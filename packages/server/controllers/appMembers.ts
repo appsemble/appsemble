@@ -6,6 +6,7 @@ import {
   logger,
   serveIcon,
   throwKoaError,
+  UserPropertiesError,
 } from '@appsemble/node-utils';
 import {
   type AppAccount,
@@ -232,19 +233,13 @@ export async function getAppMembersByRoles(ctx: Context): Promise<void> {
     include: [User],
   });
 
-  ctx.body = appMembersWithUser.map((member) => {
-    const parsedMemberProperties: Record<string, any> = {};
-    for (const [key, value] of Object.entries(member.properties)) {
-      parsedMemberProperties[key] = JSON.parse(value);
-    }
-    return {
-      id: member.UserId,
-      name: member.name,
-      primaryEmail: member.email,
-      role: member.role,
-      properties: parsedMemberProperties,
-    };
-  });
+  ctx.body = appMembersWithUser.map((member) => ({
+    id: member.UserId,
+    name: member.name,
+    primaryEmail: member.email,
+    role: member.role,
+    properties: member.properties,
+  }));
 }
 
 export const getAppMember = createGetAppMember(options);
@@ -287,19 +282,34 @@ export async function setAppMember(ctx: Context): Promise<void> {
 
   let member = app.AppMembers?.[0];
 
-  if (member) {
-    member.role = role;
-    if (properties) {
-      member.properties = properties;
+  const parsedUserProperties: Record<string, any> = {};
+  if (properties) {
+    for (const [propertyName, propertyValue] of Object.entries(properties)) {
+      try {
+        parsedUserProperties[propertyName] = JSON.parse(propertyValue as string);
+      } catch {
+        parsedUserProperties[propertyName] = propertyValue;
+      }
     }
-    await member.save();
-  } else {
-    member = await AppMember.create({
-      UserId: user.id,
-      AppId: app.id,
-      role,
-      properties,
-    });
+  }
+
+  try {
+    if (member) {
+      member.role = role;
+      member.properties = parsedUserProperties;
+      await member.save();
+    } else {
+      member = await AppMember.create({
+        UserId: user.id,
+        AppId: app.id,
+        role,
+        properties: parsedUserProperties,
+      });
+    }
+  } catch (error) {
+    if (error instanceof UserPropertiesError) {
+      throwKoaError(ctx, 400, error.message);
+    }
   }
 
   ctx.body = {
@@ -426,7 +436,15 @@ export async function updateAppMemberByEmail(ctx: Context): Promise<void> {
   }
 
   if (properties) {
-    result.properties = properties;
+    const parsedUserProperties: Record<string, any> = {};
+    for (const [propertyName, propertyValue] of Object.entries(properties)) {
+      try {
+        parsedUserProperties[propertyName] = JSON.parse(propertyValue as string);
+      } catch {
+        parsedUserProperties[propertyName] = propertyValue;
+      }
+    }
+    result.properties = parsedUserProperties;
   }
 
   if (password) {
@@ -437,7 +455,13 @@ export async function updateAppMemberByEmail(ctx: Context): Promise<void> {
     result.role = role;
   }
 
-  await appMember.update(result);
+  try {
+    await appMember.update(result);
+  } catch (error) {
+    if (error instanceof UserPropertiesError) {
+      throwKoaError(ctx, 400, error.message);
+    }
+  }
 
   delete appMember.dataValues.password;
   delete appMember.dataValues.emailKey;
@@ -500,14 +524,28 @@ export async function patchAppAccount(ctx: Context): Promise<void> {
   }
 
   if (properties) {
-    result.properties = properties;
+    const parsedUserProperties: Record<string, any> = {};
+    for (const [propertyName, propertyValue] of Object.entries(properties)) {
+      try {
+        parsedUserProperties[propertyName] = JSON.parse(propertyValue as string);
+      } catch {
+        parsedUserProperties[propertyName] = propertyValue;
+      }
+    }
+    result.properties = parsedUserProperties;
   }
 
   if (locale) {
     result.locale = locale;
   }
 
-  await member.update(result);
+  try {
+    await member.update(result);
+  } catch (error) {
+    if (error instanceof UserPropertiesError) {
+      throwKoaError(ctx, 400, error.message);
+    }
+  }
   ctx.body = outputAppMember(app, language, baseLanguage);
 }
 
@@ -610,6 +648,15 @@ export async function registerMemberEmail(ctx: Context): Promise<void> {
         { transaction },
       );
 
+      const parsedUserProperties: Record<string, any> = {};
+      for (const [propertyName, propertyValue] of Object.entries(properties)) {
+        try {
+          parsedUserProperties[propertyName] = JSON.parse(propertyValue as string);
+        } catch {
+          parsedUserProperties[propertyName] = propertyValue;
+        }
+      }
+
       await AppMember.create(
         {
           UserId: user.id,
@@ -620,13 +667,16 @@ export async function registerMemberEmail(ctx: Context): Promise<void> {
           role: app.definition.security.default.role,
           emailKey: key,
           picture: picture ? picture.contents : null,
-          properties,
+          properties: parsedUserProperties,
           locale,
         },
         { transaction },
       );
     });
   } catch (error: unknown) {
+    if (error instanceof UserPropertiesError) {
+      throwKoaError(ctx, 400, error.message);
+    }
     if (error instanceof UniqueConstraintError) {
       throwKoaError(ctx, 409, 'User with this email address already exists.');
     }
@@ -742,6 +792,17 @@ export async function createMemberEmail(ctx: Context): Promise<void> {
         { transaction },
       );
 
+      const parsedUserProperties: Record<string, any> = {};
+      if (properties) {
+        for (const [propertyName, propertyValue] of Object.entries(properties)) {
+          try {
+            parsedUserProperties[propertyName] = JSON.parse(propertyValue as string);
+          } catch {
+            parsedUserProperties[propertyName] = propertyValue;
+          }
+        }
+      }
+
       await AppMember.create(
         {
           UserId: createdUser.id,
@@ -752,13 +813,16 @@ export async function createMemberEmail(ctx: Context): Promise<void> {
           role: role ?? app.definition.security.default.role,
           emailKey: key,
           picture: picture ? picture.contents : null,
-          properties,
+          properties: parsedUserProperties,
           locale,
         },
         { transaction },
       );
     });
   } catch (error: unknown) {
+    if (error instanceof UserPropertiesError) {
+      throwKoaError(ctx, 400, error.message);
+    }
     if (error instanceof UniqueConstraintError) {
       throwKoaError(ctx, 409, 'User with this email address already exists.');
     }

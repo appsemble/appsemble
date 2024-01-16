@@ -157,8 +157,19 @@ export function processResourceBody(
     properties: {
       ...definition.schema.properties,
       id: { type: 'integer' },
-      $expires: { type: 'string', format: 'date-time' },
+      $expires: {
+        anyOf: [
+          { type: 'string', format: 'date-time' },
+          {
+            type: 'string',
+            pattern:
+              /^(\d+(y|yr|years))?\s*(\d+months)?\s*(\d+(w|wk|weeks))?\s*(\d+(d|days))?\s*(\d+(h|hr|hours))?\s*(\d+(m|min|minutes))?\s*(\d+(s|sec|seconds))?$/
+                .source,
+          },
+        ],
+      },
       $clonable: { type: 'boolean' },
+      $ephemeral: { type: 'boolean' },
     },
   };
   const customErrors: ValidationError[] = [];
@@ -171,14 +182,27 @@ export function processResourceBody(
       preValidateProperty,
       nestedErrors: true,
       rewrite(value, { format }, options, { path }) {
-        if (
-          Array.isArray(resource)
-            ? path.length === 2 && typeof path[0] === 'number' && path[1] === '$expires'
-            : path.length === 1 && path[0] === '$expires'
-        ) {
+        let propertyName;
+        if (Array.isArray(resource) && path.length === 2 && typeof path[0] === 'number') {
+          propertyName = path[1];
+        } else if (path.length === 1) {
+          propertyName = path[0];
+        }
+
+        if (propertyName === '$expires') {
           if (value !== undefined) {
             const date = parseISO(value);
-            if (isPast(date)) {
+
+            if (Number.isNaN(date.getTime())) {
+              return addMilliseconds(new Date(), parseDuration(value));
+            }
+
+            if (
+              isPast(date) &&
+              !customErrors.some(
+                (error) => error.message === 'has already passed' && error.path === path,
+              )
+            ) {
               customErrors.push(new ValidationError('has already passed', value, null, path));
             }
             return date;
@@ -190,7 +214,16 @@ export function processResourceBody(
             return addMilliseconds(new Date(), expiresDuration);
           }
         }
+
         if (value === undefined) {
+          if (propertyName === '$clonable') {
+            return definition.clonable;
+          }
+
+          if (propertyName === '$ephemeral') {
+            return definition.ephemeral;
+          }
+
           return;
         }
         if (format !== 'binary') {

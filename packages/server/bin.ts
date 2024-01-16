@@ -4,8 +4,7 @@ import yargs, { type CommandModule } from 'yargs';
 
 import * as cleanup from './commands/cleanup.js';
 import * as cleanupDemoUsers from './commands/cleanupDemoUsers.js';
-import * as cleanupResources from './commands/cleanupResources.js';
-import * as cleanupTemplateResources from './commands/cleanupTemplateResources.js';
+import * as cleanupResourcesAndAssets from './commands/cleanupResourcesAndAssets.js';
 import * as health from './commands/health.js';
 import * as migrate from './commands/migrate.js';
 import * as restore from './commands/restore.js';
@@ -41,9 +40,8 @@ const parser = yargs()
   })
   .middleware([setArgv, configureLogger, configureSentry])
   .command(cleanup as CommandModule)
-  .command(cleanupResources as CommandModule)
+  .command(cleanupResourcesAndAssets as CommandModule)
   .command(cleanupDemoUsers as CommandModule)
-  .command(cleanupTemplateResources as CommandModule)
   .command(runCronJobs as CommandModule)
   .command(health as CommandModule)
   .command(start as CommandModule)

@@ -36,6 +36,7 @@ import {
   AppRating,
   AppScreenshot,
   AppSnapshot,
+  Asset,
   BlockVersion,
   Organization,
   OrganizationMember,
@@ -276,6 +277,12 @@ export async function getAppById(ctx: Context): Promise<void> {
   } = ctx;
   const { baseLanguage, language, query: languageQuery } = parseLanguage(ctx, ctx.query?.language);
 
+  const { demoMode } = (await App.findByPk(appId, { attributes: ['demoMode'] })) || {
+    demoMode: false,
+  };
+
+  const demoModeFilter = demoMode ? { seed: false } : {};
+
   const app = await App.findByPk(appId, {
     attributes: {
       include: [
@@ -285,7 +292,8 @@ export async function getAppById(ctx: Context): Promise<void> {
       exclude: ['App.icon', 'maskableIcon', 'coreStyle', 'sharedStyle'],
     },
     include: [
-      { model: Resource, attributes: ['id'], where: { clonable: true }, required: false },
+      { model: Resource, attributes: ['id', 'clonable'], where: demoModeFilter, required: false },
+      { model: Asset, attributes: ['id', 'clonable'], where: demoModeFilter, required: false },
       { model: AppSnapshot },
       {
         model: Organization,
@@ -1301,4 +1309,138 @@ export async function setAppBlockStyle(ctx: Context): Promise<void> {
 
     throw error;
   }
+}
+
+export async function reseedDemoApp(ctx: Context): Promise<void> {
+  const {
+    pathParams: { appId },
+  } = ctx;
+
+  const app = await App.findByPk(appId, {
+    attributes: ['demoMode'],
+  });
+
+  assertKoaError(!app, ctx, 404, 'App not found');
+
+  assertKoaError(!app.demoMode, ctx, 400, 'App is not in demo mode');
+
+  const date = new Date();
+  const demoResourcesToDestroy = await Resource.findAll({
+    attributes: ['id', 'AppId', 'type'],
+    include: [
+      {
+        model: App,
+        attributes: ['definition'],
+        where: {
+          id: appId,
+          demoMode: true,
+        },
+        required: true,
+      },
+    ],
+    where: {
+      [Op.or]: [{ seed: false, expires: { [Op.lt]: date } }, { ephemeral: true }],
+    },
+  });
+
+  logger.info(
+    `Cleaning up ephemeral resources and resources with an expiry date earlier than ${date.toISOString()}.`,
+  );
+
+  const demoResourcesDeletionResult = await Resource.destroy({
+    where: {
+      id: { [Op.in]: demoResourcesToDestroy.map((resource) => resource.id) },
+    },
+    individualHooks: true,
+  });
+
+  logger.info(`Removed ${demoResourcesDeletionResult} ephemeral resources.`);
+
+  const demoResourcesToReseed = await Resource.findAll({
+    attributes: ['type', 'data', 'AppId', 'AuthorId'],
+    include: [
+      {
+        model: App,
+        attributes: ['id'],
+        where: {
+          id: appId,
+          demoMode: true,
+        },
+        required: true,
+      },
+    ],
+    where: {
+      seed: true,
+    },
+  });
+
+  logger.info('Reseeding ephemeral resources.');
+
+  for (const resource of demoResourcesToReseed) {
+    await Resource.create({
+      ...resource.dataValues,
+      ephemeral: true,
+      seed: false,
+    });
+  }
+
+  logger.info(`Reseeded ${demoResourcesToReseed.length} ephemeral resources.`);
+
+  const demoAssetsToDestroy = await Asset.findAll({
+    attributes: ['id'],
+    include: [
+      {
+        model: App,
+        attributes: ['id'],
+        where: {
+          id: appId,
+          demoMode: true,
+        },
+        required: true,
+      },
+    ],
+    where: {
+      ephemeral: true,
+    },
+  });
+
+  logger.info('Cleaning up ephemeral assets.');
+
+  const demoAssetsDeletionResult = await Asset.destroy({
+    where: {
+      id: { [Op.in]: demoAssetsToDestroy.map((asset) => asset.id) },
+    },
+  });
+
+  logger.info(`Removed ${demoAssetsDeletionResult} ephemeral assets.`);
+
+  const demoAssetsToReseed = await Asset.findAll({
+    attributes: ['mime', 'filename', 'data', 'name', 'AppId', 'ResourceId'],
+    include: [
+      {
+        model: App,
+        attributes: ['id'],
+        where: {
+          id: appId,
+          demoMode: true,
+        },
+        required: true,
+      },
+    ],
+    where: {
+      seed: true,
+    },
+  });
+
+  logger.info('Reseeding ephemeral assets.');
+
+  for (const asset of demoAssetsToReseed) {
+    await Asset.create({
+      ...asset.dataValues,
+      ephemeral: true,
+      seed: false,
+    });
+  }
+
+  logger.info(`Reseeded ${demoAssetsToReseed.length} ephemeral assets.`);
 }

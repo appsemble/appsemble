@@ -54,6 +54,7 @@ export function CloneButton({ app }: CloneButtonProps): ReactNode {
       organizationId,
       visibility: 'unlisted',
       resources: false,
+      assets: false,
     }),
     [app, organizationId],
   );
@@ -144,12 +145,20 @@ export function CloneButton({ app }: CloneButtonProps): ReactNode {
               <option value="unlisted">{formatMessage(messages.unlisted)}</option>
               <option value="private">{formatMessage(messages.private)}</option>
             </SimpleFormField>
-            {app.resources ? (
+            {app.hasClonableResources ? (
               <SimpleFormField
                 component={CheckboxField}
                 label={<FormattedMessage {...messages.resources} />}
                 name="resources"
                 title={<FormattedMessage {...messages.resourcesDescription} />}
+              />
+            ) : null}
+            {app.hasClonableAssets ? (
+              <SimpleFormField
+                component={CheckboxField}
+                label={<FormattedMessage {...messages.assets} />}
+                name="assets"
+                title={<FormattedMessage {...messages.assetsDescription} />}
               />
             ) : null}
           </ModalCard>

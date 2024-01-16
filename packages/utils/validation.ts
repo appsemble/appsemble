@@ -5,6 +5,9 @@ import {
   type Remapper,
   type ResourceGetActionDefinition,
   type RoleDefinition,
+  type UserCreateAction,
+  type UserRegisterAction,
+  type UserUpdateAction,
 } from '@appsemble/types';
 import cronParser from 'cron-parser';
 import { type Schema, ValidationError, Validator, type ValidatorResult } from 'jsonschema';
@@ -44,6 +47,44 @@ function validateJSONSchema(schema: Schema, prefix: Prefix, report: Report): voi
       }
     } else {
       report(schema, 'is missing properties', prefix);
+    }
+  }
+}
+
+function validateUsersSchema(definition: AppDefinition, report: Report): void {
+  if (!definition.users) {
+    return;
+  }
+
+  for (const [propertyName, propertyDefinition] of Object.entries(definition.users.properties)) {
+    // Handled by schema validation
+    if (!propertyDefinition?.schema) {
+      continue;
+    }
+
+    const { schema } = propertyDefinition;
+    const prefix = ['users', 'properties', propertyName, 'schema'];
+
+    validateJSONSchema(schema, prefix, report);
+
+    if (!('type' in schema) && !('enum' in schema)) {
+      report(schema, 'must define type or enum', prefix);
+    }
+
+    if ('reference' in propertyDefinition) {
+      const { resource: resourceName } = propertyDefinition.reference;
+
+      const resourceDefinition = definition.resources?.[resourceName];
+
+      if (!resourceDefinition) {
+        report(resourceName, 'refers to a resource that doesn’t exist', [
+          'users',
+          'properties',
+          propertyName,
+          'reference',
+          resourceName,
+        ]);
+      }
     }
   }
 }
@@ -538,6 +579,27 @@ function validateActions(definition: AppDefinition, report: Report): void {
         return;
       }
 
+      if (
+        ['user.register', 'user.create', 'user.update'].includes(action.type) &&
+        Object.values(
+          (action as UserCreateAction | UserRegisterAction | UserUpdateAction).properties,
+        )[0] &&
+        definition.users?.properties
+      ) {
+        for (const propertyName of Object.keys(
+          Object.values(
+            (action as UserCreateAction | UserRegisterAction | UserUpdateAction).properties,
+          )[0],
+        )) {
+          if (!definition.users?.properties[propertyName]) {
+            report(action.type, 'contains a property that doesn’t exist in users.properties', [
+              ...path,
+              'properties',
+            ]);
+          }
+        }
+      }
+
       if (action.type.startsWith('resource.')) {
         // All of the actions starting with `resource.` contain a property called `resource`.
         const { resource: resourceName, view } = action as ResourceGetActionDefinition;
@@ -945,6 +1007,7 @@ export async function validateAppDefinition(
     validateHooks(definition, report);
     validateLanguage(definition, report);
     validateResourceReferences(definition, report);
+    validateUsersSchema(definition, report);
     validateResourceSchemas(definition, report);
     validateSecurity(definition, report);
     validateBlocks(definition, blockVersionMap, report);

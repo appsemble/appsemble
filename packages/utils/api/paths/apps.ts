@@ -1484,4 +1484,15 @@ This will return a 404 if the user has not uploaded one.`,
       security: [{ app: ['teams:read'] }],
     },
   },
+  '/api/apps/{appId}/reseed': {
+    parameters: [{ $ref: '#/components/parameters/appId' }],
+    post: {
+      tags: ['app'],
+      operationId: 'reseedDemoApp',
+      responses: {
+        200: { description: 'The app has successfully been reseeded.' },
+      },
+      security: [{ studio: ['apps:write'] }],
+    },
+  },
 };

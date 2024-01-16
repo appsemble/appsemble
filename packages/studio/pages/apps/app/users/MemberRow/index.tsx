@@ -64,7 +64,14 @@ export function MemberRow({ member, onChange }: AppMemberRowProperties): ReactNo
 
   const defaultValues = useMemo(
     () => ({
-      annotations: Object.entries(member.properties || {}),
+      annotations: Object.entries(
+        Object.fromEntries(
+          Object.entries(member.properties).map(([key, value]) => [
+            key,
+            typeof value === 'string' ? value : JSON.stringify(value),
+          ]),
+        ) || {},
+      ),
     }),
     [member],
   );

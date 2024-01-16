@@ -15,6 +15,7 @@ import {
   BlockVersion,
   Organization,
   OrganizationMember,
+  Resource,
   User,
 } from '../models/index.js';
 import { setArgv } from '../utils/argv.js';
@@ -137,7 +138,7 @@ describe('getAppMembers', () => {
           "id": StringMatching /\\^\\[\\\\d\\[a-f\\]\\{8\\}-\\[\\\\da-f\\]\\{4\\}-4\\[\\\\da-f\\]\\{3\\}-\\[\\\\da-f\\]\\{4\\}-\\[\\\\d\\[a-f\\]\\{12\\}\\$/,
           "name": "Test Member",
           "primaryEmail": "member@example.com",
-          "properties": null,
+          "properties": {},
           "role": "Admin",
         },
       ]
@@ -1057,8 +1058,62 @@ describe('patchAppAccount', () => {
 
 describe('createMemberEmail', () => {
   it('should create valid email addresses', async () => {
-    const app = await createDefaultApp(organization);
+    const app = await App.create({
+      definition: {
+        name: 'Test App',
+        defaultPage: 'Test Page',
+        security: {
+          default: {
+            role: 'Admin',
+            policy: 'everyone',
+          },
+          roles: {
+            Reader: {},
+            Admin: {},
+          },
+        },
+        users: {
+          properties: {
+            lastCompletedTask: {
+              schema: {
+                type: 'integer',
+              },
+            },
+            completedTasks: {
+              schema: {
+                type: 'array',
+              },
+              reference: {
+                resource: 'tasks',
+              },
+            },
+          },
+        },
+        resources: {
+          tasks: {
+            schema: {
+              type: 'object',
+              properties: {
+                title: {
+                  type: 'string',
+                },
+              },
+            },
+          },
+        },
+      },
+      path: 'test-app',
+      vapidPublicKey: 'a',
+      vapidPrivateKey: 'b',
+      OrganizationId: organization.id,
+    });
     authorizeApp(app);
+
+    const task = await Resource.create({
+      AppId: app.id,
+      type: 'tasks',
+      data: {},
+    });
 
     const response = await request.post(
       `/api/user/apps/${app.id}/accounts`,
@@ -1066,6 +1121,10 @@ describe('createMemberEmail', () => {
         email: 'test@example.com',
         password: 'password',
         timezone: 'Europe/Amsterdam',
+        properties: JSON.stringify({
+          lastCompletedTask: String(task.id),
+          completedTasks: JSON.stringify([task.id]),
+        }),
       }),
     );
 
@@ -1219,7 +1278,35 @@ describe('createMemberEmail', () => {
 
 describe('registerMemberEmail', () => {
   it('should register valid email addresses', async () => {
-    const app = await createDefaultApp(organization);
+    const app = await App.create({
+      definition: {
+        name: 'Test App',
+        defaultPage: 'Test Page',
+        security: {
+          default: {
+            role: 'Admin',
+            policy: 'everyone',
+          },
+          roles: {
+            Reader: {},
+            Admin: {},
+          },
+        },
+        users: {
+          properties: {
+            foo: {
+              schema: {
+                type: 'string',
+              },
+            },
+          },
+        },
+      },
+      path: 'test-app',
+      vapidPublicKey: 'a',
+      vapidPrivateKey: 'b',
+      OrganizationId: organization.id,
+    });
 
     const response = await request.post(
       `/api/user/apps/${app.id}/account`,
@@ -1227,6 +1314,9 @@ describe('registerMemberEmail', () => {
         email: 'test@example.com',
         password: 'password',
         timezone: 'Europe/Amsterdam',
+        properties: {
+          foo: 'bar',
+        },
       }),
     );
 
@@ -1632,6 +1722,15 @@ describe('updateAppMemberByEmail', () => {
             Admin: {},
           },
         },
+        users: {
+          properties: {
+            foo: {
+              schema: {
+                type: 'string',
+              },
+            },
+          },
+        },
       },
       path: 'test-app',
       vapidPublicKey: 'a',
@@ -1667,6 +1766,9 @@ describe('updateAppMemberByEmail', () => {
     const formData = createFormData({
       email: 'reader.updated@gmail.com',
       password: 'new-password',
+      properties: {
+        foo: 'bar',
+      },
     });
     const { data } = await request.patch(
       `/api/user/apps/${app.id}/accounts/reader@gmail.com`,
@@ -1682,7 +1784,9 @@ describe('updateAppMemberByEmail', () => {
       id: readerMember.id,
       locale: null,
       name: 'Reader',
-      properties: {},
+      properties: {
+        foo: 'bar',
+      },
       resetKey: null,
       role: 'Reader',
       scimActive: null,
@@ -1739,7 +1843,7 @@ describe('updateAppMemberByEmail', () => {
       id: adminMember.id,
       locale: null,
       name: 'Admin',
-      properties: null,
+      properties: {},
       resetKey: null,
       role: 'Admin',
       scimActive: null,

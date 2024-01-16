@@ -127,3 +127,5 @@ export * from './UserQueryActionDefinition.js';
 export * from './UserRemoveActionDefinition.js';
 export * from './LoopPageDefinition.js';
 export * from './LoopPageActionsDefinition.js';
+export * from './UsersDefinition.js';
+export * from './UserPropertyDefinition.js';

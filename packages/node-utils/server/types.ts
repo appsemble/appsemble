@@ -150,6 +150,10 @@ export interface GetAppSubEntityParams {
   app: App;
 }
 
+export interface CheckSeededResourcesParams extends GetAppSubEntityParams {
+  resourceType: string;
+}
+
 export interface GetAppMessagesParams extends GetAppSubEntityParams {
   language?: string;
   merge?: string[] | string;
@@ -442,4 +446,5 @@ export interface Options {
   deleteAppAsset: (params: DeleteAppAssetParams) => Promise<number>;
   email: (params: EmailParams) => Promise<void>;
   sendNotifications: (params: SendNotificationsParams) => Promise<void>;
+  checkSeededResources: (params: CheckSeededResourcesParams) => Promise<boolean>;
 }

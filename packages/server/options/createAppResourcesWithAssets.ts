@@ -24,12 +24,15 @@ export async function createAppResourcesWithAssets({
   let createdResources: Resource[];
   await transactional(async (transaction) => {
     createdResources = await Resource.bulkCreate(
-      resources.map(({ $expires, ...data }) => ({
+      resources.map(({ $clonable, $ephemeral, $expires, $seed, ...data }) => ({
         AppId: app.id,
         type: resourceType,
         data,
         AuthorId: appMember?.id,
+        seed: $seed,
         expires: $expires,
+        clonable: $clonable,
+        ephemeral: $ephemeral,
       })),
       { logging: false, transaction },
     );
@@ -41,12 +44,15 @@ export async function createAppResourcesWithAssets({
     await Asset.bulkCreate(
       preparedAssets.map((asset) => {
         const index = resources.indexOf(asset.resource);
-        const { id: ResourceId } = createdResources[index];
+        const { clonable, ephemeral, id: ResourceId, seed } = createdResources[index];
         return {
           ...asset,
           AppId: app.id,
           ResourceId,
           AppMemberId: appMember?.id,
+          seed,
+          clonable,
+          ephemeral,
         };
       }),
       { logging: false, transaction },

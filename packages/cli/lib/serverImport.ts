@@ -19,8 +19,7 @@ ${PROMPT} ${COMMAND} @appsemble/server
 export async function serverImport<
   T extends
     | 'cleanupDemoUsers'
-    | 'cleanupResources'
-    | 'cleanupTemplateResources'
+    | 'cleanupResourcesAndAssets'
     | 'migrate'
     | 'runCronJobs'
     | 'setArgv'

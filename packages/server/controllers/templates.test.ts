@@ -8,6 +8,7 @@ import {
   AppBlockStyle,
   AppMessages,
   AppSnapshot,
+  Asset,
   Organization,
   OrganizationMember,
   Resource,
@@ -81,6 +82,13 @@ beforeEach(async () => {
   });
   await Resource.create({ AppId: t2.id, type: 'test', data: { name: 'foo' }, clonable: true });
   await Resource.create({ AppId: t2.id, type: 'test', data: { name: 'bar' } });
+  await Asset.create({
+    AppId: t2.id,
+    name: 'test-clonable',
+    data: Buffer.from('test'),
+    clonable: true,
+  });
+  await Asset.create({ AppId: t2.id, name: 'test', data: Buffer.from('test') });
   await AppMessages.create({
     AppId: t2.id,
     language: 'nl-nl',
@@ -209,6 +217,23 @@ describe('createTemplateApp', () => {
     const resources = await Resource.findAll({ where: { AppId: id, type: 'test' } });
 
     expect(resources.map((r) => r.data)).toStrictEqual([{ name: 'foo' }]);
+  });
+
+  it('should create a new app with example assets', async () => {
+    const [, template] = templates;
+    authorizeStudio();
+    const response = await request.post<AppType>('/api/templates', {
+      templateId: template.id,
+      name: 'Test app',
+      description: 'This is a test app',
+      organizationId: 'testorganization',
+      assets: true,
+    });
+
+    const { id } = response.data;
+    const assets = await Asset.findAll({ where: { AppId: id } });
+
+    expect(assets.map((a) => a.name)).toStrictEqual(['test-clonable']);
   });
 
   it('should include the app’s styles when cloning an app', async () => {

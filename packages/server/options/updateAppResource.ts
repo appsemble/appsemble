@@ -28,7 +28,12 @@ export function updateAppResource({
       },
     });
 
-    const { $clonable: clonable, $expires: expires, ...data } = resource as Record<string, unknown>;
+    const {
+      $clonable: clonable,
+      $ephemeral: ephemeral,
+      $expires: expires,
+      ...data
+    } = resource as Record<string, unknown>;
 
     const oldResource = await Resource.findOne({
       where: {
@@ -48,6 +53,7 @@ export function updateAppResource({
         data,
         clonable,
         expires,
+        ephemeral,
         EditorId: member?.id,
       },
       { transaction },
@@ -95,6 +101,6 @@ export function updateAppResource({
     processReferenceHooks(user as User, persistedApp, newResource, action, options, context);
     processHooks(user as User, persistedApp, newResource, action, options, context);
 
-    return reloaded.toJSON({ exclude: reloaded.App.template ? [] : undefined });
+    return reloaded.toJSON({ exclude: reloaded.App.template ? ['$seed'] : undefined });
   });
 }

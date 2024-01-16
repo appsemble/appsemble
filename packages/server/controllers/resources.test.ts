@@ -2435,12 +2435,15 @@ describe('updateResources', () => {
         AppId: app.id,
         ResourceId: 1,
         AppMemberId: null,
+        clonable: false,
         created: new Date('1970-01-01T00:00:00.000Z'),
         data: Buffer.from('Test Resource A'),
+        ephemeral: false,
         filename: null,
         id: response.data[0].file,
         mime: 'application/octet-stream',
         name: null,
+        seed: false,
         updated: new Date('1970-01-01T00:00:00.000Z'),
       },
     ]);
@@ -2677,9 +2680,20 @@ describe('createResource', () => {
                   "$clonable": {
                     "type": "boolean",
                   },
+                  "$ephemeral": {
+                    "type": "boolean",
+                  },
                   "$expires": {
-                    "format": "date-time",
-                    "type": "string",
+                    "anyOf": [
+                      {
+                        "format": "date-time",
+                        "type": "string",
+                      },
+                      {
+                        "pattern": "^(\\d+(y|yr|years))?\\s*(\\d+months)?\\s*(\\d+(w|wk|weeks))?\\s*(\\d+(d|days))?\\s*(\\d+(h|hr|hours))?\\s*(\\d+(m|min|minutes))?\\s*(\\d+(s|sec|seconds))?$",
+                        "type": "string",
+                      },
+                    ],
                   },
                   "array": {
                     "type": "array",
@@ -2865,13 +2879,16 @@ describe('createResource', () => {
       {
         AppId: app.id,
         ResourceId: 1,
+        clonable: false,
         AppMemberId: null,
         created: new Date('1970-01-01T00:00:00.000Z'),
         data: expect.any(Buffer),
+        ephemeral: false,
         filename: null,
         id: response.data.file,
         mime: 'application/octet-stream',
         name: null,
+        seed: false,
         updated: new Date('1970-01-01T00:00:00.000Z'),
       },
     ]);
@@ -3024,24 +3041,30 @@ describe('createResource', () => {
         AppId: app.id,
         ResourceId: 1,
         AppMemberId: null,
+        clonable: false,
         created: new Date('1970-01-01T00:00:00.000Z'),
         data: Buffer.from('Test resource a'),
+        ephemeral: false,
         filename: null,
         id: response.data[0].file,
         mime: 'application/octet-stream',
         name: null,
+        seed: false,
         updated: new Date('1970-01-01T00:00:00.000Z'),
       },
       {
         AppId: app.id,
         ResourceId: 2,
         AppMemberId: null,
+        clonable: false,
         created: new Date('1970-01-01T00:00:00.000Z'),
         data: Buffer.from('Test resource b'),
+        ephemeral: false,
         filename: null,
         id: response.data[1].file,
         mime: 'application/octet-stream',
         name: null,
+        seed: false,
         updated: new Date('1970-01-01T00:00:00.000Z'),
       },
     ]);
@@ -3275,6 +3298,144 @@ describe('createResource', () => {
       }
     `,
     );
+  });
+
+  it('should create seed resources and ephemeral resources in demo apps', async () => {
+    authorizeStudio();
+    await app.update({
+      demoMode: true,
+    });
+
+    const resource = { foo: 'bar' };
+    const response = await request.post(`/api/apps/${app.id}/resources/testResource`, resource);
+
+    expect(response).toMatchInlineSnapshot(
+      { data: { $author: { id: expect.any(String) } } },
+      `
+      HTTP/1.1 201 Created
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "$author": {
+          "id": Any<String>,
+          "name": "Test User",
+        },
+        "$created": "1970-01-01T00:00:00.000Z",
+        "$ephemeral": true,
+        "$updated": "1970-01-01T00:00:00.000Z",
+        "foo": "bar",
+        "id": 2,
+      }
+    `,
+    );
+
+    const seedResource = await Resource.findOne({
+      where: {
+        AppId: app.id,
+        seed: true,
+        ephemeral: false,
+      },
+    });
+    expect(seedResource).toMatchInlineSnapshot(`
+      {
+        "$created": "1970-01-01T00:00:00.000Z",
+        "$updated": "1970-01-01T00:00:00.000Z",
+        "foo": "bar",
+        "id": 1,
+      }
+    `);
+
+    const ephemeralResource = await Resource.findOne({
+      where: {
+        AppId: app.id,
+        seed: false,
+        ephemeral: true,
+      },
+    });
+    expect(ephemeralResource).toMatchInlineSnapshot(`
+      {
+        "$created": "1970-01-01T00:00:00.000Z",
+        "$ephemeral": true,
+        "$updated": "1970-01-01T00:00:00.000Z",
+        "foo": "bar",
+        "id": 2,
+      }
+    `);
+  });
+
+  it('should create ephemeral resources in demo apps if seed resources already exist', async () => {
+    authorizeStudio();
+    await app.update({
+      demoMode: true,
+    });
+
+    const resource = { foo: 'bar' };
+
+    await request.post(`/api/apps/${app.id}/resources/testResource`, resource);
+
+    const response = await request.post(`/api/apps/${app.id}/resources/testResource`, resource);
+
+    expect(response).toMatchInlineSnapshot(
+      { data: { $author: { id: expect.any(String) } } },
+      `
+      HTTP/1.1 201 Created
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "$author": {
+          "id": Any<String>,
+          "name": "Test User",
+        },
+        "$created": "1970-01-01T00:00:00.000Z",
+        "$ephemeral": true,
+        "$updated": "1970-01-01T00:00:00.000Z",
+        "foo": "bar",
+        "id": 3,
+      }
+    `,
+    );
+
+    const seedResource = await Resource.findOne({
+      where: {
+        AppId: app.id,
+        seed: true,
+        ephemeral: false,
+      },
+    });
+    expect(seedResource).toMatchInlineSnapshot(`
+      {
+        "$created": "1970-01-01T00:00:00.000Z",
+        "$updated": "1970-01-01T00:00:00.000Z",
+        "foo": "bar",
+        "id": 1,
+      }
+    `);
+
+    const ephemeralResource = await Resource.findAll({
+      where: {
+        AppId: app.id,
+        seed: false,
+        ephemeral: true,
+      },
+    });
+    expect(ephemeralResource).toMatchInlineSnapshot(`
+      [
+        {
+          "$created": "1970-01-01T00:00:00.000Z",
+          "$ephemeral": true,
+          "$updated": "1970-01-01T00:00:00.000Z",
+          "foo": "bar",
+          "id": 2,
+        },
+        {
+          "$created": "1970-01-01T00:00:00.000Z",
+          "$ephemeral": true,
+          "$updated": "1970-01-01T00:00:00.000Z",
+          "foo": "bar",
+          "id": 3,
+        },
+      ]
+    `);
   });
 });
 
@@ -3536,9 +3697,20 @@ describe('updateResource', () => {
                   "$clonable": {
                     "type": "boolean",
                   },
+                  "$ephemeral": {
+                    "type": "boolean",
+                  },
                   "$expires": {
-                    "format": "date-time",
-                    "type": "string",
+                    "anyOf": [
+                      {
+                        "format": "date-time",
+                        "type": "string",
+                      },
+                      {
+                        "pattern": "^(\\d+(y|yr|years))?\\s*(\\d+months)?\\s*(\\d+(w|wk|weeks))?\\s*(\\d+(d|days))?\\s*(\\d+(h|hr|hours))?\\s*(\\d+(m|min|minutes))?\\s*(\\d+(s|sec|seconds))?$",
+                        "type": "string",
+                      },
+                    ],
                   },
                   "array": {
                     "type": "array",
@@ -3745,6 +3917,52 @@ describe('updateResource', () => {
     `);
   });
 
+  it('should set $expires from period', async () => {
+    const {
+      data: { id },
+    } = await request.post<ResourceType>(`/api/apps/${app.id}/resources/testExpirableResource`, {
+      foo: 'test',
+      $expires: '1d',
+    });
+
+    const responseA = await request.put(
+      `/api/apps/${app.id}/resources/testExpirableResource/${id}`,
+      {
+        foo: 'updated',
+        $expires: '2d',
+      },
+    );
+    const responseB = await request.get(
+      `/api/apps/${app.id}/resources/testExpirableResource/${id}`,
+    );
+
+    expect(responseA).toMatchInlineSnapshot(`
+      HTTP/1.1 200 OK
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "$created": "1970-01-01T00:00:00.000Z",
+        "$expires": "1970-01-03T00:00:00.000Z",
+        "$updated": "1970-01-01T00:00:00.000Z",
+        "foo": "updated",
+        "id": 1,
+      }
+    `);
+
+    expect(responseB).toMatchInlineSnapshot(`
+      HTTP/1.1 200 OK
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "$created": "1970-01-01T00:00:00.000Z",
+        "$expires": "1970-01-03T00:00:00.000Z",
+        "$updated": "1970-01-01T00:00:00.000Z",
+        "foo": "updated",
+        "id": 1,
+      }
+    `);
+  });
+
   it('should not set $expires if the date has already passed', async () => {
     // 10 minutes
     vi.advanceTimersByTime(600e3);
@@ -3817,12 +4035,15 @@ describe('updateResource', () => {
         AppId: app.id,
         ResourceId: 1,
         AppMemberId: null,
+        clonable: false,
         created: new Date('1970-01-01T00:00:00.000Z'),
         data: expect.any(Buffer),
+        ephemeral: false,
         filename: null,
         id: response.data.file,
         mime: 'application/octet-stream',
         name: null,
+        seed: false,
         updated: new Date('1970-01-01T00:00:00.000Z'),
       },
     ]);
@@ -4662,6 +4883,9 @@ describe('patchResource', () => {
         AppId: app.id,
         ResourceId: 1,
         AppMemberId: null,
+        clonable: false,
+        ephemeral: false,
+        seed: false,
         created: new Date('1970-01-01T00:00:00.000Z'),
         data: expect.any(Buffer),
         filename: null,

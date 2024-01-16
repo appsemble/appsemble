@@ -11,9 +11,11 @@ import { stringify } from 'yaml';
 import {
   App,
   AppBlockStyle,
+  AppMember,
   AppRating,
   AppScreenshot,
   AppSnapshot,
+  Asset,
   BlockAsset,
   BlockMessages,
   BlockVersion,
@@ -2752,6 +2754,9 @@ describe('createApp', () => {
                   "theme": {
                     "$ref": "#/components/schemas/Theme",
                   },
+                  "users": {
+                    "$ref": "#/components/schemas/UsersDefinition",
+                  },
                 },
                 "required": [
                   "name",
@@ -3635,6 +3640,9 @@ describe('patchApp', () => {
                   "theme": {
                     "$ref": "#/components/schemas/Theme",
                   },
+                  "users": {
+                    "$ref": "#/components/schemas/UsersDefinition",
+                  },
                 },
                 "required": [
                   "name",
@@ -3777,6 +3785,9 @@ describe('patchApp', () => {
                   },
                   "theme": {
                     "$ref": "#/components/schemas/Theme",
+                  },
+                  "users": {
+                    "$ref": "#/components/schemas/UsersDefinition",
                   },
                 },
                 "required": [
@@ -5449,5 +5460,406 @@ describe('setAppBlockStyle', () => {
         "statusCode": 400,
       }
     `);
+  });
+});
+
+describe('reseedDemoApp', () => {
+  it('should throw on non existing app', async () => {
+    authorizeStudio();
+    await App.create({
+      demoMode: true,
+      definition: { name: 'Test App', defaultPage: 'Test Page' },
+      vapidPublicKey: 'a',
+      vapidPrivateKey: 'b',
+      OrganizationId: organization.id,
+    });
+
+    const response = await request.post(`/api/apps/${2}/reseed`);
+
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 404 Not Found
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "error": "Not Found",
+        "message": "App not found",
+        "statusCode": 404,
+      }
+    `);
+  });
+
+  it('should throw on non demo app', async () => {
+    authorizeStudio();
+    const { id } = await App.create({
+      demoMode: false,
+      definition: { name: 'Test App', defaultPage: 'Test Page' },
+      vapidPublicKey: 'a',
+      vapidPrivateKey: 'b',
+      OrganizationId: organization.id,
+    });
+
+    const response = await request.post(`/api/apps/${id}/reseed`);
+
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 400 Bad Request
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "error": "Bad Request",
+        "message": "App is not in demo mode",
+        "statusCode": 400,
+      }
+    `);
+  });
+
+  it('should reseed resources and assets with undefined user properties', async () => {
+    authorizeStudio();
+    const { id: appId } = await App.create({
+      demoMode: true,
+      definition: { name: 'Test App', defaultPage: 'Test Page' },
+      vapidPublicKey: 'a',
+      vapidPrivateKey: 'b',
+      OrganizationId: organization.id,
+    });
+
+    const { id: seedResourceId } = await Resource.create({
+      AppId: 1,
+      type: 'tasks',
+      seed: true,
+      data: {
+        foo: 'bar',
+      },
+    });
+
+    const { id: ephemeralResourceId } = await Resource.create({
+      AppId: 1,
+      type: 'tasks',
+      ephemeral: true,
+      data: {
+        foo: 'bar',
+      },
+    });
+
+    const { id: seedAssetId } = await Asset.create({
+      AppId: 1,
+      name: 'tasks',
+      seed: true,
+      data: Buffer.from('asset'),
+    });
+
+    const { id: ephemeralAssetId } = await Asset.create({
+      AppId: 1,
+      name: 'tasks',
+      ephemeral: true,
+      data: Buffer.from('asset'),
+    });
+
+    await request.post(`/api/apps/${appId}/reseed`);
+
+    const seedResource = await Resource.findOne({
+      where: {
+        id: seedResourceId,
+        AppId: appId,
+        seed: true,
+      },
+    });
+
+    expect(seedResource).toMatchInlineSnapshot(`
+      {
+        "$created": "1970-01-01T00:00:00.000Z",
+        "$updated": "1970-01-01T00:00:00.000Z",
+        "foo": "bar",
+        "id": 1,
+      }
+    `);
+
+    const oldEphemeralResource = await Resource.findOne({
+      where: {
+        AppId: appId,
+        id: ephemeralResourceId,
+      },
+    });
+
+    expect(oldEphemeralResource).toBeNull();
+
+    const newEphemeralResource = await Resource.findOne({
+      where: {
+        AppId: appId,
+        ephemeral: true,
+      },
+    });
+
+    expect(newEphemeralResource).toMatchInlineSnapshot(`
+      {
+        "$created": "1970-01-01T00:00:00.000Z",
+        "$ephemeral": true,
+        "$updated": "1970-01-01T00:00:00.000Z",
+        "foo": "bar",
+        "id": 3,
+      }
+    `);
+
+    const seedAsset = await Asset.findOne({
+      attributes: ['name', 'seed', 'ephemeral', 'data'],
+      where: {
+        id: seedAssetId,
+        AppId: appId,
+        seed: true,
+      },
+    });
+
+    expect(seedAsset.dataValues).toMatchInlineSnapshot(
+      {
+        data: expect.any(Buffer),
+      },
+      `
+      {
+        "data": Any<Buffer>,
+        "ephemeral": false,
+        "name": "tasks",
+        "seed": true,
+      }
+    `,
+    );
+
+    const oldEphemeralAsset = await Asset.findOne({
+      where: {
+        AppId: appId,
+        id: ephemeralAssetId,
+      },
+    });
+
+    expect(oldEphemeralAsset).toBeNull();
+
+    const newEphemeralAsset = await Asset.findOne({
+      attributes: ['name', 'seed', 'ephemeral', 'data'],
+      where: {
+        AppId: appId,
+        ephemeral: true,
+      },
+    });
+
+    expect(newEphemeralAsset.dataValues).toMatchInlineSnapshot(
+      {
+        data: expect.any(Buffer),
+      },
+      `
+      {
+        "data": Any<Buffer>,
+        "ephemeral": true,
+        "name": "tasks",
+        "seed": false,
+      }
+    `,
+    );
+  });
+
+  it('should reseed resources and assets with defined user properties', async () => {
+    authorizeStudio();
+    const { id: appId } = await App.create({
+      demoMode: true,
+      definition: {
+        name: 'Test App',
+        defaultPage: 'Test Page',
+        users: {
+          properties: {
+            completedTasks: {
+              schema: { type: 'array', items: { type: 'integer' } },
+              reference: { resource: 'tasks' },
+            },
+            lastCompletedTask: {
+              schema: { type: 'integer' },
+              reference: { resource: 'tasks' },
+            },
+          },
+        },
+        resources: {
+          tasks: {
+            schema: {
+              type: 'object',
+              properties: {
+                title: { type: 'string' },
+              },
+            },
+          },
+        },
+      },
+      vapidPublicKey: 'a',
+      vapidPrivateKey: 'b',
+      OrganizationId: organization.id,
+    });
+
+    const { id: seedResourceId } = await Resource.create({
+      AppId: 1,
+      type: 'tasks',
+      seed: true,
+      data: {
+        foo: 'bar',
+      },
+    });
+
+    const { id: ephemeralResourceId } = await Resource.create({
+      AppId: 1,
+      type: 'tasks',
+      ephemeral: true,
+      data: {
+        foo: 'bar',
+      },
+    });
+
+    const { id: seedAssetId } = await Asset.create({
+      AppId: 1,
+      name: 'tasks',
+      seed: true,
+      data: Buffer.from('asset'),
+    });
+
+    const { id: ephemeralAssetId } = await Asset.create({
+      AppId: 1,
+      name: 'tasks',
+      ephemeral: true,
+      data: Buffer.from('asset'),
+    });
+
+    await AppMember.create({
+      AppId: appId,
+      role: 'test',
+      properties: {
+        completedTasks: [ephemeralResourceId],
+        lastCompletedTask: ephemeralResourceId,
+      },
+    });
+
+    const appMember = await AppMember.findOne({
+      attributes: ['properties'],
+      where: {
+        AppId: appId,
+      },
+    });
+
+    expect(appMember.dataValues).toMatchInlineSnapshot(`
+      {
+        "properties": {
+          "completedTasks": [
+            2,
+          ],
+          "lastCompletedTask": 2,
+        },
+      }
+    `);
+
+    await request.post(`/api/apps/${appId}/reseed`);
+
+    const updatedAppMember = await AppMember.findOne({
+      attributes: ['properties'],
+      where: {
+        AppId: appId,
+      },
+    });
+
+    expect(updatedAppMember).toMatchInlineSnapshot(`
+      {
+        "properties": {
+          "completedTasks": [],
+          "lastCompletedTask": 0,
+        },
+      }
+    `);
+
+    const seedResource = await Resource.findOne({
+      where: {
+        AppId: appId,
+        id: seedResourceId,
+      },
+    });
+
+    expect(seedResource).toMatchInlineSnapshot(`
+      {
+        "$created": "1970-01-01T00:00:00.000Z",
+        "$updated": "1970-01-01T00:00:00.000Z",
+        "foo": "bar",
+        "id": 1,
+      }
+    `);
+
+    const oldEphemeralResource = await Resource.findOne({
+      where: {
+        AppId: appId,
+        id: ephemeralResourceId,
+      },
+    });
+
+    expect(oldEphemeralResource).toBeNull();
+
+    const newEphemeralResource = await Resource.findOne({
+      where: {
+        AppId: appId,
+        ephemeral: true,
+      },
+    });
+
+    expect(newEphemeralResource).toMatchInlineSnapshot(`
+      {
+        "$created": "1970-01-01T00:00:00.000Z",
+        "$ephemeral": true,
+        "$updated": "1970-01-01T00:00:00.000Z",
+        "foo": "bar",
+        "id": 3,
+      }
+    `);
+
+    const seedAsset = await Asset.findOne({
+      attributes: ['name', 'seed', 'ephemeral', 'data'],
+      where: {
+        id: seedAssetId,
+        AppId: appId,
+        seed: true,
+      },
+    });
+
+    expect(seedAsset.dataValues).toMatchInlineSnapshot(
+      {
+        data: expect.any(Buffer),
+      },
+      `
+      {
+        "data": Any<Buffer>,
+        "ephemeral": false,
+        "name": "tasks",
+        "seed": true,
+      }
+    `,
+    );
+
+    const oldEphemeralAsset = await Asset.findOne({
+      where: {
+        AppId: appId,
+        id: ephemeralAssetId,
+      },
+    });
+
+    expect(oldEphemeralAsset).toBeNull();
+
+    const newEphemeralAsset = await Asset.findOne({
+      attributes: ['name', 'seed', 'ephemeral', 'data'],
+      where: {
+        AppId: appId,
+        ephemeral: true,
+      },
+    });
+
+    expect(newEphemeralAsset.dataValues).toMatchInlineSnapshot(
+      {
+        data: expect.any(Buffer),
+      },
+      `
+      {
+        "data": Any<Buffer>,
+        "ephemeral": true,
+        "name": "tasks",
+        "seed": false,
+      }
+    `,
+    );
   });
 });

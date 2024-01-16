@@ -3,8 +3,9 @@ import { type Argv } from 'yargs';
 import { serverImport } from '../lib/serverImport.js';
 import { type BaseArguments } from '../types.js';
 
-export const command = 'cleanup-resources';
-export const description = 'Deletes all expired resources from the database.';
+export const command = 'cleanup-resources-and-assets';
+export const description =
+  'Deletes all expired or ephemeral resources and assets from the database and reseeds demo apps.';
 
 export function builder(yargs: Argv): Argv<any> {
   return yargs
@@ -39,7 +40,10 @@ export function builder(yargs: Argv): Argv<any> {
 }
 
 export async function handler(argv: BaseArguments): Promise<void> {
-  const { cleanupResources, setArgv } = await serverImport('setArgv', 'cleanupResources');
+  const { cleanupResourcesAndAssets, setArgv } = await serverImport(
+    'setArgv',
+    'cleanupResourcesAndAssets',
+  );
   setArgv(argv);
-  return cleanupResources();
+  return cleanupResourcesAndAssets();
 }

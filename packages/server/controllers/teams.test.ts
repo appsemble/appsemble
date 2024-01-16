@@ -96,7 +96,7 @@ describe('getTeams', () => {
   });
 
   it('should include the role of the user', async () => {
-    const appMember = await AppMember.create({ UserId: user.id, AppIs: app.id, role: '' });
+    const appMember = await AppMember.create({ UserId: user.id, AppId: app.id, role: '' });
     const teamA = await Team.create({ name: 'A', AppId: app.id });
     const teamB = await Team.create({ name: 'B', AppId: app.id });
     const teamC = await Team.create({ name: 'C', AppId: app.id });
