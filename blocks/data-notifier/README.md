@@ -4,4 +4,4 @@ block emits the updated data.
 
 ### Images
 
-![data-notifier screenshot](https://gitlab.com/appsemble/appsemble/-/raw/0.23.9/config/assets/data-notifier.png)
+![data-notifier screenshot](https://gitlab.com/appsemble/appsemble/-/raw/0.24.0/config/assets/data-notifier.png)

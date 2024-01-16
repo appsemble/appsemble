@@ -2,6 +2,45 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.24.0](https://gitlab.com/appsemble/appsemble/-/releases/0.24.0)] - 2024-01-16
+
+### Added
+
+- Block(`form`): Add support for icon inside file entry.
+- Block(`form`): Add support for icon to geocoordinates field.
+- Block(`form`): Add support for icon to static field.
+- Block(`form`): Add support for label to geocoordinates field.
+- Block(`form`): Add support for tag to geocoordinates field.
+- Block(`form`): Add support for “required‘ requirement to geocoordinates field.
+- App: Remap `query` remapper on the client when `request` action requests are proxied.
+- Preact-components: Add icon right option to render icon on the right.
+- Preact-components: Add styling to dual slider when it has an icon.
+- Preact-components: Add styling to slider when it has an icon.
+- Preact-components: Add support for icon to dual slider field.
+- Preact-components: Add support for icon to slider field.
+- Studio: Add a button for mobile devices to open and show the app preview.
+- Studio: Add option to pass down class name to the editor tab component\`s elements.
+- Studio: Add option to set the dropdown content container to the right side.
+
+### Changed
+
+- Block(`form`): Change icon implementation, convert Font Awesome icon to SVG instead.
+- Cli: Update definition to include changes.
+- React-components: Add an extra parameter for a reference to be exempt from triggering the closing
+  event.
+- Server: Rename database model “Member” to “OrganizationMember”.
+- Studio: Breadcrumbs now hide on smaller mobile devices.
+- Studio: Change the style of tabs navigator to resize and apply styling based on screen size.
+- Studio: Replace normal buttons with a collapsible navigation bar for mobile user interface.
+- Types: Rename type “Member” to “OrganizationMember” in the code.
+
+### Fixed
+
+- Block(`form`): Fix default min and max value for range input field.
+- Block(`form`): Fix list input field styling when icon is present.
+- Block(`form`): Fix the file entry’s image source.
+- React-components: Fix GUI path name matching condition.
+
 ## \[[0.23.9](https://gitlab.com/appsemble/appsemble/-/releases/0.23.9)] - 2023-12-14
 
 ## \[[0.23.8](https://gitlab.com/appsemble/appsemble/-/releases/0.23.8)] - 2023-12-14
