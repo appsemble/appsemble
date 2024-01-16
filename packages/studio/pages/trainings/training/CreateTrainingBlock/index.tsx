@@ -53,7 +53,7 @@ export function CreatingTrainingBlockButton({
   const active = hash === '#create';
   return (
     <div>
-      <Button className={className} onClick={openCreateDialog}>
+      <Button className={className} icon="square-plus" iconSize="medium" onClick={openCreateDialog}>
         <FormattedMessage {...messages.createTrainingBlock} />
       </Button>
       <TrainingBlockModal

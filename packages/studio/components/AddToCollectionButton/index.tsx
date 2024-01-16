@@ -23,6 +23,11 @@ interface AppToCollectionButtonProps {
    * The app to add to a collection.
    */
   readonly app: App;
+
+  /*
+   * Classname to be applied for the component
+   */
+  readonly className?: string;
 }
 
 const defaultValues = {
@@ -32,7 +37,7 @@ const defaultValues = {
 /**
  * Render a button that can be used to add an app to a collection.
  */
-export function AddToCollectionButton({ app }: AppToCollectionButtonProps): ReactNode {
+export function AddToCollectionButton({ app, className }: AppToCollectionButtonProps): ReactNode {
   const { organizations, userInfo } = useUser();
 
   const [availableCollections, setAvailableCollections] = useState<AppCollection[]>([]);
@@ -70,7 +75,7 @@ export function AddToCollectionButton({ app }: AppToCollectionButtonProps): Reac
 
   return (
     <>
-      <Button className="mb-3 ml-4" onClick={modalToggle.enable}>
+      <Button className={`mb-0 ${className && className}`} onClick={modalToggle.enable}>
         <FormattedMessage {...messages.addToCollection} />
       </Button>
       {userInfo ? (

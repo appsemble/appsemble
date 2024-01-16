@@ -1,0 +1,17 @@
+.dropdown {
+  @media (width <= 390px) {
+    float: left !important;
+    margin-left: 0.5rem;
+  }
+}
+
+.exportControls {
+  border: 2px solid rgb(83 147 255 / 63.9%);
+  border-radius: 5px;
+}
+
+.checkbox {
+  @media (width >= 509px) {
+    text-wrap: nowrap;
+  }
+}

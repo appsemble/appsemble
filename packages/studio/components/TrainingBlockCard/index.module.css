@@ -1,5 +1,6 @@
 .block {
-  max-width: 360px;
+  max-width: 601px;
+  min-width: 291px;
 }
 
 .content {

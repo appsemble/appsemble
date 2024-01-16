@@ -199,7 +199,7 @@ export function TrainingListCard({
             <div className="column">
               <b>{formatMessage(messages.competences)}</b>
               <br />
-              {competences.map((tag) => (
+              {competences?.map((tag) => (
                 <span className="tag is-medium is-center mb-2 mr-1" key={randomString()}>
                   {tag}
                 </span>
