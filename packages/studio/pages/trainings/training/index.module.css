@@ -1,5 +1,5 @@
 .root {
-  max-width: 960px;
+  max-width: 1280px;
   width: 100%;
 }
 
@@ -12,17 +12,24 @@
 .list {
   display: grid;
   grid-auto-rows: 1fr;
-  grid-gap: 10px;
-  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  grid-gap: 20px;
+  grid-template-columns: repeat(auto-fill, minmax(291px, 1fr));
   justify-content: center;
   margin: 0 auto 1.5rem;
 }
 
 .isPositionedBottomRight {
-  bottom: 2rem;
+  bottom: 0;
   margin: 10px;
   position: fixed;
-  right: 2rem;
+  right: 0.2rem;
+}
+
+.isPositionedTopRight {
+  margin-top: 13px;
+  position: absolute;
+  right: 0.7rem;
+  top: 3rem;
 }
 
 /* stack things on top of each other */

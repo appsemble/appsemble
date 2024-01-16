@@ -2,8 +2,8 @@ import { defineMessages } from 'react-intl';
 
 export const messages = defineMessages({
   createTrainingBlock: {
-    id: 'studio.3wiKqI',
-    defaultMessage: 'Create Training Block',
+    id: 'studio.PJivSX',
+    defaultMessage: 'Lesson',
   },
   cancel: {
     id: 'studio.47FYwb',

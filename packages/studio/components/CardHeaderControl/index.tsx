@@ -64,7 +64,7 @@ export function CardHeaderControl({
       <div className="is-flex card-content">
         <figure className={`image is-128x128 ${styles.logo}`}>{icon}</figure>
         <div className={`is-flex ${styles.metaWrapper}`}>
-          <div className={`ml-4 ${styles.meta}`}>
+          <div className={`mb-1 ml-4 ${styles.meta}`}>
             <header>
               <Title className={`is-marginless ${styles.ellipsis}`} level={titleLevel}>
                 {title}
@@ -80,9 +80,7 @@ export function CardHeaderControl({
             ) : null}
             {details}
           </div>
-          <div className={`${styles.buttonContainer} py-2 is-flex is-flex-direction-column`}>
-            {controls}
-          </div>
+          <div className={`${styles.buttonContainer} is-flex-tablet'`}>{controls}</div>
         </div>
       </div>
       {children}

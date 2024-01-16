@@ -178,6 +178,7 @@ test.describe('App Collections', () => {
 
     await page.getByRole('link', { name: 'App store' }).click();
     await page.getByRole('link', { name: 'Empty' }).first().click();
+    await page.click('#app-options-menu');
     await page.getByRole('button', { name: 'Add to collection' }).click();
     await page.locator('#collectionId').selectOption({ label: collectionName });
     await page.locator('footer').getByRole('button', { name: 'Add to collection' }).click();
@@ -202,6 +203,7 @@ test.describe('App Collections', () => {
 
     await page.getByRole('link', { name: 'App store' }).click();
     await page.getByRole('link', { name: 'Empty' }).first().click();
+    await page.click('#app-options-menu');
     await page.getByRole('button', { name: 'Add to collection' }).click();
     await page.locator('#collectionId').selectOption({ label: collectionName });
     await page.locator('footer').getByRole('button', { name: 'Add to collection' }).click();
@@ -232,12 +234,14 @@ test.describe('App Collections', () => {
 
     await page.getByRole('link', { name: 'App store' }).click();
     await page.getByRole('link', { name: 'Empty' }).first().click();
+    await page.click('#app-options-menu');
     await page.getByRole('button', { name: 'Add to collection' }).click();
     await page.locator('#collectionId').selectOption({ label: collectionName });
     await page.locator('footer').getByRole('button', { name: 'Add to collection' }).click();
 
     await page.goBack();
     await page.getByRole('link', { name: 'Person' }).first().click();
+    await page.click('#app-options-menu');
     await page.getByRole('button', { name: 'Add to collection' }).click();
     await page.locator('#collectionId').selectOption({ label: collectionName });
     await page.locator('footer').getByRole('button', { name: 'Add to collection' }).click();

@@ -57,18 +57,23 @@
   top: 3.25rem;
   transition: left 0.15s;
   width: menu-width;
-  z-index: 1500;
 
   /* Should be less than the z-index of the modal component and should be more than the main screen of the app */
 
+  @media screen and (width =1024px) {
+    z-index: 1500;
+  }
+
+  /* Shows the side menu  when on a big screen */
   @media screen and (width >1024px) {
-    /* Shows the side menu  when on a big screen */
     left: 0;
+    z-index: auto !important;
   }
 
   /* Shows the side menu when opened on a small screen */
   &.open {
     left: 0;
+    z-index: 1500;
   }
 
   /* Overrides the side menu behaviour on the code and GUI editor pages */

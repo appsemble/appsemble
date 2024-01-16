@@ -1,4 +1,4 @@
-import { Button, Checkbox, Title, useToggle } from '@appsemble/react-components';
+import { Button, Title, useToggle } from '@appsemble/react-components';
 import { defaultLocale } from '@appsemble/utils';
 import axios from 'axios';
 import classNames from 'classnames';
@@ -10,8 +10,8 @@ import { AppRatings } from './AppRatings/index.js';
 import { AppScreenshots } from './AppScreenshots/index.js';
 import styles from './index.module.css';
 import { messages } from './messages.js';
-import { AddToCollectionButton } from '../../../../components/AddToCollectionButton/index.js';
 import { AppIcon } from '../../../../components/AppIcon/index.js';
+import { AppOptionsMenu } from '../../../../components/AppOptionsMenu/index.js';
 import { CardHeaderControl } from '../../../../components/CardHeaderControl/index.js';
 import { CloneButton } from '../../../../components/CloneButton/index.js';
 import { MarkdownContent } from '../../../../components/MarkdownContent/index.js';
@@ -70,26 +70,15 @@ export function IndexPage(): ReactNode {
               <FormattedMessage {...messages.view} />
             </Button>
             <CloneButton app={app} />
-            <AddToCollectionButton app={app} />
             {showExport ? (
-              <div>
-                <Button className="mb-3 mx-4" onClick={onExport} rel="noopener noreferrer">
-                  <FormattedMessage {...messages.exportText} />
-                </Button>
-                {showExportResources ? (
-                  <>
-                    <Checkbox
-                      className={`is-inline-block ${styles.boolean}`}
-                      name="resources"
-                      onChange={onChecked}
-                      value={checked}
-                    />
-                    <span>
-                      <FormattedMessage {...messages.exportWithResources} />
-                    </span>
-                  </>
-                ) : null}
-              </div>
+              <AppOptionsMenu
+                app={app}
+                checked={checked}
+                onChecked={onChecked}
+                onExport={onExport}
+                showExport={showExport}
+                showExportResources={showExportResources}
+              />
             ) : null}
           </>
         }

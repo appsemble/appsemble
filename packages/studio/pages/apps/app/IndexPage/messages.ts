@@ -17,12 +17,4 @@ export const messages = defineMessages({
     id: 'studio.Ed2ywJ',
     defaultMessage: 'Read less',
   },
-  exportText: {
-    id: 'studio.SVwJTM',
-    defaultMessage: 'Export',
-  },
-  exportWithResources: {
-    id: 'studio.ny2yoG',
-    defaultMessage: 'Include resources in the export file.',
-  },
 });

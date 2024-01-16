@@ -216,13 +216,13 @@ export function TrainingBlockCard({
                 <li>
                   <div>
                     <Button
-                      className="is-ghost"
+                      className="is-ghost p-0 ml-2"
                       onClick={() => {
                         copyToClipboard(exampleCode);
                       }}
                     >
                       <span className="icon-text is-size-5">
-                        <Icon className="mr-2" color="primary" icon="clipboard" />
+                        <Icon className="mr-1" color="primary" icon="clipboard" />
                         <FormattedMessage {...messages.exampleCode} />
                       </span>
                     </Button>

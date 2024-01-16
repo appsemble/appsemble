@@ -128,7 +128,7 @@ export function TrainingHomePage(): ReactNode {
   });
 
   return (
-    <Content className={`pb-2 ${styles.root}`}>
+    <Content className={`pb-5 ${styles.root}`}>
       <AsyncDataView
         emptyMessage={<FormattedMessage {...messages.emptyTraining} />}
         errorMessage={<FormattedMessage {...messages.errorTraining} />}
@@ -143,7 +143,12 @@ export function TrainingHomePage(): ReactNode {
                   <CreatingTrainingBlockButton className="mx-3 my-1 is-flex" />
                 ) : null}
                 {mayDeleteTraining ? (
-                  <Button className="button is-primary mx-3 my-1" icon="edit" onClick={onEdit}>
+                  <Button
+                    className="button is-primary mx-3 my-1"
+                    icon="edit"
+                    iconSize="medium"
+                    onClick={onEdit}
+                  >
                     <FormattedMessage {...messages.editTraining} />
                   </Button>
                 ) : null}
@@ -151,14 +156,10 @@ export function TrainingHomePage(): ReactNode {
                   <Button
                     className="button is-danger is-light mx-3 my-1"
                     icon="trash"
+                    iconSize="medium"
                     onClick={onDeleteTraining}
                   >
                     <FormattedMessage {...messages.deleteTraining} />
-                  </Button>
-                ) : null}
-                {userInfo && isEnrolled.data && !isEnrolled.data.enrolled ? (
-                  <Button className="is-primary mx-3 my-1" onClick={onEnroll}>
-                    <FormattedMessage {...messages.enroll} />
                   </Button>
                 ) : null}
                 <TrainingModal
@@ -183,7 +184,7 @@ export function TrainingHomePage(): ReactNode {
                   <StarRating value={trainingInfoData?.difficultyLevel} />
                 </div>
                 <div>
-                  {trainingInfoData.competences.map((tag) => (
+                  {trainingInfoData?.competences?.map((tag) => (
                     <span className="tag is-primary is-capitalized ml-2" key={randomString()}>
                       {tag}
                     </span>
@@ -205,7 +206,7 @@ export function TrainingHomePage(): ReactNode {
       >
         {(trainingBlocksData) => (
           <div className={styles.list}>
-            {trainingBlocksData.map((block) => (
+            {trainingBlocksData?.map((block) => (
               <div className={styles.stack} key={block.id}>
                 <TrainingBlockCard
                   blockId={block.id}
@@ -220,14 +221,22 @@ export function TrainingHomePage(): ReactNode {
           </div>
         )}
       </AsyncDataView>
-      <div className={styles.isPositionedBottomRight}>
+      <div className={styles.isPositionedTopRight}>
+        {userInfo && isEnrolled.data && !isEnrolled.data.enrolled ? (
+          <Button className="is-primary" icon="school" onClick={onEnroll}>
+            <FormattedMessage {...messages.enroll} />
+          </Button>
+        ) : null}
         {isEnrolled.data?.enrolled && !isEnrolled.data?.completed ? (
-          <Button className="is-primary" onClick={markAsCompleted}>
+          <Button className="is-primary" icon="school-circle-check" onClick={markAsCompleted}>
             <FormattedMessage {...messages.markAsCompleted} />
           </Button>
         ) : (isEnrolled.data && !isEnrolled.data.enrolled) || !userInfo ? null : (
-          <div className="tag is-large is-success">
-            <FormattedMessage {...messages.completed} />
+          <div className="tag is-large has-background-success-light has-text-success-dark">
+            <span>
+              <Icon className="mr-2" icon="user-graduate" />
+              <FormattedMessage {...messages.completed} />
+            </span>
           </div>
         )}
       </div>
