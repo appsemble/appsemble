@@ -2,11 +2,11 @@
 apiVersion: batch/v1
 kind: CronJob
 metadata:
-  name: {{ include "appsemble.fullname" . }}-cleanup-template-resources
+  name: {{ include "appsemble.fullname" . }}-cleanup-resources-and-assets
   labels:
     {{ include "appsemble.labels" . }}
 spec:
-  schedule: 0 2 * * * # Run every day at 2:00:00
+  schedule: 0 23 * * * # Run every day at 23:00:00
   successfulJobsHistoryLimit: {{ .Values.cronjob.jobsHistoryLimit }}
   failedJobsHistoryLimit: {{ .Values.cronjob.jobsHistoryLimit }}
   jobTemplate:
@@ -18,11 +18,11 @@ spec:
         spec:
           restartPolicy: Never
           containers:
-            - name: {{ include "appsemble.fullname" . }}-cronjob-cleanup-template-resources
+            - name: {{ include "appsemble.fullname" . }}-cronjob-cleanup-resources-and-assets
               image: "{{ .Values.image.repository }}:{{ include "appsemble.tag" . }}"
               imagePullPolicy: {{ .Values.image.pullPolicy }}
               args:
-                - cleanup-template-resources
+                - cleanup-resources-and-assets
                 - -vv
               env:
 {{ include "appsemble.postgres" . | indent 16 }}

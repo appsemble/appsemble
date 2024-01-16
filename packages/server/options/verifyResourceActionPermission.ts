@@ -6,7 +6,7 @@ import {
 import { checkAppRole, Permission, TeamRole } from '@appsemble/utils';
 import { Op, type WhereOptions } from 'sequelize';
 
-import { AppMember, Organization, Team, TeamMember } from '../models/index.js';
+import { AppMember, Organization, Resource, Team, TeamMember, User } from '../models/index.js';
 
 const specialRoles = new Set([
   '$author',
@@ -81,8 +81,35 @@ export async function verifyResourceActionPermission({
 
   const result: WhereOptions[] = [];
 
+  const seededResource = await Resource.findOne({
+    attributes: ['id'],
+    where: {
+      AppId: app.id,
+      type: resourceType,
+      seed: true,
+    },
+    include: [
+      {
+        model: AppMember,
+        as: 'Author',
+        attributes: ['id'],
+        include: [
+          {
+            model: User,
+            attributes: ['id'],
+          },
+        ],
+      },
+    ],
+  });
+
+  let seeder;
+  if (app.demoMode && seededResource) {
+    seeder = seededResource.Author.User;
+  }
+
   const member = user
-    ? await AppMember.findOne({ where: { AppId: app.id, UserId: user.id } })
+    ? await AppMember.findOne({ where: { AppId: app.id, UserId: seeder ? seeder.id : user.id } })
     : null;
 
   if (functionalRoles.includes('$author') && member && action !== 'create') {
@@ -144,7 +171,7 @@ export async function verifyResourceActionPermission({
           break;
 
         case 'organization':
-          if (!(await organization.$has('User', user.id))) {
+          if (!(await organization.$has('User', seeder ? seeder.id : user.id))) {
             throwKoaError(ctx, 403, 'User is not a member of the app.');
           }
 

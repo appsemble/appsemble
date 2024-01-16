@@ -31,7 +31,7 @@ export async function getAssets(ctx: Context): Promise<void> {
         required: false,
       },
     ],
-    where: { AppId: appId },
+    where: { AppId: appId, ...(app.demoMode ? { seed: false, ephemeral: true } : {}) },
     offset: $skip,
     limit: $top,
   });
@@ -59,7 +59,9 @@ export async function countAssets(ctx: Context): Promise<void> {
 
   await checkRole(ctx, app.OrganizationId, Permission.ReadAssets);
 
-  const count = await Asset.count({ where: { AppId: appId } });
+  const count = await Asset.count({
+    where: { AppId: appId, ...(app.demoMode ? { seed: false, ephemeral: true } : {}) },
+  });
   ctx.body = count;
 }
 
@@ -69,17 +71,21 @@ export async function getAssetById(ctx: Context): Promise<void> {
   } = ctx;
 
   const app = await App.findByPk(appId, {
-    attributes: [],
-    include: [
-      { model: Asset, where: { [Op.or]: [{ id: assetId }, { name: assetId }] }, required: false },
-    ],
+    attributes: ['OrganizationId'],
   });
 
   assertKoaError(!app, ctx, 404, 'App not found');
 
+  const assets = await Asset.findAll({
+    where: {
+      AppId: appId,
+      [Op.or]: [{ id: assetId }, { name: assetId }],
+      ...(app.demoMode ? { seed: false, ephemeral: true } : {}),
+    },
+  });
+
   // Pick asset id over asset name.
-  const asset =
-    app.Assets.find((a) => a.id === assetId) || app.Assets.find((a) => a.name === assetId);
+  const asset = assets.find((a) => a.id === assetId) || assets.find((a) => a.name === assetId);
 
   assertKoaError(!asset, ctx, 404, 'Asset not found');
 
@@ -115,6 +121,7 @@ export async function createAsset(ctx: Context): Promise<void> {
     pathParams: { appId },
     request: {
       body: {
+        clonable,
         file: { contents, filename, mime },
         name,
       },
@@ -122,21 +129,62 @@ export async function createAsset(ctx: Context): Promise<void> {
     user,
   } = ctx;
 
-  const app = await App.findByPk(appId, { attributes: ['id'] });
+  const app = await App.findByPk(appId, { attributes: ['id', 'demoMode'] });
   const appMember = await getUserAppAccount(appId, user?.id);
 
   assertKoaError(!app, ctx, 404, 'App not found');
 
+  const seededAssets = await Asset.findAll({
+    attributes: ['id'],
+    where: {
+      AppId: app.id,
+      data: contents,
+      ...(filename ? { filename } : {}),
+      ...(mime ? { mime } : {}),
+      ...(name ? { name } : {}),
+      seed: true,
+    },
+  });
+
   let asset: Asset;
   try {
-    asset = await Asset.create({
-      AppId: appId,
-      data: contents,
-      filename,
-      mime,
-      name,
-      AppMemberId: appMember?.id,
-    });
+    if (app.demoMode) {
+      if (seededAssets.length === 0) {
+        await Asset.create({
+          AppId: appId,
+          data: contents,
+          filename,
+          mime,
+          name,
+          AppMemberId: appMember?.id,
+          seed: true,
+          ephemeral: false,
+          clonable,
+        });
+      }
+
+      asset = await Asset.create({
+        AppId: appId,
+        data: contents,
+        filename,
+        mime,
+        name,
+        AppMemberId: appMember?.id,
+        seed: false,
+        ephemeral: true,
+        clonable: false,
+      });
+    } else {
+      asset = await Asset.create({
+        AppId: appId,
+        data: contents,
+        filename,
+        mime,
+        name,
+        AppMemberId: appMember?.id,
+        clonable,
+      });
+    }
   } catch (error: unknown) {
     if (error instanceof UniqueConstraintError) {
       throwKoaError(ctx, 409, `An asset named ${name} already exists`);
@@ -155,15 +203,24 @@ export async function deleteAsset(ctx: Context): Promise<void> {
 
   const app = await App.findByPk(appId, {
     attributes: ['OrganizationId'],
-    include: [{ model: Asset, attributes: ['id'], where: { id: assetId }, required: false }],
   });
 
   assertKoaError(!app, ctx, 404, 'App not found');
 
-  const [asset] = app.Assets;
+  await checkRole(ctx, app.OrganizationId, Permission.ReadAssets);
+
+  const assets = await Asset.findAll({
+    where: {
+      AppId: appId,
+      id: assetId,
+      ...(app.demoMode ? { seed: false, ephemeral: true } : {}),
+    },
+  });
+
+  const [asset] = assets;
   assertKoaError(!asset, ctx, 404, 'Asset not found');
 
-  await checkRole(ctx, app.OrganizationId, Permission.ManageResources);
+  await checkRole(ctx, app.OrganizationId, Permission.ManageAssets);
   await asset.destroy();
 }
 
@@ -179,8 +236,11 @@ export async function deleteAssets(ctx: Context): Promise<void> {
 
   assertKoaError(!app, ctx, 404, 'App not found');
 
-  await checkRole(ctx, app.OrganizationId, Permission.ManageResources);
-  await Asset.destroy({ where: { id: body } });
+  await checkRole(ctx, app.OrganizationId, Permission.ManageAssets);
+  await Asset.destroy({
+    where: { id: body },
+    ...(app.demoMode ? { seed: false, ephemeral: true } : {}),
+  });
 
   ctx.status = 204;
 }

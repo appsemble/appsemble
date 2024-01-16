@@ -986,6 +986,47 @@ describe('validateAppDefinition', () => {
     ]);
   });
 
+  it('should validate user properties for type or enum', async () => {
+    const app = { ...createTestApp(), users: { properties: { foo: { schema: {} } } } };
+    const result = await validateAppDefinition(app, () => []);
+    expect(result.valid).toBe(false);
+    expect(result.errors).toStrictEqual([
+      new ValidationError('must define type or enum', {}, undefined, [
+        'users',
+        'properties',
+        'foo',
+        'schema',
+      ]),
+    ]);
+  });
+
+  it('should validate user properties for resource references', async () => {
+    const app = {
+      ...createTestApp(),
+      users: {
+        properties: {
+          foo: {
+            schema: { type: 'integer' },
+            reference: {
+              resource: 'tasks',
+            },
+          },
+        },
+      },
+    } as AppDefinition;
+    const result = await validateAppDefinition(app, () => []);
+    expect(result.valid).toBe(false);
+    expect(result.errors).toStrictEqual([
+      new ValidationError('refers to a resource that doesn’t exist', 'tasks', undefined, [
+        'users',
+        'properties',
+        'foo',
+        'reference',
+        'tasks',
+      ]),
+    ]);
+  });
+
   it('should validate resources use schemas define a type', async () => {
     const app = createTestApp();
     app.resources.person.schema = { properties: {} };
@@ -1842,6 +1883,168 @@ describe('validateAppDefinition', () => {
         'flow.cancel',
         undefined,
         ['pages', 3, 'steps', 1, 'blocks', 0, 'actions', 'onWhatever', 'type'],
+      ),
+    ]);
+  });
+
+  it('should report an error if a user register action on a block adds unsupported user properties', async () => {
+    const app = {
+      ...createTestApp(),
+      users: {
+        properties: {
+          foo: {
+            schema: {
+              type: 'string',
+            },
+          },
+        },
+      },
+    } as AppDefinition;
+    (app.pages[0] as BasicPageDefinition).blocks.push({
+      type: 'test',
+      version: '1.2.3',
+      actions: {
+        onWhatever: {
+          type: 'user.register',
+          displayName: 'name',
+          email: 'email@example.com',
+          password: 'password',
+          properties: {
+            'object.from': {
+              bar: 'baz',
+            },
+          },
+        },
+      },
+    });
+
+    const result = await validateAppDefinition(app, () => [
+      {
+        name: '@appsemble/test',
+        version: '1.2.3',
+        files: [],
+        languages: [],
+        actions: {
+          onWhatever: {},
+        },
+      },
+    ]);
+    expect(result.valid).toBe(false);
+    expect(result.errors).toStrictEqual([
+      new ValidationError(
+        'contains a property that doesn’t exist in users.properties',
+        'user.register',
+        undefined,
+        ['pages', 0, 'blocks', 0, 'actions', 'onWhatever', 'properties'],
+      ),
+    ]);
+  });
+
+  it('should report an error if a user create action on a block adds unsupported user properties', async () => {
+    const app = {
+      ...createTestApp(),
+      users: {
+        properties: {
+          foo: {
+            schema: {
+              type: 'string',
+            },
+          },
+        },
+      },
+    } as AppDefinition;
+    (app.pages[0] as BasicPageDefinition).blocks.push({
+      type: 'test',
+      version: '1.2.3',
+      actions: {
+        onWhatever: {
+          type: 'user.create',
+          name: 'name',
+          email: 'email@example.com',
+          password: 'password',
+          role: 'role',
+          properties: {
+            'object.from': {
+              bar: 'baz',
+            },
+          },
+        },
+      },
+    });
+
+    const result = await validateAppDefinition(app, () => [
+      {
+        name: '@appsemble/test',
+        version: '1.2.3',
+        files: [],
+        languages: [],
+        actions: {
+          onWhatever: {},
+        },
+      },
+    ]);
+    expect(result.valid).toBe(false);
+    expect(result.errors).toStrictEqual([
+      new ValidationError(
+        'contains a property that doesn’t exist in users.properties',
+        'user.create',
+        undefined,
+        ['pages', 0, 'blocks', 0, 'actions', 'onWhatever', 'properties'],
+      ),
+    ]);
+  });
+
+  it('should report an error if a user update action on a block adds unsupported user properties', async () => {
+    const app = {
+      ...createTestApp(),
+      users: {
+        properties: {
+          foo: {
+            schema: {
+              type: 'string',
+            },
+          },
+        },
+      },
+    } as AppDefinition;
+    (app.pages[0] as BasicPageDefinition).blocks.push({
+      type: 'test',
+      version: '1.2.3',
+      actions: {
+        onWhatever: {
+          type: 'user.update',
+          name: 'name',
+          currentEmail: 'email@example.com',
+          newEmail: 'new-email@example.com',
+          password: 'password',
+          role: 'role',
+          properties: {
+            'object.from': {
+              bar: 'baz',
+            },
+          },
+        },
+      },
+    });
+
+    const result = await validateAppDefinition(app, () => [
+      {
+        name: '@appsemble/test',
+        version: '1.2.3',
+        files: [],
+        languages: [],
+        actions: {
+          onWhatever: {},
+        },
+      },
+    ]);
+    expect(result.valid).toBe(false);
+    expect(result.errors).toStrictEqual([
+      new ValidationError(
+        'contains a property that doesn’t exist in users.properties',
+        'user.update',
+        undefined,
+        ['pages', 0, 'blocks', 0, 'actions', 'onWhatever', 'properties'],
       ),
     ]);
   });

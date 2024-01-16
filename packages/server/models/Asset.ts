@@ -36,6 +36,31 @@ export class Asset extends Model {
   @Column(DataType.STRING)
   name: string;
 
+  /**
+   * If true, the asset will be transferred when cloning an app
+   */
+  @AllowNull(false)
+  @Default(false)
+  @Column(DataType.BOOLEAN)
+  clonable: boolean;
+
+  /**
+   * If true, the asset will be used for creating ephemeral assets in demo apps
+   */
+  @AllowNull(false)
+  @Default(false)
+  @Column(DataType.BOOLEAN)
+  seed: boolean;
+
+  /**
+   * If true, the asset is cleaned up regularly
+   */
+  @AllowNull(false)
+  @Default(false)
+  @Unique('UniqueAssetNameIndex')
+  @Column(DataType.BOOLEAN)
+  ephemeral: boolean;
+
   @CreatedAt
   created: Date;
 

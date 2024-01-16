@@ -26,10 +26,16 @@ interface PublishAssetParams {
    * The remote server to publish the asset on.
    */
   remote: string;
+
+  /**
+   * Whether the asset should be clonable.
+   */
+  clonable: boolean;
 }
 
 export async function publishAsset({
   appId,
+  clonable,
   name,
   path,
   remote,
@@ -37,6 +43,7 @@ export async function publishAsset({
   const formData = new FormData();
   const file = createReadStream(path);
   formData.append('file', file);
+  formData.append('clonable', String(clonable));
   if (name) {
     formData.append('name', normalize(name));
   }

@@ -16,6 +16,7 @@ interface PublishAssetArguments extends BaseArguments {
   appId: number;
   context: string;
   app: string;
+  clonable: boolean;
 }
 
 export const command = 'publish <paths...>';
@@ -47,6 +48,11 @@ export function builder(yargs: Argv): Argv<any> {
     })
     .option('context', {
       describe: 'If specified, use the specified context from .appsemblerc.yaml',
+    })
+    .option('clonable', {
+      type: 'boolean',
+      default: false,
+      describe: 'If true, all published assets will be clonable',
     });
 }
 
@@ -54,6 +60,7 @@ export async function handler({
   app,
   appId,
   clientCredentials,
+  clonable,
   context,
   name,
   paths,
@@ -78,6 +85,7 @@ export async function handler({
       appId: resolvedAppId,
       path,
       remote: resolvedRemote,
+      clonable,
     });
   }
 }

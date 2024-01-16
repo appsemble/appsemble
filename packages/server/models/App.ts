@@ -284,7 +284,12 @@ export class App extends Model {
         this.RatingAverage == null
           ? undefined
           : { count: this.RatingCount, average: this.RatingAverage },
-      resources: this.template && this.Resources?.length ? true : undefined,
+      hasClonableResources:
+        this.template && this.Resources?.filter((resource) => resource.clonable).length
+          ? true
+          : undefined,
+      hasClonableAssets:
+        this.template && this.Assets?.filter((asset) => asset.clonable).length ? true : undefined,
       OrganizationId: this.OrganizationId,
       OrganizationName: this?.Organization?.name,
       screenshotUrls: this.AppScreenshots?.map(

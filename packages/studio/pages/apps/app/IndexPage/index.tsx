@@ -15,6 +15,7 @@ import { AppOptionsMenu } from '../../../../components/AppOptionsMenu/index.js';
 import { CardHeaderControl } from '../../../../components/CardHeaderControl/index.js';
 import { CloneButton } from '../../../../components/CloneButton/index.js';
 import { MarkdownContent } from '../../../../components/MarkdownContent/index.js';
+import { ReseedButton } from '../../../../components/ReseedButton/index.js';
 import { StarRating } from '../../../../components/StarRating/index.js';
 import { useUser } from '../../../../components/UserProvider/index.js';
 import { getAppUrl } from '../../../../utils/getAppUrl.js';
@@ -70,6 +71,7 @@ export function IndexPage(): ReactNode {
               <FormattedMessage {...messages.view} />
             </Button>
             <CloneButton app={app} />
+            <ReseedButton app={app} />
             {showExport ? (
               <AppOptionsMenu
                 app={app}

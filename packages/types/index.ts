@@ -761,6 +761,20 @@ export interface ResourceView {
   remap: Remapper;
 }
 
+export interface UserPropertyDefinition {
+  /**
+   * The JSON schema to validate user properties against before sending it to the backend.
+   */
+  schema: OpenAPIV3.SchemaObject;
+
+  /**
+   * The resource that is referenced by this user property.
+   */
+  reference?: {
+    resource: string;
+  };
+}
+
 export interface ResourceDefinition {
   /**
    * The default list of roles used for permission checks for each action.
@@ -842,6 +856,16 @@ export interface ResourceDefinition {
    * @example '1d 8h 30m'
    */
   expires?: string;
+
+  /**
+   * Whether the resource should be able to be transferred when cloning the app it belongs to.
+   */
+  clonable?: boolean;
+
+  /**
+   * Whether the resource should be cleaned up regularly.
+   */
+  ephemeral?: boolean;
 }
 
 export interface BaseActionDefinition<T extends Action['type']> {
@@ -1808,6 +1832,10 @@ export interface AppDefinition {
 
   controller?: ControllerDefinition;
 
+  users?: {
+    properties: Record<string, UserPropertyDefinition>;
+  };
+
   /**
    * Resource definitions that may be used by the app.
    */
@@ -1950,7 +1978,12 @@ export interface App {
   /**
    * Whether the app has clonable resources.
    */
-  resources?: boolean;
+  hasClonableResources?: boolean;
+
+  /**
+   * Whether the app has clonable assets.
+   */
+  hasClonableAssets?: boolean;
 
   /**
    * A list of URLs to app screenshots

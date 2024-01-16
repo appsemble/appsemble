@@ -63,6 +63,7 @@ export function createQueryResources(options: Options): Middleware {
             type: resourceType,
             AppId: appId,
             expires: { or: [{ gt: new Date() }, null] },
+            ...(app.demoMode ? { seed: false, ephemeral: true } : {}),
           },
         ],
       },
@@ -137,6 +138,7 @@ export function createCountResources(options: Options): Middleware {
             type: resourceType,
             AppId: appId,
             expires: { or: [{ gt: new Date() }, null] },
+            ...(app.demoMode ? { seed: false, ephemeral: true } : {}),
           },
         ],
       },
@@ -186,6 +188,7 @@ export function createGetResourceById(options: Options): Middleware {
         type: resourceType,
         AppId: appId,
         expires: { or: [{ gt: new Date() }, null] },
+        ...(app.demoMode ? { seed: false, ephemeral: true } : {}),
       },
     };
 
@@ -227,10 +230,17 @@ export function createCreateResource(options: Options): Middleware {
     const {
       pathParams: { appId, resourceType },
     } = ctx;
-    const { createAppResourcesWithAssets, getApp, verifyResourceActionPermission } = options;
+    const {
+      checkSeededResources,
+      createAppResourcesWithAssets,
+      getApp,
+      verifyResourceActionPermission,
+    } = options;
     const action = 'create';
 
     const app = await getApp({ context: ctx, query: { where: { id: appId } } });
+
+    const resourceSeeded = await checkSeededResources({ context: ctx, app, resourceType });
 
     const resourceDefinition = getResourceDefinition(app, resourceType, ctx);
     await verifyResourceActionPermission({ app, context: ctx, action, resourceType, options, ctx });
@@ -242,15 +252,61 @@ export function createCreateResource(options: Options): Middleware {
     }
 
     const resources = Array.isArray(processedBody) ? processedBody : [processedBody];
-    const createdResources = await createAppResourcesWithAssets({
-      app,
-      context: ctx,
-      resources,
-      preparedAssets,
-      resourceType,
-      action,
-      options,
-    });
+
+    let createdResources;
+
+    // In demo apps, there are two types of resources.
+
+    // If the app has not been seeded, resources passed from the request body
+    // are interpreted as seed resources and created with "seed: true". In addition,
+    // copies of these resources are created with "ephemeral: true".
+
+    // If the app has already been seeded, only new ephemeral resources are created,
+    // processed from the request body.
+    if (app.demoMode) {
+      if (!resourceSeeded) {
+        await createAppResourcesWithAssets({
+          app,
+          context: ctx,
+          resources: resources.map((resource) => ({
+            ...resource,
+            $seed: true,
+            $ephemeral: false,
+          })),
+          preparedAssets,
+          resourceType,
+          action,
+          options,
+        });
+      }
+
+      createdResources = await createAppResourcesWithAssets({
+        app,
+        context: ctx,
+        resources: resources.map((resource) => ({
+          ...resource,
+          $seed: false,
+          $ephemeral: true,
+          $clonable: false,
+        })),
+        preparedAssets,
+        resourceType,
+        action,
+        options,
+      });
+    } else {
+      // In regular apps, resources are created as usual
+      // with "clonable", "ephemeral" and "expires" passed from the request body
+      createdResources = await createAppResourcesWithAssets({
+        app,
+        context: ctx,
+        resources,
+        preparedAssets,
+        resourceType,
+        action,
+        options,
+      });
+    }
 
     ctx.body = Array.isArray(processedBody) ? createdResources : createdResources[0];
   };
@@ -291,6 +347,7 @@ export function createUpdateResource(options: Options): Middleware {
         type: resourceType,
         AppId: appId,
         expires: { or: [{ gt: new Date() }, null] },
+        ...(app.demoMode ? { seed: false, ephemeral: true } : {}),
       },
     };
 
@@ -320,7 +377,10 @@ export function createUpdateResource(options: Options): Middleware {
       context: ctx,
       id: resourceId,
       type: resourceType,
-      resource: resources[0],
+      resource: {
+        ...resources[0],
+        ...(app.demoMode ? { $ephemeral: true, $clonable: false } : {}),
+      },
       preparedAssets,
       deletedAssetIds,
       resourceDefinition,
@@ -356,7 +416,8 @@ export function createDeleteResource(options: Options): Middleware {
         id: resourceId,
         type: resourceType,
         AppId: appId,
-        expires: { or: [{ gt: new Date() }, null] },
+        expires: { or: [{ gt: new Date() }, { eq: null }] },
+        ...(app.demoMode ? { seed: false, ephemeral: true } : {}),
       },
     };
 

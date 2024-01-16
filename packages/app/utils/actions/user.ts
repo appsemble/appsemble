@@ -45,7 +45,10 @@ export const register: ActionCreator<'user.register'> = ({
         'properties',
         JSON.stringify(
           Object.fromEntries(
-            Object.entries(properties).map(([key, value]) => [key, JSON.stringify(value)]),
+            Object.entries(properties).map(([key, value]) => [
+              key,
+              typeof value === 'string' ? value : JSON.stringify(value),
+            ]),
           ),
         ),
       );
@@ -99,14 +102,16 @@ export const create: ActionCreator<'user.create'> = ({
         'properties',
         JSON.stringify(
           Object.fromEntries(
-            Object.entries(properties).map(([key, value]) => [key, JSON.stringify(value)]),
+            Object.entries(properties).map(([key, value]) => [
+              key,
+              typeof value === 'string' ? value : JSON.stringify(value),
+            ]),
           ),
         ),
       );
     }
 
     await axios.post(`${apiUrl}/api/user/apps/${appId}/accounts`, formData);
-
     return data;
   },
 ];
@@ -187,12 +192,16 @@ export const update: ActionCreator<'user.update'> = ({
       formData.append('role', role);
     }
     formData.append('password', password);
+
     if (properties && typeof properties === 'object' && !Array.isArray(properties)) {
       formData.append(
         'properties',
         JSON.stringify(
           Object.fromEntries(
-            Object.entries(properties).map(([key, value]) => [key, JSON.stringify(value)]),
+            Object.entries(properties).map(([key, value]) => [
+              key,
+              typeof value === 'string' ? value : JSON.stringify(value),
+            ]),
           ),
         ),
       );

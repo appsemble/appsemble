@@ -19,6 +19,10 @@ app is called a ´resource´.
     - [Cascade delete](#cascade-delete)
 - [Views](#views)
 - [Expiring resources](#expiring-resources)
+- [Clonable resources](#clonable-resources)
+- [Ephemeral resources](#ephemeral-resources)
+- [Seed resources](#seed-resources)
+  - [Reseeding events](#reseeding-events)
 - [Filtering resources from the Appsemble API](#filtering-resources-from-the-appsemble-api)
   - [Logical Operators](#logical-operators)
   - [Arithmetic Operators](#arithmetic-operators)
@@ -517,6 +521,60 @@ also be manually set by including the `$expires` property with a valid ISO 8601 
 > Note: When adding `expires` to a resource, this will not be retroactively applied to existing
 > resources. These resources can be updated to have an expiration date set by updating the resource
 > and including the `$expires` property.
+
+## Clonable resources
+
+In template apps, which can be cloned into a new app, some resources should be transferable to the
+new app. We can mark those resources with the clonable property.
+
+For example:
+
+```yaml validate resources-snippet
+resources:
+  clonable-resource:
+    schema:
+      type: object
+      additionalProperties: false
+      properties:
+        name:
+          type: string
+    clonable: true
+```
+
+In the above example, the resource can be transferred with the app when cloning it.
+
+## Ephemeral resources
+
+There are some use cases where resources should regularly be automatically removed. This can be done
+by setting the `ephemeral` property.
+
+For example:
+
+```yaml validate resources-snippet
+resources:
+  ephemeral-resource:
+    schema:
+      type: object
+      additionalProperties: false
+      properties:
+        name:
+          type: string
+    ephemeral: true
+```
+
+## Seed resources
+
+Seed resources only exist in demo apps, where we always want to have a presentable state of the
+application and its resources. In this case, resources published on app creation will automatically
+be created with their seed property set to true. In addition to that, ephemeral copies of these
+resources will be created. Users in demo apps can only interact with ephemeral resources, which are
+cleaned up regularly and new ones are created based on the app’s seed resources.
+
+### Reseeding events
+
+At the end of each day, an automated event happens, which deletes all ephemeral resources. In demo
+apps, new ephemeral resources are created based on resources marked as seed. In demo apps this event
+can also be triggered manually from the studio.
 
 ## Filtering resources from the Appsemble API
 

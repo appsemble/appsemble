@@ -629,6 +629,103 @@ describe('createAsset', () => {
     `,
     );
   });
+
+  it('should create seed assets and ephemeral assets in demo apps', async () => {
+    await app.update({ demoMode: true });
+    const member = await AppMember.create({ AppId: app.id, UserId: user.id, role: '' });
+    authorizeStudio();
+    const response = await request.post<AssetType>(
+      `/api/apps/${app.id}/assets`,
+      createFormData({ file: Buffer.alloc(0) }),
+    );
+    const asset = await Asset.findByPk(response.data.id);
+
+    expect(asset.AppMemberId).toStrictEqual(member.id);
+    expect(response).toMatchInlineSnapshot(
+      { data: { id: expect.stringMatching(uuid4Pattern) } },
+      `
+      HTTP/1.1 201 Created
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "id": StringMatching /\\^\\[\\\\d\\[a-f\\]\\{8\\}-\\[\\\\da-f\\]\\{4\\}-4\\[\\\\da-f\\]\\{3\\}-\\[\\\\da-f\\]\\{4\\}-\\[\\\\d\\[a-f\\]\\{12\\}\\$/,
+        "mime": "application/octet-stream",
+      }
+    `,
+    );
+
+    const seedAsset = await Asset.findOne({
+      where: {
+        AppId: app.id,
+        seed: true,
+        ephemeral: false,
+      },
+    });
+    expect(seedAsset.dataValues).toMatchInlineSnapshot(
+      {
+        id: expect.any(String),
+        AppMemberId: expect.any(String),
+        created: expect.any(Date),
+        updated: expect.any(Date),
+      },
+      `
+      {
+        "AppId": 1,
+        "AppMemberId": Any<String>,
+        "ResourceId": null,
+        "clonable": false,
+        "created": Any<Date>,
+        "data": {
+          "data": [],
+          "type": "Buffer",
+        },
+        "ephemeral": false,
+        "filename": null,
+        "id": Any<String>,
+        "mime": "application/octet-stream",
+        "name": null,
+        "seed": true,
+        "updated": Any<Date>,
+      }
+    `,
+    );
+
+    const ephemeralAsset = await Asset.findOne({
+      where: {
+        AppId: app.id,
+        seed: false,
+        ephemeral: true,
+      },
+    });
+    expect(ephemeralAsset.dataValues).toMatchInlineSnapshot(
+      {
+        id: expect.any(String),
+        AppMemberId: expect.any(String),
+        created: expect.any(Date),
+        updated: expect.any(Date),
+      },
+      `
+      {
+        "AppId": 1,
+        "AppMemberId": Any<String>,
+        "ResourceId": null,
+        "clonable": false,
+        "created": Any<Date>,
+        "data": {
+          "data": [],
+          "type": "Buffer",
+        },
+        "ephemeral": true,
+        "filename": null,
+        "id": Any<String>,
+        "mime": "application/octet-stream",
+        "name": null,
+        "seed": false,
+        "updated": Any<Date>,
+      }
+    `,
+    );
+  });
 });
 
 describe('deleteAsset', () => {

@@ -12,6 +12,17 @@ export interface Resource {
   $clonable: boolean;
 
   /**
+   * A boolean indicating whether the resource will be used for creating ephemeral
+   * resources in demo apps
+   */
+  $seed: boolean;
+
+  /**
+   * A boolean indicating whether the resource will be cleaned up regularly
+   */
+  $ephemeral: boolean;
+
+  /**
    * When the resource was first created as an ISO 8601 formatted string.
    */
   $created: string;

@@ -6,6 +6,7 @@ export async function getAppAssets({ app }: GetAppSubEntityParams): Promise<AppA
   const assets = await Asset.findAll({
     where: {
       AppId: app.id,
+      ...(app.demoMode ? { seed: false, ephemeral: true } : {}),
     },
   });
   return assets.map((asset) => ({

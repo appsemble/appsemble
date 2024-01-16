@@ -12,6 +12,7 @@ import {
   type LinkActionDefinition,
   type ResourceActionDefinition,
   type ResourceDefinition,
+  type UserPropertyDefinition,
 } from '@appsemble/types';
 import axios from 'axios';
 import FormData from 'form-data';
@@ -53,6 +54,7 @@ const snippetTypes = {
   cron: 'cron-snippet',
   controller: 'controller-snippet',
   security: 'security-snippet',
+  users: 'users-snippet',
 };
 
 type SnippetType = keyof typeof snippetTypes;
@@ -256,6 +258,38 @@ function appendControllerToTemplate(
   return updatedTemplate;
 }
 
+function appendUsersToTemplate(
+  users: {
+    properties: Record<string, UserPropertyDefinition>;
+  },
+  template: AppDefinition,
+): AppDefinition {
+  const updatedTemplate = template;
+
+  updatedTemplate.users = users;
+
+  for (const propertyDefinition of Object.values(users.properties)) {
+    if (propertyDefinition.reference.resource) {
+      updatedTemplate.resources = {
+        [propertyDefinition.reference.resource]: {
+          roles: ['$public'],
+          schema: {
+            type: 'object',
+            additionalProperties: false,
+            properties: {
+              property: {
+                type: 'string',
+              },
+            },
+          },
+        },
+      };
+    }
+  }
+
+  return updatedTemplate;
+}
+
 async function accumulateAppDefinitions(docsPath: string): Promise<AppDefinitionWithLocation[]> {
   const processor = unified().use(remarkParse);
 
@@ -343,6 +377,9 @@ async function accumulateAppDefinitions(docsPath: string): Promise<AppDefinition
           break;
         case 'controller':
           template = appendControllerToTemplate(parsed.controller, template);
+          break;
+        case 'users':
+          template = appendUsersToTemplate(parsed.users, template);
           break;
         case 'security':
           template.security = template.security
