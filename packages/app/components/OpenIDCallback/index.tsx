@@ -8,6 +8,7 @@ import { Link, Navigate } from 'react-router-dom';
 import styles from './index.module.css';
 import { messages } from './messages.js';
 import { getDefaultPageName } from '../../utils/getDefaultPageName.js';
+import { showDemoLogin } from '../../utils/settings.js';
 import { useAppDefinition } from '../AppDefinitionProvider/index.js';
 import { Main } from '../Main/index.js';
 import { AppBar } from '../TitleBar/index.js';
@@ -53,7 +54,7 @@ export function OpenIDCallback(): ReactNode {
 
   if (isLoggedIn) {
     const defaultPageName = getDefaultPageName(isLoggedIn, role, definition);
-    return <Navigate to={redirect || normalize(defaultPageName)} />;
+    return <Navigate to={showDemoLogin ? '/Login' : redirect || normalize(defaultPageName)} />;
   }
 
   if (!isOk) {

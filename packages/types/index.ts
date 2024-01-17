@@ -2139,13 +2139,15 @@ export interface OrganizationInvite {
 }
 
 /**
- * The controller of an app.
+ * App member in an app.
  */
 export interface AppMember {
   id: string;
   name: string;
   primaryEmail: string;
   role: string;
+  demo: boolean;
+  properties: Record<string, any>;
 }
 
 /**

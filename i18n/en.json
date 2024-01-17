@@ -1,5 +1,4 @@
 {
-  "app.+i6kfV": "Select a role",
   "app./55J3j": "Subscribed successfully!",
   "app.08ZQZZ": "Notifications have been blocked. Please update your notification permissions and try again.",
   "app.0aO9Nm": "Your invite could not be found.",
@@ -51,6 +50,7 @@
   "app.itPgxd": "Profile",
   "app.jdtAcl": "Account verification",
   "app.nuWwea": "Login failed",
+  "app.oYbaYq": "Select an app member",
   "app.obEU1l": "Select a team role",
   "app.ox304v": "An error occurred",
   "app.pSXHvd": "Get notified when “{resource}” is created",
@@ -324,8 +324,8 @@
   "studio.91p+PL": "Are you sure you want to leave this organization?",
   "studio.95stPq": "Completed",
   "studio.97DGta": "Create Team",
-  "studio.9FMy4U": "Reseed App",
   "studio.97zyiz": "Open preview",
+  "studio.9FMy4U": "Reseed App",
   "studio.9G7vKh": "Unlock app",
   "studio.9IVLHM": "Successfully set {email} as your primary email address.",
   "studio.9JhU30": "Push notifications are currently not enabled in this app. To enable sending out push notifications, please enable this in the <link>app definition</link> by specifying the “{navigation}” property.",

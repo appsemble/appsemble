@@ -1,5 +1,4 @@
 {
-  "app.+i6kfV": "",
   "app./55J3j": "Erfolgreich abonniert!",
   "app.08ZQZZ": "Benachrichtigungen wurden blockiert. Bitte aktualisieren Sie Ihre Benachrichtigungsberechtigungen und versuchen Sie es erneut.",
   "app.0aO9Nm": "Ihre Einladung konnte nicht gefunden werden.",
@@ -51,6 +50,7 @@
   "app.itPgxd": "Profil",
   "app.jdtAcl": "Kontoverifizierung",
   "app.nuWwea": "",
+  "app.oYbaYq": "",
   "app.obEU1l": "",
   "app.ox304v": "",
   "app.pSXHvd": "Benachrichtigt werden, wenn „{resource}“ erstellt wird",
@@ -324,8 +324,8 @@
   "studio.91p+PL": "Sind Sie sicher, dass Sie diese Organisation verlassen wollen?",
   "studio.95stPq": "",
   "studio.97DGta": "",
-  "studio.9FMy4U": "",
   "studio.97zyiz": "",
+  "studio.9FMy4U": "",
   "studio.9G7vKh": "App freischalten",
   "studio.9IVLHM": "Sie haben {email} erfolgreich als Ihre primäre E-Mail-Adresse festgelegt.",
   "studio.9JhU30": "Push-Benachrichtigungen sind in dieser App derzeit nicht aktiviert. Um den Versand von Push-Benachrichtigungen zu aktivieren, aktivieren Sie dies bitte in der <link>App-Definition</link> durch Angabe der Eigenschaft “{navigation}”.",

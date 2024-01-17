@@ -22,5 +22,7 @@ export async function getAppMembers({
     name: member.name,
     primaryEmail: member.email,
     role: member.role,
+    demo: app.demoMode,
+    properties: member.properties,
   }));
 }
