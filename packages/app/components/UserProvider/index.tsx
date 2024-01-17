@@ -52,7 +52,7 @@ interface LoginState {
 
 interface UserContext extends LoginState {
   passwordLogin: (params: PasswordLoginParams) => Promise<void>;
-  demoLogin: (role: string) => Promise<void>;
+  demoLogin: (appMemberId: string) => Promise<void>;
   authorizationCodeLogin: (params: AuthorizationCodeLoginParams) => Promise<void>;
   logout: () => any;
   updateTeam: UpdateTeam;
@@ -214,17 +214,18 @@ export function UserProvider({ children }: UserProviderProps): ReactNode {
   /**
    * Login using demo app functionality.
    *
-   * @param role The role to log in as.
+   * @param appMemberId The app member to log in as.
    */
   const demoLogin = useCallback(
-    (role: string) => {
+    (appMemberId: string) => {
+      logout();
       const refreshToken = localStorage.getItem(REFRESH_TOKEN);
       return login('urn:ietf:params:oauth:grant-type:demo-login', {
-        role,
+        appMemberId,
         ...(refreshToken ? { refresh_token: refreshToken } : {}),
       });
     },
-    [login],
+    [login, logout],
   );
 
   const updateTeam: UpdateTeam = useCallback((team) => {

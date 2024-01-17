@@ -189,58 +189,43 @@ export async function tokenHandler(ctx: Context): Promise<void> {
       }
       case 'urn:ietf:params:oauth:grant-type:demo-login': {
         const {
+          appMemberId,
           client_id: clientId,
-          refresh_token: token,
-          role,
           scope: requestedScope,
         } = checkTokenRequestParameters(query, ['client_id', 'role', 'scope', 'refresh_token']);
 
         const appId = Number(clientId.replace('app:', ''));
         const app = await App.findByPk(appId, {
-          attributes: ['demoMode', 'definition'],
+          attributes: ['demoMode', 'definition', 'OrganizationId'],
+          include: [
+            {
+              model: AppMember,
+              include: [
+                {
+                  model: User,
+                  where: {
+                    demoLoginUser: true,
+                  },
+                },
+              ],
+            },
+          ],
         });
 
-        if (
-          !app ||
-          !app.demoMode ||
-          !Object.keys(app.definition.security?.roles ?? {}).includes(role)
-        ) {
+        if (!app || !app.demoMode) {
           throw new GrantError('invalid_client');
         }
 
+        const role = app.definition.security?.default?.role;
+
         let member: AppMember;
-
-        if (token) {
-          const payload = jwt.verify(token, argv.secret) as JwtPayload;
-          ({ sub } = payload);
-
-          const user = await User.findByPk(sub, {
-            attributes: ['id', 'demoLoginUser'],
-          });
-          if (!user) {
-            throw new GrantError('invalid_grant');
-          }
-          if (!user.demoLoginUser) {
-            throw new GrantError('invalid_grant');
-          }
-
-          logger.verbose('Demo login: Using existing demo user');
-
-          await transactional(async (transaction) => {
-            [member] = await AppMember.upsert(
-              {
-                AppId: appId,
-                UserId: user.id,
-                role,
-                email: user.primaryEmail,
-                emailVerified: true,
-                name: user.name,
-              },
-              { transaction },
-            );
-          });
-        } else {
+        if (appMemberId === '') {
           logger.verbose('Demo login: Creating new demo user');
+
+          if (!role) {
+            throw new GrantError('invalid_request');
+          }
+
           await transactional(async (transaction) => {
             const demoEmail = `demo-${Math.random().toString(36).slice(2)}@example.com`;
             const user = await User.create(
@@ -252,6 +237,7 @@ export async function tokenHandler(ctx: Context): Promise<void> {
               },
               { transaction },
             );
+
             member = await AppMember.create(
               {
                 AppId: appId,
@@ -264,6 +250,12 @@ export async function tokenHandler(ctx: Context): Promise<void> {
               { transaction },
             );
           });
+        } else {
+          const selectedUser = app.AppMembers.find((appMember) => appMember.UserId === appMemberId);
+          if (selectedUser) {
+            logger.verbose('Demo login: Using existing demo user');
+            member = selectedUser;
+          }
         }
 
         aud = clientId;

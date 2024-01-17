@@ -1,5 +1,4 @@
 {
-  "app.+i6kfV": "",
   "app./55J3j": "Abonnement réussi !",
   "app.08ZQZZ": "Les notifications ont été bloquées. Veuillez mettre à jour vos autorisations de notification et réessayer.",
   "app.0aO9Nm": "Votre invitation est introuvable.",
@@ -51,6 +50,7 @@
   "app.itPgxd": "Profil",
   "app.jdtAcl": "Vérification de compte",
   "app.nuWwea": "",
+  "app.oYbaYq": "",
   "app.obEU1l": "",
   "app.ox304v": "",
   "app.pSXHvd": "Recevoir une notification quand « {resource} » est créé",
@@ -324,8 +324,8 @@
   "studio.91p+PL": "Voulez-vous vraiment quitter cette organisation ?",
   "studio.95stPq": "",
   "studio.97DGta": "",
-  "studio.9FMy4U": "",
   "studio.97zyiz": "",
+  "studio.9FMy4U": "",
   "studio.9G7vKh": "Déverrouiller l'application",
   "studio.9IVLHM": "Vous avez bien défini {email} comme adresse courriel principale.",
   "studio.9JhU30": "Les notifications push ne sont actuellement pas activées dans cette application. Pour permettre l’envoi de notifications push, veuillez l’activer dans la définition <link>app</link> en spécifiant la propriété “{navigation}”.",

@@ -1,5 +1,4 @@
 {
-  "app.+i6kfV": "",
   "app./55J3j": "Succesvol ingeschreven!",
   "app.08ZQZZ": "Notificaties zijn niet toegestaan op je apparaat. Controleer de rechten en probeer het opnieuw.",
   "app.0aO9Nm": "Je uitnodiging kon niet gevonden worden.",
@@ -51,6 +50,7 @@
   "app.itPgxd": "Profiel",
   "app.jdtAcl": "Accountverificatie",
   "app.nuWwea": "",
+  "app.oYbaYq": "",
   "app.obEU1l": "",
   "app.ox304v": "",
   "app.pSXHvd": "Ontvang een bericht wanneer een “{resource}” wordt aangemaakt",
@@ -324,8 +324,8 @@
   "studio.91p+PL": "Weet je zeker dat je deze organisatie wil verlaten?",
   "studio.95stPq": "",
   "studio.97DGta": "Create Team",
-  "studio.9FMy4U": "",
   "studio.97zyiz": "",
+  "studio.9FMy4U": "",
   "studio.9G7vKh": "Ontgrendel app",
   "studio.9IVLHM": "Succesvol {email} ingesteld als primair e-mailadres.",
   "studio.9JhU30": "Pushmeldingen zijn momenteel uitgeschakeld. Om het versturen van pushmeldingen mogelijk te maken moet deze worden ingevuld in de <link>appdefinitie</link> door de “{navigation}” property in te stellen.",

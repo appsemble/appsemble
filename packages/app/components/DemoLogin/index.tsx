@@ -13,7 +13,7 @@ import {
   useData,
   useToggle,
 } from '@appsemble/react-components';
-import { type Team, type TeamMember } from '@appsemble/types';
+import { type AppMember, type Team, type TeamMember } from '@appsemble/types';
 import { TeamRole } from '@appsemble/utils';
 import axios from 'axios';
 import { type ReactNode, useCallback, useEffect, useMemo } from 'react';
@@ -21,11 +21,11 @@ import { FormattedMessage, useIntl } from 'react-intl';
 
 import { messages } from './messages.js';
 import { apiUrl, appId } from '../../utils/settings.js';
-import { useAppDefinition } from '../AppDefinitionProvider/index.js';
 import { useUser } from '../UserProvider/index.js';
 
 interface DemoLoginProps {
   readonly modal?: Toggle;
+  readonly appMembers: AppMember[];
 }
 
 function TeamControls(): ReactNode {
@@ -126,24 +126,23 @@ function TeamControls(): ReactNode {
   );
 }
 
-export function DemoLogin({ modal }: DemoLoginProps): ReactNode {
-  const { definition } = useAppDefinition();
-  const roles = Object.keys(definition?.security?.roles ?? {});
-  const { demoLogin, role: userRole } = useUser();
+export function DemoLogin({ appMembers, modal }: DemoLoginProps): ReactNode {
+  const { demoLogin } = useUser();
 
   const busy = useToggle();
 
   const defaultValues = useMemo(
     () => ({
-      role: userRole ?? roles[0] ?? '',
+      appMemberId: appMembers[0]?.id ?? undefined,
     }),
-    [userRole, roles],
+    [appMembers],
   );
+
   const handleLogin = useCallback(
-    async ({ role }: typeof defaultValues) => {
+    async ({ appMemberId }: typeof defaultValues) => {
       busy.enable();
       try {
-        await demoLogin(role);
+        await demoLogin(appMemberId ?? appMembers[0]?.id ?? '');
         busy.disable();
         if (modal) {
           modal.disable();
@@ -154,25 +153,27 @@ export function DemoLogin({ modal }: DemoLoginProps): ReactNode {
         throw error;
       }
     },
-    [busy, demoLogin, modal],
+    [appMembers, busy, demoLogin, modal],
   );
 
   const fields = (
     <>
       <SimpleFormError>{() => <FormattedMessage {...messages.loginFailed} />}</SimpleFormError>
-      <SimpleFormField
-        component={SelectField}
-        disabled={roles.length === 1 || busy.enabled}
-        label={<FormattedMessage {...messages.selectRole} />}
-        name="role"
-        required
-      >
-        {roles.map((role) => (
-          <option key={role} value={role}>
-            {role}
-          </option>
-        ))}
-      </SimpleFormField>
+      {appMembers.length ? (
+        <SimpleFormField
+          component={SelectField}
+          disabled={appMembers.length < 2 || busy.enabled}
+          label={<FormattedMessage {...messages.selectMember} />}
+          name="appMemberId"
+          required
+        >
+          {appMembers.map((appMember) => (
+            <option key={appMember.id} value={appMember.id}>
+              {appMember.role} {appMember.name}
+            </option>
+          ))}
+        </SimpleFormField>
+      ) : null}
       <TeamControls />
       <SimpleSubmit allowPristine={false} disabled={busy.enabled}>
         <FormattedMessage {...messages.login} />

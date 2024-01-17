@@ -135,6 +135,7 @@ describe('getAppMembers', () => {
 
       [
         {
+          "demo": false,
           "id": StringMatching /\\^\\[\\\\d\\[a-f\\]\\{8\\}-\\[\\\\da-f\\]\\{4\\}-4\\[\\\\da-f\\]\\{3\\}-\\[\\\\da-f\\]\\{4\\}-\\[\\\\d\\[a-f\\]\\{12\\}\\$/,
           "name": "Test Member",
           "primaryEmail": "member@example.com",
@@ -178,6 +179,7 @@ describe('getAppMembers', () => {
 
       [
         {
+          "demo": false,
           "id": StringMatching /\\^\\[\\\\d\\[a-f\\]\\{8\\}-\\[\\\\da-f\\]\\{4\\}-4\\[\\\\da-f\\]\\{3\\}-\\[\\\\da-f\\]\\{4\\}-\\[\\\\d\\[a-f\\]\\{12\\}\\$/,
           "name": "Test User",
           "primaryEmail": "test@example.com",
@@ -328,9 +330,11 @@ describe('getAppMember', () => {
       Content-Type: application/json; charset=utf-8
 
       {
+        "demo": false,
         "id": StringMatching /\\^\\[\\\\d\\[a-f\\]\\{8\\}-\\[\\\\da-f\\]\\{4\\}-4\\[\\\\da-f\\]\\{3\\}-\\[\\\\da-f\\]\\{4\\}-\\[\\\\d\\[a-f\\]\\{12\\}\\$/,
         "name": "Foo",
         "primaryEmail": "foo@example.com",
+        "properties": {},
         "role": "Reader",
       }
     `,

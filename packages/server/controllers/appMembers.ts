@@ -152,7 +152,7 @@ export async function getAppMembers(ctx: Context): Promise<void> {
   } = ctx;
 
   const app = await App.findByPk(appId, {
-    attributes: ['OrganizationId', 'definition'],
+    attributes: ['OrganizationId', 'definition', 'demoMode'],
     include: [
       {
         model: AppMember,
@@ -168,6 +168,7 @@ export async function getAppMembers(ctx: Context): Promise<void> {
 
   const appMembers: AppMemberType[] = app.AppMembers.map((member) => ({
     id: member.UserId,
+    demo: member.User.demoLoginUser,
     name: member.name,
     primaryEmail: member.email,
     role: member.role,
@@ -185,12 +186,14 @@ export async function getAppMembers(ctx: Context): Promise<void> {
       ],
     });
 
-    for (const user of organization.Users) {
+    for (const orgUser of organization.Users) {
       appMembers.push({
-        id: user.id,
-        name: user.name,
-        primaryEmail: user.primaryEmail,
-        role: user?.AppMember?.role ?? app.definition.security.default.role,
+        id: orgUser.id,
+        demo: orgUser.demoLoginUser,
+        name: orgUser.name,
+        primaryEmail: orgUser.primaryEmail,
+        properties: orgUser?.AppMember?.properties,
+        role: orgUser?.AppMember?.role ?? app.definition.security.default.role,
       });
     }
   }
@@ -204,7 +207,9 @@ export async function getAppMembersByRoles(ctx: Context): Promise<void> {
     queryParams: { roles },
   } = ctx;
 
-  const app = await App.findByPk(appId, { attributes: ['OrganizationId', 'definition'] });
+  const app = await App.findByPk(appId, {
+    attributes: ['OrganizationId', 'definition', 'demoMode'],
+  });
 
   const supportedAppRoles = Object.keys(app.definition.security.roles);
   const passedRolesAreSupported = roles.every((role) => supportedAppRoles.includes(role));
@@ -218,7 +223,9 @@ export async function getAppMembersByRoles(ctx: Context): Promise<void> {
 
   assertKoaError(!app, ctx, 404, 'App not found');
 
-  await checkRole(ctx, app.OrganizationId, Permission.ReadAppAccounts);
+  if (!app.demoMode) {
+    await checkRole(ctx, app.OrganizationId, Permission.ReadAppAccounts);
+  }
 
   const appMembersWithUser = await AppMember.findAll({
     attributes: {
@@ -253,7 +260,7 @@ export async function setAppMember(ctx: Context): Promise<void> {
   } = ctx;
 
   const app = await App.findByPk(appId, {
-    attributes: ['OrganizationId', 'definition', 'id'],
+    attributes: ['OrganizationId', 'definition', 'id', 'demoMode'],
     include: [
       {
         model: AppMember,
@@ -268,7 +275,9 @@ export async function setAppMember(ctx: Context): Promise<void> {
 
   assertKoaError(!app, ctx, 404, 'App not found');
 
-  await checkRole(ctx, app.OrganizationId, Permission.EditAppAccounts);
+  if (!app.demoMode) {
+    await checkRole(ctx, app.OrganizationId, Permission.EditAppAccounts);
+  }
 
   const user = await User.findByPk(memberId);
 
@@ -382,7 +391,9 @@ export async function updateAppMemberByEmail(ctx: Context): Promise<void> {
       401,
     );
 
-    await checkRole(ctx, app.OrganizationId, Permission.EditAppAccounts);
+    if (!app.demoMode) {
+      await checkRole(ctx, app.OrganizationId, Permission.EditAppAccounts);
+    }
   }
 
   if (role) {
@@ -603,6 +614,7 @@ export async function registerMemberEmail(ctx: Context): Promise<void> {
       'emailSecure',
       'path',
       'enableSelfRegistration',
+      'demoMode',
     ],
     include: {
       model: AppMember,
@@ -644,6 +656,7 @@ export async function registerMemberEmail(ctx: Context): Promise<void> {
         {
           name,
           timezone,
+          demoLoginUser: app.demoMode,
         },
         { transaction },
       );
@@ -742,6 +755,7 @@ export async function createMemberEmail(ctx: Context): Promise<void> {
       'emailPort',
       'emailSecure',
       'path',
+      'demoMode',
     ],
     include: {
       model: AppMember,
@@ -753,7 +767,9 @@ export async function createMemberEmail(ctx: Context): Promise<void> {
     },
   });
 
-  await checkRole(ctx, app.OrganizationId, Permission.CreateAppAccounts);
+  if (!app.demoMode) {
+    await checkRole(ctx, app.OrganizationId, Permission.CreateAppAccounts);
+  }
 
   assertKoaError(!app, ctx, 404, 'App could not be found.');
   assertKoaError(
@@ -788,6 +804,7 @@ export async function createMemberEmail(ctx: Context): Promise<void> {
         {
           name,
           timezone,
+          demoLoginUser: app.demoMode,
         },
         { transaction },
       );
@@ -1051,7 +1068,7 @@ export async function deleteAppMember(ctx: Context): Promise<void> {
 
   assertKoaError(!app, ctx, 404, 'App not found');
 
-  if (user.id !== memberId) {
+  if (user.id !== memberId && !app.demoMode) {
     await checkRole(ctx, app.OrganizationId, Permission.DeleteAppAccounts);
   }
 
@@ -1093,7 +1110,9 @@ export async function deleteAppMemberByEmail(ctx: Context): Promise<void> {
       401,
     );
 
-    await checkRole(ctx, app.OrganizationId, Permission.DeleteAppAccounts);
+    if (!app.demoMode) {
+      await checkRole(ctx, app.OrganizationId, Permission.DeleteAppAccounts);
+    }
   }
 
   const appMember = await AppMember.findOne({
