@@ -610,7 +610,7 @@ production:
     - kubectl config set-context --current --namespace appsemble
     - helm repo add appsemble https://charts.appsemble.com
     # Prevent a finished job without chart actually serving.
-    - >
+    - |
       retries=0
       while [ $retries -lt 100 ]; do
         if helm search repo appsemble/appsemble --version "$CI_COMMIT_TAG"; then
