@@ -28,11 +28,18 @@ CONTEXT=${1:-development}
 REMOTE_BRANCH="${REMOTE_BRANCH:-set-$CONTEXT-app-ids}"
 
 find apps/ -mindepth 1 -maxdepth 1 -type d | while read -r app; do
-  if yq -e ".context.$CONTEXT.id" "$app/.appsemblerc.yaml" > /dev/null; then
-    npm run appsemble -- -vv app update --force "$app";
+  app_name="$(basename "$app")"
+  context_id=$(yq -e ".context.$CONTEXT.id" "$app/.appsemblerc.yaml")
+
+  if [ -n "$context_id" ] && npm run appsemble -- -vv app update --force "$app"; then
+    echo "Successful update on app $app_name";
   else
-    app_name="$(basename "$app")"
-    echo "App $app_name has no $CONTEXT id, publishing instead of updating";
+    if [ -n "$context_id" ]; then
+      echo "App with $CONTEXT id $context_id does not exist, publishing instead of updating";
+    else
+      echo "App $app_name has no $CONTEXT id, publishing instead of updating";
+    fi
+
     file_before="$(mktemp)"
     cp "$app/.appsemblerc.yaml" "$file_before"
     npm run appsemble -- -vv app publish --modify-context "$app";
