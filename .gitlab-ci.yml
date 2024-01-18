@@ -610,20 +610,7 @@ production:
     - kubectl config set-context --current --namespace appsemble
     - helm repo add appsemble https://charts.appsemble.com
     # Prevent a finished job without chart actually serving.
-    - |
-      retries=0
-      while [ $retries -lt 100 ]; do
-        if helm search repo appsemble/appsemble --version "$CI_COMMIT_TAG"; then
-          echo "Chart found!"
-          exit 0
-        else
-          echo "Chart not found, retrying in 5 seconds..."
-          sleep 5
-          retries=$((retries + 1))
-        fi
-      done
-      echo "Maximum number of attempts reached. Chart not found."
-      exit 1
+    - . scripts/wait-for-helm-chart.sh
     - helm upgrade appsemble appsemble/appsemble
       --debug
       --timeout 30m
