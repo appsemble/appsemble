@@ -1,7 +1,7 @@
 apiVersion: v2
 name: appsemble
-version: 0.24.0
-appVersion: 0.24.0
+version: 0.24.1
+appVersion: 0.24.1
 kubeVersion: '>=1.21.0'
 type: application
 description: The open source low-code app building platform
@@ -25,66 +25,39 @@ dependencies:
 annotations:
   artifacthub.io/changes: >
     - kind: added
-      description: "Block(form): Add support for icon inside file entry."
+      description: "Cli: Add clonable to asset publish command."
     - kind: added
-      description: "Block(form): Add support for icon to geocoordinates field."
+      description: "Node-utils: Add the option to expire resources based on period.
+        Add clonable and ephemeral to resource parsing."
     - kind: added
-      description: "Block(form): Add support for icon to static field."
+      description: "Scripts: Add user.properties validation in docs."
     - kind: added
-      description: "Block(form): Add support for label to geocoordinates field."
+      description: "Server: Add user.properties parsing and validation to app member
+        endpoints. Add reseed demo app endpoint. Add demo app logic for resources
+        endpoints. Add demo app logic for assets endpoints. Add AppMember
+        BeforeCreate and BeforeUpdate hooks for user.properties validation. Add
+        Resource BeforeDelete hook for user.properties update. Add logic for demo
+        apps to get the user who seeded the resource on action permission validation
+        instead of the logged in one."
     - kind: added
-      description: "Block(form): Add support for tag to geocoordinates field."
+      description: "Studio: Add reseed button for demo apps."
     - kind: added
-      description: "Block(form): Add support for “required‘ requirement to
-        geocoordinates field."
+      description: "Types: Add UserProperties interface. Add $seed and $ephemeral to resources."
     - kind: added
-      description: "App: Remap query remapper on the client when request action
-        requests are proxied."
-    - kind: added
-      description: "Preact-components: Add icon right option to render icon on the right."
-    - kind: added
-      description: "Preact-components: Add styling to dual slider when it has an icon."
-    - kind: added
-      description: "Preact-components: Add styling to slider when it has an icon."
-    - kind: added
-      description: "Preact-components: Add support for icon to dual slider field."
-    - kind: added
-      description: "Preact-components: Add support for icon to slider field."
-    - kind: added
-      description: "Studio: Add a button for mobile devices to open and show the app preview."
-    - kind: added
-      description: "Studio: Add option to pass down class name to the editor tab
-        component`s elements."
-    - kind: added
-      description: "Studio: Add option to set the dropdown content container to the right side."
+      description: "Utils: Add clonable to publish assets endpoint. Add
+        user.properties to app definition. Add user.properties to user actions. Add
+        demo app reseed endpoint."
     - kind: changed
-      description: "Block(form): Change icon implementation, convert Font Awesome icon
-        to SVG instead."
+      description: "Cli: Change cleanup resources script to clean up resources and
+        assets based on the new ephemeral field."
     - kind: changed
-      description: "Cli: Update definition to include changes."
-    - kind: changed
-      description: "React-components: Add an extra parameter for a reference to be
-        exempt from triggering the closing event."
-    - kind: changed
-      description: "Server: Rename database model “Member” to “OrganizationMember”."
-    - kind: changed
-      description: "Studio: Breadcrumbs now hide on smaller mobile devices."
-    - kind: changed
-      description: "Studio: Change the style of tabs navigator to resize and apply
-        styling based on screen size."
-    - kind: changed
-      description: "Studio: Replace normal buttons with a collapsible navigation bar
-        for mobile user interface."
-    - kind: changed
-      description: "Types: Rename type “Member” to “OrganizationMember” in the code."
+      description: "Utils: Change properties description in user.register, user.create
+        and user.update actions."
     - kind: fixed
-      description: "Block(form): Fix default min and max value for range input field."
+      description: "App: Fix user.properties in UserProvider. Fix user.properties in
+        user actions."
     - kind: fixed
-      description: "Block(form): Fix list input field styling when icon is present."
-    - kind: fixed
-      description: "Block(form): Fix the file entry’s image source."
-    - kind: fixed
-      description: "React-components: Fix GUI path name matching condition."
+      description: "Studio: Fix user.properties modal form."
   artifacthub.io/license: LGPL-3.0-only
   artifacthub.io/links: |
     - name: Appsemble Studio

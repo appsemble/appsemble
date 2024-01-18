@@ -2,6 +2,35 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.24.1](https://gitlab.com/appsemble/appsemble/-/releases/0.24.1)] - 2024-01-18
+
+### Added
+
+- Cli: Add `clonable` to asset publish command.
+- Node-utils: Add the option to expire resources based on period. Add clonable and ephemeral to
+  resource parsing.
+- Scripts: Add `user.properties` validation in docs.
+- Server: Add `user.properties` parsing and validation to app member endpoints. Add reseed demo app
+  endpoint. Add demo app logic for resources endpoints. Add demo app logic for assets endpoints. Add
+  `AppMember` `BeforeCreate` and `BeforeUpdate` hooks for `user.properties` validation. Add
+  `Resource` `BeforeDelete` hook for `user.properties` update. Add logic for demo apps to get the
+  user who seeded the resource on action permission validation instead of the logged in one.
+- Studio: Add reseed button for demo apps.
+- Types: Add `UserProperties` interface. Add `$seed` and `$ephemeral` to resources.
+- Utils: Add `clonable` to publish assets endpoint. Add `user.properties` to app definition. Add
+  `user.properties` to user actions. Add demo app reseed endpoint.
+
+### Changed
+
+- Cli: Change cleanup resources script to clean up resources and assets based on the new ephemeral
+  field.
+- Utils: Change properties description in `user.register`, `user.create` and `user.update` actions.
+
+### Fixed
+
+- App: Fix `user.properties` in `UserProvider`. Fix `user.properties` in user actions.
+- Studio: Fix `user.properties` modal form.
+
 ## \[[0.24.0](https://gitlab.com/appsemble/appsemble/-/releases/0.24.0)] - 2024-01-16
 
 ### Added
