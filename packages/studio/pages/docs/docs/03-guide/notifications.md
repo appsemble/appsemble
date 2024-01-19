@@ -79,7 +79,7 @@ pages:
     roles: []
     blocks:
       - type: data-loader
-        version: 0.24.4
+        version: 0.24.5
         actions:
           onLoad:
             type: resource.query
@@ -88,7 +88,7 @@ pages:
           emit:
             data: data
       - type: table
-        version: 0.24.4
+        version: 0.24.5
         parameters:
           fields:
             - value: { prop: firstName }
@@ -137,7 +137,7 @@ pages:
     roles: []
     blocks:
       - type: data-loader
-        version: 0.24.4
+        version: 0.24.5
         actions:
           onLoad:
             type: resource.query
@@ -146,7 +146,7 @@ pages:
           emit:
             data: data
       - type: table
-        version: 0.24.4
+        version: 0.24.5
         parameters:
           fields:
             - value: { prop: firstName }
