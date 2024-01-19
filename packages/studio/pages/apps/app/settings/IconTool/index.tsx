@@ -164,7 +164,7 @@ export function IconTool({ disabled }: IconToolProps): ReactNode {
       <span className="label">
         <FormattedMessage {...messages.icon} />
       </span>
-      <Link className="help" to={`/${lang}/docs/guide/app-icons`}>
+      <Link className="help" to={`/${lang}/docs/03-guide/app-icons`}>
         <FormattedMessage {...messages.more} />
       </Link>
       <div className="is-flex">
