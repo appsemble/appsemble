@@ -1,12 +1,13 @@
 import { Agent } from 'node:https';
 
-import { version } from '@appsemble/node-utils';
 import axios, { type AxiosRequestConfig } from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 import { fs, vol } from 'memfs';
 import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { App, AppCollection, Organization } from '../../models/index.js';
+// Importing version like this "import { version } from '@appsemble/node-utils';" breaks when mocking node:fs as it's already loaded.
+import { version } from '../../package.json';
 import { setArgv } from '../argv.js';
 import { useTestDatabase } from '../test/testSchema.js';
 
@@ -15,6 +16,7 @@ const mock = new MockAdapter(axios);
 const ca = `-----BEGIN CERTIFICATE-----
 -----END CERTIFICATE-----`;
 
+vi.hoisted(() => vi.resetModules());
 vi.mock('node:fs/promises', () => fs.promises);
 
 useTestDatabase(import.meta);
