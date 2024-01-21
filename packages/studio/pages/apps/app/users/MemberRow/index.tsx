@@ -66,7 +66,7 @@ export function MemberRow({ member, onChange }: AppMemberRowProperties): ReactNo
     () => ({
       annotations: Object.entries(
         Object.fromEntries(
-          Object.entries(member.properties).map(([key, value]) => [
+          Object.entries(member.properties ?? {}).map(([key, value]) => [
             key,
             typeof value === 'string' ? value : JSON.stringify(value),
           ]),
