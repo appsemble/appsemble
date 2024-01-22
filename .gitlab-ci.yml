@@ -550,7 +550,7 @@ staging:
     - job: helm package
       artifacts: true
   rules:
-    - if: $CI_PIPELINE_SOURCE == 'schedule' || $CI_MERGE_REQUEST_ID
+    - if: $CI_PIPELINE_SOURCE == 'schedule'
   environment:
     name: staging
     url: https://staging.appsemble.review
@@ -684,7 +684,7 @@ provision staging:
   extends: .npm
   stage: provision
   rules:
-    - if: $CI_PIPELINE_SOURCE == 'schedule' || $CI_MERGE_REQUEST_ID
+    - if: $CI_PIPELINE_SOURCE == 'schedule'
   needs:
     - staging
   script:
