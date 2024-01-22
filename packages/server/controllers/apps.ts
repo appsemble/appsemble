@@ -294,7 +294,7 @@ export async function getAppById(ctx: Context): Promise<void> {
     include: [
       { model: Resource, attributes: ['id', 'clonable'], where: demoModeFilter, required: false },
       { model: Asset, attributes: ['id', 'clonable'], where: demoModeFilter, required: false },
-      { model: AppSnapshot },
+      { model: AppSnapshot, as: 'AppSnapshots', order: [['created', 'DESC']], limit: 1 },
       {
         model: Organization,
         attributes: {
@@ -309,7 +309,6 @@ export async function getAppById(ctx: Context): Promise<void> {
       { model: AppScreenshot, attributes: ['id'] },
       ...languageQuery,
     ],
-    order: [[{ model: AppSnapshot, as: 'AppSnapshots' }, 'created', 'DESC']],
   });
 
   assertKoaError(!app, ctx, 404, 'App not found');
