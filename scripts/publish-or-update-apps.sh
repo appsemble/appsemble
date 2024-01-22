@@ -27,7 +27,10 @@ done
 CONTEXT=${1:-development}
 REMOTE_BRANCH="${REMOTE_BRANCH:-set-$CONTEXT-app-ids}"
 
-find apps/ -mindepth 1 -maxdepth 1 -type d | while read -r app; do
+ANY_PUBLISHED=""
+
+apps="$(find apps/ -mindepth 1 -maxdepth 1 -type d)"
+for app in $apps; do
   app_name="$(basename "$app")"
   context_id=$(yq -e ".context.$CONTEXT.id" "$app/.appsemblerc.yaml")
 
@@ -42,7 +45,8 @@ find apps/ -mindepth 1 -maxdepth 1 -type d | while read -r app; do
 
     file_before="$(mktemp)"
     cp "$app/.appsemblerc.yaml" "$file_before"
-    npm run appsemble -- -vv app publish --modify-context "$app";
+    npm run appsemble -- -vv app publish --modify-context "$app"
+    ANY_PUBLISHED="true"
     git diff --no-index --patch "$file_before" "$app/.appsemblerc.yaml" |
       # change the --- a to match the filename of +++ b
       sed "s/--- a.*$/--- a\/apps\/$app_name\/.appsemblerc.yaml/" |
@@ -51,6 +55,7 @@ find apps/ -mindepth 1 -maxdepth 1 -type d | while read -r app; do
   fi
 done
 
+[ -z "$ANY_PUBLISHED" ] && echo "No apps were published or updated" && exit 0
 # make an MR
 gpg --import "$GPG_PRIVATE_KEY"
 git config user.email bot@appsemble.com
