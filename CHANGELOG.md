@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.24.6](https://gitlab.com/appsemble/appsemble/-/releases/0.24.6)] - 2024-01-22
+
+### Fixed
+
+- Server: Ensure only the latest snapshot is retrieved on the server.
+- Studio: Fix link to app-icon documentation being broken in the app icon settings.
+- Studio: Resolve app members page error.
+- Studio: Resolve error in app search bar.
+
 ## \[[0.24.5](https://gitlab.com/appsemble/appsemble/-/releases/0.24.5)] - 2024-01-19
 
 ## \[[0.24.4](https://gitlab.com/appsemble/appsemble/-/releases/0.24.4)] - 2024-01-18
