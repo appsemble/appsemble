@@ -6,8 +6,7 @@ export async function checkSeededResources({
   app,
   resourceType,
 }: CheckSeededResourcesParams): Promise<boolean> {
-  const existingResources = await Resource.findAll({
-    attributes: ['id'],
+  const existingResourcesCount = await Resource.count({
     where: {
       AppId: app.id,
       type: resourceType,
@@ -15,5 +14,5 @@ export async function checkSeededResources({
     },
   });
 
-  return existingResources.length > 0;
+  return existingResourcesCount > 0;
 }
