@@ -149,10 +149,10 @@ export function UserProvider({ children }: UserProviderProps): ReactNode {
       try {
         const [auth, { sub }] = await fetchToken(grantType, params);
         const config = { headers: { authorization: auth } };
-        const [{ data: user }, role, { data: teams }] = await Promise.all([
+        const [{ data: user }, appMember, { data: teams }] = await Promise.all([
           axios.get<UserInfo>(`${apiUrl}/api/connect/userinfo`, config),
           axios.get<AppMember>(`${apiUrl}/api/apps/${appId}/members/${sub}`, config).then(
-            ({ data }) => data.role,
+            ({ data }) => data,
             (error) => {
               const { policy = 'everyone', role: defaultRole } = definition.security.default;
               if (
@@ -168,6 +168,8 @@ export function UserProvider({ children }: UserProviderProps): ReactNode {
           ),
           axios.get<TeamMember[]>(`${apiUrl}/api/apps/${appId}/teams`, config),
         ]);
+        const { role } = appMember as AppMember;
+        user.appMember = appMember as AppMember;
 
         setUser({ id: user.sub });
         setUserInfo(user);

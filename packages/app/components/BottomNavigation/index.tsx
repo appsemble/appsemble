@@ -51,6 +51,7 @@ export function BottomNavigation({ pages }: BottomNavigationProps): ReactNode {
                   url: window.location.href,
                   getMessage,
                   userInfo,
+                  appMember: userInfo.appMember,
                   context: { name },
                   locale: lang,
                 }) as ReactNode)

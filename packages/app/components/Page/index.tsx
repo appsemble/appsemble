@@ -98,6 +98,7 @@ export function Page(): ReactNode {
         getMessage,
         pageData: data,
         userInfo: userInfoRef.current,
+        appMember: userInfoRef.current?.appMember,
         context,
         history: context?.history,
         root: input,

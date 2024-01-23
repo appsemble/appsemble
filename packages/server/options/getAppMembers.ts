@@ -18,7 +18,8 @@ export async function getAppMembers({
   });
 
   return appMembers.map((member) => ({
-    id: member.UserId,
+    userId: member.UserId,
+    memberId: member.id,
     name: member.name,
     primaryEmail: member.email,
     role: member.role,

@@ -67,6 +67,7 @@ export async function getRemapperContext(
       return cache(message || `'{${id}}'`);
     },
     userInfo,
+    appMember: userInfo?.appMember,
     context: {},
     locale: userInfo?.locale ?? app.definition.defaultLanguage ?? defaultLocale,
   };

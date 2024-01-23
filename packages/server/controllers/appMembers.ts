@@ -167,7 +167,8 @@ export async function getAppMembers(ctx: Context): Promise<void> {
   assertKoaError(!app, ctx, 404, 'App not found');
 
   const appMembers: AppMemberType[] = app.AppMembers.map((member) => ({
-    id: member.UserId,
+    userId: member.UserId,
+    memberId: member.id,
     demo: member.User.demoLoginUser,
     name: member.name,
     primaryEmail: member.email,
@@ -188,7 +189,8 @@ export async function getAppMembers(ctx: Context): Promise<void> {
 
     for (const orgUser of organization.Users) {
       appMembers.push({
-        id: orgUser.id,
+        userId: orgUser.id,
+        memberId: orgUser.AppMember?.id,
         demo: orgUser.demoLoginUser,
         name: orgUser.name,
         primaryEmail: orgUser.primaryEmail,
@@ -241,7 +243,8 @@ export async function getAppMembersByRoles(ctx: Context): Promise<void> {
   });
 
   ctx.body = appMembersWithUser.map((member) => ({
-    id: member.UserId,
+    userId: member.UserId,
+    memberId: member.id,
     name: member.name,
     primaryEmail: member.email,
     role: member.role,

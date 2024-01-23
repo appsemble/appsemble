@@ -1,4 +1,4 @@
-import { type Remapper, type Remappers, type UserInfo } from '@appsemble/types';
+import { type AppMember, type Remapper, type Remappers, type UserInfo } from '@appsemble/types';
 import { addMilliseconds, format, parse, parseISO } from 'date-fns';
 import equal from 'fast-deep-equal';
 import { createEvent, type EventAttributes } from 'ics';
@@ -94,6 +94,11 @@ export interface RemapperContext {
    * A custom context passed to the remap function.
    */
   context: Record<string, any>;
+
+  /**
+   * The appMember object for the current user in the app.
+   */
+  appMember: AppMember;
 }
 
 interface InternalContext extends RemapperContext {
@@ -532,4 +537,6 @@ const mapperImplementations: MapperImplementations = {
   },
 
   user: (property, input, context) => context.userInfo?.[property],
+
+  appMember: (property, input, context) => context.userInfo?.appMember?.[property],
 };

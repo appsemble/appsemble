@@ -76,7 +76,7 @@ export function Login(): ReactNode {
   }, [isLoggedIn]);
 
   useEffect(() => {
-    const currentAppMember = appMembers.find((appMember) => appMember.id === userInfo.sub);
+    const currentAppMember = appMembers.find((appMember) => appMember.userId === userInfo.sub);
     setUserAppMember(currentAppMember);
   }, [appMembers, appMembers.length, userInfo?.sub]);
 

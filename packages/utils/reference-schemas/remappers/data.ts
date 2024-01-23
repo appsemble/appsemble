@@ -366,4 +366,30 @@ Example:
 \`\`\`
     `,
   },
+  appMember: {
+    enum: ['userId', 'memberId', 'name', 'primary_email', 'role'],
+    description: `
+> **Note:** For this remapper to work, the user that activated the remapper has to be logged in to
+> the app
+
+Provides some fields of the appMember object. 
+
+- \`userId\`: The id of the user to which the appMember object belongs.
+- \`memberId\`: The id of the appMember object itself. This value should be used when fetching resources created by the current user. 
+- \`primary_email\`: User’s **primary** email address.
+- \`name\`: The user’s name.
+- \`role\`: User's role in the context of the app.
+Example:
+
+\`\`\`json
+{
+  "memberId": "1f433c7a-54ea-466e-89f7-5dbb8f324b12",
+  "name": "Test User"
+  "primaryEmail": "example@hotmail.nl",
+  "role": "Medewerker",
+  "userId": "5c6270e2-ad31-414f-bcab-6752a2c4dcfd"
+}
+\`\`\`
+    `,
+  },
 };
