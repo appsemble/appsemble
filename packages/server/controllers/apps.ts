@@ -293,7 +293,13 @@ export async function getAppById(ctx: Context): Promise<void> {
     },
     include: [
       { model: Resource, attributes: ['id', 'clonable'], where: demoModeFilter, required: false },
-      { model: Asset, attributes: ['id', 'clonable'], where: demoModeFilter, required: false },
+      {
+        model: Asset,
+        attributes: ['id', 'clonable'],
+        where: demoModeFilter,
+        required: false,
+        separate: true,
+      },
       { model: AppSnapshot, as: 'AppSnapshots', order: [['created', 'DESC']], limit: 1 },
       {
         model: Organization,
