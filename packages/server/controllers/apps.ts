@@ -292,7 +292,13 @@ export async function getAppById(ctx: Context): Promise<void> {
       exclude: ['App.icon', 'maskableIcon', 'coreStyle', 'sharedStyle'],
     },
     include: [
-      { model: Resource, attributes: ['id', 'clonable'], where: demoModeFilter, required: false },
+      {
+        model: Resource,
+        attributes: ['id', 'clonable'],
+        where: demoModeFilter,
+        required: false,
+        separate: true,
+      },
       {
         model: Asset,
         attributes: ['id', 'clonable'],
