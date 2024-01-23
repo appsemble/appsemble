@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.24.7](https://gitlab.com/appsemble/appsemble/-/releases/0.24.7)] - 2024-01-23
+
+### Changed
+
+- Server: Fetch assets separately to improve server performance.
+
 ## \[[0.24.6](https://gitlab.com/appsemble/appsemble/-/releases/0.24.6)] - 2024-01-22
 
 ### Fixed

@@ -1,7 +1,7 @@
 apiVersion: v2
 name: appsemble
-version: 0.24.6
-appVersion: 0.24.6
+version: 0.24.7
+appVersion: 0.24.7
 kubeVersion: '>=1.21.0'
 type: application
 description: The open source low-code app building platform
@@ -24,15 +24,8 @@ dependencies:
     condition: postgresql.enabled
 annotations:
   artifacthub.io/changes: >
-    - kind: fixed
-      description: "Server: Ensure only the latest snapshot is retrieved on the server."
-    - kind: fixed
-      description: "Studio: Fix link to app-icon documentation being broken in the app
-        icon settings."
-    - kind: fixed
-      description: "Studio: Resolve app members page error."
-    - kind: fixed
-      description: "Studio: Resolve error in app search bar."
+    - kind: changed
+      description: "Server: Fetch assets separately to improve server performance."
   artifacthub.io/license: LGPL-3.0-only
   artifacthub.io/links: |
     - name: Appsemble Studio
