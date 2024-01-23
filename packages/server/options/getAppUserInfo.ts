@@ -50,7 +50,7 @@ export async function getAppUserInfo({
       properties: appMember.properties ?? {},
     };
   }
-  await (user as User).reload({
+  await (user as User)?.reload({
     attributes: ['primaryEmail', 'name', 'locale', 'timezone', 'subscribed'],
     include: [
       {

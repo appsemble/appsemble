@@ -132,12 +132,12 @@ export function CreateAppButton({ className }: { readonly className: string }): 
           />
           <SimpleFormField
             component={SelectField}
-            disabled={createOrganizations.length === 1}
+            disabled={createOrganizations?.length === 1}
             label={<FormattedMessage {...messages.organization} />}
             name="selectedOrganization"
             required
           >
-            {createOrganizations.map((organization, index) => (
+            {createOrganizations?.map((organization, index) => (
               <option key={organization.id} value={index}>
                 {organization.id}
               </option>
