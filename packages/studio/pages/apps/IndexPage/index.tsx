@@ -15,19 +15,38 @@ import {
 import { Collapsible } from '../../../components/Collapsible/index.js';
 import { useUser } from '../../../components/UserProvider/index.js';
 
+interface MyAppsListProps {
+  readonly filter: string;
+  readonly sort: { name: AppSortFunctionName; reverse: boolean };
+}
+
+function MyAppsList({ filter, sort }: MyAppsListProps): ReactNode {
+  const { lang } = useParams<{ lang: string }>();
+  const myAppsResult = useData<App[]>(`/api/user/apps?language=${lang}`);
+  return (
+    <Collapsible title={<FormattedMessage {...messages.myApps} />}>
+      <AppList
+        filter={filter}
+        result={myAppsResult}
+        reverse={sort?.reverse}
+        sortFunction={sortFunctions[sort?.name]}
+      />
+    </Collapsible>
+  );
+}
+
 export function IndexPage(): ReactNode {
   const [filter, setFilter] = useState('');
   const [sort, setSort] = useState<{ name: AppSortFunctionName; reverse: boolean }>({
     name: 'rating',
     reverse: true,
   });
+  const { userInfo } = useUser();
   const { lang } = useParams<{ lang: string }>();
-  const myAppsResult = useData<App[]>(`/api/user/apps?language=${lang}`);
   const appsResult = useData<App[]>(`/api/apps?language=${lang}`);
   const onSortChange = useCallback((name: AppSortFunctionName, reverse: boolean) => {
     setSort({ name, reverse });
   }, []);
-  const { userInfo } = useUser();
 
   return (
     <Content className={styles.content} main>
@@ -38,17 +57,7 @@ export function IndexPage(): ReactNode {
         reverse={sort?.reverse}
         sort={sort?.name}
       />
-
-      {userInfo ? (
-        <Collapsible title={<FormattedMessage {...messages.myApps} />}>
-          <AppList
-            filter={filter}
-            result={myAppsResult}
-            reverse={sort?.reverse}
-            sortFunction={sortFunctions[sort?.name]}
-          />
-        </Collapsible>
-      ) : null}
+      {userInfo ? <MyAppsList filter={filter} sort={sort} /> : null}
       <br />
       <Collapsible title={<FormattedMessage {...messages.allApps} />}>
         <AppList
