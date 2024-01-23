@@ -66,7 +66,7 @@ export async function getAppUserInfo({
 
   if (!user) {
     // The authenticated user may have been deleted.
-    throw new Error('Forbidden');
+    throwKoaError(ctx, 403, 'Forbidden');
   }
 
   return {
