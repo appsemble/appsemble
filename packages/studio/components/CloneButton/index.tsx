@@ -87,12 +87,12 @@ export function CloneButton({ app }: CloneButtonProps): ReactNode {
         <FormattedMessage {...messages.clone} />
       </Button>
       {userInfo ? (
-        createOrganizations.length ? (
+        createOrganizations?.length ? (
           <ModalCard
             component={SimpleForm}
             defaultValues={defaultValues}
             footer={
-              userInfo && createOrganizations.length ? (
+              userInfo && createOrganizations?.length ? (
                 <>
                   <CardFooterButton onClick={closeCloneDialog}>
                     <FormattedMessage {...messages.cancel} />
@@ -123,7 +123,7 @@ export function CloneButton({ app }: CloneButtonProps): ReactNode {
               name="organizationId"
               required
             >
-              {createOrganizations.map((org) => (
+              {createOrganizations?.map((org) => (
                 <option key={org.id} value={org.id}>
                   {org.name || org.id}
                 </option>

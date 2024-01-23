@@ -71,7 +71,7 @@ export function ImportAppButton(): ReactNode {
   }, []);
   return (
     <>
-      <Button disabled={createOrganizations.length === 0} onClick={openModal}>
+      <Button disabled={createOrganizations?.length === 0} onClick={openModal}>
         <FormattedMessage {...messages.importFile} />
       </Button>
       <ModalCard
@@ -110,12 +110,12 @@ export function ImportAppButton(): ReactNode {
         />
         <SimpleFormField
           component={SelectField}
-          disabled={createOrganizations.length === 1}
+          disabled={createOrganizations?.length === 1}
           label={<FormattedMessage {...messages.organization} />}
           name="selectedOrganization"
           required
         >
-          {createOrganizations.map((organization, index) => (
+          {createOrganizations?.map((organization, index) => (
             <option key={organization.id} value={index}>
               {organization.id}
             </option>
