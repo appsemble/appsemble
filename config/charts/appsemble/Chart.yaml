@@ -1,7 +1,7 @@
 apiVersion: v2
 name: appsemble
-version: 0.24.7
-appVersion: 0.24.7
+version: 0.24.8
+appVersion: 0.24.8
 kubeVersion: '>=1.21.0'
 type: application
 description: The open source low-code app building platform
@@ -25,7 +25,11 @@ dependencies:
 annotations:
   artifacthub.io/changes: >
     - kind: changed
-      description: "Server: Fetch assets separately to improve server performance."
+      description: "Server: Fetch resources separately to improve server performance."
+    - kind: fixed
+      description: "Server: Resolve error on apps page caused by expired tokens."
+    - kind: fixed
+      description: "Studio: Ensure the user is logged in before loading “My apps”."
   artifacthub.io/license: LGPL-3.0-only
   artifacthub.io/links: |
     - name: Appsemble Studio

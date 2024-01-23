@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.24.8](https://gitlab.com/appsemble/appsemble/-/releases/0.24.8)] - 2024-01-23
+
+### Changed
+
+- Server: Fetch resources separately to improve server performance.
+
+### Fixed
+
+- Server: Resolve error on apps page caused by expired tokens.
+- Studio: Ensure the user is logged in before loading “My apps”.
+
 ## \[[0.24.7](https://gitlab.com/appsemble/appsemble/-/releases/0.24.7)] - 2024-01-23
 
 ### Changed
