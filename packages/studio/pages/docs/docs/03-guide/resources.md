@@ -399,6 +399,8 @@ property equal to `1` will also be deleted.
 
 Appsemble currently supports only the three cascading strategies listed above.
 
+> Note: the id must be present in the root of a resource and the resource must be an object.
+
 ## Views
 
 When using roles for resources to secure the access to a resource it is usually done to protect
