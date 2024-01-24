@@ -1,3 +1,9 @@
+<p align="center">
+  <img src="https://gitlab.com/appsemble/brand/-/raw/main/screenshots/appsemble-studio-app-yaml.png?inline=false" alt="Appsemble" />
+</p>
+
+---
+
 # ![](config/assets/logo.svg) Appsemble
 
 > The app building platform
