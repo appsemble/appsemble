@@ -98,7 +98,16 @@ export function IndexPage(): ReactNode {
             {app.OrganizationName || app.OrganizationId}
           </Link>
         }
-        title={app.messages?.app?.name || app.definition.name}
+        title={
+          <>
+            {app.messages?.app?.name || app.definition.name}
+            {app.demoMode ? (
+              <div className="tag is-danger ml-2">
+                <FormattedMessage {...messages.demo} />
+              </div>
+            ) : null}
+          </>
+        }
       >
         <AppScreenshots />
       </CardHeaderControl>
