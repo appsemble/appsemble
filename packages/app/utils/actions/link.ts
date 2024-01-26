@@ -21,12 +21,21 @@ export const link: ActionCreator<'link'> = ({
     href = () => `/${params.lang}${to}`;
   } else {
     href = (data = {}) => {
-      const [toBase, toSub] =
+      const isRemappedLink =
         typeof to === 'object' &&
         (!Array.isArray(to) ||
-          (Array.isArray(to) && to.every((entry) => typeof entry === 'object')))
-          ? [].concat(remap(to as Remapper, data))
-          : [].concat(to);
+          (Array.isArray(to) && to.every((entry) => typeof entry === 'object')));
+
+      let [toBase, toSub]: [string, string] = [undefined, undefined];
+      if (isRemappedLink) {
+        const remappedLink = remap(to as Remapper, data);
+        if (urlRegex.test(remappedLink)) {
+          return remappedLink;
+        }
+        [toBase, toSub] = [].concat(remappedLink ?? pages[0].name);
+      } else {
+        [toBase, toSub] = [].concat(to);
+      }
 
       const toPage = pages.find(({ name }) => name === toBase);
       let subPage: SubPage;

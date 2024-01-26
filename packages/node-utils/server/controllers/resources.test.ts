@@ -20,6 +20,7 @@ import {
 import { getRemapperContext } from '../../app.js';
 import { getResourceDefinition } from '../../resource.js';
 import {
+  type AppAsset,
   type CheckSeededResourcesParams,
   type CreateAppResourcesWithAssetsParams,
   type GetAppMessagesParams,
@@ -49,6 +50,7 @@ let mockCreateAppResourcesWithAssets: Mock<
   Promise<Resource[]>
 >;
 let mockCheckSeededResources: Mock<[CheckSeededResourcesParams], Promise<boolean>>;
+let mockGetAppAssets: Mock<[GetAppSubEntityParams], Promise<AppAsset[]>>;
 
 let mockCtx: ParameterizedContext<DefaultState, DefaultContext>;
 let mockCtxIs: Mock<[], string>;
@@ -586,6 +588,7 @@ describe('createCreateResource', () => {
     mockVerifyResourceActionPermission = vi.fn();
     mockCreateAppResourcesWithAssets = vi.fn();
     mockCheckSeededResources = vi.fn();
+    mockGetAppAssets = vi.fn();
 
     mockCtxIs = vi.fn();
     mockCtx = {
@@ -613,6 +616,7 @@ describe('createCreateResource', () => {
     mockCtxIs.mockReturnValue('multipart/form-data');
     mockCreateAppResourcesWithAssets.mockResolvedValue(mockResources);
     mockCheckSeededResources.mockResolvedValue(false);
+    mockGetAppAssets.mockResolvedValue([]);
 
     const middleware = createCreateResource({
       getApp: mockGetApp as (params: GetAppParams) => Promise<App>,
@@ -625,6 +629,7 @@ describe('createCreateResource', () => {
       checkSeededResources: mockCheckSeededResources as (
         params: CheckSeededResourcesParams,
       ) => Promise<boolean>,
+      getAppAssets: mockGetAppAssets as (params: GetAppSubEntityParams) => Promise<AppAsset[]>,
     } as Options);
 
     await middleware(mockCtx, vi.fn());
@@ -690,6 +695,7 @@ describe('createCreateResource', () => {
     mockCtxIs.mockReturnValue('multipart/form-data');
     mockCreateAppResourcesWithAssets.mockResolvedValue(mockResources);
     mockCheckSeededResources.mockResolvedValue(false);
+    mockGetAppAssets.mockResolvedValue([]);
 
     const middleware = createCreateResource({
       getApp: mockGetApp as (params: GetAppParams) => Promise<App>,
@@ -702,6 +708,7 @@ describe('createCreateResource', () => {
       checkSeededResources: mockCheckSeededResources as (
         params: CheckSeededResourcesParams,
       ) => Promise<boolean>,
+      getAppAssets: mockGetAppAssets as (params: GetAppSubEntityParams) => Promise<AppAsset[]>,
     } as Options);
 
     await middleware(mockCtx, vi.fn());

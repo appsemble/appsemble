@@ -113,6 +113,7 @@ export function extractResourceBody(
  * @param definition The resource definition to use for processing the request body.
  * @param knownAssetIds A list of asset IDs that are already known to be linked to the resource.
  * @param knownExpires A previously known expires value.
+ * @param knownAssetNameIds A list of asset ids with asset names that already exist.
  * @returns A tuple which consists of:
  *
  *   1. One or more resources processed from the request body.
@@ -124,6 +125,7 @@ export function processResourceBody(
   definition: ResourceDefinition,
   knownAssetIds: string[] = [],
   knownExpires?: Date,
+  knownAssetNameIds: { id: string; name: string }[] = [],
 ): [Record<string, unknown> | Record<string, unknown>[], PreparedAsset[], string[]] {
   const [resource, assets, preValidateProperty] = extractResourceBody(ctx);
   const validator = new Validator();
@@ -139,6 +141,11 @@ export function processResourceBody(
   validator.customFormats.binary = (input) => {
     if (knownAssetIds.includes(input)) {
       reusedAssets.add(input);
+      return true;
+    }
+    const assetNameId = knownAssetNameIds.find((idName) => idName.name === input);
+    if (assetNameId) {
+      reusedAssets.add(assetNameId.id);
       return true;
     }
     if (!/^\d+$/.test(input)) {

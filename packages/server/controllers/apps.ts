@@ -1335,67 +1335,6 @@ export async function reseedDemoApp(ctx: Context): Promise<void> {
 
   assertKoaError(!app.demoMode, ctx, 400, 'App is not in demo mode');
 
-  const date = new Date();
-  const demoResourcesToDestroy = await Resource.findAll({
-    attributes: ['id', 'AppId', 'type'],
-    include: [
-      {
-        model: App,
-        attributes: ['definition'],
-        where: {
-          id: appId,
-          demoMode: true,
-        },
-        required: true,
-      },
-    ],
-    where: {
-      [Op.or]: [{ seed: false, expires: { [Op.lt]: date } }, { ephemeral: true }],
-    },
-  });
-
-  logger.info(
-    `Cleaning up ephemeral resources and resources with an expiry date earlier than ${date.toISOString()}.`,
-  );
-
-  const demoResourcesDeletionResult = await Resource.destroy({
-    where: {
-      id: { [Op.in]: demoResourcesToDestroy.map((resource) => resource.id) },
-    },
-  });
-
-  logger.info(`Removed ${demoResourcesDeletionResult} ephemeral resources.`);
-
-  const demoResourcesToReseed = await Resource.findAll({
-    attributes: ['type', 'data', 'AppId', 'AuthorId'],
-    include: [
-      {
-        model: App,
-        attributes: ['id'],
-        where: {
-          id: appId,
-          demoMode: true,
-        },
-        required: true,
-      },
-    ],
-    where: {
-      seed: true,
-    },
-  });
-
-  logger.info('Reseeding ephemeral resources.');
-
-  for (const resource of demoResourcesToReseed) {
-    await Resource.create({
-      ...resource.dataValues,
-      ephemeral: true,
-      seed: false,
-    });
-  }
-
-  logger.info(`Reseeded ${demoResourcesToReseed.length} ephemeral resources.`);
-
   const demoAssetsToDestroy = await Asset.findAll({
     attributes: ['id'],
     include: [
@@ -1453,4 +1392,65 @@ export async function reseedDemoApp(ctx: Context): Promise<void> {
   }
 
   logger.info(`Reseeded ${demoAssetsToReseed.length} ephemeral assets.`);
+
+  const date = new Date();
+  const demoResourcesToDestroy = await Resource.findAll({
+    attributes: ['id', 'AppId', 'type'],
+    include: [
+      {
+        model: App,
+        attributes: ['id'],
+        where: {
+          id: appId,
+          demoMode: true,
+        },
+        required: true,
+      },
+    ],
+    where: {
+      [Op.or]: [{ seed: false, expires: { [Op.lt]: date } }, { ephemeral: true }],
+    },
+  });
+
+  logger.info(
+    `Cleaning up ephemeral resources and resources with an expiry date earlier than ${date.toISOString()}.`,
+  );
+
+  const demoResourcesDeletionResult = await Resource.destroy({
+    where: {
+      id: { [Op.in]: demoResourcesToDestroy.map((resource) => resource.id) },
+    },
+  });
+
+  logger.info(`Removed ${demoResourcesDeletionResult} ephemeral resources.`);
+
+  const demoResourcesToReseed = await Resource.findAll({
+    attributes: ['type', 'data', 'AppId', 'AuthorId'],
+    include: [
+      {
+        model: App,
+        attributes: ['definition'],
+        where: {
+          id: appId,
+          demoMode: true,
+        },
+        required: true,
+      },
+    ],
+    where: {
+      seed: true,
+    },
+  });
+
+  logger.info('Reseeding ephemeral resources.');
+
+  for (const resource of demoResourcesToReseed) {
+    await Resource.create({
+      ...resource.dataValues,
+      ephemeral: true,
+      seed: false,
+    });
+  }
+
+  logger.info(`Reseeded ${demoResourcesToReseed.length} ephemeral resources.`);
 }
