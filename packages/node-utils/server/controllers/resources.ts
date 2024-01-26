@@ -234,6 +234,7 @@ export function createCreateResource(options: Options): Middleware {
       checkSeededResources,
       createAppResourcesWithAssets,
       getApp,
+      getAppAssets,
       verifyResourceActionPermission,
     } = options;
     const action = 'create';
@@ -245,7 +246,16 @@ export function createCreateResource(options: Options): Middleware {
     const resourceDefinition = getResourceDefinition(app, resourceType, ctx);
     await verifyResourceActionPermission({ app, context: ctx, action, resourceType, options, ctx });
 
-    const [processedBody, preparedAssets] = processResourceBody(ctx, resourceDefinition);
+    const appAssets = await getAppAssets({ app, context: ctx });
+
+    const [processedBody, preparedAssets] = processResourceBody(
+      ctx,
+      resourceDefinition,
+      undefined,
+      undefined,
+      appAssets.map((appAsset) => ({ id: appAsset.id, name: appAsset.name })),
+    );
+
     if (Array.isArray(processedBody) && !processedBody.length) {
       ctx.body = [];
       return;

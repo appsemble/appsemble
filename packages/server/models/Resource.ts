@@ -134,6 +134,10 @@ export class Resource extends Model {
       ],
     });
 
+    if (!app) {
+      return;
+    }
+
     const resource = app.Resources[0];
 
     const appMembersToUpdate: Record<string, Record<string, number[] | number>> = {};
@@ -215,6 +219,10 @@ export class Resource extends Model {
         },
       ],
     });
+
+    if (!app) {
+      return;
+    }
 
     const appMembersToUpdate: Record<string, Record<string, number[] | number>> = {};
 

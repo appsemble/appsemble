@@ -25,8 +25,11 @@ import {
 import { extractAppMessages, has, normalizeBlockName } from '@appsemble/utils';
 import axios from 'axios';
 import { type BuildResult } from 'esbuild';
+import fg from 'fast-glob';
 import FormData from 'form-data';
+import normalizePath from 'normalize-path';
 
+import { publishAsset } from './asset.js';
 import { traverseBlockThemes } from './block.js';
 import { coerceRemote } from './coercers.js';
 import { getProjectBuildConfig } from './config.js';
@@ -100,6 +103,16 @@ interface PublishAppParams {
    * Whether resources from the `resources` directory should be published after publishing the app.
    */
   resources: boolean;
+
+  /**
+   * Whether assets from the `assets` directory should be published after publishing the app.
+   */
+  assets: boolean;
+
+  /**
+   * Whether published assets should be clonable. Ignored if `assets` equals false.
+   */
+  assetsClonable: boolean;
 
   /**
    * If the app context is specified,
@@ -705,6 +718,8 @@ export async function updateApp({
  * @param options The options to use for publishing an app.
  */
 export async function publishApp({
+  assets,
+  assetsClonable,
   clientCredentials,
   context,
   dryRun,
@@ -825,6 +840,30 @@ export async function publishApp({
     // After uploading the app, upload block styles and messages if they are available
     await traverseBlockThemes(path, data.id, remote, false);
     await uploadMessages(path, data.id, remote, false);
+
+    if (assets && existsSync(join(path, 'assets'))) {
+      const assetsPath = join(path, 'assets');
+      const assetFiles = await readdir(assetsPath);
+      const normalizedPaths = assetFiles.map((assetFile) =>
+        normalizePath(join(assetsPath, assetFile)),
+      );
+      const files = await fg(normalizedPaths, { absolute: true, onlyFiles: true });
+      try {
+        logger.info(`Publishing ${files.length} asset(s)`);
+        for (const assetFilePath of files) {
+          await publishAsset({
+            name: parse(assetFilePath).name,
+            appId: data.id,
+            path: assetFilePath,
+            remote,
+            clonable: assetsClonable,
+          });
+        }
+      } catch (error: unknown) {
+        logger.error('Something went wrong when creating assets:');
+        logger.error(error);
+      }
+    }
 
     if (resources && existsSync(join(path, 'resources'))) {
       const resourcePath = join(path, 'resources');

@@ -12,6 +12,7 @@ export async function getAppAssets({ app }: GetAppSubEntityParams): Promise<AppA
   return assets.map((asset) => ({
     ...asset,
     id: asset.id,
+    name: asset.name,
     resourceId: asset.ResourceId,
   })) as AppAsset[];
 }

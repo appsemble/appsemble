@@ -66,6 +66,9 @@ export function updateAppResource({
           AppId: app.id,
           ResourceId: id,
           AppMemberId: member?.id,
+          seed: newResource.seed,
+          clonable: newResource.clonable,
+          ephemeral: newResource.ephemeral,
         })),
         { logging: false, transaction },
       );

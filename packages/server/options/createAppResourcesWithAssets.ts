@@ -1,3 +1,5 @@
+import { isDeepStrictEqual } from 'node:util';
+
 import { type CreateAppResourcesWithAssetsParams } from '@appsemble/node-utils';
 import { type Resource as ResourceInterface } from '@appsemble/types';
 
@@ -41,10 +43,22 @@ export async function createAppResourcesWithAssets({
       createdResource.Author = appMember;
     }
 
+    const cleanResources = resources.map((resource) => {
+      const { $clonable, $ephemeral, $seed, ...rest } = resource;
+      return rest;
+    });
+
     await Asset.bulkCreate(
       preparedAssets.map((asset) => {
-        const index = resources.indexOf(asset.resource);
-        const { clonable, ephemeral, id: ResourceId, seed } = createdResources[index];
+        const index = cleanResources.findIndex((resource) =>
+          isDeepStrictEqual(resource, asset.resource),
+        );
+        const {
+          clonable = false,
+          ephemeral = false,
+          id: ResourceId,
+          seed = false,
+        } = createdResources[index];
         return {
           ...asset,
           AppId: app.id,

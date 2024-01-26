@@ -32,6 +32,62 @@ export async function handler(): Promise<void> {
     handleDBError(error as Error);
   }
 
+  const demoAssetsToDestroy = await Asset.findAll({
+    attributes: ['id'],
+    include: [
+      {
+        model: App,
+        attributes: ['id'],
+        where: {
+          demoMode: true,
+        },
+        required: true,
+      },
+    ],
+    where: {
+      ephemeral: true,
+    },
+  });
+
+  logger.info('Cleaning up ephemeral assets from demo apps.');
+
+  const demoAssetsDeletionResult = await Asset.destroy({
+    where: {
+      id: { [Op.in]: demoAssetsToDestroy.map((asset) => asset.id) },
+    },
+  });
+
+  logger.info(`Removed ${demoAssetsDeletionResult} ephemeral assets.`);
+
+  const demoAssetsToReseed = await Asset.findAll({
+    attributes: ['mime', 'filename', 'data', 'name', 'AppId', 'ResourceId'],
+    include: [
+      {
+        model: App,
+        attributes: ['id'],
+        where: {
+          demoMode: true,
+        },
+        required: true,
+      },
+    ],
+    where: {
+      seed: true,
+    },
+  });
+
+  logger.info('Reseeding ephemeral assets into demo apps.');
+
+  for (const asset of demoAssetsToReseed) {
+    await Asset.create({
+      ...asset.dataValues,
+      ephemeral: true,
+      seed: false,
+    });
+  }
+
+  logger.info(`Reseeded ${demoAssetsToReseed.length} ephemeral assets into demo apps.`);
+
   const date = new Date();
   const demoResourcesToDestroy = await Resource.findAll({
     attributes: ['id', 'AppId', 'type'],
@@ -91,14 +147,14 @@ export async function handler(): Promise<void> {
 
   logger.info(`Reseeded ${demoResourcesToReseed.length} ephemeral resources into demo apps.`);
 
-  const demoAssetsToDestroy = await Asset.findAll({
+  const assetsToDestroy = await Asset.findAll({
     attributes: ['id'],
     include: [
       {
         model: App,
         attributes: ['id'],
         where: {
-          demoMode: true,
+          demoMode: false,
         },
         required: true,
       },
@@ -108,44 +164,15 @@ export async function handler(): Promise<void> {
     },
   });
 
-  logger.info('Cleaning up ephemeral assets from demo apps.');
+  logger.info('Cleaning up ephemeral assets from regular apps.');
 
-  const demoAssetsDeletionResult = await Asset.destroy({
+  const assetsDeletionResult = await Resource.destroy({
     where: {
-      id: { [Op.in]: demoAssetsToDestroy.map((asset) => asset.id) },
+      id: { [Op.in]: assetsToDestroy.map((asset) => asset.id) },
     },
   });
 
-  logger.info(`Removed ${demoAssetsDeletionResult} ephemeral assets.`);
-
-  const demoAssetsToReseed = await Asset.findAll({
-    attributes: ['mime', 'filename', 'data', 'name', 'AppId', 'ResourceId'],
-    include: [
-      {
-        model: App,
-        attributes: ['id'],
-        where: {
-          demoMode: true,
-        },
-        required: true,
-      },
-    ],
-    where: {
-      seed: true,
-    },
-  });
-
-  logger.info('Reseeding ephemeral assets into demo apps.');
-
-  for (const asset of demoAssetsToReseed) {
-    await Asset.create({
-      ...asset.dataValues,
-      ephemeral: true,
-      seed: false,
-    });
-  }
-
-  logger.info(`Reseeded ${demoAssetsToReseed.length} ephemeral assets into demo apps.`);
+  logger.info(`Removed ${assetsDeletionResult} assets.`);
 
   const resourcesToDestroy = await Resource.findAll({
     attributes: ['id', 'AppId', 'type'],
@@ -175,33 +202,6 @@ export async function handler(): Promise<void> {
   });
 
   logger.info(`Removed ${resourcesDeletionResult} resources.`);
-
-  const assetsToDestroy = await Asset.findAll({
-    attributes: ['id'],
-    include: [
-      {
-        model: App,
-        attributes: ['id'],
-        where: {
-          demoMode: false,
-        },
-        required: true,
-      },
-    ],
-    where: {
-      ephemeral: true,
-    },
-  });
-
-  logger.info('Cleaning up ephemeral assets from regular apps.');
-
-  const assetsDeletionResult = await Resource.destroy({
-    where: {
-      id: { [Op.in]: assetsToDestroy.map((asset) => asset.id) },
-    },
-  });
-
-  logger.info(`Removed ${assetsDeletionResult} assets.`);
 
   await db.close();
 }

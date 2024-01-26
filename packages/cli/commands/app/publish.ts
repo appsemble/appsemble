@@ -21,6 +21,8 @@ interface PublishAppArguments extends BaseArguments {
   demoMode: boolean;
   dryRun: boolean;
   resources: boolean;
+  assets: boolean;
+  assetsClonable: boolean;
   modifyContext: boolean;
   visibility: AppVisibility;
   sentryDsn: string;
@@ -76,6 +78,15 @@ export function builder(yargs: Argv): Argv<any> {
     .option('resources', {
       describe:
         'Whether the resources from the `resources` directory should be created after publishing the app. The names of subdirectories are used as the name of the resource, otherwise the names of top level resource .json files are used instead.',
+      type: 'boolean',
+    })
+    .option('assets', {
+      describe:
+        'Whether the assets from the `assets` directory should be created after publishing the app.',
+      type: 'boolean',
+    })
+    .option('assets-clonable', {
+      describe: 'Whether published assets should be clonable. Ignored if assets equals false.',
       type: 'boolean',
     })
     .option('modify-context', {
