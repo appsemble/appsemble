@@ -5689,7 +5689,7 @@ describe('reseedDemoApp', () => {
       OrganizationId: organization.id,
     });
 
-    const { id: seedResourceId } = await Resource.create({
+    await Resource.create({
       AppId: 1,
       type: 'tasks',
       seed: true,
@@ -5698,7 +5698,25 @@ describe('reseedDemoApp', () => {
       },
     });
 
-    const { id: ephemeralResourceId } = await Resource.create({
+    await Resource.create({
+      AppId: 1,
+      type: 'tasks',
+      seed: true,
+      data: {
+        foo: 'bar',
+      },
+    });
+
+    const { id: ephemeralResource1Id } = await Resource.create({
+      AppId: 1,
+      type: 'tasks',
+      ephemeral: true,
+      data: {
+        foo: 'bar',
+      },
+    });
+
+    const { id: ephemeralResource2Id } = await Resource.create({
       AppId: 1,
       type: 'tasks',
       ephemeral: true,
@@ -5725,8 +5743,8 @@ describe('reseedDemoApp', () => {
       AppId: appId,
       role: 'test',
       properties: {
-        completedTasks: [ephemeralResourceId],
-        lastCompletedTask: ephemeralResourceId,
+        completedTasks: [ephemeralResource1Id, ephemeralResource2Id],
+        lastCompletedTask: ephemeralResource1Id,
       },
     });
 
@@ -5741,9 +5759,10 @@ describe('reseedDemoApp', () => {
       {
         "properties": {
           "completedTasks": [
-            2,
+            3,
+            4,
           ],
-          "lastCompletedTask": 2,
+          "lastCompletedTask": 3,
         },
       }
     `);
@@ -5766,46 +5785,71 @@ describe('reseedDemoApp', () => {
       }
     `);
 
-    const seedResource = await Resource.findOne({
+    const seedResources = await Resource.findAll({
       where: {
         AppId: appId,
-        id: seedResourceId,
+        seed: true,
       },
     });
 
-    expect(seedResource).toMatchInlineSnapshot(`
-      {
-        "$created": "1970-01-01T00:00:00.000Z",
-        "$updated": "1970-01-01T00:00:00.000Z",
-        "foo": "bar",
-        "id": 1,
-      }
+    expect(seedResources).toMatchInlineSnapshot(`
+      [
+        {
+          "$created": "1970-01-01T00:00:00.000Z",
+          "$updated": "1970-01-01T00:00:00.000Z",
+          "foo": "bar",
+          "id": 1,
+        },
+        {
+          "$created": "1970-01-01T00:00:00.000Z",
+          "$updated": "1970-01-01T00:00:00.000Z",
+          "foo": "bar",
+          "id": 2,
+        },
+      ]
     `);
 
-    const oldEphemeralResource = await Resource.findOne({
+    const oldEphemeralResource1 = await Resource.findOne({
       where: {
         AppId: appId,
-        id: ephemeralResourceId,
+        id: ephemeralResource1Id,
       },
     });
 
-    expect(oldEphemeralResource).toBeNull();
+    const oldEphemeralResource2 = await Resource.findOne({
+      where: {
+        AppId: appId,
+        id: ephemeralResource2Id,
+      },
+    });
 
-    const newEphemeralResource = await Resource.findOne({
+    expect(oldEphemeralResource1).toBeNull();
+    expect(oldEphemeralResource2).toBeNull();
+
+    const newEphemeralResources = await Resource.findAll({
       where: {
         AppId: appId,
         ephemeral: true,
       },
     });
 
-    expect(newEphemeralResource).toMatchInlineSnapshot(`
-      {
-        "$created": "1970-01-01T00:00:00.000Z",
-        "$ephemeral": true,
-        "$updated": "1970-01-01T00:00:00.000Z",
-        "foo": "bar",
-        "id": 3,
-      }
+    expect(newEphemeralResources).toMatchInlineSnapshot(`
+      [
+        {
+          "$created": "1970-01-01T00:00:00.000Z",
+          "$ephemeral": true,
+          "$updated": "1970-01-01T00:00:00.000Z",
+          "foo": "bar",
+          "id": 5,
+        },
+        {
+          "$created": "1970-01-01T00:00:00.000Z",
+          "$ephemeral": true,
+          "$updated": "1970-01-01T00:00:00.000Z",
+          "foo": "bar",
+          "id": 6,
+        },
+      ]
     `);
 
     const seedAsset = await Asset.findOne({
