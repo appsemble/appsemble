@@ -1362,7 +1362,6 @@ export async function reseedDemoApp(ctx: Context): Promise<void> {
     where: {
       id: { [Op.in]: demoResourcesToDestroy.map((resource) => resource.id) },
     },
-    individualHooks: true,
   });
 
   logger.info(`Removed ${demoResourcesDeletionResult} ephemeral resources.`);

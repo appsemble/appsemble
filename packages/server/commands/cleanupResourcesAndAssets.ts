@@ -58,7 +58,6 @@ export async function handler(): Promise<void> {
     where: {
       id: { [Op.in]: demoResourcesToDestroy.map((resource) => resource.id) },
     },
-    individualHooks: true,
   });
 
   logger.info(`Removed ${demoResourcesDeletionResult} ephemeral resources.`);
@@ -173,7 +172,6 @@ export async function handler(): Promise<void> {
     where: {
       id: { [Op.in]: resourcesToDestroy.map((resource) => resource.id) },
     },
-    individualHooks: true,
   });
 
   logger.info(`Removed ${resourcesDeletionResult} resources.`);

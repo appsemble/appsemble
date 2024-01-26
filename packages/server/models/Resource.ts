@@ -1,8 +1,10 @@
 import { logger } from '@appsemble/node-utils';
 import { type Resource as ResourceType } from '@appsemble/types';
+import { type FindOptions } from 'sequelize';
 import {
   AllowNull,
   AutoIncrement,
+  BeforeBulkDestroy,
   BeforeDestroy,
   BelongsTo,
   Column,
@@ -192,6 +194,84 @@ export class Resource extends Model {
         resource.type
       } resource ${resource.id}.`,
     );
+  }
+
+  @BeforeBulkDestroy
+  static async beforeBulkDestroyHook(options: FindOptions): Promise<void> {
+    const app = await App.findOne({
+      attributes: ['definition'],
+      include: [
+        {
+          model: Resource,
+          attributes: ['id', 'type'],
+          required: true,
+          where: {
+            ...options.where,
+          },
+        },
+        {
+          model: AppMember,
+          attributes: ['id', 'properties'],
+        },
+      ],
+    });
+
+    const appMembersToUpdate: Record<string, Record<string, number[] | number>> = {};
+
+    const userPropertiesDefinition = app.definition.users?.properties;
+
+    if (!userPropertiesDefinition) {
+      return;
+    }
+
+    for (const appMember of app.AppMembers) {
+      if (!appMembersToUpdate[appMember.id]) {
+        appMembersToUpdate[appMember.id] = appMember.properties;
+      }
+
+      for (const [propertyName, propertyDefinition] of Object.entries(userPropertiesDefinition)) {
+        if (!propertyDefinition.reference) {
+          return;
+        }
+
+        let updatedValue;
+
+        if (propertyDefinition.schema.type === 'integer') {
+          updatedValue = 0;
+        }
+
+        if (propertyDefinition.schema.type === 'array') {
+          updatedValue = appMember.properties[propertyName].filter(
+            (entry: number) =>
+              !app.Resources.filter(
+                (resource) => resource.type === propertyDefinition.reference.resource,
+              )
+                .map((resource) => resource.id)
+                .includes(entry),
+          );
+        }
+
+        appMembersToUpdate[appMember.id] = {
+          ...appMembersToUpdate[appMember.id],
+          [propertyName]: updatedValue,
+        };
+      }
+    }
+
+    for (const [appMemberId, properties] of Object.entries(appMembersToUpdate)) {
+      await AppMember.update(
+        {
+          properties,
+        },
+        {
+          where: {
+            id: appMemberId,
+          },
+        },
+      );
+    }
+
+    logger.info(`Updated ${Object.keys(appMembersToUpdate).length} users' properties.`);
   }
 
   /**
