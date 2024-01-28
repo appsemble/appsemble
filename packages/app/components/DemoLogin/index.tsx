@@ -133,7 +133,7 @@ export function DemoLogin({ appMembers, modal }: DemoLoginProps): ReactNode {
 
   const defaultValues = useMemo(
     () => ({
-      appMemberId: appMembers[0]?.id ?? undefined,
+      appMemberId: appMembers[0]?.userId ?? undefined,
     }),
     [appMembers],
   );
@@ -142,7 +142,7 @@ export function DemoLogin({ appMembers, modal }: DemoLoginProps): ReactNode {
     async ({ appMemberId }: typeof defaultValues) => {
       busy.enable();
       try {
-        await demoLogin(appMemberId ?? appMembers[0]?.id ?? '');
+        await demoLogin(appMemberId ?? appMembers[0]?.userId ?? '');
         busy.disable();
         if (modal) {
           modal.disable();
@@ -168,7 +168,7 @@ export function DemoLogin({ appMembers, modal }: DemoLoginProps): ReactNode {
           required
         >
           {appMembers.map((appMember) => (
-            <option key={appMember.id} value={appMember.id}>
+            <option key={appMember.userId} value={appMember.userId}>
               {appMember.role} {appMember.name}
             </option>
           ))}

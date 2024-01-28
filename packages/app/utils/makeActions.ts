@@ -190,6 +190,7 @@ export function createTestAction<T extends ActionDefinition['type']>(
         userInfo: null,
         context,
         locale: defaultLocale,
+        appMember: undefined,
       }),
     params: {
       lang: 'en',

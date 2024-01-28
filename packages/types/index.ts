@@ -186,6 +186,11 @@ export interface UserInfo {
    * If the user is subscribed to the newsletter
    */
   subscribed?: boolean;
+
+  /**
+   * The properties of the currently logged in member of the app
+   */
+  appMember?: AppMember;
 }
 
 /**
@@ -291,6 +296,19 @@ export interface Remappers {
    * - `url`: Get the base URL of the app.
    */
   app: 'id' | 'locale' | 'url';
+
+  /**
+   * Get property of the AppMember object.
+   *
+   * Supported properties:
+   *
+   * - `memberId`: Get the id of the AppMember.
+   * - `userId`: Get the id of the user associated with AppMember object.
+   * - `role`: Get the role of the app member
+   * - `primaryEmail`: Get the primary email of the user associated with AppMember object.
+   * - `name`:  Get the name of the user associated with AppMember object.
+   */
+  appMember: keyof AppMember;
 
   /**
    * Get page metadata.
@@ -2142,7 +2160,8 @@ export interface OrganizationInvite {
  * App member in an app.
  */
 export interface AppMember {
-  id: string;
+  userId: string;
+  memberId: string;
   name: string;
   primaryEmail: string;
   role: string;

@@ -111,7 +111,8 @@ export async function handler(argv: ServeArguments): Promise<void> {
 
   const appMembers: AppMember[] = [
     {
-      id: '1',
+      userId: '1',
+      memberId: '1',
       name: 'dev',
       primaryEmail: 'dev@example.com',
       role: passedUserRole || appSecurity?.default.role,

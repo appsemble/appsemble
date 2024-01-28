@@ -55,6 +55,7 @@ function runTests(tests: Record<string, TestCase>): void {
         appId: 6789,
         locale: 'en',
         pageData: { hello: 'Page data' },
+        appMember: userInfo?.appMember,
       });
       expect(result).toStrictEqual(expected);
     },
@@ -297,6 +298,7 @@ describe('log', () => {
           appId: 6789,
           locale: 'en',
           pageData: { hello: 'Page data' },
+          appMember: userInfo?.appMember,
         });
         expect(console[(mappers as { log: 'error' | 'info' | 'warn' }).log]).toHaveBeenCalledWith(
           expected,

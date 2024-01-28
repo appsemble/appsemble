@@ -128,7 +128,14 @@ describe('getAppMembers', () => {
     authorizeStudio();
     const response = await request.get(`/api/apps/${app.id}/members`);
     expect(response).toMatchInlineSnapshot(
-      { data: [{ id: expect.stringMatching(uuid4Pattern) }] },
+      {
+        data: [
+          {
+            userId: expect.stringMatching(uuid4Pattern),
+            memberId: expect.stringMatching(uuid4Pattern),
+          },
+        ],
+      },
       `
       HTTP/1.1 200 OK
       Content-Type: application/json; charset=utf-8
@@ -136,11 +143,12 @@ describe('getAppMembers', () => {
       [
         {
           "demo": false,
-          "id": StringMatching /\\^\\[\\\\d\\[a-f\\]\\{8\\}-\\[\\\\da-f\\]\\{4\\}-4\\[\\\\da-f\\]\\{3\\}-\\[\\\\da-f\\]\\{4\\}-\\[\\\\d\\[a-f\\]\\{12\\}\\$/,
+          "memberId": StringMatching /\\^\\[\\\\d\\[a-f\\]\\{8\\}-\\[\\\\da-f\\]\\{4\\}-4\\[\\\\da-f\\]\\{3\\}-\\[\\\\da-f\\]\\{4\\}-\\[\\\\d\\[a-f\\]\\{12\\}\\$/,
           "name": "Test Member",
           "primaryEmail": "member@example.com",
           "properties": {},
           "role": "Admin",
+          "userId": StringMatching /\\^\\[\\\\d\\[a-f\\]\\{8\\}-\\[\\\\da-f\\]\\{4\\}-4\\[\\\\da-f\\]\\{3\\}-\\[\\\\da-f\\]\\{4\\}-\\[\\\\d\\[a-f\\]\\{12\\}\\$/,
         },
       ]
     `,
@@ -172,7 +180,13 @@ describe('getAppMembers', () => {
     authorizeStudio();
     const response = await request.get(`/api/apps/${app.id}/members`);
     expect(response).toMatchInlineSnapshot(
-      { data: [{ id: expect.stringMatching(uuid4Pattern) }] },
+      {
+        data: [
+          {
+            userId: expect.stringMatching(uuid4Pattern),
+          },
+        ],
+      },
       `
       HTTP/1.1 200 OK
       Content-Type: application/json; charset=utf-8
@@ -180,10 +194,10 @@ describe('getAppMembers', () => {
       [
         {
           "demo": false,
-          "id": StringMatching /\\^\\[\\\\d\\[a-f\\]\\{8\\}-\\[\\\\da-f\\]\\{4\\}-4\\[\\\\da-f\\]\\{3\\}-\\[\\\\da-f\\]\\{4\\}-\\[\\\\d\\[a-f\\]\\{12\\}\\$/,
           "name": "Test User",
           "primaryEmail": "test@example.com",
           "role": "Reader",
+          "userId": StringMatching /\\^\\[\\\\d\\[a-f\\]\\{8\\}-\\[\\\\da-f\\]\\{4\\}-4\\[\\\\da-f\\]\\{3\\}-\\[\\\\da-f\\]\\{4\\}-\\[\\\\d\\[a-f\\]\\{12\\}\\$/,
         },
       ]
     `,
@@ -324,22 +338,28 @@ describe('getAppMember', () => {
     authorizeStudio();
     const response = await request.get<AppMemberType>(`/api/apps/${app.id}/members/${user.id}`);
     expect(response).toMatchInlineSnapshot(
-      { data: { id: expect.stringMatching(uuid4Pattern) } },
+      {
+        data: {
+          userId: expect.stringMatching(uuid4Pattern),
+          memberId: expect.stringMatching(uuid4Pattern),
+        },
+      },
       `
       HTTP/1.1 200 OK
       Content-Type: application/json; charset=utf-8
 
       {
         "demo": false,
-        "id": StringMatching /\\^\\[\\\\d\\[a-f\\]\\{8\\}-\\[\\\\da-f\\]\\{4\\}-4\\[\\\\da-f\\]\\{3\\}-\\[\\\\da-f\\]\\{4\\}-\\[\\\\d\\[a-f\\]\\{12\\}\\$/,
+        "memberId": StringMatching /\\^\\[\\\\d\\[a-f\\]\\{8\\}-\\[\\\\da-f\\]\\{4\\}-4\\[\\\\da-f\\]\\{3\\}-\\[\\\\da-f\\]\\{4\\}-\\[\\\\d\\[a-f\\]\\{12\\}\\$/,
         "name": "Foo",
         "primaryEmail": "foo@example.com",
         "properties": {},
         "role": "Reader",
+        "userId": StringMatching /\\^\\[\\\\d\\[a-f\\]\\{8\\}-\\[\\\\da-f\\]\\{4\\}-4\\[\\\\da-f\\]\\{3\\}-\\[\\\\da-f\\]\\{4\\}-\\[\\\\d\\[a-f\\]\\{12\\}\\$/,
       }
     `,
     );
-    expect(response.data.id).toBe(user.id);
+    expect(response.data.userId).toBe(user.id);
   });
 });
 
@@ -1898,7 +1918,7 @@ describe('getAppMembersByRoles', () => {
       timezone: 'Europe/Amsterdam',
     });
 
-    await AppMember.create({
+    const appMember1 = await AppMember.create({
       UserId: user1.id,
       AppId: app.id,
       name: 'Test Member 1',
@@ -1914,7 +1934,7 @@ describe('getAppMembersByRoles', () => {
       timezone: 'Europe/Amsterdam',
     });
 
-    await AppMember.create({
+    const appMember2 = await AppMember.create({
       UserId: user2.id,
       AppId: app.id,
       name: 'Test Member 2',
@@ -1928,17 +1948,19 @@ describe('getAppMembersByRoles', () => {
 
     expect(data).toStrictEqual([
       {
-        id: 'cbf06bd7-5b5f-40b2-aba1-1a55edc237e2',
+        userId: 'cbf06bd7-5b5f-40b2-aba1-1a55edc237e2',
         name: 'Test Member 2',
         primaryEmail: 'role2@gmail.com',
         properties: {},
+        memberId: appMember2.id,
         role: 'Role2',
       },
       {
-        id: 'd5949885-9b31-4f4f-b842-f3ce80c03287',
+        userId: 'd5949885-9b31-4f4f-b842-f3ce80c03287',
         name: 'Test Member 1',
         primaryEmail: 'role1@gmail.com',
         properties: {},
+        memberId: appMember1.id,
         role: 'Role1',
       },
     ]);
@@ -1984,7 +2006,7 @@ describe('getAppMembersByRoles', () => {
       timezone: 'Europe/Amsterdam',
     });
 
-    await AppMember.create({
+    const appMember1 = await AppMember.create({
       UserId: user1.id,
       AppId: app.id,
       name: 'Test Member 1',
@@ -2000,7 +2022,7 @@ describe('getAppMembersByRoles', () => {
       timezone: 'Europe/Amsterdam',
     });
 
-    await AppMember.create({
+    const appMember2 = await AppMember.create({
       UserId: user2.id,
       AppId: app.id,
       name: 'Test Member 2',
@@ -2016,7 +2038,7 @@ describe('getAppMembersByRoles', () => {
       timezone: 'Europe/Amsterdam',
     });
 
-    await AppMember.create({
+    const appMember3 = await AppMember.create({
       UserId: user3.id,
       AppId: app.id,
       name: 'Test Member 3',
@@ -2030,25 +2052,28 @@ describe('getAppMembersByRoles', () => {
 
     expect(data).toStrictEqual([
       {
-        id: '5659cad5-7618-4a74-b03d-691d97ba6461',
+        userId: '5659cad5-7618-4a74-b03d-691d97ba6461',
         name: 'Test Member 3',
         primaryEmail: 'role3@gmail.com',
         properties: {},
         role: 'Role3',
+        memberId: appMember3.id,
       },
       {
-        id: 'cbf06bd7-5b5f-40b2-aba1-1a55edc237e2',
+        userId: 'cbf06bd7-5b5f-40b2-aba1-1a55edc237e2',
         name: 'Test Member 2',
         primaryEmail: 'role2@gmail.com',
         properties: {},
         role: 'Role2',
+        memberId: appMember2.id,
       },
       {
-        id: 'd5949885-9b31-4f4f-b842-f3ce80c03287',
+        userId: 'd5949885-9b31-4f4f-b842-f3ce80c03287',
         name: 'Test Member 1',
         primaryEmail: 'role1@gmail.com',
         properties: {},
         role: 'Role1',
+        memberId: appMember1.id,
       },
     ]);
   });

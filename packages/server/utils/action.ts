@@ -32,6 +32,7 @@ export async function handleAction(
       return new IntlMessageFormat(message);
     },
     userInfo: undefined,
+    appMember: undefined,
     locale,
   };
   let data =
