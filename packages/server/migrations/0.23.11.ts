@@ -5,7 +5,7 @@ export const key = '0.23.11';
 
 /*
  * Summary:
- * - Create all tables
+ * - Create all tables from production database snapshot from 0.23.9
  */
 export async function up(db: Sequelize): Promise<void> {
   const queryInterface = db.getQueryInterface();
@@ -14,6 +14,7 @@ export async function up(db: Sequelize): Promise<void> {
     logger.info('skipping migration because database is not empty');
     return;
   }
+  logger.info('Creating tables from snapshot');
   await queryInterface.createTable('Organization', {
     id: { type: DataTypes.STRING(255), allowNull: false, primaryKey: true },
     name: { type: DataTypes.STRING(255), allowNull: true },
@@ -826,51 +827,7 @@ export async function up(db: Sequelize): Promise<void> {
 
 /*
  * Summary:
- * - Drop all tables
  */
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-export async function down(db: Sequelize): Promise<void> {
-  // Ignore
-  // const queryInterface = db.getQueryInterface();
-  // await queryInterface.dropTable('BlockAsset');
-  // await queryInterface.dropTable('UserTraining');
-  // await queryInterface.dropTable('TeamInvite');
-  // await queryInterface.dropTable('Training');
-  // await queryInterface.dropTable('TrainingBlock');
-  // await queryInterface.dropTable('AppSnapshot');
-  // await queryInterface.dropTable('User');
-  // await queryInterface.dropTable('OAuthAuthorization');
-  // await queryInterface.dropTable('AppBlockStyle');
-  // await queryInterface.dropTable('ResourceSubscription');
-  // await queryInterface.dropTable('Theme');
-  // await queryInterface.dropTable('TeamMember');
-  // await queryInterface.dropTable('SamlLoginRequest');
-  // await queryInterface.dropTable('Organization');
-  // await queryInterface.dropTable('ResourceVersion');
-  // await queryInterface.dropTable('Team');
-  // await queryInterface.dropTable('OAuth2ClientCredentials');
-  // await queryInterface.dropTable('BlockVersion');
-  // await queryInterface.dropTable('OrganizationInvite');
-  // await queryInterface.dropTable('ResetPasswordToken');
-  // await queryInterface.dropTable('Resource');
-  // await queryInterface.dropTable('OAuth2AuthorizationCode');
-  // await queryInterface.dropTable('OrganizationMember');
-  // await queryInterface.dropTable('BlockMessages');
-  // await queryInterface.dropTable('Meta');
-  // await queryInterface.dropTable('EmailAuthorization');
-  // await queryInterface.dropTable('Asset');
-  // await queryInterface.dropTable('AppMember');
-  // await queryInterface.dropTable('AppServiceSecret');
-  // await queryInterface.dropTable('AppSubscription');
-  // await queryInterface.dropTable('AppSamlSecret');
-  // await queryInterface.dropTable('App');
-  // await queryInterface.dropTable('AppScreenshot');
-  // await queryInterface.dropTable('AppSamlAuthorization');
-  // await queryInterface.dropTable('AppRating');
-  // await queryInterface.dropTable('AppOAuth2Secret');
-  // await queryInterface.dropTable('AppOAuth2Authorization');
-  // await queryInterface.dropTable('AppCollectionApp');
-  // await queryInterface.dropTable('AppCollection');
-  // await queryInterface.dropTable('AppEmailQuotaLog');
-  // await queryInterface.dropTable('AppMessages');
+export function down(): void {
+  throw new Error(`Down migration for ${key} not implemented!`);
 }
