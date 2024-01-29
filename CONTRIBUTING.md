@@ -102,6 +102,23 @@ automatically extract these messages from the source files run:
 npm run scripts -- extract-messages
 ```
 
+#### Migration validation
+
+Database models (Sequelize) and migration scripts are compared using
+`./packages/server/commands/checkMigrations.ts` to ensure that migrations are not missing or
+incorrect. This is done automatically in the CI pipeline. To run it locally, run the following
+command:
+
+```sh
+npm run appsemble -- check-migrations
+```
+
+The command will exit with a non-zero exit code if there are any issues. If there are issues, check
+your models and migrations and make sure they are correct.
+
+> **Note**: This command requires a local test database to be running, for example via
+> docker-compose. See [the README](./README.md#getting-started) for more information.
+
 ### Permissions
 
 After adding a new permission to the `Permission` enum, add the permission to the relevant role at
@@ -236,6 +253,8 @@ A release can be created by a maintainer triggering the `release patch` or `rele
 the pipeline for the `main` branch.
 
 > **Note**: Migrations are still added manually. Make sure the release matches any new migrations.
+> For example, if you’re releasing version `1.2.3`, make sure existing migrations in
+> `./packages/server/migrations/` are no higher than `1.2.3`.
 
 [dnsmasq]: http://www.thekelleys.org.uk/dnsmasq/doc.html
 [keep a changelog]: https://keepachangelog.com/en/1.0.0
