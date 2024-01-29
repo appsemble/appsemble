@@ -173,6 +173,19 @@ validate:
   script:
     - npm run scripts -- validate
 
+check migrations:
+  extends: .npm
+  interruptible: true
+  services:
+    - postgres:15
+  variables:
+    POSTGRES_DB: testAppsemble
+    POSTGRES_USER: admin
+    POSTGRES_PASSWORD: password
+    DATABASE_URL: 'postgres://admin:password@postgres:5432/testAppsemble'
+  script:
+    - npm run appsemble -- check-migrations
+
 ###################################################################################################
 #  Build Stage                                                                                    #
 ###################################################################################################
