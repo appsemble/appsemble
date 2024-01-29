@@ -1,5 +1,11 @@
-import { InputField, SelectField } from '@appsemble/react-components';
-import { type ChangeEvent, type ReactNode, useCallback } from 'react';
+import {
+  Button,
+  InputField,
+  SelectField,
+  useClickOutside,
+  useToggle,
+} from '@appsemble/react-components';
+import { type ChangeEvent, type ReactNode, useCallback, useRef } from 'react';
 import { useIntl } from 'react-intl';
 
 import styles from './index.module.css';
@@ -47,6 +53,7 @@ export function AppListControls({
 }: AppListControlsProps): ReactNode {
   const { formatMessage } = useIntl();
   const { userInfo } = useUser();
+  const { disable, enabled: isActive, toggle } = useToggle(false);
 
   const handleSortChange = useCallback(
     ({ currentTarget: { value } }: ChangeEvent<HTMLSelectElement>): void => {
@@ -55,6 +62,8 @@ export function AppListControls({
     },
     [onSortChange],
   );
+  const dropdownRef = useRef<HTMLDivElement | null>();
+  useClickOutside(dropdownRef, disable);
 
   return (
     <div className={`is-flex-desktop ${styles.gap}`}>
@@ -108,9 +117,25 @@ export function AppListControls({
           {`${formatMessage(messages.updated)} (${formatMessage(messages.descending)})`}
         </option>
       </SelectField>
-      <div className="ml-auto mb-2">{userInfo && actionButton ? actionButton : null}</div>
-      <div className="ml-auto mb-2">
-        {userInfo && actionImportButton ? actionImportButton : null}
+      <div className="mb-2 ml-auto">
+        {userInfo ? (
+          <>
+            {actionButton || null}
+            <div className={`dropdown ${isActive ? 'is-active' : ''} is-pulled-right is-right`}>
+              <div className="dropdown-trigger">
+                <Button
+                  aria-controls="dropdown-trigger"
+                  aria-haspopup="true"
+                  icon="chevron-down"
+                  onClick={toggle}
+                />
+              </div>
+              <div className="dropdown-menu" role="menu">
+                <div className="dropdown-content">{actionImportButton || null}</div>
+              </div>
+            </div>
+          </>
+        ) : null}
       </div>
     </div>
   );
