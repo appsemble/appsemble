@@ -256,7 +256,7 @@ export const getAppMember = createGetAppMember(options);
 
 export async function setAppMember(ctx: Context): Promise<void> {
   const {
-    pathParams: { appId, memberId },
+    pathParams: { appId, userId },
     request: {
       body: { properties, role },
     },
@@ -271,7 +271,7 @@ export async function setAppMember(ctx: Context): Promise<void> {
           exclude: ['picture'],
         },
         required: false,
-        where: { UserId: memberId },
+        where: { UserId: userId },
       },
     ],
   });
@@ -282,7 +282,7 @@ export async function setAppMember(ctx: Context): Promise<void> {
     await checkRole(ctx, app.OrganizationId, Permission.EditAppAccounts);
   }
 
-  const user = await User.findByPk(memberId);
+  const user = await User.findByPk(userId);
 
   assertKoaError(!user, ctx, 404, 'User with this ID doesn’t exist.');
   assertKoaError(
@@ -1054,7 +1054,7 @@ export async function resetMemberPassword(ctx: Context): Promise<void> {
 
 export async function deleteAppMember(ctx: Context): Promise<void> {
   const {
-    pathParams: { appId, memberId },
+    pathParams: { appId, userId },
     user,
   } = ctx;
 
@@ -1064,14 +1064,14 @@ export async function deleteAppMember(ctx: Context): Promise<void> {
         model: AppMember,
         attributes: ['id'],
         required: false,
-        where: { UserId: memberId },
+        where: { UserId: userId },
       },
     ],
   });
 
   assertKoaError(!app, ctx, 404, 'App not found');
 
-  if (user.id !== memberId && !app.demoMode) {
+  if (user.id !== userId && !app.demoMode) {
     await checkRole(ctx, app.OrganizationId, Permission.DeleteAppAccounts);
   }
 

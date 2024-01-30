@@ -11,7 +11,8 @@ import { AsyncDataView } from '../../../../components/AsyncDataView/index.js';
 import { useApp } from '../index.js';
 
 export interface AppMember {
-  id: string;
+  userId: string;
+  memberId: string;
   name?: string;
   primaryEmail?: string;
   role: string;
@@ -25,7 +26,7 @@ export function UsersPage(): ReactNode {
   const result = useData<AppMember[]>(`/api/apps/${app.id}/members`);
 
   const onMemberChange = (member: AppMember): void => {
-    result.setData(result.data.map((m) => (m.id === member.id ? member : m)));
+    result.setData(result.data.map((m) => (m.memberId === member.memberId ? member : m)));
   };
 
   const onMemberExport = useCallback(() => {
@@ -79,7 +80,7 @@ export function UsersPage(): ReactNode {
               </thead>
               <tbody>
                 {members.map((member) => (
-                  <MemberRow key={member.id} member={member} onChange={onMemberChange} />
+                  <MemberRow key={member.memberId} member={member} onChange={onMemberChange} />
                 ))}
               </tbody>
             </Table>

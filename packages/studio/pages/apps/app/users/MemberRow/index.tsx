@@ -43,14 +43,17 @@ export function MemberRow({ member, onChange }: AppMemberRowProperties): ReactNo
       const { value: role } = event.currentTarget;
 
       try {
-        const { data } = await axios.post<AppMember>(`/api/apps/${app.id}/members/${member.id}`, {
-          role,
-        });
+        const { data } = await axios.post<AppMember>(
+          `/api/apps/${app.id}/members/${member.userId}`,
+          {
+            role,
+          },
+        );
 
         push({
           color: 'success',
           body: formatMessage(messages.changeRoleSuccess, {
-            name: data.name || data.primaryEmail || data.id,
+            name: data.name || data.primaryEmail || data.memberId,
             role,
           }),
         });
@@ -78,7 +81,7 @@ export function MemberRow({ member, onChange }: AppMemberRowProperties): ReactNo
 
   const editProperties = useCallback(
     async ({ annotations }: typeof defaultValues) => {
-      const { data } = await axios.post<AppMember>(`/api/apps/${app.id}/members/${member.id}`, {
+      const { data } = await axios.post<AppMember>(`/api/apps/${app.id}/members/${member.userId}`, {
         role: member.role,
         properties: Object.fromEntries(annotations),
       });
@@ -90,17 +93,17 @@ export function MemberRow({ member, onChange }: AppMemberRowProperties): ReactNo
 
   return (
     <>
-      <tr key={member.id}>
+      <tr key={member.memberId}>
         <td className={styles.noWrap}>
           <span>
             {member.name
               ? member.primaryEmail
                 ? `${member.name} (${member.primaryEmail})`
                 : member.name
-              : member.primaryEmail || member.id}
+              : member.primaryEmail || member.memberId}
           </span>
           <div className="tags is-inline ml-2">
-            {member.id === userInfo.sub && (
+            {member.userId === userInfo.sub && (
               <span className="tag is-success">
                 <FormattedMessage {...messages.you} />
               </span>
