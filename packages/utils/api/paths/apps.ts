@@ -593,13 +593,13 @@ export const paths: OpenAPIV3.PathsObject = {
       security: [{ studio: [] }, { app: ['openid'] }],
     },
   },
-  '/api/apps/{appId}/members/{memberId}': {
+  '/api/apps/{appId}/members/{userId}': {
     parameters: [
       { $ref: '#/components/parameters/appId' },
       {
-        name: 'memberId',
+        name: 'userId',
         in: 'path',
-        description: 'The ID of the member on which to perform an operation',
+        description: 'The user ID of the member on which to perform an operation',
         required: true,
         schema: { $ref: '#/components/schemas/User/properties/id' },
       },

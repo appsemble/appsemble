@@ -160,7 +160,7 @@ export interface GetAppMessagesParams extends GetAppSubEntityParams {
 }
 
 export interface GetAppMembersParams extends GetAppSubEntityParams {
-  memberId: string;
+  userId: string;
 }
 
 export interface GetAppUserInfoParams {
