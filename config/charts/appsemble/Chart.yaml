@@ -1,7 +1,7 @@
 apiVersion: v2
 name: appsemble
-version: 0.24.9
-appVersion: 0.24.9
+version: 0.24.10
+appVersion: 0.24.10
 kubeVersion: '>=1.21.0'
 type: application
 description: The open source low-code app building platform
@@ -23,8 +23,23 @@ dependencies:
     repository: https://charts.bitnami.com/bitnami
     condition: postgresql.enabled
 annotations:
-  artifacthub.io/changes: |
-    []
+  artifacthub.io/changes: >
+    - kind: added
+      description: "Studio: Add search bar for blocks."
+    - kind: added
+      description: "Studio: Watermark in app card and app details page."
+    - kind: added
+      description: "Utils: New Google Fonts."
+    - kind: added
+      description: "Utils: Support for binary data in null.strip remapper."
+    - kind: changed
+      description: "Studio: Make import button optionally visible on home page."
+    - kind: fixed
+      description: "Server: Deleting more child resources in cascade delete than allowed."
+    - kind: fixed
+      description: "Server: Updating more child resources in cascade delete than allowed."
+    - kind: fixed
+      description: "Utils: Ensure resource reference types are specified."
   artifacthub.io/license: LGPL-3.0-only
   artifacthub.io/links: |
     - name: Appsemble Studio

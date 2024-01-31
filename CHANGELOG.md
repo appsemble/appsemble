@@ -2,6 +2,25 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.24.10](https://gitlab.com/appsemble/appsemble/-/releases/0.24.10)] - 2024-01-31
+
+### Added
+
+- Studio: Add search bar for blocks.
+- Studio: Watermark in app card and app details page.
+- Utils: New Google Fonts.
+- Utils: Support for binary data in `null.strip` remapper.
+
+### Changed
+
+- Studio: Make `import` button optionally visible on home page.
+
+### Fixed
+
+- Server: Deleting more child resources in cascade delete than allowed.
+- Server: Updating more child resources in cascade delete than allowed.
+- Utils: Ensure resource reference types are specified.
+
 ## \[[0.24.9](https://gitlab.com/appsemble/appsemble/-/releases/0.24.9)] - 2024-01-26
 
 ## \[[0.24.8](https://gitlab.com/appsemble/appsemble/-/releases/0.24.8)] - 2024-01-23
