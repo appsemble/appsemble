@@ -5,7 +5,7 @@ import { type Promisable } from 'type-fest';
 
 import { getDB, Meta } from '../models/index.js';
 
-const firstDeterministicMigration = '0.23.11';
+const firstDeterministicMigration = '0.24.12';
 
 export interface Migration {
   key: string;

@@ -12,7 +12,7 @@ import { initDB } from '../models/index.js';
 import { migrate } from '../utils/migrate.js';
 import { handleDBError } from '../utils/sqlUtils.js';
 
-const firstDeterministicMigration = '0.23.11';
+const firstDeterministicMigration = '0.24.12';
 
 export const command = 'check-migrations';
 export const description =
@@ -40,28 +40,20 @@ async function apply(db: Sequelize, name: string, fn: () => Promise<void>): Prom
     closeConnectionAutomatically: false,
   });
   const fullSchema = await auto.run();
+  for (const [tName, table] of Object.entries(fullSchema.tables)) {
+    for (const [cName, column] of Object.entries(table)) {
+      // XXX: these two issues:
+      // https://github.com/sequelize/sequelize-typescript/issues/1704 - Unique annotation
+      // name ignored
+      // https://github.com/sequelize/sequelize-typescript/issues/1015 - Constraints on
+      // table/field
+      // make it difficult to check for foreign keys.
+      delete fullSchema.tables[tName][cName].foreignKey;
+      fullSchema.tables[tName][cName].special = [...column.special].sort();
+    }
+  }
   const schema = {
-    tables: Object.fromEntries(
-      Object.entries(fullSchema.tables).map(([tName, table]) => [
-        tName,
-        Object.fromEntries(
-          Object.entries(table).map(([cName, column]) => [
-            cName,
-            {
-              ...column,
-              // XXX: these two issues:
-              // https://github.com/sequelize/sequelize-typescript/issues/1704 - Unique annotation
-              // name ignored
-              // https://github.com/sequelize/sequelize-typescript/issues/1015 - Constraints on
-              // table/field
-              // make it difficult to check for foreign keys.
-              foreignKey: undefined,
-              special: [...column.special].sort(),
-            },
-          ]),
-        ),
-      ]),
-    ),
+    tables: fullSchema.tables,
     // XXX: these two issues:
     // https://github.com/sequelize/sequelize-typescript/issues/1704 - Unique annotation
     // name ignored

@@ -122,19 +122,19 @@ it('should run upgrades in sequence', async () => {
   expect(m002.up).toHaveBeenCalledWith(getDB());
 });
 
-it('should migrate from 0.23.11 onwards if present and no meta version is present', async () => {
-  const m02311 = { key: '0.23.11', up: vi.fn(), down: vi.fn() };
-  const m02312 = { key: '0.23.12', up: vi.fn(), down: vi.fn() };
-  const m02313 = { key: '0.23.13', up: vi.fn(), down: vi.fn() };
+it('should migrate from 0.24.12 onwards if present and no meta version is present', async () => {
+  const m02412 = { key: '0.24.12', up: vi.fn(), down: vi.fn() };
+  const m02413 = { key: '0.24.13', up: vi.fn(), down: vi.fn() };
+  const m02414 = { key: '0.24.14', up: vi.fn(), down: vi.fn() };
 
-  const moreMigrations = [...migrations, m02311, m02312, m02313];
+  const moreMigrations = [...migrations, m02412, m02413, m02414];
   await migrate('1.0.0', moreMigrations);
 
-  expect(m02311.up).toHaveBeenCalledWith(getDB());
-  expect(m02312.up).toHaveBeenCalledWith(getDB());
-  expect(m02313.up).toHaveBeenCalledWith(getDB());
+  expect(m02412.up).toHaveBeenCalledWith(getDB());
+  expect(m02413.up).toHaveBeenCalledWith(getDB());
+  expect(m02414.up).toHaveBeenCalledWith(getDB());
   expect(m100.up).toHaveBeenCalledWith(getDB());
-  expect(m02311.down).not.toHaveBeenCalled();
-  expect(m02312.down).not.toHaveBeenCalled();
-  expect(m02313.down).not.toHaveBeenCalled();
+  expect(m02412.down).not.toHaveBeenCalled();
+  expect(m02413.down).not.toHaveBeenCalled();
+  expect(m02414.down).not.toHaveBeenCalled();
 });

@@ -1,7 +1,7 @@
 import { logger } from '@appsemble/node-utils';
 import { DataTypes, type Sequelize } from 'sequelize';
 
-export const key = '0.24.2';
+export const key = '0.29.0';
 
 /**
  * Summary:
@@ -45,7 +45,10 @@ export async function up(db: Sequelize): Promise<void> {
     type: DataTypes.BOOLEAN,
   });
   await queryInterface.sequelize.query(`
-    ALTER TABLE "App" ALTER COLUMN "showAppsembleLogin" TYPE BOOLEAN USING CASE "showAppsembleLogin" WHEN 'true' THEN true WHEN 'false' THEN false ELSE "showAppsembleLogin"::BOOLEAN END;
+    ALTER TABLE "App"
+      ALTER COLUMN "showAppsembleLogin" DROP DEFAULT,
+      ALTER COLUMN "showAppsembleLogin" TYPE BOOLEAN USING CASE "showAppsembleLogin" WHEN 'true' THEN true WHEN 'false' THEN false ELSE "showAppsembleLogin"::BOOLEAN END,
+      ALTER COLUMN "showAppsembleLogin" SET DEFAULT FALSE;
   `);
   logger.info('Making User.timezone non-nullable');
   await queryInterface.changeColumn('User', 'timezone', {
@@ -129,6 +132,8 @@ export async function up(db: Sequelize): Promise<void> {
     allowNull: true,
     defaultValue: null,
   });
+  // Questionable: non-nullable in production, nullable in model, tests fail if set to non-nullable
+  // in model.
   logger.info('Making ResourceVersion.AppMemberId nullable');
   await queryInterface.changeColumn('ResourceVersion', 'AppMemberId', {
     type: DataTypes.UUID,
@@ -144,11 +149,15 @@ export async function up(db: Sequelize): Promise<void> {
     type: DataTypes.INTEGER,
     allowNull: false,
   });
+  // Questionable: non-nullable in production, nullable in model, tests fail if set to non-nullable
+  // in model.
   logger.info('Making EmailAuthorization.UserId nullable');
   await queryInterface.changeColumn('EmailAuthorization', 'UserId', {
     type: DataTypes.UUID,
     allowNull: true,
   });
+  // Questionable: non-nullable in production, nullable in model, tests fail if set to non-nullable
+  // in model.
   logger.info('Making AppMember.UserId nullable');
   await queryInterface.changeColumn('AppMember', 'UserId', {
     type: DataTypes.UUID,
@@ -198,7 +207,10 @@ export async function down(db: Sequelize): Promise<void> {
     type: DataTypes.BOOLEAN,
   });
   await queryInterface.sequelize.query(`
-    ALTER TABLE "App" ALTER COLUMN "showAppsembleLogin" TYPE VARCHAR(255) USING CASE "showAppsembleLogin" WHEN true THEN 'true' WHEN false THEN 'false' ELSE "showAppsembleLogin"::VARCHAR END;
+    ALTER TABLE "App"
+      ALTER COLUMN "showAppsembleLogin" DROP DEFAULT,
+      ALTER COLUMN "showAppsembleLogin" TYPE VARCHAR(255) USING CASE "showAppsembleLogin" WHEN true THEN 'true' WHEN false THEN 'false' ELSE "showAppsembleLogin"::VARCHAR END,
+      ALTER COLUMN "showAppsembleLogin" SET DEFAULT 'false';
   `);
   logger.info('Making User.timezone nullable');
   await queryInterface.changeColumn('User', 'timezone', {
