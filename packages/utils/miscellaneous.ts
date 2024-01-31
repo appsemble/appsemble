@@ -45,6 +45,9 @@ export function stripNullValues(
   if (typeof value !== 'object') {
     return value;
   }
+  if (value instanceof Blob) {
+    return value;
+  }
 
   if (depth <= 0) {
     return value;

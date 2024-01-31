@@ -43,6 +43,19 @@ describe('stripNullValues', () => {
     expect(stripNullValues(input)).toStrictEqual([]);
   });
 
+  it('should not remove Blob values', () => {
+    const blob = new Blob([], { type: 'image/jpeg' });
+    const input: unknown = {
+      foo: null,
+      bar: blob,
+      baz: 'hello',
+    };
+    expect(stripNullValues(input)).toStrictEqual({
+      bar: blob,
+      baz: 'hello',
+    });
+  });
+
   it('should remove undefined, and null values from objects', () => {
     const input: unknown = {
       foo: null,
