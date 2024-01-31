@@ -21,6 +21,7 @@ const referenceActionTrigger: OpenAPIV3.NonArraySchemaObject = {
   type: 'object',
   additionalProperties: false,
   description: 'Defines the type of trigger and the cascading strategy for it',
+  required: ['type'],
   properties: {
     type: {
       enum: ['create', 'update', 'delete'],

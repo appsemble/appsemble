@@ -3,6 +3,7 @@ import {
   handleValidatorResult,
   type Options,
   type QueryParams,
+  throwKoaError,
 } from '@appsemble/node-utils';
 import {
   type NotificationDefinition,
@@ -269,9 +270,9 @@ export async function processReferenceTriggers(
   }
 
   const childResources: Record<string, Resource[]> = {};
-  const childPromises = resourceReferences.map(async ({ childName }) => {
+  const childPromises = resourceReferences.map(async ({ childName, referencedProperty }) => {
     childResources[childName] = await Resource.findAll({
-      where: { type: childName, AppId: app.id },
+      where: { type: childName, AppId: app.id, [`data.${referencedProperty}`]: parent.id },
     });
   });
 
@@ -285,16 +286,11 @@ export async function processReferenceTriggers(
       switch (action) {
         case 'delete':
           if (triggers.some((trigger) => !trigger.cascade)) {
-            const ctx = context;
-
-            ctx.response.status = 400;
-            ctx.response.body = {
-              statusCode: 400,
-              error: 'Bad Request',
-              message: `Cannot delete resource ${parent.id}. There is a resource of type ${childName} that references it.`,
-            };
-
-            return ctx.throw();
+            return throwKoaError(
+              context,
+              400,
+              `Cannot delete resource ${parent.id}. There is a resource of type ${childName} that references it.`,
+            );
           }
           break;
         default:

@@ -5678,20 +5678,52 @@ describe('deleteResources', () => {
     `);
 
     authorizeStudio();
-    const responseDeleteTestResources = await request.delete(
+
+    const responseDeleteTestResources1 = await request.delete(
       `/api/apps/${app.id}/resources/testResource`,
       {
-        data: [testResource1.id, testResource2.id],
+        data: [testResource1.id],
       },
     );
+    expect(responseDeleteTestResources1).toMatchInlineSnapshot('HTTP/1.1 204 No Content');
 
-    expect(responseDeleteTestResources).toMatchInlineSnapshot('HTTP/1.1 204 No Content');
-
-    const responseGetTestResourceCAfterDeletingTestResource = await request.get(
+    const responseGetTestResourceCAfterDeletingTestResource1 = await request.get(
       `/api/apps/${app.id}/resources/testResourceC`,
     );
+    expect(responseGetTestResourceCAfterDeletingTestResource1).toMatchInlineSnapshot(`
+      HTTP/1.1 200 OK
+      Content-Type: application/json; charset=utf-8
 
-    expect(responseGetTestResourceCAfterDeletingTestResource).toMatchInlineSnapshot(`
+      [
+        {
+          "$created": "1970-01-01T00:00:00.000Z",
+          "$updated": "1970-01-01T00:00:00.000Z",
+          "foo": "I reference Foo Two.",
+          "id": 4,
+          "testResourceId": 2,
+        },
+        {
+          "$created": "1970-01-01T00:00:00.000Z",
+          "$updated": "1970-01-01T00:00:00.000Z",
+          "foo": "I reference Foo.",
+          "id": 3,
+          "testResourceId": null,
+        },
+      ]
+    `);
+
+    const responseDeleteTestResources2 = await request.delete(
+      `/api/apps/${app.id}/resources/testResource`,
+      {
+        data: [testResource2.id],
+      },
+    );
+    expect(responseDeleteTestResources2).toMatchInlineSnapshot('HTTP/1.1 204 No Content');
+
+    const responseGetTestResourceCAfterDeletingTestResource2 = await request.get(
+      `/api/apps/${app.id}/resources/testResourceC`,
+    );
+    expect(responseGetTestResourceCAfterDeletingTestResource2).toMatchInlineSnapshot(`
       HTTP/1.1 200 OK
       Content-Type: application/json; charset=utf-8
 
@@ -5788,20 +5820,38 @@ describe('deleteResources', () => {
     `);
 
     authorizeStudio();
-    const responseDeleteTestResources = await request.delete(
-      `/api/apps/${app.id}/resources/testResource`,
-      {
-        data: [testResource1.id, testResource2.id],
-      },
-    );
+    const responseDeleteTest1 = await request.delete(`/api/apps/${app.id}/resources/testResource`, {
+      data: [testResource1.id],
+    });
+    expect(responseDeleteTest1).toMatchInlineSnapshot('HTTP/1.1 204 No Content');
 
-    expect(responseDeleteTestResources).toMatchInlineSnapshot('HTTP/1.1 204 No Content');
-
-    const responseGetTestResourceDAfterDeletingTestResource = await request.get(
+    const responseGetTestResourceDAfterDeletingTestResource1 = await request.get(
       `/api/apps/${app.id}/resources/testResourceD`,
     );
+    expect(responseGetTestResourceDAfterDeletingTestResource1).toMatchInlineSnapshot(`
+      HTTP/1.1 200 OK
+      Content-Type: application/json; charset=utf-8
 
-    expect(responseGetTestResourceDAfterDeletingTestResource).toMatchInlineSnapshot(`
+      [
+        {
+          "$created": "1970-01-01T00:00:00.000Z",
+          "$updated": "1970-01-01T00:00:00.000Z",
+          "foo": "I reference Foo Two.",
+          "id": 4,
+          "testResourceId": 2,
+        },
+      ]
+    `);
+
+    const responseDeleteTest2 = await request.delete(`/api/apps/${app.id}/resources/testResource`, {
+      data: [testResource2.id],
+    });
+    expect(responseDeleteTest2).toMatchInlineSnapshot('HTTP/1.1 204 No Content');
+
+    const responseGetTestResourceDAfterDeletingTestResource2 = await request.get(
+      `/api/apps/${app.id}/resources/testResourceD`,
+    );
+    expect(responseGetTestResourceDAfterDeletingTestResource2).toMatchInlineSnapshot(`
       HTTP/1.1 200 OK
       Content-Type: application/json; charset=utf-8
 
