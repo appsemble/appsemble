@@ -15,7 +15,8 @@ import { handleDBError } from '../utils/sqlUtils.js';
 const firstDeterministicMigration = '0.23.11';
 
 export const command = 'check-migrations';
-export const description = 'Helps you with migrations';
+export const description =
+  'Checks that migrations are defined correctly and match what is defined by models';
 
 interface Schema {
   tables: Record<string, unknown>;

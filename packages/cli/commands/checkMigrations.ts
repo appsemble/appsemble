@@ -4,7 +4,8 @@ import { serverImport } from '../lib/serverImport.js';
 import { type BaseArguments } from '../types.js';
 
 export const command = 'check-migrations';
-export const description = 'Helps you with migrations';
+export const description =
+  'Checks that migrations are defined correctly and match what is defined by models';
 
 export function builder(yargs: Argv): Argv {
   return yargs;
