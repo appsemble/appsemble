@@ -32,8 +32,7 @@
     ]
   },
   "overrides": {
-    "axios": "~1.2.0",
-    "react-router-dom": "6.11.2"
+    "axios": "~1.2.0"
   },
   "devDependencies": {
     "@lhci/cli": "^0.13.0",
@@ -52,7 +51,7 @@
     "eslint-plugin-import": "^2.29.1",
     "eslint-plugin-jsx-a11y": "^6.0.0",
     "eslint-plugin-markdown": "^3.0.1",
-    "eslint-plugin-playwright": "^0.18.0",
+    "eslint-plugin-playwright": "^0.22.0",
     "eslint-plugin-react": "^7.0.0",
     "eslint-plugin-react-hooks": "^4.0.0",
     "eslint-plugin-vitest": "^0.3.0",
