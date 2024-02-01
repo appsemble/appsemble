@@ -5011,7 +5011,7 @@ describe('exportApp', () => {
     `);
   });
 
-  it('should not allow for cloning unlisted apps if the user is not in the same organization as app.', async () => {
+  it('should not allow for exporting unlisted apps if the user is not in the same organization as app.', async () => {
     await Organization.create({ id: 'xkcd', name: 'Test Organization 2' });
     const app = await App.create({
       definition: {
@@ -5167,11 +5167,12 @@ describe('importApp', () => {
     const appDefinition = {
       name: 'Test App',
       defaultPage: 'Test Page',
-      pages: [{ name: 'Test Page' }],
+      pages: [{ name: 'Test Page', blocks: [{ type: 'test', version: '0.0.0' }] }],
     } as AppDefinition;
     const zip = new JSZip();
     zip.file('app-definition.yaml', stringify(appDefinition));
-    const content = zip.generateInternalStream();
+    vi.useRealTimers();
+    const content = zip.generateNodeStream();
     await OrganizationMember.update({ role: 'Member' }, { where: { UserId: user.id } });
     authorizeStudio();
 
@@ -5194,6 +5195,35 @@ describe('importApp', () => {
         "statusCode": 403,
       }
     `);
+  });
+
+  it('should allow a user with sufficient permissions to import an App', async () => {
+    const appDefinition = {
+      name: 'Test App',
+      defaultPage: 'Test Page',
+      pages: [{ name: 'Test Page', blocks: [{ type: 'test', version: '0.0.0' }] }],
+    } as AppDefinition;
+    const zip = new JSZip();
+    zip.file('app-definition.yaml', stringify(appDefinition));
+    vi.useRealTimers();
+    const content = zip.generateNodeStream();
+    await OrganizationMember.update({ role: 'AppEditor' }, { where: { UserId: user.id } });
+    authorizeStudio();
+
+    const response = await request.post(
+      `/api/apps/import/organization/${organization.id}`,
+      content,
+      {
+        headers: {
+          'Content-Type': 'application/zip',
+        },
+      },
+    );
+    expect(response.status).toBe(201);
+    const {
+      data: { OrganizationName, screenshotUrls, ...expected },
+    } = await request.get(`/api/apps/${response.data.id}`);
+    expect(response.data).toStrictEqual(expected);
   });
 });
 
