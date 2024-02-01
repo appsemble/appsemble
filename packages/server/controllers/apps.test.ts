@@ -5126,8 +5126,7 @@ describe('exportApp', () => {
 });
 
 describe('importApp', () => {
-  // eslint-disable-next-line vitest/no-disabled-tests
-  it.skip('should not allow a user with insufficient permissions to import an App', async () => {
+  it('should not allow a user with insufficient permissions to import an App', async () => {
     const appDefinition = {
       name: 'Test App',
       defaultPage: 'Test Page',
@@ -5135,9 +5134,10 @@ describe('importApp', () => {
     } as AppDefinition;
     const zip = new JSZip();
     zip.file('app-definition.yaml', stringify(appDefinition));
-    const content = zip.generateNodeStream();
+    const content = zip.generateInternalStream();
     await OrganizationMember.update({ role: 'Member' }, { where: { UserId: user.id } });
     authorizeStudio();
+
     const response = await request.post(
       `/api/apps/import/organization/${organization.id}`,
       content,
