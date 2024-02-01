@@ -5063,6 +5063,62 @@ describe('exportApp', () => {
     `);
   });
 
+  it('should return a zip file', async () => {
+    const app = await App.create(
+      {
+        path: 'testapp',
+        definition: {
+          name: 'Test App',
+          defaultPage: 'Test Page',
+          pages: [{ name: 'Test Page' }],
+        },
+        vapidPrivateKey: 'b',
+        vapidPublicKey: 'a',
+        OrganizationId: organization.id,
+      },
+      { raw: true },
+    );
+
+    vi.useRealTimers();
+    authorizeStudio();
+    const response = await request.get(`/api/apps/${app.id}/export?resources=false`, {
+      responseType: 'stream',
+    });
+    const zip = new JSZip();
+
+    const dataBuffer: Buffer = await new Promise((resolve, reject) => {
+      const chunks: any[] = [];
+
+      // Listen for data events and collect chunks
+      response.data.on('data', (chunk: any) => chunks.push(chunk));
+      response.data.on('end', () => resolve(Buffer.concat(chunks)));
+      response.data.on('error', reject);
+    });
+    const archive = await zip.loadAsync(dataBuffer);
+
+    expect(Object.keys(archive.files)).toStrictEqual([
+      'app-definition.yaml',
+      'theme/',
+      'theme/core/',
+      'theme/core/index.css',
+      'theme/shared/',
+      'theme/shared/index.css',
+      'i18n/',
+    ]);
+
+    expect(await archive.file('app-definition.yaml').async('text')).toMatchInlineSnapshot(
+      `
+        "name: Test App
+        defaultPage: Test Page
+        pages:
+          - name: Test Page
+        "
+      `,
+    );
+    expect(await archive.file('theme/core/index.css').async('text')).toMatchInlineSnapshot('""');
+    expect(await archive.file('theme/shared/index.css').async('text')).toMatchInlineSnapshot('""');
+  });
+
   it('should allow exporting resources if the user has sufficient permissions', async () => {
     const appWithResources = await App.create({
       definition: {
@@ -5114,51 +5170,52 @@ describe('exportApp', () => {
     });
     const archive = await zip.loadAsync(dataBuffer);
 
-    const expectedFileNames = ['app-definition.yaml', 'resources/testResource.json'];
-    for (const fileName of expectedFileNames) {
-      const fileExists = archive.file(fileName) != null;
-      expect(fileExists).toBe(true);
-    }
-  });
+    expect(Object.keys(archive.files)).toStrictEqual([
+      'app-definition.yaml',
+      'theme/',
+      'theme/core/',
+      'theme/core/index.css',
+      'theme/shared/',
+      'theme/shared/index.css',
+      'i18n/',
+      'resources/',
+      'resources/testResource.json',
+    ]);
 
-  it('should return a zip file', async () => {
-    const app = await App.create(
-      {
-        path: 'testapp',
-        definition: {
-          name: 'Test App',
-          defaultPage: 'Test Page',
-          pages: [{ name: 'Test Page' }],
-        },
-        vapidPrivateKey: 'b',
-        vapidPublicKey: 'a',
-        OrganizationId: organization.id,
-      },
-      { raw: true },
+    expect(await archive.file('app-definition.yaml').async('text')).toMatchInlineSnapshot(
+      `
+        "name: Test App
+        defaultPage: Test Page
+        resources:
+          testResource:
+            schema:
+              type: object
+              required:
+                - bar
+              properties:
+                bar:
+                  type: string
+                testResourceId:
+                  type: number
+            roles:
+              - $public
+            references:
+              testResourceId:
+                resource: testResource
+                create:
+                  trigger:
+                    - update
+        "
+      `,
     );
-
-    vi.useRealTimers();
-    authorizeStudio();
-    const response = await request.get(`/api/apps/${app.id}/export?resources=false`, {
-      responseType: 'stream',
-    });
-    const zip = new JSZip();
-
-    const dataBuffer: Buffer = await new Promise((resolve, reject) => {
-      const chunks: any[] = [];
-
-      // Listen for data events and collect chunks
-      response.data.on('data', (chunk: any) => chunks.push(chunk));
-      response.data.on('end', () => resolve(Buffer.concat(chunks)));
-      response.data.on('error', reject);
-    });
-    const archive = await zip.loadAsync(dataBuffer);
-
-    const expectedFileNames = ['app-definition.yaml'];
-    for (const fileName of expectedFileNames) {
-      const fileExists = archive.file(fileName) != null;
-      expect(fileExists).toBe(true);
-    }
+    expect(await archive.file('theme/core/index.css').async('text')).toMatchInlineSnapshot('""');
+    expect(await archive.file('theme/shared/index.css').async('text')).toMatchInlineSnapshot('""');
+    expect(await archive.file('resources/testResource.json').async('text')).toMatchInlineSnapshot(
+      `
+        "{"foo":"bar","id":1,"$created":"1970-01-01T00:00:00.000Z","$updated":"1970-01-01T00:00:00.000Z"}
+        "
+      `,
+    );
   });
 });
 
