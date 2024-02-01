@@ -5063,8 +5063,7 @@ describe('exportApp', () => {
     `);
   });
 
-  // eslint-disable-next-line vitest/no-disabled-tests
-  it.skip('should allow exporting resources if the user has sufficient permissions', async () => {
+  it('should allow exporting resources if the user has sufficient permissions', async () => {
     const appWithResources = await App.create({
       definition: {
         name: 'Test App',
@@ -5097,31 +5096,69 @@ describe('exportApp', () => {
       type: 'testResource',
       data: { foo: 'bar' },
     });
+
+    vi.useRealTimers();
     authorizeStudio();
     const response = await request.get(`/api/apps/${appWithResources.id}/export?resources=true`, {
-      responseType: 'blob',
+      responseType: 'stream',
     });
-    expect(response.status).toBe(200);
+    const zip = new JSZip();
+
+    const dataBuffer: Buffer = await new Promise((resolve, reject) => {
+      const chunks: any[] = [];
+
+      // Listen for data events and collect chunks
+      response.data.on('data', (chunk: any) => chunks.push(chunk));
+      response.data.on('end', () => resolve(Buffer.concat(chunks)));
+      response.data.on('error', reject);
+    });
+    const archive = await zip.loadAsync(dataBuffer);
+
+    const expectedFileNames = ['app-definition.yaml', 'resources/testResource.json'];
+    for (const fileName of expectedFileNames) {
+      const fileExists = archive.file(fileName) != null;
+      expect(fileExists).toBe(true);
+    }
   });
 
-  // eslint-disable-next-line vitest/no-disabled-tests
-  it.skip('should return a zip file', async () => {
-    const app = await App.create({
-      path: 'testapp',
-      definition: {
-        name: 'Test App',
-        defaultPage: 'Test Page',
-        pages: [{ name: 'Test Page' }],
+  it('should return a zip file', async () => {
+    const app = await App.create(
+      {
+        path: 'testapp',
+        definition: {
+          name: 'Test App',
+          defaultPage: 'Test Page',
+          pages: [{ name: 'Test Page' }],
+        },
+        vapidPrivateKey: 'b',
+        vapidPublicKey: 'a',
+        OrganizationId: organization.id,
       },
-      vapidPrivateKey: 'b',
-      vapidPublicKey: 'a',
-      OrganizationId: organization.id,
-    });
+      { raw: true },
+    );
+
+    vi.useRealTimers();
     authorizeStudio();
     const response = await request.get(`/api/apps/${app.id}/export?resources=false`, {
-      responseType: 'blob',
+      responseType: 'stream',
     });
-    expect(response.status).toBe(200);
+    const zip = new JSZip();
+
+    const dataBuffer: Buffer = await new Promise((resolve, reject) => {
+      const chunks: any[] = [];
+
+      // Listen for data events and collect chunks
+      response.data.on('data', (chunk: any) => chunks.push(chunk));
+      response.data.on('end', () => resolve(Buffer.concat(chunks)));
+      response.data.on('error', reject);
+    });
+    const archive = await zip.loadAsync(dataBuffer);
+
+    const expectedFileNames = ['app-definition.yaml'];
+    for (const fileName of expectedFileNames) {
+      const fileExists = archive.file(fileName) != null;
+      expect(fileExists).toBe(true);
+    }
   });
 });
 
