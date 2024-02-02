@@ -2,6 +2,29 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.24.11](https://gitlab.com/appsemble/appsemble/-/releases/0.24.11)] - 2024-02-02
+
+### Added
+
+- Server: Default values are added to nested properties in app member properties when they are of
+  type object.
+
+### Changed
+
+- App: If a `currentEmail` is not specified in the `user.update` action, it assumes the logged-in
+  email.
+- App: The `password` field is no longer required in the `user.update` action.
+- Utils: Changed `user.properties` to accept integer and array properties without referencing
+  resources.
+
+### Fixed
+
+- App: After the `user.update` action, updated user properties are now correctly assigned.
+- App: After updating user properties from the studio, they are now correctly assigned.
+- App: App controller handler functions now load as expected.
+- Server: Invalid authentication state causing internal server error on blocks page.
+- Studio: The dialog message shown in the studio app editor page shows message even after save.
+
 ## \[[0.24.10](https://gitlab.com/appsemble/appsemble/-/releases/0.24.10)] - 2024-01-31
 
 ### Added

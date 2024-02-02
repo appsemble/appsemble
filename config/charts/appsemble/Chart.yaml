@@ -1,7 +1,7 @@
 apiVersion: v2
 name: appsemble
-version: 0.24.10
-appVersion: 0.24.10
+version: 0.24.11
+appVersion: 0.24.11
 kubeVersion: '>=1.21.0'
 type: application
 description: The open source low-code app building platform
@@ -25,21 +25,30 @@ dependencies:
 annotations:
   artifacthub.io/changes: >
     - kind: added
-      description: "Studio: Add search bar for blocks."
-    - kind: added
-      description: "Studio: Watermark in app card and app details page."
-    - kind: added
-      description: "Utils: New Google Fonts."
-    - kind: added
-      description: "Utils: Support for binary data in null.strip remapper."
+      description: "Server: Default values are added to nested properties in app
+        member properties when they are of type object."
     - kind: changed
-      description: "Studio: Make import button optionally visible on home page."
+      description: "App: If a currentEmail is not specified in the user.update action,
+        it assumes the logged-in email."
+    - kind: changed
+      description: "App: The password field is no longer required in the user.update action."
+    - kind: changed
+      description: "Utils: Changed user.properties to accept integer and array
+        properties without referencing resources."
     - kind: fixed
-      description: "Server: Deleting more child resources in cascade delete than allowed."
+      description: "App: After the user.update action, updated user properties are now
+        correctly assigned."
     - kind: fixed
-      description: "Server: Updating more child resources in cascade delete than allowed."
+      description: "App: After updating user properties from the studio, they are now
+        correctly assigned."
     - kind: fixed
-      description: "Utils: Ensure resource reference types are specified."
+      description: "App: App controller handler functions now load as expected."
+    - kind: fixed
+      description: "Server: Invalid authentication state causing internal server error
+        on blocks page."
+    - kind: fixed
+      description: "Studio: The dialog message shown in the studio app editor page
+        shows message even after save."
   artifacthub.io/license: LGPL-3.0-only
   artifacthub.io/links: |
     - name: Appsemble Studio
