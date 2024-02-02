@@ -3,7 +3,7 @@ import { type Context } from 'koa';
 
 import { type BlockVersion, Organization, type User } from '../models/index.js';
 
-interface ExtendedBlockVersion extends BlockVersion {
+export interface ExtendedBlockVersion extends BlockVersion {
   hasIcon?: boolean;
   hasOrganizationIcon?: boolean;
   organizationUpdated?: Date;
