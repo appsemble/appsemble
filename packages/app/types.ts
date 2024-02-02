@@ -69,6 +69,7 @@ declare global {
       vapidPublicKey: string;
       id: number;
       definition: AppDefinition;
+      demoMode: boolean;
       languages: string[];
       logins: {
         icon: IconName;
