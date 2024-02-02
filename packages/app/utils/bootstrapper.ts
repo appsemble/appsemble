@@ -19,7 +19,6 @@ const handlerFunctions = new Map<string, HandlerFunction>();
 
 const bootstrapResolvers = new Map<string, ((fn: BootstrapFunction) => void)[]>();
 const controllerResolvers = new Map<string, ((fn: ControllerFunction) => void)[]>();
-const handlerResolvers = new Map<string, ((fn: HandlerFunction) => void)[]>();
 
 const loadedBlocks = new Set<string>();
 const loadedControllers = new Set<string>();
@@ -92,19 +91,6 @@ export function registerController(
   }
 }
 
-function registerHandler(handler: string, fn: HandlerFunction): void {
-  const callbacks = handlerResolvers.get(handler);
-  controllerResolvers.delete(handler);
-
-  if (!callbacks) {
-    return;
-  }
-
-  for (const resolve of callbacks) {
-    resolve(fn);
-  }
-}
-
 function getBootstrapFunction(blockDefId: string): Promisable<BootstrapFunction> {
   if (bootstrapFunctions.has(blockDefId)) {
     return bootstrapFunctions.get(blockDefId);
@@ -131,19 +117,8 @@ function getControllerFunction(): Promisable<ControllerFunction> {
   });
 }
 
-export function getHandlerFunction(handler: string): Promisable<HandlerFunction> {
-  if (handlerFunctions.has(handler)) {
-    return handlerFunctions.get(handler);
-  }
-
-  if (!handlerResolvers.has(handler)) {
-    handlerResolvers.set(handler, []);
-  }
-
-  const waiting = handlerResolvers.get(handler);
-  return new Promise((resolve) => {
-    waiting.push(resolve);
-  });
+export function getHandlerFunction(handler: string): HandlerFunction {
+  return handlerFunctions.get(handler);
 }
 
 /**
@@ -208,6 +183,6 @@ export async function callController(params: EventParams): Promise<void> {
   const actions = await controller(params);
 
   for (const [name, handlerFunction] of Object.entries(actions)) {
-    registerHandler(name, handlerFunction);
+    handlerFunctions.set(name, handlerFunction);
   }
 }

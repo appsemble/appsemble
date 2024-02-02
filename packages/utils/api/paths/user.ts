@@ -433,7 +433,7 @@ export const paths: OpenAPIV3.PathsObject = {
           'multipart/form-data': {
             schema: {
               type: 'object',
-              required: ['password'],
+              required: [],
               properties: {
                 name: {
                   type: 'string',

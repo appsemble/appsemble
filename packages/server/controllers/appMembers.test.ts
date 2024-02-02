@@ -393,28 +393,34 @@ describe('setAppMember', () => {
     });
 
     authorizeStudio();
-    const response = await request.post<AppMember>(`/api/apps/${app.id}/members/${userB.id}`, {
+    const response = await request.post(`/api/apps/${app.id}/members/${userB.id}`, {
       role: 'Admin',
       properties: { test: 'Property' },
     });
     expect(response).toMatchInlineSnapshot(
-      { data: { id: expect.stringMatching(uuid4Pattern) } },
+      {
+        data: {
+          memberId: expect.stringMatching(uuid4Pattern),
+          userId: expect.stringMatching(uuid4Pattern),
+        },
+      },
       `
       HTTP/1.1 200 OK
       Content-Type: application/json; charset=utf-8
 
       {
-        "id": StringMatching /\\^\\[\\\\d\\[a-f\\]\\{8\\}-\\[\\\\da-f\\]\\{4\\}-4\\[\\\\da-f\\]\\{3\\}-\\[\\\\da-f\\]\\{4\\}-\\[\\\\d\\[a-f\\]\\{12\\}\\$/,
+        "memberId": StringMatching /\\^\\[\\\\d\\[a-f\\]\\{8\\}-\\[\\\\da-f\\]\\{4\\}-4\\[\\\\da-f\\]\\{3\\}-\\[\\\\da-f\\]\\{4\\}-\\[\\\\d\\[a-f\\]\\{12\\}\\$/,
         "name": null,
         "primaryEmail": null,
         "properties": {
           "test": "Property",
         },
         "role": "Admin",
+        "userId": StringMatching /\\^\\[\\\\d\\[a-f\\]\\{8\\}-\\[\\\\da-f\\]\\{4\\}-4\\[\\\\da-f\\]\\{3\\}-\\[\\\\da-f\\]\\{4\\}-\\[\\\\d\\[a-f\\]\\{12\\}\\$/,
       }
     `,
     );
-    expect(response.data.id).toBe(userB.id);
+    expect(response.data.userId).toBe(userB.id);
   });
 });
 
@@ -1295,6 +1301,158 @@ describe('createMemberEmail', () => {
         "error": "Conflict",
         "message": "User with this email address already exists.",
         "statusCode": 409,
+      }
+    `);
+  });
+
+  it('should create with default user properties', async () => {
+    const app = await App.create({
+      definition: {
+        name: 'Test App',
+        defaultPage: 'Test Page',
+        security: {
+          default: {
+            role: 'Admin',
+            policy: 'everyone',
+          },
+          roles: {
+            Reader: {},
+            Admin: {},
+          },
+        },
+        users: {
+          properties: {
+            default: {
+              schema: {
+                type: 'string',
+                default: 'default',
+              },
+            },
+            enum: {
+              schema: {
+                enum: ['enum'],
+              },
+            },
+            array: {
+              schema: {
+                type: 'array',
+              },
+            },
+            boolean: {
+              schema: {
+                type: 'boolean',
+              },
+            },
+            number: {
+              schema: {
+                type: 'number',
+              },
+            },
+            integer: {
+              schema: {
+                type: 'integer',
+              },
+            },
+            string: {
+              schema: {
+                type: 'string',
+              },
+            },
+            object: {
+              schema: {
+                type: 'object',
+                properties: {
+                  enum: {
+                    enum: ['enum'],
+                  },
+                  array: {
+                    type: 'array',
+                  },
+                  boolean: {
+                    type: 'boolean',
+                  },
+                  number: {
+                    type: 'number',
+                  },
+                  integer: {
+                    type: 'integer',
+                  },
+                  string: {
+                    type: 'string',
+                  },
+                },
+              },
+            },
+          },
+        },
+        resources: {
+          tasks: {
+            schema: {
+              type: 'object',
+              properties: {
+                title: {
+                  type: 'string',
+                },
+              },
+            },
+          },
+        },
+      },
+      path: 'test-app',
+      vapidPublicKey: 'a',
+      vapidPrivateKey: 'b',
+      OrganizationId: organization.id,
+    });
+    authorizeApp(app);
+
+    const response = await request.post(
+      `/api/user/apps/${app.id}/accounts`,
+      createFormData({
+        email: 'test@example.com',
+        password: 'password',
+        timezone: 'Europe/Amsterdam',
+      }),
+    );
+
+    expect(response).toMatchInlineSnapshot(
+      {
+        data: {
+          access_token: expect.stringMatching(jwtPattern),
+          refresh_token: expect.stringMatching(jwtPattern),
+        },
+      },
+      `
+      HTTP/1.1 201 Created
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "access_token": StringMatching /\\^\\[\\\\w-\\]\\+\\(\\?:\\\\\\.\\[\\\\w-\\]\\+\\)\\{2\\}\\$/,
+        "expires_in": 3600,
+        "refresh_token": StringMatching /\\^\\[\\\\w-\\]\\+\\(\\?:\\\\\\.\\[\\\\w-\\]\\+\\)\\{2\\}\\$/,
+        "token_type": "bearer",
+      }
+    `,
+    );
+
+    const m = await AppMember.findOne({ where: { email: 'test@example.com' } });
+
+    expect(m.properties).toMatchInlineSnapshot(`
+      {
+        "array": [],
+        "boolean": false,
+        "default": "default",
+        "enum": "enum",
+        "integer": 0,
+        "number": 0,
+        "object": {
+          "array": [],
+          "boolean": false,
+          "enum": "enum",
+          "integer": 0,
+          "number": 0,
+          "string": null,
+        },
+        "string": null,
       }
     `);
   });

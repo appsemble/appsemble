@@ -175,7 +175,7 @@ export const update: ActionCreator<'user.update'> = ({
     }
 
     const name = remap(definition.name, data);
-    const currentEmail = remap(definition.currentEmail, data);
+    const currentEmail = remap(definition.currentEmail, data) ?? userInfo.email;
     const newEmail = remap(definition.newEmail, data);
     const password = remap(definition.password, data);
     const properties = remap(definition.properties, data);
@@ -191,7 +191,9 @@ export const update: ActionCreator<'user.update'> = ({
     if (role) {
       formData.append('role', role);
     }
-    formData.append('password', password);
+    if (password) {
+      formData.append('password', password);
+    }
 
     if (properties && typeof properties === 'object' && !Array.isArray(properties)) {
       formData.append(
@@ -216,11 +218,10 @@ export const update: ActionCreator<'user.update'> = ({
       setUserInfo({
         ...userInfo,
         email: response.email,
-        sub: response.id,
         name: response.name,
         picture: response.picture,
         email_verified: response.emailVerified,
-        properties,
+        properties: response.properties,
       });
     }
 
