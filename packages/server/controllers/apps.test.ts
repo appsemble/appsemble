@@ -12,6 +12,7 @@ import {
   App,
   AppBlockStyle,
   AppMember,
+  AppMessages,
   AppRating,
   AppScreenshot,
   AppSnapshot,
@@ -5011,7 +5012,7 @@ describe('exportApp', () => {
     `);
   });
 
-  it('should not allow for cloning unlisted apps if the user is not in the same organization as app.', async () => {
+  it('should not allow for exporting unlisted apps if the user is not in the same organization as app.', async () => {
     await Organization.create({ id: 'xkcd', name: 'Test Organization 2' });
     const app = await App.create({
       definition: {
@@ -5063,8 +5064,85 @@ describe('exportApp', () => {
     `);
   });
 
-  // eslint-disable-next-line vitest/no-disabled-tests
-  it.skip('should allow exporting resources if the user has sufficient permissions', async () => {
+  it('should return a zip file', async () => {
+    const app = await App.create(
+      {
+        definition: {
+          name: 'Test App',
+          defaultPage: 'Test Page',
+          pages: [{ name: 'Test Page' }],
+        },
+        sharedStyle: `
+        * {
+          color: var(--link-color)
+        }`,
+        coreStyle: `
+        * {
+          color: var(--primary-color)
+        }`,
+        vapidPrivateKey: 'b',
+        vapidPublicKey: 'a',
+        OrganizationId: organization.id,
+      },
+      { raw: true },
+    );
+    await AppMessages.create({ AppId: app.id, language: 'en', messages: [{ test: 'test' }] });
+
+    vi.useRealTimers();
+    authorizeStudio();
+    const response = await request.get(`/api/apps/${app.id}/export?resources=false`, {
+      responseType: 'stream',
+    });
+    const zip = new JSZip();
+
+    const dataBuffer: Buffer = await new Promise((resolve, reject) => {
+      const chunks: any[] = [];
+
+      // Listen for data events and collect chunks
+      response.data.on('data', (chunk: any) => chunks.push(chunk));
+      response.data.on('end', () => resolve(Buffer.concat(chunks)));
+      response.data.on('error', reject);
+    });
+    const archive = await zip.loadAsync(dataBuffer);
+
+    expect(Object.keys(archive.files)).toStrictEqual([
+      'app-definition.yaml',
+      'theme/',
+      'theme/core/',
+      'theme/core/index.css',
+      'theme/shared/',
+      'theme/shared/index.css',
+      'i18n/',
+      'i18n/en.json',
+    ]);
+
+    expect(await archive.file('app-definition.yaml').async('text')).toMatchInlineSnapshot(
+      `
+        "name: Test App
+        defaultPage: Test Page
+        pages:
+          - name: Test Page
+        "
+      `,
+    );
+    expect(await archive.file('theme/core/index.css').async('text')).toMatchInlineSnapshot(`
+      "
+              * {
+                color: var(--primary-color)
+              }"
+    `);
+    expect(await archive.file('theme/shared/index.css').async('text')).toMatchInlineSnapshot(`
+      "
+              * {
+                color: var(--link-color)
+              }"
+    `);
+    expect(await archive.file('i18n/en.json').async('text')).toMatchInlineSnapshot(
+      '"[{"test":"test"}]"',
+    );
+  });
+
+  it('should allow exporting resources if the user has sufficient permissions', async () => {
     const appWithResources = await App.create({
       definition: {
         name: 'Test App',
@@ -5088,56 +5166,123 @@ describe('exportApp', () => {
           },
         },
       },
+      sharedStyle: `
+      * {
+        color: var(--link-color)
+      }`,
+      coreStyle: `
+      * {
+        color: var(--primary-color)
+      }`,
       OrganizationId: organization.id,
       vapidPublicKey: 'a',
       vapidPrivateKey: 'b',
+    });
+    await AppMessages.create({
+      AppId: appWithResources.id,
+      language: 'en',
+      messages: [{ test: 'test' }],
     });
     await Resource.create({
       AppId: appWithResources.id,
       type: 'testResource',
       data: { foo: 'bar' },
     });
+
+    vi.useRealTimers();
     authorizeStudio();
     const response = await request.get(`/api/apps/${appWithResources.id}/export?resources=true`, {
-      responseType: 'blob',
+      responseType: 'stream',
     });
-    expect(response.status).toBe(200);
-  });
+    const zip = new JSZip();
 
-  // eslint-disable-next-line vitest/no-disabled-tests
-  it.skip('should return a zip file', async () => {
-    const app = await App.create({
-      path: 'testapp',
-      definition: {
-        name: 'Test App',
-        defaultPage: 'Test Page',
-        pages: [{ name: 'Test Page' }],
-      },
-      vapidPrivateKey: 'b',
-      vapidPublicKey: 'a',
-      OrganizationId: organization.id,
+    const dataBuffer: Buffer = await new Promise((resolve, reject) => {
+      const chunks: any[] = [];
+
+      // Listen for data events and collect chunks
+      response.data.on('data', (chunk: any) => chunks.push(chunk));
+      response.data.on('end', () => resolve(Buffer.concat(chunks)));
+      response.data.on('error', reject);
     });
-    authorizeStudio();
-    const response = await request.get(`/api/apps/${app.id}/export?resources=false`, {
-      responseType: 'blob',
-    });
-    expect(response.status).toBe(200);
+    const archive = await zip.loadAsync(dataBuffer);
+
+    expect(Object.keys(archive.files)).toStrictEqual([
+      'app-definition.yaml',
+      'theme/',
+      'theme/core/',
+      'theme/core/index.css',
+      'theme/shared/',
+      'theme/shared/index.css',
+      'i18n/',
+      'i18n/en.json',
+      'resources/',
+      'resources/testResource.json',
+    ]);
+
+    expect(await archive.file('app-definition.yaml').async('text')).toMatchInlineSnapshot(
+      `
+        "name: Test App
+        defaultPage: Test Page
+        resources:
+          testResource:
+            schema:
+              type: object
+              required:
+                - bar
+              properties:
+                bar:
+                  type: string
+                testResourceId:
+                  type: number
+            roles:
+              - $public
+            references:
+              testResourceId:
+                resource: testResource
+                create:
+                  trigger:
+                    - update
+        "
+      `,
+    );
+    expect(await archive.file('theme/core/index.css').async('text')).toMatchInlineSnapshot(`
+      "
+            * {
+              color: var(--primary-color)
+            }"
+    `);
+    expect(await archive.file('theme/shared/index.css').async('text')).toMatchInlineSnapshot(`
+      "
+            * {
+              color: var(--link-color)
+            }"
+    `);
+    expect(await archive.file('i18n/en.json').async('text')).toMatchInlineSnapshot(
+      '"[{"test":"test"}]"',
+    );
+    expect(await archive.file('resources/testResource.json').async('text')).toMatchInlineSnapshot(
+      `
+        "{"foo":"bar","id":1,"$created":"1970-01-01T00:00:00.000Z","$updated":"1970-01-01T00:00:00.000Z"}
+        "
+      `,
+    );
   });
 });
 
 describe('importApp', () => {
-  // eslint-disable-next-line vitest/no-disabled-tests
-  it.skip('should not allow a user with insufficient permissions to import an App', async () => {
+  it('should not allow a user with insufficient permissions to import an App', async () => {
     const appDefinition = {
       name: 'Test App',
       defaultPage: 'Test Page',
-      pages: [{ name: 'Test Page' }],
+      pages: [{ name: 'Test Page', blocks: [{ type: 'test', version: '0.0.0' }] }],
     } as AppDefinition;
     const zip = new JSZip();
     zip.file('app-definition.yaml', stringify(appDefinition));
+    vi.useRealTimers();
     const content = zip.generateNodeStream();
     await OrganizationMember.update({ role: 'Member' }, { where: { UserId: user.id } });
     authorizeStudio();
+
     const response = await request.post(
       `/api/apps/import/organization/${organization.id}`,
       content,
@@ -5157,6 +5302,35 @@ describe('importApp', () => {
         "statusCode": 403,
       }
     `);
+  });
+
+  it('should allow a user with sufficient permissions to import an App', async () => {
+    const appDefinition = {
+      name: 'Test App',
+      defaultPage: 'Test Page',
+      pages: [{ name: 'Test Page', blocks: [{ type: 'test', version: '0.0.0' }] }],
+    } as AppDefinition;
+    const zip = new JSZip();
+    zip.file('app-definition.yaml', stringify(appDefinition));
+    vi.useRealTimers();
+    const content = zip.generateNodeStream();
+    await OrganizationMember.update({ role: 'AppEditor' }, { where: { UserId: user.id } });
+    authorizeStudio();
+
+    const response = await request.post(
+      `/api/apps/import/organization/${organization.id}`,
+      content,
+      {
+        headers: {
+          'Content-Type': 'application/zip',
+        },
+      },
+    );
+    expect(response.status).toBe(201);
+    const {
+      data: { OrganizationName, screenshotUrls, ...expected },
+    } = await request.get(`/api/apps/${response.data.id}`);
+    expect(response.data).toStrictEqual(expected);
   });
 });
 

@@ -1184,7 +1184,14 @@ export async function exportApp(ctx: Context): Promise<void> {
   const { resources } = ctx.queryParams;
 
   const app = await App.findByPk(appId, {
-    attributes: ['definition', 'coreStyle', 'OrganizationId', 'sharedStyle'],
+    attributes: [
+      'definition',
+      'coreStyle',
+      'OrganizationId',
+      'sharedStyle',
+      'showAppDefinition',
+      'visibility',
+    ],
     include: [
       { model: AppBlockStyle, required: false },
       { model: AppMessages, required: false },
