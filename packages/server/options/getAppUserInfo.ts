@@ -50,22 +50,24 @@ export async function getAppUserInfo({
       properties: appMember.properties ?? {},
     };
   }
-  await (user as User)?.reload({
-    attributes: ['primaryEmail', 'name', 'locale', 'timezone', 'subscribed'],
-    include: [
-      {
-        required: false,
-        model: EmailAuthorization,
-        attributes: ['verified'],
-        where: {
-          email: { [Op.col]: 'User.primaryEmail' },
-        },
-      },
-    ],
-  });
 
-  if (!user) {
+  try {
+    await (user as User).reload({
+      attributes: ['primaryEmail', 'name', 'locale', 'timezone', 'subscribed'],
+      include: [
+        {
+          required: false,
+          model: EmailAuthorization,
+          attributes: ['verified'],
+          where: {
+            email: { [Op.col]: 'User.primaryEmail' },
+          },
+        },
+      ],
+    });
+  } catch {
     // The authenticated user may have been deleted.
+    // Both sequelize instance errors and type errors should be caught here.
     throwKoaError(ctx, 403, 'Forbidden');
   }
 

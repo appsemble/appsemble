@@ -9,7 +9,7 @@ import {
   OAuth2AuthorizationCode,
   Organization,
   OrganizationMember,
-  type User,
+  User,
 } from '../models/index.js';
 import { setArgv } from '../utils/argv.js';
 import { createServer } from '../utils/createServer.js';
@@ -132,6 +132,24 @@ describe('getUserInfo', () => {
     expect(response.data.picture).toBe(
       `http://localhost/api/apps/1/members/${user.id}/picture?updated=946684800000`,
     );
+  });
+
+  it('should return 403 forbidden if the user is deleted', async () => {
+    authorizeStudio(user);
+    await user.destroy();
+    expect(await User.findAll()).toHaveLength(0);
+
+    const response = await request.get<UserInfo>('/api/connect/userinfo');
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 403 Forbidden
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "error": "Forbidden",
+        "message": "Forbidden",
+        "statusCode": 403,
+      }
+    `);
   });
 
   it('should fall back to gravatar for the profile picture', async () => {
