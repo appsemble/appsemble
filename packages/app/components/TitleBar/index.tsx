@@ -1,6 +1,8 @@
 import { Portal, SideMenuButton } from '@appsemble/react-components';
 import { type ReactChild, type ReactNode } from 'react';
+import { FormattedMessage } from 'react-intl';
 
+import { messages } from './messages.js';
 import { shouldShowMenu } from '../../utils/layout.js';
 import { useAppDefinition } from '../AppDefinitionProvider/index.js';
 import { usePage } from '../MenuProvider/index.js';
@@ -18,7 +20,7 @@ interface AppBarProps {
  * This displays the app name,
  */
 export function AppBar({ children, hideName }: AppBarProps): ReactNode {
-  const { definition } = useAppDefinition();
+  const { definition, demoMode } = useAppDefinition();
   const { role, teams } = useUser();
   const { page } = usePage();
 
@@ -34,8 +36,19 @@ export function AppBar({ children, hideName }: AppBarProps): ReactNode {
             </span>
           </div>
         ) : null}
-        <div className="navbar-brand is-flex-grow-1">
-          <h2 className="navbar-item title is-4">{!hideName && (children || definition.name)}</h2>
+        <div className="navbar-brand is-inline-flex is-flex-grow-1">
+          <header className="navbar-item">
+            <h2 className="title is-4 has-text-white">
+              {!hideName && (children || definition.name)}
+            </h2>
+          </header>
+          <div>
+            {demoMode ? (
+              <div className="tag is-rounded is-warning mx-1 my-1">
+                <FormattedMessage {...messages.demo} />
+              </div>
+            ) : null}
+          </div>
         </div>
         {definition.layout?.login == null || definition.layout?.login === 'navbar' ? (
           <div className="navbar-end is-flex is-align-items-stretch is-justify-content-flex-end ml-auto">

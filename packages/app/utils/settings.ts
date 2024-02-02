@@ -5,6 +5,7 @@ export const {
   appUpdated,
   blockManifests,
   definition,
+  demoMode,
   development,
   enableSelfRegistration,
   id: appId,

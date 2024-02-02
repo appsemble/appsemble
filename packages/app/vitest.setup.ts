@@ -19,6 +19,7 @@ window.settings = {
   appControllerImplementations: {},
   blockManifests: [],
   definition: null,
+  demoMode: false,
   development: false,
   id: 42,
   languages: ['en', 'nl'],

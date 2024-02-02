@@ -105,6 +105,7 @@ export async function createSettings({
       ],
       vapidPublicKey: persistedApp.vapidPublicKey,
       definition: persistedApp.definition,
+      demoMode: persistedApp.demoMode,
       showAppsembleLogin: persistedApp.showAppsembleLogin ?? false,
       showAppsembleOAuth2Login: persistedApp.showAppsembleOAuth2Login ?? true,
       enableSelfRegistration: persistedApp.enableSelfRegistration ?? true,
