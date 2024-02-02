@@ -35,6 +35,8 @@ export const UserPropertyDefinition: OpenAPIV3.NonArraySchemaObject = {
       properties: {
         schema: {
           anyOf: [
+            { $ref: '#/components/schemas/JSONSchemaInteger' },
+            { $ref: '#/components/schemas/JSONSchemaArray' },
             { $ref: '#/components/schemas/JSONSchemaString' },
             { $ref: '#/components/schemas/JSONSchemaNumber' },
             { $ref: '#/components/schemas/JSONSchemaEnum' },

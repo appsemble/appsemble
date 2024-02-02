@@ -37,6 +37,20 @@ export function MemberRow({ member, onChange }: AppMemberRowProperties): ReactNo
   const organization = organizations?.find((org) => org.id === app?.OrganizationId);
   const editRolesPermission = checkRole(organization.role, Permission.ManageRoles);
 
+  const defaultValues = useMemo(
+    () => ({
+      annotations: Object.entries(
+        Object.fromEntries(
+          Object.entries(member.properties ?? {}).map(([key, value]) => [
+            key,
+            typeof value === 'string' ? value : JSON.stringify(value),
+          ]),
+        ) || {},
+      ),
+    }),
+    [member],
+  );
+
   const onChangeRole = useCallback(
     async (event: ChangeEvent<HTMLSelectElement>): Promise<void> => {
       event.preventDefault();
@@ -47,6 +61,7 @@ export function MemberRow({ member, onChange }: AppMemberRowProperties): ReactNo
           `/api/apps/${app.id}/members/${member.userId}`,
           {
             role,
+            properties: Object.fromEntries(defaultValues.annotations),
           },
         );
 
@@ -62,21 +77,7 @@ export function MemberRow({ member, onChange }: AppMemberRowProperties): ReactNo
         push({ body: formatMessage(messages.changeRoleError) });
       }
     },
-    [app, formatMessage, member, onChange, push],
-  );
-
-  const defaultValues = useMemo(
-    () => ({
-      annotations: Object.entries(
-        Object.fromEntries(
-          Object.entries(member.properties ?? {}).map(([key, value]) => [
-            key,
-            typeof value === 'string' ? value : JSON.stringify(value),
-          ]),
-        ) || {},
-      ),
-    }),
-    [member],
+    [app.id, defaultValues.annotations, formatMessage, member.userId, onChange, push],
   );
 
   const editProperties = useCallback(

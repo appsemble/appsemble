@@ -1,5 +1,8 @@
 import { AppsembleError, UserPropertiesError } from '@appsemble/node-utils';
+import { type UserPropertyDefinition } from '@appsemble/types';
 import { Validator } from 'jsonschema';
+import { has } from 'lodash-es';
+import { type OpenAPIV3 } from 'openapi-types';
 import {
   AllowNull,
   BeforeCreate,
@@ -28,6 +31,44 @@ import {
   TeamMember,
   User,
 } from './index.js';
+
+function getDefaultValue(
+  propertyDefinition: OpenAPIV3.SchemaObject | UserPropertyDefinition,
+): Record<string, any> | boolean | number | [] | null {
+  const pdSchema = has(propertyDefinition, 'schema')
+    ? (propertyDefinition as UserPropertyDefinition).schema
+    : (propertyDefinition as OpenAPIV3.SchemaObject);
+
+  const { default: pdDefault, enum: pdEnum, type: pdType } = pdSchema;
+
+  if (pdDefault) {
+    return pdDefault;
+  }
+
+  if (pdEnum) {
+    return pdEnum[0];
+  }
+
+  const objectDefaultValue = {} as Record<string, any>;
+  switch (pdType) {
+    case 'array':
+      return [];
+    case 'object':
+      for (const [subPropertyName, subPropertyDefinition] of Object.entries(
+        pdSchema.properties as Record<string, OpenAPIV3.SchemaObject>,
+      )) {
+        objectDefaultValue[subPropertyName] = getDefaultValue(subPropertyDefinition);
+      }
+      return objectDefaultValue;
+    case 'boolean':
+      return false;
+    case 'number':
+    case 'integer':
+      return 0;
+    default:
+      return null;
+  }
+}
 
 @Table({ tableName: 'AppMember' })
 export class AppMember extends Model {
@@ -168,11 +209,7 @@ export class AppMember extends Model {
       for (const [propertyName, propertyDefinition] of Object.entries(userPropertiesDefinition)) {
         const propertyValue = instance.properties?.[propertyName];
 
-        const {
-          default: propertyDefault,
-          enum: propertyEnum,
-          type: propertyType,
-        } = propertyDefinition.schema;
+        const propertyType = propertyDefinition.schema.type;
 
         const { resource: referencedResource } = propertyDefinition.reference ?? {
           resource: undefined,
@@ -200,7 +237,7 @@ export class AppMember extends Model {
 
           if (propertyValueValidationResult.errors.length) {
             throw new UserPropertiesError(
-              `Invalid ${typeof propertyValue} value ${propertyValue} for property ${propertyName}`,
+              `Invalid ${typeof propertyValue} value ${JSON.stringify(propertyValue)} for property ${propertyName}`,
             );
           }
 
@@ -259,36 +296,21 @@ export class AppMember extends Model {
             }
           }
 
+          if (propertyType === 'object') {
+            for (const [subPropertyName, subPropertyDefinition] of Object.entries(
+              propertyDefinition.schema.properties as Record<string, OpenAPIV3.SchemaObject>,
+            )) {
+              if (propertyValue[subPropertyName]) {
+                continue;
+              }
+
+              propertyValue[subPropertyName] = getDefaultValue(subPropertyDefinition);
+            }
+          }
+
           parsedProperties[propertyName] = propertyValue;
         } else {
-          if (propertyDefault) {
-            parsedProperties[propertyName] = propertyDefault;
-          } else {
-            let defaultValue;
-            if (propertyEnum) {
-              defaultValue = propertyDefinition.schema.enum[0];
-            } else {
-              switch (propertyType) {
-                case 'array':
-                  defaultValue = [];
-                  break;
-                case 'object':
-                  defaultValue = {};
-                  break;
-                case 'boolean':
-                  defaultValue = false;
-                  break;
-                case 'number':
-                case 'integer':
-                  defaultValue = 0;
-                  break;
-                default:
-                  defaultValue = null;
-                  break;
-              }
-            }
-            parsedProperties[propertyName] = defaultValue;
-          }
+          parsedProperties[propertyName] = getDefaultValue(propertyDefinition);
         }
       }
     }

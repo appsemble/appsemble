@@ -325,7 +325,8 @@ export async function setAppMember(ctx: Context): Promise<void> {
   }
 
   ctx.body = {
-    id: user.id,
+    userId: user.id,
+    memberId: member.id,
     name: member.name,
     primaryEmail: member.email,
     role,
