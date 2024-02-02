@@ -12,6 +12,7 @@ import {
   App,
   AppBlockStyle,
   AppMember,
+  AppMessages,
   AppRating,
   AppScreenshot,
   AppSnapshot,
@@ -5066,18 +5067,26 @@ describe('exportApp', () => {
   it('should return a zip file', async () => {
     const app = await App.create(
       {
-        path: 'testapp',
         definition: {
           name: 'Test App',
           defaultPage: 'Test Page',
           pages: [{ name: 'Test Page' }],
         },
+        sharedStyle: `
+        * {
+          color: var(--link-color)
+        }`,
+        coreStyle: `
+        * {
+          color: var(--primary-color)
+        }`,
         vapidPrivateKey: 'b',
         vapidPublicKey: 'a',
         OrganizationId: organization.id,
       },
       { raw: true },
     );
+    await AppMessages.create({ AppId: app.id, language: 'en', messages: [{ test: 'test' }] });
 
     vi.useRealTimers();
     authorizeStudio();
@@ -5104,6 +5113,7 @@ describe('exportApp', () => {
       'theme/shared/',
       'theme/shared/index.css',
       'i18n/',
+      'i18n/en.json',
     ]);
 
     expect(await archive.file('app-definition.yaml').async('text')).toMatchInlineSnapshot(
@@ -5115,8 +5125,21 @@ describe('exportApp', () => {
         "
       `,
     );
-    expect(await archive.file('theme/core/index.css').async('text')).toMatchInlineSnapshot('""');
-    expect(await archive.file('theme/shared/index.css').async('text')).toMatchInlineSnapshot('""');
+    expect(await archive.file('theme/core/index.css').async('text')).toMatchInlineSnapshot(`
+      "
+              * {
+                color: var(--primary-color)
+              }"
+    `);
+    expect(await archive.file('theme/shared/index.css').async('text')).toMatchInlineSnapshot(`
+      "
+              * {
+                color: var(--link-color)
+              }"
+    `);
+    expect(await archive.file('i18n/en.json').async('text')).toMatchInlineSnapshot(
+      '"[{"test":"test"}]"',
+    );
   });
 
   it('should allow exporting resources if the user has sufficient permissions', async () => {
@@ -5143,9 +5166,22 @@ describe('exportApp', () => {
           },
         },
       },
+      sharedStyle: `
+      * {
+        color: var(--link-color)
+      }`,
+      coreStyle: `
+      * {
+        color: var(--primary-color)
+      }`,
       OrganizationId: organization.id,
       vapidPublicKey: 'a',
       vapidPrivateKey: 'b',
+    });
+    await AppMessages.create({
+      AppId: appWithResources.id,
+      language: 'en',
+      messages: [{ test: 'test' }],
     });
     await Resource.create({
       AppId: appWithResources.id,
@@ -5178,6 +5214,7 @@ describe('exportApp', () => {
       'theme/shared/',
       'theme/shared/index.css',
       'i18n/',
+      'i18n/en.json',
       'resources/',
       'resources/testResource.json',
     ]);
@@ -5208,8 +5245,21 @@ describe('exportApp', () => {
         "
       `,
     );
-    expect(await archive.file('theme/core/index.css').async('text')).toMatchInlineSnapshot('""');
-    expect(await archive.file('theme/shared/index.css').async('text')).toMatchInlineSnapshot('""');
+    expect(await archive.file('theme/core/index.css').async('text')).toMatchInlineSnapshot(`
+      "
+            * {
+              color: var(--primary-color)
+            }"
+    `);
+    expect(await archive.file('theme/shared/index.css').async('text')).toMatchInlineSnapshot(`
+      "
+            * {
+              color: var(--link-color)
+            }"
+    `);
+    expect(await archive.file('i18n/en.json').async('text')).toMatchInlineSnapshot(
+      '"[{"test":"test"}]"',
+    );
     expect(await archive.file('resources/testResource.json').async('text')).toMatchInlineSnapshot(
       `
         "{"foo":"bar","id":1,"$created":"1970-01-01T00:00:00.000Z","$updated":"1970-01-01T00:00:00.000Z"}
