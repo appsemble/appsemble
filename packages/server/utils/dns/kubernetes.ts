@@ -249,7 +249,7 @@ async function createIngressFunction(): Promise<
       ...defaultAnnotations,
       ...((redirectTo
         ? {
-            'nginx.ingress.kubernetes.io/rewrite-target': `${redirectTo}/$1`,
+            'nginx.ingress.kubernetes.io/rewrite-target': `https://${redirectTo}/$1`,
             'nginx.ingress.kubernetes.io/use-regex': 'true',
           }
         : {}) as Record<string, string>),
