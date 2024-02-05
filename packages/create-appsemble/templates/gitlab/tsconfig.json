@@ -8,6 +8,6 @@
     "skipLibCheck": true,
     "strict": true,
     "target": "es2019",
-    "types": ["@appsemble/webpack-config/types"],
-  },
+    "types": ["@appsemble/webpack-config/types"]
+  }
 }
