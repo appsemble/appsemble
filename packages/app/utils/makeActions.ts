@@ -91,7 +91,10 @@ export function createAction<T extends ActionDefinition['type']>({
           ? localRemap(definition.remap, args, context)
           : args;
 
-      updatedContext = { ...context, history: [].concat(context?.history || [], [data]) };
+      updatedContext = {
+        ...context,
+        history: [...(context?.history ?? []), data],
+      };
 
       result = await dispatch(data, updatedContext);
 

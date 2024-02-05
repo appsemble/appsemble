@@ -90,7 +90,7 @@ export function Page(): ReactNode {
   const prefixIndex = index === -1 ? null : `pages.${index}`;
 
   const remapWithContext = useCallback(
-    (mappers: Remapper, input: any, context: Record<string, any>) =>
+    (mappers: Remapper, input: any, { history = [], ...context }: Record<string, any> = {}) =>
       remap(mappers, input, {
         appId,
         url: window.location.href,
@@ -100,7 +100,7 @@ export function Page(): ReactNode {
         userInfo: userInfoRef.current,
         appMember: userInfoRef.current?.appMember,
         context,
-        history: context?.history,
+        history,
         root: input,
         locale: lang,
         stepRef,
