@@ -5,6 +5,3 @@ overrides:
   - files: .gitlab-ci.yml
     options:
       proseWrap: preserve
-  - files: ['tsconfig.json']
-    options:
-      trailingComma: none
