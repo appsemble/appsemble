@@ -80,13 +80,13 @@ export class Asset extends Model {
   @Column(DataType.UUID)
   AppMemberId: string;
 
-  @BelongsTo(() => AppMember)
+  @BelongsTo(() => AppMember, { onDelete: 'CASCADE' })
   AppMember: Awaited<AppMember>;
 
   @ForeignKey(() => Resource)
   @Column(DataType.INTEGER)
   ResourceId: number;
 
-  @BelongsTo(() => Resource)
+  @BelongsTo(() => Resource, { onDelete: 'SET NULL' })
   Resource: Awaited<Resource>;
 }

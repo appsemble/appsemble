@@ -28,6 +28,21 @@ export const key = '0.29.0';
  * - Making Training.difficultyLevel non-nullable
  * - Making EmailAuthorization.UserId nullable
  * - Making AppMember.UserId nullable
+ * - Setting AppServiceSecret.AppId constraints to ON UPDATE CASCADE ON DELETE CASCADE
+ * - Setting AppBlockStyle.AppId constraints to ON UPDATE CASCADE ON DELETE CASCADE
+ * - Setting AppCollection.OrganizationId constraints to ON UPDATE CASCADE ON DELETE NO ACTION
+ * - Setting AppCollectionApp.AppCollectionId constraints to ON UPDATE CASCADE ON DELETE CASCADE
+ * - Setting AppCollectionApp.AppId constraints to ON UPDATE CASCADE ON DELETE NO ACTION
+ * - Setting AppEmailQuotaLog.AppId constraints to ON UPDATE CASCADE ON DELETE NO ACTION
+ * - Setting AppSnapshot.UserId constraints to ON UPDATE CASCADE ON DELETE SET NULL
+ * - Setting AppSubscription.AppId constraints to ON UPDATE CASCADE ON DELETE CASCADE
+ * - Setting Resource.AppId constraints to ON UPDATE CASCADE ON DELETE CASCADE
+ * - Setting Asset.AppId constraints to ON UPDATE CASCADE ON DELETE CASCADE
+ * - Setting ResourceVersion.ResourceId constraints to ON UPDATE CASCADE ON DELETE CASCADE
+ * - Setting TeamInvite.TeamId constraints to ON UPDATE CASCADE ON DELETE NO ACTION
+ * - Setting UserTraining.UserId constraints to ON UPDATE CASCADE ON DELETE CASCADE
+ * - Setting UserTraining.TrainingId constraints to ON UPDATE CASCADE ON DELETE CASCADE
+ * - Setting TrainingBlock.TrainingId constraints to ON UPDATE CASCADE ON DELETE CASCADE
  *
  * @param db The sequelize database.
  */
@@ -163,6 +178,41 @@ export async function up(db: Sequelize): Promise<void> {
     type: DataTypes.UUID,
     allowNull: true,
   });
+  logger.info('Renaming enum_App_locked-temp to enum_App_locked');
+  await queryInterface.sequelize.query(`
+    DO $$ BEGIN
+      IF EXISTS (SELECT 1 FROM pg_type WHERE typname = 'enum_App_locked-temp') THEN
+        ALTER TYPE "enum_App_locked-temp" RENAME TO "enum_App_locked";
+      END IF;
+    END $$;
+  `);
+
+  const changes = [
+    ['AppServiceSecret', 'AppId', 'App', 'CASCADE', 'CASCADE'],
+    ['AppBlockStyle', 'AppId', 'App', 'CASCADE', 'CASCADE'],
+    ['AppCollection', 'OrganizationId', 'Organization', 'CASCADE', 'NO ACTION'],
+    ['AppCollectionApp', 'AppCollectionId', 'AppCollection', 'CASCADE', 'CASCADE'],
+    ['AppCollectionApp', 'AppId', 'App', 'CASCADE', 'NO ACTION'],
+    ['AppEmailQuotaLog', 'AppId', 'App', 'CASCADE', 'NO ACTION'],
+    ['AppSnapshot', 'UserId', 'User', 'CASCADE', 'SET NULL'],
+    ['AppSubscription', 'AppId', 'App', 'CASCADE', 'CASCADE'],
+    // Questionable: ON UPDATE CASCADE ON DELETE SET NULL in production, but column is also
+    // non-nullable in production.
+    ['Resource', 'AppId', 'App', 'CASCADE', 'CASCADE'],
+    ['Asset', 'AppId', 'App', 'CASCADE', 'CASCADE'],
+    ['ResourceVersion', 'ResourceId', 'Resource', 'CASCADE', 'CASCADE'],
+    ['TeamInvite', 'TeamId', 'Team', 'CASCADE', 'NO ACTION'],
+    ['UserTraining', 'UserId', 'User', 'CASCADE', 'CASCADE'],
+    ['UserTraining', 'TrainingId', 'Training', 'CASCADE', 'CASCADE'],
+    ['TrainingBlock', 'TrainingId', 'Training', 'CASCADE', 'CASCADE'],
+  ] satisfies [string, string, string, string, string][];
+  for (const [table, col, ref, update, del] of changes) {
+    logger.info(`Setting ${table}.${col} constraints to ON UPDATE ${update} ON DELETE ${del}`);
+    await queryInterface.sequelize.query(`
+      ALTER TABLE "${table}" DROP CONSTRAINT IF EXISTS "${table}_${col}_fkey";
+      ALTER TABLE "${table}" ADD FOREIGN KEY ("${col}") REFERENCES "${ref}" ("id") ON UPDATE ${update} ON DELETE ${del};
+    `);
+  }
 }
 
 /**
@@ -190,6 +240,21 @@ export async function up(db: Sequelize): Promise<void> {
  * - Making Training.difficultyLevel nullable
  * - Making EmailAuthorization.UserId non-nullable
  * - Making AppMember.UserId non-nullable
+ * - Setting AppServiceSecret.AppId constraints to ON UPDATE NO ACTION ON DELETE NO ACTION
+ * - Setting AppBlockStyle.AppId constraints to ON UPDATE CASCADE ON DELETE NO ACTION
+ * - Setting AppCollection.OrganizationId constraints to ON UPDATE NO ACTION ON DELETE NO ACTION
+ * - Setting AppCollectionApp.AppCollectionId constraints to ON UPDATE NO ACTION ON DELETE CASCADE
+ * - Setting AppCollectionApp.AppId constraints to ON UPDATE NO ACTION ON DELETE NO ACTION
+ * - Setting AppEmailQuotaLog.AppId constraints to ON UPDATE NO ACTION ON DELETE NO ACTION
+ * - Setting AppSnapshot.UserId constraints to ON UPDATE NO ACTION ON DELETE NO ACTION
+ * - Setting AppSubscription.AppId constraints to ON UPDATE CASCADE ON DELETE NO ACTION
+ * - Setting Resource.AppId constraints to ON UPDATE CASCADE ON DELETE SET NULL
+ * - Setting Asset.AppId constraints to ON UPDATE CASCADE ON DELETE NO ACTION
+ * - Setting ResourceVersion.ResourceId constraints to ON UPDATE NO ACTION ON DELETE CASCADE
+ * - Setting TeamInvite.TeamId constraints to ON UPDATE NO ACTION ON DELETE NO ACTION
+ * - Setting UserTraining.UserId constraints to ON UPDATE NO ACTION ON DELETE NO ACTION
+ * - Setting UserTraining.TrainingId constraints to ON UPDATE NO ACTION ON DELETE NO ACTION
+ * - Setting TrainingBlock.TrainingId constraints to ON UPDATE NO ACTION ON DELETE NO ACTION
  *
  * @param db The sequelize database.
  */
@@ -332,4 +397,29 @@ export async function down(db: Sequelize): Promise<void> {
     type: DataTypes.UUID,
     allowNull: false,
   });
+
+  const changes = [
+    ['AppServiceSecret', 'AppId', 'App', 'NO ACTION', 'NO ACTION'],
+    ['AppBlockStyle', 'AppId', 'App', 'CASCADE', 'NO ACTION'],
+    ['AppCollection', 'OrganizationId', 'Organization', 'NO ACTION', 'NO ACTION'],
+    ['AppCollectionApp', 'AppCollectionId', 'AppCollection', 'NO ACTION', 'CASCADE'],
+    ['AppCollectionApp', 'AppId', 'App', 'NO ACTION', 'NO ACTION'],
+    ['AppEmailQuotaLog', 'AppId', 'App', 'NO ACTION', 'NO ACTION'],
+    ['AppSnapshot', 'UserId', 'User', 'NO ACTION', 'NO ACTION'],
+    ['AppSubscription', 'AppId', 'App', 'CASCADE', 'NO ACTION'],
+    ['Resource', 'AppId', 'App', 'CASCADE', 'SET NULL'],
+    ['Asset', 'AppId', 'App', 'CASCADE', 'NO ACTION'],
+    ['ResourceVersion', 'ResourceId', 'Resource', 'NO ACTION', 'CASCADE'],
+    ['TeamInvite', 'TeamId', 'Team', 'NO ACTION', 'NO ACTION'],
+    ['UserTraining', 'UserId', 'User', 'NO ACTION', 'NO ACTION'],
+    ['UserTraining', 'TrainingId', 'Training', 'NO ACTION', 'NO ACTION'],
+    ['TrainingBlock', 'TrainingId', 'Training', 'NO ACTION', 'NO ACTION'],
+  ] satisfies [string, string, string, string, string][];
+  for (const [table, col, ref, update, del] of changes) {
+    logger.info(`Setting ${table}.${col} constraints to ON UPDATE ${update} ON DELETE ${del}`);
+    await queryInterface.sequelize.query(`
+      ALTER TABLE "${table}" DROP CONSTRAINT IF EXISTS "${table}_${col}_fkey";
+      ALTER TABLE "${table}" ADD FOREIGN KEY ("${col}") REFERENCES "${ref}" ("id") ON UPDATE ${update} ON DELETE ${del};
+    `);
+  }
 }

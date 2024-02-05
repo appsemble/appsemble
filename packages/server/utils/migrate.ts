@@ -36,11 +36,12 @@ export async function migrate(toVersion: string, migrations: Migration[]): Promi
         await migration.up(db);
         logger.info(`Upgrade to ${migration.key} successful`);
       }
+      meta = await Meta.create({ version: migrationsToApply.at(-1).key });
     } else {
       logger.info('Synchronizing database models as-is.');
       await db.sync();
+      meta = await Meta.create({ version: migrations.at(-1).key });
     }
-    meta = await Meta.create({ version: migrations.at(-1).key });
   } else {
     [meta] = metas;
   }

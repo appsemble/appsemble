@@ -1,9 +1,10 @@
 import { logger } from '@appsemble/node-utils';
+import chalk from 'chalk';
+import extractPgSchema from 'extract-pg-schema';
 import { diffString } from 'json-diff';
 import { isEqual as deepEquals } from 'lodash-es';
 import { gte as semverGte } from 'semver';
 import { Sequelize } from 'sequelize';
-import { SequelizeAuto } from 'sequelize-auto';
 import { type Argv } from 'yargs';
 
 import { databaseBuilder } from './builder/database.js';
@@ -11,6 +12,8 @@ import { migrations } from '../migrations/index.js';
 import { initDB } from '../models/index.js';
 import { migrate } from '../utils/migrate.js';
 import { handleDBError } from '../utils/sqlUtils.js';
+
+const { extractSchemas } = extractPgSchema;
 
 const firstDeterministicMigration = '0.24.12';
 
@@ -20,10 +23,7 @@ export const description =
 
 interface Schema {
   tables: Record<string, unknown>;
-  foreignKeys: Record<string, unknown>;
-  hasTriggerTables: Record<string, unknown>;
-  relations: unknown[];
-  indexes: Record<string, unknown>;
+  enums: Record<string, string[]>;
 }
 
 async function apply(db: Sequelize, name: string, fn: () => Promise<void>): Promise<Schema> {
@@ -32,41 +32,31 @@ async function apply(db: Sequelize, name: string, fn: () => Promise<void>): Prom
   logger.info(`creating database using ${name}`);
   await fn();
   logger.info('taking schema from database');
-  const auto = new SequelizeAuto(db, null, null, {
-    dialect: 'postgres',
-    directory: undefined,
-    singularize: true,
-    useDefine: false,
-    closeConnectionAutomatically: false,
-  });
-  const fullSchema = await auto.run();
-  for (const [tName, table] of Object.entries(fullSchema.tables)) {
-    for (const [cName, column] of Object.entries(table)) {
-      // XXX: these two issues:
-      // https://github.com/sequelize/sequelize-typescript/issues/1704 - Unique annotation
-      // name ignored
-      // https://github.com/sequelize/sequelize-typescript/issues/1015 - Constraints on
-      // table/field
-      // make it difficult to check for foreign keys.
-      delete fullSchema.tables[tName][cName].foreignKey;
-      fullSchema.tables[tName][cName].special = [...column.special].sort();
-    }
-  }
-  const schema = {
-    tables: fullSchema.tables,
-    // XXX: these two issues:
-    // https://github.com/sequelize/sequelize-typescript/issues/1704 - Unique annotation
-    // name ignored
-    // https://github.com/sequelize/sequelize-typescript/issues/1015 - Constraints on
-    // table/field
-    // make it difficult to check for foreign keys.
-    // foreignKeys: fullSchema.foreignKeys,
-    foreignKeys: {},
-    hasTriggerTables: fullSchema.hasTriggerTables,
-    relations: fullSchema.relations,
-    indexes: fullSchema.indexes,
+  const schema = await extractSchemas(
+    {
+      host: db.config.host,
+      port: Number(db.config.port),
+      user: db.config.username,
+      password: db.config.password,
+      database: db.config.database,
+    },
+    {},
+  );
+  const result: Schema = {
+    tables: Object.fromEntries(
+      schema.public.tables.map((t) => [
+        t.name,
+        Object.fromEntries(
+          t.columns.map((c) => [
+            c.name,
+            { ...c, ordinalPosition: 0, informationSchemaValue: {}, reference: {}, indices: [] },
+          ]),
+        ),
+      ]),
+    ),
+    enums: Object.fromEntries(schema.public.enums.map((e) => [e.name, [...e.values].sort()])),
   };
-  return schema;
+  return result;
 }
 
 function logDiff(
@@ -87,7 +77,7 @@ function logDiff(
     }
     count += 1;
     const d = diffString(modelsObj[thing], migrationsObj[thing]);
-    logger.error(`${type} ${thing} in models vs migrations:`);
+    logger.error(`${type} ${thing} in ${chalk.red('models')} vs ${chalk.green('migrations')}:`);
     logger.error(d);
   }
   return count;
@@ -135,41 +125,15 @@ export async function handler(): Promise<void> {
   });
   const counts = {
     tables: 0,
-    foreignKeys: 0,
-    hasTriggerTables: 0,
-    relations: 0,
+    enums: 0,
   };
   if (!deepEquals(fromMigrations.tables, fromModels.tables)) {
     counts.tables += logDiff('table', fromModels.tables, fromMigrations.tables);
   }
-  if (!deepEquals(fromMigrations.foreignKeys, fromModels.foreignKeys)) {
-    counts.foreignKeys += logDiff('foreignKey', fromModels.foreignKeys, fromMigrations.foreignKeys);
-  }
-  if (!deepEquals(fromMigrations.hasTriggerTables, fromModels.hasTriggerTables)) {
-    counts.hasTriggerTables += logDiff(
-      'hasTriggerTable',
-      fromModels.hasTriggerTables,
-      fromMigrations.hasTriggerTables,
-    );
-  }
-  if (!deepEquals(fromMigrations.relations, fromModels.relations)) {
-    const modelRelationsObj = Object.fromEntries(
-      fromModels.relations.map((r: any) => [`${r.parentModel}_${r.childModel}_${r.parentId}`, r]),
-    );
-    const migrationsRelationsObj = Object.fromEntries(
-      fromMigrations.relations.map((r: any) => [
-        `${r.parentModel}_${r.childModel}_${r.parentId}`,
-        r,
-      ]),
-    );
-    counts.relations += logDiff('relation', modelRelationsObj, migrationsRelationsObj);
-  }
   logger.info(`found ${counts.tables} table differences`);
-  logger.info(`found ${counts.foreignKeys} foreignKey differences`);
-  logger.info(`found ${counts.hasTriggerTables} hasTriggerTable differences`);
-  logger.info(`found ${counts.relations} relation differences`);
+  logger.info(`found ${counts.enums} enum differences`);
   await db.close();
-  if (counts.tables + counts.foreignKeys + counts.hasTriggerTables + counts.relations > 0) {
+  if (counts.tables + counts.enums > 0) {
     logger.error('models and migrations are out of sync');
     process.exit(1);
   }

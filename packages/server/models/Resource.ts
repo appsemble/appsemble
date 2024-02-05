@@ -95,14 +95,14 @@ export class Resource extends Model {
   @Column(DataType.UUID)
   AuthorId: string;
 
-  @BelongsTo(() => AppMember, 'AuthorId')
+  @BelongsTo(() => AppMember, { foreignKey: 'AuthorId', onDelete: 'CASCADE' })
   Author: Awaited<AppMember>;
 
   @ForeignKey(() => AppMember)
   @Column(DataType.UUID)
   EditorId: string;
 
-  @BelongsTo(() => AppMember, 'EditorId')
+  @BelongsTo(() => AppMember, { foreignKey: 'EditorId', onDelete: 'CASCADE' })
   Editor: Awaited<AppMember>;
 
   @HasMany(() => Asset)

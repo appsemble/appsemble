@@ -52,7 +52,7 @@ export class AppSubscription extends Model {
   @UpdatedAt
   updated: Date;
 
-  @BelongsTo(() => User)
+  @BelongsTo(() => User, { onDelete: 'SET NULL' })
   User: Awaited<User>;
 
   @HasMany(() => ResourceSubscription, { onDelete: 'CASCADE' })

@@ -33,7 +33,7 @@ export class AppSamlAuthorization extends Model {
   /**
    * The linked app SAML secret.
    */
-  @BelongsTo(() => AppSamlSecret)
+  @BelongsTo(() => AppSamlSecret, { onDelete: 'CASCADE' })
   AppSamlSecret: Awaited<AppSamlSecret>;
 
   /**

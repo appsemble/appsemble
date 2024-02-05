@@ -38,7 +38,7 @@ export class ResourceVersion extends Model {
   @Column(DataType.UUID)
   AppMemberId: string;
 
-  @BelongsTo(() => AppMember)
+  @BelongsTo(() => AppMember, { onDelete: 'CASCADE' })
   AppMember: Awaited<AppMember>;
 
   @CreatedAt
