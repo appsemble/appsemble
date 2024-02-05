@@ -37,19 +37,13 @@ export function AppBar({ children, hideName }: AppBarProps): ReactNode {
           </div>
         ) : null}
         <div className="navbar-brand is-inline-flex is-flex-grow-1">
-          <header className="navbar-item">
-            <h2 className="title is-4 has-text-white">
-              {!hideName && (children || definition.name)}
-            </h2>
-          </header>
-          <div>
-            {demoMode ? (
-              <div className="tag is-rounded is-warning mx-1 my-1">
-                <FormattedMessage {...messages.demo} />
-              </div>
-            ) : null}
-          </div>
+          <h2 className="navbar-item title is-4">{!hideName && (children || definition.name)}</h2>
         </div>
+        {demoMode ? (
+          <div className="tag is-rounded is-warning mx-1 my-1">
+            <FormattedMessage {...messages.demo} />
+          </div>
+        ) : null}
         {definition.layout?.login == null || definition.layout?.login === 'navbar' ? (
           <div className="navbar-end is-flex is-align-items-stretch is-justify-content-flex-end ml-auto">
             <ProfileDropdown />
