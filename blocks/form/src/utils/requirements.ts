@@ -1,4 +1,4 @@
-import { type Utils } from '@appsemble/sdk';
+import { type BlockUtils } from '@appsemble/sdk';
 import { compareStrings } from '@appsemble/utils';
 import { compareAsc, compareDesc } from 'date-fns';
 
@@ -14,7 +14,11 @@ type FieldWithRequirements = Field & { requirements?: any[] };
  * @param values The values of all form fields.
  * @returns Whether or not the field is required.
  */
-export function isRequired(field: FieldWithRequirements, utils?: Utils, values?: Values): boolean {
+export function isRequired(
+  field: FieldWithRequirements,
+  utils?: BlockUtils,
+  values?: Values,
+): boolean {
   return Boolean(
     field.requirements?.some(({ required }) => utils?.remap(required, values) ?? required),
   );
@@ -50,7 +54,7 @@ export function isValidTime(time: string): boolean {
  */
 export function getMinDate(
   field: FieldWithRequirements,
-  utils: Utils,
+  utils: BlockUtils,
   values: Values = null,
 ): Date | undefined {
   const minDates = field.requirements
@@ -108,7 +112,7 @@ export function getMaxTime(field: FieldWithRequirements): string {
  */
 export function getMaxDate(
   field: FieldWithRequirements,
-  utils: Utils,
+  utils: BlockUtils,
   values: Values = null,
 ): Date | undefined {
   const maxDates = field.requirements

@@ -1,13 +1,14 @@
 import { Button, Content, Loader, Message, useMeta, useQuery } from '@appsemble/react-components';
 import { normalize } from '@appsemble/utils';
 import { clearOAuth2State, loadOAuth2State } from '@appsemble/web-utils';
-import { type ReactElement, useEffect, useMemo, useState } from 'react';
+import { type ReactNode, useEffect, useMemo, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { Link, Navigate } from 'react-router-dom';
 
 import styles from './index.module.css';
 import { messages } from './messages.js';
 import { getDefaultPageName } from '../../utils/getDefaultPageName.js';
+import { showDemoLogin } from '../../utils/settings.js';
 import { useAppDefinition } from '../AppDefinitionProvider/index.js';
 import { Main } from '../Main/index.js';
 import { AppBar } from '../TitleBar/index.js';
@@ -16,7 +17,7 @@ import { useUser } from '../UserProvider/index.js';
 /**
  * Handle the OAuth2 callback.
  */
-export function OpenIDCallback(): ReactElement {
+export function OpenIDCallback(): ReactNode {
   useMeta(messages.login);
 
   const query = useQuery();
@@ -53,7 +54,7 @@ export function OpenIDCallback(): ReactElement {
 
   if (isLoggedIn) {
     const defaultPageName = getDefaultPageName(isLoggedIn, role, definition);
-    return <Navigate to={redirect || normalize(defaultPageName)} />;
+    return <Navigate to={showDemoLogin ? '/Login' : redirect || normalize(defaultPageName)} />;
   }
 
   if (!isOk) {

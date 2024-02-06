@@ -1,5 +1,5 @@
 import { Select } from '@appsemble/react-components';
-import { type ChangeEvent, type ReactElement, useCallback, useState } from 'react';
+import { type ChangeEvent, type ReactNode, useCallback, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 
 import { messages } from './messages.js';
@@ -12,7 +12,7 @@ interface AnyOfSchemaProps extends SchemaProps {
   readonly type: 'anyOf' | 'oneOf';
 }
 
-export function AnyOfSchema({ schema, type, ...props }: AnyOfSchemaProps): ReactElement {
+export function AnyOfSchema({ schema, type, ...props }: AnyOfSchemaProps): ReactNode {
   const { formatMessage } = useIntl();
   const [selectedSchemaIndex, setSelectedSchemaIndex] = useState(0);
 

@@ -22,7 +22,7 @@ import {
 import { type OAuth2ClientCredentials } from '@appsemble/types';
 import { has, scopes as knownScopes } from '@appsemble/utils';
 import axios from 'axios';
-import { type ReactElement, useCallback, useState } from 'react';
+import { type ReactNode, useCallback, useState } from 'react';
 import { FormattedDate, FormattedMessage, useIntl } from 'react-intl';
 import { useLocation } from 'react-router-dom';
 
@@ -32,18 +32,20 @@ import { messages } from './messages.js';
 interface FormValues {
   description: string;
   expires: string;
+  'apps:export': boolean;
   'blocks:write': boolean;
   'blocks:delete': boolean;
   'organizations:write': boolean;
   'resources:read': boolean;
   'resources:write': boolean;
   'apps:write': boolean;
+  'apps:delete': boolean;
   'teams:read': boolean;
   'teams:write': boolean;
   'assets:write': boolean;
 }
 
-export function ClientCredentialsPage(): ReactElement {
+export function ClientCredentialsPage(): ReactNode {
   useMeta(messages.title);
   const location = useLocation();
   const search = new URLSearchParams(location.search);
@@ -139,6 +141,7 @@ export function ClientCredentialsPage(): ReactElement {
         defaultValues={{
           description: suggestedDescription,
           expires: '',
+          'apps:export': false,
           'blocks:write': false,
           'blocks:delete': false,
           'organizations:write': false,
@@ -196,6 +199,12 @@ export function ClientCredentialsPage(): ReactElement {
             />
             <SimpleFormField
               component={CheckboxField}
+              label="apps:export"
+              name="apps:export"
+              title={<FormattedMessage {...messages['apps:export']} />}
+            />
+            <SimpleFormField
+              component={CheckboxField}
               label="blocks:write"
               name="blocks:write"
               title={<FormattedMessage {...messages['blocks:write']} />}
@@ -217,6 +226,12 @@ export function ClientCredentialsPage(): ReactElement {
               label="apps:write"
               name="apps:write"
               title={<FormattedMessage {...messages['apps:write']} />}
+            />
+            <SimpleFormField
+              component={CheckboxField}
+              label="apps:delete"
+              name="apps:delete"
+              title={<FormattedMessage {...messages['apps:delete']} />}
             />
             <SimpleFormField
               component={CheckboxField}

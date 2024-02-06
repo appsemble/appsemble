@@ -1,0 +1,22 @@
+{
+  "name": "@appsemble/controller",
+  "version": "0.24.12",
+  "private": true,
+  "description": "A controller for the controller-demo app.",
+  "homepage": "https://appsemble.app",
+  "bugs": "https://gitlab.com/appsemble/appsemble/issues",
+  "repository": {
+    "type": "git",
+    "url": "https://gitlab.com/appsemble/appsemble.git",
+    "directory": "apps/controller/controller"
+  },
+  "license": "LGPL-3.0-only",
+  "author": "Appsemble <info@appsemble.com> (https://appsemble.com)",
+  "type": "module",
+  "scripts": {
+    "test": "vitest"
+  },
+  "dependencies": {
+    "@appsemble/sdk": "0.24.12"
+  }
+}

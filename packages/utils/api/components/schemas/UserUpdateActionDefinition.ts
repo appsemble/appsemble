@@ -12,22 +12,26 @@ export const UserUpdateActionDefinition = extendJSONSchema(BaseActionDefinition,
 
 Does nothing if the user isn’t logged in.`,
     },
-    password: {
-      description: 'The new password.',
-    },
-    email: {
-      description: 'The new email address.',
-    },
-    displayName: {
+    name: {
       description: 'The new display name of the user.',
     },
-    picture: {
-      description: 'The new profile picture of the user.',
+    currentEmail: {
+      description: 'The current email address of the user.',
+    },
+    newEmail: {
+      description: 'The new email address.',
+    },
+    password: {
+      description: 'The new password.',
     },
     properties: {
       description: `The custom properties for the user.
 
-Every value will be converted to a string.`,
+Values will be validated based on \`user.properties\`, if defined in the app definition.`,
+    },
+    role: {
+      description:
+        "The role for the updated account. Defaults to the default role in the app's security definition.",
     },
   },
 });

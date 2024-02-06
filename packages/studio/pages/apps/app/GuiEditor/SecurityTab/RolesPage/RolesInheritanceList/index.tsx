@@ -1,6 +1,6 @@
 import { Button, useMessages } from '@appsemble/react-components';
 import classNames from 'classnames';
-import { type ReactElement, useCallback, useState } from 'react';
+import { type ReactNode, useCallback, useState } from 'react';
 import { useIntl } from 'react-intl';
 
 import styles from './index.module.css';
@@ -17,7 +17,7 @@ export function RolesInheritanceList({
   label,
   labelPosition,
   roleKey,
-}: RolesInheritanceListProps): ReactElement {
+}: RolesInheritanceListProps): ReactNode {
   const [addNewItem, setAddNewItem] = useState(false);
   const push = useMessages();
   const { formatMessage } = useIntl();

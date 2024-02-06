@@ -125,7 +125,7 @@ export const paths: OpenAPIV3.PathsObject = {
                   properties: {
                     id: { $ref: '#/components/schemas/Organization/properties/id' },
                     name: { $ref: '#/components/schemas/Organization/properties/name' },
-                    role: { $ref: '#/components/schemas/Member/properties/role' },
+                    role: { $ref: '#/components/schemas/OrganizationMember/properties/role' },
                   },
                 },
               },
@@ -350,6 +350,138 @@ export const paths: OpenAPIV3.PathsObject = {
               },
             },
           },
+        },
+      },
+    },
+  },
+  '/api/user/apps/{appId}/accounts': {
+    parameters: [{ $ref: '#/components/parameters/appId' }],
+    get: {
+      tags: ['appMember'],
+      description: 'Fetch app accounts by roles.',
+      operationId: 'getAppMembersByRoles',
+      parameters: [{ $ref: '#/components/parameters/roles' }],
+      security: [{ app: [] }],
+      responses: {
+        200: {
+          description: 'The accounts that were fetched.',
+        },
+      },
+    },
+    post: {
+      tags: ['appMember'],
+      description: 'Create a new app account using an email address and a password.',
+      operationId: 'createMemberEmail',
+      security: [{ app: [] }],
+      requestBody: {
+        description: 'The user account to create.',
+        required: true,
+        content: {
+          'multipart/form-data': {
+            schema: {
+              type: 'object',
+              required: ['email', 'password', 'timezone'],
+              properties: {
+                name: {
+                  type: 'string',
+                },
+                email: {
+                  type: 'string',
+                  format: 'email',
+                },
+                password: {
+                  type: 'string',
+                  minLength: 8,
+                },
+                properties: {
+                  type: 'object',
+                  additionalProperties: { type: 'string' },
+                  description: 'The member’s custom properties.',
+                },
+                timezone: { type: 'string' },
+                role: {
+                  type: 'string',
+                  description:
+                    "The role for the created account. Defaults to the default role in the app's security definition.",
+                },
+              },
+            },
+          },
+        },
+      },
+      responses: {
+        201: {
+          description: 'The account that was created.',
+        },
+      },
+    },
+  },
+  '/api/user/apps/{appId}/accounts/{memberEmail}': {
+    parameters: [
+      { $ref: '#/components/parameters/appId' },
+      { $ref: '#/components/parameters/memberEmail' },
+    ],
+    patch: {
+      tags: ['appMember'],
+      description: 'Patch an app account by email.',
+      operationId: 'updateAppMemberByEmail',
+      security: [{ app: [] }],
+      requestBody: {
+        description: 'The user account to update.',
+        required: true,
+        content: {
+          'multipart/form-data': {
+            schema: {
+              type: 'object',
+              required: [],
+              properties: {
+                name: {
+                  type: 'string',
+                },
+                email: {
+                  type: 'string',
+                  format: 'email',
+                },
+                password: {
+                  type: 'string',
+                  minLength: 8,
+                },
+                properties: {
+                  type: 'object',
+                  additionalProperties: { type: 'string' },
+                  description: 'The member’s custom properties.',
+                },
+                role: {
+                  type: 'string',
+                  description:
+                    "The role for the updated account. Defaults to the default role in the app's security definition.",
+                },
+              },
+            },
+          },
+        },
+      },
+      responses: {
+        200: {
+          description: 'A linked app account',
+          content: {
+            'application/json': {
+              schema: {
+                $ref: '#/components/schemas/AppAccount',
+              },
+            },
+          },
+        },
+      },
+    },
+    delete: {
+      tags: ['appMember'],
+      description: 'Delete a user account by email.',
+      operationId: 'deleteAppMemberByEmail',
+      security: [{ app: [] }],
+      responses: {
+        204: {
+          description: 'The account was deleted successfully.',
         },
       },
     },

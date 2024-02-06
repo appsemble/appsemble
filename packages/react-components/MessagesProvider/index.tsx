@@ -1,12 +1,5 @@
 import { type BaseMessage } from '@appsemble/types';
-import {
-  createContext,
-  type ReactElement,
-  type ReactNode,
-  useCallback,
-  useContext,
-  useRef,
-} from 'react';
+import { createContext, type ReactNode, useCallback, useContext, useRef } from 'react';
 import { useIntl } from 'react-intl';
 import { CSSTransition, TransitionGroup } from 'react-transition-group';
 
@@ -41,7 +34,7 @@ interface UniqueMessage extends Msg {
 /**
  * Render messages that may be pushed using {@link useMessages}.
  */
-export function MessagesProvider({ children }: MessagesProviderProps): ReactElement {
+export function MessagesProvider({ children }: MessagesProviderProps): ReactNode {
   const { formatMessage } = useIntl();
   const forceUpdate = useForceUpdate();
 

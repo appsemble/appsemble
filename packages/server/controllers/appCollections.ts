@@ -1,3 +1,4 @@
+import { assertKoaError, throwKoaError } from '@appsemble/node-utils';
 import { Permission } from '@appsemble/utils';
 import { type Context } from 'koa';
 import { col, fn, literal, Op, UniqueConstraintError } from 'sequelize';
@@ -5,12 +6,12 @@ import { col, fn, literal, Op, UniqueConstraintError } from 'sequelize';
 import { App } from '../models/App.js';
 import { AppCollection } from '../models/AppCollection.js';
 import { AppCollectionApp } from '../models/AppCollectionApp.js';
-import { AppRating, Member, Organization } from '../models/index.js';
+import { AppRating, Organization, OrganizationMember } from '../models/index.js';
 import { compareApps } from '../utils/app.js';
 import { checkRole } from '../utils/checkRole.js';
 
 export async function queryCollections(ctx: Context): Promise<void> {
-  const memberships = await Member.findAll({
+  const memberships = await OrganizationMember.findAll({
     where: {
       UserId: ctx.user?.id ?? null,
     },
@@ -48,7 +49,7 @@ export async function queryOrganizationCollections(ctx: Context): Promise<void> 
   } = ctx;
 
   const isUserMember =
-    (await Member.count({
+    (await OrganizationMember.count({
       where: {
         UserId: ctx.user?.id ?? null,
         OrganizationId: organizationId,
@@ -78,7 +79,7 @@ export async function getCollection(ctx: Context): Promise<void> {
   } = ctx;
   const collection = await AppCollection.findByPk(appCollectionId);
 
-  const memberships = await Member.findAll({
+  const memberships = await OrganizationMember.findAll({
     where: {
       UserId: user?.id ?? null,
     },
@@ -90,13 +91,7 @@ export async function getCollection(ctx: Context): Promise<void> {
     (collection.visibility === 'private' &&
       !memberships.some((membership) => membership.OrganizationId === collection.OrganizationId))
   ) {
-    ctx.status = 404;
-    ctx.response.body = {
-      statusCode: 404,
-      message: 'Collection not found',
-      error: 'Not Found',
-    };
-    ctx.throw();
+    throwKoaError(ctx, 404, 'Collection not found');
   }
 
   ctx.response.status = 200;
@@ -112,15 +107,7 @@ export async function deleteCollection(ctx: Context): Promise<void> {
     attributes: ['id', 'OrganizationId'],
   });
 
-  if (!collection) {
-    ctx.status = 404;
-    ctx.response.body = {
-      statusCode: 404,
-      message: 'Collection not found',
-      error: 'Not Found',
-    };
-    ctx.throw();
-  }
+  assertKoaError(!collection, ctx, 404, 'Collection not found');
 
   await checkRole(ctx, collection.OrganizationId, Permission.DeleteCollections);
 
@@ -170,7 +157,7 @@ export async function queryCollectionApps(ctx: Context): Promise<void> {
     user,
   } = ctx;
 
-  const memberships = await Member.findAll({
+  const memberships = await OrganizationMember.findAll({
     where: {
       UserId: user?.id ?? null,
     },
@@ -186,13 +173,7 @@ export async function queryCollectionApps(ctx: Context): Promise<void> {
     (collection.visibility === 'private' &&
       !memberships.some((membership) => membership.OrganizationId === collection.OrganizationId))
   ) {
-    ctx.status = 404;
-    ctx.response.body = {
-      statusCode: 404,
-      message: 'Collection not found',
-      error: 'Not Found',
-    };
-    ctx.throw();
+    throwKoaError(ctx, 404, 'Collection not found');
   }
 
   const apps = (
@@ -242,15 +223,7 @@ export async function queryCollectionApps(ctx: Context): Promise<void> {
     })
   )?.Apps;
 
-  if (!apps) {
-    ctx.status = 404;
-    ctx.response.body = {
-      statusCode: 404,
-      message: 'Collection not found',
-      error: 'Not Found',
-    };
-    ctx.throw();
-  }
+  assertKoaError(!apps, ctx, 404, 'Collection not found');
 
   const ratingsMap = new Map(
     (
@@ -307,29 +280,13 @@ export async function addAppToCollection(ctx: Context): Promise<void> {
 
   const app = await App.findByPk(body.AppId, { attributes: ['id'] });
 
-  if (!app) {
-    ctx.status = 404;
-    ctx.response.body = {
-      statusCode: 404,
-      message: 'App not found',
-      error: 'Not Found',
-    };
-    ctx.throw();
-  }
+  assertKoaError(!app, ctx, 404, 'App not found');
 
   const collection = await AppCollection.findByPk(appCollectionId, {
     attributes: ['id', 'OrganizationId'],
   });
 
-  if (!collection) {
-    ctx.status = 404;
-    ctx.response.body = {
-      statusCode: 404,
-      message: 'Collection not found',
-      error: 'Not Found',
-    };
-    ctx.throw();
-  }
+  assertKoaError(!collection, ctx, 404, 'Collection not found');
 
   await checkRole(ctx, collection.OrganizationId, Permission.EditCollections);
 
@@ -340,13 +297,7 @@ export async function addAppToCollection(ctx: Context): Promise<void> {
     });
   } catch (error: unknown) {
     if (error instanceof UniqueConstraintError) {
-      ctx.status = 409;
-      ctx.response.body = {
-        statusCode: 409,
-        message: 'App already in collection',
-        error: 'Conflict',
-      };
-      ctx.throw();
+      throwKoaError(ctx, 409, 'App already in collection');
     }
     throw error;
   }
@@ -361,29 +312,13 @@ export async function removeAppFromCollection(ctx: Context): Promise<void> {
 
   const app = await App.findByPk(appId, { attributes: ['id'] });
 
-  if (!app) {
-    ctx.status = 404;
-    ctx.response.body = {
-      statusCode: 404,
-      message: 'App not found',
-      error: 'Not Found',
-    };
-    ctx.throw();
-  }
+  assertKoaError(!app, ctx, 404, 'App not found');
 
   const collection = await AppCollection.findByPk(appCollectionId, {
     attributes: ['id', 'OrganizationId'],
   });
 
-  if (!collection) {
-    ctx.status = 404;
-    ctx.response.body = {
-      statusCode: 404,
-      message: 'Collection not found',
-      error: 'Not Found',
-    };
-    ctx.throw();
-  }
+  assertKoaError(!collection, ctx, 404, 'Collection not found');
 
   await checkRole(ctx, collection.OrganizationId, Permission.EditCollections);
 
@@ -406,15 +341,7 @@ export async function getCollectionHeaderImage(ctx: Context): Promise<void> {
     attributes: ['headerImage', 'headerImageMimeType'],
   });
 
-  if (!collection) {
-    ctx.status = 404;
-    ctx.response.body = {
-      statusCode: 404,
-      message: 'Collection not found',
-      error: 'Not Found',
-    };
-    ctx.throw();
-  }
+  assertKoaError(!collection, ctx, 404, 'Collection not found');
 
   ctx.response.status = 200;
   ctx.response.body = collection.headerImage;
@@ -430,15 +357,7 @@ export async function getCollectionExpertProfileImage(ctx: Context): Promise<voi
     attributes: ['expertProfileImage', 'expertProfileImageMimeType'],
   });
 
-  if (!collection) {
-    ctx.status = 404;
-    ctx.response.body = {
-      statusCode: 404,
-      message: 'Collection not found',
-      error: 'Not Found',
-    };
-    ctx.throw();
-  }
+  assertKoaError(!collection, ctx, 404, 'Collection not found');
 
   ctx.response.status = 200;
   ctx.response.body = collection.expertProfileImage;
@@ -455,15 +374,7 @@ export async function updateCollection(ctx: Context): Promise<void> {
     include: [{ model: Organization, attributes: ['name'] }],
   });
 
-  if (!collection) {
-    ctx.status = 404;
-    ctx.response.body = {
-      statusCode: 404,
-      message: 'Collection not found',
-      error: 'Not Found',
-    };
-    ctx.throw();
-  }
+  assertKoaError(!collection, ctx, 404, 'Collection not found');
 
   await checkRole(ctx, collection.OrganizationId, Permission.EditCollections);
 
@@ -500,15 +411,7 @@ export async function pinAppToCollection(ctx: Context): Promise<void> {
     ],
   });
 
-  if (!aca) {
-    ctx.status = 404;
-    ctx.response.body = {
-      statusCode: 404,
-      message: 'App not found in collection',
-      error: 'Not Found',
-    };
-    ctx.throw();
-  }
+  assertKoaError(!aca, ctx, 404, 'App not found in collection');
 
   await checkRole(ctx, aca.AppCollection.OrganizationId, Permission.EditCollections);
 
@@ -539,15 +442,7 @@ export async function unpinAppFromCollection(ctx: Context): Promise<void> {
     ],
   });
 
-  if (!aca) {
-    ctx.status = 404;
-    ctx.response.body = {
-      statusCode: 404,
-      message: 'App not found in collection',
-      error: 'Not Found',
-    };
-    ctx.throw();
-  }
+  assertKoaError(!aca, ctx, 404, 'App not found in collection');
 
   await checkRole(ctx, aca.AppCollection.OrganizationId, Permission.EditCollections);
 

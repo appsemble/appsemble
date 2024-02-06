@@ -1,5 +1,5 @@
 import classNames from 'classnames';
-import { type ComponentPropsWithoutRef, type ReactElement, useRef } from 'react';
+import { type ComponentPropsWithoutRef, type ReactNode, useRef } from 'react';
 
 import styles from './index.module.css';
 import { useScrollTo } from '../useScrollTo.js';
@@ -40,7 +40,7 @@ export function Title({
   size = 3,
   level = (size - 2) as TitleProps['size'],
   ...props
-}: TitleProps): ReactElement {
+}: TitleProps): ReactNode {
   const ref = useRef<HTMLHeadingElement>();
 
   useScrollTo(ref);

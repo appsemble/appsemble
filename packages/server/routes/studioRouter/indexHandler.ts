@@ -81,7 +81,7 @@ export function indexHandler(ctx: Context): Promise<void> {
       'https://fonts.googleapis.com',
     ],
     'font-src': ["'self'", 'https://fonts.gstatic.com'],
-    'frame-src': [`*.${new URL(host).host}`, host],
+    'frame-src': [`*.${new URL(host).host}`, host, '*'],
   });
   ctx.set('Content-Security-Policy', csp);
   return render(ctx, 'studio/index.html', { nonce, settings });

@@ -8,8 +8,9 @@ import {
   AppBlockStyle,
   AppMessages,
   AppSnapshot,
-  Member,
+  Asset,
   Organization,
+  OrganizationMember,
   Resource,
 } from '../models/index.js';
 import { setArgv } from '../utils/argv.js';
@@ -41,7 +42,11 @@ beforeEach(async () => {
     id: 'test-organization-2',
     name: 'Test Organization 2',
   });
-  await Member.create({ OrganizationId: organization.id, UserId: user.id, role: 'Maintainer' });
+  await OrganizationMember.create({
+    OrganizationId: organization.id,
+    UserId: user.id,
+    role: 'Maintainer',
+  });
 
   // Ensure formatting is preserved.
   const yaml1 = "'name': Test Template\n'description': Description\n\n# comment\n\npages: []\n\n\n";
@@ -77,6 +82,13 @@ beforeEach(async () => {
   });
   await Resource.create({ AppId: t2.id, type: 'test', data: { name: 'foo' }, clonable: true });
   await Resource.create({ AppId: t2.id, type: 'test', data: { name: 'bar' } });
+  await Asset.create({
+    AppId: t2.id,
+    name: 'test-clonable',
+    data: Buffer.from('test'),
+    clonable: true,
+  });
+  await Asset.create({ AppId: t2.id, name: 'test', data: Buffer.from('test') });
   await AppMessages.create({
     AppId: t2.id,
     language: 'nl-nl',
@@ -205,6 +217,23 @@ describe('createTemplateApp', () => {
     const resources = await Resource.findAll({ where: { AppId: id, type: 'test' } });
 
     expect(resources.map((r) => r.data)).toStrictEqual([{ name: 'foo' }]);
+  });
+
+  it('should create a new app with example assets', async () => {
+    const [, template] = templates;
+    authorizeStudio();
+    const response = await request.post<AppType>('/api/templates', {
+      templateId: template.id,
+      name: 'Test app',
+      description: 'This is a test app',
+      organizationId: 'testorganization',
+      assets: true,
+    });
+
+    const { id } = response.data;
+    const assets = await Asset.findAll({ where: { AppId: id } });
+
+    expect(assets.map((a) => a.name)).toStrictEqual(['test-clonable']);
   });
 
   it('should include the app’s styles when cloning an app', async () => {

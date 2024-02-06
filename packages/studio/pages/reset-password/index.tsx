@@ -1,10 +1,10 @@
 import { Content, ResetPassword, useMeta } from '@appsemble/react-components';
 import axios from 'axios';
-import { type ReactElement, useCallback } from 'react';
+import { type ReactNode, useCallback } from 'react';
 
 import { messages } from './messages.js';
 
-export function ResetPasswordPage(): ReactElement {
+export function ResetPasswordPage(): ReactNode {
   useMeta(messages.title, messages.description);
 
   const onSubmit = useCallback(async (email: string): Promise<void> => {

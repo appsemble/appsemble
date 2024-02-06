@@ -198,6 +198,26 @@ describe('link', () => {
     expect(result).toBeUndefined();
     expect(navigate).toHaveBeenCalledWith('/da/page-a/subpage-b/3', { id: 3 });
   });
+
+  it('should support dynamic links', async () => {
+    const action = createTestAction({
+      app: {
+        defaultPage: '',
+        pages: [{ name: 'Page A', type: 'tabs', tabs: [{ name: 'Subpage B', blocks: [] }] }],
+      },
+      definition: {
+        type: 'link',
+        to: [{ 'object.from': { linkTo: 'Page A' } }, { prop: 'linkTo' }],
+      },
+      params: { lang: 'da' },
+      navigate,
+    });
+    const link = action.href();
+    expect(link).toBe('/da/page-a/subpage-b');
+    const result = await action();
+    expect(result).toBeUndefined();
+    expect(navigate).toHaveBeenCalledWith('/da/page-a/subpage-b', {});
+  });
 });
 
 describe('link.back', () => {

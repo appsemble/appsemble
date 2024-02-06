@@ -11,7 +11,7 @@ import {
 import axios from 'axios';
 import {
   type ChangeEvent,
-  type ReactElement,
+  type ReactNode,
   type SyntheticEvent,
   useCallback,
   useEffect,
@@ -37,7 +37,7 @@ interface IconToolProps {
   readonly disabled?: boolean;
 }
 
-export function IconTool({ disabled }: IconToolProps): ReactElement {
+export function IconTool({ disabled }: IconToolProps): ReactNode {
   const { formatMessage } = useIntl();
   const push = useMessages();
   const { app, setApp } = useApp();
@@ -164,7 +164,7 @@ export function IconTool({ disabled }: IconToolProps): ReactElement {
       <span className="label">
         <FormattedMessage {...messages.icon} />
       </span>
-      <Link className="help" to={`/${lang}/docs/guide/app-icons`}>
+      <Link className="help" to={`/${lang}/docs/03-guide/app-icons`}>
         <FormattedMessage {...messages.more} />
       </Link>
       <div className="is-flex">

@@ -16,7 +16,7 @@ interface ListItemProps {
 export function ListItem({ index, item }: ListItemProps): VNode {
   const {
     actions,
-    parameters: { button, dropdown, image },
+    parameters: { button, dropdown, image, imageInline },
   } = useBlock();
 
   if (dropdown && !dropdown.alignment) {
@@ -33,12 +33,19 @@ export function ListItem({ index, item }: ListItemProps): VNode {
 
   return (
     <div className={`${styles.item} has-text-left is-flex my-1 pt-4 pr-6 pb-4 pl-5`}>
-      <div className={styles.image}>
-        {image && image.alignment === 'default' ? (
-          <ImageComponent field={image} index={index} item={item} />
-        ) : null}
-      </div>
+      {image && !imageInline ? (
+        <div className={styles.image}>
+          {image.alignment === 'default' ? (
+            <ImageComponent field={image} index={index} item={item} />
+          ) : null}
+        </div>
+      ) : null}
       <div className={`${styles.contentWrapper} is-inline-block`}>
+        {image && imageInline ? (
+          <figure className={`image ${styles.image}`}>
+            <ImageComponent field={image} index={index} item={item} />
+          </figure>
+        ) : null}
         <HeaderComponent index={index} item={item} />
         <ContentComponent index={index} item={item} />
       </div>

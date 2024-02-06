@@ -241,6 +241,8 @@ export type DateTimeRequirement =
  */
 export type FieldsetRequirement = LengthRequirement;
 
+export type GeocoordinateRequirement = RequiredRequirement;
+
 /**
  * An option that is displayed in a dropdown menu or radio button field.
  */
@@ -318,6 +320,12 @@ interface AbstractField {
    * Won’t display if the field has no label of its own.
    */
   tag?: Remapper;
+
+  /**
+   * A description for the text field.
+   * For adding more information about the field.
+   */
+  help?: Remapper;
 }
 
 interface InlineField {
@@ -627,6 +635,39 @@ interface EventEnumField extends AbstractEnumField {
 
 export type EnumField = ActionEnumField | EventEnumField | SyncEnumField;
 
+export interface AbstractListField extends AbstractField, InlineField {
+  /**
+   * The type of the field.
+   */
+  type: 'list';
+
+  /**
+   * The requirements that are used to validate the field with.
+   *
+   * These are evaluated in the order they are defined in.
+   */
+  requirements?: RequiredRequirement[];
+}
+
+export interface EventListField extends AbstractListField {
+  /**
+   * Wait until an event has been fired containing the list of options.
+   * The event should return an array of objects that contain the `label` and `value` property.
+   *
+   * @format event-listener
+   */
+  event: string;
+}
+
+export interface SyncListField extends AbstractListField {
+  /**
+   * A list of enum options.
+   */
+  list: Choice[];
+}
+
+export type ListField = EventListField | SyncListField;
+
 /**
  * An input field used to upload files.
  */
@@ -707,6 +748,13 @@ export interface GeoCoordinatesField extends AbstractField {
    * The type of the field.
    */
   type: 'geocoordinates';
+
+  /**
+   * The requirements that are used to validate the field with.
+   *
+   * These are evaluated in the order they are defined in.
+   */
+  requirements?: GeocoordinateRequirement[];
 }
 
 /**
@@ -765,6 +813,12 @@ export interface NumberField extends AbstractField, InlineField {
    * @minItems 2
    */
   topLabels?: Remapper[];
+}
+
+export interface RangeField extends Omit<NumberField, 'display' | 'type'> {
+  type: 'range';
+  from?: Remapper;
+  to?: Remapper;
 }
 
 /**
@@ -879,8 +933,10 @@ export type Field =
   | FileField
   | GeoCoordinatesField
   | HiddenField
+  | ListField
   | NumberField
   | RadioField
+  | RangeField
   | StaticField
   | StringField;
 
@@ -1097,7 +1153,7 @@ declare module '@appsemble/sdk' {
      * Whether or not to disable populating fields with default data values.
      *
      * If this is set to `true`, the default values for the fields won't contain
-     * data from [page storage](../../../docs/guide/storage#app-storage).
+     * data from [page storage](../../../docs/03-guide/storage#app-storage).
      *
      * @default false
      */

@@ -221,7 +221,7 @@ it('should render the index page', async () => {
 
   expect(response).toMatchInlineSnapshot(`
     HTTP/1.1 200 OK
-    Content-Security-Policy: connect-src * blob: data:; default-src 'self'; font-src * data:; frame-src 'self' *.vimeo.com *.youtube.com; img-src * blob: data: http://host.example; media-src * blob: data: http://host.example; script-src 'nonce-AAAAAAAAAAAAAAAAAAAAAA==' 'self' 'sha256-NY+8423FfvonYcU4vZSwy1Nju0N1cBB6jv7CR/77gG0=' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com
+    Content-Security-Policy: connect-src * blob: data:; default-src 'self'; font-src * data:; frame-src 'self' *.vimeo.com *.weseedo.nl *.youtube.com http://host.example; img-src * blob: data: http://host.example; media-src * blob: data: http://host.example; script-src 'nonce-AAAAAAAAAAAAAAAAAAAAAA==' 'self' 'sha256-rSbMwT0fnFslqHeFJUlxfclftt06MNehd1iZE09YaX0=' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com
     Content-Type: text/html; charset=utf-8
 
     {
@@ -230,6 +230,8 @@ it('should render the index page', async () => {
           "$created": "1970-01-01T00:00:00.000Z",
           "$updated": "1970-01-01T00:00:00.000Z",
           "OrganizationId": "test",
+          "controllerCode": null,
+          "controllerImplementations": null,
           "coreStyle": "",
           "definition": {
             "name": "Test App",
@@ -281,8 +283,10 @@ it('should render the index page', async () => {
               },
             ],
           },
+          "demoMode": false,
           "domain": null,
           "emailName": null,
+          "enableSelfRegistration": true,
           "googleAnalyticsID": null,
           "hasIcon": false,
           "hasMaskableIcon": false,
@@ -303,7 +307,7 @@ it('should render the index page', async () => {
     pages:
       - name: Test Page
         blocks:
-          - type: \\"@test/a\\"
+          - type: "@test/a"
             version: 0.0.0
           - type: a
             version: 0.1.0
@@ -320,21 +324,21 @@ it('should render the index page', async () => {
                 actions:
                   whatever:
                     blocks:
-                      - type: \\"@test/b\\"
+                      - type: "@test/b"
                         version: 0.0.2
     ",
         },
         "appUpdated": "1970-01-01T00:00:00.000Z",
         "appUrl": "http://app.test.host.example/",
         "bulmaURL": "/bulma/0.9.3/bulma.min.css?dangerColor=%23ff2800&fontFamily=Open+Sans&fontSource=google&infoColor=%23a7d0ff&linkColor=%230440ad&primaryColor=%235393ff&splashColor=%23ffffff&successColor=%231fd25b&themeColor=%23ffffff&tileLayer=https%3A%2F%2F%7Bs%7D.tile.openstreetmap.org%2F%7Bz%7D%2F%7Bx%7D%2F%7By%7D.png&warningColor=%23fed719",
-        "faURL": "/fa/6.4.2/css/all.min.css",
+        "faURL": "/fa/6.5.1/css/all.min.css",
         "host": "http://host.example",
         "locale": "en",
         "locales": [
           "nl",
         ],
         "nonce": "AAAAAAAAAAAAAAAAAAAAAA==",
-        "settings": "<script>window.settings={\\"apiUrl\\":\\"http://host.example\\",\\"blockManifests\\":[{\\"name\\":\\"@test/a\\",\\"version\\":\\"0.0.0\\",\\"layout\\":null,\\"actions\\":null,\\"events\\":null,\\"files\\":[\\"a0.js\\",\\"a0.css\\"]},{\\"name\\":\\"@test/b\\",\\"version\\":\\"0.0.2\\",\\"layout\\":null,\\"actions\\":null,\\"events\\":null,\\"files\\":[\\"b2.js\\",\\"b2.css\\"]},{\\"name\\":\\"@appsemble/a\\",\\"version\\":\\"0.1.0\\",\\"layout\\":null,\\"actions\\":null,\\"events\\":null,\\"files\\":[\\"a0.js\\",\\"a0.css\\"]},{\\"name\\":\\"@appsemble/a\\",\\"version\\":\\"0.1.1\\",\\"layout\\":null,\\"actions\\":null,\\"events\\":null,\\"files\\":[\\"a1.js\\",\\"a1.css\\"]}],\\"id\\":1,\\"languages\\":[\\"en\\",\\"nl\\"],\\"logins\\":[],\\"vapidPublicKey\\":\\"\\",\\"definition\\":{\\"name\\":\\"Test App\\",\\"pages\\":[{\\"name\\":\\"Test Page\\",\\"blocks\\":[{\\"type\\":\\"@test/a\\",\\"version\\":\\"0.0.0\\"},{\\"type\\":\\"a\\",\\"version\\":\\"0.1.0\\"},{\\"type\\":\\"a\\",\\"version\\":\\"0.1.0\\"}]},{\\"name\\":\\"Test Page with Flow\\",\\"type\\":\\"flow\\",\\"steps\\":[{\\"blocks\\":[{\\"type\\":\\"a\\",\\"version\\":\\"0.1.0\\"},{\\"type\\":\\"a\\",\\"version\\":\\"0.1.1\\",\\"actions\\":{\\"whatever\\":{\\"blocks\\":[{\\"type\\":\\"@test/b\\",\\"version\\":\\"0.0.2\\"}]}}}]}]}]},\\"showAppsembleLogin\\":false,\\"showAppsembleOAuth2Login\\":true,\\"appUpdated\\":\\"1970-01-01T00:00:00.000Z\\"}</script>",
+        "settings": "<script>window.settings={"apiUrl":"http://host.example","appControllerCode":null,"appControllerImplementations":null,"blockManifests":[{"name":"@test/a","version":"0.0.0","layout":null,"actions":null,"events":null,"files":["a0.js","a0.css"]},{"name":"@test/b","version":"0.0.2","layout":null,"actions":null,"events":null,"files":["b2.js","b2.css"]},{"name":"@appsemble/a","version":"0.1.0","layout":null,"actions":null,"events":null,"files":["a0.js","a0.css"]},{"name":"@appsemble/a","version":"0.1.1","layout":null,"actions":null,"events":null,"files":["a1.js","a1.css"]}],"id":1,"languages":["en","nl"],"logins":[],"vapidPublicKey":"","definition":{"name":"Test App","pages":[{"name":"Test Page","blocks":[{"type":"@test/a","version":"0.0.0"},{"type":"a","version":"0.1.0"},{"type":"a","version":"0.1.0"}]},{"name":"Test Page with Flow","type":"flow","steps":[{"blocks":[{"type":"a","version":"0.1.0"},{"type":"a","version":"0.1.1","actions":{"whatever":{"blocks":[{"type":"@test/b","version":"0.0.2"}]}}}]}]}]},"demoMode":false,"showAppsembleLogin":false,"showAppsembleOAuth2Login":true,"enableSelfRegistration":true,"showDemoLogin":false,"appUpdated":"1970-01-01T00:00:00.000Z"}</script>",
         "themeColor": "#ffffff",
       },
       "filename": "app/index.html",
@@ -351,7 +355,7 @@ it('should render a 404 page if no app is found', async () => {
     {
       "data": {
         "bulmaURL": "/bulma/0.9.3/bulma.min.css",
-        "faURL": "/fa/6.4.2/css/all.min.css",
+        "faURL": "/fa/6.5.1/css/all.min.css",
         "message": "The app you are looking for could not be found.",
       },
       "filename": "app/error.html",

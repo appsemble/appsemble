@@ -13,8 +13,9 @@ import {
   useMeta,
 } from '@appsemble/react-components';
 import axios from 'axios';
-import { type ReactElement, useCallback } from 'react';
+import { type ReactNode, useCallback } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
+import { Link, useParams } from 'react-router-dom';
 
 import { messages } from './messages.js';
 import { OAuth2Secrets } from './OAuth2Secrets/index.js';
@@ -35,7 +36,7 @@ interface EmailFormParameters {
   emailSecure: boolean;
 }
 
-export function SecretsPage(): ReactElement {
+export function SecretsPage(): ReactNode {
   useMeta(messages.title);
   const { app, setApp } = useApp();
   const push = useMessages();
@@ -43,12 +44,20 @@ export function SecretsPage(): ReactElement {
   const emailSettingsResult = useData<
     Omit<EmailFormParameters, 'emailPassword'> & { emailPassword: boolean }
   >(`/api/apps/${app.id}/email`);
+  const { lang } = useParams<{ lang: string }>();
 
   const onClickOAuth2Checkbox = useCallback(async () => {
     const formData = new FormData();
     formData.set('showAppsembleOAuth2Login', String(!app.showAppsembleOAuth2Login));
     await axios.patch(`/api/apps/${app.id}`, formData);
     setApp({ ...app, showAppsembleOAuth2Login: !app.showAppsembleOAuth2Login });
+  }, [app, setApp]);
+
+  const onClickSelfRegistrationCheckbox = useCallback(async () => {
+    const formData = new FormData();
+    formData.set('enableSelfRegistration', String(!app.enableSelfRegistration));
+    await axios.patch(`/api/apps/${app.id}`, formData);
+    setApp({ ...app, enableSelfRegistration: !app.enableSelfRegistration });
   }, [app, setApp]);
 
   const onSaveEmailSettings = useCallback(
@@ -92,11 +101,20 @@ export function SecretsPage(): ReactElement {
           value={app.showAppsembleOAuth2Login}
         />
         <AsyncCheckbox
+          className="is-block mb-2"
           disabled={app.locked}
           label={<FormattedMessage {...messages.displayAppsembleLogin} />}
           name="enableAppsembleLogin"
           onChange={onClickCheckbox}
           value={app.showAppsembleLogin}
+        />
+        <AsyncCheckbox
+          className="is-block mb-2"
+          disabled={app.locked}
+          label={<FormattedMessage {...messages.displaySelfRegistration} />}
+          name="enableSelfRegistration"
+          onChange={onClickSelfRegistrationCheckbox}
+          value={app.enableSelfRegistration}
         />
       </div>
       <Collapsible collapsed={false} title={<FormattedMessage {...messages.emailSettings} />}>
@@ -173,7 +191,21 @@ export function SecretsPage(): ReactElement {
       <ServiceSecrets />
       <OAuth2Secrets />
       <SamlSecrets />
-      <Collapsible title={<FormattedMessage {...messages.ssl} />}>
+      <Collapsible
+        help={
+          <FormattedMessage
+            {...messages.sslDescription}
+            values={{
+              link: (link) => (
+                <Link rel="noopener noreferrer" target="_blank" to={`/${lang}/docs/03-guide/tls`}>
+                  {link}
+                </Link>
+              ),
+            }}
+          />
+        }
+        title={<FormattedMessage {...messages.ssl} />}
+      >
         <SSLSecrets />
       </Collapsible>
       <Collapsible title="SCIM">

@@ -3,13 +3,13 @@ import {
   type FlowPageDefinition,
   type TabsPageDefinition,
 } from '@appsemble/types';
-import { type ReactElement, useCallback, useState } from 'react';
+import { type ReactNode, useCallback, useState } from 'react';
 import { type Document, type ParsedNode, type YAMLMap, type YAMLSeq } from 'yaml';
 
 import { type Page } from '../../../../../../types.js';
 import { useApp } from '../../../index.js';
 import { BlockItem } from '../../ElementsList/BlockItem/index.js';
-import { PageItem } from '../../ElementsList/PageItem/PageItem.js';
+import { PageItem } from '../../ElementsList/PageItem/index.js';
 import { SubPageItem } from '../../ElementsList/SubPageItem/index.js';
 
 interface PagesListProps {
@@ -25,7 +25,7 @@ export function PagesList({
   selectedBlock,
   selectedPage,
   selectedSubParent,
-}: PagesListProps): ReactElement {
+}: PagesListProps): ReactNode {
   const { app } = useApp();
   const [disabledPages, setDisabledPages] = useState<number[]>([]);
 

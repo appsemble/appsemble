@@ -1,6 +1,6 @@
 {
   "name": "@appsemble/e2e",
-  "version": "0.22.10",
+  "version": "0.24.12",
   "private": true,
   "description": "End-to-end tests used for testing Appsemble apps in an existing environment.",
   "keywords": [
@@ -23,6 +23,7 @@
   "type": "module",
   "scripts": {
     "e2e": "playwright test",
+    "codegen": "playwright codegen",
     "test": "vitest"
   },
   "dependencies": {

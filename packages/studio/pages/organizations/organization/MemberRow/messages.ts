@@ -13,6 +13,10 @@ export const messages = defineMessages({
     id: 'studio.eXDZGQ',
     defaultMessage: 'Maintainer',
   },
+  AccountManager: {
+    id: 'studio.Sa1VZo',
+    defaultMessage: 'AccountManager',
+  },
   Owner: {
     id: 'studio.zINlao',
     defaultMessage: 'Owner',

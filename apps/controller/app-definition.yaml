@@ -1,0 +1,42 @@
+name: controller
+description: This app demonstrates the app controller functionality
+defaultPage: Example Page A
+
+controller:
+  events:
+    emit:
+      data: calculationResult
+
+pages:
+  - name: Example Page A
+    blocks:
+      - type: form
+        version: 0.24.12
+        parameters:
+          fields:
+            - name: a
+              type: number
+              label: { translate: firstNumber }
+            - name: b
+              type: number
+              label: { translate: secondNumber }
+            - name: operation
+              type: enum
+              label: { translate: operation }
+              enum:
+                - value: addition
+                - value: multiplication
+        actions:
+          onSubmit:
+            type: controller
+            handler: calculate
+
+      - type: detail-viewer
+        version: 0.24.12
+        parameters:
+          fields:
+            - value: { prop: result }
+              label: Calculation Result
+        events:
+          listen:
+            data: calculationResult

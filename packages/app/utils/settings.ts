@@ -1,9 +1,13 @@
 export const {
   apiUrl,
+  appControllerCode,
+  appControllerImplementations,
   appUpdated,
   blockManifests,
   definition,
+  demoMode,
   development,
+  enableSelfRegistration,
   id: appId,
   languages,
   logins,
@@ -11,6 +15,7 @@ export const {
   sentryEnvironment,
   showAppsembleLogin,
   showAppsembleOAuth2Login,
+  showDemoLogin,
   vapidPublicKey,
 } = window.settings;
 delete window.settings;

@@ -1,0 +1,9 @@
+.rightIcon {
+  color: rgb(54 54 54) !important;
+  right: 0.5rem;
+}
+
+.leftIcon {
+  left: 0.9rem !important;
+  position: absolute;
+}

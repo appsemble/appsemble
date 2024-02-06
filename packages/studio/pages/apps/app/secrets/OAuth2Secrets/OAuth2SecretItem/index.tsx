@@ -1,7 +1,7 @@
 import { useToggle } from '@appsemble/react-components';
 import { type AppOAuth2Secret } from '@appsemble/types';
 import axios from 'axios';
-import { type ReactElement, useCallback } from 'react';
+import { type ReactNode, useCallback } from 'react';
 
 import { ListButton } from '../../../../../../components/ListButton/index.js';
 import { useApp } from '../../../index.js';
@@ -34,7 +34,7 @@ export function OAuth2SecretItem({
   onDeleted,
   onUpdated,
   secret,
-}: OAuth2SecretItemProps): ReactElement {
+}: OAuth2SecretItemProps): ReactNode {
   const modal = useToggle();
   const { app } = useApp();
 

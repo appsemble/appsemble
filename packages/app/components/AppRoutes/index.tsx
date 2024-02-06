@@ -1,10 +1,10 @@
 import { MetaProvider } from '@appsemble/react-components';
 import { normalize } from '@appsemble/utils';
-import { type ReactElement } from 'react';
+import { type ReactNode } from 'react';
 import { Navigate, Route, Routes } from 'react-router-dom';
 
 import { getDefaultPageName } from '../../utils/getDefaultPageName.js';
-import { sentryDsn } from '../../utils/settings.js';
+import { sentryDsn, showDemoLogin } from '../../utils/settings.js';
 import { useAppDefinition } from '../AppDefinitionProvider/index.js';
 import { useAppMessages } from '../AppMessagesProvider/index.js';
 import { AppSettings } from '../AppSettings/index.js';
@@ -24,7 +24,7 @@ import { Verify } from '../Verify/index.js';
  *
  * This maps the page to a route and displays a page depending on URL.
  */
-export function AppRoutes(): ReactElement {
+export function AppRoutes(): ReactNode {
   const { getAppMessage } = useAppMessages();
   const { definition } = useAppDefinition();
   const { isLoggedIn, role } = useUser();
@@ -45,7 +45,7 @@ export function AppRoutes(): ReactElement {
       <Routes>
         <Route caseSensitive element={<AppSettings />} path="/Settings" />
 
-        {!isLoggedIn && !hasCustomLogin ? (
+        {(!isLoggedIn && !hasCustomLogin) || showDemoLogin ? (
           <Route caseSensitive element={<Login />} path="/Login" />
         ) : null}
         {!isLoggedIn && !hasCustomRegister ? (

@@ -2,7 +2,7 @@ import { type OAuth2LoginOptions, startOAuth2Login } from '@appsemble/web-utils'
 import {
   type ComponentPropsWithoutRef,
   type MouseEvent,
-  type ReactElement,
+  type ReactNode,
   useCallback,
   useState,
 } from 'react';
@@ -25,7 +25,7 @@ export function OAuth2LoginButton({
   redirectUrl,
   scope,
   ...props
-}: OAuth2LoginButtonProps): ReactElement {
+}: OAuth2LoginButtonProps): ReactNode {
   const [loading, setLoading] = useState(false);
 
   const handleClick = useCallback(

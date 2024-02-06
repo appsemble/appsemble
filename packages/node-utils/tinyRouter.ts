@@ -1,6 +1,8 @@
 import { has } from '@appsemble/utils';
 import { type Middleware } from 'koa';
 
+import { throwKoaError } from './koa.js';
+
 type HttpMethod = 'delete' | 'get' | 'head' | 'options' | 'patch' | 'post' | 'put';
 
 type Route = {
@@ -34,13 +36,7 @@ export function tinyRouter(routes: Route[]): Middleware {
     let m = method.toLowerCase();
     if (!has(result, m)) {
       if (!has(result, 'any')) {
-        ctx.response.status = 405;
-        ctx.response.body = {
-          statusCode: 405,
-          error: 'Method Not Allowed',
-          message: 'Method not allowed',
-        };
-        ctx.throw();
+        throwKoaError(ctx, 405, 'Method not allowed');
       }
       m = 'any';
     }

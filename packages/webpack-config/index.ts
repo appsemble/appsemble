@@ -1,7 +1,7 @@
 import { createRequire } from 'node:module';
 import { join } from 'node:path';
 
-import { type BlockConfig } from '@appsemble/types';
+import { type ProjectBuildConfig } from '@appsemble/types';
 import CaseSensitivePathsPlugin from 'case-sensitive-paths-webpack-plugin';
 import CssMinimizerPlugin from 'css-minimizer-webpack-plugin';
 import MiniCssExtractPlugin from 'mini-css-extract-plugin';
@@ -21,7 +21,7 @@ const loaders = {
 };
 
 export default function createWebpackConfig(
-  { dir, name }: BlockConfig,
+  { dir, name }: ProjectBuildConfig,
   { mode }: CliConfigOptions,
 ): Configuration {
   const [, blockName] = name.split('/');

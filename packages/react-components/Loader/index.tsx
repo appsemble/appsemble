@@ -1,5 +1,5 @@
 import classNames from 'classnames';
-import { type ElementType, type ReactElement } from 'react';
+import { type ElementType, type ReactNode } from 'react';
 
 import styles from './index.module.css';
 
@@ -12,7 +12,7 @@ export function Loader({
   className,
   component: Component = 'div',
   ...props
-}: LoaderProps): ReactElement {
+}: LoaderProps): ReactNode {
   return (
     <Component className={classNames(styles.loader, 'appsemble-loader', className)} {...props} />
   );

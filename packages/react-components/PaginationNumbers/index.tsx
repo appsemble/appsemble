@@ -1,5 +1,5 @@
 import { Button } from '@appsemble/react-components';
-import { type ReactElement } from 'react';
+import { type ReactNode } from 'react';
 
 interface PaginationNumbersProps {
   /**
@@ -31,7 +31,7 @@ export function PaginationNumbers({
   maxPages,
   onPageChange,
   page,
-}: PaginationNumbersProps): ReactElement {
+}: PaginationNumbersProps): ReactNode {
   if (maxPages < 6) {
     return (
       <li>

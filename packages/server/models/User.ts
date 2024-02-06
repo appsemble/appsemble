@@ -18,11 +18,13 @@ import {
 import {
   AppMember,
   EmailAuthorization,
-  Member,
   OAuth2AuthorizationCode,
   OAuthAuthorization,
   Organization,
+  OrganizationMember,
   ResetPasswordToken,
+  Training,
+  UserTraining,
 } from './index.js';
 
 @Table({ tableName: 'User', paranoid: true })
@@ -55,8 +57,19 @@ export class User extends Model {
   @Column(DataType.BOOLEAN)
   subscribed: boolean;
 
-  @BelongsToMany(() => Organization, () => Member)
+  /**
+   * Whether this user is created by the demo login feature.
+   */
+  @AllowNull(false)
+  @Default(false)
+  @Column(DataType.BOOLEAN)
+  demoLoginUser: boolean;
+
+  @BelongsToMany(() => Organization, () => OrganizationMember)
   Organizations: Organization[];
+
+  @BelongsToMany(() => Training, () => UserTraining)
+  Trainings: Training[];
 
   @HasMany(() => EmailAuthorization)
   EmailAuthorizations: EmailAuthorization[];
@@ -84,5 +97,5 @@ export class User extends Model {
 
   AppMember: AppMember;
 
-  Member: Member;
+  OrganizationMember: OrganizationMember;
 }

@@ -1,4 +1,4 @@
-import { type ReactChild, type ReactElement, type ReactNode, useCallback, useMemo } from 'react';
+import { type ReactChild, type ReactNode, useCallback, useMemo } from 'react';
 
 import { SimpleFormProvider, useSimpleForm } from '../index.js';
 
@@ -17,7 +17,7 @@ interface SimpleFormObjectProps {
 /**
  * Component that allows for defining objects when used in conjunction with `<SimpleForm />`.
  */
-export function SimpleFormObject({ children, name }: SimpleFormObjectProps): ReactElement {
+export function SimpleFormObject({ children, name }: SimpleFormObjectProps): ReactNode {
   const simpleForm = useSimpleForm();
 
   const setValue = useCallback(

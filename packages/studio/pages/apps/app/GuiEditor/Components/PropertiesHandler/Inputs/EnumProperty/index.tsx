@@ -1,6 +1,6 @@
 import { SelectField } from '@appsemble/react-components';
 import { type Schema } from 'jsonschema';
-import { type ChangeEvent, type ReactElement, useCallback } from 'react';
+import { type ChangeEvent, type ReactNode, useCallback } from 'react';
 import { useIntl } from 'react-intl';
 
 import { messages } from './messages.js';
@@ -16,7 +16,7 @@ export function EnumProperty({
   property,
   schema,
   value = '',
-}: EnumPropertyProps): ReactElement {
+}: EnumPropertyProps): ReactNode {
   const { formatMessage } = useIntl();
 
   const onValueChange = useCallback(

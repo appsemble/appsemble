@@ -22,7 +22,7 @@ export class AppServiceSecret extends Model {
   id: number;
 
   @Column(DataType.STRING)
-  serviceName: string;
+  name: string;
 
   @AllowNull(false)
   @Column(DataType.STRING)

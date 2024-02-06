@@ -1,17 +1,10 @@
 import { useEventListener } from '@appsemble/react-components';
 import { type AppDefinition, type BlockManifest } from '@appsemble/types';
-import {
-  createContext,
-  type ReactElement,
-  type ReactNode,
-  useCallback,
-  useContext,
-  useMemo,
-  useState,
-} from 'react';
+import { createContext, type ReactNode, useCallback, useContext, useMemo, useState } from 'react';
 
 import {
   apiUrl,
+  demoMode,
   blockManifests as initialBlockManifests,
   definition as initialDefinition,
 } from '../../utils/settings.js';
@@ -19,6 +12,7 @@ import {
 interface AppDefinitionContext {
   blockManifests: BlockManifest[];
   definition: AppDefinition;
+  demoMode: boolean;
   revision: number;
 }
 
@@ -42,16 +36,17 @@ function replaceStyle(id: string, style: string): void {
 const Context = createContext<AppDefinitionContext>({
   definition: initialDefinition,
   blockManifests: initialBlockManifests,
+  demoMode,
   revision: 0,
 });
 
-export function AppDefinitionProvider({ children }: AppDefinitionProviderProps): ReactElement {
+export function AppDefinitionProvider({ children }: AppDefinitionProviderProps): ReactNode {
   const [blockManifests, setBlockManifests] = useState(initialBlockManifests);
   const [definition, setDefinition] = useState(initialDefinition);
   const [revision, setRevision] = useState(0);
 
   const value = useMemo(
-    () => ({ blockManifests, definition, revision }),
+    () => ({ blockManifests, definition, revision, demoMode }),
     [blockManifests, definition, revision],
   );
 

@@ -1,6 +1,6 @@
 import { randomBytes } from 'node:crypto';
 
-import { scimAssert, SCIMError } from '@appsemble/node-utils';
+import { assertKoaError, scimAssert, SCIMError, throwKoaError } from '@appsemble/node-utils';
 import { type Context } from 'koa';
 import { type Compare, parse } from 'scim2-parse-filter';
 import { col, fn, where, type WhereOptions } from 'sequelize';
@@ -104,12 +104,12 @@ export async function createSCIMUser(ctx: Context): Promise<void> {
   const defaultRole = (await App.findByPk(appId, { attributes: ['definition'] }))?.definition
     .security?.default?.role;
 
-  if (!defaultRole) {
-    ctx.throw(
-      400,
-      'App does not have a security definition in place to handle SCIM users. See SCIM documentation for more info.',
-    );
-  }
+  assertKoaError(
+    !defaultRole,
+    ctx,
+    400,
+    'App does not have a security definition in place to handle SCIM users. See SCIM documentation for more info.',
+  );
   try {
     await transactional(async (transaction) => {
       const user = await User.create(
@@ -470,7 +470,7 @@ export async function patchSCIMUser(ctx: Context): Promise<void> {
         managerId = getCaseInsensitive(value, 'value') as string;
       }
     } else {
-      ctx.throw(`Unknown path: ${path}`, 400);
+      throwKoaError(ctx, 400, `Unknown path: ${path}`);
     }
   }
 
@@ -505,7 +505,7 @@ export async function patchSCIMUser(ctx: Context): Promise<void> {
         }
       }
     } else {
-      ctx.throw('Expected value to be string or object', 400);
+      throwKoaError(ctx, 400, 'Expected value to be string or object');
     }
   }
 

@@ -9,6 +9,10 @@ export class Resource {
 
   $clonable: boolean;
 
+  $seed: boolean;
+
+  $ephemeral: boolean;
+
   $created: string;
 
   $updated: string;

@@ -31,6 +31,6 @@ export function getCsp({
     'media-src': ['*', 'blob:', 'data:', host],
     'style-src': ["'self'", "'unsafe-inline'", 'https://fonts.googleapis.com'],
     'font-src': ['*', 'data:'],
-    'frame-src': ["'self'", '*.vimeo.com', '*.youtube.com'],
+    'frame-src': ["'self'", '*.vimeo.com', '*.youtube.com', '*.weseedo.nl', host],
   };
 }

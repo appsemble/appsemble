@@ -1,4 +1,4 @@
-import { type GetAppUserInfoParams } from '@appsemble/node-utils';
+import { type GetAppUserInfoParams, throwKoaError } from '@appsemble/node-utils';
 import { type UserInfo } from '@appsemble/types';
 import { literal, Op } from 'sequelize';
 
@@ -27,14 +27,7 @@ export async function getAppUserInfo({
 
     if (!appMember) {
       // The authenticated user may have been deleted.
-      // throw new Error('Forbidden');
-      ctx.response.status = 403;
-      ctx.response.body = {
-        statusCode: 403,
-        error: 'Forbidden',
-        message: 'Forbidden',
-      };
-      ctx.throw();
+      throwKoaError(ctx, 403, 'Forbidden');
     }
 
     return {
@@ -57,23 +50,25 @@ export async function getAppUserInfo({
       properties: appMember.properties ?? {},
     };
   }
-  await (user as User).reload({
-    attributes: ['primaryEmail', 'name', 'locale', 'timezone'],
-    include: [
-      {
-        required: false,
-        model: EmailAuthorization,
-        attributes: ['verified'],
-        where: {
-          email: { [Op.col]: 'User.primaryEmail' },
-        },
-      },
-    ],
-  });
 
-  if (!user) {
+  try {
+    await (user as User).reload({
+      attributes: ['primaryEmail', 'name', 'locale', 'timezone', 'subscribed'],
+      include: [
+        {
+          required: false,
+          model: EmailAuthorization,
+          attributes: ['verified'],
+          where: {
+            email: { [Op.col]: 'User.primaryEmail' },
+          },
+        },
+      ],
+    });
+  } catch {
     // The authenticated user may have been deleted.
-    throw new Error('Forbidden');
+    // Both sequelize instance errors and type errors should be caught here.
+    throwKoaError(ctx, 403, 'Forbidden');
   }
 
   return {
@@ -84,5 +79,6 @@ export async function getAppUserInfo({
     sub: user.id,
     locale: user.locale,
     zoneinfo: user.timezone,
+    subscribed: user.subscribed,
   };
 }

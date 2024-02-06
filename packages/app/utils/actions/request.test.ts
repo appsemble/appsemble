@@ -124,6 +124,34 @@ describe('request', () => {
     expect(result).toStrictEqual({ hello: 'data' });
   });
 
+  it('should inherit content-type when the request data is a single binary blob', async () => {
+    mock.onAny(/.*/).reply((req) => {
+      request = req;
+      return [200, { hello: 'data' }, {}];
+    });
+
+    const imageData = new Blob([], { type: 'image/jpeg' });
+    const action = createTestAction({
+      definition: {
+        type: 'request',
+        method: 'post',
+        body: { static: imageData },
+      },
+      prefix: 'pages.test.blocks.0.actions.onClick',
+      prefixIndex: 'pages.0.blocks.0.actions.onClick',
+    });
+
+    await action(imageData);
+
+    expect(request.method).toBe('post');
+    expect(request.url).toBe(`${apiUrl}/api/apps/42/action/pages.0.blocks.0.actions.onClick`);
+    expect(request.params).toBeUndefined();
+    expect({ ...request.headers }).toMatchObject({
+      Accept: 'application/json, text/plain, */*',
+      'Content-Type': 'image/jpeg',
+    });
+  });
+
   it('should support PUT', async () => {
     mock.onAny(/.*/).reply((req) => {
       request = req;
@@ -463,6 +491,38 @@ describe('request', () => {
     expect(result).toBeInstanceOf(Blob);
     expect(result).toStrictEqual(blob);
   });
+
+  it.each`
+    requestType | expectedResult
+    ${'GET'}    | ${{ data: '{"hello":"data"}', params: '{"key":"value"}' }}
+    ${'DELETE'} | ${{ data: '{"hello":"data"}', params: '{"key":"value"}' }}
+    ${'POST'}   | ${{ params: '{"key":"value"}' }}
+    ${'PUT'}    | ${{ params: '{"key":"value"}' }}
+    ${'PATCH'}  | ${{ params: '{"key":"value"}' }}
+  `(
+    'should support query parameters for $requestType requests when proxy is true',
+    async ({ expectedResult, requestType }) => {
+      mock.onAny(/.*/).reply((req) => {
+        request = req;
+        return [200, { hello: 'data' }, {}];
+      });
+      const action = createTestAction({
+        definition: {
+          type: 'request',
+          method: requestType,
+          proxy: true,
+          query: { 'object.from': { key: 'value' } },
+        },
+        prefix: 'pages.test.blocks.0.actions.onClick',
+        prefixIndex: 'pages.0.blocks.0.actions.onClick',
+      });
+      const result = await action({ hello: 'data' });
+      expect(request.method).toBe(requestType.toLocaleLowerCase());
+      expect(request.url).toBe(`${apiUrl}/api/apps/42/action/pages.0.blocks.0.actions.onClick`);
+      expect(request.params).toStrictEqual(expectedResult);
+      expect(result).toStrictEqual({ hello: 'data' });
+    },
+  );
 
   it('should set parameter as end of URL when presented as a single string', async () => {
     mock.onAny(/.*/).reply((req) => {

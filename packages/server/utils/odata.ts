@@ -180,8 +180,8 @@ function processLogicalExpression(token: Token, model: PartialModel, rename: Ren
     token.type === TokenType.AndExpression
       ? Op.and
       : token.type === TokenType.OrExpression
-      ? Op.or
-      : undefined;
+        ? Op.or
+        : undefined;
   if (!op) {
     return processToken(token, model, rename) as WhereOptions;
   }

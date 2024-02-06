@@ -1,6 +1,6 @@
 import { type BulmaColor } from '@appsemble/types';
 import classNames from 'classnames';
-import { type ReactElement, type ReactNode } from 'react';
+import { type ReactNode } from 'react';
 
 interface MessageProps {
   /**
@@ -24,7 +24,7 @@ interface MessageProps {
   readonly header?: ReactNode;
 }
 
-export function Message({ children, className, color, header }: MessageProps): ReactElement {
+export function Message({ children, className, color, header }: MessageProps): ReactNode {
   return (
     <div className={classNames('message', className, { [`is-${color}`]: color })}>
       {header ? <h6 className="message-header">{header}</h6> : null}

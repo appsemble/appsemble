@@ -1,9 +1,9 @@
-# ![](https://gitlab.com/appsemble/appsemble/-/raw/0.22.10/config/assets/logo.svg) Appsemble CLI
+# ![](https://gitlab.com/appsemble/appsemble/-/raw/0.24.12/config/assets/logo.svg) Appsemble CLI
 
 > Manage apps and blocks from the command line.
 
 [![npm](https://img.shields.io/npm/v/@appsemble/cli)](https://www.npmjs.com/package/@appsemble/cli)
-[![GitLab CI](https://gitlab.com/appsemble/appsemble/badges/0.22.10/pipeline.svg)](https://gitlab.com/appsemble/appsemble/-/releases/0.22.10)
+[![GitLab CI](https://gitlab.com/appsemble/appsemble/badges/0.24.12/pipeline.svg)](https://gitlab.com/appsemble/appsemble/-/releases/0.24.12)
 [![Prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg)](https://prettier.io)
 
 ## Table of Contents
@@ -144,8 +144,8 @@ arguments.
 appsemble app create
 ```
 
-The Appsemble CLI can be used to create and update apps. For example, to create an app in the
-`apps/my-app` directory, run:
+The Appsemble CLI can be used to create, export, import and update apps. For example, to create an
+app in the `apps/my-app` directory, run:
 
 ```sh
 appsemble app publish apps/my-app
@@ -155,6 +155,28 @@ Similarly, to update an app using an app directory, run the following command:
 
 ```sh
 appsemble app update --id <app-id> <path/to/updated app>.
+```
+
+To delete an app using the CLI use the following command:
+
+```sh
+appsemble app delete --id <appId>
+```
+
+To export an app as a zip file, run the following:
+
+```sh
+appsemble app export --id <app-id>
+```
+
+Supported arguments for this app are `resources` and `path`. Resources is used to specify whether to
+include the resources in the exported file and path is the path of the folder where you want to put
+your downloaded file. Path is `./apps` by default and resources is set to `false`.
+
+To import an app from a zip file, use the following command:
+
+```sh
+appsemble app import <path-of-zip-file> --organization <organizationId>
 ```
 
 For a more in depth explanation of how to build apps, use our
@@ -282,5 +304,5 @@ appsemble run-cronjobs --interval 30
 
 ## License
 
-[LGPL-3.0-only](https://gitlab.com/appsemble/appsemble/-/blob/0.22.10/LICENSE.md) ©
+[LGPL-3.0-only](https://gitlab.com/appsemble/appsemble/-/blob/0.24.12/LICENSE.md) ©
 [Appsemble](https://appsemble.com)

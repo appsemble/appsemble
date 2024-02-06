@@ -22,7 +22,7 @@ const getPluralRules = memoize(
  * @param app The app for which to get the remapper context.
  * @param language The preferred language for the context.
  * @param userInfo The OAuth2 compatible user information.
- * @param options The utility options.
+ * @param options The API utility options.
  * @param context The koa context.
  * @returns A localized remapper context for the app.
  */
@@ -67,6 +67,7 @@ export async function getRemapperContext(
       return cache(message || `'{${id}}'`);
     },
     userInfo,
+    appMember: userInfo?.appMember,
     context: {},
     locale: userInfo?.locale ?? app.definition.defaultLanguage ?? defaultLocale,
   };

@@ -1,5 +1,6 @@
 import { randomBytes } from 'node:crypto';
 
+import { assertKoaError, throwKoaError } from '@appsemble/node-utils';
 import jwt, { type JwtPayload } from 'jsonwebtoken';
 import { type Context } from 'koa';
 import { literal, Op } from 'sequelize';
@@ -46,6 +47,7 @@ export async function getUser(ctx: Context): Promise<void> {
     ),
     locale: user.locale,
     timezone: user.timezone,
+    subscribed: user.subscribed,
   };
 }
 
@@ -68,7 +70,7 @@ export async function getUserOrganizations(ctx: Context): Promise<void> {
   ctx.body = organizations.map((org: Organization) => ({
     id: org.id,
     name: org.name,
-    role: org.Users[0].Member.role,
+    role: org.Users[0].OrganizationMember.role,
     description: org.description,
     website: org.website,
     email: org.email,
@@ -81,7 +83,7 @@ export async function getUserOrganizations(ctx: Context): Promise<void> {
 export async function updateUser(ctx: Context): Promise<void> {
   const {
     request: {
-      body: { locale, name, timezone },
+      body: { locale, name, subscribed, timezone },
     },
     user,
   } = ctx;
@@ -101,28 +103,11 @@ export async function updateUser(ctx: Context): Promise<void> {
       where: { email },
     });
 
-    if (!emailAuth) {
-      ctx.response.status = 404;
-      ctx.response.body = {
-        statusCode: 404,
-        error: 'Not Found',
-        message: 'No matching email could be found.',
-      };
-      ctx.throw();
-    }
-
-    if (!emailAuth.verified) {
-      ctx.response.status = 406;
-      ctx.response.body = {
-        statusCode: 406,
-        error: 'Not Acceptable',
-        message: 'This email address has not been verified.',
-      };
-      ctx.throw();
-    }
+    assertKoaError(!emailAuth, ctx, 404, 'No matching email could be found.');
+    assertKoaError(!emailAuth.verified, ctx, 406, 'This email address has not been verified.');
   }
 
-  await dbUser.update({ name, primaryEmail: email, locale, timezone });
+  await dbUser.update({ name, primaryEmail: email, locale, timezone, subscribed });
 
   ctx.body = {
     id: dbUser.id,
@@ -130,6 +115,7 @@ export async function updateUser(ctx: Context): Promise<void> {
     email,
     email_verified: true,
     locale: dbUser.locale,
+    subscribed,
   };
 }
 
@@ -152,15 +138,7 @@ export async function addEmail(ctx: Context): Promise<void> {
     where: { email },
   });
 
-  if (dbEmail) {
-    ctx.response.status = 409;
-    ctx.response.body = {
-      statusCode: 409,
-      error: 'Conflict',
-      message: 'This email has already been registered.',
-    };
-    ctx.throw();
-  }
+  assertKoaError(Boolean(dbEmail), ctx, 409, 'This email has already been registered.');
 
   await (user as User).reload({
     include: [
@@ -201,25 +179,13 @@ export async function removeEmail(ctx: Context): Promise<void> {
 
   const dbEmail = await EmailAuthorization.findOne({ where: { email, UserId: user.id } });
 
-  if (!dbEmail) {
-    ctx.response.status = 404;
-    ctx.response.body = {
-      statusCode: 404,
-      error: 'Not Found',
-      message: 'This email address is not associated with your account.',
-    };
-    ctx.throw();
-  }
-
-  if (user.EmailAuthorizations.length === 1 && !(user as User).OAuthAuthorizations.length) {
-    ctx.response.status = 406;
-    ctx.response.body = {
-      statusCode: 406,
-      error: 'Not Acceptable',
-      message: 'Deleting this email results in the inability to access this account.',
-    };
-    ctx.throw();
-  }
+  assertKoaError(!dbEmail, ctx, 404, 'This email address is not associated with your account.');
+  assertKoaError(
+    user.EmailAuthorizations.length === 1 && !(user as User).OAuthAuthorizations.length,
+    ctx,
+    406,
+    'Deleting this email results in the inability to access this account.',
+  );
 
   await dbEmail.destroy();
 
@@ -240,13 +206,7 @@ export function refreshToken(ctx: Context): void {
   try {
     ({ sub } = jwt.verify(body.refresh_token, argv.secret, { audience: argv.host }) as JwtPayload);
   } catch {
-    ctx.response.status = 401;
-    ctx.response.body = {
-      statusCode: 401,
-      error: 'Unauthorized',
-      message: 'Invalid refresh token',
-    };
-    ctx.throw();
+    throwKoaError(ctx, 401, 'Invalid refresh token');
   }
 
   ctx.body = createJWTResponse(sub);
@@ -259,15 +219,13 @@ export async function getSubscribedUsers(ctx: Context): Promise<void> {
     },
   } = ctx;
 
-  if (authorization !== `Bearer ${argv.adminApiSecret}` || !argv.adminApiSecret) {
-    ctx.response.status = 401;
-    ctx.response.body = {
-      statusCode: 401,
-      error: 'Unauthorized',
-      message: 'Invalid or missing admin API secret',
-    };
-    ctx.throw();
-  }
+  assertKoaError(
+    authorization !== `Bearer ${argv.adminApiSecret}` || !argv.adminApiSecret,
+    ctx,
+    401,
+    'Invalid or missing admin API secret',
+  );
+
   const users = await User.findAll({
     include: {
       model: EmailAuthorization,
@@ -292,18 +250,18 @@ export async function unsubscribe(ctx: Context): Promise<void> {
     },
   } = ctx;
 
-  if (authorization !== `Bearer ${argv.adminApiSecret}` || !argv.adminApiSecret) {
-    ctx.response.status = 401;
-    ctx.response.body = {
-      statusCode: 401,
-      error: 'Unauthorized',
-      message: 'Invalid or missing admin API secret',
-    };
-    ctx.throw();
-  }
+  assertKoaError(
+    authorization !== `Bearer ${argv.adminApiSecret}` || !argv.adminApiSecret,
+    ctx,
+    401,
+    'Invalid or missing admin API secret',
+  );
+
   const user = await User.findOne({ where: { primaryEmail: email } });
-  if (!user.subscribed) {
-    ctx.body = 'User is already unsubscribed';
+  assertKoaError(!user, ctx, 404, 'User does not exist');
+  if (!user?.subscribed) {
+    ctx.status = 422;
+    ctx.body = "User wasn't subscribed";
     return;
   }
 

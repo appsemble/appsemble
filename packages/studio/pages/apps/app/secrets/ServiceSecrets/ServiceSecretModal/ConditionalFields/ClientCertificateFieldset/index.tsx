@@ -1,5 +1,5 @@
 import { SimpleFormField, TextAreaField } from '@appsemble/react-components';
-import { type ReactElement } from 'react';
+import { type ReactNode } from 'react';
 import { FormattedMessage } from 'react-intl';
 
 import { messages } from './messages.js';
@@ -15,9 +15,7 @@ interface ClientCertificateFieldsetProps {
   readonly disabled: boolean;
 }
 
-export function ClientCertificateFieldset({
-  disabled,
-}: ClientCertificateFieldsetProps): ReactElement {
+export function ClientCertificateFieldset({ disabled }: ClientCertificateFieldsetProps): ReactNode {
   return (
     <>
       <SimpleFormField

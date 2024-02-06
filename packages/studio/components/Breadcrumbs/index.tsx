@@ -1,7 +1,7 @@
 import { useBreadcrumbs } from '@appsemble/react-components';
 import { useIntl } from 'react-intl';
 import { Link } from 'react-router-dom';
-import { type ReactElement } from 'rehype-react/lib';
+import { type ReactNode } from 'rehype-react/lib';
 
 import { messages } from './messages.js';
 import { useBreadCrumbsDecoration } from '../BreadCrumbsDecoration/index.js';
@@ -9,17 +9,18 @@ import { useBreadCrumbsDecoration } from '../BreadCrumbsDecoration/index.js';
 /**
  * Render breadcrumbs based on the `<MetaProvider />`.
  */
-export function Breadcrumbs(): ReactElement {
+export function Breadcrumbs(): ReactNode {
   const breadcrumbs = useBreadcrumbs();
   const { formatMessage } = useIntl();
 
   const [decoration] = useBreadCrumbsDecoration();
 
   return (
-    <div className="is-flex-tablet">
+    <div className="breadcrumbs is-flex-tablet" id="breadcrumbsDiv">
       <nav
         aria-label={formatMessage(messages.breadcrumbs)}
-        className="breadcrumb is-flex-grow-0 is-flex-shrink-0 mr-4 my-0 py-2"
+        className="breadcrumb is-flex-grow-0 is-flex-shrink-0 mb-3"
+        id="breadcrumbs"
       >
         <ul>
           {breadcrumbs.map(({ title, url }, index) => {

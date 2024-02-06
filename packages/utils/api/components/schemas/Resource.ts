@@ -12,9 +12,22 @@ export const Resource: OpenAPIV3.NonArraySchemaObject = {
     $clonable: {
       type: 'boolean',
     },
+    $ephemeral: {
+      type: 'boolean',
+    },
     $expires: {
-      type: 'string',
-      format: 'date-time',
+      anyOf: [
+        {
+          type: 'string',
+          format: 'date-time',
+        },
+        {
+          type: 'string',
+          pattern:
+            /^(\d+(y|yr|years))?\s*(\d+months)?\s*(\d+(w|wk|weeks))?\s*(\d+(d|days))?\s*(\d+(h|hr|hours))?\s*(\d+(m|min|minutes))?\s*(\d+(s|sec|seconds))?$/
+              .source,
+        },
+      ],
     },
   },
 };

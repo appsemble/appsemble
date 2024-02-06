@@ -1,6 +1,13 @@
 import { randomBytes } from 'node:crypto';
 
-import { createGetAppMember, logger, serveIcon } from '@appsemble/node-utils';
+import {
+  assertKoaError,
+  createGetAppMember,
+  logger,
+  serveIcon,
+  throwKoaError,
+  UserPropertiesError,
+} from '@appsemble/node-utils';
 import {
   type AppAccount,
   type AppMember as AppMemberType,
@@ -145,7 +152,7 @@ export async function getAppMembers(ctx: Context): Promise<void> {
   } = ctx;
 
   const app = await App.findByPk(appId, {
-    attributes: ['OrganizationId', 'definition'],
+    attributes: ['OrganizationId', 'definition', 'demoMode'],
     include: [
       {
         model: AppMember,
@@ -156,18 +163,13 @@ export async function getAppMembers(ctx: Context): Promise<void> {
       },
     ],
   });
-  if (!app) {
-    ctx.response.status = 404;
-    ctx.response.body = {
-      status: 404,
-      message: 'App not found',
-      error: 'Not Found',
-    };
-    ctx.throw();
-  }
+
+  assertKoaError(!app, ctx, 404, 'App not found');
 
   const appMembers: AppMemberType[] = app.AppMembers.map((member) => ({
-    id: member.UserId,
+    userId: member.UserId,
+    memberId: member.id,
+    demo: member.User.demoLoginUser,
     name: member.name,
     primaryEmail: member.email,
     role: member.role,
@@ -185,12 +187,15 @@ export async function getAppMembers(ctx: Context): Promise<void> {
       ],
     });
 
-    for (const user of organization.Users) {
+    for (const orgUser of organization.Users) {
       appMembers.push({
-        id: user.id,
-        name: user.name,
-        primaryEmail: user.primaryEmail,
-        role: user?.AppMember?.role ?? app.definition.security.default.role,
+        userId: orgUser.id,
+        memberId: orgUser.AppMember?.id,
+        demo: orgUser.demoLoginUser,
+        name: orgUser.name,
+        primaryEmail: orgUser.primaryEmail,
+        properties: orgUser?.AppMember?.properties,
+        role: orgUser?.AppMember?.role ?? app.definition.security.default.role,
       });
     }
   }
@@ -198,18 +203,67 @@ export async function getAppMembers(ctx: Context): Promise<void> {
   ctx.body = appMembers;
 }
 
+export async function getAppMembersByRoles(ctx: Context): Promise<void> {
+  const {
+    pathParams: { appId },
+    queryParams: { roles },
+  } = ctx;
+
+  const app = await App.findByPk(appId, {
+    attributes: ['OrganizationId', 'definition', 'demoMode'],
+  });
+
+  const supportedAppRoles = Object.keys(app.definition.security.roles);
+  const passedRolesAreSupported = roles.every((role) => supportedAppRoles.includes(role));
+
+  assertKoaError(passedRolesAreSupported, ctx, 400, 'Unsupported role in filter!');
+
+  const rolesFilter =
+    Array.isArray(roles) && roles.length > 0 && passedRolesAreSupported
+      ? roles
+      : supportedAppRoles.filter((role) => role !== app.definition.security.default.role);
+
+  assertKoaError(!app, ctx, 404, 'App not found');
+
+  if (!app.demoMode) {
+    await checkRole(ctx, app.OrganizationId, Permission.ReadAppAccounts);
+  }
+
+  const appMembersWithUser = await AppMember.findAll({
+    attributes: {
+      exclude: ['picture'],
+    },
+    where: {
+      AppId: appId,
+      role: {
+        [Op.in]: rolesFilter,
+      },
+    },
+    include: [User],
+  });
+
+  ctx.body = appMembersWithUser.map((member) => ({
+    userId: member.UserId,
+    memberId: member.id,
+    name: member.name,
+    primaryEmail: member.email,
+    role: member.role,
+    properties: member.properties,
+  }));
+}
+
 export const getAppMember = createGetAppMember(options);
 
 export async function setAppMember(ctx: Context): Promise<void> {
   const {
-    pathParams: { appId, memberId },
+    pathParams: { appId, userId },
     request: {
       body: { properties, role },
     },
   } = ctx;
 
   const app = await App.findByPk(appId, {
-    attributes: ['OrganizationId', 'definition', 'id'],
+    attributes: ['OrganizationId', 'definition', 'id', 'demoMode'],
     include: [
       {
         model: AppMember,
@@ -217,65 +271,66 @@ export async function setAppMember(ctx: Context): Promise<void> {
           exclude: ['picture'],
         },
         required: false,
-        where: { UserId: memberId },
+        where: { UserId: userId },
       },
     ],
   });
-  if (!app) {
-    ctx.response.status = 404;
-    ctx.response.body = {
-      status: 404,
-      error: 'Not Found',
-      message: 'App not found',
-    };
-    ctx.throw();
+
+  assertKoaError(!app, ctx, 404, 'App not found');
+
+  if (!app.demoMode) {
+    await checkRole(ctx, app.OrganizationId, Permission.EditAppAccounts);
   }
 
-  await checkRole(ctx, app.OrganizationId, Permission.EditApps);
+  const user = await User.findByPk(userId);
 
-  const user = await User.findByPk(memberId);
-  if (!user) {
-    ctx.response.status = 404;
-    ctx.response.body = {
-      status: 404,
-      message: 'User with this ID doesn’t exist.',
-      error: 'Not Found',
-    };
-    ctx.throw();
-  }
-  if (!has(app.definition.security.roles, role)) {
-    ctx.response.status = 400;
-    ctx.response.body = {
-      status: 400,
-      message: `Role ‘${role}’ is not defined`,
-      error: 'Bad Request',
-    };
-    ctx.throw();
-  }
+  assertKoaError(!user, ctx, 404, 'User with this ID doesn’t exist.');
+  assertKoaError(
+    !has(app.definition.security.roles, role),
+    ctx,
+    404,
+    `Role ‘${role}’ is not defined`,
+  );
 
   let member = app.AppMembers?.[0];
 
-  if (member) {
-    member.role = role;
-    if (properties) {
-      member.properties = properties;
+  const parsedUserProperties: Record<string, any> = {};
+  if (properties) {
+    for (const [propertyName, propertyValue] of Object.entries(properties)) {
+      try {
+        parsedUserProperties[propertyName] = JSON.parse(propertyValue as string);
+      } catch {
+        parsedUserProperties[propertyName] = propertyValue;
+      }
     }
-    await member.save();
-  } else {
-    member = await AppMember.create({
-      UserId: user.id,
-      AppId: app.id,
-      role,
-      properties,
-    });
+  }
+
+  try {
+    if (member) {
+      member.role = role;
+      member.properties = parsedUserProperties;
+      await member.save();
+    } else {
+      member = await AppMember.create({
+        UserId: user.id,
+        AppId: app.id,
+        role,
+        properties: parsedUserProperties,
+      });
+    }
+  } catch (error) {
+    if (error instanceof UserPropertiesError) {
+      throwKoaError(ctx, 400, error.message);
+    }
   }
 
   ctx.body = {
-    id: user.id,
+    userId: user.id,
+    memberId: member.id,
     name: member.name,
     primaryEmail: member.email,
     role,
-    properties,
+    properties: member.properties,
   };
 }
 
@@ -300,17 +355,133 @@ export async function getAppAccount(ctx: Context): Promise<void> {
     ...createAppAccountQuery(user as User, query),
   });
 
-  if (!app) {
-    ctx.response.status = 404;
-    ctx.response.body = {
-      statusCode: 404,
-      error: 'Not Found',
-      message: 'App account not found',
-    };
-    ctx.throw();
-  }
+  assertKoaError(!app, ctx, 404, 'App account not found');
 
   ctx.body = outputAppMember(app, language, baseLanguage);
+}
+
+export async function updateAppMemberByEmail(ctx: Context): Promise<void> {
+  const {
+    mailer,
+    pathParams: { appId, memberEmail },
+    request: {
+      body: { email, name, password, properties, role },
+    },
+    user,
+  } = ctx;
+
+  const { query } = parseLanguage(ctx, ctx.query?.language);
+
+  const app = await App.findOne({
+    where: { id: appId },
+    ...createAppAccountQuery(user as User, query),
+  });
+
+  assertKoaError(!app, ctx, 404, 'App account not found!');
+
+  const [userMember] = app.AppMembers;
+
+  if (userMember.email !== memberEmail) {
+    assertKoaError(
+      !app.definition?.security?.default?.role,
+      ctx,
+      404,
+      'This app has no security definition!',
+    );
+
+    assertKoaError(
+      !app.enableSelfRegistration && userMember.role !== app.definition.security.default.role,
+      ctx,
+      401,
+    );
+
+    if (!app.demoMode) {
+      await checkRole(ctx, app.OrganizationId, Permission.EditAppAccounts);
+    }
+  }
+
+  if (role) {
+    assertKoaError(
+      !Object.keys(app.definition?.security?.roles).includes(role),
+      ctx,
+      400,
+      'This role is not allowed!',
+    );
+  }
+
+  const appMember = await AppMember.findOne({
+    attributes: {
+      exclude: ['picture', 'password'],
+    },
+    where: {
+      AppId: appId,
+      email: memberEmail,
+    },
+  });
+
+  const result: Partial<AppMember> = {};
+  if (email != null && memberEmail !== email) {
+    result.email = email;
+    result.emailVerified = false;
+    result.emailKey = randomBytes(40).toString('hex');
+
+    const verificationUrl = new URL('/Verify', getAppUrl(app));
+    verificationUrl.searchParams.set('token', result.emailKey);
+
+    mailer
+      .sendTranslatedEmail({
+        appId,
+        to: { email, name },
+        locale: appMember.locale,
+        emailName: 'appMemberEmailChange',
+        values: {
+          link: (text) => `[${text}](${verificationUrl})`,
+          name: appMember.name || 'null',
+          appName: app.definition.name,
+        },
+        app,
+      })
+      .catch((error: Error) => {
+        logger.error(error);
+      });
+  }
+
+  if (name != null) {
+    result.name = name;
+  }
+
+  if (properties) {
+    const parsedUserProperties: Record<string, any> = {};
+    for (const [propertyName, propertyValue] of Object.entries(properties)) {
+      try {
+        parsedUserProperties[propertyName] = JSON.parse(propertyValue as string);
+      } catch {
+        parsedUserProperties[propertyName] = propertyValue;
+      }
+    }
+    result.properties = parsedUserProperties;
+  }
+
+  if (password) {
+    result.password = await hash(password, 10);
+  }
+
+  if (role) {
+    result.role = role;
+  }
+
+  try {
+    await appMember.update(result);
+  } catch (error) {
+    if (error instanceof UserPropertiesError) {
+      throwKoaError(ctx, 400, error.message);
+    }
+  }
+
+  delete appMember.dataValues.password;
+  delete appMember.dataValues.emailKey;
+
+  ctx.body = appMember;
 }
 
 export async function patchAppAccount(ctx: Context): Promise<void> {
@@ -329,15 +500,7 @@ export async function patchAppAccount(ctx: Context): Promise<void> {
     ...createAppAccountQuery(user as User, query),
   });
 
-  if (!app) {
-    ctx.response.status = 404;
-    ctx.response.body = {
-      statusCode: 404,
-      error: 'Not Found',
-      message: 'App account not found',
-    };
-    ctx.throw();
-  }
+  assertKoaError(!app, ctx, 404, 'App account not found');
 
   const [member] = app.AppMembers;
   const result: Partial<AppMember> = {};
@@ -376,14 +539,28 @@ export async function patchAppAccount(ctx: Context): Promise<void> {
   }
 
   if (properties) {
-    result.properties = properties;
+    const parsedUserProperties: Record<string, any> = {};
+    for (const [propertyName, propertyValue] of Object.entries(properties)) {
+      try {
+        parsedUserProperties[propertyName] = JSON.parse(propertyValue as string);
+      } catch {
+        parsedUserProperties[propertyName] = propertyValue;
+      }
+    }
+    result.properties = parsedUserProperties;
   }
 
   if (locale) {
     result.locale = locale;
   }
 
-  await member.update(result);
+  try {
+    await member.update(result);
+  } catch (error) {
+    if (error instanceof UserPropertiesError) {
+      throwKoaError(ctx, 400, error.message);
+    }
+  }
   ctx.body = outputAppMember(app, language, baseLanguage);
 }
 
@@ -403,35 +580,9 @@ export async function getAppMemberPicture(ctx: Context): Promise<void> {
     ],
   });
 
-  if (!app) {
-    ctx.response.status = 404;
-    ctx.response.body = {
-      statusCode: 404,
-      error: 'Not Found',
-      message: 'App could not be found.',
-    };
-    ctx.throw();
-  }
-
-  if (!app.AppMembers.length) {
-    ctx.response.status = 404;
-    ctx.response.body = {
-      statusCode: 404,
-      error: 'Not Found',
-      message: 'This member does not exist.',
-    };
-    ctx.throw();
-  }
-
-  if (!app.AppMembers[0].picture) {
-    ctx.response.status = 404;
-    ctx.response.body = {
-      error: 'Not Found',
-      message: 'This member has no profile picture set.',
-      statusCode: 404,
-    };
-    ctx.throw();
-  }
+  assertKoaError(!app, ctx, 404, 'App could not be found.');
+  assertKoaError(!app.AppMembers.length, ctx, 404, 'This member does not exist.');
+  assertKoaError(!app.AppMembers[0].picture, ctx, 404, 'This member has no profile picture set.');
 
   await serveIcon(ctx, {
     icon: app.AppMembers[0].picture,
@@ -466,6 +617,8 @@ export async function registerMemberEmail(ctx: Context): Promise<void> {
       'emailPort',
       'emailSecure',
       'path',
+      'enableSelfRegistration',
+      'demoMode',
     ],
     include: {
       model: AppMember,
@@ -477,38 +630,29 @@ export async function registerMemberEmail(ctx: Context): Promise<void> {
     },
   });
 
-  if (!app) {
-    ctx.response.status = 404;
-    ctx.response.body = {
-      statusCode: 404,
-      error: 'Not Found',
-      message: 'App could not be found.',
-    };
-    ctx.throw();
-  }
-
-  if (!app.definition?.security?.default?.role) {
-    ctx.response.status = 404;
-    ctx.response.body = {
-      statusCode: 404,
-      error: 'Not Found',
-      message: 'This app has no security definition',
-    };
-    ctx.throw();
-  }
+  assertKoaError(!app, ctx, 404, 'App could not be found.');
+  assertKoaError(
+    !app.enableSelfRegistration,
+    ctx,
+    401,
+    'Self registration is disabled for this app.',
+  );
+  assertKoaError(
+    !app.definition?.security?.default?.role,
+    ctx,
+    404,
+    'This app has no security definition',
+  );
 
   // XXX: This could introduce a race condition.
   // If this is not manually checked here, Sequelize never returns on
   // the AppMember.create() call if there is a conflict on the email index.
-  if (app.AppMembers.length) {
-    ctx.response.status = 409;
-    ctx.response.body = {
-      statusCode: 409,
-      error: 'Conflict',
-      message: 'User with this email address already exists.',
-    };
-    ctx.throw();
-  }
+  assertKoaError(
+    Boolean(app.AppMembers.length),
+    ctx,
+    409,
+    'User with this email address already exists.',
+  );
 
   try {
     await transactional(async (transaction) => {
@@ -516,9 +660,19 @@ export async function registerMemberEmail(ctx: Context): Promise<void> {
         {
           name,
           timezone,
+          demoLoginUser: app.demoMode,
         },
         { transaction },
       );
+
+      const parsedUserProperties: Record<string, any> = {};
+      for (const [propertyName, propertyValue] of Object.entries(properties)) {
+        try {
+          parsedUserProperties[propertyName] = JSON.parse(propertyValue as string);
+        } catch {
+          parsedUserProperties[propertyName] = propertyValue;
+        }
+      }
 
       await AppMember.create(
         {
@@ -530,32 +684,23 @@ export async function registerMemberEmail(ctx: Context): Promise<void> {
           role: app.definition.security.default.role,
           emailKey: key,
           picture: picture ? picture.contents : null,
-          properties,
+          properties: parsedUserProperties,
           locale,
         },
         { transaction },
       );
     });
   } catch (error: unknown) {
+    if (error instanceof UserPropertiesError) {
+      throwKoaError(ctx, 400, error.message);
+    }
     if (error instanceof UniqueConstraintError) {
-      ctx.response.status = 409;
-      ctx.response.body = {
-        statusCode: 409,
-        error: 'Conflict',
-        message: 'User with  this email address already exists.',
-      };
-      ctx.throw();
+      throwKoaError(ctx, 409, 'User with this email address already exists.');
     }
     if (error instanceof DatabaseError) {
       // XXX: Postgres throws a generic transaction aborted error
       // if there is a way to read the internal error, replace this code.
-      ctx.response.status = 409;
-      ctx.response.body = {
-        statusCode: 409,
-        error: 'Conflict',
-        message: 'User with this email already exists.',
-      };
-      ctx.throw();
+      throwKoaError(ctx, 409, 'User with this email already exists.');
     }
 
     throw error;
@@ -588,6 +733,156 @@ export async function registerMemberEmail(ctx: Context): Promise<void> {
   ctx.body = createJWTResponse(user.id);
 }
 
+export async function createMemberEmail(ctx: Context): Promise<void> {
+  const {
+    mailer,
+    pathParams: { appId },
+    request: {
+      body: { locale, name, password, picture, properties = {}, role, timezone },
+    },
+  } = ctx;
+
+  const email = ctx.request.body.email.toLowerCase();
+  const hashedPassword = await hash(password, 10);
+  const key = randomBytes(40).toString('hex');
+  let createdUser: User;
+
+  const app = await App.findByPk(appId, {
+    attributes: [
+      'definition',
+      'domain',
+      'OrganizationId',
+      'emailName',
+      'emailHost',
+      'emailUser',
+      'emailPassword',
+      'emailPort',
+      'emailSecure',
+      'path',
+      'demoMode',
+    ],
+    include: {
+      model: AppMember,
+      attributes: {
+        exclude: ['picture'],
+      },
+      where: { email },
+      required: false,
+    },
+  });
+
+  if (!app.demoMode) {
+    await checkRole(ctx, app.OrganizationId, Permission.CreateAppAccounts);
+  }
+
+  assertKoaError(!app, ctx, 404, 'App could not be found.');
+  assertKoaError(
+    !app.definition?.security?.default?.role,
+    ctx,
+    404,
+    'This app has no security definition',
+  );
+
+  if (role) {
+    assertKoaError(
+      !Object.keys(app.definition?.security?.roles).includes(role),
+      ctx,
+      400,
+      'This role is not allowed!',
+    );
+  }
+
+  // XXX: This could introduce a race condition.
+  // If this is not manually checked here, Sequelize never returns on
+  // the AppMember.create() call if there is a conflict on the email index.
+  assertKoaError(
+    Boolean(app.AppMembers.length),
+    ctx,
+    409,
+    'User with this email address already exists.',
+  );
+
+  try {
+    await transactional(async (transaction) => {
+      createdUser = await User.create(
+        {
+          name,
+          timezone,
+          demoLoginUser: app.demoMode,
+        },
+        { transaction },
+      );
+
+      const parsedUserProperties: Record<string, any> = {};
+      if (properties) {
+        for (const [propertyName, propertyValue] of Object.entries(properties)) {
+          try {
+            parsedUserProperties[propertyName] = JSON.parse(propertyValue as string);
+          } catch {
+            parsedUserProperties[propertyName] = propertyValue;
+          }
+        }
+      }
+
+      await AppMember.create(
+        {
+          UserId: createdUser.id,
+          AppId: appId,
+          name,
+          password: hashedPassword,
+          email,
+          role: role ?? app.definition.security.default.role,
+          emailKey: key,
+          picture: picture ? picture.contents : null,
+          properties: parsedUserProperties,
+          locale,
+        },
+        { transaction },
+      );
+    });
+  } catch (error: unknown) {
+    if (error instanceof UserPropertiesError) {
+      throwKoaError(ctx, 400, error.message);
+    }
+    if (error instanceof UniqueConstraintError) {
+      throwKoaError(ctx, 409, 'User with this email address already exists.');
+    }
+    if (error instanceof DatabaseError) {
+      // XXX: Postgres throws a generic transaction aborted error
+      // if there is a way to read the internal error, replace this code.
+      throwKoaError(ctx, 409, 'User with this email already exists.');
+    }
+
+    throw error;
+  }
+
+  const url = new URL('/Verify', getAppUrl(app));
+  url.searchParams.set('token', key);
+
+  // This is purposely not awaited, so failure won’t make the request fail. If this fails, the user
+  // will still be logged in, but will have to request a new verification email in order to verify
+  // their account.
+  mailer
+    .sendTranslatedEmail({
+      to: { email, name },
+      from: app.emailName,
+      appId,
+      emailName: 'welcome',
+      locale,
+      values: {
+        link: (text) => `[${text}](${url})`,
+        appName: app.definition.name,
+        name: name || 'null',
+      },
+      app,
+    })
+    .catch((error: Error) => {
+      logger.error(error);
+    });
+
+  ctx.body = createJWTResponse(createdUser.id);
+}
+
 export async function verifyMemberEmail(ctx: Context): Promise<void> {
   const {
     pathParams: { appId },
@@ -610,25 +905,8 @@ export async function verifyMemberEmail(ctx: Context): Promise<void> {
     ],
   });
 
-  if (!app) {
-    ctx.response.status = 404;
-    ctx.response.body = {
-      statusCode: 404,
-      error: 'Not Found',
-      message: 'App could not be found.',
-    };
-    ctx.throw();
-  }
-
-  if (!app.AppMembers.length) {
-    ctx.response.status = 404;
-    ctx.response.body = {
-      statusCode: 404,
-      error: 'Not Found',
-      message: 'Unable to verify this token.',
-    };
-    ctx.throw();
-  }
+  assertKoaError(!app, ctx, 404, 'App could not be found.');
+  assertKoaError(!app.AppMembers.length, ctx, 404, 'Unable to verify this token.');
 
   const [member] = app.AppMembers;
   member.emailVerified = true;
@@ -637,6 +915,7 @@ export async function verifyMemberEmail(ctx: Context): Promise<void> {
 
   ctx.status = 200;
 }
+
 export async function resendMemberEmailVerification(ctx: Context): Promise<void> {
   const {
     mailer,
@@ -762,25 +1041,8 @@ export async function resetMemberPassword(ctx: Context): Promise<void> {
     },
   });
 
-  if (!app) {
-    ctx.response.status = 404;
-    ctx.response.body = {
-      statusCode: 404,
-      error: 'Not Found',
-      message: 'App not found.',
-    };
-    ctx.throw();
-  }
-
-  if (!app.AppMembers.length) {
-    ctx.response.status = 404;
-    ctx.response.body = {
-      statusCode: 404,
-      error: 'Not Found',
-      message: `Unknown password reset token: ${token}`,
-    };
-    ctx.throw();
-  }
+  assertKoaError(!app, ctx, 404, 'App could not be found.');
+  assertKoaError(!app.AppMembers.length, ctx, 404, `Unknown password reset token: ${token}`);
 
   const password = await hash(ctx.request.body.password, 10);
   const [member] = app.AppMembers;
@@ -793,7 +1055,7 @@ export async function resetMemberPassword(ctx: Context): Promise<void> {
 
 export async function deleteAppMember(ctx: Context): Promise<void> {
   const {
-    pathParams: { appId, memberId },
+    pathParams: { appId, userId },
     user,
   } = ctx;
 
@@ -803,36 +1065,71 @@ export async function deleteAppMember(ctx: Context): Promise<void> {
         model: AppMember,
         attributes: ['id'],
         required: false,
-        where: { UserId: memberId },
+        where: { UserId: userId },
       },
     ],
   });
 
-  if (!app) {
-    ctx.response.status = 404;
-    ctx.response.body = {
-      statusCode: 404,
-      error: 'Not Found',
-      message: 'App not found',
-    };
-    ctx.throw();
-  }
+  assertKoaError(!app, ctx, 404, 'App not found');
 
-  if (user.id !== memberId) {
-    await checkRole(ctx, app.OrganizationId, Permission.EditApps);
+  if (user.id !== userId && !app.demoMode) {
+    await checkRole(ctx, app.OrganizationId, Permission.DeleteAppAccounts);
   }
 
   const member = app.AppMembers?.[0];
 
-  if (!member) {
-    ctx.response.status = 404;
-    ctx.response.body = {
-      statusCode: 404,
-      error: 'Not Found',
-      message: 'App member not found',
-    };
-    ctx.throw();
-  }
+  assertKoaError(!member, ctx, 404, 'App member not found');
 
   await member.destroy();
+}
+
+export async function deleteAppMemberByEmail(ctx: Context): Promise<void> {
+  const {
+    pathParams: { appId, memberEmail },
+    user,
+  } = ctx;
+
+  const { query } = parseLanguage(ctx, ctx.query?.language);
+
+  const app = await App.findOne({
+    where: { id: appId },
+    ...createAppAccountQuery(user as User, query),
+  });
+
+  assertKoaError(!app, ctx, 404, 'App account not found!');
+
+  const [userMember] = app.AppMembers;
+
+  if (userMember.email !== memberEmail) {
+    assertKoaError(
+      !app.definition?.security?.default?.role,
+      ctx,
+      404,
+      'This app has no security definition!',
+    );
+
+    assertKoaError(
+      !app.enableSelfRegistration && userMember.role !== app.definition.security.default.role,
+      ctx,
+      401,
+    );
+
+    if (!app.demoMode) {
+      await checkRole(ctx, app.OrganizationId, Permission.DeleteAppAccounts);
+    }
+  }
+
+  const appMember = await AppMember.findOne({
+    attributes: {
+      exclude: ['picture'],
+    },
+    where: {
+      AppId: appId,
+      email: memberEmail,
+    },
+  });
+
+  assertKoaError(!appMember, ctx, 404, 'App member not found');
+
+  await appMember.destroy();
 }

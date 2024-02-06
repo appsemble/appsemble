@@ -1,5 +1,5 @@
 import { FormComponent } from '@appsemble/react-components';
-import { type ComponentPropsWithoutRef, forwardRef, type ReactElement } from 'react';
+import { type ComponentPropsWithoutRef, forwardRef, type ReactNode } from 'react';
 
 import { StarRating } from '../StarRating/index.js';
 
@@ -13,7 +13,7 @@ type RatingFieldProps = ComponentPropsWithoutRef<typeof StarRating> &
  */
 export const RatingField = forwardRef<never, RatingFieldProps>(
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  ({ count, name, onChange, value, ...props }, ref): ReactElement => (
+  ({ count, name, onChange, value, ...props }, ref): ReactNode => (
     <FormComponent id={name} {...props}>
       <StarRating count={count} name={name} onChange={onChange} value={value} />
     </FormComponent>

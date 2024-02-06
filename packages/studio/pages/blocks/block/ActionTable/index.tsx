@@ -1,7 +1,7 @@
 import { Icon, Table } from '@appsemble/react-components';
 import { type BlockManifest } from '@appsemble/types';
 import { defaultLocale } from '@appsemble/utils';
-import { type ReactElement } from 'react';
+import { type ReactNode } from 'react';
 
 interface ActionTableProps {
   /**
@@ -13,7 +13,7 @@ interface ActionTableProps {
 /**
  * Render a table of all available actions for a block.
  */
-export function ActionTable({ manifest }: ActionTableProps): ReactElement {
+export function ActionTable({ manifest }: ActionTableProps): ReactNode {
   return (
     <Table>
       <thead>

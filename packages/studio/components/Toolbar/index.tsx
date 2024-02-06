@@ -1,5 +1,5 @@
 import { SideMenuButton } from '@appsemble/react-components';
-import { type ReactElement } from 'react';
+import { type ReactNode } from 'react';
 import { useIntl } from 'react-intl';
 import { Link } from 'react-router-dom';
 
@@ -9,7 +9,7 @@ import { messages } from './messages.js';
 import pkg from '../../package.json';
 import { ProfileDropdown } from '../ProfileDropdown/index.js';
 
-export function Toolbar(): ReactElement {
+export function Toolbar(): ReactNode {
   const { formatMessage } = useIntl();
 
   return (

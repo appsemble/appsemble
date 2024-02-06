@@ -15,15 +15,7 @@ import {
 } from '@appsemble/react-components';
 import { type App } from '@appsemble/types';
 import axios from 'axios';
-import {
-  type ReactElement,
-  type ReactNode,
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react';
+import { type ReactNode, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useNavigate } from 'react-router-dom';
 
@@ -58,10 +50,7 @@ function preprocessWebsite(link: string): string {
 /**
  * The page for configuring various settings of an organization.
  */
-export function SettingsPage({
-  onChangeOrganization,
-  organization,
-}: SettingsPageProps): ReactElement {
+export function SettingsPage({ onChangeOrganization, organization }: SettingsPageProps): ReactNode {
   const { setOrganizations } = useUser();
   const { formatMessage } = useIntl();
   const push = useMessages();

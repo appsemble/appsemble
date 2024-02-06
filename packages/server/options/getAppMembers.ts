@@ -5,11 +5,11 @@ import { AppMember } from '../models/index.js';
 
 export async function getAppMembers({
   app,
-  memberId,
+  userId,
 }: GetAppMembersParams): Promise<AppMemberInterface[]> {
   const appMembers = await AppMember.findAll({
     where: {
-      UserId: memberId,
+      UserId: userId,
       AppId: app.id,
     },
     attributes: {
@@ -18,9 +18,12 @@ export async function getAppMembers({
   });
 
   return appMembers.map((member) => ({
-    id: member.UserId,
+    userId: member.UserId,
+    memberId: member.id,
     name: member.name,
     primaryEmail: member.email,
     role: member.role,
+    demo: app.demoMode,
+    properties: member.properties,
   }));
 }

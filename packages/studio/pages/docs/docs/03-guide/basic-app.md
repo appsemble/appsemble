@@ -10,6 +10,7 @@ value that was entered in the _“Create new app”_ dialog.
 - [Displaying data](#displaying-data)
 - [Creating data](#creating-data)
 - [Detail view](#detail-view)
+- [Export Import](#export-import)
 - [Further reading](#further-reading)
 
 ## Empty app
@@ -94,7 +95,7 @@ pages:
   - name: People
     blocks:
       - type: table
-        version: 0.22.10
+        version: 0.24.12
         events:
           listen:
             data: people
@@ -137,7 +138,7 @@ Let’s add such a `data-loader` block.
 - name: People
   blocks:
     - type: data-loader
-      version: 0.22.10
+      version: 0.24.12
       actions:
         onLoad:
           type: resource.query
@@ -146,7 +147,7 @@ Let’s add such a `data-loader` block.
         emit:
           data: people
     - type: table
-      version: 0.22.10
+      version: 0.24.12
       events:
         listen:
           data: people
@@ -196,7 +197,7 @@ pages:
   - name: People
     blocks:
       - type: data-loader
-        version: 0.22.10
+        version: 0.24.12
         actions:
           onLoad:
             type: resource.query
@@ -205,7 +206,7 @@ pages:
           emit:
             data: people
       - type: table
-        version: 0.22.10
+        version: 0.24.12
         events:
           listen:
             data: people
@@ -227,7 +228,7 @@ Add a new page:
 - name: Register
   blocks:
     - type: form
-      version: 0.22.10
+      version: 0.24.12
       actions:
         onSubmit:
           type: resource.create
@@ -310,7 +311,7 @@ pages:
   - name: Register
     blocks:
       - type: form
-        version: 0.22.10
+        version: 0.24.12
         parameters:
           fields:
             - name: firstName
@@ -344,7 +345,7 @@ pages:
   - name: People
     blocks:
       - type: data-loader
-        version: 0.22.10
+        version: 0.24.12
         actions:
           onLoad:
             type: resource.query
@@ -353,7 +354,7 @@ pages:
           emit:
             data: people
       - type: table
-        version: 0.22.10
+        version: 0.24.12
         events:
           listen:
             data: people
@@ -379,7 +380,7 @@ Add a new page:
     - id
   blocks:
     - type: data-loader
-      version: 0.22.10
+      version: 0.24.12
       actions:
         onLoad:
           type: resource.get
@@ -388,7 +389,7 @@ Add a new page:
         emit:
           data: person
     - type: detail-viewer
-      version: 0.22.10
+      version: 0.24.12
       events:
         listen:
           data: person
@@ -457,7 +458,7 @@ pages:
   - name: Register
     blocks:
       - type: form
-        version: 0.22.10
+        version: 0.24.12
         parameters:
           fields:
             - name: firstName
@@ -498,7 +499,7 @@ pages:
   - name: People
     blocks:
       - type: data-loader
-        version: 0.22.10
+        version: 0.24.12
         actions:
           onLoad:
             type: resource.query
@@ -507,7 +508,7 @@ pages:
           emit:
             data: people
       - type: table
-        version: 0.22.10
+        version: 0.24.12
         actions:
           onClick:
             type: link
@@ -527,7 +528,7 @@ pages:
       - id
     blocks:
       - type: data-loader
-        version: 0.22.10
+        version: 0.24.12
         actions:
           onLoad:
             type: resource.get
@@ -536,7 +537,7 @@ pages:
           emit:
             data: person
       - type: detail-viewer
-        version: 0.22.10
+        version: 0.24.12
         events:
           listen:
             data: person
@@ -554,6 +555,52 @@ pages:
             - type: string
               value: { prop: description }
               label: Description
+```
+
+## Export Import
+
+An app can be exported using the studio or the CLI. Appsemble supports exporting app-definition,
+styling and messages. Exporting resources is optional and requires special permissions. To export an
+app using the studio, visit the app page in studio. Similarly, to export using CLI use the following
+command.
+
+```
+appsemble app export --id <appId>
+```
+
+Other supported flags for export command are `resources`, a boolean representing whether to include
+the resources in the exported zip file, and `path`, representing the folder where you want to put
+your downloaded file.
+
+Similarly, importing an app is possible via the studio as well as CLI, you can import the app
+definition, styling, messaging and resources. Visit the homepage of the studio to import an app.
+Importing an app requires `CreateApps` level of permissions or `apps:write` CLI scope . Zip file
+shall follow the same structure as the exported app. Importing an app is not possible if there
+already exists an app with the same name in that organization. To import an app using the CLI use
+the following command
+
+```
+appsemble app import <path-to-zip-file> --organization <organizationId>
+```
+
+Following structure is implemented for the zip files exported and supported for importing the apps.
+
+```
+.
+├── app-definition.yaml
+├── i18n
+│   ├── en.json
+│   ├── fr.json
+│   ├── hr.json
+│   ├── nl.json
+│   └── ru.json
+├── resources
+│   └── reosurce1.json
+└── theme
+    ├── core
+    │   └── index.css
+    └── shared
+        └── index.css
 ```
 
 ## Further reading

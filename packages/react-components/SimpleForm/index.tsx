@@ -1,7 +1,6 @@
 import {
   type ComponentPropsWithoutRef,
   createContext,
-  type ReactElement,
   type ReactNode,
   useCallback,
   useContext,
@@ -46,7 +45,7 @@ export function SimpleForm<T extends {}>({
   preprocess,
   resetOnSuccess,
   ...props
-}: SimpleFormProps<T>): ReactElement {
+}: SimpleFormProps<T>): ReactNode {
   const [values, setValues] = useState(defaultValues);
   const [submitError, setSubmitError] = useState<Error>(null);
   const [formErrors, setFormErrors] = useState<FormErrors>({});

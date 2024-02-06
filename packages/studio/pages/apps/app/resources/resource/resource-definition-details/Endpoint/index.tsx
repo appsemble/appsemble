@@ -1,6 +1,6 @@
 import { Title } from '@appsemble/react-components';
 import { generateDataFromSchema } from '@appsemble/utils';
-import { type ReactElement } from 'react';
+import { type ReactNode } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { useParams } from 'react-router-dom';
 
@@ -21,7 +21,7 @@ const methods = {
   delete: ['DELETE', 'id'],
 };
 
-export function Endpoint({ hasBody, type }: EndpointProps): ReactElement {
+export function Endpoint({ hasBody, type }: EndpointProps): ReactNode {
   const { app } = useApp();
   const { id, resourceName } = useParams<{ id: string; resourceName: string }>();
   const resource = app.definition.resources[resourceName];

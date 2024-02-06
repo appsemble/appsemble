@@ -20,6 +20,8 @@ import {
 import { getRemapperContext } from '../../app.js';
 import { getResourceDefinition } from '../../resource.js';
 import {
+  type AppAsset,
+  type CheckSeededResourcesParams,
   type CreateAppResourcesWithAssetsParams,
   type GetAppMessagesParams,
   type GetAppParams,
@@ -47,6 +49,8 @@ let mockCreateAppResourcesWithAssets: Mock<
   [CreateAppResourcesWithAssetsParams],
   Promise<Resource[]>
 >;
+let mockCheckSeededResources: Mock<[CheckSeededResourcesParams], Promise<boolean>>;
+let mockGetAppAssets: Mock<[GetAppSubEntityParams], Promise<AppAsset[]>>;
 
 let mockCtx: ParameterizedContext<DefaultState, DefaultContext>;
 let mockCtxIs: Mock<[], string>;
@@ -583,6 +587,8 @@ describe('createCreateResource', () => {
     mockGetApp = vi.fn();
     mockVerifyResourceActionPermission = vi.fn();
     mockCreateAppResourcesWithAssets = vi.fn();
+    mockCheckSeededResources = vi.fn();
+    mockGetAppAssets = vi.fn();
 
     mockCtxIs = vi.fn();
     mockCtx = {
@@ -609,6 +615,8 @@ describe('createCreateResource', () => {
     mockGetApp.mockResolvedValue(mockApp);
     mockCtxIs.mockReturnValue('multipart/form-data');
     mockCreateAppResourcesWithAssets.mockResolvedValue(mockResources);
+    mockCheckSeededResources.mockResolvedValue(false);
+    mockGetAppAssets.mockResolvedValue([]);
 
     const middleware = createCreateResource({
       getApp: mockGetApp as (params: GetAppParams) => Promise<App>,
@@ -618,6 +626,10 @@ describe('createCreateResource', () => {
       verifyResourceActionPermission: mockVerifyResourceActionPermission as (
         params: VerifyResourceActionPermissionParams,
       ) => Promise<Record<string, any>>,
+      checkSeededResources: mockCheckSeededResources as (
+        params: CheckSeededResourcesParams,
+      ) => Promise<boolean>,
+      getAppAssets: mockGetAppAssets as (params: GetAppSubEntityParams) => Promise<AppAsset[]>,
     } as Options);
 
     await middleware(mockCtx, vi.fn());
@@ -682,6 +694,8 @@ describe('createCreateResource', () => {
     mockGetApp.mockResolvedValue(mockApp);
     mockCtxIs.mockReturnValue('multipart/form-data');
     mockCreateAppResourcesWithAssets.mockResolvedValue(mockResources);
+    mockCheckSeededResources.mockResolvedValue(false);
+    mockGetAppAssets.mockResolvedValue([]);
 
     const middleware = createCreateResource({
       getApp: mockGetApp as (params: GetAppParams) => Promise<App>,
@@ -691,6 +705,10 @@ describe('createCreateResource', () => {
       verifyResourceActionPermission: mockVerifyResourceActionPermission as (
         params: VerifyResourceActionPermissionParams,
       ) => Promise<Record<string, any>>,
+      checkSeededResources: mockCheckSeededResources as (
+        params: CheckSeededResourcesParams,
+      ) => Promise<boolean>,
+      getAppAssets: mockGetAppAssets as (params: GetAppSubEntityParams) => Promise<AppAsset[]>,
     } as Options);
 
     await middleware(mockCtx, vi.fn());

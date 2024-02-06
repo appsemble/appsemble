@@ -3,7 +3,6 @@ import classNames from 'classnames';
 import {
   createContext,
   type Dispatch,
-  type ReactElement,
   type ReactNode,
   type SetStateAction,
   useCallback,
@@ -24,7 +23,7 @@ interface SideMenuContext {
   isOpen: boolean;
   toggle: () => void;
   disable: () => void;
-  setMenu: Dispatch<SetStateAction<ReactElement>>;
+  setMenu: Dispatch<SetStateAction<ReactNode>>;
 }
 
 const Context = createContext<SideMenuContext>({
@@ -54,9 +53,9 @@ interface SideMenuProviderProps {
 /**
  * A wrapper that renders a responsive side menu.
  */
-export function SideMenuProvider({ base, bottom, children }: SideMenuProviderProps): ReactElement {
+export function SideMenuProvider({ base, bottom, children }: SideMenuProviderProps): ReactNode {
   const { disable, enabled, toggle } = useToggle();
-  const [menu, setMenu] = useState<ReactElement>(null);
+  const [menu, setMenu] = useState<ReactNode>(null);
 
   const location = useLocation();
   useEffect(() => {
@@ -88,14 +87,37 @@ export function SideMenuProvider({ base, bottom, children }: SideMenuProviderPro
         [enabled, disable, toggle],
       )}
     >
-      <div className={styles.sideMenuWrapper}>
+      <div
+        className={classNames(
+          styles.sideMenuWrapper,
+          { [styles.open]: enabled },
+          {
+            [styles.gui]: location.pathname.match(/(?<=\/)gui(?=\/)/),
+          },
+          { [styles.code]: location.pathname.match(/edit/) && location.hash.length > 0 },
+        )}
+        id="sideMenuWrapper"
+      >
         {/* eslint-disable-next-line jsx-a11y/prefer-tag-over-role */}
         <div
-          className={classNames(styles.backdrop, { [styles.closed]: !enabled })}
+          className={classNames(
+            styles.backdrop,
+            { [styles.closed]: !enabled },
+            { [styles.code]: location.pathname.match(/edit/) && location.hash.length > 0 },
+            { [styles.gui]: location.pathname.match(/(?<=\/)gui(?=\/)/) },
+          )}
           onClick={disable}
           role="presentation"
         />
-        <aside className={classNames(`menu ${styles.sideMenu}`, { [styles.open]: enabled })}>
+        <aside
+          className={classNames(
+            `menu ${styles.sideMenu}`,
+            { [styles.open]: enabled },
+            { [styles.code]: location.pathname.match(/edit/) && location.hash.length > 0 },
+            { [styles.gui]: location.pathname.match(/(?<=\/)gui(?=\/)/) },
+          )}
+          id="sideMenu"
+        >
           {base}
           {menu}
           {bottom}
@@ -109,11 +131,34 @@ export function SideMenuProvider({ base, bottom, children }: SideMenuProviderPro
 /**
  * A Bulma styled menu toggle.
  */
-export function SideMenuButton(): ReactElement {
+export function SideMenuButton(): ReactNode {
   const { isOpen, toggle } = useContext(Context);
   const { formatMessage } = useIntl();
+  const location = useLocation();
 
-  return (
+  return /edit/.test(location.pathname) && location.hash.length > 0 ? (
+    <button
+      aria-label={formatMessage(isOpen ? messages.close : messages.open)}
+      className={classNames('navbar-burger', { 'is-active': isOpen }, styles.button, styles.code)}
+      onClick={toggle}
+      type="button"
+    >
+      <span aria-hidden />
+      <span aria-hidden />
+      <span aria-hidden />
+    </button>
+  ) : /(?<=\/)gui(?=\/)/.test(location.pathname) ? (
+    <button
+      aria-label={formatMessage(isOpen ? messages.close : messages.open)}
+      className={classNames('navbar-burger', { 'is-active': isOpen }, styles.button, styles.gui)}
+      onClick={toggle}
+      type="button"
+    >
+      <span aria-hidden />
+      <span aria-hidden />
+      <span aria-hidden />
+    </button>
+  ) : (
     <button
       aria-label={formatMessage(isOpen ? messages.close : messages.open)}
       className={classNames('navbar-burger', { 'is-active': isOpen }, styles.button)}
@@ -132,7 +177,7 @@ export function SideMenuButton(): ReactElement {
  *
  * @param menu The menu section to add to the side navigation.
  */
-export function useSideMenu(menu: ReactElement): void {
+export function useSideMenu(menu: ReactNode): void {
   const { setMenu } = useContext(Context);
 
   useEffect(() => {

@@ -1,12 +1,13 @@
 import { randomBytes } from 'node:crypto';
 
+import { assertKoaError, throwKoaError } from '@appsemble/node-utils';
 import { normalize, Permission } from '@appsemble/utils';
 import { type Context } from 'koa';
 import { UniqueConstraintError } from 'sequelize';
 import webpush from 'web-push';
 import { parseDocument } from 'yaml';
 
-import { App, AppBlockStyle, AppMessages, AppSnapshot, Resource } from '../models/index.js';
+import { App, AppBlockStyle, AppMessages, AppSnapshot, Asset, Resource } from '../models/index.js';
 import { checkRole } from '../utils/checkRole.js';
 
 export async function getAppTemplates(ctx: Context): Promise<void> {
@@ -30,7 +31,7 @@ export async function getAppTemplates(ctx: Context): Promise<void> {
 export async function createTemplateApp(ctx: Context): Promise<void> {
   const {
     request: {
-      body: { description, name, organizationId, resources, templateId, visibility },
+      body: { assets, description, name, organizationId, resources, templateId, visibility },
     },
     user,
   } = ctx;
@@ -52,6 +53,7 @@ export async function createTemplateApp(ctx: Context): Promise<void> {
     ],
     include: [
       { model: Resource, where: { clonable: true }, required: false },
+      { model: Asset, where: { clonable: true }, required: false },
       { model: AppMessages, required: false },
       { model: AppBlockStyle, required: false },
       { model: AppSnapshot, limit: 1, order: [['created', 'desc']] },
@@ -60,15 +62,7 @@ export async function createTemplateApp(ctx: Context): Promise<void> {
 
   await checkRole(ctx, organizationId, Permission.CreateApps);
 
-  if (!template) {
-    ctx.response.status = 404;
-    ctx.response.body = {
-      statusCode: 404,
-      error: 'Not Found',
-      message: `Template with ID ${templateId} does not exist.`,
-    };
-    ctx.throw();
-  }
+  assertKoaError(!template, ctx, 404, `Template with ID ${templateId} does not exist.`);
 
   if (!template.template && (template.visibility === 'private' || !template.showAppDefinition)) {
     // Only allow cloning of unlisted apps if the user is part of the template’s organization.
@@ -93,6 +87,16 @@ export async function createTemplateApp(ctx: Context): Promise<void> {
       ...(resources && {
         Resources: [].concat(template.Resources.map(({ data, type }) => ({ type, data }))),
       }),
+      ...(assets && {
+        Assets: [].concat(
+          template.Assets.map(({ data, filename, mime, name: assetName }) => ({
+            mime,
+            filename,
+            data,
+            name: assetName,
+          })),
+        ),
+      }),
       AppMessages: [].concat(template.AppMessages),
     };
 
@@ -114,7 +118,7 @@ export async function createTemplateApp(ctx: Context): Promise<void> {
       delete m.messages?.app?.name;
       delete m.messages?.app?.description;
     }
-    const record = await App.create(result, { include: [Resource, AppMessages] });
+    const record = await App.create(result, { include: [Resource, Asset, AppMessages] });
 
     const doc = parseDocument(template.AppSnapshots[0].yaml);
     doc.setIn(['description'], result.definition.description);
@@ -139,15 +143,8 @@ export async function createTemplateApp(ctx: Context): Promise<void> {
     ctx.status = 201;
   } catch (error: unknown) {
     if (error instanceof UniqueConstraintError) {
-      ctx.response.status = 409;
-      ctx.response.body = {
-        statusCode: 409,
-        error: 'Conflict',
-        message: `Another app with path “${path}” already exists`,
-      };
-      ctx.throw();
+      throwKoaError(ctx, 409, `Another app with path “${path}” already exists`);
     }
-
     throw error;
   }
 }

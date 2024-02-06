@@ -1,6 +1,6 @@
 import { randomBytes } from 'node:crypto';
 
-import { logger } from '@appsemble/node-utils';
+import { assertKoaError, logger, throwKoaError } from '@appsemble/node-utils';
 import { hash } from 'bcrypt';
 import { type Context } from 'koa';
 import { DatabaseError, UniqueConstraintError } from 'sequelize';
@@ -10,14 +10,7 @@ import { argv } from '../utils/argv.js';
 import { createJWTResponse } from '../utils/createJWTResponse.js';
 
 function mayRegister(ctx: Context): void {
-  if (argv.disableRegistration) {
-    ctx.response.status = 403;
-    ctx.response.body = {
-      statusCode: 403,
-      error: 'Forbidden',
-      message: 'Registration is disabled',
-    };
-  }
+  assertKoaError(argv.disableRegistration, ctx, 403, 'Registration is disabled');
 }
 
 export async function registerEmail(ctx: Context): Promise<void> {
@@ -25,7 +18,7 @@ export async function registerEmail(ctx: Context): Promise<void> {
   const {
     mailer,
     request: {
-      body: { name, password, timezone },
+      body: { name, password, subscribed, timezone },
     },
   } = ctx;
 
@@ -37,32 +30,20 @@ export async function registerEmail(ctx: Context): Promise<void> {
   try {
     await transactional(async (transaction) => {
       user = await User.create(
-        { name, password: hashedPassword, primaryEmail: email, timezone },
+        { name, password: hashedPassword, primaryEmail: email, timezone, subscribed },
         { transaction },
       );
       await EmailAuthorization.create({ UserId: user.id, email, key }, { transaction });
     });
   } catch (error: unknown) {
     if (error instanceof UniqueConstraintError) {
-      ctx.response.status = 409;
-      ctx.response.body = {
-        statusCode: 409,
-        error: 'Conflict',
-        message: 'User with this email address already exists.',
-      };
-      ctx.throw();
+      throwKoaError(ctx, 409, 'User with this email address already exists.');
     }
 
     if (error instanceof DatabaseError) {
       // XXX: Postgres throws a generic transaction aborted error
       // if there is a way to read the internal error, replace this code.
-      ctx.response.status = 409;
-      ctx.response.body = {
-        statusCode: 409,
-        message: 'User with this email address already exists.',
-        error: 'Conflict',
-      };
-      ctx.throw();
+      throwKoaError(ctx, 409, 'User with this email address already exists.');
     }
 
     throw error;
@@ -91,15 +72,7 @@ export async function verifyEmail(ctx: Context): Promise<void> {
 
   const email = await EmailAuthorization.findOne({ where: { key: token } });
 
-  if (!email) {
-    ctx.response.status = 404;
-    ctx.response.body = {
-      statusCode: 404,
-      message: 'Unable to verify this token.',
-      error: 'Not Found',
-    };
-    ctx.throw();
-  }
+  assertKoaError(!email, ctx, 404, 'Unable to verify this token.');
 
   email.verified = true;
   email.key = null;
@@ -154,14 +127,7 @@ export async function resetPassword(ctx: Context): Promise<void> {
 
   const tokenRecord = await ResetPasswordToken.findByPk(token);
 
-  if (!tokenRecord) {
-    ctx.response.status = 404;
-    ctx.response.body = {
-      statusCode: 404,
-      message: `Unknown password reset token: ${token}`,
-      error: 'Not Found',
-    };
-  }
+  assertKoaError(!tokenRecord, ctx, 404, `Unknown password reset token: ${token}`);
 
   const password = await hash(ctx.request.body.password, 10);
   const user = await User.findByPk(tokenRecord.UserId);

@@ -1,4 +1,4 @@
-import { type ReactElement } from 'react';
+import { type ReactNode } from 'react';
 import { useIntl } from 'react-intl';
 
 import styles from './index.module.css';
@@ -10,7 +10,7 @@ interface ResourcesTabProps {
   readonly isOpenLeft: boolean;
   readonly isOpenRight: boolean;
 }
-export function ResourcesTab({ isOpenLeft, isOpenRight, tab }: ResourcesTabProps): ReactElement {
+export function ResourcesTab({ isOpenLeft, isOpenRight, tab }: ResourcesTabProps): ReactNode {
   const { formatMessage } = useIntl();
   return (
     <>

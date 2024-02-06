@@ -8,9 +8,9 @@ import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vites
 import {
   App,
   AppOAuth2Secret,
-  Member,
   OAuth2AuthorizationCode,
   Organization,
+  OrganizationMember,
 } from '../models/index.js';
 import { setArgv } from '../utils/argv.js';
 import { createServer } from '../utils/createServer.js';
@@ -19,7 +19,7 @@ import { useTestDatabase } from '../utils/test/testSchema.js';
 
 let app: App;
 let mock: MockAdapter;
-let member: Member;
+let member: OrganizationMember;
 
 useTestDatabase(import.meta);
 
@@ -57,7 +57,11 @@ beforeEach(async () => {
       },
     },
   });
-  member = await Member.create({ OrganizationId: organization.id, UserId: user.id, role: 'Owner' });
+  member = await OrganizationMember.create({
+    OrganizationId: organization.id,
+    UserId: user.id,
+    role: 'Owner',
+  });
 });
 
 // https://github.com/vitest-dev/vitest/issues/1154#issuecomment-1138717832

@@ -1,4 +1,4 @@
-import { type Remapper, type Utils } from '@appsemble/sdk';
+import { type BlockUtils, type Remapper } from '@appsemble/sdk';
 import { has } from '@appsemble/utils';
 
 import { validateDateTime } from './validateDateTime.js';
@@ -46,12 +46,13 @@ type Validator = (
 export function validate(
   field: Field,
   values: any,
-  utils: Utils,
+  utils: BlockUtils,
   defaultError: Remapper,
   defaultValue: any,
   prefix = '',
 ): boolean | string {
-  const value = getValueByNameSequence(prefix ? `${prefix}.${field.name}` : field.name, values);
+  let value = getValueByNameSequence(prefix ? `${prefix}.${field.name}` : field.name, values);
+  value = typeof value === 'string' ? value.trim() : value;
 
   if (!has(validators, field.type)) {
     return;

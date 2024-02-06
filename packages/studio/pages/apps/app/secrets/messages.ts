@@ -17,6 +17,10 @@ export const messages = defineMessages({
     id: 'studio.NbKWvJ',
     defaultMessage: 'Display Appsemble OAuth2 login method',
   },
+  displaySelfRegistration: {
+    id: 'studio.mK9mKF',
+    defaultMessage: 'Enable self registration',
+  },
   emailSettings: {
     id: 'studio.ONdhzp',
     defaultMessage: 'Email settings',
@@ -96,5 +100,10 @@ export const messages = defineMessages({
   ssl: {
     id: 'studio.WhIybZ',
     defaultMessage: 'SSL',
+  },
+  sslDescription: {
+    id: 'studio./32Rj2',
+    defaultMessage:
+      'Bring your own SSL certificate to secure your app. Find out more from the <link>documentation</link>.',
   },
 });

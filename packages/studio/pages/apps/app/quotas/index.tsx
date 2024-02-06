@@ -1,6 +1,6 @@
 import { Content, Loader, Title, useData, useMeta } from '@appsemble/react-components';
 import { type Quota } from '@appsemble/types';
-import { type ReactElement } from 'react';
+import { type ReactNode } from 'react';
 import { FormattedMessage, type MessageDescriptor } from 'react-intl';
 
 import { messages } from './messages.js';
@@ -11,7 +11,7 @@ interface QuotaProps {
   readonly quota: Quota;
 }
 
-function QuotaCard({ name, quota: { limit, used } }: QuotaProps): ReactElement {
+function QuotaCard({ name, quota: { limit, used } }: QuotaProps): ReactNode {
   return (
     <div className="column is-half">
       <div className="box">
@@ -28,7 +28,7 @@ function QuotaCard({ name, quota: { limit, used } }: QuotaProps): ReactElement {
   );
 }
 
-export function QuotasPage(): ReactElement {
+export function QuotasPage(): ReactNode {
   useMeta(messages.title);
   const { app } = useApp();
   const { data: emailData, loading } = useData<Quota | null>(`/api/apps/${app.id}/quotas/email`);

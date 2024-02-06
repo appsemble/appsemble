@@ -21,6 +21,7 @@ const referenceActionTrigger: OpenAPIV3.NonArraySchemaObject = {
   type: 'object',
   additionalProperties: false,
   description: 'Defines the type of trigger and the cascading strategy for it',
+  required: ['type'],
   properties: {
     type: {
       enum: ['create', 'update', 'delete'],
@@ -69,6 +70,15 @@ Example: 1d 8h 30m
       pattern:
         /^(\d+(y|yr|years))?\s*(\d+months)?\s*(\d+(w|wk|weeks))?\s*(\d+(d|days))?\s*(\d+(h|hr|hours))?\s*(\d+(m|min|minutes))?\s*(\d+(s|sec|seconds))?$/
           .source,
+    },
+    clonable: {
+      type: 'boolean',
+      description:
+        'Whether the resource should be able to be transferred when cloning the app it belongs to',
+    },
+    ephemeral: {
+      type: 'boolean',
+      description: 'Whether the resource should be cleaned up regularly.',
     },
     schema: {
       $ref: '#/components/schemas/JSONSchemaRoot',

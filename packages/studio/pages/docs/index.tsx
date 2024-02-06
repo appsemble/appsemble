@@ -16,7 +16,7 @@ import Sdk from '@appsemble/sdk/README.md';
 import WebpackConfig from '@appsemble/webpack-config/README.md';
 // eslint-disable-next-line import/no-extraneous-dependencies, n/no-extraneous-import
 import CreateAppsemble from 'create-appsemble/README.md';
-import { type ReactElement, useEffect } from 'react';
+import { type ReactNode, useEffect } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Navigate, Route, useLocation, useNavigate, useParams } from 'react-router-dom';
 
@@ -37,7 +37,7 @@ function getUrl(path: string, base: string): string {
 /**
  * Render the documentation in the root of the Appsemble repository.
  */
-export function DocsRoutes(): ReactElement {
+export function DocsRoutes(): ReactNode {
   const { lang } = useParams<{ lang: string }>();
   const url = `/${lang}/docs`;
   const navigate = useNavigate();

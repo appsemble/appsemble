@@ -7,7 +7,7 @@ import {
 } from '@appsemble/react-components';
 import { type AppDefinition, type Snapshot } from '@appsemble/types';
 import axios from 'axios';
-import { lazy, type ReactElement, Suspense, useCallback } from 'react';
+import { lazy, type ReactNode, Suspense, useCallback } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useParams } from 'react-router-dom';
 import { parse } from 'yaml';
@@ -24,7 +24,7 @@ const CodeDiffBlock = lazy(() =>
   })),
 );
 
-export function SnapshotPage(): ReactElement {
+export function SnapshotPage(): ReactNode {
   const { app, setApp } = useApp();
   const push = useMessages();
 

@@ -3,6 +3,7 @@ import Koa from 'koa';
 import { beforeEach, describe, expect, it } from 'vitest';
 
 import { errorMiddleware } from './error.js';
+import { throwKoaError } from '../koa.js';
 
 describe('errorMiddleware', () => {
   let app: Koa;
@@ -15,13 +16,7 @@ describe('errorMiddleware', () => {
 
   it('should catch Koa errors', async () => {
     app.use((ctx) => {
-      ctx.response.status = 404;
-      ctx.response.body = {
-        statusCode: 404,
-        error: 'Not Found',
-        message: 'Error not found',
-      };
-      ctx.throw();
+      throwKoaError(ctx, 404, 'Error not found');
     });
 
     const response = await request.get('/');
@@ -56,13 +51,7 @@ describe('errorMiddleware', () => {
   it('should set Koa headers correctly', async () => {
     app.use((ctx) => {
       ctx.set('www-authenticate', 'Basic realm="Access to test data", charset="UTF-8"');
-      ctx.response.status = 401;
-      ctx.response.body = {
-        error: 'Unauthorized',
-        message: 'Not authorized!',
-        statusCode: 401,
-      };
-      ctx.throw();
+      throwKoaError(ctx, 401, 'Not authorized!');
     });
 
     const response = await request.get('/');

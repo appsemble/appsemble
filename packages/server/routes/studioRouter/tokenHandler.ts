@@ -1,12 +1,20 @@
 import querystring from 'node:querystring';
 
+import { logger } from '@appsemble/node-utils';
 import { compare } from 'bcrypt';
 import { isPast } from 'date-fns';
 import jwt, { type JwtPayload } from 'jsonwebtoken';
 import { type Context } from 'koa';
 import raw from 'raw-body';
 
-import { AppMember, OAuth2AuthorizationCode, OAuth2ClientCredentials } from '../../models/index.js';
+import {
+  App,
+  AppMember,
+  OAuth2AuthorizationCode,
+  OAuth2ClientCredentials,
+  transactional,
+  User,
+} from '../../models/index.js';
 import { argv } from '../../utils/argv.js';
 import { createJWTResponse } from '../../utils/createJWTResponse.js';
 import { hasScope } from '../../utils/oauth2.js';
@@ -171,6 +179,83 @@ export async function tokenHandler(ctx: Context): Promise<void> {
 
         if (!member || !(await compare(password, member.password))) {
           throw new GrantError('invalid_client');
+        }
+
+        aud = clientId;
+        sub = member.UserId;
+        scope = requestedScope;
+        refreshToken = true;
+        break;
+      }
+      case 'urn:ietf:params:oauth:grant-type:demo-login': {
+        const {
+          appMemberId,
+          client_id: clientId,
+          scope: requestedScope,
+        } = checkTokenRequestParameters(query, ['client_id', 'role', 'scope', 'refresh_token']);
+
+        const appId = Number(clientId.replace('app:', ''));
+        const app = await App.findByPk(appId, {
+          attributes: ['demoMode', 'definition', 'OrganizationId'],
+          include: [
+            {
+              model: AppMember,
+              include: [
+                {
+                  model: User,
+                  where: {
+                    demoLoginUser: true,
+                  },
+                },
+              ],
+            },
+          ],
+        });
+
+        if (!app || !app.demoMode) {
+          throw new GrantError('invalid_client');
+        }
+
+        const role = app.definition.security?.default?.role;
+
+        let member: AppMember;
+        if (appMemberId === '') {
+          logger.verbose('Demo login: Creating new demo user');
+
+          if (!role) {
+            throw new GrantError('invalid_request');
+          }
+
+          await transactional(async (transaction) => {
+            const demoEmail = `demo-${Math.random().toString(36).slice(2)}@example.com`;
+            const user = await User.create(
+              {
+                name: 'Demo User',
+                primaryEmail: demoEmail,
+                timezone: 'Europe/Amsterdam',
+                demoLoginUser: true,
+              },
+              { transaction },
+            );
+
+            member = await AppMember.create(
+              {
+                AppId: appId,
+                UserId: user.id,
+                role,
+                email: demoEmail,
+                emailVerified: true,
+                name: 'Demo User',
+              },
+              { transaction },
+            );
+          });
+        } else {
+          const selectedUser = app.AppMembers.find((appMember) => appMember.UserId === appMemberId);
+          if (selectedUser) {
+            logger.verbose('Demo login: Using existing demo user');
+            member = selectedUser;
+          }
         }
 
         aud = clientId;

@@ -10,14 +10,14 @@ import {
 } from '@appsemble/react-components';
 import { type SAMLRedirectResponse, type UserEmail } from '@appsemble/types';
 import axios from 'axios';
-import { type ReactElement, useCallback, useEffect, useState } from 'react';
+import { type ReactNode, useCallback, useEffect, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Link, useParams } from 'react-router-dom';
 
 import { messages } from './messages.js';
 import { useUser } from '../../../components/UserProvider/index.js';
 
-export function EmailConflict(): ReactElement {
+export function EmailConflict(): ReactNode {
   const { lang } = useParams<{ lang: string }>();
   const push = useMessages();
   const { formatMessage } = useIntl();

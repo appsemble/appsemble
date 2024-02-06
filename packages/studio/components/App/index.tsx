@@ -6,8 +6,9 @@ import {
   SideMenuProvider,
 } from '@appsemble/react-components';
 import { MDXProvider } from '@mdx-js/react';
-import { type ReactElement } from 'react';
-import { Route, Routes } from 'react-router-dom';
+import classNames from 'classnames';
+import { type ReactNode } from 'react';
+import { Route, Routes, useLocation } from 'react-router-dom';
 
 import styles from './index.module.css';
 import { messages } from './messages.js';
@@ -19,6 +20,7 @@ import { BreadCrumbsDecorationProvider } from '../BreadCrumbsDecoration/index.js
 import { CodeBlock } from '../CodeBlock/index.js';
 import { EmailQuotaBanners } from '../EmailQuotaBanners/index.js';
 import { ErrorFallback } from '../ErrorFallback/index.js';
+import { FullscreenProvider, useFullscreenContext } from '../FullscreenProvider/index.js';
 import { HighlightedCode } from '../HighlightedCode/index.js';
 import { MDXAnchor, MDXWrapper } from '../MDX/index.js';
 import { createHeader } from '../MDX/MDXHeader/index.js';
@@ -30,54 +32,69 @@ import { Toolbar } from '../Toolbar/index.js';
 import { UserProvider } from '../UserProvider/index.js';
 import { VerifyBanner } from '../VerifyBanner/index.js';
 
-const studioContent = (
-  <SideMenuProvider base={<SideMenuBase />} bottom={<SideMenuBottom />}>
-    <Toolbar />
-    <div className={`px-3 py-3 is-flex is-flex-direction-column ${styles.content}`}>
-      <VerifyBanner />
-      <EmailQuotaBanners />
-      <BreadCrumbsDecorationProvider>
-        <PageHeaderProvider>
-          <Breadcrumbs />
-          <TopLevelRoutes />
-        </PageHeaderProvider>
-      </BreadCrumbsDecorationProvider>
-    </div>
-  </SideMenuProvider>
-);
+function StudioContent(): ReactNode {
+  const { fullscreen, fullscreenRef } = useFullscreenContext();
+  const location = useLocation();
 
-function Providers({ content }: { readonly content: ReactElement }): ReactElement {
   return (
-    <StudioMessagesProvider>
-      <MDXProvider
-        components={{
-          a: MDXAnchor,
-          pre: CodeBlock,
-          code: HighlightedCode,
-          wrapper: MDXWrapper,
-          h1: createHeader('h1'),
-          h2: createHeader('h2'),
-          h3: createHeader('h3'),
-          h4: createHeader('h4'),
-          h5: createHeader('h5'),
-          h6: createHeader('h6'),
-        }}
-      >
-        <UserProvider>
-          <MetaProvider description={messages.description} title="Appsemble">
-            <ErrorHandler fallback={ErrorFallback}>
-              <Confirmation>
-                <MessagesProvider>{content}</MessagesProvider>
-              </Confirmation>
-            </ErrorHandler>
-          </MetaProvider>
-        </UserProvider>
-      </MDXProvider>
-    </StudioMessagesProvider>
+    <div ref={fullscreenRef}>
+      <SideMenuProvider base={<SideMenuBase />} bottom={<SideMenuBottom />}>
+        <Toolbar />
+        <div
+          className={classNames(`px-3 py-3 is-flex is-flex-direction-column ${styles.content}`, {
+            [styles.fullscreen]: fullscreen.enabled,
+            [styles.code]: location.pathname.match(/edit/) && location.hash.length > 0,
+          })}
+          id="appDiv"
+        >
+          <VerifyBanner />
+          <EmailQuotaBanners />
+          <BreadCrumbsDecorationProvider>
+            <PageHeaderProvider>
+              <Breadcrumbs />
+              <TopLevelRoutes />
+            </PageHeaderProvider>
+          </BreadCrumbsDecorationProvider>
+        </div>
+      </SideMenuProvider>
+    </div>
   );
 }
 
-function TopLevelCollection({ id }: { readonly id: number }): ReactElement {
+function Providers({ content }: { readonly content: ReactNode }): ReactNode {
+  return (
+    <FullscreenProvider>
+      <StudioMessagesProvider>
+        <MDXProvider
+          components={{
+            a: MDXAnchor,
+            pre: CodeBlock,
+            code: HighlightedCode,
+            wrapper: MDXWrapper,
+            h1: createHeader('h1'),
+            h2: createHeader('h2'),
+            h3: createHeader('h3'),
+            h4: createHeader('h4'),
+            h5: createHeader('h5'),
+            h6: createHeader('h6'),
+          }}
+        >
+          <UserProvider>
+            <MetaProvider description={messages.description} title="Appsemble">
+              <ErrorHandler fallback={ErrorFallback}>
+                <Confirmation>
+                  <MessagesProvider>{content}</MessagesProvider>
+                </Confirmation>
+              </ErrorHandler>
+            </MetaProvider>
+          </UserProvider>
+        </MDXProvider>
+      </StudioMessagesProvider>
+    </FullscreenProvider>
+  );
+}
+
+function TopLevelCollection({ id }: { readonly id: number }): ReactNode {
   return (
     <>
       <Toolbar />
@@ -90,23 +107,24 @@ function TopLevelCollection({ id }: { readonly id: number }): ReactElement {
   );
 }
 
-export function App(): ReactElement {
+export function App(): ReactNode {
   if (customDomainAppCollection) {
-    const content = <TopLevelCollection id={customDomainAppCollection.id} />;
+    const collectionContent = <TopLevelCollection id={customDomainAppCollection.id} />;
     return (
       <Routes>
-        <Route element={<Providers content={content} />} path="/:lang/" />
-        <Route element={<Providers content={content} />} path="/" />
-        <Route element={<Providers content={studioContent} />} path="/:lang/*" />
-        <Route element={<Providers content={studioContent} />} path="/*" />
+        {/* This is intentional - the two top-level routes should serve a collection at the top of the element tree, while any other route should serve the studio as-is */}
+        {/* Make sure to preserve this functionality and test it works with custom domain collections in review if you change this */}
+        <Route element={<Providers content={collectionContent} />} path="/:lang/" />
+        <Route element={<Providers content={collectionContent} />} path="/" />
+        <Route element={<Providers content={<StudioContent />} />} path="/:lang/*" />
+        <Route element={<Providers content={<StudioContent />} />} path="/*" />
       </Routes>
     );
   }
   return (
     <Routes>
-      {/* Simple way to get optional parameters back */}
-      <Route element={<Providers content={studioContent} />} path="/:lang/*" />
-      <Route element={<Providers content={studioContent} />} path="/*" />
+      <Route element={<Providers content={<StudioContent />} />} path="/:lang/*" />
+      <Route element={<Providers content={<StudioContent />} />} path="/*" />
     </Routes>
   );
 }

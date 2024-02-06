@@ -1,13 +1,14 @@
 default:
-  image: node:18-bookworm-slim
+  image: node:18.18.0-bookworm-slim
 
 stages:
   - test
   - build
+  - end 2 end
   - publish
   - deploy
   - provision
-  - end 2 end
+  - performance
 
 workflow:
   rules:
@@ -34,23 +35,23 @@ workflow:
   before_script:
     - echo $CI_REGISTRY_PASSWORD | docker login -u $CI_REGISTRY_USER --password-stdin $CI_REGISTRY
 
-# A preconfigured environment for using Yarn.
-.yarn:
+# A preconfigured environment for using npm.
+.npm:
   interruptible: true
   dependencies: []
   cache:
     key:
       files:
-        - yarn.lock
+        - package-lock.json
     paths:
       - node_modules
       - '**/node_modules'
   before_script:
-    - yarn --frozen-lockfile
+    - npm ci
 
 # A template for creating a minor or patch release
 .release:
-  extends: .yarn
+  extends: .npm
   stage: publish
   rules:
     - if: $CI_COMMIT_BRANCH == 'main'
@@ -60,12 +61,13 @@ workflow:
     - apt-get update
     - apt-get install --yes git gnupg
     - gpg --import "$GPG_PRIVATE_KEY"
-    - yarn scripts release "$INCREMENT"
-    - VERSION="$(yarn --silent appsemble --version)"
+    - npm run scripts -- release "$INCREMENT"
+    - npm install
+    - VERSION="$(npm --silent run appsemble -- --version)"
     - |
       MESSAGE="$VERSION
 
-      $(yarn --silent scripts get-release-notes)"
+      $(npm --silent run scripts get-release-notes)"
     - git config user.email bot@appsemble.com
     - git config user.name Appsemble
     - git add .
@@ -79,15 +81,15 @@ workflow:
 
 # Spell check using cspell
 cspell:
-  extends: .yarn
+  extends: .npm
   script:
-    - yarn cspell
+    - npx -- cspell
 
 # Lint JavaScript code using ESLint.
 eslint:
-  extends: .yarn
+  extends: .npm
   script:
-    - yarn eslint --format gitlab .
+    - npx -- eslint --format gitlab .
   artifacts:
     reports:
       codequality: gl-codequality.json
@@ -98,43 +100,50 @@ helm lint:
   script:
     - helm lint config/charts/*
 
+# Lint shell scripts
+shellcheck:
+  image: koalaman/shellcheck-alpine
+  script:
+    - printf "Evaluating:\n$(find . -name '*.sh')"
+    - find . -name '*.sh' | xargs shellcheck
+
 # Verify app messages are in sync with the app definition.
 i18n:
-  extends: .yarn
+  extends: .npm
   script:
-    - yarn appsemble app extract-messages --verify nl apps/*
+    - npm run appsemble -- app extract-messages --verify nl apps/*
 
 # Check formatting using prettier.
 prettier:
-  extends: .yarn
+  extends: .npm
   script:
-    - yarn prettier .
+    - npx -- prettier .
 
 # Lint Markdown using remark.
 remark lint:
-  extends: .yarn
+  extends: .npm
   script:
-    - yarn remark --frail --no-stdout .
+    - npx -- remark --frail --no-stdout .
 
 # Lint CSS using stylelint.
 stylelint:
-  extends: .yarn
+  extends: .npm
   script:
-    - yarn stylelint .
+    - npx -- stylelint .
 
 # Run unittests using NodeJS 18.
 test node 18:
   interruptible: true
   services:
-    - postgres:14
+    - postgres:15
   variables:
     POSTGRES_DB: testAppsemble
     POSTGRES_USER: admin
     POSTGRES_PASSWORD: password
     DATABASE_URL: 'postgres://admin:password@postgres:5432/testAppsemble'
   script:
-    - yarn --frozen-lockfile
-    - yarn test --coverage --shard=$CI_NODE_INDEX/$CI_NODE_TOTAL
+    - npm ci
+    - npm test -- --coverage --shard=$CI_NODE_INDEX/$CI_NODE_TOTAL
   parallel: 3
   artifacts:
     paths:
@@ -147,15 +156,15 @@ test node 18:
 
 # Check type validity for our TypeScript files.
 tsc:
-  extends: .yarn
+  extends: .npm
   script:
-    - yarn workspaces run tsc
+    - npx --workspaces tsc
 
 # Check type validity for our TypeScript files.
 validate:
-  extends: .yarn
+  extends: .npm
   script:
-    - yarn scripts validate
+    - npm run scripts -- validate
 
 ###################################################################################################
 #  Build Stage                                                                                    #
@@ -172,7 +181,7 @@ build docker image:
 
 # Build the npm packages that should be published.
 pack:
-  extends: .yarn
+  extends: .npm
   stage: build
   needs: []
   script:
@@ -184,9 +193,10 @@ pack:
     - npm --pack-destination build --workspace @appsemble/node-utils pack
     - npm --pack-destination build --workspace @appsemble/webpack-config pack
     - npm --pack-destination build --workspace @appsemble/cli pack
+    - npm --pack-destination build --workspace @appsemble/tsconfig pack
     - npm --pack-destination build --workspace appsemble pack
     - npm --pack-destination build --workspace create-appsemble pack
-    - yarn scripts validate-packaged-exports build/*
+    - npm run scripts -- validate-packaged-exports build/*
     - find build -mindepth 1 -maxdepth 1 -type d -exec rm -r {} +
   artifacts:
     name: npm packages
@@ -209,11 +219,60 @@ helm package:
       - public/
 
 ###################################################################################################
+#  End 2 End Stage                                                                               #
+###################################################################################################
+
+e2e:
+  interruptible: true
+  stage: end 2 end
+  extends: .docker
+  needs:
+    - build docker image
+  rules:
+    - if: $CI_MERGE_REQUEST_ID && $CI_MERGE_REQUEST_SOURCE_PROJECT_PATH == 'appsemble/appsemble'
+    - if: $CI_PIPELINE_SOURCE == 'schedule'
+    - if: $CI_COMMIT_TAG
+  variables:
+    APPSEMBLE_IMAGE: '$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG'
+  script:
+    - docker compose --project-name appsemble-e2e --file docker-compose-e2e.yaml up -d
+    - . scripts/e2e.sh
+  after_script:
+    - docker compose --project-name appsemble-e2e --file docker-compose-e2e.yaml down --volumes
+  artifacts:
+    expose_as: Playwright videos
+    when: always
+    paths:
+      - packages/e2e/test-results/
+    reports:
+      junit: packages/e2e/results.xml
+
+e2e apps:
+  stage: end 2 end
+  needs:
+    - build docker image
+  rules:
+    - if: $CI_MERGE_REQUEST_ID && $CI_MERGE_REQUEST_SOURCE_PROJECT_PATH == 'appsemble/appsemble'
+    - if: $CI_PIPELINE_SOURCE == 'schedule'
+    - if: $CI_COMMIT_TAG
+  inherit:
+    variables: false
+  variables:
+    APPSEMBLE_IMAGE: '$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG'
+  parallel:
+    matrix:
+      - APP: ['appsemble/apps/sittard-geleen']
+  trigger:
+    project: $APP
+    strategy: depend
+    branch: main
+
+###################################################################################################
 #  Publish Stage                                                                                  #
 ###################################################################################################
 
 twitter:
-  extends: .yarn
+  extends: .npm
   stage: publish
   # This is new and mainly used to update nice-to-have metadata.
   # Allow failure to prevent blocking of important jobs.
@@ -222,11 +281,11 @@ twitter:
   rules:
     - if: $CI_COMMIT_TAG
   script:
-    - yarn scripts twitter
+    - npm run scripts -- twitter
 
 # Update metadata on Docker Hub
 docker metadata:
-  extends: .yarn
+  extends: .npm
   stage: publish
   # This is new and mainly used to update nice-to-have metadata.
   # Allow failure to prevent blocking of important jobs.
@@ -235,11 +294,11 @@ docker metadata:
   rules:
     - if: $CI_COMMIT_TAG
   script:
-    - yarn scripts docker-metadata
+    - npm run scripts -- docker-metadata
 
 # Create a GitHub release
 github release:
-  extends: .yarn
+  extends: .npm
   stage: publish
   # This is new and mainly used to update nice-to-have metadata.
   # Allow failure to prevent blocking of important jobs.
@@ -248,11 +307,11 @@ github release:
   rules:
     - if: $CI_COMMIT_TAG
   script:
-    - yarn scripts github-release
+    - npm run scripts -- github-release
 
 # Create a GitLab release
 gitlab release:
-  extends: .yarn
+  extends: .npm
   stage: publish
   # This is new and mainly used to update nice-to-have metadata.
   # Allow failure to prevent blocking of important jobs.
@@ -261,7 +320,7 @@ gitlab release:
   rules:
     - if: $CI_COMMIT_TAG
   script:
-    - yarn scripts gitlab-release
+    - npm run scripts -- gitlab-release
 
 publish docker:
   extends: .docker
@@ -375,7 +434,6 @@ cleanup k8s jobs:
 
 # Update lockfile and fix formatting where possible
 update dependencies:
-  extends: .yarn
   stage: deploy
   variables:
     GIT_STRATEGY: none
@@ -385,7 +443,7 @@ update dependencies:
     policy: push
     key:
       files:
-        - yarn.lock
+        - package-lock.json
     paths:
       - node_modules
       - '**/node_modules'
@@ -400,13 +458,13 @@ update dependencies:
     - git config commit.gpgSign true
     - git config user.email bot@appsemble.com
     - git config user.name Appsemble
-    - rm yarn.lock
-    - yarn --ignore-scripts
-    - yarn eslint --fix . || true
-    - yarn remark . -o || true
-    - yarn stylelint --fix . || true
-    - yarn prettier --write . || true
-    - git commit --all --message 'Update yarn.lock'
+    - rm package-lock.json
+    - npm install --ignore-scripts
+    - npx -- eslint --fix . || true
+    - npx -- remark . -o || true
+    - npx -- stylelint --fix . || true
+    - npx -- prettier --write . || true
+    - git commit --all --message 'Update package-lock.json'
     - git push --force origin update-lockfile
       -o merge_request.create
       -o merge_request.label=Chore
@@ -551,6 +609,25 @@ production:
     - kubectl config use-context "$CI_PROJECT_PATH:production"
     - kubectl config set-context --current --namespace appsemble
     - helm repo add appsemble https://charts.appsemble.com
+    # Prevent a finished job without chart actually serving.
+    - |
+      retries=0
+      found=0
+      while [ $retries -lt 100 ] && [ $found -ne 1 ]; do
+        helm repo update
+        if helm search repo appsemble/appsemble --version "$CI_COMMIT_TAG" | grep -q "$CI_COMMIT_TAG"; then
+          echo "Chart found!"
+          found=1
+        else
+          echo "Chart not found, retrying in 5 seconds..."
+          sleep 5
+          retries=$((retries + 1))
+        fi
+      done
+      if [ $found -ne 1 ]; then
+        echo "Maximum number of attempts reached. Chart not found."
+        exit 1
+      fi
     - helm upgrade appsemble appsemble/appsemble
       --debug
       --timeout 30m
@@ -589,55 +666,44 @@ production:
 
 # Provision the review environment with the blocks that were built in the build stage.
 provision review:
-  extends: .yarn
+  extends: .npm
   stage: provision
   rules:
     - if: $CI_MERGE_REQUEST_ID && $CI_MERGE_REQUEST_SOURCE_PROJECT_PATH == 'appsemble/appsemble'
   needs:
     - review
   script:
-    - yarn scripts release patch
-    - yarn appsemble config set context review
-    - yarn appsemble config set remote "https://$CI_MERGE_REQUEST_IID.appsemble.review"
-    - yarn scripts wait-for-api
-    - yarn appsemble organization create appsemble
-      --description 'The open source low-code app building platform'
-      --email support@appsemble.com
-      --icon packages/server/assets/appsemble.png
-      --name Appsemble
-      --website https://appsemble.com
-    - yarn appsemble block create --organization appsemble --template vanilla --name template-vanilla --path blocks
-    - yarn appsemble block create --organization appsemble --template preact --name template-preact --path blocks
-    - yarn appsemble block create --organization appsemble --template mini-jsx --name template-mini-jsx --path blocks
-    - yarn appsemble -vv block publish blocks/*
-    - yarn appsemble -vv app publish apps/* --resources --modify-context
-    - yarn appsemble -vv asset publish --app apps/soundboard apps/soundboard/assets/*
+    - npm run scripts -- release patch
+    - npm run appsemble -- config set context review
+    - npm run appsemble -- config set remote "https://$CI_MERGE_REQUEST_IID.appsemble.review"
+    - npm run scripts -- wait-for-api
+    - . scripts/setup-appsemble.sh
 
 # Provision the staging environment with the blocks that were built in the build stage.
 provision staging:
-  extends: .yarn
+  extends: .npm
   stage: provision
   rules:
     - if: $CI_PIPELINE_SOURCE == 'schedule'
   needs:
     - staging
   script:
-    - yarn scripts release patch
-    - yarn appsemble config set context staging
-    - yarn appsemble config set remote https://staging.appsemble.review
-    - yarn appsemble organization create appsemble
+    - npm run scripts -- release patch
+    - npm run appsemble -- config set context staging
+    - npm run appsemble -- config set remote https://staging.appsemble.review
+    - npm run appsemble -- organization create appsemble
       --description 'The open source low-code app building platform'
       --email support@appsemble.com
       --icon packages/server/assets/appsemble.png
       --name Appsemble
       --website https://appsemble.com
-    - yarn appsemble -vv block publish blocks/*
-    - yarn appsemble -vv app publish apps/* --resources --modify-context
-    - yarn appsemble -vv asset publish --app apps/soundboard apps/soundboard/assets/*
+    - npm run appsemble -- -vv block publish blocks/*
+    - npm run appsemble -- -vv app publish apps/* --resources --modify-context
+    - npm run appsemble -- -vv asset publish --app apps/soundboard apps/soundboard/assets/*
 
 # Provision the production environment with the blocks that were built in the build stage.
 provision production:
-  extends: .yarn
+  extends: .npm
   stage: provision
   rules:
     - if: $CI_COMMIT_TAG
@@ -647,21 +713,22 @@ provision production:
     name: production
     action: prepare
   script:
-    - yarn appsemble config set context production
-    - yarn appsemble config set remote https://appsemble.app
-    - yarn appsemble config set ignore-conflict true
-    - yarn appsemble -vv block publish blocks/*
-    - yarn appsemble -vv app update --force apps/*
+    - npm run appsemble -- config set context production
+    - npm run appsemble -- config set remote https://appsemble.app
+    - npm run appsemble -- config set ignore-conflict true
+    - npm run appsemble -- -vv block publish blocks/*
+    - apt-get update
+    - apt-get install --yes git gnupg yq
+    - ./scripts/publish-or-update-apps.sh --push-to-main production
 
 ###################################################################################################
-#  End to End Stage                                                                               #
+#  Performance Stage                                                                               #
 ###################################################################################################
 
-# Test template apps using Lighthouse.
 lighthouse:
   interruptible: true
-  stage: end 2 end
-  extends: .yarn
+  stage: performance
+  extends: .npm
   image: $CI_REGISTRY/appsemble/docker-node-chrome
   needs:
     - job: provision review
@@ -675,46 +742,11 @@ lighthouse:
     - if: $CI_PIPELINE_SOURCE == 'schedule'
     - if: $CI_COMMIT_TAG
   script:
-    - yarn scripts wait-for-ssl
-    - yarn lhci collect
-    - yarn lhci assert
+    - npm run scripts -- wait-for-ssl
+    - npx -- lhci collect
+    - npx -- lhci assert
   artifacts:
     expose_as: Lighthouse reports
     when: always
     paths:
       - .lighthouseci
-
-playwright:
-  stage: end 2 end
-  extends: .yarn
-  image: mcr.microsoft.com/playwright
-  needs:
-    - job: provision review
-      optional: true
-    - job: provision staging
-      optional: true
-  rules:
-    - if: $CI_MERGE_REQUEST_ID && $CI_MERGE_REQUEST_SOURCE_PROJECT_PATH == 'appsemble/appsemble'
-    - if: $CI_PIPELINE_SOURCE == 'schedule'
-  script:
-    - yarn playwright install
-    - yarn scripts wait-for-ssl
-    - yarn e2e --max-failures 6
-  artifacts:
-    expose_as: Playwright videos
-    when: always
-    paths:
-      - packages/e2e/test-results/
-    reports:
-      junit: packages/e2e/results.xml
-
-validate docs:
-  stage: end 2 end
-  extends: .yarn
-  needs:
-    - provision review
-  rules:
-    - if: $CI_MERGE_REQUEST_ID && $CI_MERGE_REQUEST_SOURCE_PROJECT_PATH == 'appsemble/appsemble'
-  script:
-    - yarn scripts release patch
-    - yarn scripts validate-docs --organization appsemble --remote "https://$CI_MERGE_REQUEST_IID.appsemble.review"

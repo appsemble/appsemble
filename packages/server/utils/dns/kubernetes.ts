@@ -226,7 +226,7 @@ function generateSSLSecretName(domain: string): string {
  *   the command line arguments and the environment.
  */
 async function createIngressFunction(): Promise<
-  (domain: string, customSSL?: boolean) => Promise<void>
+  (domain: string, customSSL?: boolean, redirectTo?: string) => Promise<void>
 > {
   const { clusterIssuer, ingressAnnotations, ingressClassName, issuer, serviceName, servicePort } =
     argv;
@@ -238,14 +238,22 @@ async function createIngressFunction(): Promise<
   const issuerAnnotationKey = clusterIssuer
     ? 'cert-manager.io/cluster-issuer'
     : issuer
-    ? 'cert-manager.io/issuer'
-    : undefined;
+      ? 'cert-manager.io/issuer'
+      : undefined;
   const issuerAnnotationValue = clusterIssuer || issuer;
 
-  return async (domain, customSSL) => {
+  return async (domain, customSSL, redirectTo) => {
     const name = normalize(domain);
     const url = `/apis/networking.k8s.io/v1/namespaces/${namespace}/ingresses`;
-    const annotations = { ...defaultAnnotations };
+    const annotations = {
+      ...defaultAnnotations,
+      ...((redirectTo
+        ? {
+            'nginx.ingress.kubernetes.io/rewrite-target': `https://${redirectTo}/$1`,
+            'nginx.ingress.kubernetes.io/use-regex': 'true',
+          }
+        : {}) as Record<string, string>),
+    };
     const secretName = generateSSLSecretName(domain);
 
     if (!customSSL && issuerAnnotationKey) {
@@ -419,6 +427,9 @@ export async function configureDNS(): Promise<void> {
 
     if (domain) {
       await createIngress(domain);
+      if (!domain.startsWith('www.')) {
+        await createIngress(`www.${domain}`, false, domain);
+      }
     }
   });
 }
@@ -472,6 +483,9 @@ export async function restoreDNS(): Promise<void> {
     where: { [Op.and]: [{ domain: { [Op.not]: null } }, { domain: { [Op.not]: '' } }] },
   })) {
     await createIngress(domain);
+    if (!domain.startsWith('www.')) {
+      await createIngress(`www.${domain}`, false, domain);
+    }
   }
 }
 

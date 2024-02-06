@@ -19,6 +19,10 @@ app is called a ´resource´.
     - [Cascade delete](#cascade-delete)
 - [Views](#views)
 - [Expiring resources](#expiring-resources)
+- [Clonable resources](#clonable-resources)
+- [Ephemeral resources](#ephemeral-resources)
+- [Seed resources](#seed-resources)
+  - [Reseeding events](#reseeding-events)
 - [Filtering resources from the Appsemble API](#filtering-resources-from-the-appsemble-api)
   - [Logical Operators](#logical-operators)
   - [Arithmetic Operators](#arithmetic-operators)
@@ -222,7 +226,7 @@ pages:
   - name: Example Page
     blocks:
       - type: data-loader
-        version: 0.22.10
+        version: 0.24.12
         actions:
           onLoad:
             type: resource.query
@@ -234,7 +238,7 @@ pages:
           emit:
             data: people
       - type: table
-        version: 0.22.10
+        version: 0.24.12
         events:
           listen:
             data: people
@@ -355,6 +359,48 @@ resources:
 Here we specify that the resources `housePet`, `farmPet` and `wildPet` all reference the `owner`
 resource.
 
+When publishing resources along with the app definition using the `appsemble app publish` command
+with the `--resources` tag, resources from the `resources` directory in the app directory will be
+published in the app. If you want a resource defined as a JSON object in that directory to reference
+another resource in the directory, you can add a field to the JSON object, pointing to the index of
+the referenced resource in its array, like so:
+
+In `/resources/owner.json`:
+
+```json
+[
+  {
+    "name": "Steve"
+  },
+  {
+    "name": "Carol"
+  }
+]
+```
+
+And in `/resources/housePet.json`:
+
+```json
+[
+  {
+    "name": "Sven",
+    "species": "Dog",
+    "$owner": 0
+  },
+  {
+    "name": "Milka",
+    "species": "Cow",
+    "$owner": 1
+  }
+]
+```
+
+Appsemble will handle the references to the owners internally. The pet `Sven` will be assigned an
+`ownerId` value equal to the id of the owner `Steve`. Similarly, the pet `Milka` will be assigned an
+`ownerId` value equal to the id of the owner `Carol`. This reference also persists in demo apps
+after reseeding the resources. Each new ephemeral instances of the pets `Sven` and `Milka` will
+belong to the new ephemeral instances of the owners `Steve` and `Carol` respectively.
+
 When referencing parent resources from child resources, we often want to define what happens to the
 child when a specific resource action is executed on the parent. Here `parent` and `child` are terms
 used purely for ease of explanation. We can use the same example from the Triggers app to
@@ -394,6 +440,8 @@ The `wildPet` resource has a cascading delete strategy specified. This means tha
 property equal to `1` will also be deleted.
 
 Appsemble currently supports only the three cascading strategies listed above.
+
+> Note: the id must be present in the root of a resource and the resource must be an object.
 
 ## Views
 
@@ -517,6 +565,60 @@ also be manually set by including the `$expires` property with a valid ISO 8601 
 > Note: When adding `expires` to a resource, this will not be retroactively applied to existing
 > resources. These resources can be updated to have an expiration date set by updating the resource
 > and including the `$expires` property.
+
+## Clonable resources
+
+In template apps, which can be cloned into a new app, some resources should be transferable to the
+new app. We can mark those resources with the clonable property.
+
+For example:
+
+```yaml validate resources-snippet
+resources:
+  clonable-resource:
+    schema:
+      type: object
+      additionalProperties: false
+      properties:
+        name:
+          type: string
+    clonable: true
+```
+
+In the above example, the resource can be transferred with the app when cloning it.
+
+## Ephemeral resources
+
+There are some use cases where resources should regularly be automatically removed. This can be done
+by setting the `ephemeral` property.
+
+For example:
+
+```yaml validate resources-snippet
+resources:
+  ephemeral-resource:
+    schema:
+      type: object
+      additionalProperties: false
+      properties:
+        name:
+          type: string
+    ephemeral: true
+```
+
+## Seed resources
+
+Seed resources only exist in demo apps, where we always want to have a presentable state of the
+application and its resources. In this case, resources published on app creation will automatically
+be created with their seed property set to true. In addition to that, ephemeral copies of these
+resources will be created. Users in demo apps can only interact with ephemeral resources, which are
+cleaned up regularly and new ones are created based on the app’s seed resources.
+
+### Reseeding events
+
+At the end of each day, an automated event happens, which deletes all ephemeral resources. In demo
+apps, new ephemeral resources are created based on resources marked as seed. In demo apps this event
+can also be triggered manually from the studio.
 
 ## Filtering resources from the Appsemble API
 

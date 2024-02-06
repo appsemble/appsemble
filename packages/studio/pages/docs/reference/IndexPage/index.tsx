@@ -1,7 +1,7 @@
-import { type ReactElement } from 'react';
+import { type ReactNode } from 'react';
 
 import MDXContent from './index.md';
 
-export function IndexPage(): ReactElement {
+export function IndexPage(): ReactNode {
   return <MDXContent />;
 }

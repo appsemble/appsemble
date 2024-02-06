@@ -1,46 +1,27 @@
 import { type Context, type Middleware } from 'koa';
 
+import { assertKoaError } from '../../koa.js';
 import { type Options } from '../types.js';
 
 export function createGetAppMember({ getApp, getAppMembers }: Options): Middleware {
   return async (ctx: Context) => {
     const {
-      pathParams: { appId, memberId },
+      pathParams: { appId, userId },
     } = ctx;
 
     const app = await getApp({ context: ctx, query: { where: { id: appId } } });
 
-    if (!app) {
-      ctx.response.status = 404;
-      ctx.response.body = {
-        statusCode: 404,
-        error: 'Not Found',
-        message: 'App not found',
-      };
-      ctx.throw();
-    }
+    assertKoaError(!app, ctx, 404, 'App not found');
+    assertKoaError(
+      app.definition.security === undefined,
+      ctx,
+      404,
+      'App does not have a security definition',
+    );
 
-    if (app.definition.security === undefined) {
-      ctx.response.status = 404;
-      ctx.response.body = {
-        statusCode: 404,
-        error: 'Not Found',
-        message: 'App does not have a security definition',
-      };
-      ctx.throw();
-    }
+    const appMembers = await getAppMembers({ context: ctx, app, userId });
 
-    const appMembers = await getAppMembers({ context: ctx, app, memberId });
-
-    if (appMembers.length !== 1) {
-      ctx.response.status = 404;
-      ctx.response.body = {
-        statusCode: 404,
-        error: 'Not Found',
-        message: 'App member not found',
-      };
-      ctx.throw();
-    }
+    assertKoaError(appMembers.length !== 1, ctx, 404, 'App member not found');
 
     ctx.body = appMembers[0];
   };

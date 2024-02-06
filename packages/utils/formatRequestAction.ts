@@ -10,8 +10,8 @@ export function formatRequestAction(
   return {
     method,
     url: String(remap(action.url, data, context)),
-    headers: {},
     params: remap(query, data, context),
     responseType: 'arraybuffer',
+    headers: {},
   };
 }

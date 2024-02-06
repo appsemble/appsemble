@@ -9,11 +9,11 @@ export const messages = defineMessages({
     id: 'studio.9PjpLU',
     defaultMessage: 'Learn more in the <link>documentation</link>',
   },
-  serviceNameLabel: {
-    id: 'studio.2bKI2L',
-    defaultMessage: 'Service name',
+  nameLabel: {
+    id: 'studio.HAlOn1',
+    defaultMessage: 'Name',
   },
-  serviceNameHelp: {
+  nameHelp: {
     id: 'studio.uwcEjh',
     defaultMessage: 'An optional name to give extra clarity what the secret is used for.',
   },
@@ -24,14 +24,6 @@ export const messages = defineMessages({
   serviceSecretHelp: {
     id: 'studio.CthkzB',
     defaultMessage: 'The URL pattern(s) used to match against the request action URL.',
-  },
-  nameLabel: {
-    id: 'studio.R9kEeq',
-    defaultMessage: 'Secret Name',
-  },
-  nameHelp: {
-    id: 'studio.Y+lmh3',
-    defaultMessage: 'The name of the secret to use for the authentication',
   },
   methodLabel: {
     id: 'studio.Vs3jMi',

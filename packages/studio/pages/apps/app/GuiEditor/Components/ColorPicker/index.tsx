@@ -1,5 +1,5 @@
 import { IconButton } from '@appsemble/react-components';
-import { type ChangeEvent, type ReactElement, useCallback, useState } from 'react';
+import { type ChangeEvent, type ReactNode, useCallback, useState } from 'react';
 
 import styles from './index.module.css';
 
@@ -20,7 +20,7 @@ export function ColorPicker({
   onChange,
   onReset,
   selectedColor,
-}: ColorPickerProps): ReactElement {
+}: ColorPickerProps): ReactNode {
   const [color, setColor] = useState<string>('#000000');
 
   const setCurrentColor = useCallback(

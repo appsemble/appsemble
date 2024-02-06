@@ -6,7 +6,7 @@ import MockAdapter from 'axios-mock-adapter';
 import { fs, vol } from 'memfs';
 import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { App, Organization } from '../../models/index.js';
+import { App, AppCollection, Organization } from '../../models/index.js';
 import { setArgv } from '../argv.js';
 import { useTestDatabase } from '../test/testSchema.js';
 
@@ -34,6 +34,7 @@ beforeEach(() => {
 afterEach(() => {
   App.removeHook('afterSave', 'dns');
   Organization.removeHook('afterCreate', 'dns');
+  AppCollection.removeHook('afterSave', 'dns');
 });
 
 describe('configureDNS', () => {
@@ -93,7 +94,7 @@ describe('configureDNS', () => {
     });
   });
 
-  it('should create a wildcard ingress when an app with a domain is created', async () => {
+  it('should create an ingress when an app with a domain is created', async () => {
     let config: AxiosRequestConfig;
     mock.onPost(/.*/).reply((request) => {
       config = request;
@@ -154,7 +155,7 @@ describe('configureDNS', () => {
     });
   });
 
-  it('should not create a wildcard ingress when an app without a domain is created', async () => {
+  it('should not create an ingress when an app without a domain is created', async () => {
     let config: AxiosRequestConfig;
     mock.onPost(/.*/).reply((request) => {
       config = request;
@@ -232,6 +233,145 @@ describe('configureDNS', () => {
       },
     });
   });
+
+  it('should create an ingress and a www ingress when an app collection with a domain is created', async () => {
+    const configs: AxiosRequestConfig[] = [];
+    mock.onPost(/.*/).reply((request) => {
+      configs.push(request);
+      return [201, request.data];
+    });
+
+    setArgv({ host: 'https://host.example', serviceName: 'review-service', servicePort: 'http' });
+    await Organization.create({ id: 'org' });
+    await kubernetes.configureDNS();
+    await AppCollection.create({
+      name: 'Test Collection',
+      expertName: 'Test Expert',
+      expertDescription: 'Test Description',
+      OrganizationId: 'org',
+      headerImage: Buffer.from(''),
+      headerImageMimeType: 'image/png',
+      expertProfileImage: Buffer.from(''),
+      expertProfileImageMimeType: 'image/png',
+      domain: 'example.com',
+      visibility: 'public',
+    });
+
+    expect(JSON.parse(configs[0].data)).toStrictEqual({
+      metadata: {
+        annotations: {},
+        labels: expect.any(Object),
+        name: 'example-com',
+      },
+      spec: expect.objectContaining({
+        rules: [
+          expect.objectContaining({
+            host: 'example.com',
+          }),
+        ],
+        tls: [
+          expect.objectContaining({
+            hosts: ['example.com'],
+            secretName: 'example-com-tls',
+          }),
+        ],
+      }),
+    });
+    expect(JSON.parse(configs[1].data)).toStrictEqual({
+      metadata: {
+        annotations: {
+          'nginx.ingress.kubernetes.io/rewrite-target': 'https://example.com/$1',
+          'nginx.ingress.kubernetes.io/use-regex': 'true',
+        },
+        labels: expect.any(Object),
+        name: 'www-example-com',
+      },
+      spec: expect.objectContaining({
+        rules: [
+          expect.objectContaining({
+            host: 'www.example.com',
+          }),
+        ],
+        tls: [
+          expect.objectContaining({
+            hosts: ['www.example.com'],
+            secretName: 'www-example-com-tls',
+          }),
+        ],
+      }),
+    });
+  });
+
+  it('should not create an ingress when an app collection without a domain is created', async () => {
+    const configs: AxiosRequestConfig[] = [];
+    mock.onPost(/.*/).reply((request) => {
+      configs.push(request);
+      return [201, request.data];
+    });
+
+    setArgv({ host: 'https://host.example', serviceName: 'review-service', servicePort: 'http' });
+    await Organization.create({ id: 'org' });
+    await kubernetes.configureDNS();
+    await AppCollection.create({
+      name: 'Test Collection',
+      expertName: 'Test Expert',
+      expertDescription: 'Test Description',
+      OrganizationId: 'org',
+      headerImage: Buffer.from(''),
+      headerImageMimeType: 'image/png',
+      expertProfileImage: Buffer.from(''),
+      expertProfileImageMimeType: 'image/png',
+      visibility: 'public',
+    });
+
+    expect(configs).toHaveLength(0);
+  });
+
+  it('should create only one www ingress when an app collection with a www domain is created', async () => {
+    const configs: AxiosRequestConfig[] = [];
+    mock.onPost(/.*/).reply((request) => {
+      configs.push(request);
+      return [201, request.data];
+    });
+
+    setArgv({ host: 'https://host.example', serviceName: 'review-service', servicePort: 'http' });
+    await Organization.create({ id: 'org' });
+    await kubernetes.configureDNS();
+    await AppCollection.create({
+      name: 'Test Collection',
+      expertName: 'Test Expert',
+      expertDescription: 'Test Description',
+      OrganizationId: 'org',
+      headerImage: Buffer.from(''),
+      headerImageMimeType: 'image/png',
+      expertProfileImage: Buffer.from(''),
+      expertProfileImageMimeType: 'image/png',
+      domain: 'www.example.com',
+      visibility: 'public',
+    });
+
+    expect(JSON.parse(configs[0].data)).toStrictEqual({
+      metadata: {
+        annotations: {},
+        labels: expect.any(Object),
+        name: 'www-example-com',
+      },
+      spec: expect.objectContaining({
+        rules: [
+          expect.objectContaining({
+            host: 'www.example.com',
+          }),
+        ],
+        tls: [
+          expect.objectContaining({
+            hosts: ['www.example.com'],
+            secretName: 'www-example-com-tls',
+          }),
+        ],
+      }),
+    });
+    expect(configs).toHaveLength(1);
+  });
 });
 
 describe('cleanupDNS', () => {
@@ -282,6 +422,18 @@ describe('restoreDNS', () => {
       vapidPublicKey: '',
       vapidPrivateKey: '',
       OrganizationId: 'test',
+    });
+    await AppCollection.create({
+      name: 'Test Collection',
+      expertName: 'Test Expert',
+      expertDescription: 'Test Description',
+      expertProfileImage: Buffer.from(''),
+      expertProfileImageMimeType: 'image/png',
+      headerImage: Buffer.from(''),
+      headerImageMimeType: 'image/png',
+      visibility: 'public',
+      OrganizationId: 'test',
+      domain: 'example.com',
     });
 
     setArgv({
@@ -354,6 +506,73 @@ describe('restoreDNS', () => {
             },
           ],
           tls: [{ hosts: ['app.example'], secretName: 'app-example-tls' }],
+        },
+      },
+      {
+        metadata: {
+          annotations: {},
+          labels: {
+            'app.kubernetes.io/component': 'domain',
+            'app.kubernetes.io/instance': 'example-com',
+            'app.kubernetes.io/managed-by': 'review-service',
+            'app.kubernetes.io/name': 'appsemble',
+            'app.kubernetes.io/part-of': 'review-service',
+            'app.kubernetes.io/version': version,
+          },
+          name: 'example-com',
+        },
+        spec: {
+          ingressClassName: 'nginx',
+          rules: [
+            {
+              host: 'example.com',
+              http: {
+                paths: [
+                  {
+                    backend: { service: { name: 'review-service', port: { name: 'http' } } },
+                    path: '/',
+                    pathType: 'Prefix',
+                  },
+                ],
+              },
+            },
+          ],
+          tls: [{ hosts: ['example.com'], secretName: 'example-com-tls' }],
+        },
+      },
+      {
+        metadata: {
+          annotations: {
+            'nginx.ingress.kubernetes.io/rewrite-target': 'https://example.com/$1',
+            'nginx.ingress.kubernetes.io/use-regex': 'true',
+          },
+          labels: {
+            'app.kubernetes.io/component': 'domain',
+            'app.kubernetes.io/instance': 'www-example-com',
+            'app.kubernetes.io/managed-by': 'review-service',
+            'app.kubernetes.io/name': 'appsemble',
+            'app.kubernetes.io/part-of': 'review-service',
+            'app.kubernetes.io/version': version,
+          },
+          name: 'www-example-com',
+        },
+        spec: {
+          ingressClassName: 'nginx',
+          rules: [
+            {
+              host: 'www.example.com',
+              http: {
+                paths: [
+                  {
+                    backend: { service: { name: 'review-service', port: { name: 'http' } } },
+                    path: '/',
+                    pathType: 'Prefix',
+                  },
+                ],
+              },
+            },
+          ],
+          tls: [{ hosts: ['www.example.com'], secretName: 'www-example-com-tls' }],
         },
       },
     ]);

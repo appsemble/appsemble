@@ -88,6 +88,32 @@ export const paths: OpenAPIV3.PathsObject = {
       },
     },
   },
+  '/api/blocks/@{organizationId}/{blockId}/versions/list': {
+    parameters: [
+      { $ref: '#/components/parameters/organizationId' },
+      { $ref: '#/components/parameters/blockId' },
+    ],
+    get: {
+      tags: ['block', 'versions'],
+      description: 'Retrieve a string list of all versions of a block.',
+      operationId: 'getVersionsList',
+      responses: {
+        200: {
+          description: 'String list of all versions of a block.',
+          content: {
+            'application/json': {
+              schema: {
+                type: 'array',
+                items: {
+                  $ref: 'string',
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  },
   '/api/blocks/@{organizationId}/{blockId}/versions/{blockVersion}': {
     parameters: [
       { $ref: '#/components/parameters/organizationId' },

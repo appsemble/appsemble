@@ -1,7 +1,13 @@
 import { request, setTestApp } from 'axios-test-instance';
 import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { App, AppServiceSecret, Member, Organization, type User } from '../models/index.js';
+import {
+  App,
+  AppServiceSecret,
+  Organization,
+  OrganizationMember,
+  type User,
+} from '../models/index.js';
 import { setArgv } from '../utils/argv.js';
 import { createServer } from '../utils/createServer.js';
 import { authorizeStudio, createTestUser } from '../utils/test/authorization.js';
@@ -53,7 +59,11 @@ beforeEach(async () => {
     vapidPrivateKey: 'b',
     OrganizationId: organization.id,
   });
-  await Member.create({ OrganizationId: organization.id, UserId: user.id, role: 'Owner' });
+  await OrganizationMember.create({
+    OrganizationId: organization.id,
+    UserId: user.id,
+    role: 'Owner',
+  });
   authorizeStudio();
 });
 
@@ -64,7 +74,7 @@ afterAll(() => {
 describe('addAppServiceSecret', () => {
   it('should add new app service secret', async () => {
     const response = await request.post(`/api/apps/${app.id}/secrets/service`, {
-      serviceName: 'Test service',
+      name: 'Test service',
       urlPatterns: 'example.com',
       authenticationMethod: 'query-parameter',
       identifier: 'key',
@@ -79,7 +89,7 @@ describe('addAppServiceSecret', () => {
         "authenticationMethod": "query-parameter",
         "id": 1,
         "identifier": "key",
-        "serviceName": "Test service",
+        "name": "Test service",
         "tokenUrl": null,
         "urlPatterns": "example.com",
       }
@@ -90,7 +100,7 @@ describe('addAppServiceSecret', () => {
 describe('getAppServiceSecrets', () => {
   it('should get app service secrets', async () => {
     await AppServiceSecret.create({
-      serviceName: 'Test service',
+      name: 'Test service',
       urlPatterns: 'example.com',
       authenticationMethod: 'query',
       identifier: 'key',
@@ -98,7 +108,7 @@ describe('getAppServiceSecrets', () => {
       AppId: app.id,
     });
     await AppServiceSecret.create({
-      serviceName: 'Test service',
+      name: 'Test service',
       urlPatterns: 'example.com',
       authenticationMethod: 'basic',
       identifier: 'john_doe',
@@ -117,6 +127,7 @@ describe('getAppServiceSecrets', () => {
           "authenticationMethod": "query",
           "id": 1,
           "identifier": "key",
+          "name": "Test service",
           "tokenUrl": null,
           "urlPatterns": "example.com",
         },
@@ -124,6 +135,7 @@ describe('getAppServiceSecrets', () => {
           "authenticationMethod": "basic",
           "id": 2,
           "identifier": "john_doe",
+          "name": "Test service",
           "tokenUrl": null,
           "urlPatterns": "example.com",
         },
@@ -135,7 +147,7 @@ describe('getAppServiceSecrets', () => {
 describe('updateAppServiceSecret', () => {
   it('should update a single app service secret', async () => {
     await AppServiceSecret.create({
-      serviceName: 'Test service',
+      name: 'Test service',
       urlPatterns: 'example.com',
       authenticationMethod: 'query',
       identifier: 'key',
@@ -143,7 +155,7 @@ describe('updateAppServiceSecret', () => {
       AppId: app.id,
     });
     await AppServiceSecret.create({
-      serviceName: 'Test service',
+      name: 'Test service',
       urlPatterns: 'example.com',
       authenticationMethod: 'custom-header',
       identifier: 'x-key',
@@ -165,7 +177,7 @@ describe('updateAppServiceSecret', () => {
         "authenticationMethod": "cookie",
         "id": 2,
         "identifier": "x-key",
-        "serviceName": "Test service",
+        "name": "Test service",
         "tokenUrl": null,
         "urlPatterns": "https://example.com",
       }
@@ -176,7 +188,7 @@ describe('updateAppServiceSecret', () => {
 describe('deleteAppServiceSecret', () => {
   it('should delete a single app service secret', async () => {
     await AppServiceSecret.create({
-      serviceName: 'Test service',
+      name: 'Test service',
       urlPatterns: 'example.com',
       authenticationMethod: 'query',
       identifier: 'key',

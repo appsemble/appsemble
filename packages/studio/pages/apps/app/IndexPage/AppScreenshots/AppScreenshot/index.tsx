@@ -1,6 +1,6 @@
 import { Button, Modal, useConfirmation, useToggle } from '@appsemble/react-components';
 import axios from 'axios';
-import { type ReactElement } from 'react';
+import { type ReactNode } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 
 import styles from './index.module.css';
@@ -11,7 +11,7 @@ interface AppScreenshotProps {
   readonly url: string;
   readonly mayManageScreenshots: boolean;
 }
-export function AppScreenshot({ mayManageScreenshots, url }: AppScreenshotProps): ReactElement {
+export function AppScreenshot({ mayManageScreenshots, url }: AppScreenshotProps): ReactNode {
   const { app, setApp } = useApp();
   const { formatMessage } = useIntl();
   const modal = useToggle();

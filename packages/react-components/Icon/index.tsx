@@ -2,7 +2,7 @@ import { type BulmaColor, type BulmaSize } from '@appsemble/types';
 import { fa } from '@appsemble/web-utils';
 import { type IconName } from '@fortawesome/fontawesome-common-types';
 import classNames from 'classnames';
-import { type ComponentProps, type ReactElement } from 'react';
+import { type ComponentProps, type ReactNode } from 'react';
 
 interface IconProps extends ComponentProps<'span'> {
   readonly color?: BulmaColor;
@@ -26,7 +26,7 @@ export function Icon({
   iconSize = iconSizeMap[size as 'large' | 'medium'],
   solid = true,
   ...props
-}: IconProps): ReactElement {
+}: IconProps): ReactNode {
   return (
     <span
       className={classNames('icon', size && `is-${size}`, className, {

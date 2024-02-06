@@ -6,6 +6,7 @@ import {
   type AppDefinition,
   type BlockDefinition,
   type BlockManifest,
+  type ProjectImplementations,
   type Remapper,
   type TeamMember,
   type UserInfo,
@@ -62,10 +63,13 @@ declare global {
 
     settings: {
       apiUrl: string;
+      appControllerCode: string;
+      appControllerImplementations: ProjectImplementations;
       blockManifests: BlockManifest[];
       vapidPublicKey: string;
       id: number;
       definition: AppDefinition;
+      demoMode: boolean;
       languages: string[];
       logins: {
         icon: IconName;
@@ -77,6 +81,8 @@ declare global {
       sentryEnvironment: string;
       showAppsembleLogin: boolean;
       showAppsembleOAuth2Login: boolean;
+      enableSelfRegistration: boolean;
+      showDemoLogin: boolean;
       appUpdated: string;
       development: boolean;
     };
@@ -115,22 +121,22 @@ export type UpdateTeam = (team: TeamMember) => void;
 
 export interface MakeActionParameters<D extends ActionDefinition> {
   app: AppDefinition;
-  getAppMessage: MessageGetter;
+  getAppMessage?: MessageGetter;
   appStorage: AppStorage;
   definition: D;
-  extraCreators: ActionCreators;
-  flowActions: FlowActions;
-  navigate: NavigateFunction;
+  extraCreators?: ActionCreators;
+  flowActions?: FlowActions;
+  navigate?: NavigateFunction;
   pageReady: Promise<void>;
   params: Readonly<Params<string>>;
-  showShareDialog: ShowShareDialog;
-  showDialog: ShowDialogAction;
+  showShareDialog?: ShowShareDialog;
+  showDialog?: ShowDialogAction;
   prefix: string;
   prefixIndex: string;
   pushNotifications: ServiceWorkerRegistrationContextType;
   ee: EventEmitter;
   remap: (remapper: Remapper, data: any, context?: Record<string, any>) => any;
-  showMessage: ShowMessage;
+  showMessage?: ShowMessage;
   getUserInfo: () => UserInfo;
   passwordLogin: (params: { username: string; password: string }) => Promise<void>;
   passwordLogout: () => Promise<void>;

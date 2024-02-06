@@ -1,15 +1,15 @@
 import { render } from '@testing-library/react';
-import { type ReactElement } from 'react';
+import { type ReactNode } from 'react';
 import { BrowserRouter } from 'react-router-dom';
 import { expect, it, vi } from 'vitest';
 
 import { ErrorHandler } from './index.js';
 
 it('should render its children if no errors are thrown', () => {
-  function Child(): ReactElement {
+  function Child(): ReactNode {
     return <p>Test</p>;
   }
-  function Fallback(): ReactElement {
+  function Fallback(): ReactNode {
     return <p>Something went wrong!</p>;
   }
   const { container } = render(
@@ -26,10 +26,10 @@ it('should render its children if no errors are thrown', () => {
 
 it('should render its fallback when errors are thrown', () => {
   vi.spyOn(console, 'error').mockImplementation(null);
-  const Child = (): ReactElement => {
+  const Child = (): ReactNode => {
     throw new Error('test');
   };
-  function Fallback(): ReactElement {
+  function Fallback(): ReactNode {
     return <p>Something went wrong!</p>;
   }
   const { container } = render(

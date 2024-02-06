@@ -1,5 +1,6 @@
 # Node modules
 node_modules/
+yarn.lock
 
 # Build output for various packages
 dist/
@@ -21,7 +22,7 @@ junit.xml
 # Use this prefix for GitLab reports
 /gl-*
 
-# Log files by various tools, such as yarn
+# Log files by various tools
 *.log
 
 # Generated npm packages

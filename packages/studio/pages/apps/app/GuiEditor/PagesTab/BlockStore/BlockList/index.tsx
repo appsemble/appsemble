@@ -1,7 +1,7 @@
 import { Loader, useData } from '@appsemble/react-components';
 import { type BlockManifest } from '@appsemble/types';
 import { parseBlockName } from '@appsemble/utils';
-import { type ReactElement } from 'react';
+import { type ReactNode } from 'react';
 import { FormattedMessage } from 'react-intl';
 
 import styles from './index.module.css';
@@ -25,7 +25,7 @@ interface BlockListProps {
 /**
  * Fetch and display a list of apps.
  */
-export function BlockList({ dragEventListener, filter }: BlockListProps): ReactElement {
+export function BlockList({ dragEventListener, filter }: BlockListProps): ReactNode {
   const { data: blocks, error, loading } = useData<BlockManifest[]>('/api/blocks');
 
   if (error) {
@@ -62,8 +62,9 @@ export function BlockList({ dragEventListener, filter }: BlockListProps): ReactE
       </div>
     );
   }
+
   return (
-    <div>
+    <div className={styles.list}>
       {filteredBlocks.map((block) => (
         <BlockStoreElement block={block} dragEventListener={dragEventListener} key={block.name} />
       ))}

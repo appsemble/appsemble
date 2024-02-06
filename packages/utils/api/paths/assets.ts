@@ -48,6 +48,11 @@ export const paths: OpenAPIV3.PathsObject = {
                   description:
                     'The given name of the asset. Assets may be referenced by their name or ID in the API.',
                 },
+                clonable: {
+                  type: 'boolean',
+                  description:
+                    'Whether the asset should be transferable when cloning the app they are in.',
+                },
               },
             },
           },

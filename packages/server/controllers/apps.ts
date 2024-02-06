@@ -1,7 +1,14 @@
 import { randomBytes } from 'node:crypto';
 import { isDeepStrictEqual } from 'node:util';
 
-import { AppsembleError, handleValidatorResult, logger, serveIcon } from '@appsemble/node-utils';
+import {
+  AppsembleError,
+  assertKoaError,
+  handleValidatorResult,
+  logger,
+  serveIcon,
+  throwKoaError,
+} from '@appsemble/node-utils';
 import { type App as AppType, type BlockManifest } from '@appsemble/types';
 import {
   type IdentifiableBlock,
@@ -13,33 +20,43 @@ import {
   validateStyle,
 } from '@appsemble/utils';
 import { parseISO } from 'date-fns';
+import JSZip from 'jszip';
 import { type Context } from 'koa';
 import { type File } from 'koas-body-parser';
 import { lookup } from 'mime-types';
 import { col, fn, literal, Op, UniqueConstraintError } from 'sequelize';
 import sharp from 'sharp';
 import webpush from 'web-push';
-import { parse } from 'yaml';
+import { parse, stringify } from 'yaml';
 
 import {
   App,
   AppBlockStyle,
+  AppMessages,
   AppRating,
   AppScreenshot,
   AppSnapshot,
+  Asset,
   BlockVersion,
-  Member,
   Organization,
+  OrganizationMember,
   Resource,
   transactional,
   User,
 } from '../models/index.js';
+import { getUserAppAccount } from '../options/getUserAppAccount.js';
+import { options } from '../options/options.js';
 import { applyAppMessages, compareApps, parseLanguage } from '../utils/app.js';
 import { argv } from '../utils/argv.js';
 import { blockVersionToJson, syncBlock } from '../utils/block.js';
 import { checkAppLock } from '../utils/checkAppLock.js';
 import { checkRole } from '../utils/checkRole.js';
 import { encrypt } from '../utils/crypto.js';
+import {
+  processHooks,
+  processReferenceHooks,
+  reseedResourcesRecursively,
+} from '../utils/resource.js';
 
 async function getBlockVersions(blocks: IdentifiableBlock[]): Promise<BlockManifest[]> {
   const uniqueBlocks = blocks.map(({ type, version }) => {
@@ -72,43 +89,23 @@ async function getBlockVersions(blocks: IdentifiableBlock[]): Promise<BlockManif
 
 function handleAppValidationError(ctx: Context, error: Error, app: Partial<App>): never {
   if (error instanceof UniqueConstraintError) {
-    ctx.response.status = 409;
-    ctx.response.body = {
-      statusCode: 409,
-      error: 'Conflict',
-      message: `Another app with path “@${app.OrganizationId}/${app.path}” already exists`,
-    };
-    ctx.throw();
+    throwKoaError(
+      ctx,
+      409,
+      `Another app with path “@${app.OrganizationId}/${app.path}” already exists`,
+    );
   }
 
   if (error instanceof StyleValidationError) {
-    ctx.response.status = 400;
-    ctx.response.body = {
-      statusCode: 400,
-      error: 'Bad Request',
-      message: 'Provided CSS was invalid.',
-    };
-    ctx.throw();
+    throwKoaError(ctx, 400, 'Provided CSS was invalid.');
   }
 
   if (error.message === 'Expected file ´coreStyle´ to be css') {
-    ctx.response.status = 400;
-    ctx.response.body = {
-      statusCode: 400,
-      error: 'Bad Request',
-      message: error.message,
-    };
-    ctx.throw();
+    throwKoaError(ctx, 400, error.message);
   }
 
   if (error.message === 'Expected file ´sharedStyle´ to be css') {
-    ctx.response.status = 400;
-    ctx.response.body = {
-      statusCode: 400,
-      error: 'Bad Request',
-      message: error.message,
-    };
-    ctx.throw();
+    throwKoaError(ctx, 400, error.message);
   }
 
   throw error;
@@ -120,7 +117,10 @@ export async function createApp(ctx: Context): Promise<void> {
     request: {
       body: {
         OrganizationId,
+        controllerCode,
+        controllerImplementations,
         coreStyle,
+        demoMode,
         domain,
         googleAnalyticsID,
         icon,
@@ -155,7 +155,11 @@ export async function createApp(ctx: Context): Promise<void> {
     );
     handleValidatorResult(
       ctx,
-      await validateAppDefinition(definition, getBlockVersions),
+      await validateAppDefinition(
+        definition,
+        getBlockVersions,
+        controllerImplementations ? JSON.parse(controllerImplementations) : undefined,
+      ),
       'App validation failed',
     );
 
@@ -178,8 +182,12 @@ export async function createApp(ctx: Context): Promise<void> {
       sentryEnvironment,
       showAppsembleLogin: false,
       showAppsembleOAuth2Login: true,
+      enableSelfRegistration: true,
       vapidPublicKey: keys.publicKey,
       vapidPrivateKey: keys.privateKey,
+      demoMode: Boolean(demoMode),
+      controllerCode,
+      controllerImplementations,
     };
 
     if (icon) {
@@ -208,9 +216,11 @@ export async function createApp(ctx: Context): Promise<void> {
     try {
       await transactional(async (transaction) => {
         record = await App.create(result, { transaction });
+
         record.AppSnapshots = [
           await AppSnapshot.create({ AppId: record.id, yaml }, { transaction }),
         ];
+
         logger.verbose(`Storing ${screenshots?.length ?? 0} screenshots`);
         record.AppScreenshots = screenshots?.length
           ? await AppScreenshot.bulkCreate(
@@ -221,15 +231,7 @@ export async function createApp(ctx: Context): Promise<void> {
                   const { format, height, width } = await img.metadata();
                   const mime = lookup(format);
 
-                  if (!mime) {
-                    ctx.response.status = 404;
-                    ctx.response.body = {
-                      statusCode: 404,
-                      error: 'Not Found',
-                      message: `Unknown screenshot mime type: ${mime}`,
-                    };
-                    ctx.throw();
-                  }
+                  assertKoaError(!mime, ctx, 404, `Unknown screenshot mime type: ${mime}`);
 
                   return {
                     screenshot: contents,
@@ -279,6 +281,12 @@ export async function getAppById(ctx: Context): Promise<void> {
   } = ctx;
   const { baseLanguage, language, query: languageQuery } = parseLanguage(ctx, ctx.query?.language);
 
+  const { demoMode } = (await App.findByPk(appId, { attributes: ['demoMode'] })) || {
+    demoMode: false,
+  };
+
+  const demoModeFilter = demoMode ? { seed: false } : {};
+
   const app = await App.findByPk(appId, {
     attributes: {
       include: [
@@ -288,8 +296,21 @@ export async function getAppById(ctx: Context): Promise<void> {
       exclude: ['App.icon', 'maskableIcon', 'coreStyle', 'sharedStyle'],
     },
     include: [
-      { model: Resource, attributes: ['id'], where: { clonable: true }, required: false },
-      { model: AppSnapshot },
+      {
+        model: Resource,
+        attributes: ['id', 'clonable'],
+        where: demoModeFilter,
+        required: false,
+        separate: true,
+      },
+      {
+        model: Asset,
+        attributes: ['id', 'clonable'],
+        where: demoModeFilter,
+        required: false,
+        separate: true,
+      },
+      { model: AppSnapshot, as: 'AppSnapshots', order: [['created', 'DESC']], limit: 1 },
       {
         model: Organization,
         attributes: {
@@ -304,14 +325,9 @@ export async function getAppById(ctx: Context): Promise<void> {
       { model: AppScreenshot, attributes: ['id'] },
       ...languageQuery,
     ],
-    order: [[{ model: AppSnapshot, as: 'AppSnapshots' }, 'created', 'DESC']],
   });
 
-  if (!app) {
-    ctx.response.status = 404;
-    ctx.response.body = { statusCode: 404, error: 'Not Found', message: 'App not found' };
-    ctx.throw();
-  }
+  assertKoaError(!app, ctx, 404, 'App not found');
 
   const propertyFilters: (keyof AppType)[] = [];
   if (app.visibility === 'private' || !app.showAppDefinition) {
@@ -342,6 +358,7 @@ export async function getAppById(ctx: Context): Promise<void> {
 
   applyAppMessages(app, language, baseLanguage);
 
+  ctx.status = 200;
   ctx.body = app.toJSON(propertyFilters);
 }
 
@@ -406,7 +423,7 @@ export async function queryMyApps(ctx: Context): Promise<void> {
   const { user } = ctx;
   const { baseLanguage, language, query: languageQuery } = parseLanguage(ctx, ctx.query?.language);
 
-  const memberships = await Member.findAll({
+  const memberships = await OrganizationMember.findAll({
     attributes: ['OrganizationId'],
     raw: true,
     where: { UserId: user.id },
@@ -472,7 +489,10 @@ export async function patchApp(ctx: Context): Promise<void> {
     pathParams: { appId },
     request: {
       body: {
+        controllerCode,
+        controllerImplementations,
         coreStyle,
+        demoMode,
         domain,
         emailHost,
         emailName,
@@ -480,6 +500,7 @@ export async function patchApp(ctx: Context): Promise<void> {
         emailPort,
         emailSecure,
         emailUser,
+        enableSelfRegistration,
         googleAnalyticsID,
         icon,
         iconBackground,
@@ -528,15 +549,7 @@ export async function patchApp(ctx: Context): Promise<void> {
     ],
   });
 
-  if (!dbApp) {
-    ctx.response.status = 404;
-    ctx.response.body = {
-      statusCode: 404,
-      error: 'Not Found',
-      message: 'App not found',
-    };
-    ctx.throw();
-  }
+  assertKoaError(!dbApp, ctx, 404, 'App not found');
 
   checkAppLock(ctx, dbApp);
 
@@ -557,7 +570,11 @@ export async function patchApp(ctx: Context): Promise<void> {
       );
       handleValidatorResult(
         ctx,
-        await validateAppDefinition(definition, getBlockVersions),
+        await validateAppDefinition(
+          definition,
+          getBlockVersions,
+          controllerImplementations ? JSON.parse(controllerImplementations) : undefined,
+        ),
         'App validation failed',
       );
       result.definition = definition;
@@ -573,6 +590,10 @@ export async function patchApp(ctx: Context): Promise<void> {
 
     if (template !== undefined) {
       result.template = template;
+    }
+
+    if (demoMode !== undefined) {
+      result.demoMode = demoMode;
     }
 
     if (domain !== undefined) {
@@ -634,6 +655,10 @@ export async function patchApp(ctx: Context): Promise<void> {
       result.showAppsembleOAuth2Login = showAppsembleOAuth2Login;
     }
 
+    if (enableSelfRegistration !== undefined) {
+      result.enableSelfRegistration = enableSelfRegistration;
+    }
+
     if (coreStyle) {
       result.coreStyle = validateStyle(coreStyle);
     }
@@ -653,6 +678,11 @@ export async function patchApp(ctx: Context): Promise<void> {
     if (iconBackground) {
       result.iconBackground = iconBackground;
     }
+
+    result.controllerCode = ['', undefined].includes(controllerCode) ? null : controllerCode;
+    result.controllerImplementations = ['', undefined].includes(controllerImplementations)
+      ? null
+      : controllerImplementations;
 
     if (
       domain !== undefined ||
@@ -687,15 +717,8 @@ export async function patchApp(ctx: Context): Promise<void> {
 
               const { format, height, width } = await img.metadata();
               const mime = lookup(format);
-              if (!mime) {
-                ctx.response.status = 404;
-                ctx.response.body = {
-                  statusCode: 404,
-                  error: 'Not Found',
-                  message: `Unknown screenshot mime type: ${mime}`,
-                };
-                ctx.throw();
-              }
+
+              assertKoaError(!mime, ctx, 404, `Unknown screenshot mime type: ${mime}`);
 
               return {
                 screenshot: contents,
@@ -732,11 +755,7 @@ export async function setAppLock(ctx: Context): Promise<void> {
     include: [{ model: AppScreenshot, attributes: ['id'] }],
   });
 
-  if (!app) {
-    ctx.response.status = 404;
-    ctx.response.body = { statusCode: 404, error: 'Not Found', message: 'App not found' };
-    ctx.throw();
-  }
+  assertKoaError(!app, ctx, 404, 'App not found');
 
   await checkRole(ctx, app.OrganizationId, Permission.EditAppSettings);
   await app.update({ locked });
@@ -749,11 +768,7 @@ export async function deleteApp(ctx: Context): Promise<void> {
 
   const app = await App.findByPk(appId, { attributes: ['id', 'OrganizationId'] });
 
-  if (!app) {
-    ctx.response.status = 404;
-    ctx.response.body = { statusCode: 404, error: 'Not Found', message: 'App not found' };
-    ctx.throw();
-  }
+  assertKoaError(!app, ctx, 404, 'App not found');
 
   await checkRole(ctx, app.OrganizationId, Permission.DeleteApps);
 
@@ -779,11 +794,7 @@ export async function getAppEmailSettings(ctx: Context): Promise<void> {
     ],
   });
 
-  if (!app) {
-    ctx.response.status = 404;
-    ctx.response.body = { statusCode: 404, error: 'Not Found', message: 'App not found' };
-    ctx.throw();
-  }
+  assertKoaError(!app, ctx, 404, 'App not found');
 
   await checkRole(ctx, app.OrganizationId, Permission.EditAppSettings);
 
@@ -813,11 +824,7 @@ export async function getAppSnapshots(ctx: Context): Promise<void> {
     },
   });
 
-  if (!app) {
-    ctx.response.status = 404;
-    ctx.response.body = { statusCode: 404, error: 'Not Found', message: 'App not found' };
-    ctx.throw();
-  }
+  assertKoaError(!app, ctx, 404, 'App not found');
 
   ctx.body = app.AppSnapshots.sort((a, b) => b.id - a.id).map((snapshot) => ({
     id: snapshot.id,
@@ -844,20 +851,8 @@ export async function getAppSnapshot(ctx: Context): Promise<void> {
     },
   });
 
-  if (!app) {
-    ctx.response.status = 404;
-    ctx.response.body = { statusCode: 404, error: 'Not Found', message: 'App not found' };
-    ctx.throw();
-  }
-  if (!app.AppSnapshots.length) {
-    ctx.response.status = 404;
-    ctx.response.body = {
-      statusCode: 404,
-      error: 'Not Found',
-      message: 'Snapshot not found',
-    };
-    ctx.throw();
-  }
+  assertKoaError(!app, ctx, 404, 'App not found');
+  assertKoaError(!app.AppSnapshots.length, ctx, 404, 'Snapshot not found');
 
   const [snapshot] = app.AppSnapshots;
   ctx.body = {
@@ -886,11 +881,7 @@ export async function getAppIcon(ctx: Context): Promise<void> {
     include: [{ model: Organization, attributes: ['icon', 'updated'] }],
   });
 
-  if (!app) {
-    ctx.response.status = 404;
-    ctx.response.body = { statusCode: 404, error: 'Not Found', message: 'App not found' };
-    ctx.throw();
-  }
+  assertKoaError(!app, ctx, 404, 'App not found');
 
   const dbUpdated =
     (maskable && app.maskableIcon) || app.icon ? app.updated : app.Organization.updated;
@@ -916,21 +907,8 @@ export async function deleteAppIcon(ctx: Context): Promise<void> {
     attributes: ['id', 'icon', 'OrganizationId'],
   });
 
-  if (!app) {
-    ctx.response.status = 404;
-    ctx.response.body = { statusCode: 404, error: 'Not Found', message: 'App not found' };
-    ctx.throw();
-  }
-
-  if (!app.icon) {
-    ctx.response.status = 404;
-    ctx.response.body = {
-      statusCode: 404,
-      error: 'Not Found',
-      message: 'App has no icon',
-    };
-    ctx.throw();
-  }
+  assertKoaError(!app, ctx, 404, 'App not found');
+  assertKoaError(!app.icon, ctx, 404, 'App has no icon');
 
   await checkRole(ctx, app.OrganizationId, Permission.EditAppSettings);
   await app.update({ icon: null });
@@ -944,21 +922,8 @@ export async function deleteAppMaskableIcon(ctx: Context): Promise<void> {
     attributes: ['id', 'maskableIcon', 'OrganizationId'],
   });
 
-  if (!app) {
-    ctx.response.status = 404;
-    ctx.response.body = { statusCode: 404, error: 'Not Found', message: 'App not found' };
-    ctx.throw();
-  }
-
-  if (!app.maskableIcon) {
-    ctx.response.status = 404;
-    ctx.response.body = {
-      statusCode: 404,
-      error: 'Not Found',
-      message: 'App has no maskable icon',
-    };
-    ctx.throw();
-  }
+  assertKoaError(!app, ctx, 404, 'App not found');
+  assertKoaError(!app.maskableIcon, ctx, 404, 'App has no maskable icon');
 
   await checkRole(ctx, app.OrganizationId, Permission.EditAppSettings);
   await app.update({ maskableIcon: null });
@@ -980,21 +945,8 @@ export async function getAppScreenshot(ctx: Context): Promise<void> {
     ],
   });
 
-  if (!app) {
-    ctx.response.status = 404;
-    ctx.response.body = { statusCode: 404, error: 'Not Found', message: 'App not found' };
-    ctx.throw();
-  }
-
-  if (!app.AppScreenshots?.length) {
-    ctx.response.status = 404;
-    ctx.response.body = {
-      statusCode: 404,
-      error: 'Not Found',
-      message: 'Screenshot not found',
-    };
-    ctx.throw();
-  }
+  assertKoaError(!app, ctx, 404, 'App not found');
+  assertKoaError(!app.AppScreenshots?.length, ctx, 404, 'Screenshot not found');
 
   const [{ mime, screenshot }] = app.AppScreenshots;
 
@@ -1013,11 +965,7 @@ export async function createAppScreenshot(ctx: Context): Promise<void> {
     attributes: ['id', 'OrganizationId'],
   });
 
-  if (!app) {
-    ctx.response.status = 404;
-    ctx.response.body = { statusCode: 404, error: 'Not Found', message: 'App not found' };
-    ctx.throw();
-  }
+  assertKoaError(!app, ctx, 404, 'App not found');
 
   checkAppLock(ctx, app);
   await checkRole(ctx, app.OrganizationId, Permission.EditAppSettings);
@@ -1032,15 +980,7 @@ export async function createAppScreenshot(ctx: Context): Promise<void> {
           const { format, height, width } = await img.metadata();
           const mime = lookup(format);
 
-          if (!mime) {
-            ctx.response.status = 404;
-            ctx.response.body = {
-              statusCode: 404,
-              error: 'Not Found',
-              message: `Unknown screenshot mime type: ${mime}`,
-            };
-            ctx.throw();
-          }
+          assertKoaError(!mime, ctx, 404, `Unknown screenshot mime type: ${mime}`);
 
           return {
             screenshot: contents,
@@ -1070,26 +1010,238 @@ export async function deleteAppScreenshot(ctx: Context): Promise<void> {
     ],
   });
 
-  if (!app) {
-    ctx.response.status = 404;
-    ctx.response.body = { statusCode: 404, error: 'Not Found', message: 'App not found' };
-    ctx.throw();
-  }
+  assertKoaError(!app, ctx, 404, 'App not found');
 
   checkAppLock(ctx, app);
   await checkRole(ctx, app.OrganizationId, Permission.EditAppSettings);
 
-  if (!app.AppScreenshots.length) {
-    ctx.response.status = 404;
-    ctx.response.body = {
-      statusCode: 404,
-      error: 'Not Found',
-      message: 'Screenshot not found',
-    };
-    ctx.throw();
-  }
+  assertKoaError(!app.AppScreenshots.length, ctx, 404, 'Screenshot not found');
 
   await app.AppScreenshots[0].destroy();
+}
+
+export async function importApp(ctx: Context): Promise<void> {
+  const {
+    openApi,
+    pathParams: { organizationId },
+    request: { body: importFile },
+  } = ctx;
+  await checkRole(ctx, organizationId, Permission.EditApps);
+  let result: Partial<App>;
+  const zip = await JSZip.loadAsync(importFile);
+  try {
+    const definitionFile = zip.file('app-definition.yaml');
+    assertKoaError(!definitionFile, ctx, 400, 'app-definition.yaml file not found in the zip file');
+    const yaml = await definitionFile.async('text');
+    const theme = zip.folder('theme');
+    const definition = parse(yaml, { maxAliasCount: 10_000 });
+    handleValidatorResult(
+      ctx,
+      openApi.validate(definition, openApi.document.components.schemas.AppDefinition, {
+        throw: false,
+      }),
+      'App validation failed',
+    );
+    handleValidatorResult(
+      ctx,
+      await validateAppDefinition(definition, getBlockVersions),
+      'App validation failed',
+    );
+    const path = normalize(definition.name);
+    if (!path) {
+      result.path = `${path}-${randomBytes(5).toString('hex')}`;
+    }
+    const existingPath = await App.findOne({
+      where: { path, OrganizationId: organizationId },
+    });
+    assertKoaError(existingPath != null, ctx, 409, 'Path  in app definition needs to be unique');
+    const keys = webpush.generateVAPIDKeys();
+    result = {
+      definition,
+      path,
+      OrganizationId: organizationId,
+      vapidPublicKey: keys.publicKey,
+      vapidPrivateKey: keys.privateKey,
+      showAppsembleLogin: false,
+      showAppsembleOAuth2Login: true,
+      enableSelfRegistration: true,
+      showAppDefinition: true,
+      template: false,
+      iconBackground: '#ffffff',
+    };
+    const coreStyleFile = theme.file('core/index.css');
+    if (coreStyleFile) {
+      const coreStyle = await coreStyleFile.async('text');
+      result.coreStyle = validateStyle(coreStyle);
+    }
+    const sharedStyleFile = theme.file('shared/index.css');
+    if (sharedStyleFile) {
+      const sharedStyle = await sharedStyleFile.async('text');
+      result.sharedStyle = validateStyle(sharedStyle);
+    }
+
+    let record: App;
+    try {
+      await transactional(async (transaction) => {
+        record = await App.create(result, { transaction });
+        record.AppSnapshots = [
+          await AppSnapshot.create({ AppId: record.id, yaml }, { transaction }),
+        ];
+        const i18Folder = zip.folder('i18n').filter((filename) => filename.endsWith('json'));
+        for (const json of i18Folder) {
+          const language = json.name.slice(5, 7);
+          const messages = await json.async('text');
+          record.AppMessages = [
+            await AppMessages.create(
+              { AppId: record.id, language, messages: JSON.parse(messages) },
+              { transaction },
+            ),
+          ];
+        }
+
+        const { user } = ctx;
+        const appId = record.id;
+
+        const resourcesFolder = zip
+          .folder('resources')
+          .filter((filename) => filename.endsWith('json'));
+        for (const file of resourcesFolder) {
+          const [, resourceJsonName] = file.name.split('/');
+          const [resourceType] = resourceJsonName.split('.');
+          const action = 'create';
+          const resourcesText = await file.async('text');
+          const resources = JSON.parse(JSON.stringify(resourcesText.trim().split('\n')));
+          const { verifyResourceActionPermission } = options;
+
+          verifyResourceActionPermission({
+            app: record.toJSON(),
+            context: ctx,
+            action,
+            resourceType,
+            options,
+            ctx,
+          });
+          await (user as User)?.reload({ attributes: ['name', 'id'] });
+          const appMember = await getUserAppAccount(appId, user.id);
+          const createdResources = await Resource.bulkCreate(
+            resources.map((data: string) => ({
+              AppId: appId,
+              type: resourceType,
+              data: JSON.parse(data),
+              AuthorId: appMember?.id,
+            })),
+            { logging: false, transaction },
+          );
+          for (const createdResource of createdResources) {
+            createdResource.Author = appMember;
+          }
+
+          processReferenceHooks(user as User, record, createdResources[0], action, options, ctx);
+          processHooks(user as User, record, createdResources[0], action, options, ctx);
+        }
+
+        const organizations = theme.filter((filename) => filename.startsWith('@'));
+        for (const organization of organizations) {
+          const organizationFolder = theme.folder(organization.name);
+          const blocks = organizationFolder.filter(
+            (filename) => !organizationFolder.file(filename).dir,
+          );
+          for (const block of blocks) {
+            const [, blockName] = block.name.split('/');
+            const orgName = organizationFolder.name.slice(1);
+            const blockVersion = await BlockVersion.findOne({
+              where: { name: blockName, organizationId: orgName },
+            });
+            assertKoaError(!blockVersion, ctx, 404, 'Block not found');
+            const style = validateStyle(await block.async('text'));
+            record.AppBlockStyles = [
+              await AppBlockStyle.create(
+                {
+                  style,
+                  appId: record.id,
+                  block: `${orgName}/${blockName}`,
+                },
+                { transaction },
+              ),
+            ];
+          }
+        }
+      });
+    } catch (error: unknown) {
+      if (error instanceof AppsembleError) {
+        ctx.status = 204;
+        return;
+      }
+      ctx.throw(error);
+    }
+    ctx.body = record.toJSON();
+    ctx.status = 201;
+  } catch (error) {
+    handleAppValidationError(ctx, error as Error, result);
+  }
+}
+
+export async function exportApp(ctx: Context): Promise<void> {
+  const {
+    pathParams: { appId },
+  } = ctx;
+  const { resources } = ctx.queryParams;
+
+  const app = await App.findByPk(appId, {
+    attributes: [
+      'definition',
+      'coreStyle',
+      'OrganizationId',
+      'sharedStyle',
+      'showAppDefinition',
+      'visibility',
+    ],
+    include: [
+      { model: AppBlockStyle, required: false },
+      { model: AppMessages, required: false },
+      { model: Resource, required: false },
+    ],
+  });
+
+  if (app.visibility === 'public' || !app.showAppDefinition) {
+    await checkRole(ctx, app.OrganizationId, Permission.ViewApps);
+  }
+  const zip = new JSZip();
+  zip.file('app-definition.yaml', stringify(app.definition));
+  const theme = zip.folder('theme');
+  theme.file('core/index.css', app.coreStyle);
+  theme.file('shared/index.css', app.sharedStyle);
+
+  if (app.AppMessages !== undefined) {
+    const i18 = zip.folder('i18n');
+    for (const message of app.AppMessages) {
+      i18.file(`${message.language}.json`, JSON.stringify(message.messages));
+    }
+  }
+
+  if (app.AppBlockStyles !== undefined) {
+    for (const block of app.AppBlockStyles) {
+      const [orgName, blockName] = block.block.split('/');
+      theme.file(`${orgName}/${blockName}/index.css`, block.style);
+    }
+  }
+
+  if (resources && app.Resources !== undefined) {
+    await checkRole(ctx, app.OrganizationId, Permission.EditApps);
+    const resourceMap = new Map<string, string>();
+    for (const resource of app.Resources) {
+      const currentValue = resourceMap.get(resource.type) || '';
+      resourceMap.set(resource.type, `${currentValue + JSON.stringify(resource.toJSON())}\n`);
+    }
+    for (const [resourceType, resourceValue] of resourceMap.entries()) {
+      zip.file(`resources/${resourceType}.json`, resourceValue);
+    }
+  }
+  const content = zip.generateNodeStream();
+  ctx.attachment();
+  ctx.body = content;
+  ctx.type = 'application/zip';
+  ctx.status = 200;
 }
 
 export async function getAppCoreStyle(ctx: Context): Promise<void> {
@@ -1099,11 +1251,7 @@ export async function getAppCoreStyle(ctx: Context): Promise<void> {
 
   const app = await App.findByPk(appId, { attributes: ['coreStyle'], raw: true });
 
-  if (!app) {
-    ctx.response.status = 404;
-    ctx.response.body = { statusCode: 404, error: 'Not Found', message: 'App not found' };
-    ctx.throw();
-  }
+  assertKoaError(!app, ctx, 404, 'App not found');
 
   ctx.body = app.coreStyle || '';
   ctx.type = 'css';
@@ -1117,11 +1265,7 @@ export async function getAppSharedStyle(ctx: Context): Promise<void> {
 
   const app = await App.findByPk(appId, { attributes: ['sharedStyle'], raw: true });
 
-  if (!app) {
-    ctx.response.status = 404;
-    ctx.response.body = { statusCode: 404, error: 'Not Found', message: 'App not found' };
-    ctx.throw();
-  }
+  assertKoaError(!app, ctx, 404, 'App not found');
 
   ctx.body = app.sharedStyle || '';
   ctx.type = 'css';
@@ -1156,27 +1300,16 @@ export async function setAppBlockStyle(ctx: Context): Promise<void> {
 
   try {
     const app = await App.findByPk(appId, { attributes: ['locked', 'OrganizationId'] });
-    if (!app) {
-      ctx.response.status = 404;
-      ctx.response.body = { statusCode: 404, error: 'Not Found', message: 'App not found.' };
-      ctx.throw();
-    }
 
+    assertKoaError(!app, ctx, 404, 'App not found');
     checkAppLock(ctx, app);
     validateStyle(css);
 
     const block = await BlockVersion.findOne({
       where: { name: blockId, OrganizationId: organizationId },
     });
-    if (!block) {
-      ctx.response.status = 404;
-      ctx.response.body = {
-        statusCode: 404,
-        error: 'Not Found',
-        message: 'Block not found.',
-      };
-      ctx.throw();
-    }
+
+    assertKoaError(!block, ctx, 404, 'Block not found');
 
     await checkRole(ctx, app.OrganizationId, Permission.EditApps);
 
@@ -1193,15 +1326,136 @@ export async function setAppBlockStyle(ctx: Context): Promise<void> {
     ctx.status = 204;
   } catch (error: unknown) {
     if (error instanceof StyleValidationError) {
-      ctx.response.status = 400;
-      ctx.response.body = {
-        statusCode: 400,
-        error: 'Bad Request',
-        message: 'Provided CSS was invalid.',
-      };
-      ctx.throw();
+      throwKoaError(ctx, 400, 'Provided CSS was invalid.');
     }
 
     throw error;
   }
+}
+
+export async function reseedDemoApp(ctx: Context): Promise<void> {
+  const {
+    pathParams: { appId },
+  } = ctx;
+
+  const app = await App.findByPk(appId, {
+    attributes: ['demoMode', 'definition'],
+  });
+
+  assertKoaError(!app, ctx, 404, 'App not found');
+
+  assertKoaError(!app.demoMode, ctx, 400, 'App is not in demo mode');
+
+  const demoAssetsToDestroy = await Asset.findAll({
+    attributes: ['id'],
+    include: [
+      {
+        model: App,
+        attributes: ['id'],
+        where: {
+          id: appId,
+          demoMode: true,
+        },
+        required: true,
+      },
+    ],
+    where: {
+      ephemeral: true,
+    },
+  });
+
+  logger.info('Cleaning up ephemeral assets.');
+
+  const demoAssetsDeletionResult = await Asset.destroy({
+    where: {
+      id: { [Op.in]: demoAssetsToDestroy.map((asset) => asset.id) },
+    },
+  });
+
+  logger.info(`Removed ${demoAssetsDeletionResult} ephemeral assets.`);
+
+  const demoAssetsToReseed = await Asset.findAll({
+    attributes: ['mime', 'filename', 'data', 'name', 'AppId', 'ResourceId'],
+    include: [
+      {
+        model: App,
+        attributes: ['id'],
+        where: {
+          id: appId,
+          demoMode: true,
+        },
+        required: true,
+      },
+    ],
+    where: {
+      seed: true,
+    },
+  });
+
+  logger.info('Reseeding ephemeral assets.');
+
+  for (const asset of demoAssetsToReseed) {
+    await Asset.create({
+      ...asset.dataValues,
+      ephemeral: true,
+      seed: false,
+    });
+  }
+
+  logger.info(`Reseeded ${demoAssetsToReseed.length} ephemeral assets.`);
+
+  const date = new Date();
+  const demoResourcesToDestroy = await Resource.findAll({
+    attributes: ['id', 'AppId', 'type'],
+    include: [
+      {
+        model: App,
+        attributes: ['id'],
+        where: {
+          id: appId,
+          demoMode: true,
+        },
+        required: true,
+      },
+    ],
+    where: {
+      [Op.or]: [{ seed: false, expires: { [Op.lt]: date } }, { ephemeral: true }],
+    },
+  });
+
+  logger.info(
+    `Cleaning up ephemeral resources and resources with an expiry date earlier than ${date.toISOString()}.`,
+  );
+
+  const demoResourcesDeletionResult = await Resource.destroy({
+    where: {
+      id: { [Op.in]: demoResourcesToDestroy.map((resource) => resource.id) },
+    },
+  });
+
+  logger.info(`Removed ${demoResourcesDeletionResult} ephemeral resources.`);
+
+  const demoResourcesToReseed = await Resource.findAll({
+    attributes: ['type', 'data', 'AppId', 'AuthorId'],
+    include: [
+      {
+        model: App,
+        attributes: ['definition'],
+        where: {
+          id: appId,
+          demoMode: true,
+        },
+        required: true,
+      },
+    ],
+    where: {
+      seed: true,
+    },
+  });
+
+  logger.info('Reseeding ephemeral resources.');
+
+  await reseedResourcesRecursively(app.definition, demoResourcesToReseed);
+
+  logger.info(`Reseeded ${demoResourcesToReseed.length} ephemeral resources.`);
 }

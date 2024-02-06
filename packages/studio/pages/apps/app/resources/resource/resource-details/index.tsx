@@ -5,7 +5,7 @@ import axios from 'axios';
 import { type editor } from 'monaco-editor/esm/vs/editor/editor.api.js';
 import {
   lazy,
-  type ReactElement,
+  type ReactNode,
   Suspense,
   type SyntheticEvent,
   useCallback,
@@ -31,7 +31,7 @@ const MonacoEditor = lazy(() =>
   })),
 );
 
-export function ResourceDetailsPage(): ReactElement {
+export function ResourceDetailsPage(): ReactNode {
   const { id, lang, resourceId, resourceName } = useParams<{
     lang: string;
     id: string;

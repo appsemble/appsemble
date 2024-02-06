@@ -1,7 +1,7 @@
 import { useToggle } from '@appsemble/react-components';
 import { type AppSamlSecret } from '@appsemble/types';
 import axios from 'axios';
-import { type ReactElement, useCallback } from 'react';
+import { type ReactNode, useCallback } from 'react';
 import { useIntl } from 'react-intl';
 
 import { messages } from './messages.js';
@@ -32,11 +32,7 @@ interface SamlSecretItemProps {
 /**
  * Render an Saml app secret that may be updated.
  */
-export function SamlSecretItem({
-  onDeleted,
-  onUpdated,
-  secret,
-}: SamlSecretItemProps): ReactElement {
+export function SamlSecretItem({ onDeleted, onUpdated, secret }: SamlSecretItemProps): ReactNode {
   const { formatMessage } = useIntl();
   const modal = useToggle();
   const { app } = useApp();

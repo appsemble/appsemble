@@ -4,8 +4,9 @@ import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vite
 
 import {
   App,
-  Member,
+  AppMember,
   Organization,
+  OrganizationMember,
   Resource,
   ResourceVersion,
   type User,
@@ -31,7 +32,7 @@ beforeEach(async () => {
     id: 'testorganization',
     name: 'Test Organization',
   });
-  await Member.create({
+  await OrganizationMember.create({
     UserId: user.id,
     OrganizationId: 'testorganization',
     role: 'Maintainer',
@@ -127,16 +128,17 @@ describe('getResourceHistory', () => {
       type: 'yesHistory',
       data: { version: 'old' },
     });
+    const member = await AppMember.create({ AppId: 1, UserId: user.id, name: user.name, role: '' });
     vi.advanceTimersByTime(1000);
     await ResourceVersion.create({
-      UserId: user.id,
+      AppMemberId: member.id,
       ResourceId: resource.id,
       data: { version: 'new' },
     });
     vi.advanceTimersByTime(1000);
     await ResourceVersion.create({ ResourceId: resource.id, data: { version: 'newer' } });
     vi.advanceTimersByTime(1000);
-    await resource.update({ EditorId: user.id, data: { version: 'newest' } });
+    await resource.update({ EditorId: member.id, data: { version: 'newest' } });
 
     const response = await request.get(`/api/apps/1/resources/yesHistory/${resource.id}/history`);
 

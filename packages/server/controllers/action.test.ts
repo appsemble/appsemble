@@ -158,6 +158,17 @@ describe('handleRequestProxy', () => {
                     subject: [{ static: 'Test title' }],
                     body: [{ prop: 'body' }],
                   } as EmailActionDefinition,
+                  remap: {
+                    type: 'request',
+                    url: {
+                      'string.format': {
+                        template: `${baseURL}{dynamic}`,
+                        values: {
+                          dynamic: { prop: 'dynamic' },
+                        },
+                      },
+                    },
+                  },
                   path: {
                     type: 'request',
                     url: String(new URL('/pour?drink=coffee', baseURL)),
@@ -267,6 +278,38 @@ describe('handleRequestProxy', () => {
     expect(proxiedContext.path).toBe('/');
   });
 
+  it('should proxy binary POST requests', async () => {
+    const blob = new Blob(['New binary image'], { type: 'image/jpeg' });
+    proxiedBody = blob;
+    responseHeaders = {
+      'Content-Type': 'image/jpeg',
+    };
+    const response = await request.post(
+      '/api/apps/1/action/pages.0.blocks.0.actions.post',
+      undefined,
+      {
+        data: blob,
+        headers: responseHeaders,
+      },
+    );
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 418 I'm a teapot
+      Content-Type: image/jpeg
+
+      {}
+    `);
+    expect({ ...proxiedContext.headers }).toMatchObject({
+      accept: 'application/json, text/plain, */*',
+      'accept-encoding': 'gzip, compress, deflate, br',
+      'content-type': 'image/jpeg',
+      'content-length': '0',
+      connection: 'close',
+      host: new URL(proxiedRequest.defaults.baseURL).host,
+      'user-agent': `AppsembleServer/${version}`,
+    });
+    expect(proxiedContext.path).toBe('/');
+  });
+
   it('should proxy simple PUT request actions', async () => {
     const response = await request.put('/api/apps/1/action/pages.0.blocks.0.actions.put', {});
     expect(response).toMatchInlineSnapshot(`
@@ -344,6 +387,96 @@ describe('handleRequestProxy', () => {
     `);
   });
 
+  it('should assign incoming content-type when present', async () => {
+    const response = await request.post(
+      '/api/apps/1/action/pages.0.blocks.0.actions.post',
+      await new Blob([], { type: 'image/png' }).arrayBuffer(),
+      {
+        headers: {
+          'Content-Type': 'image/png',
+        },
+      },
+    );
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 418 I'm a teapot
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "message": "I’m a teapot",
+      }
+    `);
+    expect(proxiedContext.method).toBe('POST');
+    expect({ ...proxiedContext.headers }).toMatchObject({
+      accept: 'application/json, text/plain, */*',
+      'accept-encoding': 'gzip, compress, deflate, br',
+      host: new URL(proxiedRequest.defaults.baseURL).host,
+      'user-agent': `AppsembleServer/${version}`,
+      'content-type': 'image/png',
+    });
+  });
+
+  it('should remap url on server', async () => {
+    const response = await request.get(
+      '/api/apps/1/action/pages.0.blocks.0.actions.remap?data={"dynamic": "path"}',
+    );
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 418 I'm a teapot
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "message": "I’m a teapot",
+      }
+    `);
+    expect(proxiedContext.method).toBe('GET');
+    expect(proxiedContext.url).toBe('/path');
+  });
+
+  it('should throw if data is not a JSON object', async () => {
+    const response = await request.get('/api/apps/1/action/pages.0.blocks.0.actions.get?data=test');
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 400 Bad Request
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "error": "Bad Request",
+        "message": "data should be a JSON object.",
+        "statusCode": 400,
+      }
+    `);
+  });
+
+  it('should proxy query parameters', async () => {
+    const response = await request.get(
+      '/api/apps/1/action/pages.0.blocks.0.actions.get?data={}&params={"key": "value"}',
+    );
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 418 I'm a teapot
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "message": "I’m a teapot",
+      }
+    `);
+    expect(proxiedContext.method).toBe('GET');
+    expect(proxiedContext.querystring).toBe('key=value');
+  });
+
+  it('should throw if params is not a JSON object', async () => {
+    const response = await request.get(
+      '/api/apps/1/action/pages.0.blocks.0.actions.get?data={}&params=test',
+    );
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 400 Bad Request
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "error": "Bad Request",
+        "message": "params should be a JSON object.",
+        "statusCode": 400,
+      }
+    `);
+  });
+
   it('should proxy request paths', async () => {
     const response = await request.get('/api/apps/1/action/pages.0.blocks.0.actions.path?data={}');
     expect(response).toMatchInlineSnapshot(`
@@ -380,7 +513,7 @@ describe('handleRequestProxy', () => {
     server.context.user = null;
 
     await AppServiceSecret.create({
-      serviceName: 'Test service',
+      name: 'Test service',
       urlPatterns: proxiedRequest.defaults.baseURL,
       authenticationMethod: 'http-basic',
       identifier: 'john_doe',
@@ -425,7 +558,7 @@ describe('handleRequestProxy', () => {
     authorizeApp(app);
 
     await AppServiceSecret.create({
-      serviceName: 'Test service',
+      name: 'Test service',
       urlPatterns: `!${proxiedRequest.defaults.baseURL}`,
       authenticationMethod: 'http-basic',
       identifier: 'john_doe',
@@ -470,7 +603,7 @@ describe('handleRequestProxy', () => {
     authorizeApp(app);
 
     await AppServiceSecret.create({
-      serviceName: 'Test service',
+      name: 'Test service',
       urlPatterns: proxiedRequest.defaults.baseURL,
       authenticationMethod: 'http-basic',
       identifier: 'john_doe',
@@ -517,7 +650,7 @@ describe('handleRequestProxy', () => {
     authorizeApp(app);
 
     await AppServiceSecret.create({
-      serviceName: 'Test service',
+      name: 'Test service',
       urlPatterns: proxiedRequest.defaults.baseURL,
       authenticationMethod: 'http-basic',
       identifier: 'john_doe',
@@ -526,7 +659,7 @@ describe('handleRequestProxy', () => {
     });
 
     await AppServiceSecret.create({
-      serviceName: 'Test service',
+      name: 'Test service',
       urlPatterns: proxiedRequest.defaults.baseURL,
       authenticationMethod: 'http-basic',
       identifier: 'not_john_doe',
@@ -573,7 +706,7 @@ describe('handleRequestProxy', () => {
     authorizeApp(app);
 
     await AppServiceSecret.create({
-      serviceName: 'Test service',
+      name: 'Test service',
       urlPatterns: proxiedRequest.defaults.baseURL,
       authenticationMethod: 'client-certificate',
       identifier: '-----BEGIN CERTIFICATE-----\nTEST\n-----END CERTIFICATE-----',
@@ -628,7 +761,7 @@ describe('handleRequestProxy', () => {
     authorizeApp(app);
 
     await AppServiceSecret.create({
-      serviceName: 'Test service',
+      name: 'Test service',
       urlPatterns: proxiedRequest.defaults.baseURL,
       authenticationMethod: 'client-certificate',
       identifier: '-----BEGIN CERTIFICATE-----\nTEST\n-----END CERTIFICATE-----',
@@ -639,7 +772,7 @@ describe('handleRequestProxy', () => {
       AppId: app.id,
     });
     await AppServiceSecret.create({
-      serviceName: 'Test service',
+      name: 'Test service',
       urlPatterns: proxiedRequest.defaults.baseURL,
       authenticationMethod: 'client-certificate',
       identifier: '-----BEGIN CERTIFICATE-----\nTEST1\n-----END CERTIFICATE-----',
@@ -696,7 +829,7 @@ describe('handleRequestProxy', () => {
     const tokenUrl = `${proxiedRequest.defaults.baseURL}oauth/token`;
 
     await AppServiceSecret.create({
-      serviceName: 'Test service',
+      name: 'Test service',
       urlPatterns: proxiedRequest.defaults.baseURL,
       authenticationMethod: 'client-credentials',
       identifier: 'id',
@@ -758,7 +891,7 @@ describe('handleRequestProxy', () => {
     authorizeApp(app);
 
     await AppServiceSecret.create({
-      serviceName: 'Test service',
+      name: 'Test service',
       urlPatterns: proxiedRequest.defaults.baseURL,
       authenticationMethod: 'http-basic',
       identifier: 'john_doe',
@@ -767,7 +900,7 @@ describe('handleRequestProxy', () => {
     });
 
     await AppServiceSecret.create({
-      serviceName: 'Test service',
+      name: 'Test service',
       urlPatterns: proxiedRequest.defaults.baseURL,
       authenticationMethod: 'client-credentials',
       identifier: 'id',
@@ -817,7 +950,7 @@ describe('handleRequestProxy', () => {
     authorizeApp(app);
 
     await AppServiceSecret.create({
-      serviceName: 'Test service',
+      name: 'Test service',
       urlPatterns: proxiedRequest.defaults.baseURL,
       authenticationMethod: 'cookie',
       identifier: 'cookie',
@@ -862,7 +995,7 @@ describe('handleRequestProxy', () => {
     authorizeApp(app);
 
     await AppServiceSecret.create({
-      serviceName: 'Test service',
+      name: 'Test service',
       urlPatterns: proxiedRequest.defaults.baseURL,
       authenticationMethod: 'cookie',
       identifier: 'cookie',
@@ -870,7 +1003,7 @@ describe('handleRequestProxy', () => {
       AppId: app.id,
     });
     await AppServiceSecret.create({
-      serviceName: 'Test service',
+      name: 'Test service',
       urlPatterns: proxiedRequest.defaults.baseURL,
       authenticationMethod: 'cookie',
       identifier: 'another-cookie',
@@ -917,7 +1050,7 @@ describe('handleRequestProxy', () => {
     authorizeApp(app);
 
     await AppServiceSecret.create({
-      serviceName: 'Test service',
+      name: 'Test service',
       urlPatterns: proxiedRequest.defaults.baseURL,
       authenticationMethod: 'custom-header',
       identifier: 'custom-header',
@@ -962,7 +1095,7 @@ describe('handleRequestProxy', () => {
     authorizeApp(app);
 
     await AppServiceSecret.create({
-      serviceName: 'Test service',
+      name: 'Test service',
       urlPatterns: proxiedRequest.defaults.baseURL,
       authenticationMethod: 'http-basic',
       identifier: 'john_doe',
@@ -970,7 +1103,7 @@ describe('handleRequestProxy', () => {
       AppId: app.id,
     });
     await AppServiceSecret.create({
-      serviceName: 'Test service',
+      name: 'Test service',
       urlPatterns: proxiedRequest.defaults.baseURL,
       authenticationMethod: 'custom-header',
       identifier: 'Authorization',
@@ -1017,7 +1150,7 @@ describe('handleRequestProxy', () => {
     authorizeApp(app);
 
     await AppServiceSecret.create({
-      serviceName: 'Test service',
+      name: 'Test service',
       urlPatterns: proxiedRequest.defaults.baseURL,
       authenticationMethod: 'query-parameter',
       identifier: 'authKey',
@@ -1064,7 +1197,7 @@ describe('handleRequestProxy', () => {
     authorizeApp(app);
 
     await AppServiceSecret.create({
-      serviceName: 'Test service',
+      name: 'Test service',
       urlPatterns: proxiedRequest.defaults.baseURL,
       authenticationMethod: 'query-parameter',
       identifier: 'authKey',
@@ -1072,7 +1205,7 @@ describe('handleRequestProxy', () => {
       AppId: app.id,
     });
     await AppServiceSecret.create({
-      serviceName: 'Test service',
+      name: 'Test service',
       urlPatterns: proxiedRequest.defaults.baseURL,
       authenticationMethod: 'query-parameter',
       identifier: 'anotherOne',
@@ -1120,7 +1253,7 @@ describe('handleRequestProxy', () => {
     authorizeApp(app);
 
     await AppServiceSecret.create({
-      serviceName: 'Test service',
+      name: 'Test service',
       urlPatterns: proxiedRequest.defaults.baseURL,
       authenticationMethod: 'http-basic',
       identifier: 'john_doe',
@@ -1128,7 +1261,7 @@ describe('handleRequestProxy', () => {
       AppId: app.id,
     });
     await AppServiceSecret.create({
-      serviceName: 'Test service',
+      name: 'Test service',
       urlPatterns: proxiedRequest.defaults.baseURL,
       authenticationMethod: 'client-certificate',
       identifier: '-----BEGIN CERTIFICATE-----\nTEST\n-----END CERTIFICATE-----',
@@ -1139,7 +1272,7 @@ describe('handleRequestProxy', () => {
       AppId: app.id,
     });
     await AppServiceSecret.create({
-      serviceName: 'Test service',
+      name: 'Test service',
       urlPatterns: proxiedRequest.defaults.baseURL,
       authenticationMethod: 'query-parameter',
       identifier: 'authKey',

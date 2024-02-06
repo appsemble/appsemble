@@ -1,5 +1,5 @@
 import { Button, SelectField } from '@appsemble/react-components';
-import { type ChangeEvent, type ReactElement, useCallback } from 'react';
+import { type ChangeEvent, type ReactNode, useCallback } from 'react';
 import { FormattedMessage } from 'react-intl';
 
 import { messages } from './messages.js';
@@ -54,7 +54,7 @@ export function PaginationNavigator({
   page,
   rowsPerPage,
   rowsPerPageOptions,
-}: PaginationNavigatorProps): ReactElement {
+}: PaginationNavigatorProps): ReactNode {
   const onDropdownChange = useCallback(
     (event: ChangeEvent<HTMLSelectElement>) => {
       const newRowsPerPage = Number(event.target.value);

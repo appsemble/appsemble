@@ -3,8 +3,10 @@ import {
   handleValidatorResult,
   type Options,
   type QueryParams,
+  throwKoaError,
 } from '@appsemble/node-utils';
 import {
+  type AppDefinition,
   type NotificationDefinition,
   type ResourceDefinition,
   type Resource as ResourceType,
@@ -269,9 +271,9 @@ export async function processReferenceTriggers(
   }
 
   const childResources: Record<string, Resource[]> = {};
-  const childPromises = resourceReferences.map(async ({ childName }) => {
+  const childPromises = resourceReferences.map(async ({ childName, referencedProperty }) => {
     childResources[childName] = await Resource.findAll({
-      where: { type: childName, AppId: app.id },
+      where: { type: childName, AppId: app.id, [`data.${referencedProperty}`]: parent.id },
     });
   });
 
@@ -285,16 +287,11 @@ export async function processReferenceTriggers(
       switch (action) {
         case 'delete':
           if (triggers.some((trigger) => !trigger.cascade)) {
-            const ctx = context;
-
-            ctx.response.status = 400;
-            ctx.response.body = {
-              statusCode: 400,
-              error: 'Bad Request',
-              message: `Cannot delete resource ${parent.id}. There is a resource of type ${childName} that references it.`,
-            };
-
-            return ctx.throw();
+            return throwKoaError(
+              context,
+              400,
+              `Cannot delete resource ${parent.id}. There is a resource of type ${childName} that references it.`,
+            );
           }
           break;
         default:
@@ -436,4 +433,79 @@ export function parseQuery({ $filter, $orderby }: Pick<QueryParams, '$filter' | 
     : undefined;
 
   return { order, query };
+}
+
+export async function reseedResourcesRecursively(
+  appDefinition: AppDefinition,
+  resourcesToReseed: Resource[],
+  reseededResourcesIds: Record<string, number[]> = {},
+): Promise<Record<string, number[]>> {
+  const groupedResources: Record<string, Resource[]> = {};
+
+  for (const resource of resourcesToReseed) {
+    groupedResources[resource.type] = [...(groupedResources[resource.type] ?? []), resource];
+  }
+
+  let updatedReseededResourcesIds: Record<string, number[]> = { ...reseededResourcesIds };
+  for (const [resourceType, resources] of Object.entries(groupedResources)) {
+    const resourceReferences = appDefinition.resources?.[resourceType].references;
+    if (resourceReferences) {
+      for (const [referencedProperty, resourceReference] of Object.entries(resourceReferences)) {
+        const referencedResourceType = resourceReference.resource;
+        const referencedResourcesToReseed = groupedResources[referencedResourceType];
+
+        if (!updatedReseededResourcesIds[referencedResourceType]) {
+          const referencedReseededResourcesIds = await reseedResourcesRecursively(
+            appDefinition,
+            referencedResourcesToReseed,
+            updatedReseededResourcesIds,
+          );
+
+          updatedReseededResourcesIds = {
+            ...updatedReseededResourcesIds,
+            ...referencedReseededResourcesIds,
+          };
+        }
+
+        if (!updatedReseededResourcesIds[resourceType]) {
+          const reseededResources = [];
+          for (const resource of resources) {
+            reseededResources.push(
+              await Resource.create({
+                ...resource.dataValues,
+                ephemeral: true,
+                seed: false,
+                data: {
+                  ...resource.dataValues.data,
+                  [referencedProperty]:
+                    updatedReseededResourcesIds[referencedResourceType][
+                      resource.dataValues.data[`$${referencedResourceType}`]
+                    ],
+                },
+              }),
+            );
+          }
+          updatedReseededResourcesIds[resourceType] = reseededResources.map(
+            (resource) => resource.id,
+          );
+        }
+      }
+    }
+
+    if (!updatedReseededResourcesIds[resourceType]) {
+      const reseededResources = [];
+      for (const resource of resources) {
+        reseededResources.push(
+          await Resource.create({
+            ...resource.dataValues,
+            ephemeral: true,
+            seed: false,
+          }),
+        );
+      }
+      updatedReseededResourcesIds[resourceType] = reseededResources.map((resource) => resource.id);
+    }
+  }
+
+  return updatedReseededResourcesIds;
 }

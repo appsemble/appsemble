@@ -54,7 +54,9 @@ The tile layer used on components that display a map (such as `map` and `form`) 
 using the `tileLayer` property by specifying a URL template.
 
 The `font` property can be used to specify which font family to use. Any font family from [Google
-Fonts][] may be used
+Fonts][] may be used. Additionally any custom font can be used by specifying the source to be
+`custom` and uploading the font file(s) as asset(s), then applying it in the App’s CSS using the
+[`@font-face`][font-face] at-rule.
 
 ### Example
 
@@ -73,7 +75,7 @@ pages:
       primaryColor: '#FF0000' # Red
     blocks:
       - type: action-button
-        version: 0.22.10
+        version: 0.24.12
         parameters:
           icon: plus
         theme:
@@ -275,3 +277,4 @@ To do even more advanced CSS transformations a custom `postcssrc` file can be cr
 [css-variables]: https://developer.mozilla.org/en-US/docs/Web/CSS/Using_CSS_variables
 [google fonts]: https://fonts.google.com
 [`postcss-load-config`]: https://github.com/michael-ciniawsky/postcss-load-config
+[font-face]: https://developer.mozilla.org/en-US/docs/Web/CSS/@font-face

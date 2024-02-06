@@ -11,7 +11,9 @@ export const cli: OpenAPIV3.OAuth2SecurityScheme = {
     clientCredentials: {
       tokenUrl: '/oauth2/token',
       scopes: {
+        'apps:export': 'Export apps as zip files',
         'apps:write': 'Create and update apps',
+        'apps:delete': 'Delete apps',
         'blocks:write': 'Register and update blocks, and publish new block versions.',
         'blocks:delete': 'Delete specific block versions.',
         'organizations:write': 'Create and manage organizations.',

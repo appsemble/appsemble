@@ -47,7 +47,11 @@ export async function createSettings({
       'definition',
       'showAppsembleLogin',
       'showAppsembleOAuth2Login',
+      'enableSelfRegistration',
+      'demoMode',
       'googleAnalyticsID',
+      'controllerCode',
+      'controllerImplementations',
     ],
     where: { id: app.id },
     include: [
@@ -71,6 +75,8 @@ export async function createSettings({
   return createUtilsSettings(
     {
       apiUrl: host,
+      appControllerCode: persistedApp.controllerCode,
+      appControllerImplementations: persistedApp.controllerImplementations,
       blockManifests: blockManifests.map(
         ({ BlockAssets, OrganizationId, actions, events, layout, name, version }) => ({
           name: `@${OrganizationId}/${name}`,
@@ -99,8 +105,11 @@ export async function createSettings({
       ],
       vapidPublicKey: persistedApp.vapidPublicKey,
       definition: persistedApp.definition,
+      demoMode: persistedApp.demoMode,
       showAppsembleLogin: persistedApp.showAppsembleLogin ?? false,
       showAppsembleOAuth2Login: persistedApp.showAppsembleOAuth2Login ?? true,
+      enableSelfRegistration: persistedApp.enableSelfRegistration ?? true,
+      showDemoLogin: persistedApp.demoMode ?? false,
       sentryDsn,
       sentryEnvironment,
       appUpdated: persistedApp.updated.toISOString(),

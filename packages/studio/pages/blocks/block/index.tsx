@@ -11,7 +11,7 @@ import {
 } from '@appsemble/react-components';
 import { type BlockManifest } from '@appsemble/types';
 import { defaultLocale, stripBlockName } from '@appsemble/utils';
-import { type ChangeEvent, type ReactElement, useCallback, useMemo } from 'react';
+import { type ChangeEvent, type ReactNode, useCallback, useMemo } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { isMap, parseDocument } from 'yaml';
@@ -28,7 +28,7 @@ import { Schema } from '../../../components/Schema/index.js';
 /**
  * Render documentation for blocks.
  */
-export function BlockPage(): ReactElement {
+export function BlockPage(): ReactNode {
   const { formatMessage } = useIntl();
 
   const {
@@ -47,11 +47,9 @@ export function BlockPage(): ReactElement {
 
   const navigate = useNavigate();
 
-  const {
-    data: blockVersions,
-    error,
-    loading,
-  } = useData<BlockManifest[]>(`/api/blocks/${organization}/${blockName}/versions`);
+  const { data: blockVersions, error: fetchError } = useData<string[]>(
+    `/api/blocks/${organization}/${blockName}/versions/list`,
+  );
 
   const onSelectedVersionChange = useCallback(
     (event: ChangeEvent, value: string) => {
@@ -59,11 +57,12 @@ export function BlockPage(): ReactElement {
     },
     [navigate, url, urlVersion],
   );
-
-  const selectedBlockManifest =
+  const blockUrl =
     urlVersion === undefined
-      ? blockVersions?.at(blockVersions?.length - 1)
-      : blockVersions?.find((block) => block.version === urlVersion);
+      ? `/api/blocks/${organization}/${blockName}`
+      : `/api/blocks/${organization}/${blockName}/versions/${urlVersion}`;
+
+  const { data: selectedBlockManifest, error, loading } = useData<BlockManifest>(blockUrl);
 
   useMeta(`${organization}/${blockName}`, selectedBlockManifest?.description);
 
@@ -83,7 +82,7 @@ export function BlockPage(): ReactElement {
     [selectedBlockManifest],
   );
 
-  if (error) {
+  if (error || fetchError) {
     return (
       <Message color="danger">
         <FormattedMessage {...messages.error} />
@@ -117,14 +116,14 @@ export function BlockPage(): ReactElement {
         </header>
       </>
       <SelectField
-        disabled={blockVersions.length === 1}
+        disabled={blockVersions?.length === 1}
         label="Selected version"
         name="selectedVersion"
         onChange={onSelectedVersionChange}
         required
         value={urlVersion}
       >
-        {blockVersions.map(({ version }) => (
+        {blockVersions?.map((version) => (
           <option key={version} value={version}>
             {version}
           </option>

@@ -14,7 +14,7 @@ import {
 } from '@appsemble/react-components';
 import { type AppOAuth2Secret } from '@appsemble/types';
 import axios from 'axios';
-import { type ReactElement } from 'react';
+import { type ReactNode } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Link, useParams } from 'react-router-dom';
 
@@ -55,7 +55,7 @@ export function OAuth2Modal({
   onSubmit,
   secret,
   toggle,
-}: AppSecretCardProps): ReactElement {
+}: AppSecretCardProps): ReactNode {
   const { formatMessage } = useIntl();
   const {
     app: { locked },

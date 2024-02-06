@@ -1,5 +1,6 @@
 import { randomBytes } from 'node:crypto';
 
+import { assertKoaError, throwKoaError } from '@appsemble/node-utils';
 import { Permission } from '@appsemble/utils';
 import { addMinutes } from 'date-fns';
 import { type Context } from 'koa';
@@ -28,15 +29,7 @@ export async function createAppOAuth2Secret(ctx: Context): Promise<void> {
     attributes: ['OrganizationId'],
   });
 
-  if (!app) {
-    ctx.response.status = 404;
-    ctx.response.body = {
-      statusCode: 404,
-      error: 'Not Found',
-      message: 'App not found',
-    };
-    ctx.throw();
-  }
+  assertKoaError(!app, ctx, 404, 'App not found');
 
   checkAppLock(ctx, app);
   await checkRole(ctx, app.OrganizationId, [Permission.EditApps, Permission.EditAppSettings]);
@@ -52,15 +45,7 @@ export async function getAppOAuth2Secrets(ctx: Context): Promise<void> {
     include: [AppOAuth2Secret],
   });
 
-  if (!app) {
-    ctx.response.status = 404;
-    ctx.response.body = {
-      statusCode: 404,
-      error: 'Not Found',
-      message: 'App not found',
-    };
-    ctx.throw();
-  }
+  assertKoaError(!app, ctx, 404, 'App not found');
 
   await checkRole(ctx, app.OrganizationId, [Permission.EditApps, Permission.EditAppSettings]);
 
@@ -80,25 +65,9 @@ export async function getAppOAuth2Secret(ctx: Context): Promise<void> {
       },
     ],
   });
-  if (!app) {
-    ctx.response.status = 404;
-    ctx.response.body = {
-      status: 404,
-      error: 'Not Found',
-      message: 'App not found',
-    };
-    ctx.throw();
-  }
 
-  if (!app.AppOAuth2Secrets?.length) {
-    ctx.response.status = 404;
-    ctx.response.body = {
-      status: 404,
-      error: 'Not Found',
-      message: 'App not found',
-    };
-    ctx.throw();
-  }
+  assertKoaError(!app, ctx, 404, 'App not found');
+  assertKoaError(!app.AppOAuth2Secrets?.length, ctx, 404, 'OAuth2 secret not found');
 
   [ctx.body] = app.AppOAuth2Secrets;
 }
@@ -115,24 +84,9 @@ export async function updateAppOAuth2Secret(ctx: Context): Promise<void> {
     attributes: ['OrganizationId'],
     include: [{ model: AppOAuth2Secret, required: false, where: { id: appOAuth2SecretId } }],
   });
-  if (!app) {
-    ctx.response.status = 404;
-    ctx.response.body = {
-      statusCode: 404,
-      error: 'Not Found',
-      message: 'App not found',
-    };
-    ctx.throw();
-  }
-  if (!app.AppOAuth2Secrets?.length) {
-    ctx.response.status = 404;
-    ctx.response.body = {
-      statusCode: 404,
-      error: 'Not Found',
-      message: 'OAuth2 secret not found',
-    };
-    ctx.throw();
-  }
+
+  assertKoaError(!app, ctx, 404, 'App not found');
+  assertKoaError(!app.AppOAuth2Secrets?.length, ctx, 404, 'OAuth2 secret not found');
 
   await checkRole(ctx, app.OrganizationId, [Permission.EditApps, Permission.EditAppSettings]);
 
@@ -150,24 +104,9 @@ export async function deleteAppOAuth2Secret(ctx: Context): Promise<void> {
     attributes: ['OrganizationId'],
     include: [{ model: AppOAuth2Secret, required: false, where: { id: appOAuth2SecretId } }],
   });
-  if (!app) {
-    ctx.response.status = 404;
-    ctx.response.body = {
-      statusCode: 404,
-      error: 'Not Found',
-      message: 'App not found',
-    };
-    ctx.throw();
-  }
-  if (!app.AppOAuth2Secrets?.length) {
-    ctx.response.status = 404;
-    ctx.response.body = {
-      statusCode: 404,
-      error: 'Not Found',
-      message: 'OAuth2 secret not found',
-    };
-    ctx.throw();
-  }
+
+  assertKoaError(!app, ctx, 404, 'App not found');
+  assertKoaError(!app.AppOAuth2Secrets?.length, ctx, 404, 'OAuth2 secret not found');
 
   await checkRole(ctx, app.OrganizationId, [Permission.EditApps, Permission.EditAppSettings]);
 
@@ -189,23 +128,15 @@ export async function verifyAppOAuth2SecretCode(ctx: Context): Promise<void> {
   try {
     referer = new URL(headers.referer);
   } catch {
-    ctx.response.status = 400;
-    ctx.response.body = {
-      statusCode: 400,
-      message: 'The referer header is invalid',
-      error: 'Bad Request',
-    };
-    ctx.throw();
+    throwKoaError(ctx, 400, 'The referer header is invalid');
   }
-  if (referer.origin !== new URL(argv.host).origin) {
-    ctx.response.status = 400;
-    ctx.response.body = {
-      statusCode: 400,
-      message: 'The referer header is invalid',
-      error: 'Bad Request',
-    };
-    ctx.throw();
-  }
+
+  assertKoaError(
+    referer.origin !== new URL(argv.host).origin,
+    ctx,
+    400,
+    'The referer header is invalid',
+  );
 
   const app = await App.findByPk(appId, {
     attributes: ['id', 'definition'],
@@ -218,24 +149,9 @@ export async function verifyAppOAuth2SecretCode(ctx: Context): Promise<void> {
       },
     ],
   });
-  if (!app) {
-    ctx.response.status = 404;
-    ctx.response.body = {
-      statusCode: 404,
-      error: 'Not Found',
-      message: 'App not found',
-    };
-    ctx.throw();
-  }
-  if (!app.AppOAuth2Secrets?.length) {
-    ctx.response.status = 404;
-    ctx.response.body = {
-      statusCode: 404,
-      error: 'Not Found',
-      message: 'OAuth2 secret not found',
-    };
-    ctx.throw();
-  }
+
+  assertKoaError(!app, ctx, 404, 'App not found');
+  assertKoaError(!app.AppOAuth2Secrets?.length, ctx, 404, 'OAuth2 secret not found');
 
   const [secret] = app.AppOAuth2Secrets;
   const {

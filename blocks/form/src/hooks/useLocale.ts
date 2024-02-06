@@ -4,12 +4,10 @@ import { useMemo } from 'preact/hooks';
 
 import { type DateField, type DateTimeField } from '../../block.js';
 
-export function useLocale({
-  startOfWeek = 1,
-}: DateField | DateTimeField): flatpickr.default.CustomLocale {
+export function useLocale({ startOfWeek = 1 }: DateField | DateTimeField): flatpickr.CustomLocale {
   return useMemo(() => {
-    type Weekdays = flatpickr.default.CustomLocale['weekdays']['shorthand'];
-    type Months = flatpickr.default.CustomLocale['months']['shorthand'];
+    type Weekdays = flatpickr.CustomLocale['weekdays']['shorthand'];
+    type Months = flatpickr.CustomLocale['months']['shorthand'];
 
     const { lang } = document.documentElement;
     const formatWeekdayLong = new Intl.DateTimeFormat(lang, { weekday: 'long' });

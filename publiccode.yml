@@ -1,8 +1,8 @@
 publiccodeYmlVersion: '0.2'
 name: Appsemble
 url: https://gitlab.com/appsemble/appsemble
-softwareVersion: 0.22.10
-releaseDate: 2023-09-22
+softwareVersion: 0.24.12
+releaseDate: 2024-02-06
 logo: config/assets/logo.svg
 monochromeLogo: config/assets/logo-monochrome.svg
 platforms:
@@ -139,5 +139,4 @@ dependsOn:
     - name: Docker Compose
     - name: NodeJS
       versionMin: 18
-    - name: Yarn
     - name: appsemble/appsemble

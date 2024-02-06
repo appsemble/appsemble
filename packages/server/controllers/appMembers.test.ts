@@ -13,17 +13,18 @@ import {
   AppSamlAuthorization,
   AppSamlSecret,
   BlockVersion,
-  Member,
   Organization,
+  OrganizationMember,
+  Resource,
   User,
 } from '../models/index.js';
 import { setArgv } from '../utils/argv.js';
 import { createServer } from '../utils/createServer.js';
-import { authorizeStudio, createTestUser } from '../utils/test/authorization.js';
+import { authorizeApp, authorizeStudio, createTestUser } from '../utils/test/authorization.js';
 import { useTestDatabase } from '../utils/test/testSchema.js';
 
 let organization: Organization;
-let member: Member;
+let member: OrganizationMember;
 let user: User;
 
 function createDefaultApp(org: Organization): Promise<App> {
@@ -67,7 +68,11 @@ beforeEach(async () => {
     id: 'testorganization',
     name: 'Test Organization',
   });
-  member = await Member.create({ OrganizationId: organization.id, UserId: user.id, role: 'Owner' });
+  member = await OrganizationMember.create({
+    OrganizationId: organization.id,
+    UserId: user.id,
+    role: 'Owner',
+  });
 
   await Organization.create({ id: 'appsemble', name: 'Appsemble' });
   await BlockVersion.create({
@@ -123,18 +128,27 @@ describe('getAppMembers', () => {
     authorizeStudio();
     const response = await request.get(`/api/apps/${app.id}/members`);
     expect(response).toMatchInlineSnapshot(
-      { data: [{ id: expect.stringMatching(uuid4Pattern) }] },
+      {
+        data: [
+          {
+            userId: expect.stringMatching(uuid4Pattern),
+            memberId: expect.stringMatching(uuid4Pattern),
+          },
+        ],
+      },
       `
       HTTP/1.1 200 OK
       Content-Type: application/json; charset=utf-8
 
       [
         {
-          "id": StringMatching /\\^\\[\\\\d\\[a-f\\]\\{8\\}-\\[\\\\da-f\\]\\{4\\}-4\\[\\\\da-f\\]\\{3\\}-\\[\\\\da-f\\]\\{4\\}-\\[\\\\d\\[a-f\\]\\{12\\}\\$/,
+          "demo": false,
+          "memberId": StringMatching /\\^\\[\\\\d\\[a-f\\]\\{8\\}-\\[\\\\da-f\\]\\{4\\}-4\\[\\\\da-f\\]\\{3\\}-\\[\\\\da-f\\]\\{4\\}-\\[\\\\d\\[a-f\\]\\{12\\}\\$/,
           "name": "Test Member",
           "primaryEmail": "member@example.com",
-          "properties": null,
+          "properties": {},
           "role": "Admin",
+          "userId": StringMatching /\\^\\[\\\\d\\[a-f\\]\\{8\\}-\\[\\\\da-f\\]\\{4\\}-4\\[\\\\da-f\\]\\{3\\}-\\[\\\\da-f\\]\\{4\\}-\\[\\\\d\\[a-f\\]\\{12\\}\\$/,
         },
       ]
     `,
@@ -166,17 +180,24 @@ describe('getAppMembers', () => {
     authorizeStudio();
     const response = await request.get(`/api/apps/${app.id}/members`);
     expect(response).toMatchInlineSnapshot(
-      { data: [{ id: expect.stringMatching(uuid4Pattern) }] },
+      {
+        data: [
+          {
+            userId: expect.stringMatching(uuid4Pattern),
+          },
+        ],
+      },
       `
       HTTP/1.1 200 OK
       Content-Type: application/json; charset=utf-8
 
       [
         {
-          "id": StringMatching /\\^\\[\\\\d\\[a-f\\]\\{8\\}-\\[\\\\da-f\\]\\{4\\}-4\\[\\\\da-f\\]\\{3\\}-\\[\\\\da-f\\]\\{4\\}-\\[\\\\d\\[a-f\\]\\{12\\}\\$/,
+          "demo": false,
           "name": "Test User",
           "primaryEmail": "test@example.com",
           "role": "Reader",
+          "userId": StringMatching /\\^\\[\\\\d\\[a-f\\]\\{8\\}-\\[\\\\da-f\\]\\{4\\}-4\\[\\\\da-f\\]\\{3\\}-\\[\\\\da-f\\]\\{4\\}-\\[\\\\d\\[a-f\\]\\{12\\}\\$/,
         },
       ]
     `,
@@ -317,20 +338,28 @@ describe('getAppMember', () => {
     authorizeStudio();
     const response = await request.get<AppMemberType>(`/api/apps/${app.id}/members/${user.id}`);
     expect(response).toMatchInlineSnapshot(
-      { data: { id: expect.stringMatching(uuid4Pattern) } },
+      {
+        data: {
+          userId: expect.stringMatching(uuid4Pattern),
+          memberId: expect.stringMatching(uuid4Pattern),
+        },
+      },
       `
       HTTP/1.1 200 OK
       Content-Type: application/json; charset=utf-8
 
       {
-        "id": StringMatching /\\^\\[\\\\d\\[a-f\\]\\{8\\}-\\[\\\\da-f\\]\\{4\\}-4\\[\\\\da-f\\]\\{3\\}-\\[\\\\da-f\\]\\{4\\}-\\[\\\\d\\[a-f\\]\\{12\\}\\$/,
+        "demo": false,
+        "memberId": StringMatching /\\^\\[\\\\d\\[a-f\\]\\{8\\}-\\[\\\\da-f\\]\\{4\\}-4\\[\\\\da-f\\]\\{3\\}-\\[\\\\da-f\\]\\{4\\}-\\[\\\\d\\[a-f\\]\\{12\\}\\$/,
         "name": "Foo",
         "primaryEmail": "foo@example.com",
+        "properties": {},
         "role": "Reader",
+        "userId": StringMatching /\\^\\[\\\\d\\[a-f\\]\\{8\\}-\\[\\\\da-f\\]\\{4\\}-4\\[\\\\da-f\\]\\{3\\}-\\[\\\\da-f\\]\\{4\\}-\\[\\\\d\\[a-f\\]\\{12\\}\\$/,
       }
     `,
     );
-    expect(response.data.id).toBe(user.id);
+    expect(response.data.userId).toBe(user.id);
   });
 });
 
@@ -364,28 +393,34 @@ describe('setAppMember', () => {
     });
 
     authorizeStudio();
-    const response = await request.post<AppMember>(`/api/apps/${app.id}/members/${userB.id}`, {
+    const response = await request.post(`/api/apps/${app.id}/members/${userB.id}`, {
       role: 'Admin',
       properties: { test: 'Property' },
     });
     expect(response).toMatchInlineSnapshot(
-      { data: { id: expect.stringMatching(uuid4Pattern) } },
+      {
+        data: {
+          memberId: expect.stringMatching(uuid4Pattern),
+          userId: expect.stringMatching(uuid4Pattern),
+        },
+      },
       `
       HTTP/1.1 200 OK
       Content-Type: application/json; charset=utf-8
 
       {
-        "id": StringMatching /\\^\\[\\\\d\\[a-f\\]\\{8\\}-\\[\\\\da-f\\]\\{4\\}-4\\[\\\\da-f\\]\\{3\\}-\\[\\\\da-f\\]\\{4\\}-\\[\\\\d\\[a-f\\]\\{12\\}\\$/,
+        "memberId": StringMatching /\\^\\[\\\\d\\[a-f\\]\\{8\\}-\\[\\\\da-f\\]\\{4\\}-4\\[\\\\da-f\\]\\{3\\}-\\[\\\\da-f\\]\\{4\\}-\\[\\\\d\\[a-f\\]\\{12\\}\\$/,
         "name": null,
         "primaryEmail": null,
         "properties": {
           "test": "Property",
         },
         "role": "Admin",
+        "userId": StringMatching /\\^\\[\\\\d\\[a-f\\]\\{8\\}-\\[\\\\da-f\\]\\{4\\}-4\\[\\\\da-f\\]\\{3\\}-\\[\\\\da-f\\]\\{4\\}-\\[\\\\d\\[a-f\\]\\{12\\}\\$/,
       }
     `,
     );
-    expect(response.data.id).toBe(userB.id);
+    expect(response.data.userId).toBe(userB.id);
   });
 });
 
@@ -666,9 +701,13 @@ describe('getAppAccounts', () => {
             "$updated": "1970-01-01T00:00:00.000Z",
             "OrganizationId": "testorganization",
             "OrganizationName": "Test Organization",
+            "controllerCode": null,
+            "controllerImplementations": null,
             "definition": {},
+            "demoMode": false,
             "domain": null,
             "emailName": null,
+            "enableSelfRegistration": true,
             "googleAnalyticsID": null,
             "hasIcon": false,
             "hasMaskableIcon": false,
@@ -701,9 +740,13 @@ describe('getAppAccounts', () => {
             "$updated": "1970-01-01T00:00:00.000Z",
             "OrganizationId": "testorganization",
             "OrganizationName": "Test Organization",
+            "controllerCode": null,
+            "controllerImplementations": null,
             "definition": {},
+            "demoMode": false,
             "domain": null,
             "emailName": null,
+            "enableSelfRegistration": true,
             "googleAnalyticsID": null,
             "hasIcon": false,
             "hasMaskableIcon": false,
@@ -767,9 +810,13 @@ describe('getAppAccount', () => {
           "$updated": "1970-01-01T00:00:00.000Z",
           "OrganizationId": "testorganization",
           "OrganizationName": "Test Organization",
+          "controllerCode": null,
+          "controllerImplementations": null,
           "definition": {},
+          "demoMode": false,
           "domain": null,
           "emailName": null,
+          "enableSelfRegistration": true,
           "googleAnalyticsID": null,
           "hasIcon": false,
           "hasMaskableIcon": false,
@@ -873,9 +920,13 @@ describe('patchAppAccount', () => {
           "$updated": "1970-01-01T00:00:00.000Z",
           "OrganizationId": "testorganization",
           "OrganizationName": "Test Organization",
+          "controllerCode": null,
+          "controllerImplementations": null,
           "definition": {},
+          "demoMode": false,
           "domain": null,
           "emailName": null,
+          "enableSelfRegistration": true,
           "googleAnalyticsID": null,
           "hasIcon": false,
           "hasMaskableIcon": false,
@@ -944,9 +995,13 @@ describe('patchAppAccount', () => {
           "$updated": "1970-01-01T00:00:00.000Z",
           "OrganizationId": "testorganization",
           "OrganizationName": "Test Organization",
+          "controllerCode": null,
+          "controllerImplementations": null,
           "definition": {},
+          "demoMode": false,
           "domain": null,
           "emailName": null,
+          "enableSelfRegistration": true,
           "googleAnalyticsID": null,
           "hasIcon": false,
           "hasMaskableIcon": false,
@@ -1031,9 +1086,409 @@ describe('patchAppAccount', () => {
   });
 });
 
+describe('createMemberEmail', () => {
+  it('should create valid email addresses', async () => {
+    const app = await App.create({
+      definition: {
+        name: 'Test App',
+        defaultPage: 'Test Page',
+        security: {
+          default: {
+            role: 'Admin',
+            policy: 'everyone',
+          },
+          roles: {
+            Reader: {},
+            Admin: {},
+          },
+        },
+        users: {
+          properties: {
+            lastCompletedTask: {
+              schema: {
+                type: 'integer',
+              },
+            },
+            completedTasks: {
+              schema: {
+                type: 'array',
+              },
+              reference: {
+                resource: 'tasks',
+              },
+            },
+          },
+        },
+        resources: {
+          tasks: {
+            schema: {
+              type: 'object',
+              properties: {
+                title: {
+                  type: 'string',
+                },
+              },
+            },
+          },
+        },
+      },
+      path: 'test-app',
+      vapidPublicKey: 'a',
+      vapidPrivateKey: 'b',
+      OrganizationId: organization.id,
+    });
+    authorizeApp(app);
+
+    const task = await Resource.create({
+      AppId: app.id,
+      type: 'tasks',
+      data: {},
+    });
+
+    const response = await request.post(
+      `/api/user/apps/${app.id}/accounts`,
+      createFormData({
+        email: 'test@example.com',
+        password: 'password',
+        timezone: 'Europe/Amsterdam',
+        properties: JSON.stringify({
+          lastCompletedTask: String(task.id),
+          completedTasks: JSON.stringify([task.id]),
+        }),
+      }),
+    );
+
+    expect(response).toMatchInlineSnapshot(
+      {
+        data: {
+          access_token: expect.stringMatching(jwtPattern),
+          refresh_token: expect.stringMatching(jwtPattern),
+        },
+      },
+      `
+      HTTP/1.1 201 Created
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "access_token": StringMatching /\\^\\[\\\\w-\\]\\+\\(\\?:\\\\\\.\\[\\\\w-\\]\\+\\)\\{2\\}\\$/,
+        "expires_in": 3600,
+        "refresh_token": StringMatching /\\^\\[\\\\w-\\]\\+\\(\\?:\\\\\\.\\[\\\\w-\\]\\+\\)\\{2\\}\\$/,
+        "token_type": "bearer",
+      }
+    `,
+    );
+
+    const m = await AppMember.findOne({ where: { email: 'test@example.com' } });
+
+    expect(m.password).not.toBe('password');
+    expect(await compare('password', m.password)).toBe(true);
+  });
+
+  it('should accept a display name', async () => {
+    const app = await createDefaultApp(organization);
+    authorizeApp(app);
+
+    const response = await request.post(
+      `/api/user/apps/${app.id}/accounts`,
+      createFormData({
+        email: 'test@example.com',
+        name: 'Me',
+        password: 'password',
+        timezone: 'Europe/Amsterdam',
+      }),
+    );
+
+    expect(response).toMatchInlineSnapshot(
+      {
+        data: {
+          access_token: expect.stringMatching(jwtPattern),
+          refresh_token: expect.stringMatching(jwtPattern),
+        },
+      },
+      `
+      HTTP/1.1 201 Created
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "access_token": StringMatching /\\^\\[\\\\w-\\]\\+\\(\\?:\\\\\\.\\[\\\\w-\\]\\+\\)\\{2\\}\\$/,
+        "expires_in": 3600,
+        "refresh_token": StringMatching /\\^\\[\\\\w-\\]\\+\\(\\?:\\\\\\.\\[\\\\w-\\]\\+\\)\\{2\\}\\$/,
+        "token_type": "bearer",
+      }
+    `,
+    );
+
+    const m = await AppMember.findOne({ where: { email: 'test@example.com' } });
+    expect(m.name).toBe('Me');
+  });
+
+  it('should not register invalid email addresses', async () => {
+    const app = await createDefaultApp(organization);
+    authorizeApp(app);
+
+    const response = await request.post(
+      `/api/user/apps/${app.id}/accounts`,
+      createFormData({ email: 'foo', password: 'bar', timezone: 'Europe/Amsterdam' }),
+    );
+
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 400 Bad Request
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "errors": [
+          {
+            "argument": "email",
+            "instance": "foo",
+            "message": "does not conform to the "email" format",
+            "name": "format",
+            "path": [
+              "email",
+            ],
+            "property": "instance.email",
+            "schema": {
+              "format": "email",
+              "type": "string",
+            },
+            "stack": "instance.email does not conform to the "email" format",
+          },
+          {
+            "argument": 8,
+            "instance": "bar",
+            "message": "does not meet minimum length of 8",
+            "name": "minLength",
+            "path": [
+              "password",
+            ],
+            "property": "instance.password",
+            "schema": {
+              "minLength": 8,
+              "type": "string",
+            },
+            "stack": "instance.password does not meet minimum length of 8",
+          },
+        ],
+        "message": "Invalid content types found",
+      }
+    `);
+  });
+
+  it('should not register duplicate email addresses', async () => {
+    const app = await createDefaultApp(organization);
+    authorizeApp(app);
+
+    await AppMember.create({
+      AppId: app.id,
+      UserId: user.id,
+      role: 'User',
+      email: 'test@example.com',
+    });
+
+    const response = await request.post(
+      `/api/user/apps/${app.id}/accounts`,
+      createFormData({
+        email: 'test@example.com',
+        password: 'password',
+        timezone: 'Europe/Amsterdam',
+      }),
+    );
+
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 409 Conflict
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "error": "Conflict",
+        "message": "User with this email address already exists.",
+        "statusCode": 409,
+      }
+    `);
+  });
+
+  it('should create with default user properties', async () => {
+    const app = await App.create({
+      definition: {
+        name: 'Test App',
+        defaultPage: 'Test Page',
+        security: {
+          default: {
+            role: 'Admin',
+            policy: 'everyone',
+          },
+          roles: {
+            Reader: {},
+            Admin: {},
+          },
+        },
+        users: {
+          properties: {
+            default: {
+              schema: {
+                type: 'string',
+                default: 'default',
+              },
+            },
+            enum: {
+              schema: {
+                enum: ['enum'],
+              },
+            },
+            array: {
+              schema: {
+                type: 'array',
+              },
+            },
+            boolean: {
+              schema: {
+                type: 'boolean',
+              },
+            },
+            number: {
+              schema: {
+                type: 'number',
+              },
+            },
+            integer: {
+              schema: {
+                type: 'integer',
+              },
+            },
+            string: {
+              schema: {
+                type: 'string',
+              },
+            },
+            object: {
+              schema: {
+                type: 'object',
+                properties: {
+                  enum: {
+                    enum: ['enum'],
+                  },
+                  array: {
+                    type: 'array',
+                  },
+                  boolean: {
+                    type: 'boolean',
+                  },
+                  number: {
+                    type: 'number',
+                  },
+                  integer: {
+                    type: 'integer',
+                  },
+                  string: {
+                    type: 'string',
+                  },
+                },
+              },
+            },
+          },
+        },
+        resources: {
+          tasks: {
+            schema: {
+              type: 'object',
+              properties: {
+                title: {
+                  type: 'string',
+                },
+              },
+            },
+          },
+        },
+      },
+      path: 'test-app',
+      vapidPublicKey: 'a',
+      vapidPrivateKey: 'b',
+      OrganizationId: organization.id,
+    });
+    authorizeApp(app);
+
+    const response = await request.post(
+      `/api/user/apps/${app.id}/accounts`,
+      createFormData({
+        email: 'test@example.com',
+        password: 'password',
+        timezone: 'Europe/Amsterdam',
+      }),
+    );
+
+    expect(response).toMatchInlineSnapshot(
+      {
+        data: {
+          access_token: expect.stringMatching(jwtPattern),
+          refresh_token: expect.stringMatching(jwtPattern),
+        },
+      },
+      `
+      HTTP/1.1 201 Created
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "access_token": StringMatching /\\^\\[\\\\w-\\]\\+\\(\\?:\\\\\\.\\[\\\\w-\\]\\+\\)\\{2\\}\\$/,
+        "expires_in": 3600,
+        "refresh_token": StringMatching /\\^\\[\\\\w-\\]\\+\\(\\?:\\\\\\.\\[\\\\w-\\]\\+\\)\\{2\\}\\$/,
+        "token_type": "bearer",
+      }
+    `,
+    );
+
+    const m = await AppMember.findOne({ where: { email: 'test@example.com' } });
+
+    expect(m.properties).toMatchInlineSnapshot(`
+      {
+        "array": [],
+        "boolean": false,
+        "default": "default",
+        "enum": "enum",
+        "integer": 0,
+        "number": 0,
+        "object": {
+          "array": [],
+          "boolean": false,
+          "enum": "enum",
+          "integer": 0,
+          "number": 0,
+          "string": null,
+        },
+        "string": null,
+      }
+    `);
+  });
+});
+
 describe('registerMemberEmail', () => {
   it('should register valid email addresses', async () => {
-    const app = await createDefaultApp(organization);
+    const app = await App.create({
+      definition: {
+        name: 'Test App',
+        defaultPage: 'Test Page',
+        security: {
+          default: {
+            role: 'Admin',
+            policy: 'everyone',
+          },
+          roles: {
+            Reader: {},
+            Admin: {},
+          },
+        },
+        users: {
+          properties: {
+            foo: {
+              schema: {
+                type: 'string',
+              },
+            },
+          },
+        },
+      },
+      path: 'test-app',
+      vapidPublicKey: 'a',
+      vapidPrivateKey: 'b',
+      OrganizationId: organization.id,
+    });
 
     const response = await request.post(
       `/api/user/apps/${app.id}/account`,
@@ -1041,6 +1496,9 @@ describe('registerMemberEmail', () => {
         email: 'test@example.com',
         password: 'password',
         timezone: 'Europe/Amsterdam',
+        properties: {
+          foo: 'bar',
+        },
       }),
     );
 
@@ -1170,7 +1628,7 @@ describe('registerMemberEmail', () => {
           {
             "argument": "email",
             "instance": "foo",
-            "message": "does not conform to the \\"email\\" format",
+            "message": "does not conform to the "email" format",
             "name": "format",
             "path": [
               "email",
@@ -1180,7 +1638,7 @@ describe('registerMemberEmail', () => {
               "format": "email",
               "type": "string",
             },
-            "stack": "instance.email does not conform to the \\"email\\" format",
+            "stack": "instance.email does not conform to the "email" format",
           },
           {
             "argument": 8,
@@ -1427,5 +1885,456 @@ describe('getAppMemberPicture', () => {
         "statusCode": 404,
       }
     `);
+  });
+});
+
+describe('updateAppMemberByEmail', () => {
+  it('should update another app member', async () => {
+    const app = await App.create({
+      definition: {
+        name: 'Test App',
+        defaultPage: 'Test Page',
+        security: {
+          default: {
+            role: 'Admin',
+            policy: 'everyone',
+          },
+          roles: {
+            Reader: {},
+            Admin: {},
+          },
+        },
+        users: {
+          properties: {
+            foo: {
+              schema: {
+                type: 'string',
+              },
+            },
+          },
+        },
+      },
+      path: 'test-app',
+      vapidPublicKey: 'a',
+      vapidPrivateKey: 'b',
+      OrganizationId: organization.id,
+    });
+
+    await AppMember.create({
+      UserId: user.id,
+      AppId: app.id,
+      name: 'Admin',
+      email: 'admin@gmail.com',
+      role: 'Admin',
+    });
+
+    const readerUser = await User.create({
+      id: 'd5949885-9b31-4f4f-b842-f3ce80c03287',
+      name: 'Foo',
+      primaryEmail: 'foo@example.com',
+      timezone: 'Europe/Amsterdam',
+    });
+
+    const readerMember = await AppMember.create({
+      UserId: readerUser.id,
+      AppId: app.id,
+      name: 'Reader',
+      email: 'reader@gmail.com',
+      role: 'Reader',
+      properties: {},
+    });
+
+    authorizeApp(app);
+    const formData = createFormData({
+      email: 'reader.updated@gmail.com',
+      password: 'new-password',
+      properties: {
+        foo: 'bar',
+      },
+    });
+    const { data } = await request.patch(
+      `/api/user/apps/${app.id}/accounts/reader@gmail.com`,
+      formData,
+    );
+    expect(data).toStrictEqual({
+      email: 'reader.updated@gmail.com',
+      AppId: 1,
+      UserId: 'd5949885-9b31-4f4f-b842-f3ce80c03287',
+      consent: null,
+      created: '1970-01-01T00:00:00.000Z',
+      emailVerified: false,
+      id: readerMember.id,
+      locale: null,
+      name: 'Reader',
+      properties: {
+        foo: 'bar',
+      },
+      resetKey: null,
+      role: 'Reader',
+      scimActive: null,
+      scimExternalId: null,
+      updated: '1970-01-01T00:00:00.000Z',
+    });
+  });
+
+  it('should self update', async () => {
+    const app = await App.create({
+      definition: {
+        name: 'Test App',
+        defaultPage: 'Test Page',
+        security: {
+          default: {
+            role: 'Admin',
+            policy: 'everyone',
+          },
+          roles: {
+            Admin: {},
+          },
+        },
+      },
+      path: 'test-app',
+      vapidPublicKey: 'a',
+      vapidPrivateKey: 'b',
+      OrganizationId: organization.id,
+    });
+
+    const adminMember = await AppMember.create({
+      UserId: user.id,
+      AppId: app.id,
+      name: 'Admin',
+      email: 'admin@gmail.com',
+      role: 'Admin',
+    });
+
+    authorizeApp(app);
+    const formData = createFormData({
+      email: 'admin.updated@gmail.com',
+      password: 'new-password',
+    });
+    const { data } = await request.patch(
+      `/api/user/apps/${app.id}/accounts/admin@gmail.com`,
+      formData,
+    );
+    expect(data).toStrictEqual({
+      email: 'admin.updated@gmail.com',
+      AppId: 1,
+      UserId: user.id,
+      consent: null,
+      created: '1970-01-01T00:00:00.000Z',
+      emailVerified: false,
+      id: adminMember.id,
+      locale: null,
+      name: 'Admin',
+      properties: {},
+      resetKey: null,
+      role: 'Admin',
+      scimActive: null,
+      scimExternalId: null,
+      updated: '1970-01-01T00:00:00.000Z',
+    });
+  });
+});
+
+describe('getAppMembersByRoles', () => {
+  it('should fetch app members by supported roles', async () => {
+    const app = await App.create({
+      definition: {
+        name: 'Test App',
+        defaultPage: 'Test Page',
+        security: {
+          default: {
+            role: 'Admin',
+            policy: 'everyone',
+          },
+          roles: {
+            Role1: {},
+            Role2: {},
+            Role3: {},
+            Admin: {},
+          },
+        },
+      },
+      path: 'test-app',
+      vapidPublicKey: 'a',
+      vapidPrivateKey: 'b',
+      OrganizationId: organization.id,
+    });
+
+    await AppMember.create({
+      UserId: user.id,
+      AppId: app.id,
+      name: 'Test Admin',
+      email: 'admin@gmail.com',
+      role: 'Admin',
+      properties: {},
+    });
+
+    const user1 = await User.create({
+      id: 'd5949885-9b31-4f4f-b842-f3ce80c03287',
+      name: 'Foo',
+      primaryEmail: 'foo@example.com',
+      timezone: 'Europe/Amsterdam',
+    });
+
+    const appMember1 = await AppMember.create({
+      UserId: user1.id,
+      AppId: app.id,
+      name: 'Test Member 1',
+      email: 'role1@gmail.com',
+      role: 'Role1',
+      properties: {},
+    });
+
+    const user2 = await User.create({
+      id: 'cbf06bd7-5b5f-40b2-aba1-1a55edc237e2',
+      name: 'Foo',
+      primaryEmail: 'foo@example.com',
+      timezone: 'Europe/Amsterdam',
+    });
+
+    const appMember2 = await AppMember.create({
+      UserId: user2.id,
+      AppId: app.id,
+      name: 'Test Member 2',
+      email: 'role2@gmail.com',
+      role: 'Role2',
+      properties: {},
+    });
+
+    authorizeApp(app);
+    const { data } = await request.get(`/api/user/apps/${app.id}/accounts?roles=Role1,Role2`);
+
+    expect(data).toStrictEqual([
+      {
+        userId: 'cbf06bd7-5b5f-40b2-aba1-1a55edc237e2',
+        name: 'Test Member 2',
+        primaryEmail: 'role2@gmail.com',
+        properties: {},
+        memberId: appMember2.id,
+        role: 'Role2',
+      },
+      {
+        userId: 'd5949885-9b31-4f4f-b842-f3ce80c03287',
+        name: 'Test Member 1',
+        primaryEmail: 'role1@gmail.com',
+        properties: {},
+        memberId: appMember1.id,
+        role: 'Role1',
+      },
+    ]);
+  });
+
+  it('should fetch all app members except the default role when provided with unsupported roles', async () => {
+    const app = await App.create({
+      definition: {
+        name: 'Test App',
+        defaultPage: 'Test Page',
+        security: {
+          default: {
+            role: 'Admin',
+            policy: 'everyone',
+          },
+          roles: {
+            Role1: {},
+            Role2: {},
+            Role3: {},
+            Admin: {},
+          },
+        },
+      },
+      path: 'test-app',
+      vapidPublicKey: 'a',
+      vapidPrivateKey: 'b',
+      OrganizationId: organization.id,
+    });
+
+    await AppMember.create({
+      UserId: user.id,
+      AppId: app.id,
+      name: 'Test Admin',
+      email: 'admin@gmail.com',
+      role: 'Admin',
+      properties: {},
+    });
+
+    const user1 = await User.create({
+      id: 'd5949885-9b31-4f4f-b842-f3ce80c03287',
+      name: 'Foo',
+      primaryEmail: 'foo@example.com',
+      timezone: 'Europe/Amsterdam',
+    });
+
+    const appMember1 = await AppMember.create({
+      UserId: user1.id,
+      AppId: app.id,
+      name: 'Test Member 1',
+      email: 'role1@gmail.com',
+      role: 'Role1',
+      properties: {},
+    });
+
+    const user2 = await User.create({
+      id: 'cbf06bd7-5b5f-40b2-aba1-1a55edc237e2',
+      name: 'Foo',
+      primaryEmail: 'foo@example.com',
+      timezone: 'Europe/Amsterdam',
+    });
+
+    const appMember2 = await AppMember.create({
+      UserId: user2.id,
+      AppId: app.id,
+      name: 'Test Member 2',
+      email: 'role2@gmail.com',
+      role: 'Role2',
+      properties: {},
+    });
+
+    const user3 = await User.create({
+      id: '5659cad5-7618-4a74-b03d-691d97ba6461',
+      name: 'Foo',
+      primaryEmail: 'foo@example.com',
+      timezone: 'Europe/Amsterdam',
+    });
+
+    const appMember3 = await AppMember.create({
+      UserId: user3.id,
+      AppId: app.id,
+      name: 'Test Member 3',
+      email: 'role3@gmail.com',
+      role: 'Role3',
+      properties: {},
+    });
+
+    authorizeApp(app);
+    const { data } = await request.get(`/api/user/apps/${app.id}/accounts?roles=`);
+
+    expect(data).toStrictEqual([
+      {
+        userId: '5659cad5-7618-4a74-b03d-691d97ba6461',
+        name: 'Test Member 3',
+        primaryEmail: 'role3@gmail.com',
+        properties: {},
+        role: 'Role3',
+        memberId: appMember3.id,
+      },
+      {
+        userId: 'cbf06bd7-5b5f-40b2-aba1-1a55edc237e2',
+        name: 'Test Member 2',
+        primaryEmail: 'role2@gmail.com',
+        properties: {},
+        role: 'Role2',
+        memberId: appMember2.id,
+      },
+      {
+        userId: 'd5949885-9b31-4f4f-b842-f3ce80c03287',
+        name: 'Test Member 1',
+        primaryEmail: 'role1@gmail.com',
+        properties: {},
+        role: 'Role1',
+        memberId: appMember1.id,
+      },
+    ]);
+  });
+});
+
+describe('deleteAppMemberByEmail', () => {
+  it('should delete another app member by email', async () => {
+    const app = await App.create({
+      definition: {
+        name: 'Test App',
+        defaultPage: 'Test Page',
+        security: {
+          default: {
+            role: 'Admin',
+            policy: 'everyone',
+          },
+          roles: {
+            Admin: {},
+            Reader: {},
+          },
+        },
+      },
+      path: 'test-app',
+      vapidPublicKey: 'a',
+      vapidPrivateKey: 'b',
+      OrganizationId: organization.id,
+    });
+
+    await AppMember.create({
+      UserId: user.id,
+      AppId: app.id,
+      name: 'Admin',
+      email: 'admin@gmail.com',
+      role: 'Admin',
+    });
+
+    const readerUser = await User.create({
+      id: 'd5949885-9b31-4f4f-b842-f3ce80c03287',
+      name: 'Foo',
+      primaryEmail: 'foo@example.com',
+      timezone: 'Europe/Amsterdam',
+    });
+
+    await AppMember.create({
+      UserId: readerUser.id,
+      AppId: app.id,
+      name: 'Reader',
+      email: 'reader@gmail.com',
+      role: 'Reader',
+      properties: {},
+    });
+
+    authorizeApp(app);
+    await request.delete(`/api/user/apps/${app.id}/accounts/reader@gmail.com`);
+
+    const readerAfterDeletion = await AppMember.findOne({
+      where: {
+        email: 'reader@gmail.com',
+      },
+    });
+
+    expect(readerAfterDeletion).toBeNull();
+  });
+
+  it('should delete own account by email', async () => {
+    const app = await App.create({
+      definition: {
+        name: 'Test App',
+        defaultPage: 'Test Page',
+        security: {
+          default: {
+            role: 'Admin',
+            policy: 'everyone',
+          },
+          roles: {
+            Admin: {},
+            Reader: {},
+          },
+        },
+      },
+      path: 'test-app',
+      vapidPublicKey: 'a',
+      vapidPrivateKey: 'b',
+      OrganizationId: organization.id,
+    });
+
+    await AppMember.create({
+      UserId: user.id,
+      AppId: app.id,
+      name: 'Admin',
+      email: 'admin@gmail.com',
+      role: 'Admin',
+    });
+
+    authorizeApp(app);
+    await request.delete(`/api/user/apps/${app.id}/accounts/admin@gmail.com`);
+
+    const readerAfterDeletion = await AppMember.findOne({
+      where: {
+        email: 'admin@gmail.com',
+      },
+    });
+
+    expect(readerAfterDeletion).toBeNull();
   });
 });

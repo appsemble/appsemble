@@ -10,9 +10,15 @@
 
 .blockStoreSearch {
   border-color: hsl(0deg 0% 53%);
-  margin: 15px 25px 0;
+  margin: 15px 25px -10px;
 }
 
 .title {
   margin: auto;
+}
+
+/* the div containing the blocks list element */
+.blocksList {
+  height: calc(100vh - 19rem);
+  overflow-y: scroll;
 }

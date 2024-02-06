@@ -25,7 +25,7 @@ export function RadioInput({
   readOnly,
 }: RadioInputProps): VNode {
   const { utils } = useBlock();
-  const { label, options, tag } = field;
+  const { help, label, options, tag } = field;
   const required = isRequired(field, utils, formValues);
   const value = getValueByNameSequence(name, formValues);
 
@@ -34,6 +34,7 @@ export function RadioInput({
       className={classNames('appsemble-radio', className)}
       disabled={disabled}
       error={dirty ? error : null}
+      help={utils.remap(help, value) as string}
       label={utils.remap(label, value) as string}
       name={name}
       onChange={onChange}

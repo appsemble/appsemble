@@ -1,4 +1,4 @@
-import { type ComponentPropsWithoutRef, type MouseEventHandler, type ReactElement } from 'react';
+import { type ComponentPropsWithoutRef, type MouseEventHandler, type ReactNode } from 'react';
 
 import styles from './index.module.css';
 import { ButtonChildren, NavLink } from '../index.js';
@@ -23,7 +23,7 @@ export function NavbarItem({
   onClick,
   to,
   ...props
-}: NavbarItemProps): ReactElement {
+}: NavbarItemProps): ReactNode {
   const content = (
     <ButtonChildren icon={icon} iconPosition={iconPosition}>
       {children}

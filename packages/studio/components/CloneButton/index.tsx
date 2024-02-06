@@ -14,7 +14,7 @@ import {
 import { type App, type Template } from '@appsemble/types';
 import { Permission } from '@appsemble/utils';
 import axios from 'axios';
-import { type ReactElement, useCallback, useMemo } from 'react';
+import { type ReactNode, useCallback, useMemo } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Link, useLocation, useNavigate, useParams } from 'react-router-dom';
 
@@ -34,7 +34,7 @@ interface CloneButtonProps {
 /**
  * Display a more detailed overview of an individual app.
  */
-export function CloneButton({ app }: CloneButtonProps): ReactElement {
+export function CloneButton({ app }: CloneButtonProps): ReactNode {
   const navigate = useNavigate();
   const { formatMessage } = useIntl();
   const { lang } = useParams<{ lang: string }>();
@@ -54,6 +54,7 @@ export function CloneButton({ app }: CloneButtonProps): ReactElement {
       organizationId,
       visibility: 'unlisted',
       resources: false,
+      assets: false,
     }),
     [app, organizationId],
   );
@@ -86,12 +87,12 @@ export function CloneButton({ app }: CloneButtonProps): ReactElement {
         <FormattedMessage {...messages.clone} />
       </Button>
       {userInfo ? (
-        createOrganizations.length ? (
+        createOrganizations?.length ? (
           <ModalCard
             component={SimpleForm}
             defaultValues={defaultValues}
             footer={
-              userInfo && createOrganizations.length ? (
+              userInfo && createOrganizations?.length ? (
                 <>
                   <CardFooterButton onClick={closeCloneDialog}>
                     <FormattedMessage {...messages.cancel} />
@@ -122,7 +123,7 @@ export function CloneButton({ app }: CloneButtonProps): ReactElement {
               name="organizationId"
               required
             >
-              {createOrganizations.map((org) => (
+              {createOrganizations?.map((org) => (
                 <option key={org.id} value={org.id}>
                   {org.name || org.id}
                 </option>
@@ -144,12 +145,20 @@ export function CloneButton({ app }: CloneButtonProps): ReactElement {
               <option value="unlisted">{formatMessage(messages.unlisted)}</option>
               <option value="private">{formatMessage(messages.private)}</option>
             </SimpleFormField>
-            {app.resources ? (
+            {app.hasClonableResources ? (
               <SimpleFormField
                 component={CheckboxField}
                 label={<FormattedMessage {...messages.resources} />}
                 name="resources"
                 title={<FormattedMessage {...messages.resourcesDescription} />}
+              />
+            ) : null}
+            {app.hasClonableAssets ? (
+              <SimpleFormField
+                component={CheckboxField}
+                label={<FormattedMessage {...messages.assets} />}
+                name="assets"
+                title={<FormattedMessage {...messages.assetsDescription} />}
               />
             ) : null}
           </ModalCard>

@@ -2,12 +2,12 @@ import { Loader } from '@appsemble/react-components';
 import { type AppMember, type TeamMember, type UserInfo } from '@appsemble/types';
 import { setUser } from '@sentry/browser';
 import axios from 'axios';
-import jwtDecode from 'jwt-decode';
+import { jwtDecode } from 'jwt-decode';
 import {
   createContext,
   type Dispatch,
   type MutableRefObject,
-  type ReactElement,
+  type ReactNode,
   useCallback,
   useContext,
   useEffect,
@@ -52,6 +52,7 @@ interface LoginState {
 
 interface UserContext extends LoginState {
   passwordLogin: (params: PasswordLoginParams) => Promise<void>;
+  demoLogin: (appMemberId: string) => Promise<void>;
   authorizationCodeLogin: (params: AuthorizationCodeLoginParams) => Promise<void>;
   logout: () => any;
   updateTeam: UpdateTeam;
@@ -61,7 +62,7 @@ interface UserContext extends LoginState {
 }
 
 interface UserProviderProps {
-  readonly children: ReactElement;
+  readonly children: ReactNode;
 }
 
 /**
@@ -83,7 +84,7 @@ const REFRESH_TOKEN = 'refresh_token';
 
 const Context = createContext<UserContext>(null);
 
-export function UserProvider({ children }: UserProviderProps): ReactElement {
+export function UserProvider({ children }: UserProviderProps): ReactNode {
   const { definition } = useAppDefinition();
   // If there is no security definition, don’t even bother going into the loading state.
   const [isLoading, setIsLoading] = useState(Boolean(definition.security));
@@ -129,7 +130,6 @@ export function UserProvider({ children }: UserProviderProps): ReactElement {
         ...params,
       }),
     );
-    // @ts-expect-error https://github.com/auth0/jwt-decode/pull/130
     const payload = jwtDecode<JwtPayload>(accessToken);
     localStorage.setItem(REFRESH_TOKEN, rt);
     const auth = `Bearer ${accessToken}`;
@@ -149,10 +149,10 @@ export function UserProvider({ children }: UserProviderProps): ReactElement {
       try {
         const [auth, { sub }] = await fetchToken(grantType, params);
         const config = { headers: { authorization: auth } };
-        const [{ data: user }, role, { data: teams }] = await Promise.all([
+        const [{ data: user }, appMember, { data: teams }] = await Promise.all([
           axios.get<UserInfo>(`${apiUrl}/api/connect/userinfo`, config),
           axios.get<AppMember>(`${apiUrl}/api/apps/${appId}/members/${sub}`, config).then(
-            ({ data }) => data.role,
+            ({ data }) => data,
             (error) => {
               const { policy = 'everyone', role: defaultRole } = definition.security.default;
               if (
@@ -168,6 +168,9 @@ export function UserProvider({ children }: UserProviderProps): ReactElement {
           ),
           axios.get<TeamMember[]>(`${apiUrl}/api/apps/${appId}/teams`, config),
         ]);
+        const { role } = appMember as AppMember;
+        user.appMember = appMember as AppMember;
+
         setUser({ id: user.sub });
         setUserInfo(user);
         setState({
@@ -209,6 +212,23 @@ export function UserProvider({ children }: UserProviderProps): ReactElement {
    * @param credentials The username and password.
    */
   const developmentLogin = useCallback(() => login('development', {}), [login]);
+
+  /**
+   * Login using demo app functionality.
+   *
+   * @param appMemberId The app member to log in as.
+   */
+  const demoLogin = useCallback(
+    (appMemberId: string) => {
+      logout();
+      const refreshToken = localStorage.getItem(REFRESH_TOKEN);
+      return login('urn:ietf:params:oauth:grant-type:demo-login', {
+        appMemberId,
+        ...(refreshToken ? { refresh_token: refreshToken } : {}),
+      });
+    },
+    [login, logout],
+  );
 
   const updateTeam: UpdateTeam = useCallback((team) => {
     setState(({ teams, ...oldState }) => {
@@ -301,6 +321,7 @@ export function UserProvider({ children }: UserProviderProps): ReactElement {
       authorizationCodeLogin,
       passwordLogin,
       developmentLogin,
+      demoLogin,
       logout,
       updateTeam,
       setUserInfo,
@@ -308,7 +329,16 @@ export function UserProvider({ children }: UserProviderProps): ReactElement {
       userInfoRef,
       ...state,
     }),
-    [authorizationCodeLogin, passwordLogin, developmentLogin, logout, updateTeam, userInfo, state],
+    [
+      authorizationCodeLogin,
+      passwordLogin,
+      developmentLogin,
+      demoLogin,
+      logout,
+      updateTeam,
+      userInfo,
+      state,
+    ],
   );
 
   // If security hasn’t been initialized yet, show a loader instead of the children. This prevents

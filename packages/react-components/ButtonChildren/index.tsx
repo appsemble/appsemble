@@ -1,6 +1,6 @@
 import { type BulmaSize } from '@appsemble/types';
 import { type IconName } from '@fortawesome/fontawesome-common-types';
-import { type ReactElement, type ReactNode } from 'react';
+import { type ReactNode } from 'react';
 
 import { Icon } from '../index.js';
 
@@ -44,7 +44,7 @@ export function ButtonChildren({
   iconPosition,
   iconSize,
   iconSizeModifier,
-}: ButtonChildrenProps): ReactElement {
+}: ButtonChildrenProps): ReactNode {
   return icon ? (
     <>
       {iconPosition === 'left' && <Icon icon={icon} iconSize={iconSizeModifier} size={iconSize} />}
@@ -52,6 +52,6 @@ export function ButtonChildren({
       {iconPosition === 'right' && <Icon icon={icon} iconSize={iconSizeModifier} size={iconSize} />}
     </>
   ) : (
-    (children as ReactElement)
+    (children as ReactNode)
   );
 }

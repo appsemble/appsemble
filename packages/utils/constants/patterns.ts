@@ -24,7 +24,7 @@ export const partialNormalized = /([\da-z](?:(?!.*--)[\da-z-]*[\da-z])?)/;
 export const normalized = new RegExp(`^${partialNormalized.source}$`);
 
 /**
- * A pattern for matching the block name pattern of @organization/block.
+ * A pattern for matching the block name pattern of @organization/project.
  */
 export const blockNamePattern = new RegExp(
   `^@${partialNormalized.source}/${partialNormalized.source}$`,

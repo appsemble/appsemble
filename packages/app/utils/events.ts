@@ -1,7 +1,7 @@
 import { type EventEmitter } from 'events';
 
 import { type Events } from '@appsemble/sdk';
-import { type BlockDefinition, type BlockManifest } from '@appsemble/types';
+import { type BlockDefinition, type ProjectManifest } from '@appsemble/types';
 import { has } from '@appsemble/utils';
 import { addBreadcrumb } from '@sentry/browser';
 
@@ -17,10 +17,10 @@ import { addBreadcrumb } from '@sentry/browser';
 export function createEvents(
   ee: EventEmitter,
   ready: Promise<void>,
-  manifest?: BlockManifest['events'],
+  manifest?: ProjectManifest['events'],
   definition?: BlockDefinition['events'],
 ): Events {
-  function createProxy<E extends keyof Events, M extends keyof BlockManifest['events']>(
+  function createProxy<E extends keyof Events, M extends keyof ProjectManifest['events']>(
     manifestKey: M,
     createFn: (registered: boolean, key: string) => Events[E][string],
   ): Events[E] {

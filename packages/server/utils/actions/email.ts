@@ -1,4 +1,4 @@
-import { getRemapperContext } from '@appsemble/node-utils';
+import { getRemapperContext, throwKoaError } from '@appsemble/node-utils';
 import { type EmailActionDefinition } from '@appsemble/types';
 import { defaultLocale, remap } from '@appsemble/utils';
 import { extension } from 'mime-types';
@@ -84,13 +84,7 @@ export async function email({
   const ctx = context;
 
   if (!sub || !body) {
-    ctx.response.status = 400;
-    ctx.response.body = {
-      statusCode: 400,
-      error: 'Bad Request',
-      message: 'Fields “subject” and “body” must be a valid string',
-    };
-    ctx.throw();
+    throwKoaError(ctx, 400, 'Fields “subject” and “body” must be a valid string');
   }
 
   const attachments: SendMailOptions['attachments'] = [];

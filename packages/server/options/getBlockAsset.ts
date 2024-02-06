@@ -1,5 +1,5 @@
 import {
-  type BlockAsset as BlockAssetInterface,
+  type ProjectAsset as BlockAssetInterface,
   type GetBlockAssetParams,
 } from '@appsemble/node-utils';
 

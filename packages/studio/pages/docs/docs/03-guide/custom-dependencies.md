@@ -74,17 +74,17 @@ environment on your local machine.
    You could also directly copy and paste the contents of the outside repository’s `tsconfig.json`
    file into each block’s TypeScript configuration file.
 
-4. Open your favorite terminal in the Appsemble main directory, and run the `yarn` command.
+4. Open your favorite terminal in the Appsemble main directory, and run the `npm install` command.
 
 5. Create an organization with the name specified in the `.appsemblerc.yaml` file of the app you
    want to develop on. You can either do this in the studio or in the CLI with
-   `yarn appsemble organization create --name {name} {id}`
+   `npx appsemble organization create --name {name} {id}`
 
 6. Publish the new blocks to your local environment with
-   `yarn appsemble block publish blocks/{block name}`
+   `npx appsemble block publish blocks/{block name}`
 
 7. Upload the new app to your local environment with
-   `yarn appsemble app publish --context development apps/{app name}`
+   `npx appsemble app publish --context development apps/{app name}`
 
 # Common problems
 

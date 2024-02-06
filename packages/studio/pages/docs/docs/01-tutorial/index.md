@@ -25,8 +25,8 @@ An App in Appsemble is constructed in the data serialization language YAML. The 
 chosen is because it is an easy to read code and is also generally used for similar kind of
 configuration-like-applications and scripts. The best way to learn how YAML works for Appsemble is
 to look into some of the example applications in the
-[Appsemble App Store](https://appsemble.app/nl/apps). You can find a lot of information on the
-internet about YAML.
+[Appsemble App Store](https://appsemble.app/apps). You can find a lot of information on the internet
+about YAML.
 
 You can build an App with elements like Resources, Blocks, Roles, etc which are pieces of code that
 you can add and adjust.

@@ -6,14 +6,14 @@ import {
 } from '@appsemble/react-components';
 import { timezone } from '@appsemble/web-utils';
 import axios from 'axios';
-import { type ReactElement, useCallback } from 'react';
+import { type ReactNode, useCallback } from 'react';
 import { useParams } from 'react-router-dom';
 
 import { messages } from './messages.js';
 import { apiUrl, appId } from '../../utils/settings.js';
 import { useUser } from '../UserProvider/index.js';
 
-export function Register(): ReactElement {
+export function Register(): ReactNode {
   useMeta(messages.register);
 
   const { passwordLogin } = useUser();

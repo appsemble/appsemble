@@ -1,12 +1,12 @@
 import { type EventEmitter } from 'events';
 
 import { Title, useMessages } from '@appsemble/react-components';
-import { type Utils } from '@appsemble/sdk';
+import { type BlockUtils } from '@appsemble/sdk';
 import { type BlockDefinition, type PageDefinition, type Remapper } from '@appsemble/types';
 import { createThemeURL, mergeThemes, normalizeBlockName, prefixBlockURL } from '@appsemble/utils';
 import { fa } from '@appsemble/web-utils';
 import classNames from 'classnames';
-import { type ReactElement, useEffect, useRef, useState } from 'react';
+import { type ReactNode, useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 
@@ -79,7 +79,7 @@ export function Block({
   remap,
   showDialog,
   showShareDialog,
-}: BlockProps): ReactElement {
+}: BlockProps): ReactNode {
   const navigate = useNavigate();
   const params = useParams();
   const location = useLocation();
@@ -149,7 +149,7 @@ export function Block({
 
     const bulmaUrl = createThemeURL(theme);
 
-    const utils: Utils = {
+    const utils: BlockUtils = {
       remap,
       showMessage: push,
       addCleanup(fn) {

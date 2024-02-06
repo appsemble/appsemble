@@ -1,8 +1,9 @@
 import { Button } from '@appsemble/react-components';
+import classNames from 'classnames';
 import {
   type ChangeEvent,
   type MutableRefObject,
-  type ReactElement,
+  type ReactNode,
   type Ref,
   useCallback,
   useState,
@@ -13,6 +14,7 @@ import { type Document, type Node, type ParsedNode } from 'yaml';
 import styles from './index.module.css';
 import { messages } from './messages.js';
 import { AppPreview } from '../../../../../components/AppPreview/index.js';
+import { useFullscreenContext } from '../../../../../components/FullscreenProvider/index.js';
 import { useApp } from '../../index.js';
 import { InputList } from '../Components/InputList/index.js';
 import { InputString } from '../Components/InputString/index.js';
@@ -26,6 +28,7 @@ export interface GeneralTabProps {
   readonly frameRef: Ref<HTMLIFrameElement>;
   readonly isOpenLeft: boolean;
   readonly isOpenRight: boolean;
+  readonly selectedScreenRatio: string;
 }
 
 const languages = [
@@ -64,10 +67,12 @@ export function GeneralTab({
   frameRef,
   isOpenLeft,
   isOpenRight,
-}: GeneralTabProps): ReactElement {
+  selectedScreenRatio: selectedRatio,
+}: GeneralTabProps): ReactNode {
   const { app } = useApp();
   const [currentSideBar, setCurrentSideBar] = useState<LeftSidebar>(Tabs[0]);
   const { formatMessage } = useIntl();
+  const { fullscreen } = useFullscreenContext();
 
   const onNameChange = useCallback(
     (event: ChangeEvent<HTMLInputElement>, value: string) => {
@@ -166,7 +171,12 @@ export function GeneralTab({
           ))}
         </>
       </Sidebar>
-      <div className={styles.root}>
+      <div
+        className={classNames(`${styles.root} ${styles[selectedRatio]}`, {
+          [String(styles.fullscreen)]: fullscreen.enabled,
+        })}
+        id="appPreviewDiv"
+      >
         <AppPreview app={app} iframeRef={frameRef} />
       </div>
       <Sidebar isOpen={isOpenRight} type="right">

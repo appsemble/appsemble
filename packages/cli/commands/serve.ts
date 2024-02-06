@@ -35,9 +35,10 @@ import globalCacheDir from 'global-cache-dir';
 import { type Argv } from 'yargs';
 
 import { traverseAppDirectory } from '../lib/app.js';
-import { buildBlock, getBlockConfig, makePayload } from '../lib/block.js';
+import { buildBlock } from '../lib/block.js';
+import { getProjectBuildConfig, getProjectWebpackConfig } from '../lib/config.js';
 import { createApiServer, createStaticServer } from '../lib/createServers.js';
-import { loadWebpackConfig } from '../lib/loadWebpackConfig.js';
+import { makeProjectPayload } from '../lib/project.js';
 import { setArgv } from '../server/argv.js';
 import { setAppName } from '../server/db/methods.js';
 import { Resource } from '../server/models/Resource.js';
@@ -110,10 +111,13 @@ export async function handler(argv: ServeArguments): Promise<void> {
 
   const appMembers: AppMember[] = [
     {
-      id: '1',
+      userId: '1',
+      memberId: '1',
       name: 'dev',
       primaryEmail: 'dev@example.com',
       role: passedUserRole || appSecurity?.default.role,
+      demo: false,
+      properties: {},
     },
   ];
 
@@ -164,9 +168,9 @@ export async function handler(argv: ServeArguments): Promise<void> {
     localIdentifiableBlocks.map(async (identifiableBlock) => {
       const [organization, blockName] = parseBlockName(identifiableBlock.type);
 
-      const blockConfig = await getBlockConfig(join(process.cwd(), 'blocks', blockName));
+      const buildConfig = await getProjectBuildConfig(join(process.cwd(), 'blocks', blockName));
       return {
-        ...blockConfig,
+        ...buildConfig,
         OrganizationId: organization,
       };
     }),
@@ -174,13 +178,12 @@ export async function handler(argv: ServeArguments): Promise<void> {
 
   const localBlocksPromises = localBlocksConfigs.map(async (blockConfig) => {
     await buildBlock(blockConfig);
-    const [, blockManifest] = await makePayload(blockConfig);
+    const [, blockImplementations] = await makeProjectPayload(blockConfig);
 
-    blockManifest.version = localIdentifiableBlocks.find(
-      (identifiableBlock) => identifiableBlock.type === blockManifest.name,
-    ).version;
-
-    return blockManifest;
+    return {
+      ...blockImplementations,
+      ...blockConfig,
+    };
   });
 
   const cacheDir = await globalCacheDir('appsemble');
@@ -247,7 +250,11 @@ export async function handler(argv: ServeArguments): Promise<void> {
 
   const webpackConfigs = await Promise.all(
     localBlocksConfigs.map((blockConfig) =>
-      loadWebpackConfig(blockConfig, 'development', join(blockConfig.dir, blockConfig.output)),
+      getProjectWebpackConfig(
+        blockConfig,
+        'development',
+        join(blockConfig.dir, blockConfig.output),
+      ),
     ),
   );
 

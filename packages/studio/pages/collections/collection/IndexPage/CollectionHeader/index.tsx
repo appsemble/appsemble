@@ -1,5 +1,5 @@
 import { type AppCollection } from '@appsemble/types';
-import { type ReactElement } from 'react';
+import { type ReactNode } from 'react';
 import { Link, useParams } from 'react-router-dom';
 
 import styles from './index.module.css';
@@ -9,7 +9,7 @@ interface CollectionHeaderProps {
   readonly collection: AppCollection;
 }
 
-export function CollectionHeader({ collection }: CollectionHeaderProps): ReactElement {
+export function CollectionHeader({ collection }: CollectionHeaderProps): ReactNode {
   const { lang } = useParams<{ lang: string }>();
   return (
     <header className="has-background-primary is-flex is-flex-wrap-wrap">

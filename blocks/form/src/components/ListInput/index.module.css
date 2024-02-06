@@ -1,0 +1,74 @@
+.button {
+  display: flex;
+  justify-content: flex-start;
+}
+
+.button span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.button em {
+  color: hsl(0deg 0% 50%);
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-top: 4px;
+}
+
+.chip {
+  align-items: center;
+  border: 1px solid hsl(0deg 0% 80%);
+  border-radius: 2rem;
+  display: flex;
+  font-size: 0.875rem;
+  gap: 8px;
+  justify-content: center;
+  overflow: hidden;
+  padding-left: 12px;
+  width: initial;
+}
+
+.chip_close {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 1rem;
+  line-height: 1;
+  margin: 0;
+  padding: 4px 12px 4px 4px;
+  transition: background-color ease-out 120ms;
+}
+
+.chip_close:is(:focus, :hover) {
+  background-color: hsl(0deg 0% 93%);
+}
+
+.dropdown {
+  background-color: hsl(0deg 0% 100%);
+  border: 1px solid hsl(0deg 0% 80%);
+  box-shadow: 0 2px 6px hsl(0deg 0% 80%);
+  position: absolute;
+  width: 100%;
+  z-index: 5; /* higher than the icons' z-index */
+}
+
+.option {
+  cursor: pointer;
+  display: flex;
+  gap: 8px;
+  padding: 4px 8px;
+  width: 100%;
+}
+
+.option:is(:focus-within, :hover) {
+  background-color: hsl(0deg 0% 95%);
+}
+
+.noIcon {
+  gap: 7rem;
+}

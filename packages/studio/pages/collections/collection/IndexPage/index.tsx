@@ -9,7 +9,7 @@ import {
 import { type App, type AppCollection } from '@appsemble/types';
 import { Permission } from '@appsemble/utils';
 import axios from 'axios';
-import { type ReactElement, useCallback, useState } from 'react';
+import { type ReactNode, useCallback, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 
 import { CollectionHeader } from './CollectionHeader/index.js';
@@ -58,7 +58,7 @@ function pinnedFirstSortWrapper(
   };
 }
 
-export function IndexPage({ collection }: IndexPageProps): ReactElement {
+export function IndexPage({ collection }: IndexPageProps): ReactNode {
   const { formatMessage } = useIntl();
   const [filter, setFilter] = useState('');
   const [sort, setSort] = useState<{ name: AppSortFunctionName; reverse: boolean }>({
@@ -124,6 +124,7 @@ export function IndexPage({ collection }: IndexPageProps): ReactElement {
             </Button>
           ) : null
         }
+        actionControlImport={null}
         filter={filter}
         onFilterChange={setFilter}
         onSortChange={onSortChange}

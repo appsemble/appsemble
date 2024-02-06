@@ -1,4 +1,4 @@
-import { mergeMessages } from '@appsemble/node-utils';
+import { assertKoaError, mergeMessages } from '@appsemble/node-utils';
 import { extractAppMessages } from '@appsemble/utils';
 import { type Context } from 'koa';
 import tags from 'language-tags';
@@ -126,15 +126,7 @@ export function parseLanguage(
     return { language: undefined, baseLanguage: undefined, query: [] };
   }
 
-  if (!tags.check(language)) {
-    ctx.response.status = 400;
-    ctx.response.body = {
-      statusCode: 400,
-      error: 'Bad Request',
-      message: `Language “${language}” is invalid`,
-    };
-    ctx.throw();
-  }
+  assertKoaError(!tags.check(language), ctx, 400, `Language “${language}” is invalid`);
 
   const lang = language?.toLowerCase();
   const baseLanguage = String(

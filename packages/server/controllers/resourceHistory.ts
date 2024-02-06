@@ -1,7 +1,7 @@
-import { getResourceDefinition } from '@appsemble/node-utils';
+import { assertKoaError, getResourceDefinition } from '@appsemble/node-utils';
 import { type Context } from 'koa';
 
-import { App, Resource, ResourceVersion, User } from '../models/index.js';
+import { App, AppMember, Resource, ResourceVersion } from '../models/index.js';
 
 export async function getResourceHistory(ctx: Context): Promise<void> {
   const {
@@ -18,43 +18,18 @@ export async function getResourceHistory(ctx: Context): Promise<void> {
         where: { id: resourceId, type: resourceType },
         include: [
           { association: 'Editor' },
-          { model: ResourceVersion, include: [{ model: User }] },
+          { model: ResourceVersion, include: [{ model: AppMember }] },
         ],
       },
     ],
   });
 
-  if (!app) {
-    ctx.response.status = 404;
-    ctx.response.body = {
-      statusCode: 404,
-      error: 'Not Found',
-      message: 'App not found',
-    };
-    ctx.throw();
-  }
+  assertKoaError(!app, ctx, 404, 'App not found');
 
   const definition = getResourceDefinition(app.toJSON(), resourceType, ctx);
 
-  if (!definition.history) {
-    ctx.response.status = 404;
-    ctx.response.body = {
-      statusCode: 404,
-      error: 'Not Found',
-      message: `Resource “${resourceType}” has no history`,
-    };
-    ctx.throw();
-  }
-
-  if (app.Resources.length !== 1) {
-    ctx.response.status = 404;
-    ctx.response.body = {
-      statusCode: 404,
-      error: 'Not Found',
-      message: 'Resource not found',
-    };
-    ctx.throw();
-  }
+  assertKoaError(!definition.history, ctx, 404, `Resource “${resourceType}” has no history`);
+  assertKoaError(app.Resources.length !== 1, ctx, 404, 'Resource not found');
 
   const [resource] = app.Resources;
 

@@ -11,7 +11,7 @@ import {
 } from '@appsemble/react-components';
 import { type AppMessages, type AppsembleMessages } from '@appsemble/types';
 import axios from 'axios';
-import { type ReactElement, useCallback, useMemo } from 'react';
+import { type ReactNode, useCallback, useMemo } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 
 import styles from './index.module.css';
@@ -43,7 +43,7 @@ export function MessagesForm({
   appMessages,
   defaultAppMessages,
   languageId,
-}: MessagesFormProps): ReactElement {
+}: MessagesFormProps): ReactNode {
   const { app } = useApp();
   const push = useMessages();
   const { formatMessage } = useIntl();

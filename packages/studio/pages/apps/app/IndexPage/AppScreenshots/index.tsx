@@ -8,7 +8,7 @@ import {
 } from '@appsemble/react-components';
 import { Permission } from '@appsemble/utils';
 import axios from 'axios';
-import { type ChangeEvent, type ReactElement, useCallback, useRef, useState } from 'react';
+import { type ChangeEvent, type ReactNode, useCallback, useRef, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 
 import { AppScreenshot } from './AppScreenshot/index.js';
@@ -18,7 +18,7 @@ import { useUser } from '../../../../../components/UserProvider/index.js';
 import { checkRole } from '../../../../../utils/checkRole.js';
 import { useApp } from '../../index.js';
 
-export function AppScreenshots(): ReactElement {
+export function AppScreenshots(): ReactNode {
   const { app, setApp } = useApp();
   const { organizations } = useUser();
   const { formatMessage } = useIntl();

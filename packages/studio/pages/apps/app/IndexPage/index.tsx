@@ -1,7 +1,8 @@
 import { Button, Title, useToggle } from '@appsemble/react-components';
 import { defaultLocale } from '@appsemble/utils';
+import axios from 'axios';
 import classNames from 'classnames';
-import { type ReactElement } from 'react';
+import { type ReactNode, useCallback, useRef, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { Link, useParams } from 'react-router-dom';
 
@@ -9,24 +10,50 @@ import { AppRatings } from './AppRatings/index.js';
 import { AppScreenshots } from './AppScreenshots/index.js';
 import styles from './index.module.css';
 import { messages } from './messages.js';
-import { AddToCollectionButton } from '../../../../components/AddToCollectionButton/index.js';
 import { AppIcon } from '../../../../components/AppIcon/index.js';
+import { AppOptionsMenu } from '../../../../components/AppOptionsMenu/index.js';
 import { CardHeaderControl } from '../../../../components/CardHeaderControl/index.js';
 import { CloneButton } from '../../../../components/CloneButton/index.js';
 import { MarkdownContent } from '../../../../components/MarkdownContent/index.js';
+import { ReseedButton } from '../../../../components/ReseedButton/index.js';
 import { StarRating } from '../../../../components/StarRating/index.js';
+import { useUser } from '../../../../components/UserProvider/index.js';
 import { getAppUrl } from '../../../../utils/getAppUrl.js';
 import { useApp } from '../index.js';
 
 /**
  * Display a more detailed overview of an individual app.
  */
-export function IndexPage(): ReactElement {
+export function IndexPage(): ReactNode {
   const { app } = useApp();
+  const { organizations } = useUser();
   const descriptionToggle = useToggle();
   const { lang } = useParams<{ lang: string }>();
+  const [checked, setChecked] = useState(false);
+  const checkedRef = useRef(checked);
+  checkedRef.current = checked;
 
   const appLang = app.definition.defaultLanguage || defaultLocale;
+
+  const onChecked = useCallback(() => {
+    setChecked((prevChecked) => !prevChecked);
+  }, []);
+
+  const onExport = useCallback(async () => {
+    const response = await axios.get(`/api/apps/${app.id}/export?resources=${checkedRef.current}`, {
+      responseType: 'blob',
+    });
+    const url = document.createElement('a');
+    url.href = URL.createObjectURL(response.data);
+    url.download = `${app.definition.name}_${app.id}.zip`;
+
+    url.click();
+  }, [app.id, app.definition.name]);
+
+  const showExport = organizations.some((organization) => organization.id === app.OrganizationId);
+  const showExportResources = organizations.some(
+    (organization) => organization.id === app.OrganizationId && organization.role >= 'AppEditor',
+  );
 
   return (
     <main>
@@ -44,7 +71,17 @@ export function IndexPage(): ReactElement {
               <FormattedMessage {...messages.view} />
             </Button>
             <CloneButton app={app} />
-            <AddToCollectionButton app={app} />
+            <ReseedButton app={app} />
+            {showExport ? (
+              <AppOptionsMenu
+                app={app}
+                checked={checked}
+                onChecked={onChecked}
+                onExport={onExport}
+                showExport={showExport}
+                showExportResources={showExportResources}
+              />
+            ) : null}
           </>
         }
         description={app.messages?.app?.description || app.definition.description}
@@ -61,7 +98,16 @@ export function IndexPage(): ReactElement {
             {app.OrganizationName || app.OrganizationId}
           </Link>
         }
-        title={app.messages?.app?.name || app.definition.name}
+        title={
+          <>
+            {app.messages?.app?.name || app.definition.name}
+            {app.demoMode ? (
+              <div className="tag is-danger ml-2">
+                <FormattedMessage {...messages.demo} />
+              </div>
+            ) : null}
+          </>
+        }
       >
         <AppScreenshots />
       </CardHeaderControl>

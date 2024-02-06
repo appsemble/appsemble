@@ -36,7 +36,8 @@ module.exports = {
           {
             extendDefaults: false,
             types: {
-              'JSX.Element': 'Use ReactElement for React contexts and VNode for Preact contexts',
+              'JSX.Element': 'Use ReactNode for React contexts and VNode for Preact contexts',
+              ReactElement: { fixWith: 'ReactNode', message: 'Use ReactNode instead' },
             },
           },
         ],
@@ -58,6 +59,12 @@ module.exports = {
         'import/no-extraneous-dependencies': 'off',
 
         'n/no-extraneous-import': 'off',
+      },
+    },
+    {
+      files: ['packages/server/migrations/*'],
+      rules: {
+        '@typescript-eslint/naming-convention': 'off',
       },
     },
     {

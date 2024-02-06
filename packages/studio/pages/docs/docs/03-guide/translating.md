@@ -52,7 +52,7 @@ Let’s look at a simple example of what this looks like in an app.
 ```yaml validate blocks-snippet
 blocks:
   - type: markdown
-    version: 0.22.10
+    version: 0.24.12
     parameters:
       content:
         translate: myMessage
@@ -69,7 +69,7 @@ Alternatively using `string.format`:
 ```yaml validate blocks-snippet
 blocks:
   - type: markdown
-    version: 0.22.10
+    version: 0.24.12
     parameters:
       content:
         string.format:
@@ -160,7 +160,7 @@ The format used for these translation files is similar to the format shown on th
   },
   "blocks": {
     "@appsemble/form": {
-      "0.22.10": {
+      "0.24.12": {
         "submit": "An example override of the submit message in the form block."
       }
     }
@@ -176,7 +176,7 @@ The messages are validated and the CLI should give helpful clues as to what need
 order to resolve any potential mistakes that it finds.
 
 ```sh
-$ yarn appsemble app update ./my-app
+npx appsemble app update ./my-app
 ```
 
 [icu]: https://formatjs.io/docs/core-concepts/icu-syntax/

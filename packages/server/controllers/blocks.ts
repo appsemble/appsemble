@@ -1,4 +1,10 @@
-import { handleValidatorResult, logger, serveIcon } from '@appsemble/node-utils';
+import {
+  assertKoaError,
+  handleValidatorResult,
+  logger,
+  serveIcon,
+  throwKoaError,
+} from '@appsemble/node-utils';
 import { type BlockDefinition, type BlockManifest } from '@appsemble/types';
 import { getAppBlocks, has, Permission } from '@appsemble/utils';
 import { isEqual, parseISO } from 'date-fns';
@@ -59,15 +65,7 @@ export async function getBlock(ctx: Context): Promise<void> {
     order: [['created', 'DESC']],
   });
 
-  if (!blockVersion) {
-    ctx.response.status = 404;
-    ctx.response.body = {
-      statusCode: 404,
-      error: 'Not Found',
-      message: 'Block definition not found',
-    };
-    ctx.throw();
-  }
+  assertKoaError(!blockVersion, ctx, 404, 'Block definition not found');
 
   ctx.body = blockVersionToJson(blockVersion);
 }
@@ -160,15 +158,12 @@ export async function publishBlock(ctx: Context): Promise<void> {
 
   if (data.actions) {
     for (const key of Object.keys(data.actions)) {
-      if (!actionKeyRegex.test(key) && key !== '$any') {
-        ctx.response.status = 400;
-        ctx.response.body = {
-          statusCode: 400,
-          error: 'Bad Request',
-          message: `Action “${key}” does match /${actionKeyRegex.source}/`,
-        };
-        ctx.throw();
-      }
+      assertKoaError(
+        !actionKeyRegex.test(key) && key !== '$any',
+        ctx,
+        400,
+        `Action “${key}” does match /${actionKeyRegex.source}/`,
+      );
     }
   }
 
@@ -185,13 +180,7 @@ export async function publishBlock(ctx: Context): Promise<void> {
       try {
         example = parse(exampleString);
       } catch {
-        ctx.response.status = 400;
-        ctx.response.body = {
-          statusCode: 400,
-          message: `Error parsing YAML example:\n${exampleString}`,
-          error: 'Bad Request',
-        };
-        ctx.throw();
+        throwKoaError(ctx, 400, `Error parsing YAML example:\n${exampleString}`);
       }
       if (!example || typeof example !== 'object') {
         continue;
@@ -255,15 +244,12 @@ export async function publishBlock(ctx: Context): Promise<void> {
     const messageKeys = Object.keys(messages.en);
     for (const [language, record] of Object.entries(messages)) {
       const keys = Object.keys(record);
-      if (keys.length !== messageKeys.length || keys.some((key) => !messageKeys.includes(key))) {
-        ctx.response.status = 400;
-        ctx.response.body = {
-          statusCode: 400,
-          error: 'Bad Request',
-          message: `Language ‘${language}’ contains mismatched keys compared to ‘en’.`,
-        };
-        ctx.throw();
-      }
+      assertKoaError(
+        keys.length !== messageKeys.length || keys.some((key) => !messageKeys.includes(key)),
+        ctx,
+        400,
+        `Language ‘${language}’ contains mismatched keys compared to ‘en’.`,
+      );
     }
   }
 
@@ -277,13 +263,11 @@ export async function publishBlock(ctx: Context): Promise<void> {
 
   // If there is a previous version and it has a higher semver, throw an error.
   if (blockVersion && semver.gte(blockVersion.version, version)) {
-    ctx.response.status = 409;
-    ctx.response.body = {
-      statusCode: 409,
-      error: 'Conflict',
-      message: `Version ${blockVersion.version} is equal to or lower than the already existing ${name}@${version}.`,
-    };
-    ctx.throw();
+    throwKoaError(
+      ctx,
+      409,
+      `Version ${blockVersion.version} is equal to or lower than the already existing ${name}@${version}.`,
+    );
   }
 
   try {
@@ -337,13 +321,7 @@ export async function publishBlock(ctx: Context): Promise<void> {
     });
   } catch (err: unknown) {
     if (err instanceof UniqueConstraintError || err instanceof DatabaseError) {
-      ctx.response.status = 409;
-      ctx.response.body = {
-        statusCode: 409,
-        message: 'Conflict',
-        error: `Block “${name}@${data.version}” already exists`,
-      };
-      ctx.throw();
+      throwKoaError(ctx, 409, `Block “${name}@${data.version}” already exists`);
     }
     throw err;
   }
@@ -383,15 +361,7 @@ export async function getBlockVersion(ctx: Context): Promise<void> {
     ],
   });
 
-  if (!version) {
-    ctx.response.status = 404;
-    ctx.response.body = {
-      statusCode: 404,
-      error: 'Not Found',
-      message: 'Block version not found',
-    };
-    ctx.throw();
-  }
+  assertKoaError(!version, ctx, 404, 'Block version not found');
 
   ctx.body = blockVersionToJson(version);
   ctx.set('Cache-Control', 'max-age=31536000,immutable');
@@ -421,30 +391,18 @@ export async function removeBlockVersion(ctx: Context): Promise<void> {
   const {
     pathParams: { blockId, blockVersion, organizationId },
   } = ctx;
+
   const version = await BlockVersion.findOne({
     attributes: ['id'],
     where: { name: blockId, OrganizationId: organizationId, version: blockVersion },
   });
-  if (!version) {
-    ctx.response.status = 404;
-    ctx.response.body = {
-      statusCode: 404,
-      error: 'Not Found',
-      message: 'Block version not found.',
-    };
-  }
+
+  assertKoaError(!version, ctx, 404, 'Block version not found');
 
   await checkRole(ctx, organizationId, Permission.DeleteBlocks);
   const usedBlocks = await findBlockInApps(blockId, blockVersion, organizationId);
-  if (usedBlocks) {
-    ctx.response.status = 403;
-    ctx.response.body = {
-      statusCode: 403,
-      error: 'Forbidden',
-      message: 'Cannot delete blocks that are used by apps.',
-    };
-    ctx.throw();
-  }
+
+  assertKoaError(usedBlocks, ctx, 403, 'Cannot delete blocks that are used by apps.');
 
   await BlockAsset.destroy({
     where: { BlockVersionId: version.id },
@@ -455,6 +413,30 @@ export async function removeBlockVersion(ctx: Context): Promise<void> {
   });
   await version.destroy();
   ctx.status = 204;
+}
+
+export async function getVersionsList(ctx: Context): Promise<void> {
+  const {
+    pathParams: { blockId, organizationId },
+  } = ctx;
+
+  const blockVersions = await BlockVersion.findAll({
+    attributes: ['version'],
+    where: { name: blockId, OrganizationId: organizationId },
+    order: [['created', 'DESC']],
+  });
+
+  if (blockVersions.length === 0) {
+    ctx.response.status = 404;
+    ctx.response.body = {
+      error: 'Not Found',
+      statusCode: 404,
+      message: 'Block not found',
+    };
+    ctx.throw();
+  }
+
+  ctx.body = blockVersions.map((block) => String(block.version));
 }
 
 export async function getBlockVersions(ctx: Context): Promise<void> {
@@ -492,15 +474,7 @@ export async function getBlockVersions(ctx: Context): Promise<void> {
     order: [['created', 'DESC']],
   });
 
-  if (blockVersions.length === 0) {
-    ctx.response.status = 404;
-    ctx.response.body = {
-      statusCode: 404,
-      error: 'Not Found',
-      message: 'Block not found.',
-    };
-    ctx.throw();
-  }
+  assertKoaError(blockVersions.length === 0, ctx, 404, 'Block not found.');
 
   ctx.body = blockVersions.map(blockVersionToJson);
 }
@@ -519,25 +493,13 @@ export async function getBlockAsset(ctx: Context): Promise<void> {
     ],
   });
 
-  if (!block) {
-    ctx.response.status = 404;
-    ctx.response.body = {
-      statusCode: 404,
-      error: 'Not Found',
-      message: 'Block version not found',
-    };
-    ctx.throw();
-  }
-
-  if (block.BlockAssets.length !== 1) {
-    ctx.response.status = 404;
-    ctx.response.body = {
-      statusCode: 404,
-      error: 'Not Found',
-      message: `Block has no asset named "${filename}"`,
-    };
-    ctx.throw();
-  }
+  assertKoaError(!block, ctx, 404, 'Block version not found');
+  assertKoaError(
+    block.BlockAssets.length !== 1,
+    ctx,
+    404,
+    `Block has no asset named "${filename}"`,
+  );
 
   ctx.body = block.BlockAssets[0].content;
   ctx.type = block.BlockAssets[0].mime;
@@ -560,25 +522,13 @@ export async function getBlockMessages(ctx: Context): Promise<void> {
     ],
   });
 
-  if (!block) {
-    ctx.response.status = 404;
-    ctx.response.body = {
-      statusCode: 404,
-      error: 'Not Found',
-      message: 'Block version not found',
-    };
-    ctx.throw();
-  }
-
-  if (block.BlockMessages.length !== 1) {
-    ctx.response.status = 404;
-    ctx.response.body = {
-      statusCode: 404,
-      error: 'Not Found',
-      message: 'Block has no messages for language "en"',
-    };
-    ctx.throw();
-  }
+  assertKoaError(!block, ctx, 404, 'Block version not found');
+  assertKoaError(
+    block.BlockMessages.length !== 1,
+    ctx,
+    404,
+    'Block has no messages for language "en"',
+  );
 
   ctx.body = block.BlockMessages[0].messages;
 }
@@ -595,15 +545,7 @@ export async function getBlockIcon(ctx: Context): Promise<void> {
     include: [{ model: Organization, attributes: ['icon', 'updated'] }],
   });
 
-  if (!version) {
-    ctx.response.status = 404;
-    ctx.response.body = {
-      statusCode: 404,
-      error: 'Not Found',
-      message: 'Block version not found',
-    };
-    ctx.throw();
-  }
+  assertKoaError(!version, ctx, 404, 'Block version not found');
 
   const cache = version.icon
     ? true

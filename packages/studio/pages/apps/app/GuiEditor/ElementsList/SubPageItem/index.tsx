@@ -1,6 +1,6 @@
 import { Button, Icon } from '@appsemble/react-components';
 import classNames from 'classnames';
-import { type DragEvent, type ReactElement, useCallback, useState } from 'react';
+import { type DragEvent, type ReactNode, useCallback, useState } from 'react';
 import { type Document, type ParsedNode } from 'yaml';
 
 import styles from './index.module.css';
@@ -15,7 +15,12 @@ interface SubPageItemProps {
   readonly saveStack: Document<ParsedNode, true>;
   readonly subPages: Page[];
   readonly onChange: (page: number, subParent: number, block: number) => void;
-  readonly handleDragStart?: (e: DragEvent, subPageIndex: number, pageIndex: number) => void;
+  readonly handleDragStart?: (
+    e: DragEvent,
+    subPageIndex: number,
+    pageIndex: number,
+    dragIndex: number,
+  ) => void;
   readonly onSelectSubPage?: (index: number, subParentIndex: number) => void;
   readonly handleDrop?: (
     e: DragEvent,
@@ -35,7 +40,7 @@ export function SubPageItem({
   selectedPage,
   selectedSubParent,
   subPages,
-}: SubPageItemProps): ReactElement {
+}: SubPageItemProps): ReactNode {
   const [disabledSubParents, setDisabledSubParents] = useState<number[]>([]);
 
   const toggleDropdownSubParents = useCallback(
@@ -71,20 +76,22 @@ export function SubPageItem({
             key={subPage.index}
             onClick={() => onSelectSubPage(subPage.index, subPageIndex)}
             onDragOver={(e) => e.preventDefault()}
-            onDragStart={(e) => handleDragStart(e, subPageIndex, subPage.index)}
+            onDragStart={(e) => handleDragStart(e, subPageIndex, subPage.index, 1)}
             onDrop={(e) => handleDrop(e, subPageIndex, subPage.index, selectedSubParent)}
           >
-            {subPage.name}
             {blocks.some(
               (blockItem) =>
                 blockItem.parent === subPage.index && blockItem.subParent === subPageIndex,
-            ) && (
+            ) ? (
               <Icon
                 className="mx-2"
-                icon={disabledSubParents.includes(subPageIndex) ? 'chevron-up' : 'chevron-down'}
+                icon={disabledSubParents.includes(subPageIndex) ? 'chevron-right' : 'chevron-down'}
                 onClick={() => toggleDropdownSubParents(subPageIndex)}
               />
+            ) : (
+              <Icon className="mx-2" icon="minus" />
             )}
+            {subPage.name}
           </Button>
           {!disabledSubParents.includes(subPageIndex) && (
             <>
@@ -96,6 +103,7 @@ export function SubPageItem({
                 .map((subBlock) => (
                   <SubPageBlockItem
                     block={subBlock}
+                    handleDrop={handleDrop}
                     key={`${subBlock.parent}-${subBlock.subParent}-${subBlock.block}`}
                     onChange={onChange}
                     pageIndex={subPage.index}

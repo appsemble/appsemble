@@ -1,5 +1,5 @@
 import classNames from 'classnames';
-import { type ReactElement } from 'react';
+import { type ReactNode } from 'react';
 
 import styles from './index.module.css';
 import { ValuePickerProvider, type ValuePickerProviderProps } from '../index.js';
@@ -21,6 +21,11 @@ interface TabsProps<T> extends ValuePickerProviderProps<T> {
   readonly className?: string;
 
   /**
+   * An additional id to apply to the root element.
+   */
+  readonly id?: string;
+
+  /**
    * An optional size for the tabs
    */
   readonly size?: 'large' | 'medium' | 'small';
@@ -36,9 +41,10 @@ export function Tabs<T>({
   centered,
   children,
   className,
+  id,
   size,
   ...props
-}: TabsProps<T>): ReactElement {
+}: TabsProps<T>): ReactNode {
   return (
     <div
       className={classNames(`tabs ${styles.root}`, className, {
@@ -46,6 +52,7 @@ export function Tabs<T>({
         'is-centered': centered,
         [`is-${size}`]: size,
       })}
+      id={id}
     >
       <ul>
         <ValuePickerProvider {...props}>{children}</ValuePickerProvider>

@@ -27,7 +27,7 @@ Does nothing if the user is already logged in.`,
     properties: {
       description: `The custom properties for the user.
 
-Every value will be converted to a string.`,
+Values will be validated based on \`user.properties\`, if defined in the app definition.`,
     },
     login: {
       description: 'Whether to login after registering.',

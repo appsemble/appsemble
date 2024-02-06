@@ -1,4 +1,4 @@
-import { type IconName, type Remapper } from '@appsemble/sdk';
+import { type BulmaColor, type BulmaSize, type IconName, type Remapper } from '@appsemble/sdk';
 import { type JSX } from 'preact/jsx-runtime';
 
 export interface EnumOption {
@@ -58,6 +58,50 @@ export interface AbstractField<T extends string, D> {
   defaultValue?: D;
 }
 
+/**
+ * A checkbox that returns `true` when checked and `false` when not.
+ */
+export interface BooleanField extends AbstractField<'boolean', boolean> {
+  /**
+   * The color of the checkbox.
+   */
+  color?: BulmaColor;
+
+  /**
+   * The size of the checkbox.
+   *
+   * @default 'normal'
+   */
+  size?: BulmaSize;
+
+  /**
+   * The color of the checkbox.
+   */
+  labelText?: Remapper;
+
+  /**
+   * Whether the checkbox should display as a switch instead.
+   *
+   * @see https://wikiki.github.io/form/switch/
+   */
+  switch?: {
+    /**
+     * Whether the rounded style should be used.
+     */
+    rounded?: boolean;
+
+    /**
+     * Whether the thin style should be used.
+     */
+    thin?: boolean;
+
+    /**
+     * Whether the outlined style should be used.
+     */
+    outlined?: boolean;
+  };
+}
+
 export interface ButtonsField extends AbstractField<'buttons', string[]> {
   /**
    * A list of button options.
@@ -79,11 +123,23 @@ export interface DateRangeField extends AbstractField<'date-range', [string, str
   toLabel?: Remapper;
 }
 
+export interface ListField extends AbstractField<'list', string> {
+  /**
+   * A list of enum options.
+   */
+  list: EnumOption[];
+}
+
 export interface EnumField extends AbstractField<'enum', string> {
   /**
    * A list of enum options.
    */
   enum: EnumOption[];
+}
+
+export interface RangeField extends AbstractField<'range', [number, number]> {
+  from?: Remapper;
+  to?: Remapper;
 }
 
 export interface StringField extends AbstractField<'string', string> {
@@ -95,7 +151,15 @@ export interface StringField extends AbstractField<'string', string> {
   exact?: boolean;
 }
 
-export type Field = ButtonsField | DateField | DateRangeField | EnumField | StringField;
+export type Field =
+  | BooleanField
+  | ButtonsField
+  | DateField
+  | DateRangeField
+  | EnumField
+  | ListField
+  | RangeField
+  | StringField;
 
 export type FilterValue = Field['defaultValue'];
 
@@ -127,7 +191,21 @@ declare module '@appsemble/sdk' {
      *
      * This means this field will be displayed directly on the screen instead of in the modal.
      */
-    highlight?: string;
+    highlight?: string[] | string;
+
+    /**
+     * Whether the modal should fill the whole page or not.
+     *
+     * @default false
+     */
+    fullscreen?: boolean;
+
+    /**
+     * The name of the fontawesome icon to display on the button to open the filter modal.
+     *
+     * @default 'filter'
+     */
+    icon?: IconName;
   }
 
   interface Messages {

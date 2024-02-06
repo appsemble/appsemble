@@ -6,8 +6,8 @@ import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 import {
   App,
   AppMember,
-  Member,
   Organization,
+  OrganizationMember,
   Team,
   TeamInvite,
   TeamMember,
@@ -61,7 +61,11 @@ beforeEach(async () => {
     OrganizationId: organization.id,
   });
 
-  await Member.create({ OrganizationId: organization.id, UserId: user.id, role: 'Owner' });
+  await OrganizationMember.create({
+    OrganizationId: organization.id,
+    UserId: user.id,
+    role: 'Owner',
+  });
 });
 
 describe('getTeams', () => {
@@ -92,7 +96,7 @@ describe('getTeams', () => {
   });
 
   it('should include the role of the user', async () => {
-    const appMember = await AppMember.create({ UserId: user.id, AppIs: app.id, role: '' });
+    const appMember = await AppMember.create({ UserId: user.id, AppId: app.id, role: '' });
     const teamA = await Team.create({ name: 'A', AppId: app.id });
     const teamB = await Team.create({ name: 'B', AppId: app.id });
     const teamC = await Team.create({ name: 'C', AppId: app.id });
@@ -319,7 +323,7 @@ describe('createTeam', () => {
     });
 
     it('should not create a team if user is not an Owner', async () => {
-      await Member.update(
+      await OrganizationMember.update(
         { role: 'AppEditor' },
         { where: { UserId: user.id, OrganizationId: organization.id } },
       );
@@ -411,7 +415,7 @@ describe('patchTeam', () => {
   });
 
   it('should not update without sufficient permissions', async () => {
-    await Member.update(
+    await OrganizationMember.update(
       { role: 'AppEditor' },
       { where: { UserId: user.id, OrganizationId: organization.id } },
     );
@@ -479,7 +483,7 @@ describe('deleteTeam', () => {
   });
 
   it('should not delete without sufficient permissions', async () => {
-    await Member.update(
+    await OrganizationMember.update(
       { role: 'AppEditor' },
       { where: { UserId: user.id, OrganizationId: organization.id } },
     );
@@ -540,7 +544,11 @@ describe('getTeamMembers', () => {
       primaryEmail: 'testuser@example.com',
       timezone: 'Europe/Amsterdam',
     });
-    await Member.create({ OrganizationId: organization.id, UserId: userB.id, role: 'Member' });
+    await OrganizationMember.create({
+      OrganizationId: organization.id,
+      UserId: userB.id,
+      role: 'Member',
+    });
 
     const appMember = await AppMember.create({
       UserId: user.id,
@@ -843,7 +851,11 @@ describe('addTeamMember', () => {
         email: userB.primaryEmail,
         role: 'Member',
       });
-      await Member.create({ OrganizationId: organization.id, UserId: userB.id, role: 'Member' });
+      await OrganizationMember.create({
+        OrganizationId: organization.id,
+        UserId: userB.id,
+        role: 'Member',
+      });
       const team = await Team.create({ name: 'A', AppId: app.id });
       const response = await request.post(`/api/apps/${app.id}/teams/${team.id}/members`, {
         id: userB.id,
@@ -874,7 +886,11 @@ describe('addTeamMember', () => {
         email: userB.primaryEmail,
         role: 'Member',
       });
-      await Member.create({ OrganizationId: organization.id, UserId: userB.id, role: 'Member' });
+      await OrganizationMember.create({
+        OrganizationId: organization.id,
+        UserId: userB.id,
+        role: 'Member',
+      });
       const team = await Team.create({ name: 'A', AppId: app.id });
       const response = await request.post(`/api/apps/${app.id}/teams/${team.id}/members`, {
         id: userB.primaryEmail,
@@ -899,8 +915,12 @@ describe('addTeamMember', () => {
         timezone: 'Europe/Amsterdam',
       });
       const member1 = await AppMember.create({ AppId: app.id, UserId: user.id, role: '' });
-      await Member.create({ OrganizationId: organization.id, UserId: userB.id, role: 'Member' });
-      await Member.update(
+      await OrganizationMember.create({
+        OrganizationId: organization.id,
+        UserId: userB.id,
+        role: 'Member',
+      });
+      await OrganizationMember.update(
         { role: 'Member' },
         { where: { UserId: user.id, OrganizationId: organization.id } },
       );
@@ -935,8 +955,12 @@ describe('addTeamMember', () => {
         primaryEmail: 'testuser@example.com',
         timezone: 'Europe/Amsterdam',
       });
-      await Member.create({ OrganizationId: organization.id, UserId: userB.id, role: 'Member' });
-      await Member.update(
+      await OrganizationMember.create({
+        OrganizationId: organization.id,
+        UserId: userB.id,
+        role: 'Member',
+      });
+      await OrganizationMember.update(
         { role: 'Member' },
         { where: { UserId: user.id, OrganizationId: organization.id } },
       );
@@ -1019,7 +1043,11 @@ describe('removeTeamMember', () => {
       primaryEmail: 'testuser@example.com',
       timezone: 'Europe/Amsterdam',
     });
-    await Member.create({ OrganizationId: organization.id, UserId: userB.id, role: 'Member' });
+    await OrganizationMember.create({
+      OrganizationId: organization.id,
+      UserId: userB.id,
+      role: 'Member',
+    });
     const team = await Team.create({ name: 'A', AppId: app.id });
     const appMember = await AppMember.create({ AppId: app.id, UserId: userB.id, role: '' });
     await TeamMember.create({ AppMemberId: appMember.id, TeamId: team.id, role: TeamRole.Member });
@@ -1038,7 +1066,11 @@ describe('removeTeamMember', () => {
       primaryEmail: 'testuser@example.com',
       timezone: 'Europe/Amsterdam',
     });
-    await Member.create({ OrganizationId: organization.id, UserId: userB.id, role: 'Member' });
+    await OrganizationMember.create({
+      OrganizationId: organization.id,
+      UserId: userB.id,
+      role: 'Member',
+    });
     const team = await Team.create({ name: 'A', AppId: app.id });
     const appMember = await AppMember.create({
       AppId: app.id,
@@ -1062,8 +1094,15 @@ describe('removeTeamMember', () => {
       primaryEmail: 'testuser@example.com',
       timezone: 'Europe/Amsterdam',
     });
-    await Member.create({ OrganizationId: organization.id, UserId: userB.id, role: 'Member' });
-    await Member.update({ role: 'Member' }, { where: { UserId: user.id, OrganizationId: app.id } });
+    await OrganizationMember.create({
+      OrganizationId: organization.id,
+      UserId: userB.id,
+      role: 'Member',
+    });
+    await OrganizationMember.update(
+      { role: 'Member' },
+      { where: { UserId: user.id, OrganizationId: app.id } },
+    );
     const team = await Team.create({ name: 'A', AppId: app.id });
     const appMember1 = await AppMember.create({ AppId: app.id, UserId: user.id, role: '' });
     const appMember2 = await AppMember.create({ AppId: app.id, UserId: userB.id, role: '' });
@@ -1088,8 +1127,12 @@ describe('removeTeamMember', () => {
       primaryEmail: 'testuser@example.com',
       timezone: 'Europe/Amsterdam',
     });
-    await Member.create({ OrganizationId: organization.id, UserId: userB.id, role: 'Member' });
-    await Member.update(
+    await OrganizationMember.create({
+      OrganizationId: organization.id,
+      UserId: userB.id,
+      role: 'Member',
+    });
+    await OrganizationMember.update(
       { role: 'Member' },
       { where: { UserId: user.id, OrganizationId: organization.id } },
     );
@@ -1115,7 +1158,11 @@ describe('removeTeamMember', () => {
       timezone: 'Europe/Amsterdam',
     });
     await AppMember.create({ AppId: app.id, UserId: userB.id, role: '' });
-    await Member.create({ OrganizationId: organization.id, UserId: userB.id, role: 'Member' });
+    await OrganizationMember.create({
+      OrganizationId: organization.id,
+      UserId: userB.id,
+      role: 'Member',
+    });
     const team = await Team.create({ name: 'A', AppId: app.id });
 
     authorizeStudio();
@@ -1138,7 +1185,11 @@ describe('updateTeamMember', () => {
       primaryEmail: 'testuser@example.com',
       timezone: 'Europe/Amsterdam',
     });
-    await Member.create({ OrganizationId: organization.id, UserId: userB.id, role: 'Member' });
+    await OrganizationMember.create({
+      OrganizationId: organization.id,
+      UserId: userB.id,
+      role: 'Member',
+    });
     const team = await Team.create({ name: 'A', AppId: app.id });
     const appMember = await AppMember.create({
       AppId: app.id,
@@ -1172,7 +1223,11 @@ describe('updateTeamMember', () => {
       primaryEmail: 'testuser@example.com',
       timezone: 'Europe/Amsterdam',
     });
-    await Member.create({ OrganizationId: organization.id, UserId: userB.id, role: 'Member' });
+    await OrganizationMember.create({
+      OrganizationId: organization.id,
+      UserId: userB.id,
+      role: 'Member',
+    });
     const team = await Team.create({ name: 'A', AppId: app.id });
     const appMember = await AppMember.create({
       AppId: app.id,
@@ -1209,8 +1264,12 @@ describe('updateTeamMember', () => {
       primaryEmail: 'testuser@example.com',
       timezone: 'Europe/Amsterdam',
     });
-    await Member.create({ OrganizationId: organization.id, UserId: userB.id, role: 'Member' });
-    await Member.update(
+    await OrganizationMember.create({
+      OrganizationId: organization.id,
+      UserId: userB.id,
+      role: 'Member',
+    });
+    await OrganizationMember.update(
       { role: 'Member' },
       { where: { UserId: user.id, OrganizationId: organization.id } },
     );
@@ -1253,8 +1312,12 @@ describe('updateTeamMember', () => {
       primaryEmail: 'testuser@example.com',
       timezone: 'Europe/Amsterdam',
     });
-    await Member.create({ OrganizationId: organization.id, UserId: userB.id, role: 'Member' });
-    await Member.update(
+    await OrganizationMember.create({
+      OrganizationId: organization.id,
+      UserId: userB.id,
+      role: 'Member',
+    });
+    await OrganizationMember.update(
       { role: 'Member' },
       { where: { UserId: user.id, OrganizationId: organization.id } },
     );
@@ -1282,7 +1345,11 @@ describe('updateTeamMember', () => {
       primaryEmail: 'testuser@example.com',
       timezone: 'Europe/Amsterdam',
     });
-    await Member.create({ OrganizationId: organization.id, UserId: userB.id, role: 'Member' });
+    await OrganizationMember.create({
+      OrganizationId: organization.id,
+      UserId: userB.id,
+      role: 'Member',
+    });
     const team = await Team.create({ name: 'A', AppId: app.id });
 
     authorizeStudio();

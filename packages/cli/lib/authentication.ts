@@ -1,7 +1,14 @@
 import { type AddressInfo, type Server } from 'node:net';
 import { hostname } from 'node:os';
 
-import { AppsembleError, getKeytar, getService, logger } from '@appsemble/node-utils';
+import {
+  AppsembleError,
+  assertKoaError,
+  getKeytar,
+  getService,
+  logger,
+  throwKoaError,
+} from '@appsemble/node-utils';
 import inquirer from 'inquirer';
 import Koa, { type Context } from 'koa';
 import open from 'open';
@@ -35,10 +42,11 @@ function waitForCredentials(url: URL): Promise<string> {
       try {
         ({ credentials } = JSON.parse(await raw(ctx.req, { encoding: 'utf8' })));
       } catch {
-        ctx.throw(400, 'Invalid JSON');
+        throwKoaError(ctx, 400, 'Invalid JSON');
       }
-      ctx.assert(
-        typeof credentials === 'string' && validate(credentials),
+      assertKoaError(
+        typeof credentials === 'string' && !validate(credentials),
+        ctx,
         400,
         'Invalid client credentials',
       );

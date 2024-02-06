@@ -11,7 +11,7 @@ import {
 } from '@appsemble/react-components';
 import { Permission } from '@appsemble/utils';
 import axios from 'axios';
-import { type ChangeEvent, type ReactElement, useCallback, useMemo } from 'react';
+import { type ChangeEvent, type ReactNode, useCallback, useMemo } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 
 import styles from './index.module.css';
@@ -20,14 +20,14 @@ import { useUser } from '../../../../../components/UserProvider/index.js';
 import { checkRole } from '../../../../../utils/checkRole.js';
 import { useApp } from '../../index.js';
 import { AnnotationsTable } from '../../teams/team/AnnotationsTable/index.js';
-import { type Member } from '../index.js';
+import { type AppMember } from '../index.js';
 
-interface MemberRowProperties {
-  readonly member: Member;
-  readonly onChange: (member: Member) => void;
+interface AppMemberRowProperties {
+  readonly member: AppMember;
+  readonly onChange: (member: AppMember) => void;
 }
 
-export function MemberRow({ member, onChange }: MemberRowProperties): ReactElement {
+export function MemberRow({ member, onChange }: AppMemberRowProperties): ReactNode {
   const { app } = useApp();
   const { organizations, userInfo } = useUser();
   const push = useMessages();
@@ -37,20 +37,38 @@ export function MemberRow({ member, onChange }: MemberRowProperties): ReactEleme
   const organization = organizations?.find((org) => org.id === app?.OrganizationId);
   const editRolesPermission = checkRole(organization.role, Permission.ManageRoles);
 
+  const defaultValues = useMemo(
+    () => ({
+      annotations: Object.entries(
+        Object.fromEntries(
+          Object.entries(member.properties ?? {}).map(([key, value]) => [
+            key,
+            typeof value === 'string' ? value : JSON.stringify(value),
+          ]),
+        ) || {},
+      ),
+    }),
+    [member],
+  );
+
   const onChangeRole = useCallback(
     async (event: ChangeEvent<HTMLSelectElement>): Promise<void> => {
       event.preventDefault();
       const { value: role } = event.currentTarget;
 
       try {
-        const { data } = await axios.post<Member>(`/api/apps/${app.id}/members/${member.id}`, {
-          role,
-        });
+        const { data } = await axios.post<AppMember>(
+          `/api/apps/${app.id}/members/${member.userId}`,
+          {
+            role,
+            properties: Object.fromEntries(defaultValues.annotations),
+          },
+        );
 
         push({
           color: 'success',
           body: formatMessage(messages.changeRoleSuccess, {
-            name: data.name || data.primaryEmail || data.id,
+            name: data.name || data.primaryEmail || data.memberId,
             role,
           }),
         });
@@ -59,19 +77,12 @@ export function MemberRow({ member, onChange }: MemberRowProperties): ReactEleme
         push({ body: formatMessage(messages.changeRoleError) });
       }
     },
-    [app, formatMessage, member, onChange, push],
-  );
-
-  const defaultValues = useMemo(
-    () => ({
-      annotations: Object.entries(member.properties || {}),
-    }),
-    [member],
+    [app.id, defaultValues.annotations, formatMessage, member.userId, onChange, push],
   );
 
   const editProperties = useCallback(
     async ({ annotations }: typeof defaultValues) => {
-      const { data } = await axios.post<Member>(`/api/apps/${app.id}/members/${member.id}`, {
+      const { data } = await axios.post<AppMember>(`/api/apps/${app.id}/members/${member.userId}`, {
         role: member.role,
         properties: Object.fromEntries(annotations),
       });
@@ -83,17 +94,17 @@ export function MemberRow({ member, onChange }: MemberRowProperties): ReactEleme
 
   return (
     <>
-      <tr key={member.id}>
+      <tr key={member.memberId}>
         <td className={styles.noWrap}>
           <span>
             {member.name
               ? member.primaryEmail
                 ? `${member.name} (${member.primaryEmail})`
                 : member.name
-              : member.primaryEmail || member.id}
+              : member.primaryEmail || member.memberId}
           </span>
           <div className="tags is-inline ml-2">
-            {member.id === userInfo.sub && (
+            {member.userId === userInfo.sub && (
               <span className="tag is-success">
                 <FormattedMessage {...messages.you} />
               </span>

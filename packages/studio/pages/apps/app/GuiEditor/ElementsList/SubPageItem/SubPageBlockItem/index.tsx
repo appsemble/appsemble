@@ -1,6 +1,6 @@
 import { Button } from '@appsemble/react-components';
 import classNames from 'classnames';
-import { type DragEvent, type ReactElement, useCallback } from 'react';
+import { type DragEvent, type ReactNode, useCallback } from 'react';
 import { type Document, type ParsedNode } from 'yaml';
 
 import styles from './index.module.css';
@@ -20,8 +20,13 @@ interface SubPageBlockItemProps {
     block: number;
   };
   readonly onChange: (page: number, subParent: number, block: number) => void;
-  readonly handleDragStart?: (e: DragEvent, subPageIndex: number, pageIndex: number) => void;
-  readonly handleDrop?: (
+  readonly handleDragStart?: (
+    e: DragEvent,
+    subPageIndex: number,
+    pageIndex: number,
+    dragIndex: number,
+  ) => void;
+  readonly handleDrop: (
     e: DragEvent,
     subPageIndex: number,
     pageIndex: number,
@@ -39,7 +44,7 @@ export function SubPageBlockItem({
   selectedPage,
   selectedSubParent,
   subBlock,
-}: SubPageBlockItemProps): ReactElement {
+}: SubPageBlockItemProps): ReactNode {
   const onSelectBlock = useCallback(
     (parentIndex: number, subParentIndex: number, blockIndex: number) => {
       onChange(parentIndex, subParentIndex, blockIndex);
@@ -57,7 +62,7 @@ export function SubPageBlockItem({
       })}
       onClick={() => onSelectBlock(subBlock.parent, subBlock.subParent, subBlock.block)}
       onDragOver={(e) => e.preventDefault()}
-      onDragStart={(e) => handleDragStart(e, block.block, pageIndex)}
+      onDragStart={(e) => handleDragStart(e, block.block, pageIndex, 1)}
       onDrop={(e) => handleDrop(e, subBlock.block, pageIndex, subBlock.subParent)}
     >
       {subBlock.type === 'flow'

@@ -58,6 +58,14 @@ export const messages = defineMessages({
     id: 'studio.ipgyGT',
     defaultMessage: 'Copy any resources that are allowed to be cloned.',
   },
+  assets: {
+    id: 'studio.d1uESJ',
+    defaultMessage: 'Assets',
+  },
+  assetsDescription: {
+    id: 'studio.7n6SLi',
+    defaultMessage: 'Copy any assets that are allowed to be cloned.',
+  },
   cancel: {
     id: 'studio.47FYwb',
     defaultMessage: 'Cancel',

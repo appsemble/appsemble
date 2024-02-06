@@ -1,0 +1,33 @@
+.blockContainer {
+  background-color: hsl(120deg 73% 75%);
+  border: 4px solid hsl(120deg 100% 25%);
+  border-radius: 15px;
+  float: left;
+  /* stylelint-disable plugin/no-unsupported-browser-features */
+  height: fit-content;
+  margin: 3vw;
+  max-height: 20vw;
+  max-width: 20vw;
+  padding: 10%;
+  position: relative;
+  text-wrap: pretty;
+}
+
+.blockContainer:hover {
+  background-color: hsl(120deg 46% 68%);
+  border: 4px solid hsl(120deg 100% 15%);
+}
+
+.blockContainer:focus {
+  background-color: hsl(120deg 42% 60%);
+  border: 4px solid hsl(120deg 100% 10%);
+}
+
+.dragOver {
+  border: 4px solid hsl(218deg 100% 66%);
+}
+
+.centerFigure {
+  margin: auto;
+  min-width: 64px;
+}

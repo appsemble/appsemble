@@ -10,7 +10,7 @@ import {
 import { type PageDefinition, type Remapper } from '@appsemble/types';
 import { checkAppRole, createThemeURL, mergeThemes, normalize, remap } from '@appsemble/utils';
 import classNames from 'classnames';
-import { type ReactElement, useCallback, useEffect, useRef, useState } from 'react';
+import { type ReactNode, useCallback, useEffect, useRef, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { Navigate, Route, useLocation, useParams } from 'react-router-dom';
 
@@ -31,10 +31,10 @@ import { TabsPage } from '../TabsPage/index.js';
 import { AppBar } from '../TitleBar/index.js';
 import { useUser } from '../UserProvider/index.js';
 
-export function Page(): ReactElement {
-  const { definition } = useAppDefinition();
+export function Page(): ReactNode {
   const redirect = useLocationString();
-  const { isLoggedIn, role, teams, userInfo } = useUser();
+  const { definition } = useAppDefinition();
+  const { isLoggedIn, role, teams, userInfoRef } = useUser();
   const { lang, pageId } = useParams<{ lang: string; pageId: string }>();
 
   const { pathname } = useLocation();
@@ -47,10 +47,10 @@ export function Page(): ReactElement {
 
   const [shareDialogParams, setShareDialogParams] = useState<ShareDialogState>();
   const showShareDialog: ShowShareDialog = useCallback(
-    (params) =>
+    (showShareDialogParams) =>
       new Promise<void>((resolve, reject) => {
         setShareDialogParams({
-          params,
+          params: showShareDialogParams,
           resolve,
           reject,
         });
@@ -90,21 +90,22 @@ export function Page(): ReactElement {
   const prefixIndex = index === -1 ? null : `pages.${index}`;
 
   const remapWithContext = useCallback(
-    (mappers: Remapper, input: any, context: Record<string, any>) =>
+    (mappers: Remapper, input: any, { history = [], ...context }: Record<string, any> = {}) =>
       remap(mappers, input, {
         appId,
         url: window.location.href,
         appUrl: window.location.origin,
         getMessage,
         pageData: data,
-        userInfo,
+        userInfo: userInfoRef.current,
+        appMember: userInfoRef.current?.appMember,
         context,
-        history: context?.history,
+        history,
         root: input,
         locale: lang,
         stepRef,
       }),
-    [data, getMessage, lang, stepRef, userInfo],
+    [data, getMessage, lang, stepRef, userInfoRef],
   );
 
   const showDialog = useCallback((d: ShowDialogParams) => {

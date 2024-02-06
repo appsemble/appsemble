@@ -2,6 +2,258 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.24.12](https://gitlab.com/appsemble/appsemble/-/releases/0.24.12)] - 2024-02-06
+
+### Added
+
+- Cli: Publish resources recursively in the `app publish` command based on resource references.
+- Server: Reseed resources recursively in the `/app/{id}/reseed` endpoint based on resource
+  references.
+- Server: Reseed resources recursively in the `cleanupResourcesAndAssets` command based on resource
+  references.
+
+### Changed
+
+- Node-utils: Patch resource schema in `processResourceBody` to allow resource references by index.
+- Utils: Added validation for resource names against the reserved keywords `created`, `updated`,
+  `author`, `editor`, `seed`, `ephemeral`, `clonable` and `expires`.
+
+### Fixed
+
+- App: App bar rendering title wrong.
+- Studio: Unexpected error on the organization docs page.
+- Utils: Remove additional history stack in the remapper context.
+
+## \[[0.24.11](https://gitlab.com/appsemble/appsemble/-/releases/0.24.11)] - 2024-02-02
+
+### Added
+
+- Server: Default values are added to nested properties in app member properties when they are of
+  type object.
+
+### Changed
+
+- App: If a `currentEmail` is not specified in the `user.update` action, it assumes the logged-in
+  email.
+- App: The `password` field is no longer required in the `user.update` action.
+- Utils: Changed `user.properties` to accept integer and array properties without referencing
+  resources.
+
+### Fixed
+
+- App: After the `user.update` action, updated user properties are now correctly assigned.
+- App: After updating user properties from the studio, they are now correctly assigned.
+- App: App controller handler functions now load as expected.
+- Server: Invalid authentication state causing internal server error on blocks page.
+- Studio: The dialog message shown in the studio app editor page shows message even after save.
+
+## \[[0.24.10](https://gitlab.com/appsemble/appsemble/-/releases/0.24.10)] - 2024-01-31
+
+### Added
+
+- Studio: Add search bar for blocks.
+- Studio: Watermark in app card and app details page.
+- Utils: New Google Fonts.
+- Utils: Support for binary data in `null.strip` remapper.
+
+### Changed
+
+- Studio: Make `import` button optionally visible on home page.
+
+### Fixed
+
+- Server: Deleting more child resources in cascade delete than allowed.
+- Server: Updating more child resources in cascade delete than allowed.
+- Utils: Ensure resource reference types are specified.
+
+## \[[0.24.9](https://gitlab.com/appsemble/appsemble/-/releases/0.24.9)] - 2024-01-26
+
+## \[[0.24.8](https://gitlab.com/appsemble/appsemble/-/releases/0.24.8)] - 2024-01-23
+
+### Changed
+
+- Server: Fetch resources separately to improve server performance.
+
+### Fixed
+
+- Server: Resolve error on apps page caused by expired tokens.
+- Studio: Ensure the user is logged in before loading “My apps”.
+
+## \[[0.24.7](https://gitlab.com/appsemble/appsemble/-/releases/0.24.7)] - 2024-01-23
+
+### Changed
+
+- Server: Fetch assets separately to improve server performance.
+
+## \[[0.24.6](https://gitlab.com/appsemble/appsemble/-/releases/0.24.6)] - 2024-01-22
+
+### Fixed
+
+- Server: Ensure only the latest snapshot is retrieved on the server.
+- Studio: Fix link to app-icon documentation being broken in the app icon settings.
+- Studio: Resolve app members page error.
+- Studio: Resolve error in app search bar.
+
+## \[[0.24.5](https://gitlab.com/appsemble/appsemble/-/releases/0.24.5)] - 2024-01-19
+
+## \[[0.24.4](https://gitlab.com/appsemble/appsemble/-/releases/0.24.4)] - 2024-01-18
+
+## \[[0.24.3](https://gitlab.com/appsemble/appsemble/-/releases/0.24.3)] - 2024-01-18
+
+## \[[0.24.2](https://gitlab.com/appsemble/appsemble/-/releases/0.24.2)] - 2024-01-18
+
+## \[[0.24.1](https://gitlab.com/appsemble/appsemble/-/releases/0.24.1)] - 2024-01-18
+
+### Added
+
+- Cli: Add `clonable` to asset publish command.
+- Node-utils: Add the option to expire resources based on period. Add clonable and ephemeral to
+  resource parsing.
+- Scripts: Add `user.properties` validation in docs.
+- Server: Add `user.properties` parsing and validation to app member endpoints. Add reseed demo app
+  endpoint. Add demo app logic for resources endpoints. Add demo app logic for assets endpoints. Add
+  `AppMember` `BeforeCreate` and `BeforeUpdate` hooks for `user.properties` validation. Add
+  `Resource` `BeforeDelete` hook for `user.properties` update. Add logic for demo apps to get the
+  user who seeded the resource on action permission validation instead of the logged in one.
+- Studio: Add reseed button for demo apps.
+- Types: Add `UserProperties` interface. Add `$seed` and `$ephemeral` to resources.
+- Utils: Add `clonable` to publish assets endpoint. Add `user.properties` to app definition. Add
+  `user.properties` to user actions. Add demo app reseed endpoint.
+
+### Changed
+
+- Cli: Change cleanup resources script to clean up resources and assets based on the new ephemeral
+  field.
+- Utils: Change properties description in `user.register`, `user.create` and `user.update` actions.
+
+### Fixed
+
+- App: Fix `user.properties` in `UserProvider`. Fix `user.properties` in user actions.
+- Studio: Fix `user.properties` modal form.
+
+## \[[0.24.0](https://gitlab.com/appsemble/appsemble/-/releases/0.24.0)] - 2024-01-16
+
+### Added
+
+- Block(`form`): Add support for icon inside file entry.
+- Block(`form`): Add support for icon to geocoordinates field.
+- Block(`form`): Add support for icon to static field.
+- Block(`form`): Add support for label to geocoordinates field.
+- Block(`form`): Add support for tag to geocoordinates field.
+- Block(`form`): Add support for “required‘ requirement to geocoordinates field.
+- App: Remap `query` remapper on the client when `request` action requests are proxied.
+- Preact-components: Add icon right option to render icon on the right.
+- Preact-components: Add styling to dual slider when it has an icon.
+- Preact-components: Add styling to slider when it has an icon.
+- Preact-components: Add support for icon to dual slider field.
+- Preact-components: Add support for icon to slider field.
+- Studio: Add a button for mobile devices to open and show the app preview.
+- Studio: Add option to pass down class name to the editor tab component\`s elements.
+- Studio: Add option to set the dropdown content container to the right side.
+
+### Changed
+
+- Block(`form`): Change icon implementation, convert Font Awesome icon to SVG instead.
+- Cli: Update definition to include changes.
+- React-components: Add an extra parameter for a reference to be exempt from triggering the closing
+  event.
+- Server: Rename database model “Member” to “OrganizationMember”.
+- Studio: Breadcrumbs now hide on smaller mobile devices.
+- Studio: Change the style of tabs navigator to resize and apply styling based on screen size.
+- Studio: Replace normal buttons with a collapsible navigation bar for mobile user interface.
+- Types: Rename type “Member” to “OrganizationMember” in the code.
+
+### Fixed
+
+- Block(`form`): Fix default min and max value for range input field.
+- Block(`form`): Fix list input field styling when icon is present.
+- Block(`form`): Fix the file entry’s image source.
+- React-components: Fix GUI path name matching condition.
+
+## \[[0.23.9](https://gitlab.com/appsemble/appsemble/-/releases/0.23.9)] - 2023-12-14
+
+## \[[0.23.8](https://gitlab.com/appsemble/appsemble/-/releases/0.23.8)] - 2023-12-14
+
+## \[[0.23.7](https://gitlab.com/appsemble/appsemble/-/releases/0.23.7)] - 2023-12-04
+
+### Added
+
+- App: Add binary file support to the request action.
+
+## \[[0.23.6](https://gitlab.com/appsemble/appsemble/-/releases/0.23.6)] - 2023-11-30
+
+### Added
+
+- Studio: Add a full screen button to code and GUI editor pages.
+- Studio: Add support for multiple screen aspect ratios and resolutions.
+- Studio: Add the ability to choose the device’s screen format.
+- Studio: Keep full screen state reference.
+
+### Changed
+
+- Studio: Automatically hide the side menu on code and GUI editor pages - use burger menu to reveal
+  it.
+- Studio: Hide app preview when the screen width is too small.
+- Studio: support multiple devices for app preview.
+
+### Fixed
+
+- React-components: Fix the position of the dropdown button icon.
+- Studio: Fix CSS class selectors for indentation pseudo components.
+- Studio: Resize Monaco editor and app preview.
+
+## \[[0.23.5](https://gitlab.com/appsemble/appsemble/-/releases/0.23.5)] - 2023-11-24
+
+## \[[0.23.4](https://gitlab.com/appsemble/appsemble/-/releases/0.23.4)] - 2023-11-24
+
+### Added
+
+- Block(`filter`): Add `fullscreen` optional parameter.
+- Block(`filter`): Add boolean field support.
+- Block(`filter`): Add icon optional parameter.
+- Block(`filter`): Add list field support.
+- Block(`filter`): Add range field support.
+- Block(`form`): Add help text for all fields.
+- Block(`form`): Add list input field.
+- Block(`form`): Add range input field.
+- Cli: Add app export command to export an app as a zip file.
+- Cli: Add import app command to support importing an app from a zip file.
+
+### Fixed
+
+- App: Implement storage.append action in a way that prevents race conditions.
+
+## \[[0.23.3](https://gitlab.com/appsemble/appsemble/-/releases/0.23.3)] - 2023-11-03
+
+## \[[0.23.2](https://gitlab.com/appsemble/appsemble/-/releases/0.23.2)] - 2023-11-03
+
+## \[[0.23.1](https://gitlab.com/appsemble/appsemble/-/releases/0.23.1)] - 2023-11-03
+
+### Added
+
+- Block(`detail-viewer`): Add support for icons in the `StringField`.
+- Block(`list`): Added inline image support.
+- Cli: Add delete command for apps.
+- Server: Add `demoMode` flag to apps that lets users log in as any app role.
+- Studio: Add documentation for export and import features.
+- Tsconfig: Add new package `@appsemble/tsconfig`.
+
+### Fixed
+
+- Studio: Fix visibility of the export button.
+
+## \[[0.23.0](https://gitlab.com/appsemble/appsemble/-/releases/0.23.0)] - 2023-10-26
+
+### Added
+
+- Block(`wordcloud`): Added `shrinkToFit` and `drawOutOfBound` options.
+- Studio: Add export feature to apps.
+- Studio: Add importing new apps from zip files.
+
+### Changed
+
+- Server: Rename the `appsemble` executable to `appsemble-server`.
+
 ## \[[0.22.10](https://gitlab.com/appsemble/appsemble/-/releases/0.22.10)] - 2023-09-22
 
 ### Fixed

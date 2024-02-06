@@ -167,7 +167,7 @@ export const paths: OpenAPIV3.PathsObject = {
               schema: {
                 type: 'array',
                 items: {
-                  $ref: '#/components/schemas/Member',
+                  $ref: '#/components/schemas/OrganizationMember',
                 },
               },
             },
@@ -413,7 +413,7 @@ export const paths: OpenAPIV3.PathsObject = {
           content: {
             'application/json': {
               schema: {
-                $ref: '#/components/schemas/Member',
+                $ref: '#/components/schemas/OrganizationMember',
               },
             },
           },

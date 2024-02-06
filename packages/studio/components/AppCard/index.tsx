@@ -1,10 +1,12 @@
 import { Subtitle, Title } from '@appsemble/react-components';
 import { type App } from '@appsemble/types';
 import { defaultLocale } from '@appsemble/utils';
-import { type ReactElement } from 'react';
+import { type ReactNode } from 'react';
+import { FormattedMessage } from 'react-intl';
 import { Link, useParams } from 'react-router-dom';
 
 import styles from './index.module.css';
+import { messages } from './messages.js';
 import { AppIcon } from '../AppIcon/index.js';
 import { StarRating } from '../StarRating/index.js';
 
@@ -25,7 +27,7 @@ interface AppCardProps {
 /**
  * Display the basic information of an app and a link for more details.
  */
-export function AppCard({ app, href }: AppCardProps): ReactElement {
+export function AppCard({ app, href }: AppCardProps): ReactNode {
   const { lang } = useParams<{ lang: string }>();
   const appLang = app.definition.defaultLanguage || defaultLocale;
 
@@ -35,6 +37,11 @@ export function AppCard({ app, href }: AppCardProps): ReactElement {
       title={app.messages?.app?.description || app.definition.description}
       to={href ?? `/${lang}/apps/${app.id}`}
     >
+      {app.demoMode ? (
+        <div className="tag is-danger is-right is-pulled-right">
+          <FormattedMessage {...messages.demo} />
+        </div>
+      ) : null}
       <div className="card-content">
         <div className="media">
           <figure className={`image is-128x128 ${styles.figure}`}>

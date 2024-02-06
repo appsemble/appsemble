@@ -1,4 +1,4 @@
-import { createReadStream, existsSync, type ReadStream } from 'node:fs';
+import { createReadStream, createWriteStream, existsSync, type ReadStream } from 'node:fs';
 import { mkdir, readdir, readFile, stat } from 'node:fs/promises';
 import { basename, join, parse, relative, resolve } from 'node:path';
 import { inspect } from 'node:util';
@@ -19,16 +19,25 @@ import {
   type AppsembleRC,
   type AppVisibility,
   type Messages,
+  type ProjectBuildConfig,
+  type ProjectImplementations,
 } from '@appsemble/types';
 import { extractAppMessages, has, normalizeBlockName } from '@appsemble/utils';
 import axios from 'axios';
+import { type BuildResult } from 'esbuild';
+import fg from 'fast-glob';
 import FormData from 'form-data';
+import normalizePath from 'normalize-path';
+import { parse as parseYaml } from 'yaml';
 
+import { publishAsset } from './asset.js';
 import { traverseBlockThemes } from './block.js';
 import { coerceRemote } from './coercers.js';
+import { getProjectBuildConfig } from './config.js';
 import { printAxiosError } from './output.js';
 import { processCss } from './processCss.js';
-import { publishResource } from './resource.js';
+import { buildProject, makeProjectPayload } from './project.js';
+import { publishResourcesRecursively, type ResourceToPublish } from './resource.js';
 
 interface PublishAppParams {
   /**
@@ -67,6 +76,11 @@ interface PublishAppParams {
   template: boolean;
 
   /**
+   * Whether the App should be used in demo mode.
+   */
+  demoMode: boolean;
+
+  /**
    * The icon to upload.
    */
   icon: NodeJS.ReadStream | ReadStream;
@@ -90,6 +104,16 @@ interface PublishAppParams {
    * Whether resources from the `resources` directory should be published after publishing the app.
    */
   resources: boolean;
+
+  /**
+   * Whether assets from the `assets` directory should be published after publishing the app.
+   */
+  assets: boolean;
+
+  /**
+   * Whether published assets should be clonable. Ignored if `assets` equals false.
+   */
+  assetsClonable: boolean;
 
   /**
    * If the app context is specified,
@@ -150,6 +174,11 @@ interface UpdateAppParams {
   template: boolean;
 
   /**
+   * Whether the App should be used in demo mode.
+   */
+  demoMode: boolean;
+
+  /**
    * Whether the locked property should be ignored.
    */
   force: boolean;
@@ -203,6 +232,12 @@ export async function traverseAppDirectory(
   let iconPath: string;
   let maskableIconPath: string;
   let yaml: string;
+  let controllerPath: string;
+  let controllerBuildConfig: ProjectBuildConfig;
+  let controllerBuildResult: BuildResult;
+  let controllerCode: string;
+  let controllerImplementations: ProjectImplementations;
+
   const gatheredData: App = {
     screenshotUrls: [],
   } as App;
@@ -284,13 +319,30 @@ export async function traverseAppDirectory(
           gatheredData[`${name}Style`] = css;
         });
 
+      case 'controller':
+        controllerPath = join(path, 'controller');
+        controllerBuildConfig = await getProjectBuildConfig(controllerPath);
+        controllerBuildResult = await buildProject(controllerBuildConfig);
+
+        controllerCode = controllerBuildResult.outputFiles[0].text;
+
+        formData.append('controllerCode', controllerCode);
+        gatheredData.controllerCode = controllerCode;
+
+        [, controllerImplementations] = await makeProjectPayload(controllerBuildConfig);
+
+        formData.append('controllerImplementations', JSON.stringify(controllerImplementations));
+        gatheredData.controllerImplementations = controllerImplementations;
+        break;
       default:
         logger.warn(`Found unused file ${filepath}`);
     }
   });
+
   if (yaml === undefined) {
     throw new AppsembleError('No app definition found');
   }
+
   discoveredContext ||= {};
   discoveredContext.icon = discoveredContext.icon
     ? resolve(path, discoveredContext.icon)
@@ -299,6 +351,32 @@ export async function traverseAppDirectory(
     ? resolve(path, discoveredContext.maskableIcon)
     : maskableIconPath;
   return [discoveredContext, rc, yaml, gatheredData];
+}
+
+/**
+ * Export an app as a zip file.
+ *
+ * @param appId Id of the app to be exported.
+ * @param resources Boolean representing whether to include resources in the zip file.
+ * @param path Path of the folder where you want to put your downloaded file.
+ * @param remote The remote to fetch the app from.
+ */
+export async function exportAppAsZip(
+  appId: number,
+  resources: boolean,
+  path: string,
+  remote: string,
+): Promise<void> {
+  const app = await axios.get(`/api/apps/${appId}`);
+  const { name } = app.data.definition;
+  const response = await axios.get(`/api/apps/${appId}/export?resources=${resources}`, {
+    baseURL: remote,
+    responseType: 'stream',
+  });
+  const zipFileName = join(path, `${name}_${appId}.zip`);
+  const writeStream = createWriteStream(zipFileName);
+  response.data.pipe(writeStream);
+  logger.info(`Successfully downloaded file: ${zipFileName}`);
 }
 
 /**
@@ -559,6 +637,7 @@ export async function updateApp({
   const remote = appsembleContext.remote ?? options.remote;
   const id = appsembleContext.id ?? options.id;
   const template = appsembleContext.template ?? options.template ?? false;
+  const demoMode = appsembleContext.demoMode ?? options.demoMode ?? false;
   const visibility = appsembleContext.visibility ?? options.visibility;
   const iconBackground = appsembleContext.iconBackground ?? options.iconBackground;
   const icon = options.icon ?? appsembleContext.icon;
@@ -577,6 +656,7 @@ export async function updateApp({
   }
   formData.append('force', String(force));
   formData.append('template', String(template));
+  formData.append('demoMode', String(demoMode));
   formData.append('visibility', visibility);
   formData.append('iconBackground', iconBackground);
   if (icon) {
@@ -605,7 +685,21 @@ export async function updateApp({
   }
 
   await authenticate(remote, 'apps:write', clientCredentials);
-  const { data } = await axios.patch<App>(`/api/apps/${id}`, formData, { baseURL: remote });
+  let data;
+  try {
+    data = await axios
+      .patch<App>(`/api/apps/${id}`, formData, { baseURL: remote })
+      .then((r) => r.data);
+  } catch (error) {
+    if (!axios.isAxiosError(error)) {
+      throw error;
+    }
+    if ((error.response?.data as { message?: string })?.message !== 'App validation failed') {
+      throw error;
+    }
+    logger.error(error.response.data);
+    process.exit(1);
+  }
 
   if (file.isDirectory()) {
     // After uploading the app, upload block styles and messages if they are available
@@ -625,6 +719,8 @@ export async function updateApp({
  * @param options The options to use for publishing an app.
  */
 export async function publishApp({
+  assets,
+  assetsClonable,
   clientCredentials,
   context,
   dryRun,
@@ -649,10 +745,10 @@ export async function publishApp({
     [appsembleContext, rc, yaml] = await traverseAppDirectory(path, context, formData);
     filename = join(filename, 'app-definition.yaml');
   }
-
   const remote = appsembleContext.remote ?? options.remote;
   const organizationId = appsembleContext.organization ?? options.organization;
   const template = appsembleContext.template ?? options.template ?? false;
+  const demoMode = appsembleContext.demoMode ?? options.demoMode ?? false;
   const visibility = appsembleContext.visibility ?? options.visibility;
   const iconBackground = appsembleContext.iconBackground ?? options.iconBackground;
   const icon = options.icon ?? appsembleContext.icon;
@@ -660,50 +756,62 @@ export async function publishApp({
   const sentryDsn = appsembleContext.sentryDsn ?? options.sentryDsn;
   const sentryEnvironment = appsembleContext.sentryEnvironment ?? options.sentryEnvironment;
   const googleAnalyticsId = appsembleContext.googleAnalyticsId ?? options.googleAnalyticsId;
+
   logger.verbose(`App remote: ${remote}`);
   logger.verbose(`App organization: ${organizationId}`);
   logger.verbose(`App is template: ${inspect(template, { colors: true })}`);
   logger.verbose(`App visibility: ${visibility}`);
   logger.verbose(`Icon background: ${iconBackground}`);
+
   if (!organizationId) {
     throw new AppsembleError(
       'An organization id must be passed as a command line flag or in the context',
     );
   }
+
   formData.append('OrganizationId', organizationId);
   formData.append('template', String(template));
+  formData.append('demoMode', String(demoMode));
   formData.append('visibility', visibility);
   formData.append('iconBackground', iconBackground);
+
   if (icon) {
     const realIcon = typeof icon === 'string' ? createReadStream(icon) : icon;
     logger.info(`Using icon from ${(realIcon as ReadStream).path ?? 'stdin'}`);
     formData.append('icon', realIcon);
   }
+
   if (maskableIcon) {
     const realIcon =
       typeof maskableIcon === 'string' ? createReadStream(maskableIcon) : maskableIcon;
     logger.info(`Using maskable icon from ${(realIcon as ReadStream).path ?? 'stdin'}`);
     formData.append('maskableIcon', realIcon);
   }
+
   if (sentryDsn) {
     logger.info(
       `Using custom Sentry DSN ${sentryEnvironment ? `with environment ${sentryEnvironment}` : ''}`,
     );
     formData.append('sentryDsn', sentryDsn);
+
     if (sentryEnvironment) {
       formData.append('sentryEnvironment', sentryEnvironment);
     }
   }
+
   if (googleAnalyticsId) {
     logger.info('Using Google Analytics');
     formData.append('googleAnalyticsID', googleAnalyticsId);
   }
 
-  await authenticate(
-    remote,
-    resources ? 'apps:write resources:write' : 'apps:write',
-    clientCredentials,
-  );
+  let authScope = 'apps:write';
+
+  if (resources) {
+    authScope += ' resources:write';
+  }
+
+  await authenticate(remote, authScope, clientCredentials);
+
   let data: App;
   try {
     ({ data } = await axios.post<App>('/api/apps', formData, {
@@ -733,18 +841,46 @@ export async function publishApp({
     await traverseBlockThemes(path, data.id, remote, false);
     await uploadMessages(path, data.id, remote, false);
 
+    if (assets && existsSync(join(path, 'assets'))) {
+      const assetsPath = join(path, 'assets');
+      const assetFiles = await readdir(assetsPath);
+      const normalizedPaths = assetFiles.map((assetFile) =>
+        normalizePath(join(assetsPath, assetFile)),
+      );
+      const files = await fg(normalizedPaths, { absolute: true, onlyFiles: true });
+      try {
+        logger.info(`Publishing ${files.length} asset(s)`);
+        for (const assetFilePath of files) {
+          await publishAsset({
+            name: parse(assetFilePath).name,
+            appId: data.id,
+            path: assetFilePath,
+            remote,
+            clonable: assetsClonable,
+          });
+        }
+      } catch (error: unknown) {
+        logger.error('Something went wrong when creating assets:');
+        logger.error(error);
+      }
+    }
+
     if (resources && existsSync(join(path, 'resources'))) {
+      const appDefinition = parseYaml(yaml, { maxAliasCount: 10_000 }) as AppDefinition;
       const resourcePath = join(path, 'resources');
       try {
         const resourceFiles = await readdir(resourcePath, { withFileTypes: true });
+        const resourcesToPublish: ResourceToPublish[] = [];
+        const publishedResourcesIds: Record<string, number[]> = {};
+
         for (const resource of resourceFiles) {
           if (resource.isFile()) {
             const { name } = parse(resource.name);
-            await publishResource({
+            resourcesToPublish.push({
               appId: data.id,
               path: join(resourcePath, resource.name),
-              remote,
-              resourceName: name,
+              definition: appDefinition.resources[name],
+              type: name,
             });
           } else if (resource.isDirectory()) {
             const subDirectoryResources = await readdir(join(resourcePath, resource.name), {
@@ -752,15 +888,21 @@ export async function publishApp({
             });
 
             for (const subResource of subDirectoryResources.filter((s) => s.isFile())) {
-              await publishResource({
+              resourcesToPublish.push({
                 appId: data.id,
                 path: join(resourcePath, resource.name, subResource.name),
-                remote,
-                resourceName: resource.name,
+                definition: appDefinition.resources[resource.name],
+                type: resource.name,
               });
             }
           }
         }
+
+        await publishResourcesRecursively({
+          remote,
+          resourcesToPublish,
+          publishedResourcesIds,
+        });
       } catch (error: unknown) {
         logger.error('Something went wrong when creating resources:');
         logger.error(error);
@@ -770,7 +912,7 @@ export async function publishApp({
 
   if (modifyContext && appsembleContext && context && !dryRun) {
     rc.context[context].id = data.id;
-    await writeData(join(path, '.appsemblerc.yaml'), rc);
+    await writeData(join(path, '.appsemblerc.yaml'), rc, { sort: false });
 
     logger.info(`Updated .appsemblerc: Set context.${context}.id to ${data.id}`);
   }

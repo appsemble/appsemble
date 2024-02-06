@@ -1,3 +1,5 @@
+import { isDeepStrictEqual } from 'node:util';
+
 import { type CreateAppResourcesWithAssetsParams } from '@appsemble/node-utils';
 import { type Resource as ResourceInterface } from '@appsemble/types';
 
@@ -24,29 +26,47 @@ export async function createAppResourcesWithAssets({
   let createdResources: Resource[];
   await transactional(async (transaction) => {
     createdResources = await Resource.bulkCreate(
-      resources.map(({ $expires, ...data }) => ({
+      resources.map(({ $clonable, $ephemeral, $expires, $seed, ...data }) => ({
         AppId: app.id,
         type: resourceType,
         data,
-        AuthorId: user?.id,
+        AuthorId: appMember?.id,
+        seed: $seed,
         expires: $expires,
+        clonable: $clonable,
+        ephemeral: $ephemeral,
       })),
       { logging: false, transaction },
     );
 
     for (const createdResource of createdResources) {
-      createdResource.Author = user as User;
+      createdResource.Author = appMember;
     }
+
+    const cleanResources = resources.map((resource) => {
+      const { $clonable, $ephemeral, $seed, ...rest } = resource;
+      return rest;
+    });
 
     await Asset.bulkCreate(
       preparedAssets.map((asset) => {
-        const index = resources.indexOf(asset.resource);
-        const { id: ResourceId } = createdResources[index];
+        const index = cleanResources.findIndex((resource) =>
+          isDeepStrictEqual(resource, asset.resource),
+        );
+        const {
+          clonable = false,
+          ephemeral = false,
+          id: ResourceId,
+          seed = false,
+        } = createdResources[index];
         return {
           ...asset,
           AppId: app.id,
           ResourceId,
           AppMemberId: appMember?.id,
+          seed,
+          clonable,
+          ephemeral,
         };
       }),
       { logging: false, transaction },

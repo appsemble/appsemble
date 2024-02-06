@@ -1,5 +1,5 @@
 import { Message, MetaSwitch } from '@appsemble/react-components';
-import { type ReactElement } from 'react';
+import { type ReactNode } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { Navigate, Route, useParams } from 'react-router-dom';
 
@@ -9,7 +9,7 @@ import { ResourceDefinitionDetailsPage } from './resource-definition-details/ind
 import { ResourceDetailsPage } from './resource-details/index.js';
 import { useApp } from '../../index.js';
 
-export function ResourceRoutes(): ReactElement {
+export function ResourceRoutes(): ReactNode {
   const { app } = useApp();
   const { resourceName } = useParams<{ resourceName: string }>();
 

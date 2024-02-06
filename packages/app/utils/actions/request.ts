@@ -19,11 +19,28 @@ export const request: ActionCreator<'request'> = ({ definition, prefixIndex, rem
             responseType: 'arraybuffer',
           }
         : formatRequestAction(definition, data, remap, context);
+
       if (method === 'PUT' || method === 'POST' || method === 'PATCH') {
-        req.data = serializeResource(body ? remap(body, data, context) : data);
+        const requestData = body ? remap(body, data, context) : data;
+        if (requestData instanceof Blob) {
+          req.headers = {
+            'Content-Type': requestData.type,
+          };
+          req.data = requestData;
+        } else {
+          req.data = serializeResource(body ? remap(body, data, context) : data);
+        }
       } else if (proxy) {
         req.params = { data: JSON.stringify(data) };
       }
+
+      if (proxy && definition.query) {
+        req.params ??= {};
+        Object.assign(req.params, {
+          params: JSON.stringify(remap(definition.query, data, context)),
+        });
+      }
+
       if (
         typeof definition.query === 'string' ||
         typeof definition.query === 'number' ||
@@ -32,6 +49,7 @@ export const request: ActionCreator<'request'> = ({ definition, prefixIndex, rem
         req.url = `${req.url}/${definition.query}`;
         req.params = null;
       }
+
       const response = await axios(req);
       let responseBody = response.data;
       // Check if it's safe to represent the response as a string (i.e. not a binary file)
@@ -67,7 +85,6 @@ export const request: ActionCreator<'request'> = ({ definition, prefixIndex, rem
       ) {
         responseBody = xmlToJson(responseBody, schema);
       }
-
       return responseBody;
     },
     {

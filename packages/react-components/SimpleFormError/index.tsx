@@ -1,5 +1,5 @@
 import classNames from 'classnames';
-import { type ComponentType, type ReactElement } from 'react';
+import { type ComponentType, type ReactNode } from 'react';
 
 import styles from './index.module.css';
 import { Message, useSimpleForm } from '../index.js';
@@ -8,7 +8,7 @@ interface SimpleFormErrorProps {
   readonly children: ComponentType<{ error: Error }>;
 }
 
-export function SimpleFormError({ children: Children }: SimpleFormErrorProps): ReactElement {
+export function SimpleFormError({ children: Children }: SimpleFormErrorProps): ReactNode {
   const { submitError } = useSimpleForm();
 
   return (

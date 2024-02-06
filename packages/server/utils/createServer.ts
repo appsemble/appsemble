@@ -11,12 +11,13 @@ import {
   security,
   type SecurityOptions,
   serializer,
+  throwKoaError,
   type UtilsUser,
   version,
 } from '@appsemble/node-utils';
 import { api } from '@appsemble/utils';
 import cors from '@koa/cors';
-import Koa, { type Middleware } from 'koa';
+import Koa, { type Context, type Middleware } from 'koa';
 import compose from 'koa-compose';
 import compress from 'koa-compress';
 import range from 'koa-range';
@@ -98,13 +99,7 @@ export async function createServer({
         ]),
         (ctx, next) => {
           if (ctx.path.startsWith('/api/')) {
-            ctx.response.status = 404;
-            ctx.response.body = {
-              statusCode: 404,
-              error: 'Not Found',
-              message: 'URL not found',
-            };
-            ctx.throw();
+            throwKoaError(ctx as Context, 404, 'URL not found');
           }
           return next();
         },

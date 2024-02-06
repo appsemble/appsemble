@@ -9,7 +9,7 @@ import {
   useMessages,
 } from '@appsemble/react-components';
 import axios from 'axios';
-import { type ReactElement } from 'react';
+import { type ReactNode } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 
 import { messages } from './messages.js';
@@ -28,7 +28,7 @@ interface SSLSecret {
   key: string;
 }
 
-export function SSLSecrets(): ReactElement {
+export function SSLSecrets(): ReactNode {
   const { app } = useApp();
   const push = useMessages();
   const { formatMessage } = useIntl();

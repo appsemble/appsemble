@@ -1,9 +1,10 @@
 import axios from 'axios';
-import { type ReactElement } from 'react';
+import { type ReactNode } from 'react';
 import { FormattedMessage } from 'react-intl';
 
 import { messages } from './messages.js';
 import {
+  CheckboxField,
   FormButtons,
   PasswordField,
   SimpleForm,
@@ -17,15 +18,19 @@ export interface RegistrationFormValues {
   email: string;
   name: string;
   password: string;
+  subscribed: boolean;
 }
 
 interface RegisterProps {
   readonly onRegister: (values: RegistrationFormValues) => Promise<void>;
 }
 
-export function Register({ onRegister }: RegisterProps): ReactElement {
+export function Register({ onRegister }: RegisterProps): ReactNode {
   return (
-    <SimpleForm defaultValues={{ email: '', name: '', password: '' }} onSubmit={onRegister}>
+    <SimpleForm
+      defaultValues={{ email: '', name: '', password: '', subscribed: false }}
+      onSubmit={onRegister}
+    >
       <SimpleFormError>
         {({ error }) =>
           axios.isAxiosError(error) && error.response.status === 409 ? (
@@ -62,6 +67,11 @@ export function Register({ onRegister }: RegisterProps): ReactElement {
         minLength={8}
         name="password"
         required
+      />
+      <SimpleFormField
+        component={CheckboxField}
+        name="subscribed"
+        title={<FormattedMessage {...messages.newsletter} />}
       />
       <FormButtons>
         <SimpleSubmit className="is-pulled-right">

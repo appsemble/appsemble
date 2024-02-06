@@ -8,3 +8,25 @@
   padding-left: 2.5rem;
   width: 100%;
 }
+
+/* adds indentation line before the child item */
+.childItem::before {
+  border-left: 2px solid hsl(0deg 0% 29%);
+  content: '';
+  height: 98%;
+  left: 17px;
+  position: absolute;
+  width: 5px;
+}
+
+/* adds indentation line before the selected child item
+  but the line is white for better readibility
+*/
+.childItem:global(.is-link)::before {
+  border-left: 2px solid hsl(0deg 0% 100%);
+  content: '';
+  height: 98%;
+  left: 17px;
+  position: absolute;
+  width: 5px;
+}

@@ -1,5 +1,5 @@
 import { Title, useMeta } from '@appsemble/react-components';
-import { type ReactElement, useMemo } from 'react';
+import { type ReactNode, useMemo } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Link, useParams } from 'react-router-dom';
 import { stringify } from 'yaml';
@@ -15,7 +15,7 @@ import { useApp } from '../../../index.js';
 /**
  * Render the page for resource definition details.
  */
-export function ResourceDefinitionDetailsPage(): ReactElement {
+export function ResourceDefinitionDetailsPage(): ReactNode {
   const { app } = useApp();
   const { lang, resourceName } = useParams<{ lang: string; id: string; resourceName: string }>();
   const { formatMessage } = useIntl();

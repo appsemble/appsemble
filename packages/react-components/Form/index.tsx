@@ -2,7 +2,7 @@ import {
   type ComponentPropsWithoutRef,
   type FormEvent,
   type FormEventHandler,
-  type ReactElement,
+  type ReactNode,
   useCallback,
 } from 'react';
 
@@ -16,7 +16,7 @@ interface FormProps extends Omit<ComponentPropsWithoutRef<'form'>, 'noValidate'>
 /**
  * A simple form wrapper that ensures `noValidate` is passed and `onSubmit` is used.
  */
-export function Form({ onSubmit, ...props }: FormProps): ReactElement {
+export function Form({ onSubmit, ...props }: FormProps): ReactNode {
   const handleSubmit = useCallback(
     (event: FormEvent<HTMLFormElement>) => {
       event.preventDefault();

@@ -14,7 +14,7 @@ import axios from 'axios';
 import {
   type ChangeEvent,
   type ClipboardEvent,
-  type ReactElement,
+  type ReactNode,
   useCallback,
   useState,
 } from 'react';
@@ -48,7 +48,7 @@ const roleKeys = Object.keys(roles);
 /**
  * A modal form for inviting one or more people to the organization.
  */
-export function AddMembersModal({ onInvited, state }: AddMembersModalProps): ReactElement {
+export function AddMembersModal({ onInvited, state }: AddMembersModalProps): ReactNode {
   const { organizationId } = useParams<{ organizationId: string }>();
   const { organizations } = useUser();
   const push = useMessages();

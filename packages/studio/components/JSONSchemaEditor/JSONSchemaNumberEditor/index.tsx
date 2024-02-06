@@ -1,6 +1,6 @@
 import { InputField } from '@appsemble/react-components';
 import { type OpenAPIV3 } from 'openapi-types';
-import { type ReactElement } from 'react';
+import { type ReactNode } from 'react';
 
 import { MarkdownContent } from '../../MarkdownContent/index.js';
 import { JSONSchemaLabel } from '../JSONSchemaLabel/index.js';
@@ -14,7 +14,7 @@ export function JSONSchemaNumberEditor({
   required,
   schema,
   value = 0,
-}: CommonJSONSchemaEditorProps<number>): ReactElement {
+}: CommonJSONSchemaEditorProps<number>): ReactNode {
   return (
     <InputField
       disabled={disabled}

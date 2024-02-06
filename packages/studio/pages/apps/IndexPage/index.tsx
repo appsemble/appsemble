@@ -1,6 +1,6 @@
 import { Content, useData } from '@appsemble/react-components';
 import { type App } from '@appsemble/types';
-import { type ReactElement, useCallback, useState } from 'react';
+import { type ReactNode, useCallback, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { useParams } from 'react-router-dom';
 
@@ -15,7 +15,27 @@ import {
 import { Collapsible } from '../../../components/Collapsible/index.js';
 import { useUser } from '../../../components/UserProvider/index.js';
 
-export function IndexPage(): ReactElement {
+interface MyAppsListProps {
+  readonly filter: string;
+  readonly sort: { name: AppSortFunctionName; reverse: boolean };
+}
+
+function MyAppsList({ filter, sort }: MyAppsListProps): ReactNode {
+  const { lang } = useParams<{ lang: string }>();
+  const myAppsResult = useData<App[]>(`/api/user/apps?language=${lang}`);
+  return (
+    <Collapsible title={<FormattedMessage {...messages.myApps} />}>
+      <AppList
+        filter={filter}
+        result={myAppsResult}
+        reverse={sort?.reverse}
+        sortFunction={sortFunctions[sort?.name]}
+      />
+    </Collapsible>
+  );
+}
+
+export function IndexPage(): ReactNode {
   const [filter, setFilter] = useState('');
   const [sort, setSort] = useState<{ name: AppSortFunctionName; reverse: boolean }>({
     name: 'rating',
@@ -23,7 +43,6 @@ export function IndexPage(): ReactElement {
   });
   const { userInfo } = useUser();
   const { lang } = useParams<{ lang: string }>();
-  const myAppsResult = useData<App[]>(`/api/user/apps?language=${lang}`);
   const appsResult = useData<App[]>(`/api/apps?language=${lang}`);
   const onSortChange = useCallback((name: AppSortFunctionName, reverse: boolean) => {
     setSort({ name, reverse });
@@ -38,17 +57,7 @@ export function IndexPage(): ReactElement {
         reverse={sort?.reverse}
         sort={sort?.name}
       />
-
-      {userInfo ? (
-        <Collapsible title={<FormattedMessage {...messages.myApps} />}>
-          <AppList
-            filter={filter}
-            result={myAppsResult}
-            reverse={sort?.reverse}
-            sortFunction={sortFunctions[sort?.name]}
-          />
-        </Collapsible>
-      ) : null}
+      {userInfo ? <MyAppsList filter={filter} sort={sort} /> : null}
       <br />
       <Collapsible title={<FormattedMessage {...messages.allApps} />}>
         <AppList

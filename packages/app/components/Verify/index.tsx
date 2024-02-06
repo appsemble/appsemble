@@ -1,6 +1,6 @@
 import { Loader, Message, useMeta, useQuery } from '@appsemble/react-components';
 import axios from 'axios';
-import { type ReactElement, useEffect, useState } from 'react';
+import { type ReactNode, useEffect, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { Link, useParams } from 'react-router-dom';
 
@@ -8,7 +8,7 @@ import styles from './index.module.css';
 import { messages } from './messages.js';
 import { apiUrl, appId } from '../../utils/settings.js';
 
-export function Verify(): ReactElement {
+export function Verify(): ReactNode {
   useMeta(messages.title);
 
   const [submitting, setSubmitting] = useState(true);

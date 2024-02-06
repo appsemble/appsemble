@@ -55,6 +55,11 @@ interface ModalCardProps<T extends ElementType> {
    * The footer to render on the modal.
    */
   readonly footer?: VNode;
+
+  /**
+   * Whether to render on full screen.
+   */
+  readonly fullscreen?: boolean;
 }
 
 /**
@@ -68,6 +73,7 @@ export function ModalCard<T extends ElementType = 'div'>({
   closeButtonLabel,
   component: Component = 'div' as T,
   footer = null,
+  fullscreen,
   isActive,
   onClose,
   title,
@@ -102,7 +108,10 @@ export function ModalCard<T extends ElementType = 'div'>({
         role="presentation"
       />
       {/* @ts-expect-error This construct should work */}
-      <Component className={classNames('modal-card', cardClassName)} {...props}>
+      <Component
+        className={classNames('modal-card', cardClassName, { [styles.fullscreen]: fullscreen })}
+        {...props}
+      >
         <div className="modal-card-head">
           <p className="modal-card-title">{title}</p>
           {closable ? (

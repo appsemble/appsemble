@@ -1,5 +1,5 @@
 import { Button } from '@appsemble/react-components';
-import { type ReactElement, useCallback } from 'react';
+import { type ReactNode, useCallback } from 'react';
 
 import styles from './index.module.css';
 
@@ -9,7 +9,7 @@ interface ListItemProps {
   readonly onChange: (index: number) => void;
 }
 
-export function ListItem({ index, onChange, value }: ListItemProps): ReactElement {
+export function ListItem({ index, onChange, value }: ListItemProps): ReactNode {
   const onClickItem = useCallback(() => {
     onChange(index);
   }, [onChange, index]);

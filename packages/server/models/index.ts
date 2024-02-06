@@ -22,13 +22,13 @@ import { BlockAsset } from './BlockAsset.js';
 import { BlockMessages } from './BlockMessages.js';
 import { BlockVersion } from './BlockVersion.js';
 import { EmailAuthorization } from './EmailAuthorization.js';
-import { Member } from './Member.js';
 import { Meta } from './Meta.js';
 import { OAuth2AuthorizationCode } from './OAuth2AuthorizationCode.js';
 import { OAuth2ClientCredentials } from './OAuth2ClientCredentials.js';
 import { OAuthAuthorization } from './OAuthAuthorization.js';
 import { Organization } from './Organization.js';
 import { OrganizationInvite } from './OrganizationInvite.js';
+import { OrganizationMember } from './OrganizationMember.js';
 import { ResetPasswordToken } from './ResetPasswordToken.js';
 import { Resource } from './Resource.js';
 import { ResourceSubscription } from './ResourceSubscription.js';
@@ -38,7 +38,10 @@ import { Team } from './Team.js';
 import { TeamInvite } from './TeamInvite.js';
 import { TeamMember } from './TeamMember.js';
 import { Theme } from './Theme.js';
+import { Training } from './Training.js';
+import { TrainingBlock } from './TrainingBlock.js';
 import { User } from './User.js';
+import { UserTraining } from './UserTraining.js';
 import { logSQL } from '../utils/sqlUtils.js';
 
 let db: Sequelize;
@@ -75,13 +78,13 @@ export {
   BlockMessages,
   BlockVersion,
   EmailAuthorization,
-  Member,
   Meta,
   OAuth2AuthorizationCode,
   OAuth2ClientCredentials,
   OAuthAuthorization,
   Organization,
   OrganizationInvite,
+  OrganizationMember,
   ResetPasswordToken,
   Resource,
   ResourceVersion,
@@ -92,6 +95,9 @@ export {
   Theme,
   SamlLoginRequest,
   User,
+  UserTraining,
+  Training,
+  TrainingBlock,
 };
 
 export function initDB({
@@ -132,13 +138,13 @@ export function initDB({
       BlockMessages,
       BlockVersion,
       EmailAuthorization,
-      Member,
       Meta,
       OAuth2AuthorizationCode,
       OAuth2ClientCredentials,
       OAuthAuthorization,
       Organization,
       OrganizationInvite,
+      OrganizationMember,
       ResetPasswordToken,
       Resource,
       ResourceSubscription,
@@ -149,6 +155,9 @@ export function initDB({
       Theme,
       SamlLoginRequest,
       User,
+      Training,
+      UserTraining,
+      TrainingBlock,
     ],
   };
   const args: [Options] | [string, Options] = uri

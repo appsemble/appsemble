@@ -1,0 +1,6 @@
+/* the div containing the block's properties list element */
+.propsList {
+  height: 78vh;
+  overflow-y: scroll;
+  padding-right: 0.4vw;
+}

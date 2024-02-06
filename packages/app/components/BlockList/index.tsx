@@ -1,22 +1,28 @@
 import { type EventEmitter } from 'events';
 
-import { Loader, useLocationString } from '@appsemble/react-components';
+import { Loader, useLocationString, useMessages } from '@appsemble/react-components';
 import {
   type BlockDefinition,
   type PageDefinition,
+  type ProjectImplementations,
   type Remapper,
   type Security,
   type TeamMember,
 } from '@appsemble/types';
 import { checkAppRole } from '@appsemble/utils';
-import { type ReactElement, useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Navigate } from 'react-router-dom';
+import { type ReactNode, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { Navigate, useLocation, useParams } from 'react-router-dom';
 
 import { type ShowDialogAction, type ShowShareDialog } from '../../types.js';
 import { type ActionCreators } from '../../utils/actions/index.js';
+import { callController } from '../../utils/bootstrapper.js';
+import { createEvents } from '../../utils/events.js';
+import { makeActions } from '../../utils/makeActions.js';
+import { appControllerCode, appControllerImplementations } from '../../utils/settings.js';
 import { type AppStorage } from '../../utils/storage.js';
 import { useAppDefinition } from '../AppDefinitionProvider/index.js';
 import { Block } from '../Block/index.js';
+import { useServiceWorkerRegistration } from '../ServiceWorkerRegistrationProvider/index.js';
 import { useUser } from '../UserProvider/index.js';
 
 interface BlockListProps {
@@ -63,10 +69,21 @@ export function BlockList({
   remap,
   showDialog,
   showShareDialog,
-}: BlockListProps): ReactElement {
+}: BlockListProps): ReactNode {
+  const params = useParams();
+  const location = useLocation();
+  const push = useMessages();
   const { definition, revision } = useAppDefinition();
-  const { isLoggedIn, role, teams } = useUser();
+  const { isLoggedIn, logout, passwordLogin, role, setUserInfo, teams, updateTeam, userInfoRef } =
+    useUser();
   const redirect = useLocationString();
+
+  const cleanups = useRef<(() => void)[]>([]);
+  const pushNotifications = useServiceWorkerRegistration();
+
+  const [pageReady, setPageReady] = useState<Promise<void>>();
+
+  const [controllerInitialized, setControllerInitialized] = useState(false);
 
   const blockList = useMemo(
     () => filterBlocks(definition.security, blocks, role, teams),
@@ -74,7 +91,6 @@ export function BlockList({
   );
 
   const blockStatus = useRef(blockList.map(() => false));
-  const [pageReady, setPageReady] = useState<Promise<void>>();
 
   const [isLoading, setIsLoading] = useState(true);
   const resolvePageReady = useRef<Function>();
@@ -97,6 +113,80 @@ export function BlockList({
       }),
     );
   }, [blockList]);
+
+  useEffect(() => {
+    if (!appControllerCode || !appControllerImplementations) {
+      return;
+    }
+
+    if (controllerInitialized) {
+      return;
+    }
+    setControllerInitialized(true);
+
+    const controllerImplementations: ProjectImplementations = JSON.parse(
+      appControllerImplementations as string,
+    );
+
+    if (!controllerImplementations) {
+      return;
+    }
+
+    (async () => {
+      await callController({
+        actions: makeActions({
+          appStorage,
+          actions: controllerImplementations.actions,
+          app: definition,
+          context: definition.controller,
+          pushNotifications,
+          pageReady,
+          params,
+          prefix: 'controller',
+          prefixIndex: 'controller',
+          ee,
+          remap,
+          teams,
+          updateTeam,
+          getUserInfo: () => userInfoRef.current,
+          passwordLogin,
+          passwordLogout: logout,
+          setUserInfo,
+        }),
+        events: createEvents(
+          ee,
+          pageReady,
+          controllerImplementations.events,
+          definition.controller.events,
+        ),
+        data: location.state,
+        utils: {
+          remap,
+          addCleanup(cleanupFn) {
+            cleanups.current.push(cleanupFn);
+          },
+        },
+      });
+    })();
+  }, [
+    appStorage,
+    controllerInitialized,
+    definition,
+    ee,
+    location.state,
+    logout,
+    pageReady,
+    params,
+    passwordLogin,
+    prefix,
+    push,
+    pushNotifications,
+    remap,
+    setUserInfo,
+    teams,
+    updateTeam,
+    userInfoRef,
+  ]);
 
   if (!blockList.length) {
     if (!isLoggedIn) {

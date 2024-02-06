@@ -1,4 +1,5 @@
 import {
+  assertKoaError,
   createCountResources,
   createCreateResource,
   createDeleteResource,
@@ -8,6 +9,7 @@ import {
   extractResourceBody,
   getResourceDefinition,
   processResourceBody,
+  throwKoaError,
 } from '@appsemble/node-utils';
 import { type Resource as ResourceType } from '@appsemble/types';
 import { type Context } from 'koa';
@@ -69,37 +71,12 @@ export async function getResourceTypeSubscription(ctx: Context): Promise<void> {
   });
   getResourceDefinition(app.toJSON(), resourceType, ctx);
 
-  if (!app.Resources.length) {
-    ctx.response.status = 404;
-    ctx.response.body = {
-      statusCode: 404,
-      error: 'Not Found',
-      message: 'Resource not found',
-    };
-    ctx.throw();
-  }
-
-  if (!app.AppSubscriptions.length) {
-    ctx.response.status = 404;
-    ctx.response.body = {
-      statusCode: 404,
-      error: 'Not Found',
-      message: 'User is not subscribed to this app.',
-    };
-    ctx.throw();
-  }
+  assertKoaError(!app.Resources.length, ctx, 404, 'Resource not found');
+  assertKoaError(!app.AppSubscriptions.length, ctx, 404, 'User is not subscribed to this app.');
 
   const [appSubscription] = app.AppSubscriptions;
 
-  if (!appSubscription) {
-    ctx.response.status = 404;
-    ctx.response.body = {
-      statusCode: 404,
-      error: 'Not Found',
-      message: 'Subscription not found',
-    };
-    ctx.throw();
-  }
+  assertKoaError(!appSubscription, ctx, 404, 'Subscription not found');
 
   const result: any = { create: false, update: false, delete: false };
   for (const { ResourceId, action } of appSubscription.ResourceSubscriptions) {
@@ -153,15 +130,7 @@ export async function getResourceSubscription(ctx: Context): Promise<void> {
   });
   getResourceDefinition(app.toJSON(), resourceType, ctx);
 
-  if (!app.Resources.length) {
-    ctx.response.status = 404;
-    ctx.response.body = {
-      statusCode: 404,
-      error: 'Not Found',
-      message: 'Resource not found.',
-    };
-    ctx.throw();
-  }
+  assertKoaError(!app.Resources.length, ctx, 404, 'Resource not found.');
 
   const subscriptions = app.AppSubscriptions?.[0]?.ResourceSubscriptions ?? [];
   const result: any = { id: resourceId, update: false, delete: false };
@@ -191,7 +160,7 @@ export async function updateResources(ctx: Context): Promise<void> {
           { model: Organization, attributes: ['id'] },
           {
             model: AppMember,
-            attributes: ['role', 'UserId'],
+            attributes: ['role', 'UserId', 'id'],
             required: false,
             where: { UserId: user.id },
           },
@@ -202,7 +171,7 @@ export async function updateResources(ctx: Context): Promise<void> {
   const appMember = await getUserAppAccount(app.id, user?.id);
 
   const definition = getResourceDefinition(app.toJSON(), resourceType, ctx);
-  const userQuery = await verifyResourceActionPermission({
+  const memberQuery = await verifyResourceActionPermission({
     context: ctx,
     app: app.toJSON(),
     resourceType,
@@ -218,14 +187,12 @@ export async function updateResources(ctx: Context): Promise<void> {
   }
 
   if (resourceList.some((r) => !r.id)) {
-    ctx.response.status = 400;
-    ctx.response.body = {
-      statusCode: 400,
-      error: 'Bad Request',
-      message: 'List of resources contained a resource without an ID.',
-      data: resourceList.filter((r) => !r.id),
-    };
-    ctx.throw();
+    throwKoaError(
+      ctx,
+      400,
+      'List of resources contained a resource without an ID.',
+      resourceList.filter((r) => !r.id),
+    );
   }
 
   const existingResources = await Resource.findAll({
@@ -233,7 +200,7 @@ export async function updateResources(ctx: Context): Promise<void> {
       id: resourceList.map((r) => Number(r.id)),
       type: resourceType,
       AppId: appId,
-      ...userQuery,
+      ...memberQuery,
     },
     include: [
       { association: 'Author', attributes: ['id', 'name'], required: false },
@@ -251,14 +218,13 @@ export async function updateResources(ctx: Context): Promise<void> {
 
   if (existingResources.length !== processedResources.length) {
     const ids = new Set(existingResources.map((r) => r.id));
-    ctx.response.status = 400;
-    ctx.response.body = {
-      statusCode: 400,
-      error: 'Bad Request',
-      message: 'One or more resources could not be found.',
-      data: processedResources.filter((r) => !ids.has(r.id)),
-    };
-    ctx.throw();
+
+    throwKoaError(
+      ctx,
+      400,
+      'One or more resources could not be found.',
+      processedResources.filter((r) => !ids.has(r.id)),
+    );
   }
 
   let updatedResources: Resource[];
@@ -268,7 +234,7 @@ export async function updateResources(ctx: Context): Promise<void> {
         const [, [resource]] = await Resource.update(
           {
             data,
-            EditorId: user?.id,
+            EditorId: appMember?.id,
           },
           { where: { id }, transaction, returning: true },
         );
@@ -281,7 +247,7 @@ export async function updateResources(ctx: Context): Promise<void> {
       await ResourceVersion.bulkCreate(
         existingResources.map((resource) => ({
           ResourceId: resource.id,
-          UserId: resource.EditorId,
+          AppMemberId: resource.EditorId,
           data: historyDefinition === true || historyDefinition.data ? resource.data : undefined,
         })),
       );
@@ -337,7 +303,7 @@ export async function patchResource(ctx: Context): Promise<void> {
           { model: Organization, attributes: ['id'] },
           {
             model: AppMember,
-            attributes: ['role', 'UserId'],
+            attributes: ['role', 'UserId', 'id'],
             required: false,
             where: { UserId: user.id },
           },
@@ -348,7 +314,7 @@ export async function patchResource(ctx: Context): Promise<void> {
   const appMember = await getUserAppAccount(app.id, user?.id);
 
   const definition = getResourceDefinition(app.toJSON(), resourceType, ctx);
-  const userQuery = await verifyResourceActionPermission({
+  const memberQuery = await verifyResourceActionPermission({
     context: ctx,
     app: app.toJSON(),
     resourceType,
@@ -358,21 +324,20 @@ export async function patchResource(ctx: Context): Promise<void> {
   });
 
   const resource = await Resource.findOne({
-    where: { id: resourceId, type: resourceType, AppId: appId, ...userQuery },
+    where: { id: resourceId, type: resourceType, AppId: appId, ...memberQuery },
     include: [
       { association: 'Author', attributes: ['id', 'name'], required: false },
       { model: Asset, attributes: ['id'], required: false },
     ],
   });
 
-  if (!resource) {
-    ctx.response.status = 404;
-    ctx.response.body = {
-      statusCode: 404,
-      error: 'Not Found',
-      message: 'Resource not found',
-    };
-    ctx.throw();
+  assertKoaError(!resource, ctx, 404, 'Resource not found');
+
+  let member: AppMember;
+  if (app.AppMembers && app.AppMembers.length > 0) {
+    member = app.AppMembers[0];
+  } else if (user) {
+    member = await getUserAppAccount(app.id, user.id);
   }
 
   const [updatedResource, preparedAssets, deletedAssetIds] = processResourceBody(
@@ -392,7 +357,7 @@ export async function patchResource(ctx: Context): Promise<void> {
     const data = { ...oldData, ...patchData };
     const previousEditorId = resource.EditorId;
     const promises: Promise<unknown>[] = [
-      resource.update({ data, clonable, expires, EditorId: user?.id }, { transaction }),
+      resource.update({ data, clonable, expires, EditorId: member?.id }, { transaction }),
     ];
 
     if (preparedAssets.length) {
@@ -414,7 +379,7 @@ export async function patchResource(ctx: Context): Promise<void> {
         ResourceVersion.create(
           {
             ResourceId: resourceId,
-            UserId: previousEditorId,
+            AppMemberId: previousEditorId,
             data: definition.history === true || definition.history.data ? oldData : undefined,
           },
           { transaction },
@@ -459,7 +424,7 @@ export async function deleteResources(ctx: Context): Promise<void> {
   });
 
   getResourceDefinition(app.toJSON(), resourceType, ctx);
-  const userQuery = await verifyResourceActionPermission({
+  const memberQuery = await verifyResourceActionPermission({
     context: ctx,
     app: app.toJSON(),
     resourceType,
@@ -475,7 +440,7 @@ export async function deleteResources(ctx: Context): Promise<void> {
         id: body.slice(deletedAmount, deletedAmount + 100),
         type: resourceType,
         AppId: appId,
-        ...userQuery,
+        ...memberQuery,
       },
       limit: 100,
     })) {

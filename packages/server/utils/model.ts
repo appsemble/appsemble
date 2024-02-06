@@ -1,5 +1,6 @@
 import { randomBytes } from 'node:crypto';
 
+import { throwKoaError } from '@appsemble/node-utils';
 import type * as types from '@appsemble/types';
 import { addMinutes } from 'date-fns';
 import { type Context } from 'koa';
@@ -45,13 +46,7 @@ export async function createOAuth2AuthorizationCode(
   const appHost = `${app.path}.${app.OrganizationId}.${new URL(argv.host).hostname}`;
   const redirectHost = new URL(redirectUri).hostname;
   if (redirectHost !== appHost && redirectHost !== app.domain) {
-    ctx.response.status = 403;
-    ctx.response.body = {
-      statusCode: 403,
-      error: 'Forbidden',
-      message: 'Invalid redirectUri',
-    };
-    ctx.throw();
+    throwKoaError(ctx, 403, 'Invalid redirectUri');
   }
 
   const { code } = await models.OAuth2AuthorizationCode.create({

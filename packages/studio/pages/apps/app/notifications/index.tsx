@@ -9,14 +9,14 @@ import {
   useMeta,
 } from '@appsemble/react-components';
 import axios from 'axios';
-import { type ReactElement, useCallback } from 'react';
+import { type ReactNode, useCallback } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Link, useParams } from 'react-router-dom';
 
 import { messages } from './messages.js';
 import { useApp } from '../index.js';
 
-export function NotificationsPage(): ReactElement {
+export function NotificationsPage(): ReactNode {
   useMeta(messages.title);
 
   const { app } = useApp();

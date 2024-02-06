@@ -21,7 +21,6 @@ export function ImageScanner({
   const inputRef = useRef<HTMLInputElement>(null);
 
   function runBarcodeDetection(image: any): void {
-    // @ts-expect-error Quagga types are wrong
     Quagga.decodeSingle(
       {
         src: image,
@@ -34,7 +33,6 @@ export function ImageScanner({
       },
       onDetected,
     );
-    // @ts-expect-error Quagga types are wrong
     Quagga.onProcessed(() => {
       setBarcode(null);
     });
@@ -78,6 +76,7 @@ export function ImageScanner({
 
   return (
     <div className={styles.imageScannerWrapper}>
+      {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
       <label className={styles.fileLabel} for="fileInput">
         <i class="fas fa-barcode" />
         <input

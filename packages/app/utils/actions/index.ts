@@ -2,6 +2,7 @@ import { type Action, type ActionDefinition } from '@appsemble/types';
 
 import { analytics } from './analytics.js';
 import { condition } from './condition.js';
+import { controller } from './controller.js';
 import { dialog } from './dialog.js';
 import { download } from './download.js';
 import { each } from './each.js';
@@ -21,7 +22,7 @@ import { staticAction } from './static.js';
 import * as storage from './storage.js';
 import { teamInvite, teamJoin, teamList, teamMembers } from './team.js';
 import { throwAction } from './throw.js';
-import { login, logout, register, update } from './user.js';
+import { create, login, logout, query, register, remove, update } from './user.js';
 import { type MakeActionParameters } from '../../types.js';
 
 type ActionProperties<T extends ActionDefinition['type']> = Omit<
@@ -52,6 +53,7 @@ export type ActionCreators = {
 export const actionCreators: ActionCreators = {
   analytics,
   condition,
+  controller,
   download,
   dialog,
   each,
@@ -97,6 +99,9 @@ export const actionCreators: ActionCreators = {
   throw: throwAction,
   'user.login': login,
   'user.register': register,
+  'user.create': create,
   'user.update': update,
   'user.logout': logout,
+  'user.query': query,
+  'user.remove': remove,
 };

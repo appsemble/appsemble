@@ -1,4 +1,4 @@
-import { type Options } from '@appsemble/node-utils';
+import { assertKoaError, type Options } from '@appsemble/node-utils';
 import { type Context, type Middleware } from 'koa';
 
 export function createScreenshotHandler({ getApp, getAppScreenshots }: Options): Middleware {
@@ -7,30 +7,14 @@ export function createScreenshotHandler({ getApp, getAppScreenshots }: Options):
 
     const app = await getApp({ context: ctx });
 
-    if (!app) {
-      ctx.response.status = 404;
-      ctx.response.body = {
-        statusCode: 404,
-        message: 'App not found',
-        error: 'Not Found',
-      };
-      ctx.throw();
-    }
+    assertKoaError(!app, ctx, 404, 'App not found');
 
     const appScreenshots = await getAppScreenshots({ app, context: ctx });
     const appScreenshot = appScreenshots.find(
       (screenshot) => screenshot.id === Number.parseInt(id),
     );
 
-    if (!appScreenshot) {
-      ctx.response.status = 404;
-      ctx.response.body = {
-        statusCode: 404,
-        message: 'Screenshot not found',
-        error: 'Not Found',
-      };
-      ctx.throw();
-    }
+    assertKoaError(!appScreenshot, ctx, 404, 'Screenshot not found');
 
     const { mime, screenshot } = appScreenshot;
 

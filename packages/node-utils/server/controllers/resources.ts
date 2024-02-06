@@ -1,4 +1,5 @@
 import {
+  assertKoaError,
   type FindOptions,
   getRemapperContext,
   getResourceDefinition,
@@ -6,6 +7,7 @@ import {
   type Options,
   type OrderItem,
   processResourceBody,
+  throwKoaError,
   type WhereOptions,
 } from '@appsemble/node-utils';
 import { defaultLocale, remap } from '@appsemble/utils';
@@ -19,23 +21,10 @@ function generateQuery(
     return parseQuery({ $filter: ctx.queryParams.$filter, $orderby: ctx.queryParams.$orderby });
   } catch (error: unknown) {
     if (error instanceof Error) {
-      ctx.response.status = 400;
-      ctx.response.body = {
-        statusCode: 400,
-        error: 'Bad Request',
-        message: 'Unable to process this query',
-        data: { syntaxError: error.message },
-      };
-      ctx.throw();
+      throwKoaError(ctx, 400, 'Unable to process this query', { syntaxError: error.message });
     }
     logger.error(error);
-    ctx.response.status = 500;
-    ctx.response.body = {
-      statusCode: 500,
-      error: 'Internal Server Error',
-      message: 'Unable to process this query',
-    };
-    ctx.throw();
+    throwKoaError(ctx, 400, 'Unable to process this query');
   }
 }
 
@@ -53,7 +42,7 @@ export function createQueryResources(options: Options): Middleware {
 
     const { order, where } = generateQuery(ctx, options);
 
-    const userQuery = await verifyResourceActionPermission({
+    const memberQuery = await verifyResourceActionPermission({
       context: ctx,
       app,
       resourceType,
@@ -70,10 +59,11 @@ export function createQueryResources(options: Options): Middleware {
         and: [
           where,
           {
-            ...userQuery,
+            ...memberQuery,
             type: resourceType,
             AppId: appId,
             expires: { or: [{ gt: new Date() }, null] },
+            ...(app.demoMode ? { seed: false, ephemeral: true } : {}),
           },
         ],
       },
@@ -128,7 +118,7 @@ export function createCountResources(options: Options): Middleware {
 
     const app = await getApp({ context: ctx, query: { where: { id: appId } } });
 
-    const userQuery = await verifyResourceActionPermission({
+    const memberQuery = await verifyResourceActionPermission({
       app,
       context: ctx,
       action,
@@ -144,10 +134,11 @@ export function createCountResources(options: Options): Middleware {
         and: [
           where || {},
           {
-            ...userQuery,
+            ...memberQuery,
             type: resourceType,
             AppId: appId,
             expires: { or: [{ gt: new Date() }, null] },
+            ...(app.demoMode ? { seed: false, ephemeral: true } : {}),
           },
         ],
       },
@@ -181,7 +172,7 @@ export function createGetResourceById(options: Options): Middleware {
 
     const resourceDefinition = getResourceDefinition(app, resourceType, ctx, view);
 
-    const userQuery = await verifyResourceActionPermission({
+    const memberQuery = await verifyResourceActionPermission({
       app,
       context: ctx,
       action,
@@ -192,11 +183,12 @@ export function createGetResourceById(options: Options): Middleware {
 
     const findOptions: FindOptions = {
       where: {
-        ...userQuery,
+        ...memberQuery,
         id: resourceId,
         type: resourceType,
         AppId: appId,
         expires: { or: [{ gt: new Date() }, null] },
+        ...(app.demoMode ? { seed: false, ephemeral: true } : {}),
       },
     };
 
@@ -208,15 +200,7 @@ export function createGetResourceById(options: Options): Middleware {
       findOptions,
     });
 
-    if (!resource) {
-      ctx.response.status = 404;
-      ctx.response.body = {
-        statusCode: 404,
-        error: 'Not Found',
-        message: 'Resource not found',
-      };
-      ctx.throw();
-    }
+    assertKoaError(!resource, ctx, 404, 'Resource not found');
 
     if (view) {
       const context = await getRemapperContext(
@@ -246,30 +230,99 @@ export function createCreateResource(options: Options): Middleware {
     const {
       pathParams: { appId, resourceType },
     } = ctx;
-    const { createAppResourcesWithAssets, getApp, verifyResourceActionPermission } = options;
+    const {
+      checkSeededResources,
+      createAppResourcesWithAssets,
+      getApp,
+      getAppAssets,
+      verifyResourceActionPermission,
+    } = options;
     const action = 'create';
 
     const app = await getApp({ context: ctx, query: { where: { id: appId } } });
 
+    const resourceSeeded = await checkSeededResources({ context: ctx, app, resourceType });
+
     const resourceDefinition = getResourceDefinition(app, resourceType, ctx);
     await verifyResourceActionPermission({ app, context: ctx, action, resourceType, options, ctx });
 
-    const [processedBody, preparedAssets] = processResourceBody(ctx, resourceDefinition);
+    const appAssets = await getAppAssets({ app, context: ctx });
+
+    const [processedBody, preparedAssets] = processResourceBody(
+      ctx,
+      resourceDefinition,
+      undefined,
+      undefined,
+      appAssets.map((appAsset) => ({ id: appAsset.id, name: appAsset.name })),
+    );
+
     if (Array.isArray(processedBody) && !processedBody.length) {
       ctx.body = [];
       return;
     }
 
     const resources = Array.isArray(processedBody) ? processedBody : [processedBody];
-    const createdResources = await createAppResourcesWithAssets({
-      app,
-      context: ctx,
-      resources,
-      preparedAssets,
-      resourceType,
-      action,
-      options,
-    });
+
+    let createdResources;
+
+    // In demo apps, there are two types of resources.
+
+    // If the app has not been seeded, resources passed from the request body
+    // are interpreted as seed resources and created with "seed: true". In addition,
+    // copies of these resources are created with "ephemeral: true".
+
+    // If the app has already been seeded, only new ephemeral resources are created,
+    // processed from the request body.
+    if (app.demoMode) {
+      if (!resourceSeeded) {
+        await createAppResourcesWithAssets({
+          app,
+          context: ctx,
+          resources: resources.map((resource) => {
+            const cleanResource = { ...resource };
+            for (const referencedProperty of Object.keys(resourceDefinition.references ?? {})) {
+              delete cleanResource[referencedProperty];
+            }
+            return {
+              ...cleanResource,
+              $seed: true,
+              $ephemeral: false,
+            };
+          }),
+          preparedAssets,
+          resourceType,
+          action,
+          options,
+        });
+      }
+
+      createdResources = await createAppResourcesWithAssets({
+        app,
+        context: ctx,
+        resources: resources.map((resource) => ({
+          ...resource,
+          $seed: false,
+          $ephemeral: true,
+          $clonable: false,
+        })),
+        preparedAssets,
+        resourceType,
+        action,
+        options,
+      });
+    } else {
+      // In regular apps, resources are created as usual
+      // with "clonable", "ephemeral" and "expires" passed from the request body
+      createdResources = await createAppResourcesWithAssets({
+        app,
+        context: ctx,
+        resources,
+        preparedAssets,
+        resourceType,
+        action,
+        options,
+      });
+    }
 
     ctx.body = Array.isArray(processedBody) ? createdResources : createdResources[0];
   };
@@ -294,7 +347,7 @@ export function createUpdateResource(options: Options): Middleware {
 
     const resourceDefinition = getResourceDefinition(app, resourceType, ctx);
 
-    const userQuery = await verifyResourceActionPermission({
+    const memberQuery = await verifyResourceActionPermission({
       app,
       context: ctx,
       action,
@@ -305,11 +358,12 @@ export function createUpdateResource(options: Options): Middleware {
 
     const findOptions: FindOptions = {
       where: {
-        ...userQuery,
+        ...memberQuery,
         id: resourceId,
         type: resourceType,
         AppId: appId,
         expires: { or: [{ gt: new Date() }, null] },
+        ...(app.demoMode ? { seed: false, ephemeral: true } : {}),
       },
     };
 
@@ -321,15 +375,7 @@ export function createUpdateResource(options: Options): Middleware {
       findOptions,
     });
 
-    if (!oldResource) {
-      ctx.response.status = 404;
-      ctx.response.body = {
-        statusCode: 404,
-        error: 'Not Found',
-        message: 'Resource not found',
-      };
-      ctx.throw();
-    }
+    assertKoaError(!oldResource, ctx, 404, 'Resource not found');
 
     const appAssets = await getAppAssets({ context: ctx, app });
 
@@ -347,7 +393,10 @@ export function createUpdateResource(options: Options): Middleware {
       context: ctx,
       id: resourceId,
       type: resourceType,
-      resource: resources[0],
+      resource: {
+        ...resources[0],
+        ...(app.demoMode ? { $ephemeral: true, $clonable: false } : {}),
+      },
       preparedAssets,
       deletedAssetIds,
       resourceDefinition,
@@ -368,7 +417,7 @@ export function createDeleteResource(options: Options): Middleware {
 
     const app = await getApp({ context: ctx, query: { where: { id: appId } } });
 
-    const userQuery = await verifyResourceActionPermission({
+    const memberQuery = await verifyResourceActionPermission({
       app,
       context: ctx,
       action,
@@ -379,11 +428,12 @@ export function createDeleteResource(options: Options): Middleware {
 
     const findOptions: FindOptions = {
       where: {
-        ...userQuery,
+        ...memberQuery,
         id: resourceId,
         type: resourceType,
         AppId: appId,
-        expires: { or: [{ gt: new Date() }, null] },
+        expires: { or: [{ gt: new Date() }, { eq: null }] },
+        ...(app.demoMode ? { seed: false, ephemeral: true } : {}),
       },
     };
 
@@ -395,15 +445,7 @@ export function createDeleteResource(options: Options): Middleware {
       findOptions,
     });
 
-    if (!resource) {
-      ctx.response.status = 404;
-      ctx.response.body = {
-        statusCode: 404,
-        error: 'Not Found',
-        message: 'Resource not found',
-      };
-      ctx.throw();
-    }
+    assertKoaError(!resource, ctx, 404, 'Resource not found');
 
     await deleteAppResource({
       app,

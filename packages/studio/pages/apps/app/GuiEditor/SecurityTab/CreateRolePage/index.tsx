@@ -1,6 +1,6 @@
 import { Button, useMessages } from '@appsemble/react-components';
 import { type RoleDefinition } from '@appsemble/types';
-import { type ChangeEvent, type ReactElement, useCallback, useState } from 'react';
+import { type ChangeEvent, type ReactNode, useCallback, useState } from 'react';
 import { useIntl } from 'react-intl';
 
 import { messages } from './messages.js';
@@ -10,7 +10,7 @@ import { InputString } from '../../Components/InputString/index.js';
 import { InputTextArea } from '../../Components/InputTextArea/index.js';
 import { OptionalList } from '../../Components/OptionalList/index.js';
 
-export function CreateRolePage(): ReactElement {
+export function CreateRolePage(): ReactNode {
   const { app, setApp } = useApp();
   const { formatMessage } = useIntl();
   const push = useMessages();

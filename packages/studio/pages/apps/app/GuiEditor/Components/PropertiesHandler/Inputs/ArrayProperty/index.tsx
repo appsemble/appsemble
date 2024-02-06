@@ -1,7 +1,7 @@
 import { Button } from '@appsemble/react-components';
 import { type Schema } from 'jsonschema';
 import { type OpenAPIV3 } from 'openapi-types';
-import { type ReactElement, useCallback } from 'react';
+import { type ReactNode, useCallback } from 'react';
 import { type JsonObject } from 'type-fest';
 
 import styles from './index.module.css';
@@ -19,7 +19,7 @@ export function ArrayProperty({
   property,
   schema,
   value = [],
-}: ArrayPropertyProps): ReactElement {
+}: ArrayPropertyProps): ReactNode {
   const items = (schema as OpenAPIV3.ArraySchemaObject).items as OpenAPIV3.SchemaObject;
   const onValueChange = useCallback(
     (currentProperty: string, newValue: JsonObject) => {

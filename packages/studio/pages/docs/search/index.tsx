@@ -1,5 +1,5 @@
 import { Title, useMeta } from '@appsemble/react-components';
-import { type ReactElement, type ReactNode, useDeferredValue, useMemo } from 'react';
+import { type ReactNode, useDeferredValue, useMemo } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 
 import styles from './index.module.css';
@@ -17,6 +17,7 @@ interface SearchResult {
   url: string;
   title: string;
   match: ReactNode[];
+  matchLength: number;
 }
 
 const index: SearchEntry[] = [];
@@ -30,7 +31,7 @@ for (const doc of docs) {
   }
 }
 
-export function SearchPage(): ReactElement {
+export function SearchPage(): ReactNode {
   useMeta(messages.title);
   const location = useLocation();
 
@@ -43,15 +44,20 @@ export function SearchPage(): ReactElement {
     }
 
     for (const { haystack, title, url } of index) {
-      const match = highlight(haystack, needle);
-      if (!match) {
-        continue;
-      }
+      const result = highlight(haystack, needle);
 
-      matches.push({ match, url, title });
+      if (result) {
+        const { match, matchLength } = result;
+
+        if (!match) {
+          continue;
+        }
+        matches.push({ match, url, title, matchLength });
+      }
     }
-    // Fewer matches means longer matches, which means a higher relevance.
-    matches.sort((a, b) => a.match.length - b.match.length);
+    // Sort matches based on match char length
+    matches.sort((a, b) => b.matchLength - a.matchLength);
+
     return matches;
   }, [needle]);
 

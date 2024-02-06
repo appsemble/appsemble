@@ -1,3 +1,23 @@
 .content {
+  background-color: rgb(255 255 255);
   min-height: 100%;
+
+  &.fullscreen {
+    padding-top: 3.95rem !important;
+
+    &.code {
+      padding-top: 3.75rem !important;
+    }
+  }
+
+  &.code {
+    /* stylelint-disable-next-line media-feature-range-notation */
+    @media (max-width: 1023px) {
+      padding-top: 0.6rem !important;
+
+      &.fullscreen {
+        padding-top: 0.6rem !important;
+      }
+    }
+  }
 }

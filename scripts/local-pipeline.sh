@@ -4,41 +4,41 @@
   set -e
 
   # setup
-  yarn install
+  npm ci
   export DATABASE_URL='postgres://admin:password@localhost:5433/appsemble'
   docker compose --project-name pipeline --file docker-compose-pipeline.yaml up -d
 
   # cspell
-  yarn cspell
+  npx -- cspell
 
   # eslint
-  yarn eslint --format gitlab .
+  npx -- eslint --format gitlab .
 
   # helm lint
   docker exec helm sh -c 'helm lint charts/*'
 
   # i18n
-  yarn appsemble app extract-messages --verify nl apps/*
+  npm run appsemble -- app extract-messages --verify nl apps/*
 
   # prettier
-  yarn prettier .
+  npx -- prettier .
 
   # remark lint
-  yarn remark --frail --no-stdout .
+  npx -- remark --frail --no-stdout .
 
   # stylelint
-  yarn stylelint .
+  npx -- stylelint .
 
   # tsc
-  yarn workspaces run tsc
+  npx --workspaces tsc
 
   # validate
-  yarn scripts validate
+  npm run scripts -- validate
 
   # test node
-  yarn test --coverage --shard=1/3 --watch false
-  yarn test --coverage --shard=2/3 --watch false
-  yarn test --coverage --shard=3/3 --watch false
+  npm test -- --coverage --shard=1/3 --watch false
+  npm test -- --coverage --shard=2/3 --watch false
+  npm test -- --coverage --shard=3/3 --watch false
 )
 
 # cleanup

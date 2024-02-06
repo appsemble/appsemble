@@ -30,6 +30,7 @@ export interface ServerActionParameters<T extends ActionDefinition = ActionDefin
 export const actions = {
   analytics: noop,
   condition,
+  controller: noop,
   dialog: noop,
   'dialog.error': noop,
   'dialog.ok': noop,
@@ -76,7 +77,10 @@ export const actions = {
   'team.members': noop,
   throw: throwAction,
   'user.register': noop,
+  'user.create': noop,
   'user.login': noop,
   'user.logout': noop,
   'user.update': noop,
+  'user.remove': noop,
+  'user.query': noop,
 };

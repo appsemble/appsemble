@@ -25,7 +25,7 @@ Next, publish the existing blocks following the instructions from the
 A new block can be bootstrapped by running the following command.
 
 ```sh copy
-yarn appsemble block create
+npx appsemble block create
 ```
 
 This will prompt some questions about the new block. In the final prompt, you will be prompted to
@@ -86,7 +86,7 @@ Make sure the local Appsemble server is running, then run the following to publi
 block.
 
 ```sh copy
-yarn appsemble block publish blocks/test
+npx appsemble block publish blocks/test
 ```
 
 > **Note**: In order to publish a block for an organization, make sure you are in the same
@@ -96,8 +96,8 @@ yarn appsemble block publish blocks/test
 
 ## Testing the Block
 
-Open the Appsemble studio on <https://appsemble.app>. Login and create your first app. This example
-app will display your new block.
+Open the Appsemble studio on [Appsemble](https://appsemble.app). Login and create your first app.
+This example app will display your new block.
 
 ```yaml copy filename="app-definition.yaml"
 name: Test App
@@ -292,7 +292,7 @@ to the page to see the event is received by both blocks.
 
 To get a better idea of how blocks work, or for inspiration of what blocks can be created, please
 have a look at the
-[officially supported Appsemble blocks](https://gitlab.com/appsemble/appsemble/-/tree/0.22.10/blocks).
+[officially supported Appsemble blocks](https://gitlab.com/appsemble/appsemble/-/tree/0.24.12/blocks).
 For example, if you want to create a block to display a set of dynamically loaded data, have a look
 at the `table` or `tiles` block. If you’re interested in displaying a single entity, have a look at
 the `detail-viewer` or `stats` block. If you would like to create a block to process data based on

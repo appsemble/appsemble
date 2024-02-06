@@ -1,10 +1,17 @@
-import { InputField, SelectField } from '@appsemble/react-components';
-import { type ChangeEvent, type ReactElement, useCallback } from 'react';
+import {
+  Button,
+  InputField,
+  SelectField,
+  useClickOutside,
+  useToggle,
+} from '@appsemble/react-components';
+import { type ChangeEvent, type ReactNode, useCallback, useRef } from 'react';
 import { useIntl } from 'react-intl';
 
 import styles from './index.module.css';
 import { messages } from './messages.js';
 import { CreateAppButton } from '../../pages/apps/IndexPage/CreateAppButton/index.js';
+import { ImportAppButton } from '../../pages/apps/IndexPage/ImportAppButton/index.js';
 import { type AppSortFunction } from '../AppList/index.js';
 import { useUser } from '../UserProvider/index.js';
 
@@ -31,19 +38,22 @@ export interface AppListControlsProps {
   readonly reverse: boolean;
   readonly onFilterChange: (filter: string) => void;
   readonly onSortChange: (sortName: AppSortFunctionName, reverse: boolean) => void;
-  readonly actionControl?: ReactElement;
+  readonly actionControl?: ReactNode;
+  readonly actionControlImport?: ReactNode;
 }
 
 export function AppListControls({
   actionControl: actionButton = <CreateAppButton className="" />,
+  actionControlImport: actionImportButton = <ImportAppButton />,
   filter,
   onFilterChange,
   onSortChange,
   reverse,
   sort,
-}: AppListControlsProps): ReactElement {
+}: AppListControlsProps): ReactNode {
   const { formatMessage } = useIntl();
   const { userInfo } = useUser();
+  const { disable, enabled: isActive, toggle } = useToggle(false);
 
   const handleSortChange = useCallback(
     ({ currentTarget: { value } }: ChangeEvent<HTMLSelectElement>): void => {
@@ -52,6 +62,8 @@ export function AppListControls({
     },
     [onSortChange],
   );
+  const dropdownRef = useRef<HTMLDivElement | null>();
+  useClickOutside(dropdownRef, disable);
 
   return (
     <div className={`is-flex-desktop ${styles.gap}`}>
@@ -105,7 +117,26 @@ export function AppListControls({
           {`${formatMessage(messages.updated)} (${formatMessage(messages.descending)})`}
         </option>
       </SelectField>
-      <div className="ml-auto">{userInfo && actionButton ? actionButton : null}</div>
+      <div className="mb-2 ml-auto">
+        {userInfo ? (
+          <>
+            {actionButton || null}
+            <div className={`dropdown ${isActive ? 'is-active' : ''} is-pulled-right is-right`}>
+              <div className="dropdown-trigger">
+                <Button
+                  aria-controls="dropdown-trigger"
+                  aria-haspopup="true"
+                  icon="chevron-down"
+                  onClick={toggle}
+                />
+              </div>
+              <div className="dropdown-menu" role="menu">
+                <div className="dropdown-content">{actionImportButton || null}</div>
+              </div>
+            </div>
+          </>
+        ) : null}
+      </div>
     </div>
   );
 }

@@ -1,6 +1,6 @@
 import { type IconName } from '@fortawesome/fontawesome-common-types';
 import classNames from 'classnames';
-import { type KeyboardEvent, type ReactElement, type ReactNode, useCallback, useRef } from 'react';
+import { type KeyboardEvent, type ReactNode, useCallback, useRef } from 'react';
 
 import { Button, Icon, useClickOutside, useToggle } from '../index.js';
 
@@ -44,7 +44,7 @@ export function Dropdown({
   dropdownIcon = 'angle-down',
   icon,
   label,
-}: DropdownProps): ReactElement {
+}: DropdownProps): ReactNode {
   const ref = useRef<HTMLDivElement>();
   const { disable, enabled, toggle } = useToggle();
 
@@ -71,7 +71,7 @@ export function Dropdown({
           onKeyDown={onKeyDown}
         >
           {label}
-          <Icon icon={dropdownIcon} size="small" />
+          <Icon className="ml-1" icon={enabled ? 'chevron-up' : dropdownIcon} size="small" />
         </Button>
       </div>
       <div

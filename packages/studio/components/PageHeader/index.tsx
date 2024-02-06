@@ -2,7 +2,6 @@ import { noop } from '@appsemble/utils';
 import {
   createContext,
   type Dispatch,
-  type ReactElement,
   type ReactNode,
   useContext,
   useEffect,
@@ -11,7 +10,7 @@ import {
 } from 'react';
 
 interface PageHeaderContext {
-  setHeader: Dispatch<ReactElement>;
+  setHeader: Dispatch<ReactNode>;
 }
 
 const Context = createContext<PageHeaderContext>({
@@ -28,8 +27,8 @@ interface PageHeaderProviderProps {
 /**
  * A wrapper that renders a header at the top of the page.
  */
-export function PageHeaderProvider({ children }: PageHeaderProviderProps): ReactElement {
-  const [header, setHeader] = useState<ReactElement>(null);
+export function PageHeaderProvider({ children }: PageHeaderProviderProps): ReactNode {
+  const [header, setHeader] = useState<ReactNode>(null);
   return (
     <Context.Provider
       value={useMemo(
@@ -50,7 +49,7 @@ export function PageHeaderProvider({ children }: PageHeaderProviderProps): React
  *
  * @param header The React element to use as the page header.
  */
-export function usePageHeader(header: ReactElement): void {
+export function usePageHeader(header: ReactNode): void {
   const { setHeader } = useContext(Context);
 
   useEffect(() => {

@@ -1,5 +1,6 @@
 import { Button } from '@appsemble/react-components';
-import { type ReactElement, useCallback, useRef, useState } from 'react';
+import classNames from 'classnames';
+import { type ReactNode, useCallback, useRef, useState } from 'react';
 import { useIntl } from 'react-intl';
 
 import { CreateRolePage } from './CreateRolePage/index.js';
@@ -9,6 +10,7 @@ import { messages } from './messages.js';
 import { RolesPage } from './RolesPage/index.js';
 import { TeamsPage } from './TeamsPage/index.js';
 import { AppPreview } from '../../../../../components/AppPreview/index.js';
+import { useFullscreenContext } from '../../../../../components/FullscreenProvider/index.js';
 import { useApp } from '../../index.js';
 import { Sidebar } from '../Components/Sidebar/index.js';
 import { TreeList } from '../Components/TreeList/index.js';
@@ -16,6 +18,7 @@ import { TreeList } from '../Components/TreeList/index.js';
 interface SecurityTabProps {
   readonly isOpenLeft: boolean;
   readonly isOpenRight: boolean;
+  readonly selectedAspectRatio: string;
 }
 
 const Tabs = [
@@ -35,12 +38,17 @@ const Tabs = [
 type LeftSidebar = (typeof Tabs)[number];
 export const tabChangeOptions = ['default', 'teams', 'roles', 'createRole'] as const;
 
-export function SecurityTab({ isOpenLeft, isOpenRight }: SecurityTabProps): ReactElement {
+export function SecurityTab({
+  isOpenLeft,
+  isOpenRight,
+  selectedAspectRatio: selectedRatio,
+}: SecurityTabProps): ReactNode {
   const { formatMessage } = useIntl();
   const { app } = useApp();
   const frame = useRef<HTMLIFrameElement>();
   const [currentSideBar, setCurrentSideBar] = useState<LeftSidebar>(Tabs[0]);
   const [selectedRole, setSelectedRole] = useState<string>(null);
+  const { fullscreen } = useFullscreenContext();
 
   const onChangeTab = useCallback(
     (tab: (typeof tabChangeOptions)[number]) => {
@@ -97,7 +105,12 @@ export function SecurityTab({ isOpenLeft, isOpenRight }: SecurityTabProps): Reac
           })}
         </>
       </Sidebar>
-      <div className={styles.root}>
+      <div
+        className={classNames(`${styles.root} ${styles[selectedRatio]}`, {
+          [String(styles.fullscreen)]: fullscreen.enabled,
+        })}
+        id="appPreviewDiv"
+      >
         <AppPreview app={app} iframeRef={frame} />
       </div>
       <Sidebar isOpen={isOpenRight} type="right">

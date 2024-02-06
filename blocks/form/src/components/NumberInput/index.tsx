@@ -24,7 +24,7 @@ export function NumberInput({
   readOnly,
 }: NumberInputProps): VNode {
   const { utils } = useBlock();
-  const { bottomLabels, display, icon, inline, label, placeholder, tag, topLabels } = field;
+  const { bottomLabels, display, help, icon, inline, label, placeholder, tag, topLabels } = field;
 
   const value = getValueByNameSequence(name, formValues) as string;
   const remappedLabel = utils.remap(label, value) ?? name;
@@ -32,6 +32,7 @@ export function NumberInput({
     className: classNames('appsemble-number', className),
     disabled,
     error: dirty && error,
+    help: utils.remap(help, value) as string,
     icon,
     label: remappedLabel as string,
     max: getMax(field),

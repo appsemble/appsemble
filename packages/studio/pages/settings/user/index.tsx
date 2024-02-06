@@ -1,6 +1,7 @@
 import {
   AsyncButton,
   Button,
+  CheckboxField,
   Content,
   FormButtons,
   Loader,
@@ -20,7 +21,7 @@ import {
 import { type UserEmail } from '@appsemble/types';
 import { defaultLocale, has } from '@appsemble/utils';
 import axios from 'axios';
-import { type ReactElement, useCallback, useEffect, useState } from 'react';
+import { type ReactNode, useCallback, useEffect, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useMatch, useNavigate } from 'react-router-dom';
 
@@ -30,7 +31,7 @@ import { ResendEmailButton } from '../../../components/ResendEmailButton/index.j
 import { useUser } from '../../../components/UserProvider/index.js';
 import { supportedLanguages } from '../../../utils/constants.js';
 
-export function UserPage(): ReactElement {
+export function UserPage(): ReactNode {
   useMeta(messages.title);
   const { formatMessage } = useIntl();
   const navigate = useNavigate();
@@ -53,7 +54,7 @@ export function UserPage(): ReactElement {
   useEffect(() => setRerenderKey((prevKey) => prevKey + 1), [pathname]);
 
   const onSaveProfile = useCallback(
-    async (values: { name: string; locale: string; timezone: string }) => {
+    async (values: { name: string; locale: string; timezone: string; subscribed: boolean }) => {
       localStorage.setItem('preferredLanguage', values.locale);
       await axios.put('/api/user', values);
       refreshUserInfo();
@@ -132,6 +133,7 @@ export function UserPage(): ReactElement {
               ? userInfo.locale?.toLowerCase()
               : localStorage.getItem('preferredLanguage') || defaultLocale,
             timezone: userInfo.zoneinfo,
+            subscribed: userInfo.subscribed,
           }}
           key={rerenderKey}
           onSubmit={onSaveProfile}
@@ -173,6 +175,11 @@ export function UserPage(): ReactElement {
               </option>
             ))}
           </SimpleFormField>
+          <SimpleFormField
+            component={CheckboxField}
+            name="subscribed"
+            title={<FormattedMessage {...messages.newsletter} />}
+          />
           <FormButtons>
             <SimpleSubmit>
               <FormattedMessage {...messages.saveProfile} />

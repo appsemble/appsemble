@@ -17,7 +17,7 @@ function proxy(method: string, body?: boolean): OpenAPIV3.OperationObject {
       description: 'The data that was passed to the action',
       required: true,
       content: {
-        'application/json': {},
+        '*/*': {},
       },
     };
   } else {

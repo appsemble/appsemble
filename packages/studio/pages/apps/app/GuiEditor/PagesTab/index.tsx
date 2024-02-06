@@ -1,6 +1,7 @@
 import { useMessages } from '@appsemble/react-components';
 import { type BlockDefinition, type BlockManifest } from '@appsemble/types';
-import { type MutableRefObject, type ReactElement, type Ref, useCallback, useState } from 'react';
+import classNames from 'classnames';
+import { type MutableRefObject, type ReactNode, useCallback, useState } from 'react';
 import { type JsonObject } from 'type-fest';
 import { type Document, type Node, type ParsedNode, type YAMLSeq } from 'yaml';
 
@@ -9,9 +10,9 @@ import { BlockStore } from './BlockStore/index.js';
 import styles from './index.module.css';
 import { PageProperty } from './PageProperty/index.js';
 import SubPageProperty from './SubPageProperty/index.js';
-import { AppPreview } from '../../../../../components/AppPreview/index.js';
+import { useFullscreenContext } from '../../../../../components/FullscreenProvider/index.js';
 import { generateData } from '../../../../../utils/schemaGenerator.js';
-import { useApp } from '../../index.js';
+import { AppEditor } from '../AppEditor/index.js';
 import { Sidebar } from '../Components/Sidebar/index.js';
 import { ElementsList } from '../ElementsList/index.js';
 
@@ -20,35 +21,43 @@ interface PagesTabProps {
   readonly changeIn: (path: Iterable<unknown>, value: Node) => void;
   readonly deleteIn: (path: Iterable<unknown>) => void;
   readonly docRef: MutableRefObject<Document<ParsedNode>>;
-  readonly frameRef: Ref<HTMLIFrameElement>;
   readonly isOpenLeft: boolean;
   readonly isOpenRight: boolean;
   readonly saveStack: Document<ParsedNode, true>;
+  readonly selectedResolution: string;
+  readonly propsTabShow: boolean;
+  readonly blocksTabShow: boolean;
+  readonly toggleProps: () => void;
 }
 
 export function PagesTab({
   addIn,
+  blocksTabShow,
   changeIn,
   deleteIn,
   docRef,
-  frameRef,
   isOpenLeft,
   isOpenRight,
+  propsTabShow,
   saveStack,
-}: PagesTabProps): ReactElement {
-  const { app } = useApp();
+  selectedResolution: selectedRatio,
+  toggleProps,
+}: PagesTabProps): ReactNode {
   const push = useMessages();
   const [selectedPage, setSelectedPage] = useState<number>(0);
   const [selectedBlock, setSelectedBlock] = useState<number>(-1);
   const [selectedSubParent, setSelectedSubParent] = useState<number>(-1);
-  const [editPageView, setEditPageView] = useState<boolean>(false);
+  const [editPageView, setEditPageView] = useState<boolean>(true);
   const [editSubPageView, setEditSubPageView] = useState<boolean>(false);
   const [editBlockView, setEditBlockView] = useState<boolean>(false);
   const [dragOver, setDragOver] = useState<Boolean>(false);
   const [blockManifest, setBlockManifest] = useState<BlockManifest>(null);
   const [dropzoneActive, setDropzoneActive] = useState<boolean>(false);
+  const [dragIndex, setDragIndex] = useState<number>(0);
+  const { fullscreen } = useFullscreenContext();
 
   const onDragEvent = (data: BlockManifest): void => {
+    setDragIndex(0);
     setBlockManifest(data);
     setDropzoneActive(true);
   };
@@ -68,27 +77,31 @@ export function PagesTab({
         setEditPageView(false);
         setEditBlockView(true);
         setEditSubPageView(false);
+        toggleProps();
         return;
       }
       if (page !== -1 && block === -1 && subParent === -1) {
         setEditPageView(true);
         setEditBlockView(false);
         setEditSubPageView(false);
+        toggleProps();
       }
       if (page !== -1 && block === -1 && subParent !== -1) {
         setEditPageView(false);
         setEditBlockView(false);
         setEditSubPageView(true);
+        toggleProps();
       }
     },
-    [setSelectedPage, setSelectedBlock, setSelectedSubParent],
+    [setSelectedPage, setSelectedBlock, setSelectedSubParent, toggleProps],
   );
 
   const onCreatePage = useCallback(() => {
     setEditPageView(true);
     setEditBlockView(false);
     setSelectedPage(-1);
-  }, [setEditPageView, setEditBlockView]);
+    toggleProps();
+  }, [setEditPageView, setEditBlockView, toggleProps]);
 
   const getPagesBlocks = useCallback((): YAMLSeq => {
     if (
@@ -208,6 +221,9 @@ export function PagesTab({
   };
 
   const handleDrop = (): void => {
+    if (dragIndex !== 0) {
+      return;
+    }
     setDropzoneActive(false);
     const newBlock = {
       type: blockManifest.name,
@@ -235,10 +251,15 @@ export function PagesTab({
           selectedSubParent={selectedSubParent}
         />
       </Sidebar>
-      <div className={styles.root}>
+      <div
+        className={classNames(`${styles.root} ${styles[selectedRatio]}`, {
+          [String(styles.fullscreen)]: fullscreen.enabled,
+        })}
+        id="appPreviewDiv"
+      >
         {/* eslint-disable-next-line jsx-a11y/no-static-element-interactions */}
         <div
-          className={`${dropzoneActive ? styles.dropzoneActive : styles.dropzoneInactive}  ${
+          className={`${dropzoneActive ? styles.dropzoneActive : styles.dropzoneInactive} ${
             dragOver ? styles.dropzoneDragOver : styles.dropzone
           } is-flex m-0 p-0`}
           draggable={false}
@@ -248,11 +269,17 @@ export function PagesTab({
           onDragOver={(e) => e.preventDefault()}
           onDrop={handleDrop}
         />
-        <AppPreview app={app} iframeRef={frameRef} />
+        <AppEditor
+          changeIn={changeIn}
+          docRef={docRef}
+          onChange={onChangePagesBlocks}
+          selectedPage={selectedPage}
+          selectedSubParent={selectedSubParent >= 0 ? selectedSubParent : 0}
+        />
       </div>
       <Sidebar isOpen={isOpenRight} type="right">
         <div className={styles.rightBar}>
-          {editPageView ? (
+          {editPageView && propsTabShow ? (
             <PageProperty
               addIn={addIn}
               changeIn={changeIn}
@@ -264,7 +291,7 @@ export function PagesTab({
               selectedSubPage={selectedSubParent}
             />
           ) : null}
-          {editSubPageView ? (
+          {editSubPageView && propsTabShow ? (
             <SubPageProperty
               changeIn={changeIn}
               deletePage={deleteSubPage}
@@ -274,7 +301,7 @@ export function PagesTab({
               selectedSubPage={selectedSubParent}
             />
           ) : null}
-          {editBlockView ? (
+          {editBlockView && propsTabShow ? (
             <BlockProperty
               changeProperty={changeProperty}
               changeType={changeBlockType}
@@ -282,8 +309,8 @@ export function PagesTab({
               selectedBlock={getSelectedBlock()}
             />
           ) : null}
+          {blocksTabShow === true && <BlockStore dragEventListener={onDragEvent} />}
         </div>
-        <BlockStore dragEventListener={onDragEvent} />
       </Sidebar>
     </>
   );

@@ -1,12 +1,23 @@
-import { type ComponentPropsWithoutRef, type ReactChild, type ReactElement } from 'react';
+import { type ComponentPropsWithoutRef, type ReactNode } from 'react';
 
 import { Button, useSimpleForm } from '../index.js';
 
 interface SimpleSubmitProps extends Omit<ComponentPropsWithoutRef<'button'>, 'onChange'> {
-  readonly children?: ReactChild;
+  readonly children?: ReactNode;
+
+  /**
+   * If true, disable the submit button if no values have been changed.
+   *
+   * @default true
+   */
+  readonly allowPristine?: boolean;
 }
 
-export function SimpleSubmit({ disabled, ...props }: SimpleSubmitProps): ReactElement {
+export function SimpleSubmit({
+  allowPristine = true,
+  disabled,
+  ...props
+}: SimpleSubmitProps): ReactNode {
   const { formErrors, pristine, submitting } = useSimpleForm();
 
   return (
@@ -16,7 +27,7 @@ export function SimpleSubmit({ disabled, ...props }: SimpleSubmitProps): ReactEl
       data-testid="login"
       disabled={
         disabled ||
-        Object.values(pristine).every(Boolean) ||
+        (allowPristine && Object.values(pristine).every(Boolean)) ||
         submitting ||
         Object.values(formErrors).some(Boolean)
       }

@@ -1,5 +1,5 @@
 import { type BulmaColor } from '@appsemble/types';
-import { type MouseEventHandler, type ReactElement, type ReactNode } from 'react';
+import { type MouseEventHandler, type ReactNode } from 'react';
 
 import { CardFooterButton, useSimpleForm } from '../index.js';
 
@@ -49,7 +49,7 @@ export function SimpleModalFooter({
   disabled,
   onClose,
   submitLabel,
-}: SimpleModalFooterProps): ReactElement {
+}: SimpleModalFooterProps): ReactNode {
   const { formErrors, pristine, submitting } = useSimpleForm();
 
   return (

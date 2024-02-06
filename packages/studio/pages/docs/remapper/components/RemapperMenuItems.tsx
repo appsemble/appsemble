@@ -1,7 +1,7 @@
 import { MenuItem } from '@appsemble/react-components';
 import { camelToHyphen } from '@appsemble/utils';
 import { type MDXContent } from 'mdx/types.js';
-import { type ReactElement } from 'react';
+import { type ReactNode } from 'react';
 
 interface DocModule {
   default: MDXContent;
@@ -18,7 +18,7 @@ export function importDocs(): DocModule[] {
 
 const remapperDocs = importDocs();
 
-export function RemapperMenuItems(url: string): ReactElement {
+export function RemapperMenuItems(url: string): ReactNode {
   return (
     <div>
       {remapperDocs.map((section) => {

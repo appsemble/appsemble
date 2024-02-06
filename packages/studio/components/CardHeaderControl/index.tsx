@@ -1,5 +1,5 @@
 import { Subtitle, Title } from '@appsemble/react-components';
-import { type ReactElement, type ReactNode } from 'react';
+import { type ReactNode } from 'react';
 
 import styles from './index.module.css';
 
@@ -58,13 +58,13 @@ export function CardHeaderControl({
   subtitle,
   title,
   titleLevel,
-}: CardHeaderControlProps): ReactElement {
+}: CardHeaderControlProps): ReactNode {
   return (
     <div className="card my-3">
       <div className="is-flex card-content">
         <figure className={`image is-128x128 ${styles.logo}`}>{icon}</figure>
         <div className={`is-flex ${styles.metaWrapper}`}>
-          <div className={`ml-4 ${styles.meta}`}>
+          <div className={`mb-1 ml-4 ${styles.meta}`}>
             <header>
               <Title className={`is-marginless ${styles.ellipsis}`} level={titleLevel}>
                 {title}
@@ -80,7 +80,7 @@ export function CardHeaderControl({
             ) : null}
             {details}
           </div>
-          <div className={`${styles.buttonContainer}' is-flex-tablet'`}>{controls}</div>
+          <div className={`${styles.buttonContainer} is-flex-tablet'`}>{controls}</div>
         </div>
       </div>
       {children}

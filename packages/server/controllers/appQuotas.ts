@@ -1,3 +1,4 @@
+import { assertKoaError } from '@appsemble/node-utils';
 import { Permission } from '@appsemble/utils';
 import { addDays, startOfDay } from 'date-fns';
 import { zonedTimeToUtc } from 'date-fns-tz';
@@ -19,15 +20,7 @@ export async function getAppEmailQuota(ctx: Context): Promise<void> {
     attributes: ['OrganizationId'],
   });
 
-  if (!app) {
-    ctx.response.status = 404;
-    ctx.response.body = {
-      statusCode: 404,
-      error: 'Not Found',
-      message: 'App not found',
-    };
-    ctx.throw();
-  }
+  assertKoaError(!app, ctx, 404, 'App not found');
 
   checkAppLock(ctx, app);
   await checkRole(ctx, app.OrganizationId, [Permission.EditApps, Permission.EditAppSettings]);

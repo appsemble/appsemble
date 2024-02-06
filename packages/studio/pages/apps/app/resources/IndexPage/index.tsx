@@ -1,5 +1,5 @@
 import { compareStrings } from '@appsemble/utils';
-import { type ReactElement } from 'react';
+import { type ReactNode } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { Link, useParams } from 'react-router-dom';
 
@@ -7,7 +7,7 @@ import styles from './index.module.css';
 import { messages } from './messages.js';
 import { useApp } from '../../index.js';
 
-export function IndexPage(): ReactElement {
+export function IndexPage(): ReactNode {
   const { id, lang } = useParams<{ lang: string; id: string }>();
   const url = `/${lang}/apps/${id}/resources`;
   const { app } = useApp();

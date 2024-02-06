@@ -5,8 +5,18 @@
   font-size: 14px;
   height: 25px;
   justify-content: flex-start;
-  padding-left: 2.5rem;
+  padding-left: 2.8rem;
   width: 100%;
+}
+
+/* adds indentation line before the child item */
+.childItem::before {
+  border-left: 2px solid hsl(0deg 0% 17%);
+  content: '';
+  height: 98%;
+  left: 17px;
+  position: absolute;
+  width: 5px;
 }
 
 .subParent {
@@ -18,6 +28,40 @@
   height: 28px;
   justify-content: flex-start;
   margin: 0;
-  padding: 0 0 0 1.5rem;
+  padding: 0 0 0 0.8rem;
   width: 100%;
+}
+
+/* adds a second indentation line */
+.childItem::after {
+  border-left: 2px solid hsl(0deg 0% 58%);
+  content: '';
+  height: 98%;
+  left: 32px;
+  position: absolute;
+  width: 5px;
+}
+
+/* adds indentation line before the selected child item
+  but the line is white for better readibility
+*/
+.childItem:global(.is-link)::before {
+  border-left: 2px solid hsl(0deg 0% 100%);
+  content: '';
+  height: 98%;
+  left: 17px;
+  position: absolute;
+  width: 5px;
+}
+
+/* adds a second indentation line before the selected child item that is part of a sub-page parent
+  but the line is white for better readibility
+*/
+.childItem:global(.is-link)::after {
+  border-left: 2px solid hsl(0deg 0% 100%);
+  content: '';
+  height: 98%;
+  left: 32px;
+  position: absolute;
+  width: 5px;
 }

@@ -17,8 +17,6 @@
   display: flex;
   flex-direction: row;
   justify-content: flex-start;
-  max-width: 16%;
-  width: 16%;
 }
 
 .rightBar {
@@ -26,8 +24,6 @@
   display: flex;
   flex-direction: row;
   justify-content: flex-end;
-  max-width: 19%;
-  width: 19%;
 }
 
 .isClosed {
@@ -41,13 +37,60 @@
 .isOpen.leftBar {
   border: hsl(0deg 0% 83%) 1px solid;
   transition: width 0.35s ease-in-out;
-  width: 16%;
+  /* stylelint-disable-next-line media-feature-range-notation */
+  @media (max-width: 1024px) {
+    width: 230px;
+  }
+  /* stylelint-disable-next-line media-feature-range-notation */
+  @media (min-width: 1025px) and (max-width: 1500px) {
+    width: 250px;
+  }
+  /* stylelint-disable-next-line media-feature-range-notation */
+  @media (min-width: 1501px) and (max-width: 1600px) {
+    width: 280px;
+  }
+  /* stylelint-disable-next-line media-feature-range-notation */
+  @media (min-width: 1601px) and (max-width: 1920px) {
+    width: 320px;
+  }
+  /* stylelint-disable-next-line media-feature-range-notation */
+  @media (min-width: 1921px) and (max-width: 2560px) {
+    width: 360px;
+  }
+  /* stylelint-disable-next-line media-feature-range-notation */
+  @media (min-width: 2561px) {
+    width: 420px;
+  }
 }
 
 .isOpen.rightBar {
   border: hsl(0deg 0% 83%) 1px solid;
   transition: width 0.35s ease-in-out;
-  width: 19%;
+
+  /* stylelint-disable-next-line media-feature-range-notation */
+  @media (max-width: 1024px) {
+    width: 330px;
+  }
+  /* stylelint-disable-next-line media-feature-range-notation */
+  @media (min-width: 1025px) and (max-width: 1500px) {
+    width: 350px;
+  }
+  /* stylelint-disable-next-line media-feature-range-notation */
+  @media (min-width: 1501px) and (max-width: 1600px) {
+    width: 370px;
+  }
+  /* stylelint-disable-next-line media-feature-range-notation */
+  @media (min-width: 1601px) and (max-width: 1920px) {
+    width: 390px;
+  }
+  /* stylelint-disable-next-line media-feature-range-notation */
+  @media (min-width: 1921px) and (max-width: 2560px) {
+    width: 420px;
+  }
+  /* stylelint-disable-next-line media-feature-range-notation */
+  @media (min-width: 2561px) {
+    width: 560px;
+  }
 }
 
 .rightBarSlider {

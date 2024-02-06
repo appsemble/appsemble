@@ -1,5 +1,5 @@
 import { type Schema } from 'jsonschema';
-import { createContext, type ReactElement, useCallback } from 'react';
+import { createContext, type ReactNode, useCallback } from 'react';
 import { type JsonObject } from 'type-fest';
 
 import RecursiveProperties from './RecursiveProperties/index.js';
@@ -15,7 +15,7 @@ export function PropertiesHandler({
   onChange,
   parameters,
   schema,
-}: PropertiesHandlerProps): ReactElement {
+}: PropertiesHandlerProps): ReactNode {
   const onValueChange = useCallback(
     (property: string, newValue: JsonObject) => {
       onChange(newValue);

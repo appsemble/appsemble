@@ -1,6 +1,6 @@
 import { Icon } from '@appsemble/react-components';
 import { type App } from '@appsemble/types';
-import { type ReactElement } from 'react';
+import { type ReactNode } from 'react';
 import { useIntl } from 'react-intl';
 
 import styles from './index.module.css';
@@ -19,7 +19,7 @@ interface AppIconProps {
  * If the app has no icon, a FontAwesome icon is rendered as a fallback, using the app’s icon
  * background.
  */
-export function AppIcon({ app }: AppIconProps): ReactElement {
+export function AppIcon({ app }: AppIconProps): ReactNode {
   const { formatMessage } = useIntl();
 
   if (app.iconUrl) {

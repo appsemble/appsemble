@@ -2,10 +2,10 @@
 
 exports[`appEmailQuotaLimitHit > should render appEmailQuotaLimitHit 0 > html 1`] = `
 "<!doctype html>
-<html lang=\\"en\\">
+<html lang="en">
 <head>
-<meta charset=\\"utf-8\\">
-<meta name=\\"viewport\\" content=\\"width=device-width, initial-scale=1\\">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
 <body>
 <p>Hello,</p>
@@ -30,16 +30,16 @@ _The Appsemble Team_
 
 exports[`appMemberEmailChange > should render appMemberEmailChange 0 > html 1`] = `
 "<!doctype html>
-<html lang=\\"en\\">
+<html lang="en">
 <head>
-<meta charset=\\"utf-8\\">
-<meta name=\\"viewport\\" content=\\"width=device-width, initial-scale=1\\">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
 <body>
 <p>Hello User,</p>
 <p>You have changed your email address for Example App. Before you can use your account, we need to
 verify your email address.</p>
-<p>Please click <a href=\\"https://example.com\\">here</a> to verify your email address.</p>
+<p>Please click <a href="https://example.com">here</a> to verify your email address.</p>
 <p>Kind regards,</p>
 <p><em>Example App</em></p>
 </body>
@@ -63,16 +63,16 @@ _Example App_
 
 exports[`appMemberEmailChange > should render appMemberEmailChange 1 > html 1`] = `
 "<!doctype html>
-<html lang=\\"en\\">
+<html lang="en">
 <head>
-<meta charset=\\"utf-8\\">
-<meta name=\\"viewport\\" content=\\"width=device-width, initial-scale=1\\">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
 <body>
 <p>Hello,</p>
 <p>You have changed your email address for Example App. Before you can use your account, we need to
 verify your email address.</p>
-<p>Please click <a href=\\"https://example.com\\">here</a> to verify your email address.</p>
+<p>Please click <a href="https://example.com">here</a> to verify your email address.</p>
 <p>Kind regards,</p>
 <p><em>Example App</em></p>
 </body>
@@ -96,16 +96,16 @@ _Example App_
 
 exports[`emailAdded > should render emailAdded 0 > html 1`] = `
 "<!doctype html>
-<html lang=\\"en\\">
+<html lang="en">
 <head>
-<meta charset=\\"utf-8\\">
-<meta name=\\"viewport\\" content=\\"width=device-width, initial-scale=1\\">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
 <body>
 <p>Hello User,</p>
 <p>You have registered a new email address to your account. In order to make full use of this email, we
 need to verify your email address.</p>
-<p>Please click <a href=\\"https://example.com\\">this link</a> to verify your email address.</p>
+<p>Please click <a href="https://example.com">this link</a> to verify your email address.</p>
 <p><strong>Didn’t request this email?</strong></p>
 <p>No worries! Your address may have been entered by mistake. If you ignore or delete this email,
 nothing will be done with this email address.</p>
@@ -137,16 +137,16 @@ _The Appsemble Team_
 
 exports[`emailAdded > should render emailAdded 1 > html 1`] = `
 "<!doctype html>
-<html lang=\\"en\\">
+<html lang="en">
 <head>
-<meta charset=\\"utf-8\\">
-<meta name=\\"viewport\\" content=\\"width=device-width, initial-scale=1\\">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
 <body>
 <p>Hello,</p>
 <p>You have registered a new email address to your account. In order to make full use of this email, we
 need to verify your email address.</p>
-<p>Please click <a href=\\"https://example.com\\">this link</a> to verify your email address.</p>
+<p>Please click <a href="https://example.com">this link</a> to verify your email address.</p>
 <p><strong>Didn’t request this email?</strong></p>
 <p>No worries! Your address may have been entered by mistake. If you ignore or delete this email,
 nothing will be done with this email address.</p>
@@ -178,17 +178,17 @@ _The Appsemble Team_
 
 exports[`organizationInvite > should render organizationInvite 0 > html 1`] = `
 "<!doctype html>
-<html lang=\\"en\\">
+<html lang="en">
 <head>
-<meta charset=\\"utf-8\\">
-<meta name=\\"viewport\\" content=\\"width=device-width, initial-scale=1\\">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
 <body>
 <p>Hello User,</p>
 <p>You have been invited to join the organization <strong>winners</strong>.</p>
 <p>Joining an organization allows you to view private applications as well as create and edit apps
 belonging to an organization.</p>
-<p>You can accept or decline this invitation by following <a href=\\"https://example.com\\">this link</a>.</p>
+<p>You can accept or decline this invitation by following <a href="https://example.com">this link</a>.</p>
 <p>Kind regards,</p>
 <p><em>The Appsemble Team</em></p>
 </body>
@@ -214,17 +214,17 @@ _The Appsemble Team_
 
 exports[`organizationInvite > should render organizationInvite 1 > html 1`] = `
 "<!doctype html>
-<html lang=\\"en\\">
+<html lang="en">
 <head>
-<meta charset=\\"utf-8\\">
-<meta name=\\"viewport\\" content=\\"width=device-width, initial-scale=1\\">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
 <body>
 <p>Hello,</p>
 <p>You have been invited to join the organization <strong>winners</strong>.</p>
 <p>Joining an organization allows you to view private applications as well as create and edit apps
 belonging to an organization.</p>
-<p>You can accept or decline this invitation by following <a href=\\"https://example.com\\">this link</a>.</p>
+<p>You can accept or decline this invitation by following <a href="https://example.com">this link</a>.</p>
 <p>Kind regards,</p>
 <p><em>The Appsemble Team</em></p>
 </body>
@@ -250,16 +250,16 @@ _The Appsemble Team_
 
 exports[`resend > should render resend 0 > html 1`] = `
 "<!doctype html>
-<html lang=\\"en\\">
+<html lang="en">
 <head>
-<meta charset=\\"utf-8\\">
-<meta name=\\"viewport\\" content=\\"width=device-width, initial-scale=1\\">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
 <body>
 <p>Hello User,</p>
 <p>Someone has requested to resend the verification key for your account. Before you can use your
 account, we need to verify your email address.</p>
-<p>Please click <a href=\\"https://example.com\\">this link</a> below to verify your email address</p>
+<p>Please click <a href="https://example.com">this link</a> below to verify your email address</p>
 <p><strong>Didn’t request this email?</strong></p>
 <p>No worries! Your address may have been entered by mistake. If you ignore or delete this email,
 nothing will happen to your account.</p>
@@ -291,16 +291,16 @@ _The Appsemble Team_
 
 exports[`resend > should render resend 1 > html 1`] = `
 "<!doctype html>
-<html lang=\\"en\\">
+<html lang="en">
 <head>
-<meta charset=\\"utf-8\\">
-<meta name=\\"viewport\\" content=\\"width=device-width, initial-scale=1\\">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
 <body>
 <p>Hello,</p>
 <p>Someone has requested to resend the verification key for your account. Before you can use your
 account, we need to verify your email address.</p>
-<p>Please click <a href=\\"https://example.com\\">this link</a> below to verify your email address</p>
+<p>Please click <a href="https://example.com">this link</a> below to verify your email address</p>
 <p><strong>Didn’t request this email?</strong></p>
 <p>No worries! Your address may have been entered by mistake. If you ignore or delete this email,
 nothing will happen to your account.</p>
@@ -332,14 +332,14 @@ _The Appsemble Team_
 
 exports[`reset > should render reset 0 > html 1`] = `
 "<!doctype html>
-<html lang=\\"en\\">
+<html lang="en">
 <head>
-<meta charset=\\"utf-8\\">
-<meta name=\\"viewport\\" content=\\"width=device-width, initial-scale=1\\">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
 <body>
 <p>Hello User,</p>
-<p>A password reset has been requested for you account. Please click <a href=\\"https://example.com\\">here</a> to reset your
+<p>A password reset has been requested for you account. Please click <a href="https://example.com">here</a> to reset your
 password.</p>
 <p><strong>Didn’t request this email?</strong></p>
 <p>Your email address may have been entered by mistake. This email can be ignored safely.</p>
@@ -368,14 +368,14 @@ _The Appsemble Team_
 
 exports[`reset > should render reset 1 > html 1`] = `
 "<!doctype html>
-<html lang=\\"en\\">
+<html lang="en">
 <head>
-<meta charset=\\"utf-8\\">
-<meta name=\\"viewport\\" content=\\"width=device-width, initial-scale=1\\">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
 <body>
 <p>Hello,</p>
-<p>A password reset has been requested for you account. Please click <a href=\\"https://example.com\\">here</a> to reset your
+<p>A password reset has been requested for you account. Please click <a href="https://example.com">here</a> to reset your
 password.</p>
 <p><strong>Didn’t request this email?</strong></p>
 <p>Your email address may have been entered by mistake. This email can be ignored safely.</p>
@@ -404,15 +404,15 @@ _The Appsemble Team_
 
 exports[`teamInvite > should render teamInvite 0 > html 1`] = `
 "<!doctype html>
-<html lang=\\"en\\">
+<html lang="en">
 <head>
-<meta charset=\\"utf-8\\">
-<meta name=\\"viewport\\" content=\\"width=device-width, initial-scale=1\\">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
 <body>
 <p>Hello,</p>
 <p>You have been invited to join the team <strong>Test Team</strong> for the app <strong>Test App</strong>.</p>
-<p>You can accept this invitation by following <a href=\\"https://example.com\\">this link</a>.</p>
+<p>You can accept this invitation by following <a href="https://example.com">this link</a>.</p>
 <p>Kind regards,</p>
 <p><em>The Test App Team</em></p>
 </body>
@@ -435,16 +435,16 @@ _The Test App Team_
 
 exports[`welcome > should render welcome 0 > html 1`] = `
 "<!doctype html>
-<html lang=\\"en\\">
+<html lang="en">
 <head>
-<meta charset=\\"utf-8\\">
-<meta name=\\"viewport\\" content=\\"width=device-width, initial-scale=1\\">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
 <body>
 <p>Hello User,</p>
 <p>Thank you for registering your account. Before you can use your account, we need to verify your
 email address.</p>
-<p>Please click <a href=\\"https://example.com\\">here</a> to verify your email address.</p>
+<p>Please click <a href="https://example.com">here</a> to verify your email address.</p>
 <p>Kind regards,</p>
 <p><em>The Appsemble Team</em></p>
 </body>
@@ -468,16 +468,16 @@ _The Appsemble Team_
 
 exports[`welcome > should render welcome 1 > html 1`] = `
 "<!doctype html>
-<html lang=\\"en\\">
+<html lang="en">
 <head>
-<meta charset=\\"utf-8\\">
-<meta name=\\"viewport\\" content=\\"width=device-width, initial-scale=1\\">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
 <body>
 <p>Hello,</p>
 <p>Thank you for registering your account. Before you can use your account, we need to verify your
 email address.</p>
-<p>Please click <a href=\\"https://example.com\\">here</a> to verify your email address.</p>
+<p>Please click <a href="https://example.com">here</a> to verify your email address.</p>
 <p>Kind regards,</p>
 <p><em>The Appsemble Team</em></p>
 </body>
@@ -501,16 +501,16 @@ _The Appsemble Team_
 
 exports[`welcomeMember > should render welcomeMember 0 > html 1`] = `
 "<!doctype html>
-<html lang=\\"en\\">
+<html lang="en">
 <head>
-<meta charset=\\"utf-8\\">
-<meta name=\\"viewport\\" content=\\"width=device-width, initial-scale=1\\">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
 <body>
 <p>Hello User,</p>
 <p>Thank you for registering your account for Example App. Before you can use your account, we need to
 verify your email address.</p>
-<p>Please click <a href=\\"https://example.com\\">here</a> to verify your email address.</p>
+<p>Please click <a href="https://example.com">here</a> to verify your email address.</p>
 <p>Kind regards,</p>
 <p><em>Example App</em></p>
 </body>
@@ -534,16 +534,16 @@ _Example App_
 
 exports[`welcomeMember > should render welcomeMember 1 > html 1`] = `
 "<!doctype html>
-<html lang=\\"en\\">
+<html lang="en">
 <head>
-<meta charset=\\"utf-8\\">
-<meta name=\\"viewport\\" content=\\"width=device-width, initial-scale=1\\">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
 <body>
 <p>Hello,</p>
 <p>Thank you for registering your account for Example App. Before you can use your account, we need to
 verify your email address.</p>
-<p>Please click <a href=\\"https://example.com\\">here</a> to verify your email address.</p>
+<p>Please click <a href="https://example.com">here</a> to verify your email address.</p>
 <p>Kind regards,</p>
 <p><em>Example App</em></p>
 </body>

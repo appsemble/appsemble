@@ -1,7 +1,7 @@
 import { Button, useData, useToggle } from '@appsemble/react-components';
 import { type AppServiceSecret } from '@appsemble/types';
 import axios from 'axios';
-import { type ReactElement, useCallback } from 'react';
+import { type ReactNode, useCallback } from 'react';
 import { FormattedMessage } from 'react-intl';
 
 import { messages } from './messages.js';
@@ -12,7 +12,7 @@ import { HeaderControl } from '../../../../../components/HeaderControl/index.js'
 import { useApp } from '../../index.js';
 
 const initialSecret: AppServiceSecret = {
-  serviceName: '',
+  name: '',
   urlPatterns: '',
   authenticationMethod: 'http-basic',
   identifier: '',
@@ -23,7 +23,7 @@ const initialSecret: AppServiceSecret = {
 /**
  * Render a CRUD interface for managing app service secrets.
  */
-export function ServiceSecrets(): ReactElement {
+export function ServiceSecrets(): ReactNode {
   const { app } = useApp();
   const modal = useToggle();
 

@@ -69,6 +69,10 @@ This must be set to \`false\` before any other changes can be made to an app.
       type: 'boolean',
       description: 'Determines whether this app should be included when fetching for templates.',
     },
+    demoMode: {
+      type: 'boolean',
+      description: 'Determines whether this app should be used in demo mode.',
+    },
     longDescription: {
       type: 'string',
       description: `
@@ -102,6 +106,14 @@ domain fall back to use the Appsemble server Sentry DSN.
       description: `The name that should be used as the sentry environment.
 
   This is only applied when \`sentryDsn\` is specified.`,
+    },
+    controllerCode: {
+      type: 'string',
+      description: 'Custom app logic as a JavaScript string',
+    },
+    controllerImplementations: {
+      type: 'string',
+      description: 'Appsemble SDK interfaces implementations',
     },
   },
 };

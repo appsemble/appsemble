@@ -24,7 +24,7 @@ export function StringInput({
   readOnly,
 }: StringInputProps): VNode {
   const { utils } = useBlock();
-  const { format, icon, inline, label, multiline, placeholder, tag } = field;
+  const { format, help, icon, inline, label, multiline, placeholder, tag } = field;
 
   const value = getValueByNameSequence(name, formValues) as string;
   const remappedLabel = utils.remap(label, value) ?? name;
@@ -32,6 +32,7 @@ export function StringInput({
     className: classNames('appsemble-string', className),
     disabled,
     error: dirty && error,
+    help: utils.remap(help, value) as string,
     icon,
     label: remappedLabel as string,
     maxLength: getMaxLength(field),
@@ -43,7 +44,7 @@ export function StringInput({
     readOnly,
     required: isRequired(field, utils, formValues),
     tag: utils.remap(tag, value) as string,
-    value,
+    value: format === 'url' ? String(new URL(value)) : value,
     inline,
   };
 

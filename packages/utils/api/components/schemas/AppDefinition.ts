@@ -68,6 +68,12 @@ This **must** match the name of a page defined for the app.
       minLength: 2,
       description: 'The default language for the app.',
     },
+    controller: {
+      $ref: '#/components/schemas/ControllerDefinition',
+    },
+    users: {
+      $ref: '#/components/schemas/UsersDefinition',
+    },
     resources: {
       type: 'object',
       description: `Resources define how Appsemble can store data for an app.

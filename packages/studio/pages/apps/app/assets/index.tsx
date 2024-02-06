@@ -20,7 +20,7 @@ import {
 import { type Asset } from '@appsemble/types';
 import { compareStrings, normalize } from '@appsemble/utils';
 import axios from 'axios';
-import { type ChangeEvent, type ReactElement, useCallback, useState } from 'react';
+import { type ChangeEvent, type ReactNode, useCallback, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useSearchParams } from 'react-router-dom';
 
@@ -40,7 +40,7 @@ const defaultFormValues: FormValues = {
   name: '',
 };
 
-export function AssetsPage(): ReactElement {
+export function AssetsPage(): ReactNode {
   useMeta(messages.title);
 
   const { app } = useApp();
@@ -76,8 +76,8 @@ export function AssetsPage(): ReactElement {
         rowsPerPage === Number.POSITIVE_INFINITY
           ? 1
           : page >= Math.ceil(newCount / rowsPerPage)
-          ? Math.ceil(newCount / rowsPerPage)
-          : page;
+            ? Math.ceil(newCount / rowsPerPage)
+            : page;
       setSearchParams(
         Number.isFinite(rowsPerPage)
           ? { offset: String((newPage - 1) * rowsPerPage), limit: String(rowsPerPage) }

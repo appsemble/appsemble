@@ -48,6 +48,11 @@ CSS styles are linted using
 Markdown documents are linted using
 [![](https://avatars.githubusercontent.com/u/16309564?s=16) Remark lint](https://github.com/remarkjs/remark-lint)
 
+##### Spelling
+
+Documentation is also spell checked. In case you need to teach the checker new terms, add them to
+`config/retext/personal.dic`
+
 #### Documentation validation
 
 We intend to validate all full and partial app YAML examples in the Appsemble documentation using CI
@@ -82,7 +87,7 @@ myMessage: {
 To generate an ID for the message run:
 
 ```sh
-yarn eslint --fix path/to/my-messages-file
+npx eslint -- --fix path/to/my-messages-file
 ```
 
 This will generate an ID using the [formatjs](https://formatjs.io/docs/tooling/linter/) plugin for
@@ -94,7 +99,7 @@ The pipeline will automatically detect if newly added messages are missing in th
 automatically extract these messages from the source files run:
 
 ```sh
-yarn script extract-messages
+npm run scripts -- extract-messages
 ```
 
 ### Permissions
@@ -112,13 +117,13 @@ the test file has a _.test_ suffix. Not everything is tested yet. However, pleas
 tests keep working. To run tests, simply run the command below. Any Vitest arguments are supported.
 
 ```sh
-yarn test
+npm test
 ```
 
 To run tests for a single file, run
 
 ```sh
-yarn test path/to/file
+npm test -- path/to/file
 ```
 
 Appsemble uses test snapshots to assert large serializable objects like block manifests, HTTP
@@ -129,7 +134,7 @@ mentioned with the `-u` argument. Or when in watch mode by pressing the
 [u key](https://vitest.dev/guide/snapshot.html#updating-snapshots) in the terminal.
 
 ```sh
-yarn test -u
+npm test -- -u
 ```
 
 #### End 2 End Tests
@@ -162,9 +167,16 @@ Every block and package has a `changed` directory. This directory contains the f
 - `fixed`
 - `security`
 
-A single line changelog entry should be placed in one of these folders for any significant change. A
-single imperative sentence is preferred. Changelog entries are added to the
-[changelog](CHANGELOG.md) on a release.
+A single line changelog entry should be placed as markdown file in one of these folders for any
+significant change. A single imperative sentence is preferred. Changelog entries are parsed form
+these files and added to the [changelog](CHANGELOG.md) on a release. For example a changelog entry
+from a file `blocks/filter/changed/added/fullscreen.md` with the content `Add boolean field support`
+is parsed into Block(`filter`): Add boolean field support in the `Added` section of the changelog
+file. Similarly, a changelog entry from file `packages/cli/changed/export_command.md` with the
+content `Add app export command to export an app as a zip file` is parsed into
+`Cli: Add app export command to export an app as a zip file.`. Files added by you are removed after
+being parsed by the system at the time of release. Folders containing the changelog files are left
+with the single `.gitkeep` file.
 
 The format is based on the [keep a changelog] format.
 
@@ -213,8 +225,8 @@ Before releasing, manually inspect the changelog to be published (quoting from t
 
 ```sh
 # Make sure you're on master, clean working tree.
-yarn scripts release minor
-yarn --silent scripts get-release-notes
+npm run scripts -- release minor
+npm --silent run scripts -- get-release-notes
 ```
 
 A release can be created by a maintainer triggering the `release patch` or `release minor` job in

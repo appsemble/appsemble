@@ -3,7 +3,8 @@ import fg from 'fast-glob';
 import normalizePath from 'normalize-path';
 import { type Argv } from 'yargs';
 
-import { buildBlock, getBlockConfig } from '../../lib/block.js';
+import { getProjectBuildConfig } from '../../lib/config.js';
+import { buildProject } from '../../lib/project.js';
 import { type BaseArguments } from '../../types.js';
 
 interface BuildBlockArguments extends BaseArguments {
@@ -25,8 +26,8 @@ export async function handler({ paths }: BuildBlockArguments): Promise<void> {
   logger.info(`Building ${directories.length} Blocks`);
   for (const dir of directories) {
     logger.info('');
-    const config = await getBlockConfig(dir);
+    const buildConfig = await getProjectBuildConfig(dir);
 
-    await buildBlock(config);
+    await buildProject(buildConfig);
   }
 }

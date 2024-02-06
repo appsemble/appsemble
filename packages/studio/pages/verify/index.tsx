@@ -1,13 +1,13 @@
 import { Loader, Message, useQuery } from '@appsemble/react-components';
 import axios from 'axios';
-import { type ReactElement, useEffect, useState } from 'react';
+import { type ReactNode, useEffect, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 
 import styles from './index.module.css';
 import { messages } from './messages.js';
 import { useUser } from '../../components/UserProvider/index.js';
 
-export function VerifyPage(): ReactElement {
+export function VerifyPage(): ReactNode {
   const [submitting, setSubmitting] = useState(true);
   const [success, setSuccess] = useState(false);
   const qs = useQuery();

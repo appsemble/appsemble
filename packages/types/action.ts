@@ -54,6 +54,7 @@ export type ResourcePatchAction = RequestLikeAction<'resource.patch'>;
 export type Action =
   | BaseAction<'analytics'>
   | BaseAction<'condition'>
+  | BaseAction<'controller'>
   | BaseAction<'dialog.error'>
   | BaseAction<'dialog.ok'>
   | BaseAction<'dialog'>
@@ -89,9 +90,12 @@ export type Action =
   | BaseAction<'team.list'>
   | BaseAction<'team.members'>
   | BaseAction<'throw'>
+  | BaseAction<'user.create'>
   | BaseAction<'user.login'>
   | BaseAction<'user.logout'>
+  | BaseAction<'user.query'>
   | BaseAction<'user.register'>
+  | BaseAction<'user.remove'>
   | BaseAction<'user.update'>
   | LinkAction
   | LogAction

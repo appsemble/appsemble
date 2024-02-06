@@ -1,6 +1,6 @@
 import { Title } from '@appsemble/react-components';
 import { type NamedEvent } from '@appsemble/web-utils';
-import { type ReactElement, useCallback } from 'react';
+import { type ReactNode, useCallback } from 'react';
 
 import styles from './index.module.css';
 import { Collapsible } from '../../Collapsible/index.js';
@@ -16,7 +16,7 @@ export function JSONSchemaObjectEditor({
   prefix,
   schema,
   value = {},
-}: CommonJSONSchemaEditorProps<Record<string, string>>): ReactElement {
+}: CommonJSONSchemaEditorProps<Record<string, string>>): ReactNode {
   const onPropertyChange = useCallback(
     ({ currentTarget }: NamedEvent, val: string) => {
       const id = currentTarget.name.slice(name.length + 1);

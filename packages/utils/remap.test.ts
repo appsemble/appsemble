@@ -55,6 +55,7 @@ function runTests(tests: Record<string, TestCase>): void {
         appId: 6789,
         locale: 'en',
         pageData: { hello: 'Page data' },
+        appMember: userInfo?.appMember,
       });
       expect(result).toStrictEqual(expected);
     },
@@ -297,6 +298,7 @@ describe('log', () => {
           appId: 6789,
           locale: 'en',
           pageData: { hello: 'Page data' },
+          appMember: userInfo?.appMember,
         });
         expect(console[(mappers as { log: 'error' | 'info' | 'warn' }).log]).toHaveBeenCalledWith(
           expected,
@@ -845,6 +847,26 @@ describe('array', () => {
         { value: 'b', index: 1, length: 3 },
         { value: 'c', index: 2, length: 3 },
       ],
+    },
+  });
+});
+
+describe('array.find', () => {
+  runTests({
+    'return object with specified value from array': {
+      input: [{ name: 'Craig' }, { name: 'Joey' }, { name: 'Stuart' }],
+      mappers: [{ 'array.find': { equals: [{ prop: 'name' }, 'Craig'] } }],
+      expected: { name: 'Craig' },
+    },
+    'return undefined when condition doesn’t match anything': {
+      input: [{ name: 'Craig' }],
+      mappers: [{ 'array.find': { equals: [{ prop: 'name' }, 'foo'] } }],
+      expected: null,
+    },
+    'return single value when the array does not include objects': {
+      input: ['Craig', 'Stuart'],
+      mappers: [{ 'array.find': 'Craig' }],
+      expected: 'Craig',
     },
   });
 });

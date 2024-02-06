@@ -1,5 +1,5 @@
 import { CheckboxField } from '@appsemble/react-components';
-import { type ReactElement } from 'react';
+import { type ReactNode } from 'react';
 
 import { MarkdownContent } from '../../MarkdownContent/index.js';
 import { JSONSchemaLabel } from '../JSONSchemaLabel/index.js';
@@ -13,7 +13,7 @@ export function JSONSchemaBooleanEditor({
   required,
   schema,
   value = false,
-}: CommonJSONSchemaEditorProps<boolean>): ReactElement {
+}: CommonJSONSchemaEditorProps<boolean>): ReactNode {
   return (
     <CheckboxField
       disabled={disabled}

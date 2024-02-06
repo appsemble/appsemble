@@ -1,4 +1,4 @@
-import { type Options } from '@appsemble/node-utils';
+import { assertKoaError, type Options } from '@appsemble/node-utils';
 import { type Context, type Middleware } from 'koa';
 
 export function createBlockCssHandler({ getApp, getAppBlockStyles }: Options): Middleware {
@@ -9,15 +9,7 @@ export function createBlockCssHandler({ getApp, getAppBlockStyles }: Options): M
 
     const app = await getApp({ context: ctx });
 
-    if (!app) {
-      ctx.response.status = 404;
-      ctx.response.body = {
-        statusCode: 404,
-        error: 'Not Found',
-        message: 'App not found',
-      };
-      ctx.throw();
-    }
+    assertKoaError(!app, ctx, 404, 'App not found');
 
     const appBlockStyles = await getAppBlockStyles({ app, name, context: ctx });
 

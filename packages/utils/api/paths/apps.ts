@@ -36,6 +36,9 @@ export const paths: OpenAPIV3.PathsObject = {
                 template: {
                   $ref: '#/components/schemas/App/properties/template',
                 },
+                demoMode: {
+                  $ref: '#/components/schemas/App/properties/demoMode',
+                },
                 longDescription: {
                   $ref: '#/components/schemas/App/properties/longDescription',
                 },
@@ -76,6 +79,14 @@ export const paths: OpenAPIV3.PathsObject = {
                     type: 'string',
                     format: 'binary',
                   },
+                },
+                controllerCode: {
+                  type: 'string',
+                  description: 'Custom app logic as a JavaScript string',
+                },
+                controllerImplementations: {
+                  type: 'string',
+                  description: 'Appsemble SDK interfaces implementations',
                 },
               },
             },
@@ -174,6 +185,9 @@ export const paths: OpenAPIV3.PathsObject = {
                 template: {
                   $ref: '#/components/schemas/App/properties/template',
                 },
+                demoMode: {
+                  $ref: '#/components/schemas/App/properties/demoMode',
+                },
                 longDescription: {
                   $ref: '#/components/schemas/App/properties/longDescription',
                 },
@@ -215,6 +229,14 @@ export const paths: OpenAPIV3.PathsObject = {
                     format: 'binary',
                   },
                 },
+                controllerCode: {
+                  type: 'string',
+                  description: 'Custom app logic as a JavaScript string',
+                },
+                controllerImplementations: {
+                  type: 'string',
+                  description: 'Appsemble SDK interfaces implementations',
+                },
                 showAppsembleLogin: {
                   type: 'boolean',
                   description: 'Whether the Appsemble login method should be shown.',
@@ -222,6 +244,10 @@ export const paths: OpenAPIV3.PathsObject = {
                 showAppsembleOAuth2Login: {
                   type: 'boolean',
                   description: 'Whether the Appsemble OAuth2 login method should be shown.',
+                },
+                enableSelfRegistration: {
+                  type: 'boolean',
+                  description: 'Whether new users should be able to register themselves.',
                 },
                 emailName: {
                   type: 'string',
@@ -277,7 +303,54 @@ export const paths: OpenAPIV3.PathsObject = {
           description: 'The app was successfully deleted.',
         },
       },
-      security: [{ studio: [] }],
+      security: [{ studio: [] }, { cli: ['apps:delete'] }],
+    },
+  },
+  '/api/apps/import/organization/{organizationId}': {
+    parameters: [{ $ref: '#/components/parameters/organizationId' }],
+    post: {
+      tags: ['app', 'import', 'zip'],
+      description: 'Import an app from a zip file',
+      operationId: 'importApp',
+      requestBody: {
+        content: {
+          'application/zip': {
+            schema: {
+              type: 'string',
+              format: 'binary',
+            },
+          },
+        },
+      },
+      responses: {
+        200: {
+          description: 'App imported successfully',
+          $ref: '#/components/responses/app',
+        },
+      },
+      security: [{ studio: [] }, { cli: ['apps:write'] }],
+    },
+  },
+  '/api/apps/{appId}/export': {
+    parameters: [{ $ref: '#/components/parameters/appId' }],
+    get: {
+      tags: ['app', 'export', 'zip'],
+      description: 'Export the app',
+      operationId: 'exportApp',
+      parameters: [
+        {
+          name: 'resources',
+          schema: { type: 'boolean' },
+          description: 'Whether to include resources for an app.',
+          in: 'query',
+        },
+      ],
+      responses: {
+        200: {
+          description: 'App exported successfully.',
+        },
+      },
+      security: [{ studio: [] }, { cli: ['apps:export'] }],
     },
   },
   '/api/apps/{appId}/lock': {
@@ -306,6 +379,9 @@ export const paths: OpenAPIV3.PathsObject = {
       responses: {
         204: {
           description: 'Lock status successfully changed',
+          content: {
+            'application/zip': {},
+          },
         },
       },
       security: [{ studio: [] }, { cli: ['apps:write'] }],
@@ -507,7 +583,7 @@ export const paths: OpenAPIV3.PathsObject = {
               schema: {
                 type: 'array',
                 items: {
-                  $ref: '#/components/schemas/Member',
+                  $ref: '#/components/schemas/OrganizationMember',
                 },
               },
             },
@@ -517,13 +593,13 @@ export const paths: OpenAPIV3.PathsObject = {
       security: [{ studio: [] }, { app: ['openid'] }],
     },
   },
-  '/api/apps/{appId}/members/{memberId}': {
+  '/api/apps/{appId}/members/{userId}': {
     parameters: [
       { $ref: '#/components/parameters/appId' },
       {
-        name: 'memberId',
+        name: 'userId',
         in: 'path',
-        description: 'The ID of the member on which to perform an operation',
+        description: 'The user ID of the member on which to perform an operation',
         required: true,
         schema: { $ref: '#/components/schemas/User/properties/id' },
       },
@@ -538,7 +614,7 @@ export const paths: OpenAPIV3.PathsObject = {
           content: {
             'application/json': {
               schema: {
-                $ref: '#/components/schemas/Member',
+                $ref: '#/components/schemas/OrganizationMember',
               },
             },
           },
@@ -577,7 +653,7 @@ export const paths: OpenAPIV3.PathsObject = {
           content: {
             'application/json': {
               schema: {
-                $ref: '#/components/schemas/Member',
+                $ref: '#/components/schemas/OrganizationMember',
               },
             },
           },
@@ -1167,7 +1243,7 @@ This will return a 404 if the user has not uploaded one.`,
               schema: {
                 type: 'array',
                 items: {
-                  $ref: '#/components/schemas/Member',
+                  $ref: '#/components/schemas/OrganizationMember',
                 },
               },
             },
@@ -1201,7 +1277,7 @@ This will return a 404 if the user has not uploaded one.`,
           content: {
             'application/json': {
               schema: {
-                $ref: '#/components/schemas/Member',
+                $ref: '#/components/schemas/OrganizationMember',
               },
             },
           },
@@ -1238,7 +1314,7 @@ This will return a 404 if the user has not uploaded one.`,
           content: {
             'application/json': {
               schema: {
-                $ref: '#/components/schemas/Member',
+                $ref: '#/components/schemas/OrganizationMember',
               },
             },
           },
@@ -1273,13 +1349,13 @@ This will return a 404 if the user has not uploaded one.`,
           content: {
             'application/json': {
               schema: {
-                $ref: '#/components/schemas/Member',
+                $ref: '#/components/schemas/OrganizationMember',
               },
             },
           },
         },
       },
-      security: [{ studio: [] }, { cli: ['teams:write'] }],
+      security: [{ studio: [] }, { app: [] }, { cli: ['teams:write'] }],
     },
     delete: {
       tags: ['app'],
@@ -1290,7 +1366,7 @@ This will return a 404 if the user has not uploaded one.`,
           description: 'The team member has been removed successfully.',
         },
       },
-      security: [{ studio: [] }, { cli: ['teams:write'] }],
+      security: [{ studio: [] }, { app: [] }, { cli: ['teams:write'] }],
     },
   },
   '/api/apps/{appId}/teams/{teamId}/invite': {
@@ -1339,7 +1415,7 @@ This will return a 404 if the user has not uploaded one.`,
           content: {
             'application/json': {
               schema: {
-                $ref: '#/components/schemas/Member',
+                $ref: '#/components/schemas/OrganizationMember',
               },
             },
           },
@@ -1369,7 +1445,7 @@ This will return a 404 if the user has not uploaded one.`,
           content: {
             'application/json': {
               schema: {
-                $ref: '#/components/schemas/Member',
+                $ref: '#/components/schemas/OrganizationMember',
               },
             },
           },
@@ -1399,13 +1475,24 @@ This will return a 404 if the user has not uploaded one.`,
           content: {
             'application/json': {
               schema: {
-                $ref: '#/components/schemas/Member',
+                $ref: '#/components/schemas/OrganizationMember',
               },
             },
           },
         },
       },
       security: [{ app: ['teams:read'] }],
+    },
+  },
+  '/api/apps/{appId}/reseed': {
+    parameters: [{ $ref: '#/components/parameters/appId' }],
+    post: {
+      tags: ['app'],
+      operationId: 'reseedDemoApp',
+      responses: {
+        200: { description: 'The app has successfully been reseeded.' },
+      },
+      security: [{ studio: ['apps:write'] }],
     },
   },
 };

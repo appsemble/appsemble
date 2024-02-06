@@ -134,6 +134,8 @@ spec:
                 secretKeyRef:
                   name: {{ . | quote }}
                   key: imap-copy-to-sent-folder
+            {{- end }}
+            {{- with .Values.adminApiSecret }}
             - name: ADMIN_API_SECRET
               valueFrom: 
                 secretKeyRef:

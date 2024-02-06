@@ -12,8 +12,6 @@ export const LinkActionDefinition = extendJSONSchema(BaseActionDefinition, {
         'The link action can be used to redirect the user to other pages or absolute URLs.',
     },
     to: {
-      description:
-        'The name of the page to link to. Subpages can be referred to using arrays. If this matches with an absolute URL, link will open this instead of matching it with a page or subpage.',
       anyOf: [
         {
           type: 'string',
@@ -22,7 +20,12 @@ export const LinkActionDefinition = extendJSONSchema(BaseActionDefinition, {
           type: 'array',
           items: { type: 'string' },
         },
+        {
+          $ref: '#/components/schemas/RemapperDefinition',
+        },
       ],
+      description:
+        'The name of the page to link to. Subpages can be referred to using arrays. If this matches with an absolute URL, link will open this instead of matching it with a page or subpage.',
     },
   },
 });

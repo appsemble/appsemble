@@ -1,18 +1,18 @@
 # Build production files
-FROM node:18-bookworm-slim AS build
+FROM node:18.18.0-bookworm-slim AS build
 WORKDIR /app
 COPY . .
-RUN yarn --frozen-lockfile
-RUN yarn playwright install --with-deps chromium
-RUN yarn scripts build
-RUN yarn workspace @appsemble/types prepack
-RUN yarn workspace @appsemble/sdk prepack
-RUN yarn workspace @appsemble/utils prepack
-RUN yarn workspace @appsemble/node-utils prepack
-RUN yarn workspace @appsemble/server prepack
+RUN npm ci
+RUN npx playwright install --with-deps chromium
+RUN npm run scripts -- build
+RUN npm --workspace @appsemble/types run prepack
+RUN npm --workspace @appsemble/sdk run prepack
+RUN npm --workspace @appsemble/utils run prepack
+RUN npm --workspace @appsemble/node-utils run prepack
+RUN npm --workspace @appsemble/server run prepack
 
 # Install production dependencies
-FROM node:18-bookworm-slim AS prod
+FROM node:18.18.0-bookworm-slim AS prod
 WORKDIR /app
 COPY --from=build /app/packages/node-utils packages/node-utils
 COPY --from=build /app/packages/sdk packages/sdk
@@ -20,14 +20,15 @@ COPY --from=build /app/packages/server packages/server
 COPY --from=build /app/packages/types packages/types
 COPY --from=build /app/packages/utils packages/utils
 COPY --from=build /app/package.json package.json
-COPY --from=build /app/yarn.lock yarn.lock
-RUN yarn --frozen-lockfile --production
+COPY --from=build /app/package-lock.json package-lock.json
+RUN npm install --omit=dev
+RUN npm prune
 RUN find . -name '*.ts' -delete
-RUN rm -r yarn.lock
+RUN rm -r package-lock.json
 
 # Setup the production docker image.
-FROM node:18-bookworm-slim
-ARG version=0.22.10
+FROM node:18.18.0-bookworm-slim
+ARG version=0.24.12
 ARG date
 
 COPY --from=prod /app /app

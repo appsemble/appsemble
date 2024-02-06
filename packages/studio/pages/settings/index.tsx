@@ -5,7 +5,7 @@ import {
   MetaSwitch,
   useSideMenu,
 } from '@appsemble/react-components';
-import { type ReactElement } from 'react';
+import { type ReactNode } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { Navigate, Route, useParams } from 'react-router-dom';
 
@@ -15,7 +15,7 @@ import { messages } from './messages.js';
 import { SocialPage } from './social/index.js';
 import { UserPage } from './user/index.js';
 
-export function SettingsRoutes(): ReactElement {
+export function SettingsRoutes(): ReactNode {
   const { lang } = useParams<{ lang: string }>();
   const url = `/${lang}/settings`;
 

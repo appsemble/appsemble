@@ -4,7 +4,6 @@ import {
   type ElementType,
   type KeyboardEvent,
   type MouseEvent,
-  type ReactElement,
   type ReactNode,
   useCallback,
 } from 'react';
@@ -32,6 +31,11 @@ interface ModalProps<T extends ElementType> {
    * The React component to render as the root for the modal.
    */
   readonly component?: T;
+
+  /**
+   * Extra class name parameter to apply to the root of the component.
+   */
+  readonly extraClassName?: string;
 
   /**
    * Wether or not the modal is currently active.
@@ -73,10 +77,11 @@ export function Modal<T extends ElementType = 'div'>({
   closable = true,
   closeButtonLabel,
   component: Component = 'div' as T,
+  extraClassName,
   isActive,
   onClose,
   ...props
-}: ModalProps<T> & Omit<ComponentPropsWithoutRef<T>, keyof ModalProps<T>>): ReactElement {
+}: ModalProps<T> & Omit<ComponentPropsWithoutRef<T>, keyof ModalProps<T>>): ReactNode {
   const openClass = useAnimation(isActive, 300, {
     opening: styles.opening,
     open: styles.open,
@@ -97,7 +102,7 @@ export function Modal<T extends ElementType = 'div'>({
   }
 
   return (
-    <div className={`is-active modal ${styles.root} ${openClass}`}>
+    <div className={`is-active modal ${styles.root} ${extraClassName} ${openClass}`}>
       {/* eslint-disable-next-line jsx-a11y/prefer-tag-over-role */}
       <div
         className="modal-background"

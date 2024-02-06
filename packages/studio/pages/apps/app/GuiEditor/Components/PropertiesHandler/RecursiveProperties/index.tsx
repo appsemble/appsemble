@@ -1,5 +1,5 @@
 import { type Schema } from 'jsonschema';
-import { type ReactElement, useContext } from 'react';
+import { type ReactNode, useContext } from 'react';
 import { type JsonObject } from 'type-fest';
 
 import { SchemaDefinitionsContext } from '../index.js';
@@ -24,7 +24,7 @@ export function RecursiveProperties({
   property,
   schema,
   value,
-}: RecursivePropertiesProps): ReactElement {
+}: RecursivePropertiesProps): ReactNode {
   const definitions = useContext(SchemaDefinitionsContext) as Record<string, Schema>;
 
   if (schema.enum) {

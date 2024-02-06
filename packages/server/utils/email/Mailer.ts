@@ -1,4 +1,5 @@
 import {
+  EmailError,
   EmailQuotaExceededError,
   getAppsembleMessages,
   getSupportedLanguages,
@@ -22,12 +23,41 @@ import { Op } from 'sequelize';
 
 import { renderEmail } from './renderEmail.js';
 import { AppEmailQuotaLog } from '../../models/AppEmailQuotaLog.js';
-import { App, AppMessages, Member, Organization, transactional, User } from '../../models/index.js';
+import {
+  App,
+  AppMessages,
+  Organization,
+  OrganizationMember,
+  transactional,
+  User,
+} from '../../models/index.js';
 import { argv } from '../argv.js';
 import { decrypt } from '../crypto.js';
 import { readAsset } from '../readAsset.js';
 
 const supportedLanguages = getSupportedLanguages();
+
+const emailErrorMessages: Record<string, string> = {
+  EENVELOPE: 'Unable to determine the sender or recipient of the message.',
+  EENVELOPEFORMAT: 'The format of the sender or recipient email address is invalid.',
+  EENCODE: 'Unable to encode the message content correctly.',
+  EMESSAGEID: 'Unable to generate a unique message ID.',
+  ETXTBSY: 'The message file is locked by another process.',
+  EFILE: 'Unable to access the message file.',
+  ECONNECTION: 'Unable to establish a connection to the email server.',
+  EAUTH: 'Authentication failed during the attempt to connect to the email server.',
+  ENOAUTH: 'No authentication credentials were provided for the connection to the email server.',
+  ETLS: 'Unable to start a TLS connection with the email server.',
+  ESTARTTLS: 'Unable to start STARTTLS during the connection to the email server.',
+  EUPGRADE: 'Unable to upgrade the TLS connection to a secure connection.',
+  EENOTFOUND: 'Unable to find the specified email server.',
+  EENOTEMPTY: 'Unable to send an empty message.',
+  EMSGBIG: 'The message is too large to be sent.',
+  EINVALIDDATE: 'The message date is not valid or not in the correct format.',
+  ETOOMANYTOS: 'Too many recipients specified in the message.',
+  ETOOMANYMSGS: 'Too many messages sent in a single call to Nodemailer.',
+};
+
 export interface Recipient {
   /**
    * The email address of the recipient.
@@ -315,7 +345,7 @@ export class Mailer {
             include: [Organization],
             transaction,
           });
-          const members = await Member.findAll({
+          const members = await OrganizationMember.findAll({
             where: {
               role: 'Owner',
               OrganizationId: fullApp.OrganizationId,
@@ -419,14 +449,22 @@ export class Mailer {
     }
 
     if (transport) {
-      await transport.sendMail({
-        html,
-        from: fromHeader,
-        subject,
-        text,
-        to,
-        attachments,
-      });
+      try {
+        await transport.sendMail({
+          html,
+          from: fromHeader,
+          subject,
+          text,
+          to,
+          attachments,
+        });
+      } catch (error: any) {
+        throw new EmailError(
+          error.message ||
+            emailErrorMessages[error.code] ||
+            'Something went wrong when sending the email.',
+        );
+      }
     }
     logger.verbose('Email sent successfully.');
 

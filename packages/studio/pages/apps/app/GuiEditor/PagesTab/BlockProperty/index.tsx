@@ -1,10 +1,17 @@
-import { Button, Loader, useData } from '@appsemble/react-components';
+import {
+  Button,
+  Confirmation,
+  Loader,
+  useConfirmation,
+  useData,
+} from '@appsemble/react-components';
 import { type BlockManifest } from '@appsemble/types';
 import { normalizeBlockName } from '@appsemble/utils';
-import { type ReactElement, useCallback } from 'react';
+import { type ReactNode, useCallback } from 'react';
 import { type JsonObject } from 'type-fest';
 import { type Document, parse, type ParsedNode, stringify } from 'yaml';
 
+import styles from './index.module.css';
 import { InputList } from '../../Components/InputList/index.js';
 import PropertiesHandler from '../../Components/PropertiesHandler/index.js';
 
@@ -19,14 +26,13 @@ export function BlockProperty({
   changeType,
   deleteBlock,
   selectedBlock,
-}: BlockPropertyProps): ReactElement {
+}: BlockPropertyProps): ReactNode {
   const { data: blocks, error, loading } = useData<BlockManifest[]>('/api/blocks');
   const blockName = normalizeBlockName(
     stringify(selectedBlock.getIn(['type']))
       .replaceAll(/["']/g, '')
       .trim(),
   );
-
   const onTypeChange = useCallback(
     (index: number) => {
       if (!selectedBlock) {
@@ -36,6 +42,14 @@ export function BlockProperty({
     },
     [blocks, changeType, selectedBlock],
   );
+  const handleDelete = useConfirmation({
+    title: 'Careful!',
+    body: 'Do you really want to delete this block?',
+    cancelLabel: 'No',
+    confirmLabel: 'Yes',
+    color: 'danger',
+    action: () => deleteBlock(),
+  });
 
   if (error) {
     return null;
@@ -46,25 +60,27 @@ export function BlockProperty({
 
   return (
     <div>
-      {Boolean(selectedBlock) && (
-        <div>
-          <Button className="is-danger" component="a" icon="trash" onClick={() => deleteBlock()}>
-            Delete Block
-          </Button>
+      <Confirmation>
+        {Boolean(selectedBlock) && (
+          <div className={styles.propsList}>
+            <Button className="is-danger" component="a" icon="trash" onClick={() => handleDelete()}>
+              Delete Block
+            </Button>
 
-          <InputList
-            label="Type"
-            onChange={onTypeChange}
-            options={blocks.map((block) => block.name)}
-            value={normalizeBlockName(blockName)}
-          />
-          <PropertiesHandler
-            onChange={changeProperty}
-            parameters={parse(stringify(selectedBlock)).parameters}
-            schema={blocks.find((thisBlock) => thisBlock.name === blockName).parameters}
-          />
-        </div>
-      )}
+            <InputList
+              label="Type"
+              onChange={onTypeChange}
+              options={blocks.map((block) => block.name)}
+              value={normalizeBlockName(blockName)}
+            />
+            <PropertiesHandler
+              onChange={changeProperty}
+              parameters={parse(stringify(selectedBlock)).parameters}
+              schema={blocks.find((thisBlock) => thisBlock.name === blockName).parameters}
+            />
+          </div>
+        )}
+      </Confirmation>
     </div>
   );
 }

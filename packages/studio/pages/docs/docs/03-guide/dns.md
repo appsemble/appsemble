@@ -41,11 +41,11 @@ To link a subdomain, for example `my-app`, to an app, add the following configur
 If your root domain has no CAA record defined, you can skip this segment. If you’re unsure whether
 you have a CAA record, find out using [CAA Lookup].
 
-A CAA record defines what Certificate Authority (CA) is allowed to hand out SSL certificates for
-your (sub)domain.
+A CAA record defines what Certificate Authority (CA) is allowed to hand out certificates for your
+(sub)domain.
 
-If you host your app on _appsemble.app_, we need you to support SSL certificates handed out by
-[Let’s Encrypt]. To allow this for your (sub)domain, you add an extra CAA record like this:
+If you host your app on _appsemble.app_, we need you to support certificates handed out by [Let’s
+Encrypt]. To allow this for your (sub)domain, you add an extra CAA record like this:
 
 | Type | Name | Target                      |
 | ---- | ---- | --------------------------- |
@@ -59,6 +59,8 @@ To link a subdomain, for example `my-app`, to an app, add the following configur
 | Type | Name | Target                      |
 | ---- | ---- | --------------------------- |
 | CAA  | app  | `0 issue "letsencrypt.org"` |
+
+Read more on certificates and Appsemble from [TLS](tls.md).
 
 ## Configure app
 

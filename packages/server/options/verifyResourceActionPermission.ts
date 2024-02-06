@@ -1,11 +1,12 @@
 import {
   getResourceDefinition,
+  throwKoaError,
   type VerifyResourceActionPermissionParams,
 } from '@appsemble/node-utils';
 import { checkAppRole, Permission, TeamRole } from '@appsemble/utils';
 import { Op, type WhereOptions } from 'sequelize';
 
-import { AppMember, Organization, Team, TeamMember } from '../models/index.js';
+import { AppMember, Organization, Resource, Team, TeamMember, User } from '../models/index.js';
 
 const specialRoles = new Set([
   '$author',
@@ -63,13 +64,7 @@ export async function verifyResourceActionPermission({
   }
 
   if (!functionalRoles.length && !appRoles.length) {
-    ctx.response.status = 403;
-    ctx.response.body = {
-      statusCode: 403,
-      error: 'Forbidden',
-      message: 'This action is private.',
-    };
-    ctx.throw();
+    throwKoaError(ctx, 403, 'This action is private.');
   }
 
   if (isPublic && action !== 'count') {
@@ -81,68 +76,83 @@ export async function verifyResourceActionPermission({
   }
 
   if (!isPublic && !user && (appRoles.length || functionalRoles.length)) {
-    ctx.response.status = 401;
-    ctx.response.body = {
-      statusCode: 401,
-      error: 'Unauthorized',
-      message: 'User is not logged in.',
-    };
-    ctx.throw();
+    throwKoaError(ctx, 401, 'User is not logged in.');
   }
 
   const result: WhereOptions[] = [];
 
-  if (functionalRoles.includes('$author') && user && action !== 'create') {
-    result.push({ AuthorId: user.id });
+  const seededResource = await Resource.findOne({
+    attributes: ['id'],
+    where: {
+      AppId: app.id,
+      type: resourceType,
+      seed: true,
+    },
+    include: [
+      {
+        model: AppMember,
+        as: 'Author',
+        attributes: ['id'],
+        include: [
+          {
+            model: User,
+            attributes: ['id'],
+          },
+        ],
+      },
+    ],
+  });
+
+  let seeder;
+  if (app.demoMode && seededResource) {
+    seeder = seededResource.Author.User;
+  }
+
+  const member = user
+    ? await AppMember.findOne({ where: { AppId: app.id, UserId: seeder ? seeder.id : user.id } })
+    : null;
+
+  if (functionalRoles.includes('$author') && member && action !== 'create') {
+    result.push({ AuthorId: member.id });
   }
 
   if (functionalRoles.includes(`$team:${TeamRole.Member}`) && user) {
-    const appMember = await AppMember.findOne({ where: { AppId: app.id, UserId: user.id } });
     const teamIds = (
       await Team.findAll({
         where: { AppId: app.id },
-        include: [{ model: TeamMember, where: { AppMemberId: appMember.id } }],
+        include: [{ model: TeamMember, where: { AppMemberId: member.id } }],
         attributes: ['id'],
       })
     ).map((t) => t.id);
 
-    const userIds = (
+    const appMemberIds = (
       await TeamMember.findAll({
         where: { TeamId: teamIds },
-        include: [{ model: AppMember, attributes: ['UserId'] }],
+        attributes: ['AppMemberId'],
       })
-    ).map((tm) => tm.AppMember.UserId);
-    result.push({ AuthorId: { [Op.in]: userIds } });
+    ).map((tm) => tm.AppMemberId);
+    result.push({ AuthorId: { [Op.in]: appMemberIds } });
   }
 
   if (functionalRoles.includes(`$team:${TeamRole.Manager}`) && user) {
-    const appMember = await AppMember.findOne({ where: { AppId: app.id, UserId: user.id } });
     const teamIds = (
       await Team.findAll({
         where: { AppId: app.id },
-        include: [
-          { model: TeamMember, where: { AppMemberId: appMember.id, role: TeamRole.Manager } },
-        ],
+        include: [{ model: TeamMember, where: { AppMemberId: member.id, role: TeamRole.Manager } }],
         attributes: ['id'],
       })
     ).map((t) => t.id);
 
-    const userIds = (
+    const appMemberIds = (
       await TeamMember.findAll({
         where: { TeamId: teamIds },
-        include: [{ model: AppMember, attributes: ['UserId'] }],
+        attributes: ['AppMemberId'],
       })
-    ).map((tm) => tm.AppMember.UserId);
-    result.push({ AuthorId: { [Op.in]: userIds } });
+    ).map((tm) => tm.AppMemberId);
+    result.push({ AuthorId: { [Op.in]: appMemberIds } });
   }
 
   if (app.definition.security && !isPublic) {
-    const member = await AppMember.findOne({
-      where: {
-        AppId: app.id,
-        UserId: user.id,
-      },
-    });
     const { policy = 'everyone', role: defaultRole } = app.definition.security.default;
     let role: string;
 
@@ -161,27 +171,15 @@ export async function verifyResourceActionPermission({
           break;
 
         case 'organization':
-          if (!(await organization.$has('User', user.id))) {
-            ctx.response.status = 403;
-            ctx.response.body = {
-              statusCode: 403,
-              error: 'Forbidden',
-              message: 'User is not a member of the app.',
-            };
-            ctx.throw();
+          if (!(await organization.$has('User', seeder ? seeder.id : user.id))) {
+            throwKoaError(ctx, 403, 'User is not a member of the app.');
           }
 
           role = defaultRole;
           break;
 
         case 'invite':
-          ctx.response.status = 403;
-          ctx.response.body = {
-            statusCode: 403,
-            error: 'Forbidden',
-            message: 'User is not a member of the app.',
-          };
-          ctx.throw();
+          throwKoaError(ctx, 403, 'User is not a member of the app.');
           break;
 
         default:
@@ -195,13 +193,7 @@ export async function verifyResourceActionPermission({
       !appRoles.some((r) => checkAppRole(app.definition.security, r, role, null)) &&
       !result.length
     ) {
-      ctx.response.status = 403;
-      ctx.response.body = {
-        statusCode: 403,
-        error: 'Forbidden',
-        message: 'User does not have sufficient permissions.',
-      };
-      ctx.throw();
+      throwKoaError(ctx, 403, 'User does not have sufficient permissions.');
     }
   }
 

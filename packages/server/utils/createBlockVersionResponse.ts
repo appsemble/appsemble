@@ -3,7 +3,7 @@ import { type Context } from 'koa';
 
 import { type BlockVersion, Organization, type User } from '../models/index.js';
 
-interface ExtendedBlockVersion extends BlockVersion {
+export interface ExtendedBlockVersion extends BlockVersion {
   hasIcon?: boolean;
   hasOrganizationIcon?: boolean;
   organizationUpdated?: Date;
@@ -16,8 +16,8 @@ export async function createBlockVersionResponse(
 ): Promise<Omit<BlockManifest, 'files' | 'languages'>[]> {
   const { user } = ctx;
 
-  if (user) {
-    await (user as User).reload({
+  try {
+    await (user as User)?.reload({
       include: [
         {
           model: Organization,
@@ -27,6 +27,8 @@ export async function createBlockVersionResponse(
         },
       ],
     });
+  } catch {
+    /* Should still continue to fetch public blocks */
   }
 
   const organizationIds = new Set(

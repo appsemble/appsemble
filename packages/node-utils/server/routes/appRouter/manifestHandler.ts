@@ -1,4 +1,4 @@
-import { type Options } from '@appsemble/node-utils';
+import { assertKoaError, type Options } from '@appsemble/node-utils';
 import { baseTheme, normalize } from '@appsemble/utils';
 import { type Context, type Middleware } from 'koa';
 import { extension } from 'mime-types';
@@ -9,15 +9,7 @@ export function createManifestHandler({ getApp, getAppScreenshots }: Options): M
   return async (ctx: Context) => {
     const app = await getApp({ context: ctx });
 
-    if (!app) {
-      ctx.response.status = 404;
-      ctx.response.body = {
-        statusCode: 404,
-        message: 'Block asset not found',
-        error: 'Not Found',
-      };
-      ctx.throw();
-    }
+    assertKoaError(!app, ctx, 404, 'Block asset not found');
 
     const { defaultPage, description, name, theme = baseTheme } = app.definition;
     const { themeColor = '#ffffff', splashColor = themeColor } = theme;

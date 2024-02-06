@@ -14,7 +14,7 @@ import {
 import { type Team } from '@appsemble/types';
 import { Permission, TeamRole } from '@appsemble/utils';
 import axios from 'axios';
-import { type ReactElement, useCallback, useMemo } from 'react';
+import { type ReactNode, useCallback, useMemo } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 
@@ -29,7 +29,7 @@ import { type TeamMember } from '../../../../../types.js';
 import { checkRole } from '../../../../../utils/checkRole.js';
 import { useApp } from '../../index.js';
 
-export function TeamPage(): ReactElement {
+export function TeamPage(): ReactNode {
   const { teamId } = useParams<{ teamId: string }>();
   const { app } = useApp();
   const { organizations, userInfo } = useUser();

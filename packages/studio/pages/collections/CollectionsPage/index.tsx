@@ -8,7 +8,7 @@ import {
 } from '@appsemble/react-components';
 import { type AppCollection } from '@appsemble/types';
 import { Permission } from '@appsemble/utils';
-import { type ReactElement, useCallback, useState } from 'react';
+import { type ReactNode, useCallback, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 
 import { AddCollectionModal } from './AddCollectionModal/index.js';
@@ -23,7 +23,7 @@ interface CollectionsPageProps {
   readonly organizationId?: string;
 }
 
-export function CollectionsPage({ organizationId }: CollectionsPageProps): ReactElement {
+export function CollectionsPage({ organizationId }: CollectionsPageProps): ReactNode {
   const { formatMessage } = useIntl();
   const target = organizationId
     ? `/api/organizations/${organizationId}/appCollections`
@@ -38,7 +38,7 @@ export function CollectionsPage({ organizationId }: CollectionsPageProps): React
   const [filter, setFilter] = useState('');
 
   const onCollectionCreated = useCallback(
-    (newCollection: AppCollection) => setCollections([...collections, newCollection]),
+    (newCollection: AppCollection) => setCollections([newCollection, ...collections]),
     [collections, setCollections],
   );
 

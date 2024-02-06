@@ -11,7 +11,7 @@ import {
 import { type Organization } from '@appsemble/types';
 import { normalize } from '@appsemble/utils';
 import axios from 'axios';
-import { type ReactElement, useCallback } from 'react';
+import { type ReactNode, useCallback } from 'react';
 import { FormattedMessage } from 'react-intl';
 
 import { messages } from './messages.js';
@@ -67,7 +67,7 @@ interface CreateOrganizationModalProps {
   /**
    * Additional information that is rendered at the top of the SimpleForm.
    */
-  readonly help?: ReactElement;
+  readonly help?: ReactNode;
 
   /**
    * Whether the form should be disabled.
@@ -77,7 +77,7 @@ interface CreateOrganizationModalProps {
   /**
    * The title to display for the modal.
    */
-  readonly title: ReactElement;
+  readonly title: ReactNode;
 }
 
 const defaults = {
@@ -111,7 +111,7 @@ export function CreateOrganizationModal({
   onClose,
   onCreateOrganization,
   title,
-}: CreateOrganizationModalProps): ReactElement {
+}: CreateOrganizationModalProps): ReactNode {
   const { organizations, setOrganizations } = useUser();
 
   const submitOrganization = useCallback(

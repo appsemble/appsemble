@@ -8,14 +8,14 @@ import {
 } from '@appsemble/react-components';
 import { type TeamMember } from '@appsemble/types';
 import axios from 'axios';
-import { type ReactElement, useCallback, useState } from 'react';
+import { type ReactNode, useCallback, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 
 import { messages } from './messages.js';
 import { apiUrl, appId } from '../../../utils/settings.js';
 import { useUser } from '../../UserProvider/index.js';
 
-export function TeamInvitePrompt(): ReactElement {
+export function TeamInvitePrompt(): ReactNode {
   const query = useQuery();
   const [isAccepted, setIsAccepted] = useState(false);
   const { updateTeam } = useUser();

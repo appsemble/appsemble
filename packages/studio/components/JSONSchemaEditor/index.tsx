@@ -1,5 +1,5 @@
 import { type NamedEvent } from '@appsemble/web-utils';
-import { forwardRef, type ReactElement, useCallback } from 'react';
+import { forwardRef, type ReactNode, useCallback } from 'react';
 
 import { RecursiveJSONSchemaEditor } from './RecursiveJSONSchemaEditor/index.js';
 import { type CommonJSONSchemaEditorProps } from './types.js';
@@ -12,7 +12,7 @@ export const JSONSchemaEditor = forwardRef<
   Pick<CommonJSONSchemaEditorProps<any>, 'disabled' | 'name' | 'onChange' | 'schema' | 'value'>
   // The ref is defined to suppress a React warning.
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
->(({ disabled, name, onChange, schema, value }, ref): ReactElement => {
+>(({ disabled, name, onChange, schema, value }, ref): ReactNode => {
   const handleChange = useCallback(
     (event: NamedEvent, val: string) => {
       onChange({ currentTarget: { name } }, val);

@@ -7,8 +7,13 @@ import { useEventListener } from './index.js';
  *
  * @param ref A ref for the HTML element.
  * @param handler The function to run.
+ * @param exceptionRef A ref which is exempt from triggering the handler.
  */
-export function useClickOutside(ref: RefObject<Element>, handler: (event: Event) => void): void {
+export function useClickOutside(
+  ref: RefObject<Element>,
+  handler: (event: Event) => void,
+  exceptionRef?: RefObject<Element>,
+): void {
   const listener = useCallback(
     (event: Event): void => {
       if (!ref.current) {
@@ -21,10 +26,13 @@ export function useClickOutside(ref: RefObject<Element>, handler: (event: Event)
       if (composedPath.indexOf(ref.current) > 0) {
         return;
       }
+      if (exceptionRef && exceptionRef.current && composedPath.includes(exceptionRef.current)) {
+        return;
+      }
 
       handler(event);
     },
-    [handler, ref],
+    [exceptionRef, handler, ref],
   );
 
   useEventListener(document, 'mousedown', listener);

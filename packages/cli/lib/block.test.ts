@@ -2,19 +2,16 @@ import { resolveFixture } from '@appsemble/node-utils';
 import concat from 'concat-stream';
 import { describe, expect, it } from 'vitest';
 
-import { makePayload } from './block.js';
+import { makeProjectPayload } from './project.js';
 
-describe('makePayload', () => {
+describe('makeProjectPayload', () => {
   it('should create a form-data payload', async () => {
-    const payload = await makePayload({
+    const payload = await makeProjectPayload({
       webpack: 'webpack.config',
       name: '@org/block',
       output: 'output',
       version: '1.2.3',
-      dir: resolveFixture('makePayload/no-icon'),
-      parameters: { type: 'object' },
-      actions: { onClick: {} },
-      events: { listen: { test: {} } },
+      dir: resolveFixture('makeProjectPayload/no-icon'),
     });
     const [formData] = payload;
     const boundary = formData.getBoundary();
@@ -36,7 +33,7 @@ Content-Disposition: form-data; name="name"\r
 --${boundary}\r
 Content-Disposition: form-data; name="parameters"\r
 \r
-{"type":"object"}\r
+{"$schema":"http://json-schema.org/draft-07/schema#","type":"object","properties":{"type":{"type":"object"}},"required":["type"],"additionalProperties":false}\r
 --${boundary}\r
 Content-Disposition: form-data; name="version"\r
 \r
@@ -52,15 +49,12 @@ export const string = 'no-icon';
   });
 
   it('should include an icon if one is present', async () => {
-    const payload = await makePayload({
+    const payload = await makeProjectPayload({
       webpack: 'webpack.config',
       name: '@org/block',
       output: 'output',
       version: '1.2.3',
-      dir: resolveFixture('makePayload/with-icon'),
-      parameters: {},
-      actions: {},
-      events: {},
+      dir: resolveFixture('makeProjectPayload/with-icon'),
     });
     const [formData] = payload;
     const boundary = formData.getBoundary();
@@ -70,11 +64,11 @@ export const string = 'no-icon';
     expect(String(buffer)).toBe(`--${boundary}\r
 Content-Disposition: form-data; name="actions"\r
 \r
-{}\r
+{"onClick":{}}\r
 --${boundary}\r
 Content-Disposition: form-data; name="events"\r
 \r
-{}\r
+{"listen":{"test":{}}}\r
 --${boundary}\r
 Content-Disposition: form-data; name="name"\r
 \r
@@ -82,7 +76,7 @@ Content-Disposition: form-data; name="name"\r
 --${boundary}\r
 Content-Disposition: form-data; name="parameters"\r
 \r
-{}\r
+{"$schema":"http://json-schema.org/draft-07/schema#","type":"object","properties":{"type":{"type":"object"}},"required":["type"],"additionalProperties":false}\r
 --${boundary}\r
 Content-Disposition: form-data; name="version"\r
 \r

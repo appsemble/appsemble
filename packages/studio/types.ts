@@ -4,7 +4,7 @@ import { type OAuth2State } from '@appsemble/web-utils';
 
 export type Role = 'AppEditor' | 'Maintainer' | 'Member' | 'Owner';
 
-export interface Member {
+export interface OrganizationMember {
   id: string;
   name?: string;
   primaryEmail?: string;

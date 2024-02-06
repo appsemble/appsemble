@@ -1,7 +1,7 @@
 import { Button, useData, useToggle } from '@appsemble/react-components';
 import { type AppSamlSecret } from '@appsemble/types';
 import axios from 'axios';
-import { type ReactElement, useCallback } from 'react';
+import { type ReactNode, useCallback } from 'react';
 import { FormattedMessage } from 'react-intl';
 
 import { messages } from './messages.js';
@@ -24,7 +24,7 @@ const initialSecret: AppSamlSecret = {
 /**
  * Render a CRUD interface for managing Saml secrets.
  */
-export function SamlSecrets(): ReactElement {
+export function SamlSecrets(): ReactNode {
   const { app } = useApp();
   const modal = useToggle();
 

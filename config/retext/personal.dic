@@ -12,6 +12,7 @@ Eindhoven
 enum/kitten
 Fontys
 ICT
+IMAP
 Manny
 maskable/editable
 MDX
@@ -51,6 +52,7 @@ CLI/URL
 Cloudflare
 CNAME
 CORS
+CSR
 CSS
 CSV
 cronjob/job
@@ -79,6 +81,7 @@ Koa
 Kubernetes
 localhost
 MacOS
+Mailpit
 MD5
 NodeJS
 ngrok
@@ -118,6 +121,7 @@ Vimeo
 Vue
 Weblate
 Webpack
+WeSeeDo
 YAML
 webp
 APIV
@@ -133,6 +137,7 @@ hassubsequence
 tolower
 toupper
 fractionalseconds
+fkey
 maxdatetime
 mindatetime
 totaloffsetminutes
@@ -175,8 +180,19 @@ whitespace
 4d1
 GPL
 LGPL
+
 macOS
 i18n
 vitest
 combinators
 clonable
+namespace
+namespaces
+balancer
+hostname
+hostnames
+templating
+add-ons
+HSTS
+microk8s
+init

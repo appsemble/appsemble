@@ -1,6 +1,6 @@
 import { type BulmaColor } from '@appsemble/types';
 import classNames from 'classnames';
-import { type KeyboardEvent, type ReactElement, type ReactNode, useCallback, useRef } from 'react';
+import { type KeyboardEvent, type ReactNode, useCallback, useRef } from 'react';
 
 import styles from './index.module.css';
 import { useClickOutside, useToggle } from '../index.js';
@@ -35,7 +35,7 @@ export function NavbarDropdown({
   className,
   color,
   label,
-}: NavbarDropdownProps): ReactElement {
+}: NavbarDropdownProps): ReactNode {
   const toggle = useToggle();
   const { disable: disableMenu } = useSideMenuState();
 

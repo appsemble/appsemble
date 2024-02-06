@@ -26,7 +26,7 @@ const unscopedPackageNames = new Set(['appsemble', 'create-appsemble']);
 const projectLicense = await readFile('LICENSE.md', 'utf8');
 
 /**
- * A representation of a yarn workspace.
+ * A representation of an npm workspace.
  */
 interface Workspace {
   /**
@@ -132,6 +132,9 @@ async function validate(
    * Validate package.json
    */
   const pkgNameMatch = pkg.name.match(/^(@(?<scope>[a-z-]+)\/)?(?<name>[a-z-]+[\da-z-]+)$/);
+  const isBlock = basename(dirname(dir)) === 'blocks';
+  const isController = basename(dir) === 'controller';
+
   assert(
     basename(dir) === pkgNameMatch?.groups.name,
     '',
@@ -143,7 +146,7 @@ async function validate(
     'package.json',
     'Name should use the @appsemble scope',
   );
-  if (basename(dirname(dir)) !== 'blocks') {
+  if (!isBlock && !isController) {
     for (const keyword of ['app', 'apps', 'framework', 'low-code', 'lowcode']) {
       assert(
         pkg.keywords.includes(keyword),
@@ -216,28 +219,31 @@ async function validate(
   const tsConfig = await fsExtra.readJson(join(dir, 'tsconfig.json')).catch(() => null);
   assert(tsConfig, 'tsconfig.json', 'The workspace should have a TypeScript configuration');
   if (tsConfig) {
-    assert(
-      tsConfig.extends === '../../tsconfig',
-      'tsconfig.json',
-      'Should extend "../../tsconfig"',
-    );
-    assert(
-      isDeepStrictEqual(Object.keys(tsConfig), ['extends', 'compilerOptions']),
-      'tsconfig.json',
-      'Only specifies "extends" and "compilerOptions" with "extends" first',
-    );
-    assert(
-      tsConfig.compilerOptions?.rootDir === '.',
-      'tsconfig.json',
-      'compilerOptions.rootDir should be "."',
-    );
+    if (isBlock || isController) {
+      assert(
+        tsConfig.extends?.startsWith('@appsemble/tsconfig'),
+        'tsconfig.json',
+        'Should extend "@appsemble/tsconfig"',
+      );
+    } else {
+      assert(
+        tsConfig.extends === '../../tsconfig',
+        'tsconfig.json',
+        'Should extend "../../tsconfig"',
+      );
+      assert(
+        tsConfig.compilerOptions?.rootDir === '.',
+        'tsconfig.json',
+        'compilerOptions.rootDir should be "."',
+      );
+    }
   }
 
   /**
    * Validate vitest.config.js exists
    */
   assert(
-    existsSync(join(dir, 'vitest.config.js')),
+    existsSync(join(dir, 'vitest.config.js')) || existsSync(join(dir, 'vitest.config.mjs')),
     'vitest.config.js',
     'Projects should have a vitest configuration',
   );
@@ -302,6 +308,6 @@ export async function handler(): Promise<void> {
   }
 
   if (invalid.length) {
-    logger.info('Please use `yarn scripts extract-messages` to resolve the issue(s).');
+    logger.info('Please use `npm run scripts -- extract-messages` to resolve the issue(s).');
   }
 }

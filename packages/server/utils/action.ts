@@ -32,6 +32,7 @@ export async function handleAction(
       return new IntlMessageFormat(message);
     },
     userInfo: undefined,
+    appMember: undefined,
     locale,
   };
   let data =
@@ -39,7 +40,10 @@ export async function handleAction(
       ? remap(params.action.remapBefore, params.data, context)
       : params.data;
 
-  const updatedContext = { ...context, history: [...context.history, data] };
+  const updatedContext = {
+    ...context,
+    history: [...(context?.history ?? []), data],
+  };
 
   try {
     data = await action({ ...params, data, internalContext: updatedContext });

@@ -1,6 +1,6 @@
 import { useMeta } from '@appsemble/react-components';
 import { type AppCollection } from '@appsemble/types';
-import { type ReactElement } from 'react';
+import { type ReactNode } from 'react';
 
 import styles from './index.module.css';
 import { MarkdownContent } from '../../../../components/MarkdownContent/index.js';
@@ -12,7 +12,7 @@ interface ExpertPageProps {
   readonly collection: AppCollection;
 }
 
-export function ExpertPage({ collection }: ExpertPageProps): ReactElement {
+export function ExpertPage({ collection }: ExpertPageProps): ReactNode {
   usePageHeader(
     <header>
       <ExpertCard expert={collection.$expert} />

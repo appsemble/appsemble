@@ -2,7 +2,7 @@ import { inspect } from 'node:util';
 
 import { logger, writeData } from '@appsemble/node-utils';
 import { has } from '@appsemble/utils';
-import { readPackageUp } from 'read-pkg-up';
+import { readPackageUp } from 'read-package-up';
 import { type Argv } from 'yargs';
 
 import { type BaseArguments, type MonoRepoPackageJson } from '../../types.js';

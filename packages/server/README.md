@@ -1,9 +1,9 @@
-# ![](https://gitlab.com/appsemble/appsemble/-/raw/0.22.10/config/assets/logo.svg) Appsemble Server
+# ![](https://gitlab.com/appsemble/appsemble/-/raw/0.24.12/config/assets/logo.svg) Appsemble Server
 
 > The official Appsemble Docker image
 
 [![](https://img.shields.io/docker/v/appsemble/appsemble)](https://hub.docker.com/r/appsemble/appsemble)
-[![GitLab CI](https://gitlab.com/appsemble/appsemble/badges/0.22.10/pipeline.svg)](https://gitlab.com/appsemble/appsemble/-/releases/0.22.10)
+[![GitLab CI](https://gitlab.com/appsemble/appsemble/badges/0.24.12/pipeline.svg)](https://gitlab.com/appsemble/appsemble/-/releases/0.24.12)
 [![Prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg)](https://prettier.io)
 
 ## Table of Contents
@@ -14,6 +14,8 @@
   - [GitHub](#github)
   - [GitLab](#gitlab)
   - [Google](#google)
+  - [SMTP](#smtp)
+    - [Server configuration](#server-configuration)
 - [License](#license)
 
 ## Installation
@@ -128,7 +130,38 @@ _Create credentials_ → _OAuth client ID_ → _Web application_. Add the `HOST`
 
 Check the `read_user` scope, and click _Save application_.
 
+### SMTP
+
+To be able to send emails from your local environment, you need to set up or connect to an SMTP
+server.
+
+A project that provides an email testing environment for developers is
+[Mailpit](https://github.com/axllent/mailpit). It acts as an SMTP server where you can view and test
+captured emails.
+
+For connecting to the SMTP server, you need to obtain the following settings:
+
+- Host
+- Port
+- Username
+- Password
+
+#### Server configuration
+
+In the project’s root `package.json` you can define the following properties under
+`"appsembleServer"`:
+
+```json
+"smtp-host": "(SMTP Server)",
+"smtp-port": "(SMTP Port)",
+"smtp-user": "(SMTP Username)",
+"smtp-pass": "(SMTP Password)",
+"smtp-from": "(Standard email address to put as sender)"
+```
+
+These can also be used as CLI parameters.
+
 ## License
 
-[LGPL-3.0-only](https://gitlab.com/appsemble/appsemble/-/blob/0.22.10/LICENSE.md) ©
+[LGPL-3.0-only](https://gitlab.com/appsemble/appsemble/-/blob/0.24.12/LICENSE.md) ©
 [Appsemble](https://appsemble.com)

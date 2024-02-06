@@ -1,5 +1,5 @@
 import { Button, Content, Message, SentryForm, Title, useMeta } from '@appsemble/react-components';
-import { type ReactElement } from 'react';
+import { type ReactNode } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { Link } from 'react-router-dom';
 
@@ -23,7 +23,7 @@ interface ErrorFallbackProps {
 /**
  * Capture renderer errors using Sentry.
  */
-export function ErrorFallback({ eventId, resetErrorBoundary }: ErrorFallbackProps): ReactElement {
+export function ErrorFallback({ eventId, resetErrorBoundary }: ErrorFallbackProps): ReactNode {
   useMeta(messages.title);
   const user = useUser();
 

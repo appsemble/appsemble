@@ -11,7 +11,7 @@ import {
 import { type App, type AppCollection } from '@appsemble/types';
 import { Permission } from '@appsemble/utils';
 import axios from 'axios';
-import { type ReactElement, useCallback, useEffect, useState } from 'react';
+import { type ReactNode, useCallback, useEffect, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 
 import { messages } from './messages.js';
@@ -23,6 +23,11 @@ interface AppToCollectionButtonProps {
    * The app to add to a collection.
    */
   readonly app: App;
+
+  /*
+   * Classname to be applied for the component
+   */
+  readonly className?: string;
 }
 
 const defaultValues = {
@@ -32,7 +37,7 @@ const defaultValues = {
 /**
  * Render a button that can be used to add an app to a collection.
  */
-export function AddToCollectionButton({ app }: AppToCollectionButtonProps): ReactElement {
+export function AddToCollectionButton({ app, className }: AppToCollectionButtonProps): ReactNode {
   const { organizations, userInfo } = useUser();
 
   const [availableCollections, setAvailableCollections] = useState<AppCollection[]>([]);
@@ -70,7 +75,7 @@ export function AddToCollectionButton({ app }: AppToCollectionButtonProps): Reac
 
   return (
     <>
-      <Button className="ml-4" onClick={modalToggle.enable}>
+      <Button className={`mb-0 ${className && className}`} onClick={modalToggle.enable}>
         <FormattedMessage {...messages.addToCollection} />
       </Button>
       {userInfo ? (

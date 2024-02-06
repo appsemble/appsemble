@@ -1,4 +1,4 @@
-import { type ReactElement, useEffect, useRef } from 'react';
+import { type ReactNode, useEffect, useRef } from 'react';
 
 import LanguageConfiguration from './custom.js';
 
@@ -22,7 +22,7 @@ const languageRegex = /\blanguage-(\w+)/;
  * Don’t use this directly. Use @see CodeBlock instead.
  */
 
-export function HighlightedCode({ children, className }: HighlightedCodeProps): ReactElement {
+export function HighlightedCode({ children, className }: HighlightedCodeProps): ReactNode {
   const ref = useRef<HTMLPreElement>();
   const language = languageRegex.exec(className)?.[1];
 

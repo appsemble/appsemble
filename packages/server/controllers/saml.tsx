@@ -2,7 +2,7 @@ import { randomUUID } from 'node:crypto';
 import { promisify } from 'node:util';
 import { deflateRaw } from 'node:zlib';
 
-import { logger } from '@appsemble/node-utils';
+import { assertKoaError, logger } from '@appsemble/node-utils';
 import { type SAMLStatus } from '@appsemble/types';
 import { stripPem, wrapPem } from '@appsemble/utils';
 import { DOMImplementation, DOMParser } from '@xmldom/xmldom';
@@ -56,27 +56,10 @@ export async function createAuthnRequest(ctx: Context): Promise<void> {
     ],
   });
 
-  if (!app) {
-    ctx.response.status = 404;
-    ctx.response.body = {
-      statusCode: 404,
-      error: 'Not Found',
-      message: 'App not found',
-    };
-    ctx.throw();
-  }
+  assertKoaError(!app, ctx, 404, 'App not found');
 
   const [secret] = app.AppSamlSecrets;
-
-  if (!secret) {
-    ctx.response.status = 404;
-    ctx.response.body = {
-      statusCode: 404,
-      error: 'Not Found',
-      message: 'SAML secret not found',
-    };
-    ctx.throw();
-  }
+  assertKoaError(!secret, ctx, 404, 'SAML secret not found');
 
   const loginId = `id${randomUUID()}`;
   const doc = dom.createDocument(NS.samlp, 'samlp:AuthnRequest', null);
@@ -264,16 +247,12 @@ export async function assertConsumerService(ctx: Context): Promise<void> {
     case app.scimEnabled:
       // If the app uses SCIM for user provisioning, it should be able to find a user based on
       // the "objectId" attribute in the secret.
-      if (!objectId) {
-        ctx.response.status = 400;
-        ctx.response.body = {
-          statusCode: 400,
-          error: 'Bad request',
-          message:
-            'Could not retrieve ObjectID value from incoming secret. Is your app SAML secret configured correctly?.',
-        };
-        ctx.throw();
-      }
+      assertKoaError(
+        !objectId,
+        ctx,
+        400,
+        'Could not retrieve ObjectID value from incoming secret. Is your app SAML secret configured correctly?.',
+      );
       member = await AppMember.findOne({
         where: { AppId: appId, scimExternalId: objectId },
         attributes: { exclude: ['picture'] },
@@ -383,15 +362,7 @@ export async function getEntityId(ctx: Context): Promise<void> {
     where: { AppId: appId, id: appSamlSecretId },
   });
 
-  if (!secret) {
-    ctx.response.status = 404;
-    ctx.response.body = {
-      statusCode: 404,
-      error: 'Not Found',
-      message: 'SAML secret not found',
-    };
-    ctx.throw();
-  }
+  assertKoaError(!secret, ctx, 404, 'SAML secret not found');
 
   ctx.body = toXml(
     <>

@@ -13,7 +13,7 @@ import {
 import { type App } from '@appsemble/types';
 import { Permission } from '@appsemble/utils';
 import axios from 'axios';
-import { type ReactElement, useCallback, useState } from 'react';
+import { type ReactNode, useCallback, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useLocation, useNavigate } from 'react-router-dom';
 
@@ -30,7 +30,7 @@ interface Template {
   resources: boolean;
 }
 
-export function CreateAppButton({ className }: { readonly className: string }): ReactElement {
+export function CreateAppButton({ className }: { readonly className: string }): ReactNode {
   const { data: templates } = useData<Template[]>('/api/templates');
   const [selectedTemplate, setSelectedTemplate] = useState(0);
 
@@ -132,12 +132,12 @@ export function CreateAppButton({ className }: { readonly className: string }): 
           />
           <SimpleFormField
             component={SelectField}
-            disabled={createOrganizations.length === 1}
+            disabled={createOrganizations?.length === 1}
             label={<FormattedMessage {...messages.organization} />}
             name="selectedOrganization"
             required
           >
-            {createOrganizations.map((organization, index) => (
+            {createOrganizations?.map((organization, index) => (
               <option key={organization.id} value={index}>
                 {organization.id}
               </option>

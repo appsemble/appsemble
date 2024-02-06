@@ -1,28 +1,38 @@
 import { createFixtureStream, createFormData, readFixture } from '@appsemble/node-utils';
-import { type App as AppType, type Snapshot } from '@appsemble/types';
+import { type AppDefinition, type App as AppType, type Snapshot } from '@appsemble/types';
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 import { request, setTestApp } from 'axios-test-instance';
+import JSZip from 'jszip';
 import stripIndent from 'strip-indent';
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
+import { stringify } from 'yaml';
 
 import {
   App,
   AppBlockStyle,
+  AppMember,
+  AppMessages,
   AppRating,
   AppScreenshot,
   AppSnapshot,
+  Asset,
   BlockAsset,
   BlockMessages,
   BlockVersion,
-  Member,
   Organization,
+  OrganizationMember,
+  Resource,
   User,
 } from '../models/index.js';
 import { setArgv } from '../utils/argv.js';
 import { createServer } from '../utils/createServer.js';
 import { encrypt } from '../utils/crypto.js';
-import { authorizeStudio, createTestUser } from '../utils/test/authorization.js';
+import {
+  authorizeClientCredentials,
+  authorizeStudio,
+  createTestUser,
+} from '../utils/test/authorization.js';
 import { useTestDatabase } from '../utils/test/testSchema.js';
 
 let organization: Organization;
@@ -48,7 +58,11 @@ beforeEach(async () => {
     id: 'testorganization',
     name: 'Test Organization',
   });
-  await Member.create({ OrganizationId: organization.id, UserId: user.id, role: 'Owner' });
+  await OrganizationMember.create({
+    OrganizationId: organization.id,
+    UserId: user.id,
+    role: 'Owner',
+  });
 
   await Organization.create({ id: 'appsemble', name: 'Appsemble' });
 
@@ -119,12 +133,16 @@ describe('queryApps', () => {
           "$updated": "1970-01-01T00:00:00.000Z",
           "OrganizationId": "testorganization",
           "OrganizationName": "Test Organization",
+          "controllerCode": null,
+          "controllerImplementations": null,
           "definition": {
             "defaultPage": "Test Page",
             "name": "Test App",
           },
+          "demoMode": false,
           "domain": null,
           "emailName": null,
+          "enableSelfRegistration": true,
           "googleAnalyticsID": null,
           "hasIcon": false,
           "hasMaskableIcon": false,
@@ -146,12 +164,16 @@ describe('queryApps', () => {
           "$updated": "1970-01-01T00:00:00.000Z",
           "OrganizationId": "testorganization",
           "OrganizationName": "Test Organization",
+          "controllerCode": null,
+          "controllerImplementations": null,
           "definition": {
             "defaultPage": "Another Page",
             "name": "Another App",
           },
+          "demoMode": false,
           "domain": null,
           "emailName": null,
+          "enableSelfRegistration": true,
           "googleAnalyticsID": null,
           "hasIcon": false,
           "hasMaskableIcon": false,
@@ -218,12 +240,16 @@ describe('queryApps', () => {
           "$updated": "1970-01-01T00:00:00.000Z",
           "OrganizationId": "testorganization",
           "OrganizationName": "Test Organization",
+          "controllerCode": null,
+          "controllerImplementations": null,
           "definition": {
             "defaultPage": "Test Page",
             "name": "Test App",
           },
+          "demoMode": false,
           "domain": null,
           "emailName": null,
+          "enableSelfRegistration": true,
           "googleAnalyticsID": null,
           "hasIcon": false,
           "hasMaskableIcon": false,
@@ -306,12 +332,16 @@ describe('queryApps', () => {
           "$updated": "1970-01-01T00:00:00.000Z",
           "OrganizationId": "testorganization",
           "OrganizationName": "Test Organization",
+          "controllerCode": null,
+          "controllerImplementations": null,
           "definition": {
             "defaultPage": "Test Page",
             "name": "Test App",
           },
+          "demoMode": false,
           "domain": null,
           "emailName": null,
+          "enableSelfRegistration": true,
           "googleAnalyticsID": null,
           "hasIcon": false,
           "hasMaskableIcon": false,
@@ -337,12 +367,16 @@ describe('queryApps', () => {
           "$updated": "1970-01-01T00:00:00.000Z",
           "OrganizationId": "testorganization",
           "OrganizationName": "Test Organization",
+          "controllerCode": null,
+          "controllerImplementations": null,
           "definition": {
             "defaultPage": "Another Page",
             "name": "Another App",
           },
+          "demoMode": false,
           "domain": null,
           "emailName": null,
+          "enableSelfRegistration": true,
           "googleAnalyticsID": null,
           "hasIcon": false,
           "hasMaskableIcon": false,
@@ -368,12 +402,16 @@ describe('queryApps', () => {
           "$updated": "1970-01-01T00:00:00.000Z",
           "OrganizationId": "testorganization",
           "OrganizationName": "Test Organization",
+          "controllerCode": null,
+          "controllerImplementations": null,
           "definition": {
             "defaultPage": "Test Page",
             "name": "Test App",
           },
+          "demoMode": false,
           "domain": null,
           "emailName": null,
+          "enableSelfRegistration": true,
           "googleAnalyticsID": null,
           "hasIcon": false,
           "hasMaskableIcon": false,
@@ -433,12 +471,16 @@ describe('getAppById', () => {
         "$updated": "1970-01-01T00:00:00.000Z",
         "OrganizationId": "testorganization",
         "OrganizationName": "Test Organization",
+        "controllerCode": null,
+        "controllerImplementations": null,
         "definition": {
           "defaultPage": "Test Page",
           "name": "Test App",
         },
+        "demoMode": false,
         "domain": null,
         "emailName": null,
+        "enableSelfRegistration": true,
         "googleAnalyticsID": null,
         "hasIcon": false,
         "hasMaskableIcon": false,
@@ -457,6 +499,35 @@ describe('getAppById', () => {
         "visibility": "unlisted",
       }
     `);
+  });
+
+  it('should fetch an app even if the app definition visibility is false and user is not a member of the organization', async () => {
+    const organization2 = await Organization.create({
+      id: 'test-org',
+      name: 'Test Organization 2',
+    });
+    const app = await App.create(
+      {
+        path: 'test-app',
+        definition: { name: 'Test App', defaultPage: 'Test Page' },
+        vapidPublicKey: 'a',
+        vapidPrivateKey: 'b',
+        OrganizationId: organization2.id,
+        showAppDefinition: false,
+      },
+      { raw: true },
+    );
+    authorizeStudio();
+    const response = await request.get(`/api/apps/${app.id}`);
+    expect(response).toMatchObject({
+      status: 200,
+      data: {
+        path: 'test-app',
+        definition: { name: 'Test App', defaultPage: 'Test Page' },
+        OrganizationId: organization2.id,
+        showAppDefinition: false,
+      },
+    });
   });
 
   it('should fetch the most recent snapshot', async () => {
@@ -481,12 +552,16 @@ describe('getAppById', () => {
         "$updated": "1970-01-01T00:00:00.000Z",
         "OrganizationId": "testorganization",
         "OrganizationName": "Test Organization",
+        "controllerCode": null,
+        "controllerImplementations": null,
         "definition": {
           "defaultPage": "Test Page",
           "name": "Test App",
         },
+        "demoMode": false,
         "domain": null,
         "emailName": null,
+        "enableSelfRegistration": true,
         "googleAnalyticsID": null,
         "hasIcon": false,
         "hasMaskableIcon": false,
@@ -529,12 +604,16 @@ describe('getAppById', () => {
         "$updated": "1970-01-01T00:00:00.000Z",
         "OrganizationId": "testorganization",
         "OrganizationName": "Test Organization",
+        "controllerCode": null,
+        "controllerImplementations": null,
         "definition": {
           "defaultPage": "Test Page",
           "name": "Test App",
         },
+        "demoMode": false,
         "domain": null,
         "emailName": null,
+        "enableSelfRegistration": true,
         "googleAnalyticsID": null,
         "hasIcon": true,
         "hasMaskableIcon": false,
@@ -580,12 +659,16 @@ describe('getAppById', () => {
         "$updated": "1970-01-01T00:00:00.000Z",
         "OrganizationId": "testorganization",
         "OrganizationName": "Test Organization",
+        "controllerCode": null,
+        "controllerImplementations": null,
         "definition": {
           "defaultPage": "Test Page",
           "name": "Test App",
         },
+        "demoMode": false,
         "domain": null,
         "emailName": null,
+        "enableSelfRegistration": true,
         "googleAnalyticsID": null,
         "hasIcon": false,
         "hasMaskableIcon": false,
@@ -627,12 +710,16 @@ describe('getAppById', () => {
         "$updated": "1970-01-01T00:00:00.000Z",
         "OrganizationId": "testorganization",
         "OrganizationName": "Test Organization",
+        "controllerCode": null,
+        "controllerImplementations": null,
         "definition": {
           "defaultPage": "Test Page",
           "name": "Test App",
         },
+        "demoMode": false,
         "domain": null,
         "emailName": null,
+        "enableSelfRegistration": true,
         "googleAnalyticsID": null,
         "hasIcon": false,
         "hasMaskableIcon": false,
@@ -674,12 +761,16 @@ describe('getAppById', () => {
         "$updated": "1970-01-01T00:00:00.000Z",
         "OrganizationId": "testorganization",
         "OrganizationName": "Test Organization",
+        "controllerCode": null,
+        "controllerImplementations": null,
         "definition": {
           "defaultPage": "Test Page",
           "name": "Test App",
         },
+        "demoMode": false,
         "domain": null,
         "emailName": null,
+        "enableSelfRegistration": true,
         "googleAnalyticsID": null,
         "hasIcon": false,
         "hasMaskableIcon": false,
@@ -724,12 +815,16 @@ describe('getAppById', () => {
         "$updated": "1970-01-01T00:00:00.000Z",
         "OrganizationId": "testorganization",
         "OrganizationName": "Test Organization",
+        "controllerCode": null,
+        "controllerImplementations": null,
         "definition": {
           "defaultPage": "Test Page",
           "name": "Test App",
         },
+        "demoMode": false,
         "domain": null,
         "emailName": null,
+        "enableSelfRegistration": true,
         "googleAnalyticsID": null,
         "hasIcon": false,
         "hasMaskableIcon": false,
@@ -785,7 +880,11 @@ describe('queryMyApps', () => {
     authorizeStudio();
     const responseA = await request.get('/api/user/apps');
 
-    await Member.create({ OrganizationId: organizationB.id, UserId: user.id, role: 'Member' });
+    await OrganizationMember.create({
+      OrganizationId: organizationB.id,
+      UserId: user.id,
+      role: 'Member',
+    });
 
     const responseB = await request.get('/api/user/apps');
 
@@ -799,12 +898,16 @@ describe('queryMyApps', () => {
           "$updated": "1970-01-01T00:00:00.000Z",
           "OrganizationId": "testorganization",
           "OrganizationName": "Test Organization",
+          "controllerCode": null,
+          "controllerImplementations": null,
           "definition": {
             "defaultPage": "Test Page",
             "name": "Test App",
           },
+          "demoMode": false,
           "domain": null,
           "emailName": null,
+          "enableSelfRegistration": true,
           "googleAnalyticsID": null,
           "hasIcon": false,
           "hasMaskableIcon": false,
@@ -833,12 +936,16 @@ describe('queryMyApps', () => {
           "$updated": "1970-01-01T00:00:00.000Z",
           "OrganizationId": "testorganization",
           "OrganizationName": "Test Organization",
+          "controllerCode": null,
+          "controllerImplementations": null,
           "definition": {
             "defaultPage": "Test Page",
             "name": "Test App",
           },
+          "demoMode": false,
           "domain": null,
           "emailName": null,
+          "enableSelfRegistration": true,
           "googleAnalyticsID": null,
           "hasIcon": false,
           "hasMaskableIcon": false,
@@ -860,12 +967,16 @@ describe('queryMyApps', () => {
           "$updated": "1970-01-01T00:00:00.000Z",
           "OrganizationId": "testorganizationb",
           "OrganizationName": "Test Organization B",
+          "controllerCode": null,
+          "controllerImplementations": null,
           "definition": {
             "defaultPage": "Test Page",
             "name": "Test App B",
           },
+          "demoMode": false,
           "domain": null,
           "emailName": null,
+          "enableSelfRegistration": true,
           "googleAnalyticsID": null,
           "hasIcon": false,
           "hasMaskableIcon": false,
@@ -916,6 +1027,8 @@ describe('createApp', () => {
         "$updated": "1970-01-01T00:00:00.000Z",
         "OrganizationId": "testorganization",
         "OrganizationName": "Test Organization",
+        "controllerCode": null,
+        "controllerImplementations": null,
         "definition": {
           "defaultPage": "Test Page",
           "name": "Test App",
@@ -931,8 +1044,10 @@ describe('createApp', () => {
             },
           ],
         },
+        "demoMode": false,
         "domain": null,
         "emailName": null,
+        "enableSelfRegistration": true,
         "googleAnalyticsID": null,
         "hasIcon": true,
         "hasMaskableIcon": false,
@@ -993,6 +1108,8 @@ describe('createApp', () => {
         "$updated": "1970-01-01T00:00:00.000Z",
         "OrganizationId": "testorganization",
         "OrganizationName": "Test Organization",
+        "controllerCode": null,
+        "controllerImplementations": null,
         "definition": {
           "defaultPage": "Test Page",
           "name": "Test App",
@@ -1008,8 +1125,10 @@ describe('createApp', () => {
             },
           ],
         },
+        "demoMode": false,
         "domain": null,
         "emailName": null,
+        "enableSelfRegistration": true,
         "googleAnalyticsID": null,
         "hasIcon": true,
         "hasMaskableIcon": false,
@@ -1053,6 +1172,89 @@ describe('createApp', () => {
     });
   });
 
+  it('should accept controller', async () => {
+    authorizeStudio();
+
+    const createdResponse = await request.post(
+      '/api/apps',
+      createFormData({
+        OrganizationId: organization.id,
+        yaml: stripIndent(`
+          name: Test App
+          defaultPage: Test Page
+          pages:
+            - name: Test Page
+              blocks:
+                - type: test
+                  version: 0.0.0
+        `),
+        icon: createFixtureStream('nodejs-logo.png'),
+        controllerCode:
+          '(()=>{function a(t){let n=new CustomEvent("AppsembleController",{detail:{fn:t,document}});document.currentScript&&document.currentScript.dispatchEvent(n)}a(({events:t})=>({calculate(n){let{a:o,b:r,operation:s}=n,e;switch(s){case"addition":e=o+r;break;case"multiplication":e=o*r;break;default:e=Number.NaN;break}t.emit.data({result:e})}}));})();',
+        controllerImplementations:
+          '{"description":"A controller for the controller-demo app.","events":{"emit":{"data":{"description":"Event that gets emitted when the calculation result is available."}}},"name":"@appsemble/controller-demo","version":"0.22.10","files":["index.js","index.js.map"]}',
+      }),
+    );
+
+    expect(createdResponse).toMatchInlineSnapshot(`
+      HTTP/1.1 201 Created
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "$created": "1970-01-01T00:00:00.000Z",
+        "$updated": "1970-01-01T00:00:00.000Z",
+        "OrganizationId": "testorganization",
+        "OrganizationName": "Test Organization",
+        "controllerCode": "(()=>{function a(t){let n=new CustomEvent("AppsembleController",{detail:{fn:t,document}});document.currentScript&&document.currentScript.dispatchEvent(n)}a(({events:t})=>({calculate(n){let{a:o,b:r,operation:s}=n,e;switch(s){case"addition":e=o+r;break;case"multiplication":e=o*r;break;default:e=Number.NaN;break}t.emit.data({result:e})}}));})();",
+        "controllerImplementations": "{"description":"A controller for the controller-demo app.","events":{"emit":{"data":{"description":"Event that gets emitted when the calculation result is available."}}},"name":"@appsemble/controller-demo","version":"0.22.10","files":["index.js","index.js.map"]}",
+        "definition": {
+          "defaultPage": "Test Page",
+          "name": "Test App",
+          "pages": [
+            {
+              "blocks": [
+                {
+                  "type": "test",
+                  "version": "0.0.0",
+                },
+              ],
+              "name": "Test Page",
+            },
+          ],
+        },
+        "demoMode": false,
+        "domain": null,
+        "emailName": null,
+        "enableSelfRegistration": true,
+        "googleAnalyticsID": null,
+        "hasIcon": true,
+        "hasMaskableIcon": false,
+        "iconBackground": "#ffffff",
+        "iconUrl": "/api/apps/1/icon?maskable=true&updated=1970-01-01T00%3A00%3A00.000Z",
+        "id": 1,
+        "locked": false,
+        "longDescription": null,
+        "path": "test-app",
+        "screenshotUrls": [],
+        "sentryDsn": null,
+        "sentryEnvironment": null,
+        "showAppDefinition": true,
+        "showAppsembleLogin": false,
+        "showAppsembleOAuth2Login": true,
+        "visibility": "unlisted",
+        "yaml": "
+      name: Test App
+      defaultPage: Test Page
+      pages:
+        - name: Test Page
+          blocks:
+            - type: test
+              version: 0.0.0
+              ",
+      }
+    `);
+  });
+
   it('should not allow an upload without an app when creating an app', async () => {
     authorizeStudio();
     const response = await request.post(
@@ -1071,7 +1273,7 @@ describe('createApp', () => {
             "instance": {
               "coreStyle": "body { color: red; }",
             },
-            "message": "requires property \\"OrganizationId\\"",
+            "message": "requires property "OrganizationId"",
             "name": "required",
             "path": [],
             "property": "instance",
@@ -1080,9 +1282,20 @@ describe('createApp', () => {
                 "OrganizationId": {
                   "$ref": "#/components/schemas/Organization/properties/id",
                 },
+                "controllerCode": {
+                  "description": "Custom app logic as a JavaScript string",
+                  "type": "string",
+                },
+                "controllerImplementations": {
+                  "description": "Appsemble SDK interfaces implementations",
+                  "type": "string",
+                },
                 "coreStyle": {
                   "description": "The custom style to apply to the core app.",
                   "type": "string",
+                },
+                "demoMode": {
+                  "$ref": "#/components/schemas/App/properties/demoMode",
                 },
                 "domain": {
                   "$ref": "#/components/schemas/App/properties/domain",
@@ -1094,7 +1307,7 @@ describe('createApp', () => {
                 },
                 "iconBackground": {
                   "description": "The background color to use for the maskable icon.",
-                  "pattern": "^#[\\\\dA-Fa-f]{6}$",
+                  "pattern": "^#[\\dA-Fa-f]{6}$",
                   "type": "string",
                 },
                 "longDescription": {
@@ -1137,14 +1350,14 @@ describe('createApp', () => {
               ],
               "type": "object",
             },
-            "stack": "instance requires property \\"OrganizationId\\"",
+            "stack": "instance requires property "OrganizationId"",
           },
           {
             "argument": "yaml",
             "instance": {
               "coreStyle": "body { color: red; }",
             },
-            "message": "requires property \\"yaml\\"",
+            "message": "requires property "yaml"",
             "name": "required",
             "path": [],
             "property": "instance",
@@ -1153,9 +1366,20 @@ describe('createApp', () => {
                 "OrganizationId": {
                   "$ref": "#/components/schemas/Organization/properties/id",
                 },
+                "controllerCode": {
+                  "description": "Custom app logic as a JavaScript string",
+                  "type": "string",
+                },
+                "controllerImplementations": {
+                  "description": "Appsemble SDK interfaces implementations",
+                  "type": "string",
+                },
                 "coreStyle": {
                   "description": "The custom style to apply to the core app.",
                   "type": "string",
+                },
+                "demoMode": {
+                  "$ref": "#/components/schemas/App/properties/demoMode",
                 },
                 "domain": {
                   "$ref": "#/components/schemas/App/properties/domain",
@@ -1167,7 +1391,7 @@ describe('createApp', () => {
                 },
                 "iconBackground": {
                   "description": "The background color to use for the maskable icon.",
-                  "pattern": "^#[\\\\dA-Fa-f]{6}$",
+                  "pattern": "^#[\\dA-Fa-f]{6}$",
                   "type": "string",
                 },
                 "longDescription": {
@@ -1210,7 +1434,7 @@ describe('createApp', () => {
               ],
               "type": "object",
             },
-            "stack": "instance requires property \\"yaml\\"",
+            "stack": "instance requires property "yaml"",
           },
         ],
         "message": "Invalid content types found",
@@ -1252,7 +1476,7 @@ describe('createApp', () => {
             - type: test
               version: 0.0.1",
             },
-            "message": "requires property \\"OrganizationId\\"",
+            "message": "requires property "OrganizationId"",
             "name": "required",
             "path": [],
             "property": "instance",
@@ -1261,9 +1485,20 @@ describe('createApp', () => {
                 "OrganizationId": {
                   "$ref": "#/components/schemas/Organization/properties/id",
                 },
+                "controllerCode": {
+                  "description": "Custom app logic as a JavaScript string",
+                  "type": "string",
+                },
+                "controllerImplementations": {
+                  "description": "Appsemble SDK interfaces implementations",
+                  "type": "string",
+                },
                 "coreStyle": {
                   "description": "The custom style to apply to the core app.",
                   "type": "string",
+                },
+                "demoMode": {
+                  "$ref": "#/components/schemas/App/properties/demoMode",
                 },
                 "domain": {
                   "$ref": "#/components/schemas/App/properties/domain",
@@ -1275,7 +1510,7 @@ describe('createApp', () => {
                 },
                 "iconBackground": {
                   "description": "The background color to use for the maskable icon.",
-                  "pattern": "^#[\\\\dA-Fa-f]{6}$",
+                  "pattern": "^#[\\dA-Fa-f]{6}$",
                   "type": "string",
                 },
                 "longDescription": {
@@ -1318,7 +1553,7 @@ describe('createApp', () => {
               ],
               "type": "object",
             },
-            "stack": "instance requires property \\"OrganizationId\\"",
+            "stack": "instance requires property "OrganizationId"",
           },
         ],
         "message": "Invalid content types found",
@@ -1543,6 +1778,8 @@ describe('createApp', () => {
         "$updated": "1970-01-01T00:00:00.000Z",
         "OrganizationId": "testorganization",
         "OrganizationName": "Test Organization",
+        "controllerCode": null,
+        "controllerImplementations": null,
         "definition": {
           "defaultPage": "Test Page",
           "name": "Test App",
@@ -1558,8 +1795,10 @@ describe('createApp', () => {
             },
           ],
         },
+        "demoMode": false,
         "domain": null,
         "emailName": null,
+        "enableSelfRegistration": true,
         "googleAnalyticsID": null,
         "hasIcon": false,
         "hasMaskableIcon": false,
@@ -1627,6 +1866,8 @@ describe('createApp', () => {
         "$updated": "1970-01-01T00:00:00.000Z",
         "OrganizationId": "testorganization",
         "OrganizationName": "Test Organization",
+        "controllerCode": null,
+        "controllerImplementations": null,
         "definition": {
           "defaultPage": "Test Page",
           "name": "Test App",
@@ -1642,8 +1883,10 @@ describe('createApp', () => {
             },
           ],
         },
+        "demoMode": false,
         "domain": null,
         "emailName": null,
+        "enableSelfRegistration": true,
         "googleAnalyticsID": null,
         "hasIcon": false,
         "hasMaskableIcon": false,
@@ -1704,6 +1947,8 @@ describe('createApp', () => {
         "$updated": "1970-01-01T00:00:00.000Z",
         "OrganizationId": "testorganization",
         "OrganizationName": "Test Organization",
+        "controllerCode": null,
+        "controllerImplementations": null,
         "coreStyle": "body { color: blue; }",
         "definition": {
           "defaultPage": "Test Page",
@@ -1720,8 +1965,10 @@ describe('createApp', () => {
             },
           ],
         },
+        "demoMode": false,
         "domain": null,
         "emailName": null,
+        "enableSelfRegistration": true,
         "googleAnalyticsID": null,
         "hasIcon": false,
         "hasMaskableIcon": false,
@@ -1793,9 +2040,9 @@ describe('createApp', () => {
             "instance": {
               "OrganizationId": "testorganization",
               "coreStyle": "this is invalid css",
-              "definition": "{\\"name\\":\\"Test App\\",\\"defaultPage\\":\\"Test Page\\",\\"pages\\":[{\\"name\\":\\"Test Page\\",\\"blocks\\":[{\\"type\\":\\"test\\",\\"version\\":\\"0.0.0\\"}]}]}",
+              "definition": "{"name":"Test App","defaultPage":"Test Page","pages":[{"name":"Test Page","blocks":[{"type":"test","version":"0.0.0"}]}]}",
             },
-            "message": "requires property \\"yaml\\"",
+            "message": "requires property "yaml"",
             "name": "required",
             "path": [],
             "property": "instance",
@@ -1804,9 +2051,20 @@ describe('createApp', () => {
                 "OrganizationId": {
                   "$ref": "#/components/schemas/Organization/properties/id",
                 },
+                "controllerCode": {
+                  "description": "Custom app logic as a JavaScript string",
+                  "type": "string",
+                },
+                "controllerImplementations": {
+                  "description": "Appsemble SDK interfaces implementations",
+                  "type": "string",
+                },
                 "coreStyle": {
                   "description": "The custom style to apply to the core app.",
                   "type": "string",
+                },
+                "demoMode": {
+                  "$ref": "#/components/schemas/App/properties/demoMode",
                 },
                 "domain": {
                   "$ref": "#/components/schemas/App/properties/domain",
@@ -1818,7 +2076,7 @@ describe('createApp', () => {
                 },
                 "iconBackground": {
                   "description": "The background color to use for the maskable icon.",
-                  "pattern": "^#[\\\\dA-Fa-f]{6}$",
+                  "pattern": "^#[\\dA-Fa-f]{6}$",
                   "type": "string",
                 },
                 "longDescription": {
@@ -1861,7 +2119,7 @@ describe('createApp', () => {
               ],
               "type": "object",
             },
-            "stack": "instance requires property \\"yaml\\"",
+            "stack": "instance requires property "yaml"",
           },
         ],
         "message": "Invalid content types found",
@@ -1898,10 +2156,10 @@ describe('createApp', () => {
             "argument": "yaml",
             "instance": {
               "OrganizationId": "testorganization",
-              "definition": "{\\"name\\":\\"Test App\\",\\"defaultPage\\":\\"Test Page\\",\\"path\\":\\"a\\",\\"pages\\":[{\\"name\\":\\"Test Page\\",\\"blocks\\":[{\\"type\\":\\"testblock\\"}]}]}",
+              "definition": "{"name":"Test App","defaultPage":"Test Page","path":"a","pages":[{"name":"Test Page","blocks":[{"type":"testblock"}]}]}",
               "sharedStyle": "this is invalid css",
             },
-            "message": "requires property \\"yaml\\"",
+            "message": "requires property "yaml"",
             "name": "required",
             "path": [],
             "property": "instance",
@@ -1910,9 +2168,20 @@ describe('createApp', () => {
                 "OrganizationId": {
                   "$ref": "#/components/schemas/Organization/properties/id",
                 },
+                "controllerCode": {
+                  "description": "Custom app logic as a JavaScript string",
+                  "type": "string",
+                },
+                "controllerImplementations": {
+                  "description": "Appsemble SDK interfaces implementations",
+                  "type": "string",
+                },
                 "coreStyle": {
                   "description": "The custom style to apply to the core app.",
                   "type": "string",
+                },
+                "demoMode": {
+                  "$ref": "#/components/schemas/App/properties/demoMode",
                 },
                 "domain": {
                   "$ref": "#/components/schemas/App/properties/domain",
@@ -1924,7 +2193,7 @@ describe('createApp', () => {
                 },
                 "iconBackground": {
                   "description": "The background color to use for the maskable icon.",
-                  "pattern": "^#[\\\\dA-Fa-f]{6}$",
+                  "pattern": "^#[\\dA-Fa-f]{6}$",
                   "type": "string",
                 },
                 "longDescription": {
@@ -1967,7 +2236,7 @@ describe('createApp', () => {
               ],
               "type": "object",
             },
-            "stack": "instance requires property \\"yaml\\"",
+            "stack": "instance requires property "yaml"",
           },
         ],
         "message": "Invalid content types found",
@@ -2210,6 +2479,8 @@ describe('createApp', () => {
           "$updated": "1970-01-01T00:00:00.000Z",
           "OrganizationId": "testorganization",
           "OrganizationName": "Test Organization",
+          "controllerCode": null,
+          "controllerImplementations": null,
           "definition": {
             "defaultPage": "Test Page",
             "name": "Test App",
@@ -2225,8 +2496,10 @@ describe('createApp', () => {
               },
             ],
           },
+          "demoMode": false,
           "domain": null,
           "emailName": null,
+          "enableSelfRegistration": true,
           "googleAnalyticsID": null,
           "hasIcon": false,
           "hasMaskableIcon": false,
@@ -2354,7 +2627,7 @@ describe('createApp', () => {
                   },
                 ],
               },
-              "message": "requires property \\"name\\"",
+              "message": "requires property "name"",
               "name": "required",
               "path": [],
               "property": "instance",
@@ -2367,6 +2640,9 @@ describe('createApp', () => {
                     "items": {},
                     "minItems": 1,
                     "type": "array",
+                  },
+                  "controller": {
+                    "$ref": "#/components/schemas/ControllerDefinition",
                   },
                   "cron": {
                     "additionalProperties": {
@@ -2479,6 +2755,9 @@ describe('createApp', () => {
                   "theme": {
                     "$ref": "#/components/schemas/Theme",
                   },
+                  "users": {
+                    "$ref": "#/components/schemas/UsersDefinition",
+                  },
                 },
                 "required": [
                   "name",
@@ -2487,7 +2766,7 @@ describe('createApp', () => {
                 ],
                 "type": "object",
               },
-              "stack": "instance requires property \\"name\\"",
+              "stack": "instance requires property "name"",
             },
           ],
         },
@@ -2539,6 +2818,8 @@ describe('patchApp', () => {
         "$updated": "1970-01-01T00:00:00.000Z",
         "OrganizationId": "testorganization",
         "OrganizationName": "Test Organization",
+        "controllerCode": null,
+        "controllerImplementations": null,
         "definition": {
           "defaultPage": "Test Page",
           "name": "Foobar",
@@ -2554,8 +2835,10 @@ describe('patchApp', () => {
             },
           ],
         },
+        "demoMode": false,
         "domain": null,
         "emailName": null,
+        "enableSelfRegistration": true,
         "googleAnalyticsID": null,
         "hasIcon": false,
         "hasMaskableIcon": false,
@@ -2618,12 +2901,16 @@ describe('patchApp', () => {
         "$updated": "1970-01-01T00:00:00.000Z",
         "OrganizationId": "testorganization",
         "OrganizationName": "Test Organization",
+        "controllerCode": null,
+        "controllerImplementations": null,
         "definition": {
           "defaultPage": "Test Page",
           "name": "Test App",
         },
+        "demoMode": false,
         "domain": null,
         "emailName": "Test Email <test@example.com>",
+        "enableSelfRegistration": true,
         "googleAnalyticsID": null,
         "hasIcon": false,
         "hasMaskableIcon": false,
@@ -2763,12 +3050,16 @@ describe('patchApp', () => {
         "$updated": "1970-01-01T00:00:00.000Z",
         "OrganizationId": "testorganization",
         "OrganizationName": "Test Organization",
+        "controllerCode": null,
+        "controllerImplementations": null,
         "definition": {
           "defaultPage": "Test Page",
           "name": "Test App",
         },
+        "demoMode": false,
         "domain": null,
         "emailName": null,
+        "enableSelfRegistration": true,
         "googleAnalyticsID": null,
         "hasIcon": false,
         "hasMaskableIcon": false,
@@ -2816,12 +3107,16 @@ describe('patchApp', () => {
         "$updated": "1970-01-01T00:00:00.000Z",
         "OrganizationId": "testorganization",
         "OrganizationName": "Test Organization",
+        "controllerCode": null,
+        "controllerImplementations": null,
         "definition": {
           "defaultPage": "Test Page",
           "name": "Test App",
         },
+        "demoMode": false,
         "domain": "appsemble.app",
         "emailName": null,
+        "enableSelfRegistration": true,
         "googleAnalyticsID": null,
         "hasIcon": false,
         "hasMaskableIcon": false,
@@ -2869,12 +3164,78 @@ describe('patchApp', () => {
         "$updated": "1970-01-01T00:00:00.000Z",
         "OrganizationId": "testorganization",
         "OrganizationName": "Test Organization",
+        "controllerCode": null,
+        "controllerImplementations": null,
         "definition": {
           "defaultPage": "Test Page",
           "name": "Test App",
         },
+        "demoMode": false,
         "domain": null,
         "emailName": null,
+        "enableSelfRegistration": true,
+        "googleAnalyticsID": null,
+        "hasIcon": false,
+        "hasMaskableIcon": false,
+        "iconBackground": "#ffffff",
+        "iconUrl": null,
+        "id": 1,
+        "locked": false,
+        "longDescription": null,
+        "path": "foo",
+        "screenshotUrls": [],
+        "sentryDsn": null,
+        "sentryEnvironment": null,
+        "showAppDefinition": false,
+        "showAppsembleLogin": false,
+        "showAppsembleOAuth2Login": true,
+        "visibility": "unlisted",
+        "yaml": "name: Test App
+      defaultPage: Test Page
+      ",
+      }
+    `);
+  });
+
+  it('should delete app controller', async () => {
+    const app = await App.create(
+      {
+        path: 'foo',
+        definition: { name: 'Test App', defaultPage: 'Test Page' },
+        vapidPublicKey: 'a',
+        vapidPrivateKey: 'b',
+        OrganizationId: organization.id,
+        controllerCode: 'test',
+        controllerImplementations: 'test',
+      },
+      { raw: true },
+    );
+
+    authorizeStudio();
+    const response = await request.patch(
+      `/api/apps/${app.id}`,
+      createFormData({ controllerCode: '', controllerImplementations: '' }),
+    );
+
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 200 OK
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "$created": "1970-01-01T00:00:00.000Z",
+        "$updated": "1970-01-01T00:00:00.000Z",
+        "OrganizationId": "testorganization",
+        "OrganizationName": "Test Organization",
+        "controllerCode": null,
+        "controllerImplementations": null,
+        "definition": {
+          "defaultPage": "Test Page",
+          "name": "Test App",
+        },
+        "demoMode": false,
+        "domain": null,
+        "emailName": null,
+        "enableSelfRegistration": true,
         "googleAnalyticsID": null,
         "hasIcon": false,
         "hasMaskableIcon": false,
@@ -2952,7 +3313,7 @@ describe('patchApp', () => {
             "instance": {
               "foo": "bar",
             },
-            "message": "requires property \\"OrganizationId\\"",
+            "message": "requires property "OrganizationId"",
             "name": "required",
             "path": [],
             "property": "instance",
@@ -2961,9 +3322,20 @@ describe('patchApp', () => {
                 "OrganizationId": {
                   "$ref": "#/components/schemas/Organization/properties/id",
                 },
+                "controllerCode": {
+                  "description": "Custom app logic as a JavaScript string",
+                  "type": "string",
+                },
+                "controllerImplementations": {
+                  "description": "Appsemble SDK interfaces implementations",
+                  "type": "string",
+                },
                 "coreStyle": {
                   "description": "The custom style to apply to the core app.",
                   "type": "string",
+                },
+                "demoMode": {
+                  "$ref": "#/components/schemas/App/properties/demoMode",
                 },
                 "domain": {
                   "$ref": "#/components/schemas/App/properties/domain",
@@ -2975,7 +3347,7 @@ describe('patchApp', () => {
                 },
                 "iconBackground": {
                   "description": "The background color to use for the maskable icon.",
-                  "pattern": "^#[\\\\dA-Fa-f]{6}$",
+                  "pattern": "^#[\\dA-Fa-f]{6}$",
                   "type": "string",
                 },
                 "longDescription": {
@@ -3018,14 +3390,14 @@ describe('patchApp', () => {
               ],
               "type": "object",
             },
-            "stack": "instance requires property \\"OrganizationId\\"",
+            "stack": "instance requires property "OrganizationId"",
           },
           {
             "argument": "yaml",
             "instance": {
               "foo": "bar",
             },
-            "message": "requires property \\"yaml\\"",
+            "message": "requires property "yaml"",
             "name": "required",
             "path": [],
             "property": "instance",
@@ -3034,9 +3406,20 @@ describe('patchApp', () => {
                 "OrganizationId": {
                   "$ref": "#/components/schemas/Organization/properties/id",
                 },
+                "controllerCode": {
+                  "description": "Custom app logic as a JavaScript string",
+                  "type": "string",
+                },
+                "controllerImplementations": {
+                  "description": "Appsemble SDK interfaces implementations",
+                  "type": "string",
+                },
                 "coreStyle": {
                   "description": "The custom style to apply to the core app.",
                   "type": "string",
+                },
+                "demoMode": {
+                  "$ref": "#/components/schemas/App/properties/demoMode",
                 },
                 "domain": {
                   "$ref": "#/components/schemas/App/properties/domain",
@@ -3048,7 +3431,7 @@ describe('patchApp', () => {
                 },
                 "iconBackground": {
                   "description": "The background color to use for the maskable icon.",
-                  "pattern": "^#[\\\\dA-Fa-f]{6}$",
+                  "pattern": "^#[\\dA-Fa-f]{6}$",
                   "type": "string",
                 },
                 "longDescription": {
@@ -3091,7 +3474,7 @@ describe('patchApp', () => {
               ],
               "type": "object",
             },
-            "stack": "instance requires property \\"yaml\\"",
+            "stack": "instance requires property "yaml"",
           },
         ],
         "message": "Invalid content types found",
@@ -3130,7 +3513,7 @@ describe('patchApp', () => {
               "instance": {
                 "name": "Foo",
               },
-              "message": "requires property \\"defaultPage\\"",
+              "message": "requires property "defaultPage"",
               "name": "required",
               "path": [],
               "property": "instance",
@@ -3143,6 +3526,9 @@ describe('patchApp', () => {
                     "items": {},
                     "minItems": 1,
                     "type": "array",
+                  },
+                  "controller": {
+                    "$ref": "#/components/schemas/ControllerDefinition",
                   },
                   "cron": {
                     "additionalProperties": {
@@ -3255,6 +3641,9 @@ describe('patchApp', () => {
                   "theme": {
                     "$ref": "#/components/schemas/Theme",
                   },
+                  "users": {
+                    "$ref": "#/components/schemas/UsersDefinition",
+                  },
                 },
                 "required": [
                   "name",
@@ -3263,14 +3652,14 @@ describe('patchApp', () => {
                 ],
                 "type": "object",
               },
-              "stack": "instance requires property \\"defaultPage\\"",
+              "stack": "instance requires property "defaultPage"",
             },
             {
               "argument": "pages",
               "instance": {
                 "name": "Foo",
               },
-              "message": "requires property \\"pages\\"",
+              "message": "requires property "pages"",
               "name": "required",
               "path": [],
               "property": "instance",
@@ -3283,6 +3672,9 @@ describe('patchApp', () => {
                     "items": {},
                     "minItems": 1,
                     "type": "array",
+                  },
+                  "controller": {
+                    "$ref": "#/components/schemas/ControllerDefinition",
                   },
                   "cron": {
                     "additionalProperties": {
@@ -3395,6 +3787,9 @@ describe('patchApp', () => {
                   "theme": {
                     "$ref": "#/components/schemas/Theme",
                   },
+                  "users": {
+                    "$ref": "#/components/schemas/UsersDefinition",
+                  },
                 },
                 "required": [
                   "name",
@@ -3403,7 +3798,7 @@ describe('patchApp', () => {
                 ],
                 "type": "object",
               },
-              "stack": "instance requires property \\"pages\\"",
+              "stack": "instance requires property "pages"",
             },
           ],
         },
@@ -3452,13 +3847,17 @@ describe('patchApp', () => {
         "$updated": "1970-01-01T00:00:00.000Z",
         "OrganizationId": "testorganization",
         "OrganizationName": "Test Organization",
+        "controllerCode": null,
+        "controllerImplementations": null,
         "coreStyle": "body { color: yellow; }",
         "definition": {
           "defaultPage": "Test Page",
           "name": "Test App",
         },
+        "demoMode": false,
         "domain": null,
         "emailName": null,
+        "enableSelfRegistration": true,
         "googleAnalyticsID": null,
         "hasIcon": false,
         "hasMaskableIcon": false,
@@ -3618,6 +4017,109 @@ describe('patchApp', () => {
     expect(responseA).toMatchSnapshot();
     expect(responseB).toMatchSnapshot();
   });
+
+  it('should update the app demo mode flag', async () => {
+    const app = await App.create(
+      {
+        path: 'bar',
+        definition: { name: 'Test App', defaultPage: 'Test Page' },
+        vapidPublicKey: 'a',
+        vapidPrivateKey: 'b',
+        OrganizationId: organization.id,
+      },
+      { raw: true },
+    );
+
+    authorizeStudio();
+    const response = await request.patch(`/api/apps/${app.id}`, createFormData({ demoMode: true }));
+
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 200 OK
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "$created": "1970-01-01T00:00:00.000Z",
+        "$updated": "1970-01-01T00:00:00.000Z",
+        "OrganizationId": "testorganization",
+        "OrganizationName": "Test Organization",
+        "controllerCode": null,
+        "controllerImplementations": null,
+        "definition": {
+          "defaultPage": "Test Page",
+          "name": "Test App",
+        },
+        "demoMode": true,
+        "domain": null,
+        "emailName": null,
+        "enableSelfRegistration": true,
+        "googleAnalyticsID": null,
+        "hasIcon": false,
+        "hasMaskableIcon": false,
+        "iconBackground": "#ffffff",
+        "iconUrl": null,
+        "id": 1,
+        "locked": false,
+        "longDescription": null,
+        "path": "bar",
+        "screenshotUrls": [],
+        "sentryDsn": null,
+        "sentryEnvironment": null,
+        "showAppDefinition": false,
+        "showAppsembleLogin": false,
+        "showAppsembleOAuth2Login": true,
+        "visibility": "unlisted",
+        "yaml": "name: Test App
+      defaultPage: Test Page
+      ",
+      }
+    `);
+
+    const response2 = await request.patch(
+      `/api/apps/${app.id}`,
+      createFormData({ demoMode: false }),
+    );
+
+    expect(response2).toMatchInlineSnapshot(`
+      HTTP/1.1 200 OK
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "$created": "1970-01-01T00:00:00.000Z",
+        "$updated": "1970-01-01T00:00:00.000Z",
+        "OrganizationId": "testorganization",
+        "OrganizationName": "Test Organization",
+        "controllerCode": null,
+        "controllerImplementations": null,
+        "definition": {
+          "defaultPage": "Test Page",
+          "name": "Test App",
+        },
+        "demoMode": false,
+        "domain": null,
+        "emailName": null,
+        "enableSelfRegistration": true,
+        "googleAnalyticsID": null,
+        "hasIcon": false,
+        "hasMaskableIcon": false,
+        "iconBackground": "#ffffff",
+        "iconUrl": null,
+        "id": 1,
+        "locked": false,
+        "longDescription": null,
+        "path": "bar",
+        "screenshotUrls": [],
+        "sentryDsn": null,
+        "sentryEnvironment": null,
+        "showAppDefinition": false,
+        "showAppsembleLogin": false,
+        "showAppsembleOAuth2Login": true,
+        "visibility": "unlisted",
+        "yaml": "name: Test App
+      defaultPage: Test Page
+      ",
+      }
+    `);
+  });
 });
 
 describe('setAppLock', () => {
@@ -3655,7 +4157,7 @@ describe('setAppLock', () => {
   });
 
   it('should not be possible to set the lock status as an app editor', async () => {
-    await Member.update({ role: 'AppEditor' }, { where: { UserId: user.id } });
+    await OrganizationMember.update({ role: 'AppEditor' }, { where: { UserId: user.id } });
 
     authorizeStudio();
     const app = await App.create({
@@ -3705,6 +4207,35 @@ describe('deleteApp', () => {
     const response = await request.delete(`/api/apps/${id}`);
 
     expect(response).toMatchInlineSnapshot('HTTP/1.1 204 No Content');
+  });
+
+  it('should delete an app via the CLI command.', async () => {
+    authorizeClientCredentials('apps:delete');
+    const app = await App.create({
+      definition: {
+        name: 'Test App',
+        defaultPage: 'Test Page',
+      },
+      OrganizationId: organization.id,
+      vapidPublicKey: 'a',
+      vapidPrivateKey: 'b',
+      showAppDefinition: false,
+    });
+
+    const { status } = await request.delete(`/api/apps/${app.id}`);
+    expect(status).toBe(204);
+
+    const response = await request.get(`/api/apps/${app.id}`);
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 404 Not Found
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "error": "Not Found",
+        "message": "App not found",
+        "statusCode": 404,
+      }
+    `);
   });
 
   it('should not delete non-existent apps', async () => {
@@ -3823,7 +4354,7 @@ describe('getAppEmailSettings', () => {
       password: encrypt('password', 'key'),
     });
 
-    await Member.update({ role: 'AppEditor' }, { where: { UserId: user.id } });
+    await OrganizationMember.update({ role: 'AppEditor' }, { where: { UserId: user.id } });
 
     authorizeStudio(user);
     const response = await request.get(`/api/apps/${app.id}/email`);
@@ -4432,6 +4963,377 @@ describe('deleteAppScreenshot', () => {
   });
 });
 
+describe('exportApp', () => {
+  it('should not allow exporting resources if the user does not have sufficient permissions', async () => {
+    const appWithResources = await App.create({
+      definition: {
+        name: 'Test App',
+        defaultPage: 'Test Page',
+        resources: {
+          testResource: {
+            schema: {
+              type: 'object',
+              required: ['bar'],
+              properties: { bar: { type: 'string' }, testResourceId: { type: 'number' } },
+            },
+            roles: ['$public'],
+            references: {
+              testResourceId: {
+                resource: 'testResource',
+                create: {
+                  trigger: ['update'],
+                },
+              },
+            },
+          },
+        },
+      },
+      OrganizationId: organization.id,
+      vapidPublicKey: 'a',
+      vapidPrivateKey: 'b',
+    });
+    await Resource.create({
+      AppId: appWithResources.id,
+      type: 'testResource',
+      data: { foo: 'bar' },
+    });
+    await OrganizationMember.update({ role: 'Member' }, { where: { UserId: user.id } });
+    authorizeStudio();
+    const response = await request.get(`/api/apps/${appWithResources.id}/export?resources=true`);
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 403 Forbidden
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "error": "Forbidden",
+        "message": "User does not have sufficient permissions.",
+        "statusCode": 403,
+      }
+    `);
+  });
+
+  it('should not allow for exporting unlisted apps if the user is not in the same organization as app.', async () => {
+    await Organization.create({ id: 'xkcd', name: 'Test Organization 2' });
+    const app = await App.create({
+      definition: {
+        name: 'Test App',
+        defaultPage: 'Test Page',
+      },
+      OrganizationId: 'xkcd',
+      vapidPublicKey: 'a',
+      vapidPrivateKey: 'b',
+      visibility: 'unlisted',
+    });
+    authorizeStudio();
+    const response = await request.get(`/api/apps/${app.id}/export`);
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 403 Forbidden
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "error": "Forbidden",
+        "message": "User is not part of this organization.",
+        "statusCode": 403,
+      }
+    `);
+  });
+
+  it('should not allow for exporting apps with hidden app definitions if the user is not in the same organization as the app', async () => {
+    await Organization.create({ id: 'xkcd', name: 'Test Organization 2' });
+    const app = await App.create({
+      definition: {
+        name: 'Test App',
+        defaultPage: 'Test Page',
+      },
+      OrganizationId: 'xkcd',
+      vapidPublicKey: 'a',
+      vapidPrivateKey: 'b',
+      showAppDefinition: false,
+    });
+    authorizeStudio();
+    const response = await request.get(`/api/apps/${app.id}/export`);
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 403 Forbidden
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "error": "Forbidden",
+        "message": "User is not part of this organization.",
+        "statusCode": 403,
+      }
+    `);
+  });
+
+  it('should return a zip file', async () => {
+    const app = await App.create(
+      {
+        definition: {
+          name: 'Test App',
+          defaultPage: 'Test Page',
+          pages: [{ name: 'Test Page' }],
+        },
+        sharedStyle: `
+        * {
+          color: var(--link-color)
+        }`,
+        coreStyle: `
+        * {
+          color: var(--primary-color)
+        }`,
+        vapidPrivateKey: 'b',
+        vapidPublicKey: 'a',
+        OrganizationId: organization.id,
+      },
+      { raw: true },
+    );
+    await AppMessages.create({ AppId: app.id, language: 'en', messages: [{ test: 'test' }] });
+
+    vi.useRealTimers();
+    authorizeStudio();
+    const response = await request.get(`/api/apps/${app.id}/export?resources=false`, {
+      responseType: 'stream',
+    });
+    const zip = new JSZip();
+
+    const dataBuffer: Buffer = await new Promise((resolve, reject) => {
+      const chunks: any[] = [];
+
+      // Listen for data events and collect chunks
+      response.data.on('data', (chunk: any) => chunks.push(chunk));
+      response.data.on('end', () => resolve(Buffer.concat(chunks)));
+      response.data.on('error', reject);
+    });
+    const archive = await zip.loadAsync(dataBuffer);
+
+    expect(Object.keys(archive.files)).toStrictEqual([
+      'app-definition.yaml',
+      'theme/',
+      'theme/core/',
+      'theme/core/index.css',
+      'theme/shared/',
+      'theme/shared/index.css',
+      'i18n/',
+      'i18n/en.json',
+    ]);
+
+    expect(await archive.file('app-definition.yaml').async('text')).toMatchInlineSnapshot(
+      `
+        "name: Test App
+        defaultPage: Test Page
+        pages:
+          - name: Test Page
+        "
+      `,
+    );
+    expect(await archive.file('theme/core/index.css').async('text')).toMatchInlineSnapshot(`
+      "
+              * {
+                color: var(--primary-color)
+              }"
+    `);
+    expect(await archive.file('theme/shared/index.css').async('text')).toMatchInlineSnapshot(`
+      "
+              * {
+                color: var(--link-color)
+              }"
+    `);
+    expect(await archive.file('i18n/en.json').async('text')).toMatchInlineSnapshot(
+      '"[{"test":"test"}]"',
+    );
+  });
+
+  it('should allow exporting resources if the user has sufficient permissions', async () => {
+    const appWithResources = await App.create({
+      definition: {
+        name: 'Test App',
+        defaultPage: 'Test Page',
+        resources: {
+          testResource: {
+            schema: {
+              type: 'object',
+              required: ['bar'],
+              properties: { bar: { type: 'string' }, testResourceId: { type: 'number' } },
+            },
+            roles: ['$public'],
+            references: {
+              testResourceId: {
+                resource: 'testResource',
+                create: {
+                  trigger: ['update'],
+                },
+              },
+            },
+          },
+        },
+      },
+      sharedStyle: `
+      * {
+        color: var(--link-color)
+      }`,
+      coreStyle: `
+      * {
+        color: var(--primary-color)
+      }`,
+      OrganizationId: organization.id,
+      vapidPublicKey: 'a',
+      vapidPrivateKey: 'b',
+    });
+    await AppMessages.create({
+      AppId: appWithResources.id,
+      language: 'en',
+      messages: [{ test: 'test' }],
+    });
+    await Resource.create({
+      AppId: appWithResources.id,
+      type: 'testResource',
+      data: { foo: 'bar' },
+    });
+
+    vi.useRealTimers();
+    authorizeStudio();
+    const response = await request.get(`/api/apps/${appWithResources.id}/export?resources=true`, {
+      responseType: 'stream',
+    });
+    const zip = new JSZip();
+
+    const dataBuffer: Buffer = await new Promise((resolve, reject) => {
+      const chunks: any[] = [];
+
+      // Listen for data events and collect chunks
+      response.data.on('data', (chunk: any) => chunks.push(chunk));
+      response.data.on('end', () => resolve(Buffer.concat(chunks)));
+      response.data.on('error', reject);
+    });
+    const archive = await zip.loadAsync(dataBuffer);
+
+    expect(Object.keys(archive.files)).toStrictEqual([
+      'app-definition.yaml',
+      'theme/',
+      'theme/core/',
+      'theme/core/index.css',
+      'theme/shared/',
+      'theme/shared/index.css',
+      'i18n/',
+      'i18n/en.json',
+      'resources/',
+      'resources/testResource.json',
+    ]);
+
+    expect(await archive.file('app-definition.yaml').async('text')).toMatchInlineSnapshot(
+      `
+        "name: Test App
+        defaultPage: Test Page
+        resources:
+          testResource:
+            schema:
+              type: object
+              required:
+                - bar
+              properties:
+                bar:
+                  type: string
+                testResourceId:
+                  type: number
+            roles:
+              - $public
+            references:
+              testResourceId:
+                resource: testResource
+                create:
+                  trigger:
+                    - update
+        "
+      `,
+    );
+    expect(await archive.file('theme/core/index.css').async('text')).toMatchInlineSnapshot(`
+      "
+            * {
+              color: var(--primary-color)
+            }"
+    `);
+    expect(await archive.file('theme/shared/index.css').async('text')).toMatchInlineSnapshot(`
+      "
+            * {
+              color: var(--link-color)
+            }"
+    `);
+    expect(await archive.file('i18n/en.json').async('text')).toMatchInlineSnapshot(
+      '"[{"test":"test"}]"',
+    );
+    expect(await archive.file('resources/testResource.json').async('text')).toMatchInlineSnapshot(
+      `
+        "{"foo":"bar","id":1,"$created":"1970-01-01T00:00:00.000Z","$updated":"1970-01-01T00:00:00.000Z"}
+        "
+      `,
+    );
+  });
+});
+
+describe('importApp', () => {
+  it('should not allow a user with insufficient permissions to import an App', async () => {
+    const appDefinition = {
+      name: 'Test App',
+      defaultPage: 'Test Page',
+      pages: [{ name: 'Test Page', blocks: [{ type: 'test', version: '0.0.0' }] }],
+    } as AppDefinition;
+    const zip = new JSZip();
+    zip.file('app-definition.yaml', stringify(appDefinition));
+    vi.useRealTimers();
+    const content = zip.generateNodeStream();
+    await OrganizationMember.update({ role: 'Member' }, { where: { UserId: user.id } });
+    authorizeStudio();
+
+    const response = await request.post(
+      `/api/apps/import/organization/${organization.id}`,
+      content,
+      {
+        headers: {
+          'Content-Type': 'application/zip',
+        },
+      },
+    );
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 403 Forbidden
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "error": "Forbidden",
+        "message": "User does not have sufficient permissions.",
+        "statusCode": 403,
+      }
+    `);
+  });
+
+  it('should allow a user with sufficient permissions to import an App', async () => {
+    const appDefinition = {
+      name: 'Test App',
+      defaultPage: 'Test Page',
+      pages: [{ name: 'Test Page', blocks: [{ type: 'test', version: '0.0.0' }] }],
+    } as AppDefinition;
+    const zip = new JSZip();
+    zip.file('app-definition.yaml', stringify(appDefinition));
+    vi.useRealTimers();
+    const content = zip.generateNodeStream();
+    await OrganizationMember.update({ role: 'AppEditor' }, { where: { UserId: user.id } });
+    authorizeStudio();
+
+    const response = await request.post(
+      `/api/apps/import/organization/${organization.id}`,
+      content,
+      {
+        headers: {
+          'Content-Type': 'application/zip',
+        },
+      },
+    );
+    expect(response.status).toBe(201);
+    const {
+      data: { OrganizationName, screenshotUrls, ...expected },
+    } = await request.get(`/api/apps/${response.data.id}`);
+    expect(response.data).toStrictEqual(expected);
+  });
+});
+
 describe('setAppBlockStyle', () => {
   it('should validate and update css when updating an app’s block style', async () => {
     await BlockVersion.create({
@@ -4604,7 +5506,7 @@ describe('setAppBlockStyle', () => {
 
       {
         "error": "Not Found",
-        "message": "App not found.",
+        "message": "App not found",
         "statusCode": 404,
       }
     `);
@@ -4630,7 +5532,7 @@ describe('setAppBlockStyle', () => {
 
       {
         "error": "Not Found",
-        "message": "Block not found.",
+        "message": "Block not found",
         "statusCode": 404,
       }
     `);
@@ -4731,6 +5633,696 @@ describe('setAppBlockStyle', () => {
         "message": "App validation failed",
         "statusCode": 400,
       }
+    `);
+  });
+});
+
+describe('reseedDemoApp', () => {
+  it('should throw on non existing app', async () => {
+    authorizeStudio();
+    await App.create({
+      demoMode: true,
+      definition: { name: 'Test App', defaultPage: 'Test Page' },
+      vapidPublicKey: 'a',
+      vapidPrivateKey: 'b',
+      OrganizationId: organization.id,
+    });
+
+    const response = await request.post(`/api/apps/${2}/reseed`);
+
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 404 Not Found
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "error": "Not Found",
+        "message": "App not found",
+        "statusCode": 404,
+      }
+    `);
+  });
+
+  it('should throw on non demo app', async () => {
+    authorizeStudio();
+    const { id } = await App.create({
+      demoMode: false,
+      definition: { name: 'Test App', defaultPage: 'Test Page' },
+      vapidPublicKey: 'a',
+      vapidPrivateKey: 'b',
+      OrganizationId: organization.id,
+    });
+
+    const response = await request.post(`/api/apps/${id}/reseed`);
+
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 400 Bad Request
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "error": "Bad Request",
+        "message": "App is not in demo mode",
+        "statusCode": 400,
+      }
+    `);
+  });
+
+  it('should reseed resources and assets with undefined user properties', async () => {
+    authorizeStudio();
+    const { id: appId } = await App.create({
+      demoMode: true,
+      definition: { name: 'Test App', defaultPage: 'Test Page' },
+      vapidPublicKey: 'a',
+      vapidPrivateKey: 'b',
+      OrganizationId: organization.id,
+    });
+
+    const { id: seedResourceId } = await Resource.create({
+      AppId: 1,
+      type: 'tasks',
+      seed: true,
+      data: {
+        foo: 'bar',
+      },
+    });
+
+    const { id: ephemeralResourceId } = await Resource.create({
+      AppId: 1,
+      type: 'tasks',
+      ephemeral: true,
+      data: {
+        foo: 'bar',
+      },
+    });
+
+    const { id: seedAssetId } = await Asset.create({
+      AppId: 1,
+      name: 'tasks',
+      seed: true,
+      data: Buffer.from('asset'),
+    });
+
+    const { id: ephemeralAssetId } = await Asset.create({
+      AppId: 1,
+      name: 'tasks',
+      ephemeral: true,
+      data: Buffer.from('asset'),
+    });
+
+    await request.post(`/api/apps/${appId}/reseed`);
+
+    const seedResource = await Resource.findOne({
+      where: {
+        id: seedResourceId,
+        AppId: appId,
+        seed: true,
+      },
+    });
+
+    expect(seedResource).toMatchInlineSnapshot(`
+      {
+        "$created": "1970-01-01T00:00:00.000Z",
+        "$updated": "1970-01-01T00:00:00.000Z",
+        "foo": "bar",
+        "id": 1,
+      }
+    `);
+
+    const oldEphemeralResource = await Resource.findOne({
+      where: {
+        AppId: appId,
+        id: ephemeralResourceId,
+      },
+    });
+
+    expect(oldEphemeralResource).toBeNull();
+
+    const newEphemeralResource = await Resource.findOne({
+      where: {
+        AppId: appId,
+        ephemeral: true,
+      },
+    });
+
+    expect(newEphemeralResource).toMatchInlineSnapshot(`
+      {
+        "$created": "1970-01-01T00:00:00.000Z",
+        "$ephemeral": true,
+        "$updated": "1970-01-01T00:00:00.000Z",
+        "foo": "bar",
+        "id": 3,
+      }
+    `);
+
+    const seedAsset = await Asset.findOne({
+      attributes: ['name', 'seed', 'ephemeral', 'data'],
+      where: {
+        id: seedAssetId,
+        AppId: appId,
+        seed: true,
+      },
+    });
+
+    expect(seedAsset.dataValues).toMatchInlineSnapshot(
+      {
+        data: expect.any(Buffer),
+      },
+      `
+      {
+        "data": Any<Buffer>,
+        "ephemeral": false,
+        "name": "tasks",
+        "seed": true,
+      }
+    `,
+    );
+
+    const oldEphemeralAsset = await Asset.findOne({
+      where: {
+        AppId: appId,
+        id: ephemeralAssetId,
+      },
+    });
+
+    expect(oldEphemeralAsset).toBeNull();
+
+    const newEphemeralAsset = await Asset.findOne({
+      attributes: ['name', 'seed', 'ephemeral', 'data'],
+      where: {
+        AppId: appId,
+        ephemeral: true,
+      },
+    });
+
+    expect(newEphemeralAsset.dataValues).toMatchInlineSnapshot(
+      {
+        data: expect.any(Buffer),
+      },
+      `
+      {
+        "data": Any<Buffer>,
+        "ephemeral": true,
+        "name": "tasks",
+        "seed": false,
+      }
+    `,
+    );
+  });
+
+  it('should reseed resources and assets with defined user properties', async () => {
+    authorizeStudio();
+    const { id: appId } = await App.create({
+      demoMode: true,
+      definition: {
+        name: 'Test App',
+        defaultPage: 'Test Page',
+        users: {
+          properties: {
+            completedTasks: {
+              schema: { type: 'array', items: { type: 'integer' } },
+              reference: { resource: 'tasks' },
+            },
+            lastCompletedTask: {
+              schema: { type: 'integer' },
+              reference: { resource: 'tasks' },
+            },
+          },
+        },
+        resources: {
+          tasks: {
+            schema: {
+              type: 'object',
+              properties: {
+                title: { type: 'string' },
+              },
+            },
+          },
+        },
+      },
+      vapidPublicKey: 'a',
+      vapidPrivateKey: 'b',
+      OrganizationId: organization.id,
+    });
+
+    await Resource.create({
+      AppId: 1,
+      type: 'tasks',
+      seed: true,
+      data: {
+        foo: 'bar',
+      },
+    });
+
+    await Resource.create({
+      AppId: 1,
+      type: 'tasks',
+      seed: true,
+      data: {
+        foo: 'bar',
+      },
+    });
+
+    const { id: ephemeralResource1Id } = await Resource.create({
+      AppId: 1,
+      type: 'tasks',
+      ephemeral: true,
+      data: {
+        foo: 'bar',
+      },
+    });
+
+    const { id: ephemeralResource2Id } = await Resource.create({
+      AppId: 1,
+      type: 'tasks',
+      ephemeral: true,
+      data: {
+        foo: 'bar',
+      },
+    });
+
+    const { id: seedAssetId } = await Asset.create({
+      AppId: 1,
+      name: 'tasks',
+      seed: true,
+      data: Buffer.from('asset'),
+    });
+
+    const { id: ephemeralAssetId } = await Asset.create({
+      AppId: 1,
+      name: 'tasks',
+      ephemeral: true,
+      data: Buffer.from('asset'),
+    });
+
+    await AppMember.create({
+      AppId: appId,
+      role: 'test',
+      properties: {
+        completedTasks: [ephemeralResource1Id, ephemeralResource2Id],
+        lastCompletedTask: ephemeralResource1Id,
+      },
+    });
+
+    const appMember = await AppMember.findOne({
+      attributes: ['properties'],
+      where: {
+        AppId: appId,
+      },
+    });
+
+    expect(appMember.dataValues).toMatchInlineSnapshot(`
+      {
+        "properties": {
+          "completedTasks": [
+            3,
+            4,
+          ],
+          "lastCompletedTask": 3,
+        },
+      }
+    `);
+
+    await request.post(`/api/apps/${appId}/reseed`);
+
+    const updatedAppMember = await AppMember.findOne({
+      attributes: ['properties'],
+      where: {
+        AppId: appId,
+      },
+    });
+
+    expect(updatedAppMember).toMatchInlineSnapshot(`
+      {
+        "properties": {
+          "completedTasks": [],
+          "lastCompletedTask": 0,
+        },
+      }
+    `);
+
+    const seedResources = await Resource.findAll({
+      where: {
+        AppId: appId,
+        seed: true,
+      },
+    });
+
+    expect(seedResources).toMatchInlineSnapshot(`
+      [
+        {
+          "$created": "1970-01-01T00:00:00.000Z",
+          "$updated": "1970-01-01T00:00:00.000Z",
+          "foo": "bar",
+          "id": 1,
+        },
+        {
+          "$created": "1970-01-01T00:00:00.000Z",
+          "$updated": "1970-01-01T00:00:00.000Z",
+          "foo": "bar",
+          "id": 2,
+        },
+      ]
+    `);
+
+    const oldEphemeralResource1 = await Resource.findOne({
+      where: {
+        AppId: appId,
+        id: ephemeralResource1Id,
+      },
+    });
+
+    const oldEphemeralResource2 = await Resource.findOne({
+      where: {
+        AppId: appId,
+        id: ephemeralResource2Id,
+      },
+    });
+
+    expect(oldEphemeralResource1).toBeNull();
+    expect(oldEphemeralResource2).toBeNull();
+
+    const newEphemeralResources = await Resource.findAll({
+      where: {
+        AppId: appId,
+        ephemeral: true,
+      },
+    });
+
+    expect(newEphemeralResources).toMatchInlineSnapshot(`
+      [
+        {
+          "$created": "1970-01-01T00:00:00.000Z",
+          "$ephemeral": true,
+          "$updated": "1970-01-01T00:00:00.000Z",
+          "foo": "bar",
+          "id": 5,
+        },
+        {
+          "$created": "1970-01-01T00:00:00.000Z",
+          "$ephemeral": true,
+          "$updated": "1970-01-01T00:00:00.000Z",
+          "foo": "bar",
+          "id": 6,
+        },
+      ]
+    `);
+
+    const seedAsset = await Asset.findOne({
+      attributes: ['name', 'seed', 'ephemeral', 'data'],
+      where: {
+        id: seedAssetId,
+        AppId: appId,
+        seed: true,
+      },
+    });
+
+    expect(seedAsset.dataValues).toMatchInlineSnapshot(
+      {
+        data: expect.any(Buffer),
+      },
+      `
+      {
+        "data": Any<Buffer>,
+        "ephemeral": false,
+        "name": "tasks",
+        "seed": true,
+      }
+    `,
+    );
+
+    const oldEphemeralAsset = await Asset.findOne({
+      where: {
+        AppId: appId,
+        id: ephemeralAssetId,
+      },
+    });
+
+    expect(oldEphemeralAsset).toBeNull();
+
+    const newEphemeralAsset = await Asset.findOne({
+      attributes: ['name', 'seed', 'ephemeral', 'data'],
+      where: {
+        AppId: appId,
+        ephemeral: true,
+      },
+    });
+
+    expect(newEphemeralAsset.dataValues).toMatchInlineSnapshot(
+      {
+        data: expect.any(Buffer),
+      },
+      `
+      {
+        "data": Any<Buffer>,
+        "ephemeral": true,
+        "name": "tasks",
+        "seed": false,
+      }
+    `,
+    );
+  });
+
+  it('should reseed resources that reference each other', async () => {
+    authorizeStudio();
+    const { id: appId } = await App.create({
+      demoMode: true,
+      definition: {
+        name: 'Test App',
+        defaultPage: 'Test Page',
+        resources: {
+          survey: {
+            schema: {
+              type: 'object',
+              properties: {
+                title: {
+                  type: 'string',
+                },
+              },
+            },
+          },
+          answer: {
+            schema: {
+              type: 'object',
+              properties: {
+                surveyId: {
+                  type: 'integer',
+                },
+                content: {
+                  type: 'string',
+                },
+              },
+            },
+            references: {
+              surveyId: {
+                resource: 'survey',
+                delete: {
+                  triggers: [
+                    {
+                      type: 'delete',
+                      cascade: 'delete',
+                    },
+                  ],
+                },
+              },
+            },
+          },
+        },
+      },
+      vapidPublicKey: 'a',
+      vapidPrivateKey: 'b',
+      OrganizationId: organization.id,
+    });
+
+    await Resource.create({
+      AppId: 1,
+      type: 'survey',
+      seed: true,
+      data: {
+        title: 'Survey 1',
+      },
+    });
+
+    await Resource.create({
+      AppId: 1,
+      type: 'survey',
+      seed: true,
+      data: {
+        title: 'Survey 2',
+      },
+    });
+
+    await Resource.create({
+      AppId: 1,
+      type: 'answer',
+      seed: true,
+      data: {
+        $survey: 0,
+        content: 'Answer 1',
+      },
+    });
+
+    await Resource.create({
+      AppId: 1,
+      type: 'answer',
+      seed: true,
+      data: {
+        $survey: 1,
+        content: 'Answer 2',
+      },
+    });
+
+    const { id: ephemeralSurvey1Id } = await Resource.create({
+      AppId: 1,
+      type: 'survey',
+      ephemeral: true,
+      data: {
+        title: 'Survey 1',
+      },
+    });
+
+    const { id: ephemeralSurvey2Id } = await Resource.create({
+      AppId: 1,
+      type: 'tasks',
+      ephemeral: true,
+      data: {
+        title: 'Survey 2',
+      },
+    });
+
+    const { id: ephemeralAnswer1Id } = await Resource.create({
+      AppId: 1,
+      type: 'survey',
+      ephemeral: true,
+      data: {
+        $survey: 0,
+        content: 'Answer 1',
+      },
+    });
+
+    const { id: ephemeralAnswer2Id } = await Resource.create({
+      AppId: 1,
+      type: 'tasks',
+      ephemeral: true,
+      data: {
+        $survey: 1,
+        content: 'Answer 2',
+      },
+    });
+
+    await request.post(`/api/apps/${appId}/reseed`);
+
+    const seedResources = await Resource.findAll({
+      where: {
+        AppId: appId,
+        seed: true,
+      },
+    });
+
+    expect(seedResources).toMatchInlineSnapshot(`
+      [
+        {
+          "$created": "1970-01-01T00:00:00.000Z",
+          "$updated": "1970-01-01T00:00:00.000Z",
+          "id": 1,
+          "title": "Survey 1",
+        },
+        {
+          "$created": "1970-01-01T00:00:00.000Z",
+          "$updated": "1970-01-01T00:00:00.000Z",
+          "id": 2,
+          "title": "Survey 2",
+        },
+        {
+          "$created": "1970-01-01T00:00:00.000Z",
+          "$survey": 0,
+          "$updated": "1970-01-01T00:00:00.000Z",
+          "content": "Answer 1",
+          "id": 3,
+        },
+        {
+          "$created": "1970-01-01T00:00:00.000Z",
+          "$survey": 1,
+          "$updated": "1970-01-01T00:00:00.000Z",
+          "content": "Answer 2",
+          "id": 4,
+        },
+      ]
+    `);
+
+    const oldEphemeralSurvey1 = await Resource.findOne({
+      where: {
+        AppId: appId,
+        id: ephemeralSurvey1Id,
+      },
+    });
+
+    const oldEphemeralSurvey2 = await Resource.findOne({
+      where: {
+        AppId: appId,
+        id: ephemeralSurvey2Id,
+      },
+    });
+
+    const oldEphemeralAnswer1 = await Resource.findOne({
+      where: {
+        AppId: appId,
+        id: ephemeralAnswer1Id,
+      },
+    });
+
+    const oldEphemeralAnswer2 = await Resource.findOne({
+      where: {
+        AppId: appId,
+        id: ephemeralAnswer2Id,
+      },
+    });
+
+    expect(oldEphemeralSurvey1).toBeNull();
+    expect(oldEphemeralSurvey2).toBeNull();
+    expect(oldEphemeralAnswer1).toBeNull();
+    expect(oldEphemeralAnswer2).toBeNull();
+
+    const newEphemeralResources = await Resource.findAll({
+      where: {
+        AppId: appId,
+        ephemeral: true,
+      },
+    });
+
+    expect(newEphemeralResources).toMatchInlineSnapshot(`
+      [
+        {
+          "$created": "1970-01-01T00:00:00.000Z",
+          "$ephemeral": true,
+          "$updated": "1970-01-01T00:00:00.000Z",
+          "id": 9,
+          "title": "Survey 1",
+        },
+        {
+          "$created": "1970-01-01T00:00:00.000Z",
+          "$ephemeral": true,
+          "$updated": "1970-01-01T00:00:00.000Z",
+          "id": 10,
+          "title": "Survey 2",
+        },
+        {
+          "$created": "1970-01-01T00:00:00.000Z",
+          "$ephemeral": true,
+          "$survey": 0,
+          "$updated": "1970-01-01T00:00:00.000Z",
+          "content": "Answer 1",
+          "id": 11,
+          "surveyId": 9,
+        },
+        {
+          "$created": "1970-01-01T00:00:00.000Z",
+          "$ephemeral": true,
+          "$survey": 1,
+          "$updated": "1970-01-01T00:00:00.000Z",
+          "content": "Answer 2",
+          "id": 12,
+          "surveyId": 10,
+        },
+      ]
     `);
   });
 });

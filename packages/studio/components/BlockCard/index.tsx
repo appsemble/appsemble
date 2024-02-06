@@ -1,7 +1,7 @@
 import { Icon, Subtitle, Title } from '@appsemble/react-components';
 import { type BlockManifest } from '@appsemble/types';
 import { defaultLocale, parseBlockName } from '@appsemble/utils';
-import { type ReactElement } from 'react';
+import { type ReactNode } from 'react';
 import { Link, useParams } from 'react-router-dom';
 
 import styles from './index.module.css';
@@ -16,7 +16,7 @@ interface BlockCardProps {
 /**
  * Display a card that contains basic information of a block and a link to further documentation.
  */
-export function BlockCard({ block }: BlockCardProps): ReactElement {
+export function BlockCard({ block }: BlockCardProps): ReactNode {
   const [org, name] = parseBlockName(block.name);
   const { lang } = useParams<{ lang: string }>();
 

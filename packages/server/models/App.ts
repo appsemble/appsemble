@@ -3,6 +3,7 @@ import {
   type AppsembleMessages,
   type App as AppType,
   type AppVisibility,
+  type ProjectImplementations,
 } from '@appsemble/types';
 import { omit } from 'lodash-es';
 import {
@@ -95,6 +96,11 @@ export class App extends Model {
   @Column(DataType.BOOLEAN)
   template: boolean;
 
+  @AllowNull(false)
+  @Default(false)
+  @Column(DataType.BOOLEAN)
+  demoMode: boolean;
+
   @Column(DataType.TEXT)
   longDescription: string;
 
@@ -123,6 +129,10 @@ export class App extends Model {
   @Default(false)
   @Column(DataType.BOOLEAN)
   showAppsembleLogin: boolean;
+
+  @Default(true)
+  @Column(DataType.BOOLEAN)
+  enableSelfRegistration: boolean;
 
   @Column(DataType.STRING)
   emailName: string;
@@ -160,6 +170,12 @@ export class App extends Model {
 
   @Column(DataType.BLOB)
   scimToken: Buffer;
+
+  @Column(DataType.TEXT)
+  controllerCode: string;
+
+  @Column(DataType.JSON)
+  controllerImplementations: ProjectImplementations;
 
   @UpdatedAt
   updated: Date;
@@ -263,17 +279,26 @@ export class App extends Model {
       sentryEnvironment: this.sentryEnvironment,
       showAppsembleLogin: this.showAppsembleLogin ?? false,
       showAppsembleOAuth2Login: this.showAppsembleOAuth2Login ?? true,
+      enableSelfRegistration: this.enableSelfRegistration ?? true,
       rating:
         this.RatingAverage == null
           ? undefined
           : { count: this.RatingCount, average: this.RatingAverage },
-      resources: this.template && this.Resources?.length ? true : undefined,
+      hasClonableResources:
+        this.template && this.Resources?.filter((resource) => resource.clonable).length
+          ? true
+          : undefined,
+      hasClonableAssets:
+        this.template && this.Assets?.filter((asset) => asset.clonable).length ? true : undefined,
       OrganizationId: this.OrganizationId,
       OrganizationName: this?.Organization?.name,
       screenshotUrls: this.AppScreenshots?.map(
         ({ id }) => `/api/apps/${this.id}/screenshots/${id}`,
       ),
       messages: this.messages,
+      demoMode: this.demoMode,
+      controllerCode: this.controllerCode,
+      controllerImplementations: this.controllerImplementations,
     };
 
     return omit(result, omittedValues) as AppType;

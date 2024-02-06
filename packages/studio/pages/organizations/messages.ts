@@ -102,4 +102,20 @@ export const messages = defineMessages({
     id: 'studio.BzTzOo',
     defaultMessage: 'The permission to view the list of members in an organization.',
   },
+  CreateAppAccounts: {
+    defaultMessage: 'The permission to create app accounts.',
+    id: 'studio.Jo/vHM',
+  },
+  ReadAppAccounts: {
+    defaultMessage: 'The permission to read app accounts.',
+    id: 'studio.3aechi',
+  },
+  DeleteAppAccounts: {
+    defaultMessage: 'The permission to delete app accounts.',
+    id: 'studio.+CISCb',
+  },
+  EditAppAccounts: {
+    defaultMessage: 'The permission to edit app accounts.',
+    id: 'studio.jcL6sQ',
+  },
 });

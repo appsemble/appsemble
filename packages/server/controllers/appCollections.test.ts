@@ -2,12 +2,14 @@ import { createFixtureStream, createFormData, readFixture } from '@appsemble/nod
 import { request, setTestApp } from 'axios-test-instance';
 import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { App } from '../models/App.js';
-import { AppCollection } from '../models/AppCollection.js';
-import { AppCollectionApp } from '../models/AppCollectionApp.js';
-import { Member } from '../models/Member.js';
-import { Organization } from '../models/Organization.js';
-import { type User } from '../models/User.js';
+import {
+  App,
+  AppCollection,
+  AppCollectionApp,
+  Organization,
+  OrganizationMember,
+  type User,
+} from '../models/index.js';
 import { type Argv, setArgv } from '../utils/argv.js';
 import { createServer } from '../utils/createServer.js';
 import { authorizeStudio, createTestUser } from '../utils/test/authorization.js';
@@ -46,8 +48,12 @@ beforeEach(async () => {
     id: 'otherOrganization',
     name: 'Other Organization',
   });
-  await Member.create({ OrganizationId: organization.id, UserId: user.id, role: 'Owner' });
-  await Member.create({
+  await OrganizationMember.create({
+    OrganizationId: organization.id,
+    UserId: user.id,
+    role: 'Owner',
+  });
+  await OrganizationMember.create({
     OrganizationId: otherOrganization.id,
     UserId: unprivilegedUser.id,
     role: 'Owner',
@@ -255,14 +261,14 @@ describe('appCollections', () => {
     const response = await request.get(`/api/appCollections/${privateCollection.id}`);
     expect(response.status).toBe(404);
 
-    await authorizeStudio(user);
+    authorizeStudio(user);
 
     const response2 = await request.get(`/api/appCollections/${privateCollection.id}`);
     expect(response2.status).toBe(200);
   });
 
   it('should create a new app collection', async () => {
-    await authorizeStudio(user);
+    authorizeStudio(user);
     const response = await request.post(
       `/api/organizations/${organization.id}/appCollections`,
       createFormData({
@@ -390,7 +396,7 @@ describe('appCollections', () => {
       }),
     );
 
-    await authorizeStudio(user);
+    authorizeStudio(user);
 
     const response3 = await request.get('/api/appCollections');
     expect(response3.status).toBe(200);
@@ -431,7 +437,7 @@ describe('appCollections', () => {
   });
 
   it('should update an app collection', async () => {
-    await authorizeStudio(user);
+    authorizeStudio(user);
     const response = await request.patch(
       `/api/appCollections/${collections[0].id}`,
       createFormData({
@@ -544,7 +550,7 @@ describe('appCollections', () => {
 
 describe('appCollectionApps', () => {
   it('should add an app to an app collection', async () => {
-    await authorizeStudio(user);
+    authorizeStudio(user);
     const response = await request.post(`/api/appCollections/${collections[0].id}/apps`, {
       AppId: funAndProductivityApp.id,
     });
@@ -579,7 +585,7 @@ describe('appCollectionApps', () => {
   });
 
   it('should remove an app from an app collection', async () => {
-    await authorizeStudio(user);
+    authorizeStudio(user);
     const response = await request.delete(
       `/api/appCollections/${collections[0].id}/apps/${apps[0].id}`,
     );
@@ -637,7 +643,7 @@ describe('appCollectionApps', () => {
       }),
     );
 
-    await authorizeStudio(user);
+    authorizeStudio(user);
 
     const response2 = await request.get(`/api/appCollections/${collections[0].id}/apps`);
     expect(response2.status).toBe(200);
@@ -657,7 +663,7 @@ describe('appCollectionApps', () => {
     const response = await request.get(`/api/appCollections/${privateCollection.id}/apps`);
     expect(response.status).toBe(404);
 
-    await authorizeStudio(user);
+    authorizeStudio(user);
 
     const response2 = await request.get(`/api/appCollections/${privateCollection.id}/apps`);
     expect(response2.status).toBe(200);
@@ -671,7 +677,7 @@ describe('appCollectionApps', () => {
   // XXX: This test hangs, but functionality works fine on the server
   // eslint-disable-next-line vitest/no-disabled-tests
   it.skip('should not allow duplicate apps in an app collection', async () => {
-    await authorizeStudio(user);
+    authorizeStudio(user);
 
     const response = await request.post(`/api/appCollections/${collections[0].id}/apps`, {
       AppId: funAndProductivityApp.id,
@@ -775,7 +781,7 @@ describe('appCollectionApps', () => {
       }),
     );
 
-    await authorizeStudio(user);
+    authorizeStudio(user);
     const response2 = await request.get(`/api/appCollections/${collections[0].id}/apps`);
     expect(response2.status).toBe(200);
     expect(response2.data).toContainEqual(
@@ -794,7 +800,7 @@ describe('appCollectionApps', () => {
     it('should pin an app to an app collection', async () => {
       const app1 = await AppCollectionApp.findByPk(apps[0].id);
       expect(app1.pinnedAt).toBeNull();
-      await authorizeStudio(user);
+      authorizeStudio(user);
       const response = await request.post(
         `/api/appCollections/${collections[0].id}/apps/${apps[0].id}/pinned`,
       );
@@ -809,9 +815,9 @@ describe('appCollectionApps', () => {
 
     it('should unpin an app from an app collection', async () => {
       const app1 = await AppCollectionApp.findByPk(apps[0].id);
-      app1.update({ pinnedAt: new Date() });
+      await app1.update({ pinnedAt: new Date() });
 
-      await authorizeStudio(user);
+      authorizeStudio(user);
       const response = await request.delete(
         `/api/appCollections/${collections[0].id}/apps/${apps[0].id}/pinned`,
       );
@@ -854,7 +860,7 @@ describe('appCollectionApps', () => {
     });
 
     it('should not allow a user to pin or unpin an app to an app collection they do not own', async () => {
-      await authorizeStudio(unprivilegedUser);
+      authorizeStudio(unprivilegedUser);
       const response = await request.post(
         `/api/appCollections/${collections[0].id}/apps/${apps[0].id}/pinned`,
       );
@@ -887,7 +893,7 @@ describe('appCollectionApps', () => {
         },
       );
 
-      await authorizeStudio(user);
+      authorizeStudio(user);
 
       const response = await request.get(`/api/appCollections/${collections[0].id}/apps`);
       expect(response.status).toBe(200);

@@ -24,7 +24,7 @@ export function BooleanInput({
   readOnly,
 }: BooleanInputProps): VNode {
   const { utils } = useBlock();
-  const { color, icon, inline, label, labelText, size, switch: switchType, tag } = field;
+  const { color, help, icon, inline, label, labelText, size, switch: switchType, tag } = field;
 
   const value = getValueByNameSequence(name, formValues);
   const checkboxLabel = utils.remap(label, value);
@@ -36,6 +36,7 @@ export function BooleanInput({
       color={color}
       disabled={disabled}
       error={dirty ? error : null}
+      help={utils.remap(help, value) as string}
       icon={icon}
       inline={inline}
       label={checkboxLabel as string}

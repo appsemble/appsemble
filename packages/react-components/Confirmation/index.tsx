@@ -1,12 +1,5 @@
 import { type BulmaColor } from '@appsemble/types';
-import {
-  createContext,
-  type ReactElement,
-  type ReactNode,
-  useCallback,
-  useContext,
-  useState,
-} from 'react';
+import { createContext, type ReactNode, useCallback, useContext, useState } from 'react';
 
 import styles from './index.module.css';
 import { CardFooterButton, ModalCard } from '../index.js';
@@ -57,7 +50,7 @@ const Context = createContext(null);
 /**
  * A provider for the {@link useConfirmation} hook.
  */
-export function Confirmation({ children }: ConfirmationProps): ReactElement {
+export function Confirmation({ children }: ConfirmationProps): ReactNode {
   const [options, setOptions] = useState<DeferredConfirmationOptions>(null);
   const [isActive, setIsActive] = useState(false);
 

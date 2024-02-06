@@ -12,7 +12,7 @@ import {
 } from '@appsemble/react-components';
 import { type AppServiceSecret, type ServiceAuthenticationMethod } from '@appsemble/types';
 import axios from 'axios';
-import { type ChangeEvent, type ReactElement, useCallback, useState } from 'react';
+import { type ChangeEvent, type ReactNode, useCallback, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Link, useParams } from 'react-router-dom';
 
@@ -53,7 +53,7 @@ export function ServiceSecretsModal({
   secret,
   submit,
   toggle,
-}: ServiceSecretCardProps): ReactElement {
+}: ServiceSecretCardProps): ReactNode {
   const { formatMessage } = useIntl();
   const {
     app: { locked },
@@ -87,7 +87,7 @@ export function ServiceSecretsModal({
       await axios.delete(`/api/apps/${app.id}/secrets/service/${secret.id}`);
 
       push({
-        body: formatMessage(messages.deleteSuccess, { name: secret.serviceName }),
+        body: formatMessage(messages.deleteSuccess, { name: secret.name }),
         color: 'info',
       });
       onDeleted(secret);
@@ -130,9 +130,9 @@ export function ServiceSecretsModal({
       </p>
       <SimpleFormField
         disabled={locked}
-        help={<FormattedMessage {...messages.serviceNameHelp} />}
-        label={<FormattedMessage {...messages.serviceNameLabel} />}
-        name="serviceName"
+        help={<FormattedMessage {...messages.nameHelp} />}
+        label={<FormattedMessage {...messages.nameLabel} />}
+        name="name"
       />
       <SimpleFormField
         component={TagsField}

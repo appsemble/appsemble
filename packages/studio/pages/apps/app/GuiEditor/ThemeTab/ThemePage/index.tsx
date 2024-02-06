@@ -7,7 +7,7 @@ import {
   type Theme,
 } from '@appsemble/types';
 import { baseTheme, googleFonts } from '@appsemble/utils';
-import { type MutableRefObject, type ReactElement, useCallback } from 'react';
+import { type MutableRefObject, type ReactNode, useCallback } from 'react';
 import { useIntl } from 'react-intl';
 import { type Document, type Node, type ParsedNode, type YAMLMap } from 'yaml';
 
@@ -47,7 +47,7 @@ export function ThemePage({
   selectedBlock,
   selectedPage,
   selectedSubParent,
-}: ThemePageProps): ReactElement {
+}: ThemePageProps): ReactNode {
   const { formatMessage } = useIntl();
 
   function getTheme(
@@ -97,8 +97,8 @@ export function ThemePage({
       !currentPage.type || currentPage.type === 'page'
         ? (currentPage as BasicPageDefinition).blocks[block]
         : currentPage.type === 'flow'
-        ? (currentPage as FlowPageDefinition).steps[subParent].blocks[block]
-        : (currentPage as TabsPageDefinition).tabs[subParent].blocks[block];
+          ? (currentPage as FlowPageDefinition).steps[subParent].blocks[block]
+          : (currentPage as TabsPageDefinition).tabs[subParent].blocks[block];
     for (const [key] of Object.entries(inheritors) as [keyof ThemeColors, string][]) {
       if (currentBlock.theme?.[key]) {
         theme[key] = currentBlock.theme?.[key];

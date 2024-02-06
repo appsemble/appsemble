@@ -2,7 +2,7 @@ import { Join, Title } from '@appsemble/react-components';
 import { camelToHyphen, combineSchemas, decodeJSONRef } from '@appsemble/utils';
 import classNames from 'classnames';
 import { type Schema as SchemaType } from 'jsonschema';
-import { type FC, type ReactElement, useMemo } from 'react';
+import { type FC, type ReactNode, useMemo } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Link, useParams } from 'react-router-dom';
 
@@ -65,7 +65,7 @@ export function Schema({
   renderRef: RenderRef = null,
   required,
   schema,
-}: SchemaProps): ReactElement {
+}: SchemaProps): ReactNode {
   const mergedSchema = useMemo(
     () => (schema.allOf ? combineSchemas(...schema.allOf) : schema),
     [schema],
@@ -116,16 +116,16 @@ export function Schema({
                     <RenderRef isArray={false} jsonRef={decodeJSONRef(mergedSchema.$ref)} />
                   )
                 : mergedSchema.type === 'array'
-                ? !mergedSchema.items || Array.isArray(mergedSchema.items)
-                  ? 'array'
-                  : mergedSchema.items.type
-                  ? `${mergedSchema.items.type}[]`
-                  : mergedSchema.items.$ref
-                  ? RenderRef && (
-                      <RenderRef isArray jsonRef={decodeJSONRef(mergedSchema.items.$ref)} />
-                    )
-                  : 'array'
-                : mergedSchema.type}
+                  ? !mergedSchema.items || Array.isArray(mergedSchema.items)
+                    ? 'array'
+                    : mergedSchema.items.type
+                      ? `${mergedSchema.items.type}[]`
+                      : mergedSchema.items.$ref
+                        ? RenderRef && (
+                            <RenderRef isArray jsonRef={decodeJSONRef(mergedSchema.items.$ref)} />
+                          )
+                        : 'array'
+                  : mergedSchema.type}
             </code>
           </SchemaDescriptor>
         ) : null
@@ -147,7 +147,7 @@ export function Schema({
       {mergedSchema.format ? (
         <SchemaDescriptor label={<FormattedMessage {...messages.format} />}>
           {mergedSchema.format === 'remapper' ? (
-            <Link rel="noopener noreferrer" target="_blank" to={`/${lang}/docs/reference/remapper`}>
+            <Link rel="noopener noreferrer" target="_blank" to={`/${lang}/docs/remapper`}>
               Remapper
             </Link>
           ) : (

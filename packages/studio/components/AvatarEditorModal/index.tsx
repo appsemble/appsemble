@@ -1,5 +1,6 @@
 import { CardFooterButton, ModalCard, type Toggle } from '@appsemble/react-components';
-import { type ReactElement, useCallback, useRef, useState } from 'react';
+import { type ReactNode, useCallback, useRef, useState } from 'react';
+// eslint-disable-next-line @typescript-eslint/naming-convention
 import _AvatarEditor from 'react-avatar-editor';
 import { FormattedMessage } from 'react-intl';
 
@@ -38,7 +39,7 @@ export function AvatarEditorModal({
   onCompleted,
   photo,
   state,
-}: AvatarEditorModalProps): ReactElement {
+}: AvatarEditorModalProps): ReactNode {
   const editorRef = useRef(null);
   const [scale, setScale] = useState(1);
 

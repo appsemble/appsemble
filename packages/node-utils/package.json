@@ -1,6 +1,6 @@
 {
   "name": "@appsemble/node-utils",
-  "version": "0.22.10",
+  "version": "0.24.12",
   "description": "NodeJS utilities used by Appsemble internally.",
   "keywords": [
     "app",
@@ -38,8 +38,8 @@
     "test": "vitest"
   },
   "dependencies": {
-    "@appsemble/types": "0.22.10",
-    "@appsemble/utils": "0.22.10",
+    "@appsemble/types": "0.24.12",
+    "@appsemble/utils": "0.24.12",
     "@formatjs/fast-memoize": "^2.0.0",
     "@fortawesome/fontawesome-free": "^6.0.0",
     "@koa/cors": "^4.0.0",
@@ -79,7 +79,7 @@
     "mime-types": "^2.0.0",
     "mustache": "^4.0.0",
     "parse-duration": "^1.0.0",
-    "parse-json": "^7.0.0",
+    "parse-json": "^8.0.0",
     "sass": "^1.0.0",
     "sharp": "^0.32.0",
     "sort-keys": "^5.0.0",
@@ -98,10 +98,10 @@
     "@types/koa-range": "^0.3.0",
     "axios-mock-adapter": "^1.0.0",
     "axios-test-instance": "^7.0.0",
-    "vitest": "^0.34.0"
+    "vitest": "^1.0.0"
   },
   "peerDependencies": {
-    "prettier": "^2"
+    "prettier": "^3"
   },
   "peerDependenciesMeta": {
     "prettier": {

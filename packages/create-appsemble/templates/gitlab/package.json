@@ -1,15 +1,14 @@
 {
   "private": true,
   "dependencies": {
-    "@appsemble/cli": "0.22.10",
-    "@appsemble/webpack-config": "0.22.10",
-    "@typescript-eslint/eslint-plugin": "^5.0.0",
+    "@appsemble/cli": "0.24.12",
+    "@appsemble/webpack-config": "0.24.12",
     "eslint": "^8.0.0",
-    "eslint-config-remcohaszing": "^9.0.0",
-    "eslint-formatter-gitlab": "^4.0.0",
-    "eslint-plugin-playwright": "^0.15.0",
+    "eslint-config-remcohaszing": "^10.0.0",
+    "eslint-formatter-gitlab": "^5.0.0",
+    "eslint-plugin-playwright": "^0.18.0",
     "postcss-preset-env": "^8.0.0",
-    "prettier": "^2.0.0"
+    "prettier": "^3.0.0"
   },
   "workspaces": [
     "blocks/*",

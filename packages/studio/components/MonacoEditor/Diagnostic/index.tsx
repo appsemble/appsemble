@@ -1,6 +1,6 @@
 import { Icon } from '@appsemble/react-components';
 import { type editor, MarkerSeverity } from 'monaco-editor/esm/vs/editor/editor.api.js';
-import { type ReactElement, useCallback } from 'react';
+import { type ReactNode, useCallback } from 'react';
 
 import styles from './index.module.css';
 
@@ -19,7 +19,7 @@ interface DiagnosticProps {
 /**
  * Render a clickable Monaco editor diagnostic.
  */
-export function Diagnostic({ marker, monaco }: DiagnosticProps): ReactElement {
+export function Diagnostic({ marker, monaco }: DiagnosticProps): ReactNode {
   const activate = useCallback(() => {
     monaco.setPosition({
       lineNumber: marker.startLineNumber,

@@ -7,11 +7,10 @@ import {
 } from '@appsemble/types';
 import { setUser } from '@sentry/browser';
 import axios, { type AxiosHeaders } from 'axios';
-import jwtDecode from 'jwt-decode';
+import { jwtDecode } from 'jwt-decode';
 import {
   createContext,
   type Dispatch,
-  type ReactElement,
   type ReactNode,
   type SetStateAction,
   useCallback,
@@ -52,7 +51,7 @@ const Context = createContext<UserContext>(null);
 // plenty of time for the refresh token request to finish.
 const REFRESH_BUFFER = 60e3;
 
-export function UserProvider({ children }: UserProviderProps): ReactElement {
+export function UserProvider({ children }: UserProviderProps): ReactNode {
   const [userInfo, setUserInfo] = useState<UserInfo>();
   const [organizations, setOrganizations] = useState<UserOrganization[]>();
   const [initialized, setInitialized] = useState(false);
@@ -126,7 +125,6 @@ export function UserProvider({ children }: UserProviderProps): ReactElement {
 
     setAccessToken(tokenResponse.access_token);
 
-    // @ts-expect-error https://github.com/auth0/jwt-decode/pull/130
     const { exp } = jwtDecode<JwtPayload>(tokenResponse.access_token);
     const timeout = exp * 1e3 - REFRESH_BUFFER - Date.now();
     const timeoutId = setTimeout(async () => {

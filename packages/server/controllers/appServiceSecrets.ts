@@ -1,3 +1,4 @@
+import { assertKoaError } from '@appsemble/node-utils';
 import { Permission } from '@appsemble/utils';
 import { type Context } from 'koa';
 
@@ -17,20 +18,12 @@ export async function addAppServiceSecret(ctx: Context): Promise<void> {
     attributes: ['OrganizationId'],
   });
 
-  if (!app) {
-    ctx.response.status = 404;
-    ctx.response.body = {
-      statuscode: 404,
-      error: 'not found',
-      message: 'app not found',
-    };
-    ctx.throw();
-  }
+  assertKoaError(!app, ctx, 404, 'App not found');
 
   checkAppLock(ctx, app);
   await checkRole(ctx, app.OrganizationId, [Permission.EditApps, Permission.EditAppSettings]);
 
-  const { authenticationMethod, id, identifier, serviceName, tokenUrl, urlPatterns } =
+  const { authenticationMethod, id, identifier, name, tokenUrl, urlPatterns } =
     await AppServiceSecret.create({
       ...body,
       secret: encrypt(body.secret, argv.aesSecret),
@@ -41,7 +34,7 @@ export async function addAppServiceSecret(ctx: Context): Promise<void> {
     authenticationMethod,
     id,
     identifier,
-    serviceName,
+    name,
     urlPatterns,
     tokenUrl,
   };
@@ -56,21 +49,13 @@ export async function getAppServiceSecrets(ctx: Context): Promise<void> {
     attributes: ['OrganizationId'],
   });
 
-  if (!app) {
-    ctx.response.status = 404;
-    ctx.response.body = {
-      statuscode: 404,
-      error: 'not found',
-      message: 'app not found',
-    };
-    ctx.throw();
-  }
+  assertKoaError(!app, ctx, 404, 'App not found');
 
   checkAppLock(ctx, app);
   await checkRole(ctx, app.OrganizationId, [Permission.EditApps, Permission.EditAppSettings]);
 
   const serviceSecrets = await AppServiceSecret.findAll({
-    attributes: ['id', 'urlPatterns', 'authenticationMethod', 'identifier', 'tokenUrl'],
+    attributes: ['id', 'name', 'urlPatterns', 'authenticationMethod', 'identifier', 'tokenUrl'],
     where: {
       AppId: appId,
     },
@@ -88,29 +73,14 @@ export async function updateAppServiceSecret(ctx: Context): Promise<void> {
   const app = await App.findByPk(appId, {
     attributes: ['OrganizationId'],
   });
-  if (!app) {
-    ctx.response.status = 404;
-    ctx.response.body = {
-      statusCode: 404,
-      error: 'Not Found',
-      message: 'App not found',
-    };
-    ctx.throw();
-  }
+
+  assertKoaError(!app, ctx, 404, 'App not found');
 
   checkAppLock(ctx, app);
   await checkRole(ctx, app.OrganizationId, [Permission.EditApps, Permission.EditAppSettings]);
 
   const appServiceSecret = await AppServiceSecret.findByPk(appServiceId);
-  if (!appServiceSecret) {
-    ctx.response.status = 404;
-    ctx.response.body = {
-      statusCode: 404,
-      error: 'Not Found',
-      message: 'Cannot find the app service secret to update',
-    };
-    ctx.throw();
-  }
+  assertKoaError(!appServiceSecret, ctx, 404, 'Cannot find the app service secret to update');
 
   await appServiceSecret.update({
     ...body,
@@ -118,13 +88,12 @@ export async function updateAppServiceSecret(ctx: Context): Promise<void> {
     AppId: appId,
   });
 
-  const { authenticationMethod, id, identifier, serviceName, tokenUrl, urlPatterns } =
-    appServiceSecret;
+  const { authenticationMethod, id, identifier, name, tokenUrl, urlPatterns } = appServiceSecret;
 
   ctx.body = {
     authenticationMethod,
     id,
-    serviceName,
+    name,
     identifier,
     urlPatterns,
     tokenUrl,
@@ -139,29 +108,14 @@ export async function deleteAppServiceSecret(ctx: Context): Promise<void> {
   const app = await App.findByPk(appId, {
     attributes: ['OrganizationId'],
   });
-  if (!app) {
-    ctx.response.status = 404;
-    ctx.response.body = {
-      statusCode: 404,
-      error: 'Not Found',
-      message: 'App not found',
-    };
-    ctx.throw();
-  }
+
+  assertKoaError(!app, ctx, 404, 'App not found');
 
   checkAppLock(ctx, app);
   await checkRole(ctx, app.OrganizationId, [Permission.EditApps, Permission.EditAppSettings]);
 
   const appServiceSecret = await AppServiceSecret.findByPk(appServiceId);
-  if (!appServiceSecret) {
-    ctx.response.status = 404;
-    ctx.response.body = {
-      statusCode: 404,
-      error: 'Not Found',
-      message: 'Cannot find the app service secret to delete',
-    };
-    ctx.throw();
-  }
+  assertKoaError(!appServiceSecret, ctx, 404, 'Cannot find the app service secret to delete');
 
   await appServiceSecret.destroy();
 

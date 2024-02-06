@@ -1,12 +1,12 @@
 import { type SAMLStatus } from '@appsemble/types';
-import { type ReactElement } from 'react';
+import { type ReactNode } from 'react';
 import { useParams } from 'react-router-dom';
 
 import { ConfigurationError } from './ConfigurationError/index.js';
 import { EmailConflict } from './EmailConflict/index.js';
 import { messages } from './messages.js';
 
-export function SAMLResponsePage(): ReactElement {
+export function SAMLResponsePage(): ReactNode {
   const { code } = useParams<{ code: SAMLStatus }>();
 
   switch (code) {

@@ -9,6 +9,11 @@ interface Fixtures {
   login: (redirect: string) => Promise<void>;
 
   /**
+   * Perform a logout in Appsemble Studio.
+   */
+  logout: () => Promise<void>;
+
+  /**
    * Visit an app.
    *
    * @param appPath The app path name.
@@ -41,6 +46,17 @@ export const test = base.extend<Fixtures>({
       await page.getByTestId('password').fill(process.env.BOT_ACCOUNT_PASSWORD);
       await page.getByTestId('login').click();
       await expect(page).toHaveURL(redirect);
+    });
+  },
+
+  async logout({ page }, use) {
+    await use(async () => {
+      await page
+        .locator(
+          'div.navbar-item.has-dropdown.is-right > button.navbar-link:has(img[alt="Profile Picture"])',
+        )
+        .click();
+      await page.getByRole('button', { name: 'Logout' }).click();
     });
   },
 

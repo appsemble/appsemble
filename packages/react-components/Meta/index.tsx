@@ -1,7 +1,6 @@
 import { noop } from '@appsemble/utils';
 import {
   createContext,
-  type ReactElement,
   type ReactNode,
   useCallback,
   useContext,
@@ -58,7 +57,7 @@ interface MetaProviderProps {
 /**
  * A provider for breadcrumbs and page metadata.
  */
-export function MetaProvider({ children, description, title }: MetaProviderProps): ReactElement {
+export function MetaProvider({ children, description, title }: MetaProviderProps): ReactNode {
   const [breadcrumbs, setBreadcrumbs] = useState<Breadcrumb[]>([]);
   const descriptionNode = useRef<HTMLMetaElement>();
   const { formatMessage } = useIntl();
@@ -95,8 +94,8 @@ export function MetaProvider({ children, description, title }: MetaProviderProps
     descriptionNode.current.content = descriptions.length
       ? descriptions.at(-1)
       : typeof description === 'string'
-      ? description
-      : formatMessage(description);
+        ? description
+        : formatMessage(description);
   }, [breadcrumbs, description, formatMessage]);
 
   return (
@@ -166,7 +165,7 @@ interface MetaSwitchProps {
 /**
  * Render a React router switch and a new level for breadcrumb metadata.
  */
-export function MetaSwitch({ children, description, title }: MetaSwitchProps): ReactElement {
+export function MetaSwitch({ children, description, title }: MetaSwitchProps): ReactNode {
   const [depth, setMeta] = useContext(MetaContext);
   useMeta(title, description);
 

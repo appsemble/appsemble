@@ -7,10 +7,12 @@ import {
   type AppDefinition,
   type BasicPageDefinition,
   type BlockDefinition,
+  type ControllerDefinition,
   type CronDefinition,
   type LinkActionDefinition,
   type ResourceActionDefinition,
   type ResourceDefinition,
+  type UserPropertyDefinition,
 } from '@appsemble/types';
 import axios from 'axios';
 import FormData from 'form-data';
@@ -50,7 +52,9 @@ const snippetTypes = {
   block: 'block-snippet',
   blocks: 'blocks-snippet',
   cron: 'cron-snippet',
+  controller: 'controller-snippet',
   security: 'security-snippet',
+  users: 'users-snippet',
 };
 
 type SnippetType = keyof typeof snippetTypes;
@@ -224,6 +228,68 @@ function appendCronToTemplate(
   return updatedTemplate;
 }
 
+function appendControllerToTemplate(
+  controller: ControllerDefinition,
+  template: AppDefinition,
+): AppDefinition {
+  const updatedTemplate = template;
+
+  updatedTemplate.controller = controller;
+
+  for (const action of Object.values(controller.actions)) {
+    if (action.type.startsWith('resource')) {
+      updatedTemplate.resources = {
+        [(action as ResourceActionDefinition<'noop'>).resource]: {
+          roles: ['$public'],
+          schema: {
+            type: 'object',
+            additionalProperties: false,
+            properties: {
+              property: {
+                type: 'string',
+              },
+            },
+          },
+        },
+      };
+    }
+  }
+
+  return updatedTemplate;
+}
+
+function appendUsersToTemplate(
+  users: {
+    properties: Record<string, UserPropertyDefinition>;
+  },
+  template: AppDefinition,
+): AppDefinition {
+  const updatedTemplate = template;
+
+  updatedTemplate.users = users;
+
+  for (const propertyDefinition of Object.values(users.properties)) {
+    if (propertyDefinition.reference.resource) {
+      updatedTemplate.resources = {
+        [propertyDefinition.reference.resource]: {
+          roles: ['$public'],
+          schema: {
+            type: 'object',
+            additionalProperties: false,
+            properties: {
+              property: {
+                type: 'string',
+              },
+            },
+          },
+        },
+      };
+    }
+  }
+
+  return updatedTemplate;
+}
+
 async function accumulateAppDefinitions(docsPath: string): Promise<AppDefinitionWithLocation[]> {
   const processor = unified().use(remarkParse);
 
@@ -308,6 +374,12 @@ async function accumulateAppDefinitions(docsPath: string): Promise<AppDefinition
           break;
         case 'cron':
           template = appendCronToTemplate(parsed.cron, template);
+          break;
+        case 'controller':
+          template = appendControllerToTemplate(parsed.controller, template);
+          break;
+        case 'users':
+          template = appendUsersToTemplate(parsed.users, template);
           break;
         case 'security':
           template.security = template.security

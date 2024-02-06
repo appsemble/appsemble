@@ -1,7 +1,7 @@
 import { Button, Loader, Message, Table, useData, useToggle } from '@appsemble/react-components';
 import { type OrganizationInvite } from '@appsemble/types';
 import { Permission } from '@appsemble/utils';
-import { type ReactElement, useCallback } from 'react';
+import { type ReactNode, useCallback } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useParams } from 'react-router-dom';
 
@@ -9,13 +9,13 @@ import styles from './index.module.css';
 import { messages } from './messages.js';
 import { HeaderControl } from '../../../../components/HeaderControl/index.js';
 import { useUser } from '../../../../components/UserProvider/index.js';
-import { type Member } from '../../../../types.js';
+import { type OrganizationMember } from '../../../../types.js';
 import { checkRole } from '../../../../utils/checkRole.js';
 import { AddMembersModal } from '../AddMembersModal/index.js';
 import { InviteRow } from '../InviteRow/index.js';
 import { MemberRow } from '../MemberRow/index.js';
 
-export function MemberTable(): ReactElement {
+export function MemberTable(): ReactNode {
   const { organizationId } = useParams<{ organizationId: string }>();
   const { userInfo } = useUser();
   const { formatMessage } = useIntl();
@@ -25,7 +25,7 @@ export function MemberTable(): ReactElement {
     error: membersError,
     loading: membersLoading,
     setData: setMembers,
-  } = useData<Member[]>(`/api/organizations/${organizationId}/members`);
+  } = useData<OrganizationMember[]>(`/api/organizations/${organizationId}/members`);
   const {
     data: invites,
     loading: invitesLoading,
@@ -34,17 +34,21 @@ export function MemberTable(): ReactElement {
   const addMembersModal = useToggle();
 
   const onInvited = useCallback(
-    (newInvites: OrganizationInvite[]) => setInvites([...invites, ...newInvites]),
-    [invites, setInvites],
+    (newInvites: OrganizationInvite[]) => {
+      setInvites([...invites, ...newInvites]);
+      addMembersModal.disable();
+    },
+    [addMembersModal, invites, setInvites],
   );
 
   const onMemberChanged = useCallback(
-    (member: Member) => setMembers(members.map((m) => (m.id === member.id ? member : m))),
+    (member: OrganizationMember) =>
+      setMembers(members.map((m) => (m.id === member.id ? member : m))),
     [members, setMembers],
   );
 
   const onMemberDeleted = useCallback(
-    (member: Member) => setMembers(members.filter((m) => m.id !== member.id)),
+    (member: OrganizationMember) => setMembers(members.filter((m) => m.id !== member.id)),
     [members, setMembers],
   );
 

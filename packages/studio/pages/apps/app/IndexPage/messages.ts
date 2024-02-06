@@ -17,4 +17,8 @@ export const messages = defineMessages({
     id: 'studio.Ed2ywJ',
     defaultMessage: 'Read less',
   },
+  demo: {
+    id: 'studio.JsZpzQ',
+    defaultMessage: 'demo',
+  },
 });
