@@ -915,6 +915,137 @@ describe('validateAppDefinition', () => {
     ]);
   });
 
+  it('should validate resource types against reserved keywords', async () => {
+    const app = {
+      name: 'Test app',
+      defaultPage: 'Test Page',
+      pages: [
+        {
+          name: 'Test Page',
+          blocks: [],
+        },
+      ],
+      resources: {
+        created: {
+          schema: {
+            type: 'object',
+            properties: {
+              name: { type: 'string' },
+            },
+          },
+        },
+        updated: {
+          schema: {
+            type: 'object',
+            properties: {
+              name: { type: 'string' },
+            },
+          },
+        },
+        author: {
+          schema: {
+            type: 'object',
+            properties: {
+              name: { type: 'string' },
+            },
+          },
+        },
+        editor: {
+          schema: {
+            type: 'object',
+            properties: {
+              name: { type: 'string' },
+            },
+          },
+        },
+        seed: {
+          schema: {
+            type: 'object',
+            properties: {
+              name: { type: 'string' },
+            },
+          },
+        },
+        ephemeral: {
+          schema: {
+            type: 'object',
+            properties: {
+              name: { type: 'string' },
+            },
+          },
+        },
+        clonable: {
+          schema: {
+            type: 'object',
+            properties: {
+              name: { type: 'string' },
+            },
+          },
+        },
+        expires: {
+          schema: {
+            type: 'object',
+            properties: {
+              name: { type: 'string' },
+            },
+          },
+        },
+      },
+    } as AppDefinition;
+    const result = await validateAppDefinition(app, () => []);
+    expect(result.valid).toBe(false);
+    expect(result.errors).toStrictEqual([
+      new ValidationError(
+        'is a reserved keyword',
+        { type: 'object', properties: { name: { type: 'string' } } },
+        undefined,
+        ['resources', 'created'],
+      ),
+      new ValidationError(
+        'is a reserved keyword',
+        { type: 'object', properties: { name: { type: 'string' } } },
+        undefined,
+        ['resources', 'updated'],
+      ),
+      new ValidationError(
+        'is a reserved keyword',
+        { type: 'object', properties: { name: { type: 'string' } } },
+        undefined,
+        ['resources', 'author'],
+      ),
+      new ValidationError(
+        'is a reserved keyword',
+        { type: 'object', properties: { name: { type: 'string' } } },
+        undefined,
+        ['resources', 'editor'],
+      ),
+      new ValidationError(
+        'is a reserved keyword',
+        { type: 'object', properties: { name: { type: 'string' } } },
+        undefined,
+        ['resources', 'seed'],
+      ),
+      new ValidationError(
+        'is a reserved keyword',
+        { type: 'object', properties: { name: { type: 'string' } } },
+        undefined,
+        ['resources', 'ephemeral'],
+      ),
+      new ValidationError(
+        'is a reserved keyword',
+        { type: 'object', properties: { name: { type: 'string' } } },
+        undefined,
+        ['resources', 'clonable'],
+      ),
+      new ValidationError(
+        'is a reserved keyword',
+        { type: 'object', properties: { name: { type: 'string' } } },
+        undefined,
+        ['resources', 'expires'],
+      ),
+    ]);
+  });
+
   it('should validate the resource roles exist', async () => {
     const app = createTestApp();
     app.resources.person.roles = ['Unknown'];

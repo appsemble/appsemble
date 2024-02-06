@@ -278,11 +278,17 @@ export function createCreateResource(options: Options): Middleware {
         await createAppResourcesWithAssets({
           app,
           context: ctx,
-          resources: resources.map((resource) => ({
-            ...resource,
-            $seed: true,
-            $ephemeral: false,
-          })),
+          resources: resources.map((resource) => {
+            const cleanResource = { ...resource };
+            for (const referencedProperty of Object.keys(resourceDefinition.references ?? {})) {
+              delete cleanResource[referencedProperty];
+            }
+            return {
+              ...cleanResource,
+              $seed: true,
+              $ephemeral: false,
+            };
+          }),
           preparedAssets,
           resourceType,
           action,
