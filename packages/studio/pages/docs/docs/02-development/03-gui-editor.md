@@ -53,7 +53,25 @@ the hotkeys `ctrl+z` and `ctrl+y` can be used.
 
 ## General Tab
 
+The general tab allows you to change general app settings like the app name and description.
+
+In the app view you see the app preview that allows you to test the app functionality while you
+change settings. It auto updates for every made change.
+
+In the left sidebar you can switch between general, layout and schedule settings. In the right
+sidebar the properties can be changed.
+
 ## Theme Tab
+
+The theme tab allows you to change theming settings for the app. In the left sidebar there is a
+hierarchy of the app pages and blocks where you can select what part of the app your theming will
+affect.
+
+In the right sidebar you can set colors for your app. The colors follow the hierarchy so a color set
+for a block will overwrite the color set for its page. You can reset any color choice to its default
+by clicking the black x next to the color picker.
+
+Below the colors there are tile layers and font options.
 
 ## Style Tab
 
