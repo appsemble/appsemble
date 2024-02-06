@@ -280,7 +280,7 @@ describe('configureDNS', () => {
     expect(JSON.parse(configs[1].data)).toStrictEqual({
       metadata: {
         annotations: {
-          'nginx.ingress.kubernetes.io/rewrite-target': 'example.com/$1',
+          'nginx.ingress.kubernetes.io/rewrite-target': 'https://example.com/$1',
           'nginx.ingress.kubernetes.io/use-regex': 'true',
         },
         labels: expect.any(Object),
@@ -543,7 +543,7 @@ describe('restoreDNS', () => {
       {
         metadata: {
           annotations: {
-            'nginx.ingress.kubernetes.io/rewrite-target': 'example.com/$1',
+            'nginx.ingress.kubernetes.io/rewrite-target': 'https://example.com/$1',
             'nginx.ingress.kubernetes.io/use-regex': 'true',
           },
           labels: {
