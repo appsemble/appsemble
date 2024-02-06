@@ -15,6 +15,7 @@ code and it is accessible by one button click
 - [Style Tab](#style-tab)
 - [Resources Tab](#resources-tab)
 - [Security Tab](#security-tab)
+- [Further Reading](#further-reading)
 
 ## GUI Editor Tabs
 
@@ -75,6 +76,25 @@ Below the colors there are tile layers and font options.
 
 ## Style Tab
 
+The style tab allows the user to change the app’s styling `CSS` without knowing how to write it. It
+features a simple menu in the right sidebar for adding borders, margin and padding to any block or
+menu item selected in the left sidebar hierarchy.
+
+The generated `CSS` code can be viewed in the text box at the bottom of the right sidebar.
+
 ## Resources Tab
 
+The resources tab houses an editor for resources. However it is not yet implemented.
+
 ## Security Tab
+
+The security tab allows the user to set roles and teams by adding them in the right sidebar menu.
+The created roles show up in the left sidebar.
+
+## Further Reading
+
+The GUI Editor can be swapped for the code editor on the fly by clicking the `Switch to Code Editor`
+button. Note however that unsaved changes will be lost.
+
+If you find any bugs while using the GUI Editor please click the **bug report** button and add your
+bug to the comments if it is not already there.
