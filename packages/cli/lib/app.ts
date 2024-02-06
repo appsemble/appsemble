@@ -28,6 +28,7 @@ import { type BuildResult } from 'esbuild';
 import fg from 'fast-glob';
 import FormData from 'form-data';
 import normalizePath from 'normalize-path';
+import { parse as parseYaml } from 'yaml';
 
 import { publishAsset } from './asset.js';
 import { traverseBlockThemes } from './block.js';
@@ -36,7 +37,7 @@ import { getProjectBuildConfig } from './config.js';
 import { printAxiosError } from './output.js';
 import { processCss } from './processCss.js';
 import { buildProject, makeProjectPayload } from './project.js';
-import { publishResource } from './resource.js';
+import { publishResourcesRecursively, type ResourceToPublish } from './resource.js';
 
 interface PublishAppParams {
   /**
@@ -744,7 +745,6 @@ export async function publishApp({
     [appsembleContext, rc, yaml] = await traverseAppDirectory(path, context, formData);
     filename = join(filename, 'app-definition.yaml');
   }
-
   const remote = appsembleContext.remote ?? options.remote;
   const organizationId = appsembleContext.organization ?? options.organization;
   const template = appsembleContext.template ?? options.template ?? false;
@@ -866,17 +866,21 @@ export async function publishApp({
     }
 
     if (resources && existsSync(join(path, 'resources'))) {
+      const appDefinition = parseYaml(yaml, { maxAliasCount: 10_000 }) as AppDefinition;
       const resourcePath = join(path, 'resources');
       try {
         const resourceFiles = await readdir(resourcePath, { withFileTypes: true });
+        const resourcesToPublish: ResourceToPublish[] = [];
+        const publishedResourcesIds: Record<string, number[]> = {};
+
         for (const resource of resourceFiles) {
           if (resource.isFile()) {
             const { name } = parse(resource.name);
-            await publishResource({
+            resourcesToPublish.push({
               appId: data.id,
               path: join(resourcePath, resource.name),
-              remote,
-              resourceName: name,
+              definition: appDefinition.resources[name],
+              type: name,
             });
           } else if (resource.isDirectory()) {
             const subDirectoryResources = await readdir(join(resourcePath, resource.name), {
@@ -884,15 +888,21 @@ export async function publishApp({
             });
 
             for (const subResource of subDirectoryResources.filter((s) => s.isFile())) {
-              await publishResource({
+              resourcesToPublish.push({
                 appId: data.id,
                 path: join(resourcePath, resource.name, subResource.name),
-                remote,
-                resourceName: resource.name,
+                definition: appDefinition.resources[resource.name],
+                type: resource.name,
               });
             }
           }
         }
+
+        await publishResourcesRecursively({
+          remote,
+          resourcesToPublish,
+          publishedResourcesIds,
+        });
       } catch (error: unknown) {
         logger.error('Something went wrong when creating resources:');
         logger.error(error);

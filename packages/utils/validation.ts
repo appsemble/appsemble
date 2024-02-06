@@ -103,6 +103,21 @@ function validateResourceSchemas(definition: AppDefinition, report: Report): voi
     const { schema } = resource;
     const prefix = ['resources', resourceName, 'schema'];
 
+    const reservedKeywords = new Set([
+      'created',
+      'updated',
+      'author',
+      'editor',
+      'seed',
+      'ephemeral',
+      'clonable',
+      'expires',
+    ]);
+
+    if (reservedKeywords.has(resourceName)) {
+      report(schema, 'is a reserved keyword', ['resources', resourceName]);
+    }
+
     validateJSONSchema(schema, prefix, report);
     if (!('type' in schema)) {
       report(schema, 'must define type object', prefix);

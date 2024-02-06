@@ -52,7 +52,11 @@ import { blockVersionToJson, syncBlock } from '../utils/block.js';
 import { checkAppLock } from '../utils/checkAppLock.js';
 import { checkRole } from '../utils/checkRole.js';
 import { encrypt } from '../utils/crypto.js';
-import { processHooks, processReferenceHooks } from '../utils/resource.js';
+import {
+  processHooks,
+  processReferenceHooks,
+  reseedResourcesRecursively,
+} from '../utils/resource.js';
 
 async function getBlockVersions(blocks: IdentifiableBlock[]): Promise<BlockManifest[]> {
   const uniqueBlocks = blocks.map(({ type, version }) => {
@@ -1335,7 +1339,7 @@ export async function reseedDemoApp(ctx: Context): Promise<void> {
   } = ctx;
 
   const app = await App.findByPk(appId, {
-    attributes: ['demoMode'],
+    attributes: ['demoMode', 'definition'],
   });
 
   assertKoaError(!app, ctx, 404, 'App not found');
@@ -1451,13 +1455,7 @@ export async function reseedDemoApp(ctx: Context): Promise<void> {
 
   logger.info('Reseeding ephemeral resources.');
 
-  for (const resource of demoResourcesToReseed) {
-    await Resource.create({
-      ...resource.dataValues,
-      ephemeral: true,
-      seed: false,
-    });
-  }
+  await reseedResourcesRecursively(app.definition, demoResourcesToReseed);
 
   logger.info(`Reseeded ${demoResourcesToReseed.length} ephemeral resources.`);
 }

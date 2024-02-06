@@ -6080,4 +6080,249 @@ describe('reseedDemoApp', () => {
     `,
     );
   });
+
+  it('should reseed resources that reference each other', async () => {
+    authorizeStudio();
+    const { id: appId } = await App.create({
+      demoMode: true,
+      definition: {
+        name: 'Test App',
+        defaultPage: 'Test Page',
+        resources: {
+          survey: {
+            schema: {
+              type: 'object',
+              properties: {
+                title: {
+                  type: 'string',
+                },
+              },
+            },
+          },
+          answer: {
+            schema: {
+              type: 'object',
+              properties: {
+                surveyId: {
+                  type: 'integer',
+                },
+                content: {
+                  type: 'string',
+                },
+              },
+            },
+            references: {
+              surveyId: {
+                resource: 'survey',
+                delete: {
+                  triggers: [
+                    {
+                      type: 'delete',
+                      cascade: 'delete',
+                    },
+                  ],
+                },
+              },
+            },
+          },
+        },
+      },
+      vapidPublicKey: 'a',
+      vapidPrivateKey: 'b',
+      OrganizationId: organization.id,
+    });
+
+    await Resource.create({
+      AppId: 1,
+      type: 'survey',
+      seed: true,
+      data: {
+        title: 'Survey 1',
+      },
+    });
+
+    await Resource.create({
+      AppId: 1,
+      type: 'survey',
+      seed: true,
+      data: {
+        title: 'Survey 2',
+      },
+    });
+
+    await Resource.create({
+      AppId: 1,
+      type: 'answer',
+      seed: true,
+      data: {
+        $survey: 0,
+        content: 'Answer 1',
+      },
+    });
+
+    await Resource.create({
+      AppId: 1,
+      type: 'answer',
+      seed: true,
+      data: {
+        $survey: 1,
+        content: 'Answer 2',
+      },
+    });
+
+    const { id: ephemeralSurvey1Id } = await Resource.create({
+      AppId: 1,
+      type: 'survey',
+      ephemeral: true,
+      data: {
+        title: 'Survey 1',
+      },
+    });
+
+    const { id: ephemeralSurvey2Id } = await Resource.create({
+      AppId: 1,
+      type: 'tasks',
+      ephemeral: true,
+      data: {
+        title: 'Survey 2',
+      },
+    });
+
+    const { id: ephemeralAnswer1Id } = await Resource.create({
+      AppId: 1,
+      type: 'survey',
+      ephemeral: true,
+      data: {
+        $survey: 0,
+        content: 'Answer 1',
+      },
+    });
+
+    const { id: ephemeralAnswer2Id } = await Resource.create({
+      AppId: 1,
+      type: 'tasks',
+      ephemeral: true,
+      data: {
+        $survey: 1,
+        content: 'Answer 2',
+      },
+    });
+
+    await request.post(`/api/apps/${appId}/reseed`);
+
+    const seedResources = await Resource.findAll({
+      where: {
+        AppId: appId,
+        seed: true,
+      },
+    });
+
+    expect(seedResources).toMatchInlineSnapshot(`
+      [
+        {
+          "$created": "1970-01-01T00:00:00.000Z",
+          "$updated": "1970-01-01T00:00:00.000Z",
+          "id": 1,
+          "title": "Survey 1",
+        },
+        {
+          "$created": "1970-01-01T00:00:00.000Z",
+          "$updated": "1970-01-01T00:00:00.000Z",
+          "id": 2,
+          "title": "Survey 2",
+        },
+        {
+          "$created": "1970-01-01T00:00:00.000Z",
+          "$survey": 0,
+          "$updated": "1970-01-01T00:00:00.000Z",
+          "content": "Answer 1",
+          "id": 3,
+        },
+        {
+          "$created": "1970-01-01T00:00:00.000Z",
+          "$survey": 1,
+          "$updated": "1970-01-01T00:00:00.000Z",
+          "content": "Answer 2",
+          "id": 4,
+        },
+      ]
+    `);
+
+    const oldEphemeralSurvey1 = await Resource.findOne({
+      where: {
+        AppId: appId,
+        id: ephemeralSurvey1Id,
+      },
+    });
+
+    const oldEphemeralSurvey2 = await Resource.findOne({
+      where: {
+        AppId: appId,
+        id: ephemeralSurvey2Id,
+      },
+    });
+
+    const oldEphemeralAnswer1 = await Resource.findOne({
+      where: {
+        AppId: appId,
+        id: ephemeralAnswer1Id,
+      },
+    });
+
+    const oldEphemeralAnswer2 = await Resource.findOne({
+      where: {
+        AppId: appId,
+        id: ephemeralAnswer2Id,
+      },
+    });
+
+    expect(oldEphemeralSurvey1).toBeNull();
+    expect(oldEphemeralSurvey2).toBeNull();
+    expect(oldEphemeralAnswer1).toBeNull();
+    expect(oldEphemeralAnswer2).toBeNull();
+
+    const newEphemeralResources = await Resource.findAll({
+      where: {
+        AppId: appId,
+        ephemeral: true,
+      },
+    });
+
+    expect(newEphemeralResources).toMatchInlineSnapshot(`
+      [
+        {
+          "$created": "1970-01-01T00:00:00.000Z",
+          "$ephemeral": true,
+          "$updated": "1970-01-01T00:00:00.000Z",
+          "id": 9,
+          "title": "Survey 1",
+        },
+        {
+          "$created": "1970-01-01T00:00:00.000Z",
+          "$ephemeral": true,
+          "$updated": "1970-01-01T00:00:00.000Z",
+          "id": 10,
+          "title": "Survey 2",
+        },
+        {
+          "$created": "1970-01-01T00:00:00.000Z",
+          "$ephemeral": true,
+          "$survey": 0,
+          "$updated": "1970-01-01T00:00:00.000Z",
+          "content": "Answer 1",
+          "id": 11,
+          "surveyId": 9,
+        },
+        {
+          "$created": "1970-01-01T00:00:00.000Z",
+          "$ephemeral": true,
+          "$survey": 1,
+          "$updated": "1970-01-01T00:00:00.000Z",
+          "content": "Answer 2",
+          "id": 12,
+          "surveyId": 10,
+        },
+      ]
+    `);
+  });
 });

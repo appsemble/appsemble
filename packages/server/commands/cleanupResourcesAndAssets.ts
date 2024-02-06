@@ -5,6 +5,7 @@ import { type Argv } from 'yargs';
 import { databaseBuilder } from './builder/database.js';
 import { App, Asset, initDB, Resource } from '../models/index.js';
 import { argv } from '../utils/argv.js';
+import { reseedResourcesRecursively } from '../utils/resource.js';
 import { handleDBError } from '../utils/sqlUtils.js';
 
 export const command = 'cleanup-resources-and-assets';
@@ -123,7 +124,7 @@ export async function handler(): Promise<void> {
     include: [
       {
         model: App,
-        attributes: ['id'],
+        attributes: ['id', 'definition'],
         where: {
           demoMode: true,
         },
@@ -143,6 +144,15 @@ export async function handler(): Promise<void> {
       ephemeral: true,
       seed: false,
     });
+  }
+
+  const resourcesByApp: Record<string, Resource[]> = {};
+  for (const resource of demoResourcesToReseed) {
+    resourcesByApp[resource.App.id] = [...(resourcesByApp[resource.App.id] ?? []), resource];
+  }
+
+  for (const appResources of Object.values(resourcesByApp)) {
+    await reseedResourcesRecursively(appResources[0].App.definition, appResources);
   }
 
   logger.info(`Reseeded ${demoResourcesToReseed.length} ephemeral resources into demo apps.`);

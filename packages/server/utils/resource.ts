@@ -6,6 +6,7 @@ import {
   throwKoaError,
 } from '@appsemble/node-utils';
 import {
+  type AppDefinition,
   type NotificationDefinition,
   type ResourceDefinition,
   type Resource as ResourceType,
@@ -432,4 +433,79 @@ export function parseQuery({ $filter, $orderby }: Pick<QueryParams, '$filter' | 
     : undefined;
 
   return { order, query };
+}
+
+export async function reseedResourcesRecursively(
+  appDefinition: AppDefinition,
+  resourcesToReseed: Resource[],
+  reseededResourcesIds: Record<string, number[]> = {},
+): Promise<Record<string, number[]>> {
+  const groupedResources: Record<string, Resource[]> = {};
+
+  for (const resource of resourcesToReseed) {
+    groupedResources[resource.type] = [...(groupedResources[resource.type] ?? []), resource];
+  }
+
+  let updatedReseededResourcesIds: Record<string, number[]> = { ...reseededResourcesIds };
+  for (const [resourceType, resources] of Object.entries(groupedResources)) {
+    const resourceReferences = appDefinition.resources?.[resourceType].references;
+    if (resourceReferences) {
+      for (const [referencedProperty, resourceReference] of Object.entries(resourceReferences)) {
+        const referencedResourceType = resourceReference.resource;
+        const referencedResourcesToReseed = groupedResources[referencedResourceType];
+
+        if (!updatedReseededResourcesIds[referencedResourceType]) {
+          const referencedReseededResourcesIds = await reseedResourcesRecursively(
+            appDefinition,
+            referencedResourcesToReseed,
+            updatedReseededResourcesIds,
+          );
+
+          updatedReseededResourcesIds = {
+            ...updatedReseededResourcesIds,
+            ...referencedReseededResourcesIds,
+          };
+        }
+
+        if (!updatedReseededResourcesIds[resourceType]) {
+          const reseededResources = [];
+          for (const resource of resources) {
+            reseededResources.push(
+              await Resource.create({
+                ...resource.dataValues,
+                ephemeral: true,
+                seed: false,
+                data: {
+                  ...resource.dataValues.data,
+                  [referencedProperty]:
+                    updatedReseededResourcesIds[referencedResourceType][
+                      resource.dataValues.data[`$${referencedResourceType}`]
+                    ],
+                },
+              }),
+            );
+          }
+          updatedReseededResourcesIds[resourceType] = reseededResources.map(
+            (resource) => resource.id,
+          );
+        }
+      }
+    }
+
+    if (!updatedReseededResourcesIds[resourceType]) {
+      const reseededResources = [];
+      for (const resource of resources) {
+        reseededResources.push(
+          await Resource.create({
+            ...resource.dataValues,
+            ephemeral: true,
+            seed: false,
+          }),
+        );
+      }
+      updatedReseededResourcesIds[resourceType] = reseededResources.map((resource) => resource.id);
+    }
+  }
+
+  return updatedReseededResourcesIds;
 }

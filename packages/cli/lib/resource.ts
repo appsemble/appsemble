@@ -1,7 +1,7 @@
 import { readFile } from 'node:fs/promises';
 
 import { AppsembleError, logger, readData } from '@appsemble/node-utils';
-import { type Resource } from '@appsemble/types';
+import { type Resource, type ResourceDefinition } from '@appsemble/types';
 import axios from 'axios';
 
 interface UpdateResourceParams {
@@ -30,7 +30,7 @@ interface PublishResourceParams {
   /**
    * The name of the resource that a new entry is being created of.
    */
-  resourceName: string;
+  type: string;
 
   /**
    * The path in which the resource JSON is located.
@@ -46,14 +46,50 @@ interface PublishResourceParams {
    * The remote server to publish the resource on.
    */
   remote: string;
+
+  /**
+   * The definition of the resource.
+   */
+  definition?: ResourceDefinition;
+
+  /**
+   * An array of property name to value maps of referenced resources.
+   */
+  publishedResourcesIds?: Record<string, number[]>;
+}
+
+export interface ResourceToPublish {
+  appId: number;
+  path: string;
+  type: string;
+  definition: ResourceDefinition;
+}
+
+interface PublishResourcesRecursivelyParams {
+  /**
+   * The remote server to publish the resource on.
+   */
+  remote: string;
+
+  /**
+   * All resources that need to be published.
+   */
+  resourcesToPublish: ResourceToPublish[];
+
+  /**
+   * Already published resources.
+   */
+  publishedResourcesIds: Record<string, number[]>;
 }
 
 export async function publishResource({
   appId,
+  definition,
   path,
+  publishedResourcesIds = {},
   remote,
-  resourceName,
-}: PublishResourceParams): Promise<void> {
+  type,
+}: PublishResourceParams): Promise<number[]> {
   const csv = path.endsWith('.csv');
   let resources: Buffer | Resource[];
 
@@ -71,21 +107,95 @@ export async function publishResource({
 
   logger.info(`Publishing resource(s) from ${path}`);
 
-  const { data } = await axios.post<Resource | Resource[]>(
-    `/api/apps/${appId}/resources/${resourceName}`,
-    resources,
-    {
-      baseURL: remote,
-      headers: { 'content-type': csv ? 'text/csv' : 'application/json' },
-    },
-  );
+  let data;
+  if (csv) {
+    const response = await axios.post<Resource | Resource[]>(
+      `/api/apps/${appId}/resources/${type}`,
+      resources,
+      {
+        baseURL: remote,
+        headers: { 'content-type': 'text/csv' },
+      },
+    );
+    data = response.data;
+  } else {
+    const response = await axios.post<Resource | Resource[]>(
+      `/api/apps/${appId}/resources/${type}`,
+      (resources as Resource[]).map((resource) => {
+        const resourceWithReferences = { ...resource };
+        for (const [referencedProperty, resourceReference] of Object.entries(
+          definition?.references ?? {},
+        )) {
+          resourceWithReferences[referencedProperty] =
+            publishedResourcesIds[resourceReference.resource]?.[
+              Number(resource[`$${resourceReference.resource}`] ?? -1)
+            ];
+        }
+        return resourceWithReferences;
+      }),
+      {
+        baseURL: remote,
+        headers: { 'content-type': 'application/json' },
+      },
+    );
+    data = response.data;
+  }
+
   const ids: number[] = [].concat(data).map((d: Resource) => d.id);
-  const url = new URL(`/apps/${appId}/resources/${resourceName}/`, remote);
+  const url = new URL(`/apps/${appId}/resources/${type}/`, remote);
   logger.info(
     `Successfully published ${ids.length} resource${resources.length === 1 ? '' : 's'} at: \n${ids
       .map((id) => `${url}${id}`)
       .join('\n')}`,
   );
+  return ids;
+}
+
+export async function publishResourcesRecursively({
+  publishedResourcesIds,
+  remote,
+  resourcesToPublish,
+}: PublishResourcesRecursivelyParams): Promise<Record<string, number[]>> {
+  let updatedPublishedResourcesIds: Record<string, number[]> = { ...publishedResourcesIds };
+  for (const resourceToPublish of resourcesToPublish) {
+    const resourceReferences = resourceToPublish.definition.references;
+
+    if (resourceReferences) {
+      for (const resourceReference of Object.values(resourceReferences)) {
+        const referencedResourceType = resourceReference.resource;
+        const referencedResourcesToPublish = resourcesToPublish.filter(
+          (referencedResourceToPublish) =>
+            referencedResourceToPublish.type === referencedResourceType,
+        );
+
+        if (
+          referencedResourcesToPublish.length &&
+          !updatedPublishedResourcesIds[referencedResourceType]
+        ) {
+          const referencedPublishedResourcesIds = await publishResourcesRecursively({
+            remote,
+            resourcesToPublish: referencedResourcesToPublish,
+            publishedResourcesIds: updatedPublishedResourcesIds,
+          });
+
+          updatedPublishedResourcesIds = {
+            ...updatedPublishedResourcesIds,
+            ...referencedPublishedResourcesIds,
+          };
+        }
+      }
+    }
+
+    if (!updatedPublishedResourcesIds[resourceToPublish.type]) {
+      updatedPublishedResourcesIds[resourceToPublish.type] = await publishResource({
+        ...resourceToPublish,
+        publishedResourcesIds: updatedPublishedResourcesIds,
+        remote,
+      });
+    }
+  }
+
+  return updatedPublishedResourcesIds;
 }
 
 export async function updateResource({

@@ -359,6 +359,48 @@ resources:
 Here we specify that the resources `housePet`, `farmPet` and `wildPet` all reference the `owner`
 resource.
 
+When publishing resources along with the app definition using the `appsemble app publish` command
+with the `--resources` tag, resources from the `resources` directory in the app directory will be
+published in the app. If you want a resource defined as a JSON object in that directory to reference
+another resource in the directory, you can add a field to the JSON object, pointing to the index of
+the referenced resource in its array, like so:
+
+In `/resources/owner.json`:
+
+```json
+[
+  {
+    "name": "Steve"
+  },
+  {
+    "name": "Carol"
+  }
+]
+```
+
+And in `/resources/housePet.json`:
+
+```json
+[
+  {
+    "name": "Sven",
+    "species": "Dog",
+    "$owner": 0
+  },
+  {
+    "name": "Milka",
+    "species": "Cow",
+    "$owner": 1
+  }
+]
+```
+
+Appsemble will handle the references to the owners internally. The pet `Sven` will be assigned an
+`ownerId` value equal to the id of the owner `Steve`. Similarly, the pet `Milka` will be assigned an
+`ownerId` value equal to the id of the owner `Carol`. This reference also persists in demo apps
+after reseeding the resources. Each new ephemeral instances of the pets `Sven` and `Milka` will
+belong to the new ephemeral instances of the owners `Steve` and `Carol` respectively.
+
 When referencing parent resources from child resources, we often want to define what happens to the
 child when a specific resource action is executed on the parent. Here `parent` and `child` are terms
 used purely for ease of explanation. We can use the same example from the Triggers app to

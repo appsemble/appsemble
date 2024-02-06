@@ -68,7 +68,7 @@ export async function handler({
   for (const path of files) {
     logger.info('');
     await publishResource({
-      resourceName,
+      type: resourceName,
       appId: resolvedAppId,
       path,
       remote: resolvedRemote,
