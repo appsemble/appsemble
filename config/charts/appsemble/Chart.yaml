@@ -1,7 +1,7 @@
 apiVersion: v2
 name: appsemble
-version: 0.24.11
-appVersion: 0.24.11
+version: 0.24.12
+appVersion: 0.24.12
 kubeVersion: '>=1.21.0'
 type: application
 description: The open source low-code app building platform
@@ -25,30 +25,27 @@ dependencies:
 annotations:
   artifacthub.io/changes: >
     - kind: added
-      description: "Server: Default values are added to nested properties in app
-        member properties when they are of type object."
+      description: "Cli: Publish resources recursively in the app publish command
+        based on resource references."
+    - kind: added
+      description: "Server: Reseed resources recursively in the /app/{id}/reseed
+        endpoint based on resource references."
+    - kind: added
+      description: "Server: Reseed resources recursively in the
+        cleanupResourcesAndAssets command based on resource references."
     - kind: changed
-      description: "App: If a currentEmail is not specified in the user.update action,
-        it assumes the logged-in email."
+      description: "Node-utils: Patch resource schema in processResourceBody to allow
+        resource references by index."
     - kind: changed
-      description: "App: The password field is no longer required in the user.update action."
-    - kind: changed
-      description: "Utils: Changed user.properties to accept integer and array
-        properties without referencing resources."
+      description: "Utils: Added validation for resource names against the reserved
+        keywords created, updated, author, editor, seed, ephemeral, clonable and
+        expires."
     - kind: fixed
-      description: "App: After the user.update action, updated user properties are now
-        correctly assigned."
+      description: "App: App bar rendering title wrong."
     - kind: fixed
-      description: "App: After updating user properties from the studio, they are now
-        correctly assigned."
+      description: "Studio: Unexpected error on the organization docs page."
     - kind: fixed
-      description: "App: App controller handler functions now load as expected."
-    - kind: fixed
-      description: "Server: Invalid authentication state causing internal server error
-        on blocks page."
-    - kind: fixed
-      description: "Studio: The dialog message shown in the studio app editor page
-        shows message even after save."
+      description: "Utils: Remove additional history stack in the remapper context."
   artifacthub.io/license: LGPL-3.0-only
   artifacthub.io/links: |
     - name: Appsemble Studio

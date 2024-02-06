@@ -2,6 +2,28 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.24.12](https://gitlab.com/appsemble/appsemble/-/releases/0.24.12)] - 2024-02-06
+
+### Added
+
+- Cli: Publish resources recursively in the `app publish` command based on resource references.
+- Server: Reseed resources recursively in the `/app/{id}/reseed` endpoint based on resource
+  references.
+- Server: Reseed resources recursively in the `cleanupResourcesAndAssets` command based on resource
+  references.
+
+### Changed
+
+- Node-utils: Patch resource schema in `processResourceBody` to allow resource references by index.
+- Utils: Added validation for resource names against the reserved keywords `created`, `updated`,
+  `author`, `editor`, `seed`, `ephemeral`, `clonable` and `expires`.
+
+### Fixed
+
+- App: App bar rendering title wrong.
+- Studio: Unexpected error on the organization docs page.
+- Utils: Remove additional history stack in the remapper context.
+
 ## \[[0.24.11](https://gitlab.com/appsemble/appsemble/-/releases/0.24.11)] - 2024-02-02
 
 ### Added
