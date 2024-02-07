@@ -1,0 +1,113 @@
+# Flow
+
+## Introduction
+
+Flow actions allow users to navigate through a flow page. To know more about how data is managed on
+the flow pages visit [app storage](/docs/03-guide/storage#storage). These actions are client side
+actions, i.e. these actions are not implemented for the server side. The following are the supported
+flow actions.
+
+- `flow.next`
+- `flow.finish`
+- `flow.back`
+- `flow.cancel`
+- `flow.to`
+
+### flow.next
+
+On a flow page, this action proceed to the next page if it is present. Otherwise, the flow is
+considered to be complete and [\`flow.finish\`](#flowfinish) will be called instead. Supported field
+for this action is `type`, which is `flow.next` in this case. Here is an example of this action
+being used.
+
+```yaml validate
+blocks:
+  - type: button-list
+    version: *blocks-version
+    parameters:
+      buttons:
+        - label: { translate: start }
+          onClick: onStart
+          color: primary
+    actions:
+      onStart:
+        type: flow.next
+```
+
+### flow.finish
+
+On a flow page, this action triggers the `onFlowFinish` action on the page. Supported field for this
+action is `type`, which is `flow.finish` in this case. Here is an example of this action being used.
+
+```yaml validate
+blocks:
+  - type: form
+    version: *blocks-version
+    parameters:
+      fields:
+        - type: string
+          name: finishStep
+          label: { translate: finishStep }
+    actions:
+      onSubmit:
+        type: flow.finish
+```
+
+### flow.back
+
+On a flow page, this action returns to the previous page if it is present. If this action is called
+on the first page, nothing happens. Supported field for this action is `type`, which is `flow.back`
+in this case. Here is an example of this action being used.
+
+```yaml validate
+blocks:
+  - type: form
+    version: *blocks-version
+    parameters:
+      fields:
+        - type: string
+          name: email
+          label: { translate: email }
+    actions:
+      onPrevious:
+        type: flow.back
+```
+
+### flow.cancel
+
+On a flow page, calling this action triggers the `onFlowCancel` action. Supported field for this
+action is `type`, which is `flow.cancel` in this case. Here is an example of how to use this action.
+
+```yaml validate
+blocks:
+  - type: action-button
+    version: *blocks-version
+    parameters:
+      icon: ban
+    actions:
+      onClick:
+        type: flow.cancel
+```
+
+### flow.to
+
+On a flow page, this action is used to move to a specific step. Supported fields for this action are
+`type` and `step`. Step is the name of the step to move to, this is a remapper which gets called
+with the action input and current context, the type is `flow.to`. Both fields are required. Here is
+how you can use this action in your app.
+
+```yaml validate
+blocks:
+  - type: form
+    version: *blocks-version
+    parameters:
+      fields:
+        - name: username
+          label: { translate: username }
+          requirements: { required: true }
+          type: string
+    actions:
+      onSubmit:
+        type: flow.to
+        step: Home
+```

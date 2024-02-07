@@ -20,6 +20,8 @@ import { type ReactNode, useEffect } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Navigate, Route, useLocation, useNavigate, useParams } from 'react-router-dom';
 
+import { ActionMenuItems } from './actions/components/ActionMenuItems.js';
+import { ActionRoutes } from './actions/index.js';
 import { Doc } from './Doc/index.js';
 import { docs } from './docs.js';
 import { messages } from './messages.js';
@@ -81,6 +83,12 @@ export function DocsRoutes(): ReactNode {
         <MenuSection>{RemapperMenuItems(url)}</MenuSection>
       </CollapsibleMenuSection>
       <CollapsibleMenuSection>
+        <MenuItem exact icon="gears" to={`${url}/actions`}>
+          <FormattedMessage {...messages.action} />
+        </MenuItem>
+        <MenuSection>{ActionMenuItems(url)}</MenuSection>
+      </CollapsibleMenuSection>
+      <CollapsibleMenuSection>
         <MenuItem icon="book" to={`${url}/reference`}>
           <FormattedMessage {...messages.reference} />
         </MenuItem>
@@ -131,6 +139,7 @@ export function DocsRoutes(): ReactNode {
 
   return (
     <MetaSwitch title={messages.title}>
+      <Route element={<ActionRoutes />} path="/actions/*" />
       <Route element={<RemapperRoutes />} path="/remapper/*" />
       <Route element={<SearchPage />} path="/search" />
       <Route element={<Changelog />} path="/changelog" />
