@@ -1,0 +1,294 @@
+# Resources
+
+## Introduction
+
+Actions can be used to query the resources as well as perform various operations on resources.
+Client side actions are extended from the `request` action, hence they support the fields supported
+by the request action and additional fields as specified in every action's description. To use
+resources in your app, you need to define the resources in the `app-definition.yaml file`. Below is
+an example of how you can define resources taken from the [Person](/apps/3) app.
+
+```yaml validate
+resources:
+  person:
+    roles:
+      - $public # Allow anyone to access the resource’s actions
+    schema:
+      type: object
+      additionalProperties: false
+      required:
+        - firstName
+        - lastName
+        - email
+      properties:
+        firstName:
+          type: string
+        lastName:
+          type: string
+        email:
+          type: string
+          format: email
+        description:
+          type: string
+        picture:
+          type: string
+          format: binary
+```
+
+Supported resource actions are as below:
+
+- `resource.get`
+- `resource.query`
+- `resource.count`
+- `resource.create`
+- `resource.update`
+- `resource.patch`
+- `resource.delete`
+- `resource.subscription.subscribe`
+- `resource.subscription.unsubscribe`
+- `resource.subscription.toggle`
+- `resource.subscription.status`
+
+### resource.get
+
+This action is implemented for client as well as server side. This action is used to fetch a single
+resource. Supported fields for this action are `type`, `resource` and `view`. Fields `type` and
+`resource` are required. Resource refers to the resource to be fetched, and view is the view to use
+for the resource. Here's an example of how you can use this action to fetch the `person` resource.
+
+```yaml validate-block
+blocks:
+  - type: data-loader
+    version: *version
+    actions:
+      onLoad:
+        type: resource.get
+        resource: person
+```
+
+### resource.query
+
+This action is implemented for client as well as the server side. This action is used to fetch all
+the resources. Similar to `resource.get` supported fields for this action are `type`, `resource` and
+`view`. Fields `type` and `resource` are required. Resource refers to the resource to be fetched,
+and view is the view to use for the resource. Here's an example of how you can use this action to
+fetch all `person` resources.
+
+```yaml validate
+blocks:
+  - type: data-loader
+    version: *blocks-version
+    actions:
+      onLoad:
+        type: resource.query
+        resource: person
+```
+
+### resource.count
+
+This action is implemented for client only. This action is used to fetch the count of resources.
+Supported field for this action are `type` and `resource`. Both of the fields are required. Resource
+refers to the resource whose count is to be fetched. Here's an example of how you can use this
+action to fetch the number of resources.
+
+```yaml validate
+blocks:
+ - type: data-loader
+    version: *blocks-version
+    actions:
+      onLoad:
+        type: resource.count
+        resource: people
+```
+
+### resource.create
+
+This action is implemented for client as well as the server side. This action is used to create new
+resources. Supported fields for this action are `type` and `resource`. Both of the fields are
+required. Here's an example of how you can use this action to create a new resource of type person.
+
+```yaml validate
+blocks:
+  - type: form
+    version: *blocks-version
+    actions:
+      onSubmit:
+        type: resource.create
+        resource: person
+        remapBefore: { null.strip }
+```
+
+### resource.update
+
+This action is implemented for client as well as server side. This action is used to replace some
+resource's data with a completely new set of values. Supported field for this action are `type` and
+`resource`. Both of the fields are required. Resource refers to the resource to be updated. Here's
+an example of how you can use this action to update an existing resource of type note.
+
+```yaml validate
+blocks:
+  - type: form
+    version: *blocks-version
+    parameters:
+      fields:
+        - type: string
+          name: title
+          label: { translate: title }
+          requirements:
+            - required: true
+        - type: string
+          name: body
+          label: { translate: body }
+          multiline: true
+          actions:
+          onSubmit:
+            type: resource.update
+            resource: note
+```
+
+### resource.patch
+
+This action is implemented for client as well as the server side. This action is used to partially
+update a resource with new data. Supported field for this action are `type` and `resource`. Both of
+the fields are required. Resource refers to the resource to be partially updated. Here's an example
+of how you can partially update a resource of type note using this action.
+
+```yaml validate
+blocks:
+  - type: form
+    version: *blocks-version
+    parameters:
+      fields:
+        - type: string
+          name: title
+          label: { translate: title }
+          requirements:
+            - required: true
+          actions:
+          onSubmit:
+            type: resource.patch
+            resource: note
+```
+
+### resource.delete
+
+This action is implemented for the client as well as the server side. This action is used to delete
+a resource from the database. Supported field for this action are `type` and `resource`. Both of the
+fields are required. Resource refers to the resource to be deleted. To delete a note resource, you
+can use the following block of code.
+
+```yaml validate
+blocks:
+  - type: button-list
+    version: *blocks-version
+    parameters:
+      buttons:
+        - label: { translate: cancel }
+          color: primary
+          onClick: cancelDialog
+        - label: { translate: configDelete }
+          color: danger
+          onClick: removeItem
+          actions:
+            cancelDialog:
+              type: dialog.ok
+              removeItem:
+                type: resource.delete
+                resource: note
+                onSuccess:
+                  type: event
+                  event: refreshNotes
+```
+
+### resource.subscription.subscribe
+
+This action is only implemented for the client side. This action is used to subscribe to resource
+modification for push notifications. Supported fields for this action are `type`, `resource` and
+`action`. Fields type and resource are required, the field action refers to the action on the
+resource for which push notifications will be subscribed, the action has to be either of type
+`update`, `delete` or `create`. The default value set for action is `update`. Here's how you can use
+this action to subscribe to all the updates made to the resource person:
+
+```yaml validate
+blocks:
+  - type: table
+    version: *blocks-version
+    parameters:
+      fields:
+        - value: { prop: firstName }
+          label: First Name
+        - value: { prop: lastName }
+          label: Surname
+    actions:
+      onClick:
+        type: resource.subscription.subscribe
+        resource: person
+        action: update
+```
+
+### resource.subscription.unsubscribe
+
+This action is only implemented for the client side. This action is used to unsubscribe from
+resource modifications. Supported fields for this action are `type`, `resource` and `action`. Fields
+type and resource are required, the field action refers to the action that shall unsubscribe from
+the resource, the action has to be either of type `update`, `delete` or `create`. The default value
+set for action is `update`. Here's how you can use this action to unsubscribe to the delete
+notifications related to resource person.
+
+```yaml validate
+blocks:
+  - type: action-button
+    version: *blocks-version
+    parameters:
+      icon: bell-slash
+    actions:
+      onClick:
+        type: resource.subscription.unsubscribe
+        resource: person
+        action: delete
+```
+
+### resource.subscription.toggle
+
+This action is implemented for the client side only. This action is used to toggle push
+notifications for resource modification. i.e. It will set the subscribed property to `true` if it's
+set to `false` and vice versa. Supported fields for this action are `type`, `resource` and `action`.
+Fields type and resource are required, the field action refers to the action on the resource for
+which push notifications will be toggled, action has to be either of type `update`, `delete` or
+`create`. The default value set for action is `update`. Here's how you can use this action.
+
+```yaml validate
+blocks:
+  - type: action-button
+    version: *blocks-version
+    parameters:
+      icon: toggle-on
+    actions:
+      onClick:
+        type: resource.subscription.toggle
+        resource: person
+        action: create
+```
+
+### resource.subscription.status
+
+This action is implemented only for the client side and can be used to access the status of
+notification subscriptions for a resource. Supported fields for this action are `type`, `resource`
+and `action`. Fields type and resource are required, the field action refers to the action on the
+resource for which the push notification status will be fetched. Action has to be either of type
+`update`, `delete` or `create`. The default value set for action is `update`. Here's an example of
+usage of this action.
+
+```yaml validate
+blocks:
+  type: action-button
+  version: *blocks-version
+  parameters:
+    icon: envelope
+  actions:
+    onClick:
+      type: resource.subscription.status
+      resource: person
+      onSuccess:
+        type: log
+```

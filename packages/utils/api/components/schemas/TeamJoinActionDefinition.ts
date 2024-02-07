@@ -8,7 +8,7 @@ export const TeamJoinActionDefinition = extendJSONSchema(BaseActionDefinition, {
   properties: {
     type: {
       enum: ['team.join'],
-      description: 'Get a list of all of the user’s teams.',
+      description: 'Allow a user to join a team.',
     },
   },
 });

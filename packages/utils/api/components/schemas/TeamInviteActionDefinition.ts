@@ -8,7 +8,7 @@ export const TeamInviteActionDefinition = extendJSONSchema(BaseActionDefinition,
   properties: {
     type: {
       enum: ['team.invite'],
-      description: 'Get a list of all of the user’s teams.',
+      description: 'Invite a user to join a team.',
     },
     id: {
       description: 'The ID of the team to invite the user to.',

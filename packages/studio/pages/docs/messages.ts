@@ -18,8 +18,8 @@ export const messages = defineMessages({
     defaultMessage: 'App',
   },
   action: {
-    id: 'studio.QlsDcr',
-    defaultMessage: 'Action',
+    id: 'studio.wL7VAE',
+    defaultMessage: 'Actions',
   },
   changelog: {
     id: 'studio.MQcAql',

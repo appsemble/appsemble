@@ -1,0 +1,99 @@
+# Team
+
+## Introduction
+
+Team actions allow users with sufficient permissions to manage teams and invite members. To know
+more about the teams visit [this page](/docs/03-guide/teams). Team action are client side actions,
+i.e. these actions are not implemented for the server side. Supported team actions are as follow.
+
+- `team.invite`
+- `team.join`
+- `team.list`
+- `team.members`
+
+### team.invite
+
+This action allows a user with sufficient permissions to invite users to a team. Supported fields
+for this action are `type`, `id`, `email`, and `role`. Id is the id of the team to which the user
+will be invited, email is the email of the user to be invited to join the team and role is the role
+for which the user is being invited. Default value for role is member. Type is the only required
+value for using this action. Here is an example of how you can use this action.
+
+```yaml validate
+blocks:
+  - type: form
+    version:  *block-version
+    parameters:
+      fields:
+        - name: email
+          label: { translate: email }
+          type: string
+          format: email
+          requirements: { required: true }
+        - name: id
+          type: hidden
+    actions:
+      onSubmit:
+        type: user.invite
+        onSuccess:
+          type: log
+```
+
+### team.join
+
+This action allows a user to join a team. Supported field for this action is `type`, which is
+`team.join` in this case. Here is an example of how you can use this action to join a team.
+
+```yaml validate
+blocks:
+  - type: form
+    version: *block-version
+    parameters:
+      fields:
+        - name: team
+          label: { translate: team }
+          requirements: { required: true }
+          type: enum
+    onSubmit:
+      type: team.join
+      remap: { prop: team }
+      onSuccess:
+        type: log
+```
+
+### team.list
+
+This action allows to get a list of all of the user’s teams. Supported field for this action is
+`type`, which is `team.list` in this case. Here is an example of how you can use this action to list
+all teams of a user.
+
+```yaml validate
+blocks:
+  - type: action-button
+    version: *block-version
+    parameters:
+      icon: people-group
+    actions:
+      onClick:
+        type: team.list
+        onSuccess:
+          type: log
+```
+
+### team.members
+
+This action allows to get a list of a team’s members. Supported fields for this action are `type`
+and `id`. Id is The ID of a specific team to get the members from and type is `team.members`. Both
+the fields are required. Here is an example of this action in use.
+
+```yaml validate
+blocks:
+  - type: data-loader
+    version: *block-version
+    actions:
+      onLoad:
+        type: team.members
+        id: { prop: team }
+        onSuccess:
+          type: log
+```

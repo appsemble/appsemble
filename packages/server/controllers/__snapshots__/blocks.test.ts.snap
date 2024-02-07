@@ -3332,7 +3332,7 @@ storage: localStorage
                 ],
                 "property": "instance.actions.onSubmit.type",
                 "schema": {
-                  "description": "Get a list of all of the user’s teams.",
+                  "description": "Invite a user to join a team.",
                   "enum": [
                     "team.invite",
                   ],
@@ -3353,7 +3353,7 @@ storage: localStorage
                 ],
                 "property": "instance.actions.onSubmit.type",
                 "schema": {
-                  "description": "Get a list of all of the user’s teams.",
+                  "description": "Allow a user to join a team.",
                   "enum": [
                     "team.join",
                   ],
@@ -7821,7 +7821,7 @@ storage: localStorage
         ],
         "property": "instance.actions.onSubmit.type",
         "schema": {
-          "description": "Get a list of all of the user’s teams.",
+          "description": "Invite a user to join a team.",
           "enum": [
             "team.invite",
           ],
@@ -7842,7 +7842,7 @@ storage: localStorage
         ],
         "property": "instance.actions.onSubmit.type",
         "schema": {
-          "description": "Get a list of all of the user’s teams.",
+          "description": "Allow a user to join a team.",
           "enum": [
             "team.join",
           ],
