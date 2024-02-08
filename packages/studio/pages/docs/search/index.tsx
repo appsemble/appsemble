@@ -1,5 +1,6 @@
 import { Title, useMeta } from '@appsemble/react-components';
 import { type ReactNode, useDeferredValue, useMemo } from 'react';
+import { FormattedMessage } from 'react-intl';
 import { Link, useLocation } from 'react-router-dom';
 
 import styles from './index.module.css';
@@ -36,6 +37,9 @@ export function SearchPage(): ReactNode {
   const location = useLocation();
 
   const needle = useDeferredValue(decodeURIComponent(location.hash.slice(1)));
+  const cleanedNeedle = needle.replaceAll(/[^\dA-Za-z]/g, '');
+
+  const matchCharLength = 2;
 
   const results = useMemo(() => {
     const matches: SearchResult[] = [];
@@ -49,32 +53,48 @@ export function SearchPage(): ReactNode {
       if (result) {
         const { match, matchLength } = result;
 
-        if (!match) {
+        if (!match || matchLength === 0) {
           continue;
         }
         matches.push({ match, url, title, matchLength });
       }
     }
-    // Sort matches based on match char length
+    // Sort matches based on match char length.
     matches.sort((a, b) => b.matchLength - a.matchLength);
 
     return matches;
   }, [needle]);
 
   return (
-    <ul>
-      {results.map(({ match, title, url }) => (
-        <li key={url}>
-          <Link to={url}>
-            <div className="mb-5">
-              <Title className="my-0" size={5}>
-                {title}
-              </Title>
-              <p className={`content has-text-grey-dark ${styles.searchResult}`}>{match}</p>
-            </div>
-          </Link>
-        </li>
-      ))}
-    </ul>
+    <div>
+      {results.length ? (
+        <p className="mb-3">
+          <FormattedMessage
+            {...messages.searching}
+            values={{ cleanedNeedle: <strong>{cleanedNeedle}</strong> }}
+          />
+        </p>
+      ) : null}
+      <ul>
+        {results.length ? (
+          results.map(({ match, title, url }) => (
+            <li key={url}>
+              <Link to={url}>
+                <div className="mb-5">
+                  <Title className="my-0" size={5}>
+                    {title}
+                  </Title>
+                  <p className={`content has-text-grey-dark ${styles.searchResult}`}>{match}</p>
+                </div>
+              </Link>
+            </li>
+          ))
+        ) : needle.length <= matchCharLength ? (
+          <FormattedMessage {...messages.minCharLength} />
+        ) : (
+          <FormattedMessage {...messages.noResultsFound} />
+        )}
+      </ul>
+    </div>
   );
 }
