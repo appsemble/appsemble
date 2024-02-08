@@ -1,0 +1,19 @@
+{
+  "app": {
+    "description": "Demonstracija pokretača resursa",
+    "name": "Pokretači",
+    "pages.owners-pets": "Životinje vlasnika",
+    "pages.owners-pets.tabs.0": "Vlasnici",
+    "pages.owners-pets.tabs.1": "Kućne životinje",
+    "pages.owners-pets.tabs.2": "Domaće životinje",
+    "pages.owners-pets.tabs.3": "Divlje životinje"
+  },
+  "messageIds": {
+    "cancel": "Odustani",
+    "configDelete": "Izbriši",
+    "confirmDeleteFarmPet": "Stvarno želiš izbrisati sljedeću domaću životinju?",
+    "confirmDeleteHousePet": "Stvarno želiš izbrisati sljedeću kućnu životinju?",
+    "confirmDeleteOwner": "Stvarno želiš izbrisati sljedećeg vlasnika?",
+    "confirmDeleteWildPet": "Stvarno želiš izbrisati sljedeću divlju životinju?"
+  }
+}
