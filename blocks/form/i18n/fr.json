@@ -1,5 +1,5 @@
 {
-  "confirmLabel": "",
+  "confirmLabel": "Confirmer",
   "fieldErrorLabel": "L'une des exigences de ce champ n'est pas valide.",
   "formRequirementError": "L'une des exigences de ce formulaire n'est pas valide.",
   "invalidLabel": "Cette valeur n'est pas valide",

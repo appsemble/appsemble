@@ -8,9 +8,9 @@
   },
   "messageIds": {
     "body": "Corps",
-    "cancel": "",
-    "configDelete": "",
-    "confirmDelete": "",
+    "cancel": "Annuler",
+    "configDelete": "Supprimer",
+    "confirmDelete": "Êtes-vous sûr de vouloir supprimer la note suivante ?",
     "title": "Titre"
   }
 }

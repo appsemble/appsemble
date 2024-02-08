@@ -1,0 +1,12 @@
+{
+  "app": {
+    "description": "Demonstracija kontrolera programa",
+    "name": "Kontroler",
+    "pages.example-page-a": "Primjer stranice A"
+  },
+  "messageIds": {
+    "firstNumber": "Prvi broj",
+    "operation": "Operacija",
+    "secondNumber": "Drugi broj"
+  }
+}
