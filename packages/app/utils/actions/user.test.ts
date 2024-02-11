@@ -8,10 +8,12 @@ import { apiUrl, appId } from '../settings.js';
 describe('user.register', () => {
   let mock: MockAdapter;
   let passwordLogin: Mock;
+  let refetchDemoAppMembers: Mock;
 
   beforeEach(() => {
     mock = new MockAdapter(axios);
     passwordLogin = vi.fn();
+    refetchDemoAppMembers = vi.fn();
   });
 
   it('should call the API to register a new user', async () => {
@@ -27,6 +29,7 @@ describe('user.register', () => {
       passwordLogin,
       // eslint-disable-next-line unicorn/no-useless-undefined
       getUserInfo: () => undefined,
+      refetchDemoAppMembers,
     });
 
     const result = await action({ name: 'name' });
@@ -35,6 +38,7 @@ describe('user.register', () => {
       username: 'test@example.com',
       password: 'test',
     });
+    expect(refetchDemoAppMembers).toHaveBeenCalledWith();
   });
 
   it('should do nothing and return data if user is logged in', async () => {
@@ -53,19 +57,23 @@ describe('user.register', () => {
         email_verified: true,
         name: 'name',
       }),
+      refetchDemoAppMembers,
     });
 
     const result = await action({ name: 'name' });
     expect(result).toStrictEqual({ name: 'name' });
     expect(passwordLogin).not.toHaveBeenCalled();
+    expect(refetchDemoAppMembers).not.toHaveBeenCalled();
   });
 });
 
 describe('user.login', () => {
   let passwordLogin: Mock;
+  let refetchDemoAppMembers: Mock;
 
   beforeEach(() => {
     passwordLogin = vi.fn();
+    refetchDemoAppMembers = vi.fn();
   });
 
   it('should log the user in', async () => {
@@ -78,11 +86,13 @@ describe('user.login', () => {
       passwordLogin,
       // eslint-disable-next-line unicorn/no-useless-undefined
       getUserInfo: () => undefined,
+      refetchDemoAppMembers,
     });
 
     const result = await action({ name: 'name' });
     expect(result).toStrictEqual({ name: 'name' });
     expect(passwordLogin).toHaveBeenCalledWith({ username: 'test@example.com', password: 'test' });
+    expect(refetchDemoAppMembers).toHaveBeenCalledWith();
   });
 
   it('should do nothing and return the data if the user is logged in', async () => {
@@ -99,17 +109,20 @@ describe('user.login', () => {
         email_verified: true,
         name: 'name',
       }),
+      refetchDemoAppMembers,
     });
 
     const result = await action({ name: 'name' });
     expect(result).toStrictEqual({ name: 'name' });
     expect(passwordLogin).not.toHaveBeenCalled();
+    expect(refetchDemoAppMembers).not.toHaveBeenCalled();
   });
 });
 
 describe('user.update', () => {
   let mock: MockAdapter;
   let setUserInfo: Mock;
+  let refetchDemoAppMembers: Mock;
   const currentEmail = 'test@gmail.com';
   const newEmail = 'test.updated@gmail.com';
   const managerEmail = 'manager@gmail.com';
@@ -117,6 +130,7 @@ describe('user.update', () => {
   beforeEach(() => {
     mock = new MockAdapter(axios);
     setUserInfo = vi.fn();
+    refetchDemoAppMembers = vi.fn();
   });
 
   it('should call the API for updating the user', async () => {
@@ -148,6 +162,7 @@ describe('user.update', () => {
         properties: { test: [1, 2, 3], property: 'Property', bool: true },
       }),
       setUserInfo,
+      refetchDemoAppMembers,
     });
 
     const result = await action({ name: 'name' });
@@ -171,6 +186,7 @@ describe('user.update', () => {
       picture: `${apiUrl}/api/apps/${appId}/members/some-user-id/picture`,
       properties: { test: '[1,2,3]', property: 'Property', bool: 'true' },
     });
+    expect(refetchDemoAppMembers).toHaveBeenCalledWith();
   });
 
   it('should do nothing and return the data if the user is not logged in', async () => {
@@ -188,6 +204,7 @@ describe('user.update', () => {
     const result = await action({ name: 'name' });
     expect(result).toStrictEqual({ name: 'name' });
     expect(setUserInfo).not.toHaveBeenCalled();
+    expect(refetchDemoAppMembers).not.toHaveBeenCalled();
   });
 
   it('should update another user if called by account manager', async () => {
@@ -219,6 +236,7 @@ describe('user.update', () => {
         properties: {},
       }),
       setUserInfo,
+      refetchDemoAppMembers,
     });
 
     const result = await action({ name: 'name' });
@@ -235,6 +253,7 @@ describe('user.update', () => {
       },
     });
     expect(setUserInfo).not.toHaveBeenCalled();
+    expect(refetchDemoAppMembers).toHaveBeenCalledWith();
   });
 });
 
@@ -357,12 +376,14 @@ describe('user.query', () => {
 describe('user.remove', () => {
   let mock: MockAdapter;
   let setUserInfo: Mock;
+  let refetchDemoAppMembers: Mock;
   const managerEmail = 'manager@gmail.com';
   const memberEmail = 'test@gmail.com';
 
   beforeEach(() => {
     mock = new MockAdapter(axios);
     setUserInfo = vi.fn();
+    refetchDemoAppMembers = vi.fn();
   });
 
   it('should call the API for removing a user', async () => {
@@ -384,12 +405,14 @@ describe('user.remove', () => {
         properties: {},
       }),
       setUserInfo,
+      refetchDemoAppMembers,
     });
 
     const result = await action({
       email: memberEmail,
     });
     expect(result).toStrictEqual([]);
+    expect(refetchDemoAppMembers).toHaveBeenCalledWith();
   });
 
   it('should do nothing and return the data if the user is not logged in', async () => {
@@ -408,5 +431,6 @@ describe('user.remove', () => {
     expect(result).toStrictEqual({
       email: memberEmail,
     });
+    expect(refetchDemoAppMembers).not.toHaveBeenCalled();
   });
 });

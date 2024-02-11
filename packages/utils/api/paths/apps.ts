@@ -569,6 +569,29 @@ export const paths: OpenAPIV3.PathsObject = {
       security: [{ app: ['openid'] }, {}],
     },
   },
+  '/api/apps/{appId}/demoMembers': {
+    parameters: [{ $ref: '#/components/parameters/appId' }],
+    get: {
+      tags: ['app'],
+      description: 'Fetch all demo members of an app.',
+      operationId: 'getDemoAppMembers',
+      responses: {
+        200: {
+          description: 'The list of demo app members.',
+          content: {
+            'application/json': {
+              schema: {
+                type: 'array',
+                items: {
+                  $ref: '#/components/schemas/OrganizationMember',
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  },
   '/api/apps/{appId}/members': {
     parameters: [{ $ref: '#/components/parameters/appId' }],
     get: {

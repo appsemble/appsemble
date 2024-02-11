@@ -5,6 +5,7 @@ import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import { AppDefinitionProvider } from '../AppDefinitionProvider/index.js';
 import { AppMessagesProvider } from '../AppMessagesProvider/index.js';
 import { AppRoutes } from '../AppRoutes/index.js';
+import { DemoAppMembersProvider } from '../DemoAppMembersProvider/index.js';
 import { ErrorFallback } from '../ErrorFallback/index.js';
 import { MenuProvider } from '../MenuProvider/index.js';
 import { PageTracker } from '../PageTracker/index.js';
@@ -31,10 +32,12 @@ export function App({ serviceWorkerRegistrationPromise }: AppProps): ReactNode {
               serviceWorkerRegistrationPromise={serviceWorkerRegistrationPromise}
             >
               <UserProvider>
-                <MenuProvider>
-                  <PermissionRequest />
-                  <AppRoutes />
-                </MenuProvider>
+                <DemoAppMembersProvider>
+                  <MenuProvider>
+                    <PermissionRequest />
+                    <AppRoutes />
+                  </MenuProvider>
+                </DemoAppMembersProvider>
               </UserProvider>
             </ServiceWorkerRegistrationProvider>
           </ErrorHandler>

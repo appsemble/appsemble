@@ -207,6 +207,7 @@ export function createTestAction<T extends ActionDefinition['type']>(
     passwordLogin: null,
     passwordLogout: null,
     setUserInfo: null,
+    refetchDemoAppMembers: null,
     ...params,
   });
 }

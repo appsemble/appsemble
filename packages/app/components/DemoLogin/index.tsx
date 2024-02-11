@@ -13,7 +13,7 @@ import {
   useData,
   useToggle,
 } from '@appsemble/react-components';
-import { type AppMember, type Team, type TeamMember } from '@appsemble/types';
+import { type Team, type TeamMember } from '@appsemble/types';
 import { TeamRole } from '@appsemble/utils';
 import axios from 'axios';
 import { type ReactNode, useCallback, useEffect, useMemo } from 'react';
@@ -21,11 +21,11 @@ import { FormattedMessage, useIntl } from 'react-intl';
 
 import { messages } from './messages.js';
 import { apiUrl, appId } from '../../utils/settings.js';
+import { useDemoAppMembers } from '../DemoAppMembersProvider/index.js';
 import { useUser } from '../UserProvider/index.js';
 
 interface DemoLoginProps {
   readonly modal?: Toggle;
-  readonly appMembers: AppMember[];
 }
 
 function TeamControls(): ReactNode {
@@ -126,48 +126,50 @@ function TeamControls(): ReactNode {
   );
 }
 
-export function DemoLogin({ appMembers, modal }: DemoLoginProps): ReactNode {
+export function DemoLogin({ modal }: DemoLoginProps): ReactNode {
   const { demoLogin } = useUser();
+  const { demoAppMembers, refetchDemoAppMembers } = useDemoAppMembers();
 
   const busy = useToggle();
 
   const defaultValues = useMemo(
     () => ({
-      appMemberId: appMembers[0]?.userId ?? undefined,
+      appMemberId: demoAppMembers[0]?.userId ?? undefined,
     }),
-    [appMembers],
+    [demoAppMembers],
   );
 
   const handleLogin = useCallback(
     async ({ appMemberId }: typeof defaultValues) => {
       busy.enable();
       try {
-        await demoLogin(appMemberId ?? appMembers[0]?.userId ?? '');
+        await demoLogin(appMemberId ?? demoAppMembers[0]?.userId ?? '');
         busy.disable();
         if (modal) {
           modal.disable();
           window.location.reload();
         }
+        await refetchDemoAppMembers();
       } catch (error) {
         busy.disable();
         throw error;
       }
     },
-    [appMembers, busy, demoLogin, modal],
+    [busy, demoLogin, demoAppMembers, modal, refetchDemoAppMembers],
   );
 
   const fields = (
     <>
       <SimpleFormError>{() => <FormattedMessage {...messages.loginFailed} />}</SimpleFormError>
-      {appMembers.length ? (
+      {demoAppMembers.length ? (
         <SimpleFormField
           component={SelectField}
-          disabled={appMembers.length < 2 || busy.enabled}
+          disabled={demoAppMembers.length < 2 || busy.enabled}
           label={<FormattedMessage {...messages.selectMember} />}
           name="appMemberId"
           required
         >
-          {appMembers.map((appMember) => (
+          {demoAppMembers.map((appMember) => (
             <option key={appMember.userId} value={appMember.userId}>
               {appMember.role} {appMember.name}
             </option>

@@ -143,6 +143,7 @@ export interface MakeActionParameters<D extends ActionDefinition> {
   setUserInfo: Dispatch<UserInfo>;
   updateTeam: UpdateTeam;
   teams: TeamMember[];
+  refetchDemoAppMembers: () => Promise<void>;
 }
 
 export type Permission = NotificationPermission | 'pending';

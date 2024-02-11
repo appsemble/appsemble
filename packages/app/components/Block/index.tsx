@@ -21,6 +21,7 @@ import { apiUrl, appId } from '../../utils/settings.js';
 import { type AppStorage } from '../../utils/storage.js';
 import { useAppDefinition } from '../AppDefinitionProvider/index.js';
 import { useAppMessages } from '../AppMessagesProvider/index.js';
+import { useDemoAppMembers } from '../DemoAppMembersProvider/index.js';
 import { usePage } from '../MenuProvider/index.js';
 import { useServiceWorkerRegistration } from '../ServiceWorkerRegistrationProvider/index.js';
 import { useUser } from '../UserProvider/index.js';
@@ -89,6 +90,7 @@ export function Block({
 
   const { logout, passwordLogin, setUserInfo, teams, updateTeam, userInfo, userInfoRef } =
     useUser();
+  const { refetchDemoAppMembers } = useDemoAppMembers();
   const { setBlockMenu } = usePage();
 
   const ref = useRef<HTMLDivElement>();
@@ -144,6 +146,7 @@ export function Block({
       passwordLogin,
       passwordLogout: logout,
       setUserInfo,
+      refetchDemoAppMembers,
     });
     const theme = mergeThemes(definition.theme, page.theme, block.theme);
 
@@ -233,6 +236,7 @@ export function Block({
     userInfo,
     userInfoRef,
     getAppMessage,
+    refetchDemoAppMembers,
   ]);
 
   const { layout = manifest.layout } = block;

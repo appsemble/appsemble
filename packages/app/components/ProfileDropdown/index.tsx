@@ -91,7 +91,7 @@ export function ProfileDropdown(): ReactNode {
           </>
         ) : null}
       </NavbarDropdown>
-      <DemoLogin appMembers={[]} modal={demoLoginToggle} />
+      <DemoLogin modal={demoLoginToggle} />
     </>
   );
 }

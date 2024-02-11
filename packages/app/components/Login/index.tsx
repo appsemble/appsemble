@@ -7,10 +7,8 @@ import {
   useQuery,
   useToggle,
 } from '@appsemble/react-components';
-import { type AppMember } from '@appsemble/types';
 import { normalize } from '@appsemble/utils';
-import axios from 'axios';
-import { type ReactNode, useCallback, useEffect, useState } from 'react';
+import { type ReactNode, useCallback } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { Navigate, useParams } from 'react-router-dom';
 
@@ -39,15 +37,11 @@ export function Login(): ReactNode {
   useMeta(messages.login);
 
   const { definition } = useAppDefinition();
-  const { isLoggedIn, passwordLogin, role, userInfo } = useUser();
+  const { isLoggedIn, passwordLogin, role } = useUser();
   const qs = useQuery();
   const redirect = qs.get('redirect');
   const { lang } = useParams<{ lang: string }>();
   const busy = useToggle(false);
-
-  const [appMembersPerm, setAppMembersPerm] = useState(false);
-  const [appMembers, setAppMembers] = useState<AppMember[]>([]);
-  const [userAppMember, setUserAppMember] = useState<AppMember>(null);
 
   const onPasswordLogin = useCallback(
     async (credentials: LoginFormValues): Promise<void> => {
@@ -63,27 +57,7 @@ export function Login(): ReactNode {
     [busy, passwordLogin],
   );
 
-  useEffect(() => {
-    if (showDemoLogin && isLoggedIn) {
-      (async () => {
-        const response = await axios.get(`${apiUrl}/api/apps/${appId}/members`);
-        if (response.data) {
-          setAppMembersPerm(true);
-          setAppMembers(response.data.filter((appMember: AppMember) => appMember.demo));
-        }
-      })();
-    }
-  }, [isLoggedIn]);
-
-  useEffect(() => {
-    const currentAppMember = appMembers.find((appMember) => appMember.userId === userInfo.sub);
-    setUserAppMember(currentAppMember);
-  }, [appMembers, appMembers.length, userInfo?.sub]);
-
-  if (
-    (isLoggedIn && (!showDemoLogin || (showDemoLogin && userAppMember?.demo))) ||
-    !definition.security
-  ) {
+  if (isLoggedIn || !definition.security) {
     const defaultPageName = getDefaultPageName(isLoggedIn, role, definition);
     return <Navigate to={redirect || normalize(defaultPageName)} />;
   }
@@ -121,8 +95,8 @@ export function Login(): ReactNode {
             src={`/icon-256.png?updated=${appUpdated}`}
           />
         </figure>
-        {showDemoLogin && appMembersPerm ? (
-          <DemoLogin appMembers={appMembers} />
+        {showDemoLogin ? (
+          <DemoLogin />
         ) : (
           <>
             {showAppsembleLogin ? (

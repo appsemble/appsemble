@@ -24,6 +24,7 @@ import { makeActions } from '../../utils/makeActions.js';
 import { type AppStorage } from '../../utils/storage.js';
 import { useAppMessages } from '../AppMessagesProvider/index.js';
 import { BlockList } from '../BlockList/index.js';
+import { useDemoAppMembers } from '../DemoAppMembersProvider/index.js';
 import { DotProgressBar } from '../DotProgressBar/index.js';
 import { useServiceWorkerRegistration } from '../ServiceWorkerRegistrationProvider/index.js';
 import { useUser } from '../UserProvider/index.js';
@@ -63,6 +64,7 @@ export function FlowPage({
   const pushNotifications = useServiceWorkerRegistration();
   const showMessage = useMessages();
   const { logout, passwordLogin, setUserInfo, teams, updateTeam, userInfoRef } = useUser();
+  const { refetchDemoAppMembers } = useDemoAppMembers();
   const { getAppMessage } = useAppMessages();
   const [steps, setSteps] = useState(page.type === 'flow' ? page.steps : undefined);
   const [error, setError] = useState(false);
@@ -230,11 +232,13 @@ export function FlowPage({
         passwordLogin,
         passwordLogout: logout,
         setUserInfo,
+        refetchDemoAppMembers,
       }),
     [
+      appStorage,
+      getAppMessage,
       definition,
       page,
-      appStorage,
       navigate,
       showDialog,
       showShareDialog,
@@ -251,8 +255,8 @@ export function FlowPage({
       passwordLogin,
       logout,
       setUserInfo,
+      refetchDemoAppMembers,
       userInfoRef,
-      getAppMessage,
     ],
   );
 

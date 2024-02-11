@@ -34,6 +34,7 @@ describe('makeActions', () => {
       passwordLogin: null,
       passwordLogout: null,
       setUserInfo: null,
+      refetchDemoAppMembers: null,
     };
   });
 
