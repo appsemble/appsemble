@@ -58,6 +58,7 @@ CSV
 cronjob/job
 customappsso
 DNS
+DNS01
 Dnsmasq
 DOM
 DSN
@@ -73,6 +74,7 @@ GDPR
 GitLab
 Gravatar
 HTTPS
+HTTP01
 IDP
 JSON
 JSX
