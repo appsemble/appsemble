@@ -10,6 +10,7 @@ export const register: ActionCreator<'user.register'> = ({
   getUserInfo,
   params,
   passwordLogin,
+  refetchDemoAppMembers,
   remap,
 }) => [
   async (data) => {
@@ -58,6 +59,8 @@ export const register: ActionCreator<'user.register'> = ({
     if (login) {
       await passwordLogin({ username: email, password });
     }
+
+    await refetchDemoAppMembers();
     return data;
   },
 ];
@@ -66,6 +69,7 @@ export const create: ActionCreator<'user.create'> = ({
   definition,
   getUserInfo,
   params,
+  refetchDemoAppMembers,
   remap,
 }) => [
   async (data) => {
@@ -112,6 +116,8 @@ export const create: ActionCreator<'user.create'> = ({
     }
 
     await axios.post(`${apiUrl}/api/user/apps/${appId}/accounts`, formData);
+
+    await refetchDemoAppMembers();
     return data;
   },
 ];
@@ -120,6 +126,7 @@ export const login: ActionCreator<'user.login'> = ({
   definition,
   getUserInfo,
   passwordLogin,
+  refetchDemoAppMembers,
   remap,
 }) => [
   async (data) => {
@@ -133,6 +140,7 @@ export const login: ActionCreator<'user.login'> = ({
     const password = remap(definition.password, data);
 
     await passwordLogin({ username: email, password });
+    await refetchDemoAppMembers();
     return data;
   },
 ];
@@ -164,6 +172,7 @@ export const query: ActionCreator<'user.query'> = ({ definition, getUserInfo, re
 export const update: ActionCreator<'user.update'> = ({
   definition,
   getUserInfo,
+  refetchDemoAppMembers,
   remap,
   setUserInfo,
 }) => [
@@ -225,11 +234,17 @@ export const update: ActionCreator<'user.update'> = ({
       });
     }
 
+    await refetchDemoAppMembers();
     return response;
   },
 ];
 
-export const remove: ActionCreator<'user.remove'> = ({ definition, getUserInfo, remap }) => [
+export const remove: ActionCreator<'user.remove'> = ({
+  definition,
+  getUserInfo,
+  refetchDemoAppMembers,
+  remap,
+}) => [
   async (data) => {
     const userInfo = getUserInfo();
     if (!userInfo?.sub) {
@@ -243,6 +258,7 @@ export const remove: ActionCreator<'user.remove'> = ({ definition, getUserInfo, 
       `${apiUrl}/api/user/apps/${appId}/accounts/${email}`,
     );
 
+    await refetchDemoAppMembers();
     return response;
   },
 ];

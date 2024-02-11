@@ -47,7 +47,7 @@ export function SideNavigation({ blockMenus, pages }: SideNavigationProps): Reac
                 url: window.location.href,
                 getMessage,
                 userInfo,
-                appMember: userInfo.appMember,
+                appMember: userInfo?.appMember,
                 context: { name },
                 locale: lang,
               }) as string)

@@ -45,7 +45,7 @@ export function AppRoutes(): ReactNode {
       <Routes>
         <Route caseSensitive element={<AppSettings />} path="/Settings" />
 
-        {(!isLoggedIn && !hasCustomLogin) || showDemoLogin ? (
+        {!isLoggedIn && (!hasCustomLogin || showDemoLogin) ? (
           <Route caseSensitive element={<Login />} path="/Login" />
         ) : null}
         {!isLoggedIn && !hasCustomRegister ? (

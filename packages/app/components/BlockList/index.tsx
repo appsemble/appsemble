@@ -22,6 +22,7 @@ import { appControllerCode, appControllerImplementations } from '../../utils/set
 import { type AppStorage } from '../../utils/storage.js';
 import { useAppDefinition } from '../AppDefinitionProvider/index.js';
 import { Block } from '../Block/index.js';
+import { useDemoAppMembers } from '../DemoAppMembersProvider/index.js';
 import { useServiceWorkerRegistration } from '../ServiceWorkerRegistrationProvider/index.js';
 import { useUser } from '../UserProvider/index.js';
 
@@ -76,6 +77,7 @@ export function BlockList({
   const { definition, revision } = useAppDefinition();
   const { isLoggedIn, logout, passwordLogin, role, setUserInfo, teams, updateTeam, userInfoRef } =
     useUser();
+  const { refetchDemoAppMembers } = useDemoAppMembers();
   const redirect = useLocationString();
 
   const cleanups = useRef<(() => void)[]>([]);
@@ -152,6 +154,7 @@ export function BlockList({
           passwordLogin,
           passwordLogout: logout,
           setUserInfo,
+          refetchDemoAppMembers,
         }),
         events: createEvents(
           ee,
@@ -181,6 +184,7 @@ export function BlockList({
     prefix,
     push,
     pushNotifications,
+    refetchDemoAppMembers,
     remap,
     setUserInfo,
     teams,
