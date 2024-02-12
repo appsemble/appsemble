@@ -1,6 +1,6 @@
 {
   "app": {
-    "description": "Prazan program je osnovni program s dvije stranice i gumbovima za premještanje između tih stranica.",
+    "description": "Prazan program je osnovni program s dvije stranice i gumbima za prebacivanje između njih.",
     "name": "Prazan program",
     "pages.example-page-a": "Primjer stranice A",
     "pages.example-page-b": "Primjer stranice B"
