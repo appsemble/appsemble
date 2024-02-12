@@ -267,6 +267,13 @@ export function createStudioConfig(argv: CliConfigOptions): Configuration {
       new GenerateSW({
         // Some of our JavaScript assets are still too big to fit within the default cache limit.
         maximumFileSizeToCacheInBytes: 3 * 2 ** 20,
+        exclude: ['index.html'],
+        runtimeCaching: [
+          {
+            urlPattern: /^\/index.html|\/$/,
+            handler: 'NetworkFirst',
+          },
+        ],
       }),
     );
   }
