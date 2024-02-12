@@ -17,6 +17,7 @@ import {
   useContext,
   useEffect,
   useMemo,
+  useRef,
   useState,
 } from 'react';
 
@@ -59,7 +60,7 @@ export function UserProvider({ children }: UserProviderProps): ReactNode {
     access_token: localStorage.access_token,
     refresh_token: localStorage.refresh_token,
   });
-  const [accessToken, setAccessToken] = useState(localStorage.access_token);
+  const accessTokenRef = useRef<string | null>(localStorage.access_token);
 
   const refreshUserInfo = useCallback(async () => {
     const { data } = await axios.get<UserInfo>('/api/connect/userinfo');
@@ -70,7 +71,7 @@ export function UserProvider({ children }: UserProviderProps): ReactNode {
   const login = useCallback((response: TokenResponse) => {
     localStorage.access_token = response.access_token;
     localStorage.refresh_token = response.refresh_token;
-    setAccessToken(response.access_token);
+    accessTokenRef.current = response.access_token;
     setTokenResponse(response);
   }, []);
 
@@ -83,7 +84,7 @@ export function UserProvider({ children }: UserProviderProps): ReactNode {
     setUser(null);
     setUserInfo(null);
     setOrganizations([]);
-    setAccessToken(null);
+    accessTokenRef.current = null;
     delete localStorage.access_token;
     delete localStorage.refresh_token;
   }, []);
@@ -101,20 +102,17 @@ export function UserProvider({ children }: UserProviderProps): ReactNode {
   );
 
   useEffect(() => {
-    if (accessToken) {
-      const interceptor = axios.interceptors.request.use((config) => {
-        // Only add the authorization headers for internal requests.
-        if (config.url.startsWith('/')) {
-          (config.headers as AxiosHeaders).set('authorization', `Bearer ${accessToken}`);
-        }
-        return config;
-      });
-
-      return () => {
-        axios.interceptors.request.eject(interceptor);
-      };
-    }
-  }, [accessToken]);
+    const interceptor = axios.interceptors.request.use((config) => {
+      // Only add the authorization headers for internal requests.
+      if (config.url.startsWith('/') && accessTokenRef.current) {
+        (config.headers as AxiosHeaders).set('authorization', `Bearer ${accessTokenRef.current}`);
+      }
+      return config;
+    });
+    return () => {
+      axios.interceptors.request.eject(interceptor);
+    };
+  }, []);
 
   useEffect(() => {
     if (!tokenResponse.access_token || !tokenResponse.refresh_token) {
@@ -123,11 +121,11 @@ export function UserProvider({ children }: UserProviderProps): ReactNode {
       return;
     }
 
-    setAccessToken(tokenResponse.access_token);
+    accessTokenRef.current = tokenResponse.access_token;
 
     const { exp } = jwtDecode<JwtPayload>(tokenResponse.access_token);
     const timeout = exp * 1e3 - REFRESH_BUFFER - Date.now();
-    const timeoutId = setTimeout(async () => {
+    const refresh = async (): Promise<void> => {
       try {
         const { data } = await axios.post<TokenResponse>('/api/refresh', {
           refresh_token: tokenResponse.refresh_token,
@@ -136,11 +134,17 @@ export function UserProvider({ children }: UserProviderProps): ReactNode {
       } catch {
         logout();
       }
-    }, timeout);
+    };
+    const timeoutId = setTimeout(refresh, timeout);
 
-    Promise.all([refreshUserInfo(), fetchOrganizations()]).finally(() => {
-      setInitialized(true);
-    });
+    // If the access token is within 1 second of expiring (just to be safe),
+    // refresh it before loading children.
+    const waitForAccessToken = exp * 1e3 < Date.now() ? refresh : Promise.resolve.bind(Promise);
+    waitForAccessToken()
+      .then(() => Promise.all([refreshUserInfo(), fetchOrganizations()]))
+      .finally(() => {
+        setInitialized(true);
+      });
 
     return () => {
       clearTimeout(timeoutId);
