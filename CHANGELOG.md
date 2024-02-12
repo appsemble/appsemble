@@ -2,6 +2,22 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.24.13](https://gitlab.com/appsemble/appsemble/-/releases/0.24.13)] - 2024-02-12
+
+### Added
+
+- Server: Add an endpoint that fetches all demo app members without security.
+- Studio: New action documentation section including code snippets.
+
+### Changed
+
+- App: Users can now directly select with which demo user to login, without logging in with
+  Appsemble first.
+
+### Fixed
+
+- App: Fixed a bug in the app side menu when the user is still not logged in.
+
 ## \[[0.24.12](https://gitlab.com/appsemble/appsemble/-/releases/0.24.12)] - 2024-02-06
 
 ### Added
