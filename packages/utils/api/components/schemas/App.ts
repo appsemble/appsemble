@@ -59,10 +59,12 @@ This doesn’t affect whether or not the app can be accessed on its own domain.
       description: 'Whether or not people who have access to the app may see the app definition.',
     },
     locked: {
-      type: 'boolean',
+      enum: ['fullLock', 'studioLock', 'unlocked'],
+      default: 'unlocked',
       description: `Determines whether this app should be locked from being updated.
-
-This must be set to \`false\` before any other changes can be made to an app.
+      If this is set to \`fullLock\`, no changes can be made to the app,
+      if this is set to \`studioLock\`, no changes can be made from the studio but updating from the CLI is possible,
+      and to make any changes from the studio, this should be set to \`unlocked\`.
 `,
     },
     template: {

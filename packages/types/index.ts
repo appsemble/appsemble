@@ -234,6 +234,11 @@ export interface TokenResponse {
   token_type: 'bearer';
 }
 
+/**
+ * A type to represent the app lock.
+ */
+export type AppLock = 'fullLock' | 'studioLock' | 'unlocked';
+
 interface BaseICSRemapper {
   /**
    * The start of the icalendar event.
@@ -1941,7 +1946,7 @@ export interface App {
   /**
    * Whether the app is currently locked.
    */
-  locked: boolean;
+  locked: AppLock;
 
   /**
    * Whether the Appsemble password login method should be shown.

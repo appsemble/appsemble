@@ -142,6 +142,14 @@
           "sentryEnvironment": {
             "type": "string",
             "description": "A custom Sentry environment to use for the app."
+          },
+          "demoMode": {
+            "type": "boolean",
+            "description": "If demoMode is specified, this will override `--demo-mode` passed on the command line."
+          },
+          "appLock": {
+            "enum": ["fullLock", "studioLock", "unlocked"],
+            "description": "Set the value of AppLock for your app."
           }
         }
       }

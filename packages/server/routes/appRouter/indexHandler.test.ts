@@ -293,7 +293,7 @@ it('should render the index page', async () => {
           "iconBackground": "#ffffff",
           "iconUrl": null,
           "id": 1,
-          "locked": false,
+          "locked": "unlocked",
           "longDescription": null,
           "path": "app",
           "sentryDsn": null,

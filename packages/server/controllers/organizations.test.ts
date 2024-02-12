@@ -279,7 +279,7 @@ describe('getOrganizationApps', () => {
           iconUrl:
             '/api/organizations/testorganization/icon?background=%23ffffff&maskable=true&updated=1970-01-01T00%3A00%3A00.000Z',
           id: appA.id,
-          locked: false,
+          locked: 'unlocked',
           path: 'test-app',
           visibility: 'private',
         },
@@ -289,7 +289,7 @@ describe('getOrganizationApps', () => {
           iconUrl:
             '/api/organizations/testorganization/icon?background=%23ffffff&maskable=true&updated=1970-01-01T00%3A00%3A00.000Z',
           id: appB.id,
-          locked: false,
+          locked: 'unlocked',
           path: 'test-app-2',
           visibility: 'unlisted',
         },
@@ -299,7 +299,7 @@ describe('getOrganizationApps', () => {
           iconUrl:
             '/api/organizations/testorganization/icon?background=%23ffffff&maskable=true&updated=1970-01-01T00%3A00%3A00.000Z',
           id: appC.id,
-          locked: false,
+          locked: 'unlocked',
           path: 'test-app-3',
           visibility: 'public',
         },

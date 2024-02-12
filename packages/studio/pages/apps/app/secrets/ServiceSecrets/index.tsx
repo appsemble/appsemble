@@ -60,7 +60,7 @@ export function ServiceSecrets(): ReactNode {
     <div className="mb-3">
       <HeaderControl
         control={
-          <Button disabled={app.locked} icon="plus" onClick={modal.enable}>
+          <Button disabled={app.locked !== 'unlocked'} icon="plus" onClick={modal.enable}>
             <FormattedMessage {...messages.addNew} />
           </Button>
         }

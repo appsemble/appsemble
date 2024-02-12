@@ -94,7 +94,7 @@ export function SecretsPage(): ReactNode {
         </Title>
         <AsyncCheckbox
           className="is-block mb-2"
-          disabled={app.locked}
+          disabled={app.locked !== 'unlocked'}
           label={<FormattedMessage {...messages.displayAppsembleOAuth2Login} />}
           name="enableAppsembleOAuth2Login"
           onChange={onClickOAuth2Checkbox}
@@ -102,7 +102,7 @@ export function SecretsPage(): ReactNode {
         />
         <AsyncCheckbox
           className="is-block mb-2"
-          disabled={app.locked}
+          disabled={app.locked !== 'unlocked'}
           label={<FormattedMessage {...messages.displayAppsembleLogin} />}
           name="enableAppsembleLogin"
           onChange={onClickCheckbox}
@@ -110,7 +110,7 @@ export function SecretsPage(): ReactNode {
         />
         <AsyncCheckbox
           className="is-block mb-2"
-          disabled={app.locked}
+          disabled={app.locked !== 'unlocked'}
           label={<FormattedMessage {...messages.displaySelfRegistration} />}
           name="enableSelfRegistration"
           onChange={onClickSelfRegistrationCheckbox}

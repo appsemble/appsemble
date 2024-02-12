@@ -645,6 +645,7 @@ export async function updateApp({
   const sentryDsn = appsembleContext.sentryDsn ?? options.sentryDsn;
   const sentryEnvironment = appsembleContext.sentryEnvironment ?? options.sentryEnvironment;
   const googleAnalyticsId = appsembleContext.googleAnalyticsId ?? options.googleAnalyticsId;
+  const { appLock } = appsembleContext;
   logger.info(`App id: ${id}`);
   logger.verbose(`App remote: ${remote}`);
   logger.verbose(`App is template: ${inspect(template, { colors: true })}`);
@@ -685,6 +686,17 @@ export async function updateApp({
   }
 
   await authenticate(remote, 'apps:write', clientCredentials);
+  if (appLock) {
+    logger.info(`Setting AppLock to ${appLock}`);
+    try {
+      await axios.post(`/api/apps/${id}/lock`, {
+        locked: appLock,
+      });
+    } catch (error) {
+      logger.error(error);
+      process.exit(1);
+    }
+  }
   let data;
   try {
     data = await axios
@@ -756,6 +768,7 @@ export async function publishApp({
   const sentryDsn = appsembleContext.sentryDsn ?? options.sentryDsn;
   const sentryEnvironment = appsembleContext.sentryEnvironment ?? options.sentryEnvironment;
   const googleAnalyticsId = appsembleContext.googleAnalyticsId ?? options.googleAnalyticsId;
+  const appLock = appsembleContext.appLock || 'unlocked';
 
   logger.verbose(`App remote: ${remote}`);
   logger.verbose(`App organization: ${organizationId}`);
@@ -774,6 +787,7 @@ export async function publishApp({
   formData.append('demoMode', String(demoMode));
   formData.append('visibility', visibility);
   formData.append('iconBackground', iconBackground);
+  formData.append('locked', appLock);
 
   if (icon) {
     const realIcon = typeof icon === 'string' ? createReadStream(icon) : icon;
