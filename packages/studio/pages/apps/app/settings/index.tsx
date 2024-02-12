@@ -141,20 +141,31 @@ export function SettingsPage(): ReactNode {
   });
 
   const onToggleLock = useConfirmation({
-    title: <FormattedMessage {...(app.locked ? messages.unlockApp : messages.lockApp)} />,
+    title: (
+      <FormattedMessage
+        {...(app.locked === 'studioLock' ? messages.unlockApp : messages.lockApp)}
+      />
+    ),
     body: (
       <FormattedMessage
-        {...(app.locked ? messages.unlockAppDescription : messages.lockAppDescription)}
+        {...(app.locked === 'studioLock'
+          ? messages.unlockAppDescription
+          : messages.lockAppDescription)}
       />
     ),
     cancelLabel: <FormattedMessage {...messages.cancel} />,
-    confirmLabel: <FormattedMessage {...(app.locked ? messages.unlockApp : messages.lockApp)} />,
+    confirmLabel: (
+      <FormattedMessage
+        {...(app.locked === 'studioLock' ? messages.unlockApp : messages.lockApp)}
+      />
+    ),
     color: 'warning',
     async action() {
       const { id, locked } = app;
       try {
-        await axios.post(`/api/apps/${id}/lock`, { locked: !locked });
-        setApp({ ...app, locked: !locked });
+        const lockedValue = locked === 'studioLock' ? 'unlocked' : 'studioLock';
+        await axios.post(`/api/apps/${id}/lock`, { locked: lockedValue });
+        setApp({ ...app, locked: lockedValue });
         push({
           body: formatMessage(locked ? messages.unlockedSuccessfully : messages.lockedSuccessfully),
           color: 'info',
@@ -170,17 +181,17 @@ export function SettingsPage(): ReactNode {
       <Content fullwidth>
         <SimpleForm defaultValues={defaultValues} onSubmit={onSubmit}>
           <SimpleFormError>{() => <FormattedMessage {...messages.updateError} />}</SimpleFormError>
-          <IconTool disabled={app.locked} />
+          <IconTool disabled={app.locked !== 'unlocked'} />
           <SimpleFormField
             component={TextAreaField}
-            disabled={app.locked}
+            disabled={app.locked !== 'unlocked'}
             help={<FormattedMessage {...messages.longDescriptionDescription} />}
             label={<FormattedMessage {...messages.longDescription} />}
             name="longDescription"
           />
           <SimpleFormField
             component={SelectField}
-            disabled={app.locked}
+            disabled={app.locked !== 'unlocked'}
             help={<FormattedMessage {...messages.visibilityDescription} />}
             label={<FormattedMessage {...messages.visibilityLabel} />}
             name="visibility"
@@ -191,7 +202,7 @@ export function SettingsPage(): ReactNode {
           </SimpleFormField>
           <SimpleFormField
             component={CheckboxField}
-            disabled={app.locked}
+            disabled={app.locked !== 'unlocked'}
             help={<FormattedMessage {...messages.showAppDefinitionDescription} />}
             label={<FormattedMessage {...messages.showAppDefinitionLabel} />}
             name="showAppDefinition"
@@ -218,7 +229,7 @@ export function SettingsPage(): ReactNode {
                 {`.${app.OrganizationId}.${window.location.host}`}
               </Button>
             }
-            disabled={app.locked}
+            disabled={app.locked !== 'unlocked'}
             help={<FormattedMessage {...messages.pathDescription} />}
             label={<FormattedMessage {...messages.path} />}
             maxLength={30}
@@ -244,7 +255,7 @@ export function SettingsPage(): ReactNode {
                 {`${window.location.protocol}//`}
               </Button>
             }
-            disabled={app.locked}
+            disabled={app.locked !== 'unlocked'}
             help={
               <FormattedMessage
                 {...messages.domainDescription}
@@ -271,7 +282,7 @@ export function SettingsPage(): ReactNode {
             }}
           />
           <SimpleFormField
-            disabled={app.locked}
+            disabled={app.locked !== 'unlocked'}
             help={<FormattedMessage {...messages.emailNameDescription} />}
             label={<FormattedMessage {...messages.emailNameLabel} />}
             maxLength={30}
@@ -279,7 +290,7 @@ export function SettingsPage(): ReactNode {
             placeholder="Appsemble"
           />
           <SimpleFormField
-            disabled={app.locked}
+            disabled={app.locked !== 'unlocked'}
             help={<FormattedMessage {...messages.googleAnalyticsIDDescription} />}
             label={<FormattedMessage {...messages.googleAnalyticsIDLabel} />}
             maxLength={15}
@@ -291,20 +302,20 @@ export function SettingsPage(): ReactNode {
             }}
           />
           <SimpleFormField
-            disabled={app.locked}
+            disabled={app.locked !== 'unlocked'}
             help={<FormattedMessage {...messages.sentryDsnDescription} />}
             label={<FormattedMessage {...messages.sentryDsnLabel} />}
             name="sentryDsn"
             type="url"
           />
           <SimpleFormField
-            disabled={app.locked}
+            disabled={app.locked !== 'unlocked'}
             help={<FormattedMessage {...messages.sentryEnvironmentDescription} />}
             label={<FormattedMessage {...messages.sentryEnvironmentLabel} />}
             name="sentryEnvironment"
           />
           <FormButtons>
-            <SimpleSubmit color="primary" disabled={app.locked} type="submit">
+            <SimpleSubmit color="primary" disabled={app.locked !== 'unlocked'} type="submit">
               <FormattedMessage {...messages.saveChanges} />
             </SimpleSubmit>
           </FormButtons>
@@ -312,18 +323,26 @@ export function SettingsPage(): ReactNode {
       </Content>
       <hr />
       <Content>
-        <Message
-          className={styles.appLock}
-          color="warning"
-          header={<FormattedMessage {...messages.appLock} />}
-        >
-          <p className="content">
-            <FormattedMessage {...messages.lockedDescription} />
-          </p>
-          <Button color="warning" icon={app.locked ? 'unlock' : 'lock'} onClick={onToggleLock}>
-            <FormattedMessage {...(app.locked ? messages.unlockApp : messages.lockApp)} />
-          </Button>
-        </Message>
+        {app.locked === 'fullLock' ? null : (
+          <Message
+            className={styles.appLock}
+            color="warning"
+            header={<FormattedMessage {...messages.appLock} />}
+          >
+            <p className="content">
+              <FormattedMessage {...messages.lockedDescription} />
+            </p>
+            <Button
+              color="warning"
+              icon={app.locked === 'studioLock' ? 'unlock' : 'lock'}
+              onClick={onToggleLock}
+            >
+              <FormattedMessage
+                {...(app.locked === 'studioLock' ? messages.unlockApp : messages.lockApp)}
+              />
+            </Button>
+          </Message>
+        )}
         <Message
           className={styles.dangerZone}
           color="danger"
@@ -332,7 +351,12 @@ export function SettingsPage(): ReactNode {
           <p className="content">
             <FormattedMessage {...messages.deleteHelp} />
           </p>
-          <Button color="danger" disabled={app.locked} icon="trash-alt" onClick={onDelete}>
+          <Button
+            color="danger"
+            disabled={app.locked !== 'unlocked'}
+            icon="trash-alt"
+            onClick={onDelete}
+          >
             <FormattedMessage {...messages.delete} />
           </Button>
         </Message>

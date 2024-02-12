@@ -756,6 +756,9 @@ export async function setAppLock(ctx: Context): Promise<void> {
   });
 
   assertKoaError(!app, ctx, 404, 'App not found');
+  if (app.locked === 'fullLock' && !ctx.client) {
+    throwKoaError(ctx, 403, 'This app can only be unlocked from the CLI.');
+  }
 
   await checkRole(ctx, app.OrganizationId, Permission.EditAppSettings);
   await app.update({ locked });

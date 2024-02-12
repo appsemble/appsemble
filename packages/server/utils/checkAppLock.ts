@@ -12,7 +12,9 @@ import { type App } from '../models/index.js';
  * @param app The app to check against
  */
 export function checkAppLock(ctx: Context, app: App): void {
-  if (app.locked && !ctx.request.body?.force) {
+  if (app.locked === 'studioLock' && !ctx.client) {
+    throwKoaError(ctx, 403, 'App is currently locked.');
+  } else if (app.locked === 'fullLock' && !ctx.request.body?.force) {
     throwKoaError(ctx, 403, 'App is currently locked.');
   }
 }

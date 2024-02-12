@@ -124,7 +124,7 @@ export function TranslationsPage(): ReactNode {
           color="danger"
           disabled={
             submitting ||
-            app.locked ||
+            app.locked !== 'unlocked' ||
             !selectedLanguage ||
             selectedLanguage === (app.definition.defaultLanguage ?? 'en')
           }
@@ -133,7 +133,7 @@ export function TranslationsPage(): ReactNode {
         />
         <Button
           color="success"
-          disabled={submitting || app.locked}
+          disabled={submitting || app.locked !== 'unlocked'}
           icon="plus"
           onClick={modal.enable}
         />

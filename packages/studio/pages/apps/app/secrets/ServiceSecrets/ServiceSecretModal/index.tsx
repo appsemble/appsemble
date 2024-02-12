@@ -129,14 +129,14 @@ export function ServiceSecretsModal({
         />
       </p>
       <SimpleFormField
-        disabled={locked}
+        disabled={locked !== 'unlocked'}
         help={<FormattedMessage {...messages.nameHelp} />}
         label={<FormattedMessage {...messages.nameLabel} />}
         name="name"
       />
       <SimpleFormField
         component={TagsField}
-        disabled={locked}
+        disabled={locked !== 'unlocked'}
         help={<FormattedMessage {...messages.serviceSecretHelp} />}
         label={<FormattedMessage {...messages.serviceSecretLabel} />}
         name="urlPatterns"
@@ -146,7 +146,7 @@ export function ServiceSecretsModal({
       <SimpleFormField
         className={styles.select}
         component={SelectField}
-        disabled={locked}
+        disabled={locked !== 'unlocked'}
         fullWidth
         help={<FormattedMessage {...messages.methodHelp} />}
         label={<FormattedMessage {...messages.methodLabel} />}
@@ -161,7 +161,7 @@ export function ServiceSecretsModal({
         <option value="custom-header">Header based authentication</option>
         <option value="query-parameter">Query parameter</option>
       </SimpleFormField>
-      <SwitchField disabled={locked} method={selectedMethod} />
+      <SwitchField disabled={locked !== 'unlocked'} method={selectedMethod} />
       {onDeleted ? (
         <Button className={styles.deleteButton} color="danger" icon="trash" onClick={onDelete}>
           <FormattedMessage {...messages.deleteButton} />

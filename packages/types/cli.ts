@@ -1,4 +1,5 @@
 import { type AppVisibility } from './app.js';
+import { type AppLock } from './index.js';
 
 export interface AppsembleContext {
   /**
@@ -53,6 +54,11 @@ export interface AppsembleContext {
    * If `demoMode` is specified, this will override `--demo-mode` passed on the command line.
    */
   demoMode?: boolean;
+
+  /**
+   * Set the value of AppLock for your app.
+   */
+  appLock?: AppLock;
 }
 
 export interface AppsembleRC {

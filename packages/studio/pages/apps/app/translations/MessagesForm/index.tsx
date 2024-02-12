@@ -109,7 +109,7 @@ export function MessagesForm({
             {sortedMessageIds.map(([id, defaultMessage]) => (
               <SimpleFormField
                 component={TextAreaField}
-                disabled={app.locked}
+                disabled={app.locked !== 'unlocked'}
                 key={id}
                 label={id}
                 name={id}
@@ -125,7 +125,7 @@ export function MessagesForm({
           {Object.entries(defaultAppMessages.messages.app).map(([id, defaultMessage]) => (
             <SimpleFormField
               component={TextAreaField}
-              disabled={app.locked}
+              disabled={app.locked !== 'unlocked'}
               key={id}
               label={id}
               name={id}
@@ -144,7 +144,7 @@ export function MessagesForm({
                   {Object.entries(message).map(([messageId, defaultMessage]) => (
                     <SimpleFormField
                       component={TextAreaField}
-                      disabled={app.locked}
+                      disabled={app.locked !== 'unlocked'}
                       key={`${blockId}.${version}.${messageId}`}
                       label={`${blockId}/${version}/${messageId}`}
                       name={messageId}
@@ -163,7 +163,7 @@ export function MessagesForm({
           {Object.entries(defaultAppMessages.messages.core).map(([id, defaultMessage]) => (
             <SimpleFormField
               component={TextAreaField}
-              disabled={app.locked}
+              disabled={app.locked !== 'unlocked'}
               key={id}
               label={id}
               name={id}
@@ -174,7 +174,10 @@ export function MessagesForm({
         </SimpleFormObject>
       </Collapsible>
       <FormButtons>
-        <SimpleSubmit className={`${styles.submitButton} mb-4`} disabled={app.locked}>
+        <SimpleSubmit
+          className={`${styles.submitButton} mb-4`}
+          disabled={app.locked !== 'unlocked'}
+        >
           <FormattedMessage {...messages.submit} />
         </SimpleSubmit>
       </FormButtons>

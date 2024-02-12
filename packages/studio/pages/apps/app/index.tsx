@@ -94,8 +94,12 @@ export function AppRoutes(): ReactNode {
       <MenuSection
         label={
           <>
-            {app.locked ? <Icon icon="lock" title={formatMessage(messages.locked)} /> : null}
-            <span className={classNames({ 'pl-1': !app.locked })}>{app.definition.name}</span>
+            {app.locked === 'unlocked' ? null : (
+              <Icon icon="lock" title={formatMessage(messages.locked)} />
+            )}
+            <span className={classNames({ 'pl-1': app.locked === 'unlocked' })}>
+              {app.definition.name}
+            </span>
           </>
         }
       >

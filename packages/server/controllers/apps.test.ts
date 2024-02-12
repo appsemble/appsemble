@@ -149,7 +149,7 @@ describe('queryApps', () => {
           "iconBackground": "#ffffff",
           "iconUrl": null,
           "id": 1,
-          "locked": false,
+          "locked": "unlocked",
           "longDescription": null,
           "path": "test-app",
           "sentryDsn": null,
@@ -180,7 +180,7 @@ describe('queryApps', () => {
           "iconBackground": "#ffffff",
           "iconUrl": null,
           "id": 2,
-          "locked": false,
+          "locked": "unlocked",
           "longDescription": null,
           "path": "another-app",
           "sentryDsn": null,
@@ -256,7 +256,7 @@ describe('queryApps', () => {
           "iconBackground": "#ffffff",
           "iconUrl": null,
           "id": 1,
-          "locked": false,
+          "locked": "unlocked",
           "longDescription": null,
           "path": "test-app",
           "sentryDsn": null,
@@ -348,7 +348,7 @@ describe('queryApps', () => {
           "iconBackground": "#ffffff",
           "iconUrl": null,
           "id": 1,
-          "locked": false,
+          "locked": "unlocked",
           "longDescription": null,
           "path": "test-app",
           "rating": {
@@ -383,7 +383,7 @@ describe('queryApps', () => {
           "iconBackground": "#ffffff",
           "iconUrl": null,
           "id": 3,
-          "locked": false,
+          "locked": "unlocked",
           "longDescription": null,
           "path": "yet-another-app",
           "rating": {
@@ -418,7 +418,7 @@ describe('queryApps', () => {
           "iconBackground": "#ffffff",
           "iconUrl": null,
           "id": 2,
-          "locked": false,
+          "locked": "unlocked",
           "longDescription": null,
           "path": "another-app",
           "sentryDsn": null,
@@ -487,7 +487,7 @@ describe('getAppById', () => {
         "iconBackground": "#ffffff",
         "iconUrl": null,
         "id": 1,
-        "locked": false,
+        "locked": "unlocked",
         "longDescription": null,
         "path": "test-app",
         "screenshotUrls": [],
@@ -568,7 +568,7 @@ describe('getAppById', () => {
         "iconBackground": "#ffffff",
         "iconUrl": null,
         "id": 1,
-        "locked": false,
+        "locked": "unlocked",
         "longDescription": null,
         "path": "test-app",
         "screenshotUrls": [],
@@ -620,7 +620,7 @@ describe('getAppById', () => {
         "iconBackground": "#ffffff",
         "iconUrl": "/api/apps/1/icon?maskable=true&updated=1970-01-01T00%3A00%3A00.000Z",
         "id": 1,
-        "locked": false,
+        "locked": "unlocked",
         "longDescription": null,
         "path": "test-app",
         "screenshotUrls": [],
@@ -675,7 +675,7 @@ describe('getAppById', () => {
         "iconBackground": "#ffffff",
         "iconUrl": "/api/organizations/testorganization/icon?background=%23ffffff&maskable=true&updated=1970-01-01T00%3A00%3A00.000Z",
         "id": 1,
-        "locked": false,
+        "locked": "unlocked",
         "longDescription": null,
         "path": "test-app",
         "screenshotUrls": [],
@@ -726,7 +726,7 @@ describe('getAppById', () => {
         "iconBackground": "#ffffff",
         "iconUrl": null,
         "id": 1,
-        "locked": false,
+        "locked": "unlocked",
         "longDescription": null,
         "path": "test-app",
         "screenshotUrls": [],
@@ -777,7 +777,7 @@ describe('getAppById', () => {
         "iconBackground": "#ffffff",
         "iconUrl": null,
         "id": 1,
-        "locked": false,
+        "locked": "unlocked",
         "longDescription": null,
         "path": "test-app",
         "screenshotUrls": [],
@@ -831,7 +831,7 @@ describe('getAppById', () => {
         "iconBackground": "#ffffff",
         "iconUrl": null,
         "id": 1,
-        "locked": false,
+        "locked": "unlocked",
         "longDescription": null,
         "path": "test-app",
         "screenshotUrls": [],
@@ -914,7 +914,7 @@ describe('queryMyApps', () => {
           "iconBackground": "#ffffff",
           "iconUrl": null,
           "id": 1,
-          "locked": false,
+          "locked": "unlocked",
           "longDescription": null,
           "path": "test-app",
           "sentryDsn": null,
@@ -952,7 +952,7 @@ describe('queryMyApps', () => {
           "iconBackground": "#ffffff",
           "iconUrl": null,
           "id": 1,
-          "locked": false,
+          "locked": "unlocked",
           "longDescription": null,
           "path": "test-app",
           "sentryDsn": null,
@@ -983,7 +983,7 @@ describe('queryMyApps', () => {
           "iconBackground": "#ffffff",
           "iconUrl": null,
           "id": 2,
-          "locked": false,
+          "locked": "unlocked",
           "longDescription": null,
           "path": "test-app-b",
           "sentryDsn": null,
@@ -1054,7 +1054,7 @@ describe('createApp', () => {
         "iconBackground": "#ffffff",
         "iconUrl": "/api/apps/1/icon?maskable=true&updated=1970-01-01T00%3A00%3A00.000Z",
         "id": 1,
-        "locked": false,
+        "locked": "unlocked",
         "longDescription": null,
         "path": "test-app",
         "screenshotUrls": [],
@@ -1135,7 +1135,7 @@ describe('createApp', () => {
         "iconBackground": "#ffffff",
         "iconUrl": "/api/apps/1/icon?maskable=true&updated=1970-01-01T00%3A00%3A00.000Z",
         "id": 1,
-        "locked": false,
+        "locked": "unlocked",
         "longDescription": null,
         "path": "test-app",
         "screenshotUrls": [
@@ -1232,7 +1232,7 @@ describe('createApp', () => {
         "iconBackground": "#ffffff",
         "iconUrl": "/api/apps/1/icon?maskable=true&updated=1970-01-01T00%3A00%3A00.000Z",
         "id": 1,
-        "locked": false,
+        "locked": "unlocked",
         "longDescription": null,
         "path": "test-app",
         "screenshotUrls": [],
@@ -1805,7 +1805,7 @@ describe('createApp', () => {
         "iconBackground": "#ffffff",
         "iconUrl": null,
         "id": 2,
-        "locked": false,
+        "locked": "unlocked",
         "longDescription": null,
         "path": "test-app-2",
         "screenshotUrls": [],
@@ -1893,7 +1893,7 @@ describe('createApp', () => {
         "iconBackground": "#ffffff",
         "iconUrl": null,
         "id": 12,
-        "locked": false,
+        "locked": "unlocked",
         "longDescription": null,
         "path": StringMatching /test-app-\\(\\\\w\\)\\{10\\}/,
         "screenshotUrls": [],
@@ -1975,7 +1975,7 @@ describe('createApp', () => {
         "iconBackground": "#ffffff",
         "iconUrl": null,
         "id": 1,
-        "locked": false,
+        "locked": "unlocked",
         "longDescription": null,
         "path": "foobar",
         "screenshotUrls": [],
@@ -2506,7 +2506,7 @@ describe('createApp', () => {
           "iconBackground": "#ffffff",
           "iconUrl": null,
           "id": 1,
-          "locked": false,
+          "locked": "unlocked",
           "longDescription": null,
           "path": "test-app",
           "screenshotUrls": [],
@@ -2845,7 +2845,7 @@ describe('patchApp', () => {
         "iconBackground": "#ffffff",
         "iconUrl": null,
         "id": 1,
-        "locked": false,
+        "locked": "unlocked",
         "longDescription": null,
         "path": "test-app",
         "screenshotUrls": [],
@@ -2917,7 +2917,7 @@ describe('patchApp', () => {
         "iconBackground": "#ffffff",
         "iconUrl": null,
         "id": 1,
-        "locked": false,
+        "locked": "unlocked",
         "longDescription": null,
         "path": "test-app",
         "screenshotUrls": [],
@@ -2984,7 +2984,7 @@ describe('patchApp', () => {
       vapidPublicKey: 'a',
       vapidPrivateKey: 'b',
       OrganizationId: organization.id,
-      locked: true,
+      locked: 'fullLock',
     });
 
     const form = createFormData({
@@ -3022,7 +3022,7 @@ describe('patchApp', () => {
       vapidPrivateKey: 'b',
       OrganizationId: organization.id,
       OrganizationName: 'Test Organization',
-      locked: true,
+      locked: 'fullLock',
     });
 
     const form = createFormData({
@@ -3066,7 +3066,7 @@ describe('patchApp', () => {
         "iconBackground": "#ffffff",
         "iconUrl": null,
         "id": 1,
-        "locked": true,
+        "locked": "fullLock",
         "longDescription": null,
         "path": "bar",
         "screenshotUrls": [],
@@ -3123,7 +3123,7 @@ describe('patchApp', () => {
         "iconBackground": "#ffffff",
         "iconUrl": null,
         "id": 1,
-        "locked": false,
+        "locked": "unlocked",
         "longDescription": null,
         "path": "foo",
         "screenshotUrls": [],
@@ -3180,7 +3180,7 @@ describe('patchApp', () => {
         "iconBackground": "#ffffff",
         "iconUrl": null,
         "id": 1,
-        "locked": false,
+        "locked": "unlocked",
         "longDescription": null,
         "path": "foo",
         "screenshotUrls": [],
@@ -3242,7 +3242,7 @@ describe('patchApp', () => {
         "iconBackground": "#ffffff",
         "iconUrl": null,
         "id": 1,
-        "locked": false,
+        "locked": "unlocked",
         "longDescription": null,
         "path": "foo",
         "screenshotUrls": [],
@@ -3864,7 +3864,7 @@ describe('patchApp', () => {
         "iconBackground": "#ffffff",
         "iconUrl": null,
         "id": 1,
-        "locked": false,
+        "locked": "unlocked",
         "longDescription": null,
         "path": "bar",
         "screenshotUrls": [],
@@ -4058,7 +4058,7 @@ describe('patchApp', () => {
         "iconBackground": "#ffffff",
         "iconUrl": null,
         "id": 1,
-        "locked": false,
+        "locked": "unlocked",
         "longDescription": null,
         "path": "bar",
         "screenshotUrls": [],
@@ -4104,7 +4104,7 @@ describe('patchApp', () => {
         "iconBackground": "#ffffff",
         "iconUrl": null,
         "id": 1,
-        "locked": false,
+        "locked": "unlocked",
         "longDescription": null,
         "path": "bar",
         "screenshotUrls": [],
@@ -4123,7 +4123,7 @@ describe('patchApp', () => {
 });
 
 describe('setAppLock', () => {
-  it('should set the locked property to true', async () => {
+  it('should set the locked property to studioLock', async () => {
     authorizeStudio();
     const app = await App.create({
       definition: { name: 'Test App', defaultPage: 'Test Page' },
@@ -4133,13 +4133,13 @@ describe('setAppLock', () => {
       OrganizationId: organization.id,
     });
 
-    const response = await request.post(`/api/apps/${app.id}/lock`, { locked: true });
+    const response = await request.post(`/api/apps/${app.id}/lock`, { locked: 'studioLock' });
     await app.reload();
     expect(response).toMatchInlineSnapshot('HTTP/1.1 204 No Content');
-    expect(app.locked).toBe(true);
+    expect(app.locked).toBe('studioLock');
   });
 
-  it('should set the locked property to false', async () => {
+  it('should set the locked property to unlocked', async () => {
     authorizeStudio();
     const app = await App.create({
       definition: { name: 'Test App', defaultPage: 'Test Page' },
@@ -4147,13 +4147,71 @@ describe('setAppLock', () => {
       vapidPublicKey: 'a',
       vapidPrivateKey: 'b',
       OrganizationId: organization.id,
-      locked: true,
+      locked: 'studioLock',
     });
 
-    const response = await request.post(`/api/apps/${app.id}/lock`, { locked: false });
+    const response = await request.post(`/api/apps/${app.id}/lock`, { locked: 'unlocked' });
     await app.reload();
     expect(response).toMatchInlineSnapshot('HTTP/1.1 204 No Content');
-    expect(app.locked).toBe(false);
+    expect(app.locked).toBe('unlocked');
+  });
+
+  it('should set the locked property to fullLock', async () => {
+    authorizeStudio();
+    const app = await App.create({
+      definition: { name: 'Test App', defaultPage: 'Test Page' },
+      path: 'test-app',
+      vapidPublicKey: 'a',
+      vapidPrivateKey: 'b',
+      OrganizationId: organization.id,
+      locked: 'studioLock',
+    });
+
+    const response = await request.post(`/api/apps/${app.id}/lock`, { locked: 'fullLock' });
+    await app.reload();
+    expect(response).toMatchInlineSnapshot('HTTP/1.1 204 No Content');
+    expect(app.locked).toBe('fullLock');
+  });
+
+  it('should not be possible to change fullLock except from CLI', async () => {
+    authorizeStudio();
+    const app = await App.create({
+      definition: { name: 'Test App', defaultPage: 'Test Page' },
+      path: 'test-app',
+      vapidPublicKey: 'a',
+      vapidPrivateKey: 'b',
+      OrganizationId: organization.id,
+      locked: 'fullLock',
+    });
+
+    const response = await request.post(`/api/apps/${app.id}/lock`, { locked: 'unlocked' });
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 403 Forbidden
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "error": "Forbidden",
+        "message": "This app can only be unlocked from the CLI.",
+        "statusCode": 403,
+      }
+    `);
+  });
+
+  it('shall allow to change fullLock from CLI', async () => {
+    authorizeClientCredentials('apps:write');
+    const app = await App.create({
+      definition: { name: 'Test App', defaultPage: 'Test Page' },
+      path: 'test-app',
+      vapidPublicKey: 'a',
+      vapidPrivateKey: 'b',
+      OrganizationId: organization.id,
+      locked: 'fullLock',
+    });
+
+    const response = await request.post(`/api/apps/${app.id}/lock`, { locked: 'unlocked' });
+    await app.reload();
+    expect(response).toMatchInlineSnapshot('HTTP/1.1 204 No Content');
+    expect(app.locked).toBe('unlocked');
   });
 
   it('should not be possible to set the lock status as an app editor', async () => {
@@ -4166,10 +4224,10 @@ describe('setAppLock', () => {
       vapidPublicKey: 'a',
       vapidPrivateKey: 'b',
       OrganizationId: organization.id,
-      locked: true,
+      locked: 'studioLock',
     });
 
-    const response = await request.post(`/api/apps/${app.id}/lock`, { locked: false });
+    const response = await request.post(`/api/apps/${app.id}/lock`, { locked: 'unlocked' });
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 403 Forbidden
       Content-Type: application/json; charset=utf-8
@@ -5431,7 +5489,7 @@ describe('setAppBlockStyle', () => {
         vapidPublicKey: 'a',
         vapidPrivateKey: 'b',
         OrganizationId: organization.id,
-        locked: true,
+        locked: 'studioLock',
       },
       { raw: true },
     );

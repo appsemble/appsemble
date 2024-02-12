@@ -96,7 +96,7 @@ export function SamlModal({ onDeleted, onSubmit, secret, toggle }: AppSecretCard
       title={<FormattedMessage {...messages.modalTitle} />}
     >
       <SimpleFormField
-        disabled={app.locked}
+        disabled={app.locked !== 'unlocked'}
         help={<FormattedMessage {...messages.nameHelp} />}
         icon="user"
         label={<FormattedMessage {...messages.nameLabel} />}
@@ -104,7 +104,7 @@ export function SamlModal({ onDeleted, onSubmit, secret, toggle }: AppSecretCard
         required
       />
       <SimpleFormField
-        disabled={app.locked}
+        disabled={app.locked !== 'unlocked'}
         help={<FormattedMessage {...messages.iconHelp} />}
         icon="image"
         label={<FormattedMessage {...messages.iconLabel} />}
@@ -112,7 +112,7 @@ export function SamlModal({ onDeleted, onSubmit, secret, toggle }: AppSecretCard
         required
       />
       <SimpleFormField
-        disabled={app.locked}
+        disabled={app.locked !== 'unlocked'}
         help={<FormattedMessage {...messages.ssoUrlHelp} />}
         icon="user"
         label={<FormattedMessage {...messages.ssoUrlLabel} />}
@@ -123,7 +123,7 @@ export function SamlModal({ onDeleted, onSubmit, secret, toggle }: AppSecretCard
         validityMessages={{ typeMismatch: <FormattedMessage {...messages.badUrl} /> }}
       />
       <SimpleFormField
-        disabled={app.locked}
+        disabled={app.locked !== 'unlocked'}
         help={<FormattedMessage {...messages.idpEntityIdHelp} />}
         icon="code"
         label={<FormattedMessage {...messages.idpEntityIdLabel} />}
@@ -134,7 +134,7 @@ export function SamlModal({ onDeleted, onSubmit, secret, toggle }: AppSecretCard
       />
       <SimpleFormField
         datalist={['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress']}
-        disabled={app.locked}
+        disabled={app.locked !== 'unlocked'}
         help={<FormattedMessage {...messages.emailAttributeHelp} />}
         icon="envelope"
         label={<FormattedMessage {...messages.emailAttributeLabel} />}
@@ -145,7 +145,7 @@ export function SamlModal({ onDeleted, onSubmit, secret, toggle }: AppSecretCard
           'http://schemas.microsoft.com/identity/claims/displayname',
           'http://schemas.microsoft.com/identity/claims/name',
         ]}
-        disabled={app.locked}
+        disabled={app.locked !== 'unlocked'}
         help={<FormattedMessage {...messages.nameAttributeHelp} />}
         icon="user"
         label={<FormattedMessage {...messages.nameAttributeLabel} />}
@@ -153,7 +153,7 @@ export function SamlModal({ onDeleted, onSubmit, secret, toggle }: AppSecretCard
       />
       <SimpleFormField
         datalist={['http://schemas.microsoft.com/identity/claims/objectidentifier']}
-        disabled={app.locked}
+        disabled={app.locked !== 'unlocked'}
         help={<FormattedMessage {...messages.objectIdAttributeHelp} />}
         icon="user"
         label={<FormattedMessage {...messages.objectIdAttributeLabel} />}
@@ -162,7 +162,7 @@ export function SamlModal({ onDeleted, onSubmit, secret, toggle }: AppSecretCard
       <SimpleFormField
         className={styles.certificate}
         component={TextAreaField}
-        disabled={app.locked}
+        disabled={app.locked !== 'unlocked'}
         help={<FormattedMessage {...messages.idpCertificateHelp} />}
         label={<FormattedMessage {...messages.idpCertificateLabel} />}
         name="idpCertificate"
@@ -198,7 +198,7 @@ export function SamlModal({ onDeleted, onSubmit, secret, toggle }: AppSecretCard
         component={FormOutput}
         copyErrorMessage={formatMessage(messages.spCertificateCopyError)}
         copySuccessMessage={formatMessage(messages.spCertificateCopySuccess)}
-        disabled={app.locked}
+        disabled={app.locked !== 'unlocked'}
         help={<FormattedMessage {...messages.spCertificateHelp} />}
         label={<FormattedMessage {...messages.spCertificateLabel} />}
         multiline

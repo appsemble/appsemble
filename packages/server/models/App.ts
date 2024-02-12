@@ -1,5 +1,6 @@
 import {
   type AppDefinition,
+  type AppLock,
   type AppsembleMessages,
   type App as AppType,
   type AppVisibility,
@@ -118,9 +119,9 @@ export class App extends Model {
   @Column(DataType.STRING)
   vapidPrivateKey: string;
 
-  @Default(false)
-  @Column(DataType.BOOLEAN)
-  locked: boolean;
+  @Default('unlocked')
+  @Column(DataType.ENUM('fullLock', 'studioLock', 'unlocked'))
+  locked: AppLock;
 
   @Default(true)
   @Column(DataType.BOOLEAN)
@@ -262,7 +263,7 @@ export class App extends Model {
       googleAnalyticsID: this.googleAnalyticsID,
       path: this.path,
       visibility: this.visibility,
-      locked: Boolean(this.locked),
+      locked: this.locked || 'unlocked',
       hasIcon: this.get('hasIcon') ?? Boolean(this.icon),
       hasMaskableIcon: this.get('hasMaskableIcon') ?? Boolean(this.maskableIcon),
       iconBackground: this.iconBackground || '#ffffff',

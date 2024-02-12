@@ -415,7 +415,7 @@ export default function EditPage(): ReactNode {
 
   const disabled = Boolean(
     pristine ||
-      app.locked ||
+      app.locked !== 'unlocked' ||
       appDefinitionErrorCount ||
       coreStyleErrorCount ||
       sharedStyleErrorCount,
@@ -588,7 +588,7 @@ export default function EditPage(): ReactNode {
             className={styles.editor}
             onChange={onMonacoChange}
             onSave={onSave}
-            readOnly={app.locked}
+            readOnly={app.locked !== 'unlocked'}
             ref={editorRef}
             showDiagnostics
             {...monacoProps}
