@@ -43,7 +43,7 @@ export interface AppListControlsProps {
 }
 
 export function AppListControls({
-  actionControl: actionButton = <CreateAppButton className="" />,
+  actionControl: actionButton = <CreateAppButton />,
   actionControlImport: actionImportButton = <ImportAppButton />,
   filter,
   onFilterChange,
@@ -121,19 +121,21 @@ export function AppListControls({
         {userInfo ? (
           <>
             {actionButton || null}
-            <div className={`dropdown ${isActive ? 'is-active' : ''} is-pulled-right is-right`}>
-              <div className="dropdown-trigger">
-                <Button
-                  aria-controls="dropdown-trigger"
-                  aria-haspopup="true"
-                  icon="chevron-down"
-                  onClick={toggle}
-                />
+            {actionImportButton ? (
+              <div className={`dropdown ${isActive ? 'is-active' : ''} is-pulled-right is-right`}>
+                <div className="dropdown-trigger">
+                  <Button
+                    aria-controls="dropdown-trigger"
+                    aria-haspopup="true"
+                    icon={isActive ? 'chevron-up' : 'chevron-down'}
+                    onClick={toggle}
+                  />
+                </div>
+                <div className="dropdown-menu" role="menu">
+                  <div className="dropdown-content">{actionImportButton || null}</div>
+                </div>
               </div>
-              <div className="dropdown-menu" role="menu">
-                <div className="dropdown-content">{actionImportButton || null}</div>
-              </div>
-            </div>
+            ) : null}
           </>
         ) : null}
       </div>

@@ -18,7 +18,7 @@ import { messages } from './messages.js';
 import { useUser } from '../../../../components/UserProvider/index.js';
 import { checkRole } from '../../../../utils/checkRole.js';
 
-export function ImportAppButton(): ReactNode {
+export function ImportAppButton({ className }: { readonly className?: string }): ReactNode {
   const { organizations } = useUser();
   const [uploadingImportFile, setUploadingImportFile] = useState<File>(null);
 
@@ -71,7 +71,11 @@ export function ImportAppButton(): ReactNode {
   }, []);
   return (
     <>
-      <Button disabled={createOrganizations?.length === 0} onClick={openModal}>
+      <Button
+        className={className}
+        disabled={createOrganizations?.length === 0}
+        onClick={openModal}
+      >
         <FormattedMessage {...messages.importFile} />
       </Button>
       <ModalCard
