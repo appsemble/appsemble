@@ -39,7 +39,11 @@ _Extra options:_
 - **(day of month)`L`**: last day of the month.
 
 > Note: the current implementation of cron jobs runs jobs from the past five minutes every five
-> minutes. This means that running the job at e.g. 14:01 will not run it at 14:01, but at 14:05.
+> minutes. This means that running the job at e.g. 14:01 will not run it at 14:01, but at about
+> 14:05. It's recommended to specify a cron job to run more than 5 minutes before it's supposed to
+> finish to be certain that a job is scheduled on time. Let's say you want the job to finish before
+> 14:00, then it's recommended to be scheduled between `51 13 * * *` and `54 13 * * *` as other jobs
+> may run first.
 
 ## Actions
 
