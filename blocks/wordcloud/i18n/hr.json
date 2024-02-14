@@ -2,5 +2,5 @@
   "empty": "Nema podataka za prikaz",
   "error": "Dogodila se greška tijekom učitavanja podataka.",
   "loading": "Učitavanje …",
-  "unsupported": "Tvoj preglednik ne podržava prikaz bloka pojmova!"
+  "unsupported": "Tvoj preglednik ne podržava blok wordcloud!"
 }

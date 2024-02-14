@@ -1,10 +1,10 @@
 {
   "app": {
     "app.roles.User": "Korisnik",
-    "app.roles.User.description": "Korisnik koji čuva vlastite napomene.",
-    "description": "Sačuvaj osobne napomene",
-    "name": "Napomene",
-    "pages.notes": "Napomene"
+    "app.roles.User.description": "Korisnik koji zapisuje svoje bilješke.",
+    "description": "Zapiši osobne bilješke",
+    "name": "Bilješke",
+    "pages.notes": "Bilješke"
   },
   "messageIds": {
     "body": "Sadržaj",

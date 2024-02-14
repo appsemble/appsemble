@@ -10,7 +10,7 @@
   "messageIds": {
     "date": "Datum",
     "location": "Mjesto",
-    "notes": "Napomene",
+    "notes": "Bilješke",
     "notesExample": "Primjer: bicikl u grmlju",
     "photos": "Slike",
     "process": "Postupak"
