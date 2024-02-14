@@ -279,3 +279,35 @@ export function processResourceBody(
 
   return [resource, preparedAssets, knownAssetIds.filter((id) => !reusedAssets.has(id))];
 }
+
+export function firstRecursiveReplace(
+  input: unknown,
+  targetValue: string,
+  newValue: string,
+): [resource: any, replaced: boolean] {
+  if (!input) {
+    return [input, false];
+  }
+
+  if (input === targetValue) {
+    return [newValue, true];
+  }
+
+  if (Array.isArray(input)) {
+    for (const [index, value] of input.entries()) {
+      const [resource, replaced] = firstRecursiveReplace(value, targetValue, newValue);
+      if (replaced) {
+        return [input.with(index, resource), replaced];
+      }
+    }
+  }
+
+  if (typeof input === 'object') {
+    for (const [key, value] of Object.entries(input)) {
+      const [resource, replaced] = firstRecursiveReplace(value, targetValue, newValue);
+      if (replaced) {
+        return [{ [key]: resource, ...input }, replaced];
+      }
+    }
+  }
+}

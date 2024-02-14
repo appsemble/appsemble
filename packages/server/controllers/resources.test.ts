@@ -3437,6 +3437,93 @@ describe('createResource', () => {
       ]
     `);
   });
+
+  it('should create seed resources and ephemeral resources with assets in demo apps', async () => {
+    authorizeStudio();
+    await app.update({
+      demoMode: true,
+    });
+
+    const response = await request.post<ResourceType>(
+      `/api/apps/${app.id}/resources/testAssets`,
+      createFormData({
+        resource: { file: '0' },
+        assets: Buffer.from('Test resource a'),
+      }),
+    );
+
+    expect(response).toMatchInlineSnapshot(
+      {
+        data: {
+          $author: { id: expect.any(String) },
+          file: expect.stringMatching(/^[0-f]{8}(?:-[0-f]{4}){3}-[0-f]{12}$/),
+        },
+      },
+      `
+      HTTP/1.1 201 Created
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "$author": {
+          "id": Any<String>,
+          "name": "Test User",
+        },
+        "$created": "1970-01-01T00:00:00.000Z",
+        "$ephemeral": true,
+        "$updated": "1970-01-01T00:00:00.000Z",
+        "file": StringMatching /\\^\\[0-f\\]\\{8\\}\\(\\?:-\\[0-f\\]\\{4\\}\\)\\{3\\}-\\[0-f\\]\\{12\\}\\$/,
+        "id": 2,
+      }
+    `,
+    );
+
+    const seedResource = await Resource.findOne({
+      where: {
+        AppId: app.id,
+        seed: true,
+        ephemeral: false,
+      },
+    });
+    expect(seedResource.toJSON()).toMatchInlineSnapshot(
+      {
+        file: expect.stringMatching(/^[0-f]{8}(?:-[0-f]{4}){3}-[0-f]{12}$/),
+      },
+      `
+      {
+        "$created": "1970-01-01T00:00:00.000Z",
+        "$updated": "1970-01-01T00:00:00.000Z",
+        "file": StringMatching /\\^\\[0-f\\]\\{8\\}\\(\\?:-\\[0-f\\]\\{4\\}\\)\\{3\\}-\\[0-f\\]\\{12\\}\\$/,
+        "id": 1,
+      }
+    `,
+    );
+
+    const ephemeralResource = await Resource.findAll({
+      where: {
+        AppId: app.id,
+        seed: false,
+        ephemeral: true,
+      },
+    });
+    expect(ephemeralResource.map((r) => r.toJSON())).toMatchInlineSnapshot(
+      [
+        {
+          file: expect.stringMatching(/^[0-f]{8}(?:-[0-f]{4}){3}-[0-f]{12}$/),
+        },
+      ],
+      `
+      [
+        {
+          "$created": "1970-01-01T00:00:00.000Z",
+          "$ephemeral": true,
+          "$updated": "1970-01-01T00:00:00.000Z",
+          "file": StringMatching /\\^\\[0-f\\]\\{8\\}\\(\\?:-\\[0-f\\]\\{4\\}\\)\\{3\\}-\\[0-f\\]\\{12\\}\\$/,
+          "id": 2,
+        },
+      ]
+    `,
+    );
+  });
 });
 
 describe('updateResource', () => {
