@@ -4,7 +4,6 @@ import { isDeepStrictEqual } from 'node:util';
 import {
   assertKoaError,
   type FindOptions,
-  firstRecursiveReplace,
   getRemapperContext,
   getResourceDefinition,
   logger,
@@ -302,10 +301,8 @@ export function createCreateResource(options: Options): Middleware {
           );
           const previousAssetId = preparedSeedAsset.id;
           const newAssetId = randomUUID();
-          const [updatedResource] = firstRecursiveReplace(
-            preparedSeedResources[index],
-            previousAssetId,
-            newAssetId,
+          const updatedResource = JSON.parse(
+            JSON.stringify(preparedSeedResources[index]).replace(previousAssetId, newAssetId),
           );
           preparedSeedAsset.id = newAssetId;
           preparedSeedAsset.resource = updatedResource;
