@@ -77,7 +77,7 @@ export function Collapsible({
         >
           <Title className={classNames('mb-0', className)} level={level} size={size}>
             {title}
-          </Title>{' '}
+          </Title>
           <i
             className={classNames(
               'icon',
