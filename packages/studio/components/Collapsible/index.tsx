@@ -63,7 +63,7 @@ export function Collapsible({
     <>
       <div className={`${styles.titleContainer} is-flex mb-5`}>
         <Button
-          className={`${styles.toggle} `}
+          className={styles.toggle}
           icon={collapsed.enabled ? 'chevron-right' : 'chevron-down'}
           iconPosition="right"
           onClick={collapsed.toggle}
