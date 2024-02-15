@@ -1,5 +1,7 @@
 import { type OpenAPIV3 } from 'openapi-types';
 
+import { schemaExample } from '../../examples.js';
+
 export const arrayRemappers: Record<string, OpenAPIV3.ReferenceObject | OpenAPIV3.SchemaObject> = {
   'array.map': {
     $ref: '#/components/schemas/RemapperDefinition',
@@ -11,36 +13,7 @@ Output can be an empty array if the supplied data isn’t an array.
 For example, if you want to sort through a list of people and only get their occupations you can do
 the following:
 
-Input:
-
-\`\`\`json
-[
-  {
-    "name": "Peter",
-    "occupation": "Delivery driver"
-  },
-  {
-    "name": "Otto",
-    "occupation": "Scientist"
-  },
-  {
-    "name": "Harry",
-    "occupation": "CEO"
-  }
-]
-\`\`\`
-
-\`\`\`yaml
-array.map:
-  object.omit:
-    - name
-\`\`\`
-
-Result:
-
-\`\`\`json
-[{ "occupation": "Delivery driver" }, { "occupation": "Scientist" }, { "occupation": "CEO" }]
-\`\`\`
+${schemaExample('array.map', { input: 2 })}
 
 Another great use for \`array.map\` is to combine it with the \`if\` remapper and sort your arrays on
 specific values.
@@ -48,30 +21,7 @@ specific values.
 Using the same input data from the previous example, look at how you can change the code to get
 people from a specific occupation:
 
-\`\`\`yaml
-- array.map:
-    if:
-      condition: { equals: [{ prop: occupation }, Scientist] }
-      then:
-        object.from:
-          name:
-            prop: name
-          occupation:
-            prop: occupation
-      else: null
-- null.strip: null
-\`\`\`
-
-Result:
-
-\`\`\`json
-[
-  {
-    "name": "Otto",
-    "occupation": "Scientist"
-  }
-]
-\`\`\`
+${schemaExample('array.map.1', { input: 2, exclude: ['input'] })}
 
 Because \`array.map\` returns an array, every item has to return something. This is why we have to
 return the full object with the data we want in the \`then\` section. It’s also why we return \`null\`.
@@ -90,21 +40,7 @@ If the value Remapper results in undefined or null, the entire entry is used for
 
 If the input is not an array, the input is returned without any modifications.
 
-Input:
-
-\`\`\`json
-[1, 1, 2, 3]
-\`\`\`
-
-\`\`\`yaml
-array.unique: null
-\`\`\`
-
-Result:
-
-\`\`\`json
-[1, 2, 3]
-\`\`\`
+${schemaExample('array.unique')}
 
 You can also check for more complex values in arrays. The remapper accepts remappers as well, so you
 can also use entire objects to check for unique values.
@@ -177,22 +113,7 @@ Returns a single object or value from an array based on the given condition.
 
 For example:
 
-Input:
-
-\`\`\`json
-[{ name: "Craig" }, { name: "Joey" }, { name: "Stuart" }]
-\`\`\`
-\`\`\`yaml
-array.find:
-  equals: [{ prop: "name" }, "Craig" ]
-\`\`\`
-
-Result:
-
-\`\`\`json
-{ name: "Craig" }
-\`\`\`
-
+${schemaExample('array.find')}
 `,
   },
   'array.from': {
@@ -206,16 +127,7 @@ values.
 
 For example:
 
-\`\`\`yaml
-array.from:
-  - Peter
-  - Otto
-  - Harry
-\`\`\`
-
-\`\`\`json
-["Peter", "Otto", "Harry"]
-\`\`\`
+${schemaExample('array.from', { exclude: ['input'] })}
 
 This remapper can also be used to convert given data into an array.
 
@@ -255,35 +167,7 @@ Append new values to the end of an array. If the input is not an array an empty 
 
 Using the array from the previous example, we can add a new object on top of it using this remapper:
 
-\`\`\`yaml
-array.append:
-  - object.from:
-      name: James
-      occupation: News reporter
-\`\`\`
-
-Result:
-
-\`\`\`json
-[
-  {
-    "name": "Peter",
-    "occupation": "Delivery driver"
-  },
-  {
-    "name": "Otto",
-    "occupation": "Scientist"
-  },
-  {
-    "name": "Harry",
-    "occupation": "CEO"
-  },
-  {
-    "name": "James",
-    "occupation": "News reporter"
-  }
-]
-\`\`\`
+${schemaExample('array.append', { result: 2, exclude: ['input'] })}
 
 Extra example:
 
@@ -327,29 +211,7 @@ Accepts an array of static or remapper values.
 With the previous example we added a new person to the list of people, so now we can remove that
 person. We already know the index of this person in the array is \`3\`, so it’s easy:
 
-\`\`\`yaml
-array.omit:
-  - 3
-\`\`\`
-
-Result:
-
-\`\`\`json
-[
-  {
-    "name": "Peter",
-    "occupation": "Delivery driver"
-  },
-  {
-    "name": "Otto",
-    "occupation": "Scientist"
-  },
-  {
-    "name": "Harry",
-    "occupation": "CEO"
-  }
-]
-\`\`\`
+${schemaExample('array.omit', { result: 2, exclude: ['input'] })}
 
 However, usually we don’t know the exact index of the item we want to delete. Because the remapper
 accepts remappers as input we can get the desired item’s ID from another source as well. Take the

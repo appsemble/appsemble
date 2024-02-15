@@ -1,5 +1,5 @@
 import { FileUpload, JSONField, Message, Select, TextArea } from '@appsemble/react-components';
-import { remap, type RemapperContext, schemas } from '@appsemble/utils';
+import { examples, remap, type RemapperContext, schemas } from '@appsemble/utils';
 import classNames from 'classnames';
 import { IntlMessageFormat } from 'intl-messageformat';
 import { Validator } from 'jsonschema';
@@ -10,28 +10,20 @@ import { parse, stringify } from 'yaml';
 import styles from './index.module.css';
 import { useUser } from '../UserProvider/index.js';
 
-// TODO: include all remappers
-const examples = {
-  none: {
-    input: {},
-    remapper: '',
-  },
-  'remapper-syntax': {
-    input: {},
-    remapper: stringify([
-      {
-        root: null,
-      },
-    ]),
-  },
-} as const;
+interface PlaygroundProps {
+  readonly defaultOption?: keyof typeof examples;
+  readonly customOption?: { input: unknown; remapper: string };
+}
 
-export function Playground(): ReactNode {
+export function Playground({ customOption, defaultOption = 'None' }: PlaygroundProps): ReactNode {
+  const custom = { ...customOption, remapper: customOption?.remapper.trim() };
   const { lang } = useParams<'lang'>();
   const { userInfo } = useUser();
 
-  const [input, setInput] = useState({});
-  const [remapper, setRemapper] = useState('');
+  const [input, setInput] = useState(custom?.input || examples[defaultOption].input);
+  const [remapper, setRemapper] = useState(
+    stringify(custom?.remapper || examples[defaultOption].remapper),
+  );
   const [output, setOutput] = useState('');
   const [errorMessages, setErrorMessages] = useState([]);
 
@@ -50,11 +42,10 @@ export function Playground(): ReactNode {
     }
   }, []);
 
-  const onSelect = useCallback((event: ChangeEvent, value: string) => {
-    const { input: newInput, remapper: newRemapper } =
-      examples?.[value as keyof typeof examples] ?? examples.none;
+  const onSelect = useCallback((event: ChangeEvent, value: keyof typeof examples) => {
+    const { input: newInput, remapper: newRemapper } = examples?.[value] ?? examples.None;
     setInput(newInput);
-    setRemapper(newRemapper);
+    setRemapper(stringify(newRemapper));
   }, []);
 
   const onChangeRemapper = useCallback((event: ChangeEvent, value: string) => {
@@ -112,7 +103,7 @@ export function Playground(): ReactNode {
         },
       };
       const remappedValue = remap(parsedRemapper, input, context);
-      setOutput(JSON.stringify(remappedValue));
+      setOutput(JSON.stringify(remappedValue, null, 2));
       setErrorMessages([]);
     } catch (error) {
       setErrorMessages([error]);
@@ -127,9 +118,14 @@ export function Playground(): ReactNode {
           formComponentClassName={classNames('m-0', styles.dense)}
           onChange={onUploadFile}
         />
-        <Select defaultValue="none" onChange={onSelect}>
-          <option value="none">None</option>
-          <option value="remapper-syntax">Remapper Syntax</option>
+        <Select defaultValue={defaultOption} onChange={onSelect}>
+          {Object.keys(examples)
+            .toSorted()
+            .map((key) => (
+              <option key={key} value={key}>
+                {key}
+              </option>
+            ))}
         </Select>
       </div>
       <div className="is-flex is-flex-direction-row mb-1">
@@ -148,9 +144,7 @@ export function Playground(): ReactNode {
       </div>
       {errorMessages?.length ? (
         <Message className="mb-1" color="danger">
-          {errorMessages.map((line) => (
-            <div key={line}>{line}</div>
-          ))}
+          {errorMessages?.map((msg) => <div key={msg}>{msg}</div>)}
         </Message>
       ) : null}
     </div>

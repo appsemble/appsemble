@@ -165,8 +165,7 @@ The options represent the level of logging that will show in the console.
   - \`appUrl\`: Base URL of the application,
   - \`pageData\`: Current page data of a FlowPage (See [page remapper](./data#page)),
   - \`userInfo\`: User's information if they are logged in (See [user remapper](./data#user)),
-  - \`context\`:
-    - \`history\`: Complete list of this remapper’s history (See [history remapper](./history))
+  - \`context\`: Internal context
   - \`history\`: Complete list of this remapper’s history (See [history remapper](./history))
   - \`locale\`: The user’s locale,
   - \`stepRef\`: In a loop page, gives the properties from the loop’s current data index (See [step remapper](./data#step))
@@ -201,28 +200,7 @@ For example:
       "locale": "en",
       "zoneinfo": "Europe/Amsterdam"
     },
-    "context": {
-      "history": [
-        [
-          0,
-          4,
-          null,
-          null,
-          "Peter",
-          0.4234,
-          null
-        ],
-        {
-          "name": "Peter",
-          "age": 49
-        },
-        {
-          "name": "Peter",
-          "age": 49,
-          "birthday": "07-08-2023"
-        }
-      ]
-    },
+    "context": {},
     "history": [
       [
         0,

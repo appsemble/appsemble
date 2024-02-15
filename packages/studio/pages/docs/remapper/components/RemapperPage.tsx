@@ -3,6 +3,8 @@ import { camelToHyphen, defaultLocale } from '@appsemble/utils';
 import { type OpenAPIV3 } from 'openapi-types';
 import { Fragment, type ReactNode } from 'react';
 
+import { Collapsible } from '../../../../components/Collapsible/index.js';
+import { Playground } from '../../../../components/Playground/index.js';
 import { Schema } from '../../../../components/Schema/index.js';
 import { messages } from '../messages.js';
 import { Ref } from '../Ref/index.js';
@@ -17,12 +19,14 @@ export function RemapperPage({
     <main lang={defaultLocale}>
       {Object.entries(remappers).map(([name, schema]) => {
         const id = camelToHyphen(name);
-
         return (
           <Fragment key={name}>
             <Title anchor className="pl-8 mb-1 mt-5" id={id} size={5}>
               {name}
             </Title>
+            <Collapsible className="is-6" collapsed title="Playground">
+              <Playground defaultOption={name as keyof typeof Playground} />
+            </Collapsible>
             <div>
               <Schema idPrefix={id} renderRef={Ref} schema={schema} />
             </div>

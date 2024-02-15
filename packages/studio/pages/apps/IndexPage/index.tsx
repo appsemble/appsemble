@@ -13,7 +13,6 @@ import {
   sortFunctions,
 } from '../../../components/AppListControls/index.js';
 import { Collapsible } from '../../../components/Collapsible/index.js';
-import { Playground } from '../../../components/Playground/index.js';
 import { useUser } from '../../../components/UserProvider/index.js';
 
 interface MyAppsListProps {
@@ -51,7 +50,6 @@ export function IndexPage(): ReactNode {
 
   return (
     <Content className={styles.content} main>
-      <Playground />
       <AppListControls
         filter={filter}
         onFilterChange={setFilter}

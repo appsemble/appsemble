@@ -1,5 +1,7 @@
 import { type OpenAPIV3 } from 'openapi-types';
 
+import { schemaExample } from '../../examples.js';
+
 export const dataRemappers: Record<string, OpenAPIV3.ReferenceObject | OpenAPIV3.SchemaObject> = {
   array: {
     enum: ['index', 'length'],
@@ -9,37 +11,7 @@ Returns nothing when not in the context of \`array.map’s\`.
 
 For example:
 
-Input:
-\`\`\`json
-["a", "b", "c"]
-\`\`\`
-
-This remapper definition maps through the input array and creates an object with the length of the
-array and the current index of the loop:
-\`\`\`yaml
-array.map:
-  object.from:
-    length: { array: length }
-    index: { array: index }
-\`\`\`
-
-Result:
-\`\`\`json
-[
-  {
-    "index": 0,
-    "length": 3
-  },
-  {
-    "index": 1,
-    "length": 3
-  },
-  {
-    "index": 2,
-    "length": 3
-  }
-]
-\`\`\`
+${schemaExample('array', { result: 2 })}
 `,
   },
   app: {
@@ -243,22 +215,7 @@ The result of the final page’s log would then be:
     ],
     description: `Gets the chosen property from an object.
 
-\`\`\`json
-{
-  "name": "John",
-  "age": 52
-}
-\`\`\`
-
-\`\`\`yaml
-prop: name
-\`\`\`
-
-Result:
-
-\`\`\`json
-"John"
-\`\`\`
+${schemaExample('prop')}
 `,
   },
   root: {
@@ -298,15 +255,7 @@ Result:
   static: {
     description: `Create a static value
 
-\`\`\`yaml
-static: Hello!
-\`\`\`
-
-Returns the following string:
-
-\`\`\`
-Hello!
-\`\`\`
+${schemaExample('static', { exclude: ['input'] })}
 `,
   },
   translate: {
@@ -372,10 +321,10 @@ Example:
 > **Note:** For this remapper to work, the user that activated the remapper has to be logged in to
 > the app
 
-Provides some fields of the appMember object. 
+Provides some fields of the appMember object.
 
 - \`userId\`: The id of the user to which the appMember object belongs.
-- \`memberId\`: The id of the appMember object itself. This value should be used when fetching resources created by the current user. 
+- \`memberId\`: The id of the appMember object itself. This value should be used when fetching resources created by the current user.
 - \`primary_email\`: User’s **primary** email address.
 - \`name\`: The user’s name.
 - \`role\`: User's role in the context of the app.

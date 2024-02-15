@@ -1,5 +1,7 @@
 import { type OpenAPIV3 } from 'openapi-types';
 
+import { schemaExample } from '../../examples.js';
+
 export const dateRemappers: Record<string, OpenAPIV3.ReferenceObject | OpenAPIV3.SchemaObject> = {
   'date.add': {
     type: 'string',
@@ -23,21 +25,7 @@ Full list of supported unit types:
 
 For example:
 
-Date now:
-\`\`\`json
-2023-06-30T14:50:19.601Z
-\`\`\`
-
-Remapper definition:
-\`\`\`yaml
-[{ date.now: null }, { date.add: 1w } , { date.format: null }]
-\`\`\`
-
-Result:
-\`\`\`json
-2023-07-07T14:50:19.601Z
-\`\`\`
-
+${schemaExample('date.add')}
 `,
   },
   'date.format': {
@@ -51,22 +39,9 @@ In an app definition, it’s best to use this when you want to display a date in
 For example, if your app has a form with a Datepicker field the incoming data will be formatted
 as a simple date format. If you want to format it to the RFC3339 format, you can use this remapper.
 
-When you submit a form with a DateField, the internal output looks like this:
+When you submit a form with a DateField, the internal output looks like the following. You can then format the date so that it uses the RFC3339 format.
 
-\`\`\`js
-2023-07-03
-\`\`\`
-
-You can then format the date so that it uses the RFC3339 format.
-
-\`\`\`yaml
-date.format: null
-\`\`\`
-
-Result:
-\`\`\`js
-"2023-07-02T22:00:00.000Z"
-\`\`\`
+${schemaExample('date.format')}
 
 The remapper can also be used to format a date or timestamp using a custom format.
 
@@ -89,14 +64,8 @@ Result:
   'date.now': {
     enum: [null],
     description: `Returns the current date as a JavaScript Date object.
-\`\`\`yaml
-date.now: null
-\`\`\`
 
-Result:
-\`\`\`js
-"Mon Jul 03 2023 11:47:18 GMT+0200 (Midden-Europese zomertijd)"
-\`\`\`
+${schemaExample('date.now', { exclude: ['input'] })}
 `,
   },
   'date.parse': {
@@ -104,11 +73,8 @@ Result:
     description: `Convert a string to a date using a given format.
 
 For example:
-\`\`\`yaml
-- static: 02/11/2014     # The date string to parse
-- date.parse: MM/dd/yyyy # The given format to parse the date with
-            # => Tue Feb 11 2014 00:00:00
-\`\`\`
+
+${schemaExample('date.parse', { exclude: ['input'] })}
 
 See [date-fns](https://date-fns.org/v2.29.3/docs/parse) for the supported formats.
 
