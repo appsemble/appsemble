@@ -25,10 +25,6 @@
     margin-left: menu-width;
   }
 
-  /* &.gui {
-    margin-left: 0;
-  } */
-
   &.code,
   &.gui {
     @media screen and (width >1024px) {
@@ -114,9 +110,4 @@
     opacity: 0;
     pointer-events: none;
   }
-
-  /* &.gui {
-    display: none;
-    left: calc(-1 * menu-width);
-  } */
 }

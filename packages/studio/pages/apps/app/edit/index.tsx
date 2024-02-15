@@ -179,23 +179,6 @@ export default function EditPage(): ReactNode {
     }
   }, [appPreviewDiv, selectedRatio]);
 
-  const updateScrollShadows = useCallback(() => {
-    if (codeEditorTabs) {
-      const scrollLeft = codeEditorTabs?.scrollLeft;
-      const clientWidth = codeEditorTabs?.clientWidth;
-      const scrollWidth = codeEditorTabs?.scrollWidth;
-      const maxScrollLeft = scrollWidth - clientWidth;
-      const leftShadowPos = scrollLeft;
-      const rightShadowPos = maxScrollLeft > 0 ? -scrollLeft : 0;
-
-      codeEditorTabs?.style.setProperty('--shadow-right-position', `${rightShadowPos}px`);
-      codeEditorTabs?.style.setProperty('--shadow-left-position', `${leftShadowPos}px`);
-
-      codeEditorTabs?.classList.toggle('not-at-right', scrollLeft < maxScrollLeft);
-      codeEditorTabs?.classList.toggle('not-at-left', scrollLeft > 0);
-    }
-  }, [codeEditorTabs]);
-
   const closeModalOnDesktop = useCallback(() => {
     if (window?.innerWidth > 1023) {
       closeModal();
@@ -250,21 +233,6 @@ export default function EditPage(): ReactNode {
       { passive: false },
     );
   }
-
-  codeEditorTabs?.addEventListener('scroll', updateScrollShadows);
-
-  // Update the scroll shadow state.
-  useEffect(() => {
-    if (codeEditorTabs) {
-      const resizeObserver = new ResizeObserver(() => {
-        updateScrollShadows();
-      });
-
-      resizeObserver.observe(codeEditorTabs);
-
-      return () => resizeObserver.disconnect();
-    }
-  }, [codeEditorTabs, updateScrollShadows]);
 
   useEffect(() => {
     setBreadCrumbsDecoration(

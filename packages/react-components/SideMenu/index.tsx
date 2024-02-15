@@ -27,7 +27,7 @@ interface SideMenuContext {
 }
 
 const Context = createContext<SideMenuContext>({
-  isOpen: false,
+  isOpen: window?.innerWidth > 1024,
   toggle: noop,
   disable: noop,
   setMenu: noop,
@@ -54,12 +54,15 @@ interface SideMenuProviderProps {
  * A wrapper that renders a responsive side menu.
  */
 export function SideMenuProvider({ base, bottom, children }: SideMenuProviderProps): ReactNode {
-  const { disable, enabled, toggle } = useToggle();
+  const { disable, enable, enabled, toggle } = useToggle(window?.innerWidth > 1024);
   const [menu, setMenu] = useState<ReactNode>(null);
+  const [oldWidth, setOldWidth] = useState<number>(window?.innerWidth);
 
   const location = useLocation();
   useEffect(() => {
-    disable();
+    if (window?.innerWidth <= 1024) {
+      disable();
+    }
   }, [disable, location]);
 
   useEventListener(
@@ -74,6 +77,37 @@ export function SideMenuProvider({ base, bottom, children }: SideMenuProviderPro
       [disable],
     ),
   );
+
+  // Close or open the side menu when the screen size changes, depending on the width
+  useEffect(() => {
+    const onResize = (): void => {
+      const newWidth = window?.innerWidth;
+      // Enable side menu if width goes above 1024px and update old width
+      if (oldWidth < 1025 && newWidth >= 1025) {
+        enable();
+        setOldWidth(window?.innerWidth);
+      }
+      // If width stays above 1024px just update old width
+      if (oldWidth >= 1025 && newWidth >= 1025) {
+        setOldWidth(window?.innerWidth);
+      }
+      // Disable side menu if width goes below 1025px and update old width
+      if (oldWidth >= 1025 && newWidth < 1025) {
+        disable();
+        setOldWidth(window?.innerWidth);
+      }
+      // If width stays below 1024px just update old width
+      if (oldWidth < 1025 && newWidth < 1025) {
+        setOldWidth(window?.innerWidth);
+      }
+    };
+
+    window.addEventListener('resize', onResize);
+
+    return (): void => {
+      window.removeEventListener('resize', onResize);
+    };
+  }, [disable, enable, oldWidth]);
 
   return (
     <Context.Provider
@@ -102,6 +136,7 @@ export function SideMenuProvider({ base, bottom, children }: SideMenuProviderPro
         <div
           className={classNames(
             styles.backdrop,
+            'is-hidden-dekstop',
             { [styles.closed]: !enabled },
             { [styles.code]: location.pathname.match(/edit/) && location.hash.length > 0 },
             { [styles.gui]: location.pathname.match(/(?<=\/)gui(?=\/)/) },

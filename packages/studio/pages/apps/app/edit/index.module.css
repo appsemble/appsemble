@@ -213,9 +213,6 @@ button[class*='modal-close'] {
     top: 3.9rem;
     width: calc(100% - 5rem);
 
-    --shadow-right-position: 0px;
-    --shadow-left-position: 0px;
-
     &.fullscreen {
       position: sticky;
       top: 0.16rem;
@@ -225,47 +222,6 @@ button[class*='modal-close'] {
   &.fullscreen {
     top: 2.7rem;
   }
-}
-
-.editorTabsDiv::after,
-.editorTabsDiv::before {
-  /* stylelint-disable-next-line media-feature-range-notation */
-  @media (max-width: 1023px) {
-    bottom: 0;
-    content: '';
-    opacity: 0;
-    position: absolute;
-    top: 0;
-    transition:
-      transform 0.1s ease-out,
-      opacity 0.1s ease-out;
-    width: 6px;
-    z-index: 2;
-  }
-}
-
-.editorTabsDiv::before {
-  background: linear-gradient(to right, rgb(63 59 59 / 40%), transparent);
-  transform: translateX(-100%);
-}
-
-.editorTabsDiv::after {
-  background: linear-gradient(to left, rgb(63 59 59 / 40%), transparent);
-  transform: translateX(100%);
-}
-
-/* stylelint-disable-next-line selector-max-attribute */
-.editorTabsDiv[class*='not-at-left']::before {
-  left: var(--shadow-left-position);
-  opacity: 1;
-  transform: translateX(0);
-}
-
-/* stylelint-disable-next-line selector-max-attribute */
-.editorTabsDiv[class*='not-at-right']::after {
-  opacity: 1;
-  right: var(--shadow-right-position);
-  transform: translateX(0);
 }
 
 .editorTab > a {

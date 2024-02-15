@@ -220,12 +220,25 @@ export default function EditPage(): ReactNode {
       }
     };
 
+    const toggleRightBarButtonsText = (): void => {
+      if (rightSliderPanel?.clientWidth < 242) {
+        for (const button of pagesTabTopRightPanelButtons) {
+          button.classList.add('no-text');
+        }
+      } else {
+        for (const button of pagesTabTopRightPanelButtons) {
+          button.classList.remove('no-text');
+        }
+      }
+    };
+
     const handleTransitionEnd = (event: TransitionEvent): void => {
       if (event.propertyName === 'width') {
         setAppPreviewSize();
       } else {
         setInputListLabelVisibility();
       }
+      toggleRightBarButtonsText();
     };
 
     setContainerSize();
@@ -241,10 +254,12 @@ export default function EditPage(): ReactNode {
     window.addEventListener('resize', onResize);
     leftBar?.addEventListener('transitionend', handleTransitionEnd);
     rightBar?.addEventListener('transitionend', handleTransitionEnd);
+
     if (window?.innerWidth > 1024) {
       sideMenu?.addEventListener('transitionend', handleTransitionEnd);
       sideMenuWrapper?.addEventListener('transitionend', handleTransitionEnd);
     }
+
     const resizeObserver = new ResizeObserver((entries) => {
       for (const entry of entries) {
         if (entry.target === guiEditorContainer) {
