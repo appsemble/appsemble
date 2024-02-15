@@ -1,13 +1,14 @@
-import { cp, readdir } from 'node:fs/promises';
+import { cp, readdir, readFile, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
 
 import { logger, readData, writeData } from '@appsemble/node-utils';
-import { type AppDefinition, type AppsembleRC } from '@appsemble/types';
+import { type AppsembleRC } from '@appsemble/types';
 import inquirer from 'inquirer';
-import { parse, stringify } from 'yaml';
+import { format } from 'prettier';
+import { parse, parseDocument, stringify } from 'yaml';
 import { type Argv } from 'yargs';
 
-const templatesDir = new URL('../../templates/apps/', import.meta.url);
+const templatesDir = new URL('../../templates/apps/', import.meta.url).pathname;
 
 export const command = 'create';
 export const description = 'Scaffold a new app with a basic app-definition and styling.';
@@ -19,6 +20,10 @@ interface AppArgs {
   template?: string;
   languages?: string[];
   description?: string;
+  resource?: string;
+  security?: boolean;
+  cronJobs?: boolean;
+  teams?: boolean;
 }
 
 export async function builder(yargs: Argv): Promise<Argv<any>> {
@@ -44,6 +49,16 @@ export async function builder(yargs: Argv): Promise<Argv<any>> {
     .option('languages', {
       describe: 'Languages in which the app will be translated.',
       choices: languageChoices,
+    })
+    .option('resource', {
+      describe: 'Name of a demo resource to be added to the app definition.',
+    })
+    .option('security', {
+      describe: 'Whether to append a default security definition to app',
+      type: 'boolean',
+    })
+    .option('cron-jobs', {
+      describe: 'Whether to append default cron-jobs to the app definition',
     });
 }
 
@@ -85,6 +100,30 @@ export async function handler(args: AppArgs): Promise<void> {
         choices: languageChoices,
         message: 'Please select the languages for your app.',
       },
+      !args.resource && {
+        name: 'resource',
+        message:
+          'Please enter the name of sample resource to be added to the app definition.(leave empty for none)',
+      },
+      !args.security && {
+        name: 'security',
+        message: 'Would you like to add a security definition to the app.',
+        type: 'confirm',
+        default: false,
+      },
+      {
+        name: 'teams',
+        message: 'Will you be using teams in your app.',
+        type: 'confirm',
+        default: false,
+        when: (appOptions: AppArgs) => appOptions.security,
+      },
+      !args.cronJobs && {
+        name: 'cron-jobs',
+        message: 'Would you like to add a cron-job to the definition of the app.',
+        type: 'confirm',
+        default: false,
+      },
       !args.path && {
         name: 'path',
         message: 'Please enter the path for where you want the app folder to go (default "apps").',
@@ -97,25 +136,78 @@ export async function handler(args: AppArgs): Promise<void> {
   const appDescription = answers.description || args.description || '';
   const template = answers.template || args.template;
   const languages = answers.languages || args.languages;
+  const resource = answers.resource || args.resource;
+  const security = answers.security || args.security;
+  const cronJobs = answers['cron-jobs'] || args.cronJobs;
+  const { teams } = answers;
 
   const outputDirectory = join(path, name);
-  const inputDirectory = new URL(`${template}/`, templatesDir);
-  const appsembleRcPath = new URL('.appsemblerc.yaml', inputDirectory);
+  const inputDirectory = join(`${templatesDir}/`, template);
+  const appsembleRcPath = join(inputDirectory, '.appsemblerc.yaml');
   const [appsembleRc] = await readData<AppsembleRC>(appsembleRcPath);
   const outputAppsembleRcObject: AppsembleRC = { ...appsembleRc };
   for (const key of Object.keys(appsembleRc.context)) {
     outputAppsembleRcObject.context[key].organization = organization;
   }
   const outputAppsembleRc = parse(stringify(outputAppsembleRcObject));
-  const appDefinitionPath = new URL('app-definition.yaml', inputDirectory);
-  const [appDefinition] = await readData<AppDefinition>(appDefinitionPath);
+  const appDefinitionPath = join(inputDirectory, 'app-definition.yaml');
+  const yaml = await readFile(appDefinitionPath, 'utf8');
+  const appDefinition = parseDocument(yaml);
 
-  const outputAppDefinitionObject = { ...appDefinition };
+  appDefinition.set('name', name);
+  appDefinition.set('description', appDescription);
 
-  outputAppDefinitionObject.name = name;
-  outputAppDefinitionObject.description = appDescription;
+  if (resource) {
+    appDefinition.set('resources', {
+      [resource]: {
+        roles: ['$public'],
+        schema: {
+          type: 'object',
+          additionalProperties: false,
+        },
+      },
+    });
+  }
+  if (security) {
+    appDefinition.set('security', {
+      default: {
+        role: 'User',
+        policy: 'everyone',
+      },
+      roles: {
+        User: {
+          description: 'A sample user to be included in the app definition',
+        },
+      },
+      teams: teams
+        ? {
+            join: 'invite',
+            invite: ['$team:member'],
+          }
+        : undefined,
+    });
+    appDefinition.set('roles', ['User']);
+  }
+  if (cronJobs) {
+    appDefinition.set('cron', {
+      dailyLogs: {
+        action: {
+          type: 'noop',
+        },
+        schedule: '0 12 * * *',
+      },
+    });
+  }
 
-  const outputAppDefinition = parse(stringify(outputAppDefinitionObject));
+  const outputAppDefinition = await format(String(appDefinition), {
+    tabWidth: 2,
+    useTabs: false,
+    endOfLine: 'lf',
+    singleQuote: true,
+    proseWrap: 'preserve',
+    printWidth: 100,
+    parser: 'yaml',
+  });
 
   await cp(inputDirectory, outputDirectory, {
     errorOnExist: true,
@@ -127,8 +219,6 @@ export async function handler(args: AppArgs): Promise<void> {
     await writeData(join(outputDirectory, 'i18n', `${language}.json`), {});
   }
   await writeData(join(outputDirectory, '.appsemblerc.yaml'), outputAppsembleRc);
-  await writeData(join(outputDirectory, 'app-definition.yaml'), outputAppDefinition, {
-    sort: false,
-  });
+  await writeFile(join(outputDirectory, 'app-definition.yaml'), outputAppDefinition);
   logger.info(`Successfully created ${name} at ${outputDirectory}`);
 }
