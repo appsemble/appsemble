@@ -179,6 +179,10 @@
       "type": "boolean",
       "description": "If `true`, The proxy is trusted for logging purposes."
     },
+    "protocolHttps": {
+      "type": "boolean",
+      "description": "If `true`, the Helm chart assumes the application is reached over HTTPS"
+    },
     "global": {
       "type": "object"
     },

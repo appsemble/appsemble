@@ -64,6 +64,8 @@ gitlab:
 
 migrateTo: null
 
+protocolHttps: false
+
 proxy: false
 
 global:

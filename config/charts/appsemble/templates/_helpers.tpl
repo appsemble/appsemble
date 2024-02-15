@@ -64,7 +64,7 @@ Create chart name and version as used by the chart label.
 Get the protocol on which Appsemble is accessible.
 */}}
 {{- define "appsemble.protocol" -}}
-http{{ if .Values.ingress.tls }}s{{ end }}://
+http{{ if or .Values.protocolHttps .Values.ingress.tls }}s{{ end }}://
 {{- end -}}
 
 {{/*
