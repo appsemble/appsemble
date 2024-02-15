@@ -74,7 +74,7 @@ export async function handler(): Promise<void> {
 
   const mailer = new Mailer(argv);
 
-  // 1 hour ago
+  // The time of argv.interval minutes ago
   const startDate = Date.now() - argv.interval * 60 * 1e3;
 
   for await (const app of iterTable(App, {

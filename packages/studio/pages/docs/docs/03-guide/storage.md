@@ -46,9 +46,11 @@ often used for user preferences.
 There are 3 main browser storage options:
 
 - **[indexedDB](https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API)**: Allows you to
-  persist significant amounts of data in the browser.
+  persist on most browsers [up to 10% to 60% of the disk space available][]. Files will also be
+  stored and retrievable.
 - **[localStorage](https://developer.mozilla.org/en-US/docs/Web/API/Web_Storage_API)**: Allows you
-  to persist smaller amounts of data in the browser.
+  to persist [up to a maximum of 5 MiB on all browsers][]. Uploading files will not work and instead
+  results in an empty object being returned.
 - **[sessionStorage](https://developer.mozilla.org/en-US/docs/Web/API/Web_Storage_API)**: Stores
   data just like `localStorage` except it clears the data whenever the browser tab is closed.
 
@@ -69,3 +71,8 @@ with flow actions. This is how flow pages keep track of the data filled into a f
 to the next step.
 
 > Note: Both `App Storage` and `Page Storage` are affected by the `retainFlowData` prop.
+
+[up to 10% to 60% of the disk space available]:
+  https://developer.mozilla.org/en-US/docs/Web/API/Storage_API/Storage_quotas_and_eviction_criteria#other_web_technologies
+[up to a maximum of 5 MiB on all browsers]:
+  https://developer.mozilla.org/en-US/docs/Web/API/Storage_API/Storage_quotas_and_eviction_criteria#web_storage
