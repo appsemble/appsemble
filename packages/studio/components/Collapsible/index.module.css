@@ -1,8 +1,9 @@
+.titleContainer {
+  align-items: center;
+  padding: 5px;
+}
+
 .toggle {
   background: transparent;
   border: none;
-}
-
-.titleContainer {
-  align-items: center;
 }

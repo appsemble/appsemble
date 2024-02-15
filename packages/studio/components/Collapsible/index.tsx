@@ -63,7 +63,7 @@ export function Collapsible({
     <>
       <div className={`${styles.titleContainer} is-flex mb-5`}>
         <Button
-          className={`${styles.toggle} pl-0`}
+          className={`${styles.toggle} `}
           icon={collapsed.enabled ? 'chevron-right' : 'chevron-down'}
           iconPosition="right"
           onClick={collapsed.toggle}
@@ -73,8 +73,8 @@ export function Collapsible({
           </Title>
         </Button>
       </div>
-      <div className="is-size-7">{help}</div>
-      <div className={classNames(styles.list, { 'is-hidden': collapsed.enabled })}>{children}</div>
+      <div className="is-size-7 pl-3">{help}</div>
+      <div className={classNames('pl-5', { 'is-hidden': collapsed.enabled })}>{children}</div>
     </>
   );
 }
