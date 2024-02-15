@@ -1,0 +1,8 @@
+.json {
+  width: 100%;
+}
+
+.dense :global(.help) {
+  margin-top: unset;
+  min-height: unset;
+}
