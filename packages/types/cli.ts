@@ -56,6 +56,11 @@ export interface AppsembleContext {
   demoMode?: boolean;
 
   /**
+   * If `seed` is specified, this will override `--seed` passed on the command line.
+   */
+  seed?: boolean;
+
+  /**
    * Set the value of AppLock for your app.
    */
   appLock?: AppLock;

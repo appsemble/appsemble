@@ -277,7 +277,7 @@ export function createCreateResource(options: Options): Middleware {
     // If the app has already been seeded, only new ephemeral resources are created,
     // processed from the request body.
     if (app.demoMode) {
-      if (!resourceSeeded) {
+      if (!resourceSeeded && app.seed) {
         const preparedSeedAssets = structuredClone(preparedAssets);
         const preparedSeedResources: Record<string, unknown>[] = resources.map((resource) => {
           const cleanResource = { ...resource };
