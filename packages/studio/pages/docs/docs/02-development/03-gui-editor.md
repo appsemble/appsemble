@@ -1,10 +1,12 @@
 # GUI Editor
 
+![GUI Editor](../../gui-assets/gui-editor.png 'GUI Editor')
+
 Editing a block can be done through the code editor you have seen so far. However a new addition to
 Appsemble is the GUI Editor. This tool allows you to create apps without writing a single line of
 code and it is accessible by one button click
 
-<!-- picture of the switch to gui button -->
+![Switch Button](../../gui-assets/switch-button.png 'Switch Button')
 
 ## Table of Contents
 
@@ -19,7 +21,7 @@ code and it is accessible by one button click
 
 ## GUI Editor Tabs
 
-<!-- Picture of the tabs -->
+![GUI Editor Tabs](../../gui-assets/gui-tabs.png 'GUI Editor Tabs')
 
 The GUI Editor provides the full functionality of the code editor. The editor is made up from two
 collapsible sidebars on the left and right, tabs and buttons at the top and the app view in the
@@ -30,7 +32,7 @@ middle.
 The functionality of the GUI Editor is split over 6 different tabs. The first tab is the pages tab,
 this is where the pages of the app are created and edited.
 
-<!-- picture of the pages tab -->
+![App Editor](../../gui-assets/app-editor.png 'App Editor')
 
 The large area in the middle of the editor is the app view. In the pages tab this is an interactive
 view of the app that allows for selecting blocks with the mouse and dragging and dropping them to
@@ -59,6 +61,8 @@ The general tab allows you to change general app settings like the app name and 
 In the app view you see the app preview that allows you to test the app functionality while you
 change settings. It auto updates for every made change.
 
+![App Preview](../../gui-assets/app-preview.png 'App Preview')
+
 In the left sidebar you can switch between general, layout and schedule settings. In the right
 sidebar the properties can be changed.
 
@@ -68,9 +72,13 @@ The theme tab allows you to change theming settings for the app. In the left sid
 hierarchy of the app pages and blocks where you can select what part of the app your theming will
 affect.
 
-In the right sidebar you can set colors for your app. The colors follow the hierarchy so a color set
-for a block will overwrite the color set for its page. You can reset any color choice to its default
-by clicking the black x next to the color picker.
+In the right sidebar you can set colors for your app.
+
+![Theme Colors](../../gui-assets/theme-colors.png 'Theme Colors')
+
+The colors follow the hierarchy so a color set for a block will overwrite the color set for its
+page. You can reset any color choice to its default by clicking the black x next to the color
+picker.
 
 Below the colors there are tile layers and font options.
 
@@ -79,6 +87,8 @@ Below the colors there are tile layers and font options.
 The style tab allows the user to change the app’s styling `CSS` without knowing how to write it. It
 features a simple menu in the right sidebar for adding borders, margin and padding to any block or
 menu item selected in the left sidebar hierarchy.
+
+![Style Properties](../../gui-assets/style-props.png 'Style Properties')
 
 The generated `CSS` code can be viewed in the text box at the bottom of the right sidebar.
 
