@@ -57,10 +57,14 @@ export function DateInput({
     [onChange],
   );
 
-  const maxDate = useMemo(
-    () => extractDate(getMaxDate(field, utils, formValues)),
-    [field, utils, formValues],
-  );
+  const maxDate = useMemo(() => {
+    const max = getMaxDate(field, utils, formValues);
+    if (max) {
+      max.setHours(23, 59, 59, 999);
+    }
+    return extractDate(max);
+  }, [field, utils, formValues]);
+
   const minDate = useMemo(
     () => extractDate(getMinDate(field, utils, formValues)),
     [field, utils, formValues],

@@ -42,7 +42,7 @@ export function DateTimeInput({
   const confirmLabel = utils.formatMessage('confirmLabel');
 
   const handleOnChange = useCallback(
-    (event: JSX.TargetedEvent<HTMLInputElement, Event>, v: string): void => onChange(event, v),
+    (event: JSX.TargetedEvent<HTMLInputElement>, v: string): void => onChange(event, v),
     [onChange],
   );
 
