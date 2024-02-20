@@ -67,7 +67,6 @@
   /* Shows the side menu  when on a big screen */
   @media screen and (width >1024px) {
     left: 0;
-    z-index: auto !important;
   }
 
   /* Shows the side menu when opened on a small screen */
