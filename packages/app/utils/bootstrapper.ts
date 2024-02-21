@@ -8,7 +8,7 @@ import {
   type HandlerFunction,
 } from '@appsemble/sdk';
 import { type BlockManifest } from '@appsemble/types';
-import { prefixBlockURL } from '@appsemble/utils';
+import { normalizeBlockName, prefixBlockURL } from '@appsemble/utils';
 import { type Promisable } from 'type-fest';
 
 import { appControllerCode } from './settings.js';
@@ -131,7 +131,10 @@ export async function callBootstrap(
   manifest: BlockManifest,
   params: BootstrapParams,
 ): Promise<void> {
-  if (!loadedBlocks.has(manifest.name)) {
+  const name = normalizeBlockName(manifest.name);
+  const blockNameVersion = `${name}@${manifest.version}`;
+
+  if (!loadedBlocks.has(blockNameVersion)) {
     for (const url of manifest.files) {
       if (url.endsWith('.js')) {
         const script = document.createElement('script');
@@ -141,14 +144,14 @@ export async function callBootstrap(
         script.addEventListener('AppsembleBootstrap', (event: AppsembleBootstrapEvent) => {
           event.stopImmediatePropagation();
           event.preventDefault();
-          registerBlock(script, event, manifest.name);
+          registerBlock(script, event, blockNameVersion);
         });
         document.head.append(script);
       }
     }
-    loadedBlocks.add(manifest.name);
+    loadedBlocks.add(blockNameVersion);
   }
-  const bootstrap = await getBootstrapFunction(manifest.name);
+  const bootstrap = await getBootstrapFunction(blockNameVersion);
   const result = await bootstrap(params);
   if (result instanceof Element) {
     params.shadowRoot.append(result);
