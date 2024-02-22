@@ -38,7 +38,7 @@ export function CodeDiffBlock({
     const ed = editor.createDiffEditor(ref.current, {
       automaticLayout: true,
       enableSplitViewResizing: false,
-      renderSideBySide: false,
+      renderSideBySide: true,
       minimap: { enabled: false },
       readOnly: true,
     });

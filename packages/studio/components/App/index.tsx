@@ -37,7 +37,7 @@ function StudioContent(): ReactNode {
   const location = useLocation();
 
   return (
-    <div ref={fullscreenRef}>
+    <div className={styles.fullHeight} ref={fullscreenRef}>
       <SideMenuProvider base={<SideMenuBase />} bottom={<SideMenuBottom />}>
         <Toolbar />
         <div
