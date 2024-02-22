@@ -3,8 +3,9 @@
 ## Introduction
 
 Team actions allow users with sufficient permissions to manage teams and invite members. To know
-more about the teams visit [this page](/docs/03-guide/teams). Team action are client side actions,
-i.e. these actions are not implemented for the server side. Supported team actions are as follow.
+more about the teams visit [this page](../../docs/03-guide/teams.md). Team action are client side
+actions, i.e. these actions are not implemented for the server side. Supported team actions are as
+follow.
 
 - `team.invite`
 - `team.join`
@@ -42,7 +43,9 @@ blocks:
 ### team.join
 
 This action allows a user to join a team. Supported field for this action is `type`, which is
-`team.join` in this case. Here is an example of how you can use this action to join a team.
+`team.join` in this case. It return an error if user tries to join that they already are a member of
+or if the team security is defined as `invite`. Here is an example of how you can use this action to
+allow users to join a team selected by them.
 
 ```yaml validate
 blocks:
@@ -54,6 +57,7 @@ blocks:
           label: { translate: team }
           requirements: { required: true }
           type: enum
+          enum: ['team1', 'team2']
     onSubmit:
       type: team.join
       remap: { prop: team }
@@ -63,9 +67,10 @@ blocks:
 
 ### team.list
 
-This action allows to get a list of all of the user’s teams. Supported field for this action is
-`type`, which is `team.list` in this case. Here is an example of how you can use this action to list
-all teams of a user.
+This action allows to get a list of all of the teams user is a part of. Supported field for this
+action is `type`, which is `team.list` in this case. This action can be helpful in keeping a record
+of various organizational roles assigned to a user. Here is an example of how you can use this
+action to list all teams of a user.
 
 ```yaml validate
 blocks:
@@ -83,8 +88,10 @@ blocks:
 ### team.members
 
 This action allows to get a list of a team’s members. Supported fields for this action are `type`
-and `id`. Id is The ID of a specific team to get the members from and type is `team.members`. Both
-the fields are required. Here is an example of this action in use.
+and `id`. Id is The ID of a specific team to get the members from and type is `team.members`. This
+can be particularly helpful in keeping a record of roles assigned to various users. Both the fields
+are required. Here is an example of this action being used to fetch all the employees of a
+particular department in a company.
 
 ```yaml validate
 blocks:
@@ -93,7 +100,7 @@ blocks:
     actions:
       onLoad:
         type: team.members
-        id: { prop: team }
+        id: { prop: department }
         onSuccess:
           type: log
 ```
