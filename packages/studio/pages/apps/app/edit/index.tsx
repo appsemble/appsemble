@@ -1,5 +1,6 @@
 import {
   Button,
+  Loader,
   Modal,
   Prompt,
   Tabs,
@@ -50,10 +51,16 @@ export default function EditPage(): ReactNode {
   const { id } = app;
 
   const [appDefinition, setAppDefinition] = useState<string>(app.yaml);
-  const { data: coreStyle, setData: setCoreStyle } = useData<string>(`/api/apps/${id}/style/core`);
-  const { data: sharedStyle, setData: setSharedStyle } = useData<string>(
-    `/api/apps/${id}/style/shared`,
-  );
+  const {
+    data: coreStyle,
+    loading: coreStyleLoading,
+    setData: setCoreStyle,
+  } = useData<string>(`/api/apps/${id}/style/core`);
+  const {
+    data: sharedStyle,
+    loading: sharedStyleLoading,
+    setData: setSharedStyle,
+  } = useData<string>(`/api/apps/${id}/style/shared`);
 
   const [appDefinitionErrorCount, setAppDefinitionErrorCount] = useState(0);
   const [coreStyleErrorCount, setCoreStyleErrorCount] = useState(0);
@@ -411,6 +418,10 @@ export default function EditPage(): ReactNode {
 
   if (!monacoProps) {
     return <Navigate to={{ ...location, hash: '#editor' }} />;
+  }
+
+  if (monacoProps.language === 'css' && (coreStyleLoading || sharedStyleLoading)) {
+    return <Loader />;
   }
 
   const disabled = Boolean(
