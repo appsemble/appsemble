@@ -20,8 +20,9 @@ ingress:
     nginx.ingress.kubernetes.io/proxy-body-size: '50m'
     nginx.ingress.kubernetes.io/force-ssl-redirect: 'true'
     nginx.ingress.kubernetes.io/ssl-redirect: 'true'
-    nginx.ingress.kubernetes.io/configuration-snippet: |
-      add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
+    nginx.ingress.kubernetes.io/hsts: 'true'
+    nginx.ingress.kubernetes.io/hsts-include-subdomains: 'true'
+    nginx.ingress.kubernetes.io/hsts-max-age: '31536000'
   host: ''
   tls:
     {}
