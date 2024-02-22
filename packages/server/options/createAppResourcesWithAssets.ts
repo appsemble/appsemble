@@ -50,9 +50,10 @@ export async function createAppResourcesWithAssets({
 
     await Asset.bulkCreate(
       preparedAssets.map((asset) => {
-        const index = cleanResources.findIndex((resource) =>
-          isDeepStrictEqual(resource, asset.resource),
-        );
+        const index = cleanResources.findIndex((resource) => {
+          const { $clonable, $ephemeral, $seed, ...cleanAssetResource } = asset.resource;
+          return isDeepStrictEqual(resource, cleanAssetResource);
+        });
         const {
           clonable = false,
           ephemeral = false,

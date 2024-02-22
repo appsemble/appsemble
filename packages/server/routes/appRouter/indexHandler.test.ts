@@ -296,6 +296,7 @@ it('should render the index page', async () => {
           "locked": "unlocked",
           "longDescription": null,
           "path": "app",
+          "seed": false,
           "sentryDsn": null,
           "sentryEnvironment": null,
           "sharedStyle": "",

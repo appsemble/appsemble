@@ -1,3 +1,6 @@
+import { randomUUID } from 'node:crypto';
+import { isDeepStrictEqual } from 'node:util';
+
 import {
   assertKoaError,
   type FindOptions,
@@ -274,22 +277,43 @@ export function createCreateResource(options: Options): Middleware {
     // If the app has already been seeded, only new ephemeral resources are created,
     // processed from the request body.
     if (app.demoMode) {
-      if (!resourceSeeded) {
+      if (!resourceSeeded && app.seed) {
+        const preparedSeedAssets = structuredClone(preparedAssets);
+        const preparedSeedResources: Record<string, unknown>[] = resources.map((resource) => {
+          const cleanResource = { ...resource };
+          for (const referencedProperty of Object.keys(resourceDefinition.references ?? {})) {
+            delete cleanResource[referencedProperty];
+          }
+          return {
+            ...cleanResource,
+            $seed: true,
+            $ephemeral: false,
+          };
+        });
+
+        for (const preparedSeedAsset of preparedSeedAssets) {
+          const index = resources.findIndex(
+            ({ $clonable: clonable, $ephemeral: ephemeral, $seed: seed, ...cleanResource }) => {
+              const { $clonable, $ephemeral, $seed, ...cleanAssetResource } =
+                preparedSeedAsset.resource;
+              return isDeepStrictEqual(cleanResource, cleanAssetResource);
+            },
+          );
+          const previousAssetId = preparedSeedAsset.id;
+          const newAssetId = randomUUID();
+          const updatedResource = JSON.parse(
+            JSON.stringify(preparedSeedResources[index]).replace(previousAssetId, newAssetId),
+          );
+          preparedSeedAsset.id = newAssetId;
+          preparedSeedAsset.resource = updatedResource;
+          preparedSeedResources[index] = updatedResource;
+        }
+
         await createAppResourcesWithAssets({
           app,
           context: ctx,
-          resources: resources.map((resource) => {
-            const cleanResource = { ...resource };
-            for (const referencedProperty of Object.keys(resourceDefinition.references ?? {})) {
-              delete cleanResource[referencedProperty];
-            }
-            return {
-              ...cleanResource,
-              $seed: true,
-              $ephemeral: false,
-            };
-          }),
-          preparedAssets,
+          resources: preparedSeedResources,
+          preparedAssets: preparedSeedAssets,
           resourceType,
           action,
           options,

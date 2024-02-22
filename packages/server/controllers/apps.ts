@@ -128,6 +128,7 @@ export async function createApp(ctx: Context): Promise<void> {
         longDescription,
         maskableIcon,
         screenshots,
+        seed,
         sentryDsn,
         sentryEnvironment,
         sharedStyle,
@@ -186,6 +187,7 @@ export async function createApp(ctx: Context): Promise<void> {
       vapidPublicKey: keys.publicKey,
       vapidPrivateKey: keys.privateKey,
       demoMode: Boolean(demoMode),
+      seed: Boolean(seed ?? Boolean(demoMode)),
       controllerCode,
       controllerImplementations,
     };
@@ -508,6 +510,7 @@ export async function patchApp(ctx: Context): Promise<void> {
         maskableIcon,
         path,
         screenshots,
+        seed,
         sentryDsn,
         sentryEnvironment,
         sharedStyle,
@@ -594,6 +597,13 @@ export async function patchApp(ctx: Context): Promise<void> {
 
     if (demoMode !== undefined) {
       result.demoMode = demoMode;
+      // TODO: seed depends on demoMode, this is caused by bad database normalization.
+      // Consider using a property called `type` on the App model instead.
+      result.seed = demoMode;
+    }
+
+    if (seed !== undefined) {
+      result.seed = seed;
     }
 
     if (domain !== undefined) {
@@ -1342,36 +1352,21 @@ export async function reseedDemoApp(ctx: Context): Promise<void> {
   } = ctx;
 
   const app = await App.findByPk(appId, {
-    attributes: ['demoMode', 'definition'],
+    attributes: ['demoMode', 'definition', 'seed'],
   });
 
   assertKoaError(!app, ctx, 404, 'App not found');
 
   assertKoaError(!app.demoMode, ctx, 400, 'App is not in demo mode');
 
-  const demoAssetsToDestroy = await Asset.findAll({
-    attributes: ['id'],
-    include: [
-      {
-        model: App,
-        attributes: ['id'],
-        where: {
-          id: appId,
-          demoMode: true,
-        },
-        required: true,
-      },
-    ],
-    where: {
-      ephemeral: true,
-    },
-  });
+  assertKoaError(!app.seed, ctx, 400, 'Reseeding has been turned off for this app');
 
   logger.info('Cleaning up ephemeral assets.');
 
   const demoAssetsDeletionResult = await Asset.destroy({
     where: {
-      id: { [Op.in]: demoAssetsToDestroy.map((asset) => asset.id) },
+      ephemeral: true,
+      AppId: appId,
     },
   });
 
@@ -1386,6 +1381,7 @@ export async function reseedDemoApp(ctx: Context): Promise<void> {
         where: {
           id: appId,
           demoMode: true,
+          seed: true,
         },
         required: true,
       },
@@ -1408,23 +1404,6 @@ export async function reseedDemoApp(ctx: Context): Promise<void> {
   logger.info(`Reseeded ${demoAssetsToReseed.length} ephemeral assets.`);
 
   const date = new Date();
-  const demoResourcesToDestroy = await Resource.findAll({
-    attributes: ['id', 'AppId', 'type'],
-    include: [
-      {
-        model: App,
-        attributes: ['id'],
-        where: {
-          id: appId,
-          demoMode: true,
-        },
-        required: true,
-      },
-    ],
-    where: {
-      [Op.or]: [{ seed: false, expires: { [Op.lt]: date } }, { ephemeral: true }],
-    },
-  });
 
   logger.info(
     `Cleaning up ephemeral resources and resources with an expiry date earlier than ${date.toISOString()}.`,
@@ -1432,7 +1411,8 @@ export async function reseedDemoApp(ctx: Context): Promise<void> {
 
   const demoResourcesDeletionResult = await Resource.destroy({
     where: {
-      id: { [Op.in]: demoResourcesToDestroy.map((resource) => resource.id) },
+      [Op.or]: [{ seed: false, expires: { [Op.lt]: date } }, { ephemeral: true }],
+      [Op.and]: { AppId: appId },
     },
   });
 

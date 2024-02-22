@@ -19,6 +19,7 @@ interface UpdateAppArguments extends BaseArguments {
   id: number;
   template: boolean;
   demoMode: boolean;
+  seed: boolean;
   force: boolean;
   visibility: AppVisibility;
   sentryDsn: string;
@@ -68,6 +69,10 @@ export function builder(yargs: Argv): Argv<any> {
     .option('demo-mode', {
       describe: 'Whether the app should be used in demo mode.',
       type: 'boolean',
+    })
+    .option('seed', {
+      describe: 'Whether to enable seeding for an app or not.',
+      implies: ['demo-mode'],
     })
     .option('force', {
       describe: 'Whether the lock property should be ignored.',

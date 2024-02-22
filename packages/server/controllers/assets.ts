@@ -129,7 +129,7 @@ export async function createAsset(ctx: Context): Promise<void> {
     user,
   } = ctx;
 
-  const app = await App.findByPk(appId, { attributes: ['id', 'demoMode'] });
+  const app = await App.findByPk(appId, { attributes: ['id', 'demoMode', 'seed'] });
   const appMember = await getUserAppAccount(appId, user?.id);
 
   assertKoaError(!app, ctx, 404, 'App not found');
@@ -149,7 +149,7 @@ export async function createAsset(ctx: Context): Promise<void> {
   let asset: Asset;
   try {
     if (app.demoMode) {
-      if (seededAssets.length === 0) {
+      if (seededAssets.length === 0 && app.seed) {
         await Asset.create({
           AppId: appId,
           data: contents,

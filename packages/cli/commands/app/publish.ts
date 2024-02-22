@@ -19,6 +19,7 @@ interface PublishAppArguments extends BaseArguments {
   organization: string;
   template: boolean;
   demoMode: boolean;
+  seed: boolean;
   dryRun: boolean;
   resources: boolean;
   assets: boolean;
@@ -70,6 +71,10 @@ export function builder(yargs: Argv): Argv<any> {
     .option('demo-mode', {
       describe: 'Whether the app should be used in demo mode.',
       type: 'boolean',
+    })
+    .option('seed', {
+      describe: 'Whether to enable seeding for an app or not.',
+      implies: ['demo-mode'],
     })
     .option('dry-run', {
       describe: 'Whether the API should be called to run without actually creating the app.',

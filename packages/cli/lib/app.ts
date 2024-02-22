@@ -81,6 +81,11 @@ interface PublishAppParams {
   demoMode: boolean;
 
   /**
+   * Whether the App should seed resources and assets in demo mode.
+   */
+  seed: boolean;
+
+  /**
    * The icon to upload.
    */
   icon: NodeJS.ReadStream | ReadStream;
@@ -177,6 +182,11 @@ interface UpdateAppParams {
    * Whether the App should be used in demo mode.
    */
   demoMode: boolean;
+
+  /**
+   * Whether the App should seed resources and assets in demo mode.
+   */
+  seed: boolean;
 
   /**
    * Whether the locked property should be ignored.
@@ -638,6 +648,9 @@ export async function updateApp({
   const id = appsembleContext.id ?? options.id;
   const template = appsembleContext.template ?? options.template ?? false;
   const demoMode = appsembleContext.demoMode ?? options.demoMode ?? false;
+  // TODO: seed depends on demoMode, this is caused by bad database normalization.
+  // Consider using a property called `type` on the App model instead.
+  const seed = appsembleContext.seed ?? options.seed ?? options.demoMode ?? false;
   const visibility = appsembleContext.visibility ?? options.visibility;
   const iconBackground = appsembleContext.iconBackground ?? options.iconBackground;
   const icon = options.icon ?? appsembleContext.icon;
@@ -658,6 +671,7 @@ export async function updateApp({
   formData.append('force', String(force));
   formData.append('template', String(template));
   formData.append('demoMode', String(demoMode));
+  formData.append('demoMode', String(seed));
   formData.append('visibility', visibility);
   formData.append('iconBackground', iconBackground);
   if (icon) {
@@ -761,6 +775,9 @@ export async function publishApp({
   const organizationId = appsembleContext.organization ?? options.organization;
   const template = appsembleContext.template ?? options.template ?? false;
   const demoMode = appsembleContext.demoMode ?? options.demoMode ?? false;
+  // TODO: seed depends on demoMode, this is caused by bad database normalization.
+  // Consider using a property called `type` on the App model instead.
+  const seed = appsembleContext.seed ?? options.seed ?? options.demoMode ?? false;
   const visibility = appsembleContext.visibility ?? options.visibility;
   const iconBackground = appsembleContext.iconBackground ?? options.iconBackground;
   const icon = options.icon ?? appsembleContext.icon;
@@ -785,6 +802,7 @@ export async function publishApp({
   formData.append('OrganizationId', organizationId);
   formData.append('template', String(template));
   formData.append('demoMode', String(demoMode));
+  formData.append('seed', String(seed));
   formData.append('visibility', visibility);
   formData.append('iconBackground', iconBackground);
   formData.append('locked', appLock);
