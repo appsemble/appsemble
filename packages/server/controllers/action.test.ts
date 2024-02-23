@@ -24,6 +24,7 @@ import { useTestDatabase } from '../utils/test/testSchema.js';
 
 let server: Koa;
 let user: User;
+let testApp: AxiosTestInstance;
 const argv = { host: 'http://localhost', secret: 'test', aesSecret: 'testSecret' };
 
 useTestDatabase(import.meta);
@@ -32,7 +33,7 @@ beforeEach(async () => {
   setArgv(argv);
   user = await createTestUser();
   server = await createServer({});
-  await setTestApp(server);
+  testApp = await setTestApp(server);
 });
 
 it('should handle if the app doesn’t exist', async () => {
@@ -429,6 +430,95 @@ describe('handleRequestProxy', () => {
     `);
     expect(proxiedContext.method).toBe('GET');
     expect(proxiedContext.url).toBe('/path');
+  });
+
+  it('throw if url matches itself', async () => {
+    await App.create({
+      vapidPublicKey: '',
+      vapidPrivateKey: '',
+      OrganizationId: 'org',
+      definition: {
+        defaultPage: '',
+        pages: [
+          {
+            name: '',
+            blocks: [
+              {
+                type: '',
+                version: '',
+                actions: {
+                  sameHost: {
+                    type: 'request',
+                    url: `${testApp.defaults.baseURL}api/apps/2/action/pages.0.blocks.0.actions.sameHost?data={}`,
+                  },
+                },
+              },
+            ],
+          },
+        ],
+      },
+    } as Partial<App>);
+    const response = await request.get(
+      '/api/apps/2/action/pages.0.blocks.0.actions.sameHost?data={}',
+    );
+    expect(response.status).toBe(400);
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 400 Bad Request
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "error": "Bad Request",
+        "message": "Not allowed to make direct requests to the Appsemble action controller using this action.",
+        "statusCode": 400,
+      }
+    `);
+  });
+
+  it('should not throw if hostname does not match', async () => {
+    const remoteApp = new Koa();
+    remoteApp.use((ctx) => {
+      ctx.status = 418;
+      ctx.body = { message: 'I’m a teapot' };
+    });
+    const remoteServer = await createInstance(remoteApp);
+    const remoteUrl = `${remoteServer.defaults.baseURL}api/apps/2/action/pages.0.blocks.0.actions.differentHost?data={}`;
+
+    await App.create({
+      vapidPublicKey: '',
+      vapidPrivateKey: '',
+      OrganizationId: 'org',
+      definition: {
+        defaultPage: '',
+        pages: [
+          {
+            name: '',
+            blocks: [
+              {
+                type: '',
+                version: '',
+                actions: {
+                  differentHost: {
+                    type: 'request',
+                    url: { static: remoteUrl },
+                  },
+                },
+              },
+            ],
+          },
+        ],
+      },
+    } as Partial<App>);
+
+    const response = await request.get(
+      '/api/apps/2/action/pages.0.blocks.0.actions.differentHost?data={}',
+    );
+
+    // TODO: instead ensure the remapped url requested (in the controller) matched the remote url
+    expect(remoteServer.defaults.baseURL).not.toBe(proxiedRequest.defaults.baseURL);
+    expect(response.status).toBe(418);
+    expect(response.data).toStrictEqual({
+      message: 'I’m a teapot',
+    });
   });
 
   it('should throw if data is not a JSON object', async () => {

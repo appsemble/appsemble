@@ -141,6 +141,15 @@ async function handleRequestProxy(
     ctx,
   );
 
+  const proxyUrl = new URL(String(remap(action.url, data, remapperContext)));
+  if (/\/api\/apps\/\d+\/action\/.*/.test(proxyUrl.pathname) && ctx.URL.host === proxyUrl.host) {
+    throwKoaError(
+      ctx,
+      400,
+      'Not allowed to make direct requests to the Appsemble action controller using this action.',
+    );
+  }
+
   let params;
   try {
     if (query.params) {
@@ -152,7 +161,7 @@ async function handleRequestProxy(
 
   let axiosConfig: RawAxiosRequestConfig = {
     method: action.method ?? 'GET',
-    url: String(remap(action.url, data, remapperContext)),
+    url: String(proxyUrl),
     params,
     responseType: 'arraybuffer',
     headers: {},
