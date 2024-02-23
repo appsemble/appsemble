@@ -671,7 +671,7 @@ export async function updateApp({
   formData.append('force', String(force));
   formData.append('template', String(template));
   formData.append('demoMode', String(demoMode));
-  formData.append('demoMode', String(seed));
+  formData.append('seed', String(seed));
   formData.append('visibility', visibility);
   formData.append('iconBackground', iconBackground);
   if (icon) {
