@@ -2,6 +2,32 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.25.0](https://gitlab.com/appsemble/appsemble/-/releases/0.25.0)] - 2024-02-23
+
+### Added
+
+- Cli: More options to the create app command.
+- Cli: Option to disable seeding demo apps in `publish app` command.
+- Cli: Option to disable seeding demo apps in `update app` command.
+- Server: A setting to disable seeding for demo apps.
+- Studio: New documentation page explaining app concept and various app settings.
+
+### Changed
+
+- Studio: The app snapshot editor now uses a split view.
+
+### Fixed
+
+- App: Blocks were incorrectly filtered, which caused blocks of the same type to be filtered only by
+  their name, excluding their version, resulting in their JavaScript not being loaded.
+- React-components: Solve issue where sidebar backdrop covers the sidebar itself.
+- Server: Disallow request action calling itself.
+- Server: In demo mode ephemeral resources with assets would fail to create if not initially seeded.
+- Studio: App collections page will no longer show an unusable dropdown next to the Edit button.
+- Studio: Loading the studio at the style editor page no longer crashes the page.
+- Studio: The app snapshot editor was only 5 pixels high making difficult to view.
+- Studio: The resource details editor was only 5 pixels high making difficult to view.
+
 ## \[[0.24.13](https://gitlab.com/appsemble/appsemble/-/releases/0.24.13)] - 2024-02-12
 
 ### Added

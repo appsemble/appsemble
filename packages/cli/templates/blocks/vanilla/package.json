@@ -2,6 +2,6 @@
   "private": true,
   "type": "module",
   "dependencies": {
-    "@appsemble/sdk": "0.24.13"
+    "@appsemble/sdk": "0.25.0"
   }
 }

@@ -1,7 +1,7 @@
 apiVersion: v2
 name: appsemble
-version: 0.24.13
-appVersion: 0.24.13
+version: 0.25.0
+appVersion: 0.25.0
 kubeVersion: '>=1.21.0'
 type: application
 description: The open source low-code app building platform
@@ -25,14 +25,42 @@ dependencies:
 annotations:
   artifacthub.io/changes: >
     - kind: added
-      description: "Server: Add an endpoint that fetches all demo app members without security."
+      description: "Cli: More options to the create app command."
     - kind: added
-      description: "Studio: New action documentation section including code snippets."
+      description: "Cli: Option to disable seeding demo apps in publish app command."
+    - kind: added
+      description: "Cli: Option to disable seeding demo apps in update app command."
+    - kind: added
+      description: "Server: A setting to disable seeding for demo apps."
+    - kind: added
+      description: "Studio: New documentation page explaining app concept and various
+        app settings."
     - kind: changed
-      description: "App: Users can now directly select with which demo user to login,
-        without logging in with Appsemble first."
+      description: "Studio: The app snapshot editor now uses a split view."
     - kind: fixed
-      description: "App: Fixed a bug in the app side menu when the user is still not logged in."
+      description: "App: Blocks were incorrectly filtered, which caused blocks of the
+        same type to be filtered only by their name, excluding their version,
+        resulting in their JavaScript not being loaded."
+    - kind: fixed
+      description: "React-components: Solve issue where sidebar backdrop covers the
+        sidebar itself."
+    - kind: fixed
+      description: "Server: Disallow request action calling itself."
+    - kind: fixed
+      description: "Server: In demo mode ephemeral resources with assets would fail to
+        create if not initially seeded."
+    - kind: fixed
+      description: "Studio: App collections page will no longer show an unusable
+        dropdown next to the Edit button."
+    - kind: fixed
+      description: "Studio: Loading the studio at the style editor page no longer
+        crashes the page."
+    - kind: fixed
+      description: "Studio: The app snapshot editor was only 5 pixels high making
+        difficult to view."
+    - kind: fixed
+      description: "Studio: The resource details editor was only 5 pixels high making
+        difficult to view."
   artifacthub.io/license: LGPL-3.0-only
   artifacthub.io/links: |
     - name: Appsemble Studio
