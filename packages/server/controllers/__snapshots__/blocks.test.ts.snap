@@ -3374,7 +3374,7 @@ storage: localStorage
                 ],
                 "property": "instance.actions.onSubmit.type",
                 "schema": {
-                  "description": "Get a list of all of the user’s teams.",
+                  "description": "Get a list of all of the teams in an app.",
                   "enum": [
                     "team.list",
                   ],
@@ -7863,7 +7863,7 @@ storage: localStorage
         ],
         "property": "instance.actions.onSubmit.type",
         "schema": {
-          "description": "Get a list of all of the user’s teams.",
+          "description": "Get a list of all of the teams in an app.",
           "enum": [
             "team.list",
           ],

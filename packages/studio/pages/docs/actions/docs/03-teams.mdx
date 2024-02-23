@@ -3,7 +3,7 @@
 ## Introduction
 
 Team actions allow users with sufficient permissions to manage teams and invite members. To know
-more about the teams visit [this page](../../docs/03-guide/teams.md). Team action are client side
+more about the teams visit [this page](../../docs/03-guide/teams.md). Team actions are client side
 actions, i.e. these actions are not implemented for the server side. Supported team actions are as
 follow.
 
@@ -43,7 +43,7 @@ blocks:
 ### team.join
 
 This action allows a user to join a team. Supported field for this action is `type`, which is
-`team.join` in this case. It return an error if user tries to join that they already are a member of
+`team.join` in this case. It returns an error if the user tries to join a team that they are already a member of,
 or if the team security is defined as `invite`. Here is an example of how you can use this action to
 allow users to join a team selected by them.
 
@@ -96,8 +96,8 @@ blocks:
 
 ### team.members
 
-This action allows to get a list of a team’s members. Supported fields for this action are `type`
-and `id`. Id is The ID of a specific team to get the members from and type is `team.members`. This
+This action gets a list of a team’s members. Supported fields for this action are `type`
+and `id`. Id is the ID of a specific team to get the members from and the type is `team.members`. This
 can be particularly helpful in keeping a record of roles assigned to various users. Both the fields
 are required. Here is an example of this action being used to fetch all the employees of a
 particular department in a company.
