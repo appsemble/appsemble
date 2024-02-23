@@ -67,22 +67,31 @@ blocks:
 
 ### team.list
 
-This action allows to get a list of all of the teams user is a part of. Supported field for this
-action is `type`, which is `team.list` in this case. This action can be helpful in keeping a record
-of various organizational roles assigned to a user. Here is an example of how you can use this
-action to list all teams of a user.
+This action allows to get a list of all of the teams in an app. Supported field for this action is
+`type`, which is `team.list` in this case. An example use case of this action is providing users of
+your app the option to choose the team they want to join. Here is an example of previously mentioned
+use case of the action.
 
-```yaml validate
+```yaml
 blocks:
-  - type: action-button
+  - type: form
     version: *block-version
     parameters:
-      icon: people-group
+      fields:
+        - name: team
+          label: { translate: selectTeam }
+          type: enum
+          action: getTeams
     actions:
-      onClick:
+      getTeams:
         type: team.list
-        onSuccess:
-          type: log
+        - array.map:
+            remapAfter:
+              object.from:
+                label:
+                  prop: name
+                value:
+                  prop: id
 ```
 
 ### team.members
