@@ -60,7 +60,6 @@ The general tab allows you to change general app settings like the app name and 
 
 In the app view you see the app preview that allows you to test the app functionality while you
 change settings. It auto updates for every made change.
-![App Preview](../../gui-assets/app-preview.png 'App Preview')
 
 ![App Preview](../../gui-assets/app-preview.png 'App Preview')
 
