@@ -1,7 +1,7 @@
 apiVersion: v2
 name: appsemble
-version: 0.25.0
-appVersion: 0.25.0
+version: 0.25.1
+appVersion: 0.25.1
 kubeVersion: '>=1.21.0'
 type: application
 description: The open source low-code app building platform
@@ -25,42 +25,14 @@ dependencies:
 annotations:
   artifacthub.io/changes: >
     - kind: added
-      description: "Cli: More options to the create app command."
-    - kind: added
-      description: "Cli: Option to disable seeding demo apps in publish app command."
-    - kind: added
-      description: "Cli: Option to disable seeding demo apps in update app command."
-    - kind: added
-      description: "Server: A setting to disable seeding for demo apps."
-    - kind: added
-      description: "Studio: New documentation page explaining app concept and various
-        app settings."
-    - kind: changed
-      description: "Studio: The app snapshot editor now uses a split view."
+      description: "Cli: Allow setting seed in the .appsemblerc file of an app."
     - kind: fixed
-      description: "App: Blocks were incorrectly filtered, which caused blocks of the
-        same type to be filtered only by their name, excluding their version,
-        resulting in their JavaScript not being loaded."
+      description: "Cli: In version 0.25.1 the app update command changed the demoMode
+        value to the seed value instead of setting the seed value."
     - kind: fixed
-      description: "React-components: Solve issue where sidebar backdrop covers the
-        sidebar itself."
-    - kind: fixed
-      description: "Server: Disallow request action calling itself."
-    - kind: fixed
-      description: "Server: In demo mode ephemeral resources with assets would fail to
-        create if not initially seeded."
-    - kind: fixed
-      description: "Studio: App collections page will no longer show an unusable
-        dropdown next to the Edit button."
-    - kind: fixed
-      description: "Studio: Loading the studio at the style editor page no longer
-        crashes the page."
-    - kind: fixed
-      description: "Studio: The app snapshot editor was only 5 pixels high making
-        difficult to view."
-    - kind: fixed
-      description: "Studio: The resource details editor was only 5 pixels high making
-        difficult to view."
+      description: "Server: In version 0.25.1 demo apps that would previously seed
+        were not being updated to allow them to seed again. The demo apps should be
+        manually updated to seed again."
   artifacthub.io/license: LGPL-3.0-only
   artifacthub.io/links: |
     - name: Appsemble Studio
