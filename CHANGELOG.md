@@ -10,9 +10,9 @@ All notable changes to this project will be documented in this file.
 
 ### Fixed
 
-- Cli: In version `0.25.1` the `app update` command changed the `demoMode` value to the `seed` value
+- Cli: In version `0.25.0` the `app update` command changed the `demoMode` value to the `seed` value
   instead of setting the seed value.
-- Server: In version `0.25.1` demo apps that would previously seed were not being updated to allow
+- Server: In version `0.25.0` demo apps that would previously seed were not being updated to allow
   them to seed again. The demo apps should be manually updated to seed again.
 
 ## \[[0.25.0](https://gitlab.com/appsemble/appsemble/-/releases/0.25.0)] - 2024-02-23
