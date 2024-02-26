@@ -13,15 +13,15 @@ export const key = '0.25.0';
 export async function up(db: Sequelize): Promise<void> {
   const queryInterface = db.getQueryInterface();
 
-  logger.info('Adding new column `locked-temp` locked to table `App`');
+  logger.info('Adding new column `seed` to table `App`');
   await queryInterface.addColumn('App', 'seed', {
     type: DataTypes.BOOLEAN,
     allowNull: false,
     defaultValue: false,
   });
 
-  logger.info('Setting column `seed` to true where column `demo` = true for `App` table');
-  await queryInterface.bulkUpdate('App', { demoMode: true }, { seed: true });
+  logger.info('Setting column `seed` to true where column `demoMode` = true for `App` table');
+  await queryInterface.bulkUpdate('App', { seed: true }, { demoMode: true });
 }
 
 /**

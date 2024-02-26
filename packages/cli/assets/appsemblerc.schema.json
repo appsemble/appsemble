@@ -147,6 +147,10 @@
             "type": "boolean",
             "description": "If demoMode is specified, this will override `--demo-mode` passed on the command line."
           },
+          "seed": {
+            "type": "boolean",
+            "description": "If `seed` is specified, this will override `--seed` passed on the command line."
+          },
           "appLock": {
             "enum": ["fullLock", "studioLock", "unlocked"],
             "description": "Set the value of AppLock for your app."
