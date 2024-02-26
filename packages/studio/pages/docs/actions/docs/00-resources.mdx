@@ -4,7 +4,7 @@
 
 Actions can be used to query the resources as well as perform various operations on resources.
 Client side actions are extended from the `request` action, hence they support the fields supported
-by the request action and additional fields as specified in every action's description. To use
+by the request action and additional fields as specified in every action’s description. To use
 resources in your app, you need to define the resources in the `app-definition.yaml file`. Below is
 an example of how you can define resources taken from the [Person](/apps/3) app.
 
@@ -35,6 +35,44 @@ resources:
           format: binary
 ```
 
+Resource actions can be used in association with [teams](../../docs/03-guide/teams.md) to limit CRUD
+actions on your resources. This can be particularly helpful in separating roles and privileges of
+various users in your organization. Following is an example of how you can limit querying `employee`
+resources to the members of team and creating resource to the manager.
+
+```yaml validate
+resources:
+  employee:
+    schema:
+      type: object
+      additionalProperties: false
+      required:
+        - firstName
+        - lastName
+        - email
+        - department
+    properties:
+      firstName:
+        type: string
+      lastName:
+        type: string
+      email:
+        type: string
+        format: email
+      department:
+        type: enum
+        enum: ['HR', 'Engineering', 'Marketing', 'Data', 'Security']
+      picture:
+        type: string
+        format: binary
+    create:
+      roles:
+        - $team:manager
+    query:
+      roles:
+        - $teams:member
+```
+
 Supported resource actions are as below:
 
 - `resource.get`
@@ -54,7 +92,7 @@ Supported resource actions are as below:
 This action is implemented for client as well as server side. This action is used to fetch a single
 resource. Supported fields for this action are `type`, `resource` and `view`. Fields `type` and
 `resource` are required. Resource refers to the resource to be fetched, and view is the view to use
-for the resource. Here's an example of how you can use this action to fetch the `person` resource.
+for the resource. Here’s an example of how you can use this action to fetch the `person` resource.
 
 ```yaml validate-block
 blocks:
@@ -71,7 +109,7 @@ blocks:
 This action is implemented for client as well as the server side. This action is used to fetch all
 the resources. Similar to `resource.get` supported fields for this action are `type`, `resource` and
 `view`. Fields `type` and `resource` are required. Resource refers to the resource to be fetched,
-and view is the view to use for the resource. Here's an example of how you can use this action to
+and view is the view to use for the resource. Here’s an example of how you can use this action to
 fetch all `person` resources.
 
 ```yaml validate
@@ -88,7 +126,7 @@ blocks:
 
 This action is implemented for client only. This action is used to fetch the count of resources.
 Supported field for this action are `type` and `resource`. Both of the fields are required. Resource
-refers to the resource whose count is to be fetched. Here's an example of how you can use this
+refers to the resource whose count is to be fetched. Here’s an example of how you can use this
 action to fetch the number of resources.
 
 ```yaml validate
@@ -105,7 +143,7 @@ blocks:
 
 This action is implemented for client as well as the server side. This action is used to create new
 resources. Supported fields for this action are `type` and `resource`. Both of the fields are
-required. Here's an example of how you can use this action to create a new resource of type person.
+required. Here’s an example of how you can use this action to create a new resource of type person.
 
 ```yaml validate
 blocks:
@@ -121,8 +159,8 @@ blocks:
 ### resource.update
 
 This action is implemented for client as well as server side. This action is used to replace some
-resource's data with a completely new set of values. Supported field for this action are `type` and
-`resource`. Both of the fields are required. Resource refers to the resource to be updated. Here's
+resource’s data with a completely new set of values. Supported field for this action are `type` and
+`resource`. Both of the fields are required. Resource refers to the resource to be updated. Here’s
 an example of how you can use this action to update an existing resource of type note.
 
 ```yaml validate
@@ -150,7 +188,7 @@ blocks:
 
 This action is implemented for client as well as the server side. This action is used to partially
 update a resource with new data. Supported field for this action are `type` and `resource`. Both of
-the fields are required. Resource refers to the resource to be partially updated. Here's an example
+the fields are required. Resource refers to the resource to be partially updated. Here’s an example
 of how you can partially update a resource of type note using this action.
 
 ```yaml validate
@@ -206,7 +244,7 @@ This action is only implemented for the client side. This action is used to subs
 modification for push notifications. Supported fields for this action are `type`, `resource` and
 `action`. Fields type and resource are required, the field action refers to the action on the
 resource for which push notifications will be subscribed, the action has to be either of type
-`update`, `delete` or `create`. The default value set for action is `update`. Here's how you can use
+`update`, `delete` or `create`. The default value set for action is `update`. Here’s how you can use
 this action to subscribe to all the updates made to the resource person:
 
 ```yaml validate
@@ -232,7 +270,7 @@ This action is only implemented for the client side. This action is used to unsu
 resource modifications. Supported fields for this action are `type`, `resource` and `action`. Fields
 type and resource are required, the field action refers to the action that shall unsubscribe from
 the resource, the action has to be either of type `update`, `delete` or `create`. The default value
-set for action is `update`. Here's how you can use this action to unsubscribe to the delete
+set for action is `update`. Here’s how you can use this action to unsubscribe to the delete
 notifications related to resource person.
 
 ```yaml validate
@@ -251,11 +289,11 @@ blocks:
 ### resource.subscription.toggle
 
 This action is implemented for the client side only. This action is used to toggle push
-notifications for resource modification. i.e. It will set the subscribed property to `true` if it's
+notifications for resource modification. i.e. It will set the subscribed property to `true` if it’s
 set to `false` and vice versa. Supported fields for this action are `type`, `resource` and `action`.
 Fields type and resource are required, the field action refers to the action on the resource for
 which push notifications will be toggled, action has to be either of type `update`, `delete` or
-`create`. The default value set for action is `update`. Here's how you can use this action.
+`create`. The default value set for action is `update`. Here’s how you can use this action.
 
 ```yaml validate
 blocks:
@@ -276,7 +314,7 @@ This action is implemented only for the client side and can be used to access th
 notification subscriptions for a resource. Supported fields for this action are `type`, `resource`
 and `action`. Fields type and resource are required, the field action refers to the action on the
 resource for which the push notification status will be fetched. Action has to be either of type
-`update`, `delete` or `create`. The default value set for action is `update`. Here's an example of
+`update`, `delete` or `create`. The default value set for action is `update`. Here’s an example of
 usage of this action.
 
 ```yaml validate

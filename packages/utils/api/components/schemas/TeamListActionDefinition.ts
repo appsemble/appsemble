@@ -8,7 +8,7 @@ export const TeamListActionDefinition = extendJSONSchema(BaseActionDefinition, {
   properties: {
     type: {
       enum: ['team.list'],
-      description: 'Get a list of all of the user’s teams.',
+      description: 'Get a list of all of the teams in an app.',
     },
   },
 });

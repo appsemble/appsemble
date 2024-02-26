@@ -8,7 +8,7 @@ types but is cleaned after a page refresh. `sessionStorage` stores data for a se
 stored until the tab (or browser) is closed. This is relatively less secure than the `appStorage`.
 `localStorage` stores data for much longer times and data can only be manually cleared either using
 javascript or by clearing the browser cache. `indexedDB` is way for you to persisently store data
-inside user's browser. This is the least secure among the storage types mentioned previously but a
+inside user’s browser. This is the least secure among the storage types mentioned previously but a
 great choice for storing data that is required for a longer time. Storage actions are client side
 actions i.e. they are not implemented for the server side. To know more about the storage API visit
 this [page](/docs/03-guide/storage). Supported storage actions are as below:
@@ -26,7 +26,7 @@ This action can be used to read data from indexedDB, localStorage, sessionStorag
 Usage of this action requires the `key` and `type` fields. Supported fields for the usage of the
 action are `type`, `key` and `storage`. Key is used to fetch the data from the storage, type is
 `storage.read` and storage is used to identify the type of storage to use. Default value for the
-storage key is `indexedDb`. Here's an example of how you can use this action to read data with key
+storage key is `indexedDb`. Here’s an example of how you can use this action to read data with key
 poolData from sessionStorage.
 
 ```yaml validate
@@ -48,7 +48,7 @@ This action is used to write data to indexedDB, localStorage, sessionStorage, an
 of this action requires the `key`, `value` and `type` fields. Supported fields for the usage of the
 action are `type`, `key`, `value` and `storage`. Key and value are used to store the data in
 storage, type is `storage.write` and storage is used to identify the type of storage to use. Default
-value for the storage key is `indexedDb`. Here's an example of how you can use this action to write
+value for the storage key is `indexedDb`. Here’s an example of how you can use this action to write
 data.
 
 ```yaml validate
@@ -75,7 +75,7 @@ This action is used to append data to an existing array in storage. If the stora
 object, it turns it into an array to append the data on. Supported fields for the usage of the
 action are `type`, `key`, `value` and `storage`. Key and value are used to append data to existing
 array in storage, type is `storage.append` and storage is used to identify the type of storage to
-use. Default value for the storage key is `indexedDb`. Here's an example of how you can use this
+use. Default value for the storage key is `indexedDb`. Here’s an example of how you can use this
 action to write data.
 
 ```yaml validate
@@ -110,7 +110,7 @@ one item, the value is turned into a singular object. If the entry is a single i
 removed entirely. Usage of this action requires the `key` and `type` fields. Supported fields for
 the usage of the action are `type`, `key` and `storage`. Key is used to delete the data from the
 storage, type is `storage.subtract` and storage is used to identify the type of storage to use.
-Default value for the storage key is `indexedDb`. Here's an example of how you can use this action
+Default value for the storage key is `indexedDb`. Here’s an example of how you can use this action
 to subtract an entry of data.
 
 ```yaml validate
@@ -132,7 +132,7 @@ This action is used to update an existing item in storage, or update an item ins
 Supported fields for the usage of the action are `type`, `key`, `item`, `value` and `storage`. Item
 is used to identify the item in storage, key and value are used to append data to existing array in
 storage, type is `storage.update` and storage is used to identify the type of storage to use.
-Default value for the storage key is `indexedDb`. Here's an example of how you can use this action
+Default value for the storage key is `indexedDb`. Here’s an example of how you can use this action
 to update the data in storage.
 
 ```yaml validate
@@ -167,7 +167,7 @@ This action is used to delete the item that is stored at the specified key. Usag
 requires the `key` and `type` fields. Supported fields for the usage of the action are `type`, `key`
 and `storage`. Key is used to delete the data from the storage, type is `storage.delete` and storage
 is used to identify the type of storage to use. Default value for the storage key is `indexedDb`.
-Here's an example of how you can use this in action to delete the data in storage.
+Here’s an example of how you can use this in action to delete the data in storage.
 
 ```yaml validate
 blocks:
