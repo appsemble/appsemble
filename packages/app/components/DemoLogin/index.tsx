@@ -16,11 +16,12 @@ import {
 import { type Team, type TeamMember } from '@appsemble/types';
 import { TeamRole } from '@appsemble/utils';
 import axios from 'axios';
-import { type ReactNode, useCallback, useEffect, useMemo } from 'react';
+import { type ReactNode, useCallback, useEffect, useMemo, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 
 import { messages } from './messages.js';
 import { apiUrl, appId } from '../../utils/settings.js';
+import { useAppDefinition } from '../AppDefinitionProvider/index.js';
 import { useDemoAppMembers } from '../DemoAppMembersProvider/index.js';
 import { useUser } from '../UserProvider/index.js';
 
@@ -128,22 +129,47 @@ function TeamControls(): ReactNode {
 
 export function DemoLogin({ modal }: DemoLoginProps): ReactNode {
   const { demoLogin } = useUser();
+  const { definition } = useAppDefinition();
   const { demoAppMembers, refetchDemoAppMembers } = useDemoAppMembers();
 
   const busy = useToggle();
 
+  const [operation, setOperation] = useState<'create-account' | 'login'>(
+    demoAppMembers.length ? 'login' : 'create-account',
+  );
+
+  const setLogin = (): void => {
+    setOperation('login');
+  };
+
+  const setCreateAccount = (): void => {
+    setOperation('create-account');
+  };
+
+  const defaultAppRole = useMemo(() => definition?.security?.default.role || '', [definition]);
+
+  const appRoles = useMemo<string[]>(
+    () => Object.keys(definition?.security?.roles) || [],
+    [definition],
+  );
+
   const defaultValues = useMemo(
     () => ({
       appMemberId: demoAppMembers[0]?.userId ?? undefined,
+      appRole: defaultAppRole ?? appRoles[0] ?? undefined,
     }),
-    [demoAppMembers],
+    [appRoles, defaultAppRole, demoAppMembers],
   );
 
   const handleLogin = useCallback(
-    async ({ appMemberId }: typeof defaultValues) => {
+    async ({ appMemberId, appRole }: typeof defaultValues) => {
       busy.enable();
       try {
-        await demoLogin(appMemberId ?? demoAppMembers[0]?.userId ?? '');
+        await demoLogin({
+          appMemberId: operation === 'login' ? appMemberId ?? demoAppMembers[0]?.userId ?? '' : '',
+          appRole:
+            operation === 'create-account' ? appRole ?? defaultAppRole ?? appRoles[0] ?? '' : '',
+        });
         busy.disable();
         if (modal) {
           modal.disable();
@@ -155,31 +181,62 @@ export function DemoLogin({ modal }: DemoLoginProps): ReactNode {
         throw error;
       }
     },
-    [busy, demoLogin, demoAppMembers, modal, refetchDemoAppMembers],
+    [
+      appRoles,
+      busy,
+      defaultAppRole,
+      demoAppMembers,
+      demoLogin,
+      modal,
+      operation,
+      refetchDemoAppMembers,
+    ],
   );
 
   const fields = (
     <>
       <SimpleFormError>{() => <FormattedMessage {...messages.loginFailed} />}</SimpleFormError>
       {demoAppMembers.length ? (
-        <SimpleFormField
-          component={SelectField}
-          disabled={demoAppMembers.length < 2 || busy.enabled}
-          label={<FormattedMessage {...messages.selectMember} />}
-          name="appMemberId"
-          required
-        >
-          {demoAppMembers.map((appMember) => (
-            <option key={appMember.userId} value={appMember.userId}>
-              {appMember.role} {appMember.name}
-            </option>
-          ))}
-        </SimpleFormField>
+        <div className="mb-6">
+          <SimpleFormField
+            component={SelectField}
+            disabled={demoAppMembers.length < 2 || busy.enabled}
+            label={<FormattedMessage {...messages.selectMember} />}
+            name="appMemberId"
+            required
+          >
+            {demoAppMembers.map((appMember) => (
+              <option key={appMember.userId} value={appMember.userId}>
+                {appMember.role} {appMember.name}
+              </option>
+            ))}
+          </SimpleFormField>
+          <SimpleSubmit allowPristine={false} disabled={busy.enabled} onClick={setLogin}>
+            <FormattedMessage {...messages.login} />
+          </SimpleSubmit>
+        </div>
+      ) : null}
+      {appRoles.length ? (
+        <>
+          <SimpleFormField
+            component={SelectField}
+            disabled={appRoles.length < 2 || busy.enabled}
+            label={<FormattedMessage {...messages.selectRole} />}
+            name="appRole"
+            required
+          >
+            {appRoles.map((appRole) => (
+              <option key={appRole} value={appRole}>
+                {appRole}
+              </option>
+            ))}
+          </SimpleFormField>
+          <SimpleSubmit allowPristine={false} disabled={busy.enabled} onClick={setCreateAccount}>
+            <FormattedMessage {...messages.createAccount} />
+          </SimpleSubmit>
+        </>
       ) : null}
       <TeamControls />
-      <SimpleSubmit allowPristine={false} disabled={busy.enabled}>
-        <FormattedMessage {...messages.login} />
-      </SimpleSubmit>
     </>
   );
 

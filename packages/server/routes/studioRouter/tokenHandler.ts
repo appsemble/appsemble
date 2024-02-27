@@ -190,6 +190,7 @@ export async function tokenHandler(ctx: Context): Promise<void> {
       case 'urn:ietf:params:oauth:grant-type:demo-login': {
         const {
           appMemberId,
+          appRole,
           client_id: clientId,
           scope: requestedScope,
         } = checkTokenRequestParameters(query, ['client_id', 'role', 'scope', 'refresh_token']);
@@ -216,11 +217,15 @@ export async function tokenHandler(ctx: Context): Promise<void> {
           throw new GrantError('invalid_client');
         }
 
-        const role = app.definition.security?.default?.role;
-
         let member: AppMember;
         if (appMemberId === '') {
           logger.verbose('Demo login: Creating new demo user');
+
+          const role =
+            appRole === ''
+              ? app.definition.security?.default?.role ??
+                Object.keys(app.definition.security?.roles)[0]
+              : appRole;
 
           if (!role) {
             throw new GrantError('invalid_request');
@@ -255,6 +260,8 @@ export async function tokenHandler(ctx: Context): Promise<void> {
           if (selectedUser) {
             logger.verbose('Demo login: Using existing demo user');
             member = selectedUser;
+          } else {
+            throw new GrantError('invalid_request');
           }
         }
 

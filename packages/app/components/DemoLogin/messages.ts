@@ -9,13 +9,21 @@ export const messages = defineMessages({
     id: 'app.AyGauy',
     defaultMessage: 'Login',
   },
+  createAccount: {
+    id: 'app.5JcXdV',
+    defaultMessage: 'Create Account',
+  },
   loginFailed: {
     id: 'app.nuWwea',
     defaultMessage: 'Login failed',
   },
   selectMember: {
-    id: 'app.oYbaYq',
-    defaultMessage: 'Select an app member',
+    id: 'app.upN42Q',
+    defaultMessage: 'Select an app member to login as',
+  },
+  selectRole: {
+    id: 'app.ji+1KV',
+    defaultMessage: 'Select a role to create an account with',
   },
   selectTeamRole: {
     id: 'app.obEU1l',
