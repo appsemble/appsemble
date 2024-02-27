@@ -35,6 +35,14 @@ export default function createWebpackConfig(
     output: {
       filename: `${blockName}.js`,
     },
+    ...(production
+      ? {}
+      : {
+          watch: true,
+          watchOptions: {
+            ignored: /node_modules/,
+          },
+        }),
     resolve: {
       extensions: ['.js', '.ts', '.tsx', '.json'],
       extensionAlias: {

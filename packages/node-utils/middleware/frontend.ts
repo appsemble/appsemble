@@ -39,13 +39,16 @@ export async function frontend(
       return next();
     },
     (ctx, next) => {
-      const { hostname } = ctx;
+      const { app, hostname } = ctx;
 
       if (!skipRoute.test(ctx.path)) {
         return koaDevMiddleware(ctx, next);
       }
 
-      if (new URL(argv.host).hostname === hostname || isIP(hostname)) {
+      if (
+        (new URL(argv.host).hostname === hostname && app.env !== 'development') ||
+        isIP(hostname)
+      ) {
         return next();
       }
 
