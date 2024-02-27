@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.25.2](https://gitlab.com/appsemble/appsemble/-/releases/0.25.2)] - 2024-02-27
+
+### Changed
+
+- App: Added an option to create an account from the demo login component.
+- Server: Accept an `appRole` in the demo-login `tokenHandler` endpoint.
+- Webpack-config: Enabled watch mode for blocks in development.
+
+### Fixed
+
+- Node-utils: Fixed the check for `koa-dev-middleware`.
+
 ## \[[0.25.1](https://gitlab.com/appsemble/appsemble/-/releases/0.25.1)] - 2024-02-26
 
 ### Added
