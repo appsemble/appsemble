@@ -25,10 +25,13 @@ import { processCss } from './processCss.js';
  * @returns The Webpack stats object.
  */
 
-export async function buildBlock(buildConfig: ProjectBuildConfig): Promise<Stats> {
+export async function buildBlock(
+  buildConfig: ProjectBuildConfig,
+  env?: 'development' | 'production',
+): Promise<Stats> {
   const conf = await getProjectWebpackConfig(
     buildConfig,
-    'production',
+    env || 'production',
     join(buildConfig.dir, buildConfig.output),
   );
 
@@ -37,10 +40,9 @@ export async function buildBlock(buildConfig: ProjectBuildConfig): Promise<Stats
     await rm(conf.output.path, { force: true, recursive: true });
   }
   logger.info(`Building ${buildConfig.name}@${buildConfig.version} 🔨`);
-
   const compiler = webpack(conf);
   return new Promise((resolve, reject) => {
-    compiler.run((err, stats) => {
+    const callback = (err: Error | null, stats: Stats): void => {
       if (err) {
         reject(err);
       } else if (stats.hasErrors()) {
@@ -49,7 +51,13 @@ export async function buildBlock(buildConfig: ProjectBuildConfig): Promise<Stats
         logger.verbose(stats.toString({ colors: true }));
         resolve(stats);
       }
-    });
+    };
+
+    if (env === 'development') {
+      compiler.watch({ ignored: /node_modules/ }, callback);
+    } else {
+      compiler.run(callback);
+    }
   });
 }
 
