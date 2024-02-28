@@ -63,7 +63,7 @@ const GuiEditorPage = lazy(() => import('./GuiEditor/index.js'));
 
 export function AppRoutes(): ReactNode {
   const { id, lang } = useParams<{ id: string; lang: string }>();
-  const url = `/${lang}/apps/${id}`;
+  const url = `apps/${id}`;
   const { organizations } = useUser();
   const {
     data: app,
@@ -103,7 +103,7 @@ export function AppRoutes(): ReactNode {
           </>
         }
       >
-        <MenuItem exact icon="info" to={url}>
+        <MenuItem end icon="info" to={url}>
           <FormattedMessage {...messages.details} />
         </MenuItem>
         {editPermission ? (

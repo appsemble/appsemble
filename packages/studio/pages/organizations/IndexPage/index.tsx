@@ -2,7 +2,7 @@ import { Button, useData, useToggle } from '@appsemble/react-components';
 import { type Organization } from '@appsemble/types';
 import { type ReactNode, useCallback } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 import { messages } from './messages.js';
 import { AsyncDataView } from '../../../components/AsyncDataView/index.js';
@@ -15,8 +15,6 @@ import { useUser } from '../../../components/UserProvider/index.js';
 export function IndexPage(): ReactNode {
   const result = useData<Organization[]>('/api/organizations');
   const { organizations, userInfo } = useUser();
-  const { lang } = useParams<{ lang: string }>();
-  const url = `/${lang}/organizations`;
 
   const navigate = useNavigate();
   const modal = useToggle();
@@ -24,9 +22,9 @@ export function IndexPage(): ReactNode {
 
   const onSubmitOrganization = useCallback(
     ({ id }: Organization) => {
-      navigate(`${url}/${id}`);
+      navigate(String(id));
     },
-    [navigate, url],
+    [navigate],
   );
 
   return (
@@ -59,7 +57,7 @@ export function IndexPage(): ReactNode {
                 key={organization.id}
                 subtitle={organization.id}
                 title={organization.name || organization.id}
-                to={`${url}/${organization.id}`}
+                to={organization.id}
               />
             ))}
           </ul>
@@ -82,7 +80,7 @@ export function IndexPage(): ReactNode {
                   key={organization.id}
                   subtitle={organization.id}
                   title={organization.name || organization.id}
-                  to={`${url}/${organization.id}`}
+                  to={organization.id}
                 />
               ))}
             </ul>

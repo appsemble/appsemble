@@ -11,7 +11,6 @@ import { type TokenResponse } from '@appsemble/types';
 import axios from 'axios';
 import { type ReactNode, useCallback } from 'react';
 import { FormattedMessage } from 'react-intl';
-import { useParams } from 'react-router-dom';
 
 import styles from './index.module.css';
 import { messages } from './messages.js';
@@ -23,7 +22,6 @@ export function LoginPage(): ReactNode {
   const { login } = useUser();
   const qs = useQuery();
   const busy = useToggle();
-  const { lang } = useParams<{ lang: string }>();
 
   const onPasswordLogin = useCallback(
     async ({ email, password }: LoginFormValues) => {
@@ -46,8 +44,8 @@ export function LoginPage(): ReactNode {
       <Login
         enableRegistration={enableRegistration}
         onPasswordLogin={onPasswordLogin}
-        registerLink={`/${lang}/register`}
-        resetPasswordLink={`/${lang}/reset-password`}
+        registerLink="../register"
+        resetPasswordLink="../reset-password"
       />
       <div className={`${styles.socialLogins} mt-5`}>
         {logins.map((provider) => (

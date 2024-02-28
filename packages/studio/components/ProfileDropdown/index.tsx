@@ -66,12 +66,12 @@ export function ProfileDropdown({ className }: LanguageDropdownProps): ReactNode
       }
     >
       {userInfo ? (
-        <NavbarItem icon="wrench" to="/settings">
+        <NavbarItem icon="wrench" to="settings">
           <FormattedMessage {...messages.settings} />
         </NavbarItem>
       ) : null}
       {sentryDsn ? (
-        <NavbarItem icon="comment" to="/feedback">
+        <NavbarItem icon="comment" to="feedback">
           <FormattedMessage {...messages.feedback} />
         </NavbarItem>
       ) : null}
@@ -81,7 +81,7 @@ export function ProfileDropdown({ className }: LanguageDropdownProps): ReactNode
           <FormattedMessage {...messages.logoutButton} />
         </NavbarItem>
       ) : (
-        <NavbarItem icon="sign-in-alt" to={{ pathname: '/login', search: `?${search}` }}>
+        <NavbarItem icon="sign-in-alt" to={{ pathname: 'login', search: `?${search}` }}>
           <FormattedMessage {...messages.login} />
         </NavbarItem>
       )}

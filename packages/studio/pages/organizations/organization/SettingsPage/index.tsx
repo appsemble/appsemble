@@ -75,7 +75,7 @@ export function SettingsPage({ onChangeOrganization, organization }: SettingsPag
         }),
         color: 'info',
       });
-      navigate('/apps');
+      navigate('/');
     } catch {
       push(formatMessage(messages.errorDelete));
     }

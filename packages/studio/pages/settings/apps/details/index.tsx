@@ -29,7 +29,7 @@ import { CardHeaderControl } from '../../../../components/CardHeaderControl/inde
 import { useUser } from '../../../../components/UserProvider/index.js';
 
 export function DetailsPage(): ReactNode {
-  const { appId, lang } = useParams<{ appId: string; lang: string }>();
+  const { appId } = useParams<{ appId: string }>();
   const navigate = useNavigate();
   const result = useData<AppAccount>(`/api/user/apps/${appId}/account`);
   const { userInfo } = useUser();
@@ -85,7 +85,7 @@ export function DetailsPage(): ReactNode {
                 className="mb-3 ml-4"
                 color="primary"
                 component={Link}
-                to={`/${lang}/apps/${appId}`}
+                to={`../../../apps/${appId}`}
               >
                 <FormattedMessage {...messages.storePage} />
               </Button>
@@ -97,7 +97,7 @@ export function DetailsPage(): ReactNode {
           description={app.messages?.app?.description || app.definition.description}
           icon={<AppIcon app={app} />}
           subtitle={
-            <Link to={`/${lang}/organizations/${app.OrganizationId}`}>
+            <Link to={`../../../organizations/${app.OrganizationId}`}>
               {app.OrganizationName || app.OrganizationId}
             </Link>
           }

@@ -12,7 +12,7 @@ import { type SSLStatus } from '@appsemble/types';
 import { domainPattern, normalize } from '@appsemble/utils';
 import { type ChangeEvent, type ReactNode, useCallback } from 'react';
 import { FormattedMessage, type MessageDescriptor, useIntl } from 'react-intl';
-import { Link, useParams } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
 import { messages } from './messages.js';
 import { AvatarEditorModal } from '../../../components/AvatarEditorModal/index.js';
@@ -55,8 +55,6 @@ export function CollectionFields({
   onExpertPhotoChange,
   onHeaderChange,
 }: CollectionFieldsProps): ReactNode {
-  const { lang } = useParams<{ lang: string }>();
-
   const avatarModalToggle = useToggle();
 
   const { setValue, values } = useSimpleForm();
@@ -173,7 +171,7 @@ export function CollectionFields({
             {...messages.domainDescription}
             values={{
               link: (link) => (
-                <Link rel="noopener noreferrer" target="_blank" to={`/${lang}/docs/03-guide/dns`}>
+                <Link rel="noopener noreferrer" target="_blank" to="../../../docs/03-guide/dns">
                   {link}
                 </Link>
               ),

@@ -120,7 +120,7 @@ export function TrainingHomePage(): ReactNode {
           }),
           color: 'info',
         });
-        navigate('/settings/trainings');
+        navigate('../');
       } catch {
         push(formatMessage(messages.errorDelete));
       }

@@ -109,7 +109,7 @@ export default function EditPage(): ReactNode {
     `${formatMessage(messages.unsavedChanges)}:\n`,
   ]);
   const params = useParams();
-  const { id, lang } = params;
+  const { id } = params;
   const tabPath = Object.values(params)[0];
   const currentTab = tabs.find((tab) => tab.path === tabPath) || tabs[2];
   const screenRatios = useMemo(() => ['desktop', 'fill', 'phone', 'tablet'], []);
@@ -127,7 +127,7 @@ export default function EditPage(): ReactNode {
       <Link
         className={`mb-3 mr-1 ${styles.codeEditorSwitch}`}
         id="codeEditorSwitch"
-        to={`/${lang}/apps/${id}/edit`}
+        to={`apps/${id}/edit`}
       >
         <Button className="button is-fullwidth is-rounded is-transparent is-bordered is-small">
           {formatMessage(messages.switchToCodeEditor)}
@@ -138,7 +138,7 @@ export default function EditPage(): ReactNode {
     return () => {
       setBreadCrumbsDecoration(null);
     };
-  }, [formatMessage, location, lang, setBreadCrumbsDecoration, id]);
+  }, [formatMessage, location, setBreadCrumbsDecoration, id]);
 
   const guiEditorContainer = document?.querySelector(
     `.${styles.guiEditorContainer}`,
@@ -526,7 +526,7 @@ export default function EditPage(): ReactNode {
   }, [setIndex, updateAppPreview]);
 
   if (!location.pathname || !tabs.some((tab) => tab.path === tabPath)) {
-    return <Navigate to={{ ...location, pathname: `/${lang}/apps/${id}/edit/gui/pages` }} />;
+    return <Navigate to="pages" />;
   }
 
   const handlePropertiesToggle = (): void => {

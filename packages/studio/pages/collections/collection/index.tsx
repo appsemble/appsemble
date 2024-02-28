@@ -25,8 +25,7 @@ interface CollectionRoutesProps {
 }
 
 export function CollectionRoutes({ fallbackCollectionId }: CollectionRoutesProps): ReactNode {
-  const { collectionId, lang } = useParams<{
-    lang: string;
+  const { collectionId } = useParams<{
     organizationId: string;
     collectionId: string;
   }>();
@@ -44,12 +43,12 @@ export function CollectionRoutes({ fallbackCollectionId }: CollectionRoutesProps
 
   const mayEdit = userOrganization && checkRole(userOrganization.role, Permission.EditCollections);
 
-  const url = `/${lang}/collections/${collectionId}`;
+  const url = `collections/${collectionId}`;
 
   useSideMenu(
     collection && (
       <MenuSection label={<span className="ml-2">{collection.name}</span>}>
-        <MenuItem exact icon="folder" to={url}>
+        <MenuItem end icon="folder" to={url}>
           <FormattedMessage {...messages.apps} />
         </MenuItem>
         {mayEdit ? (

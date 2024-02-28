@@ -2,7 +2,6 @@ import { Title, useData } from '@appsemble/react-components';
 import { type AppAccount } from '@appsemble/types';
 import { type ReactNode } from 'react';
 import { FormattedMessage } from 'react-intl';
-import { useParams } from 'react-router-dom';
 
 import styles from './index.module.css';
 import { messages } from './messages.js';
@@ -11,8 +10,6 @@ import { AsyncDataView } from '../../../../components/AsyncDataView/index.js';
 
 export function IndexPage(): ReactNode {
   const result = useData<AppAccount[]>('/api/user/apps/accounts');
-  const { lang } = useParams<{ lang: string }>();
-  const url = `/${lang}/settings/apps`;
 
   return (
     <main>
@@ -31,7 +28,7 @@ export function IndexPage(): ReactNode {
         {(members) => (
           <div className={styles.list}>
             {members.map(({ app }) => (
-              <AppCard app={app} href={`${url}/${app.id}`} key={app.id} />
+              <AppCard app={app} href={`../../../settings/user/apps/${app.id}`} key={app.id} />
             ))}
           </div>
         )}

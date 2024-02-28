@@ -18,7 +18,7 @@ import WebpackConfig from '@appsemble/webpack-config/README.md';
 import CreateAppsemble from 'create-appsemble/README.md';
 import { type ReactNode, useEffect } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { Navigate, Route, useLocation, useNavigate, useParams } from 'react-router-dom';
+import { Navigate, Route, useLocation, useNavigate } from 'react-router-dom';
 
 import { ActionMenuItems } from './actions/components/ActionMenuItems.js';
 import { ActionRoutes } from './actions/index.js';
@@ -40,8 +40,6 @@ function getUrl(path: string, base: string): string {
  * Render the documentation in the root of the Appsemble repository.
  */
 export function DocsRoutes(): ReactNode {
-  const { lang } = useParams<{ lang: string }>();
-  const url = `/${lang}/docs`;
   const navigate = useNavigate();
   const location = useLocation();
   const { formatMessage } = useIntl();
@@ -50,7 +48,7 @@ export function DocsRoutes(): ReactNode {
 
   useSideMenu(
     <MenuSection label={<FormattedMessage {...messages.title} />}>
-      <MenuItem exact icon="search" to={`${url}/search`}>
+      <MenuItem end icon="search" to="docs/search">
         <FormattedMessage {...messages.search} />
       </MenuItem>
       {docs
@@ -61,13 +59,13 @@ export function DocsRoutes(): ReactNode {
           );
           return [
             <CollapsibleMenuSection key="section-wrapper">
-              <MenuItem exact icon={icon} key="docs-title" to={getUrl(path, url)}>
+              <MenuItem end icon={icon} key="docs-title" to={getUrl(path, 'docs')}>
                 {title}
               </MenuItem>
               {subRoutes.length ? (
                 <MenuSection key="docs-section">
                   {subRoutes.map((subRoute) => (
-                    <MenuItem key={subRoute.path} to={getUrl(subRoute.path, url)}>
+                    <MenuItem end key={subRoute.path} to={getUrl(subRoute.path, 'docs')}>
                       {subRoute.title}
                     </MenuItem>
                   ))}
@@ -77,43 +75,43 @@ export function DocsRoutes(): ReactNode {
           ];
         })}
       <CollapsibleMenuSection>
-        <MenuItem exact icon="sitemap" to={`${url}/remapper`}>
+        <MenuItem end icon="sitemap" to="docs/remapper">
           <FormattedMessage {...messages.remapper} />
         </MenuItem>
-        <MenuSection>{RemapperMenuItems(url)}</MenuSection>
+        <MenuSection>{RemapperMenuItems('docs')}</MenuSection>
       </CollapsibleMenuSection>
       <CollapsibleMenuSection>
-        <MenuItem exact icon="gears" to={`${url}/actions`}>
+        <MenuItem end icon="gears" to="docs/actions">
           <FormattedMessage {...messages.action} />
         </MenuItem>
-        <MenuSection>{ActionMenuItems(url)}</MenuSection>
+        <MenuSection>{ActionMenuItems('docs')}</MenuSection>
       </CollapsibleMenuSection>
       <CollapsibleMenuSection>
-        <MenuItem icon="book" to={`${url}/reference`}>
+        <MenuItem icon="book" to="docs/reference">
           <FormattedMessage {...messages.reference} />
         </MenuItem>
         <MenuSection>
-          <MenuItem exact to={`${url}/reference/app`}>
+          <MenuItem end to="docs/reference/app">
             <FormattedMessage {...messages.app} />
           </MenuItem>
-          <MenuItem exact to={`${url}/reference/action`}>
+          <MenuItem end to="docs/reference/action">
             <FormattedMessage {...messages.action} />
           </MenuItem>
         </MenuSection>
       </CollapsibleMenuSection>
       <CollapsibleMenuSection>
-        <MenuItem exact icon="cubes" to={`${url}/packages`}>
+        <MenuItem end icon="cubes" to="docs/packages">
           <FormattedMessage {...messages.packages} />
         </MenuItem>
         <MenuSection>
-          <MenuItem to={`${url}/packages/cli`}>@appsemble/cli</MenuItem>
-          <MenuItem to={`${url}/packages/preact`}>@appsemble/preact</MenuItem>
-          <MenuItem to={`${url}/packages/sdk`}>@appsemble/sdk</MenuItem>
-          <MenuItem to={`${url}/packages/webpack-config`}>@appsemble/webpack-config</MenuItem>
-          <MenuItem to={`${url}/packages/create-appsemble`}>create-appsemble</MenuItem>
+          <MenuItem to="docs/packages/cli">@appsemble/cli</MenuItem>
+          <MenuItem to="docs/packages/preact">@appsemble/preact</MenuItem>
+          <MenuItem to="docs/packages/sdk">@appsemble/sdk</MenuItem>
+          <MenuItem to="docs/packages/webpack-config">@appsemble/webpack-config</MenuItem>
+          <MenuItem to="docs/packages/create-appsemble">create-appsemble</MenuItem>
         </MenuSection>
       </CollapsibleMenuSection>
-      <MenuItem exact icon="scroll" to={`${url}/changelog`}>
+      <MenuItem end icon="scroll" to="docs/changelog">
         <FormattedMessage {...messages.changelog} />
       </MenuItem>
     </MenuSection>,
@@ -125,7 +123,7 @@ export function DocsRoutes(): ReactNode {
         className="my-2"
         defaultValue={decodeURIComponent(location.hash.slice(1))}
         onChange={(event) => {
-          navigate({ hash: event.target.value, pathname: `${url}/search` });
+          navigate({ hash: event.target.value, pathname: 'docs/search' });
         }}
         placeholder={formatMessage(messages.search)}
         type="search"
@@ -135,7 +133,7 @@ export function DocsRoutes(): ReactNode {
     return () => {
       setBreadCrumbsDecoration(null);
     };
-  }, [formatMessage, location, navigate, setBreadCrumbsDecoration, url]);
+  }, [formatMessage, location, navigate, setBreadCrumbsDecoration]);
 
   return (
     <MetaSwitch title={messages.title}>
@@ -159,7 +157,7 @@ export function DocsRoutes(): ReactNode {
       {docs.map(({ path }) => (
         <Route element={<Navigate to={getUrl(path, '')} />} key={path} path="*" />
       ))}
-      <Route element={<Navigate to={url} />} path="*" />
+      <Route element={<Navigate to="docs" />} path="*" />
     </MetaSwitch>
   );
 }

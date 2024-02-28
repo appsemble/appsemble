@@ -18,7 +18,7 @@ import {
   useState,
 } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { Link, useParams } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
 import styles from './index.module.css';
 import { messages } from './messages.js';
@@ -43,7 +43,6 @@ export function IconTool({ disabled }: IconToolProps): ReactNode {
   const { app, setApp } = useApp();
   const { organizations } = useUser();
   const { setValue, values } = useSimpleForm();
-  const { lang } = useParams<{ lang: string }>();
 
   const organization = organizations.find((org) => org.id === app.OrganizationId)!;
 
@@ -164,7 +163,7 @@ export function IconTool({ disabled }: IconToolProps): ReactNode {
       <span className="label">
         <FormattedMessage {...messages.icon} />
       </span>
-      <Link className="help" to={`/${lang}/docs/03-guide/app-icons`}>
+      <Link className="help" to="../../../docs/03-guide/app-icons">
         <FormattedMessage {...messages.more} />
       </Link>
       <div className="is-flex">

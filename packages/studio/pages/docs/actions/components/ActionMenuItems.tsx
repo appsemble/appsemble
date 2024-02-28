@@ -24,7 +24,7 @@ export function ActionMenuItems(url: string): ReactNode {
         const id = camelToHyphen(section.title);
         const path = section.title.toLowerCase();
         return (
-          <MenuItem exact key={id} to={`${url}/actions/${path}`}>
+          <MenuItem end key={id} to={`${url}/actions/${path}`}>
             {section.title}
           </MenuItem>
         );

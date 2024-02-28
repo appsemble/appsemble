@@ -1,6 +1,6 @@
 import { type AppCollection } from '@appsemble/types';
 import { type ReactNode } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
 import styles from './index.module.css';
 import { ExpertCard } from '../../ExpertCard/index.js';
@@ -10,7 +10,6 @@ interface CollectionHeaderProps {
 }
 
 export function CollectionHeader({ collection }: CollectionHeaderProps): ReactNode {
-  const { lang } = useParams<{ lang: string }>();
   return (
     <header className="has-background-primary is-flex is-flex-wrap-wrap">
       <div
@@ -26,7 +25,7 @@ export function CollectionHeader({ collection }: CollectionHeaderProps): ReactNo
           {collection.name}
         </h1>
       </div>
-      <Link className="m-auto" to={`/${lang}/collections/${collection.id}/expert`}>
+      <Link className="m-auto" to={`collections/${collection.id}/expert`}>
         <ExpertCard expert={collection.$expert} />
       </Link>
     </header>

@@ -26,8 +26,8 @@ import { checkRole } from '../../../utils/checkRole.js';
  */
 export function OrganizationRoutes(): ReactNode {
   const { organizations } = useUser();
-  const { lang, organizationId } = useParams<{ lang: string; organizationId: string }>();
-  const url = `/${lang}/organizations/${organizationId}`;
+  const { organizationId } = useParams<{ organizationId: string }>();
+  const url = `organizations/${organizationId}`;
 
   const result = useData<Organization>(`/api/organizations/${organizationId}`);
   const userOrganization = organizations?.find((org) => org.id === organizationId);
@@ -36,21 +36,21 @@ export function OrganizationRoutes(): ReactNode {
   useSideMenu(
     result.data && (
       <MenuSection label={<span className="ml-2">{result.data.name}</span>}>
-        <MenuItem exact icon="briefcase" to={url}>
+        <MenuItem end icon="briefcase" to={url}>
           <FormattedMessage {...messages.organization} />
         </MenuItem>
         {userOrganization ? (
-          <MenuItem exact icon="users" to={`${url}/members`}>
+          <MenuItem end icon="users" to={`${url}/members`}>
             <FormattedMessage {...messages.members} />
           </MenuItem>
         ) : null}
         {userOrganization ? (
-          <MenuItem exact icon="folder" to={`${url}/collections`}>
+          <MenuItem end icon="folder" to={`${url}/collections`}>
             <FormattedMessage {...messages.collections} />
           </MenuItem>
         ) : null}
         {mayEdit ? (
-          <MenuItem exact icon="cog" to={`${url}/settings`}>
+          <MenuItem end icon="cog" to={`${url}/settings`}>
             <FormattedMessage {...messages.settings} />
           </MenuItem>
         ) : null}

@@ -17,7 +17,7 @@ import { useApp } from '../../../index.js';
  */
 export function ResourceDefinitionDetailsPage(): ReactNode {
   const { app } = useApp();
-  const { lang, resourceName } = useParams<{ lang: string; id: string; resourceName: string }>();
+  const { resourceName } = useParams<{ id: string; resourceName: string }>();
   const { formatMessage } = useIntl();
   useMeta(formatMessage(messages.pageTitle));
 
@@ -34,8 +34,10 @@ export function ResourceDefinitionDetailsPage(): ReactNode {
           {...messages.description}
           values={{
             public: <code>$public</code>,
-            securityLink: (content) => <Link to={`/${lang}/docs/guide/api`}>{content}</Link>,
-            apiLink: (content) => <Link to={`/${lang}/docs/guide/resources`}>{content}</Link>,
+            securityLink: (content) => <Link to="../../../../../docs/03-guide/api">{content}</Link>,
+            apiLink: (content) => (
+              <Link to="../../../../../docs/03-guide/resources">{content}</Link>
+            ),
           }}
         />
       </p>

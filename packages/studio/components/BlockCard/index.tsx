@@ -2,7 +2,7 @@ import { Icon, Subtitle, Title } from '@appsemble/react-components';
 import { type BlockManifest } from '@appsemble/types';
 import { defaultLocale, parseBlockName } from '@appsemble/utils';
 import { type ReactNode } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
 import styles from './index.module.css';
 
@@ -11,14 +11,23 @@ interface BlockCardProps {
    * The block to display.
    */
   readonly block: BlockManifest;
+
+  /**
+   * An alternative place to link to, by default navigates to `blockName/blockVersion`
+   */
+  readonly blockHref?: string;
+
+  /**
+   * An alternative place to link to, by default navigates to `../../organizations/organizationId`
+   */
+  readonly organizationHref?: string;
 }
 
 /**
  * Display a card that contains basic information of a block and a link to further documentation.
  */
-export function BlockCard({ block }: BlockCardProps): ReactNode {
+export function BlockCard({ block, blockHref, organizationHref }: BlockCardProps): ReactNode {
   const [org, name] = parseBlockName(block.name);
-  const { lang } = useParams<{ lang: string }>();
 
   return (
     <div className={`card is-flex ${styles.root}`} key={block.name} title={block.name}>
@@ -40,7 +49,7 @@ export function BlockCard({ block }: BlockCardProps): ReactNode {
             {name}
           </Title>
           <Subtitle className={styles.ellipsis} lang={defaultLocale} level={6}>
-            <Link to={`/${lang}/organizations/${org}`}>{`@${org}`}</Link>
+            <Link to={organizationHref ?? `../../organizations/${org}`}>{`@${org}`}</Link>
           </Subtitle>
         </div>
         <span className={`subtitle is-6 has-text-grey ${styles.nogrow}`}>{block.version}</span>
@@ -54,7 +63,7 @@ export function BlockCard({ block }: BlockCardProps): ReactNode {
         )}
       </div>
       <footer className="card-footer">
-        <Link className="card-footer-item" to={`/${lang}/blocks/${block.name}/${block.version}`}>
+        <Link className="card-footer-item" to={blockHref ?? `${block.name}/${block.version}`}>
           View details
         </Link>
       </footer>

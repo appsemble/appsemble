@@ -11,7 +11,7 @@ import {
 import axios from 'axios';
 import { type ReactNode, useCallback } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { Link, useParams } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
 import { messages } from './messages.js';
 import { useApp } from '../index.js';
@@ -20,7 +20,6 @@ export function NotificationsPage(): ReactNode {
   useMeta(messages.title);
 
   const { app } = useApp();
-  const { lang } = useParams<{ lang: string }>();
 
   const { formatMessage } = useIntl();
   const push = useMessages();
@@ -50,12 +49,12 @@ export function NotificationsPage(): ReactNode {
             <FormattedMessage
               {...messages.enableInstructions}
               values={{
-                link: (link) => <Link to={`/${lang}/apps/${app.id}/edit#editor`}>{link}</Link>,
+                link: (link) => <Link to="../edit#editor">{link}</Link>,
                 navigation: (
                   <Link
                     rel="noopener noreferrer"
                     target="_blank"
-                    to={`/${lang}/docs/reference/app#notification`}
+                    to="../../../docs/reference/app#notification"
                   >
                     <code>notifications</code>
                   </Link>

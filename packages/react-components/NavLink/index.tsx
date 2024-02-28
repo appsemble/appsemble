@@ -1,25 +1,24 @@
 import classNames from 'classnames';
 import { type ComponentPropsWithoutRef, type ReactNode } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { type Link, NavLink as NavigationLink } from 'react-router-dom';
 
 interface NavLinkProps extends ComponentPropsWithoutRef<typeof Link> {
   /**
    * If specified, the link is only considered active if it’s an exact match.
    */
-  readonly exact?: boolean;
+  readonly end?: boolean;
 }
 
 /**
  * A Bulma styles navigation link.
  */
-export function NavLink({ className, exact, to, ...props }: NavLinkProps): ReactNode {
-  const location = useLocation();
-
+export function NavLink({ className, end, to, ...props }: NavLinkProps): ReactNode {
   return (
-    <Link
-      className={classNames(className, 'is-radiusless', {
-        'is-active': location.pathname === to || (!exact && location.pathname.startsWith(`${to}/`)),
-      })}
+    <NavigationLink
+      className={({ isActive }: { isActive: boolean }) =>
+        classNames(className, 'is-radiusless', isActive && 'is-active')
+      }
+      end={end}
       to={to}
       {...props}
     />

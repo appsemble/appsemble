@@ -3,7 +3,7 @@ import { convertToCsv } from '@appsemble/utils';
 import { downloadBlob } from '@appsemble/web-utils';
 import { type ReactNode, useCallback } from 'react';
 import { FormattedMessage } from 'react-intl';
-import { Link, useParams } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
 import { MemberRow } from './MemberRow/index.js';
 import { messages } from './messages.js';
@@ -21,7 +21,6 @@ export interface AppMember {
 
 export function UsersPage(): ReactNode {
   useMeta(messages.title);
-  const { lang } = useParams<{ lang: string }>();
   const { app } = useApp();
   const result = useData<AppMember[]>(`/api/apps/${app.id}/members`);
 
@@ -45,7 +44,7 @@ export function UsersPage(): ReactNode {
             {...messages.inviteOrganization}
             values={{
               link: (text) => (
-                <Link to={`/${lang}/organizations/@${app.OrganizationId}`}>{text}</Link>
+                <Link to={`../../../organizations/@${app.OrganizationId}`}>{text}</Link>
               ),
             }}
           />

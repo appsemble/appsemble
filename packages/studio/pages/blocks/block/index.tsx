@@ -33,17 +33,13 @@ export function BlockPage(): ReactNode {
 
   const {
     blockName,
-    lang,
     organization,
     version: urlVersion,
   } = useParams<{
     organization: string;
     blockName: string;
     version: string;
-    lang: string;
   }>();
-
-  const url = `${lang}/blocks/${organization}/${blockName}`;
 
   const navigate = useNavigate();
 
@@ -53,9 +49,11 @@ export function BlockPage(): ReactNode {
 
   const onSelectedVersionChange = useCallback(
     (event: ChangeEvent, value: string) => {
-      navigate(`/${url}/${urlVersion}`.replace(urlVersion, value));
+      navigate(`../${value}`, {
+        relative: 'path',
+      });
     },
-    [navigate, url, urlVersion],
+    [navigate],
   );
   const blockUrl =
     urlVersion === undefined
@@ -109,9 +107,7 @@ export function BlockPage(): ReactNode {
             {blockName}
           </Title>
           <Subtitle lang={defaultLocale} level={4}>
-            <Link to={`/${lang}/organizations/${organization.replace(/^@/, '')}`}>
-              {organization}
-            </Link>
+            <Link to={`../../organizations/${organization.replace(/^@/, '')}`}>{organization}</Link>
           </Subtitle>
         </header>
       </>
