@@ -4,7 +4,7 @@ import axios from 'axios';
 import classNames from 'classnames';
 import { type ReactNode, useCallback, useRef, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
-import { Link, useParams } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
 import { AppRatings } from './AppRatings/index.js';
 import { AppScreenshots } from './AppScreenshots/index.js';
@@ -28,7 +28,6 @@ export function IndexPage(): ReactNode {
   const { app } = useApp();
   const { organizations } = useUser();
   const descriptionToggle = useToggle();
-  const { lang } = useParams<{ lang: string }>();
   const [checked, setChecked] = useState(false);
   const checkedRef = useRef(checked);
   checkedRef.current = checked;
@@ -94,7 +93,7 @@ export function IndexPage(): ReactNode {
         }
         icon={<AppIcon app={app} />}
         subtitle={
-          <Link to={`/${lang}/organizations/${app.OrganizationId}`}>
+          <Link to={`../../../organizations/${app.OrganizationId}`}>
             {app.OrganizationName || app.OrganizationId}
           </Link>
         }

@@ -4,7 +4,7 @@ import classNames from 'classnames';
 import { type Schema as SchemaType } from 'jsonschema';
 import { type FC, type ReactNode, useMemo } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { Link, useParams } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
 import { AnyOfSchema } from './AnyOfSchema/index.js';
 import styles from './index.module.css';
@@ -72,7 +72,6 @@ export function Schema({
   );
 
   const intl = useIntl();
-  const { lang } = useParams<{ lang: string }>();
 
   const description =
     mergedSchema.description ||
@@ -147,7 +146,7 @@ export function Schema({
       {mergedSchema.format ? (
         <SchemaDescriptor label={<FormattedMessage {...messages.format} />}>
           {mergedSchema.format === 'remapper' ? (
-            <Link rel="noopener noreferrer" target="_blank" to={`/${lang}/docs/remapper`}>
+            <Link rel="noopener noreferrer" target="_blank" to="docs/remapper">
               Remapper
             </Link>
           ) : (

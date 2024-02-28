@@ -28,7 +28,7 @@ import {
   useState,
 } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { Link, useLocation, useParams, useSearchParams } from 'react-router-dom';
+import { Link, useParams, useSearchParams } from 'react-router-dom';
 
 import styles from './index.module.css';
 import { messages } from './messages.js';
@@ -48,7 +48,6 @@ export function IndexPage(): ReactNode {
     resourceName: string;
   }>();
   const [searchParams, setSearchParams] = useSearchParams();
-  const { pathname: routeUrl } = useLocation();
   const push = useMessages();
 
   const createModal = useToggle();
@@ -347,7 +346,7 @@ export function IndexPage(): ReactNode {
     <>
       <HeaderControl
         control={
-          <Button component={Link} icon="book" to={`${routeUrl}/details`}>
+          <Button component={Link} icon="book" to="details">
             <FormattedMessage {...messages.api} />
           </Button>
         }

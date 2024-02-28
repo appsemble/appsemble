@@ -268,7 +268,7 @@ export default function EditPage(): ReactNode {
 
   useEffect(() => {
     setBreadCrumbsDecoration(
-      <Link id="guiEditorSwitch" to={`/${lang}/apps/${id}/edit/gui`}>
+      <Link id="guiEditorSwitch" to={`apps/${id}/edit/gui/pages`}>
         <Button className="button is-fullwidth is-rounded is-transparent is-bordered is-small">
           {`${formatMessage(messages.switchToGuiEditor)} ${formatMessage(messages.experimental)}`}
         </Button>

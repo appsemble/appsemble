@@ -1,7 +1,7 @@
 import { Button, Title, useMeta } from '@appsemble/react-components';
 import { type ReactNode } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { Link, useParams } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
 import { messages } from './messages.js';
 import { AppIcon } from '../../../../components/AppIcon/index.js';
@@ -18,7 +18,6 @@ export function DefinitionPage(): ReactNode {
   const { app } = useApp();
   const { formatMessage } = useIntl();
   useMeta(messages.title, formatMessage(messages.description, { appName: app.definition.name }));
-  const { lang } = useParams<{ lang: string }>();
 
   return (
     <main>
@@ -41,7 +40,7 @@ export function DefinitionPage(): ReactNode {
         description={app.definition.description}
         icon={<AppIcon app={app} />}
         subtitle={
-          <Link to={`/${lang}/organizations/${app.OrganizationId}`}>
+          <Link to={`../../../organizations/${app.OrganizationId}`}>
             {app.OrganizationName || app.OrganizationId}
           </Link>
         }
@@ -64,7 +63,7 @@ export function DefinitionPage(): ReactNode {
           </Title>
           <p className="content">
             <FormattedMessage {...messages.explanation} />{' '}
-            <Link to={`/${lang}/docs/guide`}>
+            <Link to="../../../docs/03-guide">
               <FormattedMessage {...messages.learnMore} />
             </Link>
           </p>

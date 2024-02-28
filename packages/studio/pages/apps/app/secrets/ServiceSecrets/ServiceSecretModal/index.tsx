@@ -14,7 +14,7 @@ import { type AppServiceSecret, type ServiceAuthenticationMethod } from '@appsem
 import axios from 'axios';
 import { type ChangeEvent, type ReactNode, useCallback, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { Link, useParams } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
 import { SwitchField } from './ConditionalFields/index.js';
 import styles from './index.module.css';
@@ -98,8 +98,6 @@ export function ServiceSecretsModal({
     setSelectedMethod(event.target.value as ServiceAuthenticationMethod);
   }, []);
 
-  const { lang } = useParams<{ lang: string }>();
-
   return (
     <ModalCard
       component={SimpleForm}
@@ -121,7 +119,7 @@ export function ServiceSecretsModal({
           {...messages.docs}
           values={{
             link: (link) => (
-              <Link rel="noopener noreferrer" target="_blank" to={`/${lang}/docs/03-guide/service`}>
+              <Link rel="noopener noreferrer" target="_blank" to="../../../docs/03-guide/service">
                 {link}
               </Link>
             ),

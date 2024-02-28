@@ -32,13 +32,11 @@ const MonacoEditor = lazy(() =>
 );
 
 export function ResourceDetailsPage(): ReactNode {
-  const { id, lang, resourceId, resourceName } = useParams<{
-    lang: string;
+  const { id, resourceId, resourceName } = useParams<{
     id: string;
     resourceName: string;
     resourceId: string;
   }>();
-  const url = `/${lang}/apps/${id}/resources/${resourceName}/${resourceId}`;
   const { app } = useApp();
   const push = useMessages();
   const { formatMessage } = useIntl();
@@ -124,7 +122,7 @@ export function ResourceDetailsPage(): ReactNode {
   ]);
 
   if (!tabOptions.has(hash)) {
-    return <Navigate to={`${url}#properties`} />;
+    return <Navigate to="#properties" />;
   }
 
   return (
@@ -161,14 +159,14 @@ export function ResourceDetailsPage(): ReactNode {
       </HeaderControl>
       <div className={`is-flex is-flex-direction-column ${styles.flexContent}`}>
         <Tabs onChange={onClickTab} value={hash}>
-          <Tab href={`${url}#properties`} value="#properties">
+          <Tab href="#properties" value="#properties">
             <FormattedMessage {...messages.properties} />
           </Tab>
-          <Tab href={`${url}#json`} value="#json">
+          <Tab href="#json" value="#json">
             <FormattedMessage {...messages.json} />
           </Tab>
           {resourceDefinition.history ? (
-            <Tab href={`${url}#history`} value="#history">
+            <Tab href="#history" value="#history">
               <FormattedMessage {...messages.history} />
             </Tab>
           ) : null}

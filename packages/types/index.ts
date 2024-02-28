@@ -912,7 +912,7 @@ export interface BaseActionDefinition<T extends Action['type']> {
   remapBefore?: Remapper;
 
   /**
-   * The remapper used to transfrom the output before passing it to the next action.
+   * The remapper used to transform the output before passing it to the next action.
    */
   remapAfter?: Remapper;
 
@@ -1834,7 +1834,7 @@ export interface AppDefinition {
     /**
      * The navigation type to use.
      *
-     * If this is omitted, a collapsable side navigation menu will be rendered on the left.
+     * If this is omitted, a collapsible side navigation menu will be rendered on the left.
      *
      * @default 'left-menu'
      */

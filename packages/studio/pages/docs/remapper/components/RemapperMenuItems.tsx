@@ -25,7 +25,7 @@ export function RemapperMenuItems(url: string): ReactNode {
         const id = camelToHyphen(section.title);
         const path = section.title.toLowerCase();
         return (
-          <MenuItem exact key={id} to={`${url}/remapper/${path}`}>
+          <MenuItem end key={id} to={`${url}/remapper/${path}`}>
             {section.title}
           </MenuItem>
         );

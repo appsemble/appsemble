@@ -24,8 +24,7 @@ interface IndexPageProps {
 export function IndexPage({ organization }: IndexPageProps): ReactNode {
   const { formatMessage } = useIntl();
   const { organizations } = useUser();
-  const { lang, organizationId } = useParams<{ lang: string; organizationId: string }>();
-  const url = `/${lang}/organizations/${organizationId}`;
+  const { lang } = useParams<{ lang: string; organizationId: string }>();
 
   const appsResult = useData<App[]>(`/api/organizations/${organization.id}/apps?language=${lang}`);
   const blocksResult = useData<BlockManifest[]>(`/api/organizations/${organization.id}/blocks`);
@@ -40,12 +39,12 @@ export function IndexPage({ organization }: IndexPageProps): ReactNode {
         controls={
           <>
             {mayEditOrganization ? (
-              <Button className="mb-3 ml-4" component={Link} to={`${url}/settings`}>
+              <Button className="mb-3 ml-4" component={Link} to="settings">
                 <FormattedMessage {...messages.editOrganization} />
               </Button>
             ) : null}
             {userOrganization ? (
-              <Button className="mb-3 ml-4" component={Link} to={`${url}/members`}>
+              <Button className="mb-3 ml-4" component={Link} to="members">
                 <FormattedMessage {...messages.viewMembers} />
               </Button>
             ) : null}
@@ -93,7 +92,12 @@ export function IndexPage({ organization }: IndexPageProps): ReactNode {
       >
         <div className="px-5 pt-2 pb-4 has-background-white-bis">
           <Collapsible title={<FormattedMessage {...messages.apps} />}>
-            <AppList result={appsResult} reverse sortFunction={sortFunctions.rating} />
+            <AppList
+              result={appsResult}
+              reverse
+              sortFunction={sortFunctions.rating}
+              toHomeUrl="../../../apps"
+            />
           </Collapsible>
           <hr className="has-background-grey-lighter" />
           <Collapsible title={<FormattedMessage {...messages.blocks} />}>
@@ -106,7 +110,12 @@ export function IndexPage({ organization }: IndexPageProps): ReactNode {
               {(blocks) => (
                 <div className={styles.blockList}>
                   {blocks.map((block) => (
-                    <BlockCard block={block} key={block.name} />
+                    <BlockCard
+                      block={block}
+                      blockHref={`../../../blocks/${block.name}`}
+                      key={block.name}
+                      organizationHref="./"
+                    />
                   ))}
                 </div>
               )}

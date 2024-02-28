@@ -3,7 +3,7 @@ import { type LoginCodeResponse } from '@appsemble/types';
 import axios from 'axios';
 import { type ReactNode, useCallback, useEffect, useMemo, useState } from 'react';
 import { FormattedMessage, type MessageDescriptor, useIntl } from 'react-intl';
-import { Link, useParams } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
 import styles from './index.module.css';
 import { messages } from './messages.js';
@@ -14,7 +14,6 @@ import { oauth2Redirect, verifyOAuth2LoginRequest } from '../../../utils/oauth2U
  */
 export function IndexPage(): ReactNode {
   const qs = useQuery();
-  const { lang } = useParams<{ lang: string }>();
   const { formatMessage } = useIntl();
 
   const [appLoading, setAppLoading] = useState(true);
@@ -118,7 +117,7 @@ export function IndexPage(): ReactNode {
               {...messages.notAllowed}
               values={{
                 app: (
-                  <Link className="has-text-weight-bold is-italic" to={`/apps/${appId}`}>
+                  <Link className="has-text-weight-bold is-italic" to={`../../apps/${appId}`}>
                     {appName}
                   </Link>
                 ),
@@ -141,7 +140,7 @@ export function IndexPage(): ReactNode {
             {...messages.prompt}
             values={{
               app: (
-                <Link className="has-text-weight-bold is-italic" to={`/${lang}/apps/${appId}`}>
+                <Link className="has-text-weight-bold is-italic" to={`../../apps/${appId}`}>
                   {appName}
                 </Link>
               ),

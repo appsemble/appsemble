@@ -83,16 +83,10 @@ export function ResourceRow({
   schema,
   selected,
 }: ResourceRowProps): ReactNode {
-  const {
-    id: appId,
-    lang,
-    resourceName,
-  } = useParams<{
-    lang: string;
+  const { id: appId, resourceName } = useParams<{
     id: string;
     resourceName: string;
   }>();
-  const url = `/${lang}/apps/${appId}/resources/${resourceName}`;
   const { app } = useApp();
   const [editingResource, setEditingResource] = useState<Record<string, unknown>>();
   const modal = useToggle();
@@ -202,7 +196,7 @@ export function ResourceRow({
               className={`${styles.noBorder} pl-5 dropdown-item`}
               component={Link}
               icon="book"
-              to={`${url}/${resource.id}`}
+              to={String(resource.id)}
             >
               <FormattedMessage {...messages.details} />
             </Button>

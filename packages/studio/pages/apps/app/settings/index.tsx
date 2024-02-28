@@ -19,7 +19,7 @@ import { domainPattern, googleAnalyticsIDPattern, normalize, toUpperCase } from 
 import axios from 'axios';
 import { type ReactNode, useMemo } from 'react';
 import { FormattedMessage, type MessageDescriptor, useIntl } from 'react-intl';
-import { Link, useNavigate, useParams } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 import { IconTool } from './IconTool/index.js';
 import styles from './index.module.css';
@@ -63,7 +63,6 @@ export function SettingsPage(): ReactNode {
 
   const push = useMessages();
   const navigate = useNavigate();
-  const { lang } = useParams<{ lang: string }>();
 
   const pathDomain = `${app.path}.${app.OrganizationId}.${window.location.hostname}`;
   const domains = [pathDomain];
@@ -261,11 +260,7 @@ export function SettingsPage(): ReactNode {
                 {...messages.domainDescription}
                 values={{
                   link: (link) => (
-                    <Link
-                      rel="noopener noreferrer"
-                      target="_blank"
-                      to={`/${lang}/docs/03-guide/dns`}
-                    >
+                    <Link rel="noopener noreferrer" target="_blank" to="../../../docs/03-guide/dns">
                       {link}
                     </Link>
                   ),

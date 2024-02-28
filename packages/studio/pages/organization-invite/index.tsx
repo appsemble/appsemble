@@ -14,7 +14,7 @@ import {
 import axios from 'axios';
 import { type ReactNode, useCallback, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { Link, useParams } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
 import styles from './index.module.css';
 import { messages } from './messages.js';
@@ -27,7 +27,6 @@ export function OrganizationInvitePage(): ReactNode {
   const qs = useQuery();
   const { logout, organizations, setOrganizations, userInfo } = useUser();
   const redirect = useLocationString();
-  const { lang } = useParams<{ lang: string }>();
 
   const [success, setSuccess] = useState(false);
   const {
@@ -96,7 +95,7 @@ export function OrganizationInvitePage(): ReactNode {
             <FormattedMessage
               {...messages.noInvite}
               values={{
-                link: (text) => <Link to={`/${lang}/apps`}>{text}</Link>,
+                link: (text) => <Link to="apps">{text}</Link>,
               }}
             />
           )}
@@ -132,7 +131,7 @@ export function OrganizationInvitePage(): ReactNode {
           color="primary"
           component={Link}
           icon="sign-in-alt"
-          to={{ pathname: `/${lang}/login`, search: `?${search}` }}
+          to={{ pathname: 'login', search: `?${search}` }}
         >
           <FormattedMessage {...messages.login} />
         </Button>
@@ -149,9 +148,9 @@ export function OrganizationInvitePage(): ReactNode {
               {...messages.successJoined}
               values={{
                 organization: <strong>{organization.name || organization.id}</strong>,
-                makeApps: (link) => <Link to={`/${lang}/apps`}>{link}</Link>,
+                makeApps: (link) => <Link to="apps">{link}</Link>,
                 viewOrganization: (link) => (
-                  <Link to={`/${lang}/organizations/@${organization.id}`}>{link}</Link>
+                  <Link to={`organizations/@${organization.id}`}>{link}</Link>
                 ),
               }}
             />
@@ -161,7 +160,7 @@ export function OrganizationInvitePage(): ReactNode {
             <FormattedMessage
               {...messages.successDeclined}
               values={{
-                makeApps: (link) => <Link to={`/${lang}/apps`}>{link}</Link>,
+                makeApps: (link) => <Link to="apps">{link}</Link>,
               }}
             />
           </Message>

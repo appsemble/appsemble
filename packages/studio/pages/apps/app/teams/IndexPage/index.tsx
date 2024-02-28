@@ -13,7 +13,6 @@ import { Permission, type TeamRole } from '@appsemble/utils';
 import axios from 'axios';
 import { type ReactNode, useCallback } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { useParams } from 'react-router-dom';
 
 import { messages } from './messages.js';
 import { AsyncDataView } from '../../../../../components/AsyncDataView/index.js';
@@ -44,8 +43,6 @@ const newTeam = {
  */
 export function IndexPage(): ReactNode {
   const { organizations } = useUser();
-  const { id, lang } = useParams<{ lang: string; id: string }>();
-  const url = `/${lang}/apps/${id}/teams`;
 
   const { app } = useApp();
   const modal = useToggle();
@@ -96,7 +93,7 @@ export function IndexPage(): ReactNode {
                   key={team.id}
                   subtitle={team?.role ? <FormattedMessage {...messages[team.role]} /> : ''}
                   title={team.name || team.id}
-                  to={`${url}/${team.id}`}
+                  to={String(team.id)}
                 />
               ))}
             </ul>

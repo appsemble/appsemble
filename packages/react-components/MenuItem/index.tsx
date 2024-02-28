@@ -1,9 +1,10 @@
 import { type IconName } from '@fortawesome/fontawesome-common-types';
-import { type ReactNode, useCallback, useContext } from 'react';
-import { useLocation } from 'react-router-dom';
+import classNames from 'classnames';
+import { type MouseEvent, type ReactNode, useCallback, useContext } from 'react';
+import { NavLink } from 'react-router-dom';
 
 import styles from './index.module.css';
-import { CollapsedContext, Icon, NavLink } from '../index.js';
+import { CollapsedContext, Icon } from '../index.js';
 
 interface SideNavLinkProps {
   /**
@@ -12,9 +13,9 @@ interface SideNavLinkProps {
   readonly title?: string;
 
   /**
-   * If true, only highlight on an exact match.
+   * If true, only highlight if end is an exact match.
    */
-  readonly exact?: boolean;
+  readonly end?: boolean;
 
   /**
    * Child navigation items to render.
@@ -37,37 +38,43 @@ interface SideNavLinkProps {
  *
  * https://bulma.io/documentation/components/menu
  */
-export function MenuItem({ children, exact, icon, title, to }: SideNavLinkProps): ReactNode {
+export function MenuItem({ children, end, icon, title, to }: SideNavLinkProps): ReactNode {
   const { collapsed, collapsible, setCollapsed } = useContext(CollapsedContext);
-  const location = useLocation();
-  const clickHideButton = useCallback(() => {
-    setCollapsed(!collapsed);
-  }, [collapsed, setCollapsed]);
+  const clickHideButton = useCallback(
+    (event: MouseEvent<HTMLSpanElement>) => {
+      event.preventDefault();
+      setCollapsed(!collapsed);
+    },
+    [collapsed, setCollapsed],
+  );
 
   return (
-    <div className={styles.menuContainer}>
-      <NavLink
-        className={`is-flex is-align-items-center ${styles.root}`}
-        exact={exact}
-        title={title}
-        to={to}
-      >
-        {icon ? <Icon className={`mr-1 ${styles.middle}`} icon={icon} size="medium" /> : null}
-        <span className={styles.text}>{children}</span>
-      </NavLink>
-      {collapsible ? (
-        <Icon
-          className={styles.icon}
-          color={
-            location.pathname === to || (!exact && location.pathname.startsWith(`${to}/`))
-              ? 'white'
-              : 'dark'
-          }
-          icon={collapsed ? 'chevron-up' : 'chevron-down'}
-          onClick={clickHideButton}
-          size="medium"
-        />
-      ) : null}
-    </div>
+    <NavLink
+      className={({ isActive }: { isActive: boolean }) =>
+        classNames(
+          `is-radiusless is-relative is-flex is-align-items-center ${styles.root}`,
+          isActive && 'is-active',
+        )
+      }
+      end={end}
+      title={title}
+      to={to}
+    >
+      {({ isActive }) => (
+        <>
+          {icon ? <Icon className={`mr-1 ${styles.middle}`} icon={icon} size="medium" /> : null}
+          <span className={styles.text}>{children}</span>
+          {collapsible ? (
+            <Icon
+              className={styles.icon}
+              color={isActive ? 'white' : 'dark'}
+              icon={collapsed ? 'chevron-up' : 'chevron-down'}
+              onClick={clickHideButton}
+              size="medium"
+            />
+          ) : null}
+        </>
+      )}
+    </NavLink>
   );
 }

@@ -16,7 +16,7 @@ import { type AppOAuth2Secret } from '@appsemble/types';
 import axios from 'axios';
 import { type ReactNode } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { Link, useParams } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
 import styles from './index.module.css';
 import { messages } from './messages.js';
@@ -60,7 +60,6 @@ export function OAuth2Modal({
   const {
     app: { locked },
   } = useApp();
-  const { lang } = useParams<{ lang: string }>();
 
   const push = useMessages();
   const { app } = useApp();
@@ -196,7 +195,7 @@ export function OAuth2Modal({
             {...messages.remapperHelp}
             values={{
               link: (link) => (
-                <Link target="_blank" to={`/${lang}/docs/guide/remappers`}>
+                <Link target="_blank" to="../../../docs/03-guide/remappers">
                   {link}
                 </Link>
               ),

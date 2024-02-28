@@ -12,13 +12,12 @@ import { type SAMLRedirectResponse, type UserEmail } from '@appsemble/types';
 import axios from 'axios';
 import { type ReactNode, useCallback, useEffect, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { Link, useParams } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
 import { messages } from './messages.js';
 import { useUser } from '../../../components/UserProvider/index.js';
 
 export function EmailConflict(): ReactNode {
-  const { lang } = useParams<{ lang: string }>();
   const push = useMessages();
   const { formatMessage } = useIntl();
   const qs = useQuery();
@@ -72,7 +71,7 @@ export function EmailConflict(): ReactNode {
           color="primary"
           component={Link}
           to={{
-            pathname: `/${lang}/Login`,
+            pathname: 'Login',
             search: String(new URLSearchParams({ redirect })),
           }}
         >

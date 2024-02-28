@@ -2,7 +2,6 @@ import { Content, useData } from '@appsemble/react-components';
 import { type Training } from '@appsemble/types';
 import { type ReactNode, useCallback, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
-import { useParams } from 'react-router-dom';
 
 import styles from './index.module.css';
 import { messages } from './messages.js';
@@ -20,8 +19,6 @@ export function IndexPage(): ReactNode {
     name: 'difficulty',
     reverse: false,
   });
-  const { lang } = useParams<{ lang: string }>();
-  const url = `/${lang}/trainings`;
   const trainingsResult = useData<Training[]>('/api/trainings');
 
   const onSortChange = useCallback((name: TrainingSortFunctionName, reverse: boolean) => {
@@ -62,7 +59,7 @@ export function IndexPage(): ReactNode {
                       id={String(training.id)}
                       key={training.id}
                       title={training.title}
-                      to={`${url}/${training.id}`}
+                      to={String(training.id)}
                     />
                   ))}
                 </div>

@@ -2,7 +2,6 @@ import { Title, useData } from '@appsemble/react-components';
 import { type Snapshot } from '@appsemble/types';
 import { type ReactNode } from 'react';
 import { FormattedDate, FormattedMessage } from 'react-intl';
-import { useParams } from 'react-router-dom';
 
 import { messages } from './messages.js';
 import { AsyncDataView } from '../../../../../components/AsyncDataView/index.js';
@@ -12,8 +11,6 @@ import { useApp } from '../../index.js';
 export function IndexPage(): ReactNode {
   const { app } = useApp();
   const result = useData<Snapshot[]>(`/api/apps/${app.id}/snapshots`);
-  const { id, lang } = useParams<{ lang: string; id: string }>();
-  const url = `/${lang}/apps/${id}/snapshots`;
 
   return (
     <>
@@ -44,7 +41,7 @@ export function IndexPage(): ReactNode {
                     year="numeric"
                   />
                 }
-                to={`${url}/${snapshot.id}`}
+                to={String(snapshot.id)}
               />
             ))}
           </ul>

@@ -140,7 +140,7 @@ export function TrainingListCard({
           }),
           color: 'info',
         });
-        navigate('/settings/trainings');
+        navigate('../');
       } catch {
         push(formatMessage(messages.errorDelete));
       }

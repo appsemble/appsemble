@@ -1,7 +1,7 @@
 import { Subtitle, Title } from '@appsemble/react-components';
 import { type AppCollection } from '@appsemble/types';
 import { type ReactNode } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
 import styles from './index.module.css';
 
@@ -13,9 +13,8 @@ interface CollectionCardProps {
 }
 
 export function CollectionCard({ collection }: CollectionCardProps): ReactNode {
-  const { lang } = useParams<{ lang: string }>();
   return (
-    <Link className="card" title={collection.name} to={`/${lang}/collections/${collection.id}`}>
+    <Link className="card" title={collection.name} to={`../../../collections/${collection.id}`}>
       <div className="card-content is-flex">
         <div className="media">
           <figure className={`image is-128x128 is-flex is-clipped is-rounded ${styles.figure}`}>

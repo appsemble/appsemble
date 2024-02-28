@@ -46,14 +46,14 @@ export function ErrorFallback({ eventId, resetErrorBoundary }: ErrorFallbackProp
               eventId={eventId}
               name={user?.userInfo?.name}
               recovery={
-                <Button className="mb-3" component={Link} onClick={resetErrorBoundary} to="/apps">
+                <Button className="mb-3" component={Link} onClick={resetErrorBoundary} to="apps">
                   <FormattedMessage {...messages.toApps} />
                 </Button>
               }
             />
           </>
         ) : (
-          <Button component={Link} onClick={resetErrorBoundary} to="/apps">
+          <Button component={Link} onClick={resetErrorBoundary} to="apps">
             <FormattedMessage {...messages.toApps} />
           </Button>
         )}

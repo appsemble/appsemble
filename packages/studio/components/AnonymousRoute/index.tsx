@@ -1,6 +1,6 @@
 import { useQuery } from '@appsemble/react-components';
 import { type ReactNode } from 'react';
-import { Navigate, Outlet, useParams } from 'react-router-dom';
+import { Navigate, Outlet } from 'react-router-dom';
 
 import { useUser } from '../UserProvider/index.js';
 
@@ -13,7 +13,6 @@ import { useUser } from '../UserProvider/index.js';
 export function AnonymousRoute(): ReactNode {
   const { userInfo } = useUser();
   const qs = useQuery();
-  const { lang } = useParams<{ lang: string }>();
 
-  return userInfo ? <Navigate to={qs.get('redirect') || `/${lang}/apps`} /> : <Outlet />;
+  return userInfo ? <Navigate to={qs.get('redirect') || '/apps'} /> : <Outlet />;
 }

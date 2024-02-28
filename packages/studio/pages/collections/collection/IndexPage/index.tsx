@@ -156,6 +156,7 @@ export function IndexPage({ collection }: IndexPageProps): ReactNode {
         result={appsResult}
         reverse={sort.reverse}
         sortFunction={pinnedFirstSortWrapper(sortFunctions[sort.name], sort.reverse)}
+        toHomeUrl="../../../apps"
       />
     </Content>
   );

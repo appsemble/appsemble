@@ -1,16 +1,14 @@
 import { type ReactNode } from 'react';
 import { FormattedMessage } from 'react-intl';
-import { Link, useParams } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
 import styles from './index.module.css';
 import { messages } from './messages.js';
 
 export function SideMenuBottom(): ReactNode {
-  const { lang } = useParams<{ lang: string }>();
-
   return (
     <div className={`py-2 ${styles.root}`}>
-      <Link className="has-text-grey" to={`/${lang}/privacy`}>
+      <Link className="has-text-grey" to="privacy">
         <FormattedMessage {...messages.privacyPolicy} />
       </Link>
     </div>
