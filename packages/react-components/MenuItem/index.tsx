@@ -1,10 +1,9 @@
 import { type IconName } from '@fortawesome/fontawesome-common-types';
 import classNames from 'classnames';
 import { type MouseEvent, type ReactNode, useCallback, useContext } from 'react';
-import { NavLink } from 'react-router-dom';
 
 import styles from './index.module.css';
-import { CollapsedContext, Icon } from '../index.js';
+import { CollapsedContext, Icon, NavLink } from '../index.js';
 
 interface SideNavLinkProps {
   /**
@@ -50,12 +49,7 @@ export function MenuItem({ children, end, icon, title, to }: SideNavLinkProps): 
 
   return (
     <NavLink
-      className={({ isActive }: { isActive: boolean }) =>
-        classNames(
-          `is-radiusless is-relative is-flex is-align-items-center ${styles.root}`,
-          isActive && 'is-active',
-        )
-      }
+      className={classNames(`is-relative is-flex is-align-items-center ${styles.root}`)}
       end={end}
       title={title}
       to={to}
