@@ -51,12 +51,14 @@ test.describe('App Collections', () => {
 
   test('should create an app collection', async ({ browserName, page }) => {
     const collectionName = `Create test ${browserName.slice(0, 8)}`;
+    await page.route('/test-assets/side.png', (route) => {
+      route.fulfill({ path: 'fixtures/data/tux.png' });
+    });
     await createCollection({
       page,
       collectionName,
       expertName: 'John Doe',
-      expertDescription:
-        'Lorem ipsum\n\n**text in bold**\n\n![side image](https://via.placeholder.com/200x400?text=side)',
+      expertDescription: 'Lorem ipsum\n\n**text in bold**\n\n![side image](/test-assets/side.png)',
       expertPhoto: 'fixtures/data/tux.png',
       headerImage: 'fixtures/data/retail.png',
       isPrivate: false,
