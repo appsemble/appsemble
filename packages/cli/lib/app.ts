@@ -367,22 +367,28 @@ export async function traverseAppDirectory(
  * Export an app as a zip file.
  *
  * @param appId Id of the app to be exported.
+ * @param assets Boolean representing whether to include assets referenced by resources in the
+ *   exported zip file.
  * @param resources Boolean representing whether to include resources in the zip file.
  * @param path Path of the folder where you want to put your downloaded file.
  * @param remote The remote to fetch the app from.
  */
 export async function exportAppAsZip(
   appId: number,
+  assets: boolean,
   resources: boolean,
   path: string,
   remote: string,
 ): Promise<void> {
   const app = await axios.get(`/api/apps/${appId}`);
   const { name } = app.data.definition;
-  const response = await axios.get(`/api/apps/${appId}/export?resources=${resources}`, {
-    baseURL: remote,
-    responseType: 'stream',
-  });
+  const response = await axios.get(
+    `/api/apps/${appId}/export?resources=${resources}&assets=${assets}`,
+    {
+      baseURL: remote,
+      responseType: 'stream',
+    },
+  );
   const zipFileName = join(path, `${name}_${appId}.zip`);
   const writeStream = createWriteStream(zipFileName);
   response.data.pipe(writeStream);

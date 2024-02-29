@@ -1198,12 +1198,13 @@ export async function exportApp(ctx: Context): Promise<void> {
   const {
     pathParams: { appId },
   } = ctx;
-  const { resources } = ctx.queryParams;
+  const { assets, resources } = ctx.queryParams;
 
   const app = await App.findByPk(appId, {
     attributes: [
       'definition',
       'coreStyle',
+      'icon',
       'OrganizationId',
       'sharedStyle',
       'showAppDefinition',
@@ -1213,6 +1214,7 @@ export async function exportApp(ctx: Context): Promise<void> {
       { model: AppBlockStyle, required: false },
       { model: AppMessages, required: false },
       { model: Resource, required: false },
+      { model: Asset, required: false },
     ],
   });
 
@@ -1239,6 +1241,10 @@ export async function exportApp(ctx: Context): Promise<void> {
     }
   }
 
+  if (app.icon) {
+    zip.file('icon.png', app.icon);
+  }
+
   if (resources && app.Resources !== undefined) {
     await checkRole(ctx, app.OrganizationId, Permission.EditApps);
     const resourceMap = new Map<string, string>();
@@ -1249,6 +1255,15 @@ export async function exportApp(ctx: Context): Promise<void> {
     for (const [resourceType, resourceValue] of resourceMap.entries()) {
       zip.file(`resources/${resourceType}.json`, resourceValue);
     }
+  }
+
+  if (assets && app.Assets !== undefined) {
+    await checkRole(ctx, app.OrganizationId, Permission.EditApps);
+    app.Assets.map((asset) => {
+      if (asset.ResourceId) {
+        zip.file(`assets/${asset.filename}`, asset.data);
+      }
+    });
   }
   const content = zip.generateNodeStream();
   ctx.attachment();

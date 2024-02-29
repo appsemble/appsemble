@@ -169,9 +169,11 @@ To export an app as a zip file, run the following:
 appsemble app export --id <app-id>
 ```
 
-Supported arguments for this app are `resources` and `path`. Resources is used to specify whether to
-include the resources in the exported file and path is the path of the folder where you want to put
-your downloaded file. Path is `./apps` by default and resources is set to `false`.
+Supported arguments for this app are `resources`, `assets` and `path`. Resources is used to specify
+whether to include the resources in the exported file, assets can be used to include assets
+references in app resources to be included in the exported zip file and path is the path of the
+folder where you want to put your downloaded file. Path is `./apps` by default and resources is set
+to `false`.
 
 To import an app from a zip file, use the following command:
 
