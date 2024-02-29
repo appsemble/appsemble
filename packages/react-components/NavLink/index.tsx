@@ -1,8 +1,8 @@
 import classNames from 'classnames';
 import { type ComponentPropsWithoutRef, type ReactNode } from 'react';
-import { type Link, NavLink as NavigationLink } from 'react-router-dom';
+import { NavLink as NavigationLink } from 'react-router-dom';
 
-interface NavLinkProps extends ComponentPropsWithoutRef<typeof Link> {
+interface NavLinkProps extends ComponentPropsWithoutRef<typeof NavigationLink> {
   /**
    * If specified, the link is only considered active if it’s an exact match.
    */

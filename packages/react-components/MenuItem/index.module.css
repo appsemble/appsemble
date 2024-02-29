@@ -1,9 +1,4 @@
-.menuContainer {
-  position: relative;
-}
-
 .root {
-  display: flex;
   height: 3rem;
   overflow: hidden;
   text-overflow: ellipsis;
