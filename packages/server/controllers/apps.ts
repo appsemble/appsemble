@@ -1211,18 +1211,22 @@ export async function exportApp(ctx: Context): Promise<void> {
       'visibility',
     ],
     include: [
+      { model: AppSnapshot },
       { model: AppBlockStyle, required: false },
       { model: AppMessages, required: false },
       { model: Resource, required: false },
       { model: Asset, required: false },
     ],
   });
+  assertKoaError(!app, ctx, 404, 'App not found');
 
   if (app.visibility === 'public' || !app.showAppDefinition) {
     await checkRole(ctx, app.OrganizationId, Permission.ViewApps);
   }
+
   const zip = new JSZip();
-  zip.file('app-definition.yaml', stringify(app.definition));
+  const definition = app.AppSnapshots?.[0]?.yaml || stringify(app.definition);
+  zip.file('app-definition.yaml', definition);
   const theme = zip.folder('theme');
   theme.file('core/index.css', app.coreStyle);
   theme.file('shared/index.css', app.sharedStyle);
