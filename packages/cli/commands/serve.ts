@@ -177,7 +177,7 @@ export async function handler(argv: ServeArguments): Promise<void> {
   );
 
   const localBlocksPromises = localBlocksConfigs.map(async (blockConfig) => {
-    await buildBlock(blockConfig);
+    await buildBlock(blockConfig, 'development');
     const [, blockImplementations] = await makeProjectPayload(blockConfig);
 
     return {
