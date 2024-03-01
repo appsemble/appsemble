@@ -1215,6 +1215,7 @@ export async function exportApp(ctx: Context): Promise<void> {
 
   const app = await App.findByPk(appId, {
     attributes: [
+      'id',
       'definition',
       'coreStyle',
       'icon',
@@ -1224,11 +1225,8 @@ export async function exportApp(ctx: Context): Promise<void> {
       'visibility',
     ],
     include: [
-      { model: AppSnapshot },
       { model: AppBlockStyle, required: false },
       { model: AppMessages, required: false },
-      { model: Resource, required: false },
-      { model: Asset, required: false },
     ],
   });
   assertKoaError(!app, ctx, 404, 'App not found');
@@ -1238,8 +1236,7 @@ export async function exportApp(ctx: Context): Promise<void> {
   }
 
   const zip = new JSZip();
-  const definition = app.AppSnapshots?.[0]?.yaml || stringify(app.definition);
-  zip.file('app-definition.yaml', definition);
+  zip.file('app-definition.yaml', stringify(app.definition));
   const theme = zip.folder('theme');
   theme.file('core/index.css', app.coreStyle);
   theme.file('shared/index.css', app.sharedStyle);
@@ -1262,8 +1259,11 @@ export async function exportApp(ctx: Context): Promise<void> {
     zip.file('icon.png', app.icon);
   }
 
-  if (resources && app.Resources !== undefined) {
+  if (resources) {
     await checkRole(ctx, app.OrganizationId, Permission.EditApps);
+    await app.reload({
+      include: [Resource],
+    });
     const resourceMap = new Map<string, string>();
     for (const resource of app.Resources) {
       const currentValue = resourceMap.get(resource.type) || '';
@@ -1274,8 +1274,11 @@ export async function exportApp(ctx: Context): Promise<void> {
     }
   }
 
-  if (assets && app.Assets !== undefined) {
+  if (assets) {
     await checkRole(ctx, app.OrganizationId, Permission.EditApps);
+    await app.reload({
+      include: [Asset],
+    });
     app.Assets.map((asset) => {
       if (asset.ResourceId) {
         zip.file(`assets/${asset.filename}`, asset.data);
