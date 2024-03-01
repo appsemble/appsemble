@@ -1280,9 +1280,7 @@ export async function exportApp(ctx: Context): Promise<void> {
       include: [Asset],
     });
     app.Assets.map((asset) => {
-      if (asset.ResourceId) {
-        zip.file(`assets/${asset.filename}`, asset.data);
-      }
+      zip.file(`assets/${asset.filename}`, asset.data);
     });
   }
   const content = zip.generateNodeStream();

@@ -15,7 +15,7 @@ interface ExportAppArgs extends BaseArguments {
 export const command = 'export';
 export const description = `Export an app as a zip file using app id.
   App definition, styles, icon and messages are exported by default, to export resources, make sure you have suitable permissions and use the '--resources' flag.
-  Similarly for assets use the --assets flag and the assets referenced by the resources will be exported in a separate folder.`;
+  Similarly for assets use the --assets flag ro include assets in the export.`;
 
 export function builder(yargs: Argv): Argv<any> {
   return yargs
@@ -28,8 +28,7 @@ export function builder(yargs: Argv): Argv<any> {
       default: false,
     })
     .option('assets', {
-      describe:
-        'Boolean representing whether the assets referenced by resources should be exported.',
+      describe: 'Boolean representing whether assets should be exported.',
     })
     .option('path', {
       describe: 'Path of the folder where you want to put your exported file.',

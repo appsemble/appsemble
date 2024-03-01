@@ -367,8 +367,7 @@ export async function traverseAppDirectory(
  * Export an app as a zip file.
  *
  * @param appId Id of the app to be exported.
- * @param assets Boolean representing whether to include assets referenced by resources in the
- *   exported zip file.
+ * @param assets Boolean representing whether to include assets in the exported zip file.
  * @param resources Boolean representing whether to include resources in the zip file.
  * @param path Path of the folder where you want to put your downloaded file.
  * @param remote The remote to fetch the app from.
