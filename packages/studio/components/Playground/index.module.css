@@ -1,5 +1,23 @@
-.json {
-  width: 100%;
+.menu {
+  gap: 0.5rem;
+}
+
+.editor {
+  flex: 1;
+  height: 10rem;
+  margin: 0;
+  min-width: 33%;
+  padding: 0 initial;
+  transition: transform 1s ease;
+}
+
+.container {
+  border-radius: 4px;
+  box-shadow:
+    hsl(0deg 0% 87%) 0 6px 6px -6px inset,
+    hsl(0deg 0% 87%) 0 -6px 6px -6px inset,
+    hsl(0deg 0% 87%) 6px 0 6px -6px inset,
+    hsl(0deg 0% 87%) -6px 0 6px -6px inset;
 }
 
 .dense :global(.help) {
