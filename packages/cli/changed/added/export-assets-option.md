@@ -1,1 +1,1 @@
-Add an option for including assets in the export file.
+Add an option to include assets in the app export.

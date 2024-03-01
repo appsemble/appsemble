@@ -5247,6 +5247,7 @@ describe('exportApp', () => {
           },
         },
       },
+      icon: await readFixture('nodejs-logo.png'),
       OrganizationId: organization.id,
       vapidPublicKey: 'a',
       vapidPrivateKey: 'b',
@@ -5259,6 +5260,38 @@ describe('exportApp', () => {
     await OrganizationMember.update({ role: 'Member' }, { where: { UserId: user.id } });
     authorizeStudio();
     const response = await request.get(`/api/apps/${appWithResources.id}/export?resources=true`);
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 403 Forbidden
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "error": "Forbidden",
+        "message": "User does not have sufficient permissions.",
+        "statusCode": 403,
+      }
+    `);
+  });
+
+  it('should not allow exporting assets if the user does not have sufficient permissions', async () => {
+    const app = await App.create({
+      definition: {
+        name: 'Test App',
+        defaultPage: 'Test Page',
+      },
+      icon: await readFixture('nodejs-logo.png'),
+      OrganizationId: organization.id,
+      vapidPublicKey: 'a',
+      vapidPrivateKey: 'b',
+    });
+    await Asset.create({
+      AppId: app.id,
+      filename: 'icon.png',
+      mime: 'image/png',
+      data: await readFixture('nodejs-logo.png'),
+    });
+    await OrganizationMember.update({ role: 'Member' }, { where: { UserId: user.id } });
+    authorizeStudio();
+    const response = await request.get(`/api/apps/${app.id}/export?assets=true`);
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 403 Forbidden
       Content-Type: application/json; charset=utf-8
@@ -5342,6 +5375,7 @@ describe('exportApp', () => {
         vapidPrivateKey: 'b',
         vapidPublicKey: 'a',
         OrganizationId: organization.id,
+        icon: await readFixture('nodejs-logo.png'),
       },
       { raw: true },
     );
@@ -5373,6 +5407,7 @@ describe('exportApp', () => {
       'theme/shared/index.css',
       'i18n/',
       'i18n/en.json',
+      'icon.png',
     ]);
 
     expect(await archive.file('app-definition.yaml').async('text')).toMatchInlineSnapshot(
@@ -5398,6 +5433,87 @@ describe('exportApp', () => {
     `);
     expect(await archive.file('i18n/en.json').async('text')).toMatchInlineSnapshot(
       '"[{"test":"test"}]"',
+    );
+  });
+
+  it('should allow exporting assets if the user has sufficient permissions', async () => {
+    const app = await App.create({
+      definition: {
+        name: 'Test App',
+        defaultPage: 'Test Page',
+        pages: [{ name: 'Test Page' }],
+      },
+      sharedStyle: `
+      * {
+        color: var(--link-color)
+      }`,
+      coreStyle: `
+      * {
+        color: var(--primary-color)
+      }`,
+      OrganizationId: organization.id,
+      vapidPublicKey: 'a',
+      vapidPrivateKey: 'b',
+    });
+
+    await Asset.create({
+      AppId: app.id,
+      mime: 'image/png',
+      filename: 'nodejs-logo.png',
+      data: await readFixture('nodejs-logo.png'),
+    });
+    vi.useRealTimers();
+    authorizeStudio();
+    const response = await request.get(`/api/apps/${app.id}/export?assets=true`, {
+      responseType: 'stream',
+    });
+    const zip = new JSZip();
+
+    const dataBuffer: Buffer = await new Promise((resolve, reject) => {
+      const chunks: any[] = [];
+
+      // Listen for data events and collect chunks
+      response.data.on('data', (chunk: any) => chunks.push(chunk));
+      response.data.on('end', () => resolve(Buffer.concat(chunks)));
+      response.data.on('error', reject);
+    });
+    const archive = await zip.loadAsync(dataBuffer);
+
+    expect(Object.keys(archive.files)).toStrictEqual([
+      'app-definition.yaml',
+      'theme/',
+      'theme/core/',
+      'theme/core/index.css',
+      'theme/shared/',
+      'theme/shared/index.css',
+      'i18n/',
+      'assets/',
+      'assets/nodejs-logo.png',
+    ]);
+
+    expect(await archive.file('app-definition.yaml').async('text')).toMatchInlineSnapshot(
+      `
+        "name: Test App
+        defaultPage: Test Page
+        pages:
+          - name: Test Page
+        "
+      `,
+    );
+    expect(await archive.file('theme/core/index.css').async('text')).toMatchInlineSnapshot(`
+      "
+            * {
+              color: var(--primary-color)
+            }"
+    `);
+    expect(await archive.file('theme/shared/index.css').async('text')).toMatchInlineSnapshot(`
+      "
+            * {
+              color: var(--link-color)
+            }"
+    `);
+    expect(await archive.file('assets/nodejs-logo.png').async('nodebuffer')).toStrictEqual(
+      await readFixture('nodejs-logo.png'),
     );
   });
 
@@ -5571,6 +5687,8 @@ describe('importApp', () => {
     } as AppDefinition;
     const zip = new JSZip();
     zip.file('app-definition.yaml', stringify(appDefinition));
+    zip.file('icon.png', await readFixture('nodejs-logo.png'));
+    zip.file('assets/10x50.png', await readFixture('10x50.png'));
     vi.useRealTimers();
     const content = zip.generateNodeStream();
     await OrganizationMember.update({ role: 'AppEditor' }, { where: { UserId: user.id } });

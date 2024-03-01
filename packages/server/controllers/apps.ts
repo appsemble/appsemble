@@ -1068,7 +1068,7 @@ export async function importApp(ctx: Context): Promise<void> {
       where: { path, OrganizationId: organizationId },
     });
     assertKoaError(existingPath != null, ctx, 409, 'Path  in app definition needs to be unique');
-    const icon = await zip.file('icon.png').async('nodebuffer');
+    const icon = await zip.file('icon.png')?.async('nodebuffer');
     const keys = webpush.generateVAPIDKeys();
     result = {
       definition,

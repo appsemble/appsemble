@@ -1,1 +1,1 @@
-Export file includes app icon and same can be imported from the zip file.
+Export and import can now include the app icon.
