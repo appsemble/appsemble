@@ -1068,6 +1068,7 @@ export async function importApp(ctx: Context): Promise<void> {
       where: { path, OrganizationId: organizationId },
     });
     assertKoaError(existingPath != null, ctx, 409, 'Path  in app definition needs to be unique');
+    const icon = await zip.file('icon.png').async('nodebuffer');
     const keys = webpush.generateVAPIDKeys();
     result = {
       definition,
@@ -1080,6 +1081,7 @@ export async function importApp(ctx: Context): Promise<void> {
       enableSelfRegistration: true,
       showAppDefinition: true,
       template: false,
+      icon,
       iconBackground: '#ffffff',
     };
     const coreStyleFile = theme.file('core/index.css');
@@ -1152,6 +1154,17 @@ export async function importApp(ctx: Context): Promise<void> {
           processReferenceHooks(user as User, record, createdResources[0], action, options, ctx);
           processHooks(user as User, record, createdResources[0], action, options, ctx);
         }
+
+        // eslint-disable-next-line unicorn/no-array-for-each
+        zip.folder('assets').forEach(async (pathFile, file) => {
+          const data = await file.async('nodebuffer');
+          Asset.create({
+            AppId: record.id,
+            data,
+            filename: pathFile,
+            mime: lookup(pathFile),
+          });
+        });
 
         const organizations = theme.filter((filename) => filename.startsWith('@'));
         for (const organization of organizations) {
