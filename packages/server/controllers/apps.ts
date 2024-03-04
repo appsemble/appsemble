@@ -1227,6 +1227,7 @@ export async function exportApp(ctx: Context): Promise<void> {
     include: [
       { model: AppBlockStyle, required: false },
       { model: AppMessages, required: false },
+      { model: AppSnapshot },
     ],
   });
   assertKoaError(!app, ctx, 404, 'App not found');
@@ -1236,7 +1237,8 @@ export async function exportApp(ctx: Context): Promise<void> {
   }
 
   const zip = new JSZip();
-  zip.file('app-definition.yaml', stringify(app.definition));
+  const definition = app.AppSnapshots?.[0]?.yaml || stringify(app.definition);
+  zip.file('app-definition.yaml', definition);
   const theme = zip.folder('theme');
   theme.file('core/index.css', app.coreStyle);
   theme.file('shared/index.css', app.sharedStyle);
@@ -1264,13 +1266,15 @@ export async function exportApp(ctx: Context): Promise<void> {
     await app.reload({
       include: [Resource],
     });
-    const resourceMap = new Map<string, string>();
+    const splitResources = new Map<string, Resource[]>();
     for (const resource of app.Resources) {
-      const currentValue = resourceMap.get(resource.type) || '';
-      resourceMap.set(resource.type, `${currentValue + JSON.stringify(resource.toJSON())}\n`);
+      if (!splitResources.has(resource.type)) {
+        splitResources.set(resource.type, []);
+      }
+      splitResources.get(resource.type).push(resource);
     }
-    for (const [resourceType, resourceValue] of resourceMap.entries()) {
-      zip.file(`resources/${resourceType}.json`, resourceValue);
+    for (const [type, resourcesValue] of splitResources.entries()) {
+      zip.file(`resources/${type}.json`, JSON.stringify(resourcesValue.map((r) => r.toJSON())));
     }
   }
 

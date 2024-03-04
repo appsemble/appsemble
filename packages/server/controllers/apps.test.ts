@@ -5636,10 +5636,7 @@ describe('exportApp', () => {
       '"[{"test":"test"}]"',
     );
     expect(await archive.file('resources/testResource.json').async('text')).toMatchInlineSnapshot(
-      `
-        "{"foo":"bar","id":1,"$created":"1970-01-01T00:00:00.000Z","$updated":"1970-01-01T00:00:00.000Z"}
-        "
-      `,
+      '"[{"foo":"bar","id":1,"$created":"1970-01-01T00:00:00.000Z","$updated":"1970-01-01T00:00:00.000Z"}]"',
     );
   });
 });
