@@ -1,1 +1,1 @@
-Fix resources saved in the export app.
+Fix resources saved as invalid JSON in the app export.

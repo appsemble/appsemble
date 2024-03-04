@@ -171,8 +171,7 @@ appsemble app export --id <app-id>
 
 Supported arguments for this app are `resources`, `assets` and `path`. Resources is used to specify
 whether to include the resources in the exported file, the same can be applied to assets and path is
-the path of the folder where you want to put your downloaded file. Path is `./apps` by default and
-resources is set to `false`.
+the path of the folder where you want to put your downloaded file. The default path is `./apps`, and resources and assets are by default `false`.
 
 To import an app from a zip file, use the following command:
 
