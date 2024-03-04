@@ -1,29 +1,58 @@
-import { type Remappers } from '@appsemble/types';
+import { type Remappers, type UserInfo } from '@appsemble/types';
+import { IntlMessageFormat } from 'intl-messageformat';
 import { stringify } from 'yaml';
 
-interface RemapperExample {
+import { type RemapperContext } from './remap.js';
+
+export interface RemapperExample {
   input: unknown;
   remapper: unknown;
   result: unknown;
+  skip?: boolean;
 }
 
-export const examples: Record<keyof Remappers | 'array.map.1' | 'None', RemapperExample> = {
+type CustomRemapperKeys =
+  | 'app.id'
+  | 'app.locale'
+  | 'app.url'
+  | 'array.map.1'
+  | 'if.else'
+  | 'if.then'
+  | 'None';
+export type RemapperExampleKeys = CustomRemapperKeys | Exclude<keyof Remappers, 'app' | 'if'>;
+
+export const examples: Record<RemapperExampleKeys, RemapperExample> = {
   None: {
-    input: {},
+    input: null,
     remapper: '',
     result: '',
   },
-  app: {
-    input: {},
+  'app.id': {
+    input: null,
     remapper: {
-      app: {},
+      app: 'id',
     },
-    result: {},
+    result: 0,
+  },
+  'app.locale': {
+    input: null,
+    remapper: {
+      app: 'locale',
+    },
+    result: 'en',
+  },
+  'app.url': {
+    input: null,
+    remapper: {
+      app: 'url',
+    },
+    result: 'https://example-app.example-organization.example.com',
   },
   appMember: {
-    input: {},
+    input: null,
     remapper: {},
     result: {},
+    skip: true,
   },
   array: {
     input: ['a', 'b', 'c'],
@@ -55,7 +84,20 @@ export const examples: Record<keyof Remappers | 'array.map.1' | 'None', Remapper
     ],
   },
   'array.append': {
-    input: {},
+    input: [
+      {
+        name: 'Peter',
+        occupation: 'Delivery driver',
+      },
+      {
+        name: 'Otto',
+        occupation: 'Scientist',
+      },
+      {
+        name: 'Harry',
+        occupation: 'CEO',
+      },
+    ],
     remapper: {
       'array.append': [
         {
@@ -112,7 +154,7 @@ export const examples: Record<keyof Remappers | 'array.map.1' | 'None', Remapper
     },
   },
   'array.from': {
-    input: {},
+    input: null,
     remapper: {
       'array.from': ['Peter', 'Otto', 'Harry'],
     },
@@ -203,7 +245,24 @@ export const examples: Record<keyof Remappers | 'array.map.1' | 'None', Remapper
     ],
   },
   'array.omit': {
-    input: {},
+    input: [
+      {
+        name: 'Peter',
+        occupation: 'Delivery driver',
+      },
+      {
+        name: 'Otto',
+        occupation: 'Scientist',
+      },
+      {
+        name: 'Harry',
+        occupation: 'CEO',
+      },
+      {
+        name: 'James',
+        occupation: 'News reporter',
+      },
+    ],
     remapper: {
       'array.omit': [3],
     },
@@ -230,14 +289,16 @@ export const examples: Record<keyof Remappers | 'array.map.1' | 'None', Remapper
     result: [1, 2, 3],
   },
   'assign.history': {
-    input: {},
+    input: null,
     remapper: {},
     result: {},
+    skip: true,
   },
   context: {
-    input: {},
+    input: null,
     remapper: {},
     result: {},
+    skip: true,
   },
   'date.add': {
     input: '2023-06-30T14:50:19.601Z',
@@ -253,6 +314,7 @@ export const examples: Record<keyof Remappers | 'array.map.1' | 'None', Remapper
       },
     ],
     result: '2023-07-07T14:50:19.601Z',
+    skip: true,
   },
   'date.format': {
     input: '2023-07-03',
@@ -260,13 +322,15 @@ export const examples: Record<keyof Remappers | 'array.map.1' | 'None', Remapper
       'date.format': null,
     },
     result: '2023-07-02T22:00:00.000Z',
+    skip: true,
   },
   'date.now': {
-    input: {},
+    input: null,
     remapper: {
       'date.now': null,
     },
     result: 'Mon Jul 03 2023 11:47:18 GMT+0200 (Midden-Europese zomertijd)',
+    skip: true,
   },
   'date.parse': {
     input: '02/11/2014',
@@ -274,61 +338,158 @@ export const examples: Record<keyof Remappers | 'array.map.1' | 'None', Remapper
       'date.parse': 'MM/dd/yyyy',
     },
     result: 'Tue Feb 11 2014 00:00:00',
+    skip: true,
   },
+
   equals: {
-    input: {},
-    remapper: {},
-    result: {},
+    input: { inputValue: 'example', expectedValue: 'example' },
+    remapper: {
+      equals: [{ prop: 'inputValue' }, { prop: 'expectedValue' }],
+    },
+    result: true,
   },
   'from.history': {
-    input: {},
+    input: null,
     remapper: {},
     result: {},
+    skip: true,
   },
+
   gt: {
-    input: {},
-    remapper: {},
-    result: {},
+    input: { stock: 100 },
+    remapper: { gt: [{ prop: 'stock' }, 5] },
+    result: true,
   },
   history: {
-    input: {},
+    input: null,
     remapper: {},
     result: {},
+    skip: true,
   },
   ics: {
-    input: {},
+    input: null,
     remapper: {},
     result: {},
+    skip: true,
   },
-  if: {
-    input: {},
-    remapper: {},
-    result: {},
+  'if.then': {
+    input: { guess: 4 },
+    remapper: {
+      if: {
+        condition: {
+          equals: [
+            {
+              prop: 'guess',
+            },
+            4,
+          ],
+        },
+        then: {
+          static: 'You guessed right!',
+        },
+        else: {
+          static: 'You guessed wrong!',
+        },
+      },
+    },
+    result: 'You guessed right!',
+  },
+  'if.else': {
+    input: { guess: 5 },
+    remapper: {
+      if: {
+        condition: {
+          equals: [
+            {
+              prop: 'guess',
+            },
+            4,
+          ],
+        },
+        then: {
+          static: 'You guessed right!',
+        },
+        else: {
+          static: 'You guessed wrong!',
+        },
+      },
+    },
+    result: 'You guessed wrong!',
   },
   log: {
-    input: {},
+    input: null,
     remapper: {},
     result: {},
+    skip: true,
   },
   lt: {
-    input: {},
-    remapper: {},
-    result: {},
+    input: { stock: 4 },
+    remapper: { lt: [{ prop: 'stock' }, 5] },
+    result: true,
   },
   match: {
-    input: {},
-    remapper: {},
-    result: {},
+    input: { Gem: 'Ruby' },
+    remapper: {
+      match: [
+        {
+          case: {
+            equals: [
+              {
+                prop: 'Gem',
+              },
+              'Diamond',
+            ],
+          },
+          value: 100,
+        },
+        {
+          case: {
+            equals: [
+              {
+                prop: 'Gem',
+              },
+              'Ruby',
+            ],
+          },
+          value: 75,
+        },
+        {
+          case: {
+            equals: [
+              {
+                prop: 'Gem',
+              },
+              'Gold',
+            ],
+          },
+          value: 50,
+        },
+        {
+          case: {
+            equals: [
+              {
+                prop: 'Gem',
+              },
+              'Sapphire',
+            ],
+          },
+          value: 25,
+          result: {},
+        },
+      ],
+    },
+    result: 75,
   },
   not: {
-    input: {},
-    remapper: {},
-    result: {},
+    input: { number: 3 },
+    remapper: { not: [{ prop: 'number' }, 4] },
+    result: true,
   },
   'null.strip': {
-    input: {},
+    input: null,
     remapper: {},
     result: {},
+    skip: true,
   },
   'object.assign': {
     input: {
@@ -345,7 +506,7 @@ export const examples: Record<keyof Remappers | 'array.map.1' | 'None', Remapper
     },
   },
   'object.from': {
-    input: {},
+    input: null,
     remapper: {
       'object.from': {
         email: 'example@hotmail.com',
@@ -379,14 +540,16 @@ export const examples: Record<keyof Remappers | 'array.map.1' | 'None', Remapper
     },
   },
   'omit.history': {
-    input: {},
+    input: null,
     remapper: {},
     result: {},
+    skip: true,
   },
   page: {
-    input: {},
+    input: null,
     remapper: {},
     result: {},
+    skip: true,
   },
   prop: {
     input: {
@@ -399,24 +562,28 @@ export const examples: Record<keyof Remappers | 'array.map.1' | 'None', Remapper
     result: 'John',
   },
   'random.choice': {
-    input: {},
+    input: null,
     remapper: {},
     result: {},
+    skip: true,
   },
   'random.float': {
-    input: {},
+    input: null,
     remapper: {},
     result: {},
+    skip: true,
   },
   'random.integer': {
-    input: {},
+    input: null,
     remapper: {},
     result: {},
+    skip: true,
   },
   'random.string': {
-    input: {},
+    input: null,
     remapper: {},
     result: {},
+    skip: true,
   },
   root: {
     input: 'input',
@@ -424,16 +591,17 @@ export const examples: Record<keyof Remappers | 'array.map.1' | 'None', Remapper
     result: 'input',
   },
   static: {
-    input: {},
+    input: null,
     remapper: {
       static: 'Hello!',
     },
     result: 'Hello!',
   },
   step: {
-    input: {},
+    input: null,
     remapper: {},
     result: {},
+    skip: true,
   },
   'string.case': {
     input: 'Patrick',
@@ -468,26 +636,38 @@ export const examples: Record<keyof Remappers | 'array.map.1' | 'None', Remapper
     result: 'Eindhoven is the cleanest city in the Netherlands',
   },
   translate: {
-    input: {},
+    input: null,
     remapper: {},
     result: {},
+    skip: true,
   },
   user: {
-    input: {},
+    input: null,
     remapper: {},
     result: {},
+    skip: true,
   },
 } as const;
 
+/**
+ * @param remapper The remapper example to use.
+ * @param options The options specifying how to display the example.
+ * @returns Example based on the input options.
+ */
 export function schemaExample(
   remapper: keyof typeof examples,
-  options?: { input?: number; result?: number; exclude?: ('input' | 'remapper' | 'result')[] },
+  options?: {
+    input?: 'inline' | 'pretty';
+    result?: 'inline' | 'pretty';
+    exclude?: ('input' | 'remapper' | 'result')[];
+  },
 ): string {
-  const { exclude = [], input, result } = options ?? {};
+  const { exclude = [], input = 'inline', result } = options ?? {};
   let example = '';
 
   if (!exclude.includes('input')) {
-    example += `Input:\n\n\`\`\`json\n${JSON.stringify(examples[remapper].input, null, input)}\n\`\`\`\n`;
+    const spacing = input === 'pretty' && 2;
+    example += `Input:\n\n\`\`\`json\n${JSON.stringify(examples[remapper].input, null, spacing)}\n\`\`\`\n`;
   }
 
   if (!exclude.includes('remapper')) {
@@ -495,8 +675,34 @@ export function schemaExample(
   }
 
   if (!exclude.includes('result')) {
-    example += `Result:\n\n\`\`\`json\n${JSON.stringify(examples[remapper].result, null, result)}\n\`\`\`\n`;
+    const spacing = result === 'pretty' && 2;
+    example += `Result:\n\n\`\`\`json\n${JSON.stringify(examples[remapper].result, null, spacing)}\n\`\`\`\n`;
   }
 
   return example;
+}
+
+export function createExampleContext(
+  url: URL,
+  lang: string,
+  userInfo?: UserInfo,
+  history?: [],
+): RemapperContext {
+  return {
+    getMessage: ({ defaultMessage }) => new IntlMessageFormat(defaultMessage, lang, undefined),
+    url: String(url),
+    appUrl: `${url.protocol}//example-app.example-organization.${url.host}`,
+    userInfo: userInfo ?? {
+      sub: 'default-example-sub',
+      name: 'default-example-name',
+      email: 'default@example.com',
+      email_verified: false,
+    },
+    context: {},
+    history: history ?? ['Default example value'],
+    appId: 0,
+    locale: 'en',
+    pageData: { default: 'Page data' },
+    appMember: userInfo?.appMember,
+  };
 }

@@ -13,7 +13,7 @@ Output can be an empty array if the supplied data isn’t an array.
 For example, if you want to sort through a list of people and only get their occupations you can do
 the following:
 
-${schemaExample('array.map', { input: 2 })}
+${schemaExample('array.map', { input: 'pretty' })}
 
 Another great use for \`array.map\` is to combine it with the \`if\` remapper and sort your arrays on
 specific values.
@@ -21,7 +21,7 @@ specific values.
 Using the same input data from the previous example, look at how you can change the code to get
 people from a specific occupation:
 
-${schemaExample('array.map.1', { input: 2, exclude: ['input'] })}
+${schemaExample('array.map.1', { input: 'pretty', exclude: ['input'] })}
 
 Because \`array.map\` returns an array, every item has to return something. This is why we have to
 return the full object with the data we want in the \`then\` section. It’s also why we return \`null\`.
@@ -167,7 +167,7 @@ Append new values to the end of an array. If the input is not an array an empty 
 
 Using the array from the previous example, we can add a new object on top of it using this remapper:
 
-${schemaExample('array.append', { result: 2, exclude: ['input'] })}
+${schemaExample('array.append', { result: 'pretty', exclude: ['input'] })}
 
 Extra example:
 
@@ -211,7 +211,7 @@ Accepts an array of static or remapper values.
 With the previous example we added a new person to the list of people, so now we can remove that
 person. We already know the index of this person in the array is \`3\`, so it’s easy:
 
-${schemaExample('array.omit', { result: 2, exclude: ['input'] })}
+${schemaExample('array.omit', { result: 'pretty', exclude: ['input'] })}
 
 However, usually we don’t know the exact index of the item we want to delete. Because the remapper
 accepts remappers as input we can get the desired item’s ID from another source as well. Take the

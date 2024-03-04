@@ -6,12 +6,18 @@ import {
   Select,
   useToggle,
 } from '@appsemble/react-components';
-import { examples, remap, type RemapperContext, schemas } from '@appsemble/utils';
+import {
+  createExampleContext,
+  examples,
+  remap,
+  type RemapperContext,
+  type RemapperExampleKeys,
+  schemas,
+} from '@appsemble/utils';
 import classNames from 'classnames';
-import { IntlMessageFormat } from 'intl-messageformat';
 import { Validator } from 'jsonschema';
 import { editor, type IDisposable } from 'monaco-editor/esm/vs/editor/editor.api.js';
-// TODO: fix errors thrown by importing the following
+// Required for syntax highlighting in the Playground input and output editors
 import 'monaco-editor/esm/vs/language/json/monaco.contribution.js';
 import { type ChangeEvent, type ReactNode, useEffect, useMemo, useRef, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
@@ -21,6 +27,20 @@ import { parse, stringify, YAMLError } from 'yaml';
 import styles from './index.module.css';
 import { messages } from './messages.js';
 import { useUser } from '../UserProvider/index.js';
+
+// Required for syntax highlighting in the Playground input and output editors
+window.MonacoEnvironment = {
+  getWorker(workerId, label) {
+    switch (label) {
+      case 'json':
+        return new Worker(
+          new URL('monaco-editor/esm/vs/language/json/json.worker', import.meta.url),
+        );
+      default:
+        throw new Error(`Unknown label ${label}`);
+    }
+  },
+};
 
 interface EditorProps {
   /**
@@ -158,14 +178,14 @@ function Editor({ className, language, onChange, readOnly, value }: EditorProps)
 
 interface PlaygroundProps {
   /**
-   * The default option to be selected.
+   * The default remapper to be selected.
    *
    * @default 'None'
    */
-  readonly defaultOption?: keyof typeof examples;
+  readonly defaultOption?: RemapperExampleKeys;
 
   /**
-   * A custom option to define.
+   * A custom remapper example to include.
    */
   readonly customOption?: { input: unknown; remapper: string };
 }
@@ -179,31 +199,7 @@ export function Playground({ customOption, defaultOption = 'None' }: PlaygroundP
 
   const context: RemapperContext = useMemo(() => {
     const url = new URL(window.origin);
-    return {
-      appId: 0,
-      url: String(url),
-      appUrl: `${url.protocol}//playground.playground.${url.host}`,
-      getMessage(message) {
-        return new IntlMessageFormat(message.defaultMessage, lang, undefined);
-      },
-      locale: lang,
-      userInfo: userInfo ?? {
-        sub: 'Playground',
-        name: 'Playground',
-        email: 'playground@example.com',
-        email_verified: false,
-      },
-      context: {},
-      appMember: {
-        userId: 'Playground',
-        memberId: 'Playground',
-        name: 'Playground',
-        primaryEmail: 'playground@example.com',
-        role: 'Playground',
-        demo: false,
-        properties: {},
-      },
-    };
+    return createExampleContext(url, lang, userInfo);
   }, [lang, userInfo]);
 
   const [jsonError, setJsonError] = useState(false);
@@ -222,6 +218,7 @@ export function Playground({ customOption, defaultOption = 'None' }: PlaygroundP
     custom?.remapper || stringify(examples[defaultOption].remapper),
   );
   const [output, setOutput] = useState('');
+  const [skipped, setSkipped] = useState(examples[defaultOption].skip);
 
   const onChangeInput: EditorProps['onChange'] = (event, value) => {
     try {
@@ -244,19 +241,21 @@ export function Playground({ customOption, defaultOption = 'None' }: PlaygroundP
   };
 
   const onSelect = (event: ChangeEvent, value: keyof typeof examples): void => {
-    const { input: newInput, remapper: newRemapper } = examples?.[value] ?? examples.None;
+    const { input: newInput, remapper: newRemapper, skip } = examples?.[value] ?? examples.None;
     setInput(newInput);
     setRemapper(stringify(newRemapper));
+    setSkipped(skip);
   };
 
   const onChangeRemapper: EditorProps['onChange'] = (event, value) => {
-    setYamlError(null);
     setRemapper(value);
   };
 
   useEffect(() => {
     try {
+      setJsonError(false);
       const parsedRemapper = parse(remapper);
+      setYamlError(null);
       const validator = new Validator();
       Object.entries(schemas).map(([path, schema]) =>
         validator.addSchema(schema, `/#/components/schemas/${path}`),
@@ -278,11 +277,15 @@ export function Playground({ customOption, defaultOption = 'None' }: PlaygroundP
       }
 
       const remappedValue = remap(parsedRemapper, input, context);
-      setOutput(JSON.stringify(remappedValue, null, 2));
+      const stringifiedOutput = JSON.stringify(remappedValue, null, 2);
+      // The remapped value may be undefined, which results in an error when set in MonacoEditor.
+      setOutput(stringifiedOutput === undefined ? 'undefined' : stringifiedOutput);
       setRemapperErrorMessages([]);
     } catch (error) {
       if (error instanceof YAMLError) {
         setYamlError(error.message);
+      } else if (error instanceof Error) {
+        setRemapperErrorMessages([error.message]);
       } else {
         setRemapperErrorMessages([error]);
       }
@@ -312,6 +315,15 @@ export function Playground({ customOption, defaultOption = 'None' }: PlaygroundP
           iconPosition="right"
           onClick={minimized.toggle}
         />
+        {/* Intentionally not adding translations for this button as it's temporary. */}
+        <button
+          className={styles.verify}
+          disabled
+          title={`The example has ${skipped ? 'not ' : ''}been tested.`}
+          type="button"
+        >
+          {skipped ? 'Unverified' : 'Verified'}
+        </button>
       </div>
       <div
         className={classNames(
@@ -333,14 +345,14 @@ export function Playground({ customOption, defaultOption = 'None' }: PlaygroundP
         />
         <Editor className={classNames(styles.editor)} language="json" readOnly value={output} />
       </div>
-      {yamlError ? (
-        <Message className="mb-1" color="danger">
-          <FormattedMessage {...messages.yamlError} values={{ error: <pre>{yamlError}</pre> }} />
-        </Message>
-      ) : null}
       {jsonError ? (
         <Message className="mb-1" color="danger">
           <FormattedMessage {...messages.jsonError} />
+        </Message>
+      ) : null}
+      {yamlError ? (
+        <Message className="mb-1" color="danger">
+          <FormattedMessage {...messages.yamlError} values={{ error: <pre>{yamlError}</pre> }} />
         </Message>
       ) : null}
       {remapperErrorMessages?.length ? (

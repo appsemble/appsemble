@@ -1,5 +1,5 @@
 import { Title, useMeta } from '@appsemble/react-components';
-import { camelToHyphen, defaultLocale } from '@appsemble/utils';
+import { camelToHyphen, defaultLocale, examples, type RemapperExampleKeys } from '@appsemble/utils';
 import { type OpenAPIV3 } from 'openapi-types';
 import { Fragment, type ReactNode } from 'react';
 
@@ -19,14 +19,21 @@ export function RemapperPage({
     <main lang={defaultLocale}>
       {Object.entries(remappers).map(([name, schema]) => {
         const id = camelToHyphen(name);
+        const [defaultOption] =
+          // A remapper example must match: { remapper-name: ... }
+          // This ensures the first matching remapper example is used.
+          Object.entries(examples).find(([, { remapper }]) => Object.keys(remapper)[0] === name) ??
+          [];
         return (
           <Fragment key={name}>
             <Title anchor className="pl-8 mb-1 mt-5" id={id} size={5}>
               {name}
             </Title>
-            <Collapsible className="is-6" collapsed title="Playground">
-              <Playground defaultOption={name as keyof typeof Playground} />
-            </Collapsible>
+            {defaultOption ? (
+              <Collapsible className="is-6" collapsed title="Playground">
+                <Playground defaultOption={defaultOption as RemapperExampleKeys} />
+              </Collapsible>
+            ) : null}
             <div>
               <Schema idPrefix={id} renderRef={Ref} schema={schema} />
             </div>

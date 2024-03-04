@@ -2,6 +2,7 @@ import { type AppMessages, type Remapper, type UserInfo } from '@appsemble/types
 import { IntlMessageFormat } from 'intl-messageformat';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
+import { createExampleContext, examples } from './examples.js';
 import { remap } from './remap.js';
 
 /**
@@ -1276,3 +1277,14 @@ describe('user', () => {
     },
   });
 });
+
+describe.each(Object.entries(examples))(
+  'should test remapper example: %s',
+  (name, { input, remapper, result: expected, skip }) => {
+    it.skipIf(skip)('to be valid.', () => {
+      const context = createExampleContext(new URL('https://example.com'), 'en');
+      const result = remap(remapper as Remapper, input, context);
+      expect(result).toStrictEqual(expected);
+    });
+  },
+);

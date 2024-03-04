@@ -11,12 +11,12 @@ Returns nothing when not in the context of \`array.map’s\`.
 
 For example:
 
-${schemaExample('array', { result: 2 })}
+${schemaExample('array', { result: 'pretty' })}
 `,
   },
   app: {
     enum: ['id', 'locale', 'url'],
-    description: `Gives actual information about the current app. Using this remapper you will have access to the
+    description: `Gives information about the current app. Using this remapper you can get access to the
 following information:
 
 - \`id\`: App ID
@@ -25,13 +25,7 @@ following information:
 
 Example:
 
-\`\`\`json
-{
-  "id": 11,
-  "locale": "en",
-  "url": "https://example-app.examplecompany.appsemble.app"
-}
-\`\`\`
+${schemaExample('app.url', { result: 'pretty', exclude: ['input'] })}
 `,
   },
   context: {

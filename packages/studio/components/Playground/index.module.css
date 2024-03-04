@@ -24,3 +24,7 @@
   margin-top: unset;
   min-height: unset;
 }
+
+.verify {
+  font-weight: bold;
+}

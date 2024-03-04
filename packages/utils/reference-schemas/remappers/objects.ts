@@ -91,7 +91,7 @@ In contrary to the previous remapper, what if you have an object from which you 
 value? Then you can use \`object.omit\`. The remapper can remove properties from an existing object
 based on the given object keys. This includes nested properties.
 
-${schemaExample('object.omit', { input: 2, result: 2 })}
+${schemaExample('object.omit', { input: 'pretty', result: 'pretty' })}
 `,
   },
 };
