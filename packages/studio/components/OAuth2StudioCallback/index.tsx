@@ -51,20 +51,11 @@ export function OAuth2StudioCallback({ session }: OAuth2StudioCallbackProps): Re
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const finalizeLogin = useCallback(
-    async (response: TokenResponse) => {
+    (response: TokenResponse) => {
       login(response);
       clearOAuth2State();
 
-      // If password is null
-      // Redirect to /reset-password
-      const loginMethods = await axios.get<{ password: boolean; OAuthAuthorizations: boolean }>(
-        '/api/user/methods',
-        { headers: { authorization: `Bearer ${response.access_token}` } },
-      );
-
-      const url = loginMethods.data.password ? session.redirect || '/' : '/reset-password';
-
-      navigate(url, { replace: true });
+      navigate(session.redirect || '/', { replace: true });
     },
     [navigate, login, session],
   );

@@ -221,74 +221,18 @@ export async function unlinkConnectedAccount(ctx: Context): Promise<void> {
     user,
   } = ctx;
 
+  const rows = await OAuthAuthorization.destroy({ where: { UserId: user.id, authorizationUrl } });
+
+  assertKoaError(!rows, ctx, 404, 'OAuth2 account to unlink not found');
+
   const dbUser = await User.findOne({
     where: { id: user.id },
-    include: [EmailAuthorization, OAuthAuthorization],
+    include: [OAuthAuthorization],
   });
 
-  const secondaryEmails = dbUser.EmailAuthorizations.filter(
-    (e) => e.verified && e.email !== dbUser.primaryEmail,
-  );
-  const sso = dbUser.OAuthAuthorizations.find(
-    (auth) => auth.authorizationUrl === authorizationUrl && auth.UserId === dbUser.id,
-  );
-
-  // If this is the only email the account can be deleted
-  // eslint-disable-next-line unicorn/prefer-ternary
-  if (secondaryEmails.length === 0) {
-    await transactional(async (transaction) => {
-      const rows = await OAuthAuthorization.destroy({
-        where: { UserId: dbUser.id, authorizationUrl },
-        transaction,
-      });
-      if (!rows) {
-        transaction.rollback();
-        throwKoaError(ctx, 404, 'OAuth2 account to unlink not found');
-      }
-
-      // If true, the account was created with SSO
-      // And since secondaryEmails is 0, account should be deleted
-      if (sso.email === dbUser.primaryEmail) {
-        await User.destroy({ where: { id: dbUser.id }, transaction });
-
-        await EmailAuthorization.destroy({
-          where: { UserId: user.id },
-          transaction,
-        });
-      }
-    });
-  }
-  // If there are other emails the account should not be deleted
-  else {
-    // Password will not be set by default
-    // Unlinking an account without password will make it unusable
-    // Perhaps prompt the user to create a password here
-
-    await transactional(async (transaction) => {
-      // If the sso email is the primary email it needs to be changed
-      // Before deleting it
-      if (sso.email === dbUser.primaryEmail) {
-        await User.update(
-          { primaryEmail: secondaryEmails[0].email },
-          { where: { id: dbUser.id }, transaction },
-        );
-      }
-
-      await EmailAuthorization.destroy({
-        where: { email: sso.email },
-        transaction,
-      });
-
-      await OAuthAuthorization.destroy({
-        where: { UserId: dbUser.id, authorizationUrl },
-        transaction,
-      });
-    });
-  }
-
-  ctx.response.status = 204;
-  ctx.response.body = {
-    statusCode: 204,
-    message: 'The account was unlinked successfully.',
-  };
+  // Return false if any login method is left
+  // 201 is needed so that a body can be attatched
+  ctx.message = 'The account was unlinked successfully.';
+  ctx.status = 201;
+  ctx.body = dbUser.OAuthAuthorizations.length === 0 && !dbUser.password;
 }

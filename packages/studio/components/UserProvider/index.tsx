@@ -43,6 +43,8 @@ interface UserContext {
   refreshUserInfo: () => Promise<void>;
   organizations: UserOrganization[];
   setOrganizations: Dispatch<SetStateAction<UserOrganization[]>>;
+  setHasNoLoginMethods: Dispatch<SetStateAction<boolean>>;
+  hasNoLoginMethods: boolean;
 }
 
 const Context = createContext<UserContext>(null);
@@ -55,6 +57,8 @@ export function UserProvider({ children }: UserProviderProps): ReactNode {
   const [userInfo, setUserInfo] = useState<UserInfo>();
   const [organizations, setOrganizations] = useState<UserOrganization[]>();
   const [initialized, setInitialized] = useState(false);
+  const [hasNoLoginMethods, setHasNoLoginMethods] = useState(false);
+
   const [tokenResponse, setTokenResponse] = useState<Partial<TokenResponse>>({
     access_token: localStorage.access_token,
     refresh_token: localStorage.refresh_token,
@@ -95,9 +99,19 @@ export function UserProvider({ children }: UserProviderProps): ReactNode {
       userInfo,
       refreshUserInfo,
       organizations,
+      hasNoLoginMethods,
+      setHasNoLoginMethods,
       setOrganizations,
     }),
-    [login, logout, userInfo, refreshUserInfo, organizations],
+    [
+      login,
+      logout,
+      userInfo,
+      refreshUserInfo,
+      organizations,
+      hasNoLoginMethods,
+      setHasNoLoginMethods,
+    ],
   );
 
   useEffect(() => {

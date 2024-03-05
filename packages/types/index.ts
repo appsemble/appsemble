@@ -191,6 +191,11 @@ export interface UserInfo {
    * The properties of the currently logged in member of the app
    */
   appMember?: AppMember;
+
+  /**
+   * Returns `true` if the user has no Oauth connections and no password.
+   */
+  hasNoLoginMethods?: boolean;
 }
 
 /**

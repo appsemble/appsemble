@@ -1,35 +1,17 @@
 import { Message } from '@appsemble/react-components';
-import axios from 'axios';
-import { type ReactNode, useEffect, useState } from 'react';
+import { type ReactNode } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { Link } from 'react-router-dom';
 
 import { messages } from './messages.js';
 import { useUser } from '../UserProvider/index.js';
 
+// This component is needed until user deletion ...
+// ... When the user has no login options is implemented
 export function PasswordBanner(): ReactNode {
-  const { userInfo } = useUser();
-  const [loading, setLoading] = useState<Boolean>(false);
-  const [data, setData] = useState<{ password: Boolean; OAuthAuthorizations: boolean }>();
-  const [error, setError] = useState<unknown>(null);
+  const { hasNoLoginMethods } = useUser();
 
-  useEffect(() => {
-    setLoading(true);
-    axios
-      .get<{ password: Boolean; OAuthAuthorizations: boolean }>('/api/user/methods')
-      .then((res) => {
-        setData(res.data);
-        setLoading(false);
-      })
-      .catch((err) => {
-        setError(err);
-      });
-  }, []);
-
-  if (error || !userInfo || !data || loading) {
-    return null;
-  }
-  if (!data.password && !data.OAuthAuthorizations) {
+  if (hasNoLoginMethods) {
     return (
       <Message color="warning">
         <div className="is-flex is-justify-content-space-between is-align-items-center">
@@ -37,10 +19,10 @@ export function PasswordBanner(): ReactNode {
             <FormattedMessage {...messages.setPasswordBanner} />
           </span>
           <span>
-            <Link className="mr-2" to="/reset-password">
+            <Link className="mr-2" to="reset-password">
               <FormattedMessage {...messages.setPasswordButton} />
             </Link>
-            <Link className="mr-2" to="/settings/social">
+            <Link className="mr-2" to="settings/social">
               <FormattedMessage {...messages.socialLoginButton} />
             </Link>
           </span>

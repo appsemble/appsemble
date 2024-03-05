@@ -649,16 +649,4 @@ export const paths: OpenAPIV3.PathsObject = {
       },
     },
   },
-  '/api/user/methods': {
-    get: {
-      tags: ['user'],
-      description: 'Return true if the current user has active login methods',
-      operationId: 'hasLoginMethods',
-      responses: {
-        200: { description: 'List of subscribed users' },
-        401: { description: 'User must be logged' },
-      },
-      security: [{ studio: [] }],
-    },
-  },
 };
