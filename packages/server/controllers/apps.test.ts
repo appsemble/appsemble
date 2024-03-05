@@ -5706,6 +5706,49 @@ describe('importApp', () => {
     } = await request.get(`/api/apps/${response.data.id}`);
     expect(response.data).toStrictEqual(expected);
   });
+
+  it('should handle app path conflict on app import.', async () => {
+    await App.create({
+      definition: {
+        name: 'Test App',
+        defaultPage: 'Test Page',
+        pages: [{ name: 'Test Page' }],
+      },
+      path: 'test-app',
+      vapidPublicKey: 'a',
+      vapidPrivateKey: 'b',
+      OrganizationId: organization.id,
+    });
+    const appDefinition = {
+      name: 'Test App',
+      defaultPage: 'Test Page',
+      pages: [{ name: 'Test Page', blocks: [{ type: 'test', version: '0.0.0' }] }],
+    } as AppDefinition;
+    const zip = new JSZip();
+    zip.file('app-definition.yaml', stringify(appDefinition));
+    zip.file('icon.png', await readFixture('nodejs-logo.png'));
+    zip.file('assets/10x50.png', await readFixture('10x50.png'));
+    vi.useRealTimers();
+    const content = zip.generateNodeStream();
+    await OrganizationMember.update({ role: 'AppEditor' }, { where: { UserId: user.id } });
+    authorizeStudio();
+
+    const response = await request.post(
+      `/api/apps/import/organization/${organization.id}`,
+      content,
+      {
+        headers: {
+          'Content-Type': 'application/zip',
+        },
+      },
+    );
+    expect(response.status).toBe(201);
+    const {
+      data: { OrganizationName, screenshotUrls, ...expected },
+    } = await request.get(`/api/apps/${response.data.id}`);
+    expect(response.data.path).toStrictEqual(expected.path);
+    vi.useFakeTimers();
+  });
 });
 
 describe('setAppBlockStyle', () => {

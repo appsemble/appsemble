@@ -25,7 +25,6 @@ export function builder(yargs: Argv): Argv<any> {
     })
     .option('resources', {
       describe: 'Boolean representing whether the resources should be exported or not',
-      default: false,
     })
     .option('assets', {
       describe: 'Boolean representing whether assets should be exported.',

@@ -58,6 +58,24 @@ import {
   reseedResourcesRecursively,
 } from '../utils/resource.js';
 
+async function setAppPath(app: Partial<App>, path: string): Promise<void> {
+  for (let i = 1; i < 11; i += 1) {
+    const p = i === 1 ? path : `${path}-${i}`;
+    const count = await App.count({ where: { path: p } });
+    if (count === 0) {
+      Object.assign(app, {
+        path: p,
+      });
+      break;
+    }
+  }
+
+  if (!app.path) {
+    // Fallback if a suitable ID could not be found after trying for a while
+    Object.assign(app, { path: `${path}-${randomBytes(5).toString('hex')}` });
+  }
+}
+
 async function getBlockVersions(blocks: IdentifiableBlock[]): Promise<BlockManifest[]> {
   const uniqueBlocks = blocks.map(({ type, version }) => {
     const [OrganizationId, name] = parseBlockName(type);
@@ -200,19 +218,7 @@ export async function createApp(ctx: Context): Promise<void> {
       result.maskableIcon = maskableIcon.contents;
     }
 
-    for (let i = 1; i < 11; i += 1) {
-      const p = i === 1 ? path : `${path}-${i}`;
-      const count = await App.count({ where: { path: p } });
-      if (count === 0) {
-        result.path = p;
-        break;
-      }
-    }
-
-    if (!result.path) {
-      // Fallback if a suitable ID could not be found after trying for a while
-      result.path = `${path}-${randomBytes(5).toString('hex')}`;
-    }
+    await setAppPath(result, path);
 
     let record: App;
     try {
@@ -1061,13 +1067,6 @@ export async function importApp(ctx: Context): Promise<void> {
       'App validation failed',
     );
     const path = normalize(definition.name);
-    if (!path) {
-      result.path = `${path}-${randomBytes(5).toString('hex')}`;
-    }
-    const existingPath = await App.findOne({
-      where: { path, OrganizationId: organizationId },
-    });
-    assertKoaError(existingPath != null, ctx, 409, 'Path  in app definition needs to be unique');
     const icon = await zip.file('icon.png')?.async('nodebuffer');
     const keys = webpush.generateVAPIDKeys();
     result = {
@@ -1084,6 +1083,7 @@ export async function importApp(ctx: Context): Promise<void> {
       icon,
       iconBackground: '#ffffff',
     };
+    await setAppPath(result, path);
     const coreStyleFile = theme.file('core/index.css');
     if (coreStyleFile) {
       const coreStyle = await coreStyleFile.async('text');
@@ -1125,7 +1125,7 @@ export async function importApp(ctx: Context): Promise<void> {
           const [resourceType] = resourceJsonName.split('.');
           const action = 'create';
           const resourcesText = await file.async('text');
-          const resources = JSON.parse(JSON.stringify(resourcesText.trim().split('\n')));
+          const resources = JSON.parse(resourcesText);
           const { verifyResourceActionPermission } = options;
 
           verifyResourceActionPermission({
@@ -1142,7 +1142,7 @@ export async function importApp(ctx: Context): Promise<void> {
             resources.map((data: string) => ({
               AppId: appId,
               type: resourceType,
-              data: JSON.parse(data),
+              data,
               AuthorId: appMember?.id,
             })),
             { logging: false, transaction },
