@@ -350,6 +350,12 @@ export const paths: OpenAPIV3.PathsObject = {
           description: 'Whether to include resources for an app.',
           in: 'query',
         },
+        {
+          name: 'assets',
+          schema: { type: 'boolean' },
+          description: 'Whether to include assets in the export file',
+          in: 'query',
+        },
       ],
       responses: {
         200: {

@@ -163,6 +163,7 @@ export async function handler(args: AppArgs): Promise<void> {
         roles: ['$public'],
         schema: {
           type: 'object',
+          properties: {},
           additionalProperties: false,
         },
       },

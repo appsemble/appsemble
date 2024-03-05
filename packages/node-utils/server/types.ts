@@ -113,6 +113,7 @@ declare module 'koas-parameters' {
     startIndex: number;
     view: string;
     resources: boolean;
+    assets: boolean;
     roles: string[];
   }
 }

@@ -7,13 +7,15 @@ import { exportAppAsZip } from '../../lib/app.js';
 import { type BaseArguments } from '../../types.js';
 
 interface ExportAppArgs extends BaseArguments {
+  assets: boolean;
   id: number;
   resources: boolean;
   path?: string;
 }
 export const command = 'export';
 export const description = `Export an app as a zip file using app id.
-  App definition, styles and messages are exported by default, to export resources, make sure you have suitable permissions and use the '--resources' flag.`;
+  App definition, styles, icon and messages are exported by default, to export resources, make sure you have suitable permissions and use the '--resources' flag.
+  Similarly for assets use the --assets flag to include assets in the export.`;
 
 export function builder(yargs: Argv): Argv<any> {
   return yargs
@@ -23,7 +25,9 @@ export function builder(yargs: Argv): Argv<any> {
     })
     .option('resources', {
       describe: 'Boolean representing whether the resources should be exported or not',
-      default: false,
+    })
+    .option('assets', {
+      describe: 'Boolean representing whether assets should be exported.',
     })
     .option('path', {
       describe: 'Path of the folder where you want to put your exported file.',
@@ -31,13 +35,13 @@ export function builder(yargs: Argv): Argv<any> {
 }
 
 export async function handler(args: ExportAppArgs): Promise<void> {
-  const { clientCredentials, id: appId, path: outputDirectory, remote, resources } = args;
+  const { assets, clientCredentials, id: appId, path: outputDirectory, remote, resources } = args;
   const defaultOutputDirectory = join(process.cwd(), 'apps');
 
   await authenticate(remote, 'apps:export', clientCredentials);
 
   logger.info(`Exporting app with id: ${appId}`);
-  await exportAppAsZip(appId, resources, outputDirectory || defaultOutputDirectory, remote);
+  await exportAppAsZip(appId, assets, resources, outputDirectory || defaultOutputDirectory, remote);
 
   logger.info('Export completed successfully');
 }

@@ -58,6 +58,24 @@ import {
   reseedResourcesRecursively,
 } from '../utils/resource.js';
 
+async function setAppPath(app: Partial<App>, path: string): Promise<void> {
+  for (let i = 1; i < 11; i += 1) {
+    const p = i === 1 ? path : `${path}-${i}`;
+    const count = await App.count({ where: { path: p } });
+    if (count === 0) {
+      Object.assign(app, {
+        path: p,
+      });
+      break;
+    }
+  }
+
+  if (!app.path) {
+    // Fallback if a suitable ID could not be found after trying for a while
+    Object.assign(app, { path: `${path}-${randomBytes(5).toString('hex')}` });
+  }
+}
+
 async function getBlockVersions(blocks: IdentifiableBlock[]): Promise<BlockManifest[]> {
   const uniqueBlocks = blocks.map(({ type, version }) => {
     const [OrganizationId, name] = parseBlockName(type);
@@ -200,19 +218,7 @@ export async function createApp(ctx: Context): Promise<void> {
       result.maskableIcon = maskableIcon.contents;
     }
 
-    for (let i = 1; i < 11; i += 1) {
-      const p = i === 1 ? path : `${path}-${i}`;
-      const count = await App.count({ where: { path: p } });
-      if (count === 0) {
-        result.path = p;
-        break;
-      }
-    }
-
-    if (!result.path) {
-      // Fallback if a suitable ID could not be found after trying for a while
-      result.path = `${path}-${randomBytes(5).toString('hex')}`;
-    }
+    await setAppPath(result, path);
 
     let record: App;
     try {
@@ -1061,13 +1067,7 @@ export async function importApp(ctx: Context): Promise<void> {
       'App validation failed',
     );
     const path = normalize(definition.name);
-    if (!path) {
-      result.path = `${path}-${randomBytes(5).toString('hex')}`;
-    }
-    const existingPath = await App.findOne({
-      where: { path, OrganizationId: organizationId },
-    });
-    assertKoaError(existingPath != null, ctx, 409, 'Path  in app definition needs to be unique');
+    const icon = await zip.file('icon.png')?.async('nodebuffer');
     const keys = webpush.generateVAPIDKeys();
     result = {
       definition,
@@ -1080,8 +1080,10 @@ export async function importApp(ctx: Context): Promise<void> {
       enableSelfRegistration: true,
       showAppDefinition: true,
       template: false,
+      icon,
       iconBackground: '#ffffff',
     };
+    await setAppPath(result, path);
     const coreStyleFile = theme.file('core/index.css');
     if (coreStyleFile) {
       const coreStyle = await coreStyleFile.async('text');
@@ -1123,7 +1125,7 @@ export async function importApp(ctx: Context): Promise<void> {
           const [resourceType] = resourceJsonName.split('.');
           const action = 'create';
           const resourcesText = await file.async('text');
-          const resources = JSON.parse(JSON.stringify(resourcesText.trim().split('\n')));
+          const resources = JSON.parse(resourcesText);
           const { verifyResourceActionPermission } = options;
 
           verifyResourceActionPermission({
@@ -1140,7 +1142,7 @@ export async function importApp(ctx: Context): Promise<void> {
             resources.map((data: string) => ({
               AppId: appId,
               type: resourceType,
-              data: JSON.parse(data),
+              data,
               AuthorId: appMember?.id,
             })),
             { logging: false, transaction },
@@ -1152,6 +1154,17 @@ export async function importApp(ctx: Context): Promise<void> {
           processReferenceHooks(user as User, record, createdResources[0], action, options, ctx);
           processHooks(user as User, record, createdResources[0], action, options, ctx);
         }
+
+        // eslint-disable-next-line unicorn/no-array-for-each
+        zip.folder('assets').forEach(async (pathFile, file) => {
+          const data = await file.async('nodebuffer');
+          Asset.create({
+            AppId: record.id,
+            data,
+            filename: pathFile,
+            mime: lookup(pathFile),
+          });
+        });
 
         const organizations = theme.filter((filename) => filename.startsWith('@'));
         for (const organization of organizations) {
@@ -1198,12 +1211,14 @@ export async function exportApp(ctx: Context): Promise<void> {
   const {
     pathParams: { appId },
   } = ctx;
-  const { resources } = ctx.queryParams;
+  const { assets, resources } = ctx.queryParams;
 
   const app = await App.findByPk(appId, {
     attributes: [
+      'id',
       'definition',
       'coreStyle',
+      'icon',
       'OrganizationId',
       'sharedStyle',
       'showAppDefinition',
@@ -1212,15 +1227,18 @@ export async function exportApp(ctx: Context): Promise<void> {
     include: [
       { model: AppBlockStyle, required: false },
       { model: AppMessages, required: false },
-      { model: Resource, required: false },
+      { model: AppSnapshot, as: 'AppSnapshots', order: [['created', 'DESC']], limit: 1 },
     ],
   });
+  assertKoaError(!app, ctx, 404, 'App not found');
 
   if (app.visibility === 'public' || !app.showAppDefinition) {
     await checkRole(ctx, app.OrganizationId, Permission.ViewApps);
   }
+
   const zip = new JSZip();
-  zip.file('app-definition.yaml', stringify(app.definition));
+  const definition = app.AppSnapshots?.[0]?.yaml || stringify(app.definition);
+  zip.file('app-definition.yaml', definition);
   const theme = zip.folder('theme');
   theme.file('core/index.css', app.coreStyle);
   theme.file('shared/index.css', app.sharedStyle);
@@ -1239,16 +1257,35 @@ export async function exportApp(ctx: Context): Promise<void> {
     }
   }
 
-  if (resources && app.Resources !== undefined) {
+  if (app.icon) {
+    zip.file('icon.png', app.icon);
+  }
+
+  if (resources) {
     await checkRole(ctx, app.OrganizationId, Permission.EditApps);
-    const resourceMap = new Map<string, string>();
+    await app.reload({
+      include: [Resource],
+    });
+    const splitResources = new Map<string, Resource[]>();
     for (const resource of app.Resources) {
-      const currentValue = resourceMap.get(resource.type) || '';
-      resourceMap.set(resource.type, `${currentValue + JSON.stringify(resource.toJSON())}\n`);
+      if (!splitResources.has(resource.type)) {
+        splitResources.set(resource.type, []);
+      }
+      splitResources.get(resource.type).push(resource);
     }
-    for (const [resourceType, resourceValue] of resourceMap.entries()) {
-      zip.file(`resources/${resourceType}.json`, resourceValue);
+    for (const [type, resourcesValue] of splitResources.entries()) {
+      zip.file(`resources/${type}.json`, JSON.stringify(resourcesValue.map((r) => r.toJSON())));
     }
+  }
+
+  if (assets) {
+    await checkRole(ctx, app.OrganizationId, Permission.EditApps);
+    await app.reload({
+      include: [Asset],
+    });
+    app.Assets.map((asset) => {
+      zip.file(`assets/${asset.filename}`, asset.data);
+    });
   }
   const content = zip.generateNodeStream();
   ctx.attachment();

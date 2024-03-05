@@ -10,16 +10,20 @@ import { AddToCollectionButton } from '../AddToCollectionButton/index.js';
 interface AppOptionsMenuProps {
   readonly app: AppType;
   readonly onExport: () => void;
-  readonly onChecked: () => void;
-  readonly checked: boolean;
+  readonly onCheckedResources: () => void;
+  readonly onCheckedAssets: () => void;
+  readonly checkedResources: boolean;
+  readonly checkedAssets: boolean;
   readonly showExport: boolean;
   readonly showExportResources: boolean;
 }
 
 export function AppOptionsMenu({
   app,
-  checked,
-  onChecked,
+  checkedAssets,
+  checkedResources,
+  onCheckedAssets,
+  onCheckedResources,
   onExport,
   showExport,
   showExportResources,
@@ -30,12 +34,14 @@ export function AppOptionsMenu({
     (action: string) => {
       if (action === 'export') {
         onExport();
-      } else if (action === 'checked') {
-        onChecked();
+      } else if (action === 'checkedResource') {
+        onCheckedResources();
+      } else if (action === 'checkedAsset') {
+        onCheckedAssets();
       }
       disable();
     },
-    [disable, onChecked, onExport],
+    [disable, onCheckedAssets, onCheckedResources, onExport],
   );
   const dropdownRef = useRef<HTMLDivElement | null>();
 
@@ -69,13 +75,22 @@ export function AppOptionsMenu({
               </div>
             ) : null}
             {showExportResources ? (
-              <Checkbox
-                className={`is-inline-block dropdown-item ${styles.checkbox}`}
-                label={<FormattedMessage {...messages.exportWithResources} />}
-                name="resources"
-                onChange={onChecked}
-                value={checked}
-              />
+              <>
+                <Checkbox
+                  className={`is-inline-block dropdown-item ${styles.checkbox}`}
+                  label={<FormattedMessage {...messages.exportWithResources} />}
+                  name="resources"
+                  onChange={onCheckedResources}
+                  value={checkedResources}
+                />
+                <Checkbox
+                  className={`is-inline-block dropdown-item ${styles.checkbox}`}
+                  label={<FormattedMessage {...messages.exportWithAssets} />}
+                  name="assets"
+                  onChange={onCheckedAssets}
+                  value={checkedAssets}
+                />
+              </>
             ) : null}
           </div>
           <div className="dropdown-item px-0">

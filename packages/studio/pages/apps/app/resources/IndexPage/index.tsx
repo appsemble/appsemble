@@ -20,7 +20,7 @@ export function IndexPage(): ReactNode {
           .sort(compareStrings)
           .map((resource) => (
             <li key={resource}>
-              <Link to={`resources/${resource}`}>{resource}</Link>
+              <Link to={resource}>{resource}</Link>
             </li>
           ))}
       </ul>

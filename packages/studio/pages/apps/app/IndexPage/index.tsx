@@ -28,20 +28,30 @@ export function IndexPage(): ReactNode {
   const { app } = useApp();
   const { organizations } = useUser();
   const descriptionToggle = useToggle();
-  const [checked, setChecked] = useState(false);
-  const checkedRef = useRef(checked);
-  checkedRef.current = checked;
+  const [checkedResources, setCheckedResources] = useState(false);
+  const [checkedAssets, setCheckedAssets] = useState(false);
+  const checkedResourcesRef = useRef(checkedResources);
+  const checkedAssetsRef = useRef(checkedAssets);
+  checkedResourcesRef.current = checkedResources;
+  checkedAssetsRef.current = checkedAssets;
 
   const appLang = app.definition.defaultLanguage || defaultLocale;
 
-  const onChecked = useCallback(() => {
-    setChecked((prevChecked) => !prevChecked);
+  const onCheckedResources = useCallback(() => {
+    setCheckedResources((prevChecked) => !prevChecked);
+  }, []);
+
+  const onCheckedAssets = useCallback(() => {
+    setCheckedAssets((prevChecked) => !prevChecked);
   }, []);
 
   const onExport = useCallback(async () => {
-    const response = await axios.get(`/api/apps/${app.id}/export?resources=${checkedRef.current}`, {
-      responseType: 'blob',
-    });
+    const response = await axios.get(
+      `/api/apps/${app.id}/export?resources=${checkedResourcesRef.current}&assets=${checkedAssetsRef.current}`,
+      {
+        responseType: 'blob',
+      },
+    );
     const url = document.createElement('a');
     url.href = URL.createObjectURL(response.data);
     url.download = `${app.definition.name}_${app.id}.zip`;
@@ -74,8 +84,10 @@ export function IndexPage(): ReactNode {
             {showExport ? (
               <AppOptionsMenu
                 app={app}
-                checked={checked}
-                onChecked={onChecked}
+                checkedAssets={checkedAssets}
+                checkedResources={checkedResources}
+                onCheckedAssets={onCheckedAssets}
+                onCheckedResources={onCheckedResources}
                 onExport={onExport}
                 showExport={showExport}
                 showExportResources={showExportResources}
