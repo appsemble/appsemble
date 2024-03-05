@@ -80,6 +80,7 @@ export function createIndexHandler({
 
     return render(ctx, 'app/index.html', {
       app,
+      noIndex: app.visibility !== 'public',
       appUrl: String(appUrl),
       host,
       locale: defaultLanguage,
