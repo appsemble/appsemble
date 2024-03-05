@@ -21,6 +21,7 @@ export function indexHandler(ctx: Context): Promise<void> {
   } = ctx;
   const { disableRegistration, githubClientId, gitlabClientId, googleClientId, host } = argv;
   const logins = [];
+  ctx.set('x-content-type-options', 'no-sniff');
   if (githubClientId) {
     logins.push({
       authorizationUrl: githubPreset.authorizationUrl,
