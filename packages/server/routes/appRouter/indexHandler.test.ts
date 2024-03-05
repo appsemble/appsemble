@@ -338,6 +338,7 @@ it('should render the index page', async () => {
         "locales": [
           "nl",
         ],
+        "noIndex": true,
         "nonce": "AAAAAAAAAAAAAAAAAAAAAA==",
         "settings": "<script>window.settings={"apiUrl":"http://host.example","appControllerCode":null,"appControllerImplementations":null,"blockManifests":[{"name":"@test/a","version":"0.0.0","layout":null,"actions":null,"events":null,"files":["a0.js","a0.css"]},{"name":"@test/b","version":"0.0.2","layout":null,"actions":null,"events":null,"files":["b2.js","b2.css"]},{"name":"@appsemble/a","version":"0.1.0","layout":null,"actions":null,"events":null,"files":["a0.js","a0.css"]},{"name":"@appsemble/a","version":"0.1.1","layout":null,"actions":null,"events":null,"files":["a1.js","a1.css"]}],"id":1,"languages":["en","nl"],"logins":[],"vapidPublicKey":"","definition":{"name":"Test App","pages":[{"name":"Test Page","blocks":[{"type":"@test/a","version":"0.0.0"},{"type":"a","version":"0.1.0"},{"type":"a","version":"0.1.0"}]},{"name":"Test Page with Flow","type":"flow","steps":[{"blocks":[{"type":"a","version":"0.1.0"},{"type":"a","version":"0.1.1","actions":{"whatever":{"blocks":[{"type":"@test/b","version":"0.0.2"}]}}}]}]}]},"demoMode":false,"showAppsembleLogin":false,"showAppsembleOAuth2Login":true,"enableSelfRegistration":true,"showDemoLogin":false,"appUpdated":"1970-01-01T00:00:00.000Z"}</script>",
         "themeColor": "#ffffff",
@@ -409,4 +410,70 @@ it('should redirect to the app root if the organization id is disallowed', async
 
     Redirecting to <a href="http://host.example">http://host.example</a>.
   `);
+});
+
+it('should not return meta noindex if app is public', async () => {
+  await App.create({
+    OrganizationId: 'test',
+    definition: {},
+    visibility: 'public',
+    path: 'app',
+    vapidPublicKey: '',
+    vapidPrivateKey: '',
+    coreStyle: '',
+    sharedStyle: '',
+  });
+
+  const response = await request.get('/');
+
+  expect(response.data).toMatchObject({
+    data: {
+      noIndex: false,
+    },
+    filename: 'app/index.html',
+  });
+});
+
+it('should return meta noindex if app is private', async () => {
+  await App.create({
+    OrganizationId: 'test',
+    definition: {},
+    visibility: 'private',
+    path: 'app',
+    vapidPublicKey: '',
+    vapidPrivateKey: '',
+    coreStyle: '',
+    sharedStyle: '',
+  });
+
+  const response = await request.get('/');
+
+  expect(response.data).toMatchObject({
+    data: {
+      noIndex: true,
+    },
+    filename: 'app/index.html',
+  });
+});
+
+it('should return meta noindex if app is unlisted', async () => {
+  await App.create({
+    OrganizationId: 'test',
+    definition: {},
+    visibility: 'unlisted',
+    path: 'app',
+    vapidPublicKey: '',
+    vapidPrivateKey: '',
+    coreStyle: '',
+    sharedStyle: '',
+  });
+
+  const response = await request.get('/');
+
+  expect(response.data).toMatchObject({
+    data: {
+      noIndex: true,
+    },
+    filename: 'app/index.html',
+  });
 });
