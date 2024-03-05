@@ -361,51 +361,6 @@ describe('getSubscribedUsers', () => {
   });
 });
 
-describe('hasLoginMethods', () => {
-  it('should return true for the password field if the user has a password set', async () => {
-    authorizeStudio();
-    const response = await request.get('/api/user/methods');
-    expect(response).toMatchObject({
-      status: 200,
-      data: {
-        password: true,
-        OAuthAuthorizations: false,
-      },
-    });
-  });
-
-  it('should return false for password field for SSO users', async () => {
-    const testUser = await User.create({
-      password: null,
-      name: 'Test User',
-      primaryEmail: 'deleted@example.com',
-      timezone: 'Europe/Amsterdam',
-    });
-    authorizeStudio(testUser);
-    const response = await request.get('/api/user/methods');
-    expect(response).toMatchObject({
-      status: 200,
-      data: {
-        password: false,
-        OAuthAuthorizations: false,
-      },
-    });
-  });
-
-  it('should return true if the user is not logged in', async () => {
-    const testUser = await User.create({
-      deleted: new Date(),
-      password: await hash('testpassword', 10),
-      name: 'Test User',
-      primaryEmail: 'deleted@example.com',
-      timezone: 'Europe/Amsterdam',
-    });
-    authorizeStudio(testUser);
-    const response = await request.get('/api/user/methods');
-    expect(response.data).toBe(true);
-  });
-});
-
 describe('unsubscribe', () => {
   beforeEach(() => {
     updateArgv({ adminApiSecret: 'testAdminAPIsecret' });

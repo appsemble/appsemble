@@ -232,7 +232,12 @@ export async function unlinkConnectedAccount(ctx: Context): Promise<void> {
 
   // Return false if any login method is left
   // 201 is needed so that a body can be attatched
+
   ctx.message = 'The account was unlinked successfully.';
-  ctx.status = 201;
-  ctx.body = dbUser.OAuthAuthorizations.length === 0 && !dbUser.password;
+  ctx.status = 204;
+
+  if (dbUser.OAuthAuthorizations.length === 0 && !dbUser.password) {
+    ctx.status = 201;
+    ctx.body = dbUser.OAuthAuthorizations.length === 0 && !dbUser.password;
+  }
 }

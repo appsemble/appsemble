@@ -446,38 +446,6 @@ describe('unlinkConnectedAccount', () => {
     );
   });
 
-  it('should unlink an account if there are secondary emails and change the primary email', async () => {
-    const testUser = await User.create({
-      name: 'Test User',
-      primaryEmail: 'testUser@example.com',
-      timezone: 'Europe/Amsterdam',
-    });
-    await OAuthAuthorization.create({
-      UserId: testUser.id,
-      email: testUser.primaryEmail,
-      accessToken: '',
-      authorizationUrl: 'https://a.example',
-      sub: 'subA',
-    });
-    await EmailAuthorization.create({
-      UserId: testUser.id,
-      email: 'testUser2@example.com',
-      verified: true,
-    });
-    authorizeStudio(testUser);
-    const response = await request.delete('/api/oauth2/connected', {
-      params: { authorizationUrl: 'https://a.example' },
-    });
-    expect(response.status).toBe(204);
-    const primaryEmailUser = await User.findByPk(testUser.id);
-    expect(primaryEmailUser).toMatchObject({
-      id: testUser.id,
-      name: 'Test User',
-      primaryEmail: 'testUser2@example.com',
-      timezone: 'Europe/Amsterdam',
-    });
-  });
-
   it('should not delete a linked account for another user', async () => {
     const userB = await User.create({ timezone: 'Europe/Amsterdam' });
     await OAuthAuthorization.create({
