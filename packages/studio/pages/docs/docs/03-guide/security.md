@@ -24,12 +24,21 @@ different purposes.
 ## App Privacy
 
 By going to the “Settings” page from within the Appsemble Studio, it is possible to set an app to be
-marked as private by checking a checkbox. This results in the app no longer being publicly listed in
-the Appsemble Studio app list page without being logged in to a user who is in the same organization
-of the app.
+marked as public, private, or unlisted by selecting an option from a dropdown.
 
-This however does not affect anything if the user has a link to the app itself. Further security
-definitions are required to restrict access to the app itself.
+- **Public**: The app is publicly listed in the Appsemble Studio app list page and can be accessed
+  by anyone.
+- **Private**: The app is not publicly listed in the Appsemble Studio app list page and can only be
+  accessed by users who are in the same organization as the app.
+- **Unlisted**: The app is not publicly listed in the Appsemble Studio app list page and can only be
+  accessed by having a link to the app itself.
+
+The privacy setting can be used in combination with the security definition to further restrict
+access to the app.
+
+Apps that aren’t marked as public will have a
+[`noindex` meta tag](https://developers.google.com/search/docs/crawling-indexing/block-indexing), as
+well as a `robots.txt` file, which both prevent search engines from indexing pages of the app.
 
 ## App account management
 
