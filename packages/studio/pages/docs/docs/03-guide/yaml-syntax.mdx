@@ -1,7 +1,10 @@
+import { Collapsible } from '../../../../components/Collapsible/index.js';
+import { Playground } from '../../../../components/Playground/index.js';
+
 # YAML syntax
 
-[YAML](https://en.wikipedia.org/wiki/YAML) is a is a human-readable data serialization language.
-Within Appsemble, YAML is used as language to write an app definition in, for example.
+[YAML](https://en.wikipedia.org/wiki/YAML) is a human-readable data serialization language. Within
+Appsemble, YAML is used as language to write an app definition in, for example.
 
 YAML supports different types of syntax. The following piece of code:
 
@@ -52,3 +55,37 @@ job: Developer
 foods: ['Apple', 'Mango', 'Strawberry', 'Lentils', 'Meat']
 skills: ['Python', 'Linux', 'Go', 'Javascript', 'Docker']
 ```
+
+## Examples
+
+Remappers can often be used in many different ways.
+
+{/* prettier-ignore */}
+```yaml
+remapAfter:
+  - root: null
+  - root:
+  - { root: null }
+  - { root: }
+  - { root }
+```
+
+<Collapsible title="See playground" collapsed className="is-6">
+  <Playground
+    customOption={{
+      input: { remapper: 'syntax' },
+      remapper: `# Key/value pairs
+- root: null
+- root:
+- { root: null }
+- { root: }
+- { root }
+# Lists (containing key/value pairs)
+- [root: null]
+- [root: ]
+- [{ root: null }]
+- [{ root: }]
+- [{ root }]`,
+    }}
+  />
+</Collapsible>

@@ -10,12 +10,12 @@
 
 ### Introduction
 
-An app in the Appsemble ecosystem is written using [YAML](yaml-syntax.md) and is intended to provide
-the functionality of a fully fledged web app. An app consists of a definition, messages, security
-definition, various types of secrets, associated settings and resources. An app definition is the
-most important part of an app and allows you to structure your app and add functionality to it. You
-can define a layout for your app, a security definition, schema for your data and much more in your
-app. `AppMessages` allow you to enable
+An app in the Appsemble ecosystem is written using [YAML](yaml-syntax.mdx) and is intended to
+provide the functionality of a fully fledged web app. An app consists of a definition, messages,
+security definition, various types of secrets, associated settings and resources. An app definition
+is the most important part of an app and allows you to structure your app and add functionality to
+it. You can define a layout for your app, a security definition, schema for your data and much more
+in your app. `AppMessages` allow you to enable
 [internationalization](https://en.wikipedia.org/wiki/Internationalization_and_localization) for your
 app. You can define a schema in your app definition that allows you to store and access data. Data
 is securely stored in the Appsemble database. Data storage and resources are documented in detail

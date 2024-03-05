@@ -1,5 +1,7 @@
 import { type OpenAPIV3 } from 'openapi-types';
 
+import { schemaExample } from '../../examples.js';
+
 export const conditionalRemappers: Record<
   string,
   OpenAPIV3.ReferenceObject | OpenAPIV3.SchemaObject
@@ -12,24 +14,9 @@ Returns value of \`then\` if condition is truthy, otherwise it returns the value
 
 For example:
 
-\`\`\`yaml
-if:
-  condition: { equals: [{ prop: inputValue }, 4] }
-  then:
-    static: You guessed right!
-  else:
-    static: You guessed wrong!
-\`\`\`
+${schemaExample('if.then')}
 
-If the \`inputValue\` is \`4\`, it goes to the \`then\` remapper and returns:
-\`\`\`
-You guessed right!
-\`\`\`
-
-If the \`inputValue\` is something other than \`4\`, it goes to the \`else\` remapper and returns:
-\`\`\`
-You guessed wrong!
-\`\`\`
+${schemaExample('if.else', { exclude: ['remapper'] })}
 `,
     additionalProperties: false,
     required: ['condition', 'then', 'else'],
@@ -60,12 +47,7 @@ Returns \`true\` if all entries are equal, otherwise \`false\`.
 In the following example, if the \`inputValue\` and \`expectedValue\` are of the same value, the
 condition will return \`true\` and the \`then\` remapper will fire.
 
-\`\`\`yaml
-condition:
-  equals:
-    - prop: inputValue
-    - prop: expectedValue
-\`\`\`
+${schemaExample('equals')}
 `,
   },
   gt: {
@@ -78,12 +60,7 @@ Returns \`true\` if the first entry is greater than the second entry.
 
 For example, if \`stock\` is more than 5 here, it returns \`true\`.
 
-\`\`\`yaml
-condition:
-  gt:
-    - prop: stock
-    - 5
-\`\`\`
+${schemaExample('gt')}
 `,
     minItems: 2,
     maxItems: 2,
@@ -101,12 +78,7 @@ Returns \`true\` if the first entry is lesser than the second entry.
 
 For example, if \`stock\` is less than 5 here, it returns \`true\`.
 
-\`\`\`yaml
-condition:
-  lt:
-    - prop: stock
-    - 5
-\`\`\`
+${schemaExample('gt')}
 `,
     minItems: 2,
     maxItems: 2,
@@ -127,12 +99,7 @@ If only one remapper or none is passed, the remapper value gets computed and the
 
 If \`number\` in the following example is something other than 4, the condition returns \`true\`.
 
-\`\`\`yaml
-condition:
-  not:
-    - prop: number
-    - 4
-\`\`\`
+${schemaExample('not')}
 `,
   },
   match: {
@@ -144,17 +111,7 @@ Returns the value of the first case where the condition equals true, otherwise r
 In the following example, let's say the \`Gem\` is a "Ruby". The match remapper then returns
 \`value: 75\`.
 
-\`\`\`yaml
-match:
-  - case: { equals: [{ prop: Gem }, Diamond] }
-    value: 100
-  - case: { equals: [{ prop: Gem }, Ruby] }
-    value: 75
-  - case: { equals: [{ prop: Gem }, Gold] }
-    value: 50
-  - case: { equals: [{ prop: Gem }, Sapphire] }
-    value: 25
-\`\`\`
+${schemaExample('match')}
 `,
     items: {
       type: 'object',

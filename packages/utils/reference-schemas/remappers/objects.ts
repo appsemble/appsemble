@@ -1,5 +1,7 @@
 import { type OpenAPIV3 } from 'openapi-types';
 
+import { schemaExample } from '../../examples.js';
+
 export const objectRemappers: Record<string, OpenAPIV3.ReferenceObject | OpenAPIV3.SchemaObject> = {
   'object.assign': {
     additionalProperties: {
@@ -11,27 +13,7 @@ Let’s say you have an existing object that you want to add an additional value
 you can use the \`object.assign\` remapper. The remapper takes an existing object and allows the user
 to assign their own value on top of that.
 
-Input:
-
-\`\`\`json
-{
-  "title": "Weekly fishing 21"
-}
-\`\`\`
-
-\`\`\`yaml
-object.assign:
-  author: John Doe
-\`\`\`
-
-Result:
-
-\`\`\`json
-{
-  "title": "Weekly fishing 21",
-  "author": "John Doe"
-}
-\`\`\`
+${schemaExample('object.assign')}
 
 `,
   },
@@ -47,18 +29,7 @@ remappers together to make complex objects.
 
 As a base, the remapper looks like this:
 
-\`\`\`yaml
-object.from:
-  username: Chris Taub
-  email: example@hotmail.com
-\`\`\`
-
-\`\`\`json
-{
-  "username": "Chris Taub",
-  "email": "example@hotmail.com"
-}
-\`\`\`
+${schemaExample('object.from', { exclude: ['input'] })}
 
 Most of the time you won’t create an object just to store one value. Luckily, this is where the
 chaining of remappers comes in. You can create an object that contains an \`object.from\` remapper
@@ -120,39 +91,7 @@ In contrary to the previous remapper, what if you have an object from which you 
 value? Then you can use \`object.omit\`. The remapper can remove properties from an existing object
 based on the given object keys. This includes nested properties.
 
-Input:
-
-\`\`\`json
-{
-  "title": "Weekly fishing 21",
-  "author": "John Doe",
-  "content": {
-    "introduction": "This is the introduction for the new weekly fishing issue",
-    "paragraph1": "...",
-    "interview": "..."
-  }
-}
-\`\`\`
-
-\`\`\`yaml
-object.omit:
-  - author
-  - - content
-    - interview
-\`\`\`
-
-Result:
-
-\`\`\`json
-{
-  "title": "Weekly fishing 21",
-  "content": {
-    "introduction": "This is the introduction for the new weekly fishing issue",
-    "paragraph1": "..."
-  }
-}
-\`\`\`
-
+${schemaExample('object.omit', { input: 'pretty', result: 'pretty' })}
 `,
   },
 };
