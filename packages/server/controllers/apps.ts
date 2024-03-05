@@ -1227,7 +1227,7 @@ export async function exportApp(ctx: Context): Promise<void> {
     include: [
       { model: AppBlockStyle, required: false },
       { model: AppMessages, required: false },
-      { model: AppSnapshot },
+      { model: AppSnapshot, as: 'AppSnapshots', order: [['created', 'DESC']], limit: 1 },
     ],
   });
   assertKoaError(!app, ctx, 404, 'App not found');
