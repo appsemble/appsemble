@@ -110,11 +110,8 @@ export const paths: OpenAPIV3.PathsObject = {
         { in: 'query', name: 'authorizationUrl', required: true, schema: { type: 'string' } },
       ],
       responses: {
-        204: {
-          description: 'The account was unlinked successfully.',
-        },
         201: {
-          description: 'Last provider was successfully unlinked from account.',
+          description: 'The account was unlinked successfully.',
         },
       },
       security: [{ studio: [] }],
