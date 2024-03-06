@@ -196,14 +196,6 @@ export async function handler(): Promise<void> {
 
   logger.info('Reseeding ephemeral resources into demo apps.');
 
-  for (const resource of demoResourcesToReseed) {
-    await Resource.create({
-      ...resource.dataValues,
-      ephemeral: true,
-      seed: false,
-    });
-  }
-
   const resourcesByApp: Record<string, Resource[]> = {};
   for (const resource of demoResourcesToReseed) {
     resourcesByApp[resource.App.id] = [...(resourcesByApp[resource.App.id] ?? []), resource];
