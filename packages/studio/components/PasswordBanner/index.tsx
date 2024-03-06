@@ -6,8 +6,14 @@ import { Link } from 'react-router-dom';
 import { messages } from './messages.js';
 import { useUser } from '../UserProvider/index.js';
 
-// This component is needed until user deletion ...
-// ... When the user has no login options is implemented
+/**
+ * This component should at least be present until user deletion
+ * is implemented in the following manner:
+ *
+ * - The user has asked to delete their account explicitly.
+ * - Or when the user wants to disconnect their last OAuth2 Provider and has no password,
+ * and has agreed to delete the account.
+ */
 export function PasswordBanner(): ReactNode {
   const { hasNoLoginMethods } = useUser();
 

@@ -226,6 +226,7 @@ export async function unlinkConnectedAccount(ctx: Context): Promise<void> {
   assertKoaError(!rows, ctx, 404, 'OAuth2 account to unlink not found');
 
   const dbUser = await User.findOne({
+    attributes: ['password'],
     where: { id: user.id },
     include: [OAuthAuthorization],
   });
