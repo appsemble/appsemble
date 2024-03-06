@@ -7,4 +7,4 @@ Appsemble provides the following npm packages to help with app and block develop
 - [`@appsemble/sdk`](/packages/sdk) — Build your own blocks.
 - [`@appsemble/webpack-config`](/packages/webpack-config) — An opinionated reusable Webpack
   configuration for block development.
-- [`create-appsemble`](/packages/create-appsemble) — Bootstrap an Appsemble project (coming soon).
+- [`create-appsemble`](/packages/create-appsemble) — Bootstrap an Appsemble project.
