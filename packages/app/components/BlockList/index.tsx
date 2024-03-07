@@ -2,6 +2,7 @@ import { type EventEmitter } from 'events';
 
 import { Loader, useLocationString, useMessages } from '@appsemble/react-components';
 import {
+  ActionError,
   type BlockDefinition,
   type PageDefinition,
   type ProjectImplementations,
@@ -167,6 +168,9 @@ export function BlockList({
           remap,
           addCleanup(cleanupFn) {
             cleanups.current.push(cleanupFn);
+          },
+          isActionError(input): input is ActionError {
+            return input instanceof ActionError;
           },
         },
       });

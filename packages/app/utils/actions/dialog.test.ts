@@ -1,3 +1,4 @@
+import { ActionError } from '@appsemble/types';
 import { beforeEach, describe, expect, it, type Mock, vi } from 'vitest';
 
 import { type ShowDialogParams } from '../../types.js';
@@ -37,7 +38,13 @@ describe('dialog', () => {
       prefixIndex: 'pages.0.blocks.0.actions.onClick',
     });
     options.close();
-    await expect(promise).rejects.toThrow(new Error('closed'));
+    await expect(promise).rejects.toThrow(
+      new ActionError({
+        data: 'closed',
+        cause: 'closed',
+        definition: { type: 'dialog', blocks: [] },
+      }),
+    );
     expect(close).toHaveBeenCalledWith();
   });
 
@@ -69,7 +76,19 @@ describe('dialog', () => {
       title: 'Hello dialog',
     });
     options.close();
-    await expect(promise).rejects.toThrow(new Error('closed'));
+    await expect(promise).rejects.toThrow(
+      new ActionError({
+        data: '',
+        cause: '',
+        definition: {
+          type: 'dialog',
+          blocks: [],
+          closable: false,
+          fullscreen: true,
+          title: 'Hello dialog',
+        },
+      }),
+    );
     expect(close).toHaveBeenCalledWith();
   });
 
@@ -119,6 +138,12 @@ describe('dialog', () => {
       prefixIndex: 'pages.0.blocks.0.actions.onClick',
     });
     await options.actionCreators['dialog.error'](null)[0]({ value: 'fail' }, null);
-    await expect(promise).rejects.toStrictEqual({ value: 'fail' });
+    await expect(promise).rejects.toThrow(
+      new ActionError({
+        data: '',
+        cause: '',
+        definition: { type: 'dialog', blocks: [] },
+      }),
+    );
   });
 });

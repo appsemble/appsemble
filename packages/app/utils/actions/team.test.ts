@@ -1,3 +1,4 @@
+import { ActionError } from '@appsemble/types';
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 import { beforeEach, describe, expect, it, type Mock, vi } from 'vitest';
@@ -35,7 +36,13 @@ describe('team.join', () => {
       getUserInfo: () => userInfo,
       updateTeam,
     });
-    await expect(action(1337)).rejects.toThrow('User is not logged in');
+    await expect(action(1337)).rejects.toThrow(
+      new ActionError({
+        cause: 'User is not logged in',
+        data: null,
+        definition: { type: 'team.join' },
+      }),
+    );
   });
 });
 
@@ -86,7 +93,13 @@ describe('team.members', () => {
       getUserInfo: () => ({ sub: 'some-uuid', name: '', email: '', email_verified: false }),
     });
 
-    await expect(action()).rejects.toThrow('User is not a member of the specified team');
+    await expect(action()).rejects.toThrow(
+      new ActionError({
+        cause: 'User is not a member of the specified team',
+        data: null,
+        definition: { type: 'team.members', id: 1337 },
+      }),
+    );
   });
 
   it('should throw an error if the user is not logged in/valid', async () => {
@@ -98,6 +111,12 @@ describe('team.members', () => {
       getUserInfo: () => userInfo,
     });
 
-    await expect(action()).rejects.toThrow('User is not logged in');
+    await expect(action()).rejects.toThrow(
+      new ActionError({
+        cause: 'User is not logged in',
+        data: null,
+        definition: { type: 'team.members', id: 1337 },
+      }),
+    );
   });
 });

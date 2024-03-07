@@ -1,3 +1,4 @@
+import { ActionError } from '@appsemble/types';
 import { identity, remap } from '@appsemble/utils';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
@@ -139,7 +140,9 @@ describe('makeActions', () => {
       actions: { onClick: {} },
       context: { actions: { onClick: { type: 'throw' } } },
     });
-    await expect(actions.onClick('input')).rejects.toBe('input');
+    await expect(actions.onClick('input')).rejects.toThrow(
+      new ActionError({ cause: null, data: null, definition: { type: 'throw' } }),
+    );
   });
 
   it('should call onSuccess on success if it’s defined', async () => {

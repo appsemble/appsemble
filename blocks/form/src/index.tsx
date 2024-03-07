@@ -1,5 +1,6 @@
 import { bootstrap } from '@appsemble/preact';
 import { Button, Form, FormButtons, Message } from '@appsemble/preact-components';
+import { type ActionError } from '@appsemble/types';
 import { identity } from '@appsemble/utils';
 import classNames from 'classnames';
 import { recursive } from 'merge';
@@ -143,10 +144,63 @@ bootstrap(
             // Log the error to the console for troubleshooting.
             // eslint-disable-next-line no-console
             console.error(submitActionError);
-            const error =
-              typeof submitActionError === 'string'
-                ? submitActionError
-                : utils.formatMessage('submitError');
+
+            let error = '';
+            if (typeof submitActionError === 'string') {
+              error = submitActionError;
+              // If the error is an object we expect an axios response object
+              // And we need to retrieve the deeply nested error message
+              // First check if object is in expected shape
+            } else if (typeof submitActionError === 'object' && submitActionError != null) {
+              // Property names of the nested object
+              const propertyNames = ['response', 'data', 'data', 'errors'];
+              let nestedObj: any = { ...((submitActionError as ActionError).cause as Error) };
+
+              // Check if the object contains all those props
+              const objHasProps = (properties: string[]): boolean => {
+                for (const prop of properties) {
+                  if (!Object.hasOwn(nestedObj, prop)) {
+                    return false;
+                  }
+                  // The nested object become the new object
+                  // This is repeated until the last object, which contains the array of errors
+                  nestedObj = nestedObj[prop];
+
+                  if (nestedObj instanceof ArrayBuffer) {
+                    nestedObj = JSON.parse(
+                      new TextDecoder('utf8').decode(new Uint8Array(nestedObj as ArrayBuffer)),
+                    );
+                  }
+                }
+                return true;
+              };
+
+              // Expected structure is an array of errors
+              // Check to avoid exceptions otherwise
+              if (
+                objHasProps(propertyNames) &&
+                Array.isArray(nestedObj) &&
+                nestedObj.length > 0 &&
+                'property' in nestedObj[0]
+              ) {
+                // Switch statement to determine the source of the error
+                switch (nestedObj[0].property) {
+                  // In case of non-conforming email format
+                  case 'instance.email':
+                    error =
+                      'message' in nestedObj[0]
+                        ? `'${nestedObj[0].instance}' ${nestedObj[0].message}`
+                        : `'${nestedObj[0].instance}' does NOT conform to the email format.`;
+                    break;
+                  default:
+                    // Sets the cumulative stack message from the error object as the error
+                    error = nestedObj[0].message;
+                    break;
+                }
+              }
+            }
+            // Default message if not error is not set
+            error = error === '' ? utils.formatMessage('submitError') : error;
             setSubmitErrorResult(error);
           })
           .finally(() => setSubmitting(false));

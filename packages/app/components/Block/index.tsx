@@ -2,7 +2,12 @@ import { type EventEmitter } from 'events';
 
 import { Title, useMessages } from '@appsemble/react-components';
 import { type BlockUtils } from '@appsemble/sdk';
-import { type BlockDefinition, type PageDefinition, type Remapper } from '@appsemble/types';
+import {
+  ActionError,
+  type BlockDefinition,
+  type PageDefinition,
+  type Remapper,
+} from '@appsemble/types';
 import { createThemeURL, mergeThemes, normalizeBlockName, prefixBlockURL } from '@appsemble/utils';
 import { fa } from '@appsemble/web-utils';
 import classNames from 'classnames';
@@ -167,6 +172,9 @@ export function Block({
         ) as string;
       },
       fa,
+      isActionError(input): input is ActionError {
+        return input instanceof ActionError;
+      },
       menu(items, header) {
         setBlockMenu({ items, header, path: prefix });
       },
