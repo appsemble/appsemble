@@ -2,6 +2,7 @@ import {
   AsyncButton,
   AsyncSelect,
   Loader,
+  type MinimalHTMLElement,
   ModalCard,
   SelectField,
   SimpleForm,
@@ -13,10 +14,10 @@ import {
   useData,
   useToggle,
 } from '@appsemble/react-components';
-import { type Team, type TeamMember } from '@appsemble/types';
+import { type AppMember, type Team, type TeamMember } from '@appsemble/types';
 import { TeamRole } from '@appsemble/utils';
 import axios from 'axios';
-import { type ReactNode, useCallback, useEffect, useMemo, useState } from 'react';
+import { type ChangeEvent, type ReactNode, useCallback, useEffect, useMemo, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 
 import { messages } from './messages.js';
@@ -134,9 +135,38 @@ export function DemoLogin({ modal }: DemoLoginProps): ReactNode {
 
   const busy = useToggle();
 
+  const appRoles = useMemo(() => definition?.security?.roles ?? {}, [definition]);
+  const appRoleNames = useMemo(() => Object.keys(appRoles) ?? [], [appRoles]);
+  const defaultAppRoleName = useMemo(
+    () => definition?.security?.default.role ?? appRoleNames[0] ?? '',
+    [appRoleNames, definition?.security?.default.role],
+  );
+
+  const [selectedDemoAppMember, setSelectedDemoAppMember] = useState<AppMember>(null);
+  const [selectedAppRoleName, setSelectedAppRoleName] = useState<string>(defaultAppRoleName);
+
   const [operation, setOperation] = useState<'create-account' | 'login'>(
     demoAppMembers.length ? 'login' : 'create-account',
   );
+
+  const demoAppMember = useMemo(
+    () => selectedDemoAppMember ?? demoAppMembers[0],
+    [demoAppMembers, selectedDemoAppMember],
+  );
+
+  const selectedDemoAppMemberRoleDescription = appRoles[demoAppMember?.role]?.description;
+  const selectedAppRoleDescription = appRoles[selectedAppRoleName]?.description;
+
+  const changeDemoAppMember = (event: ChangeEvent<MinimalHTMLElement>): void => {
+    setSelectedDemoAppMember(
+      demoAppMembers.find((appMember) => appMember.userId === event.target.value) ??
+        demoAppMembers[0],
+    );
+  };
+
+  const changeAppRole = (event: ChangeEvent<MinimalHTMLElement>): void => {
+    setSelectedAppRoleName(event.target.value);
+  };
 
   const setLogin = (): void => {
     setOperation('login');
@@ -146,52 +176,40 @@ export function DemoLogin({ modal }: DemoLoginProps): ReactNode {
     setOperation('create-account');
   };
 
-  const defaultAppRole = useMemo(() => definition?.security?.default.role || '', [definition]);
-
-  const appRoles = useMemo<string[]>(
-    () => Object.keys(definition?.security?.roles) || [],
-    [definition],
-  );
-
   const defaultValues = useMemo(
     () => ({
-      appMemberId: demoAppMembers[0]?.userId ?? undefined,
-      appRole: defaultAppRole ?? appRoles[0] ?? undefined,
+      appMemberId: demoAppMember?.userId ?? undefined,
+      appRole: defaultAppRoleName ?? undefined,
     }),
-    [appRoles, defaultAppRole, demoAppMembers],
+    [defaultAppRoleName, demoAppMember?.userId],
   );
 
-  const handleLogin = useCallback(
-    async ({ appMemberId, appRole }: typeof defaultValues) => {
-      busy.enable();
-      try {
-        await demoLogin({
-          appMemberId: operation === 'login' ? appMemberId ?? demoAppMembers[0]?.userId ?? '' : '',
-          appRole:
-            operation === 'create-account' ? appRole ?? defaultAppRole ?? appRoles[0] ?? '' : '',
-        });
-        busy.disable();
-        if (modal) {
-          modal.disable();
-          window.location.reload();
-        }
-        await refetchDemoAppMembers();
-      } catch (error) {
-        busy.disable();
-        throw error;
+  const handleLogin = useCallback(async () => {
+    busy.enable();
+    try {
+      await demoLogin({
+        appMemberId: operation === 'login' ? demoAppMember.userId : '',
+        appRole: operation === 'create-account' ? selectedAppRoleName : '',
+      });
+      busy.disable();
+      if (modal) {
+        modal.disable();
+        window.location.reload();
       }
-    },
-    [
-      appRoles,
-      busy,
-      defaultAppRole,
-      demoAppMembers,
-      demoLogin,
-      modal,
-      operation,
-      refetchDemoAppMembers,
-    ],
-  );
+      await refetchDemoAppMembers();
+    } catch (error) {
+      busy.disable();
+      throw error;
+    }
+  }, [
+    busy,
+    demoLogin,
+    demoAppMember?.userId,
+    modal,
+    operation,
+    refetchDemoAppMembers,
+    selectedAppRoleName,
+  ]);
 
   const fields = (
     <>
@@ -201,8 +219,10 @@ export function DemoLogin({ modal }: DemoLoginProps): ReactNode {
           <SimpleFormField
             component={SelectField}
             disabled={demoAppMembers.length < 2 || busy.enabled}
+            help={<div>{selectedDemoAppMemberRoleDescription}</div>}
             label={<FormattedMessage {...messages.selectMember} />}
             name="appMemberId"
+            onChange={changeDemoAppMember}
             required
           >
             {demoAppMembers.map((appMember) => (
@@ -216,18 +236,20 @@ export function DemoLogin({ modal }: DemoLoginProps): ReactNode {
           </SimpleSubmit>
         </div>
       ) : null}
-      {appRoles.length ? (
+      {appRoleNames.length ? (
         <>
           <SimpleFormField
             component={SelectField}
-            disabled={appRoles.length < 2 || busy.enabled}
+            disabled={appRoleNames.length < 2 || busy.enabled}
+            help={<div>{selectedAppRoleDescription}</div>}
             label={<FormattedMessage {...messages.selectRole} />}
             name="appRole"
+            onChange={changeAppRole}
             required
           >
-            {appRoles.map((appRole) => (
-              <option key={appRole} value={appRole}>
-                {appRole}
+            {appRoleNames.map((appRoleName) => (
+              <option key={appRoleName} value={appRoleName}>
+                {appRoleName}
               </option>
             ))}
           </SimpleFormField>
