@@ -54,6 +54,7 @@ export function OAuth2StudioCallback({ session }: OAuth2StudioCallbackProps): Re
     (response: TokenResponse) => {
       login(response);
       clearOAuth2State();
+
       navigate(session.redirect || '/', { replace: true });
     },
     [navigate, login, session],

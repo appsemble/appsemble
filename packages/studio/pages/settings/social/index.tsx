@@ -18,6 +18,7 @@ import { FormattedMessage, useIntl } from 'react-intl';
 
 import styles from './index.module.css';
 import { messages } from './messages.js';
+import { useUser } from '../../../components/UserProvider/index.js';
 import { logins } from '../../../utils/settings.js';
 
 interface ConnectedAccount {
@@ -34,6 +35,7 @@ export function SocialPage(): ReactNode {
   const push = useMessages();
   const location = useLocationString();
   const connecting = useToggle();
+  const { setHasNoLoginMethods } = useUser();
 
   const {
     data: accounts,
@@ -45,7 +47,10 @@ export function SocialPage(): ReactNode {
   const disconnect = useCallback(
     async ({ authorizationUrl, name }: OAuth2Provider) => {
       try {
-        await axios.delete('/api/oauth2/connected', { params: { authorizationUrl } });
+        const { data: hasNoLoginMethods } = await axios.delete<boolean>('/api/oauth2/connected', {
+          params: { authorizationUrl },
+        });
+        setHasNoLoginMethods(hasNoLoginMethods);
       } catch {
         push(formatMessage(messages.disconnectError, { name }));
         return;
@@ -56,7 +61,7 @@ export function SocialPage(): ReactNode {
       });
       setAccounts(accounts.filter((account) => account.authorizationUrl !== authorizationUrl));
     },
-    [accounts, formatMessage, push, setAccounts],
+    [accounts, formatMessage, push, setAccounts, setHasNoLoginMethods],
   );
 
   if (loading) {

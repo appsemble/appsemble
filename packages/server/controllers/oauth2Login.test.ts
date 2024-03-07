@@ -158,6 +158,7 @@ describe('registerOAuth2Connection', () => {
     await OAuthAuthorization.create({
       UserId: user.id,
       accessToken: '',
+      email: '',
       authorizationUrl: 'https://gitlab.com/oauth/authorize',
       sub: '123',
     });
@@ -229,6 +230,7 @@ describe('connectPendingOAuth2Profile', () => {
   it('should link the logged in user if authorization isn’t linked yet', async () => {
     const oauthAuthorization = await OAuthAuthorization.create({
       accessToken: '',
+      email: '',
       authorizationUrl: 'https://gitlab.com/oauth/authorize',
       code: '789',
       sub: '42',
@@ -256,6 +258,7 @@ describe('connectPendingOAuth2Profile', () => {
     const userB = await User.create({ timezone: 'Europe/Amsterdam' });
     const oauthAuthorization = await OAuthAuthorization.create({
       UserId: userB.id,
+      email: 'email@example.com',
       accessToken: '',
       authorizationUrl: 'https://gitlab.com/oauth/authorize',
       code: '789',
@@ -291,6 +294,7 @@ describe('connectPendingOAuth2Profile', () => {
         },
         'secret',
       ),
+      email: '',
       authorizationUrl: 'https://gitlab.com/oauth/authorize',
       code: '789',
       sub: '42',
@@ -330,6 +334,8 @@ describe('connectPendingOAuth2Profile', () => {
         },
         'secret',
       ),
+
+      email: userB.primaryEmail,
       authorizationUrl: 'https://gitlab.com/oauth/authorize',
       code: '789',
       sub: '42',
@@ -361,6 +367,7 @@ describe('connectPendingOAuth2Profile', () => {
         },
         'secret',
       ),
+      email: '',
       authorizationUrl: 'https://gitlab.com/oauth/authorize',
       code: '789',
       sub: '42',
@@ -390,6 +397,7 @@ describe('connectPendingOAuth2Profile', () => {
 describe('getConnectedAccounts', () => {
   it('should return the linked accounts of the logged in user', async () => {
     await OAuthAuthorization.create({
+      email: '',
       UserId: user.id,
       accessToken: '',
       authorizationUrl: 'https://a.example',
@@ -398,6 +406,7 @@ describe('getConnectedAccounts', () => {
 
     const userB = await User.create({ timezone: 'Europe/Amsterdam' });
     await OAuthAuthorization.create({
+      email: '',
       UserId: userB.id,
       accessToken: '',
       authorizationUrl: 'https://b.example',
@@ -417,6 +426,7 @@ describe('unlinkConnectedAccount', () => {
   it('should delete a linked account', async () => {
     const oauthAuthorization = await OAuthAuthorization.create({
       UserId: user.id,
+      email: '',
       accessToken: '',
       authorizationUrl: 'https://a.example',
       sub: 'aubA',
@@ -440,6 +450,7 @@ describe('unlinkConnectedAccount', () => {
     const userB = await User.create({ timezone: 'Europe/Amsterdam' });
     await OAuthAuthorization.create({
       UserId: userB.id,
+      email: '',
       accessToken: '',
       authorizationUrl: 'https://b.example',
       sub: 'aubB',
