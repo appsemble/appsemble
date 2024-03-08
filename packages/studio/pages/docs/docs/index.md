@@ -61,6 +61,7 @@ authentication provider and the app components used to display apps.
 
 See also:
 
+- [Core development](./02-development/06-core-development.md)
 - [API documentation](/api-explorer)
 - [Source code on GitLab](https://gitlab.com/appsemble/appsemble)
 - [Contribution guidelines](https://gitlab.com/appsemble/appsemble/blob/main/CONTRIBUTING.md)
