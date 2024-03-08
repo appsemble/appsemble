@@ -7,6 +7,9 @@ import { beforeAll, beforeEach, expect, it, vi } from 'vitest';
 
 import { studioRouter } from './index.js';
 import { setArgv } from '../../utils/argv.js';
+import { useTestDatabase } from '../../utils/test/testSchema.js';
+
+useTestDatabase(import.meta);
 
 beforeAll(async () => {
   setArgv({ host: 'https://app.example:9999' });
@@ -26,7 +29,7 @@ it('should serve the studio index page with correct headers', async () => {
   const response = await request.get('/');
   expect(response).toMatchInlineSnapshot(`
     HTTP/1.1 200 OK
-    Content-Security-Policy: connect-src *; default-src 'self'; font-src 'self' https://fonts.gstatic.com; frame-src * *.localhost:9999 http://localhost:9999; img-src * blob: data:; script-src 'nonce-AAAAAAAAAAAAAAAAAAAAAA==' 'self' 'sha256-BErq6rufCjnrmMVqhZgAEgNe89ZlGySvrhAElUMixDk=' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com
+    Content-Security-Policy: connect-src *; default-src 'self'; font-src 'self' https://fonts.gstatic.com; frame-src *.localhost:9999 http://localhost:9999; img-src * blob: data:; script-src 'nonce-AAAAAAAAAAAAAAAAAAAAAA==' 'self' 'sha256-BErq6rufCjnrmMVqhZgAEgNe89ZlGySvrhAElUMixDk=' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com
     Content-Type: text/html; charset=utf-8
     X-Content-Type-Options: no-sniff
 
@@ -52,7 +55,7 @@ it('should pass login options from argv to the studio', async () => {
   const response = await request.get('/');
   expect(response).toMatchInlineSnapshot(`
     HTTP/1.1 200 OK
-    Content-Security-Policy: connect-src *; default-src 'self' https://sentry.io; font-src 'self' https://fonts.gstatic.com; frame-src * *.localhost:9999 http://localhost:9999; img-src * blob: data:; report-uri https://sentry.io/api/path/security/?sentry_key=secret; script-src 'nonce-AAAAAAAAAAAAAAAAAAAAAA==' 'self' 'sha256-8dYPnDBNRNIK86KD2V/qlP5xY9Uqz+Lnu/FeKaG8ZTk=' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com
+    Content-Security-Policy: connect-src *; default-src 'self' https://sentry.io; font-src 'self' https://fonts.gstatic.com; frame-src *.localhost:9999 http://localhost:9999; img-src * blob: data:; report-uri https://sentry.io/api/path/security/?sentry_key=secret; script-src 'nonce-AAAAAAAAAAAAAAAAAAAAAA==' 'self' 'sha256-8dYPnDBNRNIK86KD2V/qlP5xY9Uqz+Lnu/FeKaG8ZTk=' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com
     Content-Type: text/html; charset=utf-8
     X-Content-Type-Options: no-sniff
 

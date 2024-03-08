@@ -289,7 +289,7 @@ export default function EditPage(): ReactNode {
     if (modalIsActive && messageForModalFrame) {
       modalFrame?.current.contentWindow.postMessage(
         messageForModalFrame,
-        getAppUrl(app.OrganizationId, app.path),
+        getAppUrl(app.OrganizationId, app.path, app.domain),
       );
     }
   };
