@@ -1238,7 +1238,7 @@ export async function exportApp(ctx: Context): Promise<void> {
   });
   assertKoaError(!app, ctx, 404, 'App not found');
 
-  if (app.visibility === 'public' || !app.showAppDefinition) {
+  if (app.visibility === 'private' || !app.showAppDefinition) {
     await checkRole(ctx, app.OrganizationId, Permission.ViewApps);
   }
 
