@@ -5374,6 +5374,7 @@ describe('exportApp', () => {
         }`,
         vapidPrivateKey: 'b',
         vapidPublicKey: 'a',
+        longDescription: '# Test App',
         OrganizationId: organization.id,
         icon: await readFixture('nodejs-logo.png'),
       },
@@ -5407,6 +5408,7 @@ describe('exportApp', () => {
       'theme/shared/index.css',
       'i18n/',
       'i18n/en.json',
+      'README.md',
       'icon.png',
     ]);
 
@@ -5419,6 +5421,7 @@ describe('exportApp', () => {
         "
       `,
     );
+    expect(await archive.file('README.md').async('text')).toMatchInlineSnapshot('"# Test App"');
     expect(await archive.file('theme/core/index.css').async('text')).toMatchInlineSnapshot(`
       "
               * {
@@ -5685,6 +5688,7 @@ describe('importApp', () => {
     const zip = new JSZip();
     zip.file('app-definition.yaml', stringify(appDefinition));
     zip.file('icon.png', await readFixture('nodejs-logo.png'));
+    zip.file('README.md', '# Test App');
     zip.file('assets/10x50.png', await readFixture('10x50.png'));
     vi.useRealTimers();
     const content = zip.generateNodeStream();
@@ -5701,10 +5705,72 @@ describe('importApp', () => {
       },
     );
     expect(response.status).toBe(201);
-    const {
-      data: { OrganizationName, screenshotUrls, ...expected },
-    } = await request.get(`/api/apps/${response.data.id}`);
-    expect(response.data).toStrictEqual(expected);
+    expect(response).toMatchInlineSnapshot(
+      {
+        data: {
+          $created: expect.any(String),
+          $updated: expect.any(String),
+          iconUrl: expect.any(String),
+        },
+      },
+      `
+      HTTP/1.1 201 Created
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "$created": Any<String>,
+        "$updated": Any<String>,
+        "OrganizationId": "testorganization",
+        "controllerCode": null,
+        "controllerImplementations": null,
+        "definition": {
+          "defaultPage": "Test Page",
+          "name": "Test App",
+          "pages": [
+            {
+              "blocks": [
+                {
+                  "type": "test",
+                  "version": "0.0.0",
+                },
+              ],
+              "name": "Test Page",
+            },
+          ],
+        },
+        "demoMode": false,
+        "domain": null,
+        "emailName": null,
+        "enableSelfRegistration": true,
+        "googleAnalyticsID": null,
+        "hasIcon": true,
+        "hasMaskableIcon": false,
+        "iconBackground": "#ffffff",
+        "iconUrl": Any<String>,
+        "id": 1,
+        "locked": "unlocked",
+        "longDescription": "# Test App",
+        "path": "test-app",
+        "seed": false,
+        "sentryDsn": null,
+        "sentryEnvironment": null,
+        "showAppDefinition": true,
+        "showAppsembleLogin": false,
+        "showAppsembleOAuth2Login": true,
+        "visibility": "unlisted",
+        "yaml": "name: Test App
+      defaultPage: Test Page
+      pages:
+        - name: Test Page
+          blocks:
+            - type: test
+              version: 0.0.0
+      ",
+      }
+    `,
+    );
+    // The faker time is needed for the rest of the tests to pass after using useRealTimers.
+    vi.useFakeTimers();
   });
 
   it('should handle app path conflict on app import.', async () => {
@@ -5743,10 +5809,71 @@ describe('importApp', () => {
       },
     );
     expect(response.status).toBe(201);
-    const {
-      data: { OrganizationName, screenshotUrls, ...expected },
-    } = await request.get(`/api/apps/${response.data.id}`);
-    expect(response.data.path).toStrictEqual(expected.path);
+    expect(response).toMatchInlineSnapshot(
+      {
+        data: {
+          $created: expect.any(String),
+          $updated: expect.any(String),
+          iconUrl: expect.any(String),
+        },
+      },
+      `
+      HTTP/1.1 201 Created
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "$created": Any<String>,
+        "$updated": Any<String>,
+        "OrganizationId": "testorganization",
+        "controllerCode": null,
+        "controllerImplementations": null,
+        "definition": {
+          "defaultPage": "Test Page",
+          "name": "Test App",
+          "pages": [
+            {
+              "blocks": [
+                {
+                  "type": "test",
+                  "version": "0.0.0",
+                },
+              ],
+              "name": "Test Page",
+            },
+          ],
+        },
+        "demoMode": false,
+        "domain": null,
+        "emailName": null,
+        "enableSelfRegistration": true,
+        "googleAnalyticsID": null,
+        "hasIcon": true,
+        "hasMaskableIcon": false,
+        "iconBackground": "#ffffff",
+        "iconUrl": Any<String>,
+        "id": 2,
+        "locked": "unlocked",
+        "longDescription": null,
+        "path": "test-app-2",
+        "seed": false,
+        "sentryDsn": null,
+        "sentryEnvironment": null,
+        "showAppDefinition": true,
+        "showAppsembleLogin": false,
+        "showAppsembleOAuth2Login": true,
+        "visibility": "unlisted",
+        "yaml": "name: Test App
+      defaultPage: Test Page
+      pages:
+        - name: Test Page
+          blocks:
+            - type: test
+              version: 0.0.0
+      ",
+      }
+    `,
+    );
+    // The faker time is needed for the rest of the tests to pass after using useRealTimers.
     vi.useFakeTimers();
   });
 });
