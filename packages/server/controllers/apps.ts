@@ -1046,11 +1046,13 @@ export async function importApp(ctx: Context): Promise<void> {
     request: { body: importFile },
   } = ctx;
   await checkRole(ctx, organizationId, Permission.EditApps);
+
   let result: Partial<App>;
   const zip = await JSZip.loadAsync(importFile);
   try {
     const definitionFile = zip.file('app-definition.yaml');
     assertKoaError(!definitionFile, ctx, 400, 'app-definition.yaml file not found in the zip file');
+
     const yaml = await definitionFile.async('text');
     const theme = zip.folder('theme');
     const definition = parse(yaml, { maxAliasCount: 10_000 });
@@ -1066,8 +1068,10 @@ export async function importApp(ctx: Context): Promise<void> {
       await validateAppDefinition(definition, getBlockVersions),
       'App validation failed',
     );
+
     const path = normalize(definition.name);
     const icon = await zip.file('icon.png')?.async('nodebuffer');
+    const longDescription = await zip.file(/readme\.md/i)?.[0]?.async('text');
     const keys = webpush.generateVAPIDKeys();
     result = {
       definition,
@@ -1079,6 +1083,7 @@ export async function importApp(ctx: Context): Promise<void> {
       showAppsembleOAuth2Login: true,
       enableSelfRegistration: true,
       showAppDefinition: true,
+      longDescription,
       template: false,
       icon,
       iconBackground: '#ffffff',
@@ -1223,6 +1228,7 @@ export async function exportApp(ctx: Context): Promise<void> {
       'sharedStyle',
       'showAppDefinition',
       'visibility',
+      'longDescription',
     ],
     include: [
       { model: AppBlockStyle, required: false },
@@ -1232,7 +1238,7 @@ export async function exportApp(ctx: Context): Promise<void> {
   });
   assertKoaError(!app, ctx, 404, 'App not found');
 
-  if (app.visibility === 'public' || !app.showAppDefinition) {
+  if (app.visibility === 'private' || !app.showAppDefinition) {
     await checkRole(ctx, app.OrganizationId, Permission.ViewApps);
   }
 
@@ -1255,6 +1261,10 @@ export async function exportApp(ctx: Context): Promise<void> {
       const [orgName, blockName] = block.block.split('/');
       theme.file(`${orgName}/${blockName}/index.css`, block.style);
     }
+  }
+
+  if (app.longDescription) {
+    zip.file('README.md', app.longDescription);
   }
 
   if (app.icon) {

@@ -1,1 +1,1 @@
-Export and import can now include the app icon.
+App export and import can now include the app icon if present.
