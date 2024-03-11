@@ -102,11 +102,6 @@ export class App extends Model {
   @Column(DataType.BOOLEAN)
   demoMode: boolean;
 
-  @AllowNull(false)
-  @Default(false)
-  @Column(DataType.BOOLEAN)
-  seed: boolean;
-
   @Column(DataType.TEXT)
   longDescription: string;
 
@@ -303,7 +298,6 @@ export class App extends Model {
       ),
       messages: this.messages,
       demoMode: this.demoMode,
-      seed: this.seed,
       controllerCode: this.controllerCode,
       controllerImplementations: this.controllerImplementations,
     };

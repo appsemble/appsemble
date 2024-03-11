@@ -1,6 +1,80 @@
 import { type OpenAPIV3 } from 'openapi-types';
 
 export const paths: OpenAPIV3.PathsObject = {
+  '/api/apps/{appId}/seed-resources/{resourceType}': {
+    parameters: [
+      { $ref: '#/components/parameters/appId' },
+      { $ref: '#/components/parameters/resourceType' },
+    ],
+    post: {
+      tags: ['resource'],
+      description: 'Create a new seed resource for this app.',
+      operationId: 'seedResource',
+      requestBody: {
+        required: true,
+        description: 'The resource to create',
+        content: {
+          'application/json': {
+            schema: {
+              anyOf: [
+                { $ref: '#/components/schemas/Resource' },
+                { type: 'array', items: { $ref: '#/components/schemas/Resource' } },
+              ],
+            },
+          },
+          'multipart/form-data': {
+            schema: {
+              type: 'object',
+              required: ['resource'],
+              description: 'A `multipart/form-data` representation of a resource.',
+              additionalProperties: false,
+              properties: {
+                resource: {
+                  type: 'array',
+                  items: { $ref: '#/components/schemas/Resource' },
+                },
+                assets: {
+                  type: 'array',
+                  description: 'A list of assets that should be linked to the resource.',
+                  items: {
+                    type: 'string',
+                    format: 'binary',
+                  },
+                },
+              },
+            },
+          },
+          'text/csv': {
+            schema: {
+              type: 'array',
+              items: { type: 'object', additionalProperties: { type: 'string' } },
+            },
+          },
+        },
+      },
+      responses: {
+        201: {
+          description: 'The resource that was created.',
+          $ref: '#/components/responses/resource',
+        },
+      },
+      security: [{ studio: [] }, { app: ['resources:manage'] }, { cli: ['resources:write'] }, {}],
+    },
+  },
+  '/api/apps/{appId}/seed-resources': {
+    parameters: [{ $ref: '#/components/parameters/appId' }],
+    delete: {
+      tags: ['resource'],
+      description: 'Delete all app seed resources.',
+      operationId: 'deleteSeedResources',
+      responses: {
+        204: {
+          description: 'The app seed resources have been deleted successfully.',
+        },
+      },
+      security: [{ cli: ['resources:write'] }, {}],
+    },
+  },
   '/api/apps/{appId}/resources/{resourceType}': {
     parameters: [
       { $ref: '#/components/parameters/appId' },

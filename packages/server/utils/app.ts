@@ -1,3 +1,5 @@
+import { randomBytes } from 'node:crypto';
+
 import { assertKoaError, mergeMessages } from '@appsemble/node-utils';
 import { extractAppMessages } from '@appsemble/utils';
 import { type Context } from 'koa';
@@ -175,5 +177,23 @@ export function applyAppMessages(app: App, language: string, baseLanguage: strin
         languageMessages?.messages ?? {},
       ),
     });
+  }
+}
+
+export async function setAppPath(app: Partial<App>, path: string): Promise<void> {
+  for (let i = 1; i < 11; i += 1) {
+    const p = i === 1 ? path : `${path}-${i}`;
+    const count = await App.count({ where: { path: p } });
+    if (count === 0) {
+      Object.assign(app, {
+        path: p,
+      });
+      break;
+    }
+  }
+
+  if (!app.path) {
+    // Fallback if a suitable ID could not be found after trying for a while
+    Object.assign(app, { path: `${path}-${randomBytes(5).toString('hex')}` });
   }
 }

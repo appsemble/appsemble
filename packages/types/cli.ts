@@ -61,6 +61,11 @@ export interface AppsembleContext {
   seed?: boolean;
 
   /**
+   * Whether app assets should be clonable.
+   */
+  assetsClonable?: boolean;
+
+  /**
    * Set the value of AppLock for your app.
    */
   appLock?: AppLock;

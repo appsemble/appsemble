@@ -72,27 +72,26 @@ export function builder(yargs: Argv): Argv<any> {
       describe: 'Whether the app should be used in demo mode.',
       type: 'boolean',
     })
-    .option('seed', {
-      describe: 'Whether to enable seeding for an app or not.',
-      implies: ['demo-mode'],
-    })
     .option('dry-run', {
       describe: 'Whether the API should be called to run without actually creating the app.',
       type: 'boolean',
     })
     .option('resources', {
       describe:
-        'Whether the resources from the `resources` directory should be created after publishing the app. The names of subdirectories are used as the name of the resource, otherwise the names of top level resource .json files are used instead.',
+        'Whether the resources from the `resources` directory should be created after publishing the app. The names of sub-directories are used as the name of the resource, otherwise the names of top level resource .json files are used instead.',
       type: 'boolean',
     })
     .option('assets', {
       describe:
         'Whether the assets from the `assets` directory should be created after publishing the app.',
       type: 'boolean',
+      default: false,
     })
     .option('assets-clonable', {
       describe: 'Whether published assets should be clonable. Ignored if assets equals false.',
       type: 'boolean',
+      default: false,
+      implies: 'assets',
     })
     .option('modify-context', {
       describe:

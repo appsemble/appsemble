@@ -629,13 +629,75 @@ describe('createAsset', () => {
     `,
     );
   });
+});
 
-  it('should create seed assets and ephemeral assets in demo apps', async () => {
-    await app.update({ demoMode: true, seed: true });
+describe('seedAsset', () => {
+  it('should create seed assets in all apps', async () => {
     const member = await AppMember.create({ AppId: app.id, UserId: user.id, role: '' });
     authorizeStudio();
     const response = await request.post<AssetType>(
-      `/api/apps/${app.id}/assets`,
+      `/api/apps/${app.id}/seed-assets`,
+      createFormData({ file: Buffer.alloc(0) }),
+    );
+    const asset = await Asset.findByPk(response.data.id);
+
+    expect(asset.AppMemberId).toStrictEqual(member.id);
+    expect(response).toMatchInlineSnapshot(
+      { data: { id: expect.stringMatching(uuid4Pattern) } },
+      `
+      HTTP/1.1 201 Created
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "id": StringMatching /\\^\\[\\\\d\\[a-f\\]\\{8\\}-\\[\\\\da-f\\]\\{4\\}-4\\[\\\\da-f\\]\\{3\\}-\\[\\\\da-f\\]\\{4\\}-\\[\\\\d\\[a-f\\]\\{12\\}\\$/,
+        "mime": "application/octet-stream",
+      }
+    `,
+    );
+
+    const seedAsset = await Asset.findOne({
+      where: {
+        AppId: app.id,
+        seed: true,
+        ephemeral: false,
+      },
+    });
+    expect(seedAsset.dataValues).toMatchInlineSnapshot(
+      {
+        id: expect.any(String),
+        AppMemberId: expect.any(String),
+        created: expect.any(Date),
+        updated: expect.any(Date),
+      },
+      `
+      {
+        "AppId": 1,
+        "AppMemberId": Any<String>,
+        "ResourceId": null,
+        "clonable": false,
+        "created": Any<Date>,
+        "data": {
+          "data": [],
+          "type": "Buffer",
+        },
+        "ephemeral": false,
+        "filename": null,
+        "id": Any<String>,
+        "mime": "application/octet-stream",
+        "name": null,
+        "seed": true,
+        "updated": Any<Date>,
+      }
+    `,
+    );
+  });
+
+  it('should create seed assets and ephemeral assets in demo apps', async () => {
+    await app.update({ demoMode: true });
+    const member = await AppMember.create({ AppId: app.id, UserId: user.id, role: '' });
+    authorizeStudio();
+    const response = await request.post<AssetType>(
+      `/api/apps/${app.id}/seed-assets`,
       createFormData({ file: Buffer.alloc(0) }),
     );
     const asset = await Asset.findByPk(response.data.id);
@@ -726,39 +788,47 @@ describe('createAsset', () => {
     `,
     );
   });
+});
 
-  it('should create ephemeral assets and not seed assets in demo apps when seed is false', async () => {
-    await app.update({ demoMode: true, seed: false });
-    const member = await AppMember.create({ AppId: app.id, UserId: user.id, role: '' });
+describe('deleteSeedAssets', () => {
+  it('should delete seed assets from all apps', async () => {
     authorizeStudio();
-    const response = await request.post<AssetType>(
-      `/api/apps/${app.id}/assets`,
+    await request.post<AssetType>(
+      `/api/apps/${app.id}/seed-assets`,
       createFormData({ file: Buffer.alloc(0) }),
     );
-    const asset = await Asset.findByPk(response.data.id);
 
-    expect(asset.AppMemberId).toStrictEqual(member.id);
-    expect(response).toMatchInlineSnapshot(
-      { data: { id: expect.stringMatching(uuid4Pattern) } },
-      `
-      HTTP/1.1 201 Created
-      Content-Type: application/json; charset=utf-8
+    await request.delete(`/api/apps/${app.id}/seed-assets`);
 
-      {
-        "id": StringMatching /\\^\\[\\\\d\\[a-f\\]\\{8\\}-\\[\\\\da-f\\]\\{4\\}-4\\[\\\\da-f\\]\\{3\\}-\\[\\\\da-f\\]\\{4\\}-\\[\\\\d\\[a-f\\]\\{12\\}\\$/,
-        "mime": "application/octet-stream",
-      }
-    `,
-    );
-
-    const seedAsset = await Asset.findAll({
+    const seedAsset = await Asset.findOne({
       where: {
         AppId: app.id,
         seed: true,
         ephemeral: false,
       },
     });
-    expect(seedAsset).toStrictEqual([]);
+
+    expect(seedAsset).toBeNull();
+  });
+
+  it('should delete seed assets and ephemeral assets from demo apps', async () => {
+    authorizeStudio();
+    await app.update({ demoMode: true });
+    await request.post<AssetType>(
+      `/api/apps/${app.id}/seed-assets`,
+      createFormData({ file: Buffer.alloc(0) }),
+    );
+
+    await request.delete(`/api/apps/${app.id}/seed-assets`);
+
+    const seedAsset = await Asset.findOne({
+      where: {
+        AppId: app.id,
+        seed: true,
+        ephemeral: false,
+      },
+    });
+    expect(seedAsset).toBeNull();
 
     const ephemeralAsset = await Asset.findOne({
       where: {
@@ -767,34 +837,7 @@ describe('createAsset', () => {
         ephemeral: true,
       },
     });
-    expect(ephemeralAsset.dataValues).toMatchInlineSnapshot(
-      {
-        id: expect.any(String),
-        AppMemberId: expect.any(String),
-        created: expect.any(Date),
-        updated: expect.any(Date),
-      },
-      `
-      {
-        "AppId": 1,
-        "AppMemberId": Any<String>,
-        "ResourceId": null,
-        "clonable": false,
-        "created": Any<Date>,
-        "data": {
-          "data": [],
-          "type": "Buffer",
-        },
-        "ephemeral": true,
-        "filename": null,
-        "id": Any<String>,
-        "mime": "application/octet-stream",
-        "name": null,
-        "seed": false,
-        "updated": Any<Date>,
-      }
-    `,
-    );
+    expect(ephemeralAsset).toBeNull();
   });
 });
 

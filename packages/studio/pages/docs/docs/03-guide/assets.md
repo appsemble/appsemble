@@ -1,6 +1,6 @@
 # Assets
 
-Assets can be used to store binary data. Typically this is used for images, videos, audio fragments
+Assets can be used to store binary data. Typically, this is used for images, videos, audio fragments
 or documents. They can be used by app creators, content managers who use Appsemble Studio and end
 users of the app.
 
@@ -10,6 +10,7 @@ users of the app.
 - [Resources](#resources)
 - [Studio](#studio)
 - [CLI](#cli)
+- [Clonable assets](#clonable-assets)
 - [SDK](#sdk)
 - [Security](#security)
 
@@ -43,8 +44,26 @@ Assets can be uploaded using the [Appsemble CLI](https://www.npmjs.com/package/@
 appsemble asset publish --app-id "$MY_APP_ID" path/to/example.png
 ```
 
-By default the base name of the file will be used as the asset name. I.e. the asset created using
+By default, the base name of the file will be used as the asset name. I.e. the asset created using
 the command above, would be named _“example”_.
+
+Assets can also be uploaded alongside an app.
+
+Executing the `appsemble app publish` command with the `--assets` flag will publish the assets
+currently in the assets directory of the app with their `seed` property set to `true`.
+
+Executing the `appsemble app update` command with the `--assets` flag will replace existing `seed`
+assets with the ones currently in the assets directory of the app.
+
+`seed` assets and `ephemeral` assets behave the same way as
+[seed resources and ephemeral resources](resources.md#seed-resources).
+
+## Clonable assets
+
+In template apps, which can be cloned into a new app, some assets should be transferable to the new
+app. We can mark those assets with the clonable property. This can be achieved by using the
+`--clonable` flag in the `appsemble asset publish` command or the `--assets-clonable` tag in the
+`appsemble app publish` and `appsemble app update` commands.
 
 ## SDK
 

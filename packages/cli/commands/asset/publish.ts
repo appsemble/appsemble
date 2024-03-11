@@ -17,6 +17,7 @@ interface PublishAssetArguments extends BaseArguments {
   context: string;
   app: string;
   clonable: boolean;
+  seed: boolean;
 }
 
 export const command = 'publish <paths...>';
@@ -53,6 +54,10 @@ export function builder(yargs: Argv): Argv<any> {
       type: 'boolean',
       default: false,
       describe: 'If true, all published assets will be clonable',
+    })
+    .option('seed', {
+      describe: 'If true, published resources will be used as seed',
+      default: false,
     });
 }
 
@@ -65,6 +70,7 @@ export async function handler({
   name,
   paths,
   remote,
+  seed,
   useFileName,
 }: PublishAssetArguments): Promise<void> {
   const [resolvedAppId, resolvedRemote] = await resolveAppIdAndRemote(app, context, remote, appId);
@@ -84,6 +90,7 @@ export async function handler({
       name: name || (useFileName ? parse(path).name : null),
       appId: resolvedAppId,
       path,
+      seed,
       remote: resolvedRemote,
       clonable,
     });

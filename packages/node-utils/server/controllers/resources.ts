@@ -233,18 +233,11 @@ export function createCreateResource(options: Options): Middleware {
     const {
       pathParams: { appId, resourceType },
     } = ctx;
-    const {
-      checkSeededResources,
-      createAppResourcesWithAssets,
-      getApp,
-      getAppAssets,
-      verifyResourceActionPermission,
-    } = options;
+    const { createAppResourcesWithAssets, getApp, getAppAssets, verifyResourceActionPermission } =
+      options;
     const action = 'create';
 
     const app = await getApp({ context: ctx, query: { where: { id: appId } } });
-
-    const resourceSeeded = await checkSeededResources({ context: ctx, app, resourceType });
 
     const resourceDefinition = getResourceDefinition(app, resourceType, ctx);
     await verifyResourceActionPermission({ app, context: ctx, action, resourceType, options, ctx });
@@ -266,87 +259,19 @@ export function createCreateResource(options: Options): Middleware {
 
     const resources = Array.isArray(processedBody) ? processedBody : [processedBody];
 
-    let createdResources;
-
-    // In demo apps, there are two types of resources.
-
-    // If the app has not been seeded, resources passed from the request body
-    // are interpreted as seed resources and created with "seed: true". In addition,
-    // copies of these resources are created with "ephemeral: true".
-
-    // If the app has already been seeded, only new ephemeral resources are created,
-    // processed from the request body.
-    if (app.demoMode) {
-      if (!resourceSeeded && app.seed) {
-        const preparedSeedAssets = structuredClone(preparedAssets);
-        const preparedSeedResources: Record<string, unknown>[] = resources.map((resource) => {
-          const cleanResource = { ...resource };
-          for (const referencedProperty of Object.keys(resourceDefinition.references ?? {})) {
-            delete cleanResource[referencedProperty];
-          }
-          return {
-            ...cleanResource,
-            $seed: true,
-            $ephemeral: false,
-          };
-        });
-
-        for (const preparedSeedAsset of preparedSeedAssets) {
-          const index = resources.findIndex(
-            ({ $clonable: clonable, $ephemeral: ephemeral, $seed: seed, ...cleanResource }) => {
-              const { $clonable, $ephemeral, $seed, ...cleanAssetResource } =
-                preparedSeedAsset.resource;
-              return isDeepStrictEqual(cleanResource, cleanAssetResource);
-            },
-          );
-          const previousAssetId = preparedSeedAsset.id;
-          const newAssetId = randomUUID();
-          const updatedResource = JSON.parse(
-            JSON.stringify(preparedSeedResources[index]).replace(previousAssetId, newAssetId),
-          );
-          preparedSeedAsset.id = newAssetId;
-          preparedSeedAsset.resource = updatedResource;
-          preparedSeedResources[index] = updatedResource;
-        }
-
-        await createAppResourcesWithAssets({
-          app,
-          context: ctx,
-          resources: preparedSeedResources,
-          preparedAssets: preparedSeedAssets,
-          resourceType,
-          action,
-          options,
-        });
-      }
-
-      createdResources = await createAppResourcesWithAssets({
-        app,
-        context: ctx,
-        resources: resources.map((resource) => ({
-          ...resource,
-          $seed: false,
-          $ephemeral: true,
-          $clonable: false,
-        })),
-        preparedAssets,
-        resourceType,
-        action,
-        options,
-      });
-    } else {
-      // In regular apps, resources are created as usual
-      // with "clonable", "ephemeral" and "expires" passed from the request body
-      createdResources = await createAppResourcesWithAssets({
-        app,
-        context: ctx,
-        resources,
-        preparedAssets,
-        resourceType,
-        action,
-        options,
-      });
-    }
+    const createdResources = await createAppResourcesWithAssets({
+      app,
+      context: ctx,
+      resources: resources.map((resource) => ({
+        ...resource,
+        $seed: false,
+        $ephemeral: app.demoMode,
+      })),
+      preparedAssets,
+      resourceType,
+      action,
+      options,
+    });
 
     ctx.body = Array.isArray(processedBody) ? createdResources : createdResources[0];
   };
@@ -476,10 +401,146 @@ export function createDeleteResource(options: Options): Middleware {
       context: ctx,
       id: resourceId,
       type: resourceType,
-      action,
       options,
     });
 
     ctx.status = 204;
+  };
+}
+
+export function createSeedResource(options: Options): Middleware {
+  return async (ctx: Context) => {
+    const {
+      pathParams: { appId, resourceType },
+    } = ctx;
+
+    const { createAppResourcesWithAssets, getApp, getAppAssets, verifyResourceActionPermission } =
+      options;
+    const action = 'create';
+
+    const app = await getApp({ context: ctx, query: { where: { id: appId } } });
+
+    const resourceDefinition = getResourceDefinition(app, resourceType, ctx);
+    await verifyResourceActionPermission({ app, context: ctx, action, resourceType, options, ctx });
+
+    const appAssets = await getAppAssets({ app, context: ctx });
+
+    const [processedBody, preparedAssets] = processResourceBody(
+      ctx,
+      resourceDefinition,
+      undefined,
+      undefined,
+      appAssets.map((appAsset) => ({ id: appAsset.id, name: appAsset.name })),
+    );
+
+    if (Array.isArray(processedBody) && !processedBody.length) {
+      ctx.body = [];
+      return;
+    }
+
+    const resources = Array.isArray(processedBody) ? processedBody : [processedBody];
+
+    let createdResources;
+
+    const preparedSeedAssets = structuredClone(preparedAssets);
+    const preparedSeedResources: Record<string, unknown>[] = resources.map((resource) => {
+      const cleanResource = { ...resource };
+      if (app.demoMode) {
+        for (const referencedProperty of Object.keys(resourceDefinition.references ?? {})) {
+          delete cleanResource[referencedProperty];
+        }
+      }
+      return {
+        ...cleanResource,
+        $seed: true,
+        $ephemeral: false,
+      };
+    });
+
+    for (const preparedSeedAsset of preparedSeedAssets) {
+      const index = resources.findIndex(
+        ({ $clonable: clonable, $ephemeral: ephemeral, $seed: seed, ...cleanResource }) => {
+          const { $clonable, $ephemeral, $seed, ...cleanAssetResource } =
+            preparedSeedAsset.resource;
+          return isDeepStrictEqual(cleanResource, cleanAssetResource);
+        },
+      );
+      const previousAssetId = preparedSeedAsset.id;
+      const newAssetId = randomUUID();
+      const updatedResource = JSON.parse(
+        JSON.stringify(preparedSeedResources[index]).replace(previousAssetId, newAssetId),
+      );
+      preparedSeedAsset.id = newAssetId;
+      preparedSeedAsset.resource = updatedResource;
+      preparedSeedResources[index] = updatedResource;
+    }
+
+    createdResources = await createAppResourcesWithAssets({
+      app,
+      context: ctx,
+      resources: preparedSeedResources,
+      preparedAssets: preparedSeedAssets,
+      resourceType,
+      action,
+      options,
+    });
+
+    if (app.demoMode) {
+      createdResources = await createAppResourcesWithAssets({
+        app,
+        context: ctx,
+        resources: resources.map((resource) => ({
+          ...resource,
+          $seed: false,
+          $ephemeral: true,
+          $clonable: false,
+        })),
+        preparedAssets,
+        resourceType,
+        action,
+        options,
+      });
+    }
+
+    ctx.body = Array.isArray(processedBody) ? createdResources : createdResources[0];
+  };
+}
+
+export function createDeleteSeedResources(options: Options): Middleware {
+  return async (ctx: Context) => {
+    const {
+      pathParams: { appId },
+    } = ctx;
+
+    const { deleteAppResource, getApp, getAppResources } = options;
+
+    const app = await getApp({ context: ctx, query: { where: { id: appId } } });
+
+    for (const resourceType of Object.keys(app.definition.resources ?? {})) {
+      const resourcesToDeleteFindOptions: FindOptions = {
+        where: {
+          type: resourceType,
+          AppId: appId,
+          or: [{ seed: true }, { ephemeral: true }],
+        },
+      };
+
+      const resourcesToDelete = await getAppResources({
+        app,
+        findOptions: resourcesToDeleteFindOptions,
+        type: resourceType,
+        context: ctx,
+      });
+
+      for (const resourceToDelete of resourcesToDelete) {
+        await deleteAppResource({
+          app,
+          context: ctx,
+          options,
+          id: resourceToDelete.id,
+          type: resourceType,
+        });
+      }
+    }
   };
 }

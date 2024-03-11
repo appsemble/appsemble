@@ -2,6 +2,6 @@
   {
     "name": "Milka",
     "species": "Cow",
-    "ownerId": 1
+    "$owner": 0
   }
 ]

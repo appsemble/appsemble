@@ -1,8 +1,8 @@
 # Resources
 
 Appsemble out of the box provides its own method of storing and retrieving data specific to apps. It
-can also retrieve and store an external data source outside Appsemble. Data that is created via an
-app is called a ´resource´.
+can also retrieve and store external data outside Appsemble. Data that is created via an app is
+called a ´resource´.
 
 ## Table of Contents
 
@@ -20,8 +20,8 @@ app is called a ´resource´.
 - [Views](#views)
 - [Expiring resources](#expiring-resources)
 - [Clonable resources](#clonable-resources)
-- [Ephemeral resources](#ephemeral-resources)
 - [Seed resources](#seed-resources)
+- [Ephemeral resources](#ephemeral-resources)
   - [Reseeding events](#reseeding-events)
 - [Filtering resources from the Appsemble API](#filtering-resources-from-the-appsemble-api)
   - [Logical Operators](#logical-operators)
@@ -361,9 +361,9 @@ resource.
 
 When publishing resources along with the app definition using the `appsemble app publish` command
 with the `--resources` tag, resources from the `resources` directory in the app directory will be
-published in the app. If you want a resource defined as a JSON object in that directory to reference
-another resource in the directory, you can add a field to the JSON object, pointing to the index of
-the referenced resource in its array, like so:
+published as `seed` resources in the app. If you want a resource defined as a JSON object in that
+directory to reference another resource in the directory, you can add a field to the JSON object,
+pointing to the index of the referenced resource in its array, like so:
 
 In `/resources/owner.json`:
 
@@ -398,8 +398,8 @@ And in `/resources/housePet.json`:
 Appsemble will handle the references to the owners internally. The pet `Sven` will be assigned an
 `ownerId` value equal to the id of the owner `Steve`. Similarly, the pet `Milka` will be assigned an
 `ownerId` value equal to the id of the owner `Carol`. This reference also persists in demo apps
-after reseeding the resources. Each new ephemeral instances of the pets `Sven` and `Milka` will
-belong to the new ephemeral instances of the owners `Steve` and `Carol` respectively.
+after reseeding the resources. Each new `ephemeral` instance of the pets `Sven` and `Milka` will
+belong to the new `ephemeral` instances of the owners `Steve` and `Carol` respectively.
 
 When referencing parent resources from child resources, we often want to define what happens to the
 child when a specific resource action is executed on the parent. Here `parent` and `child` are terms
@@ -587,38 +587,32 @@ resources:
 
 In the above example, the resource can be transferred with the app when cloning it.
 
-## Ephemeral resources
-
-There are some use cases where resources should regularly be automatically removed. This can be done
-by setting the `ephemeral` property.
-
-For example:
-
-```yaml validate resources-snippet
-resources:
-  ephemeral-resource:
-    schema:
-      type: object
-      additionalProperties: false
-      properties:
-        name:
-          type: string
-    ephemeral: true
-```
-
 ## Seed resources
 
-Seed resources only exist in demo apps, where we always want to have a presentable state of the
-application and its resources. In this case, resources published on app creation will automatically
-be created with their seed property set to true. In addition to that, ephemeral copies of these
-resources will be created. Users in demo apps can only interact with ephemeral resources, which are
-cleaned up regularly and new ones are created based on the app’s seed resources.
+All resources defined in the `resources` directory of an app will be considered `seed` resources.
+Seed data is defined by the app developer and is intended to be present after changes to the app.
+
+The `appsemble app publish` command will publish resources from the `resources` directory with their
+`seed` property set to true when executed with the `--resources` flag.
+
+The `appsemble app update` command will replace existing seed resources in the app with the ones
+currently in the `resources` directory when executed with the `--resources` flag. Resources created
+from within the app itself will be left untouched.
+
+## Ephemeral resources
+
+Ephemeral resources are temporary copies of `seed` resources, which are used in demo apps (apps with
+`demoMode: true`). Users of demo apps can only interact with `ephemeral` resources.
+
+In demo apps, the `appsemble app publish` and the `appsemble app update` commands will also create
+`ephemeral` resources based on the app’s `seed` resources when executed with the `--resources` flag.
 
 ### Reseeding events
 
-At the end of each day, an automated event happens, which deletes all ephemeral resources. In demo
-apps, new ephemeral resources are created based on resources marked as seed. In demo apps this event
-can also be triggered manually from the studio.
+At the end of each day, an automated event called reseeding happens, which deletes all `ephemeral`
+resources. In demo apps, new ephemeral resources are created based on the app’s `seed` resources.
+
+In demo apps, this event can also be triggered manually from the studio.
 
 ## Filtering resources from the Appsemble API
 

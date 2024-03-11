@@ -28,6 +28,11 @@ interface PublishAssetParams {
   remote: string;
 
   /**
+   * Whether the published asset should be used as seed.
+   */
+  seed: boolean;
+
+  /**
    * Whether the asset should be clonable.
    */
   clonable: boolean;
@@ -39,6 +44,7 @@ export async function publishAsset({
   name,
   path,
   remote,
+  seed,
 }: PublishAssetParams): Promise<void> {
   const formData = new FormData();
   const file = createReadStream(path);
@@ -48,8 +54,9 @@ export async function publishAsset({
     formData.append('name', normalize(name));
   }
 
+  const endpoint = `/api/apps/${appId}/${seed ? 'seed-' : ''}assets`;
   const {
     data: { id },
-  } = await axios.post<{ id: string }>(`/api/apps/${appId}/assets`, formData, { baseURL: remote });
+  } = await axios.post<{ id: string }>(endpoint, formData, { baseURL: remote });
   logger.info(`Published asset ${id}${name ? ` with name ${normalize(name)}` : ''}`);
 }

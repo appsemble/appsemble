@@ -8,7 +8,6 @@ import {
 } from '../utils/resource.js';
 
 export async function deleteAppResource({
-  action,
   app,
   context,
   id,
@@ -28,10 +27,10 @@ export async function deleteAppResource({
     where: { id, type, AppId: app.id, ...whereOptions },
   });
 
-  processReferenceHooks(user as User, persistedApp, resource, action, options, context);
-  processHooks(user as User, persistedApp, resource, action, options, context);
+  processReferenceHooks(user as User, persistedApp, resource, 'delete', options, context);
+  processHooks(user as User, persistedApp, resource, 'delete', options, context);
 
-  await processReferenceTriggers(persistedApp, resource, action, context);
+  await processReferenceTriggers(persistedApp, resource, 'delete', context);
 
   return resource.destroy();
 }

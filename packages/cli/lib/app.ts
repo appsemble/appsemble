@@ -28,7 +28,6 @@ import { type BuildResult } from 'esbuild';
 import fg from 'fast-glob';
 import FormData from 'form-data';
 import normalizePath from 'normalize-path';
-import { parse as parseYaml } from 'yaml';
 
 import { publishAsset } from './asset.js';
 import { traverseBlockThemes } from './block.js';
@@ -184,9 +183,19 @@ interface UpdateAppParams {
   demoMode: boolean;
 
   /**
-   * Whether the App should seed resources and assets in demo mode.
+   * Whether resources from the `resources` directory should be published after publishing the app.
    */
-  seed: boolean;
+  resources: boolean;
+
+  /**
+   * Whether assets from the `assets` directory should be published after publishing the app.
+   */
+  assets: boolean;
+
+  /**
+   * Whether published assets should be clonable. Ignored if `assets` equals false.
+   */
+  assetsClonable: boolean;
 
   /**
    * Whether the locked property should be ignored.
@@ -439,6 +448,98 @@ export async function uploadMessages(
   }
 }
 
+export async function publishSeedResources(path: string, app: App, remote: string): Promise<void> {
+  const resourcesPath = join(path, 'resources');
+  logger.info(`Publishing seed resources from ${resourcesPath}`);
+
+  if (existsSync(resourcesPath)) {
+    logger.info(`Deleting existing seed resources from app ${app.id}`);
+    await axios.delete(`/api/apps/${app.id}/seed-resources`);
+
+    try {
+      const resourceFiles = await readdir(resourcesPath, { withFileTypes: true });
+      const resourcesToPublish: ResourceToPublish[] = [];
+      const publishedResourcesIds: Record<string, number[]> = {};
+
+      for (const resource of resourceFiles) {
+        if (resource.isFile()) {
+          const { name } = parse(resource.name);
+          resourcesToPublish.push({
+            appId: app.id,
+            path: join(resourcesPath, resource.name),
+            definition: app.definition.resources?.[name],
+            type: name,
+          });
+        } else if (resource.isDirectory()) {
+          const subDirectoryResources = await readdir(join(resourcesPath, resource.name), {
+            withFileTypes: true,
+          });
+
+          for (const subResource of subDirectoryResources.filter((s) => s.isFile())) {
+            resourcesToPublish.push({
+              appId: app.id,
+              path: join(resourcesPath, resource.name, subResource.name),
+              definition: app.definition.resources?.[resource.name],
+              type: resource.name,
+            });
+          }
+        }
+      }
+
+      await publishResourcesRecursively({
+        seed: true,
+        remote,
+        resourcesToPublish,
+        publishedResourcesIds,
+      });
+    } catch (error: unknown) {
+      logger.error('Something went wrong when publishing seed resources:');
+      logger.error(error);
+    }
+  } else {
+    logger.warn(`Missing resources directory in ${path}. Skipping...`);
+  }
+}
+
+export async function publishSeedAssets(
+  path: string,
+  app: App,
+  remote: string,
+  assetsClonable: boolean,
+): Promise<void> {
+  const assetsPath = join(path, 'assets');
+  logger.info(`Publishing seed assets from ${assetsPath}`);
+
+  if (existsSync(assetsPath)) {
+    logger.info(`Deleting existing seed assets from app ${app.id}`);
+    await axios.delete(`/api/apps/${app.id}/seed-assets`);
+
+    const assetFiles = await readdir(assetsPath);
+    const normalizedPaths = assetFiles.map((assetFile) =>
+      normalizePath(join(assetsPath, assetFile)),
+    );
+    const files = await fg(normalizedPaths, { absolute: true, onlyFiles: true });
+    try {
+      logger.info(`Publishing ${files.length} asset(s)`);
+      for (const assetFilePath of files) {
+        await publishAsset({
+          name: parse(assetFilePath).name,
+          appId: app.id,
+          path: assetFilePath,
+          remote,
+          seed: true,
+          clonable: assetsClonable,
+        });
+      }
+    } catch (error: unknown) {
+      logger.error('Something went wrong when creating assets:');
+      logger.error(error);
+    }
+  } else {
+    logger.warn(`Missing assets directory in ${path}. Skipping...`);
+  }
+}
+
 /**
  * @param path The path to the app directory.
  * @param languages A list of languages for which translations should be added in addition to the
@@ -632,10 +733,12 @@ This block version is not used in the app`,
  * @param argv The command line options used for updating the app.
  */
 export async function updateApp({
+  assets,
   clientCredentials,
   context,
   force,
   path,
+  resources,
   ...options
 }: UpdateAppParams): Promise<void> {
   const file = await stat(path);
@@ -652,10 +755,8 @@ export async function updateApp({
   const remote = appsembleContext.remote ?? options.remote;
   const id = appsembleContext.id ?? options.id;
   const template = appsembleContext.template ?? options.template ?? false;
+  const assetsClonable = appsembleContext.assetsClonable ?? options.assetsClonable ?? false;
   const demoMode = appsembleContext.demoMode ?? options.demoMode ?? false;
-  // TODO: seed depends on demoMode, this is caused by bad database normalization.
-  // Consider using a property called `type` on the App model instead.
-  const seed = appsembleContext.seed ?? options.seed ?? options.demoMode ?? false;
   const visibility = appsembleContext.visibility ?? options.visibility;
   const iconBackground = appsembleContext.iconBackground ?? options.iconBackground;
   const icon = options.icon ?? appsembleContext.icon;
@@ -676,7 +777,6 @@ export async function updateApp({
   formData.append('force', String(force));
   formData.append('template', String(template));
   formData.append('demoMode', String(demoMode));
-  formData.append('seed', String(seed));
   formData.append('visibility', visibility);
   formData.append('iconBackground', iconBackground);
   if (icon) {
@@ -704,7 +804,14 @@ export async function updateApp({
     formData.append('googleAnalyticsID', googleAnalyticsId);
   }
 
-  await authenticate(remote, 'apps:write', clientCredentials);
+  let authScope = 'apps:write';
+
+  if (resources) {
+    authScope += ' resources:write';
+  }
+
+  await authenticate(remote, authScope, clientCredentials);
+
   if (appLock) {
     logger.info(`Setting AppLock to ${appLock}`);
     try {
@@ -736,6 +843,15 @@ export async function updateApp({
     // After uploading the app, upload block styles and messages if they are available
     await traverseBlockThemes(path, data.id, remote, force);
     await uploadMessages(path, data.id, remote, force);
+
+    // After updating the app, publish seed resources and assets if they are available
+    if (assets && (data.locked !== 'fullLock' || force)) {
+      await publishSeedAssets(path, data, remote, assetsClonable);
+    }
+
+    if (resources && (data.locked !== 'fullLock' || force)) {
+      await publishSeedResources(path, data, remote);
+    }
   }
 
   const { host, protocol } = new URL(remote);
@@ -751,7 +867,6 @@ export async function updateApp({
  */
 export async function publishApp({
   assets,
-  assetsClonable,
   clientCredentials,
   context,
   dryRun,
@@ -779,10 +894,8 @@ export async function publishApp({
   const remote = appsembleContext.remote ?? options.remote;
   const organizationId = appsembleContext.organization ?? options.organization;
   const template = appsembleContext.template ?? options.template ?? false;
+  const assetsClonable = appsembleContext.assetsClonable ?? options.assetsClonable ?? false;
   const demoMode = appsembleContext.demoMode ?? options.demoMode ?? false;
-  // TODO: seed depends on demoMode, this is caused by bad database normalization.
-  // Consider using a property called `type` on the App model instead.
-  const seed = appsembleContext.seed ?? options.seed ?? options.demoMode ?? false;
   const visibility = appsembleContext.visibility ?? options.visibility;
   const iconBackground = appsembleContext.iconBackground ?? options.iconBackground;
   const icon = options.icon ?? appsembleContext.icon;
@@ -807,7 +920,6 @@ export async function publishApp({
   formData.append('OrganizationId', organizationId);
   formData.append('template', String(template));
   formData.append('demoMode', String(demoMode));
-  formData.append('seed', String(seed));
   formData.append('visibility', visibility);
   formData.append('iconBackground', iconBackground);
   formData.append('locked', appLock);
@@ -874,76 +986,17 @@ export async function publishApp({
   }
 
   if (file.isDirectory() && !dryRun) {
-    // After uploading the app, upload block styles and messages if they are available
+    // After uploading the app, upload block styles, messages if they are available
     await traverseBlockThemes(path, data.id, remote, false);
     await uploadMessages(path, data.id, remote, false);
 
-    if (assets && existsSync(join(path, 'assets'))) {
-      const assetsPath = join(path, 'assets');
-      const assetFiles = await readdir(assetsPath);
-      const normalizedPaths = assetFiles.map((assetFile) =>
-        normalizePath(join(assetsPath, assetFile)),
-      );
-      const files = await fg(normalizedPaths, { absolute: true, onlyFiles: true });
-      try {
-        logger.info(`Publishing ${files.length} asset(s)`);
-        for (const assetFilePath of files) {
-          await publishAsset({
-            name: parse(assetFilePath).name,
-            appId: data.id,
-            path: assetFilePath,
-            remote,
-            clonable: assetsClonable,
-          });
-        }
-      } catch (error: unknown) {
-        logger.error('Something went wrong when creating assets:');
-        logger.error(error);
-      }
+    // After uploading the app, publish seed resources and assets if they are available
+    if (assets) {
+      await publishSeedAssets(path, data, remote, assetsClonable);
     }
 
-    if (resources && existsSync(join(path, 'resources'))) {
-      const appDefinition = parseYaml(yaml, { maxAliasCount: 10_000 }) as AppDefinition;
-      const resourcePath = join(path, 'resources');
-      try {
-        const resourceFiles = await readdir(resourcePath, { withFileTypes: true });
-        const resourcesToPublish: ResourceToPublish[] = [];
-        const publishedResourcesIds: Record<string, number[]> = {};
-
-        for (const resource of resourceFiles) {
-          if (resource.isFile()) {
-            const { name } = parse(resource.name);
-            resourcesToPublish.push({
-              appId: data.id,
-              path: join(resourcePath, resource.name),
-              definition: appDefinition.resources[name],
-              type: name,
-            });
-          } else if (resource.isDirectory()) {
-            const subDirectoryResources = await readdir(join(resourcePath, resource.name), {
-              withFileTypes: true,
-            });
-
-            for (const subResource of subDirectoryResources.filter((s) => s.isFile())) {
-              resourcesToPublish.push({
-                appId: data.id,
-                path: join(resourcePath, resource.name, subResource.name),
-                definition: appDefinition.resources[resource.name],
-                type: resource.name,
-              });
-            }
-          }
-        }
-
-        await publishResourcesRecursively({
-          remote,
-          resourcesToPublish,
-          publishedResourcesIds,
-        });
-      } catch (error: unknown) {
-        logger.error('Something went wrong when creating resources:');
-        logger.error(error);
-      }
+    if (resources) {
+      await publishSeedResources(path, data, remote);
     }
   }
 
