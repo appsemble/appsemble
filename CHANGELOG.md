@@ -2,6 +2,31 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.26.0](https://gitlab.com/appsemble/appsemble/-/releases/0.26.0)] - 2024-03-11
+
+### Added
+
+- App: Added a help section for each select field in the demo login component.
+- App: Private and unlisted apps now include a `<meta name="robots" content="noindex">` tag to
+  prevent search engines from indexing them.
+- Cli: Add an option to include assets in the app export.
+- Server: App export and import can now include app assets if present.
+- Server: App export and import can now include the app README.md if present.
+- Server: App export and import can now include the app icon if present.
+- Studio: Add option to include assets in the app export and import.
+- Studio: Playground to test remappers on JSON input data.
+
+### Fixed
+
+- App: The `robots.txt` file now respects the app visibility settings for the app. This means that
+  if an app is not visible to a user, the `robots.txt` file will not allow search engines to index
+  the app.
+- Server: Allow using duplicate names in import app.
+- Server: Change `frame-src csp` settings wildcard directive.
+- Server: Fix resources saved as invalid JSON in the app export.
+- Server: Fixed duplicate reseeded ephemeral resources.
+- Webpack-config: Fix deprecation warning caused due to watch field.
+
 ## \[[0.25.2](https://gitlab.com/appsemble/appsemble/-/releases/0.25.2)] - 2024-02-27
 
 ### Changed

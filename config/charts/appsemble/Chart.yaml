@@ -1,7 +1,7 @@
 apiVersion: v2
 name: appsemble
-version: 0.25.2
-appVersion: 0.25.2
+version: 0.26.0
+appVersion: 0.26.0
 kubeVersion: '>=1.21.0'
 type: application
 description: The open source low-code app building platform
@@ -24,14 +24,38 @@ dependencies:
     condition: postgresql.enabled
 annotations:
   artifacthub.io/changes: >
-    - kind: changed
-      description: "App: Added an option to create an account from the demo login component."
-    - kind: changed
-      description: "Server: Accept an appRole in the demo-login tokenHandler endpoint."
-    - kind: changed
-      description: "Webpack-config: Enabled watch mode for blocks in development."
+    - kind: added
+      description: "App: Added a help section for each select field in the demo login
+        component."
+    - kind: added
+      description: 'App: Private and unlisted apps now include a <meta name="robots"
+        content="noindex"> tag to prevent search engines from indexing them.'
+    - kind: added
+      description: "Cli: Add an option to include assets in the app export."
+    - kind: added
+      description: "Server: App export and import can now include app assets if present."
+    - kind: added
+      description: "Server: App export and import can now include the app README.md if present."
+    - kind: added
+      description: "Server: App export and import can now include the app icon if present."
+    - kind: added
+      description: "Studio: Add option to include assets in the app export and import."
+    - kind: added
+      description: "Studio: Playground to test remappers on JSON input data."
     - kind: fixed
-      description: "Node-utils: Fixed the check for koa-dev-middleware."
+      description: "App: The robots.txt file now respects the app visibility settings
+        for the app. This means that if an app is not visible to a user, the
+        robots.txt file will not allow search engines to index the app."
+    - kind: fixed
+      description: "Server: Allow using duplicate names in import app."
+    - kind: fixed
+      description: "Server: Change frame-src csp settings wildcard directive."
+    - kind: fixed
+      description: "Server: Fix resources saved as invalid JSON in the app export."
+    - kind: fixed
+      description: "Server: Fixed duplicate reseeded ephemeral resources."
+    - kind: fixed
+      description: "Webpack-config: Fix deprecation warning caused due to watch field."
   artifacthub.io/license: LGPL-3.0-only
   artifacthub.io/links: |
     - name: Appsemble Studio
