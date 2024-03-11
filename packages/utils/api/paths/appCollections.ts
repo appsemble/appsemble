@@ -351,7 +351,7 @@ export const paths: OpenAPIV3.PathsObject = {
           description: 'The app was added to the app collection',
         },
       },
-      security: [{ studio: [] }],
+      security: [{ studio: [] }, { cli: ['apps:write'] }],
     },
   },
   '/api/appCollections/{appCollectionId}/apps/{appId}': {
