@@ -19,7 +19,9 @@ interface UpdateAppArguments extends BaseArguments {
   id: number;
   template: boolean;
   demoMode: boolean;
-  seed: boolean;
+  resources: boolean;
+  assets: boolean;
+  assetsClonable: boolean;
   force: boolean;
   visibility: AppVisibility;
   sentryDsn: string;
@@ -70,9 +72,22 @@ export function builder(yargs: Argv): Argv<any> {
       describe: 'Whether the app should be used in demo mode.',
       type: 'boolean',
     })
-    .option('seed', {
-      describe: 'Whether to enable seeding for an app or not.',
-      implies: ['demo-mode'],
+    .option('resources', {
+      describe:
+        'Whether the resources from the `resources` directory should replace the seed resources of the app being updated. The names of sub-directories are used as the name of the resource, otherwise the names of top level resource .json files are used instead.',
+      type: 'boolean',
+    })
+    .option('assets', {
+      describe:
+        'Whether the assets from the `assets` directory should replace the seed assets of the app being updated.',
+      type: 'boolean',
+      default: false,
+    })
+    .option('assets-clonable', {
+      describe: 'Whether published assets should be clonable. Ignored if assets equals false.',
+      type: 'boolean',
+      default: false,
+      implies: 'assets',
     })
     .option('force', {
       describe: 'Whether the lock property should be ignored.',

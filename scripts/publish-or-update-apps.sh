@@ -34,7 +34,7 @@ for app in $apps; do
   app_name="$(basename "$app")"
   context_id=$(yq -e ".context.$CONTEXT.id" "$app/.appsemblerc.yaml")
 
-  if [ -n "$context_id" ] && npm run appsemble -- -vv app update --force "$app"; then
+  if [ -n "$context_id" ] && npm run appsemble -- -vv app update --resources --assets --force "$app"; then
     echo "Successful update on app $app_name";
   else
     if [ -n "$context_id" ]; then
@@ -45,7 +45,7 @@ for app in $apps; do
 
     file_before="$(mktemp)"
     cp "$app/.appsemblerc.yaml" "$file_before"
-    npm run appsemble -- -vv app publish --modify-context "$app"
+    npm run appsemble -- -vv app publish --resources --assets --modify-context "$app"
     ANY_PUBLISHED="true"
     git diff --no-index --patch "$file_before" "$app/.appsemblerc.yaml" |
       # change the --- a to match the filename of +++ b

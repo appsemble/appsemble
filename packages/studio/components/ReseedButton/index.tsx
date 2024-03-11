@@ -47,7 +47,7 @@ export function ReseedButton({ app }: ReseedButtonProps): ReactNode {
 
   return (
     <>
-      <Button className="mb-3 ml-4" disabled={!app.seed} onClick={openReseedDialog}>
+      <Button className="mb-3 ml-4" onClick={openReseedDialog}>
         <FormattedMessage {...messages.reseed} />
       </Button>
       <ModalCard

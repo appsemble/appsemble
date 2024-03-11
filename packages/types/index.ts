@@ -2077,11 +2077,6 @@ export interface App {
    * Whether the app should be used in demo mode.
    */
   demoMode: boolean;
-
-  /**
-   * Whether the app should seed resources and assets in demo mode.
-   */
-  seed: boolean;
 }
 
 /**

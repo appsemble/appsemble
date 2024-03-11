@@ -1,5 +1,3 @@
-import { randomBytes } from 'node:crypto';
-
 import { assertKoaError, throwKoaError } from '@appsemble/node-utils';
 import { normalize, Permission } from '@appsemble/utils';
 import { type Context } from 'koa';
@@ -8,6 +6,7 @@ import webpush from 'web-push';
 import { parseDocument } from 'yaml';
 
 import { App, AppBlockStyle, AppMessages, AppSnapshot, Asset, Resource } from '../models/index.js';
+import { setAppPath } from '../utils/app.js';
 import { checkRole } from '../utils/checkRole.js';
 
 export async function getAppTemplates(ctx: Context): Promise<void> {
@@ -50,6 +49,7 @@ export async function createTemplateApp(ctx: Context): Promise<void> {
       'showAppDefinition',
       'template',
       'OrganizationId',
+      'demoMode',
     ],
     include: [
       { model: Resource, where: { clonable: true }, required: false },
@@ -78,6 +78,7 @@ export async function createTemplateApp(ctx: Context): Promise<void> {
         description,
         name: name || template.definition.name,
       },
+      demoMode: template.demoMode,
       visibility,
       vapidPublicKey: keys.publicKey,
       vapidPrivateKey: keys.privateKey,
@@ -85,34 +86,25 @@ export async function createTemplateApp(ctx: Context): Promise<void> {
       sharedStyle: template.sharedStyle,
       OrganizationId: organizationId,
       ...(resources && {
-        Resources: [].concat(template.Resources.map(({ data, type }) => ({ type, data }))),
+        Resources: [].concat(
+          template.Resources.map(({ data, seed, type }) => ({ type, data, seed })),
+        ),
       }),
       ...(assets && {
         Assets: [].concat(
-          template.Assets.map(({ data, filename, mime, name: assetName }) => ({
+          template.Assets.map(({ data, filename, mime, name: assetName, seed }) => ({
             mime,
             filename,
             data,
             name: assetName,
+            seed,
           })),
         ),
       }),
       AppMessages: [].concat(template.AppMessages),
     };
 
-    for (let i = 1; i < 11; i += 1) {
-      const p = i === 1 ? path : `${path}-${i}`;
-      const count = await App.count({ where: { path: p } });
-      if (count === 0) {
-        result.path = p;
-        break;
-      }
-    }
-
-    if (!result.path) {
-      // Fallback if a suitable ID could not be found after trying for a while
-      result.path = `${path}-${randomBytes(5).toString('hex')}`;
-    }
+    await setAppPath(result, path);
 
     for (const m of result.AppMessages) {
       delete m.messages?.app?.name;

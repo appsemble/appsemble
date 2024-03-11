@@ -12,5 +12,4 @@ npm run appsemble -- block create --organization appsemble --template preact --n
 npm run appsemble -- block create --organization appsemble --template mini-jsx --name template-mini-jsx --path blocks
 
 npm run appsemble -- -vv block publish 'blocks/*'
-npm run appsemble -- -vv app publish 'apps/*' --resources --modify-context
-npm run appsemble -- -vv asset publish --app apps/soundboard 'apps/soundboard/assets/*'
+npm run appsemble -- -vv app publish 'apps/*' --resources --assets --assets-clonable --modify-context

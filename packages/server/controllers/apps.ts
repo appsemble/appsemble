@@ -1,4 +1,3 @@
-import { randomBytes } from 'node:crypto';
 import { isDeepStrictEqual } from 'node:util';
 
 import {
@@ -46,7 +45,7 @@ import {
 } from '../models/index.js';
 import { getUserAppAccount } from '../options/getUserAppAccount.js';
 import { options } from '../options/options.js';
-import { applyAppMessages, compareApps, parseLanguage } from '../utils/app.js';
+import { applyAppMessages, compareApps, parseLanguage, setAppPath } from '../utils/app.js';
 import { argv } from '../utils/argv.js';
 import { blockVersionToJson, syncBlock } from '../utils/block.js';
 import { checkAppLock } from '../utils/checkAppLock.js';
@@ -57,24 +56,6 @@ import {
   processReferenceHooks,
   reseedResourcesRecursively,
 } from '../utils/resource.js';
-
-async function setAppPath(app: Partial<App>, path: string): Promise<void> {
-  for (let i = 1; i < 11; i += 1) {
-    const p = i === 1 ? path : `${path}-${i}`;
-    const count = await App.count({ where: { path: p } });
-    if (count === 0) {
-      Object.assign(app, {
-        path: p,
-      });
-      break;
-    }
-  }
-
-  if (!app.path) {
-    // Fallback if a suitable ID could not be found after trying for a while
-    Object.assign(app, { path: `${path}-${randomBytes(5).toString('hex')}` });
-  }
-}
 
 async function getBlockVersions(blocks: IdentifiableBlock[]): Promise<BlockManifest[]> {
   const uniqueBlocks = blocks.map(({ type, version }) => {
@@ -146,7 +127,6 @@ export async function createApp(ctx: Context): Promise<void> {
         longDescription,
         maskableIcon,
         screenshots,
-        seed,
         sentryDsn,
         sentryEnvironment,
         sharedStyle,
@@ -205,7 +185,6 @@ export async function createApp(ctx: Context): Promise<void> {
       vapidPublicKey: keys.publicKey,
       vapidPrivateKey: keys.privateKey,
       demoMode: Boolean(demoMode),
-      seed: Boolean(seed ?? Boolean(demoMode)),
       controllerCode,
       controllerImplementations,
     };
@@ -289,12 +268,6 @@ export async function getAppById(ctx: Context): Promise<void> {
   } = ctx;
   const { baseLanguage, language, query: languageQuery } = parseLanguage(ctx, ctx.query?.language);
 
-  const { demoMode } = (await App.findByPk(appId, { attributes: ['demoMode'] })) || {
-    demoMode: false,
-  };
-
-  const demoModeFilter = demoMode ? { seed: false } : {};
-
   const app = await App.findByPk(appId, {
     attributes: {
       include: [
@@ -307,14 +280,12 @@ export async function getAppById(ctx: Context): Promise<void> {
       {
         model: Resource,
         attributes: ['id', 'clonable'],
-        where: demoModeFilter,
         required: false,
         separate: true,
       },
       {
         model: Asset,
         attributes: ['id', 'clonable'],
-        where: demoModeFilter,
         required: false,
         separate: true,
       },
@@ -516,7 +487,6 @@ export async function patchApp(ctx: Context): Promise<void> {
         maskableIcon,
         path,
         screenshots,
-        seed,
         sentryDsn,
         sentryEnvironment,
         sharedStyle,
@@ -603,13 +573,6 @@ export async function patchApp(ctx: Context): Promise<void> {
 
     if (demoMode !== undefined) {
       result.demoMode = demoMode;
-      // TODO: seed depends on demoMode, this is caused by bad database normalization.
-      // Consider using a property called `type` on the App model instead.
-      result.seed = demoMode;
-    }
-
-    if (seed !== undefined) {
-      result.seed = seed;
     }
 
     if (domain !== undefined) {
@@ -1399,14 +1362,12 @@ export async function reseedDemoApp(ctx: Context): Promise<void> {
   } = ctx;
 
   const app = await App.findByPk(appId, {
-    attributes: ['demoMode', 'definition', 'seed'],
+    attributes: ['demoMode', 'definition'],
   });
 
   assertKoaError(!app, ctx, 404, 'App not found');
 
   assertKoaError(!app.demoMode, ctx, 400, 'App is not in demo mode');
-
-  assertKoaError(!app.seed, ctx, 400, 'Reseeding has been turned off for this app');
 
   logger.info('Cleaning up ephemeral assets.');
 
@@ -1428,7 +1389,6 @@ export async function reseedDemoApp(ctx: Context): Promise<void> {
         where: {
           id: appId,
           demoMode: true,
-          seed: true,
         },
         required: true,
       },

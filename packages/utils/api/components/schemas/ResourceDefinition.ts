@@ -76,10 +76,6 @@ Example: 1d 8h 30m
       description:
         'Whether the resource should be able to be transferred when cloning the app it belongs to',
     },
-    ephemeral: {
-      type: 'boolean',
-      description: 'Whether the resource should be cleaned up regularly.',
-    },
     schema: {
       $ref: '#/components/schemas/JSONSchemaRoot',
       description: 'JSON schema definitions that may be used by the app.',

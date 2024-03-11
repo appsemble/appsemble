@@ -13,6 +13,7 @@ interface PublishResourceArguments extends BaseArguments {
   appId: number;
   context: string;
   app: string;
+  seed: boolean;
 }
 
 export const command = 'publish <resource-name> <paths...>';
@@ -40,6 +41,10 @@ export function builder(yargs: Argv): Argv<any> {
     .option('context', {
       describe: 'If specified, use the specified context from .appsemblerc.yaml',
       demandOption: 'app',
+    })
+    .option('seed', {
+      describe: 'If true, published resources will be used as seed',
+      default: false,
     });
 }
 
@@ -51,6 +56,7 @@ export async function handler({
   paths,
   remote,
   resourceName,
+  seed,
 }: PublishResourceArguments): Promise<void> {
   const [resolvedAppId, resolvedRemote] = await resolveAppIdAndRemote(app, context, remote, appId);
   await authenticate(resolvedRemote, 'resources:write', clientCredentials);
@@ -70,8 +76,9 @@ export async function handler({
     await publishResource({
       type: resourceName,
       appId: resolvedAppId,
-      path,
       remote: resolvedRemote,
+      path,
+      seed,
     });
   }
 }

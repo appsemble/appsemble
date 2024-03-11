@@ -75,10 +75,6 @@ This doesn’t affect whether or not the app can be accessed on its own domain.
       type: 'boolean',
       description: 'Determines whether this app should be used in demo mode.',
     },
-    seed: {
-      type: 'boolean',
-      description: 'Determines whether this app should be seeded in demo mode.',
-    },
     longDescription: {
       type: 'string',
       description: `

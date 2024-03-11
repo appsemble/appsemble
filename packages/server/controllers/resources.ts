@@ -3,8 +3,10 @@ import {
   createCountResources,
   createCreateResource,
   createDeleteResource,
+  createDeleteSeedResources,
   createGetResourceById,
   createQueryResources,
+  createSeedResource,
   createUpdateResource,
   extractResourceBody,
   getResourceDefinition,
@@ -141,6 +143,10 @@ export async function getResourceSubscription(ctx: Context): Promise<void> {
 
   ctx.body = result;
 }
+
+export const seedResource = createSeedResource(options);
+
+export const deleteSeedResources = createDeleteSeedResources(options);
 
 export const createResource = createCreateResource(options);
 

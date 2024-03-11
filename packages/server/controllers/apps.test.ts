@@ -152,7 +152,6 @@ describe('queryApps', () => {
           "locked": "unlocked",
           "longDescription": null,
           "path": "test-app",
-          "seed": false,
           "sentryDsn": null,
           "sentryEnvironment": null,
           "showAppDefinition": false,
@@ -184,7 +183,6 @@ describe('queryApps', () => {
           "locked": "unlocked",
           "longDescription": null,
           "path": "another-app",
-          "seed": false,
           "sentryDsn": null,
           "sentryEnvironment": null,
           "showAppDefinition": false,
@@ -261,7 +259,6 @@ describe('queryApps', () => {
           "locked": "unlocked",
           "longDescription": null,
           "path": "test-app",
-          "seed": false,
           "sentryDsn": null,
           "sentryEnvironment": null,
           "showAppDefinition": false,
@@ -358,7 +355,6 @@ describe('queryApps', () => {
             "average": 4.5,
             "count": 2,
           },
-          "seed": false,
           "sentryDsn": null,
           "sentryEnvironment": null,
           "showAppDefinition": false,
@@ -394,7 +390,6 @@ describe('queryApps', () => {
             "average": 3,
             "count": 1,
           },
-          "seed": false,
           "sentryDsn": null,
           "sentryEnvironment": null,
           "showAppDefinition": false,
@@ -426,7 +421,6 @@ describe('queryApps', () => {
           "locked": "unlocked",
           "longDescription": null,
           "path": "another-app",
-          "seed": false,
           "sentryDsn": null,
           "sentryEnvironment": null,
           "showAppDefinition": false,
@@ -497,7 +491,6 @@ describe('getAppById', () => {
         "longDescription": null,
         "path": "test-app",
         "screenshotUrls": [],
-        "seed": false,
         "sentryDsn": null,
         "sentryEnvironment": null,
         "showAppDefinition": false,
@@ -579,7 +572,6 @@ describe('getAppById', () => {
         "longDescription": null,
         "path": "test-app",
         "screenshotUrls": [],
-        "seed": false,
         "sentryDsn": null,
         "sentryEnvironment": null,
         "showAppDefinition": false,
@@ -632,7 +624,6 @@ describe('getAppById', () => {
         "longDescription": null,
         "path": "test-app",
         "screenshotUrls": [],
-        "seed": false,
         "sentryDsn": null,
         "sentryEnvironment": null,
         "showAppDefinition": false,
@@ -688,7 +679,6 @@ describe('getAppById', () => {
         "longDescription": null,
         "path": "test-app",
         "screenshotUrls": [],
-        "seed": false,
         "sentryDsn": null,
         "sentryEnvironment": null,
         "showAppDefinition": false,
@@ -740,7 +730,6 @@ describe('getAppById', () => {
         "longDescription": null,
         "path": "test-app",
         "screenshotUrls": [],
-        "seed": false,
         "sentryDsn": null,
         "sentryEnvironment": null,
         "showAppDefinition": false,
@@ -792,7 +781,6 @@ describe('getAppById', () => {
         "longDescription": null,
         "path": "test-app",
         "screenshotUrls": [],
-        "seed": false,
         "sentryDsn": null,
         "sentryEnvironment": null,
         "showAppDefinition": true,
@@ -847,7 +835,6 @@ describe('getAppById', () => {
         "longDescription": null,
         "path": "test-app",
         "screenshotUrls": [],
-        "seed": false,
         "sentryDsn": null,
         "sentryEnvironment": null,
         "showAppDefinition": true,
@@ -930,7 +917,6 @@ describe('queryMyApps', () => {
           "locked": "unlocked",
           "longDescription": null,
           "path": "test-app",
-          "seed": false,
           "sentryDsn": null,
           "sentryEnvironment": null,
           "showAppDefinition": false,
@@ -969,7 +955,6 @@ describe('queryMyApps', () => {
           "locked": "unlocked",
           "longDescription": null,
           "path": "test-app",
-          "seed": false,
           "sentryDsn": null,
           "sentryEnvironment": null,
           "showAppDefinition": false,
@@ -1001,7 +986,6 @@ describe('queryMyApps', () => {
           "locked": "unlocked",
           "longDescription": null,
           "path": "test-app-b",
-          "seed": false,
           "sentryDsn": null,
           "sentryEnvironment": null,
           "showAppDefinition": false,
@@ -1074,7 +1058,6 @@ describe('createApp', () => {
         "longDescription": null,
         "path": "test-app",
         "screenshotUrls": [],
-        "seed": false,
         "sentryDsn": null,
         "sentryEnvironment": null,
         "showAppDefinition": true,
@@ -1158,7 +1141,6 @@ describe('createApp', () => {
         "screenshotUrls": [
           "/api/apps/1/screenshots/1",
         ],
-        "seed": false,
         "sentryDsn": null,
         "sentryEnvironment": null,
         "showAppDefinition": true,
@@ -1254,7 +1236,6 @@ describe('createApp', () => {
         "longDescription": null,
         "path": "test-app",
         "screenshotUrls": [],
-        "seed": false,
         "sentryDsn": null,
         "sentryEnvironment": null,
         "showAppDefinition": true,
@@ -1348,9 +1329,6 @@ describe('createApp', () => {
                   },
                   "type": "array",
                 },
-                "seed": {
-                  "$ref": "#/components/schemas/App/properties/seed",
-                },
                 "sharedStyle": {
                   "description": "The custom style to apply to all parts of app.",
                   "type": "string",
@@ -1434,9 +1412,6 @@ describe('createApp', () => {
                     "type": "string",
                   },
                   "type": "array",
-                },
-                "seed": {
-                  "$ref": "#/components/schemas/App/properties/seed",
                 },
                 "sharedStyle": {
                   "description": "The custom style to apply to all parts of app.",
@@ -1556,9 +1531,6 @@ describe('createApp', () => {
                     "type": "string",
                   },
                   "type": "array",
-                },
-                "seed": {
-                  "$ref": "#/components/schemas/App/properties/seed",
                 },
                 "sharedStyle": {
                   "description": "The custom style to apply to all parts of app.",
@@ -1837,7 +1809,6 @@ describe('createApp', () => {
         "longDescription": null,
         "path": "test-app-2",
         "screenshotUrls": [],
-        "seed": false,
         "sentryDsn": null,
         "sentryEnvironment": null,
         "showAppDefinition": true,
@@ -1926,7 +1897,6 @@ describe('createApp', () => {
         "longDescription": null,
         "path": StringMatching /test-app-\\(\\\\w\\)\\{10\\}/,
         "screenshotUrls": [],
-        "seed": false,
         "sentryDsn": null,
         "sentryEnvironment": null,
         "showAppDefinition": true,
@@ -2009,7 +1979,6 @@ describe('createApp', () => {
         "longDescription": null,
         "path": "foobar",
         "screenshotUrls": [],
-        "seed": false,
         "sentryDsn": null,
         "sentryEnvironment": null,
         "sharedStyle": ":root { --primary-color: purple; }",
@@ -2129,9 +2098,6 @@ describe('createApp', () => {
                   },
                   "type": "array",
                 },
-                "seed": {
-                  "$ref": "#/components/schemas/App/properties/seed",
-                },
                 "sharedStyle": {
                   "description": "The custom style to apply to all parts of app.",
                   "type": "string",
@@ -2248,9 +2214,6 @@ describe('createApp', () => {
                     "type": "string",
                   },
                   "type": "array",
-                },
-                "seed": {
-                  "$ref": "#/components/schemas/App/properties/seed",
                 },
                 "sharedStyle": {
                   "description": "The custom style to apply to all parts of app.",
@@ -2547,7 +2510,6 @@ describe('createApp', () => {
           "longDescription": null,
           "path": "test-app",
           "screenshotUrls": [],
-          "seed": false,
           "sentryDsn": null,
           "sentryEnvironment": null,
           "showAppDefinition": true,
@@ -2887,7 +2849,6 @@ describe('patchApp', () => {
         "longDescription": null,
         "path": "test-app",
         "screenshotUrls": [],
-        "seed": false,
         "sentryDsn": null,
         "sentryEnvironment": null,
         "showAppDefinition": false,
@@ -2960,7 +2921,6 @@ describe('patchApp', () => {
         "longDescription": null,
         "path": "test-app",
         "screenshotUrls": [],
-        "seed": false,
         "sentryDsn": null,
         "sentryEnvironment": null,
         "showAppDefinition": false,
@@ -3110,7 +3070,6 @@ describe('patchApp', () => {
         "longDescription": null,
         "path": "bar",
         "screenshotUrls": [],
-        "seed": false,
         "sentryDsn": null,
         "sentryEnvironment": null,
         "showAppDefinition": false,
@@ -3168,7 +3127,6 @@ describe('patchApp', () => {
         "longDescription": null,
         "path": "foo",
         "screenshotUrls": [],
-        "seed": false,
         "sentryDsn": null,
         "sentryEnvironment": null,
         "showAppDefinition": false,
@@ -3226,7 +3184,6 @@ describe('patchApp', () => {
         "longDescription": null,
         "path": "foo",
         "screenshotUrls": [],
-        "seed": false,
         "sentryDsn": null,
         "sentryEnvironment": null,
         "showAppDefinition": false,
@@ -3289,7 +3246,6 @@ describe('patchApp', () => {
         "longDescription": null,
         "path": "foo",
         "screenshotUrls": [],
-        "seed": false,
         "sentryDsn": null,
         "sentryEnvironment": null,
         "showAppDefinition": false,
@@ -3413,9 +3369,6 @@ describe('patchApp', () => {
                   },
                   "type": "array",
                 },
-                "seed": {
-                  "$ref": "#/components/schemas/App/properties/seed",
-                },
                 "sharedStyle": {
                   "description": "The custom style to apply to all parts of app.",
                   "type": "string",
@@ -3499,9 +3452,6 @@ describe('patchApp', () => {
                     "type": "string",
                   },
                   "type": "array",
-                },
-                "seed": {
-                  "$ref": "#/components/schemas/App/properties/seed",
                 },
                 "sharedStyle": {
                   "description": "The custom style to apply to all parts of app.",
@@ -3918,7 +3868,6 @@ describe('patchApp', () => {
         "longDescription": null,
         "path": "bar",
         "screenshotUrls": [],
-        "seed": false,
         "sentryDsn": null,
         "sentryEnvironment": null,
         "sharedStyle": "body { color: blue; }",
@@ -4113,7 +4062,6 @@ describe('patchApp', () => {
         "longDescription": null,
         "path": "bar",
         "screenshotUrls": [],
-        "seed": true,
         "sentryDsn": null,
         "sentryEnvironment": null,
         "showAppDefinition": false,
@@ -4160,7 +4108,6 @@ describe('patchApp', () => {
         "longDescription": null,
         "path": "bar",
         "screenshotUrls": [],
-        "seed": false,
         "sentryDsn": null,
         "sentryEnvironment": null,
         "showAppDefinition": false,
@@ -4217,7 +4164,6 @@ describe('patchApp', () => {
         "path": "bar",
         "rating": undefined,
         "screenshotUrls": undefined,
-        "seed": false,
         "sentryDsn": null,
         "sentryEnvironment": null,
         "sharedStyle": undefined,
@@ -4264,7 +4210,6 @@ describe('patchApp', () => {
         "longDescription": null,
         "path": "bar",
         "screenshotUrls": [],
-        "seed": true,
         "sentryDsn": null,
         "sentryEnvironment": null,
         "showAppDefinition": false,
@@ -4308,7 +4253,6 @@ describe('patchApp', () => {
         "longDescription": null,
         "path": "bar",
         "screenshotUrls": [],
-        "seed": false,
         "sentryDsn": null,
         "sentryEnvironment": null,
         "showAppDefinition": false,
@@ -5751,7 +5695,6 @@ describe('importApp', () => {
         "locked": "unlocked",
         "longDescription": "# Test App",
         "path": "test-app",
-        "seed": false,
         "sentryDsn": null,
         "sentryEnvironment": null,
         "showAppDefinition": true,
@@ -5855,7 +5798,6 @@ describe('importApp', () => {
         "locked": "unlocked",
         "longDescription": null,
         "path": "test-app-2",
-        "seed": false,
         "sentryDsn": null,
         "sentryEnvironment": null,
         "showAppDefinition": true,
@@ -6230,36 +6172,10 @@ describe('reseedDemoApp', () => {
     `);
   });
 
-  it('should throw when seeding is off', async () => {
-    authorizeStudio();
-    const { id } = await App.create({
-      demoMode: true,
-      seed: false,
-      definition: { name: 'Test App', defaultPage: 'Test Page' },
-      vapidPublicKey: 'a',
-      vapidPrivateKey: 'b',
-      OrganizationId: organization.id,
-    });
-
-    const response = await request.post(`/api/apps/${id}/reseed`);
-
-    expect(response).toMatchInlineSnapshot(`
-      HTTP/1.1 400 Bad Request
-      Content-Type: application/json; charset=utf-8
-
-      {
-        "error": "Bad Request",
-        "message": "Reseeding has been turned off for this app",
-        "statusCode": 400,
-      }
-    `);
-  });
-
   it('should reseed resources and assets with undefined user properties', async () => {
     authorizeStudio();
     const { id: appId } = await App.create({
       demoMode: true,
-      seed: true,
       definition: { name: 'Test App', defaultPage: 'Test Page' },
       vapidPublicKey: 'a',
       vapidPrivateKey: 'b',
@@ -6402,7 +6318,6 @@ describe('reseedDemoApp', () => {
     authorizeStudio();
     const { id: appId } = await App.create({
       demoMode: true,
-      seed: true,
       definition: {
         name: 'Test App',
         defaultPage: 'Test Page',
@@ -6656,7 +6571,6 @@ describe('reseedDemoApp', () => {
     authorizeStudio();
     const { id: appId } = await App.create({
       demoMode: true,
-      seed: true,
       definition: {
         name: 'Test App',
         defaultPage: 'Test Page',

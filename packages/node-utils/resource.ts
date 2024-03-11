@@ -176,7 +176,6 @@ export function processResourceBody(
         ],
       },
       $clonable: { type: 'boolean' },
-      $ephemeral: { type: 'boolean' },
       ...Object.fromEntries(
         Object.values(definition.references ?? {}).map((reference) => [
           `$${reference.resource}`,

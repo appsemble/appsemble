@@ -48,6 +48,11 @@ interface PublishResourceParams {
   remote: string;
 
   /**
+   * Whether the published resource should be used as seed.
+   */
+  seed: boolean;
+
+  /**
    * The definition of the resource.
    */
   definition?: ResourceDefinition;
@@ -72,6 +77,11 @@ interface PublishResourcesRecursivelyParams {
   remote: string;
 
   /**
+   * Whether the published resources should be used as seed.
+   */
+  seed: boolean;
+
+  /**
    * All resources that need to be published.
    */
   resourcesToPublish: ResourceToPublish[];
@@ -88,6 +98,7 @@ export async function publishResource({
   path,
   publishedResourcesIds = {},
   remote,
+  seed,
   type,
 }: PublishResourceParams): Promise<number[]> {
   const csv = path.endsWith('.csv');
@@ -108,19 +119,16 @@ export async function publishResource({
   logger.info(`Publishing resource(s) from ${path}`);
 
   let data;
+  const endpoint = `/api/apps/${appId}/${seed ? 'seed-' : ''}resources/${type}`;
   if (csv) {
-    const response = await axios.post<Resource | Resource[]>(
-      `/api/apps/${appId}/resources/${type}`,
-      resources,
-      {
-        baseURL: remote,
-        headers: { 'content-type': 'text/csv' },
-      },
-    );
+    const response = await axios.post<Resource | Resource[]>(endpoint, resources, {
+      baseURL: remote,
+      headers: { 'content-type': 'text/csv' },
+    });
     data = response.data;
   } else {
     const response = await axios.post<Resource | Resource[]>(
-      `/api/apps/${appId}/resources/${type}`,
+      endpoint,
       (resources as Resource[]).map((resource) => {
         const resourceWithReferences = { ...resource };
         for (const [referencedProperty, resourceReference] of Object.entries(
@@ -155,6 +163,7 @@ export async function publishResourcesRecursively({
   publishedResourcesIds,
   remote,
   resourcesToPublish,
+  seed,
 }: PublishResourcesRecursivelyParams): Promise<Record<string, number[]>> {
   let updatedPublishedResourcesIds: Record<string, number[]> = { ...publishedResourcesIds };
   for (const resourceToPublish of resourcesToPublish) {
@@ -173,9 +182,10 @@ export async function publishResourcesRecursively({
           !updatedPublishedResourcesIds[referencedResourceType]
         ) {
           const referencedPublishedResourcesIds = await publishResourcesRecursively({
-            remote,
             resourcesToPublish: referencedResourcesToPublish,
             publishedResourcesIds: updatedPublishedResourcesIds,
+            remote,
+            seed,
           });
 
           updatedPublishedResourcesIds = {
@@ -191,6 +201,7 @@ export async function publishResourcesRecursively({
         ...resourceToPublish,
         publishedResourcesIds: updatedPublishedResourcesIds,
         remote,
+        seed,
       });
     }
   }

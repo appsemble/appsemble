@@ -33,62 +33,6 @@ export async function handler(): Promise<void> {
     handleDBError(error as Error);
   }
 
-  const demoSeedAssetsToDestroy = await Asset.findAll({
-    attributes: ['id'],
-    include: [
-      {
-        model: App,
-        attributes: ['id'],
-        where: {
-          demoMode: true,
-          seed: false,
-        },
-        required: true,
-      },
-    ],
-    where: {
-      seed: true,
-    },
-  });
-
-  logger.info('Cleaning up seed assets from demo apps with seeding turned off.');
-
-  const demoSeedAssetsDeletionResult = await Asset.destroy({
-    where: {
-      id: { [Op.in]: demoSeedAssetsToDestroy.map((asset) => asset.id) },
-    },
-  });
-
-  logger.info(`Removed ${demoSeedAssetsDeletionResult} seed assets.`);
-
-  const demoSeedResourcesToDestroy = await Resource.findAll({
-    attributes: ['id'],
-    include: [
-      {
-        model: App,
-        attributes: ['id'],
-        where: {
-          demoMode: true,
-          seed: false,
-        },
-        required: true,
-      },
-    ],
-    where: {
-      seed: true,
-    },
-  });
-
-  logger.info('Cleaning up seed resources from demo apps with seeding turned off');
-
-  const demoSeedResourcesDeletionResult = await Resource.destroy({
-    where: {
-      id: { [Op.in]: demoSeedResourcesToDestroy.map((resource) => resource.id) },
-    },
-  });
-
-  logger.info(`Removed ${demoSeedResourcesDeletionResult} seed resources.`);
-
   const demoAssetsToDestroy = await Asset.findAll({
     attributes: ['id'],
     include: [
@@ -124,7 +68,6 @@ export async function handler(): Promise<void> {
         attributes: ['id'],
         where: {
           demoMode: true,
-          seed: true,
         },
         required: true,
       },
@@ -184,7 +127,6 @@ export async function handler(): Promise<void> {
         attributes: ['id', 'definition'],
         where: {
           demoMode: true,
-          seed: true,
         },
         required: true,
       },

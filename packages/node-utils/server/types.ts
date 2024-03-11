@@ -151,10 +151,6 @@ export interface GetAppSubEntityParams {
   app: App;
 }
 
-export interface CheckSeededResourcesParams extends GetAppSubEntityParams {
-  resourceType: string;
-}
-
 export interface GetAppMessagesParams extends GetAppSubEntityParams {
   language?: string;
   merge?: string[] | string;
@@ -326,7 +322,6 @@ export interface DeleteAppResourceParams extends GetAppSubEntityParams {
   id: number | string;
   type: string;
   whereOptions?: WhereOptions;
-  action: ResourceAction;
   options: Options;
 }
 
@@ -447,5 +442,4 @@ export interface Options {
   deleteAppAsset: (params: DeleteAppAssetParams) => Promise<number>;
   email: (params: EmailParams) => Promise<void>;
   sendNotifications: (params: SendNotificationsParams) => Promise<void>;
-  checkSeededResources: (params: CheckSeededResourcesParams) => Promise<boolean>;
 }

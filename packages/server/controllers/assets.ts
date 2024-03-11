@@ -129,62 +129,23 @@ export async function createAsset(ctx: Context): Promise<void> {
     user,
   } = ctx;
 
-  const app = await App.findByPk(appId, { attributes: ['id', 'demoMode', 'seed'] });
+  const app = await App.findByPk(appId, { attributes: ['id', 'demoMode'] });
   const appMember = await getUserAppAccount(appId, user?.id);
 
   assertKoaError(!app, ctx, 404, 'App not found');
 
-  const seededAssets = await Asset.findAll({
-    attributes: ['id'],
-    where: {
-      AppId: app.id,
-      data: contents,
-      ...(filename ? { filename } : {}),
-      ...(mime ? { mime } : {}),
-      ...(name ? { name } : {}),
-      seed: true,
-    },
-  });
-
   let asset: Asset;
   try {
-    if (app.demoMode) {
-      if (seededAssets.length === 0 && app.seed) {
-        await Asset.create({
-          AppId: appId,
-          data: contents,
-          filename,
-          mime,
-          name,
-          AppMemberId: appMember?.id,
-          seed: true,
-          ephemeral: false,
-          clonable,
-        });
-      }
-
-      asset = await Asset.create({
-        AppId: appId,
-        data: contents,
-        filename,
-        mime,
-        name,
-        AppMemberId: appMember?.id,
-        seed: false,
-        ephemeral: true,
-        clonable: false,
-      });
-    } else {
-      asset = await Asset.create({
-        AppId: appId,
-        data: contents,
-        filename,
-        mime,
-        name,
-        AppMemberId: appMember?.id,
-        clonable,
-      });
-    }
+    asset = await Asset.create({
+      AppId: appId,
+      data: contents,
+      filename,
+      mime,
+      name,
+      AppMemberId: appMember?.id,
+      ephemeral: app.demoMode,
+      clonable,
+    });
   } catch (error: unknown) {
     if (error instanceof UniqueConstraintError) {
       throwKoaError(ctx, 409, `An asset named ${name} already exists`);
@@ -241,6 +202,86 @@ export async function deleteAssets(ctx: Context): Promise<void> {
     where: { id: body },
     ...(app.demoMode ? { seed: false, ephemeral: true } : {}),
   });
+
+  ctx.status = 204;
+}
+
+export async function seedAsset(ctx: Context): Promise<void> {
+  const {
+    pathParams: { appId },
+    request: {
+      body: {
+        clonable,
+        file: { contents, filename, mime },
+        name,
+      },
+    },
+    user,
+  } = ctx;
+
+  const app = await App.findByPk(appId, { attributes: ['id', 'demoMode'] });
+  const appMember = await getUserAppAccount(appId, user?.id);
+
+  assertKoaError(!app, ctx, 404, 'App not found');
+
+  let asset: Asset;
+  try {
+    asset = await Asset.create({
+      AppId: appId,
+      data: contents,
+      filename,
+      mime,
+      name,
+      AppMemberId: appMember?.id,
+      seed: true,
+      ephemeral: false,
+      clonable,
+    });
+
+    if (app.demoMode) {
+      asset = await Asset.create({
+        AppId: appId,
+        data: contents,
+        filename,
+        mime,
+        name,
+        AppMemberId: appMember?.id,
+        seed: false,
+        ephemeral: true,
+        clonable: false,
+      });
+    }
+  } catch (error: unknown) {
+    if (error instanceof UniqueConstraintError) {
+      throwKoaError(ctx, 409, `An asset named ${name} already exists`);
+    }
+    throw error;
+  }
+
+  ctx.status = 201;
+  ctx.body = { id: asset.id, mime, filename, name };
+}
+
+export async function deleteSeedAssets(ctx: Context): Promise<void> {
+  const {
+    pathParams: { appId },
+  } = ctx;
+
+  const app = await App.findByPk(appId, { attributes: ['id', 'demoMode'] });
+
+  assertKoaError(!app, ctx, 404, 'App not found');
+
+  const seededAssets = await Asset.findAll({
+    attributes: ['id'],
+    where: {
+      AppId: app.id,
+      [Op.or]: [{ seed: true }, { ephemeral: true }],
+    },
+  });
+
+  for (const seededAsset of seededAssets) {
+    await seededAsset.destroy();
+  }
 
   ctx.status = 204;
 }
