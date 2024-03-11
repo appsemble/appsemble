@@ -35,7 +35,14 @@ export function builder(yargs: Argv): Argv<any> {
 }
 
 export async function handler(args: ExportAppArgs): Promise<void> {
-  const { assets, clientCredentials, id: appId, path: outputDirectory, remote, resources } = args;
+  const {
+    assets = false,
+    clientCredentials,
+    id: appId,
+    path: outputDirectory,
+    remote,
+    resources = false,
+  } = args;
   const defaultOutputDirectory = join(process.cwd(), 'apps');
 
   await authenticate(remote, 'apps:export', clientCredentials);
