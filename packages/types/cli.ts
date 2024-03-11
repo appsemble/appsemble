@@ -69,6 +69,11 @@ export interface AppsembleContext {
    * Set the value of AppLock for your app.
    */
   appLock?: AppLock;
+
+  /**
+   * A list of collections the app needs to be added to
+   */
+  collections?: string[];
 }
 
 export interface AppsembleRC {

@@ -1,9 +1,10 @@
 import { createReadStream, createWriteStream, existsSync, type ReadStream } from 'node:fs';
-import { mkdir, readdir, readFile, stat } from 'node:fs/promises';
-import { basename, join, parse, relative, resolve } from 'node:path';
+import { mkdir, readdir, readFile, rm, stat } from 'node:fs/promises';
+import { basename, dirname, join, parse, relative, resolve } from 'node:path';
 import { inspect } from 'node:util';
 
 import {
+  applyAppVariant,
   AppsembleError,
   authenticate,
   logger,
@@ -745,11 +746,19 @@ export async function updateApp({
   const formData = new FormData();
   let appsembleContext: AppsembleContext;
 
+  let appVariantPath = path;
+  if (existsSync(join(path, 'variants', context))) {
+    await applyAppVariant(path, context);
+    appVariantPath = join(dirname(path), `${basename(path)}-${context}`);
+  } else {
+    logger.warn(`App variant ${context} is not defined. Using default app.`);
+  }
+
   if (file.isFile()) {
-    const [, data] = await readData(path);
+    const [, data] = await readData(appVariantPath);
     formData.append('yaml', data);
   } else {
-    [appsembleContext] = await traverseAppDirectory(path, context, formData);
+    [appsembleContext] = await traverseAppDirectory(appVariantPath, context, formData);
   }
 
   const remote = appsembleContext.remote ?? options.remote;
@@ -841,16 +850,16 @@ export async function updateApp({
 
   if (file.isDirectory()) {
     // After uploading the app, upload block styles and messages if they are available
-    await traverseBlockThemes(path, data.id, remote, force);
-    await uploadMessages(path, data.id, remote, force);
+    await traverseBlockThemes(appVariantPath, data.id, remote, force);
+    await uploadMessages(appVariantPath, data.id, remote, force);
 
     // After updating the app, publish seed resources and assets if they are available
     if (assets && (data.locked !== 'fullLock' || force)) {
-      await publishSeedAssets(path, data, remote, assetsClonable);
+      await publishSeedAssets(appVariantPath, data, remote, assetsClonable);
     }
 
     if (resources && (data.locked !== 'fullLock' || force)) {
-      await publishSeedResources(path, data, remote);
+      await publishSeedResources(appVariantPath, data, remote);
     }
   }
 
@@ -858,6 +867,11 @@ export async function updateApp({
   logger.info(`Successfully updated app ${data.definition.name}! 🙌`);
   logger.info(`App URL: ${protocol}//${data.path}.${data.OrganizationId}.${host}`);
   logger.info(`App store page: ${new URL(`/apps/${data.id}`, remote)}`);
+
+  if (appVariantPath !== path) {
+    await rm(appVariantPath, { recursive: true });
+    logger.info(`Removed ${appVariantPath}`);
+  }
 }
 
 /**
@@ -882,13 +896,21 @@ export async function publishApp({
   let yaml: string;
   let filename = relative(process.cwd(), path);
 
+  let appVariantPath = path;
+  if (existsSync(join(path, 'variants', context))) {
+    await applyAppVariant(path, context);
+    appVariantPath = join(dirname(path), `${basename(path)}-${context}`);
+  } else {
+    logger.warn(`App variant ${context} is not defined. Using default app.`);
+  }
+
   if (file.isFile()) {
     // Assuming file is App YAML
-    const [, data] = await readData(path);
+    const [, data] = await readData(appVariantPath);
     yaml = data;
     formData.append('yaml', data);
   } else {
-    [appsembleContext, rc, yaml] = await traverseAppDirectory(path, context, formData);
+    [appsembleContext, rc, yaml] = await traverseAppDirectory(appVariantPath, context, formData);
     filename = join(filename, 'app-definition.yaml');
   }
   const remote = appsembleContext.remote ?? options.remote;
@@ -987,22 +1009,22 @@ export async function publishApp({
 
   if (file.isDirectory() && !dryRun) {
     // After uploading the app, upload block styles, messages if they are available
-    await traverseBlockThemes(path, data.id, remote, false);
-    await uploadMessages(path, data.id, remote, false);
+    await traverseBlockThemes(appVariantPath, data.id, remote, false);
+    await uploadMessages(appVariantPath, data.id, remote, false);
 
     // After uploading the app, publish seed resources and assets if they are available
     if (assets) {
-      await publishSeedAssets(path, data, remote, assetsClonable);
+      await publishSeedAssets(appVariantPath, data, remote, assetsClonable);
     }
 
     if (resources) {
-      await publishSeedResources(path, data, remote);
+      await publishSeedResources(appVariantPath, data, remote);
     }
   }
 
   if (modifyContext && appsembleContext && context && !dryRun) {
     rc.context[context].id = data.id;
-    await writeData(join(path, '.appsemblerc.yaml'), rc, { sort: false });
+    await writeData(join(appVariantPath, '.appsemblerc.yaml'), rc, { sort: false });
 
     logger.info(`Updated .appsemblerc: Set context.${context}.id to ${data.id}`);
   }
@@ -1011,6 +1033,29 @@ export async function publishApp({
   logger.info(`Successfully published app ${data.definition.name}! 🙌`);
   logger.info(`App URL: ${protocol}//${data.path}.${data.OrganizationId}.${host}`);
   logger.info(`App store page: ${new URL(`/apps/${data.id}`, remote)}`);
+
+  const rcCollections = rc.context[context].collections;
+  if (Array.isArray(rcCollections)) {
+    for (const collectionId of rcCollections) {
+      await axios.post<App>(
+        `/api/appCollections/${collectionId}/apps`,
+        { AppId: data.id },
+        {
+          baseURL: remote,
+        },
+      );
+      logger.info(`Successfully added app to collection ${collectionId}`);
+    }
+  }
+
+  if (appVariantPath !== path) {
+    const [defaultAppRc] = await readData<AppsembleRC>(join(path, '.appsemblerc.yaml'));
+    defaultAppRc.context[context] = rc.context[context];
+
+    await writeData(join(path, '.appsemblerc.yaml'), defaultAppRc, { sort: false });
+    await rm(appVariantPath, { recursive: true });
+    logger.info(`Removed ${appVariantPath}`);
+  }
 }
 
 /**
