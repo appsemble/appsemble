@@ -1,7 +1,7 @@
 apiVersion: v2
 name: appsemble
-version: 0.26.0
-appVersion: 0.26.0
+version: 0.27.0
+appVersion: 0.27.0
 kubeVersion: '>=1.21.0'
 type: application
 description: The open source low-code app building platform
@@ -25,37 +25,52 @@ dependencies:
 annotations:
   artifacthub.io/changes: >
     - kind: added
-      description: "App: Added a help section for each select field in the demo login
-        component."
+      description: "App: Translate role descriptions in demo app login."
     - kind: added
-      description: 'App: Private and unlisted apps now include a <meta name="robots"
-        content="noindex"> tag to prevent search engines from indexing them.'
+      description: "Cli: Add app to collections, listed in .appsemblerc."
     - kind: added
-      description: "Cli: Add an option to include assets in the app export."
+      description: "Cli: Added --resources, --assets and --assets-clonable flags to
+        appsemble app update command."
     - kind: added
-      description: "Server: App export and import can now include app assets if present."
+      description: "Cli: Added an option in the appsemble asset publish command
+        whether the asset should be used as seed."
     - kind: added
-      description: "Server: App export and import can now include the app README.md if present."
+      description: "Cli: Added an option in the appsemble resource publish command
+        whether the resource should be used as seed."
     - kind: added
-      description: "Server: App export and import can now include the app icon if present."
+      description: "Cli: Apply app variant on app publish."
     - kind: added
-      description: "Studio: Add option to include assets in the app export and import."
+      description: "Cli: Support publishing resources and assets with the appsemble
+        app update command."
     - kind: added
-      description: "Studio: Playground to test remappers on JSON input data."
+      description: "Node-utils: Add a script for applying app variants."
+    - kind: added
+      description: "Node-utils: Add patch scripts for styles, messages and app-definition."
+    - kind: added
+      description: "Server: Added an endpoint for deleting seed assets from an app."
+    - kind: added
+      description: "Server: Added an endpoint for seeding assets."
+    - kind: added
+      description: "Server: Added an endpoint for seeding resources."
+    - kind: added
+      description: "Studio: Add docs for local development and setup."
+    - kind: added
+      description: "Types: Added the assetsClonable option to the .appsemblerc file."
+    - kind: added
+      description: "Types: Support listing collections in the .appsemblerc file."
+    - kind: added
+      description: "Utils: Allow adding apps to collections from the CLI."
+    - kind: removed
+      description: "Server: Removed cleanup logic for seed resources and assets."
+    - kind: removed
+      description: "Server: Removed the seed column from the App model."
+    - kind: removed
+      description: "Types: Removed the seed field in the App interface."
+    - kind: removed
+      description: "Utils: Removed the $ephemeral field from the ResourceDefinition."
     - kind: fixed
-      description: "App: The robots.txt file now respects the app visibility settings
-        for the app. This means that if an app is not visible to a user, the
-        robots.txt file will not allow search engines to index the app."
-    - kind: fixed
-      description: "Server: Allow using duplicate names in import app."
-    - kind: fixed
-      description: "Server: Change frame-src csp settings wildcard directive."
-    - kind: fixed
-      description: "Server: Fix resources saved as invalid JSON in the app export."
-    - kind: fixed
-      description: "Server: Fixed duplicate reseeded ephemeral resources."
-    - kind: fixed
-      description: "Webpack-config: Fix deprecation warning caused due to watch field."
+      description: "Cli: Set the default value of the --assets-clonable tag to false
+        in the appsemble app publish and appsemble app update commands."
   artifacthub.io/license: LGPL-3.0-only
   artifacthub.io/links: |
     - name: Appsemble Studio

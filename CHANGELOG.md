@@ -2,6 +2,42 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.27.0](https://gitlab.com/appsemble/appsemble/-/releases/0.27.0)] - 2024-03-12
+
+### Added
+
+- App: Translate role descriptions in demo app login.
+- Cli: Add app to collections, listed in .appsemblerc.
+- Cli: Added `--resources`, `--assets` and `--assets-clonable` flags to `appsemble app update`
+  command.
+- Cli: Added an option in the `appsemble asset publish` command whether the asset should be used as
+  seed.
+- Cli: Added an option in the `appsemble resource publish` command whether the resource should be
+  used as seed.
+- Cli: Apply app variant on app publish.
+- Cli: Support publishing resources and assets with the `appsemble app update` command.
+- Node-utils: Add a script for applying app variants.
+- Node-utils: Add patch scripts for styles, messages and app-definition.
+- Server: Added an endpoint for deleting seed assets from an app.
+- Server: Added an endpoint for seeding assets.
+- Server: Added an endpoint for seeding resources.
+- Studio: Add docs for local development and setup.
+- Types: Added the `assetsClonable` option to the `.appsemblerc` file.
+- Types: Support listing collections in the `.appsemblerc` file.
+- Utils: Allow adding apps to collections from the CLI.
+
+### Removed
+
+- Server: Removed cleanup logic for seed resources and assets.
+- Server: Removed the seed column from the App model.
+- Types: Removed the seed field in the App interface.
+- Utils: Removed the `$ephemeral` field from the `ResourceDefinition`.
+
+### Fixed
+
+- Cli: Set the default value of the `--assets-clonable` tag to false in the `appsemble app publish`
+  and `appsemble app update` commands.
+
 ## \[[0.26.0](https://gitlab.com/appsemble/appsemble/-/releases/0.26.0)] - 2024-03-11
 
 ### Added
