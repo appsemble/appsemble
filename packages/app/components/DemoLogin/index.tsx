@@ -20,9 +20,11 @@ import axios from 'axios';
 import { type ChangeEvent, type ReactNode, useCallback, useEffect, useMemo, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 
+import styles from './index.module.css';
 import { messages } from './messages.js';
 import { apiUrl, appId } from '../../utils/settings.js';
 import { useAppDefinition } from '../AppDefinitionProvider/index.js';
+import { useAppMessages } from '../AppMessagesProvider/index.js';
 import { useDemoAppMembers } from '../DemoAppMembersProvider/index.js';
 import { useUser } from '../UserProvider/index.js';
 
@@ -131,6 +133,7 @@ function TeamControls(): ReactNode {
 export function DemoLogin({ modal }: DemoLoginProps): ReactNode {
   const { demoLogin } = useUser();
   const { definition } = useAppDefinition();
+  const { getAppMessage } = useAppMessages();
   const { demoAppMembers, refetchDemoAppMembers } = useDemoAppMembers();
 
   const busy = useToggle();
@@ -154,8 +157,15 @@ export function DemoLogin({ modal }: DemoLoginProps): ReactNode {
     [demoAppMembers, selectedDemoAppMember],
   );
 
-  const selectedDemoAppMemberRoleDescription = appRoles[demoAppMember?.role]?.description;
-  const selectedAppRoleDescription = appRoles[selectedAppRoleName]?.description;
+  const selectedDemoAppMemberRoleDescription = getAppMessage({
+    id: `app.roles.${demoAppMember?.role}.description`,
+    defaultMessage: appRoles[demoAppMember?.role]?.description,
+  }).format() as string;
+
+  const selectedAppRoleDescription = getAppMessage({
+    id: `app.roles.${selectedAppRoleName}.description`,
+    defaultMessage: appRoles[selectedAppRoleName]?.description,
+  }).format() as string;
 
   const changeDemoAppMember = (event: ChangeEvent<MinimalHTMLElement>): void => {
     setSelectedDemoAppMember(
@@ -219,7 +229,7 @@ export function DemoLogin({ modal }: DemoLoginProps): ReactNode {
           <SimpleFormField
             component={SelectField}
             disabled={demoAppMembers.length < 2 || busy.enabled}
-            help={<div>{selectedDemoAppMemberRoleDescription}</div>}
+            help={<div className={styles.black}>{selectedDemoAppMemberRoleDescription}</div>}
             label={<FormattedMessage {...messages.selectMember} />}
             name="appMemberId"
             onChange={changeDemoAppMember}
@@ -241,7 +251,7 @@ export function DemoLogin({ modal }: DemoLoginProps): ReactNode {
           <SimpleFormField
             component={SelectField}
             disabled={appRoleNames.length < 2 || busy.enabled}
-            help={<div>{selectedAppRoleDescription}</div>}
+            help={<div className={styles.black}>{selectedAppRoleDescription}</div>}
             label={<FormattedMessage {...messages.selectRole} />}
             name="appRole"
             onChange={changeAppRole}
