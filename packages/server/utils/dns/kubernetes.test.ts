@@ -578,3 +578,98 @@ describe('restoreDNS', () => {
     ]);
   });
 });
+
+describe('getSSLStatus', () => {
+  it('should return the status of the SSL certificates', async () => {
+    setArgv({ host: 'https://host.example', serviceName: 'review-service', servicePort: 'http' });
+    mock.onGet('/apis/cert-manager.io/v1/namespaces/test/certificates').reply(200, {
+      items: [
+        {
+          spec: { dnsNames: ['app.example.com'] },
+          status: { conditions: [{ type: 'Ready', status: 'True' }] },
+        },
+        {
+          spec: { dnsNames: ['app2.example.com'] },
+          status: {
+            conditions: [
+              { type: 'Ready', status: 'False' },
+              { type: 'Issuing', status: 'True' },
+            ],
+          },
+        },
+        {
+          spec: { dnsNames: ['app3.example.com'] },
+          status: { conditions: [{ type: 'Ready', status: 'Unknown' }] },
+        },
+        {
+          spec: { dnsNames: ['app4.example.com'] },
+          status: { conditions: [{ type: 'Ready', status: 'False' }] },
+        },
+        {
+          spec: { dnsNames: ['app5.example.com'] },
+          status: { conditions: [{ type: 'Issuing', status: 'True' }] },
+        },
+        {
+          spec: { dnsNames: ['app6.example.com'] },
+          status: {
+            conditions: [
+              { type: 'Ready', status: 'False' },
+              { type: 'Issuing', status: 'False' },
+            ],
+          },
+        },
+      ],
+    });
+    const result = await kubernetes.getSSLStatus([
+      'app.example.com',
+      'app2.example.com',
+      'app3.example.com',
+      'app4.example.com',
+      'app5.example.com',
+      'app6.example.com',
+      'missing-app.example.com',
+    ]);
+    expect(result).toStrictEqual({
+      'app.example.com': 'ready',
+      'app2.example.com': 'pending',
+      'app3.example.com': 'unknown',
+      'app4.example.com': 'error',
+      'app5.example.com': 'error',
+      'app6.example.com': 'unknown',
+      'missing-app.example.com': 'missing',
+    });
+  });
+
+  /**
+   * If forceProtocolHttps is enabled, we assume both the host and its subdomains have their SSL
+   * managed outside of the kubernetes namespace. Therefore, we should return 'ready' for all
+   * subdomains of the host.
+   *
+   * This is meant for instances where the SSL is managed by a third-party service like Cloudflare,
+   * or the kubernetes cluster's ingress controller has a [default SSL
+   * certificate](https://kubernetes.github.io/ingress-nginx/user-guide/tls/#default-ssl-certificate) set.
+   */
+  it('should have subdomains of host be ready if forceProtocolHttps is enabled', async () => {
+    setArgv({
+      host: 'https://example.com',
+      serviceName: 'review-service',
+      servicePort: 'http',
+      forceProtocolHttps: true,
+    });
+    const certData = {
+      items: [] as [],
+    };
+    mock.onGet('/apis/cert-manager.io/v1/namespaces/test/certificates').reply(200, certData);
+
+    const result1 = await kubernetes.getSSLStatus([
+      'example.com',
+      'app.example.com',
+      'app.example.org',
+    ]);
+    expect(result1).toStrictEqual({
+      'example.com': 'ready',
+      'app.example.com': 'ready',
+      'app.example.org': 'missing',
+    });
+  });
+});

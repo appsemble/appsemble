@@ -504,6 +504,16 @@ export async function getSSLStatus(domains: string[]): Promise<SSLStatusMap> {
     config,
   );
   const statuses: SSLStatusMap = {};
+  if (argv.forceProtocolHttps) {
+    for (const domain of domains) {
+      const { hostname: domainHostname } = new URL(`https://${domain}`);
+      const { hostname } = new URL(argv.host);
+      if (domainHostname.endsWith(hostname)) {
+        pending.delete(domain);
+        statuses[domain] = 'ready';
+      }
+    }
+  }
   for (const { spec, status } of data.items) {
     const matches = matcher([...pending], spec.dnsNames);
     for (const match of matches) {

@@ -21,6 +21,13 @@ export interface Argv {
   host: string;
 
   /**
+   * Whether or not to force the protocol to HTTPS.
+   *
+   * @default false
+   */
+  forceProtocolHttps: boolean;
+
+  /**
    * The port on which Appsemble should be started.
    *
    * @default 9999
@@ -355,6 +362,7 @@ const defaults: Argv = {
   quiet: 0,
   verbose: 0,
   host: undefined,
+  forceProtocolHttps: false,
   port: 9999,
   proxy: false,
   secret: undefined,
