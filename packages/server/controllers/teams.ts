@@ -375,7 +375,7 @@ export async function addTeamMember(ctx: Context): Promise<void> {
       },
       {
         model: App,
-        attributes: ['OrganizationId', 'definition'],
+        attributes: ['OrganizationId', 'definition', 'demoMode'],
         include: [
           {
             model: Organization,
@@ -414,7 +414,7 @@ export async function addTeamMember(ctx: Context): Promise<void> {
     if (id !== user.id && id !== user.primaryEmail) {
       throwKoaError(ctx, 403, 'App members may only add themselves as team member');
     }
-    if (team.App.definition.security?.teams.join === 'invite') {
+    if (team.App.definition.security?.teams.join === 'invite' && !team.App.demoMode) {
       throwKoaError(ctx, 403, 'You need an invite to join this team');
     }
   } else {
