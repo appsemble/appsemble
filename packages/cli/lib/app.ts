@@ -1037,14 +1037,18 @@ export async function publishApp({
   const rcCollections = rc.context[context].collections;
   if (Array.isArray(rcCollections)) {
     for (const collectionId of rcCollections) {
-      await axios.post<App>(
-        `/api/appCollections/${collectionId}/apps`,
-        { AppId: data.id },
-        {
-          baseURL: remote,
-        },
-      );
-      logger.info(`Successfully added app to collection ${collectionId}`);
+      try {
+        await axios.post<App>(
+          `/api/appCollections/${collectionId}/apps`,
+          { AppId: data.id },
+          {
+            baseURL: remote,
+          },
+        );
+        logger.info(`Successfully added app to collection ${collectionId}`);
+      } catch (error) {
+        logger.error(error);
+      }
     }
   }
 

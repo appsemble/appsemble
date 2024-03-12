@@ -289,23 +289,50 @@ export async function applyAppVariant(appPath: string, appVariant: string): Prom
 
     const patchesPath = join(appVariantDefDir, 'patches');
 
-    const [definitionPatches] = await readData(join(patchesPath, 'app-definition.json'));
-    await patchDefinition(appVariantDestDir, definitionPatches as []);
+    try {
+      const definitionPath = join(patchesPath, 'app-definition.json');
+      if (existsSync(definitionPath)) {
+        const [definitionPatches] = await readData(definitionPath);
+        await patchDefinition(appVariantDestDir, definitionPatches as []);
+      } else {
+        logger.warn(`Missing file ${definitionPath}. Skipping patching app-definition.yaml`);
+      }
+    } catch (error) {
+      logger.error(error);
+    }
 
-    const [messagesPatches] = await readData(join(patchesPath, 'messages.json'));
-    await patchMessages(
-      appVariantDestDir,
-      messagesPatches as Record<string, Partial<AppsembleMessages>>,
-    );
+    try {
+      const messagesPath = join(patchesPath, 'messages.json');
+      if (existsSync(messagesPath)) {
+        const [messagesPatches] = await readData(messagesPath);
+        await patchMessages(
+          appVariantDestDir,
+          messagesPatches as Record<string, Partial<AppsembleMessages>>,
+        );
+      } else {
+        logger.warn(`Missing file ${messagesPath}. Skipping patching app messages.`);
+      }
+    } catch (error) {
+      logger.error(error);
+    }
 
-    const [stylesPatches] = await readData(join(patchesPath, 'styles.json'));
-    await patchStyles(
-      appVariantDestDir,
-      stylesPatches as Record<
-        string,
-        Record<string, Record<string, StyleReplacement[]> | StyleReplacement[]>
-      >,
-    );
+    try {
+      const stylesPath = join(patchesPath, 'styles.json');
+      if (existsSync(stylesPath)) {
+        const [stylesPatches] = await readData(stylesPath);
+        await patchStyles(
+          appVariantDestDir,
+          stylesPatches as Record<
+            string,
+            Record<string, Record<string, StyleReplacement[]> | StyleReplacement[]>
+          >,
+        );
+      } else {
+        logger.warn(`Missing file ${stylesPath}. Skipping patching app styles.`);
+      }
+    } catch (error) {
+      logger.error(error);
+    }
 
     logger.info(`Successfully applied ${appVariant} variant to ${appPath}`);
     logger.verbose(`The ${appVariant} variant app can be found in ${appVariantDestDir}`);
