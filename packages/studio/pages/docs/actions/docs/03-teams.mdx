@@ -20,22 +20,22 @@ will be invited, email is the email of the user to be invited to join the team a
 for which the user is being invited. Default value for role is member. Type is the only required
 value for using this action. Here is an example of how you can use this action.
 
-```yaml validate
+```yaml validate blocks-snippet
 blocks:
   - type: form
-    version:  *block-version
+    version:  0.27.3
     parameters:
       fields:
         - name: email
           label: { translate: email }
           type: string
           format: email
-          requirements: { required: true }
+          requirements: [ required: true ]
         - name: id
           type: hidden
     actions:
       onSubmit:
-        type: user.invite
+        type: team.invite
         onSuccess:
           type: log
 ```
@@ -47,22 +47,25 @@ This action allows a user to join a team. Supported field for this action is `ty
 a member of, or if the team security is defined as `invite`. Here is an example of how you can use
 this action to allow users to join a team selected by them.
 
-```yaml validate
+```yaml validate blocks-snippet
 blocks:
   - type: form
-    version: *block-version
+    version: 0.27.3
     parameters:
       fields:
         - name: team
           label: { translate: team }
-          requirements: { required: true }
+          requirements: [ required: true ]
           type: enum
-          enum: ['team1', 'team2']
-    onSubmit:
-      type: team.join
-      remap: { prop: team }
-      onSuccess:
-        type: log
+          enum:
+            - value: team1
+            - value: team2
+    actions:
+      onSubmit:
+        type: team.join
+        remapBefore: { prop: team }
+        onSuccess:
+          type: log
 ```
 
 ### team.list
@@ -72,10 +75,10 @@ This action allows to get a list of all of the teams in an app. Supported field 
 your app the option to choose the team they want to join. Here is an example of previously mentioned
 use case of the action.
 
-```yaml
+```yaml validate blocks-snippet
 blocks:
   - type: form
-    version: *block-version
+    version: 0.27.3
     parameters:
       fields:
         - name: team
@@ -85,8 +88,8 @@ blocks:
     actions:
       getTeams:
         type: team.list
-        - array.map:
-            remapAfter:
+        remapAfter:
+          - array.map:
               object.from:
                 label:
                   prop: name
@@ -102,10 +105,10 @@ particularly helpful in keeping a record of roles assigned to various users. Bot
 required. Here is an example of this action being used to fetch all the employees of a particular
 department in a company.
 
-```yaml validate
+```yaml validate blocks-snippet
 blocks:
   - type: data-loader
-    version: *block-version
+    version: 0.27.3
     actions:
       onLoad:
         type: team.members

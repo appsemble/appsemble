@@ -29,10 +29,10 @@ action are `type`, `key` and `storage`. Key is used to fetch the data from the s
 storage key is `indexedDb`. Here’s an example of how you can use this action to read data with key
 poolData from sessionStorage.
 
-```yaml validate
+```yaml validate blocks-snippet
 blocks:
   - type: data-loader
-    version: *blocks-version
+    version: 0.27.3
     actions:
       onLoad:
         type: storage.read
@@ -51,16 +51,16 @@ storage, type is `storage.write` and storage is used to identify the type of sto
 value for the storage key is `indexedDb`. Here’s an example of how you can use this action to write
 data.
 
-```yaml validate
+```yaml validate blocks-snippet
 blocks:
   - type: form
-    version: *blocks-version
+    version: 0.27.3
     parameters:
       fields:
         - name: name
           label: ''
           type: string
-          requirements: { required: true }
+          requirements: [ required: true ]
     actions:
       onSubmit:
         type: storage.write
@@ -78,20 +78,20 @@ array in storage, type is `storage.append` and storage is used to identify the t
 use. Default value for the storage key is `indexedDb`. Here’s an example of how you can use this
 action to write data.
 
-```yaml validate
+```yaml validate blocks-snippet
 blocks:
   - type: form
-    version: *blocks-version
+    version: 0.27.3
     parameters:
       fields:
         - name: fullName
           label: { translate: fullName }
           type: string
-          requirements: { required: true }
+          requirements: [ required: true ]
         - name: birthDate
           label: { translate: birthDate }
           type: date
-          requirements: { required: true }
+          requirements: [ required: true ]
     actions:
       onSubmit:
         type: storage.append
@@ -113,10 +113,10 @@ storage, type is `storage.subtract` and storage is used to identify the type of 
 Default value for the storage key is `indexedDb`. Here’s an example of how you can use this action
 to subtract an entry of data.
 
-```yaml validate
+```yaml validate blocks-snippet
 blocks:
   - type: action-button
-    version: *blocks-version
+    version: 0.27.3
     parameters:
       icon: minus
     actions:
@@ -135,10 +135,10 @@ storage, type is `storage.update` and storage is used to identify the type of st
 Default value for the storage key is `indexedDb`. Here’s an example of how you can use this action
 to update the data in storage.
 
-```yaml validate
+```yaml validate blocks-snippet
 blocks:
   - type: form
-    version: *blocks-version
+    version: 0.27.3
     parameters:
       fields:
         - name: fullName
@@ -169,10 +169,10 @@ and `storage`. Key is used to delete the data from the storage, type is `storage
 is used to identify the type of storage to use. Default value for the storage key is `indexedDb`.
 Here’s an example of how you can use this in action to delete the data in storage.
 
-```yaml validate
+```yaml validate blocks-snippet
 blocks:
   - type: action-button
-    version: *blocks-version
+    version: 0.27.3
     parameters:
       icon: delete
     actions:

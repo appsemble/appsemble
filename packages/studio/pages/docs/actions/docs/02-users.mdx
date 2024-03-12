@@ -13,6 +13,17 @@ actions are not implemented for the server side. Supported User actions are as b
 - `user.remove`
 - `user.create`
 
+To use User actions, you must have a security definition in your app:
+
+```yaml validate security-snippet
+security:
+  default:
+    role: User
+    policy: everyone
+  roles:
+    User: {}
+```
+
 ### user.register
 
 This action allows the user to register a new account using an email address and a password and does
@@ -23,21 +34,21 @@ login the user after register (default value is true), picture is the profile pi
 and properties is used to denote any custom properties associated with user. All the values for
 properties are converted into strings. Here is an example of this action in use.
 
-```yaml validate
+```yaml validate blocks-snippet
 blocks:
   - type: form
-    version: *block-version
+    version: 0.27.3
     parameters:
       fields:
         - name: username
           label: { translate: username }
           type: string
-          requirements: { required: true }
+          requirements: [ required: true ]
         - name: email
           label: { translate: email }
           type: string
           format: email
-          requirements: { required: true }
+          requirements: [ required: true ]
         - name: password
           label: { translate: password }
           type: string
@@ -66,17 +77,17 @@ user is already logged in. Supported fields for this action are `type`, `email` 
 Email and password are similar to those used at the time of registering. Here is an example of this
 action in use.
 
-```yaml validate
+```yaml validate blocks-snippet
 blocks:
   - type: form
-    version: *block-version
+    version: 0.27.3
     parameters:
       fields:
         - name: email
           label: { translate: email }
           type: string
           format: email
-          requirements: { required: true }
+          requirements: [ required: true ]
         - name: password
           label: { translate: password }
           type: string
@@ -103,28 +114,25 @@ of the user, picture is the profile picture of the user and properties is used t
 properties associated with the user. All the values for properties are converted into strings. Here
 is an example of this action in use.
 
-```yaml validate
+```yaml validate blocks-snippet
 blocks:
   - type: form
-    version: *block-version
+    version: 0.27.3
     parameters:
       fields:
         - name: email
           label: { translate: email }
           type: string
           format: email
-        - name: displayName
+        - name: username
           label: { translate: username }
           type: string
-        - name: profilePicture
-          label: { translate: profilePicture }
-          type: file
     actions:
       onSubmit:
         type: user.update
-        email: { prop: email }
-        displayName: { prop: username }
-        picture: { prop: picture }
+        currentEmail: { user: email }
+        newEmail: { prop: email }
+        name: { prop: username }
 ```
 
 ### user.logout
@@ -132,18 +140,17 @@ blocks:
 This action allow the users to logout of the application. Supported field for this action is `type`,
 which is `user.logout` in this case. Here is an example of this action in use.
 
-```yaml validate
+```yaml validate blocks-snippet
 blocks:
   - type: action-button
-    version: *block-version
+    version: 0.27.3
     parameters:
       icon: right-from-bracket
     actions:
       onClick:
         type: user.logout
         onSuccess:
-          type: Link
-          to: Login Page
+          type: noop
 ```
 
 ### user.query
@@ -154,10 +161,10 @@ and roles is a remapper that represents the roles of accounts that would be fetc
 fields is required to use this action. Below is an example of this action being used to fetch user
 data.
 
-```yaml validate
+```yaml validate blocks-snippet
 blocks:
   - type: data-loader
-    version: *block-version
+    version: 0.27.3
     actions:
       onLoad:
         type: user.query
@@ -175,18 +182,18 @@ this action. Usage of this action requires the `AccountManager` level permission
 about the Permissions and their respective roles please check [here](/docs/03-guide/organizations).
 Below is an example of how this action can be used to delete a user with a provided email address.
 
-```yaml validate
+```yaml validate blocks-snippet
 blocks:
   - type: action-button
-    version: *block-version
+    version: 0.27.3
     parameters:
-      - icon: trash
+      icon: trash
     actions:
       onClick:
         type: user.remove
         email: { prop: email }
         onSuccess:
-          - type: noop
+          type: noop
 ```
 
 ### user.create
@@ -202,10 +209,10 @@ Appsemble and access other apps. Similar to `user.remove` usage of this action r
 `AccountManager` level of permissions. Fields `email` and `password` are required. Below is an
 example of this action being used in an app.
 
-```yaml validate
+```yaml validate blocks-snippet
 blocks:
   - type: form
-    version: *block-version
+    version: 0.27.3
     parameters:
       fields:
         - name: name
@@ -213,16 +220,18 @@ blocks:
           type: string
         - name: email
           label: Email
+          type: string
           format: email
           requirements:
             - required: true
               errorMessage: Please enter a valid email
         - name: password
           label: Password
+          type: string
           format: password
           requirements:
             - minLength: 8
-              required: true
+            - required: true
     actions:
       onSubmit:
         type: user.create

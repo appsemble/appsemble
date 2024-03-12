@@ -13,6 +13,41 @@ flow actions.
 - `flow.cancel`
 - `flow.to`
 
+To use flow actions, you need a flow page:
+
+```yaml validate page-snippet
+- name: Flow page
+  type: flow
+  actions:
+    onFlowFinish:
+      type: noop
+  steps:
+    - name: Step 1
+      blocks:
+        - type: form
+          version: 0.27.3
+          parameters:
+            fields:
+              - type: string
+                name: email
+                label: { translate: email }
+          actions:
+            onSubmit:
+              type: flow.next
+    - name: Step 2
+      blocks:
+        - type: form
+          version: 0.27.3
+          parameters:
+            fields:
+              - type: string
+                name: username
+                label: { translate: username }
+          actions:
+            onSubmit:
+              type: flow.finish
+```
+
 ### flow.next
 
 On a flow page, this action proceed to the next page if it is present. Otherwise, the flow is
@@ -20,10 +55,10 @@ considered to be complete and [\`flow.finish\`](#flowfinish) will be called inst
 for this action is `type`, which is `flow.next` in this case. Here is an example of this action
 being used.
 
-```yaml validate
+```yaml validate flow-blocks-snippet
 blocks:
   - type: button-list
-    version: *blocks-version
+    version: 0.27.3
     parameters:
       buttons:
         - label: { translate: start }
@@ -39,10 +74,10 @@ blocks:
 On a flow page, this action triggers the `onFlowFinish` action on the page. Supported field for this
 action is `type`, which is `flow.finish` in this case. Here is an example of this action being used.
 
-```yaml validate
+```yaml validate flow-blocks-snippet
 blocks:
   - type: form
-    version: *blocks-version
+    version: 0.27.3
     parameters:
       fields:
         - type: string
@@ -59,10 +94,10 @@ On a flow page, this action returns to the previous page if it is present. If th
 on the first page, nothing happens. Supported field for this action is `type`, which is `flow.back`
 in this case. Here is an example of this action being used.
 
-```yaml validate
+```yaml validate flow-blocks-snippet
 blocks:
   - type: form
-    version: *blocks-version
+    version: 0.27.3
     parameters:
       fields:
         - type: string
@@ -78,10 +113,10 @@ blocks:
 On a flow page, calling this action triggers the `onFlowCancel` action. Supported field for this
 action is `type`, which is `flow.cancel` in this case. Here is an example of how to use this action.
 
-```yaml validate
+```yaml validate flow-blocks-snippet
 blocks:
   - type: action-button
-    version: *blocks-version
+    version: 0.27.3
     parameters:
       icon: ban
     actions:
@@ -96,15 +131,15 @@ On a flow page, this action is used to move to a specific step. Supported fields
 with the action input and current context, the type is `flow.to`. Both fields are required. Here is
 how you can use this action in your app.
 
-```yaml validate
+```yaml validate flow-blocks-snippet
 blocks:
   - type: form
-    version: *blocks-version
+    version: 0.27.3
     parameters:
       fields:
         - name: username
           label: { translate: username }
-          requirements: { required: true }
+          requirements: [ required: true ]
           type: string
     actions:
       onSubmit:

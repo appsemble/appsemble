@@ -32,6 +32,7 @@ export * from './EventsDefinition.js';
 export * from './FlowBackActionDefinition.js';
 export * from './FlowFinishActionDefinition.js';
 export * from './FlowNextActionDefinition.js';
+export * from './FlowCancelActionDefinition.js';
 export * from './FlowPageActionsDefinition.js';
 export * from './FlowPageDefinition.js';
 export * from './FlowToActionDefinition.js';

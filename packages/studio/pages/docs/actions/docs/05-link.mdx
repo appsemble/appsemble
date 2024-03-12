@@ -18,10 +18,10 @@ using arrays. If this matches with an absolute URL, link action will open this i
 it with a page or sub-page. Both fields are required. Here is how you can use this action in your
 app.
 
-```yaml validate
+```yaml validate blocks-snippet
 blocks:
   - type: action-button
-    version: *blocks-version
+    version: 0.27.3
     parameters:
       icon: circle-chevron-right
     actions:
@@ -36,10 +36,10 @@ This action is used to link to the previous page in the browser history. Support
 action is `type`, which is `link.back` in this case. The following is an example of this action
 being used in an app.
 
-```yaml validate
+```yaml validate blocks-snippet
 blocks:
   - type: control-buttons
-    version: *blocks-version
+    version: 0.27.3
     parameters:
       back: { icon: chevron-left }
       forward: false
@@ -54,10 +54,10 @@ This action is used to link to the next page in the browser history. Supported f
 is `type`, which is `link.next` in this case. The following is an example of this action being used
 in an app.
 
-```yaml validate
+```yaml validate blocks-snippet
 blocks:
   - type: control-buttons
-    version: *blocks-version
+    version: 0.27.3
     parameters:
       back: { icon: chevron-left }
       forward: { icon: chevron-right }

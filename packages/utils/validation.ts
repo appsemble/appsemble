@@ -597,13 +597,13 @@ function validateActions(definition: AppDefinition, report: Report): void {
       if (
         ['user.register', 'user.create', 'user.update'].includes(action.type) &&
         Object.values(
-          (action as UserCreateAction | UserRegisterAction | UserUpdateAction).properties,
+          (action as UserCreateAction | UserRegisterAction | UserUpdateAction).properties ?? {},
         )[0] &&
         definition.users?.properties
       ) {
         for (const propertyName of Object.keys(
           Object.values(
-            (action as UserCreateAction | UserRegisterAction | UserUpdateAction).properties,
+            (action as UserCreateAction | UserRegisterAction | UserUpdateAction).properties ?? {},
           )[0],
         )) {
           if (!definition.users?.properties[propertyName]) {

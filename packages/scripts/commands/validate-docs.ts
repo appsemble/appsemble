@@ -9,6 +9,7 @@ import {
   type BlockDefinition,
   type ControllerDefinition,
   type CronDefinition,
+  type FlowPageDefinition,
   type LinkActionDefinition,
   type ResourceActionDefinition,
   type ResourceDefinition,
@@ -51,6 +52,7 @@ const snippetTypes = {
   pages: 'pages-snippet',
   block: 'block-snippet',
   blocks: 'blocks-snippet',
+  'flow-blocks': 'flow-blocks-snippet',
   cron: 'cron-snippet',
   controller: 'controller-snippet',
   security: 'security-snippet',
@@ -122,6 +124,53 @@ function appendResourcesToTemplate(
   }
 
   return updatedTemplate;
+}
+
+function appendFlowBlockToTemplate(block: BlockDefinition, template: AppDefinition): AppDefinition {
+  const supportPageName = 'Flow Blocks Container';
+  if (!template.pages.some((page) => page.name === supportPageName)) {
+    template.pages.push({
+      name: supportPageName,
+      type: 'flow',
+      actions: {
+        onFlowCancel: {
+          type: 'noop',
+        },
+        onFlowFinish: {
+          type: 'noop',
+        },
+      },
+      steps: [
+        {
+          name: 'Home',
+          blocks: [
+            {
+              type: 'action-button',
+              version: block.version,
+              parameters: {
+                icon: 'arrow-left',
+              },
+              actions: {
+                onClick: {
+                  type: 'flow.next',
+                },
+              },
+            },
+          ],
+        },
+        {
+          name: 'Second Step',
+          blocks: [],
+        },
+      ],
+    } as FlowPageDefinition);
+  }
+
+  (template.pages as FlowPageDefinition[])
+    .find((page) => page.name === supportPageName)
+    .steps[1].blocks.push(block);
+
+  return template;
 }
 
 function appendBlockToTemplate(block: BlockDefinition, template: AppDefinition): AppDefinition {
@@ -372,6 +421,11 @@ async function accumulateAppDefinitions(docsPath: string): Promise<AppDefinition
             template = appendBlockToTemplate(block, template);
           }
           break;
+        case 'flow-blocks':
+          for (const block of parsed.blocks) {
+            template = appendFlowBlockToTemplate(block, template);
+          }
+          break;
         case 'cron':
           template = appendCronToTemplate(parsed.cron, template);
           break;
@@ -479,8 +533,19 @@ export async function handler({ organization, remote }: Args): Promise<void> {
   logger.info('Validating docs directory');
 
   const docsPath = join(process.cwd(), 'packages', 'studio', 'pages', 'docs', 'docs');
+  const actionDocsPath = join(
+    process.cwd(),
+    'packages',
+    'studio',
+    'pages',
+    'docs',
+    'actions',
+    'docs',
+  );
 
   const appDefinitionsWithLocations = await accumulateAppDefinitions(docsPath);
+  const actionAppDefinitionsWithLocations = await accumulateAppDefinitions(actionDocsPath);
 
   await validateAppDefinitions(appDefinitionsWithLocations, organization, remote);
+  await validateAppDefinitions(actionAppDefinitionsWithLocations, organization, remote);
 }

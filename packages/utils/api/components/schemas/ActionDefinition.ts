@@ -44,6 +44,7 @@ export const ActionDefinition: OpenAPIV3.NonArraySchemaObject = {
         { $ref: '#/components/schemas/FlowBackActionDefinition' },
         { $ref: '#/components/schemas/FlowFinishActionDefinition' },
         { $ref: '#/components/schemas/FlowNextActionDefinition' },
+        { $ref: '#/components/schemas/FlowCancelActionDefinition' },
         { $ref: '#/components/schemas/FlowToActionDefinition' },
         { $ref: '#/components/schemas/LinkActionDefinition' },
         { $ref: '#/components/schemas/LinkBackActionDefinition' },
