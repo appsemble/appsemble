@@ -1,7 +1,7 @@
 apiVersion: v2
 name: appsemble
-version: 0.27.0
-appVersion: 0.27.0
+version: 0.27.1
+appVersion: 0.27.1
 kubeVersion: '>=1.21.0'
 type: application
 description: The open source low-code app building platform
@@ -23,54 +23,8 @@ dependencies:
     repository: https://charts.bitnami.com/bitnami
     condition: postgresql.enabled
 annotations:
-  artifacthub.io/changes: >
-    - kind: added
-      description: "App: Translate role descriptions in demo app login."
-    - kind: added
-      description: "Cli: Add app to collections, listed in .appsemblerc."
-    - kind: added
-      description: "Cli: Added --resources, --assets and --assets-clonable flags to
-        appsemble app update command."
-    - kind: added
-      description: "Cli: Added an option in the appsemble asset publish command
-        whether the asset should be used as seed."
-    - kind: added
-      description: "Cli: Added an option in the appsemble resource publish command
-        whether the resource should be used as seed."
-    - kind: added
-      description: "Cli: Apply app variant on app publish."
-    - kind: added
-      description: "Cli: Support publishing resources and assets with the appsemble
-        app update command."
-    - kind: added
-      description: "Node-utils: Add a script for applying app variants."
-    - kind: added
-      description: "Node-utils: Add patch scripts for styles, messages and app-definition."
-    - kind: added
-      description: "Server: Added an endpoint for deleting seed assets from an app."
-    - kind: added
-      description: "Server: Added an endpoint for seeding assets."
-    - kind: added
-      description: "Server: Added an endpoint for seeding resources."
-    - kind: added
-      description: "Studio: Add docs for local development and setup."
-    - kind: added
-      description: "Types: Added the assetsClonable option to the .appsemblerc file."
-    - kind: added
-      description: "Types: Support listing collections in the .appsemblerc file."
-    - kind: added
-      description: "Utils: Allow adding apps to collections from the CLI."
-    - kind: removed
-      description: "Server: Removed cleanup logic for seed resources and assets."
-    - kind: removed
-      description: "Server: Removed the seed column from the App model."
-    - kind: removed
-      description: "Types: Removed the seed field in the App interface."
-    - kind: removed
-      description: "Utils: Removed the $ephemeral field from the ResourceDefinition."
-    - kind: fixed
-      description: "Cli: Set the default value of the --assets-clonable tag to false
-        in the appsemble app publish and appsemble app update commands."
+  artifacthub.io/changes: |
+    []
   artifacthub.io/license: LGPL-3.0-only
   artifacthub.io/links: |
     - name: Appsemble Studio
