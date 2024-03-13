@@ -458,11 +458,7 @@ export async function publishSeedResources(path: string, app: App, remote: strin
 
     try {
       await axios.delete(`/api/apps/${app.id}/seed-resources`, { baseURL: remote });
-    } catch (error) {
-      logger.error(error);
-    }
 
-    try {
       const resourceFiles = await readdir(resourcesPath, { withFileTypes: true });
       const resourcesToPublish: ResourceToPublish[] = [];
       const publishedResourcesIds: Record<string, number[]> = {};
@@ -521,16 +517,13 @@ export async function publishSeedAssets(
 
     try {
       await axios.delete(`/api/apps/${app.id}/seed-assets`, { baseURL: remote });
-    } catch (error) {
-      logger.error(error);
-    }
 
-    const assetFiles = await readdir(assetsPath);
-    const normalizedPaths = assetFiles.map((assetFile) =>
-      normalizePath(join(assetsPath, assetFile)),
-    );
-    const files = await fg(normalizedPaths, { absolute: true, onlyFiles: true });
-    try {
+      const assetFiles = await readdir(assetsPath);
+      const normalizedPaths = assetFiles.map((assetFile) =>
+        normalizePath(join(assetsPath, assetFile)),
+      );
+      const files = await fg(normalizedPaths, { absolute: true, onlyFiles: true });
+
       logger.info(`Publishing ${files.length} asset(s)`);
       for (const assetFilePath of files) {
         await publishAsset({
