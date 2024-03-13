@@ -455,9 +455,10 @@ export async function publishSeedResources(path: string, app: App, remote: strin
 
   if (existsSync(resourcesPath)) {
     logger.info(`Deleting existing seed resources from app ${app.id}`);
-    await axios.delete(`/api/apps/${app.id}/seed-resources`);
 
     try {
+      await axios.delete(`/api/apps/${app.id}/seed-resources`, { baseURL: remote });
+
       const resourceFiles = await readdir(resourcesPath, { withFileTypes: true });
       const resourcesToPublish: ResourceToPublish[] = [];
       const publishedResourcesIds: Record<string, number[]> = {};
@@ -513,14 +514,16 @@ export async function publishSeedAssets(
 
   if (existsSync(assetsPath)) {
     logger.info(`Deleting existing seed assets from app ${app.id}`);
-    await axios.delete(`/api/apps/${app.id}/seed-assets`);
 
-    const assetFiles = await readdir(assetsPath);
-    const normalizedPaths = assetFiles.map((assetFile) =>
-      normalizePath(join(assetsPath, assetFile)),
-    );
-    const files = await fg(normalizedPaths, { absolute: true, onlyFiles: true });
     try {
+      await axios.delete(`/api/apps/${app.id}/seed-assets`, { baseURL: remote });
+
+      const assetFiles = await readdir(assetsPath);
+      const normalizedPaths = assetFiles.map((assetFile) =>
+        normalizePath(join(assetsPath, assetFile)),
+      );
+      const files = await fg(normalizedPaths, { absolute: true, onlyFiles: true });
+
       logger.info(`Publishing ${files.length} asset(s)`);
       for (const assetFilePath of files) {
         await publishAsset({

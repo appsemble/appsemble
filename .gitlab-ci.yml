@@ -261,7 +261,8 @@ e2e apps:
     APPSEMBLE_IMAGE: '$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG'
   parallel:
     matrix:
-      - APP: ['appsemble/apps/template', 'appsemble/apps/sittard-geleen']
+      - APP:
+          ['appsemble/apps/template', 'appsemble/apps/sittard-geleen', 'appsemble/apps/eindhoven']
   trigger:
     project: $APP
     strategy: depend

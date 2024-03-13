@@ -516,6 +516,8 @@ export function createDeleteSeedResources(options: Options): Middleware {
 
     const app = await getApp({ context: ctx, query: { where: { id: appId } } });
 
+    assertKoaError(!app, ctx, 404, 'App not found');
+
     for (const resourceType of Object.keys(app.definition.resources ?? {})) {
       const resourcesToDeleteFindOptions: FindOptions = {
         where: {
