@@ -889,11 +889,6 @@ export interface ResourceDefinition {
    * Whether the resource should be able to be transferred when cloning the app it belongs to.
    */
   clonable?: boolean;
-
-  /**
-   * Whether the resource should be cleaned up regularly.
-   */
-  ephemeral?: boolean;
 }
 
 export interface BaseActionDefinition<T extends Action['type']> {

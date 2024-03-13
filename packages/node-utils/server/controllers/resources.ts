@@ -342,10 +342,7 @@ export function createUpdateResource(options: Options): Middleware {
       context: ctx,
       id: resourceId,
       type: resourceType,
-      resource: {
-        ...resources[0],
-        ...(app.demoMode ? { $ephemeral: true, $clonable: false } : {}),
-      },
+      resource: resources[0],
       preparedAssets,
       deletedAssetIds,
       resourceDefinition,
