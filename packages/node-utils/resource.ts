@@ -15,6 +15,7 @@ function stripResource({
   $author,
   $created,
   $editor,
+  $ephemeral,
   $updated,
   ...data
 }: ResourceType): Record<string, unknown> {
@@ -231,11 +232,6 @@ export function processResourceBody(
           if (propertyName === '$clonable') {
             return definition.clonable;
           }
-
-          if (propertyName === '$ephemeral') {
-            return definition.ephemeral;
-          }
-
           return;
         }
         if (format !== 'binary') {

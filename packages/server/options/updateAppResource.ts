@@ -28,12 +28,7 @@ export function updateAppResource({
       },
     });
 
-    const {
-      $clonable: clonable,
-      $ephemeral: ephemeral,
-      $expires: expires,
-      ...data
-    } = resource as Record<string, unknown>;
+    const { $clonable: clonable, $expires: expires, ...data } = resource as Record<string, unknown>;
 
     const oldResource = await Resource.findOne({
       where: {
@@ -53,7 +48,6 @@ export function updateAppResource({
         data,
         clonable,
         expires,
-        ephemeral,
         EditorId: member?.id,
       },
       { transaction },
