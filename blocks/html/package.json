@@ -4,7 +4,7 @@
   "private": true,
   "description": "A block that can render HTML with basic templating.",
   "homepage": "https://appsemble.app",
-  "bugs": "https://gitlab.com/appsemble/appsemble/issues",
+  "bugs": "https://gitlab.com/appsemble/appsemble/-/issues",
   "repository": {
     "type": "git",
     "url": "https://gitlab.com/appsemble/appsemble.git",

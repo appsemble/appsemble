@@ -4,7 +4,7 @@
   "private": true,
   "description": "A block that renders some simple statistics in a friendly manner.",
   "homepage": "https://appsemble.app",
-  "bugs": "https://gitlab.com/appsemble/appsemble/issues",
+  "bugs": "https://gitlab.com/appsemble/appsemble/-/issues",
   "repository": {
     "type": "git",
     "url": "https://gitlab.com/appsemble/appsemble.git",

@@ -4,7 +4,7 @@
   "private": true,
   "description": "A block that displays a map powered by OpenStreetMap that can be used to display and interact with markers.",
   "homepage": "https://appsemble.app",
-  "bugs": "https://gitlab.com/appsemble/appsemble/issues",
+  "bugs": "https://gitlab.com/appsemble/appsemble/-/issues",
   "repository": {
     "type": "git",
     "url": "https://gitlab.com/appsemble/appsemble.git",
