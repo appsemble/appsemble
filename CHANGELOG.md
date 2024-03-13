@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.27.3](https://gitlab.com/appsemble/appsemble/-/releases/0.27.3)] - 2024-03-13
+
+### Fixed
+
+- Node-utils: Fixed updating ephemeral resources.
+
 ## \[[0.27.2](https://gitlab.com/appsemble/appsemble/-/releases/0.27.2)] - 2024-03-13
 
 ## \[[0.27.1](https://gitlab.com/appsemble/appsemble/-/releases/0.27.1)] - 2024-03-12
