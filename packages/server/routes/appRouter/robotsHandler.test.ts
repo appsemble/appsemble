@@ -81,3 +81,18 @@ it('should serve a restricted robots.txt for private apps', async () => {
     data: 'User-agent: *\nDisallow: /\n',
   });
 });
+
+it('should return 404 for unknown apps', async () => {
+  await app.destroy();
+  const response = await request.get('/robots.txt');
+
+  expect(response).toMatchObject({
+    status: 404,
+    headers: {
+      'content-type': 'application/json; charset=utf-8',
+    },
+    data: {
+      message: 'App not found',
+    },
+  });
+});
