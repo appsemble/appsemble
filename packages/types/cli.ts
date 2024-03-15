@@ -56,11 +56,6 @@ export interface AppsembleContext {
   demoMode?: boolean;
 
   /**
-   * If `seed` is specified, this will override `--seed` passed on the command line.
-   */
-  seed?: boolean;
-
-  /**
    * Whether app assets should be clonable.
    */
   assetsClonable?: boolean;
