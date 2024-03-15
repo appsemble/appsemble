@@ -480,6 +480,7 @@ export async function patchApp(ctx: Context): Promise<void> {
         emailSecure,
         emailUser,
         enableSelfRegistration,
+        enableUnsecuredServiceSecrets,
         googleAnalyticsID,
         icon,
         iconBackground,
@@ -636,6 +637,10 @@ export async function patchApp(ctx: Context): Promise<void> {
 
     if (enableSelfRegistration !== undefined) {
       result.enableSelfRegistration = enableSelfRegistration;
+    }
+
+    if (enableUnsecuredServiceSecrets !== undefined) {
+      result.enableUnsecuredServiceSecrets = enableUnsecuredServiceSecrets;
     }
 
     if (coreStyle) {

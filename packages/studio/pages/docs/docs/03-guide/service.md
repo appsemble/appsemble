@@ -34,10 +34,15 @@ were found.
 
 ## Security configuration
 
-The app must have a security definition and app roles defined.
+> Important: only use service secrets without a security definition at your own risk, anyone
+> accessing the app may be able to use your external service without authentication. Consider using
+> obfuscation or other ways of protecting your services.
 
-Service secrets will not be applied without a security definition or app roles. The app service
-secrets will be applied based on the security policy.
+The app should have a security definition and app roles defined, but will still work without them.
+
+Service secrets will still be applied without a security definition or app roles, when opted into
+`Unsecured Service Secrets`. If a security definition is defined. The app service secrets will be
+applied based on the security policy.
 
 See [Security](/docs/03-guide/security) for more on the security definition and policies.
 

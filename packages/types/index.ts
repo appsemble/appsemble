@@ -1949,6 +1949,11 @@ export interface App {
   locked: AppLock;
 
   /**
+   * Whether to apply service secrets to outgoing request even without a security definition.
+   */
+  enableUnsecuredServiceSecrets: boolean;
+
+  /**
    * Whether the Appsemble password login method should be shown.
    */
   showAppsembleLogin: boolean;

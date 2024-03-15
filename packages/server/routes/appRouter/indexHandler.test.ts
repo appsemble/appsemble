@@ -287,6 +287,7 @@ it('should render the index page', async () => {
           "domain": null,
           "emailName": null,
           "enableSelfRegistration": true,
+          "enableUnsecuredServiceSecrets": false,
           "googleAnalyticsID": null,
           "hasIcon": false,
           "hasMaskableIcon": false,
