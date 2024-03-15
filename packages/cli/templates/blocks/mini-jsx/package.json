@@ -2,7 +2,7 @@
   "private": true,
   "type": "module",
   "dependencies": {
-    "@appsemble/sdk": "0.27.3",
+    "@appsemble/sdk": "0.27.4",
     "mini-jsx": "^4.0.0"
   }
 }

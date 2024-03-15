@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.27.4](https://gitlab.com/appsemble/appsemble/-/releases/0.27.4)] - 2024-03-15
+
+### Added
+
+- Server: Allow service secrets to be applied without security definition.
+
+### Fixed
+
+- Server: Do not allow deleting assets for an app from another app.
+- Studio: Search in documentation would navigate to incorrect page.
+
 ## \[[0.27.3](https://gitlab.com/appsemble/appsemble/-/releases/0.27.3)] - 2024-03-13
 
 ### Fixed
