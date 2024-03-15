@@ -29,9 +29,10 @@ it('should serve the studio index page with correct headers', async () => {
   const response = await request.get('/');
   expect(response).toMatchInlineSnapshot(`
     HTTP/1.1 200 OK
-    Content-Security-Policy: connect-src *; default-src 'self'; font-src 'self' https://fonts.gstatic.com; frame-src *.localhost:9999 http://localhost:9999; img-src * blob: data:; script-src 'nonce-AAAAAAAAAAAAAAAAAAAAAA==' 'self' 'sha256-BErq6rufCjnrmMVqhZgAEgNe89ZlGySvrhAElUMixDk=' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com
+    Content-Security-Policy: base-uri 'self'; connect-src *; default-src 'self'; font-src 'self' https://fonts.gstatic.com; frame-ancestors 'none'; frame-src *.localhost:9999 http://localhost:9999; img-src * blob: data:; object-src 'none'; script-src 'nonce-AAAAAAAAAAAAAAAAAAAAAA==' 'self' 'sha256-BErq6rufCjnrmMVqhZgAEgNe89ZlGySvrhAElUMixDk=' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com
     Content-Type: text/html; charset=utf-8
-    X-Content-Type-Options: no-sniff
+    Referrer-Policy: strict-origin-when-cross-origin
+    X-Content-Type-Options: nosniff
 
     {
       "data": {
@@ -55,9 +56,10 @@ it('should pass login options from argv to the studio', async () => {
   const response = await request.get('/');
   expect(response).toMatchInlineSnapshot(`
     HTTP/1.1 200 OK
-    Content-Security-Policy: connect-src *; default-src 'self' https://sentry.io; font-src 'self' https://fonts.gstatic.com; frame-src *.localhost:9999 http://localhost:9999; img-src * blob: data:; report-uri https://sentry.io/api/path/security/?sentry_key=secret; script-src 'nonce-AAAAAAAAAAAAAAAAAAAAAA==' 'self' 'sha256-8dYPnDBNRNIK86KD2V/qlP5xY9Uqz+Lnu/FeKaG8ZTk=' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com
+    Content-Security-Policy: base-uri 'self'; connect-src *; default-src 'self' https://sentry.io; font-src 'self' https://fonts.gstatic.com; frame-ancestors 'none'; frame-src *.localhost:9999 http://localhost:9999; img-src * blob: data:; object-src 'none'; report-uri https://sentry.io/api/path/security/?sentry_key=secret; script-src 'nonce-AAAAAAAAAAAAAAAAAAAAAA==' 'self' 'sha256-8dYPnDBNRNIK86KD2V/qlP5xY9Uqz+Lnu/FeKaG8ZTk=' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com
     Content-Type: text/html; charset=utf-8
-    X-Content-Type-Options: no-sniff
+    Referrer-Policy: strict-origin-when-cross-origin
+    X-Content-Type-Options: nosniff
 
     {
       "data": {
