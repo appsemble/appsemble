@@ -177,9 +177,9 @@ async function validate(
     'Homepage should be "https://appsemble.app"',
   );
   assert(
-    pkg.bugs === 'https://gitlab.com/appsemble/appsemble/issues',
+    pkg.bugs === 'https://gitlab.com/appsemble/appsemble/-/issues',
     'package.json',
-    'Bugs should be "https://gitlab.com/appsemble/appsemble/issues"',
+    'Bugs should be "https://gitlab.com/appsemble/appsemble/-/issues"',
   );
   assert(
     (pkg?.repository as any)?.type === 'git',

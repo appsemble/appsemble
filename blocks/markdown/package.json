@@ -4,7 +4,7 @@
   "private": true,
   "description": "A simple block that can display content based on Markdown input.",
   "homepage": "https://appsemble.app",
-  "bugs": "https://gitlab.com/appsemble/appsemble/issues",
+  "bugs": "https://gitlab.com/appsemble/appsemble/-/issues",
   "repository": {
     "type": "git",
     "url": "https://gitlab.com/appsemble/appsemble.git",

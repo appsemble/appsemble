@@ -15,7 +15,7 @@
     "sdk"
   ],
   "homepage": "https://appsemble.app",
-  "bugs": "https://gitlab.com/appsemble/appsemble/issues",
+  "bugs": "https://gitlab.com/appsemble/appsemble/-/issues",
   "repository": {
     "type": "git",
     "url": "https://gitlab.com/appsemble/appsemble.git",
