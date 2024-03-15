@@ -198,9 +198,13 @@ export async function deleteAssets(ctx: Context): Promise<void> {
   assertKoaError(!app, ctx, 404, 'App not found');
 
   await checkRole(ctx, app.OrganizationId, Permission.ManageAssets);
-  await Asset.destroy({
-    where: { id: body },
+  const assets = await Asset.findAll({
+    where: { id: body, AppId: appId },
     ...(app.demoMode ? { seed: false, ephemeral: true } : {}),
+  });
+  assertKoaError(assets.length === 0, ctx, 404, 'Assets not found');
+  assets.map(async (asset) => {
+    await asset.destroy();
   });
 
   ctx.status = 204;
