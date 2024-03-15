@@ -23,7 +23,8 @@ export async function indexHandler(ctx: Context): Promise<void> {
   const { disableRegistration, githubClientId, gitlabClientId, googleClientId, host } = argv;
   const logins = [];
   const domains = await fetchCustomAppDomains();
-  ctx.set('x-content-type-options', 'no-sniff');
+  ctx.set('x-content-type-options', 'nosniff');
+  ctx.set('Referrer-Policy', 'strict-origin-when-cross-origin');
 
   if (githubClientId) {
     logins.push({
@@ -86,6 +87,9 @@ export async function indexHandler(ctx: Context): Promise<void> {
     ],
     'font-src': ["'self'", 'https://fonts.gstatic.com'],
     'frame-src': [`*.${new URL(host).host}`, host, ...domains],
+    'frame-ancestors': ["'none'"],
+    'object-src': ["'none'"],
+    'base-uri': ["'self'"],
   });
   ctx.set('Content-Security-Policy', csp);
   return render(ctx, 'studio/index.html', { nonce, settings });

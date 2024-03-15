@@ -182,6 +182,7 @@
     "superadmin",
     "messageformat",
     "cobertura",
-    "Pinnable"
+    "Pinnable",
+    "nosniff"
   ]
 }
