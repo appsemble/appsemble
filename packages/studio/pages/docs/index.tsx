@@ -123,7 +123,7 @@ export function DocsRoutes(): ReactNode {
         className="my-2"
         defaultValue={decodeURIComponent(location.hash.slice(1))}
         onChange={(event) => {
-          navigate({ hash: event.target.value, pathname: 'docs/search' });
+          navigate({ hash: event.target.value, pathname: 'search' });
         }}
         placeholder={formatMessage(messages.search)}
         type="search"
