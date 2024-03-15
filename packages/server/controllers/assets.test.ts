@@ -1002,6 +1002,63 @@ describe('deleteAssets', () => {
     );
   });
 
+  it('should not delete existing assets from different apps', async () => {
+    const appB = await App.create({
+      definition: {
+        name: 'Test App',
+        defaultPage: 'Test Page',
+        security: {
+          default: {
+            role: 'Reader',
+            policy: 'everyone',
+          },
+          roles: {
+            Reader: {},
+          },
+        },
+      },
+      path: 'test-app-B',
+      vapidPublicKey: 'a',
+      vapidPrivateKey: 'b',
+      OrganizationId: organization.id,
+    });
+
+    const asset = await Asset.create({
+      AppId: appB.id,
+      mime: 'application/octet-stream',
+      filename: 'test.bin',
+      data: Buffer.from('buffer'),
+    });
+    const assetB = await Asset.create({
+      AppId: appB.id,
+      mime: 'application/octet-stream',
+      filename: 'test.bin',
+      data: Buffer.from('buffer'),
+    });
+    await Asset.create({
+      AppId: appB.id,
+      mime: 'application/octet-stream',
+      filename: 'test.bin',
+      data: Buffer.from('buffer'),
+    });
+
+    authorizeStudio();
+    const response = await request.delete(`/api/apps/${app.id}/assets`, {
+      data: [asset.id, assetB.id],
+    });
+
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 404 Not Found
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "error": "Not Found",
+        "message": "Assets not found",
+        "statusCode": 404,
+      }
+    `);
+  });
+
   it('should ignore non-existent IDs when deleting multiple existing assets', async () => {
     const assetA = await Asset.create({
       AppId: app.id,
