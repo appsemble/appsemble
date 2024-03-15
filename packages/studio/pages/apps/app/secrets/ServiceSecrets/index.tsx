@@ -1,8 +1,16 @@
-import { Button, useData, useToggle } from '@appsemble/react-components';
+import {
+  AsyncCheckbox,
+  Button,
+  Message,
+  useConfirmation,
+  useData,
+  useToggle,
+} from '@appsemble/react-components';
 import { type AppServiceSecret } from '@appsemble/types';
 import axios from 'axios';
 import { type ReactNode, useCallback } from 'react';
 import { FormattedMessage } from 'react-intl';
+import { Link } from 'react-router-dom';
 
 import { messages } from './messages.js';
 import { ServiceSecretItem } from './ServiceSecretItem/index.js';
@@ -20,10 +28,17 @@ const initialSecret: AppServiceSecret = {
   tokenUrl: '',
 };
 
+interface ServiceSecretsParams {
+  /**
+   * Toggle unsecured service secrets for an app.
+   */
+  readonly onClickServiceCheckbox: () => Promise<void>;
+}
+
 /**
  * Render a CRUD interface for managing app service secrets.
  */
-export function ServiceSecrets(): ReactNode {
+export function ServiceSecrets({ onClickServiceCheckbox }: ServiceSecretsParams): ReactNode {
   const { app } = useApp();
   const modal = useToggle();
 
@@ -56,6 +71,39 @@ export function ServiceSecrets(): ReactNode {
     [setAppServiceSecret],
   );
 
+  const onEnableUnsecured = useConfirmation({
+    title: <FormattedMessage {...messages.unsecuredWarningTitle} />,
+    body: (
+      <FormattedMessage
+        {...messages.unsecuredWarning}
+        values={{
+          bold: (str) => (
+            <>
+              <b>{str}</b>
+              <br />
+              <br />
+            </>
+          ),
+          link: (link) => (
+            <Link
+              rel="noopener noreferrer"
+              target="_blank"
+              to="../../../docs/03-guide/service#security-configuration"
+            >
+              {link}
+            </Link>
+          ),
+        }}
+      />
+    ),
+    cancelLabel: <FormattedMessage {...messages.cancel} />,
+    confirmLabel: <FormattedMessage {...messages.continue} />,
+    color: 'warning',
+    async action() {
+      await onClickServiceCheckbox();
+    },
+  });
+
   return (
     <div className="mb-3">
       <HeaderControl
@@ -87,6 +135,32 @@ export function ServiceSecrets(): ReactNode {
           </ul>
         )}
       </AsyncDataView>
+      {app.enableUnsecuredServiceSecrets ? (
+        <Message color="warning">
+          <FormattedMessage
+            {...messages.unsecuredServiceSecretsWarning}
+            values={{
+              link: (link) => (
+                <Link
+                  rel="noopener noreferrer"
+                  target="_blank"
+                  to="../../../docs/03-guide/service#security-configuration"
+                >
+                  {link}
+                </Link>
+              ),
+            }}
+          />
+        </Message>
+      ) : null}
+      <AsyncCheckbox
+        className="is-block mb-2"
+        disabled={app.locked !== 'unlocked'}
+        label={<FormattedMessage {...messages.enableUnsecuredServiceSecrets} />}
+        name="enableUnsecuredServiceSecrets"
+        onChange={app.enableUnsecuredServiceSecrets ? onClickServiceCheckbox : onEnableUnsecured}
+        value={app.enableUnsecuredServiceSecrets}
+      />
       <ServiceSecretsModal secret={initialSecret} submit={create} toggle={modal} />
     </div>
   );

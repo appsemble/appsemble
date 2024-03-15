@@ -75,11 +75,18 @@ export function SecretsPage(): ReactNode {
     [app, emailSettingsResult, formatMessage, push],
   );
 
-  const onClickCheckbox = useCallback(async () => {
+  const onClickLoginCheckbox = useCallback(async () => {
     const formData = new FormData();
     formData.set('showAppsembleLogin', String(!app.showAppsembleLogin));
     await axios.patch(`/api/apps/${app.id}`, formData);
     setApp({ ...app, showAppsembleLogin: !app.showAppsembleLogin });
+  }, [app, setApp]);
+
+  const onClickServiceCheckbox = useCallback(async () => {
+    const formData = new FormData();
+    formData.set('enableUnsecuredServiceSecrets', String(!app.enableUnsecuredServiceSecrets));
+    await axios.patch(`/api/apps/${app.id}`, formData);
+    setApp({ ...app, enableUnsecuredServiceSecrets: !app.enableUnsecuredServiceSecrets });
   }, [app, setApp]);
 
   return (
@@ -104,7 +111,7 @@ export function SecretsPage(): ReactNode {
           disabled={app.locked !== 'unlocked'}
           label={<FormattedMessage {...messages.displayAppsembleLogin} />}
           name="enableAppsembleLogin"
-          onChange={onClickCheckbox}
+          onChange={onClickLoginCheckbox}
           value={app.showAppsembleLogin}
         />
         <AsyncCheckbox
@@ -187,7 +194,7 @@ export function SecretsPage(): ReactNode {
           )}
         </AsyncDataView>
       </Collapsible>
-      <ServiceSecrets />
+      <ServiceSecrets onClickServiceCheckbox={onClickServiceCheckbox} />
       <OAuth2Secrets />
       <SamlSecrets />
       <Collapsible

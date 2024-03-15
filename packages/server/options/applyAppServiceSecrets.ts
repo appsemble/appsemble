@@ -11,11 +11,7 @@ import { argv } from '../utils/argv.js';
 import { decrypt, encrypt } from '../utils/crypto.js';
 
 async function verifyPermission(ctx: Context, app: App): Promise<AppServiceSecret[]> {
-  if (!app.definition.security) {
-    return [];
-  }
-
-  if (!app.definition?.roles?.length) {
+  if (!app) {
     return [];
   }
 
@@ -24,6 +20,14 @@ async function verifyPermission(ctx: Context, app: App): Promise<AppServiceSecre
   });
 
   if (!appServiceSecrets.length) {
+    return [];
+  }
+
+  if (!app.definition.security) {
+    // Apply service secrets without security when opted-in.
+    if (app.enableUnsecuredServiceSecrets) {
+      return appServiceSecrets.map<AppServiceSecret>((secret) => secret.toJSON());
+    }
     return [];
   }
 

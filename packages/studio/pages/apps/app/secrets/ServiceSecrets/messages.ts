@@ -25,4 +25,31 @@ export const messages = defineMessages({
     id: 'studio.v9WChN',
     defaultMessage: 'Add new secret',
   },
+  unsecuredServiceSecretsWarning: {
+    id: 'studio.L0fXYF',
+    defaultMessage:
+      'Unsecured service secrets are enabled, this grants access to anyone to use your service authentication through Appsemble. Learn more in the <link>documentation</link>',
+  },
+  enableUnsecuredServiceSecrets: {
+    id: 'studio.btSu/s',
+    defaultMessage:
+      'Whether a security definition is required for the app service secrets to be applied.',
+  },
+  unsecuredWarningTitle: {
+    id: 'studio.38YuKp',
+    defaultMessage: 'Enable unsecured service secrets',
+  },
+  unsecuredWarning: {
+    id: 'studio.lCbnPH',
+    defaultMessage:
+      '<bold>Enable at your own risk</bold>Whether a security definition is required for the app service secrets to be applied. Learn more in the <link>documentation</link>',
+  },
+  cancel: {
+    id: 'studio.47FYwb',
+    defaultMessage: 'Cancel',
+  },
+  continue: {
+    id: 'studio.38YuKp',
+    defaultMessage: 'Enable unsecured service secrets',
+  },
 });

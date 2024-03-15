@@ -123,6 +123,10 @@ export class App extends Model {
   @Column(DataType.ENUM('fullLock', 'studioLock', 'unlocked'))
   locked: AppLock;
 
+  @Default(false)
+  @Column(DataType.BOOLEAN)
+  enableUnsecuredServiceSecrets: boolean;
+
   @Default(true)
   @Column(DataType.BOOLEAN)
   showAppsembleOAuth2Login: boolean;
@@ -281,6 +285,7 @@ export class App extends Model {
       showAppsembleLogin: this.showAppsembleLogin ?? false,
       showAppsembleOAuth2Login: this.showAppsembleOAuth2Login ?? true,
       enableSelfRegistration: this.enableSelfRegistration ?? true,
+      enableUnsecuredServiceSecrets: this.enableUnsecuredServiceSecrets ?? false,
       rating:
         this.RatingAverage == null
           ? undefined
