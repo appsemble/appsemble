@@ -1,1 +1,1 @@
-Update JSON schema to include `collections` and remove `seed`.
+Update JSON schema to include `collections`, `googleAnalyticsId`, and `assetsClonable`.

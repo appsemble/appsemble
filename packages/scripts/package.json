@@ -62,6 +62,7 @@
     "semver": "^7.0.0",
     "sort-keys": "^5.0.0",
     "tar": "^6.0.0",
+    "typescript": "^5.0.0",
     "twitter-api-v2": "^1.0.0",
     "type-fest": "^4.0.0",
     "unified": "^10.0.0",
