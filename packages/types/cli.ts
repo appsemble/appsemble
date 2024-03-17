@@ -87,6 +87,13 @@ export interface AppsembleContext {
   showAppDefinition?: boolean;
 
   /**
+   * The alternative app variant to use instead.
+   *
+   * If `variant` is specified, this will override `--variant` passed on the command line.
+   */
+  variant?: string;
+
+  /**
    * Determine the app visibility of the app in the Appsemble app store.
    *
    * This doesn’t affect whether or not the app can be accessed on its own domain.

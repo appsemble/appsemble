@@ -119,6 +119,10 @@
             "type": "integer",
             "minimum": 1
           },
+          "variant": {
+            "description": "The alternative app variant to use instead.\n\nIf variant is specified, this will override --variant passed on the command line.",
+            "type": "string"
+          },
           "visibility": {
             "description": "Determine the app visibility of the app in the Appsemble app store.\n\nThis doesn’t affect whether or not the app can be accessed on its own domain.\n\n- public: The app is publicly listed in the Appsemble app store.\n- unlisted: The app store page can be accessed, but the app isn’t listed publicly in the Appsemble app store.\n- private: The app is only visible to people who are part of the organization.\n\nIf visibility is specified, this will override --visibility passed on the command line.",
             "default": "unlisted",

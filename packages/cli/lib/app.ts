@@ -62,6 +62,11 @@ interface PublishAppParams {
   path: string;
 
   /**
+   * The shared variant to use instead.
+   */
+  variant?: string;
+
+  /**
    * Visibility of the app in the public app store.
    */
   visibility: AppVisibility;
@@ -165,6 +170,11 @@ interface UpdateAppParams {
   path: string;
 
   /**
+   * The shared variant to use instead.
+   */
+  variant?: string;
+
+  /**
    * Visibility of the app in the public app store.
    */
   visibility: AppVisibility;
@@ -239,19 +249,14 @@ interface UpdateAppParams {
  * Traverses an app directory and appends the files it finds to the given FormData object.
  *
  * @param path The path of the app directory to traverse.
- * @param context The Context to use from `.appsemblerc.yaml`.
  * @param formData The FormData object to append the results into..
  * @returns The context from `.appsemblerc.yaml` if a match was found.
  */
 export async function traverseAppDirectory(
   path: string,
-  context: string,
   formData: FormData,
-): Promise<[AppsembleContext, AppsembleRC, string, App]> {
-  let discoveredContext: AppsembleContext;
+): Promise<[AppsembleRC, string, App]> {
   let rc: AppsembleRC;
-  let iconPath: string;
-  let maskableIconPath: string;
   let yaml: string;
   let controllerPath: string;
   let controllerBuildConfig: ProjectBuildConfig;
@@ -275,10 +280,6 @@ export async function traverseAppDirectory(
           formData.append('iconBackground', rc.iconBackground);
           gatheredData.iconBackground = rc.iconBackground;
         }
-        if (context && has(rc?.context, context)) {
-          discoveredContext = rc.context[context];
-          logger.verbose(`Using context: ${inspect(discoveredContext, { colors: true })}`);
-        }
         break;
 
       case 'app-definition.yaml': {
@@ -296,12 +297,10 @@ export async function traverseAppDirectory(
 
       case 'icon.png':
       case 'icon.svg':
-        iconPath = filepath;
         gatheredData.iconUrl = filepath;
         return;
 
       case 'maskable-icon.png':
-        maskableIconPath = filepath;
         return;
 
       case 'readme.md':
@@ -384,6 +383,36 @@ export async function traverseAppDirectory(
     throw new AppsembleError('No app definition found');
   }
 
+  return [rc, yaml, gatheredData];
+}
+
+async function retrieveContext(path: string, context: string): Promise<AppsembleContext> {
+  let rc: AppsembleRC;
+  let discoveredContext: AppsembleContext;
+  let iconPath: string;
+  let maskableIconPath: string;
+  await opendirSafe(path, async (filepath, filestat) => {
+    switch (filestat.name.toLowerCase()) {
+      case '.appsemblerc.yaml':
+        logger.info(`Reading app settings from ${filepath}`);
+        [rc] = await readData<AppsembleRC>(filepath);
+        if (context && has(rc?.context, context)) {
+          discoveredContext = rc.context[context];
+          logger.verbose(`Using context: ${inspect(discoveredContext, { colors: true })}`);
+        }
+        break;
+      case 'icon.png':
+      case 'icon.svg':
+        iconPath = filepath;
+        return;
+
+      case 'maskable-icon.png':
+        maskableIconPath = filepath;
+        break;
+      default:
+        break;
+    }
+  });
   discoveredContext ||= {};
   discoveredContext.icon = discoveredContext.icon
     ? resolve(path, discoveredContext.icon)
@@ -391,7 +420,8 @@ export async function traverseAppDirectory(
   discoveredContext.maskableIcon = discoveredContext.maskableIcon
     ? resolve(path, discoveredContext.maskableIcon)
     : maskableIconPath;
-  return [discoveredContext, rc, yaml, gatheredData];
+
+  return discoveredContext;
 }
 
 /**
@@ -768,21 +798,21 @@ export async function updateApp({
 }: UpdateAppParams): Promise<void> {
   const file = await stat(path);
   const formData = new FormData();
-  let appsembleContext: AppsembleContext;
+  const appsembleContext = await retrieveContext(path, context);
+
+  const variant = appsembleContext.variant ?? options.variant ?? context;
 
   let appVariantPath = path;
-  if (existsSync(join(path, 'variants', context))) {
-    await applyAppVariant(path, context);
-    appVariantPath = join(dirname(path), `${basename(path)}-${context}`);
+  if (existsSync(join(path, 'variants', variant))) {
+    await applyAppVariant(path, variant);
+    appVariantPath = join(dirname(path), `${basename(path)}-${variant}`);
   } else {
-    logger.warn(`App variant ${context} is not defined. Using default app.`);
+    logger.warn('App variant is not defined. Using default app.');
   }
 
   if (file.isFile()) {
     const [, data] = await readData(appVariantPath);
     formData.append('yaml', data);
-  } else {
-    [appsembleContext] = await traverseAppDirectory(appVariantPath, context, formData);
   }
 
   const remote = appsembleContext.remote ?? options.remote;
@@ -798,6 +828,7 @@ export async function updateApp({
   const sentryEnvironment = appsembleContext.sentryEnvironment ?? options.sentryEnvironment;
   const googleAnalyticsId = appsembleContext.googleAnalyticsId ?? options.googleAnalyticsId;
   const { appLock } = appsembleContext;
+
   logger.info(`App id: ${id}`);
   logger.verbose(`App remote: ${remote}`);
   logger.verbose(`App is template: ${inspect(template, { colors: true })}`);
@@ -915,17 +946,19 @@ export async function publishApp({
 }: PublishAppParams): Promise<void> {
   const file = await stat(path);
   const formData = new FormData();
-  let appsembleContext: AppsembleContext;
+  const appsembleContext = await retrieveContext(path, context);
   let rc: AppsembleRC;
   let yaml: string;
   let filename = relative(process.cwd(), path);
 
+  const variant = appsembleContext.variant ?? options.variant ?? context;
+
   let appVariantPath = path;
-  if (existsSync(join(path, 'variants', context))) {
-    await applyAppVariant(path, context);
-    appVariantPath = join(dirname(path), `${basename(path)}-${context}`);
+  if (existsSync(join(path, 'variants', variant))) {
+    await applyAppVariant(path, variant);
+    appVariantPath = join(dirname(path), `${basename(path)}-${variant}`);
   } else {
-    logger.warn(`App variant ${context} is not defined. Using default app.`);
+    logger.warn('App variant is not defined. Using default app.');
   }
 
   if (file.isFile()) {
@@ -934,9 +967,10 @@ export async function publishApp({
     yaml = data;
     formData.append('yaml', data);
   } else {
-    [appsembleContext, rc, yaml] = await traverseAppDirectory(appVariantPath, context, formData);
+    [rc, yaml] = await traverseAppDirectory(appVariantPath, formData);
     filename = join(filename, 'app-definition.yaml');
   }
+
   const remote = appsembleContext.remote ?? options.remote;
   const organizationId = appsembleContext.organization ?? options.organization;
   const template = appsembleContext.template ?? options.template ?? false;
