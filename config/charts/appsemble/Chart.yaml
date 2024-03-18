@@ -1,7 +1,7 @@
 apiVersion: v2
 name: appsemble
-version: 0.27.4
-appVersion: 0.27.4
+version: 0.27.5
+appVersion: 0.27.5
 kubeVersion: '>=1.21.0'
 type: application
 description: The open source low-code app building platform
@@ -24,12 +24,9 @@ dependencies:
     condition: postgresql.enabled
 annotations:
   artifacthub.io/changes: >
-    - kind: added
-      description: "Server: Allow service secrets to be applied without security definition."
     - kind: fixed
-      description: "Server: Do not allow deleting assets for an app from another app."
-    - kind: fixed
-      description: "Studio: Search in documentation would navigate to incorrect page."
+      description: "Server: Fixed a bug where demo resources permissions depend on the
+        user that created them."
   artifacthub.io/license: LGPL-3.0-only
   artifacthub.io/links: |
     - name: Appsemble Studio

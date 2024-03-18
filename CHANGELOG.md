@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.27.5](https://gitlab.com/appsemble/appsemble/-/releases/0.27.5)] - 2024-03-18
+
+### Fixed
+
+- Server: Fixed a bug where demo resources permissions depend on the user that created them.
+
 ## \[[0.27.4](https://gitlab.com/appsemble/appsemble/-/releases/0.27.4)] - 2024-03-15
 
 ### Added
