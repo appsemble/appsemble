@@ -262,7 +262,12 @@ e2e apps:
   parallel:
     matrix:
       - APP:
-          ['appsemble/apps/template', 'appsemble/apps/sittard-geleen', 'appsemble/apps/eindhoven']
+          [
+            'appsemble/apps/template',
+            'appsemble/apps/sittard-geleen',
+            'appsemble/apps/eindhoven',
+            'appsemble/apps/amersfoort',
+          ]
   trigger:
     project: $APP
     strategy: depend
