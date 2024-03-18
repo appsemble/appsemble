@@ -1,5 +1,5 @@
 import { authenticate, logger } from '@appsemble/node-utils';
-import { type App, type AppVisibility } from '@appsemble/types';
+import { type App, type AppLock, type AppVisibility } from '@appsemble/types';
 import axios from 'axios';
 import FormData from 'form-data';
 import { type Argv } from 'yargs';
@@ -15,6 +15,7 @@ interface PatchAppArguments extends BaseArguments {
   showAppDefinition?: boolean;
   template?: boolean;
   demoMode?: boolean;
+  locked?: AppLock;
   showAppsembleOAuth2Login?: boolean;
   showAppsembleLogin?: boolean;
   enableSelfRegistration?: boolean;
@@ -50,6 +51,11 @@ export function builder(yargs: Argv): Argv<any> {
     .option('demoMode', {
       description: 'Whether the app should be used in demo mode',
       type: 'boolean',
+    })
+    .option('locked', {
+      description: 'Change the value of AppLock for your app.',
+      type: 'string',
+      choices: ['fullLock', 'studioLock', 'unlocked'],
     })
     .option('showAppsembleOAuth2Login', {
       description: 'Whether the Appsemble OAuth2 login method should be shown',
@@ -117,6 +123,15 @@ export async function handler({
     formData.append('enableSelfRegistration', String(args.enableSelfRegistration));
   }
   try {
+    if (args.locked) {
+      await axios.post(`api/apps/${id}/lock`, {
+        locked: args.locked,
+      });
+      logger.info(`Successfully set app lock value for app with id ${id} to ${args.locked}`);
+      if (!formData.getLengthSync()) {
+        return;
+      }
+    }
     await axios.patch<App>(`/api/apps/${id}`, formData);
     logger.info(`Successfully updated app with id ${id}`);
   } catch (error) {

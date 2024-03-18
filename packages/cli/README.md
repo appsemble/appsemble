@@ -165,6 +165,16 @@ appsemble app patch --id <app-id>
 
 Use `--help` flag with the above command to view the supported arguments.
 
+---
+
+**🛈NOTE**
+
+> The `app patch` command supports updating the `locked` property of an app, locked property is
+> updated before other properties. If you set the locked property to `fullLock`, any other changes
+> won’t be applied unless you are using `--force` flag.
+
+---
+
 To delete an app using the CLI use the following command:
 
 ```sh
