@@ -803,7 +803,7 @@ export async function updateApp({
   const variant = appsembleContext.variant ?? options.variant ?? context;
 
   let appVariantPath = path;
-  if (existsSync(join(path, 'variants', variant))) {
+  if (variant && existsSync(join(path, 'variants', variant))) {
     await applyAppVariant(path, variant);
     appVariantPath = join(dirname(path), `${basename(path)}-${variant}`);
   } else {
@@ -954,7 +954,7 @@ export async function publishApp({
   const variant = appsembleContext.variant ?? options.variant ?? context;
 
   let appVariantPath = path;
-  if (existsSync(join(path, 'variants', variant))) {
+  if (variant && existsSync(join(path, 'variants', variant))) {
     await applyAppVariant(path, variant);
     appVariantPath = join(dirname(path), `${basename(path)}-${variant}`);
   } else {
@@ -1092,7 +1092,7 @@ export async function publishApp({
   logger.info(`App URL: ${protocol}//${data.path}.${data.OrganizationId}.${host}`);
   logger.info(`App store page: ${new URL(`/apps/${data.id}`, remote)}`);
 
-  const rcCollections = rc.context[context].collections;
+  const rcCollections = rc.context[context]?.collections;
   if (Array.isArray(rcCollections)) {
     for (const collectionId of rcCollections) {
       try {
