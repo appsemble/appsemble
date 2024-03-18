@@ -406,9 +406,9 @@ it('should redirect to the app root if the organization id is disallowed', async
   expect(response).toMatchInlineSnapshot(`
     HTTP/1.1 302 Found
     Content-Type: text/html; charset=utf-8
-    Location: http://host.example
+    Location: http://host.example/
 
-    Redirecting to <a href="http://host.example">http://host.example</a>.
+    Redirecting to <a href="http://host.example/">http://host.example/</a>.
   `);
 });
 
