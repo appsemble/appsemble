@@ -1,12 +1,20 @@
 # Core development
 
 This page guides you on how to setup your local development environment, tools required, some common
-development use-cases and some common errors.
+development use-cases and some common errors. For contributing to the Appsemble core, please refer
+to the [contributing guidelines](https://gitlab.com/appsemble/appsemble/-/blob/main/CONTRIBUTING.md)
 
 ## Table of contents
 
 - [Setup](#setup)
 - [Development](#development)
+  - [Studio](#studio)
+    - [App](#app)
+    - [Message](#message)
+  - [Server](#server)
+    - [Data layer](#data-layer)
+    - [Common Development Task](#common-development-task)
+  - [react-components](#react-components)
 - [Debugging](#debugging)
 - [Common errors](#common-errors)
 
@@ -42,7 +50,7 @@ The project can be served using `npm start`. You can specify different options l
 options, use the `--help` argument. i.e. `npm start -- --help`.
 
 To start the local development process, you need to register an account and login using CLI. In your
-browser, register a new account by going to `http://localhost:9999/reigster`. You need an email
+browser, register a new account by going to `http://localhost:9999/register`. You need an email
 address to register an account. If you don’t have an SMTP server configured, the confirmation email
 is printed in the server logs. i.e. the email is not sent in real time. This also allows you to use
 a random test email address. After registering a new account and confirming your email address, you
@@ -112,6 +120,80 @@ about what the package does. E.g. `server` contains the code for Appsemble serve
 various database models, migration files, etc. Similarly, you can check `README.md` file for each
 package to know more about that package.
 
+**Changelog**
+
+Every block and package has a `changed` directory. Their use is explained
+[here](https://gitlab.com/appsemble/appsemble/-/blob/main/CONTRIBUTING.md#changelog) in the
+contributing guidelines.
+
+### Studio
+
+#### App
+
+The studio’s role is to allow users to create and manage their apps via an interactive environment.
+Apps can be edited by making changes to the app definition defined in `YAML`. The parsing of the
+apps `YAML` is done through the use of the [YAML node package](https://www.npmjs.com/package/yaml).
+You can easily access the context of the current app within the studio by using `useApp()`. This
+provides you with the current context of the app the user is viewing/working on.
+
+```sh
+import { useApp } from 'AppDirectoryRoot/index.js';
+
+const { app } = useApp();
+```
+
+#### Message
+
+Throughout the Studio codebase, you’ll encounter extensive usage of the `<FormattedMessage>`
+component. This component is utilized wherever text appears in the Studio interface, facilitating
+support for multiple languages.
+
+When using the `<FormattedMessage>` component, corresponding message definitions are provided in the
+form of `message.ts` files. These files are typically located in the same directory as the
+components or modules where the messages are utilized. Each message definition includes an `id`
+value and a `defaultMessage` value.
+
+- The `id` value serves as a unique identifier for the message and is used for language translation
+  purposes.
+- The `defaultMessage` value specifies the default text to be displayed if the corresponding
+  translation is not available. By default, this value is set to the English translation.
+
+This is done through the use of the “react-intl” package. To define a message you have to use
+“defineMessages”
+
+```sh copy
+import { defineMessages } from 'react-intl';
+
+export const messages = defineMessages({
+  title: {
+    id: 'idValue',
+    defaultMessage: 'SomeTitle',
+  },
+  someOtherMessage: {
+    id: 'idValue2',
+    defaultMessage: 'messageDefaultValue',
+  },
+});
+```
+
+Then if you want to access the value, you will need to use `<FormattedMessage>`
+
+```sh copy
+import { FormattedMessage } from 'react-intl';
+import { messages } from './messages.js';
+
+<FormattedMessage {...messages.title} />
+```
+
+### Server
+
+#### Data layer
+
+The server communicates with the database through the use of the [Sequelize](https://sequelize.org/)
+ORM. The definition for the data models can be found in the `models` directory.
+
+#### Common Development Task
+
 Some common development tasks include adding a new server endpoint, adding a new
 [action](../actions/index.mdx), adding a new [remapper](../remappers/index.mdx), adding new column
 to a table etc.
@@ -171,6 +253,13 @@ to a table etc.
 - If the type needs to be accessed in `studio` or `app` packages, add an implementation of your type
   to `packages/types/`.
 - Add a schema for your type or modify existing schema in `packages/utils/api/components/schema/`.
+
+### react-components
+
+react-components is an internal package for Appsemble which contains components which may me reused
+throughout the Appsemble core repositories. This includes costume hooks, predesigned components and
+custom functionality. It is recommended to use these components as to adhere to Appsemble styling
+and uniformity for ease of use.
 
 ## Debugging
 

@@ -11,7 +11,7 @@ component interacts with each other.
 
 - [Introduction](#introduction)
 - [App](#app)
-- [Editor](#editor)
+- [Studio](#studio)
 - [Server](#server)
 - [CLI](#cli)
 - [SDK](#sdk)
@@ -58,7 +58,7 @@ graph BT
 ## App
 
 The app component handles everything that is necessary in order to render apps as well as submitting
-new data. Apps are uploaded to the database using the Appsemble editor after which it can be
+new data. Apps are uploaded to the database using the Appsemble studio after which it can be
 displayed by retrieving the app definition from the database.
 
 The app definition contains information about how an app should be built, such as pages, blocks,
@@ -66,12 +66,12 @@ resource definitions and security. Depending on the configuration, apps may comm
 the Appsemble server or external servers to fetch and submit data, defaulting to the Appsemble
 server.
 
-## Editor
+## Studio
 
-The editor component allows users to create and manage their apps via an interactive environment.
+The studio component allows users to create and manage their apps via an interactive environment.
 Apps can be edited by making changes to the app definition defined in `YAML`, which in turn can be
 previewed before submitting it to the server. It does this by communicating directly with the app
-component. The editor itself does _not_ communicate with anything other than the Appsemble server on
+component. The studio itself does _not_ communicate with anything other than the Appsemble server on
 its own, though apps in the preview panel can.
 
 ## Server
