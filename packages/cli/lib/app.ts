@@ -790,12 +790,10 @@ This block version is not used in the app`,
  * @param argv The command line options used for updating the app.
  */
 export async function updateApp({
-  assets,
   clientCredentials,
   context,
   force,
   path,
-  resources,
   ...options
 }: UpdateAppParams): Promise<void> {
   const file = await stat(path);
@@ -829,6 +827,8 @@ export async function updateApp({
   const sentryDsn = appsembleContext.sentryDsn ?? options.sentryDsn;
   const sentryEnvironment = appsembleContext.sentryEnvironment ?? options.sentryEnvironment;
   const googleAnalyticsId = appsembleContext.googleAnalyticsId ?? options.googleAnalyticsId;
+  const resources = appsembleContext.resources ?? options.resources;
+  const assets = appsembleContext.assets ?? options.assets;
   const { appLock } = appsembleContext;
 
   logger.info(`App id: ${id}`);
@@ -937,13 +937,11 @@ export async function updateApp({
  * @param options The options to use for publishing an app.
  */
 export async function publishApp({
-  assets,
   clientCredentials,
   context,
   dryRun,
   modifyContext,
   path,
-  resources,
   ...options
 }: PublishAppParams): Promise<void> {
   const file = await stat(path);
@@ -985,6 +983,8 @@ export async function publishApp({
   const sentryDsn = appsembleContext.sentryDsn ?? options.sentryDsn;
   const sentryEnvironment = appsembleContext.sentryEnvironment ?? options.sentryEnvironment;
   const googleAnalyticsId = appsembleContext.googleAnalyticsId ?? options.googleAnalyticsId;
+  const assets = appsembleContext.assets ?? options.assets;
+  const resources = appsembleContext.resources ?? options.resources;
   const appLock = appsembleContext.appLock || 'unlocked';
 
   logger.verbose(`App remote: ${remote}`);

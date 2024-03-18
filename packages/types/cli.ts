@@ -122,14 +122,6 @@ export interface AppsembleContext {
   demoMode?: boolean;
 
   /**
-   * Whether app assets should be clonable.
-   *
-   * If `assetsClonable` is specified, this will override `--assets-clonable` passed on the command
-   * line.
-   */
-  assetsClonable?: boolean;
-
-  /**
    * Set the value of AppLock for your app.
    *
    * If `appLock` is specified, this will override `--app-lock` passed on the command line.
@@ -142,6 +134,28 @@ export interface AppsembleContext {
    * If `collections` is specified, this will override `--collections` passed on the command line.
    */
   collections?: number[];
+
+  /**
+   * Whether to publish the resources from the resources folder.
+   *
+   * If `resources` is specified, this will override `--resources` passed on the command line.
+   */
+  resources?: boolean;
+
+  /**
+   * Whether to publish assets from the assets folder.
+   *
+   * If `assets` is specified, this will override `--assets` passed on the command line.
+   */
+  assets?: boolean;
+
+  /**
+   * Whether app assets should be clonable.
+   *
+   * If `assetsClonable` is specified, this will override `--assets-clonable` passed on the command
+   * line.
+   */
+  assetsClonable?: boolean;
 }
 
 export interface AppsembleRC {
