@@ -9,6 +9,8 @@ type NavbarItemProps = ComponentPropsWithoutRef<typeof ButtonChildren> &
      * The click event handler.
      */
     readonly onClick?: MouseEventHandler<HTMLButtonElement>;
+
+    readonly dataTestId?: string;
   };
 
 /**
@@ -18,6 +20,7 @@ type NavbarItemProps = ComponentPropsWithoutRef<typeof ButtonChildren> &
  */
 export function NavbarItem({
   children,
+  dataTestId = '',
   icon,
   iconPosition,
   onClick,
@@ -33,6 +36,7 @@ export function NavbarItem({
   return onClick ? (
     <button
       className={`navbar-item has-background-white has-text-black-ter ${styles.button}`}
+      data-testid={dataTestId}
       onClick={onClick}
       type="button"
     >
