@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/usr/bin/env sh
 
 retries=0
 found=0
