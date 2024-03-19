@@ -1,7 +1,7 @@
 apiVersion: v2
 name: appsemble
-version: 0.27.5
-appVersion: 0.27.5
+version: 0.27.6
+appVersion: 0.27.6
 kubeVersion: '>=1.21.0'
 type: application
 description: The open source low-code app building platform
@@ -23,10 +23,8 @@ dependencies:
     repository: https://charts.bitnami.com/bitnami
     condition: postgresql.enabled
 annotations:
-  artifacthub.io/changes: >
-    - kind: fixed
-      description: "Server: Fixed a bug where demo resources permissions depend on the
-        user that created them."
+  artifacthub.io/changes: |
+    []
   artifacthub.io/license: LGPL-3.0-only
   artifacthub.io/links: |
     - name: Appsemble Studio
