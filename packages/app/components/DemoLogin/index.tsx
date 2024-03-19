@@ -237,7 +237,11 @@ export function DemoLogin({ modal }: DemoLoginProps): ReactNode {
           >
             {demoAppMembers.map((appMember) => (
               <option key={appMember.userId} value={appMember.userId}>
-                {appMember.role} {appMember.name}
+                {getAppMessage({
+                  id: `app.roles.${appMember.role}`,
+                  defaultMessage: appMember.role,
+                }).format()}{' '}
+                {appMember.name}
               </option>
             ))}
           </SimpleFormField>
@@ -259,7 +263,10 @@ export function DemoLogin({ modal }: DemoLoginProps): ReactNode {
           >
             {appRoleNames.map((appRoleName) => (
               <option key={appRoleName} value={appRoleName}>
-                {appRoleName}
+                {getAppMessage({
+                  id: `app.roles.${appRoleName}`,
+                  defaultMessage: appRoleName,
+                }).format()}
               </option>
             ))}
           </SimpleFormField>
