@@ -11,10 +11,13 @@ interface SimpleSubmitProps extends Omit<ComponentPropsWithoutRef<'button'>, 'on
    * @default true
    */
   readonly allowPristine?: boolean;
+
+  readonly dataTestId?: string;
 }
 
 export function SimpleSubmit({
   allowPristine = true,
+  dataTestId = 'login',
   disabled,
   ...props
 }: SimpleSubmitProps): ReactNode {
@@ -24,7 +27,7 @@ export function SimpleSubmit({
     <Button
       {...props}
       color="primary"
-      data-testid="login"
+      data-testid={dataTestId}
       disabled={
         disabled ||
         (allowPristine && Object.values(pristine).every(Boolean)) ||

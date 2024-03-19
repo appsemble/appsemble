@@ -245,7 +245,12 @@ export function DemoLogin({ modal }: DemoLoginProps): ReactNode {
               </option>
             ))}
           </SimpleFormField>
-          <SimpleSubmit allowPristine={false} disabled={busy.enabled} onClick={setLogin}>
+          <SimpleSubmit
+            allowPristine={false}
+            dataTestId="login"
+            disabled={busy.enabled}
+            onClick={setLogin}
+          >
             <FormattedMessage {...messages.login} />
           </SimpleSubmit>
         </div>
@@ -254,6 +259,7 @@ export function DemoLogin({ modal }: DemoLoginProps): ReactNode {
         <>
           <SimpleFormField
             component={SelectField}
+            data-testid="app-role"
             disabled={appRoleNames.length < 2 || busy.enabled}
             help={<div className={styles.black}>{selectedAppRoleDescription}</div>}
             label={<FormattedMessage {...messages.selectRole} />}
@@ -270,7 +276,12 @@ export function DemoLogin({ modal }: DemoLoginProps): ReactNode {
               </option>
             ))}
           </SimpleFormField>
-          <SimpleSubmit allowPristine={false} disabled={busy.enabled} onClick={setCreateAccount}>
+          <SimpleSubmit
+            allowPristine={false}
+            dataTestId="create-account"
+            disabled={busy.enabled}
+            onClick={setCreateAccount}
+          >
             <FormattedMessage {...messages.createAccount} />
           </SimpleSubmit>
         </>

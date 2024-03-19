@@ -76,7 +76,7 @@ export function ProfileDropdown(): ReactNode {
           </NavbarItem>
         ) : null}
         {showDemoLogin ? (
-          <NavbarItem onClick={demoLoginToggle.enable}>
+          <NavbarItem dataTestId="change-role" onClick={demoLoginToggle.enable}>
             <FormattedMessage {...messages.demoLogin} />
           </NavbarItem>
         ) : null}

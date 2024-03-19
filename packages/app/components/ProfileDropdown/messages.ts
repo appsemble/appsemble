@@ -6,8 +6,8 @@ export const messages = defineMessages({
     defaultMessage: 'Logout',
   },
   demoLogin: {
-    id: 'app.hMd0Ls',
-    defaultMessage: 'Demo Login: Change Role',
+    id: 'app.RXkfY1',
+    defaultMessage: 'Change Role',
   },
   feedback: {
     id: 'app.Ejhdi4',
