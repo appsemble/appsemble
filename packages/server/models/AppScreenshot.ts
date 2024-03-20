@@ -5,6 +5,7 @@ import {
   Column,
   CreatedAt,
   DataType,
+  Default,
   ForeignKey,
   Model,
   PrimaryKey,
@@ -36,6 +37,16 @@ export class AppScreenshot extends Model {
   @AllowNull(false)
   @Column(DataType.STRING)
   mime: string;
+
+  @Default(0)
+  @AllowNull(false)
+  @Column(DataType.INTEGER)
+  index: number;
+
+  @Default('unspecified')
+  @AllowNull(false)
+  @Column(DataType.STRING)
+  language: string;
 
   @UpdatedAt
   updated: Date;

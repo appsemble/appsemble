@@ -72,6 +72,7 @@ import * as m0_25_0 from './0.25.0.js';
 import * as m0_26_0 from './0.26.0.js';
 import * as m0_27_0 from './0.27.0.js';
 import * as m0_27_4 from './0.27.4.js';
+import * as m0_27_8 from './0.27.8.js';
 import * as m0_9_0 from './0.9.0.js';
 import * as m0_9_3 from './0.9.3.js';
 import * as m0_9_4 from './0.9.4.js';
@@ -155,4 +156,5 @@ export const migrations: Migration[] = [
   m0_26_0,
   m0_27_0,
   m0_27_4,
+  m0_27_8,
 ];

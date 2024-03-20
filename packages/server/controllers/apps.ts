@@ -3,6 +3,7 @@ import { isDeepStrictEqual } from 'node:util';
 import {
   AppsembleError,
   assertKoaError,
+  getSupportedLanguages,
   handleValidatorResult,
   logger,
   serveIcon,
@@ -23,7 +24,7 @@ import JSZip from 'jszip';
 import { type Context } from 'koa';
 import { type File } from 'koas-body-parser';
 import { lookup } from 'mime-types';
-import { col, fn, literal, Op, UniqueConstraintError } from 'sequelize';
+import { col, fn, literal, Op, type Transaction, UniqueConstraintError } from 'sequelize';
 import sharp from 'sharp';
 import webpush from 'web-push';
 import { parse, stringify } from 'yaml';
@@ -108,6 +109,82 @@ function handleAppValidationError(ctx: Context, error: Error, app: Partial<App>)
   }
 
   throw error;
+}
+
+async function createAppScreenshots(
+  appId: number,
+  screenshots: File[],
+  transaction: Transaction,
+  ctx: Context,
+): Promise<AppScreenshot[]> {
+  const screenshotsByLanguage: Record<string, File[]> = {};
+  const supportedLanguages = await getSupportedLanguages();
+
+  for (const screenshot of screenshots) {
+    const { filename } = screenshot;
+    let language = filename.slice(0, filename.indexOf('-'));
+
+    if (!supportedLanguages.has(language)) {
+      language = 'unspecified';
+    }
+
+    screenshotsByLanguage[language] = [...(screenshotsByLanguage[language] || []), screenshot];
+  }
+
+  let createdScreenshots: AppScreenshot[] = [];
+  for (const [language, languageScreenshots] of Object.entries(screenshotsByLanguage)) {
+    const lastExistingScreenshot = await AppScreenshot.findOne({
+      where: {
+        AppId: appId,
+        language,
+      },
+      attributes: ['index', 'language'],
+      order: [['index', 'DESC']],
+    });
+
+    const sortedScreenshots = languageScreenshots.sort((a, b) => {
+      const { filename: aFilename } = a;
+      const { filename: bFilename } = b;
+      if (aFilename > bFilename) {
+        return 1;
+      }
+      if (aFilename < bFilename) {
+        return -1;
+      }
+      return 0;
+    });
+
+    logger.verbose(`Storing ${languageScreenshots?.length ?? 0} ${language} screenshots`);
+
+    const createdLanguageScreenshots = await AppScreenshot.bulkCreate(
+      await Promise.all(
+        sortedScreenshots.map(async ({ contents }: File, index) => {
+          const img = sharp(contents);
+
+          const { format, height, width } = await img.metadata();
+          const mime = lookup(format);
+
+          assertKoaError(!mime, ctx, 404, `Unknown screenshot mime type: ${mime}`);
+
+          return {
+            screenshot: contents,
+            AppId: appId,
+            index: lastExistingScreenshot ? lastExistingScreenshot.index + index + 1 : index,
+            language,
+            mime,
+            width,
+            height,
+          };
+        }),
+      ),
+      // These queries provide huge logs.
+      { transaction, logging: false },
+    );
+
+    createdScreenshots = [...createdScreenshots, ...createdLanguageScreenshots];
+  }
+
+  return createdScreenshots;
 }
 
 export async function createApp(ctx: Context): Promise<void> {
@@ -208,30 +285,8 @@ export async function createApp(ctx: Context): Promise<void> {
           await AppSnapshot.create({ AppId: record.id, yaml }, { transaction }),
         ];
 
-        logger.verbose(`Storing ${screenshots?.length ?? 0} screenshots`);
         record.AppScreenshots = screenshots?.length
-          ? await AppScreenshot.bulkCreate(
-              await Promise.all(
-                screenshots.map(async ({ contents }: File) => {
-                  const img = sharp(contents);
-
-                  const { format, height, width } = await img.metadata();
-                  const mime = lookup(format);
-
-                  assertKoaError(!mime, ctx, 404, `Unknown screenshot mime type: ${mime}`);
-
-                  return {
-                    screenshot: contents,
-                    AppId: record.id,
-                    mime,
-                    width,
-                    height,
-                  };
-                }),
-              ),
-              // These queries provide huge logs.
-              { transaction, logging: false },
-            )
+          ? await createAppScreenshots(record.id, screenshots, transaction, ctx)
           : [];
 
         if (dryRun === 'true') {
@@ -268,6 +323,22 @@ export async function getAppById(ctx: Context): Promise<void> {
   } = ctx;
   const { baseLanguage, language, query: languageQuery } = parseLanguage(ctx, ctx.query?.language);
 
+  const languageScreenshot = await AppScreenshot.findOne({
+    attributes: ['language'],
+    where: {
+      AppId: appId,
+      ...(language ? { language } : {}),
+    },
+  });
+
+  const unspecifiedScreenshot = await AppScreenshot.findOne({
+    attributes: ['language'],
+    where: {
+      AppId: appId,
+      language: 'unspecified',
+    },
+  });
+
   const app = await App.findByPk(appId, {
     attributes: {
       include: [
@@ -301,7 +372,19 @@ export async function getAppById(ctx: Context): Promise<void> {
           ],
         },
       },
-      { model: AppScreenshot, attributes: ['id'] },
+      {
+        model: AppScreenshot,
+        attributes: ['id', 'index', 'language'],
+        where: {
+          language:
+            language && languageScreenshot
+              ? language
+              : unspecifiedScreenshot
+                ? 'unspecified'
+                : 'en',
+        },
+        required: false,
+      },
       ...languageQuery,
     ],
   });
@@ -691,31 +774,10 @@ export async function patchApp(ctx: Context): Promise<void> {
         );
         dbApp.AppSnapshots = [snapshot];
       }
+
       if (screenshots?.length) {
         await AppScreenshot.destroy({ where: { AppId: appId }, transaction });
-        logger.verbose(`Saving ${screenshots.length} screenshots`);
-        dbApp.AppScreenshots = await AppScreenshot.bulkCreate(
-          await Promise.all(
-            screenshots.map(async ({ contents }: File) => {
-              const img = sharp(contents);
-
-              const { format, height, width } = await img.metadata();
-              const mime = lookup(format);
-
-              assertKoaError(!mime, ctx, 404, `Unknown screenshot mime type: ${mime}`);
-
-              return {
-                screenshot: contents,
-                AppId: dbApp.id,
-                mime,
-                width,
-                height,
-              };
-            }),
-          ),
-          // These queries provide huge logs.
-          { transaction, logging: false },
-        );
+        dbApp.AppScreenshots = await createAppScreenshots(appId, screenshots, transaction, ctx);
       }
     });
 
@@ -945,9 +1007,10 @@ export async function createAppScreenshot(ctx: Context): Promise<void> {
   const {
     pathParams: { appId },
     request: {
-      body: { screenshots },
+      body: { language, screenshots },
     },
   } = ctx;
+
   const app = await App.findByPk(appId, {
     attributes: ['id', 'OrganizationId'],
   });
@@ -957,33 +1020,28 @@ export async function createAppScreenshot(ctx: Context): Promise<void> {
   checkAppLock(ctx, app);
   await checkRole(ctx, app.OrganizationId, Permission.EditAppSettings);
 
-  await transactional(async (transaction) => {
-    logger.verbose(`Saving ${screenshots.length} screenshots`);
-    const result = await AppScreenshot.bulkCreate(
-      await Promise.all(
-        screenshots.map(async ({ contents }: File) => {
-          const img = sharp(contents);
-
-          const { format, height, width } = await img.metadata();
-          const mime = lookup(format);
-
-          assertKoaError(!mime, ctx, 404, `Unknown screenshot mime type: ${mime}`);
-
-          return {
-            screenshot: contents,
-            AppId: app.id,
-            mime,
-            width,
-            height,
-          };
-        }),
-      ),
-      // These queries provide huge logs.
-      { transaction, logging: false },
-    );
-
-    ctx.body = result.map((screenshot) => screenshot.id);
+  const languageScreenshot = await AppScreenshot.findOne({
+    attributes: ['language'],
+    where: {
+      AppId: appId,
+      ...(language ? { language } : {}),
+    },
   });
+
+  const languageScreenshots = screenshots.map((screenshot: File) => {
+    const { filename } = screenshot;
+    return {
+      ...screenshot,
+      filename: `${languageScreenshot ? language : 'unspecified'}-${filename}`,
+    };
+  });
+
+  let result: AppScreenshot[] = [];
+  await transactional(async (transaction) => {
+    result = await createAppScreenshots(appId, languageScreenshots, transaction, ctx);
+  });
+
+  ctx.body = result.map((screenshot) => screenshot.id);
 }
 
 export async function deleteAppScreenshot(ctx: Context): Promise<void> {

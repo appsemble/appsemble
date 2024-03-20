@@ -298,9 +298,17 @@ export class App extends Model {
         this.template && this.Assets?.filter((asset) => asset.clonable).length ? true : undefined,
       OrganizationId: this.OrganizationId,
       OrganizationName: this?.Organization?.name,
-      screenshotUrls: this.AppScreenshots?.map(
-        ({ id }) => `/api/apps/${this.id}/screenshots/${id}`,
-      ),
+      screenshotUrls: this.AppScreenshots?.sort((a, b) => {
+        const { index: aIndex } = a;
+        const { index: bIndex } = b;
+        if (aIndex > bIndex) {
+          return 1;
+        }
+        if (aIndex < bIndex) {
+          return -1;
+        }
+        return 0;
+      }).map(({ id }) => `/api/apps/${this.id}/screenshots/${id}`),
       messages: this.messages,
       demoMode: this.demoMode,
       controllerCode: this.controllerCode,

@@ -1,4 +1,4 @@
-import { createReadStream, createWriteStream, existsSync, type ReadStream } from 'node:fs';
+import { cpSync, createReadStream, createWriteStream, existsSync, type ReadStream } from 'node:fs';
 import { mkdir, readdir, readFile, rm, stat } from 'node:fs/promises';
 import { basename, dirname, join, parse, relative, resolve } from 'node:path';
 import { inspect } from 'node:util';
@@ -7,6 +7,7 @@ import {
   applyAppVariant,
   AppsembleError,
   authenticate,
+  getSupportedLanguages,
   logger,
   opendirSafe,
   readData,
@@ -258,6 +259,8 @@ export async function traverseAppDirectory(
   let controllerCode: string;
   let controllerImplementations: ProjectImplementations;
 
+  const supportedLanguages = await getSupportedLanguages();
+
   const gatheredData: App = {
     screenshotUrls: [],
   } as App;
@@ -311,14 +314,32 @@ export async function traverseAppDirectory(
         return opendirSafe(
           filepath,
           (screenshotPath, screenshotStat) => {
-            logger.info(`Adding screenshot ${screenshotPath} 🖼️`);
-            if (!screenshotStat.isFile()) {
-              throw new AppsembleError(`Expected ${screenshotPath} to be an image file`);
+            if (screenshotStat.isFile()) {
+              const screenshotDirectoryPath = dirname(screenshotPath);
+              const screenshotDirectoryName = basename(screenshotDirectoryPath);
+              const screenshotName = basename(screenshotPath);
+
+              if (!['screenshots', ...supportedLanguages].includes(screenshotDirectoryName)) {
+                logger.warn(`Unsupported directory name at ${screenshotPath}. Skipping...`);
+                return;
+              }
+
+              const language = supportedLanguages.has(screenshotDirectoryName)
+                ? screenshotDirectoryName
+                : 'unspecified';
+
+              const tmpFilePath = join(screenshotDirectoryPath, `${language}-${screenshotName}`);
+
+              cpSync(screenshotPath, tmpFilePath);
+
+              logger.info(`Adding screenshot ${tmpFilePath} 🖼️`);
+              formData.append('screenshots', createReadStream(tmpFilePath));
+              gatheredData.screenshotUrls.push(basename(screenshotPath));
+
+              rm(tmpFilePath);
             }
-            formData.append('screenshots', createReadStream(screenshotPath));
-            gatheredData.screenshotUrls.push(basename(screenshotPath));
           },
-          { allowMissing: true },
+          { allowMissing: true, recursive: true },
         );
 
       case 'theme':
