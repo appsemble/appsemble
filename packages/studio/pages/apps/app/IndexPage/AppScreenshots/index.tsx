@@ -10,6 +10,7 @@ import { Permission } from '@appsemble/utils';
 import axios from 'axios';
 import { type ChangeEvent, type ReactNode, useCallback, useRef, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
+import { useParams } from 'react-router-dom';
 
 import { AppScreenshot } from './AppScreenshot/index.js';
 import styles from './index.module.css';
@@ -19,6 +20,7 @@ import { checkRole } from '../../../../../utils/checkRole.js';
 import { useApp } from '../../index.js';
 
 export function AppScreenshots(): ReactNode {
+  const { lang } = useParams<{ lang: string }>();
   const { app, setApp } = useApp();
   const { organizations } = useUser();
   const { formatMessage } = useIntl();
@@ -57,6 +59,7 @@ export function AppScreenshots(): ReactNode {
   const onSubmitScreenshot = useCallback(async () => {
     const form = new FormData();
     form.append('screenshots', uploadingScreenshot, uploadingScreenshot.name);
+    form.append('language', lang);
     const { data: ids } = await axios.post<number[]>(`/api/apps/${app.id}/screenshots`, form);
     setApp({
       ...app,
@@ -66,7 +69,7 @@ export function AppScreenshots(): ReactNode {
       ],
     });
     closeModal();
-  }, [app, setApp, uploadingScreenshot, closeModal]);
+  }, [uploadingScreenshot, app, lang, setApp, closeModal]);
 
   if (!mayManageScreenshots && !app.screenshotUrls.length) {
     return null;

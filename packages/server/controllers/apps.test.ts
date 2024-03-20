@@ -1183,11 +1183,463 @@ describe('createApp', () => {
       created: new Date(),
       height: 247,
       id: 1,
+      index: 0,
+      language: 'unspecified',
       mime: 'image/png',
       screenshot: expect.any(Buffer),
       updated: new Date(),
       width: 474,
     });
+  });
+
+  it('should accept screenshots by language and order them', async () => {
+    authorizeStudio();
+    const createdApp = await request.post(
+      '/api/apps',
+      createFormData({
+        OrganizationId: organization.id,
+        yaml: stripIndent(`
+          name: Test App
+          defaultPage: Test Page
+          pages:
+            - name: Test Page
+              blocks:
+                - type: test
+                  version: 0.0.0
+        `),
+        icon: createFixtureStream('nodejs-logo.png'),
+        screenshots: [
+          createFixtureStream('standing.png'),
+          createFixtureStream('standing.png'),
+          createFixtureStream('en-standing.png'),
+          createFixtureStream('en-standing.png'),
+          createFixtureStream('nl-standing.png'),
+          createFixtureStream('nl-standing.png'),
+        ],
+      }),
+    );
+
+    const unspecifiedScreenshots = await AppScreenshot.findAll({
+      where: {
+        language: 'unspecified',
+      },
+    });
+
+    expect(unspecifiedScreenshots[0].toJSON()).toStrictEqual({
+      AppId: 1,
+      created: new Date(),
+      height: 247,
+      id: 1,
+      index: 0,
+      language: 'unspecified',
+      mime: 'image/png',
+      screenshot: expect.any(Buffer),
+      updated: new Date(),
+      width: 474,
+    });
+
+    expect(unspecifiedScreenshots[1].toJSON()).toStrictEqual({
+      AppId: 1,
+      created: new Date(),
+      height: 247,
+      id: 2,
+      index: 1,
+      language: 'unspecified',
+      mime: 'image/png',
+      screenshot: expect.any(Buffer),
+      updated: new Date(),
+      width: 474,
+    });
+
+    const enScreenshots = await AppScreenshot.findAll({
+      where: {
+        language: 'en',
+      },
+    });
+
+    expect(enScreenshots[0].toJSON()).toStrictEqual({
+      AppId: 1,
+      created: new Date(),
+      height: 247,
+      id: 3,
+      index: 0,
+      language: 'en',
+      mime: 'image/png',
+      screenshot: expect.any(Buffer),
+      updated: new Date(),
+      width: 474,
+    });
+
+    expect(enScreenshots[1].toJSON()).toStrictEqual({
+      AppId: 1,
+      created: new Date(),
+      height: 247,
+      id: 4,
+      index: 1,
+      language: 'en',
+      mime: 'image/png',
+      screenshot: expect.any(Buffer),
+      updated: new Date(),
+      width: 474,
+    });
+
+    const nlScreenshots = await AppScreenshot.findAll({
+      where: {
+        language: 'nl',
+      },
+    });
+
+    expect(nlScreenshots[0].toJSON()).toStrictEqual({
+      AppId: 1,
+      created: new Date(),
+      height: 247,
+      id: 5,
+      index: 0,
+      language: 'nl',
+      mime: 'image/png',
+      screenshot: expect.any(Buffer),
+      updated: new Date(),
+      width: 474,
+    });
+
+    expect(nlScreenshots[1].toJSON()).toStrictEqual({
+      AppId: 1,
+      created: new Date(),
+      height: 247,
+      id: 6,
+      index: 1,
+      language: 'nl',
+      mime: 'image/png',
+      screenshot: expect.any(Buffer),
+      updated: new Date(),
+      width: 474,
+    });
+
+    const unspecifiedApp = await request.get(`/api/apps/${createdApp.data.id}`);
+    // eslint-disable-next-line vitest/no-interpolation-in-snapshots
+    expect(unspecifiedApp).toMatchInlineSnapshot(`
+      HTTP/1.1 200 OK
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "$created": "1970-01-01T00:00:00.000Z",
+        "$updated": "1970-01-01T00:00:00.000Z",
+        "OrganizationId": "testorganization",
+        "OrganizationName": "Test Organization",
+        "controllerCode": null,
+        "controllerImplementations": null,
+        "definition": {
+          "defaultPage": "Test Page",
+          "name": "Test App",
+          "pages": [
+            {
+              "blocks": [
+                {
+                  "type": "test",
+                  "version": "0.0.0",
+                },
+              ],
+              "name": "Test Page",
+            },
+          ],
+        },
+        "demoMode": false,
+        "domain": null,
+        "emailName": null,
+        "enableSelfRegistration": true,
+        "enableUnsecuredServiceSecrets": false,
+        "googleAnalyticsID": null,
+        "hasIcon": true,
+        "hasMaskableIcon": false,
+        "iconBackground": "#ffffff",
+        "iconUrl": "/api/apps/1/icon?maskable=true&updated=1970-01-01T00%3A00%3A00.000Z",
+        "id": 1,
+        "locked": "unlocked",
+        "longDescription": null,
+        "path": "test-app",
+        "screenshotUrls": [
+          "/api/apps/1/screenshots/${unspecifiedScreenshots[0].id}",
+          "/api/apps/1/screenshots/${unspecifiedScreenshots[1].id}",
+        ],
+        "sentryDsn": null,
+        "sentryEnvironment": null,
+        "showAppDefinition": true,
+        "showAppsembleLogin": false,
+        "showAppsembleOAuth2Login": true,
+        "visibility": "unlisted",
+        "yaml": "
+      name: Test App
+      defaultPage: Test Page
+      pages:
+        - name: Test Page
+          blocks:
+            - type: test
+              version: 0.0.0
+              ",
+      }
+    `);
+
+    const frApp = await request.get(`/api/apps/${createdApp.data.id}`);
+    // eslint-disable-next-line vitest/no-interpolation-in-snapshots
+    expect(frApp).toMatchInlineSnapshot(`
+      HTTP/1.1 200 OK
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "$created": "1970-01-01T00:00:00.000Z",
+        "$updated": "1970-01-01T00:00:00.000Z",
+        "OrganizationId": "testorganization",
+        "OrganizationName": "Test Organization",
+        "controllerCode": null,
+        "controllerImplementations": null,
+        "definition": {
+          "defaultPage": "Test Page",
+          "name": "Test App",
+          "pages": [
+            {
+              "blocks": [
+                {
+                  "type": "test",
+                  "version": "0.0.0",
+                },
+              ],
+              "name": "Test Page",
+            },
+          ],
+        },
+        "demoMode": false,
+        "domain": null,
+        "emailName": null,
+        "enableSelfRegistration": true,
+        "enableUnsecuredServiceSecrets": false,
+        "googleAnalyticsID": null,
+        "hasIcon": true,
+        "hasMaskableIcon": false,
+        "iconBackground": "#ffffff",
+        "iconUrl": "/api/apps/1/icon?maskable=true&updated=1970-01-01T00%3A00%3A00.000Z",
+        "id": 1,
+        "locked": "unlocked",
+        "longDescription": null,
+        "path": "test-app",
+        "screenshotUrls": [
+          "/api/apps/1/screenshots/${unspecifiedScreenshots[0].id}",
+          "/api/apps/1/screenshots/${unspecifiedScreenshots[1].id}",
+        ],
+        "sentryDsn": null,
+        "sentryEnvironment": null,
+        "showAppDefinition": true,
+        "showAppsembleLogin": false,
+        "showAppsembleOAuth2Login": true,
+        "visibility": "unlisted",
+        "yaml": "
+      name: Test App
+      defaultPage: Test Page
+      pages:
+        - name: Test Page
+          blocks:
+            - type: test
+              version: 0.0.0
+              ",
+      }
+    `);
+
+    const enApp = await request.get(`/api/apps/${createdApp.data.id}?language=en`);
+    // eslint-disable-next-line vitest/no-interpolation-in-snapshots
+    expect(enApp).toMatchInlineSnapshot(`
+      HTTP/1.1 200 OK
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "$created": "1970-01-01T00:00:00.000Z",
+        "$updated": "1970-01-01T00:00:00.000Z",
+        "OrganizationId": "testorganization",
+        "OrganizationName": "Test Organization",
+        "controllerCode": null,
+        "controllerImplementations": null,
+        "definition": {
+          "defaultPage": "Test Page",
+          "name": "Test App",
+          "pages": [
+            {
+              "blocks": [
+                {
+                  "type": "test",
+                  "version": "0.0.0",
+                },
+              ],
+              "name": "Test Page",
+            },
+          ],
+        },
+        "demoMode": false,
+        "domain": null,
+        "emailName": null,
+        "enableSelfRegistration": true,
+        "enableUnsecuredServiceSecrets": false,
+        "googleAnalyticsID": null,
+        "hasIcon": true,
+        "hasMaskableIcon": false,
+        "iconBackground": "#ffffff",
+        "iconUrl": "/api/apps/1/icon?maskable=true&updated=1970-01-01T00%3A00%3A00.000Z",
+        "id": 1,
+        "locked": "unlocked",
+        "longDescription": null,
+        "path": "test-app",
+        "screenshotUrls": [
+          "/api/apps/1/screenshots/${enScreenshots[0].id}",
+          "/api/apps/1/screenshots/${enScreenshots[1].id}",
+        ],
+        "sentryDsn": null,
+        "sentryEnvironment": null,
+        "showAppDefinition": true,
+        "showAppsembleLogin": false,
+        "showAppsembleOAuth2Login": true,
+        "visibility": "unlisted",
+        "yaml": "
+      name: Test App
+      defaultPage: Test Page
+      pages:
+        - name: Test Page
+          blocks:
+            - type: test
+              version: 0.0.0
+              ",
+      }
+    `);
+
+    const nlApp = await request.get(`/api/apps/${createdApp.data.id}?language=nl`);
+    // eslint-disable-next-line vitest/no-interpolation-in-snapshots
+    expect(nlApp).toMatchInlineSnapshot(`
+      HTTP/1.1 200 OK
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "$created": "1970-01-01T00:00:00.000Z",
+        "$updated": "1970-01-01T00:00:00.000Z",
+        "OrganizationId": "testorganization",
+        "OrganizationName": "Test Organization",
+        "controllerCode": null,
+        "controllerImplementations": null,
+        "definition": {
+          "defaultPage": "Test Page",
+          "name": "Test App",
+          "pages": [
+            {
+              "blocks": [
+                {
+                  "type": "test",
+                  "version": "0.0.0",
+                },
+              ],
+              "name": "Test Page",
+            },
+          ],
+        },
+        "demoMode": false,
+        "domain": null,
+        "emailName": null,
+        "enableSelfRegistration": true,
+        "enableUnsecuredServiceSecrets": false,
+        "googleAnalyticsID": null,
+        "hasIcon": true,
+        "hasMaskableIcon": false,
+        "iconBackground": "#ffffff",
+        "iconUrl": "/api/apps/1/icon?maskable=true&updated=1970-01-01T00%3A00%3A00.000Z",
+        "id": 1,
+        "locked": "unlocked",
+        "longDescription": null,
+        "path": "test-app",
+        "screenshotUrls": [
+          "/api/apps/1/screenshots/${nlScreenshots[0].id}",
+          "/api/apps/1/screenshots/${nlScreenshots[1].id}",
+        ],
+        "sentryDsn": null,
+        "sentryEnvironment": null,
+        "showAppDefinition": true,
+        "showAppsembleLogin": false,
+        "showAppsembleOAuth2Login": true,
+        "visibility": "unlisted",
+        "yaml": "
+      name: Test App
+      defaultPage: Test Page
+      pages:
+        - name: Test Page
+          blocks:
+            - type: test
+              version: 0.0.0
+              ",
+      }
+    `);
+
+    await AppScreenshot.destroy({
+      where: {
+        language: 'unspecified',
+      },
+    });
+
+    const frApp2 = await request.get(`/api/apps/${createdApp.data.id}`);
+    // eslint-disable-next-line vitest/no-interpolation-in-snapshots
+    expect(frApp2).toMatchInlineSnapshot(`
+      HTTP/1.1 200 OK
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "$created": "1970-01-01T00:00:00.000Z",
+        "$updated": "1970-01-01T00:00:00.000Z",
+        "OrganizationId": "testorganization",
+        "OrganizationName": "Test Organization",
+        "controllerCode": null,
+        "controllerImplementations": null,
+        "definition": {
+          "defaultPage": "Test Page",
+          "name": "Test App",
+          "pages": [
+            {
+              "blocks": [
+                {
+                  "type": "test",
+                  "version": "0.0.0",
+                },
+              ],
+              "name": "Test Page",
+            },
+          ],
+        },
+        "demoMode": false,
+        "domain": null,
+        "emailName": null,
+        "enableSelfRegistration": true,
+        "enableUnsecuredServiceSecrets": false,
+        "googleAnalyticsID": null,
+        "hasIcon": true,
+        "hasMaskableIcon": false,
+        "iconBackground": "#ffffff",
+        "iconUrl": "/api/apps/1/icon?maskable=true&updated=1970-01-01T00%3A00%3A00.000Z",
+        "id": 1,
+        "locked": "unlocked",
+        "longDescription": null,
+        "path": "test-app",
+        "screenshotUrls": [
+          "/api/apps/1/screenshots/${enScreenshots[0].id}",
+          "/api/apps/1/screenshots/${enScreenshots[1].id}",
+        ],
+        "sentryDsn": null,
+        "sentryEnvironment": null,
+        "showAppDefinition": true,
+        "showAppsembleLogin": false,
+        "showAppsembleOAuth2Login": true,
+        "visibility": "unlisted",
+        "yaml": "
+      name: Test App
+      defaultPage: Test Page
+      pages:
+        - name: Test Page
+          blocks:
+            - type: test
+              version: 0.0.0
+              ",
+      }
+    `);
   });
 
   it('should accept controller', async () => {
@@ -5090,6 +5542,147 @@ describe('createAppScreenshot', () => {
         2,
       ]
     `);
+  });
+
+  it('should create multiple screenshots by language and order them', async () => {
+    const app = await App.create({
+      definition: {},
+      OrganizationId: organization.id,
+      vapidPrivateKey: '',
+      vapidPublicKey: '',
+    });
+
+    const form = createFormData({
+      screenshots: [createFixtureStream('standing.png'), createFixtureStream('standing.png')],
+    });
+
+    authorizeStudio();
+
+    await request.post(`/api/apps/${app.id}/screenshots`, form);
+
+    const createdUnspecifiedScreenshots1 = await AppScreenshot.findAll({
+      where: {
+        AppId: app.id,
+        language: 'unspecified',
+      },
+    });
+
+    expect(createdUnspecifiedScreenshots1[0].toJSON()).toStrictEqual({
+      AppId: 1,
+      created: new Date(),
+      height: 247,
+      id: 1,
+      index: 0,
+      language: 'unspecified',
+      mime: 'image/png',
+      screenshot: expect.any(Buffer),
+      updated: new Date(),
+      width: 474,
+    });
+
+    expect(createdUnspecifiedScreenshots1[1].toJSON()).toStrictEqual({
+      AppId: 1,
+      created: new Date(),
+      height: 247,
+      id: 2,
+      index: 1,
+      language: 'unspecified',
+      mime: 'image/png',
+      screenshot: expect.any(Buffer),
+      updated: new Date(),
+      width: 474,
+    });
+
+    const formNl = createFormData({
+      screenshots: [createFixtureStream('standing.png'), createFixtureStream('standing.png')],
+      language: 'nl',
+    });
+
+    await request.post(`/api/apps/${app.id}/screenshots`, formNl);
+
+    const createdUnspecifiedScreenshots2 = await AppScreenshot.findAll({
+      where: {
+        AppId: app.id,
+        language: 'unspecified',
+      },
+      order: [['index', 'ASC']],
+    });
+
+    expect(createdUnspecifiedScreenshots2[2].toJSON()).toStrictEqual({
+      AppId: 1,
+      created: new Date(),
+      height: 247,
+      id: 3,
+      index: 2,
+      language: 'unspecified',
+      mime: 'image/png',
+      screenshot: expect.any(Buffer),
+      updated: new Date(),
+      width: 474,
+    });
+
+    expect(createdUnspecifiedScreenshots2[3].toJSON()).toStrictEqual({
+      AppId: 1,
+      created: new Date(),
+      height: 247,
+      id: 4,
+      index: 3,
+      language: 'unspecified',
+      mime: 'image/png',
+      screenshot: expect.any(Buffer),
+      updated: new Date(),
+      width: 474,
+    });
+
+    await AppScreenshot.create({
+      screenshot: Buffer.from(''),
+      AppId: app.id,
+      index: 0,
+      language: 'nl',
+      mime: 'image/png',
+      width: 100,
+      height: 200,
+    });
+
+    const formNl2 = createFormData({
+      screenshots: [createFixtureStream('standing.png'), createFixtureStream('standing.png')],
+      language: 'nl',
+    });
+
+    await request.post(`/api/apps/${app.id}/screenshots`, formNl2);
+
+    const createdNlScreenshots = await AppScreenshot.findAll({
+      where: {
+        AppId: app.id,
+        language: 'nl',
+      },
+    });
+
+    expect(createdNlScreenshots[1].toJSON()).toStrictEqual({
+      AppId: 1,
+      created: new Date(),
+      height: 247,
+      id: 6,
+      index: 1,
+      language: 'nl',
+      mime: 'image/png',
+      screenshot: expect.any(Buffer),
+      updated: new Date(),
+      width: 474,
+    });
+
+    expect(createdNlScreenshots[2].toJSON()).toStrictEqual({
+      AppId: 1,
+      created: new Date(),
+      height: 247,
+      id: 7,
+      index: 2,
+      language: 'nl',
+      mime: 'image/png',
+      screenshot: expect.any(Buffer),
+      updated: new Date(),
+      width: 474,
+    });
   });
 
   // XXX: Re-enable this test when updating Koas 🧀

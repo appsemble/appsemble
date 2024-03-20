@@ -931,6 +931,10 @@ This will return a 404 if the user has not uploaded one.`,
                     format: 'binary',
                   },
                 },
+                language: {
+                  type: 'string',
+                  description: 'The language for which the screenshots will be uploaded',
+                },
               },
             },
             encoding: {
