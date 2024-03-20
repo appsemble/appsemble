@@ -9,6 +9,7 @@ import fsExtra from 'fs-extra';
 import normalizePath from 'normalize-path';
 import semver from 'semver';
 import { type PackageJson } from 'type-fest';
+import ts from 'typescript';
 
 import { extractMessages } from '../lib/i18n.js';
 
@@ -260,6 +261,63 @@ async function validate(
   );
 }
 
+/**
+ * Validates Appsemble RC context properties and descriptions between the schema and type definition
+ *
+ * @param assert The assert function used.
+ * @param types The path to the `@appsemble/types` package.
+ * @param cli The path to the `@appsemble/cli` package.
+ */
+async function validateContext(assert: Assert, types: string, cli: string): Promise<void> {
+  const cliFile = join(types, 'cli.ts');
+  const rcFile = join(cli, 'assets', 'appsemblerc.schema.json');
+  const cliContent = await readFile(cliFile, 'utf8');
+  const [rcContent] = await readData(rcFile);
+  const file = ts.createSourceFile('temp.ts', cliContent, ts.ScriptTarget.ES2019);
+  const props = file.statements
+    .find(ts.isInterfaceDeclaration)
+    .members.filter(ts.isPropertySignature);
+
+  // TODO: validate recursively
+  const interfaceProps = props.map((p) => ({
+    name: p.name.getText(file),
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-expect-error
+    comment: p.jsDoc[0].comment,
+    // TODO: validate if types match as well
+    // type: ts.SyntaxKind[p.type.kind].replace(/Keyword|Type/, '').toLowerCase(),
+    // TODO: validate if default value matches as well
+  }));
+
+  const schemaProps = (rcContent as any).properties.context.additionalProperties.properties;
+
+  const schemaKeys = Object.keys(schemaProps);
+  const interfaceKeys = new Set(interfaceProps.map((p) => p.name));
+
+  const missingSchemaKeys = schemaKeys.filter((p) => !interfaceKeys.has(p));
+  const missingInterfaceKeys = interfaceProps.filter((p) => !schemaKeys.includes(p.name));
+
+  for (const key of missingSchemaKeys) {
+    assert(false, 'cli.ts', `is missing \`${key}\``, 'packages/types');
+  }
+  for (const key of missingInterfaceKeys) {
+    assert(false, 'assets/appsemblerc.schema.json', `is missing \`${key}\``, 'packages/cli');
+  }
+
+  const ignoredChars = /`|\*/g;
+  const newLinePattern = /(?<!\n)\n(?!\n|-)/g;
+
+  for (const interfaceProp of interfaceProps) {
+    assert(
+      schemaProps[interfaceProp.name]?.description.replaceAll(ignoredChars, '') ===
+        interfaceProp.comment.replaceAll(ignoredChars, '').replaceAll(newLinePattern, ' '),
+      'assets/appsemblerc.schema.json',
+      `\`${interfaceProp.name}\` description should be the same as in \`packages/types/cli.ts\``,
+      'packages/cli',
+    );
+  }
+}
+
 export async function handler(): Promise<void> {
   const results: Result[] = [];
   const paths = await getWorkspaces(process.cwd());
@@ -268,6 +326,18 @@ export async function handler(): Promise<void> {
       dir,
       pkg: await fsExtra.readJson(join(dir, 'package.json')),
     })),
+  );
+
+  await validateContext(
+    (pass, filename, message, workspace) =>
+      results.push({
+        filename,
+        message,
+        pass,
+        workspace: { dir: workspace, pkg: '' as unknown as PackageJson },
+      }),
+    paths.find((path) => path.endsWith('types')),
+    paths.find((path) => path.endsWith('cli')),
   );
 
   const workspaces = allWorkspaces
@@ -307,7 +377,7 @@ export async function handler(): Promise<void> {
     process.exitCode = 1;
   }
 
-  if (invalid.length) {
+  if (invalid.some((r) => r.filename.startsWith('i18n'))) {
     logger.info('Please use `npm run scripts -- extract-messages` to resolve the issue(s).');
   }
 }

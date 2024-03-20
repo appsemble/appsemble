@@ -1,84 +1,148 @@
 import { type AppVisibility } from './app.js';
 import { type AppLock } from './index.js';
 
+/**
+ * A `context` which can be specified using the `--context` command line argument.
+ */
 export interface AppsembleContext {
   /**
-   * If `remote` is specified, this will override `--remote` passed by the command line.
+   * The remote the app should be under.
+   *
+   * If `remote` is specified, this will override `--remote` passed on the command line.
+   *
+   * @default "https://appsemble.app"
    */
   remote?: string;
 
   /**
-   * If `organization` is specified, this will override `--organization` passed by the command line
-   * when creating apps.
+   * The organization ID the app should be under.
+   *
+   * If `organization` is specified, this will override `--organization` passed on the command line.
    */
   organization?: string;
 
+  /**
+   * The path to the app icon to use.
+   *
+   * If `icon` is specified, this will override `--icon` passed on the command line.
+   *
+   * @default "icon.png"
+   */
   icon?: string;
 
+  /**
+   * The background color to use for maskable icons.
+   *
+   * If `iconBackground` is specified, this will override `--icon-background` passed on the command
+   * line.
+   */
   iconBackground?: string;
 
+  /**
+   * The path to the maskable app icon to use.
+   *
+   * If `maskableIcon` is specified, this will override `--maskable-icon` passed on the command
+   * line.
+   *
+   * @default "maskable-icon.png"
+   */
   maskableIcon?: string;
 
   /**
-   * If `id` is specified, this will override `--id` passed by the command line when
-   * updating an app.
+   * The id of the app to update.
+   *
+   * If `id` is specified, this will override `--id` passed on the command line.
    */
   id?: number;
 
   /**
    * The Google Analytics ID that should be used for the app.
+   *
+   * If `googleAnalyticsId` is specified, this will override `--google-analytics-id` passed on the
+   * command line.
    */
   googleAnalyticsId?: string;
 
   /**
    * The custom Sentry DSN for the app.
+   *
+   * If `sentryDsn` is specified, this will override `--sentry-dsn` passed on the command line.
    */
   sentryDsn?: string;
 
   /**
-   * The environment for the custom Sentry DSN for the app.
+   * The custom Sentry environment to use for the app.
+   *
+   * If `sentryEnvironment` is specified, this will override `--sentry-environment` passed on the
+   * command line.
    */
   sentryEnvironment?: string;
 
   /**
+   * Whether the app-definition should be shown.
+   *
+   * If `showAppDefinition` is specified, this will override `--show-app-definition` passed on the
+   * command line.
+   */
+  showAppDefinition?: boolean;
+
+  /**
+   * Determine the app visibility of the app in the Appsemble app store.
+   *
+   * This doesn’t affect whether or not the app can be accessed on its own domain.
+   *
+   * - **public**: The app is publicly listed in the Appsemble app store.
+   * - **unlisted**: The app store page can be accessed, but the app isn’t listed publicly in the
+   * Appsemble app store.
+   * - **private**: The app is only visible to people who are part of the organization.
+   *
    * If `visibility` is specified, this will override `--visibility` passed on the command line.
    */
   visibility?: AppVisibility;
 
   /**
+   * Whether the app should be a template app.
+   *
    * If `template` is specified, this will override `--template` passed on the command line.
    */
   template?: boolean;
 
   /**
+   * Whether the app should be in demoMode.
+   *
    * If `demoMode` is specified, this will override `--demo-mode` passed on the command line.
    */
   demoMode?: boolean;
 
   /**
-   * If `seed` is specified, this will override `--seed` passed on the command line.
-   */
-  seed?: boolean;
-
-  /**
    * Whether app assets should be clonable.
+   *
+   * If `assetsClonable` is specified, this will override `--assets-clonable` passed on the command
+   * line.
    */
   assetsClonable?: boolean;
 
   /**
    * Set the value of AppLock for your app.
+   *
+   * If `appLock` is specified, this will override `--app-lock` passed on the command line.
    */
   appLock?: AppLock;
 
   /**
-   * A list of collections the app needs to be added to
+   * A list of collections the app should be added to.
+   *
+   * If `collections` is specified, this will override `--collections` passed on the command line.
    */
-  collections?: string[];
+  collections?: number[];
 }
 
 export interface AppsembleRC {
   /**
    * The background color to use for maskable icons.
+   *
+   * If `iconBackground` is specified, this will override `--icon-background` passed on the command
+   * line.
    */
   iconBackground?: string;
 

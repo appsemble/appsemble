@@ -44,7 +44,7 @@ export function builder(yargs: Argv): Argv<any> {
       describe: 'If specified, use the specified context from .appsemblerc.yaml',
     })
     .option('organization', {
-      describe: 'The organization ID the app should be published for.',
+      describe: 'The organization ID the app should be published under.',
     })
     .option('icon', {
       describe: 'The icon to upload. By default "icon.png" in the app directory is used.',

@@ -4,7 +4,6 @@
   "description": "A .appsemblerc.yaml file may be used to configure either an app or a block.",
   "type": "object",
   "additionalProperties": false,
-
   "properties": {
     "name": {
       "description": "The name of a block. By default the name in package.json is used.",
@@ -88,72 +87,86 @@
         "additionalProperties": false,
         "properties": {
           "remote": {
-            "description": "If remote is specified, this will override --remote passed by the command line.",
+            "description": "The remote the app should be under.\n\nIf remote is specified, this will override --remote passed on the command line.",
             "type": "string",
             "format": "uri",
             "default": "https://appsemble.app"
           },
           "organization": {
-            "description": "If organization is specified, this will override --organization passed by the command line when creating an app.",
+            "description": "The organization ID the app should be under.\n\nIf organization is specified, this will override --organization passed on the command line.",
             "type": "string",
             "pattern": "^([\\da-z](?:(?!.*--)[\\da-z-]*[\\da-z])?)$",
             "minLength": 1,
             "maxLength": 30
           },
           "icon": {
-            "description": "A path to the app icon to use",
+            "description": "The path to the app icon to use.\n\nIf icon is specified, this will override --icon passed on the command line.",
             "type": "string",
             "default": "icon.png"
           },
           "iconBackground": {
-            "description": "The background color to use for maskable icons.",
+            "description": "The background color to use for maskable icons.\n\nIf iconBackground is specified, this will override --icon-background passed on the command line.",
             "type": "string",
             "pattern": "^#[a-zA-Z\\d]{6}$"
           },
           "maskableIcon": {
-            "description": "A path to the maskable app icon to use",
+            "description": "The path to the maskable app icon to use.\n\nIf maskableIcon is specified, this will override --maskable-icon passed on the command line.",
             "type": "string",
             "default": "maskable-icon.png"
           },
           "id": {
-            "description": "If id is specified, this will override --id passed by the command line when updating an app.",
+            "description": "The id of the app to update.\n\nIf id is specified, this will override --id passed on the command line.",
             "type": "integer",
             "minimum": 1
           },
           "visibility": {
-            "description": "Determine the app visibility of the app in the Appsemble app store.\n\nThis doesn’t affect whether or not the app can be accessed on its own domain.\n\n- **public**: The app is publicly listed in the Appsemble app store.,\n- **unlisted**: The app store page can be accessed, but the app isn’t listed publicly in the Appsemble app store.\n- **private**: The app is only visible to people who are part of the organization.",
+            "description": "Determine the app visibility of the app in the Appsemble app store.\n\nThis doesn’t affect whether or not the app can be accessed on its own domain.\n\n- public: The app is publicly listed in the Appsemble app store.\n- unlisted: The app store page can be accessed, but the app isn’t listed publicly in the Appsemble app store.\n- private: The app is only visible to people who are part of the organization.\n\nIf visibility is specified, this will override --visibility passed on the command line.",
             "default": "unlisted",
             "enum": ["public", "unlisted", "private"]
           },
           "showAppDefinition": {
-            "description": "Whether or not people who have access to the app may see the app definition.",
+            "description": "Whether the app-definition should be shown.\n\nIf showAppDefinition is specified, this will override --show-app-definition passed on the command line.",
             "type": "boolean"
           },
           "template": {
-            "description": "If template is specified, this will override --template passed on the command line.",
+            "description": "Whether the app should be a template app.\n\nIf template is specified, this will override --template passed on the command line.",
             "type": "boolean",
             "default": false
           },
           "sentryDsn": {
             "type": "string",
             "format": "uri",
-            "description": "A custom Sentry DSN to use for the app."
+            "description": "The custom Sentry DSN for the app.\n\nIf sentryDsn is specified, this will override --sentry-dsn passed on the command line."
           },
           "sentryEnvironment": {
             "type": "string",
-            "description": "A custom Sentry environment to use for the app."
+            "description": "The custom Sentry environment to use for the app.\n\nIf sentryEnvironment is specified, this will override --sentry-environment passed on the command line."
           },
           "demoMode": {
             "type": "boolean",
-            "description": "If demoMode is specified, this will override `--demo-mode` passed on the command line."
-          },
-          "seed": {
-            "type": "boolean",
-            "description": "If `seed` is specified, this will override `--seed` passed on the command line."
+            "description": "Whether the app should be in demoMode.\n\nIf demoMode is specified, this will override --demo-mode passed on the command line."
           },
           "appLock": {
             "enum": ["fullLock", "studioLock", "unlocked"],
-            "description": "Set the value of AppLock for your app."
+            "description": "Set the value of AppLock for your app.\n\nIf appLock is specified, this will override --app-lock passed on the command line."
+          },
+          "collections": {
+            "type": "array",
+            "items": [
+              {
+                "type": "integer",
+                "description": "The app collection id."
+              }
+            ],
+            "description": "A list of collections the app should be added to.\n\nIf collections is specified, this will override --collections passed on the command line."
+          },
+          "googleAnalyticsId": {
+            "type": "string",
+            "description": "The Google Analytics ID that should be used for the app.\n\nIf googleAnalyticsId is specified, this will override --google-analytics-id passed on the command line."
+          },
+          "assetsClonable": {
+            "type": "boolean",
+            "description": "Whether app assets should be clonable.\n\nIf assetsClonable is specified, this will override --assets-clonable passed on the command line."
           }
         }
       }
