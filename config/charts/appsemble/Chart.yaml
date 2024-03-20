@@ -1,7 +1,7 @@
 apiVersion: v2
 name: appsemble
-version: 0.27.7
-appVersion: 0.27.7
+version: 0.27.8
+appVersion: 0.27.8
 kubeVersion: '>=1.21.0'
 type: application
 description: The open source low-code app building platform
@@ -23,8 +23,16 @@ dependencies:
     repository: https://charts.bitnami.com/bitnami
     condition: postgresql.enabled
 annotations:
-  artifacthub.io/changes: |
-    []
+  artifacthub.io/changes: >
+    - kind: added
+      description: "Cli: Add support for screenshots by language."
+    - kind: added
+      description: "Server: Add support for screenshots by language."
+    - kind: removed
+      description: "Cli: Remove seed from JSON schema."
+    - kind: fixed
+      description: "Cli: Update JSON schema to include collections, googleAnalyticsId,
+        and assetsClonable."
   artifacthub.io/license: LGPL-3.0-only
   artifacthub.io/links: |
     - name: Appsemble Studio

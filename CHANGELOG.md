@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.27.8](https://gitlab.com/appsemble/appsemble/-/releases/0.27.8)] - 2024-03-20
+
+### Added
+
+- Cli: Add support for screenshots by language.
+- Server: Add support for screenshots by language.
+
+### Removed
+
+- Cli: Remove `seed` from JSON schema.
+
+### Fixed
+
+- Cli: Update JSON schema to include `collections`, `googleAnalyticsId`, and `assetsClonable`.
+
 ## \[[0.27.7](https://gitlab.com/appsemble/appsemble/-/releases/0.27.7)] - 2024-03-19
 
 ## \[[0.27.6](https://gitlab.com/appsemble/appsemble/-/releases/0.27.6)] - 2024-03-19
