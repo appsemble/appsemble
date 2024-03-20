@@ -159,26 +159,32 @@ published along with the app using the `--assets` flag.
 
 ## How to apply an app variant?
 
-When a new variant of the original app is needed, the variant directory (e.g. `demodam`) must be
-created inside the app’s `variants` directory with the appropriate changes, defined using the
-mechanisms listed above.
+When a new variant of the original app is needed, create a new directory with the name of the
+variant (e.g. `demodam`) inside the app’s `variants` directory. Then include the appropriate changes
+in the directory, defined by using the mechanisms listed above.
 
-A new app context, matching the name of the app variant (e.g. `demodam`), must be added to the
-`.appsemblerc` file.
+The variant to use from the CLI can be selected using the `--variant` argument, or by passing a
+`--context` that matches the variant name.
 
-When the commands `appsemble app publish --context <context>` or
-`appsemble app update --context <context>` are used, the app variant matching the context will be
-applied and used to publish or update the app. If the `--modify-context` flag is used, the id of the
-app variant will be updated in the original app’s variant context.
+The variant name can be matched either through the name of the context passed on the command line or
+the variant defined in the `.appsemblerc.yaml` file. The variant argument from the command line or
+`.appsemblerc.yaml` file will take precedence over the context.
+
+The following commands support this feature:
+
+- `appsemble app publish --context <context>`
+- `appsemble app update --context <context>`
+
+If the `--modify-context` flag is used, the id of the app variant will be updated in the original
+app’s variant context.
 
 ## Demo mode
 
 Some app variants are used to demonstrate the app’s functionality. Appsemble supports demo mode for
 apps, which provides the following mechanisms for easier demonstration:
 
-- If the app has its property `seed` set to `true` (default is `false`), resources and assets
-  published along with the app will be created with `seed` set to `true`. See
-  [Seeding data](#seeding-data).
+- The app can have seed resources, if the app was published or updated with a resources and/or
+  assets directory. See [Seeding data](#seeding-data).
 
 - Overrides the default login screen with a screen that allows you to log in as any role defined by
   the app. Users can either choose a role to create a demo account with, or log in with an existing
@@ -201,4 +207,5 @@ Sometimes it must be ensured that an app variant always has data, so it can easi
 demonstration. The seed functionality for apps creates a set of app resources and assets that are
 kept in pristine state. Ephemeral copies of these assets and resources are created every day for
 users to interact with. At the end of the day all ephemeral resources and assets are deleted and new
-ones are created from the seed data.
+ones are created from the seed data. Additionally the ephemeral copies can also be reset when
+clicking the reseed button on the app’s home page in the studio.
