@@ -157,6 +157,24 @@ Similarly, to update an app using an app directory, run the following command:
 appsemble app update --id <app-id> <path/to/updated app>.
 ```
 
+If you want to update settings for an app, run the following command:
+
+```sh
+appsemble app patch --id <app-id>
+```
+
+Use `--help` flag with the above command to view the supported arguments.
+
+---
+
+**🛈NOTE**
+
+> The `app patch` command supports updating the `locked` property of an app, locked property is
+> updated before other properties. If you set the locked property to `fullLock`, any other changes
+> won’t be applied unless you are using `--force` flag.
+
+---
+
 To delete an app using the CLI use the following command:
 
 ```sh
@@ -169,10 +187,10 @@ To export an app as a zip file, run the following:
 appsemble app export --id <app-id>
 ```
 
-Supported arguments for this app are `resources`, `assets` and `path`. Resources is used to specify
-whether to include the resources in the exported file, the same can be applied to assets and path is
-the path of the folder where you want to put your downloaded file. The default path is `./apps`, and
-resources and assets are by default `false`.
+Supported arguments for this command are `resources`, `assets` and `path`. Resources is used to
+specify whether to include the resources in the exported file, the same can be applied to assets and
+path is the path of the folder where you want to put your downloaded file. The default path is
+`./apps`, and resources and assets are by default `false`.
 
 To import an app from a zip file, use the following command:
 

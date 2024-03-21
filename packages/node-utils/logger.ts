@@ -34,7 +34,7 @@ function httpErrorToString(error: AxiosError): string {
     highlight(
       [
         `${config.method.toUpperCase()} ${axios.getUri(config)} HTTP/${
-          request.res?.httpVersion ?? '1.1'
+          request?.res?.httpVersion ?? '1.1'
         }`,
         ...Object.entries(config.headers)
           .map(([key, value]) => [headerCase(key), value])
