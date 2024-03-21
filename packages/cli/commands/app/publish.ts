@@ -59,6 +59,9 @@ export function builder(yargs: Argv): Argv<any> {
         'The maskable icon to upload. By default "maskable-icon.png" in the app directory is used.',
       coerce: coerceFile,
     })
+    .option('variant', {
+      describe: 'The shared variant to use instead.',
+    })
     .option('visibility', {
       describe: 'Visibility of the app in the public app store.',
       default: 'unlisted',

@@ -94,7 +94,7 @@ export function builder(yargs: Argv): Argv<any> {
 export async function handler(argv: ServeArguments): Promise<void> {
   setArgv(argv);
   const appPath = join(process.cwd(), argv.path);
-  const [, , , appsembleApp] = await traverseAppDirectory(appPath, 'development', new FormData());
+  const [, , appsembleApp] = await traverseAppDirectory(appPath, new FormData());
 
   const appRoles = appsembleApp.definition.roles;
 
