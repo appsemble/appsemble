@@ -263,10 +263,13 @@ export async function traverseAppDirectory(
   let controllerCode: string;
   let controllerImplementations: ProjectImplementations;
 
-  const languageFiles = await readdir(join(path, 'i18n'));
-  const supportedLanguages = new Set(
-    languageFiles.map((lang) => lang.split('.json')[0].toLowerCase()),
-  );
+  let supportedLanguages = new Set();
+  try {
+    const languageFiles = await readdir(join(path, 'i18n'));
+    supportedLanguages = new Set(languageFiles.map((lang) => lang.split('.json')[0].toLowerCase()));
+  } catch {
+    logger.warn(`Could not read ${join(path, 'i18n')}. No supported languages found.`);
+  }
 
   const gatheredData: App = {
     screenshotUrls: [],
@@ -315,16 +318,22 @@ export async function traverseAppDirectory(
         return opendirSafe(
           filepath,
           (screenshotPath, screenshotStat) => {
+            if (
+              screenshotStat.isDirectory() &&
+              !['screenshots', ...supportedLanguages].includes(screenshotStat.name)
+            ) {
+              logger.warn(`Unsupported directory name at ${screenshotPath}. Skipping...`);
+            }
+
             if (screenshotStat.isFile()) {
               const screenshotDirectoryPath = dirname(screenshotPath);
               const screenshotDirectoryName = basename(screenshotDirectoryPath);
-              const screenshotName = basename(screenshotPath);
 
               if (!['screenshots', ...supportedLanguages].includes(screenshotDirectoryName)) {
-                logger.warn(`Unsupported directory name at ${screenshotPath}. Skipping...`);
                 return;
               }
 
+              const screenshotName = basename(screenshotPath);
               const language = supportedLanguages.has(screenshotDirectoryName)
                 ? screenshotDirectoryName
                 : 'unspecified';
@@ -799,6 +808,8 @@ export async function updateApp({
   const file = await stat(path);
   const formData = new FormData();
   const appsembleContext = await retrieveContext(path, context);
+  let yaml: string;
+  let filename = relative(process.cwd(), path);
 
   const variant = appsembleContext.variant ?? options.variant ?? context;
 
@@ -807,12 +818,18 @@ export async function updateApp({
     await applyAppVariant(path, variant);
     appVariantPath = join(dirname(path), `${basename(path)}-${variant}`);
   } else {
-    logger.warn('App variant is not defined. Using default app.');
+    logger.warn(
+      `App variant ${variant} is not defined in ${join(path, 'variants')}. Using default app.`,
+    );
   }
 
   if (file.isFile()) {
     const [, data] = await readData(appVariantPath);
+    yaml = data;
     formData.append('yaml', data);
+  } else {
+    [, yaml] = await traverseAppDirectory(appVariantPath, formData);
+    filename = join(filename, 'app-definition.yaml');
   }
 
   const remote = appsembleContext.remote ?? options.remote;
@@ -837,34 +854,41 @@ export async function updateApp({
   logger.verbose(`App visibility: ${visibility}`);
   logger.verbose(`Icon background: ${iconBackground}`);
   logger.verbose(`Force update: ${inspect(force, { colors: true })}`);
+
   if (!id) {
     throw new AppsembleError('The app id must be passed as a command line flag or in the context');
   }
+
   formData.append('force', String(force));
   formData.append('template', String(template));
   formData.append('demoMode', String(demoMode));
   formData.append('visibility', visibility);
   formData.append('iconBackground', iconBackground);
+
   if (icon) {
     const realIcon = typeof icon === 'string' ? createReadStream(icon) : icon;
     logger.info(`Using icon from ${(realIcon as ReadStream).path ?? 'stdin'}`);
     formData.append('icon', realIcon);
   }
+
   if (maskableIcon) {
     const realIcon =
       typeof maskableIcon === 'string' ? createReadStream(maskableIcon) : maskableIcon;
     logger.info(`Using maskable icon from ${(realIcon as ReadStream).path ?? 'stdin'}`);
     formData.append('maskableIcon', realIcon);
   }
+
   if (sentryDsn) {
     logger.info(
       `Using custom Sentry DSN ${sentryEnvironment ? `with environment ${sentryEnvironment}` : ''}`,
     );
     formData.append('sentryDsn', sentryDsn);
+
     if (sentryEnvironment) {
       formData.append('sentryEnvironment', sentryEnvironment);
     }
   }
+
   if (googleAnalyticsId) {
     logger.info('Using Google Analytics');
     formData.append('googleAnalyticsID', googleAnalyticsId);
@@ -889,11 +913,10 @@ export async function updateApp({
       process.exit(1);
     }
   }
-  let data;
+
+  let data: App;
   try {
-    data = await axios
-      .patch<App>(`/api/apps/${id}`, formData, { baseURL: remote })
-      .then((r) => r.data);
+    ({ data } = await axios.patch<App>(`/api/apps/${id}`, formData, { baseURL: remote }));
   } catch (error) {
     if (!axios.isAxiosError(error)) {
       throw error;
@@ -901,8 +924,9 @@ export async function updateApp({
     if ((error.response?.data as { message?: string })?.message !== 'App validation failed') {
       throw error;
     }
-    logger.error(error.response.data);
-    process.exit(1);
+    throw new AppsembleError(
+      printAxiosError(filename, yaml, (error.response.data as any).data.errors),
+    );
   }
 
   if (file.isDirectory()) {
@@ -958,7 +982,9 @@ export async function publishApp({
     await applyAppVariant(path, variant);
     appVariantPath = join(dirname(path), `${basename(path)}-${variant}`);
   } else {
-    logger.warn('App variant is not defined. Using default app.');
+    logger.warn(
+      `App variant ${variant} is not defined in ${join(path, 'variants')}. Using default app.`,
+    );
   }
 
   if (file.isFile()) {
