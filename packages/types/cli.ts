@@ -136,16 +136,16 @@ export interface AppsembleContext {
   collections?: number[];
 
   /**
-   * Whether to publish the resources from the resources folder.
+   * Whether to publish resources from the resources directory.
    *
-   * If `resources` is specified, this will override `--resources` passed on the command line.
+   * If resources is specified, this will override --resources passed on the command line.
    */
   resources?: boolean;
 
   /**
-   * Whether to publish assets from the assets folder.
+   * Whether to publish assets from the assets directory.
    *
-   * If `assets` is specified, this will override `--assets` passed on the command line.
+   * If assets is specified, this will override --assets passed on the command line.
    */
   assets?: boolean;
 

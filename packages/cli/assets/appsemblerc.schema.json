@@ -174,7 +174,7 @@
           },
           "assets": {
             "type": "boolean",
-            "descriptions": "Whether to publish assets from the assets directory.\n\nIf assets is specified, this will override --assets passed on the command line."
+            "description": "Whether to publish assets from the assets directory.\n\nIf assets is specified, this will override --assets passed on the command line."
           },
           "assetsClonable": {
             "type": "boolean",
