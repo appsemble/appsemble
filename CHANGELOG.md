@@ -2,6 +2,28 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.27.9](https://gitlab.com/appsemble/appsemble/-/releases/0.27.9)] - 2024-03-21
+
+### Added
+
+- Cli: Add app patch command to update the settings of an app.
+- Cli: Support `variant` argument for `app publish` command.
+- Cli: Support `variant` argument for `app update` command.
+- Cli: Support assets option in appsembleRC file to publish assets from assets folder.
+- Cli: Support resources option in appsembleRC file to publish resources from resources folder.
+- Cli: Support shared app variants using the `variant: name` in an `.appsemblerc` context.
+
+### Changed
+
+- Cli: Fix uploading screenshots with `app update`.
+
+### Fixed
+
+- Cli: Fix reading supported languages for screenshots.
+- Cli: Fix reading supported languages from the app directory instead of the main project.
+- Cli: The `app publish` command would error when no context is defined.
+- Cli: The `app update` command would error when no context is defined.
+
 ## \[[0.27.8](https://gitlab.com/appsemble/appsemble/-/releases/0.27.8)] - 2024-03-20
 
 ### Added

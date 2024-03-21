@@ -1,7 +1,7 @@
 apiVersion: v2
 name: appsemble
-version: 0.27.8
-appVersion: 0.27.8
+version: 0.27.9
+appVersion: 0.27.9
 kubeVersion: '>=1.21.0'
 type: application
 description: The open source low-code app building platform
@@ -25,14 +25,31 @@ dependencies:
 annotations:
   artifacthub.io/changes: >
     - kind: added
-      description: "Cli: Add support for screenshots by language."
+      description: "Cli: Add app patch command to update the settings of an app."
     - kind: added
-      description: "Server: Add support for screenshots by language."
-    - kind: removed
-      description: "Cli: Remove seed from JSON schema."
+      description: "Cli: Support variant argument for app publish command."
+    - kind: added
+      description: "Cli: Support variant argument for app update command."
+    - kind: added
+      description: "Cli: Support assets option in appsembleRC file to publish assets
+        from assets folder."
+    - kind: added
+      description: "Cli: Support resources option in appsembleRC file to publish
+        resources from resources folder."
+    - kind: added
+      description: "Cli: Support shared app variants using the variant: name in an
+        .appsemblerc context."
+    - kind: changed
+      description: "Cli: Fix uploading screenshots with app update."
     - kind: fixed
-      description: "Cli: Update JSON schema to include collections, googleAnalyticsId,
-        and assetsClonable."
+      description: "Cli: Fix reading supported languages for screenshots."
+    - kind: fixed
+      description: "Cli: Fix reading supported languages from the app directory
+        instead of the main project."
+    - kind: fixed
+      description: "Cli: The app publish command would error when no context is defined."
+    - kind: fixed
+      description: "Cli: The app update command would error when no context is defined."
   artifacthub.io/license: LGPL-3.0-only
   artifacthub.io/links: |
     - name: Appsemble Studio
