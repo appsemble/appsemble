@@ -7,7 +7,6 @@ import {
   applyAppVariant,
   AppsembleError,
   authenticate,
-  getSupportedLanguages,
   logger,
   opendirSafe,
   readData,
@@ -259,7 +258,10 @@ export async function traverseAppDirectory(
   let controllerCode: string;
   let controllerImplementations: ProjectImplementations;
 
-  const supportedLanguages = await getSupportedLanguages();
+  const languageFiles = await readdir(join(path, 'i18n'));
+  const supportedLanguages = new Set(
+    languageFiles.map((lang) => lang.split('.json')[0].toLowerCase()),
+  );
 
   const gatheredData: App = {
     screenshotUrls: [],

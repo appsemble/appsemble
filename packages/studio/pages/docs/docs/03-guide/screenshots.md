@@ -13,8 +13,11 @@ created from the app page in the Appsemble studio.
 ## Screenshots by language
 
 Screenshots can be organized by language by creating subdirectories for each language in the
-`screenshots` directory (e.g. `/screenshots/en`). The language for screenshots defined directly in
-the `screenshots` directory, will be considered `unspecified`.
+`screenshots` directory (e.g. `/screenshots/nl`). The language for screenshots defined directly in
+the `screenshots` directory, will be considered `unspecified`. For a language to be supported in an
+app, a translations JSON file (e.g. `nl.json`) for that language must be present in the `i18n`
+directory of the app. If there are no translations for that language, the translation file could
+contain an empty JSON object like `{}`.
 
 When visiting the app page in the studio, app screenshots for the user’s preferred language will be
 shown. There are the following cases for displaying app screenshots, listed by precedence:
