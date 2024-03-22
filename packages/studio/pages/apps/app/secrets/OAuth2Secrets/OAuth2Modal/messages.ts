@@ -82,8 +82,9 @@ export const messages = defineMessages({
     defaultMessage: 'User info URL',
   },
   userInfoUrlHelp: {
-    id: 'studio.xOYsN/',
-    defaultMessage: 'The URL from which Appsemble should fetch user information',
+    id: 'studio.O+/dCY',
+    defaultMessage:
+      'The URL from which Appsemble should fetch user information.<n></n>Make sure to check with your OAuth2 provider what the correct <info>userinfo</info> endpoint is to use.',
   },
   remapperLabel: {
     id: 'studio.lcRcIO',
