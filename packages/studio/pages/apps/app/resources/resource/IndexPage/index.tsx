@@ -52,12 +52,24 @@ export function IndexPage(): ReactNode {
 
   const createModal = useToggle();
   const hideModal = useToggle();
+  const advancedOptionsModal = useToggle();
+
+  const defaultAdvancedOptions = new Set([]);
+
+  if (app?.demoMode) {
+    defaultAdvancedOptions.add('$ephemeral');
+  }
+  if (app?.template) {
+    defaultAdvancedOptions.add('$clonable');
+  }
 
   const resourceURL = `/api/apps/${appId}/resources/${resourceName}`;
   const hiddenPropertiesKey = `${appId}.${resourceName}.hiddenProperties`;
+  const advancedOptionsKey = `${appId}.${resourceName}.advancedOptions`;
 
   const [hiddenProperties, setHiddenProperties] = useState(defaultHiddenProperties);
   const [selectedResources, setSelectedResources] = useState<number[]>([]);
+  const [advancedOptions, setAdvancedOptions] = useState(defaultAdvancedOptions);
 
   const orderBy = searchParams.get('order') || 'id';
   const orderDirection: 'ASC' | 'DESC' =
@@ -75,6 +87,7 @@ export function IndexPage(): ReactNode {
   const resultCount = useData<number>(`${resourceURL}/$count`);
   const result = useData<Resource[]>(
     `${resourceURL}?${new URLSearchParams({
+      $filter: [...advancedOptions].map((item) => `${item} eq true`).join(' or '),
       $orderby: `${orderBy} ${orderDirection}`,
       $skip: String(offset),
       ...(Number.isFinite(limit) && { $top: String(limit) }),
@@ -89,13 +102,18 @@ export function IndexPage(): ReactNode {
   useEffect(() => {
     try {
       const saved = localStorage.getItem(hiddenPropertiesKey);
+      const savedAdvancedOptions = localStorage.getItem(advancedOptionsKey);
       if (saved) {
         setHiddenProperties(new Set(JSON.parse(saved)));
       }
+      if (savedAdvancedOptions) {
+        setAdvancedOptions(new Set(JSON.parse(savedAdvancedOptions)));
+      }
     } catch {
       localStorage.removeItem(hiddenPropertiesKey);
+      localStorage.removeItem(advancedOptionsKey);
     }
-  }, [hiddenPropertiesKey]);
+  }, [advancedOptionsKey, hiddenPropertiesKey]);
 
   const updatePagination = useCallback(
     (newCount: number) => {
@@ -192,7 +210,7 @@ export function IndexPage(): ReactNode {
   }, [result]);
 
   const onSortProperty = useCallback(
-    (event: SyntheticEvent<HTMLTableHeaderCellElement>) => {
+    (event: SyntheticEvent<HTMLTableCellElement>) => {
       const { property } = event.currentTarget.dataset;
 
       if (property === orderBy) {
@@ -212,6 +230,18 @@ export function IndexPage(): ReactNode {
       }
     },
     [orderBy, orderDirection, searchParams, setSearchParams],
+  );
+
+  const onToggleAdvancedOptions = useCallback(
+    (values: Record<string, boolean>) => {
+      const newAdvancedOptions = Object.entries(values)
+        .filter(([, value]) => value)
+        .map(([key]) => key);
+      setAdvancedOptions(new Set(newAdvancedOptions));
+      localStorage.setItem(advancedOptionsKey, JSON.stringify(newAdvancedOptions));
+      advancedOptionsModal.disable();
+    },
+    [advancedOptionsModal, advancedOptionsKey, setAdvancedOptions],
   );
 
   const onHideProperties = useCallback(
@@ -363,6 +393,9 @@ export function IndexPage(): ReactNode {
             {...messages.hideButton}
             values={{ count: hiddenProperties.size, total: keys.length + 4 }}
           />
+        </Button>
+        <Button icon="cogs" onClick={advancedOptionsModal.enable}>
+          <FormattedMessage {...messages.advancedOptions} />
         </Button>
         <Button icon="download" onClick={downloadCsv}>
           <FormattedMessage {...messages.export} />
@@ -567,6 +600,43 @@ export function IndexPage(): ReactNode {
               name={key}
             />
           ))}
+        </div>
+      </ModalCard>
+      <ModalCard
+        component={SimpleForm}
+        defaultValues={Object.fromEntries([...advancedOptions].map((key) => [key, true]))}
+        footer={
+          <SimpleModalFooter
+            cancelLabel={<FormattedMessage {...messages.cancelButton} />}
+            onClose={advancedOptionsModal.disable}
+            submitLabel={<FormattedMessage {...messages.apply} />}
+          />
+        }
+        isActive={advancedOptionsModal.enabled}
+        onClose={advancedOptionsModal.disable}
+        onSubmit={onToggleAdvancedOptions}
+        title={<FormattedMessage {...messages.advancedOptions} />}
+      >
+        <p>
+          <FormattedMessage {...messages.advancedOptionsExplanation} />
+        </p>
+        <br />
+        <div className={styles.hideCheckboxes}>
+          <SimpleFormField
+            component={Checkbox}
+            label={<FormattedMessage {...messages.seed} />}
+            name="$seed"
+          />
+          <SimpleFormField
+            component={Checkbox}
+            label={<FormattedMessage {...messages.ephemeral} />}
+            name="$ephemeral"
+          />
+          <SimpleFormField
+            component={Checkbox}
+            label={<FormattedMessage {...messages.clonable} />}
+            name="$clonable"
+          />
         </div>
       </ModalCard>
     </>

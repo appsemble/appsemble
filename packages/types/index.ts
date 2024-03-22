@@ -1949,6 +1949,11 @@ export interface App {
   locked: AppLock;
 
   /**
+   * Whether the app is a template.
+   */
+  template?: boolean;
+
+  /**
    * Whether to apply service secrets to outgoing request even without a security definition.
    */
   enableUnsecuredServiceSecrets: boolean;

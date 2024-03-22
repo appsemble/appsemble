@@ -303,6 +303,7 @@ it('should render the index page', async () => {
           "showAppDefinition": false,
           "showAppsembleLogin": false,
           "showAppsembleOAuth2Login": true,
+          "template": false,
           "visibility": "unlisted",
           "yaml": "name: Test App
     pages:

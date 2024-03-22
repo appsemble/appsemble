@@ -723,6 +723,7 @@ describe('getAppAccounts', () => {
             "showAppDefinition": false,
             "showAppsembleLogin": false,
             "showAppsembleOAuth2Login": true,
+            "template": false,
             "visibility": "unlisted",
             "yaml": "{}
       ",
@@ -763,6 +764,7 @@ describe('getAppAccounts', () => {
             "showAppDefinition": false,
             "showAppsembleLogin": false,
             "showAppsembleOAuth2Login": true,
+            "template": false,
             "visibility": "unlisted",
             "yaml": "{}
       ",
@@ -834,6 +836,7 @@ describe('getAppAccount', () => {
           "showAppDefinition": false,
           "showAppsembleLogin": false,
           "showAppsembleOAuth2Login": true,
+          "template": false,
           "visibility": "unlisted",
           "yaml": "{}
       ",
@@ -945,6 +948,7 @@ describe('patchAppAccount', () => {
           "showAppDefinition": false,
           "showAppsembleLogin": false,
           "showAppsembleOAuth2Login": true,
+          "template": false,
           "visibility": "unlisted",
           "yaml": "{}
       ",
@@ -1021,6 +1025,7 @@ describe('patchAppAccount', () => {
           "showAppDefinition": false,
           "showAppsembleLogin": false,
           "showAppsembleOAuth2Login": true,
+          "template": false,
           "visibility": "unlisted",
           "yaml": "{}
       ",

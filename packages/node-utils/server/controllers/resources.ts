@@ -66,7 +66,6 @@ export function createQueryResources(options: Options): Middleware {
             type: resourceType,
             AppId: appId,
             expires: { or: [{ gt: new Date() }, null] },
-            ...(app.demoMode ? { seed: false, ephemeral: true } : {}),
           },
         ],
       },
