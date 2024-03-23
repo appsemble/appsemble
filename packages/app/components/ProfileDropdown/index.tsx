@@ -71,18 +71,27 @@ export function ProfileDropdown(): ReactNode {
           </NavbarItem>
         )}
         {(layout?.feedback ?? 'navbar') === 'navbar' && sentryDsn ? (
-          <NavbarItem icon="comment" to={`/${lang}/Feedback`}>
-            <FormattedMessage {...messages.feedback} />
-          </NavbarItem>
+          <>
+            {(layout?.settings ?? 'navbar') === 'navbar' ? <hr className="navbar-divider" /> : null}
+            <NavbarItem icon="comment" to={`/${lang}/Feedback`}>
+              <FormattedMessage {...messages.feedback} />
+            </NavbarItem>
+          </>
         ) : null}
         {showDemoLogin ? (
-          <NavbarItem dataTestId="change-role" onClick={demoLoginToggle.enable}>
-            <FormattedMessage {...messages.demoLogin} />
-          </NavbarItem>
+          <>
+            {(layout?.settings ?? 'navbar') === 'navbar' ||
+            (layout?.feedback === 'navbar' && sentryDsn) ? (
+              <hr className="navbar-divider" />
+            ) : null}
+            <NavbarItem dataTestId="change-role" onClick={demoLoginToggle.enable}>
+              <FormattedMessage {...messages.demoLogin} />
+            </NavbarItem>
+          </>
         ) : null}
         {showLogin ? (
           <>
-            {layout?.settings === 'navbar' || layout?.feedback === 'navbar' ? (
+            {(layout?.settings ?? 'navbar') === 'navbar' || layout?.feedback === 'navbar' ? (
               <hr className="navbar-divider" />
             ) : null}
             <NavbarItem icon="sign-out-alt" onClick={logout}>
