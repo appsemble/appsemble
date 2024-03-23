@@ -29,6 +29,9 @@
     ],
     "*.{js,md,ts,tsx}": [
       "eslint"
+    ],
+    "**/{messages.ts,package.json,tsconfig.json,vitest.config.js,LICENSE.md,packages/{cli/assets/appsemblerc.schema.json,types/cli.ts}}": [
+      "ts-node-esm -T packages/scripts/index.ts validate"
     ]
   },
   "overrides": {
