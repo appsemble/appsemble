@@ -1732,6 +1732,60 @@ describe('validateAppDefinition', () => {
     ]);
   });
 
+  it('should be valid if to is (remapper) object; considered as dynamic link', async () => {
+    const app = createTestApp();
+    (app.pages[0] as BasicPageDefinition).blocks.push({
+      type: 'test',
+      version: '1.2.3',
+      actions: {
+        onWhatever: {
+          type: 'link',
+          to: { static: 'test' },
+        },
+      },
+    });
+    const result = await validateAppDefinition(app, () => [
+      {
+        name: '@appsemble/test',
+        version: '1.2.3',
+        files: [],
+        languages: [],
+        actions: {
+          onWhatever: {},
+        },
+      },
+    ]);
+    expect(result.valid).toBe(true);
+    expect(result.errors).toStrictEqual([]);
+  });
+
+  it('should be valid if to is array of (remapper) objects; considered as dynamic link', async () => {
+    const app = createTestApp();
+    (app.pages[0] as BasicPageDefinition).blocks.push({
+      type: 'test',
+      version: '1.2.3',
+      actions: {
+        onWhatever: {
+          type: 'link',
+          to: [{ static: 'test' }],
+        },
+      },
+    });
+    const result = await validateAppDefinition(app, () => [
+      {
+        name: '@appsemble/test',
+        version: '1.2.3',
+        files: [],
+        languages: [],
+        actions: {
+          onWhatever: {},
+        },
+      },
+    ]);
+    expect(result.valid).toBe(true);
+    expect(result.errors).toStrictEqual([]);
+  });
+
   it('should report an error if user actions are used without a security definition', async () => {
     const { security, ...app } = createTestApp();
     (app.pages[0] as BasicPageDefinition).blocks.push({
