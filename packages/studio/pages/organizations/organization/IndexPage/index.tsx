@@ -92,12 +92,7 @@ export function IndexPage({ organization }: IndexPageProps): ReactNode {
       >
         <div className="px-5 pt-2 pb-4 has-background-white-bis">
           <Collapsible title={<FormattedMessage {...messages.apps} />}>
-            <AppList
-              result={appsResult}
-              reverse
-              sortFunction={sortFunctions.rating}
-              toHomeUrl="../../../apps"
-            />
+            <AppList result={appsResult} reverse sortFunction={sortFunctions.rating} />
           </Collapsible>
           <hr className="has-background-grey-lighter" />
           <Collapsible title={<FormattedMessage {...messages.blocks} />}>

@@ -70,7 +70,7 @@ export function CreateAppButton({ className }: { readonly className?: string }):
         resources: resources && includeResources,
         visibility,
       });
-      navigate(`${data.id}/edit`);
+      navigate(`${data.id}/edit#editor`);
     },
     [navigate, organizations, selectedTemplate, templates],
   );

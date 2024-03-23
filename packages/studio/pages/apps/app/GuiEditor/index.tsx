@@ -127,7 +127,7 @@ export default function EditPage(): ReactNode {
       <Link
         className={`mb-3 mr-1 ${styles.codeEditorSwitch}`}
         id="codeEditorSwitch"
-        to={`apps/${id}/edit`}
+        to={`apps/${id}/edit#editor`}
       >
         <Button className="button is-fullwidth is-rounded is-transparent is-bordered is-small">
           {formatMessage(messages.switchToCodeEditor)}

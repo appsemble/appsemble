@@ -196,7 +196,7 @@ export function ResourceRow({
               className={`${styles.noBorder} pl-5 dropdown-item`}
               component={Link}
               icon="book"
-              to={String(resource.id)}
+              to={`${resource.id}#properties`}
             >
               <FormattedMessage {...messages.details} />
             </Button>

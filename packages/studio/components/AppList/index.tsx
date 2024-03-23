@@ -42,10 +42,8 @@ export interface AppListProps<TApp extends App = App> {
   readonly editModeCardControls?: (app: TApp) => ReactNode;
 
   /**
-   * Url from the page to the home.
+   * A function to add decorations to the AppCards, such as icons.
    */
-  readonly toHomeUrl?: string;
-
   readonly decorate?: (app: TApp) => ReactNode;
 }
 
@@ -57,7 +55,6 @@ export function AppList<TApp extends App = App>({
   result,
   reverse,
   sortFunction,
-  toHomeUrl,
 }: AppListProps<TApp>): ReactNode {
   return (
     <AsyncDataView
@@ -88,11 +85,7 @@ export function AppList<TApp extends App = App>({
           <div className={styles.list}>
             {filteredApps.map((app) => (
               <div className={styles.stack} key={app.id}>
-                <AppCard
-                  app={app}
-                  href={toHomeUrl ? `${toHomeUrl}/${app.id}` : undefined}
-                  key={app.id}
-                />
+                <AppCard app={app} key={app.id} />
                 {editMode?.enabled ? (
                   <div className={styles.cardControls}>{editModeCardControls?.(app)}</div>
                 ) : decorate ? (
