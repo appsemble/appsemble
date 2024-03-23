@@ -70,12 +70,13 @@ export function ProfileDropdown({ className }: LanguageDropdownProps): ReactNode
           <FormattedMessage {...messages.settings} />
         </NavbarItem>
       ) : null}
+      {userInfo && sentryDsn ? <hr className="navbar-divider" /> : null}
       {sentryDsn ? (
         <NavbarItem icon="comment" to="feedback">
           <FormattedMessage {...messages.feedback} />
         </NavbarItem>
       ) : null}
-      <hr className="navbar-divider" />
+      {userInfo || (!userInfo && sentryDsn) ? <hr className="navbar-divider" /> : null}
       {userInfo ? (
         <NavbarItem icon="sign-out-alt" onClick={logout}>
           <FormattedMessage {...messages.logoutButton} />
