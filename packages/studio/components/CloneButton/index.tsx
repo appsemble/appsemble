@@ -63,7 +63,7 @@ export function CloneButton({ app }: CloneButtonProps): ReactNode {
     async (values: Template) => {
       const { data } = await axios.post<App>('/api/templates', values);
 
-      navigate(`/apps/${data.id}/edit`);
+      navigate(`/apps/${data.id}/edit#editor`);
     },
     [navigate],
   );

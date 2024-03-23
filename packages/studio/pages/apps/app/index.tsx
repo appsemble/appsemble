@@ -107,7 +107,7 @@ export function AppRoutes(): ReactNode {
           <FormattedMessage {...messages.details} />
         </MenuItem>
         {editPermission ? (
-          <MenuItem icon="edit" to={`${url}/edit`}>
+          <MenuItem icon="edit" to={`${url}/edit#editor`}>
             <FormattedMessage {...messages.editor} />
           </MenuItem>
         ) : app.yaml ? (

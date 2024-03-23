@@ -66,7 +66,7 @@ export function ProfileDropdown({ className }: LanguageDropdownProps): ReactNode
       }
     >
       {userInfo ? (
-        <NavbarItem icon="wrench" to="settings">
+        <NavbarItem icon="wrench" to="settings/user">
           <FormattedMessage {...messages.settings} />
         </NavbarItem>
       ) : null}

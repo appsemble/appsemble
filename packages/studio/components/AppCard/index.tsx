@@ -3,7 +3,7 @@ import { type App } from '@appsemble/types';
 import { defaultLocale } from '@appsemble/utils';
 import { type ReactNode } from 'react';
 import { FormattedMessage } from 'react-intl';
-import { Link } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 
 import styles from './index.module.css';
 import { messages } from './messages.js';
@@ -19,7 +19,7 @@ interface AppCardProps {
   /**
    * An alternative place to link to.
    *
-   * By default a link is generated towards the app’s store page.
+   * By default a link is generated towards the app’s index page.
    */
   readonly href?: string;
 }
@@ -28,13 +28,14 @@ interface AppCardProps {
  * Display the basic information of an app and a link for more details.
  */
 export function AppCard({ app, href }: AppCardProps): ReactNode {
+  const { lang } = useParams<{ lang: string }>();
   const appLang = app.definition.defaultLanguage || defaultLocale;
 
   return (
     <Link
       className={`card ${styles.overflow}`}
       title={app.messages?.app?.description || app.definition.description}
-      to={href ?? String(app.id)}
+      to={href ?? `/${lang}/apps/${app.id}`}
     >
       {app.demoMode ? (
         <div className="tag is-danger is-right is-pulled-right">
