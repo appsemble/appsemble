@@ -88,6 +88,9 @@
   },
   "devDependencies": {
     "@appsemble/types": "0.27.9",
+    "@appsemble/server": "0.27.9",
+    "bcrypt": "^5.0.0",
+    "axios-test-instance": "^7.0.0",
     "@types/concat-stream": "^2.0.0",
     "@types/inquirer": "^9.0.0",
     "@types/normalize-path": "^3.0.0",

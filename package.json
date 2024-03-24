@@ -13,7 +13,7 @@
     "prepare": "husky install || true",
     "prettier": "prettier --check",
     "scripts": "ts-node-esm -T packages/scripts/index.ts",
-    "start": "ts-node-esm -T packages/cli/index.ts start",
+    "start": "ts-node-esm -T packages/cli/index.ts start --remote https://appsemble.app",
     "stylelint": "stylelint .",
     "test": "vitest"
   },

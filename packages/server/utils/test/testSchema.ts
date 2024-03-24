@@ -1,19 +1,16 @@
 import { parse } from 'node:path';
 
 import { Sequelize } from 'sequelize';
-import { afterAll, afterEach, beforeAll } from 'vitest';
 
 import { initDB, type InitDBParams } from '../../models/index.js';
 
-/**
- * Create a temporary test database for each test in a test module or describe block.
- *
- * The database will be truncated after each test. It will be deleted after all tests have run.
- *
- * @param meta The `import.meta` property.
- * @param options Additional sequelize options.
- */
-export function useTestDatabase(meta: ImportMeta, options: InitDBParams = {}): void {
+function createTestDatabase(
+  meta: ImportMeta,
+  beforeAll: typeof import('vitest').beforeAll,
+  afterEach: typeof import('vitest').afterEach,
+  afterAll: typeof import('vitest').afterAll,
+  options: InitDBParams = {},
+): void {
   let dbName: string;
   let rootDB: Sequelize;
   let db: Sequelize;
@@ -57,4 +54,21 @@ export function useTestDatabase(meta: ImportMeta, options: InitDBParams = {}): v
       await rootDB.close();
     }
   });
+}
+
+/**
+ * Create a temporary test database for each test in a test module or describe block.
+ *
+ * The database will be truncated after each test. It will be deleted after all tests have run.
+ *
+ * @param meta The `import.meta` property.
+ * @param options Additional sequelize options.
+ */
+export function useTestDatabase(meta: ImportMeta, options: InitDBParams = {}): void {
+  if (process.env.NODE_ENV !== 'test') {
+    return;
+  }
+  import('vitest').then(({ afterAll, afterEach, beforeAll }) =>
+    createTestDatabase(meta, beforeAll, afterEach, afterAll, options),
+  );
 }
