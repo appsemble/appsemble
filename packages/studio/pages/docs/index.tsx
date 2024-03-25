@@ -30,6 +30,7 @@ import { RemapperMenuItems } from './remapper/components/RemapperMenuItems.js';
 import { RemapperRoutes } from './remapper/index.js';
 import { SearchPage } from './search/index.js';
 import Changelog from '../../../../CHANGELOG.md';
+import Contributing from '../../../../CONTRIBUTING.md';
 import { useBreadCrumbsDecoration } from '../../components/BreadCrumbsDecoration/index.js';
 
 function getUrl(path: string, base: string): string {
@@ -111,6 +112,9 @@ export function DocsRoutes(): ReactNode {
           <MenuItem to="docs/packages/create-appsemble">create-appsemble</MenuItem>
         </MenuSection>
       </CollapsibleMenuSection>
+      <MenuItem end icon="code-merge" to="docs/contributing">
+        <FormattedMessage {...messages.contributing} />
+      </MenuItem>
       <MenuItem end icon="scroll" to="docs/changelog">
         <FormattedMessage {...messages.changelog} />
       </MenuItem>
@@ -141,6 +145,7 @@ export function DocsRoutes(): ReactNode {
       <Route element={<RemapperRoutes />} path="/remapper/*" />
       <Route element={<SearchPage />} path="/search" />
       <Route element={<Changelog />} path="/changelog" />
+      <Route element={<Contributing />} path="/contributing" />
       <Route element={<Cli />} path="/packages/cli" />
       <Route element={<Preact />} path="/packages/preact" />
       <Route element={<Sdk />} path="/packages/sdk" />

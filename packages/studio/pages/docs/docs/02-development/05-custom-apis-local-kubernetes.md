@@ -530,6 +530,6 @@ If that doesn’t resolve it, there’s two things you can do:
    ```
 
 [Appsemble chart README]: https://gitlab.com/appsemble/appsemble/tree/main/config/charts/appsemble
-[CONTRIBUTING.md]: https://gitlab.com/appsemble/appsemble/tree/main/CONTRIBUTING.md
+[CONTRIBUTING.md]: /docs/contributing
 [`dnsmasq`]: https://wiki.archlinux.org/title/dnsmasq
 [hosts file]: https://en.wikipedia.org/wiki/Hosts_(file)

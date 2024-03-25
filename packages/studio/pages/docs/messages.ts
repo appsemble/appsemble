@@ -21,6 +21,10 @@ export const messages = defineMessages({
     id: 'studio.wL7VAE',
     defaultMessage: 'Actions',
   },
+  contributing: {
+    id: 'studio.Nlu/2H',
+    defaultMessage: 'Contributing',
+  },
   changelog: {
     id: 'studio.MQcAql',
     defaultMessage: 'Changelog',
