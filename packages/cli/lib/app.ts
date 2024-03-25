@@ -15,6 +15,7 @@ import {
 import {
   type App,
   type AppDefinition,
+  type AppLock,
   type AppsembleContext,
   type AppsembleMessages,
   type AppsembleRC,
@@ -1185,4 +1186,135 @@ export async function resolveAppIdAndRemote(
   }
 
   return [id, coerceRemote(resolvedRemote)];
+}
+
+interface PatchAppParams {
+  /**
+   * The path at which the app is hosted.
+   */
+  path?: string;
+
+  /**
+   * Whether the locked property should be ignored.
+   */
+  force?: boolean;
+
+  /**
+   * The ID of the app to update.
+   */
+  id?: number;
+
+  /**
+   * Visibility of the app in the public app store.
+   */
+  visibility?: AppVisibility;
+
+  /**
+   * The remote server to create the app on.
+   */
+  remote: string;
+
+  /**
+   * Whether the App should be marked as a template.
+   */
+  template?: boolean;
+
+  /**
+   * Whether the App should be used in demo mode.
+   */
+  demoMode?: boolean;
+
+  /**
+   * The background color to use for the icon in opaque contexts.
+   */
+  iconBackground?: string;
+
+  /**
+   * Whether or not the app definition is exposed for display in Appsemble Studio.
+   */
+  showAppDefinition?: boolean;
+
+  /**
+   * Whether the Appsemble password login method should be shown.
+   */
+  showAppsembleLogin?: boolean;
+
+  /**
+   * Whether the Appsemble OAuth2 login method should be shown.
+   */
+  showAppsembleOAuth2Login?: boolean;
+
+  /**
+   * Whether new users should be able to register themselves.
+   */
+  enableSelfRegistration?: boolean;
+
+  /**
+   * Whether the app is currently locked.
+   */
+  locked?: AppLock;
+}
+
+export async function patchApp({ id, remote, ...options }: PatchAppParams): Promise<void> {
+  const formData = new FormData();
+  if (options.path !== undefined) {
+    logger.info(`Setting app path to ${options.path}`);
+    formData.append('path', options.path);
+  }
+  if (options.force !== undefined) {
+    formData.append('force', String(options.force));
+  }
+  if (options.demoMode !== undefined) {
+    logger.info(`Setting app demo mode to ${options.demoMode}`);
+    formData.append('demoMode', String(options.demoMode));
+  }
+  if (options.template !== undefined) {
+    logger.info(`Setting template to ${options.template}`);
+    formData.append('template', String(options.template));
+  }
+  if (options.visibility !== undefined) {
+    logger.info(`Setting app visibility to ${options.visibility}`);
+    formData.append('visibility', options.visibility);
+  }
+  if (options.iconBackground !== undefined) {
+    logger.info(`Setting app icon background to ${options.iconBackground}`);
+    formData.append('iconBackground', options.iconBackground);
+  }
+  if (options.showAppDefinition !== undefined) {
+    logger.info(`Setting showAppDefinition to ${options.showAppDefinition}`);
+    formData.append('showAppDefinition', String(options.showAppDefinition));
+  }
+  if (options.showAppsembleLogin !== undefined) {
+    logger.info(`Setting showAppsembleLogin to ${options.showAppsembleLogin}`);
+    formData.append('showAppsembleLogin', String(options.showAppsembleLogin));
+  }
+  if (options.showAppsembleOAuth2Login !== undefined) {
+    logger.info(`Setting showAppsembleOAuth2Login to ${options.showAppsembleOAuth2Login}`);
+    formData.append('showAppsembleOAuth2Login', String(options.showAppsembleOAuth2Login));
+  }
+  if (options.enableSelfRegistration !== undefined) {
+    logger.info(`Setting enableSelfRegistration to ${options.enableSelfRegistration}`);
+    formData.append('enableSelfRegistration', String(options.enableSelfRegistration));
+  }
+  try {
+    if (!formData.getLengthSync() && options.locked === undefined) {
+      logger.warn('Nothing to patch. Need at least one additional argument to patch app.');
+      return;
+    }
+    if (formData.getLengthSync()) {
+      const { data } = await axios.patch<App>(`/api/apps/${id}`, formData);
+      logger.info(`Successfully updated app with id ${id}`);
+      const { host, protocol } = new URL(remote);
+      logger.info(`App URL: ${protocol}//${data.path}.${data.OrganizationId}.${host}`);
+    }
+    if (options.locked !== undefined) {
+      await axios.post(`/api/apps/${id}/lock`, {
+        locked: options.locked,
+      });
+      logger.info(`Successfully set app lock value for app with id ${id} to ${options.locked}`);
+    }
+    logger.info(`App store page: ${new URL(`/apps/${id}`, remote)}`);
+  } catch (error) {
+    logger.error(error);
+  }
 }

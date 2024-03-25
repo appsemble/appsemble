@@ -5,7 +5,6 @@ import { api } from '@appsemble/utils';
 import { request } from 'axios-test-instance';
 import { hash } from 'bcrypt';
 import { type OpenAPIV3 } from 'openapi-types';
-import { afterEach } from 'vitest';
 
 import { type App, EmailAuthorization, OAuth2ClientCredentials, User } from '../../models/index.js';
 import { createJWTResponse } from '../createJWTResponse.js';
@@ -129,7 +128,11 @@ export function unauthorize(): void {
 }
 
 // Reset the test user after every test.
-afterEach(() => {
-  testUser = undefined;
-  unauthorize();
-});
+if (process.env.NODE_ENV === 'test') {
+  const { afterEach } = await import('vitest');
+
+  afterEach(() => {
+    testUser = undefined;
+    unauthorize();
+  });
+}

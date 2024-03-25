@@ -1,9 +1,8 @@
 import { authenticate, logger } from '@appsemble/node-utils';
-import { type App, type AppLock, type AppVisibility } from '@appsemble/types';
-import axios from 'axios';
-import FormData from 'form-data';
+import { type AppLock, type AppVisibility } from '@appsemble/types';
 import { type Argv } from 'yargs';
 
+import { patchApp } from '../../lib/app.js';
 import { type BaseArguments } from '../../types.js';
 
 interface PatchAppArguments extends BaseArguments {
@@ -82,59 +81,11 @@ export async function handler({
   ...args
 }: PatchAppArguments): Promise<void> {
   await authenticate(remote, 'apps:write', clientCredentials);
-  const formData = new FormData();
-  if (args.path) {
-    logger.info(`Setting app path to ${args.path}`);
-    formData.append('path', args.path);
-  }
-  if (args.force) {
-    formData.append('force', String(args.force));
-  }
-  if (args.demoMode) {
-    logger.info(`Setting app demo mode to ${args.demoMode}`);
-    formData.append('demoMode', String(args.demoMode));
-  }
-  if (args.template) {
-    logger.info(`Setting template to ${args.template}`);
-    formData.append('template', String(args.template));
-  }
-  if (args.visibility) {
-    logger.info(`Setting app visibility to ${args.visibility}`);
-    formData.append('visibility', args.visibility);
-  }
-  if (args.iconBackground) {
-    logger.info(`Setting app icon background to ${args.iconBackground}`);
-    formData.append('iconBackground', args.iconBackground);
-  }
-  if (args.showAppDefinition) {
-    logger.info(`Setting showAppDefinition to ${args.showAppDefinition}`);
-    formData.append('showAppDefinition', String(args.showAppDefinition));
-  }
-  if (args.showAppsembleLogin) {
-    logger.info(`Setting showAppsembleLogin to ${args.showAppsembleLogin}`);
-    formData.append('showAppsembleLogin', String(args.showAppsembleLogin));
-  }
-  if (args.showAppsembleOAuth2Login) {
-    logger.info(`Setting showAppsembleOAuth2Login to ${args.showAppsembleOAuth2Login}`);
-    formData.append('showAppsembleOAuth2Login', String(args.showAppsembleOAuth2Login));
-  }
-  if (args.enableSelfRegistration) {
-    logger.info(`Setting enableSelfRegistration to ${args.enableSelfRegistration}`);
-    formData.append('enableSelfRegistration', String(args.enableSelfRegistration));
-  }
-  try {
-    if (args.locked) {
-      await axios.post(`api/apps/${id}/lock`, {
-        locked: args.locked,
-      });
-      logger.info(`Successfully set app lock value for app with id ${id} to ${args.locked}`);
-      if (!formData.getLengthSync()) {
-        return;
-      }
-    }
-    await axios.patch<App>(`/api/apps/${id}`, formData);
-    logger.info(`Successfully updated app with id ${id}`);
-  } catch (error) {
-    logger.error(error);
-  }
+
+  logger.info(`Patching app ${id}`);
+  await patchApp({
+    ...args,
+    id,
+    remote,
+  });
 }
