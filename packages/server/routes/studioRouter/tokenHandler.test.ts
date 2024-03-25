@@ -1,5 +1,6 @@
 import { basicAuth } from '@appsemble/node-utils';
 import { type TokenResponse } from '@appsemble/types';
+import { jwtPattern } from '@appsemble/utils';
 import { request, setTestApp } from 'axios-test-instance';
 import { hash } from 'bcrypt';
 import jwt from 'jsonwebtoken';
@@ -254,9 +255,9 @@ describe('authorization_code', () => {
     expect(response).toMatchObject({
       status: 200,
       data: {
-        access_token: expect.stringMatching(/(?:[\w-]+\.){2}[\w-]/),
+        access_token: expect.stringMatching(jwtPattern),
         expires_in: 3600,
-        refresh_token: expect.stringMatching(/(?:[\w-]+\.){2}[\w-]/),
+        refresh_token: expect.stringMatching(jwtPattern),
         token_type: 'bearer',
       },
     });
@@ -373,7 +374,7 @@ describe('client_credentials', () => {
     expect(response).toMatchObject({
       status: 200,
       data: {
-        access_token: expect.stringMatching(/^(?:[\w-]+\.){2}[\w-]+$/),
+        access_token: expect.stringMatching(jwtPattern),
         expires_in: 3600,
         token_type: 'bearer',
       },
@@ -420,9 +421,9 @@ describe('refresh_token', () => {
     expect(response).toMatchObject({
       status: 200,
       data: {
-        access_token: expect.stringMatching(/^(?:[\w-]+\.){2}[\w-]+$/),
+        access_token: expect.stringMatching(jwtPattern),
         expires_in: 3600,
-        refresh_token: expect.stringMatching(/^(?:[\w-]+\.){2}[\w-]+$/),
+        refresh_token: expect.stringMatching(jwtPattern),
         token_type: 'bearer',
       },
     });
