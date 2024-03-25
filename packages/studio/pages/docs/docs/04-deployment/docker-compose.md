@@ -56,6 +56,36 @@ It is highly recommended to specify the version of the `appsemble/appsemble` ima
 
 It is also recommended to modify the database name, user, password and the Appsemble secret.
 
+A user can configure the SMTP connection settings in the `docker-compose.yml` file as well. The
+following environment variables can be defined for configuring SMTP server.
+
+- `SMTP_HOST`
+- `SMTP_PORT`
+- `SMTP_USER`
+- `SMTP_PASS`
+- `SMTP_FROM`
+
+Similar to the example provided
+[here](https://gitlab.com/appsemble/appsemble/-/tree/main/packages/server?ref_type=heads#smtp),
+Mailpit can be used inside a docker container. Instructions for setting up the Mailpit server inside
+a container can be found
+[on this page](https://mailpit.axllent.org/docs/install/docker/#docker-compose-example).
+
+---
+
+**🛈NOTE**
+
+> Users can also configure SMTP servers for individual apps in the studio. This is documented
+> [here](../03-guide/App.md#secrets). If no SMTP server is configured for an app, this server will
+> be used as fallback.
+
+---
+
+A wide range of other services like [sentry](https://sentry.io), [GitHub](https://github.com),
+[GitLab](https://gitlab.com) etc can be configured using various environment variables. For a
+detailed list of available options, find the `defaults` constant in
+[this file](https://gitlab.com/appsemble/appsemble/-/blob/main/packages/server/utils/argv.ts)
+
 To start the service, run the following command.
 
 ```sh
