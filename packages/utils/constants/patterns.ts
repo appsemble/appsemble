@@ -46,3 +46,8 @@ export const uuid4Pattern = /^[\d[a-f]{8}-[\da-f]{4}-4[\da-f]{3}-[\da-f]{4}-[\d[
  * A pattern which matches a JSON web token.
  */
 export const jwtPattern = /^[\w-]+(?:\.[\w-]+){2}$/;
+
+/**
+ * A pattern which matches an ISO 8601 datetime string.
+ */
+export const ISODateTimePattern = /\d{4}(.\d{2}){2}(\s|T)(\d{2}.){2}\d{2}/;

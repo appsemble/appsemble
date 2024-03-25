@@ -1,0 +1,29 @@
+{
+  "shared": {
+    "index.css": [
+      {
+        "selector": ".tux",
+        "property": "color",
+        "value": "rgb(1 2 3)"
+      }
+    ]
+  },
+  "core": {
+    "index.css": [
+      {
+        "selector": ".tux",
+        "property": "color",
+        "value": "rgb(1 2 3)"
+      }
+    ]
+  },
+  "@appsemble": {
+    "test/index.css": [
+      {
+        "selector": ".tux",
+        "property": "color",
+        "value": "rgb(1 2 3)"
+      }
+    ]
+  }
+}

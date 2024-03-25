@@ -79,22 +79,17 @@ interface PublishAppParams {
   /**
    * Whether the App should be marked as a template.
    */
-  template: boolean;
+  template?: boolean;
 
   /**
    * Whether the App should be used in demo mode.
    */
-  demoMode: boolean;
-
-  /**
-   * Whether the App should seed resources and assets in demo mode.
-   */
-  seed: boolean;
+  demoMode?: boolean;
 
   /**
    * The icon to upload.
    */
-  icon: NodeJS.ReadStream | ReadStream;
+  icon?: NodeJS.ReadStream | ReadStream;
 
   /**
    * The background color to use for the icon in opaque contexts.
@@ -104,33 +99,33 @@ interface PublishAppParams {
   /**
    * The maskable icon to upload.
    */
-  maskableIcon: NodeJS.ReadStream | ReadStream;
+  maskableIcon?: NodeJS.ReadStream | ReadStream;
 
   /**
    * Whether the API should be called with a dry run.
    */
-  dryRun: boolean;
+  dryRun?: boolean;
 
   /**
    * Whether resources from the `resources` directory should be published after publishing the app.
    */
-  resources: boolean;
+  resources?: boolean;
 
   /**
    * Whether assets from the `assets` directory should be published after publishing the app.
    */
-  assets: boolean;
+  assets?: boolean;
 
   /**
    * Whether published assets should be clonable. Ignored if `assets` equals false.
    */
-  assetsClonable: boolean;
+  assetsClonable?: boolean;
 
   /**
    * If the app context is specified,
    * modify it for the current context to include the id of the published app.
    */
-  modifyContext: boolean;
+  modifyContext?: boolean;
 
   /**
    * The ID to use for Google Analytics for the app.
@@ -187,27 +182,27 @@ interface UpdateAppParams {
   /**
    * Whether the App should be marked as a template.
    */
-  template: boolean;
+  template?: boolean;
 
   /**
    * Whether the App should be used in demo mode.
    */
-  demoMode: boolean;
+  demoMode?: boolean;
 
   /**
    * Whether resources from the `resources` directory should be published after publishing the app.
    */
-  resources: boolean;
+  resources?: boolean;
 
   /**
    * Whether assets from the `assets` directory should be published after publishing the app.
    */
-  assets: boolean;
+  assets?: boolean;
 
   /**
    * Whether published assets should be clonable. Ignored if `assets` equals false.
    */
-  assetsClonable: boolean;
+  assetsClonable?: boolean;
 
   /**
    * Whether the locked property should be ignored.
@@ -217,17 +212,17 @@ interface UpdateAppParams {
   /**
    * The icon to upload.
    */
-  icon: NodeJS.ReadStream | ReadStream;
+  icon?: NodeJS.ReadStream | ReadStream;
 
   /**
    * The background color to use for the icon in opaque contexts.
    */
-  iconBackground: string;
+  iconBackground?: string;
 
   /**
    * The maskable icon to upload.
    */
-  maskableIcon: NodeJS.ReadStream | ReadStream;
+  maskableIcon?: NodeJS.ReadStream | ReadStream;
 
   /**
    * The ID to use for Google Analytics for the app.
@@ -249,15 +244,20 @@ interface UpdateAppParams {
  * Traverses an app directory and appends the files it finds to the given FormData object.
  *
  * @param path The path of the app directory to traverse.
+ * @param context The Context to use from `.appsemblerc.yaml`.
  * @param formData The FormData object to append the results into..
  * @returns The context from `.appsemblerc.yaml` if a match was found.
  */
 export async function traverseAppDirectory(
   path: string,
+  context: string,
   formData: FormData,
-): Promise<[AppsembleRC, string, App]> {
+): Promise<[AppsembleContext, AppsembleRC, string, App]> {
   let rc: AppsembleRC;
+  let discoveredContext: AppsembleContext;
   let yaml: string;
+  let iconPath: string;
+  let maskableIconPath: string;
   let controllerPath: string;
   let controllerBuildConfig: ProjectBuildConfig;
   let controllerBuildResult: BuildResult;
@@ -296,6 +296,10 @@ export async function traverseAppDirectory(
           formData.append('iconBackground', rc.iconBackground);
           gatheredData.iconBackground = rc.iconBackground;
         }
+        if (context && has(rc?.context, context)) {
+          discoveredContext = rc.context[context];
+          logger.verbose(`Using context: ${inspect(discoveredContext, { colors: true })}`);
+        }
         break;
 
       case 'app-definition.yaml': {
@@ -313,11 +317,13 @@ export async function traverseAppDirectory(
 
       case 'icon.png':
       case 'icon.svg':
+        iconPath = filepath;
         gatheredData.iconUrl = filepath;
         return;
 
       case 'maskable-icon.png':
-        return;
+        maskableIconPath = filepath;
+        break;
 
       case 'screenshots':
         return opendirSafe(
@@ -399,8 +405,15 @@ export async function traverseAppDirectory(
   if (yaml === undefined) {
     throw new AppsembleError('No app definition found');
   }
+  discoveredContext ||= {};
+  discoveredContext.icon = discoveredContext.icon
+    ? resolve(path, discoveredContext.icon)
+    : iconPath;
+  discoveredContext.maskableIcon = discoveredContext.maskableIcon
+    ? resolve(path, discoveredContext.maskableIcon)
+    : maskableIconPath;
 
-  return [rc, yaml, gatheredData];
+  return [discoveredContext, rc, yaml, gatheredData];
 }
 
 async function retrieveContext(path: string, context: string): Promise<AppsembleContext> {
@@ -834,7 +847,18 @@ export async function updateApp({
     yaml = data;
     formData.append('yaml', data);
   } else {
-    [, yaml] = await traverseAppDirectory(appVariantPath, formData);
+    let appsembleVariantContext;
+    [appsembleVariantContext, , yaml] = await traverseAppDirectory(
+      appVariantPath,
+      context,
+      formData,
+    );
+    if (appsembleVariantContext.icon) {
+      appsembleContext.icon = appsembleVariantContext.icon;
+    }
+    if (appsembleVariantContext.maskableIcon) {
+      appsembleContext.maskableIcon = appsembleVariantContext.maskableIcon;
+    }
     filename = join(filename, 'app-definition.yaml');
   }
 
@@ -999,7 +1023,18 @@ export async function publishApp({
     yaml = data;
     formData.append('yaml', data);
   } else {
-    [rc, yaml] = await traverseAppDirectory(appVariantPath, formData);
+    let appsembleVariantContext;
+    [appsembleVariantContext, rc, yaml] = await traverseAppDirectory(
+      appVariantPath,
+      context,
+      formData,
+    );
+    if (appsembleVariantContext.icon) {
+      appsembleContext.icon = appsembleVariantContext.icon;
+    }
+    if (appsembleVariantContext.maskableIcon) {
+      appsembleContext.maskableIcon = appsembleVariantContext.maskableIcon;
+    }
     filename = join(filename, 'app-definition.yaml');
   }
 
