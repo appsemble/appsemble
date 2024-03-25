@@ -657,10 +657,9 @@ describe('publishApp', () => {
     `,
     );
     expect(app.icon).toStrictEqual(await readFixture('apps/test/variants/tux/icon.png'));
-    // TODO: not supported yet
-    // expect(app.maskableIcon).toStrictEqual(
-    //   await readFixture('apps/test/variants/tux/maskable-icon.png'),
-    // );
+    expect(app.maskableIcon).toStrictEqual(
+      await readFixture('apps/test/variants/tux/maskable-icon.png'),
+    );
     const appBlockStyle = await AppBlockStyle.findOne();
     expect(appBlockStyle.style).toBe('.tux{color:rgb(1 2 3)}');
     const appScreenshot = await AppScreenshot.findOne();
@@ -1290,10 +1289,9 @@ describe('updateApp', () => {
     `,
     );
     expect(app.icon).toStrictEqual(await readFixture('apps/test/variants/tux/icon.png'));
-    // TODO: not supported yet
-    // expect(app.maskableIcon).toStrictEqual(
-    //   await readFixture('apps/test/variants/tux/maskable-icon.png'),
-    // );
+    expect(app.maskableIcon).toStrictEqual(
+      await readFixture('apps/test/variants/tux/maskable-icon.png'),
+    );
     const appBlockStyle = await AppBlockStyle.findOne();
     expect(appBlockStyle.style).toBe('.tux{color:rgb(1 2 3)}');
     const appScreenshot = await AppScreenshot.findOne();

@@ -311,6 +311,12 @@ export async function applyAppVariant(appPath: string, appVariant: string): Prom
     await transferAppVariantFiles(appPath, appVariantDefDir, appVariantDestDir, 'resources');
     await transferAppVariantFiles(appPath, appVariantDefDir, appVariantDestDir, 'screenshots');
     await transferAppVariantFiles(appPath, appVariantDefDir, appVariantDestDir, 'icon.png');
+    await transferAppVariantFiles(
+      appPath,
+      appVariantDefDir,
+      appVariantDestDir,
+      'maskable-icon.png',
+    );
     await transferReadmes(appPath, appVariantDefDir, appVariantDestDir);
 
     const patchesPath = join(appVariantDefDir, 'patches');
