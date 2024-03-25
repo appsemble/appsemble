@@ -1161,7 +1161,7 @@ export async function publishApp({
   logger.info(`App URL: ${protocol}//${data.path}.${data.OrganizationId}.${host}`);
   logger.info(`App store page: ${new URL(`/apps/${data.id}`, remote)}`);
 
-  const rcCollections = rc.context[context]?.collections;
+  const rcCollections = rc?.context?.[context]?.collections;
   if (Array.isArray(rcCollections)) {
     for (const collectionId of rcCollections) {
       try {
