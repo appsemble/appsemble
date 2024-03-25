@@ -40,206 +40,6 @@ import { processCss } from './processCss.js';
 import { buildProject, makeProjectPayload } from './project.js';
 import { publishResourcesRecursively, type ResourceToPublish } from './resource.js';
 
-interface PublishAppParams {
-  /**
-   * The OAuth2 client credentials to use.
-   */
-  clientCredentials?: string;
-
-  /**
-   * If specified, the context matching this name is used, overriding command line flags.
-   */
-  context?: string;
-
-  /**
-   * The ID of the organization to upload for.
-   */
-  organization: string;
-
-  /**
-   * The path in which the App YAML is located.
-   */
-  path: string;
-
-  /**
-   * The shared variant to use instead.
-   */
-  variant?: string;
-
-  /**
-   * Visibility of the app in the public app store.
-   */
-  visibility: AppVisibility;
-
-  /**
-   * The remote server to publish the app on.
-   */
-  remote: string;
-
-  /**
-   * Whether the App should be marked as a template.
-   */
-  template?: boolean;
-
-  /**
-   * Whether the App should be used in demo mode.
-   */
-  demoMode?: boolean;
-
-  /**
-   * The icon to upload.
-   */
-  icon?: NodeJS.ReadStream | ReadStream;
-
-  /**
-   * The background color to use for the icon in opaque contexts.
-   */
-  iconBackground: string;
-
-  /**
-   * The maskable icon to upload.
-   */
-  maskableIcon?: NodeJS.ReadStream | ReadStream;
-
-  /**
-   * Whether the API should be called with a dry run.
-   */
-  dryRun?: boolean;
-
-  /**
-   * Whether resources from the `resources` directory should be published after publishing the app.
-   */
-  resources?: boolean;
-
-  /**
-   * Whether assets from the `assets` directory should be published after publishing the app.
-   */
-  assets?: boolean;
-
-  /**
-   * Whether published assets should be clonable. Ignored if `assets` equals false.
-   */
-  assetsClonable?: boolean;
-
-  /**
-   * If the app context is specified,
-   * modify it for the current context to include the id of the published app.
-   */
-  modifyContext?: boolean;
-
-  /**
-   * The ID to use for Google Analytics for the app.
-   */
-  googleAnalyticsId?: string;
-
-  /**
-   * The custom Sentry DSN for the app.
-   */
-  sentryDsn?: string;
-
-  /**
-   * The environment for the custom Sentry DSN for the app.
-   */
-  sentryEnvironment?: string;
-}
-
-interface UpdateAppParams {
-  /**
-   * The OAuth2 client credentials to use.
-   */
-  clientCredentials: string;
-
-  /**
-   * If specified, the context matching this name is used, overriding command line flags.
-   */
-  context?: string;
-
-  /**
-   * The ID of the app to update.
-   */
-  id?: number;
-
-  /**
-   * The path in which the App YAML is located.
-   */
-  path: string;
-
-  /**
-   * The shared variant to use instead.
-   */
-  variant?: string;
-
-  /**
-   * Visibility of the app in the public app store.
-   */
-  visibility: AppVisibility;
-
-  /**
-   * The remote server to create the app on.
-   */
-  remote: string;
-
-  /**
-   * Whether the App should be marked as a template.
-   */
-  template?: boolean;
-
-  /**
-   * Whether the App should be used in demo mode.
-   */
-  demoMode?: boolean;
-
-  /**
-   * Whether resources from the `resources` directory should be published after publishing the app.
-   */
-  resources?: boolean;
-
-  /**
-   * Whether assets from the `assets` directory should be published after publishing the app.
-   */
-  assets?: boolean;
-
-  /**
-   * Whether published assets should be clonable. Ignored if `assets` equals false.
-   */
-  assetsClonable?: boolean;
-
-  /**
-   * Whether the locked property should be ignored.
-   */
-  force: boolean;
-
-  /**
-   * The icon to upload.
-   */
-  icon?: NodeJS.ReadStream | ReadStream;
-
-  /**
-   * The background color to use for the icon in opaque contexts.
-   */
-  iconBackground?: string;
-
-  /**
-   * The maskable icon to upload.
-   */
-  maskableIcon?: NodeJS.ReadStream | ReadStream;
-
-  /**
-   * The ID to use for Google Analytics for the app.
-   */
-  googleAnalyticsId?: string;
-
-  /**
-   * The custom Sentry DSN for the app.
-   */
-  sentryDsn?: string;
-
-  /**
-   * The environment for the custom Sentry DSN for the app.
-   */
-  sentryEnvironment?: string;
-}
-
 /**
  * Traverses an app directory and appends the files it finds to the given FormData object.
  *
@@ -813,176 +613,145 @@ This block version is not used in the app`,
 }
 
 /**
- * Update an existing app.
+ * Resolve the app’s ID and remote based on the app context.
  *
- * @param argv The command line options used for updating the app.
+ * @param appPath The path to the app.
+ * @param name Which context to use in the AppsembleRC file.
+ * @param defaultRemote The remote to fall back to.
+ * @param defaultAppId The app ID to fall back to.
+ * @returns The resolved app ID and remote.
  */
-export async function updateApp({
-  clientCredentials,
-  context,
-  force,
-  path,
-  ...options
-}: UpdateAppParams): Promise<void> {
-  const file = await stat(path);
-  const formData = new FormData();
-  const appsembleContext = await retrieveContext(path, context);
-  let yaml: string;
-  let filename = relative(process.cwd(), path);
+export async function resolveAppIdAndRemote(
+  appPath: string,
+  name: string,
+  defaultRemote: string,
+  defaultAppId: number,
+): Promise<[number, string]> {
+  let id = defaultAppId;
+  let resolvedRemote = defaultRemote;
 
-  const variant = appsembleContext.variant ?? options.variant ?? context;
+  if (appPath) {
+    const rcPath = join(appPath, '.appsemblerc.yaml');
+    const [rc] = await readData<AppsembleRC>(rcPath);
+    const context = rc.context?.[name];
 
-  let appVariantPath = path;
-  if (variant && existsSync(join(path, 'variants', variant))) {
-    await applyAppVariant(path, variant);
-    appVariantPath = join(dirname(path), `${basename(path)}-${variant}`);
-  } else {
-    logger.warn(
-      `App variant ${variant} is not defined in ${join(path, 'variants')}. Using default app.`,
-    );
-  }
-
-  if (file.isFile()) {
-    const [, data] = await readData(appVariantPath);
-    yaml = data;
-    formData.append('yaml', data);
-  } else {
-    let appsembleVariantContext;
-    [appsembleVariantContext, , yaml] = await traverseAppDirectory(
-      appVariantPath,
-      context,
-      formData,
-    );
-    if (appsembleVariantContext.icon) {
-      appsembleContext.icon = appsembleVariantContext.icon;
+    if (!defaultAppId) {
+      id = context?.id;
     }
-    if (appsembleVariantContext.maskableIcon) {
-      appsembleContext.maskableIcon = appsembleVariantContext.maskableIcon;
-    }
-    filename = join(filename, 'app-definition.yaml');
-  }
 
-  const remote = appsembleContext.remote ?? options.remote;
-  const id = appsembleContext.id ?? options.id;
-  const template = appsembleContext.template ?? options.template ?? false;
-  const assetsClonable = appsembleContext.assetsClonable ?? options.assetsClonable ?? false;
-  const demoMode = appsembleContext.demoMode ?? options.demoMode ?? false;
-  const visibility = appsembleContext.visibility ?? options.visibility;
-  const iconBackground = appsembleContext.iconBackground ?? options.iconBackground;
-  const icon = options.icon ?? appsembleContext.icon;
-  const maskableIcon = options.maskableIcon ?? appsembleContext.maskableIcon;
-  const sentryDsn = appsembleContext.sentryDsn ?? options.sentryDsn;
-  const sentryEnvironment = appsembleContext.sentryEnvironment ?? options.sentryEnvironment;
-  const googleAnalyticsId = appsembleContext.googleAnalyticsId ?? options.googleAnalyticsId;
-  const resources = appsembleContext.resources ?? options.resources;
-  const assets = appsembleContext.assets ?? options.assets;
-  const { appLock } = appsembleContext;
-
-  logger.info(`App id: ${id}`);
-  logger.verbose(`App remote: ${remote}`);
-  logger.verbose(`App is template: ${inspect(template, { colors: true })}`);
-  logger.verbose(`App visibility: ${visibility}`);
-  logger.verbose(`Icon background: ${iconBackground}`);
-  logger.verbose(`Force update: ${inspect(force, { colors: true })}`);
-
-  if (!id) {
-    throw new AppsembleError('The app id must be passed as a command line flag or in the context');
-  }
-
-  formData.append('force', String(force));
-  formData.append('template', String(template));
-  formData.append('demoMode', String(demoMode));
-  formData.append('visibility', visibility);
-  formData.append('iconBackground', iconBackground);
-
-  if (icon) {
-    const realIcon = typeof icon === 'string' ? createReadStream(icon) : icon;
-    logger.info(`Using icon from ${(realIcon as ReadStream).path ?? 'stdin'}`);
-    formData.append('icon', realIcon);
-  }
-
-  if (maskableIcon) {
-    const realIcon =
-      typeof maskableIcon === 'string' ? createReadStream(maskableIcon) : maskableIcon;
-    logger.info(`Using maskable icon from ${(realIcon as ReadStream).path ?? 'stdin'}`);
-    formData.append('maskableIcon', realIcon);
-  }
-
-  if (sentryDsn) {
-    logger.info(
-      `Using custom Sentry DSN ${sentryEnvironment ? `with environment ${sentryEnvironment}` : ''}`,
-    );
-    formData.append('sentryDsn', sentryDsn);
-
-    if (sentryEnvironment) {
-      formData.append('sentryEnvironment', sentryEnvironment);
+    if (context.remote) {
+      resolvedRemote = context.remote;
     }
   }
 
-  if (googleAnalyticsId) {
-    logger.info('Using Google Analytics');
-    formData.append('googleAnalyticsID', googleAnalyticsId);
+  if (id == null) {
+    throw new AppsembleError(`App ID was not found in context.${name}.id nor in --app-id`);
   }
 
-  let authScope = 'apps:write';
+  return [id, coerceRemote(resolvedRemote)];
+}
 
-  if (resources) {
-    authScope += ' resources:write';
-  }
+interface PublishAppParams {
+  /**
+   * The OAuth2 client credentials to use.
+   */
+  clientCredentials?: string;
 
-  await authenticate(remote, authScope, clientCredentials);
+  /**
+   * If specified, the context matching this name is used, overriding command line flags.
+   */
+  context?: string;
 
-  if (appLock) {
-    logger.info(`Setting AppLock to ${appLock}`);
-    try {
-      await axios.post(`/api/apps/${id}/lock`, {
-        locked: appLock,
-      });
-    } catch (error) {
-      logger.error(error);
-      process.exit(1);
-    }
-  }
+  /**
+   * The ID of the organization to upload for.
+   */
+  organization: string;
 
-  let data: App;
-  try {
-    ({ data } = await axios.patch<App>(`/api/apps/${id}`, formData, { baseURL: remote }));
-  } catch (error) {
-    if (!axios.isAxiosError(error)) {
-      throw error;
-    }
-    if ((error.response?.data as { message?: string })?.message !== 'App validation failed') {
-      throw error;
-    }
-    throw new AppsembleError(
-      printAxiosError(filename, yaml, (error.response.data as any).data.errors),
-    );
-  }
+  /**
+   * The path in which the App YAML is located.
+   */
+  path: string;
 
-  if (file.isDirectory()) {
-    // After uploading the app, upload block styles and messages if they are available
-    await traverseBlockThemes(appVariantPath, data.id, remote, force);
-    await uploadMessages(appVariantPath, data.id, remote, force);
+  /**
+   * The shared variant to use instead.
+   */
+  variant?: string;
 
-    // After updating the app, publish seed resources and assets if they are available
-    if (assets && (data.locked !== 'fullLock' || force)) {
-      await publishSeedAssets(appVariantPath, data, remote, assetsClonable);
-    }
+  /**
+   * Visibility of the app in the public app store.
+   */
+  visibility: AppVisibility;
 
-    if (resources && (data.locked !== 'fullLock' || force)) {
-      await publishSeedResources(appVariantPath, data, remote);
-    }
-  }
+  /**
+   * The remote server to publish the app on.
+   */
+  remote: string;
 
-  const { host, protocol } = new URL(remote);
-  logger.info(`Successfully updated app ${data.definition.name}! 🙌`);
-  logger.info(`App URL: ${protocol}//${data.path}.${data.OrganizationId}.${host}`);
-  logger.info(`App store page: ${new URL(`/apps/${data.id}`, remote)}`);
+  /**
+   * Whether the App should be marked as a template.
+   */
+  template?: boolean;
 
-  if (appVariantPath !== path) {
-    await rm(appVariantPath, { recursive: true });
-    logger.info(`Removed ${appVariantPath}`);
-  }
+  /**
+   * Whether the App should be used in demo mode.
+   */
+  demoMode?: boolean;
+
+  /**
+   * The icon to upload.
+   */
+  icon?: NodeJS.ReadStream | ReadStream;
+
+  /**
+   * The background color to use for the icon in opaque contexts.
+   */
+  iconBackground: string;
+
+  /**
+   * The maskable icon to upload.
+   */
+  maskableIcon?: NodeJS.ReadStream | ReadStream;
+
+  /**
+   * Whether the API should be called with a dry run.
+   */
+  dryRun?: boolean;
+
+  /**
+   * Whether resources from the `resources` directory should be published after publishing the app.
+   */
+  resources?: boolean;
+
+  /**
+   * Whether assets from the `assets` directory should be published after publishing the app.
+   */
+  assets?: boolean;
+
+  /**
+   * Whether published assets should be clonable. Ignored if `assets` equals false.
+   */
+  assetsClonable?: boolean;
+
+  /**
+   * If the app context is specified,
+   * modify it for the current context to include the id of the published app.
+   */
+  modifyContext?: boolean;
+
+  /**
+   * The ID to use for Google Analytics for the app.
+   */
+  googleAnalyticsId?: string;
+
+  /**
+   * The custom Sentry DSN for the app.
+   */
+  sentryDsn?: string;
+
+  /**
+   * The environment for the custom Sentry DSN for the app.
+   */
+  sentryEnvironment?: string;
 }
 
 /**
@@ -1189,43 +958,274 @@ export async function publishApp({
   }
 }
 
+interface UpdateAppParams {
+  /**
+   * The OAuth2 client credentials to use.
+   */
+  clientCredentials: string;
+
+  /**
+   * If specified, the context matching this name is used, overriding command line flags.
+   */
+  context?: string;
+
+  /**
+   * The ID of the app to update.
+   */
+  id?: number;
+
+  /**
+   * The path in which the App YAML is located.
+   */
+  path: string;
+
+  /**
+   * The shared variant to use instead.
+   */
+  variant?: string;
+
+  /**
+   * Visibility of the app in the public app store.
+   */
+  visibility: AppVisibility;
+
+  /**
+   * The remote server to create the app on.
+   */
+  remote: string;
+
+  /**
+   * Whether the App should be marked as a template.
+   */
+  template?: boolean;
+
+  /**
+   * Whether the App should be used in demo mode.
+   */
+  demoMode?: boolean;
+
+  /**
+   * Whether resources from the `resources` directory should be published after publishing the app.
+   */
+  resources?: boolean;
+
+  /**
+   * Whether assets from the `assets` directory should be published after publishing the app.
+   */
+  assets?: boolean;
+
+  /**
+   * Whether published assets should be clonable. Ignored if `assets` equals false.
+   */
+  assetsClonable?: boolean;
+
+  /**
+   * Whether the locked property should be ignored.
+   */
+  force: boolean;
+
+  /**
+   * The icon to upload.
+   */
+  icon?: NodeJS.ReadStream | ReadStream;
+
+  /**
+   * The background color to use for the icon in opaque contexts.
+   */
+  iconBackground?: string;
+
+  /**
+   * The maskable icon to upload.
+   */
+  maskableIcon?: NodeJS.ReadStream | ReadStream;
+
+  /**
+   * The ID to use for Google Analytics for the app.
+   */
+  googleAnalyticsId?: string;
+
+  /**
+   * The custom Sentry DSN for the app.
+   */
+  sentryDsn?: string;
+
+  /**
+   * The environment for the custom Sentry DSN for the app.
+   */
+  sentryEnvironment?: string;
+}
+
 /**
- * Resolve the app’s ID and remote based on the app context.
+ * Update an existing app.
  *
- * @param appPath The path to the app.
- * @param name Which context to use in the AppsembleRC file.
- * @param defaultRemote The remote to fall back to.
- * @param defaultAppId The app ID to fall back to.
- * @returns The resolved app ID and remote.
+ * @param argv The command line options used for updating the app.
  */
-export async function resolveAppIdAndRemote(
-  appPath: string,
-  name: string,
-  defaultRemote: string,
-  defaultAppId: number,
-): Promise<[number, string]> {
-  let id = defaultAppId;
-  let resolvedRemote = defaultRemote;
+export async function updateApp({
+  clientCredentials,
+  context,
+  force,
+  path,
+  ...options
+}: UpdateAppParams): Promise<void> {
+  const file = await stat(path);
+  const formData = new FormData();
+  const appsembleContext = await retrieveContext(path, context);
+  let yaml: string;
+  let filename = relative(process.cwd(), path);
 
-  if (appPath) {
-    const rcPath = join(appPath, '.appsemblerc.yaml');
-    const [rc] = await readData<AppsembleRC>(rcPath);
-    const context = rc.context?.[name];
+  const variant = appsembleContext.variant ?? options.variant ?? context;
 
-    if (!defaultAppId) {
-      id = context?.id;
+  let appVariantPath = path;
+  if (variant && existsSync(join(path, 'variants', variant))) {
+    await applyAppVariant(path, variant);
+    appVariantPath = join(dirname(path), `${basename(path)}-${variant}`);
+  } else {
+    logger.warn(
+      `App variant ${variant} is not defined in ${join(path, 'variants')}. Using default app.`,
+    );
+  }
+
+  if (file.isFile()) {
+    const [, data] = await readData(appVariantPath);
+    yaml = data;
+    formData.append('yaml', data);
+  } else {
+    let appsembleVariantContext;
+    [appsembleVariantContext, , yaml] = await traverseAppDirectory(
+      appVariantPath,
+      context,
+      formData,
+    );
+    if (appsembleVariantContext.icon) {
+      appsembleContext.icon = appsembleVariantContext.icon;
     }
+    if (appsembleVariantContext.maskableIcon) {
+      appsembleContext.maskableIcon = appsembleVariantContext.maskableIcon;
+    }
+    filename = join(filename, 'app-definition.yaml');
+  }
 
-    if (context.remote) {
-      resolvedRemote = context.remote;
+  const remote = appsembleContext.remote ?? options.remote;
+  const id = appsembleContext.id ?? options.id;
+  const template = appsembleContext.template ?? options.template ?? false;
+  const assetsClonable = appsembleContext.assetsClonable ?? options.assetsClonable ?? false;
+  const demoMode = appsembleContext.demoMode ?? options.demoMode ?? false;
+  const visibility = appsembleContext.visibility ?? options.visibility;
+  const iconBackground = appsembleContext.iconBackground ?? options.iconBackground;
+  const icon = options.icon ?? appsembleContext.icon;
+  const maskableIcon = options.maskableIcon ?? appsembleContext.maskableIcon;
+  const sentryDsn = appsembleContext.sentryDsn ?? options.sentryDsn;
+  const sentryEnvironment = appsembleContext.sentryEnvironment ?? options.sentryEnvironment;
+  const googleAnalyticsId = appsembleContext.googleAnalyticsId ?? options.googleAnalyticsId;
+  const resources = appsembleContext.resources ?? options.resources;
+  const assets = appsembleContext.assets ?? options.assets;
+  const { appLock } = appsembleContext;
+
+  logger.info(`App id: ${id}`);
+  logger.verbose(`App remote: ${remote}`);
+  logger.verbose(`App is template: ${inspect(template, { colors: true })}`);
+  logger.verbose(`App visibility: ${visibility}`);
+  logger.verbose(`Icon background: ${iconBackground}`);
+  logger.verbose(`Force update: ${inspect(force, { colors: true })}`);
+
+  if (!id) {
+    throw new AppsembleError('The app id must be passed as a command line flag or in the context');
+  }
+
+  formData.append('force', String(force));
+  formData.append('template', String(template));
+  formData.append('demoMode', String(demoMode));
+  formData.append('visibility', visibility);
+  formData.append('iconBackground', iconBackground);
+
+  if (icon) {
+    const realIcon = typeof icon === 'string' ? createReadStream(icon) : icon;
+    logger.info(`Using icon from ${(realIcon as ReadStream).path ?? 'stdin'}`);
+    formData.append('icon', realIcon);
+  }
+
+  if (maskableIcon) {
+    const realIcon =
+      typeof maskableIcon === 'string' ? createReadStream(maskableIcon) : maskableIcon;
+    logger.info(`Using maskable icon from ${(realIcon as ReadStream).path ?? 'stdin'}`);
+    formData.append('maskableIcon', realIcon);
+  }
+
+  if (sentryDsn) {
+    logger.info(
+      `Using custom Sentry DSN ${sentryEnvironment ? `with environment ${sentryEnvironment}` : ''}`,
+    );
+    formData.append('sentryDsn', sentryDsn);
+
+    if (sentryEnvironment) {
+      formData.append('sentryEnvironment', sentryEnvironment);
     }
   }
 
-  if (id == null) {
-    throw new AppsembleError(`App ID was not found in context.${name}.id nor in --app-id`);
+  if (googleAnalyticsId) {
+    logger.info('Using Google Analytics');
+    formData.append('googleAnalyticsID', googleAnalyticsId);
   }
 
-  return [id, coerceRemote(resolvedRemote)];
+  let authScope = 'apps:write';
+
+  if (resources) {
+    authScope += ' resources:write';
+  }
+
+  await authenticate(remote, authScope, clientCredentials);
+
+  if (appLock) {
+    logger.info(`Setting AppLock to ${appLock}`);
+    try {
+      await axios.post(`/api/apps/${id}/lock`, {
+        locked: appLock,
+      });
+    } catch (error) {
+      logger.error(error);
+      process.exit(1);
+    }
+  }
+
+  let data: App;
+  try {
+    ({ data } = await axios.patch<App>(`/api/apps/${id}`, formData, { baseURL: remote }));
+  } catch (error) {
+    if (!axios.isAxiosError(error)) {
+      throw error;
+    }
+    if ((error.response?.data as { message?: string })?.message !== 'App validation failed') {
+      throw error;
+    }
+    throw new AppsembleError(
+      printAxiosError(filename, yaml, (error.response.data as any).data.errors),
+    );
+  }
+
+  if (file.isDirectory()) {
+    // After uploading the app, upload block styles and messages if they are available
+    await traverseBlockThemes(appVariantPath, data.id, remote, force);
+    await uploadMessages(appVariantPath, data.id, remote, force);
+
+    // After updating the app, publish seed resources and assets if they are available
+    if (assets && (data.locked !== 'fullLock' || force)) {
+      await publishSeedAssets(appVariantPath, data, remote, assetsClonable);
+    }
+
+    if (resources && (data.locked !== 'fullLock' || force)) {
+      await publishSeedResources(appVariantPath, data, remote);
+    }
+  }
+
+  const { host, protocol } = new URL(remote);
+  logger.info(`Successfully updated app ${data.definition.name}! 🙌`);
+  logger.info(`App URL: ${protocol}//${data.path}.${data.OrganizationId}.${host}`);
+  logger.info(`App store page: ${new URL(`/apps/${data.id}`, remote)}`);
+
+  if (appVariantPath !== path) {
+    await rm(appVariantPath, { recursive: true });
+    logger.info(`Removed ${appVariantPath}`);
+  }
 }
 
 interface PatchAppParams {
