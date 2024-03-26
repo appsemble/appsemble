@@ -426,15 +426,7 @@ export async function getVersionsList(ctx: Context): Promise<void> {
     order: [['created', 'DESC']],
   });
 
-  if (blockVersions.length === 0) {
-    ctx.response.status = 404;
-    ctx.response.body = {
-      error: 'Not Found',
-      statusCode: 404,
-      message: 'Block not found',
-    };
-    ctx.throw();
-  }
+  assertKoaError(blockVersions.length === 0, ctx, 404, 'Block not found');
 
   ctx.body = blockVersions.map((block) => String(block.version));
 }

@@ -173,3 +173,5 @@ this problem is to run the `docker compose up -d command`.
 
 This error is caused by the absence of `node_modules` folder in your directory and can simply be
 solved by running `npm ci` or `npm clean-install`.
+
+For more information on development process, please refer to [contributing](/docs/contributing).
