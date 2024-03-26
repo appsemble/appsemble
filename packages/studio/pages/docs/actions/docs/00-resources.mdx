@@ -97,7 +97,7 @@ for the resource. Here’s an example of how you can use this action to fetch th
 ```yaml validate blocks-snippet
 blocks:
   - type: data-loader
-    version: 0.27.3
+    version: 0.28.7
     actions:
       onLoad:
         type: resource.get
@@ -115,7 +115,7 @@ fetch all `person` resources.
 ```yaml validate blocks-snippet
 blocks:
   - type: data-loader
-    version: 0.27.3
+    version: 0.28.7
     actions:
       onLoad:
         type: resource.query
@@ -132,7 +132,7 @@ action to fetch the number of resources.
 ```yaml validate blocks-snippet
 blocks:
  - type: data-loader
-   version: 0.27.3
+   version: 0.28.7
    actions:
      onLoad:
        type: resource.count
@@ -148,7 +148,7 @@ required. Here’s an example of how you can use this action to create a new res
 ```yaml validate blocks-snippet
 blocks:
   - type: form
-    version: 0.27.3
+    version: 0.28.7
     actions:
       onSubmit:
         type: resource.create
@@ -166,7 +166,7 @@ an example of how you can use this action to update an existing resource of type
 ```yaml validate blocks-snippet
 blocks:
   - type: form
-    version: 0.27.3
+    version: 0.28.7
     parameters:
       fields:
         - type: string
@@ -199,7 +199,7 @@ of how you can partially update a resource of type person using this action.
 ```yaml validate blocks-snippet
 blocks:
   - type: form
-    version: 0.27.3
+    version: 0.28.7
     parameters:
       fields:
         - type: string
@@ -223,7 +223,7 @@ can use the following block of code.
 ```yaml validate blocks-snippet
 blocks:
   - type: button-list
-    version: 0.27.3
+    version: 0.28.7
     parameters:
       buttons:
         - label: { translate: cancel }
@@ -252,7 +252,7 @@ this action to subscribe to all the updates made to the resource person:
 ```yaml validate blocks-snippet
 blocks:
   - type: table
-    version: 0.27.3
+    version: 0.28.7
     parameters:
       fields:
         - value: { prop: firstName }
@@ -278,7 +278,7 @@ notifications related to resource person.
 ```yaml validate blocks-snippet
 blocks:
   - type: action-button
-    version: 0.27.3
+    version: 0.28.7
     parameters:
       icon: bell-slash
     actions:
@@ -300,7 +300,7 @@ which push notifications will be toggled, action has to be either of type `updat
 ```yaml validate blocks-snippet
 blocks:
   - type: action-button
-    version: 0.27.3
+    version: 0.28.7
     parameters:
       icon: toggle-on
     actions:
@@ -322,7 +322,7 @@ usage of this action.
 ```yaml validate blocks-snippet
 blocks:
   - type: action-button
-    version: 0.27.3
+    version: 0.28.7
     parameters:
       icon: envelope
     actions:
