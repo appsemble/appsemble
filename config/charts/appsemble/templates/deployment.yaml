@@ -49,6 +49,8 @@ spec:
               {{- else }}
               value: http://{{ include "appsemble.fullname" . }}
               {{- end }}
+            - name: FORCE_PROTOCOL_HTTPS
+              value: {{ .Values.forceProtocolHttps | quote }}
             {{ if .Values.ingress.enabled -}}
             - name: APP_DOMAIN_STRATEGY
               value: kubernetes-ingress
@@ -137,7 +139,7 @@ spec:
             {{- end }}
             {{- with .Values.adminApiSecret }}
             - name: ADMIN_API_SECRET
-              valueFrom: 
+              valueFrom:
                 secretKeyRef:
                   name: {{ . | quote }}
                   key: admin-api-secret
