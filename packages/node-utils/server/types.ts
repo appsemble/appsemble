@@ -30,6 +30,7 @@ export interface UtilsUser {
   locale: string;
   EmailAuthorizations?: { verified: boolean }[];
   subscribed?: boolean;
+  demoLoginUser?: boolean;
 }
 
 declare module 'koa' {

@@ -86,8 +86,8 @@ export const messages = defineMessages({
     defaultMessage: 'Hide columns ({count}/{total})',
   },
   advancedOptions: {
-    id: 'studio.HiGRqW',
-    defaultMessage: 'Advance options',
+    id: 'studio.0cEOKu',
+    defaultMessage: 'Advanced options',
   },
   apply: {
     id: 'studio.EWw/tK',

@@ -285,7 +285,9 @@ export function IndexPage(): ReactNode {
   );
 
   const downloadCsv = useCallback(async () => {
-    const newSearchParams = new URLSearchParams();
+    const newSearchParams = new URLSearchParams({
+      $filter: [...advancedOptions].map((item) => `${item} eq true`).join(' or '),
+    });
     newSearchParams.set(
       '$select',
       ['id', '$created', '$updated', '$author', ...keys]
@@ -293,7 +295,7 @@ export function IndexPage(): ReactNode {
         .join(','),
     );
     await download(`${resourceURL}?${newSearchParams}`, `${resourceName}.csv`, 'text/csv');
-  }, [hiddenProperties, keys, resourceName, resourceURL]);
+  }, [advancedOptions, hiddenProperties, keys, resourceName, resourceURL]);
 
   const uploadCsv = useCallback(() => {
     const input = document.createElement('input');
