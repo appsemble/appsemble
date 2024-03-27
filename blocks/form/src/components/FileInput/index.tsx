@@ -26,7 +26,7 @@ export function FileInput({
   const { help, inline, label, repeated, tag } = field;
   const value = getValueByNameSequence(name, formValues);
   const required = isRequired(field, utils, formValues);
-  const remappedLabel = utils.remap(label, value);
+  const remappedLabel = utils.remap(label, value) ?? name;
 
   const handleInput = useCallback(
     (event: JSX.TargetedEvent<HTMLInputElement>, val: string): void => {

@@ -138,7 +138,16 @@ export function GeoCoordinatesInput({
               </span>
             ) : null}
           </div>
-        ) : null}
+        ) : (
+          <div class="is-flex is-justify-content-space-between">
+            <label className="label">{name}</label>
+            {!required || tag ? (
+              <span className="is-pulled-right has-text-weight-normal">
+                {(utils.remap(tag, {}) as string) || '(Optional)'}
+              </span>
+            ) : null}
+          </div>
+        )}
 
         <div className={styles.map} ref={ref} />
         <div className={styles.crossHairsOverlay}>

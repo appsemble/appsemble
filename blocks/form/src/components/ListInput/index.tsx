@@ -150,7 +150,7 @@ export function ListInput({
       icon={icon}
       id={field.name}
       inline={inline}
-      label={utils.remap(label, value) as string}
+      label={(utils.remap(label, value) as string) ?? name}
       name={name}
       required={required}
       tag={tag}

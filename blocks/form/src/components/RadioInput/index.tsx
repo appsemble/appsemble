@@ -35,7 +35,7 @@ export function RadioInput({
       disabled={disabled}
       error={dirty ? error : null}
       help={utils.remap(help, value) as string}
-      label={utils.remap(label, value) as string}
+      label={(utils.remap(label, value) as string) ?? name}
       name={name}
       onChange={onChange}
       optionalLabel={<FormattedMessage id="optionalLabel" />}

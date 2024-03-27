@@ -79,7 +79,7 @@ export function EnumInput({
       help={utils.remap(field.help, value) as string}
       icon={icon}
       inline={inline}
-      label={utils.remap(label, value) as string}
+      label={(utils.remap(label, value) as string) ?? name}
       loading={loading}
       name={name}
       onChange={onChange}
