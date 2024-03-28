@@ -15,9 +15,10 @@ import {
   type ResourceDefinition,
   type UserPropertyDefinition,
 } from '@appsemble/types';
+import { allActions } from '@appsemble/utils';
 import axios from 'axios';
 import FormData from 'form-data';
-import { type Code, type Root } from 'mdast';
+import { type Code, type Heading, type Root, type Text } from 'mdast';
 import remarkParse from 'remark-parse';
 import { unified } from 'unified';
 import { visit } from 'unist-util-visit';
@@ -527,6 +528,45 @@ async function validateAppDefinitions(
   }
 }
 
+async function validateActionDocs(docsPath: string): Promise<void> {
+  const documentedActions = new Set<string>();
+  await opendirSafe(
+    docsPath,
+    async (path, stats) => {
+      if (!stats.isFile() || !/^.*\.(md|mdx)$/.test(path)) {
+        return;
+      }
+      const file = await readFile(path, 'utf8');
+      const ast = unified().use(remarkParse).parse(file) as Root;
+
+      logger.verbose(`Validating actions in ${path} ⚙️`);
+      // Interpret headings h3 and h4 as headings for an action
+      visit(ast, 'heading', (node: Heading) => {
+        // TODO: reimplement another way - feels too hacky
+        if (![3, 4].includes(node.depth)) {
+          return;
+        }
+        const action = node.children
+          .filter<Text>((child): child is Text => child.type === 'text')
+          .map((child) => child.value.trim())[0];
+        if (allActions.has(action)) {
+          documentedActions.add(action);
+          logger.verbose(`"${action}" is documented`);
+        }
+      });
+    },
+    { recursive: true },
+  );
+  const undocumentedActions = [...allActions].filter((action) => !documentedActions.has(action));
+  if (undocumentedActions.length > 0) {
+    logger.error('The following actions are not documented:');
+    for (const action of undocumentedActions) {
+      logger.error(action);
+    }
+    throw new AppsembleError('Docs validation failed');
+  }
+}
+
 export async function handler({ organization, remote }: Args): Promise<void> {
   await authenticate(remote, 'apps:write', '');
 
@@ -542,6 +582,8 @@ export async function handler({ organization, remote }: Args): Promise<void> {
     'actions',
     'docs',
   );
+
+  await validateActionDocs(actionDocsPath);
 
   const appDefinitionsWithLocations = await accumulateAppDefinitions(docsPath);
   const actionAppDefinitionsWithLocations = await accumulateAppDefinitions(actionDocsPath);
