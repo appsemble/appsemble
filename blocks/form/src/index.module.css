@@ -5,8 +5,8 @@
 }
 
 .error {
-  max-height: 64px;
-  overflow: hidden;
+  max-height: 192px;
+  overflow: scroll;
   position: sticky;
   top: 64px;
   transition: 150ms;
