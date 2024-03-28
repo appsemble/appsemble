@@ -547,8 +547,12 @@ request body to send. Proxy is a boolean, representing whether to proxy the requ
 Appsemble server. By default requests will be proxied through the Appsemble API. This allows to
 protect user data and ensures [CORS](https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS) is
 enabled. This behavior can be disabled by setting this to `false`. If not specified, the raw input
-data is used. Schema is the name of the schema to validate against before submitting data. Below is
-an example of this action being used to make a request.
+data is used.
+
+`schema` is a JSON schema object that validates XML responses.
+**It does not validate regular JSON responses, nor the request data. This behavior may be subject to change in the future**
+
+Below is an example of this action being used to make a request.
 
 ```yaml validate blocks-snippet
 blocks:
