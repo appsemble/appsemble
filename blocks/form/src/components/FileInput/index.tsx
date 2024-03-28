@@ -1,4 +1,4 @@
-import { FormattedMessage, useBlock } from '@appsemble/preact';
+import { useBlock } from '@appsemble/preact';
 import { FormComponent } from '@appsemble/preact-components';
 import classNames from 'classnames';
 import { type JSX, type VNode } from 'preact';
@@ -48,7 +48,7 @@ export function FileInput({
       help={utils.remap(help, {}) as string}
       inline={repeated ? undefined : inline}
       label={remappedLabel as string}
-      optionalLabel={<FormattedMessage id="optionalLabel" />}
+      optionalLabel={utils.formatMessage('optionalLabel')}
       required={required}
       tag={utils.remap(tag, {}) as string}
     >

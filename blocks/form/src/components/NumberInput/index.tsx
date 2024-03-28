@@ -1,4 +1,4 @@
-import { FormattedMessage, useBlock } from '@appsemble/preact';
+import { useBlock } from '@appsemble/preact';
 import { InputField, SliderField } from '@appsemble/preact-components';
 import classNames from 'classnames';
 import { type VNode } from 'preact';
@@ -39,7 +39,7 @@ export function NumberInput({
     min: getMin(field),
     name,
     onChange,
-    optionalLabel: <FormattedMessage id="optionalLabel" />,
+    optionalLabel: utils.formatMessage('optionalLabel'),
     readOnly,
     required: isRequired(field, utils, formValues),
     step: getStep(field),
