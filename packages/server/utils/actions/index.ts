@@ -1,6 +1,6 @@
 import { type Options } from '@appsemble/node-utils';
 import { type ActionDefinition } from '@appsemble/types';
-import { type RemapperContext } from '@appsemble/utils';
+import { type RemapperContext, type ServerActionName } from '@appsemble/utils';
 import { type DefaultContext, type DefaultState, type ParameterizedContext } from 'koa';
 
 import { condition } from './condition.js';
@@ -84,3 +84,32 @@ export const actions = {
   'user.remove': noop,
   'user.query': noop,
 };
+
+// https://stackoverflow.com/a/53808212
+type IfEquals<T, U, Y = unknown, N = never> =
+  (<G>() => G extends T ? 1 : 2) extends <G>() => G extends U ? 1 : 2 ? Y : N;
+
+// A `Record<string, string | never>` of actions that accept a type more narrow than
+// `ServerActionParameters<ActionDefinition>`. (so
+// not `noop`)
+type NonNoopActions = {
+  [K in keyof typeof actions]: Parameters<(typeof actions)[K]>[0] extends ServerActionParameters<
+    infer T
+  >
+    ? IfEquals<T, ActionDefinition, never, K>
+    : never;
+};
+
+// The `request` action is a special case for now
+type ActualServerActionName = NonNoopActions[keyof NonNoopActions] | 'noop' | 'request';
+
+// This line checks if the `serverActions` set contains all the actions defined in the `actions` object.
+// This is not done in the `utils` package, as this would create a circular dependency (server -> utils -> server).
+// If the contents of `serverActions` and the non-`noop` keys of `actions` are equal, the type is `true`, otherwise it's `never`.
+type ServerActionsAreValid = IfEquals<ServerActionName, ActualServerActionName, true, never>;
+// If this line breaks, go fix `packages/utils/serverActions.ts`
+true satisfies ServerActionsAreValid;
+// If this line breaks, an action in `packages/utils/serverActions.ts` isn't defined in `actions` or is `noop`.
+'' as ServerActionName satisfies ActualServerActionName;
+// If this line breaks, an action defined in this file is missing from `packages/utils/serverActions.ts`
+'' as ActualServerActionName satisfies ServerActionName;

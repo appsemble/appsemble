@@ -14,4 +14,6 @@ export const serverActions = new Set([
   'resource.update',
   'resource.delete',
   'static',
-]);
+] as const);
+
+export type ServerActionName = typeof serverActions extends Set<infer T> ? T : never;
