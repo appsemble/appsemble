@@ -43,7 +43,7 @@ description so the length of those fields are restricted to 80 characters.
 As soon as you define a source and save your file your resource will appear in the left menu item
 under Resources:
 
-![Resources Menu](../../tutorial-assets/resources-menu-person.png 'Resources Menu')
+![Resources Menu](../tutorial-assets/resources-menu-person.png 'Resources Menu')
 
 In this menu you can add records to your resource. If you click on the person link you will see a
 new screen where you can update the person resource. We want to update the person resource in the

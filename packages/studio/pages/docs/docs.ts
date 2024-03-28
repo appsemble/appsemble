@@ -1,4 +1,4 @@
-const context = require.context('./docs', true, /\.mdx?$/);
+const context = require.context('.', true, /\.mdx?$/);
 
 export const docs = context
   .keys()
