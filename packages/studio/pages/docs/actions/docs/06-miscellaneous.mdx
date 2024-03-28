@@ -1,3 +1,5 @@
+import { ClientServerActionSupport as Side } from '../components/ClientServerActionSupport.tsx';
+
 # Miscellaneous
 
 ## Introduction
@@ -25,7 +27,7 @@ miscellaneous supported actions.
 - [`static`](#static)
 - [`throw`](#throw)
 
-### analytics
+### analytics<Side name="analytics" />
 
 This action sends a Google Analytics event and returns the input data. Supported fields for this
 action are `type`, `target` and `config`. Type is `analytics` in this case, target is the name of
@@ -45,7 +47,7 @@ blocks:
           body: { root }
 ```
 
-### condition
+### condition<Side name="condition" />
 
 This action runs another action if a certain condition is met. This action is supported for the
 client side as well as the server side. Supported fields for this action are `type`, `if`, `then`
@@ -80,7 +82,7 @@ blocks:
           body: Welcome to Appsemble
 ```
 
-### controller
+### controller<Side name="controller" />
 
 This action is used to specify a custom function from a JavaScript file to be used as the controller
 to handle the action. This can help the user to overcome the limitations of `yaml` with logic
@@ -113,7 +115,7 @@ blocks:
         handler: calculate
 ```
 
-### download
+### download<Side name="download" />
 
 This action is used to download data as a file. Only available for the client side, supported fields
 for this action are `type` and `filename`. Both fields are required, type is `download` in this case
@@ -142,7 +144,7 @@ blocks:
             description: "Test description"
 ```
 
-### dialog
+### dialog<Side name="dialog" />
 
 This action opens a pop-up dialog that can display blocks temporarily. Dialogs can be closed by
 calling the `dialog.ok` or `dialog.error`. Users can still manually close dialogs, which should be
@@ -193,7 +195,7 @@ blocks:
         fullscreen: false
 ```
 
-#### dialog.ok
+#### dialog.ok<Side name="dialog.ok" />
 
 This action closes an open dialog. Type for this action is `dialog.ok`. Here is an example of this
 action in use.
@@ -221,7 +223,7 @@ blocks:
           type: dialog.ok
 ```
 
-#### dialog.error
+#### dialog.error<Side name="dialog.error" />
 
 This action also closes an open dialog but the dialog action that opened the dialog will be rejected
 with the data passed to this action. Type for this action is `dialog.error`. Here is an example of
@@ -252,7 +254,7 @@ blocks:
           type: dialog.error
 ```
 
-### each
+### each<Side name="each" />
 
 This action is used to run an action for each entry in an array. The actions are run in parallel. If
 the input is not an array, the action will be applied to the input instead. This action is
@@ -284,7 +286,7 @@ blocks:
           serial: true
 ```
 
-### event
+### event<Side name="event" />
 
 This action allows for other blocks to emit data upon triggering the action. This can be used to
 make blocks interact with each other, such as triggering the `data-loader` block to refresh itself
@@ -319,7 +321,7 @@ blocks:
             type: dialog.ok
 ```
 
-### email
+### email<Side name="email" />
 
 The email action can be used to send emails via the Appsemble server. If `to`, `cc`, and `bcc` all
 end up being empty, no emails will be sent but the action will still continue as normal. Supported
@@ -377,7 +379,7 @@ blocks:
         subject: { prop: subject }
 ```
 
-### log
+### log<Side name="log" />
 
 This action is used to output the result of the action into the console, this is mostly useful for
 debugging during app development. Available for both client side and server side, this action
@@ -411,7 +413,7 @@ blocks:
           level: error
 ```
 
-### match
+### match<Side name="match" />
 
 This action runs another action if one of the cases is true, only the first case that equals true is
 called. Available only for client side, this action supports `type` and `match` fields. Both of the
@@ -448,7 +450,7 @@ blocks:
               level: warn
 ```
 
-### message
+### message<Side name="message" />
 
 This action is used to display a message to the user, this is useful in combination with action
 chaining to notify users they have performed a certain action. Available only for client side, this
@@ -483,7 +485,7 @@ blocks:
               date: { prop: formattedDate }
 ```
 
-### noop
+### noop<Side name="noop" />
 
 This action is used to do nothing when this action is triggered, this is the default action for
 block actions that are not required. The name of the action corresponds to no-operation. This action
@@ -502,7 +504,7 @@ blocks:
           type: noop
 ```
 
-### notify
+### notify<Side name="notify" />
 
 This action is used to send notifications to one or all the users of an app. Implemented for both
 server and client side, this action supports `type`, `to`, `title` and `body` fields. All the fields
@@ -528,7 +530,7 @@ blocks:
           body: { translate: resourceLoadedNotifyBody }
 ```
 
-### request
+### request<Side name="request" />
 
 This action performs an HTTP request. This can be used to call the Appsemble API or an external API
 in order to fetch data or send data. When sending `POST`, `PUT`, `DELETE` and `PATCH` calls the data
@@ -575,7 +577,7 @@ blocks:
             email: { prop: email }
 ```
 
-### share
+### share<Side name="share" />
 
 This action can be used to display a prompt that allows the user to share something with others,
 primarily via social media. Depending on whether the user’s browser supports a native share function
@@ -600,7 +602,7 @@ blocks:
     position: top left
 ```
 
-### static
+### static<Side name="static" />
 
 This action returns static data defined in the action definition, this is useful for example for
 stubbing data. Implemented for both client and server side, this action supports `type` and `value`.
@@ -622,7 +624,7 @@ blocks:
           body: { root }
 ```
 
-### throw
+### throw<Side name="throw" />
 
 This action throws a new exception based on the data that is passed through, this can be used to
 create a custom error that ends up in the error action handler. This action is implemented for the

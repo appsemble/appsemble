@@ -1,3 +1,5 @@
+import { ClientServerActionSupport as Side } from '../components/ClientServerActionSupport.tsx';
+
 # Team
 
 ## Introduction
@@ -12,7 +14,7 @@ follow.
 - [`team.list`](#teamlist)
 - [`team.members`](#teammembers)
 
-### team.invite
+### team.invite<Side name="team.invite" />
 
 This action allows a user with sufficient permissions to invite users to a team. Supported fields
 for this action are `type`, `id`, `email`, and `role`. Id is the id of the team to which the user
@@ -40,7 +42,7 @@ blocks:
           type: log
 ```
 
-### team.join
+### team.join<Side name="team.join" />
 
 This action allows a user to join a team. Supported field for this action is `type`, which is
 `team.join` in this case. It returns an error if the user tries to join a team that they are already
@@ -68,7 +70,7 @@ blocks:
           type: log
 ```
 
-### team.list
+### team.list<Side name="team.list" />
 
 This action allows to get a list of all of the teams in an app. Supported field for this action is
 `type`, which is `team.list` in this case. An example use case of this action is providing users of
@@ -97,7 +99,7 @@ blocks:
                   prop: id
 ```
 
-### team.members
+### team.members<Side name="team.members" />
 
 This action gets a list of a team’s members. Supported fields for this action are `type` and `id`.
 Id is the ID of a specific team to get the members from and the type is `team.members`. This can be

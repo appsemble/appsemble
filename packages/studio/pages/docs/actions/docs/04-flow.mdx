@@ -1,3 +1,5 @@
+import { ClientServerActionSupport as Side } from '../components/ClientServerActionSupport.tsx';
+
 # Flow
 
 ## Introduction
@@ -48,7 +50,7 @@ To use flow actions, you need a flow page:
               type: flow.finish
 ```
 
-### flow.next
+### flow.next<Side name="flow.next" />
 
 On a flow page, this action proceed to the next page if it is present. Otherwise, the flow is
 considered to be complete and [\`flow.finish\`](#flowfinish) will be called instead. Supported field
@@ -69,7 +71,7 @@ blocks:
         type: flow.next
 ```
 
-### flow.finish
+### flow.finish<Side name="flow.finish" />
 
 On a flow page, this action triggers the `onFlowFinish` action on the page. Supported field for this
 action is `type`, which is `flow.finish` in this case. Here is an example of this action being used.
@@ -88,7 +90,7 @@ blocks:
         type: flow.finish
 ```
 
-### flow.back
+### flow.back<Side name="flow.back" />
 
 On a flow page, this action returns to the previous page if it is present. If this action is called
 on the first page, nothing happens. Supported field for this action is `type`, which is `flow.back`
@@ -108,7 +110,7 @@ blocks:
         type: flow.back
 ```
 
-### flow.cancel
+### flow.cancel<Side name="flow.cancel" />
 
 On a flow page, calling this action triggers the `onFlowCancel` action. Supported field for this
 action is `type`, which is `flow.cancel` in this case. Here is an example of how to use this action.
@@ -124,7 +126,7 @@ blocks:
         type: flow.cancel
 ```
 
-### flow.to
+### flow.to<Side name="flow.to" />
 
 On a flow page, this action is used to move to a specific step. Supported fields for this action are
 `type` and `step`. Step is the name of the step to move to, this is a remapper which gets called

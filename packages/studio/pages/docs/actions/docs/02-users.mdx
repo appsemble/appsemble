@@ -1,3 +1,5 @@
+import { ClientServerActionSupport as Side } from '../components/ClientServerActionSupport.tsx';
+
 # User
 
 ## Introduction
@@ -24,7 +26,7 @@ security:
     User: {}
 ```
 
-### user.register
+### user.register<Side name="user.register" />
 
 This action allows the user to register a new account using an email address and a password and does
 nothing if the user is already logged in. Supported fields for this action are `type`, `email`,
@@ -70,7 +72,7 @@ blocks:
           type: log
 ```
 
-### user.login
+### user.login<Side name="user.login" />
 
 This action allows the user to login using an email address and a password and does nothing if the
 user is already logged in. Supported fields for this action are `type`, `email` and `password`.
@@ -105,7 +107,7 @@ blocks:
           to: Home Page
 ```
 
-### user.update
+### user.update<Side name="user.update" />
 
 This action allows the user to update their existing account and does nothing if the user isn’t
 logged in. Supported fields for this action are `type`, `email`, `password`, `displayName`,
@@ -135,7 +137,7 @@ blocks:
         name: { prop: username }
 ```
 
-### user.logout
+### user.logout<Side name="user.logout" />
 
 This action allow the users to logout of the application. Supported field for this action is `type`,
 which is `user.logout` in this case. Here is an example of this action in use.
@@ -153,7 +155,7 @@ blocks:
           type: noop
 ```
 
-### user.query
+### user.query<Side name="user.query" />
 
 This action allows the user to fetch a list of app accounts by their roles and does nothing if the
 user is not logged in. Supported fields for this action are `type` and `roles`. Type is `user.query`
@@ -173,7 +175,7 @@ blocks:
           type: log
 ```
 
-### user.remove
+### user.remove<Side name="user.remove" />
 
 This action allows the user to delete an existing account and does nothing if the user is not logged
 in. Supported fields for this action are `type` and `email`. Type is `user.remove` and `email` is a
@@ -196,7 +198,7 @@ blocks:
           type: noop
 ```
 
-### user.create
+### user.create<Side name="user.create" />
 
 This action allows the user to create a new account for the app using an email and password and does
 nothing if the user is logged in. Supported fields for this action are `type`, `email`, `name`,

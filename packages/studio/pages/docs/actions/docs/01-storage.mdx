@@ -1,3 +1,5 @@
+import { ClientServerActionSupport as Side } from '../components/ClientServerActionSupport.tsx';
+
 # Storage
 
 ## Introduction
@@ -20,7 +22,7 @@ this [page](/docs/03-guide/storage). Supported storage actions are as below:
 - [`storage.update`](#storageupdate)
 - [`storage.delete`](#storagedelete)
 
-### storage.read
+### storage.read<Side name="storage.read" />
 
 This action can be used to read data from indexedDB, localStorage, sessionStorage, and appStorage.
 Usage of this action requires the `key` and `type` fields. Supported fields for the usage of the
@@ -42,7 +44,7 @@ blocks:
           type: log
 ```
 
-### storage.write
+### storage.write<Side name="storage.write" />
 
 This action is used to write data to indexedDB, localStorage, sessionStorage, and appStorage. Usage
 of this action requires the `key`, `value` and `type` fields. Supported fields for the usage of the
@@ -69,7 +71,7 @@ blocks:
         storage: localStorage
 ```
 
-### storage.append
+### storage.append<Side name="storage.append" />
 
 This action is used to append data to an existing array in storage. If the storage entry is a single
 object, it turns it into an array to append the data on. Supported fields for the usage of the
@@ -103,7 +105,7 @@ blocks:
             fullName: { prop: fullName }
 ```
 
-### storage.subtract
+### storage.subtract<Side name="storage.subtract" />
 
 This action is used to subtract the last item from a storage entry. If the entry consists of only
 one item, the value is turned into a singular object. If the entry is a single item, the entry is
@@ -126,7 +128,7 @@ blocks:
         storage: appStorage
 ```
 
-### storage.update
+### storage.update<Side name="storage.update" />
 
 This action is used to update an existing item in storage, or update an item inside a stored array.
 Supported fields for the usage of the action are `type`, `key`, `item`, `value` and `storage`. Item
@@ -161,7 +163,7 @@ blocks:
           type: log
 ```
 
-### storage.delete
+### storage.delete<Side name="storage.delete" />
 
 This action is used to delete the item that is stored at the specified key. Usage of this action
 requires the `key` and `type` fields. Supported fields for the usage of the action are `type`, `key`
