@@ -171,7 +171,7 @@ describe('user.update', () => {
       name: 'name',
       email: currentEmail,
       emailVerified: false,
-      picture: 'https://appsemble.dev/api/apps/42/members/some-user-id/picture',
+      picture: `${apiUrl}/api/apps/42/members/some-user-id/picture`,
       properties: {
         bool: 'true',
         property: 'Property',
@@ -245,7 +245,7 @@ describe('user.update', () => {
       name: 'name',
       email: newEmail,
       emailVerified: false,
-      picture: 'https://appsemble.dev/api/apps/42/members/some-user-id/picture',
+      picture: `${apiUrl}/api/apps/42/members/some-user-id/picture`,
       properties: {
         bool: 'true',
         property: 'Property',
