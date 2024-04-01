@@ -88,14 +88,14 @@ export function DocsRoutes(): ReactNode {
         <MenuSection>{ActionMenuItems('docs')}</MenuSection>
       </CollapsibleMenuSection>
       <CollapsibleMenuSection>
-        <MenuItem icon="book" to="docs/reference">
+        <MenuItem end icon="book" to="docs/reference">
           <FormattedMessage {...messages.reference} />
         </MenuItem>
         <MenuSection>
-          <MenuItem end to="docs/reference/app">
+          <MenuItem to="docs/reference/app">
             <FormattedMessage {...messages.app} />
           </MenuItem>
-          <MenuItem end to="docs/reference/action">
+          <MenuItem to="docs/reference/action">
             <FormattedMessage {...messages.action} />
           </MenuItem>
         </MenuSection>
