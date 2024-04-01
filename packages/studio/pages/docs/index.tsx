@@ -88,16 +88,16 @@ export function DocsRoutes(): ReactNode {
           ];
         })}
       <CollapsibleMenuSection>
-        <MenuItem end icon="sitemap" to="docs/remapper">
-          <FormattedMessage {...messages.remapper} />
-        </MenuItem>
-        <MenuSection>{RemapperMenuItems('docs')}</MenuSection>
-      </CollapsibleMenuSection>
-      <CollapsibleMenuSection>
         <MenuItem end icon="gears" to="docs/actions">
           <FormattedMessage {...messages.action} />
         </MenuItem>
         <MenuSection>{ActionMenuItems('docs')}</MenuSection>
+      </CollapsibleMenuSection>
+      <CollapsibleMenuSection>
+        <MenuItem end icon="sitemap" to="docs/remapper">
+          <FormattedMessage {...messages.remapper} />
+        </MenuItem>
+        <MenuSection>{RemapperMenuItems('docs')}</MenuSection>
       </CollapsibleMenuSection>
       <CollapsibleMenuSection>
         <MenuItem end icon="book" to="docs/reference">
@@ -153,13 +153,7 @@ export function DocsRoutes(): ReactNode {
 
   return (
     <MetaSwitch title={messages.title}>
-      <Route element={<ActionRoutes />} path="/actions/*" />
-      <Route element={<RemapperRoutes />} path="/remapper/*" />
       <Route element={<SearchPage />} path="/search" />
-      <Route element={<Changelog />} path="/changelog" />
-      <Route element={<Contributing />} path="/contributing" />
-      <Route element={<PackageRoutes />} path="/packages/*" />
-      <Route element={<ReferenceRoutes />} path="/reference/*" />
       {docs.map(({ Component, path, title }) => (
         <Route
           element={<Doc component={Component} title={title} />}
@@ -167,6 +161,12 @@ export function DocsRoutes(): ReactNode {
           path={getUrl(path, '')}
         />
       ))}
+      <Route element={<ActionRoutes />} path="/actions/*" />
+      <Route element={<RemapperRoutes />} path="/remapper/*" />
+      <Route element={<ReferenceRoutes />} path="/reference/*" />
+      <Route element={<PackageRoutes />} path="/packages/*" />
+      <Route element={<Contributing />} path="/contributing" />
+      <Route element={<Changelog />} path="/changelog" />
       {docs.map(({ path }) => (
         <Route element={<Navigate to={getUrl(path, '')} />} key={path} path="*" />
       ))}

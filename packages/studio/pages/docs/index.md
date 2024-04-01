@@ -31,7 +31,7 @@ complexity.
 
 Check out the resources below for more information on how to develop apps using Appsemble.
 
-- [App development guide](03-guide/index.md)
+- [App development guide](02-guide/index.md)
 - [Documentation on blocks](/blocks)
 
 ## System Admin
@@ -51,7 +51,7 @@ order to create apps that do exactly what the user needs. Blocks can be freely d
 submitted to Appsemble for use within apps. Check out the links below for some resources on getting
 started.
 
-- [Tutorial on getting started with a new block](02-development/02-developing-blocks.md)
+- [Tutorial on getting started with a new block](03-development/02-developing-blocks.md)
 - [Documentation on existing blocks](/blocks)
 
 ## Core Developer
@@ -61,7 +61,7 @@ authentication provider and the app components used to display apps.
 
 See also:
 
-- [Core development](02-development/07-core-development.md)
+- [Core development](03-development/07-core-development.md)
 - [API documentation](/api-explorer)
 - [Source code on GitLab](https://gitlab.com/appsemble/appsemble)
 - [Contribution guidelines](/docs/contributing)
