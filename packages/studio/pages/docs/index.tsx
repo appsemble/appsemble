@@ -28,7 +28,7 @@ import { messages } from './messages.js';
 import { ReferenceRoutes } from './reference/index.js';
 import { RemapperMenuItems } from './remapper/components/RemapperMenuItems.js';
 import { RemapperRoutes } from './remapper/index.js';
-import { SearchPage } from './search/index.js';
+import { SearchPage } from './Search/index.js';
 import Changelog from '../../../../CHANGELOG.md';
 import Contributing from '../../../../CONTRIBUTING.md';
 import { useBreadCrumbsDecoration } from '../../components/BreadCrumbsDecoration/index.js';
