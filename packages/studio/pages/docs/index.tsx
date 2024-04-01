@@ -8,6 +8,7 @@ import {
   MenuItem,
   MenuSection,
   MetaSwitch,
+  useMeta,
   useSideMenu,
 } from '@appsemble/react-components';
 // eslint-disable-next-line import/no-extraneous-dependencies, n/no-extraneous-import
@@ -16,13 +17,12 @@ import Sdk from '@appsemble/sdk/README.md';
 import WebpackConfig from '@appsemble/webpack-config/README.md';
 // eslint-disable-next-line import/no-extraneous-dependencies, n/no-extraneous-import
 import CreateAppsemble from 'create-appsemble/README.md';
-import { type ReactNode, useEffect } from 'react';
+import { type ComponentType, type ReactNode, useEffect } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Navigate, Route, useLocation, useNavigate } from 'react-router-dom';
 
 import { ActionMenuItems } from './actions/components/ActionMenuItems.js';
 import { ActionRoutes } from './actions/index.js';
-import { Doc } from './Doc/index.js';
 import { docs } from './docs.js';
 import { messages } from './messages.js';
 import { ReferenceRoutes } from './reference/index.js';
@@ -35,6 +35,27 @@ import { useBreadCrumbsDecoration } from '../../components/BreadCrumbsDecoration
 
 function getUrl(path: string, base: string): string {
   return path === '/' ? base : `${base}/${path.replace(/\/$/, '')}`;
+}
+
+interface DocProps {
+  /**
+   * The MDX component to render.
+   */
+  readonly component: ComponentType;
+
+  /**
+   * The title to display.
+   */
+  readonly title: string;
+}
+
+/**
+ * Render documentation in with a breadcrumb.
+ */
+function Doc({ component: Component, title }: DocProps): ReactNode {
+  useMeta(title);
+
+  return <Component />;
 }
 
 /**
