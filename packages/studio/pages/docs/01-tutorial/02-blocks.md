@@ -15,7 +15,7 @@ You could argue that blocks are the most important element of an app. Blocks ena
 app. A block can be a button, a text field, a dropdown menu, a form, etc. Next to the app store
 there is also a block store where you can access the different blocks:
 
-![Block Store Menu](../tutorial-assets/block-store-menu.png 'Block Store Menu')
+![Block Store Menu](assets/block-store-menu.png 'Block Store Menu')
 
 This overview contains all the blocks you can use. You can easily select a block to get the example
 code and an in depth explanation of how that specific block works.

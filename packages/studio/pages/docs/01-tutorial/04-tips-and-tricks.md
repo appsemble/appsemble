@@ -32,7 +32,7 @@ to remark and then press `CTRL + /` or on a mac `CMD + /`
 While coding your application you can press `CTRL + SPACE` to show suggestions on how to complete
 the code. This can be incredibly handy when you have to choose an item from a list, like an action.
 
-![Code suggestions](../tutorial-assets/type-suggestions.png 'Code suggestions')
+![Code suggestions](assets/type-suggestions.png 'Code suggestions')
 
 ## Conclusion
 
