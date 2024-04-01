@@ -112,8 +112,8 @@ various database models, migration files, etc. Similarly, you can check `README.
 package to know more about that package.
 
 Some common development tasks include adding a new server endpoint, adding a new
-[action](../actions/index.mdx), adding a new [remapper](../remapper/index.mdx), adding new column to
-a table etc.
+[action](../03-actions/index.mdx), adding a new [remapper](../04-remapper/index.mdx), adding new
+column to a table etc.
 
 **To add a new server endpoint the following steps should be followed.**
 

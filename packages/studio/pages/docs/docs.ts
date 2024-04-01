@@ -1,4 +1,4 @@
-import { applyPackages } from './packages/index.js';
+import { applyPackages } from './08-packages/index.js';
 
 const context = require.context('.', true, /\.mdx?$/);
 

@@ -11,15 +11,15 @@ import CreateAppsemble from 'create-appsemble/README.md';
 
 export function applyPackages<T>(documents: T[]): void {
   for (const doc of [
-    { Component: Cli, path: 'packages/cli', title: '@appsemble/cli' },
-    { Component: Preact, path: 'packages/preact', title: '@appsemble/preact' },
-    { Component: Sdk, path: 'packages/sdk', title: '@appsemble/sdk' },
+    { Component: Cli, path: '08-packages/cli', title: '@appsemble/cli' },
+    { Component: Preact, path: '08-packages/preact', title: '@appsemble/preact' },
+    { Component: Sdk, path: '08-packages/sdk', title: '@appsemble/sdk' },
     {
       Component: WebpackConfig,
-      path: 'packages/webpack-config',
+      path: '08-packages/webpack-config',
       title: '@appsemble/webpack-config',
     },
-    { Component: CreateAppsemble, path: 'packages/create-appsemble', title: 'create-appsemble' },
+    { Component: CreateAppsemble, path: '08-packages/create-appsemble', title: 'create-appsemble' },
   ]) {
     documents.push({
       ...doc,
