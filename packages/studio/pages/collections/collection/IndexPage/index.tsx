@@ -11,6 +11,7 @@ import { Permission } from '@appsemble/utils';
 import axios from 'axios';
 import { type ReactNode, useCallback, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
+import { useParams } from 'react-router-dom';
 
 import { CollectionHeader } from './CollectionHeader/index.js';
 import styles from './index.module.css';
@@ -65,8 +66,11 @@ export function IndexPage({ collection }: IndexPageProps): ReactNode {
     name: 'rating',
     reverse: true,
   });
+  const { lang } = useParams();
 
-  const appsResult = useData<PinnableApp[]>(`/api/appCollections/${collection.id}/apps`);
+  const appsResult = useData<PinnableApp[]>(
+    `/api/appCollections/${collection.id}/apps?language=${lang}`,
+  );
 
   const onSortChange = useCallback((name: AppSortFunctionName, reverse: boolean) => {
     setSort({ name, reverse });

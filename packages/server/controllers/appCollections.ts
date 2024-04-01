@@ -6,8 +6,8 @@ import { col, fn, literal, Op, UniqueConstraintError } from 'sequelize';
 import { App } from '../models/App.js';
 import { AppCollection } from '../models/AppCollection.js';
 import { AppCollectionApp } from '../models/AppCollectionApp.js';
-import { AppRating, Organization, OrganizationMember } from '../models/index.js';
-import { compareApps } from '../utils/app.js';
+import { AppMessages, AppRating, Organization, OrganizationMember } from '../models/index.js';
+import { applyAppMessages, compareApps, parseLanguage } from '../utils/app.js';
 import { checkRole } from '../utils/checkRole.js';
 
 export async function queryCollections(ctx: Context): Promise<void> {
@@ -156,6 +156,7 @@ export async function queryCollectionApps(ctx: Context): Promise<void> {
     pathParams: { appCollectionId },
     user,
   } = ctx;
+  const { baseLanguage, language } = parseLanguage(ctx, ctx.query?.language);
 
   const memberships = await OrganizationMember.findAll({
     where: {
@@ -202,6 +203,9 @@ export async function queryCollectionApps(ctx: Context): Promise<void> {
                       [literal('"Apps->App->Organization"."icon" IS NOT NULL'), 'hasIcon'],
                     ],
                   },
+                },
+                {
+                  model: AppMessages,
                 },
               ],
               where: {
@@ -255,6 +259,7 @@ export async function queryCollectionApps(ctx: Context): Promise<void> {
           RatingCount: rating.count,
         });
       }
+      applyAppMessages(app, language, baseLanguage);
       return { app, pinnedAt };
     })
     .sort(({ app: app1, pinnedAt: pinnedAt1 }, { app: app2, pinnedAt: pinnedAt2 }) => {

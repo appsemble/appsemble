@@ -285,6 +285,14 @@ export const paths: OpenAPIV3.PathsObject = {
             $ref: '#/components/schemas/AppCollection/properties/id',
           },
         },
+        {
+          name: 'language',
+          in: 'query',
+          description: 'The language to include the translations of, if available',
+          schema: {
+            type: 'string',
+          },
+        },
       ],
       responses: {
         200: {

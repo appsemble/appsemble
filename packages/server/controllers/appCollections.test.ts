@@ -6,6 +6,7 @@ import {
   App,
   AppCollection,
   AppCollectionApp,
+  AppMessages,
   Organization,
   OrganizationMember,
   type User,
@@ -580,6 +581,65 @@ describe('appCollectionApps', () => {
       expect.objectContaining({
         id: apps[2].id,
         path: 'productivity-app',
+      }),
+    ]);
+  });
+
+  it('should return localized apps in an app collection', async () => {
+    await AppMessages.create({
+      AppId: apps[0].id,
+      language: 'nl',
+      messages: { app: { name: 'test in dutch' }, messageIds: { test: 'test translation' } },
+    });
+    await AppMessages.create({
+      AppId: apps[2].id,
+      language: 'en',
+      messages: { messageIds: { test2: 'test translation 2' } },
+    });
+    const response = await request.get(`/api/appCollections/${collections[0].id}/apps?language=nl`);
+    expect(response.status).toBe(200);
+    expect(response.data).toMatchObject([
+      expect.objectContaining({
+        id: apps[0].id,
+        path: 'productivity-and-collaboration-app',
+        messages: {
+          app: expect.objectContaining({ name: 'test in dutch' }),
+          messageIds: { test: 'test translation' },
+        },
+      }),
+      expect.objectContaining({
+        id: apps[2].id,
+        path: 'productivity-app',
+        messages: expect.objectContaining({
+          app: expect.objectContaining({
+            name: 'Productivity App',
+          }),
+        }),
+      }),
+    ]);
+
+    const responseEnglish = await request.get(
+      `/api/appCollections/${collections[0].id}/apps?language=en`,
+    );
+    expect(responseEnglish.status).toBe(200);
+    expect(responseEnglish.data).toMatchObject([
+      expect.objectContaining({
+        id: apps[0].id,
+        path: 'productivity-and-collaboration-app',
+        messages: {
+          app: expect.objectContaining({ name: 'Productivity and Collaboration App' }),
+          messageIds: {},
+        },
+      }),
+      expect.objectContaining({
+        id: apps[2].id,
+        path: 'productivity-app',
+        messages: {
+          app: expect.objectContaining({
+            name: 'Productivity App',
+          }),
+          messageIds: { test2: 'test translation 2' },
+        },
       }),
     ]);
   });
