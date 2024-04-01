@@ -24,7 +24,7 @@ import Changelog from '../../../../CHANGELOG.md';
 import Contributing from '../../../../CONTRIBUTING.md';
 import { useBreadCrumbsDecoration } from '../../components/BreadCrumbsDecoration/index.js';
 
-function getUrl(path: string, base: string): string {
+function formatPath(path: string, base = ''): string {
   return path === '/' ? base : `${base}/${path.replace(/\/$/, '')}`;
 }
 
@@ -72,13 +72,13 @@ export function DocsRoutes(): ReactNode {
           );
           return [
             <CollapsibleMenuSection key="section-wrapper">
-              <MenuItem end icon={icon} key="docs-title" to={getUrl(path, 'docs')}>
+              <MenuItem end icon={icon} key="docs-title" to={formatPath(path, 'docs')}>
                 {title}
               </MenuItem>
               {subRoutes.length ? (
                 <MenuSection key="docs-section">
                   {subRoutes.map((subRoute) => (
-                    <MenuItem end key={subRoute.path} to={getUrl(subRoute.path, 'docs')}>
+                    <MenuItem end key={subRoute.path} to={formatPath(subRoute.path, 'docs')}>
                       {subRoute.title}
                     </MenuItem>
                   ))}
@@ -158,7 +158,7 @@ export function DocsRoutes(): ReactNode {
         <Route
           element={<Doc component={Component} title={title} />}
           key={path}
-          path={getUrl(path, '')}
+          path={formatPath(path)}
         />
       ))}
       <Route element={<ActionRoutes />} path="/actions/*" />
@@ -168,7 +168,7 @@ export function DocsRoutes(): ReactNode {
       <Route element={<Contributing />} path="/contributing" />
       <Route element={<Changelog />} path="/changelog" />
       {docs.map(({ path }) => (
-        <Route element={<Navigate to={getUrl(path, '')} />} key={path} path="*" />
+        <Route element={<Navigate to={formatPath(path)} />} key={path} path="*" />
       ))}
       <Route element={<Navigate to="docs" />} path="*" />
     </MetaSwitch>
