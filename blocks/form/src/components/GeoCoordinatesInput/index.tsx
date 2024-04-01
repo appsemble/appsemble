@@ -1,5 +1,5 @@
 import { useBlock } from '@appsemble/preact';
-import { FormComponent, Icon, type SharedFormComponentProps } from '@appsemble/preact-components';
+import { FormComponent, type SharedFormComponentProps } from '@appsemble/preact-components';
 import { CircleMarker, type LocationEvent, Map, TileLayer } from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { type VNode } from 'preact';
@@ -114,32 +114,15 @@ export function GeoCoordinatesInput({
   }, [disabled, map]);
 
   return (
-    <FormComponent required={required}>
+    <FormComponent
+      icon={icon}
+      label={label ? (utils.remap(label, {}) as string) : name}
+      name={name}
+      optionalLabel={utils.formatMessage('optionalLabel')}
+      required={required}
+      tag={utils.remap(tag, {}) as string}
+    >
       <div className={`appsemble-geocoordinates ${styles.root} is-relative mb-5`}>
-        {icon ? (
-          // Nested divs are required to properly space the content.
-          <div class="is-flex is-justify-content-space-between">
-            <div class="is-flex">
-              <Icon className="is-left" icon={icon} />
-              {label ? <label className="label">{utils.remap(label, {}) as string}</label> : null}
-            </div>
-            {!required || tag ? (
-              <span className="is-pulled-right has-text-weight-normal">
-                {(utils.remap(tag, {}) as string) || '(Optional)'}
-              </span>
-            ) : null}
-          </div>
-        ) : label ? (
-          <div class="is-flex is-justify-content-space-between">
-            <label className="label">{utils.remap(label, {}) as string}</label>
-            {!required || tag ? (
-              <span className="is-pulled-right has-text-weight-normal">
-                {(utils.remap(tag, {}) as string) || '(Optional)'}
-              </span>
-            ) : null}
-          </div>
-        ) : null}
-
         <div className={styles.map} ref={ref} />
         <div className={styles.crossHairsOverlay}>
           <i className={`fas fa-crosshairs ${styles.crossHairs}`} />

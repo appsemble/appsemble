@@ -1,4 +1,4 @@
-import { FormattedMessage, useBlock } from '@appsemble/preact';
+import { useBlock } from '@appsemble/preact';
 import { DualSliderField } from '@appsemble/preact-components';
 import classNames from 'classnames';
 import { type VNode } from 'preact';
@@ -41,7 +41,7 @@ export function RangeInput({
     min: getMin(field),
     name,
     onChange,
-    optionalLabel: <FormattedMessage id="optionalLabel" />,
+    optionalLabel: utils.formatMessage('optionalLabel'),
     readOnly,
     required: isRequired(field, utils, formValues),
     step: getStep(field),

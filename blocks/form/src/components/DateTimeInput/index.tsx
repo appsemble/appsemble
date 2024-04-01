@@ -37,7 +37,7 @@ export function DateTimeInput({
   const value = getValueByNameSequence(name, formValues);
   const required = isRequired(field, utils, formValues);
 
-  const dateTimeLabel = utils.remap(label, value) as string;
+  const dateTimeLabel = (utils.remap(label, value) as string) ?? name;
   const confirmLabel = utils.formatMessage('confirmLabel');
 
   const handleOnChange = useCallback(

@@ -1,4 +1,4 @@
-import { FormattedMessage, useBlock } from '@appsemble/preact';
+import { useBlock } from '@appsemble/preact';
 import { CheckboxField } from '@appsemble/preact-components';
 import classNames from 'classnames';
 import { type VNode } from 'preact';
@@ -42,7 +42,7 @@ export function BooleanInput({
       label={checkboxLabel as string}
       name={name}
       onChange={onChange}
-      optionalLabel={<FormattedMessage id="optionalLabel" />}
+      optionalLabel={utils.formatMessage('optionalLabel')}
       readOnly={readOnly}
       required={required}
       size={size}

@@ -70,7 +70,7 @@ export function DateInput({
       icon={field.icon}
       id={name}
       inline={inline}
-      label={dateLabel}
+      label={dateLabel ?? name}
       locale={locale}
       maxDate={maxDate}
       minDate={minDate}

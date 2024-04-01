@@ -41,6 +41,7 @@ export const DualSliderField = forwardRef<HTMLInputElement, DualSliderFieldProps
       topLabels,
       optionalLabel,
       inline,
+      required,
       ...props
     },
     ref,
@@ -56,7 +57,7 @@ export const DualSliderField = forwardRef<HTMLInputElement, DualSliderFieldProps
       inline={inline}
       label={label}
       optionalLabel={optionalLabel}
-      required
+      required={required}
       tag={tag}
     >
       {topLabels?.length ? (

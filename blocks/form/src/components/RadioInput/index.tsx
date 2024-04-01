@@ -1,4 +1,4 @@
-import { FormattedMessage, useBlock } from '@appsemble/preact';
+import { useBlock } from '@appsemble/preact';
 import { RadioButton, RadioGroup } from '@appsemble/preact-components';
 import classNames from 'classnames';
 import { type VNode } from 'preact';
@@ -35,10 +35,10 @@ export function RadioInput({
       disabled={disabled}
       error={dirty ? error : null}
       help={utils.remap(help, value) as string}
-      label={utils.remap(label, value) as string}
+      label={(utils.remap(label, value) as string) ?? name}
       name={name}
       onChange={onChange}
-      optionalLabel={<FormattedMessage id="optionalLabel" />}
+      optionalLabel={utils.formatMessage('optionalLabel')}
       required={required}
       tag={utils.remap(tag, value) as string}
       value={value}
