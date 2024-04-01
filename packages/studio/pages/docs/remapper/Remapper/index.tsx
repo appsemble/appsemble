@@ -1,4 +1,4 @@
-import { Title, useMeta } from '@appsemble/react-components';
+import { Title } from '@appsemble/react-components';
 import { camelToHyphen, defaultLocale, examples, type RemapperExampleKeys } from '@appsemble/utils';
 import { type OpenAPIV3 } from 'openapi-types';
 import { Fragment, type ReactNode } from 'react';
@@ -6,7 +6,6 @@ import { Fragment, type ReactNode } from 'react';
 import { Collapsible } from '../../../../components/Collapsible/index.js';
 import { Playground } from '../../../../components/Playground/index.js';
 import { type RenderRefProps, Schema } from '../../../../components/Schema/index.js';
-import { messages } from '../messages.js';
 
 function Ref({ isArray, jsonRef }: RenderRefProps): ReactNode {
   const name = jsonRef.split('/').pop();
@@ -24,7 +23,6 @@ export function RemapperPage({
 }: {
   readonly remappers: Record<string, OpenAPIV3.ReferenceObject | OpenAPIV3.SchemaObject>;
 }): ReactNode {
-  useMeta(messages.title, messages.description);
   return (
     <main lang={defaultLocale}>
       {Object.entries(remappers).map(([name, schema]) => {

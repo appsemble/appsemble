@@ -60,20 +60,20 @@ export function DocsRoutes(): ReactNode {
       </MenuItem>
       {docs
         .filter(({ path }) => path.endsWith('/'))
-        .map(({ icon, path, title }) => {
+        .map(({ icon, menu, path, title }) => {
           const subRoutes = docs.filter(
             (subRoute) => subRoute.path !== path && subRoute.path.startsWith(path),
           );
           return [
             <CollapsibleMenuSection key="section-wrapper">
               <MenuItem end icon={icon} key="docs-title" to={formatPath(path, 'docs')}>
-                {title}
+                {menu ?? title}
               </MenuItem>
               {subRoutes.length ? (
                 <MenuSection key="docs-section">
                   {subRoutes.map((subRoute) => (
                     <MenuItem end key={subRoute.path} to={formatPath(subRoute.path, 'docs')}>
-                      {subRoute.title}
+                      {subRoute.menu ?? subRoute.title}
                     </MenuItem>
                   ))}
                 </MenuSection>
