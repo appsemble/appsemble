@@ -1,7 +1,3 @@
-// eslint-disable-next-line import/no-extraneous-dependencies, n/no-extraneous-import
-import Cli from '@appsemble/cli/README.md';
-// eslint-disable-next-line import/no-extraneous-dependencies, n/no-extraneous-import
-import Preact from '@appsemble/preact/README.md';
 import {
   CollapsibleMenuSection,
   Input,
@@ -11,12 +7,6 @@ import {
   useMeta,
   useSideMenu,
 } from '@appsemble/react-components';
-// eslint-disable-next-line import/no-extraneous-dependencies, n/no-extraneous-import
-import Sdk from '@appsemble/sdk/README.md';
-// eslint-disable-next-line import/no-extraneous-dependencies, n/no-extraneous-import
-import WebpackConfig from '@appsemble/webpack-config/README.md';
-// eslint-disable-next-line import/no-extraneous-dependencies, n/no-extraneous-import
-import CreateAppsemble from 'create-appsemble/README.md';
 import { type ComponentType, type ReactNode, useEffect } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Navigate, Route, useLocation, useNavigate } from 'react-router-dom';
@@ -25,6 +15,7 @@ import { ActionMenuItems } from './actions/components/ActionMenuItems.js';
 import { ActionRoutes } from './actions/index.js';
 import { docs } from './docs.js';
 import { messages } from './messages.js';
+import { PackageRoutes } from './packages/index.js';
 import { ReferenceRoutes } from './reference/index.js';
 import { RemapperMenuItems } from './remapper/components/RemapperMenuItems.js';
 import { RemapperRoutes } from './remapper/index.js';
@@ -167,11 +158,7 @@ export function DocsRoutes(): ReactNode {
       <Route element={<SearchPage />} path="/search" />
       <Route element={<Changelog />} path="/changelog" />
       <Route element={<Contributing />} path="/contributing" />
-      <Route element={<Cli />} path="/packages/cli" />
-      <Route element={<Preact />} path="/packages/preact" />
-      <Route element={<Sdk />} path="/packages/sdk" />
-      <Route element={<WebpackConfig />} path="/packages/webpack-config" />
-      <Route element={<CreateAppsemble />} path="/packages/create-appsemble" />
+      <Route element={<PackageRoutes />} path="/packages/*" />
       <Route element={<ReferenceRoutes />} path="/reference/*" />
       {docs.map(({ Component, path, title }) => (
         <Route
