@@ -3,9 +3,7 @@ import { camelToHyphen, defaultLocale, schemas } from '@appsemble/utils';
 import { type Schema as JSONSchema } from 'jsonschema';
 import { type OpenAPIV3 } from 'openapi-types';
 import { Fragment, type ReactNode } from 'react';
-import { FormattedMessage } from 'react-intl';
 
-import Introduction from './introduction.md';
 import { messages } from './messages.js';
 import { Ref } from './Ref/index.js';
 import { Schema } from '../../../../components/Schema/index.js';
@@ -42,24 +40,16 @@ export function ActionPage(): ReactNode {
 
   return (
     <main lang={defaultLocale}>
-      <Title anchor className="pl-4" id="action-reference">
-        <FormattedMessage {...messages.title} />
-      </Title>
-      <div className="pl-6">
-        <Introduction main={false} />
-        <Schema anchors renderRef={Ref} schema={base} />
-      </div>
+      <Schema anchors renderRef={Ref} schema={base} />
       {entries.map(([name, schema]) => {
         const id = camelToHyphen(name);
 
         return (
           <Fragment key={name}>
-            <Title anchor className="pl-4 mb-1 mt-5" id={id} size={4}>
+            <Title anchor className="mb-1 mt-5" id={id} size={4}>
               {name}
             </Title>
-            <div className="pl-6">
-              <Schema anchors idPrefix={id} renderRef={Ref} schema={schema} />
-            </div>
+            <Schema anchors idPrefix={id} renderRef={Ref} schema={schema} />
           </Fragment>
         );
       })}

@@ -1,3 +1,7 @@
+---
+icon: book
+---
+
 # Reference
 
 Apps are defined by app definitions. Some options are straight forward, other may need some more

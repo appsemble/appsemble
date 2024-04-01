@@ -11,14 +11,8 @@ import { type ComponentType, type ReactNode, useEffect } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Navigate, Route, useLocation, useNavigate } from 'react-router-dom';
 
-import { ActionMenuItems } from './actions/components/ActionMenuItems.js';
-import { ActionRoutes } from './actions/index.js';
 import { docs } from './docs.js';
 import { messages } from './messages.js';
-import { PackageRoutes } from './packages/index.js';
-import { ReferenceRoutes } from './reference/index.js';
-import { RemapperMenuItems } from './remapper/components/RemapperMenuItems.js';
-import { RemapperRoutes } from './remapper/index.js';
 import { SearchPage } from './Search/index.js';
 import Changelog from '../../../../CHANGELOG.md';
 import Contributing from '../../../../CONTRIBUTING.md';
@@ -87,43 +81,6 @@ export function DocsRoutes(): ReactNode {
             </CollapsibleMenuSection>,
           ];
         })}
-      <CollapsibleMenuSection>
-        <MenuItem end icon="gears" to="docs/actions">
-          <FormattedMessage {...messages.action} />
-        </MenuItem>
-        <MenuSection>{ActionMenuItems('docs')}</MenuSection>
-      </CollapsibleMenuSection>
-      <CollapsibleMenuSection>
-        <MenuItem end icon="sitemap" to="docs/remapper">
-          <FormattedMessage {...messages.remapper} />
-        </MenuItem>
-        <MenuSection>{RemapperMenuItems('docs')}</MenuSection>
-      </CollapsibleMenuSection>
-      <CollapsibleMenuSection>
-        <MenuItem end icon="book" to="docs/reference">
-          <FormattedMessage {...messages.reference} />
-        </MenuItem>
-        <MenuSection>
-          <MenuItem to="docs/reference/app">
-            <FormattedMessage {...messages.app} />
-          </MenuItem>
-          <MenuItem to="docs/reference/action">
-            <FormattedMessage {...messages.action} />
-          </MenuItem>
-        </MenuSection>
-      </CollapsibleMenuSection>
-      <CollapsibleMenuSection>
-        <MenuItem end icon="cubes" to="docs/packages">
-          <FormattedMessage {...messages.packages} />
-        </MenuItem>
-        <MenuSection>
-          <MenuItem to="docs/packages/cli">@appsemble/cli</MenuItem>
-          <MenuItem to="docs/packages/preact">@appsemble/preact</MenuItem>
-          <MenuItem to="docs/packages/sdk">@appsemble/sdk</MenuItem>
-          <MenuItem to="docs/packages/webpack-config">@appsemble/webpack-config</MenuItem>
-          <MenuItem to="docs/packages/create-appsemble">create-appsemble</MenuItem>
-        </MenuSection>
-      </CollapsibleMenuSection>
       <MenuItem end icon="code-merge" to="docs/contributing">
         <FormattedMessage {...messages.contributing} />
       </MenuItem>
@@ -161,15 +118,8 @@ export function DocsRoutes(): ReactNode {
           path={formatPath(path)}
         />
       ))}
-      <Route element={<ActionRoutes />} path="/actions/*" />
-      <Route element={<RemapperRoutes />} path="/remapper/*" />
-      <Route element={<ReferenceRoutes />} path="/reference/*" />
-      <Route element={<PackageRoutes />} path="/packages/*" />
       <Route element={<Contributing />} path="/contributing" />
       <Route element={<Changelog />} path="/changelog" />
-      {docs.map(({ path }) => (
-        <Route element={<Navigate to={formatPath(path)} />} key={path} path="*" />
-      ))}
       <Route element={<Navigate to="docs" />} path="*" />
     </MetaSwitch>
   );

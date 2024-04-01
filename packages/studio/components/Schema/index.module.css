@@ -2,8 +2,3 @@
   background-color: hsl(0deg 0% 0% / 1%);
   border-left: 2px solid hsl(0deg 0% 86%);
 }
-
-.hasAnchor {
-  left: -2.5rem;
-  position: relative;
-}
