@@ -95,8 +95,7 @@ resources and parameters.
 Blocks are what app developers will use to build apps. Pages in apps can be composed using blocks in
 order to create apps that do exactly what the user needs. Blocks can be developed in any language
 that is compatible with the Appsemble SDK, such as plain JavaScript, React, and Vue. See section
-[Developing Blocks](https://appsemble.app/docs/02-development/developing-blocks) on how to create
-blocks.
+[Developing Blocks](/docs/03-development/02-developing-blocks) on how to create blocks.
 
 Within apps blocks are contained in their own environments, disallowing them from communicating with
 each other in order to prevent conflicts.
