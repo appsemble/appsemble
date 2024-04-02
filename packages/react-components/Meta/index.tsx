@@ -129,7 +129,8 @@ export function useMeta(title: Text, description?: Text): void {
   const { pathname } = useLocation();
   // Don't count empty string-, language- and first page segments
   const segmentCount = pathname.split('/').length - 3;
-  const url = String(pathname + '/..'.repeat(segmentCount > 0 ? segmentCount - depth : 0));
+  // Slice locale e.g. `/en/`, to resolve link without a trailing `/`.
+  const url = String(pathname + '/..'.repeat(segmentCount > 0 ? segmentCount - depth : 0)).slice(4);
 
   useEffect(() => {
     const formatMaybe = (string: Text): string =>

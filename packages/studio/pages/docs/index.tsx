@@ -26,21 +26,47 @@ interface DocProps {
   /**
    * The MDX component to render.
    */
-  readonly component: ComponentType;
+  readonly Component: ComponentType;
 
   /**
    * The title to display.
    */
   readonly title: string;
+
+  /**
+   * The path of the base route.
+   */
+  readonly path: string;
+
+  /**
+   * The path of the base route.
+   */
+  readonly childRoutes?: DocProps[];
+}
+
+function ChildDoc({ Component: Child, title: childTitle }: Partial<DocProps>): ReactNode {
+  useMeta(childTitle);
+  return <Child />;
 }
 
 /**
  * Render documentation in with a breadcrumb.
  */
-function Doc({ component: Component, title }: DocProps): ReactNode {
+function Doc({ Component, childRoutes, path, title }: DocProps): ReactNode {
   useMeta(title);
 
-  return <Component />;
+  return (
+    <MetaSwitch title={title}>
+      <Route element={<Component />} path="/" />
+      {childRoutes.map((sub) => (
+        <Route
+          element={<ChildDoc Component={sub.Component} path={sub.path} title={sub.title} />}
+          key={sub.path}
+          path={sub.path.replace(path.replace('/*', ''), '')}
+        />
+      ))}
+    </MetaSwitch>
+  );
 }
 
 /**
@@ -111,13 +137,24 @@ export function DocsRoutes(): ReactNode {
   return (
     <MetaSwitch title={messages.title}>
       <Route element={<SearchPage />} path="/search" />
-      {docs.map(({ Component, path, title }) => (
-        <Route
-          element={<Doc component={Component} title={title} />}
-          key={path}
-          path={formatPath(path)}
-        />
-      ))}
+      {docs
+        .filter(({ path }) => path.endsWith('/'))
+        .map(({ Component, path, title }) => (
+          <Route
+            element={
+              <Doc
+                childRoutes={docs.filter(
+                  ({ path: subPath }) => subPath.startsWith(path) && subPath !== path,
+                )}
+                Component={Component}
+                path={path}
+                title={title}
+              />
+            }
+            key={path}
+            path={`${path}*`}
+          />
+        ))}
       <Route element={<Contributing />} path="/contributing" />
       <Route element={<Changelog />} path="/changelog" />
       <Route element={<Navigate to="docs" />} path="*" />
