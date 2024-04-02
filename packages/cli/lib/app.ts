@@ -1,5 +1,5 @@
 import { cpSync, createReadStream, createWriteStream, existsSync, type ReadStream } from 'node:fs';
-import { mkdir, readdir, readFile, rm, stat } from 'node:fs/promises';
+import { mkdir, readdir, rm, stat } from 'node:fs/promises';
 import { basename, dirname, join, parse, relative, resolve } from 'node:path';
 import { inspect } from 'node:util';
 
@@ -278,6 +278,16 @@ export async function traverseAppDirectory(
 
   logger.info(`Traversing directory for App files in ${path} 🕵`);
   await opendirSafe(path, async (filepath, filestat) => {
+    if (filestat.isFile() && filestat.name.toLowerCase().startsWith('readme')) {
+      logger.info(`Adding ${filepath}`);
+      formData.append('readmes', createReadStream(filepath));
+
+      if (filestat.name.toLowerCase().startsWith('readme.md')) {
+        gatheredData.readmeUrl = basename(filepath);
+      }
+      return;
+    }
+
     switch (filestat.name.toLowerCase()) {
       case '.appsemblerc.yaml':
         logger.info(`Reading app settings from ${filepath}`);
@@ -307,12 +317,6 @@ export async function traverseAppDirectory(
         return;
 
       case 'maskable-icon.png':
-        return;
-
-      case 'readme.md':
-        logger.info(`Including longDescription from ${filepath}`);
-        formData.append('longDescription', await readFile(filepath, 'utf8'));
-        gatheredData.longDescription = await readFile(filepath, 'utf8');
         return;
 
       case 'screenshots':
@@ -386,8 +390,9 @@ export async function traverseAppDirectory(
         formData.append('controllerImplementations', JSON.stringify(controllerImplementations));
         gatheredData.controllerImplementations = controllerImplementations;
         break;
+
       default:
-        logger.warn(`Found unused file ${filepath}`);
+        break;
     }
   });
 
@@ -1139,7 +1144,7 @@ export async function publishApp({
     }
   }
 
-  if (appVariantPath !== path) {
+  if (appVariantPath !== path && modifyContext && !dryRun) {
     const [defaultAppRc] = await readData<AppsembleRC>(join(path, '.appsemblerc.yaml'));
     defaultAppRc.context[context] = rc.context[context];
 

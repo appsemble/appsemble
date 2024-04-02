@@ -1,12 +1,21 @@
 import { readFile } from 'node:fs/promises';
 
-import dictionary from 'dictionary-en';
+import en from 'dictionary-en';
+import nl from 'dictionary-nl';
+import retextDutch from 'retext-dutch';
 import retextEnglish from 'retext-english';
 import retextQuotes from 'retext-quotes';
 import retextRepeatedWords from 'retext-repeated-words';
 import retextSpell from 'retext-spell';
 import retextSyntaxURLs from 'retext-syntax-urls';
 import { unified } from 'unified';
+
+let enDic;
+en((_, result) => {
+  enDic = result.dic;
+});
+
+const dictionary = () => Buffer.concat([enDic, nl.dic]);
 
 export default {
   settings: {
@@ -31,6 +40,7 @@ export default {
       'remark-retext',
       unified()
         .use(retextEnglish)
+        .use(retextDutch)
         .use(retextSyntaxURLs)
         .use(retextSpell, {
           dictionary,

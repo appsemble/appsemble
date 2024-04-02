@@ -9,7 +9,6 @@ import {
   SimpleFormError,
   SimpleFormField,
   SimpleSubmit,
-  TextAreaField,
   useConfirmation,
   useMessages,
   useMeta,
@@ -86,7 +85,6 @@ export function SettingsPage(): ReactNode {
       path: app.path,
       visibility: app.visibility,
       locked: app.locked,
-      longDescription: app.longDescription || '',
       showAppDefinition: app.showAppDefinition,
     }),
     [app],
@@ -102,7 +100,6 @@ export function SettingsPage(): ReactNode {
     form.set('path', values.path);
     form.set('visibility', values.visibility);
     form.set('iconBackground', values.iconBackground);
-    form.set('longDescription', values.longDescription);
     form.set('showAppDefinition', String(values.showAppDefinition));
     if (values.icon !== app.iconUrl) {
       form.set('icon', values.icon);
@@ -181,13 +178,6 @@ export function SettingsPage(): ReactNode {
         <SimpleForm defaultValues={defaultValues} onSubmit={onSubmit}>
           <SimpleFormError>{() => <FormattedMessage {...messages.updateError} />}</SimpleFormError>
           <IconTool disabled={app.locked !== 'unlocked'} />
-          <SimpleFormField
-            component={TextAreaField}
-            disabled={app.locked !== 'unlocked'}
-            help={<FormattedMessage {...messages.longDescriptionDescription} />}
-            label={<FormattedMessage {...messages.longDescription} />}
-            name="longDescription"
-          />
           <SimpleFormField
             component={SelectField}
             disabled={app.locked !== 'unlocked'}

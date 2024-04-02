@@ -11,6 +11,7 @@ import { AppMessages } from './AppMessages.js';
 import { AppOAuth2Authorization } from './AppOAuth2Authorization.js';
 import { AppOAuth2Secret } from './AppOAuth2Secret.js';
 import { AppRating } from './AppRating.js';
+import { AppReadme } from './AppReadme.js';
 import { AppSamlAuthorization } from './AppSamlAuthorization.js';
 import { AppSamlSecret } from './AppSamlSecret.js';
 import { AppScreenshot } from './AppScreenshot.js';
@@ -67,6 +68,7 @@ export {
   AppOAuth2Authorization,
   AppOAuth2Secret,
   AppRating,
+  AppReadme,
   AppSamlAuthorization,
   AppSamlSecret,
   AppScreenshot,
@@ -127,6 +129,7 @@ export function initDB({
       AppOAuth2Authorization,
       AppOAuth2Secret,
       AppRating,
+      AppReadme,
       AppSamlAuthorization,
       AppSamlSecret,
       AppScreenshot,

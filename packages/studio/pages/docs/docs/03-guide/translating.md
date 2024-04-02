@@ -5,6 +5,8 @@
 - [Introduction](#introduction)
 - [Appsemble Core and Blocks](#appsemble-core-and-blocks)
 - [Custom messages](#custom-messages)
+- [Translating screenshots](#translating-screenshots)
+- [Translating the app’s long description](#translating-the-apps-long-description)
 - [Using the translations page](#using-the-translations-page)
 - [Translating using the Appsemble CLI](#translating-using-the-appsemble-cli)
 
@@ -14,7 +16,7 @@ Just like how the Appsemble Studio is available in multiple languages, it is pos
 in individual apps. This page covers the different options that are available for translating and
 localizing apps.
 
-By default every app is assumed to support English and will also default to this language. This can
+By default, every app is assumed to support English and will also default to this language. This can
 be overwritten by defining the `defaultLanguage` property with the value being a two-letter language
 code.
 
@@ -95,6 +97,16 @@ message, as well as the name of the user assuming they are logged in:
 With the above example if the user is not logged in it will display a blank spot in the spot where
 the `{name}` value is set. This could be solved by using an
 [if remapper](/docs/reference/remapper#if).
+
+## Translating screenshots
+
+Appsemble provides a mechanism for app screenshots by language. Read more about it
+[here](screenshots.md)
+
+## Translating the app’s long description
+
+Appsemble provides a mechanism for translating the long description of the app. Read more about it
+[here](app-long-description.md)
 
 ## Using the translations page
 

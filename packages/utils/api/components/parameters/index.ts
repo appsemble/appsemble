@@ -15,6 +15,7 @@ export * from './organizationId.js';
 export * from './resourceId.js';
 export * from './resourceType.js';
 export * from './screenshotId.js';
+export * from './readmeId.js';
 export * from './appServiceId.js';
 export * from './view.js';
 export * from './trainingId.js';

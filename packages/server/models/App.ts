@@ -32,6 +32,7 @@ import {
   AppMessages,
   AppOAuth2Secret,
   AppRating,
+  AppReadme,
   AppSamlSecret,
   AppScreenshot,
   AppServiceSecret,
@@ -101,9 +102,6 @@ export class App extends Model {
   @Default(false)
   @Column(DataType.BOOLEAN)
   demoMode: boolean;
-
-  @Column(DataType.TEXT)
-  longDescription: string;
 
   @Column(DataType.TEXT)
   coreStyle: string;
@@ -230,6 +228,9 @@ export class App extends Model {
   @HasMany(() => AppScreenshot)
   AppScreenshots: AppScreenshot[];
 
+  @HasMany(() => AppReadme)
+  AppReadmes: AppReadme[];
+
   @HasMany(() => Team)
   Teams: Team[];
 
@@ -272,7 +273,6 @@ export class App extends Model {
       hasMaskableIcon: this.get('hasMaskableIcon') ?? Boolean(this.maskableIcon),
       iconBackground: this.iconBackground || '#ffffff',
       iconUrl: resolveIconUrl(this),
-      longDescription: this.longDescription,
       coreStyle: this.coreStyle == null ? undefined : this.coreStyle,
       sharedStyle: this.sharedStyle == null ? undefined : this.sharedStyle,
       definition,
@@ -309,6 +309,9 @@ export class App extends Model {
         }
         return 0;
       }).map(({ id }) => `/api/apps/${this.id}/screenshots/${id}`),
+      readmeUrl: this.AppReadmes?.length
+        ? `/api/apps/${this.id}/readmes/${this.AppReadmes?.[0]?.id}`
+        : undefined,
       messages: this.messages,
       demoMode: this.demoMode,
       controllerCode: this.controllerCode,

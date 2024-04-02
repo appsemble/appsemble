@@ -47,6 +47,7 @@ declare module 'koa' {
     appUserInfo: UserInfo;
     appTeams: ExtendedTeam[];
     appAssets: AppAsset[];
+    appReadmes: AppReadme[];
     blockConfigs: ContextBlockConfig[];
     params?: Record<string, string>;
   }
@@ -90,6 +91,7 @@ declare module 'koas-parameters' {
     resourceTypeId: string;
     schemaId: string;
     screenshotId: number;
+    readmeId: number;
     snapshotId: number;
     teamId: string;
     token: string;
@@ -373,6 +375,11 @@ export interface AppScreenshot {
   width: number;
 }
 
+export interface AppReadme {
+  id: number;
+  file: Buffer;
+}
+
 export interface AppBlockStyle {
   style: string;
 }
@@ -411,6 +418,7 @@ export interface Options {
   getAppTeams: (params: GetAppTeamsParams) => Promise<ExtendedTeam[]>;
   getAppStyles: (params: GetAppParams | GetAppSubEntityParams) => Promise<AppStyles>;
   getAppScreenshots: (params: GetAppSubEntityParams) => Promise<AppScreenshot[]>;
+  getAppReadmes: (params: GetAppSubEntityParams) => Promise<AppReadme[]>;
   getAppBlockStyles: (params: GetAppBlockStylesParams) => Promise<AppBlockStyle[]>;
   getAppIcon: (params: GetAppSubEntityParams) => Promise<Buffer>;
   getAppUrl: (params: GetAppSubEntityParams) => Promise<URL>;

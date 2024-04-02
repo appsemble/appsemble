@@ -13,7 +13,7 @@ import lodash from 'lodash';
 import { format, resolveConfig } from 'prettier';
 import { parseDocument } from 'yaml';
 
-import { readData, writeData } from './fs.js';
+import { opendirSafe, readData, writeData } from './fs.js';
 import { logger } from './logger.js';
 import { type Options } from './server/types.js';
 
@@ -119,7 +119,7 @@ function replaceStyle(
  * @param appPath The path to the app to patch.
  * @param patches Patches to apply to the YAML.
  */
-async function patchDefinition(
+export async function patchDefinition(
   appPath: string,
   patches: [key: (number | string)[], value: unknown][],
 ): Promise<void> {
@@ -152,7 +152,7 @@ async function patchDefinition(
  * @param appPath The name of the app to patch.
  * @param replacements Replacements for the original messages.
  */
-async function patchMessages(
+export async function patchMessages(
   appPath: string,
   replacements: Record<string, Partial<AppsembleMessages>>,
 ): Promise<void> {
@@ -160,6 +160,12 @@ async function patchMessages(
     const i18nPath = join(appPath, 'i18n');
     for (const [language, replacementMessages] of Object.entries(replacements)) {
       const originalMessagesPath = join(i18nPath, `${language}.json`);
+
+      if (!existsSync(originalMessagesPath)) {
+        logger.warn(`Missing translation file at ${originalMessagesPath}`);
+        return;
+      }
+
       logger.verbose(`Updating ${originalMessagesPath}`);
       const [originalMessages] = await readData<AppsembleMessages>(originalMessagesPath);
       await (replacementMessages
@@ -268,6 +274,25 @@ async function transferAppVariantFiles(
   }
 }
 
+async function transferReadmes(
+  appPath: string,
+  appVariantDefDir: string,
+  appVariantDestDir: string,
+): Promise<void> {
+  try {
+    await opendirSafe(appVariantDefDir, async (filePath, fileStat) => {
+      if (fileStat.isFile()) {
+        const fileBasename = basename(filePath);
+        if (fileBasename.toLowerCase().startsWith('readme')) {
+          await transferAppVariantFiles(appPath, appVariantDefDir, appVariantDestDir, fileBasename);
+        }
+      }
+    });
+  } catch (error) {
+    logger.error(error);
+  }
+}
+
 export async function applyAppVariant(appPath: string, appVariant: string): Promise<void> {
   try {
     logger.info(`Applying ${appVariant} variant to ${appPath}`);
@@ -286,6 +311,7 @@ export async function applyAppVariant(appPath: string, appVariant: string): Prom
     await transferAppVariantFiles(appPath, appVariantDefDir, appVariantDestDir, 'resources');
     await transferAppVariantFiles(appPath, appVariantDefDir, appVariantDestDir, 'screenshots');
     await transferAppVariantFiles(appPath, appVariantDefDir, appVariantDestDir, 'icon.png');
+    await transferReadmes(appPath, appVariantDefDir, appVariantDestDir);
 
     const patchesPath = join(appVariantDefDir, 'patches');
 

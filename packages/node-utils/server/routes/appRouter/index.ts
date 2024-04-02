@@ -14,6 +14,7 @@ import { createCssHandler } from './cssHandler.js';
 import { createIconHandler } from './iconHandler.js';
 import { createIndexHandler } from './indexHandler.js';
 import { createManifestHandler } from './manifestHandler.js';
+import { createReadmeHandler } from './readmeHandler.js';
 import { createRobotsHandler } from './robotsHandler.js';
 import { createScreenshotHandler } from './screenshotHandler.js';
 import { createServiceWorkerHandler } from './serviceWorkerHandler.js';
@@ -44,6 +45,10 @@ export function createAppRouter(options: Options): Middleware {
     {
       route: /^\/screenshots\/(?<id>\d+)\.(?<ext>[a-z]+)$/,
       get: createScreenshotHandler(options),
+    },
+    {
+      route: /^\/readmes\/(?<id>\d+)\.md$/,
+      get: createReadmeHandler(options),
     },
     {
       route: new RegExp(

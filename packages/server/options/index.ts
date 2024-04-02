@@ -7,6 +7,7 @@ export * from './getAppIcon.js';
 export * from './getAppMessages.js';
 export * from './getAppResources.js';
 export * from './getAppScreenshots.js';
+export * from './getAppReadmes.js';
 export * from './getAppStyles.js';
 export * from './getAppUrl.js';
 export * from './getBlockAsset.js';

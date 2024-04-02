@@ -1,7 +1,6 @@
 name: Triggers
 description: This app demonstrates resource referencing, triggers and cascading strategies
 defaultPage: Owners' Pets
-
 resources:
   owner:
     roles:
