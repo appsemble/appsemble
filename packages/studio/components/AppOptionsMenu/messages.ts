@@ -13,4 +13,12 @@ export const messages = defineMessages({
     id: 'studio.nAE0fd',
     defaultMessage: 'Include assets in the export file.',
   },
+  exportWithScreenshots: {
+    id: 'studio.fTbrdc',
+    defaultMessage: 'Include screenshots in the export file.',
+  },
+  exportWithReadmes: {
+    id: 'studio.SLy0Ae',
+    defaultMessage: 'Include readme files in the export file.',
+  },
 });

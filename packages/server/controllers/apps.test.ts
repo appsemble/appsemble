@@ -14,6 +14,7 @@ import {
   AppMember,
   AppMessages,
   AppRating,
+  AppReadme,
   AppScreenshot,
   AppSnapshot,
   Asset,
@@ -5951,7 +5952,7 @@ describe('exportApp', () => {
 
     vi.useRealTimers();
     authorizeStudio();
-    const response = await request.get(`/api/apps/${app.id}/export?resources=false`, {
+    const response = await request.get(`/api/apps/${app.id}/export`, {
       responseType: 'stream',
     });
     const zip = new JSZip();
@@ -6001,6 +6002,241 @@ describe('exportApp', () => {
     `);
     expect(await archive.file('i18n/en.json').async('text')).toMatchInlineSnapshot(
       '"[{"test":"test"}]"',
+    );
+  });
+
+  it('should export readmes', async () => {
+    const app = await App.create(
+      {
+        definition: {
+          name: 'Test App',
+          defaultPage: 'Test Page',
+          pages: [{ name: 'Test Page' }],
+        },
+        sharedStyle: `
+        * {
+          color: var(--link-color)
+        }`,
+        coreStyle: `
+        * {
+          color: var(--primary-color)
+        }`,
+        vapidPrivateKey: 'b',
+        vapidPublicKey: 'a',
+        OrganizationId: organization.id,
+        icon: await readFixture('nodejs-logo.png'),
+      },
+      { raw: true },
+    );
+    await AppMessages.create({ AppId: app.id, language: 'en', messages: [{ test: 'test' }] });
+
+    await AppReadme.create({
+      AppId: app.id,
+      file: Buffer.from('Default'),
+      language: 'unspecified',
+    });
+
+    await AppReadme.create({
+      AppId: app.id,
+      file: Buffer.from('English'),
+      language: 'en',
+    });
+
+    await AppReadme.create({
+      AppId: app.id,
+      file: Buffer.from('Dutch'),
+      language: 'nl',
+    });
+
+    vi.useRealTimers();
+    authorizeStudio();
+    const response = await request.get(`/api/apps/${app.id}/export?readmes=true`, {
+      responseType: 'stream',
+    });
+    const zip = new JSZip();
+
+    const dataBuffer: Buffer = await new Promise((resolve, reject) => {
+      const chunks: any[] = [];
+
+      // Listen for data events and collect chunks
+      response.data.on('data', (chunk: any) => chunks.push(chunk));
+      response.data.on('end', () => resolve(Buffer.concat(chunks)));
+      response.data.on('error', reject);
+    });
+    const archive = await zip.loadAsync(dataBuffer);
+
+    expect(Object.keys(archive.files)).toStrictEqual([
+      'app-definition.yaml',
+      'theme/',
+      'theme/core/',
+      'theme/core/index.css',
+      'theme/shared/',
+      'theme/shared/index.css',
+      'i18n/',
+      'i18n/en.json',
+      'README.md',
+      'README.en.md',
+      'README.nl.md',
+      'icon.png',
+    ]);
+
+    expect(await archive.file('app-definition.yaml').async('text')).toMatchInlineSnapshot(
+      `
+        "name: Test App
+        defaultPage: Test Page
+        pages:
+          - name: Test Page
+        "
+      `,
+    );
+    expect(await archive.file('theme/core/index.css').async('text')).toMatchInlineSnapshot(`
+      "
+              * {
+                color: var(--primary-color)
+              }"
+    `);
+    expect(await archive.file('theme/shared/index.css').async('text')).toMatchInlineSnapshot(`
+      "
+              * {
+                color: var(--link-color)
+              }"
+    `);
+    expect(await archive.file('i18n/en.json').async('text')).toMatchInlineSnapshot(
+      '"[{"test":"test"}]"',
+    );
+    expect(await archive.file('README.md').async('nodebuffer')).toStrictEqual(
+      await Buffer.from('Default'),
+    );
+    expect(await archive.file('README.en.md').async('nodebuffer')).toStrictEqual(
+      await Buffer.from('English'),
+    );
+    expect(await archive.file('README.nl.md').async('nodebuffer')).toStrictEqual(
+      await Buffer.from('Dutch'),
+    );
+  });
+
+  it('should export screenshots', async () => {
+    const app = await App.create(
+      {
+        definition: {
+          name: 'Test App',
+          defaultPage: 'Test Page',
+          pages: [{ name: 'Test Page' }],
+        },
+        sharedStyle: `
+        * {
+          color: var(--link-color)
+        }`,
+        coreStyle: `
+        * {
+          color: var(--primary-color)
+        }`,
+        vapidPrivateKey: 'b',
+        vapidPublicKey: 'a',
+        OrganizationId: organization.id,
+        icon: await readFixture('nodejs-logo.png'),
+      },
+      { raw: true },
+    );
+    await AppMessages.create({ AppId: app.id, language: 'en', messages: [{ test: 'test' }] });
+
+    await AppScreenshot.create({
+      AppId: app.id,
+      screenshot: await readFixture('standing.png'),
+      mime: 'image/png',
+      height: 247,
+      width: 474,
+      index: 0,
+      language: 'unspecified',
+    });
+
+    await AppScreenshot.create({
+      AppId: app.id,
+      screenshot: await readFixture('en-standing.png'),
+      mime: 'image/png',
+      height: 247,
+      width: 474,
+      index: 0,
+      language: 'en',
+    });
+
+    await AppScreenshot.create({
+      AppId: app.id,
+      screenshot: await readFixture('nl-standing.png'),
+      mime: 'image/png',
+      height: 247,
+      width: 474,
+      index: 0,
+      language: 'nl',
+    });
+
+    vi.useRealTimers();
+    authorizeStudio();
+    const response = await request.get(`/api/apps/${app.id}/export?screenshots=true`, {
+      responseType: 'stream',
+    });
+    const zip = new JSZip();
+
+    const dataBuffer: Buffer = await new Promise((resolve, reject) => {
+      const chunks: any[] = [];
+
+      // Listen for data events and collect chunks
+      response.data.on('data', (chunk: any) => chunks.push(chunk));
+      response.data.on('end', () => resolve(Buffer.concat(chunks)));
+      response.data.on('error', reject);
+    });
+    const archive = await zip.loadAsync(dataBuffer);
+
+    expect(Object.keys(archive.files)).toStrictEqual([
+      'app-definition.yaml',
+      'theme/',
+      'theme/core/',
+      'theme/core/index.css',
+      'theme/shared/',
+      'theme/shared/index.css',
+      'i18n/',
+      'i18n/en.json',
+      'screenshots/',
+      'screenshots/0.png',
+      'screenshots/en/',
+      'screenshots/en/0.png',
+      'screenshots/nl/',
+      'screenshots/nl/0.png',
+      'icon.png',
+    ]);
+
+    expect(await archive.file('app-definition.yaml').async('text')).toMatchInlineSnapshot(
+      `
+        "name: Test App
+        defaultPage: Test Page
+        pages:
+          - name: Test Page
+        "
+      `,
+    );
+    expect(await archive.file('theme/core/index.css').async('text')).toMatchInlineSnapshot(`
+      "
+              * {
+                color: var(--primary-color)
+              }"
+    `);
+    expect(await archive.file('theme/shared/index.css').async('text')).toMatchInlineSnapshot(`
+      "
+              * {
+                color: var(--link-color)
+              }"
+    `);
+    expect(await archive.file('i18n/en.json').async('text')).toMatchInlineSnapshot(
+      '"[{"test":"test"}]"',
+    );
+    expect(await archive.file('screenshots/0.png').async('nodebuffer')).toStrictEqual(
+      await readFixture('standing.png'),
+    );
+    expect(await archive.file('screenshots/en/0.png').async('nodebuffer')).toStrictEqual(
+      await readFixture('en-standing.png'),
+    );
+    expect(await archive.file('screenshots/nl/0.png').async('nodebuffer')).toStrictEqual(
+      await readFixture('nl-standing.png'),
     );
   });
 
@@ -6249,11 +6485,28 @@ describe('importApp', () => {
       name: 'Test App',
       defaultPage: 'Test Page',
       pages: [{ name: 'Test Page', blocks: [{ type: 'test', version: '0.0.0' }] }],
+      resources: {
+        testResource: {
+          schema: {
+            type: 'object',
+            additionalProperties: false,
+            required: ['foo'],
+            properties: { foo: { type: 'string' } },
+          },
+          roles: ['$public'],
+        },
+      },
     } as AppDefinition;
     const zip = new JSZip();
     zip.file('app-definition.yaml', stringify(appDefinition));
     zip.file('icon.png', await readFixture('nodejs-logo.png'));
-    zip.file('README.md', '# Test App');
+    zip.file('README.md', 'Default');
+    zip.file('README.en.md', 'English');
+    zip.file('README.nl.md', 'Dutch');
+    zip.file('screenshots/0.png', await readFixture('standing.png'));
+    zip.file('screenshots/en/0.png', await readFixture('en-standing.png'));
+    zip.file('screenshots/nl/0.png', await readFixture('nl-standing.png'));
+    zip.file('resources/testResource.json', Buffer.from('[{"foo":"bar"}]'));
     zip.file('assets/10x50.png', await readFixture('10x50.png'));
     vi.useRealTimers();
     const content = zip.generateNodeStream();
@@ -6269,6 +6522,127 @@ describe('importApp', () => {
         },
       },
     );
+
+    const resources = await Resource.findAll({
+      where: {
+        AppId: 1,
+      },
+    });
+
+    for (const resource of resources) {
+      expect(resource.toJSON()).toMatchInlineSnapshot(
+        {
+          id: 1,
+          foo: 'bar',
+          $created: expect.any(String),
+          $updated: expect.any(String),
+        },
+        `
+        {
+          "$created": Any<String>,
+          "$updated": Any<String>,
+          "foo": "bar",
+          "id": 1,
+        }
+      `,
+      );
+    }
+
+    const assets = await Asset.findAll({
+      attributes: ['AppId', 'data'],
+      where: {
+        AppId: 1,
+      },
+    });
+
+    for (const asset of assets) {
+      expect(asset.toJSON()).toStrictEqual({
+        AppId: 1,
+        data: expect.any(Buffer),
+      });
+    }
+
+    const defaultScreenshot = await AppScreenshot.findOne({
+      attributes: ['AppId', 'screenshot', 'language', 'index'],
+      where: {
+        AppId: 1,
+        language: 'unspecified',
+      },
+    });
+    expect(defaultScreenshot.toJSON()).toStrictEqual({
+      AppId: 1,
+      screenshot: expect.any(Buffer),
+      language: 'unspecified',
+      index: 0,
+    });
+
+    const enScreenshot = await AppScreenshot.findOne({
+      attributes: ['AppId', 'screenshot', 'language', 'index'],
+      where: {
+        AppId: 1,
+        language: 'en',
+      },
+    });
+    expect(enScreenshot.toJSON()).toStrictEqual({
+      AppId: 1,
+      screenshot: expect.any(Buffer),
+      language: 'en',
+      index: 0,
+    });
+
+    const nlScreenshot = await AppScreenshot.findOne({
+      attributes: ['AppId', 'screenshot', 'language', 'index'],
+      where: {
+        AppId: 1,
+        language: 'nl',
+      },
+    });
+    expect(nlScreenshot.toJSON()).toStrictEqual({
+      AppId: 1,
+      screenshot: expect.any(Buffer),
+      language: 'nl',
+      index: 0,
+    });
+
+    const defaultReadme = await AppReadme.findOne({
+      attributes: ['AppId', 'file', 'language'],
+      where: {
+        AppId: 1,
+        language: 'unspecified',
+      },
+    });
+    expect(defaultReadme.toJSON()).toStrictEqual({
+      AppId: 1,
+      file: Buffer.from('Default'),
+      language: 'unspecified',
+    });
+
+    const enReadme = await AppReadme.findOne({
+      attributes: ['AppId', 'file', 'language'],
+      where: {
+        AppId: 1,
+        language: 'en',
+      },
+    });
+    expect(enReadme.toJSON()).toStrictEqual({
+      AppId: 1,
+      file: Buffer.from('English'),
+      language: 'en',
+    });
+
+    const nlReadme = await AppReadme.findOne({
+      attributes: ['AppId', 'file', 'language'],
+      where: {
+        AppId: 1,
+        language: 'nl',
+      },
+    });
+    expect(nlReadme.toJSON()).toStrictEqual({
+      AppId: 1,
+      file: Buffer.from('Dutch'),
+      language: 'nl',
+    });
+
     expect(response.status).toBe(201);
     expect(response).toMatchInlineSnapshot(
       {
@@ -6302,6 +6676,25 @@ describe('importApp', () => {
               "name": "Test Page",
             },
           ],
+          "resources": {
+            "testResource": {
+              "roles": [
+                "$public",
+              ],
+              "schema": {
+                "additionalProperties": false,
+                "properties": {
+                  "foo": {
+                    "type": "string",
+                  },
+                },
+                "required": [
+                  "foo",
+                ],
+                "type": "object",
+              },
+            },
+          },
         },
         "demoMode": false,
         "domain": null,
@@ -6329,6 +6722,18 @@ describe('importApp', () => {
           blocks:
             - type: test
               version: 0.0.0
+      resources:
+        testResource:
+          schema:
+            type: object
+            additionalProperties: false
+            required:
+              - foo
+            properties:
+              foo:
+                type: string
+          roles:
+            - $public
       ",
       }
     `,

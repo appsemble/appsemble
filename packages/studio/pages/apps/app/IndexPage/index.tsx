@@ -28,13 +28,22 @@ export function IndexPage(): ReactNode {
   const { app } = useApp();
   const { organizations } = useUser();
   const descriptionToggle = useToggle();
+
   const [checkedResources, setCheckedResources] = useState(false);
   const [checkedAssets, setCheckedAssets] = useState(false);
+  const [checkedScreenshots, setCheckedScreenshots] = useState(false);
+  const [checkedReadmes, setCheckedReadmes] = useState(false);
   const [longDescription, setLongDescription] = useState('');
+
   const checkedResourcesRef = useRef(checkedResources);
   const checkedAssetsRef = useRef(checkedAssets);
+  const checkedScreenshotsRef = useRef(checkedScreenshots);
+  const checkedReadmesRef = useRef(checkedReadmes);
+
   checkedResourcesRef.current = checkedResources;
   checkedAssetsRef.current = checkedAssets;
+  checkedScreenshotsRef.current = checkedScreenshots;
+  checkedReadmesRef.current = checkedReadmes;
 
   const appLang = app.definition.defaultLanguage || defaultLocale;
 
@@ -55,13 +64,22 @@ export function IndexPage(): ReactNode {
     setCheckedAssets((prevChecked) => !prevChecked);
   }, []);
 
+  const onCheckedScreenshots = useCallback(() => {
+    setCheckedScreenshots((prevChecked) => !prevChecked);
+  }, []);
+
+  const onCheckedReadmes = useCallback(() => {
+    setCheckedReadmes((prevChecked) => !prevChecked);
+  }, []);
+
   const onExport = useCallback(async () => {
     const response = await axios.get(
-      `/api/apps/${app.id}/export?resources=${checkedResourcesRef.current}&assets=${checkedAssetsRef.current}`,
+      `/api/apps/${app.id}/export?resources=${checkedResourcesRef.current}&assets=${checkedAssetsRef.current}&screenshots=${checkedScreenshotsRef.current}&readmes=${checkedReadmesRef.current}`,
       {
         responseType: 'blob',
       },
     );
+
     const url = document.createElement('a');
     url.href = URL.createObjectURL(response.data);
     url.download = `${app.definition.name}_${app.id}.zip`;
@@ -95,9 +113,13 @@ export function IndexPage(): ReactNode {
               <AppOptionsMenu
                 app={app}
                 checkedAssets={checkedAssets}
+                checkedReadmes={checkedReadmes}
                 checkedResources={checkedResources}
+                checkedScreenshots={checkedScreenshots}
                 onCheckedAssets={onCheckedAssets}
+                onCheckedReadmes={onCheckedReadmes}
                 onCheckedResources={onCheckedResources}
+                onCheckedScreenshots={onCheckedScreenshots}
                 onExport={onExport}
                 showExport={showExport}
                 showExportResources={showExportResources}

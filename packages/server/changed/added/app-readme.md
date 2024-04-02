@@ -1,1 +1,1 @@
-Add model `AppReadme`.
+Add new table `AppReadme` to store app long descriptions.
