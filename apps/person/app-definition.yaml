@@ -1,7 +1,6 @@
 name: Person
 description: A simple form and data viewing app using the resource API
 defaultPage: Person Registration Form
-
 resources:
   person:
     roles:
@@ -80,15 +79,15 @@ pages:
             - label: { translate: firstName }
               name: firstName
               type: string
-              requirements: [required: true]
+              requirements: [{ required: true }]
             - label: { translate: lastName }
               name: lastName
               type: string
-              requirements: [required: true]
+              requirements: [{ required: true }]
             - label: { translate: email }
               name: email
               type: string
-              requirements: [required: true]
+              requirements: [{ required: true }]
             - label: { translate: description }
               multiline: true
               name: description

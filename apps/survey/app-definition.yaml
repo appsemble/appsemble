@@ -1,7 +1,6 @@
 name: Survey
 description: An app which asks the user to fill out some questions.
 defaultPage: Survey
-
 layout:
   navigation: hidden
 

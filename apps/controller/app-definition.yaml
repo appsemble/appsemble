@@ -1,7 +1,6 @@
 name: controller
 description: This app demonstrates the app controller functionality
 defaultPage: Example Page A
-
 controller:
   events:
     emit:

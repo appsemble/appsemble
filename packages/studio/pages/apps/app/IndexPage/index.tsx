@@ -2,7 +2,7 @@ import { Button, Title, useToggle } from '@appsemble/react-components';
 import { defaultLocale } from '@appsemble/utils';
 import axios from 'axios';
 import classNames from 'classnames';
-import { type ReactNode, useCallback, useRef, useState } from 'react';
+import { type ReactNode, useCallback, useEffect, useRef, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { Link } from 'react-router-dom';
 
@@ -30,12 +30,22 @@ export function IndexPage(): ReactNode {
   const descriptionToggle = useToggle();
   const [checkedResources, setCheckedResources] = useState(false);
   const [checkedAssets, setCheckedAssets] = useState(false);
+  const [longDescription, setLongDescription] = useState('');
   const checkedResourcesRef = useRef(checkedResources);
   const checkedAssetsRef = useRef(checkedAssets);
   checkedResourcesRef.current = checkedResources;
   checkedAssetsRef.current = checkedAssets;
 
   const appLang = app.definition.defaultLanguage || defaultLocale;
+
+  useEffect(() => {
+    (async () => {
+      if (app.readmeUrl) {
+        const { data: readme } = await axios.get(app.readmeUrl);
+        setLongDescription(readme);
+      }
+    })();
+  });
 
   const onCheckedResources = useCallback(() => {
     setCheckedResources((prevChecked) => !prevChecked);
@@ -122,7 +132,7 @@ export function IndexPage(): ReactNode {
       >
         <AppScreenshots />
       </CardHeaderControl>
-      {app.longDescription ? (
+      {app.readmeUrl ? (
         <div
           className={classNames('card my-3 card-content', {
             [styles.descriptionHidden]: !descriptionToggle.enabled,
@@ -138,7 +148,7 @@ export function IndexPage(): ReactNode {
               <FormattedMessage {...messages.readMore} />
             )}
           </Button>
-          <MarkdownContent content={app.longDescription} lang={appLang} />
+          <MarkdownContent content={longDescription} lang={appLang} />
           <br />
         </div>
       ) : null}

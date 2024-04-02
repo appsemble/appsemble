@@ -34,6 +34,7 @@ import {
   AppBlockStyle,
   AppMessages,
   AppRating,
+  AppReadme,
   AppScreenshot,
   AppSnapshot,
   Asset,
@@ -187,6 +188,34 @@ async function createAppScreenshots(
   return createdScreenshots;
 }
 
+async function createAppReadmes(
+  appId: number,
+  readmes: File[],
+  transaction: Transaction,
+): Promise<AppReadme[]> {
+  const supportedLanguages = await getSupportedLanguages();
+
+  return AppReadme.bulkCreate(
+    await Promise.all(
+      readmes.map(({ contents, filename }: File) => {
+        let language = filename.slice(filename.indexOf('.') + 1, filename.lastIndexOf('.'));
+
+        if (!supportedLanguages.has(language)) {
+          language = 'unspecified';
+        }
+
+        return {
+          AppId: appId,
+          file: contents,
+          language,
+        };
+      }),
+    ),
+    // These queries provide huge logs.
+    { transaction, logging: false },
+  );
+}
+
 export async function createApp(ctx: Context): Promise<void> {
   const {
     openApi,
@@ -201,8 +230,8 @@ export async function createApp(ctx: Context): Promise<void> {
         googleAnalyticsID,
         icon,
         iconBackground,
-        longDescription,
         maskableIcon,
+        readmes,
         screenshots,
         sentryDsn,
         sentryEnvironment,
@@ -247,7 +276,6 @@ export async function createApp(ctx: Context): Promise<void> {
       OrganizationId,
       coreStyle: validateStyle(coreStyle),
       googleAnalyticsID,
-      longDescription,
       iconBackground: iconBackground || '#ffffff',
       sharedStyle: validateStyle(sharedStyle),
       domain: domain || null,
@@ -287,6 +315,10 @@ export async function createApp(ctx: Context): Promise<void> {
 
         record.AppScreenshots = screenshots?.length
           ? await createAppScreenshots(record.id, screenshots, transaction, ctx)
+          : [];
+
+        record.AppReadmes = readmes?.length
+          ? await createAppReadmes(record.id, readmes, transaction)
           : [];
 
         if (dryRun === 'true') {
@@ -339,6 +371,22 @@ export async function getAppById(ctx: Context): Promise<void> {
     },
   });
 
+  const languageReadme = await AppReadme.findOne({
+    attributes: ['language'],
+    where: {
+      AppId: appId,
+      ...(language ? { language } : {}),
+    },
+  });
+
+  const unspecifiedReadme = await AppReadme.findOne({
+    attributes: ['language'],
+    where: {
+      AppId: appId,
+      language: 'unspecified',
+    },
+  });
+
   const app = await App.findByPk(appId, {
     attributes: {
       include: [
@@ -382,6 +430,15 @@ export async function getAppById(ctx: Context): Promise<void> {
               : unspecifiedScreenshot
                 ? 'unspecified'
                 : 'en',
+        },
+        required: false,
+      },
+      {
+        model: AppReadme,
+        attributes: ['id', 'language'],
+        where: {
+          language:
+            language && languageReadme ? language : unspecifiedReadme ? 'unspecified' : 'en',
         },
         required: false,
       },
@@ -567,9 +624,9 @@ export async function patchApp(ctx: Context): Promise<void> {
         googleAnalyticsID,
         icon,
         iconBackground,
-        longDescription,
         maskableIcon,
         path,
+        readmes,
         screenshots,
         sentryDsn,
         sentryEnvironment,
@@ -609,6 +666,7 @@ export async function patchApp(ctx: Context): Promise<void> {
         },
       },
       { model: AppScreenshot, attributes: ['id'] },
+      { model: AppReadme, attributes: ['id'] },
     ],
   });
 
@@ -694,10 +752,6 @@ export async function patchApp(ctx: Context): Promise<void> {
       result.googleAnalyticsID = googleAnalyticsID;
     }
 
-    if (longDescription !== undefined) {
-      result.longDescription = longDescription;
-    }
-
     if (showAppDefinition !== undefined) {
       result.showAppDefinition = showAppDefinition;
     }
@@ -778,6 +832,11 @@ export async function patchApp(ctx: Context): Promise<void> {
       if (screenshots?.length) {
         await AppScreenshot.destroy({ where: { AppId: appId }, transaction });
         dbApp.AppScreenshots = await createAppScreenshots(appId, screenshots, transaction, ctx);
+      }
+
+      if (readmes?.length) {
+        await AppReadme.destroy({ where: { AppId: appId }, transaction });
+        dbApp.AppReadmes = await createAppReadmes(appId, readmes, transaction);
       }
     });
 
@@ -1003,6 +1062,31 @@ export async function getAppScreenshot(ctx: Context): Promise<void> {
   ctx.type = mime;
 }
 
+export async function getAppReadme(ctx: Context): Promise<void> {
+  const {
+    pathParams: { appId, readmeId },
+  } = ctx;
+  const app = await App.findByPk(appId, {
+    attributes: [],
+    include: [
+      {
+        attributes: ['file'],
+        model: AppReadme,
+        required: false,
+        where: { id: readmeId },
+      },
+    ],
+  });
+
+  assertKoaError(!app, ctx, 404, 'App not found');
+  assertKoaError(!app.AppReadmes?.length, ctx, 404, 'Readme not found');
+
+  const [{ file }] = app.AppReadmes;
+
+  ctx.body = file;
+  ctx.type = 'text/markdown';
+}
+
 export async function createAppScreenshot(ctx: Context): Promise<void> {
   const {
     pathParams: { appId },
@@ -1097,7 +1181,6 @@ export async function importApp(ctx: Context): Promise<void> {
 
     const path = normalize(definition.name);
     const icon = await zip.file('icon.png')?.async('nodebuffer');
-    const longDescription = await zip.file(/readme\.md/i)?.[0]?.async('text');
     const keys = webpush.generateVAPIDKeys();
     result = {
       definition,
@@ -1109,7 +1192,6 @@ export async function importApp(ctx: Context): Promise<void> {
       showAppsembleOAuth2Login: true,
       enableSelfRegistration: true,
       showAppDefinition: true,
-      longDescription,
       template: false,
       icon,
       iconBackground: '#ffffff',
@@ -1254,7 +1336,6 @@ export async function exportApp(ctx: Context): Promise<void> {
       'sharedStyle',
       'showAppDefinition',
       'visibility',
-      'longDescription',
     ],
     include: [
       { model: AppBlockStyle, required: false },
@@ -1287,10 +1368,6 @@ export async function exportApp(ctx: Context): Promise<void> {
       const [orgName, blockName] = block.block.split('/');
       theme.file(`${orgName}/${blockName}/index.css`, block.style);
     }
-  }
-
-  if (app.longDescription) {
-    zip.file('README.md', app.longDescription);
   }
 
   if (app.icon) {

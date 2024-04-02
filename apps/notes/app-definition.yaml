@@ -1,7 +1,6 @@
 name: Notes
 description: Keep personal notes
 defaultPage: Notes
-
 security:
   default:
     role: User

@@ -39,9 +39,6 @@ export const paths: OpenAPIV3.PathsObject = {
                 demoMode: {
                   $ref: '#/components/schemas/App/properties/demoMode',
                 },
-                longDescription: {
-                  $ref: '#/components/schemas/App/properties/longDescription',
-                },
                 yaml: {
                   type: 'string',
                   description: 'The original YAML definition used to define the app.',
@@ -75,6 +72,14 @@ export const paths: OpenAPIV3.PathsObject = {
                 screenshots: {
                   type: 'array',
                   description: 'Screenshots to showcase in the store',
+                  items: {
+                    type: 'string',
+                    format: 'binary',
+                  },
+                },
+                readmes: {
+                  type: 'array',
+                  description: 'Readmes to showcase in the store',
                   items: {
                     type: 'string',
                     format: 'binary',
@@ -188,9 +193,6 @@ export const paths: OpenAPIV3.PathsObject = {
                 demoMode: {
                   $ref: '#/components/schemas/App/properties/demoMode',
                 },
-                longDescription: {
-                  $ref: '#/components/schemas/App/properties/longDescription',
-                },
                 force: {
                   type: 'boolean',
                   description: 'Whether the locked property should be ignored.',
@@ -224,6 +226,14 @@ export const paths: OpenAPIV3.PathsObject = {
                 screenshots: {
                   type: 'array',
                   description: 'Screenshots to showcase in the store',
+                  items: {
+                    type: 'string',
+                    format: 'binary',
+                  },
+                },
+                readmes: {
+                  type: 'array',
+                  description: 'Readmes to showcase in the store',
                   items: {
                     type: 'string',
                     format: 'binary',
@@ -989,6 +999,22 @@ This will return a 404 if the user has not uploaded one.`,
         },
       },
       security: [{ studio: [] }, { cli: ['apps:write'] }],
+    },
+  },
+  '/api/apps/{appId}/readmes/{readmeId}': {
+    parameters: [
+      { $ref: '#/components/parameters/appId' },
+      { $ref: '#/components/parameters/readmeId' },
+    ],
+    get: {
+      tags: ['app'],
+      description: 'Get a readme of an app.',
+      operationId: 'getAppReadme',
+      responses: {
+        200: {
+          description: 'The app readme',
+        },
+      },
     },
   },
   '/api/apps/{appId}/style/core': {

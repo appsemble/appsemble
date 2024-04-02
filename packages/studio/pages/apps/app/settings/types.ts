@@ -12,6 +12,5 @@ export interface FormValues {
   visibility: AppVisibility;
   domain: string;
   locked: AppLock;
-  longDescription: string;
   showAppDefinition: boolean;
 }

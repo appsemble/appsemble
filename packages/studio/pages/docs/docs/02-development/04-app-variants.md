@@ -19,6 +19,7 @@ maintainability.
     - [app-definition.json](#app-definitionjson)
   - [Icon](#icon)
   - [Screenshots](#screenshots)
+  - [App README files](#app-readme-files)
   - [Resources](#resources)
   - [Assets](#assets)
 - [How to apply an app variant?](#how-to-apply-an-app-variant)
@@ -130,7 +131,7 @@ be used specifically for that variant of the app. It will overwrite the icon of 
 The icon is automatically published along with the app when using the `appsemble app publish` and
 `appsemble app update` commands.
 
-### Screenshots
+### [Screenshots](../03-guide/screenshots.md)
 
 A `screenshots` directory, containing screenshots for the app variant, can be put inside the
 corresponding app variant directory (e.g. `demodam`). These screenshots will be used when applying
@@ -139,7 +140,16 @@ the app variant and will overwrite screenshots defined in the original app.
 Screenshots are automatically published along with the app when using the `appsemble app publish`
 and `appsemble app update` commands.
 
-### Resources
+### [App README files](../03-guide/app-long-description.md)
+
+`README.md` files in different languages can be put inside the corresponding app variant directory
+(e.g. `demodam`). These files will be used when applying the app variant and will overwrite `README`
+files defined in the original app.
+
+`README` files are automatically processed and their contents are published along with the app when
+using the `appsemble app publish` and `appsemble app update` commands.
+
+### [Resources](../03-guide/resources.md)
 
 A `resources` directory, containing resources for the app variant, can be put inside the
 corresponding app variant directory (e.g. `demodam`). These resources will be used when applying the
@@ -148,7 +158,7 @@ app variant and will overwrite resources defined in the original app.
 When using the `appsemble app publish` and the `appsemble app update` commands, resources can be
 published along with the app using the `--resources` flag.
 
-### Assets
+### [Assets](../03-guide/assets.md)
 
 An `assets` directory, containing assets for the app variant, can be put inside the corresponding
 app variant directory (e.g. `demodam`). These assets will be used when applying the app variant and
@@ -207,5 +217,5 @@ Sometimes it must be ensured that an app variant always has data, so it can easi
 demonstration. The seed functionality for apps creates a set of app resources and assets that are
 kept in pristine state. Ephemeral copies of these assets and resources are created every day for
 users to interact with. At the end of the day all ephemeral resources and assets are deleted and new
-ones are created from the seed data. Additionally the ephemeral copies can also be reset when
+ones are created from the seed data. Additionally, the ephemeral copies can also be reset when
 clicking the reseed button on the app’s home page in the studio.

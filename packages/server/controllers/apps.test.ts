@@ -151,7 +151,6 @@ describe('queryApps', () => {
           "iconUrl": null,
           "id": 1,
           "locked": "unlocked",
-          "longDescription": null,
           "path": "test-app",
           "sentryDsn": null,
           "sentryEnvironment": null,
@@ -183,7 +182,6 @@ describe('queryApps', () => {
           "iconUrl": null,
           "id": 2,
           "locked": "unlocked",
-          "longDescription": null,
           "path": "another-app",
           "sentryDsn": null,
           "sentryEnvironment": null,
@@ -260,7 +258,6 @@ describe('queryApps', () => {
           "iconUrl": null,
           "id": 1,
           "locked": "unlocked",
-          "longDescription": null,
           "path": "test-app",
           "sentryDsn": null,
           "sentryEnvironment": null,
@@ -353,7 +350,6 @@ describe('queryApps', () => {
           "iconUrl": null,
           "id": 1,
           "locked": "unlocked",
-          "longDescription": null,
           "path": "test-app",
           "rating": {
             "average": 4.5,
@@ -389,7 +385,6 @@ describe('queryApps', () => {
           "iconUrl": null,
           "id": 3,
           "locked": "unlocked",
-          "longDescription": null,
           "path": "yet-another-app",
           "rating": {
             "average": 3,
@@ -425,7 +420,6 @@ describe('queryApps', () => {
           "iconUrl": null,
           "id": 2,
           "locked": "unlocked",
-          "longDescription": null,
           "path": "another-app",
           "sentryDsn": null,
           "sentryEnvironment": null,
@@ -495,7 +489,6 @@ describe('getAppById', () => {
         "iconUrl": null,
         "id": 1,
         "locked": "unlocked",
-        "longDescription": null,
         "path": "test-app",
         "screenshotUrls": [],
         "sentryDsn": null,
@@ -577,7 +570,6 @@ describe('getAppById', () => {
         "iconUrl": null,
         "id": 1,
         "locked": "unlocked",
-        "longDescription": null,
         "path": "test-app",
         "screenshotUrls": [],
         "sentryDsn": null,
@@ -630,7 +622,6 @@ describe('getAppById', () => {
         "iconUrl": "/api/apps/1/icon?maskable=true&updated=1970-01-01T00%3A00%3A00.000Z",
         "id": 1,
         "locked": "unlocked",
-        "longDescription": null,
         "path": "test-app",
         "screenshotUrls": [],
         "sentryDsn": null,
@@ -686,7 +677,6 @@ describe('getAppById', () => {
         "iconUrl": "/api/organizations/testorganization/icon?background=%23ffffff&maskable=true&updated=1970-01-01T00%3A00%3A00.000Z",
         "id": 1,
         "locked": "unlocked",
-        "longDescription": null,
         "path": "test-app",
         "screenshotUrls": [],
         "sentryDsn": null,
@@ -738,7 +728,6 @@ describe('getAppById', () => {
         "iconUrl": null,
         "id": 1,
         "locked": "unlocked",
-        "longDescription": null,
         "path": "test-app",
         "screenshotUrls": [],
         "sentryDsn": null,
@@ -790,7 +779,6 @@ describe('getAppById', () => {
         "iconUrl": null,
         "id": 1,
         "locked": "unlocked",
-        "longDescription": null,
         "path": "test-app",
         "screenshotUrls": [],
         "sentryDsn": null,
@@ -845,7 +833,6 @@ describe('getAppById', () => {
         "iconUrl": null,
         "id": 1,
         "locked": "unlocked",
-        "longDescription": null,
         "path": "test-app",
         "screenshotUrls": [],
         "sentryDsn": null,
@@ -929,7 +916,6 @@ describe('queryMyApps', () => {
           "iconUrl": null,
           "id": 1,
           "locked": "unlocked",
-          "longDescription": null,
           "path": "test-app",
           "sentryDsn": null,
           "sentryEnvironment": null,
@@ -968,7 +954,6 @@ describe('queryMyApps', () => {
           "iconUrl": null,
           "id": 1,
           "locked": "unlocked",
-          "longDescription": null,
           "path": "test-app",
           "sentryDsn": null,
           "sentryEnvironment": null,
@@ -1000,7 +985,6 @@ describe('queryMyApps', () => {
           "iconUrl": null,
           "id": 2,
           "locked": "unlocked",
-          "longDescription": null,
           "path": "test-app-b",
           "sentryDsn": null,
           "sentryEnvironment": null,
@@ -1072,7 +1056,6 @@ describe('createApp', () => {
         "iconUrl": "/api/apps/1/icon?maskable=true&updated=1970-01-01T00%3A00%3A00.000Z",
         "id": 1,
         "locked": "unlocked",
-        "longDescription": null,
         "path": "test-app",
         "screenshotUrls": [],
         "sentryDsn": null,
@@ -1154,7 +1137,6 @@ describe('createApp', () => {
         "iconUrl": "/api/apps/1/icon?maskable=true&updated=1970-01-01T00%3A00%3A00.000Z",
         "id": 1,
         "locked": "unlocked",
-        "longDescription": null,
         "path": "test-app",
         "screenshotUrls": [
           "/api/apps/1/screenshots/1",
@@ -1355,7 +1337,6 @@ describe('createApp', () => {
         "iconUrl": "/api/apps/1/icon?maskable=true&updated=1970-01-01T00%3A00%3A00.000Z",
         "id": 1,
         "locked": "unlocked",
-        "longDescription": null,
         "path": "test-app",
         "screenshotUrls": [
           "/api/apps/1/screenshots/${unspecifiedScreenshots[0].id}",
@@ -1419,7 +1400,6 @@ describe('createApp', () => {
         "iconUrl": "/api/apps/1/icon?maskable=true&updated=1970-01-01T00%3A00%3A00.000Z",
         "id": 1,
         "locked": "unlocked",
-        "longDescription": null,
         "path": "test-app",
         "screenshotUrls": [
           "/api/apps/1/screenshots/${unspecifiedScreenshots[0].id}",
@@ -1483,7 +1463,6 @@ describe('createApp', () => {
         "iconUrl": "/api/apps/1/icon?maskable=true&updated=1970-01-01T00%3A00%3A00.000Z",
         "id": 1,
         "locked": "unlocked",
-        "longDescription": null,
         "path": "test-app",
         "screenshotUrls": [
           "/api/apps/1/screenshots/${enScreenshots[0].id}",
@@ -1547,7 +1526,6 @@ describe('createApp', () => {
         "iconUrl": "/api/apps/1/icon?maskable=true&updated=1970-01-01T00%3A00%3A00.000Z",
         "id": 1,
         "locked": "unlocked",
-        "longDescription": null,
         "path": "test-app",
         "screenshotUrls": [
           "/api/apps/1/screenshots/${nlScreenshots[0].id}",
@@ -1617,7 +1595,6 @@ describe('createApp', () => {
         "iconUrl": "/api/apps/1/icon?maskable=true&updated=1970-01-01T00%3A00%3A00.000Z",
         "id": 1,
         "locked": "unlocked",
-        "longDescription": null,
         "path": "test-app",
         "screenshotUrls": [
           "/api/apps/1/screenshots/${enScreenshots[0].id}",
@@ -1704,7 +1681,6 @@ describe('createApp', () => {
         "iconUrl": "/api/apps/1/icon?maskable=true&updated=1970-01-01T00%3A00%3A00.000Z",
         "id": 1,
         "locked": "unlocked",
-        "longDescription": null,
         "path": "test-app",
         "screenshotUrls": [],
         "sentryDsn": null,
@@ -1781,9 +1757,6 @@ describe('createApp', () => {
                   "pattern": "^#[\\dA-Fa-f]{6}$",
                   "type": "string",
                 },
-                "longDescription": {
-                  "$ref": "#/components/schemas/App/properties/longDescription",
-                },
                 "maskableIcon": {
                   "description": "The app icon.",
                   "format": "binary",
@@ -1791,6 +1764,14 @@ describe('createApp', () => {
                 },
                 "path": {
                   "$ref": "#/components/schemas/App/properties/path",
+                },
+                "readmes": {
+                  "description": "Readmes to showcase in the store",
+                  "items": {
+                    "format": "binary",
+                    "type": "string",
+                  },
+                  "type": "array",
                 },
                 "screenshots": {
                   "description": "Screenshots to showcase in the store",
@@ -1865,9 +1846,6 @@ describe('createApp', () => {
                   "pattern": "^#[\\dA-Fa-f]{6}$",
                   "type": "string",
                 },
-                "longDescription": {
-                  "$ref": "#/components/schemas/App/properties/longDescription",
-                },
                 "maskableIcon": {
                   "description": "The app icon.",
                   "format": "binary",
@@ -1875,6 +1853,14 @@ describe('createApp', () => {
                 },
                 "path": {
                   "$ref": "#/components/schemas/App/properties/path",
+                },
+                "readmes": {
+                  "description": "Readmes to showcase in the store",
+                  "items": {
+                    "format": "binary",
+                    "type": "string",
+                  },
+                  "type": "array",
                 },
                 "screenshots": {
                   "description": "Screenshots to showcase in the store",
@@ -1984,9 +1970,6 @@ describe('createApp', () => {
                   "pattern": "^#[\\dA-Fa-f]{6}$",
                   "type": "string",
                 },
-                "longDescription": {
-                  "$ref": "#/components/schemas/App/properties/longDescription",
-                },
                 "maskableIcon": {
                   "description": "The app icon.",
                   "format": "binary",
@@ -1994,6 +1977,14 @@ describe('createApp', () => {
                 },
                 "path": {
                   "$ref": "#/components/schemas/App/properties/path",
+                },
+                "readmes": {
+                  "description": "Readmes to showcase in the store",
+                  "items": {
+                    "format": "binary",
+                    "type": "string",
+                  },
+                  "type": "array",
                 },
                 "screenshots": {
                   "description": "Screenshots to showcase in the store",
@@ -2278,7 +2269,6 @@ describe('createApp', () => {
         "iconUrl": null,
         "id": 2,
         "locked": "unlocked",
-        "longDescription": null,
         "path": "test-app-2",
         "screenshotUrls": [],
         "sentryDsn": null,
@@ -2367,7 +2357,6 @@ describe('createApp', () => {
         "iconUrl": null,
         "id": 12,
         "locked": "unlocked",
-        "longDescription": null,
         "path": StringMatching /test-app-\\(\\\\w\\)\\{10\\}/,
         "screenshotUrls": [],
         "sentryDsn": null,
@@ -2450,7 +2439,6 @@ describe('createApp', () => {
         "iconUrl": null,
         "id": 1,
         "locked": "unlocked",
-        "longDescription": null,
         "path": "foobar",
         "screenshotUrls": [],
         "sentryDsn": null,
@@ -2553,9 +2541,6 @@ describe('createApp', () => {
                   "pattern": "^#[\\dA-Fa-f]{6}$",
                   "type": "string",
                 },
-                "longDescription": {
-                  "$ref": "#/components/schemas/App/properties/longDescription",
-                },
                 "maskableIcon": {
                   "description": "The app icon.",
                   "format": "binary",
@@ -2563,6 +2548,14 @@ describe('createApp', () => {
                 },
                 "path": {
                   "$ref": "#/components/schemas/App/properties/path",
+                },
+                "readmes": {
+                  "description": "Readmes to showcase in the store",
+                  "items": {
+                    "format": "binary",
+                    "type": "string",
+                  },
+                  "type": "array",
                 },
                 "screenshots": {
                   "description": "Screenshots to showcase in the store",
@@ -2670,9 +2663,6 @@ describe('createApp', () => {
                   "pattern": "^#[\\dA-Fa-f]{6}$",
                   "type": "string",
                 },
-                "longDescription": {
-                  "$ref": "#/components/schemas/App/properties/longDescription",
-                },
                 "maskableIcon": {
                   "description": "The app icon.",
                   "format": "binary",
@@ -2680,6 +2670,14 @@ describe('createApp', () => {
                 },
                 "path": {
                   "$ref": "#/components/schemas/App/properties/path",
+                },
+                "readmes": {
+                  "description": "Readmes to showcase in the store",
+                  "items": {
+                    "format": "binary",
+                    "type": "string",
+                  },
+                  "type": "array",
                 },
                 "screenshots": {
                   "description": "Screenshots to showcase in the store",
@@ -2982,7 +2980,6 @@ describe('createApp', () => {
           "iconUrl": null,
           "id": 1,
           "locked": "unlocked",
-          "longDescription": null,
           "path": "test-app",
           "screenshotUrls": [],
           "sentryDsn": null,
@@ -3322,7 +3319,6 @@ describe('patchApp', () => {
         "iconUrl": null,
         "id": 1,
         "locked": "unlocked",
-        "longDescription": null,
         "path": "test-app",
         "screenshotUrls": [],
         "sentryDsn": null,
@@ -3395,7 +3391,6 @@ describe('patchApp', () => {
         "iconUrl": null,
         "id": 1,
         "locked": "unlocked",
-        "longDescription": null,
         "path": "test-app",
         "screenshotUrls": [],
         "sentryDsn": null,
@@ -3545,7 +3540,6 @@ describe('patchApp', () => {
         "iconUrl": null,
         "id": 1,
         "locked": "fullLock",
-        "longDescription": null,
         "path": "bar",
         "screenshotUrls": [],
         "sentryDsn": null,
@@ -3603,7 +3597,6 @@ describe('patchApp', () => {
         "iconUrl": null,
         "id": 1,
         "locked": "unlocked",
-        "longDescription": null,
         "path": "foo",
         "screenshotUrls": [],
         "sentryDsn": null,
@@ -3661,7 +3654,6 @@ describe('patchApp', () => {
         "iconUrl": null,
         "id": 1,
         "locked": "unlocked",
-        "longDescription": null,
         "path": "foo",
         "screenshotUrls": [],
         "sentryDsn": null,
@@ -3724,7 +3716,6 @@ describe('patchApp', () => {
         "iconUrl": null,
         "id": 1,
         "locked": "unlocked",
-        "longDescription": null,
         "path": "foo",
         "screenshotUrls": [],
         "sentryDsn": null,
@@ -3831,9 +3822,6 @@ describe('patchApp', () => {
                   "pattern": "^#[\\dA-Fa-f]{6}$",
                   "type": "string",
                 },
-                "longDescription": {
-                  "$ref": "#/components/schemas/App/properties/longDescription",
-                },
                 "maskableIcon": {
                   "description": "The app icon.",
                   "format": "binary",
@@ -3841,6 +3829,14 @@ describe('patchApp', () => {
                 },
                 "path": {
                   "$ref": "#/components/schemas/App/properties/path",
+                },
+                "readmes": {
+                  "description": "Readmes to showcase in the store",
+                  "items": {
+                    "format": "binary",
+                    "type": "string",
+                  },
+                  "type": "array",
                 },
                 "screenshots": {
                   "description": "Screenshots to showcase in the store",
@@ -3915,9 +3911,6 @@ describe('patchApp', () => {
                   "pattern": "^#[\\dA-Fa-f]{6}$",
                   "type": "string",
                 },
-                "longDescription": {
-                  "$ref": "#/components/schemas/App/properties/longDescription",
-                },
                 "maskableIcon": {
                   "description": "The app icon.",
                   "format": "binary",
@@ -3925,6 +3918,14 @@ describe('patchApp', () => {
                 },
                 "path": {
                   "$ref": "#/components/schemas/App/properties/path",
+                },
+                "readmes": {
+                  "description": "Readmes to showcase in the store",
+                  "items": {
+                    "format": "binary",
+                    "type": "string",
+                  },
+                  "type": "array",
                 },
                 "screenshots": {
                   "description": "Screenshots to showcase in the store",
@@ -4347,7 +4348,6 @@ describe('patchApp', () => {
         "iconUrl": null,
         "id": 1,
         "locked": "unlocked",
-        "longDescription": null,
         "path": "bar",
         "screenshotUrls": [],
         "sentryDsn": null,
@@ -4542,7 +4542,6 @@ describe('patchApp', () => {
         "iconUrl": null,
         "id": 1,
         "locked": "unlocked",
-        "longDescription": null,
         "path": "bar",
         "screenshotUrls": [],
         "sentryDsn": null,
@@ -4589,7 +4588,6 @@ describe('patchApp', () => {
         "iconUrl": null,
         "id": 1,
         "locked": "unlocked",
-        "longDescription": null,
         "path": "bar",
         "screenshotUrls": [],
         "sentryDsn": null,
@@ -4644,10 +4642,10 @@ describe('patchApp', () => {
         "iconUrl": null,
         "id": 1,
         "locked": "unlocked",
-        "longDescription": null,
         "messages": undefined,
         "path": "bar",
         "rating": undefined,
+        "readmeUrl": undefined,
         "screenshotUrls": undefined,
         "sentryDsn": null,
         "sentryEnvironment": null,
@@ -4693,7 +4691,6 @@ describe('patchApp', () => {
         "iconUrl": null,
         "id": 1,
         "locked": "unlocked",
-        "longDescription": null,
         "path": "bar",
         "screenshotUrls": [],
         "sentryDsn": null,
@@ -4737,7 +4734,6 @@ describe('patchApp', () => {
         "iconUrl": null,
         "id": 1,
         "locked": "unlocked",
-        "longDescription": null,
         "path": "bar",
         "screenshotUrls": [],
         "sentryDsn": null,
@@ -5946,7 +5942,6 @@ describe('exportApp', () => {
         }`,
         vapidPrivateKey: 'b',
         vapidPublicKey: 'a',
-        longDescription: '# Test App',
         OrganizationId: organization.id,
         icon: await readFixture('nodejs-logo.png'),
       },
@@ -5980,7 +5975,6 @@ describe('exportApp', () => {
       'theme/shared/index.css',
       'i18n/',
       'i18n/en.json',
-      'README.md',
       'icon.png',
     ]);
 
@@ -5993,7 +5987,6 @@ describe('exportApp', () => {
         "
       `,
     );
-    expect(await archive.file('README.md').async('text')).toMatchInlineSnapshot('"# Test App"');
     expect(await archive.file('theme/core/index.css').async('text')).toMatchInlineSnapshot(`
       "
               * {
@@ -6322,7 +6315,6 @@ describe('importApp', () => {
         "iconUrl": Any<String>,
         "id": 1,
         "locked": "unlocked",
-        "longDescription": "# Test App",
         "path": "test-app",
         "sentryDsn": null,
         "sentryEnvironment": null,
@@ -6426,7 +6418,6 @@ describe('importApp', () => {
         "iconUrl": Any<String>,
         "id": 2,
         "locked": "unlocked",
-        "longDescription": null,
         "path": "test-app-2",
         "sentryDsn": null,
         "sentryEnvironment": null,

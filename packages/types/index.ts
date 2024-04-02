@@ -1919,11 +1919,6 @@ export interface App {
   OrganizationName?: string;
 
   /**
-   * The long description of the app.
-   */
-  longDescription: string;
-
-  /**
    * The path the app is available from.
    */
   path: string;
@@ -2017,6 +2012,11 @@ export interface App {
    * A list of URLs to app screenshots
    */
   screenshotUrls?: string[];
+
+  /**
+   * A URL to the long description of the app based on language
+   */
+  readmeUrl?: string;
 
   /**
    * True if the app has its own icon.
