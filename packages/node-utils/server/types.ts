@@ -116,6 +116,8 @@ declare module 'koas-parameters' {
     view: string;
     resources: boolean;
     assets: boolean;
+    screenshots: boolean;
+    readmes: boolean;
     roles: string[];
   }
 }

@@ -1,3 +1,4 @@
+import { basename, dirname } from 'node:path';
 import { isDeepStrictEqual } from 'node:util';
 
 import {
@@ -1233,6 +1234,7 @@ export async function importApp(ctx: Context): Promise<void> {
         const resourcesFolder = zip
           .folder('resources')
           .filter((filename) => filename.endsWith('json'));
+
         for (const file of resourcesFolder) {
           const [, resourceJsonName] = file.name.split('/');
           const [resourceType] = resourceJsonName.split('.');
@@ -1241,7 +1243,7 @@ export async function importApp(ctx: Context): Promise<void> {
           const resources = JSON.parse(resourcesText);
           const { verifyResourceActionPermission } = options;
 
-          verifyResourceActionPermission({
+          await verifyResourceActionPermission({
             app: record.toJSON(),
             context: ctx,
             action,
@@ -1249,6 +1251,7 @@ export async function importApp(ctx: Context): Promise<void> {
             options,
             ctx,
           });
+
           await (user as User)?.reload({ attributes: ['name', 'id'] });
           const appMember = await getUserAppAccount(appId, user.id);
           const createdResources = await Resource.bulkCreate(
@@ -1268,16 +1271,61 @@ export async function importApp(ctx: Context): Promise<void> {
           processHooks(user as User, record, createdResources[0], action, options, ctx);
         }
 
-        // eslint-disable-next-line unicorn/no-array-for-each
-        zip.folder('assets').forEach(async (pathFile, file) => {
-          const data = await file.async('nodebuffer');
-          Asset.create({
-            AppId: record.id,
-            data,
-            filename: pathFile,
-            mime: lookup(pathFile),
+        for (const jsZipObject of zip
+          .folder('assets')
+          .filter((filename) => !['.DS_Store'].includes(filename))) {
+          if (!jsZipObject.dir) {
+            const data = await jsZipObject.async('nodebuffer');
+            const { name } = jsZipObject;
+            await Asset.create(
+              {
+                AppId: record.id,
+                data,
+                filename: name,
+                mime: lookup(name),
+              },
+              { transaction },
+            );
+          }
+        }
+
+        const supportedLanguages = await getSupportedLanguages();
+        const screenshots: File[] = [];
+        for (const jsZipObject of zip
+          .folder('screenshots')
+          .filter((filename) => !['.DS_Store'].includes(filename))) {
+          if (!jsZipObject.dir) {
+            const contents = await jsZipObject.async('nodebuffer');
+
+            const { name } = jsZipObject;
+            const screenshotDirectoryPath = dirname(name);
+            const screenshotDirectoryName = basename(screenshotDirectoryPath);
+
+            const language = supportedLanguages.has(screenshotDirectoryName)
+              ? screenshotDirectoryName
+              : 'unspecified';
+
+            screenshots.push({
+              filename: `${language}-${name}`,
+              mime: lookup(name) || '',
+              contents,
+            });
+          }
+        }
+        await createAppScreenshots(record.id, screenshots, transaction, ctx);
+
+        const readmeFiles: File[] = [];
+        for (const jsZipObject of zip.filter(
+          (filename) => filename.toLowerCase().startsWith('readme') && filename.endsWith('md'),
+        )) {
+          const contents = await jsZipObject.async('nodebuffer');
+          readmeFiles.push({
+            mime: 'text/markdown',
+            filename: jsZipObject.name,
+            contents,
           });
-        });
+        }
+        await createAppReadmes(record.id, readmeFiles, transaction);
 
         const organizations = theme.filter((filename) => filename.startsWith('@'));
         for (const organization of organizations) {
@@ -1324,7 +1372,7 @@ export async function exportApp(ctx: Context): Promise<void> {
   const {
     pathParams: { appId },
   } = ctx;
-  const { assets, resources } = ctx.queryParams;
+  const { assets, readmes, resources, screenshots } = ctx.queryParams;
 
   const app = await App.findByPk(appId, {
     attributes: [
@@ -1341,8 +1389,11 @@ export async function exportApp(ctx: Context): Promise<void> {
       { model: AppBlockStyle, required: false },
       { model: AppMessages, required: false },
       { model: AppSnapshot, as: 'AppSnapshots', order: [['created', 'DESC']], limit: 1 },
+      { model: AppScreenshot, as: 'AppScreenshots' },
+      { model: AppReadme, as: 'AppReadmes' },
     ],
   });
+
   assertKoaError(!app, ctx, 404, 'App not found');
 
   if (app.visibility === 'private' || !app.showAppDefinition) {
@@ -1352,6 +1403,7 @@ export async function exportApp(ctx: Context): Promise<void> {
   const zip = new JSZip();
   const definition = app.AppSnapshots?.[0]?.yaml || stringify(app.definition);
   zip.file('app-definition.yaml', definition);
+
   const theme = zip.folder('theme');
   theme.file('core/index.css', app.coreStyle);
   theme.file('shared/index.css', app.sharedStyle);
@@ -1367,6 +1419,55 @@ export async function exportApp(ctx: Context): Promise<void> {
     for (const block of app.AppBlockStyles) {
       const [orgName, blockName] = block.block.split('/');
       theme.file(`${orgName}/${blockName}/index.css`, block.style);
+    }
+  }
+
+  if (screenshots && app.AppScreenshots?.length) {
+    const screenshotsByLanguage: Record<string, AppScreenshot[]> = {};
+    for (const screenshot of app.AppScreenshots) {
+      screenshotsByLanguage[screenshot.language] = [
+        ...(screenshotsByLanguage[screenshot.language] || []),
+        screenshot,
+      ];
+    }
+
+    const screenshotsFolder = zip.folder('screenshots');
+    for (const [language, languageScreenshots] of Object.entries(screenshotsByLanguage)) {
+      let languageFolder;
+
+      if (language !== 'unspecified') {
+        languageFolder = screenshotsFolder.folder(language);
+      }
+
+      for (const screenshot of languageScreenshots) {
+        const { index, mime } = screenshot;
+        const extension = mime.slice(mime.indexOf('/') + 1);
+
+        // This is done to include zeros in the filename and keep the order of screenshots
+        let prefixedIndex = String(index);
+
+        if (languageScreenshots.length > 9 && index < 10) {
+          prefixedIndex = `0${prefixedIndex}`;
+        }
+
+        if (languageScreenshots.length > 99 && index < 100) {
+          prefixedIndex = `0${prefixedIndex}`;
+        }
+
+        (languageFolder ?? screenshotsFolder).file(
+          `${prefixedIndex}.${extension}`,
+          screenshot.screenshot,
+        );
+      }
+    }
+  }
+
+  if (readmes && app.AppReadmes?.length) {
+    for (const readme of app.AppReadmes) {
+      zip.file(
+        `README${readme.language === 'unspecified' ? '' : `.${readme.language}`}.md`,
+        readme.file,
+      );
     }
   }
 
@@ -1400,6 +1501,7 @@ export async function exportApp(ctx: Context): Promise<void> {
       zip.file(`assets/${asset.filename}`, asset.data);
     });
   }
+
   const content = zip.generateNodeStream();
   ctx.attachment();
   ctx.body = content;

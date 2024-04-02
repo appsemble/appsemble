@@ -12,8 +12,12 @@ interface AppOptionsMenuProps {
   readonly onExport: () => void;
   readonly onCheckedResources: () => void;
   readonly onCheckedAssets: () => void;
+  readonly onCheckedScreenshots: () => void;
+  readonly onCheckedReadmes: () => void;
   readonly checkedResources: boolean;
   readonly checkedAssets: boolean;
+  readonly checkedScreenshots: boolean;
+  readonly checkedReadmes: boolean;
   readonly showExport: boolean;
   readonly showExportResources: boolean;
 }
@@ -21,9 +25,13 @@ interface AppOptionsMenuProps {
 export function AppOptionsMenu({
   app,
   checkedAssets,
+  checkedReadmes,
   checkedResources,
+  checkedScreenshots,
   onCheckedAssets,
+  onCheckedReadmes,
   onCheckedResources,
+  onCheckedScreenshots,
   onExport,
   showExport,
   showExportResources,
@@ -32,16 +40,35 @@ export function AppOptionsMenu({
 
   const handleMenuItemClick = useCallback(
     (action: string) => {
-      if (action === 'export') {
-        onExport();
-      } else if (action === 'checkedResource') {
-        onCheckedResources();
-      } else if (action === 'checkedAsset') {
-        onCheckedAssets();
+      switch (action) {
+        case 'export':
+          onExport();
+          break;
+        case 'checkedResource':
+          onCheckedResources();
+          break;
+        case 'checkedAsset':
+          onCheckedAssets();
+          break;
+        case 'checkedScreenshot':
+          onCheckedScreenshots();
+          break;
+        case 'checkedReadme':
+          onCheckedReadmes();
+          break;
+        default:
+          break;
       }
       disable();
     },
-    [disable, onCheckedAssets, onCheckedResources, onExport],
+    [
+      disable,
+      onCheckedAssets,
+      onCheckedReadmes,
+      onCheckedResources,
+      onCheckedScreenshots,
+      onExport,
+    ],
   );
   const dropdownRef = useRef<HTMLDivElement | null>();
 
@@ -89,6 +116,20 @@ export function AppOptionsMenu({
                   name="assets"
                   onChange={onCheckedAssets}
                   value={checkedAssets}
+                />
+                <Checkbox
+                  className={`is-inline-block dropdown-item ${styles.checkbox}`}
+                  label={<FormattedMessage {...messages.exportWithScreenshots} />}
+                  name="screenshots"
+                  onChange={onCheckedScreenshots}
+                  value={checkedScreenshots}
+                />
+                <Checkbox
+                  className={`is-inline-block dropdown-item ${styles.checkbox}`}
+                  label={<FormattedMessage {...messages.exportWithReadmes} />}
+                  name="readmes"
+                  onChange={onCheckedReadmes}
+                  value={checkedReadmes}
                 />
               </>
             ) : null}

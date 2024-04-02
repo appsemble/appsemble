@@ -360,6 +360,18 @@ export const paths: OpenAPIV3.PathsObject = {
           description: 'Whether to include assets in the export file',
           in: 'query',
         },
+        {
+          name: 'screenshots',
+          schema: { type: 'boolean' },
+          description: 'Whether to include screenshots in the export file',
+          in: 'query',
+        },
+        {
+          name: 'readmes',
+          schema: { type: 'boolean' },
+          description: 'Whether to include readmes in the export file',
+          in: 'query',
+        },
       ],
       responses: {
         200: {

@@ -118,7 +118,6 @@ describe('patchApp', () => {
         "iconBackground": "#FFFFFF",
         "id": 1,
         "locked": "fullLock",
-        "longDescription": null,
         "maskableIcon": null,
         "path": "updated-path",
         "scimEnabled": false,
