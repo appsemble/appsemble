@@ -1,0 +1,3 @@
+Contact: mailto:security@appsemble.com
+Expires: 2026-03-27T23:59:00.000Z
+Preferred-Languages: en, nl
