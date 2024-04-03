@@ -35,7 +35,13 @@ will remain the same until it is manually updated.
 `,
     },
     layout: {
-      description: 'An override of the block’s default.',
+      description: `An override of the block’s default layout.
+
+\`float\` sets the block position to float on the page and does not collide with other blocks.
+Layout float can be combined with the \`position\` property to place the block on the desired location.
+\`grow\` adds space between blocks so the page is filled.
+\`static\` on the contrary, does not add extra space between blocks.
+`,
       enum: ['float', 'grow', 'static'],
     },
     header: {
@@ -53,7 +59,7 @@ If a user does not have the right role, the block is not rendered.
       },
     },
     position: {
-      description: 'For floating blocks this propert defines where the block should float.',
+      description: 'For floating blocks this property defines where the block should float.',
       default: 'bottom right',
       enum: [
         'top left',
