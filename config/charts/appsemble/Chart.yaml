@@ -1,7 +1,7 @@
 apiVersion: v2
 name: appsemble
-version: 0.27.9
-appVersion: 0.27.9
+version: 0.27.10
+appVersion: 0.27.10
 kubeVersion: '>=1.21.0'
 type: application
 description: The open source low-code app building platform
@@ -25,31 +25,40 @@ dependencies:
 annotations:
   artifacthub.io/changes: >
     - kind: added
-      description: "Cli: Add app patch command to update the settings of an app."
+      description: "Cli: Read README files from app variant directories."
     - kind: added
-      description: "Cli: Support variant argument for app publish command."
+      description: "Cli: Read app long descriptions per language from README files."
     - kind: added
-      description: "Cli: Support variant argument for app update command."
+      description: "Server: Add new table AppReadme to store app long descriptions."
     - kind: added
-      description: "Cli: Support assets option in appsembleRC file to publish assets
-        from assets folder."
-    - kind: added
-      description: "Cli: Support resources option in appsembleRC file to publish
-        resources from resources folder."
-    - kind: added
-      description: "Cli: Support shared app variants using the variant: name in an
-        .appsemblerc context."
+      description: "Utils: Add readmeUrl to App."
     - kind: changed
-      description: "Cli: Fix uploading screenshots with app update."
+      description: "Server: Collections endpoint returns localized results."
+    - kind: removed
+      description: "Server: Remove column longDescription from App model."
+    - kind: removed
+      description: "Utils: Remove longDescription from App."
     - kind: fixed
-      description: "Cli: Fix reading supported languages for screenshots."
+      description: "Block(form): Use field name as fallback value for label if label
+        isn’t specified."
     - kind: fixed
-      description: "Cli: Fix reading supported languages from the app directory
-        instead of the main project."
+      description: "Cli: The app patch command would fail when passing only arguments
+        with their values set to false."
     - kind: fixed
-      description: "Cli: The app publish command would error when no context is defined."
+      description: "Cli: The app patch command would lock the app before patching
+        other values first."
     - kind: fixed
-      description: "Cli: The app update command would error when no context is defined."
+      description: "Preact-components: Use required property from props in dual slider
+        component."
+    - kind: fixed
+      description: "Server: Randonly generated app path length should be less than 30
+        characters."
+    - kind: fixed
+      description: "Server: Subdomains of the main Appsemble host are assumed to have
+        a valid SSL certificate if the --forceProtocolHttps flag is set. This
+        assumes that the main Appsemble host has a valid wildcard SSL certificate."
+    - kind: fixed
+      description: "Studio: Localization for collections page app card."
   artifacthub.io/license: LGPL-3.0-only
   artifacthub.io/links: |
     - name: Appsemble Studio

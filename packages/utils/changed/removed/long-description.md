@@ -1,1 +1,0 @@
-Remove `longDescription` from `App`.

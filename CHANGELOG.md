@@ -2,6 +2,37 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.27.10](https://gitlab.com/appsemble/appsemble/-/releases/0.27.10)] - 2024-04-03
+
+### Added
+
+- Cli: Read README files from app variant directories.
+- Cli: Read app long descriptions per language from README files.
+- Server: Add new table `AppReadme` to store app long descriptions.
+- Utils: Add `readmeUrl` to App.
+
+### Changed
+
+- Server: Collections endpoint returns localized results.
+
+### Removed
+
+- Server: Remove column `longDescription` from `App` model.
+- Utils: Remove `longDescription` from `App`.
+
+### Fixed
+
+- Block(`form`): Use field name as fallback value for label if label isn’t specified.
+- Cli: The `app patch` command would fail when passing only arguments with their values set to
+  false.
+- Cli: The `app patch` command would lock the app before patching other values first.
+- Preact-components: Use required property from props in dual slider component.
+- Server: Randonly generated app path length should be less than 30 characters.
+- Server: Subdomains of the main Appsemble host are assumed to have a valid SSL certificate if the
+  `--forceProtocolHttps` flag is set. This assumes that the main Appsemble host has a valid wildcard
+  SSL certificate.
+- Studio: Localization for collections page app card.
+
 ## \[[0.27.9](https://gitlab.com/appsemble/appsemble/-/releases/0.27.9)] - 2024-03-21
 
 ### Added
