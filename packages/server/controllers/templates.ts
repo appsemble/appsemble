@@ -104,7 +104,7 @@ export async function createTemplateApp(ctx: Context): Promise<void> {
       AppMessages: [].concat(template.AppMessages),
     };
 
-    await setAppPath(result, path);
+    await setAppPath(ctx, result, path);
 
     for (const m of result.AppMessages) {
       delete m.messages?.app?.name;

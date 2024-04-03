@@ -303,7 +303,7 @@ export async function createApp(ctx: Context): Promise<void> {
       result.maskableIcon = maskableIcon.contents;
     }
 
-    await setAppPath(result, path);
+    await setAppPath(ctx, result, path);
 
     let record: App;
     try {
@@ -1197,7 +1197,7 @@ export async function importApp(ctx: Context): Promise<void> {
       icon,
       iconBackground: '#ffffff',
     };
-    await setAppPath(result, path);
+    await setAppPath(ctx, result, path);
     const coreStyleFile = theme.file('core/index.css');
     if (coreStyleFile) {
       const coreStyle = await coreStyleFile.async('text');
