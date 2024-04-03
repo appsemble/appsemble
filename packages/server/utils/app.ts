@@ -1,6 +1,6 @@
 import { randomBytes } from 'node:crypto';
 
-import { assertKoaError, mergeMessages } from '@appsemble/node-utils';
+import { assertKoaError, mergeMessages, throwKoaError } from '@appsemble/node-utils';
 import { extractAppMessages } from '@appsemble/utils';
 import { type Context } from 'koa';
 import tags from 'language-tags';
@@ -180,11 +180,11 @@ export function applyAppMessages(app: App, language: string, baseLanguage: strin
   }
 }
 
-export async function setAppPath(app: Partial<App>, path: string): Promise<void> {
-  for (let i = 1; i < 11; i += 1) {
+export async function setAppPath(ctx: Context, app: Partial<App>, path: string): Promise<void> {
+  for (let i = 1; i < 3; i += 1) {
     const p = i === 1 ? path : `${path}-${i}`;
     const count = await App.count({ where: { path: p } });
-    if (count === 0) {
+    if (count === 0 && p.length < 30) {
       Object.assign(app, {
         path: p,
       });
@@ -194,6 +194,11 @@ export async function setAppPath(app: Partial<App>, path: string): Promise<void>
 
   if (!app.path) {
     // Fallback if a suitable ID could not be found after trying for a while
-    Object.assign(app, { path: `${path}-${randomBytes(5).toString('hex')}` });
+    const randomPath = `${path}-${randomBytes(5).toString('hex')}`;
+    if (randomPath.length < 30) {
+      Object.assign(app, { path: randomPath });
+    } else {
+      throwKoaError(ctx, 400, 'Invalid path for app, please update the name of your app.');
+    }
   }
 }

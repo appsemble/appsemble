@@ -1,3 +1,5 @@
+import { getRandomValues } from 'node:crypto';
+
 import { createFixtureStream, createFormData, readFixture } from '@appsemble/node-utils';
 import { type AppDefinition, type App as AppType, type Snapshot } from '@appsemble/types';
 import axios from 'axios';
@@ -1078,6 +1080,54 @@ describe('createApp', () => {
     `);
     const { data: retrieved } = await request.get(`/api/apps/${createdResponse.data.id}`);
     expect(retrieved).toStrictEqual(createdResponse.data);
+  });
+
+  it('should return an error if generated path is longer than 30 characters', async () => {
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    const array = new Uint8Array(30);
+    getRandomValues(array);
+    const randomName = String.fromCharCode(...array.map((n) => chars.charCodeAt(n % chars.length)));
+    await App.create(
+      {
+        definition: {
+          name: 'Test App',
+          defaultPage: 'Test Page',
+        },
+        path: randomName,
+        vapidPublicKey: 'a',
+        vapidPrivateKey: 'b',
+        OrganizationId: organization.id,
+      },
+      { raw: true },
+    );
+    authorizeStudio();
+    const createdResponse = await request.post(
+      '/api/apps',
+      createFormData({
+        OrganizationId: organization.id,
+        yaml: stripIndent(`
+          name: ${randomName}
+          defaultPage: Test Page
+          pages:
+            - name: Test Page
+              blocks:
+                - type: test
+                  version: 0.0.0
+        `),
+        icon: createFixtureStream('nodejs-logo.png'),
+      }),
+    );
+    expect(createdResponse).toMatchInlineSnapshot(`
+      HTTP/1.1 400 Bad Request
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "error": "Bad Request",
+        "message": "Invalid path for app, please update the name of your app.",
+        "statusCode": 400,
+      }
+
+    `);
   });
 
   it('should accept screenshots', async () => {
