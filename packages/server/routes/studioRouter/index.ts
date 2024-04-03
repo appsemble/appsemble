@@ -5,6 +5,7 @@ import { type Middleware } from 'koa';
 import { faviconHandler } from './faviconHandler.js';
 import { iconHandler } from './iconHandler.js';
 import { indexHandler } from './indexHandler.js';
+import { securitytxtHandler } from './securitytxtHandler.js';
 import { tokenHandler } from './tokenHandler.js';
 import { staticHandler } from '../static.js';
 
@@ -16,6 +17,10 @@ export const studioRouter: Middleware = tinyRouter([
   {
     route: '/favicon.ico',
     get: faviconHandler,
+  },
+  {
+    route: '/.well-known/security.txt',
+    get: securitytxtHandler,
   },
   {
     route: /^\/icon-(?<size>\d+)\.png$/,
