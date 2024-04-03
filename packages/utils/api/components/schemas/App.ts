@@ -80,7 +80,7 @@ This doesn’t affect whether or not the app can be accessed on its own domain.
       description: `
 A long description for the app.
 
-The long desciption will be rendered on the app details page. Markdown content is supported.
+The long description will be rendered on the app details page. Markdown content is supported.
 `,
     },
     definition: { $ref: '#/components/schemas/AppDefinition' },
