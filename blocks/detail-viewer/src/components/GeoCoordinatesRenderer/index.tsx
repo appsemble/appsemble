@@ -38,6 +38,7 @@ export function GeoCoordinatesRenderer({ data, field }: RendererProps<GeoCoordin
           latitude={lat}
           longitude={lng}
           marker={marker}
+          radius={10}
           theme={theme}
         />
       ) : null}

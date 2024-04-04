@@ -17,6 +17,7 @@ export interface LocationProps {
   className?: string;
   latitude: number;
   longitude: number;
+  radius: number;
   mapOptions?: MapOptions;
   theme: Theme;
   marker?: DivIcon | Icon;
@@ -34,11 +35,13 @@ class LocationComponent extends Component<BlockProps & LocationProps> {
       longitude,
       mapOptions,
       marker,
+      radius,
       theme: { primaryColor, tileLayer },
     } = this.props;
 
     const locationMarker = new CircleMarker(null, {
       color: primaryColor,
+      radius,
     });
 
     const map = new Map(this.ref.current, {
