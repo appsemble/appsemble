@@ -1,0 +1,14 @@
+{
+  "nl": {
+    "app": {
+      "name": "Tux App",
+      "pages.test-page": "Tux Pagina"
+    }
+  },
+  "en": {
+    "app": {
+      "name": "Tux App",
+      "pages.test-page": "Tux Page"
+    }
+  }
+}

@@ -1,0 +1,20 @@
+context:
+  test:
+    id: 1
+    organization: testorganization
+    appLock: studioLock
+    visibility: public
+    showAppDefinition: true
+    demoMode: true
+    template: true
+    assets: true
+    assetsClonable: true
+    resources: true
+    icon: icon.png
+    iconBackground: '#000000'
+    googleAnalyticsId: test
+    maskableIcon: maskable-icon.png
+    sentryDsn: https://public@sentry.example.com/1
+    sentryEnvironment: test
+    collections:
+      - 1
