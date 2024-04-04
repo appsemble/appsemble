@@ -49,6 +49,7 @@ export function GeoCoordinatesInput({
 
     const marker = new CircleMarker(null, {
       color: theme.primaryColor,
+      radius: 10,
     });
 
     const onLocationFound = ({ latlng }: LocationEvent): void => {

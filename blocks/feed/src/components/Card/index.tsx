@@ -199,6 +199,7 @@ export function Card({ content, onUpdate }: CardProps): VNode {
               zoomControl: false,
             }}
             marker={marker}
+            radius={10}
             theme={theme}
           />
         ) : null}

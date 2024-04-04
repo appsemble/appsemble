@@ -26,6 +26,7 @@ bootstrap((params) => {
   const hasExplicitCenter = Number.isFinite(latitude) && Number.isFinite(longitude);
   const locationMarker = new CircleMarker(null, {
     color: primaryColor,
+    radius: 10,
   });
   const {
     defaultLocation = [51.476_852, 0],
