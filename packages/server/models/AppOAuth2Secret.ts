@@ -9,13 +9,14 @@ import {
   DataType,
   DefaultScope,
   ForeignKey,
+  HasMany,
   Model,
   PrimaryKey,
   Table,
   UpdatedAt,
 } from 'sequelize-typescript';
 
-import { App } from './index.js';
+import { App, AppOAuth2Authorization } from './index.js';
 
 @DefaultScope(() => ({
   attributes: [
@@ -90,4 +91,7 @@ export class AppOAuth2Secret extends Model {
 
   @BelongsTo(() => App)
   App: Awaited<App>;
+
+  @HasMany(() => AppOAuth2Authorization, { onDelete: 'CASCADE', onUpdate: 'CASCADE' })
+  AppOAuth2Authorizations: AppOAuth2Authorization[];
 }
