@@ -87,18 +87,14 @@ describe('createAppOAuth2Secret', () => {
       Content-Type: application/json; charset=utf-8
 
       {
-        "AppId": 1,
         "authorizationUrl": "https://example.com/oauth/authorize",
         "clientId": "example_client_id",
         "clientSecret": "example_client_secret",
-        "created": "1970-01-01T00:00:00.000Z",
         "icon": "example",
         "id": 1,
         "name": "Example",
-        "remapper": null,
         "scope": "email openid profile",
         "tokenUrl": "https://example.com/oauth/token",
-        "updated": "1970-01-01T00:00:00.000Z",
         "userInfoUrl": "https://example.com/oauth/userinfo",
       }
     `);
