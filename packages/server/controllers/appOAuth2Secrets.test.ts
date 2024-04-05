@@ -294,6 +294,60 @@ describe('updateAppOAuth2Secret', () => {
     });
   });
 
+  it('should update AppOAuth2Secret.userInfoUrl to be null when undefined', async () => {
+    const secret = await AppOAuth2Secret.create({
+      AppId: app.id,
+      authorizationUrl: 'https://example.com/oauth/authorize',
+      clientId: 'example_client_id',
+      clientSecret: 'example_client_secret',
+      icon: 'example',
+      name: 'Example',
+      scope: 'email openid profile',
+      tokenUrl: 'https://example.com/oauth/token',
+      userInfoUrl: 'https://example.com/oauth/userinfo',
+    });
+    authorizeStudio();
+    const response = await request.put(`/api/apps/${app.id}/secrets/oauth2/${secret.id}`, {
+      authorizationUrl: 'https://other.example/oauth/authorize',
+      clientId: 'other_client_id',
+      clientSecret: 'example_client_secret',
+      icon: 'updated',
+      name: 'Updated Example',
+      scope: 'custom',
+      tokenUrl: 'https://other.example/oauth/token',
+    });
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 200 OK
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "authorizationUrl": "https://other.example/oauth/authorize",
+        "clientId": "other_client_id",
+        "clientSecret": "example_client_secret",
+        "created": "1970-01-01T00:00:00.000Z",
+        "icon": "updated",
+        "id": 1,
+        "name": "Updated Example",
+        "remapper": null,
+        "scope": "custom",
+        "tokenUrl": "https://other.example/oauth/token",
+        "updated": "1970-01-01T00:00:00.000Z",
+        "userInfoUrl": null,
+      }
+    `);
+    await secret.reload();
+    expect(secret).toMatchObject({
+      authorizationUrl: 'https://other.example/oauth/authorize',
+      clientId: 'other_client_id',
+      clientSecret: 'example_client_secret',
+      icon: 'updated',
+      name: 'Updated Example',
+      scope: 'custom',
+      tokenUrl: 'https://other.example/oauth/token',
+      userInfoUrl: null,
+    });
+  });
+
   it('should handle if the app id is invalid', async () => {
     authorizeStudio();
     const response = await request.put('/api/apps/123/secrets/oauth2/1', {
