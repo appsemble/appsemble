@@ -31,8 +31,8 @@ export interface Toggle {
  * @param initialState The initial value.
  * @returns The toggle state.
  */
-export function useToggle(initialState?: boolean): Toggle {
-  const [enabled, setEnabled] = useState(initialState ?? false);
+export function useToggle(initialState = false): Toggle {
+  const [enabled, setEnabled] = useState(initialState);
 
   const disable = useCallback(() => {
     setEnabled(false);

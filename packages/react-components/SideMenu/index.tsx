@@ -54,9 +54,8 @@ interface SideMenuProviderProps {
  * A wrapper that renders a responsive side menu.
  */
 export function SideMenuProvider({ base, bottom, children }: SideMenuProviderProps): ReactNode {
-  const { disable, enable, enabled, toggle } = useToggle(window?.innerWidth > 1024);
+  const { disable, enable, enabled, toggle } = useToggle();
   const [menu, setMenu] = useState<ReactNode>(null);
-  const [oldWidth, setOldWidth] = useState<number>(window?.innerWidth);
 
   const location = useLocation();
   useEffect(() => {
@@ -81,24 +80,11 @@ export function SideMenuProvider({ base, bottom, children }: SideMenuProviderPro
   // Close or open the side menu when the screen size changes, depending on the width
   useEffect(() => {
     const onResize = (): void => {
-      const newWidth = window?.innerWidth;
-      // Enable side menu if width goes above 1024px and update old width
-      if (oldWidth < 1025 && newWidth >= 1025) {
+      const width = window.innerWidth;
+      if (width >= 1025 && !enabled) {
         enable();
-        setOldWidth(window?.innerWidth);
-      }
-      // If width stays above 1024px just update old width
-      if (oldWidth >= 1025 && newWidth >= 1025) {
-        setOldWidth(window?.innerWidth);
-      }
-      // Disable side menu if width goes below 1025px and update old width
-      if (oldWidth >= 1025 && newWidth < 1025) {
+      } else if (width < 1025 && enabled) {
         disable();
-        setOldWidth(window?.innerWidth);
-      }
-      // If width stays below 1024px just update old width
-      if (oldWidth < 1025 && newWidth < 1025) {
-        setOldWidth(window?.innerWidth);
       }
     };
 
@@ -107,7 +93,7 @@ export function SideMenuProvider({ base, bottom, children }: SideMenuProviderPro
     return (): void => {
       window.removeEventListener('resize', onResize);
     };
-  }, [disable, enable, oldWidth]);
+  }, [disable, enable, enabled]);
 
   return (
     <Context.Provider
