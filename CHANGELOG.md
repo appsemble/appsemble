@@ -2,6 +2,26 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.27.11](https://gitlab.com/appsemble/appsemble/-/releases/0.27.11)] - 2024-04-08
+
+### Added
+
+- Cli: Support uploading `maskable-icon.png` from app variant directory with `app publish` and
+  `app update`.
+
+### Changed
+
+- Server: Change SSO authorizations to cascade delete for OAuth2 and SAML.
+
+### Fixed
+
+- Cli: Uploading `icon.png` from app variant directory with `app publish` and `app update`.
+- Server: Allow user info url to be empty when calling endpoint `updateAppOAuth2Secret`.
+- Server: Creating an OAuth2 app secret would break the ability to update again without a page
+  refresh.
+- Studio: The app assets tab would show an error after deleting the last asset.
+- Studio: The app resources tab would show an error after deleting the last resource.
+
 ## \[[0.27.10](https://gitlab.com/appsemble/appsemble/-/releases/0.27.10)] - 2024-04-03
 
 ### Added

@@ -1,7 +1,7 @@
 apiVersion: v2
 name: appsemble
-version: 0.27.10
-appVersion: 0.27.10
+version: 0.27.11
+appVersion: 0.27.11
 kubeVersion: '>=1.21.0'
 type: application
 description: The open source low-code app building platform
@@ -25,40 +25,25 @@ dependencies:
 annotations:
   artifacthub.io/changes: >
     - kind: added
-      description: "Cli: Read README files from app variant directories."
-    - kind: added
-      description: "Cli: Read app long descriptions per language from README files."
-    - kind: added
-      description: "Server: Add new table AppReadme to store app long descriptions."
-    - kind: added
-      description: "Utils: Add readmeUrl to App."
+      description: "Cli: Support uploading maskable-icon.png from app variant
+        directory with app publish and app update."
     - kind: changed
-      description: "Server: Collections endpoint returns localized results."
-    - kind: removed
-      description: "Server: Remove column longDescription from App model."
-    - kind: removed
-      description: "Utils: Remove longDescription from App."
+      description: "Server: Change SSO authorizations to cascade delete for OAuth2 and SAML."
     - kind: fixed
-      description: "Block(form): Use field name as fallback value for label if label
-        isn’t specified."
+      description: "Cli: Uploading icon.png from app variant directory with app
+        publish and app update."
     - kind: fixed
-      description: "Cli: The app patch command would fail when passing only arguments
-        with their values set to false."
+      description: "Server: Allow user info url to be empty when calling endpoint
+        updateAppOAuth2Secret."
     - kind: fixed
-      description: "Cli: The app patch command would lock the app before patching
-        other values first."
+      description: "Server: Creating an OAuth2 app secret would break the ability to
+        update again without a page refresh."
     - kind: fixed
-      description: "Preact-components: Use required property from props in dual slider
-        component."
+      description: "Studio: The app assets tab would show an error after deleting the
+        last asset."
     - kind: fixed
-      description: "Server: Randonly generated app path length should be less than 30
-        characters."
-    - kind: fixed
-      description: "Server: Subdomains of the main Appsemble host are assumed to have
-        a valid SSL certificate if the --forceProtocolHttps flag is set. This
-        assumes that the main Appsemble host has a valid wildcard SSL certificate."
-    - kind: fixed
-      description: "Studio: Localization for collections page app card."
+      description: "Studio: The app resources tab would show an error after deleting
+        the last resource."
   artifacthub.io/license: LGPL-3.0-only
   artifacthub.io/links: |
     - name: Appsemble Studio
