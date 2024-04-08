@@ -64,11 +64,11 @@ export function IndexPage(): ReactNode {
     searchParams.get('direction') == null
       ? 'DESC'
       : (searchParams.get('direction') as 'ASC' | 'DESC');
-  const offset = Number(searchParams.get('offset'));
+  const offset = Math.max(Number(searchParams.get('offset')), 0);
   const limit =
     searchParams.get('limit') === 'none'
       ? Number.POSITIVE_INFINITY
-      : Number(searchParams.get('limit')) || 15;
+      : Math.max(Number(searchParams.get('limit')), 15);
   const rowsPerPage = limit;
   const page = limit === Number.POSITIVE_INFINITY ? 1 : Math.floor(offset / limit) + 1;
 
@@ -109,7 +109,7 @@ export function IndexPage(): ReactNode {
         Number.isFinite(rowsPerPage)
           ? {
               limit: String(rowsPerPage),
-              offset: String((newPage - 1) * rowsPerPage),
+              offset: String(Math.max(newPage - 1, 0) * rowsPerPage),
               ...(searchParams.get('order') && { order: searchParams.get('order') }),
               ...(searchParams.get('direction') && { direction: searchParams.get('direction') }),
             }

@@ -48,11 +48,11 @@ export function AssetsPage(): ReactNode {
   const push = useMessages();
   const [searchParams, setSearchParams] = useSearchParams();
 
-  const offset = Number(searchParams.get('offset'));
+  const offset = Math.max(Number(searchParams.get('offset')), 0);
   const limit =
     searchParams.get('limit') === 'none'
       ? Number.POSITIVE_INFINITY
-      : Number(searchParams.get('limit')) || 10;
+      : Math.max(Number(searchParams.get('limit')), 10);
   const rowsPerPage = limit;
   const page = limit === Number.POSITIVE_INFINITY ? 1 : Math.floor(offset / limit) + 1;
 
@@ -80,7 +80,7 @@ export function AssetsPage(): ReactNode {
             : page;
       setSearchParams(
         Number.isFinite(rowsPerPage)
-          ? { offset: String((newPage - 1) * rowsPerPage), limit: String(rowsPerPage) }
+          ? { offset: String(Math.max(newPage - 1, 0) * rowsPerPage), limit: String(rowsPerPage) }
           : { offset: '0', limit: 'none' },
       );
       resultCount.setData(newCount);
@@ -157,7 +157,10 @@ export function AssetsPage(): ReactNode {
       setSelectedAssets([]);
       setSearchParams(
         Number.isFinite(rowsPerPage)
-          ? { offset: String((updatedPage - 1) * rowsPerPage), limit: String(rowsPerPage) }
+          ? {
+              offset: String(Math.max(updatedPage - 1, 0) * rowsPerPage),
+              limit: String(rowsPerPage),
+            }
           : { offset: '0', limit: 'none' },
       );
     },
