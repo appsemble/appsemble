@@ -89,6 +89,7 @@ export const paths: OpenAPIV3.PathsObject = {
         { $ref: '#/components/parameters/$filter' },
         { $ref: '#/components/parameters/$orderby' },
         { $ref: '#/components/parameters/$select' },
+        { $ref: '#/components/parameters/$skip' },
         { $ref: '#/components/parameters/$top' },
         { $ref: '#/components/parameters/$team' },
       ],
