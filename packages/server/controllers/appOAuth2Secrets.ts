@@ -34,7 +34,8 @@ export async function createAppOAuth2Secret(ctx: Context): Promise<void> {
   checkAppLock(ctx, app);
   await checkRole(ctx, app.OrganizationId, [Permission.EditApps, Permission.EditAppSettings]);
 
-  ctx.body = await AppOAuth2Secret.create({ ...body, AppId: appId });
+  const { id } = await AppOAuth2Secret.create({ ...body, AppId: appId });
+  ctx.body = { ...body, id };
 }
 
 export async function getAppOAuth2Secrets(ctx: Context): Promise<void> {
@@ -91,8 +92,7 @@ export async function updateAppOAuth2Secret(ctx: Context): Promise<void> {
   await checkRole(ctx, app.OrganizationId, [Permission.EditApps, Permission.EditAppSettings]);
 
   const [secret] = app.AppOAuth2Secrets;
-  await secret.update(body);
-  ctx.body = secret;
+  ctx.body = await secret.update({ ...body, userInfoUrl: body.userInfoUrl || null });
 }
 
 export async function deleteAppOAuth2Secret(ctx: Context): Promise<void> {

@@ -8,13 +8,14 @@ import {
   DataType,
   DefaultScope,
   ForeignKey,
+  HasMany,
   Model,
   PrimaryKey,
   Table,
   UpdatedAt,
 } from 'sequelize-typescript';
 
-import { App } from './index.js';
+import { App, AppSamlAuthorization, SamlLoginRequest } from './index.js';
 
 @DefaultScope(() => ({
   attributes: [
@@ -94,4 +95,10 @@ export class AppSamlSecret extends Model {
 
   @UpdatedAt
   updated: Date;
+
+  @HasMany(() => AppSamlAuthorization, { onDelete: 'CASCADE', onUpdate: 'CASCADE' })
+  AppSamlAuthorizations: AppSamlAuthorization[];
+
+  @HasMany(() => SamlLoginRequest, { onDelete: 'CASCADE', onUpdate: 'CASCADE' })
+  SamlLoginRequests: SamlLoginRequest[];
 }

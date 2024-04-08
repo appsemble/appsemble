@@ -39,10 +39,15 @@ export function OAuth2SecretItem({
   const { app } = useApp();
 
   const onSubmit = useCallback(
-    async ({ remapper, scope, ...values }: AppOAuth2Secret) => {
+    async ({ remapper, scope, userInfoUrl, ...values }: AppOAuth2Secret) => {
       const { data } = await axios.put<AppOAuth2Secret>(
         `/api/apps/${app.id}/secrets/oauth2/${secret.id}`,
-        { ...values, remapper: remapper || undefined, scope: [].concat(scope).sort().join(' ') },
+        {
+          ...values,
+          remapper: remapper || undefined,
+          userInfoUrl: userInfoUrl || undefined,
+          scope: [].concat(scope).sort().join(' '),
+        },
       );
       modal.disable();
       onUpdated(data, secret);

@@ -177,11 +177,24 @@ export function OAuth2Modal({
       />
       <SimpleFormField
         disabled={locked !== 'unlocked'}
-        help={<FormattedMessage {...messages.userInfoUrlHelp} />}
+        help={
+          <FormattedMessage
+            {...messages.userInfoUrlHelp}
+            values={{
+              n: () => (
+                <>
+                  <br />
+                  <br />
+                </>
+              ),
+              info: (w) => <i>{w}</i>,
+            }}
+          />
+        }
         icon="id-card"
         label={<FormattedMessage {...messages.userInfoUrlLabel} />}
         name="userInfoUrl"
-        placeholder="https://example.com/oauth2/token"
+        placeholder="https://example.com/userinfo"
         type="url"
         validityMessages={{
           typeMismatch: <FormattedMessage {...messages.badUrl} />,
