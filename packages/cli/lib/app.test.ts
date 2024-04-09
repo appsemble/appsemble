@@ -222,6 +222,23 @@ describe('publishApp', () => {
     expect(asset).toStrictEqual([]);
   });
 
+  it('should throw an error if the user doesn’t have enough scope permissions', async () => {
+    const clientCredentials = await authorizeCLI('blocks:write resources:write');
+    await expect(() =>
+      publishApp({
+        path: resolveFixture('apps/test'),
+        organization: organization.id,
+        remote: testApp.defaults.baseURL,
+        clientCredentials,
+        // Required defaults
+        visibility: 'unlisted',
+        iconBackground: '#ffffff',
+      }),
+    ).rejects.toThrow('write EPIPE');
+    const app = await App.findOne();
+    expect(app).toBeNull();
+  });
+
   it('should publish app with resources and assets', async () => {
     vi.useRealTimers();
     const clientCredentials = await authorizeCLI('apps:write resources:write');
@@ -857,6 +874,31 @@ describe('publishApp', () => {
       tokenUrl: 'http://localhost:1234',
       userInfoUrl: 'http://localhost:1234',
     });
+  });
+
+  it('should validate and throw if there’s an error before publishing an app', async () => {
+    await BlockVersion.destroy({
+      where: {
+        version: '0.0.0',
+        OrganizationId: 'appsemble',
+        name: 'test',
+      },
+    });
+    vi.useRealTimers();
+    const clientCredentials = await authorizeCLI('apps:write resources:write');
+    await expect(() =>
+      publishApp({
+        path: resolveFixture('apps/test'),
+        organization: organization.id,
+        remote: testApp.defaults.baseURL,
+        clientCredentials,
+        // Required defaults
+        visibility: 'unlisted',
+        iconBackground: '#ffffff',
+      }),
+    ).rejects.toThrow('is not a known block type');
+    const app = await App.findOne();
+    expect(app).toBeNull();
   });
 });
 
@@ -1647,6 +1689,242 @@ describe('updateApp', () => {
       userInfoUrl: 'http://localhost:1234',
     });
   });
+  it('shall update an app with `app.locked` set to `fulllock` if force is specified', async () => {
+    await app.update({ locked: 'fullLock' });
+    const clientCredentials = await authorizeCLI('apps:write');
+    await updateApp({
+      path: resolveFixture('apps/test'),
+      force: true,
+      remote: testApp.defaults.baseURL,
+      id: app.id,
+      clientCredentials,
+      visibility: 'public',
+      iconBackground: '#fff999',
+    });
+    await app.reload();
+    expect(app).toMatchInlineSnapshot(`
+      {
+        "$created": "1970-01-01T00:00:00.000Z",
+        "$updated": "1970-01-01T00:00:00.000Z",
+        "OrganizationId": "testorganization",
+        "OrganizationName": undefined,
+        "controllerCode": null,
+        "controllerImplementations": null,
+        "coreStyle": ".tux {
+        color: rgb(0 0 0);
+      }
+      ",
+        "definition": {
+          "defaultPage": "Test Page",
+          "name": "Test App",
+          "pages": [
+            {
+              "blocks": [
+                {
+                  "type": "test",
+                  "version": "0.0.0",
+                },
+              ],
+              "name": "Test Page",
+            },
+          ],
+          "resources": {
+            "test": {
+              "schema": {
+                "additionalProperties": false,
+                "properties": {
+                  "test": {
+                    "format": "binary",
+                    "type": "string",
+                  },
+                },
+                "type": "object",
+              },
+            },
+          },
+        },
+        "demoMode": false,
+        "domain": null,
+        "emailName": null,
+        "enableSelfRegistration": true,
+        "enableUnsecuredServiceSecrets": false,
+        "googleAnalyticsID": null,
+        "hasClonableAssets": undefined,
+        "hasClonableResources": undefined,
+        "hasIcon": true,
+        "hasMaskableIcon": true,
+        "iconBackground": "#fff999",
+        "iconUrl": "/api/apps/1/icon?maskable=true&updated=1970-01-01T00%3A00%3A00.000Z",
+        "id": 1,
+        "locked": "fullLock",
+        "messages": undefined,
+        "path": "test-app",
+        "rating": undefined,
+        "readmeUrl": undefined,
+        "screenshotUrls": undefined,
+        "sentryDsn": null,
+        "sentryEnvironment": null,
+        "sharedStyle": ".tux {
+        color: rgb(0 0 0);
+      }
+      ",
+        "showAppDefinition": false,
+        "showAppsembleLogin": false,
+        "showAppsembleOAuth2Login": true,
+        "visibility": "public",
+        "yaml": "name: Test App
+      defaultPage: Test Page
+      resources:
+        test:
+          schema:
+            additionalProperties: false
+            type: object
+            properties:
+              test:
+                type: string
+                format: binary
+      pages:
+        - name: Test Page
+          blocks:
+            - type: test
+              version: 0.0.0
+      ",
+      }
+    `);
+  });
+
+  it('shall not update an app if the `app.locked` is set to `fullLock`', async () => {
+    await app.update({ locked: 'fullLock' });
+    const clientCredentials = await authorizeCLI('apps:write');
+    await expect(
+      updateApp({
+        path: resolveFixture('apps/test'),
+        force: false,
+        remote: testApp.defaults.baseURL,
+        id: app.id,
+        clientCredentials,
+        visibility: 'public',
+        iconBackground: '#fff999',
+      }),
+    ).rejects.toThrow('Request failed with status code 403');
+    await app.reload();
+    expect(app).toMatchInlineSnapshot(`
+      {
+        "$created": "1970-01-01T00:00:00.000Z",
+        "$updated": "1970-01-01T00:00:00.000Z",
+        "OrganizationId": "testorganization",
+        "OrganizationName": undefined,
+        "controllerCode": null,
+        "controllerImplementations": null,
+        "coreStyle": undefined,
+        "definition": {
+          "defaultPage": "Test Page",
+          "name": "Test App",
+        },
+        "demoMode": false,
+        "domain": null,
+        "emailName": null,
+        "enableSelfRegistration": true,
+        "enableUnsecuredServiceSecrets": false,
+        "googleAnalyticsID": null,
+        "hasClonableAssets": undefined,
+        "hasClonableResources": undefined,
+        "hasIcon": false,
+        "hasMaskableIcon": false,
+        "iconBackground": "#ffffff",
+        "iconUrl": null,
+        "id": 1,
+        "locked": "fullLock",
+        "messages": undefined,
+        "path": "test-app",
+        "rating": undefined,
+        "readmeUrl": undefined,
+        "screenshotUrls": undefined,
+        "sentryDsn": null,
+        "sentryEnvironment": null,
+        "sharedStyle": undefined,
+        "showAppDefinition": false,
+        "showAppsembleLogin": false,
+        "showAppsembleOAuth2Login": true,
+        "visibility": "public",
+        "yaml": "name: Test App
+      defaultPage: Test Page
+      ",
+      }
+    `);
+  });
+
+  it('should validate and throw if there’s an error before updating an app', async () => {
+    await BlockVersion.destroy({
+      where: {
+        version: '0.0.0',
+        OrganizationId: 'appsemble',
+        name: 'test',
+      },
+    });
+    vi.useRealTimers();
+    const clientCredentials = await authorizeCLI('apps:write resources:write');
+    await expect(
+      updateApp({
+        path: resolveFixture('apps/test'),
+        id: app.id,
+        force: false,
+        remote: testApp.defaults.baseURL,
+        clientCredentials,
+        // Required defaults
+        visibility: 'unlisted',
+        iconBackground: '#ffffff',
+      }),
+    ).rejects.toThrow('is not a known block type');
+    vi.useFakeTimers();
+    await app.reload();
+    expect(app.dataValues).toMatchInlineSnapshot(`
+      {
+        "OrganizationId": "testorganization",
+        "controllerCode": null,
+        "controllerImplementations": null,
+        "coreStyle": null,
+        "created": 1970-01-01T00:00:00.000Z,
+        "definition": {
+          "defaultPage": "Test Page",
+          "name": "Test App",
+        },
+        "deleted": null,
+        "demoMode": false,
+        "domain": null,
+        "emailHost": null,
+        "emailName": null,
+        "emailPassword": null,
+        "emailPort": 587,
+        "emailSecure": true,
+        "emailUser": null,
+        "enableSelfRegistration": true,
+        "enableUnsecuredServiceSecrets": false,
+        "googleAnalyticsID": null,
+        "icon": null,
+        "iconBackground": null,
+        "id": 1,
+        "locked": "unlocked",
+        "maskableIcon": null,
+        "path": "test-app",
+        "scimEnabled": false,
+        "scimToken": null,
+        "sentryDsn": null,
+        "sentryEnvironment": null,
+        "sharedStyle": null,
+        "showAppDefinition": false,
+        "showAppsembleLogin": false,
+        "showAppsembleOAuth2Login": true,
+        "sslCertificate": null,
+        "sslKey": null,
+        "template": false,
+        "updated": 1970-01-01T00:00:00.000Z,
+        "vapidPrivateKey": "b",
+        "vapidPublicKey": "a",
+        "visibility": "public",
+      }
+    `);
+  });
 });
 
 describe('patchApp', () => {
@@ -1776,5 +2054,56 @@ describe('patchApp', () => {
     expect(app.dataValues[key]).toStrictEqual(from);
     await app.reload();
     expect(app.dataValues[key]).toStrictEqual(to);
+  });
+
+  it('shall not apply a patch if the `app.locked` is set to `fullLock`', async () => {
+    const app = await App.create(
+      {
+        path: 'test-app',
+        definition: { name: 'Test App', defaultPage: 'Test Page' },
+        vapidPublicKey: 'a',
+        vapidPrivateKey: 'b',
+        visibility: 'public',
+        OrganizationId: organization.id,
+        locked: 'fullLock',
+        showAppDefinition: false,
+      },
+      { raw: true },
+    );
+    await authorizeCLI('apps:write');
+    await patchApp({
+      remote: testApp.defaults.baseURL,
+      id: app.id,
+      showAppDefinition: true,
+    });
+    expect(app.dataValues.showAppDefinition).toBe(false);
+    await app.reload();
+    expect(app.dataValues.showAppDefinition).toBe(false);
+  });
+
+  it('shall apply a patch if the `app.locked` is set to `fullLock` and `force` is specified', async () => {
+    const app = await App.create(
+      {
+        path: 'test-app',
+        definition: { name: 'Test App', defaultPage: 'Test Page' },
+        vapidPublicKey: 'a',
+        vapidPrivateKey: 'b',
+        visibility: 'public',
+        OrganizationId: organization.id,
+        locked: 'fullLock',
+        showAppDefinition: false,
+      },
+      { raw: true },
+    );
+    await authorizeCLI('apps:write');
+    await patchApp({
+      remote: testApp.defaults.baseURL,
+      id: app.id,
+      showAppDefinition: true,
+      force: true,
+    });
+    expect(app.dataValues.showAppDefinition).toBe(false);
+    await app.reload();
+    expect(app.dataValues.showAppDefinition).toBe(true);
   });
 });
