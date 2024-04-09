@@ -1,6 +1,6 @@
 import { join } from 'node:path';
 
-import { authenticate, logger } from '@appsemble/node-utils';
+import { logger } from '@appsemble/node-utils';
 import { type Argv } from 'yargs';
 
 import { exportAppAsZip } from '../../lib/app.js';
@@ -45,10 +45,15 @@ export async function handler(args: ExportAppArgs): Promise<void> {
   } = args;
   const defaultOutputDirectory = join(process.cwd(), 'apps');
 
-  await authenticate(remote, 'apps:export', clientCredentials);
-
   logger.info(`Exporting app with id: ${appId}`);
-  await exportAppAsZip(appId, assets, resources, outputDirectory || defaultOutputDirectory, remote);
+  await exportAppAsZip(
+    clientCredentials,
+    appId,
+    assets,
+    resources,
+    outputDirectory || defaultOutputDirectory,
+    remote,
+  );
 
   logger.info('Export completed successfully');
 }

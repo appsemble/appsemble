@@ -1,19 +1,13 @@
-import { authenticate, readFixture, resolveFixture } from '@appsemble/node-utils';
-import {
-  authorizeClientCredentials,
-  createServer,
-  createTestUser,
-  models,
-  setArgv,
-  useTestDatabase,
-} from '@appsemble/server';
+import { readFixture, resolveFixture } from '@appsemble/node-utils';
+import { createServer, createTestUser, models, setArgv, useTestDatabase } from '@appsemble/server';
 import { ISODateTimePattern } from '@appsemble/utils';
 import { type AxiosTestInstance, setTestApp } from 'axios-test-instance';
-import { hash } from 'bcrypt';
+import FormData from 'form-data';
 import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { patchApp, publishApp, updateApp } from './app.js';
+import { deleteApp, patchApp, publishApp, traverseAppDirectory, updateApp } from './app.js';
 import { initAxios } from './initAxios.js';
+import { authorizeCLI } from './testUtils.js';
 
 const {
   App,
@@ -36,14 +30,6 @@ const argv = { host: 'http://localhost', secret: 'test', aesSecret: 'testSecret'
 let user: models.User;
 let organization: models.Organization;
 let testApp: AxiosTestInstance;
-
-async function authorizeCLI(scopes: string): Promise<string> {
-  const OAuth2AuthorizationCode = await authorizeClientCredentials(scopes);
-  const { id, secret } = OAuth2AuthorizationCode;
-  await OAuth2AuthorizationCode.update({ secret: await hash(secret, 10) });
-  await authenticate(testApp.defaults.baseURL, scopes, `${id}:${secret}`);
-  return `${id}:${secret}`;
-}
 
 useTestDatabase(import.meta);
 
@@ -93,7 +79,7 @@ afterAll(() => {
 describe('publishApp', () => {
   it('should publish app', async () => {
     vi.useRealTimers();
-    const clientCredentials = await authorizeCLI('apps:write resources:write');
+    const clientCredentials = await authorizeCLI('apps:write resources:write', testApp);
     await publishApp({
       path: resolveFixture('apps/test'),
       organization: organization.id,
@@ -223,7 +209,7 @@ describe('publishApp', () => {
   });
 
   it('should throw an error if the user doesn’t have enough scope permissions', async () => {
-    const clientCredentials = await authorizeCLI('blocks:write resources:write');
+    const clientCredentials = await authorizeCLI('blocks:write resources:write', testApp);
     await expect(() =>
       publishApp({
         path: resolveFixture('apps/test'),
@@ -241,7 +227,7 @@ describe('publishApp', () => {
 
   it('should publish app with resources and assets', async () => {
     vi.useRealTimers();
-    const clientCredentials = await authorizeCLI('apps:write resources:write');
+    const clientCredentials = await authorizeCLI('apps:write resources:write', testApp);
     await publishApp({
       path: resolveFixture('apps/test'),
       organization: organization.id,
@@ -404,7 +390,7 @@ describe('publishApp', () => {
       visibility: 'public',
     });
     vi.useRealTimers();
-    const clientCredentials = await authorizeCLI('apps:write resources:write');
+    const clientCredentials = await authorizeCLI('apps:write resources:write', testApp);
     await publishApp({
       path: resolveFixture('apps/test'),
       organization: organization.id,
@@ -571,7 +557,7 @@ describe('publishApp', () => {
 
   it('should publish app with app variant patches applied', async () => {
     vi.useRealTimers();
-    const clientCredentials = await authorizeCLI('apps:write resources:write');
+    const clientCredentials = await authorizeCLI('apps:write resources:write', testApp);
     await publishApp({
       path: resolveFixture('apps/test'),
       organization: organization.id,
@@ -722,7 +708,7 @@ describe('publishApp', () => {
 
   it('should publish app variables and secrets', async () => {
     vi.useRealTimers();
-    const clientCredentials = await authorizeCLI('apps:write resources:write');
+    const clientCredentials = await authorizeCLI('apps:write resources:write', testApp);
     process.env.TEST_VARIABLE_1 = 'test-variable-1';
     process.env.TEST_VARIABLE_2 = 'test-variable-2';
 
@@ -885,7 +871,7 @@ describe('publishApp', () => {
       },
     });
     vi.useRealTimers();
-    const clientCredentials = await authorizeCLI('apps:write resources:write');
+    const clientCredentials = await authorizeCLI('apps:write resources:write', testApp);
     await expect(() =>
       publishApp({
         path: resolveFixture('apps/test'),
@@ -918,7 +904,7 @@ describe('updateApp', () => {
 
   it('should update app', async () => {
     vi.useRealTimers();
-    const clientCredentials = await authorizeCLI('apps:write resources:write');
+    const clientCredentials = await authorizeCLI('apps:write resources:write', testApp);
     await updateApp({
       id: app.id,
       path: resolveFixture('apps/test'),
@@ -1050,7 +1036,7 @@ describe('updateApp', () => {
 
   it('should update app with resources and assets', async () => {
     vi.useRealTimers();
-    const clientCredentials = await authorizeCLI('apps:write resources:write');
+    const clientCredentials = await authorizeCLI('apps:write resources:write', testApp);
     await updateApp({
       id: app.id,
       path: resolveFixture('apps/test'),
@@ -1214,7 +1200,7 @@ describe('updateApp', () => {
       visibility: 'public',
     });
     vi.useRealTimers();
-    const clientCredentials = await authorizeCLI('apps:write resources:write');
+    const clientCredentials = await authorizeCLI('apps:write resources:write', testApp);
     await updateApp({
       path: resolveFixture('apps/test'),
       id: app.id,
@@ -1383,7 +1369,7 @@ describe('updateApp', () => {
 
   it('should update app with app variant patches applied', async () => {
     vi.useRealTimers();
-    const clientCredentials = await authorizeCLI('apps:write resources:write');
+    const clientCredentials = await authorizeCLI('apps:write resources:write', testApp);
     await updateApp({
       path: resolveFixture('apps/test'),
       id: app.id,
@@ -1535,7 +1521,7 @@ describe('updateApp', () => {
 
   it('should update app variables and secrets', async () => {
     vi.useRealTimers();
-    const clientCredentials = await authorizeCLI('apps:write resources:write');
+    const clientCredentials = await authorizeCLI('apps:write resources:write', testApp);
     process.env.TEST_VARIABLE_1 = 'test-variable-1';
     process.env.TEST_VARIABLE_2 = 'test-variable-2';
 
@@ -1689,9 +1675,9 @@ describe('updateApp', () => {
       userInfoUrl: 'http://localhost:1234',
     });
   });
-  it('shall update an app with `app.locked` set to `fulllock` if force is specified', async () => {
+  it('shall update an app with `app.locked` set to `fullLock` if force is specified', async () => {
     await app.update({ locked: 'fullLock' });
-    const clientCredentials = await authorizeCLI('apps:write');
+    const clientCredentials = await authorizeCLI('apps:write', testApp);
     await updateApp({
       path: resolveFixture('apps/test'),
       force: true,
@@ -1795,7 +1781,7 @@ describe('updateApp', () => {
 
   it('shall not update an app if the `app.locked` is set to `fullLock`', async () => {
     await app.update({ locked: 'fullLock' });
-    const clientCredentials = await authorizeCLI('apps:write');
+    const clientCredentials = await authorizeCLI('apps:write', testApp);
     await expect(
       updateApp({
         path: resolveFixture('apps/test'),
@@ -1863,7 +1849,7 @@ describe('updateApp', () => {
       },
     });
     vi.useRealTimers();
-    const clientCredentials = await authorizeCLI('apps:write resources:write');
+    const clientCredentials = await authorizeCLI('apps:write resources:write', testApp);
     await expect(
       updateApp({
         path: resolveFixture('apps/test'),
@@ -1952,7 +1938,7 @@ describe('patchApp', () => {
       },
       { raw: true },
     );
-    await authorizeCLI('apps:write');
+    await authorizeCLI('apps:write', testApp);
     await patchApp({
       ...patches,
       remote: testApp.defaults.baseURL,
@@ -2045,7 +2031,7 @@ describe('patchApp', () => {
       },
       { raw: true },
     );
-    await authorizeCLI('apps:write');
+    await authorizeCLI('apps:write', testApp);
     await patchApp({
       [key]: to,
       remote: testApp.defaults.baseURL,
@@ -2070,7 +2056,7 @@ describe('patchApp', () => {
       },
       { raw: true },
     );
-    await authorizeCLI('apps:write');
+    await authorizeCLI('apps:write', testApp);
     await patchApp({
       remote: testApp.defaults.baseURL,
       id: app.id,
@@ -2095,7 +2081,7 @@ describe('patchApp', () => {
       },
       { raw: true },
     );
-    await authorizeCLI('apps:write');
+    await authorizeCLI('apps:write', testApp);
     await patchApp({
       remote: testApp.defaults.baseURL,
       id: app.id,
@@ -2106,4 +2092,186 @@ describe('patchApp', () => {
     await app.reload();
     expect(app.dataValues.showAppDefinition).toBe(true);
   });
+});
+
+describe('traverseAppDirectory', () => {
+  it('should read the app definition and appsembleRC from the directory', async () => {
+    const formData = new FormData();
+    const [appsembleContext, appsembleRC, yaml, app] = await traverseAppDirectory(
+      resolveFixture('apps/test'),
+      'test',
+      formData,
+    );
+    expect(appsembleContext).toMatchInlineSnapshot(
+      {
+        icon: expect.any(String),
+        maskableIcon: expect.any(String),
+      },
+      `
+      {
+        "appLock": "studioLock",
+        "assets": true,
+        "assetsClonable": true,
+        "collections": [
+          1,
+        ],
+        "demoMode": true,
+        "googleAnalyticsId": "test",
+        "icon": Any<String>,
+        "iconBackground": "#000000",
+        "id": 1,
+        "maskableIcon": Any<String>,
+        "organization": "testorganization",
+        "resources": true,
+        "sentryDsn": "https://public@sentry.example.com/1",
+        "sentryEnvironment": "test",
+        "showAppDefinition": true,
+        "template": true,
+        "visibility": "public",
+      }
+    `,
+    );
+    expect(appsembleRC).toMatchInlineSnapshot(
+      {
+        context: {
+          test: {
+            icon: expect.any(String),
+            maskableIcon: expect.any(String),
+          },
+        },
+      },
+      `
+      {
+        "context": {
+          "test": {
+            "appLock": "studioLock",
+            "assets": true,
+            "assetsClonable": true,
+            "collections": [
+              1,
+            ],
+            "demoMode": true,
+            "googleAnalyticsId": "test",
+            "icon": Any<String>,
+            "iconBackground": "#000000",
+            "id": 1,
+            "maskableIcon": Any<String>,
+            "organization": "testorganization",
+            "resources": true,
+            "sentryDsn": "https://public@sentry.example.com/1",
+            "sentryEnvironment": "test",
+            "showAppDefinition": true,
+            "template": true,
+            "visibility": "public",
+          },
+        },
+      }
+    `,
+    );
+    expect(yaml).toMatchInlineSnapshot(`
+      "name: Test App
+      defaultPage: Test Page
+
+      resources:
+        test:
+          schema:
+            additionalProperties: false
+            type: object
+            properties:
+              test:
+                type: string
+                format: binary
+
+      pages:
+        - name: Test Page
+          blocks:
+            - type: test
+              version: 0.0.0
+      "
+    `);
+    expect(app).toMatchInlineSnapshot(
+      {
+        iconUrl: expect.any(String),
+      },
+      `
+      {
+        "coreStyle": ".tux {
+        color: rgb(0 0 0);
+      }
+      ",
+        "definition": {
+          "defaultPage": "Test Page",
+          "name": "Test App",
+          "pages": [
+            {
+              "blocks": [
+                {
+                  "type": "test",
+                  "version": "0.0.0",
+                },
+              ],
+              "name": "Test Page",
+            },
+          ],
+          "resources": {
+            "test": {
+              "schema": {
+                "additionalProperties": false,
+                "properties": {
+                  "test": {
+                    "format": "binary",
+                    "type": "string",
+                  },
+                },
+                "type": "object",
+              },
+            },
+          },
+        },
+        "iconUrl": Any<String>,
+        "readmeUrl": "README.md",
+        "screenshotUrls": [
+          "test_en-us.png",
+        ],
+        "sharedStyle": ".tux {
+        color: rgb(0 0 0);
+      }
+      ",
+      }
+    `,
+    );
+  });
+
+  it('should return an error if no app-definition is found in the given directory', async () => {
+    const formData = new FormData();
+    await expect(() =>
+      traverseAppDirectory(resolveFixture('apps/empty'), null, formData),
+    ).rejects.toThrow('No app definition found');
+  });
+});
+
+describe('deleteApp', () => {
+  it('should return an error if the app does not exist', async () => {
+    const clientCredentials = await authorizeCLI('apps:delete', testApp);
+    await expect(() =>
+      deleteApp({ id: 1, remote: testApp.defaults.baseURL, clientCredentials }),
+    ).rejects.toThrow('Request failed with status code 404');
+  });
+
+  /*
+  It('should delete an app', async () => {
+    const app = await App.create({
+      path: 'test-app',
+      definition: { name: 'Test App', defaultPage: 'Test Page' },
+      vapidPublicKey: 'a',
+      vapidPrivateKey: 'b',
+      visibility: 'public',
+      OrganizationId: organization.id,
+    });
+    const clientCredentials = await authorizeCLI('apps:delete', testApp);
+    await deleteApp({ id: app.id, remote: testApp.defaults.baseURL, clientCredentials });
+    await app.reload();
+    expect(app).toBeNull();
+  });
+  */
 });

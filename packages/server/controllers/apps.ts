@@ -1503,7 +1503,7 @@ export async function exportApp(ctx: Context): Promise<void> {
   }
 
   const content = zip.generateNodeStream();
-  ctx.attachment();
+  ctx.attachment(`${app.definition.name}_${app.id}.zip`);
   ctx.body = content;
   ctx.type = 'application/zip';
   ctx.status = 200;

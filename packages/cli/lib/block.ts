@@ -2,7 +2,14 @@ import { existsSync } from 'node:fs';
 import { mkdir, readdir, rm } from 'node:fs/promises';
 import { basename, join } from 'node:path';
 
-import { AppsembleError, logger, opendirSafe, readData, writeData } from '@appsemble/node-utils';
+import {
+  AppsembleError,
+  authenticate,
+  logger,
+  opendirSafe,
+  readData,
+  writeData,
+} from '@appsemble/node-utils';
 import { type ProjectBuildConfig } from '@appsemble/types';
 import { compareStrings } from '@appsemble/utils';
 import axios from 'axios';
@@ -66,14 +73,17 @@ interface DeleteBlockVersionParams {
   blockName: string;
   blockVersion: string;
   remote: string;
+  clientCredentials?: string;
 }
 
 export async function deleteBlock({
   blockName,
   blockVersion,
+  clientCredentials,
   organization,
   remote,
 }: DeleteBlockVersionParams): Promise<void> {
+  await authenticate(remote, 'blocks:delete', clientCredentials);
   await axios.delete(`/api/blocks/@${organization}/${blockName}/versions/${blockVersion}`, {
     baseURL: remote,
   });

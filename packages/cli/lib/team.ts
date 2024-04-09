@@ -1,4 +1,4 @@
-import { AppsembleError, logger } from '@appsemble/node-utils';
+import { AppsembleError, authenticate, logger } from '@appsemble/node-utils';
 import { type Team } from '@appsemble/types';
 import { type TeamRole } from '@appsemble/utils';
 import axios from 'axios';
@@ -13,6 +13,11 @@ interface SharedTeamParams {
    * The remote server to create the team on.
    */
   remote: string;
+
+  /**
+   * The client credentials used to authenticate
+   */
+  clientCredentials?: string;
 }
 
 interface SharedExistingTeamParams extends SharedTeamParams {
@@ -80,10 +85,12 @@ export function resolveAnnotations(annotations: string[]): Record<string, string
 export async function createTeam({
   annotations = [],
   appId,
+  clientCredentials,
   name,
   remote,
 }: CreateTeamParams): Promise<void> {
   logger.info(`Creating team ${name}`);
+  await authenticate(remote, 'teams:write', clientCredentials);
   const {
     data: { id },
   } = await axios.post<Team>(
@@ -97,7 +104,13 @@ export async function createTeam({
   logger.info(`Successfully created team ${name} with ID ${id}`);
 }
 
-export async function deleteTeam({ appId, id, remote }: SharedExistingTeamParams): Promise<void> {
+export async function deleteTeam({
+  appId,
+  clientCredentials,
+  id,
+  remote,
+}: SharedExistingTeamParams): Promise<void> {
+  await authenticate(remote, 'teams:write', clientCredentials);
   logger.info(`Deleting team ${id}`);
   await axios.delete(`/api/apps/${appId}/teams/${id}`, { baseURL: remote });
   logger.info(`Successfully deleted team ${id}`);
@@ -111,7 +124,7 @@ export async function updateTeam({
   remote,
 }: UpdateTeamParams): Promise<void> {
   logger.info(`Updating team ${id}`);
-  await axios.put(
+  await axios.patch(
     `/api/apps/${appId}/teams/${id}`,
     {
       name,
