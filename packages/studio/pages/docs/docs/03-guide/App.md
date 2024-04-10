@@ -76,6 +76,10 @@ to connect your identity management service with your app to have your users and
 To know more about the configuration options and how it works in Appsemble check the detailed
 documentation [here](scim.md).
 
+From version `0.27.12` onwards, secrets can be defined in the `config/secrets` directory in the app
+directory in their corresponding JSON files - `service.json`, `oauth2.json`, `saml.json`, `ssl.json`
+and `scim.json`. For more information see [config.md](config.md).
+
 ### Settings
 
 You can configure even more things about your app with sufficient [permissions](organizations.mdx).

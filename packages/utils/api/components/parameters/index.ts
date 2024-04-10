@@ -18,6 +18,7 @@ export * from './resourceType.js';
 export * from './screenshotId.js';
 export * from './readmeId.js';
 export * from './appServiceId.js';
+export * from './appVariableId.js';
 export * from './view.js';
 export * from './trainingId.js';
 export * from './trainingBlockId.js';

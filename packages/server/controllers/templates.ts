@@ -5,7 +5,20 @@ import { UniqueConstraintError } from 'sequelize';
 import webpush from 'web-push';
 import { parseDocument } from 'yaml';
 
-import { App, AppBlockStyle, AppMessages, AppSnapshot, Asset, Resource } from '../models/index.js';
+import {
+  App,
+  AppBlockStyle,
+  AppMessages,
+  AppOAuth2Secret,
+  AppReadme,
+  AppSamlSecret,
+  AppScreenshot,
+  AppServiceSecret,
+  AppSnapshot,
+  AppVariable,
+  Asset,
+  Resource,
+} from '../models/index.js';
 import { setAppPath } from '../utils/app.js';
 import { checkRole } from '../utils/checkRole.js';
 
@@ -30,7 +43,17 @@ export async function getAppTemplates(ctx: Context): Promise<void> {
 export async function createTemplateApp(ctx: Context): Promise<void> {
   const {
     request: {
-      body: { assets, description, name, organizationId, resources, templateId, visibility },
+      body: {
+        assets,
+        description,
+        name,
+        organizationId,
+        resources,
+        secrets,
+        templateId,
+        variables,
+        visibility,
+      },
     },
     user,
   } = ctx;
@@ -50,6 +73,8 @@ export async function createTemplateApp(ctx: Context): Promise<void> {
       'template',
       'OrganizationId',
       'demoMode',
+      'scimEnabled',
+      'sslKey',
     ],
     include: [
       { model: Resource, where: { clonable: true }, required: false },
@@ -57,6 +82,12 @@ export async function createTemplateApp(ctx: Context): Promise<void> {
       { model: AppMessages, required: false },
       { model: AppBlockStyle, required: false },
       { model: AppSnapshot, limit: 1, order: [['created', 'desc']] },
+      { model: AppScreenshot, required: false },
+      { model: AppReadme, required: false },
+      { model: AppVariable, required: false },
+      { model: AppOAuth2Secret, required: false },
+      { model: AppSamlSecret, required: false },
+      { model: AppServiceSecret, required: false },
     ],
   });
 
@@ -84,22 +115,94 @@ export async function createTemplateApp(ctx: Context): Promise<void> {
       vapidPrivateKey: keys.privateKey,
       coreStyle: template.coreStyle,
       sharedStyle: template.sharedStyle,
+      sslKey: '',
+      sslCertificate: '',
+      scimToken: Buffer.from('placeholder'),
+      scimEnabled: template.scimEnabled,
       OrganizationId: organizationId,
       ...(resources && {
-        Resources: [].concat(
-          template.Resources.map(({ data, seed, type }) => ({ type, data, seed })),
-        ),
+        Resources: template.Resources.map(({ data, seed, type }) => ({
+          type,
+          data,
+          seed,
+        })) as Resource[],
       }),
       ...(assets && {
-        Assets: [].concat(
-          template.Assets.map(({ data, filename, mime, name: assetName, seed }) => ({
-            mime,
-            filename,
-            data,
-            name: assetName,
-            seed,
-          })),
-        ),
+        Assets: template.Assets.map(({ data, filename, mime, name: assetName, seed }) => ({
+          mime,
+          filename,
+          data,
+          name: assetName,
+          seed,
+        })) as Asset[],
+      }),
+      ...(variables && {
+        AppVariables: template.AppVariables.map(({ name: variableName, value }) => ({
+          name: variableName,
+          value,
+        })) as AppVariable[],
+      }),
+      ...(secrets && {
+        AppOAuth2Secrets: template.AppOAuth2Secrets.map(
+          ({
+            authorizationUrl,
+            icon,
+            name: appOAuth2SecretName,
+            remapper,
+            scope,
+            tokenUrl,
+            userInfoUrl,
+          }) => ({
+            authorizationUrl,
+            tokenUrl,
+            userInfoUrl,
+            remapper,
+            icon,
+            scope,
+            name: appOAuth2SecretName,
+            clientId: '',
+            clientSecret: '',
+          }),
+        ) as AppOAuth2Secret[],
+        AppServiceSecrets: template.AppServiceSecrets.map(
+          ({
+            authenticationMethod,
+            identifier,
+            name: appServiceSecretName,
+            tokenUrl,
+            urlPatterns,
+          }) => ({
+            name: appServiceSecretName,
+            urlPatterns,
+            authenticationMethod,
+            identifier,
+            tokenUrl,
+            secret: Buffer.from('placeholder'),
+          }),
+        ) as AppServiceSecret[],
+        AppSamlSecrets: template.AppSamlSecrets.map(
+          ({
+            emailAttribute,
+            entityId,
+            icon,
+            name: appSamlSecretName,
+            nameAttribute,
+            objectIdAttribute,
+            ssoUrl,
+          }) => ({
+            name: appSamlSecretName,
+            entityId,
+            ssoUrl,
+            icon,
+            spPrivateKey: '',
+            spPublicKey: '',
+            spCertificate: '',
+            idpCertificate: '',
+            emailAttribute,
+            nameAttribute,
+            objectIdAttribute,
+          }),
+        ) as AppSamlSecret[],
       }),
       AppMessages: [].concat(template.AppMessages),
     };
@@ -110,7 +213,19 @@ export async function createTemplateApp(ctx: Context): Promise<void> {
       delete m.messages?.app?.name;
       delete m.messages?.app?.description;
     }
-    const record = await App.create(result, { include: [Resource, Asset, AppMessages] });
+    const record = await App.create(result, {
+      include: [
+        Resource,
+        Asset,
+        AppMessages,
+        AppScreenshot,
+        AppReadme,
+        AppVariable,
+        AppOAuth2Secret,
+        AppServiceSecret,
+        AppSamlSecret,
+      ],
+    });
 
     const doc = parseDocument(template.AppSnapshots[0].yaml);
     doc.setIn(['description'], result.definition.description);

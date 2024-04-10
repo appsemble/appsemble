@@ -35,3 +35,4 @@ export * from './applyAppServiceSecrets.js';
 export * from './getAppMembers.js';
 export * from './getAppTeams.js';
 export * from './getAppUserInfo.js';
+export * from './getAppVariables.js';

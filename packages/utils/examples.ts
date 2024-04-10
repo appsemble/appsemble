@@ -300,6 +300,12 @@ export const examples: Record<RemapperExampleKeys, RemapperExample> = {
     result: {},
     skip: true,
   },
+  variable: {
+    input: null,
+    remapper: {},
+    result: {},
+    skip: true,
+  },
   'date.add': {
     input: '2023-06-30T14:50:19.601Z',
     remapper: [
@@ -690,6 +696,7 @@ export function createExampleContext(
 ): RemapperContext {
   return {
     getMessage: ({ defaultMessage }) => new IntlMessageFormat(defaultMessage, lang, undefined),
+    getVariable: () => null,
     url: String(url),
     appUrl: `${url.protocol}//example-app.example-organization.${url.host}`,
     userInfo: userInfo ?? {

@@ -1,4 +1,10 @@
-import { type AppMember, type Remapper, type Remappers, type UserInfo } from '@appsemble/types';
+import {
+  type AppMember,
+  type Remapper,
+  type Remappers,
+  type UserInfo,
+  type ValueFromProcess,
+} from '@appsemble/types';
 import { addMilliseconds, format, parse, parseISO } from 'date-fns';
 import equal from 'fast-deep-equal';
 import { createEvent, type EventAttributes } from 'ics';
@@ -49,6 +55,8 @@ export interface IntlMessage {
  */
 export type MessageGetter = (msg: IntlMessage) => IntlMessageFormat;
 
+export type AppConfigEntryGetter = (name: string) => ValueFromProcess;
+
 export interface RemapperContext {
   /**
    * The id of the app whose context the remapper is run in.
@@ -69,6 +77,11 @@ export interface RemapperContext {
    * @see MessageGetter
    */
   getMessage: MessageGetter;
+
+  /**
+   * @see VariableGetter
+   */
+  getVariable: AppConfigEntryGetter;
 
   /**
    * The history stack containing the states before an action was called.
@@ -211,6 +224,13 @@ const mapperImplementations: MapperImplementations = {
       result = result[p];
     }
     return result ?? null;
+  },
+
+  variable(name, input, context) {
+    if (context.getVariable) {
+      return context.getVariable(name);
+    }
+    return { variable: name };
   },
 
   equals(mappers, input: any, context) {

@@ -1,5 +1,6 @@
 import {
   type App,
+  type AppConfigEntry,
   type AppMember,
   type AppMessages,
   type Asset,
@@ -43,6 +44,7 @@ declare module 'koa' {
     appsembleApp: App;
     appBlocks: BlockManifest[];
     appMessages: AppMessages[];
+    appVariables: AppConfigEntry[];
     appMembers: AppMember[];
     appUserInfo: UserInfo;
     appTeams: ExtendedTeam[];
@@ -96,6 +98,8 @@ declare module 'koas-parameters' {
     teamId: string;
     token: string;
     appServiceId: number;
+    appSecretId: number;
+    appVariableId: number;
     userId: string;
     memberEmail: string;
     trainingBlockId: number;
@@ -452,4 +456,5 @@ export interface Options {
   deleteAppAsset: (params: DeleteAppAssetParams) => Promise<number>;
   email: (params: EmailParams) => Promise<void>;
   sendNotifications: (params: SendNotificationsParams) => Promise<void>;
+  getAppVariables: (params: GetAppSubEntityParams) => Promise<AppConfigEntry[]>;
 }

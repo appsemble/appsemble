@@ -34,7 +34,7 @@ export const paths: OpenAPIV3.PathsObject = {
           $ref: '#/components/schemas/SSLSecret',
         },
       },
-      security: [{ studio: [] }],
+      security: [{ studio: [] }, { cli: ['apps:write'] }],
     },
   },
 };

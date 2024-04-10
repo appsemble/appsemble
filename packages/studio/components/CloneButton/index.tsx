@@ -161,6 +161,18 @@ export function CloneButton({ app }: CloneButtonProps): ReactNode {
                 title={<FormattedMessage {...messages.assetsDescription} />}
               />
             ) : null}
+            <SimpleFormField
+              component={CheckboxField}
+              label={<FormattedMessage {...messages.variables} />}
+              name="variables"
+              title={<FormattedMessage {...messages.variablesDescription} />}
+            />
+            <SimpleFormField
+              component={CheckboxField}
+              label={<FormattedMessage {...messages.secrets} />}
+              name="secrets"
+              title={<FormattedMessage {...messages.secretsDescription} />}
+            />
           </ModalCard>
         ) : (
           <CreateOrganizationModal

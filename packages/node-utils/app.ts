@@ -44,7 +44,7 @@ export async function getRemapperContext(
   options: Options,
   context: ParameterizedContext<DefaultState, DefaultContext, any>,
 ): Promise<RemapperContext> {
-  const { getAppMessages, getAppUrl } = options;
+  const { getAppMessages, getAppUrl, getAppVariables } = options;
 
   const appUrl = String(await getAppUrl({ context, app }));
   const appMessages = await getAppMessages({
@@ -52,6 +52,7 @@ export async function getRemapperContext(
     context,
     language,
   });
+  const appVariables = await getAppVariables({ context, app });
 
   const cache = objectCache(
     (message) =>
@@ -76,6 +77,9 @@ export async function getRemapperContext(
       const msg = appMessages.find(({ messages }) => has(messages.messageIds, id));
       const message = msg ? msg.messages.messageIds[id] : defaultMessage;
       return cache(message || `'{${id}}'`);
+    },
+    getVariable(variableName) {
+      return appVariables.find((appVariable) => appVariable.name === variableName)?.value;
     },
     userInfo,
     appMember: userInfo?.appMember,
@@ -307,6 +311,7 @@ export async function applyAppVariant(appPath: string, appVariant: string): Prom
 
     const appVariantDefDir = join(appPath, 'variants', appVariant);
 
+    await transferAppVariantFiles(appPath, appVariantDefDir, appVariantDestDir, 'config');
     await transferAppVariantFiles(appPath, appVariantDefDir, appVariantDestDir, 'assets');
     await transferAppVariantFiles(appPath, appVariantDefDir, appVariantDestDir, 'resources');
     await transferAppVariantFiles(appPath, appVariantDefDir, appVariantDestDir, 'screenshots');

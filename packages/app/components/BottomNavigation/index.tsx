@@ -12,6 +12,7 @@ import { shouldShowMenu } from '../../utils/layout.js';
 import { appId, sentryDsn } from '../../utils/settings.js';
 import { useAppDefinition } from '../AppDefinitionProvider/index.js';
 import { useAppMessages } from '../AppMessagesProvider/index.js';
+import { useAppVariables } from '../AppVariablesProvider/index.js';
 import { useUser } from '../UserProvider/index.js';
 
 interface BottomNavigationProps {
@@ -26,6 +27,7 @@ export function BottomNavigation({ pages }: BottomNavigationProps): ReactNode {
   const url = `/${lang}`;
   const { isLoggedIn, teams } = useUser();
   const { getAppMessage, getMessage } = useAppMessages();
+  const { getVariable } = useAppVariables();
   const { definition } = useAppDefinition();
   const { logout, role, userInfo } = useUser();
   const { formatMessage } = useIntl();
@@ -50,6 +52,7 @@ export function BottomNavigation({ pages }: BottomNavigationProps): ReactNode {
                   appUrl: window.location.origin,
                   url: window.location.href,
                   getMessage,
+                  getVariable,
                   userInfo,
                   appMember: userInfo.appMember,
                   context: { name },

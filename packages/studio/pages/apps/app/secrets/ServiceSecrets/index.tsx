@@ -20,6 +20,7 @@ import { HeaderControl } from '../../../../../components/HeaderControl/index.js'
 import { useApp } from '../../index.js';
 
 const initialSecret: AppServiceSecret = {
+  id: 0,
   name: '',
   urlPatterns: '',
   authenticationMethod: 'http-basic',

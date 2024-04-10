@@ -7,3 +7,4 @@ export * from './objects.js';
 export * from './randoms.js';
 export * from './strings.js';
 export * from './unsorted.js';
+export * from './config.js';

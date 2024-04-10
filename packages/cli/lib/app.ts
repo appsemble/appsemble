@@ -14,15 +14,21 @@ import {
 } from '@appsemble/node-utils';
 import {
   type App,
+  type AppConfigEntryDefinition,
   type AppDefinition,
   type AppLock,
+  type AppOAuth2Secret,
   type AppsembleContext,
   type AppsembleMessages,
   type AppsembleRC,
+  type AppServiceSecretDefinition,
   type AppVisibility,
   type Messages,
   type ProjectBuildConfig,
   type ProjectImplementations,
+  type ValueFromDefinition,
+  type ValueFromProcess,
+  type WritableAppSamlSecret,
 } from '@appsemble/types';
 import { extractAppMessages, has, normalizeBlockName } from '@appsemble/utils';
 import axios from 'axios';
@@ -422,6 +428,276 @@ export async function publishSeedAssets(
     }
   } else {
     logger.warn(`Missing assets directory in ${path}. Skipping...`);
+  }
+}
+
+function parseValueFromDefinition(value: ValueFromDefinition): ValueFromProcess {
+  let parsed = value;
+
+  if (typeof parsed === 'string' && parsed.includes('{{') && parsed.includes('}}')) {
+    parsed = parsed.replaceAll(
+      /{{\s*([^\s{}]+)\s*}}/g,
+      (match, variable) => process.env[variable.trim()] || match,
+    );
+  }
+
+  return parsed;
+}
+
+export function parseValues(
+  type: string,
+  name: string,
+  valuesToParse: Record<string, ValueFromDefinition>[],
+): [Record<string, ValueFromProcess>, boolean] {
+  const parsedValues: Record<string, ValueFromProcess> = {};
+  let missingValues = false;
+
+  for (const valueToParse of valuesToParse) {
+    const [key, value] = Object.entries(valueToParse)[0];
+
+    parsedValues[key] = parseValueFromDefinition(value);
+
+    if (!parsedValues[key]) {
+      logger.error(`Missing ${key} value for ${type} ${name}`);
+      missingValues = true;
+    }
+  }
+  return [parsedValues, missingValues];
+}
+
+export async function publishAppConfig(path: string, app: App, remote: string): Promise<void> {
+  const configPath = join(path, 'config');
+  logger.info(`Publishing app config from ${configPath}`);
+
+  if (existsSync(configPath)) {
+    try {
+      logger.info(`Deleting existing variables from app ${app.id}`);
+      await axios.delete(`/api/apps/${app.id}/variables`, { baseURL: remote });
+
+      const appVariablesPath = join(configPath, 'variables.json');
+      if (existsSync(appVariablesPath)) {
+        const [appVariables] = (await readData(appVariablesPath)) as [
+          AppConfigEntryDefinition[],
+          string,
+        ];
+
+        if (appVariables.length) {
+          logger.info(`Publishing ${appVariables.length} app variable(s)`);
+          for (const appVariable of appVariables) {
+            const { name, value } = appVariable;
+
+            const [parsedValues, missingValues] = parseValues('variable', name, [{ value }]);
+
+            if (missingValues) {
+              continue;
+            }
+
+            await axios.post(
+              `/api/apps/${app.id}/variables`,
+              { name, ...parsedValues },
+              { baseURL: remote },
+            );
+          }
+        }
+      }
+    } catch (error) {
+      logger.error('Something went wrong when creating app variables:');
+      logger.error(error);
+    }
+
+    try {
+      logger.info(`Deleting existing service secrets from app ${app.id}`);
+      await axios.delete(`/api/apps/${app.id}/secrets/service`, { baseURL: remote });
+
+      const serviceSecretsPath = join(configPath, 'secrets', 'service.json');
+      if (existsSync(serviceSecretsPath)) {
+        const [serviceSecrets] = (await readData(serviceSecretsPath)) as [
+          AppServiceSecretDefinition[],
+          string,
+        ];
+
+        if (serviceSecrets.length) {
+          logger.info(`Publishing ${serviceSecrets.length} app service secret(s)`);
+
+          for (const serviceSecret of serviceSecrets) {
+            const { identifier, name, secret, urlPatterns, ...rest } = serviceSecret;
+
+            const [parsedValues, missingValues] = parseValues('service secret', name, [
+              { secret },
+              { identifier },
+              { urlPatterns },
+            ]);
+
+            if (missingValues) {
+              continue;
+            }
+
+            await axios.post(
+              `/api/apps/${app.id}/secrets/service`,
+              { name, ...parsedValues, ...rest },
+              { baseURL: remote },
+            );
+          }
+        }
+      }
+    } catch (error) {
+      logger.error('Something went wrong when creating app service secrets:');
+      logger.error(error);
+    }
+
+    try {
+      logger.info(`Deleting existing saml secrets from app ${app.id}`);
+      await axios.delete(`/api/apps/${app.id}/secrets/saml`, { baseURL: remote });
+
+      const samlSecretsPath = join(configPath, 'secrets', 'saml.json');
+      if (existsSync(samlSecretsPath)) {
+        const [samlSecrets] = (await readData(samlSecretsPath)) as [
+          WritableAppSamlSecret[],
+          string,
+        ];
+
+        if (samlSecrets.length) {
+          logger.info(`Publishing ${samlSecrets.length} app saml secret(s)`);
+
+          for (const samlSecret of samlSecrets) {
+            const { entityId, idpCertificate, name, ssoUrl, ...rest } = samlSecret;
+
+            const [parsedValues, missingValues] = parseValues('saml secret', name, [
+              { entityId },
+              { idpCertificate },
+              { ssoUrl },
+            ]);
+
+            if (missingValues) {
+              continue;
+            }
+
+            await axios.post(
+              `/api/apps/${app.id}/secrets/saml`,
+              { name, ...parsedValues, ...rest },
+              { baseURL: remote },
+            );
+          }
+        }
+      }
+    } catch (error) {
+      logger.error('Something went wrong when creating app saml secrets:');
+      logger.error(error);
+    }
+
+    try {
+      logger.info(`Deleting existing oauth2 secrets from app ${app.id}`);
+      await axios.delete(`/api/apps/${app.id}/secrets/oauth2`, { baseURL: remote });
+
+      const oauth2SecretsPath = join(configPath, 'secrets', 'oauth2.json');
+      if (existsSync(oauth2SecretsPath)) {
+        const [oauth2Secrets] = (await readData(oauth2SecretsPath)) as [AppOAuth2Secret[], string];
+
+        if (oauth2Secrets.length) {
+          logger.info(`Publishing ${oauth2Secrets.length} app oauth2 secrets`);
+
+          for (const oauth2Secret of oauth2Secrets) {
+            const {
+              authorizationUrl,
+              clientId,
+              clientSecret,
+              name,
+              tokenUrl,
+              userInfoUrl,
+              ...rest
+            } = oauth2Secret;
+
+            const [parsedValues, missingValues] = parseValues('oauth2 secret', name, [
+              { authorizationUrl },
+              { tokenUrl },
+              { userInfoUrl },
+              { clientId },
+              { clientSecret },
+            ]);
+
+            if (missingValues) {
+              continue;
+            }
+
+            await axios.post(
+              `/api/apps/${app.id}/secrets/oauth2`,
+              { name, ...parsedValues, ...rest },
+              { baseURL: remote },
+            );
+          }
+        }
+      }
+    } catch (error) {
+      logger.error('Something went wrong when creating app oauth2 secrets:');
+      logger.error(error);
+    }
+
+    try {
+      const sslSecretPath = join(configPath, 'secrets', 'ssl.json');
+      if (existsSync(sslSecretPath)) {
+        const [sslSecret] = (await readData(sslSecretPath)) as [
+          { certificate: string; key: string },
+          string,
+        ];
+
+        if (sslSecret) {
+          logger.info('Publishing app ssl secret');
+
+          const { certificate, key } = sslSecret;
+
+          const [parsedValues, missingValues] = parseValues('ssl secret', '', [
+            { certificate },
+            { key },
+          ]);
+
+          if (missingValues) {
+            return;
+          }
+
+          await axios.put(
+            `/api/apps/${app.id}/secrets/ssl`,
+            { ...parsedValues },
+            { baseURL: remote },
+          );
+        }
+      }
+    } catch (error) {
+      logger.error('Something went wrong when creating app ssl secret:');
+      logger.error(error);
+    }
+
+    try {
+      const scimSecretPath = join(configPath, 'secrets', 'scim.json');
+      if (existsSync(scimSecretPath)) {
+        const [scimSecret] = (await readData(scimSecretPath)) as [
+          { enabled: boolean; token: string },
+          string,
+        ];
+
+        if (scimSecret) {
+          logger.info('Publishing app scim secret');
+
+          const { enabled, token } = scimSecret;
+
+          const [parsedValues, missingValues] = parseValues('scim secret', '', [{ token }]);
+
+          if (missingValues) {
+            return;
+          }
+
+          await axios.patch(
+            `/api/apps/${app.id}/secrets/scim`,
+            { enabled, ...parsedValues },
+            { baseURL: remote },
+          );
+        }
+      }
+    } catch (error) {
+      logger.error('Something went wrong when creating app scim secret:');
+      logger.error(error);
+    }
+  } else {
+    logger.warn(`Missing config directory in ${path}. Skipping...`);
   }
 }
 
@@ -907,6 +1183,7 @@ export async function publishApp({
     // After uploading the app, upload block styles, messages if they are available
     await traverseBlockThemes(appVariantPath, data.id, remote, false);
     await uploadMessages(appVariantPath, data.id, remote, false);
+    await publishAppConfig(appVariantPath, data, remote);
 
     // After uploading the app, publish seed resources and assets if they are available
     if (assets) {
@@ -1206,6 +1483,7 @@ export async function updateApp({
     // After uploading the app, upload block styles and messages if they are available
     await traverseBlockThemes(appVariantPath, data.id, remote, force);
     await uploadMessages(appVariantPath, data.id, remote, force);
+    await publishAppConfig(appVariantPath, data, remote);
 
     // After updating the app, publish seed resources and assets if they are available
     if (assets && (data.locked !== 'fullLock' || force)) {

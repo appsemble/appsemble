@@ -30,7 +30,7 @@ export const paths: OpenAPIV3.PathsObject = {
           },
         },
       },
-      security: [{ studio: [] }],
+      security: [{ studio: [] }, { cli: ['apps:write'] }],
       responses: {
         200: {
           description: 'The app SCIM configuration',

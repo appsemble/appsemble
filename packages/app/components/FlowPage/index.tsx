@@ -23,6 +23,7 @@ import { type ShowDialogAction, type ShowShareDialog } from '../../types.js';
 import { makeActions } from '../../utils/makeActions.js';
 import { type AppStorage } from '../../utils/storage.js';
 import { useAppMessages } from '../AppMessagesProvider/index.js';
+import { useAppVariables } from '../AppVariablesProvider/index.js';
 import { BlockList } from '../BlockList/index.js';
 import { useDemoAppMembers } from '../DemoAppMembersProvider/index.js';
 import { DotProgressBar } from '../DotProgressBar/index.js';
@@ -66,6 +67,7 @@ export function FlowPage({
   const { logout, passwordLogin, setUserInfo, teams, updateTeam, userInfoRef } = useUser();
   const { refetchDemoAppMembers } = useDemoAppMembers();
   const { getAppMessage } = useAppMessages();
+  const { getVariable } = useAppVariables();
   const [steps, setSteps] = useState(page.type === 'flow' ? page.steps : undefined);
   const [error, setError] = useState(false);
   const [loopData, setLoopData] = useState<Object[]>();
@@ -210,6 +212,7 @@ export function FlowPage({
       makeActions({
         appStorage,
         getAppMessage,
+        getAppVariable: getVariable,
         actions: { onFlowFinish: {}, onFlowCancel: {}, onLoad: {} },
         app: definition,
         context: page,
@@ -237,6 +240,7 @@ export function FlowPage({
     [
       appStorage,
       getAppMessage,
+      getVariable,
       definition,
       page,
       navigate,

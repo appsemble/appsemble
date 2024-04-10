@@ -131,3 +131,30 @@ export async function deleteAppSamlSecret(ctx: Context): Promise<void> {
 
   await secret.destroy();
 }
+
+export async function deleteAppSamlSecrets(ctx: Context): Promise<void> {
+  const {
+    pathParams: { appId },
+  } = ctx;
+
+  const app = await App.findByPk(appId, {
+    attributes: ['OrganizationId'],
+  });
+
+  assertKoaError(!app, ctx, 404, 'App not found');
+
+  checkAppLock(ctx, app);
+  await checkRole(ctx, app.OrganizationId, [Permission.EditApps, Permission.EditAppSettings]);
+
+  const appServiceSecrets = await AppSamlSecret.findAll({
+    where: {
+      AppId: appId,
+    },
+  });
+
+  for (const appServiceSecret of appServiceSecrets) {
+    await appServiceSecret.destroy();
+  }
+
+  ctx.status = 204;
+}

@@ -509,6 +509,52 @@ describe('deleteAppOAuth2Secret', () => {
   });
 });
 
+describe('deleteAppOAuth2Secrets', () => {
+  it('should delete all OAuth2 secrets', async () => {
+    await AppOAuth2Secret.create({
+      AppId: app.id,
+      authorizationUrl: 'https://example.com/oauth/authorize',
+      clientId: 'example_client_id',
+      clientSecret: 'example_client_secret',
+      icon: 'example',
+      name: 'Example',
+      scope: 'email openid profile',
+      tokenUrl: 'https://example.com/oauth/token',
+      userInfoUrl: 'https://example.com/oauth/userinfo',
+    });
+    await AppOAuth2Secret.create({
+      AppId: app.id,
+      authorizationUrl: 'https://example.com/oauth/authorize',
+      clientId: 'example_client_id',
+      clientSecret: 'example_client_secret',
+      icon: 'example',
+      name: 'Example',
+      scope: 'email openid profile',
+      tokenUrl: 'https://example.com/oauth/token',
+      userInfoUrl: 'https://example.com/oauth/userinfo',
+    });
+    authorizeStudio();
+    const response = await request.delete(`/api/apps/${app.id}/secrets/oauth2`);
+    expect(response).toMatchInlineSnapshot('HTTP/1.1 204 No Content');
+  });
+
+  it('should require the user to have correct permissions', async () => {
+    await member.update({ role: 'Member' });
+    authorizeStudio();
+    const response = await request.delete(`/api/apps/${app.id}/secrets/oauth2`);
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 403 Forbidden
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "error": "Forbidden",
+        "message": "User does not have sufficient permissions.",
+        "statusCode": 403,
+      }
+    `);
+  });
+});
+
 describe('verifyAppOAuth2SecretCode', () => {
   let secret: AppOAuth2Secret;
 

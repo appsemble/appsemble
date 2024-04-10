@@ -1,4 +1,8 @@
-import { type AppMessages as AppMessagesType, type App as AppType } from '@appsemble/types';
+import {
+  type AppConfigEntry,
+  type AppMessages as AppMessagesType,
+  type App as AppType,
+} from '@appsemble/types';
 import { request, setTestApp } from 'axios-test-instance';
 import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 import { parse } from 'yaml';
@@ -7,7 +11,11 @@ import {
   App,
   AppBlockStyle,
   AppMessages,
+  AppOAuth2Secret,
+  AppSamlSecret,
+  AppServiceSecret,
   AppSnapshot,
+  AppVariable,
   Asset,
   Organization,
   OrganizationMember,
@@ -72,6 +80,10 @@ beforeEach(async () => {
     resources: {
       test: { schema: { type: 'object', properties: { name: { type: 'string' } } } },
     },
+    sslKey: 'sslKey',
+    sslCertificate: 'sslCertificate',
+    scimEnabled: true,
+    scimToken: 'scimToken',
   });
   const t3 = await App.create({
     ...template,
@@ -100,6 +112,45 @@ beforeEach(async () => {
       },
       messageIds: { test: 'Dit is een testbericht' },
     },
+  });
+  await AppVariable.create({
+    AppId: t2.id,
+    name: 'test',
+    value: 'test',
+  });
+  await AppOAuth2Secret.create({
+    AppId: t2.id,
+    name: 'test',
+    authorizationUrl: 'authorizationUrl',
+    tokenUrl: 'tokenUrl',
+    userInfoUrl: 'userInfoUrl',
+    remapper: [{ prop: 'name' }],
+    clientId: 'clientId',
+    clientSecret: 'clientSecret',
+    icon: 'icon',
+    scope: 'scope',
+  });
+  await AppSamlSecret.create({
+    AppId: t2.id,
+    name: 'test',
+    idpCertificate: 'idpCertificate',
+    entityId: 'entityId',
+    ssoUrl: 'ssoUrl',
+    icon: 'icon',
+    spPrivateKey: 'spPrivateKey',
+    spPublicKey: 'spPublicKey',
+    spCertificate: 'spCertificate',
+    emailAttribute: 'emailAttribute',
+    nameAttribute: 'nameAttribute',
+  });
+  await AppServiceSecret.create({
+    AppId: t2.id,
+    name: 'test',
+    urlPatterns: 'urlPatterns',
+    authenticationMethod: 'custom-header',
+    identifier: 'identifier',
+    secret: Buffer.from('secret'),
+    tokenUrl: 'tokenUrl',
   });
   t2.AppBlockStyles = [
     await AppBlockStyle.create({
@@ -271,6 +322,116 @@ describe('createTemplateApp', () => {
 
     expect(messages.language).toBe('nl-nl');
     expect(messages.messages.messageIds).toStrictEqual({ test: 'Dit is een testbericht' });
+  });
+
+  it('should copy app variables when cloning an app', async () => {
+    const [, template] = templates;
+    authorizeStudio();
+    const response = await request.post<App>('/api/templates', {
+      templateId: template.id,
+      name: 'Test app',
+      description: 'This is a test app',
+      organizationId: 'testorganization',
+      variables: true,
+    });
+
+    const { id } = response.data;
+    const { data: variables } = await request.get<AppConfigEntry[]>(`/api/apps/${id}/variables`);
+
+    expect(variables[0]).toStrictEqual({
+      id: 2,
+      name: 'test',
+      value: 'test',
+    });
+  });
+
+  it('should copy app secrets when cloning an app', async () => {
+    const [, template] = templates;
+    authorizeStudio();
+    const response = await request.post<App>('/api/templates', {
+      templateId: template.id,
+      name: 'Test app',
+      description: 'This is a test app',
+      organizationId: 'testorganization',
+      secrets: true,
+    });
+
+    const { id } = response.data;
+
+    const appServiceSecret = await AppServiceSecret.findOne({
+      attributes: ['name', 'authenticationMethod', 'urlPatterns', 'identifier', 'secret'],
+      where: {
+        AppId: id,
+      },
+    });
+
+    expect(appServiceSecret.toJSON()).toStrictEqual({
+      name: 'test',
+      authenticationMethod: 'custom-header',
+      urlPatterns: 'urlPatterns',
+      identifier: 'identifier',
+      secret: Buffer.from('placeholder'),
+    });
+
+    const appSamlSecret = await AppSamlSecret.findOne({
+      attributes: [
+        'name',
+        'icon',
+        'nameAttribute',
+        'emailAttribute',
+        'idpCertificate',
+        'spPrivateKey',
+        'spPublicKey',
+        'entityId',
+        'ssoUrl',
+      ],
+      where: {
+        AppId: id,
+      },
+    });
+
+    expect(appSamlSecret.toJSON()).toStrictEqual({
+      emailAttribute: 'emailAttribute',
+      entityId: 'entityId',
+      icon: 'icon',
+      id: 2,
+      name: 'test',
+      nameAttribute: 'nameAttribute',
+      ssoUrl: 'ssoUrl',
+      spCertificate: '',
+      idpCertificate: '',
+      spPrivateKey: '',
+      spPublicKey: '',
+    });
+
+    const appOAuth2Secret = await AppOAuth2Secret.findOne({
+      attributes: [
+        'name',
+        'icon',
+        'scope',
+        'remapper',
+        'authorizationUrl',
+        'tokenUrl',
+        'userInfoUrl',
+        'clientId',
+        'clientSecret',
+      ],
+      where: {
+        AppId: id,
+      },
+    });
+
+    expect(appOAuth2Secret).toMatchObject({
+      authorizationUrl: 'authorizationUrl',
+      clientId: '',
+      clientSecret: '',
+      icon: 'icon',
+      name: 'test',
+      remapper: [{ prop: 'name' }],
+      scope: 'scope',
+      tokenUrl: 'tokenUrl',
+      userInfoUrl: 'userInfoUrl',
+    });
   });
 
   it('should remove name and description when cloning an app', async () => {

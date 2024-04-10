@@ -70,6 +70,14 @@ export const paths: OpenAPIV3.PathsObject = {
                   type: 'boolean',
                   description: 'Include example assets.',
                 },
+                variables: {
+                  type: 'boolean',
+                  description: 'Include example variables.',
+                },
+                secrets: {
+                  type: 'boolean',
+                  description: 'Include example secrets.',
+                },
                 visibility: {
                   $ref: '#/components/schemas/App/properties/visibility',
                 },

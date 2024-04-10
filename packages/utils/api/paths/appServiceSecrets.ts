@@ -5,7 +5,7 @@ export const paths: OpenAPIV3.PathsObject = {
     parameters: [{ $ref: '#/components/parameters/appId' }],
     post: {
       tags: ['secret'],
-      operationId: 'addAppServiceSecret',
+      operationId: 'createAppServiceSecret',
       requestBody: {
         content: {
           'application/json': {
@@ -13,7 +13,7 @@ export const paths: OpenAPIV3.PathsObject = {
           },
         },
       },
-      security: [{ studio: [] }],
+      security: [{ studio: [] }, { cli: ['apps:write'] }],
       responses: {
         201: {
           description: 'The created app service secret.',
@@ -40,6 +40,16 @@ export const paths: OpenAPIV3.PathsObject = {
               },
             },
           },
+        },
+      },
+    },
+    delete: {
+      tags: ['secret'],
+      operationId: 'deleteAppServiceSecrets',
+      security: [{ studio: [] }, { cli: ['apps:write'] }],
+      responses: {
+        204: {
+          description: 'The deleted app service secrets.',
         },
       },
     },

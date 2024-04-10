@@ -11,7 +11,7 @@ import {
   type TeamMember,
   type UserInfo,
 } from '@appsemble/types';
-import { type MessageGetter } from '@appsemble/utils';
+import { type AppConfigEntryGetter, type MessageGetter } from '@appsemble/utils';
 import { type IconName } from '@fortawesome/fontawesome-common-types';
 import { type Dispatch } from 'react';
 import { type NavigateFunction, type Params } from 'react-router-dom';
@@ -122,6 +122,7 @@ export type UpdateTeam = (team: TeamMember) => void;
 export interface MakeActionParameters<D extends ActionDefinition> {
   app: AppDefinition;
   getAppMessage?: MessageGetter;
+  getAppVariable?: AppConfigEntryGetter;
   appStorage: AppStorage;
   definition: D;
   extraCreators?: ActionCreators;

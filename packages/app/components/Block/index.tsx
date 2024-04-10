@@ -26,6 +26,7 @@ import { apiUrl, appId } from '../../utils/settings.js';
 import { type AppStorage } from '../../utils/storage.js';
 import { useAppDefinition } from '../AppDefinitionProvider/index.js';
 import { useAppMessages } from '../AppMessagesProvider/index.js';
+import { useAppVariables } from '../AppVariablesProvider/index.js';
 import { useDemoAppMembers } from '../DemoAppMembersProvider/index.js';
 import { usePage } from '../MenuProvider/index.js';
 import { useServiceWorkerRegistration } from '../ServiceWorkerRegistrationProvider/index.js';
@@ -92,6 +93,7 @@ export function Block({
   const push = useMessages();
   const { blockManifests, definition } = useAppDefinition();
   const { getAppMessage, getBlockMessage } = useAppMessages();
+  const { getVariable } = useAppVariables();
 
   const { logout, passwordLogin, setUserInfo, teams, updateTeam, userInfo, userInfoRef } =
     useUser();
@@ -128,6 +130,7 @@ export function Block({
 
     const actions = makeActions({
       getAppMessage,
+      getAppVariable: getVariable,
       appStorage,
       actions: manifest.actions,
       app: definition,
@@ -245,6 +248,7 @@ export function Block({
     userInfoRef,
     getAppMessage,
     refetchDemoAppMembers,
+    getVariable,
   ]);
 
   const { layout = manifest.layout } = block;

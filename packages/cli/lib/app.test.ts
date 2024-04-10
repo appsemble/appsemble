@@ -21,7 +21,11 @@ const {
   AppCollection,
   AppCollectionApp,
   AppMessages,
+  AppOAuth2Secret,
+  AppSamlSecret,
   AppScreenshot,
+  AppServiceSecret,
+  AppVariable,
   Asset,
   BlockVersion,
   Organization,
@@ -698,6 +702,162 @@ describe('publishApp', () => {
       await readFixture('apps/test/variants/tux/assets/small-tux.png'),
     ]);
   });
+
+  it('should publish app variables and secrets', async () => {
+    vi.useRealTimers();
+    const clientCredentials = await authorizeCLI('apps:write resources:write');
+    process.env.TEST_VARIABLE_1 = 'test-variable-1';
+    process.env.TEST_VARIABLE_2 = 'test-variable-2';
+
+    process.env.TEST_SECRET = 'test-secret';
+
+    process.env.TEST_SERVICE_URL_PATTERNS = 'http://localhost:1234';
+    process.env.TEST_SERVICE_IDENTIFIER = 'Authorization';
+    process.env.TEST_SERVICE_SECRET = 'secret';
+
+    process.env.TEST_SAML_IDP_CERTIFICATE = 'certificate';
+    process.env.TEST_SAML_ENTITY_ID = 'http://localhost:1234';
+    process.env.TEST_SAML_SSO_URL = 'http://localhost:1234';
+
+    process.env.TEST_OAUTH2_AUTHORIZATION_URL = 'http://localhost:1234';
+    process.env.TEST_OAUTH2_TOKEN_URL = 'http://localhost:1234';
+    process.env.TEST_OAUTH2_USER_INFO_URL = 'http://localhost:1234';
+    process.env.TEST_OAUTH2_CLIENT_ID = 'id';
+    process.env.TEST_OAUTH2_CLIENT_SECRET = 'secret';
+
+    process.env.TEST_SCIM_TOKEN = 'token';
+
+    process.env.TEST_SSL_KEY = 'key';
+    process.env.TEST_SSL_CERTIFICATE = 'certificate';
+
+    await publishApp({
+      path: resolveFixture('apps/test'),
+      organization: organization.id,
+      remote: testApp.defaults.baseURL,
+      clientCredentials,
+      visibility: 'unlisted',
+      iconBackground: '#ffffff',
+    });
+
+    vi.useFakeTimers();
+
+    const app = await App.findOne({
+      attributes: ['scimEnabled', 'scimToken', 'sslKey', 'sslCertificate'],
+      where: {
+        id: 1,
+      },
+    });
+
+    expect({
+      scimEnabled: app.scimEnabled,
+      scimToken: app.scimToken,
+      sslKey: app.sslKey,
+      sslCertificate: app.sslCertificate,
+    }).toStrictEqual({
+      scimEnabled: true,
+      scimToken: expect.any(Buffer),
+      sslKey: 'key',
+      sslCertificate: 'certificate',
+    });
+
+    const appVariables = await AppVariable.findAll({
+      attributes: ['name', 'value'],
+      where: {
+        AppId: 1,
+      },
+    });
+
+    expect(appVariables[0].toJSON()).toStrictEqual({
+      name: 'test-variable-inline',
+      value: 'inline',
+    });
+
+    expect(appVariables[1].toJSON()).toStrictEqual({
+      name: 'test-variable',
+      value: 'test-variable-1.test-variable-2',
+    });
+
+    const appServiceSecret = await AppServiceSecret.findOne({
+      attributes: ['name', 'authenticationMethod', 'urlPatterns', 'identifier', 'secret'],
+      where: {
+        AppId: 1,
+      },
+    });
+
+    expect(appServiceSecret.toJSON()).toStrictEqual({
+      name: 'test-service-secret',
+      authenticationMethod: 'custom-header',
+      urlPatterns: 'http://localhost:1234',
+      identifier: 'Authorization',
+      secret: expect.any(Buffer),
+    });
+
+    const appSamlSecret = await AppSamlSecret.findOne({
+      attributes: [
+        'name',
+        'icon',
+        'nameAttribute',
+        'emailAttribute',
+        'idpCertificate',
+        'entityId',
+        'ssoUrl',
+      ],
+      where: {
+        AppId: 1,
+      },
+    });
+
+    expect(appSamlSecret.toJSON()).toStrictEqual({
+      emailAttribute: 'email',
+      entityId: 'http://localhost:1234',
+      icon: 'redhat',
+      id: 1,
+      idpCertificate: 'certificate',
+      name: 'test-saml-secret',
+      nameAttribute: 'name',
+      ssoUrl: 'http://localhost:1234',
+      spCertificate: expect.any(String),
+    });
+
+    const appOauth2Secret = await AppOAuth2Secret.findOne({
+      attributes: [
+        'name',
+        'icon',
+        'scope',
+        'remapper',
+        'authorizationUrl',
+        'tokenUrl',
+        'userInfoUrl',
+        'clientId',
+        'clientSecret',
+      ],
+      where: {
+        AppId: 1,
+      },
+    });
+
+    expect({
+      authorizationUrl: appOauth2Secret.authorizationUrl,
+      clientId: appOauth2Secret.clientId,
+      clientSecret: appOauth2Secret.clientSecret,
+      icon: appOauth2Secret.icon,
+      name: appOauth2Secret.name,
+      remapper: appOauth2Secret.remapper,
+      scope: appOauth2Secret.scope,
+      tokenUrl: appOauth2Secret.tokenUrl,
+      userInfoUrl: appOauth2Secret.userInfoUrl,
+    }).toStrictEqual({
+      authorizationUrl: 'http://localhost:1234',
+      clientId: 'id',
+      clientSecret: 'secret',
+      icon: 'redhat',
+      name: 'test-oauth2-secret',
+      remapper: [{ prop: 'email' }],
+      scope: 'email openid profile',
+      tokenUrl: 'http://localhost:1234',
+      userInfoUrl: 'http://localhost:1234',
+    });
+  });
 });
 
 describe('updateApp', () => {
@@ -1329,6 +1489,163 @@ describe('updateApp', () => {
     expect(assets.map((a) => a.data)).toStrictEqual([
       await readFixture('apps/test/variants/tux/assets/small-tux.png'),
     ]);
+  });
+
+  it('should update app variables and secrets', async () => {
+    vi.useRealTimers();
+    const clientCredentials = await authorizeCLI('apps:write resources:write');
+    process.env.TEST_VARIABLE_1 = 'test-variable-1';
+    process.env.TEST_VARIABLE_2 = 'test-variable-2';
+
+    process.env.TEST_SECRET = 'test-secret';
+
+    process.env.TEST_SERVICE_URL_PATTERNS = 'http://localhost:1234';
+    process.env.TEST_SERVICE_IDENTIFIER = 'Authorization';
+    process.env.TEST_SERVICE_SECRET = 'secret';
+
+    process.env.TEST_SAML_IDP_CERTIFICATE = 'certificate';
+    process.env.TEST_SAML_ENTITY_ID = 'http://localhost:1234';
+    process.env.TEST_SAML_SSO_URL = 'http://localhost:1234';
+
+    process.env.TEST_OAUTH2_AUTHORIZATION_URL = 'http://localhost:1234';
+    process.env.TEST_OAUTH2_TOKEN_URL = 'http://localhost:1234';
+    process.env.TEST_OAUTH2_USER_INFO_URL = 'http://localhost:1234';
+    process.env.TEST_OAUTH2_CLIENT_ID = 'id';
+    process.env.TEST_OAUTH2_CLIENT_SECRET = 'secret';
+
+    process.env.TEST_SCIM_TOKEN = 'token';
+
+    process.env.TEST_SSL_KEY = 'key';
+    process.env.TEST_SSL_CERTIFICATE = 'certificate';
+
+    await updateApp({
+      id: 1,
+      path: resolveFixture('apps/test'),
+      remote: testApp.defaults.baseURL,
+      clientCredentials,
+      visibility: 'unlisted',
+      iconBackground: '#ffffff',
+      force: true,
+    });
+
+    vi.useFakeTimers();
+
+    const updatedApp = await App.findOne({
+      attributes: ['scimEnabled', 'scimToken', 'sslKey', 'sslCertificate'],
+      where: {
+        id: 1,
+      },
+    });
+
+    expect({
+      scimEnabled: updatedApp.scimEnabled,
+      scimToken: updatedApp.scimToken,
+      sslKey: updatedApp.sslKey,
+      sslCertificate: updatedApp.sslCertificate,
+    }).toStrictEqual({
+      scimEnabled: true,
+      scimToken: expect.any(Buffer),
+      sslKey: 'key',
+      sslCertificate: 'certificate',
+    });
+
+    const appVariables = await AppVariable.findAll({
+      attributes: ['name', 'value'],
+      where: {
+        AppId: 1,
+      },
+    });
+
+    expect(appVariables[0].toJSON()).toStrictEqual({
+      name: 'test-variable-inline',
+      value: 'inline',
+    });
+
+    expect(appVariables[1].toJSON()).toStrictEqual({
+      name: 'test-variable',
+      value: 'test-variable-1.test-variable-2',
+    });
+
+    const appServiceSecret = await AppServiceSecret.findOne({
+      attributes: ['name', 'authenticationMethod', 'urlPatterns', 'identifier', 'secret'],
+      where: {
+        AppId: 1,
+      },
+    });
+
+    expect(appServiceSecret.toJSON()).toStrictEqual({
+      name: 'test-service-secret',
+      authenticationMethod: 'custom-header',
+      urlPatterns: 'http://localhost:1234',
+      identifier: 'Authorization',
+      secret: expect.any(Buffer),
+    });
+
+    const appSamlSecret = await AppSamlSecret.findOne({
+      attributes: [
+        'name',
+        'icon',
+        'nameAttribute',
+        'emailAttribute',
+        'idpCertificate',
+        'entityId',
+        'ssoUrl',
+      ],
+      where: {
+        AppId: 1,
+      },
+    });
+
+    expect(appSamlSecret.toJSON()).toStrictEqual({
+      emailAttribute: 'email',
+      entityId: 'http://localhost:1234',
+      icon: 'redhat',
+      id: 1,
+      idpCertificate: 'certificate',
+      name: 'test-saml-secret',
+      nameAttribute: 'name',
+      ssoUrl: 'http://localhost:1234',
+      spCertificate: expect.any(String),
+    });
+
+    const appOauth2Secret = await AppOAuth2Secret.findOne({
+      attributes: [
+        'name',
+        'icon',
+        'scope',
+        'remapper',
+        'authorizationUrl',
+        'tokenUrl',
+        'userInfoUrl',
+        'clientId',
+        'clientSecret',
+      ],
+      where: {
+        AppId: 1,
+      },
+    });
+
+    expect({
+      authorizationUrl: appOauth2Secret.authorizationUrl,
+      clientId: appOauth2Secret.clientId,
+      clientSecret: appOauth2Secret.clientSecret,
+      icon: appOauth2Secret.icon,
+      name: appOauth2Secret.name,
+      remapper: appOauth2Secret.remapper,
+      scope: appOauth2Secret.scope,
+      tokenUrl: appOauth2Secret.tokenUrl,
+      userInfoUrl: appOauth2Secret.userInfoUrl,
+    }).toStrictEqual({
+      authorizationUrl: 'http://localhost:1234',
+      clientId: 'id',
+      clientSecret: 'secret',
+      icon: 'redhat',
+      name: 'test-oauth2-secret',
+      remapper: [{ prop: 'email' }],
+      scope: 'email openid profile',
+      tokenUrl: 'http://localhost:1234',
+      userInfoUrl: 'http://localhost:1234',
+    });
   });
 });
 
