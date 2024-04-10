@@ -15,6 +15,7 @@ import { useTestDatabase } from '../utils/test/testSchema.js';
 
 let app: App;
 let user: User;
+let member: OrganizationMember;
 const date = new Date('2000-01-01').toISOString();
 const argv = { host: 'http://localhost', secret: 'test', aesSecret: 'testSecret' };
 
@@ -59,7 +60,7 @@ beforeEach(async () => {
     vapidPrivateKey: 'b',
     OrganizationId: organization.id,
   });
-  await OrganizationMember.create({
+  member = await OrganizationMember.create({
     OrganizationId: organization.id,
     UserId: user.id,
     role: 'Owner',
@@ -71,8 +72,8 @@ afterAll(() => {
   vi.useRealTimers();
 });
 
-describe('addAppServiceSecret', () => {
-  it('should add new app service secret', async () => {
+describe('createAppServiceSecret', () => {
+  it('should create new app service secret', async () => {
     const response = await request.post(`/api/apps/${app.id}/secrets/service`, {
       name: 'Test service',
       urlPatterns: 'example.com',
@@ -92,6 +93,28 @@ describe('addAppServiceSecret', () => {
         "name": "Test service",
         "tokenUrl": null,
         "urlPatterns": "example.com",
+      }
+    `);
+  });
+
+  it('should require the EditApps and EditAppSettings permissions', async () => {
+    authorizeStudio();
+    await member.update({ role: 'Member' });
+    const response = await request.post(`/api/apps/${app.id}/secrets/service`, {
+      name: 'Test service',
+      urlPatterns: 'example.com',
+      authenticationMethod: 'query-parameter',
+      identifier: 'key',
+      secret: 'c6a5e780dee8e2f1f576538c8',
+    });
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 403 Forbidden
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "error": "Forbidden",
+        "message": "User does not have sufficient permissions.",
+        "statusCode": 403,
       }
     `);
   });
@@ -183,6 +206,70 @@ describe('updateAppServiceSecret', () => {
       }
     `);
   });
+
+  it('should throw status 404 for unknown secrets', async () => {
+    authorizeStudio();
+    const response = await request.put(`/api/apps/${app.id}/secrets/service/123`, {
+      name: 'Test service',
+      urlPatterns: 'example.com',
+      authenticationMethod: 'custom-header',
+      identifier: 'x-key',
+      secret: 'g2a3ca7494c1aad9e5e56a6c3',
+    });
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 404 Not Found
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "error": "Not Found",
+        "message": "Cannot find the app service secret to update",
+        "statusCode": 404,
+      }
+    `);
+  });
+
+  it('should throw status 404 for unknown apps', async () => {
+    authorizeStudio();
+    const response = await request.put('/api/apps/123/secrets/service/1', {
+      name: 'Test service',
+      urlPatterns: 'example.com',
+      authenticationMethod: 'custom-header',
+      identifier: 'x-key',
+      secret: 'g2a3ca7494c1aad9e5e56a6c3',
+    });
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 404 Not Found
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "error": "Not Found",
+        "message": "App not found",
+        "statusCode": 404,
+      }
+    `);
+  });
+
+  it('should require the EditApps and EditAppSettings permissions', async () => {
+    authorizeStudio();
+    await member.update({ role: 'Member' });
+    const response = await request.put(`/api/apps/${app.id}/secrets/service/123`, {
+      name: 'Test service',
+      urlPatterns: 'example.com',
+      authenticationMethod: 'query-parameter',
+      identifier: 'key',
+      secret: 'c6a5e780dee8e2f1f576538c8',
+    });
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 403 Forbidden
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "error": "Forbidden",
+        "message": "User does not have sufficient permissions.",
+        "statusCode": 403,
+      }
+    `);
+  });
 });
 
 describe('deleteAppServiceSecret', () => {
@@ -199,5 +286,62 @@ describe('deleteAppServiceSecret', () => {
     const response = await request.delete(`/api/apps/${app.id}/secrets/service/1`);
 
     expect(response).toMatchInlineSnapshot('HTTP/1.1 204 No Content');
+  });
+
+  it('should require the EditApps and EditAppSettings permissions', async () => {
+    authorizeStudio();
+    await member.update({ role: 'Member' });
+    const response = await request.delete(`/api/apps/${app.id}/secrets/service/1`);
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 403 Forbidden
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "error": "Forbidden",
+        "message": "User does not have sufficient permissions.",
+        "statusCode": 403,
+      }
+    `);
+  });
+});
+
+describe('deleteAppServiceSecrets', () => {
+  it('should delete all app service secrets', async () => {
+    await AppServiceSecret.create({
+      name: 'Test service',
+      urlPatterns: 'example.com',
+      authenticationMethod: 'query',
+      identifier: 'key',
+      secret: 'c6a5e780dee8e2f1f576538c8',
+      AppId: app.id,
+    });
+    await AppServiceSecret.create({
+      name: 'Test service 2',
+      urlPatterns: 'example.com',
+      authenticationMethod: 'query',
+      identifier: 'key 2',
+      secret: 'c6a5e780dee8e2f1f576538c9',
+      AppId: app.id,
+    });
+
+    const response = await request.delete(`/api/apps/${app.id}/secrets/service`);
+
+    expect(response).toMatchInlineSnapshot('HTTP/1.1 204 No Content');
+  });
+
+  it('should require the EditApps and EditAppSettings permissions', async () => {
+    authorizeStudio();
+    await member.update({ role: 'Member' });
+    const response = await request.delete(`/api/apps/${app.id}/secrets/service`);
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 403 Forbidden
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "error": "Forbidden",
+        "message": "User does not have sufficient permissions.",
+        "statusCode": 403,
+      }
+    `);
   });
 });

@@ -14,6 +14,8 @@ import {
 } from '@appsemble/node-utils';
 import {
   type App,
+  type AppConfigEntry,
+  type AppConfigEntryDefinition,
   type AppMember,
   type AppMessages,
   type AppsembleMessages,
@@ -34,7 +36,7 @@ import FormData from 'form-data';
 import globalCacheDir from 'global-cache-dir';
 import { type Argv } from 'yargs';
 
-import { traverseAppDirectory } from '../lib/app.js';
+import { parseValues, traverseAppDirectory } from '../lib/app.js';
 import { buildBlock } from '../lib/block.js';
 import { getProjectBuildConfig, getProjectWebpackConfig } from '../lib/config.js';
 import { createApiServer, createStaticServer } from '../lib/createServers.js';
@@ -328,6 +330,34 @@ export async function handler(argv: ServeArguments): Promise<void> {
     { allowMissing: true },
   );
 
+  const appVariables: AppConfigEntry[] = [];
+
+  const configPath = join(appPath, 'config');
+
+  if (existsSync(configPath)) {
+    const variablesPath = join(configPath, 'variables.json');
+    if (existsSync(variablesPath)) {
+      const [readAppVariables] = (await readData(variablesPath)) as [
+        AppConfigEntryDefinition[],
+        string,
+      ];
+
+      if (readAppVariables.length) {
+        for (const appVariable of readAppVariables) {
+          const { name, value } = appVariable;
+
+          const [parsedValues, missingValues] = parseValues('variable', name, [{ value }]);
+
+          if (missingValues) {
+            continue;
+          }
+
+          appVariables.push({ name, ...parsedValues } as AppConfigEntry);
+        }
+      }
+    }
+  }
+
   const stubbedApp = {
     ...appsembleApp,
     id: appId,
@@ -343,6 +373,7 @@ export async function handler(argv: ServeArguments): Promise<void> {
       appsembleApp: stubbedApp,
       appBlocks,
       appMessages,
+      appVariables,
       ...(appSecurity
         ? {
             appMembers,

@@ -13,7 +13,7 @@ export const paths: OpenAPIV3.PathsObject = {
           },
         },
       },
-      security: [{ studio: [] }],
+      security: [{ studio: [] }, { cli: ['apps:write'] }],
       responses: {
         201: {
           description: 'A list of the OAuth2 secrets for the app.',
@@ -40,6 +40,16 @@ export const paths: OpenAPIV3.PathsObject = {
               },
             },
           },
+        },
+      },
+    },
+    delete: {
+      tags: ['secret'],
+      operationId: 'deleteAppOAuth2Secrets',
+      security: [{ studio: [] }, { cli: ['apps:write'] }],
+      responses: {
+        204: {
+          description: 'The deleted app OAuth2 secrets.',
         },
       },
     },

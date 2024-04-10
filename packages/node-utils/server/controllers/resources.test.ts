@@ -1,5 +1,6 @@
 import {
   type App,
+  type AppConfigEntry,
   type AppDefinition,
   type AppMessages,
   type Resource,
@@ -44,6 +45,7 @@ let mockVerifyResourceActionPermission: Mock<
 let mockParseQuery: Mock<[ParseQueryParams], ParsedQuery>;
 let mockGetAppUrl: Mock<[GetAppSubEntityParams], Promise<URL>>;
 let mockGetAppMessages: Mock<[GetAppMessagesParams], Promise<AppMessages[]>>;
+let mockGetAppVariables: Mock<[GetAppSubEntityParams], Promise<AppConfigEntry[]>>;
 let mockCreateAppResourcesWithAssets: Mock<
   [CreateAppResourcesWithAssetsParams],
   Promise<Resource[]>
@@ -61,6 +63,7 @@ describe('createQueryResources', () => {
     mockParseQuery = vi.fn();
     mockGetAppUrl = vi.fn();
     mockGetAppMessages = vi.fn();
+    mockGetAppVariables = vi.fn();
 
     mockCtx = {
       pathParams: { appId: 1, resourceType: 'mockResourceType' } as PathParams,
@@ -225,12 +228,14 @@ describe('createQueryResources', () => {
     } as ParsedQuery;
     const mockAppUrl = new URL('https://localhost');
     const mockAppMessages = [{ language: 'eng', messages: {} }] as AppMessages[];
+    const mockAppVariables = [{ name: 'variable', value: 'variable' }] as AppConfigEntry[];
 
     mockGetApp.mockResolvedValue(mockApp);
     mockGetAppResources.mockResolvedValue(mockResources);
     mockParseQuery.mockReturnValue(mockParsedQuery);
     mockGetAppUrl.mockResolvedValue(mockAppUrl);
     mockGetAppMessages.mockResolvedValue(mockAppMessages);
+    mockGetAppVariables.mockResolvedValue(mockAppVariables);
 
     mockCtx.queryParams.view = 'view';
 
@@ -247,6 +252,9 @@ describe('createQueryResources', () => {
       getAppMessages: mockGetAppMessages as (
         params: GetAppMessagesParams,
       ) => Promise<AppMessages[]>,
+      getAppVariables: mockGetAppVariables as (
+        params: GetAppSubEntityParams,
+      ) => Promise<AppConfigEntry[]>,
     } as Options;
 
     const resourceDefinition = getResourceDefinition(mockApp, 'mockResourceType', mockCtx, 'view');
@@ -417,6 +425,7 @@ describe('createGetResourceById', () => {
     mockVerifyResourceActionPermission = vi.fn();
     mockGetAppUrl = vi.fn();
     mockGetAppMessages = vi.fn();
+    mockGetAppVariables = vi.fn();
 
     mockCtx = {
       pathParams: { appId: 1, resourceId: 1, resourceType: 'mockResourceType' } as PathParams,
@@ -536,11 +545,13 @@ describe('createGetResourceById', () => {
     const mockResource = { id: 1 } as Resource;
     const mockAppUrl = new URL('https://localhost');
     const mockAppMessages = [{ language: 'eng', messages: {} }] as AppMessages[];
+    const mockAppVariables = [{ name: 'variable', value: 'variable' }] as AppConfigEntry[];
 
     mockGetApp.mockResolvedValue(mockApp);
     mockGetAppResource.mockResolvedValue(mockResource);
     mockGetAppUrl.mockResolvedValue(mockAppUrl);
     mockGetAppMessages.mockResolvedValue(mockAppMessages);
+    mockGetAppVariables.mockResolvedValue(mockAppVariables);
 
     mockCtx.queryParams = { view: 'view' } as QueryParams;
 
@@ -554,6 +565,9 @@ describe('createGetResourceById', () => {
       getAppMessages: mockGetAppMessages as (
         params: GetAppMessagesParams,
       ) => Promise<AppMessages[]>,
+      getAppVariables: mockGetAppVariables as (
+        params: GetAppSubEntityParams,
+      ) => Promise<AppConfigEntry[]>,
     } as Options;
 
     const resourceDefinition = getResourceDefinition(mockApp, 'mockResourceType', mockCtx, 'view');

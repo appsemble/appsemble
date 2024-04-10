@@ -66,6 +66,22 @@ export const messages = defineMessages({
     id: 'studio.7n6SLi',
     defaultMessage: 'Copy any assets that are allowed to be cloned.',
   },
+  variables: {
+    id: 'studio.tr0YPg',
+    defaultMessage: 'Variables',
+  },
+  variablesDescription: {
+    id: 'studio.GbN1XV',
+    defaultMessage: 'Copy any variables the app has.',
+  },
+  secrets: {
+    id: 'studio.WKtGHy',
+    defaultMessage: 'Secrets',
+  },
+  secretsDescription: {
+    id: 'studio.GyGfwz',
+    defaultMessage: 'Copy any secrets the app has.\nMake sure to set their values after cloning',
+  },
   cancel: {
     id: 'studio.47FYwb',
     defaultMessage: 'Cancel',

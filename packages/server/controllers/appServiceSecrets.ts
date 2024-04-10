@@ -8,7 +8,7 @@ import { checkAppLock } from '../utils/checkAppLock.js';
 import { checkRole } from '../utils/checkRole.js';
 import { encrypt } from '../utils/crypto.js';
 
-export async function addAppServiceSecret(ctx: Context): Promise<void> {
+export async function createAppServiceSecret(ctx: Context): Promise<void> {
   const {
     pathParams: { appId },
     request: { body },
@@ -118,6 +118,33 @@ export async function deleteAppServiceSecret(ctx: Context): Promise<void> {
   assertKoaError(!appServiceSecret, ctx, 404, 'Cannot find the app service secret to delete');
 
   await appServiceSecret.destroy();
+
+  ctx.status = 204;
+}
+
+export async function deleteAppServiceSecrets(ctx: Context): Promise<void> {
+  const {
+    pathParams: { appId },
+  } = ctx;
+
+  const app = await App.findByPk(appId, {
+    attributes: ['OrganizationId'],
+  });
+
+  assertKoaError(!app, ctx, 404, 'App not found');
+
+  checkAppLock(ctx, app);
+  await checkRole(ctx, app.OrganizationId, [Permission.EditApps, Permission.EditAppSettings]);
+
+  const appServiceSecrets = await AppServiceSecret.findAll({
+    where: {
+      AppId: appId,
+    },
+  });
+
+  for (const appServiceSecret of appServiceSecrets) {
+    await appServiceSecret.destroy();
+  }
 
   ctx.status = 204;
 }

@@ -13,7 +13,7 @@ export const paths: OpenAPIV3.PathsObject = {
           },
         },
       },
-      security: [{ studio: [] }],
+      security: [{ studio: [] }, { cli: ['apps:write'] }],
       responses: {
         201: {
           description: 'A list of the SAML secrets for the app.',
@@ -40,6 +40,16 @@ export const paths: OpenAPIV3.PathsObject = {
               },
             },
           },
+        },
+      },
+    },
+    delete: {
+      tags: ['secret'],
+      operationId: 'deleteAppSamlSecrets',
+      security: [{ studio: [] }, { cli: ['apps:write'] }],
+      responses: {
+        204: {
+          description: 'The deleted app saml secrets.',
         },
       },
     },

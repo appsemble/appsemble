@@ -10,6 +10,7 @@ import { messages } from './messages.js';
 import { appId, sentryDsn } from '../../utils/settings.js';
 import { useAppDefinition } from '../AppDefinitionProvider/index.js';
 import { useAppMessages } from '../AppMessagesProvider/index.js';
+import { useAppVariables } from '../AppVariablesProvider/index.js';
 import { type BlockMenuItem } from '../MenuProvider/index.js';
 import { useUser } from '../UserProvider/index.js';
 
@@ -26,6 +27,7 @@ export function SideNavigation({ blockMenus, pages }: SideNavigationProps): Reac
   const url = `/${lang}`;
 
   const { getAppMessage, getMessage } = useAppMessages();
+  const { getVariable } = useAppVariables();
   const {
     definition: { layout, security },
   } = useAppDefinition();
@@ -46,6 +48,7 @@ export function SideNavigation({ blockMenus, pages }: SideNavigationProps): Reac
                 appUrl: window.location.origin,
                 url: window.location.href,
                 getMessage,
+                getVariable,
                 userInfo,
                 appMember: userInfo?.appMember,
                 context: { name },

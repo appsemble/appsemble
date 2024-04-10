@@ -31,3 +31,4 @@ export * from './trainings.js';
 export * from './user.js';
 export * from './teams.js';
 export * from './appCollections.js';
+export * from './appVariables.js';

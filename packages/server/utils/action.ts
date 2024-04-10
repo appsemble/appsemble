@@ -20,6 +20,7 @@ export async function handleAction(
     attributes: ['messages'],
     where: { AppId: params.app.id, language: locale },
   });
+
   const context: RemapperContext = params.internalContext ?? {
     appId: params.app.id,
     appUrl,
@@ -30,6 +31,9 @@ export async function handleAction(
       const messageIds = messages?.messages?.messageIds;
       const message = has(messageIds, id) ? messageIds[id] : defaultMessage;
       return new IntlMessageFormat(message);
+    },
+    getVariable() {
+      return null;
     },
     userInfo: undefined,
     appMember: undefined,

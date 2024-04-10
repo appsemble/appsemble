@@ -23,6 +23,7 @@ import { apiUrl, appId } from '../../utils/settings.js';
 import { AppStorage } from '../../utils/storage.js';
 import { useAppDefinition } from '../AppDefinitionProvider/index.js';
 import { useAppMessages } from '../AppMessagesProvider/index.js';
+import { useAppVariables } from '../AppVariablesProvider/index.js';
 import { BlockList } from '../BlockList/index.js';
 import { FlowPage } from '../FlowPage/index.js';
 import { usePage } from '../MenuProvider/index.js';
@@ -39,6 +40,7 @@ export function Page(): ReactNode {
 
   const { pathname } = useLocation();
   const { appMessageIds, getAppMessage, getMessage } = useAppMessages();
+  const { getVariable } = useAppVariables();
   const { page: navPage, setPage } = usePage();
 
   const [data, setData] = useState<unknown>({});
@@ -96,6 +98,7 @@ export function Page(): ReactNode {
         url: window.location.href,
         appUrl: window.location.origin,
         getMessage,
+        getVariable,
         pageData: data,
         userInfo: userInfoRef.current,
         appMember: userInfoRef.current?.appMember,
@@ -105,7 +108,7 @@ export function Page(): ReactNode {
         locale: lang,
         stepRef,
       }),
-    [data, getMessage, lang, stepRef, userInfoRef],
+    [data, getMessage, getVariable, lang, userInfoRef],
   );
 
   const showDialog = useCallback((d: ShowDialogParams) => {

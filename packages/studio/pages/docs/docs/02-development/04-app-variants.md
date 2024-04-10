@@ -17,6 +17,7 @@ maintainability.
     - [styles.json](#stylesjson)
     - [messages.json](#messagesjson)
     - [app-definition.json](#app-definitionjson)
+  - [Config](#config)
   - [Icon](#icon)
   - [Screenshots](#screenshots)
   - [App README files](#app-readme-files)
@@ -122,6 +123,15 @@ file contains an array of changes with their paths inside the `app-definition` l
   [["anchors", 1], "http://pdf-generator-pdf-generator-api.demodam.svc.cluster.local/render"]
 ]
 ```
+
+### [Config](../03-guide/config.md)
+
+A `config` directory, containing JSON files for app variables and secrets can be put inside the
+corresponding app variant directory (e.g. `demodam`). These variables and secrets will be used when
+applying the app variant and will overwrite variables and secrets defined in the original app.
+
+When using the `appsemble app publish` and the `appsemble app update` commands, app variables and
+secrets will be published along with the app.
 
 ### Icon
 

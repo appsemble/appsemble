@@ -10,6 +10,7 @@ import { paths as appScimSecrets } from './appScimSecrets.js';
 import { paths as appsembleMessages } from './appsembleMessages.js';
 import { paths as appServiceSecrets } from './appServiceSecrets.js';
 import { paths as appSSLSecrets } from './appSSLSecrets.js';
+import { paths as appVariables } from './appVariables.js';
 import { paths as assets } from './assets.js';
 import { paths as blocks } from './blocks.js';
 import { paths as emails } from './emails.js';
@@ -34,6 +35,7 @@ export const paths = {
   ...scimEndpoints,
   ...appsembleMessages,
   ...appSSLSecrets,
+  ...appVariables,
   ...appCollections,
   ...appQuotas,
   ...assets,

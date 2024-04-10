@@ -1,4 +1,9 @@
-import { type AppMessages, type Remapper, type UserInfo } from '@appsemble/types';
+import {
+  type AppConfigEntry,
+  type AppMessages,
+  type Remapper,
+  type UserInfo,
+} from '@appsemble/types';
 import { IntlMessageFormat } from 'intl-messageformat';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
@@ -36,6 +41,7 @@ interface TestCase {
   mappers: Remapper;
   expected: any;
   messages?: AppMessages['messages'];
+  variables?: AppConfigEntry[];
   userInfo?: UserInfo;
   context?: Record<string, any>;
   history?: unknown[];
@@ -44,10 +50,12 @@ interface TestCase {
 function runTests(tests: Record<string, TestCase>): void {
   it.each(Object.entries(tests))(
     'should %s',
-    (name, { context, expected, history, input, mappers, messages, userInfo }) => {
+    (name, { context, expected, history, input, mappers, messages, userInfo, variables }) => {
       const result = remap(mappers, input, {
         getMessage: ({ defaultMessage, id }) =>
           new IntlMessageFormat(messages?.messageIds?.[id] ?? defaultMessage),
+        getVariable: (variableName) =>
+          variables.find((variable) => variable.name === variableName)?.value,
         url: 'https://example.com/en/example',
         appUrl: 'https://example.com',
         userInfo,
@@ -170,6 +178,23 @@ describe('context', () => {
   });
 });
 
+describe('variable', () => {
+  runTests({
+    'get a variable': {
+      input: {},
+      mappers: { variable: 'my-variable' },
+      expected: 'my-variable-value',
+      variables: [{ id: 0, name: 'my-variable', value: 'my-variable-value' }],
+    },
+    'get an undefined variable': {
+      input: {},
+      mappers: { variable: 'my-variable' },
+      expected: undefined,
+      variables: [],
+    },
+  });
+});
+
 describe('date.now', () => {
   beforeEach(() => {
     vi.useFakeTimers({ now: 0 });
@@ -268,7 +293,19 @@ describe('log', () => {
   function runLogTests(tests: Record<string, TestCase>): void {
     it.each(Object.entries(tests))(
       'should %s',
-      (name, { context, expected: expectedInput, history, input, mappers, messages, userInfo }) => {
+      (
+        name,
+        {
+          context,
+          expected: expectedInput,
+          history,
+          input,
+          mappers,
+          messages,
+          userInfo,
+          variables,
+        },
+      ) => {
         const expected = JSON.stringify(
           {
             input: expectedInput,
@@ -291,6 +328,8 @@ describe('log', () => {
         remap(mappers, input, {
           getMessage: ({ defaultMessage, id }) =>
             new IntlMessageFormat(messages?.messageIds?.[id] ?? defaultMessage),
+          getVariable: (variableName) =>
+            variables.find((variable) => variable.name === variableName).value,
           url: 'https://example.com/en/example',
           appUrl: 'https://example.com',
           userInfo,

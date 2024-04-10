@@ -18,6 +18,7 @@ import { AppScreenshot } from './AppScreenshot.js';
 import { AppServiceSecret } from './AppServiceSecret.js';
 import { AppSnapshot } from './AppSnapshot.js';
 import { AppSubscription } from './AppSubscription.js';
+import { AppVariable } from './AppVariable.js';
 import { Asset } from './Asset.js';
 import { BlockAsset } from './BlockAsset.js';
 import { BlockMessages } from './BlockMessages.js';
@@ -74,6 +75,7 @@ export {
   AppScreenshot,
   AppSnapshot,
   AppSubscription,
+  AppVariable,
   AppMessages,
   Asset,
   BlockAsset,
@@ -135,6 +137,7 @@ export function initDB({
       AppScreenshot,
       AppSnapshot,
       AppSubscription,
+      AppVariable,
       AppMessages,
       Asset,
       BlockAsset,

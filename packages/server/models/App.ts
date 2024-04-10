@@ -38,6 +38,7 @@ import {
   AppServiceSecret,
   AppSnapshot,
   AppSubscription,
+  AppVariable,
   Asset,
   Organization,
   Resource,
@@ -194,6 +195,9 @@ export class App extends Model {
   @Unique('UniquePathIndex')
   @Column(DataType.STRING)
   OrganizationId: string;
+
+  @HasMany(() => AppVariable)
+  AppVariables: AppVariable[];
 
   @HasMany(() => AppBlockStyle)
   AppBlockStyles: AppBlockStyle[];

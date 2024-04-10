@@ -5,6 +5,7 @@ import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import { AppDefinitionProvider } from '../AppDefinitionProvider/index.js';
 import { AppMessagesProvider } from '../AppMessagesProvider/index.js';
 import { AppRoutes } from '../AppRoutes/index.js';
+import { AppVariablesProvider } from '../AppVariablesProvider/index.js';
 import { DemoAppMembersProvider } from '../DemoAppMembersProvider/index.js';
 import { ErrorFallback } from '../ErrorFallback/index.js';
 import { MenuProvider } from '../MenuProvider/index.js';
@@ -25,24 +26,26 @@ interface AppProps {
 export function App({ serviceWorkerRegistrationPromise }: AppProps): ReactNode {
   const appContent = (
     <AppDefinitionProvider>
-      <AppMessagesProvider>
-        <MessagesProvider>
-          <ErrorHandler fallback={ErrorFallback}>
-            <ServiceWorkerRegistrationProvider
-              serviceWorkerRegistrationPromise={serviceWorkerRegistrationPromise}
-            >
-              <UserProvider>
-                <DemoAppMembersProvider>
-                  <MenuProvider>
-                    <PermissionRequest />
-                    <AppRoutes />
-                  </MenuProvider>
-                </DemoAppMembersProvider>
-              </UserProvider>
-            </ServiceWorkerRegistrationProvider>
-          </ErrorHandler>
-        </MessagesProvider>
-      </AppMessagesProvider>
+      <AppVariablesProvider>
+        <AppMessagesProvider>
+          <MessagesProvider>
+            <ErrorHandler fallback={ErrorFallback}>
+              <ServiceWorkerRegistrationProvider
+                serviceWorkerRegistrationPromise={serviceWorkerRegistrationPromise}
+              >
+                <UserProvider>
+                  <DemoAppMembersProvider>
+                    <MenuProvider>
+                      <PermissionRequest />
+                      <AppRoutes />
+                    </MenuProvider>
+                  </DemoAppMembersProvider>
+                </UserProvider>
+              </ServiceWorkerRegistrationProvider>
+            </ErrorHandler>
+          </MessagesProvider>
+        </AppMessagesProvider>
+      </AppVariablesProvider>
     </AppDefinitionProvider>
   );
 

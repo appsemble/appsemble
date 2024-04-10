@@ -12,6 +12,7 @@ export * from './AppMessages.js';
 export * from './AppOAuth2Secret.js';
 export * from './AppsembleMessages.js';
 export * from './AppServiceSecret.js';
+export * from './AppVariable.js';
 export * from './ArrayRemapperDefinition.js';
 export * from './Asset.js';
 export * from './BlockDefinition.js';

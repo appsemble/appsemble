@@ -37,6 +37,7 @@ import { SnapshotsRoutes } from './snapshots/index.js';
 import { TeamsRoutes } from './teams/index.js';
 import { TranslationsPage } from './translations/index.js';
 import { UsersPage } from './users/index.js';
+import { VariablesPage } from './variables/index.js';
 import { ProtectedRoute } from '../../../components/ProtectedRoute/index.js';
 import { useUser } from '../../../components/UserProvider/index.js';
 import { checkRole } from '../../../utils/checkRole.js';
@@ -165,6 +166,11 @@ export function AppRoutes(): ReactNode {
           </MenuItem>
         ) : null}
         {editPermission ? (
+          <MenuItem icon="code" to={`${url}/variables`}>
+            <FormattedMessage {...messages.variables} />
+          </MenuItem>
+        ) : null}
+        {editPermission ? (
           <MenuItem icon="key" to={`${url}/secrets`}>
             <FormattedMessage {...messages.secrets} />
           </MenuItem>
@@ -223,6 +229,7 @@ export function AppRoutes(): ReactNode {
             }
             path="/edit"
           />
+          <Route element={<VariablesPage />} path="/variables" />
           <Route element={<SecretsPage />} path="/secrets" />
           <Route element={<QuotasPage />} path="/quotas" />
           <Route element={<SnapshotsRoutes />} path="/snapshots/*" />

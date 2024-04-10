@@ -1,0 +1,10 @@
+[
+  {
+    "name": "test-variable-inline",
+    "value": "inline"
+  },
+  {
+    "name": "test-variable",
+    "value": "{{ TEST_VARIABLE_1 }}.{{ TEST_VARIABLE_2 }}"
+  }
+]

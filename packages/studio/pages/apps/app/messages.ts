@@ -37,6 +37,10 @@ export const messages = defineMessages({
     id: 'studio.D3idYv',
     defaultMessage: 'Settings',
   },
+  variables: {
+    id: 'studio.tr0YPg',
+    defaultMessage: 'Variables',
+  },
   secrets: {
     id: 'studio.WKtGHy',
     defaultMessage: 'Secrets',
