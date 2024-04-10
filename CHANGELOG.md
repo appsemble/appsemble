@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.27.12](https://gitlab.com/appsemble/appsemble/-/releases/0.27.12)] - 2024-04-10
+
+### Added
+
+- App: Add support for app variables.
+- Cli: Add support for app variables and secrets from the app directory.
+- Server: Add `AppVariable` table to store app variables.
+- Studio: Add an app `Variables` page to the studio.
+- Utils: Add app variable endpoints.
+- Utils: Add the `variable` remapper.
+
 ## \[[0.27.11](https://gitlab.com/appsemble/appsemble/-/releases/0.27.11)] - 2024-04-08
 
 ### Added

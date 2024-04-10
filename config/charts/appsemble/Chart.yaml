@@ -1,7 +1,7 @@
 apiVersion: v2
 name: appsemble
-version: 0.27.11
-appVersion: 0.27.11
+version: 0.27.12
+appVersion: 0.27.12
 kubeVersion: '>=1.21.0'
 type: application
 description: The open source low-code app building platform
@@ -25,25 +25,17 @@ dependencies:
 annotations:
   artifacthub.io/changes: >
     - kind: added
-      description: "Cli: Support uploading maskable-icon.png from app variant
-        directory with app publish and app update."
-    - kind: changed
-      description: "Server: Change SSO authorizations to cascade delete for OAuth2 and SAML."
-    - kind: fixed
-      description: "Cli: Uploading icon.png from app variant directory with app
-        publish and app update."
-    - kind: fixed
-      description: "Server: Allow user info url to be empty when calling endpoint
-        updateAppOAuth2Secret."
-    - kind: fixed
-      description: "Server: Creating an OAuth2 app secret would break the ability to
-        update again without a page refresh."
-    - kind: fixed
-      description: "Studio: The app assets tab would show an error after deleting the
-        last asset."
-    - kind: fixed
-      description: "Studio: The app resources tab would show an error after deleting
-        the last resource."
+      description: "App: Add support for app variables."
+    - kind: added
+      description: "Cli: Add support for app variables and secrets from the app directory."
+    - kind: added
+      description: "Server: Add AppVariable table to store app variables."
+    - kind: added
+      description: "Studio: Add an app Variables page to the studio."
+    - kind: added
+      description: "Utils: Add app variable endpoints."
+    - kind: added
+      description: "Utils: Add the variable remapper."
   artifacthub.io/license: LGPL-3.0-only
   artifacthub.io/links: |
     - name: Appsemble Studio
