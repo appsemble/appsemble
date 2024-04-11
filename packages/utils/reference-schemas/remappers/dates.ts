@@ -29,7 +29,12 @@ ${schemaExample('date.add')}
 `,
   },
   'date.format': {
-    enum: ['string', null],
+    oneOf: [
+      { enum: [null] },
+      {
+        type: 'string',
+      },
+    ],
     description: `Format a date according to the RFC3339 format.
 
 Here is an example of a RFC3339 complicit date:
