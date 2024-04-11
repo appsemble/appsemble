@@ -57,7 +57,7 @@ bootstrap(({ data: blockData, events, parameters: { base }, ready, utils }) => {
     );
   }
 
-  if (!data.length) {
+  if (!data?.length) {
     return (
       <Message className="mt-4 mr-6 mb-4 ml-5">
         <span>
