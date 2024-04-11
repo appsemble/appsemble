@@ -107,7 +107,7 @@ export async function upsertOrganization({
     await axios.get(`/api/organizations/${id}`);
     updateOrganization({ description, email, icon, id, name, website });
   } catch (error) {
-    if (axios.isAxiosError(error) && error.response && error.response.status === 404) {
+    if (axios.isAxiosError(error) && error.response.status === 404) {
       createOrganization({ description, email, icon, id, name, website });
     } else {
       logger.error(error);

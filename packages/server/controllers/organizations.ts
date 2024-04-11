@@ -284,6 +284,7 @@ export async function patchOrganization(ctx: Context): Promise<void> {
     include: { model: Organization },
   });
   const organization = member.Organization;
+  assertKoaError(!organization, ctx, 404, 'Organization not found');
 
   const result: Partial<Organization> = {};
   if (name !== undefined) {
