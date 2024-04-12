@@ -71,7 +71,9 @@ export function AppRoutes(): ReactNode {
     error,
     loading,
     setData: setApp,
-  } = useData<App>(`/api/apps/${id}?language=${lang}`);
+  } = useData<App>(
+    Number.isNaN(id) ? `/api/apps/p/${id}?language=${lang}` : `/api/apps/${id}?language=${lang}`,
+  );
 
   const { formatMessage } = useIntl();
 

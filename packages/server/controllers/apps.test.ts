@@ -436,6 +436,56 @@ describe('queryApps', () => {
   });
 });
 
+describe('getAppByPath', () => {
+  it('should fetch an app using the path of the app', async () => {
+    await App.create(
+      {
+        path: 'test-app',
+        definition: { name: 'Test App', defaultPage: 'Test Page' },
+        vapidPublicKey: 'a',
+        vapidPrivateKey: 'b',
+        OrganizationId: organization.id,
+      },
+      { raw: true },
+    );
+    const { data } = await request.get('/api/apps/p/test-app');
+    expect(data).toMatchInlineSnapshot(`
+      {
+        "$created": "1970-01-01T00:00:00.000Z",
+        "$updated": "1970-01-01T00:00:00.000Z",
+        "OrganizationId": "testorganization",
+        "OrganizationName": "Test Organization",
+        "controllerCode": null,
+        "controllerImplementations": null,
+        "definition": {
+          "defaultPage": "Test Page",
+          "name": "Test App",
+        },
+        "demoMode": false,
+        "domain": null,
+        "emailName": null,
+        "enableSelfRegistration": true,
+        "enableUnsecuredServiceSecrets": false,
+        "googleAnalyticsID": null,
+        "hasIcon": false,
+        "hasMaskableIcon": false,
+        "iconBackground": "#ffffff",
+        "iconUrl": null,
+        "id": 1,
+        "locked": "unlocked",
+        "path": "test-app",
+        "screenshotUrls": [],
+        "sentryDsn": null,
+        "sentryEnvironment": null,
+        "showAppDefinition": false,
+        "showAppsembleLogin": false,
+        "showAppsembleOAuth2Login": true,
+        "visibility": "unlisted",
+      }
+    `);
+  });
+});
+
 describe('getAppById', () => {
   it('should return 404 when fetching a non-existent app', async () => {
     const response = await request.get('/api/apps/1');
