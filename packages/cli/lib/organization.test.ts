@@ -41,7 +41,7 @@ describe('createOrganization', () => {
       name: 'Test',
       email: 'test@example.com',
       icon: null,
-      website: 'htpps://example.com',
+      website: 'https://example.com',
     });
     const organization = await Organization.findOne();
     expect(organization).toMatchInlineSnapshot(`
@@ -54,7 +54,7 @@ describe('createOrganization', () => {
         "id": "test",
         "name": "Test",
         "updated": 1970-01-01T00:00:00.000Z,
-        "website": "htpps://example.com",
+        "website": "https://example.com",
       }
     `);
   });
@@ -73,7 +73,7 @@ describe('createOrganization', () => {
         name: 'Test',
         email: 'test@example.com',
         icon: null,
-        website: 'htpps://example.com',
+        website: 'https://example.com',
       }),
     ).rejects.toThrow('Request failed with status code 409');
     vi.useFakeTimers();

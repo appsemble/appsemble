@@ -1675,6 +1675,7 @@ describe('updateApp', () => {
       userInfoUrl: 'http://localhost:1234',
     });
   });
+
   it('shall update an app with `app.locked` set to `fullLock` if force is specified', async () => {
     await app.update({ locked: 'fullLock' });
     const clientCredentials = await authorizeCLI('apps:write', testApp);
