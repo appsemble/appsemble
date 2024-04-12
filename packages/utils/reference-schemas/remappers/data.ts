@@ -206,6 +206,12 @@ The result of the final page’s log would then be:
       { type: 'string' },
       { type: 'integer' },
       { type: 'array', minItems: 1, items: { anyOf: [{ type: 'string' }, { type: 'integer' }] } },
+      {
+        type: 'array',
+        minItems: 1,
+        items: { $ref: '#/components/schemas/ObjectRemapperDefinition' },
+      },
+      { $ref: '#/components/schemas/ObjectRemapperDefinition' },
     ],
     description: `Gets the chosen property from an object.
 

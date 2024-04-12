@@ -1,5 +1,6 @@
 import {
   type AppMember,
+  type ArrayRemapper,
   type Remapper,
   type Remappers,
   type UserInfo,
@@ -423,14 +424,45 @@ const mapperImplementations: MapperImplementations = {
 
   static: (input) => input,
 
-  prop(prop, obj) {
+  prop(prop, obj, context) {
     let result: any = obj;
-    for (const p of [prop].flat()) {
-      if (result == null) {
+
+    if (result == null) {
+      return result;
+    }
+
+    if (Array.isArray(prop)) {
+      if (prop.every((item) => typeof item === 'number' || typeof item === 'string')) {
+        // This runs if the provided value is an array of property names or indexes
+        for (const p of [prop].flat() as number[] | string) {
+          result = result[p];
+        }
+      } else if (prop.every((item) => typeof item === 'object' && !Array.isArray(item))) {
+        // This runs if the provided value is an array of remappers
+        const remapped = remap(prop as ArrayRemapper, obj, context);
+        if (typeof remapped === 'number' || typeof remapped === 'string') {
+          result = result[remapped];
+        } else {
+          console.error(`Invalid remapper ${JSON.stringify(prop)}`);
+        }
+      }
+    } else if (typeof prop === 'object') {
+      if (prop == null) {
+        result = result.null;
         return result;
       }
-      result = result[p];
+
+      // This runs if the provided value is a remapper
+      const remapped = remap(prop, result, context);
+      if (typeof remapped === 'number' || typeof remapped === 'string') {
+        result = result[remapped];
+      } else {
+        console.error(`Invalid remapper ${JSON.stringify(prop)}`);
+      }
+    } else if (typeof prop === 'number' || typeof prop === 'string') {
+      result = result[prop];
     }
+
     return result;
   },
 
