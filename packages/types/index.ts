@@ -514,7 +514,7 @@ export interface Remappers {
    *
    * If the prop is an array, nested properties will be retrieved in sequence.
    */
-  prop: number[] | string[] | number | string;
+  prop: number[] | Remapper | string[];
 
   /**
    * Recursively strip all nullish values from an object or array.

@@ -999,6 +999,24 @@ describe('prop', () => {
       mappers: [{ prop: 'names' }, { prop: 0 }],
       expected: 'foo',
     },
+    'handle a single remapper': {
+      input: { en: 'English', nl: 'Dutch' },
+      mappers: [{ prop: { app: 'locale' } }],
+      expected: 'English',
+    },
+    'handle an array of remappers': {
+      input: { address: { town: 'Bikini Bottom' } },
+      mappers: [{ prop: [{ 'object.from': { prop: 'address' } }, { prop: 'prop' }] }],
+      expected: { town: 'Bikini Bottom' },
+    },
+    'handle an array of remappers with numbers': {
+      input: { languages: ['English', 'Dutch'] },
+      mappers: [
+        { prop: [{ 'object.from': { prop: 'languages' } }, { prop: 'prop' }] },
+        { prop: 0 },
+      ],
+      expected: 'English',
+    },
     'handle null': {
       input: { name: 'Spongebob' },
       mappers: { prop: null },
