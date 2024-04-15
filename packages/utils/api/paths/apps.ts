@@ -146,7 +146,7 @@ export const paths: OpenAPIV3.PathsObject = {
       security: [{ studio: [] }, {}],
     },
   },
-  '/api/apps/p/{appPath}': {
+  '/api/apps/path/{appPath}': {
     parameters: [{ $ref: '#/components/parameters/appPath' }],
     get: {
       tags: ['app', 'app-path'],

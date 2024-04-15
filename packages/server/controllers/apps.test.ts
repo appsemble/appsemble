@@ -448,8 +448,80 @@ describe('getAppByPath', () => {
       },
       { raw: true },
     );
-    const { data } = await request.get('/api/apps/p/test-app');
+    const { data } = await request.get('/api/apps/path/test-app');
     expect(data).toMatchInlineSnapshot(`
+      {
+        "$created": "1970-01-01T00:00:00.000Z",
+        "$updated": "1970-01-01T00:00:00.000Z",
+        "OrganizationId": "testorganization",
+        "OrganizationName": "Test Organization",
+        "controllerCode": null,
+        "controllerImplementations": null,
+        "definition": {
+          "defaultPage": "Test Page",
+          "name": "Test App",
+        },
+        "demoMode": false,
+        "domain": null,
+        "emailName": null,
+        "enableSelfRegistration": true,
+        "enableUnsecuredServiceSecrets": false,
+        "googleAnalyticsID": null,
+        "hasIcon": false,
+        "hasMaskableIcon": false,
+        "iconBackground": "#ffffff",
+        "iconUrl": null,
+        "id": 1,
+        "locked": "unlocked",
+        "path": "test-app",
+        "screenshotUrls": [],
+        "sentryDsn": null,
+        "sentryEnvironment": null,
+        "showAppDefinition": false,
+        "showAppsembleLogin": false,
+        "showAppsembleOAuth2Login": true,
+        "visibility": "unlisted",
+      }
+    `);
+  });
+
+  it('should not fetch if the app does not exist', async () => {
+    const app = await App.create(
+      {
+        path: 'test-app',
+        definition: { name: 'Test App', defaultPage: 'Test Page' },
+        vapidPublicKey: 'a',
+        vapidPrivateKey: 'b',
+        OrganizationId: organization.id,
+      },
+      { raw: true },
+    );
+    await app.destroy();
+    const { data } = await request.get(`/api/apps/path/${app.path}`);
+    expect(data).toMatchObject({
+      error: 'Not Found',
+      message: 'App not found',
+      statusCode: 404,
+    });
+  });
+
+  it('should fetch the most recent snapshot', async () => {
+    const app = await App.create({
+      path: 'test-app',
+      definition: { name: 'Test App', defaultPage: 'Test Page' },
+      vapidPublicKey: 'a',
+      vapidPrivateKey: 'b',
+      OrganizationId: organization.id,
+    });
+    await AppSnapshot.create({ AppId: app.id, yaml: 'name: Test App\ndefaultPage Test Page\n' });
+    vi.advanceTimersByTime(3600);
+    await AppSnapshot.create({ AppId: app.id, yaml: '{ name: Test App, defaultPage Test Page }' });
+    const response = await request.get(`/api/apps/path/${app.path}`);
+
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 200 OK
+      Content-Type: application/json; charset=utf-8
+
       {
         "$created": "1970-01-01T00:00:00.000Z",
         "$updated": "1970-01-01T00:00:00.000Z",
@@ -6205,13 +6277,13 @@ describe('exportApp', () => {
       '"[{"test":"test"}]"',
     );
     expect(await archive.file('README.md').async('nodebuffer')).toStrictEqual(
-      await Buffer.from('Default'),
+      Buffer.from('Default'),
     );
     expect(await archive.file('README.en.md').async('nodebuffer')).toStrictEqual(
-      await Buffer.from('English'),
+      Buffer.from('English'),
     );
     expect(await archive.file('README.nl.md').async('nodebuffer')).toStrictEqual(
-      await Buffer.from('Dutch'),
+      Buffer.from('Dutch'),
     );
   });
 
