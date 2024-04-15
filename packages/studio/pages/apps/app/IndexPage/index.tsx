@@ -1,9 +1,9 @@
-import { Button, Title, useToggle } from '@appsemble/react-components';
+import { Button, Title, useMessages, useToggle } from '@appsemble/react-components';
 import { defaultLocale } from '@appsemble/utils';
 import axios from 'axios';
 import classNames from 'classnames';
 import { type ReactNode, useCallback, useEffect, useRef, useState } from 'react';
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 import { Link } from 'react-router-dom';
 
 import { AppRatings } from './AppRatings/index.js';
@@ -28,6 +28,9 @@ export function IndexPage(): ReactNode {
   const { app } = useApp();
   const { organizations } = useUser();
   const descriptionToggle = useToggle();
+
+  const push = useMessages();
+  const { formatMessage } = useIntl();
 
   const [checkedResources, setCheckedResources] = useState(false);
   const [checkedAssets, setCheckedAssets] = useState(false);
@@ -91,6 +94,13 @@ export function IndexPage(): ReactNode {
   const showExportResources = organizations.some(
     (organization) => organization.id === app.OrganizationId && organization.role >= 'AppEditor',
   );
+  const copyToClipboard = useCallback(
+    async (value: string) => {
+      await navigator.clipboard.writeText(value);
+      push({ body: formatMessage(messages.shareSuccess), color: 'success' });
+    },
+    [formatMessage, push],
+  );
 
   return (
     <main>
@@ -106,6 +116,13 @@ export function IndexPage(): ReactNode {
               target="_blank"
             >
               <FormattedMessage {...messages.view} />
+            </Button>
+            <Button
+              className="mb-3 ml-4"
+              color="primary"
+              onClick={() => copyToClipboard(window.location.href)}
+            >
+              <FormattedMessage {...messages.shareApp} />
             </Button>
             <CloneButton app={app} />
             <ReseedButton app={app} />
