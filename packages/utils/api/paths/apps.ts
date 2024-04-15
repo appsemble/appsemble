@@ -345,7 +345,7 @@ export const paths: OpenAPIV3.PathsObject = {
     parameters: [{ $ref: '#/components/parameters/appId' }],
     get: {
       tags: ['app', 'export', 'zip'],
-      description: 'Export the app',
+      description: 'Export an app as a zip file',
       operationId: 'exportApp',
       parameters: [
         {

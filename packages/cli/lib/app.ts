@@ -222,6 +222,14 @@ export async function traverseAppDirectory(
   return [discoveredContext, rc, yaml, gatheredData];
 }
 
+function extractFilenameFromContentDisposition(contentDisposition: string): string | null {
+  const match = contentDisposition.match(/filename="(.+?)"/);
+  if (match && match.length > 1) {
+    return match[1];
+  }
+  return null;
+}
+
 async function retrieveContext(path: string, context: string): Promise<AppsembleContext> {
   let rc: AppsembleRC;
   let discoveredContext: AppsembleContext;
@@ -263,6 +271,7 @@ async function retrieveContext(path: string, context: string): Promise<Appsemble
 /**
  * Export an app as a zip file.
  *
+ * @param clientCredentials The OAuth2 client credentials to use
  * @param appId Id of the app to be exported.
  * @param assets Boolean representing whether to include assets in the exported zip file.
  * @param resources Boolean representing whether to include resources in the zip file.
@@ -270,14 +279,14 @@ async function retrieveContext(path: string, context: string): Promise<Appsemble
  * @param remote The remote to fetch the app from.
  */
 export async function exportAppAsZip(
+  clientCredentials: string,
   appId: number,
   assets: boolean,
   resources: boolean,
   path: string,
   remote: string,
 ): Promise<void> {
-  const app = await axios.get(`/api/apps/${appId}`);
-  const { name } = app.data.definition;
+  await authenticate(remote, 'apps:export', clientCredentials);
   const response = await axios.get(
     `/api/apps/${appId}/export?resources=${resources}&assets=${assets}`,
     {
@@ -285,7 +294,10 @@ export async function exportAppAsZip(
       responseType: 'stream',
     },
   );
-  const zipFileName = join(path, `${name}_${appId}.zip`);
+  const zipFileName = join(
+    path,
+    String(extractFilenameFromContentDisposition(response.headers['content-disposition'])),
+  );
   const writeStream = createWriteStream(zipFileName);
   response.data.pipe(writeStream);
   logger.info(`Successfully downloaded file: ${zipFileName}`);
@@ -334,6 +346,23 @@ export async function uploadMessages(
     await axios.post(`/api/apps/${appId}/messages`, language, { baseURL: remote });
     logger.info(`Successfully uploaded messages for language “${language.language}” 🎉`);
   }
+}
+
+interface DeleteAppArgs {
+  remote: string;
+  id: number;
+  clientCredentials: string;
+}
+
+export async function deleteApp({ clientCredentials, id, remote }: DeleteAppArgs): Promise<void> {
+  await authenticate(remote, 'apps:delete', clientCredentials);
+  const response = await axios.get(`/api/apps/${id}`);
+  const { name } = response.data;
+  logger.warn(`Deleting app: ${name}`);
+  await axios.delete(`/api/apps/${id}`, {
+    baseURL: remote,
+  });
+  logger.info(`Successfully deleted app with id ${id}`);
 }
 
 export async function publishSeedResources(path: string, app: App, remote: string): Promise<void> {

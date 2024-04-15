@@ -1,8 +1,19 @@
 import { resolveFixture } from '@appsemble/node-utils';
+import { createServer, createTestUser, models, setArgv, useTestDatabase } from '@appsemble/server';
+import { type AxiosTestInstance, setTestApp } from 'axios-test-instance';
 import concat from 'concat-stream';
-import { describe, expect, it } from 'vitest';
+import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 
+import { deleteBlock } from './block.js';
+import { initAxios } from './initAxios.js';
 import { makeProjectPayload } from './project.js';
+import { authorizeCLI } from './testUtils.js';
+
+useTestDatabase(import.meta);
+const argv = { host: 'http://localhost', secret: 'test', aesSecret: 'testSecret' };
+let testApp: AxiosTestInstance;
+
+const { BlockVersion, Organization, OrganizationMember } = models;
 
 describe('makeProjectPayload', () => {
   it('should create a form-data payload', async () => {
@@ -96,5 +107,51 @@ export const string = 'with-icon';
 \r
 --${boundary}--\r
 `);
+  });
+});
+
+describe('deleteBlock', () => {
+  let user: models.User;
+  let organization: models.Organization;
+
+  beforeAll(() => {
+    vi.useFakeTimers();
+    setArgv(argv);
+  });
+
+  beforeEach(async () => {
+    vi.clearAllTimers();
+    vi.setSystemTime(0);
+    const server = await createServer();
+    testApp = await setTestApp(server);
+    initAxios({ remote: testApp.defaults.baseURL });
+    user = await createTestUser();
+    organization = await Organization.create({
+      id: 'testorganization',
+      name: 'Test Organization',
+    });
+    await OrganizationMember.create({
+      OrganizationId: organization.id,
+      UserId: user.id,
+      role: 'Owner',
+    });
+  });
+
+  it('should delete a block', async () => {
+    const block = await BlockVersion.create({
+      OrganizationId: organization.id,
+      name: 'test',
+      version: '0.0.0',
+    });
+    const clientCredentials = await authorizeCLI('blocks:delete', testApp);
+    await deleteBlock({
+      remote: testApp.defaults.baseURL,
+      clientCredentials,
+      blockName: block.name,
+      blockVersion: block.version,
+      organization: organization.id,
+    });
+    const foundBlocks = await BlockVersion.findAll();
+    expect(foundBlocks).toStrictEqual([]);
   });
 });

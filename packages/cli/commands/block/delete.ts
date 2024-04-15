@@ -1,4 +1,4 @@
-import { authenticate, logger } from '@appsemble/node-utils';
+import { logger } from '@appsemble/node-utils';
 import { type Argv } from 'yargs';
 
 import { deleteBlock } from '../../lib/block.js';
@@ -30,8 +30,7 @@ export async function handler({
   organization,
   remote,
 }: DeleteBlockArguments): Promise<void> {
-  await authenticate(remote, 'blocks:delete', clientCredentials);
   const [blockName, blockVersion] = block.split(':');
   logger.info(`Deleting Block ${block}`);
-  await deleteBlock({ organization, blockName, blockVersion, remote });
+  await deleteBlock({ organization, blockName, blockVersion, remote, clientCredentials });
 }

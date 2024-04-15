@@ -1,4 +1,3 @@
-import { authenticate } from '@appsemble/node-utils';
 import { type Argv } from 'yargs';
 
 import { resolveAppIdAndRemote } from '../../lib/app.js';
@@ -45,10 +44,10 @@ export async function handler({
 }: DeleteTeamArguments): Promise<void> {
   const [resolvedAppId, resolvedRemote] = await resolveAppIdAndRemote(app, context, remote, appId);
 
-  await authenticate(resolvedRemote, 'teams:write', clientCredentials);
   await deleteTeam({
     id,
     appId: resolvedAppId,
     remote: resolvedRemote,
+    clientCredentials,
   });
 }

@@ -4876,7 +4876,7 @@ describe('setAppLock', () => {
     `);
   });
 
-  it('shall allow to change fullLock from CLI', async () => {
+  it('should allow to change fullLock from CLI', async () => {
     authorizeClientCredentials('apps:write');
     const app = await App.create({
       definition: { name: 'Test App', defaultPage: 'Test Page' },
