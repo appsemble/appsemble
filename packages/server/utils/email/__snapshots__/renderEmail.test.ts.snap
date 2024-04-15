@@ -5,7 +5,7 @@ exports[`appEmailQuotaLimitHit > should render appEmailQuotaLimitHit 0 > html 1`
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta content="width=device-width, initial-scale=1" name="viewport">
 </head>
 <body>
 <p>Hello,</p>
@@ -33,7 +33,7 @@ exports[`appMemberEmailChange > should render appMemberEmailChange 0 > html 1`] 
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta content="width=device-width, initial-scale=1" name="viewport">
 </head>
 <body>
 <p>Hello User,</p>
@@ -66,7 +66,7 @@ exports[`appMemberEmailChange > should render appMemberEmailChange 1 > html 1`] 
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta content="width=device-width, initial-scale=1" name="viewport">
 </head>
 <body>
 <p>Hello,</p>
@@ -99,7 +99,7 @@ exports[`emailAdded > should render emailAdded 0 > html 1`] = `
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta content="width=device-width, initial-scale=1" name="viewport">
 </head>
 <body>
 <p>Hello User,</p>
@@ -140,7 +140,7 @@ exports[`emailAdded > should render emailAdded 1 > html 1`] = `
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta content="width=device-width, initial-scale=1" name="viewport">
 </head>
 <body>
 <p>Hello,</p>
@@ -181,7 +181,7 @@ exports[`organizationInvite > should render organizationInvite 0 > html 1`] = `
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta content="width=device-width, initial-scale=1" name="viewport">
 </head>
 <body>
 <p>Hello User,</p>
@@ -217,7 +217,7 @@ exports[`organizationInvite > should render organizationInvite 1 > html 1`] = `
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta content="width=device-width, initial-scale=1" name="viewport">
 </head>
 <body>
 <p>Hello,</p>
@@ -253,7 +253,7 @@ exports[`resend > should render resend 0 > html 1`] = `
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta content="width=device-width, initial-scale=1" name="viewport">
 </head>
 <body>
 <p>Hello User,</p>
@@ -294,7 +294,7 @@ exports[`resend > should render resend 1 > html 1`] = `
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta content="width=device-width, initial-scale=1" name="viewport">
 </head>
 <body>
 <p>Hello,</p>
@@ -335,7 +335,7 @@ exports[`reset > should render reset 0 > html 1`] = `
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta content="width=device-width, initial-scale=1" name="viewport">
 </head>
 <body>
 <p>Hello User,</p>
@@ -371,7 +371,7 @@ exports[`reset > should render reset 1 > html 1`] = `
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta content="width=device-width, initial-scale=1" name="viewport">
 </head>
 <body>
 <p>Hello,</p>
@@ -407,7 +407,7 @@ exports[`teamInvite > should render teamInvite 0 > html 1`] = `
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta content="width=device-width, initial-scale=1" name="viewport">
 </head>
 <body>
 <p>Hello,</p>
@@ -438,7 +438,7 @@ exports[`welcome > should render welcome 0 > html 1`] = `
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta content="width=device-width, initial-scale=1" name="viewport">
 </head>
 <body>
 <p>Hello User,</p>
@@ -471,7 +471,7 @@ exports[`welcome > should render welcome 1 > html 1`] = `
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta content="width=device-width, initial-scale=1" name="viewport">
 </head>
 <body>
 <p>Hello,</p>
@@ -504,7 +504,7 @@ exports[`welcomeMember > should render welcomeMember 0 > html 1`] = `
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta content="width=device-width, initial-scale=1" name="viewport">
 </head>
 <body>
 <p>Hello User,</p>
@@ -537,7 +537,7 @@ exports[`welcomeMember > should render welcomeMember 1 > html 1`] = `
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta content="width=device-width, initial-scale=1" name="viewport">
 </head>
 <body>
 <p>Hello,</p>

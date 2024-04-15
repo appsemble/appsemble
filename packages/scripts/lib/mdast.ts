@@ -6,7 +6,6 @@ import {
   type ListItem,
   type PhrasingContent,
   type Root,
-  type StaticPhrasingContent,
   type Text,
 } from 'mdast';
 import { toMarkdown } from 'mdast-util-to-markdown';
@@ -43,7 +42,7 @@ export function createHeading(
  * @param children Child nodes to append to the link reference.
  * @returns A link reference node.
  */
-export function createLink(url: string, children: (StaticPhrasingContent | string)[]): Link {
+export function createLink(url: string, children: (PhrasingContent | string)[]): Link {
   return {
     type: 'link',
     url,

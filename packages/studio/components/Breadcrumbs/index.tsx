@@ -1,7 +1,7 @@
 import { useBreadcrumbs } from '@appsemble/react-components';
+import { type ReactNode } from 'react';
 import { useIntl } from 'react-intl';
 import { Link } from 'react-router-dom';
-import { type ReactNode } from 'rehype-react/lib';
 
 import { messages } from './messages.js';
 import { useBreadCrumbsDecoration } from '../BreadCrumbsDecoration/index.js';

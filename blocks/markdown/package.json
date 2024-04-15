@@ -18,12 +18,12 @@
   },
   "dependencies": {
     "@appsemble/sdk": "0.27.12",
-    "rehype-dom-stringify": "^3.0.0",
-    "rehype-raw": "^6.0.0",
-    "rehype-sanitize": "^5.0.0",
-    "remark-gfm": "^3.0.0",
-    "remark-parse": "^10.0.0",
-    "remark-rehype": "^10.0.0",
-    "unified": "^10.0.0"
+    "rehype-dom-stringify": "^4.0.0",
+    "rehype-raw": "^7.0.0",
+    "rehype-sanitize": "^6.0.0",
+    "remark-gfm": "^4.0.0",
+    "remark-parse": "^11.0.0",
+    "remark-rehype": "^11.0.0",
+    "unified": "^11.0.0"
   }
 }

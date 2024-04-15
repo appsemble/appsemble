@@ -218,7 +218,7 @@ describe('sendTranslatedEmail', () => {
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta content="width=device-width, initial-scale=1" name="viewport">
 </head>
 <body>
 <p>Hello John Doe,</p>
@@ -264,7 +264,7 @@ _Test App_
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta content="width=device-width, initial-scale=1" name="viewport">
 </head>
 <body>
 <p>Beste John Doe,</p>
@@ -310,7 +310,7 @@ _Test App_
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta content="width=device-width, initial-scale=1" name="viewport">
 </head>
 <body>
 <p>Hello John Doe,</p>
@@ -366,7 +366,7 @@ _Test App_
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta content="width=device-width, initial-scale=1" name="viewport">
 </head>
 <body>
 <p>Hoi John Doe!</p>
@@ -409,7 +409,7 @@ _Test App_
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta content="width=device-width, initial-scale=1" name="viewport">
 </head>
 <body>
 <p>Hoi John Doe!</p>
@@ -452,7 +452,7 @@ _Test App_
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta content="width=device-width, initial-scale=1" name="viewport">
 </head>
 <body>
 <p>How do you do, John Doe?</p>
