@@ -151,7 +151,7 @@ describe('deleteBlock', () => {
       blockVersion: block.version,
       organization: organization.id,
     });
-    const foundBlock = await BlockVersion.findOne({});
-    expect(foundBlock).toBeNull();
+    const foundBlocks = await BlockVersion.findAll();
+    expect(foundBlocks).toStrictEqual([]);
   });
 });

@@ -359,7 +359,7 @@ export async function deleteApp({ clientCredentials, id, remote }: DeleteAppArgs
   const response = await axios.get(`/api/apps/${id}`);
   const { name } = response.data;
   logger.warn(`Deleting app: ${name}`);
-  axios.delete(`/api/apps/${id}`, {
+  await axios.delete(`/api/apps/${id}`, {
     baseURL: remote,
   });
   logger.info(`Successfully deleted app with id ${id}`);

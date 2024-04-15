@@ -105,12 +105,13 @@ export async function upsertOrganization({
 }: OrganizationArguments): Promise<void> {
   try {
     await axios.get(`/api/organizations/${id}`);
-    updateOrganization({ description, email, icon, id, name, website });
+    await updateOrganization({ description, email, icon, id, name, website });
   } catch (error) {
-    if (axios.isAxiosError(error) && error.response.status === 404) {
-      createOrganization({ description, email, icon, id, name, website });
+    if (axios.isAxiosError(error) && error.response?.status === 404) {
+      await createOrganization({ description, email, icon, id, name, website });
     } else {
       logger.error(error);
+      throw error;
     }
   }
 }

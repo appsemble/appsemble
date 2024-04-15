@@ -1676,7 +1676,7 @@ describe('updateApp', () => {
     });
   });
 
-  it('shall update an app with `app.locked` set to `fullLock` if force is specified', async () => {
+  it('should update an app with `app.locked` set to `fullLock` if force is specified', async () => {
     await app.update({ locked: 'fullLock' });
     const clientCredentials = await authorizeCLI('apps:write', testApp);
     await updateApp({
@@ -1780,7 +1780,7 @@ describe('updateApp', () => {
     `);
   });
 
-  it('shall not update an app if the `app.locked` is set to `fullLock`', async () => {
+  it('should not update an app if the `app.locked` is set to `fullLock`', async () => {
     await app.update({ locked: 'fullLock' });
     const clientCredentials = await authorizeCLI('apps:write', testApp);
     await expect(
@@ -2043,7 +2043,7 @@ describe('patchApp', () => {
     expect(app.dataValues[key]).toStrictEqual(to);
   });
 
-  it('shall not apply a patch if the `app.locked` is set to `fullLock`', async () => {
+  it('should not apply a patch if the `app.locked` is set to `fullLock`', async () => {
     const app = await App.create(
       {
         path: 'test-app',
@@ -2068,7 +2068,7 @@ describe('patchApp', () => {
     expect(app.dataValues.showAppDefinition).toBe(false);
   });
 
-  it('shall apply a patch if the `app.locked` is set to `fullLock` and `force` is specified', async () => {
+  it('should apply a patch if the `app.locked` is set to `fullLock` and `force` is specified', async () => {
     const app = await App.create(
       {
         path: 'test-app',
@@ -2252,15 +2252,14 @@ describe('traverseAppDirectory', () => {
 });
 
 describe('deleteApp', () => {
-  it('should return an error if the app does not exist', async () => {
+  it('should throw if an error occurs', async () => {
     const clientCredentials = await authorizeCLI('apps:delete', testApp);
     await expect(() =>
       deleteApp({ id: 1, remote: testApp.defaults.baseURL, clientCredentials }),
     ).rejects.toThrow('Request failed with status code 404');
   });
 
-  /*
-  It('should delete an app', async () => {
+  it('should delete an app', async () => {
     const app = await App.create({
       path: 'test-app',
       definition: { name: 'Test App', defaultPage: 'Test Page' },
@@ -2271,8 +2270,7 @@ describe('deleteApp', () => {
     });
     const clientCredentials = await authorizeCLI('apps:delete', testApp);
     await deleteApp({ id: app.id, remote: testApp.defaults.baseURL, clientCredentials });
-    await app.reload();
-    expect(app).toBeNull();
+    const foundApps = await App.findAll();
+    expect(foundApps).toStrictEqual([]);
   });
-  */
 });

@@ -3,7 +3,7 @@ import { type AxiosTestInstance, setTestApp } from 'axios-test-instance';
 import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { initAxios } from './initAxios.js';
-import { createOrganization, updateOrganization } from './organization.js';
+import { createOrganization, updateOrganization, upsertOrganization } from './organization.js';
 import { authorizeCLI } from './testUtils.js';
 
 const argv = { host: 'http://localhost', secret: 'test', aesSecret: 'testSecret' };
@@ -160,5 +160,85 @@ describe('updateOrganization', () => {
         icon: null,
       }),
     ).rejects.toThrow('Request failed with status code 401');
+  });
+});
+
+describe('upsertOrganization', () => {
+  it('should create a new organization if doesn’t exist already', async () => {
+    await authorizeCLI('organizations:write', testApp);
+    await upsertOrganization({
+      description: 'test description',
+      id: 'test',
+      name: 'Test',
+      email: 'test@example.com',
+      icon: null,
+      website: 'https://example.com',
+    });
+    const organization = await Organization.findOne();
+    expect(organization).toMatchObject({
+      id: 'test',
+      description: 'test description',
+      name: 'Test',
+      email: 'test@example.com',
+      icon: null,
+      website: 'https://example.com',
+    });
+  });
+
+  it('should update an existing organization', async () => {
+    const organization = await Organization.create({
+      id: 'test',
+      name: 'Test',
+    });
+    await OrganizationMember.create({
+      OrganizationId: organization.id,
+      UserId: user.id,
+      role: 'Owner',
+    });
+    await authorizeCLI('organizations:write', testApp);
+    await upsertOrganization({
+      id: organization.id,
+      name: 'Test changed',
+      description: null,
+      email: 'test@example.com',
+      website: null,
+      icon: null,
+    });
+    expect(organization).toMatchObject({
+      id: 'test',
+      name: 'Test',
+    });
+    await organization.reload();
+    expect(organization).toMatchObject({
+      id: organization.id,
+      name: 'Test changed',
+      description: null,
+      email: 'test@example.com',
+      website: null,
+      icon: null,
+    });
+  });
+
+  it('should throw if there is an error', async () => {
+    const organization = await Organization.create({
+      id: 'test',
+      name: 'Test',
+    });
+    await authorizeCLI('organizations:write', testApp);
+    // Fails because the organization member does not exist.
+    await expect(() =>
+      upsertOrganization({
+        id: organization.id,
+        name: 'Test changed',
+        description: null,
+        email: 'test@example.com',
+        website: 'https://www.example.com',
+        icon: null,
+      }),
+    ).rejects.toThrow('Request failed with status code 403');
+    expect(organization).toMatchObject({
+      id: 'test',
+      name: 'Test',
+    });
   });
 });

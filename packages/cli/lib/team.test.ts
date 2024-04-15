@@ -338,7 +338,7 @@ describe('updateTeam', () => {
 });
 
 describe('inviteMember', () => {
-  it('shall invite a member to a team', async () => {
+  it('should invite a member to a team', async () => {
     const app = await App.create({
       definition: {
         name: 'Test App',
@@ -396,7 +396,7 @@ describe('inviteMember', () => {
     );
   });
 
-  it('shall throw an error if the user is not AppMember', async () => {
+  it('should throw an error if the user is not AppMember', async () => {
     const app = await App.create({
       definition: {
         name: 'Test App',
@@ -431,7 +431,7 @@ describe('inviteMember', () => {
     ).rejects.toThrow('Request failed with status code 404');
   });
 
-  it('shall throw an error if the team does not exist', async () => {
+  it('should throw an error if the team does not exist', async () => {
     const app = await App.create({
       definition: {
         name: 'Test App',
@@ -520,7 +520,7 @@ describe('updateMember', () => {
     expect(teamMember.role).toBe('manager');
   });
 
-  it('shall throw an error if the user is not a TeamMember', async () => {
+  it('should throw an error if the user is not a TeamMember', async () => {
     const app = await App.create({
       definition: {
         name: 'Test App',
@@ -619,7 +619,7 @@ describe('deleteMember', () => {
     expect(foundTeamMember).toBeNull();
   });
 
-  it('shall throw an error if the TeamMember does not exist', async () => {
+  it('should throw an error if the TeamMember does not exist', async () => {
     const app = await App.create({
       definition: {
         name: 'Test App',
