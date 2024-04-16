@@ -2,6 +2,26 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.28.0](https://gitlab.com/appsemble/appsemble/-/releases/0.28.0)] - 2024-04-16
+
+### Added
+
+- Studio: Add edit and delete buttons on an organization’s app collections page.
+- Studio: Add option to view seed resources on the resource details page.
+
+### Changed
+
+- Server: Change the type of the `data` column in the `Resource` table to optimize performance and
+  support sorting by nested fields.
+- Utils: Add support for remappers in the prop remapper.
+
+### Fixed
+
+- Block(`list`): The block would throw an error when there is no data instead of displaying the
+  `No data` message.
+- Cli: `team update` command should use `patch` request.
+- Utils: The `date.format` remapper would not accept strings.
+
 ## \[[0.27.12](https://gitlab.com/appsemble/appsemble/-/releases/0.27.12)] - 2024-04-10
 
 ### Added
