@@ -24,6 +24,8 @@ const transformer: Transformer<Root> = (ast) => {
           heading.properties.id as string,
           {
             title: toText(heading),
+            // XXX: handle unexpected `mdxJsx*` tokens contained in element when updating
+            // hast-util-to-text to v4.0.1 to avoid console.trace messages
             haystack: toText({ type: 'root', children: section }),
           },
         ]);

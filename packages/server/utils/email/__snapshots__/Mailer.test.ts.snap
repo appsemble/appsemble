@@ -34,7 +34,7 @@ exports[`sendTranslatedEmail > appMemberEmailChange > en > should render appMemb
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta content="width=device-width, initial-scale=1" name="viewport">
 </head>
 <body>
 <p>Hello,</p>
@@ -70,7 +70,7 @@ exports[`sendTranslatedEmail > appMemberEmailChange > en > should render appMemb
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta content="width=device-width, initial-scale=1" name="viewport">
 </head>
 <body>
 <p>Hello John Doe,</p>
@@ -106,7 +106,7 @@ exports[`sendTranslatedEmail > appMemberEmailChange > nl > should render appMemb
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta content="width=device-width, initial-scale=1" name="viewport">
 </head>
 <body>
 <p>Hallo,</p>
@@ -142,7 +142,7 @@ exports[`sendTranslatedEmail > appMemberEmailChange > nl > should render appMemb
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta content="width=device-width, initial-scale=1" name="viewport">
 </head>
 <body>
 <p>Beste John Doe,</p>
@@ -178,7 +178,7 @@ exports[`sendTranslatedEmail > resend > en > should render resend 0 for locale e
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta content="width=device-width, initial-scale=1" name="viewport">
 </head>
 <body>
 <p>Hello,</p>
@@ -220,7 +220,7 @@ exports[`sendTranslatedEmail > resend > en > should render resend 1 for locale e
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta content="width=device-width, initial-scale=1" name="viewport">
 </head>
 <body>
 <p>Hello John Doe,</p>
@@ -262,7 +262,7 @@ exports[`sendTranslatedEmail > resend > nl > should render resend 0 for locale n
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta content="width=device-width, initial-scale=1" name="viewport">
 </head>
 <body>
 <p>Hallo,</p>
@@ -304,7 +304,7 @@ exports[`sendTranslatedEmail > resend > nl > should render resend 1 for locale n
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta content="width=device-width, initial-scale=1" name="viewport">
 </head>
 <body>
 <p>Beste John Doe,</p>
@@ -346,7 +346,7 @@ exports[`sendTranslatedEmail > reset > en > should render reset 0 for locale en 
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta content="width=device-width, initial-scale=1" name="viewport">
 </head>
 <body>
 <p>Hello,</p>
@@ -385,7 +385,7 @@ exports[`sendTranslatedEmail > reset > en > should render reset 1 for locale en 
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta content="width=device-width, initial-scale=1" name="viewport">
 </head>
 <body>
 <p>Hello John Doe,</p>
@@ -424,7 +424,7 @@ exports[`sendTranslatedEmail > reset > nl > should render reset 0 for locale nl 
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta content="width=device-width, initial-scale=1" name="viewport">
 </head>
 <body>
 <p>Hallo,</p>
@@ -463,7 +463,7 @@ exports[`sendTranslatedEmail > reset > nl > should render reset 1 for locale nl 
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta content="width=device-width, initial-scale=1" name="viewport">
 </head>
 <body>
 <p>Beste John Doe,</p>
@@ -502,7 +502,7 @@ exports[`sendTranslatedEmail > welcome > en > should render welcome 0 for locale
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta content="width=device-width, initial-scale=1" name="viewport">
 </head>
 <body>
 <p>Hello,</p>
@@ -538,7 +538,7 @@ exports[`sendTranslatedEmail > welcome > en > should render welcome 1 for locale
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta content="width=device-width, initial-scale=1" name="viewport">
 </head>
 <body>
 <p>Hello John Doe,</p>
@@ -574,7 +574,7 @@ exports[`sendTranslatedEmail > welcome > nl > should render welcome 0 for locale
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta content="width=device-width, initial-scale=1" name="viewport">
 </head>
 <body>
 <p>Hallo,</p>
@@ -610,7 +610,7 @@ exports[`sendTranslatedEmail > welcome > nl > should render welcome 1 for locale
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta content="width=device-width, initial-scale=1" name="viewport">
 </head>
 <body>
 <p>Beste John Doe,</p>

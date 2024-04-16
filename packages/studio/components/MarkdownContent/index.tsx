@@ -1,11 +1,6 @@
 import classNames from 'classnames';
-import {
-  type ComponentPropsWithoutRef,
-  createElement,
-  Fragment,
-  type ReactNode,
-  useMemo,
-} from 'react';
+import { type ComponentPropsWithoutRef, type ReactNode, useMemo } from 'react';
+import * as production from 'react/jsx-runtime';
 import rehypeReact from 'rehype-react';
 import rehypeSanitize, { defaultSchema } from 'rehype-sanitize';
 import remarkGfm from 'remark-gfm';
@@ -65,7 +60,8 @@ const processor = unified()
       ],
     },
   })
-  .use(rehypeReact, { createElement, Fragment, components: { a: Anchor, pre: Pre } });
+  // @ts-expect-error works anyways
+  .use(rehypeReact, { ...production, components: { a: Anchor, pre: Pre } });
 
 /**
  * Render a Markdown document as HTML.

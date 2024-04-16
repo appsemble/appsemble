@@ -10,12 +10,7 @@ import retextSpell from 'retext-spell';
 import retextSyntaxURLs from 'retext-syntax-urls';
 import { unified } from 'unified';
 
-let enDic;
-en((_, result) => {
-  enDic = result.dic;
-});
-
-const dictionary = () => Buffer.concat([enDic, nl.dic]);
+const dictionary = () => Buffer.concat([en.dic, nl.dic]);
 
 export default {
   settings: {

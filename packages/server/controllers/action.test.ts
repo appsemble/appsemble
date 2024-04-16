@@ -1612,7 +1612,7 @@ describe('handleEmail', () => {
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta content="width=device-width, initial-scale=1" name="viewport">
 </head>
 <body>
 <p>Body</p>
@@ -1650,7 +1650,7 @@ describe('handleEmail', () => {
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta content="width=device-width, initial-scale=1" name="viewport">
 </head>
 <body>
 <p>Test</p>
@@ -1688,7 +1688,7 @@ describe('handleEmail', () => {
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta content="width=device-width, initial-scale=1" name="viewport">
 </head>
 <body>
 <p>Test</p>
@@ -1753,7 +1753,7 @@ describe('handleEmail', () => {
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta content="width=device-width, initial-scale=1" name="viewport">
 </head>
 <body>
 <p>Body</p>
@@ -1811,7 +1811,7 @@ describe('handleEmail', () => {
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta content="width=device-width, initial-scale=1" name="viewport">
 </head>
 <body>
 <p>Body</p>
@@ -1857,7 +1857,7 @@ describe('handleEmail', () => {
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta content="width=device-width, initial-scale=1" name="viewport">
 </head>
 <body>
 <p>Body</p>
@@ -1902,7 +1902,7 @@ describe('handleEmail', () => {
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta content="width=device-width, initial-scale=1" name="viewport">
 </head>
 <body>
 <p>Body</p>
@@ -1941,7 +1941,7 @@ describe('handleEmail', () => {
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta content="width=device-width, initial-scale=1" name="viewport">
 </head>
 <body>
 <p>Body</p>

@@ -8,13 +8,13 @@ import HtmlWebpackPlugin, { type MinifyOptions } from 'html-webpack-plugin';
 import MiniCssExtractPlugin from 'mini-css-extract-plugin';
 import rehypeAutolinkHeadings from 'rehype-autolink-headings';
 import rehypeMdxCodeProps from 'rehype-mdx-code-props';
+import rehypeMdxImportMedia from 'rehype-mdx-import-media';
 import rehypeMdxTitle from 'rehype-mdx-title';
-import rehypeMermaid from 'rehype-mermaidjs';
+import rehypeMermaid from 'rehype-mermaid';
 import rehypeSlug from 'rehype-slug';
 import remarkFrontmatter from 'remark-frontmatter';
 import remarkGfm from 'remark-gfm';
 import remarkMdxFrontmatter from 'remark-mdx-frontmatter';
-import remarkMdxImages from 'remark-mdx-images';
 import { type Options } from 'sass';
 import UnusedWebpackPlugin from 'unused-webpack-plugin';
 import { type Configuration } from 'webpack';
@@ -171,11 +171,11 @@ function shared(env: string, { mode }: CliConfigOptions): Configuration {
                   remarkFrontmatter,
                   remarkGfm,
                   remarkMdxFrontmatter,
-                  remarkMdxImages,
                   remarkRewriteLinks,
                 ],
                 rehypePlugins: [
                   production && rehypeMermaid,
+                  rehypeMdxImportMedia,
                   rehypeMdxCodeProps,
                   rehypeMdxTitle,
                   rehypeSlug,
