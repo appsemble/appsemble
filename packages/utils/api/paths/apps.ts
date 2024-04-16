@@ -146,6 +146,28 @@ export const paths: OpenAPIV3.PathsObject = {
       security: [{ studio: [] }, {}],
     },
   },
+  '/api/apps/path/{appPath}': {
+    parameters: [{ $ref: '#/components/parameters/appPath' }],
+    get: {
+      tags: ['app', 'app-path'],
+      parameters: [
+        {
+          name: 'language',
+          schema: { type: 'string' },
+          description: 'The language to include the translations of, if available',
+          in: 'query',
+        },
+      ],
+      description: 'Get an app by app-path',
+      operationId: 'getAppByPath',
+      responses: {
+        200: {
+          description: 'The app that matches the given app path.',
+          $ref: '#/components/responses/app',
+        },
+      },
+    },
+  },
   '/api/apps/{appId}': {
     parameters: [{ $ref: '#/components/parameters/appId' }],
     get: {

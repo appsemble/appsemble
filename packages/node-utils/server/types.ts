@@ -75,6 +75,7 @@ declare module 'koas-security' {
 declare module 'koas-parameters' {
   interface PathParams {
     appId: number;
+    appPath: string;
     appCollectionId: number;
     appOAuth2SecretId: number;
     appSamlSecretId: number;

@@ -5,6 +5,7 @@ export * from './$team.js';
 export * from './$top.js';
 export * from './$skip.js';
 export * from './appId.js';
+export * from './appPath.js';
 export * from './appOAuth2SecretId.js';
 export * from './appSamlSecretId.js';
 export * from './assetId.js';

@@ -25,7 +25,17 @@ import JSZip from 'jszip';
 import { type Context } from 'koa';
 import { type File } from 'koas-body-parser';
 import { lookup } from 'mime-types';
-import { col, fn, literal, Op, type Transaction, UniqueConstraintError } from 'sequelize';
+import {
+  col,
+  type FindOptions,
+  fn,
+  type Includeable,
+  type IncludeOptions,
+  literal,
+  Op,
+  type Transaction,
+  UniqueConstraintError,
+} from 'sequelize';
 import sharp from 'sharp';
 import webpush from 'web-push';
 import { parse, stringify } from 'yaml';
@@ -217,6 +227,93 @@ async function createAppReadmes(
   );
 }
 
+async function applyFiltersAndRatings(
+  ctx: Context,
+  app: App,
+  language: string,
+  baseLanguage: string,
+  propertyFilters: (keyof AppType)[],
+): Promise<void> {
+  if (app.visibility === 'private' || !app.showAppDefinition) {
+    try {
+      await checkRole(ctx, app.OrganizationId, Permission.ViewApps);
+    } catch (error) {
+      if (app.visibility === 'private') {
+        throw error;
+      }
+      propertyFilters.push('yaml');
+    }
+  }
+
+  const rating = await AppRating.findOne({
+    attributes: [
+      'AppId',
+      [fn('AVG', col('rating')), 'RatingAverage'],
+      [fn('COUNT', col('AppId')), 'RatingCount'],
+    ],
+    where: { AppId: app.id },
+    group: ['AppId'],
+  });
+
+  if (rating) {
+    // eslint-disable-next-line no-param-reassign
+    app.RatingCount = Number(rating.get('RatingCount'));
+    // eslint-disable-next-line no-param-reassign
+    app.RatingAverage = Number(rating.get('RatingAverage'));
+  }
+
+  applyAppMessages(app, language, baseLanguage);
+}
+
+async function findScreenshotsAndReadmes(
+  appId: number,
+  language: string,
+): Promise<{
+  languageScreenshot: AppScreenshot | null;
+  unspecifiedScreenshot: AppScreenshot | null;
+  languageReadme: AppReadme | null;
+  unspecifiedReadme: AppReadme | null;
+}> {
+  const languageScreenshot = await AppScreenshot.findOne({
+    attributes: ['language'],
+    where: {
+      AppId: appId,
+      ...(language ? { language } : {}),
+    },
+  });
+
+  const unspecifiedScreenshot = await AppScreenshot.findOne({
+    attributes: ['language'],
+    where: {
+      AppId: appId,
+      language: 'unspecified',
+    },
+  });
+
+  const languageReadme = await AppReadme.findOne({
+    attributes: ['language'],
+    where: {
+      AppId: appId,
+      ...(language ? { language } : {}),
+    },
+  });
+
+  const unspecifiedReadme = await AppReadme.findOne({
+    attributes: ['language'],
+    where: {
+      AppId: appId,
+      language: 'unspecified',
+    },
+  });
+
+  return {
+    languageScreenshot,
+    unspecifiedScreenshot,
+    languageReadme,
+    unspecifiedReadme,
+  };
+}
+
 export async function createApp(ctx: Context): Promise<void> {
   const {
     openApi,
@@ -350,45 +447,8 @@ export async function createApp(ctx: Context): Promise<void> {
   }
 }
 
-export async function getAppById(ctx: Context): Promise<void> {
-  const {
-    pathParams: { appId },
-  } = ctx;
-  const { baseLanguage, language, query: languageQuery } = parseLanguage(ctx, ctx.query?.language);
-
-  const languageScreenshot = await AppScreenshot.findOne({
-    attributes: ['language'],
-    where: {
-      AppId: appId,
-      ...(language ? { language } : {}),
-    },
-  });
-
-  const unspecifiedScreenshot = await AppScreenshot.findOne({
-    attributes: ['language'],
-    where: {
-      AppId: appId,
-      language: 'unspecified',
-    },
-  });
-
-  const languageReadme = await AppReadme.findOne({
-    attributes: ['language'],
-    where: {
-      AppId: appId,
-      ...(language ? { language } : {}),
-    },
-  });
-
-  const unspecifiedReadme = await AppReadme.findOne({
-    attributes: ['language'],
-    where: {
-      AppId: appId,
-      language: 'unspecified',
-    },
-  });
-
-  const app = await App.findByPk(appId, {
+function fetchAppOptions(languageQuery: IncludeOptions[]): FindOptions {
+  return {
     attributes: {
       include: [
         [literal('"App".icon IS NOT NULL'), 'hasIcon'],
@@ -421,6 +481,72 @@ export async function getAppById(ctx: Context): Promise<void> {
           ],
         },
       },
+      ...languageQuery,
+    ],
+  };
+}
+
+export async function getAppByPath(ctx: Context): Promise<void> {
+  const {
+    pathParams: { appPath },
+  } = ctx;
+  const { baseLanguage, language, query: languageQuery } = parseLanguage(ctx, ctx.query?.language);
+  const app = await App.findOne({
+    where: { path: appPath },
+    ...fetchAppOptions(languageQuery),
+  });
+
+  assertKoaError(!app, ctx, 404, 'App not found');
+  const { languageReadme, languageScreenshot, unspecifiedReadme, unspecifiedScreenshot } =
+    await findScreenshotsAndReadmes(app.id, language);
+
+  await app.reload({
+    include: [
+      {
+        model: AppScreenshot,
+        attributes: ['id', 'index', 'language'],
+        where: {
+          language:
+            language && languageScreenshot
+              ? language
+              : unspecifiedScreenshot
+                ? 'unspecified'
+                : 'en',
+        },
+        required: false,
+      },
+      {
+        model: AppReadme,
+        attributes: ['id', 'language'],
+        where: {
+          language:
+            language && languageReadme ? language : unspecifiedReadme ? 'unspecified' : 'en',
+        },
+        required: false,
+      },
+    ],
+  });
+  const propertyFilters: (keyof AppType)[] = [];
+
+  await applyFiltersAndRatings(ctx, app, language, baseLanguage, propertyFilters);
+
+  ctx.status = 200;
+  ctx.body = app.toJSON(propertyFilters);
+}
+
+export async function getAppById(ctx: Context): Promise<void> {
+  const {
+    pathParams: { appId },
+  } = ctx;
+  const { baseLanguage, language, query: languageQuery } = parseLanguage(ctx, ctx.query?.language);
+
+  const { languageReadme, languageScreenshot, unspecifiedReadme, unspecifiedScreenshot } =
+    await findScreenshotsAndReadmes(appId, language);
+
+  const app = await App.findByPk(appId, {
+    attributes: { ...fetchAppOptions(languageQuery).attributes },
+    include: [
+      ...(fetchAppOptions(languageQuery).include as Includeable[]),
       {
         model: AppScreenshot,
         attributes: ['id', 'index', 'language'],
@@ -450,33 +576,8 @@ export async function getAppById(ctx: Context): Promise<void> {
   assertKoaError(!app, ctx, 404, 'App not found');
 
   const propertyFilters: (keyof AppType)[] = [];
-  if (app.visibility === 'private' || !app.showAppDefinition) {
-    try {
-      await checkRole(ctx, app.OrganizationId, Permission.ViewApps);
-    } catch (error) {
-      if (app.visibility === 'private') {
-        throw error;
-      }
-      propertyFilters.push('yaml');
-    }
-  }
 
-  const rating = await AppRating.findOne({
-    attributes: [
-      'AppId',
-      [fn('AVG', col('rating')), 'RatingAverage'],
-      [fn('COUNT', col('AppId')), 'RatingCount'],
-    ],
-    where: { AppId: app.id },
-    group: ['AppId'],
-  });
-
-  if (rating) {
-    app.RatingCount = Number(rating.get('RatingCount'));
-    app.RatingAverage = Number(rating.get('RatingAverage'));
-  }
-
-  applyAppMessages(app, language, baseLanguage);
+  await applyFiltersAndRatings(ctx, app, language, baseLanguage, propertyFilters);
 
   ctx.status = 200;
   ctx.body = app.toJSON(propertyFilters);
