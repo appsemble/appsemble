@@ -21,9 +21,10 @@ import {
   type ParameterizedContext,
 } from 'koa';
 import parseDuration from 'parse-duration';
-import { Op, type Order, type WhereOptions } from 'sequelize';
+import { literal, Op, type Order, type WhereOptions } from 'sequelize';
+import { type Literal } from 'sequelize/types/utils';
 
-import { odataFilterToSequelize, odataOrderbyToSequelize } from './odata.js';
+import { type FieldType, odataFilterToSequelize, odataOrderbyToSequelize } from './odata.js';
 import { sendNotification, type SendNotificationOptions } from './sendNotification.js';
 import {
   App,
@@ -56,6 +57,21 @@ export function renameOData(name: string): string {
       return name;
     default:
       return `data.${name}`;
+  }
+}
+
+export function renameODataWithCasting(name: string, type?: FieldType): Literal | string {
+  switch (name) {
+    case '__created__':
+      return 'created';
+    case '__updated__':
+      return 'updated';
+    case '__author__':
+      return 'AuthorId';
+    case 'id':
+      return name;
+    default:
+      return type === 'string' ? `data.${name}` : literal(`("Resource"."data"#>'{${name}}')`);
   }
 }
 
@@ -409,7 +425,11 @@ export function validate(
  * @param query The query parameters to extract the parameters from.
  * @returns An object containing the generated order and query options.
  */
-export function parseQuery({ $filter, $orderby }: Pick<QueryParams, '$filter' | '$orderby'>): {
+export function parseQuery({
+  $filter,
+  $orderby,
+  resourceDefinition,
+}: Pick<QueryParams, '$filter' | '$orderby'> & { resourceDefinition: ResourceDefinition }): {
   order: Order;
   query: WhereOptions;
 } {
@@ -418,7 +438,8 @@ export function parseQuery({ $filter, $orderby }: Pick<QueryParams, '$filter' | 
         $orderby
           .replaceAll(/(^|\B)\$created(\b|$)/g, '__created__')
           .replaceAll(/(^|\B)\$updated(\b|$)/g, '__updated__'),
-        renameOData,
+        renameODataWithCasting,
+        resourceDefinition,
       )
     : undefined;
   const query = $filter

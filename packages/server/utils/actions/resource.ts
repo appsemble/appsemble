@@ -86,11 +86,12 @@ export async function query({
   const { view } = action;
   const queryRemapper = action?.query ?? app.definition.resources[action.resource]?.query?.query;
 
-  const queryParams = remap(queryRemapper, data, internalContext) as QueryParams;
+  const queryParams = (remap(queryRemapper, data, internalContext) || {}) as QueryParams;
 
-  const parsed = parseQuery(queryParams || {});
-  const include = queryParams?.$select?.split(',').map((s) => s.trim());
   const resourceDefinition = getResourceDefinition(app.toJSON(), action.resource, context, view);
+
+  const parsed = parseQuery({ ...queryParams, resourceDefinition });
+  const include = queryParams?.$select?.split(',').map((s) => s.trim());
 
   const resources = await Resource.findAll({
     include: [

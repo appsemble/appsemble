@@ -13,15 +13,21 @@ import {
   throwKoaError,
   type WhereOptions,
 } from '@appsemble/node-utils';
+import { type ResourceDefinition } from '@appsemble/types';
 import { defaultLocale, remap } from '@appsemble/utils';
 import { type Context, type Middleware } from 'koa';
 
 function generateQuery(
   ctx: Context,
   { parseQuery }: Options,
+  resourceDefinition?: ResourceDefinition,
 ): { order: OrderItem[]; where: WhereOptions } {
   try {
-    return parseQuery({ $filter: ctx.queryParams.$filter, $orderby: ctx.queryParams.$orderby });
+    return parseQuery({
+      $filter: ctx.queryParams.$filter,
+      $orderby: ctx.queryParams.$orderby,
+      resourceDefinition,
+    });
   } catch (error: unknown) {
     if (error instanceof Error) {
       throwKoaError(ctx, 400, 'Unable to process this query', { syntaxError: error.message });
@@ -43,7 +49,11 @@ export function createQueryResources(options: Options): Middleware {
 
     const app = await getApp({ context: ctx, query: { where: { id: appId } } });
 
-    const { order, where } = generateQuery(ctx, options);
+    const view = ctx.queryParams?.view;
+
+    const resourceDefinition = getResourceDefinition(app, resourceType, ctx, view);
+
+    const { order, where } = generateQuery(ctx, options, resourceDefinition);
 
     const memberQuery = await verifyResourceActionPermission({
       context: ctx,
@@ -79,10 +89,6 @@ export function createQueryResources(options: Options): Middleware {
       type: resourceType,
       context: ctx,
     });
-
-    const view = ctx.queryParams?.view;
-
-    const resourceDefinition = getResourceDefinition(app, resourceType, ctx, view);
 
     if (view) {
       const context = await getRemapperContext(

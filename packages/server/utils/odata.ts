@@ -1,6 +1,8 @@
 import { Edm, processLiteral } from '@appsemble/node-utils';
+import { type ResourceDefinition } from '@appsemble/types';
 import { has } from '@appsemble/utils';
 import { defaultParser, type Token, TokenType } from '@odata/parser';
+import { OpenAPIV3 } from 'openapi-types';
 import {
   col,
   fn,
@@ -12,9 +14,13 @@ import {
   type WhereOptions,
   type WhereValue,
 } from 'sequelize';
-import { type Col, type Fn, type Json, type Where } from 'sequelize/types/utils';
+import { type Col, type Fn, type Json, type Literal, type Where } from 'sequelize/types/utils';
+
+import SchemaObject = OpenAPIV3.SchemaObject;
 
 type PartialModel = Pick<typeof Model, 'tableName'>;
+
+export type FieldType = 'boolean' | 'date' | 'integer' | 'number' | 'string';
 
 /**
  * A function which accepts the name in the filter, and returns a name to replace it with.
@@ -24,7 +30,18 @@ type PartialModel = Pick<typeof Model, 'tableName'>;
  */
 type Rename = (name: string) => string;
 
+/**
+ * A function which accepts the name in the filter, and returns a name to replace it with.
+ *
+ * @param name The original name. This uses `/` as a separator.
+ * @param type The type of the field in the resource data.
+ * @returns The new name to use instead.
+ */
+type RenameWithCasting = (name: string, type?: FieldType) => Literal | string;
+
 const defaultRename: Rename = (name) => name;
+
+const defaultRenameWithCasting: RenameWithCasting = (name) => name;
 
 const operators = new Map([
   [TokenType.EqualsExpression, '='],
@@ -211,12 +228,38 @@ export function odataFilterToSequelize(
   return processLogicalExpression(ast, model, rename);
 }
 
-export function odataOrderbyToSequelize(value: string, rename: Rename = defaultRename): Order {
+export function odataOrderbyToSequelize(
+  value: string,
+  rename: RenameWithCasting = defaultRenameWithCasting,
+  resourceDefinition?: ResourceDefinition,
+): Order {
   if (!value) {
     return [];
   }
   return value.split(/,/g).map((line) => {
     const [name, direction] = line.split(' ');
-    return [rename(name), direction?.toUpperCase() === 'DESC' ? 'DESC' : 'ASC'];
+
+    const resourceDefinitionProperty = resourceDefinition?.schema?.properties?.[
+      name
+    ] as SchemaObject;
+
+    const definitionType = resourceDefinitionProperty?.type;
+    const definitionFormat = resourceDefinitionProperty?.format;
+    const definitionEnum = resourceDefinitionProperty?.enum;
+
+    let type;
+    if (definitionType && !['array', 'object'].includes(definitionType)) {
+      type = definitionType;
+
+      if (definitionFormat === 'date') {
+        type = 'date';
+      }
+    }
+
+    if (definitionEnum) {
+      type = 'string';
+    }
+
+    return [rename(name, type as FieldType), direction?.toUpperCase() === 'DESC' ? 'DESC' : 'ASC'];
   });
 }

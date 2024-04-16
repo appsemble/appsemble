@@ -1,3 +1,4 @@
+import { type ResourceDefinition } from '@appsemble/types';
 import { describe, expect, it } from 'vitest';
 
 import { parseQuery } from './parseQuery.js';
@@ -7,6 +8,7 @@ describe('parseQuery', () => {
     const queryParams = {
       $filter: "AuthorId eq 1 and (Title ne 'example' or Year gt 2020)",
       $orderby: 'Title asc,Year desc',
+      resourceDefinition: {} as ResourceDefinition,
     };
 
     const expectedParsedQuery = {
@@ -33,6 +35,7 @@ describe('parseQuery', () => {
     const queryParams = {
       $filter: "Title eq 'example'",
       $orderby: 'Title asc,$author/id desc',
+      resourceDefinition: {} as ResourceDefinition,
     };
 
     const expectedParsedQuery = {

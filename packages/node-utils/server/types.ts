@@ -289,6 +289,7 @@ export interface ReloadUserParams {
 export interface ParseQueryParams {
   $filter: string;
   $orderby: string;
+  resourceDefinition: ResourceDefinition;
 }
 
 export interface GetAppResourceParams extends GetAppSubEntityParams {

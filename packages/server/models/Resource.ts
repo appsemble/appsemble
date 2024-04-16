@@ -47,7 +47,7 @@ export class Resource extends Model {
   type: string;
 
   @AllowNull(false)
-  @Column(DataType.JSON)
+  @Column(DataType.JSONB)
   data: any;
 
   /**
