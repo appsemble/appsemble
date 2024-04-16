@@ -1,0 +1,41 @@
+name: ChatGPT
+description: Demonstrates the use of OpenAI's ChatGPT in Appsemble.
+defaultPage: Chat
+
+pages:
+  - name: Chat
+    blocks:
+      - type: form
+        version: 0.27.12
+        parameters:
+          fields:
+            - type: string
+              name: message
+              label: { translate: message }
+              requirements:
+                - required: true
+        actions:
+          onSubmit:
+            type: request
+            method: post
+            proxy: true
+            url: https://api.openai.com/v1/chat/completions
+            body:
+              object.from:
+                model: gpt-3.5-turbo
+                messages:
+                  array.from:
+                    - object.from:
+                        role: user
+                        content: { prop: message }
+                    - object.from:
+                        role: system
+                        content: return the response in HTML format.
+            onSuccess:
+              type: event
+              event: response
+      - type: openai
+        version: 0.27.12
+        events:
+          listen:
+            response: response

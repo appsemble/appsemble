@@ -1,0 +1,9 @@
+{
+  "extends": "@appsemble/tsconfig/preact",
+  "compilerOptions": {
+    "strictFunctionTypes": false,
+    "strictNullChecks": false,
+    "allowImportingTsExtensions": true,
+    "types": ["@appsemble/webpack-config/types"]
+  }
+}
