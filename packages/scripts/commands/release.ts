@@ -279,6 +279,7 @@ export async function handler({ increment }: Args): Promise<void> {
       'blocks/**/*.md',
       'packages/**/*.md',
       '!packages/**/changed/**/*.md',
+      '!packages/studio/pages/docs/docs/03-guide/config.md',
       'Dockerfile',
     ],
     { absolute: true, gitignore: true },
@@ -298,7 +299,9 @@ export async function handler({ increment }: Args): Promise<void> {
   await Promise.all(
     projectTemplates.map((t) => updatePkg(join(process.cwd(), projectTemplatesDir, t), newVersion)),
   );
+
   await Promise.all(paths.map((filepath) => replaceFile(filepath, version, newVersion)));
+
   await Promise.all(workspaces.map((workspace) => updatePkg(workspace, newVersion)));
   await updatePkg(process.cwd(), newVersion);
   await updatePublicCodeYml(newVersion);

@@ -229,6 +229,9 @@ npm run scripts -- release minor
 npm --silent run scripts -- get-release-notes
 ```
 
+> Note: If you've have mentioned the current version in the docs somewhere and you don't want it to
+> be changed make sure to exclude it in the release script.
+
 A release can be created by a maintainer triggering the `release patch` or `release minor` job in
 the pipeline for the `main` branch.
 
