@@ -85,6 +85,10 @@ export const messages = defineMessages({
     id: 'studio.kiTtTY',
     defaultMessage: 'Hide columns ({count}/{total})',
   },
+  advancedOptions: {
+    id: 'studio.0cEOKu',
+    defaultMessage: 'Advanced options',
+  },
   apply: {
     id: 'studio.EWw/tK',
     defaultMessage: 'Apply',
@@ -98,6 +102,11 @@ export const messages = defineMessages({
     defaultMessage:
       'Hide properties from the table. Hidden properties will also be hidden when exporting the properties as CSV.',
   },
+  advancedOptionsExplanation: {
+    id: 'studio.Xw/F4c',
+    defaultMessage:
+      'Apply filter options to your resources, these options will also be applied when exporting the CSV.',
+  },
   created: {
     id: 'studio.ORGv1Q',
     defaultMessage: 'Created',
@@ -109,6 +118,14 @@ export const messages = defineMessages({
   clonable: {
     id: 'studio.4xEqDf',
     defaultMessage: 'Clonable',
+  },
+  seed: {
+    id: 'studio.T0E3nw',
+    defaultMessage: 'Seed',
+  },
+  ephemeral: {
+    id: 'studio.fjPJRz',
+    defaultMessage: 'Ephemeral',
   },
   resourceWarningTitle: {
     id: 'studio.bEmJ9Y',

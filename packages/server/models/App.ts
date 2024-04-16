@@ -272,6 +272,7 @@ export class App extends Model {
       googleAnalyticsID: this.googleAnalyticsID,
       path: this.path,
       visibility: this.visibility,
+      template: this.template,
       locked: this.locked || 'unlocked',
       hasIcon: this.get('hasIcon') ?? Boolean(this.icon),
       hasMaskableIcon: this.get('hasMaskableIcon') ?? Boolean(this.maskableIcon),

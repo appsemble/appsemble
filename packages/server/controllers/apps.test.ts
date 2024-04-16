@@ -160,6 +160,7 @@ describe('queryApps', () => {
           "showAppDefinition": false,
           "showAppsembleLogin": false,
           "showAppsembleOAuth2Login": true,
+          "template": false,
           "visibility": "public",
         },
         {
@@ -191,6 +192,7 @@ describe('queryApps', () => {
           "showAppDefinition": false,
           "showAppsembleLogin": false,
           "showAppsembleOAuth2Login": true,
+          "template": false,
           "visibility": "public",
         },
       ]
@@ -267,6 +269,7 @@ describe('queryApps', () => {
           "showAppDefinition": false,
           "showAppsembleLogin": false,
           "showAppsembleOAuth2Login": true,
+          "template": false,
           "visibility": "public",
         },
       ]
@@ -363,6 +366,7 @@ describe('queryApps', () => {
           "showAppDefinition": false,
           "showAppsembleLogin": false,
           "showAppsembleOAuth2Login": true,
+          "template": false,
           "visibility": "public",
         },
         {
@@ -398,6 +402,7 @@ describe('queryApps', () => {
           "showAppDefinition": false,
           "showAppsembleLogin": false,
           "showAppsembleOAuth2Login": true,
+          "template": false,
           "visibility": "public",
         },
         {
@@ -429,6 +434,7 @@ describe('queryApps', () => {
           "showAppDefinition": false,
           "showAppsembleLogin": false,
           "showAppsembleOAuth2Login": true,
+          "template": false,
           "visibility": "public",
         },
       ]
@@ -621,6 +627,7 @@ describe('getAppById', () => {
         "showAppDefinition": false,
         "showAppsembleLogin": false,
         "showAppsembleOAuth2Login": true,
+        "template": false,
         "visibility": "unlisted",
       }
     `);
@@ -702,6 +709,7 @@ describe('getAppById', () => {
         "showAppDefinition": false,
         "showAppsembleLogin": false,
         "showAppsembleOAuth2Login": true,
+        "template": false,
         "visibility": "unlisted",
       }
     `);
@@ -754,6 +762,7 @@ describe('getAppById', () => {
         "showAppDefinition": false,
         "showAppsembleLogin": false,
         "showAppsembleOAuth2Login": true,
+        "template": false,
         "visibility": "unlisted",
       }
     `);
@@ -809,6 +818,7 @@ describe('getAppById', () => {
         "showAppDefinition": false,
         "showAppsembleLogin": false,
         "showAppsembleOAuth2Login": true,
+        "template": false,
         "visibility": "unlisted",
       }
     `);
@@ -860,6 +870,7 @@ describe('getAppById', () => {
         "showAppDefinition": false,
         "showAppsembleLogin": false,
         "showAppsembleOAuth2Login": true,
+        "template": false,
         "visibility": "unlisted",
       }
     `);
@@ -911,6 +922,7 @@ describe('getAppById', () => {
         "showAppDefinition": true,
         "showAppsembleLogin": false,
         "showAppsembleOAuth2Login": true,
+        "template": false,
         "visibility": "unlisted",
         "yaml": "name: Test App
       defaultPage: Test Page
@@ -965,6 +977,7 @@ describe('getAppById', () => {
         "showAppDefinition": true,
         "showAppsembleLogin": false,
         "showAppsembleOAuth2Login": true,
+        "template": false,
         "visibility": "unlisted",
         "yaml": "name: Test App
       defaultPage: Test Page
@@ -1047,6 +1060,7 @@ describe('queryMyApps', () => {
           "showAppDefinition": false,
           "showAppsembleLogin": false,
           "showAppsembleOAuth2Login": true,
+          "template": false,
           "visibility": "unlisted",
         },
       ]
@@ -1085,6 +1099,7 @@ describe('queryMyApps', () => {
           "showAppDefinition": false,
           "showAppsembleLogin": false,
           "showAppsembleOAuth2Login": true,
+          "template": false,
           "visibility": "unlisted",
         },
         {
@@ -1116,6 +1131,7 @@ describe('queryMyApps', () => {
           "showAppDefinition": false,
           "showAppsembleLogin": false,
           "showAppsembleOAuth2Login": true,
+          "template": false,
           "visibility": "unlisted",
         },
       ]
@@ -1188,6 +1204,7 @@ describe('createApp', () => {
         "showAppDefinition": true,
         "showAppsembleLogin": false,
         "showAppsembleOAuth2Login": true,
+        "template": false,
         "visibility": "unlisted",
         "yaml": "
       name: Test App
@@ -1319,6 +1336,7 @@ describe('createApp', () => {
         "showAppDefinition": true,
         "showAppsembleLogin": false,
         "showAppsembleOAuth2Login": true,
+        "template": false,
         "visibility": "unlisted",
         "yaml": "
       name: Test App
@@ -1471,7 +1489,7 @@ describe('createApp', () => {
     });
 
     const unspecifiedApp = await request.get(`/api/apps/${createdApp.data.id}`);
-    // eslint-disable-next-line vitest/no-interpolation-in-snapshots
+
     expect(unspecifiedApp).toMatchInlineSnapshot(`
       HTTP/1.1 200 OK
       Content-Type: application/json; charset=utf-8
@@ -1512,14 +1530,15 @@ describe('createApp', () => {
         "locked": "unlocked",
         "path": "test-app",
         "screenshotUrls": [
-          "/api/apps/1/screenshots/${unspecifiedScreenshots[0].id}",
-          "/api/apps/1/screenshots/${unspecifiedScreenshots[1].id}",
+          "/api/apps/1/screenshots/1",
+          "/api/apps/1/screenshots/2",
         ],
         "sentryDsn": null,
         "sentryEnvironment": null,
         "showAppDefinition": true,
         "showAppsembleLogin": false,
         "showAppsembleOAuth2Login": true,
+        "template": false,
         "visibility": "unlisted",
         "yaml": "
       name: Test App
@@ -1534,7 +1553,7 @@ describe('createApp', () => {
     `);
 
     const frApp = await request.get(`/api/apps/${createdApp.data.id}`);
-    // eslint-disable-next-line vitest/no-interpolation-in-snapshots
+
     expect(frApp).toMatchInlineSnapshot(`
       HTTP/1.1 200 OK
       Content-Type: application/json; charset=utf-8
@@ -1575,14 +1594,15 @@ describe('createApp', () => {
         "locked": "unlocked",
         "path": "test-app",
         "screenshotUrls": [
-          "/api/apps/1/screenshots/${unspecifiedScreenshots[0].id}",
-          "/api/apps/1/screenshots/${unspecifiedScreenshots[1].id}",
+          "/api/apps/1/screenshots/1",
+          "/api/apps/1/screenshots/2",
         ],
         "sentryDsn": null,
         "sentryEnvironment": null,
         "showAppDefinition": true,
         "showAppsembleLogin": false,
         "showAppsembleOAuth2Login": true,
+        "template": false,
         "visibility": "unlisted",
         "yaml": "
       name: Test App
@@ -1597,7 +1617,7 @@ describe('createApp', () => {
     `);
 
     const enApp = await request.get(`/api/apps/${createdApp.data.id}?language=en`);
-    // eslint-disable-next-line vitest/no-interpolation-in-snapshots
+
     expect(enApp).toMatchInlineSnapshot(`
       HTTP/1.1 200 OK
       Content-Type: application/json; charset=utf-8
@@ -1638,14 +1658,15 @@ describe('createApp', () => {
         "locked": "unlocked",
         "path": "test-app",
         "screenshotUrls": [
-          "/api/apps/1/screenshots/${enScreenshots[0].id}",
-          "/api/apps/1/screenshots/${enScreenshots[1].id}",
+          "/api/apps/1/screenshots/3",
+          "/api/apps/1/screenshots/4",
         ],
         "sentryDsn": null,
         "sentryEnvironment": null,
         "showAppDefinition": true,
         "showAppsembleLogin": false,
         "showAppsembleOAuth2Login": true,
+        "template": false,
         "visibility": "unlisted",
         "yaml": "
       name: Test App
@@ -1660,7 +1681,7 @@ describe('createApp', () => {
     `);
 
     const nlApp = await request.get(`/api/apps/${createdApp.data.id}?language=nl`);
-    // eslint-disable-next-line vitest/no-interpolation-in-snapshots
+
     expect(nlApp).toMatchInlineSnapshot(`
       HTTP/1.1 200 OK
       Content-Type: application/json; charset=utf-8
@@ -1701,14 +1722,15 @@ describe('createApp', () => {
         "locked": "unlocked",
         "path": "test-app",
         "screenshotUrls": [
-          "/api/apps/1/screenshots/${nlScreenshots[0].id}",
-          "/api/apps/1/screenshots/${nlScreenshots[1].id}",
+          "/api/apps/1/screenshots/5",
+          "/api/apps/1/screenshots/6",
         ],
         "sentryDsn": null,
         "sentryEnvironment": null,
         "showAppDefinition": true,
         "showAppsembleLogin": false,
         "showAppsembleOAuth2Login": true,
+        "template": false,
         "visibility": "unlisted",
         "yaml": "
       name: Test App
@@ -1729,7 +1751,7 @@ describe('createApp', () => {
     });
 
     const frApp2 = await request.get(`/api/apps/${createdApp.data.id}`);
-    // eslint-disable-next-line vitest/no-interpolation-in-snapshots
+
     expect(frApp2).toMatchInlineSnapshot(`
       HTTP/1.1 200 OK
       Content-Type: application/json; charset=utf-8
@@ -1770,14 +1792,15 @@ describe('createApp', () => {
         "locked": "unlocked",
         "path": "test-app",
         "screenshotUrls": [
-          "/api/apps/1/screenshots/${enScreenshots[0].id}",
-          "/api/apps/1/screenshots/${enScreenshots[1].id}",
+          "/api/apps/1/screenshots/3",
+          "/api/apps/1/screenshots/4",
         ],
         "sentryDsn": null,
         "sentryEnvironment": null,
         "showAppDefinition": true,
         "showAppsembleLogin": false,
         "showAppsembleOAuth2Login": true,
+        "template": false,
         "visibility": "unlisted",
         "yaml": "
       name: Test App
@@ -1861,6 +1884,7 @@ describe('createApp', () => {
         "showAppDefinition": true,
         "showAppsembleLogin": false,
         "showAppsembleOAuth2Login": true,
+        "template": false,
         "visibility": "unlisted",
         "yaml": "
       name: Test App
@@ -2449,6 +2473,7 @@ describe('createApp', () => {
         "showAppDefinition": true,
         "showAppsembleLogin": false,
         "showAppsembleOAuth2Login": true,
+        "template": false,
         "visibility": "unlisted",
         "yaml": "
       name: Test App
@@ -2537,6 +2562,7 @@ describe('createApp', () => {
         "showAppDefinition": true,
         "showAppsembleLogin": false,
         "showAppsembleOAuth2Login": true,
+        "template": false,
         "visibility": "unlisted",
         "yaml": "
       name: Test App
@@ -2620,6 +2646,7 @@ describe('createApp', () => {
         "showAppDefinition": true,
         "showAppsembleLogin": false,
         "showAppsembleOAuth2Login": true,
+        "template": false,
         "visibility": "unlisted",
         "yaml": "
       name: Foobar
@@ -3160,6 +3187,7 @@ describe('createApp', () => {
           "showAppDefinition": true,
           "showAppsembleLogin": false,
           "showAppsembleOAuth2Login": true,
+          "template": false,
           "visibility": "unlisted",
           "yaml": "
         name: Test App
@@ -3499,6 +3527,7 @@ describe('patchApp', () => {
         "showAppDefinition": false,
         "showAppsembleLogin": false,
         "showAppsembleOAuth2Login": true,
+        "template": false,
         "visibility": "private",
         "yaml": "
       name: Foobar
@@ -3571,6 +3600,7 @@ describe('patchApp', () => {
         "showAppDefinition": false,
         "showAppsembleLogin": false,
         "showAppsembleOAuth2Login": true,
+        "template": false,
         "visibility": "unlisted",
         "yaml": "name: Test App
       defaultPage: Test Page
@@ -3720,6 +3750,7 @@ describe('patchApp', () => {
         "showAppDefinition": false,
         "showAppsembleLogin": false,
         "showAppsembleOAuth2Login": true,
+        "template": false,
         "visibility": "unlisted",
         "yaml": "name: Test App
       defaultPage: Test Page
@@ -3777,6 +3808,7 @@ describe('patchApp', () => {
         "showAppDefinition": false,
         "showAppsembleLogin": false,
         "showAppsembleOAuth2Login": true,
+        "template": false,
         "visibility": "unlisted",
         "yaml": "name: Test App
       defaultPage: Test Page
@@ -3834,6 +3866,7 @@ describe('patchApp', () => {
         "showAppDefinition": false,
         "showAppsembleLogin": false,
         "showAppsembleOAuth2Login": true,
+        "template": false,
         "visibility": "unlisted",
         "yaml": "name: Test App
       defaultPage: Test Page
@@ -3896,6 +3929,7 @@ describe('patchApp', () => {
         "showAppDefinition": false,
         "showAppsembleLogin": false,
         "showAppsembleOAuth2Login": true,
+        "template": false,
         "visibility": "unlisted",
         "yaml": "name: Test App
       defaultPage: Test Page
@@ -4529,6 +4563,7 @@ describe('patchApp', () => {
         "showAppDefinition": false,
         "showAppsembleLogin": false,
         "showAppsembleOAuth2Login": true,
+        "template": false,
         "visibility": "unlisted",
         "yaml": "name: Test App
       defaultPage: Test Page
@@ -4722,6 +4757,7 @@ describe('patchApp', () => {
         "showAppDefinition": false,
         "showAppsembleLogin": false,
         "showAppsembleOAuth2Login": true,
+        "template": false,
         "visibility": "unlisted",
         "yaml": "name: Test App
       defaultPage: Test Page
@@ -4768,6 +4804,7 @@ describe('patchApp', () => {
         "showAppDefinition": false,
         "showAppsembleLogin": false,
         "showAppsembleOAuth2Login": true,
+        "template": false,
         "visibility": "unlisted",
         "yaml": "name: Test App
       defaultPage: Test Page
@@ -4826,6 +4863,7 @@ describe('patchApp', () => {
         "showAppDefinition": false,
         "showAppsembleLogin": false,
         "showAppsembleOAuth2Login": true,
+        "template": false,
         "visibility": "unlisted",
         "yaml": "name: Test App
       defaultPage: Test Page
@@ -4871,6 +4909,7 @@ describe('patchApp', () => {
         "showAppDefinition": false,
         "showAppsembleLogin": false,
         "showAppsembleOAuth2Login": true,
+        "template": false,
         "visibility": "unlisted",
         "yaml": "name: Test App
       defaultPage: Test Page
@@ -4914,6 +4953,7 @@ describe('patchApp', () => {
         "showAppDefinition": false,
         "showAppsembleLogin": false,
         "showAppsembleOAuth2Login": true,
+        "template": false,
         "visibility": "unlisted",
         "yaml": "name: Test App
       defaultPage: Test Page
@@ -6886,6 +6926,7 @@ describe('importApp', () => {
         "showAppDefinition": true,
         "showAppsembleLogin": false,
         "showAppsembleOAuth2Login": true,
+        "template": false,
         "visibility": "unlisted",
         "yaml": "name: Test App
       defaultPage: Test Page
@@ -7001,6 +7042,7 @@ describe('importApp', () => {
         "showAppDefinition": true,
         "showAppsembleLogin": false,
         "showAppsembleOAuth2Login": true,
+        "template": false,
         "visibility": "unlisted",
         "yaml": "name: Test App
       defaultPage: Test Page

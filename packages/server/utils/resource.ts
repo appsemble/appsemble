@@ -53,6 +53,12 @@ export function renameOData(name: string): string {
       return 'updated';
     case '__author__':
       return 'AuthorId';
+    case '__seed__':
+      return 'seed';
+    case '__ephemeral__':
+      return 'ephemeral';
+    case '__clonable__':
+      return 'clonable';
     case 'id':
       return name;
     default:
@@ -447,7 +453,10 @@ export function parseQuery({
         $filter
           .replaceAll(/(^|\B)\$created(\b|$)/g, '__created__')
           .replaceAll(/(^|\B)\$updated(\b|$)/g, '__updated__')
-          .replaceAll(/(^|\B)\$author\/id(\b|$)/g, '__author__'),
+          .replaceAll(/(^|\B)\$author\/id(\b|$)/g, '__author__')
+          .replaceAll(/(^|\B)\$clonable(\b|$)/g, '__clonable__')
+          .replaceAll(/(^|\B)\$seed(\b|$)/g, '__seed__')
+          .replaceAll(/(^|\B)\$ephemeral(\b|$)/g, '__ephemeral__'),
         Resource,
         renameOData,
       )
