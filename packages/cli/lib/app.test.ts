@@ -166,6 +166,7 @@ describe('publishApp', () => {
         "showAppDefinition": true,
         "showAppsembleLogin": false,
         "showAppsembleOAuth2Login": true,
+        "template": false,
         "visibility": "unlisted",
         "yaml": "name: Test App
       defaultPage: Test Page
@@ -317,6 +318,7 @@ describe('publishApp', () => {
         "showAppDefinition": true,
         "showAppsembleLogin": false,
         "showAppsembleOAuth2Login": true,
+        "template": false,
         "visibility": "unlisted",
         "yaml": "name: Test App
       defaultPage: Test Page
@@ -479,6 +481,7 @@ describe('publishApp', () => {
         "showAppDefinition": true,
         "showAppsembleLogin": false,
         "showAppsembleOAuth2Login": true,
+        "template": true,
         "visibility": "public",
         "yaml": "name: Test App
       defaultPage: Test Page
@@ -642,6 +645,7 @@ describe('publishApp', () => {
         "showAppDefinition": true,
         "showAppsembleLogin": false,
         "showAppsembleOAuth2Login": true,
+        "template": false,
         "visibility": "unlisted",
         "yaml": "name: Test App
       defaultPage: Test Page
@@ -992,6 +996,7 @@ describe('updateApp', () => {
         "showAppDefinition": false,
         "showAppsembleLogin": false,
         "showAppsembleOAuth2Login": true,
+        "template": false,
         "visibility": "unlisted",
         "yaml": "name: Test App
       defaultPage: Test Page
@@ -1127,6 +1132,7 @@ describe('updateApp', () => {
         "showAppDefinition": false,
         "showAppsembleLogin": false,
         "showAppsembleOAuth2Login": true,
+        "template": false,
         "visibility": "unlisted",
         "yaml": "name: Test App
       defaultPage: Test Page
@@ -1290,6 +1296,7 @@ describe('updateApp', () => {
         "showAppDefinition": false,
         "showAppsembleLogin": false,
         "showAppsembleOAuth2Login": true,
+        "template": true,
         "visibility": "public",
         "yaml": "name: Test App
       defaultPage: Test Page
@@ -1455,6 +1462,7 @@ describe('updateApp', () => {
         "showAppDefinition": false,
         "showAppsembleLogin": false,
         "showAppsembleOAuth2Login": true,
+        "template": false,
         "visibility": "unlisted",
         "yaml": "name: Test App
       defaultPage: Test Page
@@ -1758,6 +1766,7 @@ describe('updateApp', () => {
         "showAppDefinition": false,
         "showAppsembleLogin": false,
         "showAppsembleOAuth2Login": true,
+        "template": false,
         "visibility": "public",
         "yaml": "name: Test App
       defaultPage: Test Page
@@ -1833,6 +1842,7 @@ describe('updateApp', () => {
         "showAppDefinition": false,
         "showAppsembleLogin": false,
         "showAppsembleOAuth2Login": true,
+        "template": false,
         "visibility": "public",
         "yaml": "name: Test App
       defaultPage: Test Page
