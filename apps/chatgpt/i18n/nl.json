@@ -1,0 +1,10 @@
+{
+  "app": {
+    "description": "Demonstreert het gebruik van OpenAI's ChatGPT in Appsemble.",
+    "name": "ChatGPT",
+    "pages.chat": "Chat"
+  },
+  "messageIds": {
+    "message": "Een AI-model dat bijna elke vraag kan beantwoorden met een tekstprompt."
+  }
+}

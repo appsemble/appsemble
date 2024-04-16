@@ -1,0 +1,5 @@
+.root {
+  flex-flow: column;
+  margin: 16px auto;
+  max-width: 480px;
+}

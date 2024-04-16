@@ -4768,6 +4768,32 @@ If defined, a loader will be shown until this event is triggered.",
 }
 `;
 
+exports[`getProjectImplementations > official blocks > openai 1`] = `
+{
+  "actions": undefined,
+  "events": {
+    "emit": undefined,
+    "listen": {
+      "response": {
+        "description": "This event can be used to receive incoming data to display.",
+      },
+    },
+  },
+  "messages": {
+    "empty": {
+      "description": "This message is displayed if the data is empty.",
+    },
+    "error": {
+      "description": "This message is displayed if there was a problem loading the data.",
+    },
+    "loading": {
+      "description": "This message is displayed if no data has been loaded yet.",
+    },
+  },
+  "parameters": undefined,
+}
+`;
+
 exports[`getProjectImplementations > official blocks > qr-scan 1`] = `
 {
   "actions": undefined,
