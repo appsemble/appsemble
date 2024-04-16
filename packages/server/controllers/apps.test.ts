@@ -486,6 +486,7 @@ describe('getAppByPath', () => {
         "showAppDefinition": false,
         "showAppsembleLogin": false,
         "showAppsembleOAuth2Login": true,
+        "template": false,
         "visibility": "unlisted",
       }
     `);
@@ -558,6 +559,7 @@ describe('getAppByPath', () => {
         "showAppDefinition": false,
         "showAppsembleLogin": false,
         "showAppsembleOAuth2Login": true,
+        "template": false,
         "visibility": "unlisted",
       }
     `);
