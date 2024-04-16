@@ -81,6 +81,8 @@ const exampleApp = (
               number: { type: 'number' },
               boolean: { type: 'boolean' },
               integer: { type: 'integer' },
+              enum: { enum: ['A', 'B'] },
+              date: { type: 'string', format: 'date' },
               object: { type: 'object' },
               array: { type: 'array' },
             },
@@ -1368,6 +1370,360 @@ describe('queryResources', () => {
           "$created": "1970-01-01T00:00:00.000Z",
           "$updated": "1970-01-01T00:00:00.000Z",
           "foo": "bar",
+          "id": 1,
+        },
+      ]
+    `);
+  });
+
+  it('should be able to sort fetched resources by a number field', async () => {
+    await Resource.create({
+      AppId: app.id,
+      type: 'testResource',
+      data: { number: 9 },
+    });
+    vi.advanceTimersByTime(20e3);
+    await Resource.create({
+      AppId: app.id,
+      type: 'testResource',
+      data: { number: 9.1 },
+    });
+    vi.advanceTimersByTime(20e3);
+    await Resource.create({
+      AppId: app.id,
+      type: 'testResource',
+      data: { number: 9.2 },
+    });
+
+    const responseA = await request.get(
+      `/api/apps/${app.id}/resources/testResource?$orderby=number asc`,
+    );
+    expect(responseA).toMatchInlineSnapshot(`
+      HTTP/1.1 200 OK
+      Content-Type: application/json; charset=utf-8
+
+      [
+        {
+          "$created": "1970-01-01T00:00:00.000Z",
+          "$updated": "1970-01-01T00:00:00.000Z",
+          "id": 1,
+          "number": 9,
+        },
+        {
+          "$created": "1970-01-01T00:00:20.000Z",
+          "$updated": "1970-01-01T00:00:20.000Z",
+          "id": 2,
+          "number": 9.1,
+        },
+        {
+          "$created": "1970-01-01T00:00:40.000Z",
+          "$updated": "1970-01-01T00:00:40.000Z",
+          "id": 3,
+          "number": 9.2,
+        },
+      ]
+    `);
+
+    const responseB = await request.get(
+      `/api/apps/${app.id}/resources/testResource?$orderby=number desc`,
+    );
+    expect(responseB).toMatchInlineSnapshot(`
+      HTTP/1.1 200 OK
+      Content-Type: application/json; charset=utf-8
+
+      [
+        {
+          "$created": "1970-01-01T00:00:40.000Z",
+          "$updated": "1970-01-01T00:00:40.000Z",
+          "id": 3,
+          "number": 9.2,
+        },
+        {
+          "$created": "1970-01-01T00:00:20.000Z",
+          "$updated": "1970-01-01T00:00:20.000Z",
+          "id": 2,
+          "number": 9.1,
+        },
+        {
+          "$created": "1970-01-01T00:00:00.000Z",
+          "$updated": "1970-01-01T00:00:00.000Z",
+          "id": 1,
+          "number": 9,
+        },
+      ]
+    `);
+  });
+
+  it('should be able to sort fetched resources by an integer field', async () => {
+    await Resource.create({
+      AppId: app.id,
+      type: 'testResource',
+      data: { integer: 9 },
+    });
+    vi.advanceTimersByTime(20e3);
+    await Resource.create({
+      AppId: app.id,
+      type: 'testResource',
+      data: { integer: 10 },
+    });
+
+    const responseA = await request.get(
+      `/api/apps/${app.id}/resources/testResource?$orderby=integer asc`,
+    );
+    expect(responseA).toMatchInlineSnapshot(`
+      HTTP/1.1 200 OK
+      Content-Type: application/json; charset=utf-8
+
+      [
+        {
+          "$created": "1970-01-01T00:00:00.000Z",
+          "$updated": "1970-01-01T00:00:00.000Z",
+          "id": 1,
+          "integer": 9,
+        },
+        {
+          "$created": "1970-01-01T00:00:20.000Z",
+          "$updated": "1970-01-01T00:00:20.000Z",
+          "id": 2,
+          "integer": 10,
+        },
+      ]
+    `);
+
+    const responseB = await request.get(
+      `/api/apps/${app.id}/resources/testResource?$orderby=integer desc`,
+    );
+    expect(responseB).toMatchInlineSnapshot(`
+      HTTP/1.1 200 OK
+      Content-Type: application/json; charset=utf-8
+
+      [
+        {
+          "$created": "1970-01-01T00:00:20.000Z",
+          "$updated": "1970-01-01T00:00:20.000Z",
+          "id": 2,
+          "integer": 10,
+        },
+        {
+          "$created": "1970-01-01T00:00:00.000Z",
+          "$updated": "1970-01-01T00:00:00.000Z",
+          "id": 1,
+          "integer": 9,
+        },
+      ]
+    `);
+  });
+
+  it('should be able to sort fetched resources by a boolean field', async () => {
+    await Resource.create({
+      AppId: app.id,
+      type: 'testResource',
+      data: { boolean: false },
+    });
+    vi.advanceTimersByTime(20e3);
+    await Resource.create({
+      AppId: app.id,
+      type: 'testResource',
+      data: { boolean: true },
+    });
+
+    const responseA = await request.get(
+      `/api/apps/${app.id}/resources/testResource?$orderby=boolean asc`,
+    );
+    expect(responseA).toMatchInlineSnapshot(`
+      HTTP/1.1 200 OK
+      Content-Type: application/json; charset=utf-8
+
+      [
+        {
+          "$created": "1970-01-01T00:00:00.000Z",
+          "$updated": "1970-01-01T00:00:00.000Z",
+          "boolean": false,
+          "id": 1,
+        },
+        {
+          "$created": "1970-01-01T00:00:20.000Z",
+          "$updated": "1970-01-01T00:00:20.000Z",
+          "boolean": true,
+          "id": 2,
+        },
+      ]
+    `);
+
+    const responseB = await request.get(
+      `/api/apps/${app.id}/resources/testResource?$orderby=boolean desc`,
+    );
+    expect(responseB).toMatchInlineSnapshot(`
+      HTTP/1.1 200 OK
+      Content-Type: application/json; charset=utf-8
+
+      [
+        {
+          "$created": "1970-01-01T00:00:20.000Z",
+          "$updated": "1970-01-01T00:00:20.000Z",
+          "boolean": true,
+          "id": 2,
+        },
+        {
+          "$created": "1970-01-01T00:00:00.000Z",
+          "$updated": "1970-01-01T00:00:00.000Z",
+          "boolean": false,
+          "id": 1,
+        },
+      ]
+    `);
+  });
+
+  it('should be able to sort fetched resources by an enum field', async () => {
+    await Resource.create({
+      AppId: app.id,
+      type: 'testResource',
+      data: { enum: 'A' },
+    });
+    vi.advanceTimersByTime(20e3);
+    await Resource.create({
+      AppId: app.id,
+      type: 'testResource',
+      data: { enum: 'B' },
+    });
+
+    const responseA = await request.get(
+      `/api/apps/${app.id}/resources/testResource?$orderby=enum asc`,
+    );
+    expect(responseA).toMatchInlineSnapshot(`
+      HTTP/1.1 200 OK
+      Content-Type: application/json; charset=utf-8
+
+      [
+        {
+          "$created": "1970-01-01T00:00:00.000Z",
+          "$updated": "1970-01-01T00:00:00.000Z",
+          "enum": "A",
+          "id": 1,
+        },
+        {
+          "$created": "1970-01-01T00:00:20.000Z",
+          "$updated": "1970-01-01T00:00:20.000Z",
+          "enum": "B",
+          "id": 2,
+        },
+      ]
+    `);
+
+    const responseB = await request.get(
+      `/api/apps/${app.id}/resources/testResource?$orderby=enum desc`,
+    );
+    expect(responseB).toMatchInlineSnapshot(`
+      HTTP/1.1 200 OK
+      Content-Type: application/json; charset=utf-8
+
+      [
+        {
+          "$created": "1970-01-01T00:00:20.000Z",
+          "$updated": "1970-01-01T00:00:20.000Z",
+          "enum": "B",
+          "id": 2,
+        },
+        {
+          "$created": "1970-01-01T00:00:00.000Z",
+          "$updated": "1970-01-01T00:00:00.000Z",
+          "enum": "A",
+          "id": 1,
+        },
+      ]
+    `);
+  });
+
+  it('should be able to sort fetched resources by a date field', async () => {
+    await Resource.create({
+      AppId: app.id,
+      type: 'testResource',
+      data: { date: '2023-05-14' },
+    });
+    vi.advanceTimersByTime(20e3);
+    await Resource.create({
+      AppId: app.id,
+      type: 'testResource',
+      data: { date: '2024-04-14' },
+    });
+    vi.advanceTimersByTime(20e3);
+    await Resource.create({
+      AppId: app.id,
+      type: 'testResource',
+      data: { date: '2024-04-15' },
+    });
+    vi.advanceTimersByTime(20e3);
+    await Resource.create({
+      AppId: app.id,
+      type: 'testResource',
+      data: { date: '2024-05-14' },
+    });
+
+    const responseA = await request.get(
+      `/api/apps/${app.id}/resources/testResource?$orderby=date asc`,
+    );
+    expect(responseA).toMatchInlineSnapshot(`
+      HTTP/1.1 200 OK
+      Content-Type: application/json; charset=utf-8
+
+      [
+        {
+          "$created": "1970-01-01T00:00:00.000Z",
+          "$updated": "1970-01-01T00:00:00.000Z",
+          "date": "2023-05-14",
+          "id": 1,
+        },
+        {
+          "$created": "1970-01-01T00:00:20.000Z",
+          "$updated": "1970-01-01T00:00:20.000Z",
+          "date": "2024-04-14",
+          "id": 2,
+        },
+        {
+          "$created": "1970-01-01T00:00:40.000Z",
+          "$updated": "1970-01-01T00:00:40.000Z",
+          "date": "2024-04-15",
+          "id": 3,
+        },
+        {
+          "$created": "1970-01-01T00:01:00.000Z",
+          "$updated": "1970-01-01T00:01:00.000Z",
+          "date": "2024-05-14",
+          "id": 4,
+        },
+      ]
+    `);
+
+    const responseB = await request.get(
+      `/api/apps/${app.id}/resources/testResource?$orderby=date desc`,
+    );
+    expect(responseB).toMatchInlineSnapshot(`
+      HTTP/1.1 200 OK
+      Content-Type: application/json; charset=utf-8
+
+      [
+        {
+          "$created": "1970-01-01T00:01:00.000Z",
+          "$updated": "1970-01-01T00:01:00.000Z",
+          "date": "2024-05-14",
+          "id": 4,
+        },
+        {
+          "$created": "1970-01-01T00:00:40.000Z",
+          "$updated": "1970-01-01T00:00:40.000Z",
+          "date": "2024-04-15",
+          "id": 3,
+        },
+        {
+          "$created": "1970-01-01T00:00:20.000Z",
+          "$updated": "1970-01-01T00:00:20.000Z",
+          "date": "2024-04-14",
+          "id": 2,
+        },
+        {
+          "$created": "1970-01-01T00:00:00.000Z",
+          "$updated": "1970-01-01T00:00:00.000Z",
+          "date": "2023-05-14",
           "id": 1,
         },
       ]
@@ -2703,6 +3059,16 @@ describe('createResource', () => {
                   },
                   "boolean": {
                     "type": "boolean",
+                  },
+                  "date": {
+                    "format": "date",
+                    "type": "string",
+                  },
+                  "enum": {
+                    "enum": [
+                      "A",
+                      "B",
+                    ],
                   },
                   "foo": {
                     "type": "string",
@@ -4163,6 +4529,16 @@ describe('updateResource', () => {
                   },
                   "boolean": {
                     "type": "boolean",
+                  },
+                  "date": {
+                    "format": "date",
+                    "type": "string",
+                  },
+                  "enum": {
+                    "enum": [
+                      "A",
+                      "B",
+                    ],
                   },
                   "foo": {
                     "type": "string",
