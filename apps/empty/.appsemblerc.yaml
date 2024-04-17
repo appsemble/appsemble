@@ -11,6 +11,7 @@ context:
     visibility: public
   production:
     id: 9
+    organization: appsemble
     remote: https://appsemble.app
     template: true
     visibility: public

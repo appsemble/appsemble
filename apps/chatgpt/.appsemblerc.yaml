@@ -5,6 +5,7 @@ context:
     template: true
     visibility: public
   production:
+    organization: appsemble
     remote: https://appsemble.app
     template: true
     visibility: public

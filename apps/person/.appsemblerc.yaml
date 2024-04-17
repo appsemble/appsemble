@@ -7,6 +7,7 @@ context:
     resources: true
   production:
     id: 3
+    organization: appsemble
     remote: https://appsemble.app
     template: true
     visibility: public
