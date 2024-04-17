@@ -9,6 +9,7 @@ context:
     assetsClonable: true
   production:
     id: 369
+    organization: appsemble
     remote: https://appsemble.app
     template: true
     visibility: public
