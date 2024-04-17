@@ -1,7 +1,7 @@
 apiVersion: v2
 name: appsemble
-version: 0.28.0
-appVersion: 0.28.0
+version: 0.28.1
+appVersion: 0.28.1
 kubeVersion: '>=1.21.0'
 type: application
 description: The open source low-code app building platform
@@ -23,24 +23,8 @@ dependencies:
     repository: https://charts.bitnami.com/bitnami
     condition: postgresql.enabled
 annotations:
-  artifacthub.io/changes: >
-    - kind: added
-      description: "Studio: Add edit and delete buttons on an organization’s app
-        collections page."
-    - kind: added
-      description: "Studio: Add option to view seed resources on the resource details page."
-    - kind: changed
-      description: "Server: Change the type of the data column in the Resource table
-        to optimize performance and support sorting by nested fields."
-    - kind: changed
-      description: "Utils: Add support for remappers in the prop remapper."
-    - kind: fixed
-      description: "Block(list): The block would throw an error when there is no data
-        instead of displaying the No data message."
-    - kind: fixed
-      description: "Cli: team update command should use patch request."
-    - kind: fixed
-      description: "Utils: The date.format remapper would not accept strings."
+  artifacthub.io/changes: |
+    []
   artifacthub.io/license: LGPL-3.0-only
   artifacthub.io/links: |
     - name: Appsemble Studio

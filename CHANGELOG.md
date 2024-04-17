@@ -2,6 +2,8 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.28.1](https://gitlab.com/appsemble/appsemble/-/releases/0.28.1)] - 2024-04-17
+
 ## \[[0.28.0](https://gitlab.com/appsemble/appsemble/-/releases/0.28.0)] - 2024-04-16
 
 ### Added
