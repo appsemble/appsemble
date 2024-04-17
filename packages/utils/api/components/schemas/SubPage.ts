@@ -12,6 +12,21 @@ export const SubPage: OpenAPIV3.NonArraySchemaObject = {
       minLength: 1,
       maxLength: 50,
     },
+    roles: {
+      type: 'array',
+      description: `The list of roles that are allowed to view this page.
+
+If the user doesn’t have any of the roles in the list the page will be unavailable to them. An empty
+list can be used to specify that users need to log in but do not need a specific role.
+
+Users trying to visit a page without having the correct roles will be redirected to the first page
+that they are allowed to view. If there aren’t any accessible pages, the user will be logged out and
+instructed to contact the app owner to get permissions.
+`,
+      items: {
+        type: 'string',
+      },
+    },
     blocks: {
       type: 'array',
       minItems: 1,

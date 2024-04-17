@@ -1,6 +1,6 @@
 import { MetaSwitch, Tab, Tabs } from '@appsemble/react-components';
-import { type TabsPageDefinition } from '@appsemble/types';
-import { normalize } from '@appsemble/utils';
+import { type SubPage, type TabsPageDefinition } from '@appsemble/types';
+import { checkAppRole, normalize } from '@appsemble/utils';
 import {
   type ChangeEvent,
   type ComponentPropsWithoutRef,
@@ -10,8 +10,10 @@ import {
 import { Navigate, Route, useLocation, useNavigate, useParams } from 'react-router-dom';
 
 import { TabContent } from './TabContent/index.js';
+import { useAppDefinition } from '../AppDefinitionProvider/index.js';
 import { useAppMessages } from '../AppMessagesProvider/index.js';
 import { type BlockList } from '../BlockList/index.js';
+import { useUser } from '../UserProvider/index.js';
 
 interface TabsPageProps extends Omit<ComponentPropsWithoutRef<typeof BlockList>, 'blocks'> {
   readonly page: TabsPageDefinition;
@@ -23,6 +25,7 @@ export function TabsPage({
   prefixIndex,
   ...blockListProps
 }: TabsPageProps): ReactNode {
+  const { definition } = useAppDefinition();
   const {
     '*': wildcard,
     lang,
@@ -32,10 +35,21 @@ export function TabsPage({
   const { getAppMessage } = useAppMessages();
   const { pathname } = useLocation();
   const navigate = useNavigate();
+  const { role, teams } = useUser();
 
   const onChange = useCallback((event: ChangeEvent, value: string) => navigate(value), [navigate]);
 
   const pageName = getAppMessage({ id: prefix, defaultMessage: page.name }).format() as string;
+  const checkSubPagePermissions = useCallback(
+    (p: SubPage): boolean => {
+      const roles = p.roles || definition.roles || [];
+
+      return (
+        roles.length === 0 || roles.some((r) => checkAppRole(definition.security, r, role, teams))
+      );
+    },
+    [definition.roles, definition.security, role, teams],
+  );
 
   return (
     <>
@@ -58,7 +72,7 @@ export function TabsPage({
         })}
       </Tabs>
       <MetaSwitch title={pageName}>
-        {page.tabs.map(({ blocks, name }, index) => {
+        {page.tabs.map(({ blocks, name, roles }, index) => {
           const translatedName = getAppMessage({
             id: `${prefix}.tabs.${index}`,
             defaultMessage: name,
@@ -67,15 +81,17 @@ export function TabsPage({
           return (
             <Route
               element={
-                <TabContent
-                  key={`${prefix}.tabs.${normalize(name)}`}
-                  {...blockListProps}
-                  blocks={blocks}
-                  name={translatedName}
-                  page={page}
-                  prefix={`${prefix}.tabs.${index}.blocks`}
-                  prefixIndex={`${prefixIndex}.tabs.${index}.blocks`}
-                />
+                checkSubPagePermissions({ blocks, name, roles }) ? (
+                  <TabContent
+                    key={`${prefix}.tabs.${normalize(name)}`}
+                    {...blockListProps}
+                    blocks={blocks}
+                    name={translatedName}
+                    page={page}
+                    prefix={`${prefix}.tabs.${index}.blocks`}
+                    prefixIndex={`${prefixIndex}.tabs.${index}.blocks`}
+                  />
+                ) : null
               }
               key={name}
               path={`/${normalize(translatedName)}${String(
