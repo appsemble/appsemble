@@ -478,7 +478,7 @@ export async function reseedResourcesRecursively(
 
   let updatedReseededResourcesIds: Record<string, number[]> = { ...reseededResourcesIds };
   for (const [resourceType, resources] of Object.entries(groupedResources)) {
-    const resourceReferences = appDefinition.resources?.[resourceType].references;
+    const resourceReferences = appDefinition.resources?.[resourceType]?.references;
     if (resourceReferences) {
       for (const [referencedProperty, resourceReference] of Object.entries(resourceReferences)) {
         const referencedResourceType = resourceReference.resource;
