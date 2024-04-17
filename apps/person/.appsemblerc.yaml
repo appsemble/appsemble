@@ -4,22 +4,27 @@ context:
     remote: http://localhost:9999
     template: true
     visibility: public
+    resources: true
   production:
     id: 3
     remote: https://appsemble.app
     template: true
     visibility: public
+    resources: true
   review:
     organization: appsemble
     template: true
     visibility: public
+    resources: true
   staging:
     organization: appsemble
     remote: https://staging.appsemble.review
     template: true
     visibility: public
+    resources: true
   e2e:
     organization: appsemble
     remote: http://appsemble:9999
     template: true
     visibility: public
+    resources: true

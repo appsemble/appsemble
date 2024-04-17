@@ -32,12 +32,12 @@ ANY_PUBLISHED=""
 apps="$(find apps/ -mindepth 1 -maxdepth 1 -type d)"
 for app in $apps; do
   app_name="$(basename "$app")"
-  context_id=$(yq -e ".context.$CONTEXT.id" "$app/.appsemblerc.yaml")
+  context_id=$(yq -e ".context.$CONTEXT.id" "$app/.appsemblerc.yaml" 2>/dev/null || true)
 
-  if [ -n "$context_id" ] && npm run appsemble -- -vv app update --resources --assets --force "$app"; then
+  if npm run appsemble -- -vv app update --force "$app"; then
     echo "Successful update on app $app_name";
   else
-    if [ -n "$context_id" ]; then
+    if [ -n "$context_id" ] && [ "$context_id" != "null" ]; then
       echo "App with $CONTEXT id $context_id does not exist, publishing instead of updating";
     else
       echo "App $app_name has no $CONTEXT id, publishing instead of updating";
@@ -45,7 +45,7 @@ for app in $apps; do
 
     file_before="$(mktemp)"
     cp "$app/.appsemblerc.yaml" "$file_before"
-    npm run appsemble -- -vv app publish --resources --assets --modify-context "$app"
+    npm run appsemble -- -vv app publish --modify-context "$app"
     ANY_PUBLISHED="true"
     git diff --no-index --patch "$file_before" "$app/.appsemblerc.yaml" |
       # change the --- a to match the filename of +++ b
