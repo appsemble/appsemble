@@ -121,6 +121,7 @@ interface InternalContext extends RemapperContext {
   array?: {
     index: number;
     length: number;
+    item: unknown;
   };
 
   stepRef?: {
@@ -357,7 +358,7 @@ const mapperImplementations: MapperImplementations = {
     input?.map((item, index) =>
       remap(mapper, item, {
         ...context,
-        array: { index, length: input.length },
+        array: { index, length: input.length, item },
       }),
     ) ?? [],
 
@@ -366,10 +367,13 @@ const mapperImplementations: MapperImplementations = {
       return input;
     }
 
-    const remapped = input.map((value, index) =>
+    const remapped = input.map((item, index) =>
       mapper == null
-        ? value
-        : remap(mapper, value, { ...context, array: { index, length: input.length } }),
+        ? item
+        : remap(mapper, item, {
+            ...context,
+            array: { index, length: input.length, item },
+          }),
     );
     return input.filter((value, index) => {
       for (let i = 0; i < index; i += 1) {

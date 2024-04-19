@@ -4,8 +4,8 @@ import { schemaExample } from '../../examples.js';
 
 export const dataRemappers: Record<string, OpenAPIV3.ReferenceObject | OpenAPIV3.SchemaObject> = {
   array: {
-    enum: ['index', 'length'],
-    description: `Get the current array.map’s index or length.
+    enum: ['index', 'length', 'item'],
+    description: `Get the current array.map’s index, length or the current item.
 
 Returns nothing when not in the context of \`array.map’s\`.
 
