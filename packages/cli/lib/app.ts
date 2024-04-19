@@ -940,7 +940,7 @@ export async function resolveAppIdAndRemote(
     const [rc] = await readData<AppsembleRC>(rcPath);
     const context = rc.context?.[name];
 
-    if (!defaultAppId) {
+    if (context?.id) {
       id = context?.id;
     }
 

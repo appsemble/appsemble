@@ -18,3 +18,10 @@ context:
     sentryEnvironment: test
     collections:
       - 1
+
+  resolve:
+    id: 5
+    remote: http://localhost:5555
+
+  notFound:
+    organization: testorganization

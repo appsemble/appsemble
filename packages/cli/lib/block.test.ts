@@ -2,9 +2,9 @@ import { resolveFixture } from '@appsemble/node-utils';
 import { createServer, createTestUser, models, setArgv, useTestDatabase } from '@appsemble/server';
 import { type AxiosTestInstance, setTestApp } from 'axios-test-instance';
 import concat from 'concat-stream';
-import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { deleteBlock } from './block.js';
+import { deleteBlock, traverseBlockThemes } from './block.js';
 import { initAxios } from './initAxios.js';
 import { makeProjectPayload } from './project.js';
 import { authorizeCLI } from './testUtils.js';
@@ -12,8 +12,39 @@ import { authorizeCLI } from './testUtils.js';
 useTestDatabase(import.meta);
 const argv = { host: 'http://localhost', secret: 'test', aesSecret: 'testSecret' };
 let testApp: AxiosTestInstance;
+let user: models.User;
+let organization: models.Organization;
 
-const { BlockVersion, Organization, OrganizationMember } = models;
+const { App, AppBlockStyle, BlockVersion, Organization, OrganizationMember, Theme } = models;
+
+beforeAll(() => {
+  vi.useFakeTimers();
+  setArgv(argv);
+});
+
+beforeEach(async () => {
+  vi.clearAllTimers();
+  vi.setSystemTime(0);
+  const server = await createServer();
+  testApp = await setTestApp(server);
+  initAxios({ remote: testApp.defaults.baseURL });
+  user = await createTestUser();
+  organization = await Organization.create({
+    id: 'testorganization',
+    name: 'Test Organization',
+  });
+  await OrganizationMember.create({
+    OrganizationId: organization.id,
+    UserId: user.id,
+    role: 'Owner',
+  });
+
+  await Organization.create({ id: 'appsemble', name: 'Appsemble' });
+});
+
+afterAll(() => {
+  vi.useRealTimers();
+});
 
 describe('makeProjectPayload', () => {
   it('should create a form-data payload', async () => {
@@ -111,32 +142,6 @@ export const string = 'with-icon';
 });
 
 describe('deleteBlock', () => {
-  let user: models.User;
-  let organization: models.Organization;
-
-  beforeAll(() => {
-    vi.useFakeTimers();
-    setArgv(argv);
-  });
-
-  beforeEach(async () => {
-    vi.clearAllTimers();
-    vi.setSystemTime(0);
-    const server = await createServer();
-    testApp = await setTestApp(server);
-    initAxios({ remote: testApp.defaults.baseURL });
-    user = await createTestUser();
-    organization = await Organization.create({
-      id: 'testorganization',
-      name: 'Test Organization',
-    });
-    await OrganizationMember.create({
-      OrganizationId: organization.id,
-      UserId: user.id,
-      role: 'Owner',
-    });
-  });
-
   it('should delete a block', async () => {
     const block = await BlockVersion.create({
       OrganizationId: organization.id,
@@ -153,5 +158,90 @@ describe('deleteBlock', () => {
     });
     const foundBlocks = await BlockVersion.findAll();
     expect(foundBlocks).toStrictEqual([]);
+  });
+});
+
+describe('traverseBlockThemes', () => {
+  it('should upload css from a file in the app directory', async () => {
+    const app = await App.create({
+      path: 'test-app',
+      definition: { name: 'Test App', defaultPage: 'Test Page' },
+      vapidPublicKey: 'a',
+      vapidPrivateKey: 'b',
+      visibility: 'public',
+      OrganizationId: organization.id,
+    });
+    await BlockVersion.create({
+      name: 'test',
+      OrganizationId: 'appsemble',
+      version: '0.0.0',
+      parameters: {
+        type: 'object',
+        properties: {
+          foo: {
+            type: 'number',
+          },
+        },
+      },
+    });
+    await authorizeCLI('apps:write', testApp);
+    await traverseBlockThemes(resolveFixture('apps/test'), app.id, testApp.defaults.baseURL, false);
+    const style = await AppBlockStyle.findOne();
+    expect(style.dataValues).toMatchInlineSnapshot(`
+      {
+        "AppId": 1,
+        "block": "@appsemble/test",
+        "created": 1970-01-01T00:00:00.000Z,
+        "style": ".tux {
+        color: rgb(0 0 0);
+      }",
+        "updated": 1970-01-01T00:00:00.000Z,
+      }
+    `);
+  });
+
+  it('should throw if the block does not exist', async () => {
+    const app = await App.create({
+      path: 'test-app',
+      definition: { name: 'Test App', defaultPage: 'Test Page' },
+      vapidPublicKey: 'a',
+      vapidPrivateKey: 'b',
+      visibility: 'public',
+      OrganizationId: organization.id,
+    });
+    await authorizeCLI('apps:write', testApp);
+    await expect(() =>
+      traverseBlockThemes(resolveFixture('apps/test'), app.id, testApp.defaults.baseURL, false),
+    ).rejects.toThrow('Request failed with status code 404');
+    const style = await AppBlockStyle.findOne();
+    expect(style).toBeNull();
+  });
+
+  it('should not upload css from core and shared directories', async () => {
+    const app = await App.create({
+      path: 'test-app',
+      definition: { name: 'Test App', defaultPage: 'Test Page' },
+      vapidPublicKey: 'a',
+      vapidPrivateKey: 'b',
+      visibility: 'public',
+      OrganizationId: organization.id,
+    });
+    await BlockVersion.create({
+      name: 'test',
+      OrganizationId: 'appsemble',
+      version: '0.0.0',
+      parameters: {
+        type: 'object',
+        properties: {
+          foo: {
+            type: 'number',
+          },
+        },
+      },
+    });
+    await authorizeCLI('apps:write', testApp);
+    await traverseBlockThemes(resolveFixture('apps/test'), app.id, testApp.defaults.baseURL, false);
+    const style = await Theme.findAll();
+    expect(style).toStrictEqual([]);
   });
 });

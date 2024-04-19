@@ -1,3 +1,4 @@
+import { createFixtureStream, readFixture } from '@appsemble/node-utils';
 import { createServer, createTestUser, models, setArgv, useTestDatabase } from '@appsemble/server';
 import { type AxiosTestInstance, setTestApp } from 'axios-test-instance';
 import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
@@ -40,23 +41,18 @@ describe('createOrganization', () => {
       id: 'test',
       name: 'Test',
       email: 'test@example.com',
-      icon: null,
+      icon: createFixtureStream('apps/tux.png'),
       website: 'https://example.com',
     });
     const organization = await Organization.findOne();
-    expect(organization).toMatchInlineSnapshot(`
-      {
-        "created": 1970-01-01T00:00:00.000Z,
-        "deleted": null,
-        "description": "test description",
-        "email": "test@example.com",
-        "icon": null,
-        "id": "test",
-        "name": "Test",
-        "updated": 1970-01-01T00:00:00.000Z,
-        "website": "https://example.com",
-      }
-    `);
+    expect(organization).toMatchObject({
+      description: 'test description',
+      email: 'test@example.com',
+      icon: await readFixture('apps/tux.png'),
+      id: 'test',
+      name: 'Test',
+      website: 'https://example.com',
+    });
   });
 
   it('should not create a new organization with duplicate id', async () => {
@@ -95,25 +91,30 @@ describe('updateOrganization', () => {
     await updateOrganization({
       id: organization.id,
       name: 'Test changed',
-      description: null,
+      description: 'Description Changed',
       email: 'test@example.com',
       website: null,
-      icon: null,
+      icon: createFixtureStream('apps/tux.png'),
     });
     await organization.reload();
-    expect(organization.dataValues).toMatchInlineSnapshot(`
+    expect(organization.dataValues).toMatchInlineSnapshot(
+      {
+        icon: expect.any(Buffer),
+      },
+      `
       {
         "created": 1970-01-01T00:00:00.000Z,
         "deleted": null,
-        "description": null,
+        "description": "Description Changed",
         "email": "test@example.com",
-        "icon": null,
+        "icon": Any<Buffer>,
         "id": "test",
         "name": "Test changed",
         "updated": 1970-01-01T00:00:00.000Z,
         "website": null,
       }
-    `);
+    `,
+    );
   });
 
   it('should throw if the organization does not exist', async () => {

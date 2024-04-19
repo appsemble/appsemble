@@ -1,0 +1,18 @@
+name: Test App
+defaultPage: Test Page
+
+resources:
+  test:
+    schema:
+      additionalProperties: false
+      type: object
+      properties:
+        test:
+          type: string
+          format: binary
+
+pages:
+  - name: Test Page
+    blocks:
+      - type: test
+        version: 0.0.0
