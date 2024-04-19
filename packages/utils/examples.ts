@@ -65,6 +65,9 @@ export const examples: Record<RemapperExampleKeys, RemapperExample> = {
           length: {
             array: 'length',
           },
+          item: {
+            array: 'item',
+          },
         },
       },
     },
@@ -72,14 +75,17 @@ export const examples: Record<RemapperExampleKeys, RemapperExample> = {
       {
         index: 0,
         length: 3,
+        item: 'a',
       },
       {
         index: 1,
         length: 3,
+        item: 'b',
       },
       {
         index: 2,
         length: 3,
+        item: 'c',
       },
     ],
   },

@@ -451,7 +451,7 @@ export interface Remappers {
    *
    * Returns nothing if array.map’s context isn’t set.
    */
-  array: 'index' | 'length';
+  array: 'index' | 'item' | 'length';
 
   /**
    * Returns an object based on the specified condition

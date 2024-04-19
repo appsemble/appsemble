@@ -861,12 +861,13 @@ describe('array', () => {
           'object.from': {
             index: [{ array: 'index' }],
             length: [{ array: 'length' }],
+            item: [{ array: 'item' }],
           },
         },
       ],
-      expected: { index: undefined, length: undefined },
+      expected: { index: undefined, length: undefined, item: undefined },
     },
-    'return the index and length if in the context of array.map': {
+    'return the index, length and item if in the context of array.map': {
       input: { array: [{ value: 'a' }, { value: 'b' }, { value: 'c' }] },
       mappers: [
         { prop: 'array' },
@@ -877,15 +878,16 @@ describe('array', () => {
                 value: [{ prop: 'value' }],
                 index: [{ array: 'index' }],
                 length: [{ array: 'length' }],
+                item: [{ array: 'item' }],
               },
             },
           ],
         },
       ],
       expected: [
-        { value: 'a', index: 0, length: 3 },
-        { value: 'b', index: 1, length: 3 },
-        { value: 'c', index: 2, length: 3 },
+        { value: 'a', index: 0, length: 3, item: { value: 'a' } },
+        { value: 'b', index: 1, length: 3, item: { value: 'b' } },
+        { value: 'c', index: 2, length: 3, item: { value: 'c' } },
       ],
     },
   });
