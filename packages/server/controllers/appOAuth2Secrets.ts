@@ -177,16 +177,28 @@ export async function verifyAppOAuth2SecretCode(ctx: Context): Promise<void> {
   });
 
   const authorizationCode = await transactional(async (transaction) => {
-    const { id: UserId } = user ?? (await User.create({ timezone }, { transaction }));
+    let userId = user?.id;
+    let appMember;
+
+    if (userId) {
+      appMember = await AppMember.findOne({
+        attributes: ['id'],
+        where: { UserId: userId, AppId: appId },
+        transaction,
+      });
+    } else if (authorization) {
+      appMember = await AppMember.findByPk(authorization.AppMemberId, { transaction });
+      userId = appMember.UserId;
+    } else {
+      // TODO: consider handling this in another way, as there is no way to login with the account,
+      // since password reset requires an email to be present.
+      userId = (await User.create({ timezone }, { transaction })).id;
+    }
+
     const role = app.definition.security?.default?.role;
-    let appMember = await AppMember.findOne({
-      attributes: ['id'],
-      where: { UserId, AppId: appId },
-      transaction,
-    });
     if (!appMember) {
       appMember = await AppMember.create(
-        { UserId, AppId: appId, role, name, email, emailVerified },
+        { UserId: userId, AppId: appId, role, name, email, emailVerified },
         { transaction },
       );
     }
@@ -210,7 +222,7 @@ export async function verifyAppOAuth2SecretCode(ctx: Context): Promise<void> {
         expires: addMinutes(new Date(), 10),
         redirectUri,
         scope,
-        UserId,
+        UserId: userId,
       },
       { transaction },
     );
