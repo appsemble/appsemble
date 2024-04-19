@@ -6,6 +6,8 @@ import {
   type ComponentPropsWithoutRef,
   type ReactNode,
   useCallback,
+  useEffect,
+  useState,
 } from 'react';
 import { Navigate, Route, useLocation, useNavigate, useParams } from 'react-router-dom';
 
@@ -36,10 +38,9 @@ export function TabsPage({
   const { pathname } = useLocation();
   const navigate = useNavigate();
   const { role, teams } = useUser();
+  const [tabsWithPermissions, setTabsWithPermissions] = useState([]);
+  const [defaultTab, setDefaultTab] = useState(null);
 
-  const onChange = useCallback((event: ChangeEvent, value: string) => navigate(value), [navigate]);
-
-  const pageName = getAppMessage({ id: prefix, defaultMessage: page.name }).format() as string;
   const checkSubPagePermissions = useCallback(
     (p: SubPage): boolean => {
       const roles = p.roles || definition.roles || [];
@@ -51,70 +52,87 @@ export function TabsPage({
     [definition.roles, definition.security, role, teams],
   );
 
-  return (
-    <>
-      <Tabs centered onChange={onChange} size="medium" value={pathname}>
-        {page.tabs.map(({ name }, index) => {
-          const translatedName = getAppMessage({
-            id: `${prefix}.tabs.${index}`,
-            defaultMessage: name,
-          }).format() as string;
+  useEffect(() => {
+    const { tabs } = page;
+    const filteredTabs = tabs.filter((tab) => checkSubPagePermissions(tab));
+    setTabsWithPermissions(filteredTabs);
+    const id = page.tabs.indexOf(filteredTabs[0]);
+    setDefaultTab({
+      id,
+      name: filteredTabs[0]?.name,
+    });
+  }, [checkSubPagePermissions, page]);
 
-          const value = `${['', lang, pageId, normalize(translatedName)].join('/')}${
-            wildcard.includes('/') ? wildcard.slice(wildcard.indexOf('/')) : ''
-          }`;
+  const onChange = useCallback((event: ChangeEvent, value: string) => navigate(value), [navigate]);
 
-          return (
-            <Tab href={value} key={name} value={value}>
-              {translatedName}
-            </Tab>
-          );
-        })}
-      </Tabs>
-      <MetaSwitch title={pageName}>
-        {page.tabs.map(({ blocks, name, roles }, index) => {
-          const translatedName = getAppMessage({
-            id: `${prefix}.tabs.${index}`,
-            defaultMessage: name,
-          }).format() as string;
+  const pageName = getAppMessage({ id: prefix, defaultMessage: page.name }).format() as string;
 
-          return (
-            <Route
-              element={
-                checkSubPagePermissions({ blocks, name, roles }) ? (
-                  <TabContent
-                    key={`${prefix}.tabs.${normalize(name)}`}
-                    {...blockListProps}
-                    blocks={blocks}
-                    name={translatedName}
-                    page={page}
-                    prefix={`${prefix}.tabs.${index}.blocks`}
-                    prefixIndex={`${prefixIndex}.tabs.${index}.blocks`}
-                  />
-                ) : null
-              }
-              key={name}
-              path={`/${normalize(translatedName)}${String(
-                (page.parameters || []).map((param) => `/:${param}`),
-              )}`}
-            />
-          );
-        })}
+  if (tabsWithPermissions.length) {
+    return (
+      <>
+        <Tabs centered onChange={onChange} size="medium" value={pathname}>
+          {page.tabs.map((tab, index) => {
+            const translatedName = getAppMessage({
+              id: `${prefix}.tabs.${index}`,
+              defaultMessage: tab.name,
+            }).format() as string;
 
-        <Route
-          element={
-            <Navigate
-              to={`/${lang}/${pageId}/${normalize(
-                getAppMessage({
-                  id: `${prefix}.tabs.0`,
-                  defaultMessage: page.tabs[0].name,
-                }).format() as string,
-              )}`}
-            />
-          }
-          path="/*"
-        />
-      </MetaSwitch>
-    </>
-  );
+            const value = `${['', lang, pageId, normalize(translatedName)].join('/')}${
+              wildcard.includes('/') ? wildcard.slice(wildcard.indexOf('/')) : ''
+            }`;
+
+            return checkSubPagePermissions(tab) ? (
+              <Tab href={value} key={tab.name} value={value}>
+                {translatedName}
+              </Tab>
+            ) : null;
+          })}
+        </Tabs>
+        <MetaSwitch title={pageName}>
+          {page.tabs.map(({ blocks, name, roles }, index) => {
+            const translatedName = getAppMessage({
+              id: `${prefix}.tabs.${index}`,
+              defaultMessage: name,
+            }).format() as string;
+
+            return (
+              <Route
+                element={
+                  checkSubPagePermissions({ blocks, name, roles }) ? (
+                    <TabContent
+                      key={`${prefix}.tabs.${normalize(name)}`}
+                      {...blockListProps}
+                      blocks={blocks}
+                      name={translatedName}
+                      page={page}
+                      prefix={`${prefix}.tabs.${index}.blocks`}
+                      prefixIndex={`${prefixIndex}.tabs.${index}.blocks`}
+                    />
+                  ) : null
+                }
+                key={name}
+                path={`/${normalize(translatedName)}${String(
+                  (page.parameters || []).map((param) => `/:${param}`),
+                )}`}
+              />
+            );
+          })}
+
+          <Route
+            element={
+              <Navigate
+                to={`/${lang}/${pageId}/${normalize(
+                  getAppMessage({
+                    id: `${prefix}.tabs.${defaultTab.id}`,
+                    defaultMessage: defaultTab.name,
+                  }).format() as string,
+                )}`}
+              />
+            }
+            path="/*"
+          />
+        </MetaSwitch>
+      </>
+    );
+  }
 }
