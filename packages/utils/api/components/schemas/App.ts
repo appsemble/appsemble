@@ -22,7 +22,8 @@ This value will be generated automatically by the API.
     path: {
       type: 'string',
       minLength: 1,
-      maxLength: 30,
+      // Max app name size + appended random data by [`setAppPath`](./packages/server/utils/app.ts)
+      maxLength: 41,
       pattern: normalized.source,
       description: `The URL path segment on which this app is reachable.
 
