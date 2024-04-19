@@ -1,7 +1,7 @@
 apiVersion: v2
 name: appsemble
-version: 0.28.2
-appVersion: 0.28.2
+version: 0.28.3
+appVersion: 0.28.3
 kubeVersion: '>=1.21.0'
 type: application
 description: The open source low-code app building platform
@@ -23,8 +23,15 @@ dependencies:
     repository: https://charts.bitnami.com/bitnami
     condition: postgresql.enabled
 annotations:
-  artifacthub.io/changes: |
-    []
+  artifacthub.io/changes: >
+    - kind: added
+      description: "Utils: Add item option to the array remapper."
+    - kind: fixed
+      description: "Server: The OAuth2 login flow would fail to authenticate a user to
+        the app if the user was not logged in to the Studio."
+    - kind: fixed
+      description: "Utils: Fix issues with querying private apps by path or with paths
+        that are over 30 characters."
   artifacthub.io/license: LGPL-3.0-only
   artifacthub.io/links: |
     - name: Appsemble Studio

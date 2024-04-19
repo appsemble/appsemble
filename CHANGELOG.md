@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.28.3](https://gitlab.com/appsemble/appsemble/-/releases/0.28.3)] - 2024-04-19
+
+### Added
+
+- Utils: Add `item` option to the `array` remapper.
+
+### Fixed
+
+- Server: The OAuth2 login flow would fail to authenticate a user to the app if the user was not
+  logged in to the Studio.
+- Utils: Fix issues with querying private apps by path or with paths that are over 30 characters.
+
 ## \[[0.28.2](https://gitlab.com/appsemble/appsemble/-/releases/0.28.2)] - 2024-04-17
 
 ## \[[0.28.1](https://gitlab.com/appsemble/appsemble/-/releases/0.28.1)] - 2024-04-17
