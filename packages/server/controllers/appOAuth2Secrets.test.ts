@@ -7,10 +7,13 @@ import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vites
 
 import {
   App,
+  AppMember,
+  AppOAuth2Authorization,
   AppOAuth2Secret,
   OAuth2AuthorizationCode,
   Organization,
   OrganizationMember,
+  User,
 } from '../models/index.js';
 import { setArgv } from '../utils/argv.js';
 import { createServer } from '../utils/createServer.js';
@@ -710,6 +713,211 @@ describe('verifyAppOAuth2SecretCode', () => {
       redirectUri: 'http://app.appsemble.localhost',
       scope: 'resources:manage',
       UserId: getTestUser().id,
+    });
+  });
+
+  it('should find Appsemble user with authorization if not already logged in', async () => {
+    const oauth2User = {
+      email: 'user@example.com',
+      emailVerified: true,
+      name: 'User',
+      profile: 'https://example.com/user',
+      picture: 'https://example.com/user.jpg',
+      sub: '42',
+    };
+    const accessToken = jwt.sign(oauth2User, 'random');
+    const idToken = jwt.sign(oauth2User, 'random');
+    mock.onPost('https://example.com/oauth/token').reply(200, {
+      access_token: accessToken,
+      id_token: idToken,
+      refresh_token: '',
+      token_type: 'bearer',
+    });
+    const appMember = await AppMember.create({
+      UserId: getTestUser().id,
+      AppId: app.id,
+      role: 'Test',
+      ...oauth2User,
+    });
+    await AppOAuth2Authorization.create({
+      accessToken,
+      AppOAuth2SecretId: secret.id,
+      refreshToken: '',
+      sub: '42',
+      AppMemberId: appMember.id,
+    });
+
+    const response = await request.post<LoginCodeResponse>(
+      `/api/apps/${app.id}/secrets/oauth2/${secret.id}/verify`,
+      {
+        code: 'authorization_code',
+        redirectUri: 'http://app.appsemble.localhost',
+        scope: 'resources:manage',
+        timezone: 'Europe/Amsterdam',
+      },
+      { headers: { referer: 'http://localhost' } },
+    );
+    expect(response).toMatchInlineSnapshot(
+      { data: { code: expect.any(String) } },
+      `
+      HTTP/1.1 200 OK
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "code": Any<String>,
+      }
+    `,
+    );
+
+    const auth = await OAuth2AuthorizationCode.findOne({
+      where: { code: response.data.code },
+    });
+    expect(auth).toMatchObject({
+      expires: expect.any(Date),
+      redirectUri: 'http://app.appsemble.localhost',
+      scope: 'resources:manage',
+      UserId: getTestUser().id,
+    });
+  });
+
+  it('should create a new user when no associated user could be found', async () => {
+    const oauth2User = {
+      email: 'user@example.com',
+      emailVerified: true,
+      name: 'User',
+      profile: 'https://example.com/user',
+      picture: 'https://example.com/user.jpg',
+      sub: '42',
+    };
+    const accessToken = jwt.sign(oauth2User, 'random');
+    const idToken = jwt.sign(oauth2User, 'random');
+    mock.onPost('https://example.com/oauth/token').reply(200, {
+      access_token: accessToken,
+      id_token: idToken,
+      refresh_token: '',
+      token_type: 'bearer',
+    });
+
+    const response = await request.post<LoginCodeResponse>(
+      `/api/apps/${app.id}/secrets/oauth2/${secret.id}/verify`,
+      {
+        code: 'authorization_code',
+        redirectUri: 'http://app.appsemble.localhost',
+        scope: 'resources:manage',
+        timezone: 'Europe/Amsterdam',
+      },
+      { headers: { referer: 'http://localhost' } },
+    );
+    expect(response).toMatchInlineSnapshot(
+      { data: { code: expect.any(String) } },
+      `
+      HTTP/1.1 200 OK
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "code": Any<String>,
+      }
+    `,
+    );
+
+    const auth = await OAuth2AuthorizationCode.findOne({
+      where: { code: response.data.code },
+    });
+    expect(auth.UserId).not.toBe(getTestUser().id);
+    expect(auth).toMatchObject({
+      expires: expect.any(Date),
+      redirectUri: 'http://app.appsemble.localhost',
+      scope: 'resources:manage',
+      UserId: expect.any(String),
+    });
+
+    const user = await User.findByPk(auth.UserId);
+    expect(user).toMatchObject({
+      created: expect.any(Date),
+      deleted: null,
+      demoLoginUser: false,
+      locale: null,
+      name: null,
+      password: null,
+      primaryEmail: null,
+      subscribed: true,
+      timezone: 'Europe/Amsterdam',
+      updated: expect.any(Date),
+    });
+  });
+
+  it('should create a new appMember when user is authorized', async () => {
+    const accessToken = jwt.sign(
+      {
+        email: 'user@example.com',
+        emailVerified: true,
+        name: 'User',
+        profile: 'https://example.com/user',
+        picture: 'https://example.com/user.jpg',
+        sub: '42',
+      },
+      'random',
+    );
+    mock.onPost('https://example.com/oauth/token').reply(200, {
+      access_token: accessToken,
+      id_token: '',
+      refresh_token: '',
+      token_type: 'bearer',
+    });
+
+    authorizeStudio();
+    const response = await request.post<LoginCodeResponse>(
+      `/api/apps/${app.id}/secrets/oauth2/${secret.id}/verify`,
+      {
+        code: 'authorization_code',
+        redirectUri: 'http://app.appsemble.localhost',
+        scope: 'resources:manage',
+        timezone: 'Europe/Amsterdam',
+      },
+      { headers: { referer: 'http://localhost' } },
+    );
+    expect(response).toMatchInlineSnapshot(
+      { data: { code: expect.any(String) } },
+      `
+      HTTP/1.1 200 OK
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "code": Any<String>,
+      }
+    `,
+    );
+
+    const auth = await OAuth2AuthorizationCode.findOne({
+      where: { code: response.data.code },
+    });
+    expect(auth).toMatchObject({
+      expires: expect.any(Date),
+      redirectUri: 'http://app.appsemble.localhost',
+      scope: 'resources:manage',
+      UserId: getTestUser().id,
+    });
+
+    const user = await User.findByPk(auth.UserId, { include: ['AppMembers'] });
+    expect(user.AppMembers[0]).toMatchObject({
+      created: expect.any(Date),
+      locale: null,
+      AppId: 1,
+      consent: null,
+      password: null,
+      UserId: user.id,
+      name: 'User',
+      email: 'user@example.com',
+      emailKey: null,
+      emailVerified: false,
+      id: expect.any(String),
+      picture: null,
+      properties: {},
+      resetKey: null,
+      role: 'Test',
+      scimActive: null,
+      scimExternalId: null,
+      updated: expect.any(Date),
     });
   });
 });
