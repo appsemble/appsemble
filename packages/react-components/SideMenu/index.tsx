@@ -27,7 +27,9 @@ interface SideMenuContext {
 }
 
 const Context = createContext<SideMenuContext>({
-  isOpen: window?.innerWidth > 1024,
+  // Ignore me
+  // isOpen: window?.innerWidth > 1024,
+  isOpen: false,
   toggle: noop,
   disable: noop,
   setMenu: noop,
@@ -60,7 +62,8 @@ export function SideMenuProvider({ base, bottom, children }: SideMenuProviderPro
   const location = useLocation();
   useEffect(() => {
     if (window?.innerWidth <= 1024) {
-      disable();
+      // REFACTORING Ignore me
+      // disable();
     }
   }, [disable, location]);
 
@@ -77,23 +80,24 @@ export function SideMenuProvider({ base, bottom, children }: SideMenuProviderPro
     ),
   );
 
+  // REFACTORING
   // Close or open the side menu when the screen size changes, depending on the width
-  useEffect(() => {
-    const onResize = (): void => {
-      const width = window.innerWidth;
-      if (width >= 1025 && !enabled) {
-        enable();
-      } else if (width < 1025 && enabled) {
-        disable();
-      }
-    };
-
-    window.addEventListener('resize', onResize);
-
-    return (): void => {
-      window.removeEventListener('resize', onResize);
-    };
-  }, [disable, enable, enabled]);
+  // useEffect(() => {
+  //   const onResize = (): void => {
+  //     const width = window.innerWidth;
+  //     if (width >= 1025 && !enabled) {
+  //       enable();
+  //     } else if (width < 1025 && enabled) {
+  //       disable();
+  //     }
+  //   };
+  //
+  //   window.addEventListener('resize', onResize);
+  //
+  //   return (): void => {
+  //     window.removeEventListener('resize', onResize);
+  //   };
+  // }, [disable, enable, enabled]);
 
   return (
     <Context.Provider
@@ -116,7 +120,6 @@ export function SideMenuProvider({ base, bottom, children }: SideMenuProviderPro
           },
           { [styles.code]: location.pathname.match(/edit/) && location.hash.length > 0 },
         )}
-        id="sideMenuWrapper"
       >
         {/* eslint-disable-next-line jsx-a11y/prefer-tag-over-role */}
         <div
@@ -137,7 +140,6 @@ export function SideMenuProvider({ base, bottom, children }: SideMenuProviderPro
             { [styles.code]: location.pathname.match(/edit/) && location.hash.length > 0 },
             { [styles.gui]: location.pathname.match(/(?<=\/)gui(?=\/)/) },
           )}
-          id="sideMenu"
         >
           {base}
           {menu}
@@ -155,31 +157,37 @@ export function SideMenuProvider({ base, bottom, children }: SideMenuProviderPro
 export function SideMenuButton(): ReactNode {
   const { isOpen, toggle } = useContext(Context);
   const { formatMessage } = useIntl();
-  const location = useLocation();
+  // REFACTORING
+  // Ignore
+  // const location = useLocation();
 
-  return /edit/.test(location.pathname) && location.hash.length > 0 ? (
-    <button
-      aria-label={formatMessage(isOpen ? messages.close : messages.open)}
-      className={classNames('navbar-burger', { 'is-active': isOpen }, styles.button, styles.code)}
-      onClick={toggle}
-      type="button"
-    >
-      <span aria-hidden />
-      <span aria-hidden />
-      <span aria-hidden />
-    </button>
-  ) : /(?<=\/)gui(?=\/)/.test(location.pathname) ? (
-    <button
-      aria-label={formatMessage(isOpen ? messages.close : messages.open)}
-      className={classNames('navbar-burger', { 'is-active': isOpen }, styles.button, styles.gui)}
-      onClick={toggle}
-      type="button"
-    >
-      <span aria-hidden />
-      <span aria-hidden />
-      <span aria-hidden />
-    </button>
-  ) : (
+  // REFACTORING
+  // Ignore
+  // return /edit/.test(location.pathname) && location.hash.length > 0 ? (
+  //   <button
+  //     aria-label={formatMessage(isOpen ? messages.close : messages.open)}
+  //     className={classNames('navbar-burger', { 'is-active': isOpen },
+  //       styles.button, styles.code)}
+  //     onClick={toggle}
+  //     type="button"
+  //   >
+  //     <span aria-hidden />
+  //     <span aria-hidden />
+  //     <span aria-hidden />
+  //   </button>
+  // ) : /(?<=\/)gui(?=\/)/.test(location.pathname) ? (
+  //   <button
+  //     aria-label={formatMessage(isOpen ? messages.close : messages.open)}
+  //     className={classNames('navbar-burger', { 'is-active': isOpen }, styles.button, styles.gui)}
+  //     onClick={toggle}
+  //     type="button"
+  //   >
+  //     <span aria-hidden />
+  //     <span aria-hidden />
+  //     <span aria-hidden />
+  //   </button>
+  // ) : (
+  return (
     <button
       aria-label={formatMessage(isOpen ? messages.close : messages.open)}
       className={classNames('navbar-burger', { 'is-active': isOpen }, styles.button)}

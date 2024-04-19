@@ -80,164 +80,180 @@ export default function EditPage(): ReactNode {
   const push = useMessages();
   const { lang } = useParams();
   const [, setBreadCrumbsDecoration] = useBreadCrumbsDecoration();
-  const screenRatios = useMemo(() => ['desktop', 'fill', 'phone', 'tablet'], []);
-  const [selectedRatio, setSelectedRatio] = useState<string>('fill');
+  const screenRatios = useMemo(() => ['desktop', 'fill', 'phone', 'tablet'] as const, []);
+  const [selectedRatio, setSelectedRatio] = useState<(typeof screenRatios)[number]>('fill');
   const { enterFullscreen, exitFullscreen, fullscreen } = useFullscreenContext();
-  const { disable: close, enable: open, enabled } = useToggle();
+  // REFACTORING this toggle is for the toolbar burger
+  // const { disable: close, enable: open, enabled } = useToggle();
+  const toolbarToggle = useToggle();
   const onChangeScreenRatio = useCallback(
     (i: number) => {
       setSelectedRatio(screenRatios[i]);
     },
     [screenRatios, setSelectedRatio],
   );
+  // REFACTORING not just a modal, the modal for mobile previews
+  // REFACTORING use the whole damn toggle hook, don't destrucure it
   const { disable: closeModal, enabled: modalIsActive, toggle: toggleModal } = useToggle();
   const [messageForModalFrame, setMessageForModalFrame] = useState(null);
+  // REFACTORING This is for the preview formats dropdown
   const [hideInputListLabel, setHideInputListLabel] = useState(false);
 
+  // REFACTORING this is sus???
   useEventListener(
     globalThis,
     'keydown',
     useCallback(
       (event) => {
         if (event.key === 'Escape') {
-          close();
+          toolbarToggle.disable();
         }
       },
-      [close],
+      [toolbarToggle],
     ),
   );
-  const breadcrumbsDiv = document?.querySelector('#breadcrumbsDiv') as HTMLElement;
-  const breadcrumbs = document?.querySelector('#breadcrumbs') as HTMLElement;
-  const appPreviewDiv = document?.querySelector(`.${styles.previewRoot}`) as HTMLElement;
-  const codeEditorTabs = document?.querySelector('#editorTabsDiv') as HTMLElement;
-  const guiEditorSwitch = document?.querySelector('#guiEditorSwitch') as HTMLElement;
-  const formatSelectionDiv = document?.querySelector(`.${styles.formatSelection}`) as HTMLElement;
-  const sideMenu = document?.querySelector('#sideMenu') as HTMLElement;
-  const sideMenuWrapper = document?.querySelector('#sideMenuWrapper') as HTMLElement;
 
-  const determineBreadcrumbsVisibility = useCallback(() => {
-    if (window?.innerWidth < 1024) {
-      if (breadcrumbsDiv.style.getPropertyValue('display') !== 'none') {
-        breadcrumbsDiv.style.setProperty('display', 'none', 'important');
-      }
-    } else {
-      breadcrumbsDiv?.style.removeProperty('display');
-    }
-  }, [breadcrumbsDiv]);
+  // const breadcrumbsDiv = document?.querySelector('#breadcrumbsDiv') as HTMLElement;
+  // const breadcrumbs = document?.querySelector('#breadcrumbs') as HTMLElement;
+  // const appPreviewDiv = document?.querySelector(`.${styles.previewRoot}`) as HTMLElement;
+  // const codeEditorTabs = document?.querySelector('#editorTabsDiv') as HTMLElement;
+  // const guiEditorSwitch = document?.querySelector('#guiEditorSwitch') as HTMLElement;
+  // const formatSelectionDiv = document?.querySelector(`.${styles.formatSelection}`) as HTMLElement;
+  // const sideMenu = document?.querySelector('#sideMenu') as HTMLElement;
+  // const sideMenuWrapper = document?.querySelector('#sideMenuWrapper') as HTMLElement;
+
+  // REFACTORING the issue with this hack lies in the `position: absolute` of the toolbar
+  // REFACTORING actually, the toolbar isn't really position: absolute, actually idk
+  // const determineBreadcrumbsVisibility = useCallback(() => {
+  //   if (window?.innerWidth < 1024) {
+  //     // REFACTORING Major bruh moment
+  //     if (breadcrumbsDiv.style.getPropertyValue('display') !== 'none') {
+  //       breadcrumbsDiv.style.setProperty('display', 'none', 'important');
+  //     }
+  //   } else {
+  //     breadcrumbsDiv?.style.removeProperty('display');
+  //   }
+  // }, [breadcrumbsDiv]);
 
   /* This closes the buttons dropdown menu when a click outside the bounds is registered,
    ** except for the toggle button. */
-  useClickOutside(buttonsDropDownRef, close, dropdownBurgerButtonRef);
+  useClickOutside(buttonsDropDownRef, toolbarToggle.disable, dropdownBurgerButtonRef);
 
-  const setInputListLabelVisibility = useCallback(() => {
-    const totalWidth = breadcrumbsDiv?.clientWidth;
-    const breadcrumbsWidth = breadcrumbs?.clientWidth;
-    const switchButtonWidth = guiEditorSwitch?.clientWidth;
-    const formatSelectionDivWidth = formatSelectionDiv?.clientWidth;
-    const freeSpace = totalWidth - (breadcrumbsWidth + switchButtonWidth);
-    if (freeSpace < formatSelectionDivWidth) {
-      if (!hideInputListLabel) {
-        setHideInputListLabel(true);
-      }
-    } else {
-      if (hideInputListLabel && freeSpace >= formatSelectionDivWidth + 127) {
-        setHideInputListLabel(false);
-      }
-    }
-  }, [breadcrumbs, breadcrumbsDiv, formatSelectionDiv, guiEditorSwitch, hideInputListLabel]);
+  // REFACTORING This is, again, for the preview formats dropdown
+  // const setInputListLabelVisibility = useCallback(() => {
+  //   const totalWidth = breadcrumbsDiv?.clientWidth;
+  //   const breadcrumbsWidth = breadcrumbs?.clientWidth;
+  //   const switchButtonWidth = guiEditorSwitch?.clientWidth;
+  //   const formatSelectionDivWidth = formatSelectionDiv?.clientWidth;
+  //   const freeSpace = totalWidth - (breadcrumbsWidth + switchButtonWidth);
+  //   if (freeSpace < formatSelectionDivWidth) {
+  //     if (!hideInputListLabel) {
+  //       setHideInputListLabel(true);
+  //     }
+  //   } else {
+  //     if (hideInputListLabel && freeSpace >= formatSelectionDivWidth + 127) {
+  //       setHideInputListLabel(false);
+  //     }
+  //   }
+  // }, [breadcrumbs, breadcrumbsDiv, formatSelectionDiv, guiEditorSwitch, hideInputListLabel]);
 
-  const setAppPreviewSize = useCallback(() => {
-    if (selectedRatio && appPreviewDiv) {
-      const windowHeight =
-        window?.innerHeight ||
-        document?.documentElement.clientHeight ||
-        document?.body.clientHeight;
-      const windowWidth =
-        window?.innerWidth || document?.documentElement.clientWidth || document?.body.clientWidth;
-      const aspectRatioH =
-        windowWidth > windowHeight ? windowWidth / windowHeight : windowHeight / windowWidth;
-      const dynamicHeight = (windowWidth / aspectRatioH + windowHeight * 0.7) / 2;
+  // REFACTORING implement this in pure CSS, no bullshit
+  // const setAppPreviewSize = useCallback(() => {
+  //   if (selectedRatio && appPreviewDiv) {
+  //     const windowHeight =
+  //       window?.innerHeight ||
+  //       document?.documentElement.clientHeight ||
+  //       document?.body.clientHeight;
+  //     const windowWidth =
+  //       window?.innerWidth || document?.documentElement.clientWidth || document?.body.clientWidth;
+  //     const aspectRatioH =
+  //       windowWidth > windowHeight ? windowWidth / windowHeight : windowHeight / windowWidth;
+  //     const dynamicHeight = (windowWidth / aspectRatioH + windowHeight * 0.7) / 2;
+  //
+  //     switch (selectedRatio) {
+  //       case 'phone':
+  //         appPreviewDiv.style.height = `${dynamicHeight - 120.8}px`;
+  //         break;
+  //       case 'tablet':
+  //         appPreviewDiv.style.removeProperty('height');
+  //         appPreviewDiv.style.height = `${dynamicHeight * 0.8}px`;
+  //         break;
+  //       case 'desktop':
+  //         appPreviewDiv.style.removeProperty('height');
+  //         break;
+  //       case 'fill':
+  //         appPreviewDiv.style.height = '100%';
+  //         break;
+  //       default:
+  //         noop();
+  //         break;
+  //     }
+  //   }
+  // }, [appPreviewDiv, selectedRatio]);
 
-      switch (selectedRatio) {
-        case 'phone':
-          appPreviewDiv.style.height = `${dynamicHeight - 120.8}px`;
-          break;
-        case 'tablet':
-          appPreviewDiv.style.removeProperty('height');
-          appPreviewDiv.style.height = `${dynamicHeight * 0.8}px`;
-          break;
-        case 'desktop':
-          appPreviewDiv.style.removeProperty('height');
-          break;
-        case 'fill':
-          appPreviewDiv.style.height = '100%';
-          break;
-        default:
-          noop();
-          break;
-      }
-    }
-  }, [appPreviewDiv, selectedRatio]);
+  // REFACTORING figure this one out
+  // const closeModalOnDesktop = useCallback(() => {
+  //   if (window?.innerWidth > 1023) {
+  //     closeModal();
+  //   }
+  // }, [closeModal]);
+  //
+  // setAppPreviewSize();
+  // determineBreadcrumbsVisibility();
 
-  const closeModalOnDesktop = useCallback(() => {
-    if (window?.innerWidth > 1023) {
-      closeModal();
-    }
-  }, [closeModal]);
-
-  setAppPreviewSize();
-  determineBreadcrumbsVisibility();
-
+  // REFACTORING Really figure this one out
   // Update the app preview size
-  useEffect(() => {
-    const handleTransitionEnd = (): void => {
-      setInputListLabelVisibility();
-    };
+  // useEffect(() => {
+  //   // REFACTORING seriously?
+  //   // REFACTORING the same pattern is present in the GuiEditor, probably arrived here as
+  //   // Copy-pasta
+  //   const handleTransitionEnd = (): void => {
+  //     setInputListLabelVisibility();
+  //   };
+  //   const onResize = (): void => {
+  //     setAppPreviewSize();
+  //     setInputListLabelVisibility();
+  //     determineBreadcrumbsVisibility();
+  //     closeModalOnDesktop();
+  //   };
+  //   window.addEventListener('resize', onResize);
+  //   if (window?.innerWidth > 1023) {
+  //     sideMenu?.addEventListener('transitionend', handleTransitionEnd);
+  //     sideMenuWrapper?.addEventListener('transitionend', handleTransitionEnd);
+  //   }
+  //   return (): void => {
+  //     window.removeEventListener('resize', onResize);
+  //     if (window?.innerWidth > 1023) {
+  //       sideMenu?.removeEventListener('transitionend', handleTransitionEnd);
+  //       sideMenuWrapper?.removeEventListener('transitionend', handleTransitionEnd);
+  //     }
+  //   };
+  // }, [
+  //   closeModalOnDesktop,
+  //   determineBreadcrumbsVisibility,
+  //   setAppPreviewSize,
+  //   setInputListLabelVisibility,
+  //   sideMenu,
+  //   sideMenuWrapper,
+  // ]);
 
-    const onResize = (): void => {
-      setAppPreviewSize();
-      setInputListLabelVisibility();
-      determineBreadcrumbsVisibility();
-      closeModalOnDesktop();
-    };
-
-    window.addEventListener('resize', onResize);
-    if (window?.innerWidth > 1023) {
-      sideMenu?.addEventListener('transitionend', handleTransitionEnd);
-      sideMenuWrapper?.addEventListener('transitionend', handleTransitionEnd);
-    }
-    return (): void => {
-      window.removeEventListener('resize', onResize);
-      if (window?.innerWidth > 1023) {
-        sideMenu?.removeEventListener('transitionend', handleTransitionEnd);
-        sideMenuWrapper?.removeEventListener('transitionend', handleTransitionEnd);
-      }
-    };
-  }, [
-    closeModalOnDesktop,
-    determineBreadcrumbsVisibility,
-    setAppPreviewSize,
-    setInputListLabelVisibility,
-    sideMenu,
-    sideMenuWrapper,
-  ]);
-
+  // REFACTORING TODO bullshit?
   // This enables the use of the mouse wheel to scroll the editor's tabs container
-  if (codeEditorTabs) {
-    codeEditorTabs.addEventListener(
-      'wheel',
-      (event: WheelEvent) => {
-        event.preventDefault();
-        codeEditorTabs.scrollLeft += event.deltaY;
-      },
-      { passive: false },
-    );
-  }
+  // if (codeEditorTabs) {
+  //   codeEditorTabs.addEventListener(
+  //     'wheel',
+  //     (event: WheelEvent) => {
+  //       event.preventDefault();
+  //       codeEditorTabs.scrollLeft += event.deltaY;
+  //     },
+  //     { passive: false },
+  //   );
+  // }
 
   useEffect(() => {
     setBreadCrumbsDecoration(
       <Link id="guiEditorSwitch" to={`apps/${id}/edit/gui/pages`}>
-        <Button className="button is-fullwidth is-rounded is-transparent is-bordered is-small">
+        <Button className="button is-hidden-touch is-fullwidth is-rounded is-transparent is-bordered is-small">
           {`${formatMessage(messages.switchToGuiEditor)} ${formatMessage(messages.experimental)}`}
         </Button>
       </Link>,
@@ -253,6 +269,7 @@ export default function EditPage(): ReactNode {
     [navigate],
   );
 
+  // REFACTORING TODO figure out what this does
   const handleIframeLoad = (): void => {
     if (modalIsActive && messageForModalFrame) {
       modalFrame?.current.contentWindow.postMessage(
@@ -267,11 +284,11 @@ export default function EditPage(): ReactNode {
     const blockManifests = await getCachedBlockVersions(getAppBlocks(definition));
     // YAML and schema appear to be valid, send it to the app preview iframe
     delete definition.anchors;
-
     frame.current?.contentWindow.postMessage(
       { type: 'editor/EDIT_SUCCESS', definition, blockManifests, coreStyle, sharedStyle },
       getAppUrl(app.OrganizationId, app.path),
     );
+    // REFACTORING TODO figure out what this does
     setMessageForModalFrame({
       type: 'editor/EDIT_SUCCESS',
       definition,
@@ -400,30 +417,23 @@ export default function EditPage(): ReactNode {
       sharedStyleErrorCount,
   );
 
+  // REFACTORING this wraps around toolbar button clicks and closes the toolbar after each click
   function handleButtonClick(handler?: Function): void {
-    if (!handler) {
-      if (enabled) {
-        close();
-      }
-      return;
+    if (toolbarToggle.enabled) {
+      toolbarToggle.disable();
     }
-    if (enabled) {
-      close();
-      handler.call(handler);
-    } else {
-      handler.call(handler);
-    }
+    handler?.call(handler);
   }
 
   return (
     <div
       className={classNames(`${styles.root} is-flex has-background-white`, {
-        [String(styles.fullscreen)]: fullscreen.enabled,
+        [styles.fullscreen]: fullscreen.enabled,
       })}
     >
       <div
         className={classNames(`is-flex is-flex-direction-column ${styles.leftPanel}`, {
-          [String(styles.fullscreen)]: fullscreen.enabled,
+          [styles.fullscreen]: fullscreen.enabled,
         })}
       >
         <nav
@@ -437,9 +447,9 @@ export default function EditPage(): ReactNode {
             <button
               aria-expanded="false"
               aria-label="menu"
-              className={classNames(['navbar-burger', { 'is-active': enabled }])}
+              className={classNames(['navbar-burger', { 'is-active': toolbarToggle.enabled }])}
               data-target="navbarMenu"
-              onClick={enabled ? close : open}
+              onClick={toolbarToggle.enabled ? toolbarToggle.disable : toolbarToggle.enable}
               ref={dropdownBurgerButtonRef}
               type="button"
             >
@@ -449,7 +459,7 @@ export default function EditPage(): ReactNode {
             </button>
           </div>
           <div
-            className={classNames(['navbar-menu', { 'is-active': enabled }])}
+            className={classNames(['navbar-menu', { 'is-active': toolbarToggle.enabled }])}
             ref={buttonsDropDownRef}
           >
             <div className="navbar-start">
@@ -533,7 +543,6 @@ export default function EditPage(): ReactNode {
         <Tabs
           boxed
           className={`${styles.editorTabsDiv} ${fullscreen.enabled ? styles.fullscreen : ''}`}
-          id="editorTabsDiv"
           onChange={changeTab}
           value={location?.hash}
         >
@@ -575,12 +584,13 @@ export default function EditPage(): ReactNode {
         </div>
       </div>
       <Prompt message={formatMessage(messages.notification)} when={appDefinition !== app.yaml} />
+      {/* REFACTORING explain to myself what the fuck this thing below is and why does it break styling */}
       <div className={`ml-3 is-hidden-touch ${styles.rightPanel} ${styles[selectedRatio]}`}>
         <div className={styles.formatSelection}>
           <InputList
             hideLabel={hideInputListLabel}
             isRight
-            label={String(formatMessage(messages.previewFormat))}
+            label={formatMessage(messages.previewFormat)}
             labelPosition="left"
             onChange={(i: number) => onChangeScreenRatio(i)}
             options={screenRatios}

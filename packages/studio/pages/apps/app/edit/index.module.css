@@ -78,7 +78,10 @@ button[class*='modal-close'] {
 
 .leftPanel {
   flex: 2 2 auto;
-  height: calc(100vh - 7.3rem);
+  /* REFACTOR get rid of this hard-coded hack */
+  /* REFACTOR and all the others down below */
+  /* height: calc(100vh - 7.3rem); */
+  max-height: 100vh;
 
   /* stylelint-disable-next-line media-feature-range-notation */
   @media (max-width: 1023px) {
@@ -162,6 +165,7 @@ button[class*='modal-close'] {
   height: 100%;
 }
 
+/* REFACTORING - what the FUCK is wrong here */
 .formatSelection {
   position: absolute;
   right: 0.15rem;
@@ -169,6 +173,7 @@ button[class*='modal-close'] {
   z-index: 30;
 }
 
+/* REFACTORING TODO die */
 /* stylelint-disable-next-line selector-max-attribute */
 [class*='editor-navbar'] {
   /* stylelint-disable-next-line media-feature-range-notation */
@@ -183,6 +188,7 @@ button[class*='modal-close'] {
   }
 }
 
+/* REFACTORING TODO die here as well */
 /* stylelint-disable-next-line selector-max-attribute */
 [class*='navbar-menu is-active'] {
   /* stylelint-disable-next-line media-feature-range-notation */
@@ -204,10 +210,11 @@ button[class*='modal-close'] {
   }
 }
 
+/* REFACTORING why does this exist in the first place??? */
+/*
 .editorTabsDiv {
   margin-bottom: 0 !important;
 
-  /* stylelint-disable-next-line media-feature-range-notation */
   @media (max-width: 1023px) {
     position: absolute;
     top: 3.9rem;
@@ -223,6 +230,7 @@ button[class*='modal-close'] {
     top: 2.7rem;
   }
 }
+*/
 
 .editorTab > a {
   /* stylelint-disable-next-line media-feature-range-notation */

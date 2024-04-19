@@ -10,7 +10,8 @@
     display: block;
   }
 
-  &.code,
+  /* TODO remove this */
+  /* &.code, */
   &.gui {
     @media screen and (width >=1024px) {
       display: block;
@@ -28,13 +29,14 @@
   &.code,
   &.gui {
     @media screen and (width >1024px) {
-      margin-left: 0;
-      transition: ease-out 0.15s;
+      margin-left: menu-width;
+      /* margin-left: 0; */
+      /* transition: ease-out 0.15s; */
 
-      &.open {
-        margin-left: menu-width;
-        transition: ease-in 0.15s;
-      }
+      /* &.open { */
+      /*   margin-left: menu-width; */
+      /*   transition: ease-in 0.15s; */
+      /* } */
     }
   }
 }
@@ -72,7 +74,8 @@
   }
 
   /* Overrides the side menu behaviour on the code and GUI editor pages */
-  &.code,
+  /* &.code, */
+  /* TODO remove this bitch */
   &.gui {
     @media screen and (width >1024px) {
       left: calc(-1 * menu-width);

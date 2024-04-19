@@ -34,8 +34,9 @@ import { UserProvider } from '../UserProvider/index.js';
 import { VerifyBanner } from '../VerifyBanner/index.js';
 
 function StudioContent(): ReactNode {
-  const { fullscreen, fullscreenRef } = useFullscreenContext();
-  const location = useLocation();
+  const { fullscreenRef } = useFullscreenContext();
+  // REFACTORING what
+  // const location = useLocation();
 
   return (
     <div className={styles.fullHeight} ref={fullscreenRef}>
@@ -43,10 +44,10 @@ function StudioContent(): ReactNode {
         <Toolbar />
         <div
           className={classNames(`px-3 py-3 is-flex is-flex-direction-column ${styles.content}`, {
-            [styles.fullscreen]: fullscreen.enabled,
-            [styles.code]: location.pathname.match(/edit/) && location.hash.length > 0,
+            // REFACTORING come ON MAN
+            // [styles.fullscreen]: fullscreen.enabled,
+            // [styles.code]: location.pathname.match(/edit/) && location.hash.length > 0,
           })}
-          id="appDiv"
         >
           <PasswordBanner />
           <VerifyBanner />
