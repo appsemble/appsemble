@@ -166,6 +166,7 @@ export const paths: OpenAPIV3.PathsObject = {
           $ref: '#/components/responses/app',
         },
       },
+      security: [{ studio: [] }, {}],
     },
   },
   '/api/apps/{appId}': {
