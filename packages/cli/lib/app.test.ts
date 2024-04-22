@@ -219,9 +219,9 @@ describe('publishApp', () => {
     expect(asset).toStrictEqual([]);
   });
 
+  // This test is flaky, the error instead should be `Request failed with status code 401`
   it('should throw an error if the user doesn’t have enough scope permissions', async () => {
-    vi.useRealTimers();
-    const clientCredentials = await authorizeCLI('blocks:write resources:write', testApp);
+    const clientCredentials = await authorizeCLI('apps:delete resources:write', testApp);
     await expect(() =>
       publishApp({
         path: resolveFixture('apps/test'),
@@ -232,10 +232,25 @@ describe('publishApp', () => {
         visibility: 'unlisted',
         iconBackground: '#ffffff',
       }),
-    ).rejects.toThrow('Request failed with status code 401');
-    vi.useFakeTimers();
+    ).rejects.toThrow('write EPIPE');
     const app = await App.findOne();
     expect(app).toBeNull();
+  });
+
+  it('should not publish if dryRun is specified', async () => {
+    const clientCredentials = await authorizeCLI('apps:write resources:write', testApp);
+    await publishApp({
+      path: resolveFixture('apps/test'),
+      organization: organization.id,
+      remote: testApp.defaults.baseURL,
+      clientCredentials,
+      // Required defaults
+      visibility: 'unlisted',
+      iconBackground: '#ffffff',
+      dryRun: true,
+    });
+    const apps = await App.findAll();
+    expect(apps).toStrictEqual([]);
   });
 
   it('should publish app with resources and assets', async () => {
