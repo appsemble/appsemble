@@ -23,7 +23,7 @@ const methods = {
 
 export function Endpoint({ hasBody, type }: EndpointProps): ReactNode {
   const { app } = useApp();
-  const { id, resourceName } = useParams<{ id: string; resourceName: string }>();
+  const { resourceName } = useParams<{ resourceName: string }>();
   const resource = app.definition.resources[resourceName];
   const roles = (resource[type === '$count' ? 'count' : type]?.roles ?? resource.roles ?? []).map(
     (role) => app.messages?.app[`app.roles.${role}`] || role,
@@ -51,7 +51,7 @@ export function Endpoint({ hasBody, type }: EndpointProps): ReactNode {
       <pre className="my-4">
         <code>
           <span className="has-text-weight-bold">{method} </span>
-          <span>{`${window.location.origin}/api/apps/${id}/resources/${resourceName}`}</span>
+          <span>{`${window.location.origin}/api/apps/${app.id}/resources/${resourceName}`}</span>
           {postfix ? (
             <>
               <span>/</span>

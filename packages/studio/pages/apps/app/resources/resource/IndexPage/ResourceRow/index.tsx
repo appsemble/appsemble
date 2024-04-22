@@ -83,8 +83,7 @@ export function ResourceRow({
   schema,
   selected,
 }: ResourceRowProps): ReactNode {
-  const { id: appId, resourceName } = useParams<{
-    id: string;
+  const { resourceName } = useParams<{
     resourceName: string;
   }>();
   const { app } = useApp();
@@ -96,14 +95,14 @@ export function ResourceRow({
   const onSetClonable = useCallback(async () => {
     const { $author, $clonable, $created, $updated, ...rest } = resource;
     const { data } = await axios.put<Resource>(
-      `/api/apps/${appId}/resources/${resourceName}/${resource.id}`,
+      `/api/apps/${app.id}/resources/${resourceName}/${resource.id}`,
       {
         ...rest,
         $clonable: !$clonable,
       },
     );
     onEdit(data);
-  }, [appId, onEdit, resource, resourceName]);
+  }, [app.id, onEdit, resource, resourceName]);
 
   const openEditModal = useCallback(() => {
     modal.enable();
@@ -123,7 +122,7 @@ export function ResourceRow({
   const onEditSubmit = useCallback(async () => {
     try {
       const { data } = await axios.put<Resource>(
-        `/api/apps/${appId}/resources/${resourceName}/${resource.id}`,
+        `/api/apps/${app.id}/resources/${resourceName}/${resource.id}`,
         serializeResource(editingResource),
       );
       push({
@@ -136,7 +135,7 @@ export function ResourceRow({
       push(formatMessage(messages.updateError));
     }
   }, [
-    appId,
+    app.id,
     closeEditModal,
     editingResource,
     formatMessage,
@@ -149,7 +148,7 @@ export function ResourceRow({
   const onConfirmDelete = useCallback(
     () =>
       axios
-        .delete(`/api/apps/${appId}/resources/${resourceName}/${resource.id}`)
+        .delete(`/api/apps/${app.id}/resources/${resourceName}/${resource.id}`)
         .then(() => {
           push({
             body: formatMessage(messages.deleteSuccess, { id: resource.id }),
@@ -158,7 +157,7 @@ export function ResourceRow({
           onDelete(resource.id);
         })
         .catch(() => push(formatMessage(messages.deleteError))),
-    [appId, formatMessage, onDelete, push, resource, resourceName],
+    [app.id, formatMessage, onDelete, push, resource, resourceName],
   );
 
   const handleDeleteResource = useConfirmation({

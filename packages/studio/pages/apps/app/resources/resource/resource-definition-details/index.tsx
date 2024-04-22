@@ -17,7 +17,7 @@ import { useApp } from '../../../index.js';
  */
 export function ResourceDefinitionDetailsPage(): ReactNode {
   const { app } = useApp();
-  const { resourceName } = useParams<{ id: string; resourceName: string }>();
+  const { resourceName } = useParams<{ resourceName: string }>();
   const { formatMessage } = useIntl();
   useMeta(formatMessage(messages.pageTitle));
 

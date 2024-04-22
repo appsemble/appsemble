@@ -43,8 +43,7 @@ const defaultHiddenProperties = new Set(['$created', '$updated', '$editor']);
 export function IndexPage(): ReactNode {
   const { app } = useApp();
   const { formatMessage } = useIntl();
-  const { id: appId, resourceName } = useParams<{
-    id: string;
+  const { resourceName } = useParams<{
     resourceName: string;
   }>();
   const [searchParams, setSearchParams] = useSearchParams();
@@ -63,9 +62,9 @@ export function IndexPage(): ReactNode {
     defaultAdvancedOptions.add('$clonable');
   }
 
-  const resourceURL = `/api/apps/${appId}/resources/${resourceName}`;
-  const hiddenPropertiesKey = `${appId}.${resourceName}.hiddenProperties`;
-  const advancedOptionsKey = `${appId}.${resourceName}.advancedOptions`;
+  const resourceURL = `/api/apps/${app.id}/resources/${resourceName}`;
+  const hiddenPropertiesKey = `${app.id}.${resourceName}.hiddenProperties`;
+  const advancedOptionsKey = `${app.id}.${resourceName}.advancedOptions`;
 
   const [hiddenProperties, setHiddenProperties] = useState(defaultHiddenProperties);
   const [selectedResources, setSelectedResources] = useState<number[]>([]);
