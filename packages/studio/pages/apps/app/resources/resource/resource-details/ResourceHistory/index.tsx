@@ -8,10 +8,13 @@ import { messages } from './messages.js';
 import { AsyncDataView } from '../../../../../../../components/AsyncDataView/index.js';
 import { CodeBlock } from '../../../../../../../components/CodeBlock/index.js';
 import { ListButton } from '../../../../../../../components/ListButton/index.js';
+import { useApp } from '../../../../index.js';
 
 export function ResourceHistory(): ReactNode {
-  const { id, resourceId, resourceName } = useParams<{
-    id: string;
+  const {
+    app: { id },
+  } = useApp();
+  const { resourceId, resourceName } = useParams<{
     resourceName: string;
     resourceId: string;
   }>();

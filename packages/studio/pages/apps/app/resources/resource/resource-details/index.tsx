@@ -32,8 +32,7 @@ const MonacoEditor = lazy(() =>
 );
 
 export function ResourceDetailsPage(): ReactNode {
-  const { id, resourceId, resourceName } = useParams<{
-    id: string;
+  const { resourceId, resourceName } = useParams<{
     resourceName: string;
     resourceId: string;
   }>();
@@ -43,7 +42,7 @@ export function ResourceDetailsPage(): ReactNode {
   const { hash } = useLocation();
   const navigate = useNavigate();
   const resourceDefinition = app.definition.resources[resourceName];
-  const resourceUrl = `/api/apps/${id}/resources/${resourceName}/${resourceId}`;
+  const resourceUrl = `/api/apps/${app.id}/resources/${resourceName}/${resourceId}`;
   const result = useData<Resource>(resourceUrl);
   const [submitting, setSubmitting] = useState(false);
   const [editingResource, setEditingResource] = useState<Record<string, unknown>>();
