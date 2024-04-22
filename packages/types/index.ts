@@ -1687,6 +1687,7 @@ export interface BasePageDefinition {
  */
 export interface SubPage {
   name: string;
+  roles?: string[];
   blocks: BlockDefinition[];
 }
 

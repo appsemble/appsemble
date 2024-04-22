@@ -8,7 +8,7 @@ import {
   useLocationString,
 } from '@appsemble/react-components';
 import { type PageDefinition, type Remapper } from '@appsemble/types';
-import { checkAppRole, createThemeURL, mergeThemes, normalize, remap } from '@appsemble/utils';
+import { createThemeURL, mergeThemes, normalize, remap } from '@appsemble/utils';
 import classNames from 'classnames';
 import { type ReactNode, useCallback, useEffect, useRef, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
@@ -18,6 +18,7 @@ import styles from './index.module.css';
 import { messages } from './messages.js';
 import { ShareDialog, type ShareDialogState } from './ShareDialog/index.js';
 import { type ShowDialogParams, type ShowShareDialog } from '../../types.js';
+import { checkPagePermissions } from '../../utils/checkPagePermissions.js';
 import { getDefaultPageName } from '../../utils/getDefaultPageName.js';
 import { apiUrl, appId } from '../../utils/settings.js';
 import { AppStorage } from '../../utils/storage.js';
@@ -134,29 +135,19 @@ export function Page(): ReactNode {
     [page],
   );
 
-  const checkPagePermissions = useCallback(
-    (p: PageDefinition): boolean => {
-      // Users should always be able to access custom login and register pages.
-      if (p.name === 'Login' || p.name === 'Register') {
-        return true;
-      }
-      const roles = p.roles || definition.roles || [];
-
-      return (
-        roles.length === 0 || roles.some((r) => checkAppRole(definition.security, r, role, teams))
-      );
-    },
-    [definition.roles, definition.security, role, teams],
+  const checkPagePermissionsCallback = useCallback(
+    (p: PageDefinition): boolean => checkPagePermissions(p, definition, role, teams),
+    [definition, role, teams],
   );
 
   useEffect(() => {
-    if (page && checkPagePermissions(page) && navPage !== page) {
+    if (page && checkPagePermissionsCallback(page) && navPage !== page) {
       setPage(page);
     }
-  }, [checkPagePermissions, navPage, page, setPage]);
+  }, [checkPagePermissionsCallback, navPage, page, setPage]);
 
   // If the user is on an existing page and is allowed to view it, render it.
-  if (page && checkPagePermissions(page)) {
+  if (page && checkPagePermissionsCallback(page)) {
     const pageName = getAppMessage({
       id: prefix,
       defaultMessage: page.name,
@@ -258,7 +249,7 @@ export function Page(): ReactNode {
   // page.
   const defaultPageName = getDefaultPageName(isLoggedIn, role, definition);
   const defaultPage = definition.pages.find((p) => p.name === defaultPageName);
-  if (checkPagePermissions(defaultPage)) {
+  if (checkPagePermissionsCallback(defaultPage)) {
     const defaultPagePrefix = `pages.${normalize(defaultPage.name)}`;
     let pageName = defaultPage.name;
 
@@ -270,7 +261,9 @@ export function Page(): ReactNode {
   }
 
   // If the user isn’t allowed to view the default page either, find a page to redirect the user to.
-  const redirectPage = definition.pages.find((p) => checkPagePermissions(p) && !p.parameters);
+  const redirectPage = definition.pages.find(
+    (p) => checkPagePermissionsCallback(p) && !p.parameters,
+  );
   if (redirectPage) {
     const normalizedRedirectPageName = `pages.${normalize(redirectPage.name)}`;
     let pageName = redirectPage.name;
