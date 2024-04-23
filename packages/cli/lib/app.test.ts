@@ -219,20 +219,20 @@ describe('publishApp', () => {
     expect(asset).toStrictEqual([]);
   });
 
-  // This test is flaky, the error instead should be `Request failed with status code 401`
   it('should throw an error if the user doesn’t have enough scope permissions', async () => {
-    const clientCredentials = await authorizeCLI('apps:delete resources:write', testApp);
+    vi.useRealTimers();
     await expect(() =>
       publishApp({
         path: resolveFixture('apps/test'),
         organization: organization.id,
         remote: testApp.defaults.baseURL,
-        clientCredentials,
+        clientCredentials: undefined,
         // Required defaults
         visibility: 'unlisted',
         iconBackground: '#ffffff',
       }),
-    ).rejects.toThrow('write EPIPE');
+    ).rejects.toThrow('No client credentials found.');
+    vi.useFakeTimers();
     const app = await App.findOne();
     expect(app).toBeNull();
   });
@@ -2322,6 +2322,20 @@ describe('resolveAppIdAndRemote', () => {
     await expect(() =>
       resolveAppIdAndRemote(resolveFixture('apps/test'), 'notFound', 'http://localhost:8888', null),
     ).rejects.toThrow('App ID was not found');
+  });
+
+  it('should throw if the remote is not found in context and defaultAppRemote is not specified', async () => {
+    const app = await App.create({
+      path: 'test-app',
+      definition: { name: 'Test App', defaultPage: 'Test Page' },
+      vapidPublicKey: 'a',
+      vapidPrivateKey: 'b',
+      visibility: 'public',
+      OrganizationId: organization.id,
+    });
+    await expect(() =>
+      resolveAppIdAndRemote(resolveFixture('apps/test'), 'notFound', null, app.id),
+    ).rejects.toThrow('App remote was not found');
   });
 });
 

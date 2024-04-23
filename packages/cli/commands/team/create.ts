@@ -31,11 +31,11 @@ export function builder(yargs: Argv): Argv<any> {
     })
     .option('app', {
       describe: 'The path to the app.',
-      demandOption: 'context',
+      implies: 'context',
     })
     .option('context', {
       describe: 'If specified, use the specified context from .appsemblerc.yaml',
-      demandOption: 'app',
+      implies: 'app',
     });
 }
 
