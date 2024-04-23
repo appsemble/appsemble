@@ -1,7 +1,7 @@
 import { type VNode } from 'preact';
 import { useCallback, useState } from 'preact/hooks';
 
-import { type Field, type InputProps } from '../../../block.js';
+import { type Field, type FormDisplay, type InputProps } from '../../../block.js';
 import { BooleanInput } from '../BooleanInput/index.js';
 import { DateInput } from '../DateInput/index.js';
 import { DateTimeInput } from '../DateTimeInput/index.js';
@@ -15,8 +15,11 @@ import { RadioInput } from '../RadioInput/index.js';
 import { RangeInput } from '../RangeInput/index.js';
 import { StaticField } from '../StaticField/index.js';
 import { StringInput } from '../StringInput/index.js';
+import { TagsInput } from '../TagsInput/index.js';
 
-type FormInputProps = Omit<InputProps<any, Field>, 'dirty'>;
+interface FormInputProps extends Omit<InputProps<any, Field>, 'dirty'> {
+  readonly display?: FormDisplay;
+}
 
 /**
  * Render any type of form input.
@@ -60,6 +63,8 @@ export function FormInput({ field, onChange, ...props }: FormInputProps): VNode 
       return <Fieldset dirty={dirty} field={field} onChange={handleChange} {...props} />;
     case 'radio':
       return <RadioInput dirty={dirty} field={field} onChange={handleChange} {...props} />;
+    case 'tags':
+      return <TagsInput dirty={dirty} field={field} onChange={handleChange} {...props} />;
     default:
   }
 }

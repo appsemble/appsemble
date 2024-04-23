@@ -35,6 +35,7 @@
     "@appsemble/preact": "0.28.3",
     "@appsemble/types": "0.28.3",
     "@appsemble/web-utils": "0.28.3",
+    "@creativebulma/bulma-tagsinput": "^1.0.0",
     "@fortawesome/fontawesome-common-types": "^6.0.0",
     "@types/css-modules": "^1.0.0",
     "@types/leaflet": "^1.0.0",

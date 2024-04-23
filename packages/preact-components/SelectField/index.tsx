@@ -23,6 +23,7 @@ export const SelectField = forwardRef<HTMLSelectElement, SelectFieldProps>(
       tag,
       optionalLabel,
       inline,
+      error,
       ...props
     },
     ref,

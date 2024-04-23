@@ -6,6 +6,7 @@ import { validateEnum, validateRadio } from './validateEnum.js';
 import { validateFile } from './validateFile.js';
 import { validateNumber } from './validateNumber.js';
 import { validateString } from './validateString.js';
+import { validateTags } from './validateTags.js';
 import { type BaseRequirement, type Field, type Values } from '../../../block.js';
 import { getValueByNameSequence } from '../getNested.js';
 import { isRequired } from '../requirements.js';
@@ -21,6 +22,7 @@ export const validators: Record<string, Validator> = {
   string: validateString,
   number: validateNumber,
   integer: validateNumber,
+  tags: validateTags,
 };
 
 type Validator = (
