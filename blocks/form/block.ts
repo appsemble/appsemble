@@ -77,7 +77,7 @@ interface FormRequirement extends BaseRequirement {
 /**
  * Requirement that matches using a given regex.
  */
-interface RegexRequirement extends BaseRequirement {
+export interface RegexRequirement extends BaseRequirement {
   /**
    * The regex to match with. Must be a valid JavaScript regex.
    */
@@ -111,6 +111,25 @@ interface LengthRequirement extends BaseRequirement {
    * @minimum 1
    */
   maxLength?: number;
+}
+
+/**
+ * A requirement used to enforce the length or amount of items in the input.
+ */
+interface CountRequirement extends BaseRequirement {
+  /**
+   * The minimum number of items.
+   *
+   * @minimum 1
+   */
+  minItems?: number;
+
+  /**
+   * The maximum number of items.
+   *
+   * @minimum 1
+   */
+  maxItems?: number;
 }
 
 interface AcceptRequirement extends BaseRequirement {
@@ -211,6 +230,11 @@ interface EnabledDayRequirement extends BaseRequirement {
    */
   sunday?: boolean;
 }
+
+/**
+ * All requirements applicable to string fields.
+ */
+export type TagsRequirement = CountRequirement | MinMaxRequirement | RegexRequirement;
 
 /**
  * All requirements applicable to string fields.
@@ -838,6 +862,20 @@ export interface StaticField extends AbstractField, InlineField {
   content: Remapper;
 }
 
+export interface TagsField extends AbstractField, InlineField {
+  /**
+   * The type of the field.
+   */
+  type: 'tags';
+
+  /**
+   * The requirements that are used to validate the field with.
+   *
+   * These are evaluated in the order they are defined in.
+   */
+  requirements?: TagsRequirement[];
+}
+
 /**
  * Fields with the type of [`string`](#StringField) support requirements. This is an array of
  * requirements that are used to validate the value the user inputs. Each requirement can be
@@ -938,7 +976,8 @@ export type Field =
   | RadioField
   | RangeField
   | StaticField
-  | StringField;
+  | StringField
+  | TagsField;
 
 export type Values = Record<string, unknown>;
 
@@ -1026,6 +1065,8 @@ export interface FieldEventParameters {
   keepValues?: boolean;
 }
 
+export type FormDisplay = 'flex' | 'grid';
+
 declare module '@appsemble/sdk' {
   interface Actions {
     /**
@@ -1093,6 +1134,11 @@ declare module '@appsemble/sdk' {
 
   interface Parameters {
     /**
+     * Specify a form title
+     */
+    title?: string;
+
+    /**
      * This allows you to update fields automatically with actions by typing in a selected field.
      *
      * To authenticate with an external API see [Services](../../../docs/03-guide/service)
@@ -1142,12 +1188,26 @@ declare module '@appsemble/sdk' {
     /**
      * Whether or not space should be reserved for the help text.
      *
-     * If this is set to `true`, any help text appearing will cause the form input to jump around
+     * If this is left as `true`, any help text appearing will cause the form input to jump around
      * due to layout changes.
+     *
+     * @default true
+     */
+    dense?: boolean;
+
+    /**
+     * Weather the form should take up all available width on the page.
      *
      * @default false
      */
-    dense?: boolean;
+    fullWidth?: boolean;
+
+    /**
+     * How the form fields should be displayed.
+     *
+     * @default 'flex'
+     */
+    display?: FormDisplay;
 
     /**
      * Whether or not to disable populating fields with default data values.

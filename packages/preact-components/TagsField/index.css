@@ -1,0 +1,7 @@
+.tag {
+  border-radius: 4px;
+}
+
+.tag > .delete {
+  border-radius: 4px;
+}

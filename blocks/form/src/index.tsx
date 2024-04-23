@@ -12,7 +12,7 @@ import { debounce } from './utils/debounce.js';
 import { generateDefaultValidity } from './utils/generateDefaultValidity.js';
 import { generateDefaultValues } from './utils/generateDefaultValues.js';
 import { isFormValid } from './utils/validity.js';
-import { type FieldEventParameters, type Values } from '../block.js';
+import { type FieldEventParameters, type StringField, type Values } from '../block.js';
 
 bootstrap(
   ({
@@ -21,13 +21,16 @@ bootstrap(
     events,
     parameters: {
       autofill,
-      dense,
+      dense = true,
       disableDefault = false,
       disabled,
+      display = 'flex',
       fields: initialFields,
+      fullWidth = false,
       previous,
       requirements,
       skipInitialLoad = false,
+      title,
     },
     path,
     ready,
@@ -313,9 +316,31 @@ bootstrap(
 
     const loading = dataLoading || fieldsLoading;
 
+    const getFieldsContainerClass = (): string => {
+      switch (display) {
+        case 'flex':
+          return classNames({
+            [styles.wrapper]: fields.some((f: any) => f?.inline),
+          });
+        case 'grid':
+          return classNames({
+            [styles['wrapper-grid']]: true,
+          });
+        default:
+          return classNames({
+            [styles.wrapper]: fields.some((f: any) => f?.inline),
+          });
+      }
+    };
+
     return (
-      <Form className={`${styles.root} is-flex px-2 py-2`} data-path={path} onSubmit={onSubmit}>
+      <Form
+        className={`${fullWidth ? styles['root-full-width'] : styles.root} is-flex`}
+        data-path={path}
+        onSubmit={onSubmit}
+      >
         {loading ? <progress className="progress is-small is-primary" /> : null}
+        {title ? <div className="title">{title}</div> : null}
         <Message
           className={classNames(styles.error, { [styles.hidden]: !formErrors.some(Boolean) })}
           color="danger"
@@ -329,17 +354,22 @@ bootstrap(
         >
           <span>{submitErrorResult}</span>
         </Message>
-        <div className={classNames({ [styles.wrapper]: fields.some((f: any) => f?.inline) })}>
+        <div className={getFieldsContainerClass()}>
           {fields
-            ?.filter((f) => f.show === undefined || utils.remap(f.show, values))
+            .filter((f) => f.show === undefined || utils.remap(f.show, values))
             .map((f) => (
               <FormInput
-                className={classNames({ [styles.dense]: dense })}
+                className={`mb-4 ${classNames({
+                  [styles.dense]: dense,
+                  [styles['column-span']]:
+                    ['fieldset', 'tags'].includes(f.type) || (f as StringField).multiline,
+                })}`}
                 disabled={
                   dataLoading ||
                   submitting ||
                   Boolean(utils.remap(f.disabled, values[f.name], { values }))
                 }
+                display={display}
                 error={errors[f.name]}
                 field={f}
                 formValues={values}
@@ -350,7 +380,7 @@ bootstrap(
               />
             ))}
         </div>
-        <FormButtons className="mt-4">
+        <FormButtons className="mt-2">
           {previous ? (
             <Button className="mr-4" disabled={dataLoading || submitting} onClick={onPrevious}>
               {utils.formatMessage('previousLabel')}

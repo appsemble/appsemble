@@ -182,6 +182,32 @@ export function getMaxLength(field: FieldWithRequirements): number | undefined {
 }
 
 /**
+ * Get the absolute minimum number of items of a field.
+ *
+ * @param field The field to check.
+ * @returns The minimum length of the field.
+ */
+export function getMinItems(field: FieldWithRequirements): number | undefined {
+  const minItems = field.requirements?.map((r) => r.minItems).filter(Number.isFinite);
+  if (minItems?.length) {
+    return Math.max(...minItems);
+  }
+}
+
+/**
+ * Get the absolute maximum number of items of a field.
+ *
+ * @param field The field to check.
+ * @returns The maximum length of the field.
+ */
+export function getMaxItems(field: FieldWithRequirements): number | undefined {
+  const maxItems = field.requirements?.map((r) => r.maxItems).filter(Number.isFinite);
+  if (maxItems?.length) {
+    return Math.min(...maxItems);
+  }
+}
+
+/**
  * Get the absolute minimum value of a field.
  *
  * @param field The field to check.

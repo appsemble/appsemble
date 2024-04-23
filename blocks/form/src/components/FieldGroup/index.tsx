@@ -3,7 +3,13 @@ import { type ComponentChildren, type VNode } from 'preact';
 import { useCallback } from 'preact/hooks';
 
 import styles from './index.module.css';
-import { type Field, type FieldErrorMap, type Values } from '../../../block.js';
+import {
+  type Field,
+  type FieldErrorMap,
+  type FormDisplay,
+  type StringField,
+  type Values,
+} from '../../../block.js';
 import { getValueByNameSequence } from '../../utils/getNested.js';
 import { FormInput } from '../FormInput/index.js';
 
@@ -12,6 +18,8 @@ interface FieldGroupProps {
    * Whether the inputs should be disabled.
    */
   disabled?: boolean;
+
+  display?: FormDisplay;
 
   /**
    * The errors that apply to the input values.
@@ -22,6 +30,11 @@ interface FieldGroupProps {
    * The fields to render.
    */
   fields: Field[];
+
+  /**
+   * Whether fields should span to the whole width if the field group.
+   */
+  fieldSpan?: boolean;
 
   /**
    * The name of the input group.
@@ -48,7 +61,9 @@ interface FieldGroupProps {
  */
 export function FieldGroup({
   disabled,
+  display = 'flex',
   errors,
+  fieldSpan,
   fields,
   formValues,
   name,
@@ -61,11 +76,35 @@ export function FieldGroup({
     [name, onChange, formValues],
   );
 
+  const getFieldsContainerClass = (): string => {
+    switch (display) {
+      case 'flex':
+        return classNames({
+          [styles.wrapper]: fields.some((f: any) => f?.inline),
+        });
+      case 'grid':
+        return classNames({
+          [styles['wrapper-grid']]: true,
+        });
+      default:
+        return classNames({
+          [styles.wrapper]: fields.some((f: any) => f?.inline),
+        });
+    }
+  };
+
   return (
-    <div className={classNames({ [styles.wrapper]: fields.some((f: any) => f?.inline) })}>
+    <div className={getFieldsContainerClass()}>
       {fields.map((f) => (
         <FormInput
+          className={String(
+            classNames({
+              [styles['column-span']]:
+                fieldSpan || ['fieldset', 'tags'].includes(f.type) || (f as StringField).multiline,
+            }),
+          )}
           disabled={disabled}
+          display={display}
           error={errors?.[f.name]}
           field={f}
           formValues={formValues}

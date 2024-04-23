@@ -1,12 +1,16 @@
 import { useBlock } from '@appsemble/preact';
 import { Button, FormButtons } from '@appsemble/preact-components';
+import classNames from 'classnames';
 import { type JSX, type VNode } from 'preact';
 import { useCallback } from 'preact/hooks';
 
+import styles from './index.module.css';
 import {
   type FieldError,
   type Fieldset as FieldsetType,
+  type FormDisplay,
   type InputProps,
+  type StringField,
   type Values,
 } from '../../../block.js';
 import { generateDefaultValues } from '../../utils/generateDefaultValues.js';
@@ -14,13 +18,17 @@ import { getValueByNameSequence } from '../../utils/getNested.js';
 import { getMaxLength, getMinLength } from '../../utils/requirements.js';
 import { FieldsetEntry } from '../FieldsetEntry/index.js';
 
-type FieldsetProps = InputProps<Values | Values[], FieldsetType>;
+interface FieldsetProps extends InputProps<Values | Values[], FieldsetType> {
+  readonly display?: FormDisplay;
+}
 
 /**
  * An input element for a fieldset
  */
 export function Fieldset({
+  className,
   disabled,
+  display = 'flex',
   error,
   field,
   formValues,
@@ -58,34 +66,53 @@ export function Fieldset({
     [field, onChange, localValues],
   );
 
+  const fieldsetSpan = field.fields.some(
+    (f) => ['fieldset', 'tags'].includes(f.type) || (f as StringField).multiline,
+  );
+
   return (
-    <fieldset className="appsemble-fieldset">
-      <legend className="title is-5">{utils.remap(field.label, localValues) as string}</legend>
+    <fieldset
+      className={classNames('appsemble-fieldset mb-4', className, styles['fieldset-wrapper'])}
+    >
+      <div className="title is-5 mb-4">{utils.remap(field.label, localValues) as string}</div>
       {field.repeated ? (
         <>
-          {(localValues || []).map((val, index) => (
-            // eslint-disable-next-line react/jsx-key
-            <div>
-              <FieldsetEntry
-                disabled={disabled}
-                error={errors?.[index]}
-                field={field}
-                formValues={formValues}
-                index={index}
-                name={`${name}.${index}`}
-                onChange={changeArray}
-              />
-              {!minLength || localValues.length > minLength ? (
-                <FormButtons>
-                  <Button icon="minus" name={String(index)} onClick={removeEntry}>
-                    {utils.remap(field.removeLabel ?? 'Remove', val) as string}
-                  </Button>
-                </FormButtons>
-              ) : null}
-            </div>
-          ))}
+          <div className={styles[`fieldset-entries-wrapper-${display}`]}>
+            {(localValues || []).map((val, index) => (
+              // eslint-disable-next-line react/jsx-key
+              <div
+                className={classNames('mb-4 box p-3', {
+                  [styles['column-span']]: fieldsetSpan,
+                })}
+              >
+                <div className="mb-2 is-flex is-justify-content-end is-align-items-center">
+                  {!minLength || localValues.length > minLength ? (
+                    <button
+                      className="delete"
+                      name={String(index)}
+                      onClick={removeEntry}
+                      type="button"
+                    />
+                  ) : (
+                    <button className="delete is-invisible" type="button" />
+                  )}
+                </div>
+                <FieldsetEntry
+                  disabled={disabled}
+                  display={display}
+                  error={errors?.[index]}
+                  field={field}
+                  fieldSpan={!fieldsetSpan}
+                  formValues={formValues}
+                  index={index}
+                  name={`${name}.${index}`}
+                  onChange={changeArray}
+                />
+              </div>
+            ))}
+          </div>
           {!maxLength || localValues.length < maxLength ? (
-            <FormButtons className="mt-2">
+            <FormButtons>
               <Button icon="plus" onClick={addEntry}>
                 {utils.remap(field.addLabel ?? 'Add', localValues) as string}
               </Button>

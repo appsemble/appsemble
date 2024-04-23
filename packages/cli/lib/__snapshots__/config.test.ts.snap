@@ -2160,6 +2160,27 @@ Replaces the optional label if the field is optional. Won’t display if the fie
         ],
         "type": "object",
       },
+      "CountRequirement": {
+        "additionalProperties": false,
+        "description": "A requirement used to enforce the length or amount of items in the input.",
+        "properties": {
+          "errorMessage": {
+            "description": "The error message that is displayed when the requirement is not met.",
+            "format": "remapper",
+          },
+          "maxItems": {
+            "description": "The maximum number of items.",
+            "minimum": 1,
+            "type": "number",
+          },
+          "minItems": {
+            "description": "The minimum number of items.",
+            "minimum": 1,
+            "type": "number",
+          },
+        },
+        "type": "object",
+      },
       "DateField": {
         "additionalProperties": false,
         "description": "A date/time picker that results in an exact date and time.",
@@ -2689,6 +2710,9 @@ Replaces the optional label if the field is optional. Won’t display if the fie
           {
             "$ref": "#/definitions/StringField",
           },
+          {
+            "$ref": "#/definitions/TagsField",
+          },
         ],
       },
       "Fieldset": {
@@ -2897,6 +2921,13 @@ Replaces the optional label if the field is optional. Won’t display if the fie
           },
         ],
         "description": "All requirements applicable to file fields.",
+      },
+      "FormDisplay": {
+        "enum": [
+          "flex",
+          "grid",
+        ],
+        "type": "string",
       },
       "FormRequirement": {
         "additionalProperties": false,
@@ -3906,6 +3937,94 @@ Replaces the optional label if the field is optional. Won’t display if the fie
         ],
         "type": "object",
       },
+      "TagsField": {
+        "additionalProperties": false,
+        "properties": {
+          "disabled": {
+            "default": false,
+            "description": "Whether the field should always be be disabled.",
+            "format": "remapper",
+          },
+          "help": {
+            "description": "A description for the text field. For adding more information about the field.",
+            "format": "remapper",
+          },
+          "icon": {
+            "description": "Name of the [Font Awesome icon](https://fontawesome.com/icons?m=free) to be displayed next to the label.",
+            "format": "fontawesome",
+            "type": "string",
+          },
+          "inline": {
+            "const": true,
+            "description": "Combines fields on the same row.
+
+Fields are combined in order if set to true.",
+            "type": "boolean",
+          },
+          "label": {
+            "description": "The label displayed next to the field.",
+            "format": "remapper",
+          },
+          "name": {
+            "description": "The name used when storing this field.",
+            "type": "string",
+          },
+          "placeholder": {
+            "description": "The placeholder to display when the field is empty.",
+            "format": "remapper",
+          },
+          "readOnly": {
+            "default": false,
+            "description": "Whether the field should be read-only.",
+            "format": "remapper",
+          },
+          "requirements": {
+            "description": "The requirements that are used to validate the field with.
+
+These are evaluated in the order they are defined in.",
+            "items": {
+              "$ref": "#/definitions/TagsRequirement",
+            },
+            "type": "array",
+          },
+          "show": {
+            "description": "Displays field only if condition is true.
+
+If not specified, the field will display.",
+            "format": "remapper",
+          },
+          "tag": {
+            "description": "The label that is shown to the right of the label.
+
+Replaces the optional label if the field is optional. Won’t display if the field has no label of its own.",
+            "format": "remapper",
+          },
+          "type": {
+            "const": "tags",
+            "description": "The type of the field.",
+            "type": "string",
+          },
+        },
+        "required": [
+          "name",
+          "type",
+        ],
+        "type": "object",
+      },
+      "TagsRequirement": {
+        "anyOf": [
+          {
+            "$ref": "#/definitions/CountRequirement",
+          },
+          {
+            "$ref": "#/definitions/MinMaxRequirement",
+          },
+          {
+            "$ref": "#/definitions/RegexRequirement",
+          },
+        ],
+        "description": "All requirements applicable to string fields.",
+      },
       "TimeRangeRequirement": {
         "additionalProperties": false,
         "description": "A requirement used to enforce the range of available times.",
@@ -3974,10 +4093,10 @@ The final output of the action(s) will get applied to the form fields.",
         "type": "object",
       },
       "dense": {
-        "default": false,
+        "default": true,
         "description": "Whether or not space should be reserved for the help text.
 
-If this is set to \`true\`, any help text appearing will cause the form input to jump around due to layout changes.",
+If this is left as \`true\`, any help text appearing will cause the form input to jump around due to layout changes.",
         "type": "boolean",
       },
       "disableDefault": {
@@ -3992,6 +4111,11 @@ If this is set to \`true\`, the default values for the fields won't contain data
         "description": "If this remapper yields true, the submit button will be disabled.",
         "format": "remapper",
       },
+      "display": {
+        "$ref": "#/definitions/FormDisplay",
+        "default": "flex",
+        "description": "How the form fields should be displayed.",
+      },
       "fields": {
         "description": "A list of objects describing each field that can be entered in the form.",
         "items": {
@@ -3999,6 +4123,11 @@ If this is set to \`true\`, the default values for the fields won't contain data
         },
         "minItems": 1,
         "type": "array",
+      },
+      "fullWidth": {
+        "default": false,
+        "description": "Weather the form should take up all available width on the page.",
+        "type": "boolean",
       },
       "previous": {
         "description": "Whether the previous button should be shown.",
@@ -4016,6 +4145,10 @@ If this is set to \`true\`, the default values for the fields won't contain data
 
 By setting this to \`true\`, this won’t happen.",
         "type": "boolean",
+      },
+      "title": {
+        "description": "Specify a form title",
+        "type": "string",
       },
     },
     "type": "object",
