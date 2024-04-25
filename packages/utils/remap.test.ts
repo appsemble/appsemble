@@ -195,6 +195,51 @@ describe('variable', () => {
   });
 });
 
+describe('number.parse', () => {
+  runTests({
+    'return the parsed number': {
+      input: '42',
+      mappers: { 'number.parse': null },
+      expected: 42,
+    },
+    'return the parsed decimal number': {
+      input: '42.5',
+      mappers: { 'number.parse': null },
+      expected: 42.5,
+    },
+    'return 0 if there is no input': {
+      input: null,
+      mappers: { 'number.parse': null },
+      expected: 0,
+    },
+    'return the input if it can not be converted': {
+      input: 'test',
+      mappers: { 'number.parse': null },
+      expected: 'test',
+    },
+    'return the parsed integer from a remapper': {
+      input: { number: '42' },
+      mappers: { 'number.parse': { prop: 'number' } },
+      expected: 42,
+    },
+    'return the parsed decimal from a remapper': {
+      input: { number: '42.5' },
+      mappers: { 'number.parse': { prop: 'number' } },
+      expected: 42.5,
+    },
+    'return 0 if the remapped value is null': {
+      input: { number: null },
+      mappers: { 'number.parse': { prop: 'number' } },
+      expected: 0,
+    },
+    'return the remapped value if it can not be parsed': {
+      input: { number: 'test' },
+      mappers: { 'number.parse': { prop: 'number' } },
+      expected: 'test',
+    },
+  });
+});
+
 describe('date.now', () => {
   beforeEach(() => {
     vi.useFakeTimers({ now: 0 });

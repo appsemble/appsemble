@@ -470,6 +470,23 @@ const mapperImplementations: MapperImplementations = {
     return result;
   },
 
+  'number.parse'(remapper, input, context) {
+    if (!remapper) {
+      const inputConverted = Number(input);
+      if (!Number.isNaN(inputConverted)) {
+        return inputConverted;
+      }
+      return input;
+    }
+
+    const remapped = remap(remapper, input, context);
+    const remappedConverted = Number(remapped);
+    if (!Number.isNaN(remappedConverted)) {
+      return remappedConverted;
+    }
+    return remapped;
+  },
+
   'date.parse': (fmt, input: string) => (fmt ? parse(input, fmt, new Date()) : parseISO(input)),
 
   'date.now': () => new Date(),
