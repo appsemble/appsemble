@@ -1,0 +1,16 @@
+import { RemapperPage } from '../components/RemapperPage.js';
+import { configRemappers } from '../../../../../utils/reference-schemas/remappers/index.js';
+
+# Config
+
+## Introduction
+
+Sometimes, Appsemble apps need configurations separate from the app definition. These configurations
+can come in the form of app variables or app secrets. App variables are predefined key value pairs,
+that can be accessed from the app definition using the `variable` remapper.
+
+Read more in [the config documentation](../../docs/03-guide/config).
+
+## Remappers
+
+<RemapperPage remappers={configRemappers} />

@@ -308,8 +308,14 @@ export const examples: Record<RemapperExampleKeys, RemapperExample> = {
   },
   variable: {
     input: null,
-    remapper: {},
-    result: {},
+    remapper: { variable: 'MY_VARIABLE' },
+    result: 'variable value',
+    skip: true,
+  },
+  'number.parse': {
+    input: '42',
+    remapper: { 'number.parse': null },
+    result: 42,
     skip: true,
   },
   'date.add': {
@@ -702,7 +708,7 @@ export function createExampleContext(
 ): RemapperContext {
   return {
     getMessage: ({ defaultMessage }) => new IntlMessageFormat(defaultMessage, lang, undefined),
-    getVariable: () => null,
+    getVariable: (name) => (name === 'MY_VARIABLE' ? 'variable value' : null),
     url: String(url),
     appUrl: `${url.protocol}//example-app.example-organization.${url.host}`,
     userInfo: userInfo ?? {

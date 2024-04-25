@@ -341,6 +341,11 @@ export interface Remappers {
   context: string;
 
   /**
+   * Convert a string to a number.
+   */
+  'number.parse': Remapper;
+
+  /**
    * Convert a string to a date using a given format.
    */
   'date.parse': string;
