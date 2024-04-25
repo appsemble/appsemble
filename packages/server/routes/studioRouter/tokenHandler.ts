@@ -232,10 +232,11 @@ export async function tokenHandler(ctx: Context): Promise<void> {
           }
 
           await transactional(async (transaction) => {
-            const demoEmail = `demo-${Math.random().toString(36).slice(2)}@example.com`;
+            const identifier = Math.random().toString(36).slice(2);
+            const demoEmail = `demo-${identifier}@example.com`;
             const user = await User.create(
               {
-                name: 'Demo User',
+                name: `User ${identifier}`,
                 primaryEmail: demoEmail,
                 timezone: 'Europe/Amsterdam',
                 demoLoginUser: true,
@@ -250,7 +251,7 @@ export async function tokenHandler(ctx: Context): Promise<void> {
                 role,
                 email: demoEmail,
                 emailVerified: true,
-                name: 'Demo User',
+                name: `${role} ${identifier}`,
               },
               { transaction },
             );

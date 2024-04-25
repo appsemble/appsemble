@@ -237,10 +237,6 @@ export function DemoLogin({ modal }: DemoLoginProps): ReactNode {
           >
             {demoAppMembers.map((appMember) => (
               <option key={appMember.userId} value={appMember.userId}>
-                {getAppMessage({
-                  id: `app.roles.${appMember.role}`,
-                  defaultMessage: appMember.role,
-                }).format()}{' '}
                 {appMember.name}
               </option>
             ))}
