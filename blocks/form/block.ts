@@ -114,6 +114,25 @@ interface LengthRequirement extends BaseRequirement {
 }
 
 /**
+ * A requirement used to enforce the size of the input.
+ */
+interface SizeRequirement extends BaseRequirement {
+  /**
+   * The minimum size in bytes.
+   *
+   * @minimum 1
+   */
+  minSize?: number;
+
+  /**
+   * The maximum size in bytes.
+   *
+   * @minimum 1
+   */
+  maxSize?: number;
+}
+
+/**
  * A requirement used to enforce the length or amount of items in the input.
  */
 interface CountRequirement extends BaseRequirement {
@@ -249,7 +268,11 @@ export type NumberRequirement = MinMaxRequirement | RequiredRequirement | StepRe
 /**
  * All requirements applicable to file fields.
  */
-export type FileRequirement = AcceptRequirement | LengthRequirement | RequiredRequirement;
+export type FileRequirement =
+  | AcceptRequirement
+  | LengthRequirement
+  | RequiredRequirement
+  | SizeRequirement;
 
 /**
  * All requirements applicable to date-time fields.
@@ -702,14 +725,19 @@ export interface FileField extends AbstractField, InlineField {
   defaultValue?: string;
 
   /**
-   * The maximum height of uploaded images.
+   * The maximum height of uploaded files.
    */
   maxHeight?: number;
 
   /**
-   * The maximum width of uploaded images.
+   * The maximum width of uploaded files.
    */
   maxWidth?: number;
+
+  /**
+   * The maximum size of uploaded files.
+   */
+  maxSize?: number;
 
   /**
    * Boolean value representing whether to accept one file or multiple files.

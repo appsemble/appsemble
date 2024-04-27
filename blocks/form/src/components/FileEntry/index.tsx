@@ -3,7 +3,7 @@ import { Modal, useObjectURL, useToggle } from '@appsemble/preact-components';
 import { findIconDefinition, icon, library } from '@fortawesome/fontawesome-svg-core';
 import { fas } from '@fortawesome/free-solid-svg-icons';
 import { type JSX, type VNode } from 'preact';
-import { useCallback } from 'preact/hooks';
+import { useCallback, useRef, useState } from 'preact/hooks';
 
 import styles from './index.module.css';
 import { type FileField, type InputProps } from '../../../block.js';
@@ -75,6 +75,9 @@ export function FileEntry({ field, formValues: value, name, onChange }: FileEntr
   const { icon: iconName } = field;
 
   const modal = useToggle();
+  const videoRef = useRef(null);
+  const [fileType, setFileType] = useState<'image' | 'video' | null>(null);
+  const [firstFrameSrc, setFirstFrameSrc] = useState('');
 
   const onSelect = useCallback(
     async (event: JSX.TargetedEvent<HTMLInputElement>): Promise<void> => {
@@ -85,6 +88,11 @@ export function FileEntry({ field, formValues: value, name, onChange }: FileEntr
 
       if (file?.type.match('image/*') && (maxWidth || maxHeight || quality)) {
         file = await resize(file, maxWidth, maxHeight, quality);
+        setFileType('image');
+      }
+
+      if (file?.type.match('video/*')) {
+        setFileType('video');
       }
 
       onChange({ currentTarget, ...event }, file);
@@ -100,17 +108,35 @@ export function FileEntry({ field, formValues: value, name, onChange }: FileEntr
     [name, onChange],
   );
 
+  const captureFirstFrame = (): void => {
+    const videoElement = videoRef.current;
+    const canvas = document.createElement('canvas');
+    canvas.width = videoElement.videoWidth;
+    canvas.height = videoElement.videoHeight;
+    const ctx = canvas.getContext('2d');
+    ctx.drawImage(videoElement, 0, 0, canvas.width, canvas.height);
+    const dataURL = canvas.toDataURL();
+    setFirstFrameSrc(dataURL);
+  };
+
   return (
     <div className={`appsemble-file file mr-3 ${styles.root}`}>
       {value && url ? (
         <Modal isActive={modal.enabled} onClose={modal.disable}>
-          <figure className="image">
-            <img
-              alt={(utils.remap(field.label, value) as string) ?? field.name}
-              className={styles.image}
-              src={url}
-            />
-          </figure>
+          {fileType === 'image' ? (
+            <figure className="image">
+              <img
+                alt={(utils.remap(field.label, value) as string) ?? field.name}
+                className={styles.image}
+                src={url}
+              />
+            </figure>
+          ) : null}
+          {fileType === 'video' ? (
+            <video controls ref={videoRef} src={url}>
+              <track kind="captions" />
+            </video>
+          ) : null}
         </Modal>
       ) : null}
       <label className="file-label">
@@ -130,7 +156,7 @@ export function FileEntry({ field, formValues: value, name, onChange }: FileEntr
                 <img
                   alt={(utils.remap(field.label, value) as string) ?? field.name}
                   className={`${styles.image} ${styles.rounded}`}
-                  src={url}
+                  src={fileType === 'video' ? firstFrameSrc : url}
                 />
               </figure>
             </button>
@@ -162,6 +188,13 @@ export function FileEntry({ field, formValues: value, name, onChange }: FileEntr
           </span>
         )}
       </label>
+      {url && fileType === 'video' ? (
+        <div className={styles.input}>
+          <video autoPlay controls onCanPlay={captureFirstFrame} ref={videoRef} src={url}>
+            <track kind="captions" />
+          </video>
+        </div>
+      ) : null}
     </div>
   );
 }

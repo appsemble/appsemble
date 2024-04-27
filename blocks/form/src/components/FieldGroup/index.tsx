@@ -100,7 +100,9 @@ export function FieldGroup({
           className={String(
             classNames({
               [styles['column-span']]:
-                fieldSpan || ['fieldset', 'tags'].includes(f.type) || (f as StringField).multiline,
+                fieldSpan ||
+                ['fieldset', 'tags', 'file'].includes(f.type) ||
+                (f as StringField).multiline,
             }),
           )}
           disabled={disabled}

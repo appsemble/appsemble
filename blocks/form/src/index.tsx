@@ -362,7 +362,7 @@ bootstrap(
                 className={`mb-4 ${classNames({
                   [styles.dense]: dense,
                   [styles['column-span']]:
-                    ['fieldset', 'tags'].includes(f.type) || (f as StringField).multiline,
+                    ['fieldset', 'tags', 'file'].includes(f.type) || (f as StringField).multiline,
                 })}`}
                 disabled={
                   dataLoading ||
