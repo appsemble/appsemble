@@ -25,6 +25,30 @@ export function validateFile(field: FileField, value: File | File[]): FileRequir
       return true;
     }
 
+    if (field.repeated) {
+      if (
+        'minSize' in requirement &&
+        (value as File[]).some((file) => requirement.minSize > file.size)
+      ) {
+        return true;
+      }
+
+      if (
+        'maxSize' in requirement &&
+        (value as File[]).some((file) => requirement.maxSize < file.size)
+      ) {
+        return true;
+      }
+    } else {
+      if ('minSize' in requirement && requirement.minSize > (value as File).size) {
+        return true;
+      }
+
+      if ('maxSize' in requirement && requirement.maxSize < (value as File).size) {
+        return true;
+      }
+    }
+
     if ('accept' in requirement) {
       if (field.repeated) {
         return (value as File[]).some((file) => !requirement.accept.includes(file.type));

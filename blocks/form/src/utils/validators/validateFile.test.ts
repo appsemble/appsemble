@@ -63,6 +63,32 @@ describe('validateFile', () => {
     );
   });
 
+  it('should check minSize and maxSize requirements', () => {
+    const field = {
+      type: 'file',
+      name: 'test',
+      repeated: false,
+      requirements: [{ minSize: 2 }, { maxSize: 2 }],
+    } as FileField;
+
+    expect(validateFile(field, { size: 2 } as File)).toBeUndefined();
+    expect(validateFile(field, { size: 1 } as File)).toStrictEqual(field.requirements[0]);
+    expect(validateFile(field, { size: 3 } as File)).toStrictEqual(field.requirements[1]);
+  });
+
+  it('should check minSize and maxSize requirements in repeated fields', () => {
+    const field = {
+      type: 'file',
+      name: 'test',
+      repeated: true,
+      requirements: [{ minSize: 2 }, { maxSize: 2 }],
+    } as FileField;
+
+    expect(validateFile(field, [{ size: 2 } as File])).toBeUndefined();
+    expect(validateFile(field, [{ size: 1 } as File])).toStrictEqual(field.requirements[0]);
+    expect(validateFile(field, [{ size: 3 } as File])).toStrictEqual(field.requirements[1]);
+  });
+
   it('should check mime types', () => {
     const field = {
       type: 'file',

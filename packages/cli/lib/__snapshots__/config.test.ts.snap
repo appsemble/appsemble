@@ -2846,11 +2846,15 @@ Fields are combined in order if set to true.",
             "format": "remapper",
           },
           "maxHeight": {
-            "description": "The maximum height of uploaded images.",
+            "description": "The maximum height of uploaded files.",
+            "type": "number",
+          },
+          "maxSize": {
+            "description": "The maximum size of uploaded files.",
             "type": "number",
           },
           "maxWidth": {
-            "description": "The maximum width of uploaded images.",
+            "description": "The maximum width of uploaded files.",
             "type": "number",
           },
           "name": {
@@ -2918,6 +2922,9 @@ Replaces the optional label if the field is optional. Won’t display if the fie
           },
           {
             "$ref": "#/definitions/RequiredRequirement",
+          },
+          {
+            "$ref": "#/definitions/SizeRequirement",
           },
         ],
         "description": "All requirements applicable to file fields.",
@@ -3562,6 +3569,27 @@ Another option is to pass a remapper returning a boolean value. This way you can
         "required": [
           "required",
         ],
+        "type": "object",
+      },
+      "SizeRequirement": {
+        "additionalProperties": false,
+        "description": "A requirement used to enforce the size of the input.",
+        "properties": {
+          "errorMessage": {
+            "description": "The error message that is displayed when the requirement is not met.",
+            "format": "remapper",
+          },
+          "maxSize": {
+            "description": "The maximum size in bytes.",
+            "minimum": 1,
+            "type": "number",
+          },
+          "minSize": {
+            "description": "The minimum size in bytes.",
+            "minimum": 1,
+            "type": "number",
+          },
+        },
         "type": "object",
       },
       "StaticField": {
