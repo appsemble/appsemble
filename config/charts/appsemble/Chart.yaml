@@ -1,7 +1,7 @@
 apiVersion: v2
 name: appsemble
-version: 0.28.3
-appVersion: 0.28.3
+version: 0.28.4
+appVersion: 0.28.4
 kubeVersion: '>=1.21.0'
 type: application
 description: The open source low-code app building platform
@@ -25,13 +25,32 @@ dependencies:
 annotations:
   artifacthub.io/changes: >
     - kind: added
-      description: "Utils: Add item option to the array remapper."
+      description: "Block(form): Add a fullWidth parameter to specify if the form
+        should take up all available width."
+    - kind: added
+      description: "Block(form): Add a grid parameter to specify if the form fields
+        should be displayed in a grid."
+    - kind: added
+      description: "Block(form): Add a title parameter to set the title of the form."
+    - kind: added
+      description: "Block(form): Add styling to fieldset fields to improve visibility."
+    - kind: added
+      description: "Block(form): Add the tags input field, which allows adding
+        multiple values to an array."
+    - kind: added
+      description: "App: Add support for pages to be viewed by roles."
+    - kind: added
+      description: "Utils: Add the number.parse remapper that converts strings to numbers."
+    - kind: changed
+      description: "Block(form): Change the default of the dense parameter to true."
     - kind: fixed
-      description: "Server: The OAuth2 login flow would fail to authenticate a user to
-        the app if the user was not logged in to the Studio."
+      description: "Block(form): Add a preview for video files."
     - kind: fixed
-      description: "Utils: Fix issues with querying private apps by path or with paths
-        that are over 30 characters."
+      description: "Block(form): Make file input fields preview larger."
+    - kind: fixed
+      description: "Block(form): Make file input fields span the whole row in grid layouts."
+    - kind: fixed
+      description: "Studio: Do not use app id from params in app resources page."
   artifacthub.io/license: LGPL-3.0-only
   artifacthub.io/links: |
     - name: Appsemble Studio

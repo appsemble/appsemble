@@ -2,6 +2,30 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.28.4](https://gitlab.com/appsemble/appsemble/-/releases/0.28.4)] - 2024-04-29
+
+### Added
+
+- Block(`form`): Add a `fullWidth` parameter to specify if the form should take up all available
+  width.
+- Block(`form`): Add a `grid` parameter to specify if the form fields should be displayed in a grid.
+- Block(`form`): Add a `title` parameter to set the title of the form.
+- Block(`form`): Add styling to `fieldset` fields to improve visibility.
+- Block(`form`): Add the `tags` input field, which allows adding multiple values to an array.
+- App: Add support for pages to be viewed by roles.
+- Utils: Add the `number.parse` remapper that converts strings to numbers.
+
+### Changed
+
+- Block(`form`): Change the default of the `dense` parameter to `true`.
+
+### Fixed
+
+- Block(`form`): Add a preview for video files.
+- Block(`form`): Make file input fields preview larger.
+- Block(`form`): Make file input fields span the whole row in grid layouts.
+- Studio: Do not use app id from params in app resources page.
+
 ## \[[0.28.3](https://gitlab.com/appsemble/appsemble/-/releases/0.28.3)] - 2024-04-19
 
 ### Added
