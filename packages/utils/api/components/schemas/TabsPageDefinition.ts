@@ -18,5 +18,8 @@ export const TabsPageDefinition = extendJSONSchema(BasePageDefinition, {
         $ref: '#/components/schemas/SubPage',
       },
     },
+    actions: {
+      $ref: '#/components/schemas/ActionDefinition',
+    },
   },
 });

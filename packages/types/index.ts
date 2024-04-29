@@ -341,6 +341,11 @@ export interface Remappers {
   context: string;
 
   /**
+   * Get the title of current page.
+   */
+  'tab.name': string;
+
+  /**
    * Convert a string to a number.
    */
   'number.parse': Remapper;
@@ -1768,6 +1773,13 @@ export interface LoopPageDefinition extends BasePageDefinition {
 export interface TabsPageDefinition extends BasePageDefinition {
   type: 'tabs';
   tabs: SubPage[];
+
+  /**
+   * A mapping of actions that can be fired by the page to action handlers.
+   */
+  actions?: {
+    onLoad?: ActionDefinition;
+  };
 }
 
 export type PageDefinition =

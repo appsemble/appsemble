@@ -127,6 +127,10 @@ interface InternalContext extends RemapperContext {
   stepRef?: {
     current: Record<string, any>;
   };
+
+  tabRef?: {
+    current: Record<string, any>;
+  };
 }
 
 type MapperImplementations = {
@@ -256,6 +260,10 @@ const mapperImplementations: MapperImplementations = {
 
   step(mapper, input, context) {
     return context.stepRef.current[mapper];
+  },
+
+  'tab.name'(mapper, input, context) {
+    return context.tabRef.current.name;
   },
 
   gt: ([left, right], input: any, context) =>

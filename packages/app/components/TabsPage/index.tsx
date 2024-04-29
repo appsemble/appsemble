@@ -4,6 +4,7 @@ import { checkAppRole, normalize } from '@appsemble/utils';
 import {
   type ChangeEvent,
   type ComponentPropsWithoutRef,
+  type MutableRefObject,
   type ReactNode,
   useCallback,
   useEffect,
@@ -19,12 +20,14 @@ import { useUser } from '../UserProvider/index.js';
 
 interface TabsPageProps extends Omit<ComponentPropsWithoutRef<typeof BlockList>, 'blocks'> {
   readonly page: TabsPageDefinition;
+  readonly tabRef: MutableRefObject<unknown>;
 }
 
 export function TabsPage({
   page,
   prefix,
   prefixIndex,
+  tabRef,
   ...blockListProps
 }: TabsPageProps): ReactNode {
   const { definition } = useAppDefinition();
@@ -107,6 +110,7 @@ export function TabsPage({
                       page={page}
                       prefix={`${prefix}.tabs.${index}.blocks`}
                       prefixIndex={`${prefixIndex}.tabs.${index}.blocks`}
+                      tabRef={tabRef}
                     />
                   ) : null
                 }
