@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.28.5](https://gitlab.com/appsemble/appsemble/-/releases/0.28.5)] - 2024-04-30
+
+### Changed
+
+- Block(`form`): Make the `title` parameter accept remappers.
+
+### Fixed
+
+- Block(`form`): Fix video and image previews.
+- Server: The `processHooks` function used to fail if there is no passed resource.
+- Server: User properties, referencing resources, could not be updated.
+
 ## \[[0.28.4](https://gitlab.com/appsemble/appsemble/-/releases/0.28.4)] - 2024-04-29
 
 ### Added
