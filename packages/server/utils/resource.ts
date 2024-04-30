@@ -244,6 +244,9 @@ export async function processReferenceHooks(
   options: Options,
   context: ParameterizedContext<DefaultState, DefaultContext, any>,
 ): Promise<void> {
+  if (!resource) {
+    return;
+  }
   await Promise.all(
     Object.entries(app.definition.resources[resource.type].references || {}).map(
       async ([propertyName, reference]) => {
