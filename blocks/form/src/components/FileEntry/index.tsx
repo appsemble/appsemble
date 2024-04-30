@@ -3,7 +3,7 @@ import { Modal, useObjectURL, useToggle } from '@appsemble/preact-components';
 import { findIconDefinition, icon, library } from '@fortawesome/fontawesome-svg-core';
 import { fas } from '@fortawesome/free-solid-svg-icons';
 import { type JSX, type VNode } from 'preact';
-import { useCallback, useRef, useState } from 'preact/hooks';
+import { useCallback, useEffect, useRef, useState } from 'preact/hooks';
 
 import styles from './index.module.css';
 import { type FileField, type InputProps } from '../../../block.js';
@@ -63,9 +63,17 @@ export function createCustomSvg(iconName: any): string {
   return `url('data:image/svg+xml,${encodedSvg}')`;
 }
 
-type FileEntryProps = InputProps<Blob | string, FileField>;
+interface FileEntryProps extends InputProps<Blob | string, FileField> {
+  readonly repeated?: boolean;
+}
 
-export function FileEntry({ field, formValues: value, name, onChange }: FileEntryProps): VNode {
+export function FileEntry({
+  field,
+  formValues: value,
+  name,
+  onChange,
+  repeated,
+}: FileEntryProps): VNode {
   const { utils } = useBlock();
 
   const valueString = typeof value === 'string' ? (value as string) : null;
@@ -88,17 +96,22 @@ export function FileEntry({ field, formValues: value, name, onChange }: FileEntr
 
       if (file?.type.match('image/*') && (maxWidth || maxHeight || quality)) {
         file = await resize(file, maxWidth, maxHeight, quality);
-        setFileType('image');
-      }
-
-      if (file?.type.match('video/*')) {
-        setFileType('video');
       }
 
       onChange({ currentTarget, ...event }, file);
     },
     [field, onChange],
   );
+
+  useEffect(() => {
+    if ((value as unknown as File)?.type.match('image/*')) {
+      setFileType('image');
+    }
+
+    if ((value as unknown as File)?.type.match('video/*')) {
+      setFileType('video');
+    }
+  }, [value]);
 
   const onRemove = useCallback(
     (event: Event) => {
@@ -120,7 +133,7 @@ export function FileEntry({ field, formValues: value, name, onChange }: FileEntr
   };
 
   return (
-    <div className={`appsemble-file file mr-3 ${styles.root}`}>
+    <div className={`appsemble-file file mr-3 ${repeated ? styles['root-repeated'] : styles.root}`}>
       {value && url ? (
         <Modal isActive={modal.enabled} onClose={modal.disable}>
           {fileType === 'image' ? (

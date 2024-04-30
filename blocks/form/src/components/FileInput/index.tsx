@@ -65,6 +65,7 @@ export function FileInput({
             formValues={null}
             name={`${name}.${(value as string[]).length}`}
             onChange={handleInput}
+            repeated={repeated}
           />
           {(value as string[]).map((val, index) => (
             <FileEntry
@@ -75,6 +76,7 @@ export function FileInput({
               key={index}
               name={`${name}.${index}`}
               onChange={handleInput}
+              repeated={repeated}
             />
           ))}
         </div>

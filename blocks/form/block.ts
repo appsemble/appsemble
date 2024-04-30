@@ -1164,7 +1164,7 @@ declare module '@appsemble/sdk' {
     /**
      * Specify a form title
      */
-    title?: string;
+    title?: Remapper;
 
     /**
      * This allows you to update fields automatically with actions by typing in a selected field.

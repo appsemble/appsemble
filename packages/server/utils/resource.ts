@@ -168,6 +168,10 @@ export async function processHooks(
   options: Options,
   context: ParameterizedContext<DefaultState, DefaultContext, any>,
 ): Promise<void> {
+  if (!resource) {
+    return;
+  }
+
   const resourceDefinition = app.definition.resources[resource.type];
 
   await user?.reload({

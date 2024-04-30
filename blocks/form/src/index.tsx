@@ -340,7 +340,7 @@ bootstrap(
         onSubmit={onSubmit}
       >
         {loading ? <progress className="progress is-small is-primary" /> : null}
-        {title ? <div className="title">{title}</div> : null}
+        {title ? <div className="title">{utils.remap(title, data) as string}</div> : null}
         <Message
           className={classNames(styles.error, { [styles.hidden]: !formErrors.some(Boolean) })}
           color="danger"
