@@ -4176,7 +4176,7 @@ By setting this to \`true\`, this won’t happen.",
       },
       "title": {
         "description": "Specify a form title",
-        "type": "string",
+        "format": "remapper",
       },
     },
     "type": "object",

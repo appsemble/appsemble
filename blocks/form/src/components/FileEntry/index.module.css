@@ -2,8 +2,15 @@
   min-width: 108px;
 }
 
+.root-repeated {
+  height: 108px;
+  min-width: 108px;
+  width: 108px;
+}
+
 .input {
   opacity: 0;
+  position: absolute;
 }
 
 .empty {
@@ -36,6 +43,7 @@
   position: absolute;
   right: 5px;
   top: 5px;
+  z-index: 2;
 }
 
 .rounded {

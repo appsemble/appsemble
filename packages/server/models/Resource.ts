@@ -166,7 +166,7 @@ export class Resource extends Model {
         }
 
         if (propertyDefinition.schema.type === 'array') {
-          updatedValue = appMember.properties[propertyName].filter(
+          updatedValue = appMember.properties[propertyName]?.filter(
             (entry: number) => entry !== resource.id,
           );
         }
