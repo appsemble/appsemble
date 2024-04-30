@@ -19,7 +19,7 @@ export const TabsPageDefinition = extendJSONSchema(BasePageDefinition, {
       },
     },
     actions: {
-      $ref: '#/components/schemas/ActionDefinition',
+      $ref: '#/components/schemas/TabsPageActionsDefinition',
     },
   },
 });
