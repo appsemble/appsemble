@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.28.6](https://gitlab.com/appsemble/appsemble/-/releases/0.28.6)] - 2024-05-02
+
+### Added
+
+- Block(`form`): Add a `selection` input field, that shows a list of available options.
+
+### Fixed
+
+- Server: The `processReferenceHooks` function used to fail if there is no resource passed.
+
 ## \[[0.28.5](https://gitlab.com/appsemble/appsemble/-/releases/0.28.5)] - 2024-04-30
 
 ### Changed
