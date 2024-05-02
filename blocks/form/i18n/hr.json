@@ -6,5 +6,7 @@
   "optionalLabel": "(opcionalno)",
   "previousLabel": "Prethodna",
   "submitError": "Dogodila se greška tijekom slanja ovog obrasca",
-  "submitLabel": "Pošalji"
+  "submitLabel": "Pošalji",
+  "selectionNoOptions": "",
+  "selectionOptionsError": ""
 }

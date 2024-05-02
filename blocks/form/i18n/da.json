@@ -6,5 +6,7 @@
   "optionalLabel": "(Valgfri)",
   "previousLabel": "Foregående",
   "submitError": "Der opstod et problem med at indsende denne formular",
-  "submitLabel": "Indsend"
+  "submitLabel": "Indsend",
+  "selectionNoOptions": "",
+  "selectionOptionsError": ""
 }

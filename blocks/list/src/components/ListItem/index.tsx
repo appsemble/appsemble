@@ -4,9 +4,9 @@ import { type VNode } from 'preact';
 
 import { ContentComponent } from './Content/index.js';
 import { HeaderComponent } from './Header/index.js';
+import { Image } from './Image/index.js';
 import styles from './index.module.css';
 import { type Item } from '../../../block.js';
-import { ImageComponent } from '../Image/index.js';
 
 interface ListItemProps {
   readonly index: number;
@@ -35,15 +35,13 @@ export function ListItem({ index, item }: ListItemProps): VNode {
     <div className={`${styles.item} has-text-left is-flex my-1 pt-4 pr-6 pb-4 pl-5`}>
       {image && !imageInline ? (
         <div className={styles.image}>
-          {image.alignment === 'default' ? (
-            <ImageComponent field={image} index={index} item={item} />
-          ) : null}
+          {image.alignment === 'default' ? <Image field={image} index={index} item={item} /> : null}
         </div>
       ) : null}
       <div className={`${styles.contentWrapper} is-inline-block`}>
         {image && imageInline ? (
           <figure className={`image ${styles.image}`}>
-            <ImageComponent field={image} index={index} item={item} />
+            <Image field={image} index={index} item={item} />
           </figure>
         ) : null}
         <HeaderComponent index={index} item={item} />

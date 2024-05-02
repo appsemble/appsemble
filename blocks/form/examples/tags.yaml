@@ -1,0 +1,58 @@
+parameters:
+  title: Create Repeating Instance
+  fields:
+    - name: repeated
+      type: enum
+      defaultValue: daily
+      enum:
+        - value: daily
+        - value: weekly
+        - value: monthly
+        - value: yearly
+    - name: hours
+      type: tags
+      requirements:
+        - min: 0
+          errorMessage: 'Hour must be a number starting from 0'
+        - max: 23
+          errorMessage: 'Hour must be a number up to 23'
+        - minItems: 1
+          errorMessage: 'At least one hour should be specified'
+    - name: weekdays
+      type: tags
+      show:
+        if:
+          condition: { equals: [{ prop: repeated }, weekly] }
+          then:
+            if:
+              condition: { not: [{ app: locale }, nl] }
+              then: true
+              else: false
+          else: false
+      requirements:
+        - regex: '\b(?:Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday)\b'
+          errorMessage: 'Weekdays should be valid, starting with a capital letter'
+    - name: weekdaysDutch
+      type: tags
+      show:
+        if:
+          condition: { equals: [{ prop: repeated }, weekly] }
+          then:
+            if:
+              condition: { equals: [{ app: locale }, nl] }
+              then: true
+              else: false
+          else: false
+      requirements:
+        - regex: '\b(?:Maandag|Dinsdag|Woensdag|Donderdag|Vrijdag|Zaterdag|Zondag)\b'
+          errorMessage: 'Weekdagen moeten geldig zijn, beginnend met een hoofdletter'
+    - name: dates
+      type: tags
+      show: { equals: [{ prop: repeated }, yearly] }
+      requirements:
+        - regex: '\b(?:0?[1-9]|[12]\d|3[01])\.(?:0?[1-9]|1[0-2])\b'
+          errorMessage: 'Dates should be in the format MM.dd'
+actions:
+  onSubmit:
+    type: resource.create
+    resource: repeatingInstance

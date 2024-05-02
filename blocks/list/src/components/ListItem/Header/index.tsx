@@ -8,8 +8,8 @@ import styles from './index.module.css';
 import { type Item } from '../../../../block.js';
 import { ButtonComponent } from '../../Button/index.js';
 import { DropdownComponent } from '../../Dropdown/index.js';
-import { ImageComponent } from '../../Image/index.js';
 import { ToggleButtonComponent } from '../../ToggleButton/index.js';
+import { Image } from '../Image/index.js';
 
 interface HeaderComponentProps {
   readonly index: number;
@@ -45,7 +45,7 @@ export function HeaderComponent({ index, item }: HeaderComponentProps): VNode {
       <div className={`is-flex ${styles.image}`}>
         <div>
           {image && image.alignment === 'header' ? (
-            <ImageComponent field={image} index={index} item={item} />
+            <Image field={image} index={index} item={item} />
           ) : null}
         </div>
         {actions.onClick.type === 'link' ? (

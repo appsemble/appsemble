@@ -6,5 +6,7 @@
   "optionalLabel": "(Optionnel)",
   "previousLabel": "Précédent",
   "submitError": "Un problème est survenu lors de l'envoi de ce formulaire",
-  "submitLabel": "Signaler"
+  "submitLabel": "Signaler",
+  "selectionNoOptions": "",
+  "selectionOptionsError": ""
 }

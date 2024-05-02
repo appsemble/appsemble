@@ -40,3 +40,4 @@ export * from './utils.js';
 export * from './applyRefs.js';
 export * from './useCombinedRefs.js';
 export * from './TagsField/index.js';
+export * from './ImageComponent/index.js';

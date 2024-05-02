@@ -6,5 +6,7 @@
   "optionalLabel": "(необязательно)",
   "previousLabel": "Предыдущий",
   "submitError": "При отправке этой формы возникла проблема",
-  "submitLabel": "Отправить"
+  "submitLabel": "Отправить",
+  "selectionNoOptions": "",
+  "selectionOptionsError": ""
 }

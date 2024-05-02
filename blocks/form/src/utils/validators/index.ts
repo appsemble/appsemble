@@ -5,6 +5,7 @@ import { validateDateTime } from './validateDateTime.js';
 import { validateEnum, validateRadio } from './validateEnum.js';
 import { validateFile } from './validateFile.js';
 import { validateNumber } from './validateNumber.js';
+import { validateSelection } from './validateSelection.js';
 import { validateString } from './validateString.js';
 import { validateTags } from './validateTags.js';
 import { type BaseRequirement, type Field, type Values } from '../../../block.js';
@@ -23,6 +24,7 @@ export const validators: Record<string, Validator> = {
   number: validateNumber,
   integer: validateNumber,
   tags: validateTags,
+  selection: validateSelection,
 };
 
 type Validator = (
