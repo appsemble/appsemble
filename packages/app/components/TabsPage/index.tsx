@@ -1,4 +1,4 @@
-import { MetaSwitch, Tab, Tabs, useMessages } from '@appsemble/react-components';
+import { applyRefs, MetaSwitch, Tab, Tabs, useMessages } from '@appsemble/react-components';
 import { type BootstrapParams } from '@appsemble/sdk';
 import { type SubPage, type TabsPageDefinition } from '@appsemble/types';
 import { checkAppRole, normalize } from '@appsemble/utils';
@@ -10,11 +10,13 @@ import {
   useCallback,
   useEffect,
   useMemo,
+  useRef,
   useState,
 } from 'react';
 import { Navigate, Route, useLocation, useNavigate, useParams } from 'react-router-dom';
 
 import { TabContent } from './TabContent/index.js';
+import { createEvents } from '../../utils/events.js';
 import { makeActions } from '../../utils/makeActions.js';
 import { useAppDefinition } from '../AppDefinitionProvider/index.js';
 import { useAppMessages } from '../AppMessagesProvider/index.js';
@@ -41,7 +43,7 @@ export function TabsPage({
   tabRef,
   ...blockListProps
 }: TabsPageProps): ReactNode {
-  const { definition } = useAppDefinition();
+  const { definition, pageManifests } = useAppDefinition();
   const {
     '*': wildcard,
     lang,
@@ -61,6 +63,8 @@ export function TabsPage({
   const params = useParams();
   const showMessage = useMessages();
   let actions: BootstrapParams['actions'];
+  const [pageReady, setPageReady] = useState<Promise<void>>();
+  const [createdTabs, setCreatedTabs] = useState([]);
 
   const checkSubPagePermissions = useCallback(
     (p: SubPage): boolean => {
@@ -73,19 +77,78 @@ export function TabsPage({
     [definition.roles, definition.security, role, teams],
   );
 
+  const events = createEvents(
+    ee,
+    pageReady,
+    pageManifests.events,
+    page.definition ? page.definition.events : null,
+  );
+  const resolvePageReady = useRef<Function>();
+
   useEffect(() => {
-    const { tabs } = page;
-    const filteredTabs = tabs.filter((tab) => checkSubPagePermissions(tab));
-    setTabsWithPermissions(filteredTabs);
-    const id = page.tabs.indexOf(filteredTabs[0]);
-    setDefaultTab({
-      id,
-      name: filteredTabs[0]?.name,
-    });
+    setPageReady(
+      new Promise((resolve) => {
+        resolvePageReady.current = resolve;
+      }),
+    );
+  }, [page.definition]);
+
+  useEffect(() => {
+    if (page.tabs) {
+      const { tabs } = page;
+
+      const filteredTabs = tabs.filter((tab) => checkSubPagePermissions(tab));
+      setTabsWithPermissions(filteredTabs);
+      const id = page.tabs.indexOf(filteredTabs[0]);
+      setDefaultTab({
+        id,
+        name: filteredTabs[0]?.name,
+      });
+    } else if (createdTabs) {
+      setTabsWithPermissions(createdTabs);
+      setDefaultTab({
+        id: '0',
+        name: 'New Generated Tab 0',
+      });
+    }
+  }, [checkSubPagePermissions, page, actions, createdTabs]);
+
+  useEffect(() => {
     actions.onLoad().then((results) => {
       setData(results);
     });
-  }, [checkSubPagePermissions, page, actions]);
+  }, [setData, actions]);
+
+  useEffect(() => {
+    const script = document.createElement('script');
+    script.addEventListener('PageEvent', (event: CustomEvent) => {
+      event.stopImmediatePropagation();
+      event.preventDefault();
+    });
+    const callback = (d: any): void => {
+      const { blocks } = page.definition.foreach;
+      function createTabs(): SubPage[] {
+        const newTabs: SubPage[] = [];
+        for (const [i, resourceData] of d.entries()) {
+          if (resourceData) {
+            const newTab: SubPage = {
+              name: `New Generated Tab ${i}`,
+              blocks,
+            };
+            newTabs.push(newTab);
+          }
+        }
+        return newTabs;
+      }
+      const result = createTabs();
+      setCreatedTabs(result);
+      applyRefs(d[0], tabRef);
+      setData(d);
+    };
+
+    events.on.data(callback);
+    return () => events.off.data(callback) as any;
+  });
 
   actions = useMemo(
     () =>
@@ -147,10 +210,11 @@ export function TabsPage({
   const pageName = getAppMessage({ id: prefix, defaultMessage: page.name }).format() as string;
 
   if (tabsWithPermissions.length) {
+    const pageTabs = page.tabs ?? createdTabs;
     return (
       <>
         <Tabs centered onChange={onChange} size="medium" value={pathname}>
-          {page.tabs.map((tab, index) => {
+          {pageTabs.map((tab, index) => {
             const translatedName = getAppMessage({
               id: `${prefix}.tabs.${index}`,
               defaultMessage: tab.name,
@@ -168,7 +232,7 @@ export function TabsPage({
           })}
         </Tabs>
         <MetaSwitch title={pageName}>
-          {page.tabs.map(({ blocks, name, roles }, index) => {
+          {pageTabs.map(({ blocks, name, roles }, index) => {
             const translatedName = getAppMessage({
               id: `${prefix}.tabs.${index}`,
               defaultMessage: name,

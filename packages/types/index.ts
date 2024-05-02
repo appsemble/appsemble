@@ -1770,9 +1770,18 @@ export interface LoopPageDefinition extends BasePageDefinition {
   retainFlowData?: boolean;
 }
 
+export interface AlternateTabsDefinition {
+  foreach: SubPage;
+  events: {
+    listen?: Record<string, string>;
+    emit?: Record<string, string>;
+  };
+}
+
 export interface TabsPageDefinition extends BasePageDefinition {
   type: 'tabs';
-  tabs: SubPage[];
+  tabs?: SubPage[];
+  definition?: AlternateTabsDefinition;
 
   /**
    * A mapping of actions that can be fired by the page to action handlers.
