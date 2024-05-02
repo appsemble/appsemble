@@ -6,5 +6,7 @@
   "optionalLabel": "(Optioneel)",
   "previousLabel": "Vorige",
   "submitError": "Er is iets misgegaan bij het versturen van dit formulier",
-  "submitLabel": "Versturen"
+  "submitLabel": "Versturen",
+  "selectionNoOptions": "Geen beschikbare opties meer",
+  "selectionOptionsError": "Er is een fout opgetreden bij het laden van de opties"
 }

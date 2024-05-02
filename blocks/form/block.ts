@@ -258,6 +258,11 @@ export type TagsRequirement = CountRequirement | MinMaxRequirement | RegexRequir
 /**
  * All requirements applicable to string fields.
  */
+export type SelectionRequirement = CountRequirement;
+
+/**
+ * All requirements applicable to string fields.
+ */
 export type StringRequirement = LengthRequirement | RegexRequirement | RequiredRequirement;
 
 /**
@@ -315,6 +320,108 @@ export interface Choice {
    * The value to use when selecting the option.
    */
   value: JsonValue;
+}
+
+export interface Image {
+  /**
+   * The image to show in the cell.
+   *
+   * image can either be url or uploaded image
+   */
+  file: Remapper;
+
+  /**
+   * The alt text of the image.
+   *
+   */
+  alt?: Remapper;
+
+  /**
+   * Is image rounded.
+   *
+   */
+  rounded?: boolean;
+
+  /**
+   * The alignment of the text content.
+   *
+   * @default 'default'
+   */
+  alignment?: 'default' | 'header';
+
+  /**
+   * The image is scaled with bulma sizes.
+   *
+   * @default 48
+   */
+  size?: 16 | 24 | 32 | 48 | 64 | 96 | 128;
+}
+
+/**
+ * An object representing how a data field should be displayed.
+ */
+export interface SelectionChoiceField {
+  /**
+   * The name of the field to read from to determine the value to show.
+   *
+   * No value will be rendered if undefined.
+   */
+  value?: Remapper;
+
+  /**
+   * The label to display.
+   *
+   * Will not render if undefined.
+   */
+  label?: Remapper;
+
+  /**
+   * The [Font Awesome icon](https://fontawesome.com/icons?m=free) to display in front of the label.
+   *
+   * Will not render if undefined.
+   */
+  icon?: IconName;
+}
+
+/**
+ * An option that is displayed in the dialog of a selection field.
+ */
+export interface SelectionChoice {
+  /**
+   * The unique identifier for the choice.
+   */
+  id: number;
+
+  /**
+   * The header text to display above the list of fields.
+   *
+   * Will not render if undefined.
+   */
+  header?: Remapper;
+
+  /**
+   * The icon that displays in front of the header.
+   *
+   * Will not render if undefined.
+   */
+  icon?: IconName;
+
+  /**
+   * A list of fields to display.
+   */
+  fields?: SelectionChoiceField[];
+
+  /**
+   * The image that is shown to the left of the list item.
+   *
+   * This can be either a full image path or an asset id.
+   */
+  image?: Image;
+
+  /**
+   * Nests image on the left inside the inline block.
+   */
+  imageInline?: boolean;
 }
 
 interface AbstractField {
@@ -715,6 +822,46 @@ export interface SyncListField extends AbstractListField {
 
 export type ListField = EventListField | SyncListField;
 
+export interface AbstractSelectionField extends AbstractField, InlineField {
+  /**
+   * The type of the field.
+   */
+  type: 'selection';
+
+  /**
+   * The requirements that are used to validate the field with.
+   *
+   * These are evaluated in the order they are defined in.
+   */
+  requirements?: SelectionRequirement[];
+
+  /**
+   * The label to show on the button for adding a new entry.
+   *
+   * @default 'Add'
+   */
+  addLabel?: Remapper;
+}
+
+export interface EventSelectionField extends AbstractSelectionField {
+  /**
+   * Wait until an event has been fired containing the list of options.
+   * The event should return an array of objects.
+   *
+   * @format event-listener
+   */
+  event: string;
+}
+
+export interface SyncSelectionField extends AbstractSelectionField {
+  /**
+   * A list of selection options.
+   */
+  selection: SelectionChoice[];
+}
+
+export type SelectionField = EventSelectionField | SyncSelectionField;
+
 /**
  * An input field used to upload files.
  */
@@ -966,14 +1113,14 @@ export interface Fieldset extends AbstractField {
   /**
    * The label to show on the button for adding a new entry for repeated fields.
    *
-   * @default 'Remove'
+   * @default 'Add'
    */
   addLabel?: Remapper;
 
   /**
    * The label to show on the button for removing an entry for repeated fields.
    *
-   * @default 'Add'
+   * @default 'Remove'
    */
   removeLabel?: Remapper;
 
@@ -1003,6 +1150,7 @@ export type Field =
   | NumberField
   | RadioField
   | RangeField
+  | SelectionField
   | StaticField
   | StringField
   | TagsField;
@@ -1158,6 +1306,8 @@ declare module '@appsemble/sdk' {
     formRequirementError: never;
     invalidLabel: never;
     previousLabel: never;
+    selectionNoOptions: never;
+    selectionOptionsError: never;
   }
 
   interface Parameters {

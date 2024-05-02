@@ -1,0 +1,30 @@
+events:
+  listen:
+    # The event should return a list of formatted choices
+    courses: courses
+parameters:
+  title: Create Training
+  fields:
+    - name: coursesFromEvent
+      type: selection
+      event: courses
+      requirements:
+        - maxItems: 3
+    - name: staticCourses
+      type: selection
+      selection:
+        - id: 1
+          header: Spaghetti Bolognese
+          fields:
+            - label: Type
+              value: Cooking
+          image:
+            object.from:
+              size: 96
+              file: spaghetti-bolognese
+      requirements:
+        - minItems: 1
+actions:
+  onSubmit:
+    type: resource.create
+    resource: training

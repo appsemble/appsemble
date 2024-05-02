@@ -1,0 +1,19 @@
+.option {
+  background-color: rgb(0 0 0 / 2.5%);
+  border: none;
+  border-radius: 4px;
+  color: inherit;
+  font-family: inherit;
+  font-size: 100%;
+  line-height: 1.15;
+  position: relative;
+  width: 100%;
+}
+
+.contentWrapper {
+  width: 100%;
+}
+
+.image {
+  align-items: center;
+}

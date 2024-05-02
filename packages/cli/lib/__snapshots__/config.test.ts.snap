@@ -1873,6 +1873,12 @@ Include an array of fields in \`fields\` to replace the current list of fields i
     "previousLabel": {
       "description": undefined,
     },
+    "selectionNoOptions": {
+      "description": undefined,
+    },
+    "selectionOptionsError": {
+      "description": undefined,
+    },
     "submitError": {
       "description": undefined,
     },
@@ -2666,6 +2672,91 @@ Replaces the optional label if the field is optional. Won’t display if the fie
         ],
         "type": "object",
       },
+      "EventSelectionField": {
+        "additionalProperties": false,
+        "properties": {
+          "addLabel": {
+            "default": "Add",
+            "description": "The label to show on the button for adding a new entry.",
+            "format": "remapper",
+          },
+          "disabled": {
+            "default": false,
+            "description": "Whether the field should always be be disabled.",
+            "format": "remapper",
+          },
+          "event": {
+            "description": "Wait until an event has been fired containing the list of options. The event should return an array of objects.",
+            "format": "event-listener",
+            "type": "string",
+          },
+          "help": {
+            "description": "A description for the text field. For adding more information about the field.",
+            "format": "remapper",
+          },
+          "icon": {
+            "description": "Name of the [Font Awesome icon](https://fontawesome.com/icons?m=free) to be displayed next to the label.",
+            "format": "fontawesome",
+            "type": "string",
+          },
+          "inline": {
+            "const": true,
+            "description": "Combines fields on the same row.
+
+Fields are combined in order if set to true.",
+            "type": "boolean",
+          },
+          "label": {
+            "description": "The label displayed next to the field.",
+            "format": "remapper",
+          },
+          "name": {
+            "description": "The name used when storing this field.",
+            "type": "string",
+          },
+          "placeholder": {
+            "description": "The placeholder to display when the field is empty.",
+            "format": "remapper",
+          },
+          "readOnly": {
+            "default": false,
+            "description": "Whether the field should be read-only.",
+            "format": "remapper",
+          },
+          "requirements": {
+            "description": "The requirements that are used to validate the field with.
+
+These are evaluated in the order they are defined in.",
+            "items": {
+              "$ref": "#/definitions/SelectionRequirement",
+            },
+            "type": "array",
+          },
+          "show": {
+            "description": "Displays field only if condition is true.
+
+If not specified, the field will display.",
+            "format": "remapper",
+          },
+          "tag": {
+            "description": "The label that is shown to the right of the label.
+
+Replaces the optional label if the field is optional. Won’t display if the field has no label of its own.",
+            "format": "remapper",
+          },
+          "type": {
+            "const": "selection",
+            "description": "The type of the field.",
+            "type": "string",
+          },
+        },
+        "required": [
+          "event",
+          "name",
+          "type",
+        ],
+        "type": "object",
+      },
       "Field": {
         "anyOf": [
           {
@@ -2705,6 +2796,9 @@ Replaces the optional label if the field is optional. Won’t display if the fie
             "$ref": "#/definitions/RangeField",
           },
           {
+            "$ref": "#/definitions/SelectionField",
+          },
+          {
             "$ref": "#/definitions/StaticField",
           },
           {
@@ -2719,7 +2813,7 @@ Replaces the optional label if the field is optional. Won’t display if the fie
         "additionalProperties": false,
         "properties": {
           "addLabel": {
-            "default": "Remove",
+            "default": "Add",
             "description": "The label to show on the button for adding a new entry for repeated fields.",
             "format": "remapper",
           },
@@ -2763,7 +2857,7 @@ Replaces the optional label if the field is optional. Won’t display if the fie
             "format": "remapper",
           },
           "removeLabel": {
-            "default": "Add",
+            "default": "Remove",
             "description": "The label to show on the button for removing an entry for repeated fields.",
             "format": "remapper",
           },
@@ -3121,6 +3215,52 @@ Replaces the optional label if the field is optional. Won’t display if the fie
         "required": [
           "name",
           "type",
+        ],
+        "type": "object",
+      },
+      "Image": {
+        "additionalProperties": false,
+        "properties": {
+          "alignment": {
+            "default": "default",
+            "description": "The alignment of the text content.",
+            "enum": [
+              "default",
+              "header",
+            ],
+            "type": "string",
+          },
+          "alt": {
+            "description": "The alt text of the image.",
+            "format": "remapper",
+          },
+          "file": {
+            "description": "The image to show in the cell.
+
+image can either be url or uploaded image",
+            "format": "remapper",
+          },
+          "rounded": {
+            "description": "Is image rounded.",
+            "type": "boolean",
+          },
+          "size": {
+            "default": 48,
+            "description": "The image is scaled with bulma sizes.",
+            "enum": [
+              16,
+              24,
+              32,
+              48,
+              64,
+              96,
+              128,
+            ],
+            "type": "number",
+          },
+        },
+        "required": [
+          "file",
         ],
         "type": "object",
       },
@@ -3571,6 +3711,90 @@ Another option is to pass a remapper returning a boolean value. This way you can
         ],
         "type": "object",
       },
+      "SelectionChoice": {
+        "additionalProperties": false,
+        "description": "An option that is displayed in the dialog of a selection field.",
+        "properties": {
+          "fields": {
+            "description": "A list of fields to display.",
+            "items": {
+              "$ref": "#/definitions/SelectionChoiceField",
+            },
+            "type": "array",
+          },
+          "header": {
+            "description": "The header text to display above the list of fields.
+
+Will not render if undefined.",
+            "format": "remapper",
+          },
+          "icon": {
+            "description": "The icon that displays in front of the header.
+
+Will not render if undefined.",
+            "format": "fontawesome",
+            "type": "string",
+          },
+          "id": {
+            "description": "The unique identifier for the choice.",
+            "type": "number",
+          },
+          "image": {
+            "$ref": "#/definitions/Image",
+            "description": "The image that is shown to the left of the list item.
+
+This can be either a full image path or an asset id.",
+          },
+          "imageInline": {
+            "description": "Nests image on the left inside the inline block.",
+            "type": "boolean",
+          },
+        },
+        "required": [
+          "id",
+        ],
+        "type": "object",
+      },
+      "SelectionChoiceField": {
+        "additionalProperties": false,
+        "description": "An object representing how a data field should be displayed.",
+        "properties": {
+          "icon": {
+            "description": "The [Font Awesome icon](https://fontawesome.com/icons?m=free) to display in front of the label.
+
+Will not render if undefined.",
+            "format": "fontawesome",
+            "type": "string",
+          },
+          "label": {
+            "description": "The label to display.
+
+Will not render if undefined.",
+            "format": "remapper",
+          },
+          "value": {
+            "description": "The name of the field to read from to determine the value to show.
+
+No value will be rendered if undefined.",
+            "format": "remapper",
+          },
+        },
+        "type": "object",
+      },
+      "SelectionField": {
+        "anyOf": [
+          {
+            "$ref": "#/definitions/EventSelectionField",
+          },
+          {
+            "$ref": "#/definitions/SyncSelectionField",
+          },
+        ],
+      },
+      "SelectionRequirement": {
+        "$ref": "#/definitions/CountRequirement",
+        "description": "All requirements applicable to string fields.",
+      },
       "SizeRequirement": {
         "additionalProperties": false,
         "description": "A requirement used to enforce the size of the input.",
@@ -3961,6 +4185,93 @@ Replaces the optional label if the field is optional. Won’t display if the fie
         "required": [
           "list",
           "name",
+          "type",
+        ],
+        "type": "object",
+      },
+      "SyncSelectionField": {
+        "additionalProperties": false,
+        "properties": {
+          "addLabel": {
+            "default": "Add",
+            "description": "The label to show on the button for adding a new entry.",
+            "format": "remapper",
+          },
+          "disabled": {
+            "default": false,
+            "description": "Whether the field should always be be disabled.",
+            "format": "remapper",
+          },
+          "help": {
+            "description": "A description for the text field. For adding more information about the field.",
+            "format": "remapper",
+          },
+          "icon": {
+            "description": "Name of the [Font Awesome icon](https://fontawesome.com/icons?m=free) to be displayed next to the label.",
+            "format": "fontawesome",
+            "type": "string",
+          },
+          "inline": {
+            "const": true,
+            "description": "Combines fields on the same row.
+
+Fields are combined in order if set to true.",
+            "type": "boolean",
+          },
+          "label": {
+            "description": "The label displayed next to the field.",
+            "format": "remapper",
+          },
+          "name": {
+            "description": "The name used when storing this field.",
+            "type": "string",
+          },
+          "placeholder": {
+            "description": "The placeholder to display when the field is empty.",
+            "format": "remapper",
+          },
+          "readOnly": {
+            "default": false,
+            "description": "Whether the field should be read-only.",
+            "format": "remapper",
+          },
+          "requirements": {
+            "description": "The requirements that are used to validate the field with.
+
+These are evaluated in the order they are defined in.",
+            "items": {
+              "$ref": "#/definitions/SelectionRequirement",
+            },
+            "type": "array",
+          },
+          "selection": {
+            "description": "A list of selection options.",
+            "items": {
+              "$ref": "#/definitions/SelectionChoice",
+            },
+            "type": "array",
+          },
+          "show": {
+            "description": "Displays field only if condition is true.
+
+If not specified, the field will display.",
+            "format": "remapper",
+          },
+          "tag": {
+            "description": "The label that is shown to the right of the label.
+
+Replaces the optional label if the field is optional. Won’t display if the field has no label of its own.",
+            "format": "remapper",
+          },
+          "type": {
+            "const": "selection",
+            "description": "The type of the field.",
+            "type": "string",
+          },
+        },
+        "required": [
+          "name",
+          "selection",
           "type",
         ],
         "type": "object",

@@ -6,5 +6,7 @@
   "optionalLabel": "(optional)",
   "previousLabel": "Vorherige",
   "submitError": "Beim Senden dieses Formulars ist ein Problem aufgetreten",
-  "submitLabel": "Übermitteln"
+  "submitLabel": "Übermitteln",
+  "selectionNoOptions": "",
+  "selectionOptionsError": ""
 }

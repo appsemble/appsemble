@@ -21,6 +21,8 @@ function generateDefaultValue(field: Field): unknown {
       return {};
     case 'tags':
       return [];
+    case 'selection':
+      return [];
     case 'fieldset': {
       if (!field.repeated) {
         // eslint-disable-next-line @typescript-eslint/no-use-before-define

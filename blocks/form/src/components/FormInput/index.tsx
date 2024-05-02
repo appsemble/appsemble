@@ -13,6 +13,7 @@ import { ListInput } from '../ListInput/index.js';
 import { NumberInput } from '../NumberInput/index.js';
 import { RadioInput } from '../RadioInput/index.js';
 import { RangeInput } from '../RangeInput/index.js';
+import { SelectionInput } from '../SelectionInput/index.js';
 import { StaticField } from '../StaticField/index.js';
 import { StringInput } from '../StringInput/index.js';
 import { TagsInput } from '../TagsInput/index.js';
@@ -65,6 +66,8 @@ export function FormInput({ field, onChange, ...props }: FormInputProps): VNode 
       return <RadioInput dirty={dirty} field={field} onChange={handleChange} {...props} />;
     case 'tags':
       return <TagsInput dirty={dirty} field={field} onChange={handleChange} {...props} />;
+    case 'selection':
+      return <SelectionInput dirty={dirty} field={field} onChange={handleChange} {...props} />;
     default:
   }
 }
