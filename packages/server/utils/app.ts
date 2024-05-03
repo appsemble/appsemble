@@ -181,7 +181,7 @@ export function applyAppMessages(app: App, language: string, baseLanguage: strin
 }
 
 export async function setAppPath(ctx: Context, app: Partial<App>, path: string): Promise<void> {
-  for (let i = 1; i < 3; i += 1) {
+  for (let i = 1; i < 10; i += 1) {
     const p = i === 1 ? path : `${path}-${i}`;
     const count = await App.count({ where: { path: p } });
     if (count === 0 && p.length < 30) {
