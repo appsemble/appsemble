@@ -10,8 +10,9 @@
     display: block;
   }
 
-  /* TODO remove this */
-  /* &.code, */
+  /* REFACTORING TODO figure out */
+  &.code,
+  &.toggleable,
   &.gui {
     @media screen and (width >=1024px) {
       display: block;

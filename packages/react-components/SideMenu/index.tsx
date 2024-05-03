@@ -115,10 +115,10 @@ export function SideMenuProvider({ base, bottom, children }: SideMenuProviderPro
         className={classNames(
           styles.sideMenuWrapper,
           { [styles.open]: enabled },
-          {
-            [styles.gui]: location.pathname.match(/(?<=\/)gui(?=\/)/),
-          },
-          { [styles.code]: location.pathname.match(/edit/) && location.hash.length > 0 },
+          // {
+          //   [styles.gui]: location.pathname.match(/(?<=\/)gui(?=\/)/),
+          // },
+          // { [styles.code]: location.pathname.match(/edit/) && location.hash.length > 0 },
         )}
       >
         {/* eslint-disable-next-line jsx-a11y/prefer-tag-over-role */}
@@ -127,8 +127,8 @@ export function SideMenuProvider({ base, bottom, children }: SideMenuProviderPro
             styles.backdrop,
             'is-hidden-dekstop',
             { [styles.closed]: !enabled },
-            { [styles.code]: location.pathname.match(/edit/) && location.hash.length > 0 },
-            { [styles.gui]: location.pathname.match(/(?<=\/)gui(?=\/)/) },
+            // { [styles.code]: location.pathname.match(/edit/) && location.hash.length > 0 },
+            // { [styles.gui]: location.pathname.match(/(?<=\/)gui(?=\/)/) },
           )}
           onClick={disable}
           role="presentation"
@@ -137,8 +137,8 @@ export function SideMenuProvider({ base, bottom, children }: SideMenuProviderPro
           className={classNames(
             `menu ${styles.sideMenu}`,
             { [styles.open]: enabled },
-            { [styles.code]: location.pathname.match(/edit/) && location.hash.length > 0 },
-            { [styles.gui]: location.pathname.match(/(?<=\/)gui(?=\/)/) },
+            // { [styles.code]: location.pathname.match(/edit/) && location.hash.length > 0 },
+            // { [styles.gui]: location.pathname.match(/(?<=\/)gui(?=\/)/) },
           )}
         >
           {base}
@@ -158,7 +158,7 @@ export function SideMenuButton(): ReactNode {
   const { isOpen, toggle } = useContext(Context);
   const { formatMessage } = useIntl();
   // REFACTORING
-  // Ignore
+  // Ignore me
   // const location = useLocation();
 
   // REFACTORING
@@ -187,10 +187,23 @@ export function SideMenuButton(): ReactNode {
   //     <span aria-hidden />
   //   </button>
   // ) : (
+  const isToggleable = true;
+
+  // Ignore
+  // console.log({ isToggleable, isOpen });
+
   return (
     <button
       aria-label={formatMessage(isOpen ? messages.close : messages.open)}
-      className={classNames('navbar-burger', { 'is-active': isOpen }, styles.button)}
+      className={classNames(
+        'navbar-burger',
+        {
+          'is-active': isOpen,
+          // Does not work yet
+          [styles.toggleable]: isToggleable,
+        },
+        styles.button,
+      )}
       onClick={toggle}
       type="button"
     >

@@ -140,6 +140,7 @@ export default function EditPage(): ReactNode {
     };
   }, [formatMessage, location, setBreadCrumbsDecoration, id]);
 
+  // TODO fix all of these
   const guiEditorContainer = document?.querySelector(
     `.${styles.guiEditorContainer}`,
   ) as HTMLElement;
