@@ -158,7 +158,7 @@ export function SecretsPage(): ReactNode {
                 required={Boolean(emailSettings.emailPassword || emailSettings.emailHost)}
               />
               <SimpleFormField
-                autoComplete="off"
+                autoComplete="new-password"
                 component={PasswordField}
                 help={<FormattedMessage {...messages.emailPasswordDescription} />}
                 label={<FormattedMessage {...messages.emailPassword} />}

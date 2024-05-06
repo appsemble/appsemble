@@ -19,6 +19,7 @@ export function HttpBasicFieldset({ disabled }: HttpBasicFieldsetProps): ReactNo
         required
       />
       <SimpleFormField
+        autoComplete="new-password"
         component={PasswordField}
         disabled={disabled}
         help={<FormattedMessage {...messages.passwordHelp} />}

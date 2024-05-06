@@ -20,6 +20,7 @@ export function QueryParameterFieldset({ disabled }: QueryParameterFieldsetProps
         required
       />
       <SimpleFormField
+        autoComplete="new-password"
         component={PasswordField}
         disabled={disabled}
         help={<FormattedMessage {...messages.secretHelp} />}

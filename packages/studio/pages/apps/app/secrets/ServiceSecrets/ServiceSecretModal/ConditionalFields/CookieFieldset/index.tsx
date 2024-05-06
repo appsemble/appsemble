@@ -20,6 +20,7 @@ export function CookieFieldset({ disabled }: CookieFieldsetProps): ReactNode {
         required
       />
       <SimpleFormField
+        autoComplete="new-password"
         component={PasswordField}
         disabled={disabled}
         help={<FormattedMessage {...messages.secretHelp} />}
