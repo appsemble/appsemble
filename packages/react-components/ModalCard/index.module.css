@@ -15,3 +15,15 @@
 .closing {
   opacity: 0;
 }
+
+.footer-placeholder {
+  height: 20px;
+}
+
+.footer button:first-child {
+  border-bottom-left-radius: 6px;
+}
+
+.footer button:last-child {
+  border-bottom-right-radius: 6px;
+}

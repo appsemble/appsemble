@@ -183,7 +183,10 @@ test.describe('App Collections', () => {
     await page.click('#app-options-menu');
     await page.getByRole('button', { name: 'Add to collection' }).click();
     await page.locator('#collectionId').selectOption({ label: collectionName });
-    await page.locator('footer').getByRole('button', { name: 'Add to collection' }).click();
+    await page
+      .locator('.modal-card-foot')
+      .getByRole('button', { name: 'Add to collection' })
+      .click();
 
     await page.goto('/en/collections');
     await page.getByRole('link', { name: collectionName }).click();
@@ -208,7 +211,10 @@ test.describe('App Collections', () => {
     await page.click('#app-options-menu');
     await page.getByRole('button', { name: 'Add to collection' }).click();
     await page.locator('#collectionId').selectOption({ label: collectionName });
-    await page.locator('footer').getByRole('button', { name: 'Add to collection' }).click();
+    await page
+      .locator('.modal-card-foot')
+      .getByRole('button', { name: 'Add to collection' })
+      .click();
 
     await page.goto('/en/collections');
     await page.getByRole('link', { name: collectionName }).click();
@@ -239,14 +245,20 @@ test.describe('App Collections', () => {
     await page.click('#app-options-menu');
     await page.getByRole('button', { name: 'Add to collection' }).click();
     await page.locator('#collectionId').selectOption({ label: collectionName });
-    await page.locator('footer').getByRole('button', { name: 'Add to collection' }).click();
+    await page
+      .locator('.modal-card-foot')
+      .getByRole('button', { name: 'Add to collection' })
+      .click();
 
     await page.goBack();
     await page.getByRole('link', { name: 'Person' }).first().click();
     await page.click('#app-options-menu');
     await page.getByRole('button', { name: 'Add to collection' }).click();
     await page.locator('#collectionId').selectOption({ label: collectionName });
-    await page.locator('footer').getByRole('button', { name: 'Add to collection' }).click();
+    await page
+      .locator('.modal-card-foot')
+      .getByRole('button', { name: 'Add to collection' })
+      .click();
 
     await page.goto('/en/collections');
     await page.getByRole('link', { name: collectionName }).click();
