@@ -220,18 +220,19 @@ describe('publishApp', () => {
   });
 
   it('should throw an error if the user doesn’t have enough scope permissions', async () => {
+    const clientCredentials = await authorizeCLI('', testApp);
     vi.useRealTimers();
     await expect(() =>
       publishApp({
         path: resolveFixture('apps/test'),
         organization: organization.id,
         remote: testApp.defaults.baseURL,
-        clientCredentials: undefined,
+        clientCredentials,
         // Required defaults
         visibility: 'unlisted',
         iconBackground: '#ffffff',
       }),
-    ).rejects.toThrow('No client credentials found.');
+    ).rejects.toThrow('Request failed with status code 401');
     vi.useFakeTimers();
     const app = await App.findOne();
     expect(app).toBeNull();
@@ -1064,6 +1065,33 @@ describe('updateApp', () => {
     expect(resource).toStrictEqual([]);
     const asset = await Asset.findAll();
     expect(asset).toStrictEqual([]);
+  });
+
+  it('should throw an error if the user doesn’t have enough scope permissions', async () => {
+    const clientCredentials = await authorizeCLI('', testApp);
+    vi.useRealTimers();
+    await expect(() =>
+      updateApp({
+        id: app.id,
+        force: false,
+        path: resolveFixture('apps/test'),
+        remote: testApp.defaults.baseURL,
+        clientCredentials,
+        // Required defaults
+        visibility: 'unlisted',
+        iconBackground: '#ffffff',
+      }),
+    ).rejects.toThrow('Request failed with status code 401');
+    vi.useFakeTimers();
+    await app.reload();
+    expect(app).toMatchObject({
+      path: 'test-app',
+      definition: { name: 'Test App', defaultPage: 'Test Page' },
+      vapidPublicKey: 'a',
+      vapidPrivateKey: 'b',
+      visibility: 'public',
+      OrganizationId: organization.id,
+    });
   });
 
   it('should update app with resources and assets', async () => {
