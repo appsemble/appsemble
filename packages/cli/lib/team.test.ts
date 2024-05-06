@@ -9,6 +9,7 @@ import {
   deleteMember,
   deleteTeam,
   inviteMember,
+  resolveAnnotations,
   updateMember,
   updateTeam,
 } from './team.js';
@@ -658,5 +659,23 @@ describe('deleteMember', () => {
     await expect(() =>
       deleteMember({ appId: app.id, remote: testApp.defaults.baseURL, user: user.id, id: team.id }),
     ).rejects.toThrow('Request failed with status code 400');
+  });
+});
+
+describe('resolveAnnotations', () => {
+  it('should resolve team annotations', () => {
+    const unresolvedAnnotations: string[] = ['foo=bar', 'hello=world'];
+    const annotations = resolveAnnotations(unresolvedAnnotations);
+    expect(annotations).toMatchObject({
+      foo: 'bar',
+      hello: 'world',
+    });
+  });
+
+  it('should throw an error if annotations are not in right format', () => {
+    const unresolvedAnnotations = ['foo:bar', 'hello.world'];
+    expect(() => resolveAnnotations(unresolvedAnnotations)).toThrow(
+      'One of the annotations did not follow the pattern of key=value',
+    );
   });
 });

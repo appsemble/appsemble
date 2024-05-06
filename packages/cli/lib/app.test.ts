@@ -1,3 +1,5 @@
+import { writeFile } from 'node:fs/promises';
+
 import { readFixture, resolveFixture } from '@appsemble/node-utils';
 import { createServer, createTestUser, models, setArgv, useTestDatabase } from '@appsemble/server';
 import { ISODateTimePattern } from '@appsemble/utils';
@@ -5,7 +7,15 @@ import { type AxiosTestInstance, setTestApp } from 'axios-test-instance';
 import FormData from 'form-data';
 import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { deleteApp, patchApp, publishApp, traverseAppDirectory, updateApp } from './app.js';
+import {
+  deleteApp,
+  patchApp,
+  publishApp,
+  resolveAppIdAndRemote,
+  traverseAppDirectory,
+  updateApp,
+  writeAppMessages,
+} from './app.js';
 import { initAxios } from './initAxios.js';
 import { authorizeCLI } from './testUtils.js';
 
@@ -210,7 +220,8 @@ describe('publishApp', () => {
   });
 
   it('should throw an error if the user doesn’t have enough scope permissions', async () => {
-    const clientCredentials = await authorizeCLI('blocks:write resources:write', testApp);
+    const clientCredentials = await authorizeCLI('', testApp);
+    vi.useRealTimers();
     await expect(() =>
       publishApp({
         path: resolveFixture('apps/test'),
@@ -221,9 +232,26 @@ describe('publishApp', () => {
         visibility: 'unlisted',
         iconBackground: '#ffffff',
       }),
-    ).rejects.toThrow('write EPIPE');
+    ).rejects.toThrow('Request failed with status code 401');
+    vi.useFakeTimers();
     const app = await App.findOne();
     expect(app).toBeNull();
+  });
+
+  it('should not publish if dryRun is specified', async () => {
+    const clientCredentials = await authorizeCLI('apps:write resources:write', testApp);
+    await publishApp({
+      path: resolveFixture('apps/test'),
+      organization: organization.id,
+      remote: testApp.defaults.baseURL,
+      clientCredentials,
+      // Required defaults
+      visibility: 'unlisted',
+      iconBackground: '#ffffff',
+      dryRun: true,
+    });
+    const apps = await App.findAll();
+    expect(apps).toStrictEqual([]);
   });
 
   it('should publish app with resources and assets', async () => {
@@ -1037,6 +1065,33 @@ describe('updateApp', () => {
     expect(resource).toStrictEqual([]);
     const asset = await Asset.findAll();
     expect(asset).toStrictEqual([]);
+  });
+
+  it('should throw an error if the user doesn’t have enough scope permissions', async () => {
+    const clientCredentials = await authorizeCLI('', testApp);
+    vi.useRealTimers();
+    await expect(() =>
+      updateApp({
+        id: app.id,
+        force: false,
+        path: resolveFixture('apps/test'),
+        remote: testApp.defaults.baseURL,
+        clientCredentials,
+        // Required defaults
+        visibility: 'unlisted',
+        iconBackground: '#ffffff',
+      }),
+    ).rejects.toThrow('Request failed with status code 401');
+    vi.useFakeTimers();
+    await app.reload();
+    expect(app).toMatchObject({
+      path: 'test-app',
+      definition: { name: 'Test App', defaultPage: 'Test Page' },
+      vapidPublicKey: 'a',
+      vapidPrivateKey: 'b',
+      visibility: 'public',
+      OrganizationId: organization.id,
+    });
   });
 
   it('should update app with resources and assets', async () => {
@@ -2154,6 +2209,13 @@ describe('traverseAppDirectory', () => {
       `
       {
         "context": {
+          "notFound": {
+            "organization": "testorganization",
+          },
+          "resolve": {
+            "id": 5,
+            "remote": "http://localhost:5555",
+          },
           "test": {
             "appLock": "studioLock",
             "assets": true,
@@ -2261,6 +2323,50 @@ describe('traverseAppDirectory', () => {
   });
 });
 
+describe('resolveAppIdAndRemote', () => {
+  it('should find and return app id and remote from appsembleRC', async () => {
+    const [appId, remote] = await resolveAppIdAndRemote(
+      resolveFixture('apps/test'),
+      'resolve',
+      'http://localhost:8888',
+      55,
+    );
+    expect(appId).toBe(5);
+    expect(remote).toBe('http://localhost:5555/');
+  });
+
+  it('should fallback to default appId and remote if not found in context', async () => {
+    const [appId, remote] = await resolveAppIdAndRemote(
+      resolveFixture('apps/test'),
+      'notFound',
+      'http://localhost:8888',
+      55,
+    );
+    expect(appId).toBe(55);
+    expect(remote).toBe('http://localhost:8888/');
+  });
+
+  it('should throw if the appId is not found in context and defaultAppId is not specified', async () => {
+    await expect(() =>
+      resolveAppIdAndRemote(resolveFixture('apps/test'), 'notFound', 'http://localhost:8888', null),
+    ).rejects.toThrow('App ID was not found');
+  });
+
+  it('should throw if the remote is not found in context and defaultAppRemote is not specified', async () => {
+    const app = await App.create({
+      path: 'test-app',
+      definition: { name: 'Test App', defaultPage: 'Test Page' },
+      vapidPublicKey: 'a',
+      vapidPrivateKey: 'b',
+      visibility: 'public',
+      OrganizationId: organization.id,
+    });
+    await expect(() =>
+      resolveAppIdAndRemote(resolveFixture('apps/test'), 'notFound', null, app.id),
+    ).rejects.toThrow('App remote was not found');
+  });
+});
+
 describe('deleteApp', () => {
   it('should throw if an error occurs', async () => {
     const clientCredentials = await authorizeCLI('apps:delete', testApp);
@@ -2282,5 +2388,53 @@ describe('deleteApp', () => {
     await deleteApp({ id: app.id, remote: testApp.defaults.baseURL, clientCredentials });
     const foundApps = await App.findAll();
     expect(foundApps).toStrictEqual([]);
+  });
+});
+
+describe('writeAppMessages', () => {
+  it('should extract messages from app-definition and write to file in i18n directory', async () => {
+    const initialMessages = JSON.parse(
+      String(await readFixture('apps/test-messages/i18n/nl.json')),
+    );
+    expect(initialMessages).toMatchObject({
+      app: {},
+    });
+    await writeAppMessages(resolveFixture('apps/test-messages'), ['nl'], [], 'json');
+    const messages = JSON.parse(String(await readFixture('apps/test-messages/i18n/nl.json')));
+    expect(messages).toMatchObject({
+      app: {
+        description: '',
+        name: '',
+        'pages.test-page': '',
+      },
+    });
+    await writeFile(
+      resolveFixture('apps/test-messages/i18n/nl.json'),
+      JSON.stringify(initialMessages, null, '\t'),
+    );
+  });
+
+  it('should throw if the language file does not exist', async () => {
+    await expect(() =>
+      writeAppMessages(resolveFixture('apps/test-messages'), ['hr'], [], 'json'),
+    ).rejects.toThrow('Missing translations file');
+  });
+
+  it('should throw if there are empty messages in a verified file', async () => {
+    const initialMessages = JSON.parse(
+      String(await readFixture('apps/test-messages/i18n/nl.json')),
+    );
+    expect(initialMessages).toMatchObject({
+      app: {},
+    });
+    await expect(() =>
+      writeAppMessages(resolveFixture('apps/test-messages'), ['nl'], ['nl'], 'json'),
+    ).rejects.toThrow('Missing translation');
+  });
+
+  it('should throw if app definition does not exist in the app folder', async () => {
+    await expect(() =>
+      writeAppMessages(resolveFixture('apps/empty'), ['nl'], [], 'json'),
+    ).rejects.toThrow('Couldn’t find app definition');
   });
 });

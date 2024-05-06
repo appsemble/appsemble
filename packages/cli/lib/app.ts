@@ -940,17 +940,21 @@ export async function resolveAppIdAndRemote(
     const [rc] = await readData<AppsembleRC>(rcPath);
     const context = rc.context?.[name];
 
-    if (!defaultAppId) {
+    if (context?.id) {
       id = context?.id;
     }
 
-    if (context.remote) {
+    if (context?.remote) {
       resolvedRemote = context.remote;
     }
   }
 
   if (id == null) {
     throw new AppsembleError(`App ID was not found in context.${name}.id nor in --app-id`);
+  }
+
+  if (resolvedRemote == null) {
+    throw new AppsembleError(`App remote was not found in context.${name}.remote nor in --remote`);
   }
 
   return [id, coerceRemote(resolvedRemote)];

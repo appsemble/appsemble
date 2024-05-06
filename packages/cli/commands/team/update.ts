@@ -30,6 +30,15 @@ export function builder(yargs: Argv): Argv<any> {
       type: 'array',
       describe: 'The new list of annotations. The format is key=value.',
     })
+    .option('app', {
+      describe: 'The path to the app.',
+      implies: 'context',
+    })
+    .option('context', {
+      describe:
+        'If specified, use the specified context from .appsemblerc.yaml to resolve appId and remote',
+      implies: 'app',
+    })
     .option('app-id', {
       describe: 'The ID of the app to delete the team from.',
       type: 'number',
