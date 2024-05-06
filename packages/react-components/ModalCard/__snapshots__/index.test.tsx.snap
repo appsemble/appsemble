@@ -30,6 +30,13 @@ exports[`should render a bulma modal when it is active 1`] = `
       >
         test
       </div>
+      <div
+        class="modal-card-foot p-0 footer"
+      >
+        <div
+          class="footer-placeholder"
+        />
+      </div>
     </div>
   </div>
 </div>

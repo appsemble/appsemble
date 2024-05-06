@@ -143,6 +143,7 @@ export function DateTimeField({
       altInput,
       allowInput,
       altFormat,
+      static: true,
       positionElement: positionElement.current,
       // eslint-disable-next-line @typescript-eslint/naming-convention
       time_24hr: true,

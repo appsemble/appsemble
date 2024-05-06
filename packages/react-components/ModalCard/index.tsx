@@ -127,7 +127,9 @@ export function ModalCard<T extends ElementType = 'div'>({
           ) : null}
         </div>
         <div className={classNames('modal-card-body', className)}>{children}</div>
-        {footer ? <footer className="card-footer">{footer}</footer> : null}
+        <div className={classNames('modal-card-foot', 'p-0', styles.footer)}>
+          {footer || <div className={styles['footer-placeholder']} />}
+        </div>
       </Component>
     </div>
   );
