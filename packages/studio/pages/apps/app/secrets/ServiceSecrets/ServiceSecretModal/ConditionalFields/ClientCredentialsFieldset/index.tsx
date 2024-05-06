@@ -19,6 +19,7 @@ export function ClientCredentialsFieldset({ disabled }: ClientCredentialsFieldse
         required
       />
       <SimpleFormField
+        autoComplete="new-password"
         component={PasswordField}
         disabled={disabled}
         help={<FormattedMessage {...messages.clientSecretHelp} />}

@@ -158,7 +158,7 @@ export function OAuth2Modal({
       />
       <SimpleFormField
         // https://stackoverflow.com/questions/15738259
-        autoComplete="one-time-code"
+        autoComplete="new-password"
         component={PasswordField}
         disabled={locked !== 'unlocked'}
         help={<FormattedMessage {...messages.clientSecretHelp} />}
