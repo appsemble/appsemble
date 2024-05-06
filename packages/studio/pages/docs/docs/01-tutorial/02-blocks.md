@@ -26,7 +26,7 @@ only works when you have a page defined with the name Home.
 
 ```yaml copy validate block-snippet
 - type: action-button
-  version: 0.28.6
+  version: 0.28.7
   parameters:
     icon: home
   actions:
@@ -48,7 +48,7 @@ pages:
   - name: Home
     blocks:
       - type: action-button
-        version: 0.28.6
+        version: 0.28.7
         parameters:
           icon: arrow-right
         actions:
@@ -59,7 +59,7 @@ pages:
   - name: Other Page
     blocks:
       - type: action-button
-        version: 0.28.6
+        version: 0.28.7
         parameters:
           icon: home
         actions:

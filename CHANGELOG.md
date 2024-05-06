@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.28.7](https://gitlab.com/appsemble/appsemble/-/releases/0.28.7)] - 2024-05-06
+
+### Fixed
+
+- Cli: Missing options in `team update` command, `context` and `app`.
+- Cli: Throw an error if `remote` is neither found in the specified context nor passed as an
+  argument.
+- Cli: Wrong option used in `team create` command to make argument dependent on one-another. Options
+  app and context are now optional unless either is specified.
+- Preact-components: Make the date picker calendar display statically below the input field.
+- React-components: Add a footer to the dialog from the `dialog` action.
+- Server: The `setAppPath` function should try at least 9 times before generating hex values.
+- Studio: Disable autofill for app secrets.
+
 ## \[[0.28.6](https://gitlab.com/appsemble/appsemble/-/releases/0.28.6)] - 2024-05-02
 
 ### Added
