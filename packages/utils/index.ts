@@ -28,4 +28,5 @@ export * from './examples.js';
 export * from './allActions.js';
 export * from './serverActions.js';
 export * from './validation.js';
+export * from './serializeResource.js';
 export * from './convertToCsv.js';

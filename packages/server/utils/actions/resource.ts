@@ -12,12 +12,11 @@ import {
   type ResourceQueryActionDefinition,
   type ResourceUpdateActionDefinition,
 } from '@appsemble/types';
-import { defaultLocale, remap } from '@appsemble/utils';
+import { defaultLocale, remap, serializeResource } from '@appsemble/utils';
 import { Op } from 'sequelize';
 
 import { type ServerActionParameters } from './index.js';
 import { AppMember, Asset, Resource, ResourceVersion, transactional } from '../../models/index.js';
-import { getAppAssets } from '../../options/getAppAssets.js';
 import { parseQuery, processHooks, processReferenceHooks, validate } from '../resource.js';
 
 export async function get({
@@ -153,6 +152,7 @@ export async function create({
   options,
   user,
 }: ServerActionParameters<ResourceCreateActionDefinition>): Promise<unknown> {
+  const { getAppAssets } = options;
   const body = (remap(action.body, data, internalContext) ?? data) as
     | Record<string, unknown>
     | Record<string, unknown>[];
@@ -160,8 +160,7 @@ export async function create({
   const definition = getResourceDefinition(app.toJSON(), action.resource, context);
 
   const appAssets = await getAppAssets({ context, app: app.toJSON() });
-  // eslint-disable-next-line no-param-reassign
-  context.body = body;
+  Object.assign(context, { body: serializeResource(body) });
 
   const [processedBody] = processResourceBody(
     context,
@@ -172,14 +171,14 @@ export async function create({
   );
   const resources = Array.isArray(processedBody) ? processedBody : [processedBody];
   const createdResources = await Resource.bulkCreate(
-    resources.map(({ $ephemeral, $expires, $seed, ...resourceData }) => ({
+    resources.map(({ $expires, ...resourceData }) => ({
       type: action.resource,
       data: resourceData,
       AppId: app.id,
       AuthorId: user?.id,
       expires: $expires,
-      seed: $seed,
-      ephemeral: $ephemeral,
+      seed: !app.demoMode,
+      ephemeral: app.demoMode,
     })),
   );
 
@@ -228,9 +227,7 @@ export async function update({
 
   const {
     $clonable: clonable,
-    $ephemeral: ephemeral,
     $expires: expires,
-    $seed: seed,
     // Exclude id from body
     id,
     ...data
@@ -240,7 +237,7 @@ export async function update({
     const oldData = resource.data;
     const previousEditorId = resource.EditorId;
     const promises: Promise<unknown>[] = [
-      resource.update({ data, clonable, expires, seed, ephemeral }, { transaction }),
+      resource.update({ data, clonable, expires }, { transaction }),
     ];
 
     if (definition.history) {
@@ -301,9 +298,7 @@ export async function patch({
 
   const {
     $clonable: clonable,
-    $ephemeral: ephemeral,
     $expires: expires,
-    $seed: seed,
     // Exclude id from body
     id,
     ...data
@@ -314,7 +309,7 @@ export async function patch({
     const patchedData = { ...oldData, ...data };
     const previousEditorId = resource.EditorId;
     const promises: Promise<unknown>[] = [
-      resource.update({ data: patchedData, clonable, expires, seed, ephemeral }, { transaction }),
+      resource.update({ data: patchedData, clonable, expires }, { transaction }),
     ];
 
     if (definition.history) {

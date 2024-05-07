@@ -1,6 +1,5 @@
 import { type HTTPMethods } from '@appsemble/types';
-import { formatRequestAction } from '@appsemble/utils';
-import { serializeResource } from '@appsemble/web-utils';
+import { formatRequestAction, serializeResource } from '@appsemble/utils';
 import axios, { type RawAxiosRequestConfig } from 'axios';
 
 import { type ActionCreator } from './index.js';

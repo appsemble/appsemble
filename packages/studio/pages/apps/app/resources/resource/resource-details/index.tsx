@@ -1,6 +1,7 @@
 import { Button, Tab, Tabs, useData, useMessages, useMeta } from '@appsemble/react-components';
 import { type Resource } from '@appsemble/types';
-import { download, type NamedEvent, serializeResource } from '@appsemble/web-utils';
+import { serializeResource } from '@appsemble/utils';
+import { download, type NamedEvent } from '@appsemble/web-utils';
 import axios from 'axios';
 import { type editor } from 'monaco-editor/esm/vs/editor/editor.api.js';
 import {

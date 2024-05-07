@@ -14,8 +14,8 @@ import {
   useToggle,
 } from '@appsemble/react-components';
 import { type Resource } from '@appsemble/types';
-import { generateDataFromSchema, has } from '@appsemble/utils';
-import { download, serializeResource } from '@appsemble/web-utils';
+import { generateDataFromSchema, has, serializeResource } from '@appsemble/utils';
+import { download } from '@appsemble/web-utils';
 import axios from 'axios';
 import { type OpenAPIV3 } from 'openapi-types';
 import {
