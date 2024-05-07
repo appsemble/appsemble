@@ -87,7 +87,7 @@ export function AppScreenshots(): ReactNode {
           </Button>
         ) : null}
         {app.screenshotUrls.length !== 0 && (
-          <div className="my-4 is-flex">
+          <div className="my-4 is-flex gap-1">
             <Button
               className={`is-medium ${styles.scrollButton}`}
               icon="chevron-left"

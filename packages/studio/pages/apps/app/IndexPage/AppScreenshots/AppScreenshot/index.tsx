@@ -31,7 +31,7 @@ export function AppScreenshot({ mayManageScreenshots, url }: AppScreenshotProps)
   });
 
   return (
-    <div className={`mr-6 ${styles.screenshotWrapper}`} key={url}>
+    <div className={`mx-3 ${styles.screenshotWrapper}`} key={url}>
       {mayManageScreenshots ? (
         <Button
           className={`${styles.deleteScreenshotButton} mx-2 my-2 is-rounded is-small`}
