@@ -5,15 +5,12 @@
   display: inline-block;
   height: 100%;
   position: relative;
-
-  &:last-child {
-    margin-right: 0 !important;
-  }
 }
 
 .screenshot {
   height: 100%;
   max-width: unset;
+  scroll-snap-align: center;
   width: initial;
 }
 

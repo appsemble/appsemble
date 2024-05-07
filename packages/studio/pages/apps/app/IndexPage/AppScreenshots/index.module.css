@@ -18,6 +18,7 @@
   -webkit-overflow-scrolling: touch;
   -ms-overflow-style: none; /* Hide scrollbar for IE and Edge */
   scroll-behavior: smooth;
+  scroll-snap-type: x mandatory;
   /* stylelint-disable-next-line plugin/no-unsupported-browser-features */
   scrollbar-width: none; /* Hide scrollbar for Firefox */
   white-space: nowrap;
