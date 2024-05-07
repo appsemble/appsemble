@@ -1,4 +1,9 @@
-import { getRemapperContext, getResourceDefinition, type QueryParams } from '@appsemble/node-utils';
+import {
+  getRemapperContext,
+  getResourceDefinition,
+  processResourceBody,
+  type QueryParams,
+} from '@appsemble/node-utils';
 import {
   type ResourceCreateActionDefinition,
   type ResourceDeleteActionDefinition,
@@ -12,6 +17,7 @@ import { Op } from 'sequelize';
 
 import { type ServerActionParameters } from './index.js';
 import { AppMember, Asset, Resource, ResourceVersion, transactional } from '../../models/index.js';
+import { getAppAssets } from '../../options/getAppAssets.js';
 import { parseQuery, processHooks, processReferenceHooks, validate } from '../resource.js';
 
 export async function get({
@@ -152,16 +158,28 @@ export async function create({
     | Record<string, unknown>[];
 
   const definition = getResourceDefinition(app.toJSON(), action.resource, context);
-  const resource = validate(body, definition, context);
 
-  const resources = Array.isArray(resource) ? resource : [resource];
+  const appAssets = await getAppAssets({ context, app: app.toJSON() });
+  // eslint-disable-next-line no-param-reassign
+  context.body = body;
+
+  const [processedBody] = processResourceBody(
+    context,
+    definition,
+    undefined,
+    undefined,
+    appAssets.map((asset) => ({ id: asset.id, name: asset.name })),
+  );
+  const resources = Array.isArray(processedBody) ? processedBody : [processedBody];
   const createdResources = await Resource.bulkCreate(
-    resources.map(({ $expires, ...resourceData }) => ({
+    resources.map(({ $ephemeral, $expires, $seed, ...resourceData }) => ({
       type: action.resource,
       data: resourceData,
       AppId: app.id,
       AuthorId: user?.id,
       expires: $expires,
+      seed: $seed,
+      ephemeral: $ephemeral,
     })),
   );
 
@@ -170,7 +188,7 @@ export async function create({
 
   const mappedResources = createdResources.map((r) => r.toJSON());
 
-  return Array.isArray(resource) ? mappedResources : mappedResources[0];
+  return Array.isArray(processedBody) ? mappedResources : mappedResources[0];
 }
 
 export async function update({
@@ -210,7 +228,9 @@ export async function update({
 
   const {
     $clonable: clonable,
+    $ephemeral: ephemeral,
     $expires: expires,
+    $seed: seed,
     // Exclude id from body
     id,
     ...data
@@ -220,7 +240,7 @@ export async function update({
     const oldData = resource.data;
     const previousEditorId = resource.EditorId;
     const promises: Promise<unknown>[] = [
-      resource.update({ data, clonable, expires }, { transaction }),
+      resource.update({ data, clonable, expires, seed, ephemeral }, { transaction }),
     ];
 
     if (definition.history) {
@@ -281,7 +301,9 @@ export async function patch({
 
   const {
     $clonable: clonable,
+    $ephemeral: ephemeral,
     $expires: expires,
+    $seed: seed,
     // Exclude id from body
     id,
     ...data
@@ -292,7 +314,7 @@ export async function patch({
     const patchedData = { ...oldData, ...data };
     const previousEditorId = resource.EditorId;
     const promises: Promise<unknown>[] = [
-      resource.update({ data: patchedData, clonable, expires }, { transaction }),
+      resource.update({ data: patchedData, clonable, expires, seed, ephemeral }, { transaction }),
     ];
 
     if (definition.history) {

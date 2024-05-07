@@ -4,14 +4,19 @@ import { handleValidatorResult, type PreparedAsset } from '@appsemble/node-utils
 import { type App, type ResourceDefinition, type Resource as ResourceType } from '@appsemble/types';
 import { addMilliseconds, isPast, parseISO } from 'date-fns';
 import { type PreValidatePropertyFunction, ValidationError, Validator } from 'jsonschema';
-import { type Context } from 'koa';
+import {
+  type Context,
+  type DefaultContext,
+  type DefaultState,
+  type ParameterizedContext,
+} from 'koa';
 import { type File } from 'koas-body-parser';
 import parseDuration from 'parse-duration';
 
 import { preProcessCSV } from './csv.js';
 import { throwKoaError } from './koa.js';
 
-function stripResource({
+export function stripResource({
   $author,
   $created,
   $editor,
@@ -79,22 +84,25 @@ export function getResourceDefinition(
  *   3. preValidateProperty function used for reconstructing resources from a CSV file.
  */
 export function extractResourceBody(
-  ctx: Context,
+  ctx: Context | ParameterizedContext<DefaultState, DefaultContext, any>,
 ): [Record<string, unknown> | Record<string, unknown>[], File[], PreValidatePropertyFunction] {
   let body: ResourceType | ResourceType[];
   let assets: File[];
   let preValidateProperty: PreValidatePropertyFunction;
 
-  if (ctx.is('multipart/form-data')) {
+  if (ctx?.request?.body && ctx.is('multipart/form-data')) {
     ({ assets = [], resource: body } = ctx.request.body);
     if (Array.isArray(body) && body.length === 1) {
       [body] = body;
     }
-  } else {
+  } else if (ctx?.request?.body) {
     if (ctx.is('text/csv')) {
       preValidateProperty = preProcessCSV;
     }
     ({ body } = ctx.request);
+    assets = [];
+  } else {
+    ({ body } = ctx);
     assets = [];
   }
 
@@ -122,7 +130,7 @@ export function extractResourceBody(
  *   3. Asset IDs from the `knownAssetIds` array which are no longer used.
  */
 export function processResourceBody(
-  ctx: Context,
+  ctx: Context | ParameterizedContext<DefaultState, DefaultContext, any>,
   definition: ResourceDefinition,
   knownAssetIds: string[] = [],
   knownExpires?: Date,
@@ -161,7 +169,7 @@ export function processResourceBody(
 
   const patchedSchema = {
     ...definition.schema,
-    required: ctx.request.method === 'PATCH' ? [] : definition.schema.required,
+    required: ctx.request?.method === 'PATCH' ? [] : definition.schema.required,
     properties: {
       ...definition.schema.properties,
       id: { type: 'integer' },

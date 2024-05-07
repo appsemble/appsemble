@@ -3,6 +3,7 @@ import {
   handleValidatorResult,
   type Options,
   type QueryParams,
+  stripResource,
   throwKoaError,
 } from '@appsemble/node-utils';
 import {
@@ -34,16 +35,6 @@ import {
   ResourceSubscription,
   User,
 } from '../models/index.js';
-
-function stripResource({
-  $author,
-  $created,
-  $editor,
-  $updated,
-  ...data
-}: ResourceType): Record<string, unknown> {
-  return data;
-}
 
 export function renameOData(name: string): string {
   switch (name) {
