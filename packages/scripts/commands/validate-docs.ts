@@ -9,14 +9,16 @@ import {
   type BlockDefinition,
   type ControllerDefinition,
   type CronDefinition,
+  type FlowPageDefinition,
   type LinkActionDefinition,
   type ResourceActionDefinition,
   type ResourceDefinition,
   type UserPropertyDefinition,
 } from '@appsemble/types';
+import { allActions } from '@appsemble/utils';
 import axios from 'axios';
 import FormData from 'form-data';
-import { type Code, type Root } from 'mdast';
+import { type Code, type Heading, type Root, type Text } from 'mdast';
 import remarkParse from 'remark-parse';
 import { unified } from 'unified';
 import { visit } from 'unist-util-visit';
@@ -51,6 +53,7 @@ const snippetTypes = {
   pages: 'pages-snippet',
   block: 'block-snippet',
   blocks: 'blocks-snippet',
+  'flow-blocks': 'flow-blocks-snippet',
   cron: 'cron-snippet',
   controller: 'controller-snippet',
   security: 'security-snippet',
@@ -122,6 +125,53 @@ function appendResourcesToTemplate(
   }
 
   return updatedTemplate;
+}
+
+function appendFlowBlockToTemplate(block: BlockDefinition, template: AppDefinition): AppDefinition {
+  const supportPageName = 'Flow Blocks Container';
+  if (!template.pages.some((page) => page.name === supportPageName)) {
+    template.pages.push({
+      name: supportPageName,
+      type: 'flow',
+      actions: {
+        onFlowCancel: {
+          type: 'noop',
+        },
+        onFlowFinish: {
+          type: 'noop',
+        },
+      },
+      steps: [
+        {
+          name: 'Home',
+          blocks: [
+            {
+              type: 'action-button',
+              version: block.version,
+              parameters: {
+                icon: 'arrow-left',
+              },
+              actions: {
+                onClick: {
+                  type: 'flow.next',
+                },
+              },
+            },
+          ],
+        },
+        {
+          name: 'Second Step',
+          blocks: [],
+        },
+      ],
+    } as FlowPageDefinition);
+  }
+
+  (template.pages as FlowPageDefinition[])
+    .find((page) => page.name === supportPageName)
+    .steps[1].blocks.push(block);
+
+  return template;
 }
 
 function appendBlockToTemplate(block: BlockDefinition, template: AppDefinition): AppDefinition {
@@ -372,6 +422,11 @@ async function accumulateAppDefinitions(docsPath: string): Promise<AppDefinition
             template = appendBlockToTemplate(block, template);
           }
           break;
+        case 'flow-blocks':
+          for (const block of parsed.blocks) {
+            template = appendFlowBlockToTemplate(block, template);
+          }
+          break;
         case 'cron':
           template = appendCronToTemplate(parsed.cron, template);
           break;
@@ -473,14 +528,66 @@ async function validateAppDefinitions(
   }
 }
 
+async function validateActionDocs(docsPath: string): Promise<void> {
+  const documentedActions = new Set<string>();
+  await opendirSafe(
+    docsPath,
+    async (path, stats) => {
+      if (!stats.isFile() || !/^.*\.(md|mdx)$/.test(path)) {
+        return;
+      }
+      const file = await readFile(path, 'utf8');
+      const ast = unified().use(remarkParse).parse(file) as Root;
+
+      logger.verbose(`Validating actions in ${path} ⚙️`);
+      // Interpret headings h3 and h4 as headings for an action
+      visit(ast, 'heading', (node: Heading) => {
+        // TODO: reimplement another way - feels too hacky
+        if (![3, 4].includes(node.depth)) {
+          return;
+        }
+        const action = node.children
+          .filter<Text>((child): child is Text => child.type === 'text')
+          .map((child) => child.value.trim())[0];
+        if (allActions.has(action)) {
+          documentedActions.add(action);
+          logger.verbose(`"${action}" is documented`);
+        }
+      });
+    },
+    { recursive: true },
+  );
+  const undocumentedActions = [...allActions].filter((action) => !documentedActions.has(action));
+  if (undocumentedActions.length > 0) {
+    logger.error('The following actions are not documented:');
+    for (const action of undocumentedActions) {
+      logger.error(action);
+    }
+    throw new AppsembleError('Docs validation failed');
+  }
+}
+
 export async function handler({ organization, remote }: Args): Promise<void> {
   await authenticate(remote, 'apps:write', '');
 
   logger.info('Validating docs directory');
 
   const docsPath = join(process.cwd(), 'packages', 'studio', 'pages', 'docs', 'docs');
+  const actionDocsPath = join(
+    process.cwd(),
+    'packages',
+    'studio',
+    'pages',
+    'docs',
+    'actions',
+    'docs',
+  );
+
+  await validateActionDocs(actionDocsPath);
 
   const appDefinitionsWithLocations = await accumulateAppDefinitions(docsPath);
+  const actionAppDefinitionsWithLocations = await accumulateAppDefinitions(actionDocsPath);
 
   await validateAppDefinitions(appDefinitionsWithLocations, organization, remote);
+  await validateAppDefinitions(actionAppDefinitionsWithLocations, organization, remote);
 }

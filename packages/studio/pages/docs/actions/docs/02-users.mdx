@@ -1,3 +1,5 @@
+import { ClientServerActionSupport as Side } from '../components/ClientServerActionSupport.tsx';
+
 # User
 
 ## Introduction
@@ -5,15 +7,26 @@
 User actions allow you to manage users for your app. User actions are client side actions i.e. these
 actions are not implemented for the server side. Supported User actions are as below.
 
-- `user.register`
-- `user.login`
-- `user.update`
-- `user.logout`
-- `user.query`
-- `user.remove`
-- `user.create`
+- [`user.register`](#userregister)
+- [`user.login`](#userlogin)
+- [`user.update`](#userupdate)
+- [`user.logout`](#userlogout)
+- [`user.query`](#userquery)
+- [`user.remove`](#userremove)
+- [`user.create`](#usercreate)
 
-### user.register
+To use User actions, you must have a security definition in your app:
+
+```yaml validate security-snippet
+security:
+  default:
+    role: User
+    policy: everyone
+  roles:
+    User: {}
+```
+
+### user.register<Side name="user.register" />
 
 This action allows the user to register a new account using an email address and a password and does
 nothing if the user is already logged in. Supported fields for this action are `type`, `email`,
@@ -23,21 +36,21 @@ login the user after register (default value is true), picture is the profile pi
 and properties is used to denote any custom properties associated with user. All the values for
 properties are converted into strings. Here is an example of this action in use.
 
-```yaml validate
+```yaml validate blocks-snippet
 blocks:
   - type: form
-    version: *block-version
+    version: 0.28.7
     parameters:
       fields:
         - name: username
           label: { translate: username }
           type: string
-          requirements: { required: true }
+          requirements: [ required: true ]
         - name: email
           label: { translate: email }
           type: string
           format: email
-          requirements: { required: true }
+          requirements: [ required: true ]
         - name: password
           label: { translate: password }
           type: string
@@ -59,24 +72,24 @@ blocks:
           type: log
 ```
 
-### user.login
+### user.login<Side name="user.login" />
 
 This action allows the user to login using an email address and a password and does nothing if the
 user is already logged in. Supported fields for this action are `type`, `email` and `password`.
 Email and password are similar to those used at the time of registering. Here is an example of this
 action in use.
 
-```yaml validate
+```yaml validate blocks-snippet
 blocks:
   - type: form
-    version: *block-version
+    version: 0.28.7
     parameters:
       fields:
         - name: email
           label: { translate: email }
           type: string
           format: email
-          requirements: { required: true }
+          requirements: [ required: true ]
         - name: password
           label: { translate: password }
           type: string
@@ -94,7 +107,7 @@ blocks:
           to: Home Page
 ```
 
-### user.update
+### user.update<Side name="user.update" />
 
 This action allows the user to update their existing account and does nothing if the user isn’t
 logged in. Supported fields for this action are `type`, `email`, `password`, `displayName`,
@@ -103,50 +116,46 @@ of the user, picture is the profile picture of the user and properties is used t
 properties associated with the user. All the values for properties are converted into strings. Here
 is an example of this action in use.
 
-```yaml validate
+```yaml validate blocks-snippet
 blocks:
   - type: form
-    version: *block-version
+    version: 0.28.7
     parameters:
       fields:
         - name: email
           label: { translate: email }
           type: string
           format: email
-        - name: displayName
+        - name: username
           label: { translate: username }
           type: string
-        - name: profilePicture
-          label: { translate: profilePicture }
-          type: file
     actions:
       onSubmit:
         type: user.update
-        email: { prop: email }
-        displayName: { prop: username }
-        picture: { prop: picture }
+        currentEmail: { user: email }
+        newEmail: { prop: email }
+        name: { prop: username }
 ```
 
-### user.logout
+### user.logout<Side name="user.logout" />
 
 This action allow the users to logout of the application. Supported field for this action is `type`,
 which is `user.logout` in this case. Here is an example of this action in use.
 
-```yaml validate
+```yaml validate blocks-snippet
 blocks:
   - type: action-button
-    version: *block-version
+    version: 0.28.7
     parameters:
       icon: right-from-bracket
     actions:
       onClick:
         type: user.logout
         onSuccess:
-          type: Link
-          to: Login Page
+          type: noop
 ```
 
-### user.query
+### user.query<Side name="user.query" />
 
 This action allows the user to fetch a list of app accounts by their roles and does nothing if the
 user is not logged in. Supported fields for this action are `type` and `roles`. Type is `user.query`
@@ -154,10 +163,10 @@ and roles is a remapper that represents the roles of accounts that would be fetc
 fields is required to use this action. Below is an example of this action being used to fetch user
 data.
 
-```yaml validate
+```yaml validate blocks-snippet
 blocks:
   - type: data-loader
-    version: *block-version
+    version: 0.28.7
     actions:
       onLoad:
         type: user.query
@@ -166,7 +175,7 @@ blocks:
           type: log
 ```
 
-### user.remove
+### user.remove<Side name="user.remove" />
 
 This action allows the user to delete an existing account and does nothing if the user is not logged
 in. Supported fields for this action are `type` and `email`. Type is `user.remove` and `email` is a
@@ -175,21 +184,21 @@ this action. Usage of this action requires the `AccountManager` level permission
 about the Permissions and their respective roles please check [here](/docs/03-guide/organizations).
 Below is an example of how this action can be used to delete a user with a provided email address.
 
-```yaml validate
+```yaml validate blocks-snippet
 blocks:
   - type: action-button
-    version: *block-version
+    version: 0.28.7
     parameters:
-      - icon: trash
+      icon: trash
     actions:
       onClick:
         type: user.remove
         email: { prop: email }
         onSuccess:
-          - type: noop
+          type: noop
 ```
 
-### user.create
+### user.create<Side name="user.create" />
 
 This action allows the user to create a new account for the app using an email and password and does
 nothing if the user is logged in. Supported fields for this action are `type`, `email`, `name`,
@@ -202,10 +211,10 @@ Appsemble and access other apps. Similar to `user.remove` usage of this action r
 `AccountManager` level of permissions. Fields `email` and `password` are required. Below is an
 example of this action being used in an app.
 
-```yaml validate
+```yaml validate blocks-snippet
 blocks:
   - type: form
-    version: *block-version
+    version: 0.28.7
     parameters:
       fields:
         - name: name
@@ -213,16 +222,18 @@ blocks:
           type: string
         - name: email
           label: Email
+          type: string
           format: email
           requirements:
             - required: true
               errorMessage: Please enter a valid email
         - name: password
           label: Password
+          type: string
           format: password
           requirements:
             - minLength: 8
-              required: true
+            - required: true
     actions:
       onSubmit:
         type: user.create

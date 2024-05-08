@@ -18,7 +18,7 @@ import { getAppBlocks, type IdentifiableBlock, normalizeBlockName } from './bloc
 import { has } from './has.js';
 import { partialNormalized } from './index.js';
 import { iterApp, type Prefix } from './iterApp.js';
-import { serverActions } from './serverActions.js';
+import { type ServerActionName, serverActions } from './serverActions.js';
 
 type Report = (instance: unknown, message: string, path: (number | string)[]) => void;
 
@@ -580,7 +580,7 @@ function validateActions(definition: AppDefinition, report: Report): void {
 
   iterApp(definition, {
     onAction(action, path) {
-      if (path[0] === 'cron' && !serverActions.has(action.type)) {
+      if (path[0] === 'cron' && !serverActions.has(action.type as ServerActionName)) {
         report(action.type, 'action type is not supported for cron jobs', [...path, 'type']);
         return;
       }
@@ -597,13 +597,13 @@ function validateActions(definition: AppDefinition, report: Report): void {
       if (
         ['user.register', 'user.create', 'user.update'].includes(action.type) &&
         Object.values(
-          (action as UserCreateAction | UserRegisterAction | UserUpdateAction).properties,
+          (action as UserCreateAction | UserRegisterAction | UserUpdateAction).properties ?? {},
         )[0] &&
         definition.users?.properties
       ) {
         for (const propertyName of Object.keys(
           Object.values(
-            (action as UserCreateAction | UserRegisterAction | UserUpdateAction).properties,
+            (action as UserCreateAction | UserRegisterAction | UserUpdateAction).properties ?? {},
           )[0],
         )) {
           if (!definition.users?.properties[propertyName]) {

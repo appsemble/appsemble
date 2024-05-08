@@ -1,3 +1,5 @@
+import { ClientServerActionSupport as Side } from '../components/ClientServerActionSupport.tsx';
+
 # Team
 
 ## Introduction
@@ -7,12 +9,12 @@ more about the teams visit [this page](../../docs/03-guide/teams.md). Team actio
 actions, i.e. these actions are not implemented for the server side. Supported team actions are as
 follow.
 
-- `team.invite`
-- `team.join`
-- `team.list`
-- `team.members`
+- [`team.invite`](#teaminvite)
+- [`team.join`](#teamjoin)
+- [`team.list`](#teamlist)
+- [`team.members`](#teammembers)
 
-### team.invite
+### team.invite<Side name="team.invite" />
 
 This action allows a user with sufficient permissions to invite users to a team. Supported fields
 for this action are `type`, `id`, `email`, and `role`. Id is the id of the team to which the user
@@ -20,62 +22,65 @@ will be invited, email is the email of the user to be invited to join the team a
 for which the user is being invited. Default value for role is member. Type is the only required
 value for using this action. Here is an example of how you can use this action.
 
-```yaml validate
+```yaml validate blocks-snippet
 blocks:
   - type: form
-    version:  *block-version
+    version:  0.28.7
     parameters:
       fields:
         - name: email
           label: { translate: email }
           type: string
           format: email
-          requirements: { required: true }
+          requirements: [ required: true ]
         - name: id
           type: hidden
     actions:
       onSubmit:
-        type: user.invite
+        type: team.invite
         onSuccess:
           type: log
 ```
 
-### team.join
+### team.join<Side name="team.join" />
 
 This action allows a user to join a team. Supported field for this action is `type`, which is
 `team.join` in this case. It returns an error if the user tries to join a team that they are already
 a member of, or if the team security is defined as `invite`. Here is an example of how you can use
 this action to allow users to join a team selected by them.
 
-```yaml validate
+```yaml validate blocks-snippet
 blocks:
   - type: form
-    version: *block-version
+    version: 0.28.7
     parameters:
       fields:
         - name: team
           label: { translate: team }
-          requirements: { required: true }
+          requirements: [ required: true ]
           type: enum
-          enum: ['team1', 'team2']
-    onSubmit:
-      type: team.join
-      remap: { prop: team }
-      onSuccess:
-        type: log
+          enum:
+            - value: team1
+            - value: team2
+    actions:
+      onSubmit:
+        type: team.join
+        remapBefore: { prop: team }
+        onSuccess:
+          type: log
 ```
 
-### team.list
+### team.list<Side name="team.list" />
 
 This action allows to get a list of all of the teams in an app. Supported field for this action is
 `type`, which is `team.list` in this case. An example use case of this action is providing users of
 your app the option to choose the team they want to join. Here is an example of previously mentioned
 use case of the action.
 
-```yaml
+```yaml validate blocks-snippet
 blocks:
   - type: form
-    version: *block-version
+    version: 0.28.7
     parameters:
       fields:
         - name: team
@@ -85,8 +90,8 @@ blocks:
     actions:
       getTeams:
         type: team.list
-        - array.map:
-            remapAfter:
+        remapAfter:
+          - array.map:
               object.from:
                 label:
                   prop: name
@@ -94,7 +99,7 @@ blocks:
                   prop: id
 ```
 
-### team.members
+### team.members<Side name="team.members" />
 
 This action gets a list of a team’s members. Supported fields for this action are `type` and `id`.
 Id is the ID of a specific team to get the members from and the type is `team.members`. This can be
@@ -102,10 +107,10 @@ particularly helpful in keeping a record of roles assigned to various users. Bot
 required. Here is an example of this action being used to fetch all the employees of a particular
 department in a company.
 
-```yaml validate
+```yaml validate blocks-snippet
 blocks:
   - type: data-loader
-    version: *block-version
+    version: 0.28.7
     actions:
       onLoad:
         type: team.members

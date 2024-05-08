@@ -1,3 +1,5 @@
+import { ClientServerActionSupport as Side } from '../components/ClientServerActionSupport.tsx';
+
 # Storage
 
 ## Introduction
@@ -13,14 +15,14 @@ great choice for storing data that is required for a longer time. Storage action
 actions i.e. they are not implemented for the server side. To know more about the storage API visit
 this [page](/docs/03-guide/storage). Supported storage actions are as below:
 
-- `storage.read`
-- `storage.write`
-- `storage.append`
-- `storage.subtract`
-- `storage.update`
-- `storage.delete`
+- [`storage.read`](#storageread)
+- [`storage.write`](#storagewrite)
+- [`storage.append`](#storageappend)
+- [`storage.subtract`](#storagesubtract)
+- [`storage.update`](#storageupdate)
+- [`storage.delete`](#storagedelete)
 
-### storage.read
+### storage.read<Side name="storage.read" />
 
 This action can be used to read data from indexedDB, localStorage, sessionStorage, and appStorage.
 Usage of this action requires the `key` and `type` fields. Supported fields for the usage of the
@@ -29,10 +31,10 @@ action are `type`, `key` and `storage`. Key is used to fetch the data from the s
 storage key is `indexedDb`. Here’s an example of how you can use this action to read data with key
 poolData from sessionStorage.
 
-```yaml validate
+```yaml validate blocks-snippet
 blocks:
   - type: data-loader
-    version: *blocks-version
+    version: 0.28.7
     actions:
       onLoad:
         type: storage.read
@@ -42,7 +44,7 @@ blocks:
           type: log
 ```
 
-### storage.write
+### storage.write<Side name="storage.write" />
 
 This action is used to write data to indexedDB, localStorage, sessionStorage, and appStorage. Usage
 of this action requires the `key`, `value` and `type` fields. Supported fields for the usage of the
@@ -51,16 +53,16 @@ storage, type is `storage.write` and storage is used to identify the type of sto
 value for the storage key is `indexedDb`. Here’s an example of how you can use this action to write
 data.
 
-```yaml validate
+```yaml validate blocks-snippet
 blocks:
   - type: form
-    version: *blocks-version
+    version: 0.28.7
     parameters:
       fields:
         - name: name
           label: ''
           type: string
-          requirements: { required: true }
+          requirements: [ required: true ]
     actions:
       onSubmit:
         type: storage.write
@@ -69,7 +71,7 @@ blocks:
         storage: localStorage
 ```
 
-### storage.append
+### storage.append<Side name="storage.append" />
 
 This action is used to append data to an existing array in storage. If the storage entry is a single
 object, it turns it into an array to append the data on. Supported fields for the usage of the
@@ -78,20 +80,20 @@ array in storage, type is `storage.append` and storage is used to identify the t
 use. Default value for the storage key is `indexedDb`. Here’s an example of how you can use this
 action to write data.
 
-```yaml validate
+```yaml validate blocks-snippet
 blocks:
   - type: form
-    version: *blocks-version
+    version: 0.28.7
     parameters:
       fields:
         - name: fullName
           label: { translate: fullName }
           type: string
-          requirements: { required: true }
+          requirements: [ required: true ]
         - name: birthDate
           label: { translate: birthDate }
           type: date
-          requirements: { required: true }
+          requirements: [ required: true ]
     actions:
       onSubmit:
         type: storage.append
@@ -103,7 +105,7 @@ blocks:
             fullName: { prop: fullName }
 ```
 
-### storage.subtract
+### storage.subtract<Side name="storage.subtract" />
 
 This action is used to subtract the last item from a storage entry. If the entry consists of only
 one item, the value is turned into a singular object. If the entry is a single item, the entry is
@@ -113,10 +115,10 @@ storage, type is `storage.subtract` and storage is used to identify the type of 
 Default value for the storage key is `indexedDb`. Here’s an example of how you can use this action
 to subtract an entry of data.
 
-```yaml validate
+```yaml validate blocks-snippet
 blocks:
   - type: action-button
-    version: *blocks-version
+    version: 0.28.7
     parameters:
       icon: minus
     actions:
@@ -126,7 +128,7 @@ blocks:
         storage: appStorage
 ```
 
-### storage.update
+### storage.update<Side name="storage.update" />
 
 This action is used to update an existing item in storage, or update an item inside a stored array.
 Supported fields for the usage of the action are `type`, `key`, `item`, `value` and `storage`. Item
@@ -135,10 +137,10 @@ storage, type is `storage.update` and storage is used to identify the type of st
 Default value for the storage key is `indexedDb`. Here’s an example of how you can use this action
 to update the data in storage.
 
-```yaml validate
+```yaml validate blocks-snippet
 blocks:
   - type: form
-    version: *blocks-version
+    version: 0.28.7
     parameters:
       fields:
         - name: fullName
@@ -161,7 +163,7 @@ blocks:
           type: log
 ```
 
-### storage.delete
+### storage.delete<Side name="storage.delete" />
 
 This action is used to delete the item that is stored at the specified key. Usage of this action
 requires the `key` and `type` fields. Supported fields for the usage of the action are `type`, `key`
@@ -169,10 +171,10 @@ and `storage`. Key is used to delete the data from the storage, type is `storage
 is used to identify the type of storage to use. Default value for the storage key is `indexedDb`.
 Here’s an example of how you can use this in action to delete the data in storage.
 
-```yaml validate
+```yaml validate blocks-snippet
 blocks:
   - type: action-button
-    version: *blocks-version
+    version: 0.28.7
     parameters:
       icon: delete
     actions:

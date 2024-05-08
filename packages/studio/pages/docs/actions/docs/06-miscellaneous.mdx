@@ -1,3 +1,5 @@
+import { ClientServerActionSupport as Side } from '../components/ClientServerActionSupport.tsx';
+
 # Miscellaneous
 
 ## Introduction
@@ -7,48 +9,45 @@ request to the Appsemble API or some other external API, you can use the `reques
 Similarly, to make an email, you can use the `email` action. Following is a list of the
 miscellaneous supported actions.
 
-- `analytics`
-- `condition`
-- `controller`
-- `download`
-- `dialog`
-- `each`
-- `event`
-- `email`
-- `log`
-- `match`
-- `message`
-- `noop`
-- `notify`
-- `request`
-- `share`
-- `static`
-- `throw`
+- [`analytics`](#analytics)
+- [`condition`](#condition)
+- [`controller`](#controller)
+- [`download`](#download)
+- [`dialog`](#dialog)
+- [`each`](#each)
+- [`event`](#event)
+- [`email`](#email)
+- [`log`](#log)
+- [`match`](#match)
+- [`message`](#message)
+- [`noop`](#noop)
+- [`notify`](#notify)
+- [`request`](#request)
+- [`share`](#share)
+- [`static`](#static)
+- [`throw`](#throw)
 
-### analytics
+### analytics<Side name="analytics" />
 
 This action sends a Google Analytics event and returns the input data. Supported fields for this
 action are `type`, `target` and `config`. Type is `analytics` in this case, target is the name of
 the analytics target event to send and config is a remapper whose result will be sent to Google
 Analytics as additional context. Below is an example of this action in use.
 
-```yaml validate
+```yaml validate blocks-snippet
 blocks:
-  - type: control-buttons
-    version: *blocks-version
-    parameters:
-      back:
-        icon: angle-left
-      forward: false
+  - type: data-loader
+    version: 0.28.7
     actions:
-      onBack:
-        type: flow.back
+      onLoad:
+        type: analytics
+        target: page_view
         onSuccess:
-          type: analytics
-          target: page_view
+          type: message
+          body: { root }
 ```
 
-### condition
+### condition<Side name="condition" />
 
 This action runs another action if a certain condition is met. This action is supported for the
 client side as well as the server side. Supported fields for this action are `type`, `if`, `then`
@@ -56,17 +55,16 @@ and `else`. If is a remapper to determine the condition to check. If this yields
 `then` action is called, otherwise the `else` action is called. Fields `type` and `if` are required.
 Here is how you can use this action in your app.
 
-```yaml validate
+```yaml validate blocks-snippet
 blocks:
   - type: form
-    version: *blocks-version
+    version: 0.28.7
     parameters:
-      previous: true
       fields:
         - type: radio
           name: triedAppsemble
           label: { translate: triedAppsemble }
-          requirements: { required: true }
+          requirements: [ required: true ]
           options:
             - value: true
               label: { translate: yes }
@@ -77,16 +75,14 @@ blocks:
         type: condition
         if: { prop: triedAppsemble }
         then:
-          type: flow.to
-          step: Appsemble Ratings
+          type: message
+          body: Welcome back
         else:
-          type: flow.to
-          step: Appsemble Feedback
-      onPrevious:
-        type: flow.back
+          type: message
+          body: Welcome to Appsemble
 ```
 
-### controller
+### controller<Side name="controller" />
 
 This action is used to specify a custom function from a JavaScript file to be used as the controller
 to handle the action. This can help the user to overcome the limitations of `yaml` with logic
@@ -95,10 +91,10 @@ handler is the name of the function in the controller that will handle the actio
 fields are required. Here is an example of this action being used in the
 [controller](http://appsemble.app/apps/1030) app.
 
-```yaml validate
+```yaml validate blocks-snippet
 blocks:
   - type: form
-    version: 0.24.11
+    version: 0.28.7
     parameters:
       fields:
         - name: a
@@ -119,17 +115,17 @@ blocks:
         handler: calculate
 ```
 
-### download
+### download<Side name="download" />
 
 This action is used to download data as a file. Only available for the client side, supported fields
 for this action are `type` and `filename`. Both fields are required, type is `download` in this case
 whereas `filename` is the filename to save the file as. This must include a file extension. Here is
 an example of this action being used.
 
-```yaml validate
+```yaml validate blocks-snippet
 blocks:
   - type: table
-    version: *blocks-version
+    version: 0.28.7
     parameters:
       fields:
         - value: { prop: date }
@@ -148,7 +144,7 @@ blocks:
             description: "Test description"
 ```
 
-### dialog
+### dialog<Side name="dialog" />
 
 This action opens a pop-up dialog that can display blocks temporarily. Dialogs can be closed by
 calling the `dialog.ok` or `dialog.error`. Users can still manually close dialogs, which should be
@@ -160,61 +156,61 @@ of it or on the close button, fullscreen denotes whether the dialog should be di
 as if it’s a new page, or as a pop-up, blocks is a list of blocks to display in the dialog. Fields
 `type` and `blocks` are required. Following is an example of how to use this action.
 
-```yaml validate
+```yaml validate blocks-snippet
 blocks:
   - type: table
-    version: *blocks-version
+    version: 0.28.7
     parameters:
       fields:
         - value: { prop: title }
           label: { translate: title }
     events:
       listen:
-        data: notes
-        actions:
-          onClick:
-            type: dialog
-            title: { translate: editNote }
-            closable: true
-            blocks:
-              - type: form
-                version: 0.22.10
-                parameters:
-                  fields:
-                    - type: string
-                      name: title
-                      label: { translate: title }
-                      requirements:
-                        - required: true
-                    - type: string
-                      name: body
-                      label: { translate: body }
-                      multiline: true
-                actions:
-                  onSubmit:
-                    type: resource.update
-                    resource: note
-                    onSuccess:
-                      type: dialog.ok
-            fullscreen: false
+        data: refreshNotes
+    actions:
+      onClick:
+        type: dialog
+        title: { translate: editNote }
+        closable: true
+        blocks:
+          - type: form
+            version: 0.28.7
+            parameters:
+              fields:
+                - type: string
+                  name: title
+                  label: { translate: title }
+                  requirements:
+                    - required: true
+                - type: string
+                  name: body
+                  label: { translate: body }
+                  multiline: true
+            actions:
+              onSubmit:
+                type: resource.update
+                resource: note
+                onSuccess:
+                  type: dialog.ok
+        fullscreen: false
 ```
 
-#### dialog.ok
+#### dialog.ok<Side name="dialog.ok" />
 
 This action closes an open dialog. Type for this action is `dialog.ok`. Here is an example of this
 action in use.
 
-```yaml validate
+```yaml validate blocks-snippet
 blocks:
   - type: form
-    version: *blocks-version
+    version: 0.28.7
     parameters:
       fields:
         - type: string
           name: title
           label: { translate: title }
           requirements:
-            required: true
+            - required: true
         - type: string
           name: body
           label: { translate: body }
@@ -227,23 +223,23 @@ blocks:
           type: dialog.ok
 ```
 
-#### dialog.error
+#### dialog.error<Side name="dialog.error" />
 
 This action also closes an open dialog but the dialog action that opened the dialog will be rejected
 with the data passed to this action. Type for this action is `dialog.error`. Here is an example of
 this action being used.
 
-```yaml validate
+```yaml validate blocks-snippet
 blocks:
   - type: form
-    version: *blocks-version
+    version: 0.28.7
     parameters:
       fields:
         - type: string
           name: title
           label: { translate: title }
           requirements:
-            required: true
+            - required: true
         - type: string
           name: body
           label: { translate: body }
@@ -258,7 +254,7 @@ blocks:
           type: dialog.error
 ```
 
-### each
+### each<Side name="each" />
 
 This action is used to run an action for each entry in an array. The actions are run in parallel. If
 the input is not an array, the action will be applied to the input instead. This action is
@@ -267,21 +263,30 @@ implemented for server side as well as client side. Supported fields for this ac
 parallel and do is the action to be called for each item in the input array. Below is an example of
 this action in use.
 
-```yaml validate
+```yaml validate blocks-snippet
 blocks:
-  - type: button-list
-    version: *blocks-version
+  - type: action-button
+    version: 0.28.7
     parameters:
       icon: trash
-    onClick:
-      type: each
-      do:
-        type: resource.delete
-        resource: todo
-      serial: true
+    actions:
+      onClick:
+        type: static
+        value: [1, 2, 3]
+        onSuccess:
+          type: each
+          do:
+            type: message
+            dismissable: true
+            body:
+              string.format:
+                template: 'Message {num}'
+                values:
+                  num: { root }
+          serial: true
 ```
 
-### event
+### event<Side name="event" />
 
 This action allows for other blocks to emit data upon triggering the action. This can be used to
 make blocks interact with each other, such as triggering the `data-loader` block to refresh itself
@@ -291,10 +296,10 @@ for the client side, this action supports `type`, `event` and `waitFor` fields. 
 field is specified, the action will wait for this event to have been emitted and responds with its
 data. Here is how you can use this action.
 
-```yaml validate
+```yaml validate blocks-snippet
 blocks:
   - type: button-list
-    version: 0.22.10
+    version: 0.28.7
     parameters:
       buttons:
         - label: { translate: cancel }
@@ -306,17 +311,17 @@ blocks:
     actions:
       cancelDialog:
         type: dialog.ok
-        removeItem:
-          type: resource.delete
-          resource: note
+      removeItem:
+        type: resource.delete
+        resource: note
+        onSuccess:
+          type: event
+          event: refreshNotes
           onSuccess:
-            type: event
-            event: refreshNotes
-            onSuccess:
-              type: dialog.ok
+            type: dialog.ok
 ```
 
-### email
+### email<Side name="email" />
 
 The email action can be used to send emails via the Appsemble server. If `to`, `cc`, and `bcc` all
 end up being empty, no emails will be sent but the action will still continue as normal. Supported
@@ -343,10 +348,10 @@ The remapper must resolve to an object containing the following properties:
 If the attachment is a string, it will be treated as the target. Following is an example of email
 action in use.
 
-```yaml validate
+```yaml validate blocks-snippet
 blocks:
   - type: form
-    version: *blocks-version
+    version: 0.28.7
     parameters:
       fields:
         - type: string
@@ -355,6 +360,12 @@ blocks:
           label: { translate: email }
           requirements:
             - required: true
+        - type: string
+          name: subject
+          label: { translate: subject }
+          requirements:
+            - required: true
+            - minLength: 2
         - type: string
           multiline: true
           name: body
@@ -365,9 +376,10 @@ blocks:
         from: { prop: email }
         to: test@example.com
         body: { prop: body }
+        subject: { prop: subject }
 ```
 
-### log
+### log<Side name="log" />
 
 This action is used to output the result of the action into the console, this is mostly useful for
 debugging during app development. Available for both client side and server side, this action
@@ -375,10 +387,10 @@ supports `type` and `level` fields. Only required field is `type`. Level is the 
 which to log and defaults to `info`. Available options for level are `info`, `error` and `warn`.
 Below is an example of this action in use.
 
-```yaml validate
+```yaml validate blocks-snippet
 blocks:
   - type: form
-    version: *blocks-version
+    version: 0.28.7
     parameters:
       fields:
         - type: string
@@ -401,7 +413,7 @@ blocks:
           level: error
 ```
 
-### match
+### match<Side name="match" />
 
 This action runs another action if one of the cases is true, only the first case that equals true is
 called. Available only for client side, this action supports `type` and `match` fields. Both of the
@@ -409,10 +421,10 @@ fields are required to use this action. Match is array of objects, each object h
 properties, `case` and `action`. Case is the case to be matched and action is the action to be
 executed when the case is thruthy. The following is how you can use this action in your app.
 
-```yaml validate
+```yaml validate blocks-snippet
 blocks:
   - type: form
-    version: *blocks-version
+    version: 0.28.7
     parameters:
       fields:
         - type: enum
@@ -438,7 +450,7 @@ blocks:
               level: warn
 ```
 
-### message
+### message<Side name="message" />
 
 This action is used to display a message to the user, this is useful in combination with action
 chaining to notify users they have performed a certain action. Available only for client side, this
@@ -450,10 +462,10 @@ Dismissable is a boolean value indicating whether the user is able to dismiss th
 and timeout is the time in milliseconds how long the message should be visible. Fields `type` and
 `body` are required. Below is an example of this action being used in an app.
 
-```yaml validate
+```yaml validate blocks-snippet
 blocks:
   - type: form
-    version: *blocks-version
+    version: 0.28.7
     parameters:
       fields:
         - type: date
@@ -473,17 +485,17 @@ blocks:
               date: { prop: formattedDate }
 ```
 
-### noop
+### noop<Side name="noop" />
 
 This action is used to do nothing when this action is triggered, this is the default action for
 block actions that are not required. The name of the action corresponds to no-operation. This action
 returns the data passed to it. Implemented for both server and client side, this action only
 supports a single field `type`. The following is an example of this action in use.
 
-```yaml validate
+```yaml validate blocks-snippet
 blocks:
   - type: data-loader
-    version: *blocks-version
+    version: 0.28.7
     actions:
       onLoad:
         type: resource.query
@@ -492,7 +504,7 @@ blocks:
           type: noop
 ```
 
-### notify
+### notify<Side name="notify" />
 
 This action is used to send notifications to one or all the users of an app. Implemented for both
 server and client side, this action supports `type`, `to`, `title` and `body` fields. All the fields
@@ -503,12 +515,10 @@ either a single user id or an array of user ids. Nothing is sent if the value is
 user id. Body is a remapper containing the body of the notifications. Below is how you can use this
 action in your app.
 
-```yaml validate
+```yaml validate blocks-snippet
 blocks:
   - type: data-loader
-    version: *blocks-version
-    parameters:
-      icon: bell
+    version: 0.28.7
     actions:
       onLoad:
         type: resource.query
@@ -520,7 +530,7 @@ blocks:
           body: { translate: resourceLoadedNotifyBody }
 ```
 
-### request
+### request<Side name="request" />
 
 This action performs an HTTP request. This can be used to call the Appsemble API or an external API
 in order to fetch data or send data. When sending `POST`, `PUT`, `DELETE` and `PATCH` calls the data
@@ -537,13 +547,29 @@ request body to send. Proxy is a boolean, representing whether to proxy the requ
 Appsemble server. By default requests will be proxied through the Appsemble API. This allows to
 protect user data and ensures [CORS](https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS) is
 enabled. This behavior can be disabled by setting this to `false`. If not specified, the raw input
-data is used. Schema is the name of the schema to validate against before submitting data. Below is
-an example of this action being used to make a request.
+data is used.
 
-```yaml validate
+`schema` is a JSON schema object that validates XML responses.
+**It does not validate regular JSON responses, nor the request data. This behavior may be subject to change in the future**
+
+Below is an example of this action being used to make a request.
+
+```yaml validate blocks-snippet
 blocks:
   - type: form
-    version: *blocks-version
+    version: 0.28.7
+    parameters:
+      fields:
+        - name: name
+          label: { translate: name }
+          type: string
+          requirements: [ required: true ]
+        - name: email
+          type: string
+          format: email
+          label: { translate: email }
+          requirements:
+            - required: true
     actions:
       onSubmit:
         type: request
@@ -553,20 +579,9 @@ blocks:
           object.from:
             name: { prop: name }
             email: { prop: email }
-    parameters:
-      fields:
-        - name: name
-          label: { translate: name }
-          type: string
-          requirements: { required: true }
-        - type: email
-          label: { translate: email }
-          format: email
-          requirements:
-            - required: true
 ```
 
-### share
+### share<Side name="share" />
 
 This action can be used to display a prompt that allows the user to share something with others,
 primarily via social media. Depending on whether the user’s browser supports a native share function
@@ -576,10 +591,10 @@ fields. Url is a remapper representing the url that is being shared. Similarly, 
 that represents The title that should be shared and body is the main body that should be shared.
 Field `type` is the only required field. The following is an example of this action in use.
 
-```yaml validate
+```yaml validate blocks-snippet
 blocks:
   - type: action-button
-    version: *blocks-version
+    version: 0.28.7
     parameters:
       icon: share-nodes
     actions:
@@ -591,29 +606,39 @@ blocks:
     position: top left
 ```
 
-### static
+### static<Side name="static" />
 
 This action returns static data defined in the action definition, this is useful for example for
 stubbing data. Implemented for both client and server side, this action supports `type` and `value`.
 Both of the values are required to use this action. Value is the static value to return. The
 following is an example of this action being used in an app.
 
-```yaml validate
+```yaml validate blocks-snippet
 blocks:
-  - type:
+  - type: action-button
+    version: 0.28.7
+    parameters:
+      icon: share-nodes
+    actions:
+      onClick:
+        type: static
+        value: "Hello, world"
+        onSuccess:
+          type: message
+          body: { root }
 ```
 
-### throw
+### throw<Side name="throw" />
 
 This action throws a new exception based on the data that is passed through, this can be used to
 create a custom error that ends up in the error action handler. This action is implemented for the
 server side as well as the client side. The only supported field for this action is `type`. The
-following is an example of how this action can be used.
+following is an example of how this action can be used:
 
-```yaml validate
+```yaml validate blocks-snippet
 blocks:
   - type: form
-    version: *blocks-version
+    version: 0.28.7
     parameters:
       fields:
         - type: string
@@ -631,12 +656,12 @@ blocks:
             - minLength: 8
     actions:
       onSubmit:
-        type: user.login
-        email: { prop: email }
-        password: { prop: password }
+        type: request
+        url: https://nonexistent.example.com
         onSuccess:
-          type: link
-          to: Home Page
+          type: message
+          body: { root }
         onError:
           type: throw
+          remapBefore: { prop: code } # ERR_BAD_RESPONSE
 ```
