@@ -17,7 +17,7 @@ import { Op } from 'sequelize';
 
 import { type ServerActionParameters } from './index.js';
 import { AppMember, Asset, Resource, ResourceVersion, transactional } from '../../models/index.js';
-import { parseQuery, processHooks, processReferenceHooks, validate } from '../resource.js';
+import { parseQuery, processHooks, processReferenceHooks } from '../resource.js';
 
 export async function get({
   action,
@@ -177,7 +177,7 @@ export async function create({
       AppId: app.id,
       AuthorId: user?.id,
       expires: $expires,
-      seed: !app.demoMode,
+      seed: false,
       ephemeral: app.demoMode,
     })),
   );
@@ -222,8 +222,17 @@ export async function update({
   if (!resource) {
     throw new Error('Resource not found');
   }
+  const { getAppAssets } = options;
+  const appAssets = await getAppAssets({ context, app: app.toJSON() });
+  Object.assign(context, { body: serializeResource(body) });
 
-  const updatedResource = validate(body, definition, context, false, resource.expires);
+  const [updatedResource] = processResourceBody(
+    context,
+    definition,
+    appAssets.filter((asset) => asset.resourceId === resource.id).map((asset) => asset.id),
+    resource.expires,
+    appAssets.map((asset) => ({ id: asset.id, name: asset.name })),
+  );
 
   const {
     $clonable: clonable,
@@ -269,6 +278,7 @@ export async function patch({
   context,
   data: actionData,
   internalContext,
+  options,
 }: ServerActionParameters<ResourcePatchActionDefinition>): Promise<unknown> {
   const body = (remap(action.body, actionData, internalContext) ?? actionData) as Record<
     string,
@@ -294,7 +304,18 @@ export async function patch({
     throw new Error('Resource not found');
   }
 
-  const patchedResource = validate(body, definition, context, true, resource.expires);
+  const { getAppAssets } = options;
+  const appAssets = await getAppAssets({ context, app: app.toJSON() });
+  Object.assign(context, { body: serializeResource(body) });
+
+  const [patchedResource] = processResourceBody(
+    context,
+    definition,
+    appAssets.filter((asset) => asset.resourceId === resource.id).map((asset) => asset.id),
+    resource.expires,
+    appAssets.map((asset) => ({ id: asset.id, name: asset.name })),
+    true,
+  );
 
   const {
     $clonable: clonable,

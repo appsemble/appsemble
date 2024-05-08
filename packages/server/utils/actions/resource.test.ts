@@ -399,6 +399,40 @@ describe('resource.create', () => {
     });
   });
 
+  it('should create ephemeral resources in demo apps', async () => {
+    const action: ActionDefinition = {
+      type: 'resource.create',
+      resource: 'person',
+    };
+
+    const app = await exampleApp('testorg', action);
+
+    await app.update({ demoMode: true });
+    await app.reload();
+
+    const result = await handleAction(create, {
+      app,
+      user: null,
+      action,
+      mailer,
+      data: {
+        firstName: 'Spongebob',
+        lastName: 'Squarepants',
+      },
+      options,
+      context: {} as any,
+    });
+
+    expect(result).toStrictEqual({
+      $created: '1970-01-01T00:00:00.000Z',
+      $updated: '1970-01-01T00:00:00.000Z',
+      $ephemeral: true,
+      id: 1,
+      firstName: 'Spongebob',
+      lastName: 'Squarepants',
+    });
+  });
+
   it('should create a new resource using the action body', async () => {
     const action: ActionDefinition = {
       type: 'resource.create',

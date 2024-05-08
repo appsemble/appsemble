@@ -21,6 +21,7 @@ export function stripResource({
   $created,
   $editor,
   $ephemeral,
+  $seed,
   $updated,
   ...data
 }: ResourceType): Record<string, unknown> {
@@ -123,6 +124,7 @@ export function extractResourceBody(
  * @param knownAssetIds A list of asset IDs that are already known to be linked to the resource.
  * @param knownExpires A previously known expires value.
  * @param knownAssetNameIds A list of asset ids with asset names that already exist.
+ * @param [isPatch] if the "PATCH" HTTP method is being used.
  * @returns A tuple which consists of:
  *
  *   1. One or more resources processed from the request body.
@@ -135,6 +137,7 @@ export function processResourceBody(
   knownAssetIds: string[] = [],
   knownExpires?: Date,
   knownAssetNameIds: { id: string; name: string }[] = [],
+  isPatch = false,
 ): [Record<string, unknown> | Record<string, unknown>[], PreparedAsset[], string[]] {
   const [resource, assets, preValidateProperty] = extractResourceBody(ctx);
   const validator = new Validator();
@@ -169,7 +172,7 @@ export function processResourceBody(
 
   const patchedSchema = {
     ...definition.schema,
-    required: ctx.request?.method === 'PATCH' ? [] : definition.schema.required,
+    required: ctx.request?.method === 'PATCH' || isPatch ? [] : definition.schema.required,
     properties: {
       ...definition.schema.properties,
       id: { type: 'integer' },
