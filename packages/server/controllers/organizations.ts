@@ -13,6 +13,7 @@ import { col, fn, literal, Op, QueryTypes, UniqueConstraintError } from 'sequeli
 
 import {
   App,
+  AppCollection,
   AppRating,
   BlockVersion,
   EmailAuthorization,
@@ -251,7 +252,7 @@ export async function deleteOrganization(ctx: Context): Promise<void> {
   assertKoaError(!organization, ctx, 404, 'Organization not found.');
 
   await organization.reload({
-    include: [BlockVersion, App],
+    include: [BlockVersion, AppCollection, App],
   });
 
   assertKoaError(
@@ -259,6 +260,12 @@ export async function deleteOrganization(ctx: Context): Promise<void> {
     ctx,
     403,
     'Cannot delete an organization with associated blocks.',
+  );
+  assertKoaError(
+    organization.AppCollections.length !== 0,
+    ctx,
+    403,
+    'Cannot delete an organization with associated app collections.',
   );
 
   organization.Apps.map(async (app) => {

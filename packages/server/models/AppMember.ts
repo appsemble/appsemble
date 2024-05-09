@@ -113,7 +113,8 @@ export class AppMember extends Model {
   @Column(DataType.STRING)
   scimExternalId?: string;
 
-  @AllowNull(true)
+  @Default(false)
+  @AllowNull(false)
   @Column(DataType.BOOLEAN)
   scimActive?: boolean;
 
@@ -136,6 +137,7 @@ export class AppMember extends Model {
   @BelongsTo(() => App)
   App: Awaited<App>;
 
+  @AllowNull(false)
   @ForeignKey(() => User)
   @Index({ name: 'UniqueAppMemberIndex', unique: true })
   @Column(DataType.UUID)

@@ -915,7 +915,7 @@ describe('verifyAppOAuth2SecretCode', () => {
       properties: {},
       resetKey: null,
       role: 'Test',
-      scimActive: null,
+      scimActive: false,
       scimExternalId: null,
       updated: expect.any(Date),
     });

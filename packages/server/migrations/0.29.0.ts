@@ -5,6 +5,10 @@ export const key = '0.29.0';
 
 /**
  * Summary:
+ * - Making Resource.data non-nullable
+ * - Making OAuthAuthorization.accessToken non-nullable
+ * - Removing App.longDescription
+ * - Removing AppReadme.deleted
  * - Making AppServiceSecret.AppId non-nullable
  * - Changing default value of App.showAppDefinition to false
  * - Changing type of App.showAppsembleLogin to boolean
@@ -12,27 +16,25 @@ export const key = '0.29.0';
  * - Making User.subscribed non-nullable
  * - Making AppOAuth2Authorization.AppMemberId non-nullable
  * - Changing type of AppSamlSecret.name to STRING
- * - Making AppSamlAuthorization.AppMemberId non-nullable
  * - Removing AppScreenshot.name
- * - Making BlockVersion.examples non-nullable
+ * - Making BlockVersion.examples non-nullable and DEFAULT '[]'::jsonb
  * - Renaming enum_Member_role to enum_OrganizationMember_role
  * - Adding AccountManager to enum_OrganizationMember_role
  * - Adding Translator, APIReader, APIUser, AccountManager to enum_OrganizationInvite_role
  * - Making SamlLoginRequest.timezone non-nullable
- * - Changing TeamInvite.role default value to member
+ * - Changing TeamInvite.role default value to member and to enum
  * - Changing TeamMember.role default value to member
  * - Adding primary key to TeamMember
- * - Changing AppMember.scimActive default value to null
+ * - Making AppMember.scimActive non-nullable and default to false
  * - Making ResourceVersion.AppMemberId nullable
  * - Making Training.competences non-nullable
  * - Making Training.difficultyLevel non-nullable
- * - Making EmailAuthorization.UserId nullable
- * - Making AppMember.UserId nullable
+ * - Renaming TYPE enum_App_locked-temp to enum_App_locked if possible
  * - Setting AppServiceSecret.AppId constraints to ON UPDATE CASCADE ON DELETE CASCADE
  * - Setting AppBlockStyle.AppId constraints to ON UPDATE CASCADE ON DELETE CASCADE
- * - Setting AppCollection.OrganizationId constraints to ON UPDATE CASCADE ON DELETE NO ACTION
+ * - Setting AppCollection.OrganizationId constraints to ON UPDATE CASCADE ON DELETE CASCADE
  * - Setting AppCollectionApp.AppCollectionId constraints to ON UPDATE CASCADE ON DELETE CASCADE
- * - Setting AppCollectionApp.AppId constraints to ON UPDATE CASCADE ON DELETE NO ACTION
+ * - Setting AppCollectionApp.AppId constraints to ON UPDATE CASCADE ON DELETE CASCADE
  * - Setting AppEmailQuotaLog.AppId constraints to ON UPDATE CASCADE ON DELETE NO ACTION
  * - Setting AppSnapshot.UserId constraints to ON UPDATE CASCADE ON DELETE SET NULL
  * - Setting AppSubscription.AppId constraints to ON UPDATE CASCADE ON DELETE CASCADE
@@ -48,6 +50,24 @@ export const key = '0.29.0';
  */
 export async function up(db: Sequelize): Promise<void> {
   const queryInterface = db.getQueryInterface();
+  logger.info('Making Resource.data non-nullable');
+  await queryInterface.changeColumn('Resource', 'data', {
+    allowNull: false,
+    type: DataTypes.JSONB,
+  });
+  logger.info('Making OAuthAuthorization.accessToken non-nullable');
+  await queryInterface.changeColumn('OAuthAuthorization', 'accessToken', {
+    allowNull: false,
+    type: DataTypes.TEXT,
+  });
+  logger.info('Removing App.longDescription');
+  await queryInterface.sequelize.query(`
+    ALTER TABLE "App" DROP COLUMN IF EXISTS "longDescription";
+  `);
+  logger.info('Removing AppReadme.deleted');
+  await queryInterface.sequelize.query(`
+    ALTER TABLE "AppReadme" DROP COLUMN IF EXISTS "deleted";
+  `);
   logger.info('Making AppServiceSecret.AppId non-nullable');
   await queryInterface.changeColumn('AppServiceSecret', 'AppId', {
     allowNull: false,
@@ -59,6 +79,7 @@ export async function up(db: Sequelize): Promise<void> {
     defaultValue: false,
     type: DataTypes.BOOLEAN,
   });
+  logger.info('Changing type of App.showAppsembleLogin to boolean');
   await queryInterface.sequelize.query(`
     ALTER TABLE "App"
       ALTER COLUMN "showAppsembleLogin" DROP DEFAULT,
@@ -84,11 +105,6 @@ export async function up(db: Sequelize): Promise<void> {
   logger.info('Changing type of AppSamlSecret.name to STRING');
   await queryInterface.changeColumn('AppSamlSecret', 'name', {
     type: DataTypes.STRING,
-    allowNull: false,
-  });
-  logger.info('Making AppSamlAuthorization.AppMemberId non-nullable');
-  await queryInterface.changeColumn('AppSamlAuthorization', 'AppMemberId', {
-    type: DataTypes.UUID,
     allowNull: false,
   });
   logger.info('Removing AppScreenshot.name');
@@ -127,12 +143,17 @@ export async function up(db: Sequelize): Promise<void> {
     type: DataTypes.STRING,
     allowNull: false,
   });
-  logger.info('Changing TeamInvite.role default value to member');
-  await queryInterface.changeColumn('TeamInvite', 'role', {
-    type: DataTypes.STRING,
-    allowNull: false,
-    defaultValue: 'member',
-  });
+  logger.info('Changing TeamInvite.role default value to member and to enum');
+  await queryInterface.sequelize.query(`
+    DO $$ BEGIN
+      IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'enum_TeamInvite_role') THEN
+        CREATE TYPE "enum_TeamInvite_role" AS ENUM ('manager', 'member');
+      END IF;
+      ALTER TABLE "TeamInvite"
+        ALTER COLUMN "role" TYPE "enum_TeamInvite_role" USING "role"::"enum_TeamInvite_role",
+        ALTER COLUMN "role" SET DEFAULT 'member'::public."enum_TeamInvite_role";
+    END $$;
+  `);
   logger.info('Changing TeamMember.role default value to member');
   await queryInterface.sequelize.query(`
     ALTER TABLE "TeamMember" ALTER COLUMN "role" SET DEFAULT 'member';
@@ -141,18 +162,15 @@ export async function up(db: Sequelize): Promise<void> {
   await queryInterface.sequelize.query(`
     ALTER TABLE "TeamMember" ADD PRIMARY KEY ("TeamId", "AppMemberId");
   `);
-  logger.info('Changing AppMember.scimActive default value to null');
+  logger.info('Making AppMember.scimActive non-nullable and default to false');
   await queryInterface.changeColumn('AppMember', 'scimActive', {
     type: DataTypes.BOOLEAN,
-    allowNull: true,
-    defaultValue: null,
+    allowNull: false,
+    defaultValue: false,
   });
-  // Questionable: non-nullable in production, nullable in model, tests fail if set to non-nullable
-  // in model.
   logger.info('Making ResourceVersion.AppMemberId nullable');
   await queryInterface.changeColumn('ResourceVersion', 'AppMemberId', {
     type: DataTypes.UUID,
-    allowNull: true,
   });
   logger.info('Making Training.competences non-nullable');
   await queryInterface.changeColumn('Training', 'competences', {
@@ -164,25 +182,13 @@ export async function up(db: Sequelize): Promise<void> {
     type: DataTypes.INTEGER,
     allowNull: false,
   });
-  // Questionable: non-nullable in production, nullable in model, tests fail if set to non-nullable
-  // in model.
-  logger.info('Making EmailAuthorization.UserId nullable');
-  await queryInterface.changeColumn('EmailAuthorization', 'UserId', {
-    type: DataTypes.UUID,
-    allowNull: true,
-  });
-  // Questionable: non-nullable in production, nullable in model, tests fail if set to non-nullable
-  // in model.
-  logger.info('Making AppMember.UserId nullable');
-  await queryInterface.changeColumn('AppMember', 'UserId', {
-    type: DataTypes.UUID,
-    allowNull: true,
-  });
   logger.info('Renaming enum_App_locked-temp to enum_App_locked');
   await queryInterface.sequelize.query(`
     DO $$ BEGIN
       IF EXISTS (SELECT 1 FROM pg_type WHERE typname = 'enum_App_locked-temp') THEN
-        ALTER TYPE "enum_App_locked-temp" RENAME TO "enum_App_locked";
+        IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'enum_App_locked') THEN
+          ALTER TYPE "enum_App_locked-temp" RENAME TO "enum_App_locked";
+        END IF;
       END IF;
     END $$;
   `);
@@ -190,14 +196,12 @@ export async function up(db: Sequelize): Promise<void> {
   const changes = [
     ['AppServiceSecret', 'AppId', 'App', 'CASCADE', 'CASCADE'],
     ['AppBlockStyle', 'AppId', 'App', 'CASCADE', 'CASCADE'],
-    ['AppCollection', 'OrganizationId', 'Organization', 'CASCADE', 'NO ACTION'],
+    ['AppCollection', 'OrganizationId', 'Organization', 'CASCADE', 'CASCADE'],
     ['AppCollectionApp', 'AppCollectionId', 'AppCollection', 'CASCADE', 'CASCADE'],
-    ['AppCollectionApp', 'AppId', 'App', 'CASCADE', 'NO ACTION'],
+    ['AppCollectionApp', 'AppId', 'App', 'CASCADE', 'CASCADE'],
     ['AppEmailQuotaLog', 'AppId', 'App', 'CASCADE', 'NO ACTION'],
     ['AppSnapshot', 'UserId', 'User', 'CASCADE', 'SET NULL'],
     ['AppSubscription', 'AppId', 'App', 'CASCADE', 'CASCADE'],
-    // Questionable: ON UPDATE CASCADE ON DELETE SET NULL in production, but column is also
-    // non-nullable in production.
     ['Resource', 'AppId', 'App', 'CASCADE', 'CASCADE'],
     ['Asset', 'AppId', 'App', 'CASCADE', 'CASCADE'],
     ['ResourceVersion', 'ResourceId', 'Resource', 'CASCADE', 'CASCADE'],
@@ -217,6 +221,10 @@ export async function up(db: Sequelize): Promise<void> {
 
 /**
  * Summary:
+ * - Making Resource.data nullable
+ * - Making OAuthAuthorization.accessToken nullable
+ * - Adding column App.longDescription
+ * - Adding column AppReadme.deleted
  * - Making AppServiceSecret.AppId nullable
  * - Changing default value of App.showAppDefinition to true
  * - Changing type of App.showAppsembleLogin to string
@@ -224,22 +232,19 @@ export async function up(db: Sequelize): Promise<void> {
  * - Making User.subscribed nullable
  * - Making AppOAuth2Authorization.AppMemberId nullable
  * - Changing type of AppSamlSecret.name to TEXT
- * - Making AppSamlAuthorization.AppMemberId nullable
  * - Adding column AppScreenshot.name
- * - Making BlockVersion.examples nullable
+ * - Making BlockVersion.examples nullable and DEFAULT to null
  * - Renaming enum_OrganizationMember_role to enum_Member_role
  * - Removing AccountManager from enum_Member_role
  * - Removing Translator, APIReader, APIUser, AccountManager from enum_OrganizationInvite_role
  * - Making SamlLoginRequest.timezone nullable
- * - Changing TeamInvite.role default value to null
+ * - Changing TeamInvite.role default value to null and to string
  * - Changing TeamMember.role default value to null
  * - Removing primary key from TeamMember
- * - Changing AppMember.scimActive default value to true
+ * - Making AppMember.scimActive nullable and default to true
  * - Making ResourceVersion.AppMemberId non-nullable
  * - Making Training.competences nullable
  * - Making Training.difficultyLevel nullable
- * - Making EmailAuthorization.UserId non-nullable
- * - Making AppMember.UserId non-nullable
  * - Setting AppServiceSecret.AppId constraints to ON UPDATE NO ACTION ON DELETE NO ACTION
  * - Setting AppBlockStyle.AppId constraints to ON UPDATE CASCADE ON DELETE NO ACTION
  * - Setting AppCollection.OrganizationId constraints to ON UPDATE NO ACTION ON DELETE NO ACTION
@@ -260,6 +265,23 @@ export async function up(db: Sequelize): Promise<void> {
  */
 export async function down(db: Sequelize): Promise<void> {
   const queryInterface = db.getQueryInterface();
+  logger.info('Making Resource.data nullable');
+  await queryInterface.changeColumn('Resource', 'data', {
+    type: DataTypes.JSONB,
+    allowNull: true,
+  });
+  logger.info('Making OAuthAuthorization.accessToken nullable');
+  await queryInterface.changeColumn('OAuthAuthorization', 'accessToken', {
+    type: DataTypes.TEXT,
+    allowNull: true,
+  });
+  logger.info('Adding column AppScreenshot.name');
+  await queryInterface.addColumn('App', 'longDescription', {
+    type: DataTypes.TEXT,
+    allowNull: true,
+  });
+  logger.info('Adding column AppReadme.deleted');
+  await queryInterface.addColumn('AppReadme', 'deleted', { allowNull: true, type: DataTypes.DATE });
   logger.info('Making AppServiceSecret.AppId nullable');
   await queryInterface.changeColumn('AppServiceSecret', 'AppId', {
     allowNull: true,
@@ -271,6 +293,7 @@ export async function down(db: Sequelize): Promise<void> {
     defaultValue: true,
     type: DataTypes.BOOLEAN,
   });
+  logger.info('Changing type of App.showAppsembleLogin to string');
   await queryInterface.sequelize.query(`
     ALTER TABLE "App"
       ALTER COLUMN "showAppsembleLogin" DROP DEFAULT,
@@ -296,11 +319,6 @@ export async function down(db: Sequelize): Promise<void> {
   await queryInterface.changeColumn('AppSamlSecret', 'name', {
     type: DataTypes.TEXT,
     allowNull: false,
-  });
-  logger.info('Making AppSamlAuthorization.AppMemberId nullable');
-  await queryInterface.changeColumn('AppSamlAuthorization', 'AppMemberId', {
-    type: DataTypes.UUID,
-    allowNull: true,
   });
   logger.info('Adding column AppScreenshot.name');
   await queryInterface.addColumn('AppScreenshot', 'name', {
@@ -352,7 +370,7 @@ export async function down(db: Sequelize): Promise<void> {
     type: DataTypes.STRING,
     allowNull: true,
   });
-  logger.info('Changing TeamInvite.role default value to null');
+  logger.info('Changing TeamInvite.role default value to null and to string');
   await queryInterface.changeColumn('TeamInvite', 'role', {
     type: DataTypes.STRING,
     allowNull: true,
@@ -366,7 +384,7 @@ export async function down(db: Sequelize): Promise<void> {
   await queryInterface.sequelize.query(`
     ALTER TABLE "TeamMember" DROP CONSTRAINT "TeamMember_pkey";
   `);
-  logger.info('Changing AppMember.scimActive default value to true');
+  logger.info('Making AppMember.scimActive nullable and default to true');
   await queryInterface.changeColumn('AppMember', 'scimActive', {
     type: DataTypes.BOOLEAN,
     allowNull: true,
@@ -389,11 +407,6 @@ export async function down(db: Sequelize): Promise<void> {
   });
   logger.info('Making EmailAuthorization.UserId non-nullable');
   await queryInterface.changeColumn('EmailAuthorization', 'UserId', {
-    type: DataTypes.UUID,
-    allowNull: false,
-  });
-  logger.info('Making AppMember.UserId non-nullable');
-  await queryInterface.changeColumn('AppMember', 'UserId', {
     type: DataTypes.UUID,
     allowNull: false,
   });

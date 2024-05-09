@@ -4,6 +4,7 @@ export const Training: OpenAPIV3.NonArraySchemaObject = {
   type: 'object',
   description: 'Object representation of a training',
   additionalProperties: false,
+  required: ['title', 'competences', 'difficultyLevel'],
   properties: {
     id: {
       type: 'number',

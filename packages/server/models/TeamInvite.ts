@@ -1,4 +1,5 @@
 import { type TeamMember } from '@appsemble/types';
+import { TeamRole } from '@appsemble/utils';
 import {
   AllowNull,
   BelongsTo,
@@ -29,9 +30,9 @@ export class TeamInvite extends Model {
   email: string;
 
   @AllowNull(false)
-  @Default('member')
-  @Column(DataType.STRING)
-  role: TeamMember['role'];
+  @Default(TeamRole.Member)
+  @Column(DataType.ENUM(...Object.values(TeamRole)))
+  role: TeamRole;
 
   @AllowNull(false)
   @Column(DataType.STRING)

@@ -34,7 +34,7 @@ export class AppCollectionApp extends Model {
   @BelongsTo(() => AppCollection)
   AppCollection: Awaited<AppCollection>;
 
-  @BelongsTo(() => App)
+  @BelongsTo(() => App, { onDelete: 'CASCADE' })
   App: Awaited<App>;
 
   @Column(DataType.DATE)

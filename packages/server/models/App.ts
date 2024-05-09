@@ -122,6 +122,7 @@ export class App extends Model {
   @Column(DataType.ENUM('fullLock', 'studioLock', 'unlocked'))
   locked: AppLock;
 
+  @AllowNull(false)
   @Default(false)
   @Column(DataType.BOOLEAN)
   enableUnsecuredServiceSecrets: boolean;

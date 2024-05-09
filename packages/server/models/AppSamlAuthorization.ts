@@ -1,5 +1,4 @@
 import {
-  AllowNull,
   BelongsTo,
   Column,
   CreatedAt,
@@ -40,7 +39,6 @@ export class AppSamlAuthorization extends Model {
    * The id of the linked app user.
    */
   @ForeignKey(() => AppMember)
-  @AllowNull(false)
   @Column(DataType.UUID)
   AppMemberId: string;
 

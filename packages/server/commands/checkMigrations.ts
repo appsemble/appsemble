@@ -44,12 +44,18 @@ async function apply(db: Sequelize, name: string, fn: () => Promise<void>): Prom
   );
   const result: Schema = {
     tables: Object.fromEntries(
-      schema.public.tables.map((t) => [
-        t.name,
+      schema.public.tables.map((table) => [
+        table.name,
         Object.fromEntries(
-          t.columns.map((c) => [
-            c.name,
-            { ...c, ordinalPosition: 0, informationSchemaValue: {}, reference: {}, indices: [] },
+          table.columns.map((column) => [
+            column.name,
+            {
+              ...column,
+              ordinalPosition: 0,
+              informationSchemaValue: {},
+              reference: {},
+              indices: [],
+            },
           ]),
         ),
       ]),

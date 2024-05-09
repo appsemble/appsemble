@@ -1976,7 +1976,7 @@ describe('updateAppMemberByEmail', () => {
       },
       resetKey: null,
       role: 'Reader',
-      scimActive: null,
+      scimActive: false,
       scimExternalId: null,
       updated: '1970-01-01T00:00:00.000Z',
     });
@@ -2033,7 +2033,7 @@ describe('updateAppMemberByEmail', () => {
       properties: {},
       resetKey: null,
       role: 'Admin',
-      scimActive: null,
+      scimActive: false,
       scimExternalId: null,
       updated: '1970-01-01T00:00:00.000Z',
     });

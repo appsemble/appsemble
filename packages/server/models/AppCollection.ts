@@ -58,7 +58,7 @@ export class AppCollection extends Model {
   @Column(DataType.STRING)
   OrganizationId: string;
 
-  @BelongsTo(() => Organization)
+  @BelongsTo(() => Organization, { onDelete: 'CASCADE' })
   Organization: Awaited<Organization>;
 
   @AllowNull(false)

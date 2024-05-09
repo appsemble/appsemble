@@ -459,7 +459,7 @@ describe('getSCIMUser', () => {
       Content-Type: application/scim+json
 
       {
-        "active": null,
+        "active": false,
         "externalId": null,
         "id": Any<String>,
         "locale": null,
@@ -496,7 +496,7 @@ describe('getSCIMUser', () => {
       Content-Type: application/scim+json
 
       {
-        "active": null,
+        "active": false,
         "externalId": null,
         "id": Any<String>,
         "locale": null,
@@ -539,7 +539,7 @@ describe('getSCIMUsers', () => {
       {
         "Resources": [
           {
-            "active": null,
+            "active": false,
             "externalId": null,
             "id": Any<String>,
             "locale": null,
@@ -584,7 +584,7 @@ describe('getSCIMUsers', () => {
       {
         "Resources": [
           {
-            "active": null,
+            "active": false,
             "externalId": null,
             "id": Any<String>,
             "locale": null,
@@ -639,7 +639,7 @@ describe('getSCIMUsers', () => {
       {
         "Resources": [
           {
-            "active": null,
+            "active": false,
             "externalId": null,
             "id": Any<String>,
             "locale": null,
@@ -792,7 +792,7 @@ describe('patchSCIMUser', () => {
       Content-Type: application/json; charset=utf-8
 
       {
-        "active": null,
+        "active": false,
         "externalId": "ptrk",
         "id": Any<String>,
         "locale": "nl_NL",

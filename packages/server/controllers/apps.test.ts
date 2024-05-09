@@ -7543,6 +7543,7 @@ describe('reseedDemoApp', () => {
     });
 
     await AppMember.create({
+      UserId: user.id,
       AppId: appId,
       role: 'test',
       properties: {

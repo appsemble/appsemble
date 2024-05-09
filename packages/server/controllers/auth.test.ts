@@ -158,7 +158,12 @@ describe('registerEmail', () => {
   });
 
   it('should not register duplicate email addresses', async () => {
+    const user = await User.create({
+      primaryEmail: 'test@example.com',
+      timezone: 'Europe/Amsterdam',
+    });
     await EmailAuthorization.create({
+      UserId: user.id,
       email: 'test@example.com',
       password: 'unhashed',
     });

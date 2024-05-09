@@ -8,6 +8,7 @@ import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vites
 
 import {
   App,
+  AppCollection,
   BlockVersion,
   EmailAuthorization,
   Organization,
@@ -586,6 +587,37 @@ describe('deleteOrganization', () => {
     const organizationId = await Organization.findByPk(organization.id);
     expect(organizationId.id).toBe(organization.id);
   });
+
+  it('should not delete the organization with associated app collections', async () => {
+    const organization2 = await Organization.create({
+      id: 'testorganization2',
+      name: 'Test Organization',
+    });
+    await OrganizationMember.create({
+      OrganizationId: organization2.id,
+      UserId: user.id,
+      role: 'Owner',
+    });
+    await AppCollection.create({
+      name: 'Collection',
+      expertName: 'Expert van den Expert',
+      expertProfileImage: Buffer.from(''),
+      headerImage: Buffer.from(''),
+      expertProfileImageMimeType: 'image/png',
+      headerImageMimeType: 'image/png',
+      expertDescription: 'I’m an expert, trust me.',
+      OrganizationId: organization2.id,
+      visibility: 'public',
+    });
+    authorizeStudio();
+    const response = await request.delete(`/api/organizations/${organization2.id}`);
+    expect(response).toMatchObject({
+      status: 403,
+      data: { message: 'Cannot delete an organization with associated app collections.' },
+    });
+    const organizationId = await Organization.findByPk(organization.id);
+    expect(organizationId.id).toBe(organization.id);
+  });
 });
 
 describe('patchOrganization', () => {
@@ -772,11 +804,15 @@ describe('getMembers', () => {
 
 describe('getInvites', () => {
   it('should fetch organization invites', async () => {
-    const userB = await EmailAuthorization.create({ email: 'test2@example.com', verified: true });
-    await userB.$create('User', {
+    const userB = await User.create({
       primaryEmail: 'test2@example.com',
       name: 'John',
       timezone: 'Europe/Amsterdam',
+    });
+    await EmailAuthorization.create({
+      UserId: userB.id,
+      email: 'test2@example.com',
+      verified: true,
     });
     await OrganizationInvite.create({
       email: 'test2@example.com',
@@ -799,11 +835,15 @@ describe('getInvites', () => {
 
   it('should return forbidden if the user is a member but does not have invite permissions', async () => {
     await OrganizationMember.update({ role: 'Member' }, { where: { UserId: user.id } });
-    const userB = await EmailAuthorization.create({ email: 'test2@example.com', verified: true });
-    await userB.$create('User', {
+    const userB = await User.create({
       primaryEmail: 'test2@example.com',
       name: 'John',
       timezone: 'Europe/Amsterdam',
+    });
+    await EmailAuthorization.create({
+      UserId: userB.id,
+      email: 'test2@example.com',
+      verified: true,
     });
     await OrganizationInvite.create({
       email: 'test2@example.com',
@@ -1021,11 +1061,15 @@ describe('resendInvitation', () => {
 
   it('should not resend an invitation if the user does not have the right permissions', async () => {
     await OrganizationMember.update({ role: 'AppEditor' }, { where: { UserId: user.id } });
-    const userB = await EmailAuthorization.create({ email: 'test2@example.com', verified: true });
-    await userB.$create('User', {
+    const userB = await User.create({
       primaryEmail: 'test2@example.com',
       name: 'John',
       timezone: 'Europe/Amsterdam',
+    });
+    await EmailAuthorization.create({
+      UserId: userB.id,
+      email: 'test2@example.com',
+      verified: true,
     });
 
     authorizeStudio();
@@ -1049,11 +1093,15 @@ describe('resendInvitation', () => {
   });
 
   it('should not resend an invitation to a member who has not been invited', async () => {
-    const userB = await EmailAuthorization.create({ email: 'test2@example.com', verified: true });
-    await userB.$create('User', {
+    const userB = await User.create({
       primaryEmail: 'test2@example.com',
       name: 'John',
       timezone: 'Europe/Amsterdam',
+    });
+    await EmailAuthorization.create({
+      UserId: userB.id,
+      email: 'test2@example.com',
+      verified: true,
     });
 
     authorizeStudio();
@@ -1143,11 +1191,15 @@ describe('removeInvite', () => {
 
   it('should not revoke an invite for an organization you are not a member of', async () => {
     await Organization.create({ id: 'org' });
-    const userB = await EmailAuthorization.create({ email: 'test2@example.com', verified: true });
-    await userB.$create('User', {
+    const userB = await User.create({
       primaryEmail: 'test2@example.com',
       name: 'John',
       timezone: 'Europe/Amsterdam',
+    });
+    await EmailAuthorization.create({
+      UserId: userB.id,
+      email: 'test2@example.com',
+      verified: true,
     });
     await OrganizationInvite.create({
       email: 'test2@example.com',
