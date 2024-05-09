@@ -35,7 +35,7 @@ export function AppCard({ app, href }: AppCardProps): ReactNode {
     <Link
       className={`card ${styles.overflow}`}
       title={app.messages?.app?.description || app.definition.description}
-      to={href ?? `/${lang}/apps/${app.path}`}
+      to={href ?? `/${lang}/apps/${app.id}`}
     >
       {app.demoMode ? (
         <div className="tag is-danger is-right is-pulled-right">
