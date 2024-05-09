@@ -63,8 +63,12 @@ const EditPage = lazy(() => import('./edit/index.js'));
 const GuiEditorPage = lazy(() => import('./GuiEditor/index.js'));
 
 export function AppRoutes(): ReactNode {
-  const { id, lang } = useParams<{ id: string; lang: string }>();
-  const url = `apps/${id}`;
+  const {
+    '*': splat,
+    id,
+    lang,
+    path,
+  } = useParams<{ id: string; lang: string; path?: string; '*': string }>();
   const { organizations } = useUser();
   const {
     data: app,
@@ -72,6 +76,8 @@ export function AppRoutes(): ReactNode {
     loading,
     setData: setApp,
   } = useData<App>(`/api/apps/${id}?language=${lang}`);
+
+  const url = `apps/${id}/${path}`;
 
   const { formatMessage } = useIntl();
 
@@ -200,6 +206,15 @@ export function AppRoutes(): ReactNode {
 
   if (!organizations || loading) {
     return <Loader />;
+  }
+
+  if (path === undefined) {
+    /* For compatibility with old app links, see #1490 */
+    return <Navigate replace to={`/${lang}/apps/${id}/${app.path}`} />;
+  }
+
+  if (app && app.path !== path) {
+    return <Navigate replace to={`/${lang}/apps/${id}/${app.path}/${splat}`} />;
   }
 
   return (
