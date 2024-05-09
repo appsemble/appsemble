@@ -236,6 +236,56 @@ The hosts file can be found in the following location:
 - **MacOS**: `/private/etc/hosts`
 - Most systems: `/etc/hosts`
 
+### Migrations
+
+Writing Appsemble migrations must be done with great care, to avoid database corruption in
+production and for self-hosted Appsemble instances.
+
+1. Migrations MUST have tested `up` and `down` migrations. You must be able to rollback (to version
+   0.24.12) and migrate to the latest without failure, use the following command
+   `npm run appsemble fuzz-migrations` for that.
+
+2. Migrations MUST NOT\* contain any conditions, especially ones depending on database values or
+   external factors. _The only time this is allowed is when there is no other way around it, and all
+   core-developers
+   ([Appsemble maintainers on GitLab](https://gitlab.com/groups/appsemble/-/group_members?sort=access_level_desc))
+   that work during that week agree with the change._
+
+3. You MUST include a help plan when expecting potential failures across any Appsemble instance. The
+   plan must mention how to clean the database appropriately for the migration to succeed.
+
+4. Adding unique constraints (or primary keys) should only be done on new tables.
+
+> Note: all migrations are wrapped automically in a transaction, however this does NOT mean the
+> rules described can be ignored. When a migration fails the logs will contain
+> support@appsemble.com.
+
+Migrating up to the latest, or use `--migrate-to` to migrate to a specific version.
+
+```sh
+npm run appsemble migrate
+```
+
+Migrating down to the first migration.
+
+```sh
+npm run appsemble migrate -- --migrate-to 0.24.12
+```
+
+Check current migration version.
+
+```sh
+psql postgres://admin:password@localhost:5432/appsemble -c 'SELECT "version" FROM "Meta";'
+# Or run `npm start` to see the current version and migrate to latest
+```
+
+Whenever you want to checkout the database after running `npm run appsemble check-migrations` or
+`npm run appsemble fuzz-migrations` run the following to list the databases created.
+
+```sh
+psql postgres://admin:password@localhost:54321/postgres -c '\l'
+```
+
 ## Releasing
 
 Before releasing, manually inspect the changelog to be published (quoting from the `.release` job):

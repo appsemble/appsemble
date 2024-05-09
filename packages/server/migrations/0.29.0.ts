@@ -163,11 +163,13 @@ export async function up(db: Sequelize): Promise<void> {
     ALTER TABLE "TeamMember" ADD PRIMARY KEY ("TeamId", "AppMemberId");
   `);
   logger.info('Making AppMember.scimActive non-nullable and default to false');
-  await queryInterface.changeColumn('AppMember', 'scimActive', {
-    type: DataTypes.BOOLEAN,
-    allowNull: false,
-    defaultValue: false,
-  });
+  await queryInterface.sequelize.query(`
+    ALTER TABLE "AppMember"
+      ALTER COLUMN "scimActive" DROP DEFAULT,
+      ALTER COLUMN "scimActive" TYPE BOOLEAN USING CASE "scimActive" WHEN 'true' THEN true WHEN 'false' THEN false ELSE false END,
+      ALTER COLUMN "scimActive" SET DEFAULT FALSE,
+      ALTER COLUMN "scimActive" SET NOT NULL;
+  `);
   logger.info('Making ResourceVersion.AppMemberId nullable');
   await queryInterface.changeColumn('ResourceVersion', 'AppMemberId', {
     type: DataTypes.UUID,

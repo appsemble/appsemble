@@ -21,6 +21,7 @@ export async function serverImport<
     | 'checkMigrations'
     | 'cleanupDemoUsers'
     | 'cleanupResourcesAndAssets'
+    | 'fuzzMigrations'
     | 'migrate'
     | 'runCronJobs'
     | 'setArgv'

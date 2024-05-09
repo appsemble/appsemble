@@ -10,6 +10,7 @@ export { handler as cleanupResourcesAndAssets } from './commands/cleanupResource
 export { handler as cleanupDemoUsers } from './commands/cleanupDemoUsers.js';
 export { handler as checkMigrations } from './commands/checkMigrations.js';
 export { handler as runCronJobs } from './commands/runCronJobs.js';
+export { handler as fuzzMigrations } from './commands/fuzzMigrations.js';
 
 /**
  * These are exported, so @appsemble/cli can use them for integration testing.

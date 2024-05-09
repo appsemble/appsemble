@@ -170,3 +170,4 @@ export const migrations: Migration[] = [
   m0_28_0,
   m0_29_0,
 ];
+export const firstDeterministicMigration = '0.24.12';
