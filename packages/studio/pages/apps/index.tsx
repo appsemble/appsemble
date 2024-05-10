@@ -13,7 +13,9 @@ export function AppsRoutes(): ReactNode {
   return (
     <MetaSwitch description={messages.description} title={messages.title}>
       <Route element={<IndexPage />} path="/" />
-      <Route element={<AppRoutes />} path="/:id/*" />
+      {/* For compatibility with old app links, see #1490 */}
+      <Route element={<AppRoutes />} path="/:id/" />
+      <Route element={<AppRoutes />} path="/:id/:path/*" />
       <Route element={<Navigate to="/" />} path="*" />
     </MetaSwitch>
   );
