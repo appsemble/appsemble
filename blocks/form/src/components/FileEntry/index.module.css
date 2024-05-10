@@ -13,19 +13,6 @@
   position: absolute;
 }
 
-.empty {
-  align-items: flex-end !important;
-  background-color: var(--primary-color) !important;
-  background-image: url(./addpicture.svg);
-  background-position: center !important;
-  background-repeat: no-repeat !important;
-  background-size: 60px !important;
-  color: hsl(0deg 0% 100%) !important;
-  display: flex !important;
-  height: 6.75em !important;
-  width: 6.75em !important;
-}
-
 .button {
   background: transparent;
   border: none;
@@ -53,4 +40,47 @@
 .image {
   height: 100% !important;
   object-fit: cover;
+}
+
+.removeButtonUnavailable {
+  background-color: transparent;
+  background-image: url(./cross.svg) !important;
+  background-repeat: no-repeat !important;
+  background-size: contain;
+  border-color: transparent;
+  border-radius: 0;
+  margin-left: 5px;
+  position: absolute;
+}
+
+.videoAbsolute {
+  position: absolute;
+}
+
+.thumbnail {
+  height: 100%;
+}
+
+.placeholder {
+  align-items: flex-end !important;
+  background-color: var(--primary-color) !important;
+  background-position: center !important;
+  background-repeat: no-repeat !important;
+  background-size: 60px !important;
+  color: hsl(0deg 0% 100%) !important;
+  display: flex !important;
+  height: 6.75em !important;
+  width: 6.75em !important;
+}
+
+.empty {
+  background-image: url(./addpicture.svg);
+}
+
+.loading {
+  background-image: url(./loading.svg);
+}
+
+.unknown {
+  background-image: url(./thumbnailPlaceholder.svg);
 }

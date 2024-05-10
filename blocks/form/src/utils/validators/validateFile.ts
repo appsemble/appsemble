@@ -1,5 +1,11 @@
 import { type FileField, type FileRequirement } from '../../../block.js';
 
+function testType(acceptedType: string, type: string): boolean {
+  return new RegExp(/^[^/]+\/\*$/).test(acceptedType)
+    ? acceptedType.slice(0, acceptedType.indexOf('/')) === type?.slice(0, type?.indexOf('/'))
+    : acceptedType === type;
+}
+
 export function validateFile(field: FileField, value: File | File[]): FileRequirement {
   return field.requirements?.find((requirement) => {
     if (
@@ -51,10 +57,12 @@ export function validateFile(field: FileField, value: File | File[]): FileRequir
 
     if ('accept' in requirement) {
       if (field.repeated) {
-        return (value as File[]).some((file) => !requirement.accept.includes(file.type));
+        return (value as File[]).some((file) =>
+          requirement.accept.every((type) => !testType(type, file?.type)),
+        );
       }
 
-      return !requirement.accept.includes((value as File).type);
+      return requirement.accept.every((type) => !testType(type, (value as File)?.type));
     }
 
     return false;
