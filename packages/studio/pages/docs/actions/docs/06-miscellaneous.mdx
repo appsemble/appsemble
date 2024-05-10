@@ -64,7 +64,7 @@ blocks:
         - type: radio
           name: triedAppsemble
           label: { translate: triedAppsemble }
-          requirements: [ required: true ]
+          requirements: [required: true]
           options:
             - value: true
               label: { translate: yes }
@@ -131,7 +131,7 @@ blocks:
         - value: { prop: date }
           label: { translate: date }
         - value: { prop: name }
-          label: { string.format: { messageId: name, values: { locale: EN }}}
+          label: { string.format: { messageId: name, values: { locale: EN } } }
     actions:
       onClick:
         type: download
@@ -141,7 +141,7 @@ blocks:
             title: { prop: name }
             start: { prop: date }
             duration: 1d
-            description: "Test description"
+            description: 'Test description'
 ```
 
 ### dialog<Side name="dialog" />
@@ -440,7 +440,7 @@ blocks:
       onSubmit:
         type: match
         match:
-          - case: { equals: [prop: testEnum, test]}
+          - case: { equals: [prop: testEnum, test] }
             action:
               type: log
               level: info
@@ -549,8 +549,8 @@ protect user data and ensures [CORS](https://developer.mozilla.org/en-US/docs/We
 enabled. This behavior can be disabled by setting this to `false`. If not specified, the raw input
 data is used.
 
-`schema` is a JSON schema object that validates XML responses.
-**It does not validate regular JSON responses, nor the request data. This behavior may be subject to change in the future**
+`schema` is a JSON schema object that validates XML responses. **It does not validate regular JSON
+responses, nor the request data. This behavior may be subject to change in the future**
 
 Below is an example of this action being used to make a request.
 
@@ -563,7 +563,7 @@ blocks:
         - name: name
           label: { translate: name }
           type: string
-          requirements: [ required: true ]
+          requirements: [required: true]
         - name: email
           type: string
           format: email
@@ -622,7 +622,7 @@ blocks:
     actions:
       onClick:
         type: static
-        value: "Hello, world"
+        value: 'Hello, world'
         onSuccess:
           type: message
           body: { root }
