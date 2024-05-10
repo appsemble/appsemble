@@ -133,12 +133,12 @@ action to fetch the number of resources.
 
 ```yaml validate blocks-snippet
 blocks:
- - type: data-loader
-   version: 0.28.7
-   actions:
-     onLoad:
-       type: resource.count
-       resource: person
+  - type: data-loader
+    version: 0.28.7
+    actions:
+      onLoad:
+        type: resource.count
+        resource: person
 ```
 
 ### resource.create<Side name="resource.create" />
@@ -179,12 +179,12 @@ blocks:
         - type: string
           name: lastName
           label: { translate: lastName }
-          requirements: [ required: true ]
+          requirements: [required: true]
         - type: string
           name: email
           format: email
           label: { translate: email }
-          requirements: [ required: true ]
+          requirements: [required: true]
     actions:
       onSubmit:
         type: resource.update
