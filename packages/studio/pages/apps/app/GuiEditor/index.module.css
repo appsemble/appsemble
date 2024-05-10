@@ -12,6 +12,7 @@
 
 .codeEditorSwitch {
   margin-left: -5px !important;
+  margin-top: -0.25rem;
 }
 
 /* stylelint-disable selector-max-attribute */

@@ -1,9 +1,14 @@
 .root {
   flex: 1 1 auto;
   justify-content: space-between;
-  /* REFACTORING TODO figure out how we came to this as a conclusion, if this was a conclusion at
-* all */
-  /* max-height: 90vmax; */
+}
+
+.guiSwitch {
+  margin-top: -0.25rem;
+
+  @media screen and (width < 1024px) {
+    display: none !important;
+  }
 }
 
 /* stylelint-disable-next-line selector-max-attribute */
@@ -18,7 +23,7 @@ button[class*='modal-close'] {
   background-color: rgb(29 33 41 / 76%);
 }
 
-.previewModal {
+.mobilePreviewModal {
   height: 100%;
   margin-bottom: 0.8rem;
   max-height: 92vh;
@@ -26,7 +31,7 @@ button[class*='modal-close'] {
   width: 100% !important;
 }
 
-.modalPreviewFrameDiv {
+.mobilePreviewRoot {
   background-color: hsl(0deg 0% 7%);
   border-radius: 22px;
   box-sizing: border-box;
@@ -51,21 +56,23 @@ button[class*='modal-close'] {
 
   &.desktop {
     aspect-ratio: 16 / 9;
-
     min-width: 50vw;
 
     /* stylelint-disable-next-line media-feature-range-notation */
     @media (min-width: 1024px) and (max-width: 1599px) {
       min-width: 43vw;
     }
+
     /* stylelint-disable-next-line media-feature-range-notation */
     @media (min-width: 1600px) and (max-width: 2599px) {
       min-width: 50vw;
     }
+
     /* stylelint-disable-next-line media-feature-range-notation */
     @media (min-width: 2600px) and (max-width: 3440px) {
       min-width: 55vw;
     }
+
     /* stylelint-disable-next-line media-feature-range-notation */
     @media (min-width: 3441px) {
       min-width: 58vw;
@@ -85,38 +92,33 @@ button[class*='modal-close'] {
 
 .leftPanel {
   flex: 2 2 auto;
-  max-height: 100vh;
+  height: calc(100vh - 7.1rem);
 
-  /* stylelint-disable-next-line media-feature-range-notation */
-  @media (max-width: 1023px) {
+  @media screen and (width <=1023px) {
     height: calc(100vh - 7rem);
     width: 100%;
 
     &.fullscreen {
-      height: calc(100vh - 1.4rem) !important;
+      height: calc(100vh - 7rem) !important;
     }
   }
 
-  /* stylelint-disable-next-line media-feature-range-notation */
-  @media (min-width: 1024px) and (max-width: 1280px) {
+  @media screen and (width >=1024px) and (width <=1280px) {
     max-width: 86vw;
     min-width: 234px;
   }
 
-  /* stylelint-disable-next-line media-feature-range-notation */
-  @media (min-width: 1281px) and (max-width: 1920px) {
+  @media (width >= 1281px) and (width <= 1920px) {
     max-width: 93vw;
     min-width: 337px;
   }
 
-  /* stylelint-disable-next-line media-feature-range-notation */
-  @media (min-width: 1921px) {
+  @media (width >= 1921px) {
     max-width: 94vw;
     min-width: 565px;
   }
 
-  /* stylelint-disable-next-line media-feature-range-notation */
-  @media (min-width: 2561px) {
+  @media (width >= 2561px) {
     max-width: 96vw;
     min-width: 825px;
   }
@@ -127,29 +129,29 @@ button[class*='modal-close'] {
 }
 
 .rightPanel {
+  display: none;
   margin-top: 2.5rem;
 
-  /* stylelint-disable-next-line media-feature-range-notation */
-  @media (max-width: 1023px) {
-    /* display: none; */
-  }
+  @media (width >= 1024px) {
+    display: flex;
 
-  &.fill {
-    padding-bottom: 1.3rem;
+    &.fill {
+      padding-bottom: 1.3rem;
 
-    /* stylelint-disable-next-line media-feature-range-notation */
-    @media (min-width: 1024px) and (max-width: 1279px) {
-      min-width: 44vw;
-    }
+      /* stylelint-disable-next-line media-feature-range-notation */
+      @media (min-width: 1024px) and (max-width: 1279px) {
+        min-width: 44vw;
+      }
 
-    /* stylelint-disable-next-line media-feature-range-notation */
-    @media (min-width: 1280px) and (max-width: 1919px) {
-      min-width: 41vw;
-    }
+      /* stylelint-disable-next-line media-feature-range-notation */
+      @media (min-width: 1280px) and (max-width: 1919px) {
+        min-width: 41vw;
+      }
 
-    /* stylelint-disable-next-line media-feature-range-notation */
-    @media (min-width: 1920px) {
-      min-width: 44%;
+      /* stylelint-disable-next-line media-feature-range-notation */
+      @media (min-width: 1920px) {
+        min-width: 44%;
+      }
     }
   }
 }
@@ -157,8 +159,8 @@ button[class*='modal-close'] {
 .editorForm {
   flex: 1 1 auto;
   min-height: 0%;
-  /* stylelint-disable-next-line media-feature-range-notation */
-  @media (max-width: 1023px) {
+
+  @media screen and (width <=1024px) {
     &:not(.fullscreen) {
       margin-top: -0.6rem;
     }
@@ -170,34 +172,27 @@ button[class*='modal-close'] {
 }
 
 .formatSelection {
-  position: absolute;
-  right: 0.15rem;
-  top: 3.7rem;
-  z-index: 30;
+  @media (width >= 1024px) {
+    position: absolute;
+    right: 0.5rem;
+    top: 3.9rem;
+    z-index: 30;
+  }
 }
 
-/* REFACTORING TODO I forgor */
-/* stylelint-disable-next-line selector-max-attribute */
 .editorNavbar {
-  /* stylelint-disable-next-line media-feature-range-notation */
-  /* @media (max-width: 1023px) { */
-  /*   top: -0.6rem; */
-  /*   z-index: auto; */
-  /**/
-    /* stylelint-disable-next-line selector-max-attribute */
-  /*   &.fullscreen { */
-  /*     top: 2.65rem; */
-  /*   } */
-  /* } */
+  @media (width < 1024px) {
+    top: -0.6rem;
+    z-index: auto;
+
+    &.fullscreen {
+      /* top: 2.65rem; */
+    }
+  }
 }
 
-/* REFACTORING TODO change this to not be a dirty attr selector like that */
-/* stylelint-disable-next-line selector-max-attribute */
-/* Stuck here refactoring the selector */
-/* tried ".editorNavbar .navbar-menu.is-active" but nah */
-[class*='navbar-menu is-active'] {
-  /* stylelint-disable-next-line media-feature-range-notation */
-  @media (max-width: 1023px) {
+.toolbarMenu.toolbarMenuActive {
+  @media (width < 1024px) {
     backdrop-filter: blur(5px);
     background-color: rgb(212 212 212 / 72.9%);
     border-radius: 6px;
@@ -215,19 +210,16 @@ button[class*='modal-close'] {
   }
 }
 
-/* REFACTORING why does this exist in the first place??? */
-/*
 .editorTabsDiv {
   margin-bottom: 0 !important;
 
-  @media (max-width: 1023px) {
+  @media (width < 1024px) {
     position: absolute;
-    top: 3.9rem;
-    width: calc(100% - 5rem);
+    top: 6.15rem;
+    width: calc(100% - 4.7rem);
 
     &.fullscreen {
-      position: sticky;
-      top: 0.16rem;
+      top: 6.5rem !important;
     }
   }
 
@@ -235,11 +227,9 @@ button[class*='modal-close'] {
     top: 2.7rem;
   }
 }
-*/
 
 .editorTab > a {
-  /* stylelint-disable-next-line media-feature-range-notation */
-  @media (max-width: 495px) {
+  @media screen and (width < 495px) {
     padding: 8px 8px 8px 5px !important;
 
     .editorTab {

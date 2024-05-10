@@ -4,7 +4,6 @@ import { type KeyboardEvent, type ReactNode, useCallback, useRef } from 'react';
 
 import styles from './index.module.css';
 import { useClickOutside, useToggle } from '../index.js';
-import { useSideMenuState } from '../SideMenu/index.js';
 
 interface NavbarDropdownProps {
   /**
@@ -37,7 +36,6 @@ export function NavbarDropdown({
   label,
 }: NavbarDropdownProps): ReactNode {
   const toggle = useToggle();
-  const { disable: disableMenu } = useSideMenuState();
 
   const onKeyDown = useCallback(
     (event: KeyboardEvent) => {
@@ -50,8 +48,7 @@ export function NavbarDropdown({
 
   const onClick = useCallback(() => {
     toggle.toggle();
-    disableMenu?.();
-  }, [disableMenu, toggle]);
+  }, [toggle]);
 
   const ref = useRef<HTMLDivElement>();
   useClickOutside(ref, toggle.disable);

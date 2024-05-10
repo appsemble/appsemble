@@ -6,6 +6,7 @@ import {
   Tabs,
   useBeforeUnload,
   useClickOutside,
+  useClosableOnDesktopSideMenu,
   useConfirmation,
   useData,
   useEventListener,
@@ -46,10 +47,8 @@ import { useApp } from '../index.js';
 
 export default function EditPage(): ReactNode {
   useMeta(messages.title);
-
   const { app, setApp } = useApp();
   const { id } = app;
-
   const [appDefinition, setAppDefinition] = useState<string>(app.yaml);
   const {
     data: coreStyle,
@@ -65,16 +64,11 @@ export default function EditPage(): ReactNode {
   const [appDefinitionErrorCount, setAppDefinitionErrorCount] = useState(0);
   const [coreStyleErrorCount, setCoreStyleErrorCount] = useState(0);
   const [sharedStyleErrorCount, setSharedStyleErrorCount] = useState(0);
-
   const [pristine, setPristine] = useState(true);
-
   const frame = useRef<HTMLIFrameElement>();
   const modalFrame = useRef<HTMLIFrameElement>();
-
-  // REFACTORING confusing names?
-  const dropdownBurgerButtonRef = useRef<HTMLButtonElement>();
-  const buttonsDropDownRef = useRef<HTMLDivElement>();
-
+  const toolbarMenuButtonRef = useRef<HTMLButtonElement>();
+  const toolbarMenuRef = useRef<HTMLDivElement>();
   const editorRef = useRef<editor.IStandaloneCodeEditor>();
   const { formatMessage } = useIntl();
   const location = useLocation();
@@ -86,10 +80,10 @@ export default function EditPage(): ReactNode {
   const [selectedRatio, setSelectedRatio] = useState<(typeof screenRatios)[number]>('fill');
   const { enterFullscreen, exitFullscreen, fullscreen } = useFullscreenContext();
   const toolbarToggle = useToggle();
-
   const previewModalToggle = useToggle();
-  // REFACTORING does this need to be state?
   const [messageForModalFrame, setMessageForModalFrame] = useState(null);
+
+  useClosableOnDesktopSideMenu();
 
   useEventListener(
     globalThis,
@@ -106,31 +100,15 @@ export default function EditPage(): ReactNode {
 
   /* This closes the buttons dropdown menu when a click outside the bounds is registered,
    ** except for the toggle button. */
-  useClickOutside(buttonsDropDownRef, toolbarToggle.disable, dropdownBurgerButtonRef);
+  useClickOutside(toolbarMenuRef, toolbarToggle.disable, toolbarMenuButtonRef);
 
   useEventListener(window, 'resize', () => {
     // If user resizes window from mobile form factor to desktop,
     // close the mobile preview modal
-    if (window.innerWidth > 1023) {
+    if (window?.innerWidth > 1023) {
       previewModalToggle.disable();
     }
   });
-
-  // REFACTORING TODO needed? maybe it is, see https://css-tricks.com/pure-css-horizontal-scrolling/
-  // The official (i.e. css-tricks endorsed way) of doing this in pure css is
-  // not any better than this is
-  // This enables the use of the mouse wheel to scroll the editor's tabs container
-  // However, this uses a direct HTMLElement from a querySelector call - no-no.
-  // if (codeEditorTabs) {
-  //   codeEditorTabs.addEventListener(
-  //     'wheel',
-  //     (event: WheelEvent) => {
-  //       event.preventDefault();
-  //       codeEditorTabs.scrollLeft += event.deltaY;
-  //     },
-  //     { passive: false },
-  //   );
-  // }
 
   const handleToolbarButtonClick = useCallback(
     (handler?: () => unknown) => {
@@ -144,8 +122,10 @@ export default function EditPage(): ReactNode {
 
   useEffect(() => {
     setBreadCrumbsDecoration(
-      <Link id="guiEditorSwitch" to={`apps/${id}/edit/gui/pages`}>
-        <Button className="button is-hidden-touch is-fullwidth is-rounded is-transparent is-bordered is-small">
+      <Link to={`apps/${id}/edit/gui/pages`}>
+        <Button
+          className={`button is-hidden-touch is-fullwidth is-rounded is-transparent is-bordered is-small ${styles.guiSwitch}`}
+        >
           <FormattedMessage {...messages.switchToGuiEditor} />{' '}
           <FormattedMessage {...messages.experimental} />
         </Button>
@@ -162,14 +142,6 @@ export default function EditPage(): ReactNode {
     [navigate],
   );
 
-  // REFACTORING
-  // This is necessary to reload the code changes inside the frame
-  // Should we be using two different iFrames? and should we be passing messages through state?
-  // The first iFrame is always guaranteed to be loaded, but the second is not.
-  // not good, cause the second iframe needs to receive a definition
-  // on load to show the preview version and
-  // not the published version.
-  // Will using portals work better here or what?
   const handleIframeLoad = (): void => {
     if (previewModalToggle.enabled && messageForModalFrame) {
       modalFrame?.current.contentWindow.postMessage(
@@ -192,7 +164,6 @@ export default function EditPage(): ReactNode {
       { type: 'editor/EDIT_SUCCESS', definition, blockManifests, coreStyle, sharedStyle },
       getAppUrl(app.OrganizationId, app.path),
     );
-    // REFACTORING change or nah?
     setMessageForModalFrame({
       type: 'editor/EDIT_SUCCESS',
       definition,
@@ -346,7 +317,7 @@ export default function EditPage(): ReactNode {
               className={classNames(['navbar-burger', { 'is-active': toolbarToggle.enabled }])}
               data-target="navbarMenu"
               onClick={toolbarToggle.enabled ? toolbarToggle.disable : toolbarToggle.enable}
-              ref={dropdownBurgerButtonRef}
+              ref={toolbarMenuButtonRef}
               type="button"
             >
               <span aria-hidden="true" />
@@ -355,8 +326,15 @@ export default function EditPage(): ReactNode {
             </button>
           </div>
           <div
-            className={classNames(['navbar-menu', { 'is-active': toolbarToggle.enabled }])}
-            ref={buttonsDropDownRef}
+            className={classNames([
+              'navbar-menu',
+              styles.toolbarMenu,
+              {
+                'is-active': toolbarToggle.enabled,
+                [styles.toolbarMenuActive]: toolbarToggle.enabled,
+              },
+            ])}
+            ref={toolbarMenuRef}
           >
             <div className="navbar-start">
               <div className="navbar-item px-0">
@@ -480,7 +458,7 @@ export default function EditPage(): ReactNode {
         </div>
       </div>
       <Prompt message={formatMessage(messages.notification)} when={appDefinition !== app.yaml} />
-      <div className={`ml-3 is-hidden-touch ${styles.rightPanel} ${styles[selectedRatio]}`}>
+      <div className={`ml-3 ${styles.rightPanel} ${styles[selectedRatio]}`}>
         <div className={styles.formatSelection}>
           <InputList
             isRight
@@ -496,12 +474,12 @@ export default function EditPage(): ReactNode {
         </div>
       </div>
       <Modal
-        className={styles.previewModal}
+        className={styles.mobilePreviewModal}
         extraClassName="is-hidden-desktop"
         isActive={previewModalToggle.enabled}
         onClose={previewModalToggle.disable}
       >
-        <div className={`${styles.modalPreviewFrameDiv} is-flex mx-2 px-5 py-5 ${styles.fill}`}>
+        <div className={`${styles.mobilePreviewRoot} is-flex mx-2 px-5 py-5 ${styles.fill}`}>
           <AppPreview app={app} iframeRef={modalFrame} onIframeLoad={handleIframeLoad} />
         </div>
       </Modal>

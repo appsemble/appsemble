@@ -1,6 +1,7 @@
 import {
   Button,
   useBeforeUnload,
+  useClosableOnDesktopSideMenu,
   useData,
   useMessages,
   useMeta,
@@ -121,6 +122,8 @@ export default function EditPage(): ReactNode {
   const [hideInputListLabel, setHideInputListLabel] = useState(false);
 
   const [, setBreadCrumbsDecoration] = useBreadCrumbsDecoration();
+
+  useClosableOnDesktopSideMenu();
 
   useEffect(() => {
     setBreadCrumbsDecoration(
