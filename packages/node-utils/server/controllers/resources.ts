@@ -340,6 +340,7 @@ export function createUpdateResource(options: Options): Middleware {
       resourceDefinition,
       appAssets.filter((asset) => asset.resourceId === resourceId).map((asset) => asset.id),
       oldResource.expires as Date,
+      appAssets.map((asset) => ({ id: asset.id, name: asset.name })),
     );
 
     const resources = Array.isArray(processedBody) ? processedBody : [processedBody];

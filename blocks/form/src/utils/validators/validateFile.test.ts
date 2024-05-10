@@ -116,4 +116,82 @@ describe('validateFile', () => {
       ]),
     ).toStrictEqual(field.requirements[0]);
   });
+
+  it('should check combining mime types', () => {
+    const field = {
+      type: 'file',
+      name: 'test',
+      requirements: [{ accept: ['image/*'] }],
+    } as FileField;
+
+    expect(validateFile(field, { type: 'image/jpeg' } as File)).toBeUndefined();
+    expect(validateFile(field, { type: 'image/svg+xml' } as File)).toBeUndefined();
+    expect(validateFile(field, { type: 'video/quicktime' } as File)).toStrictEqual(
+      field.requirements[0],
+    );
+
+    expect(
+      validateFile({ ...field, repeated: true }, [
+        { type: 'image/jpeg' } as File,
+        { type: 'image/png' } as File,
+      ]),
+    ).toBeUndefined();
+
+    expect(
+      validateFile({ ...field, repeated: true }, [
+        { type: 'image/svg+xml' } as File,
+        { type: 'image/png' } as File,
+      ]),
+    ).toBeUndefined();
+
+    expect(
+      validateFile({ ...field, repeated: true }, [
+        { type: 'image/svg+xml' } as File,
+        { type: 'video/quicktime' } as File,
+      ]),
+    ).toStrictEqual(field.requirements[0]);
+  });
+
+  it('should check complex combining mime types', () => {
+    const field = {
+      type: 'file',
+      name: 'test',
+      requirements: [{ accept: ['image/*', 'video/quicktime'] }],
+    } as FileField;
+
+    expect(validateFile(field, { type: 'image/jpeg' } as File)).toBeUndefined();
+    expect(validateFile(field, { type: 'image/svg+xml' } as File)).toBeUndefined();
+    expect(validateFile(field, { type: 'video/quicktime' } as File)).toBeUndefined();
+    expect(validateFile(field, { type: 'video/x-msvideo' } as File)).toStrictEqual(
+      field.requirements[0],
+    );
+
+    expect(
+      validateFile({ ...field, repeated: true }, [
+        { type: 'image/jpeg' } as File,
+        { type: 'image/png' } as File,
+      ]),
+    ).toBeUndefined();
+
+    expect(
+      validateFile({ ...field, repeated: true }, [
+        { type: 'image/svg+xml' } as File,
+        { type: 'image/png' } as File,
+      ]),
+    ).toBeUndefined();
+
+    expect(
+      validateFile({ ...field, repeated: true }, [
+        { type: 'image/svg+xml' } as File,
+        { type: 'video/quicktime' } as File,
+      ]),
+    ).toBeUndefined();
+
+    expect(
+      validateFile({ ...field, repeated: true }, [
+        { type: 'image/svg+xml' } as File,
+        { type: 'video/x-msvideo' } as File,
+      ]),
+    ).toStrictEqual(field.requirements[0]);
+  });
 });

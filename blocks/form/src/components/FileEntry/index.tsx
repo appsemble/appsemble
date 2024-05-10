@@ -2,6 +2,7 @@ import { useBlock } from '@appsemble/preact';
 import { Modal, useObjectURL, useToggle } from '@appsemble/preact-components';
 import { findIconDefinition, icon, library } from '@fortawesome/fontawesome-svg-core';
 import { fas } from '@fortawesome/free-solid-svg-icons';
+import classNames from 'classnames';
 import { type JSX, type VNode } from 'preact';
 import { useCallback, useEffect, useRef, useState } from 'preact/hooks';
 
@@ -84,13 +85,14 @@ export function FileEntry({
 
   const modal = useToggle();
   const videoRef = useRef(null);
-  const [fileType, setFileType] = useState<'image' | 'video' | null>(null);
+  const [fileType, setFileType] = useState<'image' | 'unknown' | 'video' | null>(null);
   const [firstFrameSrc, setFirstFrameSrc] = useState('');
 
   const onSelect = useCallback(
     async (event: JSX.TargetedEvent<HTMLInputElement>): Promise<void> => {
       const { maxHeight, maxWidth, quality } = field;
       const { currentTarget } = event;
+
       let file = currentTarget.files[0] as Blob;
       currentTarget.value = null;
 
@@ -104,14 +106,43 @@ export function FileEntry({
   );
 
   useEffect(() => {
-    if ((value as unknown as File)?.type.match('image/*')) {
-      setFileType('image');
-    }
+    (async () => {
+      if (valueString) {
+        try {
+          const assetUrl = utils.asset(valueString);
+          const response = await fetch(assetUrl);
+          if (response.ok) {
+            const contentType = response.headers.get('Content-Type');
+            if (contentType && contentType.includes('image')) {
+              setFileType('image');
+            } else if (contentType && contentType.includes('video')) {
+              setFileType('video');
+            } else {
+              setFileType('unknown');
+            }
+          } else {
+            setFileType('unknown');
+          }
+        } catch {
+          setFileType('unknown');
+        }
+      } else {
+        if (!(value instanceof File)) {
+          setFileType('unknown');
+          return;
+        }
 
-    if ((value as unknown as File)?.type.match('video/*')) {
-      setFileType('video');
-    }
-  }, [value]);
+        const valueType = value.type;
+        if (valueType.match('image/*')) {
+          setFileType('image');
+        } else if (valueType.match('video/*')) {
+          setFileType('video');
+        } else {
+          setFileType('unknown');
+        }
+      }
+    })();
+  }, [utils, value, valueString]);
 
   const onRemove = useCallback(
     (event: Event) => {
@@ -132,9 +163,11 @@ export function FileEntry({
     setFirstFrameSrc(dataURL);
   };
 
+  const previewAvailable = ['image', 'video'].includes(fileType);
+
   return (
     <div className={`appsemble-file file mr-3 ${repeated ? styles['root-repeated'] : styles.root}`}>
-      {value && url ? (
+      {value && url && previewAvailable ? (
         <Modal isActive={modal.enabled} onClose={modal.disable}>
           {fileType === 'image' ? (
             <figure className="image">
@@ -163,37 +196,58 @@ export function FileEntry({
           />
         ) : null}
         {url ? (
-          <>
-            <button className={styles.button} onClick={modal.enable} type="button">
-              <figure className="image is-relative">
-                <img
-                  alt={(utils.remap(field.label, value) as string) ?? field.name}
-                  className={`${styles.image} ${styles.rounded}`}
-                  src={fileType === 'video' ? firstFrameSrc : url}
-                />
-              </figure>
-            </button>
-            <button
-              className={`button is-small ${styles.removeButton}`}
-              onClick={onRemove}
-              type="button"
-            >
-              <span className="icon">
-                <i className="fas fa-times" />
-              </span>
-            </button>
-          </>
+          previewAvailable ? (
+            (fileType === 'video' && firstFrameSrc) || fileType === 'image' ? (
+              <>
+                <button className={styles.button} onClick={modal.enable} type="button">
+                  <figure className={classNames('image is-relative', styles.thumbnail)}>
+                    <img
+                      alt={(utils.remap(field.label, value) as string) ?? field.name}
+                      className={`${styles.image} ${styles.rounded}`}
+                      src={fileType === 'video' ? firstFrameSrc : url}
+                    />
+                  </figure>
+                </button>
+                <button
+                  className={`button is-small ${styles.removeButton}`}
+                  onClick={onRemove}
+                  type="button"
+                >
+                  <span className="icon">
+                    <i className="fas fa-times" />
+                  </span>
+                </button>
+              </>
+            ) : (
+              <span
+                className={`image is-128x128 px-2 py-2 has-text-centered ${styles.rounded} ${styles.placeholder} ${styles.loading}`}
+                /* eslint-disable-next-line react/forbid-dom-props */
+                style={{ backgroundImage: createCustomSvg(iconName) }}
+              />
+            )
+          ) : (
+            <>
+              <span
+                className={`image is-128x128 px-2 py-2 has-text-centered ${styles.rounded} ${styles.placeholder} ${styles.unknown}`}
+                /* eslint-disable-next-line react/forbid-dom-props */
+                style={{ backgroundImage: createCustomSvg(iconName) }}
+              />
+              <button
+                className={`button is-small ${styles.removeButton}`}
+                onClick={onRemove}
+                type="button"
+              >
+                <span className="icon">
+                  <i className="fas fa-times" />
+                </span>
+              </button>
+            </>
+          )
         ) : (
           <span
-            className={`image is-128x128 px-2 py-2 has-text-centered ${styles.rounded} ${styles.empty} `}
+            className={`image is-128x128 px-2 py-2 has-text-centered ${styles.rounded} ${styles.placeholder} ${styles.empty}`}
             /* eslint-disable-next-line react/forbid-dom-props */
-            style={
-              createCustomSvg(iconName)
-                ? {
-                    backgroundImage: createCustomSvg(iconName),
-                  }
-                : {}
-            }
+            style={{ backgroundImage: createCustomSvg(iconName) }}
           >
             <span className="file-label">
               {utils.remap(field.emptyFileLabel ?? ' ', field) as string}
@@ -203,7 +257,15 @@ export function FileEntry({
       </label>
       {url && fileType === 'video' ? (
         <div className={styles.input}>
-          <video autoPlay controls onCanPlay={captureFirstFrame} ref={videoRef} src={url}>
+          <video
+            autoPlay
+            className={styles.videoAbsolute}
+            controls
+            crossOrigin="anonymous"
+            onCanPlay={captureFirstFrame}
+            ref={videoRef}
+            src={url}
+          >
             <track kind="captions" />
           </video>
         </div>
