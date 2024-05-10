@@ -1,7 +1,7 @@
 apiVersion: v2
 name: appsemble
-version: 0.28.7
-appVersion: 0.28.7
+version: 0.28.8
+appVersion: 0.28.8
 kubeVersion: '>=1.21.0'
 type: application
 description: The open source low-code app building platform
@@ -24,25 +24,14 @@ dependencies:
     condition: postgresql.enabled
 annotations:
   artifacthub.io/changes: >
+    - kind: changed
+      description: "Block(form): Add the option to specify accept in the mime-type/*
+        format for file fields."
     - kind: fixed
-      description: "Cli: Missing options in team update command, context and app."
+      description: "Block(form): Improve UX on file upload."
     - kind: fixed
-      description: "Cli: Throw an error if remote is neither found in the specified
-        context nor passed as an argument."
-    - kind: fixed
-      description: "Cli: Wrong option used in team create command to make argument
-        dependent on one-another. Options app and context are now optional unless
-        either is specified."
-    - kind: fixed
-      description: "Preact-components: Make the date picker calendar display
-        statically below the input field."
-    - kind: fixed
-      description: "React-components: Add a footer to the dialog from the dialog action."
-    - kind: fixed
-      description: "Server: The setAppPath function should try at least 9 times before
-        generating hex values."
-    - kind: fixed
-      description: "Studio: Disable autofill for app secrets."
+      description: "Node-utils: Updating resources used to fail if they were created
+        with assets referenced by name."
   artifacthub.io/license: LGPL-3.0-only
   artifacthub.io/links: |
     - name: Appsemble Studio

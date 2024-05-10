@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.28.8](https://gitlab.com/appsemble/appsemble/-/releases/0.28.8)] - 2024-05-10
+
+### Changed
+
+- Block(`form`): Add the option to specify accept in the `mime-type/*` format for file fields.
+
+### Fixed
+
+- Block(`form`): Improve UX on file upload.
+- Node-utils: Updating resources used to fail if they were created with assets referenced by name.
+
 ## \[[0.28.7](https://gitlab.com/appsemble/appsemble/-/releases/0.28.7)] - 2024-05-06
 
 ### Fixed
