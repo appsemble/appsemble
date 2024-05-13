@@ -42,7 +42,11 @@ export function generateDefaultValidity(
             prefix ? `${prefix}.${field.name}` : field.name,
           );
     }
-    if (!isRequired(field, utils, data) && value === defaultValues?.[field.name]) {
+    if (
+      !isRequired(field, utils, data) &&
+      !['selection', 'tags'].includes(field.type) &&
+      value === defaultValues?.[field.name]
+    ) {
       // If the user has entered something and then reverted it to its default value,
       // it should be treated as if it’s pristine.
       continue;

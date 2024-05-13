@@ -272,10 +272,8 @@ export async function handler({ increment }: Args): Promise<void> {
     [
       'apps/*/index.html',
       'apps/*/app-definition.yaml',
-      'docs/*.md',
-      'docs/**/*.md',
-      'docs/*.mdx',
-      'docs/**/*.mdx',
+      'packages/studio/pages/docs/**/*.md',
+      'packages/studio/pages/docs/**/*.mdx',
       'blocks/**/*.md',
       'packages/**/*.md',
       '!packages/**/changed/**/*.md',
