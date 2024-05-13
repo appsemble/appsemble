@@ -4947,6 +4947,12 @@ If not defined, received data will be treated as an array.",
 Will not render if undefined.",
         "format": "remapper",
       },
+      "hideOnNoData": {
+        "description": "Weather the list should be hidden if there is no data.
+
+Will not hide if undefined.",
+        "type": "boolean",
+      },
       "icon": {
         "description": "The icon that displays in front of the header.
 
