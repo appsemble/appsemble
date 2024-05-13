@@ -226,6 +226,13 @@ declare module '@appsemble/sdk' {
 
   interface Parameters {
     /**
+     * Weather the list should be hidden if there is no data.
+     *
+     * Will not hide if undefined.
+     */
+    hideOnNoData?: boolean;
+
+    /**
      * The header text to display above the list of fields.
      *
      * Will not render if undefined.

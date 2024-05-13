@@ -127,7 +127,7 @@ export function FileEntry({
           setFileType('unknown');
         }
       } else {
-        if (!(value instanceof File)) {
+        if (!(value instanceof Blob)) {
           setFileType('unknown');
           return;
         }
