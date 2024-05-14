@@ -85,6 +85,10 @@ If a user does not have the right role, the block is not rendered.
               },
               "type": "array",
             },
+            "show": {
+              "$ref": "#/components/schemas/RemapperDefinition",
+              "description": "Whether to render the block or not",
+            },
             "theme": {
               "$ref": "#/components/schemas/Theme",
             },
@@ -1502,6 +1506,10 @@ If a user does not have the right role, the block is not rendered.
                 "type": "string",
               },
               "type": "array",
+            },
+            "show": {
+              "$ref": "#/components/schemas/RemapperDefinition",
+              "description": "Whether to render the block or not",
             },
             "theme": {
               "$ref": "#/components/schemas/Theme",

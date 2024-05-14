@@ -263,40 +263,45 @@ export function Block({
     </Title>
   ) : null;
 
-  if (layout === 'float') {
-    const { position = 'bottom right' } = block;
-    const { navigation = 'left-menu' } = definition.layout || {};
+  const show = block.show === undefined ? true : remap(block.show, { ...data, ...params });
 
-    return createPortal(
+  if (show) {
+    if (layout === 'float') {
+      const { position = 'bottom right' } = block;
+      const { navigation = 'left-menu' } = definition.layout || {};
+
+      return createPortal(
+        <div
+          className={classNames(`is-flex ${styles.root} ${styles.float}`, {
+            [styles.top]: position.includes('top'),
+            [styles.bottom]: position.includes('bottom'),
+            [styles.left]: position.includes('left'),
+            [styles.right]: position.includes('right'),
+            [styles.hasSideMenu]: navigation === 'left-menu',
+            [styles.hasBottomNav]: navigation === 'bottom',
+          })}
+          data-block={blockName}
+          data-path={prefix}
+          data-path-index={prefixIndex}
+        >
+          {header}
+          <div className={styles.host} ref={ref} />
+        </div>,
+        document.body,
+      );
+    }
+
+    return (
       <div
-        className={classNames(`is-flex ${styles.root} ${styles.float}`, {
-          [styles.top]: position.includes('top'),
-          [styles.bottom]: position.includes('bottom'),
-          [styles.left]: position.includes('left'),
-          [styles.right]: position.includes('right'),
-          [styles.hasSideMenu]: navigation === 'left-menu',
-          [styles.hasBottomNav]: navigation === 'bottom',
-        })}
+        className={`is-flex ${styles.root} ${layout === 'grow' ? styles.grow : styles.static}`}
         data-block={blockName}
         data-path={prefix}
         data-path-index={prefixIndex}
       >
         {header}
         <div className={styles.host} ref={ref} />
-      </div>,
-      document.body,
+      </div>
     );
   }
-
-  return (
-    <div
-      className={`is-flex ${styles.root} ${layout === 'grow' ? styles.grow : styles.static}`}
-      data-block={blockName}
-      data-path={prefix}
-      data-path-index={prefixIndex}
-    >
-      {header}
-      <div className={styles.host} ref={ref} />
-    </div>
-  );
+  return null;
 }

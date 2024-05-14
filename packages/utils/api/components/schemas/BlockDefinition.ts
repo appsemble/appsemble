@@ -44,6 +44,10 @@ Layout float can be combined with the \`position\` property to place the block o
 `,
       enum: ['float', 'grow', 'static'],
     },
+    show: {
+      $ref: '#/components/schemas/RemapperDefinition',
+      description: 'Whether to render the block or not',
+    },
     header: {
       $ref: '#/components/schemas/RemapperDefinition',
       description: 'An optional header to render above the block.',
