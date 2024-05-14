@@ -781,13 +781,9 @@ export async function patchApp(ctx: Context): Promise<void> {
       result.enableUnsecuredServiceSecrets = enableUnsecuredServiceSecrets;
     }
 
-    if (coreStyle) {
-      result.coreStyle = validateStyle(coreStyle);
-    }
+    result.coreStyle = coreStyle ? validateStyle(coreStyle) : validateStyle('');
 
-    if (sharedStyle) {
-      result.sharedStyle = validateStyle(sharedStyle);
-    }
+    result.sharedStyle = sharedStyle ? validateStyle(sharedStyle) : validateStyle('');
 
     if (icon) {
       result.icon = icon.contents;
