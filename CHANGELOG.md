@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.28.9](https://gitlab.com/appsemble/appsemble/-/releases/0.28.9)] - 2024-05-14
+
+### Added
+
+- Block(`list`): Add a `hideOnNoData` property to hide the block if there is no data.
+- Cli: Get app variables endpoint for dev server.
+
+### Fixed
+
+- Block(`form`): Allow selected value to be of type `Blob`.
+- Block(`form`): Invalidate `tags` and `selection` fields if they are not required, but have
+  `minItems` specified.
+- Server: Allow to remove core and shared styles from an app.
+
 ## \[[0.28.8](https://gitlab.com/appsemble/appsemble/-/releases/0.28.8)] - 2024-05-10
 
 ### Changed
