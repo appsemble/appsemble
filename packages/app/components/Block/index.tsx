@@ -253,6 +253,13 @@ export function Block({
 
   const { layout = manifest.layout } = block;
 
+  const hide = block.hide ? remap(block.hide, { ...data, ...params }) : false;
+  useEffect(() => {
+    if (hide) {
+      ready(block);
+    }
+  });
+
   if (layout === 'hidden') {
     return null;
   }
@@ -263,9 +270,7 @@ export function Block({
     </Title>
   ) : null;
 
-  const show = block.show === undefined ? true : remap(block.show, { ...data, ...params });
-
-  if (show) {
+  if (!hide) {
     if (layout === 'float') {
       const { position = 'bottom right' } = block;
       const { navigation = 'left-menu' } = definition.layout || {};

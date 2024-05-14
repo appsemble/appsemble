@@ -39,6 +39,10 @@ Content-Type: application/json; charset=utf-8
               "$ref": "#/components/schemas/RemapperDefinition",
               "description": "An optional header to render above the block.",
             },
+            "hide": {
+              "$ref": "#/components/schemas/RemapperDefinition",
+              "description": "Whether to render the block or not",
+            },
             "layout": {
               "description": "An override of the block’s default layout.
 
@@ -84,10 +88,6 @@ If a user does not have the right role, the block is not rendered.
                 "type": "string",
               },
               "type": "array",
-            },
-            "show": {
-              "$ref": "#/components/schemas/RemapperDefinition",
-              "description": "Whether to render the block or not",
             },
             "theme": {
               "$ref": "#/components/schemas/Theme",
@@ -1461,6 +1461,10 @@ Content-Type: application/json; charset=utf-8
               "$ref": "#/components/schemas/RemapperDefinition",
               "description": "An optional header to render above the block.",
             },
+            "hide": {
+              "$ref": "#/components/schemas/RemapperDefinition",
+              "description": "Whether to render the block or not",
+            },
             "layout": {
               "description": "An override of the block’s default layout.
 
@@ -1506,10 +1510,6 @@ If a user does not have the right role, the block is not rendered.
                 "type": "string",
               },
               "type": "array",
-            },
-            "show": {
-              "$ref": "#/components/schemas/RemapperDefinition",
-              "description": "Whether to render the block or not",
             },
             "theme": {
               "$ref": "#/components/schemas/Theme",

@@ -1,1 +1,1 @@
-Add `show` property to blocks to enable conditional rendering.
+Add `hide` property to blocks to enable conditional rendering.
