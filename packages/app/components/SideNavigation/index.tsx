@@ -91,6 +91,21 @@ export function SideNavigation({ blockMenus, pages }: SideNavigationProps): Reac
           const [name, navName] = generateNameAndNavName(page);
           return (
             <MenuItem
+              count={
+                page.badgeCount
+                  ? (remap(page.badgeCount, null, {
+                      appId,
+                      appUrl: window.location.origin,
+                      url: window.location.href,
+                      getMessage,
+                      getVariable,
+                      userInfo,
+                      appMember: userInfo?.appMember,
+                      context: { name },
+                      locale: lang,
+                    }) as number)
+                  : undefined
+              }
               icon={page.icon}
               key={page.name}
               title={navName}

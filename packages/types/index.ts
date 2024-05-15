@@ -1792,6 +1792,11 @@ export interface BasePageDefinition {
    * The global theme for the page.
    */
   theme?: Partial<Theme>;
+
+  /**
+   * A Remapper that resolves to a number to be visibile in the side-menu.
+   */
+  badgeCount?: Remapper;
 }
 
 /**

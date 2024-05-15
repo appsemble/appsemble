@@ -85,5 +85,9 @@ instructed to contact the app owner to get permissions.
     theme: {
       $ref: '#/components/schemas/Theme',
     },
+    badgeCount: {
+      $ref: '#/components/schemas/RemapperDefinition',
+      description: 'A Remapper that resolves to a number to be visibile in the side-menu.',
+    },
   },
 };
