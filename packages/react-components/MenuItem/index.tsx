@@ -58,7 +58,9 @@ export function MenuItem({ children, count, end, icon, title, to }: SideNavLinkP
       <>
         {icon ? <Icon className={`mr-1 ${styles.middle}`} icon={icon} size="medium" /> : null}
         <span className={styles.text}>{children}</span>
-        {count ? <span className="tag is-rounded is-small">{count}</span> : null}
+        {count ? (
+          <sub className={`tag is-rounded ml-1 ${isActive ? '' : 'is-dark'}`}>{count}</sub>
+        ) : null}
         {collapsible ? (
           <Icon
             className={styles.icon}

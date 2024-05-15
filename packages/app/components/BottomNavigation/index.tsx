@@ -46,25 +46,27 @@ export function BottomNavigation({ pages }: BottomNavigationProps): ReactNode {
               id: `pages.${normalize(page.name)}`,
               defaultMessage: page.name,
             }).format() as string;
+            const remapperContext = {
+              appId,
+              appUrl: window.location.origin,
+              url: window.location.href,
+              getMessage,
+              getVariable,
+              appMemberInfo,
+              context: { name },
+              locale: lang,
+            };
             const navName = page.navTitle
-              ? (remap(page.navTitle, null, {
-                  appId,
-                  appUrl: window.location.origin,
-                  url: window.location.href,
-                  getMessage,
-                  getVariable,
-                  appMemberInfo,
-                  context: { name },
-                  locale: lang,
-                }) as ReactNode)
+              ? (remap(page.navTitle, null, remapperContext) as ReactNode)
               : name;
+
+            const count = remap(page.badgeCount, null, remapperContext) as number;
 
             return (
               <li className="bottom-nav-item" key={page.name}>
                 <NavLink
                   className={({ isActive }) =>
-                    `bottom-nav-item-link is-flex px-4 py-4 has-text-centered ${
-                      isActive && 'is-active'
+                    `bottom-nav-item-link is-flex px-4 py-4 has-text-centered ${isActive && 'is-active'
                     }`
                   }
                   title={navName as string}
@@ -73,7 +75,12 @@ export function BottomNavigation({ pages }: BottomNavigationProps): ReactNode {
                   {page.icon ? (
                     <Icon className="mb-1" icon={page.icon} iconSize="3x" size="large" />
                   ) : null}
-                  <span>{navName}</span>
+                  <div>
+                    <span>{navName}</span>
+                    {page.badgeCount ? (
+                      <span className="tag is-rounded ml-1 is-dark">{count}</span>
+                    ) : null}
+                  </div>
                 </NavLink>
               </li>
             );
@@ -83,8 +90,7 @@ export function BottomNavigation({ pages }: BottomNavigationProps): ReactNode {
             <li className="bottom-nav-item">
               <NavLink
                 className={({ isActive }) =>
-                  `bottom-nav-item-link is-flex px-4 py-4 has-text-centered ${
-                    isActive && 'is-active'
+                  `bottom-nav-item-link is-flex px-4 py-4 has-text-centered ${isActive && 'is-active'
                   }`
                 }
                 title={formatMessage(messages.settings)}
@@ -101,8 +107,7 @@ export function BottomNavigation({ pages }: BottomNavigationProps): ReactNode {
             <li className="bottom-nav-item">
               <NavLink
                 className={({ isActive }) =>
-                  `bottom-nav-item-link is-flex px-4 py-4 has-text-centered ${
-                    isActive && 'is-active'
+                  `bottom-nav-item-link is-flex px-4 py-4 has-text-centered ${isActive && 'is-active'
                   }`
                 }
                 title={formatMessage(messages.feedback)}
@@ -133,8 +138,7 @@ export function BottomNavigation({ pages }: BottomNavigationProps): ReactNode {
               <li className="bottom-nav-item">
                 <NavLink
                   className={({ isActive }) =>
-                    `bottom-nav-item-link is-flex px-4 py-4 has-text-centered ${
-                      isActive && 'is-active'
+                    `bottom-nav-item-link is-flex px-4 py-4 has-text-centered ${isActive && 'is-active'
                     }`
                   }
                   title={formatMessage(messages.login)}
