@@ -43,7 +43,7 @@ export async function up(transaction: Transaction, db: Sequelize): Promise<void>
     await queryInterface.removeConstraint(tableName, foreignKeyName, { transaction });
 
     logger.info(
-      `Adding foreign key constraint \`${foreignKeyName}\` to table \`${tableName}\` without cascade`,
+      `Adding foreign key constraint \`${foreignKeyName}\` to table \`${tableName}\` with cascade`,
     );
     await queryInterface.addConstraint(tableName, {
       fields: [field],
@@ -106,7 +106,7 @@ export async function down(transaction: Transaction, db: Sequelize): Promise<voi
       fields: [field],
       type: 'foreign key',
       name: foreignKeyName,
-      onUpdate: 'set null',
+      onUpdate: 'cascade',
       onDelete: 'set null',
       references: {
         table: referencedTableName,
