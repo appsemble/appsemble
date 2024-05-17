@@ -52,7 +52,7 @@ beforeEach(async () => {
     id: 'appsemble',
     name: 'Appsemble',
   });
-  vi.spyOn(server.context.mailer, 'sendTemplateEmail');
+  vi.spyOn(server.context.mailer, 'sendTranslatedEmail');
 });
 
 afterAll(() => {
@@ -840,7 +840,7 @@ describe('inviteMembers', () => {
         statusCode: 403,
       },
     });
-    expect(server.context.mailer.sendTemplateEmail).not.toHaveBeenCalled();
+    expect(server.context.mailer.sendTranslatedEmail).not.toHaveBeenCalled();
   });
 
   it('should throw a bad request of all invitees are already in the organization', async () => {
@@ -871,7 +871,7 @@ describe('inviteMembers', () => {
         statusCode: 400,
       },
     });
-    expect(server.context.mailer.sendTemplateEmail).not.toHaveBeenCalled();
+    expect(server.context.mailer.sendTranslatedEmail).not.toHaveBeenCalled();
   });
 
   it('should throw a bad request of all new invitees are have already been invited', async () => {
@@ -901,13 +901,15 @@ describe('inviteMembers', () => {
         statusCode: 400,
       },
     });
-    expect(server.context.mailer.sendTemplateEmail).not.toHaveBeenCalled();
+    expect(server.context.mailer.sendTranslatedEmail).not.toHaveBeenCalled();
   });
 
   it('should invite users by their primary email', async () => {
     const userA = await User.create({
       primaryEmail: 'a@example.com',
       timezone: 'Europe/Amsterdam',
+      locale: 'nl',
+      name: 'Test User',
     });
     await EmailAuthorization.create({ UserId: userA.id, email: 'a@example.com' });
     await EmailAuthorization.create({ UserId: userA.id, email: 'aa@example.com' });
@@ -929,14 +931,20 @@ describe('inviteMembers', () => {
       UserId: userA.id,
       role: 'Member',
     });
-    expect(server.context.mailer.sendTemplateEmail).toHaveBeenCalledWith(
-      { email: 'a@example.com' },
-      'organizationInvite',
-      {
-        organization: 'testorganization',
-        url: `http://localhost/organization-invite?token=${invite.key}`,
+    expect(server.context.mailer.sendTranslatedEmail).toHaveBeenCalledWith({
+      emailName: 'organizationInvite',
+      locale: 'nl',
+      to: {
+        email: 'a@example.com',
+        name: 'Test User',
       },
-    );
+      values: {
+        appName: 'null',
+        link: expect.any(Function),
+        name: 'Test User',
+        organization: 'testorganization',
+      },
+    });
   });
 
   it('should invite unknown email addresses', async () => {
@@ -957,24 +965,36 @@ describe('inviteMembers', () => {
       UserId: null,
       role: 'Member',
     });
-    expect(server.context.mailer.sendTemplateEmail).toHaveBeenCalledWith(
-      { email: 'a@example.com' },
-      'organizationInvite',
-      {
-        organization: 'testorganization',
-        url: `http://localhost/organization-invite?token=${invite.key}`,
+    expect(server.context.mailer.sendTranslatedEmail).toHaveBeenCalledWith({
+      emailName: 'organizationInvite',
+      to: {
+        email: 'a@example.com',
       },
-    );
+      values: {
+        appName: 'null',
+        link: expect.any(Function),
+        name: 'null',
+        organization: 'testorganization',
+      },
+    });
   });
 });
 
 describe('resendInvitation', () => {
   it('should resend an invitation', async () => {
+    const orgUser = await User.create({
+      email: 'test2@example.com',
+      timezone: 'Europe/Amsterdam',
+      locale: 'nl',
+      name: 'Test User',
+    });
+
     await OrganizationInvite.create({
       email: 'test2@example.com',
       key: 'invitekey',
       role: 'Member',
       OrganizationId: 'testorganization',
+      UserId: orgUser.id,
     });
 
     authorizeStudio();
@@ -983,14 +1003,20 @@ describe('resendInvitation', () => {
     });
 
     expect(response).toMatchObject({ status: 204 });
-    expect(server.context.mailer.sendTemplateEmail).toHaveBeenCalledWith(
-      { email: 'test2@example.com' },
-      'organizationInvite',
-      {
-        organization: 'testorganization',
-        url: 'http://localhost/organization-invite?token=invitekey',
+    expect(server.context.mailer.sendTranslatedEmail).toHaveBeenCalledWith({
+      emailName: 'organizationInvite',
+      locale: 'nl',
+      to: {
+        email: 'test2@example.com',
+        name: 'Test User',
       },
-    );
+      values: {
+        appName: 'null',
+        link: expect.any(Function),
+        name: 'Test User',
+        organization: 'testorganization',
+      },
+    });
   });
 
   it('should not resend an invitation if the user does not have the right permissions', async () => {
@@ -1019,7 +1045,7 @@ describe('resendInvitation', () => {
         statusCode: 403,
       },
     });
-    expect(server.context.mailer.sendTemplateEmail).not.toHaveBeenCalled();
+    expect(server.context.mailer.sendTranslatedEmail).not.toHaveBeenCalled();
   });
 
   it('should not resend an invitation to a member who has not been invited', async () => {
@@ -1043,7 +1069,7 @@ describe('resendInvitation', () => {
         statusCode: 404,
       },
     });
-    expect(server.context.mailer.sendTemplateEmail).not.toHaveBeenCalled();
+    expect(server.context.mailer.sendTranslatedEmail).not.toHaveBeenCalled();
   });
 
   it('should not resend an invitation for a non-existent organization', async () => {
@@ -1060,7 +1086,7 @@ describe('resendInvitation', () => {
         statusCode: 404,
       },
     });
-    expect(server.context.mailer.sendTemplateEmail).not.toHaveBeenCalled();
+    expect(server.context.mailer.sendTranslatedEmail).not.toHaveBeenCalled();
   });
 });
 

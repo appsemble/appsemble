@@ -1,24 +1,34 @@
 import { jwtPattern } from '@appsemble/utils';
 import { request, setTestApp } from 'axios-test-instance';
 import { compare } from 'bcrypt';
-import { beforeAll, describe, expect, it } from 'vitest';
+import type Koa from 'koa';
+import { beforeAll, describe, expect, it, vi } from 'vitest';
 
 import { EmailAuthorization, ResetPasswordToken, User } from '../models/index.js';
 import { setArgv } from '../utils/argv.js';
 import { createServer } from '../utils/createServer.js';
 import { useTestDatabase } from '../utils/test/testSchema.js';
 
+let server: Koa;
+
 useTestDatabase(import.meta);
 
 beforeAll(async () => {
   setArgv({ host: 'http://localhost', secret: 'test' });
-  const server = await createServer();
+  server = await createServer();
   await setTestApp(server);
 });
 
 describe('registerEmail', () => {
   it('should register valid email addresses', async () => {
-    const data = { email: 'test@example.com', password: 'password', timezone: 'Europe/Amsterdam' };
+    const spy = vi.spyOn(server.context.mailer, 'sendTranslatedEmail');
+    const data = {
+      email: 'test@example.com',
+      password: 'password',
+      timezone: 'Europe/Amsterdam',
+      name: 'Me',
+      locale: 'nl',
+    };
     const response = await request.post('/api/email', data);
 
     expect(response).toMatchInlineSnapshot(
@@ -46,6 +56,21 @@ describe('registerEmail', () => {
 
     expect(user.password).not.toBe('password');
     expect(await compare(data.password, user.password)).toBe(true);
+
+    expect(server.context.mailer.sendTranslatedEmail).toHaveBeenCalledWith({
+      emailName: 'welcome',
+      locale: 'nl',
+      to: {
+        email: 'test@example.com',
+        name: 'Me',
+      },
+      values: {
+        appName: 'null',
+        link: expect.any(Function),
+        name: 'Me',
+      },
+    });
+    spy.mockRestore();
   });
 
   it('should accept a display name', async () => {

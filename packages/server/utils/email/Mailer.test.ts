@@ -15,13 +15,7 @@ import {
 } from 'vitest';
 
 import { Mailer } from './Mailer.js';
-import {
-  App,
-  AppMessages,
-  Organization,
-  OrganizationMember,
-  type User,
-} from '../../models/index.js';
+import { App, AppMessages, Organization, OrganizationMember, User } from '../../models/index.js';
 import { type Argv, argv, setArgv } from '../argv.js';
 import { createServer } from '../createServer.js';
 import { createTestUser } from '../test/authorization.js';
@@ -58,53 +52,6 @@ describe('verify', () => {
       verify: () => Promise.reject(new Error('fail')),
     } as Partial<Transporter> as Transporter;
     await expect(mailer.verify()).rejects.toThrow(new Error('fail'));
-  });
-});
-
-describe('sendEmail', () => {
-  it('should send emails with a name', async () => {
-    mailer.transport = {
-      sendMail: vi.fn(() => null),
-    } as Partial<Transporter> as Transporter;
-    await mailer.sendTemplateEmail({ email: 'test@example.com', name: 'Me' }, 'resend', {
-      url: 'https://example.appsemble.app/verify?code=test',
-      name: 'Test App',
-    });
-    expect(mailer.transport.sendMail).toHaveBeenCalledWith({
-      to: 'Me <test@example.com>',
-      from: 'test@example.com',
-      subject: 'Confirm account registration',
-      text: expect.any(String),
-      html: expect.any(String),
-      attachments: [],
-    });
-  });
-
-  it('should send emails without a name', async () => {
-    mailer.transport = {
-      sendMail: vi.fn(() => null),
-    } as Partial<Transporter> as Transporter;
-    await mailer.sendTemplateEmail({ email: 'test@example.com' }, 'resend', {
-      url: 'https://example.appsemble.app/verify?code=test',
-      name: 'Test App',
-    });
-    expect(mailer.transport.sendMail).toHaveBeenCalledWith({
-      to: 'test@example.com',
-      from: 'test@example.com',
-      subject: 'Confirm account registration',
-      text: expect.any(String),
-      html: expect.any(String),
-      attachments: [],
-    });
-  });
-
-  it('should not send emails when smtp is not configured', async () => {
-    expect(
-      await mailer.sendTemplateEmail({ email: 'test@example.com' }, 'resend', {
-        url: 'https://example.appsemble.app/verify?code=test',
-        name: 'The Appsemble Team',
-      }),
-    ).toBeUndefined();
   });
 });
 
@@ -161,6 +108,68 @@ describe('sendTranslatedEmail', () => {
         appName: 'Test App',
       },
     ],
+    organizationInvite: [
+      {
+        name: 'null',
+        link: (text: string) => `[${text}](https://example.com)`,
+        appName: 'null',
+        organization: 'Test Organization',
+      },
+      {
+        name: 'John Doe',
+        link: (text: string) => `[${text}](https://example.com)`,
+        appName: 'null',
+        organization: 'Test Organization',
+      },
+    ],
+    teamInvite: [
+      {
+        name: 'null',
+        link: (text: string) => `[${text}](https://example.com)`,
+        teamName: 'Test Team',
+        appName: 'Test App',
+      },
+      {
+        name: 'John Doe',
+        link: (text: string) => `[${text}](https://example.com)`,
+        teamName: 'Test Team',
+        appName: 'Test App',
+      },
+    ],
+    emailAdded: [
+      {
+        name: 'null',
+        link: (text: string) => `[${text}](https://example.com)`,
+        appName: 'Test App',
+      },
+      {
+        name: 'John Doe',
+        link: (text: string) => `[${text}](https://example.com)`,
+        appName: 'Test App',
+      },
+      {
+        name: 'null',
+        link: (text: string) => `[${text}](https://example.com)`,
+        appName: 'null',
+      },
+      {
+        name: 'John Doe',
+        link: (text: string) => `[${text}](https://example.com)`,
+        appName: 'null',
+      },
+    ],
+    appEmailQuotaLimitHit: [
+      {
+        name: 'null',
+        link: (text: string) => `[${text}](https://example.com)`,
+        appName: 'Test App',
+      },
+      {
+        name: 'John Doe',
+        link: (text: string) => `[${text}](https://example.com)`,
+        appName: 'Test App',
+      },
+    ],
   };
 
   beforeEach(() => {
@@ -175,6 +184,16 @@ describe('sendTranslatedEmail', () => {
     const organization = await Organization.create({
       id: 'testorganization',
       name: 'Test Organization',
+    });
+    const user = await User.create({
+      name: 'John Doe',
+      locale: 'nl',
+      email: 'test@example.com',
+      timezone: 'Europe/Amsterdam',
+    });
+    await OrganizationMember.create({
+      UserId: user.id,
+      OrganizationId: organization.id,
     });
     app = await App.create({
       definition: {
@@ -477,7 +496,10 @@ _Test App_
         await mailer.sendTranslatedEmail({
           appId: app.id,
           emailName: name,
-          to: { email: 'test@example.com', name: values.name },
+          to: {
+            email: 'test@example.com',
+            ...(values.name === 'null' ? {} : { name: values.name }),
+          },
           values: values as any,
           locale,
         });

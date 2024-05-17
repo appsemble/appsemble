@@ -24,6 +24,138 @@ Content-Transfer-Encoding: 7bit
 "
 `;
 
+exports[`sendTranslatedEmail > appEmailQuotaLimitHit > en > should render appEmailQuotaLimitHit 0 for locale en 1`] = `undefined`;
+
+exports[`sendTranslatedEmail > appEmailQuotaLimitHit > en > should render appEmailQuotaLimitHit 0 for locale en 2`] = `
+{
+  "attachments": [],
+  "from": "Appsemble <test@example.com>",
+  "html": "<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1" name="viewport">
+</head>
+<body>
+<p>Hello,</p>
+<p>Your app Test App has hit its email quota limit.</p>
+<p>Kind regards,</p>
+<p><em>The Appsemble Team</em></p>
+</body>
+</html>
+",
+  "subject": "Email quota hit",
+  "text": "Hello,
+
+Your app Test App has hit its email quota limit.
+
+Kind regards,
+
+_The Appsemble Team_
+",
+  "to": "test@example.com",
+}
+`;
+
+exports[`sendTranslatedEmail > appEmailQuotaLimitHit > en > should render appEmailQuotaLimitHit 1 for locale en 1`] = `undefined`;
+
+exports[`sendTranslatedEmail > appEmailQuotaLimitHit > en > should render appEmailQuotaLimitHit 1 for locale en 2`] = `
+{
+  "attachments": [],
+  "from": "Appsemble <test@example.com>",
+  "html": "<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1" name="viewport">
+</head>
+<body>
+<p>Hello John Doe,</p>
+<p>Your app Test App has hit its email quota limit.</p>
+<p>Kind regards,</p>
+<p><em>The Appsemble Team</em></p>
+</body>
+</html>
+",
+  "subject": "Email quota hit",
+  "text": "Hello John Doe,
+
+Your app Test App has hit its email quota limit.
+
+Kind regards,
+
+_The Appsemble Team_
+",
+  "to": "John Doe <test@example.com>",
+}
+`;
+
+exports[`sendTranslatedEmail > appEmailQuotaLimitHit > nl > should render appEmailQuotaLimitHit 0 for locale nl 1`] = `undefined`;
+
+exports[`sendTranslatedEmail > appEmailQuotaLimitHit > nl > should render appEmailQuotaLimitHit 0 for locale nl 2`] = `
+{
+  "attachments": [],
+  "from": "Appsemble <test@example.com>",
+  "html": "<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1" name="viewport">
+</head>
+<body>
+<p>Hallo,</p>
+<p>Uw app Test App heeft de limiet voor het e-mailquotum bereikt.</p>
+<p>Met vriendelijke groet,</p>
+<p>Het Appsemble Team_</p>
+</body>
+</html>
+",
+  "subject": "E-mailquotum bereikt",
+  "text": "Hallo,
+
+Uw app Test App heeft de limiet voor het e-mailquotum bereikt.
+
+Met vriendelijke groet,
+
+Het Appsemble Team\\_
+",
+  "to": "test@example.com",
+}
+`;
+
+exports[`sendTranslatedEmail > appEmailQuotaLimitHit > nl > should render appEmailQuotaLimitHit 1 for locale nl 1`] = `undefined`;
+
+exports[`sendTranslatedEmail > appEmailQuotaLimitHit > nl > should render appEmailQuotaLimitHit 1 for locale nl 2`] = `
+{
+  "attachments": [],
+  "from": "Appsemble <test@example.com>",
+  "html": "<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1" name="viewport">
+</head>
+<body>
+<p>Hallo John Doe,</p>
+<p>Uw app Test App heeft de limiet voor het e-mailquotum bereikt.</p>
+<p>Met vriendelijke groet,</p>
+<p>Het Appsemble Team_</p>
+</body>
+</html>
+",
+  "subject": "E-mailquotum bereikt",
+  "text": "Hallo John Doe,
+
+Uw app Test App heeft de limiet voor het e-mailquotum bereikt.
+
+Met vriendelijke groet,
+
+Het Appsemble Team\\_
+",
+  "to": "John Doe <test@example.com>",
+}
+`;
+
 exports[`sendTranslatedEmail > appMemberEmailChange > en > should render appMemberEmailChange 0 for locale en 1`] = `undefined`;
 
 exports[`sendTranslatedEmail > appMemberEmailChange > en > should render appMemberEmailChange 0 for locale en 2`] = `
@@ -56,7 +188,7 @@ Kind regards
 
 , _Test App_
 ",
-  "to": "null <test@example.com>",
+  "to": "test@example.com",
 }
 `;
 
@@ -128,7 +260,7 @@ Met vriendelijke groet,
 
 _Test App_
 ",
-  "to": "null <test@example.com>",
+  "to": "test@example.com",
 }
 `;
 
@@ -168,6 +300,498 @@ _Test App_
 }
 `;
 
+exports[`sendTranslatedEmail > emailAdded > en > should render emailAdded 0 for locale en 1`] = `undefined`;
+
+exports[`sendTranslatedEmail > emailAdded > en > should render emailAdded 0 for locale en 2`] = `
+{
+  "attachments": [],
+  "from": "Appsemble <test@example.com>",
+  "html": "<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1" name="viewport">
+</head>
+<body>
+<p>Hello,</p>
+<p>You have registered a new email address to your account. In order to make full use of this email, we need to verify your email address.</p>
+<p>Please click <a href="https://example.com">this link</a> to verify your email address</p>
+<p><strong>Didn’t request this email?</strong>.</p>
+<p>No worries! Your address may have been entered by mistake. If you ignore or delete this email, nothing will be done with this email address.</p>
+<p>Kind regards,</p>
+<p><em>Test App</em></p>
+</body>
+</html>
+",
+  "subject": "Email added to account",
+  "text": "Hello,
+
+You have registered a new email address to your account. In order to make full use of this email, we need to verify your email address.
+
+Please click [this link](https://example.com) to verify your email address
+
+**Didn’t request this email?**.
+
+No worries! Your address may have been entered by mistake. If you ignore or delete this email, nothing will be done with this email address.
+
+Kind regards,
+
+_Test App_
+",
+  "to": "test@example.com",
+}
+`;
+
+exports[`sendTranslatedEmail > emailAdded > en > should render emailAdded 1 for locale en 1`] = `undefined`;
+
+exports[`sendTranslatedEmail > emailAdded > en > should render emailAdded 1 for locale en 2`] = `
+{
+  "attachments": [],
+  "from": "Appsemble <test@example.com>",
+  "html": "<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1" name="viewport">
+</head>
+<body>
+<p>Hello John Doe,</p>
+<p>You have registered a new email address to your account. In order to make full use of this email, we need to verify your email address.</p>
+<p>Please click <a href="https://example.com">this link</a> to verify your email address</p>
+<p><strong>Didn’t request this email?</strong>.</p>
+<p>No worries! Your address may have been entered by mistake. If you ignore or delete this email, nothing will be done with this email address.</p>
+<p>Kind regards,</p>
+<p><em>Test App</em></p>
+</body>
+</html>
+",
+  "subject": "Email added to account",
+  "text": "Hello John Doe,
+
+You have registered a new email address to your account. In order to make full use of this email, we need to verify your email address.
+
+Please click [this link](https://example.com) to verify your email address
+
+**Didn’t request this email?**.
+
+No worries! Your address may have been entered by mistake. If you ignore or delete this email, nothing will be done with this email address.
+
+Kind regards,
+
+_Test App_
+",
+  "to": "John Doe <test@example.com>",
+}
+`;
+
+exports[`sendTranslatedEmail > emailAdded > en > should render emailAdded 2 for locale en 1`] = `undefined`;
+
+exports[`sendTranslatedEmail > emailAdded > en > should render emailAdded 2 for locale en 2`] = `
+{
+  "attachments": [],
+  "from": "Appsemble <test@example.com>",
+  "html": "<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1" name="viewport">
+</head>
+<body>
+<p>Hello,</p>
+<p>You have registered a new email address to your account. In order to make full use of this email, we need to verify your email address.</p>
+<p>Please click <a href="https://example.com">this link</a> to verify your email address</p>
+<p><strong>Didn’t request this email?</strong>.</p>
+<p>No worries! Your address may have been entered by mistake. If you ignore or delete this email, nothing will be done with this email address.</p>
+<p>Kind regards,</p>
+<p><em>The Appsemble Team</em></p>
+</body>
+</html>
+",
+  "subject": "Email added to account",
+  "text": "Hello,
+
+You have registered a new email address to your account. In order to make full use of this email, we need to verify your email address.
+
+Please click [this link](https://example.com) to verify your email address
+
+**Didn’t request this email?**.
+
+No worries! Your address may have been entered by mistake. If you ignore or delete this email, nothing will be done with this email address.
+
+Kind regards,
+
+_The Appsemble Team_
+",
+  "to": "test@example.com",
+}
+`;
+
+exports[`sendTranslatedEmail > emailAdded > en > should render emailAdded 3 for locale en 1`] = `undefined`;
+
+exports[`sendTranslatedEmail > emailAdded > en > should render emailAdded 3 for locale en 2`] = `
+{
+  "attachments": [],
+  "from": "Appsemble <test@example.com>",
+  "html": "<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1" name="viewport">
+</head>
+<body>
+<p>Hello John Doe,</p>
+<p>You have registered a new email address to your account. In order to make full use of this email, we need to verify your email address.</p>
+<p>Please click <a href="https://example.com">this link</a> to verify your email address</p>
+<p><strong>Didn’t request this email?</strong>.</p>
+<p>No worries! Your address may have been entered by mistake. If you ignore or delete this email, nothing will be done with this email address.</p>
+<p>Kind regards,</p>
+<p><em>The Appsemble Team</em></p>
+</body>
+</html>
+",
+  "subject": "Email added to account",
+  "text": "Hello John Doe,
+
+You have registered a new email address to your account. In order to make full use of this email, we need to verify your email address.
+
+Please click [this link](https://example.com) to verify your email address
+
+**Didn’t request this email?**.
+
+No worries! Your address may have been entered by mistake. If you ignore or delete this email, nothing will be done with this email address.
+
+Kind regards,
+
+_The Appsemble Team_
+",
+  "to": "John Doe <test@example.com>",
+}
+`;
+
+exports[`sendTranslatedEmail > emailAdded > nl > should render emailAdded 0 for locale nl 1`] = `undefined`;
+
+exports[`sendTranslatedEmail > emailAdded > nl > should render emailAdded 0 for locale nl 2`] = `
+{
+  "attachments": [],
+  "from": "Appsemble <test@example.com>",
+  "html": "<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1" name="viewport">
+</head>
+<body>
+<p>Hallo,</p>
+<p>U heeft een nieuw e-mailadres geregistreerd voor uw account. Om volledig gebruik te kunnen maken van deze e-mail, moeten we uw e-mailadres verifiëren.</p>
+<p>Klik op <a href="https://example.com">deze link</a> om uw e-mailadres te verifiëren.</p>
+<p><strong>Heb je deze e-mail niet aangevraagd?</strong>.</p>
+<p>Geen zorgen! Mogelijk is uw adres per ongeluk ingevoerd. Als u deze e-mail negeert of verwijdert, wordt er niets met dit e-mailadres gedaan.</p>
+<p>Met vriendelijke groet,</p>
+<p><em>Test App</em></p>
+</body>
+</html>
+",
+  "subject": "E-mailadres toegevoegd aan account",
+  "text": "Hallo,
+
+U heeft een nieuw e-mailadres geregistreerd voor uw account. Om volledig gebruik te kunnen maken van deze e-mail, moeten we uw e-mailadres verifiëren.
+
+Klik op [deze link](https://example.com) om uw e-mailadres te verifiëren.
+
+**Heb je deze e-mail niet aangevraagd?**.
+
+Geen zorgen! Mogelijk is uw adres per ongeluk ingevoerd. Als u deze e-mail negeert of verwijdert, wordt er niets met dit e-mailadres gedaan.
+
+Met vriendelijke groet,
+
+_Test App_
+",
+  "to": "test@example.com",
+}
+`;
+
+exports[`sendTranslatedEmail > emailAdded > nl > should render emailAdded 1 for locale nl 1`] = `undefined`;
+
+exports[`sendTranslatedEmail > emailAdded > nl > should render emailAdded 1 for locale nl 2`] = `
+{
+  "attachments": [],
+  "from": "Appsemble <test@example.com>",
+  "html": "<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1" name="viewport">
+</head>
+<body>
+<p>Hallo John Doe,</p>
+<p>U heeft een nieuw e-mailadres geregistreerd voor uw account. Om volledig gebruik te kunnen maken van deze e-mail, moeten we uw e-mailadres verifiëren.</p>
+<p>Klik op <a href="https://example.com">deze link</a> om uw e-mailadres te verifiëren.</p>
+<p><strong>Heb je deze e-mail niet aangevraagd?</strong>.</p>
+<p>Geen zorgen! Mogelijk is uw adres per ongeluk ingevoerd. Als u deze e-mail negeert of verwijdert, wordt er niets met dit e-mailadres gedaan.</p>
+<p>Met vriendelijke groet,</p>
+<p><em>Test App</em></p>
+</body>
+</html>
+",
+  "subject": "E-mailadres toegevoegd aan account",
+  "text": "Hallo John Doe,
+
+U heeft een nieuw e-mailadres geregistreerd voor uw account. Om volledig gebruik te kunnen maken van deze e-mail, moeten we uw e-mailadres verifiëren.
+
+Klik op [deze link](https://example.com) om uw e-mailadres te verifiëren.
+
+**Heb je deze e-mail niet aangevraagd?**.
+
+Geen zorgen! Mogelijk is uw adres per ongeluk ingevoerd. Als u deze e-mail negeert of verwijdert, wordt er niets met dit e-mailadres gedaan.
+
+Met vriendelijke groet,
+
+_Test App_
+",
+  "to": "John Doe <test@example.com>",
+}
+`;
+
+exports[`sendTranslatedEmail > emailAdded > nl > should render emailAdded 2 for locale nl 1`] = `undefined`;
+
+exports[`sendTranslatedEmail > emailAdded > nl > should render emailAdded 2 for locale nl 2`] = `
+{
+  "attachments": [],
+  "from": "Appsemble <test@example.com>",
+  "html": "<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1" name="viewport">
+</head>
+<body>
+<p>Hallo,</p>
+<p>U heeft een nieuw e-mailadres geregistreerd voor uw account. Om volledig gebruik te kunnen maken van deze e-mail, moeten we uw e-mailadres verifiëren.</p>
+<p>Klik op <a href="https://example.com">deze link</a> om uw e-mailadres te verifiëren.</p>
+<p><strong>Heb je deze e-mail niet aangevraagd?</strong>.</p>
+<p>Geen zorgen! Mogelijk is uw adres per ongeluk ingevoerd. Als u deze e-mail negeert of verwijdert, wordt er niets met dit e-mailadres gedaan.</p>
+<p>Met vriendelijke groet,</p>
+<p><em>Het Appsemble Team</em></p>
+</body>
+</html>
+",
+  "subject": "E-mailadres toegevoegd aan account",
+  "text": "Hallo,
+
+U heeft een nieuw e-mailadres geregistreerd voor uw account. Om volledig gebruik te kunnen maken van deze e-mail, moeten we uw e-mailadres verifiëren.
+
+Klik op [deze link](https://example.com) om uw e-mailadres te verifiëren.
+
+**Heb je deze e-mail niet aangevraagd?**.
+
+Geen zorgen! Mogelijk is uw adres per ongeluk ingevoerd. Als u deze e-mail negeert of verwijdert, wordt er niets met dit e-mailadres gedaan.
+
+Met vriendelijke groet,
+
+_Het Appsemble Team_
+",
+  "to": "test@example.com",
+}
+`;
+
+exports[`sendTranslatedEmail > emailAdded > nl > should render emailAdded 3 for locale nl 1`] = `undefined`;
+
+exports[`sendTranslatedEmail > emailAdded > nl > should render emailAdded 3 for locale nl 2`] = `
+{
+  "attachments": [],
+  "from": "Appsemble <test@example.com>",
+  "html": "<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1" name="viewport">
+</head>
+<body>
+<p>Hallo John Doe,</p>
+<p>U heeft een nieuw e-mailadres geregistreerd voor uw account. Om volledig gebruik te kunnen maken van deze e-mail, moeten we uw e-mailadres verifiëren.</p>
+<p>Klik op <a href="https://example.com">deze link</a> om uw e-mailadres te verifiëren.</p>
+<p><strong>Heb je deze e-mail niet aangevraagd?</strong>.</p>
+<p>Geen zorgen! Mogelijk is uw adres per ongeluk ingevoerd. Als u deze e-mail negeert of verwijdert, wordt er niets met dit e-mailadres gedaan.</p>
+<p>Met vriendelijke groet,</p>
+<p><em>Het Appsemble Team</em></p>
+</body>
+</html>
+",
+  "subject": "E-mailadres toegevoegd aan account",
+  "text": "Hallo John Doe,
+
+U heeft een nieuw e-mailadres geregistreerd voor uw account. Om volledig gebruik te kunnen maken van deze e-mail, moeten we uw e-mailadres verifiëren.
+
+Klik op [deze link](https://example.com) om uw e-mailadres te verifiëren.
+
+**Heb je deze e-mail niet aangevraagd?**.
+
+Geen zorgen! Mogelijk is uw adres per ongeluk ingevoerd. Als u deze e-mail negeert of verwijdert, wordt er niets met dit e-mailadres gedaan.
+
+Met vriendelijke groet,
+
+_Het Appsemble Team_
+",
+  "to": "John Doe <test@example.com>",
+}
+`;
+
+exports[`sendTranslatedEmail > organizationInvite > en > should render organizationInvite 0 for locale en 1`] = `undefined`;
+
+exports[`sendTranslatedEmail > organizationInvite > en > should render organizationInvite 0 for locale en 2`] = `
+{
+  "attachments": [],
+  "from": "Appsemble <test@example.com>",
+  "html": "<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1" name="viewport">
+</head>
+<body>
+<p>Hello,</p>
+<p>You have been invited to join the organization <strong>Test Organization</strong>.</p>
+<p>Joining an organization allows you to view private applications as well as create and edit apps belonging to an organization.</p>
+<p>You can accept or decline this invitation by following <a href="https://example.com">this link</a>.</p>
+<p>Kind regards,</p>
+<p><em>The Appsemble Team</em></p>
+</body>
+</html>
+",
+  "subject": "Invited to organization",
+  "text": "Hello,
+
+You have been invited to join the organization **Test Organization**.
+
+Joining an organization allows you to view private applications as well as create and edit apps belonging to an organization.
+
+You can accept or decline this invitation by following [this link](https://example.com).
+
+Kind regards,
+
+_The Appsemble Team_
+",
+  "to": "test@example.com",
+}
+`;
+
+exports[`sendTranslatedEmail > organizationInvite > en > should render organizationInvite 1 for locale en 1`] = `undefined`;
+
+exports[`sendTranslatedEmail > organizationInvite > en > should render organizationInvite 1 for locale en 2`] = `
+{
+  "attachments": [],
+  "from": "Appsemble <test@example.com>",
+  "html": "<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1" name="viewport">
+</head>
+<body>
+<p>Hello John Doe,</p>
+<p>You have been invited to join the organization <strong>Test Organization</strong>.</p>
+<p>Joining an organization allows you to view private applications as well as create and edit apps belonging to an organization.</p>
+<p>You can accept or decline this invitation by following <a href="https://example.com">this link</a>.</p>
+<p>Kind regards,</p>
+<p><em>The Appsemble Team</em></p>
+</body>
+</html>
+",
+  "subject": "Invited to organization",
+  "text": "Hello John Doe,
+
+You have been invited to join the organization **Test Organization**.
+
+Joining an organization allows you to view private applications as well as create and edit apps belonging to an organization.
+
+You can accept or decline this invitation by following [this link](https://example.com).
+
+Kind regards,
+
+_The Appsemble Team_
+",
+  "to": "John Doe <test@example.com>",
+}
+`;
+
+exports[`sendTranslatedEmail > organizationInvite > nl > should render organizationInvite 0 for locale nl 1`] = `undefined`;
+
+exports[`sendTranslatedEmail > organizationInvite > nl > should render organizationInvite 0 for locale nl 2`] = `
+{
+  "attachments": [],
+  "from": "Appsemble <test@example.com>",
+  "html": "<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1" name="viewport">
+</head>
+<body>
+<p>Hallo,</p>
+<p>Je bent uitgenodigd om lid te worden van de organisatie <strong>Test Organization</strong>.</p>
+<p>Als u lid wordt van een organisatie, kunt u privéapplicaties bekijken en apps van een organisatie maken en bewerken.</p>
+<p>U kunt deze uitnodiging accepteren of weigeren door <a href="https://example.com">deze link</a> te volgen.</p>
+<p>Met vriendelijke groet,</p>
+<p><em>Het Appsemble Team</em></p>
+</body>
+</html>
+",
+  "subject": "Uitgenodigd voor organisatie",
+  "text": "Hallo,
+
+Je bent uitgenodigd om lid te worden van de organisatie **Test Organization**.
+
+Als u lid wordt van een organisatie, kunt u privéapplicaties bekijken en apps van een organisatie maken en bewerken.
+
+U kunt deze uitnodiging accepteren of weigeren door [deze link](https://example.com) te volgen.
+
+Met vriendelijke groet,
+
+_Het Appsemble Team_
+",
+  "to": "test@example.com",
+}
+`;
+
+exports[`sendTranslatedEmail > organizationInvite > nl > should render organizationInvite 1 for locale nl 1`] = `undefined`;
+
+exports[`sendTranslatedEmail > organizationInvite > nl > should render organizationInvite 1 for locale nl 2`] = `
+{
+  "attachments": [],
+  "from": "Appsemble <test@example.com>",
+  "html": "<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1" name="viewport">
+</head>
+<body>
+<p>Hallo John Doe,</p>
+<p>Je bent uitgenodigd om lid te worden van de organisatie <strong>Test Organization</strong>.</p>
+<p>Als u lid wordt van een organisatie, kunt u privéapplicaties bekijken en apps van een organisatie maken en bewerken.</p>
+<p>U kunt deze uitnodiging accepteren of weigeren door <a href="https://example.com">deze link</a> te volgen.</p>
+<p>Met vriendelijke groet,</p>
+<p><em>Het Appsemble Team</em></p>
+</body>
+</html>
+",
+  "subject": "Uitgenodigd voor organisatie",
+  "text": "Hallo John Doe,
+
+Je bent uitgenodigd om lid te worden van de organisatie **Test Organization**.
+
+Als u lid wordt van een organisatie, kunt u privéapplicaties bekijken en apps van een organisatie maken en bewerken.
+
+U kunt deze uitnodiging accepteren of weigeren door [deze link](https://example.com) te volgen.
+
+Met vriendelijke groet,
+
+_Het Appsemble Team_
+",
+  "to": "John Doe <test@example.com>",
+}
+`;
+
 exports[`sendTranslatedEmail > resend > en > should render resend 0 for locale en 1`] = `undefined`;
 
 exports[`sendTranslatedEmail > resend > en > should render resend 0 for locale en 2`] = `
@@ -183,7 +807,7 @@ exports[`sendTranslatedEmail > resend > en > should render resend 0 for locale e
 <body>
 <p>Hello,</p>
 <p>Someone has requested to resend the verification key for your account. Before you can use your account, we need to verify your email address.</p>
-<p>Please click <a href="https://example.com">this link</a> to vervify your email address.</p>
+<p>Please click <a href="https://example.com">this link</a> to verify your email address.</p>
 <p><strong>Didn’t request this email?</strong></p>
 <p>No worries! Your address may have been entered by mistake. If you ignore or delete this email, nothing will happen to your account.</p>
 <p>Kind regards,</p>
@@ -196,7 +820,7 @@ exports[`sendTranslatedEmail > resend > en > should render resend 0 for locale e
 
 Someone has requested to resend the verification key for your account. Before you can use your account, we need to verify your email address.
 
-Please click [this link](https://example.com) to vervify your email address.
+Please click [this link](https://example.com) to verify your email address.
 
 **Didn’t request this email?**
 
@@ -206,7 +830,7 @@ Kind regards,
 
 _Test App_
 ",
-  "to": "null <test@example.com>",
+  "to": "test@example.com",
 }
 `;
 
@@ -225,7 +849,7 @@ exports[`sendTranslatedEmail > resend > en > should render resend 1 for locale e
 <body>
 <p>Hello John Doe,</p>
 <p>Someone has requested to resend the verification key for your account. Before you can use your account, we need to verify your email address.</p>
-<p>Please click <a href="https://example.com">this link</a> to vervify your email address.</p>
+<p>Please click <a href="https://example.com">this link</a> to verify your email address.</p>
 <p><strong>Didn’t request this email?</strong></p>
 <p>No worries! Your address may have been entered by mistake. If you ignore or delete this email, nothing will happen to your account.</p>
 <p>Kind regards,</p>
@@ -238,7 +862,7 @@ exports[`sendTranslatedEmail > resend > en > should render resend 1 for locale e
 
 Someone has requested to resend the verification key for your account. Before you can use your account, we need to verify your email address.
 
-Please click [this link](https://example.com) to vervify your email address.
+Please click [this link](https://example.com) to verify your email address.
 
 **Didn’t request this email?**
 
@@ -290,7 +914,7 @@ Met vriendelijke groet,
 
 _Test App_
 ",
-  "to": "null <test@example.com>",
+  "to": "test@example.com",
 }
 `;
 
@@ -371,7 +995,7 @@ Kind regards,
 
 _Test App_
 ",
-  "to": "null <test@example.com>",
+  "to": "test@example.com",
 }
 `;
 
@@ -449,7 +1073,7 @@ Met vriendelijke groet,
 
 _Test App_
 ",
-  "to": "null <test@example.com>",
+  "to": "test@example.com",
 }
 `;
 
@@ -492,6 +1116,150 @@ _Test App_
 }
 `;
 
+exports[`sendTranslatedEmail > teamInvite > en > should render teamInvite 0 for locale en 1`] = `undefined`;
+
+exports[`sendTranslatedEmail > teamInvite > en > should render teamInvite 0 for locale en 2`] = `
+{
+  "attachments": [],
+  "from": "Appsemble <test@example.com>",
+  "html": "<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1" name="viewport">
+</head>
+<body>
+<p>Hello,</p>
+<p>You have been invited to join the team <strong>Test Team</strong> for the app <strong>Test App</strong>.</p>
+<p>You can accept this invitation by following <a href="https://example.com">this link</a>.</p>
+<p>Kind regards,</p>
+<p><em>The Test App Team</em></p>
+</body>
+</html>
+",
+  "subject": "Invited to team",
+  "text": "Hello,
+
+You have been invited to join the team **Test Team** for the app **Test App**.
+
+You can accept this invitation by following [this link](https://example.com).
+
+Kind regards,
+
+_The Test App Team_
+",
+  "to": "test@example.com",
+}
+`;
+
+exports[`sendTranslatedEmail > teamInvite > en > should render teamInvite 1 for locale en 1`] = `undefined`;
+
+exports[`sendTranslatedEmail > teamInvite > en > should render teamInvite 1 for locale en 2`] = `
+{
+  "attachments": [],
+  "from": "Appsemble <test@example.com>",
+  "html": "<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1" name="viewport">
+</head>
+<body>
+<p>Hello John Doe,</p>
+<p>You have been invited to join the team <strong>Test Team</strong> for the app <strong>Test App</strong>.</p>
+<p>You can accept this invitation by following <a href="https://example.com">this link</a>.</p>
+<p>Kind regards,</p>
+<p><em>The Test App Team</em></p>
+</body>
+</html>
+",
+  "subject": "Invited to team",
+  "text": "Hello John Doe,
+
+You have been invited to join the team **Test Team** for the app **Test App**.
+
+You can accept this invitation by following [this link](https://example.com).
+
+Kind regards,
+
+_The Test App Team_
+",
+  "to": "John Doe <test@example.com>",
+}
+`;
+
+exports[`sendTranslatedEmail > teamInvite > nl > should render teamInvite 0 for locale nl 1`] = `undefined`;
+
+exports[`sendTranslatedEmail > teamInvite > nl > should render teamInvite 0 for locale nl 2`] = `
+{
+  "attachments": [],
+  "from": "Appsemble <test@example.com>",
+  "html": "<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1" name="viewport">
+</head>
+<body>
+<p>Hallo,</p>
+<p>Je bent uitgenodigd om deel uit te maken van het team <strong>Test Team</strong> voor de app <strong>Test App</strong>.</p>
+<p>U kunt deze uitnodiging accepteren door <a href="https://example.com">deze link</a> te volgen.</p>
+<p>Met vriendelijke groet,</p>
+<p><em>Het Test App Team</em></p>
+</body>
+</html>
+",
+  "subject": "Uitgenodigd voor team",
+  "text": "Hallo,
+
+Je bent uitgenodigd om deel uit te maken van het team **Test Team** voor de app **Test App**.
+
+U kunt deze uitnodiging accepteren door [deze link](https://example.com) te volgen.
+
+Met vriendelijke groet,
+
+_Het Test App Team_
+",
+  "to": "test@example.com",
+}
+`;
+
+exports[`sendTranslatedEmail > teamInvite > nl > should render teamInvite 1 for locale nl 1`] = `undefined`;
+
+exports[`sendTranslatedEmail > teamInvite > nl > should render teamInvite 1 for locale nl 2`] = `
+{
+  "attachments": [],
+  "from": "Appsemble <test@example.com>",
+  "html": "<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1" name="viewport">
+</head>
+<body>
+<p>Hallo John Doe,</p>
+<p>Je bent uitgenodigd om deel uit te maken van het team <strong>Test Team</strong> voor de app <strong>Test App</strong>.</p>
+<p>U kunt deze uitnodiging accepteren door <a href="https://example.com">deze link</a> te volgen.</p>
+<p>Met vriendelijke groet,</p>
+<p><em>Het Test App Team</em></p>
+</body>
+</html>
+",
+  "subject": "Uitgenodigd voor team",
+  "text": "Hallo John Doe,
+
+Je bent uitgenodigd om deel uit te maken van het team **Test Team** voor de app **Test App**.
+
+U kunt deze uitnodiging accepteren door [deze link](https://example.com) te volgen.
+
+Met vriendelijke groet,
+
+_Het Test App Team_
+",
+  "to": "John Doe <test@example.com>",
+}
+`;
+
 exports[`sendTranslatedEmail > welcome > en > should render welcome 0 for locale en 1`] = `undefined`;
 
 exports[`sendTranslatedEmail > welcome > en > should render welcome 0 for locale en 2`] = `
@@ -524,7 +1292,7 @@ Kind regards,
 
 _Test App_
 ",
-  "to": "null <test@example.com>",
+  "to": "test@example.com",
 }
 `;
 
@@ -596,7 +1364,7 @@ Met vriendelijke groet,
 
 _Test App_
 ",
-  "to": "null <test@example.com>",
+  "to": "test@example.com",
 }
 `;
 

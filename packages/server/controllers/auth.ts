@@ -18,7 +18,7 @@ export async function registerEmail(ctx: Context): Promise<void> {
   const {
     mailer,
     request: {
-      body: { name, password, subscribed, timezone },
+      body: { locale, name, password, subscribed, timezone },
     },
   } = ctx;
 
@@ -30,7 +30,7 @@ export async function registerEmail(ctx: Context): Promise<void> {
   try {
     await transactional(async (transaction) => {
       user = await User.create(
-        { name, password: hashedPassword, primaryEmail: email, timezone, subscribed },
+        { name, password: hashedPassword, primaryEmail: email, timezone, subscribed, locale },
         { transaction },
       );
       await EmailAuthorization.create({ UserId: user.id, email, key }, { transaction });
@@ -49,12 +49,19 @@ export async function registerEmail(ctx: Context): Promise<void> {
     throw error;
   }
 
-  // This is purposely not awaited, so failure won’t make the request fail. If this fails, the user
-  // will still be logged in, but will have to request a new verification email in order to verify
-  // their account.
   mailer
-    .sendTemplateEmail({ email, name }, 'welcome', {
-      url: `${argv.host}/verify?token=${key}`,
+    .sendTranslatedEmail({
+      to: {
+        name,
+        email,
+      },
+      emailName: 'welcome',
+      locale,
+      values: {
+        link: (text) => `[${text}](${argv.host}/verify?token=${key})`,
+        name: name || 'null',
+        appName: 'null',
+      },
     })
     .catch((error: Error) => {
       logger.error(error);
@@ -85,13 +92,29 @@ export async function resendEmailVerification(ctx: Context): Promise<void> {
   const { mailer, request } = ctx;
 
   const email = request.body.email.toLowerCase();
-  const record = await EmailAuthorization.findByPk(email, { raw: true });
+  const record = await EmailAuthorization.findByPk(email, {
+    raw: true,
+    include: [{ model: User, attributes: ['name', 'locale'] }],
+  });
   if (record && !record.verified) {
     const { key } = record;
-    await mailer.sendTemplateEmail(record, 'resend', {
-      url: `${argv.host}/verify?token=${key}`,
-      name: 'The Appsemble Team',
-    });
+    await mailer
+      .sendTranslatedEmail({
+        to: {
+          name: record.User.name,
+          email: record.email,
+        },
+        emailName: 'resend',
+        locale: record.User.locale,
+        values: {
+          link: (text) => `[${text}](${argv.host}/verify?token=${key})`,
+          name: record.User.name || 'null',
+          appName: 'null',
+        },
+      })
+      .catch((error: Error) => {
+        logger.error(error);
+      });
   }
 
   ctx.status = 204;
@@ -106,13 +129,25 @@ export async function requestResetPassword(ctx: Context): Promise<void> {
   if (emailRecord) {
     const user = await User.findByPk(emailRecord.UserId);
 
-    const { name } = user;
     const token = randomBytes(40).toString('hex');
     await ResetPasswordToken.create({ UserId: user.id, token });
-    await mailer.sendTemplateEmail({ email, name }, 'reset', {
-      url: `${argv.host}/edit-password?token=${token}`,
-      name: 'The Appsemble Team',
-    });
+    await mailer
+      .sendTranslatedEmail({
+        to: {
+          name: user.name,
+          email: user.primaryEmail,
+        },
+        emailName: 'reset',
+        locale: user.locale,
+        values: {
+          link: (text) => `[${text}](${argv.host}/edit-password?token=${token})`,
+          name: user.name || 'null',
+          appName: 'null',
+        },
+      })
+      .catch((error: Error) => {
+        logger.error(error);
+      });
   }
 
   ctx.status = 204;

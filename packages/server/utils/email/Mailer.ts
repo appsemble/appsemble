@@ -33,7 +33,6 @@ import {
 } from '../../models/index.js';
 import { argv } from '../argv.js';
 import { decrypt } from '../crypto.js';
-import { readAsset } from '../readAsset.js';
 
 const supportedLanguages = getSupportedLanguages();
 
@@ -211,11 +210,11 @@ export class Mailer {
     values,
   }: {
     to: Recipient;
-    appId: number;
+    appId?: number;
     from?: string;
     emailName: string;
     values: Record<string, FormatXMLElementFn<string, string[] | string> | PrimitiveType>;
-    locale: string;
+    locale?: string;
     app?: App;
   }): Promise<void> {
     const emailLocale = locale || defaultLocale;
@@ -224,12 +223,16 @@ export class Mailer {
       .subtags()
       .find((sub) => sub.type() === 'language');
     const baseLang = baseLanguage && String(baseLanguage).toLowerCase();
-    const appMessages = await AppMessages.findAll({
-      where: {
-        AppId: appId,
-        language: { [Op.or]: baseLang ? [baseLang, lang, defaultLocale] : [lang, defaultLocale] },
-      },
-    });
+    const appMessages = appId
+      ? await AppMessages.findAll({
+          where: {
+            AppId: appId,
+            language: {
+              [Op.or]: baseLang ? [baseLang, lang, defaultLocale] : [lang, defaultLocale],
+            },
+          },
+        })
+      : [];
 
     const subjectKey = `server.emails.${emailName}.subject`;
     const bodyKey = `server.emails.${emailName}.body`;
@@ -293,32 +296,6 @@ export class Mailer {
     await this.sendEmail(email);
   }
 
-  /**
-   * Send an email using the configured SMTP transport.
-   *
-   * @param to The email
-   * @param templateName The name of the Markdown email template to send
-   * @param values A key/value pair of values to use for rendering the email.
-   */
-  async sendTemplateEmail(
-    to: Recipient,
-    templateName: string,
-    values: Record<string, string>,
-  ): Promise<void> {
-    const template = await readAsset(`email/${templateName}.md`, 'utf8');
-    const { html, subject, text } = await renderEmail(template, {
-      ...values,
-      greeting: to.name ? `Hello ${to.name}` : 'Hello',
-    });
-
-    await this.sendEmail({
-      to: to.name ? `${to.name} <${to.email}>` : to.email,
-      subject,
-      html,
-      text,
-    });
-  }
-
   async tryRateLimiting({ app }: Pick<SendMailOptions, 'app'>): Promise<void> {
     if (
       argv.enableAppEmailQuota &&
@@ -354,24 +331,26 @@ export class Mailer {
               {
                 model: User,
                 required: true,
-                attributes: ['primaryEmail'],
+                attributes: ['primaryEmail', 'name', 'locale'],
               },
             ],
             attributes: [],
             transaction,
           });
-          const emails = members.map((m) => m.User.primaryEmail);
           await Promise.all(
-            emails.map(async (email) => {
-              await this.sendTemplateEmail(
-                {
-                  email,
+            members.map(async (m) => {
+              await this.sendTranslatedEmail({
+                to: {
+                  name: m.User.name,
+                  email: m.User.primaryEmail,
                 },
-                'appEmailQuotaLimitHit',
-                {
+                emailName: 'appEmailQuotaLimitHit',
+                locale: m.User.locale,
+                values: {
+                  name: m.User.name,
                   appName: fullApp.definition.name,
                 },
-              );
+              });
             }),
           );
         }
