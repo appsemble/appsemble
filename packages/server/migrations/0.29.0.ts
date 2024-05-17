@@ -51,7 +51,10 @@ export const key = '0.29.0';
  */
 export async function up(transaction: Transaction, db: Sequelize): Promise<void> {
   const queryInterface = db.getQueryInterface();
-  logger.info('Making Resource.data non-nullable');
+  logger.warn('Making Resource.data non-nullable');
+  logger.warn(`The following may result in errors depending on the data present in the database.
+In case the database contains Resources with data equal to null, the following will fail.
+When that happens you may want to backup these resources, before removing them manually.`);
   await queryInterface.changeColumn(
     'Resource',
     'data',
@@ -61,7 +64,11 @@ export async function up(transaction: Transaction, db: Sequelize): Promise<void>
     },
     { transaction },
   );
-  logger.info('Making OAuthAuthorization.accessToken non-nullable');
+  logger.warn('Making OAuthAuthorization.accessToken non-nullable');
+  logger.warn(`The following may result in errors depending on the data present in the database.
+In case the database contains OAuthAuthorizations with accessToken equal to null, the following will fail.
+When that happens you may want to delete all OAuthAuthorizations with accessToken equal to null as those
+shouldn't be present anyways.`);
   await queryInterface.changeColumn(
     'OAuthAuthorization',
     'accessToken',
@@ -85,7 +92,10 @@ export async function up(transaction: Transaction, db: Sequelize): Promise<void>
   `,
     { transaction },
   );
-  logger.info('Making AppServiceSecret.AppId non-nullable');
+  logger.warn('Making AppServiceSecret.AppId non-nullable');
+  logger.warn(`The following may result in errors depending on the data present in the database.
+In case the database contains AppServiceSecret with AppId equal to null, the following will fail.
+When that happens you may want to delete all AppServiceSecrets with AppId equal to null.`);
   await queryInterface.changeColumn(
     'AppServiceSecret',
     'AppId',
@@ -116,7 +126,10 @@ export async function up(transaction: Transaction, db: Sequelize): Promise<void>
   `,
     { transaction },
   );
-  logger.info('Making User.timezone non-nullable');
+  logger.warn('Making User.timezone non-nullable');
+  logger.warn(`The following may result in errors depending on the data present in the database.
+In case the database contains Users with timezone equal to null, the following will fail.
+When that happens you may want to set a default timezone for those Users, or delete them if possible.`);
   await queryInterface.changeColumn(
     'User',
     'timezone',
@@ -137,7 +150,14 @@ export async function up(transaction: Transaction, db: Sequelize): Promise<void>
     },
     { transaction },
   );
-  logger.info('Making AppOAuth2Authorization.AppMemberId non-nullable');
+  logger.warn('Making AppOAuth2Authorization.AppMemberId non-nullable');
+  logger.warn(`The following may result in errors depending on the data present in the database.
+In case the database contains AppOAuth2Authorizations with AppMemberId equal to null, the following will fail.
+When that happens you may want to consider checking where the AppOAuth2Authorizations came from with the following command,
+and determine whether these AppOAuth2Authorizations can be removed.
+
+  SELECT "sub","AppId" FROM "AppOAuth2Authorization" WHERE "AppMemberId" IS NULL;
+`);
   await queryInterface.changeColumn(
     'AppOAuth2Authorization',
     'AppMemberId',
@@ -147,7 +167,11 @@ export async function up(transaction: Transaction, db: Sequelize): Promise<void>
     },
     { transaction },
   );
-  logger.info('Changing type of AppSamlSecret.name to STRING');
+  logger.warn('Changing type of AppSamlSecret.name to STRING');
+  logger.warn(`The following may result in errors depending on the data present in the database.
+In case the database contains AppSamlSecrets with names longer than 255 characters, the following may fail.
+When that happens you may want to manually look for \`AppSamlSecret.name\` to delete the AppSamlSecret,
+or keep a substring of those names.`);
   await queryInterface.changeColumn(
     'AppSamlSecret',
     'name',
@@ -205,7 +229,14 @@ export async function up(transaction: Transaction, db: Sequelize): Promise<void>
   `,
     { transaction },
   );
-  logger.info('Making SamlLoginRequest.timezone non-nullable');
+  logger.warn('Making SamlLoginRequest.timezone non-nullable');
+  logger.warn(`The following may result in errors depending on the data present in the database.
+In case the database contains SamlLoginRequests with timezone equal to null, the following will fail.
+When that happens you may want to consider checking where the SamlLoginRequest came from with the following command,
+and determine whether to add a default timezone manually or to remove those.
+
+  SELECT "email","UserId" FROM "SamlLoginRequest" WHERE "timezone" IS NULL;
+`);
   await queryInterface.changeColumn(
     'SamlLoginRequest',
     'timezone',
@@ -236,7 +267,15 @@ export async function up(transaction: Transaction, db: Sequelize): Promise<void>
     `,
     { transaction },
   );
-  logger.info('Adding primary key to TeamMember');
+  logger.warn('Adding primary key to TeamMember');
+  logger.warn(`The following may result in errors depending on the data present in the database.
+In case the database contains duplicate TeamMembers make sure to delete those first as this migration,
+requires unique TeamMembers for it to work. The following database query should help to find those.
+
+  SELECT "TeamId", "AppMemberId", COUNT(*) AS "DuplicateCount"
+  FROM "TeamMember" GROUP BY "AppMemberId", "TeamId"
+  HAVING COUNT(*) > 1;
+`);
   await queryInterface.sequelize.query(
     `
     ALTER TABLE "TeamMember" ADD PRIMARY KEY ("TeamId", "AppMemberId");
@@ -263,7 +302,11 @@ export async function up(transaction: Transaction, db: Sequelize): Promise<void>
     },
     { transaction },
   );
-  logger.info('Making Training.competences non-nullable');
+  logger.warn('Making Training.competences non-nullable');
+  logger.warn(`The following may result in errors depending on the data present in the database.
+In case the database contains Trainings with competences equal to null, the following will fail.
+When that happens you may want to consider checking where the Trainings belong to, and add
+competences manually.`);
   await queryInterface.changeColumn(
     'Training',
     'competences',
@@ -273,7 +316,11 @@ export async function up(transaction: Transaction, db: Sequelize): Promise<void>
     },
     { transaction },
   );
-  logger.info('Making Training.difficultyLevel non-nullable');
+  logger.warn('Making Training.difficultyLevel non-nullable');
+  logger.warn(`The following may result in errors depending on the data present in the database.
+In case the database contains Trainings with difficultyLevel equal to null, the following will fail.
+When that happens you may want to consider checking where the Trainings belong to, and add
+difficultyLevel manually.`);
   await queryInterface.changeColumn(
     'Training',
     'difficultyLevel',
@@ -591,7 +638,11 @@ export async function down(transaction: Transaction, db: Sequelize): Promise<voi
     },
     { transaction },
   );
-  logger.info('Making ResourceVersion.AppMemberId non-nullable');
+  logger.warn('Making ResourceVersion.AppMemberId non-nullable');
+  logger.warn(`The following may result in errors depending on the data present in the database.
+In case the database contains ResourceVersions with AppMemberId equal to null, the following will fail.
+When that happens you may want to consider checking to what app and app member the ResourceVersions belong to,
+and removing them manually.`);
   await queryInterface.changeColumn(
     'ResourceVersion',
     'AppMemberId',
@@ -621,7 +672,14 @@ export async function down(transaction: Transaction, db: Sequelize): Promise<voi
     },
     { transaction },
   );
-  logger.info('Making EmailAuthorization.UserId non-nullable');
+  logger.warn('Making EmailAuthorization.UserId non-nullable');
+  logger.warn(`The following may result in errors depending on the data present in the database.
+In case the database contains EmailAuthorizations with UserId equal to null, the following will fail.
+When that happens you may want to consider checking what email was used and inform the user, to
+connect the ID manually or to delete them.
+
+  SELECT "email" FROM "EmailAuthorization" WHERE "UserId" IS NULL;
+`);
   await queryInterface.changeColumn(
     'EmailAuthorization',
     'UserId',
