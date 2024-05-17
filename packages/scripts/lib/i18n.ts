@@ -18,6 +18,14 @@ const serverMessageKeys = [
   'server.emails.reset.body',
   'server.emails.appMemberEmailChange.subject',
   'server.emails.appMemberEmailChange.body',
+  'server.emails.organizationInvite.body',
+  'server.emails.organizationInvite.subject',
+  'server.emails.teamInvite.body',
+  'server.emails.teamInvite.subject',
+  'server.emails.emailAdded.body',
+  'server.emails.emailAdded.subject',
+  'server.emails.appEmailQuotaLimitHit.body',
+  'server.emails.appEmailQuotaLimitHit.subject',
 ];
 
 export async function extractMessages(): Promise<Translations> {

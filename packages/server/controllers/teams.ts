@@ -323,10 +323,27 @@ export async function inviteTeamMember(ctx: Context): Promise<void> {
   });
   const url = new URL('/Team-Invite', getAppUrl(app));
   url.searchParams.set('code', invite.key);
-  await mailer.sendTemplateEmail({ email: invite.email }, 'teamInvite', {
-    appName: app.definition.name,
-    teamName: app.Teams[0].name,
-    url: String(url),
+
+  const existingUser = await User.findOne({
+    where: {
+      primaryEmail: email,
+    },
+    attributes: ['name', 'locale'],
+  });
+
+  await mailer.sendTranslatedEmail({
+    to: {
+      ...(existingUser ? { name: existingUser.name } : {}),
+      email,
+    },
+    emailName: 'teamInvite',
+    ...(existingUser ? { locale: existingUser.locale } : {}),
+    values: {
+      link: (text) => `[${text}](${String(url)})`,
+      name: existingUser ? existingUser.name : 'null',
+      teamName: app.Teams[0].name,
+      appName: app.definition.name,
+    },
   });
 }
 

@@ -567,12 +567,27 @@ export async function inviteMembers(ctx: Context): Promise<void> {
   );
 
   await Promise.all(
-    result.map((invite) =>
-      mailer.sendTemplateEmail({ ...invite.User, email: invite.email }, 'organizationInvite', {
-        organization: organizationId,
-        url: `${argv.host}/organization-invite?token=${invite.key}`,
-      }),
-    ),
+    result.map(async (invite) => {
+      const user = await User.findOne({
+        where: {
+          primaryEmail: invite.email,
+        },
+      });
+      return mailer.sendTranslatedEmail({
+        to: {
+          ...(user ? { name: user.name } : {}),
+          email: invite.email,
+        },
+        emailName: 'organizationInvite',
+        ...(user ? { locale: user.locale } : {}),
+        values: {
+          link: (text) => `[${text}](${argv.host}/organization-invite?token=${invite.key})`,
+          organization: organizationId,
+          name: user?.name || 'null',
+          appName: 'null',
+        },
+      });
+    }),
   );
   ctx.body = result.map(({ email, role }) => ({ email, role }));
 }
@@ -586,7 +601,16 @@ export async function resendInvitation(ctx: Context): Promise<void> {
 
   const email = request.body.email.toLowerCase();
   const organization = await Organization.findByPk(organizationId, {
-    include: [OrganizationInvite],
+    include: [
+      {
+        model: OrganizationInvite,
+        include: [
+          {
+            model: User,
+          },
+        ],
+      },
+    ],
   });
 
   assertKoaError(!organization, ctx, 404, 'Organization not found.');
@@ -597,17 +621,21 @@ export async function resendInvitation(ctx: Context): Promise<void> {
 
   assertKoaError(!invite, ctx, 404, 'This person was not invited previously.');
 
-  const user = await User.findByPk(invite.UserId);
-
   try {
-    await mailer.sendTemplateEmail(
-      { email, ...(user && { name: user.name }) },
-      'organizationInvite',
-      {
-        organization: organization.id,
-        url: `${argv.host}/organization-invite?token=${invite.key}`,
+    await mailer.sendTranslatedEmail({
+      to: {
+        name: invite.User.name,
+        email,
       },
-    );
+      emailName: 'organizationInvite',
+      locale: invite.User.locale,
+      values: {
+        link: (text) => `[${text}](${argv.host}/organization-invite?token=${invite.key})`,
+        organization: organizationId,
+        name: invite.User.name || 'null',
+        appName: 'null',
+      },
+    });
   } catch (error: any) {
     throwKoaError(ctx, 400, error.message || 'Something went wrong when sending the invite.');
   }

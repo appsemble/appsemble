@@ -151,8 +151,18 @@ export async function addEmail(ctx: Context): Promise<void> {
   const key = randomBytes(40).toString('hex');
   await EmailAuthorization.create({ UserId: user.id, email, key });
 
-  await mailer.sendTemplateEmail({ email, name: user.name }, 'emailAdded', {
-    url: `${argv.host}/verify?token=${key}`,
+  await mailer.sendTranslatedEmail({
+    to: {
+      name: user.name,
+      email,
+    },
+    emailName: 'emailAdded',
+    locale: user.locale,
+    values: {
+      link: (text) => `[${text}](${argv.host}/verify?token=${key})`,
+      name: user ? user.name : 'null',
+      appName: 'null',
+    },
   });
 
   ctx.status = 201;
