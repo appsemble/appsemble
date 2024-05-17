@@ -36,7 +36,7 @@ export class UserTraining extends Model {
   @Column(DataType.BOOLEAN)
   completed: boolean;
 
-  @BelongsTo(() => Training, { onDelete: 'CASCADE', onUpdate: 'CASCADE' })
+  @BelongsTo(() => Training, { onDelete: 'CASCADE' })
   Training: Awaited<Training>;
 
   @BelongsTo(() => User)

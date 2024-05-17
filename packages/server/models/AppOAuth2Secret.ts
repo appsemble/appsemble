@@ -92,6 +92,6 @@ export class AppOAuth2Secret extends Model {
   @BelongsTo(() => App)
   App: Awaited<App>;
 
-  @HasMany(() => AppOAuth2Authorization, { onDelete: 'CASCADE', onUpdate: 'CASCADE' })
+  @HasMany(() => AppOAuth2Authorization, { onDelete: 'CASCADE' })
   AppOAuth2Authorizations: AppOAuth2Authorization[];
 }

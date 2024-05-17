@@ -242,7 +242,7 @@ export class App extends Model {
   @HasMany(() => AppServiceSecret)
   AppServiceSecrets: AppServiceSecret[];
 
-  @HasMany(() => AppSnapshot, { onDelete: 'CASCADE', onUpdate: 'CASCADE' })
+  @HasMany(() => AppSnapshot, { onDelete: 'CASCADE' })
   AppSnapshots: AppSnapshot[];
 
   RatingAverage?: number;
