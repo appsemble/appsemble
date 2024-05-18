@@ -268,7 +268,7 @@ export default function EditPage(): ReactNode {
 
   useEffect(() => {
     setBreadCrumbsDecoration(
-      <Link id="guiEditorSwitch" to={`apps/${id}/edit/gui/pages`}>
+      <Link id="guiEditorSwitch" to={`apps/${id}/${app.definition.name}/edit/gui/pages`}>
         <Button className="button is-fullwidth is-rounded is-transparent is-bordered is-small">
           {`${formatMessage(messages.switchToGuiEditor)} ${formatMessage(messages.experimental)}`}
         </Button>
@@ -278,7 +278,7 @@ export default function EditPage(): ReactNode {
     return () => {
       setBreadCrumbsDecoration(null);
     };
-  }, [formatMessage, id, lang, location, setBreadCrumbsDecoration]);
+  }, [app.definition.name, formatMessage, id, lang, location, setBreadCrumbsDecoration]);
 
   const changeTab = useCallback(
     (event: SyntheticEvent, hash: string) => navigate({ hash }),

@@ -127,7 +127,7 @@ export default function EditPage(): ReactNode {
       <Link
         className={`mb-3 mr-1 ${styles.codeEditorSwitch}`}
         id="codeEditorSwitch"
-        to={`apps/${id}/edit#editor`}
+        to={`apps/${id}/${app.definition.name}/edit#editor`}
       >
         <Button className="button is-fullwidth is-rounded is-transparent is-bordered is-small">
           {formatMessage(messages.switchToCodeEditor)}
@@ -138,7 +138,7 @@ export default function EditPage(): ReactNode {
     return () => {
       setBreadCrumbsDecoration(null);
     };
-  }, [formatMessage, location, setBreadCrumbsDecoration, id]);
+  }, [formatMessage, location, setBreadCrumbsDecoration, id, app.definition.name]);
 
   const guiEditorContainer = document?.querySelector(
     `.${styles.guiEditorContainer}`,
