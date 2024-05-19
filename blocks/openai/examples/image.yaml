@@ -26,6 +26,11 @@ events:
 #                   content:
 #                     array.from:
 #                       - object.from:
+#                           type: image_url
+#                           image_url:
+#                             - object.from:
+#                                 url: image.url
+#                       - object.from:
 #                           type: text
 #                           text: { prop: message }
 #       onSuccess:
