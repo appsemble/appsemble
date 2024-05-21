@@ -4930,6 +4930,12 @@ If not defined, received data will be treated as an array.",
         "$ref": "#/definitions/Button",
         "description": "The definition of the contents and styling of the button.",
       },
+      "collapsible": {
+        "description": "Whether the list or the grouped lists should be collapsible.
+
+Will show the title in the collapse button if this is true.",
+        "type": "boolean",
+      },
       "dropdown": {
         "$ref": "#/definitions/Dropdown",
         "description": "The definition of the contents and styling of the dropdown.",
@@ -4941,6 +4947,10 @@ If not defined, received data will be treated as an array.",
         },
         "type": "array",
       },
+      "groupBy": {
+        "description": "The property based on which the list should be split into multiple lists.",
+        "type": "string",
+      },
       "header": {
         "description": "The header text to display above the list of fields.
 
@@ -4948,7 +4958,7 @@ Will not render if undefined.",
         "format": "remapper",
       },
       "hideOnNoData": {
-        "description": "Weather the list should be hidden if there is no data.
+        "description": "Whether the list should be hidden if there is no data.
 
 Will not hide if undefined.",
         "type": "boolean",
@@ -4969,6 +4979,16 @@ This can be either a full image path or an asset id.",
       "imageInline": {
         "description": "Nests image on the left inside the inline block.",
         "type": "boolean",
+      },
+      "startCollapsed": {
+        "description": "Whether the list should start in a collapsed state.
+
+Will only apply to the first list in grouped lists.",
+        "type": "boolean",
+      },
+      "title": {
+        "description": "The title to display above the list.",
+        "format": "remapper",
       },
       "toggleButton": {
         "$ref": "#/definitions/ToggleButton",
