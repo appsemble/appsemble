@@ -31,6 +31,8 @@ export interface Field {
  */
 export interface Item {
   id?: number;
+
+  [key: string]: unknown;
 }
 
 export interface Button {
@@ -226,7 +228,31 @@ declare module '@appsemble/sdk' {
 
   interface Parameters {
     /**
-     * Weather the list should be hidden if there is no data.
+     * The title to display above the list.
+     */
+    title?: Remapper;
+
+    /**
+     * Whether the list or the grouped lists should be collapsible.
+     *
+     * Will show the title in the collapse button if this is true.
+     */
+    collapsible?: boolean;
+
+    /**
+     * Whether the list should start in a collapsed state.
+     *
+     * Will only apply to the first list in grouped lists.
+     */
+    startCollapsed?: boolean;
+
+    /**
+     * The property based on which the list should be split into multiple lists.
+     */
+    groupBy?: string;
+
+    /**
+     * Whether the list should be hidden if there is no data.
      *
      * Will not hide if undefined.
      */

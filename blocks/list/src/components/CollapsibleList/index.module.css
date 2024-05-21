@@ -1,0 +1,15 @@
+.title {
+  font-size: 16px;
+}
+
+.toggle-button {
+  align-items: center;
+  background-color: hsl(0deg 0% 96%);
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  display: flex;
+  margin-top: 12px;
+  padding: 1rem;
+  width: 100%;
+}

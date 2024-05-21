@@ -1,13 +1,33 @@
 import { bootstrap, FormattedMessage } from '@appsemble/preact';
 import { Loader, Message } from '@appsemble/preact-components';
+import { type VNode } from 'preact';
 import { useCallback, useEffect, useState } from 'preact/hooks';
 
+import { CollapsibleListComponent } from './components/CollapsibleList/index.js';
 import { ListItem } from './components/ListItem/index.js';
+import styles from './index.module.css';
 import { type Item } from '../block.js';
 
+export const renderItems = (items: Item[], spaced?: boolean): VNode => (
+  <ul className={spaced ? 'py-4 px-5' : ''}>
+    {items.map((item, index) => (
+      <li key={item.id ?? index}>
+        <ListItem index={index} item={item} />
+      </li>
+    ))}
+  </ul>
+);
+
 bootstrap(
-  ({ data: blockData, events, parameters: { base, hideOnNoData = false }, ready, utils }) => {
+  ({
+    data: blockData,
+    events,
+    parameters: { base, collapsible, groupBy, hideOnNoData = false, title },
+    ready,
+    utils,
+  }) => {
     const [data, setData] = useState<Item[]>([]);
+    const [groupedData, setGroupedData] = useState<Record<string, Item[]>>({});
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(false);
 
@@ -21,6 +41,19 @@ bootstrap(
         }
       }
     }, [base, blockData]);
+
+    useEffect(() => {
+      if (data != null) {
+        const newGroupedData: Record<string, Item[]> = {};
+        for (const entry of data) {
+          const groupName = entry[groupBy];
+          if (groupName && typeof groupName === 'string') {
+            newGroupedData[groupName] = [...(newGroupedData[groupName] ?? []), entry];
+          }
+        }
+        setGroupedData(newGroupedData);
+      }
+    }, [data, groupBy]);
 
     const loadData = useCallback(
       (d: any, err: string): void => {
@@ -72,14 +105,45 @@ bootstrap(
       );
     }
 
-    return (
-      <ul className="py-4 px-5">
-        {data.map((item, index) => (
-          <li key={item.id ?? index}>
-            <ListItem index={index} item={item} />
-          </li>
-        ))}
-      </ul>
+    const renderFirstList = (): VNode => (
+      <CollapsibleListComponent
+        index={0}
+        items={data}
+        title={utils.remap(title, blockData) as string}
+      />
+    );
+
+    return groupBy ? (
+      collapsible ? (
+        <div>
+          {Object.entries(groupedData).length
+            ? Object.entries(groupedData).map(([key, value], index) => (
+                <CollapsibleListComponent index={index} items={value} key={key} title={key} />
+              ))
+            : renderFirstList()}
+        </div>
+      ) : (
+        <div>
+          {Object.entries(groupedData).length ? (
+            Object.entries(groupedData).map(([key, value]) => (
+              <div key={key}>
+                <div className={styles.title}>{key}</div>
+                {renderItems(value)}
+              </div>
+            ))
+          ) : (
+            <>
+              <div className={styles.title}>{title}</div>
+              {renderItems(data)}
+            </>
+          )}
+        </div>
+      )
+    ) : (
+      <>
+        {title && !collapsible ? <div className={styles.title}>{title}</div> : null}
+        {collapsible ? renderFirstList() : renderItems(data, true)}
+      </>
     );
   },
 );
