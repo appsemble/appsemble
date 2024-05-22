@@ -6,7 +6,7 @@ import {
   useMeta,
 } from '@appsemble/react-components';
 import { type App, type AppDefinition } from '@appsemble/types';
-import { getAppBlocks, noop } from '@appsemble/utils';
+import { getAppBlocks, noop, normalize } from '@appsemble/utils';
 import axios from 'axios';
 import classNames from 'classnames';
 import { type ReactNode, useCallback, useEffect, useMemo, useRef, useState } from 'react';
@@ -127,7 +127,7 @@ export default function EditPage(): ReactNode {
       <Link
         className={`mb-3 mr-1 ${styles.codeEditorSwitch}`}
         id="codeEditorSwitch"
-        to={`apps/${id}/edit#editor`}
+        to={`apps/${id}/${normalize(app.definition.name)}/edit#editor`}
       >
         <Button className="button is-fullwidth is-rounded is-transparent is-bordered is-small">
           {formatMessage(messages.switchToCodeEditor)}
@@ -138,7 +138,7 @@ export default function EditPage(): ReactNode {
     return () => {
       setBreadCrumbsDecoration(null);
     };
-  }, [formatMessage, location, setBreadCrumbsDecoration, id]);
+  }, [formatMessage, location, setBreadCrumbsDecoration, id, app.definition.name]);
 
   const guiEditorContainer = document?.querySelector(
     `.${styles.guiEditorContainer}`,
