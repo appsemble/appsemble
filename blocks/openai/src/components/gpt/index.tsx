@@ -1,5 +1,6 @@
 import { type OpenAIResponse } from '@appsemble/sdk';
 import { type VNode } from 'preact';
+import Markdown from 'preact-markdown';
 
 interface ModelGPTProps {
   readonly data: OpenAIResponse;
@@ -12,7 +13,7 @@ export function ModelGPT({ data }: ModelGPTProps): VNode {
         data.choices.map((choice) => (
           <p key={choice.index}>
             <strong>{choice.message.role}: </strong>
-            <span>{choice.message.content}</span>
+            {(Markdown as any)({ markdown: choice.message.content })}
           </p>
         ))}
     </div>

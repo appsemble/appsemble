@@ -22,7 +22,7 @@ pages:
             url: https://api.openai.com/v1/chat/completions
             body:
               object.from:
-                model: gpt-3.5-turbo
+                model: gpt-4o
                 messages:
                   array.from:
                     - object.from:
@@ -30,7 +30,7 @@ pages:
                         content: { prop: message }
                     - object.from:
                         role: system
-                        content: return the response in HTML format.
+                        content: return the response in markdown format.
             onSuccess:
               type: event
               event: response
