@@ -6,7 +6,7 @@ import {
   useMeta,
 } from '@appsemble/react-components';
 import { type App, type AppDefinition } from '@appsemble/types';
-import { getAppBlocks, noop } from '@appsemble/utils';
+import { getAppBlocks, noop, normalize } from '@appsemble/utils';
 import axios from 'axios';
 import classNames from 'classnames';
 import { type ReactNode, useCallback, useEffect, useMemo, useRef, useState } from 'react';
