@@ -75,6 +75,10 @@ export function SelectionInput({
 
   const selectOption = (id: number): void => {
     onChange(name, [...selectedOptions, options.find((option) => option.id === id)]);
+
+    if (selectedOptions.length + 1 === maxItems) {
+      modal.disable();
+    }
   };
 
   const deselectOption = (id: number): void => {
