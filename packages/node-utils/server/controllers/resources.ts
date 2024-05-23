@@ -13,7 +13,7 @@ import {
   throwKoaError,
   type WhereOptions,
 } from '@appsemble/node-utils';
-import { type ResourceDefinition } from '@appsemble/types';
+import { type App, type ResourceDefinition } from '@appsemble/types';
 import { defaultLocale, remap } from '@appsemble/utils';
 import { type Context, type Middleware } from 'koa';
 
@@ -511,43 +511,65 @@ export function createSeedResource(options: Options): Middleware {
   };
 }
 
+async function deleteResourcesRecursively(
+  type: string,
+  app: App,
+  options: Options,
+  context: Context,
+): Promise<void> {
+  const { deleteAppResource, getAppResources } = options;
+
+  const referencingResources = Object.entries(app.definition.resources).filter(
+    ([, resourceDefinition]) =>
+      Object.values(resourceDefinition.references ?? {}).find(
+        (resourceReference) => resourceReference.resource === type,
+      ),
+  );
+
+  for (const [referencingResourceType] of referencingResources) {
+    await deleteResourcesRecursively(referencingResourceType, app, options, context);
+  }
+
+  const resourcesToDeleteFindOptions: FindOptions = {
+    where: {
+      type,
+      AppId: app.id,
+      or: [{ seed: true }, { ephemeral: true }],
+    },
+  };
+
+  const resourcesToDelete = await getAppResources({
+    app,
+    findOptions: resourcesToDeleteFindOptions,
+    type,
+    context,
+  });
+
+  for (const resourceToDelete of resourcesToDelete) {
+    await deleteAppResource({
+      app,
+      context,
+      options,
+      id: resourceToDelete.id,
+      type,
+    });
+  }
+}
+
 export function createDeleteSeedResources(options: Options): Middleware {
   return async (ctx: Context) => {
     const {
       pathParams: { appId },
     } = ctx;
 
-    const { deleteAppResource, getApp, getAppResources } = options;
+    const { getApp } = options;
 
     const app = await getApp({ context: ctx, query: { where: { id: appId } } });
 
     assertKoaError(!app, ctx, 404, 'App not found');
 
     for (const resourceType of Object.keys(app.definition.resources ?? {})) {
-      const resourcesToDeleteFindOptions: FindOptions = {
-        where: {
-          type: resourceType,
-          AppId: appId,
-          or: [{ seed: true }, { ephemeral: true }],
-        },
-      };
-
-      const resourcesToDelete = await getAppResources({
-        app,
-        findOptions: resourcesToDeleteFindOptions,
-        type: resourceType,
-        context: ctx,
-      });
-
-      for (const resourceToDelete of resourcesToDelete) {
-        await deleteAppResource({
-          app,
-          context: ctx,
-          options,
-          id: resourceToDelete.id,
-          type: resourceType,
-        });
-      }
+      await deleteResourcesRecursively(resourceType, app, options, ctx);
     }
   };
 }

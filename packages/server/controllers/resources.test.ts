@@ -134,6 +134,26 @@ const exampleApp = (
             },
           },
         },
+        testResourceBB: {
+          schema: {
+            type: 'object',
+            required: ['bar'],
+            properties: { bar: { type: 'string' }, testResourceBId: { type: 'number' } },
+          },
+          roles: ['$public'],
+          references: {
+            testResourceBId: {
+              resource: 'testResourceB',
+              delete: {
+                triggers: [
+                  {
+                    type: 'delete',
+                  },
+                ],
+              },
+            },
+          },
+        },
         testResourceC: {
           schema: {
             type: 'object',
@@ -4198,11 +4218,19 @@ describe('deleteSeedResources', () => {
   it('should delete seed resources in all apps', async () => {
     authorizeStudio();
 
-    const resource1 = { foo: 'bar' };
-    await request.post(`/api/apps/${app.id}/seed-resources/testResource1`, resource1);
+    await Resource.create({
+      type: 'testResource',
+      AppId: app.id,
+      data: { foo: 'I am Foo.' },
+      seed: true,
+    });
 
-    const resource2 = { foo: 'bar' };
-    await request.post(`/api/apps/${app.id}/seed-resources/testResource2`, resource2);
+    await Resource.create({
+      type: 'testResource',
+      AppId: app.id,
+      data: { foo: 'I am Foo.' },
+      seed: true,
+    });
 
     await request.delete(`/api/apps/${app.id}/seed-resources`);
 
@@ -4220,11 +4248,136 @@ describe('deleteSeedResources', () => {
     await app.update({ demoMode: true });
     authorizeStudio();
 
-    const resource1 = { foo: 'bar' };
-    await request.post(`/api/apps/${app.id}/seed-resources/testResource1`, resource1);
+    await Resource.create({
+      type: 'testResource',
+      AppId: app.id,
+      data: { foo: 'I am Foo.' },
+      seed: true,
+    });
 
-    const resource2 = { foo: 'bar' };
-    await request.post(`/api/apps/${app.id}/seed-resources/testResource2`, resource2);
+    await Resource.create({
+      type: 'testResource',
+      AppId: app.id,
+      data: { foo: 'I am Foo.' },
+      seed: true,
+    });
+
+    await Resource.create({
+      type: 'testResource',
+      AppId: app.id,
+      data: { foo: 'I am Foo.' },
+      ephemeral: true,
+    });
+
+    await Resource.create({
+      type: 'testResource',
+      AppId: app.id,
+      data: { foo: 'I am Foo.' },
+      ephemeral: true,
+    });
+
+    await request.delete(`/api/apps/${app.id}/seed-resources`);
+
+    const seedResources = await Resource.findAll({
+      where: {
+        AppId: app.id,
+        seed: true,
+      },
+    });
+
+    expect(seedResources).toStrictEqual([]);
+
+    const ephemeralResources = await Resource.findAll({
+      where: {
+        AppId: app.id,
+        ephemeral: true,
+      },
+    });
+
+    expect(ephemeralResources).toStrictEqual([]);
+  });
+
+  it('should delete seed resources with references in all apps', async () => {
+    authorizeStudio();
+
+    const testResource = await Resource.create({
+      type: 'testResource',
+      AppId: app.id,
+      data: { foo: 'I am Foo.' },
+      seed: true,
+    });
+
+    const testResourceB = await Resource.create({
+      type: 'testResourceB',
+      AppId: app.id,
+      data: { foo: 'I am Foo.', testResourceId: testResource.id },
+      seed: true,
+    });
+
+    await Resource.create({
+      type: 'testResourceBB',
+      AppId: app.id,
+      data: { foo: 'I am Foo.', testResourceBId: testResourceB.id },
+      seed: true,
+    });
+
+    await request.delete(`/api/apps/${app.id}/seed-resources`);
+
+    const seedResources = await Resource.findAll({
+      where: {
+        AppId: app.id,
+        seed: true,
+      },
+    });
+
+    expect(seedResources).toStrictEqual([]);
+  });
+
+  it('should delete seed resources and ephemeral resources with references in demo apps', async () => {
+    await app.update({ demoMode: true });
+    authorizeStudio();
+
+    const seedTestResource = await Resource.create({
+      type: 'testResource',
+      AppId: app.id,
+      data: { foo: 'I am Foo.' },
+      seed: true,
+    });
+
+    const seedTestResourceB = await Resource.create({
+      type: 'testResourceB',
+      AppId: app.id,
+      data: { foo: 'I am Foo.', testResourceId: seedTestResource.id },
+      seed: true,
+    });
+
+    await Resource.create({
+      type: 'testResourceBB',
+      AppId: app.id,
+      data: { foo: 'I am Foo.', testResourceBId: seedTestResourceB.id },
+      seed: true,
+    });
+
+    const ephemeralTestResource = await Resource.create({
+      type: 'testResource',
+      AppId: app.id,
+      data: { foo: 'I am Foo.' },
+      ephemeral: true,
+    });
+
+    const ephemeralTestResourceB = await Resource.create({
+      type: 'testResourceB',
+      AppId: app.id,
+      data: { foo: 'I am Foo.', testResourceId: ephemeralTestResource.id },
+      seed: true,
+    });
+
+    await Resource.create({
+      type: 'testResourceBB',
+      AppId: app.id,
+      data: { foo: 'I am Foo.', testResourceBId: ephemeralTestResourceB.id },
+      seed: true,
+    });
 
     await request.delete(`/api/apps/${app.id}/seed-resources`);
 
