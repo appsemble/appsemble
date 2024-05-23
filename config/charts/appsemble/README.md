@@ -92,6 +92,22 @@ helm repo update
 helm upgrade my-appsemble appsemble/appsemble --set 'global.postgresql.auth.existingSecret=postgresql-secret' --set 'ingress.host=my-appsemble.example.com'
 ```
 
+### Updating Secrets
+
+If you make changes to one or more secrets, the Appsemble kubernetes pod needs to be restarted for
+these changes to be applied.
+
+You can run the following command to restart the deployment:
+
+```sh
+kubectl rollout restart deployment appsemble
+```
+
+This will cause Kubernetes to create new pods with the updated configuration until all the pods are
+new. New pods will be created one at a time, to avoid downtime.
+
+> **Note**: This will incur some downtime.
+
 ## Variables
 
 | Name                                     | Default                       | Description                                                                                                                               |
