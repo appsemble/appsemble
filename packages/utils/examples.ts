@@ -621,6 +621,12 @@ export const examples: Record<RemapperExampleKeys, RemapperExample> = {
     result: {},
     skip: true,
   },
+  'tab.name': {
+    input: null,
+    remapper: {},
+    result: {},
+    skip: true,
+  },
   'string.case': {
     input: 'Patrick',
     remapper: {

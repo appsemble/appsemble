@@ -166,9 +166,16 @@ export function iterPage(
         ? page.steps.some((step, index) =>
             iterBlockList(step.blocks, callbacks, [...prefix, 'steps', index, 'blocks']),
           )
-        : page.tabs.some((tab, index) =>
-            iterBlockList(tab.blocks, callbacks, [...prefix, 'tabs', index, 'blocks']),
-          ))
+        : page.tabs
+          ? page.tabs.some((tab, index) =>
+              iterBlockList(tab.blocks, callbacks, [...prefix, 'tabs', index, 'blocks']),
+            )
+          : iterBlockList(page.definition.foreach.blocks, callbacks, [
+              ...prefix,
+              'tabs',
+              0,
+              'blocks',
+            ]))
     );
   }
 

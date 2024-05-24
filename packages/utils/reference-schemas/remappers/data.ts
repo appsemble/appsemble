@@ -96,6 +96,30 @@ Result:
 \`\`\`
     `,
   },
+  'tab.name': {
+    enum: [null],
+    description: `
+
+Returns the name of the current tab in a \`tabs\` page.
+
+\`\`\`yaml
+name: Example Page A
+type: tabs
+  tabs:
+    - name: Tab2
+      blocks:
+        - type: action-button
+          version: "0.27.12"
+          parameters:
+            icon: chevron-right
+          actions:
+            onClick:
+              type: log
+              remapBefore:
+                { tab.name: null }
+\`\`\`
+    `,
+  },
   step: {
     type: 'string',
     description: `

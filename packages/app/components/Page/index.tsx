@@ -47,6 +47,7 @@ export function Page(): ReactNode {
   const [data, setData] = useState<unknown>({});
   const [dialog, setDialog] = useState<ShowDialogParams>();
   const stepRef = useRef<unknown>();
+  const tabRef = useRef<unknown>();
 
   const [shareDialogParams, setShareDialogParams] = useState<ShareDialogState>();
   const showShareDialog: ShowShareDialog = useCallback(
@@ -108,6 +109,7 @@ export function Page(): ReactNode {
         root: input,
         locale: lang,
         stepRef,
+        tabRef,
       }),
     [data, getMessage, getVariable, lang, userInfoRef],
   );
@@ -180,6 +182,7 @@ export function Page(): ReactNode {
             remap={remapWithContext}
             showDialog={showDialog}
             showShareDialog={showShareDialog}
+            tabRef={tabRef}
           />
         ) : (
           // The switch is used to enforce an exact path.

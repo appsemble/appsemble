@@ -41,8 +41,8 @@ export const link: ActionCreator<'link'> = ({
       let subPage: SubPage;
       let index: number;
 
-      if (toPage?.type === 'tabs') {
-        subPage = toPage.tabs.find(({ name }) => name === toSub) ?? toPage.tabs[0];
+      if (toPage?.type === 'tabs' && toPage?.tabs) {
+        subPage = toPage?.tabs?.find(({ name }) => name === toSub) ?? toPage.tabs[0];
         index = toPage.tabs.findIndex(({ name }) => name === subPage.name);
       }
 
@@ -71,7 +71,9 @@ export const link: ActionCreator<'link'> = ({
               normalize(
                 getAppMessage({
                   id: `pages.${normalizedPageName}.tabs.${index}`,
-                  defaultMessage: normalize(subPage.name),
+                  defaultMessage: normalize(
+                    typeof subPage.name === 'string' ? subPage.name : remap(subPage.name, data),
+                  ),
                 }).format() as string,
               ),
             ]
@@ -88,7 +90,7 @@ export const link: ActionCreator<'link'> = ({
       if (urlRegex.test(target)) {
         window.open(target, '_blank', 'noopener,noreferrer');
       } else {
-        navigate(target, data);
+        navigate(target, data ?? {});
       }
     },
     { href },

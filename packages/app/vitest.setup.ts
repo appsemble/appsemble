@@ -18,6 +18,7 @@ window.settings = {
   appControllerCode: '',
   appControllerImplementations: {},
   blockManifests: [],
+  pageManifests: {},
   definition: null,
   demoMode: false,
   development: false,

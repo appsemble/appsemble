@@ -21,6 +21,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 
 import { type ShowDialogAction, type ShowShareDialog } from '../../types.js';
 import { makeActions } from '../../utils/makeActions.js';
+import { appId } from '../../utils/settings.js';
 import { type AppStorage } from '../../utils/storage.js';
 import { useAppMessages } from '../AppMessagesProvider/index.js';
 import { useAppVariables } from '../AppVariablesProvider/index.js';
@@ -64,14 +65,26 @@ export function FlowPage({
   const [currentStep, setCurrentStep] = useState(0);
   const pushNotifications = useServiceWorkerRegistration();
   const showMessage = useMessages();
-  const { logout, passwordLogin, setUserInfo, teams, updateTeam, userInfoRef } = useUser();
+  const { logout, passwordLogin, setUserInfo, teams, updateTeam, userInfo, userInfoRef } =
+    useUser();
   const { refetchDemoAppMembers } = useDemoAppMembers();
-  const { getAppMessage } = useAppMessages();
+  const { getAppMessage, getMessage } = useAppMessages();
   const { getVariable } = useAppVariables();
   const [steps, setSteps] = useState(page.type === 'flow' ? page.steps : undefined);
   const [error, setError] = useState(false);
   const [loopData, setLoopData] = useState<Object[]>();
   const [stepsData, setStepsData] = useState<Object[]>();
+  const remapperContext = {
+    appId,
+    appUrl: window.location.origin,
+    url: window.location.href,
+    getMessage,
+    getVariable,
+    userInfo,
+    appMember: userInfo?.appMember,
+    context: { name: page.name },
+    locale: params.lang,
+  };
 
   const generateLoopPrefix = (loopPrefix: string): string => {
     if (!currentStep) {
@@ -87,7 +100,12 @@ export function FlowPage({
 
   const name = getAppMessage({
     id,
-    defaultMessage: page.type === 'loop' ? generateLoopPrefix(prefix) : steps?.[currentStep]?.name,
+    defaultMessage:
+      page.type === 'loop'
+        ? generateLoopPrefix(prefix)
+        : typeof steps?.[currentStep]?.name === 'string'
+          ? steps?.[currentStep]?.name
+          : remap(steps?.[currentStep]?.name, stepsData, remapperContext),
   }).format() as string;
   useMeta(name === `{${id}}` ? null : name);
 
