@@ -129,13 +129,15 @@ export function extractAppMessages(
 
       if (page.type === 'tabs' && Array.isArray(page.tabs)) {
         for (const [index, tab] of page.tabs.entries()) {
-          messages.app[`${prefix}.tabs.${index}`] = tab.name ?? '';
+          messages.app[`${prefix}.tabs.${index}`] =
+            (typeof tab.name === 'string' ? tab.name : '') ?? '';
         }
       }
 
       if (page.type === 'flow') {
         for (const [index, step] of page.steps.entries()) {
-          messages.app[`${prefix}.steps.${index}`] = step.name ?? '';
+          messages.app[`${prefix}.steps.${index}`] =
+            (typeof step.name === 'string' ? step.name : '') ?? '';
         }
       }
 

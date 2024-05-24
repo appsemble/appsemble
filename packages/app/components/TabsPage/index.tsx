@@ -18,6 +18,7 @@ import { Navigate, Route, useLocation, useNavigate, useParams } from 'react-rout
 import { TabContent } from './TabContent/index.js';
 import { createEvents } from '../../utils/events.js';
 import { makeActions } from '../../utils/makeActions.js';
+import { appId } from '../../utils/settings.js';
 import { useAppDefinition } from '../AppDefinitionProvider/index.js';
 import { useAppMessages } from '../AppMessagesProvider/index.js';
 import { useAppVariables } from '../AppVariablesProvider/index.js';
@@ -50,11 +51,12 @@ export function TabsPage({
     pageId,
   } = useParams<{ lang: string; pageId: string; '*': string }>();
 
-  const { getAppMessage } = useAppMessages();
+  const { getAppMessage, getMessage } = useAppMessages();
   const [data, setData] = useState<unknown>({});
   const { pathname } = useLocation();
   const navigate = useNavigate();
-  const { logout, passwordLogin, role, setUserInfo, teams, updateTeam, userInfoRef } = useUser();
+  const { logout, passwordLogin, role, setUserInfo, teams, updateTeam, userInfo, userInfoRef } =
+    useUser();
   const { refetchDemoAppMembers } = useDemoAppMembers();
   const [tabsWithPermissions, setTabsWithPermissions] = useState([]);
   const [defaultTab, setDefaultTab] = useState(null);
@@ -84,6 +86,17 @@ export function TabsPage({
     page.definition ? page.definition.events : null,
   );
   const resolvePageReady = useRef<Function>();
+  const remapperContext = {
+    appId,
+    appUrl: window.location.origin,
+    url: window.location.href,
+    getMessage,
+    getVariable,
+    userInfo,
+    appMember: userInfo?.appMember,
+    context: { name: page.name },
+    locale: lang,
+  };
 
   useEffect(() => {
     setPageReady(
@@ -108,10 +121,10 @@ export function TabsPage({
       setTabsWithPermissions(createdTabs);
       setDefaultTab({
         id: '0',
-        name: 'New Generated Tab 0',
+        name: '',
       });
     }
-  }, [checkSubPagePermissions, page, actions, createdTabs]);
+  }, [checkSubPagePermissions, page, actions, createdTabs, setCreatedTabs]);
 
   useEffect(() => {
     actions.onLoad().then((results) => {
@@ -126,13 +139,17 @@ export function TabsPage({
       event.preventDefault();
     });
     const callback = (d: any): void => {
-      const { blocks } = page.definition.foreach;
+      const { blocks, name } = page.definition.foreach;
       function createTabs(): SubPage[] {
         const newTabs: SubPage[] = [];
         for (const [i, resourceData] of d.entries()) {
           if (resourceData) {
+            let remappedName: string | undefined;
+            if (typeof name !== 'string') {
+              remappedName = remap(name, resourceData, remapperContext);
+            }
             const newTab: SubPage = {
-              name: `New Generated Tab ${i}`,
+              name: typeof name === 'string' ? `${name}${i}` : remappedName || `Generated Tab ${i}`,
               blocks,
             };
             newTabs.push(newTab);
@@ -217,7 +234,7 @@ export function TabsPage({
           {pageTabs.map((tab, index) => {
             const translatedName = getAppMessage({
               id: `${prefix}.tabs.${index}`,
-              defaultMessage: tab.name,
+              defaultMessage: remap(tab.name, data, remapperContext),
             }).format() as string;
 
             const value = `${['', lang, pageId, normalize(translatedName)].join('/')}${
@@ -233,9 +250,11 @@ export function TabsPage({
         </Tabs>
         <MetaSwitch title={pageName}>
           {pageTabs.map(({ blocks, name, roles }, index) => {
+            const defaultMessage =
+              typeof name === 'string' ? name : String(remap(name, data, remapperContext));
             const translatedName = getAppMessage({
               id: `${prefix}.tabs.${index}`,
-              defaultMessage: name,
+              defaultMessage,
             }).format() as string;
 
             return (

@@ -97,7 +97,7 @@ Result:
     `,
   },
   'tab.name': {
-    type: 'string',
+    enum: [null],
     description: `
 
 Returns the name of the current tab in a \`tabs\` page.
@@ -116,7 +116,7 @@ type: tabs
             onClick:
               type: log
               remapBefore:
-                { tab.name }
+                { tab.name: null }
 \`\`\`
     `,
   },

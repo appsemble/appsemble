@@ -1696,7 +1696,7 @@ export interface BasePageDefinition {
  * A subset of page for use within flow pages and tab pages.
  */
 export interface SubPage {
-  name: string;
+  name: Remapper;
   roles?: string[];
   blocks: BlockDefinition[];
 }
