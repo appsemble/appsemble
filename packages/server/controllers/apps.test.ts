@@ -4942,7 +4942,7 @@ describe('setAppLock', () => {
   });
 
   it('should allow to change fullLock from CLI', async () => {
-    authorizeClientCredentials('apps:write');
+    await authorizeClientCredentials('apps:write');
     const app = await App.create({
       definition: { name: 'Test App', defaultPage: 'Test Page' },
       path: 'test-app',
@@ -5012,7 +5012,7 @@ describe('deleteApp', () => {
   });
 
   it('should delete an app via the CLI command.', async () => {
-    authorizeClientCredentials('apps:delete');
+    await authorizeClientCredentials('apps:delete');
     const app = await App.create({
       definition: {
         name: 'Test App',
