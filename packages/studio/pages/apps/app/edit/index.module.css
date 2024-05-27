@@ -56,43 +56,49 @@ button[class*='modal-close'] {
 
   &.desktop {
     aspect-ratio: 16 / 9;
-    min-width: 50vw;
+    height: calc(38vw - 3rem);
+    max-height: 900px;
 
-    /* stylelint-disable-next-line media-feature-range-notation */
-    @media (min-width: 1024px) and (max-width: 1599px) {
-      min-width: 43vw;
+    @media (width > 1023px) and (width < 1601px) {
+      height: calc(30vw - 3rem);
     }
 
-    /* stylelint-disable-next-line media-feature-range-notation */
-    @media (min-width: 1600px) and (max-width: 2599px) {
-      min-width: 50vw;
+    @media screen and (width > 1600px) and (width < 1921px) {
+      height: calc(34vw - 2rem);
     }
 
-    /* stylelint-disable-next-line media-feature-range-notation */
-    @media (min-width: 2600px) and (max-width: 3440px) {
-      min-width: 55vw;
+    @media (width > 1920px) and (width < 2601px) {
+      height: calc(32vw - 6.67rem);
     }
 
-    /* stylelint-disable-next-line media-feature-range-notation */
-    @media (min-width: 3441px) {
-      min-width: 58vw;
+    @media (width > 2600px) and (width < 3441px) {
+      height: calc(33vw - 2rem);
+    }
+
+    @media (width > 3440px) {
+      height: calc(34vw - 6rem);
     }
   }
 
   &.phone {
     aspect-ratio: 9 / 18;
-    min-height: 80vh;
+    height: calc(84vh - 3.2rem);
+    max-height: 900px;
+    max-width: 450px;
   }
 
   &.tablet {
     aspect-ratio: 3 / 4;
-    min-height: 80vh;
+    height: calc(80vh - 3rem);
+    max-height: 1024px;
+    max-width: 768px;
   }
 }
 
 .leftPanel {
   flex: 2 2 auto;
   height: calc(100vh - 7.1rem);
+  min-width: 250px;
 
   @media screen and (width <=1023px) {
     height: calc(100vh - 7rem);
@@ -105,22 +111,19 @@ button[class*='modal-close'] {
 
   @media screen and (width >=1024px) and (width <=1280px) {
     max-width: 86vw;
-    min-width: 234px;
   }
 
   @media (width >= 1281px) and (width <= 1920px) {
     max-width: 93vw;
-    min-width: 337px;
   }
 
-  @media (width >= 1921px) {
+  @media (width >= 1921px) and (width < 2561px) {
     max-width: 94vw;
-    min-width: 565px;
   }
 
   @media (width >= 2561px) {
     max-width: 96vw;
-    min-width: 825px;
+    min-width: 505px;
   }
 
   &.fullscreen {
@@ -130,28 +133,14 @@ button[class*='modal-close'] {
 
 .rightPanel {
   display: none;
-  margin-top: 2.5rem;
+  padding-top: 2.5rem;
 
   @media (width >= 1024px) {
     display: flex;
 
     &.fill {
+      min-width: 45vw;
       padding-bottom: 1.3rem;
-
-      /* stylelint-disable-next-line media-feature-range-notation */
-      @media (min-width: 1024px) and (max-width: 1279px) {
-        min-width: 44vw;
-      }
-
-      /* stylelint-disable-next-line media-feature-range-notation */
-      @media (min-width: 1280px) and (max-width: 1919px) {
-        min-width: 41vw;
-      }
-
-      /* stylelint-disable-next-line media-feature-range-notation */
-      @media (min-width: 1920px) {
-        min-width: 44%;
-      }
     }
   }
 }
@@ -184,10 +173,6 @@ button[class*='modal-close'] {
   @media (width < 1024px) {
     top: -0.6rem;
     z-index: auto;
-
-    &.fullscreen {
-      /* top: 2.65rem; */
-    }
   }
 }
 
