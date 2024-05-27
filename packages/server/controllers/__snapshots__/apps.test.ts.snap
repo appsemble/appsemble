@@ -39,6 +39,10 @@ Content-Type: application/json; charset=utf-8
               "$ref": "#/components/schemas/RemapperDefinition",
               "description": "An optional header to render above the block.",
             },
+            "hide": {
+              "$ref": "#/components/schemas/RemapperDefinition",
+              "description": "Whether to render the block or not",
+            },
             "layout": {
               "description": "An override of the block’s default layout.
 
@@ -1467,6 +1471,10 @@ Content-Type: application/json; charset=utf-8
             "header": {
               "$ref": "#/components/schemas/RemapperDefinition",
               "description": "An optional header to render above the block.",
+            },
+            "hide": {
+              "$ref": "#/components/schemas/RemapperDefinition",
+              "description": "Whether to render the block or not",
             },
             "layout": {
               "description": "An override of the block’s default layout.

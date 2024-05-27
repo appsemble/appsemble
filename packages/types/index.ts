@@ -112,6 +112,11 @@ export interface BlockDefinition extends ControllerDefinition {
     | 'top';
 
   /**
+   * Whether to render the block or not.
+   */
+  hide?: Remapper;
+
+  /**
    * The theme of the block.
    */
   theme?: Partial<Theme>;
