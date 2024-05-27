@@ -1,7 +1,7 @@
 apiVersion: v2
 name: appsemble
-version: 0.28.10
-appVersion: 0.28.10
+version: 0.28.11
+appVersion: 0.28.11
 kubeVersion: '>=1.21.0'
 type: application
 description: The open source low-code app building platform
@@ -23,25 +23,8 @@ dependencies:
     repository: https://charts.bitnami.com/bitnami
     condition: postgresql.enabled
 annotations:
-  artifacthub.io/changes: >
-    - kind: added
-      description: "Block(list): Add collapsible and startCollapsed properties for
-        collapsing the list into a compact view."
-    - kind: added
-      description: "Block(list): Add a groupBy property to split the list into
-        multiple smaller lists."
-    - kind: added
-      description: "Block(list): Add a title property for a title that shows above the list."
-    - kind: added
-      description: "App: Allow sub-page name to be dynamic using Remappers."
-    - kind: changed
-      description: "Server: All emails now use translation files instead of templates."
-    - kind: fixed
-      description: "Block(form): Close the selection modal when the maxItems
-        requirement is reached."
-    - kind: fixed
-      description: "Node-utils: Deleting seed resources now deletes referencing
-        resources before referenced resources."
+  artifacthub.io/changes: |
+    []
   artifacthub.io/license: LGPL-3.0-only
   artifacthub.io/links: |
     - name: Appsemble Studio
