@@ -35,6 +35,7 @@ export function JSONSchemaStringEditor({
     required,
     step: multipleOf,
     value,
+    error: required && !value,
   };
 
   if (schema.multiline) {

@@ -15,6 +15,7 @@ export function JSONSchemaUnknownEditor({
 }: CommonJSONSchemaEditorProps<any>): ReactNode {
   return (
     <JSONField
+      error={required ? !value : null}
       help={<MarkdownContent content={schema.description} />}
       label={<JSONSchemaLabel name={name} prefix={prefix} schema={schema} />}
       name={name}

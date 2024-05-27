@@ -21,6 +21,7 @@ import { has, serializeResource } from '@appsemble/utils';
 import { download } from '@appsemble/web-utils';
 import axios from 'axios';
 import classNames from 'classnames';
+import { validate } from 'jsonschema';
 import { type OpenAPIV3 } from 'openapi-types';
 import {
   type ChangeEvent,
@@ -318,6 +319,24 @@ export function IndexPage({
 
   const submitCreate = useCallback(
     async (values: Record<string, Resource>) => {
+      const { errors } = validate(values[resourceName], schema, {
+        skipAttributes: ['type', 'format'],
+      });
+      if (errors.length) {
+        for (const error of errors) {
+          const prefix =
+            error.path.length === 2
+              ? `Item ${error.path[1]} of property ${error.path[0]} `
+              : error.path.length
+                ? `Property ${error.path[0]} `
+                : '';
+          push({
+            body: `${prefix}${error.message}`,
+            color: 'danger',
+          });
+        }
+        return;
+      }
       try {
         const { data } = await axios.post<Resource>(
           resourceURL,
@@ -366,6 +385,7 @@ export function IndexPage({
       push,
       resourceName,
       resourceURL,
+      schema,
       setResources,
       updatePagination,
     ],

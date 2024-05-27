@@ -18,6 +18,7 @@ export function JSONSchemaNumberEditor({
   return (
     <InputField
       disabled={disabled}
+      error={required ? !value : null}
       help={<MarkdownContent content={schema.description} />}
       label={<JSONSchemaLabel name={name} prefix={prefix} schema={schema} />}
       max={schema.maximum}

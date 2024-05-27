@@ -97,55 +97,59 @@ export function JSONSchemaArrayEditor({
         size={3}
         title={<JSONSchemaLabel name={name} prefix={prefix} schema={schema} />}
       >
-        {value.map((val, index) => (
-          // eslint-disable-next-line react/no-array-index-key
-          <div className="my-1" key={index}>
-            <RecursiveJSONSchemaEditor
-              disabled={disabled}
-              name={`${name}.${index}`}
-              nested
-              onChange={onPropertyChange}
-              prefix={prefix}
-              required={schema.minItems != null && index < schema.minItems}
-              schema={items}
-              value={val}
-            />
-            <div className="is-pulled-right">
-              {value.length && index !== value.length - 1 ? (
-                <Button
-                  className="mr-1"
-                  color="info"
-                  icon="arrows-alt-v"
-                  name={`${name}.${index}`}
-                  onClick={onItemSwapped}
-                  title={formatMessage(messages.swap)}
-                />
-              ) : null}
-              {schema.minItems == null || value.length > schema.minItems ? (
-                <Button
-                  color="danger"
-                  icon="minus"
-                  name={`${name}.${index}`}
-                  onClick={onClickRemoveItem}
-                  title={formatMessage(messages.removeAbove, {
-                    name: `${name.replace(`${prefix}.`, '')}.${index}`,
-                  })}
-                />
-              ) : null}
-              {schema.maxItems == null || value.length < schema.maxItems ? (
-                <Button
-                  className="ml-1"
-                  color="success"
-                  icon="plus"
-                  name={`${name}.${index}`}
-                  onClick={onItemAdded}
-                  title={formatMessage(messages.addBelow, { index: index + 1 })}
-                />
-              ) : null}
+        {value.map((val, index) => {
+          const required = schema.minItems != null && index < schema.minItems;
+          return (
+            // eslint-disable-next-line react/no-array-index-key
+            <div className="my-1" key={index}>
+              <RecursiveJSONSchemaEditor
+                disabled={disabled}
+                error={required ? !val : null}
+                name={`${name}.${index}`}
+                nested
+                onChange={onPropertyChange}
+                prefix={prefix}
+                required={required}
+                schema={items}
+                value={val}
+              />
+              <div className="is-pulled-right">
+                {value.length && index !== value.length - 1 ? (
+                  <Button
+                    className="mr-1"
+                    color="info"
+                    icon="arrows-alt-v"
+                    name={`${name}.${index}`}
+                    onClick={onItemSwapped}
+                    title={formatMessage(messages.swap)}
+                  />
+                ) : null}
+                {schema.minItems == null || value.length > schema.minItems ? (
+                  <Button
+                    color="danger"
+                    icon="minus"
+                    name={`${name}.${index}`}
+                    onClick={onClickRemoveItem}
+                    title={formatMessage(messages.removeAbove, {
+                      name: `${name.replace(`${prefix}.`, '')}.${index}`,
+                    })}
+                  />
+                ) : null}
+                {schema.maxItems == null || value.length < schema.maxItems ? (
+                  <Button
+                    className="ml-1"
+                    color="success"
+                    icon="plus"
+                    name={`${name}.${index}`}
+                    onClick={onItemAdded}
+                    title={formatMessage(messages.addBelow, { index: index + 1 })}
+                  />
+                ) : null}
+              </div>
+              <hr />
             </div>
-            <hr />
-          </div>
-        ))}
+          );
+        })}
       </Collapsible>
       <ModalCard
         footer={

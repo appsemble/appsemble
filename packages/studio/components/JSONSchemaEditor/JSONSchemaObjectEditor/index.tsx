@@ -25,22 +25,25 @@ export function JSONSchemaObjectEditor({
     [name, onChange, value],
   );
 
-  const content = Object.entries(schema?.properties ?? {}).map(([propName, subSchema]) => (
-    <RecursiveJSONSchemaEditor
-      disabled={disabled}
-      key={propName}
-      name={name ? `${name}.${propName}` : propName}
-      nested
-      onChange={onPropertyChange}
-      prefix={prefix}
-      required={
-        (Array.isArray(schema.required) && schema.required.includes(propName)) ||
-        subSchema.required === true
-      }
-      schema={subSchema}
-      value={value?.[propName]}
-    />
-  ));
+  const content = Object.entries(schema?.properties ?? {}).map(([propName, subSchema]) => {
+    const required =
+      (Array.isArray(schema.required) && schema.required.includes(propName)) ||
+      subSchema.required === true;
+    return (
+      <RecursiveJSONSchemaEditor
+        disabled={disabled}
+        error={required ? !value?.propName : null}
+        key={propName}
+        name={name ? `${name}.${propName}` : propName}
+        nested
+        onChange={onPropertyChange}
+        prefix={prefix}
+        required={required}
+        schema={subSchema}
+        value={value?.[propName]}
+      />
+    );
+  });
 
   return (
     <div className={nested ? `${styles.nested} px-3 py-3 my-2 mx-0` : null}>

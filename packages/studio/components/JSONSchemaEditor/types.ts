@@ -47,4 +47,9 @@ export interface CommonJSONSchemaEditorProps<T = never> {
    * The value used to populate the editor.
    */
   value: T;
+
+  /**
+   * If there are any errors in the field, Only requirement errors are supported for now.
+   */
+  error?: Boolean;
 }
