@@ -2,6 +2,25 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.28.10](https://gitlab.com/appsemble/appsemble/-/releases/0.28.10)] - 2024-05-27
+
+### Added
+
+- Block(`list`): Add `collapsible` and `startCollapsed` properties for collapsing the list into a
+  compact view.
+- Block(`list`): Add a `groupBy` property to split the list into multiple smaller lists.
+- Block(`list`): Add a `title` property for a title that shows above the list.
+- App: Allow sub-page name to be dynamic using Remappers.
+
+### Changed
+
+- Server: All emails now use translation files instead of templates.
+
+### Fixed
+
+- Block(`form`): Close the selection modal when the `maxItems` requirement is reached.
+- Node-utils: Deleting seed resources now deletes referencing resources before referenced resources.
+
 ## \[[0.28.9](https://gitlab.com/appsemble/appsemble/-/releases/0.28.9)] - 2024-05-14
 
 ### Added
