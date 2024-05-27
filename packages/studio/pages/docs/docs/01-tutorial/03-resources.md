@@ -63,7 +63,7 @@ Here you see the code of the data-loader block
 
 ```yaml validate block-snippet
 - type: data-loader
-  version: 0.28.9
+  version: 0.28.10
   actions:
     onLoad:
       type: resource.query
@@ -84,7 +84,7 @@ The following is the table block:
 
 ```yaml validate block-snippet
 - type: table
-  version: 0.28.9
+  version: 0.28.10
   events:
     listen:
       data: people
@@ -110,7 +110,7 @@ block as an input form:
 
 ```yaml validate block-snippet
 - type: form
-  version: 0.28.9
+  version: 0.28.10
   actions:
     onSubmit:
       type: resource.create

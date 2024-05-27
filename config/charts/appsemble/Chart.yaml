@@ -1,7 +1,7 @@
 apiVersion: v2
 name: appsemble
-version: 0.28.9
-appVersion: 0.28.9
+version: 0.28.10
+appVersion: 0.28.10
 kubeVersion: '>=1.21.0'
 type: application
 description: The open source low-code app building platform
@@ -25,17 +25,23 @@ dependencies:
 annotations:
   artifacthub.io/changes: >
     - kind: added
-      description: "Block(list): Add a hideOnNoData property to hide the block if
-        there is no data."
+      description: "Block(list): Add collapsible and startCollapsed properties for
+        collapsing the list into a compact view."
     - kind: added
-      description: "Cli: Get app variables endpoint for dev server."
+      description: "Block(list): Add a groupBy property to split the list into
+        multiple smaller lists."
+    - kind: added
+      description: "Block(list): Add a title property for a title that shows above the list."
+    - kind: added
+      description: "App: Allow sub-page name to be dynamic using Remappers."
+    - kind: changed
+      description: "Server: All emails now use translation files instead of templates."
     - kind: fixed
-      description: "Block(form): Allow selected value to be of type Blob."
+      description: "Block(form): Close the selection modal when the maxItems
+        requirement is reached."
     - kind: fixed
-      description: "Block(form): Invalidate tags and selection fields if they are not
-        required, but have minItems specified."
-    - kind: fixed
-      description: "Server: Allow to remove core and shared styles from an app."
+      description: "Node-utils: Deleting seed resources now deletes referencing
+        resources before referenced resources."
   artifacthub.io/license: LGPL-3.0-only
   artifacthub.io/links: |
     - name: Appsemble Studio
