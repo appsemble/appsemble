@@ -3,7 +3,6 @@ import chalk from 'chalk';
 import extractPgSchema from 'extract-pg-schema';
 import { diffString } from 'json-diff';
 import { isEqual as deepEquals } from 'lodash-es';
-import { gte as semverGte } from 'semver';
 import { Sequelize } from 'sequelize';
 import { type Argv } from 'yargs';
 
@@ -14,8 +13,6 @@ import { migrate } from '../utils/migrate.js';
 import { handleDBError } from '../utils/sqlUtils.js';
 
 const { extractSchemas } = extractPgSchema;
-
-const firstDeterministicMigration = '0.24.12';
 
 export const command = 'check-migrations';
 export const description =
@@ -119,11 +116,8 @@ export async function handler(): Promise<void> {
     handleDBError(error as Error);
   }
   const fromMigrations = await apply(db, 'migrations', async () => {
-    logger.info(`applying and checking migrations above ${firstDeterministicMigration}`);
-    const migrationsToCheck = migrations.filter((m) =>
-      semverGte(m.key, firstDeterministicMigration),
-    );
-    await migrate('next', migrationsToCheck);
+    logger.info(`applying migrations from ${migrations[0].key} to latest`);
+    await migrate('next', migrations);
   });
   const fromModels = await apply(db, 'models', async () => {
     logger.info('syncing models with database');

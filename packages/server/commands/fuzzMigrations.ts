@@ -1,10 +1,9 @@
 import { logger } from '@appsemble/node-utils';
-import { gte as semverGte } from 'semver';
 import { Sequelize } from 'sequelize';
 import { type Argv } from 'yargs';
 
 import { databaseBuilder } from './builder/database.js';
-import { firstDeterministicMigration, migrations } from '../migrations/index.js';
+import { migrations } from '../migrations/index.js';
 import { initDB } from '../models/index.js';
 import { migrate } from '../utils/migrate.js';
 import { handleDBError } from '../utils/sqlUtils.js';
@@ -45,11 +44,9 @@ export async function handler(): Promise<void> {
   logger.info('dropping database');
   await db.getQueryInterface().dropAllTables();
 
-  const migrationsToCheck = migrations.filter((m) => semverGte(m.key, firstDeterministicMigration));
-
   for (let index = 0; index < 5; index += 1) {
-    await migrate('0.24.12', migrationsToCheck);
-    await migrate('next', migrationsToCheck);
+    await migrate(migrations[0].key, migrations);
+    await migrate('next', migrations);
   }
 
   await db.close();
