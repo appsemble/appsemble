@@ -251,14 +251,24 @@ production and for self-hosted Appsemble instances.
    ([Appsemble maintainers on GitLab](https://gitlab.com/groups/appsemble/-/group_members?sort=access_level_desc))
    that work during that week agree with the change._
 
-3. You MUST include a help plan when expecting potential failures across any Appsemble instance. The
-   plan must mention how to clean the database appropriately for the migration to succeed.
+3. You MUST log a warning when expecting potential failures across any Appsemble instance. The
+   warning must explain the expected problem(s), and what actions to take to manually clean the
+   database appropriately for the migration to succeed.
 
 4. Adding unique constraints (or primary keys) should only be done on new tables.
 
-> Note: all migrations are wrapped automically in a transaction, however this does NOT mean the
-> rules described can be ignored. When a migration fails the logs will contain
-> support@appsemble.com.
+5. All queries must be part of the transaction, by passing `{ transaction }` as option.
+
+> Note: since all migrations are wrapped in transactions, this does NOT mean it's okay to ignore
+> these rules. When a migration fails the following is logged:
+>
+> ```
+> [warn]: Upgrade to 0.29.0 unsuccessful, not committing. Current database version 0.28.0.
+> [warn]: In case this occured on a hosted Appsemble instance,
+> [warn]: and the logs above do not explain how to resolve the below error manually,
+> [warn]: consider contacting `support@appsemble.com` to report the migration issue,
+> [warn]: and include the stacktrace.
+> ```
 
 Migrating up to the latest, or use `--migrate-to` to migrate to a specific version.
 

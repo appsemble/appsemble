@@ -1,5 +1,5 @@
 import { logger } from '@appsemble/node-utils';
-import { DataTypes, type Sequelize } from 'sequelize';
+import { DataTypes, type Sequelize, type Transaction } from 'sequelize';
 
 export const key = '0.29.0';
 
@@ -46,105 +46,178 @@ export const key = '0.29.0';
  * - Setting UserTraining.TrainingId constraints to ON UPDATE CASCADE ON DELETE CASCADE
  * - Setting TrainingBlock.TrainingId constraints to ON UPDATE CASCADE ON DELETE CASCADE
  *
+ * @param transaction The sequelize Transaction.
  * @param db The sequelize database.
  */
-export async function up(db: Sequelize): Promise<void> {
+export async function up(transaction: Transaction, db: Sequelize): Promise<void> {
   const queryInterface = db.getQueryInterface();
   logger.info('Making Resource.data non-nullable');
-  await queryInterface.changeColumn('Resource', 'data', {
-    allowNull: false,
-    type: DataTypes.JSONB,
-  });
+  await queryInterface.changeColumn(
+    'Resource',
+    'data',
+    {
+      allowNull: false,
+      type: DataTypes.JSONB,
+    },
+    { transaction },
+  );
   logger.info('Making OAuthAuthorization.accessToken non-nullable');
-  await queryInterface.changeColumn('OAuthAuthorization', 'accessToken', {
-    allowNull: false,
-    type: DataTypes.TEXT,
-  });
+  await queryInterface.changeColumn(
+    'OAuthAuthorization',
+    'accessToken',
+    {
+      allowNull: false,
+      type: DataTypes.TEXT,
+    },
+    { transaction },
+  );
   logger.info('Removing App.longDescription');
-  await queryInterface.sequelize.query(`
+  await queryInterface.sequelize.query(
+    `
     ALTER TABLE "App" DROP COLUMN IF EXISTS "longDescription";
-  `);
+  `,
+    { transaction },
+  );
   logger.info('Removing AppReadme.deleted');
-  await queryInterface.sequelize.query(`
+  await queryInterface.sequelize.query(
+    `
     ALTER TABLE "AppReadme" DROP COLUMN IF EXISTS "deleted";
-  `);
+  `,
+    { transaction },
+  );
   logger.info('Making AppServiceSecret.AppId non-nullable');
-  await queryInterface.changeColumn('AppServiceSecret', 'AppId', {
-    allowNull: false,
-    type: DataTypes.INTEGER,
-  });
+  await queryInterface.changeColumn(
+    'AppServiceSecret',
+    'AppId',
+    {
+      allowNull: false,
+      type: DataTypes.INTEGER,
+    },
+    { transaction },
+  );
   logger.info('Changing default value of App.showAppDefinition to false');
-  await queryInterface.changeColumn('App', 'showAppDefinition', {
-    allowNull: false,
-    defaultValue: false,
-    type: DataTypes.BOOLEAN,
-  });
+  await queryInterface.changeColumn(
+    'App',
+    'showAppDefinition',
+    {
+      allowNull: false,
+      defaultValue: false,
+      type: DataTypes.BOOLEAN,
+    },
+    { transaction },
+  );
   logger.info('Changing type of App.showAppsembleLogin to boolean');
-  await queryInterface.sequelize.query(`
+  await queryInterface.sequelize.query(
+    `
     ALTER TABLE "App"
       ALTER COLUMN "showAppsembleLogin" DROP DEFAULT,
       ALTER COLUMN "showAppsembleLogin" TYPE BOOLEAN USING CASE "showAppsembleLogin" WHEN 'true' THEN true WHEN 'false' THEN false ELSE "showAppsembleLogin"::BOOLEAN END,
       ALTER COLUMN "showAppsembleLogin" SET DEFAULT FALSE;
-  `);
+  `,
+    { transaction },
+  );
   logger.info('Making User.timezone non-nullable');
-  await queryInterface.changeColumn('User', 'timezone', {
-    type: DataTypes.STRING,
-    allowNull: false,
-  });
+  await queryInterface.changeColumn(
+    'User',
+    'timezone',
+    {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    { transaction },
+  );
   logger.info('Making User.subscribed non-nullable');
-  await queryInterface.changeColumn('User', 'subscribed', {
-    type: DataTypes.BOOLEAN,
-    allowNull: false,
-    defaultValue: true,
-  });
+  await queryInterface.changeColumn(
+    'User',
+    'subscribed',
+    {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      defaultValue: true,
+    },
+    { transaction },
+  );
   logger.info('Making AppOAuth2Authorization.AppMemberId non-nullable');
-  await queryInterface.changeColumn('AppOAuth2Authorization', 'AppMemberId', {
-    type: DataTypes.UUID,
-    allowNull: false,
-  });
+  await queryInterface.changeColumn(
+    'AppOAuth2Authorization',
+    'AppMemberId',
+    {
+      type: DataTypes.UUID,
+      allowNull: false,
+    },
+    { transaction },
+  );
   logger.info('Changing type of AppSamlSecret.name to STRING');
-  await queryInterface.changeColumn('AppSamlSecret', 'name', {
-    type: DataTypes.STRING,
-    allowNull: false,
-  });
+  await queryInterface.changeColumn(
+    'AppSamlSecret',
+    'name',
+    {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    { transaction },
+  );
   logger.info('Removing AppScreenshot.name');
-  await queryInterface.sequelize.query(`
+  await queryInterface.sequelize.query(
+    `
     ALTER TABLE "AppScreenshot" DROP COLUMN IF EXISTS "name";
-  `);
+  `,
+    { transaction },
+  );
   logger.info('Making BlockVersion.examples non-nullable');
-  await queryInterface.changeColumn('BlockVersion', 'examples', {
-    type: DataTypes.JSONB,
-    allowNull: false,
-    defaultValue: [],
-  });
+  await queryInterface.changeColumn(
+    'BlockVersion',
+    'examples',
+    {
+      type: DataTypes.JSONB,
+      allowNull: false,
+      defaultValue: [],
+    },
+    { transaction },
+  );
   logger.info('Renaming enum_Member_role to enum_OrganizationMember_role');
-  await queryInterface.sequelize.query(`
+  await queryInterface.sequelize.query(
+    `
     DO $$ BEGIN
       IF EXISTS (SELECT 1 FROM pg_type WHERE typname = 'enum_Member_role') THEN
         ALTER TYPE "enum_Member_role" RENAME TO "enum_OrganizationMember_role";
       END IF;
     END $$;
-  `);
+  `,
+    { transaction },
+  );
   logger.info('Adding AccountManager to enum_OrganizationMember_role');
-  await queryInterface.sequelize.query(`
+  await queryInterface.sequelize.query(
+    `
     ALTER TYPE "enum_OrganizationMember_role" ADD VALUE 'AccountManager' AFTER 'Owner';
-  `);
+  `,
+    { transaction },
+  );
   logger.info(
     'Adding Translator, APIReader, APIUser, AccountManager to enum_OrganizationInvite_role',
   );
-  await queryInterface.sequelize.query(`
+  await queryInterface.sequelize.query(
+    `
     ALTER TYPE "enum_OrganizationInvite_role" ADD VALUE 'Translator' AFTER 'Member';
     ALTER TYPE "enum_OrganizationInvite_role" ADD VALUE 'APIReader' AFTER 'Translator';
     ALTER TYPE "enum_OrganizationInvite_role" ADD VALUE 'APIUser' AFTER 'APIReader';
     ALTER TYPE "enum_OrganizationInvite_role" ADD VALUE 'AccountManager' AFTER 'Maintainer';
-  `);
+  `,
+    { transaction },
+  );
   logger.info('Making SamlLoginRequest.timezone non-nullable');
-  await queryInterface.changeColumn('SamlLoginRequest', 'timezone', {
-    type: DataTypes.STRING,
-    allowNull: false,
-  });
+  await queryInterface.changeColumn(
+    'SamlLoginRequest',
+    'timezone',
+    {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    { transaction },
+  );
   logger.info('Changing TeamInvite.role default value to member and to enum');
-  await queryInterface.sequelize.query(`
+  await queryInterface.sequelize.query(
+    `
     DO $$ BEGIN
       IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'enum_TeamInvite_role') THEN
         CREATE TYPE "enum_TeamInvite_role" AS ENUM ('manager', 'member');
@@ -153,39 +226,66 @@ export async function up(db: Sequelize): Promise<void> {
         ALTER COLUMN "role" TYPE "enum_TeamInvite_role" USING "role"::"enum_TeamInvite_role",
         ALTER COLUMN "role" SET DEFAULT 'member'::public."enum_TeamInvite_role";
     END $$;
-  `);
+  `,
+    { transaction },
+  );
   logger.info('Changing TeamMember.role default value to member');
-  await queryInterface.sequelize.query(`
+  await queryInterface.sequelize.query(
+    `
     ALTER TABLE "TeamMember" ALTER COLUMN "role" SET DEFAULT 'member';
-  `);
+    `,
+    { transaction },
+  );
   logger.info('Adding primary key to TeamMember');
-  await queryInterface.sequelize.query(`
+  await queryInterface.sequelize.query(
+    `
     ALTER TABLE "TeamMember" ADD PRIMARY KEY ("TeamId", "AppMemberId");
-  `);
+  `,
+    { transaction },
+  );
   logger.info('Making AppMember.scimActive non-nullable and default to false');
-  await queryInterface.sequelize.query(`
+  await queryInterface.sequelize.query(
+    `
     ALTER TABLE "AppMember"
       ALTER COLUMN "scimActive" DROP DEFAULT,
       ALTER COLUMN "scimActive" TYPE BOOLEAN USING CASE "scimActive" WHEN 'true' THEN true WHEN 'false' THEN false ELSE false END,
       ALTER COLUMN "scimActive" SET DEFAULT FALSE,
       ALTER COLUMN "scimActive" SET NOT NULL;
-  `);
+  `,
+    { transaction },
+  );
   logger.info('Making ResourceVersion.AppMemberId nullable');
-  await queryInterface.changeColumn('ResourceVersion', 'AppMemberId', {
-    type: DataTypes.UUID,
-  });
+  await queryInterface.changeColumn(
+    'ResourceVersion',
+    'AppMemberId',
+    {
+      type: DataTypes.UUID,
+    },
+    { transaction },
+  );
   logger.info('Making Training.competences non-nullable');
-  await queryInterface.changeColumn('Training', 'competences', {
-    type: DataTypes.ARRAY(DataTypes.STRING),
-    allowNull: false,
-  });
+  await queryInterface.changeColumn(
+    'Training',
+    'competences',
+    {
+      type: DataTypes.ARRAY(DataTypes.STRING),
+      allowNull: false,
+    },
+    { transaction },
+  );
   logger.info('Making Training.difficultyLevel non-nullable');
-  await queryInterface.changeColumn('Training', 'difficultyLevel', {
-    type: DataTypes.INTEGER,
-    allowNull: false,
-  });
+  await queryInterface.changeColumn(
+    'Training',
+    'difficultyLevel',
+    {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+    },
+    { transaction },
+  );
   logger.info('Renaming enum_App_locked-temp to enum_App_locked');
-  await queryInterface.sequelize.query(`
+  await queryInterface.sequelize.query(
+    `
     DO $$ BEGIN
       IF EXISTS (SELECT 1 FROM pg_type WHERE typname = 'enum_App_locked-temp') THEN
         IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'enum_App_locked') THEN
@@ -193,7 +293,9 @@ export async function up(db: Sequelize): Promise<void> {
         END IF;
       END IF;
     END $$;
-  `);
+  `,
+    { transaction },
+  );
 
   const changes = [
     ['AppServiceSecret', 'AppId', 'App', 'CASCADE', 'CASCADE'],
@@ -214,10 +316,13 @@ export async function up(db: Sequelize): Promise<void> {
   ] satisfies [string, string, string, string, string][];
   for (const [table, col, ref, update, del] of changes) {
     logger.info(`Setting ${table}.${col} constraints to ON UPDATE ${update} ON DELETE ${del}`);
-    await queryInterface.sequelize.query(`
+    await queryInterface.sequelize.query(
+      `
       ALTER TABLE "${table}" DROP CONSTRAINT IF EXISTS "${table}_${col}_fkey";
       ALTER TABLE "${table}" ADD FOREIGN KEY ("${col}") REFERENCES "${ref}" ("id") ON UPDATE ${update} ON DELETE ${del};
-    `);
+    `,
+      { transaction },
+    );
   }
 }
 
@@ -263,97 +368,168 @@ export async function up(db: Sequelize): Promise<void> {
  * - Setting UserTraining.TrainingId constraints to ON UPDATE NO ACTION ON DELETE NO ACTION
  * - Setting TrainingBlock.TrainingId constraints to ON UPDATE NO ACTION ON DELETE NO ACTION
  *
+ * @param transaction The sequelize Transaction.
  * @param db The sequelize database.
  */
-export async function down(db: Sequelize): Promise<void> {
+export async function down(transaction: Transaction, db: Sequelize): Promise<void> {
   const queryInterface = db.getQueryInterface();
   logger.info('Making Resource.data nullable');
-  await queryInterface.changeColumn('Resource', 'data', {
-    type: DataTypes.JSONB,
-    allowNull: true,
-  });
+  await queryInterface.changeColumn(
+    'Resource',
+    'data',
+    {
+      type: DataTypes.JSONB,
+      allowNull: true,
+    },
+    { transaction },
+  );
   logger.info('Making OAuthAuthorization.accessToken nullable');
-  await queryInterface.changeColumn('OAuthAuthorization', 'accessToken', {
-    type: DataTypes.TEXT,
-    allowNull: true,
-  });
+  await queryInterface.changeColumn(
+    'OAuthAuthorization',
+    'accessToken',
+    {
+      type: DataTypes.TEXT,
+      allowNull: true,
+    },
+    { transaction },
+  );
   logger.info('Adding column AppScreenshot.name');
-  await queryInterface.addColumn('App', 'longDescription', {
-    type: DataTypes.TEXT,
-    allowNull: true,
-  });
+  await queryInterface.addColumn(
+    'App',
+    'longDescription',
+    {
+      type: DataTypes.TEXT,
+      allowNull: true,
+    },
+    { transaction },
+  );
   logger.info('Adding column AppReadme.deleted');
-  await queryInterface.addColumn('AppReadme', 'deleted', { allowNull: true, type: DataTypes.DATE });
+  await queryInterface.addColumn(
+    'AppReadme',
+    'deleted',
+    { allowNull: true, type: DataTypes.DATE },
+    { transaction },
+  );
   logger.info('Making AppServiceSecret.AppId nullable');
-  await queryInterface.changeColumn('AppServiceSecret', 'AppId', {
-    allowNull: true,
-    type: DataTypes.INTEGER,
-  });
+  await queryInterface.changeColumn(
+    'AppServiceSecret',
+    'AppId',
+    {
+      allowNull: true,
+      type: DataTypes.INTEGER,
+    },
+    { transaction },
+  );
   logger.info('Changing default value of App.showAppDefinition to true');
-  await queryInterface.changeColumn('App', 'showAppDefinition', {
-    allowNull: false,
-    defaultValue: true,
-    type: DataTypes.BOOLEAN,
-  });
+  await queryInterface.changeColumn(
+    'App',
+    'showAppDefinition',
+    {
+      allowNull: false,
+      defaultValue: true,
+      type: DataTypes.BOOLEAN,
+    },
+    { transaction },
+  );
   logger.info('Changing type of App.showAppsembleLogin to string');
-  await queryInterface.sequelize.query(`
+  await queryInterface.sequelize.query(
+    `
     ALTER TABLE "App"
       ALTER COLUMN "showAppsembleLogin" DROP DEFAULT,
       ALTER COLUMN "showAppsembleLogin" TYPE VARCHAR(255) USING CASE "showAppsembleLogin" WHEN true THEN 'true' WHEN false THEN 'false' ELSE "showAppsembleLogin"::VARCHAR END,
       ALTER COLUMN "showAppsembleLogin" SET DEFAULT 'false';
-  `);
+  `,
+    { transaction },
+  );
   logger.info('Making User.timezone nullable');
-  await queryInterface.changeColumn('User', 'timezone', {
-    type: DataTypes.STRING,
-    allowNull: true,
-  });
+  await queryInterface.changeColumn(
+    'User',
+    'timezone',
+    {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    { transaction },
+  );
   logger.info('Making User.subscribed nullable');
-  await queryInterface.changeColumn('User', 'subscribed', {
-    type: DataTypes.BOOLEAN,
-    defaultValue: true,
-  });
+  await queryInterface.changeColumn(
+    'User',
+    'subscribed',
+    {
+      type: DataTypes.BOOLEAN,
+      defaultValue: true,
+    },
+    { transaction },
+  );
   logger.info('Making AppOAuth2Authorization.AppMemberId nullable');
-  await queryInterface.changeColumn('AppOAuth2Authorization', 'AppMemberId', {
-    type: DataTypes.UUID,
-    allowNull: true,
-  });
+  await queryInterface.changeColumn(
+    'AppOAuth2Authorization',
+    'AppMemberId',
+    {
+      type: DataTypes.UUID,
+      allowNull: true,
+    },
+    { transaction },
+  );
   logger.info('Changing type of AppSamlSecret.name to TEXT');
-  await queryInterface.changeColumn('AppSamlSecret', 'name', {
-    type: DataTypes.TEXT,
-    allowNull: false,
-  });
+  await queryInterface.changeColumn(
+    'AppSamlSecret',
+    'name',
+    {
+      type: DataTypes.TEXT,
+      allowNull: false,
+    },
+    { transaction },
+  );
   logger.info('Adding column AppScreenshot.name');
-  await queryInterface.addColumn('AppScreenshot', 'name', {
-    type: DataTypes.STRING,
-    allowNull: true,
-    defaultValue: null,
-    comment: null,
-    primaryKey: false,
-  });
+  await queryInterface.addColumn(
+    'AppScreenshot',
+    'name',
+    {
+      type: DataTypes.STRING,
+      allowNull: true,
+      defaultValue: null,
+      comment: null,
+      primaryKey: false,
+    },
+    { transaction },
+  );
   logger.info('Making BlockVersion.examples nullable');
-  await queryInterface.changeColumn('BlockVersion', 'examples', {
-    type: DataTypes.JSONB,
-    allowNull: true,
-    defaultValue: null,
-  });
+  await queryInterface.changeColumn(
+    'BlockVersion',
+    'examples',
+    {
+      type: DataTypes.JSONB,
+      allowNull: true,
+      defaultValue: null,
+    },
+    { transaction },
+  );
   logger.info('Renaming enum_OrganizationMember_role to enum_Member_role');
-  await queryInterface.sequelize.query(`
+  await queryInterface.sequelize.query(
+    `
     DO $$ BEGIN
       IF EXISTS (SELECT 1 FROM pg_type WHERE typname = 'enum_OrganizationMember_role') THEN
         ALTER TYPE "enum_OrganizationMember_role" RENAME TO "enum_Member_role";
       END IF;
     END $$;
-  `);
+  `,
+    { transaction },
+  );
   logger.info('Removing AccountManager from enum_Member_role');
-  await queryInterface.sequelize.query(`
+  await queryInterface.sequelize.query(
+    `
     DELETE FROM pg_enum WHERE enumlabel = 'AccountManager' AND enumtypid = (
       SELECT oid FROM pg_type WHERE typname = 'enum_Member_role'
     );
-  `);
+  `,
+    { transaction },
+  );
   logger.info(
     'Removing Translator, APIReader, APIUser, AccountManager from enum_OrganizationInvite_role',
   );
-  await queryInterface.sequelize.query(`
+  await queryInterface.sequelize.query(
+    `
     DELETE FROM pg_enum WHERE enumlabel = 'Translator' AND enumtypid = (
       SELECT oid FROM pg_type WHERE typname = 'enum_OrganizationInvite_role'
     );
@@ -366,52 +542,95 @@ export async function down(db: Sequelize): Promise<void> {
     DELETE FROM pg_enum WHERE enumlabel = 'AccountManager' AND enumtypid = (
       SELECT oid FROM pg_type WHERE typname = 'enum_OrganizationInvite_role'
     );
-  `);
+  `,
+    { transaction },
+  );
   logger.info('Making SamlLoginRequest.timezone nullable');
-  await queryInterface.changeColumn('SamlLoginRequest', 'timezone', {
-    type: DataTypes.STRING,
-    allowNull: true,
-  });
+  await queryInterface.changeColumn(
+    'SamlLoginRequest',
+    'timezone',
+    {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    { transaction },
+  );
   logger.info('Changing TeamInvite.role default value to null and to string');
-  await queryInterface.changeColumn('TeamInvite', 'role', {
-    type: DataTypes.STRING,
-    allowNull: true,
-    defaultValue: null,
-  });
+  await queryInterface.changeColumn(
+    'TeamInvite',
+    'role',
+    {
+      type: DataTypes.STRING,
+      allowNull: true,
+      defaultValue: null,
+    },
+    { transaction },
+  );
   logger.info('Changing TeamMember.role default value to null');
-  await queryInterface.sequelize.query(`
+  await queryInterface.sequelize.query(
+    `
     ALTER TABLE "TeamMember" ALTER COLUMN "role" SET DEFAULT null;
-  `);
+  `,
+    { transaction },
+  );
   logger.info('Removing primary key from TeamMember');
-  await queryInterface.sequelize.query(`
+  await queryInterface.sequelize.query(
+    `
     ALTER TABLE "TeamMember" DROP CONSTRAINT "TeamMember_pkey";
-  `);
+  `,
+    { transaction },
+  );
   logger.info('Making AppMember.scimActive nullable and default to true');
-  await queryInterface.changeColumn('AppMember', 'scimActive', {
-    type: DataTypes.BOOLEAN,
-    allowNull: true,
-    defaultValue: true,
-  });
+  await queryInterface.changeColumn(
+    'AppMember',
+    'scimActive',
+    {
+      type: DataTypes.BOOLEAN,
+      allowNull: true,
+      defaultValue: true,
+    },
+    { transaction },
+  );
   logger.info('Making ResourceVersion.AppMemberId non-nullable');
-  await queryInterface.changeColumn('ResourceVersion', 'AppMemberId', {
-    type: DataTypes.UUID,
-    allowNull: false,
-  });
+  await queryInterface.changeColumn(
+    'ResourceVersion',
+    'AppMemberId',
+    {
+      type: DataTypes.UUID,
+      allowNull: false,
+    },
+    { transaction },
+  );
   logger.info('Making Training.competences nullable');
-  await queryInterface.changeColumn('Training', 'competences', {
-    type: DataTypes.ARRAY(DataTypes.STRING),
-    allowNull: true,
-  });
+  await queryInterface.changeColumn(
+    'Training',
+    'competences',
+    {
+      type: DataTypes.ARRAY(DataTypes.STRING),
+      allowNull: true,
+    },
+    { transaction },
+  );
   logger.info('Making Training.difficultyLevel nullable');
-  await queryInterface.changeColumn('Training', 'difficultyLevel', {
-    type: DataTypes.INTEGER,
-    allowNull: true,
-  });
+  await queryInterface.changeColumn(
+    'Training',
+    'difficultyLevel',
+    {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+    },
+    { transaction },
+  );
   logger.info('Making EmailAuthorization.UserId non-nullable');
-  await queryInterface.changeColumn('EmailAuthorization', 'UserId', {
-    type: DataTypes.UUID,
-    allowNull: false,
-  });
+  await queryInterface.changeColumn(
+    'EmailAuthorization',
+    'UserId',
+    {
+      type: DataTypes.UUID,
+      allowNull: false,
+    },
+    { transaction },
+  );
 
   const changes = [
     ['AppServiceSecret', 'AppId', 'App', 'NO ACTION', 'NO ACTION'],
@@ -432,9 +651,12 @@ export async function down(db: Sequelize): Promise<void> {
   ] satisfies [string, string, string, string, string][];
   for (const [table, col, ref, update, del] of changes) {
     logger.info(`Setting ${table}.${col} constraints to ON UPDATE ${update} ON DELETE ${del}`);
-    await queryInterface.sequelize.query(`
+    await queryInterface.sequelize.query(
+      `
       ALTER TABLE "${table}" DROP CONSTRAINT IF EXISTS "${table}_${col}_fkey";
       ALTER TABLE "${table}" ADD FOREIGN KEY ("${col}") REFERENCES "${ref}" ("id") ON UPDATE ${update} ON DELETE ${del};
-    `);
+    `,
+      { transaction },
+    );
   }
 }

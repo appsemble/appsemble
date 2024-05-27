@@ -1,5 +1,5 @@
 import { logger } from '@appsemble/node-utils';
-import { type Sequelize } from 'sequelize';
+import { type Sequelize, type Transaction } from 'sequelize';
 
 export const key = '0.27.11';
 
@@ -9,9 +9,10 @@ export const key = '0.27.11';
  * - Change `AppSamlAuthorization_AppSamlSecretId_fkey` foreign key constraint to cascade.
  * - Change `SamlLoginRequest_AppSamlSecretId_fkey` foreign key constraint to cascade.
  *
+ * @param transaction The sequelize Transaction.
  * @param db The sequelize database.
  */
-export async function up(db: Sequelize): Promise<void> {
+export async function up(transaction: Transaction, db: Sequelize): Promise<void> {
   const queryInterface = db.getQueryInterface();
 
   const tables = [
@@ -39,7 +40,7 @@ export async function up(db: Sequelize): Promise<void> {
     logger.info(
       `Removing foreign key constraint \`${foreignKeyName}\` from table \`${tableName}\``,
     );
-    await queryInterface.removeConstraint(tableName, foreignKeyName);
+    await queryInterface.removeConstraint(tableName, foreignKeyName, { transaction });
 
     logger.info(
       `Adding foreign key constraint \`${foreignKeyName}\` to table \`${tableName}\` without cascade`,
@@ -54,6 +55,7 @@ export async function up(db: Sequelize): Promise<void> {
         table: referencedTableName,
         field: 'id',
       },
+      transaction,
     });
   }
 }
@@ -64,9 +66,10 @@ export async function up(db: Sequelize): Promise<void> {
  * - Change `AppSamlAuthorization_AppSamlSecretId_fkey` foreign key constraint to not cascade.
  * - Change `SamlLoginRequest_AppSamlSecretId_fkey` foreign key constraint to not cascade.
  *
+ * @param transaction The sequelize Transaction.
  * @param db The sequelize Database.
  */
-export async function down(db: Sequelize): Promise<void> {
+export async function down(transaction: Transaction, db: Sequelize): Promise<void> {
   const queryInterface = db.getQueryInterface();
 
   const tables = [
@@ -94,7 +97,7 @@ export async function down(db: Sequelize): Promise<void> {
     logger.info(
       `Removing foreign key constraint \`${foreignKeyName}\` from table \`${tableName}\``,
     );
-    await queryInterface.removeConstraint(tableName, foreignKeyName);
+    await queryInterface.removeConstraint(tableName, foreignKeyName, { transaction });
 
     logger.info(
       `Adding foreign key constraint \`${foreignKeyName}\` to table \`${tableName}\` without cascade`,
@@ -109,6 +112,7 @@ export async function down(db: Sequelize): Promise<void> {
         table: referencedTableName,
         field: 'id',
       },
+      transaction,
     });
   }
 }

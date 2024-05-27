@@ -1,6 +1,6 @@
 import { AppsembleError, logger } from '@appsemble/node-utils';
 import semver from 'semver';
-import { type Sequelize } from 'sequelize';
+import { type Sequelize, type Transaction } from 'sequelize';
 import { type Promisable } from 'type-fest';
 
 import { getDB, Meta } from '../models/index.js';
@@ -8,9 +8,33 @@ import { getDB, Meta } from '../models/index.js';
 export interface Migration {
   key: string;
 
-  up: (db: Sequelize) => Promisable<void>;
+  up: (transaction: Transaction, db: Sequelize) => Promisable<void>;
 
-  down: (db: Sequelize) => Promisable<void>;
+  down: (transaction: Transaction, db: Sequelize) => Promisable<void>;
+}
+
+async function handleMigration(
+  db: Sequelize,
+  migration: Migration,
+  type: 'down' | 'up',
+): Promise<void> {
+  try {
+    await db.transaction(async (t: Transaction) => {
+      await migration[type](t, db);
+    });
+  } catch (error) {
+    const [meta] = await Meta.findAll();
+    logger.warn(
+      `Upgrade to ${migration.key} unsuccessful, not committing. Current database version ${meta.version}.`,
+    );
+    logger.warn(
+      `In case this occurred on a hosted Appsemble instance,
+and the logs above do not contain warnings to resolve the below error manually,
+consider contacting \`support@appsemble.com\` to report the migration issue,
+and include the stacktrace.`,
+    );
+    throw error;
+  }
 }
 
 export async function migrate(toVersion: string, migrations: Migration[]): Promise<void> {
@@ -29,7 +53,7 @@ export async function migrate(toVersion: string, migrations: Migration[]): Promi
     logger.info(`Migrating from ${migrationsToApply[0].key}.`);
     for (const migration of migrationsToApply) {
       logger.info(`Upgrade to ${migration.key} started`);
-      await migration.up(db);
+      await handleMigration(db, migration, 'up');
       [, [meta]] = await Meta.update({ version: migration.key }, { returning: true, where: {} });
       logger.info(`Upgrade to ${migration.key} successful`);
     }
@@ -47,7 +71,7 @@ export async function migrate(toVersion: string, migrations: Migration[]): Promi
     );
     for (const migration of migrationsToApply) {
       logger.info(`Upgrade to ${migration.key} started`);
-      await migration.up(db);
+      await handleMigration(db, migration, 'up');
       await Meta.update({ version: migration.key }, { where: {} });
       logger.info(`Upgrade to ${migration.key} successful`);
     }
@@ -59,7 +83,7 @@ export async function migrate(toVersion: string, migrations: Migration[]): Promi
       logger.info(`Downgrade from ${migration.key} started`);
       const migrationIndex = migrations.lastIndexOf(migration);
       const version = migrationIndex ? migrations[migrationIndex - 1].key : '0.0.0';
-      await migration.down(db);
+      await handleMigration(db, migration, 'down');
       await Meta.update({ version }, { where: {} });
       logger.info(`Downgrade from ${migration.key} successful`);
     }
