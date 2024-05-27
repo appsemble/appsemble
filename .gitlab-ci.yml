@@ -73,7 +73,14 @@ workflow:
     - git add .
     - git commit --message "$MESSAGE" --cleanup whitespace --gpg-sign
     - git tag "$VERSION" --message "$MESSAGE" --cleanup whitespace --sign
-    - git push "https://appsemble-bot:$GITLAB_ACCESS_TOKEN@gitlab.com/appsemble/appsemble" HEAD:main --tags
+    - git push "https://appsemble-bot:$GITLAB_ACCESS_TOKEN@gitlab.com/appsemble/appsemble" HEAD:main
+    - |
+      if [ $? -eq 0 ]; then
+        echo "Code push successful. Pushing tags..."
+        git push "https://appsemble-bot:$GITLAB_ACCESS_TOKEN@gitlab.com/appsemble/appsemble" --tags
+      else
+        echo "Push to main branch failed. Tags will not be pushed."
+      fi
 
 ###################################################################################################
 #  Test Stage                                                                                     #
