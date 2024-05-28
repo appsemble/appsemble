@@ -28,5 +28,13 @@ By default the flow page retains it's data after navigating once. Set to false t
 `,
       default: true,
     },
+    start: {
+      $ref: '#/components/schemas/RemapperDefinition',
+      description: 'A remapper to mark the first loop item.',
+    },
+    end: {
+      $ref: '#/components/schemas/RemapperDefinition',
+      description: 'A remapper to mark the last loop item.',
+    },
   },
 });

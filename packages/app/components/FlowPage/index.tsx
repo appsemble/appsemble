@@ -91,18 +91,28 @@ export function FlowPage({
   const [error, setError] = useState(false);
   const [loopData, setLoopData] = useState<Object[]>();
   const [stepsData, setStepsData] = useState<Object[]>();
-  const remapperContext: RemapperContext = {
-    appId,
-    appUrl: window.location.origin,
-    url: window.location.href,
-    group: appMemberSelectedGroup,
-    getMessage,
-    getVariable,
-    appMemberInfo,
-    context: { name: pageDefinition.name },
-    // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
-    locale: params.lang,
-  };
+  const remapperContext: RemapperContext = useMemo(
+    () => ({
+      appId,
+      appUrl: window.location.origin,
+      url: window.location.href,
+      group: appMemberSelectedGroup,
+      getMessage,
+      getVariable,
+      appMemberInfo,
+      context: { name: pageDefinition.name },
+      // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
+      locale: params.lang,
+    }),
+    [
+      appMemberInfo,
+      appMemberSelectedGroup,
+      getMessage,
+      getVariable,
+      pageDefinition.name,
+      params.lang,
+    ],
+  );
 
   const generateLoopPrefix = (loopPrefix: string): string => {
     if (!currentStep) {
@@ -144,6 +154,7 @@ export function FlowPage({
 
   // XXX Something weird is going on here.
   let actions: BootstrapParams['actions'];
+  const startConsumedRef = useRef(false);
 
   const finish = useCallback(
     async (d: any): Promise<any> => {
@@ -352,24 +363,43 @@ export function FlowPage({
         .then((results: any) => {
           const { blocks } = pageDefinition.foreach;
 
-          function createSteps(): SubPageDefinition[] {
+          function createSteps(): [Object[], SubPageDefinition[]] {
+            const newLoopData: Object[] = [];
             const newSteps: SubPageDefinition[] = [];
             for (const resourceData of results) {
+              if (pageDefinition.start && !startConsumedRef.current) {
+                startConsumedRef.current = Boolean(
+                  remap(pageDefinition.start, resourceData, remapperContext),
+                );
+                if (!startConsumedRef.current) {
+                  continue;
+                }
+              }
+
               if (resourceData) {
                 const newStep: SubPageDefinition = {
                   name: 'New loop page',
                   blocks,
                 };
+                newLoopData.push(resourceData);
                 newSteps.push(newStep);
               }
+
+              if (
+                pageDefinition.end &&
+                remap(pageDefinition.end, resourceData, remapperContext)
+              ) {
+                break;
+              }
             }
-            return newSteps;
+            return [newLoopData, newSteps];
           }
-          const result = createSteps();
-          setSteps(result);
-          applyRefs(results[0], stepRef);
-          setLoopData(results);
+          const [newLoopData, newSteps] = createSteps();
+          setSteps(newSteps);
+          applyRefs(newLoopData[0], stepRef);
+          setLoopData(newLoopData);
           setStepsData([]);
+          startConsumedRef.current = false;
         })
         .catch((caughtError: unknown) => {
           if (!isActionOwnerAbortError(caughtError)) {
@@ -377,7 +407,7 @@ export function FlowPage({
           }
         });
     }
-  }, [actions, pageDefinition, setData, stepRef, steps]);
+  }, [actions, pageDefinition, remap, remapperContext, setData, stepRef, steps]);
 
   if (error) {
     return <p>Error loading steps</p>;

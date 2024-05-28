@@ -373,6 +373,16 @@ export interface LoopPageDefinition extends BasePageDefinition {
    * @default true
    */
   retainFlowData?: boolean;
+
+  /**
+   * A remapper to mark the first loop item.
+   */
+  start?: Remapper;
+
+  /**
+   * A remapper to mark the last loop item.
+   */
+  end?: Remapper;
 }
 
 export interface AlternateTabsDefinition {
