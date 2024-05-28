@@ -2,6 +2,52 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.28.11](https://gitlab.com/appsemble/appsemble/-/releases/0.28.11)] - 2024-05-27
+
+## \[[0.28.10](https://gitlab.com/appsemble/appsemble/-/releases/0.28.10)] - 2024-05-27
+
+### Added
+
+- Block(`list`): Add `collapsible` and `startCollapsed` properties for collapsing the list into a
+  compact view.
+- Block(`list`): Add a `groupBy` property to split the list into multiple smaller lists.
+- Block(`list`): Add a `title` property for a title that shows above the list.
+- App: Allow sub-page name to be dynamic using Remappers.
+
+### Changed
+
+- Server: All emails now use translation files instead of templates.
+
+### Fixed
+
+- Block(`form`): Close the selection modal when the `maxItems` requirement is reached.
+- Node-utils: Deleting seed resources now deletes referencing resources before referenced resources.
+
+## \[[0.28.9](https://gitlab.com/appsemble/appsemble/-/releases/0.28.9)] - 2024-05-14
+
+### Added
+
+- Block(`list`): Add a `hideOnNoData` property to hide the block if there is no data.
+- Cli: Get app variables endpoint for dev server.
+
+### Fixed
+
+- Block(`form`): Allow selected value to be of type `Blob`.
+- Block(`form`): Invalidate `tags` and `selection` fields if they are not required, but have
+  `minItems` specified.
+- Server: Allow to remove core and shared styles from an app.
+
+## \[[0.28.8](https://gitlab.com/appsemble/appsemble/-/releases/0.28.8)] - 2024-05-10
+
+### Changed
+
+- Block(`form`): Add the option to specify accept in the `mime-type/*` format for file fields.
+
+### Fixed
+
+- Block(`form`): Improve UX on file upload.
+- Node-utils: Updating resources used to fail if they were created with assets referenced by name.
+
 ## \[[0.28.7](https://gitlab.com/appsemble/appsemble/-/releases/0.28.7)] - 2024-05-06
 
 ### Fixed

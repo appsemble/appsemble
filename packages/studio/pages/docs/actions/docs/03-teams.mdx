@@ -25,14 +25,14 @@ value for using this action. Here is an example of how you can use this action.
 ```yaml validate blocks-snippet
 blocks:
   - type: form
-    version:  0.28.7
+    version: 0.28.11
     parameters:
       fields:
         - name: email
           label: { translate: email }
           type: string
           format: email
-          requirements: [ required: true ]
+          requirements: [required: true]
         - name: id
           type: hidden
     actions:
@@ -52,12 +52,12 @@ this action to allow users to join a team selected by them.
 ```yaml validate blocks-snippet
 blocks:
   - type: form
-    version: 0.28.7
+    version: 0.28.11
     parameters:
       fields:
         - name: team
           label: { translate: team }
-          requirements: [ required: true ]
+          requirements: [required: true]
           type: enum
           enum:
             - value: team1
@@ -80,7 +80,7 @@ use case of the action.
 ```yaml validate blocks-snippet
 blocks:
   - type: form
-    version: 0.28.7
+    version: 0.28.11
     parameters:
       fields:
         - name: team
@@ -110,7 +110,7 @@ department in a company.
 ```yaml validate blocks-snippet
 blocks:
   - type: data-loader
-    version: 0.28.7
+    version: 0.28.11
     actions:
       onLoad:
         type: team.members

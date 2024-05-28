@@ -740,25 +740,28 @@ describe('inviteTeamMember', () => {
       },
     });
 
-    vi.spyOn(server.context.mailer, 'sendTemplateEmail');
+    vi.spyOn(server.context.mailer, 'sendTranslatedEmail');
     const team = await Team.create({ name: 'A', AppId: app.id });
     const appMember = await AppMember.create({ AppId: app.id, UserId: user.id, role: '' });
     await TeamMember.create({ TeamId: team.id, AppMemberId: appMember.id, role: 'member' });
     const response = await request.post(`/api/apps/${app.id}/teams/${team.id}/invite`, {
       email: 'newuser@example.com',
     });
-    const invite = await TeamInvite.findOne();
 
     expect(response).toMatchInlineSnapshot('HTTP/1.1 204 No Content');
-    expect(server.context.mailer.sendTemplateEmail).toHaveBeenCalledWith(
-      { email: 'newuser@example.com' },
-      'teamInvite',
-      {
-        appName: 'Test App',
-        teamName: 'A',
-        url: `http://test-app.testorganization.localhost/Team-Invite?code=${invite.key}`,
+
+    expect(server.context.mailer.sendTranslatedEmail).toHaveBeenCalledWith({
+      emailName: 'teamInvite',
+      to: {
+        email: 'newuser@example.com',
       },
-    );
+      values: {
+        appName: 'Test App',
+        link: expect.any(Function),
+        name: 'null',
+        teamName: 'A',
+      },
+    });
   });
 });
 

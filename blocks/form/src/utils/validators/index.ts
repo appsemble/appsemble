@@ -62,7 +62,11 @@ export function validate(
     return;
   }
 
-  if (!isRequired(field, utils, values) && value === defaultValue) {
+  if (
+    !isRequired(field, utils, values) &&
+    !['selection', 'tags'].includes(field.type) &&
+    value === defaultValue
+  ) {
     // Consider empty/unchanged fields that aren’t required as valid.
     return;
   }

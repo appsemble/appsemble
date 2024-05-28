@@ -66,6 +66,7 @@ declare global {
       appControllerCode: string;
       appControllerImplementations: ProjectImplementations;
       blockManifests: BlockManifest[];
+      pageManifests: ProjectImplementations;
       vapidPublicKey: string;
       id: number;
       definition: AppDefinition;

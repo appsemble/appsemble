@@ -1,8 +1,9 @@
-import { assertKoaError } from '@appsemble/node-utils';
+import { assertKoaError, createGetAppVariables } from '@appsemble/node-utils';
 import { Permission } from '@appsemble/utils';
 import { type Context } from 'koa';
 
 import { App, AppVariable } from '../models/index.js';
+import { options } from '../options/options.js';
 import { checkAppLock } from '../utils/checkAppLock.js';
 import { checkRole } from '../utils/checkRole.js';
 
@@ -41,26 +42,7 @@ export async function createAppVariable(ctx: Context): Promise<void> {
   ctx.body = { id, name, value };
 }
 
-export async function getAppVariables(ctx: Context): Promise<void> {
-  const {
-    pathParams: { appId },
-  } = ctx;
-
-  const app = await App.findByPk(appId, {
-    attributes: ['OrganizationId'],
-  });
-
-  assertKoaError(!app, ctx, 404, 'App not found');
-
-  const variables = await AppVariable.findAll({
-    attributes: ['id', 'name', 'value'],
-    where: {
-      AppId: appId,
-    },
-  });
-
-  ctx.body = variables.map((variable) => variable.toJSON());
-}
+export const getAppVariables = createGetAppVariables(options);
 
 export async function updateAppVariable(ctx: Context): Promise<void> {
   const {

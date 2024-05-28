@@ -54,7 +54,7 @@ export function FileInput({
     >
       {repeated ? (
         <div
-          className={classNames('is-flex py-2 px-0', styles.repeatedContainer, {
+          className={classNames('is-flex py-2 pl-2 pr-0', styles.repeatedContainer, {
             'mt-5': !remappedLabel,
           })}
         >
@@ -67,18 +67,20 @@ export function FileInput({
             onChange={handleInput}
             repeated={repeated}
           />
-          {(value as string[]).map((val, index) => (
-            <FileEntry
-              error={dirty ? error : null}
-              field={field}
-              formValues={val as unknown as Values}
-              // eslint-disable-next-line react/no-array-index-key
-              key={index}
-              name={`${name}.${index}`}
-              onChange={handleInput}
-              repeated={repeated}
-            />
-          ))}
+          <div className={styles.repeatedEntries}>
+            {(value as string[]).map((val, index) => (
+              <FileEntry
+                error={dirty ? error : null}
+                field={field}
+                formValues={val as unknown as Values}
+                // eslint-disable-next-line react/no-array-index-key
+                key={index}
+                name={`${name}.${index}`}
+                onChange={handleInput}
+                repeated={repeated}
+              />
+            ))}
+          </div>
         </div>
       ) : (
         <FileEntry

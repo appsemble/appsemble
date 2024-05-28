@@ -94,6 +94,7 @@ export function IndexPage(): ReactNode {
   const showExportResources = organizations.some(
     (organization) => organization.id === app.OrganizationId && organization.role >= 'AppEditor',
   );
+
   const copyToClipboard = useCallback(
     async (value: string) => {
       await navigator.clipboard.writeText(value);
@@ -120,6 +121,7 @@ export function IndexPage(): ReactNode {
             <Button
               className="mb-3 ml-4"
               color="primary"
+              icon="share"
               onClick={() => copyToClipboard(window.location.href)}
             >
               <FormattedMessage {...messages.shareApp} />

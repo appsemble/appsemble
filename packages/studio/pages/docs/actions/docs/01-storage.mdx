@@ -34,7 +34,7 @@ poolData from sessionStorage.
 ```yaml validate blocks-snippet
 blocks:
   - type: data-loader
-    version: 0.28.7
+    version: 0.28.11
     actions:
       onLoad:
         type: storage.read
@@ -56,13 +56,13 @@ data.
 ```yaml validate blocks-snippet
 blocks:
   - type: form
-    version: 0.28.7
+    version: 0.28.11
     parameters:
       fields:
         - name: name
           label: ''
           type: string
-          requirements: [ required: true ]
+          requirements: [required: true]
     actions:
       onSubmit:
         type: storage.write
@@ -83,17 +83,17 @@ action to write data.
 ```yaml validate blocks-snippet
 blocks:
   - type: form
-    version: 0.28.7
+    version: 0.28.11
     parameters:
       fields:
         - name: fullName
           label: { translate: fullName }
           type: string
-          requirements: [ required: true ]
+          requirements: [required: true]
         - name: birthDate
           label: { translate: birthDate }
           type: date
-          requirements: [ required: true ]
+          requirements: [required: true]
     actions:
       onSubmit:
         type: storage.append
@@ -118,7 +118,7 @@ to subtract an entry of data.
 ```yaml validate blocks-snippet
 blocks:
   - type: action-button
-    version: 0.28.7
+    version: 0.28.11
     parameters:
       icon: minus
     actions:
@@ -140,7 +140,7 @@ to update the data in storage.
 ```yaml validate blocks-snippet
 blocks:
   - type: form
-    version: 0.28.7
+    version: 0.28.11
     parameters:
       fields:
         - name: fullName
@@ -174,7 +174,7 @@ Here’s an example of how you can use this in action to delete the data in stor
 ```yaml validate blocks-snippet
 blocks:
   - type: action-button
-    version: 0.28.7
+    version: 0.28.11
     parameters:
       icon: delete
     actions:

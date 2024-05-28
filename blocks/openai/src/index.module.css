@@ -1,5 +1,10 @@
 .root {
   flex-flow: column;
-  margin: 16px auto;
+  margin: 8px auto;
   max-width: 480px;
+  padding: 1rem;
+}
+
+ol {
+  padding: 0 1rem;
 }

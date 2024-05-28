@@ -17,6 +17,29 @@
   transform: translate(-50%, -50%);
   z-index: 2000;
 
+  &.hasSideMenu {
+    &:not(.right, .left) {
+      @media screen and (width >= 1024px) {
+        /* The side menu has a width of 18rem */
+        left: calc(50% + 9rem);
+      }
+    }
+  }
+
+  &.left {
+    left: 0.75rem;
+
+    /* Trim the X translation */
+    transform: translateY(-50%);
+
+    &.hasSideMenu {
+      @media screen and (width >= 1024px) {
+        /* The side menu has a width of 18rem */
+        left: 18.75rem;
+      }
+    }
+  }
+
   &.top {
     bottom: unset;
 
@@ -46,29 +69,6 @@
 
     &.hasBottomNav {
       bottom: 7.75rem;
-    }
-  }
-
-  &.left {
-    left: 0.75rem;
-
-    /* Trim the X translation */
-    transform: translateY(-50%);
-
-    &.hasSideMenu {
-      @media screen and (width >= 1024px) {
-        /* The side menu has a width of 18rem */
-        left: 18.75rem;
-      }
-    }
-  }
-
-  &.hasSideMenu {
-    &:not(.right, .left) {
-      @media screen and (width >= 1024px) {
-        /* The side menu has a width of 18rem */
-        left: calc(50% + 9rem);
-      }
     }
   }
 

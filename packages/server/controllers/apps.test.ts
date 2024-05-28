@@ -442,130 +442,6 @@ describe('queryApps', () => {
   });
 });
 
-describe('getAppByPath', () => {
-  it('should fetch an app using the path of the app', async () => {
-    await App.create(
-      {
-        path: 'test-app',
-        definition: { name: 'Test App', defaultPage: 'Test Page' },
-        vapidPublicKey: 'a',
-        vapidPrivateKey: 'b',
-        OrganizationId: organization.id,
-      },
-      { raw: true },
-    );
-    const { data } = await request.get('/api/apps/path/test-app');
-    expect(data).toMatchInlineSnapshot(`
-      {
-        "$created": "1970-01-01T00:00:00.000Z",
-        "$updated": "1970-01-01T00:00:00.000Z",
-        "OrganizationId": "testorganization",
-        "OrganizationName": "Test Organization",
-        "controllerCode": null,
-        "controllerImplementations": null,
-        "definition": {
-          "defaultPage": "Test Page",
-          "name": "Test App",
-        },
-        "demoMode": false,
-        "domain": null,
-        "emailName": null,
-        "enableSelfRegistration": true,
-        "enableUnsecuredServiceSecrets": false,
-        "googleAnalyticsID": null,
-        "hasIcon": false,
-        "hasMaskableIcon": false,
-        "iconBackground": "#ffffff",
-        "iconUrl": null,
-        "id": 1,
-        "locked": "unlocked",
-        "path": "test-app",
-        "screenshotUrls": [],
-        "sentryDsn": null,
-        "sentryEnvironment": null,
-        "showAppDefinition": false,
-        "showAppsembleLogin": false,
-        "showAppsembleOAuth2Login": true,
-        "template": false,
-        "visibility": "unlisted",
-      }
-    `);
-  });
-
-  it('should not fetch if the app does not exist', async () => {
-    const app = await App.create(
-      {
-        path: 'test-app',
-        definition: { name: 'Test App', defaultPage: 'Test Page' },
-        vapidPublicKey: 'a',
-        vapidPrivateKey: 'b',
-        OrganizationId: organization.id,
-      },
-      { raw: true },
-    );
-    await app.destroy();
-    const { data } = await request.get(`/api/apps/path/${app.path}`);
-    expect(data).toMatchObject({
-      error: 'Not Found',
-      message: 'App not found',
-      statusCode: 404,
-    });
-  });
-
-  it('should fetch the most recent snapshot', async () => {
-    const app = await App.create({
-      path: 'test-app',
-      definition: { name: 'Test App', defaultPage: 'Test Page' },
-      vapidPublicKey: 'a',
-      vapidPrivateKey: 'b',
-      OrganizationId: organization.id,
-    });
-    await AppSnapshot.create({ AppId: app.id, yaml: 'name: Test App\ndefaultPage Test Page\n' });
-    vi.advanceTimersByTime(3600);
-    await AppSnapshot.create({ AppId: app.id, yaml: '{ name: Test App, defaultPage Test Page }' });
-    const response = await request.get(`/api/apps/path/${app.path}`);
-
-    expect(response).toMatchInlineSnapshot(`
-      HTTP/1.1 200 OK
-      Content-Type: application/json; charset=utf-8
-
-      {
-        "$created": "1970-01-01T00:00:00.000Z",
-        "$updated": "1970-01-01T00:00:00.000Z",
-        "OrganizationId": "testorganization",
-        "OrganizationName": "Test Organization",
-        "controllerCode": null,
-        "controllerImplementations": null,
-        "definition": {
-          "defaultPage": "Test Page",
-          "name": "Test App",
-        },
-        "demoMode": false,
-        "domain": null,
-        "emailName": null,
-        "enableSelfRegistration": true,
-        "enableUnsecuredServiceSecrets": false,
-        "googleAnalyticsID": null,
-        "hasIcon": false,
-        "hasMaskableIcon": false,
-        "iconBackground": "#ffffff",
-        "iconUrl": null,
-        "id": 1,
-        "locked": "unlocked",
-        "path": "test-app",
-        "screenshotUrls": [],
-        "sentryDsn": null,
-        "sentryEnvironment": null,
-        "showAppDefinition": false,
-        "showAppsembleLogin": false,
-        "showAppsembleOAuth2Login": true,
-        "template": false,
-        "visibility": "unlisted",
-      }
-    `);
-  });
-});
-
 describe('getAppById', () => {
   it('should return 404 when fetching a non-existent app', async () => {
     const response = await request.get('/api/apps/1');
@@ -3544,6 +3420,31 @@ describe('patchApp', () => {
     `);
   });
 
+  it('should allow removing core styling and shared styling of an app', async () => {
+    const app = await App.create({
+      definition: { name: 'Test App', defaultPage: 'Test Page' },
+      path: 'test-app',
+      vapidPublicKey: 'a',
+      vapidPrivateKey: 'b',
+      OrganizationId: organization.id,
+      coreStyle: 'body { color: yellow; }',
+      sharedStyle: 'body { color: blue; }',
+    });
+
+    authorizeStudio(user);
+    const response = await request.patch(
+      `/api/apps/${app.id}`,
+      createFormData({
+        coreStyle: '',
+        sharedStyle: '',
+      }),
+    );
+    expect(response.status).toBe(200);
+    await app.reload();
+    expect(app.coreStyle).toBeNull();
+    expect(app.sharedStyle).toBeNull();
+  });
+
   it('should update the email settings', async () => {
     const app = await App.create({
       definition: { name: 'Test App', defaultPage: 'Test Page' },
@@ -5041,7 +4942,7 @@ describe('setAppLock', () => {
   });
 
   it('should allow to change fullLock from CLI', async () => {
-    authorizeClientCredentials('apps:write');
+    await authorizeClientCredentials('apps:write');
     const app = await App.create({
       definition: { name: 'Test App', defaultPage: 'Test Page' },
       path: 'test-app',
@@ -5111,7 +5012,7 @@ describe('deleteApp', () => {
   });
 
   it('should delete an app via the CLI command.', async () => {
-    authorizeClientCredentials('apps:delete');
+    await authorizeClientCredentials('apps:delete');
     const app = await App.create({
       definition: {
         name: 'Test App',

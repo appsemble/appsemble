@@ -770,7 +770,7 @@ function validateActions(definition: AppDefinition, report: Report): void {
           return;
         }
 
-        if (toPage.type === 'tabs' && toSub) {
+        if (toPage.type === 'tabs' && toSub && Array.isArray(toPage.tabs)) {
           const subPage = toPage.tabs.find(({ name }) => name === toSub);
           if (!subPage) {
             report(toSub, 'refers to a tab that doesn’t exist', [...path, 'to', 1]);
@@ -891,6 +891,24 @@ function validateEvents(
       collect([...path, 'event'], action.event, true);
       if ('waitFor' in action) {
         collect([...path, 'waitFor'], action.waitFor, false);
+      }
+    },
+
+    onPage(page, path) {
+      if (!(page.type === 'tabs') || page.tabs) {
+        return;
+      }
+
+      if (page.definition.events.emit) {
+        for (const [prefix, name] of Object.entries(page.definition.events.emit)) {
+          collect([...path, 'events', 'emit', prefix], name, true);
+        }
+      }
+
+      if (page.definition.events.listen) {
+        for (const [prefix, name] of Object.entries(page.definition.events.listen)) {
+          collect([...path, 'events', 'listen', prefix], name, false);
+        }
       }
     },
 

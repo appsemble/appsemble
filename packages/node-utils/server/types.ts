@@ -76,7 +76,6 @@ declare module 'koas-security' {
 declare module 'koas-parameters' {
   interface PathParams {
     appId: number;
-    appPath: string;
     appCollectionId: number;
     appOAuth2SecretId: number;
     appSamlSecretId: number;
@@ -159,6 +158,10 @@ export interface GetAppParams {
 export interface GetAppSubEntityParams {
   context: ParameterizedContext<DefaultState, DefaultContextInterface, any>;
   app: App;
+}
+
+export interface GetAppVariablesParams extends GetAppSubEntityParams {
+  query?: Record<string, any>;
 }
 
 export interface GetAppMessagesParams extends GetAppSubEntityParams {
@@ -459,5 +462,5 @@ export interface Options {
   deleteAppAsset: (params: DeleteAppAssetParams) => Promise<number>;
   email: (params: EmailParams) => Promise<void>;
   sendNotifications: (params: SendNotificationsParams) => Promise<void>;
-  getAppVariables: (params: GetAppSubEntityParams) => Promise<AppConfigEntry[]>;
+  getAppVariables: (params: GetAppVariablesParams) => Promise<AppConfigEntry[]>;
 }

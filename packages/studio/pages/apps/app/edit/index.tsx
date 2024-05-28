@@ -135,7 +135,7 @@ export default function EditPage(): ReactNode {
     return () => {
       setBreadCrumbsDecoration(null);
     };
-  }, [formatMessage, id, lang, location, setBreadCrumbsDecoration]);
+  }, [app.definition.name, formatMessage, id, lang, location, setBreadCrumbsDecoration]);
 
   const changeTab = useCallback(
     (event: SyntheticEvent, hash: string) => navigate({ hash }),

@@ -103,7 +103,7 @@ export function BlockList({
       blockStatus.current[blockList.findIndex(([b]) => b === block)] = true;
       if (blockStatus.current.every(Boolean)) {
         setIsLoading(false);
-        resolvePageReady.current();
+        resolvePageReady.current?.();
       }
     },
     [blockList],

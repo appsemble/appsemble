@@ -11,6 +11,7 @@ export const {
   id: appId,
   languages,
   logins,
+  pageManifests,
   sentryDsn,
   sentryEnvironment,
   showAppsembleLogin,

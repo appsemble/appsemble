@@ -4,7 +4,14 @@ import { extendJSONSchema } from './utils.js';
 export const TabsPageDefinition = extendJSONSchema(BasePageDefinition, {
   type: 'object',
   description: 'This describes what a page will look like in the app.',
-  required: ['type', 'tabs'],
+  oneOf: [
+    {
+      required: ['type', 'tabs'],
+    },
+    {
+      required: ['type', 'definition'],
+    },
+  ],
   additionalProperties: true,
   properties: {
     type: {
@@ -17,6 +24,23 @@ export const TabsPageDefinition = extendJSONSchema(BasePageDefinition, {
       items: {
         $ref: '#/components/schemas/SubPage',
       },
+    },
+    definition: {
+      type: 'object',
+      additionalProperties: false,
+      description: 'Generate tabs dynamically',
+      required: ['events', 'foreach'],
+      properties: {
+        events: {
+          $ref: '#/components/schemas/EventsDefinition',
+        },
+        foreach: {
+          $ref: '#/components/schemas/SubPage',
+        },
+      },
+    },
+    actions: {
+      $ref: '#/components/schemas/TabsPageActionsDefinition',
     },
   },
 });

@@ -112,6 +112,11 @@ export interface BlockDefinition extends ControllerDefinition {
     | 'top';
 
   /**
+   * Whether to render the block or not.
+   */
+  hide?: Remapper;
+
+  /**
    * The theme of the block.
    */
   theme?: Partial<Theme>;
@@ -339,6 +344,11 @@ export interface Remappers {
    * Get a property from the context.
    */
   context: string;
+
+  /**
+   * Get the title of current page.
+   */
+  'tab.name': string;
 
   /**
    * Convert a string to a number.
@@ -1691,7 +1701,7 @@ export interface BasePageDefinition {
  * A subset of page for use within flow pages and tab pages.
  */
 export interface SubPage {
-  name: string;
+  name: Remapper;
   roles?: string[];
   blocks: BlockDefinition[];
 }
@@ -1765,9 +1775,25 @@ export interface LoopPageDefinition extends BasePageDefinition {
   retainFlowData?: boolean;
 }
 
+export interface AlternateTabsDefinition {
+  foreach: SubPage;
+  events: {
+    listen?: Record<string, string>;
+    emit?: Record<string, string>;
+  };
+}
+
 export interface TabsPageDefinition extends BasePageDefinition {
   type: 'tabs';
-  tabs: SubPage[];
+  tabs?: SubPage[];
+  definition?: AlternateTabsDefinition;
+
+  /**
+   * A mapping of actions that can be fired by the page to action handlers.
+   */
+  actions?: {
+    onLoad?: ActionDefinition;
+  };
 }
 
 export type PageDefinition =

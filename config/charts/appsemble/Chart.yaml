@@ -1,7 +1,7 @@
 apiVersion: v2
 name: appsemble
-version: 0.28.7
-appVersion: 0.28.7
+version: 0.28.11
+appVersion: 0.28.11
 kubeVersion: '>=1.21.0'
 type: application
 description: The open source low-code app building platform
@@ -23,26 +23,8 @@ dependencies:
     repository: https://charts.bitnami.com/bitnami
     condition: postgresql.enabled
 annotations:
-  artifacthub.io/changes: >
-    - kind: fixed
-      description: "Cli: Missing options in team update command, context and app."
-    - kind: fixed
-      description: "Cli: Throw an error if remote is neither found in the specified
-        context nor passed as an argument."
-    - kind: fixed
-      description: "Cli: Wrong option used in team create command to make argument
-        dependent on one-another. Options app and context are now optional unless
-        either is specified."
-    - kind: fixed
-      description: "Preact-components: Make the date picker calendar display
-        statically below the input field."
-    - kind: fixed
-      description: "React-components: Add a footer to the dialog from the dialog action."
-    - kind: fixed
-      description: "Server: The setAppPath function should try at least 9 times before
-        generating hex values."
-    - kind: fixed
-      description: "Studio: Disable autofill for app secrets."
+  artifacthub.io/changes: |
+    []
   artifacthub.io/license: LGPL-3.0-only
   artifacthub.io/links: |
     - name: Appsemble Studio

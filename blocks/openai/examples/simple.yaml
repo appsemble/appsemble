@@ -1,3 +1,33 @@
 events:
   listen:
     response: response
+# Uncomment the following for a more complete example including a form to interact with.
+# - type: form
+#   parameters:
+#     fields:
+#       - type: string
+#         name: message
+#         label: { translate: message }
+#         requirements:
+#           - required: true
+#   actions:
+#     onSubmit:
+#       type: request
+#       method: post
+#       proxy: true
+#       url: https://api.openai.com/v1/chat/completions
+#       body:
+#         object.from:
+#           model: gpt-4o
+#           messages:
+#             array.from:
+#               - object.from:
+#                   role: user
+#                   content:
+#                     array.from:
+#                       - object.from:
+#                           type: text
+#                           text: { prop: message }
+#       onSuccess:
+#         type: event
+#         event: response

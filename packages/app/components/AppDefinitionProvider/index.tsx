@@ -1,6 +1,18 @@
 import { useEventListener } from '@appsemble/react-components';
-import { type AppDefinition, type BlockManifest } from '@appsemble/types';
-import { createContext, type ReactNode, useCallback, useContext, useMemo, useState } from 'react';
+import {
+  type AppDefinition,
+  type BlockManifest,
+  type ProjectImplementations,
+} from '@appsemble/types';
+import {
+  createContext,
+  type ReactNode,
+  useCallback,
+  useContext,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 
 import {
   apiUrl,
@@ -14,6 +26,7 @@ interface AppDefinitionContext {
   definition: AppDefinition;
   demoMode: boolean;
   revision: number;
+  pageManifests?: ProjectImplementations;
 }
 
 interface AppDefinitionProviderProps {
@@ -36,6 +49,7 @@ function replaceStyle(id: string, style: string): void {
 const Context = createContext<AppDefinitionContext>({
   definition: initialDefinition,
   blockManifests: initialBlockManifests,
+  pageManifests: {} as ProjectImplementations,
   demoMode,
   revision: 0,
 });
@@ -44,10 +58,31 @@ export function AppDefinitionProvider({ children }: AppDefinitionProviderProps):
   const [blockManifests, setBlockManifests] = useState(initialBlockManifests);
   const [definition, setDefinition] = useState(initialDefinition);
   const [revision, setRevision] = useState(0);
+  const pageManifests = useRef<ProjectImplementations>({
+    events: {
+      listen: {
+        data: {
+          description: '',
+        },
+      },
+
+      emit: {
+        data: {
+          description: '',
+        },
+      },
+    },
+  });
 
   const value = useMemo(
-    () => ({ blockManifests, definition, revision, demoMode }),
-    [blockManifests, definition, revision],
+    () => ({
+      blockManifests,
+      definition,
+      pageManifests: pageManifests.current,
+      revision,
+      demoMode,
+    }),
+    [blockManifests, definition, pageManifests, revision],
   );
 
   const onMessage = useCallback(

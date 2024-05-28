@@ -7,10 +7,8 @@ export const SubPage: OpenAPIV3.NonArraySchemaObject = {
   additionalProperties: false,
   properties: {
     name: {
-      type: 'string',
+      $ref: '#/components/schemas/RemapperDefinition',
       description: 'The name of the sub page.',
-      minLength: 1,
-      maxLength: 50,
     },
     roles: {
       type: 'array',
