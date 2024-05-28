@@ -411,7 +411,7 @@ describe('setAppMember', () => {
       {
         "memberId": StringMatching /\\^\\[\\\\d\\[a-f\\]\\{8\\}-\\[\\\\da-f\\]\\{4\\}-4\\[\\\\da-f\\]\\{3\\}-\\[\\\\da-f\\]\\{4\\}-\\[\\\\d\\[a-f\\]\\{12\\}\\$/,
         "name": null,
-        "primaryEmail": null,
+        "primaryEmail": "foo@example.com",
         "properties": {
           "test": "Property",
         },
@@ -505,7 +505,12 @@ describe('deleteAppMember', () => {
     });
     await member.update({ role: 'Member' });
     const userB = await User.create({ timezone: 'Europe/Amsterdam' });
-    await AppMember.create({ UserId: userB.id, AppId: app.id, role: 'Reader' });
+    await AppMember.create({
+      email: 'userB@example.com',
+      UserId: userB.id,
+      AppId: app.id,
+      role: 'Reader',
+    });
     const response = await request.delete(`/api/apps/${app.id}/members/${userB.id}`);
 
     expect(response).toMatchInlineSnapshot(`
@@ -543,7 +548,12 @@ describe('deleteAppMember', () => {
       OrganizationId: organization.id,
     });
     const userB = await User.create({ timezone: 'Europe/Amsterdam' });
-    const appMember = await AppMember.create({ UserId: userB.id, AppId: app.id, role: 'Reader' });
+    const appMember = await AppMember.create({
+      email: 'user@example.com',
+      UserId: userB.id,
+      AppId: app.id,
+      role: 'Reader',
+    });
     const response = await request.delete(`/api/apps/${app.id}/members/${userB.id}`);
 
     expect(response).toMatchInlineSnapshot('HTTP/1.1 204 No Content');
@@ -574,7 +584,12 @@ describe('deleteAppMember', () => {
       OrganizationId: organization.id,
     });
     const userB = await User.create({ timezone: 'Europe/Amsterdam' });
-    const appMember = await AppMember.create({ UserId: userB.id, AppId: app.id, role: 'Reader' });
+    const appMember = await AppMember.create({
+      email: 'userB@example.com',
+      UserId: userB.id,
+      AppId: app.id,
+      role: 'Reader',
+    });
     authorizeStudio(userB);
     const response = await request.delete(`/api/apps/${app.id}/members/${userB.id}`);
 
@@ -607,7 +622,12 @@ describe('deleteAppMember', () => {
       OrganizationId: organization.id,
     });
     const userB = await User.create({ timezone: 'Europe/Amsterdam' });
-    const appMember = await AppMember.create({ UserId: userB.id, AppId: app.id, role: 'Reader' });
+    const appMember = await AppMember.create({
+      email: 'userB@example.com',
+      UserId: userB.id,
+      AppId: app.id,
+      role: 'Reader',
+    });
     const samlSecret = await AppSamlSecret.create({
       AppId: app.id,
       entityId: '',
@@ -678,8 +698,18 @@ describe('getAppAccounts', () => {
       vapidPrivateKey: '',
       definition: {},
     });
-    await AppMember.create({ AppId: appA.id, UserId: user.id, role: 'Admin' });
-    await AppMember.create({ AppId: appB.id, UserId: user.id, role: 'Member' });
+    await AppMember.create({
+      email: user.primaryEmail,
+      AppId: appA.id,
+      UserId: user.id,
+      role: 'Admin',
+    });
+    await AppMember.create({
+      email: user.primaryEmail,
+      AppId: appB.id,
+      UserId: user.id,
+      role: 'Member',
+    });
 
     const response = await request.get('/api/user/apps/accounts');
 
@@ -727,10 +757,11 @@ describe('getAppAccounts', () => {
             "yaml": "{}
       ",
           },
-          "email": null,
+          "email": "test@example.com",
           "emailVerified": false,
           "id": StringMatching /\\^\\[\\\\d\\[a-f\\]\\{8\\}-\\[\\\\da-f\\]\\{4\\}-4\\[\\\\da-f\\]\\{3\\}-\\[\\\\da-f\\]\\{4\\}-\\[\\\\d\\[a-f\\]\\{12\\}\\$/,
           "name": null,
+          "picture": "https://www.gravatar.com/avatar/55502f40dc8b7c769880b10874abc9d0?s=128&d=mp",
           "properties": {},
           "role": "Admin",
           "sso": [],
@@ -767,10 +798,11 @@ describe('getAppAccounts', () => {
             "yaml": "{}
       ",
           },
-          "email": null,
+          "email": "test@example.com",
           "emailVerified": false,
           "id": StringMatching /\\^\\[\\\\d\\[a-f\\]\\{8\\}-\\[\\\\da-f\\]\\{4\\}-4\\[\\\\da-f\\]\\{3\\}-\\[\\\\da-f\\]\\{4\\}-\\[\\\\d\\[a-f\\]\\{12\\}\\$/,
           "name": null,
+          "picture": "https://www.gravatar.com/avatar/55502f40dc8b7c769880b10874abc9d0?s=128&d=mp",
           "properties": {},
           "role": "Member",
           "sso": [],
@@ -792,6 +824,7 @@ describe('getAppAccount', () => {
       definition: {},
     });
     await AppMember.create({
+      email: user.primaryEmail,
       AppId: app.id,
       UserId: user.id,
       role: 'Member',
@@ -838,10 +871,11 @@ describe('getAppAccount', () => {
           "yaml": "{}
       ",
         },
-        "email": null,
+        "email": "test@example.com",
         "emailVerified": false,
         "id": StringMatching /\\^\\[\\\\d\\[a-f\\]\\{8\\}-\\[\\\\da-f\\]\\{4\\}-4\\[\\\\da-f\\]\\{3\\}-\\[\\\\da-f\\]\\{4\\}-\\[\\\\d\\[a-f\\]\\{12\\}\\$/,
         "name": null,
+        "picture": "https://www.gravatar.com/avatar/55502f40dc8b7c769880b10874abc9d0?s=128&d=mp",
         "properties": {
           "test": "Property",
         },
@@ -904,7 +938,12 @@ describe('patchAppAccount', () => {
       vapidPrivateKey: '',
       definition: {},
     });
-    const appMember = await AppMember.create({ AppId: app.id, UserId: user.id, role: 'Member' });
+    const appMember = await AppMember.create({
+      email: user.primaryEmail,
+      AppId: app.id,
+      UserId: user.id,
+      role: 'Member',
+    });
 
     const response = await request.patch(
       `/api/user/apps/${app.id}/account`,
@@ -976,7 +1015,12 @@ describe('patchAppAccount', () => {
       vapidPrivateKey: '',
       definition: {},
     });
-    const appMember = await AppMember.create({ AppId: app.id, UserId: user.id, role: 'Member' });
+    const appMember = await AppMember.create({
+      email: 'user@example.com',
+      AppId: app.id,
+      UserId: user.id,
+      role: 'Member',
+    });
 
     const response = await request.patch<AppAccount>(
       `/api/user/apps/${app.id}/account`,

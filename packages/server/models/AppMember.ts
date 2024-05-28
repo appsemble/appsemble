@@ -81,6 +81,7 @@ export class AppMember extends Model {
   @Column(DataType.STRING)
   role: string;
 
+  @AllowNull(false)
   @Index({ name: 'UniqueAppMemberEmailIndex', unique: true })
   @Column(DataType.STRING)
   email: string;

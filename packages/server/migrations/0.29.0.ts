@@ -5,6 +5,7 @@ export const key = '0.29.0';
 
 /**
  * Summary:
+ * - Making AppMember.email non-nullable
  * - Making Resource.data non-nullable
  * - Making OAuthAuthorization.accessToken non-nullable
  * - Removing App.longDescription
@@ -54,6 +55,22 @@ export const key = '0.29.0';
  */
 export async function up(transaction: Transaction, db: Sequelize): Promise<void> {
   const queryInterface = db.getQueryInterface();
+  logger.info('Making AppMember.email non-nullable');
+  logger.warn(`The following may result in errors depending on the data present in the database.
+In case the database contains AppMembers with emails set to NULL make sure to delete those first
+as this migration requires AppMembers to have an email set.
+
+  SELECT COUNT(*) FROM "AppMember" WHERE "email" IS NULL;
+`);
+  await queryInterface.changeColumn(
+    'AppMember',
+    'email',
+    {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    { transaction },
+  );
   logger.warn('Making Resource.data non-nullable');
   logger.warn(`The following may result in errors depending on the data present in the database.
 In case the database contains Resources with data equal to null, the following will fail.
@@ -393,6 +410,7 @@ difficultyLevel manually.`);
 
 /**
  * Summary:
+ * - Making AppMember.email nullable
  * - Making Resource.data nullable
  * - Making OAuthAuthorization.accessToken nullable
  * - Adding column App.longDescription
@@ -442,6 +460,16 @@ difficultyLevel manually.`);
  */
 export async function down(transaction: Transaction, db: Sequelize): Promise<void> {
   const queryInterface = db.getQueryInterface();
+  logger.info('Making AppMember.email nullable');
+  await queryInterface.changeColumn(
+    'AppMember',
+    'email',
+    {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    { transaction },
+  );
   logger.info('Making Resource.data nullable');
   await queryInterface.changeColumn(
     'Resource',

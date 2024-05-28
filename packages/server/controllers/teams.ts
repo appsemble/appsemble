@@ -620,6 +620,7 @@ export async function acceptTeamInvite(ctx: Context): Promise<void> {
             (
               await AppMember.create(
                 {
+                  email: invite.email,
                   AppId: app.id,
                   UserId: user.id,
                   role: app.definition.security.default.role,

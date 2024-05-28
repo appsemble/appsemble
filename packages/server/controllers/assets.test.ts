@@ -607,7 +607,12 @@ describe('createAsset', () => {
   });
 
   it('should associate the app member if the user is authenticated', async () => {
-    const member = await AppMember.create({ AppId: app.id, UserId: user.id, role: '' });
+    const member = await AppMember.create({
+      email: user.primaryEmail,
+      AppId: app.id,
+      UserId: user.id,
+      role: '',
+    });
     authorizeStudio();
     const response = await request.post<AssetType>(
       `/api/apps/${app.id}/assets`,
@@ -633,7 +638,12 @@ describe('createAsset', () => {
 
 describe('seedAsset', () => {
   it('should create seed assets in all apps', async () => {
-    const member = await AppMember.create({ AppId: app.id, UserId: user.id, role: '' });
+    const member = await AppMember.create({
+      email: user.primaryEmail,
+      AppId: app.id,
+      UserId: user.id,
+      role: '',
+    });
     authorizeStudio();
     const response = await request.post<AssetType>(
       `/api/apps/${app.id}/seed-assets`,
@@ -694,7 +704,12 @@ describe('seedAsset', () => {
 
   it('should create seed assets and ephemeral assets in demo apps', async () => {
     await app.update({ demoMode: true });
-    const member = await AppMember.create({ AppId: app.id, UserId: user.id, role: '' });
+    const member = await AppMember.create({
+      email: user.primaryEmail,
+      AppId: app.id,
+      UserId: user.id,
+      role: '',
+    });
     authorizeStudio();
     const response = await request.post<AssetType>(
       `/api/apps/${app.id}/seed-assets`,

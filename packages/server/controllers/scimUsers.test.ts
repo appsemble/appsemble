@@ -414,6 +414,7 @@ describe('createSCIMUser', () => {
   it('should assign manager to team that was created before their team’s creation, with the appropriate role', async () => {
     const user = await User.create({ timezone: '' });
     const appMember = await AppMember.create({
+      email: 'user@example.com',
       UserId: user.id,
       AppId: app.id,
       role: 'User',
@@ -448,7 +449,12 @@ describe('createSCIMUser', () => {
 describe('getSCIMUser', () => {
   it('should return a SCIM user', async () => {
     const user = await User.create({ timezone: 'Europe/Amsterdam' });
-    const member = await AppMember.create({ AppId: app.id, UserId: user.id, role: 'User' });
+    const member = await AppMember.create({
+      email: 'user@example.com',
+      AppId: app.id,
+      UserId: user.id,
+      role: 'User',
+    });
 
     const response = await request.get(`/api/apps/${app.id}/scim/Users/${member.id}`);
 
@@ -474,6 +480,7 @@ describe('getSCIMUser', () => {
           "urn:ietf:params:scim:schemas:extension:enterprise:2.0:User",
         ],
         "timezone": "Europe/Amsterdam",
+        "userName": "user@example.com",
       }
     `,
     );
@@ -484,7 +491,12 @@ describe('getSCIMUser', () => {
   it('should return a SCIM user with manager', async () => {
     const team = await Team.create({ AppId: app.id, name: 'krbs' });
     const user = await User.create({ timezone: 'Europe/Amsterdam' });
-    const member = await AppMember.create({ AppId: app.id, UserId: user.id, role: 'User' });
+    const member = await AppMember.create({
+      email: 'user@example.com',
+      AppId: app.id,
+      UserId: user.id,
+      role: 'User',
+    });
     await TeamMember.create({ TeamId: team.id, AppMemberId: member.id });
 
     const response = await request.get(`/api/apps/${app.id}/scim/Users/${member.id}`);
@@ -516,6 +528,7 @@ describe('getSCIMUser', () => {
             "value": "krbs",
           },
         },
+        "userName": "user@example.com",
       }
     `,
     );
@@ -527,7 +540,12 @@ describe('getSCIMUser', () => {
 describe('getSCIMUsers', () => {
   it('should return a SCIM user', async () => {
     const user = await User.create({ timezone: 'Europe/Amsterdam' });
-    await AppMember.create({ AppId: app.id, UserId: user.id, role: 'User' });
+    await AppMember.create({
+      email: 'user@example.com',
+      AppId: app.id,
+      UserId: user.id,
+      role: 'User',
+    });
 
     const response = await request.get(`/api/apps/${app.id}/scim/Users`);
     expect(response).toMatchInlineSnapshot(
@@ -554,6 +572,7 @@ describe('getSCIMUsers', () => {
               "urn:ietf:params:scim:schemas:extension:enterprise:2.0:User",
             ],
             "timezone": "Europe/Amsterdam",
+            "userName": "user@example.com",
           },
         ],
         "itemsPerPage": 1,
@@ -570,7 +589,12 @@ describe('getSCIMUsers', () => {
   it('should return a SCIM user with manager', async () => {
     const team = await Team.create({ AppId: app.id, name: 'krbs' });
     const user = await User.create({ timezone: 'Europe/Amsterdam' });
-    const member = await AppMember.create({ AppId: app.id, UserId: user.id, role: 'User' });
+    const member = await AppMember.create({
+      email: 'user@example.com',
+      AppId: app.id,
+      UserId: user.id,
+      role: 'User',
+    });
     await TeamMember.create({ TeamId: team.id, AppMemberId: member.id });
 
     const response = await request.get(`/api/apps/${app.id}/scim/Users`);
@@ -604,6 +628,7 @@ describe('getSCIMUsers', () => {
                 "value": "krbs",
               },
             },
+            "userName": "user@example.com",
           },
         ],
         "itemsPerPage": 1,
@@ -670,7 +695,12 @@ describe('getSCIMUsers', () => {
 
   it('should return empty resources when user is not found', async () => {
     const user = await User.create({ timezone: 'Europe/Amsterdam' });
-    await AppMember.create({ AppId: app.id, UserId: user.id, role: 'User' });
+    await AppMember.create({
+      email: 'user@example.com',
+      AppId: app.id,
+      UserId: user.id,
+      role: 'User',
+    });
 
     const response = await request.get(`/api/apps/${app.id}/scim/Users?filter=uSeRnAmE eQ ""`);
 
@@ -694,7 +724,12 @@ describe('getSCIMUsers', () => {
 describe('updateSCIMUser', () => {
   it('should update a user and app member', async () => {
     const user = await User.create({ timezone: 'Europe/Amsterdam' });
-    const member = await AppMember.create({ AppId: app.id, UserId: user.id, role: 'User' });
+    const member = await AppMember.create({
+      email: 'user@example.com',
+      AppId: app.id,
+      UserId: user.id,
+      role: 'User',
+    });
 
     const response = await request.put(`/api/apps/${app.id}/scim/Users/${member.id}`, {
       ScHeMaS: [
@@ -764,7 +799,12 @@ describe('updateSCIMUser', () => {
 describe('patchSCIMUser', () => {
   it('should replace a bulk value', async () => {
     const user = await User.create({ timezone: 'Europe/Amsterdam' });
-    const member = await AppMember.create({ AppId: app.id, UserId: user.id, role: 'User' });
+    const member = await AppMember.create({
+      email: 'user@example.com',
+      AppId: app.id,
+      UserId: user.id,
+      role: 'User',
+    });
 
     const response = await request.patch(`/api/apps/${app.id}/scim/Users/${member.id}`, {
       ScHeMaS: [
@@ -833,7 +873,12 @@ describe('patchSCIMUser', () => {
 
   it('should replace separate operations', async () => {
     const user = await User.create({ timezone: 'Europe/Amsterdam' });
-    const member = await AppMember.create({ AppId: app.id, UserId: user.id, role: 'User' });
+    const member = await AppMember.create({
+      email: 'user@example.com',
+      AppId: app.id,
+      UserId: user.id,
+      role: 'User',
+    });
 
     const response = await request.patch(`/api/apps/${app.id}/scim/Users/${member.id}`, {
       ScHeMaS: [
@@ -899,7 +944,12 @@ describe('patchSCIMUser', () => {
 
 it("should create a team if the user contains a manager ID of a team that doesn't exist yet", async () => {
   const user = await User.create({ timezone: 'Europe/Amsterdam' });
-  const member = await AppMember.create({ AppId: app.id, UserId: user.id, role: 'User' });
+  const member = await AppMember.create({
+    email: 'user@example.com',
+    AppId: app.id,
+    UserId: user.id,
+    role: 'User',
+  });
 
   await request.patch(`/api/apps/${app.id}/scim/Users/${member.id}`, {
     ScHeMaS: [
@@ -928,8 +978,18 @@ it("should create a team if the user contains a manager ID of a team that doesn'
 it('should add member to an existing team if the user contains a manager ID of a team that already exists', async () => {
   const user1 = await User.create({ timezone: 'Europe/Amsterdam' });
   const user2 = await User.create({ timezone: 'Europe/Amsterdam' });
-  const member1 = await AppMember.create({ AppId: app.id, UserId: user1.id, role: 'User' });
-  const member2 = await AppMember.create({ AppId: app.id, UserId: user2.id, role: 'User' });
+  const member1 = await AppMember.create({
+    email: 'user1@example.com',
+    AppId: app.id,
+    UserId: user1.id,
+    role: 'User',
+  });
+  const member2 = await AppMember.create({
+    email: 'user2@example.com',
+    AppId: app.id,
+    UserId: user2.id,
+    role: 'User',
+  });
   const team = await Team.create({ AppId: app.id, name: member1.id });
   await TeamMember.create({ TeamId: team.id, AppMemberId: member1.id, role: 'manager' });
 
@@ -961,8 +1021,18 @@ it('should add member to an existing team if the user contains a manager ID of a
 it('should assign existing manager to new team as manager', async () => {
   const user1 = await User.create({ timezone: 'Europe/Amsterdam' });
   const user2 = await User.create({ timezone: 'Europe/Amsterdam' });
-  const member1 = await AppMember.create({ AppId: app.id, UserId: user1.id, role: 'User' });
-  const member2 = await AppMember.create({ AppId: app.id, UserId: user2.id, role: 'User' });
+  const member1 = await AppMember.create({
+    email: 'user1@example.com',
+    AppId: app.id,
+    UserId: user1.id,
+    role: 'User',
+  });
+  const member2 = await AppMember.create({
+    email: 'user2@example.com',
+    AppId: app.id,
+    UserId: user2.id,
+    role: 'User',
+  });
 
   await request.patch(`/api/apps/${app.id}/scim/Users/${member1.id}`, {
     ScHeMaS: [

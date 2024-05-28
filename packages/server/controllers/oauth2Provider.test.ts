@@ -226,6 +226,7 @@ describe('verifyOAuth2Consent', () => {
     await AppMember.create({
       AppId: app.id,
       UserId: user.id,
+      email: user.primaryEmail,
       consent: new Date(),
       role: 'User',
     });
@@ -272,6 +273,7 @@ describe('verifyOAuth2Consent', () => {
       vapidPrivateKey: '',
     });
     await AppMember.create({
+      email: user.primaryEmail,
       AppId: app.id,
       UserId: user.id,
       consent: new Date(),
