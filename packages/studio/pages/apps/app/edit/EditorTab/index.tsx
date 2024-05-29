@@ -1,9 +1,9 @@
 import { Icon, Tab } from '@appsemble/react-components';
 import { type IconName } from '@fortawesome/fontawesome-common-types';
-import { type ReactChild, type ReactNode } from 'react';
+import { type ReactNode } from 'react';
 
 interface EditorTabProps {
-  readonly children: ReactChild;
+  readonly children: ReactNode;
   readonly className?: string;
   readonly errorCount: number;
   readonly icon: IconName;

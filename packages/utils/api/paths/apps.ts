@@ -1044,6 +1044,17 @@ This will return a 404 if the user has not uploaded one.`,
         },
       },
     },
+    delete: {
+      tags: ['app', 'coreStyle'],
+      description: 'Delete the core styling of an app',
+      operationId: 'deleteAppCoreStyle',
+      responses: {
+        204: {
+          description: 'Successfully deleted app core styling',
+        },
+      },
+      security: [{ studio: [] }],
+    },
   },
   '/api/apps/{appId}/style/shared': {
     parameters: [{ $ref: '#/components/parameters/appId' }],
@@ -1059,6 +1070,17 @@ This will return a 404 if the user has not uploaded one.`,
           },
         },
       },
+    },
+    delete: {
+      tags: ['app', 'sharedStyle'],
+      description: 'Delete the shared styling of an app',
+      operationId: 'deleteAppSharedStyle',
+      responses: {
+        204: {
+          description: 'Successfully deleted app shared styling',
+        },
+      },
+      security: [{ studio: [] }],
     },
   },
   '/api/apps/{appId}/style/block/@{organizationId}/{blockId}': {

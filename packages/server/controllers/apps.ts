@@ -781,9 +781,13 @@ export async function patchApp(ctx: Context): Promise<void> {
       result.enableUnsecuredServiceSecrets = enableUnsecuredServiceSecrets;
     }
 
-    result.coreStyle = coreStyle ? validateStyle(coreStyle) : validateStyle('');
+    if (coreStyle !== undefined) {
+      result.coreStyle = validateStyle(coreStyle);
+    }
 
-    result.sharedStyle = sharedStyle ? validateStyle(sharedStyle) : validateStyle('');
+    if (sharedStyle !== undefined) {
+      result.sharedStyle = validateStyle(sharedStyle);
+    }
 
     if (icon) {
       result.icon = icon.contents;
@@ -1519,6 +1523,32 @@ export async function getAppCoreStyle(ctx: Context): Promise<void> {
   ctx.status = 200;
 }
 
+export async function deleteAppCoreStyle(ctx: Context): Promise<void> {
+  const {
+    pathParams: { appId },
+  } = ctx;
+
+  const app = await App.findOne({
+    where: { id: appId },
+    attributes: ['id', 'coreStyle', 'OrganizationId'],
+  });
+
+  assertKoaError(!app, ctx, 404, 'App not found');
+
+  checkAppLock(ctx, app);
+  await checkRole(ctx, app.OrganizationId, Permission.EditApps);
+
+  assertKoaError(!app.coreStyle, ctx, 404, 'App core style not found');
+
+  const coreStyle = validateStyle('');
+
+  await app.update({
+    coreStyle,
+  });
+
+  ctx.status = 204;
+}
+
 export async function getAppSharedStyle(ctx: Context): Promise<void> {
   const {
     pathParams: { appId },
@@ -1531,6 +1561,30 @@ export async function getAppSharedStyle(ctx: Context): Promise<void> {
   ctx.body = app.sharedStyle || '';
   ctx.type = 'css';
   ctx.status = 200;
+}
+
+export async function deleteAppSharedStyle(ctx: Context): Promise<void> {
+  const {
+    pathParams: { appId },
+  } = ctx;
+
+  const app = await App.findOne({
+    where: { id: appId },
+    attributes: ['id', 'sharedStyle', 'OrganizationId'],
+  });
+
+  assertKoaError(!app, ctx, 404, 'App not found');
+
+  checkAppLock(ctx, app);
+  await checkRole(ctx, app.OrganizationId, Permission.EditApps);
+
+  assertKoaError(!app.sharedStyle, ctx, 404, 'App shared style not found');
+
+  await app.update({
+    sharedStyle: validateStyle(''),
+  });
+
+  ctx.status = 204;
 }
 
 export async function getAppBlockStyle(ctx: Context): Promise<void> {
