@@ -1,4 +1,9 @@
-import { getRemapperContext, getResourceDefinition, type QueryParams } from '@appsemble/node-utils';
+import {
+  getRemapperContext,
+  getResourceDefinition,
+  processResourceBody,
+  type QueryParams,
+} from '@appsemble/node-utils';
 import {
   type ResourceCreateActionDefinition,
   type ResourceDeleteActionDefinition,
@@ -7,12 +12,12 @@ import {
   type ResourceQueryActionDefinition,
   type ResourceUpdateActionDefinition,
 } from '@appsemble/types';
-import { defaultLocale, remap } from '@appsemble/utils';
+import { defaultLocale, remap, serializeResource } from '@appsemble/utils';
 import { Op } from 'sequelize';
 
 import { type ServerActionParameters } from './index.js';
 import { AppMember, Asset, Resource, ResourceVersion, transactional } from '../../models/index.js';
-import { parseQuery, processHooks, processReferenceHooks, validate } from '../resource.js';
+import { parseQuery, processHooks, processReferenceHooks } from '../resource.js';
 
 export async function get({
   action,
@@ -147,14 +152,24 @@ export async function create({
   options,
   user,
 }: ServerActionParameters<ResourceCreateActionDefinition>): Promise<unknown> {
+  const { getAppAssets } = options;
   const body = (remap(action.body, data, internalContext) ?? data) as
     | Record<string, unknown>
     | Record<string, unknown>[];
 
   const definition = getResourceDefinition(app.toJSON(), action.resource, context);
-  const resource = validate(body, definition, context);
 
-  const resources = Array.isArray(resource) ? resource : [resource];
+  const appAssets = await getAppAssets({ context, app: app.toJSON() });
+  Object.assign(context, { body: serializeResource(body) });
+
+  const [processedBody] = processResourceBody(
+    context,
+    definition,
+    undefined,
+    undefined,
+    appAssets.map((asset) => ({ id: asset.id, name: asset.name })),
+  );
+  const resources = Array.isArray(processedBody) ? processedBody : [processedBody];
   const createdResources = await Resource.bulkCreate(
     resources.map(({ $expires, ...resourceData }) => ({
       type: action.resource,
@@ -162,6 +177,8 @@ export async function create({
       AppId: app.id,
       AuthorId: user?.id,
       expires: $expires,
+      seed: false,
+      ephemeral: app.demoMode,
     })),
   );
 
@@ -170,7 +187,7 @@ export async function create({
 
   const mappedResources = createdResources.map((r) => r.toJSON());
 
-  return Array.isArray(resource) ? mappedResources : mappedResources[0];
+  return Array.isArray(processedBody) ? mappedResources : mappedResources[0];
 }
 
 export async function update({
@@ -205,8 +222,17 @@ export async function update({
   if (!resource) {
     throw new Error('Resource not found');
   }
+  const { getAppAssets } = options;
+  const appAssets = await getAppAssets({ context, app: app.toJSON() });
+  Object.assign(context, { body: serializeResource(body) });
 
-  const updatedResource = validate(body, definition, context, false, resource.expires);
+  const [updatedResource] = processResourceBody(
+    context,
+    definition,
+    appAssets.filter((asset) => asset.resourceId === resource.id).map((asset) => asset.id),
+    resource.expires,
+    appAssets.map((asset) => ({ id: asset.id, name: asset.name })),
+  );
 
   const {
     $clonable: clonable,
@@ -252,6 +278,7 @@ export async function patch({
   context,
   data: actionData,
   internalContext,
+  options,
 }: ServerActionParameters<ResourcePatchActionDefinition>): Promise<unknown> {
   const body = (remap(action.body, actionData, internalContext) ?? actionData) as Record<
     string,
@@ -277,7 +304,18 @@ export async function patch({
     throw new Error('Resource not found');
   }
 
-  const patchedResource = validate(body, definition, context, true, resource.expires);
+  const { getAppAssets } = options;
+  const appAssets = await getAppAssets({ context, app: app.toJSON() });
+  Object.assign(context, { body: serializeResource(body) });
+
+  const [patchedResource] = processResourceBody(
+    context,
+    definition,
+    appAssets.filter((asset) => asset.resourceId === resource.id).map((asset) => asset.id),
+    resource.expires,
+    appAssets.map((asset) => ({ id: asset.id, name: asset.name })),
+    true,
+  );
 
   const {
     $clonable: clonable,

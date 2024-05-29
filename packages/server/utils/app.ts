@@ -84,7 +84,7 @@ export async function getApp(
 
 export function getAppUrl(app: App): URL {
   const url = new URL(argv.host);
-  url.hostname = app.domain || `${app.path}.${app.OrganizationId}.${url.hostname}`;
+  url.hostname = app?.domain || `${app.path}.${app.OrganizationId}.${url.hostname}`;
   return url;
 }
 

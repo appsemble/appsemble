@@ -11,8 +11,8 @@ import {
   useToggle,
 } from '@appsemble/react-components';
 import { type Resource } from '@appsemble/types';
-import { has } from '@appsemble/utils';
-import { type NamedEvent, serializeResource } from '@appsemble/web-utils';
+import { has, serializeResource } from '@appsemble/utils';
+import { type NamedEvent } from '@appsemble/web-utils';
 import axios from 'axios';
 import classNames from 'classnames';
 import { type OpenAPIV3 } from 'openapi-types';
