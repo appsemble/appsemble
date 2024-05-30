@@ -24,5 +24,5 @@ export const ResourceCountActionDefinition = extendJSONSchema(
       },
     },
   },
-  ['url'],
+  ['url', 'method'],
 );

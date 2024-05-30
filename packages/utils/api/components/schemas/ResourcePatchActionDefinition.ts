@@ -18,5 +18,5 @@ export const ResourcePatchActionDefinition = extendJSONSchema(
       },
     },
   },
-  ['url'],
+  ['url', 'method'],
 );
