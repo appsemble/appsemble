@@ -108,7 +108,6 @@
     "scim2-parse-filter": "^0.2.8",
     "semver": "^7.0.0",
     "sequelize": "^6.0.0",
-    "sequelize-auto": "^0.8.8",
     "sequelize-typescript": "^2.0.0",
     "sharp": "^0.32.0",
     "strip-bom": "^5.0.0",
