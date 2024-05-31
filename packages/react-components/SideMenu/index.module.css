@@ -10,10 +10,9 @@
     display: block;
   }
 
-  &.code,
-  &.gui {
+  &.toggleable {
     @media screen and (width >=1024px) {
-      display: block;
+      display: block !important;
     }
   }
 }
@@ -22,22 +21,19 @@
   height: 100%;
 
   @media screen and (width >1024px) {
-    margin-left: menu-width;
-  }
+    &:not(.toggleable) {
+      margin-left: menu-width;
+    }
 
-  /* &.gui {
-    margin-left: 0;
-  } */
-
-  &.code,
-  &.gui {
-    @media screen and (width >1024px) {
+    &.toggleable {
+      /* Hide if closable on desktop */
       margin-left: 0;
-      transition: ease-out 0.15s;
+      transition: ease-in 0.1s;
 
+      /* Show when open if closable on desktop */
       &.open {
         margin-left: menu-width;
-        transition: ease-in 0.15s;
+        transition: ease-out 0.1s;
       }
     }
   }
@@ -57,28 +53,15 @@
   top: 3.25rem;
   transition: left 0.15s;
   width: menu-width;
-
-  /* Should be less than the z-index of the modal component and should be more than the main screen of the app */
-
-  @media screen and (width =1024px) {
-    z-index: 1500;
-  }
+  z-index: 1500;
 
   /* Shows the side menu  when on a big screen */
   @media screen and (width >1024px) {
-    left: 0;
-  }
+    &:not(.toggleable) {
+      left: 0;
+    }
 
-  /* Shows the side menu when opened on a small screen */
-  &.open {
-    left: 0;
-    z-index: 1500;
-  }
-
-  /* Overrides the side menu behaviour on the code and GUI editor pages */
-  &.code,
-  &.gui {
-    @media screen and (width >1024px) {
+    &.toggleable {
       left: calc(-1 * menu-width);
       transition: ease-out 0.1s;
 
@@ -88,11 +71,13 @@
         transition: ease-in 0.1s;
       }
     }
+  }
 
-    /* Shows the side menu when opened on a small screen */
-    &.open {
-      left: 0;
-    }
+  /* Shows the side menu when opened on a small screen */
+  &.open {
+    left: 0;
+
+    /* Should be less than the z-index of the modal component and should be more than the main screen of the app */
   }
 }
 
@@ -114,9 +99,4 @@
     opacity: 0;
     pointer-events: none;
   }
-
-  /* &.gui {
-    display: none;
-    left: calc(-1 * menu-width);
-  } */
 }

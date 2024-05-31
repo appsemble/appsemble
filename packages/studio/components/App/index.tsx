@@ -8,7 +8,7 @@ import {
 import { MDXProvider } from '@mdx-js/react';
 import classNames from 'classnames';
 import { type ReactNode } from 'react';
-import { Route, Routes, useLocation } from 'react-router-dom';
+import { Route, Routes } from 'react-router-dom';
 
 import styles from './index.module.css';
 import { messages } from './messages.js';
@@ -35,18 +35,16 @@ import { VerifyBanner } from '../VerifyBanner/index.js';
 
 function StudioContent(): ReactNode {
   const { fullscreen, fullscreenRef } = useFullscreenContext();
-  const location = useLocation();
 
   return (
-    <div className={styles.fullHeight} ref={fullscreenRef}>
+    <div
+      className={classNames(styles.fullHeight, { [styles.fullscreen]: fullscreen?.enabled })}
+      ref={fullscreenRef}
+    >
       <SideMenuProvider base={<SideMenuBase />} bottom={<SideMenuBottom />}>
         <Toolbar />
         <div
-          className={classNames(`px-3 py-3 is-flex is-flex-direction-column ${styles.content}`, {
-            [styles.fullscreen]: fullscreen.enabled,
-            [styles.code]: location.pathname.match(/edit/) && location.hash.length > 0,
-          })}
-          id="appDiv"
+          className={classNames(`px-3 py-3 is-flex is-flex-direction-column ${styles.content}`, {})}
         >
           <PasswordBanner />
           <VerifyBanner />

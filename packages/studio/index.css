@@ -8,7 +8,7 @@ body {
 
 /* stylelint-disable-next-line selector-max-id */
 #app {
-  height: 100%;
+  height: calc(100vh - 3.25rem);
 }
 
 .browsers {

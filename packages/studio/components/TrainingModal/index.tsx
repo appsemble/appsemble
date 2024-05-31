@@ -36,6 +36,7 @@ export function TrainingModal({
   onSubmit,
 }: TrainingModalProps): ReactNode {
   const competenceTags = ['accuracy', 'advance', 'analyze', 'basics', 'creativity'];
+  // TODO: fix
   const sideMenu = document?.querySelector('#sideMenu') as HTMLElement;
 
   // Fixes the problem with the side menu drawing over the modal.

@@ -2,11 +2,11 @@
   justify-content: space-between;
 
   /*
-   * This should overlay any other navbars.
+   * This should overlay the side menu and side menu backdrop z-index
    *
-   * Bulma navbars have a z-index of 30.
+   * The side menu has a z-index of 1500, the backdrop a z-index of 1400
    */
-  z-index: 31 !important;
+  z-index: 1600 !important;
 }
 
 .tag {
@@ -56,7 +56,7 @@
   position: absolute;
   right: 0;
   top: 100%;
-  z-index: 20;
+  z-index: 1500;
 }
 
 .dropdown button,

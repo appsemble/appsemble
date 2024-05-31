@@ -14,7 +14,6 @@ test.describe('/apps/:appId', () => {
     await page.getByRole('code').getByText('Person', { exact: true }).press('Backspace');
     await page.getByRole('code').getByText('name:').first().press('t+e+s+t');
     await expect(page.getByRole('button', { name: 'Publish' })).toBeEnabled();
-    await page.getByLabel('Open menu').click();
 
     // TODO: could not get close or reload to work within this test.
     // page.close({ runBeforeUnload: true });
@@ -50,7 +49,6 @@ test.describe('/apps/:appId', () => {
     await page.getByRole('button', { name: 'Publish' }).click();
     // The validation needs to catch up otherwise the dialog will still open.
     await page.waitForResponse('/api/apps/*');
-    await page.getByLabel('Open menu').click();
 
     await page
       .once('dialog', (dialog) => {
