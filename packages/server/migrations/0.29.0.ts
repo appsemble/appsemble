@@ -45,6 +45,9 @@ export const key = '0.29.0';
  * - Setting UserTraining.UserId constraints to ON UPDATE CASCADE ON DELETE CASCADE
  * - Setting UserTraining.TrainingId constraints to ON UPDATE CASCADE ON DELETE CASCADE
  * - Setting TrainingBlock.TrainingId constraints to ON UPDATE CASCADE ON DELETE CASCADE
+ * - Creating unique index UniqueNameIndex on AppVariable (name, AppId)
+ * - Creating unique index UniqueRatingIndex on AppRating (AppId, UserId)
+ * - Creating unique index UserTraining_UserId_TrainingId_key on UserTraining (UserId, TrainingId)
  *
  * @param transaction The sequelize Transaction.
  * @param db The sequelize database.
@@ -371,6 +374,21 @@ difficultyLevel manually.`);
       { transaction },
     );
   }
+
+  const indexes = [
+    ['AppVariable', 'UniqueNameIndex', ['name', 'AppId']],
+    ['AppRating', 'UniqueRatingIndex', ['AppId', 'UserId']],
+    // The following is automatically created with db.sync()
+    ['UserTraining', 'UserTraining_UserId_TrainingId_key', ['UserId', 'TrainingId']],
+  ] satisfies [string, string, string[]][];
+  for (const [table, name, cols] of indexes) {
+    logger.info(`Creating unique index ${name} on ${table} (${cols.join(', ')})`);
+    await queryInterface.addIndex(table, cols, {
+      name,
+      unique: true,
+      transaction,
+    });
+  }
 }
 
 /**
@@ -414,6 +432,9 @@ difficultyLevel manually.`);
  * - Setting UserTraining.UserId constraints to ON UPDATE NO ACTION ON DELETE NO ACTION
  * - Setting UserTraining.TrainingId constraints to ON UPDATE NO ACTION ON DELETE NO ACTION
  * - Setting TrainingBlock.TrainingId constraints to ON UPDATE NO ACTION ON DELETE NO ACTION
+ * - Removing unique index UniqueNameIndex from AppVariable (name, AppId)
+ * - Removing unique index UniqueRatingIndex from AppRating (AppId, UserId)
+ * - Removing unique index UserTraining_UserId_TrainingId_key from UserTraining (UserId, TrainingId)
  *
  * @param transaction The sequelize Transaction.
  * @param db The sequelize database.
@@ -716,5 +737,15 @@ connect the ID manually or to delete them.
     `,
       { transaction },
     );
+  }
+
+  const indexes = [
+    ['AppVariable', 'UniqueNameIndex', ['name', 'AppId']],
+    ['AppRating', 'UniqueRatingIndex', ['AppId', 'UserId']],
+    ['UserTraining', 'UserTraining_UserId_TrainingId_key', ['UserId', 'TrainingId']],
+  ] satisfies [string, string, string[]][];
+  for (const [table, name, cols] of indexes) {
+    logger.info(`Removing unique index ${name} from ${table} (${cols.join(', ')})`);
+    await queryInterface.removeIndex(table, name, { transaction });
   }
 }

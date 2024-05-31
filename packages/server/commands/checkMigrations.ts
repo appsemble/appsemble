@@ -43,18 +43,32 @@ async function apply(db: Sequelize, name: string, fn: () => Promise<void>): Prom
     tables: Object.fromEntries(
       schema.public.tables.map((table) => [
         table.name,
-        Object.fromEntries(
-          table.columns.map((column) => [
-            column.name,
-            {
-              ...column,
-              ordinalPosition: 0,
-              informationSchemaValue: {},
-              reference: {},
-              indices: [],
-            },
-          ]),
-        ),
+        {
+          ...table,
+          indices: Object.fromEntries(
+            table.indices.map((index) => [
+              index.name,
+              {
+                ...index,
+                columns: Object.fromEntries(index.columns.map((column) => [column.name, column])),
+              },
+            ]),
+          ),
+          columns: Object.fromEntries(
+            table.columns.map((column) => [
+              column.name,
+              {
+                ...column,
+                // Position in table schema irrelevant
+                ordinalPosition: 0,
+                // Again contains ordinal positions
+                informationSchemaValue: {},
+                // Ingore already present on table under indices
+                indices: [],
+              },
+            ]),
+          ),
+        },
       ]),
     ),
     enums: Object.fromEntries(schema.public.enums.map((e) => [e.name, [...e.values].sort()])),

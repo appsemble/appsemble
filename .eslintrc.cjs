@@ -3,7 +3,7 @@ const { BasicAnnotationsReader } = require('ts-json-schema-generator');
 module.exports = {
   root: true,
   extends: ['remcohaszing'],
-  plugins: ['formatjs', 'vitest'],
+  plugins: ['formatjs', 'vitest', 'appsemble'],
   settings: {
     node: {
       convertPath: {
@@ -12,6 +12,7 @@ module.exports = {
     },
   },
   rules: {
+    'appsemble/enforce-index-decorator': 'error',
     'jsdoc/require-jsdoc': 'off',
     'jsdoc/check-tag-names': [
       'error',
@@ -26,6 +27,12 @@ module.exports = {
     'unicorn/prefer-spread': 'off',
   },
   overrides: [
+    {
+      files: ['*.ts', '*.tsx'],
+      rules: {
+        'appsemble/enforce-index-decorator': 'error',
+      },
+    },
     {
       files: ['*.ts', '*.tsx'],
       plugins: ['@typescript-eslint'],

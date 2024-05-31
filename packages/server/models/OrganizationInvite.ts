@@ -33,7 +33,7 @@ export class OrganizationInvite extends Model {
   role: Role;
 
   @ForeignKey(() => User)
-  @Index({ name: 'EmailOrganizationIndex', unique: true })
+  @Index({ name: 'OrganizationInvite_UserId_OrganizationId_key', unique: true })
   @Column(DataType.UUID)
   UserId: string;
 
@@ -42,7 +42,7 @@ export class OrganizationInvite extends Model {
 
   @PrimaryKey
   @ForeignKey(() => Organization)
-  @Index({ name: 'EmailOrganizationIndex', unique: true })
+  @Index({ name: 'OrganizationInvite_UserId_OrganizationId_key', unique: true })
   @Column(DataType.STRING)
   OrganizationId: string;
 

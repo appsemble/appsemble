@@ -221,7 +221,7 @@ export async function up(transaction: Transaction, db: Sequelize): Promise<void>
       definition: { type: DataTypes.JSON, allowNull: false },
       domain: { type: DataTypes.STRING(253), allowNull: true },
       icon: { type: DataTypes.BLOB, allowNull: true },
-      path: { type: DataTypes.STRING(255), allowNull: true, unique: 'App_path_OrganizationId_key' },
+      path: { type: DataTypes.STRING(255), allowNull: true },
       coreStyle: { type: DataTypes.TEXT, allowNull: true },
       sharedStyle: { type: DataTypes.TEXT, allowNull: true },
       OrganizationId: {
@@ -229,7 +229,6 @@ export async function up(transaction: Transaction, db: Sequelize): Promise<void>
         type: DataTypes.STRING(255),
         allowNull: false,
         references: { model: 'Organization', key: 'id' },
-        unique: 'App_path_OrganizationId_key',
       },
       created: { type: DataTypes.DATE, allowNull: false },
       updated: { type: DataTypes.DATE, allowNull: false },
@@ -273,14 +272,12 @@ export async function up(transaction: Transaction, db: Sequelize): Promise<void>
         type: DataTypes.INTEGER,
         allowNull: true,
         references: { model: 'AppCollection', key: 'id' },
-        unique: 'UniqueAppCollectionAppIndex',
         onDelete: 'CASCADE',
       },
       AppId: {
         type: DataTypes.INTEGER,
         allowNull: true,
         references: { model: 'App', key: 'id' },
-        unique: 'UniqueAppCollectionAppIndex',
       },
       pinnedAt: { type: DataTypes.DATE, allowNull: true },
       created: { type: DataTypes.DATE, allowNull: false },
@@ -477,7 +474,6 @@ export async function up(transaction: Transaction, db: Sequelize): Promise<void>
         type: DataTypes.INTEGER,
         allowNull: false,
         references: { model: 'App', key: 'id' },
-        unique: 'UniqueAppMemberIndex',
       },
       created: { type: DataTypes.DATE, allowNull: false },
       updated: { type: DataTypes.DATE, allowNull: false },
@@ -487,10 +483,9 @@ export async function up(transaction: Transaction, db: Sequelize): Promise<void>
         type: DataTypes.UUID,
         allowNull: false,
         references: { model: 'User', key: 'id' },
-        unique: 'UniqueAppMemberIndex',
       },
       name: { type: DataTypes.STRING(255), allowNull: true },
-      email: { type: DataTypes.STRING(255), allowNull: true, unique: 'UniqueAppMemberEmailIndex' },
+      email: { type: DataTypes.STRING(255), allowNull: true },
       emailVerified: { type: DataTypes.BOOLEAN, allowNull: true, defaultValue: false },
       id: { type: DataTypes.UUID, allowNull: false, primaryKey: true },
       consent: { type: DataTypes.DATE, allowNull: true },
@@ -714,7 +709,6 @@ export async function up(transaction: Transaction, db: Sequelize): Promise<void>
         type: DataTypes.INTEGER,
         allowNull: false,
         references: { model: 'App', key: 'id' },
-        unique: 'UniqueAssetNameIndex',
       },
       id: { type: DataTypes.STRING(255), allowNull: false, primaryKey: true },
       ResourceId: {
@@ -724,7 +718,7 @@ export async function up(transaction: Transaction, db: Sequelize): Promise<void>
         allowNull: true,
         references: { model: 'Resource', key: 'id' },
       },
-      name: { type: DataTypes.STRING, allowNull: true, unique: 'UniqueAssetNameIndex' },
+      name: { type: DataTypes.STRING, allowNull: true },
       AppMemberId: {
         onUpdate: 'CASCADE',
         onDelete: 'CASCADE',
@@ -738,7 +732,6 @@ export async function up(transaction: Transaction, db: Sequelize): Promise<void>
         type: DataTypes.BOOLEAN,
         allowNull: false,
         defaultValue: false,
-        unique: 'UniqueAssetNameIndex',
       },
     },
     { transaction },
@@ -826,7 +819,6 @@ export async function up(transaction: Transaction, db: Sequelize): Promise<void>
         allowNull: false,
         primaryKey: true,
         references: { model: 'Organization', key: 'id' },
-        unique: 'OrganizationInvite_UserId_OrganizationId_key',
       },
       created: { type: DataTypes.DATE, allowNull: false },
       updated: { type: DataTypes.DATE, allowNull: false },
@@ -835,7 +827,6 @@ export async function up(transaction: Transaction, db: Sequelize): Promise<void>
         type: DataTypes.UUID,
         allowNull: true,
         references: { model: 'User', key: 'id' },
-        unique: 'OrganizationInvite_UserId_OrganizationId_key',
       },
       role: {
         type: DataTypes.ENUM('Member', 'Owner', 'Maintainer', 'AppEditor'),
@@ -885,8 +876,8 @@ export async function up(transaction: Transaction, db: Sequelize): Promise<void>
   await queryInterface.createTable(
     'BlockVersion',
     {
-      name: { type: DataTypes.STRING(255), allowNull: false, unique: 'blockVersionComposite' },
-      version: { type: DataTypes.STRING(255), allowNull: false, unique: 'blockVersionComposite' },
+      name: { type: DataTypes.STRING(255), allowNull: false },
+      version: { type: DataTypes.STRING(255), allowNull: false },
       layout: { type: DataTypes.STRING(255), allowNull: true },
       actions: { type: DataTypes.JSON, allowNull: true },
       parameters: { type: DataTypes.JSON, allowNull: true },
@@ -897,7 +888,6 @@ export async function up(transaction: Transaction, db: Sequelize): Promise<void>
         type: DataTypes.STRING(255),
         allowNull: false,
         references: { model: 'Organization', key: 'id' },
-        unique: 'blockVersionComposite',
       },
       description: { type: DataTypes.TEXT, allowNull: true },
       icon: { type: DataTypes.BLOB, allowNull: true },
@@ -906,7 +896,6 @@ export async function up(transaction: Transaction, db: Sequelize): Promise<void>
         type: DataTypes.UUID,
         allowNull: false,
         primaryKey: true,
-        unique: 'BlockVersion_id_key',
       },
       wildcardActions: { type: DataTypes.BOOLEAN, allowNull: false, defaultValue: false },
       visibility: { type: DataTypes.STRING(255), allowNull: false, defaultValue: 'public' },
@@ -957,6 +946,28 @@ export async function up(transaction: Transaction, db: Sequelize): Promise<void>
     },
     { transaction },
   );
+
+  const indexes = [
+    ['App', 'App_path_OrganizationId_key', ['path', 'OrganizationId']],
+    ['BlockVersion', 'blockVersionComposite', ['OrganizationId', 'name', 'version']],
+    ['AppMember', 'UniqueAppMemberEmailIndex', ['AppId', 'email']],
+    ['AppMember', 'UniqueAppMemberIndex', ['AppId', 'UserId']],
+    ['AppCollectionApp', 'UniqueAppCollectionAppIndex', ['AppCollectionId', 'AppId']],
+    [
+      'OrganizationInvite',
+      'OrganizationInvite_UserId_OrganizationId_key',
+      ['UserId', 'OrganizationId'],
+    ],
+    ['Asset', 'UniqueAssetNameIndex', ['AppId', 'name', 'ephemeral']],
+  ] satisfies [string, string, string[]][];
+  for (const [table, name, cols] of indexes) {
+    logger.info(`Creating unique index ${name} on ${table} (${cols.join(', ')})`);
+    await queryInterface.addIndex(table, cols, {
+      name,
+      unique: true,
+      transaction,
+    });
+  }
 }
 
 /*

@@ -80,7 +80,7 @@ export class App extends Model {
   @Column(DataType.STRING)
   iconBackground: string;
 
-  @Index({ name: 'UniquePathIndex', unique: true })
+  @Index({ name: 'App_path_OrganizationId_key', unique: true })
   @Column(DataType.STRING)
   path: string;
 
@@ -193,7 +193,7 @@ export class App extends Model {
 
   @AllowNull(false)
   @ForeignKey(() => Organization)
-  @Index({ name: 'UniquePathIndex', unique: true })
+  @Index({ name: 'App_path_OrganizationId_key', unique: true })
   @Column(DataType.STRING)
   OrganizationId: string;
 
