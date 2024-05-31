@@ -144,6 +144,9 @@ export async function handler(): Promise<void> {
   if (!deepEquals(fromMigrations.tables, fromModels.tables)) {
     counts.tables += logDiff('table', fromModels.tables, fromMigrations.tables);
   }
+  if (!deepEquals(fromMigrations.enums, fromModels.enums)) {
+    counts.enums += logDiff('enum', fromModels.enums, fromMigrations.enums);
+  }
   logger.info(`found ${counts.tables} table differences`);
   logger.info(`found ${counts.enums} enum differences`);
   await db.close();
