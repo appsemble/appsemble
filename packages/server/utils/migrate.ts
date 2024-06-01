@@ -24,6 +24,12 @@ async function handleMigration(
     });
   } catch (error) {
     const [meta] = await Meta.findAll();
+    if (!meta) {
+      logger.warn(
+        `Upgrade to ${migration.key} unsuccessful, not committing. Please make sure to start from an empty database.`,
+      );
+      throw error;
+    }
     logger.warn(
       `Upgrade to ${migration.key} unsuccessful, not committing. Current database version ${meta.version}.`,
     );
@@ -48,9 +54,10 @@ export async function migrate(toVersion: string, migrations: Migration[]): Promi
   let meta: Meta;
   if (metas.length === 0) {
     logger.warn('No old database meta information was found.');
-    const migrationsToApply = migrations.filter(({ key }) => semver.lte(key, to));
-    meta = await Meta.create({ version: migrationsToApply[0].key });
-    logger.info(`Migrating from ${migrationsToApply[0].key}.`);
+    const [first, ...migrationsToApply] = migrations.filter(({ key }) => semver.lte(key, to));
+    logger.info(`Upgrade to ${first.key} started`);
+    await handleMigration(db, first, 'up');
+    meta = await Meta.create({ version: first.key });
     for (const migration of migrationsToApply) {
       logger.info(`Upgrade to ${migration.key} started`);
       await handleMigration(db, migration, 'up');

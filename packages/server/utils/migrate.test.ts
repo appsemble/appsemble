@@ -36,6 +36,7 @@ it('should fail if multiple meta entries are found', async () => {
 });
 
 it('should apply all migrations to database if no meta version is present', async () => {
+  vi.spyOn(Meta, 'create');
   vi.spyOn(Meta, 'update');
   await migrate('1.0.0', migrations);
   expect(m000.up).toHaveBeenCalledWith(expect.any(Transaction), getDB());
@@ -50,7 +51,7 @@ it('should apply all migrations to database if no meta version is present', asyn
   expect(m003.down).not.toHaveBeenCalled();
   expect(m010.down).not.toHaveBeenCalled();
   expect(m100.down).not.toHaveBeenCalled();
-  expect(Meta.update).toHaveBeenCalledWith({ version: m000.key }, expect.any(Object));
+  expect(Meta.create).toHaveBeenCalledWith({ version: m000.key });
   expect(Meta.update).toHaveBeenCalledWith({ version: m001.key }, expect.any(Object));
   expect(Meta.update).toHaveBeenCalledWith({ version: m002.key }, expect.any(Object));
   expect(Meta.update).toHaveBeenCalledWith({ version: m003.key }, expect.any(Object));
@@ -205,7 +206,35 @@ describe('handleMigration', () => {
     expect(m02413.down).not.toHaveBeenCalled();
   });
 
-  it('should log warnings', async () => {
+  it('should log first migration failure instructions', async () => {
+    vi.spyOn(logger, 'warn');
+    const m02412 = {
+      key: '0.24.12',
+      up: vi.fn(() => {
+        throw new Error('test');
+      }),
+      down: vi.fn(),
+    };
+    const m02413 = { key: '0.24.13', up: vi.fn(), down: vi.fn() };
+
+    await expect(migrate('0.24.13', [m02412, m02413])).rejects.toThrow('test');
+
+    expect(m02412.up).toHaveBeenCalledWith(expect.any(Transaction), getDB());
+    expect(m02413.up).not.toHaveBeenCalled();
+    expect(m100.up).not.toHaveBeenCalled();
+    expect(m02412.down).not.toHaveBeenCalled();
+    expect(m02413.down).not.toHaveBeenCalled();
+
+    expect(logger.warn).toHaveBeenCalledWith('No old database meta information was found.');
+    expect(logger.warn).toHaveBeenCalledWith(
+      'Upgrade to 0.24.12 unsuccessful, not committing. Please make sure to start from an empty database.',
+    );
+
+    const metas = await Meta.findAll({ raw: true });
+    expect(metas).toStrictEqual([]);
+  });
+
+  it('should log migration failure instructions', async () => {
     vi.spyOn(logger, 'warn');
     const m02412 = { key: '0.24.12', up: vi.fn(), down: vi.fn() };
     const m02413 = {
@@ -234,5 +263,8 @@ and the logs above do not contain warnings to resolve the below error manually,
 consider contacting \`support@appsemble.com\` to report the migration issue,
 and include the stacktrace.`,
     );
+
+    const metas = await Meta.findAll({ raw: true });
+    expect(metas).toStrictEqual([{ version: '0.24.12' }]);
   });
 });
