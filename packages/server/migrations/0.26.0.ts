@@ -56,7 +56,8 @@ as that will only log some users out.`);
     'OAuthAuthorization',
     'accessToken',
     {
-      type: DataTypes.STRING,
+      type: DataTypes.TEXT,
+      allowNull: false,
     },
     { transaction },
   );

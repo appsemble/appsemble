@@ -28,5 +28,10 @@ export async function down(transaction: Transaction, db: Sequelize): Promise<voi
   const queryInterface = db.getQueryInterface();
 
   logger.info('Changing the data column of the `Resource` table');
-  await queryInterface.changeColumn('Resource', 'data', { type: DataTypes.JSON }, { transaction });
+  await queryInterface.changeColumn(
+    'Resource',
+    'data',
+    { type: DataTypes.JSON, allowNull: false },
+    { transaction },
+  );
 }

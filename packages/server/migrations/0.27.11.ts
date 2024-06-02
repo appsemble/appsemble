@@ -78,22 +78,25 @@ export async function down(transaction: Transaction, db: Sequelize): Promise<voi
       field: 'AppOAuth2SecretId',
       foreignKeyName: 'AppOAuth2Authorization_AppOAuth2SecretId_fkey',
       referencedTableName: 'AppOAuth2Secret',
+      onDelete: 'no action',
     },
     {
       tableName: 'AppSamlAuthorization',
       field: 'AppSamlSecretId',
       foreignKeyName: 'AppSamlAuthorization_AppSamlSecretId_fkey',
       referencedTableName: 'AppSamlSecret',
+      onDelete: 'cascade',
     },
     {
       tableName: 'SamlLoginRequest',
       field: 'AppSamlSecretId',
       foreignKeyName: 'SamlLoginRequest_AppSamlSecretId_fkey',
       referencedTableName: 'AppSamlSecret',
+      onDelete: 'cascade',
     },
   ];
 
-  for (const { field, foreignKeyName, referencedTableName, tableName } of tables) {
+  for (const { field, foreignKeyName, onDelete, referencedTableName, tableName } of tables) {
     logger.info(
       `Removing foreign key constraint \`${foreignKeyName}\` from table \`${tableName}\``,
     );
@@ -107,7 +110,7 @@ export async function down(transaction: Transaction, db: Sequelize): Promise<voi
       type: 'foreign key',
       name: foreignKeyName,
       onUpdate: 'cascade',
-      onDelete: 'set null',
+      onDelete,
       references: {
         table: referencedTableName,
         field: 'id',

@@ -406,17 +406,18 @@ difficultyLevel manually.`);
  * - Changing type of AppSamlSecret.name to TEXT
  * - Adding column AppScreenshot.name
  * - Making BlockVersion.examples nullable and DEFAULT to null
- * - Renaming enum_OrganizationMember_role to enum_Member_role
- * - Removing AccountManager from enum_Member_role
+ * - Removing AccountManager from enum_OrganizationMember_role
  * - Removing Translator, APIReader, APIUser, AccountManager from enum_OrganizationInvite_role
  * - Making SamlLoginRequest.timezone nullable
- * - Changing TeamInvite.role default value to null and to string
+ * - Changing TeamInvite.role to string
+ * - Removing type enum enum_TeamInvite_role
  * - Changing TeamMember.role default value to null
  * - Removing primary key from TeamMember
  * - Making AppMember.scimActive nullable and default to true
  * - Making ResourceVersion.AppMemberId non-nullable
  * - Making Training.competences nullable
  * - Making Training.difficultyLevel nullable
+ * - Renaming enum_App_locked to enum_App_locked-temp
  * - Setting AppServiceSecret.AppId constraints to ON UPDATE NO ACTION ON DELETE NO ACTION
  * - Setting AppBlockStyle.AppId constraints to ON UPDATE CASCADE ON DELETE NO ACTION
  * - Setting AppCollection.OrganizationId constraints to ON UPDATE NO ACTION ON DELETE NO ACTION
@@ -556,9 +557,6 @@ export async function down(transaction: Transaction, db: Sequelize): Promise<voi
     {
       type: DataTypes.STRING,
       allowNull: true,
-      defaultValue: null,
-      comment: null,
-      primaryKey: false,
     },
     { transaction },
   );
@@ -573,24 +571,13 @@ export async function down(transaction: Transaction, db: Sequelize): Promise<voi
     },
     { transaction },
   );
-  logger.info('Renaming enum_OrganizationMember_role to enum_Member_role');
-  await queryInterface.sequelize.query(
-    `
-    DO $$ BEGIN
-      IF EXISTS (SELECT 1 FROM pg_type WHERE typname = 'enum_OrganizationMember_role') THEN
-        ALTER TYPE "enum_OrganizationMember_role" RENAME TO "enum_Member_role";
-      END IF;
-    END $$;
-  `,
-    { transaction },
-  );
-  logger.info('Removing AccountManager from enum_Member_role');
+  logger.info('Removing AccountManager from enum_OrganizationMember_role');
   await queryInterface.sequelize.query(
     `
     DELETE FROM pg_enum WHERE enumlabel = 'AccountManager' AND enumtypid = (
-      SELECT oid FROM pg_type WHERE typname = 'enum_Member_role'
+      SELECT oid FROM pg_type WHERE typname = 'enum_OrganizationMember_role'
     );
-  `,
+    `,
     { transaction },
   );
   logger.info(
@@ -623,17 +610,18 @@ export async function down(transaction: Transaction, db: Sequelize): Promise<voi
     },
     { transaction },
   );
-  logger.info('Changing TeamInvite.role default value to null and to string');
+  logger.info('Changing TeamInvite.role to string');
   await queryInterface.changeColumn(
     'TeamInvite',
     'role',
     {
       type: DataTypes.STRING,
-      allowNull: true,
-      defaultValue: null,
+      allowNull: false,
     },
     { transaction },
   );
+  logger.info('Removing type enum enum_TeamInvite_role');
+  await queryInterface.sequelize.query('DROP TYPE "enum_TeamInvite_role";', { transaction });
   logger.info('Changing TeamMember.role default value to null');
   await queryInterface.sequelize.query(
     `
@@ -691,6 +679,19 @@ and removing them manually.`);
       type: DataTypes.INTEGER,
       allowNull: true,
     },
+    { transaction },
+  );
+  logger.info('Renaming enum_App_locked to enum_App_locked-temp');
+  await queryInterface.sequelize.query(
+    `
+    DO $$ BEGIN
+      IF EXISTS (SELECT 1 FROM pg_type WHERE typname = 'enum_App_locked') THEN
+        IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'enum_App_locked-temp') THEN
+          ALTER TYPE "enum_App_locked" RENAME TO "enum_App_locked-temp";
+        END IF;
+      END IF;
+    END $$;
+  `,
     { transaction },
   );
   logger.warn('Making EmailAuthorization.UserId non-nullable');

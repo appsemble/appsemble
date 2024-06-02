@@ -9,6 +9,7 @@ export { handler as migrate } from './commands/migrate.js';
 export { handler as cleanupResourcesAndAssets } from './commands/cleanupResourcesAndAssets.js';
 export { handler as cleanupDemoUsers } from './commands/cleanupDemoUsers.js';
 export { handler as checkMigrations } from './commands/checkMigrations.js';
+export { handler as checkDownMigrations } from './commands/checkDownMigrations.js';
 export { handler as runCronJobs } from './commands/runCronJobs.js';
 export { handler as fuzzMigrations } from './commands/fuzzMigrations.js';
 

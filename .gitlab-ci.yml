@@ -173,6 +173,7 @@ validate:
   script:
     - npm run scripts -- validate
 
+# Check migrations are in sync with Sequelize models
 check migrations:
   extends: .npm
   interruptible: true
@@ -186,6 +187,21 @@ check migrations:
   script:
     - npm run appsemble -- check-migrations
 
+# Check down migrations
+check down migrations:
+  extends: .npm
+  interruptible: true
+  services:
+    - postgres:15
+  variables:
+    POSTGRES_DB: testAppsemble
+    POSTGRES_USER: admin
+    POSTGRES_PASSWORD: password
+    DATABASE_URL: 'postgres://admin:password@postgres:5432/testAppsemble'
+  script:
+    - npm run appsemble -- check-down-migrations
+
+# Fuzz test migrations for anomalous up and down migration failures
 fuzz migrations:
   extends: .npm
   interruptible: true

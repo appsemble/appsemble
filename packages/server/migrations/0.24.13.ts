@@ -48,6 +48,7 @@ export async function up(transaction: Transaction, db: Sequelize): Promise<void>
 
 /**
  * - Change data type of the column App.locked to boolean.
+ * - Remove enum enum_App_locked-temp
  */
 
 export async function down(transaction: Transaction, db: Sequelize): Promise<void> {
@@ -59,7 +60,7 @@ export async function down(transaction: Transaction, db: Sequelize): Promise<voi
     'locked-temp',
     {
       type: DataTypes.BOOLEAN,
-      defaultValue: false,
+      allowNull: true,
     },
     { transaction },
   );
@@ -84,4 +85,6 @@ export async function down(transaction: Transaction, db: Sequelize): Promise<voi
   await queryInterface.removeColumn('App', 'locked', { transaction });
   logger.info('Renaming column locked-temp to locked in table App');
   await queryInterface.renameColumn('App', 'locked-temp', 'locked', { transaction });
+  logger.info('Removing type enum enum_App_locked-temp');
+  await queryInterface.sequelize.query('DROP TYPE "enum_App_locked-temp";', { transaction });
 }
