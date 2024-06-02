@@ -939,13 +939,6 @@ export async function up(transaction: Transaction, db: Sequelize): Promise<void>
     },
     { transaction },
   );
-  await queryInterface.createTable(
-    'Meta',
-    {
-      version: { type: DataTypes.STRING(11), allowNull: false, primaryKey: true },
-    },
-    { transaction },
-  );
 
   const indexes = [
     ['App', 'App_path_OrganizationId_key', ['path', 'OrganizationId']],
