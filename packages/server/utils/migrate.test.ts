@@ -164,7 +164,6 @@ describe('handleMigration', () => {
     expect((await getDB().query('SELECT * FROM "Test";'))[0]).toStrictEqual([]);
     expect(m02412.up).toHaveBeenCalledWith(expect.any(Transaction), getDB());
     expect(m02413.up).toHaveBeenCalledWith(expect.any(Transaction), getDB());
-    expect(m100.up).not.toHaveBeenCalled();
     expect(m02412.down).not.toHaveBeenCalled();
     expect(m02413.down).not.toHaveBeenCalled();
 
@@ -201,7 +200,6 @@ describe('handleMigration', () => {
 
     expect(m02412.up).toHaveBeenCalledWith(expect.any(Transaction), getDB());
     expect(m02413.up).toHaveBeenCalledWith(expect.any(Transaction), getDB());
-    expect(m100.up).not.toHaveBeenCalled();
     expect(m02412.down).not.toHaveBeenCalled();
     expect(m02413.down).not.toHaveBeenCalled();
   });
@@ -221,7 +219,6 @@ describe('handleMigration', () => {
 
     expect(m02412.up).toHaveBeenCalledWith(expect.any(Transaction), getDB());
     expect(m02413.up).not.toHaveBeenCalled();
-    expect(m100.up).not.toHaveBeenCalled();
     expect(m02412.down).not.toHaveBeenCalled();
     expect(m02413.down).not.toHaveBeenCalled();
 
@@ -234,7 +231,7 @@ describe('handleMigration', () => {
     expect(metas).toStrictEqual([]);
   });
 
-  it('should log migration failure instructions', async () => {
+  it('should log upgrade migration failure instructions', async () => {
     vi.spyOn(logger, 'warn');
     const m02412 = { key: '0.24.12', up: vi.fn(), down: vi.fn() };
     const m02413 = {
@@ -249,7 +246,6 @@ describe('handleMigration', () => {
 
     expect(m02412.up).toHaveBeenCalledWith(expect.any(Transaction), getDB());
     expect(m02413.up).toHaveBeenCalledWith(expect.any(Transaction), getDB());
-    expect(m100.up).not.toHaveBeenCalled();
     expect(m02412.down).not.toHaveBeenCalled();
     expect(m02413.down).not.toHaveBeenCalled();
 
@@ -266,5 +262,38 @@ and include the stacktrace.`,
 
     const metas = await Meta.findAll({ raw: true });
     expect(metas).toStrictEqual([{ version: '0.24.12' }]);
+  });
+
+  it('should log downgrade migration failure instructions', async () => {
+    await Meta.create({ version: '0.24.13' });
+    vi.spyOn(logger, 'warn');
+    const m02412 = { key: '0.24.12', up: vi.fn(), down: vi.fn() };
+    const m02413 = {
+      key: '0.24.13',
+      up: vi.fn(),
+      down: vi.fn(() => {
+        throw new Error('test');
+      }),
+    };
+
+    await expect(migrate('0.24.12', [m02412, m02413])).rejects.toThrow('test');
+
+    expect(m02412.up).not.toHaveBeenCalled();
+    expect(m02413.up).not.toHaveBeenCalled();
+    expect(m02412.down).not.toHaveBeenCalled();
+    expect(m02413.down).toHaveBeenCalledWith(expect.any(Transaction), getDB());
+
+    expect(logger.warn).toHaveBeenCalledWith(
+      'Downgrade from 0.24.13 unsuccessful, not committing. Current database version 0.24.13.',
+    );
+    expect(logger.warn).toHaveBeenCalledWith(
+      `In case this occurred on a hosted Appsemble instance,
+and the logs above do not contain warnings to resolve the below error manually,
+consider contacting \`support@appsemble.com\` to report the migration issue,
+and include the stacktrace.`,
+    );
+
+    const metas = await Meta.findAll({ raw: true });
+    expect(metas).toStrictEqual([{ version: '0.24.13' }]);
   });
 });

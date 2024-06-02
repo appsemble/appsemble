@@ -24,14 +24,15 @@ async function handleMigration(
     });
   } catch (error) {
     const [meta] = await Meta.findAll();
+    const prefix = type === 'up' ? 'Upgrade to' : 'Downgrade from';
     if (!meta) {
       logger.warn(
-        `Upgrade to ${migration.key} unsuccessful, not committing. Please make sure to start from an empty database.`,
+        `${prefix} ${migration.key} unsuccessful, not committing. Please make sure to start from an empty database.`,
       );
       throw error;
     }
     logger.warn(
-      `Upgrade to ${migration.key} unsuccessful, not committing. Current database version ${meta.version}.`,
+      `${prefix} ${migration.key} unsuccessful, not committing. Current database version ${meta.version}.`,
     );
     logger.warn(
       `In case this occurred on a hosted Appsemble instance,
