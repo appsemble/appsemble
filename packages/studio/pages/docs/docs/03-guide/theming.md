@@ -54,9 +54,9 @@ The tile layer used on components that display a map (such as `map` and `form`) 
 using the `tileLayer` property by specifying a URL template.
 
 The `font` property can be used to specify which font family to use. Any font family from [Google
-Fonts][] may be used. Additionally any custom font can be used by specifying the source to be
-`custom` and uploading the font file(s) as asset(s), then applying it in the App’s CSS using the
-[`@font-face`][font-face] at-rule.
+Fonts][] may be used. Additionally any custom font can be used by specifying the source to be `custom`
+and uploading the font file(s) as asset(s), then applying it in the App’s CSS using the [`@font-face`][font-face]
+at-rule.
 
 ### Example
 
