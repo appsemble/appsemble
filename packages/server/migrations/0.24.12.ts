@@ -954,7 +954,6 @@ export async function up(transaction: Transaction, db: Sequelize): Promise<void>
     ['Asset', 'UniqueAssetNameIndex', ['AppId', 'name', 'ephemeral']],
   ] satisfies [string, string, string[]][];
   for (const [table, name, cols] of indexes) {
-    logger.info(`Creating unique index ${name} on ${table} (${cols.join(', ')})`);
     await queryInterface.addIndex(table, cols, {
       name,
       unique: true,
