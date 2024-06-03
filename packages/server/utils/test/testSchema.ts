@@ -4,6 +4,32 @@ import { Sequelize } from 'sequelize';
 
 import { initDB, type InitDBParams } from '../../models/index.js';
 
+export async function setupTestDatabase(
+  name: string,
+  options: InitDBParams = {},
+): Promise<[db: Sequelize, dbName: string, rootDB: Sequelize]> {
+  const connection =
+    process.env.DATABASE_URL || 'postgres://admin:password@localhost:54321/appsemble';
+  const rootDB = new Sequelize(connection, {
+    logging: false,
+    retry: { max: 3 },
+  });
+
+  const dbName = rootDB
+    .escape(`${name}_${new Date().toISOString()}`)
+    .replaceAll("'", '')
+    .replaceAll(/\W+/g, '_')
+    .slice(0, 63)
+    .toLowerCase();
+
+  await rootDB.query(`CREATE DATABASE ${dbName}`);
+  const db = initDB({
+    ...options,
+    uri: `${connection.replace(/\/\w+$/, '')}/${dbName}`,
+  });
+  return [db, dbName, rootDB];
+}
+
 function createTestDatabase(
   meta: ImportMeta,
   beforeAll: typeof import('vitest').beforeAll,
@@ -16,25 +42,7 @@ function createTestDatabase(
   let db: Sequelize;
 
   beforeAll(async () => {
-    const database =
-      process.env.DATABASE_URL || 'postgres://admin:password@localhost:54321/appsemble';
-    rootDB = new Sequelize(database, {
-      logging: false,
-      retry: { max: 3 },
-    });
-
-    dbName = rootDB
-      .escape(`appsemble_${parse(meta.url).name}_${new Date().toISOString()}`)
-      .replaceAll("'", '')
-      .replaceAll(/\W+/g, '_')
-      .slice(0, 63)
-      .toLowerCase();
-
-    await rootDB.query(`CREATE DATABASE ${dbName}`);
-    db = initDB({
-      ...options,
-      uri: `${database.replace(/\/\w+$/, '')}/${dbName}`,
-    });
+    [db, dbName, rootDB] = await setupTestDatabase(`appsemble_${parse(meta.url).name}`, options);
     await db.sync();
   });
 

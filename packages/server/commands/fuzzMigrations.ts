@@ -1,12 +1,12 @@
 import { logger } from '@appsemble/node-utils';
-import { Sequelize } from 'sequelize';
+import { type Sequelize } from 'sequelize';
 import { type Argv } from 'yargs';
 
 import { databaseBuilder } from './builder/database.js';
 import { migrations } from '../migrations/index.js';
-import { initDB } from '../models/index.js';
 import { migrate } from '../utils/migrate.js';
 import { handleDBError } from '../utils/sqlUtils.js';
+import { setupTestDatabase } from '../utils/test/testSchema.js';
 
 export const command = 'fuzz-migrations';
 export const description = 'Fuzz migrations to find inconcistencies';
@@ -19,24 +19,7 @@ export async function handler(): Promise<void> {
   let db: Sequelize;
 
   try {
-    const database =
-      process.env.DATABASE_URL || 'postgres://admin:password@localhost:54321/appsemble';
-    const rootDB = new Sequelize(database, {
-      logging: false,
-      retry: { max: 3 },
-    });
-
-    const dbName = rootDB
-      .escape(`appsemble_fuzz_migrations_${new Date().toISOString()}`)
-      .replaceAll("'", '')
-      .replaceAll(/\W+/g, '_')
-      .slice(0, 63)
-      .toLowerCase();
-
-    await rootDB.query(`CREATE DATABASE ${dbName}`);
-    db = initDB({
-      uri: `${database.replace(/\/\w+$/, '')}/${dbName}`,
-    });
+    [db] = await setupTestDatabase('appsemble_fuzz_migrations');
   } catch (error: unknown) {
     handleDBError(error as Error);
   }
