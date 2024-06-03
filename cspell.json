@@ -184,6 +184,7 @@
     "cobertura",
     "Pinnable",
     "nosniff",
-    "typname"
+    "typname",
+    "psql"
   ]
 }

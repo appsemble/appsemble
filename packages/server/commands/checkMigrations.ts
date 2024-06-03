@@ -19,9 +19,10 @@ export function builder(yargs: Argv): Argv {
 
 export async function handler(): Promise<void> {
   let db: Sequelize;
+  let dbName: string;
 
   try {
-    [db] = await setupTestDatabase('appsemble_check_migrations');
+    [db, dbName] = await setupTestDatabase('appsemble_check_migrations');
   } catch (error: unknown) {
     handleDBError(error as Error);
   }
@@ -37,6 +38,9 @@ export async function handler(): Promise<void> {
   await db.close();
   if (counts.tables + counts.enums > 0) {
     logger.error('Models and migrations are out of sync');
+    logger.info(`Use the following command to connect to the test database for further debugging:
+
+psql postgres://admin:password@localhost:54321/${dbName}`);
     process.exit(1);
   }
   process.exit();

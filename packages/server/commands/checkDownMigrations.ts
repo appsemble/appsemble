@@ -19,9 +19,10 @@ export function builder(yargs: Argv): Argv {
 
 export async function handler(): Promise<void> {
   let db: Sequelize;
+  let dbName: string;
 
   try {
-    [db] = await setupTestDatabase('appsemble_check_down_migrations');
+    [db, dbName] = await setupTestDatabase('appsemble_check_down_migrations');
   } catch (error: unknown) {
     handleDBError(error as Error);
   }
@@ -50,6 +51,9 @@ export async function handler(): Promise<void> {
       logger.error(
         `Down migration ${migration.key} out of sync with migrate up of ${migrations[index - 1].key}`,
       );
+      logger.info(`Use the following command to connect to the test database for further debugging:
+
+  psql postgres://admin:password@localhost:54321/${dbName}`);
       process.exit(1);
     }
   }

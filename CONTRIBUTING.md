@@ -116,8 +116,30 @@ npm run appsemble -- check-migrations
 The command will exit with a non-zero exit code if there are any issues. If there are issues, check
 your models and migrations and make sure they are correct.
 
-> **Note**: This command requires a local test database to be running, for example via
+Similar to the `check-migrations` command there's also the `check-down-migrations` command stored in
+`./packages/server/commands/checkDownMigrations.ts`, which ensures the down migration matches with
+the previous up migration. The command compares every down migration in chronological order. To run
+it locally, run the following command:
+
+```sh
+npm run appsemble -- check-down-migrations
+```
+
+The command will exit with a non-zero exit code per down migration mismatch. If there are issues,
+check the down migration that's highlighted in green, and compare it with any migrations before or
+equal to the up migration in red.
+
+> **Note**: These commands require a local test database to be running, for example via
 > docker-compose. See [the README](./README.md#getting-started) for more information.
+
+> If there is ever the need to start using the postgres
+> [`CHECK-`](https://www.postgresql.org/docs/current/ddl-constraints.html#DDL-CONSTRAINTS-CHECK-CONSTRAINTS)
+> or
+> [`EXCLUSION`](https://www.postgresql.org/docs/current/ddl-constraints.html#DDL-CONSTRAINTS-EXCLUSION)
+> constraints these commands will not properly catch inconsistencies, because
+> [`table checks`](https://kristiandupont.github.io/extract-pg-schema/api/extract-pg-schema.tablecheck.html)
+> are not converted from an array to an object to avoid ordering collisions. EXCLUSION constraints
+> have not been tested before.
 
 ### Permissions
 
@@ -241,13 +263,19 @@ The hosts file can be found in the following location:
 Writing Appsemble migrations must be done with great care, to avoid database corruption in
 production and for self-hosted Appsemble instances.
 
+The migrations under `packages/server/migrations` are the source of truth. We do however use
+`Meta.sync()` in [migrate.ts](packages/server/utils/migrate.ts) to create the `Meta` table, which
+tracks the migration version.
+
+#### Rules
+
 1. Migrations MUST have tested `up` and `down` migrations. You must be able to rollback (to version
    0.24.12) and migrate to the latest without failure, use the following command
    `npm run appsemble fuzz-migrations` for that.
 
 2. Migrations MUST NOT\* contain any conditions, especially ones depending on database values or
-   external factors. _The only time this is allowed is when there is no other way around it, and all
-   core-developers
+   external factors. _The only time this is allowed is when there is no other way around it, and at
+   least 3 other core-developers
    ([Appsemble maintainers on GitLab](https://gitlab.com/groups/appsemble/-/group_members?sort=access_level_desc))
    that work during that week agree with the change._
 
@@ -255,12 +283,24 @@ production and for self-hosted Appsemble instances.
    warning must explain the expected problem(s), and what actions to take to manually clean the
    database appropriately for the migration to succeed.
 
-4. Adding unique constraints (or primary keys) should only be done on new tables.
+4. Adding unique rules to columns in a table MUST be done using indexes, NOT constraints. Appsemble
+   has a custom eslint rule defined in
+   [enforce-index-decorator.cjs](packages/eslint-plugin-appsemble/enforce-index-decorator.cjs) to
+   remind you of the correct decorator to use in the models. See why this is done here
+   [appsemble-eslint-plugin](packages/appsemble-eslint-plugin/README.md). This also means you MUST
+   never use `queryInterface.createConstraint` for unique columns, but instead use
+   `queryInterface.createIndex`.
 
-5. All queries must be part of the transaction, by passing `{ transaction }` as option.
+5. Adding unique indexes (or primary keys) should only be done on new tables.
+
+6. Carefully consider whether a column should be nullable to avoid having to clean the database when
+   changing the column to non-nullable without a default value.
+
+7. All queries must be part of the transaction, by passing `{ transaction }` as option.
 
 > Note: since all migrations are wrapped in transactions, this does NOT mean it's okay to ignore
-> these rules. When a migration fails the following is logged:
+> these rules, because others may self-host Appsemble. When a migration fails the following is
+> logged:
 >
 > ```
 > [warn]: Upgrade to 0.29.0 unsuccessful, not committing. Current database version 0.28.0.
@@ -282,7 +322,7 @@ Migrating down to the first migration.
 npm run appsemble migrate -- --migrate-to 0.24.12
 ```
 
-Check current migration version.
+<!-- Check current migration version.
 
 ```sh
 psql postgres://admin:password@localhost:5432/appsemble -c 'SELECT "version" FROM "Meta";'
@@ -294,7 +334,7 @@ Whenever you want to checkout the database after running `npm run appsemble chec
 
 ```sh
 psql postgres://admin:password@localhost:54321/postgres -c '\l'
-```
+``` -->
 
 ## Releasing
 

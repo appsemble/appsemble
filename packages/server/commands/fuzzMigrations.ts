@@ -17,9 +17,10 @@ export function builder(yargs: Argv): Argv {
 
 export async function handler(): Promise<void> {
   let db: Sequelize;
+  let dbName: string;
 
   try {
-    [db] = await setupTestDatabase('appsemble_fuzz_migrations');
+    [db, dbName] = await setupTestDatabase('appsemble_fuzz_migrations');
   } catch (error: unknown) {
     handleDBError(error as Error);
   }
@@ -27,9 +28,16 @@ export async function handler(): Promise<void> {
   logger.info('dropping database');
   await db.getQueryInterface().dropAllTables();
 
-  for (let index = 0; index < 5; index += 1) {
-    await migrate(migrations[0].key, migrations);
-    await migrate('next', migrations);
+  try {
+    for (let index = 0; index < 5; index += 1) {
+      await migrate(migrations[0].key, migrations);
+      await migrate('next', migrations);
+    }
+  } catch (error) {
+    logger.info(`Use the following command to connect to the test database for further debugging:
+
+psql postgres://admin:password@localhost:54321/${dbName}`);
+    throw error;
   }
 
   await db.close();
