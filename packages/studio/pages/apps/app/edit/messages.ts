@@ -82,32 +82,4 @@ export const messages = defineMessages({
     id: 'studio.97zyiz',
     defaultMessage: 'Open preview',
   },
-  deleteSharedStyles: {
-    id: 'studio.ezZJd7',
-    defaultMessage: 'Delete Shared Styles',
-  },
-  deleteCoreStyles: {
-    id: 'studio.TGJ8LO',
-    defaultMessage: 'Delete Core Styles',
-  },
-  deleteSharedConfirmation: {
-    id: 'studio.P85DLR',
-    defaultMessage: 'Are you sure you want to delete shared styles?',
-  },
-  deleteConfirm: {
-    id: 'studio.K3r6DQ',
-    defaultMessage: 'Delete',
-  },
-  deleteSuccess: {
-    id: 'studio.5pLbA5',
-    defaultMessage: 'Successfully deleted',
-  },
-  deleteError: {
-    id: 'studio.p5oCtI',
-    defaultMessage: 'Something went wrong trying to delete styles',
-  },
-  deleteCoreConfirmation: {
-    id: 'studio.7tKB9T',
-    defaultMessage: 'Are you sure you want to delete core styles?',
-  },
 });

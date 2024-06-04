@@ -411,26 +411,6 @@ export default function EditPage(): ReactNode {
                   </Button>
                 </div>
               )}
-              <div className="navbar-item px-0">
-                <Button
-                  className="is-fullwidth mr-2 mb-1 is-danger"
-                  disabled={!sharedStyle || app.locked !== 'unlocked'}
-                  icon="trash-alt"
-                  onClick={deleteSharedStyles}
-                >
-                  <FormattedMessage {...messages.sharedStyle} />
-                </Button>
-              </div>
-              <div className="navbar-item px-0">
-                <Button
-                  className="is-fullwidth mr-2 mb-1 is-danger"
-                  disabled={!coreStyle || app.locked !== 'unlocked'}
-                  icon="trash-alt"
-                  onClick={deleteCoreStyles}
-                >
-                  <FormattedMessage {...messages.coreStyle} />
-                </Button>
-              </div>
             </div>
           </div>
         </nav>
