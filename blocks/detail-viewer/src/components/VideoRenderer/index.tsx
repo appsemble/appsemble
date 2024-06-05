@@ -41,31 +41,31 @@ export function VideoRenderer({
   return (
     <div className={styles.wrapper}>
       {isPreactChild(label) ? <h1 className="label">{label}</h1> : null}
-      {value ? (
-        thumbnailLink ? (
-          <ImageField field={{ rounded: true } as FileField} source={thumbnailUrl} />
-        ) : null
-      ) : platform ? (
-        <iframe
-          allowFullScreen
-          height={height}
-          sandbox={sandboxConfig}
-          src={url}
-          title="video"
-          width={width}
-        />
-      ) : (
-        <video
-          controls
-          height={height}
-          id="interactive"
-          poster={thumbnailUrl}
-          src={url}
-          width={width}
-        >
-          <track class="viewport" kind="captions" label="English" src="captions.vtt" />
-        </video>
-      )}
+      {videoLink ? (
+        platform ? (
+          <iframe
+            allowFullScreen
+            height={height}
+            sandbox={sandboxConfig}
+            src={url}
+            title="video"
+            width={width}
+          />
+        ) : (
+          <video
+            controls
+            height={height}
+            id="interactive"
+            poster={thumbnailUrl}
+            src={url}
+            width={width}
+          >
+            <track class="viewport" kind="captions" label="English" src="captions.vtt" />
+          </video>
+        )
+      ) : thumbnailLink ? (
+        <ImageField field={{} as FileField} source={thumbnailUrl} />
+      ) : null}
     </div>
   );
 }
