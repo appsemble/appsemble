@@ -15,6 +15,11 @@ export function validateFile(field: FileField, value: File | File[]): FileRequir
       return true;
     }
 
+    // Allows existing asset id values
+    if (typeof value === 'string') {
+      return false;
+    }
+
     if (
       'maxLength' in requirement &&
       field.repeated &&

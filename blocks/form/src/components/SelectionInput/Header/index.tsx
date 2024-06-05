@@ -8,11 +8,11 @@ import { type SelectionChoice } from '../../../../block.js';
 import { Image } from '../Image/index.js';
 
 interface HeaderProps {
-  readonly index: number;
+  readonly id: number | string;
   readonly option: SelectionChoice;
 }
 
-export function Header({ index, option }: HeaderProps): VNode {
+export function Header({ id, option }: HeaderProps): VNode {
   const {
     utils: { remap },
   } = useBlock();
@@ -33,7 +33,7 @@ export function Header({ index, option }: HeaderProps): VNode {
       <div className={`is-flex ${styles.image}`}>
         <div>
           {image && image.alignment === 'header' ? (
-            <Image image={image} index={index} option={option} />
+            <Image id={id} image={image} option={option} />
           ) : null}
         </div>
         <div className={`${styles.item} has-text-left is-block`}>{headerHTML}</div>

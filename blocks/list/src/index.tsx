@@ -9,7 +9,7 @@ import styles from './index.module.css';
 import { type Item } from '../block.js';
 
 export const renderItems = (items: Item[], spaced?: boolean): VNode => (
-  <ul className={spaced ? 'py-4 px-5' : ''}>
+  <ul className={spaced ? 'py-4 px-5' : 'pb-4'}>
     {items.map((item, index) => (
       <li key={item.id ?? index}>
         <ListItem index={index} item={item} />

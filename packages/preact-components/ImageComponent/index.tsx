@@ -18,9 +18,9 @@ interface ImageComponentProps {
   readonly rounded?: boolean;
 
   /**
-   * The index of the image.
+   * The id of the image.
    */
-  readonly index: number;
+  readonly id: number | string;
 
   /**
    * The src of the image to display.
@@ -33,17 +33,11 @@ interface ImageComponentProps {
   readonly alt: string;
 }
 
-export function ImageComponent({
-  alt,
-  index,
-  rounded,
-  size = 48,
-  src,
-}: ImageComponentProps): VNode {
+export function ImageComponent({ alt, id, rounded, size = 48, src }: ImageComponentProps): VNode {
   const modal = useToggle();
 
   return (
-    <Fragment key={index}>
+    <Fragment key={id}>
       {src ? (
         <>
           <button

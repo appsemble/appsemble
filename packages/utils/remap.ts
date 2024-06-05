@@ -434,6 +434,16 @@ const mapperImplementations: MapperImplementations = {
     return Array.isArray(input) ? input.filter((value, i) => !indices.has(i)) : [];
   },
 
+  'array.flatten'(mapper, input, context) {
+    if (!Array.isArray(input)) {
+      return input;
+    }
+
+    const depth = remap(mapper, input, context) as number;
+
+    return (input as unknown[]).flat(depth || Number.POSITIVE_INFINITY);
+  },
+
   static: (input) => input,
 
   prop(prop, obj, context) {
@@ -594,7 +604,8 @@ const mapperImplementations: MapperImplementations = {
 
   'string.format'({ messageId, template, values }, input, context) {
     try {
-      const message = context.getMessage({ id: messageId, defaultMessage: template });
+      const remappedMessageId = remap(messageId, input, context) as string;
+      const message = context.getMessage({ id: remappedMessageId, defaultMessage: template });
       return message.format(
         values ? mapValues(values, (val) => remap(val, input, context)) : undefined,
       );
