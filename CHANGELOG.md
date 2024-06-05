@@ -2,6 +2,25 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.29.0](https://gitlab.com/appsemble/appsemble/-/releases/0.29.0)] - 2024-06-05
+
+### Changed
+
+- Server: Migration 0.29.0 has a significant chance to fail due too a large amount of new
+  constraints. The migration however will now be rolled back in case of a failure and log the
+  appriopriate actions to take to clean the database.
+
+### Removed
+
+- Server: Removed migration versions `0.9.0` - `0.24.1`.
+
+### Fixed
+
+- Server: Loading empty SCIM secrets resulted in an error on the secrets page not allowing to
+  generate a new SCIM secret.
+- Server: SCIM errors were unhandled causing internal server errors since the error handling
+  middleware was removed in version 0.22.0.
+
 ## \[[0.28.13](https://gitlab.com/appsemble/appsemble/-/releases/0.28.13)] - 2024-06-05
 
 ### Fixed
