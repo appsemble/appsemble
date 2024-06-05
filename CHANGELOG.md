@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.28.13](https://gitlab.com/appsemble/appsemble/-/releases/0.28.13)] - 2024-06-05
+
+### Fixed
+
+- Block(`detail-viewer`): Fix the styling and the logic of displaying the video thumbnail.
+
 ## \[[0.28.12](https://gitlab.com/appsemble/appsemble/-/releases/0.28.12)] - 2024-06-05
 
 ### Added
