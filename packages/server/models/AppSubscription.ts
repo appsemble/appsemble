@@ -34,6 +34,7 @@ export class AppSubscription extends Model {
   @Column(DataType.STRING)
   auth: string;
 
+  @AllowNull(false)
   @ForeignKey(() => App)
   @Column(DataType.INTEGER)
   AppId: number;
@@ -51,7 +52,7 @@ export class AppSubscription extends Model {
   @UpdatedAt
   updated: Date;
 
-  @BelongsTo(() => User)
+  @BelongsTo(() => User, { onDelete: 'SET NULL' })
   User: Awaited<User>;
 
   @HasMany(() => ResourceSubscription, { onDelete: 'CASCADE' })

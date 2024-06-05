@@ -20,7 +20,11 @@ export async function getAppScimSecret(ctx: Context): Promise<void> {
 
   let decryptedToken;
   if (app.scimToken) {
-    decryptedToken = decrypt(app.scimToken, argv.aesSecret);
+    try {
+      decryptedToken = decrypt(app.scimToken, argv.aesSecret);
+    } catch {
+      // Do nothing
+    }
   }
 
   ctx.body = {

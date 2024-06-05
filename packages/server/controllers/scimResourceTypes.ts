@@ -30,7 +30,7 @@ export function getSCIMResourceType(ctx: Context): void {
     pathParams: { appId, resourceTypeId },
   } = ctx;
 
-  scimAssert(resourceTypeId === 'User', 404, 'ResourceType not found');
+  scimAssert(resourceTypeId === 'User', ctx, 404, 'ResourceType not found');
 
   ctx.body = getResourceType(appId);
 }

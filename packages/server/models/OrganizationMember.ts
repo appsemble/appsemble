@@ -16,6 +16,7 @@ import { Organization, User } from './index.js';
 
 @Table({ tableName: 'OrganizationMember' })
 export class OrganizationMember extends Model {
+  @AllowNull(false)
   @Default('Member')
   @Column(DataType.ENUM(...Object.keys(roles)))
   role: Role;

@@ -102,6 +102,45 @@ automatically extract these messages from the source files run:
 npm run scripts -- extract-messages
 ```
 
+#### Migration validation
+
+Database models (Sequelize) and migration scripts are compared using
+`./packages/server/commands/checkMigrations.ts` to ensure that migrations are not missing or
+incorrect. This is done automatically in the CI pipeline. To run it locally, run the following
+command:
+
+```sh
+npm run appsemble -- check-migrations
+```
+
+The command will exit with a non-zero exit code if there are any issues. If there are issues, check
+your models and migrations and make sure they are correct.
+
+Similar to the `check-migrations` command there's also the `check-down-migrations` command stored in
+`./packages/server/commands/checkDownMigrations.ts`, which ensures the down migration matches with
+the previous up migration. The command compares every down migration in chronological order. To run
+it locally, run the following command:
+
+```sh
+npm run appsemble -- check-down-migrations
+```
+
+The command will exit with a non-zero exit code per down migration mismatch. If there are issues,
+check the down migration that's highlighted in green, and compare it with any migrations before or
+equal to the up migration in red.
+
+> **Note**: These commands require a local test database to be running, for example via
+> docker-compose. See [the README](./README.md#getting-started) for more information.
+
+> If there is ever the need to start using the postgres
+> [`CHECK-`](https://www.postgresql.org/docs/current/ddl-constraints.html#DDL-CONSTRAINTS-CHECK-CONSTRAINTS)
+> or
+> [`EXCLUSION`](https://www.postgresql.org/docs/current/ddl-constraints.html#DDL-CONSTRAINTS-EXCLUSION)
+> constraints these commands will not properly catch inconsistencies, because
+> [`table checks`](https://kristiandupont.github.io/extract-pg-schema/api/extract-pg-schema.tablecheck.html)
+> are not converted from an array to an object to avoid ordering collisions. EXCLUSION constraints
+> have not been tested before.
+
 ### Permissions
 
 After adding a new permission to the `Permission` enum, add the permission to the relevant role at
@@ -219,6 +258,84 @@ The hosts file can be found in the following location:
 - **MacOS**: `/private/etc/hosts`
 - Most systems: `/etc/hosts`
 
+### Migrations
+
+Writing Appsemble migrations must be done with great care, to avoid database corruption in
+production and for self-hosted Appsemble instances.
+
+The migrations under `packages/server/migrations` are the source of truth. We do however use
+`Meta.sync()` in [migrate.ts](packages/server/utils/migrate.ts) to create the `Meta` table, which
+tracks the migration version.
+
+#### Rules
+
+1. Migrations MUST have tested `up` and `down` migrations. You must be able to rollback (to version
+   0.24.12) and migrate to the latest without failure, use the following command
+   `npm run appsemble fuzz-migrations` for that.
+
+2. Migrations MUST NOT\* contain any conditions, especially ones depending on database values or
+   external factors. _The only time this is allowed is when there is no other way around it, and at
+   least 3 other core-developers
+   ([Appsemble maintainers on GitLab](https://gitlab.com/groups/appsemble/-/group_members?sort=access_level_desc))
+   that work during that week agree with the change._
+
+3. You MUST log a warning when expecting potential failures across any Appsemble instance. The
+   warning must explain the expected problem(s), and what actions to take to manually clean the
+   database appropriately for the migration to succeed.
+
+4. Adding unique rules to columns in a table MUST be done using indexes, NOT constraints. Appsemble
+   has a custom eslint rule defined in
+   [enforce-index-decorator.cjs](packages/eslint-plugin-appsemble/enforce-index-decorator.cjs) to
+   remind you of the correct decorator to use in the models. See why this is done here
+   [appsemble-eslint-plugin](packages/appsemble-eslint-plugin/README.md). This also means you MUST
+   never use `queryInterface.createConstraint` for unique columns, but instead use
+   `queryInterface.createIndex`.
+
+5. Adding unique indexes (or primary keys) should only be done on new tables.
+
+6. Carefully consider whether a column should be nullable to avoid having to clean the database when
+   changing the column to non-nullable without a default value.
+
+7. All queries must be part of the transaction, by passing `{ transaction }` as option.
+
+> Note: since all migrations are wrapped in transactions, this does NOT mean it's okay to ignore
+> these rules, because others may self-host Appsemble. When a migration fails the following is
+> logged:
+>
+> ```
+> [warn]: Upgrade to 0.29.0 unsuccessful, not committing. Current database version 0.28.0.
+> [warn]: In case this occured on a hosted Appsemble instance,
+> [warn]: and the logs above do not explain how to resolve the below error manually,
+> [warn]: consider contacting `support@appsemble.com` to report the migration issue,
+> [warn]: and include the stacktrace.
+> ```
+
+Migrating up to the latest, or use `--migrate-to` to migrate to a specific version.
+
+```sh
+npm run appsemble migrate
+```
+
+Migrating down to the first migration.
+
+```sh
+npm run appsemble migrate -- --migrate-to 0.24.12
+```
+
+<!-- Check current migration version.
+
+```sh
+psql postgres://admin:password@localhost:5432/appsemble -c 'SELECT "version" FROM "Meta";'
+# Or run `npm start` to see the current version and migrate to latest
+```
+
+Whenever you want to checkout the database after running `npm run appsemble check-migrations` or
+`npm run appsemble fuzz-migrations` run the following to list the databases created.
+
+```sh
+psql postgres://admin:password@localhost:54321/postgres -c '\l'
+``` -->
+
 ## Releasing
 
 Before releasing, manually inspect the changelog to be published (quoting from the `.release` job):
@@ -236,6 +353,8 @@ A release can be created by a maintainer triggering the `release patch` or `rele
 the pipeline for the `main` branch.
 
 > **Note**: Migrations are still added manually. Make sure the release matches any new migrations.
+> For example, if you’re releasing version `1.2.3`, make sure existing migrations in
+> `./packages/server/migrations/` are no higher than `1.2.3`.
 
 [dnsmasq]: http://www.thekelleys.org.uk/dnsmasq/doc.html
 [keep a changelog]: https://keepachangelog.com/en/1.0.0

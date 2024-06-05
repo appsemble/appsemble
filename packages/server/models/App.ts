@@ -18,10 +18,10 @@ import {
   DeletedAt,
   ForeignKey,
   HasMany,
+  Index,
   Model,
   PrimaryKey,
   Table,
-  Unique,
   UpdatedAt,
 } from 'sequelize-typescript';
 import { stringify } from 'yaml';
@@ -80,7 +80,7 @@ export class App extends Model {
   @Column(DataType.STRING)
   iconBackground: string;
 
-  @Unique('UniquePathIndex')
+  @Index({ name: 'App_path_OrganizationId_key', unique: true })
   @Column(DataType.STRING)
   path: string;
 
@@ -122,6 +122,7 @@ export class App extends Model {
   @Column(DataType.ENUM('fullLock', 'studioLock', 'unlocked'))
   locked: AppLock;
 
+  @AllowNull(false)
   @Default(false)
   @Column(DataType.BOOLEAN)
   enableUnsecuredServiceSecrets: boolean;
@@ -192,7 +193,7 @@ export class App extends Model {
 
   @AllowNull(false)
   @ForeignKey(() => Organization)
-  @Unique('UniquePathIndex')
+  @Index({ name: 'App_path_OrganizationId_key', unique: true })
   @Column(DataType.STRING)
   OrganizationId: string;
 
@@ -241,7 +242,7 @@ export class App extends Model {
   @HasMany(() => AppServiceSecret)
   AppServiceSecrets: AppServiceSecret[];
 
-  @HasMany(() => AppSnapshot, { onDelete: 'CASCADE', onUpdate: 'CASCADE' })
+  @HasMany(() => AppSnapshot, { onDelete: 'CASCADE' })
   AppSnapshots: AppSnapshot[];
 
   RatingAverage?: number;

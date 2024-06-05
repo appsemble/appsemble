@@ -11,7 +11,14 @@ import {
   UpdatedAt,
 } from 'sequelize-typescript';
 
-import { App, BlockVersion, OrganizationInvite, OrganizationMember, User } from './index.js';
+import {
+  App,
+  AppCollection,
+  BlockVersion,
+  OrganizationInvite,
+  OrganizationMember,
+  User,
+} from './index.js';
 
 @Table({ tableName: 'Organization', paranoid: true })
 export class Organization extends Model {
@@ -42,6 +49,9 @@ export class Organization extends Model {
 
   @HasMany(() => App)
   Apps: App[];
+
+  @HasMany(() => AppCollection)
+  AppCollections: AppCollection[];
 
   @HasMany(() => BlockVersion)
   BlockVersions: BlockVersion[];

@@ -6,10 +6,10 @@ import {
   CreatedAt,
   DataType,
   ForeignKey,
+  Index,
   Model,
   PrimaryKey,
   Table,
-  Unique,
   UpdatedAt,
 } from 'sequelize-typescript';
 
@@ -23,7 +23,7 @@ export class AppVariable extends Model {
   id: number;
 
   @AllowNull(false)
-  @Unique('UniqueNameIndex')
+  @Index({ name: 'UniqueNameIndex', unique: true })
   @Column(DataType.STRING)
   name: string;
 
@@ -32,7 +32,7 @@ export class AppVariable extends Model {
 
   @ForeignKey(() => App)
   @AllowNull(false)
-  @Unique('UniqueNameIndex')
+  @Index({ name: 'UniqueNameIndex', unique: true })
   @Column(DataType.INTEGER)
   AppId: number;
 

@@ -76,6 +76,6 @@ export class OAuthAuthorization extends Model {
   /**
    * The Appsemble user.
    */
-  @BelongsTo(() => User)
+  @BelongsTo(() => User, { onDelete: 'SET NULL' })
   User: Awaited<User>;
 }

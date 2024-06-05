@@ -8,9 +8,12 @@ import yargs, { type CommandModule } from 'yargs';
 import * as app from './commands/app/index.js';
 import * as asset from './commands/asset/index.js';
 import * as block from './commands/block/index.js';
+import * as checkDownMigrations from './commands/checkDownMigrations.js';
+import * as checkMigrations from './commands/checkMigrations.js';
 import * as cleanupDemoUsers from './commands/cleanupDemoUsers.js';
 import * as cleanupResourcesAndAssets from './commands/cleanupResourcesAndAssets.js';
 import * as config from './commands/config/index.js';
+import * as fuzzMigrations from './commands/fuzzMigrations.js';
 import * as login from './commands/login.js';
 import * as logout from './commands/logout.js';
 import * as migrate from './commands/migrate.js';
@@ -54,6 +57,9 @@ let parser = yargs(process.argv.slice(2))
   .command(block)
   .command(cleanupResourcesAndAssets as unknown as CommandModule)
   .command(cleanupDemoUsers as unknown as CommandModule)
+  .command(checkMigrations as unknown as CommandModule)
+  .command(checkDownMigrations as unknown as CommandModule)
+  .command(fuzzMigrations as unknown as CommandModule)
   .command(config)
   .command(login as unknown as CommandModule)
   .command(logout as unknown as CommandModule)

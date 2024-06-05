@@ -379,6 +379,7 @@ export async function setAppMember(ctx: Context): Promise<void> {
       await member.save();
     } else {
       member = await AppMember.create({
+        email: user.primaryEmail,
         UserId: user.id,
         AppId: app.id,
         role,

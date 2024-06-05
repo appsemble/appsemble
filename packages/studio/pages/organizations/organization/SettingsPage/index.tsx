@@ -13,7 +13,7 @@ import {
   useMessages,
   useMeta,
 } from '@appsemble/react-components';
-import { type App } from '@appsemble/types';
+import { type App, type AppCollection } from '@appsemble/types';
 import axios from 'axios';
 import { type ReactNode, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
@@ -23,7 +23,7 @@ import styles from './index.module.css';
 import { messages } from './messages.js';
 import { IconPreview } from '../../../../components/IconPreview/index.js';
 import { useUser } from '../../../../components/UserProvider/index.js';
-import { type Organization } from '../../../../types.js';
+import { type Block, type Organization } from '../../../../types.js';
 
 interface SettingsPageProps {
   /**
@@ -56,16 +56,22 @@ export function SettingsPage({ onChangeOrganization, organization }: SettingsPag
   const push = useMessages();
   const navigate = useNavigate();
   const inputOrganization = useRef(null);
-  const [fetched, setFetched] = useState<App[]>([]);
+  const [fetchedApps, setFetchedApps] = useState<App[]>([]);
+  const [fetchedAppCollections, setFetchedAppCollections] = useState<AppCollection[]>([]);
+  const [fetchedBlocks, setFetchedBlocks] = useState<Block[]>([]);
 
-  const fetchApps = useCallback(async () => {
-    const fetchedApps = await axios.get(`/api/organizations/${organization.id}/apps`);
-    setFetched(fetchedApps.data);
+  const fetch = useCallback(async () => {
+    const apps = await axios.get(`/api/organizations/${organization.id}/apps`);
+    setFetchedApps(apps.data);
+    const appCollections = await axios.get(`/api/organizations/${organization.id}/appCollections`);
+    setFetchedAppCollections(appCollections.data);
+    const blocks = await axios.get(`/api/organizations/${organization.id}/blocks`);
+    setFetchedBlocks(blocks.data);
   }, [organization.id]);
 
   useEffect(() => {
-    fetchApps();
-  }, [fetchApps]);
+    fetch();
+  }, [fetch]);
   const deleteOrganization = async (id: string): Promise<void> => {
     try {
       await axios.delete(`/api/organizations/${id}`);
@@ -94,10 +100,13 @@ export function SettingsPage({ onChangeOrganization, organization }: SettingsPag
         ref={inputOrganization}
         type="text"
       />
-      {fetched?.length === 0 ? (
+      {fetchedApps?.length === 0 && fetchedAppCollections?.length === 0 ? (
         <FormattedMessage {...messages.deleteWarning} />
       ) : (
-        <FormattedMessage {...messages.deleteWithAppsWarning} values={{ apps: fetched?.length }} />
+        <FormattedMessage
+          {...messages.deleteWithAppsWarning}
+          values={{ apps: fetchedApps?.length, appCollections: fetchedAppCollections?.length }}
+        />
       )}
     </div>
   );
@@ -214,7 +223,12 @@ export function SettingsPage({ onChangeOrganization, organization }: SettingsPag
             <p className="content">
               <FormattedMessage {...messages.deleteHelp} />
             </p>
-            <Button color="danger" icon="trash-alt" onClick={onDeleteOrganization}>
+            <Button
+              color="danger"
+              disabled={Boolean(fetchedAppCollections?.length || fetchedBlocks?.length)}
+              icon="trash-alt"
+              onClick={onDeleteOrganization}
+            >
               <FormattedMessage {...messages.delete} />
             </Button>
           </Message>

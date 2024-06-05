@@ -27,7 +27,7 @@ export class AppOAuth2Authorization extends Model {
   @Column(DataType.INTEGER)
   AppOAuth2SecretId: number;
 
-  @BelongsTo(() => AppOAuth2Secret)
+  @BelongsTo(() => AppOAuth2Secret, { onDelete: 'CASCADE' })
   AppOAuth2Secret: Awaited<AppOAuth2Secret>;
 
   /**

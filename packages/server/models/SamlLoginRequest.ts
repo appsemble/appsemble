@@ -73,7 +73,7 @@ export class SamlLoginRequest extends Model {
   /**
    * The app’s SAML secret.
    */
-  @BelongsTo(() => AppSamlSecret)
+  @BelongsTo(() => AppSamlSecret, { onDelete: 'CASCADE' })
   AppSamlSecret: Awaited<AppSamlSecret>;
 
   /**
@@ -86,7 +86,7 @@ export class SamlLoginRequest extends Model {
   /**
    * An optional user who’s logged in to Appsemble Studio at the time of the request.
    */
-  @BelongsTo(() => User)
+  @BelongsTo(() => User, { onDelete: 'CASCADE' })
   User: Awaited<User>;
 
   @CreatedAt

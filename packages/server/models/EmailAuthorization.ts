@@ -34,6 +34,7 @@ export class EmailAuthorization extends Model {
   @UpdatedAt
   updated: Date;
 
+  @AllowNull(false)
   @ForeignKey(() => User)
   @Column(DataType.UUID)
   UserId: string;

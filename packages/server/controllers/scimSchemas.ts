@@ -149,7 +149,7 @@ export function getSCIMSchema(ctx: Context): void {
   } = ctx;
 
   const schema = schemas.find((s) => s.id === schemaId);
-  scimAssert(schema, 404, 'Schema not found');
+  scimAssert(schema, ctx, 404, 'Schema not found');
 
   ctx.body = {
     ...schema,

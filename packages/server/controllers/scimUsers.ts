@@ -1,6 +1,6 @@
 import { randomBytes } from 'node:crypto';
 
-import { assertKoaError, scimAssert, SCIMError, throwKoaError } from '@appsemble/node-utils';
+import { assertKoaError, scimAssert, throwKoaError } from '@appsemble/node-utils';
 import { type Context } from 'koa';
 import { type Compare, parse } from 'scim2-parse-filter';
 import { col, fn, where, type WhereOptions } from 'sequelize';
@@ -56,34 +56,36 @@ export async function createSCIMUser(ctx: Context): Promise<void> {
   } = ctx;
 
   const externalId = getCaseInsensitive(body, 'externalid');
-  scimAssert(typeof externalId === 'string', 400, 'Expected externalId to be string');
+  scimAssert(typeof externalId === 'string', ctx, 400, 'Expected externalId to be string');
 
   const userName = getCaseInsensitive(body, 'username');
-  scimAssert(typeof userName === 'string', 400, 'Expected userName to be string');
+  scimAssert(typeof userName === 'string', ctx, 400, 'Expected userName to be string');
 
   const active = getCaseInsensitive(body, 'active');
-  scimAssert(typeof active === 'boolean', 400, 'Expected active to be boolean');
+  scimAssert(typeof active === 'boolean', ctx, 400, 'Expected active to be boolean');
 
   const name = getCaseInsensitive(body, 'name');
-  scimAssert(name == null || typeof name === 'object', 400, 'Expected name to be an object');
+  scimAssert(name == null || typeof name === 'object', ctx, 400, 'Expected name to be an object');
 
   const formattedName = name && getCaseInsensitive(name, 'formatted');
   scimAssert(
     formattedName == null || typeof formattedName === 'string',
+    ctx,
     400,
     'Expected name.formatted to be a string',
   );
 
   const locale = getCaseInsensitive(body, 'locale') || 'en';
-  scimAssert(typeof locale === 'string', 400, 'Expected locale to be a string');
+  scimAssert(typeof locale === 'string', ctx, 400, 'Expected locale to be a string');
 
   const timezone = getCaseInsensitive(body, 'timezone') || 'Europe/Amsterdam';
-  scimAssert(typeof timezone === 'string', 400, 'Expected locale to be a string');
+  scimAssert(typeof timezone === 'string', ctx, 400, 'Expected locale to be a string');
 
   const enterpriseUser =
     getCaseInsensitive(body, 'urn:ietf:params:scim:schemas:extension:enterprise:2.0:user') || {};
   scimAssert(
     enterpriseUser == null || typeof enterpriseUser === 'object',
+    ctx,
     400,
     'Expected urn:ietf:params:scim:schemas:extension:enterprise:2.0:User to be an object',
   );
@@ -91,6 +93,7 @@ export async function createSCIMUser(ctx: Context): Promise<void> {
   const managerId = enterpriseUser && getCaseInsensitive(enterpriseUser, 'manager');
   scimAssert(
     managerId == null || typeof managerId === 'string',
+    ctx,
     400,
     'Expected manager to be a string',
   );
@@ -184,7 +187,7 @@ export async function createSCIMUser(ctx: Context): Promise<void> {
       }
     });
   } catch {
-    throw new SCIMError(409, 'Conflict');
+    scimAssert(false, ctx, 409, 'Conflict');
   }
 
   ctx.body = toScimUser(member);
@@ -212,7 +215,7 @@ export async function getSCIMUser(ctx: Context): Promise<void> {
       },
     ],
   });
-  scimAssert(member, 404, 'User not found');
+  scimAssert(member, ctx, 404, 'User not found');
 
   ctx.body = toScimUser(member);
 }
@@ -223,7 +226,7 @@ export async function deleteSCIMUser(ctx: Context): Promise<void> {
   } = ctx;
 
   const deletedRows = await AppMember.destroy({ where: { id: userId, AppId: appId } });
-  scimAssert(deletedRows, 404, 'User not found');
+  scimAssert(deletedRows, ctx, 404, 'User not found');
 }
 
 export async function getSCIMUsers(ctx: Context): Promise<void> {
@@ -310,34 +313,36 @@ export async function updateSCIMUser(ctx: Context): Promise<void> {
   } = ctx;
 
   const externalId = getCaseInsensitive(body, 'externalid');
-  scimAssert(typeof externalId === 'string', 400, 'Expected externalId to be string');
+  scimAssert(typeof externalId === 'string', ctx, 400, 'Expected externalId to be string');
 
   const userName = getCaseInsensitive(body, 'username');
-  scimAssert(typeof userName === 'string', 400, 'Expected userName to be string');
+  scimAssert(typeof userName === 'string', ctx, 400, 'Expected userName to be string');
 
   const active = getCaseInsensitive(body, 'active');
-  scimAssert(typeof active === 'boolean', 400, 'Expected active to be boolean');
+  scimAssert(typeof active === 'boolean', ctx, 400, 'Expected active to be boolean');
 
   const name = getCaseInsensitive(body, 'name');
-  scimAssert(name == null || typeof name === 'object', 400, 'Expected name to be an object');
+  scimAssert(name == null || typeof name === 'object', ctx, 400, 'Expected name to be an object');
 
   const formattedName = name && getCaseInsensitive(name, 'formatted');
   scimAssert(
     formattedName == null || typeof formattedName === 'string',
+    ctx,
     400,
     'Expected name.formatted to be a string',
   );
 
   const locale = getCaseInsensitive(body, 'locale') || 'en';
-  scimAssert(typeof locale === 'string', 400, 'Expected locale to be a string');
+  scimAssert(typeof locale === 'string', ctx, 400, 'Expected locale to be a string');
 
   const timezone = getCaseInsensitive(body, 'timezone') || 'Europe/Amsterdam';
-  scimAssert(typeof timezone === 'string', 400, 'Expected locale to be a string');
+  scimAssert(typeof timezone === 'string', ctx, 400, 'Expected locale to be a string');
 
   const enterpriseUser =
     getCaseInsensitive(body, 'urn:ietf:params:scim:schemas:extension:enterprise:2.0:user') || {};
   scimAssert(
     enterpriseUser == null || typeof enterpriseUser === 'object',
+    ctx,
     400,
     'Expected urn:ietf:params:scim:schemas:extension:enterprise:2.0:User to be an object',
   );
@@ -345,6 +350,7 @@ export async function updateSCIMUser(ctx: Context): Promise<void> {
   const managerId = enterpriseUser && getCaseInsensitive(enterpriseUser, 'manager');
   scimAssert(
     managerId == null || typeof managerId === 'string',
+    ctx,
     400,
     'Expected manager to be a string',
   );
@@ -367,7 +373,7 @@ export async function updateSCIMUser(ctx: Context): Promise<void> {
       },
     ],
   });
-  scimAssert(member, 404, 'User not found');
+  scimAssert(member, ctx, 404, 'User not found');
 
   await transactional(async (transaction) => {
     const key = randomBytes(40).toString('hex');
@@ -438,16 +444,16 @@ export async function patchSCIMUser(ctx: Context): Promise<void> {
       },
     ],
   });
-  scimAssert(member, 404, 'User not found');
+  scimAssert(member, ctx, 404, 'User not found');
 
   const operations = getCaseInsensitive(body, 'operations');
-  scimAssert(Array.isArray(operations), 400, 'Expected operations to be array');
+  scimAssert(Array.isArray(operations), ctx, 400, 'Expected operations to be array');
 
   let managerId: string | undefined;
 
   function replace(path: string, value: unknown): void {
     const lower = path.toLowerCase();
-    scimAssert(typeof value === 'string', 400, 'Expected value to be a string');
+    scimAssert(typeof value === 'string', ctx, 400, 'Expected value to be a string');
 
     if (lower === 'externalid') {
       member.scimExternalId = value;
@@ -477,15 +483,17 @@ export async function patchSCIMUser(ctx: Context): Promise<void> {
   for (const operation of operations) {
     scimAssert(
       typeof operation === 'object' && operation != null,
+      ctx,
       400,
       'Expected operation to be an object',
     );
 
     let op = getCaseInsensitive(operation, 'op');
-    scimAssert(typeof op === 'string', 400, 'Only add and replace operations are supported');
+    scimAssert(typeof op === 'string', ctx, 400, 'Only add and replace operations are supported');
     op = op.toLowerCase();
     scimAssert(
       op === 'add' || op === 'replace',
+      ctx,
       400,
       'Only add and replace operations are supported',
     );
@@ -493,7 +501,7 @@ export async function patchSCIMUser(ctx: Context): Promise<void> {
     const value = getCaseInsensitive(operation, 'value');
     if (typeof value === 'string') {
       const path = getCaseInsensitive(operation, 'path');
-      scimAssert(typeof path === 'string', 400, 'Expected path to be string');
+      scimAssert(typeof path === 'string', ctx, 400, 'Expected path to be string');
 
       replace(path, value);
     } else if (typeof value === 'object' && value != null) {

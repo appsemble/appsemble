@@ -96,7 +96,12 @@ describe('getTeams', () => {
   });
 
   it('should include the role of the user', async () => {
-    const appMember = await AppMember.create({ UserId: user.id, AppId: app.id, role: '' });
+    const appMember = await AppMember.create({
+      email: user.primaryEmail,
+      UserId: user.id,
+      AppId: app.id,
+      role: '',
+    });
     const teamA = await Team.create({ name: 'A', AppId: app.id });
     const teamB = await Team.create({ name: 'B', AppId: app.id });
     const teamC = await Team.create({ name: 'C', AppId: app.id });
@@ -122,7 +127,12 @@ describe('getTeams', () => {
 
 describe('getTeam', () => {
   it('should return a team', async () => {
-    const appMember = await AppMember.create({ UserId: user.id, AppId: app.id, role: '' });
+    const appMember = await AppMember.create({
+      email: user.primaryEmail,
+      UserId: user.id,
+      AppId: app.id,
+      role: '',
+    });
     const team = await Team.create({ name: 'A', AppId: app.id });
     await TeamMember.create({ role: TeamRole.Member, AppMemberId: appMember.id, TeamId: team.id });
 
@@ -193,7 +203,12 @@ describe('createTeam', () => {
           },
         },
       });
-      await AppMember.create({ AppId: app.id, UserId: user.id, role: 'TeamCreator' });
+      await AppMember.create({
+        email: user.primaryEmail,
+        AppId: app.id,
+        UserId: user.id,
+        role: 'TeamCreator',
+      });
 
       const response = await request.post(`/api/apps/${app.id}/teams`, {
         name: 'Test Team',
@@ -222,7 +237,12 @@ describe('createTeam', () => {
           },
         },
       });
-      await AppMember.create({ AppId: app.id, UserId: user.id, role: 'Invalid' });
+      await AppMember.create({
+        email: user.primaryEmail,
+        AppId: app.id,
+        UserId: user.id,
+        role: 'Invalid',
+      });
 
       const response = await request.post(`/api/apps/${app.id}/teams`, {
         name: 'Test Team',
@@ -644,7 +664,12 @@ describe('inviteTeamMember', () => {
 
   it('should not allow to invite team members if the join policy is not invite', async () => {
     const team = await Team.create({ name: 'A', AppId: app.id });
-    const appMember = await AppMember.create({ AppId: app.id, UserId: user.id, role: '' });
+    const appMember = await AppMember.create({
+      email: user.primaryEmail,
+      AppId: app.id,
+      UserId: user.id,
+      role: '',
+    });
     await TeamMember.create({ TeamId: team.id, AppMemberId: appMember.id, role: 'manager' });
 
     const response = await request.post(`/api/apps/${app.id}/teams/${team.id}/invite`, {
@@ -707,7 +732,12 @@ describe('inviteTeamMember', () => {
       },
     });
     const team = await Team.create({ name: 'A', AppId: app.id });
-    const appMember = await AppMember.create({ AppId: app.id, UserId: user.id, role: '' });
+    const appMember = await AppMember.create({
+      email: user.primaryEmail,
+      AppId: app.id,
+      UserId: user.id,
+      role: '',
+    });
     await TeamMember.create({ TeamId: team.id, AppMemberId: appMember.id, role: 'member' });
     const response = await request.post(`/api/apps/${app.id}/teams/${team.id}/invite`, {
       email: 'newuser@example.com',
@@ -742,7 +772,12 @@ describe('inviteTeamMember', () => {
 
     vi.spyOn(server.context.mailer, 'sendTranslatedEmail');
     const team = await Team.create({ name: 'A', AppId: app.id });
-    const appMember = await AppMember.create({ AppId: app.id, UserId: user.id, role: '' });
+    const appMember = await AppMember.create({
+      email: user.primaryEmail,
+      AppId: app.id,
+      UserId: user.id,
+      role: '',
+    });
     await TeamMember.create({ TeamId: team.id, AppMemberId: appMember.id, role: 'member' });
     const response = await request.post(`/api/apps/${app.id}/teams/${team.id}/invite`, {
       email: 'newuser@example.com',
@@ -774,6 +809,7 @@ describe('addTeamMember', () => {
     it('should allow anyone to join if the join policy is `anyone', async () => {
       const team = await Team.create({ name: 'A', AppId: app.id });
       await AppMember.create({
+        email: user.primaryEmail,
         AppId: app.id,
         UserId: user.id,
         name: user.name,
@@ -800,6 +836,7 @@ describe('addTeamMember', () => {
     it('should allow reject users if the join policy is `invite`', async () => {
       const team = await Team.create({ name: 'A', AppId: app.id });
       await AppMember.create({
+        email: user.primaryEmail,
         AppId: app.id,
         UserId: user.id,
         role: 'Member',
@@ -917,7 +954,12 @@ describe('addTeamMember', () => {
         primaryEmail: 'testuser@example.com',
         timezone: 'Europe/Amsterdam',
       });
-      const member1 = await AppMember.create({ AppId: app.id, UserId: user.id, role: '' });
+      const member1 = await AppMember.create({
+        email: user.primaryEmail,
+        AppId: app.id,
+        UserId: user.id,
+        role: '',
+      });
       await OrganizationMember.create({
         OrganizationId: organization.id,
         UserId: userB.id,
@@ -968,7 +1010,12 @@ describe('addTeamMember', () => {
         { where: { UserId: user.id, OrganizationId: organization.id } },
       );
       const team = await Team.create({ name: 'A', AppId: app.id });
-      const appMember = await AppMember.create({ AppId: app.id, UserId: user.id, role: '' });
+      const appMember = await AppMember.create({
+        email: user.primaryEmail,
+        AppId: app.id,
+        UserId: user.id,
+        role: '',
+      });
       await TeamMember.create({
         AppMemberId: appMember.id,
         TeamId: team.id,
@@ -991,7 +1038,12 @@ describe('addTeamMember', () => {
         primaryEmail: 'testuser@example.com',
         timezone: 'Europe/Amsterdam',
       });
-      await AppMember.create({ AppId: app.id, UserId: userB.id, role: 'Member' });
+      await AppMember.create({
+        email: userB.primaryEmail,
+        AppId: app.id,
+        UserId: userB.id,
+        role: 'Member',
+      });
       const team = await Team.create({ name: 'A', AppId: app.id });
       await request.post(`/api/apps/${app.id}/teams/${team.id}/members`, { id: userB.id });
       const response = await request.post(`/api/apps/${app.id}/teams/${team.id}/members`, {
@@ -1022,7 +1074,12 @@ describe('addTeamMember', () => {
         vapidPrivateKey: 'd',
         OrganizationId: organization.id,
       });
-      await AppMember.create({ AppId: app2.id, UserId: userB.id, role: '' });
+      await AppMember.create({
+        email: userB.primaryEmail,
+        AppId: app2.id,
+        UserId: userB.id,
+        role: '',
+      });
       const team = await Team.create({ name: 'A', AppId: app.id });
       const response = await request.post(`/api/apps/${app.id}/teams/${team.id}/members`, {
         id: userB.id,
@@ -1052,7 +1109,12 @@ describe('removeTeamMember', () => {
       role: 'Member',
     });
     const team = await Team.create({ name: 'A', AppId: app.id });
-    const appMember = await AppMember.create({ AppId: app.id, UserId: userB.id, role: '' });
+    const appMember = await AppMember.create({
+      email: userB.primaryEmail,
+      AppId: app.id,
+      UserId: userB.id,
+      role: '',
+    });
     await TeamMember.create({ AppMemberId: appMember.id, TeamId: team.id, role: TeamRole.Member });
 
     authorizeStudio();
@@ -1107,8 +1169,18 @@ describe('removeTeamMember', () => {
       { where: { UserId: user.id, OrganizationId: app.id } },
     );
     const team = await Team.create({ name: 'A', AppId: app.id });
-    const appMember1 = await AppMember.create({ AppId: app.id, UserId: user.id, role: '' });
-    const appMember2 = await AppMember.create({ AppId: app.id, UserId: userB.id, role: '' });
+    const appMember1 = await AppMember.create({
+      email: user.primaryEmail,
+      AppId: app.id,
+      UserId: user.id,
+      role: '',
+    });
+    const appMember2 = await AppMember.create({
+      email: userB.primaryEmail,
+      AppId: app.id,
+      UserId: userB.id,
+      role: '',
+    });
     await TeamMember.create({ AppMemberId: appMember1.id, TeamId: team.id, role: TeamRole.Member });
     await TeamMember.create({
       AppMemberId: appMember2.id,
@@ -1140,7 +1212,12 @@ describe('removeTeamMember', () => {
       { where: { UserId: user.id, OrganizationId: organization.id } },
     );
     const team = await Team.create({ name: 'A', AppId: app.id });
-    const appMember = await AppMember.create({ AppId: app.id, UserId: userB.id, role: '' });
+    const appMember = await AppMember.create({
+      email: userB.primaryEmail,
+      AppId: app.id,
+      UserId: userB.id,
+      role: '',
+    });
     await TeamMember.create({ AppMemberId: appMember.id, TeamId: team.id, role: TeamRole.Member });
 
     authorizeStudio();
@@ -1160,7 +1237,12 @@ describe('removeTeamMember', () => {
       primaryEmail: 'testuser@example.com',
       timezone: 'Europe/Amsterdam',
     });
-    await AppMember.create({ AppId: app.id, UserId: userB.id, role: '' });
+    await AppMember.create({
+      email: userB.primaryEmail,
+      AppId: app.id,
+      UserId: userB.id,
+      role: '',
+    });
     await OrganizationMember.create({
       OrganizationId: organization.id,
       UserId: userB.id,
@@ -1277,7 +1359,12 @@ describe('updateTeamMember', () => {
       { where: { UserId: user.id, OrganizationId: organization.id } },
     );
     const team = await Team.create({ name: 'A', AppId: app.id });
-    const appMember1 = await AppMember.create({ AppId: app.id, UserId: user.id, role: '' });
+    const appMember1 = await AppMember.create({
+      email: user.primaryEmail,
+      AppId: app.id,
+      UserId: user.id,
+      role: '',
+    });
     const appMember2 = await AppMember.create({
       AppId: app.id,
       UserId: userB.id,
@@ -1325,7 +1412,12 @@ describe('updateTeamMember', () => {
       { where: { UserId: user.id, OrganizationId: organization.id } },
     );
     const team = await Team.create({ name: 'A', AppId: app.id });
-    const appMember = await AppMember.create({ AppId: app.id, UserId: userB.id, role: '' });
+    const appMember = await AppMember.create({
+      email: userB.primaryEmail,
+      AppId: app.id,
+      UserId: userB.id,
+      role: '',
+    });
     await TeamMember.create({ AppMemberId: appMember.id, TeamId: team.id, role: TeamRole.Member });
 
     authorizeStudio();

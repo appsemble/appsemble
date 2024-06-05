@@ -96,9 +96,9 @@ export class AppSamlSecret extends Model {
   @UpdatedAt
   updated: Date;
 
-  @HasMany(() => AppSamlAuthorization, { onDelete: 'CASCADE', onUpdate: 'CASCADE' })
+  @HasMany(() => AppSamlAuthorization, { onDelete: 'CASCADE' })
   AppSamlAuthorizations: AppSamlAuthorization[];
 
-  @HasMany(() => SamlLoginRequest, { onDelete: 'CASCADE', onUpdate: 'CASCADE' })
+  @HasMany(() => SamlLoginRequest, { onDelete: 'CASCADE' })
   SamlLoginRequests: SamlLoginRequest[];
 }

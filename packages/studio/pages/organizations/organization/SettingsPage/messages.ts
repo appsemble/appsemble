@@ -54,8 +54,9 @@ export const messages = defineMessages({
     defaultMessage: 'Delete Organization',
   },
   deleteHelp: {
-    id: 'studio.zkEvon',
-    defaultMessage: 'Deleting an organization cannot be undone.',
+    id: 'studio.xbYTxC',
+    defaultMessage:
+      'Deleting an organization cannot be undone. Organizations with blocks or app collections cannot be removed.',
   },
   deleteWarningTitle: {
     id: 'studio.2T4AGb',
@@ -67,9 +68,9 @@ export const messages = defineMessages({
       'Are you sure you want to delete this organization? This action cannot be reverted.',
   },
   deleteWithAppsWarning: {
-    id: 'studio.g7ozu9',
+    id: 'studio.xkWE9y',
     defaultMessage:
-      'This organisation has {apps} published app(s). The apps will be deleted with the organization. Are you sure you want to delete this organisation?',
+      'This organization has {apps} published app(s). The app(s) will be deleted with the organization. Are you sure you want to delete this organization?',
   },
   errorDelete: {
     id: 'studio.MePfdF',

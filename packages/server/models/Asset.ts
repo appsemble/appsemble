@@ -6,10 +6,10 @@ import {
   DataType,
   Default,
   ForeignKey,
+  Index,
   Model,
   PrimaryKey,
   Table,
-  Unique,
   UpdatedAt,
 } from 'sequelize-typescript';
 
@@ -32,7 +32,7 @@ export class Asset extends Model {
   @Column(DataType.BLOB)
   data: Buffer;
 
-  @Unique('UniqueAssetNameIndex')
+  @Index({ name: 'UniqueAssetNameIndex', unique: true })
   @Column(DataType.STRING)
   name: string;
 
@@ -57,7 +57,7 @@ export class Asset extends Model {
    */
   @AllowNull(false)
   @Default(false)
-  @Unique('UniqueAssetNameIndex')
+  @Index({ name: 'UniqueAssetNameIndex', unique: true })
   @Column(DataType.BOOLEAN)
   ephemeral: boolean;
 
@@ -67,8 +67,9 @@ export class Asset extends Model {
   @UpdatedAt
   updated: Date;
 
+  @AllowNull(false)
   @ForeignKey(() => App)
-  @Unique('UniqueAssetNameIndex')
+  @Index({ name: 'UniqueAssetNameIndex', unique: true })
   @Column(DataType.INTEGER)
   AppId: number;
 
@@ -79,13 +80,13 @@ export class Asset extends Model {
   @Column(DataType.UUID)
   AppMemberId: string;
 
-  @BelongsTo(() => AppMember)
+  @BelongsTo(() => AppMember, { onDelete: 'CASCADE' })
   AppMember: Awaited<AppMember>;
 
   @ForeignKey(() => Resource)
   @Column(DataType.INTEGER)
   ResourceId: number;
 
-  @BelongsTo(() => Resource)
+  @BelongsTo(() => Resource, { onDelete: 'SET NULL' })
   Resource: Awaited<Resource>;
 }

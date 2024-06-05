@@ -19,7 +19,6 @@ import {
   Model,
   PrimaryKey,
   Table,
-  Unique,
   UpdatedAt,
 } from 'sequelize-typescript';
 
@@ -82,7 +81,8 @@ export class AppMember extends Model {
   @Column(DataType.STRING)
   role: string;
 
-  @Index({ name: 'UniqueAppMemberEmailIndex', type: 'UNIQUE' })
+  @AllowNull(false)
+  @Index({ name: 'UniqueAppMemberEmailIndex', unique: true })
   @Column(DataType.STRING)
   email: string;
 
@@ -114,7 +114,8 @@ export class AppMember extends Model {
   @Column(DataType.STRING)
   scimExternalId?: string;
 
-  @AllowNull(true)
+  @Default(false)
+  @AllowNull(false)
   @Column(DataType.BOOLEAN)
   scimActive?: boolean;
 
@@ -127,21 +128,23 @@ export class AppMember extends Model {
   @UpdatedAt
   updated: Date;
 
+  @AllowNull(false)
   @ForeignKey(() => App)
-  @Unique('UniqueAppMemberIndex')
-  @Index({ name: 'UniqueAppMemberEmailIndex', type: 'UNIQUE' })
+  @Index({ name: 'UniqueAppMemberEmailIndex', unique: true })
+  @Index({ name: 'UniqueAppMemberIndex', unique: true })
   @Column(DataType.INTEGER)
   AppId: number;
 
   @BelongsTo(() => App)
   App: Awaited<App>;
 
+  @AllowNull(false)
   @ForeignKey(() => User)
-  @Unique('UniqueAppMemberIndex')
+  @Index({ name: 'UniqueAppMemberIndex', unique: true })
   @Column(DataType.UUID)
   UserId: string;
 
-  @BelongsTo(() => User)
+  @BelongsTo(() => User, { onDelete: 'CASCADE' })
   User: Awaited<User>;
 
   @HasMany(() => TeamMember)

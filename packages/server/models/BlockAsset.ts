@@ -46,6 +46,6 @@ export class BlockAsset extends Model {
   @CreatedAt
   created: Date;
 
-  @BelongsTo(() => BlockVersion)
+  @BelongsTo(() => BlockVersion, { onDelete: 'CASCADE' })
   BlockVersion: Awaited<BlockVersion>;
 }

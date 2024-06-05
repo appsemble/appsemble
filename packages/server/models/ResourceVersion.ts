@@ -20,7 +20,7 @@ export class ResourceVersion extends Model {
   @PrimaryKey
   @IsUUID(4)
   @Default(DataType.UUIDV4)
-  @Column(DataType.STRING)
+  @Column(DataType.UUID)
   id: string;
 
   @Column(DataType.JSON)
@@ -38,7 +38,7 @@ export class ResourceVersion extends Model {
   @Column(DataType.UUID)
   AppMemberId: string;
 
-  @BelongsTo(() => AppMember)
+  @BelongsTo(() => AppMember, { onDelete: 'CASCADE' })
   AppMember: Awaited<AppMember>;
 
   @CreatedAt

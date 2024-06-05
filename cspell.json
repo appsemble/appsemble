@@ -183,6 +183,8 @@
     "messageformat",
     "cobertura",
     "Pinnable",
-    "nosniff"
+    "nosniff",
+    "typname",
+    "psql"
   ]
 }

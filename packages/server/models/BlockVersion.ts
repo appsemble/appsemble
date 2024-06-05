@@ -9,10 +9,10 @@ import {
   Default,
   ForeignKey,
   HasMany,
+  Index,
   Model,
   PrimaryKey,
   Table,
-  Unique,
 } from 'sequelize-typescript';
 
 import { BlockAsset, BlockMessages, Organization } from './index.js';
@@ -24,17 +24,19 @@ export class BlockVersion extends Model {
   @Column(DataType.UUID)
   id: string;
 
-  @Unique('blockVersionComposite')
+  @Index({ name: 'blockVersionComposite', unique: true })
   @ForeignKey(() => Organization)
   @AllowNull(false)
   @Column(DataType.STRING)
   OrganizationId: string;
 
-  @Unique('blockVersionComposite')
+  @AllowNull(false)
+  @Index({ name: 'blockVersionComposite', unique: true })
   @Column(DataType.STRING)
   name: string;
 
-  @Unique('blockVersionComposite')
+  @AllowNull(false)
+  @Index({ name: 'blockVersionComposite', unique: true })
   @Column(DataType.STRING)
   version: string;
 

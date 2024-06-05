@@ -1,4 +1,5 @@
 import {
+  AllowNull,
   BelongsTo,
   Column,
   CreatedAt,
@@ -24,6 +25,7 @@ export class ResourceSubscription extends Model {
   type: string;
 
   @ForeignKey(() => AppSubscription)
+  @AllowNull(false)
   @Column(DataType.INTEGER)
   AppSubscriptionId: number;
 

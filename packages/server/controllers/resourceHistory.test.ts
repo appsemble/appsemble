@@ -128,7 +128,13 @@ describe('getResourceHistory', () => {
       type: 'yesHistory',
       data: { version: 'old' },
     });
-    const member = await AppMember.create({ AppId: 1, UserId: user.id, name: user.name, role: '' });
+    const member = await AppMember.create({
+      email: user.primaryEmail,
+      AppId: 1,
+      UserId: user.id,
+      name: user.name,
+      role: '',
+    });
     vi.advanceTimersByTime(1000);
     await ResourceVersion.create({
       AppMemberId: member.id,

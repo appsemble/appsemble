@@ -5,10 +5,10 @@ import {
   CreatedAt,
   DataType,
   ForeignKey,
+  Index,
   Model,
   PrimaryKey,
   Table,
-  Unique,
   UpdatedAt,
 } from 'sequelize-typescript';
 
@@ -22,19 +22,19 @@ export class AppCollectionApp extends Model {
   id: number;
 
   @ForeignKey(() => AppCollection)
-  @Unique('UniqueAppCollectionAppIndex')
+  @Index({ name: 'UniqueAppCollectionAppIndex', unique: true })
   @Column(DataType.INTEGER)
   AppCollectionId: number;
 
   @ForeignKey(() => App)
-  @Unique('UniqueAppCollectionAppIndex')
+  @Index({ name: 'UniqueAppCollectionAppIndex', unique: true })
   @Column(DataType.INTEGER)
   AppId: number;
 
   @BelongsTo(() => AppCollection)
   AppCollection: Awaited<AppCollection>;
 
-  @BelongsTo(() => App)
+  @BelongsTo(() => App, { onDelete: 'CASCADE' })
   App: Awaited<App>;
 
   @Column(DataType.DATE)

@@ -368,6 +368,7 @@ describe('inviteMember', () => {
       name: 'test',
     });
     await AppMember.create({
+      email: user.primaryEmail,
       AppId: app.id,
       UserId: user.id,
       role: 'Manager',
@@ -499,6 +500,7 @@ describe('updateMember', () => {
       name: 'test',
     });
     const member = await AppMember.create({
+      email: user.primaryEmail,
       AppId: app.id,
       UserId: user.id,
       role: 'Manager',
@@ -550,6 +552,7 @@ describe('updateMember', () => {
       name: 'test',
     });
     await AppMember.create({
+      email: user.primaryEmail,
       AppId: app.id,
       UserId: user.id,
       role: 'Manager',
@@ -599,6 +602,7 @@ describe('deleteMember', () => {
       name: 'test',
     });
     const member = await AppMember.create({
+      email: user.primaryEmail,
       AppId: app.id,
       UserId: user.id,
       role: 'Manager',
@@ -649,6 +653,7 @@ describe('deleteMember', () => {
       name: 'test',
     });
     await AppMember.create({
+      email: user.primaryEmail,
       AppId: app.id,
       UserId: user.id,
       role: 'Manager',
