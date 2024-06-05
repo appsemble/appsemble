@@ -226,7 +226,7 @@ pages:
   - name: Example Page
     blocks:
       - type: data-loader
-        version: 0.28.11
+        version: 0.28.12
         actions:
           onLoad:
             type: resource.query
@@ -238,7 +238,7 @@ pages:
           emit:
             data: people
       - type: table
-        version: 0.28.11
+        version: 0.28.12
         events:
           listen:
             data: people

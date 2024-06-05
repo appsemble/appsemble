@@ -2,6 +2,34 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.28.12](https://gitlab.com/appsemble/appsemble/-/releases/0.28.12)] - 2024-06-05
+
+### Added
+
+- App: Add `hide` property to blocks to enable conditional rendering.
+- Utils: Add the `array.flatten` remapper.
+
+### Changed
+
+- Block(`form`): Change the selection input to also work with unique strings for the ids of the
+  items.
+- Preact-components: Change the `ImageComponent` to accept an id.
+- Utils: Change the `string.format` remapper to accept remappers, so it can receive a message id
+  dynamically.
+
+### Fixed
+
+- Block(`detail-viewer`): Display the thumbnail if there is no video value.
+- Block(`form`): Accept asset ids as valid file entry values.
+- Block(`form`): Make the selection field full width in forms.
+- Block(`list`): Add some padding to the end of the list to show the dropdown when needed.
+- React-components: Fix behavior of side menu to no longer immediately hide upon opening code and
+  GUI editors.
+- React-components: Fix initial state value parameter of the hook to now be passed along to
+  `enabled` state variable.
+- Studio: Fix bug where right options and blocks buttons permanently lose their text after right bar
+  is closed.
+
 ## \[[0.28.11](https://gitlab.com/appsemble/appsemble/-/releases/0.28.11)] - 2024-05-27
 
 ## \[[0.28.10](https://gitlab.com/appsemble/appsemble/-/releases/0.28.10)] - 2024-05-27

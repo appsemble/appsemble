@@ -1,7 +1,7 @@
 apiVersion: v2
 name: appsemble
-version: 0.28.11
-appVersion: 0.28.11
+version: 0.28.12
+appVersion: 0.28.12
 kubeVersion: '>=1.21.0'
 type: application
 description: The open source low-code app building platform
@@ -23,8 +23,37 @@ dependencies:
     repository: https://charts.bitnami.com/bitnami
     condition: postgresql.enabled
 annotations:
-  artifacthub.io/changes: |
-    []
+  artifacthub.io/changes: >
+    - kind: added
+      description: "App: Add hide property to blocks to enable conditional rendering."
+    - kind: added
+      description: "Utils: Add the array.flatten remapper."
+    - kind: changed
+      description: "Block(form): Change the selection input to also work with unique
+        strings for the ids of the items."
+    - kind: changed
+      description: "Preact-components: Change the ImageComponent to accept an id."
+    - kind: changed
+      description: "Utils: Change the string.format remapper to accept remappers, so
+        it can receive a message id dynamically."
+    - kind: fixed
+      description: "Block(detail-viewer): Display the thumbnail if there is no video value."
+    - kind: fixed
+      description: "Block(form): Accept asset ids as valid file entry values."
+    - kind: fixed
+      description: "Block(form): Make the selection field full width in forms."
+    - kind: fixed
+      description: "Block(list): Add some padding to the end of the list to show the
+        dropdown when needed."
+    - kind: fixed
+      description: "React-components: Fix behavior of side menu to no longer
+        immediately hide upon opening code and GUI editors."
+    - kind: fixed
+      description: "React-components: Fix initial state value parameter of the hook to
+        now be passed along to enabled state variable."
+    - kind: fixed
+      description: "Studio: Fix bug where right options and blocks buttons permanently
+        lose their text after right bar is closed."
   artifacthub.io/license: LGPL-3.0-only
   artifacthub.io/links: |
     - name: Appsemble Studio
