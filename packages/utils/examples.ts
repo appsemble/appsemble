@@ -294,6 +294,13 @@ export const examples: Record<RemapperExampleKeys, RemapperExample> = {
     },
     result: [1, 2, 3],
   },
+  'array.flatten': {
+    input: [['Milka', 'Sven'], 'Goldie'],
+    remapper: {
+      'array.flatten': null,
+    },
+    result: ['Milka', 'Sven', 'Goldie'],
+  },
   'assign.history': {
     input: null,
     remapper: {},
@@ -372,7 +379,6 @@ export const examples: Record<RemapperExampleKeys, RemapperExample> = {
     result: {},
     skip: true,
   },
-
   gt: {
     input: { stock: 100 },
     remapper: { gt: [{ prop: 'stock' }, 5] },

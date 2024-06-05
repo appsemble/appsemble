@@ -4,7 +4,8 @@ import { type VNode } from 'preact';
 import { useState } from 'preact/hooks';
 
 import styles from './index.module.css';
-import { type RendererProps, type VideoField } from '../../../block.js';
+import { type FileField, type RendererProps, type VideoField } from '../../../block.js';
+import { ImageField } from '../ImageField/index.js';
 
 export function VideoRenderer({
   data,
@@ -40,7 +41,11 @@ export function VideoRenderer({
   return (
     <div className={styles.wrapper}>
       {isPreactChild(label) ? <h1 className="label">{label}</h1> : null}
-      {platform ? (
+      {value ? (
+        thumbnailLink ? (
+          <ImageField field={{ rounded: true } as FileField} source={thumbnailUrl} />
+        ) : null
+      ) : platform ? (
         <iframe
           allowFullScreen
           height={height}

@@ -3737,7 +3737,10 @@ Will not render if undefined.",
           },
           "id": {
             "description": "The unique identifier for the choice.",
-            "type": "number",
+            "type": [
+              "number",
+              "string",
+            ],
           },
           "image": {
             "$ref": "#/definitions/Image",

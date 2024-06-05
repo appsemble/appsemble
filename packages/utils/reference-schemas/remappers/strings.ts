@@ -15,7 +15,7 @@ ${schemaExample('string.case')}
     additionalProperties: false,
     properties: {
       messageId: {
-        type: 'string',
+        $ref: '#/components/schemas/RemapperDefinition',
         description: 'The message id pointing to the template string to format.',
       },
       template: {

@@ -443,6 +443,18 @@ export interface Remappers {
   'array.unique': Remapper;
 
   /**
+   * Flattens an array.
+   *
+   * The value of the remapper is used for the flattening depth.
+   *
+   * If the value Remapper result in `undefined` or `null`, the array will be flattened until
+   * the last layer.
+   *
+   * If the input is not an array, the input is returned without any modifications.
+   */
+  'array.flatten': Remapper;
+
+  /**
    * Create an icalendar event.
    */
   ics: DurationICSRemapper | EndTimeICSRemapper;
@@ -653,7 +665,7 @@ export interface Remappers {
     /**
      * The message id pointing to the template string to format.
      */
-    messageId?: string;
+    messageId?: Remapper;
 
     /**
      * The template default string to format.

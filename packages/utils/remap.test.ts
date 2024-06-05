@@ -897,6 +897,55 @@ describe('array.unique', () => {
   });
 });
 
+describe('array.flatten', () => {
+  runTests({
+    'with unspecified depth': {
+      input: [
+        'a',
+        ['b'],
+        ['c', 'd'],
+        [
+          ['e', 'f'],
+          ['g', 'h'],
+        ],
+      ],
+      mappers: [{ 'array.flatten': null }],
+      expected: ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'],
+    },
+    'with statically specified depth': {
+      input: [
+        'a',
+        ['b'],
+        ['c', 'd'],
+        [
+          ['e', 'f'],
+          ['g', 'h'],
+        ],
+      ],
+      mappers: [{ 'array.flatten': 1 }],
+      expected: ['a', 'b', 'c', 'd', ['e', 'f'], ['g', 'h']],
+    },
+    'with dynamically specified depth': {
+      input: [
+        'a',
+        ['b'],
+        ['c', 'd'],
+        [
+          ['e', 'f'],
+          ['g', 'h'],
+        ],
+      ],
+      mappers: [{ 'array.flatten': { 'number.parse': '1' } }],
+      expected: ['a', 'b', 'c', 'd', ['e', 'f'], ['g', 'h']],
+    },
+    'with non array input': {
+      input: 'Oops',
+      mappers: [{ 'array.flatten': null }],
+      expected: 'Oops',
+    },
+  });
+});
+
 describe('array', () => {
   runTests({
     'return undefined if not in the context of array.map': {

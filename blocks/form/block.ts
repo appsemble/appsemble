@@ -390,7 +390,7 @@ export interface SelectionChoice {
   /**
    * The unique identifier for the choice.
    */
-  id: number;
+  id: number | string;
 
   /**
    * The header text to display above the list of fields.

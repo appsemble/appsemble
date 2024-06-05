@@ -34,5 +34,5 @@ export function Image({
   const img = remap(file, item, { index }) as string;
   const src = /^(https?:)?\/\//.test(img) ? img : asset(img);
 
-  return <ImageComponent alt={alternate} index={index} rounded={rounded} size={size} src={src} />;
+  return <ImageComponent alt={alternate} id={index} rounded={rounded} size={size} src={src} />;
 }

@@ -13,7 +13,7 @@ interface ImageComponentProps {
   /**
    * The index of the row that was clicked.
    */
-  readonly index: number;
+  readonly id: number | string;
 
   /**
    * The data to get properties from.
@@ -22,17 +22,17 @@ interface ImageComponentProps {
 }
 
 export function Image({
+  id,
   image: { alt, file, rounded, size = 48 },
-  index,
   option,
 }: ImageComponentProps): VNode {
   const {
     utils: { asset, remap },
   } = useBlock();
 
-  const alternate = remap(alt, option, { index }) as string;
-  const img = remap(file, option, { index }) as string;
+  const alternate = remap(alt, option, { id }) as string;
+  const img = remap(file, option, { id }) as string;
   const src = /^(https?:)?\/\//.test(img) ? img : asset(img);
 
-  return <ImageComponent alt={alternate} index={index} rounded={rounded} size={size} src={src} />;
+  return <ImageComponent alt={alternate} id={id} rounded={rounded} size={size} src={src} />;
 }

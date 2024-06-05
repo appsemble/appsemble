@@ -248,4 +248,14 @@ actions:
 \`\`\`
     `,
   },
+  'array.flatten': {
+    $ref: '#/components/schemas/RemapperDefinition',
+    description: `
+Flatten an array. Accepts an array of static or remapper values.
+
+Say for example that each person has some pets. We could get an array of all pets like so:
+
+${schemaExample('array.flatten', { input: 'pretty', exclude: ['remapper'] })}
+`,
+  },
 };

@@ -81,7 +81,7 @@ export function SelectionInput({
     }
   };
 
-  const deselectOption = (id: number): void => {
+  const deselectOption = (id: number | string): void => {
     onChange(
       name,
       selectedOptions.filter((selectedOption) => selectedOption.id !== id),

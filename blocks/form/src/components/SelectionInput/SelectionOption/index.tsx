@@ -9,7 +9,7 @@ import { Image } from '../Image/index.js';
 
 interface SelectionOptionProps {
   readonly option: SelectionChoice;
-  readonly onAdd: (id: number) => void;
+  readonly onAdd: (id: number | string) => void;
 }
 
 export function SelectionOption({ onAdd, option }: SelectionOptionProps): VNode {
@@ -24,16 +24,16 @@ export function SelectionOption({ onAdd, option }: SelectionOptionProps): VNode 
     <div className={`${styles.option} has-text-left is-flex my-1 p-2`}>
       {image && !imageInline ? (
         <div className={styles.image}>
-          {alignment === 'default' ? <Image image={image} index={id} option={option} /> : null}
+          {alignment === 'default' ? <Image id={id} image={image} option={option} /> : null}
         </div>
       ) : null}
       <div className={`${styles.contentWrapper} is-inline-block`}>
         {image && imageInline ? (
           <figure className={`image ${styles.image}`}>
-            <Image image={image} index={id} option={option} />
+            <Image id={id} image={image} option={option} />
           </figure>
         ) : null}
-        <Header index={id} option={option} />
+        <Header id={id} option={option} />
         <Content option={option} />
       </div>
       <div className="is-flex is-flex-direction-column is-justify-content-end">
