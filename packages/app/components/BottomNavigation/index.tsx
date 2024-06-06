@@ -73,12 +73,19 @@ export function BottomNavigation({ pages }: BottomNavigationProps): ReactNode {
                   to={`${url}/${normalize(name)}`}
                 >
                   {page.icon ? (
-                    <Icon className="mb-1" icon={page.icon} iconSize="3x" size="large" />
+                    <div>
+                      <Icon className="mb-1" icon={page.icon} iconSize="3x" size="large" />
+                      {page.badgeCount ? (
+                        <span className="tag is-rounded ml-1 is-success is-pulled-right">
+                          {count}
+                        </span>
+                      ) : null}
+                    </div>
                   ) : null}
                   <div>
                     <span>{navName}</span>
-                    {page.badgeCount ? (
-                      <span className="tag is-rounded ml-1 is-dark">{count}</span>
+                    {page.badgeCount && !page.icon ? (
+                      <span className="tag is-rounded ml-1 is-success">{count}</span>
                     ) : null}
                   </div>
                 </NavLink>
