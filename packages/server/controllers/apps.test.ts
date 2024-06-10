@@ -4586,6 +4586,31 @@ describe('patchApp', () => {
     expect(responseB).toMatchSnapshot();
   });
 
+  it('should allow removing stylesheets when updating an app', async () => {
+    const app = await App.create({
+      definition: { name: 'Test App', defaultPage: 'Test Page' },
+      path: 'test-app',
+      vapidPublicKey: 'a',
+      vapidPrivateKey: 'b',
+      OrganizationId: organization.id,
+      coreStyle: 'body { color: yellow; }',
+      sharedStyle: 'body { color: blue; }',
+    });
+
+    authorizeStudio(user);
+    const response = await request.patch(
+      `/api/apps/${app.id}`,
+      createFormData({
+        coreStyle: '',
+        sharedStyle: '',
+      }),
+    );
+    expect(response.status).toBe(200);
+    await app.reload();
+    expect(app.coreStyle).toBeNull();
+    expect(app.sharedStyle).toBeNull();
+  });
+
   it('should update the app demo mode flag', async () => {
     const app = await App.create(
       {
@@ -4836,138 +4861,6 @@ describe('patchApp', () => {
         "yaml": "name: Test App
       defaultPage: Test Page
       ",
-      }
-    `);
-  });
-});
-
-describe('getAppSharedStyle', () => {
-  it('should fetch sharedStyle for an app', async () => {
-    const app = await App.create(
-      {
-        definition: {
-          name: 'Test App',
-          defaultPage: 'Test Page',
-          pages: [{ name: 'Test Page' }],
-        },
-        sharedStyle: `
-        * {
-          color: var(--link-color)
-        }`,
-        coreStyle: `
-        * {
-          color: var(--primary-color)
-        }`,
-        vapidPrivateKey: 'b',
-        vapidPublicKey: 'a',
-        OrganizationId: organization.id,
-        icon: await readFixture('nodejs-logo.png'),
-      },
-      { raw: true },
-    );
-
-    const response = await request.get(`/api/apps/${app.id}/style/shared`);
-    expect(response.status).toBe(200);
-    expect(response.data).toMatchInlineSnapshot(`
-      "
-              * {
-                color: var(--link-color)
-              }"
-    `);
-  });
-
-  it('should return 404 for an app that does not exist', async () => {
-    const response = await request.get('/api/apps/0/style/shared');
-    expect(response).toMatchInlineSnapshot(`
-      HTTP/1.1 404 Not Found
-      Content-Type: application/json; charset=utf-8
-
-      {
-        "error": "Not Found",
-        "message": "App not found",
-        "statusCode": 404,
-      }
-    `);
-  });
-});
-
-describe('deleteAppSharedStyle', () => {
-  it('should delete sharedStyle for an app', async () => {
-    const app = await App.create(
-      {
-        definition: {
-          name: 'Test App',
-          defaultPage: 'Test Page',
-          pages: [{ name: 'Test Page' }],
-        },
-        sharedStyle: `
-        * {
-          color: var(--link-color)
-        }`,
-        coreStyle: `
-        * {
-          color: var(--primary-color)
-        }`,
-        vapidPrivateKey: 'b',
-        vapidPublicKey: 'a',
-        OrganizationId: organization.id,
-        icon: await readFixture('nodejs-logo.png'),
-      },
-      { raw: true },
-    );
-
-    authorizeStudio();
-
-    const response = await request.delete(`/api/apps/${app.id}/style/shared`);
-    expect(response.status).toBe(204);
-
-    await app.reload();
-    expect(app.sharedStyle).toBeNull();
-  });
-
-  it('should return 404 for an app that does not exist', async () => {
-    authorizeStudio();
-
-    const response = await request.delete('/api/apps/0/style/shared');
-    expect(response).toMatchInlineSnapshot(`
-      HTTP/1.1 404 Not Found
-      Content-Type: application/json; charset=utf-8
-
-      {
-        "error": "Not Found",
-        "message": "App not found",
-        "statusCode": 404,
-      }
-    `);
-  });
-
-  it('should return 404 if sharedStyle for an app does not exist', async () => {
-    authorizeStudio();
-
-    const app = await App.create(
-      {
-        definition: {
-          name: 'Test App',
-          defaultPage: 'Test Page',
-          pages: [{ name: 'Test Page' }],
-        },
-        vapidPrivateKey: 'b',
-        vapidPublicKey: 'a',
-        OrganizationId: organization.id,
-        icon: await readFixture('nodejs-logo.png'),
-      },
-      { raw: true },
-    );
-
-    const response = await request.delete(`/api/apps/${app.id}/style/shared`);
-    expect(response).toMatchInlineSnapshot(`
-      HTTP/1.1 404 Not Found
-      Content-Type: application/json; charset=utf-8
-
-      {
-        "error": "Not Found",
-        "message": "App shared style not found",
-        "statusCode": 404,
       }
     `);
   });
