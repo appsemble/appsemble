@@ -128,6 +128,30 @@ bootstrap(
       setSubmitErrorResult(null);
     }, []);
 
+    const receiveFields = (d: FieldEventParameters): void => {
+      setFieldsLoading(true);
+      setFields(d.fields);
+
+      const newDefaultValues = generateDefaultValues(d.fields);
+
+      if (d.keepValues) {
+        setValues((currentValues) =>
+          recursive(true, newDefaultValues, d.initialValues, currentValues),
+        );
+      } else {
+        setValues(recursive(true, newDefaultValues, d.initialValues));
+      }
+      setSubmitErrorResult(null);
+      setFieldsLoading(!d.fields?.length);
+    };
+
+    useEffect(() => {
+      (async () => {
+        const result = (await actions?.onLoad?.()) as FieldEventParameters;
+        receiveFields(result);
+      })();
+    }, [actions]);
+
     useEffect(() => {
       events.emit.change(values);
 
@@ -272,23 +296,6 @@ bootstrap(
     }, [actions, values]);
 
     useEffect(() => {
-      const receiveFields = (d: FieldEventParameters): void => {
-        setFieldsLoading(true);
-        setFields(d.fields);
-
-        const newDefaultValues = generateDefaultValues(d.fields);
-
-        if (d.keepValues) {
-          setValues((currentValues) =>
-            recursive(true, newDefaultValues, d.initialValues, currentValues),
-          );
-        } else {
-          setValues(recursive(true, newDefaultValues, d.initialValues));
-        }
-        setSubmitErrorResult(null);
-        setFieldsLoading(!d.fields?.length);
-      };
-
       const hasFieldsEvent = events.on.fields(receiveFields);
       if (hasFieldsEvent && !initialFields) {
         setFieldsLoading(true);
