@@ -128,7 +128,7 @@ export const MonacoEditor = forwardRef<editor.IStandaloneCodeEditor, MonacoEdito
       if (model && model.getValue() !== value) {
         model.setValue(value);
       }
-    }, [value]);
+    }, [value, uri]);
 
     /**
      * Handle the change handler.

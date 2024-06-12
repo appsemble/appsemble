@@ -3420,31 +3420,6 @@ describe('patchApp', () => {
     `);
   });
 
-  it('should allow removing core styling and shared styling of an app', async () => {
-    const app = await App.create({
-      definition: { name: 'Test App', defaultPage: 'Test Page' },
-      path: 'test-app',
-      vapidPublicKey: 'a',
-      vapidPrivateKey: 'b',
-      OrganizationId: organization.id,
-      coreStyle: 'body { color: yellow; }',
-      sharedStyle: 'body { color: blue; }',
-    });
-
-    authorizeStudio(user);
-    const response = await request.patch(
-      `/api/apps/${app.id}`,
-      createFormData({
-        coreStyle: '',
-        sharedStyle: '',
-      }),
-    );
-    expect(response.status).toBe(200);
-    await app.reload();
-    expect(app.coreStyle).toBeNull();
-    expect(app.sharedStyle).toBeNull();
-  });
-
   it('should update the email settings', async () => {
     const app = await App.create({
       definition: { name: 'Test App', defaultPage: 'Test Page' },
@@ -4609,6 +4584,31 @@ describe('patchApp', () => {
 
     expect(responseA).toMatchSnapshot();
     expect(responseB).toMatchSnapshot();
+  });
+
+  it('should allow removing stylesheets when updating an app', async () => {
+    const app = await App.create({
+      definition: { name: 'Test App', defaultPage: 'Test Page' },
+      path: 'test-app',
+      vapidPublicKey: 'a',
+      vapidPrivateKey: 'b',
+      OrganizationId: organization.id,
+      coreStyle: 'body { color: yellow; }',
+      sharedStyle: 'body { color: blue; }',
+    });
+
+    authorizeStudio(user);
+    const response = await request.patch(
+      `/api/apps/${app.id}`,
+      createFormData({
+        coreStyle: '',
+        sharedStyle: '',
+      }),
+    );
+    expect(response.status).toBe(200);
+    await app.reload();
+    expect(app.coreStyle).toBeNull();
+    expect(app.sharedStyle).toBeNull();
   });
 
   it('should update the app demo mode flag', async () => {
