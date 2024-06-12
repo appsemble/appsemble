@@ -1,7 +1,7 @@
 apiVersion: v2
 name: appsemble
-version: 0.29.0
-appVersion: 0.29.0
+version: 0.29.1
+appVersion: 0.29.1
 kubeVersion: '>=1.21.0'
 type: application
 description: The open source low-code app building platform
@@ -24,19 +24,12 @@ dependencies:
     condition: postgresql.enabled
 annotations:
   artifacthub.io/changes: >
-    - kind: changed
-      description: "Server: Migration 0.29.0 has a significant chance to fail due too
-        a large amount of new constraints. The migration however will now be rolled
-        back in case of a failure and log the appriopriate actions to take to clean
-        the database."
-    - kind: removed
-      description: "Server: Removed migration versions 0.9.0 - 0.24.1."
     - kind: fixed
-      description: "Server: Loading empty SCIM secrets resulted in an error on the
-        secrets page not allowing to generate a new SCIM secret."
+      description: "Server: Updating an app without updating the shared- or core
+        styles directly would remove the app styles."
     - kind: fixed
-      description: "Server: SCIM errors were unhandled causing internal server errors
-        since the error handling middleware was removed in version 0.22.0."
+      description: "Studio: When the core and shared styling is exactly the same it
+        wouldn't load when switching to the other editor style tab."
   artifacthub.io/license: LGPL-3.0-only
   artifacthub.io/links: |
     - name: Appsemble Studio

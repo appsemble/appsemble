@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.29.1](https://gitlab.com/appsemble/appsemble/-/releases/0.29.1)] - 2024-06-12
+
+### Fixed
+
+- Server: Updating an app without updating the shared- or core styles directly would remove the app
+  styles.
+- Studio: When the core and shared styling is exactly the same it wouldn't load when switching to
+  the other editor style tab.
+
 ## \[[0.29.0](https://gitlab.com/appsemble/appsemble/-/releases/0.29.0)] - 2024-06-05
 
 ### Changed
