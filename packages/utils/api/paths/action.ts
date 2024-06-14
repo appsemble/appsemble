@@ -17,6 +17,27 @@ function proxy(method: string, body?: boolean): OpenAPIV3.OperationObject {
       description: 'The data that was passed to the action',
       required: true,
       content: {
+        'multipart/form-data': {
+          schema: {
+            type: 'object',
+            description: 'A `multipart/form-data` representation of a resource.',
+            additionalProperties: true,
+            properties: {
+              resource: {
+                type: 'array',
+                items: { $ref: '#/components/schemas/Resource' },
+              },
+              assets: {
+                type: 'array',
+                description: 'A list of assets that should be linked to the resource.',
+                items: {
+                  type: 'string',
+                  format: 'binary',
+                },
+              },
+            },
+          },
+        },
         '*/*': {},
       },
     };

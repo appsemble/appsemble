@@ -1,5 +1,6 @@
 import {
   assertKoaError,
+  createFormData,
   getRemapperContext,
   logger,
   type Options,
@@ -16,7 +17,8 @@ import {
 import { defaultLocale, remap } from '@appsemble/utils';
 import axios, { type RawAxiosRequestConfig } from 'axios';
 import { type Context, type Middleware } from 'koa';
-import { get, pick } from 'lodash-es';
+import { get, mapValues, pick } from 'lodash-es';
+import { type JsonObject, type JsonValue } from 'type-fest';
 
 import { EmailQuotaExceededError } from '../../EmailQuotaExceededError.js';
 
@@ -99,6 +101,29 @@ async function handleNotify(
   ctx.status = 204;
 }
 
+function deserializeResource(data: any): any {
+  // Extract the resource and assets from the JSON object
+  const { resource } = data;
+  const assets = data.assets as Blob[];
+
+  // Function to replace asset placeholders with actual Blobs
+  const replaceAssets = (value: JsonValue): any => {
+    if (Array.isArray(value)) {
+      return value.map(replaceAssets);
+    }
+    if (typeof value === 'string' && /^\d+$/.test(value)) {
+      return assets[Number(value)];
+    }
+    if (value && typeof value === 'object') {
+      return mapValues(value as JsonObject, replaceAssets);
+    }
+    return value;
+  };
+
+  // Replace placeholders and return the deserialized resource
+  return replaceAssets(resource);
+}
+
 async function handleRequestProxy(
   ctx: Context,
   app: App,
@@ -115,7 +140,12 @@ async function handleRequestProxy(
 
   let data;
   if (useBody) {
-    data = body;
+    if (Object.hasOwn(body, 'assets')) {
+      const deserializedBody = deserializeResource(body);
+      data = createFormData(deserializedBody.length === 1 ? deserializedBody[0] : deserializedBody);
+    } else {
+      data = body;
+    }
   } else {
     try {
       data = JSON.parse(query.data as string);
