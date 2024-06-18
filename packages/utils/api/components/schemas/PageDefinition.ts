@@ -20,7 +20,7 @@ the list.
       },
     },
     actions: {
-      $ref: '#/components/schemas/TabsPageActionsDefinition',
+      $ref: '#/components/schemas/PageActionsDefinition',
     },
   },
 });

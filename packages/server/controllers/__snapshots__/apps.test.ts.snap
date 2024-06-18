@@ -263,7 +263,7 @@ will remain the same until it is manually updated.
           ],
           "properties": {
             "actions": {
-              "$ref": "#/components/schemas/TabsPageActionsDefinition",
+              "$ref": "#/components/schemas/PageActionsDefinition",
             },
             "badgeCount": {
               "$ref": "#/components/schemas/RemapperDefinition",
@@ -2233,7 +2233,7 @@ will remain the same until it is manually updated.
           ],
           "properties": {
             "actions": {
-              "$ref": "#/components/schemas/TabsPageActionsDefinition",
+              "$ref": "#/components/schemas/PageActionsDefinition",
             },
             "badgeCount": {
               "$ref": "#/components/schemas/RemapperDefinition",
@@ -4115,7 +4115,7 @@ will remain the same until it is manually updated.
           ],
           "properties": {
             "actions": {
-              "$ref": "#/components/schemas/TabsPageActionsDefinition",
+              "$ref": "#/components/schemas/PageActionsDefinition",
             },
             "badgeCount": {
               "$ref": "#/components/schemas/RemapperDefinition",
