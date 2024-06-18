@@ -19,5 +19,8 @@ the list.
         $ref: '#/components/schemas/BlockDefinition',
       },
     },
+    actions: {
+      $ref: '#/components/schemas/TabsPageActionsDefinition',
+    },
   },
 });
