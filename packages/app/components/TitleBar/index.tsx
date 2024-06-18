@@ -1,16 +1,17 @@
 import { Portal, SideMenuButton } from '@appsemble/react-components';
-import { type ReactChild, type ReactNode } from 'react';
+import { type ReactNode } from 'react';
 import { FormattedMessage } from 'react-intl';
 
 import { messages } from './messages.js';
 import { shouldShowMenu } from '../../utils/layout.js';
 import { useAppDefinition } from '../AppDefinitionProvider/index.js';
+import { useAppMessages } from '../AppMessagesProvider/index.js';
 import { usePage } from '../MenuProvider/index.js';
 import { ProfileDropdown } from '../ProfileDropdown/index.js';
 import { useUser } from '../UserProvider/index.js';
 
 interface AppBarProps {
-  readonly children?: ReactChild;
+  readonly children?: ReactNode;
   readonly hideName?: boolean;
 }
 
@@ -21,10 +22,12 @@ interface AppBarProps {
  */
 export function AppBar({ children, hideName }: AppBarProps): ReactNode {
   const { definition, demoMode } = useAppDefinition();
+  const { getAppMessage } = useAppMessages();
   const { role, teams } = useUser();
   const { page } = usePage();
 
   const navigation = (page?.navigation || definition?.layout?.navigation) ?? 'left-menu';
+  const appName = (getAppMessage({ id: 'name' }).format() as string) ?? definition.name;
 
   return (
     <Portal element={document.getElementsByClassName('navbar')[0]}>
@@ -37,7 +40,7 @@ export function AppBar({ children, hideName }: AppBarProps): ReactNode {
           </div>
         ) : null}
         <div className="navbar-brand is-inline-flex is-flex-grow-1">
-          <h2 className="navbar-item title is-4">{!hideName && (children || definition.name)}</h2>
+          <h2 className="navbar-item title is-4">{!hideName && (children || appName)}</h2>
         </div>
         {demoMode ? (
           <div className="tag is-rounded is-warning mx-1 my-1">
