@@ -20,6 +20,7 @@ spec:
       annotations:
         {{ include "appsemble.gitlab" . | indent 10 }}
     spec:
+      automountServiceAccountToken: {{ not .Values.noServiceAccount }}
       enableServiceLinks: false
       containers:
         - name: {{ .Chart.Name }}
@@ -51,7 +52,7 @@ spec:
               {{- end }}
             - name: FORCE_PROTOCOL_HTTPS
               value: {{ .Values.forceProtocolHttps | quote }}
-            {{ if .Values.ingress.enabled -}}
+            {{ if and .Values.ingress.enabled (not .Values.noServiceAccount) -}}
             - name: APP_DOMAIN_STRATEGY
               value: kubernetes-ingress
             - name: INGRESS_CLASS_NAME

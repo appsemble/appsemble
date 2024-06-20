@@ -66,6 +66,7 @@ gitlab:
 migrateTo: null
 
 forceProtocolHttps: false
+noServiceAccount: false
 
 proxy: false
 
