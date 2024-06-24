@@ -98,7 +98,6 @@ export function SideMenuProvider({ base, bottom, children }: SideMenuProviderPro
           [styles.toggleable]: isClosableOnDesktop,
         })}
       >
-        {}
         <div
           className={classNames(styles.backdrop, 'is-hidden-dekstop', {
             [styles.closed]: !enabled,

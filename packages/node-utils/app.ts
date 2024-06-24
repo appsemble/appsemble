@@ -58,7 +58,6 @@ export async function getRemapperContext(
     (message) =>
       new IntlMessageFormat(message, language, undefined, {
         formatters: {
-          // @ts-expect-error intl-messageformat types are wrong
           getNumberFormat,
           getPluralRules,
           getDateTimeFormat: memoize(

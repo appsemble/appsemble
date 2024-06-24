@@ -103,7 +103,6 @@ export function Modal<T extends ElementType = 'div'>({
 
   return (
     <div className={`is-active modal ${styles.root} ${extraClassName} ${openClass}`}>
-      {}
       <div
         className="modal-background"
         onClick={closable ? onClose : null}

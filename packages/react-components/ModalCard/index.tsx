@@ -106,7 +106,6 @@ export function ModalCard<T extends ElementType = 'div'>({
 
   return (
     <div className={classNames(`is-active modal ${styles.root} ${openClass}`, wrapperClassName)}>
-      {}
       <div
         className="modal-background"
         onClick={closable ? onClose : null}
