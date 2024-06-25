@@ -183,6 +183,10 @@
       "type": "boolean",
       "description": "If `true`, the Helm chart assumes the application is reached over HTTPS"
     },
+    "noServiceAccount": {
+      "type": "boolean",
+      "description": "If specified, the Kubernetes service account and all functionality related to it won't be used."
+    },
     "global": {
       "type": "object"
     },
