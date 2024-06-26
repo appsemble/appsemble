@@ -1,6 +1,6 @@
-{{- if and .Values.ingress.enabled (not .Values.noServiceAccount) -}}
+{{- if .Values.ingress.enabled -}}
 apiVersion: rbac.authorization.k8s.io/v1
-kind: Role
+kind: ClusterRole
 metadata:
   name: {{ include "appsemble.fullname" . }}
   labels:
