@@ -1,5 +1,5 @@
-import { type ComponentChildren, createContext, type JSX, type VNode } from 'preact';
-import { useContext, useMemo } from 'preact/hooks';
+import { type ComponentChildren, createContext, type JSX, type Ref, type VNode } from 'preact';
+import { type MutableRef, useContext, useMemo } from 'preact/hooks';
 
 interface ValuePickerContext<T> {
   /**
@@ -22,6 +22,11 @@ const Context = createContext<ValuePickerContext<unknown>>(null);
 
 export interface ValuePickerProviderProps<T> extends ValuePickerContext<T> {
   readonly children: ComponentChildren;
+
+  /**
+   * The ref to the element used for scrolling to the field error
+   */
+  readonly errorLinkRef?: MutableRef<HTMLElement>;
 }
 
 /**
@@ -32,13 +37,19 @@ export interface ValuePickerProviderProps<T> extends ValuePickerContext<T> {
  */
 export function ValuePickerProvider<T>({
   children,
+  errorLinkRef,
   name,
   onChange,
   value,
 }: ValuePickerProviderProps<T>): VNode {
   const context = useMemo(() => ({ name, onChange, value }), [name, onChange, value]);
 
-  return <Context.Provider value={context}>{children}</Context.Provider>;
+  return (
+    <>
+      <span ref={errorLinkRef as unknown as Ref<HTMLDivElement>} />
+      <Context.Provider value={context}>{children}</Context.Provider>
+    </>
+  );
 }
 
 /**

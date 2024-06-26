@@ -20,6 +20,7 @@ export function TagsInput({
   dirty,
   disabled,
   error,
+  errorLinkRef,
   field,
   formValues,
   name,
@@ -54,6 +55,7 @@ export function TagsInput({
   return (
     <TagsField
       {...commonProps}
+      errorLinkRef={errorLinkRef}
       regex={field.requirements?.some((r) => Boolean((r as RegexRequirement).regex))}
     />
   );

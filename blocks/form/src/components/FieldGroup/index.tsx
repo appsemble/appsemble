@@ -1,6 +1,6 @@
 import classNames from 'classnames';
 import { type ComponentChildren, type VNode } from 'preact';
-import { useCallback } from 'preact/hooks';
+import { type MutableRef, useCallback } from 'preact/hooks';
 
 import styles from './index.module.css';
 import {
@@ -54,6 +54,14 @@ interface FieldGroupProps {
    * The current form values.
    */
   formValues: Values;
+
+  /**
+   * Used to set the element for scrolling to the field error
+   */
+  readonly setFieldErrorLink?: (
+    fieldName: string,
+    params: { ref: MutableRef<HTMLElement>; error: string; label: string },
+  ) => void;
 }
 
 /**
@@ -68,6 +76,7 @@ export function FieldGroup({
   formValues,
   name,
   onChange,
+  setFieldErrorLink,
 }: FieldGroupProps): VNode {
   const handleChange = useCallback(
     (localName: string, val: unknown) => {
@@ -113,6 +122,7 @@ export function FieldGroup({
           key={f.name}
           name={name ? `${name}.${f.name}` : f.name}
           onChange={handleChange}
+          setFieldErrorLink={setFieldErrorLink}
         />
       ))}
     </div>

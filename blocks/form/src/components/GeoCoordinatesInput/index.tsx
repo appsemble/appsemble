@@ -2,7 +2,7 @@ import { useBlock } from '@appsemble/preact';
 import { FormComponent, type SharedFormComponentProps } from '@appsemble/preact-components';
 import { CircleMarker, type LocationEvent, Map, TileLayer } from 'leaflet';
 import 'leaflet/dist/leaflet.css';
-import { type VNode } from 'preact';
+import { type Ref, type VNode } from 'preact';
 import { useCallback, useEffect, useRef, useState } from 'preact/hooks';
 
 import styles from './index.module.css';
@@ -17,6 +17,7 @@ type GeoCoordinatesInputProps = InputProps<Record<string, number>, GeoCoordinate
  */
 export function GeoCoordinatesInput({
   disabled,
+  errorLinkRef,
   field,
   formValues,
   name,
@@ -123,7 +124,10 @@ export function GeoCoordinatesInput({
       required={required}
       tag={utils.remap(tag, {}) as string}
     >
-      <div className={`appsemble-geocoordinates ${styles.root} is-relative mb-5`}>
+      <div
+        className={`appsemble-geocoordinates ${styles.root} is-relative mb-5`}
+        ref={errorLinkRef as unknown as Ref<HTMLDivElement>}
+      >
         <div className={styles.map} ref={ref} />
         <div className={styles.crossHairsOverlay}>
           <i className={`fas fa-crosshairs ${styles.crossHairs}`} />

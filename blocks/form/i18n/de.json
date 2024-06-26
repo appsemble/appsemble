@@ -1,12 +1,13 @@
 {
   "confirmLabel": "Bestätigen",
   "fieldErrorLabel": "Eine der Anforderungen dieses Feldes ist ungültig.",
+  "fixErrors": "",
   "formRequirementError": "Eine der Anforderungen dieses Formulars ist ungültig.",
   "invalidLabel": "Dieser Wert ist ungültig",
   "optionalLabel": "(optional)",
   "previousLabel": "Vorherige",
-  "submitError": "Beim Senden dieses Formulars ist ein Problem aufgetreten",
-  "submitLabel": "Übermitteln",
   "selectionNoOptions": "",
-  "selectionOptionsError": ""
+  "selectionOptionsError": "",
+  "submitError": "Beim Senden dieses Formulars ist ein Problem aufgetreten",
+  "submitLabel": "Übermitteln"
 }

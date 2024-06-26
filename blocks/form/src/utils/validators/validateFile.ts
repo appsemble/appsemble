@@ -8,15 +8,18 @@ function testType(acceptedType: string, type: string): boolean {
 
 export function validateFile(field: FileField, value: File | File[]): FileRequirement {
   return field.requirements?.find((requirement) => {
-    if (
-      'required' in requirement &&
-      (value == null || (field.repeated && (value as File[]).length === 0))
-    ) {
-      return true;
+    if (value == null) {
+      return 'required' in requirement;
     }
 
     // Allows existing asset id values
-    if (typeof value === 'string') {
+    if (
+      typeof value === 'string' ||
+      (field.repeated &&
+        Array.isArray(value) &&
+        value.length > 0 &&
+        value.every((entry) => typeof entry === 'string'))
+    ) {
       return false;
     }
 

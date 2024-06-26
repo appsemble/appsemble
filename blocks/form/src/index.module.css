@@ -49,6 +49,23 @@
   grid-column: span 3;
 }
 
+.error-link-container {
+  text-align: left;
+}
+
+.error-link {
+  background-color: unset;
+  border: 0;
+  color: hsl(9deg 100% 50%);
+  cursor: pointer;
+  display: inline-flex;
+  padding: 0;
+}
+
+.error-link :hover {
+  text-decoration: underline;
+}
+
 @media only screen and (width <= 1024px) {
   .wrapper-grid {
     display: grid;

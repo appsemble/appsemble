@@ -17,6 +17,7 @@ export function EnumInput({
   className,
   dirty,
   disabled,
+  errorLinkRef,
   field,
   formValues,
   name,
@@ -76,6 +77,7 @@ export function EnumInput({
       className={classNames('appsemble-enum', className)}
       disabled={disabled || loading || options.length === 0}
       error={dirty ? error : null}
+      errorLinkRef={errorLinkRef}
       help={utils.remap(field.help, value) as string}
       icon={icon}
       inline={inline}

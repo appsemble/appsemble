@@ -17,6 +17,7 @@ export function FileInput({
   dirty,
   disabled,
   error,
+  errorLinkRef,
   field,
   formValues,
   name,
@@ -57,10 +58,12 @@ export function FileInput({
           className={classNames('is-flex py-2 pl-2 pr-0', styles.repeatedContainer, {
             'mt-5': !remappedLabel,
           })}
+          id={name}
         >
           <FileEntry
             disabled={disabled}
             error={dirty ? error : null}
+            errorLinkRef={errorLinkRef}
             field={field}
             formValues={null}
             name={`${name}.${(value as string[]).length}`}
@@ -71,6 +74,7 @@ export function FileInput({
             {(value as string[]).map((val, index) => (
               <FileEntry
                 error={dirty ? error : null}
+                errorLinkRef={errorLinkRef}
                 field={field}
                 formValues={val as unknown as Values}
                 // eslint-disable-next-line react/no-array-index-key
@@ -85,6 +89,7 @@ export function FileInput({
       ) : (
         <FileEntry
           error={dirty ? error : null}
+          errorLinkRef={errorLinkRef}
           field={field}
           formValues={value as Values}
           name={name}

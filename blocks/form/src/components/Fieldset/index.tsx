@@ -2,7 +2,7 @@ import { useBlock } from '@appsemble/preact';
 import { Button, FormButtons } from '@appsemble/preact-components';
 import classNames from 'classnames';
 import { type JSX, type VNode } from 'preact';
-import { useCallback } from 'preact/hooks';
+import { type MutableRef, useCallback } from 'preact/hooks';
 
 import styles from './index.module.css';
 import {
@@ -20,6 +20,10 @@ import { FieldsetEntry } from '../FieldsetEntry/index.js';
 
 interface FieldsetProps extends InputProps<Values | Values[], FieldsetType> {
   readonly display?: FormDisplay;
+  readonly setFieldErrorLink?: (
+    fieldName: string,
+    params: { ref: MutableRef<any>; error: string; label: string },
+  ) => void;
 }
 
 /**
@@ -30,10 +34,12 @@ export function Fieldset({
   disabled,
   display = 'flex',
   error,
+  errorLinkRef,
   field,
   formValues,
   name,
   onChange,
+  setFieldErrorLink,
 }: FieldsetProps): VNode {
   const { utils } = useBlock();
   const localValues = getValueByNameSequence(name, formValues) as Values[];
@@ -102,12 +108,16 @@ export function Fieldset({
                   disabled={disabled}
                   display={display}
                   error={errors?.[index]}
+                  errorLinkRef={errorLinkRef}
                   field={field}
                   fieldSpan={!fieldsetSpan}
                   formValues={formValues}
                   index={index}
                   name={`${name}.${index}`}
                   onChange={changeArray}
+                  setFieldErrorLink={(fieldName, params) =>
+                    setFieldErrorLink(`${field.name}.${index}.${fieldName}`, params)
+                  }
                 />
               </div>
             ))}
@@ -124,10 +134,12 @@ export function Fieldset({
         <FieldsetEntry
           disabled={disabled}
           error={error}
+          errorLinkRef={errorLinkRef}
           field={field}
           formValues={formValues}
           name={name}
           onChange={onChange}
+          setFieldErrorLink={setFieldErrorLink}
         />
       )}
     </fieldset>

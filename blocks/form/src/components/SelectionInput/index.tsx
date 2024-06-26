@@ -8,7 +8,7 @@ import {
   useToggle,
 } from '@appsemble/preact-components';
 import classNames from 'classnames';
-import { type VNode } from 'preact';
+import { type Ref, type VNode } from 'preact';
 import { useEffect, useState } from 'preact/hooks';
 
 import styles from './index.module.css';
@@ -27,6 +27,7 @@ type SelectionInputProps = InputProps<SelectionChoice[], SelectionFieldInterface
 export function SelectionInput({
   className,
   disabled,
+  errorLinkRef,
   field,
   formValues,
   name,
@@ -93,7 +94,11 @@ export function SelectionInput({
   );
 
   return (
-    <div className={classNames('appsemble-selection mb-4', className, styles['selection-wrapper'])}>
+    <div
+      className={classNames('appsemble-selection mb-4', className, styles['selection-wrapper'])}
+      id={name}
+      ref={errorLinkRef as unknown as Ref<HTMLDivElement>}
+    >
       <div className="title is-5 mb-4">{utils.remap(field.label, selectedOptions) as string}</div>
       <div>
         {selectedOptions.map((option) => (

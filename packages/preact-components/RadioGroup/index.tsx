@@ -1,4 +1,5 @@
 import { type ComponentChild, type JSX, type VNode } from 'preact';
+import { type MutableRef } from 'preact/hooks';
 
 import { FormComponent, type SharedFormComponentProps, ValuePickerProvider } from '../index.js';
 
@@ -35,12 +36,18 @@ type RadioGroupProps = Omit<JSX.HTMLAttributes<HTMLInputElement>, 'label' | 'onC
      * The tag to display to the right of the label.
      */
     readonly tag?: ComponentChild;
+
+    /**
+     * The ref to the element used for scrolling to the field error
+     */
+    readonly errorLinkRef?: MutableRef<HTMLElement>;
   };
 
 export function RadioGroup({
   children,
   className,
   error,
+  errorLinkRef,
   label,
   name,
   onChange,
@@ -58,7 +65,12 @@ export function RadioGroup({
       required={required}
       tag={tag}
     >
-      <ValuePickerProvider name={name} onChange={onChange} value={value}>
+      <ValuePickerProvider
+        errorLinkRef={errorLinkRef}
+        name={name}
+        onChange={onChange}
+        value={value}
+      >
         {children}
         {error ? <p className="help is-danger">{error}</p> : null}
       </ValuePickerProvider>

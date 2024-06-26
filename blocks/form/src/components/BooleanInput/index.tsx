@@ -17,6 +17,7 @@ export function BooleanInput({
   dirty,
   disabled,
   error,
+  errorLinkRef,
   field,
   formValues,
   name,
@@ -36,6 +37,7 @@ export function BooleanInput({
       color={color}
       disabled={disabled}
       error={dirty ? error : null}
+      errorLinkRef={errorLinkRef}
       help={utils.remap(help, value) as string}
       icon={icon}
       inline={inline}

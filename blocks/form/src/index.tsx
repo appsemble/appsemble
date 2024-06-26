@@ -4,7 +4,8 @@ import { type ActionError } from '@appsemble/types';
 import { identity } from '@appsemble/utils';
 import classNames from 'classnames';
 import { recursive } from 'merge';
-import { useCallback, useEffect, useMemo, useRef, useState } from 'preact/hooks';
+import { type VNode } from 'preact';
+import { type MutableRef, useCallback, useEffect, useMemo, useRef, useState } from 'preact/hooks';
 
 import { FormInput } from './components/FormInput/index.js';
 import styles from './index.module.css';
@@ -13,6 +14,11 @@ import { generateDefaultValidity } from './utils/generateDefaultValidity.js';
 import { generateDefaultValues } from './utils/generateDefaultValues.js';
 import { isFormValid } from './utils/validity.js';
 import { type FieldEventParameters, type StringField, type Values } from '../block.js';
+
+const goToRef = (ref: MutableRef<any>): void => {
+  ref?.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  ref?.current?.focus({ preventScroll: true });
+};
 
 bootstrap(
   ({
@@ -67,6 +73,51 @@ bootstrap(
         ),
       [defaultValues, fields, utils, values],
     );
+
+    const [fieldErrorLinks, setFieldErrorLinks] = useState<
+      Record<string, { error: string; element: VNode }>
+    >({});
+
+    const setFieldErrorLink = (
+      fieldName: string,
+      params: { ref: MutableRef<any>; label: string; error: string },
+    ): void => {
+      if (params) {
+        const { error, label, ref } = params;
+
+        if (!fieldErrorLinks[fieldName] || fieldErrorLinks[fieldName].error !== error) {
+          setFieldErrorLinks((prevState) => ({
+            ...prevState,
+            [fieldName]: {
+              error,
+              element: (
+                <button
+                  className={styles['error-link']}
+                  key={fieldName}
+                  onClick={() => goToRef(ref)}
+                  type="button"
+                >
+                  <span>
+                    {label}: {error}
+                  </span>
+                </button>
+              ),
+            },
+          }));
+        }
+      } else {
+        if (fieldErrorLinks[fieldName]) {
+          setFieldErrorLinks((prevState) => ({
+            ...prevState,
+            [fieldName]: null,
+          }));
+        }
+      }
+    };
+
+    const errorLink = Object.values(fieldErrorLinks).find(
+      (fieldErrorLink) => fieldErrorLink != null,
+    )?.element;
 
     const lock = useRef<symbol>();
 
@@ -378,9 +429,21 @@ bootstrap(
                 name={f.name}
                 onChange={onChange}
                 readOnly={Boolean(utils.remap(f.readOnly, values[f.name], { values }))}
+                setFieldErrorLink={setFieldErrorLink}
               />
             ))}
         </div>
+        {errorLink ? (
+          <div
+            className={classNames(
+              styles['error-link-container'],
+              'is-flex is-flex-direction-column is-justify-content-flex-start',
+            )}
+          >
+            <span>{utils.formatMessage('fixErrors')}</span>
+            {errorLink}
+          </div>
+        ) : null}
         <FormButtons className="mt-2">
           {previous ? (
             <Button className="mr-4" disabled={dataLoading || submitting} onClick={onPrevious}>

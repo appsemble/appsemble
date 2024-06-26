@@ -28,6 +28,7 @@ export const TextAreaField = forwardRef<HTMLTextAreaElement, TextAreaFieldProps>
       tag,
       optionalLabel,
       inline,
+      errorLinkRef,
       ...props
     },
     ref,
@@ -50,6 +51,7 @@ export const TextAreaField = forwardRef<HTMLTextAreaElement, TextAreaFieldProps>
       <TextArea
         {...props}
         className={classNames('textarea', { 'is-danger': error })}
+        errorLinkRef={errorLinkRef}
         id={id}
         maxLength={maxLength}
         name={name}

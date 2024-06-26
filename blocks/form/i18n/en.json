@@ -1,12 +1,13 @@
 {
   "confirmLabel": "Confirm",
   "fieldErrorLabel": "One of the requirements of this field is invalid.",
+  "fixErrors": "Please fix the following errors:",
   "formRequirementError": "One of the requirements of this form is invalid.",
   "invalidLabel": "This value is invalid",
   "optionalLabel": "(Optional)",
   "previousLabel": "Previous",
-  "submitError": "There was a problem submitting this form",
-  "submitLabel": "Submit",
   "selectionNoOptions": "No more available options",
-  "selectionOptionsError": "There was an error loading the options"
+  "selectionOptionsError": "There was an error loading the options",
+  "submitError": "There was a problem submitting this form",
+  "submitLabel": "Submit"
 }

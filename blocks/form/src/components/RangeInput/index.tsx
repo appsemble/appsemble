@@ -18,6 +18,7 @@ export function RangeInput({
   dirty,
   disabled,
   error,
+  errorLinkRef,
   field,
   formValues,
   name,
@@ -74,6 +75,7 @@ export function RangeInput({
     <DualSliderField
       {...commonProps}
       bottomLabels={bottomLabels?.map((bottomLabel) => utils.remap(bottomLabel, value) as string)}
+      errorLinkRef={errorLinkRef}
       topLabels={customTopLabels?.map((topLabel) => utils.remap(topLabel, value) as string)}
     />
   );

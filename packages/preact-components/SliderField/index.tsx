@@ -1,5 +1,6 @@
 import { type ComponentProps } from 'preact';
 import { forwardRef } from 'preact/compat';
+import { type MutableRef } from 'preact/hooks';
 
 import { FormComponent, Icon, type SharedFormComponentProps, Slider } from '../index.js';
 
@@ -14,6 +15,11 @@ type SliderFieldProps = Omit<ComponentProps<typeof Slider>, keyof SharedFormComp
      * Labels to display evenly spaced on top of the slider.
      */
     topLabels?: (number | string)[];
+
+    /**
+     * The ref to the element used for scrolling to the field error
+     */
+    readonly errorLinkRef?: MutableRef<HTMLElement>;
   };
 
 /**
@@ -38,6 +44,7 @@ export const SliderField = forwardRef<HTMLInputElement, SliderFieldProps>(
       topLabels,
       optionalLabel,
       inline,
+      errorLinkRef,
       ...props
     },
     ref,
@@ -69,6 +76,7 @@ export const SliderField = forwardRef<HTMLInputElement, SliderFieldProps>(
           <Slider
             {...props}
             error={Boolean(error)}
+            errorLinkRef={errorLinkRef}
             hasIcon
             id={id}
             maxLength={maxLength}
@@ -81,6 +89,7 @@ export const SliderField = forwardRef<HTMLInputElement, SliderFieldProps>(
         <Slider
           {...props}
           error={Boolean(error)}
+          errorLinkRef={errorLinkRef}
           hasIcon={false}
           id={id}
           maxLength={maxLength}

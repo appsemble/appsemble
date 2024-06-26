@@ -17,6 +17,7 @@ export function StringInput({
   dirty,
   disabled,
   error,
+  errorLinkRef,
   field,
   formValues,
   name,
@@ -46,6 +47,7 @@ export function StringInput({
     tag: utils.remap(tag, value) as string,
     value: format === 'url' ? String(new URL(value)) : value,
     inline,
+    errorLinkRef,
   };
 
   return multiline ? (
