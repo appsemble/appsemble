@@ -2,9 +2,10 @@ import classNames from 'classnames';
 import noUiSlider, { type target } from 'nouislider';
 import 'nouislider/dist/nouislider.css';
 import { type ComponentProps, type JSX, type VNode } from 'preact';
-import { useEffect, useRef } from 'preact/hooks';
+import { type MutableRef, useEffect, useRef } from 'preact/hooks';
 
 import styles from './index.module.css';
+import { useCombinedRefs } from '../useCombinedRefs.js';
 
 export interface DualSliderProps
   extends Omit<ComponentProps<'input'>, 'label' | 'onChange' | 'onInput' | 'type'> {
@@ -27,6 +28,11 @@ export interface DualSliderProps
    * If the input type is `number`, the value is a number, otherwise it is a string.
    */
   readonly onChange?: (event: JSX.TargetedEvent<HTMLInputElement>, value: [number, number]) => void;
+
+  /**
+   * The ref to the element used for scrolling to the field error
+   */
+  readonly errorLinkRef?: MutableRef<HTMLElement>;
 }
 
 /**
@@ -40,6 +46,7 @@ export function DualSlider({
   hasIcon,
   onChange,
   to = 100,
+  errorLinkRef,
 }: DualSliderProps): VNode {
   const sliderRef = useRef<HTMLDivElement & target>(null);
   const sliderInitiated = useRef(false);
@@ -76,6 +83,8 @@ export function DualSlider({
     }
   }, [from, to, onChange, name]);
 
+  const combinedRef = useCombinedRefs(sliderRef, errorLinkRef);
+
   return (
     <div
       className={classNames(styles.dual_slider, {
@@ -83,7 +92,7 @@ export function DualSlider({
         [styles.sliderWithIcon]: hasIcon,
       })}
       id={id}
-      ref={sliderRef}
+      ref={combinedRef}
     />
   );
 }

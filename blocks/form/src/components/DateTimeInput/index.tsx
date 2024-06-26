@@ -27,6 +27,7 @@ export function DateTimeInput({
   dirty,
   disabled,
   error,
+  errorLinkRef,
   field,
   formValues = null,
   onChange,
@@ -74,6 +75,7 @@ export function DateTimeInput({
       disabled={disabled}
       enableTime={field.type === 'date-time'}
       error={dirty ? error : null}
+      errorLinkRef={errorLinkRef}
       help={utils.remap(help, value) as string}
       icon={field.icon}
       id={name}

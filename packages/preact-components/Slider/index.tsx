@@ -1,9 +1,10 @@
 import classNames from 'classnames';
 import { type ComponentProps, type JSX } from 'preact';
 import { forwardRef } from 'preact/compat';
-import { useCallback } from 'preact/hooks';
+import { type MutableRef, useCallback } from 'preact/hooks';
 
 import styles from './index.module.css';
+import { useCombinedRefs } from '../useCombinedRefs.js';
 
 export interface SliderProps
   extends Omit<ComponentProps<'input'>, 'label' | 'onChange' | 'onInput' | 'type'> {
@@ -23,13 +24,18 @@ export interface SliderProps
    * If the input type is `number`, the value is a number, otherwise it is a string.
    */
   onChange?: (event: JSX.TargetedEvent<HTMLInputElement>, value: number) => void;
+
+  /**
+   * The ref to the element used for scrolling to the field error
+   */
+  readonly errorLinkRef?: MutableRef<HTMLElement>;
 }
 
 /**
  * A Bulma styled form input element.
  */
 export const Slider = forwardRef<HTMLInputElement, SliderProps>(
-  ({ error, hasIcon, name, onChange, readOnly, id = name, ...props }, ref) => {
+  ({ errorLinkRef, error, hasIcon, name, onChange, readOnly, id = name, ...props }, ref) => {
     const handleChange = useCallback(
       (event: JSX.TargetedEvent<HTMLInputElement>) => {
         const { currentTarget } = event;
@@ -37,6 +43,8 @@ export const Slider = forwardRef<HTMLInputElement, SliderProps>(
       },
       [onChange],
     );
+
+    const combinedRef = useCombinedRefs(ref, errorLinkRef);
 
     return (
       <input
@@ -49,7 +57,7 @@ export const Slider = forwardRef<HTMLInputElement, SliderProps>(
         name={name}
         onChange={handleChange}
         readOnly={readOnly}
-        ref={ref}
+        ref={combinedRef}
         type="range"
       />
     );

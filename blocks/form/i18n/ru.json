@@ -1,12 +1,13 @@
 {
   "confirmLabel": "",
   "fieldErrorLabel": "Одно из требований этого поля недействительно.",
+  "fixErrors": "",
   "formRequirementError": "Одно из требований данной формы недействительно.",
   "invalidLabel": "Это значение недействительно",
   "optionalLabel": "(необязательно)",
   "previousLabel": "Предыдущий",
-  "submitError": "При отправке этой формы возникла проблема",
-  "submitLabel": "Отправить",
   "selectionNoOptions": "",
-  "selectionOptionsError": ""
+  "selectionOptionsError": "",
+  "submitError": "При отправке этой формы возникла проблема",
+  "submitLabel": "Отправить"
 }

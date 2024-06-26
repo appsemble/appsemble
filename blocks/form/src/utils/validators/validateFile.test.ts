@@ -4,7 +4,7 @@ import { validateFile } from './validateFile.js';
 import { type FileField } from '../../../block.js';
 
 describe('validateFile', () => {
-  it('should should return undefined if it validates correctly', () => {
+  it('should return undefined if it validates correctly', () => {
     const field = {
       type: 'file',
       name: 'test',
@@ -18,14 +18,13 @@ describe('validateFile', () => {
     const field = {
       type: 'file',
       name: 'test',
-      requirements: [{ required: true }, { max: 5 }],
+      requirements: [{ required: true }, { maxLength: 5 }],
     } as FileField;
 
     expect(validateFile(field, null)).toStrictEqual(field.requirements[0]);
-    expect(validateFile({ ...field, repeated: true }, [])).toStrictEqual(field.requirements[0]);
   });
 
-  it('should ignore min and max requirements if the field is not repeated', () => {
+  it('should ignore minLength and maxLength requirements if the field is not repeated', () => {
     const field = {
       type: 'file',
       name: 'test',
@@ -193,5 +192,43 @@ describe('validateFile', () => {
         { type: 'video/x-msvideo' } as File,
       ]),
     ).toStrictEqual(field.requirements[0]);
+  });
+
+  it('should allow null values if not required', () => {
+    const field = {
+      type: 'file',
+      name: 'test',
+    } as FileField;
+
+    expect(validateFile(field, null)).toBeUndefined();
+  });
+
+  it('should not allow null values if required', () => {
+    const field = {
+      type: 'file',
+      name: 'test',
+      requirements: [{ required: true }],
+    } as FileField;
+
+    expect(validateFile(field, null)).toStrictEqual(field.requirements[0]);
+  });
+
+  it('should allow existing asset id', () => {
+    const field = {
+      type: 'file',
+      name: 'test',
+    } as FileField;
+
+    expect(validateFile(field, 'asset-1' as unknown as File)).toBeUndefined();
+  });
+
+  it('should allow existing asset ids', () => {
+    const field = {
+      type: 'file',
+      name: 'test',
+      repeated: true,
+    } as FileField;
+
+    expect(validateFile(field, ['asset-1', 'asset-2'] as unknown as File[])).toBeUndefined();
   });
 });

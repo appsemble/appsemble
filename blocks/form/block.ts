@@ -1,4 +1,5 @@
 import { type BulmaColor, type BulmaSize, type IconName, type Remapper } from '@appsemble/sdk';
+import { type MutableRef } from 'preact/hooks';
 
 type JsonValue = JsonValue[] | boolean | number | string | { [key: string]: JsonValue } | null;
 
@@ -1215,6 +1216,11 @@ export interface InputProps<T, F extends Field> {
    * The current form values.
    */
   formValues: Values;
+
+  /**
+   * The ref to the element used for scrolling to the field error
+   */
+  readonly errorLinkRef?: MutableRef<HTMLElement>;
 }
 
 /**
@@ -1308,6 +1314,7 @@ declare module '@appsemble/sdk' {
     previousLabel: never;
     selectionNoOptions: never;
     selectionOptionsError: never;
+    fixErrors: never;
   }
 
   interface Parameters {

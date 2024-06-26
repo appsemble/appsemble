@@ -3,7 +3,7 @@ import { Modal, useObjectURL, useToggle } from '@appsemble/preact-components';
 import { findIconDefinition, icon, library } from '@fortawesome/fontawesome-svg-core';
 import { fas } from '@fortawesome/free-solid-svg-icons';
 import classNames from 'classnames';
-import { type JSX, type VNode } from 'preact';
+import { type JSX, type Ref, type VNode } from 'preact';
 import { useCallback, useEffect, useRef, useState } from 'preact/hooks';
 
 import styles from './index.module.css';
@@ -69,6 +69,7 @@ interface FileEntryProps extends InputProps<Blob | string, FileField> {
 }
 
 export function FileEntry({
+  errorLinkRef,
   field,
   formValues: value,
   name,
@@ -76,7 +77,6 @@ export function FileEntry({
   repeated,
 }: FileEntryProps): VNode {
   const { utils } = useBlock();
-
   const valueString = typeof value === 'string' ? (value as string) : null;
   const prefix = valueString ? utils.asset(valueString) : null;
   const src = valueString?.startsWith('http') ? valueString : prefix;
@@ -154,6 +154,8 @@ export function FileEntry({
 
   const captureFirstFrame = (): void => {
     const videoElement = videoRef.current;
+    videoElement.pause();
+    videoElement.currentTime = 0;
     const canvas = document.createElement('canvas');
     canvas.width = videoElement.videoWidth;
     canvas.height = videoElement.videoHeight;
@@ -166,7 +168,11 @@ export function FileEntry({
   const previewAvailable = ['image', 'video'].includes(fileType);
 
   return (
-    <div className={`appsemble-file file mr-3 ${repeated ? styles['root-repeated'] : styles.root}`}>
+    <div
+      className={`appsemble-file file mr-3 ${repeated ? styles['root-repeated'] : styles.root}`}
+      id={name}
+      ref={errorLinkRef as unknown as Ref<HTMLDivElement>}
+    >
       {value && url && previewAvailable ? (
         <Modal isActive={modal.enabled} onClose={modal.disable}>
           {fileType === 'image' ? (

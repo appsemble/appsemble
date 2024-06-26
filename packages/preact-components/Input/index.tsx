@@ -1,7 +1,9 @@
 import classNames from 'classnames';
 import { type ComponentProps, type JSX } from 'preact';
 import { forwardRef } from 'preact/compat';
-import { useCallback } from 'preact/hooks';
+import { type MutableRef, useCallback } from 'preact/hooks';
+
+import { useCombinedRefs } from '../useCombinedRefs.js';
 
 export interface InputProps
   extends Omit<ComponentProps<'input'>, 'label' | 'loading' | 'onChange' | 'onInput' | 'pattern'> {
@@ -40,6 +42,11 @@ export interface InputProps
    */
   // XXX 'date' should be removed.
   type?: 'color' | 'date' | 'email' | 'number' | 'password' | 'search' | 'tel' | 'text' | 'url';
+
+  /**
+   * The ref to use for the error link
+   */
+  readonly errorLinkRef?: MutableRef<HTMLElement>;
 }
 
 /**
@@ -47,7 +54,19 @@ export interface InputProps
  */
 export const Input = forwardRef<HTMLInputElement, InputProps>(
   (
-    { datalist, error, loading, name, onChange, pattern, readOnly, type, id = name, ...props },
+    {
+      errorLinkRef,
+      datalist,
+      error,
+      loading,
+      name,
+      onChange,
+      pattern,
+      readOnly,
+      type,
+      id = name,
+      ...props
+    },
     ref,
   ) => {
     const handleChange = useCallback(
@@ -57,6 +76,8 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
       },
       [onChange, type],
     );
+
+    const combinedRef = useCombinedRefs(ref, errorLinkRef);
 
     return (
       <>
@@ -72,7 +93,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
           onInput={handleChange}
           pattern={pattern instanceof RegExp ? pattern.source : pattern}
           readOnly={readOnly}
-          ref={ref}
+          ref={combinedRef}
           type={type}
         />
         {datalist ? (

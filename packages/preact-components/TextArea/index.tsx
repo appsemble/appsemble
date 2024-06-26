@@ -1,7 +1,9 @@
 import classNames from 'classnames';
 import { type ComponentProps, type JSX } from 'preact';
 import { forwardRef } from 'preact/compat';
-import { useCallback } from 'preact/hooks';
+import { type MutableRef, useCallback } from 'preact/hooks';
+
+import { useCombinedRefs } from '../useCombinedRefs.js';
 
 export interface TextAreaProps
   extends Omit<ComponentProps<'textarea'>, 'label' | 'loading' | 'onChange' | 'onInput'> {
@@ -19,19 +21,26 @@ export interface TextAreaProps
    * This is fired when the input value has changed.
    */
   onChange?: (event: JSX.TargetedEvent<HTMLTextAreaElement>, value: string) => void;
+
+  /**
+   * The ref to use for the error link
+   */
+  readonly errorLinkRef?: MutableRef<HTMLElement>;
 }
 
 /**
  * A Bulma styled textarea element.
  */
 export const TextArea = forwardRef<HTMLTextAreaElement, TextAreaProps>(
-  ({ error, name, loading, onChange, readOnly, id = name, ...props }, ref) => {
+  ({ errorLinkRef, error, name, loading, onChange, readOnly, id = name, ...props }, ref) => {
     const handleChange = useCallback(
       (event: JSX.TargetedEvent<HTMLTextAreaElement>) => {
         onChange(event, event.currentTarget.value);
       },
       [onChange],
     );
+
+    const combinedRef = useCombinedRefs(ref, errorLinkRef);
 
     return (
       <textarea
@@ -45,7 +54,7 @@ export const TextArea = forwardRef<HTMLTextAreaElement, TextAreaProps>(
         name={name}
         onChange={handleChange}
         readOnly={readOnly}
-        ref={ref}
+        ref={combinedRef}
       />
     );
   },

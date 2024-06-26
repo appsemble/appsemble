@@ -20,6 +20,7 @@ export function DateInput({
   dirty,
   disabled,
   error,
+  errorLinkRef,
   field,
   formValues = null,
   onChange,
@@ -66,6 +67,7 @@ export function DateInput({
       disable={disable}
       disabled={disabled}
       error={dirty ? error : null}
+      errorLinkRef={errorLinkRef}
       help={utils.remap(help, value) as string}
       icon={field.icon}
       id={name}

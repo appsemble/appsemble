@@ -5,7 +5,7 @@ import 'flatpickr/dist/flatpickr.css';
 import 'flatpickr/dist/plugins/confirmDate/confirmDate.css';
 import confirmDatePlugin from 'flatpickr/dist/plugins/confirmDate/confirmDate.js';
 import { type ComponentProps, type JSX, type VNode } from 'preact';
-import { useCallback, useEffect, useRef, useState } from 'preact/hooks';
+import { type MutableRef, useCallback, useEffect, useRef, useState } from 'preact/hooks';
 
 import { FormComponent, Input, type SharedFormComponentProps } from '../index.js';
 
@@ -63,6 +63,11 @@ type DateTimeFieldProps = Omit<ComponentProps<typeof Input>, 'error'> &
      * The remapper used for custom value labels.
      */
     readonly dateFormat?: Remapper;
+
+    /**
+     * The ref to the element used for scrolling to the field error
+     */
+    readonly errorLinkRef?: MutableRef<HTMLElement>;
   };
 
 export function DateTimeField({
@@ -97,6 +102,7 @@ export function DateTimeField({
   id = name,
   minuteIncrement = 5,
   inline,
+  errorLinkRef,
   ...props
 }: DateTimeFieldProps): VNode {
   const wrapper = useRef<HTMLDivElement>();
@@ -222,6 +228,7 @@ export function DateTimeField({
         className="is-fullwidth"
         data-input
         disabled={disabled}
+        errorLinkRef={errorLinkRef}
         id={id}
         name={name}
         onChange={handleChange}

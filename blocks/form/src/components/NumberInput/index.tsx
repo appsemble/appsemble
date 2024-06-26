@@ -17,6 +17,7 @@ export function NumberInput({
   dirty,
   disabled,
   error,
+  errorLinkRef,
   field,
   formValues,
   name,
@@ -53,6 +54,7 @@ export function NumberInput({
       <SliderField
         {...commonProps}
         bottomLabels={bottomLabels?.map((bottomLabel) => utils.remap(bottomLabel, value) as string)}
+        errorLinkRef={errorLinkRef}
         onChange={onChange}
         topLabels={topLabels?.map((topLabel) => utils.remap(topLabel, value) as string)}
       />
@@ -69,6 +71,7 @@ export function NumberInput({
       }
       type="number"
       {...commonProps}
+      errorLinkRef={errorLinkRef}
     />
   );
 }

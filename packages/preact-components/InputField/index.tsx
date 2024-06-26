@@ -27,6 +27,7 @@ export const InputField = forwardRef<HTMLInputElement, InputFieldProps>(
       tag,
       optionalLabel,
       inline,
+      errorLinkRef,
       ...props
     },
     ref,
@@ -49,6 +50,7 @@ export const InputField = forwardRef<HTMLInputElement, InputFieldProps>(
       <Input
         {...props}
         error={Boolean(error)}
+        errorLinkRef={errorLinkRef}
         id={id}
         maxLength={maxLength}
         name={name}

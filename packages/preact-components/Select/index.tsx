@@ -1,9 +1,10 @@
 import classNames from 'classnames';
 import { type ComponentProps, type JSX, toChildArray, type VNode } from 'preact';
 import { forwardRef } from 'preact/compat';
-import { useCallback } from 'preact/hooks';
+import { type MutableRef, useCallback } from 'preact/hooks';
 
 import { Option, type OptionProps } from '../Option/index.js';
+import { useCombinedRefs } from '../useCombinedRefs.js';
 
 export interface SelectProps
   extends Omit<ComponentProps<'select'>, 'loading' | 'onChange' | 'onInput'> {
@@ -31,6 +32,11 @@ export interface SelectProps
    * The current value.
    */
   value: any;
+
+  /**
+   * The ref to use for the error link
+   */
+  readonly errorLinkRef?: MutableRef<HTMLElement>;
 }
 
 /**
@@ -47,6 +53,7 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
       onChange,
       placeholder,
       value,
+      errorLinkRef,
       id = name,
       ...props
     },
@@ -78,6 +85,8 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
       );
     }
 
+    const combinedRef = useCombinedRefs(ref, errorLinkRef);
+
     return (
       <div
         className={classNames('select', className, {
@@ -90,7 +99,7 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
           id={id}
           name={name}
           onChange={handleChange}
-          ref={ref}
+          ref={combinedRef}
           {...props}
         >
           {options}

@@ -1,5 +1,6 @@
 import { type ComponentProps } from 'preact';
 import { forwardRef } from 'preact/compat';
+import { type MutableRef } from 'preact/hooks';
 
 import { DualSlider, FormComponent, Icon, type SharedFormComponentProps } from '../index.js';
 
@@ -17,6 +18,11 @@ type DualSliderFieldProps = Omit<
      * Labels to display evenly spaced on top of the slider.
      */
     topLabels?: (number | string)[];
+
+    /**
+     * The ref to the element used for scrolling to the field error
+     */
+    readonly errorLinkRef?: MutableRef<HTMLElement>;
   };
 
 /**
@@ -42,6 +48,7 @@ export const DualSliderField = forwardRef<HTMLInputElement, DualSliderFieldProps
       optionalLabel,
       inline,
       required,
+      errorLinkRef,
       ...props
     },
     ref,
@@ -73,6 +80,7 @@ export const DualSliderField = forwardRef<HTMLInputElement, DualSliderFieldProps
           <DualSlider
             {...props}
             error={Boolean(error)}
+            errorLinkRef={errorLinkRef}
             hasIcon
             id={id}
             maxLength={maxLength}
@@ -85,6 +93,7 @@ export const DualSliderField = forwardRef<HTMLInputElement, DualSliderFieldProps
         <DualSlider
           {...props}
           error={Boolean(error)}
+          errorLinkRef={errorLinkRef}
           id={id}
           maxLength={maxLength}
           name={name}

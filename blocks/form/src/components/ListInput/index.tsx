@@ -18,6 +18,7 @@ export function ListInput({
   className,
   dirty,
   disabled,
+  errorLinkRef,
   field,
   formValues,
   name,
@@ -166,6 +167,7 @@ export function ListInput({
         )}
         data-field={field.name}
         disabled={disabled || readOnly || loading || !options.length}
+        errorLinkRef={errorLinkRef}
         icon="chevron-down"
         iconRight={Boolean(icon)}
         id={field.name}

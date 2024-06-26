@@ -24,6 +24,7 @@ export const SelectField = forwardRef<HTMLSelectElement, SelectFieldProps>(
       optionalLabel,
       inline,
       error,
+      errorLinkRef,
       ...props
     },
     ref,
@@ -39,7 +40,15 @@ export const SelectField = forwardRef<HTMLSelectElement, SelectFieldProps>(
       required={required}
       tag={tag}
     >
-      <Select fullWidth={fullWidth} id={id} name={name} ref={ref} required={required} {...props} />
+      <Select
+        errorLinkRef={errorLinkRef}
+        fullWidth={fullWidth}
+        id={id}
+        name={name}
+        ref={ref}
+        required={required}
+        {...props}
+      />
     </FormComponent>
   ),
 );

@@ -1,5 +1,5 @@
 import { type VNode } from 'preact';
-import { useCallback } from 'preact/hooks';
+import { type MutableRef, useCallback } from 'preact/hooks';
 
 import {
   type FieldErrorMap,
@@ -19,6 +19,11 @@ interface FieldsetEntryProps extends InputProps<Values, Fieldset> {
   readonly display?: FormDisplay;
 
   readonly fieldSpan?: boolean;
+
+  readonly setFieldErrorLink?: (
+    fieldName: string,
+    params: { ref: MutableRef<any>; error: string; label: string },
+  ) => void;
 }
 
 /**
@@ -34,6 +39,7 @@ export function FieldsetEntry({
   index,
   name,
   onChange,
+  setFieldErrorLink,
 }: FieldsetEntryProps): VNode {
   const onChangeIndex = useCallback(
     (localName: string, values: Values) => {
@@ -52,6 +58,7 @@ export function FieldsetEntry({
       formValues={formValues}
       name={name}
       onChange={index == null ? onChange : onChangeIndex}
+      setFieldErrorLink={setFieldErrorLink}
     />
   );
 }

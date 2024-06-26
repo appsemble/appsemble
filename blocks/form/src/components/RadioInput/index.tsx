@@ -18,6 +18,7 @@ export function RadioInput({
   dirty,
   disabled,
   error,
+  errorLinkRef,
   field,
   formValues,
   name,
@@ -34,6 +35,7 @@ export function RadioInput({
       className={classNames('appsemble-radio', className)}
       disabled={disabled}
       error={dirty ? error : null}
+      errorLinkRef={errorLinkRef}
       help={utils.remap(help, value) as string}
       label={(utils.remap(label, value) as string) ?? name}
       name={name}

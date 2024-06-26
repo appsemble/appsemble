@@ -2,9 +2,10 @@ import { type BulmaColor } from '@appsemble/types';
 import { type IconName } from '@fortawesome/fontawesome-common-types';
 import classNames from 'classnames';
 import { type ComponentProps, type VNode } from 'preact';
+import { type MutableRef } from 'preact/hooks';
 
 import styles from './index.module.css';
-import { Icon } from '../index.js';
+import { Icon, useCombinedRefs } from '../index.js';
 
 interface ButtonProps extends Omit<ComponentProps<'button'>, 'loading'> {
   /**
@@ -36,6 +37,11 @@ interface ButtonProps extends Omit<ComponentProps<'button'>, 'loading'> {
    * Set to true to indicate the button is in a loading state.
    */
   readonly loading?: boolean;
+
+  /**
+   * The ref to the element used for scrolling to the field error
+   */
+  readonly errorLinkRef?: MutableRef<HTMLElement>;
 }
 
 /**
@@ -47,12 +53,15 @@ export function Button({
   children,
   className,
   color,
+  errorLinkRef,
   icon,
   iconRight = false,
   inverted,
   loading,
+  ref,
   ...props
 }: ButtonProps): VNode {
+  const combinedRef = useCombinedRefs(ref, errorLinkRef);
   return (
     <button
       className={classNames('button', className, {
@@ -60,6 +69,7 @@ export function Button({
         'is-inverted': inverted,
         'is-loading': loading,
       })}
+      ref={combinedRef}
       type="button"
       {...props}
     >

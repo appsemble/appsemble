@@ -1861,6 +1861,9 @@ Include an array of fields in \`fields\` to replace the current list of fields i
     "fieldErrorLabel": {
       "description": undefined,
     },
+    "fixErrors": {
+      "description": undefined,
+    },
     "formRequirementError": {
       "description": undefined,
     },

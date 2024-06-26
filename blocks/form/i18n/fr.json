@@ -1,12 +1,13 @@
 {
   "confirmLabel": "Confirmer",
   "fieldErrorLabel": "L'une des exigences de ce champ n'est pas valide.",
+  "fixErrors": "",
   "formRequirementError": "L'une des exigences de ce formulaire n'est pas valide.",
   "invalidLabel": "Cette valeur n'est pas valide",
   "optionalLabel": "(Optionnel)",
   "previousLabel": "Précédent",
-  "submitError": "Un problème est survenu lors de l'envoi de ce formulaire",
-  "submitLabel": "Signaler",
   "selectionNoOptions": "",
-  "selectionOptionsError": ""
+  "selectionOptionsError": "",
+  "submitError": "Un problème est survenu lors de l'envoi de ce formulaire",
+  "submitLabel": "Signaler"
 }

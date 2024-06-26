@@ -1,12 +1,13 @@
 {
   "confirmLabel": "",
   "fieldErrorLabel": "Et af kravene i dette felt er ugyldigt.",
+  "fixErrors": "",
   "formRequirementError": "Et af kravene i denne formular er ugyldigt.",
   "invalidLabel": "Denne værdi er ugyldig",
   "optionalLabel": "(Valgfri)",
   "previousLabel": "Foregående",
-  "submitError": "Der opstod et problem med at indsende denne formular",
-  "submitLabel": "Indsend",
   "selectionNoOptions": "",
-  "selectionOptionsError": ""
+  "selectionOptionsError": "",
+  "submitError": "Der opstod et problem med at indsende denne formular",
+  "submitLabel": "Indsend"
 }
