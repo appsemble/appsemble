@@ -2,15 +2,15 @@
 apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
 metadata:
-  name: {{ include "appsemble.fullname" . }}
+  name: {{ include "appsemble.fullname" . }}-rolebinding
   labels:
     {{ include "appsemble.labels" . }}
 roleRef:
   apiGroup: rbac.authorization.k8s.io
-  kind: ClusterRole
-  # This should match the name of the clusterrole
+  kind: Role
+  # This should match the name of the role
   name: {{ include "appsemble.fullname" . }}
 subjects:
   - kind: ServiceAccount
-    name: default
+    name: {{ include "appsemble.fullname" . }}-serviceaccount
 {{ end }}

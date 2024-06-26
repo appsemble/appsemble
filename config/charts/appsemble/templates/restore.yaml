@@ -13,6 +13,7 @@ spec:
   template:
     spec:
       restartPolicy: Never
+      serviceAccountName: {{ include "appsemble.fullname" . }}-serviceaccount
       containers:
         - name: {{ include "appsemble.fullname" . }}-restore
           image: "{{ .Values.image.repository }}:{{ include "appsemble.tag" . }}"

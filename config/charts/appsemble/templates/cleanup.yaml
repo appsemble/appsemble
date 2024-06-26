@@ -14,6 +14,7 @@ spec:
         {{ include "appsemble.gitlab" . | indent 8 }}
     spec:
       restartPolicy: Never
+      serviceAccountName: {{ include "appsemble.fullname" . }}-serviceaccount
       containers:
         - name: {{ include "appsemble.fullname" . }}-cleanup
           image: "{{ .Values.image.repository }}:{{ include "appsemble.tag" . }}"

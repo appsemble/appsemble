@@ -20,6 +20,7 @@ spec:
       annotations:
         {{ include "appsemble.gitlab" . | indent 10 }}
     spec:
+      serviceAccountName: {{ include "appsemble.fullname" . }}-serviceaccount
       enableServiceLinks: false
       containers:
         - name: {{ .Chart.Name }}
