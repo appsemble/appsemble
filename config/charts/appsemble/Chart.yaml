@@ -1,7 +1,7 @@
 apiVersion: v2
 name: appsemble
-version: 0.29.2
-appVersion: 0.29.2
+version: 0.29.3
+appVersion: 0.29.3
 kubeVersion: '>=1.21.0'
 type: application
 description: The open source low-code app building platform
@@ -23,8 +23,10 @@ dependencies:
     repository: https://charts.bitnami.com/bitnami
     condition: postgresql.enabled
 annotations:
-  artifacthub.io/changes: |
-    []
+  artifacthub.io/changes: >
+    - kind: added
+      description: "Block(form): Add links above the submit button that scroll to and
+        focus the form errors."
   artifacthub.io/license: LGPL-3.0-only
   artifacthub.io/links: |
     - name: Appsemble Studio

@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.29.3](https://gitlab.com/appsemble/appsemble/-/releases/0.29.3)] - 2024-06-26
+
+### Added
+
+- Block(`form`): Add links above the submit button that scroll to and focus the form errors.
+
 ## \[[0.29.2](https://gitlab.com/appsemble/appsemble/-/releases/0.29.2)] - 2024-06-19
 
 ## \[[0.29.1](https://gitlab.com/appsemble/appsemble/-/releases/0.29.1)] - 2024-06-12
