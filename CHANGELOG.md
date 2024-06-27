@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.29.4](https://gitlab.com/appsemble/appsemble/-/releases/0.29.4)] - 2024-06-27
+
+### Added
+
+- Studio: Added the resource tab to the GUI.
+
+### Fixed
+
+- Studio: Do not use app id from params in app resources page.
+- Studio: Switching to the GUI-editor is now fixed.
+
 ## \[[0.29.3](https://gitlab.com/appsemble/appsemble/-/releases/0.29.3)] - 2024-06-26
 
 ### Added

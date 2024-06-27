@@ -30,7 +30,7 @@ pages:
   - name: Person List
     blocks:
       - type: data-loader
-        version: 0.29.3
+        version: 0.29.4
         actions:
           onLoad:
             type: resource.query
@@ -39,7 +39,7 @@ pages:
           emit:
             data: data
       - type: table
-        version: 0.29.3
+        version: 0.29.4
         parameters:
           fields:
             - value: { prop: firstName }
@@ -54,7 +54,7 @@ pages:
           listen:
             data: data
       - type: action-button
-        version: 0.29.3
+        version: 0.29.4
         parameters:
           icon: plus
         actions:
@@ -65,7 +65,7 @@ pages:
   - name: Person Registration Form
     blocks:
       - type: form
-        version: 0.29.3
+        version: 0.29.4
         actions:
           onSubmit:
             type: resource.create
@@ -101,7 +101,7 @@ pages:
       - id
     blocks:
       - type: data-loader
-        version: 0.29.3
+        version: 0.29.4
         actions:
           onLoad:
             type: resource.get
@@ -110,7 +110,7 @@ pages:
           emit:
             data: data
       - type: detail-viewer
-        version: 0.29.3
+        version: 0.29.4
         parameters:
           fields:
             - value: { prop: firstName }

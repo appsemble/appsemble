@@ -1,1 +1,0 @@
-Switching to the GUI-editor is now fixed.
