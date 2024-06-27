@@ -73,7 +73,7 @@ test.describe('/apps/:appId', () => {
   test('should link to a specific resource', async ({ page }) => {
     await page.click('text=Resources');
     await page.click('ul.menu-list :has-text("person")');
-    await page.waitForSelector('text=Resource person');
+    await page.waitForSelector('text=Resource: person');
   });
 
   test('should link to the translator tool', async ({ page }) => {

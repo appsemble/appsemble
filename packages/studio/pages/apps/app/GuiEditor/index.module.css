@@ -10,6 +10,30 @@
   padding: 0;
 }
 
+.goBack {
+  box-shadow: 0 0 7px 0 rgba(0 0 0 / 30%);
+  position: absolute;
+  right: 1.4rem;
+
+  &.rightBar {
+    @media (width < 1024px) {
+      right: 19.4rem;
+    }
+
+    @media (width > 1023px) and (width < 1501px) {
+      right: 25.4rem;
+    }
+
+    @media (width >= 1501px) and (width < 1921px) {
+      right: 28.4rem;
+    }
+
+    @media (width >= 1921px) {
+      right: 33.4rem;
+    }
+  }
+}
+
 .codeEditorSwitch {
   margin-left: -5px !important;
   margin-top: -0.25rem;

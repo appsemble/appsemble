@@ -45,6 +45,7 @@ export function BlockStore({ dragEventListener }: BlockStoreProps): ReactNode {
       </div>
       <div className={styles.blockStoreSearch}>
         <InputField
+          className={String(styles.searchField)}
           icon="search"
           name="search"
           onChange={onFilterChange}

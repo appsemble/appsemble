@@ -1,5 +1,5 @@
 .modal {
-  max-width: 100vw;
+  max-width: 80vw;
   width: 960px;
 }
 
@@ -25,4 +25,29 @@
     margin: 0 !important;
     padding-left: 1rem !important;
   }
+}
+
+.table {
+  max-height: 60vh;
+  min-height: 17rem;
+  overflow-y: scroll;
+
+  table {
+    border: 0;
+  }
+}
+
+.tableDiv {
+  bottom: 0;
+  display: flex;
+  flex-direction: column;
+  height: calc(100vh - 14rem);
+  justify-content: space-between;
+}
+
+.buttons {
+  box-shadow: 0 3px 2px -1px rgba(0 0 0 / 30%);
+  flex-wrap: nowrap !important;
+  overflow-x: scroll;
+  padding-bottom: 0.4rem;
 }

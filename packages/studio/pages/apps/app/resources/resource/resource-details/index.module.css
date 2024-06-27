@@ -1,3 +1,11 @@
 .flexContent {
   flex: 1 1 auto;
+
+  &.inGui {
+    height: calc(100vh - 15.7rem);
+  }
+}
+
+.inGui {
+  margin-right: 3.8rem;
 }

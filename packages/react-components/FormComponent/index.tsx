@@ -97,7 +97,7 @@ export function FormComponent({
 
   const controls = (
     <div
-      className={classNames(`control ${styles.control}`, {
+      className={classNames('control', styles.control, className, {
         'has-icons-left': icon,
         'has-icons-right': control,
       })}

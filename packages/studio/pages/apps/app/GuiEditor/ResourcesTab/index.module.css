@@ -1,4 +1,263 @@
 .root {
   flex: 1;
-  height: 80vh;
+  max-height: calc(100vh - 10.5rem);
+
+  &.shouldOverflow {
+    overflow-y: auto;
+  }
+}
+
+.elementRoot {
+  background-color: hsl(0deg 0% 0% / 2%);
+  border: 1px solid hsl(0deg 0% 86%);
+  padding: 1rem;
+}
+
+.leftBarButton {
+  border: 0;
+  border-bottom: 1px solid hsl(0deg 0% 88%);
+  border-radius: 0;
+  height: 30px;
+  margin: 0;
+  padding: 0;
+  width: 100%;
+}
+
+.addNewElement {
+  border: 0;
+  border-bottom: 1px solid hsl(0deg 0% 88%);
+  border-radius: 0;
+  color: hsl(0deg 0% 50%);
+  font-size: 14px;
+  height: 25px;
+  width: 100%;
+}
+
+.editorNavBar {
+  align-items: center;
+  background-color: hsl(0deg 0% 96%);
+  border-radius: 4px;
+
+  /* box-shadow: 0 12px 20px -12px rgba(0 0 0 / 30%); */
+  display: flex;
+  flex-direction: row;
+  overflow: hidden;
+  overflow-x: auto;
+}
+
+.rightBar {
+  display: flex;
+  flex-direction: column;
+  padding: 0.5rem;
+  row-gap: 0.8rem;
+  width: 100%;
+}
+
+.highlight {
+  color: rgb(83 147 255);
+  font-weight: bold;
+}
+
+.propsList {
+  height: calc(100vh - 18rem);
+  overflow-y: auto;
+  padding-right: 0.5rem;
+}
+
+/* .propsList::before {
+  background-image: linear-gradient(to bottom, rgba(0 0 0 / 10%), transparent);
+  border-radius: 0.5rem;
+  content: '';
+  height: 10px;
+  left: 0.35rem;
+  pointer-events: none;
+  position: absolute;
+  right: 0.35rem;
+  top: 4.12rem;
+  z-index: 19;
+} */
+
+.FormButtons {
+  margin-top: auto;
+  padding-top: 10px;
+}
+
+.selectLabel {
+  display: block;
+  font-size: 16px;
+  font-weight: bold;
+  margin-bottom: 8px;
+}
+
+.indexPage {
+  height: calc(100vh - 11.1rem) !important;
+}
+
+.tableDiv {
+  height: calc(100vh - 18rem) !important;
+}
+
+.wrappedIndexPage {
+  /* height: calc(100vh - 11.1rem); */
+  position: relative;
+}
+
+/* .buttonContainer button {
+  margin-right: 10px;
+} */
+
+.buttonContainer {
+  position: absolute;
+  right: 80px;
+  top: 0;
+
+  &.definition {
+    right: 0 !important;
+  }
+
+  &.details {
+    right: 140px !important;
+  }
+}
+
+.responsive {
+  &:not(.withSidemenu) {
+    width: calc(100vw - 3.7rem);
+
+    &.withLeftPanel:not(.withRightPanel) {
+      @media (width < 1024px) {
+        width: calc(100vw - 3.7rem - 14.5rem);
+      }
+
+      @media (width > 1023px) and (width < 1501px) {
+        width: calc(100vw - 3.7rem - 17rem);
+      }
+
+      @media (width >= 1501px) and (width < 1921px) {
+        width: calc(100vw - 3.7rem - 20rem);
+      }
+
+      @media (width >= 1921px) {
+        width: calc(100vw - 3.7rem - 22.5rem);
+      }
+    }
+
+    &.withRightPanel:not(.withLeftPanel) {
+      @media (width < 1024px) {
+        width: calc(100vw - 3.7rem - 18.2rem);
+      }
+
+      @media (width > 1023px) and (width < 1501px) {
+        width: calc(100vw - 3.7rem - 24rem);
+      }
+
+      @media (width >= 1501px) and (width < 1921px) {
+        width: calc(100vw - 3.7rem - 27rem);
+      }
+
+      @media (width >= 1921px) {
+        width: calc(100vw - 3.7rem - 32rem);
+      }
+    }
+
+    &.withLeftPanel.withRightPanel {
+      @media (width < 1024px) {
+        width: calc(100vw - 3.7rem - 14.5rem - 18.2rem);
+      }
+
+      @media (width > 1023px) and (width < 1501px) {
+        width: calc(100vw - 3.7rem - 17rem - 24rem);
+      }
+
+      @media (width >= 1501px) and (width < 1921px) {
+        width: calc(100vw - 3.7rem - 20rem - 27rem);
+      }
+
+      @media (width >= 1921px) {
+        width: calc(100vw - 3.7rem - 22.5rem - 32rem);
+      }
+    }
+  }
+
+  &.withSidemenu {
+    width: calc(100vw - 3.7rem - 18rem);
+
+    &.withLeftPanel:not(.withRightPanel) {
+      @media (width < 1024px) {
+        width: calc(100vw - 3.7rem - 14.5rem);
+      }
+
+      @media (width > 1023px) and (width < 1501px) {
+        width: calc(100vw - 3.7rem - 18rem - 17rem);
+      }
+
+      @media (width >= 1501px) and (width < 1921px) {
+        width: calc(100vw - 3.7rem - 18rem - 20rem);
+      }
+
+      @media (width >= 1921px) {
+        width: calc(100vw - 3.7rem - 18rem - 22.5rem);
+      }
+    }
+
+    &.withRightPanel:not(.withLeftPanel) {
+      @media (width < 1024px) {
+        width: calc(100vw - 3.7rem - 18.2rem);
+      }
+
+      @media (width > 1023px) and (width < 1501px) {
+        width: calc(100vw - 3.7rem - 18rem - 24rem);
+      }
+
+      @media (width >= 1501px) and (width < 1921px) {
+        width: calc(100vw - 3.7rem - 18rem - 27rem);
+      }
+
+      @media (width >= 1921px) {
+        width: calc(100vw - 3.7rem - 18rem - 32rem);
+      }
+    }
+
+    /* stylelint-disable-next-line selector-max-class */
+    &.withLeftPanel.withRightPanel {
+      @media (width < 1024px) {
+        width: calc(100vw - 3.7rem - 14.5rem - 18.2rem);
+      }
+
+      @media (width > 1023px) and (width < 1501px) {
+        width: calc(100vw - 3.7rem - 18rem - 17rem - 24rem);
+      }
+
+      @media (width >= 1501px) and (width < 1921px) {
+        width: calc(100vw - 3.7rem - 18rem - 20rem - 27rem);
+      }
+
+      @media (width >= 1921px) {
+        width: calc(100vw - 3.7rem - 18rem - 22.5rem - 32rem);
+      }
+    }
+  }
+}
+
+.erd {
+  height: 100%;
+}
+
+.erdButton {
+  height: 30px;
+  left: 2.5%;
+  margin: 0;
+  padding: 0;
+  top: 2%;
+  width: 95%;
+}
+
+a.closeTag:hover {
+  background-color: rgba(255 0 0 / 63%) !important;
+  color: rgb(0 0 0);
+}
+
+div.tagDiv {
+  border-radius: 0;
+  box-shadow: 0 12px 20px -12px rgba(0 0 0 / 30%);
 }

@@ -17,6 +17,7 @@ import { type Resource } from '@appsemble/types';
 import { generateDataFromSchema, has, serializeResource } from '@appsemble/utils';
 import { download } from '@appsemble/web-utils';
 import axios from 'axios';
+import classNames from 'classnames';
 import { type OpenAPIV3 } from 'openapi-types';
 import {
   type ChangeEvent,
@@ -40,12 +41,32 @@ import { useApp } from '../../../index.js';
 
 const defaultHiddenProperties = new Set(['$created', '$updated', '$editor']);
 
-export function IndexPage(): ReactNode {
+export function IndexPage({
+  isInGui,
+  providedResourceName,
+  rootClassName,
+  showResourceDefinition,
+  tableDivClassName,
+  triggerShowDetails,
+}: {
+  readonly rootClassName?: string;
+  readonly tableDivClassName?: string;
+  readonly providedResourceName?: string;
+  readonly isInGui?: boolean;
+  readonly showResourceDefinition?: () => void;
+  readonly triggerShowDetails?: (passedResourceId: string) => void;
+}): ReactNode {
   const { app } = useApp();
   const { formatMessage } = useIntl();
-  const { resourceName } = useParams<{
+  let { resourceName } = useParams<{
+    id: string;
     resourceName: string;
   }>();
+
+  if (providedResourceName) {
+    resourceName = providedResourceName;
+  }
+
   const [searchParams, setSearchParams] = useSearchParams();
   const push = useMessages();
 
@@ -374,18 +395,24 @@ export function IndexPage(): ReactNode {
   );
 
   return (
-    <>
+    <div className={rootClassName}>
       <HeaderControl
         control={
-          <Button component={Link} icon="book" to="details">
-            <FormattedMessage {...messages.api} />
-          </Button>
+          isInGui ? (
+            <Button icon="book" onClick={showResourceDefinition}>
+              <FormattedMessage {...messages.api} />
+            </Button>
+          ) : (
+            <Button component={Link} icon="book" to="details">
+              <FormattedMessage {...messages.api} />
+            </Button>
+          )
         }
+        titleClassName="title is-4"
       >
         <FormattedMessage {...messages.header} values={{ resourceName }} />
       </HeaderControl>
-
-      <div className="buttons">
+      <div className={classNames('buttons mb-1 pt-3', styles.buttons)}>
         <Button className="is-primary" icon="plus-square" onClick={createModal.enable}>
           <FormattedMessage {...messages.createButton} />
         </Button>
@@ -424,8 +451,8 @@ export function IndexPage(): ReactNode {
         result={result}
       >
         {(resources) => (
-          <>
-            <Table className="is-flex-grow-1 is-flex-shrink-1">
+          <div className={classNames(styles.tableDiv, tableDivClassName)}>
+            <Table className={styles.table} fullwidth={false}>
               <thead>
                 <tr>
                   <th className={`pl-2 ${styles.noWrap}`}>
@@ -506,6 +533,8 @@ export function IndexPage(): ReactNode {
                   <ResourceRow
                     dropdownUp={resources.length > 2 && index >= resources.length - 2}
                     filter={hiddenProperties}
+                    guiResourceName={providedResourceName}
+                    isInGui={isInGui}
                     key={resource.id}
                     onDelete={onDeleteResource}
                     onEdit={onEditResource}
@@ -513,10 +542,12 @@ export function IndexPage(): ReactNode {
                     resource={resource}
                     schema={schema}
                     selected={selectedResources.includes(resource.id)}
+                    triggerShowDetails={triggerShowDetails}
                   />
                 ))}
               </tbody>
             </Table>
+
             <PaginationNavigator
               count={count}
               onPageChange={onPageChange}
@@ -525,7 +556,7 @@ export function IndexPage(): ReactNode {
               rowsPerPage={rowsPerPage}
               rowsPerPageOptions={[15, 25, 100, 500, Number.POSITIVE_INFINITY]}
             />
-          </>
+          </div>
         )}
       </AsyncDataView>
       <ModalCard
@@ -640,6 +671,6 @@ export function IndexPage(): ReactNode {
           />
         </div>
       </ModalCard>
-    </>
+    </div>
   );
 }

@@ -82,7 +82,7 @@
     "remark-retext": "^6.0.0",
     "remark-toc": "^9.0.0",
     "remark-validate-links": "^13.0.0",
-    "retext-english": "^5.0.0",
+	"retext-english": "^5.0.0",
     "retext-dutch": "^5.0.0",
     "retext-indefinite-article": "^5.0.0",
     "retext-quotes": "^6.0.0",

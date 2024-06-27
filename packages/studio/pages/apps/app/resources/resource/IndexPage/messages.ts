@@ -2,8 +2,8 @@ import { defineMessages } from 'react-intl';
 
 export const messages = defineMessages({
   header: {
-    id: 'studio.Ts6YUb',
-    defaultMessage: 'Resource {resourceName}',
+    id: 'studio.gHMvwI',
+    defaultMessage: 'Resource: {resourceName}',
   },
   resources: {
     id: 'studio.c/KktL',
@@ -12,6 +12,10 @@ export const messages = defineMessages({
   actions: {
     id: 'studio.wL7VAE',
     defaultMessage: 'Actions',
+  },
+  update: {
+    defaultMessage: 'Update',
+    id: 'studio.BWpuKl',
   },
   cancelButton: {
     id: 'studio.47FYwb',

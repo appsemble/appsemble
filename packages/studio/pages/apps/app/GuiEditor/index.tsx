@@ -5,6 +5,7 @@ import {
   useData,
   useMessages,
   useMeta,
+  useToggle,
 } from '@appsemble/react-components';
 import { type App, type AppDefinition } from '@appsemble/types';
 import { getAppBlocks, noop, normalize } from '@appsemble/utils';
@@ -104,8 +105,6 @@ export default function EditPage(): ReactNode {
   );
   const { data: sharedStyle } = useData<string>(`/api/apps/${app.id}/style/shared`);
   const location = useLocation();
-  const [leftPanelOpen, setLeftPanelOpen] = useState(true);
-  const [rightPanelOpen, setRightPanelOpen] = useState(true);
   const [unsaved, setUnsaved] = useState<string[]>([
     `${formatMessage(messages.unsavedChanges)}:\n`,
   ]);
@@ -113,6 +112,8 @@ export default function EditPage(): ReactNode {
   const { id } = params;
   const tabPath = Object.values(params)[0];
   const currentTab = tabs.find((tab) => tab.path === tabPath) || tabs[2];
+  const [leftPanelOpen, setLeftPanelOpen] = useState(true);
+  const [rightPanelOpen, setRightPanelOpen] = useState(currentTab.tabName !== 'resources');
   const screenRatios = useMemo(() => ['desktop', 'fill', 'phone', 'tablet'], []);
   const { enterFullscreen, exitFullscreen, fullscreen } = useFullscreenContext();
 
@@ -120,7 +121,8 @@ export default function EditPage(): ReactNode {
   const [propsTabToggle, setPropsTabToggle] = useState(true);
   const [blocksTabToggle, setBlocksTabToggle] = useState(false);
   const [hideInputListLabel, setHideInputListLabel] = useState(false);
-
+  const toggleResourceDefinition = useToggle();
+  const toggleResourceDetails = useToggle();
   const [, setBreadCrumbsDecoration] = useBreadCrumbsDecoration();
 
   useClosableOnDesktopSideMenu();
@@ -142,6 +144,15 @@ export default function EditPage(): ReactNode {
       setBreadCrumbsDecoration(null);
     };
   }, [formatMessage, location, setBreadCrumbsDecoration, id, app.definition.name]);
+
+  const handleGoBack = (): void => {
+    if (toggleResourceDefinition.enabled) {
+      toggleResourceDefinition.disable();
+    }
+    if (toggleResourceDetails.enabled) {
+      toggleResourceDetails.disable();
+    }
+  };
 
   // TODO fix all of these
   const guiEditorContainer = document?.querySelector(
@@ -516,10 +527,17 @@ export default function EditPage(): ReactNode {
         body: `${formatMessage(messages.failed)} ${message}`,
         color: 'danger',
       });
+      if (currentTab.tabName === 'resources') {
+        setUnsaved([`${formatMessage(messages.unsavedChanges)}\n`]);
+        setSaveStack([docRef.current.clone()]);
+        setIndex(0);
+        docRef.current = undefined;
+      }
     }
   }, [
     app.id,
     coreStyle,
+    currentTab.tabName,
     formatMessage,
     getErrorMessage,
     index,
@@ -564,8 +582,11 @@ export default function EditPage(): ReactNode {
 
   return (
     <>
-      <div className={`is-flex ${styles.controls}`}>
+      <div className={classNames('is-flex', styles.controls)}>
         <InputList
+          className={classNames({
+            'is-hidden': currentTab.tabName === 'resources',
+          })}
           hideLabel={hideInputListLabel}
           isRight
           label={String(formatMessage(messages.previewFormat))}
@@ -601,7 +622,19 @@ export default function EditPage(): ReactNode {
           <ul>
             {tabs.map((tab) => (
               <li className={tab.path === tabPath ? 'is-active' : ''} key={tab.tabName}>
-                <Link className="tab-btn-link" to={tab.path}>
+                <Link
+                  className="tab-btn-link"
+                  onClick={() => {
+                    if (tab.tabName === 'resources') {
+                      if (rightPanelOpen) {
+                        setRightPanelOpen(false);
+                      }
+                    } else {
+                      setRightPanelOpen(true);
+                    }
+                  }}
+                  to={tab.path}
+                >
                   <span className="icon tab-btn-icon">
                     <i aria-hidden="true" className={tab.icon} />
                   </span>
@@ -639,15 +672,19 @@ export default function EditPage(): ReactNode {
           <BugButton />
           <div className={styles.panelTopRight}>
             <Button
-              className="is-primary"
+              className={classNames('is-primary', {
+                'is-hidden': currentTab.tabName === 'resources',
+              })}
               icon={rightPanelOpen ? 'angles-right' : 'angles-left'}
               onClick={handleRightPanelToggle}
             />
 
             <div
-              className={`${styles.panelSliderRight} ${
-                rightPanelOpen ? styles.isOpen : styles.isClosed
-              }`}
+              className={classNames(styles.panelSliderRight, {
+                [styles.isOpen]: rightPanelOpen,
+                [styles.isClosed]: !rightPanelOpen,
+                'is-hidden': currentTab.tabName === 'resources',
+              })}
             >
               {currentTab.tabName === 'pages' && (
                 <>
@@ -687,11 +724,38 @@ export default function EditPage(): ReactNode {
             />
           )}
           {currentTab.tabName === 'resources' && (
-            <ResourcesTab
-              isOpenLeft={leftPanelOpen}
-              isOpenRight={rightPanelOpen}
-              tab={currentTab}
-            />
+            <>
+              <ResourcesTab
+                addIn={addIn}
+                changeIn={changeIn}
+                deleteIn={deleteIn}
+                docRef={docRef}
+                goBack={handleGoBack}
+                handleSave={handleSave}
+                isOpenLeft={leftPanelOpen}
+                isOpenRight={rightPanelOpen}
+                isShowingDefinition={toggleResourceDefinition.enabled}
+                isShowingDetails={toggleResourceDetails.enabled}
+                saveStack={saveStack[index]}
+                showResourceDefinition={toggleResourceDefinition.enable}
+                showResourceDetails={toggleResourceDetails.enable}
+                toggleRightPanel={handleRightPanelToggle}
+              />
+              {toggleResourceDetails.enabled || toggleResourceDefinition.enabled ? (
+                <Button
+                  className={classNames(
+                    'is-danger is-rounded is-light mt-3',
+                    String(styles.goBack),
+                    {
+                      [styles.rightBar]: rightPanelOpen,
+                    },
+                  )}
+                  icon="arrow-left-long"
+                  iconSize="medium"
+                  onClick={handleGoBack}
+                />
+              ) : null}
+            </>
           )}
           {currentTab.tabName === 'pages' && (
             <PagesTab

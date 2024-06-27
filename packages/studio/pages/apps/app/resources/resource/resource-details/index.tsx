@@ -3,6 +3,7 @@ import { type Resource } from '@appsemble/types';
 import { serializeResource } from '@appsemble/utils';
 import { download, type NamedEvent } from '@appsemble/web-utils';
 import axios from 'axios';
+import classNames from 'classnames';
 import { type editor } from 'monaco-editor/esm/vs/editor/editor.api.js';
 import {
   lazy,
@@ -24,6 +25,14 @@ import { HeaderControl } from '../../../../../../components/HeaderControl/index.
 import { JSONSchemaEditor } from '../../../../../../components/JSONSchemaEditor/index.js';
 import { useApp } from '../../../index.js';
 
+/**
+ * Pass along the resource name from the GUI editor `Resources` tab
+ */
+interface Props {
+  readonly guiResourceName?: string;
+  readonly guiResourceId?: string;
+}
+
 const tabOptions = new Set(['#history', '#json', '#properties']);
 
 const MonacoEditor = lazy(() =>
@@ -32,11 +41,13 @@ const MonacoEditor = lazy(() =>
   })),
 );
 
-export function ResourceDetailsPage(): ReactNode {
-  const { resourceId, resourceName } = useParams<{
+export function ResourceDetailsPage({ guiResourceId, guiResourceName }: Props): ReactNode {
+  const { resourceId: paramResourceId, resourceName: paramResourceName } = useParams<{
     resourceName: string;
     resourceId: string;
   }>();
+  const resourceName: string = guiResourceName || paramResourceName;
+  const resourceId: string = guiResourceId || paramResourceId;
   const { app } = useApp();
   const push = useMessages();
   const { formatMessage } = useIntl();
@@ -129,7 +140,11 @@ export function ResourceDetailsPage(): ReactNode {
     <>
       <HeaderControl
         control={
-          <div className="is-flex is-justify-content-flex-end">
+          <div
+            className={classNames('is-flex is-justify-content-flex-end', {
+              [styles.inGui]: guiResourceName !== undefined,
+            })}
+          >
             <Button
               className="mb-4 mr-2"
               color="primary"
@@ -157,7 +172,11 @@ export function ResourceDetailsPage(): ReactNode {
       >
         {resourceName} {resourceId}
       </HeaderControl>
-      <div className={`is-flex is-flex-direction-column ${styles.flexContent}`}>
+      <div
+        className={classNames('is-flex is-flex-direction-column', String(styles.flexContent), {
+          [styles.inGui]: guiResourceName !== undefined,
+        })}
+      >
         <Tabs onChange={onClickTab} value={hash}>
           <Tab href="#properties" value="#properties">
             <FormattedMessage {...messages.properties} />

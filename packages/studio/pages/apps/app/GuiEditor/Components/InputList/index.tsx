@@ -6,14 +6,15 @@ import styles from './index.module.css';
 import { ListItem } from './ListItem/index.js';
 
 interface InputStringProps {
+  readonly className?: string;
   readonly hideLabel?: boolean;
   readonly isRight?: boolean;
   readonly label?: string;
   readonly labelPosition?: 'left' | 'top';
   readonly onChange: (index: number) => void;
-  readonly value: string;
   readonly options: readonly string[];
   readonly size?: 'large' | 'medium' | 'normal' | 'small';
+  readonly value: string;
 }
 
 export function DropDownLabel(size: string, value: string): ReactNode {
@@ -37,6 +38,7 @@ export function DropDownLabel(size: string, value: string): ReactNode {
 }
 
 export function InputList({
+  className,
   hideLabel,
   isRight,
   label,
@@ -55,7 +57,7 @@ export function InputList({
 
   if (!label) {
     return (
-      <div className={`${styles.root} field`}>
+      <div className={`${styles.root} ${className} field`}>
         <Dropdown className={String(isRight ? 'is-right' : '')} label={DropDownLabel(size, value)}>
           {options.map((option, index) => (
             <ListItem index={index} key={option} onChange={onDropdownChange} value={option} />
@@ -67,7 +69,7 @@ export function InputList({
 
   return (
     <div
-      className={`${styles.root} field ${
+      className={`${styles.root} ${className} field ${
         labelPosition === 'left' ? styles.leftLabel : styles.topLabel
       }`}
     >
