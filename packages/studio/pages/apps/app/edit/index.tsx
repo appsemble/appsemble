@@ -15,7 +15,7 @@ import {
   useToggle,
 } from '@appsemble/react-components';
 import { type App, type AppDefinition } from '@appsemble/types';
-import { getAppBlocks } from '@appsemble/utils';
+import { getAppBlocks, normalize } from '@appsemble/utils';
 import axios from 'axios';
 import classNames from 'classnames';
 import equal from 'fast-deep-equal';
@@ -122,7 +122,7 @@ export default function EditPage(): ReactNode {
 
   useEffect(() => {
     setBreadCrumbsDecoration(
-      <Link to={`apps/${id}/edit/gui/pages`}>
+      <Link to={`apps/${id}/${normalize(app.definition.name)}/edit/gui/pages`}>
         <Button
           className={`button is-hidden-touch is-fullwidth is-rounded is-transparent is-bordered is-small ${styles.guiSwitch}`}
         >

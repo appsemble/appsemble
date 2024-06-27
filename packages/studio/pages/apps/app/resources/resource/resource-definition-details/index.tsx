@@ -13,11 +13,20 @@ import { Schema } from '../../../../../../components/Schema/index.js';
 import { useApp } from '../../../index.js';
 
 /**
+ * Pass along the resource name from the GUI editor `Resources` tab
+ */
+interface Props {
+  readonly guiResourceName?: string;
+}
+
+/**
  * Render the page for resource definition details.
  */
-export function ResourceDefinitionDetailsPage(): ReactNode {
+export function ResourceDefinitionDetailsPage({ guiResourceName }: Props): ReactNode {
   const { app } = useApp();
-  const { resourceName } = useParams<{ resourceName: string }>();
+  const { resourceName: paramResourceName } = useParams<{ resourceName: string }>();
+
+  const resourceName: string = guiResourceName || paramResourceName;
   const { formatMessage } = useIntl();
   useMeta(formatMessage(messages.pageTitle));
 
@@ -57,12 +66,25 @@ export function ResourceDefinitionDetailsPage(): ReactNode {
       <Title size={4}>
         <FormattedMessage {...messages.endpoints} />
       </Title>
-      <Endpoint type="query" />
-      <Endpoint type="get" />
-      <Endpoint type="$count" />
-      <Endpoint hasBody type="create" />
-      <Endpoint hasBody type="update" />
-      <Endpoint type="delete" />
+      {guiResourceName ? (
+        <>
+          <Endpoint guiResourceName={resourceName} type="query" />
+          <Endpoint guiResourceName={resourceName} type="get" />
+          <Endpoint guiResourceName={resourceName} type="$count" />
+          <Endpoint guiResourceName={resourceName} hasBody type="create" />
+          <Endpoint guiResourceName={resourceName} hasBody type="update" />
+          <Endpoint guiResourceName={resourceName} type="delete" />{' '}
+        </>
+      ) : (
+        <>
+          <Endpoint type="query" />
+          <Endpoint type="get" />
+          <Endpoint type="$count" />
+          <Endpoint hasBody type="create" />
+          <Endpoint hasBody type="update" />
+          <Endpoint type="delete" />
+        </>
+      )}
       <hr />
       <Collapsible size={4} title="YAML View">
         <CodeBlock className="mb-4" language="yaml">

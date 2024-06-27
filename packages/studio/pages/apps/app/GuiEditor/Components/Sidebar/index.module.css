@@ -37,29 +37,21 @@
 .isOpen.leftBar {
   border: hsl(0deg 0% 83%) 1px solid;
   transition: width 0.35s ease-in-out;
-  /* stylelint-disable-next-line media-feature-range-notation */
-  @media (max-width: 1024px) {
-    width: 230px;
+
+  @media (width < 1024px) {
+    width: 14.5rem;
   }
-  /* stylelint-disable-next-line media-feature-range-notation */
-  @media (min-width: 1025px) and (max-width: 1500px) {
-    width: 250px;
+
+  @media (width > 1023px) and (width < 1501px) {
+    width: 17rem;
   }
-  /* stylelint-disable-next-line media-feature-range-notation */
-  @media (min-width: 1501px) and (max-width: 1600px) {
-    width: 280px;
+
+  @media (width >= 1501px) and (width < 1921px) {
+    width: 20rem;
   }
-  /* stylelint-disable-next-line media-feature-range-notation */
-  @media (min-width: 1601px) and (max-width: 1920px) {
-    width: 320px;
-  }
-  /* stylelint-disable-next-line media-feature-range-notation */
-  @media (min-width: 1921px) and (max-width: 2560px) {
-    width: 360px;
-  }
-  /* stylelint-disable-next-line media-feature-range-notation */
-  @media (min-width: 2561px) {
-    width: 420px;
+
+  @media (width >= 1921px) {
+    width: 22.5rem;
   }
 }
 
@@ -67,29 +59,20 @@
   border: hsl(0deg 0% 83%) 1px solid;
   transition: width 0.35s ease-in-out;
 
-  /* stylelint-disable-next-line media-feature-range-notation */
-  @media (max-width: 1024px) {
-    width: 330px;
+  @media (width < 1024px) {
+    width: 18.2rem;
   }
-  /* stylelint-disable-next-line media-feature-range-notation */
-  @media (min-width: 1025px) and (max-width: 1500px) {
-    width: 350px;
+
+  @media (width > 1023px) and (width < 1501px) {
+    width: 24rem;
   }
-  /* stylelint-disable-next-line media-feature-range-notation */
-  @media (min-width: 1501px) and (max-width: 1600px) {
-    width: 370px;
+
+  @media (width >= 1501px) and (width < 1921px) {
+    width: 27rem;
   }
-  /* stylelint-disable-next-line media-feature-range-notation */
-  @media (min-width: 1601px) and (max-width: 1920px) {
-    width: 390px;
-  }
-  /* stylelint-disable-next-line media-feature-range-notation */
-  @media (min-width: 1921px) and (max-width: 2560px) {
-    width: 420px;
-  }
-  /* stylelint-disable-next-line media-feature-range-notation */
-  @media (min-width: 2561px) {
-    width: 560px;
+
+  @media (width >= 1921px) {
+    width: 32rem;
   }
 }
 
@@ -97,12 +80,12 @@
   background-color: hsl(0deg 0% 100%);
   border-bottom: none;
   border-radius: 0 4px 0 0;
-  width: 100%;
+  width: inherit;
 }
 
 .leftBarSlider {
   background-color: hsl(0deg 0% 100%);
   border-bottom: none;
   border-radius: 4px 0 0;
-  width: 100%;
+  width: inherit;
 }

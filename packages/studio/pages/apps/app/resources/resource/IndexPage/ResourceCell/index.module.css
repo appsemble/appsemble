@@ -1,8 +1,10 @@
 .root {
-  max-width: 50vw;
+  max-width: 32rem;
   overflow-x: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+
+  &.overflowing {
+    display: flex;
+  }
 }
 
 .boolean {
@@ -24,4 +26,46 @@
 
 .noSelect {
   user-select: none;
+}
+
+.toggleButton {
+  position: relative;
+
+  &.overflowing {
+    position: sticky;
+  }
+
+  &.expanded {
+    margin-left: 1rem;
+    margin-top: -0.2rem;
+  }
+}
+
+.contentWrapper {
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
+  max-height: 13rem;
+  max-width: 26rem;
+  overflow: hidden;
+  white-space: nowrap;
+  width: 100%;
+
+  &.overflowing {
+    min-height: 50px;
+    min-width: 26rem;
+
+    &.expanded {
+      min-width: 26.8rem;
+      scrollbar-gutter: stable both-edges;
+    }
+  }
+
+  &.expanded {
+    max-height: 9rem;
+    overflow-y: auto;
+    padding-top: 1rem;
+    text-wrap: balance;
+    white-space: preserve-spaces;
+  }
 }

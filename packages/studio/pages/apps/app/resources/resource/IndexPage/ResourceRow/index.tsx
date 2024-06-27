@@ -48,6 +48,11 @@ interface ResourceRowProps {
   readonly onDelete: (id: number) => void;
 
   /**
+   * The overloaded passed down toggle from the GUI editor.
+   */
+  readonly triggerShowDetails?: (passedResourceId: string) => void;
+
+  /**
    * The JSON schema of the resource.
    */
   readonly schema: OpenAPIV3.SchemaObject;
@@ -66,6 +71,16 @@ interface ResourceRowProps {
    * The list of properties to hide.
    */
   readonly filter: Set<string>;
+
+  /**
+   * Whether it is rendered within the GUI editor
+   */
+  readonly isInGui?: boolean;
+
+  /**
+   * Pass along the resource name from the GUI editor `Resources` tab
+   */
+  readonly guiResourceName?: string;
 }
 
 const filteredKeys = new Set(['id', '$author']);
@@ -76,16 +91,21 @@ const filteredKeys = new Set(['id', '$author']);
 export function ResourceRow({
   dropdownUp,
   filter,
+  guiResourceName,
+  isInGui,
   onDelete,
   onEdit,
   onSelected,
   resource,
   schema,
   selected,
+  triggerShowDetails: showResourceDetails,
 }: ResourceRowProps): ReactNode {
-  const { resourceName } = useParams<{
+  const { resourceName: paramResourceName } = useParams<{
     resourceName: string;
   }>();
+  const resourceName: string = guiResourceName || paramResourceName;
+
   const { app } = useApp();
   const [editingResource, setEditingResource] = useState<Record<string, unknown>>();
   const modal = useToggle();
@@ -191,14 +211,24 @@ export function ResourceRow({
               <FormattedMessage {...messages.edit} />
             </Button>
             <hr className="dropdown-divider" />
-            <Button
-              className={`${styles.noBorder} pl-5 dropdown-item`}
-              component={Link}
-              icon="book"
-              to={`${resource.id}#properties`}
-            >
-              <FormattedMessage {...messages.details} />
-            </Button>
+            {isInGui ? (
+              <Button
+                className={`${styles.noBorder} pl-5 dropdown-item`}
+                icon="book"
+                onClick={() => showResourceDetails(String(resource.id))}
+              >
+                <FormattedMessage {...messages.details} />
+              </Button>
+            ) : (
+              <Button
+                className={`${styles.noBorder} pl-5 dropdown-item`}
+                component={Link}
+                icon="book"
+                to={`${resource.id}#properties`}
+              >
+                <FormattedMessage {...messages.details} />
+              </Button>
+            )}
             <hr className="dropdown-divider" />
             <Button
               className={`${styles.noBorder} pl-5 dropdown-item`}

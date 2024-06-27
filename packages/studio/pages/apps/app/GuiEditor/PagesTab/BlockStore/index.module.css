@@ -22,3 +22,9 @@
   height: calc(100vh - 19rem);
   overflow-y: scroll;
 }
+
+/* Add shadow to search field on block store page */
+/* stylelint-disable-next-line selector-max-type */
+div.blockStoreSearch > div.searchField > div.searchField {
+  box-shadow: 0 5px 13px -5px rgba(0 0 0 / 30%);
+}

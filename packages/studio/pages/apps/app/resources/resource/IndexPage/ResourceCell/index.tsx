@@ -1,6 +1,7 @@
-import { Checkbox } from '@appsemble/react-components';
+import { Button, Checkbox, useToggle } from '@appsemble/react-components';
+import classNames from 'classnames';
 import { type Schema, Validator } from 'jsonschema';
-import { type ReactNode } from 'react';
+import { type ReactNode, useEffect, useRef, useState } from 'react';
 import { FormattedDate, FormattedMessage, FormattedNumber } from 'react-intl';
 
 import styles from './index.module.css';
@@ -18,9 +19,18 @@ interface ResourceCellProps {
 
 export function ResourceCell({ required, schema, value }: ResourceCellProps): ReactNode {
   const { valid } = validator.validate(value, { required, ...schema }, { nestedErrors: true });
-  const classes = [styles.root];
+  const expandCell = useToggle();
+  const contentRef = useRef<HTMLDivElement>(null);
+  const [isOverflowing, setIsOverflowing] = useState(false);
+  const classes = [styles.root, isOverflowing ? styles.overflowing : ''];
   let content: ReactNode;
   let title: string;
+
+  useEffect(() => {
+    if (contentRef.current) {
+      setIsOverflowing(contentRef.current.scrollWidth > contentRef.current.clientWidth);
+    }
+  }, [content]);
 
   if (!valid) {
     classes.push('has-text-danger');
@@ -116,7 +126,28 @@ export function ResourceCell({ required, schema, value }: ResourceCellProps): Re
 
   return (
     <td className={classes.join(' ')} title={title}>
-      {content}
+      <div
+        className={classNames(String(styles.contentWrapper), {
+          [styles.overflowing]: isOverflowing,
+          [styles.expanded]: expandCell.enabled,
+        })}
+        ref={contentRef}
+      >
+        {content}
+      </div>
+      {isOverflowing ? (
+        <>
+          {expandCell.enabled ? null : <p className="pt-3 ml-1 mr-3">...</p>}
+          <Button
+            className={classNames(String(styles.toggleButton), {
+              [styles.overflowing]: isOverflowing && !expandCell.enabled,
+              [styles.expanded]: expandCell.enabled,
+            })}
+            icon={expandCell.enabled ? 'angles-up' : 'angles-down'}
+            onClick={expandCell.toggle}
+          />
+        </>
+      ) : null}
     </td>
   );
 }

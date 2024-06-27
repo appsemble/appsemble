@@ -12,6 +12,15 @@ interface EndpointProps {
   readonly type: '$count' | 'create' | 'delete' | 'get' | 'query' | 'update';
 }
 
+/**
+ * Pass along the resource name from the GUI editor `Resources` tab
+ */
+interface Props {
+  readonly guiResourceName?: string;
+}
+
+interface CombinedProps extends EndpointProps, Props {}
+
 const methods = {
   get: ['GET', 'id'],
   query: ['GET', ''],
@@ -21,9 +30,10 @@ const methods = {
   delete: ['DELETE', 'id'],
 };
 
-export function Endpoint({ hasBody, type }: EndpointProps): ReactNode {
+export function Endpoint({ guiResourceName, hasBody, type }: CombinedProps): ReactNode {
   const { app } = useApp();
-  const { resourceName } = useParams<{ resourceName: string }>();
+  const { resourceName: paramResourceName } = useParams<{ resourceName: string }>();
+  const resourceName: string = guiResourceName || paramResourceName;
   const resource = app.definition.resources[resourceName];
   const roles = (resource[type === '$count' ? 'count' : type]?.roles ?? resource.roles ?? []).map(
     (role) => app.messages?.app[`app.roles.${role}`] || role,

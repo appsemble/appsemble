@@ -791,7 +791,7 @@ interface ResourceReferenceAction {
   triggers: ResourceReferenceActionTrigger[];
 }
 
-interface ResourceReference {
+export interface ResourceReference {
   /**
    * The name of the referenced resource.
    */
