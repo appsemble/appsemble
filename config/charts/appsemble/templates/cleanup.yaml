@@ -13,8 +13,8 @@ spec:
       annotations:
         {{ include "appsemble.gitlab" . | indent 8 }}
     spec:
-      automountServiceAccountToken: {{ not .Values.noServiceAccount }}
       restartPolicy: Never
+      serviceAccountName: {{ include "appsemble.fullname" . }}-serviceaccount
       containers:
         - name: {{ include "appsemble.fullname" . }}-cleanup
           image: "{{ .Values.image.repository }}:{{ include "appsemble.tag" . }}"
@@ -24,14 +24,12 @@ spec:
             - -vv
           env:
 {{ include "appsemble.postgres" . | indent 12 }}
-            {{ if not .Values.noServiceAccount -}}
             - name: APP_DOMAIN_STRATEGY
               value: kubernetes-ingress
             - name: SERVICE_NAME
               value: {{ include "appsemble.fullname" . }}
             - name: SERVICE_PORT
               value: {{ .Values.service.port | quote }}
-            {{- end }}
             - name: HOST
               {{ if .Values.ingress.enabled -}}
               value: {{ include "appsemble.protocol" $ }}{{ .Values.ingress.host }}
