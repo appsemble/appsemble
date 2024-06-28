@@ -1,10 +1,15 @@
 import { logger } from '@appsemble/node-utils';
 import axios from 'axios';
 
+import { argv } from '../utils/argv.js';
+
 export const command = 'health';
 export const description = 'Check if the locally running Appsemble server is still healthy';
 
 export async function handler(): Promise<void> {
-  await axios.get('http://localhost:9999/api/health');
+  const { host, port } = argv;
+  const url = new URL(host);
+  url.port = String(port);
+  await axios.get(`${url}/api/health`);
   logger.info('API is healthy');
 }
