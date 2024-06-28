@@ -208,6 +208,11 @@ export enum MainPermission {
   CreateOrganizationInvites,
 
   /**
+   * The permission to query organization invites,
+   */
+  QueryOrganizationInvites,
+
+  /**
    * The permission to update organization invites,
    */
   UpdateOrganizationInvites,
@@ -251,4 +256,34 @@ export enum MainPermission {
    * The permission to send manual push notifications for an app.
    */
   PushAppNotifications,
+
+  /**
+   * The permission to create trainings.
+   */
+  CreateTrainings,
+
+  /**
+   * The permission to update trainings.
+   */
+  UpdateTrainings,
+
+  /**
+   * The permission to delete trainings.
+   */
+  DeleteTrainings,
+
+  /**
+   * The permission to create training blocks.
+   */
+  CreateTrainingBlocks,
+
+  /**
+   * The permission to update training blocks.
+   */
+  UpdateTrainingBlocks,
+
+  /**
+   * The permission to delete training blocks.
+   */
+  DeleteTrainingBlocks,
 }

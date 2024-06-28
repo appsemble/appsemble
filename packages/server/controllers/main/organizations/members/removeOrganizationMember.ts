@@ -1,9 +1,9 @@
 import { assertKoaError } from '@appsemble/node-utils';
-import { Permissions } from '@appsemble/utils';
+import { MainPermission } from '@appsemble/utils';
 import { type Context } from 'koa';
 
 import { Organization, User } from '../../../../models/index.js';
-import { checkRole } from '../../../../utils/checkRole.js';
+import { checkUserPermissions } from '../../../../utils/authorization.js';
 
 export async function removeOrganizationMember(ctx: Context): Promise<void> {
   const {
@@ -28,7 +28,7 @@ export async function removeOrganizationMember(ctx: Context): Promise<void> {
   );
 
   if (memberId !== user.id) {
-    await checkRole(ctx, organization.id, Permissions.ManageMembers);
+    await checkUserPermissions(ctx, organization.id, [MainPermission.RemoveOrganizationMembers]);
   }
 
   assertKoaError(

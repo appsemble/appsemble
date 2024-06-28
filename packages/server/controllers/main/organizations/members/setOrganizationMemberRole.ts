@@ -1,9 +1,9 @@
 import { assertKoaError } from '@appsemble/node-utils';
-import { Permissions } from '@appsemble/utils';
+import { MainPermission } from '@appsemble/utils';
 import { type Context } from 'koa';
 
 import { Organization, User } from '../../../../models/index.js';
-import { checkRole } from '../../../../utils/checkRole.js';
+import { checkUserPermissions } from '../../../../utils/authorization.js';
 
 export async function setOrganizationMemberRole(ctx: Context): Promise<void> {
   const {
@@ -24,7 +24,7 @@ export async function setOrganizationMemberRole(ctx: Context): Promise<void> {
   );
   assertKoaError(user.id === memberId, ctx, 400, 'Not allowed to change your own rule');
 
-  await checkRole(ctx, organization.id, Permissions.ManageRoles);
+  await checkUserPermissions(ctx, organization.id, [MainPermission.UpdateOrganizationMembers]);
 
   const member = organization.Users.find((m) => m.id === memberId);
 

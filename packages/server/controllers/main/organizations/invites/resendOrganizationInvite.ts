@@ -1,10 +1,10 @@
 import { assertKoaError, throwKoaError } from '@appsemble/node-utils';
-import { Permissions } from '@appsemble/utils';
+import { MainPermission } from '@appsemble/utils';
 import { type Context } from 'koa';
 
 import { Organization, OrganizationInvite, User } from '../../../../models/index.js';
 import { argv } from '../../../../utils/argv.js';
-import { checkRole } from '../../../../utils/checkRole.js';
+import { checkUserPermissions } from '../../../../utils/authorization.js';
 
 export async function resendOrganizationInvite(ctx: Context): Promise<void> {
   const {
@@ -13,40 +13,36 @@ export async function resendOrganizationInvite(ctx: Context): Promise<void> {
     request,
   } = ctx;
 
-  const email = request.body.email.toLowerCase();
-  const organization = await Organization.findByPk(organizationId, {
-    include: [
-      {
-        model: OrganizationInvite,
-        include: [
-          {
-            model: User,
-          },
-        ],
-      },
-    ],
-  });
+  await checkUserPermissions(ctx, organizationId, [MainPermission.CreateOrganizationInvites]);
+
+  const organization = await Organization.findByPk(organizationId, { attributes: [] });
 
   assertKoaError(!organization, ctx, 404, 'Organization not found.');
 
-  await checkRole(ctx, organization.id, Permissions.InviteMember);
+  const email = request.body.email.toLowerCase();
+  const existingOrganizationInvite = await OrganizationInvite.findOne({
+    where: {
+      OrganizationId: organizationId,
+      email,
+    },
+    include: [User],
+  });
 
-  const invite = organization.OrganizationInvites.find((i) => i.email === email);
-
-  assertKoaError(!invite, ctx, 404, 'This person was not invited previously.');
+  assertKoaError(!existingOrganizationInvite, ctx, 404, 'This person was not invited previously.');
 
   try {
     await mailer.sendTranslatedEmail({
       to: {
-        name: invite.User.name,
+        name: existingOrganizationInvite.User.name,
         email,
       },
       emailName: 'organizationInvite',
-      locale: invite.User.locale,
+      locale: existingOrganizationInvite.User.locale,
       values: {
-        link: (text) => `[${text}](${argv.host}/organization-invite?token=${invite.key})`,
+        link: (text) =>
+          `[${text}](${argv.host}/organization-invite?token=${existingOrganizationInvite.key})`,
         organization: organizationId,
-        name: invite.User.name || 'null',
+        name: existingOrganizationInvite.User.name || 'null',
         appName: 'null',
       },
     });

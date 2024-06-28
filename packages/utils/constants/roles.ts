@@ -66,14 +66,26 @@ const OrganizationBlockManager = [
   MainPermission.DeleteBlocks,
 ];
 
+const OrganizationTrainingManager = [
+  ...OrganizationMember,
+  MainPermission.CreateTrainings,
+  MainPermission.UpdateTrainings,
+  MainPermission.DeleteTrainings,
+  MainPermission.CreateTrainingBlocks,
+  MainPermission.UpdateTrainingBlocks,
+  MainPermission.DeleteTrainingBlocks,
+];
+
 const OrganizationMaintainer = [
   ...OrganizationAppManager,
   ...OrganizationAppTeamManager,
   ...OrganizationAppCollectionManager,
   ...OrganizationBlockManager,
+  ...OrganizationTrainingManager,
   MainPermission.CreateApps,
   MainPermission.DeleteApps,
   MainPermission.CreateOrganizationInvites,
+  MainPermission.QueryOrganizationInvites,
   MainPermission.UpdateOrganizationInvites,
   MainPermission.DeleteOrganizationInvites,
 ];

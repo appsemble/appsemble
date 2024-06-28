@@ -21,7 +21,7 @@ export async function respondOrganizationInvite(ctx: Context): Promise<void> {
   assertKoaError(organizationId !== organization.id, ctx, 406, 'Organization IDs do not match');
 
   if (response) {
-    await organization.$add('User', userId, { through: { role: invite.role || 'Member' } });
+    await organization.$add('User', userId, { through: { role: invite.role } });
   }
 
   await invite.destroy();

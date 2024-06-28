@@ -9,10 +9,10 @@ export async function createOrganization(ctx: Context): Promise<void> {
     request: {
       body: { description, email, icon, id, name, website },
     },
-    user,
+    user: authSubject,
   } = ctx;
 
-  await (user as User).reload({
+  const user = await User.findByPk(authSubject.id, {
     attributes: ['primaryEmail', 'name'],
     include: [
       {
@@ -26,12 +26,20 @@ export async function createOrganization(ctx: Context): Promise<void> {
     ],
   });
 
+  const userEmailAuthorization = await EmailAuthorization.findOne({
+    attributes: ['verified'],
+    where: {
+      email: user.primaryEmail,
+    },
+  });
+
   assertKoaError(
-    !user.primaryEmail || !user.EmailAuthorizations[0].verified,
+    !user.primaryEmail || !userEmailAuthorization.verified,
     ctx,
     403,
     'Email not verified.',
   );
+
   assertKoaError(
     organizationBlocklist.includes(id),
     ctx,

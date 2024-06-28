@@ -1,9 +1,9 @@
 import { assertKoaError } from '@appsemble/node-utils';
-import { Permissions } from '@appsemble/utils';
+import { MainPermission } from '@appsemble/utils';
 import { type Context } from 'koa';
 
 import { OrganizationInvite } from '../../../../models/index.js';
-import { checkRole } from '../../../../utils/checkRole.js';
+import { checkUserPermissions } from '../../../../utils/authorization.js';
 
 export async function deleteOrganizationInvite(ctx: Context): Promise<void> {
   const { request } = ctx;
@@ -13,7 +13,9 @@ export async function deleteOrganizationInvite(ctx: Context): Promise<void> {
 
   assertKoaError(!invite, ctx, 404, 'This invite does not exist');
 
-  await checkRole(ctx, invite.OrganizationId, Permissions.InviteMember);
+  await checkUserPermissions(ctx, invite.OrganizationId, [
+    MainPermission.DeleteOrganizationInvites,
+  ]);
 
   await invite.destroy();
 }

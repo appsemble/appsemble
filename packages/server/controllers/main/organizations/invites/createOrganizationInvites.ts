@@ -1,18 +1,19 @@
-import { randomBytes } from "node:crypto";
+import { randomBytes } from 'node:crypto';
 
-import { assertKoaError } from "@appsemble/node-utils";
-import { MainPermission } from "@appsemble/utils";
-import { type Context } from "koa";
-import { Op } from "sequelize";
+import { assertKoaError } from '@appsemble/node-utils';
+import { MainPermission } from '@appsemble/utils';
+import { type Context } from 'koa';
+import { Op } from 'sequelize';
 
 import {
   EmailAuthorization,
   Organization,
   OrganizationInvite,
-  User
-} from "../../../../models/index.js";
-import { argv } from "../../../../utils/argv.js";
-import { checkUserPermissions } from "../../../../utils/authorization.js";
+  OrganizationMember,
+  User,
+} from '../../../../models/index.js';
+import { argv } from '../../../../utils/argv.js';
+import { checkUserPermissions } from '../../../../utils/authorization.js';
 
 export async function createOrganizationInvites(ctx: Context): Promise<void> {
   const {
@@ -21,36 +22,44 @@ export async function createOrganizationInvites(ctx: Context): Promise<void> {
     request: { body },
   } = ctx;
 
-  const allInvites = (body as OrganizationInvite[]).map((invite) => ({
-    email: invite.email.toLowerCase(),
-    role: invite.role,
-  }));
-
   await checkUserPermissions(ctx, organizationId, [MainPermission.CreateOrganizationInvites]);
 
-  const member = await checkRole(ctx, organizationId, Permissions.InviteMember, {
+  const organization = await Organization.findByPk(organizationId, { attributes: ['id'] });
+
+  assertKoaError(!organization, ctx, 404, 'Organization not found');
+
+  const organizationMembers = await OrganizationMember.findAll({
+    where: {
+      OrganizationId: organizationId,
+    },
     include: [
       {
-        model: Organization,
-        attributes: ['id'],
-        include: [
-          {
-            model: User,
-            attributes: ['primaryEmail'],
-            include: [{ model: EmailAuthorization, attributes: ['email'] }],
-          },
-          { model: OrganizationInvite, attributes: ['email'] },
-        ],
+        model: User,
+        attributes: ['primaryEmail'],
+        include: [{ model: EmailAuthorization, attributes: ['email'] }],
       },
     ],
   });
 
+  const organizationInvites = await OrganizationInvite.findAll({
+    attributes: ['email'],
+    where: {
+      OrganizationId: organizationId,
+    },
+  });
+
   const memberEmails = new Set(
-    member.Organization.Users.flatMap(({ EmailAuthorizations }) =>
+    organizationMembers.flatMap(({ User: { EmailAuthorizations } }) =>
       EmailAuthorizations.flatMap(({ email }) => email),
     ),
   );
-  const newInvites = allInvites.filter((invite) => !memberEmails.has(invite.email));
+
+  const newInvites = (body as OrganizationInvite[])
+    .map((invite) => ({
+      email: invite.email.toLowerCase(),
+      role: invite.role,
+    }))
+    .filter((invite) => !memberEmails.has(invite.email));
 
   assertKoaError(
     !newInvites.length,
@@ -59,9 +68,8 @@ export async function createOrganizationInvites(ctx: Context): Promise<void> {
     'All invited users are already part of this organization',
   );
 
-  const existingInvites = new Set(
-    member.Organization.OrganizationInvites.flatMap(({ email }) => email),
-  );
+  const existingInvites = new Set(organizationInvites.flatMap(({ email }) => email));
+
   const pendingInvites = newInvites.filter((invite) => !existingInvites.has(invite.email));
 
   assertKoaError(
@@ -75,7 +83,9 @@ export async function createOrganizationInvites(ctx: Context): Promise<void> {
     include: [{ model: User }],
     where: { email: { [Op.in]: pendingInvites.map((invite) => invite.email) } },
   });
+
   const userMap = new Map(auths.map((auth) => [auth.email, auth.User]));
+
   const result = await OrganizationInvite.bulkCreate(
     pendingInvites.map((invite) => {
       const user = userMap.get(invite.email);

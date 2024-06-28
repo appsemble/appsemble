@@ -1,9 +1,9 @@
 import { assertKoaError } from '@appsemble/node-utils';
-import { Permissions } from '@appsemble/utils';
+import { MainPermission } from '@appsemble/utils';
 import { type Context } from 'koa';
 
 import { Organization } from '../../../models/index.js';
-import { checkRole } from '../../../utils/checkRole.js';
+import { checkUserPermissions } from '../../../utils/authorization.js';
 
 export async function patchOrganization(ctx: Context): Promise<void> {
   const {
@@ -13,10 +13,10 @@ export async function patchOrganization(ctx: Context): Promise<void> {
     },
   } = ctx;
 
-  const member = await checkRole(ctx, organizationId, Permissions.EditOrganization, {
-    include: { model: Organization },
-  });
-  const organization = member.Organization;
+  await checkUserPermissions(ctx, organizationId, [MainPermission.UpdateOrganizations]);
+
+  const organization = await Organization.findByPk(organizationId);
+
   assertKoaError(!organization, ctx, 404, 'Organization not found');
 
   const result: Partial<Organization> = {};
