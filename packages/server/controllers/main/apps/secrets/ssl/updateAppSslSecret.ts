@@ -1,9 +1,9 @@
 import { assertKoaError } from '@appsemble/node-utils';
-import { Permissions } from '@appsemble/utils';
+import { MainPermission } from '@appsemble/utils';
 import { type Context } from 'koa';
 
 import { App } from '../../../../../models/index.js';
-import { checkRole } from '../../../../../utils/checkRole.js';
+import { checkUserPermissions } from '../../../../../utils/authorization.js';
 
 export async function updateAppSslSecret(ctx: Context): Promise<void> {
   const {
@@ -21,7 +21,7 @@ export async function updateAppSslSecret(ctx: Context): Promise<void> {
     sslKey: key?.trim() || null,
   });
 
-  await checkRole(ctx, app.OrganizationId, Permissions.EditAppSettings);
+  await checkUserPermissions(ctx, app.OrganizationId, [MainPermission.UpdateAppSecrets]);
 
   ctx.body = {
     certificate: app.sslCertificate,

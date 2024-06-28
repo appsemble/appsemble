@@ -11,6 +11,7 @@ export async function getAppOAuth2Secret(ctx: Context): Promise<void> {
   assertKoaError(!app, ctx, 404, 'App not found');
 
   const appOAuth2Secret = await AppOAuth2Secret.findOne({
+    attributes: ['authorizationUrl', 'clientId', 'scope'],
     where: {
       AppId: appId,
       id: appOAuth2SecretId,

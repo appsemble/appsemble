@@ -1,13 +1,13 @@
 import { assertKoaError } from '@appsemble/node-utils';
-import { Permissions } from '@appsemble/utils';
+import { MainPermission } from '@appsemble/utils';
 import { addYears } from 'date-fns';
 import { type Context } from 'koa';
 import forge from 'node-forge';
 
 import { App, AppSamlSecret } from '../../../../../models/index.js';
 import { argv } from '../../../../../utils/argv.js';
+import { checkUserPermissions } from '../../../../../utils/authorization.js';
 import { checkAppLock } from '../../../../../utils/checkAppLock.js';
-import { checkRole } from '../../../../../utils/checkRole.js';
 
 export async function createAppSamlSecret(ctx: Context): Promise<void> {
   const {
@@ -23,22 +23,27 @@ export async function createAppSamlSecret(ctx: Context): Promise<void> {
   assertKoaError(!app, ctx, 404, 'App not found');
 
   checkAppLock(ctx, app);
-  await checkRole(ctx, app.OrganizationId, [Permissions.EditApps, Permissions.EditAppSettings]);
+
+  await checkUserPermissions(ctx, app.OrganizationId, [MainPermission.CreateAppSecrets]);
 
   const { privateKey, publicKey } = await new Promise<forge.pki.rsa.KeyPair>((resolve, reject) => {
     forge.pki.rsa.generateKeyPair({ bits: 2048 }, (error, result) =>
       error ? reject(error) : resolve(result),
     );
   });
+
   const cert = forge.pki.createCertificate();
+
   cert.publicKey = publicKey;
   cert.privateKey = privateKey;
   cert.validity.notBefore = new Date();
   cert.validity.notAfter = addYears(new Date(), 10);
+
   const attrs = [
     { shortName: 'CN', value: argv.host },
     { shortName: 'O', value: 'Appsemble' },
   ];
+
   cert.setSubject(attrs);
   cert.setIssuer(attrs);
   cert.sign(privateKey);
@@ -50,5 +55,6 @@ export async function createAppSamlSecret(ctx: Context): Promise<void> {
     spPrivateKey: forge.pki.privateKeyToPem(privateKey).trim(),
     spPublicKey: forge.pki.publicKeyToPem(publicKey).trim(),
   });
+
   ctx.body = { ...secret, id };
 }

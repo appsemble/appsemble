@@ -33,10 +33,15 @@ const OrganizationAppManager = [
   MainPermission.UpdateAppSettings,
   MainPermission.CreateAppScreenshots,
   MainPermission.DeleteAppScreenshots,
+  MainPermission.CreateAppReadmes,
+  MainPermission.DeleteAppReadmes,
   MainPermission.CreateAppSecrets,
   MainPermission.QueryAppSecrets,
   MainPermission.UpdateAppSecrets,
   MainPermission.DeleteAppSecrets,
+  MainPermission.CreateAppVariables,
+  MainPermission.UpdateAppVariables,
+  MainPermission.DeleteAppVariables,
   MainPermission.PushAppNotifications,
 ];
 

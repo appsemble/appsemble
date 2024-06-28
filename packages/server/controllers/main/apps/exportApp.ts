@@ -1,5 +1,5 @@
 import { assertKoaError } from '@appsemble/node-utils';
-import { Permissions } from '@appsemble/utils';
+import { MainPermission } from '@appsemble/utils';
 import JSZip from 'jszip';
 import { type Context } from 'koa';
 import { stringify } from 'yaml';
@@ -14,7 +14,7 @@ import {
   Asset,
   Resource,
 } from '../../../models/index.js';
-import { checkRole } from '../../../utils/checkRole.js';
+import { checkUserPermissions } from '../../../utils/authorization.js';
 
 export async function exportApp(ctx: Context): Promise<void> {
   const {
@@ -45,7 +45,7 @@ export async function exportApp(ctx: Context): Promise<void> {
   assertKoaError(!app, ctx, 404, 'App not found');
 
   if (app.visibility === 'private' || !app.showAppDefinition) {
-    await checkRole(ctx, app.OrganizationId, Permissions.ViewApps);
+    await checkUserPermissions(ctx, app.OrganizationId, [MainPermission.QueryApps]);
   }
 
   const zip = new JSZip();
@@ -124,7 +124,7 @@ export async function exportApp(ctx: Context): Promise<void> {
   }
 
   if (resources) {
-    await checkRole(ctx, app.OrganizationId, Permissions.EditApps);
+    await checkUserPermissions(ctx, app.OrganizationId, [MainPermission.QueryAppResources]);
     await app.reload({
       include: [Resource],
     });
@@ -136,12 +136,15 @@ export async function exportApp(ctx: Context): Promise<void> {
       splitResources.get(resource.type).push(resource);
     }
     for (const [type, resourcesValue] of splitResources.entries()) {
-      zip.file(`resources/${type}.json`, JSON.stringify(resourcesValue.map((r) => r.toJSON())));
+      zip.file(
+        `resources/${type}.json`,
+        JSON.stringify(resourcesValue.map((r) => r.toJSON({ exclude: [] }))),
+      );
     }
   }
 
   if (assets) {
-    await checkRole(ctx, app.OrganizationId, Permissions.EditApps);
+    await checkUserPermissions(ctx, app.OrganizationId, [MainPermission.QueryAppAssets]);
     await app.reload({
       include: [Asset],
     });

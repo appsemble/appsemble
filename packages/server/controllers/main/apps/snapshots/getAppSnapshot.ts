@@ -1,7 +1,9 @@
 import { assertKoaError } from '@appsemble/node-utils';
+import { MainPermission } from '@appsemble/utils';
 import { type Context } from 'koa';
 
 import { App, AppSnapshot, User } from '../../../../models/index.js';
+import { checkUserPermissions } from '../../../../utils/authorization.js';
 
 export async function getAppSnapshot(ctx: Context): Promise<void> {
   const {
@@ -9,7 +11,7 @@ export async function getAppSnapshot(ctx: Context): Promise<void> {
   } = ctx;
 
   const app = await App.findByPk(appId, {
-    attributes: [],
+    attributes: ['OrganizationId'],
     include: {
       model: AppSnapshot,
       required: false,
@@ -19,6 +21,9 @@ export async function getAppSnapshot(ctx: Context): Promise<void> {
   });
 
   assertKoaError(!app, ctx, 404, 'App not found');
+
+  await checkUserPermissions(ctx, app.OrganizationId, [MainPermission.QueryApps]);
+
   assertKoaError(!app.AppSnapshots.length, ctx, 404, 'Snapshot not found');
 
   const [snapshot] = app.AppSnapshots;

@@ -1,8 +1,10 @@
 import { assertKoaError, logger } from '@appsemble/node-utils';
+import { MainPermission } from '@appsemble/utils';
 import { type Context } from 'koa';
 import { Op } from 'sequelize';
 
 import { App, Asset, Resource } from '../../../models/index.js';
+import { checkUserPermissions } from '../../../utils/authorization.js';
 import { reseedResourcesRecursively } from '../../../utils/resource.js';
 
 export async function reseedDemoApp(ctx: Context): Promise<void> {
@@ -11,7 +13,7 @@ export async function reseedDemoApp(ctx: Context): Promise<void> {
   } = ctx;
 
   const app = await App.findByPk(appId, {
-    attributes: ['demoMode', 'definition'],
+    attributes: ['demoMode', 'definition', 'OrganizationId'],
   });
 
   assertKoaError(!app, ctx, 404, 'App not found');
@@ -19,6 +21,13 @@ export async function reseedDemoApp(ctx: Context): Promise<void> {
   assertKoaError(!app.demoMode, ctx, 400, 'App is not in demo mode');
 
   logger.info('Cleaning up ephemeral assets.');
+
+  await checkUserPermissions(ctx, app.OrganizationId, [
+    MainPermission.DeleteAppAssets,
+    MainPermission.DeleteAppResources,
+    MainPermission.CreateAppAssets,
+    MainPermission.CreateAppResources,
+  ]);
 
   const demoAssetsDeletionResult = await Asset.destroy({
     where: {

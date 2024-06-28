@@ -1,3 +1,4 @@
+import { assertKoaError } from '@appsemble/node-utils';
 import { type Context } from 'koa';
 
 import { AppCollection, Organization, OrganizationMember } from '../../../../models/index.js';
@@ -5,24 +6,30 @@ import { AppCollection, Organization, OrganizationMember } from '../../../../mod
 export async function queryOrganizationAppCollections(ctx: Context): Promise<void> {
   const {
     pathParams: { organizationId },
+    user: authSubject,
   } = ctx;
 
-  const isUserMember =
-    (await OrganizationMember.count({
-      where: {
-        UserId: ctx.user?.id ?? null,
-        OrganizationId: organizationId,
-      },
-    })) > 0;
+  const organization = await Organization.findByPk(organizationId, { attributes: [] });
+
+  assertKoaError(!organization, ctx, 404, 'Organization not found.');
+
+  const organizationMember = await OrganizationMember.findOne({
+    where: {
+      UserId: authSubject.id,
+      OrganizationId: organizationId,
+    },
+  });
+
   const collections = await AppCollection.findAll({
     include: [
       {
         model: Organization,
+        attributes: ['name'],
       },
     ],
     where: {
       OrganizationId: organizationId,
-      ...(isUserMember ? {} : { visibility: 'public' }),
+      ...(organizationMember ? {} : { visibility: 'public' }),
     },
     order: [['updated', 'DESC']],
   });

@@ -88,6 +88,16 @@ export enum MainPermission {
   DeleteAppScreenshots,
 
   /**
+   * The permission to create app readmes.
+   */
+  CreateAppReadmes,
+
+  /**
+   * The permission to delete app readmes.
+   */
+  DeleteAppReadmes,
+
+  /**
    * The permission to create app secrets.
    */
   CreateAppSecrets,
@@ -106,6 +116,21 @@ export enum MainPermission {
    * The permission to delete app secrets.
    */
   DeleteAppSecrets,
+
+  /**
+   * The permission to create app secrets.
+   */
+  CreateAppVariables,
+
+  /**
+   * The permission to update app secrets.
+   */
+  UpdateAppVariables,
+
+  /**
+   * The permission to delete app secrets.
+   */
+  DeleteAppVariables,
 
   /**
    * The permission to create app resources.

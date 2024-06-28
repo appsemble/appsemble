@@ -5,7 +5,7 @@ import {
   throwKoaError,
 } from '@appsemble/node-utils';
 import { type BlockDefinition } from '@appsemble/types';
-import { has, Permissions } from '@appsemble/utils';
+import { has, MainPermission } from '@appsemble/utils';
 import { Validator } from 'jsonschema';
 import { type Context } from 'koa';
 import { type OpenAPIV3 } from 'openapi-types';
@@ -21,8 +21,8 @@ import {
   transactional,
 } from '../../../models/index.js';
 import { type PublishBlockBody } from '../../../types/index.js';
+import { checkUserPermissions } from '../../../utils/authorization.js';
 import { blockVersionToJson } from '../../../utils/block.js';
-import { checkRole } from '../../../utils/checkRole.js';
 
 export async function createBlock(ctx: Context): Promise<void> {
   const { files, icon, messages, ...data }: PublishBlockBody = ctx.request.body;
@@ -129,7 +129,7 @@ export async function createBlock(ctx: Context): Promise<void> {
     }
   }
 
-  await checkRole(ctx, OrganizationId, Permissions.PublishBlocks);
+  await checkUserPermissions(ctx, OrganizationId, [MainPermission.PublishBlocks]);
 
   const blockVersion = await BlockVersion.findOne({
     where: { name: blockId, OrganizationId },

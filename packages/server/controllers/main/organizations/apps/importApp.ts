@@ -6,7 +6,7 @@ import {
   getSupportedLanguages,
   handleValidatorResult,
 } from '@appsemble/node-utils';
-import { normalize, Permissions, validateAppDefinition, validateStyle } from '@appsemble/utils';
+import { MainPermission, normalize, validateAppDefinition, validateStyle } from '@appsemble/utils';
 import JSZip from 'jszip';
 import { type Context } from 'koa';
 import { type File } from 'koas-body-parser';
@@ -23,27 +23,28 @@ import {
   BlockVersion,
   Resource,
   transactional,
-  type User,
-} from '../../../../models/index.js';
-import { getUserAppAccount } from '../../../../options/index.js';
-import { options } from '../../../../options/options.js';
+  User,
+} from '../../../models/index.js';
+import { options } from '../../../options/options.js';
 import {
   createAppReadmes,
   createAppScreenshots,
   handleAppValidationError,
   setAppPath,
-} from '../../../../utils/app.js';
-import { getBlockVersions } from '../../../../utils/block.js';
-import { checkRole } from '../../../../utils/checkRole.js';
-import { processHooks, processReferenceHooks } from '../../../../utils/resource.js';
+} from '../../../utils/app.js';
+import { checkUserPermissions } from '../../../utils/authorization.js';
+import { getBlockVersions } from '../../../utils/block.js';
+import { processHooks, processReferenceHooks } from '../../../utils/resource.js';
 
 export async function importApp(ctx: Context): Promise<void> {
   const {
     openApi,
     pathParams: { organizationId },
     request: { body: importFile },
+    user: authSubject,
   } = ctx;
-  await checkRole(ctx, organizationId, Permissions.EditApps);
+
+  await checkUserPermissions(ctx, organizationId, [MainPermission.CreateApps]);
 
   let result: Partial<App>;
   const zip = await JSZip.loadAsync(importFile);
@@ -103,6 +104,7 @@ export async function importApp(ctx: Context): Promise<void> {
         record.AppSnapshots = [
           await AppSnapshot.create({ AppId: record.id, yaml }, { transaction }),
         ];
+
         const i18Folder = zip.folder('i18n').filter((filename) => filename.endsWith('json'));
         for (const json of i18Folder) {
           const language = json.name.slice(5, 7);
@@ -115,7 +117,6 @@ export async function importApp(ctx: Context): Promise<void> {
           ];
         }
 
-        const { user } = ctx;
         const appId = record.id;
 
         const resourcesFolder = zip
@@ -139,23 +140,34 @@ export async function importApp(ctx: Context): Promise<void> {
             ctx,
           });
 
-          await (user as User)?.reload({ attributes: ['name', 'id'] });
-          const appMember = await getUserAppAccount(appId, user.id);
+          const user = await User.findByPk(authSubject.id, { attributes: ['name', 'id'] });
+
           const createdResources = await Resource.bulkCreate(
-            resources.map((data: string) => ({
-              AppId: appId,
-              type: resourceType,
-              data,
-              AuthorId: appMember?.id,
-            })),
+            resources.map(
+              ({
+                $clonable,
+                $ephemeral,
+                $seed,
+                data,
+              }: {
+                data: Record<string, any>;
+                $seed: boolean;
+                $ephemeral: boolean;
+                $clonable: boolean;
+              }) => ({
+                AppId: appId,
+                type: resourceType,
+                seed: $seed,
+                ephemeral: $ephemeral,
+                clonable: $clonable,
+                data,
+              }),
+            ),
             { logging: false, transaction },
           );
-          for (const createdResource of createdResources) {
-            createdResource.Author = appMember;
-          }
 
-          processReferenceHooks(user as User, record, createdResources[0], action, options, ctx);
-          processHooks(user as User, record, createdResources[0], action, options, ctx);
+          processReferenceHooks(user, record, createdResources[0], action, options, ctx);
+          processHooks(user, record, createdResources[0], action, options, ctx);
         }
 
         for (const jsZipObject of zip

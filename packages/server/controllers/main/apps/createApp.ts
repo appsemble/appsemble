@@ -4,7 +4,7 @@ import {
   updateCompanionContainers,
 } from '@appsemble/node-utils';
 import { type AppDefinition } from '@appsemble/types';
-import { normalize, Permissions, validateAppDefinition, validateStyle } from '@appsemble/utils';
+import { MainPermission, normalize, validateAppDefinition, validateStyle } from '@appsemble/utils';
 import { type Context } from 'koa';
 import { literal } from 'sequelize';
 import webpush from 'web-push';
@@ -17,8 +17,8 @@ import {
   handleAppValidationError,
   setAppPath,
 } from '../../../utils/app.js';
+import { checkUserPermissions } from '../../../utils/authorization.js';
 import { getBlockVersions } from '../../../utils/block.js';
-import { checkRole } from '../../../utils/checkRole.js';
 
 export async function createApp(ctx: Context): Promise<void> {
   const {
@@ -50,7 +50,8 @@ export async function createApp(ctx: Context): Promise<void> {
   } = ctx;
 
   let result: Partial<App>;
-  await checkRole(ctx, OrganizationId, Permissions.CreateApps);
+
+  await checkUserPermissions(ctx, OrganizationId, [MainPermission.CreateApps]);
 
   try {
     const definition = parse(yaml, { maxAliasCount: 10_000 }) as AppDefinition;

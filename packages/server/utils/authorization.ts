@@ -15,7 +15,7 @@ export async function checkAppMemberPermissions(
 ): Promise<void> {
   const { user: authSubject } = ctx;
 
-  const appMember = await AppMember.findByPk(authSubject.id);
+  const appMember = await AppMember.findByPk(authSubject.id, { attributes: ['role'] });
 
   const app = await App.findByPk(appId);
 
@@ -38,12 +38,10 @@ export async function checkUserPermissions(
 ): Promise<void> {
   const { user: authSubject } = ctx;
 
-  const user = await User.findByPk(authSubject.id);
-
   const organizationMember = await OrganizationMember.findOne({
     where: {
       OrganizationId: organizationId,
-      UserId: user.id,
+      UserId: authSubject.id,
     },
   });
 

@@ -2,22 +2,27 @@ import { assertKoaError } from '@appsemble/node-utils';
 import { type Context } from 'koa';
 import { col, fn, literal } from 'sequelize';
 
-import { App, AppRating, Organization, User } from '../../../../models/index.js';
+import { App, AppRating, Organization, OrganizationMember } from '../../../../models/index.js';
 import { applyAppMessages, compareApps, parseLanguage } from '../../../../utils/app.js';
 
 export async function getOrganizationApps(ctx: Context): Promise<void> {
   const {
     pathParams: { organizationId },
-    user,
+    user: authSubject,
   } = ctx;
+
   const { baseLanguage, language, query: languageQuery } = parseLanguage(ctx, ctx.query?.language);
 
-  const memberInclude = user
-    ? { include: [{ model: User, where: { id: user.id }, required: false }] }
-    : {};
-  const organization = await Organization.findByPk(organizationId, memberInclude);
+  const organization = await Organization.findByPk(organizationId);
 
   assertKoaError(!organization, ctx, 404, 'Organization not found.');
+
+  const organizationMember = await OrganizationMember.findOne({
+    where: {
+      UserId: authSubject.id,
+      OrganizationId: organizationId,
+    },
+  });
 
   const apps = await App.findAll({
     attributes: {
@@ -38,11 +43,11 @@ export async function getOrganizationApps(ctx: Context): Promise<void> {
       },
       ...languageQuery,
     ],
-    where: { OrganizationId: organizationId },
+    where: {
+      OrganizationId: organizationId,
+      ...(organizationMember ? {} : { visibility: 'public' }),
+    },
   });
-
-  const filteredApps =
-    user && organization.Users.length ? apps : apps.filter((app) => app.visibility === 'public');
 
   const ratings = await AppRating.findAll({
     attributes: [
@@ -50,11 +55,11 @@ export async function getOrganizationApps(ctx: Context): Promise<void> {
       [fn('AVG', col('rating')), 'RatingAverage'],
       [fn('COUNT', col('AppId')), 'RatingCount'],
     ],
-    where: { AppId: filteredApps.map((app) => app.id) },
+    where: { AppId: apps.map((app) => app.id) },
     group: ['AppId'],
   });
 
-  ctx.body = filteredApps
+  ctx.body = apps
     .map((app) => {
       const rating = ratings.find((r) => r.AppId === app.id);
 

@@ -1,9 +1,9 @@
-import { Permissions } from '@appsemble/utils';
+import { MainPermission } from '@appsemble/utils';
 import { type Context } from 'koa';
 
 import { App } from '../../../../../models/index.js';
 import { argv } from '../../../../../utils/argv.js';
-import { checkRole } from '../../../../../utils/checkRole.js';
+import { checkUserPermissions } from '../../../../../utils/authorization.js';
 import { decrypt } from '../../../../../utils/crypto.js';
 
 export async function getAppScimSecret(ctx: Context): Promise<void> {
@@ -14,7 +14,8 @@ export async function getAppScimSecret(ctx: Context): Promise<void> {
   const app = await App.findByPk(appId, {
     attributes: ['id', 'OrganizationId', 'scimEnabled', 'scimToken'],
   });
-  await checkRole(ctx, app.OrganizationId, [Permissions.EditApps, Permissions.EditAppSettings]);
+
+  await checkUserPermissions(ctx, app.OrganizationId, [MainPermission.QueryAppSecrets]);
 
   ctx.assert(app, 404, 'App not found');
 

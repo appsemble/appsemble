@@ -1,9 +1,9 @@
 import { assertKoaError, throwKoaError } from '@appsemble/node-utils';
-import { Permissions } from '@appsemble/utils';
+import { MainPermission } from '@appsemble/utils';
 import { type Context } from 'koa';
 
 import { App, AppScreenshot } from '../../../models/index.js';
-import { checkRole } from '../../../utils/checkRole.js';
+import { checkUserPermissions } from '../../../utils/authorization.js';
 
 export async function setAppLock(ctx: Context): Promise<void> {
   const {
@@ -24,6 +24,6 @@ export async function setAppLock(ctx: Context): Promise<void> {
     throwKoaError(ctx, 403, 'This app can only be unlocked from the CLI.');
   }
 
-  await checkRole(ctx, app.OrganizationId, Permissions.EditAppSettings);
+  await checkUserPermissions(ctx, app.OrganizationId, [MainPermission.UpdateAppSettings]);
   await app.update({ locked });
 }

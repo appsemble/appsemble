@@ -1,18 +1,18 @@
-import { randomBytes } from 'node:crypto';
+import { randomBytes } from "node:crypto";
 
-import { assertKoaError } from '@appsemble/node-utils';
-import { Permissions } from '@appsemble/utils';
-import { type Context } from 'koa';
-import { Op } from 'sequelize';
+import { assertKoaError } from "@appsemble/node-utils";
+import { MainPermission } from "@appsemble/utils";
+import { type Context } from "koa";
+import { Op } from "sequelize";
 
 import {
   EmailAuthorization,
   Organization,
   OrganizationInvite,
-  User,
-} from '../../../../models/index.js';
-import { argv } from '../../../../utils/argv.js';
-import { checkRole } from '../../../../utils/checkRole.js';
+  User
+} from "../../../../models/index.js";
+import { argv } from "../../../../utils/argv.js";
+import { checkUserPermissions } from "../../../../utils/authorization.js";
 
 export async function createOrganizationInvites(ctx: Context): Promise<void> {
   const {
@@ -25,6 +25,8 @@ export async function createOrganizationInvites(ctx: Context): Promise<void> {
     email: invite.email.toLowerCase(),
     role: invite.role,
   }));
+
+  await checkUserPermissions(ctx, organizationId, [MainPermission.CreateOrganizationInvites]);
 
   const member = await checkRole(ctx, organizationId, Permissions.InviteMember, {
     include: [
