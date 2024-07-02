@@ -37,7 +37,7 @@ describe('getCurrentUserOrganizations', () => {
     await OrganizationMember.create({ OrganizationId: organizationB.id, UserId: user.id });
 
     authorizeStudio();
-    const response = await request.get('/api/main/users/current/organizations');
+    const response = await request.get('/api/users/current/organizations');
     expect(response).toMatchObject({
       status: 200,
       data: [

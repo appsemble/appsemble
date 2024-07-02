@@ -59,7 +59,7 @@ describe('deleteOrganizationInvite', () => {
     });
 
     authorizeStudio();
-    const response = await request.delete('/api/main/organizations/testorganization/invites', {
+    const response = await request.delete('/api/organizations/testorganization/invites', {
       data: { email: 'test2@example.com' },
     });
 
@@ -77,7 +77,7 @@ describe('deleteOrganizationInvite', () => {
     await OrganizationMember.update({ role: 'AppEditor' }, { where: { UserId: user.id } });
 
     authorizeStudio();
-    const response = await request.delete('/api/main/organizations/testorganization/invites', {
+    const response = await request.delete('/api/organizations/testorganization/invites', {
       data: { email: 'test2@example.com' },
     });
 
@@ -93,7 +93,7 @@ describe('deleteOrganizationInvite', () => {
 
   it('should not revoke a non-existent invite', async () => {
     authorizeStudio();
-    const response = await request.delete('/api/main/organizations/testorganization/invites', {
+    const response = await request.delete('/api/organizations/testorganization/invites', {
       data: { email: 'test2@example.com' },
     });
 
@@ -119,7 +119,7 @@ describe('deleteOrganizationInvite', () => {
       OrganizationId: 'org',
     });
     authorizeStudio();
-    const response = await request.delete('/api/main/organizations/org/invites', {
+    const response = await request.delete('/api/organizations/org/invites', {
       data: { email: 'test2@example.com' },
     });
 

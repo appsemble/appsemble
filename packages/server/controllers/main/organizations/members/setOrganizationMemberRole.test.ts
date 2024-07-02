@@ -54,7 +54,7 @@ describe('setOrganizationMemberRole', () => {
 
     authorizeStudio();
     const response = await request.put(
-      `/api/main/organizations/testorganization/members/${userB.id}/role`,
+      `/api/organizations/testorganization/members/${userB.id}/role`,
       { role: 'AppEditor' },
     );
 

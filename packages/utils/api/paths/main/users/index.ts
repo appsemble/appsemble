@@ -4,7 +4,7 @@ import { paths as currentPaths } from './current/index.js';
 
 export const paths: OpenAPIV3.PathsObject = {
   ...currentPaths,
-  '/api/main/users/subscribed': {
+  '/api/users/subscribed': {
     get: {
       tags: ['main', 'user'],
       description: 'Get a list of active and verified users subscribed to the appsemble newsletter',

@@ -65,10 +65,7 @@ afterAll(() => {
 describe('createAppResource', () => {
   it('should be able to create a new resource', async () => {
     const resource = { foo: 'bar' };
-    const response = await request.post(
-      `/api/common/apps/${app.id}/resources/testResource`,
-      resource,
-    );
+    const response = await request.post(`/api/apps/${app.id}/resources/testResource`, resource);
 
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 201 Created
@@ -85,10 +82,7 @@ describe('createAppResource', () => {
 
   it('should validate resources', async () => {
     const resource = {};
-    const response = await request.post(
-      `/api/common/apps/${app.id}/resources/testResource`,
-      resource,
-    );
+    const response = await request.post(`/api/apps/${app.id}/resources/testResource`, resource);
 
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 400 Bad Request
@@ -186,7 +180,7 @@ describe('createAppResource', () => {
   });
 
   it('should check if an app has a specific resource definition', async () => {
-    const response = await request.get(`/api/common/apps/${app.id}/resources/thisDoesNotExist`);
+    const response = await request.get(`/api/apps/${app.id}/resources/thisDoesNotExist`);
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 404 Not Found
       Content-Type: application/json; charset=utf-8
@@ -207,7 +201,7 @@ describe('createAppResource', () => {
       vapidPrivateKey: 'b',
       OrganizationId: organization.id,
     });
-    const response = await request.get(`/api/common/apps/${appA.id}/resources/thisDoesNotExist`);
+    const response = await request.get(`/api/apps/${appA.id}/resources/thisDoesNotExist`);
 
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 404 Not Found
@@ -222,12 +216,9 @@ describe('createAppResource', () => {
   });
 
   it('should calculate resource expiration', async () => {
-    const response = await request.post(
-      `/api/common/apps/${app.id}/resources/testExpirableResource`,
-      {
-        foo: 'test',
-      },
-    );
+    const response = await request.post(`/api/apps/${app.id}/resources/testExpirableResource`, {
+      foo: 'test',
+    });
 
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 201 Created
@@ -244,13 +235,10 @@ describe('createAppResource', () => {
   });
 
   it('should set resource expiration', async () => {
-    const response = await request.post(
-      `/api/common/apps/${app.id}/resources/testExpirableResource`,
-      {
-        foo: 'test',
-        $expires: '1970-01-01T00:05:00.000Z',
-      },
-    );
+    const response = await request.post(`/api/apps/${app.id}/resources/testExpirableResource`, {
+      foo: 'test',
+      $expires: '1970-01-01T00:05:00.000Z',
+    });
 
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 201 Created
@@ -270,13 +258,10 @@ describe('createAppResource', () => {
     // 10 minutes
     vi.advanceTimersByTime(600e3);
 
-    const response = await request.post(
-      `/api/common/apps/${app.id}/resources/testExpirableResource`,
-      {
-        foo: 'test',
-        $expires: '1970-01-01T00:05:00.000Z',
-      },
-    );
+    const response = await request.post(`/api/apps/${app.id}/resources/testExpirableResource`, {
+      foo: 'test',
+      $expires: '1970-01-01T00:05:00.000Z',
+    });
 
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 400 Bad Request
@@ -305,7 +290,7 @@ describe('createAppResource', () => {
 
   it('should accept assets as form data', async () => {
     const response = await request.post<ResourceType>(
-      `/api/common/apps/${app.id}/resources/testAssets`,
+      `/api/apps/${app.id}/resources/testAssets`,
       createFormData({
         resource: { file: '0' },
         assets: Buffer.from('Test resource a'),
@@ -349,7 +334,7 @@ describe('createAppResource', () => {
 
   it('should disallow unused files', async () => {
     const response = await request.post(
-      `/api/common/apps/${app.id}/resources/testAssets`,
+      `/api/apps/${app.id}/resources/testAssets`,
       createFormData({
         resource: { string: '0' },
         assets: Buffer.from('Test resource a'),
@@ -386,7 +371,7 @@ describe('createAppResource', () => {
 
   it('should disallow duplicate file references', async () => {
     const response = await request.post(
-      `/api/common/apps/${app.id}/resources/testAssets`,
+      `/api/apps/${app.id}/resources/testAssets`,
       createFormData({
         resource: { file: '0', file2: '0' },
         assets: Buffer.from('Test resource a'),
@@ -426,7 +411,7 @@ describe('createAppResource', () => {
 
   it('should accept an array of resources', async () => {
     const response = await request.post<ResourceType>(
-      `/api/common/apps/${app.id}/resources/testResource`,
+      `/api/apps/${app.id}/resources/testResource`,
       [{ foo: 'bar' }, { foo: 'baz' }],
     );
 
@@ -453,7 +438,7 @@ describe('createAppResource', () => {
 
   it('should accept assets as form data with multiple resources', async () => {
     const response = await request.post<ResourceType[]>(
-      `/api/common/apps/${app.id}/resources/testAssets`,
+      `/api/apps/${app.id}/resources/testAssets`,
       createFormData({
         resource: [{ file: '0' }, { file: '1' }],
         assets: [Buffer.from('Test resource a'), Buffer.from('Test resource b')],
@@ -525,7 +510,7 @@ describe('createAppResource', () => {
 
   it('should block unknown asset references', async () => {
     const response = await request.post(
-      `/api/common/apps/${app.id}/resources/testAssets`,
+      `/api/apps/${app.id}/resources/testAssets`,
       createFormData({
         resource: { file: '1' },
       }),
@@ -564,12 +549,9 @@ describe('createAppResource', () => {
 
   it('should allow organization app editors to create resources using Studio', async () => {
     authorizeStudio();
-    const response = await request.post(
-      `/api/common/apps/${app.id}/resources/testResourceAuthorOnly`,
-      {
-        foo: 'bar',
-      },
-    );
+    const response = await request.post(`/api/apps/${app.id}/resources/testResourceAuthorOnly`, {
+      foo: 'bar',
+    });
     expect(response).toMatchInlineSnapshot(
       { data: { $author: { id: expect.any(String) } } },
       `
@@ -596,12 +578,9 @@ describe('createAppResource', () => {
     });
 
     authorizeStudio();
-    const response = await request.post(
-      `/api/common/apps/${app.id}/resources/testResourceAuthorOnly`,
-      {
-        foo: 'bar',
-      },
-    );
+    const response = await request.post(`/api/apps/${app.id}/resources/testResourceAuthorOnly`, {
+      foo: 'bar',
+    });
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 403 Forbidden
       Content-Type: application/json; charset=utf-8
@@ -616,12 +595,9 @@ describe('createAppResource', () => {
 
   it('should allow organization app editors to create resources using client credentials', async () => {
     await authorizeClientCredentials('resources:write');
-    const response = await request.post(
-      `/api/common/apps/${app.id}/resources/testResourceAuthorOnly`,
-      {
-        foo: 'bar',
-      },
-    );
+    const response = await request.post(`/api/apps/${app.id}/resources/testResourceAuthorOnly`, {
+      foo: 'bar',
+    });
     expect(response).toMatchInlineSnapshot(
       { data: { $author: { id: expect.any(String) } } },
       `
@@ -648,12 +624,9 @@ describe('createAppResource', () => {
     });
 
     await authorizeClientCredentials('resources:write');
-    const response = await request.post(
-      `/api/common/apps/${app.id}/resources/testResourceAuthorOnly`,
-      {
-        foo: 'bar',
-      },
-    );
+    const response = await request.post(`/api/apps/${app.id}/resources/testResourceAuthorOnly`, {
+      foo: 'bar',
+    });
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 403 Forbidden
       Content-Type: application/json; charset=utf-8
@@ -668,7 +641,7 @@ describe('createAppResource', () => {
 
   it('should accept text/csv', async () => {
     const response = await request.post(
-      `/api/common/apps/${app.id}/resources/testResource`,
+      `/api/apps/${app.id}/resources/testResource`,
       stripIndent(`
         foo,bar,integer,boolean,number,object,array\r
         a,b,42,true,3.14,{},[]\r
@@ -722,10 +695,7 @@ describe('createAppResource', () => {
     authorizeStudio();
 
     const resource = { foo: 'bar' };
-    const response = await request.post(
-      `/api/common/apps/${app.id}/resources/testResource`,
-      resource,
-    );
+    const response = await request.post(`/api/apps/${app.id}/resources/testResource`, resource);
 
     expect(response).toMatchInlineSnapshot(
       { data: { $author: { id: expect.any(String) } } },
@@ -751,10 +721,7 @@ describe('createAppResource', () => {
   it('should create a new AppMember account if the user does not have one yet, and assign it to the resource', async () => {
     authorizeStudio();
     const resource = { foo: 'bar' };
-    const response = await request.post(
-      `/api/common/apps/${app.id}/resources/testResource`,
-      resource,
-    );
+    const response = await request.post(`/api/apps/${app.id}/resources/testResource`, resource);
 
     expect(response).toMatchInlineSnapshot(
       { data: { $author: { id: expect.any(String) } } },
@@ -783,10 +750,7 @@ describe('createAppResource', () => {
     });
 
     const resource = { foo: 'bar' };
-    const response = await request.post(
-      `/api/common/apps/${app.id}/resources/testResource`,
-      resource,
-    );
+    const response = await request.post(`/api/apps/${app.id}/resources/testResource`, resource);
 
     expect(response).toMatchInlineSnapshot(
       { data: { $author: { id: expect.any(String) } } },
@@ -833,7 +797,7 @@ describe('createAppResource', () => {
     });
 
     const response = await request.post<ResourceType>(
-      `/api/common/apps/${app.id}/resources/testAssets`,
+      `/api/apps/${app.id}/resources/testAssets`,
       createFormData({
         resource: { file: '0' },
         assets: Buffer.alloc(0),

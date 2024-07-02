@@ -74,7 +74,7 @@ describe('getOrganizationBlocks', () => {
       },
     });
 
-    const response = await request.get('/api/main/organizations/testorganization/blocks');
+    const response = await request.get('/api/organizations/testorganization/blocks');
 
     expect(response).toMatchObject({
       status: 200,
@@ -83,7 +83,7 @@ describe('getOrganizationBlocks', () => {
           actions: null,
           description: null,
           events: null,
-          iconUrl: '/api/main/organizations/testorganization/icon?updated=1970-01-01T00:00:00.000Z',
+          iconUrl: '/api/organizations/testorganization/icon?updated=1970-01-01T00:00:00.000Z',
           layout: null,
           longDescription: null,
           name: '@testorganization/test',
@@ -131,7 +131,7 @@ describe('getOrganizationBlocks', () => {
       },
     });
 
-    const response = await request.get('/api/main/organizations/testorganization/blocks');
+    const response = await request.get('/api/organizations/testorganization/blocks');
 
     expect(response).toMatchObject({
       status: 200,
@@ -140,7 +140,7 @@ describe('getOrganizationBlocks', () => {
           actions: null,
           description: null,
           events: null,
-          iconUrl: '/api/main/organizations/testorganization/icon?updated=1970-01-01T00:00:00.000Z',
+          iconUrl: '/api/organizations/testorganization/icon?updated=1970-01-01T00:00:00.000Z',
           layout: null,
           longDescription: null,
           name: '@testorganization/test',
@@ -158,7 +158,7 @@ describe('getOrganizationBlocks', () => {
           actions: null,
           description: null,
           events: null,
-          iconUrl: '/api/main/organizations/testorganization/icon?updated=1970-01-01T00:00:00.000Z',
+          iconUrl: '/api/organizations/testorganization/icon?updated=1970-01-01T00:00:00.000Z',
           layout: null,
           longDescription: null,
           name: '@testorganization/test-2',

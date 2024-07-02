@@ -61,7 +61,7 @@ describe('createAppScreenshot', () => {
     });
 
     authorizeStudio();
-    const createdResponse = await request.post(`/api/main/apps/${app.id}/screenshots`, form);
+    const createdResponse = await request.post(`/api/apps/${app.id}/screenshots`, form);
 
     expect(createdResponse).toMatchInlineSnapshot(`
       HTTP/1.1 201 Created
@@ -85,7 +85,7 @@ describe('createAppScreenshot', () => {
     });
 
     authorizeStudio();
-    const createdResponse = await request.post(`/api/main/apps/${app.id}/screenshots`, form);
+    const createdResponse = await request.post(`/api/apps/${app.id}/screenshots`, form);
 
     expect(createdResponse).toMatchInlineSnapshot(`
       HTTP/1.1 201 Created
@@ -112,7 +112,7 @@ describe('createAppScreenshot', () => {
 
     authorizeStudio();
 
-    await request.post(`/api/main/apps/${app.id}/screenshots`, form);
+    await request.post(`/api/apps/${app.id}/screenshots`, form);
 
     const createdUnspecifiedScreenshots1 = await AppScreenshot.findAll({
       where: {
@@ -152,7 +152,7 @@ describe('createAppScreenshot', () => {
       language: 'nl',
     });
 
-    await request.post(`/api/main/apps/${app.id}/screenshots`, formNl);
+    await request.post(`/api/apps/${app.id}/screenshots`, formNl);
 
     const createdUnspecifiedScreenshots2 = await AppScreenshot.findAll({
       where: {
@@ -203,7 +203,7 @@ describe('createAppScreenshot', () => {
       language: 'nl',
     });
 
-    await request.post(`/api/main/apps/${app.id}/screenshots`, formNl2);
+    await request.post(`/api/apps/${app.id}/screenshots`, formNl2);
 
     const createdNlScreenshots = await AppScreenshot.findAll({
       where: {
@@ -251,7 +251,7 @@ describe('createAppScreenshot', () => {
     const form = createFormData({});
 
     authorizeStudio();
-    const createdResponse = await request.post(`/api/main/apps/${app.id}/screenshots`, form);
+    const createdResponse = await request.post(`/api/apps/${app.id}/screenshots`, form);
 
     expect(createdResponse).toMatchInlineSnapshot();
   });
@@ -266,7 +266,7 @@ describe('createAppScreenshot', () => {
     const form = createFormData({ screenshots: Buffer.from('I am not a screenshot') });
 
     authorizeStudio();
-    const createdResponse = await request.post(`/api/main/apps/${app.id}/screenshots`, form);
+    const createdResponse = await request.post(`/api/apps/${app.id}/screenshots`, form);
 
     expect(createdResponse).toMatchInlineSnapshot(`
       HTTP/1.1 400 Bad Request

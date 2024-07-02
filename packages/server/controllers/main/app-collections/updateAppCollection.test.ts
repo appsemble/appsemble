@@ -64,7 +64,7 @@ describe('updateAppCollection', () => {
 
     authorizeStudio(user);
     const response = await request.patch(
-      `/api/main/app-collections/${collections[0].id}`,
+      `/api/app-collections/${collections[0].id}`,
       createFormData({
         name: 'New Name',
         visibility: 'private',
@@ -81,9 +81,9 @@ describe('updateAppCollection', () => {
       $expert: {
         name: 'New Expert Name',
         description: 'New Expert Description',
-        profileImage: `/api/main/app-collections/${collections[0].id}/expert/profile-image`,
+        profileImage: `/api/app-collections/${collections[0].id}/expert/profile-image`,
       },
-      headerImage: `/api/main/app-collections/${collections[0].id}/header-image`,
+      headerImage: `/api/app-collections/${collections[0].id}/header-image`,
       OrganizationId: organization.id,
       OrganizationName: organization.name,
       visibility: 'private',
@@ -116,7 +116,7 @@ describe('updateAppCollection', () => {
     expect(response3.data).toStrictEqual(await readFixture('tux.png'));
 
     const response4 = await request.patch(
-      `/api/main/app-collections/${collections[0].id}`,
+      `/api/app-collections/${collections[0].id}`,
       createFormData({
         name: 'New Name 2',
       }),
@@ -148,7 +148,7 @@ describe('updateAppCollection', () => {
     );
 
     const response = await request.patch(
-      `/api/main/app-collections/${collections[0].id}`,
+      `/api/app-collections/${collections[0].id}`,
       createFormData({
         name: 'New Name',
         visibility: 'private',
@@ -169,7 +169,7 @@ describe('updateAppCollection', () => {
     authorizeStudio(unprivilegedUser);
 
     const response2 = await request.patch(
-      `/api/main/app-collections/${collections[0].id}`,
+      `/api/app-collections/${collections[0].id}`,
       createFormData({
         name: 'New Name',
         visibility: 'private',

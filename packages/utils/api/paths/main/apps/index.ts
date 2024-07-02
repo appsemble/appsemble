@@ -29,7 +29,7 @@ export const paths: OpenAPIV3.PathsObject = {
   ...snapshotsPaths,
   ...subscriptionsPaths,
   ...variablesPaths,
-  '/api/main/apps': {
+  '/api/apps': {
     post: {
       tags: ['main', 'app'],
       description: 'Create a new app',
@@ -172,7 +172,7 @@ export const paths: OpenAPIV3.PathsObject = {
       security: [{ studio: [] }, {}],
     },
   },
-  '/api/main/apps/{appId}': {
+  '/api/apps/{appId}': {
     parameters: [{ $ref: '#/components/parameters/appId' }],
     get: {
       tags: ['main', 'app'],
@@ -346,7 +346,7 @@ export const paths: OpenAPIV3.PathsObject = {
       security: [{ studio: [] }, { cli: ['apps:delete'] }],
     },
   },
-  '/api/main/apps/{appId}/icon': {
+  '/api/apps/{appId}/icon': {
     parameters: [{ $ref: '#/components/parameters/appId' }],
     delete: {
       tags: ['main', 'app'],
@@ -360,7 +360,32 @@ export const paths: OpenAPIV3.PathsObject = {
       security: [{ studio: [] }, { cli: ['apps:write'] }],
     },
   },
-  '/api/main/apps/{appId}/export': {
+  '/api/apps/import': {
+    parameters: [{ $ref: '#/components/parameters/organizationId' }],
+    post: {
+      tags: ['main', 'app'],
+      description: 'Import an app from a zip file',
+      operationId: 'importApp',
+      requestBody: {
+        content: {
+          'application/zip': {
+            schema: {
+              type: 'string',
+              format: 'binary',
+            },
+          },
+        },
+      },
+      responses: {
+        200: {
+          description: 'App imported successfully',
+          $ref: '#/components/responses/app',
+        },
+      },
+      security: [{ studio: [] }, { cli: ['apps:write'] }],
+    },
+  },
+  '/api/apps/{appId}/export': {
     parameters: [{ $ref: '#/components/parameters/appId' }],
     get: {
       tags: ['main', 'app'],
@@ -400,7 +425,7 @@ export const paths: OpenAPIV3.PathsObject = {
       security: [{ studio: [] }, { cli: ['apps:export'] }],
     },
   },
-  '/api/main/apps/{appId}/lock': {
+  '/api/apps/{appId}/lock': {
     parameters: [{ $ref: '#/components/parameters/appId' }],
     post: {
       tags: ['main', 'app'],
@@ -434,7 +459,7 @@ export const paths: OpenAPIV3.PathsObject = {
       security: [{ studio: [] }, { cli: ['apps:write'] }],
     },
   },
-  '/api/main/apps/{appId}/email': {
+  '/api/apps/{appId}/email': {
     parameters: [{ $ref: '#/components/parameters/appId' }],
     get: {
       tags: ['main', 'app'],
@@ -481,7 +506,7 @@ export const paths: OpenAPIV3.PathsObject = {
       security: [{ studio: [] }, { cli: ['apps:write'] }],
     },
   },
-  '/api/main/apps/{appId}/maskable-icon': {
+  '/api/apps/{appId}/maskable-icon': {
     parameters: [{ $ref: '#/components/parameters/appId' }],
     delete: {
       tags: ['main', 'app'],
@@ -495,7 +520,7 @@ export const paths: OpenAPIV3.PathsObject = {
       security: [{ studio: [] }, { cli: ['apps:write'] }],
     },
   },
-  '/api/main/apps/{appId}/broadcast': {
+  '/api/apps/{appId}/broadcast': {
     parameters: [{ $ref: '#/components/parameters/appId' }],
     post: {
       tags: ['main', 'app'],
@@ -531,7 +556,7 @@ export const paths: OpenAPIV3.PathsObject = {
       security: [{ studio: [] }],
     },
   },
-  '/api/main/apps/{appId}/reseed': {
+  '/api/apps/{appId}/reseed': {
     parameters: [{ $ref: '#/components/parameters/appId' }],
     post: {
       tags: ['main', 'app'],
@@ -542,7 +567,7 @@ export const paths: OpenAPIV3.PathsObject = {
       security: [{ studio: ['apps:write'] }],
     },
   },
-  '/api/main/app-templates': {
+  '/api/app-templates': {
     get: {
       tags: ['main', 'app', 'template'],
       description: 'Fetch a list of all available templates.',
@@ -635,7 +660,7 @@ export const paths: OpenAPIV3.PathsObject = {
       security: [{ studio: [] }],
     },
   },
-  '/api/main/apps/{appId}/style/block/@{organizationId}/{blockId}': {
+  '/api/apps/{appId}/style/block/@{organizationId}/{blockId}': {
     parameters: [
       { $ref: '#/components/parameters/appId' },
       { $ref: '#/components/parameters/organizationId' },

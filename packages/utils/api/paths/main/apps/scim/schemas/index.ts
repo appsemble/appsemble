@@ -1,7 +1,7 @@
 import { type OpenAPIV3 } from 'openapi-types';
 
 export const paths: OpenAPIV3.PathsObject = {
-  '/api/main/apps/{appId}/scim/Schemas': {
+  '/api/apps/{appId}/scim/Schemas': {
     parameters: [{ $ref: '#/components/parameters/appId' }],
     get: {
       tags: ['main', 'app', 'scim'],
@@ -21,7 +21,7 @@ export const paths: OpenAPIV3.PathsObject = {
       },
     },
   },
-  '/api/main/apps/{appId}/scim/Schemas/{schemaId}': {
+  '/api/apps/{appId}/scim/Schemas/{schemaId}': {
     parameters: [
       { $ref: '#/components/parameters/appId' },
       { name: 'schemaId', in: 'path', schema: { type: 'string' } },

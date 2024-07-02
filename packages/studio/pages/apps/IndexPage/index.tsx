@@ -22,7 +22,7 @@ interface MyAppsListProps {
 
 function MyAppsList({ filter, sort }: MyAppsListProps): ReactNode {
   const { lang } = useParams<{ lang: string }>();
-  const myAppsResult = useData<App[]>(`/api/main/users/current/apps?language=${lang}`);
+  const myAppsResult = useData<App[]>(`/api/users/current/apps?language=${lang}`);
   return (
     <Collapsible title={<FormattedMessage {...messages.myApps} />}>
       <AppList
@@ -43,7 +43,7 @@ export function IndexPage(): ReactNode {
   });
   const { userInfo } = useUser();
   const { lang } = useParams<{ lang: string }>();
-  const appsResult = useData<App[]>(`/api/main/apps?language=${lang}`);
+  const appsResult = useData<App[]>(`/api/apps?language=${lang}`);
   const onSortChange = useCallback((name: AppSortFunctionName, reverse: boolean) => {
     setSort({ name, reverse });
   }, []);

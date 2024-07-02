@@ -43,14 +43,14 @@ describe('getBlock', () => {
     });
 
     await authorizeClientCredentials('blocks:write');
-    const { data: original } = await request.post('/api/main/blocks', formData);
-    const { data: retrieved } = await request.get('/api/common/blocks/@xkcd/test');
+    const { data: original } = await request.post('/api/blocks', formData);
+    const { data: retrieved } = await request.get('/api/blocks/@xkcd/test');
 
     expect(retrieved).toStrictEqual(original);
   });
 
   it('should return a 404 if the requested block definition doesn’t exist', async () => {
-    const { data } = await request.get('/api/common/blocks/@non/existent');
+    const { data } = await request.get('/api/blocks/@non/existent');
     expect(data).toStrictEqual({
       error: 'Not Found',
       message: 'Block definition not found',

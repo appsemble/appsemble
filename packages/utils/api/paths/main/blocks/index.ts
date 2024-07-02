@@ -4,7 +4,7 @@ import { paths as versionsPaths } from './versions/index.js';
 
 export const paths: OpenAPIV3.PathsObject = {
   ...versionsPaths,
-  '/api/main/blocks': {
+  '/api/blocks': {
     post: {
       tags: ['main', 'block'],
       description: 'Publish a block.',

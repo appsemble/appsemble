@@ -1,7 +1,7 @@
 import { type OpenAPIV3 } from 'openapi-types';
 
 export const paths: OpenAPIV3.PathsObject = {
-  '/api/main/saml/continue': {
+  '/api/saml/continue': {
     post: {
       tags: ['main', 'saml'],
       operationId: 'continueSamlLogin',

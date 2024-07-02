@@ -46,13 +46,13 @@ describe('getBlockVersion', () => {
     });
 
     await authorizeClientCredentials('blocks:write');
-    const { data: created } = await request.post<BlockManifest>('/api/main/blocks', formData);
+    const { data: created } = await request.post<BlockManifest>('/api/blocks', formData);
 
     const {
       data: retrieved,
       headers,
       status,
-    } = await request.get<BlockManifest>('/api/common/blocks/@xkcd/standing/versions/1.32.9');
+    } = await request.get<BlockManifest>('/api/blocks/@xkcd/standing/versions/1.32.9');
 
     expect(retrieved.iconUrl).toBeNull();
     expect(retrieved).toStrictEqual(created);
@@ -73,13 +73,13 @@ describe('getBlockVersion', () => {
     formData.append('icon', createFixtureStream('nodejs-logo.png'), { filepath: 'icon.png' });
 
     await authorizeClientCredentials('blocks:write');
-    const { data: created } = await request.post('/api/main/blocks', formData);
+    const { data: created } = await request.post('/api/blocks', formData);
     const { data: retrieved, status } = await request.get<BlockManifest>(
-      '/api/common/blocks/@xkcd/standing/versions/1.32.9',
+      '/api/blocks/@xkcd/standing/versions/1.32.9',
     );
 
     expect(retrieved).toStrictEqual(created);
-    expect(retrieved.iconUrl).toBe('/api/common/blocks/@xkcd/standing/versions/1.32.9/icon');
+    expect(retrieved.iconUrl).toBe('/api/blocks/@xkcd/standing/versions/1.32.9/icon');
     expect(status).toBe(200);
   });
 
@@ -101,10 +101,10 @@ describe('getBlockVersion', () => {
     });
 
     await authorizeClientCredentials('blocks:write');
-    const { data: created } = await request.post('/api/main/blocks', formData);
+    const { data: created } = await request.post('/api/blocks', formData);
 
     const { data: retrieved, status } = await request.get<BlockManifest>(
-      '/api/common/blocks/@xkcd/standing/versions/1.32.9',
+      '/api/blocks/@xkcd/standing/versions/1.32.9',
     );
 
     expect(retrieved).toStrictEqual(created);
@@ -115,7 +115,7 @@ describe('getBlockVersion', () => {
   });
 
   it('should respond with 404 when trying to fetch a non existing block version', async () => {
-    const { data, status } = await request.get('/api/common/blocks/@xkcd/standing/versions/3.1.4');
+    const { data, status } = await request.get('/api/blocks/@xkcd/standing/versions/3.1.4');
     expect(status).toBe(404);
     expect(data).toStrictEqual({
       error: 'Not Found',

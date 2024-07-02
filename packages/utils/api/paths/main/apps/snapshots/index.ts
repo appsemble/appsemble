@@ -1,7 +1,7 @@
 import { type OpenAPIV3 } from 'openapi-types';
 
 export const paths: OpenAPIV3.PathsObject = {
-  '/api/main/apps/{appId}/snapshots': {
+  '/api/apps/{appId}/snapshots': {
     parameters: [{ $ref: '#/components/parameters/appId' }],
     get: {
       tags: ['main', 'app', 'snapshot'],
@@ -40,7 +40,7 @@ export const paths: OpenAPIV3.PathsObject = {
       security: [{ studio: [] }, { cli: ['apps:write'] }],
     },
   },
-  '/api/main/apps/{appId}/snapshots/{snapshotId}': {
+  '/api/apps/{appId}/snapshots/{snapshotId}': {
     parameters: [
       { $ref: '#/components/parameters/appId' },
       {

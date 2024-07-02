@@ -92,7 +92,7 @@ describe('removeAppTeamMember', () => {
 
     authorizeStudio();
     const response = await request.delete(
-      `/api/common/apps/${app.id}/teams/${team.id}/members/${userB.id}`,
+      `/api/apps/${app.id}/teams/${team.id}/members/${userB.id}`,
     );
     expect(response.status).toBe(204);
   });
@@ -121,7 +121,7 @@ describe('removeAppTeamMember', () => {
 
     authorizeStudio();
     const response = await request.delete(
-      `/api/common/apps/${app.id}/teams/${team.id}/members/${appMember.email}`,
+      `/api/apps/${app.id}/teams/${team.id}/members/${appMember.email}`,
     );
     expect(response.status).toBe(204);
   });
@@ -166,7 +166,7 @@ describe('removeAppTeamMember', () => {
 
     authorizeStudio();
     const response = await request.delete(
-      `/api/common/apps/${app.id}/teams/${team.id}/members/${userB.id}`,
+      `/api/apps/${app.id}/teams/${team.id}/members/${userB.id}`,
     );
     expect(response.status).toBe(204);
   });
@@ -199,7 +199,7 @@ describe('removeAppTeamMember', () => {
 
     authorizeStudio();
     const response = await request.delete(
-      `/api/common/apps/${app.id}/teams/${team.id}/members/${userB.id}`,
+      `/api/apps/${app.id}/teams/${team.id}/members/${userB.id}`,
     );
     expect(response).toMatchObject({
       status: 403,
@@ -230,7 +230,7 @@ describe('removeAppTeamMember', () => {
 
     authorizeStudio();
     const response = await request.delete(
-      `/api/common/apps/${app.id}/teams/${team.id}/members/${userB.id}`,
+      `/api/apps/${app.id}/teams/${team.id}/members/${userB.id}`,
     );
 
     expect(response).toMatchObject({

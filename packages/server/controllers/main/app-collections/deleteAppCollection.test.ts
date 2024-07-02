@@ -56,7 +56,7 @@ beforeEach(async () => {
 describe('deleteAppCollection', () => {
   it('should delete an app collection', async () => {
     authorizeStudio(user);
-    const response = await request.delete(`/api/main/app-collections/${collection.id}`);
+    const response = await request.delete(`/api/app-collections/${collection.id}`);
     expect(response).toMatchInlineSnapshot('HTTP/1.1 204 No Content');
 
     const nullCollection = await AppCollection.findByPk(collection.id);
@@ -64,7 +64,7 @@ describe('deleteAppCollection', () => {
   });
 
   it('should not allow a user to delete a collection without permission', async () => {
-    const response = await request.delete(`/api/main/app-collections/${collection.id}`);
+    const response = await request.delete(`/api/app-collections/${collection.id}`);
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 401 Unauthorized
       Content-Type: text/plain; charset=utf-8
@@ -75,7 +75,7 @@ describe('deleteAppCollection', () => {
     const unprivilegedUser = await createTestUser('nobody@example.com');
     authorizeStudio(unprivilegedUser);
 
-    const response2 = await request.delete(`/api/main/app-collections/${collection.id}`);
+    const response2 = await request.delete(`/api/app-collections/${collection.id}`);
     expect(response2).toMatchInlineSnapshot(`
       HTTP/1.1 403 Forbidden
       Content-Type: application/json; charset=utf-8

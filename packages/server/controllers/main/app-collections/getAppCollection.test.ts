@@ -62,7 +62,7 @@ describe('getAppCollection', () => {
       ),
     );
 
-    const response = await request.get(`/api/main/app-collections/${collections[0].id}`);
+    const response = await request.get(`/api/app-collections/${collections[0].id}`);
     expect(response.status).toBe(200);
     expect(response.data).toStrictEqual({
       id: collections[0].id,
@@ -70,9 +70,9 @@ describe('getAppCollection', () => {
       $expert: {
         name: 'Expert van den Expert',
         description: 'I’m an expert, trust me.',
-        profileImage: `/api/main/app-collections/${collections[0].id}/expert/profile-image`,
+        profileImage: `/api/app-collections/${collections[0].id}/expert/profile-image`,
       },
-      headerImage: `/api/main/app-collections/${collections[0].id}/header-image`,
+      headerImage: `/api/app-collections/${collections[0].id}/header-image`,
       OrganizationId: organization.id,
       visibility: 'public',
       domain: null,
@@ -94,12 +94,12 @@ describe('getAppCollection', () => {
       visibility: 'private',
     });
 
-    const response = await request.get(`/api/main/app-collections/${privateCollection.id}`);
+    const response = await request.get(`/api/app-collections/${privateCollection.id}`);
     expect(response.status).toBe(404);
 
     authorizeStudio(user);
 
-    const response2 = await request.get(`/api/main/app-collections/${privateCollection.id}`);
+    const response2 = await request.get(`/api/app-collections/${privateCollection.id}`);
     expect(response2.status).toBe(200);
     expect(response2.data).toMatchObject({
       id: 1,
@@ -109,9 +109,9 @@ describe('getAppCollection', () => {
       $expert: {
         name: 'Expert van den Expert',
         description: 'I’m an expert, trust me.',
-        profileImage: '/api/main/app-collections/1/expert/profile-image',
+        profileImage: '/api/app-collections/1/expert/profile-image',
       },
-      headerImage: '/api/main/app-collections/1/header-image',
+      headerImage: '/api/app-collections/1/header-image',
       domain: null,
       $created: '1970-01-01T00:00:00.000Z',
       $updated: '1970-01-01T00:00:00.000Z',

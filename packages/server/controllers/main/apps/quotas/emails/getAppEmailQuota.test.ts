@@ -82,7 +82,7 @@ describe('getAppEmailQuota', () => {
       AppId: app.id,
     });
 
-    const response = await request.get(`/api/main/apps/${app.id}/quotas/email`);
+    const response = await request.get(`/api/apps/${app.id}/quotas/email`);
 
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 200 OK
@@ -107,7 +107,7 @@ describe('getAppEmailQuota', () => {
       AppId: app.id,
     });
 
-    const response1 = await request.get(`/api/main/apps/${app.id}/quotas/email`);
+    const response1 = await request.get(`/api/apps/${app.id}/quotas/email`);
 
     expect(response1).toMatchInlineSnapshot(`
       HTTP/1.1 200 OK
@@ -123,7 +123,7 @@ describe('getAppEmailQuota', () => {
     vi.advanceTimersByTime(24 * 60 * 60 * 1000);
     authorizeStudio(user);
 
-    const response2 = await request.get(`/api/main/apps/${app.id}/quotas/email`);
+    const response2 = await request.get(`/api/apps/${app.id}/quotas/email`);
 
     expect(response2).toMatchInlineSnapshot(`
       HTTP/1.1 200 OK
@@ -149,7 +149,7 @@ describe('getAppEmailQuota', () => {
       AppId: app.id,
     });
 
-    const response = await request.get(`/api/main/apps/${app.id}/quotas/email`);
+    const response = await request.get(`/api/apps/${app.id}/quotas/email`);
 
     expect(response).toMatchInlineSnapshot('HTTP/1.1 204 No Content');
   });

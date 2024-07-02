@@ -1,7 +1,7 @@
 import { type OpenAPIV3 } from 'openapi-types';
 
 export const paths: OpenAPIV3.PathsObject = {
-  '/api/common/messages': {
+  '/api/messages': {
     parameters: [
       { name: 'context', in: 'query', schema: { type: 'string', enum: ['studio', 'app'] } },
     ],

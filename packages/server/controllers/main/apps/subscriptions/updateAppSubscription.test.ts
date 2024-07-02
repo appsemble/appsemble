@@ -95,14 +95,14 @@ describe('updateAppSubscription', () => {
     });
 
     authorizeApp(app);
-    const response = await request.patch(`/api/main/apps/${app.id}/subscriptions`, {
+    const response = await request.patch(`/api/apps/${app.id}/subscriptions`, {
       endpoint: 'https://example.com',
       resource: 'person',
       action: 'create',
       value: true,
     });
 
-    const responseB = await request.get(`/api/main/apps/${app.id}/subscriptions`, {
+    const responseB = await request.get(`/api/apps/${app.id}/subscriptions`, {
       params: { endpoint: 'https://example.com' },
     });
 
@@ -142,7 +142,7 @@ describe('updateAppSubscription', () => {
     const { id } = await Resource.create({ AppId: app.id, type: 'person', data: {} });
 
     authorizeApp(app);
-    const response = await request.patch(`/api/main/apps/${app.id}/subscriptions`, {
+    const response = await request.patch(`/api/apps/${app.id}/subscriptions`, {
       endpoint: 'https://example.com',
       resource: 'person',
       action: 'update',
@@ -150,7 +150,7 @@ describe('updateAppSubscription', () => {
       value: true,
     });
 
-    const responseB = await request.get(`/api/main/apps/${app.id}/subscriptions`, {
+    const responseB = await request.get(`/api/apps/${app.id}/subscriptions`, {
       params: { endpoint: 'https://example.com' },
     });
 
@@ -200,13 +200,13 @@ describe('updateAppSubscription', () => {
     });
 
     authorizeApp(app);
-    const response = await request.patch(`/api/main/apps/${app.id}/subscriptions`, {
+    const response = await request.patch(`/api/apps/${app.id}/subscriptions`, {
       endpoint: 'https://example.com',
       resource: 'person',
       action: 'create',
       value: false,
     });
-    const responseB = await request.get(`/api/main/apps/${app.id}/subscriptions`, {
+    const responseB = await request.get(`/api/apps/${app.id}/subscriptions`, {
       params: { endpoint: 'https://example.com' },
     });
 
@@ -247,19 +247,19 @@ describe('updateAppSubscription', () => {
       ResourceId: id,
     });
 
-    const responseA = await request.get(`/api/main/apps/${app.id}/subscriptions`, {
+    const responseA = await request.get(`/api/apps/${app.id}/subscriptions`, {
       params: { endpoint: 'https://example.com' },
     });
 
     authorizeApp(app);
-    const response = await request.patch(`/api/main/apps/${app.id}/subscriptions`, {
+    const response = await request.patch(`/api/apps/${app.id}/subscriptions`, {
       endpoint: 'https://example.com',
       resource: 'person',
       action: 'update',
       resourceId: id,
       value: false,
     });
-    const responseB = await request.get(`/api/main/apps/${app.id}/subscriptions`, {
+    const responseB = await request.get(`/api/apps/${app.id}/subscriptions`, {
       params: { endpoint: 'https://example.com' },
     });
 
@@ -316,20 +316,20 @@ describe('updateAppSubscription', () => {
     });
 
     authorizeApp(app);
-    await request.patch(`/api/main/apps/${app.id}/subscriptions`, {
+    await request.patch(`/api/apps/${app.id}/subscriptions`, {
       endpoint: 'https://example.com',
       resource: 'person',
       action: 'create',
     });
-    const responseA = await request.get(`/api/main/apps/${app.id}/subscriptions`, {
+    const responseA = await request.get(`/api/apps/${app.id}/subscriptions`, {
       params: { endpoint: 'https://example.com' },
     });
-    await request.patch(`/api/main/apps/${app.id}/subscriptions`, {
+    await request.patch(`/api/apps/${app.id}/subscriptions`, {
       endpoint: 'https://example.com',
       resource: 'person',
       action: 'create',
     });
-    const responseB = await request.get(`/api/main/apps/${app.id}/subscriptions`, {
+    const responseB = await request.get(`/api/apps/${app.id}/subscriptions`, {
       params: { endpoint: 'https://example.com' },
     });
 
@@ -381,23 +381,23 @@ describe('updateAppSubscription', () => {
     const { id } = await Resource.create({ AppId: app.id, type: 'person', data: {} });
 
     authorizeApp(app);
-    await request.patch(`/api/main/apps/${app.id}/subscriptions`, {
+    await request.patch(`/api/apps/${app.id}/subscriptions`, {
       endpoint: 'https://example.com',
       resource: 'person',
       action: 'update',
       resourceId: id,
     });
-    const responseA = await request.get(`/api/main/apps/${app.id}/subscriptions`, {
+    const responseA = await request.get(`/api/apps/${app.id}/subscriptions`, {
       params: { endpoint: 'https://example.com' },
     });
 
-    await request.patch(`/api/main/apps/${app.id}/subscriptions`, {
+    await request.patch(`/api/apps/${app.id}/subscriptions`, {
       endpoint: 'https://example.com',
       resource: 'person',
       action: 'update',
       resourceId: id,
     });
-    const responseB = await request.get(`/api/main/apps/${app.id}/subscriptions`, {
+    const responseB = await request.get(`/api/apps/${app.id}/subscriptions`, {
       params: { endpoint: 'https://example.com' },
     });
 
@@ -446,7 +446,7 @@ describe('updateAppSubscription', () => {
 
   it('should 404 on non-existent subscriptions', async () => {
     const app = await defaultApp(organization.id);
-    const response = await request.patch(`/api/main/apps/${app.id}/subscriptions`, {
+    const response = await request.patch(`/api/apps/${app.id}/subscriptions`, {
       endpoint: 'https://example.com',
       resource: 'person',
       action: 'create',

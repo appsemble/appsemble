@@ -1,7 +1,7 @@
 import { type OpenAPIV3 } from 'openapi-types';
 
 export const paths: OpenAPIV3.PathsObject = {
-  '/api/main/auth/email/register': {
+  '/api/auth/email/register': {
     post: {
       tags: ['main', 'auth', 'email'],
       description: 'Register a new studio account using an email address and a password.',
@@ -45,7 +45,7 @@ export const paths: OpenAPIV3.PathsObject = {
       },
     },
   },
-  '/api/main/auth/email/verify': {
+  '/api/auth/email/verify': {
     post: {
       tags: ['main', 'auth', 'email'],
       description: 'Verify the email address of a registered user.',
@@ -74,7 +74,7 @@ export const paths: OpenAPIV3.PathsObject = {
       },
     },
   },
-  '/api/main/auth/email/resend-verification': {
+  '/api/auth/email/resend-verification': {
     post: {
       tags: ['main', 'auth', 'email'],
       description: 'Resend the verification code for a registered email.',
@@ -104,7 +104,7 @@ export const paths: OpenAPIV3.PathsObject = {
       security: [{ studio: [] }],
     },
   },
-  '/api/main/auth/email/login': {
+  '/api/auth/email/login': {
     post: {
       tags: ['main', 'auth', 'email'],
       description: 'Login using the Appsemble studio.',
@@ -113,7 +113,7 @@ export const paths: OpenAPIV3.PathsObject = {
       security: [{ basic: [] }],
     },
   },
-  '/api/main/auth/email/request-password-reset': {
+  '/api/auth/email/request-password-reset': {
     post: {
       tags: ['main', 'auth', 'email'],
       description: 'Request a reset token for resetting passwords.',
@@ -142,7 +142,7 @@ export const paths: OpenAPIV3.PathsObject = {
       },
     },
   },
-  '/api/main/auth/email/reset-password': {
+  '/api/auth/email/reset-password': {
     post: {
       tags: ['main', 'auth', 'email'],
       description: 'Reset a password using a password reset token.',

@@ -94,7 +94,7 @@ describe('getAppMembers', () => {
     });
 
     authorizeStudio();
-    const response = await request.get(`/api/common/apps/${app.id}/members`);
+    const response = await request.get(`/api/apps/${app.id}/members`);
     expect(response).toMatchInlineSnapshot(
       {
         data: [
@@ -146,7 +146,7 @@ describe('getAppMembers', () => {
     });
 
     authorizeStudio();
-    const response = await request.get(`/api/common/apps/${app.id}/members`);
+    const response = await request.get(`/api/apps/${app.id}/members`);
     expect(response).toMatchInlineSnapshot(
       {
         data: [
@@ -194,7 +194,7 @@ describe('getAppMembers', () => {
     });
 
     authorizeStudio();
-    const response = await request.get(`/api/common/apps/${app.id}/members`);
+    const response = await request.get(`/api/apps/${app.id}/members`);
     expect(response).toMatchObject({
       status: 200,
       data: [],

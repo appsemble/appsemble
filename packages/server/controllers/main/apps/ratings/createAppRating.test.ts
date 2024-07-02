@@ -63,7 +63,7 @@ afterAll(() => {
 describe('createAppRating', () => {
   it('should be possible to submit a new app rating', async () => {
     authorizeStudio(user);
-    const response = await request.post(`/api/main/apps/${app.id}/ratings`, {
+    const response = await request.post(`/api/apps/${app.id}/ratings`, {
       description: 'Test description',
       rating: 5,
     });
@@ -90,14 +90,14 @@ describe('createAppRating', () => {
 
   it('should replace existing ratings', async () => {
     authorizeStudio(user);
-    await request.post(`/api/main/apps/${app.id}/ratings`, {
+    await request.post(`/api/apps/${app.id}/ratings`, {
       description: 'Test description',
       rating: 5,
     });
 
     vi.advanceTimersByTime(20e3);
 
-    const response = await request.post(`/api/main/apps/${app.id}/ratings`, {
+    const response = await request.post(`/api/apps/${app.id}/ratings`, {
       description: 'Updated description',
       rating: 3,
     });

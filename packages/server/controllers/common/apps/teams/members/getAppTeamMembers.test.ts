@@ -71,7 +71,7 @@ describe('getAppTeamMembers', () => {
   it('should return an empty array', async () => {
     const team = await Team.create({ name: 'A', AppId: app.id });
     authorizeStudio();
-    const response = await request.get(`/api/common/apps/${app.id}/teams/${team.id}/members`);
+    const response = await request.get(`/api/apps/${app.id}/teams/${team.id}/members`);
 
     expect(response).toMatchObject({ status: 200, data: [] });
   });
@@ -117,7 +117,7 @@ describe('getAppTeamMembers', () => {
     });
 
     authorizeStudio();
-    const response = await request.get(`/api/common/apps/${app.id}/teams/${team.id}/members`);
+    const response = await request.get(`/api/apps/${app.id}/teams/${team.id}/members`);
 
     expect(response).toMatchObject({
       status: 200,
@@ -140,7 +140,7 @@ describe('getAppTeamMembers', () => {
 
   it('should not fetch members of non-existent teams', async () => {
     authorizeStudio();
-    const response = await request.get(`/api/common/apps/${app.id}/teams/80000/members`);
+    const response = await request.get(`/api/apps/${app.id}/teams/80000/members`);
 
     expect(response).toMatchObject({
       status: 404,

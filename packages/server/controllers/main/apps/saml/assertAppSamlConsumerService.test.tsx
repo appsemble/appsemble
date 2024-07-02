@@ -29,7 +29,7 @@ function createSamlResponse({
 }: CreateSamlResponseOptions = {}): string {
   const tree = (
     <samlp:Response
-      Destination="http://localhost:9999/api/main/apps/7/saml/1/acs"
+      Destination="http://localhost:9999/api/apps/7/saml/1/acs"
       ID="_5190f0683c9e4b77a4e0a8ffd4d4a4dd"
       InResponseTo="id27748888-5253-48bf-8cf5-b65f793b7643"
       IssueInstant="2020-11-20T10:26:11.008603+00:00"
@@ -118,7 +118,7 @@ function createSamlResponse({
             {subject.nameId ? (
               <saml:NameID
                 Format="urn:oasis:names:tc:SAML:2.0:nameid-format:email"
-                SPNameQualifier="http://localhost:9999/api/main/apps/7/saml/1/metadata.xml"
+                SPNameQualifier="http://localhost:9999/api/apps/7/saml/1/metadata.xml"
               >
                 alex@example.com
               </saml:NameID>
@@ -128,7 +128,7 @@ function createSamlResponse({
                 <saml:SubjectConfirmationData
                   InResponseTo="id27748888-5253-48bf-8cf5-b65f793b7643"
                   NotOnOrAfter="2020-11-20T10:41:11.008603+00:00"
-                  Recipient="http://localhost:9999/api/main/apps/7/saml/1/acs"
+                  Recipient="http://localhost:9999/api/apps/7/saml/1/acs"
                 />
               </saml:SubjectConfirmation>
             ) : null}
@@ -139,7 +139,7 @@ function createSamlResponse({
           NotOnOrAfter="2020-11-20T10:41:11.008603+00:00"
         >
           <saml:AudienceRestriction>
-            <saml:Audience>http://localhost:9999/api/main/apps/7/saml/1/metadata.xml</saml:Audience>
+            <saml:Audience>http://localhost:9999/api/apps/7/saml/1/metadata.xml</saml:Audience>
           </saml:AudienceRestriction>
         </saml:Conditions>
         <saml:AuthnStatement AuthnInstant="2020-11-20T10:26:11.008603+00:00">
@@ -206,7 +206,7 @@ afterAll(() => {
 describe('assertAppSamlConsumerService', () => {
   it('should handle an invalid relay state', async () => {
     const response = await request.post(
-      `/api/main/apps/${app.id}/saml/${secret.id}/acs`,
+      `/api/apps/${app.id}/saml/${secret.id}/acs`,
       new URLSearchParams({
         SAMLResponse: createSamlResponse(),
         RelayState: 'http://invalid.example',
@@ -221,7 +221,7 @@ describe('assertAppSamlConsumerService', () => {
 
   it('should handle if no secret can be found', async () => {
     const response = await request.post(
-      '/api/main/apps/23/saml/93/acs',
+      '/api/apps/23/saml/93/acs',
       new URLSearchParams({
         SAMLResponse: createSamlResponse(),
         RelayState: 'http://localhost',
@@ -236,7 +236,7 @@ describe('assertAppSamlConsumerService', () => {
 
   it('should handle an invalid status code', async () => {
     const response = await request.post(
-      `/api/main/apps/${app.id}/saml/${secret.id}/acs`,
+      `/api/apps/${app.id}/saml/${secret.id}/acs`,
       new URLSearchParams({
         SAMLResponse: createSamlResponse({ statusCode: 'Any invalid string' }),
         RelayState: 'http://localhost',

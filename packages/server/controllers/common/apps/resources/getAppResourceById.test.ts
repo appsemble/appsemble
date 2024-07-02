@@ -70,9 +70,7 @@ describe('getAppResourceById', () => {
       type: 'testResource',
       data: { foo: 'bar' },
     });
-    const response = await request.get(
-      `/api/common/apps/${app.id}/resources/testResource/${resource.id}`,
-    );
+    const response = await request.get(`/api/apps/${app.id}/resources/testResource/${resource.id}`);
 
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 200 OK
@@ -102,7 +100,7 @@ describe('getAppResourceById', () => {
     });
     authorizeApp(app);
     const response = await request.get(
-      `/api/common/apps/${app.id}/resources/testResource/${resource.id}`,
+      `/api/apps/${app.id}/resources/testResource/${resource.id}`,
       { params: { view: 'testView' } },
     );
 
@@ -125,7 +123,7 @@ describe('getAppResourceById', () => {
     });
 
     const response = await request.get(
-      `/api/common/apps/${app.id}/resources/testResource/${resource.id}`,
+      `/api/apps/${app.id}/resources/testResource/${resource.id}`,
       { params: { view: 'publicView' } },
     );
 
@@ -158,7 +156,7 @@ describe('getAppResourceById', () => {
     });
     authorizeApp(app);
     const response = await request.get(
-      `/api/common/apps/${app.id}/resources/testResource/${resource.id}`,
+      `/api/apps/${app.id}/resources/testResource/${resource.id}`,
       { params: { view: 'missingView' } },
     );
 
@@ -181,7 +179,7 @@ describe('getAppResourceById', () => {
       data: { foo: 'bar' },
     });
     const response = await request.get(
-      `/api/common/apps/${app.id}/resources/testResource/${resource.id}`,
+      `/api/apps/${app.id}/resources/testResource/${resource.id}`,
       { params: { view: 'testView' } },
     );
 
@@ -212,7 +210,7 @@ describe('getAppResourceById', () => {
     });
     authorizeApp(app);
     const response = await request.get(
-      `/api/common/apps/${app.id}/resources/testResource/${resource.id}`,
+      `/api/apps/${app.id}/resources/testResource/${resource.id}`,
       { params: { view: 'testView' } },
     );
 
@@ -257,7 +255,7 @@ describe('getAppResourceById', () => {
     });
     authorizeStudio();
     const response = await request.get(
-      `/api/common/apps/${app.id}/resources/testResourceTeam/${resource.id}`,
+      `/api/apps/${app.id}/resources/testResourceTeam/${resource.id}`,
     );
 
     expect(response).toMatchInlineSnapshot(
@@ -312,7 +310,7 @@ describe('getAppResourceById', () => {
 
     authorizeApp(app);
     const response = await request.get(
-      `/api/common/apps/${app.id}/resources/testResourceTeam/${resource.id}`,
+      `/api/apps/${app.id}/resources/testResourceTeam/${resource.id}`,
     );
 
     expect(response).toMatchInlineSnapshot(`
@@ -336,10 +334,10 @@ describe('getAppResourceById', () => {
       data: { foo: 'bar' },
     });
     const responseA = await request.get(
-      `/api/common/apps/${appB.id}/resources/testResource/${resource.id}`,
+      `/api/apps/${appB.id}/resources/testResource/${resource.id}`,
     );
     const responseB = await request.get(
-      `/api/common/apps/${appB.id}/resources/testResourceB/${resource.id}`,
+      `/api/apps/${appB.id}/resources/testResourceB/${resource.id}`,
     );
 
     expect(responseA).toMatchInlineSnapshot(`
@@ -380,9 +378,7 @@ describe('getAppResourceById', () => {
       AuthorId: member.id,
     });
 
-    const response = await request.get(
-      `/api/common/apps/${app.id}/resources/testResource/${resource.id}`,
-    );
+    const response = await request.get(`/api/apps/${app.id}/resources/testResource/${resource.id}`);
 
     expect(response).toMatchInlineSnapshot(
       { data: { $author: { id: expect.any(String) } } },
@@ -421,9 +417,7 @@ describe('getAppResourceById', () => {
       AuthorId: member.id,
     });
 
-    const response = await request.get(
-      `/api/common/apps/${app.id}/resources/testResource/${resource.id}`,
-    );
+    const response = await request.get(`/api/apps/${app.id}/resources/testResource/${resource.id}`);
 
     expect(response).toMatchInlineSnapshot(
       { data: { $author: { id: expect.any(String) } } },
@@ -449,22 +443,19 @@ describe('getAppResourceById', () => {
   it('should not fetch expired resources', async () => {
     const {
       data: { id },
-    } = await request.post<ResourceType>(
-      `/api/common/apps/${app.id}/resources/testExpirableResource`,
-      {
-        foo: 'test',
-      },
-    );
+    } = await request.post<ResourceType>(`/api/apps/${app.id}/resources/testExpirableResource`, {
+      foo: 'test',
+    });
 
     const responseA = await request.get(
-      `/api/common/apps/${app.id}/resources/testExpirableResource/${id}`,
+      `/api/apps/${app.id}/resources/testExpirableResource/${id}`,
     );
 
     // The resource expires after 10 minutes.
     vi.advanceTimersByTime(601e3);
 
     const responseB = await request.get(
-      `/api/common/apps/${app.id}/resources/testExpirableResource/${id}`,
+      `/api/apps/${app.id}/resources/testExpirableResource/${id}`,
     );
 
     expect(responseA).toMatchInlineSnapshot(`
@@ -499,7 +490,7 @@ describe('getAppResourceById', () => {
     });
     authorizeStudio();
     const response = await request.get(
-      `/api/common/apps/${app.id}/resources/testResourceAuthorOnly/${resource.id}`,
+      `/api/apps/${app.id}/resources/testResourceAuthorOnly/${resource.id}`,
     );
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 200 OK
@@ -526,7 +517,7 @@ describe('getAppResourceById', () => {
     });
     authorizeStudio();
     const response = await request.get(
-      `/api/common/apps/${app.id}/resources/testResourceAuthorOnly/${resource.id}`,
+      `/api/apps/${app.id}/resources/testResourceAuthorOnly/${resource.id}`,
     );
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 403 Forbidden
@@ -548,7 +539,7 @@ describe('getAppResourceById', () => {
     });
     await authorizeClientCredentials('resources:read');
     const response = await request.get(
-      `/api/common/apps/${app.id}/resources/testResourceAuthorOnly/${resource.id}`,
+      `/api/apps/${app.id}/resources/testResourceAuthorOnly/${resource.id}`,
     );
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 200 OK
@@ -575,7 +566,7 @@ describe('getAppResourceById', () => {
     });
     await authorizeClientCredentials('resources:read');
     const response = await request.get(
-      `/api/common/apps/${app.id}/resources/testResourceAuthorOnly/${resource.id}`,
+      `/api/apps/${app.id}/resources/testResourceAuthorOnly/${resource.id}`,
     );
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 403 Forbidden

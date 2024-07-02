@@ -1,7 +1,7 @@
 import { type OpenAPIV3 } from 'openapi-types';
 
 export const paths: OpenAPIV3.PathsObject = {
-  '/api/main/app-collections/{appCollectionId}/apps': {
+  '/api/app-collections/{appCollectionId}/apps': {
     get: {
       tags: ['main', 'app-collection', 'app'],
       description: 'Get a list of apps in an app collection',
@@ -93,7 +93,7 @@ export const paths: OpenAPIV3.PathsObject = {
       security: [{ studio: [] }, { cli: ['apps:write'] }],
     },
   },
-  '/api/main/app-collections/{appCollectionId}/apps/{appId}': {
+  '/api/app-collections/{appCollectionId}/apps/{appId}': {
     delete: {
       tags: ['main', 'app-collection', 'app'],
       description: 'Remove an app from an app collection',
@@ -126,7 +126,7 @@ export const paths: OpenAPIV3.PathsObject = {
       security: [{ studio: [] }],
     },
   },
-  '/api/main/app-collections/{appCollectionId}/apps/{appId}/pinned': {
+  '/api/app-collections/{appCollectionId}/apps/{appId}/pinned': {
     post: {
       tags: ['main', 'app-collection', 'app'],
       description: 'Pin an app to an app collection',

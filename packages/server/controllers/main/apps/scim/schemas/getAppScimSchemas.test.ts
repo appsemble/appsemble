@@ -37,7 +37,7 @@ beforeEach(async () => {
 
 describe('getAppScimSchemas', () => {
   it('should fetch all SCIM schemas for an app', async () => {
-    const response = await request.get(`/api/main/apps/${app.id}/scim/Schemas`);
+    const response = await request.get(`/api/apps/${app.id}/scim/Schemas`);
 
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 200 OK
@@ -140,7 +140,7 @@ describe('getAppScimSchemas', () => {
             "description": "User Account",
             "id": "urn:ietf:params:scim:schemas:core:2.0:User",
             "meta": {
-              "location": "http://localhost/api/main/apps/1/scim/schemas/urn:ietf:params:scim:schemas:core:2.0:User",
+              "location": "http://localhost/api/apps/1/scim/schemas/urn:ietf:params:scim:schemas:core:2.0:User",
               "resourceType": "Schema",
             },
             "name": "User",
@@ -165,7 +165,7 @@ describe('getAppScimSchemas', () => {
             "description": "Enterprise user account",
             "id": "urn:ietf:params:scim:schemas:extension:enterprise:2.0:User",
             "meta": {
-              "location": "http://localhost/api/main/apps/1/scim/schemas/urn:ietf:params:scim:schemas:extension:enterprise:2.0:User",
+              "location": "http://localhost/api/apps/1/scim/schemas/urn:ietf:params:scim:schemas:extension:enterprise:2.0:User",
               "resourceType": "Schema",
             },
             "name": "User",

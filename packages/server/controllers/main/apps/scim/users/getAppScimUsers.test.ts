@@ -63,7 +63,7 @@ describe('getAppScimUsers', () => {
       timezone: 'Europe/Amsterdam',
     });
 
-    const response = await request.get(`/api/main/apps/${app.id}/scim/Users`);
+    const response = await request.get(`/api/apps/${app.id}/scim/Users`);
     expect(response).toMatchInlineSnapshot(
       { data: { Resources: [{ id: expect.any(String), meta: { location: expect.any(String) } }] } },
       `
@@ -113,7 +113,7 @@ describe('getAppScimUsers', () => {
     });
     await TeamMember.create({ TeamId: team.id, AppMemberId: member.id });
 
-    const response = await request.get(`/api/main/apps/${app.id}/scim/Users`);
+    const response = await request.get(`/api/apps/${app.id}/scim/Users`);
 
     expect(response).toMatchInlineSnapshot(
       { data: { Resources: [{ id: expect.any(String), meta: { location: expect.any(String) } }] } },
@@ -168,7 +168,7 @@ describe('getAppScimUsers', () => {
     });
 
     const response = await request.get(
-      `/api/main/apps/${app.id}/scim/Users?filter=uSeRnAmE Eq "eXaMpLe@HoTmAIl.CoM"`,
+      `/api/apps/${app.id}/scim/Users?filter=uSeRnAmE Eq "eXaMpLe@HoTmAIl.CoM"`,
     );
 
     expect(response).toMatchInlineSnapshot(
@@ -219,7 +219,7 @@ describe('getAppScimUsers', () => {
       timezone: 'Europe/Amsterdam',
     });
 
-    const response = await request.get(`/api/main/apps/${app.id}/scim/Users?filter=uSeRnAmE eQ ""`);
+    const response = await request.get(`/api/apps/${app.id}/scim/Users?filter=uSeRnAmE eQ ""`);
 
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 200 OK

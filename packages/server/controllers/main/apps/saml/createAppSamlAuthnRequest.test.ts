@@ -69,7 +69,7 @@ describe('createAuthnRequest', () => {
   it('should generate SAML parameters', async () => {
     authorizeStudio();
     const response = await request.post<SAMLRedirectResponse>(
-      `/api/main/apps/${app.id}/saml/${secret.id}/authn`,
+      `/api/apps/${app.id}/saml/${secret.id}/authn`,
       {
         redirectUri: 'https://app.example',
         scope: 'email openid profile',
@@ -105,7 +105,7 @@ describe('createAuthnRequest', () => {
     expect(samlRequest).toBe(
       '<samlp:AuthnRequest' +
         ' xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion"' +
-        ' AssertionConsumerServiceURL="http://localhost/api/main/apps/1/saml/1/acs"' +
+        ' AssertionConsumerServiceURL="http://localhost/api/apps/1/saml/1/acs"' +
         ' Destination="https://example.com/saml/login"' +
         ` ID="${loginRequest.id}"` +
         ' Version="2.0"' +
@@ -113,7 +113,7 @@ describe('createAuthnRequest', () => {
         ' xmlns:samlp="urn:oasis:names:tc:SAML:2.0:protocol"' +
         '>' +
         '<saml:Issuer>' +
-        'http://localhost/api/main/apps/1/saml/1/metadata.xml' +
+        'http://localhost/api/apps/1/saml/1/metadata.xml' +
         '</saml:Issuer>' +
         '<samlp:NameIDPolicy' +
         ' Format="urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress"' +
@@ -124,7 +124,7 @@ describe('createAuthnRequest', () => {
 
   it('should throw if the app ID is invalid', async () => {
     authorizeStudio();
-    const response = await request.post('/api/main/apps/64/saml/26/authn', {
+    const response = await request.post('/api/apps/64/saml/26/authn', {
       redirectUri: 'https://app.example',
       scope: 'email openid profile',
       state: 'secret state',
@@ -137,7 +137,7 @@ describe('createAuthnRequest', () => {
 
   it('should throw if the SAML secret ID is invalid', async () => {
     authorizeStudio();
-    const response = await request.post(`/api/main/apps/${app.id}/saml/26/authn`, {
+    const response = await request.post(`/api/apps/${app.id}/saml/26/authn`, {
       redirectUri: 'https://app.example',
       scope: 'email openid profile',
       state: 'secret state',

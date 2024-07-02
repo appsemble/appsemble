@@ -1,7 +1,7 @@
 import { type OpenAPIV3 } from 'openapi-types';
 
 export const paths: OpenAPIV3.PathsObject = {
-  '/api/main/users/current/auth/oauth2/apps/{appId}/consent/agree': {
+  '/api/users/current/auth/oauth2/apps/{appId}/consent/agree': {
     post: {
       description: 'Create a new OAuth2 consent.',
       tags: ['main', 'user', 'current-user', 'auth', 'oauth2'],
@@ -11,7 +11,7 @@ export const paths: OpenAPIV3.PathsObject = {
       security: [{ studio: [] }],
     },
   },
-  '/api/main/users/current/auth/oauth2/apps/{appId}/consent/verify': {
+  '/api/users/current/auth/oauth2/apps/{appId}/consent/verify': {
     post: {
       description: 'Verify if the user has previously agreed to the requested OAuth2 consent.',
       tags: ['main', 'user', 'current-user', 'auth', 'oauth2'],

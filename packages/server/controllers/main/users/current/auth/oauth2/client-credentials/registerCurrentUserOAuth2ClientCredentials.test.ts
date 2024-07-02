@@ -33,7 +33,7 @@ describe('registerCurrentUserOAuth2ClientCredentials', () => {
   it('should register OAuth2 client credentials', async () => {
     authorizeStudio();
     const response = await request.post<OAuth2ClientCredentialsType>(
-      '/api/main/users/current/auth/oauth2/client-credentials',
+      '/api/users/current/auth/oauth2/client-credentials',
       {
         description: 'Test client',
         expires: '2345-01-02T03:04:05Z',
@@ -57,7 +57,7 @@ describe('registerCurrentUserOAuth2ClientCredentials', () => {
 
   it('should not allow to create already expired client credentials', async () => {
     authorizeStudio();
-    const response = await request.post('/api/main/users/current/auth/oauth2/client-credentials', {
+    const response = await request.post('/api/users/current/auth/oauth2/client-credentials', {
       description: 'Test client',
       expires: '1999-01-02T03:04:05Z',
       scopes: ['organizations:write', 'blocks:write'],

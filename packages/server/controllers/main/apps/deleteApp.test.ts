@@ -76,7 +76,7 @@ describe('deleteApp', () => {
     const {
       data: { id },
     } = await request.post<AppType>(
-      '/api/main/apps',
+      '/api/apps',
       createFormData({
         OrganizationId: organization.id,
         yaml: stripIndent(`
@@ -91,7 +91,7 @@ describe('deleteApp', () => {
       }),
     );
 
-    const response = await request.delete(`/api/main/apps/${id}`);
+    const response = await request.delete(`/api/apps/${id}`);
 
     expect(response).toMatchInlineSnapshot('HTTP/1.1 204 No Content');
   });
@@ -109,10 +109,10 @@ describe('deleteApp', () => {
       showAppDefinition: false,
     });
 
-    const { status } = await request.delete(`/api/main/apps/${app.id}`);
+    const { status } = await request.delete(`/api/apps/${app.id}`);
     expect(status).toBe(204);
 
-    const response = await request.get(`/api/main/apps/${app.id}`);
+    const response = await request.get(`/api/apps/${app.id}`);
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 404 Not Found
       Content-Type: application/json; charset=utf-8
@@ -127,7 +127,7 @@ describe('deleteApp', () => {
 
   it('should not delete non-existent apps', async () => {
     authorizeStudio();
-    const response = await request.delete('/api/main/apps/0');
+    const response = await request.delete('/api/apps/0');
 
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 404 Not Found
@@ -152,7 +152,7 @@ describe('deleteApp', () => {
     });
 
     authorizeStudio();
-    const response = await request.delete(`/api/main/apps/${app.id}`);
+    const response = await request.delete(`/api/apps/${app.id}`);
 
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 403 Forbidden

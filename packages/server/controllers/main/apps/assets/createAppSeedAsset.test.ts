@@ -73,7 +73,7 @@ describe('createAppSeedAsset', () => {
     });
     authorizeStudio();
     const response = await request.post<AssetType>(
-      `/api/main/apps/${app.id}/assets`,
+      `/api/apps/${app.id}/assets`,
       createFormData({ file: Buffer.alloc(0) }),
     );
     const asset = await Asset.findByPk(response.data.id);
@@ -140,7 +140,7 @@ describe('createAppSeedAsset', () => {
     });
     authorizeStudio();
     const response = await request.post<AssetType>(
-      `/api/main/apps/${app.id}/assets`,
+      `/api/apps/${app.id}/assets`,
       createFormData({ file: Buffer.alloc(0) }),
     );
     const asset = await Asset.findByPk(response.data.id);

@@ -71,7 +71,7 @@ describe('deleteAppResource', () => {
     });
 
     const responseGetA = await request.get(
-      `/api/common/apps/${app.id}/resources/testResource/${resource.id}`,
+      `/api/apps/${app.id}/resources/testResource/${resource.id}`,
     );
 
     expect(responseGetA).toMatchInlineSnapshot(`
@@ -88,13 +88,13 @@ describe('deleteAppResource', () => {
 
     authorizeStudio();
     const response = await request.delete(
-      `/api/common/apps/${app.id}/resources/testResource/${resource.id}`,
+      `/api/apps/${app.id}/resources/testResource/${resource.id}`,
     );
 
     expect(response).toMatchInlineSnapshot('HTTP/1.1 204 No Content');
 
     const responseGetB = await request.get(
-      `/api/common/apps/${app.id}/resources/testResource/${resource.id}`,
+      `/api/apps/${app.id}/resources/testResource/${resource.id}`,
     );
 
     expect(responseGetB).toMatchInlineSnapshot(`
@@ -140,7 +140,7 @@ describe('deleteAppResource', () => {
 
     authorizeStudio();
     const response = await request.delete(
-      `/api/common/apps/${app.id}/resources/testResourceTeam/${resource.id}`,
+      `/api/apps/${app.id}/resources/testResourceTeam/${resource.id}`,
     );
 
     expect(response).toMatchInlineSnapshot('HTTP/1.1 204 No Content');
@@ -176,7 +176,7 @@ describe('deleteAppResource', () => {
 
     authorizeApp(app);
     const response = await request.delete(
-      `/api/common/apps/${app.id}/resources/testResourceTeam/${resource.id}`,
+      `/api/apps/${app.id}/resources/testResourceTeam/${resource.id}`,
     );
 
     expect(response).toMatchInlineSnapshot(`
@@ -193,7 +193,7 @@ describe('deleteAppResource', () => {
 
   it('should not be able to delete a non-existent resource', async () => {
     authorizeStudio();
-    const response = await request.delete(`/api/common/apps/${app.id}/resources/testResource/0`);
+    const response = await request.delete(`/api/apps/${app.id}/resources/testResource/0`);
 
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 404 Not Found
@@ -216,7 +216,7 @@ describe('deleteAppResource', () => {
 
     authorizeStudio();
     const response = await request.delete(
-      `/api/common/apps/${app.id}/resources/testResourceB/${resource.id}`,
+      `/api/apps/${app.id}/resources/testResourceB/${resource.id}`,
     );
 
     expect(response).toMatchInlineSnapshot(`
@@ -231,7 +231,7 @@ describe('deleteAppResource', () => {
     `);
 
     const responseGet = await request.get(
-      `/api/common/apps/${app.id}/resources/testResource/${resource.id}`,
+      `/api/apps/${app.id}/resources/testResource/${resource.id}`,
     );
 
     expect(responseGet).toMatchInlineSnapshot(`
@@ -257,7 +257,7 @@ describe('deleteAppResource', () => {
     const appB = await exampleApp(organization.id, 'app-b');
     authorizeStudio();
     const response = await request.delete(
-      `/api/common/apps/${appB.id}/resources/testResource/${resource.id}`,
+      `/api/apps/${appB.id}/resources/testResource/${resource.id}`,
     );
 
     expect(response).toMatchInlineSnapshot(`
@@ -272,7 +272,7 @@ describe('deleteAppResource', () => {
     `);
 
     const responseGet = await request.get(
-      `/api/common/apps/${app.id}/resources/testResource/${resource.id}`,
+      `/api/apps/${app.id}/resources/testResource/${resource.id}`,
     );
 
     expect(responseGet).toMatchInlineSnapshot(`
@@ -296,7 +296,7 @@ describe('deleteAppResource', () => {
     });
     authorizeStudio();
     const response = await request.delete(
-      `/api/common/apps/${app.id}/resources/testResourceAuthorOnly/${resource.id}`,
+      `/api/apps/${app.id}/resources/testResourceAuthorOnly/${resource.id}`,
     );
     expect(response).toMatchInlineSnapshot('HTTP/1.1 204 No Content');
   });
@@ -313,7 +313,7 @@ describe('deleteAppResource', () => {
     });
     authorizeStudio();
     const response = await request.delete(
-      `/api/common/apps/${app.id}/resources/testResourceAuthorOnly/${resource.id}`,
+      `/api/apps/${app.id}/resources/testResourceAuthorOnly/${resource.id}`,
     );
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 403 Forbidden
@@ -335,7 +335,7 @@ describe('deleteAppResource', () => {
     });
     await authorizeClientCredentials('resources:write');
     const response = await request.delete(
-      `/api/common/apps/${app.id}/resources/testResourceAuthorOnly/${resource.id}`,
+      `/api/apps/${app.id}/resources/testResourceAuthorOnly/${resource.id}`,
     );
     expect(response).toMatchInlineSnapshot('HTTP/1.1 204 No Content');
   });
@@ -352,7 +352,7 @@ describe('deleteAppResource', () => {
     });
     await authorizeClientCredentials('resources:write');
     const response = await request.delete(
-      `/api/common/apps/${app.id}/resources/testResourceAuthorOnly/${resource.id}`,
+      `/api/apps/${app.id}/resources/testResourceAuthorOnly/${resource.id}`,
     );
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 403 Forbidden
@@ -380,7 +380,7 @@ describe('deleteAppResource', () => {
     });
 
     const responseGetTestResource = await request.get(
-      `/api/common/apps/${app.id}/resources/testResource/${testResource.id}`,
+      `/api/apps/${app.id}/resources/testResource/${testResource.id}`,
     );
 
     expect(responseGetTestResource).toMatchInlineSnapshot(`
@@ -396,7 +396,7 @@ describe('deleteAppResource', () => {
     `);
 
     const responseGetTestResourceB = await request.get(
-      `/api/common/apps/${app.id}/resources/testResourceB/${testResourceB.id}`,
+      `/api/apps/${app.id}/resources/testResourceB/${testResourceB.id}`,
     );
 
     expect(responseGetTestResourceB).toMatchInlineSnapshot(`
@@ -414,7 +414,7 @@ describe('deleteAppResource', () => {
 
     authorizeStudio();
     const responseDeleteTestResource = await request.delete(
-      `/api/common/apps/${app.id}/resources/testResource/${testResource.id}`,
+      `/api/apps/${app.id}/resources/testResource/${testResource.id}`,
     );
 
     expect(responseDeleteTestResource).toMatchInlineSnapshot(`
@@ -443,7 +443,7 @@ describe('deleteAppResource', () => {
     });
 
     const responseGetTestResource = await request.get(
-      `/api/common/apps/${app.id}/resources/testResource/${testResource.id}`,
+      `/api/apps/${app.id}/resources/testResource/${testResource.id}`,
     );
 
     expect(responseGetTestResource).toMatchInlineSnapshot(`
@@ -459,7 +459,7 @@ describe('deleteAppResource', () => {
     `);
 
     const responseGetTestResourceB = await request.get(
-      `/api/common/apps/${app.id}/resources/testResourceB/${testResourceB.id}`,
+      `/api/apps/${app.id}/resources/testResourceB/${testResourceB.id}`,
     );
 
     expect(responseGetTestResourceB).toMatchInlineSnapshot(`
@@ -477,13 +477,13 @@ describe('deleteAppResource', () => {
 
     authorizeStudio();
     const responseDeleteTestResourceB = await request.delete(
-      `/api/common/apps/${app.id}/resources/testResourceB/${testResourceB.id}`,
+      `/api/apps/${app.id}/resources/testResourceB/${testResourceB.id}`,
     );
 
     expect(responseDeleteTestResourceB).toMatchInlineSnapshot('HTTP/1.1 204 No Content');
 
     const responseDeleteTestResource = await request.delete(
-      `/api/common/apps/${app.id}/resources/testResource/${testResource.id}`,
+      `/api/apps/${app.id}/resources/testResource/${testResource.id}`,
     );
 
     expect(responseDeleteTestResource).toMatchInlineSnapshot('HTTP/1.1 204 No Content');
@@ -503,7 +503,7 @@ describe('deleteAppResource', () => {
     });
 
     const responseGetTestResource = await request.get(
-      `/api/common/apps/${app.id}/resources/testResource/${testResource.id}`,
+      `/api/apps/${app.id}/resources/testResource/${testResource.id}`,
     );
 
     expect(responseGetTestResource).toMatchInlineSnapshot(`
@@ -519,7 +519,7 @@ describe('deleteAppResource', () => {
     `);
 
     const responseGetTestResourceC = await request.get(
-      `/api/common/apps/${app.id}/resources/testResourceC/${testResourceC.id}`,
+      `/api/apps/${app.id}/resources/testResourceC/${testResourceC.id}`,
     );
 
     expect(responseGetTestResourceC).toMatchInlineSnapshot(`
@@ -537,13 +537,13 @@ describe('deleteAppResource', () => {
 
     authorizeStudio();
     const responseDeleteTestResource = await request.delete(
-      `/api/common/apps/${app.id}/resources/testResource/${testResource.id}`,
+      `/api/apps/${app.id}/resources/testResource/${testResource.id}`,
     );
 
     expect(responseDeleteTestResource).toMatchInlineSnapshot('HTTP/1.1 204 No Content');
 
     const responseGetTestResourceCAfterDeletingTestResource = await request.get(
-      `/api/common/apps/${app.id}/resources/testResourceC/${testResourceC.id}`,
+      `/api/apps/${app.id}/resources/testResourceC/${testResourceC.id}`,
     );
 
     expect(responseGetTestResourceCAfterDeletingTestResource).toMatchInlineSnapshot(`
@@ -574,7 +574,7 @@ describe('deleteAppResource', () => {
     });
 
     const responseGetTestResource = await request.get(
-      `/api/common/apps/${app.id}/resources/testResource/${testResource.id}`,
+      `/api/apps/${app.id}/resources/testResource/${testResource.id}`,
     );
 
     expect(responseGetTestResource).toMatchInlineSnapshot(`
@@ -590,7 +590,7 @@ describe('deleteAppResource', () => {
     `);
 
     const responseGetTestResourceD = await request.get(
-      `/api/common/apps/${app.id}/resources/testResourceD/${testResourceD.id}`,
+      `/api/apps/${app.id}/resources/testResourceD/${testResourceD.id}`,
     );
 
     expect(responseGetTestResourceD).toMatchInlineSnapshot(`
@@ -608,13 +608,13 @@ describe('deleteAppResource', () => {
 
     authorizeStudio();
     const responseDeleteTestResource = await request.delete(
-      `/api/common/apps/${app.id}/resources/testResource/${testResource.id}`,
+      `/api/apps/${app.id}/resources/testResource/${testResource.id}`,
     );
 
     expect(responseDeleteTestResource).toMatchInlineSnapshot('HTTP/1.1 204 No Content');
 
     const responseGetTestResourceDAfterDeletingTestResource = await request.get(
-      `/api/common/apps/${app.id}/resources/testResourceD/${testResourceD.id}`,
+      `/api/apps/${app.id}/resources/testResourceD/${testResourceD.id}`,
     );
 
     expect(responseGetTestResourceDAfterDeletingTestResource).toMatchInlineSnapshot(`

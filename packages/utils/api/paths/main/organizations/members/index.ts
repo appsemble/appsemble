@@ -3,7 +3,7 @@ import { type OpenAPIV3 } from 'openapi-types';
 import { roles } from '../../../../../constants/index.js';
 
 export const paths: OpenAPIV3.PathsObject = {
-  '/api/main/organizations/{organizationId}/members': {
+  '/api/organizations/{organizationId}/members': {
     parameters: [{ $ref: '#/components/parameters/organizationId' }],
     get: {
       tags: ['main', 'organization', 'member'],
@@ -27,7 +27,7 @@ export const paths: OpenAPIV3.PathsObject = {
       security: [{ studio: [] }],
     },
   },
-  '/api/main/organizations/{organizationId}/members/{memberId}': {
+  '/api/organizations/{organizationId}/members/{memberId}': {
     parameters: [
       { $ref: '#/components/parameters/organizationId' },
       {
@@ -51,7 +51,7 @@ export const paths: OpenAPIV3.PathsObject = {
       security: [{ studio: [] }],
     },
   },
-  '/api/main/organizations/{organizationId}/members/{memberId}/role': {
+  '/api/organizations/{organizationId}/members/{memberId}/role': {
     parameters: [
       { $ref: '#/components/parameters/organizationId' },
       {

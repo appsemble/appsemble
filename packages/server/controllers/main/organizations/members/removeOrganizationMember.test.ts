@@ -52,9 +52,7 @@ describe('removeOrganizationMember', () => {
     });
 
     authorizeStudio();
-    const result = await request.delete(
-      `/api/main/organizations/testorganization/members/${user.id}`,
-    );
+    const result = await request.delete(`/api/organizations/testorganization/members/${user.id}`);
 
     expect(result.status).toBe(204);
   });
@@ -69,7 +67,7 @@ describe('removeOrganizationMember', () => {
 
     authorizeStudio();
     const { status } = await request.delete(
-      `/api/main/organizations/testorganization/members/${userB.id}`,
+      `/api/organizations/testorganization/members/${userB.id}`,
     );
 
     expect(status).toBe(204);
@@ -77,9 +75,7 @@ describe('removeOrganizationMember', () => {
 
   it('should not remove the only remaining member in an organization', async () => {
     authorizeStudio();
-    const response = await request.delete(
-      `/api/main/organizations/testorganization/members/${user.id}`,
-    );
+    const response = await request.delete(`/api/organizations/testorganization/members/${user.id}`);
 
     expect(response).toMatchObject({
       status: 406,
@@ -94,12 +90,9 @@ describe('removeOrganizationMember', () => {
     const userB = await User.create({ timezone: 'Europe/Amsterdam' });
     authorizeStudio();
     const responseA = await request.delete(
-      `/api/main/organizations/testorganization/members/${userB.id}`,
+      `/api/organizations/testorganization/members/${userB.id}`,
     );
-    const responseB = await request.delete(
-      '/api/main/organizations/testorganization/members/0',
-      {},
-    );
+    const responseB = await request.delete('/api/organizations/testorganization/members/0', {});
 
     expect(responseA).toMatchObject({
       status: 404,

@@ -49,7 +49,7 @@ describe('createBlock', () => {
     });
 
     await authorizeClientCredentials('blocks:write');
-    const { data, status } = await request.post('/api/main/blocks', formData);
+    const { data, status } = await request.post('/api/blocks', formData);
 
     expect(data).toStrictEqual({
       actions: null,
@@ -89,7 +89,7 @@ describe('createBlock', () => {
     );
 
     await authorizeClientCredentials('blocks:write');
-    const { status } = await request.post('/api/main/blocks', formData);
+    const { status } = await request.post('/api/blocks', formData);
     const blockVersionMessages = await BlockVersion.findOne({
       where: { version: '1.32.9', OrganizationId: 'xkcd', name: 'standing' },
       include: [BlockMessages],
@@ -126,7 +126,7 @@ describe('createBlock', () => {
     );
 
     await authorizeClientCredentials('blocks:write');
-    const response = await request.post('/api/main/blocks', formData);
+    const response = await request.post('/api/blocks', formData);
 
     expect(response).toMatchObject({
       status: 400,
@@ -194,7 +194,7 @@ English (\`en\`) messages are required.
     );
 
     await authorizeClientCredentials('blocks:write');
-    const response = await request.post('/api/main/blocks', formData);
+    const response = await request.post('/api/blocks', formData);
 
     expect(response).toMatchObject({
       status: 400,
@@ -239,7 +239,7 @@ English (\`en\`) messages are required.
     );
 
     await authorizeClientCredentials('blocks:write');
-    const response = await request.post('/api/main/blocks', formData);
+    const response = await request.post('/api/blocks', formData);
 
     expect(response).toMatchObject({
       status: 400,
@@ -259,7 +259,7 @@ English (\`en\`) messages are required.
       filepath: 'testblock.js',
     });
     await authorizeClientCredentials('blocks:write');
-    const response = await request.post('/api/main/blocks', formData);
+    const response = await request.post('/api/blocks', formData);
 
     expect(response).toMatchObject({
       status: 400,
@@ -280,7 +280,7 @@ English (\`en\`) messages are required.
     });
 
     await authorizeClientCredentials('blocks:write');
-    await request.post('/api/main/blocks', formData);
+    await request.post('/api/blocks', formData);
 
     const formData2 = new FormData();
     formData2.append('name', '@xkcd/standing');
@@ -297,7 +297,7 @@ English (\`en\`) messages are required.
     });
 
     await authorizeClientCredentials('blocks:write');
-    const { data } = await request.post('/api/main/blocks', formData2);
+    const { data } = await request.post('/api/blocks', formData2);
 
     expect(data).toStrictEqual({
       error: 'Conflict',
@@ -313,7 +313,7 @@ English (\`en\`) messages are required.
     formData.append('version', '1.32.9');
 
     await authorizeClientCredentials('blocks:write');
-    const { data, status } = await request.post('/api/main/blocks', formData);
+    const { data, status } = await request.post('/api/blocks', formData);
 
     expect(data).toStrictEqual({
       errors: [
@@ -536,7 +536,7 @@ considered invalid.
     );
 
     await authorizeClientCredentials('blocks:write');
-    const response = await request.post('/api/main/blocks', formData);
+    const response = await request.post('/api/blocks', formData);
 
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 201 Created
@@ -624,7 +624,7 @@ considered invalid.
     );
 
     await authorizeClientCredentials('blocks:write');
-    const response = await request.post('/api/main/blocks', formData);
+    const response = await request.post('/api/blocks', formData);
 
     expect(response).toMatchSnapshot();
   });

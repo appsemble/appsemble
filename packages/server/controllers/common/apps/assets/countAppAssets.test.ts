@@ -61,7 +61,7 @@ beforeEach(async () => {
 describe('countAppAssets', () => {
   it('should return 0 if no assets exist', async () => {
     authorizeStudio();
-    const response = await request.get(`/api/common/apps/${app.id}/assets/$count`);
+    const response = await request.get(`/api/apps/${app.id}/assets/$count`);
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 200 OK
       Content-Type: application/json; charset=utf-8
@@ -86,7 +86,7 @@ describe('countAppAssets', () => {
     });
 
     authorizeStudio();
-    const response = await request.get(`/api/common/apps/${app.id}/assets/$count`);
+    const response = await request.get(`/api/apps/${app.id}/assets/$count`);
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 200 OK
       Content-Type: application/json; charset=utf-8
@@ -137,7 +137,7 @@ describe('countAppAssets', () => {
     });
 
     authorizeStudio();
-    const response = await request.get(`/api/common/apps/${app.id}/assets/$count`);
+    const response = await request.get(`/api/apps/${app.id}/assets/$count`);
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 200 OK
       Content-Type: application/json; charset=utf-8
@@ -192,7 +192,7 @@ describe('countAppAssets', () => {
     });
 
     authorizeStudio();
-    const response = await request.get(`/api/common/apps/${app.id}/assets/$count`);
+    const response = await request.get(`/api/apps/${app.id}/assets/$count`);
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 200 OK
       Content-Type: application/json; charset=utf-8

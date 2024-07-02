@@ -64,7 +64,7 @@ beforeEach(async () => {
 describe('getAppAssets', () => {
   it('should return an empty array if no assets exist', async () => {
     authorizeStudio();
-    const response = await request.get(`/api/common/apps/${app.id}/assets`);
+    const response = await request.get(`/api/apps/${app.id}/assets`);
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 200 OK
       Content-Type: application/json; charset=utf-8
@@ -97,7 +97,7 @@ describe('getAppAssets', () => {
     });
 
     authorizeStudio();
-    const response = await request.get<AssetType[]>(`/api/common/apps/${app.id}/assets`);
+    const response = await request.get<AssetType[]>(`/api/apps/${app.id}/assets`);
     expect(response).toMatchInlineSnapshot(
       {
         data: [
@@ -172,7 +172,7 @@ describe('getAppAssets', () => {
     });
 
     authorizeStudio();
-    const response = await request.get<AssetType[]>(`/api/common/apps/${app.id}/assets`);
+    const response = await request.get<AssetType[]>(`/api/apps/${app.id}/assets`);
     expect(response).toMatchInlineSnapshot(
       {
         data: [

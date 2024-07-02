@@ -1,7 +1,7 @@
 import { type OpenAPIV3 } from 'openapi-types';
 
 export const paths: OpenAPIV3.PathsObject = {
-  '/api/common/apps/{appId}/resources/{resourceType}/subscriptions': {
+  '/api/apps/{appId}/resources/{resourceType}/subscriptions': {
     parameters: [
       { $ref: '#/components/parameters/appId' },
       { $ref: '#/components/parameters/resourceType' },
@@ -26,7 +26,7 @@ export const paths: OpenAPIV3.PathsObject = {
       security: [{ studio: [] }, { app: ['openid'] }, {}],
     },
   },
-  '/api/common/apps/{appId}/resources/{resourceType}/{resourceId}/subscriptions': {
+  '/api/apps/{appId}/resources/{resourceType}/{resourceId}/subscriptions': {
     parameters: [
       { $ref: '#/components/parameters/appId' },
       { $ref: '#/components/parameters/resourceType' },

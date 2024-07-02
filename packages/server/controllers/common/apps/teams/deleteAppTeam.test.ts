@@ -68,8 +68,8 @@ describe('deleteAppTeam', () => {
   it('should delete a team', async () => {
     const team = await Team.create({ name: 'A', AppId: app.id });
     authorizeStudio();
-    const response = await request.delete(`/api/common/apps/${app.id}/teams/${team.id}`);
-    const responseB = await request.get(`/api/common/apps/${app.id}/teams`);
+    const response = await request.delete(`/api/apps/${app.id}/teams/${team.id}`);
+    const responseB = await request.get(`/api/apps/${app.id}/teams`);
 
     expect(response.status).toBe(204);
     expect(responseB.data).toStrictEqual([]);
@@ -82,7 +82,7 @@ describe('deleteAppTeam', () => {
     );
     const team = await Team.create({ name: 'A', AppId: app.id });
     authorizeStudio();
-    const response = await request.delete(`/api/common/apps/${app.id}/teams/${team.id}`);
+    const response = await request.delete(`/api/apps/${app.id}/teams/${team.id}`);
 
     expect(response).toMatchObject({
       status: 403,
@@ -113,7 +113,7 @@ describe('deleteAppTeam', () => {
     });
     const team = await Team.create({ name: 'A', AppId: appB.id });
     authorizeStudio();
-    const response = await request.delete(`/api/common/apps/${appB.id}/teams/${team.id}`);
+    const response = await request.delete(`/api/apps/${appB.id}/teams/${team.id}`);
     expect(response).toMatchObject({
       status: 403,
       data: { message: 'User is not part of this organization.' },

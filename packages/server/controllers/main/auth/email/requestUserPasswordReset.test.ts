@@ -21,9 +21,9 @@ beforeAll(async () => {
 describe('requestUserPasswordReset', () => {
   it('should create a password reset token', async () => {
     const data = { email: 'test@example.com', password: 'password', timezone: 'Europe/Amsterdam' };
-    await request.post('/api/main/auth/email/register', data);
+    await request.post('/api/auth/email/register', data);
 
-    const responseA = await request.post('/api/main/auth/email/request-password-reset', {
+    const responseA = await request.post('/api/auth/email/request-password-reset', {
       email: data.email,
     });
 
@@ -34,7 +34,7 @@ describe('requestUserPasswordReset', () => {
       include: [User],
     });
 
-    const responseB = await request.post('/api/main/auth/email/reset-password', {
+    const responseB = await request.post('/api/auth/email/reset-password', {
       token: token.token,
       password: 'newPassword',
     });
@@ -53,7 +53,7 @@ describe('requestUserPasswordReset', () => {
   });
 
   it('should not reveal existing emails', async () => {
-    const response = await request.post('/api/main/auth/email/request-password-reset', {
+    const response = await request.post('/api/auth/email/request-password-reset', {
       email: 'idonotexist@example.com',
     });
 

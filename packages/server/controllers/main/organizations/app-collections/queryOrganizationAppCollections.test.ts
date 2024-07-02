@@ -123,9 +123,7 @@ describe('queryOrganizationAppCollections', () => {
       visibility: 'public',
     });
 
-    const response = await request.get(
-      `/api/main/organizations/${organization.id}/app-collections`,
-    );
+    const response = await request.get(`/api/organizations/${organization.id}/app-collections`);
     expect(response.status).toBe(200);
     for (const { id } of collections) {
       expect(response.data).toContainEqual(
@@ -153,9 +151,7 @@ describe('queryOrganizationAppCollections', () => {
       OrganizationId: organization.id,
       visibility: 'private',
     });
-    const response = await request.get(
-      `/api/main/organizations/${organization.id}/app-collections`,
-    );
+    const response = await request.get(`/api/organizations/${organization.id}/app-collections`);
     expect(response.status).toBe(200);
     expect(response.data).not.toContainEqual(
       expect.objectContaining({
@@ -164,9 +160,7 @@ describe('queryOrganizationAppCollections', () => {
     );
     authorizeStudio(user);
 
-    const response3 = await request.get(
-      `/api/main/organizations/${organization.id}/app-collections`,
-    );
+    const response3 = await request.get(`/api/organizations/${organization.id}/app-collections`);
     expect(response3.status).toBe(200);
     expect(response3.data).toContainEqual(
       expect.objectContaining({

@@ -60,10 +60,7 @@ describe('createAppSeedResource', () => {
     authorizeStudio();
 
     const resource = { foo: 'bar' };
-    const response = await request.post(
-      `/api/main/apps/${app.id}/resources/testResource`,
-      resource,
-    );
+    const response = await request.post(`/api/apps/${app.id}/resources/testResource`, resource);
 
     expect(response).toMatchInlineSnapshot(
       { data: { $author: { id: expect.any(String) } } },
@@ -108,10 +105,7 @@ describe('createAppSeedResource', () => {
     });
 
     const resource = { foo: 'bar' };
-    const response = await request.post(
-      `/api/main/apps/${app.id}/resources/testResource`,
-      resource,
-    );
+    const response = await request.post(`/api/apps/${app.id}/resources/testResource`, resource);
 
     expect(response).toMatchInlineSnapshot(
       { data: { $author: { id: expect.any(String) } } },
@@ -171,7 +165,7 @@ describe('createAppSeedResource', () => {
     authorizeStudio();
 
     const response = await request.post<ResourceType>(
-      `/api/main/apps/${app.id}/resources/testAssets`,
+      `/api/apps/${app.id}/resources/testAssets`,
       createFormData({
         resource: { file: '0' },
         assets: Buffer.alloc(0),
@@ -273,7 +267,7 @@ describe('createAppSeedResource', () => {
     });
 
     const response = await request.post<ResourceType>(
-      `/api/main/apps/${app.id}/resources/testAssets`,
+      `/api/apps/${app.id}/resources/testAssets`,
       createFormData({
         resource: { file: '0' },
         assets: Buffer.alloc(0),

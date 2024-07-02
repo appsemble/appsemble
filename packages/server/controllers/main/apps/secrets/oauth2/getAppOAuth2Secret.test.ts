@@ -74,7 +74,7 @@ describe('getAppOAuth2Secret', () => {
       tokenUrl: 'https://example.com/oauth/token',
       userInfoUrl: 'https://example.com/oauth/userinfo',
     });
-    const response = await request.get(`/api/main/apps/${app.id}/secrets/oauth2/${secret.id}`);
+    const response = await request.get(`/api/apps/${app.id}/secrets/oauth2/${secret.id}`);
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 200 OK
       Content-Type: application/json; charset=utf-8

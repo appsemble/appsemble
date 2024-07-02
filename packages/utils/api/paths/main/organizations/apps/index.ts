@@ -1,7 +1,7 @@
 import { type OpenAPIV3 } from 'openapi-types';
 
 export const paths: OpenAPIV3.PathsObject = {
-  '/api/main/organizations/{organizationId}/apps': {
+  '/api/organizations/{organizationId}/apps': {
     parameters: [{ $ref: '#/components/parameters/organizationId' }],
     get: {
       tags: ['main', 'organization', 'app'],
@@ -34,7 +34,8 @@ export const paths: OpenAPIV3.PathsObject = {
       security: [{ studio: [] }, {}],
     },
   },
-  '/api/main/organization/{organizationId}/apps/import': {
+  // TODO: FIX DUPLICATE
+  '/api/organizations/{organizationId}/apps/import': {
     parameters: [{ $ref: '#/components/parameters/organizationId' }],
     post: {
       tags: ['main', 'app'],

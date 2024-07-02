@@ -68,10 +68,10 @@ describe('patchAppTeam', () => {
   it('should update the name of the team', async () => {
     const team = await Team.create({ name: 'A', AppId: app.id });
     authorizeStudio();
-    const response = await request.patch(`/api/common/apps/${app.id}/teams/${team.id}`, {
+    const response = await request.patch(`/api/apps/${app.id}/teams/${team.id}`, {
       name: 'B',
     });
-    const responseB = await request.get<Team>(`/api/common/apps/${app.id}/teams/${team.id}`);
+    const responseB = await request.get<Team>(`/api/apps/${app.id}/teams/${team.id}`);
 
     expect(response).toMatchObject({ status: 200, data: { id: team.id, name: 'B' } });
     expect(responseB.data.name).toBe('B');
@@ -80,11 +80,11 @@ describe('patchAppTeam', () => {
   it('should update annotations', async () => {
     const team = await Team.create({ name: 'A', AppId: app.id });
     authorizeStudio();
-    const response = await request.patch(`/api/common/apps/${app.id}/teams/${team.id}`, {
+    const response = await request.patch(`/api/apps/${app.id}/teams/${team.id}`, {
       name: 'B',
       annotations: { testKey: 'foo' },
     });
-    const responseB = await request.get(`/api/common/apps/${app.id}/teams/${team.id}`);
+    const responseB = await request.get(`/api/apps/${app.id}/teams/${team.id}`);
 
     expect(response).toMatchObject({
       status: 200,
@@ -104,7 +104,7 @@ describe('patchAppTeam', () => {
     );
     const team = await Team.create({ name: 'A', AppId: app.id });
     authorizeStudio();
-    const response = await request.patch(`/api/common/apps/${app.id}/teams/${team.id}`, {
+    const response = await request.patch(`/api/apps/${app.id}/teams/${team.id}`, {
       name: 'B',
     });
 
@@ -116,7 +116,7 @@ describe('patchAppTeam', () => {
 
   it('should not update a non-existent team', async () => {
     authorizeStudio();
-    const response = await request.patch(`/api/common/apps/${app.id}/teams/80000`, { name: 'B' });
+    const response = await request.patch(`/api/apps/${app.id}/teams/80000`, { name: 'B' });
 
     expect(response).toMatchObject({ status: 404, data: { message: 'Team not found.' } });
   });
@@ -147,7 +147,7 @@ describe('patchAppTeam', () => {
     });
     const team = await Team.create({ name: 'A', AppId: appB.id });
     authorizeStudio();
-    const response = await request.patch(`/api/common/apps/${appB.id}/teams/${team.id}`, {
+    const response = await request.patch(`/api/apps/${appB.id}/teams/${team.id}`, {
       name: 'B',
     });
 

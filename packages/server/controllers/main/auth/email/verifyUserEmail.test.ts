@@ -19,7 +19,7 @@ beforeAll(async () => {
 
 describe('verifyUserEmail', () => {
   it('should verify existing email addresses', async () => {
-    await request.post('/api/main/auth/email/register', {
+    await request.post('/api/auth/email/register', {
       email: 'test@example.com',
       password: 'password',
       timezone: 'Europe/Amsterdam',
@@ -29,7 +29,7 @@ describe('verifyUserEmail', () => {
     expect(email.verified).toBe(false);
     expect(email.key).not.toBeNull();
 
-    const response = await request.post('/api/main/auth/email/verify', { token: email.key });
+    const response = await request.post('/api/auth/email/verify', { token: email.key });
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 200 OK
       Content-Type: text/plain; charset=utf-8
@@ -43,9 +43,9 @@ describe('verifyUserEmail', () => {
   });
 
   it('should not verify empty or invalid keys', async () => {
-    const responseA = await request.post('/api/main/auth/email/verify');
-    const responseB = await request.post('/api/main/auth/email/verify', { token: null });
-    const responseC = await request.post('/api/main/auth/email/verify', { token: 'invalidkey' });
+    const responseA = await request.post('/api/auth/email/verify');
+    const responseB = await request.post('/api/auth/email/verify', { token: null });
+    const responseC = await request.post('/api/auth/email/verify', { token: 'invalidkey' });
 
     expect(responseA).toMatchInlineSnapshot(`
       HTTP/1.1 415 Unsupported Media Type

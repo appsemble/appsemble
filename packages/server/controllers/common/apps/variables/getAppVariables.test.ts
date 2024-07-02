@@ -84,7 +84,7 @@ describe('getAppVariables', () => {
       AppId: app.id,
     });
 
-    const response = await request.get(`/api/common/apps/${app.id}/variables`);
+    const response = await request.get(`/api/apps/${app.id}/variables`);
 
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 200 OK
@@ -107,7 +107,7 @@ describe('getAppVariables', () => {
 
   it('should throw status 404 for unknown apps', async () => {
     authorizeStudio();
-    const response = await request.get('/api/common/apps/123/variables');
+    const response = await request.get('/api/apps/123/variables');
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 404 Not Found
       Content-Type: application/json; charset=utf-8

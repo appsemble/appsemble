@@ -39,7 +39,7 @@ beforeEach(async () => {
 describe('updateCurrentUser', () => {
   it('should update the user display name', async () => {
     authorizeStudio();
-    const response = await request.put('/api/main/users/current', { name: 'John' });
+    const response = await request.put('/api/users/current', { name: 'John' });
 
     expect(response).toMatchObject({
       status: 200,
@@ -55,7 +55,7 @@ describe('updateCurrentUser', () => {
     });
 
     authorizeStudio();
-    const response = await request.put('/api/main/users/current', {
+    const response = await request.put('/api/users/current', {
       name: 'Test User',
       email: 'test2@example.com',
     });
@@ -69,7 +69,7 @@ describe('updateCurrentUser', () => {
 
   it('should not set a non-existent email as primary email', async () => {
     authorizeStudio();
-    const response = await request.put('/api/main/users/current', {
+    const response = await request.put('/api/users/current', {
       name: 'Test User',
       email: 'test2@example.com',
     });
@@ -86,9 +86,9 @@ describe('updateCurrentUser', () => {
 
   it('should not set an unverified email as primary email', async () => {
     authorizeStudio();
-    await request.post('/api/main/users/current/emails', { email: 'test2@example.com' });
+    await request.post('/api/users/current/emails', { email: 'test2@example.com' });
 
-    const response = await request.put('/api/main/users/current', {
+    const response = await request.put('/api/users/current', {
       name: 'Test User',
       email: 'test2@example.com',
     });

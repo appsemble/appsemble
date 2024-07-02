@@ -1,7 +1,7 @@
 import { type OpenAPIV3 } from 'openapi-types';
 
 export const paths: OpenAPIV3.PathsObject = {
-  '/api/common/apps/{appId}/members': {
+  '/api/apps/{appId}/members': {
     parameters: [
       { $ref: '#/components/parameters/appId' },
       { in: 'query', name: 'demo', description: 'Whether to fetch demo app members' },
@@ -28,7 +28,7 @@ export const paths: OpenAPIV3.PathsObject = {
       security: [{ studio: [] }, { app: ['openid'] }],
     },
   },
-  '/api/common/apps/{appId}/members/{memberId}': {
+  '/api/apps/{appId}/members/{memberId}': {
     parameters: [
       { $ref: '#/components/parameters/appId' },
       {
@@ -108,7 +108,7 @@ export const paths: OpenAPIV3.PathsObject = {
       security: [{ studio: [] }],
     },
   },
-  '/api/common/apps/{appId}/members/{memberId}/picture': {
+  '/api/apps/{appId}/members/{memberId}/picture': {
     parameters: [
       { $ref: '#/components/parameters/appId' },
       {

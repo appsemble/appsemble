@@ -1,7 +1,7 @@
 import { type OpenAPIV3 } from 'openapi-types';
 
 export const paths: OpenAPIV3.PathsObject = {
-  '/api/main/users/current/emails': {
+  '/api/users/current/emails': {
     get: {
       tags: ['main', 'user', 'current-user', 'email'],
       description: "List email addresses registered to logged in user's account.",

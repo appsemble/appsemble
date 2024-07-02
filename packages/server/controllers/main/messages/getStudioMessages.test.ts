@@ -13,7 +13,7 @@ beforeAll(async () => {
 
 describe('getStudioMessages', () => {
   it('should return all translations for a language', async () => {
-    const result = await request.get<AppMessages>('/api/main/messages/nl');
+    const result = await request.get<AppMessages>('/api/messages/nl');
     const keys = Object.keys(result.data.messages);
     expect(result).toMatchObject({ status: 200, data: { language: 'nl' } });
     expect(
@@ -22,7 +22,7 @@ describe('getStudioMessages', () => {
   });
 
   it('should filter based on the context given', async () => {
-    const resultStudio = await request.get<AppMessages>('/api/main/messages/nl');
+    const resultStudio = await request.get<AppMessages>('/api/messages/nl');
     expect(
       Object.keys(resultStudio.data.messages).every(
         (key) => key.startsWith('studio') || key.startsWith('react-components'),
@@ -31,12 +31,12 @@ describe('getStudioMessages', () => {
   });
 
   it('should return empty messages if requesting the default language', async () => {
-    const result = await request('/api/main/messages/en');
+    const result = await request('/api/messages/en');
     expect(result).toMatchObject({ status: 200, data: { language: 'en', messages: {} } });
   });
 
   it('should return 404 on languages that aren’t supported', async () => {
-    const result = await request('/api/main/messages/ko-kr');
+    const result = await request('/api/messages/ko-kr');
     expect(result).toMatchObject({
       status: 404,
       data: { message: 'Language “ko-kr” could not be found' },
@@ -44,7 +44,7 @@ describe('getStudioMessages', () => {
   });
 
   it('should return 400 on misformatted languages', async () => {
-    const result = await request('/api/main/messages/invalid');
+    const result = await request('/api/messages/invalid');
     expect(result).toMatchObject({
       status: 400,
       data: { message: 'Language code “invalid” is invalid' },

@@ -45,19 +45,19 @@ beforeEach(async () => {
 describe('deleteAppMessages', () => {
   it('should delete existing messages', async () => {
     authorizeStudio();
-    await request.post(`/api/main/apps/${app.id}/messages`, {
+    await request.post(`/api/apps/${app.id}/messages`, {
       language: 'en',
       messages: { messageIds: { test: 'Test.' } },
     });
 
-    const response = await request.delete(`/api/main/apps/${app.id}/messages/en`);
+    const response = await request.delete(`/api/apps/${app.id}/messages/en`);
 
     expect(response).toMatchInlineSnapshot('HTTP/1.1 204 No Content');
   });
 
   it('should return 404 when deleting non-existant messages', async () => {
     authorizeStudio();
-    const response = await request.delete(`/api/main/apps/${app.id}/messages/en`);
+    const response = await request.delete(`/api/apps/${app.id}/messages/en`);
 
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 404 Not Found

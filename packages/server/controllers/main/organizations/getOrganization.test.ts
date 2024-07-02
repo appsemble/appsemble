@@ -42,7 +42,7 @@ beforeEach(async () => {
 describe('getOrganization', () => {
   it('should fetch an organization', async () => {
     authorizeStudio();
-    const response = await request.get('/api/main/organizations/testorganization');
+    const response = await request.get('/api/organizations/testorganization');
 
     expect(response).toMatchObject({
       status: 200,
@@ -56,7 +56,7 @@ describe('getOrganization', () => {
 
   it('should not fetch a non-existent organization', async () => {
     authorizeStudio();
-    const response = await request.get('/api/main/organizations/foo');
+    const response = await request.get('/api/organizations/foo');
 
     expect(response).toMatchObject({
       status: 404,

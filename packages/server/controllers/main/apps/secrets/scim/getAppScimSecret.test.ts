@@ -40,7 +40,7 @@ beforeEach(async () => {
 
 describe('getAppScimSecret', () => {
   it('should be secure', async () => {
-    const response = await request.get(`/api/main/apps/${app.id}/secrets/scim`);
+    const response = await request.get(`/api/apps/${app.id}/secrets/scim`);
 
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 401 Unauthorized
@@ -52,7 +52,7 @@ describe('getAppScimSecret', () => {
 
   it('should get the SCIM secret', async () => {
     authorizeStudio();
-    const response = await request.get(`/api/main/apps/${app.id}/secrets/scim`);
+    const response = await request.get(`/api/apps/${app.id}/secrets/scim`);
 
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 200 OK
@@ -68,7 +68,7 @@ describe('getAppScimSecret', () => {
     authorizeStudio();
     await app.update({ scimEnabled: true, scimToken: encrypt('1234', argv.aesSecret) });
 
-    const response = await request.get(`/api/main/apps/${app.id}/secrets/scim`);
+    const response = await request.get(`/api/apps/${app.id}/secrets/scim`);
 
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 200 OK

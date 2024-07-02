@@ -53,7 +53,7 @@ afterAll(() => {
 
 describe('getEntityId', () => {
   it('should handle if no secret can be found', async () => {
-    const response = await request.get('/api/main/apps/23/saml/93/metadata.xml');
+    const response = await request.get('/api/apps/23/saml/93/metadata.xml');
 
     expect(response).toMatchObject({
       status: 404,
@@ -62,14 +62,14 @@ describe('getEntityId', () => {
   });
 
   it('should serve the metadata XML', async () => {
-    const response = await request.get(`/api/main/apps/${app.id}/saml/${secret.id}/metadata.xml`);
+    const response = await request.get(`/api/apps/${app.id}/saml/${secret.id}/metadata.xml`);
 
     expect(response).toMatchObject({
       status: 200,
       data:
         '<?xml version="1.0" encoding="utf-8"?>' +
         '<md:EntityDescriptor' +
-        ` entityID="http://localhost/api/main/apps/${app.id}/saml/${secret.id}/metadata.xml"` +
+        ` entityID="http://localhost/api/apps/${app.id}/saml/${secret.id}/metadata.xml"` +
         ' xmlns:md="urn:oasis:names:tc:SAML:2.0:metadata"' +
         '>' +
         '<md:SPSSODescriptor' +
@@ -105,7 +105,7 @@ describe('getEntityId', () => {
         '</md:KeyDescriptor>' +
         '<md:AssertionConsumerService' +
         ' Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST"' +
-        ` Location="http://localhost/api/main/apps/${app.id}/saml/${secret.id}/acs"` +
+        ` Location="http://localhost/api/apps/${app.id}/saml/${secret.id}/acs"` +
         '/>' +
         '</md:SPSSODescriptor>' +
         '</md:EntityDescriptor>',
@@ -113,16 +113,14 @@ describe('getEntityId', () => {
   });
 
   it('should ignore query parameters', async () => {
-    const response = await request.get(
-      `/api/main/apps/${app.id}/saml/${secret.id}/metadata.xml?foo=1`,
-    );
+    const response = await request.get(`/api/apps/${app.id}/saml/${secret.id}/metadata.xml?foo=1`);
 
     expect(response).toMatchObject({
       status: 200,
       data:
         '<?xml version="1.0" encoding="utf-8"?>' +
         '<md:EntityDescriptor' +
-        ` entityID="http://localhost/api/main/apps/${app.id}/saml/${secret.id}/metadata.xml"` +
+        ` entityID="http://localhost/api/apps/${app.id}/saml/${secret.id}/metadata.xml"` +
         ' xmlns:md="urn:oasis:names:tc:SAML:2.0:metadata"' +
         '>' +
         '<md:SPSSODescriptor' +
@@ -158,7 +156,7 @@ describe('getEntityId', () => {
         '</md:KeyDescriptor>' +
         '<md:AssertionConsumerService' +
         ' Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST"' +
-        ` Location="http://localhost/api/main/apps/${app.id}/saml/${secret.id}/acs"` +
+        ` Location="http://localhost/api/apps/${app.id}/saml/${secret.id}/acs"` +
         '/>' +
         '</md:SPSSODescriptor>' +
         '</md:EntityDescriptor>',

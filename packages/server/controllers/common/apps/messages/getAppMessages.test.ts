@@ -59,12 +59,12 @@ beforeEach(async () => {
 describe('getAppMessages', () => {
   it('should return the messages for an existing language', async () => {
     authorizeStudio();
-    await request.post(`/api/main/apps/${app.id}/messages`, {
+    await request.post(`/api/apps/${app.id}/messages`, {
       language: 'en-gb',
       messages: { messageIds: { test: 'Test.' } },
     });
 
-    const response = await request.get(`/api/common/apps/${app.id}/messages/en-GB`);
+    const response = await request.get(`/api/apps/${app.id}/messages/en-GB`);
     expect(response).toMatchInlineSnapshot(
       { data: { messages: { core: expect.any(Object) } } },
       `
@@ -90,7 +90,7 @@ describe('getAppMessages', () => {
   });
 
   it('should return a 404 if a language is not supported', async () => {
-    const response = await request.get(`/api/common/apps/${app.id}/messages/en-GB`);
+    const response = await request.get(`/api/apps/${app.id}/messages/en-GB`);
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 404 Not Found
       Content-Type: application/json; charset=utf-8
@@ -110,7 +110,7 @@ describe('getAppMessages', () => {
         defaultLanguage: 'nl-nl',
       },
     });
-    const response = await request.get(`/api/common/apps/${app.id}/messages/nl-nl`);
+    const response = await request.get(`/api/apps/${app.id}/messages/nl-nl`);
     expect(response).toMatchInlineSnapshot(
       { data: { messages: { core: expect.any(Object) } } },
       `
@@ -134,7 +134,7 @@ describe('getAppMessages', () => {
   });
 
   it('should return a 200 if a en is not supported and is default language unset', async () => {
-    const response = await request.get(`/api/common/apps/${app.id}/messages/en`);
+    const response = await request.get(`/api/apps/${app.id}/messages/en`);
     expect(response).toMatchInlineSnapshot(
       { data: { messages: { core: expect.any(Object) } } },
       `
@@ -159,17 +159,17 @@ describe('getAppMessages', () => {
 
   it('should merge messages with the base language if merge is enabled', async () => {
     authorizeStudio();
-    await request.post(`/api/main/apps/${app.id}/messages`, {
+    await request.post(`/api/apps/${app.id}/messages`, {
       language: 'en',
       messages: { messageIds: { test: 'Test.', bla: 'bla' } },
     });
 
-    await request.post(`/api/main/apps/${app.id}/messages`, {
+    await request.post(`/api/apps/${app.id}/messages`, {
       language: 'en-gb',
       messages: { messageIds: { bla: 'blah' } },
     });
 
-    const response = await request.get(`/api/common/apps/${app.id}/messages/en-GB?merge=true`);
+    const response = await request.get(`/api/apps/${app.id}/messages/en-GB?merge=true`);
 
     expect(response).toMatchInlineSnapshot(
       { data: { messages: { core: expect.any(Object) } } },
@@ -249,7 +249,7 @@ describe('getAppMessages', () => {
       },
     });
 
-    const response = await request.get(`/api/common/apps/${app.id}/messages/en`);
+    const response = await request.get(`/api/apps/${app.id}/messages/en`);
     expect(response).toMatchInlineSnapshot(
       { data: { messages: { core: expect.any(Object) } } },
       `
@@ -325,7 +325,7 @@ describe('getAppMessages', () => {
       },
     });
 
-    const response = await request.get(`/api/common/apps/${app.id}/messages/nl`);
+    const response = await request.get(`/api/apps/${app.id}/messages/nl`);
     expect(response).toMatchInlineSnapshot(
       { data: { messages: { core: expect.any(Object) } } },
       `
@@ -393,7 +393,7 @@ describe('getAppMessages', () => {
       },
     });
 
-    const response = await request.get(`/api/common/apps/${app.id}/messages/en-gb`);
+    const response = await request.get(`/api/apps/${app.id}/messages/en-gb`);
     expect(response).toMatchInlineSnapshot(
       { data: { messages: { core: expect.any(Object) } } },
       `
@@ -435,7 +435,7 @@ describe('getAppMessages', () => {
       messages: { messageIds: { test: 'test translation' } },
     });
 
-    const response = await request.get(`/api/common/apps/${app.id}/messages/nl`);
+    const response = await request.get(`/api/apps/${app.id}/messages/nl`);
     expect(response).toMatchObject({
       status: 200,
       data: {
@@ -483,7 +483,7 @@ describe('getAppMessages', () => {
     );
 
     await authorizeClientCredentials('blocks:write');
-    await request.post('/api/main/blocks', formData);
+    await request.post('/api/blocks', formData);
     await BlockVersion.findOne({
       where: { version: '1.32.9', OrganizationId: 'xkcd', name: 'standing' },
       include: [BlockMessages],
@@ -508,7 +508,7 @@ describe('getAppMessages', () => {
       },
     });
 
-    const response = await request.get(`/api/common/apps/${app.id}/messages/en?override=false`);
+    const response = await request.get(`/api/apps/${app.id}/messages/en?override=false`);
     expect(response).toMatchObject({
       status: 200,
       data: {
@@ -570,7 +570,7 @@ describe('getAppMessages', () => {
     );
 
     await authorizeClientCredentials('blocks:write');
-    await request.post('/api/main/blocks', formData);
+    await request.post('/api/blocks', formData);
     await BlockVersion.findOne({
       where: { version: '1.32.9', OrganizationId: 'xkcd', name: 'standing' },
       include: [BlockMessages],
@@ -597,7 +597,7 @@ describe('getAppMessages', () => {
       },
     });
 
-    const response = await request.get(`/api/common/apps/${app.id}/messages/en`);
+    const response = await request.get(`/api/apps/${app.id}/messages/en`);
     expect(response).toMatchObject({
       status: 200,
       data: {

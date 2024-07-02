@@ -4,7 +4,7 @@ import { paths as versionsPaths } from './versions/index.js';
 
 export const paths: OpenAPIV3.PathsObject = {
   ...versionsPaths,
-  '/api/common/blocks': {
+  '/api/blocks': {
     get: {
       tags: ['common', 'block'],
       description: 'Get all block’s latest definitions.',
@@ -27,7 +27,7 @@ export const paths: OpenAPIV3.PathsObject = {
       security: [{ studio: [] }, {}],
     },
   },
-  '/api/common/blocks/@{organizationId}/{blockId}': {
+  '/api/blocks/@{organizationId}/{blockId}': {
     parameters: [
       { $ref: '#/components/parameters/organizationId' },
       { $ref: '#/components/parameters/blockId' },

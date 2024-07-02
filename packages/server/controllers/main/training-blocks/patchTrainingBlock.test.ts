@@ -63,7 +63,7 @@ describe('patchTrainingBlock', () => {
 
     authorizeStudio();
     const response = await request.patch<TrainingBlockType>(
-      `/api/main/training-blocks/${block.id}`,
+      `/api/training-blocks/${block.id}`,
       createFormData({
         documentationLink: 'https://appsemble.app/en/docs',
       }),
@@ -100,7 +100,7 @@ describe('patchTrainingBlock', () => {
 
     authorizeStudio();
     const response = await request.patch<TrainingBlockType>(
-      `/api/main/training-blocks/${block.id}`,
+      `/api/training-blocks/${block.id}`,
       createFormData({
         documentationLink: 'https://appsemble.app/en/docs',
       }),
@@ -131,7 +131,7 @@ describe('patchTrainingBlock', () => {
 
     authorizeStudio();
     const response = await request.patch<TrainingBlockType>(
-      `/api/main/training-blocks/${block.id}`,
+      `/api/training-blocks/${block.id}`,
       createFormData({
         documentationLink: 'https://appsemble.app/en/docs',
       }),

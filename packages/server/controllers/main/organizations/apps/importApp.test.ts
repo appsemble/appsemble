@@ -86,7 +86,7 @@ describe('importApp', () => {
     authorizeStudio();
 
     const response = await request.post(
-      `/api/main/organization/${organization.id}/apps/import`,
+      `/api/organizations/${organization.id}/apps/import`,
       content,
       {
         headers: {
@@ -140,7 +140,7 @@ describe('importApp', () => {
     authorizeStudio();
 
     const response = await request.post(
-      `/api/main/organization/${organization.id}/apps/import`,
+      `/api/organizations/${organization.id}/apps/import`,
       content,
       {
         headers: {
@@ -396,7 +396,7 @@ describe('importApp', () => {
     authorizeStudio();
 
     const response = await request.post(
-      `/api/main/organization/${organization.id}/apps/import`,
+      `/api/organizations/${organization.id}/apps/import`,
       content,
       {
         headers: {

@@ -63,7 +63,7 @@ describe('getAppScimUser', () => {
       timezone: 'Europe/Amsterdam',
     });
 
-    const response = await request.get(`/api/main/apps/${app.id}/scim/Users/${member.id}`);
+    const response = await request.get(`/api/apps/${app.id}/scim/Users/${member.id}`);
 
     expect(response).toMatchInlineSnapshot(
       { data: { id: expect.any(String), meta: { location: expect.any(String) } } },
@@ -106,7 +106,7 @@ describe('getAppScimUser', () => {
     });
     await TeamMember.create({ TeamId: team.id, AppMemberId: member.id });
 
-    const response = await request.get(`/api/main/apps/${app.id}/scim/Users/${member.id}`);
+    const response = await request.get(`/api/apps/${app.id}/scim/Users/${member.id}`);
 
     expect(response).toMatchInlineSnapshot(
       { data: { id: expect.any(String), meta: { location: expect.any(String) } } },

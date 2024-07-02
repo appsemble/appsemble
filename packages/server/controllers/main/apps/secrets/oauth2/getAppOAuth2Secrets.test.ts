@@ -77,7 +77,7 @@ describe('getAppOAuth2Secrets', () => {
     });
     authorizeStudio();
     const response = await request.get<OAuth2ClientCredentials[]>(
-      `/api/main/apps/${app.id}/secrets/oauth2`,
+      `/api/apps/${app.id}/secrets/oauth2`,
     );
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 200 OK
@@ -105,7 +105,7 @@ describe('getAppOAuth2Secrets', () => {
 
   it('should throw 404 if no app is found', async () => {
     authorizeStudio();
-    const response = await request.get('/api/main/apps/99999/secrets/oauth2');
+    const response = await request.get('/api/apps/99999/secrets/oauth2');
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 404 Not Found
       Content-Type: application/json; charset=utf-8
@@ -119,7 +119,7 @@ describe('getAppOAuth2Secrets', () => {
   });
 
   it('should require a login with Appsemble Studio', async () => {
-    const response = await request.get(`/api/main/apps/${app.id}/secrets/oauth2`);
+    const response = await request.get(`/api/apps/${app.id}/secrets/oauth2`);
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 401 Unauthorized
       Content-Type: text/plain; charset=utf-8

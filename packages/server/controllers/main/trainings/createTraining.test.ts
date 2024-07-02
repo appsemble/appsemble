@@ -44,7 +44,7 @@ describe('createTraining', () => {
   it('should not allow anyone without enough permissions to create trainings', async () => {
     await OrganizationMember.update({ role: 'Member' }, { where: { UserId: user.id } });
     authorizeStudio();
-    const response = await request.post<TrainingType>('/api/main/trainings', {
+    const response = await request.post<TrainingType>('/api/trainings', {
       title: 'test',
       description: 'test description',
       competences: ['basics'],
@@ -69,7 +69,7 @@ describe('createTraining', () => {
     });
     await OrganizationMember.update({ OrganizationId: 'test' }, { where: { UserId: user.id } });
     authorizeStudio();
-    const response = await request.post<TrainingType>('/api/main/trainings', {
+    const response = await request.post<TrainingType>('/api/trainings', {
       title: 'test',
       description: 'test description',
       competences: ['basics'],
@@ -89,14 +89,14 @@ describe('createTraining', () => {
 
   it('should allow a user with sufficient permissions to create trainings', async () => {
     authorizeStudio();
-    const response = await request.post<TrainingType>('/api/main/trainings', {
+    const response = await request.post<TrainingType>('/api/trainings', {
       title: 'test',
       description: 'test description',
       competences: ['basics'],
       difficultyLevel: 2,
     });
     expect(response.status).toBe(201);
-    const training = await request.get('/api/main/trainings/1');
+    const training = await request.get('/api/trainings/1');
     expect(training).toMatchObject({
       status: 200,
       data: {

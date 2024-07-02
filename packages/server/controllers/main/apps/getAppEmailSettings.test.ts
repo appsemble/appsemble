@@ -55,7 +55,7 @@ describe('getAppEmailSettings', () => {
     });
 
     authorizeStudio(user);
-    const response = await request.get(`/api/main/apps/${app.id}/email`);
+    const response = await request.get(`/api/apps/${app.id}/email`);
 
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 200 OK
@@ -87,7 +87,7 @@ describe('getAppEmailSettings', () => {
     });
 
     authorizeStudio(user);
-    const response = await request.get(`/api/main/apps/${app.id}/email`);
+    const response = await request.get(`/api/apps/${app.id}/email`);
 
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 200 OK
@@ -120,7 +120,7 @@ describe('getAppEmailSettings', () => {
     await OrganizationMember.update({ role: 'AppEditor' }, { where: { UserId: user.id } });
 
     authorizeStudio(user);
-    const response = await request.get(`/api/main/apps/${app.id}/email`);
+    const response = await request.get(`/api/apps/${app.id}/email`);
 
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 403 Forbidden

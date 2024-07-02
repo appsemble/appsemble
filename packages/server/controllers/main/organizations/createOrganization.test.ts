@@ -48,7 +48,7 @@ describe('createOrganization', () => {
   it('should create a new organization', async () => {
     authorizeStudio();
     const response = await request.post(
-      '/api/main/organizations',
+      '/api/organizations',
       createFormData({ id: 'foo', name: 'Foooo' }),
     );
 
@@ -76,7 +76,7 @@ describe('createOrganization', () => {
     const formData = createFormData({ id: 'foo', name: 'Foooo' });
     const buffer = await readFixture('testpattern.png');
     formData.append('icon', buffer, { filename: 'icon.png' });
-    const response = await request.post('/api/main/organizations', formData);
+    const response = await request.post('/api/organizations', formData);
 
     expect(response).toMatchObject({
       status: 201,
@@ -102,7 +102,7 @@ describe('createOrganization', () => {
 
     authorizeStudio();
     const response = await request.post(
-      '/api/main/organizations',
+      '/api/organizations',
       createFormData({ id: 'foo', name: 'Foooo' }),
     );
 
@@ -121,10 +121,10 @@ describe('createOrganization', () => {
     vi.useRealTimers();
 
     authorizeStudio();
-    await request.post('/api/main/organizations', createFormData({ id: 'foo', name: 'Foooo' }));
+    await request.post('/api/organizations', createFormData({ id: 'foo', name: 'Foooo' }));
 
     const response = await request.post(
-      '/api/main/organizations',
+      '/api/organizations',
       createFormData({ id: 'foo', name: 'Foooo' }),
     );
 
@@ -139,7 +139,7 @@ describe('createOrganization', () => {
     async (blockedName) => {
       authorizeStudio();
       const response = await request.post(
-        '/api/main/organizations',
+        '/api/organizations',
         createFormData({ id: blockedName }),
       );
       expect(response).toMatchObject({

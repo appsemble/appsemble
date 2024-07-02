@@ -24,7 +24,7 @@ export const paths: OpenAPIV3.PathsObject = {
   ...trainingBlocksPaths,
   ...trainingsPaths,
   ...usersPaths,
-  '/api/main/health': {
+  '/api/health': {
     get: {
       tags: ['main'],
       description: 'Check whether or not the API is healthy',
@@ -43,7 +43,7 @@ export const paths: OpenAPIV3.PathsObject = {
       },
     },
   },
-  '/api/main/ssl': {
+  '/api/ssl': {
     get: {
       tags: ['main'],
       description: 'Check the SSL certificate status for the given domain names.',
@@ -73,7 +73,7 @@ export const paths: OpenAPIV3.PathsObject = {
       },
     },
   },
-  '/api/main/timezones': {
+  '/api/timezones': {
     get: {
       tags: ['main'],
       description: 'Get a list of timezones supported by the API',

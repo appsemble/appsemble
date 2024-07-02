@@ -57,7 +57,7 @@ describe('getAppCollectionExpertProfileImage', () => {
     });
 
     const response = await request.get(
-      `/api/main/app-collections/${collection.id}/expert/profile-image`,
+      `/api/app-collections/${collection.id}/expert/profile-image`,
       {
         responseType: 'arraybuffer',
       },

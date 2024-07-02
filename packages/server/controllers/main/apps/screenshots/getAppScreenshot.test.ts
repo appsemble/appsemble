@@ -50,7 +50,7 @@ afterAll(() => {
 
 describe('getAppScreenshot', () => {
   it('should throw a 404 if the app doesn’t exist', async () => {
-    const response = await request.get('/api/main/apps/1/screenshots/1');
+    const response = await request.get('/api/apps/1/screenshots/1');
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 404 Not Found
       Content-Type: application/json; charset=utf-8
@@ -70,7 +70,7 @@ describe('getAppScreenshot', () => {
       vapidPrivateKey: '',
       vapidPublicKey: '',
     });
-    const response = await request.get(`/api/main/apps/${app.id}/screenshots/1`);
+    const response = await request.get(`/api/apps/${app.id}/screenshots/1`);
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 404 Not Found
       Content-Type: application/json; charset=utf-8
@@ -98,7 +98,7 @@ describe('getAppScreenshot', () => {
       height: 247,
       mime: 'image/png',
     });
-    const response = await request.get(`/api/main/apps/${app.id}/screenshots/${screenshot.id}`, {
+    const response = await request.get(`/api/apps/${app.id}/screenshots/${screenshot.id}`, {
       responseType: 'arraybuffer',
     });
     expect(response).toMatchInlineSnapshot(

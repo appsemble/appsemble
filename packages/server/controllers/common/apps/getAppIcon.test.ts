@@ -52,7 +52,7 @@ describe('getAppIcon', () => {
       vapidPrivateKey: 'b',
       OrganizationId: organization.id,
     });
-    const response = await request.get(`/api/common/apps/${app.id}/icon`, {
+    const response = await request.get(`/api/apps/${app.id}/icon`, {
       responseType: 'arraybuffer',
     });
     expect(response).toMatchInlineSnapshot(
@@ -76,7 +76,7 @@ describe('getAppIcon', () => {
       vapidPrivateKey: 'b',
       OrganizationId: organization.id,
     });
-    const response = await request.get(`/api/common/apps/${app.id}/icon`, {
+    const response = await request.get(`/api/apps/${app.id}/icon`, {
       params: { maskable: 'true' },
       responseType: 'arraybuffer',
     });
@@ -101,7 +101,7 @@ describe('getAppIcon', () => {
       vapidPrivateKey: 'b',
       OrganizationId: organization.id,
     });
-    const response = await request.get(`/api/common/apps/${app.id}/icon`, {
+    const response = await request.get(`/api/apps/${app.id}/icon`, {
       params: { maskable: 'true' },
       responseType: 'arraybuffer',
     });
@@ -127,7 +127,7 @@ describe('getAppIcon', () => {
       vapidPrivateKey: 'b',
       OrganizationId: organization.id,
     });
-    const response = await request.get(`/api/common/apps/${app.id}/icon`, {
+    const response = await request.get(`/api/apps/${app.id}/icon`, {
       params: { maskable: 'true' },
       responseType: 'arraybuffer',
     });
@@ -152,7 +152,7 @@ describe('getAppIcon', () => {
       vapidPrivateKey: 'b',
       OrganizationId: organization.id,
     });
-    const response = await request.get(`/api/common/apps/${app.id}/icon`, {
+    const response = await request.get(`/api/apps/${app.id}/icon`, {
       params: { maskable: 'true' },
       responseType: 'arraybuffer',
     });

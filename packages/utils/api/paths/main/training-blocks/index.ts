@@ -1,7 +1,7 @@
 import { type OpenAPIV3 } from 'openapi-types';
 
 export const paths: OpenAPIV3.PathsObject = {
-  '/api/main/training-blocks/{trainingBlockId}': {
+  '/api/training-blocks/{trainingBlockId}': {
     parameters: [{ $ref: '#/components/parameters/trainingBlockId' }],
     patch: {
       tags: ['main', 'training-block'],

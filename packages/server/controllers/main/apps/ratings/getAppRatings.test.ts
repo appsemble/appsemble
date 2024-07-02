@@ -62,7 +62,7 @@ afterAll(() => {
 
 describe('getAppRatings', () => {
   it('should return an empty array', async () => {
-    const response = await request.get(`/api/main/apps/${app.id}/ratings`);
+    const response = await request.get(`/api/apps/${app.id}/ratings`);
 
     expect(response.data).toStrictEqual([]);
   });
@@ -82,7 +82,7 @@ describe('getAppRatings', () => {
       description: 'This is also a test rating',
     });
 
-    const response = await request.get(`/api/main/apps/${app.id}/ratings`);
+    const response = await request.get(`/api/apps/${app.id}/ratings`);
 
     expect(response).toMatchInlineSnapshot(
       {

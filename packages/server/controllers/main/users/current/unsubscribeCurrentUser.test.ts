@@ -44,7 +44,7 @@ describe('unsubscribeCurrentUser', () => {
 
   it('should unsubscribe a user already subscribed to the newsletter', async () => {
     const response = await request.post(
-      '/api/main/users/current/unsubscribe',
+      '/api/users/current/unsubscribe',
       { email: user.primaryEmail },
       {
         headers: { authorization: `Bearer ${argv.adminApiSecret}` },
@@ -71,7 +71,7 @@ describe('unsubscribeCurrentUser', () => {
       }),
     ];
     const response = await request.post(
-      '/api/main/users/current/unsubscribe',
+      '/api/users/current/unsubscribe',
       { email: user2.primaryEmail },
       {
         headers: { authorization: `Bearer ${argv.adminApiSecret}` },
@@ -83,7 +83,7 @@ describe('unsubscribeCurrentUser', () => {
 
   it('should return 404 if user to unsubscribe does not exist', async () => {
     const response = await request.post(
-      '/api/main/users/current/unsubscribe',
+      '/api/users/current/unsubscribe',
       { email: 'test@bot.com' },
       {
         headers: { authorization: `Bearer ${argv.adminApiSecret}` },
@@ -105,7 +105,7 @@ describe('unsubscribeCurrentUser', () => {
     updateArgv({ adminApiSecret: '' });
 
     const response = await request.post(
-      '/api/main/users/current/unsubscribe',
+      '/api/users/current/unsubscribe',
       { email: user.primaryEmail },
       {
         headers: { authorization: `Bearer ${secret}` },
@@ -119,7 +119,7 @@ describe('unsubscribeCurrentUser', () => {
     const wrongSecret = `${argv.adminApiSecret} + wrong secret`;
 
     const response = await request.post(
-      '/api/main/users/current/unsubscribe',
+      '/api/users/current/unsubscribe',
       { email: user.primaryEmail },
       {
         headers: { authorization: `Bearer ${wrongSecret}` },
@@ -132,7 +132,7 @@ describe('unsubscribeCurrentUser', () => {
   it('should return 400 if the provided email does not match an existing user', async () => {
     const wrongEmail = 'wrongTestEmail';
     const response = await request.post(
-      '/api/main/users/current/unsubscribe',
+      '/api/users/current/unsubscribe',
       { email: wrongEmail },
       {
         headers: { authorization: `Bearer ${argv.adminApiSecret}` },

@@ -201,7 +201,7 @@ afterAll(() => {
 describe('createAppFromTemplate', () => {
   it('should create a new app using a template', async () => {
     authorizeStudio();
-    const response = await request.post<AppType>('/api/main/app-templates', {
+    const response = await request.post<AppType>('/api/app-templates', {
       templateId: templates[0].id,
       name: 'Test app',
       description: 'This is a test app',
@@ -231,7 +231,7 @@ describe('createAppFromTemplate', () => {
   it('should create a new app with example resources', async () => {
     const [, template] = templates;
     authorizeStudio();
-    const response = await request.post<AppType>('/api/main/app-templates', {
+    const response = await request.post<AppType>('/api/app-templates', {
       templateId: template.id,
       name: 'Test app',
       description: 'This is a test app',
@@ -248,7 +248,7 @@ describe('createAppFromTemplate', () => {
   it('should create a new app with example assets', async () => {
     const [, template] = templates;
     authorizeStudio();
-    const response = await request.post<AppType>('/api/main/app-templates', {
+    const response = await request.post<AppType>('/api/app-templates', {
       templateId: template.id,
       name: 'Test app',
       description: 'This is a test app',
@@ -265,7 +265,7 @@ describe('createAppFromTemplate', () => {
   it('should include the app’s styles when cloning an app', async () => {
     const [, template] = templates;
     authorizeStudio();
-    const response = await request.post<AppType>('/api/main/app-templates', {
+    const response = await request.post<AppType>('/api/app-templates', {
       templateId: template.id,
       name: 'Test app',
       description: 'This is a test app',
@@ -284,7 +284,7 @@ describe('createAppFromTemplate', () => {
   it('should copy app messages when cloning an app', async () => {
     const [, template] = templates;
     authorizeStudio();
-    const response = await request.post<App>('/api/main/app-templates', {
+    const response = await request.post<App>('/api/app-templates', {
       templateId: template.id,
       name: 'Test app',
       description: 'This is a test app',
@@ -293,9 +293,7 @@ describe('createAppFromTemplate', () => {
     });
 
     const { id } = response.data;
-    const { data: messages } = await request.get<AppMessagesType>(
-      `/api/common/apps/${id}/messages/nl-nl`,
-    );
+    const { data: messages } = await request.get<AppMessagesType>(`/api/apps/${id}/messages/nl-nl`);
 
     expect(messages.language).toBe('nl-nl');
     expect(messages.messages.messageIds).toStrictEqual({ test: 'Dit is een testbericht' });
@@ -304,7 +302,7 @@ describe('createAppFromTemplate', () => {
   it('should copy app variables when cloning an app', async () => {
     const [, template] = templates;
     authorizeStudio();
-    const response = await request.post<App>('/api/main/app-templates', {
+    const response = await request.post<App>('/api/app-templates', {
       templateId: template.id,
       name: 'Test app',
       description: 'This is a test app',
@@ -313,9 +311,7 @@ describe('createAppFromTemplate', () => {
     });
 
     const { id } = response.data;
-    const { data: variables } = await request.get<AppConfigEntry[]>(
-      `/api/common/apps/${id}/variables`,
-    );
+    const { data: variables } = await request.get<AppConfigEntry[]>(`/api/apps/${id}/variables`);
 
     expect(variables[0]).toStrictEqual({
       id: 2,
@@ -327,7 +323,7 @@ describe('createAppFromTemplate', () => {
   it('should copy app secrets when cloning an app', async () => {
     const [, template] = templates;
     authorizeStudio();
-    const response = await request.post<App>('/api/main/app-templates', {
+    const response = await request.post<App>('/api/app-templates', {
       templateId: template.id,
       name: 'Test app',
       description: 'This is a test app',
@@ -418,7 +414,7 @@ describe('createAppFromTemplate', () => {
     authorizeStudio();
     const {
       data: { id },
-    } = await request.post<App>('/api/main/app-templates', {
+    } = await request.post<App>('/api/app-templates', {
       templateId: template.id,
       name: 'Test app',
       description: 'This is a test description',
@@ -436,14 +432,14 @@ describe('createAppFromTemplate', () => {
 
   it('should append a number when creating a new app using a template with a duplicate name', async () => {
     authorizeStudio();
-    await request.post('/api/main/app-templates', {
+    await request.post('/api/app-templates', {
       templateId: templates[0].id,
       name: 'Test app',
       description: 'This is a test app',
       organizationId: 'testorganization',
     });
 
-    const response = await request.post('/api/main/app-templates', {
+    const response = await request.post('/api/app-templates', {
       templateId: templates[0].id,
       name: 'Test app',
       description: 'This is also a test app',
@@ -475,7 +471,7 @@ describe('createAppFromTemplate', () => {
     );
 
     authorizeStudio();
-    const response = await request.post('/api/main/app-templates', {
+    const response = await request.post('/api/app-templates', {
       templateId: templates[0].id,
       name: 'Test app',
       description: 'This is a test app',
@@ -493,7 +489,7 @@ describe('createAppFromTemplate', () => {
   it('should not allow for cloning unlisted apps if the user is not in the same organization as the app', async () => {
     authorizeStudio();
 
-    const response = await request.post('/api/main/app-templates', {
+    const response = await request.post('/api/app-templates', {
       templateId: templates[2].id,
       name: 'Test app',
       description: 'This is also a test app',
@@ -509,7 +505,7 @@ describe('createAppFromTemplate', () => {
   it('should not allow for cloning apps with hidden app definitions if the user is not in the same organization as the app', async () => {
     await templates[2].update({ showAppDefinition: false, visibility: 'public' });
     authorizeStudio();
-    const response = await request.post('/api/main/app-templates', {
+    const response = await request.post('/api/app-templates', {
       templateId: templates[2].id,
       name: 'Test app',
       description: 'This is also a test app',

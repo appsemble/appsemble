@@ -43,9 +43,9 @@ describe('getBlockVersionIcon', () => {
     formData.append('icon', icon);
 
     await authorizeClientCredentials('blocks:write');
-    await request.post('/api/main/blocks', formData);
+    await request.post('/api/blocks', formData);
 
-    const response = await request.get('/api/common/blocks/@xkcd/test/versions/1.33.8/icon', {
+    const response = await request.get('/api/blocks/@xkcd/test/versions/1.33.8/icon', {
       responseType: 'arraybuffer',
     });
     expect(response.headers['content-type']).toBe('image/png');
@@ -53,7 +53,7 @@ describe('getBlockVersionIcon', () => {
   });
 
   it('should return a 404 if the requested block definition doesn’t exist', async () => {
-    const { data } = await request.get('/api/common/blocks/@non/existent');
+    const { data } = await request.get('/api/blocks/@non/existent');
     expect(data).toStrictEqual({
       error: 'Not Found',
       message: 'Block definition not found',
@@ -69,9 +69,9 @@ describe('getBlockVersionIcon', () => {
     formData.append('files', Buffer.from(''), 'test.js');
 
     await authorizeClientCredentials('blocks:write');
-    await request.post('/api/main/blocks', formData);
+    await request.post('/api/blocks', formData);
 
-    const response = await request.get('/api/common/blocks/@xkcd/test/versions/1.33.8/icon', {
+    const response = await request.get('/api/blocks/@xkcd/test/versions/1.33.8/icon', {
       responseType: 'arraybuffer',
     });
 

@@ -44,7 +44,7 @@ describe('getSubscribedUsers', () => {
   it('should return a list of subscribed users', async () => {
     const user2 = await createTestUser('user2@example.com');
 
-    const response = await request.get('/api/main/users/subscribed', {
+    const response = await request.get('/api/users/subscribed', {
       headers: { authorization: `Bearer ${argv.adminApiSecret}` },
     });
 
@@ -83,7 +83,7 @@ describe('getSubscribedUsers', () => {
     ];
     deletedUser.save();
 
-    const response = await request.get('/api/main/users/subscribed', {
+    const response = await request.get('/api/users/subscribed', {
       headers: { authorization: `Bearer ${argv.adminApiSecret}` },
     });
 
@@ -107,7 +107,7 @@ describe('getSubscribedUsers', () => {
       timezone: 'Europe/Amsterdam',
     });
 
-    const response = await request.get('/api/main/users/subscribed', {
+    const response = await request.get('/api/users/subscribed', {
       headers: { authorization: `Bearer ${argv.adminApiSecret}` },
     });
 
@@ -125,14 +125,14 @@ describe('getSubscribedUsers', () => {
   it('should return a 401 if admin API secret is not passed', async () => {
     updateArgv({ adminApiSecret: '' });
 
-    const response = await request.get('/api/main/users/subscribed');
+    const response = await request.get('/api/users/subscribed');
     expect(response.status).toBe(401);
   });
 
   it('should return 401 if the provided admin api secret is wrong', async () => {
     const wrongSecret = `${argv.adminApiSecret} + wrong secret`;
 
-    const response = await request.get('/api/main/users/subscribed', {
+    const response = await request.get('/api/users/subscribed', {
       headers: { authorization: `Bearer ${wrongSecret}` },
     });
 

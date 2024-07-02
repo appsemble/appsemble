@@ -65,7 +65,7 @@ describe('getAppSamlSecrets', () => {
       spPrivateKey: '-----BEGIN PRIVATE KEY-----\nSP\n-----END PRIVATE KEY-----',
       spPublicKey: '-----BEGIN PUBLIC KEY-----\nSP\n-----END PUBLIC KEY-----',
     });
-    const response = await request.get(`/api/main/apps/${app.id}/secrets/saml`);
+    const response = await request.get(`/api/apps/${app.id}/secrets/saml`);
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 200 OK
       Content-Type: application/json; charset=utf-8
@@ -120,7 +120,7 @@ describe('getAppSamlSecrets', () => {
       spPrivateKey: '-----BEGIN PRIVATE KEY-----\nOTHER)SP\n-----END PRIVATE KEY-----',
       spPublicKey: '-----BEGIN PUBLIC KEY-----\nOTHER_SP\n-----END PUBLIC KEY-----',
     });
-    const response = await request.get(`/api/main/apps/${app.id}/secrets/saml`);
+    const response = await request.get(`/api/apps/${app.id}/secrets/saml`);
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 200 OK
       Content-Type: application/json; charset=utf-8
@@ -147,7 +147,7 @@ describe('getAppSamlSecrets', () => {
 
   it('should not throw status 404 for unknown apps', async () => {
     authorizeStudio();
-    const response = await request.get('/api/main/apps/53/secrets/saml');
+    const response = await request.get('/api/apps/53/secrets/saml');
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 404 Not Found
       Content-Type: application/json; charset=utf-8
@@ -163,7 +163,7 @@ describe('getAppSamlSecrets', () => {
   it('should require the EditApps and EditAppSettings permissions', async () => {
     authorizeStudio();
     await member.update({ role: 'Member' });
-    const response = await request.get(`/api/main/apps/${app.id}/secrets/saml`);
+    const response = await request.get(`/api/apps/${app.id}/secrets/saml`);
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 403 Forbidden
       Content-Type: application/json; charset=utf-8

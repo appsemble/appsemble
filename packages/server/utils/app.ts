@@ -356,7 +356,7 @@ export function resolveIconUrl(app: App): string {
   const hasIcon = app.get('hasIcon') ?? Boolean(app.icon);
 
   if (hasIcon) {
-    return `/api/common/apps/${app.id}/icon?${new URLSearchParams({
+    return `/api/apps/${app.id}/icon?${new URLSearchParams({
       maskable: 'true',
       updated: app.updated.toISOString(),
     })}`;
@@ -364,7 +364,7 @@ export function resolveIconUrl(app: App): string {
 
   const organizationHasIcon = app.Organization?.get('hasIcon');
   if (organizationHasIcon) {
-    return `/api/main/organizations/${app.OrganizationId}/icon?${new URLSearchParams({
+    return `/api/organizations/${app.OrganizationId}/icon?${new URLSearchParams({
       background: app.iconBackground || '#ffffff',
       maskable: 'true',
       updated: app.Organization.updated.toISOString(),

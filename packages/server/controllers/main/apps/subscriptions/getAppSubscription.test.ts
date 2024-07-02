@@ -101,7 +101,7 @@ describe('getAppSubscription', () => {
     });
 
     authorizeApp(app);
-    await request.patch(`/api/main/apps/${app.id}/subscriptions`, {
+    await request.patch(`/api/apps/${app.id}/subscriptions`, {
       endpoint: 'https://example.com',
       resource: 'person',
       resourceId: resource.id,
@@ -109,7 +109,7 @@ describe('getAppSubscription', () => {
       value: true,
     });
 
-    const response = await request.get(`/api/main/apps/${app.id}/subscriptions`, {
+    const response = await request.get(`/api/apps/${app.id}/subscriptions`, {
       params: { endpoint: 'https://example.com' },
     });
 
@@ -140,7 +140,7 @@ describe('getAppSubscription', () => {
 
   it('should 404 on non-existent subscriptions', async () => {
     const app = await defaultApp(organization.id);
-    const response = await request.get(`/api/main/apps/${app.id}/subscriptions`, {
+    const response = await request.get(`/api/apps/${app.id}/subscriptions`, {
       params: { endpoint: 'https://example.com' },
     });
 

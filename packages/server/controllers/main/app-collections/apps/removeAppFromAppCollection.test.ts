@@ -108,7 +108,7 @@ describe('removeAppFromAppCollection', () => {
 
     authorizeStudio(user);
     const response = await request.delete(
-      `/api/main/app-collections/${collections[0].id}/apps/${apps[0].id}`,
+      `/api/app-collections/${collections[0].id}/apps/${apps[0].id}`,
     );
     expect(response).toMatchInlineSnapshot('HTTP/1.1 204 No Content');
 

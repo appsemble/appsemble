@@ -112,7 +112,7 @@ describe('unpinAppFromAppCollection', () => {
 
     authorizeStudio(user);
     const response = await request.delete(
-      `/api/main/app-collections/${collections[0].id}/apps/${apps[0].id}/pinned`,
+      `/api/app-collections/${collections[0].id}/apps/${apps[0].id}/pinned`,
     );
     expect(response.status).toBe(204);
 
@@ -125,7 +125,7 @@ describe('unpinAppFromAppCollection', () => {
     authorizeStudio(unprivilegedUser);
 
     const response2 = await request.delete(
-      `/api/main/app-collections/${collections[0].id}/apps/${apps[0].id}/pinned`,
+      `/api/app-collections/${collections[0].id}/apps/${apps[0].id}/pinned`,
     );
     expect(response2).toMatchInlineSnapshot(`
       HTTP/1.1 403 Forbidden

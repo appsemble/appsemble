@@ -104,7 +104,7 @@ export function outputAppMember(app: App, language: string, baseLanguage: string
     picture: member.picture
       ? String(
           new URL(
-            `/api/common/apps/${app.id}/members/${
+            `/api/apps/${app.id}/members/${
               member.UserId
             }/picture?updated=${member.updated.getTime()}`,
             argv.host,

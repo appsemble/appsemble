@@ -46,13 +46,13 @@ describe('removeCurrentUserEmail', () => {
     });
 
     authorizeStudio();
-    const response = await request.delete('/api/main/users/current/emails', {
+    const response = await request.delete('/api/users/current/emails', {
       data: { email: 'test2@example.com' },
     });
 
     expect(response).toMatchObject({ status: 204 });
 
-    const { data } = await request.get<APIUser>('/api/main/users/current');
+    const { data } = await request.get<APIUser>('/api/users/current');
 
     expect(data.emails).not.toContainEqual({
       email: 'test2@example.com',
@@ -63,7 +63,7 @@ describe('removeCurrentUserEmail', () => {
 
   it('should not delete non-associated emails', async () => {
     authorizeStudio();
-    const response = await request.delete('/api/main/users/current/emails', {
+    const response = await request.delete('/api/users/current/emails', {
       data: { email: 'test2@example.com' },
     });
 
@@ -79,7 +79,7 @@ describe('removeCurrentUserEmail', () => {
 
   it('should not delete the last login method', async () => {
     authorizeStudio();
-    const response = await request.delete('/api/main/users/current/emails', {
+    const response = await request.delete('/api/users/current/emails', {
       data: { email: 'test@example.com' },
     });
 

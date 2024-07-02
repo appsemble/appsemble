@@ -76,11 +76,11 @@ describe('setAppBlockStyle', () => {
     );
 
     authorizeStudio();
-    const response = await request.post(`/api/main/apps/${id}/style/block/@appsemble/testblock`, {
+    const response = await request.post(`/api/apps/${id}/style/block/@appsemble/testblock`, {
       style: 'body { color: yellow; }',
     });
 
-    const style = await request.get(`/api/common/apps/${id}/style/block/@appsemble/testblock`);
+    const style = await request.get(`/api/apps/${id}/style/block/@appsemble/testblock`);
 
     expect(response).toMatchInlineSnapshot('HTTP/1.1 204 No Content');
     expect(style).toMatchInlineSnapshot(`
@@ -111,13 +111,13 @@ describe('setAppBlockStyle', () => {
     );
 
     authorizeStudio();
-    const responseA = await request.post(`/api/main/apps/${id}/style/block/@appsemble/testblock`, {
+    const responseA = await request.post(`/api/apps/${id}/style/block/@appsemble/testblock`, {
       style: 'body { color: blue; }',
     });
     expect(responseA).toMatchInlineSnapshot('HTTP/1.1 204 No Content');
 
     authorizeStudio();
-    const responseB = await request.post(`/api/main/apps/${id}/style/block/@appsemble/testblock`, {
+    const responseB = await request.post(`/api/apps/${id}/style/block/@appsemble/testblock`, {
       style: ' ',
     });
 
@@ -154,7 +154,7 @@ describe('setAppBlockStyle', () => {
     );
 
     authorizeStudio();
-    const response = await request.post(`/api/main/apps/${id}/style/block/@appsemble/testblock`, {
+    const response = await request.post(`/api/apps/${id}/style/block/@appsemble/testblock`, {
       style: 'body { color: yellow; }',
     });
 
@@ -188,7 +188,7 @@ describe('setAppBlockStyle', () => {
     });
 
     authorizeStudio();
-    const response = await request.post(`/api/main/apps/${id}/style/block/@appsemble/styledblock`, {
+    const response = await request.post(`/api/apps/${id}/style/block/@appsemble/styledblock`, {
       style: 'invalidCss',
     });
 
@@ -213,7 +213,7 @@ describe('setAppBlockStyle', () => {
     });
 
     authorizeStudio();
-    const response = await request.post('/api/main/apps/0/style/block/@appsemble/block', {
+    const response = await request.post('/api/apps/0/style/block/@appsemble/block', {
       style: 'body { color: red; }',
     });
 
@@ -239,7 +239,7 @@ describe('setAppBlockStyle', () => {
     });
 
     authorizeStudio();
-    const response = await request.post(`/api/main/apps/${id}/style/block/@appsemble/doesntexist`, {
+    const response = await request.post(`/api/apps/${id}/style/block/@appsemble/doesntexist`, {
       style: 'body { color: red; }',
     });
 
@@ -264,7 +264,7 @@ describe('setAppBlockStyle', () => {
       OrganizationId: organization.id,
     });
 
-    const response = await request.get(`/api/common/apps/${id}/style/block/@appsemble/doesntexist`);
+    const response = await request.get(`/api/apps/${id}/style/block/@appsemble/doesntexist`);
 
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 200 OK
@@ -282,7 +282,7 @@ describe('setAppBlockStyle', () => {
       OrganizationId: organization.id,
     });
     const response = await request.patch(
-      `/api/main/apps/${id}`,
+      `/api/apps/${id}`,
       createFormData({
         'organization.id': organization.id,
         yaml: stripIndent(`
@@ -310,7 +310,7 @@ describe('setAppBlockStyle', () => {
       OrganizationId: organization.id,
     });
     const response = await request.patch(
-      `/api/main/apps/${id}`,
+      `/api/apps/${id}`,
       createFormData({
         yaml: stripIndent(`
           name: Test App

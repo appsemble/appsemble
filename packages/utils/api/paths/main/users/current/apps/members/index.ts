@@ -1,7 +1,7 @@
 import { type OpenAPIV3 } from 'openapi-types';
 
 export const paths: OpenAPIV3.PathsObject = {
-  '/api/main/users/current/apps/members': {
+  '/api/users/current/apps/members': {
     get: {
       description: 'Get the accounts that have been linked to an app and the user',
       tags: ['main', 'user', 'current-user', 'app', 'member'],
@@ -24,7 +24,7 @@ export const paths: OpenAPIV3.PathsObject = {
       },
     },
   },
-  '/api/main/users/current/apps/{appId}/member': {
+  '/api/users/current/apps/{appId}/member': {
     parameters: [{ $ref: '#/components/parameters/appId' }],
     get: {
       description: 'Get a single account that has been linked to an app and the current user',

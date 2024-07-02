@@ -72,7 +72,7 @@ describe('getAppSnapshots', () => {
     });
 
     authorizeStudio(user);
-    const response = await request.get<Snapshot[]>(`/api/main/apps/${app.id}/snapshots`);
+    const response = await request.get<Snapshot[]>(`/api/apps/${app.id}/snapshots`);
 
     expect(response).toMatchInlineSnapshot(
       { data: [{ $author: { id: expect.any(String) } }, { $author: { id: expect.any(String) } }] },

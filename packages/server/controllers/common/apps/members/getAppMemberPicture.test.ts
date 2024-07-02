@@ -76,7 +76,7 @@ describe('getAppMemberPicture', () => {
     );
 
     const m = await AppMember.findOne({ where: { email: 'test@example.com' } });
-    const response = await request.get(`/api/common/apps/${app.id}/members/${m.id}/picture`, {
+    const response = await request.get(`/api/apps/${app.id}/members/${m.id}/picture`, {
       responseType: 'arraybuffer',
     });
 
@@ -95,7 +95,7 @@ describe('getAppMemberPicture', () => {
     );
 
     const m = await AppMember.findOne({ where: { email: 'test@example.com' } });
-    const response = await request.get(`/api/common/apps/${app.id}/members/${m.id}/picture`);
+    const response = await request.get(`/api/apps/${app.id}/members/${m.id}/picture`);
 
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 404 Not Found

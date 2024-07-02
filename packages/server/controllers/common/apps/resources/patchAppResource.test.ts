@@ -78,7 +78,7 @@ describe('patchAppResource', () => {
 
     authorizeStudio();
     const response = await request.patch(
-      `/api/common/apps/${app.id}/resources/testResource/${resource.id}`,
+      `/api/apps/${app.id}/resources/testResource/${resource.id}`,
       { foo: 'I am not Foo.' },
     );
 
@@ -103,7 +103,7 @@ describe('patchAppResource', () => {
     );
 
     const responseB = await request.get(
-      `/api/common/apps/${app.id}/resources/testResource/${resource.id}`,
+      `/api/apps/${app.id}/resources/testResource/${resource.id}`,
     );
 
     expect(responseB).toMatchInlineSnapshot(
@@ -160,7 +160,7 @@ describe('patchAppResource', () => {
 
     authorizeStudio();
     const response = await request.patch(
-      `/api/common/apps/${app.id}/resources/testResourceTeam/${resource.id}`,
+      `/api/apps/${app.id}/resources/testResourceTeam/${resource.id}`,
       { foo: 'I am not Foo.' },
     );
 
@@ -223,7 +223,7 @@ describe('patchAppResource', () => {
 
     authorizeApp(app);
     const response = await request.patch(
-      `/api/common/apps/${app.id}/resources/testResourceTeam/${resource.id}`,
+      `/api/apps/${app.id}/resources/testResourceTeam/${resource.id}`,
       { foo: 'I am not Foo.' },
     );
 
@@ -248,7 +248,7 @@ describe('patchAppResource', () => {
 
     authorizeStudio();
     const response = await request.patch(
-      `/api/common/apps/${app.id}/resources/testResourceB/${resource.id}`,
+      `/api/apps/${app.id}/resources/testResourceB/${resource.id}`,
       { foo: 'I am not Foo.' },
     );
 
@@ -275,7 +275,7 @@ describe('patchAppResource', () => {
 
     authorizeStudio();
     const response = await request.patch(
-      `/api/common/apps/${appB.id}/resources/testResource/${resource.id}`,
+      `/api/apps/${appB.id}/resources/testResource/${resource.id}`,
       { foo: 'I am not Foo.' },
     );
 
@@ -293,7 +293,7 @@ describe('patchAppResource', () => {
 
   it('should not be possible to patch a non-existent resource', async () => {
     authorizeStudio();
-    const response = await request.patch(`/api/common/apps/${app.id}/resources/testResource/0`, {
+    const response = await request.patch(`/api/apps/${app.id}/resources/testResource/0`, {
       foo: 'I am not Foo.',
     });
 
@@ -318,7 +318,7 @@ describe('patchAppResource', () => {
 
     authorizeStudio();
     const response = await request.patch(
-      `/api/common/apps/${app.id}/resources/testResource/${resource.id}`,
+      `/api/apps/${app.id}/resources/testResource/${resource.id}`,
       { bar: 123 },
     );
 
@@ -363,7 +363,7 @@ describe('patchAppResource', () => {
 
     authorizeStudio();
     const response = await request.patch(
-      `/api/common/apps/${app.id}/resources/testResource/${resource.id}`,
+      `/api/apps/${app.id}/resources/testResource/${resource.id}`,
       { foo: 'I am not Foo.', $clonable: true },
     );
 
@@ -393,23 +393,20 @@ describe('patchAppResource', () => {
   it('should set $expires', async () => {
     const {
       data: { id },
-    } = await request.post<ResourceType>(
-      `/api/common/apps/${app.id}/resources/testExpirableResource`,
-      {
-        foo: 'test',
-        $expires: '1970-01-01T00:05:00.000Z',
-      },
-    );
+    } = await request.post<ResourceType>(`/api/apps/${app.id}/resources/testExpirableResource`, {
+      foo: 'test',
+      $expires: '1970-01-01T00:05:00.000Z',
+    });
 
     const responseA = await request.patch(
-      `/api/common/apps/${app.id}/resources/testExpirableResource/${id}`,
+      `/api/apps/${app.id}/resources/testExpirableResource/${id}`,
       {
         foo: 'updated',
         $expires: '1970-01-01T00:07:00.000Z',
       },
     );
     const responseB = await request.get(
-      `/api/common/apps/${app.id}/resources/testExpirableResource/${id}`,
+      `/api/apps/${app.id}/resources/testExpirableResource/${id}`,
     );
 
     expect(responseA).toMatchInlineSnapshot(`
@@ -445,15 +442,12 @@ describe('patchAppResource', () => {
 
     const {
       data: { id },
-    } = await request.post<ResourceType>(
-      `/api/common/apps/${app.id}/resources/testExpirableResource`,
-      {
-        foo: 'test',
-      },
-    );
+    } = await request.post<ResourceType>(`/api/apps/${app.id}/resources/testExpirableResource`, {
+      foo: 'test',
+    });
 
     const response = await request.patch(
-      `/api/common/apps/${app.id}/resources/testExpirableResource/${id}`,
+      `/api/apps/${app.id}/resources/testExpirableResource/${id}`,
       {
         foo: 'updated',
         $expires: '1970-01-01T00:07:00.000Z',
@@ -487,7 +481,7 @@ describe('patchAppResource', () => {
   it('should accept assets as form data', async () => {
     const resource = await Resource.create({ AppId: app.id, type: 'testAssets', data: {} });
     const response = await request.patch<ResourceType>(
-      `/api/common/apps/${app.id}/resources/testAssets/${resource.id}`,
+      `/api/apps/${app.id}/resources/testAssets/${resource.id}`,
       createFormData({
         resource: { file: '0' },
         assets: Buffer.from('Test resource a'),
@@ -532,7 +526,7 @@ describe('patchAppResource', () => {
   it('should disallow unused assets', async () => {
     const resource = await Resource.create({ AppId: app.id, type: 'testAssets', data: {} });
     const response = await request.patch(
-      `/api/common/apps/${app.id}/resources/testAssets/${resource.id}`,
+      `/api/apps/${app.id}/resources/testAssets/${resource.id}`,
       createFormData({
         resource: { string: '0' },
         assets: Buffer.from('Test resource a'),
@@ -570,7 +564,7 @@ describe('patchAppResource', () => {
   it('should block unknown asset references', async () => {
     const resource = await Resource.create({ AppId: app.id, type: 'testAssets', data: {} });
     const response = await request.patch(
-      `/api/common/apps/${app.id}/resources/testAssets/${resource.id}`,
+      `/api/apps/${app.id}/resources/testAssets/${resource.id}`,
       createFormData({
         resource: { file: '1' },
       }),
@@ -615,7 +609,7 @@ describe('patchAppResource', () => {
       data: Buffer.alloc(0),
     });
     const response = await request.patch<ResourceType>(
-      `/api/common/apps/${app.id}/resources/testAssets/${resource.id}`,
+      `/api/apps/${app.id}/resources/testAssets/${resource.id}`,
       createFormData({ resource: { file: asset.id } }),
     );
 
@@ -649,7 +643,7 @@ describe('patchAppResource', () => {
       data: Buffer.alloc(0),
     });
     const response = await request.patch(
-      `/api/common/apps/${app.id}/resources/testAssets/${resource.id}`,
+      `/api/apps/${app.id}/resources/testAssets/${resource.id}`,
       createFormData({ resource: { file: '0' }, assets: Buffer.alloc(1) }),
     );
 
@@ -680,7 +674,7 @@ describe('patchAppResource', () => {
     });
     authorizeStudio();
     const response = await request.patch(
-      `/api/common/apps/${app.id}/resources/testResourceAuthorOnly/${resource.id}`,
+      `/api/apps/${app.id}/resources/testResourceAuthorOnly/${resource.id}`,
       { foo: 'baz' },
     );
     expect(response).toMatchInlineSnapshot(
@@ -715,7 +709,7 @@ describe('patchAppResource', () => {
     });
     authorizeStudio();
     const response = await request.patch(
-      `/api/common/apps/${app.id}/resources/testResourceAuthorOnly/${resource.id}`,
+      `/api/apps/${app.id}/resources/testResourceAuthorOnly/${resource.id}`,
       { foo: 'baz' },
     );
     expect(response).toMatchInlineSnapshot(`
@@ -738,7 +732,7 @@ describe('patchAppResource', () => {
     });
     await authorizeClientCredentials('resources:write');
     const response = await request.patch(
-      `/api/common/apps/${app.id}/resources/testResourceAuthorOnly/${resource.id}`,
+      `/api/apps/${app.id}/resources/testResourceAuthorOnly/${resource.id}`,
       { foo: 'baz' },
     );
     expect(response).toMatchInlineSnapshot(
@@ -773,7 +767,7 @@ describe('patchAppResource', () => {
     });
     await authorizeClientCredentials('resources:write');
     const response = await request.patch(
-      `/api/common/apps/${app.id}/resources/testResourceAuthorOnly/${resource.id}`,
+      `/api/apps/${app.id}/resources/testResourceAuthorOnly/${resource.id}`,
       { foo: 'baz' },
     );
     expect(response).toMatchInlineSnapshot(`
@@ -806,7 +800,7 @@ describe('patchAppResource', () => {
 
     authorizeStudio();
     const response = await request.patch(
-      `/api/common/apps/${app.id}/resources/testResource/${resource.id}`,
+      `/api/apps/${app.id}/resources/testResource/${resource.id}`,
       { foo: 'I am Foo too!' },
     );
     expect(response).toMatchInlineSnapshot(
@@ -839,7 +833,7 @@ describe('patchAppResource', () => {
       data: { string: 'rev1' },
     });
     const response = await request.patch(
-      `/api/common/apps/${app.id}/resources/testHistoryTrue/${resource.id}`,
+      `/api/apps/${app.id}/resources/testHistoryTrue/${resource.id}`,
       { string: 'rev2' },
     );
     expect(response).toMatchInlineSnapshot(`
@@ -874,7 +868,7 @@ describe('patchAppResource', () => {
       data: { string: 'rev1' },
     });
     const response = await request.patch(
-      `/api/common/apps/${app.id}/resources/testHistoryDataTrue/${resource.id}`,
+      `/api/apps/${app.id}/resources/testHistoryDataTrue/${resource.id}`,
       { string: 'rev2' },
     );
     expect(response).toMatchInlineSnapshot(`
@@ -909,7 +903,7 @@ describe('patchAppResource', () => {
       data: { string: 'rev1' },
     });
     const response = await request.patch(
-      `/api/common/apps/${app.id}/resources/testHistoryDataFalse/${resource.id}`,
+      `/api/apps/${app.id}/resources/testHistoryDataFalse/${resource.id}`,
       { string: 'rev2' },
     );
     expect(response).toMatchInlineSnapshot(`

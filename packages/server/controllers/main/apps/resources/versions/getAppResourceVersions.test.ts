@@ -61,7 +61,7 @@ afterEach(() => {
 
 describe('getAppResourceVersions', () => {
   it('should return 404 if no app was found', async () => {
-    const response = await request.get('/api/main/apps/789/resources/any/1/versions');
+    const response = await request.get('/api/apps/789/resources/any/1/versions');
 
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 404 Not Found
@@ -76,7 +76,7 @@ describe('getAppResourceVersions', () => {
   });
 
   it('should return 404 if no resource definition was found', async () => {
-    const response = await request.get('/api/main/apps/1/resources/nonexistent/1/versions');
+    const response = await request.get('/api/apps/1/resources/nonexistent/1/versions');
 
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 404 Not Found
@@ -91,7 +91,7 @@ describe('getAppResourceVersions', () => {
   });
 
   it('should return 404 if the resource definition doesn’t support history', async () => {
-    const response = await request.get('/api/main/apps/1/resources/noHistory/1/versions');
+    const response = await request.get('/api/apps/1/resources/noHistory/1/versions');
 
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 404 Not Found
@@ -106,7 +106,7 @@ describe('getAppResourceVersions', () => {
   });
 
   it('should return 404 if no resource was found for the given ID was found', async () => {
-    const response = await request.get('/api/main/apps/1/resources/yesHistory/1/versions');
+    const response = await request.get('/api/apps/1/resources/yesHistory/1/versions');
 
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 404 Not Found
@@ -146,9 +146,7 @@ describe('getAppResourceVersions', () => {
     vi.advanceTimersByTime(1000);
     await resource.update({ EditorId: member.id, data: { version: 'newest' } });
 
-    const response = await request.get(
-      `/api/main/apps/1/resources/yesHistory/${resource.id}/versions`,
-    );
+    const response = await request.get(`/api/apps/1/resources/yesHistory/${resource.id}/versions`);
 
     expect(response).toMatchInlineSnapshot(
       {

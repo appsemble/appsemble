@@ -54,7 +54,7 @@ describe('createTrainingBlock', () => {
 
     authorizeStudio();
     const response = await request.post<TrainingBlockType>(
-      '/api/main/trainings/1/blocks',
+      '/api/trainings/1/blocks',
       createFormData({
         title: 'test block',
         documentationLink: 'https://www.appsemble.app/en/docs/',
@@ -88,7 +88,7 @@ describe('createTrainingBlock', () => {
     await OrganizationMember.update({ OrganizationId: 'test' }, { where: { UserId: user.id } });
     authorizeStudio();
     const response = await request.post<TrainingBlockType>(
-      '/api/main/trainings/1/blocks',
+      '/api/trainings/1/blocks',
       createFormData({
         title: 'test block',
         documentationLink: 'https://www.appsemble.app/en/docs/',
@@ -117,7 +117,7 @@ describe('createTrainingBlock', () => {
     });
     authorizeStudio();
     const response = await request.post<TrainingBlockType>(
-      '/api/main/trainings/1/blocks',
+      '/api/trainings/1/blocks',
       createFormData({
         title: 'test block',
         documentationLink: 'https://www.appsemble.app/en/docs/',
@@ -125,7 +125,7 @@ describe('createTrainingBlock', () => {
       }),
     );
     expect(response.status).toBe(201);
-    const training = await request.get('/api/main/trainings/1/blocks');
+    const training = await request.get('/api/trainings/1/blocks');
     expect(training).toMatchObject({
       status: 200,
       data: [
@@ -142,7 +142,7 @@ describe('createTrainingBlock', () => {
   it('should not allow a user to create training blocks for non existent training', async () => {
     authorizeStudio();
     const response = await request.post<TrainingBlockType>(
-      '/api/main/trainings/1/blocks',
+      '/api/trainings/1/blocks',
       createFormData({
         title: 'test block',
         documentationLink: 'https://www.appsemble.app/en/docs/',

@@ -1,7 +1,7 @@
 import { type OpenAPIV3 } from 'openapi-types';
 
 export const paths: OpenAPIV3.PathsObject = {
-  '/api/main/users/current/auth/oauth2/authorizations': {
+  '/api/users/current/auth/oauth2/authorizations': {
     get: {
       description: 'Get a list of the current user’s OAuth2 authorizations.',
       tags: ['main', 'user', 'current-user', 'auth', 'oauth2', 'authorization'],

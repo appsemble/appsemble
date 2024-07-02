@@ -67,14 +67,14 @@ describe('deleteAppSamlSecret', () => {
       spPublicKey: '-----BEGIN PUBLIC KEY-----\nSP\n-----END PUBLIC KEY-----',
     });
     const response = await request.delete<AppSamlSecretType>(
-      `/api/main/apps/${app.id}/secrets/saml/${secret.id}`,
+      `/api/apps/${app.id}/secrets/saml/${secret.id}`,
     );
     expect(response).toMatchInlineSnapshot('HTTP/1.1 204 No Content');
   });
 
   it('should not throw status 404 for unknown apps', async () => {
     authorizeStudio();
-    const response = await request.delete(`/api/main/apps/${app.id}/secrets/saml/1`);
+    const response = await request.delete(`/api/apps/${app.id}/secrets/saml/1`);
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 404 Not Found
       Content-Type: application/json; charset=utf-8
@@ -89,7 +89,7 @@ describe('deleteAppSamlSecret', () => {
 
   it('should not throw status 404 for unknown secrets', async () => {
     authorizeStudio();
-    const response = await request.delete('/api/main/apps/13/secrets/saml/1');
+    const response = await request.delete('/api/apps/13/secrets/saml/1');
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 404 Not Found
       Content-Type: application/json; charset=utf-8
@@ -105,7 +105,7 @@ describe('deleteAppSamlSecret', () => {
   it('should require the EditApps and EditAppSettings permissions', async () => {
     authorizeStudio();
     await member.update({ role: 'Member' });
-    const response = await request.delete(`/api/main/apps/${app.id}/secrets/saml/34`);
+    const response = await request.delete(`/api/apps/${app.id}/secrets/saml/34`);
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 403 Forbidden
       Content-Type: application/json; charset=utf-8

@@ -14,7 +14,7 @@ export const paths: OpenAPIV3.PathsObject = {
   ...resourcesPaths,
   ...teamsPaths,
   ...variablesPaths,
-  '/api/common/apps/{appId}/icon': {
+  '/api/apps/{appId}/icon': {
     parameters: [{ $ref: '#/components/parameters/appId' }],
     get: {
       tags: ['main', 'app'],
@@ -33,7 +33,7 @@ export const paths: OpenAPIV3.PathsObject = {
       },
     },
   },
-  '/api/common/apps/{appId}/style/core': {
+  '/api/apps/{appId}/style/core': {
     parameters: [{ $ref: '#/components/parameters/appId' }],
     get: {
       tags: ['common', 'app'],
@@ -49,7 +49,7 @@ export const paths: OpenAPIV3.PathsObject = {
       },
     },
   },
-  '/api/common/apps/{appId}/style/shared': {
+  '/api/apps/{appId}/style/shared': {
     parameters: [{ $ref: '#/components/parameters/appId' }],
     get: {
       tags: ['common', 'app'],
@@ -65,7 +65,7 @@ export const paths: OpenAPIV3.PathsObject = {
       },
     },
   },
-  '/api/common/apps/{appId}/style/block/@{organizationId}/{blockId}': {
+  '/api/apps/{appId}/style/block/@{organizationId}/{blockId}': {
     parameters: [
       { $ref: '#/components/parameters/appId' },
       { $ref: '#/components/parameters/organizationId' },

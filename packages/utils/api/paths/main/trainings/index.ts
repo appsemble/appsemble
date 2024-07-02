@@ -6,7 +6,7 @@ import { paths as usersPaths } from './users/index.js';
 export const paths: OpenAPIV3.PathsObject = {
   ...blocksPaths,
   ...usersPaths,
-  '/api/main/trainings': {
+  '/api/trainings': {
     get: {
       tags: ['main', 'training'],
       description: 'Fetch all trainings available',
@@ -49,7 +49,7 @@ export const paths: OpenAPIV3.PathsObject = {
       security: [{ studio: [] }],
     },
   },
-  '/api/main/trainings/{trainingId}': {
+  '/api/trainings/{trainingId}': {
     parameters: [{ $ref: '#/components/parameters/trainingId' }],
     get: {
       tags: ['main', 'training'],

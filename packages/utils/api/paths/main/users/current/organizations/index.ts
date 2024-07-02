@@ -1,7 +1,7 @@
 import { type OpenAPIV3 } from 'openapi-types';
 
 export const paths: OpenAPIV3.PathsObject = {
-  '/api/main/users/current/organizations': {
+  '/api/users/current/organizations': {
     get: {
       tags: ['main', 'user', 'current-user', 'organization'],
       description: "Fetch the logged in user's organizations.",

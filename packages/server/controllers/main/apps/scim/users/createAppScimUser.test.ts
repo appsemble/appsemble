@@ -54,7 +54,7 @@ beforeEach(async () => {
 
 describe('createAppScimUser', () => {
   it('should create a user and app member', async () => {
-    const response = await request.post(`/api/main/apps/${app.id}/scim/Users`, {
+    const response = await request.post(`/api/apps/${app.id}/scim/Users`, {
       ScHeMaS: [
         'urn:ietf:params:scim:schemas:core:2.0:User',
         'urn:ietf:params:scim:schemas:extension:enterprise:2.0:User',
@@ -120,7 +120,7 @@ describe('createAppScimUser', () => {
       },
     });
 
-    const response = await request.post(`/api/main/apps/${app.id}/scim/Users`, {
+    const response = await request.post(`/api/apps/${app.id}/scim/Users`, {
       ScHeMaS: [
         'urn:ietf:params:scim:schemas:core:2.0:User',
         'urn:ietf:params:scim:schemas:extension:enterprise:2.0:User',
@@ -146,7 +146,7 @@ describe('createAppScimUser', () => {
   });
 
   it('should accept partial data', async () => {
-    const response = await request.post(`/api/main/apps/${app.id}/scim/Users`, {
+    const response = await request.post(`/api/apps/${app.id}/scim/Users`, {
       sChEmAs: [
         'urn:ietf:params:scim:schemas:core:2.0:User',
         'urn:ietf:params:scim:schemas:extension:enterprise:2.0:User',
@@ -197,7 +197,7 @@ describe('createAppScimUser', () => {
   });
 
   it('should create a team matching the manager id', async () => {
-    const response = await request.post(`/api/main/apps/${app.id}/scim/Users`, {
+    const response = await request.post(`/api/apps/${app.id}/scim/Users`, {
       sChEmAs: [
         'urn:ietf:params:scim:schemas:core:2.0:User',
         'urn:ietf:params:scim:schemas:extension:enterprise:2.0:User',
@@ -272,7 +272,7 @@ describe('createAppScimUser', () => {
   it('should add members to an existing team matching the manager id', async () => {
     const team = await Team.create({ AppId: app.id, name: 'krbs' });
 
-    const response = await request.post(`/api/main/apps/${app.id}/scim/Users`, {
+    const response = await request.post(`/api/apps/${app.id}/scim/Users`, {
       sChEmAs: [
         'urn:ietf:params:scim:schemas:core:2.0:User',
         'urn:ietf:params:scim:schemas:extension:enterprise:2.0:User',
@@ -346,7 +346,7 @@ describe('createAppScimUser', () => {
   it('should make members manager of a team matching their id', async () => {
     const team = await Team.create({ AppId: app.id, name: 'krbs' });
 
-    const response = await request.post(`/api/main/apps/${app.id}/scim/Users`, {
+    const response = await request.post(`/api/apps/${app.id}/scim/Users`, {
       sChEmAs: [
         'urn:ietf:params:scim:schemas:core:2.0:User',
         'urn:ietf:params:scim:schemas:extension:enterprise:2.0:User',
@@ -419,7 +419,7 @@ describe('createAppScimUser', () => {
       timezone: 'Europe/Amsterdam',
     });
 
-    await request.post(`/api/main/apps/${app.id}/scim/Users`, {
+    await request.post(`/api/apps/${app.id}/scim/Users`, {
       sChEmAs: [
         'urn:ietf:params:scim:schemas:core:2.0:User',
         'urn:ietf:params:scim:schemas:extension:enterprise:2.0:User',

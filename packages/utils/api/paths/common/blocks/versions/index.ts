@@ -6,7 +6,7 @@ import { paths as messagesPaths } from './messages/index.js';
 export const paths: OpenAPIV3.PathsObject = {
   ...assetsPaths,
   ...messagesPaths,
-  '/api/common/blocks/@{organizationId}/{blockId}/versions': {
+  '/api/blocks/@{organizationId}/{blockId}/versions': {
     parameters: [
       { $ref: '#/components/parameters/organizationId' },
       { $ref: '#/components/parameters/blockId' },
@@ -32,7 +32,7 @@ export const paths: OpenAPIV3.PathsObject = {
       },
     },
   },
-  '/api/common/blocks/@{organizationId}/{blockId}/versions/{blockVersion}': {
+  '/api/blocks/@{organizationId}/{blockId}/versions/{blockVersion}': {
     parameters: [
       { $ref: '#/components/parameters/organizationId' },
       { $ref: '#/components/parameters/blockId' },
@@ -49,7 +49,7 @@ export const paths: OpenAPIV3.PathsObject = {
       },
     },
   },
-  '/api/common/blocks/@{organizationId}/{blockId}/versions/{blockVersion}/icon': {
+  '/api/blocks/@{organizationId}/{blockId}/versions/{blockVersion}/icon': {
     parameters: [
       { $ref: '#/components/parameters/organizationId' },
       { $ref: '#/components/parameters/blockId' },

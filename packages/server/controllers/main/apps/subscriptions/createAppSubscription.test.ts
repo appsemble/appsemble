@@ -87,7 +87,7 @@ describe('createAppSubscription', () => {
     const app = await defaultApp(organization.id);
 
     authorizeApp(app);
-    const response = await request.post(`/api/main/apps/${app.id}/subscriptions`, {
+    const response = await request.post(`/api/apps/${app.id}/subscriptions`, {
       endpoint: 'https://example.com',
       keys: { p256dh: 'abc', auth: 'def' },
     });

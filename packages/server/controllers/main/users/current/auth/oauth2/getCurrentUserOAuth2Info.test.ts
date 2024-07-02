@@ -38,7 +38,7 @@ afterAll(() => {
 describe('getCurrentUserOAuth2Info', () => {
   it('should return userinfo formatted as defined by OpenID', async () => {
     authorizeStudio();
-    const response = await request.get('/api/main/users/current/auth/oauth2');
+    const response = await request.get('/api/users/current/auth/oauth2');
     expect(response).toMatchObject({
       status: 200,
       data: {
@@ -54,7 +54,7 @@ describe('getCurrentUserOAuth2Info', () => {
   it('should work if the user has no primary email address', async () => {
     await user.update({ primaryEmail: null });
     authorizeStudio();
-    const response = await request.get('/api/main/users/current/auth/oauth2');
+    const response = await request.get('/api/users/current/auth/oauth2');
     expect(response).toMatchObject({
       status: 200,
       data: {
@@ -75,7 +75,7 @@ describe('getCurrentUserOAuth2Info', () => {
       vapidPublicKey: '',
     });
     authorizeApp(app);
-    const response = await request.get<UserInfo>('/api/main/users/current/auth/oauth2');
+    const response = await request.get<UserInfo>('/api/users/current/auth/oauth2');
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 403 Forbidden
       Content-Type: application/json; charset=utf-8
@@ -106,7 +106,7 @@ describe('getCurrentUserOAuth2Info', () => {
       picture: Buffer.from('PNG'),
     });
     authorizeApp(app);
-    const response = await request.get<UserInfo>('/api/main/users/current/auth/oauth2');
+    const response = await request.get<UserInfo>('/api/users/current/auth/oauth2');
     expect(response).toMatchInlineSnapshot(
       { data: { sub: expect.stringMatching(uuid4Pattern), picture: expect.any(String) } },
       `
@@ -136,7 +136,7 @@ describe('getCurrentUserOAuth2Info', () => {
     await user.destroy();
     expect(await User.findAll()).toHaveLength(0);
 
-    const response = await request.get<UserInfo>('/api/main/users/current/auth/oauth2');
+    const response = await request.get<UserInfo>('/api/users/current/auth/oauth2');
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 403 Forbidden
       Content-Type: application/json; charset=utf-8
@@ -166,7 +166,7 @@ describe('getCurrentUserOAuth2Info', () => {
       name: 'Test User',
     });
     authorizeApp(app);
-    const response = await request.get<UserInfo>('/api/main/users/current/auth/oauth2');
+    const response = await request.get<UserInfo>('/api/users/current/auth/oauth2');
     expect(response).toMatchInlineSnapshot(
       { data: { sub: expect.stringMatching(uuid4Pattern) } },
       `

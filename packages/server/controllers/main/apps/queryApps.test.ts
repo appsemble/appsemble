@@ -43,7 +43,7 @@ afterAll(() => {
 
 describe('queryApps', () => {
   it('should return an empty array of apps', async () => {
-    const response = await request.get('/api/main/apps');
+    const response = await request.get('/api/apps');
 
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 200 OK
@@ -77,7 +77,7 @@ describe('queryApps', () => {
       { raw: true },
     );
 
-    const response = await request.get('/api/main/apps');
+    const response = await request.get('/api/apps');
 
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 200 OK
@@ -187,7 +187,7 @@ describe('queryApps', () => {
       { raw: true },
     );
 
-    const response = await request.get('/api/main/apps');
+    const response = await request.get('/api/apps');
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 200 OK
       Content-Type: application/json; charset=utf-8
@@ -279,7 +279,7 @@ describe('queryApps', () => {
       visibility: 'public',
     });
 
-    const response = await request.get('/api/main/apps');
+    const response = await request.get('/api/apps');
 
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 200 OK

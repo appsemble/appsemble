@@ -218,7 +218,7 @@ describe('patchCurrentAppMember', () => {
     `,
     );
     expect(response.data.picture).toBe(
-      `http://localhost/api/common/apps/1/members/${user.id}/picture?updated=0`,
+      `http://localhost/api/apps/1/members/${user.id}/picture?updated=0`,
     );
     await appMember.reload();
     expect(appMember.picture).toStrictEqual(await readFixture('tux.png'));

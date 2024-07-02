@@ -143,7 +143,7 @@ describe('getOrganizations', () => {
       },
     });
 
-    const response = await request.get('/api/main/organizations');
+    const response = await request.get('/api/organizations');
 
     expect(response).toMatchObject({
       status: 200,

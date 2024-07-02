@@ -37,7 +37,7 @@ beforeEach(async () => {
 
 describe('getAppScimResourceType', () => {
   it('should fetch a SCIM schema for an app', async () => {
-    const response = await request.get(`/api/main/apps/${app.id}/scim/getSCIMResourceTypes/User`);
+    const response = await request.get(`/api/apps/${app.id}/scim/getSCIMResourceTypes/User`);
 
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 404 Not Found

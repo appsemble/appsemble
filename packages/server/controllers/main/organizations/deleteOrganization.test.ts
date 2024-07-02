@@ -57,8 +57,8 @@ describe('deleteOrganization', () => {
       UserId: user.id,
       role: 'Owner',
     });
-    await request.delete(`/api/main/organizations/${organization2.id}`);
-    const response = await request.get(`/api/main/organizations/${organization2.id}`);
+    await request.delete(`/api/organizations/${organization2.id}`);
+    const response = await request.get(`/api/organizations/${organization2.id}`);
     expect(response).toMatchObject({
       status: 404,
       data: { error: 'Not Found', statusCode: 404, message: 'Organization not found.' },
@@ -71,7 +71,7 @@ describe('deleteOrganization', () => {
       { where: { OrganizationId: organization.id, UserId: user.id } },
     );
     authorizeStudio();
-    const response = await request.delete(`/api/main/organizations/${organization.id}`);
+    const response = await request.delete(`/api/organizations/${organization.id}`);
     expect(response).toMatchObject({
       data: { message: 'User does not have sufficient permissions.' },
       status: 403,
@@ -105,7 +105,7 @@ describe('deleteOrganization', () => {
       },
     });
     authorizeStudio();
-    const response = await request.delete(`/api/main/organizations/${organization2.id}`);
+    const response = await request.delete(`/api/organizations/${organization2.id}`);
     expect(response).toMatchObject({
       status: 403,
       data: { message: 'Cannot delete an organization with associated blocks.' },
@@ -136,7 +136,7 @@ describe('deleteOrganization', () => {
       visibility: 'public',
     });
     authorizeStudio();
-    const response = await request.delete(`/api/main/organizations/${organization2.id}`);
+    const response = await request.delete(`/api/organizations/${organization2.id}`);
     expect(response).toMatchObject({
       status: 403,
       data: { message: 'Cannot delete an organization with associated app collections.' },

@@ -61,10 +61,10 @@ afterAll(() => {
 describe('updateAppResources', () => {
   it('should be able to update existing resources', async () => {
     const { data: resources } = await request.post<{ foo: string }[]>(
-      `/api/common/apps/${app.id}/resources/testResource`,
+      `/api/apps/${app.id}/resources/testResource`,
       [{ foo: 'bar' }, { foo: 'baz' }],
     );
-    const response = await request.put(`/api/common/apps/${app.id}/resources/testResource`, [
+    const response = await request.put(`/api/apps/${app.id}/resources/testResource`, [
       { ...resources[0], foo: 'baa' },
       { ...resources[1], foo: 'zaa' },
     ]);
@@ -92,7 +92,7 @@ describe('updateAppResources', () => {
 
   it('should accept text/csv', async () => {
     const { data: resources } = await request.post<{ id: string }[]>(
-      `/api/common/apps/${app.id}/resources/testResource`,
+      `/api/apps/${app.id}/resources/testResource`,
       [
         { foo: 'bar', bar: '00' },
         { foo: 'baz', bar: '11' },
@@ -100,7 +100,7 @@ describe('updateAppResources', () => {
     );
 
     const response = await request.put(
-      `/api/common/apps/${app.id}/resources/testResource`,
+      `/api/apps/${app.id}/resources/testResource`,
       stripIndent(`
         id,foo,integer,boolean,number,object,array\r
         ${resources[0].id},a,42,true,3.14,{},[]\r
@@ -143,7 +143,7 @@ describe('updateAppResources', () => {
 
   it('should accept assets as form data with multiple resources', async () => {
     const resources = await request.post<ResourceType[]>(
-      `/api/common/apps/${app.id}/resources/testAssets`,
+      `/api/apps/${app.id}/resources/testAssets`,
       createFormData({
         resource: [{ string: 'A' }, { string: 'B', file: '0' }],
         assets: [Buffer.from('Test resource B')],
@@ -151,7 +151,7 @@ describe('updateAppResources', () => {
     );
 
     const response = await request.put<ResourceType[]>(
-      `/api/common/apps/${app.id}/resources/testAssets`,
+      `/api/apps/${app.id}/resources/testAssets`,
       createFormData({
         resource: [
           { id: resources.data[0].id, string: 'A', file: '0' },
@@ -209,10 +209,10 @@ describe('updateAppResources', () => {
 
   it('should not be able to update existing resources if one of them is missing an ID', async () => {
     const { data: resources } = await request.post<{ foo: string }[]>(
-      `/api/common/apps/${app.id}/resources/testResource`,
+      `/api/apps/${app.id}/resources/testResource`,
       [{ foo: 'bar' }, { foo: 'baz' }],
     );
-    const response = await request.put(`/api/common/apps/${app.id}/resources/testResource`, [
+    const response = await request.put(`/api/apps/${app.id}/resources/testResource`, [
       { foo: 'baa' },
       { ...resources[1], foo: 'zaa' },
     ]);
@@ -236,10 +236,10 @@ describe('updateAppResources', () => {
 
   it('should not be able to update existing resources if one the resources don’t exist', async () => {
     const { data: resources } = await request.post<{ foo: string }[]>(
-      `/api/common/apps/${app.id}/resources/testResource`,
+      `/api/apps/${app.id}/resources/testResource`,
       [{ foo: 'bar' }, { foo: 'baz' }],
     );
-    const response = await request.put(`/api/common/apps/${app.id}/resources/testResource`, [
+    const response = await request.put(`/api/apps/${app.id}/resources/testResource`, [
       { id: 1000, foo: 'baa' },
       { ...resources[1], foo: 'zaa' },
     ]);
@@ -268,7 +268,7 @@ describe('updateAppResources', () => {
       type: 'testHistoryTrue',
       data: { string: 'rev1' },
     });
-    const response = await request.put(`/api/common/apps/${app.id}/resources/testHistoryTrue`, [
+    const response = await request.put(`/api/apps/${app.id}/resources/testHistoryTrue`, [
       { string: 'rev2', id: resource.id },
     ]);
     expect(response).toMatchInlineSnapshot(`
@@ -304,7 +304,7 @@ describe('updateAppResources', () => {
       type: 'testHistoryDataTrue',
       data: { string: 'rev1' },
     });
-    const response = await request.put(`/api/common/apps/${app.id}/resources/testHistoryDataTrue`, [
+    const response = await request.put(`/api/apps/${app.id}/resources/testHistoryDataTrue`, [
       { string: 'rev2', id: resource.id },
     ]);
     expect(response).toMatchInlineSnapshot(`
@@ -340,10 +340,9 @@ describe('updateAppResources', () => {
       type: 'testHistoryDataFalse',
       data: { string: 'rev1' },
     });
-    const response = await request.put(
-      `/api/common/apps/${app.id}/resources/testHistoryDataFalse`,
-      [{ string: 'rev2', id: resource.id }],
-    );
+    const response = await request.put(`/api/apps/${app.id}/resources/testHistoryDataFalse`, [
+      { string: 'rev2', id: resource.id },
+    ]);
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 200 OK
       Content-Type: application/json; charset=utf-8

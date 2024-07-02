@@ -31,7 +31,7 @@ export function blockVersionToJson(blockVersion: BlockVersion): BlockManifest {
   const blockName = `@${OrganizationId || Organization.id}/${name}`;
   let iconUrl = null;
   if (blockVersion.icon || blockVersion.get('hasIcon')) {
-    iconUrl = `/api/common/blocks/${blockName}/versions/${version}/icon`;
+    iconUrl = `/api/blocks/${blockName}/versions/${version}/icon`;
   } else if (blockVersion.Organization?.icon || blockVersion.Organization?.get('hasIcon')) {
     iconUrl = `/api/organizations/${Organization.id}/icon?${new URLSearchParams({
       updated: blockVersion.Organization?.updated.toISOString(),
@@ -62,7 +62,7 @@ export async function syncBlock({
   version,
 }: Pick<BlockVersion, 'name' | 'OrganizationId' | 'version'>): Promise<BlockManifest | undefined> {
   const id = `@${OrganizationId}/${name}`;
-  const blockUrl = String(new URL(`/api/common/blocks/${id}/versions/${version}`, argv.remote));
+  const blockUrl = String(new URL(`/api/blocks/${id}/versions/${version}`, argv.remote));
   logger.info(`Synchronizing block from ${blockUrl}`);
   try {
     const { data: block } = await axios.get<BlockManifest>(blockUrl);

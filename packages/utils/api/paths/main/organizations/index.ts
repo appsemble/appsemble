@@ -12,7 +12,7 @@ export const paths: OpenAPIV3.PathsObject = {
   ...blocksPaths,
   ...invitesPaths,
   ...membersPaths,
-  '/api/main/organizations': {
+  '/api/organizations': {
     get: {
       tags: ['main', 'organization'],
       description: 'Fetch the list of organizations.',
@@ -83,7 +83,7 @@ export const paths: OpenAPIV3.PathsObject = {
       security: [{ studio: [] }, { cli: ['organizations:write'] }],
     },
   },
-  '/api/main/organizations/{organizationId}': {
+  '/api/organizations/{organizationId}': {
     parameters: [{ $ref: '#/components/parameters/organizationId' }],
     get: {
       tags: ['main', 'organization'],
@@ -149,7 +149,7 @@ export const paths: OpenAPIV3.PathsObject = {
       security: [{ studio: [] }, {}],
     },
   },
-  '/api/main/organizations/{organizationId}/icon': {
+  '/api/organizations/{organizationId}/icon': {
     parameters: [{ $ref: '#/components/parameters/organizationId' }],
     get: {
       tags: ['organization'],

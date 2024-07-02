@@ -37,7 +37,7 @@ beforeEach(async () => {
 
 describe('getAppScimServiceProviderConfig', () => {
   it('should fetch all SCIM schemas for an app', async () => {
-    const response = await request.get(`/api/main/apps/${app.id}/scim/ServiceProviderConfig`);
+    const response = await request.get(`/api/apps/${app.id}/scim/ServiceProviderConfig`);
 
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 200 OK

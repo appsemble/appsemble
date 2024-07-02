@@ -188,10 +188,10 @@ describe('registerAppMemberWithEmail', () => {
 
     const m = await AppMember.findOne({ where: { email: 'test@example.com' } });
 
-    const responseB = await request.get(`/api/common/apps/${app.id}/members/${m.id}/picture`, {
+    const responseB = await request.get(`/api/apps/${app.id}/members/${m.id}/picture`, {
       responseType: 'arraybuffer',
     });
-    const responseC = await request.get(`/api/common/apps/${app.id}/members/${m.UserId}/picture`, {
+    const responseC = await request.get(`/api/apps/${app.id}/members/${m.UserId}/picture`, {
       responseType: 'arraybuffer',
     });
     expect(response).toMatchInlineSnapshot(

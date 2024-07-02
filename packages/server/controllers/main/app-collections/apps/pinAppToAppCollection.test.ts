@@ -111,7 +111,7 @@ describe('pinAppToAppCollection', () => {
     expect(app1.pinnedAt).toBeNull();
     authorizeStudio(user);
     const response = await request.post(
-      `/api/main/app-collections/${collections[0].id}/apps/${apps[0].id}/pinned`,
+      `/api/app-collections/${collections[0].id}/apps/${apps[0].id}/pinned`,
     );
     expect(response.status).toBe(200);
     expect(response.data).toStrictEqual({
@@ -126,7 +126,7 @@ describe('pinAppToAppCollection', () => {
     const unprivilegedUser = await createTestUser('nobody@example.com');
     authorizeStudio(unprivilegedUser);
     const response = await request.post(
-      `/api/main/app-collections/${collections[0].id}/apps/${apps[0].id}/pinned`,
+      `/api/app-collections/${collections[0].id}/apps/${apps[0].id}/pinned`,
     );
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 403 Forbidden

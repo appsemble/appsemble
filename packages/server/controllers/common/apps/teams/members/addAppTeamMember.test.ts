@@ -87,7 +87,7 @@ describe('addAppTeamMember', () => {
         role: 'Member',
       });
 
-      const response = await request.post(`/api/common/apps/${app.id}/teams/${team.id}/members`, {
+      const response = await request.post(`/api/apps/${app.id}/teams/${team.id}/members`, {
         id: user.id,
       });
 
@@ -125,7 +125,7 @@ describe('addAppTeamMember', () => {
           },
         },
       });
-      const response = await request.post(`/api/common/apps/${app.id}/teams/${team.id}/members`, {
+      const response = await request.post(`/api/apps/${app.id}/teams/${team.id}/members`, {
         id: user.id,
       });
 
@@ -168,7 +168,7 @@ describe('addAppTeamMember', () => {
         role: 'Member',
       });
       const team = await Team.create({ name: 'A', AppId: app.id });
-      const response = await request.post(`/api/common/apps/${app.id}/teams/${team.id}/members`, {
+      const response = await request.post(`/api/apps/${app.id}/teams/${team.id}/members`, {
         id: userB.id,
       });
 
@@ -203,7 +203,7 @@ describe('addAppTeamMember', () => {
         role: 'Member',
       });
       const team = await Team.create({ name: 'A', AppId: app.id });
-      const response = await request.post(`/api/common/apps/${app.id}/teams/${team.id}/members`, {
+      const response = await request.post(`/api/apps/${app.id}/teams/${team.id}/members`, {
         id: userB.primaryEmail,
       });
 
@@ -249,7 +249,7 @@ describe('addAppTeamMember', () => {
       });
       const team = await Team.create({ name: 'A', AppId: app.id });
       await TeamMember.create({ AppMemberId: member1.id, TeamId: team.id, role: TeamRole.Manager });
-      const response = await request.post(`/api/common/apps/${app.id}/teams/${team.id}/members`, {
+      const response = await request.post(`/api/apps/${app.id}/teams/${team.id}/members`, {
         id: userB.id,
       });
 
@@ -292,7 +292,7 @@ describe('addAppTeamMember', () => {
         TeamId: team.id,
         role: TeamRole.Member,
       });
-      const response = await request.post(`/api/common/apps/${app.id}/teams/${team.id}/members`, {
+      const response = await request.post(`/api/apps/${app.id}/teams/${team.id}/members`, {
         id: user.id,
       });
 
@@ -316,8 +316,8 @@ describe('addAppTeamMember', () => {
         role: 'Member',
       });
       const team = await Team.create({ name: 'A', AppId: app.id });
-      await request.post(`/api/common/apps/${app.id}/teams/${team.id}/members`, { id: userB.id });
-      const response = await request.post(`/api/common/apps/${app.id}/teams/${team.id}/members`, {
+      await request.post(`/api/apps/${app.id}/teams/${team.id}/members`, { id: userB.id });
+      const response = await request.post(`/api/apps/${app.id}/teams/${team.id}/members`, {
         id: userB.id,
       });
 
@@ -352,7 +352,7 @@ describe('addAppTeamMember', () => {
         role: '',
       });
       const team = await Team.create({ name: 'A', AppId: app.id });
-      const response = await request.post(`/api/common/apps/${app.id}/teams/${team.id}/members`, {
+      const response = await request.post(`/api/apps/${app.id}/teams/${team.id}/members`, {
         id: userB.id,
       });
 

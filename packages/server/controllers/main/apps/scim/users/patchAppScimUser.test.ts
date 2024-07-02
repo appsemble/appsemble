@@ -55,7 +55,7 @@ describe('patchAppScimUser', () => {
       role: 'User',
     });
 
-    const response = await request.patch(`/api/main/apps/${app.id}/scim/Users/${member.id}`, {
+    const response = await request.patch(`/api/apps/${app.id}/scim/Users/${member.id}`, {
       ScHeMaS: [
         'urn:ietf:params:scim:schemas:core:2.0:User',
         'urn:ietf:params:scim:schemas:extension:enterprise:2.0:User',
@@ -124,7 +124,7 @@ describe('patchAppScimUser', () => {
       role: 'User',
     });
 
-    const response = await request.patch(`/api/main/apps/${app.id}/scim/Users/${member.id}`, {
+    const response = await request.patch(`/api/apps/${app.id}/scim/Users/${member.id}`, {
       ScHeMaS: [
         'urn:ietf:params:scim:schemas:core:2.0:User',
         'urn:ietf:params:scim:schemas:extension:enterprise:2.0:User',

@@ -46,7 +46,7 @@ describe('getBlockVersionMessages', () => {
       messages: { hello: 'Hello' },
     });
 
-    const response = await request.get('/api/common/blocks/@xkcd/test/versions/1.2.3/messages/en');
+    const response = await request.get('/api/blocks/@xkcd/test/versions/1.2.3/messages/en');
     expect(response).toMatchObject({
       status: 200,
       data: { hello: 'Hello' },
@@ -60,7 +60,7 @@ describe('getBlockVersionMessages', () => {
       version: '1.2.3',
     });
 
-    const response = await request.get('/api/common/blocks/@xkcd/test/versions/1.2.3/messages/en');
+    const response = await request.get('/api/blocks/@xkcd/test/versions/1.2.3/messages/en');
     expect(response).toMatchObject({
       status: 404,
       data: {
@@ -72,7 +72,7 @@ describe('getBlockVersionMessages', () => {
   });
 
   it('should return 404 if the block doesn’t exist', async () => {
-    const response = await request.get('/api/common/blocks/@xkcd/test/versions/1.2.3/messages/en');
+    const response = await request.get('/api/blocks/@xkcd/test/versions/1.2.3/messages/en');
     expect(response).toMatchObject({
       status: 404,
       data: {

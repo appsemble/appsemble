@@ -1,7 +1,7 @@
 import { type OpenAPIV3 } from 'openapi-types';
 
 export const paths: OpenAPIV3.PathsObject = {
-  '/api/main/auth/oauth2/authorizations/register': {
+  '/api/auth/oauth2/authorizations/register': {
     post: {
       tags: ['main', 'auth', 'oauth2', 'authorization'],
       operationId: 'registerOAuth2Authorization',
@@ -32,7 +32,7 @@ export const paths: OpenAPIV3.PathsObject = {
       },
     },
   },
-  '/api/main/auth/oauth2/authorizations/connect': {
+  '/api/auth/oauth2/authorizations/connect': {
     post: {
       description: 'Create an account using an OAuth2 authorization.',
       tags: ['main', 'auth', 'oauth2', 'authorization'],

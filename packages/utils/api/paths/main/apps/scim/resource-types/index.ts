@@ -1,7 +1,7 @@
 import { type OpenAPIV3 } from 'openapi-types';
 
 export const paths: OpenAPIV3.PathsObject = {
-  '/api/main/apps/{appId}/scim/ResourceTypes': {
+  '/api/apps/{appId}/scim/ResourceTypes': {
     parameters: [{ $ref: '#/components/parameters/appId' }],
     get: {
       tags: ['main', 'app', 'scim'],
@@ -22,7 +22,7 @@ export const paths: OpenAPIV3.PathsObject = {
       },
     },
   },
-  '/api/main/apps/{appId}/scim/ResourceTypes/{resourceTypeId}': {
+  '/api/apps/{appId}/scim/ResourceTypes/{resourceTypeId}': {
     parameters: [
       { $ref: '#/components/parameters/appId' },
       { name: 'resourceTypeId', in: 'path', schema: { type: 'string' } },

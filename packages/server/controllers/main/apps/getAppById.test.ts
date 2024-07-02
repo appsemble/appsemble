@@ -50,7 +50,7 @@ afterAll(() => {
 
 describe('getAppById', () => {
   it('should return 404 when fetching a non-existent app', async () => {
-    const response = await request.get('/api/main/apps/1');
+    const response = await request.get('/api/apps/1');
 
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 404 Not Found
@@ -75,7 +75,7 @@ describe('getAppById', () => {
       },
       { raw: true },
     );
-    const response = await request.get(`/api/main/apps/${appA.id}`);
+    const response = await request.get(`/api/apps/${appA.id}`);
 
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 200 OK
@@ -134,7 +134,7 @@ describe('getAppById', () => {
       { raw: true },
     );
     authorizeStudio();
-    const response = await request.get(`/api/main/apps/${app.id}`);
+    const response = await request.get(`/api/apps/${app.id}`);
     expect(response).toMatchObject({
       status: 200,
       data: {
@@ -157,7 +157,7 @@ describe('getAppById', () => {
     await AppSnapshot.create({ AppId: app.id, yaml: 'name: Test App\ndefaultPage Test Page\n' });
     vi.advanceTimersByTime(3600);
     await AppSnapshot.create({ AppId: app.id, yaml: '{ name: Test App, defaultPage Test Page }' });
-    const response = await request.get(`/api/main/apps/${app.id}`);
+    const response = await request.get(`/api/apps/${app.id}`);
 
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 200 OK
@@ -211,7 +211,7 @@ describe('getAppById', () => {
       },
       { raw: true },
     );
-    const response = await request.get(`/api/main/apps/${app.id}`);
+    const response = await request.get(`/api/apps/${app.id}`);
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 200 OK
       Content-Type: application/json; charset=utf-8
@@ -236,7 +236,7 @@ describe('getAppById', () => {
         "hasIcon": true,
         "hasMaskableIcon": false,
         "iconBackground": "#ffffff",
-        "iconUrl": "/api/common/apps/1/icon?maskable=true&updated=1970-01-01T00%3A00%3A00.000Z",
+        "iconUrl": "/api/apps/1/icon?maskable=true&updated=1970-01-01T00%3A00%3A00.000Z",
         "id": 1,
         "locked": "unlocked",
         "path": "test-app",
@@ -267,7 +267,7 @@ describe('getAppById', () => {
       },
       { raw: true },
     );
-    const response = await request.get(`/api/main/apps/${app.id}`);
+    const response = await request.get(`/api/apps/${app.id}`);
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 200 OK
       Content-Type: application/json; charset=utf-8
@@ -292,7 +292,7 @@ describe('getAppById', () => {
         "hasIcon": false,
         "hasMaskableIcon": false,
         "iconBackground": "#ffffff",
-        "iconUrl": "/api/main/organizations/testorganization/icon?background=%23ffffff&maskable=true&updated=1970-01-01T00%3A00%3A00.000Z",
+        "iconUrl": "/api/organizations/testorganization/icon?background=%23ffffff&maskable=true&updated=1970-01-01T00%3A00%3A00.000Z",
         "id": 1,
         "locked": "unlocked",
         "path": "test-app",
@@ -319,7 +319,7 @@ describe('getAppById', () => {
       },
       { raw: true },
     );
-    const response = await request.get(`/api/main/apps/${app.id}`);
+    const response = await request.get(`/api/apps/${app.id}`);
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 200 OK
       Content-Type: application/json; charset=utf-8
@@ -370,7 +370,7 @@ describe('getAppById', () => {
       showAppDefinition: true,
     });
     authorizeStudio();
-    const response = await request.get(`/api/main/apps/${app.id}`);
+    const response = await request.get(`/api/apps/${app.id}`);
 
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 200 OK
@@ -425,7 +425,7 @@ describe('getAppById', () => {
       showAppDefinition: true,
     });
     authorizeStudio();
-    const response = await request.get(`/api/main/apps/${app.id}`);
+    const response = await request.get(`/api/apps/${app.id}`);
 
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 200 OK

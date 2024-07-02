@@ -87,14 +87,14 @@ describe('deleteAppOAuth2Secrets', () => {
       userInfoUrl: 'https://example.com/oauth/userinfo',
     });
     authorizeStudio();
-    const response = await request.delete(`/api/main/apps/${app.id}/secrets/oauth2`);
+    const response = await request.delete(`/api/apps/${app.id}/secrets/oauth2`);
     expect(response).toMatchInlineSnapshot('HTTP/1.1 204 No Content');
   });
 
   it('should require the user to have correct permissions', async () => {
     await member.update({ role: 'Member' });
     authorizeStudio();
-    const response = await request.delete(`/api/main/apps/${app.id}/secrets/oauth2`);
+    const response = await request.delete(`/api/apps/${app.id}/secrets/oauth2`);
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 403 Forbidden
       Content-Type: application/json; charset=utf-8

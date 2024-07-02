@@ -4,7 +4,7 @@ import { paths as membersPaths } from './members/index.js';
 
 export const paths: OpenAPIV3.PathsObject = {
   ...membersPaths,
-  '/api/main/users/current/apps': {
+  '/api/users/current/apps': {
     get: {
       tags: ['main', 'user', 'current-user', 'app'],
       parameters: [

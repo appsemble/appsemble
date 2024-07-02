@@ -6,7 +6,7 @@ import { paths as oauth2Paths } from './oauth2/authorizations/index.js';
 export const paths: OpenAPIV3.PathsObject = {
   ...emailPaths,
   ...oauth2Paths,
-  '/api/main/auth/refresh-token': {
+  '/api/auth/refresh-token': {
     post: {
       tags: ['main', 'auth'],
       description: 'Refresh an access token using the Appsemble studio',

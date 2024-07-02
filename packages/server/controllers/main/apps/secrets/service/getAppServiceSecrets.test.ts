@@ -90,7 +90,7 @@ describe('getAppServiceSecrets', () => {
       AppId: app.id,
     });
 
-    const response = await request.get(`/api/main/apps/${app.id}/secrets/service`);
+    const response = await request.get(`/api/apps/${app.id}/secrets/service`);
 
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 200 OK

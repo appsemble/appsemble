@@ -62,7 +62,7 @@ describe('deleteTrainingBlock', () => {
     OrganizationMember.update({ role: 'Member' }, { where: { UserId: user.id } });
 
     authorizeStudio();
-    const response = await request.delete(`/api/main/training-blocks/${block1.id}`);
+    const response = await request.delete(`/api/training-blocks/${block1.id}`);
 
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 403 Forbidden
@@ -97,7 +97,7 @@ describe('deleteTrainingBlock', () => {
     OrganizationMember.update({ OrganizationId: 'testorg' }, { where: { UserId: user.id } });
 
     authorizeStudio();
-    const response = await request.delete(`/api/main/training-blocks/${block1.id}`);
+    const response = await request.delete(`/api/training-blocks/${block1.id}`);
 
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 403 Forbidden
@@ -130,10 +130,10 @@ describe('deleteTrainingBlock', () => {
     });
 
     authorizeStudio();
-    const response = await request.delete(`/api/main/training-blocks/${block1.id}`);
+    const response = await request.delete(`/api/training-blocks/${block1.id}`);
     expect(response.status).toBe(204);
 
-    const trainingBlocks = await request.get('/api/main/trainings/1/blocks');
+    const trainingBlocks = await request.get('/api/trainings/1/blocks');
     expect(trainingBlocks).toMatchObject({
       status: 200,
       data: [

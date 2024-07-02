@@ -49,7 +49,7 @@ afterAll(() => {
 describe('createAppSamlSecret', () => {
   it('should generate SAML parameters', async () => {
     authorizeStudio();
-    const response = await request.post(`/api/main/apps/${app.id}/secrets/saml`, {
+    const response = await request.post(`/api/apps/${app.id}/secrets/saml`, {
       entityId: 'https://example.com/saml/metadata.xml',
       ssoUrl: 'https://example.com/saml/login',
       idpCertificate: '-----BEGIN CERTIFICATE-----\nIDP\n-----END CERTIFICATE-----',
@@ -79,7 +79,7 @@ describe('createAppSamlSecret', () => {
 
   it('should not throw status 404 for unknown apps', async () => {
     authorizeStudio();
-    const response = await request.post('/api/main/apps/13/secrets/saml', {
+    const response = await request.post('/api/apps/13/secrets/saml', {
       entityId: 'https://example.com/saml/metadata.xml',
       ssoUrl: 'https://example.com/saml/login',
       idpCertificate: '-----BEGIN CERTIFICATE-----\nIDP\n-----END CERTIFICATE-----',
@@ -101,7 +101,7 @@ describe('createAppSamlSecret', () => {
   it('should require the EditApps and EditAppSettings permissions', async () => {
     authorizeStudio();
     await member.update({ role: 'Member' });
-    const response = await request.post(`/api/main/apps/${app.id}/secrets/saml`, {
+    const response = await request.post(`/api/apps/${app.id}/secrets/saml`, {
       entityId: 'https://example.com/saml/metadata.xml',
       ssoUrl: 'https://example.com/saml/login',
       idpCertificate: '-----BEGIN CERTIFICATE-----\nIDP\n-----END CERTIFICATE-----',

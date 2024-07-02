@@ -56,7 +56,7 @@ describe('setAppLock', () => {
       OrganizationId: organization.id,
     });
 
-    const response = await request.post(`/api/main/apps/${app.id}/lock`, { locked: 'studioLock' });
+    const response = await request.post(`/api/apps/${app.id}/lock`, { locked: 'studioLock' });
     await app.reload();
     expect(response).toMatchInlineSnapshot('HTTP/1.1 204 No Content');
     expect(app.locked).toBe('studioLock');
@@ -73,7 +73,7 @@ describe('setAppLock', () => {
       locked: 'studioLock',
     });
 
-    const response = await request.post(`/api/main/apps/${app.id}/lock`, { locked: 'unlocked' });
+    const response = await request.post(`/api/apps/${app.id}/lock`, { locked: 'unlocked' });
     await app.reload();
     expect(response).toMatchInlineSnapshot('HTTP/1.1 204 No Content');
     expect(app.locked).toBe('unlocked');
@@ -90,7 +90,7 @@ describe('setAppLock', () => {
       locked: 'studioLock',
     });
 
-    const response = await request.post(`/api/main/apps/${app.id}/lock`, { locked: 'fullLock' });
+    const response = await request.post(`/api/apps/${app.id}/lock`, { locked: 'fullLock' });
     await app.reload();
     expect(response).toMatchInlineSnapshot('HTTP/1.1 204 No Content');
     expect(app.locked).toBe('fullLock');
@@ -107,7 +107,7 @@ describe('setAppLock', () => {
       locked: 'fullLock',
     });
 
-    const response = await request.post(`/api/main/apps/${app.id}/lock`, { locked: 'unlocked' });
+    const response = await request.post(`/api/apps/${app.id}/lock`, { locked: 'unlocked' });
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 403 Forbidden
       Content-Type: application/json; charset=utf-8
@@ -131,7 +131,7 @@ describe('setAppLock', () => {
       locked: 'fullLock',
     });
 
-    const response = await request.post(`/api/main/apps/${app.id}/lock`, { locked: 'unlocked' });
+    const response = await request.post(`/api/apps/${app.id}/lock`, { locked: 'unlocked' });
     await app.reload();
     expect(response).toMatchInlineSnapshot('HTTP/1.1 204 No Content');
     expect(app.locked).toBe('unlocked');
@@ -150,7 +150,7 @@ describe('setAppLock', () => {
       locked: 'studioLock',
     });
 
-    const response = await request.post(`/api/main/apps/${app.id}/lock`, { locked: 'unlocked' });
+    const response = await request.post(`/api/apps/${app.id}/lock`, { locked: 'unlocked' });
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 403 Forbidden
       Content-Type: application/json; charset=utf-8

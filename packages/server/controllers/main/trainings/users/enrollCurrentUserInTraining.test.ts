@@ -55,7 +55,7 @@ describe('enrollCurrentUserInTraining', () => {
     });
 
     authorizeStudio();
-    const response = await request.post('/api/main/trainings/2/users/current');
+    const response = await request.post('/api/trainings/2/users/current');
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 404 Not Found
       Content-Type: application/json; charset=utf-8
@@ -83,7 +83,7 @@ describe('enrollCurrentUserInTraining', () => {
     });
 
     authorizeStudio();
-    const response = await request.post('/api/main/trainings/1/users/current');
+    const response = await request.post('/api/trainings/1/users/current');
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 400 Bad Request
       Content-Type: application/json; charset=utf-8
@@ -105,7 +105,7 @@ describe('enrollCurrentUserInTraining', () => {
     });
 
     authorizeStudio();
-    const response = await request.post('/api/main/trainings/1/users/current');
+    const response = await request.post('/api/trainings/1/users/current');
     expect(response.status).toBe(201);
   });
 });

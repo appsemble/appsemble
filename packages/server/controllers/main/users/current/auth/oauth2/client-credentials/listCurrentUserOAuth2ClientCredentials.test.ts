@@ -50,7 +50,7 @@ describe('listOAuth2ClientCredentials', () => {
     });
 
     authorizeStudio();
-    const response = await request.get('/api/main/users/current/auth/oauth2/client-credentials');
+    const response = await request.get('/api/users/current/auth/oauth2/client-credentials');
     expect(response).toMatchObject({
       status: 200,
       data: [
@@ -84,7 +84,7 @@ describe('listOAuth2ClientCredentials', () => {
     });
 
     authorizeStudio();
-    const response = await request.get('/api/main/users/current/auth/oauth2/client-credentials');
+    const response = await request.get('/api/users/current/auth/oauth2/client-credentials');
     expect(response).toMatchObject({
       status: 200,
       data: [

@@ -60,7 +60,7 @@ describe('getTrainedUsers', () => {
       completed: true,
     });
     authorizeStudio();
-    const response = await request.get('/api/main/trainings/2/users');
+    const response = await request.get('/api/trainings/2/users');
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 404 Not Found
       Content-Type: application/json; charset=utf-8
@@ -94,7 +94,7 @@ describe('getTrainedUsers', () => {
       completed: false,
     });
     authorizeStudio();
-    const response = await request.get('/api/main/trainings/1/users');
+    const response = await request.get('/api/trainings/1/users');
     expect(response).toMatchObject({
       status: 200,
       data: [

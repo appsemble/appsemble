@@ -62,7 +62,7 @@ describe('isCurrentUserEnrolledInTraining', () => {
       completed: false,
     });
     authorizeStudio();
-    const response = await request.get('/api/main/trainings/1/users/current');
+    const response = await request.get('/api/trainings/1/users/current');
     expect(response).toMatchObject({
       status: 200,
       data: {
@@ -87,7 +87,7 @@ describe('isCurrentUserEnrolledInTraining', () => {
       completed: false,
     });
     authorizeStudio();
-    const response = await request.get('/api/main/trainings/1/users/current');
+    const response = await request.get('/api/trainings/1/users/current');
     expect(response).toMatchObject({
       status: 200,
       data: {

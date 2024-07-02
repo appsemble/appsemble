@@ -68,7 +68,7 @@ afterAll(() => {
 
 describe('createAppVariable', () => {
   it('should add new app variable', async () => {
-    const response = await request.post(`/api/main/apps/${app.id}/variables`, {
+    const response = await request.post(`/api/apps/${app.id}/variables`, {
       name: 'Test variable',
       value: 'Test value',
     });
@@ -86,11 +86,11 @@ describe('createAppVariable', () => {
   });
 
   it('should not allow duplicate variable names', async () => {
-    await request.post(`/api/main/apps/${app.id}/variables`, {
+    await request.post(`/api/apps/${app.id}/variables`, {
       name: 'Test variable',
       value: 'Test value',
     });
-    const response = await request.post(`/api/main/apps/${app.id}/variables`, {
+    const response = await request.post(`/api/apps/${app.id}/variables`, {
       name: 'Test variable',
       value: 'Test value',
     });
@@ -109,7 +109,7 @@ describe('createAppVariable', () => {
 
   it('should throw status 404 for unknown apps', async () => {
     authorizeStudio();
-    const response = await request.post('/api/main/apps/123/variables', {
+    const response = await request.post('/api/apps/123/variables', {
       name: 'Test variable',
       value: 'Test value',
     });
@@ -128,7 +128,7 @@ describe('createAppVariable', () => {
   it('should require the EditApps and EditAppSettings permissions', async () => {
     authorizeStudio();
     await member.update({ role: 'Member' });
-    const response = await request.post(`/api/main/apps/${app.id}/variables`, {
+    const response = await request.post(`/api/apps/${app.id}/variables`, {
       name: 'Test variable',
       value: 'Test value',
     });

@@ -56,9 +56,9 @@ export async function queryBlocks(ctx: Context): Promise<void> {
     } = blockVersion;
     let iconUrl = null;
     if (hasIcon) {
-      iconUrl = `/api/common/blocks/@${OrganizationId}/${name}/versions/${version}/icon`;
+      iconUrl = `/api/blocks/@${OrganizationId}/${name}/versions/${version}/icon`;
     } else if (hasOrganizationIcon) {
-      iconUrl = `/api/main/organizations/${OrganizationId}/icon?updated=${organizationUpdated.toISOString()}`;
+      iconUrl = `/api/organizations/${OrganizationId}/icon?updated=${organizationUpdated.toISOString()}`;
     }
     return {
       name: `@${OrganizationId}/${name}`,

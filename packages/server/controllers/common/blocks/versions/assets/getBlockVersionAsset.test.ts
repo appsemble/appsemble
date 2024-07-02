@@ -47,7 +47,7 @@ describe('getBlockVersionAsset', () => {
       mime: 'application/javascript',
     });
 
-    const response = await request.get('/api/common/blocks/@xkcd/test/versions/1.2.3/asset', {
+    const response = await request.get('/api/blocks/@xkcd/test/versions/1.2.3/asset', {
       params: { filename: 'hello.js' },
     });
     expect(response.headers['content-type']).toBe('application/javascript; charset=utf-8');
@@ -67,7 +67,7 @@ describe('getBlockVersionAsset', () => {
       mime: 'application/javascript',
     });
 
-    const response = await request.get('/api/common/blocks/@xkcd/test/versions/1.2.4/asset', {
+    const response = await request.get('/api/blocks/@xkcd/test/versions/1.2.4/asset', {
       params: { filename: 'hello.js' },
     });
     expect(response).toMatchObject({
@@ -93,7 +93,7 @@ describe('getBlockVersionAsset', () => {
       mime: 'application/javascript',
     });
 
-    const response = await request.get('/api/common/blocks/@nope/test/versions/1.2.3/asset', {
+    const response = await request.get('/api/blocks/@nope/test/versions/1.2.3/asset', {
       params: { filename: 'hello.js' },
     });
     expect(response).toMatchObject({
@@ -119,7 +119,7 @@ describe('getBlockVersionAsset', () => {
       mime: 'application/javascript',
     });
 
-    const response = await request.get('/api/common/blocks/@xkcd/nope/versions/1.2.3/asset', {
+    const response = await request.get('/api/blocks/@xkcd/nope/versions/1.2.3/asset', {
       params: { filename: 'hello.js' },
     });
     expect(response).toMatchObject({
@@ -145,7 +145,7 @@ describe('getBlockVersionAsset', () => {
       mime: 'application/javascript',
     });
 
-    const response = await request.get('/api/common/blocks/@xkcd/test/versions/1.2.3/asset', {
+    const response = await request.get('/api/blocks/@xkcd/test/versions/1.2.3/asset', {
       params: { filename: 'nope.js' },
     });
     expect(response).toMatchObject({

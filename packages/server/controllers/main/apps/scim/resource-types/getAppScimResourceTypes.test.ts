@@ -37,7 +37,7 @@ beforeEach(async () => {
 
 describe('getAppScimResourceTypes', () => {
   it('should fetch all SCIM schemas for an app', async () => {
-    const response = await request.get(`/api/main/apps/${app.id}/scim/ResourceTypes`);
+    const response = await request.get(`/api/apps/${app.id}/scim/ResourceTypes`);
 
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 200 OK
@@ -47,10 +47,10 @@ describe('getAppScimResourceTypes', () => {
         "Resources": [
           {
             "description": "https://tools.ietf.org/html/rfc7643#section-8.7.1",
-            "endpoint": "http://localhost/api/main/apps/1/scim/Users",
+            "endpoint": "http://localhost/api/apps/1/scim/Users",
             "id": "User",
             "meta": {
-              "location": "http://localhost/api/main/apps/1/scim/ResourceTypes/User",
+              "location": "http://localhost/api/apps/1/scim/ResourceTypes/User",
               "resourceType": "ResourceType",
             },
             "name": "User",

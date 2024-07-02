@@ -87,7 +87,7 @@ beforeEach(async () => {
 describe('addAppToAppCollection', () => {
   it('should add an app to an app collection', async () => {
     authorizeStudio(user);
-    const response = await request.post(`/api/main/app-collections/${collections[0].id}/apps`, {
+    const response = await request.post(`/api/app-collections/${collections[0].id}/apps`, {
       AppId: funAndProductivityApp.id,
     });
     expect(response).toMatchInlineSnapshot('HTTP/1.1 204 No Content');
@@ -104,7 +104,7 @@ describe('addAppToAppCollection', () => {
   it('should not allow a user to add an app to an app collection without permission', async () => {
     const unprivilegedUser = await createTestUser('nobody@example.com');
     authorizeStudio(unprivilegedUser);
-    const response = await request.post(`/api/main/app-collections/${collections[0].id}/apps`, {
+    const response = await request.post(`/api/app-collections/${collections[0].id}/apps`, {
       AppId: funAndProductivityApp.id,
     });
     expect(response).toMatchInlineSnapshot(`
@@ -124,12 +124,12 @@ describe('addAppToAppCollection', () => {
   it.skip('should not allow duplicate apps in an app collection', async () => {
     authorizeStudio(user);
 
-    const response = await request.post(`/api/main/app-collections/${collections[0].id}/apps`, {
+    const response = await request.post(`/api/app-collections/${collections[0].id}/apps`, {
       AppId: funAndProductivityApp.id,
     });
     expect(response).toMatchInlineSnapshot('HTTP/1.1 204 No Content');
 
-    const response2 = await request.post(`/api/main/app-collections/${collections[0].id}/apps`, {
+    const response2 = await request.post(`/api/app-collections/${collections[0].id}/apps`, {
       AppId: funAndProductivityApp.id,
     });
     expect(response2).toMatchInlineSnapshot(`

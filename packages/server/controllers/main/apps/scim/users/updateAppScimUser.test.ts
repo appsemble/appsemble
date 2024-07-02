@@ -55,7 +55,7 @@ describe('updateAppScimUser', () => {
       role: 'User',
     });
 
-    const response = await request.put(`/api/main/apps/${app.id}/scim/Users/${member.id}`, {
+    const response = await request.put(`/api/apps/${app.id}/scim/Users/${member.id}`, {
       ScHeMaS: [
         'urn:ietf:params:scim:schemas:core:2.0:User',
         'urn:ietf:params:scim:schemas:extension:enterprise:2.0:User',

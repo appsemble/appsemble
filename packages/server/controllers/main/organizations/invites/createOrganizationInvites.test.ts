@@ -54,7 +54,7 @@ describe('createOrganizationInvites', () => {
     await OrganizationMember.update({ role: 'Member' }, { where: { UserId: user.id } });
 
     authorizeStudio();
-    const response = await request.post('/api/main/organizations/testorganization/invites', [
+    const response = await request.post('/api/organizations/testorganization/invites', [
       { email: 'a@example.com', role: 'Member' },
     ]);
     expect(response).toMatchObject({
@@ -84,7 +84,7 @@ describe('createOrganizationInvites', () => {
     await OrganizationMember.create({ OrganizationId: organization.id, UserId: userB.id });
 
     authorizeStudio();
-    const response = await request.post('/api/main/organizations/testorganization/invites', [
+    const response = await request.post('/api/organizations/testorganization/invites', [
       { email: 'a@example.com', role: 'Member' },
       { email: 'b@example.com', role: 'Member' },
     ]);
@@ -114,7 +114,7 @@ describe('createOrganizationInvites', () => {
     });
 
     authorizeStudio();
-    const response = await request.post('/api/main/organizations/testorganization/invites', [
+    const response = await request.post('/api/organizations/testorganization/invites', [
       { email: 'a@example.com', role: 'Member' },
       { email: 'b@example.com', role: 'Member' },
     ]);
@@ -140,7 +140,7 @@ describe('createOrganizationInvites', () => {
     await EmailAuthorization.create({ UserId: userA.id, email: 'aa@example.com' });
 
     authorizeStudio();
-    const response = await request.post('/api/main/organizations/testorganization/invites', [
+    const response = await request.post('/api/organizations/testorganization/invites', [
       { email: 'aa@example.com', role: 'Member' },
     ]);
     const invite = await OrganizationInvite.findOne();
@@ -174,7 +174,7 @@ describe('createOrganizationInvites', () => {
 
   it('should invite unknown email addresses', async () => {
     authorizeStudio();
-    const response = await request.post('/api/main/organizations/testorganization/invites', [
+    const response = await request.post('/api/organizations/testorganization/invites', [
       { email: 'a@example.com', role: 'Member' },
     ]);
     const invite = await OrganizationInvite.findOne();

@@ -4,7 +4,7 @@ import { paths as versionsPaths } from './versions/index.js';
 
 export const paths: OpenAPIV3.PathsObject = {
   ...versionsPaths,
-  '/api/main/apps/{appId}/resources': {
+  '/api/apps/{appId}/resources': {
     parameters: [{ $ref: '#/components/parameters/appId' }],
     delete: {
       tags: ['main', 'app', 'resource'],
@@ -18,7 +18,7 @@ export const paths: OpenAPIV3.PathsObject = {
       security: [{ cli: ['resources:write'] }, {}],
     },
   },
-  '/api/main/apps/{appId}/resources/{resourceType}': {
+  '/api/apps/{appId}/resources/{resourceType}': {
     parameters: [
       { $ref: '#/components/parameters/appId' },
       { $ref: '#/components/parameters/resourceType' },

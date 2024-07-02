@@ -70,7 +70,7 @@ describe('deleteAppSeedResources', () => {
       seed: true,
     });
 
-    await request.delete(`/api/main/apps/${app.id}/resources`);
+    await request.delete(`/api/apps/${app.id}/resources`);
 
     const seedResources = await Resource.findAll({
       where: {
@@ -114,7 +114,7 @@ describe('deleteAppSeedResources', () => {
       ephemeral: true,
     });
 
-    await request.delete(`/api/main/apps/${app.id}/resources`);
+    await request.delete(`/api/apps/${app.id}/resources`);
 
     const seedResources = await Resource.findAll({
       where: {
@@ -159,7 +159,7 @@ describe('deleteAppSeedResources', () => {
       seed: true,
     });
 
-    await request.delete(`/api/main/apps/${app.id}/resources`);
+    await request.delete(`/api/apps/${app.id}/resources`);
 
     const seedResources = await Resource.findAll({
       where: {
@@ -217,7 +217,7 @@ describe('deleteAppSeedResources', () => {
       seed: true,
     });
 
-    await request.delete(`/api/main/apps/${app.id}/resources`);
+    await request.delete(`/api/apps/${app.id}/resources`);
 
     const seedResources = await Resource.findAll({
       where: {

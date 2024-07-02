@@ -47,7 +47,7 @@ describe('queryBlocks', () => {
     });
 
     await authorizeClientCredentials('blocks:write');
-    const { data: apple } = await request.post<BlockManifest>('/api/main/blocks', formDataA);
+    const { data: apple } = await request.post<BlockManifest>('/api/blocks', formDataA);
 
     const formDataB = new FormData();
     formDataB.append('name', '@xkcd/pen');
@@ -58,9 +58,9 @@ describe('queryBlocks', () => {
     });
 
     await authorizeClientCredentials('blocks:write');
-    const { data: pen } = await request.post<BlockManifest>('/api/main/blocks', formDataB);
+    const { data: pen } = await request.post<BlockManifest>('/api/blocks', formDataB);
 
-    const { data: bam } = await request.get<BlockManifest[]>('/api/common/blocks');
+    const { data: bam } = await request.get<BlockManifest[]>('/api/blocks');
     expect(bam).toStrictEqual(
       expect.arrayContaining([
         omit(apple, ['files', 'languages']),
@@ -82,7 +82,7 @@ describe('queryBlocks', () => {
       visibility: 'unlisted',
     });
 
-    const { data: response } = await request.get<BlockManifest[]>('/api/common/blocks');
+    const { data: response } = await request.get<BlockManifest[]>('/api/blocks');
     expect(response).toHaveLength(1);
     expect(response).toMatchInlineSnapshot(`
       [
@@ -131,7 +131,7 @@ describe('queryBlocks', () => {
       visibility: 'unlisted',
     });
 
-    const { data: response } = await request.get<BlockManifest[]>('/api/common/blocks');
+    const { data: response } = await request.get<BlockManifest[]>('/api/blocks');
     expect(response).toHaveLength(2);
     expect(response).toMatchInlineSnapshot(`
       [

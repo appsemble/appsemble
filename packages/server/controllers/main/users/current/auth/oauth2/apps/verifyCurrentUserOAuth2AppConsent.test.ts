@@ -77,7 +77,7 @@ describe('verifyCurrentUserOAuth2AppConsent', () => {
     });
     authorizeStudio();
     const response = await request.post<LoginCodeResponse>(
-      `/api/main/users/current/auth/oauth2/apps/${app.id}/consent/verify`,
+      `/api/users/current/auth/oauth2/apps/${app.id}/consent/verify`,
       {
         appId: app.id,
         redirectUri: 'http://app.org.localhost:9999',
@@ -129,7 +129,7 @@ describe('verifyCurrentUserOAuth2AppConsent', () => {
     });
     authorizeStudio();
     const response = await request.post<LoginCodeResponse>(
-      `/api/main/users/current/auth/oauth2/apps/${app.id}/consent/verify`,
+      `/api/users/current/auth/oauth2/apps/${app.id}/consent/verify`,
       {
         appId: app.id,
         redirectUri: 'http://app.example:9999',
@@ -166,7 +166,7 @@ describe('verifyCurrentUserOAuth2AppConsent', () => {
     });
     authorizeStudio();
     const response = await request.post(
-      `/api/main/users/current/auth/oauth2/apps/${app.id}/consent/verify`,
+      `/api/users/current/auth/oauth2/apps/${app.id}/consent/verify`,
       {
         appId: app.id,
         redirectUri: 'http://invalid.example:9999',
@@ -199,7 +199,7 @@ describe('verifyCurrentUserOAuth2AppConsent', () => {
 
     authorizeStudio();
     const response = await request.post(
-      `/api/main/users/current/auth/oauth2/apps/${app.id}/consent/verify`,
+      `/api/users/current/auth/oauth2/apps/${app.id}/consent/verify`,
       {
         appId: app.id,
         redirectUri: 'http://app.example:9999',
@@ -228,7 +228,7 @@ describe('verifyCurrentUserOAuth2AppConsent', () => {
     });
     authorizeStudio();
     const response = await request.post(
-      `/api/main/users/current/auth/oauth2/apps/${app.id}/consent/verify`,
+      `/api/users/current/auth/oauth2/apps/${app.id}/consent/verify`,
       {
         appId: app.id,
         redirectUri: 'http://app.example:9999',
@@ -248,14 +248,11 @@ describe('verifyCurrentUserOAuth2AppConsent', () => {
 
   it('should return 404 for non-existent apps', async () => {
     authorizeStudio();
-    const response = await request.post(
-      '/api/main/users/current/auth/oauth2/apps/346/consent/verify',
-      {
-        appId: 346,
-        redirectUri: 'http://any.example:9999',
-        scope: 'openid',
-      },
-    );
+    const response = await request.post('/api/users/current/auth/oauth2/apps/346/consent/verify', {
+      appId: 346,
+      redirectUri: 'http://any.example:9999',
+      scope: 'openid',
+    });
     expect(response).toMatchObject({
       status: 404,
       data: {

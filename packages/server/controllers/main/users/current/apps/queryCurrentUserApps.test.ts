@@ -70,7 +70,7 @@ describe('queryCurrentUserApps', () => {
     );
 
     authorizeStudio();
-    const responseA = await request.get('/api/main/users/current/apps');
+    const responseA = await request.get('/api/users/current/apps');
 
     await OrganizationMember.create({
       OrganizationId: organizationB.id,
@@ -78,7 +78,7 @@ describe('queryCurrentUserApps', () => {
       role: 'Member',
     });
 
-    const responseB = await request.get('/api/main/users/current/apps');
+    const responseB = await request.get('/api/users/current/apps');
 
     expect(responseA).toMatchInlineSnapshot(`
       HTTP/1.1 200 OK

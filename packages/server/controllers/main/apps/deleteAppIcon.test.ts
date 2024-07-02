@@ -53,7 +53,7 @@ describe('deleteAppIcon', () => {
       OrganizationId: organization.id,
     });
     authorizeStudio();
-    const response = await request.delete(`/api/main/apps/${app.id}/icon`);
+    const response = await request.delete(`/api/apps/${app.id}/icon`);
     await app.reload();
     expect(response).toMatchInlineSnapshot('HTTP/1.1 204 No Content');
     expect(app.maskableIcon).toBeNull();
@@ -61,7 +61,7 @@ describe('deleteAppIcon', () => {
 
   it('should not delete icons from non-existent apps', async () => {
     authorizeStudio();
-    const response = await request.delete('/api/main/apps/0/icon');
+    const response = await request.delete('/api/apps/0/icon');
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 404 Not Found
       Content-Type: application/json; charset=utf-8
@@ -83,7 +83,7 @@ describe('deleteAppIcon', () => {
       OrganizationId: organization.id,
     });
     authorizeStudio();
-    const response = await request.delete(`/api/main/apps/${app.id}/icon`);
+    const response = await request.delete(`/api/apps/${app.id}/icon`);
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 404 Not Found
       Content-Type: application/json; charset=utf-8

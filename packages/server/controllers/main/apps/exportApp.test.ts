@@ -90,9 +90,7 @@ describe('exportApp', () => {
     });
     await OrganizationMember.update({ role: 'Member' }, { where: { UserId: user.id } });
     authorizeStudio();
-    const response = await request.get(
-      `/api/main/apps/${appWithResources.id}/export?resources=true`,
-    );
+    const response = await request.get(`/api/apps/${appWithResources.id}/export?resources=true`);
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 403 Forbidden
       Content-Type: application/json; charset=utf-8
@@ -124,7 +122,7 @@ describe('exportApp', () => {
     });
     await OrganizationMember.update({ role: 'Member' }, { where: { UserId: user.id } });
     authorizeStudio();
-    const response = await request.get(`/api/main/apps/${app.id}/export?assets=true`);
+    const response = await request.get(`/api/apps/${app.id}/export?assets=true`);
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 403 Forbidden
       Content-Type: application/json; charset=utf-8
@@ -150,7 +148,7 @@ describe('exportApp', () => {
       visibility: 'unlisted',
     });
     authorizeStudio();
-    const response = await request.get(`/api/main/apps/${app.id}/export`);
+    const response = await request.get(`/api/apps/${app.id}/export`);
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 403 Forbidden
       Content-Type: application/json; charset=utf-8
@@ -176,7 +174,7 @@ describe('exportApp', () => {
       showAppDefinition: false,
     });
     authorizeStudio();
-    const response = await request.get(`/api/main/apps/${app.id}/export`);
+    const response = await request.get(`/api/apps/${app.id}/export`);
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 403 Forbidden
       Content-Type: application/json; charset=utf-8
@@ -216,7 +214,7 @@ describe('exportApp', () => {
 
     vi.useRealTimers();
     authorizeStudio();
-    const response = await request.get(`/api/main/apps/${app.id}/export`, {
+    const response = await request.get(`/api/apps/${app.id}/export`, {
       responseType: 'stream',
     });
     const zip = new JSZip();
@@ -314,7 +312,7 @@ describe('exportApp', () => {
 
     vi.useRealTimers();
     authorizeStudio();
-    const response = await request.get(`/api/main/apps/${app.id}/export?readmes=true`, {
+    const response = await request.get(`/api/apps/${app.id}/export?readmes=true`, {
       responseType: 'stream',
     });
     const zip = new JSZip();
@@ -436,7 +434,7 @@ describe('exportApp', () => {
 
     vi.useRealTimers();
     authorizeStudio();
-    const response = await request.get(`/api/main/apps/${app.id}/export?screenshots=true`, {
+    const response = await request.get(`/api/apps/${app.id}/export?screenshots=true`, {
       responseType: 'stream',
     });
     const zip = new JSZip();
@@ -532,7 +530,7 @@ describe('exportApp', () => {
     });
     vi.useRealTimers();
     authorizeStudio();
-    const response = await request.get(`/api/main/apps/${app.id}/export?assets=true`, {
+    const response = await request.get(`/api/apps/${app.id}/export?assets=true`, {
       responseType: 'stream',
     });
     const zip = new JSZip();
@@ -634,12 +632,9 @@ describe('exportApp', () => {
 
     vi.useRealTimers();
     authorizeStudio();
-    const response = await request.get(
-      `/api/main/apps/${appWithResources.id}/export?resources=true`,
-      {
-        responseType: 'stream',
-      },
-    );
+    const response = await request.get(`/api/apps/${appWithResources.id}/export?resources=true`, {
+      responseType: 'stream',
+    });
     const zip = new JSZip();
 
     const dataBuffer: Buffer = await new Promise((resolve, reject) => {

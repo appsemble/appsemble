@@ -45,9 +45,9 @@ describe('deleteBlockVersion', () => {
     });
 
     await authorizeClientCredentials('blocks:delete');
-    const { status } = await request.delete('/api/main/blocks/@xkcd/test-delete/versions/1.2.3');
+    const { status } = await request.delete('/api/blocks/@xkcd/test-delete/versions/1.2.3');
     expect(status).toBe(204);
-    const response = await request.get('/api/common/blocks/@xkcd/test-delete/versions/1.2.3');
+    const response = await request.get('/api/blocks/@xkcd/test-delete/versions/1.2.3');
 
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 404 Not Found
@@ -73,7 +73,7 @@ describe('deleteBlockVersion', () => {
       { where: { OrganizationId: 'xkcd', UserId: user.id } },
     );
 
-    const response = await request.delete('/api/main/blocks/@xkcd/test/versions/1.2.3');
+    const response = await request.delete('/api/blocks/@xkcd/test/versions/1.2.3');
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 403 Forbidden
       Content-Type: application/json; charset=utf-8
@@ -107,7 +107,7 @@ describe('deleteBlockVersion', () => {
     );
 
     await authorizeClientCredentials('blocks:delete');
-    const response = await request.delete('/api/main/blocks/@xkcd/test/versions/1.2.3');
+    const response = await request.delete('/api/blocks/@xkcd/test/versions/1.2.3');
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 403 Forbidden
       Content-Type: application/json; charset=utf-8

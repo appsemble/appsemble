@@ -91,7 +91,7 @@ describe('updateAppServiceSecret', () => {
       AppId: app.id,
     });
 
-    const response = await request.put(`/api/main/apps/${app.id}/secrets/service/2`, {
+    const response = await request.put(`/api/apps/${app.id}/secrets/service/2`, {
       urlPatterns: 'https://example.com',
       authenticationMethod: 'cookie',
       secret: 'g0024cba821834fea0a94763f',
@@ -114,7 +114,7 @@ describe('updateAppServiceSecret', () => {
 
   it('should throw status 404 for unknown secrets', async () => {
     authorizeStudio();
-    const response = await request.put(`/api/main/apps/${app.id}/secrets/service/123`, {
+    const response = await request.put(`/api/apps/${app.id}/secrets/service/123`, {
       name: 'Test service',
       urlPatterns: 'example.com',
       authenticationMethod: 'custom-header',
@@ -135,7 +135,7 @@ describe('updateAppServiceSecret', () => {
 
   it('should throw status 404 for unknown apps', async () => {
     authorizeStudio();
-    const response = await request.put('/api/main/apps/123/secrets/service/1', {
+    const response = await request.put('/api/apps/123/secrets/service/1', {
       name: 'Test service',
       urlPatterns: 'example.com',
       authenticationMethod: 'custom-header',
@@ -157,7 +157,7 @@ describe('updateAppServiceSecret', () => {
   it('should require the EditApps and EditAppSettings permissions', async () => {
     authorizeStudio();
     await member.update({ role: 'Member' });
-    const response = await request.put(`/api/main/apps/${app.id}/secrets/service/123`, {
+    const response = await request.put(`/api/apps/${app.id}/secrets/service/123`, {
       name: 'Test service',
       urlPatterns: 'example.com',
       authenticationMethod: 'query-parameter',

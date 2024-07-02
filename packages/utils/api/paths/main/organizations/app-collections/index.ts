@@ -1,7 +1,7 @@
 import { type OpenAPIV3 } from 'openapi-types';
 
 export const paths: OpenAPIV3.PathsObject = {
-  '/api/main/organizations/{organizationId}/app-collections': {
+  '/api/organizations/{organizationId}/app-collections': {
     parameters: [{ $ref: '#/components/parameters/organizationId' }],
     get: {
       tags: ['main', 'organization', 'app-collection'],

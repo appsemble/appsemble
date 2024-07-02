@@ -106,7 +106,7 @@ describe('queryAppCollections', () => {
         ),
     );
 
-    const response = await request.get('/api/main/app-collections');
+    const response = await request.get('/api/app-collections');
     expect(response.status).toBe(200);
     expect(response.data).toStrictEqual(
       expect.arrayContaining([
@@ -116,9 +116,9 @@ describe('queryAppCollections', () => {
           $expert: {
             name: 'Expert van den Expert',
             description: 'I’m an expert, trust me.',
-            profileImage: `/api/main/app-collections/${collections[0].id}/expert/profile-image`,
+            profileImage: `/api/app-collections/${collections[0].id}/expert/profile-image`,
           },
-          headerImage: `/api/main/app-collections/${collections[0].id}/header-image`,
+          headerImage: `/api/app-collections/${collections[0].id}/header-image`,
           OrganizationId: organization.id,
           OrganizationName: organization.name,
           visibility: 'public',
@@ -132,9 +132,9 @@ describe('queryAppCollections', () => {
           $expert: {
             name: 'Expert van den Expert',
             description: 'I’m an expert, trust me.',
-            profileImage: `/api/main/app-collections/${collections[1].id}/expert/profile-image`,
+            profileImage: `/api/app-collections/${collections[1].id}/expert/profile-image`,
           },
-          headerImage: `/api/main/app-collections/${collections[1].id}/header-image`,
+          headerImage: `/api/app-collections/${collections[1].id}/header-image`,
           OrganizationId: organization.id,
           OrganizationName: organization.name,
           visibility: 'public',
@@ -148,9 +148,9 @@ describe('queryAppCollections', () => {
           $expert: {
             name: 'Expert van den Expert',
             description: 'I’m an expert, trust me.',
-            profileImage: `/api/main/app-collections/${collections[2].id}/expert/profile-image`,
+            profileImage: `/api/app-collections/${collections[2].id}/expert/profile-image`,
           },
-          headerImage: `/api/main/app-collections/${collections[2].id}/header-image`,
+          headerImage: `/api/app-collections/${collections[2].id}/header-image`,
           OrganizationId: organization.id,
           OrganizationName: organization.name,
           visibility: 'public',
@@ -174,7 +174,7 @@ describe('queryAppCollections', () => {
       OrganizationId: organization.id,
       visibility: 'private',
     });
-    const response = await request.get('/api/main/app-collections');
+    const response = await request.get('/api/app-collections');
     expect(response.status).toBe(200);
     expect(response.data).not.toContainEqual(
       expect.objectContaining({
@@ -183,7 +183,7 @@ describe('queryAppCollections', () => {
     );
     authorizeStudio(user);
 
-    const response3 = await request.get('/api/main/app-collections');
+    const response3 = await request.get('/api/app-collections');
     expect(response3.status).toBe(200);
     expect(response3.data).toContainEqual(
       expect.objectContaining({

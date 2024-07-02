@@ -5,7 +5,7 @@ import { TeamRole } from '../../../../../constants/index.js';
 
 export const paths: OpenAPIV3.PathsObject = {
   ...membersPaths,
-  '/api/common/apps/{appId}/teams': {
+  '/api/apps/{appId}/teams': {
     parameters: [{ $ref: '#/components/parameters/appId' }],
     get: {
       tags: ['common', 'app', 'team'],
@@ -87,7 +87,7 @@ export const paths: OpenAPIV3.PathsObject = {
       security: [{ app: ['teams:write'] }, { studio: [] }, { cli: ['teams:write'] }],
     },
   },
-  '/api/common/apps/{appId}/teams/{teamId}': {
+  '/api/apps/{appId}/teams/{teamId}': {
     parameters: [
       { $ref: '#/components/parameters/appId' },
       {

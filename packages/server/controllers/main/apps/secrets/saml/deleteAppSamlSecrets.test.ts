@@ -77,7 +77,7 @@ describe('deleteAppSamlSecrets', () => {
       spPublicKey: '-----BEGIN PUBLIC KEY-----\nSP\n-----END PUBLIC KEY-----',
     });
 
-    const response = await request.delete(`/api/main/apps/${app.id}/secrets/saml`);
+    const response = await request.delete(`/api/apps/${app.id}/secrets/saml`);
 
     expect(response).toMatchInlineSnapshot('HTTP/1.1 204 No Content');
   });
@@ -85,7 +85,7 @@ describe('deleteAppSamlSecrets', () => {
   it('should require the EditApps and EditAppSettings permissions', async () => {
     authorizeStudio();
     await member.update({ role: 'Member' });
-    const response = await request.delete(`/api/main/apps/${app.id}/secrets/saml`);
+    const response = await request.delete(`/api/apps/${app.id}/secrets/saml`);
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 403 Forbidden
       Content-Type: application/json; charset=utf-8

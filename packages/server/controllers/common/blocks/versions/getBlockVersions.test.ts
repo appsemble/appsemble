@@ -45,9 +45,9 @@ describe('getBlockVersions', () => {
       filepath: 'testblock.js',
     });
     await authorizeClientCredentials('blocks:write');
-    await request.post('/api/main/blocks', formData);
+    await request.post('/api/blocks', formData);
 
-    const { data } = await request.get('/api/common/blocks/@xkcd/standing/versions');
+    const { data } = await request.get('/api/blocks/@xkcd/standing/versions');
     expect(data).toStrictEqual([
       {
         name: '@xkcd/standing',
@@ -68,7 +68,7 @@ describe('getBlockVersions', () => {
   });
 
   it('should not be possible to fetch block versions of non-existent blocks', async () => {
-    const { data } = await request.get('/api/common/blocks/@xkcd/standing/versions');
+    const { data } = await request.get('/api/blocks/@xkcd/standing/versions');
     expect(data).toStrictEqual({
       statusCode: 404,
       error: 'Not Found',
@@ -86,7 +86,7 @@ describe('getBlockVersions', () => {
     });
     formDataA.append('messages', JSON.stringify({ en: { foo: 'Foo' } }));
     await authorizeClientCredentials('blocks:write');
-    await request.post('/api/main/blocks', formDataA);
+    await request.post('/api/blocks', formDataA);
 
     const formDataB = new FormData();
     formDataB.append('name', '@xkcd/standing');
@@ -96,9 +96,9 @@ describe('getBlockVersions', () => {
       filepath: 'testblock.js',
     });
     await authorizeClientCredentials('blocks:write');
-    await request.post('/api/main/blocks', formDataB);
+    await request.post('/api/blocks', formDataB);
 
-    const { data } = await request.get('/api/common/blocks/@xkcd/standing/versions');
+    const { data } = await request.get('/api/blocks/@xkcd/standing/versions');
     expect(data).toStrictEqual([
       {
         name: '@xkcd/standing',

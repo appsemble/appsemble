@@ -76,7 +76,7 @@ describe('updateAppOAuth2Secret', () => {
       userInfoUrl: 'https://example.com/oauth/userinfo',
     });
     authorizeStudio();
-    const response = await request.put(`/api/main/apps/${app.id}/secrets/oauth2/${secret.id}`, {
+    const response = await request.put(`/api/apps/${app.id}/secrets/oauth2/${secret.id}`, {
       authorizationUrl: 'https://other.example/oauth/authorize',
       clientId: 'other_client_id',
       clientSecret: 'example_client_secret',
@@ -131,7 +131,7 @@ describe('updateAppOAuth2Secret', () => {
       userInfoUrl: 'https://example.com/oauth/userinfo',
     });
     authorizeStudio();
-    const response = await request.put(`/api/main/apps/${app.id}/secrets/oauth2/${secret.id}`, {
+    const response = await request.put(`/api/apps/${app.id}/secrets/oauth2/${secret.id}`, {
       authorizationUrl: 'https://other.example/oauth/authorize',
       clientId: 'other_client_id',
       clientSecret: 'example_client_secret',
@@ -174,7 +174,7 @@ describe('updateAppOAuth2Secret', () => {
 
   it('should handle if the app id is invalid', async () => {
     authorizeStudio();
-    const response = await request.put('/api/main/apps/123/secrets/oauth2/1', {
+    const response = await request.put('/api/apps/123/secrets/oauth2/1', {
       authorizationUrl: 'https://other.example/oauth/authorize',
       clientId: 'other_client_id',
       clientSecret: 'example_client_secret',
@@ -198,7 +198,7 @@ describe('updateAppOAuth2Secret', () => {
 
   it('should handle if the secret id is invalid', async () => {
     authorizeStudio();
-    const response = await request.put(`/api/main/apps/${app.id}/secrets/oauth2/1`, {
+    const response = await request.put(`/api/apps/${app.id}/secrets/oauth2/1`, {
       authorizationUrl: 'https://other.example/oauth/authorize',
       clientId: 'other_client_id',
       clientSecret: 'example_client_secret',
@@ -234,7 +234,7 @@ describe('updateAppOAuth2Secret', () => {
     });
     await member.update({ role: 'Member' });
     authorizeStudio();
-    const response = await request.put(`/api/main/apps/${app.id}/secrets/oauth2/${secret.id}`, {
+    const response = await request.put(`/api/apps/${app.id}/secrets/oauth2/${secret.id}`, {
       authorizationUrl: 'https://other.example/oauth/authorize',
       clientId: 'other_client_id',
       clientSecret: 'example_client_secret',

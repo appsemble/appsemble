@@ -44,7 +44,7 @@ describe('patchOrganization', () => {
   it('should update the name of the organization', async () => {
     authorizeStudio();
     const response = await request.patch(
-      `/api/main/organizations/${organization.id}`,
+      `/api/organizations/${organization.id}`,
       createFormData({ name: 'Test' }),
     );
     expect(response).toMatchObject({ data: { id: organization.id, name: 'Test' } });
@@ -57,7 +57,7 @@ describe('patchOrganization', () => {
     formData.append('icon', buffer, { filename: 'icon.png' });
 
     authorizeStudio();
-    const response = await request.patch(`/api/main/organizations/${organization.id}`, formData);
+    const response = await request.patch(`/api/organizations/${organization.id}`, formData);
 
     await organization.reload();
 
@@ -73,7 +73,7 @@ describe('patchOrganization', () => {
 
     authorizeStudio();
     const response = await request.patch(
-      `/api/main/organizations/${organization.id}`,
+      `/api/organizations/${organization.id}`,
       createFormData({ name: 'Test' }),
     );
     expect(response).toMatchObject({

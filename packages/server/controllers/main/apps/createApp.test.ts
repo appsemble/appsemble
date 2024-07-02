@@ -76,7 +76,7 @@ describe('createApp', () => {
   it('should create an app', async () => {
     authorizeStudio();
     const createdResponse = await request.post<AppType>(
-      '/api/main/apps',
+      '/api/apps',
       createFormData({
         OrganizationId: organization.id,
         icon: createFixtureStream('nodejs-logo.png'),
@@ -127,7 +127,7 @@ describe('createApp', () => {
         "hasIcon": true,
         "hasMaskableIcon": false,
         "iconBackground": "#ffffff",
-        "iconUrl": "/api/common/apps/1/icon?maskable=true&updated=1970-01-01T00%3A00%3A00.000Z",
+        "iconUrl": "/api/apps/1/icon?maskable=true&updated=1970-01-01T00%3A00%3A00.000Z",
         "id": 1,
         "locked": "unlocked",
         "path": "test-app",
@@ -150,7 +150,7 @@ describe('createApp', () => {
               ",
       }
     `);
-    const { data: retrieved } = await request.get(`/api/main/apps/${createdResponse.data.id}`);
+    const { data: retrieved } = await request.get(`/api/apps/${createdResponse.data.id}`);
     expect(retrieved).toStrictEqual(createdResponse.data);
   });
 
@@ -174,7 +174,7 @@ describe('createApp', () => {
     );
     authorizeStudio();
     const createdResponse = await request.post(
-      '/api/main/apps',
+      '/api/apps',
       createFormData({
         OrganizationId: organization.id,
         yaml: stripIndent(`
@@ -205,7 +205,7 @@ describe('createApp', () => {
   it('should accept screenshots', async () => {
     authorizeStudio();
     const createdResponse = await request.post(
-      '/api/main/apps',
+      '/api/apps',
       createFormData({
         OrganizationId: organization.id,
         yaml: stripIndent(`
@@ -257,12 +257,12 @@ describe('createApp', () => {
         "hasIcon": true,
         "hasMaskableIcon": false,
         "iconBackground": "#ffffff",
-        "iconUrl": "/api/common/apps/1/icon?maskable=true&updated=1970-01-01T00%3A00%3A00.000Z",
+        "iconUrl": "/api/apps/1/icon?maskable=true&updated=1970-01-01T00%3A00%3A00.000Z",
         "id": 1,
         "locked": "unlocked",
         "path": "test-app",
         "screenshotUrls": [
-          "/api/main/apps/1/screenshots/1",
+          "/api/apps/1/screenshots/1",
         ],
         "sentryDsn": null,
         "sentryEnvironment": null,
@@ -301,7 +301,7 @@ describe('createApp', () => {
   it('should accept screenshots by language and order them', async () => {
     authorizeStudio();
     const createdApp = await request.post(
-      '/api/main/apps',
+      '/api/apps',
       createFormData({
         OrganizationId: organization.id,
         yaml: stripIndent(`
@@ -421,7 +421,7 @@ describe('createApp', () => {
       width: 474,
     });
 
-    const unspecifiedApp = await request.get(`/api/main/apps/${createdApp.data.id}`);
+    const unspecifiedApp = await request.get(`/api/apps/${createdApp.data.id}`);
 
     expect(unspecifiedApp).toMatchInlineSnapshot(`
       HTTP/1.1 200 OK
@@ -458,13 +458,13 @@ describe('createApp', () => {
         "hasIcon": true,
         "hasMaskableIcon": false,
         "iconBackground": "#ffffff",
-        "iconUrl": "/api/common/apps/1/icon?maskable=true&updated=1970-01-01T00%3A00%3A00.000Z",
+        "iconUrl": "/api/apps/1/icon?maskable=true&updated=1970-01-01T00%3A00%3A00.000Z",
         "id": 1,
         "locked": "unlocked",
         "path": "test-app",
         "screenshotUrls": [
-          "/api/main/apps/1/screenshots/1",
-          "/api/main/apps/1/screenshots/2",
+          "/api/apps/1/screenshots/1",
+          "/api/apps/1/screenshots/2",
         ],
         "sentryDsn": null,
         "sentryEnvironment": null,
@@ -485,7 +485,7 @@ describe('createApp', () => {
       }
     `);
 
-    const frApp = await request.get(`/api/main/apps/${createdApp.data.id}`);
+    const frApp = await request.get(`/api/apps/${createdApp.data.id}`);
 
     expect(frApp).toMatchInlineSnapshot(`
       HTTP/1.1 200 OK
@@ -522,13 +522,13 @@ describe('createApp', () => {
         "hasIcon": true,
         "hasMaskableIcon": false,
         "iconBackground": "#ffffff",
-        "iconUrl": "/api/common/apps/1/icon?maskable=true&updated=1970-01-01T00%3A00%3A00.000Z",
+        "iconUrl": "/api/apps/1/icon?maskable=true&updated=1970-01-01T00%3A00%3A00.000Z",
         "id": 1,
         "locked": "unlocked",
         "path": "test-app",
         "screenshotUrls": [
-          "/api/main/apps/1/screenshots/1",
-          "/api/main/apps/1/screenshots/2",
+          "/api/apps/1/screenshots/1",
+          "/api/apps/1/screenshots/2",
         ],
         "sentryDsn": null,
         "sentryEnvironment": null,
@@ -549,7 +549,7 @@ describe('createApp', () => {
       }
     `);
 
-    const enApp = await request.get(`/api/main/apps/${createdApp.data.id}?language=en`);
+    const enApp = await request.get(`/api/apps/${createdApp.data.id}?language=en`);
 
     expect(enApp).toMatchInlineSnapshot(`
       HTTP/1.1 200 OK
@@ -586,13 +586,13 @@ describe('createApp', () => {
         "hasIcon": true,
         "hasMaskableIcon": false,
         "iconBackground": "#ffffff",
-        "iconUrl": "/api/common/apps/1/icon?maskable=true&updated=1970-01-01T00%3A00%3A00.000Z",
+        "iconUrl": "/api/apps/1/icon?maskable=true&updated=1970-01-01T00%3A00%3A00.000Z",
         "id": 1,
         "locked": "unlocked",
         "path": "test-app",
         "screenshotUrls": [
-          "/api/main/apps/1/screenshots/3",
-          "/api/main/apps/1/screenshots/4",
+          "/api/apps/1/screenshots/3",
+          "/api/apps/1/screenshots/4",
         ],
         "sentryDsn": null,
         "sentryEnvironment": null,
@@ -613,7 +613,7 @@ describe('createApp', () => {
       }
     `);
 
-    const nlApp = await request.get(`/api/main/apps/${createdApp.data.id}?language=nl`);
+    const nlApp = await request.get(`/api/apps/${createdApp.data.id}?language=nl`);
 
     expect(nlApp).toMatchInlineSnapshot(`
       HTTP/1.1 200 OK
@@ -650,13 +650,13 @@ describe('createApp', () => {
         "hasIcon": true,
         "hasMaskableIcon": false,
         "iconBackground": "#ffffff",
-        "iconUrl": "/api/common/apps/1/icon?maskable=true&updated=1970-01-01T00%3A00%3A00.000Z",
+        "iconUrl": "/api/apps/1/icon?maskable=true&updated=1970-01-01T00%3A00%3A00.000Z",
         "id": 1,
         "locked": "unlocked",
         "path": "test-app",
         "screenshotUrls": [
-          "/api/main/apps/1/screenshots/5",
-          "/api/main/apps/1/screenshots/6",
+          "/api/apps/1/screenshots/5",
+          "/api/apps/1/screenshots/6",
         ],
         "sentryDsn": null,
         "sentryEnvironment": null,
@@ -683,7 +683,7 @@ describe('createApp', () => {
       },
     });
 
-    const frApp2 = await request.get(`/api/main/apps/${createdApp.data.id}`);
+    const frApp2 = await request.get(`/api/apps/${createdApp.data.id}`);
 
     expect(frApp2).toMatchInlineSnapshot(`
       HTTP/1.1 200 OK
@@ -720,13 +720,13 @@ describe('createApp', () => {
         "hasIcon": true,
         "hasMaskableIcon": false,
         "iconBackground": "#ffffff",
-        "iconUrl": "/api/common/apps/1/icon?maskable=true&updated=1970-01-01T00%3A00%3A00.000Z",
+        "iconUrl": "/api/apps/1/icon?maskable=true&updated=1970-01-01T00%3A00%3A00.000Z",
         "id": 1,
         "locked": "unlocked",
         "path": "test-app",
         "screenshotUrls": [
-          "/api/main/apps/1/screenshots/3",
-          "/api/main/apps/1/screenshots/4",
+          "/api/apps/1/screenshots/3",
+          "/api/apps/1/screenshots/4",
         ],
         "sentryDsn": null,
         "sentryEnvironment": null,
@@ -752,7 +752,7 @@ describe('createApp', () => {
     authorizeStudio();
 
     const createdResponse = await request.post(
-      '/api/main/apps',
+      '/api/apps',
       createFormData({
         OrganizationId: organization.id,
         yaml: stripIndent(`
@@ -807,7 +807,7 @@ describe('createApp', () => {
         "hasIcon": true,
         "hasMaskableIcon": false,
         "iconBackground": "#ffffff",
-        "iconUrl": "/api/common/apps/1/icon?maskable=true&updated=1970-01-01T00%3A00%3A00.000Z",
+        "iconUrl": "/api/apps/1/icon?maskable=true&updated=1970-01-01T00%3A00%3A00.000Z",
         "id": 1,
         "locked": "unlocked",
         "path": "test-app",
@@ -835,7 +835,7 @@ describe('createApp', () => {
   it('should not allow an upload without an app when creating an app', async () => {
     authorizeStudio();
     const response = await request.post(
-      '/api/main/apps',
+      '/api/apps',
       createFormData({ coreStyle: 'body { color: red; }' }),
     );
 
@@ -1032,7 +1032,7 @@ describe('createApp', () => {
   it('should not allow apps to be created without an organization.id', async () => {
     authorizeStudio();
     const response = await request.post(
-      '/api/main/apps',
+      '/api/apps',
       createFormData({
         yaml: stripIndent(`
           name: Test App
@@ -1156,7 +1156,7 @@ describe('createApp', () => {
   it('should not allow apps to be created for organizations the user does not belong to', async () => {
     authorizeStudio();
     const response = await request.post(
-      '/api/main/apps',
+      '/api/apps',
       createFormData({
         OrganizationId: 'a',
         yaml: stripIndent(`
@@ -1186,7 +1186,7 @@ describe('createApp', () => {
   it('should not allow to create an app using non-existent blocks', async () => {
     authorizeStudio();
     const response = await request.post(
-      '/api/main/apps',
+      '/api/apps',
       createFormData({
         OrganizationId: organization.id,
         yaml: stripIndent(`
@@ -1233,7 +1233,7 @@ describe('createApp', () => {
   it('should not allow to create an app using non-existent block versions', async () => {
     authorizeStudio();
     const response = await request.post(
-      '/api/main/apps',
+      '/api/apps',
       createFormData({
         OrganizationId: organization.id,
         yaml: stripIndent(`
@@ -1280,7 +1280,7 @@ describe('createApp', () => {
   it('should not allow to create an app using invalid block parameters', async () => {
     authorizeStudio();
     const response = await request.post(
-      '/api/main/apps',
+      '/api/apps',
       createFormData({
         OrganizationId: organization.id,
         yaml: stripIndent(`
@@ -1330,7 +1330,7 @@ describe('createApp', () => {
   it('should handle app path conflicts on create', async () => {
     authorizeStudio();
     await request.post(
-      '/api/main/apps',
+      '/api/apps',
       createFormData({
         OrganizationId: organization.id,
         yaml: stripIndent(`
@@ -1346,7 +1346,7 @@ describe('createApp', () => {
     );
 
     const response = await request.post(
-      '/api/main/apps',
+      '/api/apps',
       createFormData({
         OrganizationId: organization.id,
         yaml: stripIndent(`
@@ -1433,7 +1433,7 @@ describe('createApp', () => {
     );
     authorizeStudio();
     const response = await request.post(
-      '/api/main/apps',
+      '/api/apps',
       createFormData({
         OrganizationId: organization.id,
         yaml: stripIndent(`
@@ -1527,10 +1527,10 @@ describe('createApp', () => {
       sharedStyle: ':root { --primary-color: purple; }',
     });
     authorizeStudio();
-    const response = await request.post<AppType>('/api/main/apps', form);
+    const response = await request.post<AppType>('/api/apps', form);
 
-    const coreStyle = await request.get(`/api/common/apps/${response.data.id}/style/core`);
-    const sharedStyle = await request.get(`/api/common/apps/${response.data.id}/style/shared`);
+    const coreStyle = await request.get(`/api/apps/${response.data.id}/style/core`);
+    const sharedStyle = await request.get(`/api/apps/${response.data.id}/style/shared`);
 
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 201 Created
@@ -1622,7 +1622,7 @@ describe('createApp', () => {
       coreStyle: 'this is invalid css',
     });
     authorizeStudio();
-    const response = await request.post('/api/main/apps', form);
+    const response = await request.post('/api/apps', form);
 
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 400 Bad Request
@@ -1744,7 +1744,7 @@ describe('createApp', () => {
       sharedStyle: 'this is invalid css',
     });
     authorizeStudio();
-    const response = await request.post('/api/main/apps', form);
+    const response = await request.post('/api/apps', form);
 
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 400 Bad Request
@@ -1866,13 +1866,13 @@ describe('createApp', () => {
       authorizeStudio();
 
       mock
-        .onGet('https://appsemble.example/api/common/blocks/@appsemble/upstream/versions/1.2.3')
+        .onGet('https://appsemble.example/api/blocks/@appsemble/upstream/versions/1.2.3')
         .reply(200, {
           name: '@appsemble/invalid',
           version: '1.2.3',
         });
       const response = await request.post(
-        '/api/main/apps',
+        '/api/apps',
         createFormData({
           OrganizationId: organization.id,
           path: 'a',
@@ -1920,13 +1920,13 @@ describe('createApp', () => {
       authorizeStudio();
 
       mock
-        .onGet('https://appsemble.example/api/common/blocks/@appsemble/upstream/versions/1.2.3')
+        .onGet('https://appsemble.example/api/blocks/@appsemble/upstream/versions/1.2.3')
         .reply(200, {
           name: '@appsemble/upstream',
           version: '3.2.1',
         });
       const response = await request.post(
-        '/api/main/apps',
+        '/api/apps',
         createFormData({
           OrganizationId: organization.id,
           path: 'a',
@@ -1974,13 +1974,13 @@ describe('createApp', () => {
       authorizeStudio();
 
       mock
-        .onGet('https://appsemble.example/api/common/blocks/@appsemble/upstream/versions/1.2.3')
+        .onGet('https://appsemble.example/api/blocks/@appsemble/upstream/versions/1.2.3')
         .reply(404, {
           name: '@appsemble/upstream',
           version: '3.2.1',
         });
       const response = await request.post(
-        '/api/main/apps',
+        '/api/apps',
         createFormData({
           OrganizationId: organization.id,
           path: 'a',
@@ -2028,7 +2028,7 @@ describe('createApp', () => {
       authorizeStudio();
 
       mock
-        .onGet('https://appsemble.example/api/common/blocks/@appsemble/upstream/versions/1.2.3')
+        .onGet('https://appsemble.example/api/blocks/@appsemble/upstream/versions/1.2.3')
         .reply(200, {
           actions: {},
           description: 'This is a block',
@@ -2043,9 +2043,7 @@ describe('createApp', () => {
           version: '1.2.3',
         });
       mock
-        .onGet(
-          'https://appsemble.example/api/common/blocks/@appsemble/upstream/versions/1.2.3/asset',
-        )
+        .onGet('https://appsemble.example/api/blocks/@appsemble/upstream/versions/1.2.3/asset')
         .reply(({ params: { filename } }) => {
           switch (filename) {
             case 'a.js':
@@ -2058,11 +2056,11 @@ describe('createApp', () => {
         });
       mock
         .onGet(
-          'https://appsemble.example/api/common/blocks/@appsemble/upstream/versions/1.2.3/messages/en',
+          'https://appsemble.example/api/blocks/@appsemble/upstream/versions/1.2.3/messages/en',
         )
         .reply(200, { hello: 'world' });
       const response = await request.post(
-        '/api/main/apps',
+        '/api/apps',
         createFormData({
           OrganizationId: organization.id,
           path: 'a',
@@ -2170,7 +2168,7 @@ describe('createApp', () => {
   it('should allow for dry runs without creating an app', async () => {
     authorizeStudio();
     const createdResponse = await request.post(
-      '/api/main/apps',
+      '/api/apps',
       createFormData({
         OrganizationId: organization.id,
         icon: createFixtureStream('nodejs-logo.png'),
@@ -2195,7 +2193,7 @@ describe('createApp', () => {
   it('should still return errors during dry runs', async () => {
     authorizeStudio();
     const createdResponse = await request.post(
-      '/api/main/apps',
+      '/api/apps',
       createFormData({
         OrganizationId: organization.id,
         icon: createFixtureStream('nodejs-logo.png'),

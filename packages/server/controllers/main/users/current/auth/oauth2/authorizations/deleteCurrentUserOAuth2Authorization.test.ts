@@ -35,7 +35,7 @@ describe('deleteCurrentUserOAuth2Authorization', () => {
       sub: 'aubA',
     });
     authorizeStudio();
-    const response = await request.delete('/api/main/users/current/auth/oauth2/authorizations', {
+    const response = await request.delete('/api/users/current/auth/oauth2/authorizations', {
       params: { authorizationUrl: 'https://a.example' },
     });
     expect(response).toMatchObject({
@@ -59,7 +59,7 @@ describe('deleteCurrentUserOAuth2Authorization', () => {
     });
 
     authorizeStudio();
-    const response = await request.delete('/api/main/users/current/auth/oauth2/authorizations', {
+    const response = await request.delete('/api/users/current/auth/oauth2/authorizations', {
       params: { authorizationUrl: 'https://b.example' },
     });
     expect(response).toMatchObject({

@@ -28,7 +28,7 @@ afterEach(() => {
 
 describe('registerOAuth2Authorization', () => {
   it('should throw if the referer header is missing', async () => {
-    const response = await request.post('/api/main/auth/oauth2/authorizations/register', {
+    const response = await request.post('/api/auth/oauth2/authorizations/register', {
       authorizationUrl: 'https://gitlab.com/oauth/authorize',
       code: '123',
     });
@@ -44,7 +44,7 @@ describe('registerOAuth2Authorization', () => {
 
   it('should throw if the referer header is invalid', async () => {
     const response = await request.post(
-      '/api/main/auth/oauth2/authorizations/register',
+      '/api/auth/oauth2/authorizations/register',
       { authorizationUrl: 'https://gitlab.com/oauth/authorize', code: '123' },
       { headers: { referer: 'invalid' } },
     );
@@ -60,7 +60,7 @@ describe('registerOAuth2Authorization', () => {
 
   it('should throw if no matching client id or client secret has been configured', async () => {
     const response = await request.post(
-      '/api/main/auth/oauth2/authorizations/register',
+      '/api/auth/oauth2/authorizations/register',
       { authorizationUrl: 'https://gitlab.com/oauth/authorize', code: '123' },
       { headers: { referer: 'http://localhost' } },
     );
@@ -99,7 +99,7 @@ describe('registerOAuth2Authorization', () => {
     });
 
     const response = await request.post(
-      '/api/main/auth/oauth2/authorizations/register',
+      '/api/auth/oauth2/authorizations/register',
       { authorizationUrl: 'https://gitlab.com/oauth/authorize', code: '456' },
       { headers: { referer: 'http://localhost/foo?code=456' } },
     );
@@ -163,7 +163,7 @@ describe('registerOAuth2Authorization', () => {
       sub: '123',
     });
     const response = await request.post(
-      '/api/main/auth/oauth2/authorizations/register',
+      '/api/auth/oauth2/authorizations/register',
       { authorizationUrl: 'https://gitlab.com/oauth/authorize', code: '456' },
       { headers: { referer: 'http://localhost/foo?code=456' } },
     );

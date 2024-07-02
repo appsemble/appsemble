@@ -66,7 +66,7 @@ describe('deleteAppScreenshot', () => {
     });
 
     authorizeStudio();
-    const response = await request.delete(`/api/main/apps/${app.id}/screenshots/${screenshot.id}`);
+    const response = await request.delete(`/api/apps/${app.id}/screenshots/${screenshot.id}`);
 
     const screenshots = await AppScreenshot.count();
 
@@ -87,7 +87,7 @@ describe('deleteAppScreenshot', () => {
       vapidPublicKey: '',
     });
     authorizeStudio();
-    const response = await request.delete(`/api/main/apps/${app.id}/screenshots/0`);
+    const response = await request.delete(`/api/apps/${app.id}/screenshots/0`);
 
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 404 Not Found

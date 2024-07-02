@@ -34,7 +34,7 @@ beforeEach(async () => {
 describe('getCurrentUser', () => {
   it('should return a user profile', async () => {
     authorizeStudio();
-    const response = await request.get('/api/main/users/current');
+    const response = await request.get('/api/users/current');
 
     expect(response).toMatchObject({
       status: 200,
@@ -49,7 +49,7 @@ describe('getCurrentUser', () => {
   });
 
   it('should not return a user profile if not logged in', async () => {
-    const response = await request.get('/api/main/users/current');
+    const response = await request.get('/api/users/current');
     expect(response).toMatchObject({ status: 401 });
   });
 });

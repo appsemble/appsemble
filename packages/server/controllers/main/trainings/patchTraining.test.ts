@@ -54,7 +54,7 @@ describe('patchTraining', () => {
     authorizeStudio();
 
     const response = await request.patch<TrainingType>(
-      '/api/main/trainings/1',
+      '/api/trainings/1',
       createFormData({
         title: 'test5',
       }),
@@ -89,7 +89,7 @@ describe('patchTraining', () => {
     authorizeStudio();
 
     const response = await request.patch<TrainingType>(
-      '/api/main/trainings/1',
+      '/api/trainings/1',
       createFormData({
         title: 'test5',
       }),
@@ -125,7 +125,7 @@ describe('patchTraining', () => {
       difficultyLevel: 3,
       competences: JSON.stringify(['basics', 'analyze']),
     });
-    const response = await request.patch<TrainingType>('/api/main/trainings/1', formData);
+    const response = await request.patch<TrainingType>('/api/trainings/1', formData);
     expect(response).toMatchObject({
       status: 200,
       data: {

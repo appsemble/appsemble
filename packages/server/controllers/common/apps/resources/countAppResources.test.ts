@@ -74,9 +74,9 @@ describe('countAppResources', () => {
     });
 
     authorizeStudio();
-    const responseA = await request.get(`/api/common/apps/${app.id}/resources/testResource/$count`);
+    const responseA = await request.get(`/api/apps/${app.id}/resources/testResource/$count`);
     const responseB = await request.get(
-      `/api/common/apps/${app.id}/resources/testExpirableResource/$count`,
+      `/api/apps/${app.id}/resources/testExpirableResource/$count`,
     );
 
     expect(responseA).toMatchInlineSnapshot(`
@@ -112,7 +112,7 @@ describe('countAppResources', () => {
 
     authorizeStudio();
     const response = await request.get(
-      `/api/common/apps/${app.id}/resources/testResource/$count?$filter=foo eq 'baz'`,
+      `/api/apps/${app.id}/resources/testResource/$count?$filter=foo eq 'baz'`,
     );
 
     expect(response).toMatchInlineSnapshot(`
@@ -146,7 +146,7 @@ describe('countAppResources', () => {
 
     authorizeApp(app);
     const response = await request.get(
-      `/api/common/apps/${app.id}/resources/testResourceAuthorOnly/$count`,
+      `/api/apps/${app.id}/resources/testResourceAuthorOnly/$count`,
     );
 
     expect(response).toMatchInlineSnapshot(`
@@ -206,9 +206,7 @@ describe('countAppResources', () => {
     });
 
     authorizeApp(app);
-    const response = await request.get(
-      `/api/common/apps/${app.id}/resources/testResourceTeam/$count`,
-    );
+    const response = await request.get(`/api/apps/${app.id}/resources/testResourceTeam/$count`);
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 200 OK
       Content-Type: application/json; charset=utf-8
@@ -268,7 +266,7 @@ describe('countAppResources', () => {
 
     authorizeApp(app);
     const response = await request.get(
-      `/api/common/apps/${app.id}/resources/testResource/$count?$team=member`,
+      `/api/apps/${app.id}/resources/testResource/$count?$team=member`,
     );
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 200 OK
@@ -329,7 +327,7 @@ describe('countAppResources', () => {
 
     authorizeApp(app);
     const response = await request.get(
-      `/api/common/apps/${app.id}/resources/testResource/$count?$team=member`,
+      `/api/apps/${app.id}/resources/testResource/$count?$team=member`,
     );
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 200 OK
@@ -390,7 +388,7 @@ describe('countAppResources', () => {
 
     authorizeApp(app);
     const response = await request.get(
-      `/api/common/apps/${app.id}/resources/testResource/$count?$team=member`,
+      `/api/apps/${app.id}/resources/testResource/$count?$team=member`,
     );
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 200 OK
@@ -451,7 +449,7 @@ describe('countAppResources', () => {
 
     authorizeApp(app);
     const response = await request.get(
-      `/api/common/apps/${app.id}/resources/testResource/$count?$team=manager`,
+      `/api/apps/${app.id}/resources/testResource/$count?$team=manager`,
     );
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 200 OK
@@ -512,7 +510,7 @@ describe('countAppResources', () => {
 
     authorizeApp(app);
     const response = await request.get(
-      `/api/common/apps/${app.id}/resources/testResource/$count?$team=manager`,
+      `/api/apps/${app.id}/resources/testResource/$count?$team=manager`,
     );
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 200 OK
@@ -530,9 +528,7 @@ describe('countAppResources', () => {
     });
 
     authorizeStudio();
-    const response = await request.get(
-      `/api/common/apps/${app.id}/resources/testPrivateResource/$count`,
-    );
+    const response = await request.get(`/api/apps/${app.id}/resources/testPrivateResource/$count`);
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 200 OK
       Content-Type: application/json; charset=utf-8
@@ -591,7 +587,7 @@ describe('countAppResources', () => {
 
     authorizeApp(app);
     const response = await request.get(
-      `/api/common/apps/${app.id}/resources/testResource/$count?$team=manager`,
+      `/api/apps/${app.id}/resources/testResource/$count?$team=manager`,
     );
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 200 OK

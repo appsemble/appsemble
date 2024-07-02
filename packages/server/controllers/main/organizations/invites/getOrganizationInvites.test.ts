@@ -64,7 +64,7 @@ describe('getOrganizationInvites', () => {
     });
 
     authorizeStudio();
-    const response = await request.get('/api/main/organizations/testorganization/invites');
+    const response = await request.get('/api/organizations/testorganization/invites');
 
     expect(response).toMatchObject({
       status: 200,
@@ -95,7 +95,7 @@ describe('getOrganizationInvites', () => {
     });
 
     authorizeStudio();
-    const response = await request.get('/api/main/organizations/testorganization/invites');
+    const response = await request.get('/api/organizations/testorganization/invites');
 
     expect(response).toMatchObject({
       status: 403,

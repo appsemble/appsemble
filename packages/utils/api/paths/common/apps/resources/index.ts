@@ -4,7 +4,7 @@ import { paths as subscriptionsPaths } from './subscriptions/index.js';
 
 export const paths: OpenAPIV3.PathsObject = {
   ...subscriptionsPaths,
-  '/api/common/apps/{appId}/resources/{resourceType}': {
+  '/api/apps/{appId}/resources/{resourceType}': {
     parameters: [
       { $ref: '#/components/parameters/appId' },
       { $ref: '#/components/parameters/resourceType' },
@@ -175,7 +175,7 @@ export const paths: OpenAPIV3.PathsObject = {
   },
   // XXX: Temporary workaround until this is fixed in Koas
   // See https://gitlab.com/remcohaszing/koas/-/issues/2
-  '/api/common/apps/{appId}/resources/{resourceType}/\\$count': {
+  '/api/apps/{appId}/resources/{resourceType}/\\$count': {
     parameters: [
       { $ref: '#/components/parameters/appId' },
       { $ref: '#/components/parameters/resourceType' },
@@ -203,7 +203,7 @@ export const paths: OpenAPIV3.PathsObject = {
       security: [{ studio: [] }, { app: ['resources:manage'] }, { cli: ['resources:read'] }, {}],
     },
   },
-  '/api/common/apps/{appId}/resources/{resourceType}/{resourceId}': {
+  '/api/apps/{appId}/resources/{resourceType}/{resourceId}': {
     parameters: [
       { $ref: '#/components/parameters/appId' },
       { $ref: '#/components/parameters/resourceType' },

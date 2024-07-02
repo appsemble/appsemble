@@ -131,7 +131,7 @@ export const schemas: Omit<ScimSchema, 'meta'>[] = [
  * @returns The prefix for SCIM endpoints.
  */
 export function getScimLocation(appId: number, pathSegment: string): string {
-  return String(new URL(`/api/main/apps/${appId}/scim/${pathSegment}`, argv.host));
+  return String(new URL(`/api/apps/${appId}/scim/${pathSegment}`, argv.host));
 }
 
 export function getScimResourceType(appId: number): unknown {

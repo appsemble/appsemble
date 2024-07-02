@@ -52,9 +52,9 @@ export async function getOrganizationBlocks(ctx: Context): Promise<void> {
     }) => {
       let iconUrl = null;
       if (icon) {
-        iconUrl = `/api/common/blocks/@${OrganizationId}/${name}/versions/${version}/icon`;
+        iconUrl = `/api/blocks/@${OrganizationId}/${name}/versions/${version}/icon`;
       } else if (organization.get('hasIcon')) {
-        iconUrl = `/api/main/organizations/${OrganizationId}/icon?updated=${organization.updated.toISOString()}`;
+        iconUrl = `/api/organizations/${OrganizationId}/icon?updated=${organization.updated.toISOString()}`;
       }
       return {
         name: `@${OrganizationId}/${name}`,

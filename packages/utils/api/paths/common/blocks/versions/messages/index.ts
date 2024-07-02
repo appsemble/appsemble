@@ -1,7 +1,7 @@
 import { type OpenAPIV3 } from 'openapi-types';
 
 export const paths: OpenAPIV3.PathsObject = {
-  '/api/common/blocks/@{organizationId}/{blockId}/versions/{blockVersion}/messages/{language}': {
+  '/api/blocks/@{organizationId}/{blockId}/versions/{blockVersion}/messages/{language}': {
     parameters: [
       { $ref: '#/components/parameters/organizationId' },
       { $ref: '#/components/parameters/blockId' },

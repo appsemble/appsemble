@@ -45,7 +45,7 @@ describe('getCurrentUserOAuth2Authorizations', () => {
     });
 
     authorizeStudio();
-    const response = await request.get('/api/main/users/current/auth/oauth2/authorizations');
+    const response = await request.get('/api/users/current/auth/oauth2/authorizations');
     expect(response).toMatchObject({
       status: 200,
       data: [{ authorizationUrl: 'https://a.example' }],

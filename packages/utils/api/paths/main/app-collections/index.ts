@@ -4,7 +4,7 @@ import { paths as appsPaths } from './apps/index.js';
 
 export const paths: OpenAPIV3.PathsObject = {
   ...appsPaths,
-  '/api/main/app-collections': {
+  '/api/app-collections': {
     get: {
       tags: ['main', 'app-collection'],
       description: 'Get a list of app collections',
@@ -27,7 +27,7 @@ export const paths: OpenAPIV3.PathsObject = {
       security: [{ studio: [] }, {}],
     },
   },
-  '/api/main/app-collections/{appCollectionId}': {
+  '/api/app-collections/{appCollectionId}': {
     get: {
       tags: ['main', 'app-collection'],
       description: 'Get an app collection',
@@ -128,7 +128,7 @@ export const paths: OpenAPIV3.PathsObject = {
       security: [{ studio: [] }],
     },
   },
-  '/api/main/app-collections/{appCollectionId}/header-image': {
+  '/api/app-collections/{appCollectionId}/header-image': {
     get: {
       tags: ['main', 'app-collection'],
       description: 'Get an app collection’s header image',
@@ -158,7 +158,7 @@ export const paths: OpenAPIV3.PathsObject = {
       security: [{ studio: [] }, {}],
     },
   },
-  '/api/main/app-collections/{appCollectionId}/expert/profile-image': {
+  '/api/app-collections/{appCollectionId}/expert/profile-image': {
     get: {
       tags: ['main', 'app-collection'],
       description: 'Get an app collection’s expert’s profile image',

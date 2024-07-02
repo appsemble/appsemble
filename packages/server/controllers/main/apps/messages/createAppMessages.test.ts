@@ -52,7 +52,7 @@ beforeEach(async () => {
 describe('createAppMessages', () => {
   it('should accept valid requests', async () => {
     authorizeStudio();
-    const response = await request.post(`/api/main/apps/${app.id}/messages`, {
+    const response = await request.post(`/api/apps/${app.id}/messages`, {
       language: 'en',
       messages: { messageIds: { test: 'Test.' } },
     });
@@ -76,7 +76,7 @@ describe('createAppMessages', () => {
 
   it('should accept arrays of objects as request body', async () => {
     authorizeStudio();
-    const response = await request.post(`/api/main/apps/${app.id}/messages`, [
+    const response = await request.post(`/api/apps/${app.id}/messages`, [
       { language: 'en', messages: { messageIds: { test: 'Test' } } },
       { language: 'de', messages: { messageIds: { test: 'Test De' } } },
       { language: 'ru', messages: { messageIds: { test: 'Test Ru' } } },
@@ -122,7 +122,7 @@ describe('createAppMessages', () => {
 
   it('should validate language tags in array request body', async () => {
     authorizeStudio();
-    const response = await request.post(`/api/main/apps/${app.id}/messages`, [
+    const response = await request.post(`/api/apps/${app.id}/messages`, [
       { language: 'en', messages: { messageIds: { test: 'Test' } } },
       { language: 'test', messages: { messageIds: { test: 'Test Ru' } } },
     ]);
@@ -142,7 +142,7 @@ describe('createAppMessages', () => {
 
   it('should not accept invalid language tags', async () => {
     authorizeStudio();
-    const response = await request.post(`/api/main/apps/${app.id}/messages`, {
+    const response = await request.post(`/api/apps/${app.id}/messages`, {
       language: 'english',
       messages: { messageIds: { test: 'Test.' } },
     });

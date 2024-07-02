@@ -3,7 +3,7 @@ import { type OpenAPIV3 } from 'openapi-types';
 import { normalized } from '../../../../../constants/index.js';
 
 export const paths: OpenAPIV3.PathsObject = {
-  '/api/main/apps/{appId}/assets': {
+  '/api/apps/{appId}/assets': {
     parameters: [{ $ref: '#/components/parameters/appId' }],
     post: {
       tags: ['main', 'app', 'asset'],

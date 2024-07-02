@@ -3,7 +3,7 @@ import { type OpenAPIV3 } from 'openapi-types';
 import { TeamRole } from '../../../../../../constants/index.js';
 
 export const paths: OpenAPIV3.PathsObject = {
-  '/api/common/apps/{appId}/teams/{teamId}/members': {
+  '/api/apps/{appId}/teams/{teamId}/members': {
     parameters: [
       { $ref: '#/components/parameters/appId' },
       {
@@ -69,7 +69,7 @@ export const paths: OpenAPIV3.PathsObject = {
       security: [{ studio: [] }, { app: ['teams:write'] }, { cli: ['teams:write'] }],
     },
   },
-  '/api/common/apps/{appId}/teams/{teamId}/members/{memberId}': {
+  '/api/apps/{appId}/teams/{teamId}/members/{memberId}': {
     parameters: [
       { $ref: '#/components/parameters/appId' },
       {

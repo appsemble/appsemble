@@ -29,7 +29,7 @@ describe('registerUserWithEmail', () => {
       name: 'Me',
       locale: 'nl',
     };
-    const response = await request.post('/api/main/auth/email/register', data);
+    const response = await request.post('/api/auth/email/register', data);
 
     expect(response).toMatchInlineSnapshot(
       {
@@ -80,7 +80,7 @@ describe('registerUserWithEmail', () => {
       password: 'password',
       timezone: 'Europe/Amsterdam',
     };
-    const response = await request.post('/api/main/auth/email/register', data);
+    const response = await request.post('/api/auth/email/register', data);
 
     expect(response).toMatchInlineSnapshot(
       {
@@ -109,7 +109,7 @@ describe('registerUserWithEmail', () => {
   });
 
   it('should not register invalid email addresses', async () => {
-    const response = await request.post('/api/main/auth/email/register', {
+    const response = await request.post('/api/auth/email/register', {
       email: 'foo',
       password: 'bar',
       timezone: 'Europe/Amsterdam',
@@ -167,7 +167,7 @@ describe('registerUserWithEmail', () => {
       email: 'test@example.com',
       password: 'unhashed',
     });
-    const response = await request.post('/api/main/auth/email/register', {
+    const response = await request.post('/api/auth/email/register', {
       email: 'test@example.com',
       password: 'password',
       timezone: 'Europe/Amsterdam',

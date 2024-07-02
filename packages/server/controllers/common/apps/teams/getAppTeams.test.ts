@@ -70,7 +70,7 @@ beforeEach(async () => {
 describe('getAppTeams', () => {
   it('should return an empty array', async () => {
     authorizeStudio();
-    const response = await request.get(`/api/common/apps/${app.id}/teams`);
+    const response = await request.get(`/api/apps/${app.id}/teams`);
 
     expect(response).toMatchObject({
       status: 200,
@@ -83,7 +83,7 @@ describe('getAppTeams', () => {
     const teamB = await Team.create({ name: 'B', AppId: app.id });
 
     authorizeStudio();
-    const response = await request.get(`/api/common/apps/${app.id}/teams`);
+    const response = await request.get(`/api/apps/${app.id}/teams`);
 
     expect(response).toMatchObject({
       status: 200,
@@ -112,7 +112,7 @@ describe('getAppTeams', () => {
     ]);
 
     authorizeStudio();
-    const response = await request.get(`/api/common/apps/${app.id}/teams`);
+    const response = await request.get(`/api/apps/${app.id}/teams`);
 
     expect(response).toMatchObject({
       status: 200,

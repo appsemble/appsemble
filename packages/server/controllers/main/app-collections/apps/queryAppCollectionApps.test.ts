@@ -108,7 +108,7 @@ beforeEach(async () => {
 
 describe('queryAppCollectionApps', () => {
   it('should return the apps in an app collection', async () => {
-    const response = await request.get(`/api/main/app-collections/${collections[0].id}/apps`);
+    const response = await request.get(`/api/app-collections/${collections[0].id}/apps`);
     expect(response.status).toBe(200);
     expect(response.data).toStrictEqual([
       expect.objectContaining({
@@ -134,7 +134,7 @@ describe('queryAppCollectionApps', () => {
       messages: { messageIds: { test2: 'test translation 2' } },
     });
     const response = await request.get(
-      `/api/main/app-collections/${collections[0].id}/apps?language=nl`,
+      `/api/app-collections/${collections[0].id}/apps?language=nl`,
     );
     expect(response.status).toBe(200);
     expect(response.data).toMatchObject([
@@ -158,7 +158,7 @@ describe('queryAppCollectionApps', () => {
     ]);
 
     const responseEnglish = await request.get(
-      `/api/main/app-collections/${collections[0].id}/apps?language=en`,
+      `/api/app-collections/${collections[0].id}/apps?language=en`,
     );
     expect(responseEnglish.status).toBe(200);
     expect(responseEnglish.data).toMatchObject([
@@ -201,12 +201,12 @@ describe('queryAppCollectionApps', () => {
       AppId: apps[0].id,
     });
 
-    const response = await request.get(`/api/main/app-collections/${privateCollection.id}/apps`);
+    const response = await request.get(`/api/app-collections/${privateCollection.id}/apps`);
     expect(response.status).toBe(404);
 
     authorizeStudio(user);
 
-    const response2 = await request.get(`/api/main/app-collections/${privateCollection.id}/apps`);
+    const response2 = await request.get(`/api/app-collections/${privateCollection.id}/apps`);
     expect(response2.status).toBe(200);
     expect(response2.data).toContainEqual(
       expect.objectContaining({
@@ -250,7 +250,7 @@ describe('queryAppCollectionApps', () => {
       AppId: unlistedApp.id,
     });
 
-    const response = await request.get(`/api/main/app-collections/${collections[0].id}/apps`);
+    const response = await request.get(`/api/app-collections/${collections[0].id}/apps`);
     expect(response.status).toBe(200);
     expect(response.data).not.toContainEqual(
       expect.objectContaining({
@@ -264,7 +264,7 @@ describe('queryAppCollectionApps', () => {
     );
 
     authorizeStudio(user);
-    const response2 = await request.get(`/api/main/app-collections/${collections[0].id}/apps`);
+    const response2 = await request.get(`/api/app-collections/${collections[0].id}/apps`);
     expect(response2.status).toBe(200);
     expect(response2.data).toContainEqual(
       expect.objectContaining({
@@ -279,7 +279,7 @@ describe('queryAppCollectionApps', () => {
   });
 
   it('should include the pin status of an app in the app collection apps endpoint', async () => {
-    const response = await request.get(`/api/main/app-collections/${collections[0].id}/apps`);
+    const response = await request.get(`/api/app-collections/${collections[0].id}/apps`);
     expect(response.status).toBe(200);
     expect(response.data).toContainEqual(
       expect.objectContaining({
@@ -300,7 +300,7 @@ describe('queryAppCollectionApps', () => {
       },
     );
 
-    const response2 = await request.get(`/api/main/app-collections/${collections[0].id}/apps`);
+    const response2 = await request.get(`/api/app-collections/${collections[0].id}/apps`);
     expect(response2.status).toBe(200);
     expect(response2.data).toContainEqual(
       expect.objectContaining({
@@ -354,7 +354,7 @@ describe('queryAppCollectionApps', () => {
 
     authorizeStudio(user);
 
-    const response = await request.get(`/api/main/app-collections/${collections[0].id}/apps`);
+    const response = await request.get(`/api/app-collections/${collections[0].id}/apps`);
     expect(response.status).toBe(200);
     expect(response.data).toStrictEqual([
       expect.objectContaining({

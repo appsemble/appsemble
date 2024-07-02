@@ -64,11 +64,11 @@ describe('deleteAppSeedAssets', () => {
   it('should delete seed assets from all apps', async () => {
     authorizeStudio();
     await request.post<AssetType>(
-      `/api/main/apps/${app.id}/assets`,
+      `/api/apps/${app.id}/assets`,
       createFormData({ file: Buffer.alloc(0) }),
     );
 
-    await request.delete(`/api/main/apps/${app.id}/assets`);
+    await request.delete(`/api/apps/${app.id}/assets`);
 
     const seedAsset = await Asset.findOne({
       where: {
@@ -85,11 +85,11 @@ describe('deleteAppSeedAssets', () => {
     authorizeStudio();
     await app.update({ demoMode: true });
     await request.post<AssetType>(
-      `/api/main/apps/${app.id}/seed-assets`,
+      `/api/apps/${app.id}/seed-assets`,
       createFormData({ file: Buffer.alloc(0) }),
     );
 
-    await request.delete(`/api/main/apps/${app.id}/assets`);
+    await request.delete(`/api/apps/${app.id}/assets`);
 
     const seedAsset = await Asset.findOne({
       where: {

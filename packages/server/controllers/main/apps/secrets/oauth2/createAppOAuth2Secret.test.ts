@@ -59,7 +59,7 @@ afterAll(() => {
 describe('createAppOAuth2Secret', () => {
   it('should be possible to create an app secret', async () => {
     authorizeStudio();
-    const response = await request.post(`/api/main/apps/${app.id}/secrets/oauth2`, {
+    const response = await request.post(`/api/apps/${app.id}/secrets/oauth2`, {
       authorizationUrl: 'https://example.com/oauth/authorize',
       clientId: 'example_client_id',
       clientSecret: 'example_client_secret',
@@ -89,7 +89,7 @@ describe('createAppOAuth2Secret', () => {
 
   it('should throw 404 if no app is found', async () => {
     authorizeStudio();
-    const response = await request.post('/api/main/apps/99999/secrets/oauth2', {
+    const response = await request.post('/api/apps/99999/secrets/oauth2', {
       authorizationUrl: 'https://example.com/oauth/authorize',
       clientId: 'example_client_id',
       clientSecret: 'example_client_secret',
@@ -112,7 +112,7 @@ describe('createAppOAuth2Secret', () => {
   });
 
   it('should require a login with Appsemble Studio', async () => {
-    const response = await request.post(`/api/main/apps/${app.id}/secrets/oauth2`, {
+    const response = await request.post(`/api/apps/${app.id}/secrets/oauth2`, {
       authorizationUrl: 'https://example.com/oauth/authorize',
       clientId: 'example_client_id',
       clientSecret: 'example_client_secret',

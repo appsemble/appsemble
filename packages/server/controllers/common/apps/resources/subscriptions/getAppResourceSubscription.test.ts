@@ -67,7 +67,7 @@ describe('getAppResourceSubscription', () => {
       data: { foo: 'I am Foo.' },
     });
     authorizeStudio();
-    await request.patch(`/api/main/apps/${app.id}/subscriptions`, {
+    await request.patch(`/api/apps/${app.id}/subscriptions`, {
       endpoint: 'https://example.com',
       resource: 'testResource',
       resourceId: resource.id,
@@ -76,7 +76,7 @@ describe('getAppResourceSubscription', () => {
     });
 
     const response = await request.get(
-      `/api/common/apps/${app.id}/resources/testResource/${resource.id}/subscriptions`,
+      `/api/apps/${app.id}/resources/testResource/${resource.id}/subscriptions`,
       { params: { endpoint: 'https://example.com' } },
     );
 
@@ -107,7 +107,7 @@ describe('getAppResourceSubscription', () => {
 
     authorizeStudio();
     const response = await request.get(
-      `/api/common/apps/${app.id}/resources/testResource/${resource.id}/subscriptions`,
+      `/api/apps/${app.id}/resources/testResource/${resource.id}/subscriptions`,
       { params: { endpoint: 'https://example.com' } },
     );
 
@@ -133,7 +133,7 @@ describe('getAppResourceSubscription', () => {
 
     authorizeStudio();
     const response = await request.get(
-      `/api/common/apps/${app.id}/resources/testResource/0/subscriptions`,
+      `/api/apps/${app.id}/resources/testResource/0/subscriptions`,
       { params: { endpoint: 'https://example.com' } },
     );
 
@@ -157,7 +157,7 @@ describe('getAppResourceSubscription', () => {
     });
     authorizeStudio();
     const response = await request.get(
-      `/api/common/apps/${app.id}/resources/testResource/${resource.id}/subscriptions`,
+      `/api/apps/${app.id}/resources/testResource/${resource.id}/subscriptions`,
       { params: { endpoint: 'https://example.com' } },
     );
 

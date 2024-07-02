@@ -70,7 +70,7 @@ describe('getAppSnapshot', () => {
     });
 
     authorizeStudio(user);
-    const response = await request.get(`/api/main/apps/${app.id}/snapshots/${snapshot.id}`);
+    const response = await request.get(`/api/apps/${app.id}/snapshots/${snapshot.id}`);
 
     expect(response).toMatchInlineSnapshot(
       { data: { $author: { id: expect.any(String) } } },
@@ -108,7 +108,7 @@ describe('getAppSnapshot', () => {
     });
 
     authorizeStudio(user);
-    const response = await request.get(`/api/main/apps/${app.id}/snapshots/1000`);
+    const response = await request.get(`/api/apps/${app.id}/snapshots/1000`);
 
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 404 Not Found

@@ -31,7 +31,7 @@ interface Template {
 }
 
 export function CreateAppButton({ className }: { readonly className?: string }): ReactNode {
-  const { data: templates } = useData<Template[]>('/api/main/app-templates');
+  const { data: templates } = useData<Template[]>('/api/app-templates');
   const [selectedTemplate, setSelectedTemplate] = useState(0);
 
   const navigate = useNavigate();

@@ -17,7 +17,7 @@ beforeAll(async () => {
 
 describe('checkHealth', () => {
   it('should return status ok if all services are connected properly', async () => {
-    const response = await request.get('/api/main/health');
+    const response = await request.get('/api/health');
 
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 200 OK
@@ -31,7 +31,7 @@ describe('checkHealth', () => {
 
   it('should fail if the database is disconnected', async () => {
     vi.spyOn(getDB(), 'authenticate').mockRejectedValue(new Error('stub'));
-    const response = await request.get('/api/main/health');
+    const response = await request.get('/api/health');
 
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 503 Service Unavailable

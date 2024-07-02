@@ -40,7 +40,7 @@ beforeEach(async () => {
 
 describe('updateAppScimSecret', () => {
   it('should be secure', async () => {
-    const response = await request.get(`/api/main/apps/${app.id}/secrets/scim`);
+    const response = await request.get(`/api/apps/${app.id}/secrets/scim`);
 
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 401 Unauthorized
@@ -52,7 +52,7 @@ describe('updateAppScimSecret', () => {
 
   it('should update whether SCIM is enabled', async () => {
     authorizeStudio();
-    const response = await request.patch(`/api/main/apps/${app.id}/secrets/scim`, {
+    const response = await request.patch(`/api/apps/${app.id}/secrets/scim`, {
       enabled: true,
     });
 
@@ -72,7 +72,7 @@ describe('updateAppScimSecret', () => {
 
   it('should update the SCIM token', async () => {
     authorizeStudio();
-    const response = await request.patch(`/api/main/apps/${app.id}/secrets/scim`, {
+    const response = await request.patch(`/api/apps/${app.id}/secrets/scim`, {
       token: '6789',
     });
 

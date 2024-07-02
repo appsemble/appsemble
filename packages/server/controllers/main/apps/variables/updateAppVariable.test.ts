@@ -85,7 +85,7 @@ describe('updateAppVariable', () => {
       AppId: app.id,
     });
 
-    const response = await request.put(`/api/main/apps/${app.id}/variables/2`, {
+    const response = await request.put(`/api/apps/${app.id}/variables/2`, {
       name: 'Test variable 3',
       value: 'Test value 3',
     });
@@ -114,7 +114,7 @@ describe('updateAppVariable', () => {
       AppId: app.id,
     });
 
-    const response = await request.put(`/api/main/apps/${app.id}/variables/2`, {
+    const response = await request.put(`/api/apps/${app.id}/variables/2`, {
       name: 'Test variable 2',
       value: 'Test value 2',
     });
@@ -133,7 +133,7 @@ describe('updateAppVariable', () => {
 
   it('should throw status 404 for unknown variables', async () => {
     authorizeStudio();
-    const response = await request.put(`/api/main/apps/${app.id}/variables/123`, {
+    const response = await request.put(`/api/apps/${app.id}/variables/123`, {
       name: 'Test variable 2',
       value: 'Test value 2',
     });
@@ -151,7 +151,7 @@ describe('updateAppVariable', () => {
 
   it('should throw status 404 for unknown apps', async () => {
     authorizeStudio();
-    const response = await request.put('/api/main/apps/123/variables/1', {
+    const response = await request.put('/api/apps/123/variables/1', {
       name: 'Test variable 2',
       value: 'Test value 2',
     });
@@ -170,7 +170,7 @@ describe('updateAppVariable', () => {
   it('should require the EditApps and EditAppSettings permissions', async () => {
     authorizeStudio();
     await member.update({ role: 'Member' });
-    const response = await request.put(`/api/main/apps/${app.id}/variables/123`, {
+    const response = await request.put(`/api/apps/${app.id}/variables/123`, {
       name: 'Test variable',
       value: 'Test value',
     });

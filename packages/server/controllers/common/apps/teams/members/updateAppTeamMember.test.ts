@@ -91,12 +91,9 @@ describe('updateAppTeamMember', () => {
     await TeamMember.create({ AppMemberId: appMember.id, TeamId: team.id, role: TeamRole.Member });
 
     authorizeStudio();
-    const response = await request.put(
-      `/api/common/apps/${app.id}/teams/${team.id}/members/${userB.id}`,
-      {
-        role: TeamRole.Manager,
-      },
-    );
+    const response = await request.put(`/api/apps/${app.id}/teams/${team.id}/members/${userB.id}`, {
+      role: TeamRole.Manager,
+    });
 
     expect(response).toMatchObject({
       status: 200,
@@ -133,7 +130,7 @@ describe('updateAppTeamMember', () => {
 
     authorizeStudio();
     const response = await request.put(
-      `/api/common/apps/${app.id}/teams/${team.id}/members/${appMember.email}`,
+      `/api/apps/${app.id}/teams/${team.id}/members/${appMember.email}`,
       {
         role: TeamRole.Manager,
       },
@@ -188,12 +185,9 @@ describe('updateAppTeamMember', () => {
     });
 
     authorizeStudio();
-    const response = await request.put(
-      `/api/common/apps/${app.id}/teams/${team.id}/members/${userB.id}`,
-      {
-        role: TeamRole.Manager,
-      },
-    );
+    const response = await request.put(`/api/apps/${app.id}/teams/${team.id}/members/${userB.id}`, {
+      role: TeamRole.Manager,
+    });
 
     expect(response).toMatchObject({
       status: 200,
@@ -233,12 +227,9 @@ describe('updateAppTeamMember', () => {
     await TeamMember.create({ AppMemberId: appMember.id, TeamId: team.id, role: TeamRole.Member });
 
     authorizeStudio();
-    const response = await request.put(
-      `/api/common/apps/${app.id}/teams/${team.id}/members/${userB.id}`,
-      {
-        role: TeamRole.Manager,
-      },
-    );
+    const response = await request.put(`/api/apps/${app.id}/teams/${team.id}/members/${userB.id}`, {
+      role: TeamRole.Manager,
+    });
 
     expect(response).toMatchObject({
       status: 403,
@@ -263,12 +254,9 @@ describe('updateAppTeamMember', () => {
     const team = await Team.create({ name: 'A', AppId: app.id });
 
     authorizeStudio();
-    const response = await request.put(
-      `/api/common/apps/${app.id}/teams/${team.id}/members/${userB.id}`,
-      {
-        role: TeamRole.Manager,
-      },
-    );
+    const response = await request.put(`/api/apps/${app.id}/teams/${team.id}/members/${userB.id}`, {
+      role: TeamRole.Manager,
+    });
 
     expect(response).toMatchObject({
       status: 400,

@@ -93,7 +93,7 @@ describe('createAppTeam', () => {
         role: 'TeamCreator',
       });
 
-      const response = await request.post(`/api/common/apps/${app.id}/teams`, {
+      const response = await request.post(`/api/apps/${app.id}/teams`, {
         name: 'Test Team',
       });
       expect(response).toMatchInlineSnapshot(`
@@ -127,7 +127,7 @@ describe('createAppTeam', () => {
         role: 'Invalid',
       });
 
-      const response = await request.post(`/api/common/apps/${app.id}/teams`, {
+      const response = await request.post(`/api/apps/${app.id}/teams`, {
         name: 'Test Team',
       });
       expect(response).toMatchInlineSnapshot(`
@@ -154,7 +154,7 @@ describe('createAppTeam', () => {
         },
       });
 
-      const response = await request.post(`/api/common/apps/${app.id}/teams`, {
+      const response = await request.post(`/api/apps/${app.id}/teams`, {
         name: 'Test Team',
       });
       expect(response).toMatchInlineSnapshot(`
@@ -176,7 +176,7 @@ describe('createAppTeam', () => {
     });
 
     it('should create a team if user is Owner', async () => {
-      const response = await request.post(`/api/common/apps/${app.id}/teams`, {
+      const response = await request.post(`/api/apps/${app.id}/teams`, {
         name: 'Test Team',
       });
 
@@ -187,7 +187,7 @@ describe('createAppTeam', () => {
     });
 
     it('should create a team with annotations', async () => {
-      const response = await request.post(`/api/common/apps/${app.id}/teams`, {
+      const response = await request.post(`/api/apps/${app.id}/teams`, {
         name: 'Test Team',
         annotations: { testKey: 'foo' },
       });
@@ -215,7 +215,7 @@ describe('createAppTeam', () => {
         OrganizationId: organization.id,
       });
 
-      const response = await request.post(`/api/common/apps/${noSecurity.id}/teams`, {
+      const response = await request.post(`/api/apps/${noSecurity.id}/teams`, {
         name: 'Test Team',
       });
 
@@ -230,7 +230,7 @@ describe('createAppTeam', () => {
         { role: 'AppEditor' },
         { where: { UserId: user.id, OrganizationId: organization.id } },
       );
-      const response = await request.post(`/api/common/apps/${app.id}/teams`, {
+      const response = await request.post(`/api/apps/${app.id}/teams`, {
         name: 'Test Team',
       });
 
@@ -268,7 +268,7 @@ describe('createAppTeam', () => {
         vapidPrivateKey: 'b',
         OrganizationId: 'appsemble',
       });
-      const response = await request.post(`/api/common/apps/${appB.id}/teams`, {
+      const response = await request.post(`/api/apps/${appB.id}/teams`, {
         name: 'Test Team',
       });
 
@@ -280,7 +280,7 @@ describe('createAppTeam', () => {
 
     it('should not create a team for non-existent organizations', async () => {
       authorizeStudio();
-      const response = await request.post('/api/common/apps/80123/teams', { name: 'Test Team' });
+      const response = await request.post('/api/apps/80123/teams', { name: 'Test Team' });
 
       expect(response).toMatchObject({
         status: 404,

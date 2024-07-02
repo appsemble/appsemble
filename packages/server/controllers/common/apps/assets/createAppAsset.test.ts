@@ -66,7 +66,7 @@ describe('createAppAsset', () => {
   it('should be able to create an asset', async () => {
     const data = Buffer.from([0xc0, 0xff, 0xee, 0xba, 0xbe]);
     const response = await request.post<Asset>(
-      `/api/common/apps/${app.id}/assets`,
+      `/api/apps/${app.id}/assets`,
       createFormData({ file: data, name: 'test-asset' }),
     );
     expect(response).toMatchInlineSnapshot(
@@ -96,11 +96,11 @@ describe('createAppAsset', () => {
 
   it('should not allow using conflicting names', async () => {
     await request.post(
-      `/api/common/apps/${app.id}/assets`,
+      `/api/apps/${app.id}/assets`,
       createFormData({ file: Buffer.alloc(0), name: 'conflict' }),
     );
     const response = await request.post(
-      `/api/common/apps/${app.id}/assets`,
+      `/api/apps/${app.id}/assets`,
       createFormData({ file: Buffer.alloc(0), name: 'conflict' }),
     );
     expect(response).toMatchInlineSnapshot(`
@@ -139,7 +139,7 @@ describe('createAppAsset', () => {
 
   it('should accept empty files', async () => {
     const response = await request.post(
-      `/api/common/apps/${app.id}/assets`,
+      `/api/apps/${app.id}/assets`,
       createFormData({ file: Buffer.alloc(0) }),
     );
     expect(response).toMatchInlineSnapshot(
@@ -158,7 +158,7 @@ describe('createAppAsset', () => {
 
   it('should support filenames', async () => {
     const response = await request.post(
-      `/api/common/apps/${app.id}/assets`,
+      `/api/apps/${app.id}/assets`,
       createFormData({ file: createFixtureStream('10x50.png') }),
     );
     expect(response).toMatchInlineSnapshot(
@@ -178,7 +178,7 @@ describe('createAppAsset', () => {
 
   it('should not create assets for apps that don’t exist', async () => {
     const response = await request.post(
-      '/api/common/apps/0/assets',
+      '/api/apps/0/assets',
       createFormData({ file: Buffer.alloc(0) }),
     );
     expect(response).toMatchInlineSnapshot(`
@@ -203,7 +203,7 @@ describe('createAppAsset', () => {
     });
     authorizeStudio();
     const response = await request.post<AssetType>(
-      `/api/common/apps/${app.id}/assets`,
+      `/api/apps/${app.id}/assets`,
       createFormData({ file: Buffer.alloc(0) }),
     );
     const asset = await Asset.findByPk(response.data.id);

@@ -84,9 +84,7 @@ describe('getAppTeamMember', () => {
     });
 
     authorizeStudio();
-    const response = await request.get(
-      `/api/common/apps/${app.id}/teams/${team.id}/members/${user.id}`,
-    );
+    const response = await request.get(`/api/apps/${app.id}/teams/${team.id}/members/${user.id}`);
 
     expect(response.data).toStrictEqual({
       id: user.id,

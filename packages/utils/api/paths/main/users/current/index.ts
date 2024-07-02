@@ -10,7 +10,7 @@ export const paths: OpenAPIV3.PathsObject = {
   ...authPaths,
   ...emailsPaths,
   ...organizationsPaths,
-  '/api/main/users/current': {
+  '/api/users/current': {
     get: {
       tags: ['main', 'user', 'current-user'],
       description: "Fetch the logged in user's profile.",
@@ -52,7 +52,7 @@ export const paths: OpenAPIV3.PathsObject = {
       security: [{ studio: [] }],
     },
   },
-  '/api/main/users/current/unsubscribe': {
+  '/api/users/current/unsubscribe': {
     post: {
       tags: ['main', 'user', 'current-user'],
       description: 'Unsubscribe a user from the newsletter',

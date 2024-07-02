@@ -1,7 +1,7 @@
 import { type OpenAPIV3 } from 'openapi-types';
 
 export const paths: OpenAPIV3.PathsObject = {
-  '/api/main/blocks/@{organizationId}/{blockId}/versions/list': {
+  '/api/blocks/@{organizationId}/{blockId}/versions/list': {
     parameters: [
       { $ref: '#/components/parameters/organizationId' },
       { $ref: '#/components/parameters/blockId' },
@@ -27,7 +27,7 @@ export const paths: OpenAPIV3.PathsObject = {
       },
     },
   },
-  '/api/main/blocks/@{organizationId}/{blockId}/versions/{blockVersion}': {
+  '/api/blocks/@{organizationId}/{blockId}/versions/{blockVersion}': {
     parameters: [
       { $ref: '#/components/parameters/organizationId' },
       { $ref: '#/components/parameters/blockId' },

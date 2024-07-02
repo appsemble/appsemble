@@ -64,7 +64,7 @@ describe('getAppLanguages', () => {
         defaultLanguage: 'nl-nl',
       },
     });
-    const response = await request.get(`/api/common/apps/${app.id}/messages`);
+    const response = await request.get(`/api/apps/${app.id}/messages`);
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 200 OK
       Content-Type: application/json; charset=utf-8
@@ -76,7 +76,7 @@ describe('getAppLanguages', () => {
   });
 
   it('should fallback to the default value of defaultLanguage', async () => {
-    const response = await request.get(`/api/common/apps/${app.id}/messages`);
+    const response = await request.get(`/api/apps/${app.id}/messages`);
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 200 OK
       Content-Type: application/json; charset=utf-8
@@ -89,20 +89,20 @@ describe('getAppLanguages', () => {
 
   it('should return a list of available languages', async () => {
     authorizeStudio();
-    await request.post(`/api/main/apps/${app.id}/messages`, {
+    await request.post(`/api/apps/${app.id}/messages`, {
       language: 'nl',
       messages: { messageIds: { test: 'Geslaagd met vliegende kleuren' } },
     });
-    await request.post(`/api/main/apps/${app.id}/messages`, {
+    await request.post(`/api/apps/${app.id}/messages`, {
       language: 'en',
       messages: { messageIds: { test: 'Passed with flying colors' } },
     });
-    await request.post(`/api/main/apps/${app.id}/messages`, {
+    await request.post(`/api/apps/${app.id}/messages`, {
       language: 'en-GB',
       messages: { messageIds: { test: 'Passed with flying colours' } },
     });
 
-    const response = await request.get(`/api/common/apps/${app.id}/messages`);
+    const response = await request.get(`/api/apps/${app.id}/messages`);
 
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 200 OK
@@ -118,20 +118,20 @@ describe('getAppLanguages', () => {
 
   it('should include messages with languages', async () => {
     authorizeStudio();
-    await request.post(`/api/main/apps/${app.id}/messages`, {
+    await request.post(`/api/apps/${app.id}/messages`, {
       language: 'nl',
       messages: { messageIds: { test: 'Geslaagd met vliegende kleuren' } },
     });
-    await request.post(`/api/main/apps/${app.id}/messages`, {
+    await request.post(`/api/apps/${app.id}/messages`, {
       language: 'en',
       messages: { messageIds: { test: 'Passed with flying colors' } },
     });
-    await request.post(`/api/main/apps/${app.id}/messages`, {
+    await request.post(`/api/apps/${app.id}/messages`, {
       language: 'en-GB',
       messages: { messageIds: { test: 'Passed with flying colours' } },
     });
 
-    const response = await request.get(`/api/common/apps/${app.id}/messages?includeMessages=true`);
+    const response = await request.get(`/api/apps/${app.id}/messages?includeMessages=true`);
 
     expect(response.data).toMatchObject([
       { language: 'en', messages: { messageIds: { test: 'Passed with flying colors' } } },

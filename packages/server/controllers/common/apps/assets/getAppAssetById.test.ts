@@ -68,7 +68,7 @@ describe('getAppAssetById', () => {
       data,
     });
 
-    const response = await request.get(`/api/common/apps/${app.id}/assets/${asset.id}`, {
+    const response = await request.get(`/api/apps/${app.id}/assets/${asset.id}`, {
       responseType: 'arraybuffer',
     });
 
@@ -93,12 +93,12 @@ describe('getAppAssetById', () => {
       name: 'test-asset',
     });
 
-    const response = await request.get(`/api/common/apps/${app.id}/assets/test-asset`);
+    const response = await request.get(`/api/apps/${app.id}/assets/test-asset`);
 
     expect(response).toMatchObject({
       status: 302,
       headers: expect.objectContaining({
-        location: `/api/common/apps/1/assets/${asset.id}`,
+        location: `/api/apps/1/assets/${asset.id}`,
         'content-type': 'text/plain; charset=utf-8',
       }),
       data: 'Found',
@@ -112,7 +112,7 @@ describe('getAppAssetById', () => {
       data,
     });
 
-    const response = await request.get(`/api/common/apps/${app.id}/assets/${asset.id}`, {
+    const response = await request.get(`/api/apps/${app.id}/assets/${asset.id}`, {
       responseType: 'arraybuffer',
     });
 
@@ -134,7 +134,7 @@ describe('getAppAssetById', () => {
       data,
     });
 
-    const response = await request.get(`/api/common/apps/${app.id}/assets/${asset.id}`, {
+    const response = await request.get(`/api/apps/${app.id}/assets/${asset.id}`, {
       responseType: 'arraybuffer',
     });
 
@@ -176,7 +176,7 @@ describe('getAppAssetById', () => {
       data,
     });
 
-    const response = await request.get(`/api/common/apps/${app.id}/assets/${asset.id}`);
+    const response = await request.get(`/api/apps/${app.id}/assets/${asset.id}`);
 
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 404 Not Found
@@ -191,7 +191,7 @@ describe('getAppAssetById', () => {
   });
 
   it('should fetch assets from apps that don’t exist', async () => {
-    const response = await request.get('/api/common/apps/0/assets/0');
+    const response = await request.get('/api/apps/0/assets/0');
 
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 404 Not Found

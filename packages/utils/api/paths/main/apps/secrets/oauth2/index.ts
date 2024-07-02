@@ -1,7 +1,7 @@
 import { type OpenAPIV3 } from 'openapi-types';
 
 export const paths: OpenAPIV3.PathsObject = {
-  '/api/main/apps/{appId}/secrets/oauth2': {
+  '/api/apps/{appId}/secrets/oauth2': {
     parameters: [{ $ref: '#/components/parameters/appId' }],
     post: {
       tags: ['main', 'app', 'secret', 'oauth2'],
@@ -54,7 +54,7 @@ export const paths: OpenAPIV3.PathsObject = {
       },
     },
   },
-  '/api/main/apps/{appId}/secrets/oauth2/{appOAuth2SecretId}': {
+  '/api/apps/{appId}/secrets/oauth2/{appOAuth2SecretId}': {
     parameters: [
       { $ref: '#/components/parameters/appId' },
       { $ref: '#/components/parameters/appOAuth2SecretId' },
@@ -113,7 +113,7 @@ export const paths: OpenAPIV3.PathsObject = {
       },
     },
   },
-  '/api/main/apps/{appId}/secrets/oauth2/{appOAuth2SecretId}/verify': {
+  '/api/apps/{appId}/secrets/oauth2/{appOAuth2SecretId}/verify': {
     parameters: [
       { $ref: '#/components/parameters/appId' },
       { $ref: '#/components/parameters/appOAuth2SecretId' },

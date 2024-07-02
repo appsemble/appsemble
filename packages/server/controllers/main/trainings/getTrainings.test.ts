@@ -57,7 +57,7 @@ describe('getTrainings', () => {
     });
 
     authorizeStudio();
-    const response = await request.get('/api/main/trainings');
+    const response = await request.get('/api/trainings');
     expect(response).toMatchObject({
       status: 200,
       data: [

@@ -67,7 +67,7 @@ describe('updateAppSamlSecret', () => {
       spPublicKey: '-----BEGIN PUBLIC KEY-----\nSP\n-----END PUBLIC KEY-----',
     });
     const response = await request.put<AppSamlSecretType>(
-      `/api/main/apps/${app.id}/secrets/saml/${secret.id}`,
+      `/api/apps/${app.id}/secrets/saml/${secret.id}`,
       {
         entityId: 'https://updated.example/saml/metadata.xml',
         ssoUrl: 'https://updated.example/saml/login',
@@ -105,7 +105,7 @@ describe('updateAppSamlSecret', () => {
 
   it('should not throw status 404 for unknown apps', async () => {
     authorizeStudio();
-    const response = await request.put(`/api/main/apps/${app.id}/secrets/saml/1`, {
+    const response = await request.put(`/api/apps/${app.id}/secrets/saml/1`, {
       entityId: 'https://example.com/saml/metadata.xml',
       ssoUrl: 'https://example.com/saml/login',
       idpCertificate: '-----BEGIN CERTIFICATE-----\nIDP\n-----END CERTIFICATE-----',
@@ -126,7 +126,7 @@ describe('updateAppSamlSecret', () => {
 
   it('should not throw status 404 for unknown secrets', async () => {
     authorizeStudio();
-    const response = await request.put('/api/main/apps/13/secrets/saml/1', {
+    const response = await request.put('/api/apps/13/secrets/saml/1', {
       entityId: 'https://example.com/saml/metadata.xml',
       ssoUrl: 'https://example.com/saml/login',
       idpCertificate: '-----BEGIN CERTIFICATE-----\nIDP\n-----END CERTIFICATE-----',
@@ -148,7 +148,7 @@ describe('updateAppSamlSecret', () => {
   it('should require the EditApps and EditAppSettings permissions', async () => {
     authorizeStudio();
     await member.update({ role: 'Member' });
-    const response = await request.put(`/api/main/apps/${app.id}/secrets/saml/34`, {
+    const response = await request.put(`/api/apps/${app.id}/secrets/saml/34`, {
       entityId: 'https://example.com/saml/metadata.xml',
       ssoUrl: 'https://example.com/saml/login',
       idpCertificate: '-----BEGIN CERTIFICATE-----\nIDP\n-----END CERTIFICATE-----',

@@ -1,7 +1,7 @@
 import { type OpenAPIV3 } from 'openapi-types';
 
 export const paths: OpenAPIV3.PathsObject = {
-  '/api/main/apps/{appId}/quotas/email': {
+  '/api/apps/{appId}/quotas/email': {
     get: {
       tags: ['main', 'app', 'quota', 'email'],
       operationId: 'getAppEmailQuota',

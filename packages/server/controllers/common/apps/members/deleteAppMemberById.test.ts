@@ -70,7 +70,7 @@ describe('deleteAppMemberById', () => {
   it('should throw 404 if the app doesn’t exist', async () => {
     authorizeStudio();
     const response = await request.delete(
-      '/api/common/apps/253/members/e1f0eda6-b2cd-4e66-ae8d-f9dee33d1624',
+      '/api/apps/253/members/e1f0eda6-b2cd-4e66-ae8d-f9dee33d1624',
     );
 
     expect(response).toMatchInlineSnapshot(`
@@ -108,7 +108,7 @@ describe('deleteAppMemberById', () => {
       OrganizationId: organization.id,
     });
     const response = await request.delete(
-      `/api/common/apps/${app.id}/members/e1f0eda6-b2cd-4e66-ae8d-f9dee33d1624`,
+      `/api/apps/${app.id}/members/e1f0eda6-b2cd-4e66-ae8d-f9dee33d1624`,
     );
 
     expect(response).toMatchInlineSnapshot(`
@@ -154,7 +154,7 @@ describe('deleteAppMemberById', () => {
       role: 'Reader',
       timezone: 'Europe/Amsterdam',
     });
-    const response = await request.delete(`/api/common/apps/${app.id}/members/${userB.id}`);
+    const response = await request.delete(`/api/apps/${app.id}/members/${userB.id}`);
 
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 403 Forbidden
@@ -198,7 +198,7 @@ describe('deleteAppMemberById', () => {
       role: 'Reader',
       timezone: 'Europe/Amsterdam',
     });
-    const response = await request.delete(`/api/common/apps/${app.id}/members/${userB.id}`);
+    const response = await request.delete(`/api/apps/${app.id}/members/${userB.id}`);
 
     expect(response).toMatchInlineSnapshot('HTTP/1.1 204 No Content');
     await expect(() => appMember.reload()).rejects.toThrow(
@@ -235,7 +235,7 @@ describe('deleteAppMemberById', () => {
       role: 'Reader',
     });
     authorizeStudio(userB);
-    const response = await request.delete(`/api/common/apps/${app.id}/members/${userB.id}`);
+    const response = await request.delete(`/api/apps/${app.id}/members/${userB.id}`);
 
     expect(response).toMatchInlineSnapshot('HTTP/1.1 204 No Content');
     await expect(() => appMember.reload()).rejects.toThrow(
@@ -306,7 +306,7 @@ describe('deleteAppMemberById', () => {
       refreshToken: 'refresh',
       expiresAt: new Date(),
     });
-    const response = await request.delete(`/api/common/apps/${app.id}/members/${userB.id}`);
+    const response = await request.delete(`/api/apps/${app.id}/members/${userB.id}`);
 
     expect(response).toMatchObject({
       status: 204,

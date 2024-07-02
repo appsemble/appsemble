@@ -80,7 +80,7 @@ describe('getAppTeam', () => {
     await TeamMember.create({ role: TeamRole.Member, AppMemberId: appMember.id, TeamId: team.id });
 
     authorizeStudio();
-    const response = await request.get(`/api/common/apps/${app.id}/teams/${team.id}`);
+    const response = await request.get(`/api/apps/${app.id}/teams/${team.id}`);
     expect(response).toMatchObject({
       status: 200,
       data: { id: team.id, name: team.name, role: TeamRole.Member },
@@ -89,7 +89,7 @@ describe('getAppTeam', () => {
 
   it('should not return a team that doesn’t exist', async () => {
     authorizeStudio();
-    const response = await request.get(`/api/common/apps/${app.id}/teams/80000`);
+    const response = await request.get(`/api/apps/${app.id}/teams/80000`);
 
     expect(response).toMatchObject({
       status: 404,
@@ -120,7 +120,7 @@ describe('getAppTeam', () => {
     });
 
     authorizeStudio();
-    const response = await request.get(`/api/common/apps/${appB.id}/teams/${team.id}`);
+    const response = await request.get(`/api/apps/${appB.id}/teams/${team.id}`);
 
     expect(response).toMatchObject({
       status: 404,

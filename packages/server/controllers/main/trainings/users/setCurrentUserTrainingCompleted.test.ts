@@ -57,7 +57,7 @@ describe('setCurrentUserTrainingCompleted', () => {
 
     authorizeStudio();
     const response = await request.patch(
-      '/api/main/trainings/2/users/current',
+      '/api/trainings/2/users/current',
       createFormData({
         completed: true,
       }),
@@ -90,7 +90,7 @@ describe('setCurrentUserTrainingCompleted', () => {
 
     authorizeStudio();
     const response = await request.patch(
-      '/api/main/trainings/1/users/current',
+      '/api/trainings/1/users/current',
       createFormData({
         completed: true,
       }),

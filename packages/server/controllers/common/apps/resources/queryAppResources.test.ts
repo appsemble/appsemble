@@ -77,7 +77,7 @@ describe('queryAppResources', () => {
     });
     await Resource.create({ AppId: app.id, type: 'testResourceB', data: { bar: 'baz' } });
 
-    const response = await request.get(`/api/common/apps/${app.id}/resources/testResource`);
+    const response = await request.get(`/api/apps/${app.id}/resources/testResource`);
 
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 200 OK
@@ -112,7 +112,7 @@ describe('queryAppResources', () => {
       data: { foo: 'baz', bar: 'fooz', fooz: 'bar', baz: 'foo' },
     });
 
-    const response = await request.get(`/api/common/apps/${app.id}/resources/testResource`, {
+    const response = await request.get(`/api/apps/${app.id}/resources/testResource`, {
       params: { $select: 'id,foo,bar' },
     });
 
@@ -162,7 +162,7 @@ describe('queryAppResources', () => {
       await Resource.create({ AppId: app.id, type: 'testResourceB', data: { bar: 'baz' } });
 
       authorizeStudio();
-      const response = await request.get(`/api/common/apps/${app.id}/resources/testResource`);
+      const response = await request.get(`/api/apps/${app.id}/resources/testResource`);
 
       expect(response).toMatchInlineSnapshot(`
         HTTP/1.1 200 OK
@@ -207,7 +207,7 @@ describe('queryAppResources', () => {
 
       authorizeStudio();
       const response = await request.get(
-        `/api/common/apps/${app.id}/resources/testResource/${resource.id}`,
+        `/api/apps/${app.id}/resources/testResource/${resource.id}`,
       );
 
       expect(response).toMatchInlineSnapshot(
@@ -231,7 +231,7 @@ describe('queryAppResources', () => {
     });
 
     it('should return a 401 on unauthorized requests if roles are present', async () => {
-      const response = await request.get(`/api/common/apps/${app.id}/resources/secured`);
+      const response = await request.get(`/api/apps/${app.id}/resources/secured`);
 
       expect(response).toMatchInlineSnapshot(`
         HTTP/1.1 401 Unauthorized
@@ -247,7 +247,7 @@ describe('queryAppResources', () => {
 
     it('should throw a 403 on secured actions if user is authenticated and is not a member', async () => {
       authorizeApp(app);
-      const response = await request.get(`/api/common/apps/${app.id}/resources/secured`);
+      const response = await request.get(`/api/apps/${app.id}/resources/secured`);
 
       expect(response).toMatchInlineSnapshot(`
         HTTP/1.1 403 Forbidden
@@ -271,7 +271,7 @@ describe('queryAppResources', () => {
       });
 
       authorizeApp(app);
-      const response = await request.post(`/api/common/apps/${app.id}/resources/secured`, {});
+      const response = await request.post(`/api/apps/${app.id}/resources/secured`, {});
 
       expect(response).toMatchInlineSnapshot(`
         HTTP/1.1 403 Forbidden
@@ -298,7 +298,7 @@ describe('queryAppResources', () => {
       data: { foo: 'baz', bar: 'fooz', fooz: 'bar', baz: 'foo' },
     });
 
-    const response = await request.get(`/api/common/apps/${app.id}/resources/testResource`, {
+    const response = await request.get(`/api/apps/${app.id}/resources/testResource`, {
       params: { $select: '  fooz ,    baz     ' },
     });
 
@@ -331,7 +331,7 @@ describe('queryAppResources', () => {
       data: { foo: 'baz', bar: 'fooz', fooz: 'bar', baz: 'foo' },
     });
 
-    const response = await request.get(`/api/common/apps/${app.id}/resources/testResource`, {
+    const response = await request.get(`/api/apps/${app.id}/resources/testResource`, {
       params: { $select: 'unknown' },
     });
 
@@ -362,7 +362,7 @@ describe('queryAppResources', () => {
       data: { bar: 'bar' },
     });
 
-    const response = await request.get(`/api/common/apps/${app.id}/resources/testResourceNone`);
+    const response = await request.get(`/api/apps/${app.id}/resources/testResourceNone`);
     expect(response).toMatchInlineSnapshot(
       { data: [{ $author: { id: expect.any(String) } }] },
       `
@@ -418,9 +418,7 @@ describe('queryAppResources', () => {
     await Resource.create({ AppId: app.id, type: 'testResourceB', data: { bar: 'baz' } });
 
     authorizeApp(app);
-    const response = await request.get(
-      `/api/common/apps/${app.id}/resources/testResourceAuthorOnly`,
-    );
+    const response = await request.get(`/api/apps/${app.id}/resources/testResourceAuthorOnly`);
 
     expect(response).toMatchInlineSnapshot(
       { data: [{ $author: { id: expect.any(String) } }] },
@@ -495,7 +493,7 @@ describe('queryAppResources', () => {
     });
 
     authorizeApp(app);
-    const response = await request.get(`/api/common/apps/${app.id}/resources/testResourceTeam`);
+    const response = await request.get(`/api/apps/${app.id}/resources/testResourceTeam`);
     expect(response).toMatchInlineSnapshot(
       { data: [{ $author: { id: expect.any(String) } }, { $author: { id: expect.any(String) } }] },
       `
@@ -639,9 +637,7 @@ describe('queryAppResources', () => {
     });
 
     authorizeApp(app);
-    const response = await request.get(
-      `/api/common/apps/${app.id}/resources/testResourceTeamManager`,
-    );
+    const response = await request.get(`/api/apps/${app.id}/resources/testResourceTeamManager`);
 
     expect(response).toMatchInlineSnapshot(
       { data: [{ $author: { id: expect.any(String) } }, { $author: { id: expect.any(String) } }] },
@@ -683,7 +679,7 @@ describe('queryAppResources', () => {
     });
     await Resource.create({ AppId: app.id, type: 'testResource', data: { foo: 'baz' } });
 
-    const response = await request.get(`/api/common/apps/${app.id}/resources/testResource?$top=1`);
+    const response = await request.get(`/api/apps/${app.id}/resources/testResource?$top=1`);
 
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 200 OK
@@ -714,7 +710,7 @@ describe('queryAppResources', () => {
     });
 
     const responseA = await request.get(
-      `/api/common/apps/${app.id}/resources/testResource?$orderby=foo asc`,
+      `/api/apps/${app.id}/resources/testResource?$orderby=foo asc`,
     );
     expect(responseA).toMatchInlineSnapshot(`
       HTTP/1.1 200 OK
@@ -737,7 +733,7 @@ describe('queryAppResources', () => {
     `);
 
     const responseB = await request.get(
-      `/api/common/apps/${app.id}/resources/testResource?$orderby=foo desc`,
+      `/api/apps/${app.id}/resources/testResource?$orderby=foo desc`,
     );
     expect(responseB).toMatchInlineSnapshot(`
       HTTP/1.1 200 OK
@@ -760,7 +756,7 @@ describe('queryAppResources', () => {
     `);
 
     const responseC = await request.get(
-      `/api/common/apps/${app.id}/resources/testResource?$orderby=$created asc`,
+      `/api/apps/${app.id}/resources/testResource?$orderby=$created asc`,
     );
     expect(responseC).toMatchInlineSnapshot(`
       HTTP/1.1 200 OK
@@ -783,7 +779,7 @@ describe('queryAppResources', () => {
     `);
 
     const responseD = await request.get(
-      `/api/common/apps/${app.id}/resources/testResource?$orderby=$created desc`,
+      `/api/apps/${app.id}/resources/testResource?$orderby=$created desc`,
     );
     expect(responseD).toMatchInlineSnapshot(`
       HTTP/1.1 200 OK
@@ -826,7 +822,7 @@ describe('queryAppResources', () => {
     });
 
     const responseA = await request.get(
-      `/api/common/apps/${app.id}/resources/testResource?$orderby=number asc`,
+      `/api/apps/${app.id}/resources/testResource?$orderby=number asc`,
     );
     expect(responseA).toMatchInlineSnapshot(`
       HTTP/1.1 200 OK
@@ -855,7 +851,7 @@ describe('queryAppResources', () => {
     `);
 
     const responseB = await request.get(
-      `/api/common/apps/${app.id}/resources/testResource?$orderby=number desc`,
+      `/api/apps/${app.id}/resources/testResource?$orderby=number desc`,
     );
     expect(responseB).toMatchInlineSnapshot(`
       HTTP/1.1 200 OK
@@ -898,7 +894,7 @@ describe('queryAppResources', () => {
     });
 
     const responseA = await request.get(
-      `/api/common/apps/${app.id}/resources/testResource?$orderby=integer asc`,
+      `/api/apps/${app.id}/resources/testResource?$orderby=integer asc`,
     );
     expect(responseA).toMatchInlineSnapshot(`
       HTTP/1.1 200 OK
@@ -921,7 +917,7 @@ describe('queryAppResources', () => {
     `);
 
     const responseB = await request.get(
-      `/api/common/apps/${app.id}/resources/testResource?$orderby=integer desc`,
+      `/api/apps/${app.id}/resources/testResource?$orderby=integer desc`,
     );
     expect(responseB).toMatchInlineSnapshot(`
       HTTP/1.1 200 OK
@@ -958,7 +954,7 @@ describe('queryAppResources', () => {
     });
 
     const responseA = await request.get(
-      `/api/common/apps/${app.id}/resources/testResource?$orderby=boolean asc`,
+      `/api/apps/${app.id}/resources/testResource?$orderby=boolean asc`,
     );
     expect(responseA).toMatchInlineSnapshot(`
       HTTP/1.1 200 OK
@@ -981,7 +977,7 @@ describe('queryAppResources', () => {
     `);
 
     const responseB = await request.get(
-      `/api/common/apps/${app.id}/resources/testResource?$orderby=boolean desc`,
+      `/api/apps/${app.id}/resources/testResource?$orderby=boolean desc`,
     );
     expect(responseB).toMatchInlineSnapshot(`
       HTTP/1.1 200 OK
@@ -1018,7 +1014,7 @@ describe('queryAppResources', () => {
     });
 
     const responseA = await request.get(
-      `/api/common/apps/${app.id}/resources/testResource?$orderby=enum asc`,
+      `/api/apps/${app.id}/resources/testResource?$orderby=enum asc`,
     );
     expect(responseA).toMatchInlineSnapshot(`
       HTTP/1.1 200 OK
@@ -1041,7 +1037,7 @@ describe('queryAppResources', () => {
     `);
 
     const responseB = await request.get(
-      `/api/common/apps/${app.id}/resources/testResource?$orderby=enum desc`,
+      `/api/apps/${app.id}/resources/testResource?$orderby=enum desc`,
     );
     expect(responseB).toMatchInlineSnapshot(`
       HTTP/1.1 200 OK
@@ -1090,7 +1086,7 @@ describe('queryAppResources', () => {
     });
 
     const responseA = await request.get(
-      `/api/common/apps/${app.id}/resources/testResource?$orderby=date asc`,
+      `/api/apps/${app.id}/resources/testResource?$orderby=date asc`,
     );
     expect(responseA).toMatchInlineSnapshot(`
       HTTP/1.1 200 OK
@@ -1125,7 +1121,7 @@ describe('queryAppResources', () => {
     `);
 
     const responseB = await request.get(
-      `/api/common/apps/${app.id}/resources/testResource?$orderby=date desc`,
+      `/api/apps/${app.id}/resources/testResource?$orderby=date desc`,
     );
     expect(responseB).toMatchInlineSnapshot(`
       HTTP/1.1 200 OK
@@ -1169,7 +1165,7 @@ describe('queryAppResources', () => {
     await Resource.create({ AppId: app.id, type: 'testResource', data: { foo: 'bar' } });
 
     const response = await request.get(
-      `/api/common/apps/${app.id}/resources/testResource?$filter=foo eq 'foo'`,
+      `/api/apps/${app.id}/resources/testResource?$filter=foo eq 'foo'`,
     );
 
     expect(response).toMatchInlineSnapshot(`
@@ -1195,7 +1191,7 @@ describe('queryAppResources', () => {
     });
     await Resource.create({ AppId: app.id, type: 'testResource', data: { foo: 'bar', bar: 2 } });
 
-    const response = await request.get(`/api/common/apps/${app.id}/resources/testResource`, {
+    const response = await request.get(`/api/apps/${app.id}/resources/testResource`, {
       params: { $filter: `contains(foo, 'oo') and id le ${resource.id}` },
     });
 
@@ -1246,7 +1242,7 @@ describe('queryAppResources', () => {
       AuthorId: memberB.id,
     });
 
-    const response = await request.get(`/api/common/apps/${app.id}/resources/testResource`, {
+    const response = await request.get(`/api/apps/${app.id}/resources/testResource`, {
       params: { $filter: `$author/id eq ${memberB.id}` },
     });
 
@@ -1286,7 +1282,7 @@ describe('queryAppResources', () => {
       data: { foo: 'bar', bar: 2 },
     });
 
-    const response = await request.get(`/api/common/apps/${app.id}/resources/testResource`, {
+    const response = await request.get(`/api/apps/${app.id}/resources/testResource`, {
       params: { $filter: "contains(foo, 'oo') or foo eq 'bar'", $orderby: '$updated desc' },
     });
 
@@ -1330,7 +1326,7 @@ describe('queryAppResources', () => {
       EditorId: member.id,
     });
 
-    const response = await request.get(`/api/common/apps/${app.id}/resources/testResource`);
+    const response = await request.get(`/api/apps/${app.id}/resources/testResource`);
 
     expect(response).toMatchInlineSnapshot(
       { data: [{ $author: { id: expect.any(String) }, $editor: { id: expect.any(String) } }] },
@@ -1360,24 +1356,20 @@ describe('queryAppResources', () => {
   });
 
   it('should not fetch expired resources', async () => {
-    await request.post<ResourceType>(`/api/common/apps/${app.id}/resources/testExpirableResource`, {
+    await request.post<ResourceType>(`/api/apps/${app.id}/resources/testExpirableResource`, {
       foo: 'test',
       $expires: '1970-01-01T00:05:00.000Z',
     });
-    await request.post<ResourceType>(`/api/common/apps/${app.id}/resources/testExpirableResource`, {
+    await request.post<ResourceType>(`/api/apps/${app.id}/resources/testExpirableResource`, {
       foo: 'bar',
     });
 
-    const responseA = await request.get(
-      `/api/common/apps/${app.id}/resources/testExpirableResource`,
-    );
+    const responseA = await request.get(`/api/apps/${app.id}/resources/testExpirableResource`);
 
     // The resource A expires after 5 minutes.
     vi.advanceTimersByTime(301e3);
 
-    const responseB = await request.get(
-      `/api/common/apps/${app.id}/resources/testExpirableResource`,
-    );
+    const responseB = await request.get(`/api/apps/${app.id}/resources/testExpirableResource`);
 
     expect(responseA).toMatchInlineSnapshot(`
       HTTP/1.1 200 OK
@@ -1423,9 +1415,7 @@ describe('queryAppResources', () => {
       data: { foo: 'bar' },
     });
     authorizeStudio();
-    const response = await request.get(
-      `/api/common/apps/${app.id}/resources/testResourceAuthorOnly`,
-    );
+    const response = await request.get(`/api/apps/${app.id}/resources/testResourceAuthorOnly`);
 
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 200 OK
@@ -1453,9 +1443,7 @@ describe('queryAppResources', () => {
       data: { foo: 'bar' },
     });
     authorizeStudio();
-    const response = await request.get(
-      `/api/common/apps/${app.id}/resources/testResourceAuthorOnly`,
-    );
+    const response = await request.get(`/api/apps/${app.id}/resources/testResourceAuthorOnly`);
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 403 Forbidden
       Content-Type: application/json; charset=utf-8
@@ -1475,9 +1463,7 @@ describe('queryAppResources', () => {
       data: { foo: 'bar' },
     });
     await authorizeClientCredentials('resources:read');
-    const response = await request.get(
-      `/api/common/apps/${app.id}/resources/testResourceAuthorOnly`,
-    );
+    const response = await request.get(`/api/apps/${app.id}/resources/testResourceAuthorOnly`);
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 200 OK
       Content-Type: application/json; charset=utf-8
@@ -1504,9 +1490,7 @@ describe('queryAppResources', () => {
       data: { foo: 'bar' },
     });
     await authorizeClientCredentials('resources:read');
-    const response = await request.get(
-      `/api/common/apps/${app.id}/resources/testResourceAuthorOnly`,
-    );
+    const response = await request.get(`/api/apps/${app.id}/resources/testResourceAuthorOnly`);
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 403 Forbidden
       Content-Type: application/json; charset=utf-8
@@ -1525,7 +1509,7 @@ describe('queryAppResources', () => {
       type: 'testPrivateResource',
       data: { foo: 'bar' },
     });
-    const response = await request.get(`/api/common/apps/${app.id}/resources/testPrivateResource`);
+    const response = await request.get(`/api/apps/${app.id}/resources/testPrivateResource`);
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 403 Forbidden
       Content-Type: application/json; charset=utf-8
@@ -1559,7 +1543,7 @@ describe('queryAppResources', () => {
       timezone: 'Europe/Amsterdam',
     });
     authorizeApp(app);
-    const response = await request.get(`/api/common/apps/${app.id}/resources/testResource`, {
+    const response = await request.get(`/api/apps/${app.id}/resources/testResource`, {
       params: { view: 'testView' },
     });
 
@@ -1597,7 +1581,7 @@ describe('queryAppResources', () => {
     });
     await Resource.create({ AppId: app.id, type: 'testResource', data: { bar: 'baz' } });
 
-    const response = await request.get(`/api/common/apps/${app.id}/resources/testResource`, {
+    const response = await request.get(`/api/apps/${app.id}/resources/testResource`, {
       params: { view: 'publicView' },
     });
 
@@ -1640,7 +1624,7 @@ describe('queryAppResources', () => {
       timezone: 'Europe/Amsterdam',
     });
     authorizeApp(app);
-    const response = await request.get(`/api/common/apps/${app.id}/resources/testResource`, {
+    const response = await request.get(`/api/apps/${app.id}/resources/testResource`, {
       params: { view: 'missingView' },
     });
 
@@ -1657,7 +1641,7 @@ describe('queryAppResources', () => {
   });
 
   it('should check for authentication when using resource views', async () => {
-    const response = await request.get(`/api/common/apps/${app.id}/resources/testResource`, {
+    const response = await request.get(`/api/apps/${app.id}/resources/testResource`, {
       params: { view: 'testView' },
     });
 
@@ -1682,7 +1666,7 @@ describe('queryAppResources', () => {
       timezone: 'Europe/Amsterdam',
     });
     authorizeApp(app);
-    const response = await request.get(`/api/common/apps/${app.id}/resources/testResource`, {
+    const response = await request.get(`/api/apps/${app.id}/resources/testResource`, {
       params: { view: 'testView' },
     });
 
@@ -1707,7 +1691,7 @@ describe('queryAppResources', () => {
     });
 
     authorizeStudio();
-    const response1 = await request.get(`/api/common/apps/${app.id}/resources/testResource`);
+    const response1 = await request.get(`/api/apps/${app.id}/resources/testResource`);
     expect(response1).toMatchInlineSnapshot(`
       HTTP/1.1 200 OK
       Content-Type: application/json; charset=utf-8
@@ -1726,7 +1710,7 @@ describe('queryAppResources', () => {
     resource.clonable = true;
     await resource.save();
 
-    const response2 = await request.get(`/api/common/apps/${app.id}/resources/testResource`);
+    const response2 = await request.get(`/api/apps/${app.id}/resources/testResource`);
     expect(response2).toMatchInlineSnapshot(`
       HTTP/1.1 200 OK
       Content-Type: application/json; charset=utf-8

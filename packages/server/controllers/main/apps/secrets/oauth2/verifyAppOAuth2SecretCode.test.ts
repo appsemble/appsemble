@@ -94,7 +94,7 @@ describe('verifyAppOAuth2SecretCode', () => {
 
   it('should throw 400 if the referer is missing', async () => {
     authorizeStudio();
-    const response = await request.post(`/api/main/apps/9999/secrets/oauth2/${secret.id}/verify`, {
+    const response = await request.post(`/api/apps/9999/secrets/oauth2/${secret.id}/verify`, {
       code: 'authorization_code',
       redirectUri: 'http://localhost',
       scope: 'resources:manage',
@@ -114,7 +114,7 @@ describe('verifyAppOAuth2SecretCode', () => {
 
   it('should throw 400 if the referer is invalid', async () => {
     authorizeStudio();
-    const response = await request.post(`/api/main/apps/9999/secrets/oauth2/${secret.id}/verify`, {
+    const response = await request.post(`/api/apps/9999/secrets/oauth2/${secret.id}/verify`, {
       code: 'authorization_code',
       redirectUri: 'http://localhost',
       scope: 'resources:manage',
@@ -135,7 +135,7 @@ describe('verifyAppOAuth2SecretCode', () => {
   it('should throw 404 if no app is found', async () => {
     authorizeStudio();
     const response = await request.post(
-      `/api/main/apps/9999/secrets/oauth2/${secret.id}/verify`,
+      `/api/apps/9999/secrets/oauth2/${secret.id}/verify`,
       {
         code: 'authorization_code',
         redirectUri: 'http://localhost',
@@ -159,7 +159,7 @@ describe('verifyAppOAuth2SecretCode', () => {
   it('should throw 404 if no secret is found', async () => {
     authorizeStudio();
     const response = await request.post(
-      `/api/main/apps/${app.id}/secrets/oauth2/9999/verify`,
+      `/api/apps/${app.id}/secrets/oauth2/9999/verify`,
       {
         code: 'authorization_code',
         redirectUri: 'http://localhost',
@@ -201,7 +201,7 @@ describe('verifyAppOAuth2SecretCode', () => {
 
     authorizeStudio();
     const response = await request.post<LoginCodeResponse>(
-      `/api/main/apps/${app.id}/secrets/oauth2/${secret.id}/verify`,
+      `/api/apps/${app.id}/secrets/oauth2/${secret.id}/verify`,
       {
         code: 'authorization_code',
         redirectUri: 'http://app.appsemble.localhost',
@@ -266,7 +266,7 @@ describe('verifyAppOAuth2SecretCode', () => {
     });
 
     const response = await request.post<LoginCodeResponse>(
-      `/api/main/apps/${app.id}/secrets/oauth2/${secret.id}/verify`,
+      `/api/apps/${app.id}/secrets/oauth2/${secret.id}/verify`,
       {
         code: 'authorization_code',
         redirectUri: 'http://app.appsemble.localhost',
@@ -319,7 +319,7 @@ describe('verifyAppOAuth2SecretCode', () => {
 
     authorizeStudio();
     const response = await request.post<LoginCodeResponse>(
-      `/api/main/apps/${app.id}/secrets/oauth2/${secret.id}/verify`,
+      `/api/apps/${app.id}/secrets/oauth2/${secret.id}/verify`,
       {
         code: 'authorization_code',
         redirectUri: 'http://app.appsemble.localhost',

@@ -42,7 +42,7 @@ beforeEach(async () => {
 describe('getOrganizationMembers', () => {
   it('should fetch organization members', async () => {
     authorizeStudio();
-    const response = await request.get('/api/main/organizations/testorganization/members');
+    const response = await request.get('/api/organizations/testorganization/members');
 
     expect(response).toMatchObject({
       status: 200,
@@ -60,7 +60,7 @@ describe('getOrganizationMembers', () => {
   it('should should not fetch organization members if the user is not a member', async () => {
     authorizeStudio();
     await Organization.create({ id: 'org' });
-    const response = await request.get('/api/main/organizations/org/members');
+    const response = await request.get('/api/organizations/org/members');
 
     expect(response).toMatchObject({
       status: 403,

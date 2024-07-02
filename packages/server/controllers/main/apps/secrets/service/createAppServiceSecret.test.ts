@@ -68,7 +68,7 @@ afterAll(() => {
 
 describe('createAppServiceSecret', () => {
   it('should create new app service secret', async () => {
-    const response = await request.post(`/api/main/apps/${app.id}/secrets/service`, {
+    const response = await request.post(`/api/apps/${app.id}/secrets/service`, {
       name: 'Test service',
       urlPatterns: 'example.com',
       authenticationMethod: 'query-parameter',
@@ -94,7 +94,7 @@ describe('createAppServiceSecret', () => {
   it('should require the EditApps and EditAppSettings permissions', async () => {
     authorizeStudio();
     await member.update({ role: 'Member' });
-    const response = await request.post(`/api/main/apps/${app.id}/secrets/service`, {
+    const response = await request.post(`/api/apps/${app.id}/secrets/service`, {
       name: 'Test service',
       urlPatterns: 'example.com',
       authenticationMethod: 'query-parameter',

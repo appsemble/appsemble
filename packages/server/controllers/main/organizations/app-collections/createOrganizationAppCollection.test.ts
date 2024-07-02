@@ -46,7 +46,7 @@ describe('createOrganizationAppCollection', () => {
   it('should create a new app collection', async () => {
     authorizeStudio(user);
     const response = await request.post(
-      `/api/main/organizations/${organization.id}/app-collections`,
+      `/api/organizations/${organization.id}/app-collections`,
       createFormData({
         name: 'Test Collection',
         visibility: 'public',
@@ -63,9 +63,9 @@ describe('createOrganizationAppCollection', () => {
       $expert: {
         name: 'Expert van den Expert',
         description: 'I’m an expert, trust me.',
-        profileImage: `/api/main/app-collections/${response.data.id}/expert/profile-image`,
+        profileImage: `/api/app-collections/${response.data.id}/expert/profile-image`,
       },
-      headerImage: `/api/main/app-collections/${response.data.id}/header-image`,
+      headerImage: `/api/app-collections/${response.data.id}/header-image`,
       OrganizationId: organization.id,
       OrganizationName: organization.name,
       visibility: 'public',
@@ -80,7 +80,7 @@ describe('createOrganizationAppCollection', () => {
 
   it('should not allow a user to create a collection without permission', async () => {
     const response = await request.post(
-      `/api/main/organizations/${organization.id}/app-collections`,
+      `/api/organizations/${organization.id}/app-collections`,
       createFormData({
         name: 'Test Collection',
         visibility: 'public',
@@ -101,7 +101,7 @@ describe('createOrganizationAppCollection', () => {
     authorizeStudio(unprivilegedUser);
 
     const response2 = await request.post(
-      `/api/main/organizations/${organization.id}/app-collections`,
+      `/api/organizations/${organization.id}/app-collections`,
       createFormData({
         name: 'Test Collection',
         visibility: 'public',

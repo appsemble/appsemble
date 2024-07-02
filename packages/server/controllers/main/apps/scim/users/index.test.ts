@@ -62,7 +62,7 @@ it("should create a team if the user contains a manager ID of a team that doesn'
     role: 'User',
   });
 
-  await request.patch(`/api/main/apps/${app.id}/scim/Users/${member.id}`, {
+  await request.patch(`/api/apps/${app.id}/scim/Users/${member.id}`, {
     ScHeMaS: [
       'urn:ietf:params:scim:schemas:core:2.0:User',
       'urn:ietf:params:scim:schemas:extension:enterprise:2.0:User',
@@ -104,7 +104,7 @@ it('should add member to an existing team if the user contains a manager ID of a
   const team = await Team.create({ AppId: app.id, name: member1.id });
   await TeamMember.create({ TeamId: team.id, AppMemberId: member1.id, role: 'manager' });
 
-  await request.patch(`/api/main/apps/${app.id}/scim/Users/${member2.id}`, {
+  await request.patch(`/api/apps/${app.id}/scim/Users/${member2.id}`, {
     ScHeMaS: [
       'urn:ietf:params:scim:schemas:core:2.0:User',
       'urn:ietf:params:scim:schemas:extension:enterprise:2.0:User',
@@ -145,7 +145,7 @@ it('should assign existing manager to new team as manager', async () => {
     role: 'User',
   });
 
-  await request.patch(`/api/main/apps/${app.id}/scim/Users/${member1.id}`, {
+  await request.patch(`/api/apps/${app.id}/scim/Users/${member1.id}`, {
     ScHeMaS: [
       'urn:ietf:params:scim:schemas:core:2.0:User',
       'urn:ietf:params:scim:schemas:extension:enterprise:2.0:User',

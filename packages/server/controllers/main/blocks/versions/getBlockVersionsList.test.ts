@@ -34,7 +34,7 @@ beforeEach(async () => {
 
 describe('getBlockVersionsList', () => {
   it('should return an error if no versions exist for a block', async () => {
-    const response = await request.get('/api/main/blocks/@xkcd/block-test/versions/list');
+    const response = await request.get('/api/blocks/@xkcd/block-test/versions/list');
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 404 Not Found
       Content-Type: application/json; charset=utf-8
@@ -58,7 +58,7 @@ describe('getBlockVersionsList', () => {
       name: 'block-test',
       version: '0.0.2',
     });
-    const { data } = await request.get('/api/main/blocks/@xkcd/block-test/versions/list');
+    const { data } = await request.get('/api/blocks/@xkcd/block-test/versions/list');
 
     expect(data).toStrictEqual(['0.0.2', '0.0.1']);
   });

@@ -3,7 +3,7 @@ import { type OpenAPIV3 } from 'openapi-types';
 import { roles } from '../../../../../constants/index.js';
 
 export const paths: OpenAPIV3.PathsObject = {
-  '/api/main/organizations/{organizationId}/invites': {
+  '/api/organizations/{organizationId}/invites': {
     parameters: [{ $ref: '#/components/parameters/organizationId' }],
     get: {
       tags: ['main', 'organization', 'invite'],
@@ -140,7 +140,7 @@ export const paths: OpenAPIV3.PathsObject = {
       security: [{ studio: [] }],
     },
   },
-  '/api/main/organizations/{organizationId}/invites/{inviteToken}': {
+  '/api/organizations/{organizationId}/invites/{inviteToken}': {
     parameters: [
       {
         name: 'token',
@@ -162,7 +162,7 @@ export const paths: OpenAPIV3.PathsObject = {
       },
     },
   },
-  '/api/main/organizations/{organizationId}/invites/{inviteToken}/respond': {
+  '/api/organizations/{organizationId}/invites/{inviteToken}/respond': {
     parameters: [
       { $ref: '#/components/parameters/organizationId' },
       {

@@ -50,9 +50,7 @@ export async function getAppSamlEntityId(ctx: Context): Promise<void> {
           </md:KeyDescriptor>
           <md:AssertionConsumerService
             Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST"
-            Location={String(
-              new URL(`/api/main/apps/${appId}/saml/${appSamlSecretId}/acs`, argv.host),
-            )}
+            Location={String(new URL(`/api/apps/${appId}/saml/${appSamlSecretId}/acs`, argv.host))}
           />
         </md:SPSSODescriptor>
       </md:EntityDescriptor>

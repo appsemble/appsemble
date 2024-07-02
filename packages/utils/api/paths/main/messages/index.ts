@@ -1,7 +1,7 @@
 import { type OpenAPIV3 } from 'openapi-types';
 
 export const paths: OpenAPIV3.PathsObject = {
-  '/api/main/messages/{language}': {
+  '/api/messages/{language}': {
     parameters: [{ $ref: '#/components/parameters/language' }],
     get: {
       tags: ['main', 'translation'],

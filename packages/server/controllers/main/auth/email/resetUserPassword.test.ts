@@ -18,7 +18,7 @@ beforeAll(async () => {
 
 describe('resetUserPassword', () => {
   it('should return not found when resetting using a non-existent token', async () => {
-    const response = await request.post('/api/main/auth/email/reset-password', {
+    const response = await request.post('/api/auth/email/reset-password', {
       token: 'idontexist',
       password: 'whatever',
     });

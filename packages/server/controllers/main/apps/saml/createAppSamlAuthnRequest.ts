@@ -43,7 +43,7 @@ export async function createAppSamlAuthnRequest(ctx: Context): Promise<void> {
 
   const loginId = `id${randomUUID()}`;
   const doc = dom.createDocument(NS.samlp, 'samlp:AuthnRequest', null);
-  const samlUrl = new URL(`/api/main/apps/${appId}/saml/${appSamlSecretId}`, argv.host);
+  const samlUrl = new URL(`/api/apps/${appId}/saml/${appSamlSecretId}`, argv.host);
 
   const authnRequest = doc.documentElement;
   authnRequest.setAttributeNS(NS.xmlns, 'xmlns:saml', NS.saml);

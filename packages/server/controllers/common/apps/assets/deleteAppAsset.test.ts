@@ -68,7 +68,7 @@ describe('deleteAppAsset', () => {
     });
 
     authorizeStudio();
-    const response = await request.delete(`/api/common/apps/${app.id}/assets/${asset.id}`);
+    const response = await request.delete(`/api/apps/${app.id}/assets/${asset.id}`);
 
     expect(response).toMatchInlineSnapshot('HTTP/1.1 204 No Content');
   });
@@ -84,7 +84,7 @@ describe('deleteAppAsset', () => {
     });
 
     authorizeStudio();
-    const response = await request.delete(`/api/common/apps/${app.id}/assets/${asset.id}`);
+    const response = await request.delete(`/api/apps/${app.id}/assets/${asset.id}`);
 
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 403 Forbidden
@@ -127,7 +127,7 @@ describe('deleteAppAsset', () => {
     });
 
     authorizeStudio();
-    const response = await request.delete(`/api/common/apps/${app.id}/assets/${asset.id}`);
+    const response = await request.delete(`/api/apps/${app.id}/assets/${asset.id}`);
 
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 404 Not Found

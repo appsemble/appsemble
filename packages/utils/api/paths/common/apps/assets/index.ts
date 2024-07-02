@@ -3,7 +3,7 @@ import { type OpenAPIV3 } from 'openapi-types';
 import { normalized } from '../../../../../constants/index.js';
 
 export const paths: OpenAPIV3.PathsObject = {
-  '/api/common/apps/{appId}/assets': {
+  '/api/apps/{appId}/assets': {
     parameters: [{ $ref: '#/components/parameters/appId' }],
     get: {
       tags: ['common', 'app', 'asset'],
@@ -96,7 +96,7 @@ export const paths: OpenAPIV3.PathsObject = {
       security: [{ studio: [] }, { app: ['resources:manage'] }, { cli: ['resources:write'] }, {}],
     },
   },
-  '/api/common/apps/{appId}/assets/\\$count': {
+  '/api/apps/{appId}/assets/\\$count': {
     parameters: [{ $ref: '#/components/parameters/appId' }],
     get: {
       tags: ['common', 'app', 'asset'],
@@ -117,7 +117,7 @@ export const paths: OpenAPIV3.PathsObject = {
       security: [{ studio: [] }, { app: ['resources:manage'] }, { cli: ['resources:read'] }, {}],
     },
   },
-  '/api/common/apps/{appId}/assets/{assetId}': {
+  '/api/apps/{appId}/assets/{assetId}': {
     parameters: [
       { $ref: '#/components/parameters/appId' },
       { $ref: '#/components/parameters/assetId' },

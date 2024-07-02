@@ -81,7 +81,7 @@ describe('patchApp', () => {
 
     authorizeStudio();
     const response = await request.patch(
-      `/api/main/apps/${app.id}`,
+      `/api/apps/${app.id}`,
       createFormData({
         visibility: 'private',
         yaml: stripIndent(`
@@ -167,7 +167,7 @@ describe('patchApp', () => {
 
     authorizeStudio(user);
     const response = await request.patch(
-      `/api/main/apps/${app.id}`,
+      `/api/apps/${app.id}`,
       createFormData({
         emailName: 'Test Email <test@example.com>',
         emailHost: 'smtp.google.com',
@@ -178,7 +178,7 @@ describe('patchApp', () => {
       }),
     );
 
-    const email = await request.get(`/api/main/apps/${app.id}/email`);
+    const email = await request.get(`/api/apps/${app.id}/email`);
 
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 200 OK
@@ -239,7 +239,7 @@ describe('patchApp', () => {
   it('should not update a non-existent app', async () => {
     authorizeStudio();
     const response = await request.patch(
-      '/api/main/apps/1',
+      '/api/apps/1',
       createFormData({
         definition: {
           name: 'Foobar',
@@ -289,7 +289,7 @@ describe('patchApp', () => {
       },
     });
     authorizeStudio();
-    const response = await request.patch(`/api/main/apps/${app.id}`, form);
+    const response = await request.patch(`/api/apps/${app.id}`, form);
 
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 403 Forbidden
@@ -328,7 +328,7 @@ describe('patchApp', () => {
       force: true,
     });
     authorizeStudio();
-    const response = await request.patch(`/api/main/apps/${app.id}`, form);
+    const response = await request.patch(`/api/apps/${app.id}`, form);
 
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 200 OK
@@ -384,7 +384,7 @@ describe('patchApp', () => {
 
     authorizeStudio();
     const response = await request.patch(
-      `/api/main/apps/${app.id}`,
+      `/api/apps/${app.id}`,
       createFormData({ domain: 'appsemble.app' }),
     );
 
@@ -444,10 +444,7 @@ describe('patchApp', () => {
     );
 
     authorizeStudio();
-    const response = await request.patch(
-      `/api/main/apps/${app.id}`,
-      createFormData({ domain: '' }),
-    );
+    const response = await request.patch(`/api/apps/${app.id}`, createFormData({ domain: '' }));
 
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 200 OK
@@ -508,7 +505,7 @@ describe('patchApp', () => {
 
     authorizeStudio();
     const response = await request.patch(
-      `/api/main/apps/${app.id}`,
+      `/api/apps/${app.id}`,
       createFormData({ controllerCode: '', controllerImplementations: '' }),
     );
 
@@ -567,7 +564,7 @@ describe('patchApp', () => {
 
     authorizeStudio();
     const response = await request.patch(
-      `/api/main/apps/${app.id}`,
+      `/api/apps/${app.id}`,
       createFormData({
         definition: {
           name: 'Foobar',
@@ -596,7 +593,7 @@ describe('patchApp', () => {
 
   it('should validate an app on creation', async () => {
     authorizeStudio();
-    const response = await request.post('/api/main/apps', createFormData({ foo: 'bar' }));
+    const response = await request.post('/api/apps', createFormData({ foo: 'bar' }));
 
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 400 Bad Request
@@ -799,7 +796,7 @@ describe('patchApp', () => {
 
     authorizeStudio();
     const response = await request.patch(
-      `/api/main/apps/${app.id}`,
+      `/api/apps/${app.id}`,
       createFormData({
         yaml: stripIndent(`
           name: Foo
@@ -1173,10 +1170,10 @@ describe('patchApp', () => {
       sharedStyle: 'body { color: blue; }',
     });
     authorizeStudio();
-    const response = await request.patch<AppType>(`/api/main/apps/${app.id}`, form);
+    const response = await request.patch<AppType>(`/api/apps/${app.id}`, form);
 
-    const coreStyle = await request.get(`/api/common/apps/${response.data.id}/style/core`);
-    const sharedStyle = await request.get(`/api/common/apps/${response.data.id}/style/shared`);
+    const coreStyle = await request.get(`/api/apps/${response.data.id}/style/core`);
+    const sharedStyle = await request.get(`/api/apps/${response.data.id}/style/shared`);
 
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 200 OK
@@ -1262,7 +1259,7 @@ describe('patchApp', () => {
       coreStyle: 'this is invalid css',
     });
     authorizeStudio();
-    const responseA = await request.patch(`/api/main/apps/${app.id}`, formA);
+    const responseA = await request.patch(`/api/apps/${app.id}`, formA);
 
     const formB = createFormData({
       definition: {
@@ -1282,7 +1279,7 @@ describe('patchApp', () => {
       filename: 'style.json',
     });
     authorizeStudio();
-    const responseB = await request.patch(`/api/main/apps/${app.id}`, formB);
+    const responseB = await request.patch(`/api/apps/${app.id}`, formB);
 
     expect(responseA).toMatchInlineSnapshot(`
       HTTP/1.1 400 Bad Request
@@ -1339,7 +1336,7 @@ describe('patchApp', () => {
       sharedStyle: 'this is invalid css',
     });
     authorizeStudio();
-    const responseA = await request.patch(`/api/main/apps/${app.id}`, formA);
+    const responseA = await request.patch(`/api/apps/${app.id}`, formA);
 
     const formB = createFormData({
       yaml: stripIndent(`
@@ -1353,7 +1350,7 @@ describe('patchApp', () => {
       sharedStyle: '.foo { margin: 0 auto; }',
     });
     authorizeStudio();
-    const responseB = await request.patch(`/api/main/apps/${app.id}`, formB);
+    const responseB = await request.patch(`/api/apps/${app.id}`, formB);
 
     expect(responseA).toMatchSnapshot();
     expect(responseB).toMatchSnapshot();
@@ -1372,7 +1369,7 @@ describe('patchApp', () => {
 
     authorizeStudio(user);
     const response = await request.patch(
-      `/api/main/apps/${app.id}`,
+      `/api/apps/${app.id}`,
       createFormData({
         coreStyle: '',
         sharedStyle: '',
@@ -1397,10 +1394,7 @@ describe('patchApp', () => {
     );
 
     authorizeStudio();
-    const response = await request.patch(
-      `/api/main/apps/${app.id}`,
-      createFormData({ demoMode: true }),
-    );
+    const response = await request.patch(`/api/apps/${app.id}`, createFormData({ demoMode: true }));
 
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 200 OK
@@ -1445,7 +1439,7 @@ describe('patchApp', () => {
     `);
 
     const response2 = await request.patch(
-      `/api/main/apps/${app.id}`,
+      `/api/apps/${app.id}`,
       createFormData({ demoMode: false }),
     );
 
@@ -1552,10 +1546,7 @@ describe('patchApp', () => {
 
     authorizeStudio();
 
-    const response = await request.patch(
-      `/api/main/apps/${app.id}`,
-      createFormData({ demoMode: true }),
-    );
+    const response = await request.patch(`/api/apps/${app.id}`, createFormData({ demoMode: true }));
 
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 200 OK
@@ -1599,10 +1590,7 @@ describe('patchApp', () => {
       }
     `);
 
-    const response2 = await request.patch(
-      `/api/main/apps/${app.id}`,
-      createFormData({ seed: false }),
-    );
+    const response2 = await request.patch(`/api/apps/${app.id}`, createFormData({ seed: false }));
 
     expect(response2).toMatchInlineSnapshot(`
       HTTP/1.1 200 OK

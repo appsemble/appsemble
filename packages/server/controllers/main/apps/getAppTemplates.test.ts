@@ -196,7 +196,7 @@ afterAll(() => {
 describe('getAppTemplates', () => {
   it('should return a list of available templates', async () => {
     authorizeStudio();
-    const response = await request.get('/api/main/app-templates');
+    const response = await request.get('/api/app-templates');
 
     expect(response).toMatchObject({
       status: 200,

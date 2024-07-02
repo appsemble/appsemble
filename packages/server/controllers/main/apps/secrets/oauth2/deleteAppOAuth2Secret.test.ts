@@ -76,13 +76,13 @@ describe('deleteAppOAuth2Secret', () => {
       userInfoUrl: 'https://example.com/oauth/userinfo',
     });
     authorizeStudio();
-    const response = await request.delete(`/api/main/apps/${app.id}/secrets/oauth2/${secret.id}`);
+    const response = await request.delete(`/api/apps/${app.id}/secrets/oauth2/${secret.id}`);
     expect(response).toMatchInlineSnapshot('HTTP/1.1 204 No Content');
   });
 
   it('should handle if the app id is invalid', async () => {
     authorizeStudio();
-    const response = await request.delete('/api/main/apps/123/secrets/oauth2/1');
+    const response = await request.delete('/api/apps/123/secrets/oauth2/1');
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 404 Not Found
       Content-Type: application/json; charset=utf-8
@@ -97,7 +97,7 @@ describe('deleteAppOAuth2Secret', () => {
 
   it('should handle if the secret id is invalid', async () => {
     authorizeStudio();
-    const response = await request.delete(`/api/main/apps/${app.id}/secrets/oauth2/1`);
+    const response = await request.delete(`/api/apps/${app.id}/secrets/oauth2/1`);
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 404 Not Found
       Content-Type: application/json; charset=utf-8
@@ -124,7 +124,7 @@ describe('deleteAppOAuth2Secret', () => {
     });
     await member.update({ role: 'Member' });
     authorizeStudio();
-    const response = await request.delete(`/api/main/apps/${app.id}/secrets/oauth2/${secret.id}`);
+    const response = await request.delete(`/api/apps/${app.id}/secrets/oauth2/${secret.id}`);
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 403 Forbidden
       Content-Type: application/json; charset=utf-8

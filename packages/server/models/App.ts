@@ -323,9 +323,9 @@ export class App extends Model {
           return -1;
         }
         return 0;
-      }).map(({ id }) => `/api/main/apps/${this.id}/screenshots/${id}`),
+      }).map(({ id }) => `/api/apps/${this.id}/screenshots/${id}`),
       readmeUrl: this.AppReadmes?.length
-        ? `/api/main/apps/${this.id}/readmes/${this.AppReadmes?.[0]?.id}`
+        ? `/api/apps/${this.id}/readmes/${this.AppReadmes?.[0]?.id}`
         : undefined,
       messages: this.messages,
       demoMode: this.demoMode,

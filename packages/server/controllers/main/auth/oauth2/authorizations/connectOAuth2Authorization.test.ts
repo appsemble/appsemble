@@ -28,7 +28,7 @@ afterEach(() => {
 
 describe('connectOAuth2Authorization', () => {
   it('should throw if the authorization URL is not implemented', async () => {
-    const response = await request.post('/api/main/auth/oauth2/authorizations/connect', {
+    const response = await request.post('/api/auth/oauth2/authorizations/connect', {
       authorizationUrl: '',
       code: '',
       timezone: 'Europe/Amsterdam',
@@ -44,7 +44,7 @@ describe('connectOAuth2Authorization', () => {
   });
 
   it('should throw if no pending authorization is found', async () => {
-    const response = await request.post('/api/main/auth/oauth2/authorizations/connect', {
+    const response = await request.post('/api/auth/oauth2/authorizations/connect', {
       authorizationUrl: 'https://gitlab.com/oauth/authorize',
       code: '789',
       timezone: 'Europe/Amsterdam',
@@ -68,7 +68,7 @@ describe('connectOAuth2Authorization', () => {
       sub: '42',
     });
     authorizeStudio();
-    const response = await request.post('/api/main/auth/oauth2/authorizations/connect', {
+    const response = await request.post('/api/auth/oauth2/authorizations/connect', {
       authorizationUrl: 'https://gitlab.com/oauth/authorize',
       code: '789',
       timezone: 'Europe/Amsterdam',
@@ -97,7 +97,7 @@ describe('connectOAuth2Authorization', () => {
       sub: '42',
     });
     authorizeStudio();
-    const response = await request.post('/api/main/auth/oauth2/authorizations/connect', {
+    const response = await request.post('/api/auth/oauth2/authorizations/connect', {
       authorizationUrl: 'https://gitlab.com/oauth/authorize',
       code: '789',
       timezone: 'Europe/Amsterdam',
@@ -131,7 +131,7 @@ describe('connectOAuth2Authorization', () => {
       code: '789',
       sub: '42',
     });
-    const response = await request.post('/api/main/auth/oauth2/authorizations/connect', {
+    const response = await request.post('/api/auth/oauth2/authorizations/connect', {
       authorizationUrl: 'https://gitlab.com/oauth/authorize',
       code: '789',
       timezone: 'Europe/Amsterdam',
@@ -172,7 +172,7 @@ describe('connectOAuth2Authorization', () => {
       code: '789',
       sub: '42',
     });
-    const response = await request.post('/api/main/auth/oauth2/authorizations/connect', {
+    const response = await request.post('/api/auth/oauth2/authorizations/connect', {
       authorizationUrl: 'https://gitlab.com/oauth/authorize',
       code: '789',
       timezone: 'Europe/Amsterdam',
@@ -204,7 +204,7 @@ describe('connectOAuth2Authorization', () => {
       code: '789',
       sub: '42',
     });
-    const response = await request.post('/api/main/auth/oauth2/authorizations/connect', {
+    const response = await request.post('/api/auth/oauth2/authorizations/connect', {
       authorizationUrl: 'https://gitlab.com/oauth/authorize',
       code: '789',
       timezone: 'Europe/Amsterdam',

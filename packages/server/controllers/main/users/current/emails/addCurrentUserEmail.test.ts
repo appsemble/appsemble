@@ -34,13 +34,13 @@ beforeEach(async () => {
 describe('addCurrentUserEmail', () => {
   it('should be possible to add new email addresses', async () => {
     authorizeStudio();
-    const response = await request.post('/api/main/users/current/emails', {
+    const response = await request.post('/api/users/current/emails', {
       email: 'test2@example.com',
     });
 
     expect(response).toMatchObject({ status: 201 });
 
-    const responseB = await request.get('/api/main/users/current/emails');
+    const responseB = await request.get('/api/users/current/emails');
     expect(responseB).toMatchObject({
       status: 200,
       data: [
@@ -58,7 +58,7 @@ describe('addCurrentUserEmail', () => {
 
   it('should not be possible to register the same email twice', async () => {
     authorizeStudio();
-    const response = await request.post('/api/main/users/current/emails', {
+    const response = await request.post('/api/users/current/emails', {
       email: 'test@example.com',
     });
 

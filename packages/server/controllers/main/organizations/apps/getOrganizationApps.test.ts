@@ -66,7 +66,7 @@ describe('getOrganizationApps', () => {
       visibility: 'public',
     });
 
-    const response = await request.get('/api/main/organizations/testorganization/apps');
+    const response = await request.get('/api/organizations/testorganization/apps');
     expect(response).toMatchObject({
       status: 200,
       data: [
@@ -74,7 +74,7 @@ describe('getOrganizationApps', () => {
           OrganizationId: 'testorganization',
           definition: app.definition,
           iconUrl:
-            '/api/main/organizations/testorganization/icon?background=%23ffffff&maskable=true&updated=1970-01-01T00%3A00%3A00.000Z',
+            '/api/organizations/testorganization/icon?background=%23ffffff&maskable=true&updated=1970-01-01T00%3A00%3A00.000Z',
           id: app.id,
           path: 'test-app-3',
           visibility: 'public',
@@ -110,7 +110,7 @@ describe('getOrganizationApps', () => {
       visibility: 'public',
     });
 
-    const response = await request.get('/api/main/organizations/testorganization/apps');
+    const response = await request.get('/api/organizations/testorganization/apps');
     expect(response).toMatchObject({
       status: 200,
       data: [
@@ -118,7 +118,7 @@ describe('getOrganizationApps', () => {
           OrganizationId: 'testorganization',
           definition: appA.definition,
           iconUrl:
-            '/api/main/organizations/testorganization/icon?background=%23ffffff&maskable=true&updated=1970-01-01T00%3A00%3A00.000Z',
+            '/api/organizations/testorganization/icon?background=%23ffffff&maskable=true&updated=1970-01-01T00%3A00%3A00.000Z',
           id: appA.id,
           locked: 'unlocked',
           path: 'test-app',
@@ -128,7 +128,7 @@ describe('getOrganizationApps', () => {
           OrganizationId: 'testorganization',
           definition: appB.definition,
           iconUrl:
-            '/api/main/organizations/testorganization/icon?background=%23ffffff&maskable=true&updated=1970-01-01T00%3A00%3A00.000Z',
+            '/api/organizations/testorganization/icon?background=%23ffffff&maskable=true&updated=1970-01-01T00%3A00%3A00.000Z',
           id: appB.id,
           locked: 'unlocked',
           path: 'test-app-2',
@@ -138,7 +138,7 @@ describe('getOrganizationApps', () => {
           OrganizationId: 'testorganization',
           definition: appC.definition,
           iconUrl:
-            '/api/main/organizations/testorganization/icon?background=%23ffffff&maskable=true&updated=1970-01-01T00%3A00%3A00.000Z',
+            '/api/organizations/testorganization/icon?background=%23ffffff&maskable=true&updated=1970-01-01T00%3A00%3A00.000Z',
           id: appC.id,
           locked: 'unlocked',
           path: 'test-app-3',

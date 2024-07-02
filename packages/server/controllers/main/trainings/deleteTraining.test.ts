@@ -50,7 +50,7 @@ describe('deleteTraining', () => {
       difficultyLevel: 1,
     });
     authorizeStudio();
-    const response = await request.delete('/api/main/trainings/1');
+    const response = await request.delete('/api/trainings/1');
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 403 Forbidden
       Content-Type: application/json; charset=utf-8
@@ -72,9 +72,9 @@ describe('deleteTraining', () => {
       difficultyLevel: 1,
     });
     authorizeStudio();
-    const response = await request.delete('/api/main/trainings/1');
+    const response = await request.delete('/api/trainings/1');
     expect(response.status).toBe(204);
-    const training = await request.get('/api/main/trainings/1');
+    const training = await request.get('/api/trainings/1');
     expect(training).toMatchInlineSnapshot(`
       HTTP/1.1 404 Not Found
       Content-Type: application/json; charset=utf-8

@@ -60,7 +60,7 @@ describe('reseedDemoApp', () => {
       OrganizationId: organization.id,
     });
 
-    const response = await request.post(`/api/main/apps/${2}/reseed`);
+    const response = await request.post(`/api/apps/${2}/reseed`);
 
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 404 Not Found
@@ -84,7 +84,7 @@ describe('reseedDemoApp', () => {
       OrganizationId: organization.id,
     });
 
-    const response = await request.post(`/api/main/apps/${id}/reseed`);
+    const response = await request.post(`/api/apps/${id}/reseed`);
 
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 400 Bad Request
@@ -140,7 +140,7 @@ describe('reseedDemoApp', () => {
       data: Buffer.from('asset'),
     });
 
-    await request.post(`/api/main/apps/${appId}/reseed`);
+    await request.post(`/api/apps/${appId}/reseed`);
 
     const seedResource = await Resource.findOne({
       where: {
@@ -356,7 +356,7 @@ describe('reseedDemoApp', () => {
       }
     `);
 
-    await request.post(`/api/main/apps/${appId}/reseed`);
+    await request.post(`/api/apps/${appId}/reseed`);
 
     const updatedAppMember = await AppMember.findOne({
       attributes: ['properties'],
@@ -623,7 +623,7 @@ describe('reseedDemoApp', () => {
       },
     });
 
-    await request.post(`/api/main/apps/${appId}/reseed`);
+    await request.post(`/api/apps/${appId}/reseed`);
 
     const seedResources = await Resource.findAll({
       where: {

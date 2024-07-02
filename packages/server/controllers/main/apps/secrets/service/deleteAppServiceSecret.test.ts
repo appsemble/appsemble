@@ -82,7 +82,7 @@ describe('deleteAppServiceSecret', () => {
       secret: 'c6a5e780dee8e2f1f576538c8',
       AppId: app.id,
     });
-    const response = await request.delete(`/api/main/apps/${app.id}/secrets/service/1`);
+    const response = await request.delete(`/api/apps/${app.id}/secrets/service/1`);
 
     expect(response).toMatchInlineSnapshot('HTTP/1.1 204 No Content');
   });
@@ -90,7 +90,7 @@ describe('deleteAppServiceSecret', () => {
   it('should require the EditApps and EditAppSettings permissions', async () => {
     authorizeStudio();
     await member.update({ role: 'Member' });
-    const response = await request.delete(`/api/main/apps/${app.id}/secrets/service/1`);
+    const response = await request.delete(`/api/apps/${app.id}/secrets/service/1`);
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 403 Forbidden
       Content-Type: application/json; charset=utf-8

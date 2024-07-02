@@ -56,7 +56,7 @@ describe('getAppCollectionHeaderImage', () => {
       visibility: 'public',
     });
 
-    const response = await request.get(`/api/main/app-collections/${collection.id}/header-image`, {
+    const response = await request.get(`/api/app-collections/${collection.id}/header-image`, {
       responseType: 'arraybuffer',
     });
     expect(response.status).toBe(200);

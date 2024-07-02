@@ -81,11 +81,11 @@ describe('deleteAppAssets', () => {
     });
 
     authorizeStudio();
-    const assetsResponse = await request.get(`/api/common/apps/${app.id}/assets`);
-    const response = await request.delete(`/api/common/apps/${app.id}/assets`, {
+    const assetsResponse = await request.get(`/api/apps/${app.id}/assets`);
+    const response = await request.delete(`/api/apps/${app.id}/assets`, {
       data: [assetA.id, assetB.id],
     });
-    const newAssetsResponse = await request.get(`/api/common/apps/${app.id}/assets`);
+    const newAssetsResponse = await request.get(`/api/apps/${app.id}/assets`);
 
     expect(assetsResponse).toMatchInlineSnapshot(
       {
@@ -177,7 +177,7 @@ describe('deleteAppAssets', () => {
     });
 
     authorizeStudio();
-    const response = await request.delete(`/api/common/apps/${app.id}/assets`, {
+    const response = await request.delete(`/api/apps/${app.id}/assets`, {
       data: [asset.id, assetB.id],
     });
 
@@ -214,11 +214,11 @@ describe('deleteAppAssets', () => {
     });
 
     authorizeStudio();
-    const assetsResponse = await request.get(`/api/common/apps/${app.id}/assets`);
-    const response = await request.delete(`/api/common/apps/${app.id}/assets`, {
+    const assetsResponse = await request.get(`/api/apps/${app.id}/assets`);
+    const response = await request.delete(`/api/apps/${app.id}/assets`, {
       data: [assetA.id, assetB.id],
     });
-    const newAssetsResponse = await request.get(`/api/common/apps/${app.id}/assets`);
+    const newAssetsResponse = await request.get(`/api/apps/${app.id}/assets`);
 
     expect(assetsResponse).toMatchInlineSnapshot(
       {
