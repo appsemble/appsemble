@@ -1,12 +1,12 @@
 import { assertKoaError } from '@appsemble/node-utils';
-import { MainPermission } from '@appsemble/utils';
+import { OrganizationPermission } from '@appsemble/utils';
 import { addYears } from 'date-fns';
 import { type Context } from 'koa';
 import forge from 'node-forge';
 
 import { App, AppSamlSecret } from '../../../../../models/index.js';
 import { argv } from '../../../../../utils/argv.js';
-import { checkUserPermissions } from '../../../../../utils/authorization.js';
+import { checkUserOrganizationPermissions } from '../../../../../utils/authorization.js';
 import { checkAppLock } from '../../../../../utils/checkAppLock.js';
 
 export async function createAppSamlSecret(ctx: Context): Promise<void> {
@@ -24,7 +24,9 @@ export async function createAppSamlSecret(ctx: Context): Promise<void> {
 
   checkAppLock(ctx, app);
 
-  await checkUserPermissions(ctx, app.OrganizationId, [MainPermission.CreateAppSecrets]);
+  await checkUserOrganizationPermissions(ctx, app.OrganizationId, [
+    OrganizationPermission.CreateAppSecrets,
+  ]);
 
   const { privateKey, publicKey } = await new Promise<forge.pki.rsa.KeyPair>((resolve, reject) => {
     forge.pki.rsa.generateKeyPair({ bits: 2048 }, (error, result) =>

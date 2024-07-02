@@ -1,9 +1,9 @@
 import { assertKoaError } from '@appsemble/node-utils';
-import { MainPermission } from '@appsemble/utils';
+import { OrganizationPermission } from '@appsemble/utils';
 import { type Context } from 'koa';
 
 import { App, AppMessages } from '../../../../models/index.js';
-import { checkUserPermissions } from '../../../../utils/authorization.js';
+import { checkUserOrganizationPermissions } from '../../../../utils/authorization.js';
 import { checkAppLock } from '../../../../utils/checkAppLock.js';
 
 export async function deleteAppMessages(ctx: Context): Promise<void> {
@@ -20,7 +20,9 @@ export async function deleteAppMessages(ctx: Context): Promise<void> {
 
   checkAppLock(ctx, app);
 
-  await checkUserPermissions(ctx, app.OrganizationId, [MainPermission.DeleteAppMessages]);
+  await checkUserOrganizationPermissions(ctx, app.OrganizationId, [
+    OrganizationPermission.DeleteAppMessages,
+  ]);
 
   const affectedRows = await AppMessages.destroy({
     where: { language: language.toLowerCase(), AppId: appId },

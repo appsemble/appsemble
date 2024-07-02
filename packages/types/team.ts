@@ -1,3 +1,5 @@
+import { type TeamMemberRole } from '@appsemble/utils';
+
 /**
  * Represents a team within an organization.
  */
@@ -19,5 +21,5 @@ export interface Team {
 }
 
 export interface TeamMember extends Team {
-  role: 'manager' | 'member';
+  role: TeamMemberRole;
 }

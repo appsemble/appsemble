@@ -14,7 +14,11 @@ import {
   type Theme as ThemeType,
   type UserInfo,
 } from '@appsemble/types';
-import { type AppsPermission, type IdentifiableBlock, type MainPermission } from '@appsemble/utils';
+import {
+  type AppPermission,
+  type IdentifiableBlock,
+  type OrganizationPermission,
+} from '@appsemble/utils';
 import { type RawAxiosRequestConfig } from 'axios';
 import {
   type Context,
@@ -79,7 +83,9 @@ declare module 'koas-parameters' {
     controllerVersion: string;
     clientId: string;
     language: string;
-    memberId: string;
+    appMemberId: string;
+    organizationMemberId: string;
+    teamMemberId: string;
     organizationId: string;
     path: string;
     resourceId: number;
@@ -89,9 +95,9 @@ declare module 'koas-parameters' {
     screenshotId: number;
     readmeId: number;
     snapshotId: number;
-    teamId: string;
+    teamId: number;
     token: string;
-    appServiceId: number;
+    serviceSecretId: number;
     appSecretId: number;
     appVariableId: number;
     userId: string;
@@ -278,14 +284,14 @@ export interface ApplyAppServiceSecretsParams {
 export interface CheckAppMemberPermissionsParams {
   context: ParameterizedContext<DefaultState, DefaultContextInterface, any>;
   app: App;
-  permissions: AppsPermission[];
+  permissions: AppPermission[];
   findOptions?: FindOptions;
 }
 
 export interface CheckUserPermissionsParams {
   context: ParameterizedContext<DefaultState, DefaultContextInterface, any>;
   app: App;
-  permissions: MainPermission[];
+  permissions: OrganizationPermission[];
   findOptions?: FindOptions;
 }
 

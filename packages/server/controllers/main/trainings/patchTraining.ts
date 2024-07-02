@@ -1,9 +1,9 @@
 import { assertKoaError } from '@appsemble/node-utils';
-import { MainPermission } from '@appsemble/utils';
+import { OrganizationPermission } from '@appsemble/utils';
 import { type Context } from 'koa';
 
 import { Training } from '../../../models/index.js';
-import { checkUserPermissions } from '../../../utils/authorization.js';
+import { checkUserOrganizationPermissions } from '../../../utils/authorization.js';
 
 export async function patchTraining(ctx: Context): Promise<void> {
   const {
@@ -16,7 +16,9 @@ export async function patchTraining(ctx: Context): Promise<void> {
   const training = await Training.findByPk(trainingId);
   assertKoaError(!training, ctx, 404, 'Training not found');
 
-  await checkUserPermissions(ctx, 'appsemble', [MainPermission.UpdateTrainings]);
+  await checkUserOrganizationPermissions(ctx, 'appsemble', [
+    OrganizationPermission.UpdateTrainings,
+  ]);
   const result: Partial<Training> = {};
 
   if (competences !== undefined) {

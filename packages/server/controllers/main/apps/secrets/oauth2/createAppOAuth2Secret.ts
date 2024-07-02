@@ -1,9 +1,9 @@
 import { assertKoaError } from '@appsemble/node-utils';
-import { MainPermission } from '@appsemble/utils';
+import { OrganizationPermission } from '@appsemble/utils';
 import { type Context } from 'koa';
 
 import { App, AppOAuth2Secret } from '../../../../../models/index.js';
-import { checkUserPermissions } from '../../../../../utils/authorization.js';
+import { checkUserOrganizationPermissions } from '../../../../../utils/authorization.js';
 import { checkAppLock } from '../../../../../utils/checkAppLock.js';
 
 export async function createAppOAuth2Secret(ctx: Context): Promise<void> {
@@ -20,7 +20,9 @@ export async function createAppOAuth2Secret(ctx: Context): Promise<void> {
 
   checkAppLock(ctx, app);
 
-  await checkUserPermissions(ctx, app.OrganizationId, [MainPermission.CreateAppSecrets]);
+  await checkUserOrganizationPermissions(ctx, app.OrganizationId, [
+    OrganizationPermission.CreateAppSecrets,
+  ]);
 
   const { id } = await AppOAuth2Secret.create({ ...body, AppId: appId });
   ctx.body = { ...body, id };

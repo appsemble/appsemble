@@ -1,9 +1,9 @@
 import { assertKoaError } from '@appsemble/node-utils';
-import { MainPermission } from '@appsemble/utils';
+import { OrganizationPermission } from '@appsemble/utils';
 import { type Context } from 'koa';
 
 import { TrainingBlock } from '../../../models/index.js';
-import { checkUserPermissions } from '../../../utils/authorization.js';
+import { checkUserOrganizationPermissions } from '../../../utils/authorization.js';
 
 export async function patchTrainingBlock(ctx: Context): Promise<void> {
   const {
@@ -13,7 +13,9 @@ export async function patchTrainingBlock(ctx: Context): Promise<void> {
     },
   } = ctx;
 
-  await checkUserPermissions(ctx, 'appsemble', [MainPermission.UpdateTrainingBlocks]);
+  await checkUserOrganizationPermissions(ctx, 'appsemble', [
+    OrganizationPermission.UpdateTrainingBlocks,
+  ]);
   const trainingBlock = await TrainingBlock.findByPk(trainingBlockId);
 
   assertKoaError(!trainingBlock, ctx, 404, 'Training Block not found.');

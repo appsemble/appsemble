@@ -1,91 +1,37 @@
-import { randomBytes } from 'node:crypto';
-
-import {
-  AppMemberPropertiesError,
-  assertKoaError,
-  logger,
-  throwKoaError,
-} from '@appsemble/node-utils';
+import { assertKoaError } from '@appsemble/node-utils';
+import { type AppMemberInfo } from '@appsemble/types';
+import { AppPermission } from '@appsemble/utils';
 import { type Context } from 'koa';
 
-import { App, type AppMember } from '../../../../models/index.js';
-import { getAppUrl } from '../../../../utils/app.js';
-import { getAppMemberInfo } from '../../../../utils/appMember.js';
+import { AppMember } from '../../../../models/index.js';
+import { getAppMemberInfo, parseAppMemberProperties } from '../../../../utils/appMember.js';
+import { checkAuthSubjectAppPermissions } from '../../../../utils/authorization.js';
 
-// TODO: CHECK
 export async function patchAppMemberById(ctx: Context): Promise<void> {
   const {
-    mailer,
-    pathParams: { appId },
+    pathParams: { appId, appMemberId },
     request: {
-      body: { email, locale, name, picture, properties },
+      body: { properties, role },
     },
   } = ctx;
-  const app = await App.findOne({
-    where: { id: appId },
-    // ...createAppMemberQuery(user as User, query),
-  });
 
-  assertKoaError(!app, ctx, 404, 'App account not found');
+  await checkAuthSubjectAppPermissions(ctx, appId, [AppPermission.QueryAppMembers]);
 
-  const [member] = app.AppMembers;
-  const result: Partial<AppMember> = {};
-  if (email != null && member.email !== email) {
-    result.email = email;
-    result.emailVerified = false;
-    result.emailKey = randomBytes(40).toString('hex');
+  const appMember = await AppMember.findByPk(appMemberId);
 
-    const verificationUrl = new URL('/Verify', getAppUrl(app));
-    verificationUrl.searchParams.set('token', result.emailKey);
+  assertKoaError(!appMember, ctx, 404, 'App member not found');
 
-    mailer
-      .sendTranslatedEmail({
-        appId,
-        to: { email, name },
-        locale: member.locale,
-        emailName: 'appMemberEmailChange',
-        values: {
-          link: (text) => `[${text}](${verificationUrl})`,
-          name: member.name || 'null',
-          appName: app.definition.name,
-        },
-        app,
-      })
-      .catch((error: Error) => {
-        logger.error(error);
-      });
+  const payload: Partial<AppMemberInfo> = {};
+
+  if (properties !== undefined) {
+    payload.properties = parseAppMemberProperties(properties);
   }
 
-  if (name != null) {
-    result.name = name;
+  if (role !== undefined) {
+    payload.role = role;
   }
 
-  if (picture) {
-    result.picture = picture.contents;
-  }
+  const updatedAppMember = await appMember.update(payload);
 
-  if (properties) {
-    const parsedUserProperties: Record<string, any> = {};
-    for (const [propertyName, propertyValue] of Object.entries(properties)) {
-      try {
-        parsedUserProperties[propertyName] = JSON.parse(propertyValue as string);
-      } catch {
-        parsedUserProperties[propertyName] = propertyValue;
-      }
-    }
-    result.properties = parsedUserProperties;
-  }
-
-  if (locale) {
-    result.locale = locale;
-  }
-
-  try {
-    await member.update(result);
-  } catch (error) {
-    if (error instanceof AppMemberPropertiesError) {
-      throwKoaError(ctx, 400, error.message);
-    }
-  }
-  ctx.body = getAppMemberInfo(member);
+  ctx.body = getAppMemberInfo(updatedAppMember);
 }

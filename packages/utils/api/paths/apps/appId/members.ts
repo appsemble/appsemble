@@ -1,9 +1,12 @@
 import { type OpenAPIV3 } from 'openapi-types';
 
 export const pathItems: OpenAPIV3.PathItemObject = {
-  parameters: [{ $ref: '#/components/parameters/appId' }],
+  parameters: [
+    { $ref: '#/components/parameters/appId' },
+    { in: 'query', name: 'demo', description: 'Whether to fetch demo app members' },
+  ],
   get: {
-    tags: ['app'],
+    tags: ['common', 'app', 'member'],
     description: 'Fetch all members of an app.',
     operationId: 'getAppMembers',
     responses: {
@@ -14,7 +17,7 @@ export const pathItems: OpenAPIV3.PathItemObject = {
             schema: {
               type: 'array',
               items: {
-                $ref: '#/components/schemas/OrganizationMember',
+                $ref: '#/components/schemas/AppMemberInfo',
               },
             },
           },

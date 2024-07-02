@@ -1,5 +1,5 @@
 import { assertKoaError } from '@appsemble/node-utils';
-import { MainPermission } from '@appsemble/utils';
+import { OrganizationPermission } from '@appsemble/utils';
 import JSZip from 'jszip';
 import { type Context } from 'koa';
 import { stringify } from 'yaml';
@@ -14,7 +14,7 @@ import {
   Asset,
   Resource,
 } from '../../../models/index.js';
-import { checkUserPermissions } from '../../../utils/authorization.js';
+import { checkUserOrganizationPermissions } from '../../../utils/authorization.js';
 
 export async function exportApp(ctx: Context): Promise<void> {
   const {
@@ -45,7 +45,9 @@ export async function exportApp(ctx: Context): Promise<void> {
   assertKoaError(!app, ctx, 404, 'App not found');
 
   if (app.visibility === 'private' || !app.showAppDefinition) {
-    await checkUserPermissions(ctx, app.OrganizationId, [MainPermission.QueryApps]);
+    await checkUserOrganizationPermissions(ctx, app.OrganizationId, [
+      OrganizationPermission.QueryApps,
+    ]);
   }
 
   const zip = new JSZip();
@@ -124,7 +126,9 @@ export async function exportApp(ctx: Context): Promise<void> {
   }
 
   if (resources) {
-    await checkUserPermissions(ctx, app.OrganizationId, [MainPermission.QueryAppResources]);
+    await checkUserOrganizationPermissions(ctx, app.OrganizationId, [
+      OrganizationPermission.QueryAppResources,
+    ]);
     await app.reload({
       include: [Resource],
     });
@@ -144,7 +148,9 @@ export async function exportApp(ctx: Context): Promise<void> {
   }
 
   if (assets) {
-    await checkUserPermissions(ctx, app.OrganizationId, [MainPermission.QueryAppAssets]);
+    await checkUserOrganizationPermissions(ctx, app.OrganizationId, [
+      OrganizationPermission.QueryAppAssets,
+    ]);
     await app.reload({
       include: [Asset],
     });

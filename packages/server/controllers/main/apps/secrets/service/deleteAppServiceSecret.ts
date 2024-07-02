@@ -1,9 +1,9 @@
 import { assertKoaError, deleteSecret } from '@appsemble/node-utils';
-import { MainPermission } from '@appsemble/utils';
+import { OrganizationPermission } from '@appsemble/utils';
 import { type Context } from 'koa';
 
 import { App, AppServiceSecret } from '../../../../../models/index.js';
-import { checkUserPermissions } from '../../../../../utils/authorization.js';
+import { checkUserOrganizationPermissions } from '../../../../../utils/authorization.js';
 import { checkAppLock } from '../../../../../utils/checkAppLock.js';
 
 export async function deleteAppServiceSecret(ctx: Context): Promise<void> {
@@ -19,7 +19,9 @@ export async function deleteAppServiceSecret(ctx: Context): Promise<void> {
 
   checkAppLock(ctx, app);
 
-  await checkUserPermissions(ctx, app.OrganizationId, [MainPermission.DeleteAppSecrets]);
+  await checkUserOrganizationPermissions(ctx, app.OrganizationId, [
+    OrganizationPermission.DeleteAppSecrets,
+  ]);
 
   const appServiceSecret = await AppServiceSecret.findByPk(serviceSecretId);
   assertKoaError(!appServiceSecret, ctx, 404, 'Cannot find the app service secret to delete');

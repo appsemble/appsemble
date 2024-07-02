@@ -1,9 +1,9 @@
 import { assertKoaError } from '@appsemble/node-utils';
-import { MainPermission } from '@appsemble/utils';
+import { OrganizationPermission } from '@appsemble/utils';
 import { type Context } from 'koa';
 
 import { Organization } from '../../../models/index.js';
-import { checkUserPermissions } from '../../../utils/authorization.js';
+import { checkUserOrganizationPermissions } from '../../../utils/authorization.js';
 
 export async function patchOrganization(ctx: Context): Promise<void> {
   const {
@@ -13,7 +13,9 @@ export async function patchOrganization(ctx: Context): Promise<void> {
     },
   } = ctx;
 
-  await checkUserPermissions(ctx, organizationId, [MainPermission.UpdateOrganizations]);
+  await checkUserOrganizationPermissions(ctx, organizationId, [
+    OrganizationPermission.UpdateOrganizations,
+  ]);
 
   const organization = await Organization.findByPk(organizationId);
 

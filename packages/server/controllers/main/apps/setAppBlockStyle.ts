@@ -1,9 +1,9 @@
 import { assertKoaError, throwKoaError } from '@appsemble/node-utils';
-import { MainPermission, StyleValidationError, validateStyle } from '@appsemble/utils';
+import { OrganizationPermission, StyleValidationError, validateStyle } from '@appsemble/utils';
 import { type Context } from 'koa';
 
 import { App, AppBlockStyle, BlockVersion } from '../../../models/index.js';
-import { checkUserPermissions } from '../../../utils/authorization.js';
+import { checkUserOrganizationPermissions } from '../../../utils/authorization.js';
 import { checkAppLock } from '../../../utils/checkAppLock.js';
 
 export async function setAppBlockStyle(ctx: Context): Promise<void> {
@@ -28,7 +28,9 @@ export async function setAppBlockStyle(ctx: Context): Promise<void> {
 
     assertKoaError(!block, ctx, 404, 'Block not found');
 
-    await checkUserPermissions(ctx, app.OrganizationId, [MainPermission.UpdateAppSettings]);
+    await checkUserOrganizationPermissions(ctx, app.OrganizationId, [
+      OrganizationPermission.UpdateAppSettings,
+    ]);
 
     await (css.length
       ? AppBlockStyle.upsert({

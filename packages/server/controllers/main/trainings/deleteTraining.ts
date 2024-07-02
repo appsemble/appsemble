@@ -1,16 +1,18 @@
 import { assertKoaError } from '@appsemble/node-utils';
-import { MainPermission } from '@appsemble/utils';
+import { OrganizationPermission } from '@appsemble/utils';
 import { type Context } from 'koa';
 
 import { Training, TrainingBlock, UserTraining } from '../../../models/index.js';
-import { checkUserPermissions } from '../../../utils/authorization.js';
+import { checkUserOrganizationPermissions } from '../../../utils/authorization.js';
 
 export async function deleteTraining(ctx: Context): Promise<void> {
   const {
     pathParams: { trainingId },
   } = ctx;
 
-  await checkUserPermissions(ctx, 'appsemble', [MainPermission.DeleteTrainings]);
+  await checkUserOrganizationPermissions(ctx, 'appsemble', [
+    OrganizationPermission.DeleteTrainings,
+  ]);
 
   const training = await Training.findByPk(trainingId);
   assertKoaError(!training, ctx, 404, 'Training not found');

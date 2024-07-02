@@ -1,10 +1,10 @@
 import { assertKoaError, updateNamespacedSecret } from '@appsemble/node-utils';
-import { MainPermission } from '@appsemble/utils';
+import { OrganizationPermission } from '@appsemble/utils';
 import { type Context } from 'koa';
 
 import { App, AppServiceSecret } from '../../../../../models/index.js';
 import { argv } from '../../../../../utils/argv.js';
-import { checkUserPermissions } from '../../../../../utils/authorization.js';
+import { checkUserOrganizationPermissions } from '../../../../../utils/authorization.js';
 import { checkAppLock } from '../../../../../utils/checkAppLock.js';
 import { encrypt } from '../../../../../utils/crypto.js';
 
@@ -22,7 +22,9 @@ export async function createAppServiceSecret(ctx: Context): Promise<void> {
 
   checkAppLock(ctx, app);
 
-  await checkUserPermissions(ctx, app.OrganizationId, [MainPermission.CreateAppSecrets]);
+  await checkUserOrganizationPermissions(ctx, app.OrganizationId, [
+    OrganizationPermission.CreateAppSecrets,
+  ]);
 
   const { authenticationMethod, id, identifier, name, tokenUrl, urlPatterns } =
     await AppServiceSecret.create({

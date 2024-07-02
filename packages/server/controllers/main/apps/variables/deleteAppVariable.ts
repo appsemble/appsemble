@@ -1,9 +1,9 @@
 import { assertKoaError } from '@appsemble/node-utils';
-import { MainPermission } from '@appsemble/utils';
+import { OrganizationPermission } from '@appsemble/utils';
 import { type Context } from 'koa';
 
 import { App, AppVariable } from '../../../../models/index.js';
-import { checkUserPermissions } from '../../../../utils/authorization.js';
+import { checkUserOrganizationPermissions } from '../../../../utils/authorization.js';
 import { checkAppLock } from '../../../../utils/checkAppLock.js';
 
 export async function deleteAppVariable(ctx: Context): Promise<void> {
@@ -19,7 +19,9 @@ export async function deleteAppVariable(ctx: Context): Promise<void> {
 
   checkAppLock(ctx, app);
 
-  await checkUserPermissions(ctx, app.OrganizationId, [MainPermission.DeleteAppVariables]);
+  await checkUserOrganizationPermissions(ctx, app.OrganizationId, [
+    OrganizationPermission.DeleteAppVariables,
+  ]);
 
   const appVariable = await AppVariable.findByPk(appVariableId);
   assertKoaError(!appVariable, ctx, 404, 'Cannot find the app variable to delete');

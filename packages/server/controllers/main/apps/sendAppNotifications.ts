@@ -1,9 +1,9 @@
 import { assertKoaError, logger } from '@appsemble/node-utils';
-import { MainPermission } from '@appsemble/utils';
+import { OrganizationPermission } from '@appsemble/utils';
 import { type Context } from 'koa';
 
 import { App, AppSubscription } from '../../../models/index.js';
-import { checkUserPermissions } from '../../../utils/authorization.js';
+import { checkUserOrganizationPermissions } from '../../../utils/authorization.js';
 import { sendNotification } from '../../../utils/sendNotification.js';
 
 export async function sendAppNotifications(ctx: Context): Promise<void> {
@@ -21,7 +21,9 @@ export async function sendAppNotifications(ctx: Context): Promise<void> {
 
   assertKoaError(!app, ctx, 404, 'App not found');
 
-  await checkUserPermissions(ctx, app.OrganizationId, [MainPermission.PushAppNotifications]);
+  await checkUserOrganizationPermissions(ctx, app.OrganizationId, [
+    OrganizationPermission.PushAppNotifications,
+  ]);
 
   // XXX: Replace with paginated requests
   logger.verbose(`Sending ${app.AppSubscriptions.length} notifications for app ${appId}`);

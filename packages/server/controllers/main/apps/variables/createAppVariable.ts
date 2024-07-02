@@ -1,9 +1,9 @@
 import { assertKoaError } from '@appsemble/node-utils';
-import { MainPermission } from '@appsemble/utils';
+import { OrganizationPermission } from '@appsemble/utils';
 import { type Context } from 'koa';
 
 import { App, AppVariable } from '../../../../models/index.js';
-import { checkUserPermissions } from '../../../../utils/authorization.js';
+import { checkUserOrganizationPermissions } from '../../../../utils/authorization.js';
 import { checkAppLock } from '../../../../utils/checkAppLock.js';
 
 export async function createAppVariable(ctx: Context): Promise<void> {
@@ -20,7 +20,9 @@ export async function createAppVariable(ctx: Context): Promise<void> {
 
   checkAppLock(ctx, app);
 
-  await checkUserPermissions(ctx, app.OrganizationId, [MainPermission.CreateAppVariables]);
+  await checkUserOrganizationPermissions(ctx, app.OrganizationId, [
+    OrganizationPermission.CreateAppVariables,
+  ]);
 
   const { name, value } = body;
 

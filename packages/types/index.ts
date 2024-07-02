@@ -1,4 +1,4 @@
-import { type AppsPermission } from '@appsemble/utils';
+import { type AppMemberRole, type AppPermission } from '@appsemble/utils';
 import { type IconName } from '@fortawesome/fontawesome-common-types';
 import { type Schema } from 'jsonschema';
 import { type OpenAPIV3 } from 'openapi-types';
@@ -716,9 +716,9 @@ export type SubscriptionResponse = Record<string, SubscriptionResponseResource>;
 
 export interface RoleDefinition {
   description?: string;
-  inherits?: string[];
   defaultPage?: string;
-  permissions?: AppsPermission[];
+  inherits?: AppMemberRole[];
+  permissions?: AppPermission[];
 }
 
 export interface Security {

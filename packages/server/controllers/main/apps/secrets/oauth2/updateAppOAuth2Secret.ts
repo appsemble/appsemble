@@ -1,9 +1,9 @@
 import { assertKoaError } from '@appsemble/node-utils';
-import { MainPermission } from '@appsemble/utils';
+import { OrganizationPermission } from '@appsemble/utils';
 import { type Context } from 'koa';
 
 import { App, AppOAuth2Secret } from '../../../../../models/index.js';
-import { checkUserPermissions } from '../../../../../utils/authorization.js';
+import { checkUserOrganizationPermissions } from '../../../../../utils/authorization.js';
 
 export async function updateAppOAuth2Secret(ctx: Context): Promise<void> {
   const {
@@ -24,7 +24,9 @@ export async function updateAppOAuth2Secret(ctx: Context): Promise<void> {
     },
   });
 
-  await checkUserPermissions(ctx, app.OrganizationId, [MainPermission.UpdateAppSecrets]);
+  await checkUserOrganizationPermissions(ctx, app.OrganizationId, [
+    OrganizationPermission.UpdateAppSecrets,
+  ]);
 
   assertKoaError(!appOAuth2Secret, ctx, 404, 'OAuth2 secret not found');
 

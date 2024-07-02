@@ -6,7 +6,12 @@ import {
   getSupportedLanguages,
   handleValidatorResult,
 } from '@appsemble/node-utils';
-import { MainPermission, normalize, validateAppDefinition, validateStyle } from '@appsemble/utils';
+import {
+  normalize,
+  OrganizationPermission,
+  validateAppDefinition,
+  validateStyle,
+} from '@appsemble/utils';
 import JSZip from 'jszip';
 import { type Context } from 'koa';
 import { type File } from 'koas-body-parser';
@@ -24,17 +29,17 @@ import {
   Resource,
   transactional,
   User,
-} from '../../../models/index.js';
-import { options } from '../../../options/options.js';
+} from '../../../../models/index.js';
+import { options } from '../../../../options/options.js';
 import {
   createAppReadmes,
   createAppScreenshots,
   handleAppValidationError,
   setAppPath,
-} from '../../../utils/app.js';
-import { checkUserPermissions } from '../../../utils/authorization.js';
-import { getBlockVersions } from '../../../utils/block.js';
-import { processHooks, processReferenceHooks } from '../../../utils/resource.js';
+} from '../../../../utils/app.js';
+import { checkUserOrganizationPermissions } from '../../../../utils/authorization.js';
+import { getBlockVersions } from '../../../../utils/block.js';
+import { processHooks, processReferenceHooks } from '../../../../utils/resource.js';
 
 export async function importApp(ctx: Context): Promise<void> {
   const {
@@ -44,7 +49,7 @@ export async function importApp(ctx: Context): Promise<void> {
     user: authSubject,
   } = ctx;
 
-  await checkUserPermissions(ctx, organizationId, [MainPermission.CreateApps]);
+  await checkUserOrganizationPermissions(ctx, organizationId, [OrganizationPermission.CreateApps]);
 
   let result: Partial<App>;
   const zip = await JSZip.loadAsync(importFile);

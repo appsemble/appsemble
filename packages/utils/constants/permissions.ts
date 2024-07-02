@@ -1,7 +1,7 @@
 /**
  * A permission an app member may have within an app because of their given role.
  */
-export enum AppsPermission {
+export enum AppPermission {
   /**
    * The permission to create app invites.
    */
@@ -16,12 +16,47 @@ export enum AppsPermission {
    * The permission to query app members.
    */
   RemoveAppMembers,
+
+  /**
+   * The permission to create app teams.
+   */
+  CreateTeams,
+
+  /**
+   * The permission to update app teams.
+   */
+  UpdateTeams,
+
+  /**
+   * The permission to create app teams.
+   */
+  DeleteTeams,
+}
+
+/**
+ * A permission a team member may have within an app team because of their given role.
+ */
+export enum TeamPermission {
+  /**
+   * The permission to create team invites.
+   */
+  CreateTeamInvites,
+
+  /**
+   * The permission to update team members.
+   */
+  UpdateTeamMembers,
+
+  /**
+   * The permission to remove team members.
+   */
+  RemoveTeamMembers,
 }
 
 /**
  * A permission a user may have within the platform because of their given role.
  */
-export enum MainPermission {
+export enum OrganizationPermission {
   /**
    * The permission to publish blocks for an organization.
    */
@@ -171,26 +206,6 @@ export enum MainPermission {
    * The permission to delete app assets.
    */
   DeleteAppAssets,
-
-  /**
-   * The permission to create app teams.
-   */
-  CreateAppTeams,
-
-  /**
-   * The permission to delete app teams.
-   */
-  DeleteAppTeams,
-
-  /**
-   * The permission to update app team members.
-   */
-  UpdateAppTeamMembers,
-
-  /**
-   * The permission to remove app team members.
-   */
-  RemoveAppTeamMembers,
 
   /**
    * The permission to update organizations.

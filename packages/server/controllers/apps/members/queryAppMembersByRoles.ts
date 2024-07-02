@@ -1,11 +1,11 @@
 import { assertKoaError } from '@appsemble/node-utils';
-import { AppsPermission } from '@appsemble/utils';
+import { AppPermission } from '@appsemble/utils';
 import { type Context } from 'koa';
 import { Op } from 'sequelize';
 
 import { App, AppMember } from '../../../models/index.js';
 import { getAppMemberInfo } from '../../../utils/appMember.js';
-import { checkAppMemberPermissions } from '../../../utils/authorization.js';
+import { checkAppMemberAppPermissions } from '../../../utils/authorization.js';
 
 export async function queryAppMembersByRoles(ctx: Context): Promise<void> {
   const {
@@ -28,7 +28,7 @@ export async function queryAppMembersByRoles(ctx: Context): Promise<void> {
   assertKoaError(passedRolesAreSupported, ctx, 400, 'Unsupported role in filter!');
 
   if (!app.demoMode) {
-    await checkAppMemberPermissions(ctx, app.OrganizationId, [AppsPermission.QueryAppMembers]);
+    await checkAppMemberAppPermissions(ctx, appId, [AppPermission.QueryAppMembers]);
   }
 
   const appMembers = await AppMember.findAll({

@@ -1,4 +1,4 @@
-import { TeamMemberRole } from '@appsemble/utils';
+import { type TeamMemberRole, teamMemberRoles } from '@appsemble/utils';
 import {
   AllowNull,
   BelongsTo,
@@ -7,6 +7,7 @@ import {
   DataType,
   Default,
   ForeignKey,
+  IsUUID,
   Model,
   PrimaryKey,
   Table,
@@ -19,6 +20,12 @@ import { Team } from './Team.js';
 @Table({ tableName: 'TeamMember' })
 export class TeamMember extends Model {
   @PrimaryKey
+  @IsUUID(4)
+  @Default(DataType.UUIDV4)
+  @Column(DataType.UUID)
+  id: string;
+
+  @PrimaryKey
   @ForeignKey(() => Team)
   @Column(DataType.INTEGER)
   TeamId: number;
@@ -28,9 +35,9 @@ export class TeamMember extends Model {
   @Column(DataType.UUID)
   AppMemberId: string;
 
-  @Default(TeamMemberRole.Member)
+  @Default('Member')
   @AllowNull(false)
-  @Column(DataType.ENUM(...Object.values(TeamMemberRole)))
+  @Column(DataType.ENUM(...Object.keys(teamMemberRoles)))
   role: TeamMemberRole;
 
   @BelongsTo(() => AppMember)

@@ -28,7 +28,7 @@ export function checkAppRole(
   }
 
   if (role === '$team:manager') {
-    return teams.some((team) => team.role === 'manager');
+    return teams.some((team) => team.role === 'Manager');
   }
 
   if (role === '$team:member') {

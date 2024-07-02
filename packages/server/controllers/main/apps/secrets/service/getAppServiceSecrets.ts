@@ -1,9 +1,9 @@
 import { assertKoaError } from '@appsemble/node-utils';
-import { MainPermission } from '@appsemble/utils';
+import { OrganizationPermission } from '@appsemble/utils';
 import { type Context } from 'koa';
 
 import { App, AppServiceSecret } from '../../../../../models/index.js';
-import { checkUserPermissions } from '../../../../../utils/authorization.js';
+import { checkUserOrganizationPermissions } from '../../../../../utils/authorization.js';
 import { checkAppLock } from '../../../../../utils/checkAppLock.js';
 
 export async function getAppServiceSecrets(ctx: Context): Promise<void> {
@@ -19,7 +19,9 @@ export async function getAppServiceSecrets(ctx: Context): Promise<void> {
 
   checkAppLock(ctx, app);
 
-  await checkUserPermissions(ctx, app.OrganizationId, [MainPermission.QueryAppSecrets]);
+  await checkUserOrganizationPermissions(ctx, app.OrganizationId, [
+    OrganizationPermission.QueryAppSecrets,
+  ]);
 
   const serviceSecrets = await AppServiceSecret.findAll({
     attributes: ['id', 'name', 'urlPatterns', 'authenticationMethod', 'identifier', 'tokenUrl'],

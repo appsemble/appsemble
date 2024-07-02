@@ -1,8 +1,8 @@
-import { MainPermission } from '@appsemble/utils';
+import { OrganizationPermission } from '@appsemble/utils';
 import { type Context } from 'koa';
 
 import { Training } from '../../../models/index.js';
-import { checkUserPermissions } from '../../../utils/authorization.js';
+import { checkUserOrganizationPermissions } from '../../../utils/authorization.js';
 
 export async function createTraining(ctx: Context): Promise<void> {
   const {
@@ -11,7 +11,9 @@ export async function createTraining(ctx: Context): Promise<void> {
     },
   } = ctx;
 
-  await checkUserPermissions(ctx, 'appsemble', [MainPermission.CreateTrainings]);
+  await checkUserOrganizationPermissions(ctx, 'appsemble', [
+    OrganizationPermission.CreateTrainings,
+  ]);
   const training = await Training.create({
     title,
     description,

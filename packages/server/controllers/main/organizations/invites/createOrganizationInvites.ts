@@ -1,7 +1,7 @@
 import { randomBytes } from 'node:crypto';
 
 import { assertKoaError } from '@appsemble/node-utils';
-import { MainPermission } from '@appsemble/utils';
+import { OrganizationPermission } from '@appsemble/utils';
 import { type Context } from 'koa';
 import { Op } from 'sequelize';
 
@@ -13,7 +13,7 @@ import {
   User,
 } from '../../../../models/index.js';
 import { argv } from '../../../../utils/argv.js';
-import { checkUserPermissions } from '../../../../utils/authorization.js';
+import { checkUserOrganizationPermissions } from '../../../../utils/authorization.js';
 
 export async function createOrganizationInvites(ctx: Context): Promise<void> {
   const {
@@ -22,7 +22,9 @@ export async function createOrganizationInvites(ctx: Context): Promise<void> {
     request: { body },
   } = ctx;
 
-  await checkUserPermissions(ctx, organizationId, [MainPermission.CreateOrganizationInvites]);
+  await checkUserOrganizationPermissions(ctx, organizationId, [
+    OrganizationPermission.CreateOrganizationInvites,
+  ]);
 
   const organization = await Organization.findByPk(organizationId, { attributes: ['id'] });
 

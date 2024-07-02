@@ -1,10 +1,10 @@
 import { assertKoaError, throwKoaError } from '@appsemble/node-utils';
-import { MainPermission } from '@appsemble/utils';
+import { OrganizationPermission } from '@appsemble/utils';
 import { type Context } from 'koa';
 
 import { Organization, OrganizationInvite, User } from '../../../../models/index.js';
 import { argv } from '../../../../utils/argv.js';
-import { checkUserPermissions } from '../../../../utils/authorization.js';
+import { checkUserOrganizationPermissions } from '../../../../utils/authorization.js';
 
 export async function resendOrganizationInvite(ctx: Context): Promise<void> {
   const {
@@ -13,7 +13,9 @@ export async function resendOrganizationInvite(ctx: Context): Promise<void> {
     request,
   } = ctx;
 
-  await checkUserPermissions(ctx, organizationId, [MainPermission.CreateOrganizationInvites]);
+  await checkUserOrganizationPermissions(ctx, organizationId, [
+    OrganizationPermission.CreateOrganizationInvites,
+  ]);
 
   const organization = await Organization.findByPk(organizationId, { attributes: [] });
 

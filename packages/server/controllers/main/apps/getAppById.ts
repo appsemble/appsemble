@@ -1,6 +1,6 @@
 import { assertKoaError } from '@appsemble/node-utils';
 import { type App as AppType } from '@appsemble/types';
-import { MainPermission } from '@appsemble/utils';
+import { OrganizationPermission } from '@appsemble/utils';
 import { type Context } from 'koa';
 import { col, fn, literal } from 'sequelize';
 
@@ -15,7 +15,7 @@ import {
   Resource,
 } from '../../../models/index.js';
 import { applyAppMessages, parseLanguage } from '../../../utils/app.js';
-import { checkUserPermissions } from '../../../utils/authorization.js';
+import { checkUserOrganizationPermissions } from '../../../utils/authorization.js';
 
 export async function getAppById(ctx: Context): Promise<void> {
   const {
@@ -119,7 +119,9 @@ export async function getAppById(ctx: Context): Promise<void> {
   const propertyFilters: (keyof AppType)[] = [];
   if (app.visibility === 'private' || !app.showAppDefinition) {
     try {
-      await checkUserPermissions(ctx, app.OrganizationId, [MainPermission.QueryApps]);
+      await checkUserOrganizationPermissions(ctx, app.OrganizationId, [
+        OrganizationPermission.QueryApps,
+      ]);
     } catch (error) {
       if (app.visibility === 'private') {
         throw error;

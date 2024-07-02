@@ -3,11 +3,11 @@ import {
   deleteCompanionContainers,
   formatServiceName,
 } from '@appsemble/node-utils';
-import { MainPermission } from '@appsemble/utils';
+import { OrganizationPermission } from '@appsemble/utils';
 import { type Context } from 'koa';
 
 import { App } from '../../../models/index.js';
-import { checkUserPermissions } from '../../../utils/authorization.js';
+import { checkUserOrganizationPermissions } from '../../../utils/authorization.js';
 
 export async function deleteApp(ctx: Context): Promise<void> {
   const {
@@ -18,7 +18,9 @@ export async function deleteApp(ctx: Context): Promise<void> {
 
   assertKoaError(!app, ctx, 404, 'App not found');
 
-  await checkUserPermissions(ctx, app.OrganizationId, [MainPermission.DeleteApps]);
+  await checkUserOrganizationPermissions(ctx, app.OrganizationId, [
+    OrganizationPermission.DeleteApps,
+  ]);
 
   await app.update({ path: null });
   await app.destroy();

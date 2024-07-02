@@ -4,7 +4,7 @@ import {
   updateCompanionContainers,
 } from '@appsemble/node-utils';
 import { type AppDefinition } from '@appsemble/types';
-import { MainPermission, validateAppDefinition, validateStyle } from '@appsemble/utils';
+import { OrganizationPermission, validateAppDefinition, validateStyle } from '@appsemble/utils';
 import { type Context } from 'koa';
 import { literal } from 'sequelize';
 import { parse } from 'yaml';
@@ -23,7 +23,7 @@ import {
   handleAppValidationError,
 } from '../../../utils/app.js';
 import { argv } from '../../../utils/argv.js';
-import { checkUserPermissions } from '../../../utils/authorization.js';
+import { checkUserOrganizationPermissions } from '../../../utils/authorization.js';
 import { getBlockVersions } from '../../../utils/block.js';
 import { checkAppLock } from '../../../utils/checkAppLock.js';
 import { encrypt } from '../../../utils/crypto.js';
@@ -103,9 +103,9 @@ export async function patchApp(ctx: Context): Promise<void> {
   try {
     result = {};
 
-    const permissionsToCheck: MainPermission[] = [];
+    const permissionsToCheck: OrganizationPermission[] = [];
     if (yaml) {
-      permissionsToCheck.push(MainPermission.UpdateApps);
+      permissionsToCheck.push(OrganizationPermission.UpdateApps);
 
       const definition = parse(yaml, { maxAliasCount: 10_000 }) as AppDefinition;
       handleValidatorResult(
@@ -247,21 +247,24 @@ export async function patchApp(ctx: Context): Promise<void> {
       maskableIcon !== undefined ||
       iconBackground !== undefined
     ) {
-      permissionsToCheck.push(MainPermission.UpdateAppSettings);
+      permissionsToCheck.push(OrganizationPermission.UpdateAppSettings);
     }
 
     if (screenshots?.length) {
       permissionsToCheck.push(
-        MainPermission.DeleteAppScreenshots,
-        MainPermission.CreateAppScreenshots,
+        OrganizationPermission.DeleteAppScreenshots,
+        OrganizationPermission.CreateAppScreenshots,
       );
     }
 
     if (readmes?.length) {
-      permissionsToCheck.push(MainPermission.DeleteAppReadmes, MainPermission.CreateAppReadmes);
+      permissionsToCheck.push(
+        OrganizationPermission.DeleteAppReadmes,
+        OrganizationPermission.CreateAppReadmes,
+      );
     }
 
-    await checkUserPermissions(ctx, dbApp.OrganizationId, permissionsToCheck);
+    await checkUserOrganizationPermissions(ctx, dbApp.OrganizationId, permissionsToCheck);
 
     await transactional(async (transaction) => {
       await dbApp.update(result, { where: { id: appId }, transaction });

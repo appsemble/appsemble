@@ -1,5 +1,5 @@
 import { assertKoaError } from '@appsemble/node-utils';
-import { MainPermission } from '@appsemble/utils';
+import { OrganizationPermission } from '@appsemble/utils';
 import { addDays, startOfDay } from 'date-fns';
 import { zonedTimeToUtc } from 'date-fns-tz';
 import { type Context } from 'koa';
@@ -7,7 +7,7 @@ import { Op } from 'sequelize';
 
 import { App, AppEmailQuotaLog } from '../../../../../models/index.js';
 import { argv } from '../../../../../utils/argv.js';
-import { checkUserPermissions } from '../../../../../utils/authorization.js';
+import { checkUserOrganizationPermissions } from '../../../../../utils/authorization.js';
 import { checkAppLock } from '../../../../../utils/checkAppLock.js';
 
 export async function getAppEmailQuota(ctx: Context): Promise<void> {
@@ -23,7 +23,9 @@ export async function getAppEmailQuota(ctx: Context): Promise<void> {
 
   checkAppLock(ctx, app);
 
-  await checkUserPermissions(ctx, app.OrganizationId, [MainPermission.ReadAppSettings]);
+  await checkUserOrganizationPermissions(ctx, app.OrganizationId, [
+    OrganizationPermission.ReadAppSettings,
+  ]);
 
   if (!argv.enableAppEmailQuota) {
     ctx.response.status = 200;

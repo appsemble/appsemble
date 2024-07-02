@@ -4,7 +4,12 @@ import {
   updateCompanionContainers,
 } from '@appsemble/node-utils';
 import { type AppDefinition } from '@appsemble/types';
-import { MainPermission, normalize, validateAppDefinition, validateStyle } from '@appsemble/utils';
+import {
+  normalize,
+  OrganizationPermission,
+  validateAppDefinition,
+  validateStyle,
+} from '@appsemble/utils';
 import { type Context } from 'koa';
 import { literal } from 'sequelize';
 import webpush from 'web-push';
@@ -17,7 +22,7 @@ import {
   handleAppValidationError,
   setAppPath,
 } from '../../../utils/app.js';
-import { checkUserPermissions } from '../../../utils/authorization.js';
+import { checkUserOrganizationPermissions } from '../../../utils/authorization.js';
 import { getBlockVersions } from '../../../utils/block.js';
 
 export async function createApp(ctx: Context): Promise<void> {
@@ -51,7 +56,7 @@ export async function createApp(ctx: Context): Promise<void> {
 
   let result: Partial<App>;
 
-  await checkUserPermissions(ctx, OrganizationId, [MainPermission.CreateApps]);
+  await checkUserOrganizationPermissions(ctx, OrganizationId, [OrganizationPermission.CreateApps]);
 
   try {
     const definition = parse(yaml, { maxAliasCount: 10_000 }) as AppDefinition;

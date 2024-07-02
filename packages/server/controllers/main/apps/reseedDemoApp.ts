@@ -1,10 +1,10 @@
 import { assertKoaError, logger } from '@appsemble/node-utils';
-import { MainPermission } from '@appsemble/utils';
+import { OrganizationPermission } from '@appsemble/utils';
 import { type Context } from 'koa';
 import { Op } from 'sequelize';
 
 import { App, Asset, Resource } from '../../../models/index.js';
-import { checkUserPermissions } from '../../../utils/authorization.js';
+import { checkUserOrganizationPermissions } from '../../../utils/authorization.js';
 import { reseedResourcesRecursively } from '../../../utils/resource.js';
 
 export async function reseedDemoApp(ctx: Context): Promise<void> {
@@ -22,11 +22,11 @@ export async function reseedDemoApp(ctx: Context): Promise<void> {
 
   logger.info('Cleaning up ephemeral assets.');
 
-  await checkUserPermissions(ctx, app.OrganizationId, [
-    MainPermission.DeleteAppAssets,
-    MainPermission.DeleteAppResources,
-    MainPermission.CreateAppAssets,
-    MainPermission.CreateAppResources,
+  await checkUserOrganizationPermissions(ctx, app.OrganizationId, [
+    OrganizationPermission.DeleteAppAssets,
+    OrganizationPermission.DeleteAppResources,
+    OrganizationPermission.CreateAppAssets,
+    OrganizationPermission.CreateAppResources,
   ]);
 
   const demoAssetsDeletionResult = await Asset.destroy({

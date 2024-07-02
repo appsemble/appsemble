@@ -14,7 +14,7 @@ export const pathItems: OpenAPIV3.PathItemObject = {
   post: {
     tags: ['app', 'team', 'invite'],
     description: 'Invite a new user to a team.',
-    operationId: 'createAppTeamInvite',
+    operationId: 'createTeamInvite',
     requestBody: {
       description: 'The team invite to create.',
       required: true,

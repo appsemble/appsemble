@@ -1,10 +1,10 @@
 import { assertKoaError, updateNamespacedSecret } from '@appsemble/node-utils';
-import { MainPermission } from '@appsemble/utils';
+import { OrganizationPermission } from '@appsemble/utils';
 import { type Context } from 'koa';
 
 import { App, AppServiceSecret } from '../../../../../models/index.js';
 import { argv } from '../../../../../utils/argv.js';
-import { checkUserPermissions } from '../../../../../utils/authorization.js';
+import { checkUserOrganizationPermissions } from '../../../../../utils/authorization.js';
 import { checkAppLock } from '../../../../../utils/checkAppLock.js';
 import { encrypt } from '../../../../../utils/crypto.js';
 
@@ -22,7 +22,9 @@ export async function updateAppServiceSecret(ctx: Context): Promise<void> {
 
   checkAppLock(ctx, app);
 
-  await checkUserPermissions(ctx, app.OrganizationId, [MainPermission.UpdateAppSecrets]);
+  await checkUserOrganizationPermissions(ctx, app.OrganizationId, [
+    OrganizationPermission.UpdateAppSecrets,
+  ]);
 
   const appServiceSecret = await AppServiceSecret.findByPk(serviceSecretId);
   assertKoaError(!appServiceSecret, ctx, 404, 'Cannot find the app service secret to update');

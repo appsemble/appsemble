@@ -1,8 +1,8 @@
-import { MainPermission } from '@appsemble/utils';
+import { OrganizationPermission } from '@appsemble/utils';
 import { type Context } from 'koa';
 
 import { AppCollection, Organization } from '../../../../models/index.js';
-import { checkUserPermissions } from '../../../../utils/authorization.js';
+import { checkUserOrganizationPermissions } from '../../../../utils/authorization.js';
 
 export async function createOrganizationAppCollection(ctx: Context): Promise<void> {
   const {
@@ -10,7 +10,9 @@ export async function createOrganizationAppCollection(ctx: Context): Promise<voi
     request: { body },
   } = ctx;
 
-  await checkUserPermissions(ctx, organizationId, [MainPermission.CreateAppCollections]);
+  await checkUserOrganizationPermissions(ctx, organizationId, [
+    OrganizationPermission.CreateAppCollections,
+  ]);
 
   const collection = await AppCollection.create({
     name: body.name,

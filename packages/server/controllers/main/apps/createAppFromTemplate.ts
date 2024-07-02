@@ -1,5 +1,5 @@
 import { assertKoaError, throwKoaError, updateCompanionContainers } from '@appsemble/node-utils';
-import { MainPermission, normalize } from '@appsemble/utils';
+import { normalize, OrganizationPermission } from '@appsemble/utils';
 import { type Context } from 'koa';
 import { UniqueConstraintError } from 'sequelize';
 import webpush from 'web-push';
@@ -20,7 +20,7 @@ import {
   Resource,
 } from '../../../models/index.js';
 import { setAppPath } from '../../../utils/app.js';
-import { checkUserPermissions } from '../../../utils/authorization.js';
+import { checkUserOrganizationPermissions } from '../../../utils/authorization.js';
 
 export async function createAppFromTemplate(ctx: Context): Promise<void> {
   const {
@@ -73,13 +73,15 @@ export async function createAppFromTemplate(ctx: Context): Promise<void> {
     ],
   });
 
-  await checkUserPermissions(ctx, organizationId, [MainPermission.CreateApps]);
+  await checkUserOrganizationPermissions(ctx, organizationId, [OrganizationPermission.CreateApps]);
 
   assertKoaError(!template, ctx, 404, `Template with ID ${templateId} does not exist.`);
 
   if (!template.template && (template.visibility === 'private' || !template.showAppDefinition)) {
     // Only allow cloning of unlisted apps if the user is part of the template’s organization.
-    await checkUserPermissions(ctx, template.OrganizationId, [MainPermission.QueryApps]);
+    await checkUserOrganizationPermissions(ctx, template.OrganizationId, [
+      OrganizationPermission.QueryApps,
+    ]);
   }
 
   const path = name ? normalize(name) : normalize(template.definition.name);

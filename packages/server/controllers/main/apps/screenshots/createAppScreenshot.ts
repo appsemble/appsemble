@@ -1,11 +1,11 @@
 import { assertKoaError } from '@appsemble/node-utils';
-import { MainPermission } from '@appsemble/utils';
+import { OrganizationPermission } from '@appsemble/utils';
 import { type Context } from 'koa';
 import { type File } from 'koas-body-parser';
 
 import { App, AppScreenshot, transactional } from '../../../../models/index.js';
 import { createAppScreenshots } from '../../../../utils/app.js';
-import { checkUserPermissions } from '../../../../utils/authorization.js';
+import { checkUserOrganizationPermissions } from '../../../../utils/authorization.js';
 import { checkAppLock } from '../../../../utils/checkAppLock.js';
 
 export async function createAppScreenshot(ctx: Context): Promise<void> {
@@ -24,7 +24,9 @@ export async function createAppScreenshot(ctx: Context): Promise<void> {
 
   checkAppLock(ctx, app);
 
-  await checkUserPermissions(ctx, app.OrganizationId, [MainPermission.CreateAppScreenshots]);
+  await checkUserOrganizationPermissions(ctx, app.OrganizationId, [
+    OrganizationPermission.CreateAppScreenshots,
+  ]);
 
   const languageScreenshot = await AppScreenshot.findOne({
     attributes: ['language'],

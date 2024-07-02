@@ -1,13 +1,13 @@
 import { assertKoaError } from '@appsemble/node-utils';
-import { MainPermission } from '@appsemble/utils';
+import { OrganizationPermission } from '@appsemble/utils';
 import { type Context } from 'koa';
 
 import { Organization, User } from '../../../../models/index.js';
-import { checkUserPermissions } from '../../../../utils/authorization.js';
+import { checkUserOrganizationPermissions } from '../../../../utils/authorization.js';
 
 export async function setOrganizationMemberRole(ctx: Context): Promise<void> {
   const {
-    pathParams: { memberId, organizationId },
+    pathParams: { organizationId, organizationMemberId },
     request: {
       body: { role },
     },
@@ -22,11 +22,13 @@ export async function setOrganizationMemberRole(ctx: Context): Promise<void> {
     404,
     'User is not part of this organization.',
   );
-  assertKoaError(user.id === memberId, ctx, 400, 'Not allowed to change your own rule');
+  assertKoaError(user.id === organizationMemberId, ctx, 400, 'Not allowed to change your own rule');
 
-  await checkUserPermissions(ctx, organization.id, [MainPermission.UpdateOrganizationMembers]);
+  await checkUserOrganizationPermissions(ctx, organization.id, [
+    OrganizationPermission.UpdateOrganizationMembers,
+  ]);
 
-  const member = organization.Users.find((m) => m.id === memberId);
+  const member = organization.Users.find((m) => m.id === organizationMemberId);
 
   assertKoaError(!member, ctx, 400, 'This member is not part of this organization.');
 

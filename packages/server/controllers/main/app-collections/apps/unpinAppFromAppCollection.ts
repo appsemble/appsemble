@@ -1,9 +1,9 @@
 import { assertKoaError } from '@appsemble/node-utils';
-import { MainPermission } from '@appsemble/utils';
+import { OrganizationPermission } from '@appsemble/utils';
 import { type Context } from 'koa';
 
 import { AppCollection, AppCollectionApp } from '../../../../models/index.js';
-import { checkUserPermissions } from '../../../../utils/authorization.js';
+import { checkUserOrganizationPermissions } from '../../../../utils/authorization.js';
 
 export async function unpinAppFromAppCollection(ctx: Context): Promise<void> {
   const {
@@ -25,8 +25,8 @@ export async function unpinAppFromAppCollection(ctx: Context): Promise<void> {
 
   assertKoaError(!aca, ctx, 404, 'App not found in collection');
 
-  await checkUserPermissions(ctx, aca.AppCollection.OrganizationId, [
-    MainPermission.UpdateAppCollections,
+  await checkUserOrganizationPermissions(ctx, aca.AppCollection.OrganizationId, [
+    OrganizationPermission.UpdateAppCollections,
   ]);
 
   await aca.update({
