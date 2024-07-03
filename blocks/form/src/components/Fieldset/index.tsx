@@ -39,6 +39,7 @@ export function Fieldset({
   formValues,
   name,
   onChange,
+  readOnly,
   setFieldErrorLink,
 }: FieldsetProps): VNode {
   const { utils } = useBlock();
@@ -122,9 +123,9 @@ export function Fieldset({
               </div>
             ))}
           </div>
-          {!maxLength || localValues.length < maxLength ? (
+          {!readOnly && (!maxLength || localValues.length < maxLength) ? (
             <FormButtons>
-              <Button icon="plus" onClick={addEntry}>
+              <Button disabled={disabled} icon="plus" onClick={addEntry}>
                 {utils.remap(field.addLabel ?? 'Add', localValues) as string}
               </Button>
             </FormButtons>
