@@ -1,9 +1,9 @@
 import { type OpenAPIV3 } from 'openapi-types';
 
-import { paths as idPaths } from './memberId.js';
+import { paths as memberIdPaths } from './memberId.js';
 
 export const paths: OpenAPIV3.PathsObject = {
-  ...idPaths,
+  ...memberIdPaths,
   '/api/apps/{appId}/teams/{teamId}/members': {
     parameters: [
       { $ref: '#/components/parameters/appId' },

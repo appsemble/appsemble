@@ -1,9 +1,9 @@
 import { type OpenAPIV3 } from 'openapi-types';
 
-import { paths as idPaths } from './secretId.js';
+import { paths as secretIdPaths } from './secretId.js';
 
 export const paths: OpenAPIV3.PathsObject = {
-  ...idPaths,
+  ...secretIdPaths,
   '/api/apps/{appId}/secrets/service': {
     parameters: [{ $ref: '#/components/parameters/appId' }],
     post: {

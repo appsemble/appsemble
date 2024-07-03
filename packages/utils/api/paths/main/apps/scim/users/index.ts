@@ -1,9 +1,9 @@
 import { type OpenAPIV3 } from 'openapi-types';
 
-import { paths as idPaths } from './userId.js';
+import { paths as userIdPaths } from './userId.js';
 
 export const paths: OpenAPIV3.PathsObject = {
-  ...idPaths,
+  ...userIdPaths,
   '/api/apps/{appId}/scim/Users': {
     parameters: [{ $ref: '#/components/parameters/appId' }],
     post: {

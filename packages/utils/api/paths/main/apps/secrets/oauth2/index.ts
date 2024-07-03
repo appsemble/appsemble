@@ -1,10 +1,10 @@
 import { type OpenAPIV3 } from 'openapi-types';
 
-import { paths as idPaths } from './secretId.js';
+import { paths as secretIdPaths } from './secretId.js';
 import { paths as verifyPaths } from './verify.js';
 
 export const paths: OpenAPIV3.PathsObject = {
-  ...idPaths,
+  ...secretIdPaths,
   ...verifyPaths,
   '/api/apps/{appId}/secrets/oauth2': {
     parameters: [{ $ref: '#/components/parameters/appId' }],

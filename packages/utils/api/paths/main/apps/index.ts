@@ -1,6 +1,6 @@
 import { type OpenAPIV3 } from 'openapi-types';
 
-import { paths as idPaths } from './appId/index.js';
+import { paths as appIdPaths } from './appId/index.js';
 import { paths as assetsPaths } from './assets/index.js';
 import { paths as messagesPaths } from './messages/index.js';
 import { paths as quotasPaths } from './quotas/index.js';
@@ -18,8 +18,8 @@ import { paths as variablesPaths } from './variables/index.js';
 import { hexColor } from '../../../../constants/index.js';
 
 export const paths: OpenAPIV3.PathsObject = {
+  ...appIdPaths,
   ...assetsPaths,
-  ...idPaths,
   ...messagesPaths,
   ...quotasPaths,
   ...ratingsPaths,

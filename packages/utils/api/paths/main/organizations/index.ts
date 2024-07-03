@@ -5,7 +5,7 @@ import { paths as appsPaths } from './apps/index.js';
 import { paths as blocksPaths } from './blocks/index.js';
 import { paths as invitesPaths } from './invites/index.js';
 import { paths as membersPaths } from './members/index.js';
-import { paths as idPaths } from './organizationId/index.js';
+import { paths as organizationIdPaths } from './organizationId/index.js';
 
 export const paths: OpenAPIV3.PathsObject = {
   ...appCollectionsPaths,
@@ -13,7 +13,7 @@ export const paths: OpenAPIV3.PathsObject = {
   ...blocksPaths,
   ...invitesPaths,
   ...membersPaths,
-  ...idPaths,
+  ...organizationIdPaths,
   '/api/organizations': {
     get: {
       tags: ['main', 'organization'],

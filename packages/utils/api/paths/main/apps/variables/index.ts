@@ -1,9 +1,9 @@
 import { type OpenAPIV3 } from 'openapi-types';
 
-import { paths as idPaths } from './variableId.js';
+import { paths as variableIdPaths } from './variableId.js';
 
 export const paths: OpenAPIV3.PathsObject = {
-  ...idPaths,
+  ...variableIdPaths,
   '/api/apps/{appId}/variables': {
     parameters: [{ $ref: '#/components/parameters/appId' }],
     post: {

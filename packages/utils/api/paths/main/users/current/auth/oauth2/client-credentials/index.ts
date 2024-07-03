@@ -1,9 +1,9 @@
 import { type OpenAPIV3 } from 'openapi-types';
 
-import { paths as idPaths } from './clientId.js';
+import { paths as clientIdPaths } from './clientId.js';
 
 export const paths: OpenAPIV3.PathsObject = {
-  ...idPaths,
+  ...clientIdPaths,
   '/api/users/current/auth/oauth2/client-credentials': {
     post: {
       description: 'Register new OAuth2 client credentials for the authenticated user.',

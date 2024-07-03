@@ -1,9 +1,9 @@
 import { type OpenAPIV3 } from 'openapi-types';
 
-import { paths as idPaths } from './appId/index.js';
+import { paths as appIdPaths } from './appId/index.js';
 
 export const paths: OpenAPIV3.PathsObject = {
-  ...idPaths,
+  ...appIdPaths,
   '/api/app-collections/{appCollectionId}/apps': {
     get: {
       tags: ['main', 'app-collection', 'app'],

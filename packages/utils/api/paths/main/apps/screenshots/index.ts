@@ -1,9 +1,9 @@
 import { type OpenAPIV3 } from 'openapi-types';
 
-import { paths as idPaths } from './screenshotId.js';
+import { paths as screenshotIdPaths } from './screenshotId.js';
 
 export const paths: OpenAPIV3.PathsObject = {
-  ...idPaths,
+  ...screenshotIdPaths,
   '/api/apps/{appId}/screenshots': {
     parameters: [{ $ref: '#/components/parameters/appId' }],
     post: {

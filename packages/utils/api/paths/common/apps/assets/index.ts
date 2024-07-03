@@ -1,11 +1,11 @@
 import { type OpenAPIV3 } from 'openapi-types';
 
-import { paths as idPaths } from './assetId.js';
+import { paths as assetIdPaths } from './assetId.js';
 import { paths as countPaths } from './count.js';
 import { normalized } from '../../../../../constants/index.js';
 
 export const paths: OpenAPIV3.PathsObject = {
-  ...idPaths,
+  ...assetIdPaths,
   ...countPaths,
   '/api/apps/{appId}/assets': {
     parameters: [{ $ref: '#/components/parameters/appId' }],
