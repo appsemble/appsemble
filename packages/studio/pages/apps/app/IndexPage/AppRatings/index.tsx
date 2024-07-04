@@ -14,7 +14,7 @@ import { useApp } from '../../index.js';
 
 export function AppRatings(): ReactNode {
   const { app, setApp } = useApp();
-  const result = useData<Rating[]>(`/api/main/apps/${app.id}/ratings`);
+  const result = useData<Rating[]>(`/api/apps/${app.id}/ratings`);
   const { formatMessage } = useIntl();
 
   const push = useMessages();

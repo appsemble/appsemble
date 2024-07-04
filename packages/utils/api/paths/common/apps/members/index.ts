@@ -4,7 +4,7 @@ import { paths as memberIdPaths } from './memberId/index.js';
 
 export const paths: OpenAPIV3.PathsObject = {
   ...memberIdPaths,
-  '/api/common/apps/{appId}/members': {
+  '/api/apps/{appId}/members': {
     parameters: [
       { $ref: '#/components/parameters/appId' },
       { in: 'query', name: 'demo', description: 'Whether to fetch demo app members' },

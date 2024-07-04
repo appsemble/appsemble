@@ -35,11 +35,11 @@ export function TrainingHomePage(): ReactNode {
   const push = useMessages();
   const navigate = useNavigate();
   const { hash } = useLocation();
-  const trainingInfo = useData<Training>(`/api/main/trainings/${trainingId}`);
+  const trainingInfo = useData<Training>(`/api/trainings/${trainingId}`);
   const [comp, setComp] = useState(null);
-  const trainingBlocks = useData<TrainingBlock[]>(`/api/main/trainings/${trainingId}/blocks`);
+  const trainingBlocks = useData<TrainingBlock[]>(`/api/trainings/${trainingId}/blocks`);
   const isEnrolled = useData<{ enrolled: boolean; completed: boolean }>(
-    `/api/main/trainings/${trainingId}/enroll`,
+    `/api/trainings/${trainingId}/enroll`,
   );
 
   const isAppsembleMember = organizations?.find((org) => org.id === 'appsemble');
@@ -53,12 +53,12 @@ export function TrainingHomePage(): ReactNode {
   const markAsCompleted = useCallback(async () => {
     const formData = new FormData();
     formData.set('completed', 'true');
-    await axios.patch(`/api/main/trainings/${trainingId}/enroll`, formData);
+    await axios.patch(`/api/trainings/${trainingId}/enroll`, formData);
     window.location.reload();
   }, [trainingId]);
 
   const onEnroll = useCallback(async () => {
-    await axios.post(`/api/main/trainings/${trainingId}/enroll`);
+    await axios.post(`/api/trainings/${trainingId}/enroll`);
     window.location.reload();
   }, [trainingId]);
 
@@ -99,7 +99,7 @@ export function TrainingHomePage(): ReactNode {
       formData.set('description', trainingDescription);
       formData.set('difficultyLevel', String(trainingDifficultyLevel));
       formData.set('competences', JSON.stringify(comp));
-      await axios.patch<Training>(`/api/main/trainings/${trainingId}`, formData);
+      await axios.patch<Training>(`/api/trainings/${trainingId}`, formData);
       closeEditDialog();
       window.location.reload();
     },
@@ -113,7 +113,7 @@ export function TrainingHomePage(): ReactNode {
     confirmLabel: <FormattedMessage {...messages.delete} />,
     async action() {
       try {
-        await axios.delete(`/api/main/trainings/${trainingId}`);
+        await axios.delete(`/api/trainings/${trainingId}`);
         push({
           body: formatMessage(messages.deleteSuccess, {
             name: String(trainingInfo?.data.title),

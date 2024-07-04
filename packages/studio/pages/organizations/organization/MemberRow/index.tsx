@@ -69,7 +69,7 @@ export function MemberRow({
   const onChangeRole = useCallback(
     async (event: ChangeEvent<HTMLSelectElement>, role: string) => {
       const { data } = await axios.put<OrganizationMember>(
-        `/api/main/organizations/${organizationId}/members/${id}/role`,
+        `/api/organizations/${organizationId}/members/${id}/role`,
         { role },
       );
       onChanged(data);
@@ -78,7 +78,7 @@ export function MemberRow({
   );
 
   const callDelete = useCallback(async () => {
-    await axios.delete(`/api/main/organizations/${organizationId}/members/${id}`);
+    await axios.delete(`/api/organizations/${organizationId}/members/${id}`);
     onDeleted(member);
 
     push({

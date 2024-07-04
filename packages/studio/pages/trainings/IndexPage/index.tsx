@@ -19,7 +19,7 @@ export function IndexPage(): ReactNode {
     name: 'difficulty',
     reverse: false,
   });
-  const trainingsResult = useData<Training[]>('/api/main/trainings');
+  const trainingsResult = useData<Training[]>('/api/trainings');
 
   const onSortChange = useCallback((name: TrainingSortFunctionName, reverse: boolean) => {
     setSort({ name, reverse });

@@ -34,8 +34,8 @@ export function CollectionsPage({ organizationId }: CollectionsPageProps): React
   const navigate = useNavigate();
 
   const target = organizationId
-    ? `/api/main/organizations/${organizationId}/app-collections`
-    : '/api/main/app-collections';
+    ? `/api/organizations/${organizationId}/app-collections`
+    : '/api/app-collections';
   const {
     data: collections,
     error: collectionsError,

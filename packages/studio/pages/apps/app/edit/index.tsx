@@ -54,12 +54,12 @@ export default function EditPage(): ReactNode {
     data: coreStyle,
     loading: coreStyleLoading,
     setData: setCoreStyle,
-  } = useData<string>(`/api/common/apps/${id}/styles/core`);
+  } = useData<string>(`/api/apps/${id}/styles/core`);
   const {
     data: sharedStyle,
     loading: sharedStyleLoading,
     setData: setSharedStyle,
-  } = useData<string>(`/api/common/apps/${id}/styles/shared`);
+  } = useData<string>(`/api/apps/${id}/styles/shared`);
 
   const [appDefinitionErrorCount, setAppDefinitionErrorCount] = useState(0);
   const [coreStyleErrorCount, setCoreStyleErrorCount] = useState(0);

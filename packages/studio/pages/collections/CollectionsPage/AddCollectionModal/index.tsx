@@ -60,7 +60,7 @@ export function AddCollectionModal({ onCreated, state }: AddCollectionModalProps
         form.append('domain', domain);
       }
       const { data } = await axios.post<AppCollection>(
-        `/api/main/organizations/${organizationId}/app-collections`,
+        `/api/organizations/${organizationId}/app-collections`,
         form,
       );
       onCreated(data);

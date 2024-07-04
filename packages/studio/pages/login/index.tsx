@@ -27,7 +27,7 @@ export function LoginPage(): ReactNode {
     async ({ email, password }: LoginFormValues) => {
       busy.enable();
       try {
-        const { data } = await axios.post<TokenResponse>('/api/main/auth/email/login', undefined, {
+        const { data } = await axios.post<TokenResponse>('/api/auth/email/login', undefined, {
           headers: { authorization: `Basic ${btoa(`${email}:${password}`)}` },
         });
         login(data);

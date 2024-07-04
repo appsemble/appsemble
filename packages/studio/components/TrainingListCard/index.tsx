@@ -97,7 +97,7 @@ export function TrainingListCard({
   }, [handleClickOutside]);
 
   const onEdit = useCallback(async () => {
-    const { data: fetchedTrainingData } = await axios.get<Training>(`/api/main/trainings/${id}`);
+    const { data: fetchedTrainingData } = await axios.get<Training>(`/api/trainings/${id}`);
     setTrainingData(fetchedTrainingData);
     navigate({ hash: `edit-${id}` }, { replace: true });
   }, [navigate, id]);
@@ -119,7 +119,7 @@ export function TrainingListCard({
       formData.set('description', trainingDescription);
       formData.set('difficultyLevel', String(trainingDifficultyLevel));
       formData.set('competences', JSON.stringify(comp));
-      const { data } = await axios.patch<Training>(`/api/main/trainings/${id}`, formData);
+      const { data } = await axios.patch<Training>(`/api/trainings/${id}`, formData);
       closeEditDialog();
       navigate(String(data.id), { replace: true });
     },
@@ -133,7 +133,7 @@ export function TrainingListCard({
     confirmLabel: <FormattedMessage {...messages.delete} />,
     async action() {
       try {
-        await axios.delete(`/api/main/trainings/${id}`);
+        await axios.delete(`/api/trainings/${id}`);
         push({
           body: formatMessage(messages.deleteSuccess, {
             name: String(title),

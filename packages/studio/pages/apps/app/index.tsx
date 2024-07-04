@@ -76,7 +76,7 @@ export function AppRoutes(): ReactNode {
     error,
     loading,
     setData: setApp,
-  } = useData<App>(`/api/main/apps/${id}?language=${lang}`);
+  } = useData<App>(`/api/apps/${id}?language=${lang}`);
 
   const url = `apps/${id}/${path}`;
 

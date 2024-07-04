@@ -67,7 +67,7 @@ export function UserProvider({ children }: UserProviderProps): ReactNode {
   const accessTokenRef = useRef<string | null>(localStorage.access_token);
 
   const refreshUserInfo = useCallback(async () => {
-    const { data } = await axios.get<UserInfo>('/api/main/users/current');
+    const { data } = await axios.get<UserInfo>('/api/users/current');
     setSentryUser({ id: data.sub });
     setUserInfo(data);
   }, []);
@@ -80,7 +80,7 @@ export function UserProvider({ children }: UserProviderProps): ReactNode {
   }, []);
 
   const fetchOrganizations = useCallback(async () => {
-    const { data } = await axios.get<UserOrganization[]>('/api/main/users/current/organizations');
+    const { data } = await axios.get<UserOrganization[]>('/api/users/current/organizations');
     setOrganizations(data);
   }, []);
 
@@ -141,7 +141,7 @@ export function UserProvider({ children }: UserProviderProps): ReactNode {
     const timeout = exp * 1e3 - REFRESH_BUFFER - Date.now();
     const refresh = async (): Promise<void> => {
       try {
-        const { data } = await axios.post<TokenResponse>('/api/main/auth/refresh-token', {
+        const { data } = await axios.post<TokenResponse>('/api/auth/refresh-token', {
           refresh_token: tokenResponse.refresh_token,
         });
         login(data);

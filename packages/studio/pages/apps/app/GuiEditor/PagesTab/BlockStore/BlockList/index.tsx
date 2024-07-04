@@ -26,7 +26,7 @@ interface BlockListProps {
  * Fetch and display a list of apps.
  */
 export function BlockList({ dragEventListener, filter }: BlockListProps): ReactNode {
-  const { data: blocks, error, loading } = useData<BlockManifest[]>('/api/common/blocks');
+  const { data: blocks, error, loading } = useData<BlockManifest[]>('/api/blocks');
 
   if (error) {
     return <FormattedMessage {...messages.error} />;

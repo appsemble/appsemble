@@ -239,7 +239,7 @@ export async function updateResource({
       const {
         data: { id },
       } = await axios.put<Resource>(
-        `/api/common/apps/${appId}/resources/${resourceName}/${resource.id}`,
+        `/api/apps/${appId}/resources/${resourceName}/${resource.id}`,
         resource,
         {
           baseURL: remote,

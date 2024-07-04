@@ -37,7 +37,7 @@ describe('resource.get', () => {
     });
     const result = await action({ id: 1 });
     expect(request.method).toBe('get');
-    expect(request.url).toBe(`${apiUrl}/api/common/apps/42/resources/pet/1`);
+    expect(request.url).toBe(`${apiUrl}/api/apps/42/resources/pet/1`);
     expect(request.params).toBeUndefined();
     expect(request.data).toBeUndefined();
     expect(result).toStrictEqual({ type: 'cat' });
@@ -59,7 +59,7 @@ describe('resource.get', () => {
     });
     const result = await action({ id: 1 });
     expect(request.method).toBe('get');
-    expect(request.url).toBe(`${apiUrl}/api/common/apps/42/resources/pet/1`);
+    expect(request.url).toBe(`${apiUrl}/api/apps/42/resources/pet/1`);
     expect(request.params).toStrictEqual({ $filter: "type eq 'dog'", view: 'dogs' });
     expect(request.data).toBeUndefined();
     expect(result).toStrictEqual({ type: 'dog' });
@@ -78,7 +78,7 @@ describe('resource.query', () => {
     });
     const result = await action();
     expect(request.method).toBe('get');
-    expect(request.url).toBe(`${apiUrl}/api/common/apps/42/resources/pet`);
+    expect(request.url).toBe(`${apiUrl}/api/apps/42/resources/pet`);
     expect(request.params).toBeUndefined();
     expect(request.data).toBeUndefined();
     expect(result).toStrictEqual([{ type: 'cat' }]);
@@ -100,7 +100,7 @@ describe('resource.query', () => {
     });
     const result = await action({ id: 1 });
     expect(request.method).toBe('get');
-    expect(request.url).toBe(`${apiUrl}/api/common/apps/42/resources/pet`);
+    expect(request.url).toBe(`${apiUrl}/api/apps/42/resources/pet`);
     expect(request.params).toStrictEqual({ $filter: "type eq 'dog'", view: 'dogs' });
     expect(request.data).toBeUndefined();
     expect(result).toStrictEqual({ type: 'dog' });
@@ -119,7 +119,7 @@ describe('resource.count', () => {
     });
     const result = await action();
     expect(request.method).toBe('get');
-    expect(request.url).toBe(`${apiUrl}/api/common/apps/42/resources/pet/$count`);
+    expect(request.url).toBe(`${apiUrl}/api/apps/42/resources/pet/$count`);
     expect(request.params).toBeUndefined();
     expect(request.data).toBeUndefined();
     expect(result).toBe(12);
@@ -138,7 +138,7 @@ describe('resource.create', () => {
     });
     const result = await action({ type: 'fish' });
     expect(request.method).toBe('post');
-    expect(request.url).toBe(`${apiUrl}/api/common/apps/42/resources/pet`);
+    expect(request.url).toBe(`${apiUrl}/api/apps/42/resources/pet`);
     expect(request.params).toBeUndefined();
     expect(request.data).toBe('{"type":"fish"}');
     expect(result).toStrictEqual({ id: 84, type: 'fish' });
@@ -157,7 +157,7 @@ describe('resource.update', () => {
     });
     const result = await action({ id: 84, type: 'fish' });
     expect(request.method).toBe('put');
-    expect(request.url).toBe(`${apiUrl}/api/common/apps/42/resources/pet/84`);
+    expect(request.url).toBe(`${apiUrl}/api/apps/42/resources/pet/84`);
     expect(request.params).toBeUndefined();
     expect(request.data).toBe('{"id":84,"type":"fish"}');
     expect(result).toStrictEqual({ id: 84, type: 'fish' });
@@ -176,7 +176,7 @@ describe('resource.patch', () => {
     });
     const result = await action({ id: 84, type: 'fish' });
     expect(request.method).toBe('patch');
-    expect(request.url).toBe(`${apiUrl}/api/common/apps/42/resources/pet/84`);
+    expect(request.url).toBe(`${apiUrl}/api/apps/42/resources/pet/84`);
     expect(request.params).toBeUndefined();
     expect(request.data).toBe('{"id":84,"type":"fish"}');
     expect(result).toStrictEqual({ id: 84, type: 'fish' });
@@ -195,7 +195,7 @@ describe('resource.delete', () => {
     });
     const result = await action({ id: 63 });
     expect(request.method).toBe('delete');
-    expect(request.url).toBe(`${apiUrl}/api/common/apps/42/resources/pet/63`);
+    expect(request.url).toBe(`${apiUrl}/api/apps/42/resources/pet/63`);
     expect(request.params).toBeUndefined();
     expect(request.data).toBeUndefined();
     expect(result).toBeNull();

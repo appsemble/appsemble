@@ -35,7 +35,7 @@ const blockMap = new Map<string, Promise<BlockManifest>>();
 async function getCachedBlockVersions(blocks: IdentifiableBlock[]): Promise<BlockManifest[]> {
   const manifests = await Promise.all(
     blocks.map(({ type, version }) => {
-      const url = `/api/common/blocks/${normalizeBlockName(type)}/versions/${version}`;
+      const url = `/api/blocks/${normalizeBlockName(type)}/versions/${version}`;
       if (!blockMap.has(url)) {
         blockMap.set(
           url,

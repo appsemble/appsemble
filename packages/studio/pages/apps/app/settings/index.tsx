@@ -108,7 +108,7 @@ export function SettingsPage(): ReactNode {
       form.set('maskableIcon', values.maskableIcon);
     }
 
-    const { data } = await axios.patch<App>(`/api/main/apps/${app.id}`, form);
+    const { data } = await axios.patch<App>(`/api/apps/${app.id}`, form);
     push({ color: 'success', body: formatMessage(messages.updateSuccess) });
     setApp(data);
   };
@@ -122,7 +122,7 @@ export function SettingsPage(): ReactNode {
       const { id } = app;
 
       try {
-        await axios.delete(`/api/main/apps/${id}`);
+        await axios.delete(`/api/apps/${id}`);
         push({
           body: formatMessage(messages.deleteSuccess, {
             name: app.definition.name,

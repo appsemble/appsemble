@@ -48,7 +48,7 @@ export function AddToCollectionButton({ app, className }: AppToCollectionButtonP
           organizations
             ?.filter((org) => checkRole(org.role, Permission.EditCollections))
             .map((org) =>
-              axios.get<AppCollection[]>(`/api/main/organizations/${org.id}/app-collections`),
+              axios.get<AppCollection[]>(`/api/organizations/${org.id}/app-collections`),
             ),
         )
       ).flatMap((response) => response.data);

@@ -22,7 +22,7 @@ converted to JSON.
       $ref: '#/components/schemas/RemapperDefinition',
       description: `A remapper that results in the URL to send the request to.
 
-Can be a relative URL (E.g. \`/api/main/health\`) for usage with the Appsemble API, or an absolute URL
+Can be a relative URL (E.g. \`/api/health\`) for usage with the Appsemble API, or an absolute URL
 (E.g. \`https://example.com\`) for usage with external sites.`,
     },
     method: {

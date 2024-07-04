@@ -59,7 +59,7 @@ export function ClientCredentialsPage(): ReactNode {
     loading,
     refresh,
     setData: setClients,
-  } = useData<OAuth2ClientCredentials[]>('/api/main/auth/oauth2/client-credentials');
+  } = useData<OAuth2ClientCredentials[]>('/api/auth/oauth2/client-credentials');
   const [newClientCredentials, setNewClientCredentials] = useState<string>(null);
   const modal = useToggle(Boolean(callback));
 
@@ -75,7 +75,7 @@ export function ClientCredentialsPage(): ReactNode {
         .filter(([key, value]) => value && (knownScopes as readonly string[]).includes(key))
         .map(([key]) => key);
       const { data } = await axios.post<OAuth2ClientCredentials>(
-        '/api/main/auth/oauth2/client-credentials',
+        '/api/auth/oauth2/client-credentials',
         {
           description,
           expires: expires ? new Date(expires) : undefined,
@@ -104,7 +104,7 @@ export function ClientCredentialsPage(): ReactNode {
     cancelLabel: <FormattedMessage {...messages.deleteCancel} />,
     confirmLabel: <FormattedMessage {...messages.deleteConfirm} />,
     async action(client: OAuth2ClientCredentials) {
-      await axios.delete(`/api/main/auth/oauth2/client-credentials/${client.id}`);
+      await axios.delete(`/api/auth/oauth2/client-credentials/${client.id}`);
       setClients(clients.filter((c) => c.id !== client.id));
     },
   });

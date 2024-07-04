@@ -52,7 +52,7 @@ export function createAppRouter(options: Options): Middleware {
     },
     {
       route: new RegExp(
-        `^/api/common/blocks/${blockName}/versions/(?<version>${partialSemver.source})/(?<filename>.+)$`,
+        `^/api/blocks/${blockName}/versions/(?<version>${partialSemver.source})/(?<filename>.+)$`,
       ),
       get: createBlockAssetHandler(options),
     },

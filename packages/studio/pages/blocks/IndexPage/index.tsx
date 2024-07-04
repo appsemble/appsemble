@@ -12,7 +12,7 @@ import { BlockCard } from '../../../components/BlockCard/index.js';
  */
 export function IndexPage(): ReactNode {
   const [filter, setFilter] = useState('');
-  const { data: blocks, error, loading } = useData<BlockManifest[]>('/api/common/blocks');
+  const { data: blocks, error, loading } = useData<BlockManifest[]>('/api/blocks');
 
   if (error) {
     return (

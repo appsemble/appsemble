@@ -53,7 +53,7 @@ export function InviteRow({ invite, mayInvite, onDeleted }: InviteRowProps): Rea
     cancelLabel: <FormattedMessage {...messages.cancelLabel} />,
     confirmLabel: <FormattedMessage {...messages.deleteInvite} />,
     async action() {
-      await axios.delete(`/api/main/organizations/${organizationId}/invites`, {
+      await axios.delete(`/api/organizations/${organizationId}/invites`, {
         data: invite,
       });
 

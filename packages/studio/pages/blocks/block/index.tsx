@@ -44,7 +44,7 @@ export function BlockPage(): ReactNode {
   const navigate = useNavigate();
 
   const { data: blockVersions, error: fetchError } = useData<string[]>(
-    `/api/main/blocks/${organization}/${blockName}/versions/list`,
+    `/api/blocks/${organization}/${blockName}/versions/list`,
   );
 
   const onSelectedVersionChange = useCallback(
@@ -57,8 +57,8 @@ export function BlockPage(): ReactNode {
   );
   const blockUrl =
     urlVersion === undefined
-      ? `/api/common/blocks/${organization}/${blockName}`
-      : `/api/common/blocks/${organization}/${blockName}/versions/${urlVersion}`;
+      ? `/api/blocks/${organization}/${blockName}`
+      : `/api/blocks/${organization}/${blockName}/versions/${urlVersion}`;
 
   const { data: selectedBlockManifest, error, loading } = useData<BlockManifest>(blockUrl);
 

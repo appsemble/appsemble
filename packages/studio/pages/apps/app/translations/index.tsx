@@ -45,7 +45,7 @@ export function TranslationsPage(): ReactNode {
   const push = useMessages();
   const { formatMessage } = useIntl();
 
-  const languageIds = useData<string[]>(`/api/common/apps/${app.id}/messages`);
+  const languageIds = useData<string[]>(`/api/apps/${app.id}/messages`);
   const [selectedLanguage, setSelectedLanguage] = useState<string>();
   const [parsedLanguage, setParsedLanguage] = useState<string>();
   const [submitting, setSubmitting] = useState(false);

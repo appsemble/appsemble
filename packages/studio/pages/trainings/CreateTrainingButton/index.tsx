@@ -15,7 +15,7 @@ export function CreateTrainingButton({ className }: { readonly className: string
 
   const onCreateTraining = useCallback(
     async ({ description, difficultyLevel, title }: typeof defaultTrainingValues) => {
-      const { data } = await axios.post<Training>('/api/main/trainings', {
+      const { data } = await axios.post<Training>('/api/trainings', {
         title,
         description,
         difficultyLevel,

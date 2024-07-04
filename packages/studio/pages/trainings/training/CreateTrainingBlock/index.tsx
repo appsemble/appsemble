@@ -42,7 +42,7 @@ export function CreatingTrainingBlockButton({
       formData.set('exampleCode', exampleCodeBlock);
       formData.set('externalResource', externalResourceLink);
 
-      await axios.post<TrainingBlock>(`/api/main/trainings/${trainingId}/blocks`, formData);
+      await axios.post<TrainingBlock>(`/api/trainings/${trainingId}/blocks`, formData);
       closeCreateDialog();
 
       window.location.reload();

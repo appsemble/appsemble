@@ -4,7 +4,7 @@ import { paths as picturePaths } from './picture.js';
 
 export const paths: OpenAPIV3.PathsObject = {
   ...picturePaths,
-  '/api/common/apps/{appId}/members/{memberId}': {
+  '/api/apps/{appId}/members/{memberId}': {
     parameters: [
       { $ref: '#/components/parameters/appId' },
       {

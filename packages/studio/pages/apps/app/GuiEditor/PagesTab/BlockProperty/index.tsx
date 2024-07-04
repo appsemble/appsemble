@@ -27,7 +27,7 @@ export function BlockProperty({
   deleteBlock,
   selectedBlock,
 }: BlockPropertyProps): ReactNode {
-  const { data: blocks, error, loading } = useData<BlockManifest[]>('/api/common/blocks');
+  const { data: blocks, error, loading } = useData<BlockManifest[]>('/api/blocks');
   const blockName = normalizeBlockName(
     stringify(selectedBlock.getIn(['type']))
       .replaceAll(/["']/g, '')

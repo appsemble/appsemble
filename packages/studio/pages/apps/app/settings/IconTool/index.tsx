@@ -63,11 +63,11 @@ export function IconTool({ disabled }: IconToolProps): ReactNode {
     maskableIcon = URL.createObjectURL(maskableIcon);
   } else {
     if (app.hasMaskableIcon) {
-      maskableIcon = `/api/common/apps/${app.id}/icon?maskable=true`;
+      maskableIcon = `/api/apps/${app.id}/icon?maskable=true`;
     } else {
       scaleMaskableIcon = true;
       if (typeof icon === 'string') {
-        maskableIcon = `/api/common/apps/${app.id}/icon?raw=true`;
+        maskableIcon = `/api/apps/${app.id}/icon?raw=true`;
       } else if (icon instanceof Blob) {
         maskableIcon = URL.createObjectURL(icon);
       }

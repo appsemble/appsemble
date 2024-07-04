@@ -14,7 +14,7 @@ export const get: ActionCreator<'resource.get'> = (args) => {
   const url =
     resource?.get?.url ??
     resource?.url ??
-    `${apiUrl}/api/common/apps/${appId}/resources/${definition.resource}`;
+    `${apiUrl}/api/apps/${appId}/resources/${definition.resource}`;
   const { id = 'id' } = resource;
 
   const query: Remapper = [].concat(definition?.query ?? resource?.query?.query).filter(Boolean);
@@ -49,7 +49,7 @@ export const query: ActionCreator<'resource.query'> = (args) => {
   const url =
     resource?.query?.url ??
     resource?.url ??
-    `${apiUrl}/api/common/apps/${appId}/resources/${definition.resource}`;
+    `${apiUrl}/api/apps/${appId}/resources/${definition.resource}`;
 
   const queryRemapper: Remapper = []
     .concat(definition?.query ?? resource?.query?.query)
@@ -79,7 +79,7 @@ export const count: ActionCreator<'resource.count'> = (args) => {
   const url =
     resource?.count?.url ??
     resource?.url ??
-    `${apiUrl}/api/common/apps/${appId}/resources/${definition.resource}/$count`;
+    `${apiUrl}/api/apps/${appId}/resources/${definition.resource}/$count`;
 
   return request({
     ...args,
@@ -102,7 +102,7 @@ export const create: ActionCreator<'resource.create'> = (args) => {
   const url =
     resource?.create?.url ||
     resource.url ||
-    `${apiUrl}/api/common/apps/${appId}/resources/${definition.resource}`;
+    `${apiUrl}/api/apps/${appId}/resources/${definition.resource}`;
 
   const [dispatch, properties] = request({
     ...args,
@@ -126,7 +126,7 @@ export const update: ActionCreator<'resource.update'> = (args) => {
   const url =
     resource?.update?.url ||
     resource.url ||
-    `${apiUrl}/api/common/apps/${appId}/resources/${definition.resource}`;
+    `${apiUrl}/api/apps/${appId}/resources/${definition.resource}`;
   const { id = 'id' } = resource;
 
   return request({
@@ -155,7 +155,7 @@ export const patch: ActionCreator<'resource.patch'> = (args) => {
   const url =
     resource?.update?.url ||
     resource.url ||
-    `${apiUrl}/api/common/apps/${appId}/resources/${definition.resource}`;
+    `${apiUrl}/api/apps/${appId}/resources/${definition.resource}`;
   const { id = 'id' } = resource;
 
   return request({
@@ -184,7 +184,7 @@ export const remove: ActionCreator<'resource.delete'> = (args) => {
   const url =
     resource?.delete?.url ||
     resource.url ||
-    `${apiUrl}/api/common/apps/${appId}/resources/${definition.resource}`;
+    `${apiUrl}/api/apps/${appId}/resources/${definition.resource}`;
   const { id = 'id' } = resource;
 
   return request({
@@ -239,7 +239,7 @@ export const subscribe: ActionCreator<'resource.subscription.subscribe'> = ({
   return [
     async (data: any) => {
       const { endpoint } = await getSubscription(pushNotifications);
-      await axios.patch(`${apiUrl}/api/common/apps/${appId}/subscriptions`, {
+      await axios.patch(`${apiUrl}/api/apps/${appId}/subscriptions`, {
         endpoint,
         resource: definition.resource,
         action: definition.action || 'update',
@@ -263,7 +263,7 @@ export const unsubscribe: ActionCreator<'resource.subscription.unsubscribe'> = (
   return [
     async (data: any) => {
       const { endpoint } = await getSubscription(pushNotifications);
-      await axios.patch(`${apiUrl}/api/common/apps/${appId}/subscriptions`, {
+      await axios.patch(`${apiUrl}/api/apps/${appId}/subscriptions`, {
         endpoint,
         resource: definition.resource,
         action: definition.action || 'update',
@@ -287,7 +287,7 @@ export const toggle: ActionCreator<'resource.subscription.toggle'> = ({
   return [
     async (data: any) => {
       const { endpoint } = await getSubscription(pushNotifications);
-      await axios.patch(`${apiUrl}/api/common/apps/${appId}/subscriptions`, {
+      await axios.patch(`${apiUrl}/api/apps/${appId}/subscriptions`, {
         endpoint,
         resource: definition.resource,
         action: definition.action || 'update',
@@ -312,8 +312,8 @@ export const status: ActionCreator<'resource.subscription.status'> = ({
       const { endpoint } = await getSubscription(pushNotifications);
       const { data } = await axios.get(
         d?.[id]
-          ? `${apiUrl}/api/common/apps/${appId}/resources/${definition.resource}/${d[id]}/subscriptions`
-          : `${apiUrl}/api/common/apps/${appId}/resources/${definition.resource}/subscriptions`,
+          ? `${apiUrl}/api/apps/${appId}/resources/${definition.resource}/${d[id]}/subscriptions`
+          : `${apiUrl}/api/apps/${appId}/resources/${definition.resource}/subscriptions`,
         {
           params: { endpoint },
         },

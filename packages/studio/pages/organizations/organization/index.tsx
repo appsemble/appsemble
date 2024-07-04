@@ -29,7 +29,7 @@ export function OrganizationRoutes(): ReactNode {
   const { organizationId } = useParams<{ organizationId: string }>();
   const url = `organizations/${organizationId}`;
 
-  const result = useData<Organization>(`/api/main/organizations/${organizationId}`);
+  const result = useData<Organization>(`/api/organizations/${organizationId}`);
   const userOrganization = organizations?.find((org) => org.id === organizationId);
   const mayEdit = userOrganization && checkRole(userOrganization.role, Permission.EditOrganization);
 
