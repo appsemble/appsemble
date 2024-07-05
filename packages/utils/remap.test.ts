@@ -985,6 +985,31 @@ describe('array', () => {
   });
 });
 
+describe('array.filter', () => {
+  runTests({
+    'return a new array containing the object with specified value from array': {
+      input: [{ name: 'Craig' }, { name: 'Joey' }, { name: 'Stuart' }],
+      mappers: [{ 'array.filter': { equals: [{ prop: 'name' }, 'Craig'] } }],
+      expected: [{ name: 'Craig' }],
+    },
+    'return a new array containing the 2 objects with specified value from array': {
+      input: [{ name: 'Craig' }, { name: 'Joey' }, { name: 'Stuart' }, { name: 'Craig' }],
+      mappers: [{ 'array.filter': { equals: [{ prop: 'name' }, 'Craig'] } }],
+      expected: [{ name: 'Craig' }, { name: 'Craig' }],
+    },
+    'return a new array containing a single value when the array does not include objects': {
+      input: ['Craig', 'Joey', 'Stuart'],
+      mappers: [{ 'array.filter': { equals: [{ array: 'item' }, 'Craig'] } }],
+      expected: ['Craig'],
+    },
+    'return an empty array when condition doesn’t match anything': {
+      input: ['Craig', 'Joey', 'Stuart'],
+      mappers: [{ 'array.filter': { equals: [{ array: 'item' }, 'Peter'] } }],
+      expected: [],
+    },
+  });
+});
+
 describe('array.find', () => {
   runTests({
     'return object with specified value from array': {

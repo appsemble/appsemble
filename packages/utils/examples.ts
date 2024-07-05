@@ -133,6 +133,30 @@ export const examples: Record<RemapperExampleKeys, RemapperExample> = {
       },
     ],
   },
+  'array.filter': {
+    input: [
+      {
+        name: 'Peter',
+      },
+      {
+        name: 'Louis',
+      },
+      {
+        name: 'Brian',
+      },
+    ],
+    remapper: {
+      'array.filter': {
+        equals: [
+          {
+            prop: 'name',
+          },
+          'Louis',
+        ],
+      },
+    },
+    result: [{ name: 'Louis' }],
+  },
   'array.find': {
     input: [
       {
@@ -317,6 +341,13 @@ export const examples: Record<RemapperExampleKeys, RemapperExample> = {
     input: null,
     remapper: { variable: 'MY_VARIABLE' },
     result: 'variable value',
+    skip: true,
+  },
+  type: {
+    // TODO:
+    input: null,
+    remapper: { type: 'MY_VARIABLE' },
+    result: 'type value',
     skip: true,
   },
   'number.parse': {
