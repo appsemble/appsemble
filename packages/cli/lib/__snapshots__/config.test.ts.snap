@@ -2683,6 +2683,10 @@ Replaces the optional label if the field is optional. Won’t display if the fie
             "description": "The label to show on the button for adding a new entry.",
             "format": "remapper",
           },
+          "disableSearch": {
+            "description": "Whether to disable the search field for the selection choices.",
+            "type": "boolean",
+          },
           "disabled": {
             "default": false,
             "description": "Whether the field should always be be disabled.",
@@ -4202,6 +4206,10 @@ Replaces the optional label if the field is optional. Won’t display if the fie
             "default": "Add",
             "description": "The label to show on the button for adding a new entry.",
             "format": "remapper",
+          },
+          "disableSearch": {
+            "description": "Whether to disable the search field for the selection choices.",
+            "type": "boolean",
           },
           "disabled": {
             "default": false,

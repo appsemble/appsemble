@@ -842,6 +842,11 @@ export interface AbstractSelectionField extends AbstractField, InlineField {
    * @default 'Add'
    */
   addLabel?: Remapper;
+
+  /**
+   * Whether to disable the search field for the selection choices.
+   */
+  disableSearch?: boolean;
 }
 
 export interface EventSelectionField extends AbstractSelectionField {
