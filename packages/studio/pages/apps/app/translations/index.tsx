@@ -1,5 +1,6 @@
 import {
   Button,
+  FileUpload,
   ModalCard,
   SelectField,
   SimpleForm,
@@ -19,11 +20,12 @@ import { downloadBlob } from '@appsemble/web-utils';
 import axios from 'axios';
 import { type ChangeEvent, type ReactNode, useCallback, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { useParams } from 'react-router-dom';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
 
 import { messages } from './messages.js';
 import { MessagesForm } from './MessagesForm/index.js';
 import { AsyncDataView } from '../../../../components/AsyncDataView/index.js';
+import { supportedLanguages } from '../../../../utils/constants.js';
 import { useApp } from '../index.js';
 
 interface LanguageFormValues {
@@ -61,6 +63,26 @@ export function TranslationsPage(): ReactNode {
   const onSelectedLanguageChange = useCallback((event: ChangeEvent, lang: string) => {
     setSelectedLanguage(lang);
   }, []);
+
+  const [uploadingImportFile, setUploadingImportFile] = useState<File>(null);
+
+  const onImportFileChange = useCallback((event: ChangeEvent<HTMLInputElement>) => {
+    setUploadingImportFile(event.target.files[0]);
+  }, []);
+
+  const navigate = useNavigate();
+  const { hash } = useLocation();
+
+  const openModal = useCallback(() => {
+    navigate({ hash: 'import' }, { replace: true });
+  }, [navigate]);
+
+  const closeModal = useCallback(() => {
+    navigate({ hash: null }, { replace: true });
+    setUploadingImportFile(null);
+  }, [navigate]);
+
+  const active = hash === '#import';
 
   const onDeleteLanguage = useConfirmation({
     title: (
@@ -112,53 +134,31 @@ export function TranslationsPage(): ReactNode {
     downloadBlob(new Blob([bytes]), `${languageId}.json`);
   }, [languageId, result?.data?.messages]);
 
-  const uploadJson = useCallback(() => {
-    const input = document.createElement('input');
-    input.type = 'file';
-    input.accept = 'application/json';
-    input.click();
-    input.addEventListener('change', () => {
-      const [file] = input.files;
-      const reader = new FileReader();
-      reader.addEventListener(
-        'load',
-        () => {
-          try {
-            axios
-              .post<AppMessages>(`/api/apps/${app.id}/messages`, {
-                language: languageId,
-                messages: JSON.parse(reader.result as string),
-              })
-              .then(({ data }) => {
-                result.setData(data);
-                push({
-                  body: formatMessage(messages.importSuccess, {
-                    selectedLanguage: getLanguageDisplayName(languageId),
-                  }),
-                  color: 'success',
-                });
-              })
-              .catch(() => {
-                push({
-                  body: formatMessage(messages.uploadError),
-                  color: 'danger',
-                });
-              });
-          } catch {
-            push({
-              body: formatMessage(messages.importError),
-              color: 'danger',
-            });
-          }
-        },
-        false,
-      );
-
-      if (file) {
-        file.text();
-      }
-    });
-  }, [app.id, formatMessage, languageId, push, result]);
+  const importTranslations = useCallback(async () => {
+    if (uploadingImportFile instanceof Blob) {
+      const readMessages = await uploadingImportFile.text();
+      axios
+        .post<AppMessages>(`/api/apps/${app.id}/messages`, {
+          language: languageId,
+          messages: JSON.parse(readMessages),
+        })
+        .then(({ data }) => {
+          result.setData(data);
+          push({
+            body: formatMessage(messages.importSuccess, {
+              selectedLanguage: getLanguageDisplayName(languageId),
+            }),
+            color: 'success',
+          });
+        })
+        .catch(() => {
+          push({
+            body: formatMessage(messages.uploadError),
+            color: 'danger',
+          });
+        });
+    }
+  }, [app.id, formatMessage, languageId, push, result, uploadingImportFile]);
 
   return (
     <>
@@ -202,7 +202,7 @@ export function TranslationsPage(): ReactNode {
           <Button icon="download" onClick={downloadJson}>
             <FormattedMessage {...messages.export} />
           </Button>
-          <Button icon="upload" onClick={uploadJson}>
+          <Button icon="upload" onClick={openModal}>
             <FormattedMessage {...messages.import} />
           </Button>
         </span>
@@ -262,6 +262,52 @@ export function TranslationsPage(): ReactNode {
             </option>
           ))}
         </SimpleFormField>
+      </ModalCard>
+      <ModalCard
+        component={SimpleForm}
+        defaultValues={{ messages: null }}
+        footer={
+          <SimpleModalFooter
+            cancelLabel={<FormattedMessage {...messages.cancel} />}
+            onClose={closeModal}
+            submitLabel={<FormattedMessage {...messages.add} />}
+          />
+        }
+        isActive={active}
+        onClose={closeModal}
+        onSubmit={importTranslations}
+      >
+        <SimpleFormError>
+          {({ error }) =>
+            axios.isAxiosError(error) ? (
+              <FormattedMessage {...messages.errorMessage} />
+            ) : (
+              <FormattedMessage {...messages.importError} />
+            )
+          }
+        </SimpleFormError>
+        <SimpleFormField
+          accept="application/json"
+          component={FileUpload}
+          fileButtonLabel={<FormattedMessage {...messages.import} />}
+          fileLabel={uploadingImportFile?.name ?? 'No File'}
+          label={<FormattedMessage {...messages.import} />}
+          name="messages"
+          onChange={onImportFileChange}
+          required
+        />
+        <SelectField
+          disabled={submitting}
+          label={<FormattedMessage {...messages.selectedLanguage} />}
+          name="language"
+          onChange={onSelectedLanguageChange}
+        >
+          {Object.keys(supportedLanguages).map((lang) => (
+            <option key={lang} value={lang}>
+              {getLanguageDisplayName(lang)}
+            </option>
+          ))}
+        </SelectField>
       </ModalCard>
     </>
   );
