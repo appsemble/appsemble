@@ -62,6 +62,7 @@ bootstrap(
     const [submitting, setSubmitting] = useState(false);
     const [values, setValues] = useState(defaultValues);
     const [lastChanged, setLastChanged] = useState<string>(null);
+    const [triedToSubmit, setTriedToSubmit] = useState<boolean>(false);
     const errors = useMemo(
       () =>
         generateDefaultValidity(
@@ -189,6 +190,11 @@ bootstrap(
 
         if (!isFormValid(errors, keys) || formErrors.some(Boolean)) {
           setSubmitting(false);
+
+          if (!triedToSubmit) {
+            return setTriedToSubmit(true);
+          }
+
           return;
         }
 
@@ -259,7 +265,7 @@ bootstrap(
           })
           .finally(() => setSubmitting(false));
       }
-    }, [actions, data, errors, fields, formErrors, submitting, utils, values]);
+    }, [actions, data, errors, fields, formErrors, submitting, triedToSubmit, utils, values]);
 
     const onPrevious = useCallback(() => {
       actions.onPrevious(values);
@@ -433,7 +439,7 @@ bootstrap(
               />
             ))}
         </div>
-        {errorLink ? (
+        {errorLink && triedToSubmit ? (
           <div
             className={classNames(
               styles['error-link-container'],
@@ -455,9 +461,8 @@ bootstrap(
             disabled={Boolean(
               loading ||
                 submitting ||
-                formErrors.some(Boolean) ||
-                !isFormValid(errors) ||
-                utils.remap(disabled, values),
+                utils.remap(disabled, values) ||
+                (triedToSubmit && (formErrors.some(Boolean) || !isFormValid(errors))),
             )}
             type="submit"
           >
