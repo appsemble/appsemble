@@ -535,19 +535,24 @@ blocks:
 This action performs an HTTP request. This can be used to call the Appsemble API or an external API
 in order to fetch data or send data. When sending `POST`, `PUT`, `DELETE` and `PATCH` calls the data
 that is currently available in the block gets passed through. If the content type of the request is
-`text/xml` or `application/xml`, the data will be converted to JSON. Implemented for both client and
-server side, this action supports `type`, `url`, `method`, `query`, `body`, `proxy` and `schema`
-fields. Type and url fields are required to use this action. Url is a remapper that results in the
-URL to send the request to, can be a relative URL (E.g. `/api/health`) for usage with the Appsemble
-API, or an absolute URL (E.g. `https://example.com`) for usage with external sites. Method is the
-type of request to make and can be either of `delete`, `get`, `patch`, `post` or `put`. Default
-method is `get`. Query is a remapper that results in either an object containing each property of
-the query string, or a string that gets passed through as-is. Body is a remapper that results in the
-request body to send. Proxy is a boolean, representing whether to proxy the requests through the
-Appsemble server. By default requests will be proxied through the Appsemble API. This allows to
-protect user data and ensures [CORS](https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS) is
-enabled. This behavior can be disabled by setting this to `false`. If not specified, the raw input
-data is used.
+`text/xml` or `application/xml`, the data will be converted to JSON. When the body of the request
+action contains both files, and json, the content-type of `multipart/form-data` will be used
+instead. When proxied the server will map strings with integers inside to the matching files by
+index. In case you have a property defined with an integer as string value, this may be overwritten.
+**This behavior is subject to change. In the near future we will likely make it use the `schema`
+property to indicate the property is of format binary similar to resources. Therefore we do not
+recommend using it as it may break in the near future.** Implemented for both client and server
+side, this action supports `type`, `url`, `method`, `query`, `body`, `proxy` and `schema` fields.
+Type and url fields are required to use this action. Url is a remapper that results in the URL to
+send the request to, can be a relative URL (E.g. `/api/health`) for usage with the Appsemble API, or
+an absolute URL (E.g. `https://example.com`) for usage with external sites. Method is the type of
+request to make and can be either of `delete`, `get`, `patch`, `post` or `put`. Default method is
+`get`. Query is a remapper that results in either an object containing each property of the query
+string, or a string that gets passed through as-is. Body is a remapper that results in the request
+body to send. Proxy is a boolean, representing whether to proxy the requests through the Appsemble
+server. By default requests will be proxied through the Appsemble API. This allows to protect user
+data and ensures [CORS](https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS) is enabled. This
+behavior can be disabled by setting this to `false`. If not specified, the raw input data is used.
 
 `schema` is a JSON schema object that validates XML responses. **It does not validate regular JSON
 responses, nor the request data. This behavior may be subject to change in the future**
