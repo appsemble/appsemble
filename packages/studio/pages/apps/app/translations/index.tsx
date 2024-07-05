@@ -155,7 +155,7 @@ export function TranslationsPage(): ReactNode {
       );
 
       if (file) {
-        reader.readAsText(file);
+        file.text();
       }
     });
   }, [app.id, formatMessage, languageId, push, result]);
@@ -184,7 +184,7 @@ export function TranslationsPage(): ReactNode {
             color="danger"
             disabled={
               submitting ||
-              app.locked ||
+              app.locked !== 'unlocked' ||
               !selectedLanguage ||
               selectedLanguage === (app.definition.defaultLanguage ?? 'en')
             }
