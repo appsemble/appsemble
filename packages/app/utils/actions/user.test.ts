@@ -387,7 +387,9 @@ describe('user.remove', () => {
   });
 
   it('should call the API for removing a user', async () => {
-    mock.onDelete(`${apiUrl}/api/apps/${appId}/members/${memberEmail}`).reply(() => [204, []]);
+    mock
+      .onDelete(`${apiUrl}/api/apps/${appId}/members/email/${memberEmail}`)
+      .reply(() => [204, []]);
 
     const action = createTestAction({
       definition: {

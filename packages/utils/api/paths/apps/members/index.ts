@@ -19,7 +19,7 @@ export const paths: OpenAPIV3.PathsObject = {
       },
     },
   },
-  '/api/apps/{appId}/members/{memberEmail}': {
+  '/api/apps/{appId}/members/email/{memberEmail}': {
     parameters: [
       { $ref: '#/components/parameters/appId' },
       { $ref: '#/components/parameters/memberEmail' },

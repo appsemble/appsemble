@@ -5,8 +5,8 @@ import { paths as resendPaths } from './resend.js';
 import { roles } from '../../../../../constants/index.js';
 
 export const paths: OpenAPIV3.PathsObject = {
+  ...resendPaths,
   ...invitePaths,
-  resendPaths,
   '/api/organizations/{organizationId}/invites': {
     parameters: [{ $ref: '#/components/parameters/organizationId' }],
     get: {

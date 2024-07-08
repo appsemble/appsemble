@@ -255,7 +255,7 @@ export const remove: ActionCreator<'user.remove'> = ({
     const email = remap(definition.email, data);
 
     const { data: response } = await axios.delete<AppAccount>(
-      `${apiUrl}/api/apps/${appId}/members/${email}`,
+      `${apiUrl}/api/apps/${appId}/members/email/${email}`,
     );
 
     await refetchDemoAppMembers();

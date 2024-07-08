@@ -18,7 +18,7 @@ export const paths: OpenAPIV3.PathsObject = {
     get: {
       tags: ['common', 'app', 'member'],
       description: 'Get an app member.',
-      operationId: 'getAppMember',
+      operationId: 'getAppMemberById',
       responses: {
         200: {
           description: 'The resulting app member.',

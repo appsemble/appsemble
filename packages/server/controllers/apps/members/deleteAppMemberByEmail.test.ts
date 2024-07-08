@@ -111,7 +111,7 @@ describe('deleteAppMemberByEmail', () => {
     });
 
     authorizeApp(app);
-    await request.delete(`/api/apps/${app.id}/members/reader@gmail.com`);
+    await request.delete(`/api/apps/${app.id}/members/email/reader@gmail.com`);
 
     const readerAfterDeletion = await AppMember.findOne({
       where: {
@@ -154,7 +154,7 @@ describe('deleteAppMemberByEmail', () => {
     });
 
     authorizeApp(app);
-    await request.delete(`/api/apps/${app.id}/members/admin@gmail.com`);
+    await request.delete(`/api/apps/${app.id}/members/email/admin@gmail.com`);
 
     const readerAfterDeletion = await AppMember.findOne({
       where: {

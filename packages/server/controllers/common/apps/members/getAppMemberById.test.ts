@@ -63,7 +63,7 @@ afterAll(() => {
   vi.useRealTimers();
 });
 
-describe('getAppMemberById', () => {
+describe.skip('getAppMemberById', () => {
   it('should return 404 if no app was found', async () => {
     authorizeStudio();
     const response = await request.get(

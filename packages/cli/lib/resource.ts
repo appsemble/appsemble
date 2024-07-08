@@ -155,7 +155,7 @@ export async function publishResource({
   }
 
   const ids: number[] = [].concat(data).map((d: Resource) => d.id);
-  const url = new URL(`/common/apps/${appId}/resources/${type}/`, remote);
+  const url = new URL(`/apps/${appId}/resources/${type}/`, remote);
   logger.info(
     `Successfully published ${ids.length} resource${resources.length === 1 ? '' : 's'} at: \n${ids
       .map((id) => `${url}${id}`)

@@ -5,8 +5,8 @@ import { paths as countPaths } from './count.js';
 import { normalized } from '../../../../../constants/index.js';
 
 export const paths: OpenAPIV3.PathsObject = {
-  ...assetIdPaths,
   ...countPaths,
+  ...assetIdPaths,
   '/api/apps/{appId}/assets': {
     parameters: [{ $ref: '#/components/parameters/appId' }],
     get: {

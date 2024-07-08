@@ -8,7 +8,7 @@ export const paths: OpenAPIV3.PathsObject = {
   ...appsPaths,
   ...authorizationsPaths,
   ...clientCredentialsPaths,
-  '/api/main/users/current/auth/oauth2': {
+  '/api/users/current/auth/oauth2': {
     get: {
       tags: ['main', 'user', 'current-user', 'auth', 'oauth2'],
       description: `

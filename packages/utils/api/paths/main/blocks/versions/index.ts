@@ -4,6 +4,6 @@ import { paths as blockVersionPaths } from './blockVersion.js';
 import { paths as listPaths } from './list.js';
 
 export const paths: OpenAPIV3.PathsObject = {
-  ...blockVersionPaths,
   ...listPaths,
+  ...blockVersionPaths,
 };
