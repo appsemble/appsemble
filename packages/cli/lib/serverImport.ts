@@ -25,6 +25,7 @@ export async function serverImport<
     | 'fuzzMigrations'
     | 'migrate'
     | 'runCronJobs'
+    | 'scaleContainers'
     | 'setArgv'
     | 'start',
 >(...members: T[]): Promise<Record<T, any>> {

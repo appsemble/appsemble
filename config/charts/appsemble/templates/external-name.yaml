@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "appsemble.fullname" . }}
+  namespace: companion-containers
+spec:
+  type: ExternalName
+  externalName: {{ include "appsemble.fullname" . }}.
+{{- $fullname := include "appsemble.fullname" . | quote -}}
+{{- if contains "review" $fullname -}}
+    {{- "review" }}
+{{- else -}}
+    {{ include "appsemble.fullname" . }}
+{{- end -}}
+.svc.cluster.local

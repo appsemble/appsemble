@@ -4,6 +4,7 @@ import {
   type AppsembleMessages,
   type App as AppType,
   type AppVisibility,
+  type CompanionContainerDefinition,
   type ProjectImplementations,
 } from '@appsemble/types';
 import { omit } from 'lodash-es';
@@ -181,6 +182,14 @@ export class App extends Model {
 
   @Column(DataType.JSON)
   controllerImplementations: ProjectImplementations;
+
+  @AllowNull(true)
+  @Column(DataType.JSON)
+  containers: CompanionContainerDefinition[];
+
+  @AllowNull(true)
+  @Column(DataType.STRING)
+  registry: string;
 
   @UpdatedAt
   updated: Date;

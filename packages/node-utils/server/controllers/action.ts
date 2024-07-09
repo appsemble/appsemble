@@ -4,8 +4,12 @@ import {
   getRemapperContext,
   logger,
   type Options,
+  parseServiceUrl,
+  scaleDeployment,
+  setLastRequestAnnotation,
   throwKoaError,
   version,
+  waitForPodReadiness,
 } from '@appsemble/node-utils';
 import {
   type ActionDefinition,
@@ -217,12 +221,43 @@ async function handleRequestProxy(
   axiosConfig.decompress = false;
 
   let response;
+  const urlPattern = /^http:\/\/(([\da-z-]+).){2}svc.cluster.local/;
+
+  // Restricting access to only the containers defined by the app
+  if (urlPattern.test(String(proxyUrl))) {
+    const { appId } = parseServiceUrl(String(proxyUrl));
+    if (appId !== String(app.id)) {
+      throwKoaError(ctx, 403, 'Forbidden');
+    }
+  }
+
   logger.verbose(`Forwarding request to ${axios.getUri(axiosConfig)}`);
   try {
     response = await axios(axiosConfig);
   } catch (err: unknown) {
-    logger.error(err);
-    throwKoaError(ctx, 502, 'Bad Gateway');
+    // If request is sent to a companion container and fails
+    // Try to start it anew and retry the request
+    if (urlPattern.test(String(proxyUrl))) {
+      const { deploymentName, namespace } = parseServiceUrl(String(proxyUrl));
+      try {
+        await scaleDeployment(namespace, deploymentName, 1);
+        await waitForPodReadiness(
+          namespace,
+          deploymentName,
+          (process.env.POD_READINESS_TIMEOUT as undefined as number) ?? undefined,
+        );
+
+        response = await axios(axiosConfig);
+      } catch {
+        logger.error(err);
+        throwKoaError(ctx, 502, 'Bad Gateway');
+      } finally {
+        await setLastRequestAnnotation(namespace, deploymentName);
+      }
+    } else {
+      logger.error(err);
+      throwKoaError(ctx, 502, 'Bad Gateway');
+    }
   }
 
   ctx.status = response.status;

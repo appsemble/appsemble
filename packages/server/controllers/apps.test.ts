@@ -3192,6 +3192,15 @@ describe('createApp', () => {
                     "minItems": 1,
                     "type": "array",
                   },
+                  "containers": {
+                    "additionalProperties": false,
+                    "description": "Definition of the companion containers to be created.",
+                    "items": {
+                      "$ref": "#/components/schemas/ContainerDefinition",
+                    },
+                    "minItems": 1,
+                    "type": "array",
+                  },
                   "controller": {
                     "$ref": "#/components/schemas/ControllerDefinition",
                   },
@@ -3275,6 +3284,11 @@ describe('createApp', () => {
                     },
                     "minItems": 1,
                     "type": "array",
+                  },
+                  "registry": {
+                    "default": null,
+                    "description": "The default registry used to pull images for companion containers.",
+                    "type": "string",
                   },
                   "resources": {
                     "additionalProperties": {
@@ -4094,6 +4108,15 @@ describe('patchApp', () => {
                     "minItems": 1,
                     "type": "array",
                   },
+                  "containers": {
+                    "additionalProperties": false,
+                    "description": "Definition of the companion containers to be created.",
+                    "items": {
+                      "$ref": "#/components/schemas/ContainerDefinition",
+                    },
+                    "minItems": 1,
+                    "type": "array",
+                  },
                   "controller": {
                     "$ref": "#/components/schemas/ControllerDefinition",
                   },
@@ -4177,6 +4200,11 @@ describe('patchApp', () => {
                     },
                     "minItems": 1,
                     "type": "array",
+                  },
+                  "registry": {
+                    "default": null,
+                    "description": "The default registry used to pull images for companion containers.",
+                    "type": "string",
                   },
                   "resources": {
                     "additionalProperties": {
@@ -4240,6 +4268,15 @@ describe('patchApp', () => {
                     "minItems": 1,
                     "type": "array",
                   },
+                  "containers": {
+                    "additionalProperties": false,
+                    "description": "Definition of the companion containers to be created.",
+                    "items": {
+                      "$ref": "#/components/schemas/ContainerDefinition",
+                    },
+                    "minItems": 1,
+                    "type": "array",
+                  },
                   "controller": {
                     "$ref": "#/components/schemas/ControllerDefinition",
                   },
@@ -4323,6 +4360,11 @@ describe('patchApp', () => {
                     },
                     "minItems": 1,
                     "type": "array",
+                  },
+                  "registry": {
+                    "default": null,
+                    "description": "The default registry used to pull images for companion containers.",
+                    "type": "string",
                   },
                   "resources": {
                     "additionalProperties": {

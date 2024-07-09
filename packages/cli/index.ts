@@ -20,6 +20,7 @@ import * as migrate from './commands/migrate.js';
 import * as organization from './commands/organization/index.js';
 import * as resource from './commands/resource/index.js';
 import * as runCronJobs from './commands/runCronJobs.js';
+import * as scaleContainers from './commands/scaleContainers.js';
 import * as serve from './commands/serve.js';
 import * as start from './commands/start.js';
 import * as team from './commands/team/index.js';
@@ -69,6 +70,7 @@ let parser = yargs(process.argv.slice(2))
   .command(runCronJobs as unknown as CommandModule)
   .command(start as unknown as CommandModule)
   .command(serve as unknown as CommandModule)
+  .command(scaleContainers as unknown as CommandModule)
   .command(team)
   .demandCommand(1)
   // .strict() isn’t used because of https://github.com/yargs/yargs/issues/2058

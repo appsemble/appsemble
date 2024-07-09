@@ -19,6 +19,7 @@ export * from './BlockDefinition.js';
 export * from './BlockVersion.js';
 export * from './ConditionActionDefinition.js';
 export * from './CronDefinition.js';
+export * from './ContainerDefinition.js';
 export * from './CustomFontDefinition.js';
 export * from './DialogActionDefinition.js';
 export * from './DialogErrorActionDefinition.js';
