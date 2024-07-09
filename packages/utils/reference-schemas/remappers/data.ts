@@ -352,6 +352,7 @@ Provides some fields of the appMember object.
 - \`primary_email\`: User’s **primary** email address.
 - \`name\`: The user’s name.
 - \`role\`: User's role in the context of the app.
+
 Example:
 
 \`\`\`json
@@ -362,6 +363,24 @@ Example:
   "role": "Medewerker",
   "userId": "5c6270e2-ad31-414f-bcab-6752a2c4dcfd"
 }
+\`\`\`
+    `,
+  },
+  container: {
+    type: 'string',
+    description: `
+> **Note:** For this remapper to work, the application needs to define a companion container. 
+
+This remapper provides a short way to access a companion container for the purpose of making http requests.
+When using the 'request' action, the url can be provided by using the 'container' remapper, and providing a string. 
+The string should contain the name of the companion container, followed by the API endpoint path. 
+
+Example:
+\`\`\`yaml
+    type: request
+    url: { container: my-container/api/endpoint }
+    proxy: true
+    method: get
 \`\`\`
     `,
   },

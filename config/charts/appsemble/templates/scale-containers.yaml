@@ -1,0 +1,29 @@
+{{- if .Values.ingress.enabled -}}
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: {{ include "appsemble.fullname" . }}-scale-containers
+  labels:
+    {{ include "appsemble.labels" . }}
+spec:
+  schedule: "*/10 * * * *" # Run every 10 minutes
+  successfulJobsHistoryLimit: {{ .Values.cronjob.jobsHistoryLimit }}
+  failedJobsHistoryLimit: {{ .Values.cronjob.jobsHistoryLimit }}
+  jobTemplate:
+    spec:
+      template:
+        metadata:
+          annotations:
+            {{ include "appsemble.gitlab" . | indent 12 }}
+        spec:
+          restartPolicy: Never
+          containers:
+            - name: {{ include "appsemble.fullname" . }}-scale-containers
+              image: "{{ .Values.image.repository }}:{{ include "appsemble.tag" . }}"
+              imagePullPolicy: {{ .Values.image.pullPolicy }}
+              args:
+                - scale-containers # Command that handles scaling
+                - -vv
+              env:
+{{ include "appsemble.postgres" . | indent 16 }}
+{{ end }}

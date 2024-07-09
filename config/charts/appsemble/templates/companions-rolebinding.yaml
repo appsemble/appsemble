@@ -1,0 +1,25 @@
+{{- if .Values.ingress.enabled -}}
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: companions-manager
+  namespace: companion-containers
+  labels:
+    {{ include "appsemble.labels" . }}
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  # This should match the name of the role
+  name: companions-manager
+subjects:
+  - kind: ServiceAccount
+    name: {{ include "appsemble.fullname" . }}-serviceaccount
+    namespace: 
+    {{- $fullname := include "appsemble.fullname" . | quote -}}
+    {{- if contains "review" $fullname -}}
+    {{- indent 1 "review" }}
+    {{- else -}}
+    {{ include "appsemble.fullname" . | indent 1 }}
+    {{- end -}}
+
+{{ end }}

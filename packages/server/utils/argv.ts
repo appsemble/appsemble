@@ -356,6 +356,13 @@ export interface Argv {
    * @default undefined
    */
   adminApiSecret: string;
+
+  /**
+   * The number of replicas to scale a deployment to.
+   *
+   * @default 0
+   */
+  scaleTo: number;
 }
 
 const defaults: Argv = {
@@ -412,6 +419,7 @@ const defaults: Argv = {
   disableRegistration: false,
   remote: null,
   adminApiSecret: undefined,
+  scaleTo: 0,
 };
 
 export const argv = { ...defaults };

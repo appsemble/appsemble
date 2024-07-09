@@ -1,0 +1,14 @@
+{
+  "app": {
+    "app.roles.User": "User",
+    "app.roles.User.description": "User",
+    "description": "Demonstreert hoe je PDF-documenten rendert met behulp van begeleidende containers en documentsjablonen.",
+    "name": "PDF",
+    "pages.create-report": "Rapport maken"
+  },
+  "messageIds": {
+    "author": "Auteur",
+    "content": "Inhoud",
+    "reportTitle": "Rapport Titel"
+  }
+}

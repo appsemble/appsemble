@@ -12,6 +12,7 @@ import * as health from './commands/health.js';
 import * as migrate from './commands/migrate.js';
 import * as restore from './commands/restore.js';
 import * as runCronJobs from './commands/runCronJobs.js';
+import * as scaleContainers from './commands/scaleContainers.js';
 import * as start from './commands/start.js';
 import './types.js';
 import { setArgv } from './utils/argv.js';
@@ -50,6 +51,7 @@ const parser = yargs()
   .command(fuzzMigrations as CommandModule)
   .command(runCronJobs as CommandModule)
   .command(health as CommandModule)
+  .command(scaleContainers as CommandModule)
   .command(start as CommandModule)
   .command(migrate as CommandModule)
   .command(restore as CommandModule)

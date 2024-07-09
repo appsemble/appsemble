@@ -677,6 +677,12 @@ export const examples: Record<RemapperExampleKeys, RemapperExample> = {
     result: {},
     skip: true,
   },
+  container: {
+    input: null,
+    remapper: {},
+    result: {},
+    skip: true,
+  },
 } as const;
 
 /**

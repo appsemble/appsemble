@@ -1,0 +1,7 @@
+{
+  "app": {
+    "description": "Een app die de functie companion containers demonstreert",
+    "name": "Containers",
+    "pages.test": "Test"
+  }
+}

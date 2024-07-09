@@ -1,4 +1,4 @@
-import { assertKoaError, throwKoaError } from '@appsemble/node-utils';
+import { assertKoaError, throwKoaError, updateCompanionContainers } from '@appsemble/node-utils';
 import { normalize, Permission } from '@appsemble/utils';
 import { type Context } from 'koa';
 import { UniqueConstraintError } from 'sequelize';
@@ -243,6 +243,15 @@ export async function createTemplateApp(ctx: Context): Promise<void> {
           block: blockStyle.block,
           style: blockStyle.style,
         })),
+      );
+    }
+
+    if (template.definition.containers && template.definition.containers.length > 0) {
+      await updateCompanionContainers(
+        template.definition.containers,
+        record.definition.name,
+        String(record.id),
+        template.registry,
       );
     }
 

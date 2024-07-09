@@ -1933,6 +1933,7 @@ describe('updateApp', () => {
     expect(app.dataValues).toMatchInlineSnapshot(`
       {
         "OrganizationId": "testorganization",
+        "containers": null,
         "controllerCode": null,
         "controllerImplementations": null,
         "coreStyle": null,
@@ -1959,6 +1960,7 @@ describe('updateApp', () => {
         "locked": "unlocked",
         "maskableIcon": null,
         "path": "test-app",
+        "registry": null,
         "scimEnabled": false,
         "scimToken": null,
         "sentryDsn": null,
@@ -2017,6 +2019,7 @@ describe('patchApp', () => {
     expect(app.dataValues).toMatchInlineSnapshot(`
       {
         "OrganizationId": "testorganization",
+        "containers": null,
         "controllerCode": null,
         "controllerImplementations": null,
         "coreStyle": null,
@@ -2043,6 +2046,7 @@ describe('patchApp', () => {
         "locked": "fullLock",
         "maskableIcon": null,
         "path": "updated-path",
+        "registry": null,
         "scimEnabled": false,
         "scimToken": null,
         "sentryDsn": null,

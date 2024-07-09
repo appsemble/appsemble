@@ -1,0 +1,14 @@
+{
+  "app": {
+    "app.roles.User": "User",
+    "app.roles.User.description": "User",
+    "description": "Demonstrates how to render PDF documents with the use of companion containers and document templates.",
+    "name": "PDF",
+    "pages.create-report": "Create Report"
+  },
+  "messageIds": {
+    "author": "Author",
+    "content": "Content",
+    "reportTitle": "Report title"
+  }
+}
