@@ -12,6 +12,7 @@ import {
   useState,
 } from 'react';
 import { useIntl } from 'react-intl';
+import { useLocation } from 'react-router-dom';
 
 import styles from './index.module.css';
 import { messages } from './messages.js';
@@ -62,6 +63,13 @@ export function SideMenuProvider({ base, bottom, children }: SideMenuProviderPro
   const { disable, enable, enabled, toggle } = useToggle();
   const [menu, setMenu] = useState<ReactNode>(null);
   const [isClosableOnDesktop, setIsClosableOnDesktop] = useState(false);
+
+  const location = useLocation();
+  useEffect(() => {
+    if (window?.innerWidth < 1024) {
+      disable();
+    }
+  }, [disable, location]);
 
   useEventListener(
     globalThis,

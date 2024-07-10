@@ -42,6 +42,7 @@ export function MenuItem({ children, end, icon, title, to }: SideNavLinkProps): 
   const clickHideButton = useCallback(
     (event: MouseEvent<HTMLSpanElement>) => {
       event.preventDefault();
+      event.stopPropagation();
       setCollapsed(!collapsed);
     },
     [collapsed, setCollapsed],
