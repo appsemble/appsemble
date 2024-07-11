@@ -128,30 +128,6 @@ bootstrap(
       setSubmitErrorResult(null);
     }, []);
 
-    const receiveFields = (d: FieldEventParameters): void => {
-      setFieldsLoading(true);
-      setFields(d.fields);
-
-      const newDefaultValues = generateDefaultValues(d.fields);
-
-      if (d.keepValues) {
-        setValues((currentValues) =>
-          recursive(true, newDefaultValues, d.initialValues, currentValues),
-        );
-      } else {
-        setValues(recursive(true, newDefaultValues, d.initialValues));
-      }
-      setSubmitErrorResult(null);
-      setFieldsLoading(!d.fields?.length);
-    };
-
-    useEffect(() => {
-      (async () => {
-        const result = (await actions?.onLoad?.()) as FieldEventParameters;
-        receiveFields(result);
-      })();
-    }, [actions]);
-
     useEffect(() => {
       events.emit.change(values);
 
@@ -296,6 +272,23 @@ bootstrap(
     }, [actions, values]);
 
     useEffect(() => {
+      const receiveFields = (d: FieldEventParameters): void => {
+        setFieldsLoading(true);
+        setFields(d.fields);
+
+        const newDefaultValues = generateDefaultValues(d.fields);
+
+        if (d.keepValues) {
+          setValues((currentValues) =>
+            recursive(true, newDefaultValues, d.initialValues, currentValues),
+          );
+        } else {
+          setValues(recursive(true, newDefaultValues, d.initialValues));
+        }
+        setSubmitErrorResult(null);
+        setFieldsLoading(!d.fields?.length);
+      };
+
       const hasFieldsEvent = events.on.fields(receiveFields);
       if (hasFieldsEvent && !initialFields) {
         setFieldsLoading(true);
@@ -370,13 +363,19 @@ bootstrap(
     useEffect(() => {
       // If a listener is present, wait until data has been received
       const hasListener = events.on.data(receiveData);
+      (async () => {
+        const result = (await actions?.onLoad?.()) as Values;
+        if (result) {
+          receiveData(result);
+        }
+      })();
       if (!skipInitialLoad || !initialLoad.current) {
         setDataLoading(hasListener);
       } else {
         initialLoad.current = false;
       }
       ready();
-    }, [events, ready, receiveData, skipInitialLoad]);
+    }, [actions, events, ready, receiveData, skipInitialLoad]);
 
     const loading = dataLoading || fieldsLoading;
 
