@@ -46,6 +46,7 @@ export function TranslationsPage(): ReactNode {
 
   const languageIds = useData<string[]>(`/api/apps/${app.id}/messages`);
   const [selectedLanguage, setSelectedLanguage] = useState<string>();
+  const [parsedLanguage, setParsedLanguage] = useState<string>();
   const [submitting, setSubmitting] = useState(false);
   const modal = useToggle();
 
@@ -67,7 +68,12 @@ export function TranslationsPage(): ReactNode {
   const [uploadingImportFile, setUploadingImportFile] = useState<File>(null);
 
   const onImportFileChange = useCallback((event: ChangeEvent<HTMLInputElement>) => {
-    setUploadingImportFile(event.target.files[0]);
+    const selectedFile = event.target.files[0];
+    setUploadingImportFile(selectedFile);
+    const languageName = selectedFile.name.split('.')[0];
+    if (Object.keys(supportedLanguages).includes(languageName)) {
+      setParsedLanguage(languageName);
+    }
   }, []);
 
   const navigate = useNavigate();
@@ -134,19 +140,33 @@ export function TranslationsPage(): ReactNode {
     downloadBlob(new Blob([bytes]), `${languageId}.json`);
   }, [languageId, result?.data?.messages]);
 
+  const exportAllMessages = useCallback(async () => {
+    const { data: allMessages } = await axios.get(
+      `/api/apps/${app.id}/messages?includeMessages=true`,
+    );
+    const bytes = new TextEncoder().encode(JSON.stringify(allMessages, null, 2));
+    downloadBlob(new Blob([bytes]), 'i18n.json');
+  }, [app.id]);
+
   const importTranslations = useCallback(async () => {
     if (uploadingImportFile instanceof Blob) {
       const readMessages = await uploadingImportFile.text();
+      const parsedMessages = JSON.parse(readMessages);
       axios
-        .post<AppMessages>(`/api/apps/${app.id}/messages`, {
-          language: languageId,
-          messages: JSON.parse(readMessages),
-        })
+        .post<AppMessages>(
+          `/api/apps/${app.id}/messages`,
+          Array.isArray(parsedMessages)
+            ? parsedMessages
+            : {
+                language: parsedLanguage || languageId,
+                messages: parsedMessages,
+              },
+        )
         .then(({ data }) => {
           result.setData(data);
           push({
             body: formatMessage(messages.importSuccess, {
-              selectedLanguage: getLanguageDisplayName(languageId),
+              selectedLanguage: getLanguageDisplayName(parsedLanguage || languageId),
             }),
             color: 'success',
           });
@@ -158,7 +178,7 @@ export function TranslationsPage(): ReactNode {
           });
         });
     }
-  }, [app.id, formatMessage, languageId, push, result, uploadingImportFile]);
+  }, [app.id, formatMessage, languageId, parsedLanguage, push, result, uploadingImportFile]);
 
   return (
     <>
@@ -199,6 +219,10 @@ export function TranslationsPage(): ReactNode {
           />
         </span>
         <span className="buttons m-0">
+          <Button icon="file-export" onClick={exportAllMessages}>
+            <FormattedMessage {...messages.exportAll} />
+          </Button>
+
           <Button icon="download" onClick={downloadJson}>
             <FormattedMessage {...messages.export} />
           </Button>
@@ -296,18 +320,6 @@ export function TranslationsPage(): ReactNode {
           onChange={onImportFileChange}
           required
         />
-        <SelectField
-          disabled={submitting}
-          label={<FormattedMessage {...messages.selectedLanguage} />}
-          name="language"
-          onChange={onSelectedLanguageChange}
-        >
-          {Object.keys(supportedLanguages).map((lang) => (
-            <option key={lang} value={lang}>
-              {getLanguageDisplayName(lang)}
-            </option>
-          ))}
-        </SelectField>
       </ModalCard>
     </>
   );
