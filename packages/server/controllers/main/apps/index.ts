@@ -10,6 +10,7 @@ export * from './secrets/index.js';
 export * from './snapshots/index.js';
 export * from './subscriptions/index.js';
 export * from './variables/index.js';
+export * from './assets/index.js';
 
 export { createApp } from './createApp.js';
 export { createAppFromTemplate } from './createAppFromTemplate.js';
