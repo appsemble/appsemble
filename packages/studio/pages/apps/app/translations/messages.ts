@@ -99,4 +99,12 @@ export const messages = defineMessages({
     id: 'studio.Ft/dkd',
     defaultMessage: 'Loading app messages',
   },
+  overrideWarningLanguage: {
+    id: 'studio.s3s2y0',
+    defaultMessage: 'This will override all the messages for {language}',
+  },
+  overrideWarningAll: {
+    id: 'studio.a8m+6u',
+    defaultMessage: 'This will override messages for all languages found in the file.',
+  },
 });

@@ -1,6 +1,7 @@
 import {
   Button,
   FileUpload,
+  Icon,
   ModalCard,
   SelectField,
   SimpleForm,
@@ -48,6 +49,7 @@ export function TranslationsPage(): ReactNode {
   const [selectedLanguage, setSelectedLanguage] = useState<string>();
   const [parsedLanguage, setParsedLanguage] = useState<string>();
   const [submitting, setSubmitting] = useState(false);
+  const [parsedMessages, setParsedMessages] = useState<AppMessages | AppMessages[]>();
   const modal = useToggle();
 
   if (!languageIds?.data?.includes(pageLanguage)) {
@@ -67,13 +69,17 @@ export function TranslationsPage(): ReactNode {
 
   const [uploadingImportFile, setUploadingImportFile] = useState<File>(null);
 
-  const onImportFileChange = useCallback((event: ChangeEvent<HTMLInputElement>) => {
+  const onImportFileChange = useCallback(async (event: ChangeEvent<HTMLInputElement>) => {
     const selectedFile = event.target.files[0];
     setUploadingImportFile(selectedFile);
     const languageName = selectedFile.name.split('.')[0];
     if (Object.keys(supportedLanguages).includes(languageName)) {
       setParsedLanguage(languageName);
+    } else {
+      setParsedLanguage(null);
     }
+    const readMessages = await selectedFile.text();
+    setParsedMessages(JSON.parse(readMessages));
   }, []);
 
   const navigate = useNavigate();
@@ -86,6 +92,8 @@ export function TranslationsPage(): ReactNode {
   const closeModal = useCallback(() => {
     navigate({ hash: null }, { replace: true });
     setUploadingImportFile(null);
+    setParsedLanguage(null);
+    setParsedMessages(null);
   }, [navigate]);
 
   const active = hash === '#import';
@@ -148,10 +156,8 @@ export function TranslationsPage(): ReactNode {
     downloadBlob(new Blob([bytes]), 'i18n.json');
   }, [app.id]);
 
-  const importTranslations = useCallback(async () => {
+  const importTranslations = useCallback(() => {
     if (uploadingImportFile instanceof Blob) {
-      const readMessages = await uploadingImportFile.text();
-      const parsedMessages = JSON.parse(readMessages);
       axios
         .post<AppMessages>(
           `/api/apps/${app.id}/messages`,
@@ -163,13 +169,30 @@ export function TranslationsPage(): ReactNode {
               },
         )
         .then(({ data }) => {
-          result.setData(data);
-          push({
-            body: formatMessage(messages.importSuccess, {
-              selectedLanguage: getLanguageDisplayName(parsedLanguage || languageId),
-            }),
-            color: 'success',
-          });
+          if (Array.isArray(data)) {
+            const selectedLanguageData = data.find((item) => item.language === languageId);
+            result.setData(selectedLanguageData);
+            const languagesFromFiles = data
+              .map((item) => item.language)
+              .map(getLanguageDisplayName);
+            const foundLanguages = languagesFromFiles.join(', ');
+            push({
+              body: formatMessage(messages.importSuccess, {
+                selectedLanguage: foundLanguages,
+              }),
+              color: 'success',
+            });
+            closeModal();
+          } else {
+            result.setData(data);
+            push({
+              body: formatMessage(messages.importSuccess, {
+                selectedLanguage: getLanguageDisplayName(parsedLanguage || languageId),
+              }),
+              color: 'success',
+            });
+            closeModal();
+          }
         })
         .catch(() => {
           push({
@@ -178,7 +201,17 @@ export function TranslationsPage(): ReactNode {
           });
         });
     }
-  }, [app.id, formatMessage, languageId, parsedLanguage, push, result, uploadingImportFile]);
+  }, [
+    app.id,
+    closeModal,
+    formatMessage,
+    languageId,
+    parsedLanguage,
+    parsedMessages,
+    push,
+    result,
+    uploadingImportFile,
+  ]);
 
   return (
     <>
@@ -301,6 +334,30 @@ export function TranslationsPage(): ReactNode {
         onClose={closeModal}
         onSubmit={importTranslations}
       >
+        <p className="has-text-danger">
+          {parsedLanguage ? (
+            <>
+              <Icon icon="warning" />
+              <FormattedMessage
+                {...messages.overrideWarningLanguage}
+                values={{ language: getLanguageDisplayName(parsedLanguage) }}
+              />
+            </>
+          ) : Array.isArray(parsedMessages) ? (
+            <>
+              <Icon icon="warning" />
+              <FormattedMessage {...messages.overrideWarningAll} />
+            </>
+          ) : uploadingImportFile ? (
+            <>
+              <Icon icon="warning" />
+              <FormattedMessage
+                {...messages.overrideWarningLanguage}
+                values={{ language: getLanguageDisplayName(languageId) }}
+              />
+            </>
+          ) : null}
+        </p>
         <SimpleFormError>
           {({ error }) =>
             axios.isAxiosError(error) ? (

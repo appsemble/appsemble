@@ -55,7 +55,15 @@ export const paths: OpenAPIV3.PathsObject = {
           content: {
             'application/json': {
               schema: {
-                $ref: '#/components/schemas/AppMessages',
+                oneOf: [
+                  { $ref: '#/components/schemas/AppMessages' },
+                  {
+                    type: 'array',
+                    items: {
+                      $ref: '#/components/schemas/AppMessages',
+                    },
+                  },
+                ],
               },
             },
           },

@@ -42,6 +42,8 @@ export async function createMessages(ctx: Context): Promise<void> {
       if (!tags.check(message.language)) {
         throwKoaError(ctx, 400, `Language “${message.language}” is invalid`);
       }
+    });
+    ctx.request.body.map((message) => {
       validateAndCreateMessages(message.language, appId, message.messages);
     });
   } else {
@@ -50,11 +52,13 @@ export async function createMessages(ctx: Context): Promise<void> {
     }
     validateAndCreateMessages(ctx.request.body.language, appId, ctx.request.body.messages);
   }
-  const messages = Array.isArray(ctx.request.body)
-    ? ctx.request.body.find((message) => message.language === 'en').messages
-    : ctx.request.body.messages;
 
-  ctx.body = { language: ctx.request.body.language?.toLowerCase() || 'en', messages };
+  ctx.body = Array.isArray(ctx.request.body)
+    ? ctx.request.body
+    : {
+        language: ctx.request.body.language?.toLowerCase() || 'en',
+        messages: ctx.request?.body?.messages,
+      };
 }
 
 export async function deleteMessages(ctx: Context): Promise<void> {
