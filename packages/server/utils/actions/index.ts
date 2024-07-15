@@ -13,13 +13,12 @@ import { request } from './request.js';
 import * as resource from './resource.js';
 import { staticAction } from './static.js';
 import { throwAction } from './throw.js';
-import { type App, type User } from '../../models/index.js';
+import { type App } from '../../models/index.js';
 import { type Mailer } from '../email/Mailer.js';
 
 export interface ServerActionParameters<T extends ActionDefinition = ActionDefinition> {
   app: App;
   action: T;
-  user: User;
   mailer: Mailer;
   data: unknown;
   internalContext?: RemapperContext;

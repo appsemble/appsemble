@@ -1,5 +1,5 @@
-import { createProxyPut } from '@appsemble/node-utils';
+import { createProxyPutController } from '@appsemble/node-utils';
 
 import { options } from '../../../options/options.js';
 
-export const proxyPut = createProxyPut(options);
+export const proxyPut = createProxyPutController(options);

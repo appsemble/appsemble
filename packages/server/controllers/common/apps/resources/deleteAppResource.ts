@@ -1,5 +1,5 @@
-import { createDeleteResource } from '@appsemble/node-utils';
+import { createDeleteAppResourceController } from '@appsemble/node-utils';
 
 import { options } from '../../../../options/options.js';
 
-export const deleteAppResource = createDeleteResource(options);
+export const deleteAppResource = createDeleteAppResourceController(options);

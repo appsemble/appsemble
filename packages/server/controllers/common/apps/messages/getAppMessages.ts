@@ -1,5 +1,5 @@
-import { createGetMessages } from '@appsemble/node-utils';
+import { createGetAppMessagesController } from '@appsemble/node-utils';
 
 import { options } from '../../../../options/options.js';
 
-export const getAppMessages = createGetMessages(options);
+export const getAppMessages = createGetAppMessagesController(options);

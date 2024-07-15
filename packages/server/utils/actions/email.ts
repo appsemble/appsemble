@@ -5,7 +5,7 @@ import { extension } from 'mime-types';
 import { type SendMailOptions } from 'nodemailer';
 
 import { type ServerActionParameters } from './index.js';
-import { AppMember, Asset } from '../../models/index.js';
+import { Asset } from '../../models/index.js';
 import { iterTable } from '../database.js';
 import { renderEmail } from '../email/renderEmail.js';
 
@@ -50,21 +50,10 @@ export async function email({
   data,
   mailer,
   options,
-  user,
 }: ServerActionParameters<EmailActionDefinition>): Promise<any> {
-  const appMember =
-    user && (await AppMember.findOne({ where: { AppId: app.id, UserId: user.id } }));
-
   const remapperContext = await getRemapperContext(
     app.toJSON(),
     app.definition.defaultLanguage || defaultLocale,
-    appMember && {
-      sub: user.id,
-      name: appMember.name,
-      email: appMember.email,
-      email_verified: appMember.emailVerified,
-      zoneinfo: user.timezone,
-    },
     options,
     context,
   );

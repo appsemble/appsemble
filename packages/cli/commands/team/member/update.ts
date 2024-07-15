@@ -1,5 +1,5 @@
 import { authenticate } from '@appsemble/node-utils';
-import { TeamRole } from '@appsemble/utils';
+import { type TeamMemberRole, teamMemberRoles } from '@appsemble/utils';
 import { type Argv } from 'yargs';
 
 import { resolveAppIdAndRemote } from '../../../lib/app.js';
@@ -10,7 +10,7 @@ interface InviteTeamArguments extends BaseArguments {
   appId: number;
   id: number;
   user: string;
-  role: TeamRole;
+  role: TeamMemberRole;
   context: string;
   app: string;
 }
@@ -43,7 +43,7 @@ export function builder(yargs: Argv): Argv<any> {
     .positional('role', {
       describe: 'The new role of the member.',
       demandOption: true,
-      choices: Object.values(TeamRole),
+      choices: Object.keys(teamMemberRoles),
     });
 }
 

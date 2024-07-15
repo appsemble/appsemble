@@ -19,7 +19,6 @@ import { sendNotification, type SendNotificationOptions } from './sendNotificati
 import {
   App,
   AppSubscription,
-  EmailAuthorization,
   Resource,
   ResourceSubscription,
   User,
@@ -141,7 +140,6 @@ async function sendSubscriptionNotifications(
 }
 
 export async function processHooks(
-  user: User,
   app: App,
   resource: Resource,
   action: 'create' | 'delete' | 'update',
@@ -153,20 +151,6 @@ export async function processHooks(
   }
 
   const resourceDefinition = app.definition.resources[resource.type];
-
-  await user?.reload({
-    attributes: ['primaryEmail', 'name', 'timezone'],
-    include: [
-      {
-        required: false,
-        model: EmailAuthorization,
-        attributes: ['verified'],
-        where: {
-          email: { [Op.col]: 'User.primaryEmail' },
-        },
-      },
-    ],
-  });
 
   if (resourceDefinition[action]?.hooks?.notification) {
     const { notification } = resourceDefinition[action].hooks;
@@ -182,13 +166,6 @@ export async function processHooks(
     const remapperContext = await getRemapperContext(
       app.toJSON(),
       app.definition.defaultLanguage || defaultLocale,
-      user && {
-        sub: user.id,
-        name: user.name,
-        email: user.primaryEmail,
-        email_verified: Boolean(user.EmailAuthorizations?.[0]?.verified),
-        zoneinfo: user.timezone,
-      },
       options,
       context,
     );
@@ -217,7 +194,6 @@ export async function processHooks(
 }
 
 export async function processReferenceHooks(
-  user: User,
   app: App,
   resource: Resource,
   action: 'create' | 'delete' | 'update',
@@ -244,9 +220,7 @@ export async function processReferenceHooks(
         await Promise.all(
           parents.map((parent) =>
             Promise.all(
-              triggers.map((trigger) =>
-                processHooks(user, app, parent, trigger.type, options, context),
-              ),
+              triggers.map((trigger) => processHooks(app, parent, trigger.type, options, context)),
             ),
           ),
         );

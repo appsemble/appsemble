@@ -3,7 +3,7 @@ import {
   throwKoaError,
   type VerifyResourceActionPermissionParams,
 } from '@appsemble/node-utils';
-import { checkAppRole, Permissions, TeamRole } from '@appsemble/utils';
+import { checkAppRole, OrganizationPermission, teamMemberRoles } from '@appsemble/utils';
 import { Op, type WhereOptions } from 'sequelize';
 
 import { AppMember, Organization, Team, TeamMember } from '../models/index.js';
@@ -12,7 +12,7 @@ const specialRoles = new Set([
   '$author',
   '$public',
   '$none',
-  ...Object.values(TeamRole).map((r) => `$team:${r}`),
+  ...Object.keys(teamMemberRoles).map((r) => `$team:${r.toLowerCase()}`),
 ]);
 
 export async function verifyResourceActionPermission({
@@ -20,7 +20,7 @@ export async function verifyResourceActionPermission({
   app,
   context,
   ctx,
-  options: { checkRole },
+  options: { checkUserOrganizationPermissions },
   resourceType,
 }: VerifyResourceActionPermissionParams): Promise<Record<string, any>> {
   const view = context.queryParams?.view;
@@ -34,13 +34,13 @@ export async function verifyResourceActionPermission({
   } = context;
 
   if ('studio' in users || 'cli' in users) {
-    await checkRole({
+    await checkUserOrganizationPermissions({
       context,
       app,
       permissions:
         action === 'count' || action === 'get' || action === 'query'
-          ? Permissions.ReadResources
-          : Permissions.ManageResources,
+          ? [OrganizationPermission.QueryAppResources]
+          : [OrganizationPermission.UpdateAppResources, OrganizationPermission.DeleteAppResources],
     });
     return;
   }
@@ -89,7 +89,7 @@ export async function verifyResourceActionPermission({
     result.push({ AuthorId: member.id });
   }
 
-  if (functionalRoles.includes(`$team:${TeamRole.Member}`) && user) {
+  if (functionalRoles.includes('$team:member') && user) {
     const teamIds = (
       await Team.findAll({
         where: { AppId: app.id },
@@ -107,11 +107,11 @@ export async function verifyResourceActionPermission({
     result.push({ AuthorId: { [Op.in]: appMemberIds } });
   }
 
-  if (functionalRoles.includes(`$team:${TeamRole.Manager}`) && user) {
+  if (functionalRoles.includes('$team:manager') && user) {
     const teamIds = (
       await Team.findAll({
         where: { AppId: app.id },
-        include: [{ model: TeamMember, where: { AppMemberId: member.id, role: TeamRole.Manager } }],
+        include: [{ model: TeamMember, where: { AppMemberId: member.id, role: 'Manager' } }],
         attributes: ['id'],
       })
     ).map((t) => t.id);

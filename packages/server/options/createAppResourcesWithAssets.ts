@@ -3,7 +3,7 @@ import { isDeepStrictEqual } from 'node:util';
 import { type CreateAppResourcesWithAssetsParams } from '@appsemble/node-utils';
 import { type Resource as ResourceInterface } from '@appsemble/types';
 
-import { getUserAppAccount } from './getUserAppAccount.js';
+import { getCurrentAppMember } from './getCurrentAppMember.js';
 import { App, Asset, transactional, type User } from '../models/index.js';
 import { Resource } from '../models/Resource.js';
 import { processHooks, processReferenceHooks } from '../utils/resource.js';
@@ -21,7 +21,7 @@ export async function createAppResourcesWithAssets({
 
   await (user as User)?.reload({ attributes: ['name', 'id'] });
 
-  const appMember = await getUserAppAccount(app?.id, user?.id);
+  const appMember = await getCurrentAppMember({ context });
 
   let createdResources: Resource[];
   await transactional(async (transaction) => {
@@ -30,7 +30,7 @@ export async function createAppResourcesWithAssets({
         AppId: app.id,
         type: resourceType,
         data,
-        AuthorId: appMember?.id,
+        AuthorId: appMember?.sub,
         seed: $seed,
         expires: $expires,
         clonable: $clonable,
@@ -40,7 +40,7 @@ export async function createAppResourcesWithAssets({
     );
 
     for (const createdResource of createdResources) {
-      createdResource.Author = appMember;
+      createdResource.AuthorId = appMember.sub;
     }
 
     const cleanResources = resources.map((resource) => {
@@ -65,7 +65,7 @@ export async function createAppResourcesWithAssets({
           ...asset,
           AppId: app.id,
           ResourceId,
-          AppMemberId: appMember?.id,
+          AppMemberId: appMember?.sub,
           seed,
           clonable,
           ephemeral,
@@ -77,8 +77,8 @@ export async function createAppResourcesWithAssets({
 
   const persistedApp = await App.findOne({ where: { id: app.id } });
 
-  processReferenceHooks(user as User, persistedApp, createdResources[0], action, options, context);
-  processHooks(user as User, persistedApp, createdResources[0], action, options, context);
+  processReferenceHooks(persistedApp, createdResources[0], action, options, context);
+  processHooks(persistedApp, createdResources[0], action, options, context);
 
   return createdResources.map((resource) => resource.toJSON());
 }

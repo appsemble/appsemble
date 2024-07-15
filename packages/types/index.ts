@@ -5,7 +5,7 @@ import { type OpenAPIV3 } from 'openapi-types';
 import { type JsonObject, type RequireExactlyOne } from 'type-fest';
 
 import { type Action, type LogAction } from './action.js';
-import { type AppVisibility, type TeamsDefinition } from './app.js';
+import { type AppVisibility } from './app.js';
 import { type BulmaColor } from './bulma.js';
 import { type HTTPMethods } from './http.js';
 import { type Theme } from './theme.js';
@@ -728,11 +728,6 @@ export interface Security {
   };
 
   roles: Record<string, RoleDefinition>;
-
-  /**
-   * Define how teams are handled by the app.
-   */
-  teams?: TeamsDefinition;
 }
 
 export type Navigation = 'bottom' | 'hidden' | 'left-menu';

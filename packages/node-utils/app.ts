@@ -2,7 +2,7 @@ import { existsSync } from 'node:fs';
 import { readFile, rm, writeFile } from 'node:fs/promises';
 import { basename, dirname, join } from 'node:path';
 
-import { type App, type AppsembleMessages, type UserInfo } from '@appsemble/types';
+import { type App, type AppsembleMessages } from '@appsemble/types';
 import { defaultLocale, has, objectCache, type RemapperContext } from '@appsemble/utils';
 import { memoize } from '@formatjs/fast-memoize';
 import { type CssNode, generate, parse, walk } from 'css-tree';
@@ -32,7 +32,6 @@ const getPluralRules = memoize(
  *
  * @param app The app for which to get the remapper context.
  * @param language The preferred language for the context.
- * @param userInfo The OAuth2 compatible user information.
  * @param options The API utility options.
  * @param context The koa context.
  * @returns A localized remapper context for the app.
@@ -40,19 +39,22 @@ const getPluralRules = memoize(
 export async function getRemapperContext(
   app: App,
   language: string,
-  userInfo: UserInfo,
   options: Options,
   context: ParameterizedContext<DefaultState, DefaultContext, any>,
 ): Promise<RemapperContext> {
-  const { getAppMessages, getAppUrl, getAppVariables } = options;
+  const { getAppMessages, getAppUrl, getAppVariables, getCurrentAppMember } = options;
 
   const appUrl = String(await getAppUrl({ context, app }));
+
   const appMessages = await getAppMessages({
     app,
     context,
     language,
   });
+
   const appVariables = await getAppVariables({ context, app });
+
+  const appMemberInfo = await getCurrentAppMember({ context });
 
   const cache = objectCache(
     (message) =>
@@ -62,7 +64,7 @@ export async function getRemapperContext(
           getPluralRules,
           getDateTimeFormat: memoize(
             (locale: string, opts: Intl.DateTimeFormatOptions) =>
-              new Intl.DateTimeFormat(locale, { ...opts, timeZone: userInfo?.zoneinfo }),
+              new Intl.DateTimeFormat(locale, { ...opts, timeZone: appMemberInfo?.zoneinfo }),
           ),
         },
       }),
@@ -80,10 +82,9 @@ export async function getRemapperContext(
     getVariable(variableName) {
       return appVariables.find((appVariable) => appVariable.name === variableName)?.value;
     },
-    userInfo,
-    appMember: userInfo?.appMember,
+    appMemberInfo,
     context: {},
-    locale: userInfo?.locale ?? app.definition.defaultLanguage ?? defaultLocale,
+    locale: appMemberInfo?.locale ?? app.definition.defaultLanguage ?? defaultLocale,
   };
 }
 

@@ -1,7 +1,7 @@
 import { type AppAsset, type CreateAppAssetParams, throwKoaError } from '@appsemble/node-utils';
 import { UniqueConstraintError } from 'sequelize';
 
-import { getUserAppAccount } from './getUserAppAccount.js';
+import { getCurrentAppMember } from './getCurrentAppMember.js';
 import { Asset } from '../models/Asset.js';
 
 export async function createAppAsset({
@@ -11,10 +11,9 @@ export async function createAppAsset({
 }: CreateAppAssetParams): Promise<AppAsset> {
   const { data, filename, mime, name } = payload;
 
-  const member = await getUserAppAccount(app?.id, context.user?.id);
+  const member = await getCurrentAppMember({ context });
 
   let asset: Asset;
-  const ctx = context;
   try {
     asset = await Asset.create({
       AppId: app.id,
@@ -22,11 +21,11 @@ export async function createAppAsset({
       filename,
       mime,
       name,
-      AppMemberId: member?.id,
+      AppMemberId: member?.sub,
     });
   } catch (error: unknown) {
     if (error instanceof UniqueConstraintError) {
-      throwKoaError(ctx, 409, `An asset named ${name} already exists`);
+      throwKoaError(context, 409, `An asset named ${name} already exists`);
     }
     throw error;
   }

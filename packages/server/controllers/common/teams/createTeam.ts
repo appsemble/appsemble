@@ -14,9 +14,7 @@ export async function createTeam(ctx: Context): Promise<void> {
     },
   } = ctx;
 
-  const appMember = await checkAuthSubjectAppPermissions(ctx, appId, [
-    AppPermission.CreateTeams,
-  ]);
+  const appMember = await checkAuthSubjectAppPermissions(ctx, appId, [AppPermission.CreateTeams]);
 
   await transactional(async (transaction) => {
     const team = await Team.create(

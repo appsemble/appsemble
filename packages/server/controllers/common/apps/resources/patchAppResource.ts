@@ -1,43 +1,21 @@
 import { assertKoaError, getResourceDefinition, processResourceBody } from '@appsemble/node-utils';
 import { type Context } from 'koa';
 
-import {
-  App,
-  AppMember,
-  Asset,
-  Organization,
-  Resource,
-  ResourceVersion,
-  transactional,
-} from '../../../../models/index.js';
-import { getUserAppAccount } from '../../../../options/index.js';
+import { App, Asset, Resource, ResourceVersion, transactional } from '../../../../models/index.js';
+import { getCurrentAppMember } from '../../../../options/index.js';
 import { options } from '../../../../options/options.js';
 
 export async function patchAppResource(ctx: Context): Promise<void> {
   const {
     pathParams: { appId, resourceId, resourceType },
-    user,
   } = ctx;
   const { verifyResourceActionPermission } = options;
 
   const action = 'patch';
 
-  const app = await App.findByPk(appId, {
-    attributes: ['id', 'definition', 'OrganizationId'],
-    include: user
-      ? [
-          { model: Organization, attributes: ['id'] },
-          {
-            model: AppMember,
-            attributes: ['role', 'UserId', 'id'],
-            required: false,
-            where: { UserId: user.id },
-          },
-        ]
-      : [],
-  });
+  const app = await App.findByPk(appId, { attributes: ['id', 'definition', 'OrganizationId'] });
 
-  const appMember = await getUserAppAccount(app.id, user?.id);
+  const appMember = await getCurrentAppMember({ context: ctx });
 
   const definition = getResourceDefinition(app.toJSON(), resourceType, ctx);
   const memberQuery = await verifyResourceActionPermission({
@@ -61,13 +39,6 @@ export async function patchAppResource(ctx: Context): Promise<void> {
 
   assertKoaError(!resource, ctx, 404, 'Resource not found');
 
-  let member: AppMember;
-  if (app.AppMembers && app.AppMembers.length > 0) {
-    member = app.AppMembers[0];
-  } else if (user) {
-    member = await getUserAppAccount(app.id, user.id);
-  }
-
   const [updatedResource, preparedAssets, deletedAssetIds] = processResourceBody(
     ctx,
     definition,
@@ -87,7 +58,7 @@ export async function patchAppResource(ctx: Context): Promise<void> {
     const data = { ...oldData, ...patchData };
     const previousEditorId = resource.EditorId;
     const promises: Promise<unknown>[] = [
-      resource.update({ data, clonable, expires, EditorId: member?.id }, { transaction }),
+      resource.update({ data, clonable, expires, EditorId: appMember?.sub }, { transaction }),
     ];
 
     if (preparedAssets.length) {
@@ -97,7 +68,7 @@ export async function patchAppResource(ctx: Context): Promise<void> {
             ...asset,
             AppId: app.id,
             ResourceId: resource.id,
-            AppMemberId: appMember?.id,
+            AppMemberId: appMember?.sub,
           })),
           { logging: false, transaction },
         ),

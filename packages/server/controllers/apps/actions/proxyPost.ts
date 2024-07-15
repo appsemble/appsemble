@@ -1,5 +1,5 @@
-import { createProxyPost } from '@appsemble/node-utils';
+import { createProxyPostController } from '@appsemble/node-utils';
 
 import { options } from '../../../options/options.js';
 
-export const proxyPost = createProxyPost(options);
+export const proxyPost = createProxyPostController(options);

@@ -1,8 +1,8 @@
 import { type UpdateAppResourceParams } from '@appsemble/node-utils';
 import { type Resource as ResourceInterface } from '@appsemble/types';
 
-import { getUserAppAccount } from './getUserAppAccount.js';
-import { App, Asset, ResourceVersion, transactional, type User } from '../models/index.js';
+import { getCurrentAppMember } from './getCurrentAppMember.js';
+import { App, Asset, ResourceVersion, transactional } from '../models/index.js';
 import { Resource } from '../models/Resource.js';
 import { processHooks, processReferenceHooks } from '../utils/resource.js';
 
@@ -18,9 +18,7 @@ export function updateAppResource({
   resourceDefinition,
 }: UpdateAppResourceParams): Promise<ResourceInterface | null> {
   return transactional(async (transaction) => {
-    const { user } = context;
-
-    const member = await getUserAppAccount(app?.id, user?.id);
+    const member = await getCurrentAppMember({ context });
 
     const persistedApp = await App.findOne({
       where: {
@@ -48,7 +46,7 @@ export function updateAppResource({
         data,
         clonable,
         expires,
-        EditorId: member?.id,
+        EditorId: member?.sub,
       },
       { transaction },
     );
@@ -59,7 +57,7 @@ export function updateAppResource({
           ...asset,
           AppId: app.id,
           ResourceId: id,
-          AppMemberId: member?.id,
+          AppMemberId: member?.sub,
           seed: newResource.seed,
           clonable: newResource.clonable,
           ephemeral: newResource.ephemeral,
@@ -95,8 +93,8 @@ export function updateAppResource({
       transaction,
     });
 
-    processReferenceHooks(user as User, persistedApp, newResource, action, options, context);
-    processHooks(user as User, persistedApp, newResource, action, options, context);
+    processReferenceHooks(persistedApp, newResource, action, options, context);
+    processHooks(persistedApp, newResource, action, options, context);
 
     return reloaded.toJSON({ exclude: reloaded.App.template ? ['$seed'] : undefined });
   });

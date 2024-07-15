@@ -1,5 +1,5 @@
-import { createCreateResource } from '@appsemble/node-utils';
+import { createCreateAppResourceController } from '@appsemble/node-utils';
 
 import { options } from '../../../../options/options.js';
 
-export const createAppResource = createCreateResource(options);
+export const createAppResource = createCreateAppResourceController(options);

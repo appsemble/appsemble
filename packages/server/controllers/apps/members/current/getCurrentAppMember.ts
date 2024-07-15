@@ -1,8 +1,5 @@
-import { type Context } from 'koa';
+import { createGetCurrentAppMemberController } from '@appsemble/node-utils';
 
-import { getAppMemberInfoById } from '../../../../utils/appMember.js';
+import { options } from '../../../../options/options.js';
 
-export async function getCurrentAppMember(ctx: Context): Promise<void> {
-  const { user: authSubject } = ctx;
-  ctx.body = await getAppMemberInfoById(authSubject.id);
-}
+export const getCurrentAppMember = createGetCurrentAppMemberController(options);

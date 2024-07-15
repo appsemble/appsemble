@@ -15,9 +15,7 @@ export async function patchTeam(ctx: Context): Promise<void> {
     },
   } = ctx;
 
-  const appMember = await checkAuthSubjectAppPermissions(ctx, appId, [
-    AppPermission.UpdateTeams,
-  ]);
+  const appMember = await checkAuthSubjectAppPermissions(ctx, appId, [AppPermission.UpdateTeams]);
 
   const team = await Team.findByPk(teamId);
 

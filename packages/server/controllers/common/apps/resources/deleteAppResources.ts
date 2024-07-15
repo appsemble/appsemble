@@ -1,7 +1,7 @@
 import { getResourceDefinition } from '@appsemble/node-utils';
 import { type Context } from 'koa';
 
-import { App, AppMember, Organization, Resource, type User } from '../../../../models/index.js';
+import { App, AppMember, Organization, Resource } from '../../../../models/index.js';
 import { options } from '../../../../options/options.js';
 import {
   processHooks,
@@ -55,8 +55,8 @@ export async function deleteAppResources(ctx: Context): Promise<void> {
       },
       limit: 100,
     })) {
-      processReferenceHooks(user as User, app, resource, action, options, ctx);
-      processHooks(user as User, app, resource, action, options, ctx);
+      processReferenceHooks(app, resource, action, options, ctx);
+      processHooks(app, resource, action, options, ctx);
 
       await processReferenceTriggers(app, resource, action, ctx);
 

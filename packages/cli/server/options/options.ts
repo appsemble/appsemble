@@ -2,7 +2,8 @@ import { type Options } from '@appsemble/node-utils';
 
 import {
   applyAppServiceSecrets,
-  checkRole,
+  checkAppMemberAppPermissions,
+  checkUserOrganizationPermissions,
   createAppAsset,
   createAppResourcesWithAssets,
   createSettings,
@@ -15,7 +16,6 @@ import {
   getAppBlockStyles,
   getAppDetails,
   getAppIcon,
-  getAppMember,
   getAppMessages,
   getAppReadmes,
   getAppResource,
@@ -24,12 +24,12 @@ import {
   getAppStyles,
   getAppTeams,
   getAppUrl,
-  getAppUserInfo,
   getAppVariables,
   getBlockAsset,
   getBlockMessages,
   getBlocksAssetsPaths,
   getCsp,
+  getCurrentAppMember,
   getDbUpdated,
   getHost,
   getTheme,
@@ -42,7 +42,6 @@ import {
 
 export const options: Options = {
   applyAppServiceSecrets,
-  checkRole,
   createAppAsset,
   createAppResourcesWithAssets,
   createSettings,
@@ -55,7 +54,6 @@ export const options: Options = {
   getAppBlockStyles,
   getAppDetails,
   getAppIcon,
-  getAppMember,
   getAppMessages,
   getAppReadmes,
   getAppResource,
@@ -64,7 +62,6 @@ export const options: Options = {
   getAppStyles,
   getAppTeams,
   getAppUrl,
-  getAppUserInfo,
   getAppVariables,
   getBlockAsset,
   getBlockMessages,
@@ -78,4 +75,7 @@ export const options: Options = {
   sendNotifications,
   updateAppResource,
   verifyResourceActionPermission,
+  checkUserOrganizationPermissions,
+  checkAppMemberAppPermissions,
+  getCurrentAppMember,
 };

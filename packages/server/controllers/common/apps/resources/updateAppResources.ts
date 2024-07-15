@@ -15,9 +15,8 @@ import {
   Resource,
   ResourceVersion,
   transactional,
-  type User,
 } from '../../../../models/index.js';
-import { getUserAppAccount } from '../../../../options/index.js';
+import { getCurrentAppMember } from '../../../../options/index.js';
 import { options } from '../../../../options/options.js';
 import { processHooks, processReferenceHooks } from '../../../../utils/resource.js';
 
@@ -45,7 +44,7 @@ export async function updateAppResources(ctx: Context): Promise<void> {
       : [],
   });
 
-  const appMember = await getUserAppAccount(app.id, user?.id);
+  const appMember = await getCurrentAppMember({ context: ctx });
 
   const definition = getResourceDefinition(app.toJSON(), resourceType, ctx);
   const memberQuery = await verifyResourceActionPermission({
@@ -111,7 +110,7 @@ export async function updateAppResources(ctx: Context): Promise<void> {
         const [, [resource]] = await Resource.update(
           {
             data,
-            EditorId: appMember?.id,
+            EditorId: appMember?.sub,
           },
           { where: { id }, transaction, returning: true },
         );
@@ -146,7 +145,7 @@ export async function updateAppResources(ctx: Context): Promise<void> {
             ...asset,
             AppId: app.id,
             ResourceId,
-            AppMemberId: appMember?.id,
+            AppMemberId: appMember?.sub,
           };
         }),
         { logging: false, transaction },
@@ -157,7 +156,7 @@ export async function updateAppResources(ctx: Context): Promise<void> {
   ctx.body = updatedResources;
 
   for (const resource of updatedResources) {
-    processReferenceHooks(user as User, app, resource, action, options, ctx);
-    processHooks(user as User, app, resource, action, options, ctx);
+    processReferenceHooks(app, resource, action, options, ctx);
+    processHooks(app, resource, action, options, ctx);
   }
 }
