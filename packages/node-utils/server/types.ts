@@ -348,6 +348,7 @@ export interface CreateAppAssetParams extends GetAppSubEntityParams {
     name: string;
     data: Buffer;
   };
+  seed?: boolean;
 }
 
 export interface DeleteAppAssetParams extends GetAppSubEntityParams {

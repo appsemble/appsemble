@@ -1,10 +1,8 @@
 import { type OpenAPIV3 } from 'openapi-types';
 
-import { paths as resourceTypePaths } from './resourceType.js';
 import { paths as versionsPaths } from './versions/index.js';
 
 export const paths: OpenAPIV3.PathsObject = {
-  ...resourceTypePaths,
   ...versionsPaths,
   '/api/apps/{appId}/resources': {
     parameters: [{ $ref: '#/components/parameters/appId' }],

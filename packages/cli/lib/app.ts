@@ -447,7 +447,11 @@ export async function publishSeedAssets(
     logger.info(`Deleting existing seed assets from app ${app.id}`);
 
     try {
-      await axios.delete(`/api/apps/${app.id}/assets`, { baseURL: remote });
+      await axios.delete(`/api/apps/${app.id}/assets`, {
+        data: [],
+        baseURL: remote,
+        params: { seed: true },
+      });
 
       const assetFiles = await readdir(assetsPath);
       const normalizedPaths = assetFiles.map((assetFile) =>

@@ -73,9 +73,11 @@ export function createGetAssetById({ getApp, getAppAssets }: Options): Middlewar
   };
 }
 
+// TODO: figure out where this needs to be used
 export function createCreateAsset({ createAppAsset, getApp }: Options): Middleware {
   return async (ctx: Context) => {
     const {
+      params: { seed },
       pathParams: { appId },
       request: {
         body: {
@@ -93,6 +95,7 @@ export function createCreateAsset({ createAppAsset, getApp }: Options): Middlewa
       app,
       context: ctx,
       payload: { filename, mime, name, data: contents },
+      seed: Boolean(seed),
     });
 
     ctx.status = 201;

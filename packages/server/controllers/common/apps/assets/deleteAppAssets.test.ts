@@ -1,3 +1,4 @@
+import { createFormData } from '@appsemble/node-utils';
 import { uuid4Pattern } from '@appsemble/utils';
 import { request, setTestApp } from 'axios-test-instance';
 import { beforeAll, beforeEach, describe, expect, it } from 'vitest';
@@ -187,7 +188,7 @@ describe('deleteAppAssets', () => {
 
       {
         "error": "Not Found",
-        "message": "Assets not found",
+        "message": "No assets found",
         "statusCode": 404,
       }
     `);
@@ -267,5 +268,63 @@ describe('deleteAppAssets', () => {
       ]
     `,
     );
+  });
+
+  it('should delete seed assets from all apps', async () => {
+    authorizeStudio();
+    await request.post<Asset>(
+      `/api/apps/${app.id}/assets`,
+      createFormData({ file: Buffer.alloc(0) }),
+      { params: { seed: true } },
+    );
+    const response = await request.delete(`/api/apps/${app.id}/assets`, {
+      data: [],
+      params: { seed: true },
+    });
+    expect(response).toMatchInlineSnapshot('HTTP/1.1 204 No Content');
+
+    const seedAsset = await Asset.findOne({
+      where: {
+        AppId: app.id,
+        seed: true,
+        ephemeral: false,
+      },
+    });
+
+    expect(seedAsset).toBeNull();
+  });
+
+  it('should delete seed assets and ephemeral assets from demo apps', async () => {
+    authorizeStudio();
+    await app.update({ demoMode: true });
+    await request.post<Asset>(
+      `/api/apps/${app.id}/assets`,
+      createFormData({ file: Buffer.alloc(0) }),
+      { params: { seed: true } },
+    );
+
+    const response = await request.delete(`/api/apps/${app.id}/assets`, {
+      data: [],
+      params: { seed: true },
+    });
+    expect(response).toMatchInlineSnapshot('HTTP/1.1 204 No Content');
+
+    const seedAsset = await Asset.findOne({
+      where: {
+        AppId: app.id,
+        seed: true,
+        ephemeral: false,
+      },
+    });
+    expect(seedAsset).toBeNull();
+
+    const ephemeralAsset = await Asset.findOne({
+      where: {
+        AppId: app.id,
+        seed: false,
+        ephemeral: true,
+      },
+    });
+    expect(ephemeralAsset).toBeNull();
   });
 });

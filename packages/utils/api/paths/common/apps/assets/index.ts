@@ -16,6 +16,7 @@ export const paths: OpenAPIV3.PathsObject = {
       parameters: [
         { $ref: '#/components/parameters/$skip' },
         { $ref: '#/components/parameters/$top' },
+        { $ref: '#/components/parameters/seed' },
       ],
       responses: {
         200: {
@@ -33,6 +34,7 @@ export const paths: OpenAPIV3.PathsObject = {
       tags: ['common', 'app', 'asset'],
       description: 'Upload a new asset.',
       operationId: 'createAppAsset',
+      parameters: [{ $ref: '#/components/parameters/seed' }],
       requestBody: {
         description: 'The asset to upload.',
         content: {
@@ -81,6 +83,7 @@ export const paths: OpenAPIV3.PathsObject = {
       tags: ['common', 'app', 'asset'],
       description: 'Delete multiple app assets.',
       operationId: 'deleteAppAssets',
+      parameters: [{ $ref: '#/components/parameters/seed' }],
       requestBody: {
         content: {
           'application/json': {

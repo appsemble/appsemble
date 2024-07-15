@@ -24,3 +24,4 @@ export * from './$top.js';
 export * from './endpoint.js';
 export * from './roles.js';
 export * from './view.js';
+export * from './seed.js';

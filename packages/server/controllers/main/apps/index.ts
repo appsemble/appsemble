@@ -1,4 +1,3 @@
-export * from './assets/index.js';
 export * from './messages/index.js';
 export * from './quotas/index.js';
 export * from './ratings/index.js';
