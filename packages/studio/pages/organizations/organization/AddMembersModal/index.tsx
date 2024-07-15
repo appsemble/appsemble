@@ -9,7 +9,7 @@ import {
   useMessages,
 } from '@appsemble/react-components';
 import { type OrganizationInvite } from '@appsemble/types';
-import { type Role, roles } from '@appsemble/utils';
+// Import { type Role, roles } from '@appsemble/utils';
 import axios from 'axios';
 import {
   type ChangeEvent,
@@ -43,7 +43,7 @@ const defaultInvite = {
   role: 'Member',
 };
 
-const roleKeys = Object.keys(roles);
+// Const roleKeys = Object.keys(roles);
 
 /**
  * A modal form for inviting one or more people to the organization.
@@ -199,13 +199,13 @@ export function AddMembersModal({ onInvited, state }: AddMembersModalProps): Rea
               onChange={onChange}
               value={member.role}
             >
-              {roleKeys
+              {/* RoleKeys
                 .filter((r) => roleKeys.indexOf(r) <= roleKeys.indexOf(organization?.role))
                 .map((r: Role) => (
                   <option key={r} value={r}>
-                    {formatMessage(messages[r])}
+                    {FormatMessage(messages[r]) }
                   </option>
-                ))}
+                )) */}
             </Select>
           </div>
         ))}

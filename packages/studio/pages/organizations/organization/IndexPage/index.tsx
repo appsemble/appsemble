@@ -1,6 +1,6 @@
 import { Button, Content, Icon, useData } from '@appsemble/react-components';
 import { type App, type BlockManifest } from '@appsemble/types';
-import { Permissions } from '@appsemble/utils';
+import { OrganizationPermission } from '@appsemble/utils';
 import { type ReactNode } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Link, useParams } from 'react-router-dom';
@@ -31,7 +31,8 @@ export function IndexPage({ organization }: IndexPageProps): ReactNode {
 
   const userOrganization = organizations?.find((org) => org.id === organization.id);
   const mayEditOrganization =
-    userOrganization && checkRole(userOrganization.role, Permissions.EditOrganization);
+    userOrganization &&
+    checkRole(userOrganization.role, OrganizationPermission.UpdateOrganizations);
 
   return (
     <Content className={`pb-2 ${styles.root}`}>

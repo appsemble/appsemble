@@ -5,7 +5,7 @@ import {
   useData,
   useSideMenu,
 } from '@appsemble/react-components';
-import { normalize, normalized, Permissions } from '@appsemble/utils';
+import { normalize, normalized, OrganizationPermission } from '@appsemble/utils';
 import { type ReactNode } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { Navigate, Route, useParams } from 'react-router-dom';
@@ -32,7 +32,8 @@ export function OrganizationRoutes(): ReactNode {
   const result = useData<Organization>(`/api/organizations/${organizationId}`);
   const userOrganization = organizations?.find((org) => org.id === organizationId);
   const mayEdit =
-    userOrganization && checkRole(userOrganization.role, Permissions.EditOrganization);
+    userOrganization &&
+    checkRole(userOrganization.role, OrganizationPermission.UpdateOrganizations);
 
   useSideMenu(
     result.data && (
@@ -77,7 +78,7 @@ export function OrganizationRoutes(): ReactNode {
             element={
               <ProtectedRoute
                 organization={userOrganization}
-                permission={Permissions.EditOrganization}
+                permission={OrganizationPermission.UpdateOrganizations}
               />
             }
           >
