@@ -1,1 +1,1 @@
-Disable fieldset fields while submitting the form.
+Disable fieldset and file fields while submitting the form.

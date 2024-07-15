@@ -69,6 +69,7 @@ interface FileEntryProps extends InputProps<Blob | string, FileField> {
 }
 
 export function FileEntry({
+  disabled,
   errorLinkRef,
   field,
   formValues: value,
@@ -196,6 +197,7 @@ export function FileEntry({
           <input
             accept={getAccept(field)}
             className={`file-input ${styles.input}`}
+            disabled={disabled}
             name={name}
             onChange={onSelect}
             type="file"
@@ -214,15 +216,17 @@ export function FileEntry({
                     />
                   </figure>
                 </button>
-                <button
-                  className={`button is-small ${styles.removeButton}`}
-                  onClick={onRemove}
-                  type="button"
-                >
-                  <span className="icon">
-                    <i className="fas fa-times" />
-                  </span>
-                </button>
+                {!disabled && (
+                  <button
+                    className={`button is-small ${styles.removeButton}`}
+                    onClick={onRemove}
+                    type="button"
+                  >
+                    <span className="icon">
+                      <i className="fas fa-times" />
+                    </span>
+                  </button>
+                )}
               </>
             ) : (
               <span
@@ -238,15 +242,17 @@ export function FileEntry({
                 /* eslint-disable-next-line react/forbid-dom-props */
                 style={{ backgroundImage: createCustomSvg(iconName) }}
               />
-              <button
-                className={`button is-small ${styles.removeButton}`}
-                onClick={onRemove}
-                type="button"
-              >
-                <span className="icon">
-                  <i className="fas fa-times" />
-                </span>
-              </button>
+              {!disabled && (
+                <button
+                  className={`button is-small ${styles.removeButton}`}
+                  onClick={onRemove}
+                  type="button"
+                >
+                  <span className="icon">
+                    <i className="fas fa-times" />
+                  </span>
+                </button>
+              )}
             </>
           )
         ) : (

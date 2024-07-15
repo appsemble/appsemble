@@ -73,6 +73,7 @@ export function FileInput({
           <div className={styles.repeatedEntries}>
             {(value as string[]).map((val, index) => (
               <FileEntry
+                disabled={disabled}
                 error={dirty ? error : null}
                 errorLinkRef={errorLinkRef}
                 field={field}
@@ -88,6 +89,7 @@ export function FileInput({
         </div>
       ) : (
         <FileEntry
+          disabled={disabled}
           error={dirty ? error : null}
           errorLinkRef={errorLinkRef}
           field={field}
