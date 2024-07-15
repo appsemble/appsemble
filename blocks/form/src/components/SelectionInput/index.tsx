@@ -108,7 +108,7 @@ export function SelectionInput({
   };
 
   const handleSearch = (e: any, value: number | string): void => {
-    setSearchString(String(value));
+    setSearchString(String(value).toLowerCase());
   };
 
   useEffect(() => {
