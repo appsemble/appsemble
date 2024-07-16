@@ -11,10 +11,6 @@ export const oauth2Consent: OpenAPIV3.RequestBodyObject = {
         description: 'A representation of a user’s OAuth2 consent when logging in to an app.',
         additionalProperties: false,
         properties: {
-          // AppId: {
-          //   type: 'number',
-          //   description: 'The app ID to manage the OAuth2 consent for',
-          // },
           redirectUri: {
             type: 'string',
             format: 'uri',

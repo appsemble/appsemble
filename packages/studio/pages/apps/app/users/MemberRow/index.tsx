@@ -9,7 +9,7 @@ import {
   useMessages,
   useToggle,
 } from '@appsemble/react-components';
-import { Permissions } from '@appsemble/utils';
+import { OrganizationPermission } from '@appsemble/utils';
 import axios from 'axios';
 import { type ChangeEvent, type ReactNode, useCallback, useMemo } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
@@ -35,7 +35,9 @@ export function MemberRow({ member, onChange }: AppMemberRowProperties): ReactNo
   const editModal = useToggle();
 
   const organization = organizations?.find((org) => org.id === app?.OrganizationId);
-  const editRolesPermission = checkRole(organization.role, Permissions.ManageRoles);
+  const mayUpdateAppMembers = checkRole(organization.role, [
+    OrganizationPermission.UpdateAppMembers,
+  ]);
 
   const defaultValues = useMemo(
     () => ({
@@ -125,7 +127,7 @@ export function MemberRow({ member, onChange }: AppMemberRowProperties): ReactNo
         </td>
         <td className="has-text-right">
           <div className="control is-inline">
-            <AsyncSelect disabled={!editRolesPermission} onChange={onChangeRole}>
+            <AsyncSelect disabled={!mayUpdateAppMembers} onChange={onChangeRole}>
               {Object.keys(app.definition.security.roles).map((role) => (
                 <option key={role} selected={role === member.role} value={role}>
                   {app.messages?.app?.[`app.roles.${role}`] || role}

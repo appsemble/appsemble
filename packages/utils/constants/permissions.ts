@@ -88,6 +88,11 @@ export enum OrganizationPermission {
   DeleteApps,
 
   /**
+   * The permission to query app translations.
+   */
+  QueryAppMessages,
+
+  /**
    * The permission to create app translations.
    */
   CreateAppMessages,
@@ -153,17 +158,22 @@ export enum OrganizationPermission {
   DeleteAppSecrets,
 
   /**
-   * The permission to create app secrets.
+   * The permission to query app variables.
+   */
+  QueryAppVariables,
+
+  /**
+   * The permission to create app variables.
    */
   CreateAppVariables,
 
   /**
-   * The permission to update app secrets.
+   * The permission to update app variables.
    */
   UpdateAppVariables,
 
   /**
-   * The permission to delete app secrets.
+   * The permission to delete app variables.
    */
   DeleteAppVariables,
 
@@ -253,6 +263,51 @@ export enum OrganizationPermission {
   RemoveOrganizationMembers,
 
   /**
+   * The permission to create app invites.
+   */
+  CreateAppInvites,
+
+  /**
+   * The permission to query app members.
+   */
+  QueryAppMembers,
+
+  /**
+   * The permission to update app members.
+   */
+  UpdateAppMembers,
+
+  /**
+   * The permission to query app members.
+   */
+  RemoveAppMembers,
+
+  /**
+   * The permission to query app teams.
+   */
+  QueryTeams,
+
+  /**
+   * The permission to create app teams.
+   */
+  CreateTeams,
+
+  /**
+   * The permission to update app teams.
+   */
+  UpdateTeams,
+
+  /**
+   * The permission to create app teams.
+   */
+  DeleteTeams,
+
+  /**
+   * The permission to query app snapshots.
+   */
+  QueryAppSnapshots,
+
+  /**
    * The permission to create app collections.
    */
   CreateAppCollections,
@@ -302,3 +357,13 @@ export enum OrganizationPermission {
    */
   DeleteTrainingBlocks,
 }
+
+export const appOrganizationPermissionMapping: { [key in AppPermission]: OrganizationPermission } =
+  {
+    [AppPermission.CreateAppInvites]: OrganizationPermission.CreateAppInvites,
+    [AppPermission.QueryAppMembers]: OrganizationPermission.QueryAppMembers,
+    [AppPermission.RemoveAppMembers]: OrganizationPermission.RemoveAppMembers,
+    [AppPermission.CreateTeams]: OrganizationPermission.CreateTeams,
+    [AppPermission.UpdateTeams]: OrganizationPermission.UpdateTeams,
+    [AppPermission.DeleteTeams]: OrganizationPermission.DeleteTeams,
+  };

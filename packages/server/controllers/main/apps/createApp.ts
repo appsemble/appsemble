@@ -68,6 +68,7 @@ export async function createApp(ctx: Context): Promise<void> {
       }),
       'App validation failed',
     );
+
     handleValidatorResult(
       ctx,
       await validateAppDefinition(

@@ -1,6 +1,6 @@
 import { Button, CardFooterButton, ModalCard } from '@appsemble/react-components';
 import { type App } from '@appsemble/types';
-import { Permissions } from '@appsemble/utils';
+import { OrganizationPermission } from '@appsemble/utils';
 import axios from 'axios';
 import { type ReactNode, useCallback } from 'react';
 import { FormattedMessage } from 'react-intl';
@@ -25,8 +25,16 @@ export function ReseedButton({ app }: ReseedButtonProps): ReactNode {
   const { hash } = useLocation();
   const { organizations, userInfo } = useUser();
 
-  const manageResources =
-    organizations?.filter((org) => checkRole(org.role, Permissions.ManageResources)) ?? [];
+  const userRole = organizations?.find((org) => org.id === app.OrganizationId)?.role;
+
+  const mayReseedApp =
+    userRole &&
+    checkRole(userRole, [
+      OrganizationPermission.DeleteAppResources,
+      OrganizationPermission.DeleteAppAssets,
+      OrganizationPermission.CreateAppResources,
+      OrganizationPermission.CreateAppAssets,
+    ]);
 
   const reseedApp = useCallback(async () => {
     await axios.post<App>(`/api/apps/${app.id}/reseed`);
@@ -52,7 +60,7 @@ export function ReseedButton({ app }: ReseedButtonProps): ReactNode {
       </Button>
       <ModalCard
         footer={
-          userInfo && manageResources.length ? (
+          userInfo && mayReseedApp ? (
             <>
               <CardFooterButton onClick={closeReseedDialog}>
                 <FormattedMessage {...messages.cancel} />

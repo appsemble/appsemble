@@ -1,11 +1,12 @@
 import { Loader } from '@appsemble/react-components';
 import {
+  type App,
   type JwtPayload,
   type Organization,
   type TokenResponse,
   type UserInfo,
 } from '@appsemble/types';
-import { type OrganizationMemberRole } from '@appsemble/utils';
+import { type AppMemberRole, type OrganizationMemberRole } from '@appsemble/utils';
 import { setUser as setSentryUser } from '@sentry/browser';
 import axios, { type AxiosHeaders } from 'axios';
 import { jwtDecode } from 'jwt-decode';
@@ -34,6 +35,16 @@ export interface UserOrganization extends Organization {
    * The user’s role within the organization.
    */
   role: OrganizationMemberRole;
+}
+
+/**
+ * The representation of an app that the user is a member of.
+ */
+export interface UserApp extends App {
+  /**
+   * The user’s role within the organization.
+   */
+  role: AppMemberRole;
 }
 
 interface UserContext {
@@ -103,15 +114,7 @@ export function UserProvider({ children }: UserProviderProps): ReactNode {
       setHasNoLoginMethods,
       setOrganizations,
     }),
-    [
-      login,
-      logout,
-      userInfo,
-      refreshUserInfo,
-      organizations,
-      hasNoLoginMethods,
-      setHasNoLoginMethods,
-    ],
+    [login, logout, userInfo, refreshUserInfo, organizations, hasNoLoginMethods],
   );
 
   useEffect(() => {

@@ -12,7 +12,7 @@ import {
   useLocationString,
 } from '@appsemble/react-components';
 import { type App, type Template } from '@appsemble/types';
-import { Permissions } from '@appsemble/utils';
+import { OrganizationPermission } from '@appsemble/utils';
 import axios from 'axios';
 import { type ReactNode, useCallback, useMemo } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
@@ -43,7 +43,7 @@ export function CloneButton({ app }: CloneButtonProps): ReactNode {
   const { organizations, userInfo } = useUser();
 
   const createOrganizations =
-    organizations?.filter((org) => checkRole(org.role, Permissions.CreateApps)) ?? [];
+    organizations?.filter((org) => checkRole(org.role, [OrganizationPermission.CreateApps])) ?? [];
   const organizationId = createOrganizations[0]?.id;
 
   const defaultValues = useMemo<Template>(

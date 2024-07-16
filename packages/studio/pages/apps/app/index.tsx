@@ -9,7 +9,7 @@ import {
   useSideMenu,
 } from '@appsemble/react-components';
 import { type App } from '@appsemble/types';
-import { compareStrings, Permissions } from '@appsemble/utils';
+import { compareStrings, OrganizationPermission } from '@appsemble/utils';
 import classNames from 'classnames';
 import {
   createContext,
@@ -35,6 +35,7 @@ import { ResourcesRoutes } from './resources/index.js';
 import { SecretsPage } from './secrets/index.js';
 import { SettingsPage } from './settings/index.js';
 import { SnapshotsRoutes } from './snapshots/index.js';
+import { SnapshotPage } from './snapshots/snapshot/index.js';
 import { TeamsRoutes } from './teams/index.js';
 import { TranslationsPage } from './translations/index.js';
 import { UsersPage } from './users/index.js';
@@ -71,6 +72,7 @@ export function AppRoutes(): ReactNode {
     path,
   } = useParams<{ id: string; lang: string; path?: string; '*': string }>();
   const { organizations } = useUser();
+
   const {
     data: app,
     error,
@@ -82,18 +84,79 @@ export function AppRoutes(): ReactNode {
 
   const { formatMessage } = useIntl();
 
-  const organization = organizations?.find((org) => org.id === app?.OrganizationId);
-
-  const editPermission = organization && checkRole(organization.role, Permissions.EditApps);
-  const editMessagePermission =
-    organization && checkRole(organization.role, Permissions.EditAppMessages);
-  const pushNotificationPermission =
-    organization && checkRole(organization.role, Permissions.PushNotifications);
-
   const resourceNames = app?.definition.resources && Object.keys(app?.definition.resources);
-  const mayViewResources = organization && checkRole(organization.role, Permissions.ReadResources);
-  const mayViewAssets = organization && checkRole(organization.role, Permissions.ReadAssets);
-  const canViewResources = Boolean(mayViewResources && resourceNames?.length);
+
+  const organization = useMemo(
+    () => organizations?.find((org) => org.id === app?.OrganizationId),
+    [app, organizations],
+  );
+
+  const userOrganizationRole = useMemo(() => organization?.role || 'Member', [organization]);
+
+  const mayVisitEditor = useMemo(
+    () => checkRole(userOrganizationRole, [OrganizationPermission.UpdateApps]),
+    [userOrganizationRole],
+  );
+
+  const mayVisitAssets = useMemo(
+    () => checkRole(userOrganizationRole, [OrganizationPermission.QueryAppAssets]),
+    [userOrganizationRole],
+  );
+
+  const mayVisitResources = useMemo(
+    () => checkRole(userOrganizationRole, [OrganizationPermission.QueryAppResources]),
+    [userOrganizationRole],
+  );
+
+  const mayVisitTranslations = useMemo(
+    () => checkRole(userOrganizationRole, [OrganizationPermission.QueryAppMessages]),
+    [userOrganizationRole],
+  );
+
+  const mayVisitNotifications = useMemo(
+    () => checkRole(userOrganizationRole, [OrganizationPermission.PushAppNotifications]),
+    [userOrganizationRole],
+  );
+
+  const mayVisitAppMembers = useMemo(
+    () => checkRole(userOrganizationRole, [OrganizationPermission.QueryAppMembers]),
+    [userOrganizationRole],
+  );
+
+  const mayVisitTeams = useMemo(
+    () => checkRole(userOrganizationRole, [OrganizationPermission.QueryTeams]),
+    [userOrganizationRole],
+  );
+
+  const mayVisitSnapshots = useMemo(
+    () => checkRole(userOrganizationRole, [OrganizationPermission.QueryAppSnapshots]),
+    [userOrganizationRole],
+  );
+
+  const mayVisitSettings = useMemo(
+    () => checkRole(userOrganizationRole, [OrganizationPermission.ReadAppSettings]),
+    [userOrganizationRole],
+  );
+
+  const mayVisitVariables = useMemo(
+    () => checkRole(userOrganizationRole, [OrganizationPermission.QueryAppVariables]),
+    [userOrganizationRole],
+  );
+
+  const mayVisitSecrets = useMemo(
+    () => checkRole(userOrganizationRole, [OrganizationPermission.QueryAppSecrets]),
+    [userOrganizationRole],
+  );
+
+  const mayVisitQuotas = useMemo(
+    () => checkRole(userOrganizationRole, [OrganizationPermission.ReadAppSettings]),
+    [userOrganizationRole],
+  );
+
+  const mayVisitContainerLogs = useMemo(
+    () => checkRole(userOrganizationRole, [OrganizationPermission.UpdateApps]),
+    [userOrganizationRole],
+  );
 
   const value = useMemo(() => ({ app, setApp }), [app, setApp]);
 
@@ -114,80 +177,96 @@ export function AppRoutes(): ReactNode {
         <MenuItem end icon="info" to={url}>
           <FormattedMessage {...messages.details} />
         </MenuItem>
-        {editPermission ? (
-          <MenuItem icon="edit" to={`${url}/edit#editor`}>
-            <FormattedMessage {...messages.editor} />
-          </MenuItem>
-        ) : app.yaml ? (
-          <MenuItem icon="code" to={`${url}/definition`}>
-            <FormattedMessage {...messages.definition} />
-          </MenuItem>
-        ) : null}
-        {mayViewAssets ? (
-          <MenuItem icon="layer-group" to={`${url}/assets`}>
-            <FormattedMessage {...messages.assets} />
-          </MenuItem>
-        ) : null}
-        {canViewResources ? (
-          <MenuItem icon="cubes" to={`${url}/resources`}>
-            <FormattedMessage {...messages.resources} />
-          </MenuItem>
-        ) : null}
-        {canViewResources ? (
-          <MenuSection>
-            {resourceNames.sort(compareStrings).map((resource) => (
-              <MenuItem key={resource} to={`${url}/resources/${resource}`}>
-                {resource}
+
+        {organization ? (
+          <>
+            {mayVisitEditor ? (
+              <MenuItem icon="edit" to={`${url}/edit#editor`}>
+                <FormattedMessage {...messages.editor} />
               </MenuItem>
-            ))}
-          </MenuSection>
+            ) : app.yaml ? (
+              <MenuItem icon="code" to={`${url}/definition`}>
+                <FormattedMessage {...messages.definition} />
+              </MenuItem>
+            ) : null}
+
+            {mayVisitAssets ? (
+              <MenuItem icon="layer-group" to={`${url}/assets`}>
+                <FormattedMessage {...messages.assets} />
+              </MenuItem>
+            ) : null}
+
+            {mayVisitResources ? (
+              <>
+                <MenuItem icon="cubes" to={`${url}/resources`}>
+                  <FormattedMessage {...messages.resources} />
+                </MenuItem>
+                <MenuSection>
+                  {resourceNames.sort(compareStrings).map((resource) => (
+                    <MenuItem key={resource} to={`${url}/resources/${resource}`}>
+                      {resource}
+                    </MenuItem>
+                  ))}
+                </MenuSection>
+              </>
+            ) : null}
+
+            {mayVisitTranslations ? (
+              <MenuItem icon="language" to={`${url}/translations`}>
+                <FormattedMessage {...messages.translations} />
+              </MenuItem>
+            ) : null}
+
+            {mayVisitNotifications ? (
+              <MenuItem icon="paper-plane" to={`${url}/notifications`}>
+                <FormattedMessage {...messages.notifications} />
+              </MenuItem>
+            ) : null}
+
+            {mayVisitAppMembers && app.definition.security ? (
+              <MenuItem icon="users" to={`${url}/app-members`}>
+                <FormattedMessage {...messages.users} />
+              </MenuItem>
+            ) : null}
+
+            {mayVisitTeams && app.definition.security ? (
+              <MenuItem icon="hands-helping" to={`${url}/teams`}>
+                <FormattedMessage {...messages.teams} />
+              </MenuItem>
+            ) : null}
+
+            {mayVisitSnapshots ? (
+              <MenuItem icon="clock" to={`${url}/snapshots`}>
+                <FormattedMessage {...messages.snapshots} />
+              </MenuItem>
+            ) : null}
+
+            {mayVisitSettings ? (
+              <MenuItem icon="cogs" to={`${url}/settings`}>
+                <FormattedMessage {...messages.settings} />
+              </MenuItem>
+            ) : null}
+
+            {mayVisitVariables ? (
+              <MenuItem icon="code" to={`${url}/variables`}>
+                <FormattedMessage {...messages.variables} />
+              </MenuItem>
+            ) : null}
+
+            {mayVisitSecrets ? (
+              <MenuItem icon="key" to={`${url}/secrets`}>
+                <FormattedMessage {...messages.secrets} />
+              </MenuItem>
+            ) : null}
+
+            {mayVisitQuotas ? (
+              <MenuItem icon="chart-bar" to={`${url}/quotas`}>
+                <FormattedMessage {...messages.quotas} />
+              </MenuItem>
+            ) : null}
+          </>
         ) : null}
-        {editMessagePermission ? (
-          <MenuItem icon="language" to={`${url}/translations`}>
-            <FormattedMessage {...messages.translations} />
-          </MenuItem>
-        ) : null}
-        {pushNotificationPermission ? (
-          <MenuItem icon="paper-plane" to={`${url}/notifications`}>
-            <FormattedMessage {...messages.notifications} />
-          </MenuItem>
-        ) : null}
-        {editPermission && app.definition.security ? (
-          <MenuItem icon="users" to={`${url}/users`}>
-            <FormattedMessage {...messages.users} />
-          </MenuItem>
-        ) : null}
-        {editPermission && app.definition.security?.teams ? (
-          <MenuItem icon="hands-helping" to={`${url}/teams`}>
-            <FormattedMessage {...messages.teams} />
-          </MenuItem>
-        ) : null}
-        {editPermission ? (
-          <MenuItem icon="clock" to={`${url}/snapshots`}>
-            <FormattedMessage {...messages.snapshots} />
-          </MenuItem>
-        ) : null}
-        {editPermission ? (
-          <MenuItem icon="cogs" to={`${url}/settings`}>
-            <FormattedMessage {...messages.settings} />
-          </MenuItem>
-        ) : null}
-        {editPermission ? (
-          <MenuItem icon="code" to={`${url}/variables`}>
-            <FormattedMessage {...messages.variables} />
-          </MenuItem>
-        ) : null}
-        {editPermission ? (
-          <MenuItem icon="key" to={`${url}/secrets`}>
-            <FormattedMessage {...messages.secrets} />
-          </MenuItem>
-        ) : null}
-        {editPermission ? (
-          <MenuItem icon="chart-bar" to={`${url}/quotas`}>
-            <FormattedMessage {...messages.quotas} />
-          </MenuItem>
-        ) : null}
-        {editPermission && app.definition?.containers ? (
+        {mayVisitContainerLogs && app.definition?.containers ? (
           <MenuItem icon="list-alt" to={`${url}/container-logs`}>
             <FormattedMessage {...messages.logs} />
           </MenuItem>
@@ -231,8 +310,15 @@ export function AppRoutes(): ReactNode {
       >
         <Route element={<IndexPage />} path="/" />
 
+        {app.yaml ? <Route element={<DefinitionPage />} path="/definition" /> : null}
+
         <Route
-          element={<ProtectedRoute organization={organization} permission={Permissions.EditApps} />}
+          element={
+            <ProtectedRoute
+              organization={organization}
+              permissions={[OrganizationPermission.UpdateApps]}
+            />
+          }
         >
           <Route
             element={
@@ -250,15 +336,14 @@ export function AppRoutes(): ReactNode {
             }
             path="/edit"
           />
-          <Route element={<VariablesPage />} path="/variables" />
-          <Route element={<SecretsPage />} path="/secrets" />
-          <Route element={<QuotasPage />} path="/quotas" />
-          <Route element={<SnapshotsRoutes />} path="/snapshots/*" />
         </Route>
 
         <Route
           element={
-            <ProtectedRoute organization={organization} permission={Permissions.ReadAssets} />
+            <ProtectedRoute
+              organization={organization}
+              permissions={[OrganizationPermission.QueryAppAssets]}
+            />
           }
         >
           <Route element={<AssetsPage />} path="/assets" />
@@ -266,7 +351,10 @@ export function AppRoutes(): ReactNode {
 
         <Route
           element={
-            <ProtectedRoute organization={organization} permission={Permissions.ReadResources} />
+            <ProtectedRoute
+              organization={organization}
+              permissions={[OrganizationPermission.QueryAppResources]}
+            />
           }
         >
           <Route element={<ResourcesRoutes />} path="/resources/*" />
@@ -274,7 +362,10 @@ export function AppRoutes(): ReactNode {
 
         <Route
           element={
-            <ProtectedRoute organization={organization} permission={Permissions.EditAppMessages} />
+            <ProtectedRoute
+              organization={organization}
+              permissions={[OrganizationPermission.QueryAppMessages]}
+            />
           }
         >
           <Route element={<TranslationsPage />} path="/translations" />
@@ -282,7 +373,10 @@ export function AppRoutes(): ReactNode {
         {app.definition?.containers ? (
           <Route
             element={
-              <ProtectedRoute organization={organization} permission={Permission.ReadResources} />
+              <ProtectedRoute
+                organization={organization}
+                permissions={[OrganizationPermission.QueryAppResources]}
+              />
             }
           >
             <Route element={<ContainerLogs />} path="/container-logs" />
@@ -291,29 +385,62 @@ export function AppRoutes(): ReactNode {
 
         {app.yaml ? <Route element={<DefinitionPage />} path="/definition" /> : null}
 
-        {app.definition.security ? (
-          <Route
-            element={
-              <ProtectedRoute organization={organization} permission={Permissions.EditApps} />
-            }
-          >
-            <Route element={<UsersPage />} path="/users" />
-          </Route>
-        ) : null}
+        <Route
+          element={
+            <ProtectedRoute
+              organization={organization}
+              permissions={[OrganizationPermission.PushAppNotifications]}
+            />
+          }
+        >
+          <Route element={<NotificationsPage />} path="/notifications" />
+        </Route>
 
-        {app.definition.security?.teams ? (
-          <Route
-            element={
-              <ProtectedRoute organization={organization} permission={Permissions.InviteMember} />
-            }
-          >
-            <Route element={<TeamsRoutes />} path="/teams/*" />
-          </Route>
+        {app.definition.security ? (
+          <>
+            <Route
+              element={
+                <ProtectedRoute
+                  organization={organization}
+                  permissions={[OrganizationPermission.QueryAppMembers]}
+                />
+              }
+            >
+              <Route element={<UsersPage />} path="/app-members" />
+            </Route>
+
+            <Route
+              element={
+                <ProtectedRoute
+                  organization={organization}
+                  permissions={[OrganizationPermission.QueryTeams]}
+                />
+              }
+            >
+              <Route element={<TeamsRoutes />} path="/teams/*" />
+            </Route>
+          </>
         ) : null}
 
         <Route
           element={
-            <ProtectedRoute organization={organization} permission={Permissions.EditAppSettings} />
+            <ProtectedRoute
+              organization={organization}
+              permissions={[OrganizationPermission.ReadAppSettings]}
+            />
+          }
+        >
+          <Route element={<SnapshotPage />} path="/snapshots" />
+          <Route element={<SnapshotsRoutes />} path="/snapshots/*" />
+          <Route element={<QuotasPage />} path="/quotas" />
+        </Route>
+
+        <Route
+          element={
+            <ProtectedRoute
+              organization={organization}
+              permissions={[OrganizationPermission.UpdateAppSettings]}
+            />
           }
         >
           <Route element={<SettingsPage />} path="/settings" />
@@ -323,11 +450,22 @@ export function AppRoutes(): ReactNode {
           element={
             <ProtectedRoute
               organization={organization}
-              permission={Permissions.PushNotifications}
+              permissions={[OrganizationPermission.QueryAppVariables]}
             />
           }
         >
-          <Route element={<NotificationsPage />} path="/notifications" />
+          <Route element={<VariablesPage />} path="/variables" />
+        </Route>
+
+        <Route
+          element={
+            <ProtectedRoute
+              organization={organization}
+              permissions={[OrganizationPermission.QueryAppSecrets]}
+            />
+          }
+        >
+          <Route element={<SecretsPage />} path="/secrets" />
         </Route>
 
         <Route element={<Navigate to={url} />} path="*" />

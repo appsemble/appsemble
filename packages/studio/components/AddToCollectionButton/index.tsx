@@ -9,7 +9,7 @@ import {
   useToggle,
 } from '@appsemble/react-components';
 import { type App, type AppCollection } from '@appsemble/types';
-import { Permissions } from '@appsemble/utils';
+import { OrganizationPermission } from '@appsemble/utils';
 import axios from 'axios';
 import { type ReactNode, useCallback, useEffect, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
@@ -46,7 +46,7 @@ export function AddToCollectionButton({ app, className }: AppToCollectionButtonP
       const collections = (
         await Promise.all(
           organizations
-            ?.filter((org) => checkRole(org.role, Permissions.EditCollections))
+            ?.filter((org) => checkRole(org.role, [OrganizationPermission.UpdateAppCollections]))
             .map((org) =>
               axios.get<AppCollection[]>(`/api/organizations/${org.id}/app-collections`),
             ),

@@ -1,5 +1,7 @@
 import { assertKoaError } from '@appsemble/node-utils';
 import {
+  appMemberRoles,
+  appOrganizationPermissionMapping,
   type AppPermission,
   organizationMemberRoles,
   type OrganizationPermission,
@@ -32,8 +34,16 @@ export async function checkAppMemberAppPermissions(
 
   const appMemberRoleDefinition = app.definition.security?.roles[appMember.role];
 
+  const rolePermissions = appMemberRoleDefinition.permissions?.length
+    ? appMemberRoleDefinition.permissions
+    : appMemberRoleDefinition.inherits?.length
+      ? appMemberRoleDefinition.inherits.flatMap(
+          (inheritedRole) => app.definition.security?.roles[inheritedRole].permissions,
+        )
+      : appMemberRoles.Member;
+
   assertKoaError(
-    !permissions.every((p) => appMemberRoleDefinition.permissions.includes(p)),
+    !permissions.every((p) => rolePermissions.includes(p)),
     ctx,
     403,
     'App member does not have sufficient app permissions.',
@@ -110,26 +120,45 @@ export async function checkUserAppPermissions(
   ctx: Context,
   appId: number,
   permissions: AppPermission[],
-): Promise<AppMember> {
+): Promise<AppMember | OrganizationMember> {
   const { user: authSubject } = ctx;
 
-  const app = await App.findByPk(appId, { attributes: ['definition'] });
+  const app = await App.findByPk(appId, { attributes: ['definition', 'OrganizationId'] });
 
   assertKoaError(!app, ctx, 404, 'App not found');
 
   const appMember = await AppMember.findOne({
     where: {
-      UserId: authSubject.id,
       AppId: appId,
+      UserId: authSubject.id,
     },
   });
 
-  assertKoaError(!appMember, ctx, 403, 'User is not a member of this app.');
+  const organizationMember = await OrganizationMember.findOne({
+    where: {
+      OrganizationId: app.OrganizationId,
+      UserId: authSubject.id,
+    },
+  });
 
-  const appMemberRole = app.definition.security?.roles[appMember.role];
+  const appMemberRoleDefinition = app.definition.security?.roles[appMember.role];
+
+  const appRolePermissions = appMemberRoleDefinition.permissions?.length
+    ? appMemberRoleDefinition.permissions
+    : appMemberRoleDefinition.inherits?.length
+      ? appMemberRoleDefinition.inherits.flatMap(
+          (inheritedRole) => app.definition.security?.roles[inheritedRole].permissions,
+        )
+      : appMemberRoles.Member;
+
+  const organizationRolePermissions = organizationMemberRoles[organizationMember.role];
 
   assertKoaError(
-    !permissions.every((p) => appMemberRole.permissions.includes(p)),
+    !permissions.every(
+      (p) =>
+        appRolePermissions.includes(p) ||
+        organizationRolePermissions.includes(appOrganizationPermissionMapping[p]),
+    ),
     ctx,
     403,
     'User does not have sufficient app permissions.',
@@ -189,7 +218,7 @@ export function checkAuthSubjectAppPermissions(
   ctx: Context,
   appId: number,
   permissions: AppPermission[],
-): Promise<AppMember> {
+): Promise<AppMember | OrganizationMember> {
   const { client } = ctx;
 
   return client && 'app' in client

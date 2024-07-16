@@ -37,11 +37,11 @@ export function ImportAppButton({ className }: { readonly className?: string }):
   const active = hash === '#import';
 
   const organizationIndex = organizations?.findIndex((org) =>
-    checkRole(org.role, OrganizationPermission.CreateApps),
+    checkRole(org.role, [OrganizationPermission.CreateApps]),
   );
 
   const createOrganizations = organizations?.filter((org) =>
-    checkRole(org.role, OrganizationPermission.CreateApps),
+    checkRole(org.role, [OrganizationPermission.CreateApps]),
   );
 
   const defaultValues = {

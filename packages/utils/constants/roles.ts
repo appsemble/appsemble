@@ -7,6 +7,7 @@ const OrganizationMember = [
 
 const OrganizationAppTranslator = [
   ...OrganizationMember,
+  OrganizationPermission.QueryAppMessages,
   OrganizationPermission.CreateAppMessages,
   OrganizationPermission.UpdateAppMessages,
   OrganizationPermission.DeleteAppMessages,
@@ -28,9 +29,24 @@ const OrganizationAppContentsManager = [
   OrganizationPermission.DeleteAppResources,
 ];
 
+const OrganizationAppMemberManager = [
+  OrganizationPermission.CreateAppInvites,
+  OrganizationPermission.QueryAppMembers,
+  OrganizationPermission.RemoveAppMembers,
+];
+
+const OrganizationAppTeamManager = [
+  OrganizationPermission.QueryTeams,
+  OrganizationPermission.CreateTeams,
+  OrganizationPermission.UpdateTeams,
+  OrganizationPermission.DeleteTeams,
+];
+
 const OrganizationAppManager = [
   ...OrganizationAppTranslator,
   ...OrganizationAppContentsManager,
+  ...OrganizationAppMemberManager,
+  ...OrganizationAppTeamManager,
   OrganizationPermission.UpdateApps,
   OrganizationPermission.ReadAppSettings,
   OrganizationPermission.UpdateAppSettings,
@@ -42,10 +58,12 @@ const OrganizationAppManager = [
   OrganizationPermission.QueryAppSecrets,
   OrganizationPermission.UpdateAppSecrets,
   OrganizationPermission.DeleteAppSecrets,
+  OrganizationPermission.QueryAppVariables,
   OrganizationPermission.CreateAppVariables,
   OrganizationPermission.UpdateAppVariables,
   OrganizationPermission.DeleteAppVariables,
   OrganizationPermission.PushAppNotifications,
+  OrganizationPermission.QueryAppSnapshots,
 ];
 
 const OrganizationAppCollectionManager = [
@@ -97,6 +115,8 @@ export const organizationMemberRoles = {
   AppTranslator: OrganizationAppTranslator,
   AppContentsExplorer: OrganizationAppContentsExplorer,
   AppContentsManager: OrganizationAppContentsManager,
+  AppMemberManager: OrganizationAppMemberManager,
+  AppTeamManager: OrganizationAppTeamManager,
   AppManager: OrganizationAppManager,
   AppCollectionManager: OrganizationAppCollectionManager,
   BlockManager: OrganizationBlockManager,

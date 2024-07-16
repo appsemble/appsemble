@@ -6,11 +6,12 @@ import {
 
 export function checkRole(
   role: OrganizationMemberRole,
-  permission: OrganizationPermission,
+  permissions: OrganizationPermission[],
 ): boolean {
   if (!role) {
     return false;
   }
 
-  return organizationMemberRoles[role].includes(permission);
+  const rolePermissions = organizationMemberRoles[role];
+  return permissions.every((permission) => rolePermissions.includes(permission));
 }

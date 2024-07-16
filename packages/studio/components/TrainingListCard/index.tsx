@@ -1,6 +1,6 @@
 import { Button, useConfirmation, useMessages } from '@appsemble/react-components';
 import { type Training } from '@appsemble/types';
-import { Permissions } from '@appsemble/utils';
+import { OrganizationPermission } from '@appsemble/utils';
 import { randomString } from '@appsemble/web-utils';
 import axios from 'axios';
 import {
@@ -59,8 +59,14 @@ export function TrainingListCard({
   const { organizations } = useUser();
 
   const isAppsembleMember = organizations?.find((org) => org.id === 'appsemble');
+
+  const mayUpdateTraining =
+    isAppsembleMember &&
+    checkRole(isAppsembleMember.role, [OrganizationPermission.UpdateTrainings]);
+
   const mayDeleteTraining =
-    isAppsembleMember && checkRole(isAppsembleMember.role, Permissions.DeleteApps);
+    isAppsembleMember &&
+    checkRole(isAppsembleMember.role, [OrganizationPermission.DeleteTrainings]);
 
   const handleSelectChange = useCallback(
     ({ currentTarget }: ChangeEvent<HTMLSelectElement>) => {
@@ -148,47 +154,51 @@ export function TrainingListCard({
   });
   return (
     <div>
-      {mayDeleteTraining ? (
-        <div className="dropdown is-pulled-right is-right is-active" ref={dropdownRef}>
-          <div className="dropdown-trigger">
-            <Button
-              aria-controls="dropdown-menu"
-              aria-haspopup="true"
-              icon="ellipsis-vertical"
-              onClick={() => setShowMenu(!showMenu)}
-            />
-          </div>
-          {showMenu ? (
-            <div className="dropdown-menu" role="menu">
-              <div className="dropdown-content">
+      <div className="dropdown is-pulled-right is-right is-active" ref={dropdownRef}>
+        <div className="dropdown-trigger">
+          <Button
+            aria-controls="dropdown-menu"
+            aria-haspopup="true"
+            icon="ellipsis-vertical"
+            onClick={() => setShowMenu(!showMenu)}
+          />
+        </div>
+        {showMenu ? (
+          <div className="dropdown-menu" role="menu">
+            <div className="dropdown-content">
+              {mayUpdateTraining ? (
                 <div className="dropdown-item">
                   <Button className="is-ghost" onClick={onEdit}>
                     <FormattedMessage {...messages.editTraining} />
                   </Button>
                 </div>
+              ) : null}
+
+              {mayDeleteTraining ? (
                 <div className="dropdown-item">
                   <Button className="is-ghost" onClick={onDeleteTraining}>
                     <FormattedMessage {...messages.deleteTraining} />
                   </Button>
                 </div>
-                <TrainingModal
-                  defaultValues={{
-                    title: trainingData.title,
-                    description: trainingData.description,
-                    difficultyLevel: trainingData.difficultyLevel,
-                    competences: comp,
-                  }}
-                  isActive={isEditModalActive}
-                  modalTitle={<FormattedMessage {...messages.editTraining} />}
-                  onClose={closeEditDialog}
-                  onSelectChange={handleSelectChange}
-                  onSubmit={onEditTraining}
-                />
-              </div>
+              ) : null}
+
+              <TrainingModal
+                defaultValues={{
+                  title: trainingData.title,
+                  description: trainingData.description,
+                  difficultyLevel: trainingData.difficultyLevel,
+                  competences: comp,
+                }}
+                isActive={isEditModalActive}
+                modalTitle={<FormattedMessage {...messages.editTraining} />}
+                onClose={closeEditDialog}
+                onSelectChange={handleSelectChange}
+                onSubmit={onEditTraining}
+              />
             </div>
-          ) : null}
-        </div>
-      ) : null}
+          </div>
+        ) : null}
+      </div>
       <li className="my-4" id={id}>
         <Wrapper className={`box px-4 py-4 ${styles.wrapper}`} {...props}>
           <div className="columns is-multiline">
