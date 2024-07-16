@@ -17,7 +17,7 @@ export async function resendOrganizationInvite(ctx: Context): Promise<void> {
     OrganizationPermission.CreateOrganizationInvites,
   ]);
 
-  const organization = await Organization.findByPk(organizationId, { attributes: [] });
+  const organization = await Organization.findByPk(organizationId, { attributes: ['id'] });
 
   assertKoaError(!organization, ctx, 404, 'Organization not found.');
 

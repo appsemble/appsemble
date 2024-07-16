@@ -1,8 +1,8 @@
 import { assertKoaError } from '@appsemble/node-utils';
 import {
   type AppPermission,
-  type OrganizationPermission,
   organizationMemberRoles,
+  type OrganizationPermission,
   teamMemberRoles,
   type TeamPermission,
 } from '@appsemble/utils';
@@ -14,8 +14,8 @@ import {
   Organization,
   OrganizationMember,
   Team,
-  TeamMember
-} from "../models/index.js";
+  TeamMember,
+} from '../models/index.js';
 
 export async function checkAppMemberAppPermissions(
   ctx: Context,
@@ -49,7 +49,7 @@ export async function checkAppMemberTeamPermissions(
 ): Promise<TeamMember> {
   const { user: authSubject } = ctx;
 
-  const team = await Team.findByPk(teamId, { attributes: [] });
+  const team = await Team.findByPk(teamId, { attributes: ['id'] });
 
   assertKoaError(!team, ctx, 404, 'Team not found.');
 
@@ -60,12 +60,7 @@ export async function checkAppMemberTeamPermissions(
     },
   });
 
-  assertKoaError(
-    !teamMember,
-    ctx,
-    403,
-    'App member is not a member of this team.',
-  );
+  assertKoaError(!teamMember, ctx, 403, 'App member is not a member of this team.');
 
   const teamMemberRole = teamMemberRoles[teamMember.role];
 
@@ -86,7 +81,7 @@ export async function checkUserOrganizationPermissions(
 ): Promise<OrganizationMember> {
   const { user: authSubject } = ctx;
 
-  const organization = await Organization.findByPk(organizationId, { attributes: [] });
+  const organization = await Organization.findByPk(organizationId, { attributes: ['id'] });
 
   assertKoaError(!organization, ctx, 403, 'Organization not found.');
 
@@ -150,7 +145,7 @@ export async function checkUserTeamPermissions(
 ): Promise<TeamMember> {
   const { user: authSubject } = ctx;
 
-  const team = await Team.findByPk(teamId, { attributes: [] });
+  const team = await Team.findByPk(teamId, { attributes: ['id'] });
 
   assertKoaError(!team, ctx, 404, 'Team not found.');
 
@@ -159,10 +154,15 @@ export async function checkUserTeamPermissions(
     where: {
       UserId: authSubject.id,
       AppId: team.AppId,
-    }
+    },
   });
 
-  assertKoaError(!appMember, ctx, 403, 'User is not a member of the app that this team belongs to.');
+  assertKoaError(
+    !appMember,
+    ctx,
+    403,
+    'User is not a member of the app that this team belongs to.',
+  );
 
   const teamMember = await TeamMember.findOne({
     where: {
@@ -185,30 +185,26 @@ export async function checkUserTeamPermissions(
   return teamMember;
 }
 
-export async function checkAuthSubjectAppPermissions(
+export function checkAuthSubjectAppPermissions(
   ctx: Context,
   appId: number,
   permissions: AppPermission[],
 ): Promise<AppMember> {
   const { client } = ctx;
 
-  if (client && 'app' in client) {
-    return checkAppMemberAppPermissions(ctx, appId, permissions);
-  } else {
-    return checkUserAppPermissions(ctx, appId, permissions);
-  }
+  return client && 'app' in client
+    ? checkAppMemberAppPermissions(ctx, appId, permissions)
+    : checkUserAppPermissions(ctx, appId, permissions);
 }
 
-export async function checkAuthSubjectTeamPermissions(
+export function checkAuthSubjectTeamPermissions(
   ctx: Context,
   teamId: number,
   permissions: TeamPermission[],
 ): Promise<TeamMember> {
   const { client } = ctx;
 
-  if (client && 'app' in client) {
-    return checkAppMemberTeamPermissions(ctx, teamId, permissions);
-  } else {
-    return checkUserTeamPermissions(ctx, teamId, permissions);
-  }
+  return client && 'app' in client
+    ? checkAppMemberTeamPermissions(ctx, teamId, permissions)
+    : checkUserTeamPermissions(ctx, teamId, permissions);
 }

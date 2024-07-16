@@ -12,7 +12,7 @@ export async function resetAppMemberPassword(ctx: Context): Promise<void> {
     },
   } = ctx;
 
-  const app = await App.findByPk(appId, { attributes: [] });
+  const app = await App.findByPk(appId, { attributes: ['id'] });
 
   assertKoaError(!app, ctx, 404, 'App could not be found.');
 

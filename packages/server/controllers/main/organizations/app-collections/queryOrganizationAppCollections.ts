@@ -9,7 +9,7 @@ export async function queryOrganizationAppCollections(ctx: Context): Promise<voi
     user: authSubject,
   } = ctx;
 
-  const organization = await Organization.findByPk(organizationId, { attributes: [] });
+  const organization = await Organization.findByPk(organizationId, { attributes: ['id'] });
 
   assertKoaError(!organization, ctx, 404, 'Organization not found.');
 

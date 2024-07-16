@@ -6,7 +6,7 @@ import { App, AppOAuth2Secret } from '../../../../../models/index.js';
 export async function getAppOAuth2Secret(ctx: Context): Promise<void> {
   const { appId, appOAuth2SecretId } = ctx.pathParams;
 
-  const app = await App.findByPk(appId, { attributes: [] });
+  const app = await App.findByPk(appId, { attributes: ['id'] });
 
   assertKoaError(!app, ctx, 404, 'App not found');
 
