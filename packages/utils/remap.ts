@@ -633,9 +633,10 @@ const mapperImplementations: MapperImplementations = {
   appMember: (property, input, context) => context.userInfo?.appMember?.[property],
 
   container(property, input, context) {
-    const namespace = 'companion-containers';
+    // This value is replaced when the request is made
+    // By using the value of the release name
+    const namespace = 'companion-containers-appsemble';
     const appName = context.appUrl.split('.')[0].replace(/^https?:\/\//, '');
-
     const endpoint = property.split('/').slice(1).join('/');
 
     const containerName = `${property.split('/')[0]}-${appName}-${context.appId}`

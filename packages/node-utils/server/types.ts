@@ -105,6 +105,7 @@ declare module 'koas-parameters' {
     memberEmail: string;
     trainingBlockId: number;
     trainingId: number;
+    container: string;
   }
 
   interface QueryParams {

@@ -2757,3 +2757,7 @@ export interface ContainerEnvVar {
   value: string;
   useValueFromSecret?: boolean;
 }
+export interface LogObject {
+  fromAppsemble: boolean;
+  entries: string[];
+}

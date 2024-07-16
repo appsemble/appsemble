@@ -347,7 +347,7 @@ export async function createApp(ctx: Context): Promise<void> {
     if (containerDefinitions && containerDefinitions.length > 0) {
       await updateCompanionContainers(
         containerDefinitions,
-        record.definition.name,
+        record.path,
         String(record.id),
         record.registry,
       );
@@ -720,7 +720,7 @@ export async function patchApp(ctx: Context): Promise<void> {
       // Make the actual update
       await updateCompanionContainers(
         definition.containers ?? [],
-        dbApp.definition.name,
+        dbApp.path,
         String(appId),
         definition.registry,
       );

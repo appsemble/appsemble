@@ -18,7 +18,7 @@ export const maxCPU = (process.env.MAX_CONTAINER_CPU as unknown as number) ?? 3;
 export const maxMemoryGi = (process.env.MAX_CONTAINER_MEMORY as unknown as number) ?? 3;
 
 export const appIdLabel = 'appId';
-export const resourceDefaults: ContainerResourceProps = { memory: '512Mi', cpu: '0.5' };
+export const resourceDefaults: ContainerResourceProps = { memory: '128Mi', cpu: '0.1' };
 
 export function getKubeConfig(): {
   appsApi: AppsV1Api;
@@ -33,8 +33,9 @@ export function getKubeConfig(): {
 
   return { appsApi, coreApi, kubeconfig };
 }
+
 export function getContainerNamespace(): string {
-  return process.env.COMPANION_CONTAINER_NAMESPACE ?? 'companion-containers';
+  return `companion-containers-${process.env.SERVICE_NAME ?? 'appsemble'}`;
 }
 
 export function formatServiceName(containerName: string, appName: string, appId: string): string {
@@ -141,7 +142,7 @@ export function validateContainerResources(resources: ContainerResources): Conta
       unit === 'Mi' && parsedValue > maxMemoryGi * 1024,
     ];
 
-    if (conditionsMemory.some((c) => !c)) {
+    if (conditionsMemory.some(Boolean)) {
       result.limits.memory = resourceDefaults.memory;
     }
   } else {

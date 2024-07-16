@@ -15,12 +15,13 @@ roles:
 
 containers:
   - name: pdf-generator
-    image: registry.gitlab.com/appsemble/apps/eindhoven/pdf-generator-api:main
+    image: registry.gitlab.com/appsemble/core-images/pdf-generator-api:demo
     port: 3000
+    resources:
+      limits:
+        cpu: '0.6'
+        memory: 512Mi
     env:
-      - name: SECRET
-        value: secret
-        useValueFromSecret: true
       # The name of the appsemble domain you are using
       - name: REMOTE
         value: http://appsemble
