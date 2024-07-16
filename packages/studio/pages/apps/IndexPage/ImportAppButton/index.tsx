@@ -8,7 +8,7 @@ import {
   SimpleFormField,
   SimpleModalFooter,
 } from '@appsemble/react-components';
-import { Permissions } from '@appsemble/utils';
+import { OrganizationPermission } from '@appsemble/utils';
 import axios from 'axios';
 import { type ChangeEvent, type ReactNode, useCallback, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
@@ -37,11 +37,11 @@ export function ImportAppButton({ className }: { readonly className?: string }):
   const active = hash === '#import';
 
   const organizationIndex = organizations?.findIndex((org) =>
-    checkRole(org.role, Permissions.CreateApps),
+    checkRole(org.role, OrganizationPermission.CreateApps),
   );
 
   const createOrganizations = organizations?.filter((org) =>
-    checkRole(org.role, Permissions.CreateApps),
+    checkRole(org.role, OrganizationPermission.CreateApps),
   );
 
   const defaultValues = {

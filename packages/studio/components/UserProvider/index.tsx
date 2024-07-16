@@ -5,6 +5,7 @@ import {
   type TokenResponse,
   type UserInfo,
 } from '@appsemble/types';
+import { type OrganizationMemberRole } from '@appsemble/utils';
 import { setUser as setSentryUser } from '@sentry/browser';
 import axios, { type AxiosHeaders } from 'axios';
 import { jwtDecode } from 'jwt-decode';
@@ -21,8 +22,6 @@ import {
   useState,
 } from 'react';
 
-import { type Role } from '../../types.js';
-
 interface UserProviderProps {
   readonly children: ReactNode;
 }
@@ -34,7 +33,7 @@ export interface UserOrganization extends Organization {
   /**
    * The user’s role within the organization.
    */
-  role: Role;
+  role: OrganizationMemberRole;
 }
 
 interface UserContext {
