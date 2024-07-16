@@ -29,4 +29,16 @@ rules:
       - certificates
     verbs:
       - list
+  - apiGroups:
+      - ''
+    resources:
+      - pods
+    verbs:
+      - list
+  - apiGroups:
+      - ''
+    resources:
+      - pods/log
+    verbs:
+      - get
 {{ end }}

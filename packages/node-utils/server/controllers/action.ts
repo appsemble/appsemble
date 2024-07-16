@@ -1,6 +1,7 @@
 import {
   assertKoaError,
   createFormData,
+  getContainerNamespace,
   getRemapperContext,
   logger,
   type Options,
@@ -225,6 +226,11 @@ async function handleRequestProxy(
 
   // Restricting access to only the containers defined by the app
   if (urlPattern.test(String(proxyUrl))) {
+    axiosConfig.url = axiosConfig.url.replace(
+      axiosConfig.url.split('.')[1],
+      getContainerNamespace(),
+    );
+
     const { appId } = parseServiceUrl(String(proxyUrl));
     if (appId !== String(app.id)) {
       throwKoaError(ctx, 403, 'Forbidden');

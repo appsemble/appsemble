@@ -249,7 +249,7 @@ export async function createTemplateApp(ctx: Context): Promise<void> {
     if (template.definition.containers && template.definition.containers.length > 0) {
       await updateCompanionContainers(
         template.definition.containers,
-        record.definition.name,
+        record.path,
         String(record.id),
         template.registry,
       );

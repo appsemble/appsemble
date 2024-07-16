@@ -3,7 +3,7 @@ apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:
   name: companions-manager
-  namespace: companion-containers
+  namespace: companion-containers-{{ include "appsemble.fullname" . }}
   labels:
     {{ include "appsemble.labels" . }}
 rules:
@@ -43,4 +43,11 @@ rules:
       - ''
     resources:
       - pods
+  - verbs:
+      - get
+    apiGroups:
+      - ''
+    resources:
+      - pods/log
+    
 {{ end }}

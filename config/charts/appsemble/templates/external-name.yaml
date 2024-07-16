@@ -2,7 +2,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: {{ include "appsemble.fullname" . }}
-  namespace: companion-containers
+  namespace: companion-containers-{{ include "appsemble.fullname" . }}
 spec:
   type: ExternalName
   externalName: {{ include "appsemble.fullname" . }}.
