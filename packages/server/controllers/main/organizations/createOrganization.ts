@@ -2,7 +2,12 @@ import { assertKoaError, organizationBlocklist, throwKoaError } from '@appsemble
 import { type Context } from 'koa';
 import { Op, UniqueConstraintError } from 'sequelize';
 
-import { EmailAuthorization, Organization, User } from '../../../models/index.js';
+import {
+  EmailAuthorization,
+  Organization,
+  OrganizationMember,
+  User,
+} from '../../../models/index.js';
 
 export async function createOrganization(ctx: Context): Promise<void> {
   const {
@@ -13,7 +18,7 @@ export async function createOrganization(ctx: Context): Promise<void> {
   } = ctx;
 
   const user = await User.findByPk(authSubject.id, {
-    attributes: ['primaryEmail', 'name'],
+    attributes: ['id', 'primaryEmail', 'name'],
     include: [
       {
         required: false,
@@ -48,14 +53,20 @@ export async function createOrganization(ctx: Context): Promise<void> {
   );
 
   try {
-    const organization = await Organization.create(
-      { id, name, email, description, website, icon: icon ? icon.contents : null },
-      { include: [User] },
-    );
+    const organization = await Organization.create({
+      id,
+      name,
+      email,
+      description,
+      website,
+      icon: icon ? icon.contents : null,
+    });
 
-    // @ts-expect-error XXX Convert to a type safe expression.
-    await organization.addUser(user.id, { through: { role: 'Owner' } });
-    await organization.reload();
+    await OrganizationMember.create({
+      OrganizationId: organization.id,
+      UserId: user.id,
+      role: 'Owner',
+    });
 
     ctx.body = {
       id: organization.id,
@@ -66,12 +77,14 @@ export async function createOrganization(ctx: Context): Promise<void> {
       description: organization.description,
       website: organization.website,
       email: organization.email,
-      members: organization.Users.map((u) => ({
-        id: u.id,
-        name: u.name,
-        primaryEmail: u.primaryEmail,
-        role: 'Owner',
-      })),
+      members: [
+        {
+          id: user.id,
+          name: user.name,
+          primaryEmail: user.primaryEmail,
+          role: 'Owner',
+        },
+      ],
       invites: [],
     };
   } catch (error: unknown) {
