@@ -2,7 +2,7 @@ import { type ActionName, type ServerActionName, serverActions } from '@appsembl
 import { type ReactNode } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 
-import { messages } from '../messages.js';
+import { messages } from './messages.js';
 
 export function ClientServerActionSupport({ name }: { readonly name: ActionName }): ReactNode {
   const intl = useIntl();
