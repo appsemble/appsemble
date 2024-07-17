@@ -19,6 +19,8 @@ spec:
         - name: {{ include "appsemble.fullname" . }}-cleanup
           image: "{{ .Values.image.repository }}:{{ include "appsemble.tag" . }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
+          securityContext:
+            readOnlyRootFilesystem: true
           args:
             - cleanup
             - -vv

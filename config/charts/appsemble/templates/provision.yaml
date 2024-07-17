@@ -21,6 +21,8 @@ spec:
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           command:
             - psql
+          securityContext:
+            readOnlyRootFilesystem: true
           args:
             - "--command"
             - |

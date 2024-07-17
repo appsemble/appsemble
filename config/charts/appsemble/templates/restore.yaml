@@ -18,6 +18,8 @@ spec:
         - name: {{ include "appsemble.fullname" . }}-restore
           image: "{{ .Values.image.repository }}:{{ include "appsemble.tag" . }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
+          securityContext:
+            readOnlyRootFilesystem: true
           args:
             - restore
             - -vv

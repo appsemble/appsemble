@@ -22,6 +22,8 @@ spec:
             - name: {{ include "appsemble.fullname" . }}-cronjob
               image: "{{ .Values.image.repository }}:{{ include "appsemble.tag" . }}"
               imagePullPolicy: {{ .Values.image.pullPolicy }}
+              securityContext:
+                readOnlyRootFilesystem: true
               args:
                 - run-cronjobs
                 - -vv
