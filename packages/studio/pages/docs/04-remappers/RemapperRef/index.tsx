@@ -18,7 +18,7 @@ function Ref({ isArray, jsonRef }: RenderRefProps): ReactNode {
   );
 }
 
-export function RemapperPage({
+export function RemapperRef({
   remappers,
 }: {
   readonly remappers: Record<string, OpenAPIV3.ReferenceObject | OpenAPIV3.SchemaObject>;

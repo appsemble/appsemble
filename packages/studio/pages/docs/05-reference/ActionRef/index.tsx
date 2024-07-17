@@ -3,10 +3,10 @@ import { camelToHyphen, defaultLocale, schemas } from '@appsemble/utils';
 import { type Schema as JSONSchema } from 'jsonschema';
 import { type OpenAPIV3 } from 'openapi-types';
 import { Fragment, type ReactNode } from 'react';
+import { Link } from 'react-router-dom';
 
 import { messages } from './messages.js';
-import { Ref } from './Ref/index.js';
-import { Schema } from '../../../../components/Schema/index.js';
+import { type RenderRefProps, Schema } from '../../../../components/Schema/index.js';
 
 const [base, definitions] = schemas.ActionDefinition.allOf;
 
@@ -35,7 +35,26 @@ const entries = (definitions as OpenAPIV3.NonArraySchemaObject).anyOf
   })
   .sort(([a], [b]) => a.localeCompare(b));
 
-export function ActionPage(): ReactNode {
+function Ref({ isArray, jsonRef }: RenderRefProps): ReactNode {
+  const name = jsonRef.split('/').pop();
+
+  return (
+    <>
+      {name === 'ActionDefinition' ? (
+        'ActionDefinition'
+      ) : (
+        <Link
+          to={name === 'RemapperDefinition' ? '../../remapper' : `./app#${camelToHyphen(name)}`}
+        >
+          {name}
+        </Link>
+      )}
+      {isArray ? '[]' : null}
+    </>
+  );
+}
+
+export function ActionRef(): ReactNode {
   useMeta(messages.title, messages.description);
 
   return (

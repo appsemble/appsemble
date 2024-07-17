@@ -3,12 +3,12 @@ import { camelToHyphen, iterJSONSchema, schemas } from '@appsemble/utils';
 import { type Schema as JSONSchema } from 'jsonschema';
 import { Fragment, type ReactNode } from 'react';
 import { FormattedMessage } from 'react-intl';
+import { Link } from 'react-router-dom';
 import { stringify } from 'yaml';
 
 import { messages } from './messages.js';
-import { Ref } from './Ref/index.js';
 import { CodeBlock } from '../../../../components/CodeBlock/index.js';
-import { Schema } from '../../../../components/Schema/index.js';
+import { type RenderRefProps, Schema } from '../../../../components/Schema/index.js';
 
 const allSchemas = new Map<string, JSONSchema>();
 
@@ -31,7 +31,28 @@ resolveJsonReferences(schemas.AppDefinition, 'AppDefinition');
 
 const entries = [...allSchemas.entries()];
 
-export function AppPage(): ReactNode {
+function Ref({ isArray, jsonRef }: RenderRefProps): ReactNode {
+  const name = jsonRef.split('/').pop();
+
+  return (
+    <>
+      <Link
+        to={
+          name === 'ActionDefinition'
+            ? './action'
+            : name === 'RemapperDefinition'
+              ? './remapper'
+              : `#${camelToHyphen(name)}`
+        }
+      >
+        {name}
+      </Link>
+      {isArray ? '[]' : null}
+    </>
+  );
+}
+
+export function AppRef(): ReactNode {
   useMeta(messages.title, messages.description);
 
   const showYaml = useToggle();
