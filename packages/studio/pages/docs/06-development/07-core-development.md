@@ -57,8 +57,8 @@ OAuth2 credentials [here](/settings/client-credentials), these credentials can b
 setting the APPSEMBLE_CLIENT_CREDENTIALS environment variable.
 
 After completing the login, the first step is to create an
-[organization](../02-guide/organizations.mdx). This can be done either via the CLI or the studio. To
-create an organization from the CLI, use the following command.
+[organization](../02-guides/organizations.mdx). This can be done either via the CLI or the studio.
+To create an organization from the CLI, use the following command.
 
 ```sh
 npm run appsemble organization create <organization_id>

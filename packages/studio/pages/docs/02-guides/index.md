@@ -2,7 +2,7 @@
 icon: info-circle
 ---
 
-# Guide
+# Guides
 
 This document acts as a guide for creating apps. The first guide will explain the Appsemble studio.
 The second guide will guide you to create a simple person registration app. The follow up guides

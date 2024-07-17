@@ -31,7 +31,7 @@ complexity.
 
 Check out the resources below for more information on how to develop apps using Appsemble.
 
-- [App development guide](02-guide/index.md)
+- [App development guide](02-guides/index.md)
 - [Documentation on blocks](/blocks)
 
 ## System Admin
