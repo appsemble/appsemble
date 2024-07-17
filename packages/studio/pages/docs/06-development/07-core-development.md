@@ -45,7 +45,7 @@ browser, register a new account by going to `http://localhost:9999/reigster`. Yo
 address to register an account. If you don’t have an SMTP server configured, the confirmation email
 is printed in the server logs. i.e. the email is not sent in real time. This also allows you to use
 a random test email address. After registering a new account and confirming your email address, you
-can run the following command to login into the [Appsemble CLI](/docs/packages/cli).
+can run the following command to login into the [Appsemble CLI](/docs/08-packages/cli).
 
 ```sh
 npm run appsemble login
@@ -112,7 +112,7 @@ various database models, migration files, etc. Similarly, you can check `README.
 package to know more about that package.
 
 Some common development tasks include adding a new server endpoint, adding a new
-[action](../03-actions/index.mdx), adding a new [remapper](../04-remapper/index.mdx), adding new
+[action](../03-actions/index.mdx), adding a new [remapper](../04-remappers/index.mdx), adding new
 column to a table etc.
 
 **To add a new server endpoint the following steps should be followed.**

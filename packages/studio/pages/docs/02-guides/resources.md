@@ -40,7 +40,7 @@ called a ´resource´.
 
 ## Defining resources
 
-Resources can be defined in the [app definition](/docs/reference/app#app-definition) within the
+Resources can be defined in the [app definition](../05-reference/app.mdx#app-definition) within the
 `resources` property. Each object within `resources` is considered to be a Resource, named after the
 name it was given within `resources`.
 
@@ -186,9 +186,10 @@ resources:
 
 Aside from including the query string parameters in the URL manually, it is also possible to define
 a `query` object in a resource definition. This allows for the URL to be easier to read. Note that
-if `query` is defined in the [`resource` action](/docs/reference/app#-resource-definition-query),
-the `query` [remapper](/docs/reference/remapper) as defined in the action will take precedence over
-the one defined as the default for the resource’s method.
+if `query` is defined in the
+[`resource` action](../05-reference/app.mdx#-resource-definition-query), the `query`
+[remapper](../04-remappers/) as defined in the action will take precedence over the one defined as
+the default for the resource’s method.
 
 Below is an example of what the query object looks like when in use.
 
@@ -451,7 +452,7 @@ Sometimes it is still desirable to know about parts of a resource despite of thi
 For this purpose resource _views_ can be used.
 
 Views are alternate ways to display resources, using separate sets of roles. The output of these API
-calls can then be modified using [remappers](/docs/reference/remapper).
+calls can then be modified using [remappers](../04-remappers/).
 
 Let’s use an example of a resource that tracks reservations for a restaurant. Our resource contains
 the name of the person who placed the reservation, as well as the table that has been reserved. Only
@@ -460,7 +461,7 @@ get leaked.
 
 When making reservations, however, it is still helpful to know which tables are already reserved. To
 accomplish this, views can be used. A view has a set of roles, as well as a
-[remapper](/docs/reference/remapper) that’s used to transform the output.
+[remapper](../04-remappers/) that’s used to transform the output.
 
 In this case only the resource ID, table name and the creation date should be included. The
 `object.from` remapper is suitable for this:

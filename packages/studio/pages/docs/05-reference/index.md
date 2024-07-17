@@ -9,5 +9,5 @@ explanation.
 
 On this page, a full reference can be found for app definitions and actions.
 
-- [App definition](/docs/reference/app)
-- [Action definition](/docs/reference/action)
+- [App definition](app.mdx)
+- [Action definition](action.mdx)

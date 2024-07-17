@@ -12,7 +12,7 @@ continue on this basic app to add more advanced features.
 2. [App](App.md)
 3. [Basic app](basic-app.md)
 4. [Events](events.md)
-5. [Remappers](/docs/reference/remapper)
+5. [Remappers](../04-remappers/)
 6. [Theming](theming.md)
 7. [Screenshots](screenshots.md)
 8. [App long description](app-long-description.md)

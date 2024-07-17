@@ -203,7 +203,7 @@ export function SecretsPage(): ReactNode {
             {...messages.sslDescription}
             values={{
               link: (link) => (
-                <Link rel="noopener noreferrer" target="_blank" to="../../../docs/03-guide/tls">
+                <Link rel="noopener noreferrer" target="_blank" to="../../../docs/02-guides/tls">
                   {link}
                 </Link>
               ),

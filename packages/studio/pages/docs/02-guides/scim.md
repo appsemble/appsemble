@@ -43,10 +43,11 @@ have an Azure Active Directory already set up and filled with users.
 
 1. Firstly, to configure your Appsemble application so that individual users can log in, your app
    definition needs to contain a basic
-   [security definition](/docs/03-guide/security#security-definition).
+   [security definition](../02-guides/security.md#security-definition).
 
-   **(Optional)** If your application wants to use the [Teams](/docs/03-guide/teams) functionality,
-   this security definition also has to contain a [teams definition](/docs/03-guide/security#teams).
+   **(Optional)** If your application wants to use the [Teams](../02-guides/teams.md) functionality,
+   this security definition also has to contain a
+   [teams definition](../02-guides/security.md#teams).
 
 2. In your application, go to **Secrets** -> **SCIM**.
 
@@ -68,7 +69,7 @@ have an Azure Active Directory already set up and filled with users.
 
 2. Under **Mappings**, set up the desired attribute mappings you need for your application. The
    supported attributes can be found at
-   [Supported attribute mappings](/docs/03-development/03-SCIM-development#supported-attribute-mappings).
+   [Supported attribute mappings](../06-development/06-SCIM-development.md#supported-attribute-mappings).
 
    **Note:** As of now, “Group” mappings are not supported. Turn these off to prevent provisioning
    issues.

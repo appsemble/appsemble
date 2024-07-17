@@ -54,7 +54,7 @@ export function NotificationsPage(): ReactNode {
                   <Link
                     rel="noopener noreferrer"
                     target="_blank"
-                    to="../../../docs/reference/app#notification"
+                    to="../../../docs/05-reference/app#notification"
                   >
                     <code>notifications</code>
                   </Link>

@@ -89,7 +89,7 @@ export function ServiceSecrets({ onClickServiceCheckbox }: ServiceSecretsParams)
             <Link
               rel="noopener noreferrer"
               target="_blank"
-              to="../../../docs/03-guide/service#security-configuration"
+              to="../../../docs/02-guides/service#security-configuration"
             >
               {link}
             </Link>
@@ -145,7 +145,7 @@ export function ServiceSecrets({ onClickServiceCheckbox }: ServiceSecretsParams)
                 <Link
                   rel="noopener noreferrer"
                   target="_blank"
-                  to="../../../docs/03-guide/service#security-configuration"
+                  to="../../../docs/02-guides/service#security-configuration"
                 >
                   {link}
                 </Link>
