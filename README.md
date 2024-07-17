@@ -6,7 +6,7 @@
 
 # ![](config/assets/logo.svg) Appsemble
 
-> The app building platform
+> The open source low-code app building platform
 
 ## Table of Contents
 
