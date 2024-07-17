@@ -28,7 +28,7 @@ Here’s an example of how you can use `onLoad` to trigger an action:
 ```yaml validate blocks-snippet
 blocks:
   - type: data-loader
-    version: *version
+    version: 0.29.5
     actions:
       onLoad:
         type: resource.query
@@ -39,21 +39,45 @@ Here the `data-loader` block queries the `person` resource when the block is ren
 
 Similarly, for onSubmit action:
 
-```yaml validate blocks-snippet
-blocks:
-  - type: form
-    version: *version
-    actions:
-      onSubmit:
-        remapBefore: { null.strip }
-        type: resource.create
-        resource: person
-        onSuccess:
-          type: link
-          to: Person List
-        onError:
-          type: link
-          to: Error Page
+```yaml validate pages-snippet
+pages:
+  - name: Create Person
+    blocks:
+      - type: form
+        version: 0.29.5
+        actions:
+          onSubmit:
+            remapBefore: { null.strip }
+            type: resource.create
+            resource: person
+            onSuccess:
+              type: link
+              to: Person List
+            onError:
+              type: link
+              to: Error Page
+  - name: Person List
+    blocks:
+      - type: markdown
+        version: 0.29.5
+        parameters:
+          content: |
+            ## Person list
+
+            | Person   | Age |
+            | -------- | --- |
+            | Person 1 | 35  |
+            | Person 2 | 52  |
+            | Person 3 | 61  |
+  - name: Error Page
+    blocks:
+      - type: markdown
+        version: 0.29.5
+        parameters:
+          content: |
+            Something went wrong creating this resource :/
+
+            Please try again later
 ```
 
 Here when data is submitted via the `form` block, a `person` resource is created. If the resource is
