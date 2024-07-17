@@ -4,6 +4,7 @@
   "fixErrors": "",
   "formRequirementError": "Et af kravene i denne formular er ugyldigt.",
   "invalidLabel": "Denne værdi er ugyldig",
+  "longSubmissionWarning": "",
   "optionalLabel": "(Valgfri)",
   "previousLabel": "Foregående",
   "selectionNoOptions": "",

@@ -1870,6 +1870,9 @@ Include an array of fields in \`fields\` to replace the current list of fields i
     "invalidLabel": {
       "description": undefined,
     },
+    "longSubmissionWarning": {
+      "description": undefined,
+    },
     "optionalLabel": {
       "description": undefined,
     },
@@ -4481,6 +4484,11 @@ If this is set to \`true\`, the default values for the fields won't contain data
         "default": false,
         "description": "Weather the form should take up all available width on the page.",
         "type": "boolean",
+      },
+      "longSubmissionDuration": {
+        "default": 5000,
+        "description": "After this duration in milliseconds, a message will display urging the user to wait because the form is taking long to submit.",
+        "type": "number",
       },
       "previous": {
         "description": "Whether the previous button should be shown.",

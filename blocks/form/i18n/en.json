@@ -4,6 +4,7 @@
   "fixErrors": "Please fix the following errors:",
   "formRequirementError": "One of the requirements of this form is invalid.",
   "invalidLabel": "This value is invalid",
+  "longSubmissionWarning": "The form is still being submitted, please wait.",
   "optionalLabel": "(Optional)",
   "previousLabel": "Previous",
   "selectionNoOptions": "No more available options",

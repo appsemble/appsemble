@@ -4,6 +4,7 @@
   "fixErrors": "",
   "formRequirementError": "Jedan zahtjev ovog polja je neispravan.",
   "invalidLabel": "Ova je vrijednost neispravna",
+  "longSubmissionWarning": "",
   "optionalLabel": "(opcionalno)",
   "previousLabel": "Prethodna",
   "selectionNoOptions": "",

@@ -4,6 +4,7 @@
   "fixErrors": "",
   "formRequirementError": "Een van de vereisten van dit formulier is ongeldig.",
   "invalidLabel": "Deze waarde is ongeldig",
+  "longSubmissionWarning": "",
   "optionalLabel": "(Optioneel)",
   "previousLabel": "Vorige",
   "selectionNoOptions": "Geen beschikbare opties meer",

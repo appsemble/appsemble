@@ -1320,6 +1320,7 @@ declare module '@appsemble/sdk' {
     selectionNoOptions: never;
     selectionOptionsError: never;
     fixErrors: never;
+    longSubmissionWarning: never;
   }
 
   interface Parameters {
@@ -1420,5 +1421,13 @@ declare module '@appsemble/sdk' {
      * By setting this to `true`, this won’t happen.
      */
     skipInitialLoad?: boolean;
+
+    /**
+     * After this duration in milliseconds, a message will display urging the
+     * user to wait because the form is taking long to submit.
+     *
+     * @default 5000
+     */
+    longSubmissionDuration?: number;
   }
 }
