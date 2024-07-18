@@ -15,7 +15,7 @@ test.describe('Docs', () => {
   });
 
   test('should render the permissions table', async ({ page }) => {
-    await page.goto('/en/docs/03-guide/organizations');
+    await page.goto('/en/docs/02-guides/organizations');
     await expect(page.getByRole('row')).toHaveText([
       ['Permissions', ...Object.keys(roles)].join(''),
       ...Object.values(Permission)

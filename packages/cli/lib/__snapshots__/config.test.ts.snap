@@ -4420,7 +4420,7 @@ Replaces the optional label if the field is optional. Won’t display if the fie
         "additionalProperties": false,
         "description": "This allows you to update fields automatically with actions by typing in a selected field.
 
-To authenticate with an external API see [Services](../../../docs/03-guide/service)",
+To authenticate with an external API see [Services](../../../docs/02-guides/service)",
         "properties": {
           "action": {
             "description": "The name of the action to trigger when the selected field values are changed.
@@ -4459,7 +4459,7 @@ If this is left as \`true\`, any help text appearing will cause the form input t
         "default": false,
         "description": "Whether or not to disable populating fields with default data values.
 
-If this is set to \`true\`, the default values for the fields won't contain data from [page storage](../../../docs/03-guide/storage#app-storage).",
+If this is set to \`true\`, the default values for the fields won't contain data from [page storage](../../../docs/02-guides/storage#app-storage).",
         "type": "boolean",
       },
       "disabled": {

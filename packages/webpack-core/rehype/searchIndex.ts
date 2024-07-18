@@ -38,6 +38,16 @@ const transformer: Transformer<Root> = (ast) => {
     section.push(child);
   }
 
+  if (heading && section.length) {
+    sections.push([
+      heading.properties.id as string,
+      {
+        title: toText(heading),
+        haystack: toText({ type: 'root', children: section }),
+      },
+    ]);
+  }
+
   ast.children.unshift({
     type: 'mdxjsEsm',
     value: '',

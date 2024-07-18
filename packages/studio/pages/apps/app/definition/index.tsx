@@ -63,7 +63,7 @@ export function DefinitionPage(): ReactNode {
           </Title>
           <p className="content">
             <FormattedMessage {...messages.explanation} />{' '}
-            <Link to="../../../docs/03-guide">
+            <Link to="../../../docs/02-guides">
               <FormattedMessage {...messages.learnMore} />
             </Link>
           </p>

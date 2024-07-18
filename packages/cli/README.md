@@ -199,7 +199,7 @@ appsemble app import <path-of-zip-file> --organization <organizationId>
 ```
 
 For a more in depth explanation of how to build apps, use our
-[app building guide](https://appsemble.app/docs/03-guide).
+[app building guide](https://appsemble.app/docs/02-guides).
 
 ### Blocks
 

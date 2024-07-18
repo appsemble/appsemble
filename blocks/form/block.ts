@@ -1332,7 +1332,7 @@ declare module '@appsemble/sdk' {
     /**
      * This allows you to update fields automatically with actions by typing in a selected field.
      *
-     * To authenticate with an external API see [Services](../../../docs/03-guide/service)
+     * To authenticate with an external API see [Services](../../../docs/02-guides/service)
      */
     autofill?: {
       /**
@@ -1404,7 +1404,7 @@ declare module '@appsemble/sdk' {
      * Whether or not to disable populating fields with default data values.
      *
      * If this is set to `true`, the default values for the fields won't contain
-     * data from [page storage](../../../docs/03-guide/storage#app-storage).
+     * data from [page storage](../../../docs/02-guides/storage#app-storage).
      *
      * @default false
      */

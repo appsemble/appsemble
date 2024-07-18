@@ -1,6 +1,8 @@
-const context = require.context('./docs', true, /\.mdx?$/);
+import { applyPackages } from './08-packages/index.js';
 
-export const docs = context
+const context = require.context('.', true, /\.mdx?$/);
+
+const documents = context
   .keys()
   .map((key) => {
     const {
@@ -21,3 +23,7 @@ export const docs = context
     };
   })
   .sort((a, b) => a.path.localeCompare(b.path));
+
+applyPackages(documents);
+
+export const docs = documents;

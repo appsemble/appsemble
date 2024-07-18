@@ -11,6 +11,11 @@ declare module '*.md' {
          * An icon for the document.
          */
         icon?: IconName | undefined;
+
+        /**
+         * A replacement name for the menu item.
+         */
+        menu?: string | undefined;
       };
 
   export const searchIndex: [string, { title: string; haystack: string }][];

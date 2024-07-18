@@ -277,7 +277,7 @@ export async function handler({ increment }: Args): Promise<void> {
       'blocks/**/*.md',
       'packages/**/*.md',
       '!packages/**/changed/**/*.md',
-      '!packages/studio/pages/docs/docs/03-guide/config.md',
+      '!packages/studio/pages/docs/docs/02-guides/config.md',
       'Dockerfile',
     ],
     { absolute: true, gitignore: true },

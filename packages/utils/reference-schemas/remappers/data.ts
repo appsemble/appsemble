@@ -64,7 +64,7 @@ Clicking on the first item would log \`0\`, the second item \`1\` and so on.
   },
   history: {
     type: 'integer',
-    description: `> **Note:** This remapper is explained more in depth in the [History](/docs/remapper/history) page
+    description: `> **Note:** This remapper is explained more in depth in the [History](/docs/04-remappers/05-history) page
 
 Gives the data at the history entry at the specified history index. The history at specified index
 is the data that is passed to that action.
@@ -169,7 +169,7 @@ Example:
 \`\`\`
 
 The page data only works in the context of a flow page. Let’s say you have a
-[“FlowPage”](/docs/reference/app#-flow-page-definition) type with multiple subpages. Whenever you
+[“FlowPage”](/docs/05-reference/app#-flow-page-definition) type with multiple subpages. Whenever you
 navigate to the next page it adds the data from that page to the flow page’s data. The page remapper
 allows you to access this cumulative data.
 
@@ -284,7 +284,7 @@ ${schemaExample('static', { exclude: ['input'] })}
   },
   translate: {
     type: 'string',
-    description: `> **Note:** This is explained much more in depth at [Translating](/docs/03-guide/translating)
+    description: `> **Note:** This is explained much more in depth at [Translating](/docs/02-guides/translating)
 
 This remapper allows you to easily add translations to your app. To make this remapper work, replace
 any static text with \`translate: {name}\`. Then, in your app’s Translations page pick the language
@@ -369,11 +369,11 @@ Example:
   container: {
     type: 'string',
     description: `
-> **Note:** For this remapper to work, the application needs to define a companion container. 
+> **Note:** For this remapper to work, the application needs to define a companion container.
 
 This remapper provides a short way to access a companion container for the purpose of making http requests.
-When using the 'request' action, the url can be provided by using the 'container' remapper, and providing a string. 
-The string should contain the name of the companion container, followed by the API endpoint path. 
+When using the 'request' action, the url can be provided by using the 'container' remapper, and providing a string.
+The string should contain the name of the companion container, followed by the API endpoint path.
 
 Example:
 \`\`\`yaml
