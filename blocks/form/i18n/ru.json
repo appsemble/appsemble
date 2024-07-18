@@ -4,6 +4,7 @@
   "fixErrors": "",
   "formRequirementError": "Одно из требований данной формы недействительно.",
   "invalidLabel": "Это значение недействительно",
+  "longSubmissionWarning": "",
   "optionalLabel": "(необязательно)",
   "previousLabel": "Предыдущий",
   "selectionNoOptions": "",
