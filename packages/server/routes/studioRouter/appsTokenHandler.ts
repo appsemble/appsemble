@@ -95,7 +95,7 @@ export async function appsTokenHandler(ctx: Context): Promise<void> {
           throw new GrantError('invalid_client');
         }
         const authorizationCode = await OAuth2AuthorizationCode.findOne({
-          attributes: ['expires', 'scope', 'UserId'],
+          attributes: ['expires', 'scope', 'AppMemberId'],
           where: { code, AppId: match[1], redirectUri },
         });
         if (!authorizationCode) {
