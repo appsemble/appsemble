@@ -5314,6 +5314,44 @@ exports[`getProjectImplementations > official blocks > openai 1`] = `
 }
 `;
 
+exports[`getProjectImplementations > official blocks > pdf-viewer 1`] = `
+{
+  "actions": {
+    "onLoad": {
+      "description": "Action that gets dispatched during the initial load.",
+    },
+  },
+  "events": {
+    "emit": undefined,
+    "listen": {
+      "data": {
+        "description": "This event can be used to receive incoming data to display.",
+      },
+    },
+  },
+  "messages": {
+    "error": {
+      "description": "This message is displayed if there was a problem loading the data.",
+    },
+  },
+  "parameters": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "additionalProperties": false,
+    "properties": {
+      "height": {
+        "description": "Height of the container in which PDF is displayed",
+        "type": "number",
+      },
+      "width": {
+        "description": "Width of the container in which PDF is displayed",
+        "type": "number",
+      },
+    },
+    "type": "object",
+  },
+}
+`;
+
 exports[`getProjectImplementations > official blocks > qr-scan 1`] = `
 {
   "actions": undefined,

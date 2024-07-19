@@ -1,0 +1,7 @@
+type: pdf-viewer
+events:
+  listen:
+    data: pdf
+parameters:
+  height: 800
+  width: 600
