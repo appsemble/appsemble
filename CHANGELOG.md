@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.29.6](https://gitlab.com/appsemble/appsemble/-/releases/0.29.6)] - 2024-07-19
+
+### Added
+
+- Block(`form`): Add warning on long submission.
+- Block(`pdf-viewer`): Add new block `pdf-viewer`.
+- Studio: Add tab to apps to view companion container logs.
+
+### Fixed
+
+- Block(`form`): Fix searching by words containing capital letters.
+
 ## \[[0.29.5](https://gitlab.com/appsemble/appsemble/-/releases/0.29.5)] - 2024-07-15
 
 ### Added
