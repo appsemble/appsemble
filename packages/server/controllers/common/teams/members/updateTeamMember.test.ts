@@ -90,18 +90,9 @@ describe('updateTeamMember', () => {
     await TeamMember.create({ AppMemberId: appMember.id, TeamId: team.id, role: 'Member' });
 
     authorizeStudio();
-<<<<<<< HEAD:packages/server/controllers/common/apps/teams/members/updateAppTeamMember.test.ts
     const response = await request.put(`/api/apps/${app.id}/teams/${team.id}/members/${userB.id}`, {
       role: 'Manager',
     });
-=======
-    const response = await request.put(
-      `/api/common/apps/${app.id}/teams/${team.id}/members/${userB.id}`,
-      {
-        role: 'Manager',
-      },
-    );
->>>>>>> dc6c4dc07 (fix(appsemble): refactor app, team and organization roles, refactor controllers authorization):packages/server/controllers/common/teams/members/updateTeamMember.test.ts
 
     expect(response).toMatchObject({
       status: 200,
@@ -193,18 +184,9 @@ describe('updateTeamMember', () => {
     });
 
     authorizeStudio();
-<<<<<<< HEAD:packages/server/controllers/common/apps/teams/members/updateAppTeamMember.test.ts
     const response = await request.put(`/api/apps/${app.id}/teams/${team.id}/members/${userB.id}`, {
       role: 'Manager',
     });
-=======
-    const response = await request.put(
-      `/api/common/apps/${app.id}/teams/${team.id}/members/${userB.id}`,
-      {
-        role: 'Manager',
-      },
-    );
->>>>>>> dc6c4dc07 (fix(appsemble): refactor app, team and organization roles, refactor controllers authorization):packages/server/controllers/common/teams/members/updateTeamMember.test.ts
 
     expect(response).toMatchObject({
       status: 200,
@@ -244,18 +226,9 @@ describe('updateTeamMember', () => {
     await TeamMember.create({ AppMemberId: appMember.id, TeamId: team.id, role: 'Member' });
 
     authorizeStudio();
-<<<<<<< HEAD:packages/server/controllers/common/apps/teams/members/updateAppTeamMember.test.ts
     const response = await request.put(`/api/apps/${app.id}/teams/${team.id}/members/${userB.id}`, {
       role: 'Manager',
     });
-=======
-    const response = await request.put(
-      `/api/common/apps/${app.id}/teams/${team.id}/members/${userB.id}`,
-      {
-        role: 'Manager',
-      },
-    );
->>>>>>> dc6c4dc07 (fix(appsemble): refactor app, team and organization roles, refactor controllers authorization):packages/server/controllers/common/teams/members/updateTeamMember.test.ts
 
     expect(response).toMatchObject({
       status: 403,
@@ -280,18 +253,9 @@ describe('updateTeamMember', () => {
     const team = await Team.create({ name: 'A', AppId: app.id });
 
     authorizeStudio();
-<<<<<<< HEAD:packages/server/controllers/common/apps/teams/members/updateAppTeamMember.test.ts
     const response = await request.put(`/api/apps/${app.id}/teams/${team.id}/members/${userB.id}`, {
       role: 'Manager',
     });
-=======
-    const response = await request.put(
-      `/api/common/apps/${app.id}/teams/${team.id}/members/${userB.id}`,
-      {
-        role: 'Manager',
-      },
-    );
->>>>>>> dc6c4dc07 (fix(appsemble): refactor app, team and organization roles, refactor controllers authorization):packages/server/controllers/common/teams/members/updateTeamMember.test.ts
 
     expect(response).toMatchObject({
       status: 400,
