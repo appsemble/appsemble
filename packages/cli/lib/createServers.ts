@@ -79,7 +79,7 @@ export function createApiServer({ context }: CreateServerOptions): Koa {
       conditional(
         (ctx) =>
           ctx.path.startsWith('/api') ||
-          ctx.path === '/main/auth/oauth2/token' ||
+          ctx.path === '/auth/oauth2/token' ||
           /\/apps\/\d+\/auth\/oauth2\/token/.test(ctx.path),
         cors(),
       ),

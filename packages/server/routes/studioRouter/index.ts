@@ -12,7 +12,7 @@ import { staticHandler } from '../static.js';
 
 export const studioRouter: Middleware = tinyRouter([
   {
-    route: '/main/auth/oauth2/token',
+    route: '/auth/oauth2/token',
     post: mainTokenHandler,
   },
   {

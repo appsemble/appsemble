@@ -156,7 +156,7 @@ export function AppMemberProvider({ children }: AppMemberProviderProps): ReactNo
         const config = { headers: { authorization: auth } };
         const [{ data: appMember }, { data: teams }] = await Promise.all([
           axios.get<AppMemberInfo>(`${apiUrl}/api/apps/${appId}/members/current`, config),
-          axios.get<TeamMember[]>(`${apiUrl}/api/common/apps/${appId}/teams`, config),
+          axios.get<TeamMember[]>(`${apiUrl}/api/apps/${appId}/teams`, config),
         ]);
 
         setSentryUser({ id: appMember.sub });
