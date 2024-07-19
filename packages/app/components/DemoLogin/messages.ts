@@ -29,11 +29,11 @@ export const messages = defineMessages({
     id: 'app.obEU1l',
     defaultMessage: 'Select a team role',
   },
-  member: {
+  Member: {
     id: 'app.7L86Z5',
     defaultMessage: 'Member',
   },
-  manager: {
+  Manager: {
     id: 'app.KQzcqr',
     defaultMessage: 'Manager',
   },

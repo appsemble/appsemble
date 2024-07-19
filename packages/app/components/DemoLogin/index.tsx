@@ -1,106 +1,307 @@
-import { Icon, NavbarDropdown, NavbarItem, useToggle } from '@appsemble/react-components';
-import { type ReactNode } from 'react';
+import {
+  AsyncButton,
+  AsyncSelect,
+  Loader,
+  type MinimalHTMLElement,
+  ModalCard,
+  SelectField,
+  SimpleForm,
+  SimpleFormError,
+  SimpleFormField,
+  SimpleSubmit,
+  Table,
+  type Toggle,
+  useData,
+  useToggle,
+} from '@appsemble/react-components';
+import { type AppMember, type Team, type TeamMember } from '@appsemble/types';
+import { type TeamMemberRole, teamMemberRoles } from '@appsemble/utils';
+import axios from 'axios';
+import { type ChangeEvent, type ReactNode, useCallback, useEffect, useMemo, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { Link, useLocation, useParams } from 'react-router-dom';
 
 import styles from './index.module.css';
 import { messages } from './messages.js';
-import { sentryDsn, showDemoLogin } from '../../utils/settings.js';
+import { apiUrl, appId } from '../../utils/settings.js';
 import { useAppDefinition } from '../AppDefinitionProvider/index.js';
 import { useAppMember } from '../AppMemberProvider/index.js';
-import { DemoLogin } from '../DemoLogin/index.js';
+import { useAppMessages } from '../AppMessagesProvider/index.js';
+import { useDemoAppMembers } from '../DemoAppMembersProvider/index.js';
 
-export function ProfileDropdown(): ReactNode {
+interface DemoLoginProps {
+  readonly modal?: Toggle;
+}
+
+function TeamControls(): ReactNode {
+  type TeamsResponse = (Partial<TeamMember> & Team)[];
+
+  const { appMemberInfo, isLoggedIn } = useAppMember();
+
+  const sub = appMemberInfo?.sub;
+
   const { formatMessage } = useIntl();
-  const { definition } = useAppDefinition();
-  const { appMemberInfo, isLoggedIn, logout } = useAppMember();
-  const { lang } = useParams<{ lang: string }>();
-  const { pathname } = useLocation();
 
-  const showLogin = definition.security;
-  const { layout } = definition;
+  const {
+    data: teams,
+    error,
+    loading,
+    refresh,
+    setData: setTeams,
+  } = useData<TeamsResponse>(`${apiUrl}/api/apps/${appId}/teams`);
 
-  const demoLoginToggle = useToggle();
+  const changeTeamRole = useCallback(
+    async (team: Team, role: TeamMemberRole) => {
+      await axios.put(`${apiUrl}/api/apps/${appId}/teams/${team.id}/members/${sub}`, {
+        role,
+      });
+      setTeams((prevTeams) => prevTeams.map((t) => (t.id === team.id ? { ...t, role } : t)));
+    },
+    [sub, setTeams],
+  );
+  const leaveTeam = useCallback(
+    async (team: Team) => {
+      await axios.delete(`${apiUrl}/api/apps/${appId}/teams/${team.id}/members/${sub}`);
+      setTeams((prevTeams) =>
+        prevTeams.map((t) => (t.id === team.id ? { ...t, role: undefined } : t)),
+      );
+    },
+    [sub, setTeams],
+  );
+  const joinTeam = useCallback(
+    async (team: Team) => {
+      const result = await axios.post(`${apiUrl}/api/apps/${appId}/teams/${team.id}/members`, {
+        id: sub,
+      });
+      setTeams((prevTeams) => prevTeams.map((t) => (t.id === team.id ? result.data : t)));
+    },
+    [sub, setTeams],
+  );
 
-  if (
-    !showLogin ||
-    pathname.includes(`${lang}/Login`) ||
-    (layout?.login != null && layout?.login !== 'navbar')
-  ) {
+  useEffect(() => {
+    refresh();
+  }, [isLoggedIn, refresh]);
+
+  if (!isLoggedIn) {
     return null;
   }
 
-  if (!isLoggedIn) {
-    return (
-      <div className="navbar-item is-paddingless">
-        <Link className={styles.login} to={`/${lang}/Login`}>
-          <div
-            className={`is-flex is-justify-content-center is-align-items-center px-4 ${styles.loginText}`}
+  if (loading) {
+    return <Loader />;
+  }
+
+  if (isLoggedIn && error) {
+    return <FormattedMessage {...messages.error} />;
+  }
+
+  return (
+    <Table>
+      <tbody>
+        {teams?.map((team) => (
+          <tr key={team.id}>
+            <td>{team.name}</td>
+            <td className="is-pulled-right">
+              {team.role == null ? (
+                <AsyncButton onClick={() => joinTeam(team)}>
+                  <FormattedMessage {...messages.joinTeam} />
+                </AsyncButton>
+              ) : (
+                <>
+                  <AsyncSelect
+                    name="role"
+                    onChange={(event, value: TeamMemberRole) => changeTeamRole(team, value)}
+                    value={team.role}
+                  >
+                    {Object.keys(teamMemberRoles).map((role: TeamMemberRole) => (
+                      <option key={role} value={role}>
+                        {formatMessage(messages[role])}
+                      </option>
+                    ))}
+                  </AsyncSelect>
+                  <AsyncButton onClick={() => leaveTeam(team)}>
+                    <FormattedMessage {...messages.leaveTeam} />
+                  </AsyncButton>
+                </>
+              )}
+            </td>
+          </tr>
+        ))}
+      </tbody>
+    </Table>
+  );
+}
+
+export function DemoLogin({ modal }: DemoLoginProps): ReactNode {
+  const { demoLogin } = useAppMember();
+  const { definition } = useAppDefinition();
+  const { getAppMessage } = useAppMessages();
+  const { demoAppMembers, refetchDemoAppMembers } = useDemoAppMembers();
+
+  const busy = useToggle();
+
+  const appRoles = useMemo(() => definition?.security?.roles ?? {}, [definition]);
+  const appRoleNames = useMemo(() => Object.keys(appRoles) ?? [], [appRoles]);
+  const defaultAppRoleName = useMemo(
+    () => definition?.security?.default.role ?? appRoleNames[0] ?? '',
+    [appRoleNames, definition?.security?.default.role],
+  );
+
+  const [selectedDemoAppMember, setSelectedDemoAppMember] = useState<AppMember>(null);
+  const [selectedAppRoleName, setSelectedAppRoleName] = useState<string>(defaultAppRoleName);
+
+  const [operation, setOperation] = useState<'create-account' | 'login'>(
+    demoAppMembers.length ? 'login' : 'create-account',
+  );
+
+  const demoAppMember = useMemo(
+    () => selectedDemoAppMember ?? demoAppMembers[0],
+    [demoAppMembers, selectedDemoAppMember],
+  );
+
+  const selectedDemoAppMemberRoleDescription = getAppMessage({
+    id: `app.roles.${demoAppMember?.role}.description`,
+    defaultMessage: appRoles[demoAppMember?.role]?.description,
+  }).format() as string;
+
+  const selectedAppRoleDescription = getAppMessage({
+    id: `app.roles.${selectedAppRoleName}.description`,
+    defaultMessage: appRoles[selectedAppRoleName]?.description,
+  }).format() as string;
+
+  const changeDemoAppMember = (event: ChangeEvent<MinimalHTMLElement>): void => {
+    setSelectedDemoAppMember(
+      demoAppMembers.find((appMember) => appMember.id === event.target.value) ?? demoAppMembers[0],
+    );
+  };
+
+  const changeAppRole = (event: ChangeEvent<MinimalHTMLElement>): void => {
+    setSelectedAppRoleName(event.target.value);
+  };
+
+  const setLogin = (): void => {
+    setOperation('login');
+  };
+
+  const setCreateAccount = (): void => {
+    setOperation('create-account');
+  };
+
+  const defaultValues = useMemo(
+    () => ({
+      appMemberId: demoAppMember?.id ?? undefined,
+      appRole: defaultAppRoleName ?? undefined,
+    }),
+    [defaultAppRoleName, demoAppMember?.id],
+  );
+
+  const handleLogin = useCallback(async () => {
+    busy.enable();
+    try {
+      await demoLogin({
+        appMemberId: operation === 'login' ? demoAppMember.id : '',
+        appRole: operation === 'create-account' ? selectedAppRoleName : '',
+      });
+      busy.disable();
+      if (modal) {
+        modal.disable();
+        window.location.reload();
+      }
+      await refetchDemoAppMembers();
+    } catch (error) {
+      busy.disable();
+      throw error;
+    }
+  }, [
+    busy,
+    demoLogin,
+    operation,
+    demoAppMember?.id,
+    selectedAppRoleName,
+    modal,
+    refetchDemoAppMembers,
+  ]);
+
+  const fields = (
+    <>
+      <SimpleFormError>{() => <FormattedMessage {...messages.loginFailed} />}</SimpleFormError>
+      {demoAppMembers.length ? (
+        <div className="mb-6">
+          <SimpleFormField
+            component={SelectField}
+            disabled={demoAppMembers.length < 2 || busy.enabled}
+            help={<div className={styles.black}>{selectedDemoAppMemberRoleDescription}</div>}
+            label={<FormattedMessage {...messages.selectMember} />}
+            name="appMemberId"
+            onChange={changeDemoAppMember}
+            required
+          >
+            {demoAppMembers.map((appMember) => (
+              <option key={appMember.id} value={appMember.id}>
+                {appMember.name}
+              </option>
+            ))}
+          </SimpleFormField>
+          <SimpleSubmit
+            allowPristine={false}
+            dataTestId="login"
+            disabled={busy.enabled}
+            onClick={setLogin}
           >
             <FormattedMessage {...messages.login} />
-          </div>
-        </Link>
-      </div>
+          </SimpleSubmit>
+        </div>
+      ) : null}
+      {appRoleNames.length ? (
+        <>
+          <SimpleFormField
+            component={SelectField}
+            data-testid="app-role"
+            disabled={appRoleNames.length < 2 || busy.enabled}
+            help={<div className={styles.black}>{selectedAppRoleDescription}</div>}
+            label={<FormattedMessage {...messages.selectRole} />}
+            name="appRole"
+            onChange={changeAppRole}
+            required
+          >
+            {appRoleNames.map((appRoleName) => (
+              <option key={appRoleName} value={appRoleName}>
+                {getAppMessage({
+                  id: `app.roles.${appRoleName}`,
+                  defaultMessage: appRoleName,
+                }).format()}
+              </option>
+            ))}
+          </SimpleFormField>
+          <SimpleSubmit
+            allowPristine={false}
+            dataTestId="create-account"
+            disabled={busy.enabled}
+            onClick={setCreateAccount}
+          >
+            <FormattedMessage {...messages.createAccount} />
+          </SimpleSubmit>
+        </>
+      ) : null}
+      <TeamControls />
+    </>
+  );
+
+  if (modal) {
+    return (
+      <ModalCard
+        component={SimpleForm}
+        defaultValues={defaultValues}
+        isActive={modal.enabled}
+        onClose={modal.disable}
+        onSubmit={handleLogin}
+      >
+        {fields}
+      </ModalCard>
     );
   }
 
   return (
-    <>
-      <NavbarDropdown
-        className={`is-right ${styles.dropdown}`}
-        label={
-          <figure className="image is-32x32 is-clipped">
-            {appMemberInfo?.picture ? (
-              <img
-                alt={formatMessage(messages.pfp)}
-                className={`is-rounded ${styles.gravatar}`}
-                src={appMemberInfo.picture}
-              />
-            ) : (
-              <Icon
-                className={`is-rounded has-background-grey-dark has-text-white-ter ${styles.gravatarFallback}`}
-                icon="user"
-              />
-            )}
-          </figure>
-        }
-      >
-        {(layout?.settings ?? 'navbar') === 'navbar' && (
-          <NavbarItem icon="wrench" to={`/${lang}/Settings`}>
-            <FormattedMessage {...messages.settings} />
-          </NavbarItem>
-        )}
-        {(layout?.feedback ?? 'navbar') === 'navbar' && sentryDsn ? (
-          <>
-            {(layout?.settings ?? 'navbar') === 'navbar' ? <hr className="navbar-divider" /> : null}
-            <NavbarItem icon="comment" to={`/${lang}/Feedback`}>
-              <FormattedMessage {...messages.feedback} />
-            </NavbarItem>
-          </>
-        ) : null}
-        {showDemoLogin ? (
-          <>
-            {(layout?.settings ?? 'navbar') === 'navbar' ||
-            (layout?.feedback === 'navbar' && sentryDsn) ? (
-              <hr className="navbar-divider" />
-            ) : null}
-            <NavbarItem dataTestId="change-role" onClick={demoLoginToggle.enable}>
-              <FormattedMessage {...messages.demoLogin} />
-            </NavbarItem>
-          </>
-        ) : null}
-        {showLogin ? (
-          <>
-            {(layout?.settings ?? 'navbar') === 'navbar' || layout?.feedback === 'navbar' ? (
-              <hr className="navbar-divider" />
-            ) : null}
-            <NavbarItem icon="sign-out-alt" onClick={logout}>
-              <FormattedMessage {...messages.logoutButton} />
-            </NavbarItem>
-          </>
-        ) : null}
-      </NavbarDropdown>
-      <DemoLogin modal={demoLoginToggle} />
-    </>
+    <SimpleForm defaultValues={defaultValues} onSubmit={handleLogin}>
+      {fields}
+    </SimpleForm>
   );
 }

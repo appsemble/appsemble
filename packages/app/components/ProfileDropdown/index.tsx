@@ -13,7 +13,7 @@ import { DemoLogin } from '../DemoLogin/index.js';
 export function ProfileDropdown(): ReactNode {
   const { formatMessage } = useIntl();
   const { definition } = useAppDefinition();
-  const { isLoggedIn, logout, userInfo } = useAppMember();
+  const { appMemberInfo, isLoggedIn, logout } = useAppMember();
   const { lang } = useParams<{ lang: string }>();
   const { pathname } = useLocation();
 
@@ -50,11 +50,11 @@ export function ProfileDropdown(): ReactNode {
         className={`is-right ${styles.dropdown}`}
         label={
           <figure className="image is-32x32 is-clipped">
-            {userInfo?.picture ? (
+            {appMemberInfo?.picture ? (
               <img
                 alt={formatMessage(messages.pfp)}
                 className={`is-rounded ${styles.gravatar}`}
-                src={userInfo.picture}
+                src={appMemberInfo.picture}
               />
             ) : (
               <Icon
