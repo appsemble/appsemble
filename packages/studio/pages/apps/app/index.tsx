@@ -196,7 +196,7 @@ export function AppRoutes(): ReactNode {
               </MenuItem>
             ) : null}
 
-            {mayVisitResources ? (
+            {mayVisitResources && resourceNames.length ? (
               <>
                 <MenuItem icon="cubes" to={`${url}/resources`}>
                   <FormattedMessage {...messages.resources} />
