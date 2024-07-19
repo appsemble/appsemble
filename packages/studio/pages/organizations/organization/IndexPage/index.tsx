@@ -32,7 +32,7 @@ export function IndexPage({ organization }: IndexPageProps): ReactNode {
   const userOrganization = organizations?.find((org) => org.id === organization.id);
   const mayEditOrganization =
     userOrganization &&
-    checkRole(userOrganization.role, OrganizationPermission.UpdateOrganizations);
+    checkRole(userOrganization.role, [OrganizationPermission.UpdateOrganizations]);
 
   return (
     <Content className={`pb-2 ${styles.root}`}>

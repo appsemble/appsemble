@@ -33,7 +33,7 @@ export function OrganizationRoutes(): ReactNode {
   const userOrganization = organizations?.find((org) => org.id === organizationId);
   const mayEdit =
     userOrganization &&
-    checkRole(userOrganization.role, OrganizationPermission.UpdateOrganizations);
+    checkRole(userOrganization.role, [OrganizationPermission.UpdateOrganizations]);
 
   useSideMenu(
     result.data && (
@@ -78,7 +78,7 @@ export function OrganizationRoutes(): ReactNode {
             element={
               <ProtectedRoute
                 organization={userOrganization}
-                permission={OrganizationPermission.UpdateOrganizations}
+                permissions={[OrganizationPermission.UpdateOrganizations]}
               />
             }
           >
