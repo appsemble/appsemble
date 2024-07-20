@@ -17,6 +17,7 @@ export const {
   showAppsembleLogin,
   showAppsembleOAuth2Login,
   showDemoLogin,
+  snapshotId,
   vapidPublicKey,
 } = window.settings;
 delete window.settings;

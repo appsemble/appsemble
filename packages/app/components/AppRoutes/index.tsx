@@ -5,6 +5,7 @@ import { Navigate, Route, Routes } from 'react-router-dom';
 
 import { getDefaultPageName } from '../../utils/getDefaultPageName.js';
 import { sentryDsn, showDemoLogin } from '../../utils/settings.js';
+import { AppDebug } from '../AppDebug/index.js';
 import { useAppDefinition } from '../AppDefinitionProvider/index.js';
 import { useAppMessages } from '../AppMessagesProvider/index.js';
 import { AppSettings } from '../AppSettings/index.js';
@@ -44,6 +45,7 @@ export function AppRoutes(): ReactNode {
     >
       <Routes>
         <Route caseSensitive element={<AppSettings />} path="/Settings" />
+        <Route caseSensitive element={<AppDebug />} path="/Debug" />
 
         {!isLoggedIn && (!hasCustomLogin || showDemoLogin) ? (
           <Route caseSensitive element={<Login />} path="/Login" />
