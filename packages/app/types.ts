@@ -86,6 +86,7 @@ declare global {
       showDemoLogin: boolean;
       appUpdated: string;
       development: boolean;
+      snapshotId?: number;
     };
   }
 }
