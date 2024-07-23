@@ -5,11 +5,11 @@ export const paths: OpenAPIV3.PathsObject = {
     parameters: [
       { $ref: '#/components/parameters/appId' },
       { name: 'merge', in: 'query', schema: { type: 'boolean' } },
+      { name: 'includeMessages', in: 'query', schema: { type: 'boolean' } },
     ],
     get: {
       tags: ['language'],
       description: 'Get a list of all languages with messages.',
-      operationId: 'getLanguages',
       responses: {
         200: {
           description: 'The list of supported languages',
@@ -18,13 +18,14 @@ export const paths: OpenAPIV3.PathsObject = {
               schema: {
                 type: 'array',
                 items: {
-                  type: 'string',
+                  oneOf: [{ type: 'string' }, { $ref: '#/components/schemas/AppMessages' }],
                 },
               },
             },
           },
         },
       },
+      operationId: 'getLanguages',
     },
     post: {
       tags: ['language'],
@@ -35,7 +36,15 @@ export const paths: OpenAPIV3.PathsObject = {
         content: {
           'application/json': {
             schema: {
-              $ref: '#/components/schemas/AppMessages',
+              oneOf: [
+                { $ref: '#/components/schemas/AppMessages' },
+                {
+                  type: 'array',
+                  items: {
+                    $ref: '#/components/schemas/AppMessages',
+                  },
+                },
+              ],
             },
           },
         },
@@ -46,7 +55,15 @@ export const paths: OpenAPIV3.PathsObject = {
           content: {
             'application/json': {
               schema: {
-                $ref: '#/components/schemas/AppMessages',
+                oneOf: [
+                  { $ref: '#/components/schemas/AppMessages' },
+                  {
+                    type: 'array',
+                    items: {
+                      $ref: '#/components/schemas/AppMessages',
+                    },
+                  },
+                ],
               },
             },
           },

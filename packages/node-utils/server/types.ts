@@ -125,6 +125,7 @@ declare module 'koas-parameters' {
     screenshots: boolean;
     readmes: boolean;
     roles: string[];
+    includeMessages: boolean;
   }
 }
 

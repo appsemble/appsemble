@@ -71,4 +71,40 @@ export const messages = defineMessages({
     id: 'studio.xTZrx0',
     defaultMessage: 'Successfully deleted messages',
   },
+  export: {
+    id: 'studio.MHyPpu',
+    defaultMessage: 'Export as JSON',
+  },
+  exportAll: {
+    id: 'studio.4I6271',
+    defaultMessage: 'Export all Messages',
+  },
+  import: {
+    id: 'studio.4qv+fW',
+    defaultMessage: 'Import from JSON file',
+  },
+  importSuccess: {
+    id: 'studio.2rkKvL',
+    defaultMessage: 'Successfully imported {selectedLanguage} translations',
+  },
+  importError: {
+    id: 'studio.U1cf2h',
+    defaultMessage: 'Something went wrong when reading the file.',
+  },
+  errorMessage: {
+    id: 'studio.ql9rKu',
+    defaultMessage: 'Error loading app messages',
+  },
+  loadingMessage: {
+    id: 'studio.Ft/dkd',
+    defaultMessage: 'Loading app messages',
+  },
+  overrideWarningLanguage: {
+    id: 'studio.s3s2y0',
+    defaultMessage: 'This will override all the messages for {language}',
+  },
+  overrideWarningAll: {
+    id: 'studio.a8m+6u',
+    defaultMessage: 'This will override messages for all languages found in the file.',
+  },
 });

@@ -656,6 +656,72 @@ describe('createMessages', () => {
     expect(translation.messages).toStrictEqual({ messageIds: { test: 'Test.' } });
   });
 
+  it('should accept arrays of objects as request body', async () => {
+    authorizeStudio();
+    const response = await request.post(`/api/apps/${app.id}/messages`, [
+      { language: 'en', messages: { messageIds: { test: 'Test' } } },
+      { language: 'de', messages: { messageIds: { test: 'Test De' } } },
+      { language: 'ru', messages: { messageIds: { test: 'Test Ru' } } },
+    ]);
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 201 Created
+      Content-Type: application/json; charset=utf-8
+
+      [
+        {
+          "language": "en",
+          "messages": {
+            "messageIds": {
+              "test": "Test",
+            },
+          },
+        },
+        {
+          "language": "de",
+          "messages": {
+            "messageIds": {
+              "test": "Test De",
+            },
+          },
+        },
+        {
+          "language": "ru",
+          "messages": {
+            "messageIds": {
+              "test": "Test Ru",
+            },
+          },
+        },
+      ]
+    `);
+    const translations = await AppMessages.findAll({ where: { AppId: app.id } });
+    expect(translations).toMatchObject([
+      { AppId: app.id, language: 'de', messages: { messageIds: { test: 'Test De' } } },
+      { AppId: app.id, language: 'en', messages: { messageIds: { test: 'Test' } } },
+      { AppId: app.id, language: 'ru', messages: { messageIds: { test: 'Test Ru' } } },
+    ]);
+  });
+
+  it('should validate language tags in array request body', async () => {
+    authorizeStudio();
+    const response = await request.post(`/api/apps/${app.id}/messages`, [
+      { language: 'en', messages: { messageIds: { test: 'Test' } } },
+      { language: 'test', messages: { messageIds: { test: 'Test Ru' } } },
+    ]);
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 400 Bad Request
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "error": "Bad Request",
+        "message": "Language “test” is invalid",
+        "statusCode": 400,
+      }
+    `);
+    const translations = await AppMessages.findAll({ where: { AppId: app.id } });
+    expect(translations).toStrictEqual([]);
+  });
+
   it('should not accept invalid language tags', async () => {
     authorizeStudio();
     const response = await request.post(`/api/apps/${app.id}/messages`, {
@@ -764,5 +830,29 @@ describe('getLanguages', () => {
         "nl",
       ]
     `);
+  });
+
+  it('should include messages with languages', async () => {
+    authorizeStudio();
+    await request.post(`/api/apps/${app.id}/messages`, {
+      language: 'nl',
+      messages: { messageIds: { test: 'Geslaagd met vliegende kleuren' } },
+    });
+    await request.post(`/api/apps/${app.id}/messages`, {
+      language: 'en',
+      messages: { messageIds: { test: 'Passed with flying colors' } },
+    });
+    await request.post(`/api/apps/${app.id}/messages`, {
+      language: 'en-GB',
+      messages: { messageIds: { test: 'Passed with flying colours' } },
+    });
+
+    const response = await request.get(`/api/apps/${app.id}/messages?includeMessages=true`);
+
+    expect(response.data).toMatchObject([
+      { language: 'en', messages: { messageIds: { test: 'Passed with flying colors' } } },
+      { language: 'en-gb', messages: { messageIds: { test: 'Passed with flying colours' } } },
+      { language: 'nl', messages: { messageIds: { test: 'Geslaagd met vliegende kleuren' } } },
+    ]);
   });
 });
