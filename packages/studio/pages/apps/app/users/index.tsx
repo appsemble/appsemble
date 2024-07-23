@@ -33,6 +33,7 @@ export function UsersPage(): ReactNode {
     downloadBlob(csv, 'members.csv');
   }, [result.data]);
 
+  console.log(result)
   return (
     <>
       <Title>

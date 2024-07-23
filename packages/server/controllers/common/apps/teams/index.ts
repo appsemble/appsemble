@@ -1,1 +1,2 @@
-export { getTeams } from './getTeams.js';
+export { createAppTeam } from './createAppTeam.js';
+export { getAppTeams } from './getAppTeams.js';

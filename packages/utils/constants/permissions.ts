@@ -18,6 +18,11 @@ export enum AppPermission {
   RemoveAppMembers,
 
   /**
+   * The permission to query app teams.
+   */
+  QueryTeams,
+
+  /**
    * The permission to create app teams.
    */
   CreateTeams,
@@ -41,6 +46,11 @@ export enum TeamPermission {
    * The permission to create team invites.
    */
   CreateTeamInvites,
+
+  /**
+   * The permission to query team members.
+   */
+  QueryTeamMembers,
 
   /**
    * The permission to update team members.
@@ -303,6 +313,26 @@ export enum OrganizationPermission {
   DeleteTeams,
 
   /**
+   * The permission to create team invites.
+   */
+  CreateTeamInvites,
+
+  /**
+   * The permission to query team members.
+   */
+  QueryTeamMembers,
+
+  /**
+   * The permission to update team members.
+   */
+  UpdateTeamMembers,
+
+  /**
+   * The permission to remove team members.
+   */
+  RemoveTeamMembers,
+
+  /**
    * The permission to query app snapshots.
    */
   QueryAppSnapshots,
@@ -363,7 +393,17 @@ export const appOrganizationPermissionMapping: { [key in AppPermission]: Organiz
     [AppPermission.CreateAppInvites]: OrganizationPermission.CreateAppInvites,
     [AppPermission.QueryAppMembers]: OrganizationPermission.QueryAppMembers,
     [AppPermission.RemoveAppMembers]: OrganizationPermission.RemoveAppMembers,
+    [AppPermission.QueryTeams]: OrganizationPermission.QueryTeams,
     [AppPermission.CreateTeams]: OrganizationPermission.CreateTeams,
     [AppPermission.UpdateTeams]: OrganizationPermission.UpdateTeams,
     [AppPermission.DeleteTeams]: OrganizationPermission.DeleteTeams,
   };
+
+export const teamOrganizationPermissionMapping: {
+  [key in TeamPermission]: OrganizationPermission;
+} = {
+  [TeamPermission.CreateTeamInvites]: OrganizationPermission.CreateTeamInvites,
+  [TeamPermission.QueryTeamMembers]: OrganizationPermission.QueryTeamMembers,
+  [TeamPermission.UpdateTeamMembers]: OrganizationPermission.UpdateTeamMembers,
+  [TeamPermission.RemoveTeamMembers]: OrganizationPermission.RemoveTeamMembers,
+};

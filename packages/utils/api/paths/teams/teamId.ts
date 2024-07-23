@@ -1,10 +1,9 @@
 import { type OpenAPIV3 } from 'openapi-types';
 
-import { TeamMemberRole } from '../../../../../constants/index.js';
+import { teamMemberRoles } from '../../../constants/index.js';
 
 export const pathItems: OpenAPIV3.PathItemObject = {
   parameters: [
-    { $ref: '#/components/parameters/appId' },
     {
       name: 'teamId',
       in: 'path',
@@ -14,9 +13,9 @@ export const pathItems: OpenAPIV3.PathItemObject = {
     },
   ],
   get: {
-    tags: ['common', 'app', 'team'],
+    tags: ['common', 'team'],
     description: 'Fetch an existing team.',
-    operationId: 'getAppTeam',
+    operationId: 'getTeam',
     responses: {
       200: {
         description: 'The requested team',
@@ -30,7 +29,7 @@ export const pathItems: OpenAPIV3.PathItemObject = {
                 role: {
                   type: 'string',
                   description: 'The role of the user who requested the team',
-                  enum: Object.values(TeamMemberRole),
+                  enum: Object.values(teamMemberRoles),
                 },
               },
             },
@@ -41,9 +40,9 @@ export const pathItems: OpenAPIV3.PathItemObject = {
     security: [{ studio: [] }],
   },
   patch: {
-    tags: ['common', 'app', 'team'],
+    tags: ['common', 'team'],
     description: 'Update an existing team.',
-    operationId: 'patchAppTeam',
+    operationId: 'patchTeam',
     requestBody: {
       description: 'The team to update.',
       required: true,
@@ -78,7 +77,7 @@ export const pathItems: OpenAPIV3.PathItemObject = {
                 role: {
                   type: 'string',
                   description: 'The role of the user who updated the team',
-                  enum: Object.values(TeamMemberRole),
+                  enum: Object.values(teamMemberRoles),
                 },
               },
             },
@@ -89,9 +88,9 @@ export const pathItems: OpenAPIV3.PathItemObject = {
     security: [{ studio: [] }, { cli: ['teams:write'] }],
   },
   delete: {
-    tags: ['common', 'app', 'team'],
+    tags: ['common', 'team'],
     description: 'Delete an existing team.',
-    operationId: 'deleteAppTeam',
+    operationId: 'deleteTeam',
     responses: {
       204: { description: 'The team has successfully been deleted.' },
     },

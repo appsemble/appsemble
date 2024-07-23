@@ -1,6 +1,6 @@
 import { type OpenAPIV3 } from 'openapi-types';
 
-import { TeamMemberRole } from '../../../../constants/roles.js';
+import { teamMemberRoles } from '../../../../constants/roles.js';
 
 export const pathItems: OpenAPIV3.PathItemObject = {
   parameters: [{ $ref: '#/components/parameters/appId' }],
@@ -24,7 +24,7 @@ export const pathItems: OpenAPIV3.PathItemObject = {
                   role: {
                     type: 'string',
                     description: 'The role of the user requesting the list of teams',
-                    enum: Object.values(TeamMemberRole),
+                    enum: Object.values(teamMemberRoles),
                   },
                 },
               },
@@ -73,7 +73,7 @@ export const pathItems: OpenAPIV3.PathItemObject = {
                 role: {
                   type: 'string',
                   description: 'The role of the user who created the team',
-                  enum: Object.values(TeamMemberRole),
+                  enum: Object.values(teamMemberRoles),
                 },
               },
             },

@@ -9,7 +9,7 @@ import {
   useToggle,
 } from '@appsemble/react-components';
 import { type Team } from '@appsemble/types';
-import { Permissions, type TeamRole } from '@appsemble/utils';
+import { OrganizationPermission } from '@appsemble/utils';
 import axios from 'axios';
 import { type ReactNode, useCallback } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
@@ -21,16 +21,6 @@ import { ListButton } from '../../../../../components/ListButton/index.js';
 import { useUser } from '../../../../../components/UserProvider/index.js';
 import { checkRole } from '../../../../../utils/checkRole.js';
 import { useApp } from '../../index.js';
-
-/**
- * The representation of a team that the user is a member of.
- */
-export interface UserTeam extends Team {
-  /**
-   * The user’s role within the team.
-   */
-  role?: TeamRole;
-}
 
 const newTeam = {
   name: '',
@@ -47,7 +37,7 @@ export function IndexPage(): ReactNode {
   const { app } = useApp();
   const modal = useToggle();
   const { formatMessage } = useIntl();
-  const result = useData<UserTeam[]>(`/api/apps/${app.id}/teams`);
+  const result = useData<Team[]>(`/api/apps/${app.id}/teams`);
   const { setData: setTeams } = result;
 
   const submitTeam = useCallback(
@@ -62,7 +52,8 @@ export function IndexPage(): ReactNode {
   );
 
   const organization = organizations.find((o) => o.id === app.OrganizationId);
-  const mayCreateTeam = organization && checkRole(organization.role, Permissions.ManageTeams);
+  const mayCreateTeam =
+    organization && checkRole(organization.role, [OrganizationPermission.CreateTeams]);
 
   return (
     <>
@@ -91,7 +82,6 @@ export function IndexPage(): ReactNode {
                   alt={formatMessage(messages.logo)}
                   icon="users"
                   key={team.id}
-                  subtitle={team?.role ? <FormattedMessage {...messages[team.role]} /> : ''}
                   title={team.name || team.id}
                   to={String(team.id)}
                 />

@@ -5,9 +5,9 @@ import {
   type AppPermission,
   organizationMemberRoles,
   type OrganizationPermission,
-  teamMemberRoles,
-  type TeamPermission,
-} from '@appsemble/utils';
+  teamMemberRoles, teamOrganizationPermissionMapping,
+  type TeamPermission
+} from "@appsemble/utils";
 import { type Context } from 'koa';
 
 import {
@@ -38,8 +38,8 @@ export async function checkAppMemberAppPermissions(
     ? appMemberRoleDefinition.permissions
     : appMemberRoleDefinition.inherits?.length
       ? appMemberRoleDefinition.inherits.flatMap(
-          (inheritedRole) => app.definition.security?.roles[inheritedRole].permissions,
-        )
+        (inheritedRole) => app.definition.security?.roles[inheritedRole].permissions,
+      )
       : appMemberRoles.Member;
 
   assertKoaError(
@@ -120,7 +120,7 @@ export async function checkUserAppPermissions(
   ctx: Context,
   appId: number,
   permissions: AppPermission[],
-): Promise<AppMember | OrganizationMember> {
+): Promise<AppMember> {
   const { user: authSubject } = ctx;
 
   const app = await App.findByPk(appId, { attributes: ['definition', 'OrganizationId'] });
@@ -134,6 +134,19 @@ export async function checkUserAppPermissions(
     },
   });
 
+  let appRolePermissions: AppPermission[] = [];
+  if (appMember) {
+    const appMemberRoleDefinition = app.definition.security?.roles[appMember.role];
+
+    appRolePermissions = appMemberRoleDefinition.permissions?.length
+      ? appMemberRoleDefinition.permissions
+      : appMemberRoleDefinition.inherits?.length
+        ? appMemberRoleDefinition.inherits.flatMap(
+          (inheritedRole) => app.definition.security?.roles[inheritedRole].permissions,
+        )
+        : appMemberRoles.Member;
+  }
+
   const organizationMember = await OrganizationMember.findOne({
     where: {
       OrganizationId: app.OrganizationId,
@@ -141,17 +154,10 @@ export async function checkUserAppPermissions(
     },
   });
 
-  const appMemberRoleDefinition = app.definition.security?.roles[appMember.role];
-
-  const appRolePermissions = appMemberRoleDefinition.permissions?.length
-    ? appMemberRoleDefinition.permissions
-    : appMemberRoleDefinition.inherits?.length
-      ? appMemberRoleDefinition.inherits.flatMap(
-          (inheritedRole) => app.definition.security?.roles[inheritedRole].permissions,
-        )
-      : appMemberRoles.Member;
-
-  const organizationRolePermissions = organizationMemberRoles[organizationMember.role];
+  let organizationRolePermissions: OrganizationPermission[] = [];
+  if (organizationMember) {
+    organizationRolePermissions = organizationMemberRoles[organizationMember.role];
+  }
 
   assertKoaError(
     !permissions.every(
@@ -174,9 +180,13 @@ export async function checkUserTeamPermissions(
 ): Promise<TeamMember> {
   const { user: authSubject } = ctx;
 
-  const team = await Team.findByPk(teamId, { attributes: ['id'] });
+  const team = await Team.findByPk(teamId, { attributes: ['id', 'AppId'] });
 
   assertKoaError(!team, ctx, 404, 'Team not found.');
+
+  const app = await App.findByPk(team.AppId, { attributes: ['definition', 'OrganizationId'] });
+
+  assertKoaError(!app, ctx, 404, 'App not found');
 
   const appMember = await AppMember.findOne({
     attributes: ['id'],
@@ -186,26 +196,37 @@ export async function checkUserTeamPermissions(
     },
   });
 
-  assertKoaError(
-    !appMember,
-    ctx,
-    403,
-    'User is not a member of the app that this team belongs to.',
-  );
+  let teamMember;
+  let teamMemberRolePermissions: TeamPermission[] = [];
+  if (appMember) {
+    teamMember = await TeamMember.findOne({
+      where: {
+        TeamId: teamId,
+        AppMemberId: appMember.id,
+      },
+    });
 
-  const teamMember = await TeamMember.findOne({
+    teamMemberRolePermissions = teamMemberRoles[teamMember.role];
+  }
+
+  const organizationMember = await OrganizationMember.findOne({
     where: {
-      TeamId: teamId,
-      AppMemberId: appMember.id,
+      OrganizationId: app.OrganizationId,
+      UserId: authSubject.id,
     },
   });
 
-  assertKoaError(!teamMember, ctx, 403, 'User is not a member of this team.');
-
-  const teamMemberRole = teamMemberRoles[teamMember.role];
+  let organizationRolePermissions: OrganizationPermission[] = [];
+  if (organizationMember) {
+    organizationRolePermissions = organizationMemberRoles[organizationMember.role];
+  }
 
   assertKoaError(
-    !permissions.every((p) => teamMemberRole.includes(p)),
+    !permissions.every(
+      (p) =>
+        teamMemberRolePermissions.includes(p) ||
+        organizationRolePermissions.includes(teamOrganizationPermissionMapping[p]),
+    ),
     ctx,
     403,
     'User does not have sufficient team permissions.',
@@ -218,7 +239,7 @@ export function checkAuthSubjectAppPermissions(
   ctx: Context,
   appId: number,
   permissions: AppPermission[],
-): Promise<AppMember | OrganizationMember> {
+): Promise<AppMember> {
   const { client } = ctx;
 
   return client && 'app' in client

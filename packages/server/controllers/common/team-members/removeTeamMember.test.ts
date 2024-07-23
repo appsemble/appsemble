@@ -11,11 +11,11 @@ import {
   Team,
   TeamMember,
   User,
-} from '../../../../models/index.js';
-import { setArgv } from '../../../../utils/argv.js';
-import { createServer } from '../../../../utils/createServer.js';
-import { authorizeStudio, createTestUser } from '../../../../utils/test/authorization.js';
-import { useTestDatabase } from '../../../../utils/test/testSchema.js';
+} from '../../../models/index.js';
+import { setArgv } from '../../../utils/argv.js';
+import { createServer } from '../../../utils/createServer.js';
+import { authorizeStudio, createTestUser } from '../../../utils/test/authorization.js';
+import { useTestDatabase } from '../../../utils/test/testSchema.js';
 
 let organization: Organization;
 let app: App;

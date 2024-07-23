@@ -10,6 +10,7 @@ export function createGetAppTeamsController({ getApp, getAppTeams }: Options): M
       user,
     } = ctx;
 
+    // TODO check AppPermission.QueryTeams
     const app = await getApp({ context: ctx, query: { where: { id: appId } } });
 
     assertKoaError(!app, ctx, 404, 'App not found');

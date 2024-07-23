@@ -37,53 +37,49 @@ export function TeamPage(): ReactNode {
   const { pathname } = useLocation();
   const { formatMessage } = useIntl();
 
-  const teamResult = useData<Team>(`/api/apps/${app.id}/teams/${teamId}`);
+  const teamResult = useData<Team>(`/api/teams/${teamId}`);
   useMeta(teamResult.data?.name || teamId);
-  const memberResult = useData<TeamMember[]>(`/api/apps/${app.id}/teams/${teamId}/members`);
+  const memberResult = useData<TeamMember[]>(`/api/teams/${teamId}/members`);
   const editModal = useToggle();
   const addModal = useToggle();
 
   const submitTeam = useCallback(
     async ({ annotations, name }: typeof defaultValues) => {
-      const { data } = await axios.patch<Team>(`/api/apps/${app.id}/teams/${teamId}`, {
+      const { data } = await axios.patch<Team>(`/api/teams/${teamId}`, {
         name,
         annotations: Object.fromEntries(annotations),
       });
       editModal.disable();
       teamResult.setData(data);
     },
-    [editModal, app, teamResult, teamId],
+    [editModal, teamResult, teamId],
   );
 
   const onEdit = useCallback(
     async ({ id }: TeamMember, role: TeamMemberRole) => {
-      const { data: updated } = await axios.put<TeamMember>(
-        `/api/apps/${app.id}/teams/${teamId}/members/${id}`,
-        { role },
-      );
+      const { data: updated } = await axios.put<TeamMember>(`/api/team-members/${id}`, { role });
       memberResult.setData((members) =>
         members.map((member) => (member.id === id ? updated : member)),
       );
     },
-    [app, memberResult, teamId],
+    [memberResult],
   );
 
   const onAdd = useCallback(
     async (id: string) => {
-      const { data: newMember } = await axios.post<TeamMember>(
-        `/api/apps/${app.id}/teams/${teamId}/members`,
-        { id },
-      );
+      const { data: newMember } = await axios.post<TeamMember>(`/api/teams/${teamId}/members`, {
+        id,
+      });
       memberResult.setData((members) => [...members, newMember]);
       addModal.disable();
     },
-    [addModal, memberResult, app, teamId],
+    [addModal, memberResult, teamId],
   );
 
   const onDelete = useCallback(async () => {
-    await axios.delete(`/api/apps/${app.id}/teams/${teamId}`);
+    await axios.delete(`/api/teams/${teamId}`);
     navigate(pathname.replace(`/teams/${teamId}`, '/teams'), { replace: true });
-  }, [navigate, app, teamId, pathname]);
+  }, [navigate, teamId, pathname]);
 
   const onDeleteClick = useConfirmation({
     title: <FormattedMessage {...messages.deletingTeam} />,
@@ -95,10 +91,10 @@ export function TeamPage(): ReactNode {
 
   const onRemoveTeamMember = useCallback(
     async ({ id }: TeamMember) => {
-      await axios.delete(`/api/apps/${app.id}/teams/${teamId}/members/${id}`);
+      await axios.delete(`/api/team-members/${id}`);
       memberResult.setData((members) => members.filter((member) => member.id !== id));
     },
-    [app, memberResult, teamId],
+    [memberResult],
   );
 
   const organization = organizations.find((o) => o.id === app.OrganizationId);

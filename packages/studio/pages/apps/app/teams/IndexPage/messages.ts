@@ -37,11 +37,11 @@ export const messages = defineMessages({
     id: 'studio.NhnlVy',
     defaultMessage: 'No teams have been created yet.',
   },
-  manager: {
+  Manager: {
     id: 'studio.KQzcqr',
     defaultMessage: 'Manager',
   },
-  member: {
+  Member: {
     id: 'studio.7L86Z5',
     defaultMessage: 'Member',
   },

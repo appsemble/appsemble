@@ -8,15 +8,15 @@ import {
   Organization,
   OrganizationMember,
   type User,
-} from '../../../models/index.js';
-import { setArgv } from '../../../utils/argv.js';
-import { createServer } from '../../../utils/createServer.js';
+} from '../../../../models/index.js';
+import { setArgv } from '../../../../utils/argv.js';
+import { createServer } from '../../../../utils/createServer.js';
 import {
   authorizeApp,
   authorizeStudio,
   createTestUser,
-} from '../../../utils/test/authorization.js';
-import { useTestDatabase } from '../../../utils/test/testSchema.js';
+} from '../../../../utils/test/authorization.js';
+import { useTestDatabase } from '../../../../utils/test/testSchema.js';
 
 let organization: Organization;
 let app: App;

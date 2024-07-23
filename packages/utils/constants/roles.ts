@@ -1,4 +1,4 @@
-import { AppPermission, OrganizationPermission, TeamPermission } from './permissions.js';
+import { AppPermission, OrganizationPermission, TeamPermission } from "./permissions.js";
 
 const OrganizationMember = [
   OrganizationPermission.QueryApps,
@@ -42,11 +42,19 @@ const OrganizationAppTeamManager = [
   OrganizationPermission.DeleteTeams,
 ];
 
+const OrganizationAppTeamMembersManager = [
+  OrganizationPermission.QueryTeamMembers,
+  OrganizationPermission.CreateTeamInvites,
+  OrganizationPermission.UpdateTeamMembers,
+  OrganizationPermission.RemoveTeamMembers,
+];
+
 const OrganizationAppManager = [
   ...OrganizationAppTranslator,
   ...OrganizationAppContentsManager,
   ...OrganizationAppMemberManager,
   ...OrganizationAppTeamManager,
+  ...OrganizationAppTeamMembersManager,
   OrganizationPermission.UpdateApps,
   OrganizationPermission.ReadAppSettings,
   OrganizationPermission.UpdateAppSettings,
@@ -117,6 +125,7 @@ export const organizationMemberRoles = {
   AppContentsManager: OrganizationAppContentsManager,
   AppMemberManager: OrganizationAppMemberManager,
   AppTeamManager: OrganizationAppTeamManager,
+  AppTeamMembersManager: OrganizationAppTeamMembersManager,
   AppManager: OrganizationAppManager,
   AppCollectionManager: OrganizationAppCollectionManager,
   BlockManager: OrganizationBlockManager,
@@ -137,6 +146,7 @@ const AppMembersManager = [
 
 const AppTeamsManager = [
   ...AppMember,
+  AppPermission.QueryTeams,
   AppPermission.CreateTeams,
   AppPermission.UpdateTeams,
   AppPermission.DeleteTeams,
@@ -153,9 +163,10 @@ export const appMemberRoles = {
 
 export type AppMemberRole = string | keyof typeof appMemberRoles;
 
-const TeamMember: TeamPermission[] = [];
+const TeamMember: TeamPermission[] = [TeamPermission.QueryTeamMembers];
 
 const TeamManager = [
+  ...TeamMember,
   TeamPermission.CreateTeamInvites,
   TeamPermission.UpdateTeamMembers,
   TeamPermission.RemoveTeamMembers,
