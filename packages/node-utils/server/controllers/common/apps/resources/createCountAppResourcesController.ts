@@ -9,19 +9,14 @@ export function createCountAppResourcesController(options: Options): Middleware 
       pathParams: { appId, resourceType },
     } = ctx;
 
-    const action = 'count';
-
-    const { getApp, getAppResources, verifyResourceActionPermission } = options;
+    const { checkAuthSubjectAppPermissions, getApp, getAppResources } = options;
 
     const app = await getApp({ context: ctx, query: { where: { id: appId } } });
 
-    const memberQuery = await verifyResourceActionPermission({
-      app,
+    await checkAuthSubjectAppPermissions({
       context: ctx,
-      action,
-      resourceType,
-      options,
-      ctx,
+      app,
+      permissions: [`$resource:${resourceType}:query`],
     });
 
     const { where } = generateResourceQuery(ctx, options);
@@ -31,7 +26,6 @@ export function createCountAppResourcesController(options: Options): Middleware 
         and: [
           where || {},
           {
-            ...memberQuery,
             type: resourceType,
             AppId: appId,
             expires: { or: [{ gt: new Date() }, null] },

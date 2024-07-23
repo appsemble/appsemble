@@ -198,6 +198,11 @@ export enum OrganizationPermission {
   QueryAppResources,
 
   /**
+   * The permission to get app resources.
+   */
+  GetAppResources,
+
+  /**
    * The permission to update app resources.
    */
   UpdateAppResources,

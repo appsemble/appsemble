@@ -14,9 +14,7 @@ export function createGetAppResourceByIdController(options: Options): Middleware
       pathParams: { appId, resourceId, resourceType },
     } = ctx;
 
-    const action = 'get';
-
-    const { getApp, getAppResource, verifyResourceActionPermission } = options;
+    const { checkAuthSubjectAppPermissions, getApp, getAppResource } = options;
 
     const app = await getApp({ context: ctx, query: { where: { id: appId } } });
 
@@ -24,18 +22,14 @@ export function createGetAppResourceByIdController(options: Options): Middleware
 
     const resourceDefinition = getResourceDefinition(app, resourceType, ctx, view);
 
-    const memberQuery = await verifyResourceActionPermission({
-      app,
+    await checkAuthSubjectAppPermissions({
       context: ctx,
-      action,
-      resourceType,
-      options,
-      ctx,
+      app,
+      permissions: [`$resource:${resourceType}:get`],
     });
 
     const findOptions: FindOptions = {
       where: {
-        ...memberQuery,
         id: resourceId,
         type: resourceType,
         AppId: appId,

@@ -33,7 +33,7 @@ export function getAppMemberInfo(appMember: AppMember): AppMemberInfo {
 
 export async function getAppMemberInfoById(id: string): Promise<AppMemberInfo> {
   const appMember = await AppMember.findByPk(id);
-  return getAppMemberInfo(appMember);
+  return appMember ? getAppMemberInfo(appMember) : null;
 }
 
 export function parseAppMemberProperties(properties: any): Record<string, any> {

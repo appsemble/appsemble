@@ -668,47 +668,48 @@ function validateActions(definition: AppDefinition, report: Report): void {
             | 'query'
             | 'update';
           const roles = resource?.[type]?.roles ?? resource?.roles;
-          if (!roles) {
-            report(action.type, 'refers to a resource action that is currently set to private', [
-              ...path,
-              'resource',
-            ]);
-            return;
-          }
-
-          if (roles && !roles.length && !definition.security) {
-            report(
-              action.type,
-              'refers to a resource action that is accessible when logged in, but the app has no security definitions',
-              [...path, 'resource'],
-            );
-            return;
-          }
-
-          if ((type === 'get' || type === 'query') && view) {
-            if (!resource.views?.[view]) {
-              report(action.type, 'refers to a view that doesn’t exist', [...path, 'view']);
-              return;
-            }
-
-            const viewRoles = resource?.views?.[view].roles;
-            if (!viewRoles?.length) {
-              report(action.type, 'refers to a resource view that is currently set to private', [
-                ...path,
-                'view',
-              ]);
-              return;
-            }
-
-            if (viewRoles && !viewRoles.length && !definition.security) {
-              report(
-                action.type,
-                'refers to a resource action that is accessible when logged in, but the app has no security definitions',
-                [...path, 'view'],
-              );
-              return;
-            }
-          }
+          // TODO refactor resource action validation
+          // if (!roles) {
+          //   report(action.type, 'refers to a resource action that is currently set to private', [
+          //     ...path,
+          //     'resource',
+          //   ]);
+          //   return;
+          // }
+          //
+          // if (roles && !roles.length && !definition.security) {
+          //   report(
+          //     action.type,
+          //     'refers to a resource action that is accessible when logged in, but the app has no security definitions',
+          //     [...path, 'resource'],
+          //   );
+          //   return;
+          // }
+          //
+          // if ((type === 'get' || type === 'query') && view) {
+          //   if (!resource.views?.[view]) {
+          //     report(action.type, 'refers to a view that doesn’t exist', [...path, 'view']);
+          //     return;
+          //   }
+          //
+          //   const viewRoles = resource?.views?.[view].roles;
+          //   if (!viewRoles?.length) {
+          //     report(action.type, 'refers to a resource view that is currently set to private', [
+          //       ...path,
+          //       'view',
+          //     ]);
+          //     return;
+          //   }
+          //
+          //   if (viewRoles && !viewRoles.length && !definition.security) {
+          //     report(
+          //       action.type,
+          //       'refers to a resource action that is accessible when logged in, but the app has no security definitions',
+          //       [...path, 'view'],
+          //     );
+          //     return;
+          //   }
+          // }
         }
       }
 

@@ -17,18 +17,6 @@ export const AppDefinition: OpenAPIV3.NonArraySchemaObject = {
 This will be displayed for example on the home screen or in the browser tab.
 `,
     },
-    roles: {
-      type: 'array',
-      description: `The list of roles that are allowed to view this app.
-
-This list is used as the default roles for the roles property on pages and blocks, which can be
-overridden by defining them for a specific page or block. Note that these roles must be defined in
-\`security.roles\`.
-`,
-      items: {
-        type: 'string',
-      },
-    },
     description: {
       type: 'string',
       maxLength: 80,

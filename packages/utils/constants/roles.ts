@@ -1,4 +1,4 @@
-import { AppPermission, OrganizationPermission, TeamPermission } from "./permissions.js";
+import { AppPermission, OrganizationPermission, TeamPermission } from './permissions.js';
 
 const OrganizationMember = [
   OrganizationPermission.QueryApps,
@@ -17,6 +17,7 @@ const OrganizationAppContentsExplorer = [
   ...OrganizationMember,
   OrganizationPermission.QueryAppAssets,
   OrganizationPermission.QueryAppResources,
+  OrganizationPermission.GetAppResources,
 ];
 
 const OrganizationAppContentsManager = [

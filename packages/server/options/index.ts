@@ -35,3 +35,4 @@ export * from './getAppTeams.js';
 export * from './getAppVariables.js';
 export * from './checkAppMemberAppPermissions.js';
 export * from './checkUserOrganizationPermissions.js';
+export * from './checkAuthSubjectAppPermissions.js';

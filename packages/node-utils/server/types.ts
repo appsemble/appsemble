@@ -8,18 +8,14 @@ import {
   type BlockDefinition,
   type BlockManifest,
   type ControllerDefinition,
+  type CustomAppPermission,
   type EmailActionDefinition,
   type Resource,
   type ResourceDefinition,
   type TeamMember,
   type Theme as ThemeType,
-  type UserInfo,
 } from '@appsemble/types';
-import {
-  type AppPermission,
-  type IdentifiableBlock,
-  type OrganizationPermission,
-} from '@appsemble/utils';
+import { type IdentifiableBlock, type OrganizationPermission } from '@appsemble/utils';
 import { type RawAxiosRequestConfig } from 'axios';
 import {
   type Context,
@@ -278,13 +274,19 @@ export interface ApplyAppServiceSecretsParams {
 export interface CheckAppMemberAppPermissionsParams {
   context: ParameterizedContext<DefaultState, DefaultContextInterface, any>;
   app: App;
-  permissions: AppPermission[];
+  permissions: CustomAppPermission[];
 }
 
 export interface CheckUserOrganizationPermissionsParams {
   context: ParameterizedContext<DefaultState, DefaultContextInterface, any>;
   app: App;
   permissions: OrganizationPermission[];
+}
+
+export interface CheckAuthSubjectAppPermissionsParams {
+  context: ParameterizedContext<DefaultState, DefaultContextInterface, any>;
+  app: App;
+  permissions: CustomAppPermission[];
 }
 
 export interface ReloadUserParams {
@@ -453,6 +455,9 @@ export interface Options {
   ) => Promise<Record<string, any>>;
   checkUserOrganizationPermissions: (
     params: CheckUserOrganizationPermissionsParams,
+  ) => Promise<Record<string, any>>;
+  checkAuthSubjectAppPermissions: (
+    params: CheckAuthSubjectAppPermissionsParams,
   ) => Promise<Record<string, any>>;
   reloadUser: (params: ReloadUserParams) => Promise<Record<string, any>>;
   parseQuery: (params: ParseQueryParams) => ParsedQuery;

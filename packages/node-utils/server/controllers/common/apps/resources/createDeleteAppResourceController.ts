@@ -7,23 +7,18 @@ export function createDeleteAppResourceController(options: Options): Middleware 
       pathParams: { appId, resourceId, resourceType },
     } = ctx;
 
-    const { deleteAppResource, getApp, getAppResource, verifyResourceActionPermission } = options;
-    const action = 'delete';
+    const { checkAuthSubjectAppPermissions, deleteAppResource, getApp, getAppResource } = options;
 
     const app = await getApp({ context: ctx, query: { where: { id: appId } } });
 
-    const memberQuery = await verifyResourceActionPermission({
-      app,
+    await checkAuthSubjectAppPermissions({
       context: ctx,
-      action,
-      resourceType,
-      options,
-      ctx,
+      app,
+      permissions: [`$resource:${resourceType}:delete`],
     });
 
     const findOptions: FindOptions = {
       where: {
-        ...memberQuery,
         id: resourceId,
         type: resourceType,
         AppId: appId,

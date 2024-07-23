@@ -16,7 +16,7 @@ export function createQueryAppResourcesController(options: Options): Middleware 
       queryParams: { $select, $skip, $top },
     } = ctx;
 
-    const { getApp, getAppResources, verifyResourceActionPermission } = options;
+    const { checkAuthSubjectAppPermissions, getApp, getAppResources } = options;
 
     const app = await getApp({ context: ctx, query: { where: { id: appId } } });
 
@@ -26,14 +26,10 @@ export function createQueryAppResourcesController(options: Options): Middleware 
 
     const { order, where } = generateResourceQuery(ctx, options, resourceDefinition);
 
-    // TODO fix this with the new authorization logic
-    const memberQuery = await verifyResourceActionPermission({
+    await checkAuthSubjectAppPermissions({
       context: ctx,
       app,
-      resourceType,
-      action: 'query',
-      options,
-      ctx,
+      permissions: [`$resource:${resourceType}:query`],
     });
 
     const isSameOrigin = ctx?.headers?.origin === ctx?.headers?.host;
@@ -46,7 +42,6 @@ export function createQueryAppResourcesController(options: Options): Middleware 
         and: [
           where,
           {
-            ...memberQuery,
             type: resourceType,
             AppId: appId,
             expires: { or: [{ gt: new Date() }, null] },

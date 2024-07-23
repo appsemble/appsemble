@@ -14,11 +14,11 @@ export function createUpdateAppResourceController(options: Options): Middleware 
     } = ctx;
 
     const {
+      checkAuthSubjectAppPermissions,
       getApp,
       getAppAssets,
       getAppResource,
       updateAppResource,
-      verifyResourceActionPermission,
     } = options;
     const action = 'update';
 
@@ -26,18 +26,14 @@ export function createUpdateAppResourceController(options: Options): Middleware 
 
     const resourceDefinition = getResourceDefinition(app, resourceType, ctx);
 
-    const memberQuery = await verifyResourceActionPermission({
-      app,
+    await checkAuthSubjectAppPermissions({
       context: ctx,
-      action,
-      resourceType,
-      options,
-      ctx,
+      app,
+      permissions: [`$resource:${resourceType}:update`],
     });
 
     const findOptions: FindOptions = {
       where: {
-        ...memberQuery,
         id: resourceId,
         type: resourceType,
         AppId: appId,

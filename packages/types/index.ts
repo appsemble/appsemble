@@ -714,11 +714,17 @@ export interface SubscriptionResponseResource {
 
 export type SubscriptionResponse = Record<string, SubscriptionResponseResource>;
 
+export type ResourceAction = 'create' | 'delete' | 'get' | 'query' | 'update';
+
+export type AppResourceActionPermission = `$resource:${string}:${ResourceAction}`;
+
+export type CustomAppPermission = AppPermission | AppResourceActionPermission;
+
 export interface RoleDefinition {
   description?: string;
   defaultPage?: string;
   inherits?: AppMemberRole[];
-  permissions?: AppPermission[];
+  permissions?: CustomAppPermission[];
 }
 
 export interface Security {

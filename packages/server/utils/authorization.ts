@@ -1,10 +1,10 @@
-import { assertKoaError } from '@appsemble/node-utils';
+import { assertKoaError } from "@appsemble/node-utils";
 import {
   appMemberRoles,
   appOrganizationPermissionMapping,
   type AppPermission,
   organizationMemberRoles,
-  type OrganizationPermission,
+  OrganizationPermission,
   teamMemberRoles, teamOrganizationPermissionMapping,
   type TeamPermission
 } from "@appsemble/utils";
@@ -18,11 +18,12 @@ import {
   Team,
   TeamMember,
 } from '../models/index.js';
+import { AppResourceActionPermission, CustomAppPermission, ResourceAction } from "@appsemble/types";
 
 export async function checkAppMemberAppPermissions(
   ctx: Context,
   appId: number,
-  permissions: AppPermission[],
+  permissions: CustomAppPermission[],
 ): Promise<AppMember> {
   const { user: authSubject } = ctx;
 
@@ -119,7 +120,7 @@ export async function checkUserOrganizationPermissions(
 export async function checkUserAppPermissions(
   ctx: Context,
   appId: number,
-  permissions: AppPermission[],
+  permissions: CustomAppPermission[],
 ): Promise<AppMember> {
   const { user: authSubject } = ctx;
 
@@ -134,7 +135,7 @@ export async function checkUserAppPermissions(
     },
   });
 
-  let appRolePermissions: AppPermission[] = [];
+  let appRolePermissions: CustomAppPermission[] = [];
   if (appMember) {
     const appMemberRoleDefinition = app.definition.security?.roles[appMember.role];
 
@@ -161,9 +162,26 @@ export async function checkUserAppPermissions(
 
   assertKoaError(
     !permissions.every(
-      (p) =>
-        appRolePermissions.includes(p) ||
-        organizationRolePermissions.includes(appOrganizationPermissionMapping[p]),
+      (p) => {
+        if (appRolePermissions.includes(p)) {
+          return true;
+        }
+
+        const mappedPermission = appOrganizationPermissionMapping[p as AppPermission];
+
+        if (mappedPermission) {
+          return organizationRolePermissions.includes(mappedPermission);
+        } else {
+          const permissionString = String(p) as AppResourceActionPermission;
+          const permissionType = permissionString.substring(1, permissionString.indexOf(':'));
+          switch (permissionType) {
+            case 'resource':
+              const permissionAction = permissionString.substring(permissionString.lastIndexOf(':') + 1) as ResourceAction;
+              const organizationPermissionKey= `${permissionAction[0].toUpperCase()}${permissionAction.substring(1)}AppResources` as keyof typeof OrganizationPermission;
+              return organizationRolePermissions.includes(OrganizationPermission[organizationPermissionKey]);
+          }
+        }
+      }
     ),
     ctx,
     403,
@@ -238,7 +256,7 @@ export async function checkUserTeamPermissions(
 export function checkAuthSubjectAppPermissions(
   ctx: Context,
   appId: number,
-  permissions: AppPermission[],
+  permissions: CustomAppPermission[],
 ): Promise<AppMember> {
   const { client } = ctx;
 

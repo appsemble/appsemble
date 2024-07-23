@@ -12,14 +12,19 @@ export function createCreateAppResourceController(options: Options): Middleware 
       pathParams: { appId, resourceType },
       query,
     } = ctx;
-    const { createAppResourcesWithAssets, getApp, getAppAssets, verifyResourceActionPermission } =
+    const { checkAuthSubjectAppPermissions, createAppResourcesWithAssets, getApp, getAppAssets } =
       options;
     const action = 'create';
 
     const app = await getApp({ context: ctx, query: { where: { id: appId } } });
 
     const resourceDefinition = getResourceDefinition(app, resourceType, ctx);
-    await verifyResourceActionPermission({ app, context: ctx, action, resourceType, options, ctx });
+
+    await checkAuthSubjectAppPermissions({
+      context: ctx,
+      app,
+      permissions: [`$resource:${resourceType}:create`],
+    });
 
     const appAssets = await getAppAssets({ app, context: ctx });
 
