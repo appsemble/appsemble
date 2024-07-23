@@ -1,0 +1,93 @@
+name: PDF
+description: An app demonstrating how PDFs can be generated
+defaultPage: Create report
+
+security:
+  default:
+    role: User
+    policy: everyone
+  roles:
+    User:
+      description: User
+
+roles:
+  - User
+
+containers:
+  - name: pdf-generator
+    image: registry.gitlab.com/appsemble/core-images/pdf-generator-api:demo
+    port: 3000
+    resources:
+      limits:
+        cpu: '0.6'
+        memory: 512Mi
+    env:
+      # The name of the appsemble domain you are using
+      - name: REMOTE
+        value: http://appsemble
+      # Id of your app
+      - name: APP_ID
+        value: '38'
+
+pages:
+  - name: Create report
+    blocks:
+      - type: button-list
+        version: 0.29.6
+        roles:
+          - User
+        actions:
+          health:
+            type: request
+            # Find container's DNS by its name
+            url: { container: pdf-generator/health }
+            proxy: true
+            method: get
+            onSuccess:
+              type: message
+              body: 'Healthcheck successful!'
+              color: success
+            onError:
+              type: message
+              body: 'Healthcheck failed'
+              color: danger
+        parameters:
+          buttons:
+            - label: Health check
+              onClick: health
+      - type: form
+        version: 0.29.6
+        actions:
+          onSubmit:
+            type: request
+            url: { container: pdf-generator/render }
+            proxy: true
+            method: post
+            body:
+              object.from:
+                template: 'demo-template'
+                params:
+                  object.from:
+                    reportTitle: { prop: reportTitle }
+                    author: { prop: author }
+                    content: { prop: content }
+                    date: { date.now }
+            onSuccess:
+              type: download
+              filename: my-rendered.pdf
+
+        parameters:
+          fields:
+            - label: { translate: reportTitle }
+              name: reportTitle
+              type: string
+              requirements: [{ required: true }]
+            - label: { translate: author }
+              name: author
+              type: string
+              requirements: [{ required: true }]
+            - label: { translate: content }
+              name: content
+              type: string
+              multiline: true
+              requirements: [{ required: true }]

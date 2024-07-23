@@ -6,4 +6,4 @@ at their [website](https://beta.openai.com/signup/) and follow this
 need to add it to the app's configuration by going to `Secrets > Service > Add new secret`
 (https://appsemble.app/en/apps/{appId}/secrets), or add it in the `secrets.json` file in the app
 folder and export it as an environment variable, following this
-[documentation](https://appsemble.app/en/docs/03-guide/App#secrets).
+[documentation](https://appsemble.app/en/docs/02-guides/App#secrets).

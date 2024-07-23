@@ -4,13 +4,16 @@ import { isDeepStrictEqual } from 'node:util';
 import {
   AppsembleError,
   assertKoaError,
+  deleteCompanionContainers,
+  formatServiceName,
   getSupportedLanguages,
   handleValidatorResult,
   logger,
   serveIcon,
   throwKoaError,
+  updateCompanionContainers,
 } from '@appsemble/node-utils';
-import { type App as AppType, type BlockManifest } from '@appsemble/types';
+import { type AppDefinition, type App as AppType, type BlockManifest } from '@appsemble/types';
 import {
   type IdentifiableBlock,
   normalize,
@@ -250,7 +253,7 @@ export async function createApp(ctx: Context): Promise<void> {
   await checkRole(ctx, OrganizationId, Permission.CreateApps);
 
   try {
-    const definition = parse(yaml, { maxAliasCount: 10_000 });
+    const definition = parse(yaml, { maxAliasCount: 10_000 }) as AppDefinition;
 
     handleValidatorResult(
       ctx,
@@ -294,7 +297,8 @@ export async function createApp(ctx: Context): Promise<void> {
       controllerCode,
       controllerImplementations,
     };
-
+    result.containers = definition.containers;
+    result.registry = definition.registry;
     if (icon) {
       result.icon = icon.contents;
     }
@@ -336,6 +340,17 @@ export async function createApp(ctx: Context): Promise<void> {
       }
 
       throw error;
+    }
+
+    const containerDefinitions = record.containers;
+
+    if (containerDefinitions && containerDefinitions.length > 0) {
+      await updateCompanionContainers(
+        containerDefinitions,
+        record.path,
+        String(record.id),
+        record.registry,
+      );
     }
 
     record.Organization = await Organization.findByPk(record.OrganizationId, {
@@ -682,7 +697,8 @@ export async function patchApp(ctx: Context): Promise<void> {
 
     if (yaml) {
       checkPermissions.push(Permission.EditApps);
-      const definition = parse(yaml, { maxAliasCount: 10_000 });
+      const definition = parse(yaml, { maxAliasCount: 10_000 }) as AppDefinition;
+
       handleValidatorResult(
         ctx,
         openApi.validate(definition, openApi.document.components.schemas.AppDefinition, {
@@ -700,6 +716,17 @@ export async function patchApp(ctx: Context): Promise<void> {
         'App validation failed',
       );
       result.definition = definition;
+
+      // Make the actual update
+      await updateCompanionContainers(
+        definition.containers ?? [],
+        dbApp.path,
+        String(appId),
+        definition.registry,
+      );
+
+      result.containers = definition.containers;
+      result.registry = definition.registry;
     }
 
     if (path) {
@@ -875,7 +902,7 @@ export async function deleteApp(ctx: Context): Promise<void> {
     pathParams: { appId },
   } = ctx;
 
-  const app = await App.findByPk(appId, { attributes: ['id', 'OrganizationId'] });
+  const app = await App.findByPk(appId, { attributes: ['id', 'OrganizationId', 'definition'] });
 
   assertKoaError(!app, ctx, 404, 'App not found');
 
@@ -883,6 +910,14 @@ export async function deleteApp(ctx: Context): Promise<void> {
 
   await app.update({ path: null });
   await app.destroy();
+
+  if (app.definition.containers && app.definition.containers.length > 0) {
+    for (const def of app.definition.containers) {
+      await deleteCompanionContainers(
+        formatServiceName(def.name, app.definition?.name, String(appId)),
+      );
+    }
+  }
 }
 
 export async function getAppEmailSettings(ctx: Context): Promise<void> {

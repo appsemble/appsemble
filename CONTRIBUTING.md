@@ -20,6 +20,17 @@ validation and deployment.
 To get started head over to our [Template](https://gitlab.com/appsemble/apps/template) repository
 for further instructions.
 
+### Blocks
+
+Everyone can create their own blocks, with any technology. Stricter requirements are enforced on
+core blocks. These are the 3 classes of blocks:
+
+| block class | requirements                            | SLA covered | Location                                                  |
+| ----------- | --------------------------------------- | ----------- | --------------------------------------------------------- |
+| core        | mandatory: plain JS / Preact / mini-jsx | yes         | https://gitlab.com/appsemble/appsemble/-/tree/main/blocks |
+| custom      | suggested: plain js / Preact / mini-jsx | optionally  | https://gitlab.com/appsemble/apps                         |
+| community   | suggested: plain js / preact / mini-jsx | no          | varies                                                    |
+
 ### Style guide
 
 The entire code base is formatted using
@@ -321,20 +332,6 @@ Migrating down to the first migration.
 ```sh
 npm run appsemble migrate -- --migrate-to 0.24.12
 ```
-
-<!-- Check current migration version.
-
-```sh
-psql postgres://admin:password@localhost:5432/appsemble -c 'SELECT "version" FROM "Meta";'
-# Or run `npm start` to see the current version and migrate to latest
-```
-
-Whenever you want to checkout the database after running `npm run appsemble check-migrations` or
-`npm run appsemble fuzz-migrations` run the following to list the databases created.
-
-```sh
-psql postgres://admin:password@localhost:54321/postgres -c '\l'
-``` -->
 
 ## Releasing
 

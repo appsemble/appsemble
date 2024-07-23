@@ -65,11 +65,12 @@ export function ButtonField({
     'is-outlined': outlined,
   });
   const remappedTitle = remap(title, item, { index, repeatedIndex }) as string;
+  const remappedLabel = remap(label, item, { index, repeatedIndex }) as string;
 
   const content = (
     <Fragment>
       {icon ? <Icon icon={icon} /> : null}
-      <span>{remap(label, item, { index, repeatedIndex }) as string}</span>
+      {remappedLabel ? <span>{remappedLabel}</span> : null}
     </Fragment>
   );
 

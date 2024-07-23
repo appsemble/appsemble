@@ -1,40 +1,72 @@
-// eslint-disable-next-line import/no-extraneous-dependencies, n/no-extraneous-import
-import Cli from '@appsemble/cli/README.md';
-// eslint-disable-next-line import/no-extraneous-dependencies, n/no-extraneous-import
-import Preact from '@appsemble/preact/README.md';
 import {
   CollapsibleMenuSection,
   Input,
   MenuItem,
   MenuSection,
   MetaSwitch,
+  useMeta,
   useSideMenu,
 } from '@appsemble/react-components';
-// eslint-disable-next-line import/no-extraneous-dependencies, n/no-extraneous-import
-import Sdk from '@appsemble/sdk/README.md';
-// eslint-disable-next-line import/no-extraneous-dependencies, n/no-extraneous-import
-import WebpackConfig from '@appsemble/webpack-config/README.md';
-// eslint-disable-next-line import/no-extraneous-dependencies, n/no-extraneous-import
-import CreateAppsemble from 'create-appsemble/README.md';
-import { type ReactNode, useEffect } from 'react';
+import { type ComponentType, type ReactNode, useEffect } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Navigate, Route, useLocation, useNavigate } from 'react-router-dom';
 
-import { ActionMenuItems } from './actions/components/ActionMenuItems.js';
-import { ActionRoutes } from './actions/index.js';
-import { Doc } from './Doc/index.js';
 import { docs } from './docs.js';
 import { messages } from './messages.js';
-import { ReferenceRoutes } from './reference/index.js';
-import { RemapperMenuItems } from './remapper/components/RemapperMenuItems.js';
-import { RemapperRoutes } from './remapper/index.js';
-import { SearchPage } from './search/index.js';
+import { SearchPage } from './Search/index.js';
 import Changelog from '../../../../CHANGELOG.md';
 import Contributing from '../../../../CONTRIBUTING.md';
 import { useBreadCrumbsDecoration } from '../../components/BreadCrumbsDecoration/index.js';
 
-function getUrl(path: string, base: string): string {
+function formatPath(path: string, base = ''): string {
   return path === '/' ? base : `${base}/${path.replace(/\/$/, '')}`;
+}
+
+interface DocProps {
+  /**
+   * The MDX component to render.
+   */
+  readonly Component: ComponentType;
+
+  /**
+   * The title to display.
+   */
+  readonly title: string;
+
+  /**
+   * The path of the base route.
+   */
+  readonly path: string;
+
+  /**
+   * The path of the base route.
+   */
+  readonly childRoutes?: DocProps[];
+}
+
+function ChildDoc({ Component: Child, title: childTitle }: Partial<DocProps>): ReactNode {
+  useMeta(childTitle);
+  return <Child />;
+}
+
+/**
+ * Render documentation in with a breadcrumb.
+ */
+function Doc({ Component, childRoutes, path, title }: DocProps): ReactNode {
+  useMeta(title);
+
+  return (
+    <MetaSwitch title={title}>
+      <Route element={<Component />} path="/" />
+      {childRoutes.map((sub) => (
+        <Route
+          element={<ChildDoc Component={sub.Component} path={sub.path} title={sub.title} />}
+          key={sub.path}
+          path={sub.path.replace(path.replace('/*', ''), '')}
+        />
+      ))}
+    </MetaSwitch>
+  );
 }
 
 /**
@@ -54,20 +86,20 @@ export function DocsRoutes(): ReactNode {
       </MenuItem>
       {docs
         .filter(({ path }) => path.endsWith('/'))
-        .map(({ icon, path, title }) => {
+        .map(({ icon, menu, path, title }) => {
           const subRoutes = docs.filter(
             (subRoute) => subRoute.path !== path && subRoute.path.startsWith(path),
           );
           return [
             <CollapsibleMenuSection key="section-wrapper">
-              <MenuItem end icon={icon} key="docs-title" to={getUrl(path, 'docs')}>
-                {title}
+              <MenuItem end icon={icon} key="docs-title" to={formatPath(path, 'docs')}>
+                {menu ?? title}
               </MenuItem>
               {subRoutes.length ? (
                 <MenuSection key="docs-section">
                   {subRoutes.map((subRoute) => (
-                    <MenuItem end key={subRoute.path} to={getUrl(subRoute.path, 'docs')}>
-                      {subRoute.title}
+                    <MenuItem end key={subRoute.path} to={formatPath(subRoute.path, 'docs')}>
+                      {subRoute.menu ?? subRoute.title}
                     </MenuItem>
                   ))}
                 </MenuSection>
@@ -75,43 +107,6 @@ export function DocsRoutes(): ReactNode {
             </CollapsibleMenuSection>,
           ];
         })}
-      <CollapsibleMenuSection>
-        <MenuItem end icon="sitemap" to="docs/remapper">
-          <FormattedMessage {...messages.remapper} />
-        </MenuItem>
-        <MenuSection>{RemapperMenuItems('docs')}</MenuSection>
-      </CollapsibleMenuSection>
-      <CollapsibleMenuSection>
-        <MenuItem end icon="gears" to="docs/actions">
-          <FormattedMessage {...messages.action} />
-        </MenuItem>
-        <MenuSection>{ActionMenuItems('docs')}</MenuSection>
-      </CollapsibleMenuSection>
-      <CollapsibleMenuSection>
-        <MenuItem icon="book" to="docs/reference">
-          <FormattedMessage {...messages.reference} />
-        </MenuItem>
-        <MenuSection>
-          <MenuItem end to="docs/reference/app">
-            <FormattedMessage {...messages.app} />
-          </MenuItem>
-          <MenuItem end to="docs/reference/action">
-            <FormattedMessage {...messages.action} />
-          </MenuItem>
-        </MenuSection>
-      </CollapsibleMenuSection>
-      <CollapsibleMenuSection>
-        <MenuItem end icon="cubes" to="docs/packages">
-          <FormattedMessage {...messages.packages} />
-        </MenuItem>
-        <MenuSection>
-          <MenuItem to="docs/packages/cli">@appsemble/cli</MenuItem>
-          <MenuItem to="docs/packages/preact">@appsemble/preact</MenuItem>
-          <MenuItem to="docs/packages/sdk">@appsemble/sdk</MenuItem>
-          <MenuItem to="docs/packages/webpack-config">@appsemble/webpack-config</MenuItem>
-          <MenuItem to="docs/packages/create-appsemble">create-appsemble</MenuItem>
-        </MenuSection>
-      </CollapsibleMenuSection>
       <MenuItem end icon="code-merge" to="docs/contributing">
         <FormattedMessage {...messages.contributing} />
       </MenuItem>
@@ -141,27 +136,27 @@ export function DocsRoutes(): ReactNode {
 
   return (
     <MetaSwitch title={messages.title}>
-      <Route element={<ActionRoutes />} path="/actions/*" />
-      <Route element={<RemapperRoutes />} path="/remapper/*" />
       <Route element={<SearchPage />} path="/search" />
-      <Route element={<Changelog />} path="/changelog" />
+      {docs
+        .filter(({ path }) => path.endsWith('/'))
+        .map(({ Component, path, title }) => (
+          <Route
+            element={
+              <Doc
+                childRoutes={docs.filter(
+                  ({ path: subPath }) => subPath.startsWith(path) && subPath !== path,
+                )}
+                Component={Component}
+                path={path}
+                title={title}
+              />
+            }
+            key={path}
+            path={`${path}*`}
+          />
+        ))}
       <Route element={<Contributing />} path="/contributing" />
-      <Route element={<Cli />} path="/packages/cli" />
-      <Route element={<Preact />} path="/packages/preact" />
-      <Route element={<Sdk />} path="/packages/sdk" />
-      <Route element={<WebpackConfig />} path="/packages/webpack-config" />
-      <Route element={<CreateAppsemble />} path="/packages/create-appsemble" />
-      <Route element={<ReferenceRoutes />} path="/reference/*" />
-      {docs.map(({ Component, path, title }) => (
-        <Route
-          element={<Doc component={Component} title={title} />}
-          key={path}
-          path={getUrl(path, '')}
-        />
-      ))}
-      {docs.map(({ path }) => (
-        <Route element={<Navigate to={getUrl(path, '')} />} key={path} path="*" />
-      ))}
+      <Route element={<Changelog />} path="/changelog" />
       <Route element={<Navigate to="docs" />} path="*" />
     </MetaSwitch>
   );

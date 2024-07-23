@@ -201,3 +201,5 @@ microk8s
 init
 quicktime
 msvideo
+orgname
+kubeconfig

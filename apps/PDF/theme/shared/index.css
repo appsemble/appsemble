@@ -1,0 +1,17 @@
+button[type='submit'] {
+  color: transparent !important;
+  font-size: 32px;
+  position: relative;
+  width: 90px;
+}
+
+.button[type='submit']::before {
+  color: hsl(0deg 0% 100%);
+  content: '\f1c1';
+  font-family: 'Font Awesome 5 Free', sans-serif;
+  font-weight: 900;
+  left: 50%;
+  position: absolute;
+  top: 50%;
+  transform: translate(-50%, -50%);
+}

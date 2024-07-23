@@ -1,0 +1,247 @@
+import { ClientServerActionSupport as Side } from './ClientServerActionSupport/index.tsx';
+
+# User
+
+## Introduction
+
+User actions allow you to manage users for your app. User actions are client side actions i.e. these
+actions are not implemented for the server side. Supported User actions are as below.
+
+- [`user.register`](#userregister)
+- [`user.login`](#userlogin)
+- [`user.update`](#userupdate)
+- [`user.logout`](#userlogout)
+- [`user.query`](#userquery)
+- [`user.remove`](#userremove)
+- [`user.create`](#usercreate)
+
+To use User actions, you must have a security definition in your app:
+
+```yaml validate security-snippet
+security:
+  default:
+    role: User
+    policy: everyone
+  roles:
+    User: {}
+```
+
+### user.register<Side name="user.register" />
+
+This action allows the user to register a new account using an email address and a password and does
+nothing if the user is already logged in. Supported fields for this action are `type`, `email`,
+`password`, `displayName`, `properties`, `login` and `picture`. Email and password are used for
+logging in, `displayName` is the full name of user, login is a boolean value representing whether to
+login the user after register (default value is true), picture is the profile picture of the user
+and properties is used to denote any custom properties associated with user. All the values for
+properties are converted into strings. Here is an example of this action in use.
+
+```yaml validate blocks-snippet
+blocks:
+  - type: form
+    version: 0.29.6
+    parameters:
+      fields:
+        - name: username
+          label: { translate: username }
+          type: string
+          requirements: [required: true]
+        - name: email
+          label: { translate: email }
+          type: string
+          format: email
+          requirements: [required: true]
+        - name: password
+          label: { translate: password }
+          type: string
+          format: password
+          requirements:
+            - required: true
+            - minLength: 8
+        - name: picture
+          label: { translate: profilePicture }
+          type: file
+    actions:
+      onSubmit:
+        type: user.register
+        email: { prop: email }
+        password: { prop: password }
+        displayName: { prop: username }
+        picture: { prop: profilePicture }
+        onSuccess:
+          type: log
+```
+
+### user.login<Side name="user.login" />
+
+This action allows the user to login using an email address and a password and does nothing if the
+user is already logged in. Supported fields for this action are `type`, `email` and `password`.
+Email and password are similar to those used at the time of registering. Here is an example of this
+action in use.
+
+```yaml validate blocks-snippet
+blocks:
+  - type: form
+    version: 0.29.6
+    parameters:
+      fields:
+        - name: email
+          label: { translate: email }
+          type: string
+          format: email
+          requirements: [required: true]
+        - name: password
+          label: { translate: password }
+          type: string
+          format: password
+          requirements:
+            - required: true
+            - minLength: 8
+    actions:
+      onSubmit:
+        type: user.login
+        email: { prop: email }
+        password: { prop: password }
+        onSuccess:
+          type: link
+          to: Home Page
+```
+
+### user.update<Side name="user.update" />
+
+This action allows the user to update their existing account and does nothing if the user isn’t
+logged in. Supported fields for this action are `type`, `email`, `password`, `displayName`,
+`properties` and `picture`. Email and password are used for logging in, displayName is the full name
+of the user, picture is the profile picture of the user and properties is used to denote any custom
+properties associated with the user. All the values for properties are converted into strings. Here
+is an example of this action in use.
+
+```yaml validate blocks-snippet
+blocks:
+  - type: form
+    version: 0.29.6
+    parameters:
+      fields:
+        - name: email
+          label: { translate: email }
+          type: string
+          format: email
+        - name: username
+          label: { translate: username }
+          type: string
+    actions:
+      onSubmit:
+        type: user.update
+        currentEmail: { user: email }
+        newEmail: { prop: email }
+        name: { prop: username }
+```
+
+### user.logout<Side name="user.logout" />
+
+This action allow the users to logout of the application. Supported field for this action is `type`,
+which is `user.logout` in this case. Here is an example of this action in use.
+
+```yaml validate blocks-snippet
+blocks:
+  - type: action-button
+    version: 0.29.6
+    parameters:
+      icon: right-from-bracket
+    actions:
+      onClick:
+        type: user.logout
+        onSuccess:
+          type: noop
+```
+
+### user.query<Side name="user.query" />
+
+This action allows the user to fetch a list of app accounts by their roles and does nothing if the
+user is not logged in. Supported fields for this action are `type` and `roles`. Type is `user.query`
+and roles is a remapper that represents the roles of accounts that would be fetched. Neither of the
+fields is required to use this action. Below is an example of this action being used to fetch user
+data.
+
+```yaml validate blocks-snippet
+blocks:
+  - type: data-loader
+    version: 0.29.6
+    actions:
+      onLoad:
+        type: user.query
+        roles: { prop: selectedRole }
+        onSuccess:
+          type: log
+```
+
+### user.remove<Side name="user.remove" />
+
+This action allows the user to delete an existing account and does nothing if the user is not logged
+in. Supported fields for this action are `type` and `email`. Type is `user.remove` and `email` is a
+remapper representing the email of the account to be deleted. Email is the only required field for
+this action. Usage of this action requires the `AccountManager` level permissions. To know more
+about the Permissions and their respective roles please check
+[here](../02-guides/organizations.mdx). Below is an example of how this action can be used to delete
+a user with a provided email address.
+
+```yaml validate blocks-snippet
+blocks:
+  - type: action-button
+    version: 0.29.6
+    parameters:
+      icon: trash
+    actions:
+      onClick:
+        type: user.remove
+        email: { prop: email }
+        onSuccess:
+          type: noop
+```
+
+### user.create<Side name="user.create" />
+
+This action allows the user to create a new account for the app using an email and password and does
+nothing if the user is logged in. Supported fields for this action are `type`, `email`, `name`,
+`password`, `role` and `properties`. Type is `user.create` and all other fields are remappers
+allowing you to use dynamic values. The properties field can be used to define custom properties for
+the user. Values will be validated based on `user.properties`, if defined in the app definition.
+Role defaults to the default role in the security definition. Accounts created via this action are
+created on Appsemble as well i.e. the credentials(email and password) can be used to log in into the
+Appsemble and access other apps. Similar to `user.remove` usage of this action requires
+`AccountManager` level of permissions. Fields `email` and `password` are required. Below is an
+example of this action being used in an app.
+
+```yaml validate blocks-snippet
+blocks:
+  - type: form
+    version: 0.29.6
+    parameters:
+      fields:
+        - name: name
+          label: Full Name
+          type: string
+        - name: email
+          label: Email
+          type: string
+          format: email
+          requirements:
+            - required: true
+              errorMessage: Please enter a valid email
+        - name: password
+          label: Password
+          type: string
+          format: password
+          requirements:
+            - minLength: 8
+            - required: true
+    actions:
+      onSubmit:
+        type: user.create
+        name: { prop: name }
+        email: { prop: email }
+        password: { prop: password }
+        onSuccess:
+          type: link
+          to: Home
+```

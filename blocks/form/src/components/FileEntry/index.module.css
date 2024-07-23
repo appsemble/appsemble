@@ -20,9 +20,9 @@
   padding: 0;
 }
 
-.removeButton {
+.remove-button {
   background-color: transparent;
-  background-image: url(./cross.svg) !important;
+  background-image: url(./circle.svg) !important;
   background-repeat: no-repeat !important;
   background-size: contain;
   border-color: transparent;
@@ -44,7 +44,7 @@
 
 .removeButtonUnavailable {
   background-color: transparent;
-  background-image: url(./cross.svg) !important;
+  background-image: url(./circle.svg) !important;
   background-repeat: no-repeat !important;
   background-size: contain;
   border-color: transparent;

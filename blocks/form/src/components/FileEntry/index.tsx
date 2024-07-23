@@ -69,6 +69,7 @@ interface FileEntryProps extends InputProps<Blob | string, FileField> {
 }
 
 export function FileEntry({
+  disabled,
   errorLinkRef,
   field,
   formValues: value,
@@ -167,6 +168,32 @@ export function FileEntry({
 
   const previewAvailable = ['image', 'video'].includes(fileType);
 
+  const displayFileEntryPlaceholder = (
+    type: 'empty' | 'loading' | 'unknown',
+    label?: VNode,
+  ): VNode => (
+    <span
+      className={`image is-128x128 px-2 py-2 has-text-centered ${styles.rounded} ${styles.placeholder} ${styles[type]}`}
+      /* eslint-disable-next-line react/forbid-dom-props */
+      style={{ backgroundImage: createCustomSvg(iconName) }}
+    >
+      {label ?? null}
+    </span>
+  );
+
+  const displayFileEntryButtons = (): VNode =>
+    !disabled && (
+      <button
+        className={`button is-small ${styles['remove-button']}`}
+        onClick={onRemove}
+        type="button"
+      >
+        <span className="icon">
+          <i className="fas fa-times" />
+        </span>
+      </button>
+    );
+
   return (
     <div
       className={`appsemble-file file mr-3 ${repeated ? styles['root-repeated'] : styles.root}`}
@@ -196,6 +223,7 @@ export function FileEntry({
           <input
             accept={getAccept(field)}
             className={`file-input ${styles.input}`}
+            disabled={disabled}
             name={name}
             onChange={onSelect}
             type="file"
@@ -214,51 +242,24 @@ export function FileEntry({
                     />
                   </figure>
                 </button>
-                <button
-                  className={`button is-small ${styles.removeButton}`}
-                  onClick={onRemove}
-                  type="button"
-                >
-                  <span className="icon">
-                    <i className="fas fa-times" />
-                  </span>
-                </button>
+                {displayFileEntryButtons()}
               </>
             ) : (
-              <span
-                className={`image is-128x128 px-2 py-2 has-text-centered ${styles.rounded} ${styles.placeholder} ${styles.loading}`}
-                /* eslint-disable-next-line react/forbid-dom-props */
-                style={{ backgroundImage: createCustomSvg(iconName) }}
-              />
+              displayFileEntryPlaceholder('loading')
             )
           ) : (
             <>
-              <span
-                className={`image is-128x128 px-2 py-2 has-text-centered ${styles.rounded} ${styles.placeholder} ${styles.unknown}`}
-                /* eslint-disable-next-line react/forbid-dom-props */
-                style={{ backgroundImage: createCustomSvg(iconName) }}
-              />
-              <button
-                className={`button is-small ${styles.removeButton}`}
-                onClick={onRemove}
-                type="button"
-              >
-                <span className="icon">
-                  <i className="fas fa-times" />
-                </span>
-              </button>
+              {displayFileEntryPlaceholder('unknown')}
+              {displayFileEntryButtons()}
             </>
           )
         ) : (
-          <span
-            className={`image is-128x128 px-2 py-2 has-text-centered ${styles.rounded} ${styles.placeholder} ${styles.empty}`}
-            /* eslint-disable-next-line react/forbid-dom-props */
-            style={{ backgroundImage: createCustomSvg(iconName) }}
-          >
+          displayFileEntryPlaceholder(
+            'empty',
             <span className="file-label">
               {utils.remap(field.emptyFileLabel ?? ' ', field) as string}
-            </span>
-          </span>
+            </span>,
+          )
         )}
       </label>
       {url && fileType === 'video' ? (

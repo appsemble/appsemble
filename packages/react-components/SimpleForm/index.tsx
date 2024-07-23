@@ -47,7 +47,6 @@ export function SimpleForm<T extends {}>({
   ...props
 }: SimpleFormProps<T>): ReactNode {
   const [values, setValues] = useState(defaultValues);
-
   const [submitError, setSubmitError] = useState<Error>(null);
   const [formErrors, setFormErrors] = useState<FormErrors>({});
   const [pristine, setPristine] = useState(

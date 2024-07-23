@@ -6,7 +6,7 @@
 
 # ![](config/assets/logo.svg) Appsemble
 
-> The app building platform
+> The open source low-code app building platform
 
 ## Table of Contents
 
@@ -28,7 +28,7 @@
 ## Usage
 
 These are instructions for developing the Appsemble core platform. Production setup instructions can
-be found in [here](packages/studio/pages/docs/docs/04-deployment/helm.md).
+be found in [here](packages/studio/pages/docs/07-deployment/helm.md).
 
 ### Live Environments
 

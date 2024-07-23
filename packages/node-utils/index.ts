@@ -36,3 +36,4 @@ export * from './EmailError.js';
 export * from './UserPropertiesError.js';
 export * from './authentication.js';
 export * from './getMessagesUtil.js';
+export * from './container/index.js';

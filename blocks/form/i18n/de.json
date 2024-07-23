@@ -4,6 +4,7 @@
   "fixErrors": "",
   "formRequirementError": "Eine der Anforderungen dieses Formulars ist ungültig.",
   "invalidLabel": "Dieser Wert ist ungültig",
+  "longSubmissionWarning": "",
   "optionalLabel": "(optional)",
   "previousLabel": "Vorherige",
   "selectionNoOptions": "",

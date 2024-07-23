@@ -5,7 +5,7 @@ export const unsortedRemappers: Record<string, OpenAPIV3.ReferenceObject | OpenA
     ics: {
       type: 'object',
       description: `Create a calendar event. This event can be downloaded as an \`.ics\` file and
-uploaded to your agenda using the [download](../reference/action#download) action.
+uploaded to your agenda using the [download](../05-reference/action#download) action.
 
 For example, the following input:
 \`\`\`yaml
@@ -163,12 +163,12 @@ The options represent the level of logging that will show in the console.
   - \`appId\`: ID of the application,
   - \`url\`: Absolute URL of the page where the remapper was fired,
   - \`appUrl\`: Base URL of the application,
-  - \`pageData\`: Current page data of a FlowPage (See [page remapper](./data#page)),
-  - \`userInfo\`: User's information if they are logged in (See [user remapper](./data#user)),
+  - \`pageData\`: Current page data of a FlowPage (See [page remapper](./04-data#page)),
+  - \`userInfo\`: User's information if they are logged in (See [user remapper](./04-data#user)),
   - \`context\`: Internal context
-  - \`history\`: Complete list of this remapper’s history (See [history remapper](./history))
+  - \`history\`: Complete list of this remapper’s history (See [history remapper](./05-history))
   - \`locale\`: The user’s locale,
-  - \`stepRef\`: In a loop page, gives the properties from the loop’s current data index (See [step remapper](./data#step))
+  - \`stepRef\`: In a loop page, gives the properties from the loop’s current data index (See [step remapper](./04-data#step))
 
 For example:
 

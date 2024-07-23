@@ -117,5 +117,17 @@ The most basic resource has a \`schema\` property and defines the minimal securi
       description: 'Helper property that can be used to store YAML anchors.',
       items: {},
     },
+    containers: {
+      type: 'array',
+      minItems: 1,
+      additionalProperties: false,
+      description: 'Definition of the companion containers to be created.',
+      items: { $ref: '#/components/schemas/ContainerDefinition' },
+    },
+    registry: {
+      type: 'string',
+      default: null,
+      description: 'The default registry used to pull images for companion containers.',
+    },
   },
 };

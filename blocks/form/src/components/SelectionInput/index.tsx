@@ -2,6 +2,7 @@ import { FormattedMessage, useBlock } from '@appsemble/preact';
 import {
   Button,
   FormButtons,
+  Input,
   Loader,
   Message,
   ModalCard,
@@ -9,7 +10,7 @@ import {
 } from '@appsemble/preact-components';
 import classNames from 'classnames';
 import { type Ref, type VNode } from 'preact';
-import { useEffect, useState } from 'preact/hooks';
+import { useCallback, useEffect, useState } from 'preact/hooks';
 
 import styles from './index.module.css';
 import { SelectionEntry } from './SelectionEntry/index.js';
@@ -38,8 +39,11 @@ export function SelectionInput({
   const [loading, setLoading] = useState('event' in field);
   const [options, setOptions] = useState('event' in field ? [] : field.selection);
   const [optionsError, setOptionsError] = useState<boolean>(false);
+  const [searchString, setSearchString] = useState<string>(null);
 
   const selectedOptions = getValueByNameSequence(name, formValues) as SelectionChoice[];
+
+  const [filteredOptions, setFilteredOptions] = useState<SelectionChoice[]>([]);
 
   const minItems = getMinItems(field);
   const maxItems = getMaxItems(field);
@@ -89,9 +93,39 @@ export function SelectionInput({
     );
   };
 
-  const availableOptions = options.filter(
-    (option) => !selectedOptions.some((selectedOption) => selectedOption.id === option.id),
+  const getOptionsFilteredBySelection = useCallback(
+    (): SelectionChoice[] =>
+      options.filter(
+        (option) => !selectedOptions.some((selectedOption) => selectedOption.id === option.id),
+      ),
+    [options, selectedOptions],
   );
+
+  const handleModalOpen = (): void => {
+    const filtered = getOptionsFilteredBySelection();
+    setFilteredOptions(filtered);
+    modal.enable();
+  };
+
+  const handleSearch = (e: any, value: number | string): void => {
+    setSearchString(String(value).toLowerCase());
+  };
+
+  useEffect(() => {
+    let filtered = getOptionsFilteredBySelection();
+
+    if (searchString) {
+      filtered = filtered.filter(
+        (option) =>
+          String(option.header).toLowerCase().includes(searchString) ||
+          option.fields.some((optionField) =>
+            String(optionField.value).toLowerCase().includes(searchString),
+          ),
+      );
+    }
+
+    setFilteredOptions(filtered);
+  }, [getOptionsFilteredBySelection, options, searchString, selectedOptions]);
 
   return (
     <div
@@ -112,12 +146,13 @@ export function SelectionInput({
       </div>
       {!readOnly && (!maxItems || selectedOptions.length < maxItems) ? (
         <FormButtons>
-          <Button disabled={disabled} icon="plus" onClick={modal.enable}>
+          <Button disabled={disabled} icon="plus" onClick={handleModalOpen}>
             {utils.remap(field.addLabel ?? 'Add', selectedOptions) as string}
           </Button>
         </FormButtons>
       ) : null}
       <ModalCard isActive={modal.enabled} onClose={modal.disable}>
+        {!field.disableSearch && <Input className="mb-2" onChange={handleSearch} />}
         {loading ? (
           <Loader />
         ) : optionsError ? (
@@ -126,8 +161,8 @@ export function SelectionInput({
               <FormattedMessage id="selectionOptionsError" />
             </span>
           </Message>
-        ) : availableOptions.length > 0 ? (
-          availableOptions.map((option) => (
+        ) : filteredOptions.length > 0 ? (
+          filteredOptions.map((option) => (
             <SelectionOption key={option.id} onAdd={selectOption} option={option} />
           ))
         ) : (

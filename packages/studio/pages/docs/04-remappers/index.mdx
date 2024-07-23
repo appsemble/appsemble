@@ -1,0 +1,212 @@
+---
+icon: sitemap
+---
+
+import { importDocs } from './index.js';
+
+# Remappers
+
+## Introduction
+
+Remapper functions are objects that define how a value should be transformed. This can be useful for
+various purposes, such as retrieving properties from data structures, transforming data and
+formatting text.
+
+A remapper is structured as follows. A remapper function gets data from a source. This can be an
+action, an event, etc. Then, the function can define a remapper or an array, or remappers to
+manipulate this data.
+
+When using an array of remappers, it executes each one after the other from top to bottom. This way
+you can create a whole stack of remappers to completely transform a set of data into something else.
+
+As an example, say we have a big dataset of users but we only want to show specific properties of
+each user.
+
+Given the following data:
+
+```json
+{
+  "firstName": "Patrick",
+  "lastName": "Stuart"
+}
+```
+
+The user that’s passed to this remap function is an object with two string properties: “firstName”
+and “lastName”. What if we want to only show the first name of this user? For this we can use the
+`prop` remapper. This remapper allows you to target a specific property of the data passed to the
+function.
+
+This means that with the data above, we can easily get the first name using this `prop` remapper:
+
+```yaml
+prop: firstName
+```
+
+Result:
+
+```json
+"Patrick"
+```
+
+We have now successfully remapped existing data! Instead of a big user dataset, it now only shows
+their first name.
+
+If we want to further manipulate this data, it’s best to do in the same remap function as well.
+Because the function can contain an array of remappers, we can easily alter the data further. In the
+`YAML` language, you can define an array in a multitude of ways. To keep your code clean, it’s best
+to define it with a `-` before each item.
+
+With this in mind we can remap this data even further by defining the function as an array with
+multiple remappers. Now, we use the `prop` and `string.case` remappers to transform the data even
+further:
+
+```yaml
+- prop: firstName
+- string.case: upper
+```
+
+Result:
+
+```json
+"PATRICK"
+```
+
+Now that you know the basics of remappers we can get into some real app writing.
+
+### How does this work in an app?
+
+Let’s say you want to create an app that displays a list of songs in a table. You might not know
+this, but services like Spotify store a lot of data you don’t directly see in their database.
+According to the developer documentation a track contains 18 audio features. Some of these features
+are `acousticness`, `danceability`, `loudness` and `duration_ms`. When you want to show a user their
+playlist of songs, you only want to show relevant information like the song’s title, artist and
+duration. We can use remappers to filter this data further to only show this information.
+
+See the following page definition
+
+```yaml
+name: Playlist
+blocks:
+  - type: data-loader
+    version: 0.20.38
+    actions:
+      onLoad:
+        type: resource.query
+        resource: songs
+    events:
+      emit:
+        data: songData
+```
+
+In here we define a `data-loader` block. In this block we call the `resource.query` action when the
+page is loaded. This action retrieves the entire dataset that is stored in the `songs` resource:
+
+```json
+[
+  {
+    "name": "string",
+    "artist": "string",
+    "duration": "string",
+    "release-date": "date",
+    "metadata": "string",
+    ...
+  }
+]
+```
+
+If we want to only show certain properties, we can directly use the `prop` remapper to only show
+what we want. The `table` block accepts a remapper as the value under a column. We can use this to
+insert the specific properties of a song we want.
+
+```yaml
+- type: table
+  version: 0.20.38
+  parameters:
+    fields:
+      - label: Title
+        value: { prop: title }
+      - label: Artist
+        value: { prop: artist }
+      - label: Duration
+        value: { prop: duration }
+  events:
+    listen:
+      data: songData
+```
+
+With this in mind, you should be able to understand what is going on in the default
+[Person app](https://appsemble.app/en/apps/3). This covers some of the very basics of remappers.
+Next, there will be a bit more of an advanced example.
+
+### Advanced remapping
+
+As the final part of this tutorial we will go over a bit more advanced filtering of data. We will
+take the example of a big dataset of users again.
+
+```yaml
+type: data-loader
+version: 0.20.38
+actions:
+  onLoad:
+    type: resource.query
+    resource: people
+    remapAfter:
+      - array.map:
+          if:
+            condition:
+              equals:
+                - prop: city
+                - 'Eindhoven'
+            then:
+              object.omit:
+                - city
+            else: null
+      - null.strip: null
+events:
+  emit:
+    data: peopleInEindhoven
+```
+
+This looks like a lot, but after going through every bit it should start to make some sense.
+
+The `data-loader` here gets every person in the `people` resource. After that, it creates a remapper
+function containing two remappers:
+
+1. `array.map`: This remapper goes through every item in the data that is given (if the data is an
+   array) and applies the remappers in the function on it. So, within this remapper every person in
+   the resource is individually given to the remappers inside. In this case, they are compared to an
+   `if` remapper. This `if` remapper has a condition which compares the property `city` within the
+   user and checks if it is equal to “Eindhoven”. If this is true, it removes the `city` property
+   from the person’s properties. If this is false, it sets the person object to null.
+
+   When this remapper is done, an array that is filled with people that had the value of “Eindhoven”
+   under the `city` property is outputted. People that didn’t are set to null.
+
+   > **Note:** Remappers don’t directly alter the resource itself. It only changes data within the
+   > **context** of the remapper itself.
+
+2. `null.strip`: This remapper removes any `null` value from the data that is given to it.
+   Considering the output of the previous remapper was an array mixed with people and null values.
+   This cleans up the data, so that you _only_ have actual people in the dataset.
+
+The end result of this is a fully filtered list of users from the city of Eindhoven. Next, you could
+display this information in any block you’d like to use via the event emitter from the data-loader
+block.
+
+### Conclusion
+
+You should be familiar with the very basics of remapping now. A lot more remappers exist in the
+framework and more will be added over time, so it’s good to get familiar with the most important
+ones. Keep experimenting with them and you will find out just how powerful remappers are.
+
+To see each remapper in action, check out the official [Remapper app](/apps/746).
+
+### Table of contents
+
+<div>
+  {importDocs().map((section) => (
+    <li key={section.title.toLowerCase()}>
+      <a href={`/docs/04-remappers/${section.title.toLowerCase()}`}>{section.title}</a>
+    </li>
+  ))}
+</div>

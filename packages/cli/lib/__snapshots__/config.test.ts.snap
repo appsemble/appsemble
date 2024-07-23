@@ -1870,6 +1870,9 @@ Include an array of fields in \`fields\` to replace the current list of fields i
     "invalidLabel": {
       "description": undefined,
     },
+    "longSubmissionWarning": {
+      "description": undefined,
+    },
     "optionalLabel": {
       "description": undefined,
     },
@@ -2682,6 +2685,10 @@ Replaces the optional label if the field is optional. Won’t display if the fie
             "default": "Add",
             "description": "The label to show on the button for adding a new entry.",
             "format": "remapper",
+          },
+          "disableSearch": {
+            "description": "Whether to disable the search field for the selection choices.",
+            "type": "boolean",
           },
           "disabled": {
             "default": false,
@@ -4203,6 +4210,10 @@ Replaces the optional label if the field is optional. Won’t display if the fie
             "description": "The label to show on the button for adding a new entry.",
             "format": "remapper",
           },
+          "disableSearch": {
+            "description": "Whether to disable the search field for the selection choices.",
+            "type": "boolean",
+          },
           "disabled": {
             "default": false,
             "description": "Whether the field should always be be disabled.",
@@ -4409,7 +4420,7 @@ Replaces the optional label if the field is optional. Won’t display if the fie
         "additionalProperties": false,
         "description": "This allows you to update fields automatically with actions by typing in a selected field.
 
-To authenticate with an external API see [Services](../../../docs/03-guide/service)",
+To authenticate with an external API see [Services](../../../docs/02-guides/service)",
         "properties": {
           "action": {
             "description": "The name of the action to trigger when the selected field values are changed.
@@ -4448,7 +4459,7 @@ If this is left as \`true\`, any help text appearing will cause the form input t
         "default": false,
         "description": "Whether or not to disable populating fields with default data values.
 
-If this is set to \`true\`, the default values for the fields won't contain data from [page storage](../../../docs/03-guide/storage#app-storage).",
+If this is set to \`true\`, the default values for the fields won't contain data from [page storage](../../../docs/02-guides/storage#app-storage).",
         "type": "boolean",
       },
       "disabled": {
@@ -4473,6 +4484,11 @@ If this is set to \`true\`, the default values for the fields won't contain data
         "default": false,
         "description": "Weather the form should take up all available width on the page.",
         "type": "boolean",
+      },
+      "longSubmissionDuration": {
+        "default": 5000,
+        "description": "After this duration in milliseconds, a message will display urging the user to wait because the form is taking long to submit.",
+        "type": "number",
       },
       "previous": {
         "description": "Whether the previous button should be shown.",
@@ -5295,6 +5311,44 @@ exports[`getProjectImplementations > official blocks > openai 1`] = `
     },
   },
   "parameters": undefined,
+}
+`;
+
+exports[`getProjectImplementations > official blocks > pdf-viewer 1`] = `
+{
+  "actions": {
+    "onLoad": {
+      "description": "Action that gets dispatched during the initial load.",
+    },
+  },
+  "events": {
+    "emit": undefined,
+    "listen": {
+      "data": {
+        "description": "This event can be used to receive incoming data to display.",
+      },
+    },
+  },
+  "messages": {
+    "error": {
+      "description": "This message is displayed if there was a problem loading the data.",
+    },
+  },
+  "parameters": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "additionalProperties": false,
+    "properties": {
+      "height": {
+        "description": "Height of the container in which PDF is displayed",
+        "type": "number",
+      },
+      "width": {
+        "description": "Width of the container in which PDF is displayed",
+        "type": "number",
+      },
+    },
+    "type": "object",
+  },
 }
 `;
 

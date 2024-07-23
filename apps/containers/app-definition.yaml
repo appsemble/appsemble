@@ -1,0 +1,39 @@
+name: Containers
+description: An app showcasing companion containers feature
+defaultPage: Test
+
+containers:
+  - name: my-api
+    image: httpd
+    port: 80
+
+pages:
+  - name: Test
+    blocks:
+      - type: button-list
+        version: 0.29.6
+        actions:
+          handle:
+            type: request
+            # Using the container remapper is equivalent to:
+            # http://my-api-containers-28.companion-containers.svc.cluster.local
+            # Where app name and appId vary per app
+            url: { container: my-api }
+            proxy: true
+            method: get
+            body:
+              object.from:
+                key1: value1
+                key2: value2
+            onSuccess:
+              type: message
+              body: 'Success!'
+              color: success
+            onError:
+              type: message
+              body: 'Something went wrong'
+              color: danger
+        parameters:
+          buttons:
+            - label: Send request
+              onClick: handle

@@ -1,0 +1,18 @@
+.log-field {
+  background-color: hsl(0deg 0% 90.2%);
+  border: hsl(0deg 0% 100%) solid 1px;
+  box-shadow:
+    0 0.5em 1em -0.125em hsl(0deg 0% 3.92%),
+    0 0 0 1px hsl(0deg 0% 3.92%);
+  flex: 1 0 45%;
+  margin-top: 15px;
+  max-height: 400px;
+  min-width: 400px;
+  overflow-y: auto;
+  padding: 5px;
+}
+
+.title {
+  border-bottom: hsl(0deg 0% 0%) 1px solid;
+  font-size: 2rem;
+}

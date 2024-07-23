@@ -1,4 +1,4 @@
-import { assertKoaError } from '@appsemble/node-utils';
+import { assertKoaError, deleteSecret, updateNamespacedSecret } from '@appsemble/node-utils';
 import { Permission } from '@appsemble/utils';
 import { type Context } from 'koa';
 
@@ -15,7 +15,7 @@ export async function createAppServiceSecret(ctx: Context): Promise<void> {
   } = ctx;
 
   const app = await App.findByPk(appId, {
-    attributes: ['OrganizationId'],
+    attributes: ['OrganizationId', 'path'],
   });
 
   assertKoaError(!app, ctx, 404, 'App not found');
@@ -29,6 +29,9 @@ export async function createAppServiceSecret(ctx: Context): Promise<void> {
       secret: encrypt(body.secret, argv.aesSecret),
       AppId: appId,
     });
+
+  // Create in the cluster
+  await updateNamespacedSecret(name, body.secret, app.path, String(appId));
 
   ctx.body = {
     authenticationMethod,
@@ -71,7 +74,7 @@ export async function updateAppServiceSecret(ctx: Context): Promise<void> {
   } = ctx;
 
   const app = await App.findByPk(appId, {
-    attributes: ['OrganizationId'],
+    attributes: ['OrganizationId', 'path'],
   });
 
   assertKoaError(!app, ctx, 404, 'App not found');
@@ -90,6 +93,8 @@ export async function updateAppServiceSecret(ctx: Context): Promise<void> {
 
   const { authenticationMethod, id, identifier, name, tokenUrl, urlPatterns } = appServiceSecret;
 
+  await updateNamespacedSecret(name, body.secret, app.path, String(appId));
+
   ctx.body = {
     authenticationMethod,
     id,
@@ -106,7 +111,7 @@ export async function deleteAppServiceSecret(ctx: Context): Promise<void> {
   } = ctx;
 
   const app = await App.findByPk(appId, {
-    attributes: ['OrganizationId'],
+    attributes: ['OrganizationId', 'path'],
   });
 
   assertKoaError(!app, ctx, 404, 'App not found');
@@ -118,6 +123,8 @@ export async function deleteAppServiceSecret(ctx: Context): Promise<void> {
   assertKoaError(!appServiceSecret, ctx, 404, 'Cannot find the app service secret to delete');
 
   await appServiceSecret.destroy();
+
+  await deleteSecret(app.path, String(appId), appServiceSecret.name);
 
   ctx.status = 204;
 }

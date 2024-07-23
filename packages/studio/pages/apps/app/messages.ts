@@ -74,4 +74,8 @@ export const messages = defineMessages({
     defaultMessage:
       'This app is currently locked. No changes can be made without first unlocking the app in the settings.',
   },
+  logs: {
+    id: 'studio.QXAhtx',
+    defaultMessage: 'Container logs',
+  },
 });

@@ -1,0 +1,97 @@
+import { RemapperRef } from './RemapperRef/index.js';
+import { stringRemappers } from '../../../../utils/reference-schemas/remappers/index.js';
+
+# String-manipulation
+
+## Introduction
+
+With remappers you can manipulate strings in a number of ways. This can be very helpful when you
+want to display information in a certain way. For example, if you want to display a whole list of
+users in uppercase you can simply use the `string.case` remapper.
+
+Let’s say you have an application that fetches all the employee data from a company’s department.
+This data is stored as an array of objects, each having a first name, last name, address, etc. You
+want to present this data in a neat list where each employee’s first name is in uppercase and a bit
+of text describes what the employee does.
+
+This data would look something like this:
+
+```json
+[
+  {
+    "firstName": "Peter",
+    "lastName": "Parker",
+    "department": "Photography"
+  },
+  {
+    "firstName": "John",
+    "lastName": "Jameson",
+    "department": "Editor"
+  }
+]
+```
+
+If you were to use a [list block](/blocks/@appsemble/list), you can fill in the different fields
+with this information. But just putting the data straight in can be a bit limiting, as you can only
+really apply the format of ‘`label`: `value`’.
+
+The header of the list item is what informs the reader what the item is about. In this case, this
+would be the user’s first name, as each card is about that specific user. To make this stand out and
+make it look more like a header, you can make the name all upper case, for example:
+
+```yaml
+header: [{ prop: firstName }, { string.case: upper }]
+```
+
+> **Note:** You can specify a remapper as an array to chain remappers together
+
+If you want to add more information to this card, like a description, you can also use the
+`string.format` remapper to combine incoming data and a string template into a dynamic result.
+
+Because the list block’s fields accept remappers as input, we can add this to the block’s
+definition. This looks like this:
+
+```yaml
+label: Description
+value:
+  string.format:
+    template: '{firstName} {lastName} is an employee of the {department} department!'
+    values:
+      firstName: { prop: firstName }
+      lastName: { prop: lastName }
+      department: { prop: department }
+```
+
+The list block’s definition now has plenty of the incoming data integrated and formatted to be more
+visible and descriptive. This is, of course, only a small example. You can expand this much more by
+applying other remappers. For example, you could add a condition that sets a different icon based on
+the employee’s department to reflect their position.
+
+The full result of this block definition can be seen here:
+
+![List of employees](../../../../../config/assets/remapper-tutorial/employee-list-example.png 'List of employees')
+
+The complete block definition looks like this:
+
+```yaml
+type: list
+version: 0.20.45
+events:
+  listen:
+    data: dailyBugleEmployees
+parameters:
+  header: [{ prop: firstName }, { string.case: upper }]
+  fields:
+    - label: Description
+      value:
+        string.format:
+          template: '{firstName} {lastName} is an employee of the {department} department!'
+          values:
+            firstName: { prop: firstName }
+            lastName: { prop: lastName }
+            department: { prop: department }
+```
+
+## Remappers
+
+<RemapperRef remappers={stringRemappers} />

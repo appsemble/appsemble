@@ -19,6 +19,7 @@ import {
   demoMode,
   blockManifests as initialBlockManifests,
   definition as initialDefinition,
+  snapshotId,
 } from '../../utils/settings.js';
 
 interface AppDefinitionContext {
@@ -27,6 +28,7 @@ interface AppDefinitionContext {
   demoMode: boolean;
   revision: number;
   pageManifests?: ProjectImplementations;
+  snapshotId?: number;
 }
 
 interface AppDefinitionProviderProps {
@@ -52,6 +54,7 @@ const Context = createContext<AppDefinitionContext>({
   pageManifests: {} as ProjectImplementations,
   demoMode,
   revision: 0,
+  snapshotId,
 });
 
 export function AppDefinitionProvider({ children }: AppDefinitionProviderProps): ReactNode {
@@ -81,6 +84,7 @@ export function AppDefinitionProvider({ children }: AppDefinitionProviderProps):
       pageManifests: pageManifests.current,
       revision,
       demoMode,
+      snapshotId,
     }),
     [blockManifests, definition, pageManifests, revision],
   );

@@ -82,3 +82,5 @@ export * from './useToggle.js';
 export * from './useLocationString.js';
 export * from './ValuePickerProvider/index.js';
 export * from './Prompt/index.js';
+export * from './LogViewer/index.js';
+export * from './LogEntryList/index.js';

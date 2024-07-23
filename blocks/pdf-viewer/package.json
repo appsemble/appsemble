@@ -1,0 +1,24 @@
+{
+  "name": "@appsemble/pdf-viewer",
+  "private": true,
+  "type": "module",
+  "version": "0.29.6",
+  "description": "A block to view PDFs in your browser, is triggered by events data.",
+  "homepage": "https://appsemble.app",
+  "bugs": "https://gitlab.com/appsemble/appsemble/-/issues",
+  "repository": {
+    "type": "git",
+    "url": "https://gitlab.com/appsemble/appsemble.git",
+    "directory": "blocks/pdf-viewer"
+  },
+  "license": "LGPL-3.0-only",
+  "author": "Appsemble <info@appsemble.com> (https://appsemble.com)",
+  "scripts": {
+    "test": "vitest"
+  },
+  "dependencies": {
+    "@appsemble/preact": "0.29.6",
+    "@appsemble/sdk": "0.29.6",
+    "preact": "^10.0.0"
+  }
+}

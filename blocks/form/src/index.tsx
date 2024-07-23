@@ -33,6 +33,7 @@ bootstrap(
       display = 'flex',
       fields: initialFields,
       fullWidth = false,
+      longSubmissionDuration = 5000,
       previous,
       requirements,
       skipInitialLoad = false,
@@ -62,6 +63,9 @@ bootstrap(
     const [submitting, setSubmitting] = useState(false);
     const [values, setValues] = useState(defaultValues);
     const [lastChanged, setLastChanged] = useState<string>(null);
+    const [triedToSubmit, setTriedToSubmit] = useState<boolean>(false);
+    const [longSubmission, setLongSubmission] = useState<boolean>(false);
+
     const errors = useMemo(
       () =>
         generateDefaultValidity(
@@ -185,12 +189,22 @@ bootstrap(
     const onSubmit = useCallback(() => {
       if (!submitting) {
         setSubmitting(true);
+
         const keys = fields.map((field) => field.name);
 
         if (!isFormValid(errors, keys) || formErrors.some(Boolean)) {
           setSubmitting(false);
+
+          if (!triedToSubmit) {
+            return setTriedToSubmit(true);
+          }
+
           return;
         }
+
+        setTimeout(() => {
+          setLongSubmission(true);
+        }, longSubmissionDuration);
 
         actions
           .onSubmit({ ...(data as Record<string, unknown>), ...values })
@@ -257,9 +271,23 @@ bootstrap(
             error = error === '' ? utils.formatMessage('submitError') : error;
             setSubmitErrorResult(error);
           })
-          .finally(() => setSubmitting(false));
+          .finally(() => {
+            setSubmitting(false);
+            setLongSubmission(false);
+          });
       }
-    }, [actions, data, errors, fields, formErrors, submitting, utils, values]);
+    }, [
+      actions,
+      data,
+      errors,
+      fields,
+      formErrors,
+      longSubmissionDuration,
+      submitting,
+      triedToSubmit,
+      utils,
+      values,
+    ]);
 
     const onPrevious = useCallback(() => {
       actions.onPrevious(values);
@@ -433,7 +461,8 @@ bootstrap(
               />
             ))}
         </div>
-        {errorLink ? (
+
+        {errorLink && triedToSubmit ? (
           <div
             className={classNames(
               styles['error-link-container'],
@@ -444,6 +473,17 @@ bootstrap(
             {errorLink}
           </div>
         ) : null}
+
+        {longSubmission ? (
+          <div
+            className={classNames(
+              'is-flex is-flex-direction-column is-justify-content-flex-start text-left',
+            )}
+          >
+            <span>{utils.formatMessage('longSubmissionWarning')}</span>
+          </div>
+        ) : null}
+
         <FormButtons className="mt-2">
           {previous ? (
             <Button className="mr-4" disabled={dataLoading || submitting} onClick={onPrevious}>
@@ -455,9 +495,8 @@ bootstrap(
             disabled={Boolean(
               loading ||
                 submitting ||
-                formErrors.some(Boolean) ||
-                !isFormValid(errors) ||
-                utils.remap(disabled, values),
+                utils.remap(disabled, values) ||
+                (triedToSubmit && (formErrors.some(Boolean) || !isFormValid(errors))),
             )}
             type="submit"
           >

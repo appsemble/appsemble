@@ -1,0 +1,53 @@
+{{- if .Values.ingress.enabled -}}
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: companions-manager
+  namespace: companion-containers-{{ include "appsemble.fullname" . }}
+  labels:
+    {{ include "appsemble.labels" . }}
+rules:
+  - verbs:
+      - create
+      - delete
+      - list
+      - patch
+    apiGroups:
+      - ''
+    resources:
+      - services
+  - verbs:
+      - create
+      - delete
+      - list
+      - patch
+    apiGroups:
+      - apps
+    resources:
+      - deployments
+  - verbs:
+      - create
+      - delete
+      - read
+      - replace
+      - get
+      - update
+    apiGroups:
+      - ''
+    resources:
+      - secrets
+  - verbs:
+      - list
+      - patch
+    apiGroups:
+      - ''
+    resources:
+      - pods
+  - verbs:
+      - get
+    apiGroups:
+      - ''
+    resources:
+      - pods/log
+    
+{{ end }}

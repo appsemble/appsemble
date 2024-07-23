@@ -25,6 +25,7 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import { Navigate, Route, useParams } from 'react-router-dom';
 
 import { AssetsPage } from './assets/index.js';
+import { ContainerLogs } from './containerLogs/index.js';
 import { DefinitionPage } from './definition/index.js';
 import { IndexPage } from './IndexPage/index.js';
 import { messages } from './messages.js';
@@ -186,6 +187,11 @@ export function AppRoutes(): ReactNode {
             <FormattedMessage {...messages.quotas} />
           </MenuItem>
         ) : null}
+        {editPermission && app.definition?.containers ? (
+          <MenuItem icon="list-alt" to={`${url}/container-logs`}>
+            <FormattedMessage {...messages.logs} />
+          </MenuItem>
+        ) : null}
       </MenuSection>
     ),
   );
@@ -273,6 +279,16 @@ export function AppRoutes(): ReactNode {
         >
           <Route element={<TranslationsPage />} path="/translations" />
         </Route>
+        {app.definition?.containers ? (
+          <Route
+            element={
+              <ProtectedRoute organization={organization} permission={Permission.ReadResources} />
+            }
+          >
+            <Route element={<ContainerLogs />} path="/container-logs" />
+          </Route>
+        ) : null}
+
         {app.yaml ? <Route element={<DefinitionPage />} path="/definition" /> : null}
 
         {app.definition.security ? (

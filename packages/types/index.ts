@@ -691,6 +691,8 @@ export interface Remappers {
   translate: string;
 
   user: keyof UserInfo;
+
+  container: string;
 }
 
 export type ObjectRemapper = RequireExactlyOne<Remappers>;
@@ -1929,6 +1931,17 @@ export interface AppDefinition {
    * Cron jobs associated with the app.
    */
   cron?: Record<string, CronDefinition>;
+
+  /**
+   * Companion containers of the app.
+   */
+  containers?: CompanionContainerDefinition[];
+
+  /**
+   * Default registry to use when creating app companion containers.
+   * Used to avoid writing the registry name in front of every image.
+   */
+  registry?: string;
 }
 
 /**
@@ -2689,4 +2702,62 @@ export interface BlockManifest extends ProjectManifest {
    * The type of layout to be used for the block.
    */
   layout?: 'float' | 'grow' | 'hidden' | 'static' | null;
+}
+
+export interface CompanionContainerDefinition {
+  /**
+   * Alias of the container in the app.
+   */
+  name: string;
+
+  /**
+   * Image to use for the container.
+   */
+  image: string;
+
+  /**
+   * Port exposed by the provided image.
+   *
+   * E.g., if the Dockerfile of the image contains `EXPOSE 3000`
+   * then `port` should be 3000 as well.
+   */
+  port: number;
+
+  /**
+   * Limits the resources used and required by companion containers
+   *
+   */
+  resources?: ContainerResources;
+
+  /**
+   * Environment within the container
+   */
+  env?: ContainerEnvVar[];
+
+  /**
+   * Additional properties e.g., labels, annotations
+   *
+   */
+  metadata?: Record<string, any>;
+}
+
+export interface ContainerResources {
+  /**
+   * Maximum amount of resources allowed
+   */
+  limits: ContainerResourceProps;
+}
+export interface ContainerResourceProps {
+  cpu: string;
+  memory: string;
+}
+
+export interface ContainerEnvVar {
+  name: string;
+  value: string;
+  useValueFromSecret?: boolean;
+}
+export interface LogObject {
+  fromAppsemble: boolean;
+  entries: string[];
 }

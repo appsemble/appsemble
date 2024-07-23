@@ -13,6 +13,7 @@ import { paths as appSSLSecrets } from './appSSLSecrets.js';
 import { paths as appVariables } from './appVariables.js';
 import { paths as assets } from './assets.js';
 import { paths as blocks } from './blocks.js';
+import { paths as containerLogs } from './containerLogs.js';
 import { paths as emails } from './emails.js';
 import { paths as health } from './health.js';
 import { paths as invite } from './invite.js';
@@ -56,4 +57,5 @@ export const paths = {
   ...appServiceSecrets,
   ...user,
   ...trainings,
+  ...containerLogs,
 };

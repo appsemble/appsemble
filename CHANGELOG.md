@@ -2,6 +2,38 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.29.6](https://gitlab.com/appsemble/appsemble/-/releases/0.29.6)] - 2024-07-19
+
+### Added
+
+- Block(`form`): Add warning on long submission.
+- Block(`pdf-viewer`): Add new block `pdf-viewer`.
+- Studio: Add tab to apps to view companion container logs.
+
+### Fixed
+
+- Block(`form`): Fix searching by words containing capital letters.
+
+## \[[0.29.5](https://gitlab.com/appsemble/appsemble/-/releases/0.29.5)] - 2024-07-15
+
+### Added
+
+- Block(`form`): Add search to selection fields.
+
+### Changed
+
+- Block(`form`): Allow trying to submit while there are field errors.
+- Block(`form`): Don't show field error links until the user has tried to submit.
+- Server: The server would error when receiving `multipart/form-data` from a proxied request action.
+
+### Fixed
+
+- Block(`detail-viewer`): Fix the height of displayed non-square images.
+- Block(`form`): Acknowledge `readOnly` in fieldset fields.
+- Block(`form`): Disable fieldset and file fields while submitting the form.
+- Block(`table`): Fix miss-aligned button icon when label is empty.
+- React-components: Fix behaviour where side menu would not close when clicking a menu item.
+
 ## \[[0.29.4](https://gitlab.com/appsemble/appsemble/-/releases/0.29.4)] - 2024-06-27
 
 ### Added

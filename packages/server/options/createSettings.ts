@@ -5,7 +5,14 @@ import {
 import { parseBlockName } from '@appsemble/utils';
 import { Op } from 'sequelize';
 
-import { App, AppOAuth2Secret, AppSamlSecret, BlockAsset, BlockVersion } from '../models/index.js';
+import {
+  App,
+  AppOAuth2Secret,
+  AppSamlSecret,
+  AppSnapshot,
+  BlockAsset,
+  BlockVersion,
+} from '../models/index.js';
 import { createGtagCode } from '../utils/render.js';
 import { getSentryClientSettings } from '../utils/sentry.js';
 
@@ -63,6 +70,12 @@ export async function createSettings({
         attributes: ['icon', 'id', 'name'],
         model: AppSamlSecret,
       },
+      {
+        attributes: ['id', 'yaml'],
+        order: [['created', 'DESC']],
+        limit: 1,
+        model: AppSnapshot,
+      },
     ],
   });
 
@@ -105,6 +118,7 @@ export async function createSettings({
       ],
       vapidPublicKey: persistedApp.vapidPublicKey,
       definition: persistedApp.definition,
+      snapshotId: persistedApp.AppSnapshots?.[0]?.id,
       demoMode: persistedApp.demoMode,
       showAppsembleLogin: persistedApp.showAppsembleLogin ?? false,
       showAppsembleOAuth2Login: persistedApp.showAppsembleOAuth2Login ?? true,

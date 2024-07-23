@@ -1,10 +1,16 @@
 import {
   assertKoaError,
+  createFormData,
+  getContainerNamespace,
   getRemapperContext,
   logger,
   type Options,
+  parseServiceUrl,
+  scaleDeployment,
+  setLastRequestAnnotation,
   throwKoaError,
   version,
+  waitForPodReadiness,
 } from '@appsemble/node-utils';
 import {
   type ActionDefinition,
@@ -16,7 +22,8 @@ import {
 import { defaultLocale, remap } from '@appsemble/utils';
 import axios, { type RawAxiosRequestConfig } from 'axios';
 import { type Context, type Middleware } from 'koa';
-import { get, pick } from 'lodash-es';
+import { get, mapValues, pick } from 'lodash-es';
+import { type JsonObject, type JsonValue } from 'type-fest';
 
 import { EmailQuotaExceededError } from '../../EmailQuotaExceededError.js';
 
@@ -99,6 +106,29 @@ async function handleNotify(
   ctx.status = 204;
 }
 
+function deserializeResource(data: any): any {
+  // Extract the resource and assets from the JSON object
+  const { resource } = data;
+  const assets = data.assets as Blob[];
+
+  // Function to replace asset placeholders with actual Blobs
+  const replaceAssets = (value: JsonValue): any => {
+    if (Array.isArray(value)) {
+      return value.map(replaceAssets);
+    }
+    if (typeof value === 'string' && /^\d+$/.test(value)) {
+      return assets[Number(value)];
+    }
+    if (value && typeof value === 'object') {
+      return mapValues(value as JsonObject, replaceAssets);
+    }
+    return value;
+  };
+
+  // Replace placeholders and return the deserialized resource
+  return replaceAssets(resource);
+}
+
 async function handleRequestProxy(
   ctx: Context,
   app: App,
@@ -115,7 +145,12 @@ async function handleRequestProxy(
 
   let data;
   if (useBody) {
-    data = body;
+    if (Object.hasOwn(body, 'assets')) {
+      const deserializedBody = deserializeResource(body);
+      data = createFormData(deserializedBody.length === 1 ? deserializedBody[0] : deserializedBody);
+    } else {
+      data = body;
+    }
   } else {
     try {
       data = JSON.parse(query.data as string);
@@ -187,12 +222,48 @@ async function handleRequestProxy(
   axiosConfig.decompress = false;
 
   let response;
+  const urlPattern = /^http:\/\/(([\da-z-]+).){2}svc.cluster.local/;
+
+  // Restricting access to only the containers defined by the app
+  if (urlPattern.test(String(proxyUrl))) {
+    axiosConfig.url = axiosConfig.url.replace(
+      axiosConfig.url.split('.')[1],
+      getContainerNamespace(),
+    );
+
+    const { appId } = parseServiceUrl(String(proxyUrl));
+    if (appId !== String(app.id)) {
+      throwKoaError(ctx, 403, 'Forbidden');
+    }
+  }
+
   logger.verbose(`Forwarding request to ${axios.getUri(axiosConfig)}`);
   try {
     response = await axios(axiosConfig);
   } catch (err: unknown) {
-    logger.error(err);
-    throwKoaError(ctx, 502, 'Bad Gateway');
+    // If request is sent to a companion container and fails
+    // Try to start it anew and retry the request
+    if (urlPattern.test(String(proxyUrl))) {
+      const { deploymentName, namespace } = parseServiceUrl(String(proxyUrl));
+      try {
+        await scaleDeployment(namespace, deploymentName, 1);
+        await waitForPodReadiness(
+          namespace,
+          deploymentName,
+          (process.env.POD_READINESS_TIMEOUT as undefined as number) ?? undefined,
+        );
+
+        response = await axios(axiosConfig);
+      } catch {
+        logger.error(err);
+        throwKoaError(ctx, 502, 'Bad Gateway');
+      } finally {
+        await setLastRequestAnnotation(namespace, deploymentName);
+      }
+    } else {
+      logger.error(err);
+      throwKoaError(ctx, 502, 'Bad Gateway');
+    }
   }
 
   ctx.status = response.status;

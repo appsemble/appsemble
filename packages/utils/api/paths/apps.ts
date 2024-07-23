@@ -284,6 +284,10 @@ export const paths: OpenAPIV3.PathsObject = {
                   type: 'boolean',
                   description: 'Whether TLS is being used.',
                 },
+                containers: {
+                  type: 'array',
+                  items: { $ref: '#/components/schemas/ContainerDefinition' },
+                },
               },
             },
             encoding: {
