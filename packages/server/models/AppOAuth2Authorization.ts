@@ -59,7 +59,6 @@ export class AppOAuth2Authorization extends Model {
    * The id of the linked app user.
    */
   @ForeignKey(() => AppMember)
-  @AllowNull(false)
   @Column(DataType.UUID)
   AppMemberId: string;
 

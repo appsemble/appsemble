@@ -30,7 +30,6 @@ export class OAuth2AuthorizationCode extends Model {
   @Column(DataType.DATE)
   expires: Date;
 
-  @AllowNull(false)
   @ForeignKey(() => AppMember)
   @Column(DataType.UUID)
   AppMemberId: string;
