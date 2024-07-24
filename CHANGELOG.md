@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.29.7](https://gitlab.com/appsemble/appsemble/-/releases/0.29.7)] - 2024-07-24
+
+### Added
+
+- App: Add debug page.
+- Server: Add app snapshot id to app settings.
+
 ## \[[0.29.6](https://gitlab.com/appsemble/appsemble/-/releases/0.29.6)] - 2024-07-19
 
 ### Added
