@@ -3,6 +3,7 @@ import { type OpenAPIV3 } from 'openapi-types';
 export const paths: OpenAPIV3.PathsObject = {
   '/api/users/current/auth/oauth2/apps/{appId}/consent/agree': {
     post: {
+      parameters: [{ $ref: '#/components/parameters/appId' }],
       description: 'Create a new OAuth2 consent.',
       tags: ['main', 'user', 'current-user', 'auth', 'oauth2'],
       operationId: 'agreeCurrentUserOAuth2AppConsent',

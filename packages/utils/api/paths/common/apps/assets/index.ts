@@ -12,7 +12,7 @@ export const paths: OpenAPIV3.PathsObject = {
     get: {
       tags: ['common', 'app', 'asset'],
       description: 'Get all of the app’s assets.',
-      operationId: 'getAppAssets',
+      operationId: 'queryAppAssets',
       parameters: [
         { $ref: '#/components/parameters/$skip' },
         { $ref: '#/components/parameters/$top' },

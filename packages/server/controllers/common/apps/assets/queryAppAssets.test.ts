@@ -61,7 +61,7 @@ beforeEach(async () => {
   });
 });
 
-describe('getAppAssets', () => {
+describe('queryAppAssets', () => {
   it('should return an empty array if no assets exist', async () => {
     authorizeStudio();
     const response = await request.get(`/api/apps/${app.id}/assets`);

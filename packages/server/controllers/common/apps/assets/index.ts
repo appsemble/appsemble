@@ -4,4 +4,4 @@ export { deleteAppAsset } from './deleteAppAsset.js';
 export { deleteAppAssets } from './deleteAppAssets.js';
 export { getAppAssetById } from './getAppAssetById.js';
 export { getAppAssetHeadersById } from './getAppAssetHeadersById.js';
-export { getAppAssets } from './getAppAssets.js';
+export { queryAppAssets } from './queryAppAssets.js';

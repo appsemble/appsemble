@@ -5,7 +5,7 @@ import { type Context } from 'koa';
 import { App, Asset, Resource } from '../../../../models/index.js';
 import { checkRole } from '../../../../utils/checkRole.js';
 
-export async function getAppAssets(ctx: Context): Promise<void> {
+export async function queryAppAssets(ctx: Context): Promise<void> {
   const {
     pathParams: { appId },
     queryParams: { $skip, $top },
