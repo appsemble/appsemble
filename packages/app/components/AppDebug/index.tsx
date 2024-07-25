@@ -19,21 +19,28 @@ export function AppDebug(): ReactNode {
   const navigate = useNavigate();
   const { formatMessage } = useIntl();
 
-  const cleanState = (): void => {
+  const cleanState = async (): Promise<void> => {
     logout();
 
     localStorage.clear();
     sessionStorage.clear();
 
     if ('caches' in window) {
-      caches.keys().then(async (names) => {
-        for (const name of names) {
-          await caches.delete(name);
-        }
-      });
+      const cacheKeys = await caches.keys();
+      for (const name of cacheKeys) {
+        await caches.delete(name);
+      }
+    }
+
+    if ('serviceWorker' in navigator) {
+      const serviceWorkerRegistrations = await navigator.serviceWorker.getRegistrations();
+      for (const registration of serviceWorkerRegistrations) {
+        await registration.unregister();
+      }
     }
 
     navigate('/Login');
+    window.location.reload();
   };
 
   return (

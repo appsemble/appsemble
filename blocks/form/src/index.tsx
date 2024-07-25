@@ -474,7 +474,7 @@ bootstrap(
           </div>
         ) : null}
 
-        {longSubmission ? (
+        {longSubmission && !(formErrors.some(Boolean) || !isFormValid(errors)) ? (
           <div
             className={classNames(
               'is-flex is-flex-direction-column is-justify-content-flex-start text-left',

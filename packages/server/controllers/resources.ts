@@ -331,10 +331,12 @@ export async function patchResource(ctx: Context): Promise<void> {
 
   const resource = await Resource.findOne({
     where: { id: resourceId, type: resourceType, AppId: appId, ...memberQuery },
-    include: [
-      { association: 'Author', attributes: ['id', 'name'], required: false },
-      { model: Asset, attributes: ['id'], required: false },
-    ],
+    include: [{ association: 'Author', attributes: ['id', 'name'], required: false }],
+  });
+
+  const appAssets = await Asset.findAll({
+    attributes: ['id', 'name'],
+    where: { AppId: appId },
   });
 
   assertKoaError(!resource, ctx, 404, 'Resource not found');
@@ -349,9 +351,11 @@ export async function patchResource(ctx: Context): Promise<void> {
   const [updatedResource, preparedAssets, deletedAssetIds] = processResourceBody(
     ctx,
     definition,
-    resource.Assets.map((asset) => asset.id),
+    appAssets.map((asset) => asset.id),
     resource.expires,
+    appAssets.map((asset) => ({ id: asset.id, name: asset.name })),
   );
+
   const {
     $clonable: clonable,
     $expires: expires,
