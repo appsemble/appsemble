@@ -3,15 +3,24 @@ import { type OpenAPIV3 } from 'openapi-types';
 export const pathItems: OpenAPIV3.PathItemObject = {
   parameters: [{ $ref: '#/components/parameters/appId' }],
   get: {
-    tags: ['app', 'member'],
-    description: 'Fetch app accounts by roles.',
-    operationId: 'getAppMembersByRoles',
-    parameters: [{ $ref: '#/components/parameters/roles' }],
-    security: [{ app: [] }],
+    tags: ['app'],
+    description: 'Fetch all members of an app.',
+    operationId: 'getAppMembers',
     responses: {
       200: {
-        description: 'The accounts that were fetched.',
+        description: 'The list of app members.',
+        content: {
+          'application/json': {
+            schema: {
+              type: 'array',
+              items: {
+                $ref: '#/components/schemas/OrganizationMember',
+              },
+            },
+          },
+        },
       },
     },
+    security: [{ studio: [] }, { app: ['openid'] }],
   },
 };

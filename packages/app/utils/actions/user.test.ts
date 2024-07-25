@@ -267,7 +267,7 @@ describe('user.query', () => {
   });
 
   it('should call the API for getting all users by roles', async () => {
-    mock.onGet(`${apiUrl}/api/apps/${appId}/members?roles=Role1,Role2,Role3`).reply(() => [
+    mock.onGet(`${apiUrl}/api/apps/${appId}/members/roles?roles=Role1,Role2,Role3`).reply(() => [
       200,
       [
         {

@@ -128,7 +128,7 @@ describe('getAppMembersByRoles', () => {
     });
 
     authorizeApp(app);
-    const { data } = await request.get(`/api/apps/${app.id}/members?roles=Role1,Role2`);
+    const { data } = await request.get(`/api/apps/${app.id}/members/roles?roles=Role1,Role2`);
 
     expect(data).toStrictEqual([
       {
@@ -232,7 +232,7 @@ describe('getAppMembersByRoles', () => {
     });
 
     authorizeApp(app);
-    const { data } = await request.get(`/api/apps/${app.id}/members?roles=`);
+    const { data } = await request.get(`/api/apps/${app.id}/members/roles?roles=`);
 
     expect(data).toStrictEqual([
       {

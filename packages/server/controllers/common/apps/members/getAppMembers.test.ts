@@ -62,7 +62,7 @@ afterAll(() => {
   vi.useRealTimers();
 });
 
-describe.skip('getAppMembers', () => {
+describe('getAppMembers', () => {
   it('should fetch app members', async () => {
     const app = await App.create({
       definition: {

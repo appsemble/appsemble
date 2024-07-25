@@ -162,7 +162,7 @@ export const query: ActionCreator<'user.query'> = ({ definition, getUserInfo, re
     const roles = remap(definition.roles, data);
 
     const { data: response } = await axios.get<AppAccount[]>(
-      `${apiUrl}/api/apps/${appId}/members?roles=${roles}`,
+      `${apiUrl}/api/apps/${appId}/members/roles?roles=${roles}`,
     );
 
     return response;

@@ -29,10 +29,10 @@ export const pathItems: OpenAPIV3.PathItemObject = {
     },
     security: [{ studio: [] }, { app: ['openid'] }],
   },
-  patch: {
-    tags: ['common', 'app', 'member'],
-    description: 'Patch an app member.',
-    operationId: 'patchAppMemberById',
+  post: {
+    tags: ['app'],
+    description: 'Assign an app role to a member.',
+    operationId: 'setAppMember',
     requestBody: {
       content: {
         'application/json': {
@@ -68,6 +68,63 @@ export const pathItems: OpenAPIV3.PathItemObject = {
     },
     security: [{ studio: [] }],
   },
+  patch: {
+    tags: ['common', 'app', 'member'],
+    description: 'Patch an app member.',
+    operationId: 'patchAppMemberById',
+    security: [{ studio: [] }],
+    requestBody: {
+      content: {
+        'multipart/form-data': {
+          schema: {
+            type: 'object',
+            additionalProperties: false,
+            properties: {
+              email: {
+                type: 'string',
+                format: 'email',
+              },
+              name: {
+                type: 'string',
+              },
+              picture: {
+                type: 'string',
+                format: 'binary',
+                description: 'The member’s profile picture.',
+              },
+              properties: {
+                type: 'object',
+                additionalProperties: { type: 'string' },
+                description: 'The member’s custom properties.',
+              },
+              locale: {
+                type: 'string',
+                description: 'The preferred locale of the user.',
+              },
+            },
+          },
+          encoding: {
+            picture: {
+              contentType: 'image/png,image/jpeg,image/tiff,image/webp',
+            },
+          },
+        },
+      },
+    },
+    responses: {
+      200: {
+        description: 'A linked app account',
+        content: {
+          'application/json': {
+            schema: {
+              $ref: '#/components/schemas/AppAccount',
+            },
+          },
+        },
+      },
+    },
+  },
+
   delete: {
     tags: ['common', 'app', 'member'],
     description: 'Delete an app member.',

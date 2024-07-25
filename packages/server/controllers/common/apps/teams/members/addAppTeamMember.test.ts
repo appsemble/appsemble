@@ -71,7 +71,7 @@ beforeEach(async () => {
   });
 });
 
-describe.skip('addAppTeamMember', () => {
+describe('addAppTeamMember', () => {
   describe('app', () => {
     beforeEach(() => {
       authorizeApp(app);
