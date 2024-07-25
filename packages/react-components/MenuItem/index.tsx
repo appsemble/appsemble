@@ -30,6 +30,11 @@ interface SideNavLinkProps {
    * Where to navigate to.
    */
   readonly to: string;
+
+  /**
+   * Whether to reload the document after navigating.
+   */
+  readonly reloadDocument?: boolean;
 }
 
 /**
@@ -37,7 +42,14 @@ interface SideNavLinkProps {
  *
  * https://bulma.io/documentation/components/menu
  */
-export function MenuItem({ children, end, icon, title, to }: SideNavLinkProps): ReactNode {
+export function MenuItem({
+  children,
+  end,
+  icon,
+  reloadDocument,
+  title,
+  to,
+}: SideNavLinkProps): ReactNode {
   const { collapsed, collapsible, setCollapsed } = useContext(CollapsedContext);
   const clickHideButton = useCallback(
     (event: MouseEvent<HTMLSpanElement>) => {
@@ -52,6 +64,7 @@ export function MenuItem({ children, end, icon, title, to }: SideNavLinkProps): 
     <NavLink
       className={classNames(`is-relative is-flex is-align-items-center ${styles.root}`)}
       end={end}
+      reloadDocument={reloadDocument}
       title={title}
       to={to}
     >

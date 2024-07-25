@@ -1,7 +1,13 @@
-import { Button, MenuButton, MenuItem, MenuSection } from '@appsemble/react-components';
+import {
+  Button,
+  CollapsibleMenuSection,
+  MenuButton,
+  MenuItem,
+  MenuSection,
+} from '@appsemble/react-components';
 import { type PageDefinition } from '@appsemble/types';
 import { normalize, remap } from '@appsemble/utils';
-import { Fragment, type ReactNode } from 'react';
+import { Fragment, type ReactNode, useCallback } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useParams } from 'react-router-dom';
 
@@ -34,39 +40,69 @@ export function SideNavigation({ blockMenus, pages }: SideNavigationProps): Reac
   const { formatMessage } = useIntl();
   const { isLoggedIn, logout, userInfo } = useUser();
 
+  const generateNameAndNavName = useCallback(
+    (page: PageDefinition): [string, string] => {
+      const name = getAppMessage({
+        id: `pages.${normalize(page.name)}`,
+        defaultMessage: page.name,
+      }).format() as string;
+      const navName = page.navTitle
+        ? (remap(page.navTitle, null, {
+            appId,
+            appUrl: window.location.origin,
+            url: window.location.href,
+            getMessage,
+            getVariable,
+            userInfo,
+            appMember: userInfo?.appMember,
+            context: { name },
+            locale: lang,
+          }) as string)
+        : name;
+      return [name, navName];
+    },
+    [getAppMessage, getMessage, getVariable, lang, userInfo],
+  );
+
+  const renderMenu = useCallback(
+    (internalPages: PageDefinition[]): ReactNode =>
+      internalPages.map((page) => {
+        if (page?.type === 'container') {
+          const [name, navName] = generateNameAndNavName(page);
+          return (
+            <CollapsibleMenuSection key={page.name}>
+              <MenuItem
+                icon={page?.icon}
+                key={page?.name}
+                title={navName}
+                to={`${url}/${normalize(name)}`}
+              >
+                {navName}
+              </MenuItem>
+              <MenuSection>{renderMenu(page.pages)}</MenuSection>
+            </CollapsibleMenuSection>
+          );
+        }
+        const [name, navName] = generateNameAndNavName(page);
+        return (
+          <MenuItem
+            icon={page.icon}
+            key={page.name}
+            reloadDocument
+            title={navName}
+            to={`${url}/${normalize(name)}`}
+          >
+            {navName}
+          </MenuItem>
+        );
+      }),
+    [generateNameAndNavName, url],
+  );
+
   return (
     <div className="is-flex-grow-1 is-flex-shrink-1">
       <MenuSection>
-        {pages.map((page) => {
-          const name = getAppMessage({
-            id: `pages.${normalize(page.name)}`,
-            defaultMessage: page.name,
-          }).format() as string;
-          const navName = page.navTitle
-            ? (remap(page.navTitle, null, {
-                appId,
-                appUrl: window.location.origin,
-                url: window.location.href,
-                getMessage,
-                getVariable,
-                userInfo,
-                appMember: userInfo?.appMember,
-                context: { name },
-                locale: lang,
-              }) as string)
-            : name;
-
-          return (
-            <MenuItem
-              icon={page.icon}
-              key={page.name}
-              title={navName}
-              to={`${url}/${normalize(name)}`}
-            >
-              {navName}
-            </MenuItem>
-          );
-        })}
+        {renderMenu(pages)}
         {layout?.settings === 'navigation' && (
           <MenuItem icon="wrench" title={formatMessage(messages.settings)} to={`${url}/Settings`}>
             <FormattedMessage {...messages.settings} />

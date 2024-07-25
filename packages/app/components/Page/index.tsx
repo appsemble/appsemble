@@ -12,7 +12,7 @@ import { createThemeURL, mergeThemes, normalize, remap } from '@appsemble/utils'
 import classNames from 'classnames';
 import { type ReactNode, useCallback, useEffect, useRef, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
-import { Navigate, Route, useLocation, useParams } from 'react-router-dom';
+import { Link, Navigate, Route, useLocation, useParams } from 'react-router-dom';
 
 import styles from './index.module.css';
 import { messages } from './messages.js';
@@ -48,6 +48,7 @@ export function Page(): ReactNode {
   const [dialog, setDialog] = useState<ShowDialogParams>();
   const stepRef = useRef<unknown>();
   const tabRef = useRef<unknown>();
+  const url = `/${lang}`;
 
   const [shareDialogParams, setShareDialogParams] = useState<ShareDialogState>();
   const showShareDialog: ShowShareDialog = useCallback(
@@ -88,7 +89,27 @@ export function Page(): ReactNode {
     }
   }
 
-  const page = index === -1 ? null : definition.pages[index];
+  const findPageById = useCallback(
+    (pages: PageDefinition[]): PageDefinition | null => {
+      for (const internalPage of pages) {
+        if (normalize(internalPage.name) === normalizedPageId) {
+          return internalPage;
+        }
+
+        if (internalPage.type === 'container') {
+          const foundPage = findPageById(internalPage.pages);
+          if (foundPage) {
+            return foundPage;
+          }
+        }
+      }
+
+      return null;
+    },
+    [normalizedPageId],
+  );
+
+  const page = index === -1 ? findPageById(definition.pages) : definition.pages[index];
   const internalPageName = page ? normalize(page.name) : null;
   const prefix = index === -1 ? null : `pages.${internalPageName}`;
   const prefixIndex = index === -1 ? null : `pages.${index}`;
@@ -205,6 +226,16 @@ export function Page(): ReactNode {
                     showShareDialog={showShareDialog}
                     stepRef={stepRef}
                   />
+                ) : page.type === 'container' ? (
+                  <li>
+                    {page.pages.map((containedPage) => (
+                      <ul key={containedPage.name}>
+                        <Link to={`${url}/${normalize(containedPage.name)}`}>
+                          {containedPage.name}
+                        </Link>
+                      </ul>
+                    ))}
+                  </li>
                 ) : (
                   <BlockList
                     appStorage={appStorage.current}
@@ -245,7 +276,7 @@ export function Page(): ReactNode {
   // If the user isn’t allowed to view the page, because they aren’t logged in, redirect to the
   // login page.
   if (page && !isLoggedIn) {
-    return <Navigate to={`/${lang}/Login?${new URLSearchParams({ redirect })}`} />;
+    return <Navigate to={`${url}/Login?${new URLSearchParams({ redirect })}`} />;
   }
 
   // If the user is logged in, but isn’t allowed to view the current page, redirect to the default
@@ -260,7 +291,7 @@ export function Page(): ReactNode {
       pageName = getAppMessage({ id: defaultPagePrefix }).format() as string;
     }
 
-    return <Navigate to={`/${lang}/${normalize(pageName)}`} />;
+    return <Navigate to={`${url}/${normalize(pageName)}`} />;
   }
 
   // If the user isn’t allowed to view the default page either, find a page to redirect the user to.
@@ -275,7 +306,7 @@ export function Page(): ReactNode {
       pageName = getAppMessage({ id: normalizedRedirectPageName }).format() as string;
     }
 
-    return <Navigate to={`/${lang}/${normalize(pageName)}`} />;
+    return <Navigate to={`${url}/${normalize(pageName)}`} />;
   }
 
   // If the user isn’t allowed to view any pages, show an error message.
