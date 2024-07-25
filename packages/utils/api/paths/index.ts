@@ -24,7 +24,6 @@ import { pathItems as appsAppIdLock } from './apps/appId/lock.js';
 import { pathItems as appsAppIdMaskableIcon } from './apps/appId/maskableIcon.js';
 import { pathItems as appsAppIdMembersCurrentAuthOAuth2 } from './apps/appId/members/current/auth/oauth2.js';
 import { pathItems as appsAppIdMembersCurrent } from './apps/appId/members/current.js';
-import { pathItems as appsAppIdMembersEmailMemberEmail } from './apps/appId/members/email/memberEmail.js';
 import { pathItems as appsAppIdMembersMemberIdPicture } from './apps/appId/members/memberId/picture.js';
 import { pathItems as appsAppIdMembersMemberId } from './apps/appId/members/memberId.js';
 import { pathItems as appsAppIdMembersRoles } from './apps/appId/members/roles.js';
@@ -165,7 +164,6 @@ export const paths = {
   '/api/apps/{appId}/maskable-icon': appsAppIdMaskableIcon,
   '/api/apps/{appId}/members/current/auth/oauth2': appsAppIdMembersCurrentAuthOAuth2,
   '/api/apps/{appId}/members/current': appsAppIdMembersCurrent,
-  '/api/apps/{appId}/members/email/{memberEmail}': appsAppIdMembersEmailMemberEmail,
   '/api/apps/{appId}/members/roles': appsAppIdMembersRoles,
   '/api/apps/{appId}/members/{memberId}/picture': appsAppIdMembersMemberIdPicture,
   '/api/apps/{appId}/members/{memberId}': appsAppIdMembersMemberId,

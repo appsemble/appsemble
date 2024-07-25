@@ -11,24 +11,24 @@ export const pathItems: OpenAPIV3.PathItemObject = {
       schema: { $ref: '#/components/schemas/User/properties/id' },
     },
   ],
-  get: {
-    tags: ['common', 'app', 'member'],
-    description: 'Get an app member.',
-    operationId: 'getAppMemberById',
-    responses: {
-      200: {
-        description: 'The resulting app member.',
-        content: {
-          'application/json': {
-            schema: {
-              $ref: '#/components/schemas/OrganizationMember',
-            },
-          },
-        },
-      },
-    },
-    security: [{ studio: [] }, { app: ['openid'] }],
-  },
+  // Get: {
+  //   tags: ['common', 'app', 'member'],
+  //   description: 'Get an app member.',
+  //   operationId: 'getAppMemberById',
+  //   responses: {
+  //     200: {
+  //       description: 'The resulting app member.',
+  //       content: {
+  //         'application/json': {
+  //           schema: {
+  //             $ref: '#/components/schemas/OrganizationMember',
+  //           },
+  //         },
+  //       },
+  //     },
+  //   },
+  //   security: [{ studio: [] }, { app: ['openid'] }],
+  // },
   patch: {
     tags: ['common', 'app', 'member'],
     description: 'Patch an app member.',
