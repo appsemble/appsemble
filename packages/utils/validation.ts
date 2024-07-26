@@ -16,7 +16,7 @@ import { type Promisable } from 'type-fest';
 
 import { getAppBlocks, type IdentifiableBlock, normalizeBlockName } from './blockUtils.js';
 import { has } from './has.js';
-import { findPageByName, normalize, partialNormalized } from './index.js';
+import { appMemberRoles, findPageByName, normalize, partialNormalized } from './index.js';
 import { iterApp, type Prefix } from './iterApp.js';
 import { type ServerActionName, serverActions } from './serverActions.js';
 
@@ -425,7 +425,13 @@ function checkCyclicRoleInheritance(
  */
 function validateSecurity(definition: AppDefinition, report: Report): void {
   const { notifications, security } = definition;
-  const defaultAllow = ['$none', '$public', '$team:member', '$team:manager'];
+  const defaultAllow = [
+    '$none',
+    '$public',
+    '$team:member',
+    '$team:manager',
+    ...Object.keys(appMemberRoles),
+  ];
 
   if (!security) {
     if (notifications === 'login') {

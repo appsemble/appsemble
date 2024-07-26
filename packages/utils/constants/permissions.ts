@@ -453,10 +453,3 @@ export const teamOrganizationPermissionMapping: {
   [TeamPermission.UpdateTeamMembers]: OrganizationPermission.UpdateTeamMembers,
   [TeamPermission.RemoveTeamMembers]: OrganizationPermission.RemoveTeamMembers,
 };
-
-export function getEnumKeyByValue<T>(
-  enumObject: T,
-  value: T[keyof T] | string,
-): keyof T | undefined {
-  return (Object.keys(enumObject) as (keyof T)[]).find((key) => enumObject[key] === value);
-}

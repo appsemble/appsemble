@@ -7,8 +7,7 @@ import {
 import {
   appMemberRoles,
   appOrganizationPermissionMapping,
-  AppPermission,
-  getEnumKeyByValue,
+  type AppPermission,
   type OrganizationMemberRole,
   organizationMemberRoles,
   type OrganizationPermission,
@@ -27,25 +26,53 @@ import {
   TeamMember,
 } from '../models/index.js';
 
+function getAppRolePermissionsRecursively(
+  appSecurityDefinition: Security,
+  appRoles: string[],
+): CustomAppPermission[] {
+  const accumulatedPermissions: CustomAppPermission[] = [];
+
+  for (const appRole of appRoles) {
+    const appRoleAccumulatedPermissions: CustomAppPermission[] = [];
+    const appRoleDefinition = appSecurityDefinition.roles[appRole];
+
+    if (appRoleDefinition) {
+      const appRolePermissions = appRoleDefinition.permissions;
+      if (appRolePermissions) {
+        appRoleAccumulatedPermissions.push(...appRolePermissions);
+      }
+
+      const appRoleInherits = appRoleDefinition.inherits;
+      if (appRoleInherits) {
+        appRoleAccumulatedPermissions.push(
+          ...getAppRolePermissionsRecursively(appSecurityDefinition, appRoleInherits),
+        );
+      }
+    } else {
+      const predefinedRolePermissions = appMemberRoles[appRole as keyof typeof appMemberRoles];
+      if (predefinedRolePermissions) {
+        appRoleAccumulatedPermissions.push(...predefinedRolePermissions);
+      }
+    }
+
+    accumulatedPermissions.push(...appRoleAccumulatedPermissions);
+  }
+
+  return accumulatedPermissions;
+}
+
 function checkAppRoleAppPermissions(
   appSecurityDefinition: Security,
   appRole: string,
   requiredPermissions: CustomAppPermission[],
 ): boolean {
-  const appRoleDefinition = appSecurityDefinition.roles[appRole];
-
-  const appRolePermissions = appRoleDefinition.permissions?.length
-    ? appRoleDefinition.permissions
-    : appRoleDefinition.inherits?.length
-      ? appRoleDefinition.inherits.flatMap(
-          (inheritedRole) => appSecurityDefinition.roles[inheritedRole].permissions,
-        )
-      : appMemberRoles.Member;
+  const appRolePermissions = getAppRolePermissionsRecursively(appSecurityDefinition, [appRole]);
 
   return requiredPermissions.every((p) => {
-    if (getEnumKeyByValue(AppPermission, p)) {
-      return appRolePermissions.includes(p);
+    if (appRolePermissions.includes(p)) {
+      return true;
     }
+
     if (p.startsWith('$resource')) {
       const permissionAction = p.slice(p.lastIndexOf(':') + 1);
       return appRolePermissions.includes(`$resource:all:${permissionAction}` as AppPermission);
