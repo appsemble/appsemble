@@ -5,37 +5,67 @@ export enum AppPermission {
   /**
    * The permission to create app invites.
    */
-  CreateAppInvites,
+  InviteAppMembers = '$member:invite',
 
   /**
    * The permission to query app members.
    */
-  QueryAppMembers,
+  QueryAppMembers = '$member:query',
 
   /**
    * The permission to query app members.
    */
-  RemoveAppMembers,
+  RemoveAppMembers = '$member:remove',
 
   /**
    * The permission to query app teams.
    */
-  QueryTeams,
+  QueryTeams = '$team:query',
 
   /**
    * The permission to create app teams.
    */
-  CreateTeams,
+  CreateTeams = '$team:create',
 
   /**
    * The permission to update app teams.
    */
-  UpdateTeams,
+  UpdateTeams = '$team:update',
 
   /**
    * The permission to create app teams.
    */
-  DeleteTeams,
+  DeleteTeams = '$team:delete',
+
+  /**
+   * The permission to create any app resources.
+   */
+  CreateResources = '$resource:all:create',
+
+  /**
+   * The permission to query app resources.
+   */
+  QueryResources = '$resource:all:query',
+
+  /**
+   * The permission to get app resources.
+   */
+  GetResources = '$resource:all:get',
+
+  /**
+   * The permission to update app resources.
+   */
+  UpdateResources = '$resource:all:update',
+
+  /**
+   * The permission to patch app resources.
+   */
+  PatchResources = '$resource:all:patch',
+
+  /**
+   * The permission to delete app resources.
+   */
+  DeleteResources = '$resource:all:delete',
 }
 
 /**
@@ -208,6 +238,11 @@ export enum OrganizationPermission {
   UpdateAppResources,
 
   /**
+   * The permission to patch app resources.
+   */
+  PatchAppResources,
+
+  /**
    * The permission to delete app resources.
    */
   DeleteAppResources,
@@ -280,7 +315,7 @@ export enum OrganizationPermission {
   /**
    * The permission to create app invites.
    */
-  CreateAppInvites,
+  InviteAppMembers,
 
   /**
    * The permission to query app members.
@@ -395,13 +430,19 @@ export enum OrganizationPermission {
 
 export const appOrganizationPermissionMapping: { [key in AppPermission]: OrganizationPermission } =
   {
-    [AppPermission.CreateAppInvites]: OrganizationPermission.CreateAppInvites,
+    [AppPermission.InviteAppMembers]: OrganizationPermission.InviteAppMembers,
     [AppPermission.QueryAppMembers]: OrganizationPermission.QueryAppMembers,
     [AppPermission.RemoveAppMembers]: OrganizationPermission.RemoveAppMembers,
-    [AppPermission.QueryTeams]: OrganizationPermission.QueryTeams,
     [AppPermission.CreateTeams]: OrganizationPermission.CreateTeams,
+    [AppPermission.QueryTeams]: OrganizationPermission.QueryTeams,
     [AppPermission.UpdateTeams]: OrganizationPermission.UpdateTeams,
     [AppPermission.DeleteTeams]: OrganizationPermission.DeleteTeams,
+    [AppPermission.CreateResources]: OrganizationPermission.CreateAppResources,
+    [AppPermission.QueryResources]: OrganizationPermission.QueryAppResources,
+    [AppPermission.GetResources]: OrganizationPermission.GetAppResources,
+    [AppPermission.UpdateResources]: OrganizationPermission.UpdateAppResources,
+    [AppPermission.PatchResources]: OrganizationPermission.PatchAppResources,
+    [AppPermission.DeleteResources]: OrganizationPermission.DeleteAppResources,
   };
 
 export const teamOrganizationPermissionMapping: {
@@ -412,3 +453,10 @@ export const teamOrganizationPermissionMapping: {
   [TeamPermission.UpdateTeamMembers]: OrganizationPermission.UpdateTeamMembers,
   [TeamPermission.RemoveTeamMembers]: OrganizationPermission.RemoveTeamMembers,
 };
+
+export function getEnumKeyByValue<T>(
+  enumObject: T,
+  value: T[keyof T] | string,
+): keyof T | undefined {
+  return (Object.keys(enumObject) as (keyof T)[]).find((key) => enumObject[key] === value);
+}

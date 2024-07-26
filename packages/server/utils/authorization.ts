@@ -1,13 +1,21 @@
-import { assertKoaError } from "@appsemble/node-utils";
+import { assertKoaError } from '@appsemble/node-utils';
+import {
+  type CustomAppPermission,
+  type CustomAppResourcePermission,
+  type Security,
+} from '@appsemble/types';
 import {
   appMemberRoles,
   appOrganizationPermissionMapping,
-  type AppPermission,
+  AppPermission,
+  getEnumKeyByValue,
+  type OrganizationMemberRole,
   organizationMemberRoles,
-  OrganizationPermission,
-  teamMemberRoles, teamOrganizationPermissionMapping,
-  type TeamPermission
-} from "@appsemble/utils";
+  type OrganizationPermission,
+  teamMemberRoles,
+  teamOrganizationPermissionMapping,
+  type TeamPermission,
+} from '@appsemble/utils';
 import { type Context } from 'koa';
 
 import {
@@ -18,7 +26,63 @@ import {
   Team,
   TeamMember,
 } from '../models/index.js';
-import { AppResourceActionPermission, CustomAppPermission, ResourceAction } from "@appsemble/types";
+
+function checkAppRoleAppPermissions(
+  appSecurityDefinition: Security,
+  appRole: string,
+  requiredPermissions: CustomAppPermission[],
+): boolean {
+  const appRoleDefinition = appSecurityDefinition.roles[appRole];
+
+  const appRolePermissions = appRoleDefinition.permissions?.length
+    ? appRoleDefinition.permissions
+    : appRoleDefinition.inherits?.length
+      ? appRoleDefinition.inherits.flatMap(
+          (inheritedRole) => appSecurityDefinition.roles[inheritedRole].permissions,
+        )
+      : appMemberRoles.Member;
+
+  return requiredPermissions.every((p) => {
+    if (getEnumKeyByValue(AppPermission, p)) {
+      return appRolePermissions.includes(p);
+    }
+    if (p.startsWith('$resource')) {
+      const permissionAction = p.slice(p.lastIndexOf(':') + 1);
+      return appRolePermissions.includes(`$resource:all:${permissionAction}` as AppPermission);
+    }
+  });
+}
+
+function checkOrganizationRoleAppPermissions(
+  organizationRole: OrganizationMemberRole,
+  requiredPermissions: CustomAppPermission[],
+): boolean {
+  const organizationRolePermissions = organizationMemberRoles[organizationRole];
+
+  return requiredPermissions.every((p) => {
+    let mappedPermission = appOrganizationPermissionMapping[p as AppPermission];
+
+    if (!mappedPermission) {
+      const customAppPermission = p as string;
+
+      if (customAppPermission.startsWith('$resource')) {
+        mappedPermission =
+          appOrganizationPermissionMapping[
+            (p as CustomAppResourcePermission).replace(/:[^:]*:/, ':all:') as AppPermission
+          ];
+      }
+    }
+
+    return organizationRolePermissions.includes(mappedPermission);
+  });
+}
+
+function checkOrganizationRoleOrganizationPermissions(
+  organizationRole: OrganizationMemberRole,
+  requiredPermissions: OrganizationPermission[],
+): boolean {
+  return requiredPermissions.every((p) => organizationMemberRoles[organizationRole].includes(p));
+}
 
 export async function checkAppMemberAppPermissions(
   ctx: Context,
@@ -31,20 +95,12 @@ export async function checkAppMemberAppPermissions(
 
   assertKoaError(!app, ctx, 404, 'App not found');
 
+  assertKoaError(!app.definition.security, ctx, 404, 'App does not have a security definition');
+
   const appMember = await AppMember.findByPk(authSubject.id);
 
-  const appMemberRoleDefinition = app.definition.security?.roles[appMember.role];
-
-  const rolePermissions = appMemberRoleDefinition.permissions?.length
-    ? appMemberRoleDefinition.permissions
-    : appMemberRoleDefinition.inherits?.length
-      ? appMemberRoleDefinition.inherits.flatMap(
-        (inheritedRole) => app.definition.security?.roles[inheritedRole].permissions,
-      )
-      : appMemberRoles.Member;
-
   assertKoaError(
-    !permissions.every((p) => rolePermissions.includes(p)),
+    !checkAppRoleAppPermissions(app.definition.security, appMember.role, permissions),
     ctx,
     403,
     'App member does not have sufficient app permissions.',
@@ -105,10 +161,8 @@ export async function checkUserOrganizationPermissions(
 
   assertKoaError(!organizationMember, ctx, 403, 'User is not a member of this organization.');
 
-  const organizationMemberRole = organizationMemberRoles[organizationMember.role];
-
   assertKoaError(
-    !permissions.every((p) => organizationMemberRole.includes(p)),
+    !checkOrganizationRoleOrganizationPermissions(organizationMember.role, permissions),
     ctx,
     403,
     'User does not have sufficient organization permissions.',
@@ -128,25 +182,14 @@ export async function checkUserAppPermissions(
 
   assertKoaError(!app, ctx, 404, 'App not found');
 
+  assertKoaError(!app.definition.security, ctx, 404, 'App does not have a security definition');
+
   const appMember = await AppMember.findOne({
     where: {
       AppId: appId,
       UserId: authSubject.id,
     },
   });
-
-  let appRolePermissions: CustomAppPermission[] = [];
-  if (appMember) {
-    const appMemberRoleDefinition = app.definition.security?.roles[appMember.role];
-
-    appRolePermissions = appMemberRoleDefinition.permissions?.length
-      ? appMemberRoleDefinition.permissions
-      : appMemberRoleDefinition.inherits?.length
-        ? appMemberRoleDefinition.inherits.flatMap(
-          (inheritedRole) => app.definition.security?.roles[inheritedRole].permissions,
-        )
-        : appMemberRoles.Member;
-  }
 
   const organizationMember = await OrganizationMember.findOne({
     where: {
@@ -155,33 +198,12 @@ export async function checkUserAppPermissions(
     },
   });
 
-  let organizationRolePermissions: OrganizationPermission[] = [];
-  if (organizationMember) {
-    organizationRolePermissions = organizationMemberRoles[organizationMember.role];
-  }
-
   assertKoaError(
-    !permissions.every(
-      (p) => {
-        if (appRolePermissions.includes(p)) {
-          return true;
-        }
-
-        const mappedPermission = appOrganizationPermissionMapping[p as AppPermission];
-
-        if (mappedPermission) {
-          return organizationRolePermissions.includes(mappedPermission);
-        } else {
-          const permissionString = String(p) as AppResourceActionPermission;
-          const permissionType = permissionString.substring(1, permissionString.indexOf(':'));
-          switch (permissionType) {
-            case 'resource':
-              const permissionAction = permissionString.substring(permissionString.lastIndexOf(':') + 1) as ResourceAction;
-              const organizationPermissionKey= `${permissionAction[0].toUpperCase()}${permissionAction.substring(1)}AppResources` as keyof typeof OrganizationPermission;
-              return organizationRolePermissions.includes(OrganizationPermission[organizationPermissionKey]);
-          }
-        }
-      }
+    !(
+      (appMember &&
+        checkAppRoleAppPermissions(app.definition.security, appMember.role, permissions)) ||
+      (organizationMember &&
+        checkOrganizationRoleAppPermissions(organizationMember.role, permissions))
     ),
     ctx,
     403,

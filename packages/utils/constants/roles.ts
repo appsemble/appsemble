@@ -27,11 +27,12 @@ const OrganizationAppContentsManager = [
   OrganizationPermission.DeleteAppAssets,
   OrganizationPermission.CreateAppResources,
   OrganizationPermission.UpdateAppResources,
+  OrganizationPermission.PatchAppResources,
   OrganizationPermission.DeleteAppResources,
 ];
 
 const OrganizationAppMemberManager = [
-  OrganizationPermission.CreateAppInvites,
+  OrganizationPermission.InviteAppMembers,
   OrganizationPermission.QueryAppMembers,
   OrganizationPermission.RemoveAppMembers,
 ];
@@ -140,7 +141,7 @@ const AppMember: AppPermission[] = [];
 
 const AppMembersManager = [
   ...AppMember,
-  AppPermission.CreateAppInvites,
+  AppPermission.InviteAppMembers,
   AppPermission.QueryAppMembers,
   AppPermission.RemoveAppMembers,
 ];
@@ -153,12 +154,23 @@ const AppTeamsManager = [
   AppPermission.DeleteTeams,
 ];
 
-const AppOwner = [...AppMember, ...AppMembersManager, ...AppTeamsManager];
+const AppResourcesManager = [
+  ...AppMember,
+  AppPermission.CreateResources,
+  AppPermission.QueryResources,
+  AppPermission.GetResources,
+  AppPermission.UpdateResources,
+  AppPermission.PatchResources,
+  AppPermission.DeleteResources,
+];
+
+const AppOwner = [...AppMember, ...AppMembersManager, ...AppTeamsManager, ...AppResourcesManager];
 
 export const appMemberRoles = {
   Member: AppMember,
   MembersManager: AppMembersManager,
   TeamsManager: AppTeamsManager,
+  ResourcesManager: AppResourcesManager,
   Owner: AppOwner,
 };
 
