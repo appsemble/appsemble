@@ -6,6 +6,7 @@ import { type Context } from 'koa';
 import { Op } from 'sequelize';
 
 import { App, AppInvite, AppMember, EmailAuthorization, User } from '../../../models/index.js';
+import { getAppUrl } from '../../../utils/app.js';
 import { checkAppMemberAppPermissions } from '../../../utils/authorization.js';
 
 export async function createAppInvite(ctx: Context): Promise<void> {
@@ -25,7 +26,7 @@ export async function createAppInvite(ctx: Context): Promise<void> {
 
   assertKoaError(!app.definition.security?.roles[body.role], ctx, 403, 'Role not allowed.');
 
-  await checkAppMemberAppPermissions(ctx, appId, [AppPermission.CreateAppInvites]);
+  await checkAppMemberAppPermissions(ctx, appId, [AppPermission.InviteAppMembers]);
 
   const appMembers = await AppMember.findAll({
     where: {
@@ -101,6 +102,10 @@ export async function createAppInvite(ctx: Context): Promise<void> {
           primaryEmail: invite.email,
         },
       });
+
+      const url = new URL('/App-Invite', getAppUrl(app));
+      url.searchParams.set('code', invite.key);
+
       return mailer.sendTranslatedEmail({
         to: {
           ...(user ? { name: user.name } : {}),
@@ -109,7 +114,7 @@ export async function createAppInvite(ctx: Context): Promise<void> {
         emailName: 'appInvite',
         ...(user ? { locale: user.locale } : {}),
         values: {
-          link: (text) => `[${text}](${app.domain}/app-invite?token=${invite.key})`,
+          link: (text) => `[${text}](${String(url)})`,
           name: user?.name || 'null',
           appName: app.definition.name,
         },

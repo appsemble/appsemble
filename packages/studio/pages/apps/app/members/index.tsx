@@ -1,5 +1,6 @@
-import { Button, Table, Title, useData, useMeta } from '@appsemble/react-components';
-import { convertToCsv } from '@appsemble/utils';
+import { Button, Table, useData, useMeta } from '@appsemble/react-components';
+import { type AppMemberInfo } from '@appsemble/types';
+import { convertToCsv, OrganizationPermission } from '@appsemble/utils';
 import { downloadBlob } from '@appsemble/web-utils';
 import { type ReactNode, useCallback } from 'react';
 import { FormattedMessage } from 'react-intl';
@@ -8,24 +9,20 @@ import { Link } from 'react-router-dom';
 import { MemberRow } from './MemberRow/index.js';
 import { messages } from './messages.js';
 import { AsyncDataView } from '../../../../components/AsyncDataView/index.js';
+import { HeaderControl } from '../../../../components/HeaderControl/index.js';
+import { useUser } from '../../../../components/UserProvider/index.js';
 import { useApp } from '../index.js';
 
-export interface AppMember {
-  userId: string;
-  memberId: string;
-  name?: string;
-  primaryEmail?: string;
-  role: string;
-  properties?: Record<string, string>;
-}
-
-export function UsersPage(): ReactNode {
+export function MembersPage(): ReactNode {
   useMeta(messages.title);
-  const { app } = useApp();
-  const result = useData<AppMember[]>(`/api/apps/${app.id}/members`);
 
-  const onMemberChange = (member: AppMember): void => {
-    result.setData(result.data.map((m) => (m.memberId === member.memberId ? member : m)));
+  const { app } = useApp();
+  const { userInfo } = useUser();
+
+  const result = useData<AppMemberInfo[]>(`/api/apps/${app.id}/members`);
+
+  const onMemberChange = (member: AppMemberInfo): void => {
+    result.setData(result.data.map((m) => (m.sub === member.sub ? member : m)));
   };
 
   const onMemberExport = useCallback(() => {
@@ -33,12 +30,32 @@ export function UsersPage(): ReactNode {
     downloadBlob(csv, 'members.csv');
   }, [result.data]);
 
-  console.log(result)
+  const {
+    data: members,
+    error: membersError,
+    loading: membersLoading,
+    setData: setMembers,
+  } = useData<AppMemberInfo[]>(`/api/apps/${app.id}/members`);
+
+  const me = members?.find((member) => member.id === userInfo.sub);
+  const mayInvite = me && chec(me.role, [OrganizationPermission.CreateOrganizationInvites]);
+
   return (
     <>
-      <Title>
-        <FormattedMessage {...messages.users} />
-      </Title>
+      <HeaderControl
+        control={
+          <Button
+            disabled={!mayInvite}
+            onClick={addMembersModal.enable}
+            title={mayInvite ? undefined : formatMessage(messages.notAllowed)}
+          >
+            <FormattedMessage {...messages.addMembers} />
+          </Button>
+        }
+        level={4}
+      >
+        <FormattedMessage {...messages.members} />
+      </HeaderControl>
       {app.definition.security.default.policy === 'organization' && (
         <span>
           <FormattedMessage
@@ -68,7 +85,7 @@ export function UsersPage(): ReactNode {
               <thead>
                 <tr>
                   <th>
-                    <FormattedMessage {...messages.user} />
+                    <FormattedMessage {...messages.member} />
                   </th>
                   <th>
                     <FormattedMessage {...messages.properties} />

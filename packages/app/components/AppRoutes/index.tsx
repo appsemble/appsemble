@@ -7,6 +7,7 @@ import { getDefaultPageName } from '../../utils/getDefaultPageName.js';
 import { sentryDsn, showDemoLogin } from '../../utils/settings.js';
 import { AppDebug } from '../AppDebug/index.js';
 import { useAppDefinition } from '../AppDefinitionProvider/index.js';
+import { AppInvite } from '../AppInvite/index.js';
 import { useAppMember } from '../AppMemberProvider/index.js';
 import { useAppMessages } from '../AppMessagesProvider/index.js';
 import { AppSettings } from '../AppSettings/index.js';
@@ -59,6 +60,7 @@ export function AppRoutes(): ReactNode {
         ) : null}
 
         <Route caseSensitive element={<TeamInvite />} path="/Team-Invite" />
+        <Route caseSensitive element={<AppInvite />} path="/App-Invite" />
         <Route caseSensitive element={<ResetPassword />} path="/Reset-Password" />
         <Route caseSensitive element={<EditPassword />} path="/Edit-Password" />
         <Route caseSensitive element={<Verify />} path="/Verify" />

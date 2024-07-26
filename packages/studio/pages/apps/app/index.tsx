@@ -28,6 +28,7 @@ import { AssetsPage } from './assets/index.js';
 import { ContainerLogs } from './containerLogs/index.js';
 import { DefinitionPage } from './definition/index.js';
 import { IndexPage } from './IndexPage/index.js';
+import { MembersPage } from './members/index.js';
 import { messages } from './messages.js';
 import { NotificationsPage } from './notifications/index.js';
 import { QuotasPage } from './quotas/index.js';
@@ -38,7 +39,6 @@ import { SnapshotsRoutes } from './snapshots/index.js';
 import { SnapshotPage } from './snapshots/snapshot/index.js';
 import { TeamsRoutes } from './teams/index.js';
 import { TranslationsPage } from './translations/index.js';
-import { UsersPage } from './users/index.js';
 import { VariablesPage } from './variables/index.js';
 import { ProtectedRoute } from '../../../components/ProtectedRoute/index.js';
 import { useUser } from '../../../components/UserProvider/index.js';
@@ -224,7 +224,7 @@ export function AppRoutes(): ReactNode {
             ) : null}
 
             {mayVisitAppMembers && app.definition.security ? (
-              <MenuItem icon="users" to={`${url}/app-members`}>
+              <MenuItem icon="users" to={`${url}/members`}>
                 <FormattedMessage {...messages.users} />
               </MenuItem>
             ) : null}
@@ -406,7 +406,7 @@ export function AppRoutes(): ReactNode {
                 />
               }
             >
-              <Route element={<UsersPage />} path="/app-members" />
+              <Route element={<MembersPage />} path="/members" />
             </Route>
 
             <Route
