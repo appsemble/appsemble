@@ -1925,7 +1925,7 @@ export interface App {
    */
   id?: number;
 
-  /*
+  /**
    * A domain name on which this app should be served.
    */
   domain?: string;

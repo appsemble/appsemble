@@ -6,6 +6,7 @@ import { AppBlockStyle } from './AppBlockStyle.js';
 import { AppCollection } from './AppCollection.js';
 import { AppCollectionApp } from './AppCollectionApp.js';
 import { AppEmailQuotaLog } from './AppEmailQuotaLog.js';
+import { AppInvite } from './AppInvite.js';
 import { AppMember } from './AppMember.js';
 import { AppMessages } from './AppMessages.js';
 import { AppOAuth2Authorization } from './AppOAuth2Authorization.js';
@@ -65,6 +66,7 @@ export {
   AppCollection,
   AppCollectionApp,
   AppEmailQuotaLog,
+  AppInvite,
   AppMember,
   AppOAuth2Authorization,
   AppOAuth2Secret,
@@ -127,6 +129,7 @@ export function initDB({
       AppCollection,
       AppCollectionApp,
       AppEmailQuotaLog,
+      AppInvite,
       AppMember,
       AppOAuth2Authorization,
       AppOAuth2Secret,

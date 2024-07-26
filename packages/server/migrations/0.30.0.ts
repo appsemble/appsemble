@@ -18,6 +18,7 @@ export const key = '0.30.0';
  * - Remove column `demoLoginUser` from `User` table
  * - Add column `timezone` to the `AppMember` table
  * - Add column `demo` to the `AppMember` table
+ * - Add table `AppInvite`
  *
  * @param transaction The sequelize transaction.
  * @param db The sequelize database.
@@ -137,6 +138,48 @@ export async function up(transaction: Transaction, db: Sequelize): Promise<void>
     },
     { transaction },
   );
+
+  logger.info('Adding table `AppInvite`');
+  await queryInterface.createTable(
+    'AppInvite',
+    {
+      email: { type: DataTypes.STRING, primaryKey: true, allowNull: false },
+      key: { type: DataTypes.STRING, allowNull: false },
+      role: { type: DataTypes.STRING, allowNull: false, defaultValue: 'Member' },
+      UserId: {
+        type: DataTypes.UUID,
+        allowNull: false,
+        onDelete: 'cascade',
+        onUpdate: 'cascade',
+        references: {
+          model: 'User',
+          key: 'id',
+        },
+        unique: 'AppInvite_UserId_AppId_key',
+      },
+      AppId: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        onDelete: 'cascade',
+        onUpdate: 'cascade',
+        references: {
+          model: 'App',
+          key: 'id',
+        },
+        unique: 'AppInvite_UserId_AppId_key',
+      },
+      created: { allowNull: false, type: DataTypes.DATE },
+      updated: { allowNull: false, type: DataTypes.DATE },
+    },
+    { transaction },
+  );
+
+  logger.info('Creating unique index AppInvite_UserId_AppId_key on AppInvite (UserId, AppId)');
+  await queryInterface.addIndex('AppInvite', ['UserId', 'AppId'], {
+    name: 'AppInvite_UserId_AppId_key',
+    unique: true,
+    transaction,
+  });
 }
 
 /**
@@ -228,4 +271,10 @@ export async function down(transaction: Transaction, db: Sequelize): Promise<voi
 
   logger.info('Remove column `demo` on `AppMember` table');
   await queryInterface.removeColumn('AppMember', 'demo', { transaction });
+
+  logger.info('Dropping table AppInvite');
+  await queryInterface.dropTable('AppInvite', { transaction });
+
+  logger.info('Removing unique index AppInvite_UserId_AppId_key from AppInvite (UserId, AppId)');
+  await queryInterface.removeIndex('AppInvite', 'AppInvite_UserId_AppId_key', { transaction });
 }

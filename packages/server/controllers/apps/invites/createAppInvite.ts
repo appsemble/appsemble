@@ -1,11 +1,18 @@
-import { assertKoaError } from '@appsemble/node-utils';
-import { type Context } from 'koa';
+import { randomBytes } from 'node:crypto';
 
-import { App } from '../../../models/index.js';
+import { assertKoaError } from '@appsemble/node-utils';
+import { AppPermission } from '@appsemble/utils';
+import { type Context } from 'koa';
+import { Op } from 'sequelize';
+
+import { App, AppInvite, AppMember, EmailAuthorization, User } from '../../../models/index.js';
+import { checkAppMemberAppPermissions } from '../../../utils/authorization.js';
 
 export async function createAppInvite(ctx: Context): Promise<void> {
   const {
+    mailer,
     pathParams: { appId },
+    request: { body },
   } = ctx;
 
   const app = await App.findByPk(appId, {
@@ -14,7 +21,100 @@ export async function createAppInvite(ctx: Context): Promise<void> {
 
   assertKoaError(!app, ctx, 404, 'App not found');
 
-  assertKoaError(!app.definition.security, ctx, 400, 'App does not have a security definition.');
+  assertKoaError(!app.definition.security, ctx, 403, 'App does not have a security definition.');
 
-  // TODO
+  assertKoaError(!app.definition.security?.roles[body.role], ctx, 403, 'Role not allowed.');
+
+  await checkAppMemberAppPermissions(ctx, appId, [AppPermission.CreateAppInvites]);
+
+  const appMembers = await AppMember.findAll({
+    where: {
+      AppId: appId,
+    },
+    include: [
+      {
+        model: User,
+        attributes: ['primaryEmail'],
+        include: [{ model: EmailAuthorization, attributes: ['email'] }],
+      },
+    ],
+  });
+
+  const appInvites = await AppInvite.findAll({
+    attributes: ['email'],
+    where: { AppId: appId },
+  });
+
+  const memberEmails = new Set(
+    appMembers.flatMap(({ User: { EmailAuthorizations } }) =>
+      EmailAuthorizations.flatMap(({ email }) => email),
+    ),
+  );
+
+  const newInvites = (body as AppInvite[])
+    .map((invite) => ({
+      email: invite.email.toLowerCase(),
+      role: invite.role,
+    }))
+    .filter((invite) => !memberEmails.has(invite.email));
+
+  assertKoaError(!newInvites.length, ctx, 400, 'All invited users are already part of this app');
+
+  const existingInvites = new Set(appInvites.flatMap(({ email }) => email));
+
+  const pendingInvites = newInvites.filter((invite) => !existingInvites.has(invite.email));
+
+  assertKoaError(
+    !pendingInvites.length,
+    ctx,
+    400,
+    'All email addresses are already invited to this organization',
+  );
+
+  const auths = await EmailAuthorization.findAll({
+    include: [{ model: User }],
+    where: { email: { [Op.in]: pendingInvites.map((invite) => invite.email) } },
+  });
+
+  const userMap = new Map(auths.map((auth) => [auth.email, auth.User]));
+
+  const result = await AppInvite.bulkCreate(
+    pendingInvites.map((invite) => {
+      const user = userMap.get(invite.email);
+      const key = randomBytes(20).toString('hex');
+      return user
+        ? {
+            email: user?.primaryEmail ?? invite.email,
+            UserId: user.id,
+            key,
+            AppId: appId,
+            role: invite.role,
+          }
+        : { email: invite.email, role: invite.role, key, AppId: appId };
+    }),
+  );
+
+  await Promise.all(
+    result.map(async (invite) => {
+      const user = await User.findOne({
+        where: {
+          primaryEmail: invite.email,
+        },
+      });
+      return mailer.sendTranslatedEmail({
+        to: {
+          ...(user ? { name: user.name } : {}),
+          email: invite.email,
+        },
+        emailName: 'appInvite',
+        ...(user ? { locale: user.locale } : {}),
+        values: {
+          link: (text) => `[${text}](${app.domain}/app-invite?token=${invite.key})`,
+          name: user?.name || 'null',
+          appName: app.definition.name,
+        },
+      });
+    }),
+  );
+  ctx.body = result.map(({ email, role }) => ({ email, role }));
 }
