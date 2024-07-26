@@ -16,13 +16,7 @@ import { type Literal } from 'sequelize/types/utils';
 
 import { type FieldType, odataFilterToSequelize, odataOrderbyToSequelize } from './odata.js';
 import { sendNotification, type SendNotificationOptions } from './sendNotification.js';
-import {
-  App,
-  AppSubscription,
-  Resource,
-  ResourceSubscription,
-  User,
-} from '../models/index.js';
+import { App, AppSubscription, Resource, ResourceSubscription, User } from '../models/index.js';
 
 export function renameOData(name: string): string {
   switch (name) {

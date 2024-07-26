@@ -1,5 +1,5 @@
 import { type TeamMember } from '@appsemble/types';
-import { TeamMemberRole, teamMemberRoles } from "@appsemble/utils";
+import { type TeamMemberRole, teamMemberRoles } from '@appsemble/utils';
 import {
   AllowNull,
   BelongsTo,

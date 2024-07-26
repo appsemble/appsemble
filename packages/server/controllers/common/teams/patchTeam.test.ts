@@ -2,13 +2,7 @@ import { request, setTestApp } from 'axios-test-instance';
 import type Koa from 'koa';
 import { beforeAll, beforeEach, describe, expect, it } from 'vitest';
 
-import {
-  App,
-  Organization,
-  OrganizationMember,
-  Team,
-  type User,
-} from '../../../models/index.js';
+import { App, Organization, OrganizationMember, Team, type User } from '../../../models/index.js';
 import { setArgv } from '../../../utils/argv.js';
 import { createServer } from '../../../utils/createServer.js';
 import { authorizeStudio, createTestUser } from '../../../utils/test/authorization.js';
