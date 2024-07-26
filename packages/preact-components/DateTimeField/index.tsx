@@ -106,6 +106,7 @@ export function DateTimeField({
   ...props
 }: DateTimeFieldProps): VNode {
   const wrapper = useRef<HTMLDivElement>();
+  const internal = useRef<HTMLDivElement>();
   const positionElement = useRef<HTMLDivElement>();
   const [picker, setPicker] = useState<flatpickr.Instance>(null);
   const {
@@ -140,7 +141,7 @@ export function DateTimeField({
       template += '{date, time, short}';
     }
 
-    const p = flatpickr(wrapper.current, {
+    const p = flatpickr(internal.current, {
       appendTo: wrapper.current,
       enableTime,
       locale,
@@ -209,30 +210,31 @@ export function DateTimeField({
   }, [picker, value]);
 
   return (
-    <FormComponent
-      className={className}
-      error={error}
-      help={help}
-      icon={icon}
-      id={id}
-      inline={inline}
-      label={label}
-      optionalLabel={optionalLabel}
-      ref={wrapper}
-      required={required}
-      tag={tag}
-    >
-      <div ref={positionElement} />
-      <Input
-        {...props}
-        className="is-fullwidth"
-        data-input
-        disabled={disabled}
-        errorLinkRef={errorLinkRef}
+    <div className={className} id="wrapper" ref={wrapper}>
+      <FormComponent
+        error={error}
+        help={help}
+        icon={icon}
         id={id}
-        name={name}
-        onChange={handleChange}
-      />
-    </FormComponent>
+        inline={inline}
+        label={label}
+        optionalLabel={optionalLabel}
+        ref={internal}
+        required={required}
+        tag={tag}
+      >
+        <div ref={positionElement} />
+        <Input
+          {...props}
+          className="is-fullwidth"
+          data-input
+          disabled={disabled}
+          errorLinkRef={errorLinkRef}
+          id={id}
+          name={name}
+          onChange={handleChange}
+        />
+      </FormComponent>
+    </div>
   );
 }
