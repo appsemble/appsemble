@@ -5,33 +5,49 @@ export const messages = defineMessages({
     id: 'studio.7L86Z5',
     defaultMessage: 'Member',
   },
-  AppEditor: {
-    id: 'studio.hBhvRa',
-    defaultMessage: 'AppEditor',
+  AppTranslator: {
+    id: 'studio.Vg+/cC',
+    defaultMessage: 'AppTranslator',
+  },
+  AppContentsExplorer: {
+    id: 'studio.vUOBIG',
+    defaultMessage: 'AppContentsExplorer',
+  },
+  AppContentsManager: {
+    id: 'studio.ebfZw6',
+    defaultMessage: 'AppContentsManager',
+  },
+  AppMemberManager: {
+    id: 'studio.7IeO4D',
+    defaultMessage: 'AppMemberManager',
+  },
+  AppTeamManager: {
+    id: 'studio./b6YhM',
+    defaultMessage: 'AppTeamManager',
+  },
+  AppTeamMembersManager: {
+    id: 'studio.bN0yuN',
+    defaultMessage: 'AppTeamMembersManager',
+  },
+  AppManager: {
+    id: 'studio.o61GlD',
+    defaultMessage: 'AppManager',
+  },
+  AppCollectionManager: {
+    id: 'studio.VDt0tf',
+    defaultMessage: 'AppCollectionManager',
+  },
+  BlockManager: {
+    id: 'studio.xfR9j2',
+    defaultMessage: 'BlockManager',
   },
   Maintainer: {
     id: 'studio.eXDZGQ',
     defaultMessage: 'Maintainer',
   },
-  AccountManager: {
-    id: 'studio.Sa1VZo',
-    defaultMessage: 'AccountManager',
-  },
   Owner: {
     id: 'studio.zINlao',
     defaultMessage: 'Owner',
-  },
-  APIUser: {
-    id: 'studio.bDOdFJ',
-    defaultMessage: 'API User',
-  },
-  APIReader: {
-    id: 'studio.4hlRkE',
-    defaultMessage: 'API Reader',
-  },
-  Translator: {
-    id: 'studio.yvZLHk',
-    defaultMessage: 'Translator',
   },
   deleteMember: {
     id: 'studio.7EMBrV',

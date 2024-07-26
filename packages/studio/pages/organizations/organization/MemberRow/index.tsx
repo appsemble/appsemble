@@ -4,7 +4,7 @@ import {
   useConfirmation,
   useMessages,
 } from '@appsemble/react-components';
-import { type Role, roles } from '@appsemble/utils';
+import { type OrganizationMemberRole, organizationMemberRoles } from '@appsemble/utils';
 import axios from 'axios';
 import { type ChangeEvent, type ReactNode, useCallback } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
@@ -19,11 +19,6 @@ interface MemberRowProps {
    * Whether the user may delete members.
    */
   readonly mayEdit: boolean;
-
-  /**
-   * Whether the user has the permission to edit other user’s roles.
-   */
-  readonly mayEditRole: boolean;
 
   /**
    * The member represented by this row.
@@ -52,7 +47,6 @@ interface MemberRowProps {
  */
 export function MemberRow({
   mayEdit,
-  mayEditRole,
   member,
   onChanged,
   onDeleted,
@@ -121,13 +115,13 @@ export function MemberRow({
       <td align="right">
         <AsyncSelect
           className="mr-2"
-          disabled={!mayEditRole || (member.role === 'Owner' && ownerCount < 2) || id === sub}
+          disabled={!mayEdit || (member.role === 'Owner' && ownerCount < 2) || id === sub}
           id={`role-${id}`}
           name="role"
           onChange={onChangeRole}
           value={member.role}
         >
-          {Object.keys(roles).map((r: Role) => (
+          {Object.keys(organizationMemberRoles).map((r: OrganizationMemberRole) => (
             <option key={r} value={r}>
               {formatMessage(messages[r])}
             </option>
