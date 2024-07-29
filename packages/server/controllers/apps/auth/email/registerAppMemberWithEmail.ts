@@ -14,6 +14,7 @@ import { getAppUrl } from '../../../../utils/app.js';
 import { parseAppMemberProperties } from '../../../../utils/appMember.js';
 import { createJWTResponse } from '../../../../utils/createJWTResponse.js';
 
+// TODO: use AppEmailAuthorization model
 export async function registerAppMemberWithEmail(ctx: Context): Promise<void> {
   const {
     mailer,

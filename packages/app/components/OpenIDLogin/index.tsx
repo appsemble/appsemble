@@ -1,17 +1,24 @@
-import { OAuth2LoginButton, useQuery, useToggle } from '@appsemble/react-components';
+import { SSOLoginButton, useQuery, useToggle } from '@appsemble/react-components';
 import { type ReactNode } from 'react';
 import { FormattedMessage } from 'react-intl';
 
 import styles from './index.module.css';
 import { messages } from './messages.js';
+import { type Login } from '../../types.js';
 import { oauth2Scope } from '../../utils/constants.js';
-import { apiUrl, appId, logins, showAppsembleOAuth2Login } from '../../utils/settings.js';
+import { apiUrl, appId } from '../../utils/settings.js';
 
-interface OpenIDLoginProps {
+export interface OpenIDLoginProps {
   readonly disabled: boolean;
+  readonly logins: Login[];
+  readonly showAppsembleOAuth2Login: boolean;
 }
 
-export function OpenIDLogin({ disabled }: OpenIDLoginProps): ReactNode {
+export function OpenIDLogin({
+  disabled,
+  logins,
+  showAppsembleOAuth2Login,
+}: OpenIDLoginProps): ReactNode {
   const qs = useQuery();
   const busy = useToggle();
 
@@ -28,7 +35,7 @@ export function OpenIDLogin({ disabled }: OpenIDLoginProps): ReactNode {
   return (
     <>
       {showAppsembleOAuth2Login ? (
-        <OAuth2LoginButton
+        <SSOLoginButton
           authorizationUrl={String(new URL('/connect/authorize', apiUrl))}
           className={buttonProps.className}
           data-testid="login-with-appsemble"
@@ -36,10 +43,10 @@ export function OpenIDLogin({ disabled }: OpenIDLoginProps): ReactNode {
           {...buttonProps}
         >
           <FormattedMessage {...messages.loginWith} values={{ name: 'Appsemble' }} />
-        </OAuth2LoginButton>
+        </SSOLoginButton>
       ) : null}
       {logins?.map(({ icon, id, name, type }) => (
-        <OAuth2LoginButton
+        <SSOLoginButton
           authorizationUrl={String(new URL(`/connect/authorize/${type}/${id}`, apiUrl))}
           className={buttonProps.className}
           icon={icon}
@@ -47,7 +54,7 @@ export function OpenIDLogin({ disabled }: OpenIDLoginProps): ReactNode {
           {...buttonProps}
         >
           <FormattedMessage {...messages.loginWith} values={{ name }} />
-        </OAuth2LoginButton>
+        </SSOLoginButton>
       ))}
     </>
   );

@@ -17,7 +17,7 @@ type OAuth2LoginButtonProps = ComponentPropsWithoutRef<typeof Button> & OAuth2Lo
  * When the button is clicked, the user will be redirected to the authorization URL. The state and
  * authorization url will be stored in `sessionStorage`.
  */
-export function OAuth2LoginButton({
+export function SSOLoginButton({
   authorizationUrl,
   clientId,
   onClick,

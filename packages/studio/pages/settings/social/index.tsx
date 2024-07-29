@@ -3,7 +3,7 @@ import {
   Content,
   Loader,
   Message,
-  OAuth2LoginButton,
+  SSOLoginButton,
   Title,
   useData,
   useLocationString,
@@ -96,7 +96,7 @@ export function SocialPage(): ReactNode {
             <FormattedMessage {...messages.disconnectAccount} values={{ name: provider.name }} />
           </AsyncButton>
         ) : (
-          <OAuth2LoginButton
+          <SSOLoginButton
             authorizationUrl={provider.authorizationUrl}
             className={`${styles.button} mb-4`}
             clientId={provider.clientId}
@@ -109,7 +109,7 @@ export function SocialPage(): ReactNode {
             scope={provider.scope}
           >
             <FormattedMessage {...messages.connectAccount} values={{ name: provider.name }} />
-          </OAuth2LoginButton>
+          </SSOLoginButton>
         ),
       )}
     </Content>

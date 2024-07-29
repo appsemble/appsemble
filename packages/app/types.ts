@@ -52,6 +52,13 @@ export interface User extends UserInfo {
   scope: string;
 }
 
+export interface Login {
+  icon: IconName;
+  id: number;
+  name: string;
+  type: 'oauth2' | 'saml';
+}
+
 declare global {
   interface Window {
     /**
@@ -73,12 +80,7 @@ declare global {
       definition: AppDefinition;
       demoMode: boolean;
       languages: string[];
-      logins: {
-        icon: IconName;
-        id: number;
-        name: string;
-        type: 'oauth2' | 'saml';
-      }[];
+      logins: Login[];
       sentryDsn: string;
       sentryEnvironment: string;
       showAppsembleLogin: boolean;

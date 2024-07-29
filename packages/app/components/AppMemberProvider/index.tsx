@@ -17,6 +17,7 @@ import {
 } from 'react';
 
 import { type UpdateGroup } from '../../types.js';
+import { clearAccountLinkingState, loadAccountLinkingState } from '../../utils/accountLinking.js';
 import { oauth2Scope } from '../../utils/constants.js';
 import { apiUrl, appId, development } from '../../utils/settings.js';
 import { useAppDefinition } from '../AppDefinitionProvider/index.js';
@@ -44,21 +45,21 @@ interface AuthorizationCodeLoginParams {
   redirect_uri: string;
 }
 
+interface DemoLoginParams {
+  appMemberId?: string;
+  appRole?: string;
+}
+
 interface LoginState {
   isLoggedIn: boolean;
   role: string;
   groups: GroupMember[];
 }
 
-interface DemoLoginProps {
-  appMemberId?: string;
-  appRole?: string;
-}
-
 interface AppMemberContext extends LoginState {
   passwordLogin: (params: PasswordLoginParams) => Promise<void>;
-  demoLogin: (props: DemoLoginProps) => Promise<void>;
   authorizationCodeLogin: (params: AuthorizationCodeLoginParams) => Promise<void>;
+  demoLogin: (props: DemoLoginParams) => Promise<void>;
   logout: () => any;
   updateGroup: UpdateGroup;
   appMemberInfo: AppMemberInfo;
@@ -94,6 +95,7 @@ export function AppMemberProvider({ children }: AppMemberProviderProps): ReactNo
   // If there is no security definition, don’t even bother going into the loading state.
   const [isLoading, setIsLoading] = useState(Boolean(definition.security));
   const [state, setState] = useState(initialState);
+
   const [appMemberInfo, setAppMemberInfo] = useState<AppMemberInfo>(null);
   const [exp, setExp] = useState(null);
   const [authorization, setAuthorization] = useState<string>(null);
@@ -154,6 +156,18 @@ export function AppMemberProvider({ children }: AppMemberProviderProps): ReactNo
       try {
         const [auth] = await fetchToken(grantType, params);
         const config = { headers: { authorization: auth } };
+        const linking = loadAccountLinkingState();
+        if (linking) {
+          await axios.post(
+            `${apiUrl}/api/apps/${appId}/members/current/link`,
+            {
+              externalId: linking.externalId,
+              secret: linking.secret,
+              email: linking.email,
+            },
+            config,
+          );
+        }
         const [{ data: appMember }, { data: groups }] = await Promise.all([
           axios.get<AppMemberInfo>(`${apiUrl}/api/apps/${appId}/members/current`, config),
           axios.get<GroupMember[]>(`${apiUrl}/api/apps/${appId}/groups`, config),
@@ -166,6 +180,7 @@ export function AppMemberProvider({ children }: AppMemberProviderProps): ReactNo
           role: appMember.role,
           groups,
         });
+        clearAccountLinkingState();
       } catch (error: unknown) {
         logout();
         throw error;
@@ -207,7 +222,7 @@ export function AppMemberProvider({ children }: AppMemberProviderProps): ReactNo
    * @param appMemberId The app member to log in as.
    */
   const demoLogin = useCallback(
-    ({ appMemberId, appRole }: DemoLoginProps) => {
+    ({ appMemberId, appRole }: DemoLoginParams) => {
       logout();
       const refreshToken = localStorage.getItem(REFRESH_TOKEN);
       return login('urn:ietf:params:oauth:grant-type:demo-login', {

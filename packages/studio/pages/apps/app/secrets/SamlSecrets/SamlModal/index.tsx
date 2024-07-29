@@ -132,6 +132,7 @@ export function SamlModal({ onDeleted, onSubmit, secret, toggle }: AppSecretCard
         type="url"
         validityMessages={{ typeMismatch: <FormattedMessage {...messages.badUrl} /> }}
       />
+      {/* TODO suggest value based on what the server found */}
       <SimpleFormField
         datalist={['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress']}
         disabled={app.locked !== 'unlocked'}
@@ -139,6 +140,15 @@ export function SamlModal({ onDeleted, onSubmit, secret, toggle }: AppSecretCard
         icon="envelope"
         label={<FormattedMessage {...messages.emailAttributeLabel} />}
         name="emailAttribute"
+      />
+      {/* TODO suggest value based on what the server found */}
+      <SimpleFormField
+        datalist={[]}
+        disabled={app.locked !== 'unlocked'}
+        help={<FormattedMessage {...messages.emailVerifiedAttributeHelp} />}
+        icon="check"
+        label={<FormattedMessage {...messages.emailVerifiedAttributeLabel} />}
+        name="emailVerifiedAttribute"
       />
       <SimpleFormField
         datalist={[

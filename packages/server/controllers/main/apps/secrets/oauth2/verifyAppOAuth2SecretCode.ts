@@ -1,7 +1,4 @@
-import { randomBytes } from 'node:crypto';
-
 import { assertKoaError, throwKoaError } from '@appsemble/node-utils';
-import { addMinutes } from 'date-fns';
 import { type Context } from 'koa';
 
 import {
@@ -9,11 +6,14 @@ import {
   AppMember,
   AppOAuth2Authorization,
   AppOAuth2Secret,
-  OAuth2AuthorizationCode,
-  transactional,
 } from '../../../../../models/index.js';
 import { argv } from '../../../../../utils/argv.js';
-import { getAccessToken, getUserInfo } from '../../../../../utils/oauth2.js';
+import { handleUniqueAppMemberEmailIndex } from '../../../../../utils/auth.js';
+import {
+  createAppOAuth2AuthorizationCode,
+  getAccessToken,
+  getUserInfo,
+} from '../../../../../utils/oauth2.js';
 
 export async function verifyAppOAuth2SecretCode(ctx: Context): Promise<void> {
   const {
@@ -22,7 +22,6 @@ export async function verifyAppOAuth2SecretCode(ctx: Context): Promise<void> {
     request: {
       body: { code, redirectUri, scope, timezone },
     },
-    user,
   } = ctx;
   // XXX Replace this with an imported language array when supporting more languages
   let referer: URL;
@@ -40,13 +39,13 @@ export async function verifyAppOAuth2SecretCode(ctx: Context): Promise<void> {
   );
 
   const app = await App.findByPk(appId, {
-    attributes: ['id', 'definition'],
+    attributes: ['id', 'path', 'OrganizationId', 'definition'],
     include: [
       {
         attributes: ['id', 'tokenUrl', 'clientId', 'clientSecret', 'remapper', 'userInfoUrl'],
         model: AppOAuth2Secret,
-        required: false,
         where: { id: appOAuth2SecretId },
+        required: false,
       },
     ],
   });
@@ -75,43 +74,54 @@ export async function verifyAppOAuth2SecretCode(ctx: Context): Promise<void> {
   } = await getUserInfo(accessToken, idToken, secret.userInfoUrl, secret.remapper);
   const authorization = await AppOAuth2Authorization.findOne({
     where: { sub, AppOAuth2SecretId: secret.id },
+    include: [{ model: AppMember, attributes: ['id'] }],
   });
 
-  const authorizationCode = await transactional(async (transaction) => {
-    let appMember = await AppMember.findByPk(authorization?.AppMemberId, { transaction });
+  function handleAuthorization(appMember?: AppMember): Promise<AppOAuth2Authorization> {
+    return authorization
+      ? authorization.update({ accessToken, refreshToken })
+      : AppOAuth2Authorization.create({
+          accessToken,
+          AppOAuth2SecretId: secret.id,
+          refreshToken,
+          sub,
+          email,
+          emailVerified,
+          AppMemberId: appMember?.id,
+        });
+  }
 
+  let appMember = authorization?.AppMember;
+  if (!appMember) {
     const role = app.definition.security?.default?.role;
-    if (!appMember) {
-      appMember = await AppMember.create(
-        { AppId: appId, role, name, email, emailVerified, timezone, UserId: user.id },
-        { transaction },
-      );
+    try {
+      appMember = await AppMember.create({
+        AppId: appId,
+        role,
+        name,
+        email,
+        emailVerified,
+        timezone,
+      });
+      await handleAuthorization();
+    } catch (error) {
+      await handleUniqueAppMemberEmailIndex(ctx, error, email, emailVerified, async (data) => {
+        const { AppOAuth2SecretId, sub: subject } = await handleAuthorization();
+        throwKoaError(ctx, 409, 'Account already exists for this email.', {
+          externalId: subject,
+          secret: `oauth2:${AppOAuth2SecretId}`,
+          ...data,
+        });
+      });
     }
+  }
 
-    await (authorization
-      ? authorization.update({ accessToken, refreshToken }, { transaction })
-      : AppOAuth2Authorization.create(
-          {
-            accessToken,
-            AppOAuth2SecretId: secret.id,
-            refreshToken,
-            sub,
-            AppMemberId: appMember.id,
-          },
-          { transaction },
-        ));
-    return OAuth2AuthorizationCode.create(
-      {
-        AppId: app.id,
-        AppMemberId: appMember.id,
-        code: randomBytes(10).toString('hex'),
-        expires: addMinutes(new Date(), 10),
-        redirectUri,
-        scope,
-      },
-      { transaction },
-    );
-  });
-
-  ctx.body = { code: authorizationCode.code };
+  const appOAuth2AuthorizationCode = await createAppOAuth2AuthorizationCode(
+    app,
+    redirectUri,
+    scope,
+    appMember,
+    ctx,
+  );
+  ctx.body = { code: appOAuth2AuthorizationCode.code };
 }

@@ -1,12 +1,19 @@
 import { randomBytes } from 'node:crypto';
 
-import { type Transaction } from 'sequelize';
+import { assertKoaError } from '@appsemble/node-utils';
+import { type Context } from 'koa';
+import { type Transaction, UniqueConstraintError } from 'sequelize';
+import { type Promisable } from 'type-fest';
 
 import { argv } from './argv.js';
 import { type Mailer } from './email/Mailer.js';
 import {
   type App,
-  type AppMember,
+  AppMember,
+  AppOAuth2Authorization,
+  AppOAuth2Secret,
+  AppSamlAuthorization,
+  AppSamlSecret,
   EmailAuthorization,
   OrganizationMember,
   User,
@@ -64,5 +71,66 @@ export async function checkAppSecurityPolicy(
         where: { OrganizationId: app.OrganizationId, UserId: user.id },
       }),
     );
+  }
+}
+
+export async function handleUniqueAppMemberEmailIndex(
+  ctx: Context,
+  error: unknown,
+  email: string,
+  emailVerified: boolean,
+
+  /**
+   * Callback which handles creation/authorization updates.
+   *
+   * The `externalId` is either the `sub` when using OAuth2, `nameId` when using SAML or `UserId`
+   * when using the Appsemble OAuth2 flow.
+   * The `secret` is the type of secret either oauth2 or saml combined with the id, or just user;
+   * format `oauth2|saml:{id}` or `user:`.
+   */
+  handleAuthorization: (data: { email: string; user: boolean; logins: string }) => Promisable<void>,
+): Promise<void> {
+  if (
+    error instanceof UniqueConstraintError &&
+    'constraint' in error.parent &&
+    error.parent.constraint === 'UniqueAppMemberEmailIndex'
+  ) {
+    assertKoaError(
+      !emailVerified,
+      ctx,
+      403,
+      `Account linking is only allowed to a verified account. Please verify your email ${email}.`,
+    );
+    const memberToLink = await AppMember.findOne({
+      where: { AppId: ctx.pathParams.appId, email },
+      attributes: ['id', 'email', 'UserId'],
+      include: [
+        {
+          model: AppOAuth2Authorization,
+          include: [{ model: AppOAuth2Secret, attributes: ['id'] }],
+          attributes: ['AppOAuth2SecretId'],
+          required: false,
+        },
+        {
+          model: AppSamlAuthorization,
+          include: [{ model: AppSamlSecret, attributes: ['id'] }],
+          attributes: ['AppSamlSecretId'],
+          required: false,
+        },
+        // { model: AppEmailAuthorization },
+      ],
+    });
+    const data = {
+      email,
+      user: Boolean(memberToLink.UserId),
+      // Password: Boolean(memberToLink.AppEmailAuthorization.length),
+      logins: [
+        ...memberToLink.AppOAuth2Authorizations.map(
+          ({ AppOAuth2Secret: { id } }) => `oauth2:${id}`,
+        ),
+        ...memberToLink.AppSamlAuthorizations.map(({ AppSamlSecret: { id } }) => `saml:${id}`),
+      ].join(','),
+    };
+    await handleAuthorization(data);
   }
 }

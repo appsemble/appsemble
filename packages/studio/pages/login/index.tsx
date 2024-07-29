@@ -2,7 +2,7 @@ import {
   Content,
   Login,
   type LoginFormValues,
-  OAuth2LoginButton,
+  SSOLoginButton,
   useMeta,
   useQuery,
   useToggle,
@@ -49,7 +49,7 @@ export function LoginPage(): ReactNode {
       />
       <div className={`${styles.socialLogins} mt-5`}>
         {logins.map((provider) => (
-          <OAuth2LoginButton
+          <SSOLoginButton
             authorizationUrl={provider.authorizationUrl}
             className="mr-2"
             clientId={provider.clientId}
@@ -62,7 +62,7 @@ export function LoginPage(): ReactNode {
             scope={provider.scope}
           >
             <FormattedMessage {...messages.loginWith} values={{ name: provider.name }} />
-          </OAuth2LoginButton>
+          </SSOLoginButton>
         ))}
       </div>
     </Content>

@@ -54,7 +54,14 @@ export function IndexPage(): ReactNode {
         scope: [...new Set(scopes)].join(' '),
       })
       .then(({ data }) => oauth2Redirect(qs, { code: data.code }))
-      .catch(() => oauth2Redirect(qs, { error: 'server_error' }));
+      .catch((err) => {
+        // In case of a conflict navigate the user back to the login page to link,
+        // an existing account with any of the already associated login methods.
+        if (axios.isAxiosError(err) && err.response.status === 409) {
+          return oauth2Redirect(qs, { ...err.response.data.data });
+        }
+        return oauth2Redirect(qs, { error: 'server_error' });
+      });
   }, [appId, qs, redirectUri, scopes]);
 
   const onDeny = useCallback(() => {

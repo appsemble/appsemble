@@ -9,18 +9,7 @@ import { checkAppLock } from '../../../../../utils/checkAppLock.js';
 export async function updateAppSamlSecret(ctx: Context): Promise<void> {
   const {
     pathParams: { appId, appSamlSecretId },
-    request: {
-      body: {
-        emailAttribute,
-        entityId,
-        icon,
-        idpCertificate,
-        name,
-        nameAttribute,
-        objectIdAttribute,
-        ssoUrl,
-      },
-    },
+    request: { body },
   } = ctx;
 
   const app = await App.findByPk(appId, {
@@ -39,14 +28,5 @@ export async function updateAppSamlSecret(ctx: Context): Promise<void> {
   const [secret] = app.AppSamlSecrets;
   assertKoaError(!secret, ctx, 404, 'SAML secret not found');
 
-  ctx.body = await secret.update({
-    emailAttribute,
-    entityId,
-    icon,
-    idpCertificate,
-    name,
-    nameAttribute,
-    objectIdAttribute,
-    ssoUrl,
-  });
+  ctx.body = await secret.update(body);
 }

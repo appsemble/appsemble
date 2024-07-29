@@ -6,6 +6,7 @@ import {
   Column,
   CreatedAt,
   DataType,
+  Default,
   DefaultScope,
   ForeignKey,
   HasMany,
@@ -27,6 +28,7 @@ import { App, AppSamlAuthorization, SamlLoginRequest } from './index.js';
     'icon',
     'spCertificate',
     'emailAttribute',
+    'emailVerifiedAttribute',
     'nameAttribute',
   ],
 }))
@@ -69,8 +71,13 @@ export class AppSamlSecret extends Model {
   @Column(DataType.TEXT)
   spCertificate: string;
 
+  @AllowNull(false)
+  @Default('http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress')
   @Column(DataType.STRING)
   emailAttribute: string;
+
+  @Column(DataType.STRING)
+  emailVerifiedAttribute: string;
 
   @Column(DataType.STRING)
   nameAttribute: string;

@@ -14,13 +14,13 @@ import { NS } from '../../../../utils/saml.js';
 const deflate = promisify(deflateRaw);
 const dom = new DOMImplementation();
 
+// TODO: handle appropriately
 export async function createAppSamlAuthnRequest(ctx: Context): Promise<void> {
   const {
     pathParams: { appId, appSamlSecretId },
     request: {
       body: { redirectUri, scope, state, timezone },
     },
-    user,
   } = ctx;
 
   const app = await App.findOne({
@@ -80,7 +80,6 @@ export async function createAppSamlAuthnRequest(ctx: Context): Promise<void> {
   await SamlLoginRequest.create({
     id: loginId,
     AppSamlSecretId: appSamlSecretId,
-    UserId: user?.id,
     redirectUri,
     state,
     scope,

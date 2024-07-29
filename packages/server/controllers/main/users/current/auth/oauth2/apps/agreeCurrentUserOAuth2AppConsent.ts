@@ -1,8 +1,11 @@
-import { assertKoaError } from '@appsemble/node-utils';
+import { assertKoaError, throwKoaError } from '@appsemble/node-utils';
 import { type Context } from 'koa';
 
 import { App, AppMember, EmailAuthorization, User } from '../../../../../../../models/index.js';
-import { checkAppSecurityPolicy } from '../../../../../../../utils/auth.js';
+import {
+  checkAppSecurityPolicy,
+  handleUniqueAppMemberEmailIndex,
+} from '../../../../../../../utils/auth.js';
 import { createAppOAuth2AuthorizationCode } from '../../../../../../../utils/oauth2.js';
 
 export async function agreeCurrentUserOAuth2AppConsent(ctx: Context): Promise<void> {
@@ -39,22 +42,38 @@ export async function agreeCurrentUserOAuth2AppConsent(ctx: Context): Promise<vo
   if (appMember) {
     await appMember.update({ consent: new Date() });
   } else {
-    const userEmailAuthorization = await EmailAuthorization.findOne({
+    const emailAuthorization = await EmailAuthorization.findOne({
       where: {
         email: user.primaryEmail,
       },
     });
 
-    appMember = await AppMember.create({
-      AppId: app.id,
-      UserId: user.id,
-      name: user.name,
-      email: user.primaryEmail,
-      timezone: user.timezone,
-      emailVerified: userEmailAuthorization?.verified ?? false,
-      role: app.definition.security.default.role,
-      consent: new Date(),
-    });
+    try {
+      appMember = await AppMember.create({
+        AppId: app.id,
+        UserId: user.id,
+        name: user.name,
+        email: user.primaryEmail,
+        timezone: user.timezone,
+        emailVerified: emailAuthorization?.verified ?? false,
+        role: app.definition.security.default.role,
+        consent: new Date(),
+      });
+    } catch (error) {
+      await handleUniqueAppMemberEmailIndex(
+        ctx,
+        error,
+        user.primaryEmail,
+        emailAuthorization?.verified ?? false,
+        (data) => {
+          throwKoaError(ctx, 409, 'Account already exists for this email.', {
+            externalId: user.id,
+            secret: 'user:',
+            ...data,
+          });
+        },
+      );
+    }
   }
 
   ctx.body = await createAppOAuth2AuthorizationCode(app, redirectUri, scope, appMember, ctx);

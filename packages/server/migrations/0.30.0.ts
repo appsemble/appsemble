@@ -9,12 +9,18 @@ export const key = '0.30.0';
  * - TODO: Cleanup anonymous users with only a timezone (and name)
  * - TODO: Cleanup demo login users
  * - Add column `id` to `TeamMember` table
- * - Making `AppMember.UserId` nullable
+ * - Make `AppSamlSecret.emailAttribute` non-nullable with default
+ * - Add column `emailVerifiedAttribute` to `AppSamlSecret` table
+ * - Make `AppMember.UserId` nullable
  * - Add unique index `UniqueUserEmail` to column `primaryEmail` on `User` table
  * - TODO: Remove column `UserId` from table `OAuth2AuthorizationCode`
  * - TODO: Add column `AppMemberId` to the `OAuth2AuthorizationCode` table with foreign key
  * constraint
  * - Change column `AppMemberId` to nullable on table `AppOAuth2Authorization`
+ * - Add column `email` to  `AppOAuth2Authorization` table
+ * - Add column `emailVerified` to  `AppOAuth2Authorization` table
+ * - Add column `email` to `AppSamlAuthorization` table
+ * - Add column `emailVerified` to `AppSamlAuthorization` table
  * - Remove column `demoLoginUser` from `User` table
  * - Add column `timezone` to the `AppMember` table
  * - Add column `demo` to the `AppMember` table
@@ -35,7 +41,7 @@ export async function up(transaction: Transaction, db: Sequelize): Promise<void>
   // TODO: make sure to delete users with only a timezone (and name)
   // TODO: cleanup demoLoginUsers
 
-  logger.info('Add column `id` to `GroupMember` table');
+  logger.info('Add column `id` to `TeamMember` table');
   await queryInterface.addColumn(
     'TeamMember',
     'id',
@@ -59,6 +65,29 @@ export async function up(transaction: Transaction, db: Sequelize): Promise<void>
   //   name: 'GroupMember_pkey',
   //   transaction,
   // });
+
+  logger.info('Making `AppSamlSecret.emailAttribute` non-nullable with default');
+  await queryInterface.changeColumn(
+    'AppSamlSecret',
+    'emailAttribute',
+    {
+      allowNull: false,
+      type: DataTypes.STRING,
+      defaultValue: 'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress',
+    },
+    { transaction },
+  );
+
+  logger.info('Adding column `emailVerifiedAttribute` to `AppSamlSecret` table');
+  await queryInterface.addColumn(
+    'AppSamlSecret',
+    'emailVerifiedAttribute',
+    {
+      allowNull: true,
+      type: DataTypes.STRING,
+    },
+    { transaction },
+  );
 
   logger.info('Making `AppMember.UserId` nullable');
   await queryInterface.changeColumn(
@@ -89,7 +118,7 @@ export async function up(transaction: Transaction, db: Sequelize): Promise<void>
     'AppMemberId',
     {
       type: DataTypes.UUID,
-      allowNull: true,
+      allowNull: false,
       onUpdate: 'cascade',
       onDelete: 'cascade',
       references: {
@@ -115,6 +144,38 @@ export async function up(transaction: Transaction, db: Sequelize): Promise<void>
       //   model: 'AppMember',
       // },
     },
+    { transaction },
+  );
+
+  // TODO: handle allownull true -> false
+  logger.info('Add column `email` to  `AppOAuth2Authorization` table');
+  await queryInterface.addColumn(
+    'AppOAuth2Authorization',
+    'email',
+    { type: DataTypes.STRING, allowNull: true },
+    { transaction },
+  );
+  logger.info('Add column `emailVerified` to  `AppOAuth2Authorization` table');
+  await queryInterface.addColumn(
+    'AppOAuth2Authorization',
+    'emailVerified',
+    { type: DataTypes.BOOLEAN, allowNull: false, defaultValue: false },
+    { transaction },
+  );
+
+  // TODO: handle allownull true -> false
+  logger.info('Add column `email` to `AppSamlAuthorization` table');
+  await queryInterface.addColumn(
+    'AppSamlAuthorization',
+    'email',
+    { type: DataTypes.STRING, allowNull: true },
+    { transaction },
+  );
+  logger.info('Add column `emailVerified` to `AppSamlAuthorization` table');
+  await queryInterface.addColumn(
+    'AppSamlAuthorization',
+    'emailVerified',
+    { type: DataTypes.BOOLEAN, allowNull: false, defaultValue: false },
     { transaction },
   );
 
@@ -262,11 +323,17 @@ export async function up(transaction: Transaction, db: Sequelize): Promise<void>
 /**
  * Summary:
  * - Remove column `id` from `GroupMember` table
- * - Making `AppMember.UserId` non-nullable
+ * - Make `AppSamlSecret.emailAttribute` nullable
+ * - Remove column `emailVerifiedAttribute` from `AppSamlSecret` table
+ * - Make `AppMember.UserId` non-nullable
  * - Remove unique index `UniqueUserEmail` from column `primaryEmail` on `User` table
  * - TODO: Remove column `AppMemberId` on `OAuth2AuthorizationCode` table
  * - TODO: Add column `UserId` to table `OAuth2AuthorizationCode` with foreign key constraint
  * - Change column `AppMemberId` to non-nullable on table `AppOAuth2Authorization`
+ * - Remove column `email` from  `AppOAuth2Authorization` table
+ * - Remove column `emailVerified` from  `AppOAuth2Authorization` table
+ * - Remove column `email` from `AppSamlAuthorization` table
+ * - Remove column `emailVerified` from `AppSamlAuthorization` table
  * - Add column `demoLoginUser` to `User` table
  * - Remove column `timezone` from the `AppMember` table
  * - Remove column `demo` from the `AppMember` table
@@ -284,6 +351,22 @@ export async function down(transaction: Transaction, db: Sequelize): Promise<voi
 
   logger.info('Remove column `id` from `GroupMember` table');
   await queryInterface.removeColumn('GroupMember', 'id', { transaction });
+
+  logger.info('Making `AppSamlSecret.emailAttribute` nullable');
+  await queryInterface.changeColumn(
+    'AppSamlSecret',
+    'emailAttribute',
+    {
+      allowNull: true,
+      type: DataTypes.STRING,
+    },
+    { transaction },
+  );
+
+  logger.info('Removing column `emailVerifiedAttribute` from `AppSamlSecret` table');
+  await queryInterface.removeColumn('AppSamlSecret', 'emailVerifiedAttribute', {
+    transaction,
+  });
 
   logger.warn('Making `AppMember.UserId` non-nullable');
   logger.warn('');
@@ -339,6 +422,16 @@ export async function down(transaction: Transaction, db: Sequelize): Promise<voi
     },
     { transaction },
   );
+
+  logger.info('Remove column `email` from  `AppOAuth2Authorization` table');
+  await queryInterface.removeColumn('AppOAuth2Authorization', 'email', { transaction });
+  logger.info('Remove column `emailVerified` from  `AppOAuth2Authorization` table');
+  await queryInterface.removeColumn('AppOAuth2Authorization', 'emailVerified', { transaction });
+
+  logger.info('Remove column `email` from `AppSamlAuthorization` table');
+  await queryInterface.removeColumn('AppSamlAuthorization', 'email', { transaction });
+  logger.info('Remove column `emailVerified` from `AppSamlAuthorization` table');
+  await queryInterface.removeColumn('AppSamlAuthorization', 'emailVerified', { transaction });
 
   logger.info('Add column `demoLoginUser` to `User` table');
   await queryInterface.addColumn(
