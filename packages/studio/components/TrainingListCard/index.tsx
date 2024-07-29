@@ -1,6 +1,9 @@
 import { Button, useConfirmation, useMessages } from '@appsemble/react-components';
 import { type Training } from '@appsemble/types';
-import { OrganizationPermission } from '@appsemble/utils';
+import {
+  checkOrganizationRoleOrganizationPermissions,
+  OrganizationPermission,
+} from '@appsemble/utils';
 import { randomString } from '@appsemble/web-utils';
 import axios from 'axios';
 import {
@@ -18,7 +21,6 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 
 import styles from './index.module.css';
 import { messages } from './messages.js';
-import { checkRole } from '../../utils/checkRole.js';
 import { StarRating } from '../StarRating/index.js';
 import { defaultTrainingValues, TrainingModal } from '../TrainingModal/index.js';
 import { useUser } from '../UserProvider/index.js';
@@ -62,11 +64,15 @@ export function TrainingListCard({
 
   const mayUpdateTraining =
     isAppsembleMember &&
-    checkRole(isAppsembleMember.role, [OrganizationPermission.UpdateTrainings]);
+    checkOrganizationRoleOrganizationPermissions(isAppsembleMember.role, [
+      OrganizationPermission.UpdateTrainings,
+    ]);
 
   const mayDeleteTraining =
     isAppsembleMember &&
-    checkRole(isAppsembleMember.role, [OrganizationPermission.DeleteTrainings]);
+    checkOrganizationRoleOrganizationPermissions(isAppsembleMember.role, [
+      OrganizationPermission.DeleteTrainings,
+    ]);
 
   const handleSelectChange = useCallback(
     ({ currentTarget }: ChangeEvent<HTMLSelectElement>) => {

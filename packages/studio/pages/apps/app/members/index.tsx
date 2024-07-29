@@ -1,11 +1,16 @@
-import { Button, Table, useData, useMeta } from '@appsemble/react-components';
-import { type AppMemberInfo } from '@appsemble/types';
-import { convertToCsv, OrganizationPermission } from '@appsemble/utils';
+import { Button, Table, useData, useMeta, useToggle } from '@appsemble/react-components';
+import { type AppInvite, type AppMemberInfo } from '@appsemble/types';
+import {
+  checkOrganizationRoleOrganizationPermissions,
+  convertToCsv,
+  OrganizationPermission,
+} from '@appsemble/utils';
 import { downloadBlob } from '@appsemble/web-utils';
 import { type ReactNode, useCallback } from 'react';
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 import { Link } from 'react-router-dom';
 
+import { AddMembersModal } from './AddMembersModal/index.js';
 import { MemberRow } from './MemberRow/index.js';
 import { messages } from './messages.js';
 import { AsyncDataView } from '../../../../components/AsyncDataView/index.js';
@@ -17,9 +22,26 @@ export function MembersPage(): ReactNode {
   useMeta(messages.title);
 
   const { app } = useApp();
-  const { userInfo } = useUser();
+  const { organizations } = useUser();
+  const { formatMessage } = useIntl();
 
   const result = useData<AppMemberInfo[]>(`/api/apps/${app.id}/members`);
+
+  const { data: invites, setData: setInvites } = useData<AppInvite[]>(
+    `/api/apps/${app.id}/invites`,
+  );
+
+  const userOrganization = organizations?.find((org) => org.id === app?.OrganizationId);
+
+  const addMembersModal = useToggle();
+
+  const onInvited = useCallback(
+    (newInvites: AppInvite[]) => {
+      setInvites([...invites, ...newInvites]);
+      addMembersModal.disable();
+    },
+    [addMembersModal, invites, setInvites],
+  );
 
   const onMemberChange = (member: AppMemberInfo): void => {
     result.setData(result.data.map((m) => (m.sub === member.sub ? member : m)));
@@ -30,15 +52,11 @@ export function MembersPage(): ReactNode {
     downloadBlob(csv, 'members.csv');
   }, [result.data]);
 
-  const {
-    data: members,
-    error: membersError,
-    loading: membersLoading,
-    setData: setMembers,
-  } = useData<AppMemberInfo[]>(`/api/apps/${app.id}/members`);
-
-  const me = members?.find((member) => member.id === userInfo.sub);
-  const mayInvite = me && chec(me.role, [OrganizationPermission.CreateOrganizationInvites]);
+  const mayInvite =
+    userOrganization &&
+    checkOrganizationRoleOrganizationPermissions(userOrganization.role, [
+      OrganizationPermission.CreateAppInvites,
+    ]);
 
   return (
     <>
@@ -97,13 +115,14 @@ export function MembersPage(): ReactNode {
               </thead>
               <tbody>
                 {members.map((member) => (
-                  <MemberRow key={member.memberId} member={member} onChange={onMemberChange} />
+                  <MemberRow key={member.sub} member={member} onChange={onMemberChange} />
                 ))}
               </tbody>
             </Table>
           </>
         )}
       </AsyncDataView>
+      <AddMembersModal onInvited={onInvited} state={addMembersModal} />
     </>
   );
 }

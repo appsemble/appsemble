@@ -46,4 +46,8 @@ export const messages = defineMessages({
     id: 'studio.kM6XaM',
     defaultMessage: 'Export to CSV',
   },
+  notAllowed: {
+    id: 'studio.kznIRT',
+    defaultMessage: 'You don’t have sufficient permissions to invite members.',
+  },
 });

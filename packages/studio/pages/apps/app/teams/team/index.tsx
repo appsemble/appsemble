@@ -12,7 +12,11 @@ import {
   useToggle,
 } from '@appsemble/react-components';
 import { type Team } from '@appsemble/types';
-import { OrganizationPermission, type TeamMemberRole } from '@appsemble/utils';
+import {
+  checkOrganizationRoleOrganizationPermissions,
+  OrganizationPermission,
+  type TeamMemberRole,
+} from '@appsemble/utils';
 import axios from 'axios';
 import { type ReactNode, useCallback, useMemo } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
@@ -26,7 +30,6 @@ import { AsyncDataView } from '../../../../../components/AsyncDataView/index.js'
 import { HeaderControl } from '../../../../../components/HeaderControl/index.js';
 import { useUser } from '../../../../../components/UserProvider/index.js';
 import { type TeamMember } from '../../../../../types.js';
-import { checkRole } from '../../../../../utils/checkRole.js';
 import { useApp } from '../../index.js';
 
 export function TeamPage(): ReactNode {
@@ -100,7 +103,10 @@ export function TeamPage(): ReactNode {
   const organization = organizations.find((o) => o.id === app.OrganizationId);
   const me = memberResult.data?.find((member) => member.id === userInfo.sub);
   const mayEditTeam =
-    organization && checkRole(organization.role, [OrganizationPermission.UpdateTeams]);
+    organization &&
+    checkOrganizationRoleOrganizationPermissions(organization.role, [
+      OrganizationPermission.UpdateTeams,
+    ]);
   const mayInvite = mayEditTeam || (me && me.role === 'Manager');
 
   const defaultValues = useMemo(

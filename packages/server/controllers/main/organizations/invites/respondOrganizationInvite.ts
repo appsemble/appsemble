@@ -1,7 +1,7 @@
 import { assertKoaError } from '@appsemble/node-utils';
 import { type Context } from 'koa';
 
-import { Organization, OrganizationInvite } from '../../../../models/index.js';
+import { Organization, OrganizationInvite, OrganizationMember } from '../../../../models/index.js';
 
 export async function respondOrganizationInvite(ctx: Context): Promise<void> {
   const {
@@ -21,7 +21,11 @@ export async function respondOrganizationInvite(ctx: Context): Promise<void> {
   assertKoaError(organizationId !== organization.id, ctx, 406, 'Organization IDs do not match');
 
   if (response) {
-    await organization.$add('User', userId, { through: { role: invite.role } });
+    await OrganizationMember.create({
+      OrganizationId: organizationId,
+      UserId: userId,
+      role: invite.role,
+    });
   }
 
   await invite.destroy();

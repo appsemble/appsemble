@@ -5,7 +5,7 @@ export enum AppPermission {
   /**
    * The permission to create app invites.
    */
-  InviteAppMembers = '$member:invite',
+  CreateAppInvites = '$member:invite',
 
   /**
    * The permission to query app members.
@@ -313,11 +313,6 @@ export enum OrganizationPermission {
   RemoveOrganizationMembers,
 
   /**
-   * The permission to create app invites.
-   */
-  InviteAppMembers,
-
-  /**
    * The permission to query app members.
    */
   QueryAppMembers,
@@ -331,6 +326,16 @@ export enum OrganizationPermission {
    * The permission to query app members.
    */
   RemoveAppMembers,
+
+  /**
+   * The permission to create app invites.
+   */
+  CreateAppInvites,
+
+  /**
+   * The permission to query app invites,
+   */
+  QueryAppInvites,
 
   /**
    * The permission to query app teams.
@@ -430,7 +435,7 @@ export enum OrganizationPermission {
 
 export const appOrganizationPermissionMapping: { [key in AppPermission]: OrganizationPermission } =
   {
-    [AppPermission.InviteAppMembers]: OrganizationPermission.InviteAppMembers,
+    [AppPermission.CreateAppInvites]: OrganizationPermission.CreateAppInvites,
     [AppPermission.QueryAppMembers]: OrganizationPermission.QueryAppMembers,
     [AppPermission.RemoveAppMembers]: OrganizationPermission.RemoveAppMembers,
     [AppPermission.CreateTeams]: OrganizationPermission.CreateTeams,

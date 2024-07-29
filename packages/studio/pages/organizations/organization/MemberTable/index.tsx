@@ -1,6 +1,9 @@
 import { Button, Loader, Message, Table, useData, useToggle } from '@appsemble/react-components';
 import { type OrganizationInvite } from '@appsemble/types';
-import { OrganizationPermission } from '@appsemble/utils';
+import {
+  checkOrganizationRoleOrganizationPermissions,
+  OrganizationPermission,
+} from '@appsemble/utils';
 import { type ReactNode, useCallback } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useParams } from 'react-router-dom';
@@ -10,7 +13,6 @@ import { messages } from './messages.js';
 import { HeaderControl } from '../../../../components/HeaderControl/index.js';
 import { useUser } from '../../../../components/UserProvider/index.js';
 import { type OrganizationMember } from '../../../../types.js';
-import { checkRole } from '../../../../utils/checkRole.js';
 import { AddMembersModal } from '../AddMembersModal/index.js';
 import { InviteRow } from '../InviteRow/index.js';
 import { MemberRow } from '../MemberRow/index.js';
@@ -26,11 +28,13 @@ export function MemberTable(): ReactNode {
     loading: membersLoading,
     setData: setMembers,
   } = useData<OrganizationMember[]>(`/api/organizations/${organizationId}/members`);
+
   const {
     data: invites,
     loading: invitesLoading,
     setData: setInvites,
   } = useData<OrganizationInvite[]>(`/api/organizations/${organizationId}/invites`);
+
   const addMembersModal = useToggle();
 
   const onInvited = useCallback(
@@ -59,8 +63,18 @@ export function MemberTable(): ReactNode {
 
   const me = members?.find((member) => member.id === userInfo.sub);
   const ownerCount = me && members.filter((member) => member.role === 'Owner').length;
-  const mayEdit = me && checkRole(me.role, [OrganizationPermission.UpdateOrganizationMembers]);
-  const mayInvite = me && checkRole(me.role, [OrganizationPermission.CreateOrganizationInvites]);
+
+  const mayEdit =
+    me &&
+    checkOrganizationRoleOrganizationPermissions(me.role, [
+      OrganizationPermission.UpdateOrganizationMembers,
+    ]);
+
+  const mayInvite =
+    me &&
+    checkOrganizationRoleOrganizationPermissions(me.role, [
+      OrganizationPermission.CreateOrganizationInvites,
+    ]);
 
   return (
     <>

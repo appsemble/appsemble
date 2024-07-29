@@ -9,7 +9,11 @@ import {
   useSideMenu,
 } from '@appsemble/react-components';
 import { type App } from '@appsemble/types';
-import { compareStrings, OrganizationPermission } from '@appsemble/utils';
+import {
+  checkOrganizationRoleOrganizationPermissions,
+  compareStrings,
+  OrganizationPermission,
+} from '@appsemble/utils';
 import classNames from 'classnames';
 import {
   createContext,
@@ -42,7 +46,6 @@ import { TranslationsPage } from './translations/index.js';
 import { VariablesPage } from './variables/index.js';
 import { ProtectedRoute } from '../../../components/ProtectedRoute/index.js';
 import { useUser } from '../../../components/UserProvider/index.js';
-import { checkRole } from '../../../utils/checkRole.js';
 
 /**
  * A wrapper which fetches the app definition and makes sure it is available to its children.
@@ -94,67 +97,106 @@ export function AppRoutes(): ReactNode {
   const userOrganizationRole = useMemo(() => organization?.role || 'Member', [organization]);
 
   const mayVisitEditor = useMemo(
-    () => checkRole(userOrganizationRole, [OrganizationPermission.UpdateApps]),
+    () =>
+      checkOrganizationRoleOrganizationPermissions(userOrganizationRole, [
+        OrganizationPermission.UpdateApps,
+      ]),
     [userOrganizationRole],
   );
 
   const mayVisitAssets = useMemo(
-    () => checkRole(userOrganizationRole, [OrganizationPermission.QueryAppAssets]),
+    () =>
+      checkOrganizationRoleOrganizationPermissions(userOrganizationRole, [
+        OrganizationPermission.QueryAppAssets,
+      ]),
     [userOrganizationRole],
   );
 
   const mayVisitResources = useMemo(
-    () => checkRole(userOrganizationRole, [OrganizationPermission.QueryAppResources]),
+    () =>
+      checkOrganizationRoleOrganizationPermissions(userOrganizationRole, [
+        OrganizationPermission.QueryAppResources,
+      ]),
     [userOrganizationRole],
   );
 
   const mayVisitTranslations = useMemo(
-    () => checkRole(userOrganizationRole, [OrganizationPermission.QueryAppMessages]),
+    () =>
+      checkOrganizationRoleOrganizationPermissions(userOrganizationRole, [
+        OrganizationPermission.QueryAppMessages,
+      ]),
     [userOrganizationRole],
   );
 
   const mayVisitNotifications = useMemo(
-    () => checkRole(userOrganizationRole, [OrganizationPermission.PushAppNotifications]),
+    () =>
+      checkOrganizationRoleOrganizationPermissions(userOrganizationRole, [
+        OrganizationPermission.PushAppNotifications,
+      ]),
     [userOrganizationRole],
   );
 
   const mayVisitAppMembers = useMemo(
-    () => checkRole(userOrganizationRole, [OrganizationPermission.QueryAppMembers]),
+    () =>
+      checkOrganizationRoleOrganizationPermissions(userOrganizationRole, [
+        OrganizationPermission.QueryAppMembers,
+      ]),
     [userOrganizationRole],
   );
 
   const mayVisitTeams = useMemo(
-    () => checkRole(userOrganizationRole, [OrganizationPermission.QueryTeams]),
+    () =>
+      checkOrganizationRoleOrganizationPermissions(userOrganizationRole, [
+        OrganizationPermission.QueryTeams,
+      ]),
     [userOrganizationRole],
   );
 
   const mayVisitSnapshots = useMemo(
-    () => checkRole(userOrganizationRole, [OrganizationPermission.QueryAppSnapshots]),
+    () =>
+      checkOrganizationRoleOrganizationPermissions(userOrganizationRole, [
+        OrganizationPermission.QueryAppSnapshots,
+      ]),
     [userOrganizationRole],
   );
 
   const mayVisitSettings = useMemo(
-    () => checkRole(userOrganizationRole, [OrganizationPermission.ReadAppSettings]),
+    () =>
+      checkOrganizationRoleOrganizationPermissions(userOrganizationRole, [
+        OrganizationPermission.ReadAppSettings,
+      ]),
     [userOrganizationRole],
   );
 
   const mayVisitVariables = useMemo(
-    () => checkRole(userOrganizationRole, [OrganizationPermission.QueryAppVariables]),
+    () =>
+      checkOrganizationRoleOrganizationPermissions(userOrganizationRole, [
+        OrganizationPermission.QueryAppVariables,
+      ]),
     [userOrganizationRole],
   );
 
   const mayVisitSecrets = useMemo(
-    () => checkRole(userOrganizationRole, [OrganizationPermission.QueryAppSecrets]),
+    () =>
+      checkOrganizationRoleOrganizationPermissions(userOrganizationRole, [
+        OrganizationPermission.QueryAppSecrets,
+      ]),
     [userOrganizationRole],
   );
 
   const mayVisitQuotas = useMemo(
-    () => checkRole(userOrganizationRole, [OrganizationPermission.ReadAppSettings]),
+    () =>
+      checkOrganizationRoleOrganizationPermissions(userOrganizationRole, [
+        OrganizationPermission.ReadAppSettings,
+      ]),
     [userOrganizationRole],
   );
 
   const mayVisitContainerLogs = useMemo(
-    () => checkRole(userOrganizationRole, [OrganizationPermission.UpdateApps]),
+    () =>
+      checkOrganizationRoleOrganizationPermissions(userOrganizationRole, [
+        OrganizationPermission.UpdateApps,
+      ]),
     [userOrganizationRole],
   );
 

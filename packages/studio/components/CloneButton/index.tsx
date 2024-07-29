@@ -12,14 +12,16 @@ import {
   useLocationString,
 } from '@appsemble/react-components';
 import { type App, type Template } from '@appsemble/types';
-import { OrganizationPermission } from '@appsemble/utils';
+import {
+  checkOrganizationRoleOrganizationPermissions,
+  OrganizationPermission,
+} from '@appsemble/utils';
 import axios from 'axios';
 import { type ReactNode, useCallback, useMemo } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Link, useLocation, useNavigate, useParams } from 'react-router-dom';
 
 import { messages } from './messages.js';
-import { checkRole } from '../../utils/checkRole.js';
 import { CreateOrganizationModal } from '../CreateOrganizationModal/index.js';
 import { ResendEmailButton } from '../ResendEmailButton/index.js';
 import { useUser } from '../UserProvider/index.js';
@@ -43,7 +45,9 @@ export function CloneButton({ app }: CloneButtonProps): ReactNode {
   const { organizations, userInfo } = useUser();
 
   const createOrganizations =
-    organizations?.filter((org) => checkRole(org.role, [OrganizationPermission.CreateApps])) ?? [];
+    organizations?.filter((org) =>
+      checkOrganizationRoleOrganizationPermissions(org.role, [OrganizationPermission.CreateApps]),
+    ) ?? [];
   const organizationId = createOrganizations[0]?.id;
 
   const defaultValues = useMemo<Template>(

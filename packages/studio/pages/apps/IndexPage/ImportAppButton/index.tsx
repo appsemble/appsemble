@@ -8,7 +8,10 @@ import {
   SimpleFormField,
   SimpleModalFooter,
 } from '@appsemble/react-components';
-import { OrganizationPermission } from '@appsemble/utils';
+import {
+  checkOrganizationRoleOrganizationPermissions,
+  OrganizationPermission,
+} from '@appsemble/utils';
 import axios from 'axios';
 import { type ChangeEvent, type ReactNode, useCallback, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
@@ -16,7 +19,6 @@ import { useLocation, useNavigate } from 'react-router-dom';
 
 import { messages } from './messages.js';
 import { useUser } from '../../../../components/UserProvider/index.js';
-import { checkRole } from '../../../../utils/checkRole.js';
 
 export function ImportAppButton({ className }: { readonly className?: string }): ReactNode {
   const { organizations } = useUser();
@@ -37,11 +39,11 @@ export function ImportAppButton({ className }: { readonly className?: string }):
   const active = hash === '#import';
 
   const organizationIndex = organizations?.findIndex((org) =>
-    checkRole(org.role, [OrganizationPermission.CreateApps]),
+    checkOrganizationRoleOrganizationPermissions(org.role, [OrganizationPermission.CreateApps]),
   );
 
   const createOrganizations = organizations?.filter((org) =>
-    checkRole(org.role, [OrganizationPermission.CreateApps]),
+    checkOrganizationRoleOrganizationPermissions(org.role, [OrganizationPermission.CreateApps]),
   );
 
   const defaultValues = {

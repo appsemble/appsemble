@@ -16,7 +16,7 @@ import {
   type OrganizationPermission,
   teamMemberRoles,
   teamOrganizationPermissionMapping,
-  type TeamPermission
+  type TeamPermission,
 } from '@appsemble/utils';
 import { type Context } from 'koa';
 

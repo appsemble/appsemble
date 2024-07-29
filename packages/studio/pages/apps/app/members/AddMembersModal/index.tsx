@@ -8,8 +8,8 @@ import {
   type Toggle,
   useMessages,
 } from '@appsemble/react-components';
-import { type OrganizationInvite } from '@appsemble/types';
-import { type OrganizationMemberRole, organizationMemberRoles } from '@appsemble/utils';
+import { type AppInvite } from '@appsemble/types';
+import { type AppMemberRole, appMemberRoles } from '@appsemble/utils';
 import axios from 'axios';
 import {
   type ChangeEvent,
@@ -19,10 +19,9 @@ import {
   useState,
 } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { useParams } from 'react-router-dom';
 
 import { messages } from './messages.js';
-import { useUser } from '../../../../components/UserProvider/index.js';
+import { useApp } from '../../index.js';
 
 interface AddMembersModalProps {
   /**
@@ -35,7 +34,7 @@ interface AddMembersModalProps {
    *
    * @param invites The newly added invites.
    */
-  readonly onInvited: (invites: OrganizationInvite[]) => void;
+  readonly onInvited: (invites: AppInvite[]) => void;
 }
 
 const defaultInvite = {
@@ -43,19 +42,19 @@ const defaultInvite = {
   role: 'Member',
 };
 
-const roleKeys = Object.keys(organizationMemberRoles);
-
 /**
  * A modal form for inviting one or more people to the organization.
  */
 export function AddMembersModal({ onInvited, state }: AddMembersModalProps): ReactNode {
-  const { organizationId } = useParams<{ organizationId: string }>();
-  const { organizations } = useUser();
+  const { app } = useApp();
   const push = useMessages();
   const { formatMessage } = useIntl();
-  const [invites, setInvites] = useState<OrganizationInvite[]>([defaultInvite]);
+  const [invites, setInvites] = useState<AppInvite[]>([defaultInvite]);
   const [submitting, setSubmitting] = useState(false);
-  const organization = organizations.find((org) => org.id === organizationId.replace('@', ''));
+
+  const roleKeys = Array.from(
+    new Set([...Object.keys(app?.definition.security?.roles), ...Object.keys(appMemberRoles)]),
+  );
 
   const reset = useCallback(() => {
     setInvites([defaultInvite]);
@@ -65,8 +64,8 @@ export function AddMembersModal({ onInvited, state }: AddMembersModalProps): Rea
   const onSubmit = useCallback(async () => {
     setSubmitting(true);
     try {
-      const { data } = await axios.post<OrganizationInvite[]>(
-        `/api/organizations/${organizationId.replace('@', '')}/invites`,
+      const { data } = await axios.post<AppInvite[]>(
+        `/api/apps/${app?.id}/invites`,
         invites.filter(({ email }) => email),
       );
       onInvited(data);
@@ -78,7 +77,7 @@ export function AddMembersModal({ onInvited, state }: AddMembersModalProps): Rea
     state.disable();
     setSubmitting(false);
     setInvites([defaultInvite]);
-  }, [formatMessage, invites, onInvited, organizationId, push, state]);
+  }, [app?.id, formatMessage, invites, onInvited, push, state]);
 
   const onChange = useCallback(
     (
@@ -199,13 +198,11 @@ export function AddMembersModal({ onInvited, state }: AddMembersModalProps): Rea
               onChange={onChange}
               value={member.role}
             >
-              {roleKeys
-                .filter((r) => roleKeys.indexOf(r) <= roleKeys.indexOf(organization?.role))
-                .map((r: OrganizationMemberRole) => (
-                  <option key={r} value={r}>
-                    {formatMessage(messages[r])}
-                  </option>
-                ))}
+              {roleKeys.map((r: AppMemberRole) => (
+                <option key={r} value={r}>
+                  {r}
+                </option>
+              ))}
             </Select>
           </div>
         ))}

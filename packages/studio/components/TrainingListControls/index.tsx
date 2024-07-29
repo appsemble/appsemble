@@ -1,12 +1,14 @@
 import { InputField, SelectField } from '@appsemble/react-components';
-import { OrganizationPermission } from '@appsemble/utils';
+import {
+  checkOrganizationRoleOrganizationPermissions,
+  OrganizationPermission,
+} from '@appsemble/utils';
 import { type ChangeEvent, type ReactNode, useCallback } from 'react';
 import { useIntl } from 'react-intl';
 
 import styles from './index.module.css';
 import { messages } from './messages.js';
 import { CreateTrainingButton } from '../../pages/trainings/CreateTrainingButton/index.js';
-import { checkRole } from '../../utils/checkRole.js';
 import { type TrainingSortFunction } from '../TrainingListCard/index.js';
 import { useUser } from '../UserProvider/index.js';
 
@@ -48,7 +50,9 @@ export function TrainingListControls({
   const isAppsembleMember = organizations.find((organization) => organization.id === 'appsemble');
   const mayCreateTraining =
     isAppsembleMember &&
-    checkRole(isAppsembleMember.role, [OrganizationPermission.CreateTrainings]);
+    checkOrganizationRoleOrganizationPermissions(isAppsembleMember.role, [
+      OrganizationPermission.CreateTrainings,
+    ]);
   return (
     <div className={`is-flex-desktop ${styles.gap}`}>
       <InputField

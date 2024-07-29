@@ -1,10 +1,17 @@
-import { CustomAppPermission, CustomAppResourcePermission, Security } from "@appsemble/types";
 import {
-  appMemberRoles, appOrganizationPermissionMapping,
-  AppPermission,
-  OrganizationMemberRole,
-  organizationMemberRoles, OrganizationPermission
-} from "./constants/index.js";
+  type CustomAppPermission,
+  type CustomAppResourcePermission,
+  type Security,
+} from '@appsemble/types';
+
+import {
+  appMemberRoles,
+  appOrganizationPermissionMapping,
+  type AppPermission,
+  type OrganizationMemberRole,
+  organizationMemberRoles,
+  type OrganizationPermission,
+} from './constants/index.js';
 
 export function getAppRolePermissionsRecursively(
   appSecurityDefinition: Security,
@@ -76,7 +83,7 @@ export function checkOrganizationRoleAppPermissions(
         mappedPermission =
           appOrganizationPermissionMapping[
             (p as CustomAppResourcePermission).replace(/:[^:]*:/, ':all:') as AppPermission
-            ];
+          ];
       }
     }
 

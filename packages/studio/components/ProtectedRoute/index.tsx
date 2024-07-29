@@ -1,10 +1,12 @@
 import { useLocationString, useQuery } from '@appsemble/react-components';
-import { type OrganizationPermission } from '@appsemble/utils';
+import {
+  checkOrganizationRoleOrganizationPermissions,
+  type OrganizationPermission,
+} from '@appsemble/utils';
 import { type ReactNode } from 'react';
 import { Navigate, Outlet } from 'react-router-dom';
 
 import { type Organization } from '../../types.js';
-import { checkRole } from '../../utils/checkRole.js';
 import { useUser } from '../UserProvider/index.js';
 
 interface ProtectedRouteProps {
@@ -23,7 +25,10 @@ export function ProtectedRoute({ organization, permissions }: ProtectedRouteProp
     return <Navigate to={{ pathname: '/login', search: `?${search}` }} />;
   }
 
-  if (permissions && (!organization || !checkRole(organization.role, permissions))) {
+  if (
+    permissions &&
+    (!organization || !checkOrganizationRoleOrganizationPermissions(organization.role, permissions))
+  ) {
     return <Navigate to="/" />;
   }
 

@@ -19,6 +19,8 @@ import { pathItems as appsAppIdBroadcast } from './apps/appId/broadcast.js';
 import { pathItems as appsAppIdEmail } from './apps/appId/email.js';
 import { pathItems as appsAppIdExport } from './apps/appId/export.js';
 import { pathItems as appsAppIdIcon } from './apps/appId/icon.js';
+import { pathItems as appsAppIdInvitesTokenRespond } from './apps/appId/invites/token/respond.js';
+import { pathItems as appsAppIdInvitesToken } from './apps/appId/invites/token.js';
 import { pathItems as appsAppIdInvites } from './apps/appId/invites.js';
 import { pathItems as appsAppIdLock } from './apps/appId/lock.js';
 import { pathItems as appsAppIdMaskableIcon } from './apps/appId/maskableIcon.js';
@@ -30,6 +32,8 @@ import { pathItems as appsAppIdMembersRoles } from './apps/appId/members/roles.j
 import { pathItems as appsAppIdMembers } from './apps/appId/members.js';
 import { pathItems as appsAppIdMessagesLanguage } from './apps/appId/messages/language.js';
 import { pathItems as appsAppIdMessages } from './apps/appId/messages.js';
+import { pathItems as appsAppIdQuotasEmail } from './apps/appId/quotas/emails.js';
+import { pathItems as appsAppIdRatings } from './apps/appId/ratings.js';
 import { pathItems as appsAppIdReadmesReadmeId } from './apps/appId/readmes/readmeId.js';
 import { pathItems as appsAppIdReseed } from './apps/appId/reseed.js';
 import { pathItems as appsAppIdResourcesResourceType$Count } from './apps/appId/resources/resourceType/count.js';
@@ -66,6 +70,7 @@ import { pathItems as appsAppIdStyleBlockOrganizationIdBLockId } from './apps/ap
 import { pathItems as appsAppIdStyleCore } from './apps/appId/style/core.js';
 import { pathItems as appsAppIdStyleShared } from './apps/appId/style/shared.js';
 import { pathItems as appsAppIdSubscriptions } from './apps/appId/subscriptions.js';
+import { pathItems as appsTeamInvites } from './apps/appId/team-invites.js';
 import { pathItems as appsAppIdTeamsTeamIdMembersMemberId } from './apps/appId/teams/members/memberId.js';
 import { pathItems as appsAppIdTeamsTeamIdMembers } from './apps/appId/teams/members.js';
 import { pathItems as appsAppIdTeamsTeamIdInvites } from './apps/appId/teams/teamId/invites.js';
@@ -73,9 +78,6 @@ import { pathItems as appsAppIdTeams } from './apps/appId/teams.js';
 import { pathItems as appsAppIdVariablesAppVariableId } from './apps/appId/variables/variableId.js';
 import { pathItems as appsAppIdVariables } from './apps/appId/variables.js';
 import { pathItems as appsAppId } from './apps/appId.js';
-import { pathItems as appsAppIdQuotasEmail } from './apps/quotas/emails.js';
-import { pathItems as appsAppIdRatings } from './apps/ratings.js';
-import { pathItems as appsTeamInvites } from './apps/team-invites.js';
 import { pathItems as apps } from './apps.js';
 import { pathItems as appTemplates } from './appTemplates.js';
 import { pathItems as authEmailLogin } from './auth/email/login.js';
@@ -99,18 +101,18 @@ import { pathItems as containersAppIdLogsContainer } from './containerLogs.js';
 import { pathItems as health } from './health.js';
 import { pathItems as messagesLanguage } from './messages/language.js';
 import { pathItems as messages } from './messages.js';
-import { pathItems as organizationsOrganizationIdBlocks } from './organizations/blocks.js';
-import { pathItems as organizationsOrganizationIdMembersMemberIdRole } from './organizations/members/memberId/role.js';
-import { pathItems as organizationsOrganizationIdMembersMemberId } from './organizations/members/memberId.js';
-import { pathItems as organizationsOrganizationIdMembers } from './organizations/members.js';
 import { pathItems as organizationsOrganizationIdAppCollections } from './organizations/organizationId/appCollections.js';
 import { pathItems as organizationsOrganizationIdAppsImport } from './organizations/organizationId/apps/import.js';
 import { pathItems as organizationsOrganizationIdApps } from './organizations/organizationId/apps.js';
-import { pathItems as organizationsOragnizationIdIcon } from './organizations/organizationId/icon.js';
+import { pathItems as organizationsOrganizationIdBlocks } from './organizations/organizationId/blocks.js';
+import { pathItems as organizationsOrganizationIdIcon } from './organizations/organizationId/icon.js';
 import { pathItems as organizationsOrganizationIdInvitesInviteTokenRespond } from './organizations/organizationId/invites/inviteToken/respond.js';
 import { pathItems as organizationsOrganizationIdInvitesInviteToken } from './organizations/organizationId/invites/inviteToken.js';
 import { pathItems as organizationsOrganizationIdInvitesResend } from './organizations/organizationId/invites/resend.js';
-import { pathItems as organizationsOragnizationIdInvites } from './organizations/organizationId/invites.js';
+import { pathItems as organizationsOrganizationIdInvites } from './organizations/organizationId/invites.js';
+import { pathItems as organizationsOrganizationIdMembersMemberIdRole } from './organizations/organizationId/members/memberId/role.js';
+import { pathItems as organizationsOrganizationIdMembersMemberId } from './organizations/organizationId/members/memberId.js';
+import { pathItems as organizationsOrganizationIdMembers } from './organizations/organizationId/members.js';
 import { pathItems as organizationsOragnizationId } from './organizations/organizationId.js';
 import { pathItems as organizations } from './organizations.js';
 import { pathItems as samlContinue } from './saml/continue.js';
@@ -159,6 +161,8 @@ export const paths = {
   '/api/apps/{appId}/email': appsAppIdEmail,
   '/api/apps/{appId}/export': appsAppIdExport,
   '/api/apps/{appId}/icon': appsAppIdIcon,
+  '/api/apps/{appId}/invites/{token}/respond': appsAppIdInvitesTokenRespond,
+  '/api/apps/{appId}/invites/{token}': appsAppIdInvitesToken,
   '/api/apps/{appId}/invites': appsAppIdInvites,
   '/api/apps/{appId}/lock': appsAppIdLock,
   '/api/apps/{appId}/maskable-icon': appsAppIdMaskableIcon,
@@ -170,6 +174,8 @@ export const paths = {
   '/api/apps/{appId}/members': appsAppIdMembers,
   '/api/apps/{appId}/messages/{language}': appsAppIdMessagesLanguage,
   '/api/apps/{appId}/messages': appsAppIdMessages,
+  '/api/apps/{appId}/quotas/email': appsAppIdQuotasEmail,
+  '/api/apps/{appId}/ratings': appsAppIdRatings,
   '/api/apps/{appId}/readmes/{readmeId}': appsAppIdReadmesReadmeId,
   '/api/apps/{appId}/reseed': appsAppIdReseed,
   // XXX: Temporary workaround until this is fixed in Koas
@@ -214,6 +220,7 @@ export const paths = {
   '/api/apps/{appId}/style/core': appsAppIdStyleCore,
   '/api/apps/{appId}/style/shared': appsAppIdStyleShared,
   '/api/apps/{appId}/subscriptions': appsAppIdSubscriptions,
+  '/api/apps/{appId}/team-invites': appsTeamInvites,
   '/api/apps/{appId}/teams/{teamId}/members/{memberId}': appsAppIdTeamsTeamIdMembersMemberId,
   '/api/apps/{appId}/teams/{teamId}/members': appsAppIdTeamsTeamIdMembers,
   '/api/apps/{appId}/teams/{teamId}/invites': appsAppIdTeamsTeamIdInvites,
@@ -227,9 +234,6 @@ export const paths = {
   '/api/apps/{appId}/auth/email/request-password-reset': appsAppIdAuthEmailRequestPasswordReset,
   '/api/apps/{appId}/auth/email/reset-password': appsAppIdAuthEmailResetPassword,
   '/api/apps/{appId}/auth/email/verify': appsAppIdAuthEmailVerify,
-  '/api/apps/{appId}/quotas/email': appsAppIdQuotasEmail,
-  '/api/apps/{appId}/ratings': appsAppIdRatings,
-  '/api/apps/{appId}/team-invites': appsTeamInvites,
   '/api/apps': apps,
   '/api/app-templates': appTemplates,
   '/api/auth/email/login': authEmailLogin,
@@ -257,22 +261,22 @@ export const paths = {
   '/api/health': health,
   '/api/messages/{language}': messagesLanguage,
   '/api/messages': messages,
-  '/api/organizations/{organizationId}/members/{memberId}/role':
-    organizationsOrganizationIdMembersMemberIdRole,
-  '/api/organizations/{organizationId}/members/{memberId}':
-    organizationsOrganizationIdMembersMemberId,
-  '/api/organizations/{organizationId}/members': organizationsOrganizationIdMembers,
   '/api/organizations/{organizationId}/app-collections': organizationsOrganizationIdAppCollections,
   '/api/organizations/{organizationId}/apps/import': organizationsOrganizationIdAppsImport,
   '/api/organizations/{organizationId}/apps': organizationsOrganizationIdApps,
   '/api/organizations/{organizationId}/blocks': organizationsOrganizationIdBlocks,
-  '/api/organizations/{organizationId}/icon': organizationsOragnizationIdIcon,
+  '/api/organizations/{organizationId}/icon': organizationsOrganizationIdIcon,
   '/api/organizations/{organizationId}/invites/resend': organizationsOrganizationIdInvitesResend,
   '/api/organizations/{organizationId}/invites/{inviteToken}/respond':
     organizationsOrganizationIdInvitesInviteTokenRespond,
   '/api/organizations/{organizationId}/invites/{inviteToken}':
     organizationsOrganizationIdInvitesInviteToken,
-  '/api/organizations/{organizationId}/invites': organizationsOragnizationIdInvites,
+  '/api/organizations/{organizationId}/invites': organizationsOrganizationIdInvites,
+  '/api/organizations/{organizationId}/members/{memberId}/role':
+    organizationsOrganizationIdMembersMemberIdRole,
+  '/api/organizations/{organizationId}/members/{memberId}':
+    organizationsOrganizationIdMembersMemberId,
+  '/api/organizations/{organizationId}/members': organizationsOrganizationIdMembers,
   '/api/organizations/{organizationId}': organizationsOragnizationId,
   '/api/organizations': organizations,
   '/api/saml/continue': samlContinue,

@@ -11,7 +11,10 @@ import {
   useData,
 } from '@appsemble/react-components';
 import { type App } from '@appsemble/types';
-import { OrganizationPermission } from '@appsemble/utils';
+import {
+  checkOrganizationRoleOrganizationPermissions,
+  OrganizationPermission,
+} from '@appsemble/utils';
 import axios from 'axios';
 import { type ReactNode, useCallback, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
@@ -21,7 +24,6 @@ import { messages } from './messages.js';
 import { CreateOrganizationModal } from '../../../../components/CreateOrganizationModal/index.js';
 import { ResendEmailButton } from '../../../../components/ResendEmailButton/index.js';
 import { useUser } from '../../../../components/UserProvider/index.js';
-import { checkRole } from '../../../../utils/checkRole.js';
 
 interface Template {
   id: number;
@@ -40,7 +42,7 @@ export function CreateAppButton({ className }: { readonly className?: string }):
   const { organizations, userInfo } = useUser();
 
   const organizationIndex = organizations?.findIndex((org) =>
-    checkRole(org.role, [OrganizationPermission.CreateApps]),
+    checkOrganizationRoleOrganizationPermissions(org.role, [OrganizationPermission.CreateApps]),
   );
 
   const defaultValues = {
@@ -86,7 +88,7 @@ export function CreateAppButton({ className }: { readonly className?: string }):
   const active = hash === '#create';
 
   const createOrganizations = organizations?.filter((org) =>
-    checkRole(org.role, [OrganizationPermission.CreateApps]),
+    checkOrganizationRoleOrganizationPermissions(org.role, [OrganizationPermission.CreateApps]),
   );
 
   if (!templates?.length) {

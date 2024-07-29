@@ -6,7 +6,10 @@ import {
   useObjectURL,
   useToggle,
 } from '@appsemble/react-components';
-import { OrganizationPermission } from '@appsemble/utils';
+import {
+  checkOrganizationRoleOrganizationPermissions,
+  OrganizationPermission,
+} from '@appsemble/utils';
 import axios from 'axios';
 import { type ChangeEvent, type ReactNode, useCallback, useRef, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
@@ -16,7 +19,6 @@ import { AppScreenshot } from './AppScreenshot/index.js';
 import styles from './index.module.css';
 import { messages } from './messages.js';
 import { useUser } from '../../../../../components/UserProvider/index.js';
-import { checkRole } from '../../../../../utils/checkRole.js';
 import { useApp } from '../../index.js';
 
 export function AppScreenshots(): ReactNode {
@@ -31,7 +33,10 @@ export function AppScreenshots(): ReactNode {
 
   const userRole = organizations?.find((org) => org.id === app.OrganizationId)?.role;
   const mayCreateScreenshots =
-    userRole && checkRole(userRole, [OrganizationPermission.CreateAppScreenshots]);
+    userRole &&
+    checkOrganizationRoleOrganizationPermissions(userRole, [
+      OrganizationPermission.CreateAppScreenshots,
+    ]);
 
   const screenshotDiv = useRef<HTMLDivElement>();
   const scrollScreenshots = useCallback((reverse = false) => {

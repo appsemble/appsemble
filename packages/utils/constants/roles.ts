@@ -32,7 +32,8 @@ const OrganizationAppContentsManager = [
 ];
 
 const OrganizationAppMemberManager = [
-  OrganizationPermission.InviteAppMembers,
+  OrganizationPermission.CreateAppInvites,
+  OrganizationPermission.QueryAppInvites,
   OrganizationPermission.QueryAppMembers,
   OrganizationPermission.RemoveAppMembers,
 ];
@@ -141,7 +142,7 @@ const AppMember: AppPermission[] = [];
 
 const AppMembersManager = [
   ...AppMember,
-  AppPermission.InviteAppMembers,
+  AppPermission.CreateAppInvites,
   AppPermission.QueryAppMembers,
   AppPermission.RemoveAppMembers,
 ];

@@ -1,6 +1,9 @@
 import { Button, Icon, useConfirmation, useMessages } from '@appsemble/react-components';
 import { type TrainingBlock } from '@appsemble/types';
-import { OrganizationPermission } from '@appsemble/utils';
+import {
+  checkOrganizationRoleOrganizationPermissions,
+  OrganizationPermission,
+} from '@appsemble/utils';
 import axios from 'axios';
 import { type ReactNode, useCallback, useLayoutEffect, useRef, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
@@ -8,7 +11,6 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 
 import styles from './index.module.css';
 import { messages } from './messages.js';
-import { checkRole } from '../../utils/checkRole.js';
 import TrainingBlockModal, { type defaults } from '../TrainingBlockModal/index.js';
 import { useUser } from '../UserProvider/index.js';
 
@@ -49,11 +51,15 @@ export function TrainingBlockCard({
 
   const mayUpdateTrainingBlock =
     isAppsembleMember &&
-    checkRole(isAppsembleMember.role, [OrganizationPermission.UpdateTrainingBlocks]);
+    checkOrganizationRoleOrganizationPermissions(isAppsembleMember.role, [
+      OrganizationPermission.UpdateTrainingBlocks,
+    ]);
 
   const mayDeleteTrainingBlock =
     isAppsembleMember &&
-    checkRole(isAppsembleMember.role, [OrganizationPermission.UpdateTrainingBlocks]);
+    checkOrganizationRoleOrganizationPermissions(isAppsembleMember.role, [
+      OrganizationPermission.UpdateTrainingBlocks,
+    ]);
 
   const blockDefaultValues = {
     exampleCodeBlock: exampleCode,

@@ -148,7 +148,6 @@ export async function up(transaction: Transaction, db: Sequelize): Promise<void>
       role: { type: DataTypes.STRING, allowNull: false, defaultValue: 'Member' },
       UserId: {
         type: DataTypes.UUID,
-        allowNull: false,
         onDelete: 'cascade',
         onUpdate: 'cascade',
         references: {

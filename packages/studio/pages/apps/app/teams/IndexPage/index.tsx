@@ -9,7 +9,10 @@ import {
   useToggle,
 } from '@appsemble/react-components';
 import { type Team } from '@appsemble/types';
-import { OrganizationPermission } from '@appsemble/utils';
+import {
+  checkOrganizationRoleOrganizationPermissions,
+  OrganizationPermission,
+} from '@appsemble/utils';
 import axios from 'axios';
 import { type ReactNode, useCallback } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
@@ -19,7 +22,6 @@ import { AsyncDataView } from '../../../../../components/AsyncDataView/index.js'
 import { HeaderControl } from '../../../../../components/HeaderControl/index.js';
 import { ListButton } from '../../../../../components/ListButton/index.js';
 import { useUser } from '../../../../../components/UserProvider/index.js';
-import { checkRole } from '../../../../../utils/checkRole.js';
 import { useApp } from '../../index.js';
 
 const newTeam = {
@@ -53,7 +55,10 @@ export function IndexPage(): ReactNode {
 
   const organization = organizations.find((o) => o.id === app.OrganizationId);
   const mayCreateTeam =
-    organization && checkRole(organization.role, [OrganizationPermission.CreateTeams]);
+    organization &&
+    checkOrganizationRoleOrganizationPermissions(organization.role, [
+      OrganizationPermission.CreateTeams,
+    ]);
 
   return (
     <>

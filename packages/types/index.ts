@@ -2199,6 +2199,21 @@ export interface OrganizationInvite {
 }
 
 /**
+ * An invite for an app.
+ */
+export interface AppInvite {
+  /**
+   * The email address of the app member to invite.
+   */
+  email: string;
+
+  /**
+   * The role the user should get when accepting the invite.
+   */
+  role: string;
+}
+
+/**
  * App member in an app.
  */
 export interface AppMember {

@@ -181,7 +181,7 @@ export async function appsTokenHandler(ctx: Context): Promise<void> {
         }
 
         aud = clientId;
-        sub = member.UserId;
+        sub = member.id;
         scope = requestedScope;
         refreshToken = true;
         break;

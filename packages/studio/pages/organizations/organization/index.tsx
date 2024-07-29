@@ -5,7 +5,12 @@ import {
   useData,
   useSideMenu,
 } from '@appsemble/react-components';
-import { normalize, normalized, OrganizationPermission } from '@appsemble/utils';
+import {
+  checkOrganizationRoleOrganizationPermissions,
+  normalize,
+  normalized,
+  OrganizationPermission,
+} from '@appsemble/utils';
 import { type ReactNode } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { Navigate, Route, useParams } from 'react-router-dom';
@@ -19,7 +24,6 @@ import { AsyncDataView } from '../../../components/AsyncDataView/index.js';
 import { ProtectedRoute } from '../../../components/ProtectedRoute/index.js';
 import { useUser } from '../../../components/UserProvider/index.js';
 import { type Organization } from '../../../types.js';
-import { checkRole } from '../../../utils/checkRole.js';
 
 /**
  * Render routes related to apps.
@@ -33,7 +37,9 @@ export function OrganizationRoutes(): ReactNode {
   const userOrganization = organizations?.find((org) => org.id === organizationId);
   const mayEdit =
     userOrganization &&
-    checkRole(userOrganization.role, [OrganizationPermission.UpdateOrganizations]);
+    checkOrganizationRoleOrganizationPermissions(userOrganization.role, [
+      OrganizationPermission.UpdateOrganizations,
+    ]);
 
   useSideMenu(
     result.data && (

@@ -9,7 +9,12 @@ import {
   useMessages,
   useToggle,
 } from '@appsemble/react-components';
-import { OrganizationPermission } from '@appsemble/utils';
+import { type AppMemberInfo } from '@appsemble/types';
+import {
+  appMemberRoles,
+  checkOrganizationRoleOrganizationPermissions,
+  OrganizationPermission,
+} from '@appsemble/utils';
 import axios from 'axios';
 import { type ChangeEvent, type ReactNode, useCallback, useMemo } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
@@ -17,25 +22,26 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import styles from './index.module.css';
 import { messages } from './messages.js';
 import { useUser } from '../../../../../components/UserProvider/index.js';
-import { checkRole } from '../../../../../utils/checkRole.js';
 import { useApp } from '../../index.js';
 import { AnnotationsTable } from '../../teams/team/AnnotationsTable/index.js';
-import { type AppMember } from '../index.js';
 
 interface AppMemberRowProperties {
-  readonly member: AppMember;
-  readonly onChange: (member: AppMember) => void;
+  readonly member: AppMemberInfo;
+  readonly onChange: (member: AppMemberInfo) => void;
 }
 
 export function MemberRow({ member, onChange }: AppMemberRowProperties): ReactNode {
   const { app } = useApp();
   const { organizations, userInfo } = useUser();
-  const push = useMessages();
   const { formatMessage } = useIntl();
+
+  const push = useMessages();
+
   const editModal = useToggle();
 
-  const organization = organizations?.find((org) => org.id === app?.OrganizationId);
-  const mayUpdateAppMembers = checkRole(organization.role, [
+  const userOrganization = organizations?.find((org) => org.id === app?.OrganizationId);
+
+  const mayUpdateAppMembers = checkOrganizationRoleOrganizationPermissions(userOrganization.role, [
     OrganizationPermission.UpdateAppMembers,
   ]);
 
@@ -59,8 +65,8 @@ export function MemberRow({ member, onChange }: AppMemberRowProperties): ReactNo
       const { value: role } = event.currentTarget;
 
       try {
-        const { data } = await axios.post<AppMember>(
-          `/api/apps/${app.id}/members/${member.userId}`,
+        const { data } = await axios.post<AppMemberInfo>(
+          `/api/apps/${app.id}/members/${member.sub}`,
           {
             role,
             properties: Object.fromEntries(defaultValues.annotations),
@@ -70,7 +76,7 @@ export function MemberRow({ member, onChange }: AppMemberRowProperties): ReactNo
         push({
           color: 'success',
           body: formatMessage(messages.changeRoleSuccess, {
-            name: data.name || data.primaryEmail || data.memberId,
+            name: data.name || data.email || data.sub,
             role,
           }),
         });
@@ -79,34 +85,41 @@ export function MemberRow({ member, onChange }: AppMemberRowProperties): ReactNo
         push({ body: formatMessage(messages.changeRoleError) });
       }
     },
-    [app.id, defaultValues.annotations, formatMessage, member.userId, onChange, push],
+    [app.id, defaultValues.annotations, formatMessage, member.sub, onChange, push],
   );
 
   const editProperties = useCallback(
     async ({ annotations }: typeof defaultValues) => {
-      const { data } = await axios.post<AppMember>(`/api/apps/${app.id}/members/${member.userId}`, {
-        role: member.role,
-        properties: Object.fromEntries(annotations),
-      });
+      const { data } = await axios.post<AppMemberInfo>(
+        `/api/apps/${app.id}/members/${member.sub}`,
+        {
+          role: member.role,
+          properties: Object.fromEntries(annotations),
+        },
+      );
       editModal.disable();
       onChange(data);
     },
     [app, member, editModal, onChange],
   );
 
+  const roleKeys = Array.from(
+    new Set([...Object.keys(app?.definition.security?.roles), ...Object.keys(appMemberRoles)]),
+  );
+
   return (
     <>
-      <tr key={member.memberId}>
+      <tr key={member.sub}>
         <td className={styles.noWrap}>
           <span>
             {member.name
-              ? member.primaryEmail
-                ? `${member.name} (${member.primaryEmail})`
+              ? member.email
+                ? `${member.name} (${member.email})`
                 : member.name
-              : member.primaryEmail || member.memberId}
+              : member.email || member.sub}
           </span>
           <div className="tags is-inline ml-2">
-            {member.userId === userInfo.sub && (
+            {member.sub === userInfo.sub && (
               <span className="tag is-success">
                 <FormattedMessage {...messages.you} />
               </span>
@@ -128,7 +141,7 @@ export function MemberRow({ member, onChange }: AppMemberRowProperties): ReactNo
         <td className="has-text-right">
           <div className="control is-inline">
             <AsyncSelect disabled={!mayUpdateAppMembers} onChange={onChangeRole}>
-              {Object.keys(app.definition.security.roles).map((role) => (
+              {roleKeys.map((role) => (
                 <option key={role} selected={role === member.role} value={role}>
                   {app.messages?.app?.[`app.roles.${role}`] || role}
                 </option>

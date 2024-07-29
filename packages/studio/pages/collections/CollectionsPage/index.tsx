@@ -9,7 +9,10 @@ import {
   useToggle,
 } from '@appsemble/react-components';
 import { type AppCollection } from '@appsemble/types';
-import { Permissions } from '@appsemble/utils';
+import {
+  checkOrganizationRoleOrganizationPermissions,
+  OrganizationPermission,
+} from '@appsemble/utils';
 import axios from 'axios';
 import { type ReactNode, useCallback, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
@@ -21,7 +24,6 @@ import { messages } from './messages.js';
 import { CollectionCard } from '../../../components/CollectionCard/index.js';
 import { HeaderControl } from '../../../components/HeaderControl/index.js';
 import { useUser } from '../../../components/UserProvider/index.js';
-import { checkRole } from '../../../utils/checkRole.js';
 import { messages as settingsMessages } from '../collection/SettingsPage/messages.js';
 
 interface CollectionsPageProps {
@@ -55,13 +57,16 @@ export function CollectionsPage({ organizationId }: CollectionsPageProps): React
   const { organizations } = useUser();
 
   const [mayCreateCollections, mayEditCollections, mayDeleteCollections] = [
-    Permissions.CreateCollections,
-    Permissions.EditCollections,
-    Permissions.DeleteCollections,
+    OrganizationPermission.CreateAppCollections,
+    OrganizationPermission.UpdateAppCollections,
+    OrganizationPermission.DeleteAppCollections,
   ].map(
     (permission) =>
       organizationId != null &&
-      checkRole(organizations?.find((org) => org.id === organizationId).role, permission),
+      checkOrganizationRoleOrganizationPermissions(
+        organizations?.find((org) => org.id === organizationId).role,
+        [permission],
+      ),
   );
 
   const editCollection = useCallback(

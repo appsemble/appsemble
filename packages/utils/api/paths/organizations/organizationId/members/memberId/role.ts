@@ -1,6 +1,6 @@
 import { type OpenAPIV3 } from 'openapi-types';
 
-import { organizationMemberRoles } from '../../../../../constants/index.js';
+import { organizationMemberRoles } from '../../../../../../constants/index.js';
 
 export const pathItems: OpenAPIV3.PathItemObject = {
   parameters: [

@@ -1,5 +1,8 @@
 import { Button, Modal, useConfirmation, useToggle } from '@appsemble/react-components';
-import { OrganizationPermission } from '@appsemble/utils';
+import {
+  checkOrganizationRoleOrganizationPermissions,
+  OrganizationPermission,
+} from '@appsemble/utils';
 import axios from 'axios';
 import { type ReactNode } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
@@ -7,7 +10,6 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import styles from './index.module.css';
 import { messages } from './messages.js';
 import { useUser } from '../../../../../../components/UserProvider/index.js';
-import { checkRole } from '../../../../../../utils/checkRole.js';
 import { useApp } from '../../../index.js';
 
 interface AppScreenshotProps {
@@ -21,7 +23,10 @@ export function AppScreenshot({ url }: AppScreenshotProps): ReactNode {
 
   const userRole = organizations?.find((org) => org.id === app.OrganizationId)?.role;
   const mayDeleteScreenshots =
-    userRole && checkRole(userRole, [OrganizationPermission.DeleteAppScreenshots]);
+    userRole &&
+    checkOrganizationRoleOrganizationPermissions(userRole, [
+      OrganizationPermission.DeleteAppScreenshots,
+    ]);
 
   const onDeleteScreenshotClick = useConfirmation({
     title: <FormattedMessage {...messages.deleteScreenshotTitle} />,

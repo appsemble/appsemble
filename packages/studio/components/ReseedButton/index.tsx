@@ -1,13 +1,15 @@
 import { Button, CardFooterButton, ModalCard } from '@appsemble/react-components';
 import { type App } from '@appsemble/types';
-import { OrganizationPermission } from '@appsemble/utils';
+import {
+  checkOrganizationRoleOrganizationPermissions,
+  OrganizationPermission,
+} from '@appsemble/utils';
 import axios from 'axios';
 import { type ReactNode, useCallback } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { useLocation, useNavigate } from 'react-router-dom';
 
 import { messages } from './messages.js';
-import { checkRole } from '../../utils/checkRole.js';
 import { useUser } from '../UserProvider/index.js';
 
 interface ReseedButtonProps {
@@ -29,7 +31,7 @@ export function ReseedButton({ app }: ReseedButtonProps): ReactNode {
 
   const mayReseedApp =
     userRole &&
-    checkRole(userRole, [
+    checkOrganizationRoleOrganizationPermissions(userRole, [
       OrganizationPermission.DeleteAppResources,
       OrganizationPermission.DeleteAppAssets,
       OrganizationPermission.CreateAppResources,
