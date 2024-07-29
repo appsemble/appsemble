@@ -20,6 +20,8 @@ const serverMessageKeys = [
   'server.emails.appMemberEmailChange.body',
   'server.emails.organizationInvite.body',
   'server.emails.organizationInvite.subject',
+  'server.emails.appInvite.body',
+  'server.emails.appInvite.subject',
   'server.emails.teamInvite.body',
   'server.emails.teamInvite.subject',
   'server.emails.emailAdded.body',

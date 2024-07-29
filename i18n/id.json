@@ -156,6 +156,8 @@
   "react-components.zQvVDJ": "",
   "server.emails.appEmailQuotaLimitHit.body": "",
   "server.emails.appEmailQuotaLimitHit.subject": "",
+  "server.emails.appInvite.body": "",
+  "server.emails.appInvite.subject": "",
   "server.emails.appMemberEmailChange.body": "{name, select, null {Halo,} other {Halo {name},}}\n\nAnda telah mengubah alamat email untuk {appName}. Sebelum Anda dapat menggunakan akun Anda, kami perlu memverifikasi alamat email Anda.\n\nSilakan klik <link>di sini</link> untuk memverifikasi alamat email Anda.\n\nSalam Hormat\n\n, _{appName}_",
   "server.emails.appMemberEmailChange.subject": "Email berubah",
   "server.emails.emailAdded.body": "",

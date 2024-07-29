@@ -156,6 +156,8 @@
   "react-components.zQvVDJ": "Alle",
   "server.emails.appEmailQuotaLimitHit.body": "{name, select, null {Hallo,} other {Hallo {name},}}\n\nUw app {appName} heeft de limiet voor het e-mailquotum bereikt.\n\nMet vriendelijke groet,\n\nHet Appsemble Team_",
   "server.emails.appEmailQuotaLimitHit.subject": "E-mailquotum bereikt",
+  "server.emails.appInvite.body": "",
+  "server.emails.appInvite.subject": "",
   "server.emails.appMemberEmailChange.body": "{name, select, null {Hallo,} other {Beste {name},}}\n\nJe hebt je e-mailadres voor {appName} gewijzigd. Voordat je jouw account kunt gebruiken, moeten we jouw e-mailadres verifiëren.\n\nKlik <link>hier</link> om jouw e-mailadres te verifiëren.\n\nMet vriendelijke groet,\n\n_{appName}_",
   "server.emails.appMemberEmailChange.subject": "E-mail gewijzigd",
   "server.emails.emailAdded.body": "{name, select, null {Hallo,} other {Hallo {name},}}\n\nU heeft een nieuw e-mailadres geregistreerd voor uw account. Om volledig gebruik te kunnen maken van deze e-mail, moeten we uw e-mailadres verifiëren.\n\nKlik op <link>deze link</link> om uw e-mailadres te verifiëren.\n\n**Heb je deze e-mail niet aangevraagd?**.\n\nGeen zorgen! Mogelijk is uw adres per ongeluk ingevoerd. Als u deze e-mail negeert of verwijdert, wordt er niets met dit e-mailadres gedaan.\n\nMet vriendelijke groet,\n\n_{appName, select, null {Het Appsemble Team} other {{appName}}}_",

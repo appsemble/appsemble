@@ -156,6 +156,8 @@
   "react-components.zQvVDJ": "",
   "server.emails.appEmailQuotaLimitHit.body": "",
   "server.emails.appEmailQuotaLimitHit.subject": "",
+  "server.emails.appInvite.body": "",
+  "server.emails.appInvite.subject": "",
   "server.emails.appMemberEmailChange.body": "",
   "server.emails.appMemberEmailChange.subject": "",
   "server.emails.emailAdded.body": "",

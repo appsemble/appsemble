@@ -156,6 +156,8 @@
   "react-components.zQvVDJ": "Svi",
   "server.emails.appEmailQuotaLimitHit.body": "",
   "server.emails.appEmailQuotaLimitHit.subject": "",
+  "server.emails.appInvite.body": "",
+  "server.emails.appInvite.subject": "",
   "server.emails.appMemberEmailChange.body": "{name, select, null {Pozdrav,} other {Zdravo {name},}}\n\nTvoja je e-mail adresa promijenjena za program {appName}. Prije nego što možeš koristiti svoj račun, moramo potvrditi tvoju e-mail adresu.\n\nZa potvrđivanje tvoje e-mail adrese pritisni <link>ovdje</link>.\n\nLijepi pozdrav\n\n, _ {appName} _",
   "server.emails.appMemberEmailChange.subject": "E-mail adresa se promijenila",
   "server.emails.emailAdded.body": "",

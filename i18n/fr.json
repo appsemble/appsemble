@@ -156,6 +156,8 @@
   "react-components.zQvVDJ": "",
   "server.emails.appEmailQuotaLimitHit.body": "",
   "server.emails.appEmailQuotaLimitHit.subject": "",
+  "server.emails.appInvite.body": "",
+  "server.emails.appInvite.subject": "",
   "server.emails.appMemberEmailChange.body": "{nom, sélection, null {Bonjour,} autre {Bonjour {nom},}}\n\nVous avez changé votre adresse e-mail pour {appName}. Avant de pouvoir utiliser votre compte, nous devons vérifier votre adresse e-mail.\n\nVeuillez cliquer <link>ici</link> pour vérifier votre adresse e-mail.\n\nBien à vous\n\n, _{nom de l'application}_",
   "server.emails.appMemberEmailChange.subject": "E-mail modifié",
   "server.emails.emailAdded.body": "",
