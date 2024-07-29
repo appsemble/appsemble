@@ -4,7 +4,6 @@ export const roles: OpenAPIV3.ParameterObject = {
   name: 'roles',
   in: 'query',
   description: 'The roles of app members on which to perform an operation',
-  required: true,
   schema: {
     oneOf: [
       {

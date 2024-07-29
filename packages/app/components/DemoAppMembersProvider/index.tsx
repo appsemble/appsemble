@@ -28,7 +28,7 @@ export function DemoAppMembersProvider({ children }: DemoAppMembersProviderProps
 
   const refetchDemoAppMembers = useCallback(async () => {
     if (showDemoLogin) {
-      const response = await axios.get(`${apiUrl}/api/apps/${appId}/demoMembers`);
+      const response = await axios.get(`${apiUrl}/api/apps/${appId}/members?demo=true`);
       if (response.data) {
         setDemoAppMembers(response.data.filter((appMember: AppMember) => appMember.demo));
       }

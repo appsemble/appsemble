@@ -35,6 +35,7 @@ const OrganizationAppMemberManager = [
   OrganizationPermission.CreateAppInvites,
   OrganizationPermission.QueryAppInvites,
   OrganizationPermission.QueryAppMembers,
+  OrganizationPermission.PatchAppMembers,
   OrganizationPermission.RemoveAppMembers,
 ];
 

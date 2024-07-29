@@ -1,25 +1,10 @@
 import { type AppAccount, type AppMemberInfo } from '@appsemble/types';
+import { assignAppMemberProperties } from '@appsemble/utils';
 import { timezone } from '@appsemble/web-utils';
 import axios from 'axios';
 
 import { type ActionCreator } from './index.js';
 import { apiUrl, appId } from '../settings.js';
-
-function assignProperties(properties: any, formData: FormData): void {
-  if (properties && typeof properties === 'object' && !Array.isArray(properties)) {
-    formData.append(
-      'properties',
-      JSON.stringify(
-        Object.fromEntries(
-          Object.entries(properties).map(([key, value]) => [
-            key,
-            typeof value === 'string' ? value : JSON.stringify(value),
-          ]),
-        ),
-      ),
-    );
-  }
-}
 
 export const register: ActionCreator<'app.member.register'> = ({
   definition,
@@ -58,7 +43,7 @@ export const register: ActionCreator<'app.member.register'> = ({
       formData.append('picture', picture);
     }
 
-    assignProperties(properties, formData);
+    assignAppMemberProperties(properties, formData);
 
     await axios.post(`${apiUrl}/api/apps/${appId}/auth/email/register`, formData);
 
@@ -117,7 +102,7 @@ export const query: ActionCreator<'app.member.query'> = ({
     const roles = remap(definition.roles, data);
 
     const { data: response } = await axios.get<AppAccount[]>(
-      `${apiUrl}/api/apps/${appId}/members/roles?roles=${roles}`,
+      `${apiUrl}/api/apps/${appId}/members?roles=${roles}`,
     );
 
     return response;
@@ -154,7 +139,7 @@ export const update: ActionCreator<'app.member.update'> = ({
       formData.append('role', role);
     }
 
-    assignProperties(properties, formData);
+    assignAppMemberProperties(properties, formData);
 
     let response;
     if (appMemberInfo.sub === id) {

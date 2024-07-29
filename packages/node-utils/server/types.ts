@@ -80,7 +80,7 @@ declare module 'koas-parameters' {
     controllerVersion: string;
     clientId: string;
     language: string;
-    appMemberId: string;
+    memberId: string;
     organizationMemberId: string;
     teamMemberId: string;
     organizationId: string;
@@ -122,6 +122,7 @@ declare module 'koas-parameters' {
     readmes: boolean;
     roles: string[] | string;
     includeMessages: boolean;
+    demo: boolean;
   }
 }
 

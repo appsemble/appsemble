@@ -13,6 +13,11 @@ export enum AppPermission {
   QueryAppMembers = '$member:query',
 
   /**
+   * The permission to patch app members.
+   */
+  PatchAppMembers = '$member:patch',
+
+  /**
    * The permission to query app members.
    */
   RemoveAppMembers = '$member:remove',
@@ -320,7 +325,7 @@ export enum OrganizationPermission {
   /**
    * The permission to update app members.
    */
-  UpdateAppMembers,
+  PatchAppMembers,
 
   /**
    * The permission to query app members.
@@ -437,6 +442,7 @@ export const appOrganizationPermissionMapping: { [key in AppPermission]: Organiz
   {
     [AppPermission.CreateAppInvites]: OrganizationPermission.CreateAppInvites,
     [AppPermission.QueryAppMembers]: OrganizationPermission.QueryAppMembers,
+    [AppPermission.PatchAppMembers]: OrganizationPermission.PatchAppMembers,
     [AppPermission.RemoveAppMembers]: OrganizationPermission.RemoveAppMembers,
     [AppPermission.CreateTeams]: OrganizationPermission.CreateTeams,
     [AppPermission.QueryTeams]: OrganizationPermission.QueryTeams,

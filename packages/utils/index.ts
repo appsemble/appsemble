@@ -31,6 +31,7 @@ export * from './validation.js';
 export * from './serializeResource.js';
 export * from './convertToCsv.js';
 export * from './authorization.js';
+export * from './appMembers.js';
 export * from './assets.js';
 export * from './validateAppMessages.js';
 export * from './findPageByName.js';

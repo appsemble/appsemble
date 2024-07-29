@@ -28,7 +28,6 @@ import { pathItems as appsAppIdMembersCurrentAuthOAuth2 } from './apps/appId/mem
 import { pathItems as appsAppIdMembersCurrent } from './apps/appId/members/current.js';
 import { pathItems as appsAppIdMembersMemberIdPicture } from './apps/appId/members/memberId/picture.js';
 import { pathItems as appsAppIdMembersMemberId } from './apps/appId/members/memberId.js';
-import { pathItems as appsAppIdMembersRoles } from './apps/appId/members/roles.js';
 import { pathItems as appsAppIdMembers } from './apps/appId/members.js';
 import { pathItems as appsAppIdMessagesLanguage } from './apps/appId/messages/language.js';
 import { pathItems as appsAppIdMessages } from './apps/appId/messages.js';
@@ -168,7 +167,6 @@ export const paths = {
   '/api/apps/{appId}/maskable-icon': appsAppIdMaskableIcon,
   '/api/apps/{appId}/members/current/auth/oauth2': appsAppIdMembersCurrentAuthOAuth2,
   '/api/apps/{appId}/members/current': appsAppIdMembersCurrent,
-  '/api/apps/{appId}/members/roles': appsAppIdMembersRoles,
   '/api/apps/{appId}/members/{memberId}/picture': appsAppIdMembersMemberIdPicture,
   '/api/apps/{appId}/members/{memberId}': appsAppIdMembersMemberId,
   '/api/apps/{appId}/members': appsAppIdMembers,

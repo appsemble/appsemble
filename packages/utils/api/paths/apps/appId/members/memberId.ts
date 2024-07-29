@@ -8,32 +8,13 @@ export const pathItems: OpenAPIV3.PathItemObject = {
       in: 'path',
       description: 'The id of the app member on which to perform an operation',
       required: true,
-      schema: { $ref: '#/components/schemas/User/properties/id' },
+      schema: { $ref: '#/components/schemas/AppMember/properties/id' },
     },
   ],
-  // Get: {
-  //   tags: ['common', 'app', 'member'],
-  //   description: 'Get an app member.',
-  //   operationId: 'getAppMemberById',
-  //   responses: {
-  //     200: {
-  //       description: 'The resulting app member.',
-  //       content: {
-  //         'application/json': {
-  //           schema: {
-  //             $ref: '#/components/schemas/OrganizationMember',
-  //           },
-  //         },
-  //       },
-  //     },
-  //   },
-  //   security: [{ studio: [] }, { app: ['openid'] }],
-  // },
   patch: {
     tags: ['common', 'app', 'member'],
     description: 'Patch an app member.',
     operationId: 'patchAppMemberById',
-    security: [{ studio: [] }],
     requestBody: {
       content: {
         'multipart/form-data': {
@@ -62,6 +43,9 @@ export const pathItems: OpenAPIV3.PathItemObject = {
                 type: 'string',
                 description: 'The preferred locale of the user.',
               },
+              role: {
+                type: 'string',
+              },
             },
           },
           encoding: {
@@ -84,8 +68,8 @@ export const pathItems: OpenAPIV3.PathItemObject = {
         },
       },
     },
+    security: [{ studio: [] }],
   },
-
   delete: {
     tags: ['common', 'app', 'member'],
     description: 'Delete an app member.',

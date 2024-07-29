@@ -12,6 +12,7 @@ import {
 import { type AppMemberInfo } from '@appsemble/types';
 import {
   appMemberRoles,
+  assignAppMemberProperties,
   checkOrganizationRoleOrganizationPermissions,
   OrganizationPermission,
 } from '@appsemble/utils';
@@ -42,7 +43,7 @@ export function MemberRow({ member, onChange }: AppMemberRowProperties): ReactNo
   const userOrganization = organizations?.find((org) => org.id === app?.OrganizationId);
 
   const mayUpdateAppMembers = checkOrganizationRoleOrganizationPermissions(userOrganization.role, [
-    OrganizationPermission.UpdateAppMembers,
+    OrganizationPermission.PatchAppMembers,
   ]);
 
   const defaultValues = useMemo(
@@ -65,12 +66,13 @@ export function MemberRow({ member, onChange }: AppMemberRowProperties): ReactNo
       const { value: role } = event.currentTarget;
 
       try {
-        const { data } = await axios.post<AppMemberInfo>(
+        const formData = new FormData();
+        formData.append('role', role);
+        assignAppMemberProperties(Object.fromEntries(defaultValues.annotations), formData);
+
+        const { data } = await axios.patch<AppMemberInfo>(
           `/api/apps/${app.id}/members/${member.sub}`,
-          {
-            role,
-            properties: Object.fromEntries(defaultValues.annotations),
-          },
+          formData,
         );
 
         push({
@@ -90,12 +92,13 @@ export function MemberRow({ member, onChange }: AppMemberRowProperties): ReactNo
 
   const editProperties = useCallback(
     async ({ annotations }: typeof defaultValues) => {
-      const { data } = await axios.post<AppMemberInfo>(
+      const formData = new FormData();
+      formData.append('role', member.role);
+      assignAppMemberProperties(Object.fromEntries(annotations), formData);
+
+      const { data } = await axios.patch<AppMemberInfo>(
         `/api/apps/${app.id}/members/${member.sub}`,
-        {
-          role: member.role,
-          properties: Object.fromEntries(annotations),
-        },
+        formData,
       );
       editModal.disable();
       onChange(data);

@@ -9,15 +9,15 @@ import { checkAuthSubjectAppPermissions } from '../../../../utils/authorization.
 
 export async function patchAppMemberById(ctx: Context): Promise<void> {
   const {
-    pathParams: { appId, appMemberId },
+    pathParams: { appId, memberId },
     request: {
       body: { properties, role },
     },
   } = ctx;
 
-  await checkAuthSubjectAppPermissions(ctx, appId, [AppPermission.QueryAppMembers]);
+  await checkAuthSubjectAppPermissions(ctx, appId, [AppPermission.PatchAppMembers]);
 
-  const appMember = await AppMember.findByPk(appMemberId);
+  const appMember = await AppMember.findByPk(memberId);
 
   assertKoaError(!appMember, ctx, 404, 'App member not found');
 
