@@ -64,7 +64,7 @@ Clicking on the first item would log \`0\`, the second item \`1\` and so on.
   },
   history: {
     type: 'integer',
-    description: `> **Note:** This remapper is explained more in depth in the [History](/docs/04-remappers/05-history) page
+    description: `> **Note:** This remapper is explained more in depth in the [History](/docs/remappers/history) page
 
 Gives the data at the history entry at the specified history index. The history at specified index
 is the data that is passed to that action.
@@ -169,7 +169,7 @@ Example:
 \`\`\`
 
 The page data only works in the context of a flow page. Let’s say you have a
-[“FlowPage”](/docs/05-reference/app#-flow-page-definition) type with multiple subpages. Whenever you
+[“FlowPage”](/docs/reference/app#-flow-page-definition) type with multiple subpages. Whenever you
 navigate to the next page it adds the data from that page to the flow page’s data. The page remapper
 allows you to access this cumulative data.
 
@@ -284,7 +284,7 @@ ${schemaExample('static', { exclude: ['input'] })}
   },
   translate: {
     type: 'string',
-    description: `> **Note:** This is explained much more in depth at [Translating](/docs/02-guides/translating)
+    description: `> **Note:** This is explained much more in depth at [Translating](/docs/guides/translating)
 
 This remapper allows you to easily add translations to your app. To make this remapper work, replace
 any static text with \`translate: {name}\`. Then, in your app’s Translations page pick the language

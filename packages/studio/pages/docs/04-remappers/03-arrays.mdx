@@ -5,9 +5,9 @@ import { arrayRemappers } from '../../../../utils/reference-schemas/remappers/in
 
 ## Introduction
 
-In the [Objects](../04-remappers/02-objects.mdx) page, we explained how to manipulate an object so
-it only contains specific properties/data. This only applies to a singular object however. Usually,
-you will be working with lists of objects that have to be manipulated.
+In the [Objects](../remappers/objects.mdx) page, we explained how to manipulate an object so it only
+contains specific properties/data. This only applies to a singular object however. Usually, you will
+be working with lists of objects that have to be manipulated.
 
 If you have a list of employees, for example, you can use the `array.map` remapper to map over the
 list and apply remappers to the incoming data. That way, you can make sure that every employee in
@@ -49,7 +49,7 @@ array.map:
 ```
 
 You can also use this to assign a new property to the object based on an
-[if condition](./06-conditionals.mdx#if). With this data, you could check if the employee’s age is
+[if condition](./conditionals.mdx#if). With this data, you could check if the employee’s age is
 above a certain amount and give them the title of “Senior” instead of the age, for example:
 
 ```yaml

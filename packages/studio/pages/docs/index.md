@@ -21,7 +21,7 @@ professional role and common task scenarios.
 Creating an app all by yourself can be a difficult task. To help you get started with Appsemble, we
 have provided an easy to understand tutorial, so you can get right into creating your very own app.
 
-- [Appsemble tutorial](./01-tutorial/index.md)
+- [Appsemble tutorial](./tutorial/index.md)
 
 ## App Builder
 
@@ -31,7 +31,7 @@ complexity.
 
 Check out the resources below for more information on how to develop apps using Appsemble.
 
-- [App development guide](./02-guides/)
+- [App development guide](./guides/)
 - [Documentation on blocks](/blocks)
 
 ## System Admin
@@ -41,8 +41,8 @@ works or how Appsemble can be deployed on your own server.
 
 For more information, please refer to the links below.
 
-- [Deployment using Docker Compose](./07-deployment/docker-compose.md)
-- [Deployment using Helm](./07-deployment/helm.md)
+- [Deployment using Docker Compose](./deployment/docker-compose.md)
+- [Deployment using Helm](./deployment/helm.md)
 
 ## Block Developer
 
@@ -51,7 +51,7 @@ order to create apps that do exactly what the user needs. Blocks can be freely d
 submitted to Appsemble for use within apps. Check out the links below for some resources on getting
 started.
 
-- [Tutorial on getting started with a new block](./06-development/02-developing-blocks.md)
+- [Tutorial on getting started with a new block](./development/developing-blocks.md)
 - [Documentation on existing blocks](/blocks)
 
 ## Core Developer
@@ -61,7 +61,7 @@ authentication provider and the app components used to display apps.
 
 See also:
 
-- [Core development](./06-development/07-core-development.md)
+- [Core development](./development/core-development.md)
 - [API documentation](/api-explorer)
 - [Source code on GitLab](https://gitlab.com/appsemble/appsemble)
 - [Contribution guidelines](/docs/contributing)

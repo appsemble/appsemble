@@ -2,8 +2,8 @@ import { serverActions } from '@appsemble/utils';
 
 # Cron Jobs
 
-Appsemble provides a way to run [actions](../05-reference/action.mdx) based on a schedule through
-cron jobs.
+Appsemble provides a way to run [actions](../reference/action.mdx) based on a schedule through cron
+jobs.
 
 They are especially useful for reoccurring actions like e.g. sending emails to notify your users
 about upcoming events.
@@ -50,7 +50,7 @@ _Extra options:_
 Cron jobs can be specified with only certain actions that we support on the server, they may still
 be used in older apps, but will run a `noop` action instead. The actions also work a little
 different e.g. the actions are not run by the user, so retrieving user information with the
-[user](../04-remappers/04-data.mdx#user) remapper won’t work the same.
+[user](../remappers/data.mdx#user) remapper won’t work the same.
 
 > Note: We do not recommend using resource actions with resources that have properties in binary
 > format, as assets are currently unsupported.
@@ -60,7 +60,7 @@ Supported (server-side) actions:
 <ul>
   {Array.from(serverActions).map((action) => (
     <li key={action}>
-      <a href={`/docs/05-reference/action#${action}`}>{action}</a>
+      <a href={`/docs/reference/action#${action}`}>{action}</a>
     </li>
   ))}
 </ul>
@@ -68,7 +68,7 @@ Supported (server-side) actions:
 ## Example
 
 Cron jobs are defined at the top level of the app definition with the
-[cron](../05-reference/app.mdx#-app-definition-cron) property.
+[cron](../reference/app.mdx#-app-definition-cron) property.
 
 ```yaml copy validate cron-snippet
 cron:

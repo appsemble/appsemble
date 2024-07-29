@@ -10,7 +10,7 @@ properties, which are stored as a JSON object.
 ## Defining user properties
 
 Sometimes it is good to define a concrete structure for the user properties JSON object to ensure
-consistency. This can be done in the [app definition](../05-reference/app.mdx#app-definition) within
+consistency. This can be done in the [app definition](../reference/app.mdx#app-definition) within
 `users.properties`.
 
 The shape of a property is defined using [JSON Schema](https://json-schema.org/). This makes it

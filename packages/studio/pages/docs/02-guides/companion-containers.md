@@ -48,8 +48,8 @@ backend. After that, a request can be made to the api.
 
 ## Connecting
 
-To make a request to the API, you can use the
-[container remapper](../04-remappers/04-data.mdx#remapper) which would generate the request url.
+To make a request to the API, you can use the [container remapper](../remappers/data.mdx#remapper)
+which would generate the request url.
 
 The remapper provides a shorthand for the container DNS
 `<container-name>-<app-name>-<app-id>.companion-containers.svc.cluster.local`. Of course, this can

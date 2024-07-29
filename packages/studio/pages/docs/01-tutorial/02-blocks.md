@@ -100,6 +100,6 @@ you are using always works in a way that you have intended use version numbers. 
 always being made in the newest version that means that your version never gets changed. Our advice
 is, when creating your app, to always use the latest version.
 
-- [Next: Resources](03-resources.md)
-- [Previous: Account setup](01-account-setup.md)
+- [Next: Resources](resources.md)
+- [Previous: Account setup](account-setup.md)
 - [Back to tutorial index](index.md)

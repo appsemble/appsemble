@@ -157,6 +157,6 @@ With resource.create this form block updates the person resource with the inform
 provided in the form. `onSuccess` allows you to make a chain of actions, which in this case makes
 sure that when the form is submitted successfully the user is redirected to the Home page.
 
-- [Next: Tips and tricks](04-tips-and-tricks.md)
-- [Previous: Blocks](02-blocks.md)
+- [Next: Tips and tricks](tips-and-tricks.md)
+- [Previous: Blocks](blocks.md)
 - [Back to tutorial index](index.md)

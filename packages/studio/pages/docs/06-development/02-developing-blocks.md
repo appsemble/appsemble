@@ -302,12 +302,12 @@ Need help developing a block? Feel free to join our [Discord server](https://dis
 
 Also have a look at the npm packages we publish.
 
-- [`@appsemble/cli`](/docs/08-packages/cli) — Manage apps and blocks from the command line.
-- [`@appsemble/preact`](/docs/08-packages/preact) — Build your own blocks using Preact.
-- [`@appsemble/sdk`](/docs/08-packages/sdk) — Build your own blocks.
-- [`@appsemble/webpack-config`](/docs/08-packages/webpack-config) — An opinionated reusable Webpack
+- [`@appsemble/cli`](/docs/packages/cli) — Manage apps and blocks from the command line.
+- [`@appsemble/preact`](/docs/packages/preact) — Build your own blocks using Preact.
+- [`@appsemble/sdk`](/docs/packages/sdk) — Build your own blocks.
+- [`@appsemble/webpack-config`](/docs/packages/webpack-config) — An opinionated reusable Webpack
   configuration for block development.
-- [`create-appsemble`](/docs/08-packages/create-appsemble) — Bootstrap an Appsemble project (coming
+- [`create-appsemble`](/docs/packages/create-appsemble) — Bootstrap an Appsemble project (coming
   soon).
 
 [bulma]: https://bulma.io

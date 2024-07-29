@@ -26,4 +26,7 @@ const documents = context
 
 applyPackages(documents);
 
-export const docs = documents;
+export const docs = documents.map((doc) => ({
+  ...doc,
+  path: doc.path.replaceAll(/\d{2}-/g, '').toLocaleLowerCase(),
+}));

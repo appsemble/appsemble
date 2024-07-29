@@ -20,8 +20,8 @@ whenever its associated trigger occurs.
 
 Actions have specific implementations for each environment, i.e. `client` side and `server` side.
 Client actions only work on pages and blocks in app. Server actions are used in Cron Jobs. An entire
-list of server side actions can be found [here](../02-guides/cron.mdx#actions). If an action is
-client only then it’s defined as `noop` on the server.
+list of server side actions can be found [here](../guides/cron.mdx#actions). If an action is client
+only then it’s defined as `noop` on the server.
 
 Here’s an example of how you can use `onLoad` to trigger an action:
 
@@ -101,7 +101,7 @@ Below you can find the actions grouped by type that Appsemble supports.
 <div>
   {importDocs().map((section) => (
     <li key={section.title.toLowerCase()}>
-      <a href={`/docs/03-actions/${section.title.toLowerCase()}`}>{section.title}</a>
+      <a href={`/docs/actions/${section.title.toLowerCase()}`}>{section.title}</a>
     </li>
   ))}
 </div>

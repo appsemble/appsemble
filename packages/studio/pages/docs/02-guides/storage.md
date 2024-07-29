@@ -28,13 +28,13 @@ Storing data on the server enables the option to share data between multiple cli
 
 Below are some materials on server based storage.
 
-- **[Resources](../02-guides/resources.md)**: Allows you to persist structured data with the
-  resource [actions](../05-reference/action.mdx).
-- **[Assets](../02-guides/assets.md)**: Allows for (public) file and media storage.
+- **[Resources](../guides/resources.md)**: Allows you to persist structured data with the resource
+  [actions](../reference/action.mdx).
+- **[Assets](../guides/assets.md)**: Allows for (public) file and media storage.
 
 ## Client Storage
 
-All client storage types can be accessed through the storage [actions](../05-reference/action.mdx).
+All client storage types can be accessed through the storage [actions](../reference/action.mdx).
 Storage actions allow you to share data between blocks. There are 2 main Client Storage options,
 `Browser` and `App` Storage.
 
@@ -62,8 +62,8 @@ over to the storage section.
 App Storage can be used to store data directly in the app (in memory). The App Storage will be
 cleared whenever the user refreshes the page. This means that App Storage is mainly useful when you
 want to briefly store data on the client side. A common use case for App Storage is to use it within
-a flow page with [retain-flow-data](../05-reference/app.mdx#-flow-page-definition-retain-flow-data)
-set to `false`.
+a flow page with [retain-flow-data](../reference/app.mdx#-flow-page-definition-retain-flow-data) set
+to `false`.
 
 There is also another form of app storage called `Page Storage` which automatically loads data into
 blocks when switching pages. Data can only be persisted to Page Storage by switching pages in a flow
