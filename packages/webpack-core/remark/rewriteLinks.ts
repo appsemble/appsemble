@@ -26,11 +26,11 @@ const transformer: Transformer<Root> = (ast, vfile) => {
     // Make the URL absolute, so no weird routing happens at runtime.
     const prefixed = `/${stripped}`;
     chunks[0] = prefixed;
-    // Remove all ordering prefixes with format `/number-` from segments
+    // Replace all ordering prefixes of format `/number-` with `/`
     chunks = chunks.map((chunk) => chunk.replaceAll(/\/\d+-/g, '/'));
     // Update the node URL, taking the URL hash into account.
     // eslint-disable-next-line no-param-reassign
-    node.url = chunks.join('#');
+    node.url = chunks.join('#').toLowerCase();
   });
 };
 

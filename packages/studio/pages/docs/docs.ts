@@ -28,5 +28,6 @@ applyPackages(documents);
 
 export const docs = documents.map((doc) => ({
   ...doc,
-  path: doc.path.replaceAll(/\d{2}-/g, '').toLocaleLowerCase(),
+  // Replace all ordering prefixes of format `/number-` with `/`
+  path: doc.path.replaceAll(/\/\d+-/g, '/').toLowerCase(),
 }));
