@@ -10,7 +10,7 @@ const transformer: Transformer<Root> = (ast, vfile) => {
       // External URLs or absolute URLs to Appsemble Studio
       return;
     }
-    const chunks = node.url.split('#');
+    let chunks = node.url.split('#');
     if (!chunks[0]) {
       // Internal hash URLs
       return;
@@ -26,6 +26,8 @@ const transformer: Transformer<Root> = (ast, vfile) => {
     // Make the URL absolute, so no weird routing happens at runtime.
     const prefixed = `/${stripped}`;
     chunks[0] = prefixed;
+    // Remove all ordering prefixes with format `/number-` from segments
+    chunks = chunks.map((chunk) => chunk.replaceAll(/\/\d+-/g, '/'));
     // Update the node URL, taking the URL hash into account.
     // eslint-disable-next-line no-param-reassign
     node.url = chunks.join('#');
