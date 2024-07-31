@@ -7,12 +7,12 @@ import {
   MetaSwitch,
   useLocationString,
 } from '@appsemble/react-components';
-import { type PageDefinition, type Remapper } from '@appsemble/types';
+import { type ContainerPageDefinition, type PageDefinition, type Remapper } from '@appsemble/types';
 import { createThemeURL, mergeThemes, normalize, remap } from '@appsemble/utils';
 import classNames from 'classnames';
 import { type ReactNode, useCallback, useEffect, useRef, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
-import { Link, Navigate, Route, useLocation, useParams } from 'react-router-dom';
+import { Navigate, Route, useLocation, useParams } from 'react-router-dom';
 
 import styles from './index.module.css';
 import { messages } from './messages.js';
@@ -49,6 +49,31 @@ export function Page(): ReactNode {
   const stepRef = useRef<unknown>();
   const tabRef = useRef<unknown>();
   const url = `/${lang}`;
+
+  const defaultErrorPage = useCallback(
+    (): ReactNode => (
+      <Content padding>
+        <Message color="danger">
+          <p>
+            <FormattedMessage
+              {...messages.permissionError}
+              values={{
+                link: (text) => (
+                  <a href={`${apiUrl}/apps/${appId}`} rel="noopener noreferrer" target="_blank">
+                    {text}
+                  </a>
+                ),
+              }}
+            />
+          </p>
+          <Button className="mt-4" color="danger">
+            <FormattedMessage {...messages.logout} />
+          </Button>
+        </Message>
+      </Content>
+    ),
+    [],
+  );
 
   const [shareDialogParams, setShareDialogParams] = useState<ShareDialogState>();
   const showShareDialog: ShowShareDialog = useCallback(
@@ -169,6 +194,18 @@ export function Page(): ReactNode {
     }
   }, [checkPagePermissionsCallback, navPage, page, setPage]);
 
+  const containerPageRenderCallback = useCallback(
+    (pageContainer: ContainerPageDefinition): ReactNode => {
+      const foundPage = pageContainer.pages?.find((p) => checkPagePermissionsCallback(p));
+      return foundPage ? (
+        <Navigate to={pathname.replace(pageId, normalize(foundPage.name))} />
+      ) : (
+        defaultErrorPage()
+      );
+    },
+    [defaultErrorPage, pageId, pathname, checkPagePermissionsCallback],
+  );
+
   // If the user is on an existing page and is allowed to view it, render it.
   if (page && checkPagePermissionsCallback(page)) {
     const pageName = getAppMessage({
@@ -227,15 +264,7 @@ export function Page(): ReactNode {
                     stepRef={stepRef}
                   />
                 ) : page.type === 'container' ? (
-                  <li>
-                    {page.pages.map((containedPage) => (
-                      <ul key={containedPage.name}>
-                        <Link to={`${url}/${normalize(containedPage.name)}`}>
-                          {containedPage.name}
-                        </Link>
-                      </ul>
-                    ))}
-                  </li>
+                  containerPageRenderCallback(page)
                 ) : (
                   <BlockList
                     appStorage={appStorage.current}
@@ -310,25 +339,5 @@ export function Page(): ReactNode {
   }
 
   // If the user isn’t allowed to view any pages, show an error message.
-  return (
-    <Content padding>
-      <Message color="danger">
-        <p>
-          <FormattedMessage
-            {...messages.permissionError}
-            values={{
-              link: (text) => (
-                <a href={`${apiUrl}/apps/${appId}`} rel="noopener noreferrer" target="_blank">
-                  {text}
-                </a>
-              ),
-            }}
-          />
-        </p>
-        <Button className="mt-4" color="danger">
-          <FormattedMessage {...messages.logout} />
-        </Button>
-      </Message>
-    </Content>
-  );
+  return defaultErrorPage();
 }

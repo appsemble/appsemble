@@ -13,6 +13,7 @@ import { useParams } from 'react-router-dom';
 
 import styles from './index.module.css';
 import { messages } from './messages.js';
+import { checkPagePermissions } from '../../utils/checkPagePermissions.js';
 import { appId, sentryDsn } from '../../utils/settings.js';
 import { useAppDefinition } from '../AppDefinitionProvider/index.js';
 import { useAppMessages } from '../AppMessagesProvider/index.js';
@@ -32,13 +33,18 @@ export function SideNavigation({ blockMenus, pages }: SideNavigationProps): Reac
   const { lang } = useParams<{ lang: string }>();
   const url = `/${lang}`;
 
+  const { definition } = useAppDefinition();
   const { getAppMessage, getMessage } = useAppMessages();
   const { getVariable } = useAppVariables();
   const {
     definition: { layout, security },
   } = useAppDefinition();
   const { formatMessage } = useIntl();
-  const { isLoggedIn, logout, userInfo } = useUser();
+  const { isLoggedIn, logout, role, teams, userInfo } = useUser();
+  const checkPagePermissionsCallback = useCallback(
+    (page: PageDefinition): boolean => checkPagePermissions(page, definition, role, teams),
+    [definition, role, teams],
+  );
 
   const generateNameAndNavName = useCallback(
     (page: PageDefinition): [string, string] => {
@@ -66,37 +72,39 @@ export function SideNavigation({ blockMenus, pages }: SideNavigationProps): Reac
 
   const renderMenu = useCallback(
     (internalPages: PageDefinition[]): ReactNode =>
-      internalPages.map((page) => {
-        if (page?.type === 'container') {
+      internalPages
+        .filter((page) => checkPagePermissionsCallback(page))
+        .map((page) => {
+          if (page?.type === 'container') {
+            const [name, navName] = generateNameAndNavName(page);
+            return (
+              <CollapsibleMenuSection key={page.name}>
+                <MenuItem
+                  icon={page?.icon}
+                  key={page?.name}
+                  title={navName}
+                  to={`${url}/${normalize(name)}`}
+                >
+                  {navName}
+                </MenuItem>
+                <MenuSection>{renderMenu(page.pages)}</MenuSection>
+              </CollapsibleMenuSection>
+            );
+          }
           const [name, navName] = generateNameAndNavName(page);
           return (
-            <CollapsibleMenuSection key={page.name}>
-              <MenuItem
-                icon={page?.icon}
-                key={page?.name}
-                title={navName}
-                to={`${url}/${normalize(name)}`}
-              >
-                {navName}
-              </MenuItem>
-              <MenuSection>{renderMenu(page.pages)}</MenuSection>
-            </CollapsibleMenuSection>
+            <MenuItem
+              icon={page.icon}
+              key={page.name}
+              reloadDocument
+              title={navName}
+              to={`${url}/${normalize(name)}`}
+            >
+              {navName}
+            </MenuItem>
           );
-        }
-        const [name, navName] = generateNameAndNavName(page);
-        return (
-          <MenuItem
-            icon={page.icon}
-            key={page.name}
-            reloadDocument
-            title={navName}
-            to={`${url}/${normalize(name)}`}
-          >
-            {navName}
-          </MenuItem>
-        );
-      }),
-    [generateNameAndNavName, url],
+        }),
+    [generateNameAndNavName, checkPagePermissionsCallback, url],
   );
 
   return (

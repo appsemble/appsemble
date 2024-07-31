@@ -37,7 +37,13 @@ export const link: ActionCreator<'link'> = ({
         [toBase, toSub] = [].concat(to);
       }
 
-      const toPage = pages.find(({ name }) => name === toBase);
+      const containedPages = pages.filter((p) => p.type === 'container');
+      let toPage;
+      toPage = pages.find(({ name }) => name === toBase);
+      if (!toPage && containedPages) {
+        toPage = containedPages.find((p) => p.pages.find((internal) => internal.name === toBase));
+      }
+
       let subPage: SubPage;
       let index: number;
 

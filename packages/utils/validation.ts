@@ -1,6 +1,7 @@
 import {
   type AppDefinition,
   type BlockManifest,
+  type ContainerPageDefinition,
   type ProjectImplementations,
   type Remapper,
   type ResourceGetActionDefinition,
@@ -547,7 +548,12 @@ function validateLanguage({ defaultLanguage }: AppDefinition, report: Report): v
 }
 
 function validateDefaultPage({ defaultPage, pages }: AppDefinition, report: Report): void {
-  const page = pages?.find((p) => p.name === defaultPage);
+  const containedPages = pages.filter((p) => p.type === 'container') as ContainerPageDefinition[];
+  let page;
+  page = pages?.find((p) => p.name === defaultPage);
+  if (!page && containedPages) {
+    page = containedPages.find((p) => p?.pages?.find((internal) => internal.name === defaultPage));
+  }
 
   if (!page) {
     report(defaultPage, 'does not refer to an existing page', ['defaultPage']);
