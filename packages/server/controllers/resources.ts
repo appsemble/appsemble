@@ -335,7 +335,7 @@ export async function patchResource(ctx: Context): Promise<void> {
   });
 
   const appAssets = await Asset.findAll({
-    attributes: ['id', 'name'],
+    attributes: ['id', 'name', 'ResourceId'],
     where: { AppId: appId },
   });
 
@@ -351,7 +351,7 @@ export async function patchResource(ctx: Context): Promise<void> {
   const [updatedResource, preparedAssets, deletedAssetIds] = processResourceBody(
     ctx,
     definition,
-    appAssets.map((asset) => asset.id),
+    appAssets.filter((asset) => asset.ResourceId === resourceId).map((asset) => asset.id),
     resource.expires,
     appAssets.map((asset) => ({ id: asset.id, name: asset.name })),
   );
