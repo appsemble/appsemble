@@ -28,6 +28,10 @@ applyPackages(documents);
 
 export const docs = documents.map((doc) => ({
   ...doc,
-  // Replace all ordering prefixes of format `/number-` with `/`
-  path: doc.path.replaceAll(/\/\d+-/g, '/').toLowerCase(),
+  // Replace ordering prefixes at the start of a path with ''
+  // and all the following of format `/number-` with '/'
+  path: doc.path
+    .replace(/^\d+-/, '')
+    .replaceAll(/\/\d+-/g, '/')
+    .toLowerCase(),
 }));
