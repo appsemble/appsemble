@@ -43,12 +43,8 @@ export function ResourceDefinitionDetailsPage({ guiResourceName }: Props): React
           {...messages.description}
           values={{
             public: <code>$public</code>,
-            securityLink: (content) => (
-              <Link to="../../../../../docs/02-guides/api">{content}</Link>
-            ),
-            apiLink: (content) => (
-              <Link to="../../../../../docs/02-guides/resources">{content}</Link>
-            ),
+            securityLink: (content) => <Link to="../../../../../docs/guides/api">{content}</Link>,
+            apiLink: (content) => <Link to="../../../../../docs/guides/resources">{content}</Link>,
           }}
         />
       </p>

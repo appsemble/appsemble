@@ -119,7 +119,7 @@ export function ServiceSecretsModal({
           {...messages.docs}
           values={{
             link: (link) => (
-              <Link rel="noopener noreferrer" target="_blank" to="../../../docs/02-guides/service">
+              <Link rel="noopener noreferrer" target="_blank" to="../../../docs/guides/service">
                 {link}
               </Link>
             ),

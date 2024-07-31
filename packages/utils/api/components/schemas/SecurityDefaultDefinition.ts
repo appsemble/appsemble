@@ -16,7 +16,7 @@ The following values are allowed:
 - \`organization\`: Every authenticated user gets the default role if they are in the same organization as the app.
 - \`invite\`: The user has to manually get a role assigned.
 
-> **Important**: When [OAuth2](../02-guides/oauth2) or [SAML2.0](../02-guides/saml) is used in the
+> **Important**: When [OAuth2](../guides/oauth2) or [SAML2.0](../guides/saml) is used in the
 > app, you must set the policy to \`everyone\`. This will specifically allow every configured
 > authentication method on the secrets page to be used as login method. If you do not want other
 > Appsemble user accounts to be able to log in, you must \`disable\` the \`appsemble login\` options
