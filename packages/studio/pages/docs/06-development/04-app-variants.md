@@ -124,7 +124,7 @@ file contains an array of changes with their paths inside the `app-definition` l
 ]
 ```
 
-### [Config](../guides/config.md)
+### [Config](../02-guides/config.md)
 
 A `config` directory, containing JSON files for app variables and secrets can be put inside the
 corresponding app variant directory (e.g. `demodam`). These variables and secrets will be used when
@@ -141,7 +141,7 @@ be used specifically for that variant of the app. It will overwrite the icon of 
 The icon is automatically published along with the app when using the `appsemble app publish` and
 `appsemble app update` commands.
 
-### [Screenshots](../guides/screenshots.md)
+### [Screenshots](../02-guides/screenshots.md)
 
 A `screenshots` directory, containing screenshots for the app variant, can be put inside the
 corresponding app variant directory (e.g. `demodam`). These screenshots will be used when applying
@@ -150,7 +150,7 @@ the app variant and will overwrite screenshots defined in the original app.
 Screenshots are automatically published along with the app when using the `appsemble app publish`
 and `appsemble app update` commands.
 
-### [App README files](../guides/app-long-description.md)
+### [App README files](../02-guides/app-long-description.md)
 
 `README.md` files in different languages can be put inside the corresponding app variant directory
 (e.g. `demodam`). These files will be used when applying the app variant and will overwrite `README`
@@ -159,7 +159,7 @@ files defined in the original app.
 `README` files are automatically processed and their contents are published along with the app when
 using the `appsemble app publish` and `appsemble app update` commands.
 
-### [Resources](../guides/resources.md)
+### [Resources](../02-guides/resources.md)
 
 A `resources` directory, containing resources for the app variant, can be put inside the
 corresponding app variant directory (e.g. `demodam`). These resources will be used when applying the
@@ -168,7 +168,7 @@ app variant and will overwrite resources defined in the original app.
 When using the `appsemble app publish` and the `appsemble app update` commands, resources can be
 published along with the app using the `--resources` flag.
 
-### [Assets](../guides/assets.md)
+### [Assets](../02-guides/assets.md)
 
 An `assets` directory, containing assets for the app variant, can be put inside the corresponding
 app variant directory (e.g. `demodam`). These assets will be used when applying the app variant and

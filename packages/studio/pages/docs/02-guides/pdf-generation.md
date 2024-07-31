@@ -55,8 +55,8 @@ containers:
     back to Appsemble to fetch the PDF template. E.g., when using the offical Appsemble instance
     (production), this should be `https://appsemble.app`. For self-hosted instances, this value
     depends on what the `ingress.host` is set to. In the
-    [local Kubernetes guide](../development/custom-apis-local-kubernetes.md), this value is set to
-    `appsemble`, then the value for the `REMOTE` property should be `http://appsemble`.
+    [local Kubernetes guide](../06-development/05-custom-apis-local-kubernetes.md), this value is
+    set to `appsemble`, then the value for the `REMOTE` property should be `http://appsemble`.
   - `APP_ID` - The id of your app, also required for fetching the template.
 
 After publishing the app definition, the container with the PDF generator will be created, however,
@@ -82,7 +82,7 @@ In short, a service secret needs to be created from the `secrets` page with the 
 
 After creating the secret, the PDF generator container should be ready to use. You can perform a
 healthcheck to make sure, by sending a request to the `/health` endpoint. The
-[container remapper](../remappers/data.mdx#container) comes in handy for this:
+[container remapper](../04-remappers/04-data.mdx#container) comes in handy for this:
 
 ```yaml
     type: request
@@ -189,8 +189,8 @@ Open the app in the live view, instead of in the editor and try downloading agai
 - `401` - Security is not setup properly and the request to the backend is not authenticated, or not
   setup at all.
 - `403` - You are trying to send a request to a container hosted by your app. This can be avoided by
-  using the [container remapper](../remappers/data.mdx#container) for the `url` property of your
-  request.
+  using the [container remapper](../04-remappers/04-data.mdx#container) for the `url` property of
+  your request.
 - `500` - Internal error within the container. Probably the container has started, but it might be
   unable to fetch the template from Appsemble. Check if the name of the template is spelled
   properly, if the format of the provided file is [supported](#pdf-template), if the `appId` and

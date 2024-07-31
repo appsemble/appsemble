@@ -33,5 +33,5 @@ you are not happy with what you have created you can always remove the app.
 To learn more about the fundamentals of building your own app, follow the tutorial to find more
 information on how the building... blocks of an app work.
 
-- [Next: Blocks](blocks.md)
+- [Next: Blocks](02-blocks.md)
 - [Back to tutorial index](index.md)

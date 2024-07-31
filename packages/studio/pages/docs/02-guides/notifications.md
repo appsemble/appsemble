@@ -16,7 +16,7 @@ This page serves to explain the concepts used to send out these notifications.
 ## Subscribing
 
 In order to enable notifications, you must set the
-[`notifications`](../reference/app.mdx#app-definition-notifications) property to either `opt-in`
+[`notifications`](../05-reference/app.mdx#app-definition-notifications) property to either `opt-in`
 (recommended), `login` or `startup`. Doing so allows app creators to access the “Notifications”
 page, from which notifications can be manually pushed to all users who are currently subscribed.
 
@@ -174,7 +174,7 @@ content: Updated person 123
 
 This can be customized by defining an object called `data` with the properties `title` and `content`
 in the notification hook object. The values can be either regular strings if they don’t have to be
-dynamic, or a valid [remapper definition](../remappers/).
+dynamic, or a valid [remapper definition](../04-remappers/).
 
 For example:
 

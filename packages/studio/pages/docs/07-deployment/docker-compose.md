@@ -76,8 +76,8 @@ a container can be found
 **🛈NOTE**
 
 > Users can also configure SMTP servers for individual apps in the studio. This is documented
-> [here](../guides/App.md#secrets). If no SMTP server is configured for an app, this server will be
-> used as fallback.
+> [here](../02-guides/App.md#secrets). If no SMTP server is configured for an app, this server will
+> be used as fallback.
 
 ---
 

@@ -45,7 +45,7 @@ browser, register a new account by going to `http://localhost:9999/reigster`. Yo
 address to register an account. If you don’t have an SMTP server configured, the confirmation email
 is printed in the server logs. i.e. the email is not sent in real time. This also allows you to use
 a random test email address. After registering a new account and confirming your email address, you
-can run the following command to login into the [Appsemble CLI](/docs/packages/cli).
+can run the following command to login into the [Appsemble CLI](/docs/08-packages/cli).
 
 ```sh
 npm run appsemble login
@@ -57,8 +57,8 @@ OAuth2 credentials [here](/settings/client-credentials), these credentials can b
 setting the APPSEMBLE_CLIENT_CREDENTIALS environment variable.
 
 After completing the login, the first step is to create an
-[organization](../guides/organizations.mdx). This can be done either via the CLI or the studio. To
-create an organization from the CLI, use the following command.
+[organization](../02-guides/organizations.mdx). This can be done either via the CLI or the studio.
+To create an organization from the CLI, use the following command.
 
 ```sh
 npm run appsemble organization create <organization_id>
@@ -78,9 +78,9 @@ organization.
 
 ---
 
-The next step is to publish the [blocks](./developing-blocks.md) available in the repository. This
-can only be done via the CLI and the following command is used to publish all the blocks in blocks
-directory.
+The next step is to publish the [blocks](./02-developing-blocks.md) available in the repository.
+This can only be done via the CLI and the following command is used to publish all the blocks in
+blocks directory.
 
 ```sh copy
 npm run appsemble block publish blocks/*
@@ -112,8 +112,8 @@ various database models, migration files, etc. Similarly, you can check `README.
 package to know more about that package.
 
 Some common development tasks include adding a new server endpoint, adding a new
-[action](../actions/index.mdx), adding a new [remapper](../remappers/index.mdx), adding new column
-to a table etc.
+[action](../03-actions/index.mdx), adding a new [remapper](../04-remappers/index.mdx), adding new
+column to a table etc.
 
 **To add a new server endpoint the following steps should be followed.**
 

@@ -48,8 +48,8 @@ then have to specify the generated address from ngrok using the `--host` flag.
   [join the Microsoft 365 developer program](https://learn.microsoft.com/en-us/azure/active-directory/develop/test-setup-environment#join-the-microsoft-365-developer-program-recommended)
   to get access to a free Azure AD developer environment with fake users and groups. This way, you
   can test your endpoint as if it’s being used in a professional environment. You can also see what
-  it looks like on the Azure side. By following the [SCIM configuration](../guides/scim.md) guide,
-  you can set up your own SCIM connection and test it out.
+  it looks like on the Azure side. By following the [SCIM configuration](../02-guides/scim.md)
+  guide, you can set up your own SCIM connection and test it out.
 
 ## Supported attribute mappings
 

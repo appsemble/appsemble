@@ -44,6 +44,6 @@ problems and to get you on track with creating your own apps!
 Click [here](https://discord.gg/5qtDyFvd9K) to join our discord!
 
 - [Introduction](index.md)
-- [Account setup](account-setup.md)
-- [Blocks](blocks.md)
-- [Resources](resources.md)
+- [Account setup](01-account-setup.md)
+- [Blocks](02-blocks.md)
+- [Resources](03-resources.md)

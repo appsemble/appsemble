@@ -199,7 +199,7 @@ appsemble app import <path-of-zip-file> --organization <organizationId>
 ```
 
 For a more in depth explanation of how to build apps, use our
-[app building guide](https://appsemble.app/docs/guides).
+[app building guide](https://appsemble.app/docs/02-guides).
 
 ### Blocks
 
@@ -248,7 +248,7 @@ npm install webpack@webpack-4 @appsemble/webpack-config
 ```
 
 For a more in-depth explanation of how to build apps, use our
-[block development guide](https://appsemble.app/docs/development/developing-blocks).
+[block development guide](https://appsemble.app/docs/02-development/developing-blocks).
 
 ### Teams
 

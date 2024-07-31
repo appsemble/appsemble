@@ -213,7 +213,7 @@ anyone.
 
 The following team related actions are can be used within an app:
 
-- [`team.invite`](../actions/teams.mdx#teaminvite)
-- [`team.join`](../actions/teams.mdx#teamjoin)
-- [`team.list`](../actions/teams.mdx#teamlist)
-- [`team.members`](../actions/teams.mdx#teammembers)
+- [`team.invite`](../actions/03-teams.mdx#teaminvite)
+- [`team.join`](../actions/03-teams.mdx#teamjoin)
+- [`team.list`](../actions/03-teams.mdx#teamlist)
+- [`team.members`](../actions/03-teams.mdx#teammembers)

@@ -17,7 +17,7 @@ main concepts of Appsemble.
 
 Here is a short tutorial on how to set up your account and organization:
 
-- [Set up Account and Organization](account-setup.md)
+- [Set up Account and Organization](01-account-setup.md)
 
 ## Introduction Appsemble App
 
@@ -65,4 +65,4 @@ apps is not that hard. To get to the next step and build an app yourself we reco
 a look at the existing apps in the [App Store](/apps). You can clone an app and try to make changes
 to the configuration of the app. This way you can see if the app behaves the way you want it to.
 
-- [Next: Account setup](account-setup.md)
+- [Next: Account setup](01-account-setup.md)

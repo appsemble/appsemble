@@ -371,7 +371,7 @@ http://my-custom-api.orgname.svc.cluster.local/
 
 ## Using your custom API from Appsemble apps
 
-Check the [Appsemble service/secret docs](../guides/service.md) for more info on how to configure
+Check the [Appsemble service/secret docs](../02-guides/service.md) for more info on how to configure
 your API’s authentication.
 
 You can use your API from an app like this:

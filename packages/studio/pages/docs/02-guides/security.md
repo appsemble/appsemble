@@ -51,7 +51,7 @@ Appsemble accounts since the same account can be reused.
 The second login option allows for users to login using a password and email address. When enabled,
 a login form appears on the login page from which a user can login, register a new account or reset
 their password. This method also allows usage of the
-[`user.login` and `user.register` actions](../reference/action.mdx#user.login).
+[`user.login` and `user.register` actions](../05-reference/action.mdx#user.login).
 
 This login option can be customized by naming pages `Login` and `Register`. Doing so will display
 these pages instead of the default app login and register pages.
@@ -65,8 +65,8 @@ set by the app.
 
 ## Security Definition
 
-The security definition, as defined [here](../reference/app.mdx#security-definition), can be used to
-define the roles that are used within the app. The security definition also determines how the
+The security definition, as defined [here](../05-reference/app.mdx#security-definition), can be used
+to define the roles that are used within the app. The security definition also determines how the
 default role is assigned.
 
 The `policy` property can be set to `everyone` to give everyone the default role, `organization` to
@@ -133,12 +133,12 @@ security:
 ```
 
 For more details, see the [teams guide](teams.md) and the
-[teams reference documentation](../reference/app.mdx#teams-definition)
+[teams reference documentation](../05-reference/app.mdx#teams-definition)
 
 ## Root app roles
 
-By specifying the [`roles`](../reference/app.mdx#app-definition-roles) property to the root of the
-app definition, each user must at least have one of these roles in order to view the app.
+By specifying the [`roles`](../05-reference/app.mdx#app-definition-roles) property to the root of
+the app definition, each user must at least have one of these roles in order to view the app.
 Consequently, each page and block will use this property as its default implementation unless it is
 overridden by specifying another `roles` list at that level.
 
@@ -172,7 +172,7 @@ pages:
 
 ## Page app roles
 
-By specifying the [`roles`](../reference/app.mdx#base-page-definition-roles) property for a page,
+By specifying the [`roles`](../05-reference/app.mdx#base-page-definition-roles) property for a page,
 visiting the page requires the user to have at least one of the roles specified in this list.
 
 If a visiting user is not logged in and tries to view the page, they will instead be prompted to log
