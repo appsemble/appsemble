@@ -6194,14 +6194,14 @@ describe('patchResource', () => {
       data: { file: 'test-asset' },
     });
     const asset = await Asset.create({
-      id: 'test-asset',
+      name: 'test-asset',
       ResourceId: resource.id,
       AppId: app.id,
       data: Buffer.alloc(0),
     });
     const response = await request.patch(
       `/api/apps/${app.id}/resources/testAssets/${resource.id}`,
-      createFormData({ resource: { file: '0' }, assets: Buffer.alloc(0) }),
+      createFormData({ resource: { file: '0' }, assets: Buffer.alloc(1) }),
     );
 
     expect(response).toMatchInlineSnapshot(
