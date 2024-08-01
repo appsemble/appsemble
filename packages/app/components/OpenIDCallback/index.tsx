@@ -7,7 +7,7 @@ import { Link, Navigate } from 'react-router-dom';
 
 import styles from './index.module.css';
 import { messages } from './messages.js';
-import { useStartAccountLinking } from '../../utils/accountLinking.js';
+import { startAccountLinking } from '../../utils/accountLinking.js';
 import { getDefaultPageName } from '../../utils/getDefaultPageName.js';
 import { showDemoLogin } from '../../utils/settings.js';
 import { useAppDefinition } from '../AppDefinitionProvider/index.js';
@@ -33,7 +33,7 @@ export function OpenIDCallback(): ReactNode {
   const showAppsembleLogin = query.get('password') === 'true';
   const logins = query.get('logins');
 
-  const { navigate, shouldLink } = useStartAccountLinking({
+  const shouldLink = startAccountLinking({
     externalId: sub,
     secret,
     email,
@@ -54,9 +54,6 @@ export function OpenIDCallback(): ReactNode {
   const isOk = code && !errorMessage && !error && !isLoggedIn && stateOk;
 
   useEffect(() => {
-    if (shouldLink) {
-      navigate();
-    }
     if (isOk && !shouldLink) {
       authorizationCodeLogin({
         code,
@@ -65,13 +62,17 @@ export function OpenIDCallback(): ReactNode {
         setError(true);
       });
     }
-  }, [authorizationCodeLogin, code, isOk, shouldLink, navigate]);
+  }, [authorizationCodeLogin, code, isOk, shouldLink]);
 
   useEffect(() => {
     if (isLoggedIn) {
       clearOAuth2State();
     }
   }, [isLoggedIn]);
+
+  if (shouldLink) {
+    return <Navigate to="/Login" />;
+  }
 
   if (isLoggedIn) {
     const defaultPageName = getDefaultPageName(isLoggedIn, role, definition);

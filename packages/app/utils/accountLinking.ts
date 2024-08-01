@@ -1,5 +1,3 @@
-import { useNavigate } from 'react-router-dom';
-
 const storageKey = 'linking';
 
 interface Linking {
@@ -15,30 +13,20 @@ interface Linking {
  * Initiate the account linking process.
  *
  * @param linking the account information to be linked.
- * @returns the navigate callback towards the login page.
+ * @returns whether to navigate back to login page to link the account.
  */
-export function useStartAccountLinking(linking: Linking): {
-  /**
-   * Links to the `Login` page where the account associated login methods are shown to link the
-   * account with.
-   */
-  navigate: () => void;
-  shouldLink: boolean;
-} {
-  const navigate = useNavigate();
-
+export function startAccountLinking(linking: Linking): boolean {
   const { email, externalId, logins, secret, showAppsembleLogin, showAppsembleOAuth2Login } =
     linking;
   const hasLogin = showAppsembleOAuth2Login || showAppsembleLogin || Boolean(logins);
   const shouldLink = externalId && secret && email && hasLogin;
 
-  // TODO handle differently
   if (!shouldLink) {
-    return { navigate: () => null, shouldLink };
+    return false;
   }
   sessionStorage.setItem(storageKey, JSON.stringify(linking));
 
-  return { navigate: () => navigate('/Login'), shouldLink };
+  return shouldLink;
 }
 
 /**
