@@ -358,6 +358,11 @@ export enum OrganizationPermission {
   CreateGroupInvites,
 
   /**
+   * The permission to query group invites.
+   */
+  QueryGroupInvites,
+
+  /**
    * The permission to query group members.
    */
   QueryGroupMembers,

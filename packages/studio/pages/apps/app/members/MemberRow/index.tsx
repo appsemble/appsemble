@@ -22,9 +22,9 @@ import { FormattedMessage, useIntl } from 'react-intl';
 
 import styles from './index.module.css';
 import { messages } from './messages.js';
+import { AnnotationsTable } from '../../../../../components/AnnotationsTable/index.js';
 import { useUser } from '../../../../../components/UserProvider/index.js';
 import { useApp } from '../../index.js';
-import { AnnotationsTable } from '../../groups/group/AnnotationsTable/index.js';
 
 interface AppMemberRowProperties {
   readonly member: AppMemberInfo;

@@ -4,10 +4,10 @@ import { assertKoaError, logger } from '@appsemble/node-utils';
 import { hash } from 'bcrypt';
 import { type Context } from 'koa';
 
-import { App, AppInvite, AppMember } from '../../../models/index.js';
-import { getAppUrl } from '../../../utils/app.js';
+import { AppMember, GroupMember } from "../../../../models/index.js";
+import { getAppUrl } from '../../../../utils/app.js';
 
-export async function respondAppInvite(ctx: Context): Promise<void> {
+export async function respondGroupInvite(ctx: Context): Promise<void> {
   const {
     mailer,
     pathParams: { token },
@@ -22,8 +22,10 @@ export async function respondAppInvite(ctx: Context): Promise<void> {
 
   const app = await App.findByPk(invite.AppId, { attributes: ['id', 'definition'] });
 
+  assertKoaError(appId !== app.id, ctx, 406, 'App ids do not match');
+
   if (response) {
-    const existingAppMember = await AppMember.findOne({ where: { email: invite.email } });
+    const existingAppMember = await GroupMember.findOne({ where: { email: invite.email } });
 
     assertKoaError(
       Boolean(existingAppMember),
@@ -36,7 +38,7 @@ export async function respondAppInvite(ctx: Context): Promise<void> {
     const key = randomBytes(40).toString('hex');
 
     await AppMember.create({
-      AppId: app.id,
+      AppId: appId,
       email: invite.email.toLowerCase(),
       role: invite.role,
       password: hashedPassword,
@@ -53,7 +55,7 @@ export async function respondAppInvite(ctx: Context): Promise<void> {
       .sendTranslatedEmail({
         to: { email: invite.email },
         from: app.emailName,
-        appId: app.id,
+        appId,
         emailName: 'welcome',
         locale,
         values: {

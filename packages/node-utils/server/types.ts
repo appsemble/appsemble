@@ -10,9 +10,9 @@ import {
   type ControllerDefinition,
   type CustomAppPermission,
   type EmailActionDefinition,
+  type Group,
   type Resource,
   type ResourceDefinition,
-  type GroupMember,
   type Theme as ThemeType,
 } from '@appsemble/types';
 import { type IdentifiableBlock, type OrganizationPermission } from '@appsemble/utils';
@@ -168,7 +168,7 @@ export interface GetAppMessagesParams extends GetAppSubEntityParams {
   merge?: string[] | string;
 }
 
-export interface ExtendedGroup extends GroupMember {
+export interface ExtendedGroup extends Group {
   size: number;
 }
 

@@ -1,11 +1,19 @@
 import { type OpenAPIV3 } from 'openapi-types';
 
 export const pathItems: OpenAPIV3.PathItemObject = {
-  parameters: [{ $ref: '#/components/parameters/appId' }],
+  parameters: [
+    {
+      name: 'groupId',
+      in: 'path',
+      description: 'The ID of the group',
+      required: true,
+      schema: { type: 'number', readOnly: true },
+    },
+  ],
   get: {
-    tags: ['app', 'invite'],
-    description: 'Get a list of invited app members.',
-    operationId: 'getAppInvites',
+    tags: ['group', 'invite'],
+    description: 'Get a list of invited group members.',
+    operationId: 'getGroupInvites',
     responses: {
       200: {
         description: 'The list of all invites.',
@@ -33,11 +41,11 @@ export const pathItems: OpenAPIV3.PathItemObject = {
     security: [{ studio: [] }],
   },
   post: {
-    tags: ['app', 'invite'],
-    description: 'Invite a new app member to an app.',
-    operationId: 'createAppInvites',
+    tags: ['group', 'invite'],
+    description: 'Invite a new user to a group.',
+    operationId: 'createGroupInvites',
     requestBody: {
-      description: 'The invite to create.',
+      description: 'The group invite to create.',
       required: true,
       content: {
         'application/json': {
@@ -57,7 +65,7 @@ export const pathItems: OpenAPIV3.PathItemObject = {
                   description: 'The role to invite the user as.',
                 },
               },
-            },
+            }
           },
         },
       },
@@ -74,6 +82,6 @@ export const pathItems: OpenAPIV3.PathItemObject = {
         },
       },
     },
-    security: [{ studio: [] }, { app: ['app:write'] }],
+    security: [{ studio: [] }, { app: ['groups:write'] }],
   },
 };

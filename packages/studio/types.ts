@@ -1,5 +1,5 @@
 import { type OAuth2Provider, type UserInfo } from '@appsemble/types';
-import { type GroupMemberRole, type OrganizationMemberRole } from '@appsemble/utils';
+import { type OrganizationMemberRole } from '@appsemble/utils';
 import { type OAuth2State } from '@appsemble/web-utils';
 
 export interface OrganizationMember {
@@ -13,7 +13,6 @@ export interface GroupMember {
   id: string;
   name?: string;
   primaryEmail?: string;
-  role: GroupMemberRole;
 }
 
 export interface Organization {

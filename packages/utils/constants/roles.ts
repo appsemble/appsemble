@@ -48,6 +48,7 @@ const OrganizationAppGroupManager = [
 
 const OrganizationAppGroupMembersManager = [
   OrganizationPermission.CreateGroupInvites,
+  OrganizationPermission.QueryGroupInvites,
   OrganizationPermission.QueryGroupMembers,
   OrganizationPermission.RemoveGroupMembers,
 ];
@@ -155,7 +156,7 @@ const AppGroupsManager = [
   AppPermission.DeleteGroups,
 ];
 
-const AppGroupsMembersManager = [
+const AppGroupMembersManager = [
   ...AppMember,
   AppPermission.CreateGroupInvites,
   AppPermission.QueryGroupMembers,
@@ -172,13 +173,19 @@ const AppResourcesManager = [
   AppPermission.DeleteResources,
 ];
 
-const AppOwner = [...AppMember, ...AppMembersManager, ...AppGroupsManager, ...AppResourcesManager];
+const AppOwner = [
+  ...AppMember,
+  ...AppMembersManager,
+  ...AppGroupsManager,
+  ...AppGroupMembersManager,
+  ...AppResourcesManager,
+];
 
 export const appMemberRoles = {
   Member: AppMember,
   MembersManager: AppMembersManager,
   GroupsManager: AppGroupsManager,
-  GroupMembersManager: AppGroupsMembersManager,
+  GroupMembersManager: AppGroupMembersManager,
   ResourcesManager: AppResourcesManager,
   Owner: AppOwner,
 };

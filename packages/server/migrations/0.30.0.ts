@@ -8,7 +8,7 @@ export const key = '0.30.0';
  * - TODO: Cleanup duplicate users with same email
  * - TODO: Cleanup anonymous users with only a timezone (and name)
  * - TODO: Cleanup demo login users
- * - Add column `id` to `GroupMember` table
+ * - Add column `id` to `TeamMember` table
  * - Making `AppMember.UserId` nullable
  * - Add unique index `UniqueUserEmail` to column `primaryEmail` on `User` table
  * - TODO: Remove column `UserId` from table `OAuth2AuthorizationCode`
@@ -21,10 +21,9 @@ export const key = '0.30.0';
  * - Add table `AppInvite`
  * - Rename table `Team` to `Group`
  * - Rename table `TeamMember` to `GroupMember`
+ * - Rename column `TeamId` to `GroupId` on table `GroupMember`
  * - Rename table `TeamInvite` to `GroupInvite`
- * - Add column `roles` to `Group` table
- * - Remove column `role` from `GroupMember` table
- * - Remove column `role` from `GroupInvite` table
+ * - Rename column `TeamId` to `GroupId` on table `GroupInvite`
  *
  * @param transaction The sequelize transaction.
  * @param db The sequelize database.
@@ -38,7 +37,7 @@ export async function up(transaction: Transaction, db: Sequelize): Promise<void>
 
   logger.info('Add column `id` to `GroupMember` table');
   await queryInterface.addColumn(
-    'GroupMember',
+    'TeamMember',
     'id',
     {
       allowNull: false,
@@ -192,19 +191,72 @@ export async function up(transaction: Transaction, db: Sequelize): Promise<void>
   logger.info('Rename table `TeamMember` to `GroupMember`');
   await queryInterface.renameTable('TeamMember', 'GroupMember', { transaction });
 
-  logger.info('Rename table `TeamInvite` to `GroupInvite`');
-  await queryInterface.renameTable('TeamInvite', 'GroupInvite', { transaction });
+  logger.info('Rename column `TeamId` to `GroupId` in `GroupMember` table');
+  await queryInterface.renameColumn('GroupMember', 'TeamId', 'GroupId', { transaction });
 
-  logger.info('Add column `roles` to `Group` table');
-  await queryInterface.addColumn('Group', 'roles', DataTypes.ARRAY(DataTypes.STRING), {
+  logger.info('Drop the default value of column `role` column `GroupMember` table');
+  await queryInterface.sequelize.query(
+    'ALTER TABLE "GroupMember" ALTER COLUMN "role" DROP DEFAULT',
+    { transaction },
+  );
+
+  logger.info('Change the type of column `role` in `GroupMember` table');
+  await queryInterface.sequelize.query(
+    'ALTER TABLE "GroupMember" ALTER COLUMN "role" TYPE TEXT USING "role"::text',
+    { transaction },
+  );
+
+  logger.info('Change column `role` in `GroupMember` table');
+  await queryInterface.changeColumn(
+    'GroupMember',
+    'role',
+    {
+      type: DataTypes.STRING,
+      defaultValue: 'Member',
+      allowNull: false,
+    },
+    { transaction },
+  );
+
+  logger.info('Drop enum `enum_TeamMember_role`');
+  await queryInterface.sequelize.query('DROP TYPE IF EXISTS "enum_TeamMember_role"', {
     transaction,
   });
 
-  logger.info('Remove column `role` from `GroupMember` table');
-  await queryInterface.removeColumn('GroupMember', 'role', { transaction });
+  logger.info('Rename table `TeamInvite` to `GroupInvite`');
+  await queryInterface.renameTable('TeamInvite', 'GroupInvite', { transaction });
 
-  logger.info('Remove column `role` from `GroupInvite` table');
-  await queryInterface.removeColumn('GroupInvite', 'role', { transaction });
+  logger.info('Rename column `TeamId` to `GroupId` in `GroupInvite` table');
+  await queryInterface.renameColumn('GroupInvite', 'TeamId', 'GroupId', { transaction });
+
+  logger.info('Drop the default value of column `role` in `GroupInvite` table');
+  await queryInterface.sequelize.query(
+    'ALTER TABLE "GroupInvite" ALTER COLUMN "role" DROP DEFAULT',
+    { transaction },
+  );
+
+  logger.info('Change the type of column `role` in `GroupInvite` table');
+  await queryInterface.sequelize.query(
+    'ALTER TABLE "GroupInvite" ALTER COLUMN "role" TYPE TEXT USING "role"::text',
+    { transaction },
+  );
+
+  logger.info('Change column `role` in `GroupInvite` table');
+  await queryInterface.changeColumn(
+    'GroupInvite',
+    'role',
+    {
+      type: DataTypes.STRING,
+      defaultValue: 'Member',
+      allowNull: false,
+    },
+    { transaction },
+  );
+
+  logger.info('Drop enum `enum_TeamInvite_role`');
+  await queryInterface.sequelize.query('DROP TYPE IF EXISTS "enum_TeamInvite_role"', {
+    transaction,
+  });
 }
 
 /**
@@ -220,10 +272,9 @@ export async function up(transaction: Transaction, db: Sequelize): Promise<void>
  * - Remove column `demo` from the `AppMember` table
  * - Rename table `Group` to `Team`
  * - Rename table `GroupMember` to `TeamMember`
+ * - Rename column `GroupId` to `TeamId` on table `TeamMember`
  * - Rename table `GroupInvite` to `TeamInvite`
- * - Remove column `roles` from `Team` table
- * - Add column `role` to `TeamMember` table
- * - Add column `role` to `TeamInvite` table
+ * - Rename column `GroupId` to `TeamId` on table `TeamInvite`
  *
  * @param transaction The sequelize transaction.
  * @param db The sequelize database.
@@ -315,33 +366,66 @@ export async function down(transaction: Transaction, db: Sequelize): Promise<voi
   logger.info('Rename table `GroupMember` to `TeamMember`');
   await queryInterface.renameTable('GroupMember', 'TeamMember', { transaction });
 
-  logger.info('Rename table `GroupInvite` to `TeamInvite`');
-  await queryInterface.renameTable('GroupInvite', 'TeamInvite', { transaction });
+  logger.info('Rename column `GroupId` to `TeamId` in `TeamMember` table');
+  await queryInterface.renameColumn('TeamMember', 'GroupId', 'TeamId', { transaction });
 
-  logger.info('Remove column `roles` from `Team` table');
-  await queryInterface.removeColumn('Team', 'roles', { transaction });
+  logger.info('Create enum `enum_TeamMember_role`');
+  await queryInterface.sequelize.query(
+    `
+    CREATE TYPE "enum_TeamMember_role" AS ENUM('Member', 'Manager');
+  `,
+    { transaction },
+  );
 
-  logger.info('Add column `role` to `GroupMember` table');
-  await queryInterface.addColumn(
-    'GroupMember',
+  logger.info('Create column `role` in `TeamMember` table');
+  await queryInterface.changeColumn(
+    'TeamMember',
     'role',
     {
       type: DataTypes.ENUM('Member', 'Manager'),
       allowNull: false,
-      defaultValue: 'Member',
     },
     { transaction },
   );
 
-  logger.info('Add column `role` to `GroupInvite` table');
-  await queryInterface.addColumn(
-    'GroupInvite',
+  logger.info('Set the default of column `role` in `TeamMember` table');
+  await queryInterface.sequelize.query(
+    `
+    ALTER TABLE "TeamMember" ALTER COLUMN "role" SET DEFAULT 'Member'
+  `,
+    { transaction },
+  );
+
+  logger.info('Rename table `GroupInvite` to `TeamInvite`');
+  await queryInterface.renameTable('GroupInvite', 'TeamInvite', { transaction });
+
+  logger.info('Rename column `GroupId` to `TeamId` in `TeamInvite` table');
+  await queryInterface.renameColumn('TeamInvite', 'GroupId', 'TeamId', { transaction });
+
+  logger.info('Create enum `enum_TeamInvite_role`');
+  await queryInterface.sequelize.query(
+    `
+    CREATE TYPE "enum_TeamInvite_role" AS ENUM('Member', 'Manager');
+  `,
+    { transaction },
+  );
+
+  logger.info('Create column `role` in `TeamInvite` table');
+  await queryInterface.changeColumn(
+    'TeamInvite',
     'role',
     {
       type: DataTypes.ENUM('Member', 'Manager'),
       allowNull: false,
-      defaultValue: 'Member',
     },
+    { transaction },
+  );
+
+  logger.info('Set the default of column `role` in `TeamInvite` table');
+  await queryInterface.sequelize.query(
+    `
+    ALTER TABLE "TeamInvite" ALTER COLUMN "role" SET DEFAULT 'Member'
+  `,
     { transaction },
   );
 }

@@ -1,4 +1,6 @@
+import { type AppMemberRole } from '@appsemble/utils';
 import {
+  AllowNull,
   BelongsTo,
   Column,
   CreatedAt,
@@ -22,6 +24,11 @@ export class GroupMember extends Model {
   @Default(DataType.UUIDV4)
   @Column(DataType.UUID)
   id: string;
+
+  @Default('Member')
+  @AllowNull(false)
+  @Column(DataType.STRING)
+  role: AppMemberRole;
 
   @PrimaryKey
   @ForeignKey(() => Group)

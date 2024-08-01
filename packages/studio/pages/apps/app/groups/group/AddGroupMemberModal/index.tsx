@@ -8,8 +8,8 @@ import {
   type Toggle,
   useMessages,
 } from '@appsemble/react-components';
-import { type AppInvite } from '@appsemble/types';
-import { type AppMemberRole, appMemberRoles, getAppRoles } from "@appsemble/utils";
+import { type GroupInvite } from '@appsemble/types';
+import { type AppMemberRole, getAppRoles } from '@appsemble/utils';
 import axios from 'axios';
 import {
   type ChangeEvent,
@@ -21,9 +21,14 @@ import {
 import { FormattedMessage, useIntl } from 'react-intl';
 
 import { messages } from './messages.js';
-import { useApp } from '../../index.js';
+import { useApp } from '../../../index.js';
 
 interface AddMembersModalProps {
+  /**
+   * The id of the group.
+   */
+  readonly groupId: number;
+
   /**
    * The state of the modal.
    */
@@ -34,7 +39,7 @@ interface AddMembersModalProps {
    *
    * @param invites The newly added invites.
    */
-  readonly onInvited: (invites: AppInvite[]) => void;
+  readonly onInvited: (invites: GroupInvite[]) => void;
 }
 
 const defaultInvite = {
@@ -42,14 +47,16 @@ const defaultInvite = {
   role: 'Member',
 };
 
-/**
- * A modal form for inviting one or more people to the organization.
- */
-export function AddMembersModal({ onInvited, state }: AddMembersModalProps): ReactNode {
+export function AddGroupMemberModal({
+  groupId,
+  onInvited,
+  state,
+}: AddMembersModalProps): ReactNode {
   const { app } = useApp();
-  const push = useMessages();
   const { formatMessage } = useIntl();
-  const [invites, setInvites] = useState<AppInvite[]>([defaultInvite]);
+
+  const push = useMessages();
+  const [invites, setInvites] = useState<GroupInvite[]>([defaultInvite]);
   const [submitting, setSubmitting] = useState(false);
 
   const roleKeys = getAppRoles(app);
@@ -62,8 +69,8 @@ export function AddMembersModal({ onInvited, state }: AddMembersModalProps): Rea
   const onSubmit = useCallback(async () => {
     setSubmitting(true);
     try {
-      const { data } = await axios.post<AppInvite[]>(
-        `/api/apps/${app?.id}/invites`,
+      const { data } = await axios.post<GroupInvite[]>(
+        `/api/groups/${groupId}/invites`,
         invites.filter(({ email }) => email),
       );
       onInvited(data);
@@ -75,7 +82,7 @@ export function AddMembersModal({ onInvited, state }: AddMembersModalProps): Rea
     state.disable();
     setSubmitting(false);
     setInvites([defaultInvite]);
-  }, [app?.id, formatMessage, invites, onInvited, push, state]);
+  }, [formatMessage, groupId, invites, onInvited, push, state]);
 
   const onChange = useCallback(
     (

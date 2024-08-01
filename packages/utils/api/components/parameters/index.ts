@@ -23,6 +23,7 @@ export * from './$skip.js';
 export * from './$group.js';
 export * from './$top.js';
 export * from './endpoint.js';
+export * from './groupId.js';
 export * from './roles.js';
 export * from './view.js';
 export * from './seed.js';

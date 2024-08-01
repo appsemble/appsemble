@@ -1,9 +1,11 @@
+import { type AppMemberRole } from '@appsemble/utils';
 import {
   AllowNull,
   BelongsTo,
   Column,
   CreatedAt,
   DataType,
+  Default,
   ForeignKey,
   Model,
   PrimaryKey,
@@ -29,6 +31,11 @@ export class GroupInvite extends Model {
   @AllowNull(false)
   @Column(DataType.STRING)
   key: string;
+
+  @Default('Member')
+  @AllowNull(false)
+  @Column(DataType.STRING)
+  role: AppMemberRole;
 
   @BelongsTo(() => Group)
   Group: Awaited<Group>;

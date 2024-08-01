@@ -52,7 +52,7 @@ async function getAppMemberAppRoles(appMemberId: string, appId: number): Promise
 
 async function getUserAppRoles(userId: string, appId: number): Promise<AppMemberRole[]> {
   const appMember = await AppMember.findOne({
-    attributes: ['role'],
+    attributes: ['id', 'role'],
     where: {
       AppId: appId,
       UserId: userId,
@@ -158,7 +158,7 @@ export async function checkUserOrganizationPermissions(
   assertKoaError(!organization, ctx, 404, 'Organization not found.');
 
   const organizationMember = await OrganizationMember.findOne({
-    attributes: ['id'],
+    attributes: ['role'],
     where: {
       UserId: authSubject.id,
       OrganizationId: organizationId,

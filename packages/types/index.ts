@@ -2208,7 +2208,22 @@ export interface AppInvite {
   email: string;
 
   /**
-   * The role the user should get when accepting the invite.
+   * The role the app member should get when accepting the invite.
+   */
+  role: string;
+}
+
+/**
+ * An invite for a group.
+ */
+export interface GroupInvite {
+  /**
+   * The email address of the group member to invite.
+   */
+  email: string;
+
+  /**
+   * The role the group member should get when accepting the invite.
    */
   role: string;
 }
@@ -2225,6 +2240,14 @@ export interface AppMember {
   demo: boolean;
   timezone: string;
   properties: Record<string, any>;
+}
+
+/**
+ * Group member in a group.
+ */
+export interface GroupMember {
+  id: string;
+  role: string;
 }
 
 /**

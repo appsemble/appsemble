@@ -4,7 +4,6 @@ import { type Context } from 'koa';
 import { Group, transactional } from '../../../../models/index.js';
 import { checkAuthSubjectAppPermissions } from '../../../../utils/authorization.js';
 
-// This no longer creates a group member and doesn't return the role
 export async function createAppGroup(ctx: Context): Promise<void> {
   const {
     pathParams: { appId },

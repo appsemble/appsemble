@@ -29,9 +29,6 @@ export class Group extends Model {
   @Column(DataType.JSON)
   annotations: Record<string, string>;
 
-  @Column(DataType.ARRAY(DataType.STRING))
-  roles: string[];
-
   @AllowNull(false)
   @ForeignKey(() => App)
   @Column(DataType.INTEGER)

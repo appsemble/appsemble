@@ -603,7 +603,7 @@ export async function up(transaction: Transaction, db: Sequelize): Promise<void>
     { transaction },
   );
   await queryInterface.createTable(
-    'Group',
+    'Team',
     {
       id: { autoIncrement: true, type: DataTypes.INTEGER, allowNull: false, primaryKey: true },
       name: { type: DataTypes.STRING(255), allowNull: false },
@@ -621,15 +621,15 @@ export async function up(transaction: Transaction, db: Sequelize): Promise<void>
     { transaction },
   );
   await queryInterface.createTable(
-    'GroupMember',
+    'TeamMember',
     {
       role: { type: DataTypes.ENUM('member', 'manager'), allowNull: false },
-      GroupId: {
+      TeamId: {
         onUpdate: 'CASCADE',
         onDelete: 'CASCADE',
         type: DataTypes.INTEGER,
         allowNull: false,
-        references: { model: 'Group', key: 'id' },
+        references: { model: 'Team', key: 'id' },
       },
       created: { type: DataTypes.DATE, allowNull: false },
       updated: { type: DataTypes.DATE, allowNull: false },
@@ -644,13 +644,13 @@ export async function up(transaction: Transaction, db: Sequelize): Promise<void>
     { transaction },
   );
   await queryInterface.createTable(
-    'GroupInvite',
+    'TeamInvite',
     {
-      GroupId: {
+      TeamId: {
         type: DataTypes.INTEGER,
         allowNull: false,
         primaryKey: true,
-        references: { model: 'Group', key: 'id' },
+        references: { model: 'Team', key: 'id' },
       },
       email: { type: DataTypes.STRING(255), allowNull: false, primaryKey: true },
       role: { type: DataTypes.STRING(255), allowNull: false },

@@ -1,22 +1,32 @@
 import { randomBytes } from 'node:crypto';
 
 import { assertKoaError } from '@appsemble/node-utils';
-import { appMemberRoles, AppPermission, getAppRoles } from "@appsemble/utils";
+import { AppPermission, getAppRoles } from '@appsemble/utils';
 import { type Context } from 'koa';
 import { Op } from 'sequelize';
 
-import { App, AppInvite, AppMember, EmailAuthorization, User } from '../../../models/index.js';
-import { getAppUrl } from '../../../utils/app.js';
-import { checkAuthSubjectAppPermissions } from '../../../utils/authorization.js';
+import {
+  App,
+  AppMember,
+  EmailAuthorization,
+  Group,
+  GroupInvite,
+  GroupMember,
+  User,
+} from '../../../../models/index.js';
+import { getAppUrl } from '../../../../utils/app.js';
+import { checkAuthSubjectAppPermissions } from '../../../../utils/authorization.js';
 
-export async function createAppInvites(ctx: Context): Promise<void> {
+export async function createGroupInvites(ctx: Context): Promise<void> {
   const {
     mailer,
-    pathParams: { appId },
+    pathParams: { groupId },
     request: { body },
   } = ctx;
 
-  const app = await App.findByPk(appId, {
+  const group = await Group.findOne({ where: { id: groupId } });
+
+  const app = await App.findByPk(group.AppId, {
     attributes: ['id', 'definition', 'path', 'OrganizationId', 'domain'],
   });
 
@@ -25,7 +35,7 @@ export async function createAppInvites(ctx: Context): Promise<void> {
   assertKoaError(!app.definition.security, ctx, 403, 'App does not have a security definition.');
 
   assertKoaError(
-    !(body as AppInvite[]).every((invite) =>
+    !(body as GroupInvite[]).every((invite) =>
       getAppRoles(app.toJSON()).find((role) => role === invite.role),
     ),
     ctx,
@@ -33,18 +43,27 @@ export async function createAppInvites(ctx: Context): Promise<void> {
     'Role not allowed.',
   );
 
-  await checkAuthSubjectAppPermissions(ctx, appId, [AppPermission.CreateAppInvites]);
+  await checkAuthSubjectAppPermissions(ctx, groupId, [AppPermission.CreateGroupInvites]);
 
-  const appMembers = await AppMember.findAll({ where: { AppId: appId }, attributes: ['email'] });
-
-  const appInvites = await AppInvite.findAll({
-    attributes: ['email'],
-    where: { AppId: appId },
+  const groupMembers = await GroupMember.findAll({
+    attributes: ['id'],
+    where: { GroupId: groupId },
+    include: [
+      {
+        attributes: ['email'],
+        model: AppMember,
+      },
+    ],
   });
 
-  const memberEmails = new Set(appMembers.flatMap(({ email }) => email));
+  const groupInvites = await GroupInvite.findAll({
+    attributes: ['email'],
+    where: { GroupId: groupId },
+  });
 
-  const newInvites = (body as AppInvite[])
+  const memberEmails = new Set(groupMembers.flatMap((groupMember) => groupMember.AppMember.email));
+
+  const newInvites = (body as GroupInvite[])
     .map((invite) => ({
       email: invite.email.toLowerCase(),
       role: invite.role,
@@ -55,10 +74,10 @@ export async function createAppInvites(ctx: Context): Promise<void> {
     !newInvites.length,
     ctx,
     400,
-    'All invited emails are already members of this app',
+    'All invited emails are already members of this group',
   );
 
-  const existingInvites = new Set(appInvites.flatMap(({ email }) => email));
+  const existingInvites = new Set(groupInvites.flatMap(({ email }) => email));
 
   const pendingInvites = newInvites.filter((invite) => !existingInvites.has(invite.email));
 
@@ -66,7 +85,7 @@ export async function createAppInvites(ctx: Context): Promise<void> {
     !pendingInvites.length,
     ctx,
     400,
-    'All email addresses are already invited to this app',
+    'All email addresses are already invited to this group',
   );
 
   const auths = await EmailAuthorization.findAll({
@@ -76,7 +95,7 @@ export async function createAppInvites(ctx: Context): Promise<void> {
 
   const userMap = new Map(auths.map((auth) => [auth.email, auth.User]));
 
-  const result = await AppInvite.bulkCreate(
+  const result = await GroupInvite.bulkCreate(
     pendingInvites.map((invite) => {
       const user = userMap.get(invite.email);
       const key = randomBytes(20).toString('hex');
@@ -85,10 +104,10 @@ export async function createAppInvites(ctx: Context): Promise<void> {
             email: user?.primaryEmail ?? invite.email,
             UserId: user.id,
             key,
-            AppId: appId,
+            GroupId: groupId,
             role: invite.role,
           }
-        : { email: invite.email, role: invite.role, key, AppId: appId };
+        : { email: invite.email, role: invite.role, key, GroupId: groupId };
     }),
   );
 
@@ -100,7 +119,7 @@ export async function createAppInvites(ctx: Context): Promise<void> {
         },
       });
 
-      const url = new URL('/App-Invite', getAppUrl(app));
+      const url = new URL('/Group-Invite', getAppUrl(app));
       url.searchParams.set('token', invite.key);
 
       return mailer.sendTranslatedEmail({
@@ -108,11 +127,12 @@ export async function createAppInvites(ctx: Context): Promise<void> {
           ...(user ? { name: user.name } : {}),
           email: invite.email,
         },
-        emailName: 'appInvite',
+        emailName: 'groupInvite',
         ...(user ? { locale: user.locale } : {}),
         values: {
           link: (text) => `[${text}](${String(url)})`,
           name: user?.name || 'null',
+          groupName: group.name,
           appName: app.definition.name,
         },
       });
