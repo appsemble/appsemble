@@ -48,14 +48,14 @@ export function SecretsPage(): ReactNode {
   const onClickOAuth2Checkbox = useCallback(async () => {
     const formData = new FormData();
     formData.set('showAppsembleOAuth2Login', String(!app.showAppsembleOAuth2Login));
-    await axios.patch(`/api/main/apps/${app.id}`, formData);
+    await axios.patch(`/api/apps/${app.id}`, formData);
     setApp({ ...app, showAppsembleOAuth2Login: !app.showAppsembleOAuth2Login });
   }, [app, setApp]);
 
   const onClickSelfRegistrationCheckbox = useCallback(async () => {
     const formData = new FormData();
     formData.set('enableSelfRegistration', String(!app.enableSelfRegistration));
-    await axios.patch(`/api/main/apps/${app.id}`, formData);
+    await axios.patch(`/api/apps/${app.id}`, formData);
     setApp({ ...app, enableSelfRegistration: !app.enableSelfRegistration });
   }, [app, setApp]);
 
@@ -65,7 +65,7 @@ export function SecretsPage(): ReactNode {
       for (const [key, value] of Object.entries(values)) {
         formData.set(key, value);
       }
-      await axios.patch(`/api/main/apps/${app.id}`, formData);
+      await axios.patch(`/api/apps/${app.id}`, formData);
       push({ color: 'success', body: formatMessage(messages.emailUpdateSuccess) });
       emailSettingsResult.setData({
         ...values,
@@ -78,14 +78,14 @@ export function SecretsPage(): ReactNode {
   const onClickLoginCheckbox = useCallback(async () => {
     const formData = new FormData();
     formData.set('showAppsembleLogin', String(!app.showAppsembleLogin));
-    await axios.patch(`/api/main/apps/${app.id}`, formData);
+    await axios.patch(`/api/apps/${app.id}`, formData);
     setApp({ ...app, showAppsembleLogin: !app.showAppsembleLogin });
   }, [app, setApp]);
 
   const onClickServiceCheckbox = useCallback(async () => {
     const formData = new FormData();
     formData.set('enableUnsecuredServiceSecrets', String(!app.enableUnsecuredServiceSecrets));
-    await axios.patch(`/api/main/apps/${app.id}`, formData);
+    await axios.patch(`/api/apps/${app.id}`, formData);
     setApp({ ...app, enableUnsecuredServiceSecrets: !app.enableUnsecuredServiceSecrets });
   }, [app, setApp]);
 
