@@ -95,6 +95,25 @@ describe('validateAppDefinition', () => {
     ]);
   });
 
+  it('should report duplicate page names', async () => {
+    const app = createTestApp();
+    app.pages.push({
+      name: 'Container Page',
+      type: 'container',
+      pages: [{ name: 'Test Page', blocks: [] }],
+    });
+    const result = await validateAppDefinition(app, () => [
+      { name: '@appsemble/test', version: '0.0.0', files: [], languages: [] },
+    ]);
+    expect(result.valid).toBe(false);
+    expect(result.errors).toStrictEqual([
+      new ValidationError('is a duplicate page name', 'Test Page', undefined, [
+        'Container Page',
+        'Test Page',
+      ]),
+    ]);
+  });
+
   it('should validate block parameters', async () => {
     const app = createTestApp();
     (app.pages[0] as BasicPageDefinition).blocks.push({
