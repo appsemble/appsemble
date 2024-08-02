@@ -14,7 +14,6 @@ import { getAppUrl } from '../../../../utils/app.js';
 import { parseAppMemberProperties } from '../../../../utils/appMember.js';
 import { createJWTResponse } from '../../../../utils/createJWTResponse.js';
 
-// TODO: use AppEmailAuthorization model
 export async function registerAppMemberWithEmail(ctx: Context): Promise<void> {
   const {
     mailer,
@@ -46,7 +45,6 @@ export async function registerAppMemberWithEmail(ctx: Context): Promise<void> {
   });
 
   assertKoaError(!app, ctx, 404, 'App could not be found.');
-
   assertKoaError(
     !app.enableSelfRegistration,
     ctx,
@@ -60,15 +58,11 @@ export async function registerAppMemberWithEmail(ctx: Context): Promise<void> {
     'This app has no security definition',
   );
 
-  const existingAppMember = await AppMember.findOne({
-    where: { email },
-    attributes: {
-      exclude: ['picture'],
-    },
+  const appMemberExists = await AppMember.count({
+    where: { email, AppId: appId },
   });
-
   assertKoaError(
-    Boolean(existingAppMember),
+    Boolean(appMemberExists),
     ctx,
     409,
     'App member with this email address already exists.',

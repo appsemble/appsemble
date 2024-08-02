@@ -172,16 +172,17 @@ export async function appsTokenHandler(ctx: Context): Promise<void> {
           username,
         } = checkTokenRequestParameters(query, ['client_id', 'username', 'password', 'scope']);
         const appId = Number(clientId.replace('app:', ''));
-        const member = await AppMember.findOne({
+        const appMember = await AppMember.findOne({
           where: { AppId: appId, email: username.toLowerCase() },
+          attributes: ['id', 'password'],
         });
 
-        if (!member || !(await compare(password, member.password))) {
+        if (!appMember?.password || !(await compare(password, appMember.password))) {
           throw new GrantError('invalid_client');
         }
 
         aud = clientId;
-        sub = member.id;
+        sub = appMember.id;
         scope = requestedScope;
         refreshToken = true;
         break;

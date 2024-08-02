@@ -2,7 +2,7 @@ import { randomBytes } from 'node:crypto';
 
 import { assertKoaError } from '@appsemble/node-utils';
 import { type Context } from 'koa';
-import { type Transaction, UniqueConstraintError } from 'sequelize';
+import { Op, type Transaction, UniqueConstraintError } from 'sequelize';
 import { type Promisable } from 'type-fest';
 
 import { argv } from './argv.js';
@@ -117,13 +117,15 @@ export async function handleUniqueAppMemberEmailIndex(
           attributes: ['AppSamlSecretId'],
           required: false,
         },
-        // { model: AppEmailAuthorization },
       ],
+    });
+    const hasPassword = await AppMember.count({
+      where: { id: memberToLink.id, password: { [Op.ne]: null } },
     });
     const data = {
       email,
       user: Boolean(memberToLink.UserId),
-      // Password: Boolean(memberToLink.AppEmailAuthorization.length),
+      password: Boolean(hasPassword),
       logins: [
         ...memberToLink.AppOAuth2Authorizations.map(
           ({ AppOAuth2Secret: { id } }) => `oauth2:${id}`,
