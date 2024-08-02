@@ -33,7 +33,7 @@ export function OrganizationInvitePage(): ReactNode {
     data: organization,
     error,
     loading,
-  } = useData<Organization>(`/api/invites/${qs.get('token')}`);
+  } = useData<Organization>(`/api/organization-invites/${qs.get('token')}`);
   const [submitting, setSubmitting] = useState(false);
   const [joined, setJoined] = useState(false);
 

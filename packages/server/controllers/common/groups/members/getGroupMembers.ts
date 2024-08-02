@@ -1,4 +1,5 @@
 import { assertKoaError } from '@appsemble/node-utils';
+import { type GroupMember as GroupMemberType } from '@appsemble/types';
 import { AppPermission } from '@appsemble/utils';
 import { type Context } from 'koa';
 
@@ -19,6 +20,7 @@ export async function getGroupMembers(ctx: Context): Promise<void> {
   await checkAuthSubjectAppPermissions(ctx, groupId, [AppPermission.QueryGroupMembers]);
 
   const groupMembers = await GroupMember.findAll({
+    attributes: ['id', 'role'],
     where: { GroupId: groupId },
     include: [
       {
@@ -29,9 +31,9 @@ export async function getGroupMembers(ctx: Context): Promise<void> {
   });
 
   ctx.body = groupMembers.map((groupMember) => ({
-    id: groupMember.AppMember.id,
-    name: groupMember.AppMember.name,
-    primaryEmail: groupMember.AppMember.email,
+    id: groupMember.id,
     role: groupMember.role,
-  }));
+    name: groupMember.AppMember.name,
+    email: groupMember.AppMember.email,
+  })) as GroupMemberType[];
 }

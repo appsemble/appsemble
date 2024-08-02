@@ -134,3 +134,4 @@ export * from './LoopPageActionsDefinition.js';
 export * from './TabsPageActionsDefinition.js';
 export * from './AppMembersDefinition.js';
 export * from './AppMemberPropertyDefinition.js';
+export * from './GroupMember.js';

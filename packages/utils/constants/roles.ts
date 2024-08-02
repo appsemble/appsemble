@@ -35,8 +35,9 @@ const OrganizationAppMemberManager = [
   OrganizationPermission.CreateAppInvites,
   OrganizationPermission.QueryAppInvites,
   OrganizationPermission.QueryAppMembers,
-  OrganizationPermission.PatchAppMembers,
-  OrganizationPermission.RemoveAppMembers,
+  OrganizationPermission.DeleteAppMembers,
+  OrganizationPermission.UpdateAppMemberRoles,
+  OrganizationPermission.PatchAppMemberProperties,
 ];
 
 const OrganizationAppGroupManager = [
@@ -118,11 +119,11 @@ const OrganizationOwner = [
   ...OrganizationMaintainer,
   OrganizationPermission.UpdateOrganizations,
   OrganizationPermission.DeleteOrganizations,
-  OrganizationPermission.UpdateOrganizationMembers,
   OrganizationPermission.RemoveOrganizationMembers,
+  OrganizationPermission.UpdateOrganizationMemberRoles,
 ];
 
-export const organizationMemberRoles = {
+export const organizationRoles = {
   Member: OrganizationMember,
   AppTranslator: OrganizationAppTranslator,
   AppContentsExplorer: OrganizationAppContentsExplorer,
@@ -137,7 +138,7 @@ export const organizationMemberRoles = {
   Owner: OrganizationOwner,
 };
 
-export type OrganizationMemberRole = keyof typeof organizationMemberRoles;
+export type OrganizationRole = keyof typeof organizationRoles;
 
 const AppMember: AppPermission[] = [];
 
@@ -145,7 +146,9 @@ const AppMembersManager = [
   ...AppMember,
   AppPermission.CreateAppInvites,
   AppPermission.QueryAppMembers,
-  AppPermission.RemoveAppMembers,
+  AppPermission.DeleteAppMembers,
+  AppPermission.UpdateAppMemberRoles,
+  AppPermission.PatchAppMemberProperties,
 ];
 
 const AppGroupsManager = [
@@ -161,6 +164,7 @@ const AppGroupMembersManager = [
   AppPermission.CreateGroupInvites,
   AppPermission.QueryGroupMembers,
   AppPermission.RemoveGroupMembers,
+  AppPermission.UpdateGroupMemberRoles,
 ];
 
 const AppResourcesManager = [
@@ -181,7 +185,7 @@ const AppOwner = [
   ...AppResourcesManager,
 ];
 
-export const appMemberRoles = {
+export const appRoles = {
   Member: AppMember,
   MembersManager: AppMembersManager,
   GroupsManager: AppGroupsManager,
@@ -190,4 +194,4 @@ export const appMemberRoles = {
   Owner: AppOwner,
 };
 
-export type AppMemberRole = string | keyof typeof appMemberRoles;
+export type AppRole = string | keyof typeof appRoles;

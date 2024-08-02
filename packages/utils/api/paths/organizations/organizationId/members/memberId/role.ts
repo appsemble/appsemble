@@ -1,6 +1,6 @@
 import { type OpenAPIV3 } from 'openapi-types';
 
-import { organizationMemberRoles } from '../../../../../../constants/index.js';
+import { organizationRoles } from '../../../../../../constants/index.js';
 
 export const pathItems: OpenAPIV3.PathItemObject = {
   parameters: [
@@ -16,7 +16,7 @@ export const pathItems: OpenAPIV3.PathItemObject = {
   put: {
     tags: ['main', 'organization', 'member'],
     description: 'Set the role of the member within the organization.',
-    operationId: 'setOrganizationMemberRole',
+    operationId: 'updateOrganizationMemberRole',
     requestBody: {
       description: 'The role to set.',
       required: true,
@@ -28,7 +28,7 @@ export const pathItems: OpenAPIV3.PathItemObject = {
             properties: {
               role: {
                 type: 'string',
-                enum: Object.keys(organizationMemberRoles),
+                enum: Object.keys(organizationRoles),
               },
             },
           },

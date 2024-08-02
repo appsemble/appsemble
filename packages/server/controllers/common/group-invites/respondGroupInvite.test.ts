@@ -9,11 +9,11 @@ import {
   Group,
   GroupInvite,
   type User,
-} from '../../../../models/index.js';
-import { setArgv } from '../../../../utils/argv.js';
-import { createServer } from '../../../../utils/createServer.js';
-import { authorizeApp, createTestUser } from '../../../../utils/test/authorization.js';
-import { useTestDatabase } from '../../../../utils/test/testSchema.js';
+} from '../../../models/index.js';
+import { setArgv } from '../../../utils/argv.js';
+import { createServer } from '../../../utils/createServer.js';
+import { authorizeApp, createTestUser } from '../../../utils/test/authorization.js';
+import { useTestDatabase } from '../../../utils/test/testSchema.js';
 
 let organization: Organization;
 let app: App;

@@ -1,20 +1,16 @@
 import { assertKoaError, serveIcon } from '@appsemble/node-utils';
 import { type Context } from 'koa';
 
-import { App, AppMember } from '../../../../models/index.js';
+import { AppMember } from '../../../models/index.js';
 
 export async function getAppMemberPicture(ctx: Context): Promise<void> {
   const {
-    pathParams: { appId, appMemberId },
+    pathParams: { appMemberId },
   } = ctx;
 
-  const app = await App.findByPk(appId);
+  const appMember = await AppMember.findByPk(appMemberId, { attributes: ['picture'] });
 
-  assertKoaError(!app, ctx, 404, 'App could not be found.');
-
-  const appMember = await AppMember.findByPk(appMemberId);
-
-  assertKoaError(!appMember, ctx, 404, 'This member does not exist.');
+  assertKoaError(!appMember, ctx, 404, 'App member not found.');
 
   assertKoaError(!appMember.picture, ctx, 404, 'This member has no profile picture set.');
 

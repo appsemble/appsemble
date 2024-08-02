@@ -1,4 +1,4 @@
-import { type AppMemberRole } from '@appsemble/utils';
+import { type AppRole } from '@appsemble/utils';
 import {
   AllowNull,
   BelongsTo,
@@ -35,7 +35,7 @@ export class GroupInvite extends Model {
   @Default('Member')
   @AllowNull(false)
   @Column(DataType.STRING)
-  role: AppMemberRole;
+  role: AppRole;
 
   @BelongsTo(() => Group)
   Group: Awaited<Group>;

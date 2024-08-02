@@ -13,14 +13,19 @@ export enum AppPermission {
   QueryAppMembers = '$member:query',
 
   /**
-   * The permission to patch app members.
-   */
-  PatchAppMembers = '$member:patch',
-
-  /**
    * The permission to query app members.
    */
-  RemoveAppMembers = '$member:remove',
+  DeleteAppMembers = '$member:delete',
+
+  /**
+   * The permission to update the role of app members.
+   */
+  UpdateAppMemberRoles = '$member:role:update',
+
+  /**
+   * The permission to patch the properties of app members.
+   */
+  PatchAppMemberProperties = '$member:properties:patch',
 
   /**
    * The permission to query app groups.
@@ -53,9 +58,14 @@ export enum AppPermission {
   QueryGroupMembers = '$group:member:query',
 
   /**
-   * The permission to remove group members.
+   * The permission to delete group members.
    */
-  RemoveGroupMembers = '$group:member:remove',
+  RemoveGroupMembers = '$group:member:delete',
+
+  /**
+   * The permission to change the role of members in a group.
+   */
+  UpdateGroupMemberRoles = '$group:member:role:update',
 
   /**
    * The permission to create any app resources.
@@ -298,29 +308,14 @@ export enum OrganizationPermission {
   QueryOrganizationMembers,
 
   /**
-   * The permission to change the roles of organization members.
-   */
-  UpdateOrganizationMembers,
-
-  /**
    * The permission to remove organization members.
    */
   RemoveOrganizationMembers,
 
   /**
-   * The permission to query app members.
+   * The permission to change the roles of organization members.
    */
-  QueryAppMembers,
-
-  /**
-   * The permission to update app members.
-   */
-  PatchAppMembers,
-
-  /**
-   * The permission to query app members.
-   */
-  RemoveAppMembers,
+  UpdateOrganizationMemberRoles,
 
   /**
    * The permission to create app invites.
@@ -331,6 +326,26 @@ export enum OrganizationPermission {
    * The permission to query app invites,
    */
   QueryAppInvites,
+
+  /**
+   * The permission to query app members.
+   */
+  QueryAppMembers,
+
+  /**
+   * The permission to delete app members.
+   */
+  DeleteAppMembers,
+
+  /**
+   * The permission to update the role of app members.
+   */
+  UpdateAppMemberRoles,
+
+  /**
+   * The permission to patch the properties of app members.
+   */
+  PatchAppMemberProperties,
 
   /**
    * The permission to query app groups.
@@ -432,8 +447,9 @@ export const appOrganizationPermissionMapping: { [key in AppPermission]: Organiz
   {
     [AppPermission.CreateAppInvites]: OrganizationPermission.CreateAppInvites,
     [AppPermission.QueryAppMembers]: OrganizationPermission.QueryAppMembers,
-    [AppPermission.PatchAppMembers]: OrganizationPermission.PatchAppMembers,
-    [AppPermission.RemoveAppMembers]: OrganizationPermission.RemoveAppMembers,
+    [AppPermission.DeleteAppMembers]: OrganizationPermission.DeleteAppMembers,
+    [AppPermission.UpdateAppMemberRoles]: OrganizationPermission.UpdateAppMemberRoles,
+    [AppPermission.PatchAppMemberProperties]: OrganizationPermission.PatchAppMemberProperties,
     [AppPermission.CreateGroups]: OrganizationPermission.CreateGroups,
     [AppPermission.QueryGroups]: OrganizationPermission.QueryGroups,
     [AppPermission.UpdateGroups]: OrganizationPermission.UpdateGroups,
@@ -441,6 +457,7 @@ export const appOrganizationPermissionMapping: { [key in AppPermission]: Organiz
     [AppPermission.CreateGroupInvites]: OrganizationPermission.CreateGroupInvites,
     [AppPermission.QueryGroupMembers]: OrganizationPermission.QueryGroupMembers,
     [AppPermission.RemoveGroupMembers]: OrganizationPermission.RemoveGroupMembers,
+    [AppPermission.UpdateGroupMemberRoles]: OrganizationPermission.UpdateOrganizationMemberRoles,
     [AppPermission.CreateResources]: OrganizationPermission.CreateAppResources,
     [AppPermission.QueryResources]: OrganizationPermission.QueryAppResources,
     [AppPermission.GetResources]: OrganizationPermission.GetAppResources,

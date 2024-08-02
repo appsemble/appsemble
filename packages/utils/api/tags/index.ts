@@ -2,6 +2,10 @@ import { type OpenAPIV3 } from 'openapi-types';
 
 export const tags: OpenAPIV3.TagObject[] = [
   {
+    name: 'app-member',
+    description: 'Operations related to app members',
+  },
+  {
     name: 'app',
     description: 'Operations related to apps',
   },
@@ -116,6 +120,10 @@ export const tags: OpenAPIV3.TagObject[] = [
   {
     name: 'subscription',
     description: 'Operations related to subscriptions',
+  },
+  {
+    name: 'group-member',
+    description: 'Operations related to group members',
   },
   {
     name: 'group',

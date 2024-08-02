@@ -1,2 +1,3 @@
+export { deleteGroupMember } from './deleteGroupMember.js';
 export { getGroupMember } from './getGroupMember.js';
-export { removeGroupMember } from './removeGroupMember.js';
+export { updateGroupMemberRole } from './updateGroupMemberRole.js';

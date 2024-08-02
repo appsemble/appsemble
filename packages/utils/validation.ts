@@ -16,7 +16,7 @@ import { type Promisable } from 'type-fest';
 
 import { getAppBlocks, type IdentifiableBlock, normalizeBlockName } from './blockUtils.js';
 import { has } from './has.js';
-import { appMemberRoles, findPageByName, normalize, partialNormalized } from './index.js';
+import { appRoles, findPageByName, normalize, partialNormalized } from './index.js';
 import { iterApp, type Prefix } from './iterApp.js';
 import { type ServerActionName, serverActions } from './serverActions.js';
 
@@ -430,7 +430,7 @@ function validateSecurity(definition: AppDefinition, report: Report): void {
     '$public',
     '$group:member',
     '$group:manager',
-    ...Object.keys(appMemberRoles),
+    ...Object.keys(appRoles),
   ];
 
   if (!security) {

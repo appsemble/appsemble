@@ -5,10 +5,10 @@ import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 import {
   App,
   AppMember,
-  Organization,
-  OrganizationMember,
   Group,
   GroupMember,
+  Organization,
+  OrganizationMember,
   type User,
 } from '../../../../models/index.js';
 import { setArgv } from '../../../../utils/argv.js';

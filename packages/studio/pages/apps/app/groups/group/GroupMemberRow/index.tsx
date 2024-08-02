@@ -1,15 +1,16 @@
 import { AsyncSelect, Button, useConfirmation } from '@appsemble/react-components';
-import { GroupRole } from '@appsemble/utils';
+import { type GroupMember } from '@appsemble/types';
+import { type AppRole, getAppRoles } from '@appsemble/utils';
 import { type ChangeEvent, type ReactNode, useCallback } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 
 import { messages } from './messages.js';
-import { type GroupMember } from '../../../../../../types.js';
+import { useApp } from '../../../index.js';
 
 interface GroupMemberRowProps {
   readonly member: GroupMember;
   readonly mayInvite: boolean;
-  readonly onEdit: (member: GroupMember, role: GroupRole) => Promise<void>;
+  readonly onEdit: (member: GroupMember, role: AppRole) => Promise<void>;
   readonly onRemove: (member: GroupMember) => Promise<void>;
 }
 
@@ -19,12 +20,16 @@ export function GroupMemberRow({
   onEdit,
   onRemove,
 }: GroupMemberRowProps): ReactNode {
+  const { formatMessage } = useIntl();
+
+  const { app } = useApp();
+
   const editRole = useCallback(
-    (event: ChangeEvent, role: GroupRole) => onEdit(member, role),
+    (event: ChangeEvent, role: AppRole) => onEdit(member, role),
     [member, onEdit],
   );
+
   const removeMember = useCallback(() => onRemove(member), [member, onRemove]);
-  const { formatMessage } = useIntl();
 
   const remove = useConfirmation({
     title: <FormattedMessage {...messages.removingMember} />,
@@ -34,20 +39,22 @@ export function GroupMemberRow({
     action: removeMember,
   });
 
+  const roleKeys = getAppRoles(app);
+
   return (
     <tr key={member.id}>
-      <td>{member.name || member.primaryEmail || member.id}</td>
+      <td>{member.name || member.email || member.id}</td>
       <td align="right">
         {mayInvite ? (
           <AsyncSelect name="role" onChange={editRole} value={member.role}>
-            {Object.values(GroupRole).map((role) => (
+            {roleKeys.map((role) => (
               <option key={role} value={role}>
-                {formatMessage(messages[role])}
+                {role}
               </option>
             ))}
           </AsyncSelect>
         ) : (
-          <FormattedMessage {...messages[member.role]} />
+          <span>{member.role}</span>
         )}
         {mayInvite ? (
           <Button

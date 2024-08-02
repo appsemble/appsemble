@@ -5,11 +5,15 @@ export const messages = defineMessages({
     id: 'app.sjzLbX',
     defaultMessage: 'Accept',
   },
-  description: {
-    id: 'app.bWEMmt',
-    defaultMessage: 'Would you like to join {groupName}?',
+  decline: {
+    id: 'app.pvtgR2',
+    defaultMessage: 'Decline',
   },
-  error: {
+  description: {
+    id: 'app.Yqebpa',
+    defaultMessage: 'Would you like to join the group {groupName}?',
+  },
+  inviteLoadingError: {
     id: 'app.SLVblb',
     defaultMessage: 'There was a problem loading your invite.',
   },
@@ -18,7 +22,19 @@ export const messages = defineMessages({
     defaultMessage: 'Your invite could not be found.',
   },
   accepted: {
-    id: 'app.AciR6R',
+    id: 'app.EuI3Ag',
     defaultMessage: 'Successfully joined {groupName}',
+  },
+  declined: {
+    id: 'app.KTZPFD',
+    defaultMessage: 'Successfully declined joining {groupName}',
+  },
+  submissionError: {
+    id: 'app.G1UGLZ',
+    defaultMessage: 'There was a problem submitting this form.',
+  },
+  emailConflict: {
+    id: 'app.n9hgKp',
+    defaultMessage: 'A group member with this email already exists.',
   },
 });

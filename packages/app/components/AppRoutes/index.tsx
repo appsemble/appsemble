@@ -12,13 +12,13 @@ import { useAppMember } from '../AppMemberProvider/index.js';
 import { useAppMessages } from '../AppMessagesProvider/index.js';
 import { AppSettings } from '../AppSettings/index.js';
 import { EditPassword } from '../EditPassword/index.js';
+import { GroupInvite } from '../GroupInvite/index.js';
 import { Login } from '../Login/index.js';
 import { OpenIDCallback } from '../OpenIDCallback/index.js';
 import { Page } from '../Page/index.js';
 import { Register } from '../Register/index.js';
 import { ResetPassword } from '../ResetPassword/index.js';
 import { SentryFeedback } from '../SentryFeedback/index.js';
-import { GroupInvite } from '../GroupInvite/index.js';
 import { Verify } from '../Verify/index.js';
 
 /**

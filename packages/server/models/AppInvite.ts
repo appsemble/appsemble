@@ -1,4 +1,4 @@
-import { type AppMemberRole } from '@appsemble/utils';
+import { type AppRole } from '@appsemble/utils';
 import {
   AllowNull,
   BelongsTo,
@@ -30,7 +30,7 @@ export class AppInvite extends Model {
   @Default('Member')
   @AllowNull(false)
   @Column(DataType.STRING)
-  role: AppMemberRole;
+  role: AppRole;
 
   @ForeignKey(() => User)
   @Index({ name: 'AppInvite_UserId_AppId_key', unique: true })

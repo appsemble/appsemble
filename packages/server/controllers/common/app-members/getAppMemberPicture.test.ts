@@ -8,12 +8,12 @@ import {
   Organization,
   OrganizationMember,
   type User,
-} from '../../../../models/index.js';
-import { setArgv } from '../../../../utils/argv.js';
-import { createServer } from '../../../../utils/createServer.js';
-import { createTestUser } from '../../../../utils/test/authorization.js';
-import { createDefaultAppWithSecurity } from '../../../../utils/test/defaultAppSecurity.js';
-import { useTestDatabase } from '../../../../utils/test/testSchema.js';
+} from '../../../models/index.js';
+import { setArgv } from '../../../utils/argv.js';
+import { createServer } from '../../../utils/createServer.js';
+import { createTestUser } from '../../../utils/test/authorization.js';
+import { createDefaultAppWithSecurity } from '../../../utils/test/defaultAppSecurity.js';
+import { useTestDatabase } from '../../../utils/test/testSchema.js';
 
 let organization: Organization;
 let user: User;

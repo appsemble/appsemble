@@ -9,7 +9,7 @@ import {
   useMessages,
 } from '@appsemble/react-components';
 import { type GroupInvite } from '@appsemble/types';
-import { type AppMemberRole, getAppRoles } from '@appsemble/utils';
+import { type AppRole, getAppRoles } from '@appsemble/utils';
 import axios from 'axios';
 import {
   type ChangeEvent,
@@ -203,7 +203,7 @@ export function AddGroupMemberModal({
               onChange={onChange}
               value={member.role}
             >
-              {roleKeys.map((r: AppMemberRole) => (
+              {roleKeys.map((r: AppRole) => (
                 <option key={r} value={r}>
                   {r}
                 </option>

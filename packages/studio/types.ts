@@ -9,12 +9,6 @@ export interface OrganizationMember {
   role: OrganizationMemberRole;
 }
 
-export interface GroupMember {
-  id: string;
-  name?: string;
-  primaryEmail?: string;
-}
-
 export interface Organization {
   id: string;
   name: string;

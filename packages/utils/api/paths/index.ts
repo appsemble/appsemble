@@ -1,11 +1,15 @@
+import { pathItems as appCollectionsAppCollectionIdAppsAppIdPinned } from './app-collections/appCollectionId/apps/appId/pinned.js';
+import { pathItems as appCollectionsAppCollectionIdAppsAppId } from './app-collections/appCollectionId/apps/appId.js';
+import { pathItems as appCollectionsAppCollectionIdApps } from './app-collections/appCollectionId/apps.js';
+import { pathItems as appCollectionsAppCollectionIdExpertProfileImage } from './app-collections/appCollectionId/expert/profileImage.js';
+import { pathItems as appCollectionsAppCollectionIdHeaderImage } from './app-collections/appCollectionId/headerImage.js';
+import { pathItems as appCollectionsAppCollectionId } from './app-collections/appCollectionId.js';
 import { pathItems as appInvitesTokenRespond } from './app-invites/token/respond.js';
 import { pathItems as appInvitesToken } from './app-invites/token.js';
-import { pathItems as appCollectionsAppCollectionIdAppsAppIdPinned } from './appCollections/appCollectionId/apps/appId/pinned.js';
-import { pathItems as appCollectionsAppCollectionIdAppsAppId } from './appCollections/appCollectionId/apps/appId.js';
-import { pathItems as appCollectionsAppCollectionIdApps } from './appCollections/appCollectionId/apps.js';
-import { pathItems as appCollectionsAppCollectionIdExpertProfileImage } from './appCollections/appCollectionId/expert/profileImage.js';
-import { pathItems as appCollectionsAppCollectionIdHeaderImage } from './appCollections/appCollectionId/headerImage.js';
-import { pathItems as appCollectionsAppCollectionId } from './appCollections/appCollectionId.js';
+import { pathItems as appMembersAppMemberIdPicture } from './app-members/appMemberId/picture.js';
+import { pathItems as appMembersAppMemberIdProperties } from './app-members/appMemberId/properties.js';
+import { pathItems as appMembersAppMemberIdRole } from './app-members/appMemberId/role.js';
+import { pathItems as appMembersAppMemberId } from './app-members/appMemberId.js';
 import { pathItems as appCollections } from './appCollections.js';
 import { pathItems as appsAppIdActionsPath } from './apps/appId/actions/path.js';
 import { pathItems as appsAppIdAssetsAssetId } from './apps/appId/assets/assetId.js';
@@ -27,8 +31,6 @@ import { pathItems as appsAppIdLock } from './apps/appId/lock.js';
 import { pathItems as appsAppIdMaskableIcon } from './apps/appId/maskableIcon.js';
 import { pathItems as appsAppIdMembersCurrentAuthOAuth2 } from './apps/appId/members/current/auth/oauth2.js';
 import { pathItems as appsAppIdMembersCurrent } from './apps/appId/members/current.js';
-import { pathItems as appsAppIdMembersMemberIdPicture } from './apps/appId/members/memberId/picture.js';
-import { pathItems as appsAppIdMembersMemberId } from './apps/appId/members/memberId.js';
 import { pathItems as appsAppIdMembers } from './apps/appId/members.js';
 import { pathItems as appsAppIdMessagesLanguage } from './apps/appId/messages/language.js';
 import { pathItems as appsAppIdMessages } from './apps/appId/messages.js';
@@ -95,6 +97,7 @@ import { pathItems as blocks } from './blocks.js';
 import { pathItems as containersAppIdLogsContainer } from './containerLogs.js';
 import { pathItems as groupInvitesTokenRespond } from './group-invites/token/respond.js';
 import { pathItems as groupInvitesToken } from './group-invites/token.js';
+import { pathItems as groupsMembersGroupMemberIdRole } from './group-members/groupMemberId/role.js';
 import { pathItems as groupsMembersGroupMemberId } from './group-members/groupMemberId.js';
 import { pathItems as groupsGroupIdInvites } from './groups/groupId/invites.js';
 import { pathItems as groupsGroupIdMembers } from './groups/groupId/members.js';
@@ -102,13 +105,13 @@ import { pathItems as groupsGroupId } from './groups/groupId.js';
 import { pathItems as health } from './health.js';
 import { pathItems as messagesLanguage } from './messages/language.js';
 import { pathItems as messages } from './messages.js';
+import { pathItems as organizationInvitesTokenRespond } from './organization-invites/token/respond.js';
+import { pathItems as organizationInvitesToken } from './organization-invites/token.js';
 import { pathItems as organizationsOrganizationIdAppCollections } from './organizations/organizationId/appCollections.js';
 import { pathItems as organizationsOrganizationIdAppsImport } from './organizations/organizationId/apps/import.js';
 import { pathItems as organizationsOrganizationIdApps } from './organizations/organizationId/apps.js';
 import { pathItems as organizationsOrganizationIdBlocks } from './organizations/organizationId/blocks.js';
 import { pathItems as organizationsOrganizationIdIcon } from './organizations/organizationId/icon.js';
-import { pathItems as organizationsOrganizationIdInvitesInviteTokenRespond } from './organizations/organizationId/invites/inviteToken/respond.js';
-import { pathItems as organizationsOrganizationIdInvitesInviteToken } from './organizations/organizationId/invites/inviteToken.js';
 import { pathItems as organizationsOrganizationIdInvitesResend } from './organizations/organizationId/invites/resend.js';
 import { pathItems as organizationsOrganizationIdInvites } from './organizations/organizationId/invites.js';
 import { pathItems as organizationsOrganizationIdMembersMemberIdRole } from './organizations/organizationId/members/memberId/role.js';
@@ -141,8 +144,6 @@ import { pathItems as usersCurrent } from './users/current.js';
 import { pathItems as usersSubscribed } from './users/subscribed.js';
 
 export const paths = {
-  '/api/app-invites/{token}/respond': appInvitesTokenRespond,
-  '/api/app-invites/{token}': appInvitesToken,
   '/api/app-collections/{appCollectionId}/apps/{appId}/pinned':
     appCollectionsAppCollectionIdAppsAppIdPinned,
   '/api/app-collections/{appCollectionId}/apps/{appId}': appCollectionsAppCollectionIdAppsAppId,
@@ -152,6 +153,12 @@ export const paths = {
   '/api/app-collections/{appCollectionId}/header-image': appCollectionsAppCollectionIdHeaderImage,
   '/api/app-collections/{appCollectionId}': appCollectionsAppCollectionId,
   '/api/app-collections': appCollections,
+  '/api/app-invites/{token}/respond': appInvitesTokenRespond,
+  '/api/app-invites/{token}': appInvitesToken,
+  '/api/app-members/{appMemberId}/picture': appMembersAppMemberIdPicture,
+  '/api/app-members/{appMemberId}/properties': appMembersAppMemberIdProperties,
+  '/api/app-members/{appMemberId}/role': appMembersAppMemberIdRole,
+  '/api/app-members/{appMemberId}': appMembersAppMemberId,
   '/api/apps/{appId}/actions/{path}': appsAppIdActionsPath,
   // XXX: Temporary workaround until this is fixed in Koas
   // See https://gitlab.com/remcohaszing/koas/-/issues/2
@@ -168,8 +175,6 @@ export const paths = {
   '/api/apps/{appId}/maskable-icon': appsAppIdMaskableIcon,
   '/api/apps/{appId}/members/current/auth/oauth2': appsAppIdMembersCurrentAuthOAuth2,
   '/api/apps/{appId}/members/current': appsAppIdMembersCurrent,
-  '/api/apps/{appId}/members/{memberId}/picture': appsAppIdMembersMemberIdPicture,
-  '/api/apps/{appId}/members/{memberId}': appsAppIdMembersMemberId,
   '/api/apps/{appId}/members': appsAppIdMembers,
   '/api/apps/{appId}/messages/{language}': appsAppIdMessagesLanguage,
   '/api/apps/{appId}/messages': appsAppIdMessages,
@@ -255,16 +260,14 @@ export const paths = {
   '/api/health': health,
   '/api/messages/{language}': messagesLanguage,
   '/api/messages': messages,
+  '/api/organization-invites/{token}/respond': organizationInvitesTokenRespond,
+  '/api/organization-invites/{token}': organizationInvitesToken,
   '/api/organizations/{organizationId}/app-collections': organizationsOrganizationIdAppCollections,
   '/api/organizations/{organizationId}/apps/import': organizationsOrganizationIdAppsImport,
   '/api/organizations/{organizationId}/apps': organizationsOrganizationIdApps,
   '/api/organizations/{organizationId}/blocks': organizationsOrganizationIdBlocks,
   '/api/organizations/{organizationId}/icon': organizationsOrganizationIdIcon,
   '/api/organizations/{organizationId}/invites/resend': organizationsOrganizationIdInvitesResend,
-  '/api/organizations/{organizationId}/invites/{inviteToken}/respond':
-    organizationsOrganizationIdInvitesInviteTokenRespond,
-  '/api/organizations/{organizationId}/invites/{inviteToken}':
-    organizationsOrganizationIdInvitesInviteToken,
   '/api/organizations/{organizationId}/invites': organizationsOrganizationIdInvites,
   '/api/organizations/{organizationId}/members/{memberId}/role':
     organizationsOrganizationIdMembersMemberIdRole,
@@ -275,9 +278,10 @@ export const paths = {
   '/api/organizations': organizations,
   '/api/saml/continue': samlContinue,
   '/api/ssl': ssl,
-  '/api/groups-invites/{token}/respond': groupInvitesTokenRespond,
-  '/api/groups-invites/{token}': groupInvitesToken,
-  '/api/groups-members/{groupMemberId}': groupsMembersGroupMemberId,
+  '/api/group-invites/{token}/respond': groupInvitesTokenRespond,
+  '/api/group-invites/{token}': groupInvitesToken,
+  '/api/group-members/{groupMemberId}/role': groupsMembersGroupMemberIdRole,
+  '/api/group-members/{groupMemberId}': groupsMembersGroupMemberId,
   '/api/groups/{groupId}/invites': groupsGroupIdInvites,
   '/api/groups/{groupId}/members': groupsGroupIdMembers,
   '/api/groups/{groupId}': groupsGroupId,

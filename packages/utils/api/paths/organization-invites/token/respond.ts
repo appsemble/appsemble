@@ -2,9 +2,8 @@ import { type OpenAPIV3 } from 'openapi-types';
 
 export const pathItems: OpenAPIV3.PathItemObject = {
   parameters: [
-    { $ref: '#/components/parameters/organizationId' },
     {
-      name: 'inviteToken',
+      name: 'token',
       in: 'path',
       description: 'The token of the invite.',
       required: true,
@@ -28,9 +27,6 @@ export const pathItems: OpenAPIV3.PathItemObject = {
             properties: {
               response: {
                 type: 'boolean',
-              },
-              token: {
-                type: 'string',
               },
             },
           },

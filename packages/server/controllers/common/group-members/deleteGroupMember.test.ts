@@ -67,7 +67,7 @@ beforeEach(async () => {
   });
 });
 
-describe('removeGroupMember', () => {
+describe('deleteGroupMember', () => {
   it('should remove a group member from a group', async () => {
     const userB = await User.create({
       password: user.password,

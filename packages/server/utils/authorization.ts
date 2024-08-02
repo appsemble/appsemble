@@ -1,47 +1,36 @@
 import { assertKoaError } from '@appsemble/node-utils';
 import { type CustomAppPermission } from '@appsemble/types';
 import {
-  type AppMemberRole,
+  type AppRole,
   checkAppRoleAppPermissions,
   checkOrganizationRoleAppPermissions,
   checkOrganizationRoleOrganizationPermissions,
-  type OrganizationMemberRole,
   type OrganizationPermission,
+  type OrganizationRole,
 } from '@appsemble/utils';
 import { type Context } from 'koa';
 
-import {
-  App,
-  AppMember,
-  Group,
-  GroupMember,
-  Organization,
-  OrganizationMember,
-} from '../models/index.js';
+import { App, AppMember, GroupMember, Organization, OrganizationMember } from '../models/index.js';
 
+// TODO check and fix this logic
 async function getAppMemberAcquiredAppRoles(
   appMember: AppMember,
   appId: number,
 ): Promise<string[]> {
   const groupMemberships = await GroupMember.findAll({
-    attributes: ['id'],
+    attributes: ['id', 'role'],
     where: {
-      AppId: appId,
       AppMemberId: appMember.id,
-    },
-    include: {
-      model: Group,
-      attributes: ['roles'],
     },
   });
 
-  const groupRoles = groupMemberships.flatMap((groupMembership) => groupMembership.Group.roles);
+  const groupRoles = groupMemberships.flatMap((groupMembership) => groupMembership.role);
 
-  return Array.from(new Set(...groupRoles, appMember.role));
+  return Array.from(new Set([...groupRoles, appMember.role]));
 }
 
-async function getAppMemberAppRoles(appMemberId: string, appId: number): Promise<AppMemberRole[]> {
-  const appMember = await AppMember.findByPk(appMemberId, { attributes: ['role'] });
+async function getAppMemberAppRoles(appMemberId: string, appId: number): Promise<AppRole[]> {
+  const appMember = await AppMember.findByPk(appMemberId, { attributes: ['id', 'role'] });
 
   if (!appMember) {
     return [];
@@ -50,7 +39,7 @@ async function getAppMemberAppRoles(appMemberId: string, appId: number): Promise
   return getAppMemberAcquiredAppRoles(appMember, appId);
 }
 
-async function getUserAppRoles(userId: string, appId: number): Promise<AppMemberRole[]> {
+async function getUserAppRoles(userId: string, appId: number): Promise<AppRole[]> {
   const appMember = await AppMember.findOne({
     attributes: ['id', 'role'],
     where: {
@@ -69,7 +58,7 @@ async function getUserAppRoles(userId: string, appId: number): Promise<AppMember
 async function getUserOrganizationRoles(
   userId: string,
   organizationId: string,
-): Promise<OrganizationMemberRole[]> {
+): Promise<OrganizationRole[]> {
   const organizationMember = await OrganizationMember.findOne({
     attributes: ['role'],
     where: {

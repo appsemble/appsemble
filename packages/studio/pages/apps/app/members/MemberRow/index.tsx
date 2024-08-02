@@ -11,9 +11,9 @@ import {
 } from '@appsemble/react-components';
 import { type AppMemberInfo } from '@appsemble/types';
 import {
-  appMemberRoles,
   assignAppMemberProperties,
   checkOrganizationRoleOrganizationPermissions,
+  getAppRoles,
   OrganizationPermission,
 } from '@appsemble/utils';
 import axios from 'axios';
@@ -42,9 +42,15 @@ export function MemberRow({ member, onChange }: AppMemberRowProperties): ReactNo
 
   const userOrganization = organizations?.find((org) => org.id === app?.OrganizationId);
 
-  const mayUpdateAppMembers = checkOrganizationRoleOrganizationPermissions(userOrganization.role, [
-    OrganizationPermission.PatchAppMembers,
-  ]);
+  const mayUpdateAppMemberRoles = checkOrganizationRoleOrganizationPermissions(
+    userOrganization.role,
+    [OrganizationPermission.UpdateAppMemberRoles],
+  );
+
+  const mayPatchAppMemberProperties = checkOrganizationRoleOrganizationPermissions(
+    userOrganization.role,
+    [OrganizationPermission.PatchAppMemberProperties],
+  );
 
   const defaultValues = useMemo(
     () => ({
@@ -66,14 +72,9 @@ export function MemberRow({ member, onChange }: AppMemberRowProperties): ReactNo
       const { value: role } = event.currentTarget;
 
       try {
-        const formData = new FormData();
-        formData.append('role', role);
-        assignAppMemberProperties(Object.fromEntries(defaultValues.annotations), formData);
-
-        const { data } = await axios.patch<AppMemberInfo>(
-          `/api/apps/${app.id}/members/${member.sub}`,
-          formData,
-        );
+        const { data } = await axios.put<AppMemberInfo>(`/api/app-members/${member.sub}/role`, {
+          role,
+        });
 
         push({
           color: 'success',
@@ -87,28 +88,25 @@ export function MemberRow({ member, onChange }: AppMemberRowProperties): ReactNo
         push({ body: formatMessage(messages.changeRoleError) });
       }
     },
-    [app.id, defaultValues.annotations, formatMessage, member.sub, onChange, push],
+    [formatMessage, member.sub, onChange, push],
   );
 
-  const editProperties = useCallback(
+  const onUpdateProperties = useCallback(
     async ({ annotations }: typeof defaultValues) => {
       const formData = new FormData();
-      formData.append('role', member.role);
       assignAppMemberProperties(Object.fromEntries(annotations), formData);
 
       const { data } = await axios.patch<AppMemberInfo>(
-        `/api/apps/${app.id}/members/${member.sub}`,
+        `/api/app-members/${member.sub}/properties`,
         formData,
       );
       editModal.disable();
       onChange(data);
     },
-    [app, member, editModal, onChange],
+    [member, editModal, onChange],
   );
 
-  const roleKeys = Array.from(
-    new Set([...Object.keys(app?.definition.security?.roles), ...Object.keys(appMemberRoles)]),
-  );
+  const roleKeys = getAppRoles(app);
 
   return (
     <>
@@ -131,22 +129,31 @@ export function MemberRow({ member, onChange }: AppMemberRowProperties): ReactNo
         </td>
         <td className={styles.propertyRow}>
           <div className="is-flex is-justify-content-space-between is-flex-grow-1">
-            {member.properties && Object.keys(member.properties).length ? (
+            {member.properties ? (
               <span className={styles.property}>{JSON.stringify(member.properties)}</span>
             ) : (
               <span className="is-unselectable has-text-grey">
                 (<FormattedMessage {...messages.empty} />)
               </span>
             )}
-            <Button color="primary" icon="edit" onClick={editModal.enable} />
+            <Button
+              color="primary"
+              disabled={!mayPatchAppMemberProperties}
+              icon="edit"
+              onClick={editModal.enable}
+            />
           </div>
         </td>
         <td className="has-text-right">
           <div className="control is-inline">
-            <AsyncSelect disabled={!mayUpdateAppMembers} onChange={onChangeRole}>
+            <AsyncSelect
+              defaultValue={member.role}
+              disabled={!mayUpdateAppMemberRoles}
+              onChange={onChangeRole}
+            >
               {roleKeys.map((role) => (
-                <option key={role} selected={role === member.role} value={role}>
-                  {app.messages?.app?.[`app.roles.${role}`] || role}
+                <option key={role} value={role}>
+                  {role}
                 </option>
               ))}
             </AsyncSelect>
@@ -165,7 +172,7 @@ export function MemberRow({ member, onChange }: AppMemberRowProperties): ReactNo
         }
         isActive={editModal.enabled}
         onClose={editModal.disable}
-        onSubmit={editProperties}
+        onSubmit={onUpdateProperties}
         title={<FormattedMessage {...messages.editProperties} />}
       >
         <Title className="mb-0" level={5}>

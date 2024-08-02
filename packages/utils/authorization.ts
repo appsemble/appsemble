@@ -6,30 +6,27 @@ import {
 } from '@appsemble/types';
 
 import {
-  appMemberRoles,
   appOrganizationPermissionMapping,
   type AppPermission,
-  type OrganizationMemberRole,
-  organizationMemberRoles,
+  appRoles,
   type OrganizationPermission,
+  type OrganizationRole,
+  organizationRoles,
 } from './constants/index.js';
 
 export function getAppRoles(app: App): string[] {
   return Array.from(
-    new Set([
-      ...Object.keys(app?.definition.security?.roles || {}),
-      ...Object.keys(appMemberRoles),
-    ]),
+    new Set([...Object.keys(app?.definition.security?.roles || {}), ...Object.keys(appRoles)]),
   );
 }
 
 export function getAppRolePermissionsRecursively(
   appSecurityDefinition: Security,
-  appRoles: string[],
+  roles: string[],
 ): CustomAppPermission[] {
   const accumulatedPermissions: CustomAppPermission[] = [];
 
-  for (const appRole of appRoles) {
+  for (const appRole of roles) {
     const appRoleAccumulatedPermissions: CustomAppPermission[] = [];
     const appRoleDefinition = appSecurityDefinition.roles[appRole];
 
@@ -46,7 +43,7 @@ export function getAppRolePermissionsRecursively(
         );
       }
     } else {
-      const predefinedRolePermissions = appMemberRoles[appRole as keyof typeof appMemberRoles];
+      const predefinedRolePermissions = appRoles[appRole as keyof typeof appRoles];
       if (predefinedRolePermissions) {
         appRoleAccumulatedPermissions.push(...predefinedRolePermissions);
       }
@@ -78,10 +75,10 @@ export function checkAppRoleAppPermissions(
 }
 
 export function checkOrganizationRoleAppPermissions(
-  organizationRole: OrganizationMemberRole,
+  organizationRole: OrganizationRole,
   requiredPermissions: CustomAppPermission[],
 ): boolean {
-  const organizationRolePermissions = organizationMemberRoles[organizationRole];
+  const organizationRolePermissions = organizationRoles[organizationRole];
 
   return requiredPermissions.every((p) => {
     let mappedPermission = appOrganizationPermissionMapping[p as AppPermission];
@@ -93,7 +90,7 @@ export function checkOrganizationRoleAppPermissions(
         mappedPermission =
           appOrganizationPermissionMapping[
             (p as CustomAppResourcePermission).replace(/:[^:]*:/, ':all:') as AppPermission
-            ];
+          ];
       }
     }
 
@@ -102,8 +99,8 @@ export function checkOrganizationRoleAppPermissions(
 }
 
 export function checkOrganizationRoleOrganizationPermissions(
-  organizationRole: OrganizationMemberRole,
+  organizationRole: OrganizationRole,
   requiredPermissions: OrganizationPermission[],
 ): boolean {
-  return requiredPermissions.every((p) => organizationMemberRoles[organizationRole].includes(p));
+  return requiredPermissions.every((p) => organizationRoles[organizationRole].includes(p));
 }

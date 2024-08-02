@@ -80,9 +80,9 @@ declare module 'koas-parameters' {
     controllerVersion: string;
     clientId: string;
     language: string;
-    memberId: string;
     organizationMemberId: string;
     groupMemberId: string;
+    appMemberId: string;
     organizationId: string;
     path: string;
     resourceId: number;

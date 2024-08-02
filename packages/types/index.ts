@@ -1,4 +1,4 @@
-import { type AppMemberRole, type AppPermission } from '@appsemble/utils';
+import { type AppPermission, type AppRole } from '@appsemble/utils';
 import { type IconName } from '@fortawesome/fontawesome-common-types';
 import { type Schema } from 'jsonschema';
 import { type OpenAPIV3 } from 'openapi-types';
@@ -723,7 +723,7 @@ export type CustomAppPermission = AppPermission | CustomAppResourcePermission;
 export interface RoleDefinition {
   description?: string;
   defaultPage?: string;
-  inherits?: AppMemberRole[];
+  inherits?: AppRole[];
   permissions?: CustomAppPermission[];
 }
 
@@ -2218,6 +2218,11 @@ export interface AppInvite {
  */
 export interface GroupInvite {
   /**
+   * The name of the group.
+   */
+  groupName?: string;
+
+  /**
    * The email address of the group member to invite.
    */
   email: string;
@@ -2248,6 +2253,8 @@ export interface AppMember {
 export interface GroupMember {
   id: string;
   role: string;
+  name: string;
+  email: string;
 }
 
 /**

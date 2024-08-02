@@ -39,7 +39,7 @@ beforeEach(async () => {
   });
 });
 
-describe('setOrganizationMemberRole', () => {
+describe('updateOrganizationMemberRole', () => {
   it('should change the role of other members', async () => {
     const userB = await User.create({
       name: 'Foo',

@@ -3,47 +3,25 @@ import {
   Content,
   Loader,
   Message,
-  PasswordField,
-  PasswordStrengthIndicator,
-  SimpleForm,
-  SimpleFormError,
-  SimpleFormField,
-  SimpleSubmit,
   useData,
   useQuery,
 } from '@appsemble/react-components';
-import { type AppInvite as AppInviteType, type AppMemberInfo } from '@appsemble/types';
-import { timezone } from '@appsemble/web-utils';
+import { type AppMemberInfo, type GroupInvite as GroupInviteType } from '@appsemble/types';
 import axios from 'axios';
 import { type ReactNode, useCallback, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 import { messages } from './messages.js';
 import { apiUrl } from '../../../utils/settings.js';
-import { useAppDefinition } from '../../AppDefinitionProvider/index.js';
-import { useAppMember } from '../../AppMemberProvider/index.js';
-import { useAppMessages } from '../../AppMessagesProvider/index.js';
-
-interface AppInviteFormProps {
-  readonly password: string;
-
-  readonly accepted: boolean;
-}
 
 export function GroupInvitePrompt(): ReactNode {
   const query = useQuery();
-
-  const { definition } = useAppDefinition();
-  const { passwordLogin } = useAppMember();
-  const { getAppMessage } = useAppMessages();
   const navigate = useNavigate();
-  const { lang } = useParams<{ lang: string }>();
 
   const [accepted, setAccepted] = useState(false);
   const [declined, setDeclined] = useState(false);
-
-  const appName = (getAppMessage({ id: 'name' }).format() as string) ?? definition.name;
+  const [error, setError] = useState(null);
 
   const token = query.get('token');
 
@@ -51,29 +29,30 @@ export function GroupInvitePrompt(): ReactNode {
     data: invite,
     error: inviteError,
     loading,
-  } = useData<AppInviteType>(`${apiUrl}/api/group-invites/${token}`);
+  } = useData<GroupInviteType>(`${apiUrl}/api/group-invites/${token}`);
 
   const decline = useCallback(async () => {
-    await axios.post<AppMemberInfo>(`${apiUrl}/api/group-invites/${token}/respond`, {
-      response: false,
-    });
-    setDeclined(true);
+    try {
+      await axios.post<AppMemberInfo>(`${apiUrl}/api/group-invites/${token}/respond`, {
+        response: false,
+      });
+      setDeclined(true);
+    } catch (error_) {
+      setError(error_);
+    }
   }, [token]);
 
-  const accept = useCallback(
-    async (props: AppInviteFormProps) => {
+  const accept = useCallback(async () => {
+    try {
       await axios.post<AppMemberInfo>(`${apiUrl}/api/group-invites/${token}/respond`, {
-        timezone,
-        locale: lang,
         response: true,
-        password: props.password,
       });
       setAccepted(true);
-      await passwordLogin({ username: invite.email, password: props.password });
       navigate('/');
-    },
-    [invite, lang, navigate, passwordLogin, token],
-  );
+    } catch (error_) {
+      setError(error_);
+    }
+  }, [navigate, token]);
 
   if (loading) {
     return <Loader />;
@@ -99,7 +78,7 @@ export function GroupInvitePrompt(): ReactNode {
         <Message color="success">
           <FormattedMessage
             {...messages.accepted}
-            values={{ appName: <strong>{appName}</strong> }}
+            values={{ groupName: <strong>{invite.groupName}</strong> }}
           />
         </Message>
       </Content>
@@ -112,7 +91,7 @@ export function GroupInvitePrompt(): ReactNode {
         <Message color="success">
           <FormattedMessage
             {...messages.declined}
-            values={{ appName: <strong>{appName}</strong> }}
+            values={{ groupName: <strong>{invite.groupName}</strong> }}
           />
         </Message>
       </Content>
@@ -124,40 +103,26 @@ export function GroupInvitePrompt(): ReactNode {
       <p className="content has-text-centered">
         <FormattedMessage
           {...messages.description}
-          values={{ appName: <strong>{appName}</strong> }}
+          values={{ groupName: <strong>{invite.groupName}</strong> }}
         />
       </p>
-      <p className="content has-text-centered">
-        <FormattedMessage {...messages.setPassword} />
-      </p>
-      <SimpleForm defaultValues={{ password: '', accepted: false }} onSubmit={accept}>
-        <SimpleFormField
-          autoComplete="new-password"
-          component={PasswordField}
-          help={<PasswordStrengthIndicator minLength={8} name="password" />}
-          label={<FormattedMessage {...messages.passwordLabel} />}
-          minLength={8}
-          name="password"
-          required
-        />
-        <div className="mt-2 is-flex is-justify-content-space-between">
-          <AsyncButton color="danger" disabled={accepted || declined} onClick={decline}>
-            <FormattedMessage {...messages.decline} />
-          </AsyncButton>
-          <SimpleSubmit color="primary" disabled={accepted || declined}>
-            <FormattedMessage {...messages.accept} />
-          </SimpleSubmit>
+      <div className="mt-2 is-flex is-justify-content-space-evenly">
+        <AsyncButton color="danger" disabled={accepted || declined} onClick={decline}>
+          <FormattedMessage {...messages.decline} />
+        </AsyncButton>
+        <AsyncButton color="primary" disabled={accepted || declined} onClick={accept}>
+          <FormattedMessage {...messages.accept} />
+        </AsyncButton>
+      </div>
+      {error ? (
+        <div className="mt-2 is-flex is-justify-content-center">
+          {axios.isAxiosError(error) && error.response.status === 409 ? (
+            <FormattedMessage {...messages.emailConflict} />
+          ) : (
+            <FormattedMessage {...messages.submissionError} />
+          )}
         </div>
-        <SimpleFormError>
-          {({ error }) =>
-            axios.isAxiosError(error) && error.response.status === 409 ? (
-              <FormattedMessage {...messages.emailConflict} />
-            ) : (
-              <FormattedMessage {...messages.submissionError} />
-            )
-          }
-        </SimpleFormError>
-      </SimpleForm>
+      ) : null}
     </Content>
   );
 }

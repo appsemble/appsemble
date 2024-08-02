@@ -6,7 +6,7 @@ import {
   type TokenResponse,
   type UserInfo,
 } from '@appsemble/types';
-import { type AppMemberRole, type OrganizationMemberRole } from '@appsemble/utils';
+import { type AppRole, type OrganizationMemberRole } from '@appsemble/utils';
 import { setUser as setSentryUser } from '@sentry/browser';
 import axios, { type AxiosHeaders } from 'axios';
 import { jwtDecode } from 'jwt-decode';
@@ -44,7 +44,7 @@ export interface UserApp extends App {
   /**
    * The user’s role within the organization.
    */
-  role: AppMemberRole;
+  role: AppRole;
 }
 
 interface UserContext {

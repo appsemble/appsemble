@@ -11,7 +11,7 @@ import {
   useMeta,
   useToggle,
 } from '@appsemble/react-components';
-import { type AppInvite, type Group, type GroupInvite } from '@appsemble/types';
+import { type AppInvite, type Group, type GroupInvite, type GroupMember } from '@appsemble/types';
 import {
   checkOrganizationRoleOrganizationPermissions,
   OrganizationPermission,
@@ -28,7 +28,6 @@ import { AnnotationsTable } from '../../../../../components/AnnotationsTable/ind
 import { AsyncDataView } from '../../../../../components/AsyncDataView/index.js';
 import { HeaderControl } from '../../../../../components/HeaderControl/index.js';
 import { useUser } from '../../../../../components/UserProvider/index.js';
-import { type GroupMember } from '../../../../../types.js';
 import { useApp } from '../../index.js';
 
 export function GroupPage(): ReactNode {
@@ -64,7 +63,9 @@ export function GroupPage(): ReactNode {
   const onEditMember = useCallback(
     // Async ({ id }: GroupMember, role: GroupMemberRole) => {
     async ({ id }: GroupMember, role: any) => {
-      const { data: updated } = await axios.put<GroupMember>(`/api/group-members/${id}`, { role });
+      const { data: updated } = await axios.put<GroupMember>(`/api/group-members/${id}/role`, {
+        role,
+      });
       memberResult.setData((members) =>
         members.map((member) => (member.id === id ? updated : member)),
       );

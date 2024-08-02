@@ -9,7 +9,7 @@ import {
   useMessages,
 } from '@appsemble/react-components';
 import { type OrganizationInvite } from '@appsemble/types';
-import { type OrganizationMemberRole, organizationMemberRoles } from '@appsemble/utils';
+import { type OrganizationMemberRole, organizationRoles } from '@appsemble/utils';
 import axios from 'axios';
 import {
   type ChangeEvent,
@@ -43,7 +43,7 @@ const defaultInvite = {
   role: 'Member',
 };
 
-const roleKeys = Object.keys(organizationMemberRoles);
+const roleKeys = Object.keys(organizationRoles);
 
 /**
  * A modal form for inviting one or more people to the organization.

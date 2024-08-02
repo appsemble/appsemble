@@ -67,7 +67,7 @@ export function MemberTable(): ReactNode {
   const mayEdit =
     me &&
     checkOrganizationRoleOrganizationPermissions(me.role, [
-      OrganizationPermission.UpdateOrganizationMembers,
+      OrganizationPermission.UpdateOrganizationMemberRoles,
     ]);
 
   const mayInvite =

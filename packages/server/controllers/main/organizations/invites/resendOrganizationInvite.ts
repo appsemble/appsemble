@@ -35,16 +35,18 @@ export async function resendOrganizationInvite(ctx: Context): Promise<void> {
   try {
     await mailer.sendTranslatedEmail({
       to: {
-        name: existingOrganizationInvite.User.name,
+        ...(existingOrganizationInvite.User ? { name: existingOrganizationInvite.User.name } : {}),
         email,
       },
       emailName: 'organizationInvite',
-      locale: existingOrganizationInvite.User.locale,
+      ...(existingOrganizationInvite.User
+        ? { locale: existingOrganizationInvite.User.locale }
+        : {}),
       values: {
         link: (text) =>
           `[${text}](${argv.host}/organization-invite?token=${existingOrganizationInvite.key})`,
         organization: organizationId,
-        name: existingOrganizationInvite.User.name || 'null',
+        name: existingOrganizationInvite.User?.name || 'null',
         appName: 'null',
       },
     });

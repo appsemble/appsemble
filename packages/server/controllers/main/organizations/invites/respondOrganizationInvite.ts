@@ -1,28 +1,26 @@
 import { assertKoaError } from '@appsemble/node-utils';
 import { type Context } from 'koa';
 
-import { Organization, OrganizationInvite, OrganizationMember } from '../../../../models/index.js';
+import { OrganizationInvite, OrganizationMember } from '../../../../models/index.js';
 
 export async function respondOrganizationInvite(ctx: Context): Promise<void> {
   const {
-    pathParams: { organizationId },
+    pathParams: { token },
     request: {
-      body: { response, token },
+      body: { response },
     },
     user: { id: userId },
   } = ctx;
 
-  const invite = await OrganizationInvite.findOne({ where: { key: token } });
+  const invite = await OrganizationInvite.findOne({
+    where: { key: token },
+  });
 
   assertKoaError(!invite, ctx, 404, 'This token is invalid');
 
-  const organization = await Organization.findByPk(invite.OrganizationId);
-
-  assertKoaError(organizationId !== organization.id, ctx, 406, 'Organization IDs do not match');
-
   if (response) {
     await OrganizationMember.create({
-      OrganizationId: organizationId,
+      OrganizationId: invite.OrganizationId,
       UserId: userId,
       role: invite.role,
     });

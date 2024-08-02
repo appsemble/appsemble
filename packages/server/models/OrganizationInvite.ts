@@ -1,4 +1,4 @@
-import { type OrganizationMemberRole, organizationMemberRoles } from '@appsemble/utils';
+import { type OrganizationMemberRole, organizationRoles } from '@appsemble/utils';
 import {
   AllowNull,
   BelongsTo,
@@ -29,7 +29,7 @@ export class OrganizationInvite extends Model {
 
   @Default('Member')
   @AllowNull(false)
-  @Column(DataType.ENUM(...Object.keys(organizationMemberRoles)))
+  @Column(DataType.ENUM(...Object.keys(organizationRoles)))
   role: OrganizationMemberRole;
 
   @ForeignKey(() => User)

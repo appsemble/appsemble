@@ -1,14 +1,6 @@
 import { defineMessages } from 'react-intl';
 
 export const messages = defineMessages({
-  manager: {
-    id: 'studio.KQzcqr',
-    defaultMessage: 'Manager',
-  },
-  member: {
-    id: 'studio.7L86Z5',
-    defaultMessage: 'Member',
-  },
   cancelLabel: {
     id: 'studio.47FYwb',
     defaultMessage: 'Cancel',
@@ -22,7 +14,7 @@ export const messages = defineMessages({
     defaultMessage: 'Removing member',
   },
   removeWarning: {
-    id: 'studio.dCQxJz',
+    id: 'studio.FAnTZ3',
     defaultMessage: 'Are you sure you want to remove this member from the group?',
   },
 });

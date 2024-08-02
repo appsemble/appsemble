@@ -3,7 +3,7 @@ import { type OpenAPIV3 } from 'openapi-types';
 export const pathItems: OpenAPIV3.PathItemObject = {
   parameters: [{ $ref: '#/components/parameters/groupMemberId' }],
   get: {
-    tags: ['common', 'group-members'],
+    tags: ['common', 'group-member'],
     description: 'Get a certain group member from a group',
     operationId: 'getGroupMember',
     responses: {
@@ -12,7 +12,7 @@ export const pathItems: OpenAPIV3.PathItemObject = {
         content: {
           'application/json': {
             schema: {
-              $ref: '#/components/schemas/OrganizationMember',
+              $ref: '#/components/schemas/GroupMember',
             },
           },
         },
@@ -20,9 +20,9 @@ export const pathItems: OpenAPIV3.PathItemObject = {
     },
   },
   delete: {
-    tags: ['common', 'group-members'],
+    tags: ['common', 'group-member'],
     description: 'Remove a member from a group.',
-    operationId: 'removeGroupMember',
+    operationId: 'deleteGroupMember',
     responses: {
       204: {
         description: 'The group member has been removed successfully.',

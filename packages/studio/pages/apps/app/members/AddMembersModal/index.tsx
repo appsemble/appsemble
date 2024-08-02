@@ -9,7 +9,7 @@ import {
   useMessages,
 } from '@appsemble/react-components';
 import { type AppInvite } from '@appsemble/types';
-import { type AppMemberRole, appMemberRoles, getAppRoles } from "@appsemble/utils";
+import { type AppRole, getAppRoles } from '@appsemble/utils';
 import axios from 'axios';
 import {
   type ChangeEvent,
@@ -196,7 +196,7 @@ export function AddMembersModal({ onInvited, state }: AddMembersModalProps): Rea
               onChange={onChange}
               value={member.role}
             >
-              {roleKeys.map((r: AppMemberRole) => (
+              {roleKeys.map((r: AppRole) => (
                 <option key={r} value={r}>
                   {r}
                 </option>
