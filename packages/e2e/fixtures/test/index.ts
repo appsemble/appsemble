@@ -1,4 +1,24 @@
-import { test as base, expect } from '@playwright/test';
+import { type App } from '@appsemble/types';
+import { test as base, expect, type Page } from '@playwright/test';
+
+/**
+ * Get the appId.
+ *
+ * TODO: figure out a better way of getting the app id.
+ *
+ * @param page The playwright page.
+ * @returns appId The app id.
+ */
+export async function getAppId(page: Page): Promise<number> {
+  // Const token = localStorage.getItem('refresh_token');
+  // const { aud } = jwtDecode<JwtPayload>(token);
+  // return Number(aud?.split(':')[1]);
+  const [path] = new URL(page.url()).hostname.split('.');
+  const response = await fetch('/api/apps');
+  const apps: App[] = await response.json();
+  const index = apps.findIndex((app) => app.path === path);
+  return apps[index].id;
+}
 
 interface Fixtures {
   /**
@@ -74,7 +94,10 @@ export const test = base.extend<Fixtures>({
         await page.getByTestId('password').fill(process.env.BOT_ACCOUNT_PASSWORD);
         await page.getByTestId('login').click();
 
-        const response = await page.waitForResponse('/api/oauth2/consent/verify');
+        const appId = await getAppId(page);
+        const response = await page.waitForResponse(
+          `/api/users/current/auth/oauth2/apps/${appId}/consent/verify`,
+        );
         if (response.ok()) {
           return;
         }
