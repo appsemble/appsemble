@@ -128,14 +128,18 @@ export async function createAsset(ctx: Context): Promise<void> {
       },
     },
     user,
+    users,
   } = ctx;
 
-  const app = await App.findByPk(appId, { attributes: ['id', 'demoMode'] });
+  const app = await App.findByPk(appId, { attributes: ['id', 'demoMode', 'OrganizationId'] });
   const appMember = await getUserAppAccount(appId, user?.id);
 
   assertKoaError(!app, ctx, 404, 'App not found');
 
   let asset: Asset;
+  if ('studio' in users || 'cli' in users) {
+    await checkRole(ctx, app.OrganizationId, Permission.ManageAssets);
+  }
   try {
     asset = await Asset.create({
       AppId: appId,
@@ -169,7 +173,7 @@ export async function deleteAsset(ctx: Context): Promise<void> {
 
   assertKoaError(!app, ctx, 404, 'App not found');
 
-  await checkRole(ctx, app.OrganizationId, Permission.ReadAssets);
+  await checkRole(ctx, app.OrganizationId, Permission.ManageAssets);
 
   const assets = await Asset.findAll({
     where: {

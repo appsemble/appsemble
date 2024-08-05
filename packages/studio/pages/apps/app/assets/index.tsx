@@ -18,7 +18,7 @@ import {
   useToggle,
 } from '@appsemble/react-components';
 import { type Asset } from '@appsemble/types';
-import { compareStrings, normalize } from '@appsemble/utils';
+import { compareStrings, normalize, Permission } from '@appsemble/utils';
 import axios from 'axios';
 import { type ChangeEvent, type ReactNode, useCallback, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
@@ -28,6 +28,8 @@ import { AssetRow } from './AssetRow/index.js';
 import styles from './index.module.css';
 import { messages } from './messages.js';
 import { AsyncDataView } from '../../../../components/AsyncDataView/index.js';
+import { useUser } from '../../../../components/UserProvider/index.js';
+import { checkRole } from '../../../../utils/checkRole.js';
 import { useApp } from '../index.js';
 
 interface FormValues {
@@ -47,6 +49,7 @@ export function AssetsPage(): ReactNode {
   const { formatMessage } = useIntl();
   const push = useMessages();
   const [searchParams, setSearchParams] = useSearchParams();
+  const { organizations } = useUser();
 
   const offset = Math.max(Number(searchParams.get('offset')), 0);
   const limit =
@@ -63,6 +66,11 @@ export function AssetsPage(): ReactNode {
       ...(Number.isFinite(limit) && { $top: String(limit) }),
     })}`,
   );
+
+  const isOrganizationMember = organizations.find(
+    (organization) => organization.id === app.OrganizationId,
+  );
+  const mayUploadAsset = checkRole(isOrganizationMember.role, Permission.ManageAssets);
 
   const [selectedAssets, setSelectedAssets] = useState<string[]>([]);
   const dialog = useToggle();
@@ -188,7 +196,7 @@ export function AssetsPage(): ReactNode {
         <FormattedMessage {...messages.title} />
       </Title>
       <div className="buttons">
-        <Button color="primary" icon="upload" onClick={dialog.enable}>
+        <Button color="primary" disabled={!mayUploadAsset} icon="upload" onClick={dialog.enable}>
           <FormattedMessage {...messages.uploadButton} />
         </Button>
         <Button
