@@ -23,27 +23,24 @@ export async function respondAppInvite(ctx: Context): Promise<void> {
   const app = await App.findByPk(invite.AppId, { attributes: ['id', 'definition'] });
 
   if (response) {
-    const existingAppMember = await AppMember.findOne({ where: { email: invite.email } });
-
-    assertKoaError(
-      Boolean(existingAppMember),
-      ctx,
-      409,
-      'App member with this email already exists',
-    );
+    const existingAppMember = await AppMember.findOne({
+      where: { AppId: app.id, email: invite.email },
+    });
 
     const hashedPassword = await hash(password, 10);
     const key = randomBytes(40).toString('hex');
 
-    await AppMember.create({
-      AppId: app.id,
-      email: invite.email.toLowerCase(),
-      role: invite.role,
-      password: hashedPassword,
-      emailKey: key,
-      timezone,
-      locale,
-    });
+    await (existingAppMember
+      ? existingAppMember.update({ role: invite.role, password: hashedPassword })
+      : AppMember.create({
+          AppId: app.id,
+          email: invite.email.toLowerCase(),
+          role: invite.role,
+          password: hashedPassword,
+          emailKey: key,
+          timezone,
+          locale,
+        }));
 
     const url = new URL('/Verify', getAppUrl(app));
     url.searchParams.set('token', key);
