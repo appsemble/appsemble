@@ -67,7 +67,7 @@ export function UserProvider({ children }: UserProviderProps): ReactNode {
   const accessTokenRef = useRef<string | null>(localStorage.access_token);
 
   const refreshUserInfo = useCallback(async () => {
-    const { data } = await axios.get<UserInfo>('/api/users/current');
+    const { data } = await axios.get<UserInfo>('/api/users/current/auth/oauth2');
     setSentryUser({ id: data.sub });
     setUserInfo(data);
   }, []);
