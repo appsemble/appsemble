@@ -155,7 +155,7 @@ export function UserProvider({ children }: UserProviderProps): ReactNode {
         const [auth, { sub }] = await fetchToken(grantType, params);
         const config = { headers: { authorization: auth } };
         const [{ data: user }, appMember, { data: teams }] = await Promise.all([
-          axios.get<UserInfo>(`${apiUrl}/api/connect/userinfo`, config),
+          axios.get<UserInfo>(`${apiUrl}/api/users/current/auth/oauth2`, config),
           axios.get<AppMember>(`${apiUrl}/api/apps/${appId}/members/${sub}`, config).then(
             ({ data }) => data,
             (error) => {
