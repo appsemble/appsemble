@@ -90,7 +90,7 @@ export const test = base.extend<Fixtures>({
       await page.waitForSelector('.appsemble-loader', { state: 'hidden' });
 
       if (await emailInput.isVisible()) {
-        await page.getByTestId('email').fill('bot@appsemble.com');
+        await page.getByTestId('email').fill(process.env.BOT_ACCOUNT_EMAIL);
         await page.getByTestId('password').fill(process.env.BOT_ACCOUNT_PASSWORD);
         await page.getByTestId('login').click();
 

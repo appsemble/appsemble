@@ -7,8 +7,9 @@ import { createAppOAuth2AuthorizationCode } from '../../../../../../../utils/oau
 
 export async function verifyCurrentUserOAuth2AppConsent(ctx: Context): Promise<void> {
   const {
+    pathParams: { appId },
     request: {
-      body: { appId, redirectUri, scope },
+      body: { redirectUri, scope },
     },
     user,
   } = ctx;

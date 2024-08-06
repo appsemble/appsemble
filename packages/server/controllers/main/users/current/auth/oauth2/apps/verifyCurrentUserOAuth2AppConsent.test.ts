@@ -79,7 +79,6 @@ describe('verifyCurrentUserOAuth2AppConsent', () => {
     const response = await request.post<LoginCodeResponse>(
       `/api/users/current/auth/oauth2/apps/${app.id}/consent/verify`,
       {
-        appId: app.id,
         redirectUri: 'http://app.org.localhost:9999',
         scope: 'openid',
       },
@@ -131,7 +130,6 @@ describe('verifyCurrentUserOAuth2AppConsent', () => {
     const response = await request.post<LoginCodeResponse>(
       `/api/users/current/auth/oauth2/apps/${app.id}/consent/verify`,
       {
-        appId: app.id,
         redirectUri: 'http://app.example:9999',
         scope: 'email',
       },
@@ -168,7 +166,6 @@ describe('verifyCurrentUserOAuth2AppConsent', () => {
     const response = await request.post(
       `/api/users/current/auth/oauth2/apps/${app.id}/consent/verify`,
       {
-        appId: app.id,
         redirectUri: 'http://invalid.example:9999',
         scope: 'email openid',
       },
@@ -201,7 +198,6 @@ describe('verifyCurrentUserOAuth2AppConsent', () => {
     const response = await request.post(
       `/api/users/current/auth/oauth2/apps/${app.id}/consent/verify`,
       {
-        appId: app.id,
         redirectUri: 'http://app.example:9999',
         scope: 'openid',
       },
@@ -230,7 +226,6 @@ describe('verifyCurrentUserOAuth2AppConsent', () => {
     const response = await request.post(
       `/api/users/current/auth/oauth2/apps/${app.id}/consent/verify`,
       {
-        appId: app.id,
         redirectUri: 'http://app.example:9999',
         scope: 'openid',
       },
@@ -249,7 +244,6 @@ describe('verifyCurrentUserOAuth2AppConsent', () => {
   it('should return 404 for non-existent apps', async () => {
     authorizeStudio();
     const response = await request.post('/api/users/current/auth/oauth2/apps/346/consent/verify', {
-      appId: 346,
       redirectUri: 'http://any.example:9999',
       scope: 'openid',
     });
