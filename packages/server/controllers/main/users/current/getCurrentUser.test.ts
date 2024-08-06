@@ -1,3 +1,4 @@
+import { uuid4Pattern } from '@appsemble/utils';
 import { request, setTestApp } from 'axios-test-instance';
 import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 
@@ -39,11 +40,14 @@ describe('getCurrentUser', () => {
     expect(response).toMatchObject({
       status: 200,
       data: {
-        id: expect.any(String),
+        sub: expect.stringMatching(uuid4Pattern),
         name: 'Test User',
-        primaryEmail: 'test@example.com',
-        emails: [{ email: 'test@example.com', primary: true, verified: true }],
-        organizations: [{ id: 'testorganization', name: 'Test Organization' }],
+        email: 'test@example.com',
+        email_verified: true,
+        picture: 'https://www.gravatar.com/avatar/55502f40dc8b7c769880b10874abc9d0?s=128&d=mp',
+        locale: null,
+        zoneinfo: 'Europe/Amsterdam',
+        subscribed: true,
       },
     });
   });

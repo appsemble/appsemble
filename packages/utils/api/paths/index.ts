@@ -136,7 +136,6 @@ import { pathItems as usersCurrentAuthOAuth2AppsAppIdConsentVerify } from './use
 import { pathItems as usersCurrentAuthOauth2Authorizations } from './users/current/auth/oauth2/authorizations.js';
 import { pathItems as usersCurrentAuthOAuth2ClientCredentialsClientId } from './users/current/auth/oauth2/clientCredentials/clientId.js';
 import { pathItems as usersCurrentAuthOAuth2ClientCredentials } from './users/current/auth/oauth2/clientCredentials.js';
-import { pathItems as usersCurrentAuthOAuth2 } from './users/current/auth/oauth2.js';
 import { pathItems as usersCurrentEmails } from './users/current/emails.js';
 import { pathItems as usersCurrentOrganizations } from './users/current/organizations.js';
 import { pathItems as usersCurrentUnsubscribe } from './users/current/unsubscribe.js';
@@ -303,7 +302,6 @@ export const paths = {
   '/api/users/current/auth/oauth2/client-credentials/{clientId}':
     usersCurrentAuthOAuth2ClientCredentialsClientId,
   '/api/users/current/auth/oauth2/client-credentials': usersCurrentAuthOAuth2ClientCredentials,
-  '/api/users/current/auth/oauth2': usersCurrentAuthOAuth2,
   '/api/users/current/emails': usersCurrentEmails,
   '/api/users/current/organizations': usersCurrentOrganizations,
   '/api/users/current/unsubscribe': usersCurrentUnsubscribe,
