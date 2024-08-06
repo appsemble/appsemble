@@ -120,7 +120,6 @@ import { pathItems as organizationsOrganizationIdMembersMemberId } from './organ
 import { pathItems as organizationsOrganizationIdMembers } from './organizations/organizationId/members.js';
 import { pathItems as organizationsOrganizationId } from './organizations/organizationId.js';
 import { pathItems as organizations } from './organizations.js';
-import { pathItems as samlContinue } from './saml/continue.js';
 import { pathItems as ssl } from './ssl.js';
 import { pathItems as timezones } from './timezones.js';
 import { pathItems as trainingBlocksTrainingBlockId } from './trainingBlocks/trainingBlockId.js';
@@ -278,7 +277,6 @@ export const paths = {
   '/api/organizations/{organizationId}/members': organizationsOrganizationIdMembers,
   '/api/organizations/{organizationId}': organizationsOrganizationId,
   '/api/organizations': organizations,
-  '/api/saml/continue': samlContinue,
   '/api/ssl': ssl,
   '/api/group-invites/{token}/respond': groupInvitesTokenRespond,
   '/api/group-invites/{token}': groupInvitesToken,
