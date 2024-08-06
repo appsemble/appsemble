@@ -1,5 +1,8 @@
+import { createFormData } from '@appsemble/node-utils';
 import { type App } from '@appsemble/types';
 import { test as base, expect, type Page } from '@playwright/test';
+import axios from 'axios';
+import stripIndent from 'strip-indent';
 
 /**
  * Get the appId.
@@ -41,6 +44,11 @@ interface Fixtures {
    * Login to an Appsemble app.
    */
   loginApp: () => Promise<void>;
+
+  /**
+   * Create a test app.
+   */
+  createTestApp: (organization: string, yaml: string) => Promise<App>;
 }
 
 export const test = base.extend<Fixtures>({
@@ -110,6 +118,20 @@ export const test = base.extend<Fixtures>({
       if (await allowButton.isVisible()) {
         await allowButton.click();
       }
+    });
+  },
+
+  // TODO: handle this by seeding an app beforehand with logins configured
+  async createTestApp({}, use) {
+    await use(async (organization, yaml) => {
+      const response = await axios.post<App>(
+        '/api/apps',
+        createFormData({
+          OrganizationId: organization.toLowerCase(),
+          yaml: stripIndent(yaml),
+        }),
+      );
+      return response.data;
     });
   },
 });

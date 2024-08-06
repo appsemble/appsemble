@@ -204,6 +204,54 @@ afterAll(() => {
 });
 
 describe('assertAppSamlConsumerService', () => {
+  // eslint-disable-next-line vitest/no-disabled-tests
+  it.skip('should authorize new app member and redirect with valid code', async () => {
+    const response = await request.post(
+      `/api/apps/${app.id}/saml/${secret.id}/acs`,
+      new URLSearchParams({
+        SAMLResponse: createSamlResponse({ statusCode: 'Any invalid string' }),
+        RelayState: 'http://localhost',
+      }),
+    );
+
+    expect(response).toMatchObject({
+      status: 302,
+      data: 'Redirecting to <a href="/saml/response/invalidstatuscode">/saml/response/invalidstatuscode</a>.',
+    });
+  });
+
+  // eslint-disable-next-line vitest/no-disabled-tests
+  it.skip('should reuse existing authorization', async () => {
+    const response = await request.post(
+      `/api/apps/${app.id}/saml/${secret.id}/acs`,
+      new URLSearchParams({
+        SAMLResponse: createSamlResponse({ statusCode: 'Any invalid string' }),
+        RelayState: 'http://localhost',
+      }),
+    );
+
+    expect(response).toMatchObject({
+      status: 302,
+      data: 'Redirecting to <a href="/saml/response/invalidstatuscode">/saml/response/invalidstatuscode</a>.',
+    });
+  });
+
+  // eslint-disable-next-line vitest/no-disabled-tests
+  it.skip('should handle conflicts', async () => {
+    const response = await request.post(
+      `/api/apps/${app.id}/saml/${secret.id}/acs`,
+      new URLSearchParams({
+        SAMLResponse: createSamlResponse({ statusCode: 'Any invalid string' }),
+        RelayState: 'http://localhost',
+      }),
+    );
+
+    expect(response).toMatchObject({
+      status: 302,
+      data: 'Redirecting to <a href="/saml/response/invalidstatuscode">/saml/response/invalidstatuscode</a>.',
+    });
+  });
+
   it('should handle an invalid relay state', async () => {
     const response = await request.post(
       `/api/apps/${app.id}/saml/${secret.id}/acs`,
