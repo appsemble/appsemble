@@ -447,7 +447,7 @@ export interface Remappers {
   /**
    * Get input object type.
    */
-  type: string;
+  type: null;
 
   /**
    * Builds an array based on the given data and remappers.

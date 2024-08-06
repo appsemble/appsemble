@@ -826,6 +826,34 @@ describe('object.assign', () => {
   });
 });
 
+describe('type', () => {
+  runTests({
+    'input array, type remapper test': {
+      input: [
+        { firstName: 'John', lastName: 'Doe' },
+        { firstName: 'Jane', lastName: 'Smith' },
+      ],
+      mappers: { type: null },
+      expected: 'array',
+    },
+    'input object, type remapper test': {
+      input: { firstName: 'John', lastName: 'Doe' },
+      mappers: { type: null },
+      expected: 'object',
+    },
+    'input number, type remapper test': {
+      input: 1,
+      mappers: { type: null },
+      expected: 'number',
+    },
+    'input string, type remapper test': {
+      input: 'I am a string',
+      mappers: { type: null },
+      expected: 'string',
+    },
+  });
+});
+
 describe('array.map', () => {
   runTests({
     'apply remappers to each array item': {

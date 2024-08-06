@@ -54,6 +54,11 @@ export const examples: Record<RemapperExampleKeys, RemapperExample> = {
     result: {},
     skip: true,
   },
+  type: {
+    input: [1, 2, 3],
+    remapper: { type: null },
+    result: 'array',
+  },
   array: {
     input: ['a', 'b', 'c'],
     remapper: {
@@ -341,13 +346,6 @@ export const examples: Record<RemapperExampleKeys, RemapperExample> = {
     input: null,
     remapper: { variable: 'MY_VARIABLE' },
     result: 'variable value',
-    skip: true,
-  },
-  type: {
-    // TODO:
-    input: null,
-    remapper: { type: 'MY_VARIABLE' },
-    result: 'type value',
     skip: true,
   },
   'number.parse': {

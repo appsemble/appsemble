@@ -148,6 +148,24 @@ object will be checked. The result looks like this:
         },
       ],
     },
+    type: {
+      enum: [null],
+      description: `Returns the type of the input object
+
+For example, with the following input value:
+\`\`\`json
+[0, 5, 7, 8]
+\`\`\`
+\`\`\`yaml
+type: null
+\`\`\`
+
+The result will be:
+\`\`\`json
+"array"
+\`\`\`
+    `,
+    },
     log: {
       enum: ['info', 'warn', 'error'],
       description: `Logs in the browser's console and returns the incoming data and the remapper function's context.

@@ -356,10 +356,16 @@ const mapperImplementations: MapperImplementations = {
     return result;
   },
 
-  // TODO: finish implementing
-  type(mappers, input: any, context) {
-    const test = remap(mappers, input, context);
-    return test;
+  type(args, input) {
+    if (input == null) {
+      return null;
+    }
+
+    if (Array.isArray(input)) {
+      return 'array';
+    }
+
+    return typeof input;
   },
 
   'array.map': (mapper, input: any[], context) =>
