@@ -1,5 +1,12 @@
 import { useBlock } from '@appsemble/preact';
 import { Modal, useObjectURL, useToggle } from '@appsemble/preact-components';
+import {
+  type FileIconName,
+  getMimeTypeCategories,
+  getMimeTypeCategory,
+  getMimeTypeIcon,
+  type MimeTypeCategory,
+} from '@appsemble/utils';
 import { findIconDefinition, icon, library } from '@fortawesome/fontawesome-svg-core';
 import { fas } from '@fortawesome/free-solid-svg-icons';
 import classNames from 'classnames';
@@ -7,11 +14,11 @@ import { type JSX, type Ref, type VNode } from 'preact';
 import { useCallback, useEffect, useRef, useState } from 'preact/hooks';
 
 import styles from './index.module.css';
-import { type FileField, type InputProps } from '../../../block.js';
+import { type AcceptRequirement, type FileField, type InputProps } from '../../../block.js';
 import { getAccept } from '../../utils/requirements.js';
 import { resize } from '../../utils/resize.js';
 
-export function createCustomSvg(iconName: any): string {
+export function createCustomSvg(iconName: any, hasPlus?: boolean): string {
   /* Add all font awesome solid icons to the library. */
   library.add(fas);
 
@@ -42,7 +49,8 @@ export function createCustomSvg(iconName: any): string {
   const circleX = originalWidth - circleRadius * 2 + overflow;
   const circleY = originalHeight - circleRadius * 2 + overflow;
 
-  const plusSignSvg = `
+  if (hasPlus) {
+    const plusSignSvg = `
       <g id="plus-sign" transform="translate(${circleX}, ${circleY})">
           <circle id="circle-background" fill="#BEBEBE" cx="${circleRadius}" cy="${circleRadius}" r="${circleRadius}"></circle>
           <path d="M${circleRadius - circleRadius / 2},${circleRadius} L${
@@ -54,7 +62,9 @@ export function createCustomSvg(iconName: any): string {
       </g>
       `;
 
-  svgContent = svgContent.replace('</svg>', `${plusSignSvg}</svg>`);
+    svgContent = svgContent.replace('</svg>', `${plusSignSvg}</svg>`);
+  }
+
   //
   // cspell:disable-next-line
   svgContent = svgContent.replace(/viewbox="[\d\s.-]+"/i, `viewBox="${newViewBox}"`);
@@ -82,11 +92,16 @@ export function FileEntry({
   const prefix = valueString ? utils.asset(valueString) : null;
   const src = valueString?.startsWith('http') ? valueString : prefix;
   const url = useObjectURL((src || value) as unknown as Blob | string);
-  const { icon: iconName } = field;
+  const { icon: iconName, requirements } = field;
+
+  const acceptRequirement = requirements?.find((requirement) => 'accept' in requirement);
+  const acceptedMimeTypeCategories = getMimeTypeCategories(
+    (acceptRequirement as AcceptRequirement)?.accept || [],
+  );
 
   const modal = useToggle();
   const videoRef = useRef(null);
-  const [fileType, setFileType] = useState<'image' | 'unknown' | 'video' | null>(null);
+  const [fileType, setFileType] = useState<MimeTypeCategory | null>(null);
   const [firstFrameSrc, setFirstFrameSrc] = useState('');
 
   const onSelect = useCallback(
@@ -114,33 +129,23 @@ export function FileEntry({
           const response = await fetch(assetUrl);
           if (response.ok) {
             const contentType = response.headers.get('Content-Type');
-            if (contentType && contentType.includes('image')) {
-              setFileType('image');
-            } else if (contentType && contentType.includes('video')) {
-              setFileType('video');
-            } else {
-              setFileType('unknown');
+
+            if (contentType) {
+              setFileType(getMimeTypeCategory(contentType));
             }
           } else {
-            setFileType('unknown');
+            setFileType(null);
           }
         } catch {
-          setFileType('unknown');
+          setFileType(null);
         }
       } else {
         if (!(value instanceof Blob)) {
-          setFileType('unknown');
+          setFileType(null);
           return;
         }
 
-        const valueType = value.type;
-        if (valueType.match('image/*')) {
-          setFileType('image');
-        } else if (valueType.match('video/*')) {
-          setFileType('video');
-        } else {
-          setFileType('unknown');
-        }
+        setFileType(getMimeTypeCategory(value.type));
       }
     })();
   }, [utils, value, valueString]);
@@ -169,13 +174,14 @@ export function FileEntry({
   const previewAvailable = ['image', 'video'].includes(fileType);
 
   const displayFileEntryPlaceholder = (
-    type: 'empty' | 'loading' | 'unknown',
+    fileIconName: FileIconName,
     label?: VNode,
+    hasPlus?: boolean,
   ): VNode => (
     <span
-      className={`image is-128x128 px-2 py-2 has-text-centered ${styles.rounded} ${styles.placeholder} ${styles[type]}`}
+      className={`image is-128x128 px-2 py-2 has-text-centered ${styles.rounded} ${styles.placeholder}`}
       /* eslint-disable-next-line react/forbid-dom-props */
-      style={{ backgroundImage: createCustomSvg(iconName) }}
+      style={{ backgroundImage: createCustomSvg(fileIconName, hasPlus) }}
     >
       {label ?? null}
     </span>
@@ -245,20 +251,23 @@ export function FileEntry({
                 {displayFileEntryButtons()}
               </>
             ) : (
-              displayFileEntryPlaceholder('loading')
+              displayFileEntryPlaceholder('spinner')
             )
           ) : (
             <>
-              {displayFileEntryPlaceholder('unknown')}
+              {displayFileEntryPlaceholder(getMimeTypeIcon(fileType))}
               {displayFileEntryButtons()}
             </>
           )
         ) : (
           displayFileEntryPlaceholder(
-            'empty',
+            iconName || acceptedMimeTypeCategories.length === 1
+              ? getMimeTypeIcon(acceptedMimeTypeCategories[0])
+              : 'file',
             <span className="file-label">
               {utils.remap(field.emptyFileLabel ?? ' ', field) as string}
             </span>,
+            true,
           )
         )}
       </label>

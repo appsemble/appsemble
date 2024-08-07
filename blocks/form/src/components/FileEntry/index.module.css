@@ -72,15 +72,3 @@
   height: 6.75em !important;
   width: 6.75em !important;
 }
-
-.empty {
-  background-image: url(./addpicture.svg);
-}
-
-.loading {
-  background-image: url(./loading.svg);
-}
-
-.unknown {
-  background-image: url(./thumbnailPlaceholder.svg);
-}

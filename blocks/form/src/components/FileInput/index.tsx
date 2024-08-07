@@ -60,16 +60,6 @@ export function FileInput({
           })}
           id={name}
         >
-          <FileEntry
-            disabled={disabled}
-            error={dirty ? error : null}
-            errorLinkRef={errorLinkRef}
-            field={field}
-            formValues={null}
-            name={`${name}.${(value as string[]).length}`}
-            onChange={handleInput}
-            repeated={repeated}
-          />
           <div className={styles.repeatedEntries}>
             {(value as string[]).map((val, index) => (
               <FileEntry
@@ -86,6 +76,16 @@ export function FileInput({
               />
             ))}
           </div>
+          <FileEntry
+            disabled={disabled}
+            error={dirty ? error : null}
+            errorLinkRef={errorLinkRef}
+            field={field}
+            formValues={null}
+            name={`${name}.${(value as string[]).length}`}
+            onChange={handleInput}
+            repeated={repeated}
+          />
         </div>
       ) : (
         <FileEntry
