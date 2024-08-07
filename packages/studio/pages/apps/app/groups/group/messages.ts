@@ -6,11 +6,11 @@ export const messages = defineMessages({
     defaultMessage: 'Annotations',
   },
   editButton: {
-    id: 'studio.I8Hyi4',
+    id: 'studio.Z/1udv',
     defaultMessage: 'Edit group',
   },
   groupMembers: {
-    id: 'studio.HCYBYT',
+    id: 'studio.TMfUIc',
     defaultMessage: 'Group Members',
   },
   cancelLabel: {
@@ -18,11 +18,11 @@ export const messages = defineMessages({
     defaultMessage: 'Cancel',
   },
   editingGroup: {
-    id: 'studio.+hX6uJ',
+    id: 'studio.yUlBzE',
     defaultMessage: 'Editing group',
   },
   groupName: {
-    id: 'studio.qUrlgz',
+    id: 'studio.gL86bv',
     defaultMessage: 'Group name',
   },
   name: {
@@ -38,11 +38,11 @@ export const messages = defineMessages({
     defaultMessage: 'Add member',
   },
   noMembers: {
-    id: 'studio.BwQDJK',
+    id: 'studio.Lb1P34',
     defaultMessage: 'This group currently has no members.',
   },
   memberError: {
-    id: 'studio.Ps0KeF',
+    id: 'studio.lCX8ty',
     defaultMessage: 'There was a problem loading this group’s members.',
   },
   loadingMembers: {
@@ -50,27 +50,27 @@ export const messages = defineMessages({
     defaultMessage: 'Loading members…',
   },
   noGroup: {
-    id: 'studio.Qao/oV',
+    id: 'studio.kvrEcW',
     defaultMessage: 'This group could not be found.',
   },
   groupError: {
-    id: 'studio.KG15uK',
+    id: 'studio.l2htNZ',
     defaultMessage: 'There was a problem loading this group.',
   },
   loadingGroup: {
-    id: 'studio.Xjf6hp',
+    id: 'studio.t4HlYe',
     defaultMessage: 'Loading group…',
   },
   deletingGroup: {
-    id: 'studio.aSV4JQ',
+    id: 'studio.Ph66vC',
     defaultMessage: 'Deleting group',
   },
   deleteWarning: {
-    id: 'studio.IHM/v1',
+    id: 'studio.veYfyC',
     defaultMessage: 'Are you sure you want to delete this group? This action cannot be undone.',
   },
   deleteGroup: {
-    id: 'studio.Omd++F',
+    id: 'studio.BpuMwR',
     defaultMessage: 'Delete group',
   },
 });

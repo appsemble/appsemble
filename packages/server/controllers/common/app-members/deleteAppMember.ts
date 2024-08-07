@@ -11,7 +11,7 @@ export async function deleteAppMember(ctx: Context): Promise<void> {
   } = ctx;
 
   const appMember = await AppMember.findByPk(appMemberId, {
-    attributes: ['AppId'],
+    attributes: ['id', 'AppId'],
   });
 
   await checkAuthSubjectAppPermissions(ctx, appMember.AppId, [AppPermission.DeleteAppMembers]);

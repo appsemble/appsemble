@@ -1,4 +1,4 @@
-import { type AppPermission, type AppRole } from '@appsemble/utils';
+import { type AppPermission, type AppRole, type OrganizationRole } from '@appsemble/utils';
 import { type IconName } from '@fortawesome/fontawesome-common-types';
 import { type Schema } from 'jsonschema';
 import { type OpenAPIV3 } from 'openapi-types';
@@ -125,7 +125,7 @@ export interface BlockDefinition extends ControllerDefinition {
   /**
    * A list of roles that are allowed to view this block.
    */
-  roles?: string[];
+  roles?: ViewRole[];
 
   /**
    * A free form mapping of named parameters.
@@ -196,6 +196,11 @@ export interface AppMemberInfo extends BaseUserInfo {
    * The end-user's additional properties
    */
   properties?: Record<string, any>;
+
+  /**
+   * Whether this app member is used for demonstration purposes
+   */
+  demo: boolean;
 }
 
 /**
@@ -1610,6 +1615,8 @@ export interface EventType {
   description?: string;
 }
 
+export type ViewRole = AppRole | '$none' | '$public';
+
 /**
  * This describes what a page will look like in the app.
  */
@@ -1650,7 +1657,7 @@ export interface BasePageDefinition {
   /**
    * A list of roles that may view the page.
    */
-  roles?: string[];
+  roles?: ViewRole[];
 
   /**
    * An optional icon from the fontawesome icon set
@@ -1673,9 +1680,9 @@ export interface BasePageDefinition {
 /**
  * A subset of page for use within flow pages and tab pages.
  */
-export interface SubPage {
+export interface SubPageDefinition {
   name: Remapper;
-  roles?: string[];
+  roles?: ViewRole[];
   blocks: BlockDefinition[];
 }
 
@@ -1692,7 +1699,7 @@ export interface ContainerPageDefinition extends BasePageDefinition {
 export interface FlowPageDefinition extends BasePageDefinition {
   type: 'flow';
 
-  steps: SubPage[];
+  steps: SubPageDefinition[];
 
   /**
    * A mapping of actions that can be fired by the page to action handlers.
@@ -1725,7 +1732,7 @@ export interface LoopPageDefinition extends BasePageDefinition {
   /**
    * Template step that the loop will pass data onto
    */
-  foreach?: SubPage;
+  foreach?: SubPageDefinition;
 
   /**
    * A mapping of actions that can be fired by the page to action handlers.
@@ -1754,7 +1761,7 @@ export interface LoopPageDefinition extends BasePageDefinition {
 }
 
 export interface AlternateTabsDefinition {
-  foreach: SubPage;
+  foreach: SubPageDefinition;
   events: {
     listen?: Record<string, string>;
     emit?: Record<string, string>;
@@ -1763,7 +1770,7 @@ export interface AlternateTabsDefinition {
 
 export interface TabsPageDefinition extends BasePageDefinition {
   type: 'tabs';
-  tabs?: SubPage[];
+  tabs?: SubPageDefinition[];
   definition?: AlternateTabsDefinition;
 
   /**
@@ -1807,11 +1814,6 @@ export interface AppDefinition {
    * This determines user roles and login behavior.
    */
   security?: Security;
-
-  /**
-   * A list of roles that are required to view pages. Specific page roles override this property.
-   */
-  roles?: string[];
 
   /**
    * The default page of the app.
@@ -2195,7 +2197,7 @@ export interface OrganizationInvite {
   /**
    * The role the user should get when accepting the invite.
    */
-  role: string;
+  role: OrganizationRole;
 }
 
 /**
@@ -2230,21 +2232,7 @@ export interface GroupInvite {
   /**
    * The role the group member should get when accepting the invite.
    */
-  role: string;
-}
-
-/**
- * App member in an app.
- */
-export interface AppMember {
-  id: string;
-  name: string;
-  email: string;
-  emailVerified?: boolean;
-  role: string;
-  demo: boolean;
-  timezone: string;
-  properties: Record<string, any>;
+  role: AppRole;
 }
 
 /**

@@ -18,7 +18,7 @@ import styles from './index.module.css';
 import { messages } from './messages.js';
 import { ShareDialog, type ShareDialogState } from './ShareDialog/index.js';
 import { type ShowDialogParams, type ShowShareDialog } from '../../types.js';
-import { checkPagePermissions } from '../../utils/checkPagePermissions.js';
+import { checkPagePermissions } from '../../utils/authorization.js';
 import { getDefaultPageName } from '../../utils/getDefaultPageName.js';
 import { apiUrl, appId } from '../../utils/settings.js';
 import { AppStorage } from '../../utils/storage.js';
@@ -35,8 +35,8 @@ import { AppBar } from '../TitleBar/index.js';
 
 export function Page(): ReactNode {
   const redirect = useLocationString();
-  const { definition } = useAppDefinition();
-  const { appMemberInfoRef, isLoggedIn, role, groups } = useAppMember();
+  const { definition: appDefinition } = useAppDefinition();
+  const { appMemberInfoRef, groups, isLoggedIn, role: appMemberRole } = useAppMember();
   const { lang, pageId } = useParams<{ lang: string; pageId: string }>();
 
   const { pathname } = useLocation();
@@ -100,7 +100,7 @@ export function Page(): ReactNode {
   }
 
   const normalizedPageId = normalize(pageId);
-  let index = definition.pages.findIndex((p) => normalize(p.name) === normalizedPageId);
+  let index = appDefinition.pages.findIndex((p) => normalize(p.name) === normalizedPageId);
 
   if (index < 0) {
     const pageMessages = appMessageIds.filter((id) => id.startsWith('pages.'));
@@ -110,7 +110,7 @@ export function Page(): ReactNode {
 
     if (translatedPage) {
       const pageName = translatedPage.split('.').pop();
-      index = definition.pages.findIndex((p) => normalize(p.name) === pageName);
+      index = appDefinition.pages.findIndex((p) => normalize(p.name) === pageName);
     }
   }
   const findPageById = useCallback(
@@ -148,8 +148,9 @@ export function Page(): ReactNode {
     [appMessageIds, getAppMessage, normalizedPageId],
   );
 
-  const page = index === -1 ? findPageById(definition.pages) : definition.pages[index];
-  const internalPageName = page ? normalize(page.name) : null;
+  const pageDefinition =
+    index === -1 ? findPageById(appDefinition.pages) : appDefinition.pages[index];
+  const internalPageName = pageDefinition ? normalize(pageDefinition.name) : null;
   const prefix = internalPageName ? `pages.${internalPageName}` : null;
   const prefixIndex = index === -1 ? null : `pages.${index}`;
 
@@ -181,37 +182,41 @@ export function Page(): ReactNode {
   }, []);
 
   useEffect(() => {
-    if (!page) {
+    if (!pageDefinition) {
       return;
     }
     const bulmaElement = document.getElementById('bulma-style-app') as HTMLLinkElement;
-    bulmaElement.href = createThemeURL(mergeThemes(definition.theme, page.theme));
-  }, [definition, page]);
+    bulmaElement.href = createThemeURL(mergeThemes(appDefinition.theme, pageDefinition.theme));
+  }, [appDefinition, pageDefinition]);
 
   // Remove the listeners from any previous pages
   useEffect(
     () => () => {
       ee.current.removeAllListeners();
     },
-    [page],
+    [pageDefinition],
   );
 
   const checkPagePermissionsCallback = useCallback(
-    (p: PageDefinition): boolean => checkPagePermissions(p, definition, role, groups),
-    [definition, role, groups],
+    (pd: PageDefinition): boolean => checkPagePermissions(pd, appDefinition, appMemberRole, groups),
+    [appDefinition, appMemberRole, groups],
   );
 
   useEffect(() => {
-    if (page && checkPagePermissionsCallback(page) && navPage !== page) {
-      setPage(page);
+    if (
+      pageDefinition &&
+      checkPagePermissionsCallback(pageDefinition) &&
+      navPage !== pageDefinition
+    ) {
+      setPage(pageDefinition);
     }
-  }, [checkPagePermissionsCallback, navPage, page, setPage]);
+  }, [checkPagePermissionsCallback, navPage, pageDefinition, setPage]);
 
   // If the user is on an existing page and is allowed to view it, render it.
-  if (page && checkPagePermissionsCallback(page)) {
+  if (pageDefinition && checkPagePermissionsCallback(pageDefinition)) {
     const pageName = getAppMessage({
       id: prefix,
-      defaultMessage: page.name,
+      defaultMessage: pageDefinition.name,
     }).format() as string;
     const normalizedPageName = normalize(pageName);
 
@@ -223,19 +228,19 @@ export function Page(): ReactNode {
     return (
       <main
         className={classNames(styles.root, {
-          [styles.hasBottomNavigation]: definition.layout?.navigation === 'bottom',
+          [styles.hasBottomNavigation]: appDefinition.layout?.navigation === 'bottom',
         })}
         data-path={prefix}
         data-path-index={prefixIndex}
       >
-        <AppBar hideName={page.hideName}>{pageName}</AppBar>
-        {page.type === 'tabs' ? (
+        <AppBar hideName={pageDefinition.hideName}>{pageName}</AppBar>
+        {pageDefinition.type === 'tabs' ? (
           <TabsPage
             appStorage={appStorage.current}
             data={data}
             ee={ee.current}
             key={prefix}
-            page={page}
+            pageDefinition={pageDefinition}
             prefix={prefix}
             prefixIndex={prefixIndex}
             remap={remapWithContext}
@@ -248,14 +253,14 @@ export function Page(): ReactNode {
           <MetaSwitch title={pageName}>
             <Route
               element={
-                page.type === 'flow' || page.type === 'loop' ? (
+                pageDefinition.type === 'flow' || pageDefinition.type === 'loop' ? (
                   <FlowPage
+                    appDefinition={appDefinition}
                     appStorage={appStorage.current}
                     data={data}
-                    definition={definition}
                     ee={ee.current}
                     key={prefix}
-                    page={page}
+                    pageDefinition={pageDefinition}
                     prefix={prefix}
                     prefixIndex={prefixIndex}
                     remap={remapWithContext}
@@ -264,12 +269,12 @@ export function Page(): ReactNode {
                     showShareDialog={showShareDialog}
                     stepRef={stepRef}
                   />
-                ) : page.type === 'container' ? (
-                  page.pages.some(checkPagePermissionsCallback) ? (
+                ) : pageDefinition.type === 'container' ? (
+                  pageDefinition.pages.some(checkPagePermissionsCallback) ? (
                     <Navigate
                       to={pathname.replace(
                         pageId,
-                        normalize(page.pages.find(checkPagePermissionsCallback).name),
+                        normalize(pageDefinition.pages.find(checkPagePermissionsCallback).name),
                       )}
                     />
                   ) : (
@@ -278,11 +283,11 @@ export function Page(): ReactNode {
                 ) : (
                   <BlockList
                     appStorage={appStorage.current}
-                    blocks={page.blocks}
+                    blocks={pageDefinition.blocks}
                     data={data}
                     ee={ee.current}
                     key={prefix}
-                    page={page}
+                    pageDefinition={pageDefinition}
                     prefix={`${prefix}.blocks`}
                     prefixIndex={`${prefixIndex}.blocks`}
                     remap={remapWithContext}
@@ -291,7 +296,7 @@ export function Page(): ReactNode {
                   />
                 )
               }
-              path={String((page.parameters || []).map((param) => `/:${param}`))}
+              path={String((pageDefinition.parameters || []).map((param) => `/:${param}`))}
             />
           </MetaSwitch>
         )}
@@ -299,7 +304,7 @@ export function Page(): ReactNode {
           appStorage={appStorage.current}
           dialog={dialog}
           ee={ee.current}
-          page={page}
+          pageDefinition={pageDefinition}
           remap={remapWithContext}
           showDialog={showDialog}
           showShareDialog={showShareDialog}
@@ -314,14 +319,15 @@ export function Page(): ReactNode {
 
   // If the user isn’t allowed to view the page, because they aren’t logged in, redirect to the
   // login page.
-  if (page && !isLoggedIn) {
+  if (pageDefinition && !isLoggedIn) {
     return <Navigate to={`${url}/Login?${new URLSearchParams({ redirect })}`} />;
   }
 
   // If the user is logged in, but isn’t allowed to view the current page, redirect to the default
   // page.
-  const defaultPageName = getDefaultPageName(isLoggedIn, role, definition);
-  const defaultPage = definition.pages.find((p) => p.name === defaultPageName);
+  const defaultPageName = getDefaultPageName(isLoggedIn, appMemberRole, appDefinition);
+  const defaultPage = appDefinition.pages.find((p) => p.name === defaultPageName);
+
   if (checkPagePermissionsCallback(defaultPage)) {
     const defaultPagePrefix = `pages.${normalize(defaultPage.name)}`;
     let pageName = defaultPage.name;
@@ -334,8 +340,8 @@ export function Page(): ReactNode {
   }
 
   // If the user isn’t allowed to view the default page either, find a page to redirect the user to.
-  const redirectPage = definition.pages.find(
-    (p) => checkPagePermissionsCallback(p) && !p.parameters,
+  const redirectPage = appDefinition.pages.find(
+    (pd) => checkPagePermissionsCallback(pd) && !pd.parameters,
   );
   if (redirectPage) {
     const normalizedRedirectPageName = `pages.${normalize(redirectPage.name)}`;

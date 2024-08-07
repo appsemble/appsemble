@@ -7,11 +7,11 @@ import webpush from 'web-push';
 import {
   type App,
   AppMember,
+  Group,
+  GroupMember,
   Organization,
   OrganizationMember,
   Resource,
-  Group,
-  GroupMember,
   User,
 } from '../../../../models/index.js';
 import { setArgv } from '../../../../utils/argv.js';
@@ -244,8 +244,16 @@ describe('getAppResourceById', () => {
       timezone: 'Europe/Amsterdam',
     });
 
-    await GroupMember.create({ GroupId: group.id, AppMemberId: member1.id, role: GroupRole.Member });
-    await GroupMember.create({ GroupId: group.id, AppMemberId: member2.id, role: GroupRole.Member });
+    await GroupMember.create({
+      GroupId: group.id,
+      AppMemberId: member1.id,
+      role: GroupRole.Member,
+    });
+    await GroupMember.create({
+      GroupId: group.id,
+      AppMemberId: member2.id,
+      role: GroupRole.Member,
+    });
 
     const resource = await Resource.create({
       AppId: app.id,
@@ -291,7 +299,11 @@ describe('getAppResourceById', () => {
       role: 'Member',
       timezone: 'Europe/Amsterdam',
     });
-    await GroupMember.create({ GroupId: group.id, AppMemberId: memberB.id, role: GroupRole.Member });
+    await GroupMember.create({
+      GroupId: group.id,
+      AppMemberId: memberB.id,
+      role: GroupRole.Member,
+    });
 
     await AppMember.create({
       email: user.primaryEmail,

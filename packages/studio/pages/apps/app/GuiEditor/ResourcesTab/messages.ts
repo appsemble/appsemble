@@ -125,12 +125,12 @@ export const messages = defineMessages({
     defaultMessage: 'Grants access if the user is the same as the one who created the resource.',
   },
   groupMemberRoleInfo: {
-    id: 'studio.z1iBkr',
+    id: 'studio.N07voO',
     defaultMessage:
       'Grants access if the user is in the same group as the user who created the resource.',
   },
   groupManagerRoleInfo: {
-    id: 'studio.tOoKCv',
+    id: 'studio.6Ttiou',
     defaultMessage:
       'Grants access if the user is in the same group as the user who created the resource and has the manager role within the group.',
   },

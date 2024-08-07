@@ -1,5 +1,7 @@
 import { type OpenAPIV3 } from 'openapi-types';
 
+import { AppPermission } from '../../../constants/index.js';
+
 export const SecurityRoleDefinition: OpenAPIV3.NonArraySchemaObject = {
   type: 'object',
   description: 'This describes a security role.',
@@ -29,7 +31,16 @@ of the referenced role.
       type: 'array',
       minItems: 1,
       description: 'Specific permissions within the app, which this role should have',
-      items: { type: 'string' },
+      items: {
+        oneOf: [
+          {
+            enum: [Object.values(AppPermission)],
+          },
+          {
+            type: 'string',
+          },
+        ],
+      },
     },
   },
 };

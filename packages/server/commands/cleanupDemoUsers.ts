@@ -3,7 +3,7 @@ import { Op } from 'sequelize';
 import { type Argv } from 'yargs';
 
 import { databaseBuilder } from './builder/database.js';
-import { AppMember, initDB, Resource, GroupMember, transactional, User } from '../models/index.js';
+import { AppMember, GroupMember, initDB, Resource, transactional, User } from '../models/index.js';
 import { argv } from '../utils/argv.js';
 import { handleDBError } from '../utils/sqlUtils.js';
 

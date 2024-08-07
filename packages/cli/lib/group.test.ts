@@ -3,19 +3,20 @@ import { GroupMemberRole } from '@appsemble/utils';
 import { type AxiosTestInstance, setTestApp } from 'axios-test-instance';
 import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { initAxios } from './initAxios.js';
 import {
   createGroup,
-  deleteMember,
   deleteGroup,
+  deleteMember,
   inviteMember,
   resolveAnnotations,
-  updateMember,
   updateGroup,
+  updateMember,
 } from './group.js';
+import { initAxios } from './initAxios.js';
 import { authorizeCLI } from './testUtils.js';
 
-const { App, AppMember, BlockVersion, Organization, OrganizationMember, Group, GroupMember } = models;
+const { App, AppMember, BlockVersion, Group, GroupMember, Organization, OrganizationMember } =
+  models;
 
 const argv = { host: 'http://localhost', secret: 'test', aesSecret: 'testSecret' };
 let user: models.User;
@@ -429,7 +430,12 @@ describe('inviteMember', () => {
 
     await authorizeCLI('groups:write', testApp);
     await expect(() =>
-      inviteMember({ appId: app.id, id: group.id, remote: testApp.defaults.baseURL, user: user.id }),
+      inviteMember({
+        appId: app.id,
+        id: group.id,
+        remote: testApp.defaults.baseURL,
+        user: user.id,
+      }),
     ).rejects.toThrow('Request failed with status code 404');
   });
 
@@ -465,7 +471,12 @@ describe('inviteMember', () => {
 
     await authorizeCLI('groups:write', testApp);
     await expect(() =>
-      inviteMember({ appId: app.id, id: group.id, remote: testApp.defaults.baseURL, user: user.id }),
+      inviteMember({
+        appId: app.id,
+        id: group.id,
+        remote: testApp.defaults.baseURL,
+        user: user.id,
+      }),
     ).rejects.toThrow('Request failed with status code 404');
   });
 });
@@ -662,7 +673,12 @@ describe('deleteMember', () => {
 
     await authorizeCLI('groups:write', testApp);
     await expect(() =>
-      deleteMember({ appId: app.id, remote: testApp.defaults.baseURL, user: user.id, id: group.id }),
+      deleteMember({
+        appId: app.id,
+        remote: testApp.defaults.baseURL,
+        user: user.id,
+        id: group.id,
+      }),
     ).rejects.toThrow('Request failed with status code 400');
   });
 });

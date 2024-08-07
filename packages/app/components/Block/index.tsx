@@ -54,7 +54,7 @@ interface BlockProps {
   /**
    * The page in which the block is rendered.
    */
-  readonly page: PageDefinition;
+  readonly pageDefinition: PageDefinition;
   readonly appStorage: AppStorage;
   readonly showDialog: ShowDialogAction;
   readonly showShareDialog: ShowShareDialog;
@@ -78,7 +78,7 @@ export function Block({
   ee,
   extraCreators,
   flowActions,
-  page,
+  pageDefinition,
   pageReady,
   prefix,
   prefixIndex,
@@ -91,11 +91,11 @@ export function Block({
   const params = useParams();
   const location = useLocation();
   const push = useMessages();
-  const { blockManifests, definition } = useAppDefinition();
+  const { blockManifests, definition: appDefinition } = useAppDefinition();
   const { getAppMessage, getBlockMessage } = useAppMessages();
   const { getVariable } = useAppVariables();
 
-  const { appMemberInfoRef, logout, passwordLogin, setAppMemberInfo, groups, updateGroup } =
+  const { appMemberInfoRef, groups, logout, passwordLogin, setAppMemberInfo, updateGroup } =
     useAppMember();
   const { refetchDemoAppMembers } = useDemoAppMembers();
   const { setBlockMenu } = usePage();
@@ -133,7 +133,7 @@ export function Block({
       getAppVariable: getVariable,
       appStorage,
       actions: manifest.actions,
-      app: definition,
+      appDefinition,
       context: block,
       navigate,
       showDialog,
@@ -156,7 +156,7 @@ export function Block({
       setAppMemberInfo,
       refetchDemoAppMembers,
     });
-    const theme = mergeThemes(definition.theme, page.theme, block.theme);
+    const theme = mergeThemes(appDefinition.theme, pageDefinition.theme, block.theme);
 
     const bulmaUrl = createThemeURL(theme);
 
@@ -217,7 +217,7 @@ export function Block({
     block,
     blockName,
     data,
-    definition,
+    appDefinition,
     ee,
     appStorage,
     extraCreators,
@@ -227,7 +227,7 @@ export function Block({
     initialized,
     location,
     manifest,
-    page,
+    pageDefinition,
     pageReady,
     params,
     passwordLogin,
@@ -272,7 +272,7 @@ export function Block({
   if (!hide) {
     if (layout === 'float') {
       const { position = 'bottom right' } = block;
-      const { navigation = 'left-menu' } = definition.layout || {};
+      const { navigation = 'left-menu' } = appDefinition.layout || {};
 
       return createPortal(
         <div

@@ -5,10 +5,10 @@ import { useIntl } from 'react-intl';
 
 import { CreateRolePage } from './CreateRolePage/index.js';
 import { DefaultPage } from './DefaultPage/index.js';
+import { GroupsPage } from './GroupsPage/index.js';
 import styles from './index.module.css';
 import { messages } from './messages.js';
 import { RolesPage } from './RolesPage/index.js';
-import { GroupsPage } from './GroupsPage/index.js';
 import { AppPreview } from '../../../../../components/AppPreview/index.js';
 import { useFullscreenContext } from '../../../../../components/FullscreenProvider/index.js';
 import { useApp } from '../../index.js';

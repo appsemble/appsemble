@@ -9,12 +9,12 @@ import {
   type App,
   AppMember,
   Asset,
+  Group,
+  GroupMember,
   Organization,
   OrganizationMember,
   Resource,
   ResourceVersion,
-  Group,
-  GroupMember,
   User,
 } from '../../../../models/index.js';
 import { setArgv } from '../../../../utils/argv.js';
@@ -146,8 +146,16 @@ describe('updateAppResource', () => {
       role: 'Member',
     });
 
-    await GroupMember.create({ GroupId: group.id, AppMemberId: memberA.id, role: GroupRole.Member });
-    await GroupMember.create({ GroupId: group.id, AppMemberId: memberB.id, role: GroupRole.Member });
+    await GroupMember.create({
+      GroupId: group.id,
+      AppMemberId: memberA.id,
+      role: GroupRole.Member,
+    });
+    await GroupMember.create({
+      GroupId: group.id,
+      AppMemberId: memberB.id,
+      role: GroupRole.Member,
+    });
 
     const resource = await Resource.create({
       type: 'testResourceGroup',
@@ -202,7 +210,11 @@ describe('updateAppResource', () => {
       timezone: 'Europe/Amsterdam',
     });
 
-    await GroupMember.create({ GroupId: group.id, AppMemberId: memberB.id, role: GroupRole.Member });
+    await GroupMember.create({
+      GroupId: group.id,
+      AppMemberId: memberB.id,
+      role: GroupRole.Member,
+    });
     await AppMember.create({
       email: user.primaryEmail,
       AppId: app.id,

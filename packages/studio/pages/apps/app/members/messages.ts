@@ -21,11 +21,6 @@ export const messages = defineMessages({
     id: 'studio.1ZgrhW',
     defaultMessage: 'Role',
   },
-  inviteOrganization: {
-    id: 'studio.UPJUn0',
-    defaultMessage:
-      'In order to invite more members, they have to be added to the organization first. Click <link>here</link> to invite new members.',
-  },
   noMembers: {
     id: 'studio.jRZz4r',
     defaultMessage: 'This app currently has no members.',
@@ -38,6 +33,10 @@ export const messages = defineMessages({
     id: 'studio.Lxkny3',
     defaultMessage: 'Loading members…',
   },
+  membersError: {
+    id: 'studio.Aopgs7',
+    defaultMessage: 'There was a problem loading the members of this app.',
+  },
   properties: {
     id: 'studio.aI80kg',
     defaultMessage: 'Properties',
@@ -49,5 +48,13 @@ export const messages = defineMessages({
   notAllowed: {
     id: 'studio.kznIRT',
     defaultMessage: 'You don’t have sufficient permissions to invite members.',
+  },
+  demo: {
+    id: 'studio.TPv/Zv',
+    defaultMessage: 'Demo',
+  },
+  actions: {
+    id: 'studio.wL7VAE',
+    defaultMessage: 'Actions',
   },
 });

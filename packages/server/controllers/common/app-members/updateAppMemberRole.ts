@@ -28,7 +28,12 @@ export async function updateAppMemberRole(ctx: Context): Promise<void> {
 
   assertKoaError(!appMember, ctx, 404, 'App member not found');
 
-  assertKoaError(!getAppRoles(appMember.App.toJSON()).includes(role), ctx, 401, 'Role not allowed');
+  assertKoaError(
+    !getAppRoles(appMember.App.definition).includes(role),
+    ctx,
+    401,
+    'Role not allowed',
+  );
 
   await checkAuthSubjectAppPermissions(ctx, appMember.App.id, [AppPermission.UpdateAppMemberRoles]);
 

@@ -1,26 +1,27 @@
 import { type AppDefinition, type GroupMember, type PageDefinition } from '@appsemble/types';
-import { checkAppRole } from '@appsemble/utils';
+import { type AppRole } from '@appsemble/utils';
+
+import { checkPagePermissions } from './authorization.js';
 
 function shouldShowPage(
-  app: AppDefinition,
-  page: PageDefinition,
-  userRole: string,
-  groups: GroupMember[],
+  appDefinition: AppDefinition,
+  pageDefinition: PageDefinition,
+  appMemberRole: AppRole,
+  appMemberGroups: GroupMember[],
 ): boolean {
-  if (page.hideNavTitle) {
+  if (pageDefinition.hideNavTitle) {
     return false;
   }
-  if (page.parameters) {
+  if (pageDefinition.parameters) {
     return false;
   }
-  const roles = page.roles || app.roles || [];
-  if (roles.length && !roles.some((r) => checkAppRole(app.security, r, userRole, groups))) {
+  if (!checkPagePermissions(pageDefinition, appDefinition, appMemberRole, appMemberGroups)) {
     return false;
   }
 
-  if (page.type === 'container' && page.pages) {
-    for (const nestedPage of page.pages) {
-      if (shouldShowPage(app, nestedPage, userRole, groups)) {
+  if (pageDefinition.type === 'container' && pageDefinition.pages) {
+    for (const nestedPage of pageDefinition.pages) {
+      if (shouldShowPage(appDefinition, nestedPage, appMemberRole, appMemberGroups)) {
         return true;
       }
     }
@@ -31,14 +32,14 @@ function shouldShowPage(
 }
 
 export function shouldShowMenu(
-  app: AppDefinition,
-  userRole: string,
-  groups: GroupMember[],
+  appDefinition: AppDefinition,
+  appMemberRole: AppRole,
+  appMemberGroups: GroupMember[],
 ): boolean {
   let visiblePagesCount = 0;
 
-  for (const page of app.pages) {
-    if (shouldShowPage(app, page, userRole, groups)) {
+  for (const pageDefinition of appDefinition.pages) {
+    if (shouldShowPage(appDefinition, pageDefinition, appMemberRole, appMemberGroups)) {
       visiblePagesCount += 1;
     }
     if (visiblePagesCount > 1) {
@@ -48,8 +49,8 @@ export function shouldShowMenu(
 
   return (
     visiblePagesCount > 1 ||
-    app.layout?.feedback === 'navigation' ||
-    app.layout?.login === 'navigation' ||
-    app.layout?.settings === 'navigation'
+    appDefinition.layout?.feedback === 'navigation' ||
+    appDefinition.layout?.login === 'navigation' ||
+    appDefinition.layout?.settings === 'navigation'
   );
 }

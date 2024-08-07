@@ -1,5 +1,5 @@
 import {
-  type App,
+  type AppDefinition,
   type CustomAppPermission,
   type CustomAppResourcePermission,
   type Security,
@@ -8,51 +8,66 @@ import {
 import {
   appOrganizationPermissionMapping,
   type AppPermission,
+  type AppRole,
   appRoles,
   type OrganizationPermission,
   type OrganizationRole,
   organizationRoles,
 } from './constants/index.js';
 
-export function getAppRoles(app: App): string[] {
+export function getAppRoles(appDefinition: AppDefinition): string[] {
   return Array.from(
-    new Set([...Object.keys(app?.definition.security?.roles || {}), ...Object.keys(appRoles)]),
+    new Set([...Object.keys(appDefinition?.security?.roles || {}), ...Object.keys(appRoles)]),
   );
 }
 
-export function getAppRolePermissionsRecursively(
-  appSecurityDefinition: Security,
-  roles: string[],
-): CustomAppPermission[] {
-  const accumulatedPermissions: CustomAppPermission[] = [];
-
-  for (const appRole of roles) {
-    const appRoleAccumulatedPermissions: CustomAppPermission[] = [];
-    const appRoleDefinition = appSecurityDefinition.roles[appRole];
-
-    if (appRoleDefinition) {
-      const appRolePermissions = appRoleDefinition.permissions;
-      if (appRolePermissions) {
-        appRoleAccumulatedPermissions.push(...appRolePermissions);
-      }
-
-      const appRoleInherits = appRoleDefinition.inherits;
-      if (appRoleInherits) {
-        appRoleAccumulatedPermissions.push(
-          ...getAppRolePermissionsRecursively(appSecurityDefinition, appRoleInherits),
-        );
-      }
-    } else {
-      const predefinedRolePermissions = appRoles[appRole as keyof typeof appRoles];
-      if (predefinedRolePermissions) {
-        appRoleAccumulatedPermissions.push(...predefinedRolePermissions);
-      }
-    }
-
-    accumulatedPermissions.push(...appRoleAccumulatedPermissions);
+export function getAppInheritedRoles(appSecurityDefinition: Security, roles: AppRole[]): AppRole[] {
+  if (!appSecurityDefinition) {
+    return [];
   }
 
-  return accumulatedPermissions;
+  const accumulatedRoles: AppRole[] = [];
+
+  for (const role of roles) {
+    if (!accumulatedRoles.includes(role)) {
+      accumulatedRoles.push(role);
+
+      const roleDefinition = appSecurityDefinition.roles[role];
+      if (roleDefinition && roleDefinition.inherits) {
+        accumulatedRoles.push(
+          ...getAppInheritedRoles(appSecurityDefinition, roleDefinition.inherits),
+        );
+      }
+    }
+  }
+
+  return accumulatedRoles;
+}
+
+export function getAppRolePermissions(
+  appSecurityDefinition: Security,
+  roles: AppRole[],
+): CustomAppPermission[] {
+  const accumulatedPermissions: CustomAppPermission[] = [];
+  const inheritedRoles = getAppInheritedRoles(appSecurityDefinition, roles);
+
+  for (const role of inheritedRoles) {
+    const roleDefinition = appSecurityDefinition.roles[role];
+
+    if (roleDefinition) {
+      const rolePermissions = roleDefinition.permissions;
+      if (rolePermissions) {
+        accumulatedPermissions.push(...rolePermissions);
+      }
+    } else {
+      const predefinedRolePermissions = appRoles[role as keyof typeof appRoles];
+      if (predefinedRolePermissions) {
+        accumulatedPermissions.push(...predefinedRolePermissions);
+      }
+    }
+  }
+
+  return Array.from(new Set(accumulatedPermissions));
 }
 
 export function checkAppRoleAppPermissions(
@@ -60,7 +75,7 @@ export function checkAppRoleAppPermissions(
   appRole: string,
   requiredPermissions: CustomAppPermission[],
 ): boolean {
-  const appRolePermissions = getAppRolePermissionsRecursively(appSecurityDefinition, [appRole]);
+  const appRolePermissions = getAppRolePermissions(appSecurityDefinition, [appRole]);
 
   return requiredPermissions.every((p) => {
     if (appRolePermissions.includes(p)) {

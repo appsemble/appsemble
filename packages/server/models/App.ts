@@ -41,9 +41,9 @@ import {
   AppSubscription,
   AppVariable,
   Asset,
+  Group,
   Organization,
   Resource,
-  Group,
 } from './index.js';
 import { resolveIconUrl } from '../utils/app.js';
 

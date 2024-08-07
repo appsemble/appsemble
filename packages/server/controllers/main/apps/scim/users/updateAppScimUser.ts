@@ -90,12 +90,17 @@ export async function updateAppScimUser(ctx: Context): Promise<void> {
       if (managerId === '') {
         if (group) {
           promises.push(
-            GroupMember.destroy({ where: { GroupId: group.id, AppMemberId: member.id }, transaction }),
+            GroupMember.destroy({
+              where: { GroupId: group.id, AppMemberId: member.id },
+              transaction,
+            }),
           );
         }
       } else {
         if (group) {
-          if (!(await GroupMember.findOne({ where: { GroupId: group.id, AppMemberId: member.id } }))) {
+          if (
+            !(await GroupMember.findOne({ where: { GroupId: group.id, AppMemberId: member.id } }))
+          ) {
             promises.push(
               GroupMember.create({ GroupId: group.id, AppMemberId: member.id }, { transaction }),
             );

@@ -1,4 +1,4 @@
-import { type Remapper, type SubPage } from '@appsemble/types';
+import { type Remapper, type SubPageDefinition } from '@appsemble/types';
 import { findPageByName, isAppLink, normalize, partialNormalized } from '@appsemble/utils';
 
 import { type ActionCreator } from './index.js';
@@ -6,7 +6,7 @@ import { type ActionCreator } from './index.js';
 const urlRegex = new RegExp(`^${partialNormalized.source}:`);
 
 export const link: ActionCreator<'link'> = ({
-  app: { pages },
+  appDefinition: { pages },
   definition: { to },
   getAppMessage,
   navigate,
@@ -39,7 +39,7 @@ export const link: ActionCreator<'link'> = ({
 
       const toPage = findPageByName(pages, toBase);
 
-      let subPage: SubPage;
+      let subPage: SubPageDefinition;
       let index: number;
 
       if (toPage?.type === 'tabs' && toPage?.tabs) {

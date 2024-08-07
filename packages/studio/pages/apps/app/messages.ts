@@ -62,7 +62,7 @@ export const messages = defineMessages({
     defaultMessage: 'App members',
   },
   groups: {
-    id: 'studio.DNeuzb',
+    id: 'studio.hzmswI',
     defaultMessage: 'Groups',
   },
   translations: {

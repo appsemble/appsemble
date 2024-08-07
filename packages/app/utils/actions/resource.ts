@@ -7,9 +7,9 @@ import { type ServiceWorkerRegistrationContextType } from '../../types.js';
 import { apiUrl, appId } from '../settings.js';
 
 export const get: ActionCreator<'resource.get'> = (args) => {
-  const { app, definition } = args;
+  const { appDefinition, definition } = args;
   const { view } = definition;
-  const resource = app.resources[definition.resource];
+  const resource = appDefinition.resources[definition.resource];
   const method = resource?.get?.method || 'GET';
   const url =
     resource?.get?.url ??
@@ -42,9 +42,9 @@ export const get: ActionCreator<'resource.get'> = (args) => {
 };
 
 export const query: ActionCreator<'resource.query'> = (args) => {
-  const { app, definition } = args;
+  const { appDefinition, definition } = args;
   const { view } = definition;
-  const resource = app.resources[definition.resource];
+  const resource = appDefinition.resources[definition.resource];
   const method = resource?.query?.method || 'GET';
   const url =
     resource?.query?.url ??
@@ -73,8 +73,8 @@ export const query: ActionCreator<'resource.query'> = (args) => {
 };
 
 export const count: ActionCreator<'resource.count'> = (args) => {
-  const { app, definition } = args;
-  const resource = app.resources[definition.resource];
+  const { appDefinition, definition } = args;
+  const resource = appDefinition.resources[definition.resource];
   const method = resource?.count?.method || 'GET';
   const url =
     resource?.count?.url ??
@@ -96,8 +96,8 @@ export const count: ActionCreator<'resource.count'> = (args) => {
 };
 
 export const create: ActionCreator<'resource.create'> = (args) => {
-  const { app, definition } = args;
-  const resource = app.resources[definition.resource];
+  const { appDefinition, definition } = args;
+  const resource = appDefinition.resources[definition.resource];
   const method = resource?.create?.method || 'POST';
   const url =
     resource?.create?.url ||
@@ -120,8 +120,8 @@ export const create: ActionCreator<'resource.create'> = (args) => {
 };
 
 export const update: ActionCreator<'resource.update'> = (args) => {
-  const { app, definition } = args;
-  const resource = app.resources[definition.resource];
+  const { appDefinition, definition } = args;
+  const resource = appDefinition.resources[definition.resource];
   const method = resource?.update?.method || 'PUT';
   const url =
     resource?.update?.url ||
@@ -149,8 +149,8 @@ export const update: ActionCreator<'resource.update'> = (args) => {
 };
 
 export const patch: ActionCreator<'resource.patch'> = (args) => {
-  const { app, definition } = args;
-  const resource = app.resources[definition.resource];
+  const { appDefinition, definition } = args;
+  const resource = appDefinition.resources[definition.resource];
   const method = resource?.update?.method || 'PATCH';
   const url =
     resource?.update?.url ||
@@ -178,8 +178,8 @@ export const patch: ActionCreator<'resource.patch'> = (args) => {
 };
 
 export const remove: ActionCreator<'resource.delete'> = (args) => {
-  const { app, definition } = args;
-  const resource = app.resources[definition.resource];
+  const { appDefinition, definition } = args;
+  const resource = appDefinition.resources[definition.resource];
   const method = resource?.delete?.method || 'DELETE';
   const url =
     resource?.delete?.url ||
@@ -229,11 +229,11 @@ async function getSubscription(
 }
 
 export const subscribe: ActionCreator<'resource.subscription.subscribe'> = ({
-  app,
+  appDefinition,
   definition,
   pushNotifications,
 }) => {
-  const resource = app.resources[definition.resource];
+  const resource = appDefinition.resources[definition.resource];
   const { id = 'id' } = resource;
 
   return [
@@ -253,11 +253,11 @@ export const subscribe: ActionCreator<'resource.subscription.subscribe'> = ({
 };
 
 export const unsubscribe: ActionCreator<'resource.subscription.unsubscribe'> = ({
-  app,
+  appDefinition,
   definition,
   pushNotifications,
 }) => {
-  const resource = app.resources[definition.resource];
+  const resource = appDefinition.resources[definition.resource];
   const { id = 'id' } = resource;
 
   return [
@@ -277,11 +277,11 @@ export const unsubscribe: ActionCreator<'resource.subscription.unsubscribe'> = (
 };
 
 export const toggle: ActionCreator<'resource.subscription.toggle'> = ({
-  app,
+  appDefinition,
   definition,
   pushNotifications,
 }) => {
-  const resource = app.resources[definition.resource];
+  const resource = appDefinition.resources[definition.resource];
   const { id = 'id' } = resource;
 
   return [
@@ -300,11 +300,11 @@ export const toggle: ActionCreator<'resource.subscription.toggle'> = ({
 };
 
 export const status: ActionCreator<'resource.subscription.status'> = ({
-  app,
+  appDefinition,
   definition,
   pushNotifications,
 }) => {
-  const resource = app.resources[definition.resource];
+  const resource = appDefinition.resources[definition.resource];
   const { id = 'id' } = resource;
 
   return [

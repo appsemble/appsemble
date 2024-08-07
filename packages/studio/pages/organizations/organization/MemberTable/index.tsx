@@ -64,10 +64,16 @@ export function MemberTable(): ReactNode {
   const me = members?.find((member) => member.id === userInfo.sub);
   const ownerCount = me && members.filter((member) => member.role === 'Owner').length;
 
-  const mayEdit =
+  const mayUpdateRoles =
     me &&
     checkOrganizationRoleOrganizationPermissions(me.role, [
       OrganizationPermission.UpdateOrganizationMemberRoles,
+    ]);
+
+  const mayDelete =
+    me &&
+    checkOrganizationRoleOrganizationPermissions(me.role, [
+      OrganizationPermission.RemoveOrganizationMembers,
     ]);
 
   const mayInvite =
@@ -114,7 +120,8 @@ export function MemberTable(): ReactNode {
             {members.map((member) => (
               <MemberRow
                 key={member.id}
-                mayEdit={mayEdit}
+                mayDelete={mayDelete}
+                mayUpdateRoles={mayUpdateRoles}
                 member={member}
                 onChanged={onMemberChanged}
                 onDeleted={onMemberDeleted}

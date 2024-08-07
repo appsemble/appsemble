@@ -33,9 +33,9 @@ import { useServiceWorkerRegistration } from '../ServiceWorkerRegistrationProvid
 
 interface FlowPageProps {
   readonly data: unknown;
-  readonly definition: AppDefinition;
+  readonly appDefinition: AppDefinition;
   readonly ee: EventEmitter;
-  readonly page: FlowPageDefinition | LoopPageDefinition;
+  readonly pageDefinition: FlowPageDefinition | LoopPageDefinition;
   readonly appStorage: AppStorage;
   readonly prefix: string;
   readonly prefixIndex: string;
@@ -47,11 +47,11 @@ interface FlowPageProps {
 }
 
 export function FlowPage({
+  appDefinition,
   appStorage,
   data,
-  definition,
   ee,
-  page,
+  pageDefinition,
   prefix,
   prefixIndex,
   remap,
@@ -68,16 +68,18 @@ export function FlowPage({
   const {
     appMemberInfo,
     appMemberInfoRef,
+    groups,
     logout,
     passwordLogin,
     setAppMemberInfo,
-    groups,
     updateGroup,
   } = useAppMember();
   const { refetchDemoAppMembers } = useDemoAppMembers();
   const { getAppMessage, getMessage } = useAppMessages();
   const { getVariable } = useAppVariables();
-  const [steps, setSteps] = useState(page.type === 'flow' ? page.steps : undefined);
+  const [steps, setSteps] = useState(
+    pageDefinition.type === 'flow' ? pageDefinition.steps : undefined,
+  );
   const [error, setError] = useState(false);
   const [loopData, setLoopData] = useState<Object[]>();
   const [stepsData, setStepsData] = useState<Object[]>();
@@ -88,7 +90,7 @@ export function FlowPage({
     getMessage,
     getVariable,
     appMember: appMemberInfo,
-    context: { name: page.name },
+    context: { name: pageDefinition.name },
     locale: params.lang,
   };
 
@@ -102,12 +104,13 @@ export function FlowPage({
     return `${loopPrefix}.steps`;
   };
 
-  const id = page.type === 'loop' ? generateLoopPrefix(prefix) : `${prefix}.steps.${currentStep}`;
+  const id =
+    pageDefinition.type === 'loop' ? generateLoopPrefix(prefix) : `${prefix}.steps.${currentStep}`;
 
   const name = getAppMessage({
     id,
     defaultMessage:
-      page.type === 'loop'
+      pageDefinition.type === 'loop'
         ? generateLoopPrefix(prefix)
         : typeof steps?.[currentStep]?.name === 'string'
           ? steps?.[currentStep]?.name
@@ -116,20 +119,20 @@ export function FlowPage({
   useMeta(name === `{${id}}` ? null : name);
 
   useEffect(() => {
-    if (page.retainFlowData === false) {
+    if (pageDefinition.retainFlowData === false) {
       return () => {
         setData({});
         appStorage.clear();
       };
     }
-  }, [page.retainFlowData, appStorage, setData]);
+  }, [pageDefinition.retainFlowData, appStorage, setData]);
 
   // XXX Something weird is going on here.
   let actions: BootstrapParams['actions'];
 
   const finish = useCallback(
     async (d: any): Promise<any> => {
-      if (page.type === 'loop') {
+      if (pageDefinition.type === 'loop') {
         applyRefs(null, stepRef);
         const newData = { ...loopData[currentStep], ...d };
         let stepData = stepsData;
@@ -145,7 +148,7 @@ export function FlowPage({
       setData(d);
       return d;
     },
-    [actions, currentStep, loopData, page.type, setData, stepRef, stepsData],
+    [actions, currentStep, loopData, pageDefinition.type, setData, stepRef, stepsData],
   );
 
   const next = useCallback(
@@ -155,7 +158,7 @@ export function FlowPage({
         return finish(d);
       }
 
-      if (page.type === 'loop') {
+      if (pageDefinition.type === 'loop') {
         applyRefs((loopData as Record<string, any>)[currentStep + 1], stepRef);
         const newData = { ...loopData[currentStep], ...d };
         if (Array.isArray(stepsData) && stepsData.length > 0) {
@@ -170,18 +173,18 @@ export function FlowPage({
       setCurrentStep(currentStep + 1);
       return d;
     },
-    [currentStep, steps, page, stepsData, loopData, finish, stepRef, setData],
+    [currentStep, steps, pageDefinition, stepsData, loopData, finish, stepRef, setData],
   );
 
   const back = useCallback(
     // eslint-disable-next-line require-await
     async (d: any): Promise<any> => {
       if (currentStep <= 0) {
-        // Don't do anything if a previous page does not exist
+        // Don't do anything if a previous pageDefinition does not exist
         return d;
       }
 
-      if (page.type === 'loop') {
+      if (pageDefinition.type === 'loop') {
         stepsData.pop();
         applyRefs((loopData as Record<string, any>)[currentStep - 1], stepRef);
       } else {
@@ -190,7 +193,7 @@ export function FlowPage({
       setCurrentStep(currentStep - 1);
       return d;
     },
-    [currentStep, page, stepsData, loopData, stepRef, setData],
+    [currentStep, pageDefinition, stepsData, loopData, stepRef, setData],
   );
 
   const cancel = useCallback(
@@ -204,11 +207,13 @@ export function FlowPage({
   const to = useCallback(
     (d: any, stepName: string) => {
       if (typeof stepName !== 'string') {
-        throw new TypeError(`Expected page to be a string, got: ${JSON.stringify(stepName)}`);
+        throw new TypeError(
+          `Expected pageDefinition to be a string, got: ${JSON.stringify(stepName)}`,
+        );
       }
       const found = steps.findIndex((p) => p.name === stepName);
       if (found === -1) {
-        throw new Error(`No matching page was found for ${stepName}`);
+        throw new Error(`No matching pageDefinition was found for ${stepName}`);
       }
 
       setCurrentStep(found);
@@ -238,8 +243,8 @@ export function FlowPage({
         getAppMessage,
         getAppVariable: getVariable,
         actions: { onFlowFinish: {}, onFlowCancel: {}, onLoad: {} },
-        app: definition,
-        context: page,
+        appDefinition,
+        context: pageDefinition,
         navigate,
         showDialog,
         showShareDialog,
@@ -265,8 +270,8 @@ export function FlowPage({
       appStorage,
       getAppMessage,
       getVariable,
-      definition,
-      page,
+      appDefinition,
+      pageDefinition,
       navigate,
       showDialog,
       showShareDialog,
@@ -290,18 +295,18 @@ export function FlowPage({
 
   // Generate loop steps and data
   useEffect(() => {
-    if (page.type === 'loop' && !steps) {
+    if (pageDefinition.type === 'loop' && !steps) {
       actions
         .onLoad()
         .then((results: any) => {
-          const { blocks } = page.foreach;
+          const { blocks } = pageDefinition.foreach;
 
           function createSteps(): SubPage[] {
             const newSteps: SubPage[] = [];
             for (const resourceData of results) {
               if (resourceData) {
                 const newStep: SubPage = {
-                  name: 'New loop page',
+                  name: 'New loop pageDefinition',
                   blocks,
                 };
                 newSteps.push(newStep);
@@ -319,7 +324,7 @@ export function FlowPage({
           setError(true);
         });
     }
-  }, [actions, page, setData, stepRef, steps]);
+  }, [actions, pageDefinition, setData, stepRef, steps]);
 
   if (error) {
     return <p>Error loading steps</p>;
@@ -329,7 +334,7 @@ export function FlowPage({
     return <Loader />;
   }
 
-  const { progress = 'corner-dots' } = page;
+  const { progress = 'corner-dots' } = pageDefinition;
 
   return (
     <>
@@ -341,14 +346,14 @@ export function FlowPage({
         ee={ee}
         flowActions={flowActions}
         key={currentStep}
-        page={page}
+        pageDefinition={pageDefinition}
         prefix={
-          page.type === 'loop'
+          pageDefinition.type === 'loop'
             ? `${generateLoopPrefix(prefix)}.blocks`
             : `${prefix}.steps.${currentStep}.blocks`
         }
         prefixIndex={
-          page.type === 'loop'
+          pageDefinition.type === 'loop'
             ? `${generateLoopPrefix(prefixIndex)}.blocks`
             : `${prefixIndex}.steps.${currentStep}.blocks`
         }

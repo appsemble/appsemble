@@ -168,10 +168,22 @@ export function AppMemberProvider({ children }: AppMemberProviderProps): ReactNo
             config,
           );
         }
-        const [{ data: appMember }, { data: groups }] = await Promise.all([
-          axios.get<AppMemberInfo>(`${apiUrl}/api/apps/${appId}/members/current`, config),
-          axios.get<GroupMember[]>(`${apiUrl}/api/apps/${appId}/groups`, config),
-        ]);
+
+        const { data: appMember } = await axios.get<AppMemberInfo>(
+          `${apiUrl}/api/apps/${appId}/members/current`,
+          config,
+        );
+
+        let groups: GroupMember[] = [];
+        try {
+          const { data } = await axios.get<GroupMember[]>(
+            `${apiUrl}/api/apps/${appId}/groups`,
+            config,
+          );
+          groups = data;
+        } catch {
+          // Do nothing
+        }
 
         setSentryUser({ id: appMember.sub });
         setAppMemberInfo(appMember);

@@ -10,7 +10,7 @@ describe('makeActions', () => {
 
   beforeEach(() => {
     testDefaults = {
-      app: null,
+      appDefinition: null,
       appStorage: null,
       context: null,
       ee: null,
@@ -29,12 +29,12 @@ describe('makeActions', () => {
       showDialog: null,
       showShareDialog: null,
       showMessage: null,
-      groups: [],
+      appMemberGroups: [],
       updateGroup: null,
-      getUserInfo: null,
+      getAppMemberInfo: null,
       passwordLogin: null,
       passwordLogout: null,
-      setUserInfo: null,
+      setAppMemberInfo: null,
       refetchDemoAppMembers: null,
     };
   });

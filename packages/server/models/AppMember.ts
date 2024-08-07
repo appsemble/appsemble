@@ -26,9 +26,9 @@ import {
   App,
   AppOAuth2Authorization,
   AppSamlAuthorization,
+  GroupMember,
   OAuth2AuthorizationCode,
   Resource,
-  GroupMember,
   User,
 } from './index.js';
 

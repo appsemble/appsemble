@@ -174,7 +174,7 @@ export function createTestAction<T extends ActionDefinition['type']>(
   params: SetRequired<Partial<CreateActionParams<T>>, 'definition'>,
 ): Extract<Action, { type: T }> {
   return createAction<T>({
-    app: null,
+    appDefinition: null,
     definition: null,
     ee: null,
     extraCreators: null,
@@ -193,10 +193,9 @@ export function createTestAction<T extends ActionDefinition['type']>(
         appId,
         url: 'https://example.com/en/example',
         appUrl: 'https://example.com',
-        userInfo: null,
+        appMemberInfo: null,
         context,
         locale: defaultLocale,
-        appMember: undefined,
       }),
     params: {
       lang: 'en',
@@ -204,12 +203,12 @@ export function createTestAction<T extends ActionDefinition['type']>(
     showDialog: null,
     showShareDialog: null,
     showMessage: null,
-    groups: [],
+    appMemberGroups: [],
     updateGroup: null,
-    getUserInfo: null,
+    getAppMemberInfo: null,
     passwordLogin: null,
     passwordLogout: null,
-    setUserInfo: null,
+    setAppMemberInfo: null,
     refetchDemoAppMembers: null,
     ...params,
   });

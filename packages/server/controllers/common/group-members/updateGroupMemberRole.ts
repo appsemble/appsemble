@@ -36,7 +36,7 @@ export async function updateGroupMemberRole(ctx: Context): Promise<void> {
   assertKoaError(!groupMember, ctx, 404, 'Group member not found.');
 
   assertKoaError(
-    !getAppRoles(groupMember.Group.App.toJSON()).includes(role),
+    !getAppRoles(groupMember.Group.App.definition).includes(role),
     ctx,
     401,
     'Role not allowed',

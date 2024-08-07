@@ -14,11 +14,11 @@ import {
   useData,
   useToggle,
 } from '@appsemble/react-components';
-import { type AppMember, type Group, type GroupMember } from '@appsemble/types';
-import { type GroupMemberRole, groupMemberRoles } from '@appsemble/utils';
+import { type AppMemberInfo, type Group, type GroupMember } from '@appsemble/types';
+import { type AppRole, getAppRoles } from '@appsemble/utils';
 import axios from 'axios';
 import { type ChangeEvent, type ReactNode, useCallback, useEffect, useMemo, useState } from 'react';
-import { FormattedMessage, useIntl } from 'react-intl';
+import { FormattedMessage } from 'react-intl';
 
 import styles from './index.module.css';
 import { messages } from './messages.js';
@@ -33,13 +33,12 @@ interface DemoLoginProps {
 }
 
 function GroupControls(): ReactNode {
-  type GroupsResponse = (Partial<GroupMember> & Group)[];
+  type GroupsResponse = (Group & Partial<GroupMember>)[];
 
   const { appMemberInfo, isLoggedIn } = useAppMember();
+  const { definition: appDefinition } = useAppDefinition();
 
   const sub = appMemberInfo?.sub;
-
-  const { formatMessage } = useIntl();
 
   const {
     data: groups,
@@ -50,7 +49,7 @@ function GroupControls(): ReactNode {
   } = useData<GroupsResponse>(`${apiUrl}/api/apps/${appId}/groups`);
 
   const changeGroupRole = useCallback(
-    async (group: Group, role: GroupMemberRole) => {
+    async (group: Group, role: AppRole) => {
       await axios.put(`${apiUrl}/api/apps/${appId}/groups/${group.id}/members/${sub}`, {
         role,
       });
@@ -58,6 +57,7 @@ function GroupControls(): ReactNode {
     },
     [sub, setGroups],
   );
+
   const leaveGroup = useCallback(
     async (group: Group) => {
       await axios.delete(`${apiUrl}/api/apps/${appId}/groups/${group.id}/members/${sub}`);
@@ -67,6 +67,7 @@ function GroupControls(): ReactNode {
     },
     [sub, setGroups],
   );
+
   const joinGroup = useCallback(
     async (group: Group) => {
       const result = await axios.post(`${apiUrl}/api/apps/${appId}/groups/${group.id}/members`, {
@@ -93,6 +94,8 @@ function GroupControls(): ReactNode {
     return <FormattedMessage {...messages.error} />;
   }
 
+  const appRoles = getAppRoles(appDefinition);
+
   return (
     <Table>
       <tbody>
@@ -108,12 +111,12 @@ function GroupControls(): ReactNode {
                 <>
                   <AsyncSelect
                     name="role"
-                    onChange={(event, value: GroupMemberRole) => changeGroupRole(group, value)}
+                    onChange={(event, value: AppRole) => changeGroupRole(group, value)}
                     value={group.role}
                   >
-                    {Object.keys(groupMemberRoles).map((role: GroupMemberRole) => (
+                    {appRoles.map((role: AppRole) => (
                       <option key={role} value={role}>
-                        {formatMessage(messages[role])}
+                        {role}
                       </option>
                     ))}
                   </AsyncSelect>
@@ -132,21 +135,20 @@ function GroupControls(): ReactNode {
 
 export function DemoLogin({ modal }: DemoLoginProps): ReactNode {
   const { demoLogin } = useAppMember();
-  const { definition } = useAppDefinition();
+  const { definition: appDefinition } = useAppDefinition();
   const { getAppMessage } = useAppMessages();
   const { demoAppMembers, refetchDemoAppMembers } = useDemoAppMembers();
 
   const busy = useToggle();
 
-  const appRoles = useMemo(() => definition?.security?.roles ?? {}, [definition]);
-  const appRoleNames = useMemo(() => Object.keys(appRoles) ?? [], [appRoles]);
-  const defaultAppRoleName = useMemo(
-    () => definition?.security?.default.role ?? appRoleNames[0] ?? '',
-    [appRoleNames, definition?.security?.default.role],
+  const appRoles = getAppRoles(appDefinition);
+  const defaultAppRole = useMemo(
+    () => appDefinition?.security?.default.role ?? appRoles[0] ?? '',
+    [appDefinition?.security?.default.role, appRoles],
   );
 
-  const [selectedDemoAppMember, setSelectedDemoAppMember] = useState<AppMember>(null);
-  const [selectedAppRoleName, setSelectedAppRoleName] = useState<string>(defaultAppRoleName);
+  const [selectedDemoAppMember, setSelectedDemoAppMember] = useState<AppMemberInfo>(null);
+  const [selectedAppRole, setSelectedAppRole] = useState<string>(defaultAppRole);
 
   const [operation, setOperation] = useState<'create-account' | 'login'>(
     demoAppMembers.length ? 'login' : 'create-account',
@@ -157,24 +159,24 @@ export function DemoLogin({ modal }: DemoLoginProps): ReactNode {
     [demoAppMembers, selectedDemoAppMember],
   );
 
-  const selectedDemoAppMemberRoleDescription = getAppMessage({
-    id: `app.roles.${demoAppMember?.role}.description`,
-    defaultMessage: appRoles[demoAppMember?.role]?.description,
-  }).format() as string;
+  const getRoleDescription = (role: AppRole): string =>
+    getAppMessage({
+      id: `app.roles.${role}.description`,
+      defaultMessage: appDefinition.security?.roles[role]?.description || role,
+    }).format() as string;
 
-  const selectedAppRoleDescription = getAppMessage({
-    id: `app.roles.${selectedAppRoleName}.description`,
-    defaultMessage: appRoles[selectedAppRoleName]?.description,
-  }).format() as string;
+  const selectedDemoAppMemberRoleDescription = getRoleDescription(demoAppMember?.role);
+
+  const selectedAppRoleDescription = getRoleDescription(selectedAppRole);
 
   const changeDemoAppMember = (event: ChangeEvent<MinimalHTMLElement>): void => {
     setSelectedDemoAppMember(
-      demoAppMembers.find((appMember) => appMember.id === event.target.value) ?? demoAppMembers[0],
+      demoAppMembers.find((appMember) => appMember.sub === event.target.value) ?? demoAppMembers[0],
     );
   };
 
   const changeAppRole = (event: ChangeEvent<MinimalHTMLElement>): void => {
-    setSelectedAppRoleName(event.target.value);
+    setSelectedAppRole(event.target.value);
   };
 
   const setLogin = (): void => {
@@ -187,18 +189,18 @@ export function DemoLogin({ modal }: DemoLoginProps): ReactNode {
 
   const defaultValues = useMemo(
     () => ({
-      appMemberId: demoAppMember?.id ?? undefined,
-      appRole: defaultAppRoleName ?? undefined,
+      appMemberId: demoAppMember?.sub ?? undefined,
+      appRole: defaultAppRole ?? undefined,
     }),
-    [defaultAppRoleName, demoAppMember?.id],
+    [defaultAppRole, demoAppMember?.sub],
   );
 
   const handleLogin = useCallback(async () => {
     busy.enable();
     try {
       await demoLogin({
-        appMemberId: operation === 'login' ? demoAppMember.id : '',
-        appRole: operation === 'create-account' ? selectedAppRoleName : '',
+        appMemberId: operation === 'login' ? demoAppMember.sub : '',
+        appRole: operation === 'create-account' ? selectedAppRole : '',
       });
       busy.disable();
       if (modal) {
@@ -210,15 +212,7 @@ export function DemoLogin({ modal }: DemoLoginProps): ReactNode {
       busy.disable();
       throw error;
     }
-  }, [
-    busy,
-    demoLogin,
-    operation,
-    demoAppMember?.id,
-    selectedAppRoleName,
-    modal,
-    refetchDemoAppMembers,
-  ]);
+  }, [busy, demoLogin, operation, demoAppMember, selectedAppRole, modal, refetchDemoAppMembers]);
 
   const fields = (
     <>
@@ -235,7 +229,7 @@ export function DemoLogin({ modal }: DemoLoginProps): ReactNode {
             required
           >
             {demoAppMembers.map((appMember) => (
-              <option key={appMember.id} value={appMember.id}>
+              <option key={appMember.sub} value={appMember.sub}>
                 {appMember.name}
               </option>
             ))}
@@ -250,23 +244,27 @@ export function DemoLogin({ modal }: DemoLoginProps): ReactNode {
           </SimpleSubmit>
         </div>
       ) : null}
-      {appRoleNames.length ? (
+      {appRoles.length ? (
         <>
           <SimpleFormField
             component={SelectField}
             data-testid="app-role"
-            disabled={appRoleNames.length < 2 || busy.enabled}
-            help={<div className={styles.black}>{selectedAppRoleDescription}</div>}
+            disabled={appRoles.length < 2 || busy.enabled}
+            help={
+              selectedAppRoleDescription === selectedAppRole ? null : (
+                <div className={styles.black}>{selectedAppRoleDescription}</div>
+              )
+            }
             label={<FormattedMessage {...messages.selectRole} />}
             name="appRole"
             onChange={changeAppRole}
             required
           >
-            {appRoleNames.map((appRoleName) => (
-              <option key={appRoleName} value={appRoleName}>
+            {appRoles.map((appRole) => (
+              <option key={appRole} value={appRole}>
                 {getAppMessage({
-                  id: `app.roles.${appRoleName}`,
-                  defaultMessage: appRoleName,
+                  id: `app.roles.${appRole}`,
+                  defaultMessage: appRole,
                 }).format()}
               </option>
             ))}

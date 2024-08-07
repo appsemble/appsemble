@@ -10,6 +10,7 @@ import { each } from './each.js';
 import { email } from './email.js';
 import { event } from './event.js';
 import * as flow from './flow.js';
+import { groupInvite, groupJoin, groupList, groupMembers } from './group.js';
 import { back, link, next } from './link.js';
 import { log } from './log.js';
 import { match } from './match.js';
@@ -21,7 +22,6 @@ import * as resource from './resource.js';
 import { share } from './share.js';
 import { staticAction } from './static.js';
 import * as storage from './storage.js';
-import { groupInvite, groupJoin, groupList, groupMembers } from './group.js';
 import { throwAction } from './throw.js';
 import { type MakeActionParameters } from '../../types.js';
 

@@ -39,7 +39,7 @@ export function GroupMemberRow({
     action: removeMember,
   });
 
-  const roleKeys = getAppRoles(app);
+  const roleKeys = getAppRoles(app.definition);
 
   return (
     <tr key={member.id}>

@@ -26,7 +26,7 @@ export const messages = defineMessages({
     defaultMessage: 'Select a role to create an account with',
   },
   selectGroupRole: {
-    id: 'app.obEU1l',
+    id: 'app.V9YOMv',
     defaultMessage: 'Select a group role',
   },
   Member: {
@@ -38,11 +38,11 @@ export const messages = defineMessages({
     defaultMessage: 'Manager',
   },
   joinGroup: {
-    id: 'app.C5l8n7',
+    id: 'app.IzjIPk',
     defaultMessage: 'Join group',
   },
   leaveGroup: {
-    id: 'app.sPEM/n',
+    id: 'app.g9Ii4M',
     defaultMessage: 'Leave group',
   },
   error: {

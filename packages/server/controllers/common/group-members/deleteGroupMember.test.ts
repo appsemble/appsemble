@@ -6,10 +6,10 @@ import { beforeAll, beforeEach, describe, expect, it } from 'vitest';
 import {
   App,
   AppMember,
-  Organization,
-  OrganizationMember,
   Group,
   GroupMember,
+  Organization,
+  OrganizationMember,
   User,
 } from '../../../models/index.js';
 import { setArgv } from '../../../utils/argv.js';
@@ -88,7 +88,11 @@ describe('deleteGroupMember', () => {
       timezone: 'Europe/Amsterdam',
       role: '',
     });
-    await GroupMember.create({ AppMemberId: appMember.id, GroupId: group.id, role: GroupRole.Member });
+    await GroupMember.create({
+      AppMemberId: appMember.id,
+      GroupId: group.id,
+      role: GroupRole.Member,
+    });
 
     authorizeStudio();
     const response = await request.delete(
@@ -117,7 +121,11 @@ describe('deleteGroupMember', () => {
       timezone: 'Europe/Amsterdam',
       role: '',
     });
-    await GroupMember.create({ AppMemberId: appMember.id, GroupId: group.id, role: GroupRole.Member });
+    await GroupMember.create({
+      AppMemberId: appMember.id,
+      GroupId: group.id,
+      role: GroupRole.Member,
+    });
 
     authorizeStudio();
     const response = await request.delete(
@@ -157,7 +165,11 @@ describe('deleteGroupMember', () => {
       timezone: 'Europe/Amsterdam',
       role: '',
     });
-    await GroupMember.create({ AppMemberId: appMember1.id, GroupId: group.id, role: GroupRole.Member });
+    await GroupMember.create({
+      AppMemberId: appMember1.id,
+      GroupId: group.id,
+      role: GroupRole.Member,
+    });
     await GroupMember.create({
       AppMemberId: appMember2.id,
       GroupId: group.id,
@@ -195,7 +207,11 @@ describe('deleteGroupMember', () => {
       timezone: 'Europe/Amsterdam',
       role: '',
     });
-    await GroupMember.create({ AppMemberId: appMember.id, GroupId: group.id, role: GroupRole.Member });
+    await GroupMember.create({
+      AppMemberId: appMember.id,
+      GroupId: group.id,
+      role: GroupRole.Member,
+    });
 
     authorizeStudio();
     const response = await request.delete(

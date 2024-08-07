@@ -6,11 +6,11 @@ import webpush from 'web-push';
 import {
   type App,
   AppMember,
+  Group,
+  GroupMember,
   Organization,
   OrganizationMember,
   Resource,
-  Group,
-  GroupMember,
   User,
 } from '../../../../models/index.js';
 import { setArgv } from '../../../../utils/argv.js';
@@ -183,8 +183,16 @@ describe('countAppResources', () => {
       timezone: 'Europe/Amsterdam',
     });
 
-    await GroupMember.create({ GroupId: group.id, AppMemberId: memberA.id, role: GroupRole.Member });
-    await GroupMember.create({ GroupId: group.id, AppMemberId: memberB.id, role: GroupRole.Member });
+    await GroupMember.create({
+      GroupId: group.id,
+      AppMemberId: memberA.id,
+      role: GroupRole.Member,
+    });
+    await GroupMember.create({
+      GroupId: group.id,
+      AppMemberId: memberB.id,
+      role: GroupRole.Member,
+    });
 
     await Resource.create({
       AppId: app.id,
@@ -242,8 +250,16 @@ describe('countAppResources', () => {
       timezone: 'Europe/Amsterdam',
     });
 
-    await GroupMember.create({ GroupId: group.id, AppMemberId: memberA.id, role: GroupRole.Member });
-    await GroupMember.create({ GroupId: group.id, AppMemberId: memberB.id, role: GroupRole.Member });
+    await GroupMember.create({
+      GroupId: group.id,
+      AppMemberId: memberA.id,
+      role: GroupRole.Member,
+    });
+    await GroupMember.create({
+      GroupId: group.id,
+      AppMemberId: memberB.id,
+      role: GroupRole.Member,
+    });
 
     await Resource.create({
       AppId: app.id,
@@ -303,8 +319,16 @@ describe('countAppResources', () => {
       timezone: 'Europe/Amsterdam',
     });
 
-    await GroupMember.create({ GroupId: group.id, AppMemberId: memberA.id, role: GroupRole.Manager });
-    await GroupMember.create({ GroupId: group.id, AppMemberId: memberB.id, role: GroupRole.Member });
+    await GroupMember.create({
+      GroupId: group.id,
+      AppMemberId: memberA.id,
+      role: GroupRole.Manager,
+    });
+    await GroupMember.create({
+      GroupId: group.id,
+      AppMemberId: memberB.id,
+      role: GroupRole.Member,
+    });
 
     await Resource.create({
       AppId: app.id,
@@ -365,7 +389,11 @@ describe('countAppResources', () => {
       timezone: 'Europe/Amsterdam',
     });
 
-    await GroupMember.create({ GroupId: group.id, AppMemberId: memberB.id, role: GroupRole.Member });
+    await GroupMember.create({
+      GroupId: group.id,
+      AppMemberId: memberB.id,
+      role: GroupRole.Member,
+    });
 
     await Resource.create({
       AppId: app.id,
@@ -425,8 +453,16 @@ describe('countAppResources', () => {
       timezone: 'Europe/Amsterdam',
     });
 
-    await GroupMember.create({ GroupId: group.id, AppMemberId: memberA.id, role: GroupRole.Member });
-    await GroupMember.create({ GroupId: group.id, AppMemberId: memberB.id, role: GroupRole.Member });
+    await GroupMember.create({
+      GroupId: group.id,
+      AppMemberId: memberA.id,
+      role: GroupRole.Member,
+    });
+    await GroupMember.create({
+      GroupId: group.id,
+      AppMemberId: memberB.id,
+      role: GroupRole.Member,
+    });
 
     await Resource.create({
       AppId: app.id,
@@ -486,8 +522,16 @@ describe('countAppResources', () => {
       timezone: 'Europe/Amsterdam',
     });
 
-    await GroupMember.create({ GroupId: group.id, AppMemberId: memberA.id, role: GroupRole.Manager });
-    await GroupMember.create({ GroupId: group.id, AppMemberId: memberB.id, role: GroupRole.Member });
+    await GroupMember.create({
+      GroupId: group.id,
+      AppMemberId: memberA.id,
+      role: GroupRole.Manager,
+    });
+    await GroupMember.create({
+      GroupId: group.id,
+      AppMemberId: memberB.id,
+      role: GroupRole.Member,
+    });
 
     await Resource.create({
       AppId: app.id,
@@ -564,7 +608,11 @@ describe('countAppResources', () => {
       timezone: 'Europe/Amsterdam',
     });
 
-    await GroupMember.create({ GroupId: group.id, AppMemberId: memberB.id, role: GroupRole.Member });
+    await GroupMember.create({
+      GroupId: group.id,
+      AppMemberId: memberB.id,
+      role: GroupRole.Member,
+    });
 
     await Resource.create({
       AppId: app.id,

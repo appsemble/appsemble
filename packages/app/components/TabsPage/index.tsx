@@ -1,7 +1,11 @@
 import { applyRefs, MetaSwitch, Tab, Tabs, useMessages } from '@appsemble/react-components';
 import { type BootstrapParams } from '@appsemble/sdk';
-import { type SubPage, type TabsPageDefinition } from '@appsemble/types';
-import { checkAppRole, normalize } from '@appsemble/utils';
+import {
+  type PageDefinition,
+  type SubPageDefinition,
+  type TabsPageDefinition,
+} from '@appsemble/types';
+import { normalize } from '@appsemble/utils';
 import {
   type ChangeEvent,
   type ComponentPropsWithoutRef,
@@ -16,6 +20,7 @@ import {
 import { Navigate, Route, useLocation, useNavigate, useParams } from 'react-router-dom';
 
 import { TabContent } from './TabContent/index.js';
+import { checkPagePermissions } from '../../utils/authorization.js';
 import { createEvents } from '../../utils/events.js';
 import { makeActions } from '../../utils/makeActions.js';
 import { appId } from '../../utils/settings.js';
@@ -28,14 +33,14 @@ import { useDemoAppMembers } from '../DemoAppMembersProvider/index.js';
 import { useServiceWorkerRegistration } from '../ServiceWorkerRegistrationProvider/index.js';
 
 interface TabsPageProps extends Omit<ComponentPropsWithoutRef<typeof BlockList>, 'blocks'> {
-  readonly page: TabsPageDefinition;
+  readonly pageDefinition: TabsPageDefinition;
   readonly tabRef: MutableRefObject<unknown>;
 }
 
 export function TabsPage({
   appStorage,
   ee,
-  page,
+  pageDefinition,
   prefix,
   prefixIndex,
   remap,
@@ -44,7 +49,7 @@ export function TabsPage({
   tabRef,
   ...blockListProps
 }: TabsPageProps): ReactNode {
-  const { definition, pageManifests } = useAppDefinition();
+  const { definition: appDefinition, pageManifests } = useAppDefinition();
   const {
     '*': wildcard,
     lang,
@@ -58,11 +63,11 @@ export function TabsPage({
   const {
     appMemberInfo,
     appMemberInfoRef,
+    groups: appMemberGroups,
     logout,
     passwordLogin,
-    role,
+    role: appMemberRole,
     setAppMemberInfo,
-    groups,
     updateGroup,
   } = useAppMember();
   const { refetchDemoAppMembers } = useDemoAppMembers();
@@ -76,34 +81,40 @@ export function TabsPage({
   const [pageReady, setPageReady] = useState<Promise<void>>();
   const [createdTabs, setCreatedTabs] = useState([]);
 
-  const checkSubPagePermissions = useCallback(
-    (p: SubPage): boolean => {
-      const roles = p.roles || definition.roles || [];
+  const remapperContext = useMemo(
+    () => ({
+      appId,
+      appUrl: window.location.origin,
+      url: window.location.href,
+      getMessage,
+      getVariable,
+      appMemberInfo,
+      context: { name: pageDefinition.name },
+      locale: lang,
+    }),
+    [appMemberInfo, getMessage, getVariable, lang, pageDefinition.name],
+  );
 
-      return (
-        roles.length === 0 || roles.some((r) => checkAppRole(definition.security, r, role, groups))
-      );
+  const checkSubPagePermissions = useCallback(
+    (subPage: SubPageDefinition): boolean => {
+      const pd: PageDefinition = {
+        name: remap(subPage.name, data, remapperContext) as string,
+        type: undefined,
+        roles: subPage.roles,
+      };
+
+      return checkPagePermissions(pd, appDefinition, appMemberRole, appMemberGroups);
     },
-    [definition.roles, definition.security, role, groups],
+    [appDefinition, appMemberGroups, appMemberRole, data, remap, remapperContext],
   );
 
   const events = createEvents(
     ee,
     pageReady,
     pageManifests.events,
-    page.definition ? page.definition.events : null,
+    pageDefinition.definition ? pageDefinition.definition.events : null,
   );
   const resolvePageReady = useRef<Function>();
-  const remapperContext = {
-    appId,
-    appUrl: window.location.origin,
-    url: window.location.href,
-    getMessage,
-    getVariable,
-    appMemberInfo,
-    context: { name: page.name },
-    locale: lang,
-  };
 
   useEffect(() => {
     setPageReady(
@@ -111,15 +122,15 @@ export function TabsPage({
         resolvePageReady.current = resolve;
       }),
     );
-  }, [page.definition]);
+  }, [pageDefinition.definition]);
 
   useEffect(() => {
-    if (page.tabs) {
-      const { tabs } = page;
+    if (pageDefinition.tabs) {
+      const { tabs } = pageDefinition;
 
       const filteredTabs = tabs.filter((tab) => checkSubPagePermissions(tab));
       setTabsWithPermissions(filteredTabs);
-      const id = page.tabs.indexOf(filteredTabs[0]);
+      const id = pageDefinition.tabs.indexOf(filteredTabs[0]);
       setDefaultTab({
         id,
         name: filteredTabs[0]?.name,
@@ -131,7 +142,7 @@ export function TabsPage({
         name: '',
       });
     }
-  }, [checkSubPagePermissions, page, actions, createdTabs, setCreatedTabs]);
+  }, [checkSubPagePermissions, pageDefinition, actions, createdTabs, setCreatedTabs]);
 
   useEffect(() => {
     actions.onLoad().then((results) => {
@@ -146,16 +157,16 @@ export function TabsPage({
       event.preventDefault();
     });
     const callback = (d: any): void => {
-      const { blocks, name } = page.definition.foreach;
-      function createTabs(): SubPage[] {
-        const newTabs: SubPage[] = [];
+      const { blocks, name } = pageDefinition.definition.foreach;
+      function createTabs(): SubPageDefinition[] {
+        const newTabs: SubPageDefinition[] = [];
         for (const [i, resourceData] of d.entries()) {
           if (resourceData) {
             let remappedName: string | undefined;
             if (typeof name !== 'string') {
               remappedName = remap(name, resourceData, remapperContext);
             }
-            const newTab: SubPage = {
+            const newTab: SubPageDefinition = {
               name: typeof name === 'string' ? `${name}${i}` : remappedName || `Generated Tab ${i}`,
               blocks,
             };
@@ -181,8 +192,8 @@ export function TabsPage({
         getAppMessage,
         getAppVariable: getVariable,
         actions: { onLoad: {} },
-        app: definition,
-        context: page,
+        appDefinition,
+        context: pageDefinition,
         navigate,
         extraCreators: {},
         prefix,
@@ -195,7 +206,7 @@ export function TabsPage({
         remap,
         params,
         showMessage,
-        groups,
+        appMemberGroups,
         updateGroup,
         getAppMemberInfo: () => appMemberInfoRef.current,
         passwordLogin,
@@ -207,8 +218,8 @@ export function TabsPage({
       appStorage,
       getAppMessage,
       getVariable,
-      definition,
-      page,
+      appDefinition,
+      pageDefinition,
       navigate,
       showDialog,
       showShareDialog,
@@ -219,7 +230,7 @@ export function TabsPage({
       remap,
       params,
       showMessage,
-      groups,
+      appMemberGroups,
       updateGroup,
       passwordLogin,
       logout,
@@ -231,10 +242,13 @@ export function TabsPage({
 
   const onChange = useCallback((event: ChangeEvent, value: string) => navigate(value), [navigate]);
 
-  const pageName = getAppMessage({ id: prefix, defaultMessage: page.name }).format() as string;
+  const pageName = getAppMessage({
+    id: prefix,
+    defaultMessage: pageDefinition.name,
+  }).format() as string;
 
   if (tabsWithPermissions.length) {
-    const pageTabs = page.tabs ?? createdTabs;
+    const pageTabs = pageDefinition.tabs ?? createdTabs;
     return (
       <>
         <Tabs centered onChange={onChange} size="medium" value={pathname}>
@@ -276,7 +290,7 @@ export function TabsPage({
                       data={data}
                       ee={ee}
                       name={translatedName}
-                      page={page}
+                      pageDefinition={pageDefinition}
                       prefix={`${prefix}.tabs.${index}.blocks`}
                       prefixIndex={`${prefixIndex}.tabs.${index}.blocks`}
                       remap={remap}
@@ -288,7 +302,7 @@ export function TabsPage({
                 }
                 key={name}
                 path={`/${normalize(translatedName)}${String(
-                  (page.parameters || []).map((param) => `/:${param}`),
+                  (pageDefinition.parameters || []).map((param) => `/:${param}`),
                 )}`}
               />
             );

@@ -7,15 +7,13 @@ import {
   type PageDefinition,
   type ProjectImplementations,
   type Remapper,
-  type Security,
-  type GroupMember,
 } from '@appsemble/types';
-import { checkAppRole } from '@appsemble/utils';
 import { type ReactNode, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Navigate, useLocation, useParams } from 'react-router-dom';
 
 import { type ShowDialogAction, type ShowShareDialog } from '../../types.js';
 import { type ActionCreators } from '../../utils/actions/index.js';
+import { checkBlockPermissions } from '../../utils/authorization.js';
 import { callController } from '../../utils/bootstrapper.js';
 import { createEvents } from '../../utils/events.js';
 import { makeActions } from '../../utils/makeActions.js';
@@ -33,29 +31,13 @@ interface BlockListProps {
   readonly ee: EventEmitter;
   readonly extraCreators?: ActionCreators;
   readonly flowActions?: {};
-  readonly page: PageDefinition;
+  readonly pageDefinition: PageDefinition;
   readonly prefix: string;
   readonly prefixIndex: string;
   readonly appStorage: AppStorage;
   readonly remap: (remapper: Remapper, data: any, context: Record<string, any>) => any;
   readonly showDialog: ShowDialogAction;
   readonly showShareDialog: ShowShareDialog;
-}
-
-function filterBlocks(
-  security: Security,
-  blocks: BlockDefinition[],
-  appMemberRole: string,
-  groups: GroupMember[],
-): [BlockDefinition, number][] {
-  return blocks
-    .map<[BlockDefinition, number]>((block, index) => [block, index])
-    .filter(
-      ([block]) =>
-        block.roles === undefined ||
-        block.roles.length === 0 ||
-        block.roles.some((r) => checkAppRole(security, r, appMemberRole, groups)),
-    );
 }
 
 export function BlockList({
@@ -65,7 +47,7 @@ export function BlockList({
   ee,
   extraCreators,
   flowActions,
-  page,
+  pageDefinition,
   prefix,
   prefixIndex,
   remap,
@@ -75,15 +57,15 @@ export function BlockList({
   const params = useParams();
   const location = useLocation();
   const push = useMessages();
-  const { definition, revision } = useAppDefinition();
+  const { definition: appDefinition, revision } = useAppDefinition();
   const {
     appMemberInfoRef,
+    groups: appMemberGroups,
     isLoggedIn,
     logout,
     passwordLogin,
-    role,
+    role: appMemberRole,
     setAppMemberInfo,
-    groups,
     updateGroup,
   } = useAppMember();
   const { refetchDemoAppMembers } = useDemoAppMembers();
@@ -97,8 +79,13 @@ export function BlockList({
   const [controllerInitialized, setControllerInitialized] = useState(false);
 
   const blockList = useMemo(
-    () => filterBlocks(definition.security, blocks, role, groups),
-    [blocks, definition, role, groups],
+    () =>
+      blocks
+        .filter((block) =>
+          checkBlockPermissions(block, appDefinition, appMemberRole, appMemberGroups),
+        )
+        .map<[BlockDefinition, number]>((block, index) => [block, index]),
+    [blocks, appDefinition, appMemberRole, appMemberGroups],
   );
 
   const blockStatus = useRef(blockList.map(() => false));
@@ -148,8 +135,8 @@ export function BlockList({
         actions: makeActions({
           appStorage,
           actions: controllerImplementations.actions,
-          app: definition,
-          context: definition.controller,
+          appDefinition,
+          context: appDefinition.controller,
           pushNotifications,
           pageReady,
           params,
@@ -157,7 +144,7 @@ export function BlockList({
           prefixIndex: 'controller',
           ee,
           remap,
-          groups,
+          appMemberGroups,
           updateGroup,
           getAppMemberInfo: () => appMemberInfoRef.current,
           passwordLogin,
@@ -169,7 +156,7 @@ export function BlockList({
           ee,
           pageReady,
           controllerImplementations.events,
-          definition.controller.events,
+          appDefinition.controller.events,
         ),
         data: location.state,
         utils: {
@@ -186,7 +173,7 @@ export function BlockList({
   }, [
     appStorage,
     controllerInitialized,
-    definition,
+    appDefinition,
     ee,
     location.state,
     logout,
@@ -199,7 +186,7 @@ export function BlockList({
     refetchDemoAppMembers,
     remap,
     setAppMemberInfo,
-    groups,
+    appMemberGroups,
     updateGroup,
     appMemberInfoRef,
   ]);
@@ -225,7 +212,7 @@ export function BlockList({
           extraCreators={extraCreators}
           flowActions={flowActions}
           key={`${prefix}.${index}-${revision}`}
-          page={page}
+          pageDefinition={pageDefinition}
           pageReady={pageReady}
           prefix={`${prefix}.${index}`}
           prefixIndex={`${prefixIndex}.${index}`}

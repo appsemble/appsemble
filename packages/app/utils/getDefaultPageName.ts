@@ -1,20 +1,23 @@
 import { type AppDefinition } from '@appsemble/types';
-import { resolveRoleInheritance } from '@appsemble/utils';
+import { type AppRole, getAppInheritedRoles } from '@appsemble/utils';
 
 export function getDefaultPageName(
   isLoggedIn: boolean,
-  role: string,
-  definition: Pick<AppDefinition, 'defaultPage' | 'security'>,
+  appMemberRole: AppRole,
+  appDefinition: AppDefinition,
 ): string {
   if (!isLoggedIn) {
-    return definition.defaultPage;
+    return appDefinition.defaultPage;
   }
 
-  for (const [, roleDefinition] of resolveRoleInheritance(definition, role)) {
-    if (roleDefinition.defaultPage) {
-      return roleDefinition.defaultPage;
+  if (appDefinition.security) {
+    for (const role of getAppInheritedRoles(appDefinition.security, [appMemberRole])) {
+      const roleDefinition = appDefinition.security.roles[role];
+      if (roleDefinition && roleDefinition.defaultPage) {
+        return roleDefinition.defaultPage;
+      }
     }
   }
 
-  return definition.defaultPage;
+  return appDefinition.defaultPage;
 }

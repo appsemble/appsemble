@@ -2,7 +2,6 @@ import './types.js';
 
 export * from './api/index.js';
 export * from './appMessages.js';
-export * from './appSecurity.js';
 export * from './blockUtils.js';
 export * from './compare.js';
 export * from './constants/index.js';

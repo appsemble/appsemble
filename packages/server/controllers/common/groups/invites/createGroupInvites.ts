@@ -36,7 +36,7 @@ export async function createGroupInvites(ctx: Context): Promise<void> {
 
   assertKoaError(
     !(body as GroupInvite[]).every((invite) =>
-      getAppRoles(app.toJSON()).find((role) => role === invite.role),
+      getAppRoles(app.definition).find((role) => role === invite.role),
     ),
     ctx,
     403,

@@ -6,9 +6,9 @@ import { setArgv } from '../../../../../index.js';
 import {
   App,
   AppMember,
-  Organization,
   Group,
   GroupMember,
+  Organization,
   User,
 } from '../../../../../models/index.js';
 import { argv } from '../../../../../utils/argv.js';

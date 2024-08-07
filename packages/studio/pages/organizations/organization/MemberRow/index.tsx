@@ -15,9 +15,14 @@ import { type OrganizationMember } from '../../../../types.js';
 
 interface MemberRowProps {
   /**
+   * Whether the user may update the roles of members.
+   */
+  readonly mayUpdateRoles: boolean;
+
+  /**
    * Whether the user may delete members.
    */
-  readonly mayEdit: boolean;
+  readonly mayDelete: boolean;
 
   /**
    * The member represented by this row.
@@ -45,7 +50,8 @@ interface MemberRowProps {
  * A single row for managing an organization member from the members table.
  */
 export function MemberRow({
-  mayEdit,
+  mayDelete,
+  mayUpdateRoles,
   member,
   onChanged,
   onDeleted,
@@ -112,7 +118,7 @@ export function MemberRow({
       <td align="right">
         <AsyncSelect
           className="mr-2"
-          disabled={!mayEdit || (member.role === 'Owner' && ownerCount < 2) || id === sub}
+          disabled={!mayUpdateRoles || (member.role === 'Owner' && ownerCount < 2) || id === sub}
           id={`role-${id}`}
           name="role"
           onChange={onChangeRole}
@@ -134,7 +140,7 @@ export function MemberRow({
             <FormattedMessage {...messages.leave} />
           </AsyncButton>
         ) : (
-          mayEdit && (
+          mayDelete && (
             <AsyncButton
               color="danger"
               icon="trash-alt"

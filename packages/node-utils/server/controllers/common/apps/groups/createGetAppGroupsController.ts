@@ -19,12 +19,16 @@ export function createGetAppGroupsController({
 
     assertKoaError(!app, ctx, 404, 'App not found');
 
-    await checkAuthSubjectAppPermissions({
-      app,
-      context: ctx,
-      permissions: [AppPermission.QueryGroups],
-    });
+    if (!app.demoMode) {
+      assertKoaError(!user, ctx, 401);
 
-    ctx.body = await getAppGroups({ context: ctx, app, id: user.id });
+      await checkAuthSubjectAppPermissions({
+        app,
+        context: ctx,
+        permissions: [AppPermission.QueryGroups],
+      });
+    }
+
+    ctx.body = await getAppGroups({ context: ctx, app });
   };
 }

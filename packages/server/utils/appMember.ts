@@ -28,6 +28,7 @@ export function getAppMemberInfo(appMember: AppMember): AppMemberInfo {
     zoneinfo: appMember.timezone,
     properties: appMember.properties,
     role: appMember.role,
+    demo: appMember.demo,
   } as AppMemberInfo;
 }
 

@@ -41,4 +41,16 @@ export const messages = defineMessages({
     id: 'studio.47FYwb',
     defaultMessage: 'Cancel',
   },
+  deleteMember: {
+    id: 'studio.7EMBrV',
+    defaultMessage: 'Delete member',
+  },
+  deleteConfirmationBody: {
+    id: 'studio.Jh0bQl',
+    defaultMessage: 'Are you sure you want to remove {member} from this app?',
+  },
+  deleteSuccess: {
+    id: 'studio.RBzBwp',
+    defaultMessage: '{member} was successfully removed from the app',
+  },
 });

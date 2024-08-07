@@ -238,6 +238,7 @@ export async function appsTokenHandler(ctx: Context): Promise<void> {
                 emailVerified: true,
                 name: `${role} ${identifier}`,
                 timezone: '',
+                demo: true,
               },
               { transaction },
             );

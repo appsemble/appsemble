@@ -82,16 +82,16 @@ export function RolesPage({ selectedRole }: RolesPageProps): ReactNode {
           app.definition.security.groups?.create &&
           app.definition.security.groups?.create.length > 0
         ) {
-          app.definition.security.groups.create = app.definition.security.groups.create.map((role) =>
-            role === oldRole ? newRole : role,
+          app.definition.security.groups.create = app.definition.security.groups.create.map(
+            (role) => (role === oldRole ? newRole : role),
           );
         }
         if (
           app.definition.security.groups?.invite &&
           app.definition.security.groups?.invite.length > 0
         ) {
-          app.definition.security.groups.invite = app.definition.security.groups.invite.map((role) =>
-            role === oldRole ? newRole : role,
+          app.definition.security.groups.invite = app.definition.security.groups.invite.map(
+            (role) => (role === oldRole ? newRole : role),
           );
         }
         // Rename role in resources

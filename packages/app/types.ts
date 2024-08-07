@@ -7,9 +7,9 @@ import {
   type AppMemberInfo,
   type BlockDefinition,
   type BlockManifest,
+  type GroupMember,
   type ProjectImplementations,
   type Remapper,
-  type GroupMember,
   type UserInfo,
 } from '@appsemble/types';
 import { type AppConfigEntryGetter, type MessageGetter } from '@appsemble/utils';
@@ -125,7 +125,7 @@ export interface FlowActions {
 export type UpdateGroup = (group: GroupMember) => void;
 
 export interface MakeActionParameters<D extends ActionDefinition> {
-  app: AppDefinition;
+  appDefinition: AppDefinition;
   getAppMessage?: MessageGetter;
   getAppVariable?: AppConfigEntryGetter;
   appStorage: AppStorage;
@@ -148,7 +148,7 @@ export interface MakeActionParameters<D extends ActionDefinition> {
   passwordLogout: () => Promise<void>;
   setAppMemberInfo: Dispatch<AppMemberInfo>;
   updateGroup: UpdateGroup;
-  groups: GroupMember[];
+  appMemberGroups: GroupMember[];
   refetchDemoAppMembers: () => Promise<void>;
 }
 

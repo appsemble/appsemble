@@ -2,19 +2,19 @@ import { defineMessages } from 'react-intl';
 
 export const messages = defineMessages({
   groupsJoinLabel: {
-    id: 'studio.rkYXIu',
+    id: 'studio.8hYalv',
     defaultMessage: 'Join Group',
   },
   groupsCreateLabel: {
-    id: 'studio.97DGta',
+    id: 'studio.8eDBzp',
     defaultMessage: 'Create Group',
   },
   groupsInviteLabel: {
-    id: 'studio.xiSMpO',
+    id: 'studio.l01CvH',
     defaultMessage: 'Invite Group',
   },
   noRoles: {
-    id: 'studio.erfBQH',
+    id: 'studio.cLdBYw',
     defaultMessage: 'You first need a role to edit groups!',
   },
   createNewRole: {

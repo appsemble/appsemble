@@ -10,7 +10,7 @@ import { checkAuthSubjectAppPermissions } from '../../../../utils/authorization.
 export async function queryAppMembers(ctx: Context): Promise<void> {
   const {
     pathParams: { appId },
-    queryParams: { demo = false, roles = [] },
+    queryParams: { demo, roles = [] },
   } = ctx;
 
   const app = await App.findByPk(appId, {
@@ -23,7 +23,7 @@ export async function queryAppMembers(ctx: Context): Promise<void> {
     await checkAuthSubjectAppPermissions(ctx, appId, [AppPermission.QueryAppMembers]);
   }
 
-  const supportedAppRoles = getAppRoles(app.toJSON());
+  const supportedAppRoles = getAppRoles(app.definition);
 
   const passedRoles = Array.isArray(roles) ? roles : [roles];
 
@@ -36,7 +36,7 @@ export async function queryAppMembers(ctx: Context): Promise<void> {
   const appMembers = await AppMember.findAll({
     where: {
       AppId: appId,
-      demo,
+      ...(demo === undefined ? {} : { demo }),
       ...(passedRoles.length ? { role: { [Op.in]: passedRoles } } : {}),
     },
   });

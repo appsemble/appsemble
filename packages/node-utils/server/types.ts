@@ -172,10 +172,6 @@ export interface ExtendedGroup extends Group {
   size: number;
 }
 
-export interface GetAppGroupsParams extends GetAppSubEntityParams {
-  id: string;
-}
-
 export interface GetAppBlockStylesParams extends GetAppSubEntityParams {
   name: string;
 }
@@ -429,7 +425,7 @@ export interface Options {
   getApp: (params: GetAppParams) => Promise<App>;
   getAppDetails: (params: GetAppParams) => Promise<AppDetails>;
   getAppMessages: (params: GetAppMessagesParams) => Promise<AppMessages[]>;
-  getAppGroups: (params: GetAppGroupsParams) => Promise<ExtendedGroup[]>;
+  getAppGroups: (params: GetAppSubEntityParams) => Promise<ExtendedGroup[]>;
   getAppStyles: (params: GetAppParams | GetAppSubEntityParams) => Promise<AppStyles>;
   getAppScreenshots: (params: GetAppSubEntityParams) => Promise<AppScreenshot[]>;
   getAppReadmes: (params: GetAppSubEntityParams) => Promise<AppReadme[]>;

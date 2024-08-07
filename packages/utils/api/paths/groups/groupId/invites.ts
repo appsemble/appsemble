@@ -65,7 +65,7 @@ export const pathItems: OpenAPIV3.PathItemObject = {
                   description: 'The role to invite the user as.',
                 },
               },
-            }
+            },
           },
         },
       },

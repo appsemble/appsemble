@@ -22,7 +22,7 @@ interface AppBarProps {
  */
 export function AppBar({ children, hideName }: AppBarProps): ReactNode {
   const { definition, demoMode } = useAppDefinition();
-  const { role, groups } = useAppMember();
+  const { groups, role } = useAppMember();
   const { page } = usePage();
   const { getAppMessage } = useAppMessages();
 
