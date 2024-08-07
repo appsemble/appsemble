@@ -61,7 +61,7 @@ export function AddToCollectionButton({ app, className }: AppToCollectionButtonP
 
   const onSubmit = useCallback(
     async ({ collectionId }: typeof defaultValues) => {
-      await axios.post(`/api/appCollections/${collectionId}/apps`, {
+      await axios.post(`/api/app-collections/${collectionId}/apps`, {
         AppId: app.id,
       });
       modalToggle.disable();

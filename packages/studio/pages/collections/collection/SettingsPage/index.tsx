@@ -60,7 +60,7 @@ export function SettingsPage({ collection, setCollection }: SettingsPageProps): 
     async action() {
       const { id } = collection;
       try {
-        await axios.delete(`/api/appCollections/${id}`);
+        await axios.delete(`/api/app-collections/${id}`);
         push({
           color: 'info',
           body: formatMessage(messages.deleteSuccess, {
@@ -102,7 +102,7 @@ export function SettingsPage({ collection, setCollection }: SettingsPageProps): 
         formData.append('expertProfileImage', expertPhoto, expertPhoto.name);
       }
       const { data } = await axios.patch<AppCollection>(
-        `/api/appCollections/${collection.id}`,
+        `/api/app-collections/${collection.id}`,
         formData,
       );
       push({ color: 'success', body: formatMessage(messages.updateSuccess) });

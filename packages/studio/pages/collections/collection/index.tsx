@@ -35,7 +35,7 @@ export function CollectionRoutes({ fallbackCollectionId }: CollectionRoutesProps
     error,
     loading,
     setData: setCollection,
-  } = useData<AppCollection>(`/api/appCollections/${id}`);
+  } = useData<AppCollection>(`/api/app-collections/${id}`);
 
   const { organizations } = useUser();
   const organizationId = collection?.OrganizationId;

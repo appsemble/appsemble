@@ -78,7 +78,7 @@ export function CollectionsPage({ organizationId }: CollectionsPageProps): React
     body: <FormattedMessage {...settingsMessages.deleteWarning} />,
     action(collection: AppCollection) {
       axios
-        .delete(`/api/appCollections/${collection.id}`)
+        .delete(`/api/app-collections/${collection.id}`)
         .then(() => setCollections(collections.filter((c) => c.id !== collection.id)))
         .then(() => push({ color: 'info', body: formatMessage(settingsMessages.deleteSuccess) }))
         .catch(() => push({ color: 'danger', body: formatMessage(settingsMessages.deleteError) }));

@@ -69,7 +69,7 @@ export function IndexPage({ collection }: IndexPageProps): ReactNode {
   const { lang } = useParams();
 
   const appsResult = useData<PinnableApp[]>(
-    `/api/appCollections/${collection.id}/apps?language=${lang}`,
+    `/api/app-collections/${collection.id}/apps?language=${lang}`,
   );
 
   const onSortChange = useCallback((name: AppSortFunctionName, reverse: boolean) => {
@@ -82,7 +82,7 @@ export function IndexPage({ collection }: IndexPageProps): ReactNode {
     confirmLabel: <FormattedMessage {...messages.confirm} />,
     title: <FormattedMessage {...messages.deleteAppFromCollection} />,
     async action(app: App) {
-      await axios.delete(`/api/appCollections/${collection.id}/apps/${app.id}`);
+      await axios.delete(`/api/app-collections/${collection.id}/apps/${app.id}`);
       appsResult.setData((apps) => apps.filter((a) => a.id !== app.id));
     },
   });
@@ -93,11 +93,11 @@ export function IndexPage({ collection }: IndexPageProps): ReactNode {
         const {
           data: { pinnedAt },
         } = await axios.post<{ pinnedAt: string }>(
-          `/api/appCollections/${collection.id}/apps/${app.id}/pinned`,
+          `/api/app-collections/${collection.id}/apps/${app.id}/pinned`,
         );
         appsResult.setData((apps) => apps.map((a) => (a.id === app.id ? { ...a, pinnedAt } : a)));
       } else {
-        await axios.delete(`/api/appCollections/${collection.id}/apps/${app.id}/pinned`);
+        await axios.delete(`/api/app-collections/${collection.id}/apps/${app.id}/pinned`);
         appsResult.setData((apps) =>
           apps.map((a) => (a.id === app.id ? { ...a, pinnedAt: null } : a)),
         );
