@@ -18,7 +18,7 @@ import { type Promisable } from 'type-fest';
 
 import { getAppBlocks, type IdentifiableBlock, normalizeBlockName } from './blockUtils.js';
 import { has } from './has.js';
-import { normalize, partialNormalized } from './index.js';
+import { findPageByName, normalize, partialNormalized } from './index.js';
 import { iterApp, type Prefix } from './iterApp.js';
 import { type ServerActionName, serverActions } from './serverActions.js';
 
@@ -796,7 +796,7 @@ function validateActions(definition: AppDefinition, report: Report): void {
         }
 
         const [toBase, toSub] = [].concat(to);
-        const toPage = definition.pages.find(({ name }) => name === toBase);
+        const toPage = findPageByName(toBase, toSub);
 
         if (!toPage) {
           report(to, 'refers to a page that doesn’t exist', [...path, 'to']);

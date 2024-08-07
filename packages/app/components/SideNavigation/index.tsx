@@ -73,6 +73,7 @@ export function SideNavigation({ blockMenus, pages }: SideNavigationProps): Reac
   const renderMenu = useCallback(
     (internalPages: PageDefinition[]): ReactNode =>
       internalPages
+        .filter((page) => !page.hideNavTitle)
         .filter((page) => checkPagePermissionsCallback(page))
         .map((page) => {
           if (page?.type === 'container') {
