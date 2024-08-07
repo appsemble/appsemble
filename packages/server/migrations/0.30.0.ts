@@ -465,7 +465,7 @@ export async function down(transaction: Transaction, db: Sequelize): Promise<voi
   logger.info('Create enum `enum_TeamMember_role`');
   await queryInterface.sequelize.query(
     `
-    CREATE TYPE "enum_TeamMember_role" AS ENUM('Member', 'Manager');
+    CREATE TYPE "enum_TeamMember_role" AS ENUM('member', 'manager');
   `,
     { transaction },
   );
@@ -475,7 +475,7 @@ export async function down(transaction: Transaction, db: Sequelize): Promise<voi
     'TeamMember',
     'role',
     {
-      type: DataTypes.ENUM('Member', 'Manager'),
+      type: DataTypes.ENUM('member', 'manager'),
       allowNull: false,
     },
     { transaction },
@@ -484,7 +484,7 @@ export async function down(transaction: Transaction, db: Sequelize): Promise<voi
   logger.info('Set the default of column `role` in `TeamMember` table');
   await queryInterface.sequelize.query(
     `
-    ALTER TABLE "TeamMember" ALTER COLUMN "role" SET DEFAULT 'Member'
+    ALTER TABLE "TeamMember" ALTER COLUMN "role" SET DEFAULT 'member'
   `,
     { transaction },
   );
@@ -498,7 +498,7 @@ export async function down(transaction: Transaction, db: Sequelize): Promise<voi
   logger.info('Create enum `enum_TeamInvite_role`');
   await queryInterface.sequelize.query(
     `
-    CREATE TYPE "enum_TeamInvite_role" AS ENUM('Member', 'Manager');
+    CREATE TYPE "enum_TeamInvite_role" AS ENUM('member', 'manager');
   `,
     { transaction },
   );
@@ -508,7 +508,7 @@ export async function down(transaction: Transaction, db: Sequelize): Promise<voi
     'TeamInvite',
     'role',
     {
-      type: DataTypes.ENUM('Member', 'Manager'),
+      type: DataTypes.ENUM('member', 'manager'),
       allowNull: false,
     },
     { transaction },
@@ -517,7 +517,7 @@ export async function down(transaction: Transaction, db: Sequelize): Promise<voi
   logger.info('Set the default of column `role` in `TeamInvite` table');
   await queryInterface.sequelize.query(
     `
-    ALTER TABLE "TeamInvite" ALTER COLUMN "role" SET DEFAULT 'Member'
+    ALTER TABLE "TeamInvite" ALTER COLUMN "role" SET DEFAULT 'member'
   `,
     { transaction },
   );
