@@ -1,5 +1,5 @@
 #!/usr/bin/env sh
-
+set -e
 apt-get update && apt-get install -y socat
 
 socat TCP-LISTEN:9999,fork TCP:appsemble:9999 &  # forward localhost:9999 to appsemble:9999
