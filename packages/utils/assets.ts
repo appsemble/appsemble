@@ -74,3 +74,18 @@ export function getMimeTypeIcon(category: MimeTypeCategory): FileIconName {
       return 'file';
   }
 }
+
+/**
+ * Extracts the filename from a Content-Disposition header string.
+ *
+ * @param contentDisposition The Content-Disposition header string
+ * @returns The name of the file or null if it's not present
+ */
+export function getFilenameFromContentDisposition(contentDisposition: string): string | null {
+  const filenameRegex = /filename="([^"]+)"/;
+  const matches = filenameRegex.exec(contentDisposition);
+  if (matches != null && matches[1]) {
+    return matches[1].replaceAll(/["']/g, '');
+  }
+  return null;
+}

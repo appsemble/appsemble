@@ -1,8 +1,16 @@
 import { useBlock } from '@appsemble/preact';
 import { Icon, isPreactChild } from '@appsemble/preact-components';
+import {
+  type FileIconName,
+  getFilenameFromContentDisposition,
+  getMimeTypeCategory,
+  getMimeTypeIcon,
+  normalized,
+} from '@appsemble/utils';
+import { type IconName } from '@fortawesome/fontawesome-common-types';
 import classNames from 'classnames';
 import { type VNode } from 'preact';
-import { useCallback } from 'preact/hooks';
+import { useCallback, useEffect, useState } from 'preact/hooks';
 
 import styles from './index.module.css';
 import { type Item } from '../../../../block.js';
@@ -20,8 +28,12 @@ export function HeaderComponent({ index, item }: HeaderComponentProps): VNode {
   const {
     actions,
     parameters: { button, dropdown, fields, header, icon, image, toggleButton },
-    utils: { remap },
+    utils: { asset, remap },
   } = useBlock();
+
+  const [headerValue, setHeaderValue] = useState<string>('');
+  const [fileIcon, setFileIcon] = useState<FileIconName>(null);
+  const [fetched, setFetched] = useState<boolean>(false);
 
   const onItemClick = useCallback(
     (event: Event) => {
@@ -31,14 +43,43 @@ export function HeaderComponent({ index, item }: HeaderComponentProps): VNode {
     [actions, item],
   );
 
-  const headerValue = remap(header, item);
+  useEffect(() => {
+    setHeaderValue(String(remap(header, item)));
+  }, [header, item, remap]);
 
   const headerHTML = (
-    <div className={classNames({ [styles.header]: fields?.length })}>
-      {isPreactChild(icon) ? <Icon icon={icon} /> : null}
+    <div className={classNames({ [styles.header]: fields?.length || fileIcon })}>
+      {fileIcon && isPreactChild(fileIcon) ? (
+        <Icon icon={fileIcon as IconName} size="large" />
+      ) : isPreactChild(icon) ? (
+        <Icon icon={icon} />
+      ) : null}
       {isPreactChild(headerValue) ? <h4>{headerValue}</h4> : null}
     </div>
   );
+
+  useEffect(() => {
+    (async () => {
+      if (headerValue && normalized.test(headerValue) && !fetched) {
+        const headerValueAssetUrl = asset(headerValue as string);
+        try {
+          const response = await fetch(headerValueAssetUrl);
+          if (response.ok) {
+            const contentType = response.headers.get('Content-Type');
+            setFileIcon(getMimeTypeIcon(getMimeTypeCategory(contentType)));
+
+            const contentDisposition = response.headers.get('Content-Disposition');
+            if (contentDisposition) {
+              setHeaderValue(getFilenameFromContentDisposition(contentDisposition));
+            }
+          }
+          setFetched(true);
+        } catch {
+          // Do nothing
+        }
+      }
+    })();
+  }, [asset, item, headerValue, fetched]);
 
   return (
     <div className={`${styles.headerWrapper} is-flex`}>
