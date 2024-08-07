@@ -112,6 +112,7 @@ export async function getAssetById(ctx: Context): Promise<void> {
     ctx.set('content-disposition', `attachment; filename=${JSON.stringify(filename)}`);
   }
 
+  ctx.set('Access-Control-Expose-Headers', 'Content-Disposition');
   ctx.set('Cache-Control', 'max-age=31536000,immutable');
   ctx.body = asset.data;
 }
