@@ -147,7 +147,7 @@ export async function up(transaction: Transaction, db: Sequelize): Promise<void>
     { transaction },
   );
 
-  // TODO: handle allownull true -> false
+  // TODO: handle allow null true -> false
   logger.info('Add column `email` to  `AppOAuth2Authorization` table');
   await queryInterface.addColumn(
     'AppOAuth2Authorization',
@@ -163,7 +163,7 @@ export async function up(transaction: Transaction, db: Sequelize): Promise<void>
     { transaction },
   );
 
-  // TODO: handle allownull true -> false
+  // TODO: handle allow null true -> false
   logger.info('Add column `email` to `AppSamlAuthorization` table');
   await queryInterface.addColumn(
     'AppSamlAuthorization',
