@@ -180,6 +180,7 @@ check migrations:
   services:
     - postgres:15
   variables:
+    FORCE_COLOR: '1' # Required for Chalk.js
     POSTGRES_DB: testAppsemble
     POSTGRES_USER: admin
     POSTGRES_PASSWORD: password
@@ -194,6 +195,7 @@ check down migrations:
   services:
     - postgres:15
   variables:
+    FORCE_COLOR: '1' # Required for Chalk.js
     POSTGRES_DB: testAppsemble
     POSTGRES_USER: admin
     POSTGRES_PASSWORD: password
