@@ -1,7 +1,7 @@
 apiVersion: v2
 name: appsemble
-version: 0.29.7
-appVersion: 0.29.7
+version: 0.29.8
+appVersion: 0.29.8
 kubeVersion: '>=1.21.0'
 type: application
 description: The open source low-code app building platform
@@ -23,11 +23,34 @@ dependencies:
     repository: https://charts.bitnami.com/bitnami
     condition: postgresql.enabled
 annotations:
-  artifacthub.io/changes: |
+  artifacthub.io/changes: >
     - kind: added
-      description: "App: Add debug page."
+      description: "Block(form): Use the accept requirement of input fields to show an
+        icon in the upload button."
     - kind: added
-      description: "Server: Add app snapshot id to app settings."
+      description: "Block(list): Show the filename and filetype icon in the header of
+        list items, with a header value remapping to an asset id."
+    - kind: added
+      description: "App: Unregister service worker in app debug page."
+    - kind: added
+      description: "Server: Add Access-Control-Expose-Headers: 'Content-Disposition'
+        header to getAssetById endpoint."
+    - kind: added
+      description: "Utils: Add assets content type and content disposition utils."
+    - kind: added
+      description: "Utils: Add functions for mime type operations and icons."
+    - kind: changed
+      description: "Block(form): Show the upload button to the right in repeated file inputs."
+    - kind: changed
+      description: "Block(form): Use the mime type of files in the file input to show
+        a placeholder."
+    - kind: changed
+      description: "App: Make debug page path case insensitive."
+    - kind: fixed
+      description: "Block(form): Don't show the message for long submission if there
+        are form errors."
+    - kind: fixed
+      description: "Server: Allow patching resources with assets by name."
   artifacthub.io/license: LGPL-3.0-only
   artifacthub.io/links: |
     - name: Appsemble Studio

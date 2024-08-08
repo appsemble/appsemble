@@ -2,6 +2,30 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.29.8](https://gitlab.com/appsemble/appsemble/-/releases/0.29.8)] - 2024-08-08
+
+### Added
+
+- Block(`form`): Use the `accept` requirement of input fields to show an icon in the upload button.
+- Block(`list`): Show the filename and filetype icon in the header of list items, with a header
+  value remapping to an asset id.
+- App: Unregister service worker in app debug page.
+- Server: Add `Access-Control-Expose-Headers: 'Content-Disposition'` header to `getAssetById`
+  endpoint.
+- Utils: Add assets content type and content disposition utils.
+- Utils: Add functions for mime type operations and icons.
+
+### Changed
+
+- Block(`form`): Show the upload button to the right in repeated file inputs.
+- Block(`form`): Use the mime type of files in the file input to show a placeholder.
+- App: Make debug page path case insensitive.
+
+### Fixed
+
+- Block(`form`): Don't show the message for long submission if there are form errors.
+- Server: Allow patching resources with assets by name.
+
 ## \[[0.29.7](https://gitlab.com/appsemble/appsemble/-/releases/0.29.7)] - 2024-07-24
 
 ### Added
