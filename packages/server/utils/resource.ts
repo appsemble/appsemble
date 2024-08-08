@@ -26,6 +26,8 @@ export function renameOData(name: string): string {
       return 'updated';
     case '__author__':
       return 'AuthorId';
+    case '__group__':
+      return 'GroupId';
     case '__seed__':
       return 'seed';
     case '__ephemeral__':
@@ -47,6 +49,8 @@ export function renameODataWithCasting(name: string, type?: FieldType): Literal 
       return 'updated';
     case '__author__':
       return 'AuthorId';
+    case '__group__':
+      return 'GroupId';
     case 'id':
       return name;
     default:
@@ -330,6 +334,7 @@ export function parseQuery({
           .replaceAll(/(^|\B)\$created(\b|$)/g, '__created__')
           .replaceAll(/(^|\B)\$updated(\b|$)/g, '__updated__')
           .replaceAll(/(^|\B)\$author\/id(\b|$)/g, '__author__')
+          .replaceAll(/(^|\B)\$group\/id(\b|$)/g, '__group__')
           .replaceAll(/(^|\B)\$clonable(\b|$)/g, '__clonable__')
           .replaceAll(/(^|\B)\$seed(\b|$)/g, '__seed__')
           .replaceAll(/(^|\B)\$ephemeral(\b|$)/g, '__ephemeral__'),

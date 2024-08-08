@@ -4,79 +4,58 @@ import {
   processResourceBody,
   throwKoaError,
 } from '@appsemble/node-utils';
-import { type Resource as ResourceType } from '@appsemble/types';
+import { type Resource as ResourceInterface } from '@appsemble/types';
 import { type Context } from 'koa';
 
-import {
-  App,
-  AppMember,
-  Asset,
-  Organization,
-  Resource,
-  ResourceVersion,
-  transactional,
-} from '../../../../models/index.js';
+import { App, Asset, Resource, ResourceVersion, transactional } from '../../../../models/index.js';
 import { getCurrentAppMember } from '../../../../options/index.js';
 import { options } from '../../../../options/options.js';
+import { checkAuthSubjectAppPermissions } from '../../../../utils/authorization.js';
 import { processHooks, processReferenceHooks } from '../../../../utils/resource.js';
 
 export async function updateAppResources(ctx: Context): Promise<void> {
   const {
     pathParams: { appId, resourceType },
-    user,
+    queryParams: { groupId },
   } = ctx;
-  const { verifyResourceActionPermission } = options;
-
-  const action = 'update';
 
   const app = await App.findByPk(appId, {
-    attributes: ['id', 'definition', 'OrganizationId', 'vapidPrivateKey', 'vapidPublicKey'],
-    include: user
-      ? [
-          { model: Organization, attributes: ['id'] },
-          {
-            model: AppMember,
-            attributes: ['role', 'id', 'UserId'],
-            required: false,
-            where: { id: user.id },
-          },
-        ]
-      : [],
+    attributes: ['definition', 'id'],
+  });
+
+  await checkAuthSubjectAppPermissions({
+    context: ctx,
+    appId,
+    groupId,
+    requiredPermissions: [`$resource:${resourceType}:update`],
   });
 
   const appMember = await getCurrentAppMember({ context: ctx });
 
   const definition = getResourceDefinition(app.toJSON(), resourceType, ctx);
-  const memberQuery = await verifyResourceActionPermission({
-    context: ctx,
-    app: app.toJSON(),
-    resourceType,
-    action,
-    options,
-    ctx,
-  });
-  const resourceList = extractResourceBody(ctx)[0] as ResourceType[];
 
-  if (!resourceList.length) {
+  const resourcesPayload = extractResourceBody(ctx)[0] as ResourceInterface[];
+
+  if (!resourcesPayload.length) {
     ctx.body = [];
     return;
   }
 
-  if (resourceList.some((r) => !r.id)) {
+  if (resourcesPayload.some((resource) => !resource.id)) {
     throwKoaError(
       ctx,
       400,
-      'List of resources contained a resource without an ID.',
-      resourceList.filter((r) => !r.id),
+      'There is a resource with a missing id.',
+      resourcesPayload.filter((resource) => !resource.id),
     );
   }
 
   const existingResources = await Resource.findAll({
     where: {
-      id: resourceList.map((r) => Number(r.id)),
+      id: resourcesPayload.map((resource) => Number(resource.id)),
       type: resourceType,
       AppId: appId,
-      ...memberQuery,
+      GroupId: groupId ?? null,
     },
     include: [
       { association: 'Author', attributes: ['id', 'name'], required: false },
@@ -85,21 +64,22 @@ export async function updateAppResources(ctx: Context): Promise<void> {
     ],
   });
 
-  const [resources, preparedAssets, unusedAssetIds] = processResourceBody(
+  const [preparedResources, preparedAssets, unusedAssetIds] = processResourceBody(
     ctx,
     definition,
-    existingResources.flatMap((r) => r.Assets.map((a) => a.id)),
+    existingResources.flatMap((resource) => resource.Assets.map((asset) => asset.id)),
   );
-  const processedResources = resources as ResourceType[];
+
+  const processedResources = preparedResources as ResourceInterface[];
 
   if (existingResources.length !== processedResources.length) {
-    const ids = new Set(existingResources.map((r) => r.id));
+    const resourceIds = new Set(existingResources.map((resource) => resource.id));
 
     throwKoaError(
       ctx,
       400,
       'One or more resources could not be found.',
-      processedResources.filter((r) => !ids.has(r.id)),
+      processedResources.filter((resource) => !resourceIds.has(resource.id)),
     );
   }
 
@@ -139,11 +119,12 @@ export async function updateAppResources(ctx: Context): Promise<void> {
     if (preparedAssets.length) {
       await Asset.bulkCreate(
         preparedAssets.map((asset) => {
-          const index = processedResources.indexOf(asset.resource as ResourceType);
+          const index = processedResources.indexOf(asset.resource as ResourceInterface);
           const { id: ResourceId } = processedResources[index];
           return {
             ...asset,
             AppId: app.id,
+            GroupId: groupId ?? null,
             ResourceId,
             AppMemberId: appMember?.sub,
           };
@@ -156,7 +137,7 @@ export async function updateAppResources(ctx: Context): Promise<void> {
   ctx.body = updatedResources;
 
   for (const resource of updatedResources) {
-    processReferenceHooks(app, resource, action, options, ctx);
-    processHooks(app, resource, action, options, ctx);
+    processReferenceHooks(app, resource, 'update', options, ctx);
+    processHooks(app, resource, 'update', options, ctx);
   }
 }

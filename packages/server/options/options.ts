@@ -38,7 +38,6 @@ import {
   reloadUser,
   sendNotifications,
   updateAppResource,
-  verifyResourceActionPermission,
 } from './index.js';
 
 export const options: Options = {
@@ -79,5 +78,4 @@ export const options: Options = {
   reloadUser,
   sendNotifications,
   updateAppResource,
-  verifyResourceActionPermission,
 };

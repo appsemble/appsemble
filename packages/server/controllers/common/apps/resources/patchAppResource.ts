@@ -3,38 +3,36 @@ import { type Context } from 'koa';
 
 import { App, Asset, Resource, ResourceVersion, transactional } from '../../../../models/index.js';
 import { getCurrentAppMember } from '../../../../options/index.js';
-import { options } from '../../../../options/options.js';
+import { checkAuthSubjectAppPermissions } from '../../../../utils/authorization.js';
 
 export async function patchAppResource(ctx: Context): Promise<void> {
   const {
     pathParams: { appId, resourceId, resourceType },
+    queryParams: { groupId },
   } = ctx;
-  const { verifyResourceActionPermission } = options;
 
-  const action = 'patch';
-
-  const app = await App.findByPk(appId, { attributes: ['id', 'definition', 'OrganizationId'] });
+  const app = await App.findByPk(appId, {
+    attributes: ['definition', 'id'],
+  });
+  await checkAuthSubjectAppPermissions({
+    context: ctx,
+    appId,
+    groupId,
+    requiredPermissions: [`$resource:${resourceType}:patch`],
+  });
 
   const appMember = await getCurrentAppMember({ context: ctx });
 
-  const definition = getResourceDefinition(app.toJSON(), resourceType, ctx);
-  const memberQuery = await verifyResourceActionPermission({
-    context: ctx,
-    app: app.toJSON(),
-    resourceType,
-    action,
-    options,
-    ctx,
-  });
+  const definition = getResourceDefinition(app.definition, resourceType, ctx);
 
   const resource = await Resource.findOne({
-    where: { id: resourceId, type: resourceType, AppId: appId, ...memberQuery },
+    where: { id: resourceId, type: resourceType, AppId: appId, GroupId: groupId ?? null },
     include: [{ association: 'Author', attributes: ['id', 'name'], required: false }],
   });
 
   const appAssets = await Asset.findAll({
     attributes: ['id', 'name', 'ResourceId'],
-    where: { AppId: appId },
+    where: { AppId: appId, GroupId: groupId ?? null },
   });
 
   assertKoaError(!resource, ctx, 404, 'Resource not found');
@@ -67,6 +65,7 @@ export async function patchAppResource(ctx: Context): Promise<void> {
           preparedAssets.map((asset) => ({
             ...asset,
             AppId: app.id,
+            GroupId: groupId ?? null,
             ResourceId: resource.id,
             AppMemberId: appMember?.sub,
           })),

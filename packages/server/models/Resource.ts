@@ -312,6 +312,10 @@ export class Resource extends Model {
       result.$editor = { id: this.Editor.id, name: this.Editor.name };
     }
 
+    if (this.GroupId) {
+      result.$group = { id: this.Group.id, name: this.Group.name };
+    }
+
     if (this.clonable != null) {
       result.$clonable = this.clonable;
     }
@@ -335,11 +339,13 @@ export class Resource extends Model {
         }
       }
     }
+
     if (exclude) {
       for (const name of exclude) {
         delete result[name];
       }
     }
+
     return result;
   }
 }

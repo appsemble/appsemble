@@ -18,7 +18,6 @@ import {
 import { type IdentifiableBlock } from '@appsemble/utils';
 import { type RawAxiosRequestConfig } from 'axios';
 import {
-  type Context,
   type DefaultContext as DefaultContextInterface,
   type DefaultState,
   type ParameterizedContext,
@@ -254,15 +253,6 @@ export interface GetCurrentAppMemberParams {
 export type ResourceAction = 'create' | 'delete' | 'update';
 export type Action = ResourceAction | 'count' | 'get' | 'patch' | 'query';
 
-export interface VerifyResourceActionPermissionParams {
-  context: ParameterizedContext<DefaultState, DefaultContextInterface, any>;
-  app: App;
-  resourceType: string;
-  action: Action;
-  options: Options;
-  ctx: Context;
-}
-
 export interface ApplyAppServiceSecretsParams {
   context: ParameterizedContext<DefaultState, DefaultContextInterface, any>;
   app: App;
@@ -442,9 +432,6 @@ export interface Options {
   getHost: (params: GetHostParams) => string;
   getCsp: (params: GetCspParams) => ContentSecurityPolicy;
   createSettings: (params: CreateSettingsParams) => Promise<[digest: string, script: string]>;
-  verifyResourceActionPermission: (
-    params: VerifyResourceActionPermissionParams,
-  ) => Promise<Record<string, any>>;
   applyAppServiceSecrets: (
     params: ApplyAppServiceSecretsParams,
   ) => Promise<RawAxiosRequestConfig<any>>;

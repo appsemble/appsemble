@@ -43,6 +43,11 @@ export interface Resource {
   $editor?: ResourceAuthor;
 
   /**
+   * The app group that this resource is scoped to.
+   */
+  $group?: ResourceGroup;
+
+  /**
    * Any non-reserved properties are allowed on the resource as defined in the app definition.
    */
   [key: string]: unknown;
@@ -56,6 +61,18 @@ export interface ResourceAuthor {
 
   /**
    * The display name of the user.
+   */
+  name: string;
+}
+
+export interface ResourceGroup {
+  /**
+   * The id of the group.
+   */
+  id: number;
+
+  /**
+   * The name of the group.
    */
   name: string;
 }

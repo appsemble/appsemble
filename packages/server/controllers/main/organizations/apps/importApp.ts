@@ -129,19 +129,8 @@ export async function importApp(ctx: Context): Promise<void> {
         for (const file of resourcesFolder) {
           const [, resourceJsonName] = file.name.split('/');
           const [resourceType] = resourceJsonName.split('.');
-          const action = 'create';
           const resourcesText = await file.async('text');
           const resources = JSON.parse(resourcesText);
-          const { verifyResourceActionPermission } = options;
-
-          await verifyResourceActionPermission({
-            app: record.toJSON(),
-            context: ctx,
-            action,
-            resourceType,
-            options,
-            ctx,
-          });
 
           const createdResources = await Resource.bulkCreate(
             resources.map(
@@ -167,8 +156,8 @@ export async function importApp(ctx: Context): Promise<void> {
             { logging: false, transaction },
           );
 
-          processReferenceHooks(record, createdResources[0], action, options, ctx);
-          processHooks(record, createdResources[0], action, options, ctx);
+          processReferenceHooks(record, createdResources[0], 'create', options, ctx);
+          processHooks(record, createdResources[0], 'create', options, ctx);
         }
 
         for (const jsZipObject of zip
@@ -177,6 +166,7 @@ export async function importApp(ctx: Context): Promise<void> {
           if (!jsZipObject.dir) {
             const data = await jsZipObject.async('nodebuffer');
             const { name } = jsZipObject;
+
             await Asset.create(
               {
                 AppId: record.id,
@@ -212,6 +202,7 @@ export async function importApp(ctx: Context): Promise<void> {
             });
           }
         }
+
         await createAppScreenshots(record.id, screenshots, transaction, ctx);
 
         const readmeFiles: File[] = [];

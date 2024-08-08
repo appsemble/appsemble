@@ -11,7 +11,6 @@ export * from './noop.js';
 export * from './normalize.js';
 export * from './validateStyle.js';
 export * from './prefix.js';
-export * from './checkAppRole.js';
 export * from './formatRequestAction.js';
 export * from './iterApp.js';
 export * from './jsonschema.js';

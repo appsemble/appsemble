@@ -18,7 +18,6 @@ export * from './getDbUpdated.js';
 export * from './getHost.js';
 export * from './getTheme.js';
 export * from './parseQuery.js';
-export * from './verifyResourceActionPermission.js';
 export * from './createAppAsset.js';
 export * from './createAppResourcesWithAssets.js';
 export * from './updateAppResource.js';
