@@ -92,7 +92,7 @@ export class Resource extends Model {
   App: Awaited<App>;
 
   @ForeignKey(() => Group)
-  @AllowNull(false)
+  @AllowNull(true)
   @Column(DataType.INTEGER)
   GroupId: number;
 

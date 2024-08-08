@@ -21,9 +21,11 @@ export async function updateAppSslSecret(ctx: Context): Promise<void> {
     sslKey: key?.trim() || null,
   });
 
-  await checkUserOrganizationPermissions(ctx, app.OrganizationId, [
-    OrganizationPermission.UpdateAppSecrets,
-  ]);
+  await checkUserOrganizationPermissions({
+    context: ctx,
+    organizationId: app.OrganizationId,
+    requiredPermissions: [OrganizationPermission.UpdateAppSecrets],
+  });
 
   ctx.body = {
     certificate: app.sslCertificate,

@@ -34,7 +34,11 @@ export async function createAppInvites(ctx: Context): Promise<void> {
     'Role not allowed.',
   );
 
-  await checkAuthSubjectAppPermissions(ctx, appId, [AppPermission.CreateAppInvites]);
+  await checkAuthSubjectAppPermissions({
+    context: ctx,
+    appId,
+    requiredPermissions: [AppPermission.CreateAppInvites],
+  });
 
   const appMembers = await AppMember.findAll({ where: { AppId: appId }, attributes: ['email'] });
 

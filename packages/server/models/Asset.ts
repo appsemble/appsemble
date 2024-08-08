@@ -76,7 +76,7 @@ export class Asset extends Model {
   @BelongsTo(() => App)
   App: Awaited<App>;
 
-  @AllowNull(false)
+  @AllowNull(true)
   @ForeignKey(() => Group)
   @Index({ name: 'UniqueAssetNameIndex', unique: true })
   @Column(DataType.INTEGER)

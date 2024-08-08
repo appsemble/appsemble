@@ -24,9 +24,11 @@ export async function createAppScreenshot(ctx: Context): Promise<void> {
 
   checkAppLock(ctx, app);
 
-  await checkUserOrganizationPermissions(ctx, app.OrganizationId, [
-    OrganizationPermission.CreateAppScreenshots,
-  ]);
+  await checkUserOrganizationPermissions({
+    context: ctx,
+    organizationId: app.OrganizationId,
+    requiredPermissions: [OrganizationPermission.CreateAppScreenshots],
+  });
 
   const languageScreenshot = await AppScreenshot.findOne({
     attributes: ['language'],

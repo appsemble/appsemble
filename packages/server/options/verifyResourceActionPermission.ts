@@ -11,6 +11,7 @@ import { AppMember, Group, GroupMember, Organization } from '../models/index.js'
 
 const specialRoles = new Set(['$author', '$public', '$none', '$group:member', '$group:manager']);
 
+// TODO refactor
 export async function verifyResourceActionPermission({
   action,
   app,

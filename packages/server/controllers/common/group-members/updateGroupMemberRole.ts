@@ -42,9 +42,12 @@ export async function updateGroupMemberRole(ctx: Context): Promise<void> {
     'Role not allowed',
   );
 
-  await checkAuthSubjectAppPermissions(ctx, groupMember.Group.App.id, [
-    AppPermission.UpdateGroupMemberRoles,
-  ]);
+  await checkAuthSubjectAppPermissions({
+    context: ctx,
+    appId: groupMember.Group.App.id,
+    groupId: groupMember.GroupId,
+    requiredPermissions: [AppPermission.UpdateGroupMemberRoles],
+  });
 
   await groupMember.update({ role });
 

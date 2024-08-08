@@ -11,7 +11,7 @@ export const pathItems: OpenAPIV3.PathItemObject = {
     operationId: 'countAppResources',
     parameters: [
       { $ref: '#/components/parameters/$filter' },
-      { $ref: '#/components/parameters/$group' },
+      { in: 'query', name: 'groupId', schema: { type: 'number' } },
     ],
     responses: {
       200: {

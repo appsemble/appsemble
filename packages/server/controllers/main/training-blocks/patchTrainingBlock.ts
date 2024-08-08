@@ -13,9 +13,11 @@ export async function patchTrainingBlock(ctx: Context): Promise<void> {
     },
   } = ctx;
 
-  await checkUserOrganizationPermissions(ctx, 'appsemble', [
-    OrganizationPermission.UpdateTrainingBlocks,
-  ]);
+  await checkUserOrganizationPermissions({
+    context: ctx,
+    organizationId: 'appsemble',
+    requiredPermissions: [OrganizationPermission.UpdateTrainingBlocks],
+  });
   const trainingBlock = await TrainingBlock.findByPk(trainingBlockId);
 
   assertKoaError(!trainingBlock, ctx, 404, 'Training Block not found.');

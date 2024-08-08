@@ -22,9 +22,11 @@ export async function patchAppMemberProperties(ctx: Context): Promise<void> {
 
   assertKoaError(!appMember, ctx, 404, 'App member not found');
 
-  await checkAuthSubjectAppPermissions(ctx, appMember.AppId, [
-    AppPermission.PatchAppMemberProperties,
-  ]);
+  await checkAuthSubjectAppPermissions({
+    context: ctx,
+    appId: appMember.AppId,
+    requiredPermissions: [AppPermission.PatchAppMemberProperties],
+  });
 
   const updatedAppMember = await appMember.update({
     properties: parseAppMemberProperties(properties),

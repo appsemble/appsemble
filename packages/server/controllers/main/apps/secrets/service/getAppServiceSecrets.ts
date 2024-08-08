@@ -19,9 +19,11 @@ export async function getAppServiceSecrets(ctx: Context): Promise<void> {
 
   checkAppLock(ctx, app);
 
-  await checkUserOrganizationPermissions(ctx, app.OrganizationId, [
-    OrganizationPermission.QueryAppSecrets,
-  ]);
+  await checkUserOrganizationPermissions({
+    context: ctx,
+    organizationId: app.OrganizationId,
+    requiredPermissions: [OrganizationPermission.QueryAppSecrets],
+  });
 
   const serviceSecrets = await AppServiceSecret.findAll({
     attributes: ['id', 'name', 'urlPatterns', 'authenticationMethod', 'identifier', 'tokenUrl'],

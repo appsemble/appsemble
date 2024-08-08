@@ -19,9 +19,11 @@ export async function deleteAppVariables(ctx: Context): Promise<void> {
 
   checkAppLock(ctx, app);
 
-  await checkUserOrganizationPermissions(ctx, app.OrganizationId, [
-    OrganizationPermission.DeleteAppVariables,
-  ]);
+  await checkUserOrganizationPermissions({
+    context: ctx,
+    organizationId: app.OrganizationId,
+    requiredPermissions: [OrganizationPermission.DeleteAppVariables],
+  });
 
   const appVariables = await AppVariable.findAll({
     where: {

@@ -16,7 +16,7 @@ export const pathItems: OpenAPIV3.PathItemObject = {
       { $ref: '#/components/parameters/$select' },
       { $ref: '#/components/parameters/$skip' },
       { $ref: '#/components/parameters/$top' },
-      { $ref: '#/components/parameters/$group' },
+      { in: 'query', name: 'groupId', schema: { type: 'number' } },
     ],
     responses: {
       200: {
@@ -44,6 +44,7 @@ export const pathItems: OpenAPIV3.PathItemObject = {
     tags: ['common', 'app', 'resource'],
     description: 'Create a new resource for this app.',
     operationId: 'createAppResource',
+    parameters: [{ in: 'query', name: 'groupId', schema: { type: 'number' } }],
     requestBody: {
       required: true,
       description: 'The resource to create',
@@ -98,6 +99,7 @@ export const pathItems: OpenAPIV3.PathItemObject = {
     tags: ['common', 'app', 'resource'],
     description: 'Update existing app resources.',
     operationId: 'updateAppResources',
+    parameters: [{ in: 'query', name: 'groupId', schema: { type: 'number' } }],
     requestBody: {
       required: true,
       description: 'The resources to update',
@@ -150,6 +152,7 @@ export const pathItems: OpenAPIV3.PathItemObject = {
     tags: ['common', 'app', 'resource'],
     description: 'Delete multiple app resources.',
     operationId: 'deleteAppResources',
+    parameters: [{ in: 'query', name: 'groupId', schema: { type: 'number' } }],
     requestBody: {
       content: {
         'application/json': {

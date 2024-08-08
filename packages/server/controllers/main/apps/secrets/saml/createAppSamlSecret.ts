@@ -24,9 +24,11 @@ export async function createAppSamlSecret(ctx: Context): Promise<void> {
 
   checkAppLock(ctx, app);
 
-  await checkUserOrganizationPermissions(ctx, app.OrganizationId, [
-    OrganizationPermission.CreateAppSecrets,
-  ]);
+  await checkUserOrganizationPermissions({
+    context: ctx,
+    organizationId: app.OrganizationId,
+    requiredPermissions: [OrganizationPermission.CreateAppSecrets],
+  });
 
   const { privateKey, publicKey } = await new Promise<forge.pki.rsa.KeyPair>((resolve, reject) => {
     forge.pki.rsa.generateKeyPair({ bits: 2048 }, (error, result) =>

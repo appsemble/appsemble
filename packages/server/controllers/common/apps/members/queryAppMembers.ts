@@ -21,7 +21,11 @@ export async function queryAppMembers(ctx: Context): Promise<void> {
   assertKoaError(!app, ctx, 404, 'App not found');
 
   if (!app.demoMode) {
-    await checkAuthSubjectAppPermissions(ctx, appId, [AppPermission.QueryAppMembers]);
+    await checkAuthSubjectAppPermissions({
+      context: ctx,
+      appId,
+      requiredPermissions: [AppPermission.QueryAppMembers],
+    });
   }
 
   const supportedAppRoles = getAppRoles(app.definition);

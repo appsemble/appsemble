@@ -16,8 +16,11 @@ export async function deleteAppMaskableIcon(ctx: Context): Promise<void> {
   assertKoaError(!app, ctx, 404, 'App not found');
   assertKoaError(!app.maskableIcon, ctx, 404, 'App has no maskable icon');
 
-  await checkUserOrganizationPermissions(ctx, app.OrganizationId, [
-    OrganizationPermission.UpdateAppSettings,
-  ]);
+  await checkUserOrganizationPermissions({
+    context: ctx,
+    organizationId: app.OrganizationId,
+    requiredPermissions: [OrganizationPermission.UpdateAppSettings],
+  });
+
   await app.update({ maskableIcon: null });
 }

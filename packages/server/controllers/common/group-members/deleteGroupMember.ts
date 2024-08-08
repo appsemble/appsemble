@@ -21,9 +21,12 @@ export async function deleteGroupMember(ctx: Context): Promise<void> {
 
   assertKoaError(!groupMember, ctx, 404, 'Group member not found.');
 
-  await checkAuthSubjectAppPermissions(ctx, groupMember.AppMember.AppId, [
-    AppPermission.RemoveGroupMembers,
-  ]);
+  await checkAuthSubjectAppPermissions({
+    context: ctx,
+    appId: groupMember.AppMember.AppId,
+    groupId: groupMember.GroupId,
+    requiredPermissions: [AppPermission.RemoveGroupMembers],
+  });
 
   await groupMember.destroy();
 }

@@ -20,9 +20,11 @@ export async function deleteAppSamlSecret(ctx: Context): Promise<void> {
 
   checkAppLock(ctx, app);
 
-  await checkUserOrganizationPermissions(ctx, app.OrganizationId, [
-    OrganizationPermission.DeleteAppSecrets,
-  ]);
+  await checkUserOrganizationPermissions({
+    context: ctx,
+    organizationId: app.OrganizationId,
+    requiredPermissions: [OrganizationPermission.DeleteAppSecrets],
+  });
 
   const [secret] = app.AppSamlSecrets;
   assertKoaError(!secret, ctx, 404, 'SAML secret not found');

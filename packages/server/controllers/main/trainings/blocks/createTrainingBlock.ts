@@ -13,9 +13,11 @@ export async function createTrainingBlock(ctx: Context): Promise<void> {
     },
   } = ctx;
 
-  await checkUserOrganizationPermissions(ctx, 'appsemble', [
-    OrganizationPermission.CreateTrainingBlocks,
-  ]);
+  await checkUserOrganizationPermissions({
+    context: ctx,
+    organizationId: 'appsemble',
+    requiredPermissions: [OrganizationPermission.CreateTrainingBlocks],
+  });
 
   const parentTraining = await Training.findByPk(trainingId);
   assertKoaError(!parentTraining, ctx, 404, 'Training not found');

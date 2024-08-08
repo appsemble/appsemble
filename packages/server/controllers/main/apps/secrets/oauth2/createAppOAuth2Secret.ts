@@ -20,9 +20,11 @@ export async function createAppOAuth2Secret(ctx: Context): Promise<void> {
 
   checkAppLock(ctx, app);
 
-  await checkUserOrganizationPermissions(ctx, app.OrganizationId, [
-    OrganizationPermission.CreateAppSecrets,
-  ]);
+  await checkUserOrganizationPermissions({
+    context: ctx,
+    organizationId: app.OrganizationId,
+    requiredPermissions: [OrganizationPermission.CreateAppSecrets],
+  });
 
   const { id } = await AppOAuth2Secret.create({ ...body, AppId: appId });
   ctx.body = { ...body, id };

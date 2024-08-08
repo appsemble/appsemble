@@ -29,9 +29,11 @@ export async function setAppBlockStyle(ctx: Context): Promise<void> {
 
     assertKoaError(!block, ctx, 404, 'Block not found');
 
-    await checkUserOrganizationPermissions(ctx, app.OrganizationId, [
-      OrganizationPermission.UpdateAppSettings,
-    ]);
+    await checkUserOrganizationPermissions({
+      context: ctx,
+      organizationId: app.OrganizationId,
+      requiredPermissions: [OrganizationPermission.UpdateAppSettings],
+    });
 
     await (css.length
       ? AppBlockStyle.upsert({

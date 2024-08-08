@@ -22,9 +22,11 @@ export async function updateAppServiceSecret(ctx: Context): Promise<void> {
 
   checkAppLock(ctx, app);
 
-  await checkUserOrganizationPermissions(ctx, app.OrganizationId, [
-    OrganizationPermission.UpdateAppSecrets,
-  ]);
+  await checkUserOrganizationPermissions({
+    context: ctx,
+    organizationId: app.OrganizationId,
+    requiredPermissions: [OrganizationPermission.UpdateAppSecrets],
+  });
 
   const appServiceSecret = await AppServiceSecret.findByPk(serviceSecretId);
   assertKoaError(!appServiceSecret, ctx, 404, 'Cannot find the app service secret to update');

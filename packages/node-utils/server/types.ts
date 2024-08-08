@@ -123,6 +123,7 @@ declare module 'koas-parameters' {
     roles: string[] | string;
     includeMessages: boolean;
     demo: boolean;
+    groupId: number;
   }
 }
 
@@ -270,19 +271,20 @@ export interface ApplyAppServiceSecretsParams {
 
 export interface CheckAppMemberAppPermissionsParams {
   context: ParameterizedContext<DefaultState, DefaultContextInterface, any>;
-  app: App;
   permissions: CustomAppPermission[];
+  app: App;
 }
 
 export interface CheckUserOrganizationPermissionsParams {
   context: ParameterizedContext<DefaultState, DefaultContextInterface, any>;
-  app: App;
   permissions: OrganizationPermission[];
+  app: App;
 }
 
 export interface CheckAuthSubjectAppPermissionsParams {
   context: ParameterizedContext<DefaultState, DefaultContextInterface, any>;
   app: App;
+  groupId?: number;
   permissions: CustomAppPermission[];
 }
 
@@ -316,8 +318,8 @@ export interface CreateAppResourcesWithAssetsParams extends GetAppSubEntityParam
   resources: Record<string, unknown>[];
   preparedAssets: PreparedAsset[];
   resourceType: string;
-  action: ResourceAction;
   options: Options;
+  groupId?: number;
 }
 
 export interface UpdateAppResourceParams extends GetAppSubEntityParams {
@@ -328,7 +330,6 @@ export interface UpdateAppResourceParams extends GetAppSubEntityParams {
   deletedAssetIds: string[];
   type: string;
   options: Options;
-  action: ResourceAction;
 }
 
 export interface DeleteAppResourceParams extends GetAppSubEntityParams {

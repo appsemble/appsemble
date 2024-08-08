@@ -19,9 +19,11 @@ export async function deleteAppServiceSecrets(ctx: Context): Promise<void> {
 
   checkAppLock(ctx, app);
 
-  await checkUserOrganizationPermissions(ctx, app.OrganizationId, [
-    OrganizationPermission.DeleteAppSecrets,
-  ]);
+  await checkUserOrganizationPermissions({
+    context: ctx,
+    organizationId: app.OrganizationId,
+    requiredPermissions: [OrganizationPermission.DeleteAppSecrets],
+  });
 
   const appServiceSecrets = await AppServiceSecret.findAll({
     where: {

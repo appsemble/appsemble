@@ -18,9 +18,11 @@ export async function addAppToAppCollection(ctx: Context): Promise<void> {
 
   assertKoaError(!collection, ctx, 404, 'App collection not found');
 
-  await checkUserOrganizationPermissions(ctx, collection.OrganizationId, [
-    OrganizationPermission.UpdateAppCollections,
-  ]);
+  await checkUserOrganizationPermissions({
+    context: ctx,
+    organizationId: collection.OrganizationId,
+    requiredPermissions: [OrganizationPermission.UpdateAppCollections],
+  });
 
   const app = await App.findByPk(body.AppId, { attributes: ['id'] });
 

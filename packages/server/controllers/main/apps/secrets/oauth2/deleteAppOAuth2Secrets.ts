@@ -18,9 +18,12 @@ export async function deleteAppOAuth2Secrets(ctx: Context): Promise<void> {
   assertKoaError(!app, ctx, 404, 'App not found');
 
   checkAppLock(ctx, app);
-  await checkUserOrganizationPermissions(ctx, app.OrganizationId, [
-    OrganizationPermission.DeleteAppSecrets,
-  ]);
+
+  await checkUserOrganizationPermissions({
+    context: ctx,
+    organizationId: app.OrganizationId,
+    requiredPermissions: [OrganizationPermission.DeleteAppSecrets],
+  });
 
   const appOAuth2Secrets = await AppOAuth2Secret.findAll({
     where: {

@@ -118,9 +118,11 @@ export async function getAppById(ctx: Context): Promise<void> {
   const propertyFilters: (keyof AppType)[] = [];
   if (app.visibility === 'private' || !app.showAppDefinition) {
     try {
-      await checkUserOrganizationPermissions(ctx, app.OrganizationId, [
-        OrganizationPermission.QueryApps,
-      ]);
+      await checkUserOrganizationPermissions({
+        context: ctx,
+        organizationId: app.OrganizationId,
+        requiredPermissions: [OrganizationPermission.QueryApps],
+      });
     } catch (error) {
       if (app.visibility === 'private') {
         throw error;

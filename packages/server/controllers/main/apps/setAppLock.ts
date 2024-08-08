@@ -24,8 +24,11 @@ export async function setAppLock(ctx: Context): Promise<void> {
     throwKoaError(ctx, 403, 'This app can only be unlocked from the CLI.');
   }
 
-  await checkUserOrganizationPermissions(ctx, app.OrganizationId, [
-    OrganizationPermission.UpdateAppSettings,
-  ]);
+  await checkUserOrganizationPermissions({
+    context: ctx,
+    requiredPermissions: [OrganizationPermission.UpdateAppSettings],
+    organizationId: app.OrganizationId,
+  });
+
   await app.update({ locked });
 }

@@ -21,10 +21,14 @@ export async function deleteAppAssets(ctx: Context): Promise<void> {
 
   const isSeed = !(ctx.client && 'app' in ctx.client) && seed === 'true';
 
-  await checkUserOrganizationPermissions(ctx, app.OrganizationId, [
-    OrganizationPermission.QueryAppAssets,
-    OrganizationPermission.DeleteAppAssets,
-  ]);
+  await checkUserOrganizationPermissions({
+    context: ctx,
+    organizationId: app.OrganizationId,
+    requiredPermissions: [
+      OrganizationPermission.QueryAppAssets,
+      OrganizationPermission.DeleteAppAssets,
+    ],
+  });
 
   const handleEphemeral = app.demoMode ? { seed: false, ephemeral: true } : {};
   const query: FindOptions = {

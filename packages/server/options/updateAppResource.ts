@@ -7,7 +7,6 @@ import { Resource } from '../models/Resource.js';
 import { processHooks, processReferenceHooks } from '../utils/resource.js';
 
 export function updateAppResource({
-  action,
   app,
   context,
   deletedAssetIds,
@@ -93,8 +92,8 @@ export function updateAppResource({
       transaction,
     });
 
-    processReferenceHooks(persistedApp, newResource, action, options, context);
-    processHooks(persistedApp, newResource, action, options, context);
+    processReferenceHooks(persistedApp, newResource, 'update', options, context);
+    processHooks(persistedApp, newResource, 'update', options, context);
 
     return reloaded.toJSON({ exclude: reloaded.App.template ? ['$seed'] : undefined });
   });

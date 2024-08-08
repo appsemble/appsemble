@@ -10,10 +10,14 @@ export async function deleteOrganization(ctx: Context): Promise<void> {
     pathParams: { organizationId },
   } = ctx;
 
-  await checkUserOrganizationPermissions(ctx, organizationId, [
-    OrganizationPermission.DeleteOrganizations,
-    OrganizationPermission.DeleteApps,
-  ]);
+  await checkUserOrganizationPermissions({
+    context: ctx,
+    organizationId,
+    requiredPermissions: [
+      OrganizationPermission.DeleteOrganizations,
+      OrganizationPermission.DeleteApps,
+    ],
+  });
 
   const organization = await Organization.findByPk(organizationId);
 

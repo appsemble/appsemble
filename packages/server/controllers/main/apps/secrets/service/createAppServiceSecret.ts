@@ -22,9 +22,11 @@ export async function createAppServiceSecret(ctx: Context): Promise<void> {
 
   checkAppLock(ctx, app);
 
-  await checkUserOrganizationPermissions(ctx, app.OrganizationId, [
-    OrganizationPermission.CreateAppSecrets,
-  ]);
+  await checkUserOrganizationPermissions({
+    context: ctx,
+    organizationId: app.OrganizationId,
+    requiredPermissions: [OrganizationPermission.CreateAppSecrets],
+  });
 
   const { authenticationMethod, id, identifier, name, tokenUrl, urlPatterns } =
     await AppServiceSecret.create({

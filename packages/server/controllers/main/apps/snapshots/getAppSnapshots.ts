@@ -21,9 +21,11 @@ export async function getAppSnapshots(ctx: Context): Promise<void> {
 
   assertKoaError(!app, ctx, 404, 'App not found');
 
-  await checkUserOrganizationPermissions(ctx, app.OrganizationId, [
-    OrganizationPermission.QueryApps,
-  ]);
+  await checkUserOrganizationPermissions({
+    context: ctx,
+    organizationId: app.OrganizationId,
+    requiredPermissions: [OrganizationPermission.QueryApps],
+  });
 
   ctx.body = app.AppSnapshots.sort((a, b) => b.id - a.id).map((snapshot) => ({
     id: snapshot.id,

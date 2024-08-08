@@ -17,13 +17,18 @@ export async function patchGroup(ctx: Context): Promise<void> {
 
   assertKoaError(!group, ctx, 404, 'Group not found');
 
-  await checkAuthSubjectAppPermissions(ctx, group.AppId, [AppPermission.UpdateGroups]);
+  await checkAuthSubjectAppPermissions({
+    context: ctx,
+    appId: group.AppId,
+    groupId,
+    requiredPermissions: [AppPermission.UpdateGroups],
+  });
 
   await group.update({ name: name || undefined, annotations: annotations || undefined });
 
   ctx.body = {
-    id: group.id,
     name,
+    id: group.id,
     ...(annotations && { annotations }),
   };
 }

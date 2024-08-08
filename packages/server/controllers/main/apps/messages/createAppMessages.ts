@@ -45,9 +45,11 @@ export async function createAppMessages(ctx: Context): Promise<void> {
 
   checkAppLock(ctx, app);
 
-  await checkUserOrganizationPermissions(ctx, app.OrganizationId, [
-    OrganizationPermission.UpdateAppMessages,
-  ]);
+  await checkUserOrganizationPermissions({
+    context: ctx,
+    organizationId: app.OrganizationId,
+    requiredPermissions: [OrganizationPermission.UpdateAppMessages],
+  });
 
   if (Array.isArray(ctx.request.body)) {
     ctx.request.body.map((message) => {

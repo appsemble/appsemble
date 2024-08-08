@@ -14,7 +14,12 @@ export async function deleteGroup(ctx: Context): Promise<void> {
 
   assertKoaError(!group, ctx, 404, 'Group not found');
 
-  await checkAuthSubjectAppPermissions(ctx, group.AppId, [AppPermission.DeleteGroups]);
+  await checkAuthSubjectAppPermissions({
+    context: ctx,
+    appId: group.AppId,
+    groupId,
+    requiredPermissions: [AppPermission.DeleteGroups],
+  });
 
   await group.destroy();
 }

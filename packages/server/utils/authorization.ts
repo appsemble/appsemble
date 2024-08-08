@@ -14,35 +14,53 @@ import { type Context } from 'koa';
 
 import { App, AppMember, GroupMember, Organization, OrganizationMember } from '../models/index.js';
 
-// TODO check and fix this logic
-async function getAppMemberAcquiredAppRoles(
-  appMember: AppMember,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  appId: number,
-): Promise<string[]> {
-  const groupMemberships = await GroupMember.findAll({
-    attributes: ['id', 'role'],
-    where: {
-      AppMemberId: appMember.id,
-    },
-  });
-
-  const groupRoles = groupMemberships.flatMap((groupMembership) => groupMembership.role);
-
-  return Array.from(new Set([...groupRoles, appMember.role]));
+interface CheckAppPermissionsParams {
+  context: Context;
+  appId: number;
+  groupId?: number;
+  requiredPermissions: CustomAppPermission[];
 }
 
-async function getAppMemberAppRoles(appMemberId: string, appId: number): Promise<AppRole[]> {
-  const appMember = await AppMember.findByPk(appMemberId, { attributes: ['id', 'role'] });
+interface CheckOrganizationPermissionsParams {
+  context: Context;
+  organizationId: string;
+  requiredPermissions: OrganizationPermission[];
+}
 
+async function getAppMemberScopedRole(appMember: AppMember, groupId?: number): Promise<AppRole> {
   if (!appMember) {
-    return [];
+    return null;
   }
 
-  return getAppMemberAcquiredAppRoles(appMember, appId);
+  if (groupId) {
+    const groupMember = await GroupMember.findOne({
+      where: {
+        AppMemberId: appMember.id,
+        GroupId: groupId,
+      },
+    });
+
+    if (!groupMember) {
+      return null;
+    }
+
+    return groupMember.role;
+  }
+
+  return appMember.role;
 }
 
-async function getUserAppRoles(userId: string, appId: number): Promise<AppRole[]> {
+async function getAppMemberAppRole(
+  appMemberId: string,
+  appId: number,
+  groupId?: number,
+): Promise<AppRole> {
+  const appMember = await AppMember.findByPk(appMemberId, { attributes: ['id', 'role'] });
+
+  return getAppMemberScopedRole(appMember, groupId);
+}
+
+async function getUserAppRole(userId: string, appId: number, groupId?: number): Promise<AppRole> {
   const appMember = await AppMember.findOne({
     attributes: ['id', 'role'],
     where: {
@@ -51,17 +69,13 @@ async function getUserAppRoles(userId: string, appId: number): Promise<AppRole[]
     },
   });
 
-  if (!appMember) {
-    return [];
-  }
-
-  return getAppMemberAcquiredAppRoles(appMember, appId);
+  return getAppMemberScopedRole(appMember, groupId);
 }
 
-async function getUserOrganizationRoles(
+async function getUserOrganizationRole(
   userId: string,
   organizationId: string,
-): Promise<OrganizationRole[]> {
+): Promise<OrganizationRole> {
   const organizationMember = await OrganizationMember.findOne({
     attributes: ['role'],
     where: {
@@ -71,83 +85,79 @@ async function getUserOrganizationRoles(
   });
 
   if (!organizationMember) {
-    return [];
+    return null;
   }
 
-  return [organizationMember.role];
+  return organizationMember.role;
 }
 
-export async function checkAppMemberAppPermissions(
-  ctx: Context,
-  appId: number,
-  requiredAppPermissions: CustomAppPermission[],
-): Promise<void> {
-  const { user: authSubject } = ctx;
+export async function checkAppMemberAppPermissions({
+  appId,
+  context,
+  groupId,
+  requiredPermissions,
+}: CheckAppPermissionsParams): Promise<void> {
+  const { user: authSubject } = context;
 
   const app = await App.findByPk(appId, { attributes: ['definition'] });
 
-  assertKoaError(!app, ctx, 404, 'App not found');
+  assertKoaError(!app, context, 404, 'App not found');
 
-  assertKoaError(!app.definition.security, ctx, 404, 'App does not have a security definition');
+  assertKoaError(!app.definition.security, context, 404, 'App does not have a security definition');
 
   const appMember = await AppMember.findByPk(authSubject.id, { attributes: ['id'] });
 
-  assertKoaError(!appMember, ctx, 403, 'App member not found');
+  assertKoaError(!appMember, context, 403, 'App member not found');
 
-  const appMemberAppRoles = await getAppMemberAppRoles(appMember.id, appId);
+  const appMemberAppRole = await getAppMemberAppRole(appMember.id, appId, groupId);
 
   assertKoaError(
-    !appMemberAppRoles.some((appMemberAppRole) =>
-      checkAppRoleAppPermissions(app.definition.security, appMemberAppRole, requiredAppPermissions),
-    ),
-    ctx,
+    !checkAppRoleAppPermissions(app.definition.security, appMemberAppRole, requiredPermissions),
+    context,
     403,
     'App member does not have sufficient app permissions.',
   );
 }
 
-export async function checkUserAppPermissions(
-  ctx: Context,
-  appId: number,
-  requiredAppPermissions: CustomAppPermission[],
-): Promise<void> {
-  const { user: authSubject } = ctx;
+export async function checkUserAppPermissions({
+  appId,
+  context,
+  groupId,
+  requiredPermissions,
+}: CheckAppPermissionsParams): Promise<void> {
+  const { user: authSubject } = context;
 
   const app = await App.findByPk(appId, { attributes: ['definition', 'OrganizationId'] });
 
-  assertKoaError(!app, ctx, 404, 'App not found');
+  assertKoaError(!app, context, 404, 'App not found');
 
-  assertKoaError(!app.definition.security, ctx, 404, 'App does not have a security definition');
+  assertKoaError(!app.definition.security, context, 404, 'App does not have a security definition');
 
-  const userAppRoles = await getUserAppRoles(authSubject.id, appId);
+  const userAppRole = await getUserAppRole(authSubject.id, appId, groupId);
 
-  const userOrganizationRoles = await getUserOrganizationRoles(authSubject.id, app.OrganizationId);
+  const userOrganizationRole = await getUserOrganizationRole(authSubject.id, app.OrganizationId);
 
   assertKoaError(
     !(
-      userAppRoles.some((userAppRole) =>
-        checkAppRoleAppPermissions(app.definition.security, userAppRole, requiredAppPermissions),
-      ) ||
-      userOrganizationRoles.some((userOrganizationRole) =>
-        checkOrganizationRoleAppPermissions(userOrganizationRole, requiredAppPermissions),
-      )
+      checkAppRoleAppPermissions(app.definition.security, userAppRole, requiredPermissions) ||
+      checkOrganizationRoleAppPermissions(userOrganizationRole, requiredPermissions)
     ),
-    ctx,
+    context,
     403,
     'User does not have sufficient app permissions.',
   );
 }
 
-export async function checkUserOrganizationPermissions(
-  ctx: Context,
-  organizationId: string,
-  requiredOrganizationPermissions: OrganizationPermission[],
-): Promise<void> {
-  const { user: authSubject } = ctx;
+export async function checkUserOrganizationPermissions({
+  context,
+  organizationId,
+  requiredPermissions,
+}: CheckOrganizationPermissionsParams): Promise<void> {
+  const { user: authSubject } = context;
 
   const organization = await Organization.findByPk(organizationId, { attributes: ['id'] });
 
-  assertKoaError(!organization, ctx, 404, 'Organization not found.');
+  assertKoaError(!organization, context, 404, 'Organization not found.');
 
   const organizationMember = await OrganizationMember.findOne({
     attributes: ['role'],
@@ -157,31 +167,22 @@ export async function checkUserOrganizationPermissions(
     },
   });
 
-  assertKoaError(!organizationMember, ctx, 403, 'User is not a member of this organization.');
+  assertKoaError(!organizationMember, context, 403, 'User is not a member of this organization.');
 
-  const userOrganizationRoles = await getUserOrganizationRoles(authSubject.id, organizationId);
+  const userOrganizationRole = await getUserOrganizationRole(authSubject.id, organizationId);
 
   assertKoaError(
-    !userOrganizationRoles.some((userOrganizationRole) =>
-      checkOrganizationRoleOrganizationPermissions(
-        userOrganizationRole,
-        requiredOrganizationPermissions,
-      ),
-    ),
-    ctx,
+    !checkOrganizationRoleOrganizationPermissions(userOrganizationRole, requiredPermissions),
+    context,
     403,
     'User does not have sufficient organization permissions.',
   );
 }
 
-export function checkAuthSubjectAppPermissions(
-  ctx: Context,
-  appId: number,
-  requiredAppPermissions: CustomAppPermission[],
-): Promise<void> {
-  const { client } = ctx;
+export function checkAuthSubjectAppPermissions(params: CheckAppPermissionsParams): Promise<void> {
+  const { client } = params.context;
 
   return client && 'app' in client
-    ? checkAppMemberAppPermissions(ctx, appId, requiredAppPermissions)
-    : checkUserAppPermissions(ctx, appId, requiredAppPermissions);
+    ? checkAppMemberAppPermissions(params)
+    : checkUserAppPermissions(params);
 }

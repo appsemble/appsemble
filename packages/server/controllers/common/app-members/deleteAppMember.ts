@@ -14,7 +14,11 @@ export async function deleteAppMember(ctx: Context): Promise<void> {
     attributes: ['id', 'AppId'],
   });
 
-  await checkAuthSubjectAppPermissions(ctx, appMember.AppId, [AppPermission.DeleteAppMembers]);
+  await checkAuthSubjectAppPermissions({
+    context: ctx,
+    appId: appMember.AppId,
+    requiredPermissions: [AppPermission.DeleteAppMembers],
+  });
 
   assertKoaError(!appMember, ctx, 404, 'App member not found');
 

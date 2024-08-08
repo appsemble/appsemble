@@ -51,7 +51,11 @@ export async function createApp(ctx: Context): Promise<void> {
 
   let result: Partial<App>;
 
-  await checkUserOrganizationPermissions(ctx, OrganizationId, [OrganizationPermission.CreateApps]);
+  await checkUserOrganizationPermissions({
+    context: ctx,
+    organizationId: OrganizationId,
+    requiredPermissions: [OrganizationPermission.CreateApps],
+  });
 
   try {
     const definition = parse(yaml, { maxAliasCount: 10_000 }) as AppDefinition;

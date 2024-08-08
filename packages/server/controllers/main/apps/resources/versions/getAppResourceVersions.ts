@@ -14,9 +14,11 @@ export async function getAppResourceVersions(ctx: Context): Promise<void> {
 
   assertKoaError(!app, ctx, 404, 'App not found');
 
-  await checkUserOrganizationPermissions(ctx, app.OrganizationId, [
-    OrganizationPermission.QueryAppResources,
-  ]);
+  await checkUserOrganizationPermissions(
+    ctx,
+    [OrganizationPermission.QueryAppResources],
+    app.OrganizationId,
+  );
 
   const resource = await Resource.findOne({
     where: {

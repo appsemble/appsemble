@@ -7,5 +7,9 @@ export function checkAuthSubjectAppPermissions({
   context,
   permissions,
 }: CheckAuthSubjectAppPermissionsParams): Promise<void> {
-  return checkAuthSubjectAppPermissionsServer(context, app.id, permissions);
+  return checkAuthSubjectAppPermissionsServer({
+    context,
+    appId: app.id,
+    requiredPermissions: permissions,
+  });
 }

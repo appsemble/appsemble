@@ -25,9 +25,11 @@ export async function getAppEmailSettings(ctx: Context): Promise<void> {
 
   assertKoaError(!app, ctx, 404, 'App not found');
 
-  await checkUserOrganizationPermissions(ctx, app.OrganizationId, [
-    OrganizationPermission.ReadAppSettings,
-  ]);
+  await checkUserOrganizationPermissions({
+    context: ctx,
+    organizationId: app.OrganizationId,
+    requiredPermissions: [OrganizationPermission.ReadAppSettings],
+  });
 
   const { emailHost, emailName, emailPassword, emailPort, emailSecure, emailUser } = app;
 

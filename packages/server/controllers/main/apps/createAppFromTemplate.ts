@@ -74,15 +74,21 @@ export async function createAppFromTemplate(ctx: Context): Promise<void> {
     ],
   });
 
-  await checkUserOrganizationPermissions(ctx, organizationId, [OrganizationPermission.CreateApps]);
+  await checkUserOrganizationPermissions({
+    context: ctx,
+    organizationId,
+    requiredPermissions: [OrganizationPermission.CreateApps],
+  });
 
   assertKoaError(!template, ctx, 404, `Template with ID ${templateId} does not exist.`);
 
   if (!template.template && (template.visibility === 'private' || !template.showAppDefinition)) {
     // Only allow cloning of unlisted apps if the user is part of the template’s organization.
-    await checkUserOrganizationPermissions(ctx, template.OrganizationId, [
-      OrganizationPermission.QueryApps,
-    ]);
+    await checkUserOrganizationPermissions({
+      context: ctx,
+      organizationId: template.OrganizationId,
+      requiredPermissions: [OrganizationPermission.QueryApps],
+    });
   }
 
   const path = name ? normalize(name) : normalize(template.definition.name);

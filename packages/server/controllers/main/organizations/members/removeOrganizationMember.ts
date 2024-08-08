@@ -28,9 +28,11 @@ export async function removeOrganizationMember(ctx: Context): Promise<void> {
   );
 
   if (organizationMemberId !== user.id) {
-    await checkUserOrganizationPermissions(ctx, organization.id, [
-      OrganizationPermission.RemoveOrganizationMembers,
-    ]);
+    await checkUserOrganizationPermissions({
+      context: ctx,
+      organizationId: organization.id,
+      requiredPermissions: [OrganizationPermission.RemoveOrganizationMembers],
+    });
   }
 
   assertKoaError(

@@ -14,7 +14,12 @@ export async function getGroup(ctx: Context): Promise<void> {
 
   assertKoaError(!group, ctx, 404, 'Group not found');
 
-  await checkAuthSubjectAppPermissions(ctx, group.AppId, [AppPermission.QueryGroups]);
+  await checkAuthSubjectAppPermissions({
+    context: ctx,
+    appId: group.AppId,
+    requiredPermissions: [AppPermission.QueryGroups],
+    groupId,
+  });
 
   ctx.body = {
     id: group.id,

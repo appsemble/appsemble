@@ -24,9 +24,11 @@ export async function updateOrganizationMemberRole(ctx: Context): Promise<void> 
   );
   assertKoaError(user.id === organizationMemberId, ctx, 400, 'Not allowed to change your own rule');
 
-  await checkUserOrganizationPermissions(ctx, organization.id, [
-    OrganizationPermission.UpdateOrganizationMemberRoles,
-  ]);
+  await checkUserOrganizationPermissions({
+    context: ctx,
+    organizationId: organization.id,
+    requiredPermissions: [OrganizationPermission.UpdateOrganizationMemberRoles],
+  });
 
   const member = organization.Users.find((m) => m.id === organizationMemberId);
 

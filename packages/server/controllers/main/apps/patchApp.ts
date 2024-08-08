@@ -268,7 +268,11 @@ export async function patchApp(ctx: Context): Promise<void> {
       );
     }
 
-    await checkUserOrganizationPermissions(ctx, dbApp.OrganizationId, permissionsToCheck);
+    await checkUserOrganizationPermissions({
+      context: ctx,
+      organizationId: dbApp.OrganizationId,
+      requiredPermissions: permissionsToCheck,
+    });
 
     await transactional(async (transaction) => {
       await dbApp.update(result, { where: { id: appId }, transaction });

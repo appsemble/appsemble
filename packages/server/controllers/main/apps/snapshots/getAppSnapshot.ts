@@ -22,9 +22,11 @@ export async function getAppSnapshot(ctx: Context): Promise<void> {
 
   assertKoaError(!app, ctx, 404, 'App not found');
 
-  await checkUserOrganizationPermissions(ctx, app.OrganizationId, [
-    OrganizationPermission.QueryApps,
-  ]);
+  await checkUserOrganizationPermissions({
+    context: ctx,
+    organizationId: app.OrganizationId,
+    requiredPermissions: [OrganizationPermission.QueryApps],
+  });
 
   assertKoaError(!app.AppSnapshots.length, ctx, 404, 'Snapshot not found');
 

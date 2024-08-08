@@ -17,9 +17,11 @@ export async function queryAppAssets(ctx: Context): Promise<void> {
 
   assertKoaError(!app, ctx, 404, 'App not found');
 
-  await checkUserOrganizationPermissions(ctx, app.OrganizationId, [
-    OrganizationPermission.QueryAppAssets,
-  ]);
+  await checkUserOrganizationPermissions({
+    context: ctx,
+    organizationId: app.OrganizationId,
+    requiredPermissions: [OrganizationPermission.QueryAppAssets],
+  });
 
   const assets = await Asset.findAll({
     attributes: ['id', 'mime', 'filename', 'name', 'ResourceId'],

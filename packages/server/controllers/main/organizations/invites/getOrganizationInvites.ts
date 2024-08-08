@@ -10,9 +10,11 @@ export async function getOrganizationInvites(ctx: Context): Promise<void> {
     pathParams: { organizationId },
   } = ctx;
 
-  await checkUserOrganizationPermissions(ctx, organizationId, [
-    OrganizationPermission.QueryOrganizationInvites,
-  ]);
+  await checkUserOrganizationPermissions({
+    context: ctx,
+    organizationId,
+    requiredPermissions: [OrganizationPermission.QueryOrganizationInvites],
+  });
 
   const organization = await Organization.findByPk(organizationId);
 

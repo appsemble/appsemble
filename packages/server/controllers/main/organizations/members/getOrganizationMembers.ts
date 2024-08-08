@@ -16,9 +16,11 @@ export async function getOrganizationMembers(ctx: Context): Promise<void> {
 
   assertKoaError(!organization, ctx, 404, 'Organization not found.');
 
-  await checkUserOrganizationPermissions(ctx, organization.id, [
-    OrganizationPermission.QueryOrganizationMembers,
-  ]);
+  await checkUserOrganizationPermissions({
+    context: ctx,
+    organizationId: organization.id,
+    requiredPermissions: [OrganizationPermission.QueryOrganizationMembers],
+  });
 
   ctx.body = organization.Users.map((user) => ({
     id: user.id,

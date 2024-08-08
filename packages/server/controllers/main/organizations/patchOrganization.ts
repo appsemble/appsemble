@@ -13,9 +13,11 @@ export async function patchOrganization(ctx: Context): Promise<void> {
     },
   } = ctx;
 
-  await checkUserOrganizationPermissions(ctx, organizationId, [
-    OrganizationPermission.UpdateOrganizations,
-  ]);
+  await checkUserOrganizationPermissions({
+    context: ctx,
+    organizationId,
+    requiredPermissions: [OrganizationPermission.UpdateOrganizations],
+  });
 
   const organization = await Organization.findByPk(organizationId);
 

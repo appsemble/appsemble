@@ -9,9 +9,9 @@ import { Resource } from '../models/Resource.js';
 import { processHooks, processReferenceHooks } from '../utils/resource.js';
 
 export async function createAppResourcesWithAssets({
-  action,
   app,
   context,
+  groupId,
   options,
   preparedAssets,
   resourceType,
@@ -24,6 +24,7 @@ export async function createAppResourcesWithAssets({
     createdResources = await Resource.bulkCreate(
       resources.map(({ $clonable, $ephemeral, $expires, $seed, $thumbnails, ...data }) => ({
         AppId: app.id,
+        GroupId: groupId ?? null,
         type: resourceType,
         data,
         AuthorId: appMember?.sub,
@@ -60,6 +61,7 @@ export async function createAppResourcesWithAssets({
         return {
           ...asset,
           AppId: app.id,
+          GroupId: groupId ?? null,
           ResourceId,
           AppMemberId: appMember?.sub,
           seed,
@@ -73,8 +75,8 @@ export async function createAppResourcesWithAssets({
 
   const persistedApp = await App.findOne({ where: { id: app.id } });
 
-  processReferenceHooks(persistedApp, createdResources[0], action, options, context);
-  processHooks(persistedApp, createdResources[0], action, options, context);
+  processReferenceHooks(persistedApp, createdResources[0], 'create', options, context);
+  processHooks(persistedApp, createdResources[0], 'create', options, context);
 
   return createdResources.map((resource) => resource.toJSON());
 }

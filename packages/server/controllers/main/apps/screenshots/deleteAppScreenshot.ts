@@ -22,9 +22,11 @@ export async function deleteAppScreenshot(ctx: Context): Promise<void> {
 
   checkAppLock(ctx, app);
 
-  await checkUserOrganizationPermissions(ctx, app.OrganizationId, [
-    OrganizationPermission.DeleteAppScreenshots,
-  ]);
+  await checkUserOrganizationPermissions({
+    context: ctx,
+    organizationId: app.OrganizationId,
+    requiredPermissions: [OrganizationPermission.DeleteAppScreenshots],
+  });
 
   assertKoaError(!app.AppScreenshots.length, ctx, 404, 'Screenshot not found');
 

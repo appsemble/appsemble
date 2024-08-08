@@ -11,6 +11,7 @@ export function createUpdateAppResourceController(options: Options): Middleware 
   return async (ctx: Context) => {
     const {
       pathParams: { appId, resourceId, resourceType },
+      queryParams: { groupId },
     } = ctx;
 
     const {
@@ -20,7 +21,6 @@ export function createUpdateAppResourceController(options: Options): Middleware 
       getAppResource,
       updateAppResource,
     } = options;
-    const action = 'update';
 
     const app = await getApp({ context: ctx, query: { where: { id: appId } } });
 
@@ -28,8 +28,9 @@ export function createUpdateAppResourceController(options: Options): Middleware 
 
     await checkAuthSubjectAppPermissions({
       context: ctx,
-      app,
       permissions: [`$resource:${resourceType}:update`],
+      app,
+      groupId,
     });
 
     const findOptions: FindOptions = {
@@ -37,6 +38,7 @@ export function createUpdateAppResourceController(options: Options): Middleware 
         id: resourceId,
         type: resourceType,
         AppId: appId,
+        GroupId: groupId ?? null,
         expires: { or: [{ gt: new Date() }, null] },
         ...(app.demoMode ? { seed: false, ephemeral: true } : {}),
       },
@@ -73,7 +75,6 @@ export function createUpdateAppResourceController(options: Options): Middleware 
       preparedAssets,
       deletedAssetIds,
       resourceDefinition,
-      action,
       options,
     });
   };

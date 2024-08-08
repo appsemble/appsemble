@@ -13,9 +13,11 @@ export async function deleteOrganizationInvite(ctx: Context): Promise<void> {
 
   assertKoaError(!invite, ctx, 404, 'This invite does not exist');
 
-  await checkUserOrganizationPermissions(ctx, invite.OrganizationId, [
-    OrganizationPermission.DeleteOrganizationInvites,
-  ]);
+  await checkUserOrganizationPermissions({
+    context: ctx,
+    organizationId: invite.OrganizationId,
+    requiredPermissions: [OrganizationPermission.DeleteOrganizationInvites],
+  });
 
   await invite.destroy();
 }

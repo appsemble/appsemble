@@ -10,6 +10,7 @@ import { App, AppMember, AppServiceSecret, Organization } from '../models/index.
 import { argv } from '../utils/argv.js';
 import { decrypt, encrypt } from '../utils/crypto.js';
 
+// TODO refactor
 async function verifyPermission(ctx: Context, app: App): Promise<AppServiceSecret[]> {
   if (!app) {
     return [];

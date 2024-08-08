@@ -10,9 +10,11 @@ export async function createOrganizationAppCollection(ctx: Context): Promise<voi
     request: { body },
   } = ctx;
 
-  await checkUserOrganizationPermissions(ctx, organizationId, [
-    OrganizationPermission.CreateAppCollections,
-  ]);
+  await checkUserOrganizationPermissions({
+    context: ctx,
+    organizationId,
+    requiredPermissions: [OrganizationPermission.CreateAppCollections],
+  });
 
   const collection = await AppCollection.create({
     name: body.name,

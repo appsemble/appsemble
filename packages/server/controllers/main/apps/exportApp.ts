@@ -45,9 +45,11 @@ export async function exportApp(ctx: Context): Promise<void> {
   assertKoaError(!app, ctx, 404, 'App not found');
 
   if (app.visibility === 'private' || !app.showAppDefinition) {
-    await checkUserOrganizationPermissions(ctx, app.OrganizationId, [
-      OrganizationPermission.QueryApps,
-    ]);
+    await checkUserOrganizationPermissions({
+      context: ctx,
+      organizationId: app.OrganizationId,
+      requiredPermissions: [OrganizationPermission.QueryApps],
+    });
   }
 
   const zip = new JSZip();
@@ -126,9 +128,11 @@ export async function exportApp(ctx: Context): Promise<void> {
   }
 
   if (resources) {
-    await checkUserOrganizationPermissions(ctx, app.OrganizationId, [
-      OrganizationPermission.QueryAppResources,
-    ]);
+    await checkUserOrganizationPermissions({
+      context: ctx,
+      organizationId: app.OrganizationId,
+      requiredPermissions: [OrganizationPermission.QueryAppResources],
+    });
     await app.reload({
       include: [Resource],
     });
@@ -148,9 +152,11 @@ export async function exportApp(ctx: Context): Promise<void> {
   }
 
   if (assets) {
-    await checkUserOrganizationPermissions(ctx, app.OrganizationId, [
-      OrganizationPermission.QueryAppAssets,
-    ]);
+    await checkUserOrganizationPermissions({
+      context: ctx,
+      organizationId: app.OrganizationId,
+      requiredPermissions: [OrganizationPermission.QueryAppAssets],
+    });
     await app.reload({
       include: [Asset],
     });

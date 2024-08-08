@@ -5,6 +5,7 @@ export function createDeleteAppResourceController(options: Options): Middleware 
   return async (ctx: Context) => {
     const {
       pathParams: { appId, resourceId, resourceType },
+      queryParams: { groupId },
     } = ctx;
 
     const { checkAuthSubjectAppPermissions, deleteAppResource, getApp, getAppResource } = options;
@@ -13,8 +14,9 @@ export function createDeleteAppResourceController(options: Options): Middleware 
 
     await checkAuthSubjectAppPermissions({
       context: ctx,
-      app,
       permissions: [`$resource:${resourceType}:delete`],
+      app,
+      groupId,
     });
 
     const findOptions: FindOptions = {
@@ -22,6 +24,7 @@ export function createDeleteAppResourceController(options: Options): Middleware 
         id: resourceId,
         type: resourceType,
         AppId: appId,
+        GroupId: groupId ?? null,
         expires: { or: [{ gt: new Date() }, { eq: null }] },
         ...(app.demoMode ? { seed: false, ephemeral: true } : {}),
       },

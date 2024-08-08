@@ -129,9 +129,11 @@ export async function createBlock(ctx: Context): Promise<void> {
     }
   }
 
-  await checkUserOrganizationPermissions(ctx, OrganizationId, [
-    OrganizationPermission.PublishBlocks,
-  ]);
+  await checkUserOrganizationPermissions({
+    context: ctx,
+    organizationId: OrganizationId,
+    requiredPermissions: [OrganizationPermission.PublishBlocks],
+  });
 
   const blockVersion = await BlockVersion.findOne({
     where: { name: blockId, OrganizationId },

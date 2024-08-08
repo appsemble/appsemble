@@ -43,7 +43,11 @@ export async function importApp(ctx: Context): Promise<void> {
     request: { body: importFile },
   } = ctx;
 
-  await checkUserOrganizationPermissions(ctx, organizationId, [OrganizationPermission.CreateApps]);
+  await checkUserOrganizationPermissions({
+    context: ctx,
+    organizationId,
+    requiredPermissions: [OrganizationPermission.CreateApps],
+  });
 
   let result: Partial<App>;
   const zip = await JSZip.loadAsync(importFile);

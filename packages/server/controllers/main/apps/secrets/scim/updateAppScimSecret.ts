@@ -16,9 +16,11 @@ export async function updateAppScimSecret(ctx: Context): Promise<void> {
     attributes: ['id', 'OrganizationId', 'scimEnabled', 'scimToken'],
   });
 
-  await checkUserOrganizationPermissions(ctx, app.OrganizationId, [
-    OrganizationPermission.UpdateAppSecrets,
-  ]);
+  await checkUserOrganizationPermissions({
+    context: ctx,
+    organizationId: app.OrganizationId,
+    requiredPermissions: [OrganizationPermission.UpdateAppSecrets],
+  });
 
   ctx.assert(app, 404, 'App not found');
 

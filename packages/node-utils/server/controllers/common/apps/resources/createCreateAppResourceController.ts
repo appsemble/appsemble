@@ -11,10 +11,10 @@ export function createCreateAppResourceController(options: Options): Middleware 
     const {
       pathParams: { appId, resourceType },
       query,
+      queryParams: { groupId },
     } = ctx;
     const { checkAuthSubjectAppPermissions, createAppResourcesWithAssets, getApp, getAppAssets } =
       options;
-    const action = 'create';
 
     const app = await getApp({ context: ctx, query: { where: { id: appId } } });
 
@@ -22,8 +22,9 @@ export function createCreateAppResourceController(options: Options): Middleware 
 
     await checkAuthSubjectAppPermissions({
       context: ctx,
-      app,
       permissions: [`$resource:${resourceType}:create`],
+      app,
+      groupId,
     });
 
     const appAssets = await getAppAssets({ app, context: ctx });
@@ -81,17 +82,18 @@ export function createCreateAppResourceController(options: Options): Middleware 
 
       createdResources = await createAppResourcesWithAssets({
         app,
+        groupId,
         context: ctx,
         resources: preparedSeedResources,
         preparedAssets: preparedSeedAssets,
         resourceType,
-        action,
         options,
       });
 
       if (app.demoMode) {
         createdResources = await createAppResourcesWithAssets({
           app,
+          groupId,
           context: ctx,
           resources: resources.map((resource) => ({
             ...resource,
@@ -101,13 +103,13 @@ export function createCreateAppResourceController(options: Options): Middleware 
           })),
           preparedAssets,
           resourceType,
-          action,
           options,
         });
       }
     } else {
       createdResources = await createAppResourcesWithAssets({
         app,
+        groupId,
         context: ctx,
         resources: resources.map((resource) => ({
           ...resource,
@@ -116,7 +118,6 @@ export function createCreateAppResourceController(options: Options): Middleware 
         })),
         preparedAssets,
         resourceType,
-        action,
         options,
       });
     }

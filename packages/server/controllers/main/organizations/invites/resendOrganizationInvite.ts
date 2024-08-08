@@ -13,9 +13,11 @@ export async function resendOrganizationInvite(ctx: Context): Promise<void> {
     request,
   } = ctx;
 
-  await checkUserOrganizationPermissions(ctx, organizationId, [
-    OrganizationPermission.CreateOrganizationInvites,
-  ]);
+  await checkUserOrganizationPermissions({
+    context: ctx,
+    organizationId,
+    requiredPermissions: [OrganizationPermission.CreateOrganizationInvites],
+  });
 
   const organization = await Organization.findByPk(organizationId, { attributes: ['id'] });
 

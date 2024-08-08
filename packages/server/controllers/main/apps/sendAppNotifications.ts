@@ -21,9 +21,11 @@ export async function sendAppNotifications(ctx: Context): Promise<void> {
 
   assertKoaError(!app, ctx, 404, 'App not found');
 
-  await checkUserOrganizationPermissions(ctx, app.OrganizationId, [
-    OrganizationPermission.PushAppNotifications,
-  ]);
+  await checkUserOrganizationPermissions({
+    context: ctx,
+    requiredPermissions: [OrganizationPermission.PushAppNotifications],
+    organizationId: app.OrganizationId,
+  });
 
   // XXX: Replace with paginated requests
   logger.verbose(`Sending ${app.AppSubscriptions.length} notifications for app ${appId}`);

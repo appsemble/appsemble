@@ -12,6 +12,7 @@ export function createGetAppResourceByIdController(options: Options): Middleware
   return async (ctx: Context) => {
     const {
       pathParams: { appId, resourceId, resourceType },
+      queryParams: { groupId },
     } = ctx;
 
     const { checkAuthSubjectAppPermissions, getApp, getAppResource } = options;
@@ -24,8 +25,9 @@ export function createGetAppResourceByIdController(options: Options): Middleware
 
     await checkAuthSubjectAppPermissions({
       context: ctx,
-      app,
       permissions: [`$resource:${resourceType}:get`],
+      app,
+      groupId,
     });
 
     const findOptions: FindOptions = {
@@ -33,6 +35,7 @@ export function createGetAppResourceByIdController(options: Options): Middleware
         id: resourceId,
         type: resourceType,
         AppId: appId,
+        GroupId: groupId ?? null,
         expires: { or: [{ gt: new Date() }, null] },
         ...(app.demoMode ? { seed: false, ephemeral: true } : {}),
       },

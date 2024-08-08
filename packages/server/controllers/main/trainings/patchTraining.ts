@@ -16,9 +16,11 @@ export async function patchTraining(ctx: Context): Promise<void> {
   const training = await Training.findByPk(trainingId);
   assertKoaError(!training, ctx, 404, 'Training not found');
 
-  await checkUserOrganizationPermissions(ctx, 'appsemble', [
-    OrganizationPermission.UpdateTrainings,
-  ]);
+  await checkUserOrganizationPermissions({
+    context: ctx,
+    organizationId: 'appsemble',
+    requiredPermissions: [OrganizationPermission.UpdateTrainings],
+  });
   const result: Partial<Training> = {};
 
   if (competences !== undefined) {

@@ -146,6 +146,7 @@ async function handleRequestProxy(
     }
   }
 
+  // TODO
   const { applyAppServiceSecrets } = options;
 
   const remapperContext = await getRemapperContext(

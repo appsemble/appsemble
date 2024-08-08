@@ -22,9 +22,11 @@ export async function getGroupInvites(ctx: Context): Promise<void> {
 
   assertKoaError(!group, ctx, 404, 'Group not found.');
 
-  await checkUserOrganizationPermissions(ctx, group.App.OrganizationId, [
-    OrganizationPermission.QueryGroupInvites,
-  ]);
+  await checkUserOrganizationPermissions({
+    context: ctx,
+    organizationId: group.App.OrganizationId,
+    requiredPermissions: [OrganizationPermission.QueryGroupInvites],
+  });
 
   const groupInvites = await GroupInvite.findAll({
     where: { GroupId: groupId },

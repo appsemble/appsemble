@@ -44,7 +44,12 @@ export async function createGroupInvites(ctx: Context): Promise<void> {
     'Role not allowed.',
   );
 
-  await checkAuthSubjectAppPermissions(ctx, groupId, [AppPermission.CreateGroupInvites]);
+  await checkAuthSubjectAppPermissions({
+    context: ctx,
+    appId: app.id,
+    groupId,
+    requiredPermissions: [AppPermission.CreateGroupInvites],
+  });
 
   const groupMembers = await GroupMember.findAll({
     attributes: ['id'],

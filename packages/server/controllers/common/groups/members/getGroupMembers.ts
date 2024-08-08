@@ -16,7 +16,12 @@ export async function getGroupMembers(ctx: Context): Promise<void> {
 
   assertKoaError(!group, ctx, 404, 'Group not found.');
 
-  await checkAuthSubjectAppPermissions(ctx, groupId, [AppPermission.QueryGroupMembers]);
+  await checkAuthSubjectAppPermissions({
+    context: ctx,
+    appId: group.AppId,
+    groupId,
+    requiredPermissions: [AppPermission.QueryGroupMembers],
+  });
 
   const groupMembers = await GroupMember.findAll({
     attributes: ['id', 'role'],

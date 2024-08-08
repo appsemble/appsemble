@@ -16,9 +16,11 @@ export async function deleteAppCollection(ctx: Context): Promise<void> {
 
   assertKoaError(!collection, ctx, 404, 'Collection not found');
 
-  await checkUserOrganizationPermissions(ctx, collection.OrganizationId, [
-    OrganizationPermission.DeleteAppCollections,
-  ]);
+  await checkUserOrganizationPermissions({
+    context: ctx,
+    organizationId: collection.OrganizationId,
+    requiredPermissions: [OrganizationPermission.DeleteAppCollections],
+  });
 
   await collection.destroy();
 

@@ -19,9 +19,11 @@ export async function deleteAppServiceSecret(ctx: Context): Promise<void> {
 
   checkAppLock(ctx, app);
 
-  await checkUserOrganizationPermissions(ctx, app.OrganizationId, [
-    OrganizationPermission.DeleteAppSecrets,
-  ]);
+  await checkUserOrganizationPermissions({
+    context: ctx,
+    organizationId: app.OrganizationId,
+    requiredPermissions: [OrganizationPermission.DeleteAppSecrets],
+  });
 
   const appServiceSecret = await AppServiceSecret.findByPk(serviceSecretId);
   assertKoaError(!appServiceSecret, ctx, 404, 'Cannot find the app service secret to delete');

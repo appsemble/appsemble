@@ -36,7 +36,11 @@ export async function updateAppMemberRole(ctx: Context): Promise<void> {
     'Role not allowed',
   );
 
-  await checkAuthSubjectAppPermissions(ctx, appMember.App.id, [AppPermission.UpdateAppMemberRoles]);
+  await checkAuthSubjectAppPermissions({
+    context: ctx,
+    appId: appMember.App.id,
+    requiredPermissions: [AppPermission.UpdateAppMemberRoles],
+  });
 
   const updatedAppMember = await appMember.update({ role });
 

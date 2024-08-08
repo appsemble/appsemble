@@ -23,9 +23,11 @@ export async function getAppEmailQuota(ctx: Context): Promise<void> {
 
   checkAppLock(ctx, app);
 
-  await checkUserOrganizationPermissions(ctx, app.OrganizationId, [
-    OrganizationPermission.ReadAppSettings,
-  ]);
+  await checkUserOrganizationPermissions({
+    context: ctx,
+    organizationId: app.OrganizationId,
+    requiredPermissions: [OrganizationPermission.ReadAppSettings],
+  });
 
   if (!argv.enableAppEmailQuota) {
     ctx.response.status = 200;

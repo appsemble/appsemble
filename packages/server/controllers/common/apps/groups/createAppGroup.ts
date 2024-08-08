@@ -12,7 +12,11 @@ export async function createAppGroup(ctx: Context): Promise<void> {
     },
   } = ctx;
 
-  await checkAuthSubjectAppPermissions(ctx, appId, [AppPermission.CreateGroups]);
+  await checkAuthSubjectAppPermissions({
+    context: ctx,
+    appId,
+    requiredPermissions: [AppPermission.CreateGroups],
+  });
 
   await transactional(async (transaction) => {
     const group = await Group.create(

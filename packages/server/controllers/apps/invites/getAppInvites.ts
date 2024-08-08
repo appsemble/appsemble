@@ -16,9 +16,11 @@ export async function getAppInvites(ctx: Context): Promise<void> {
 
   assertKoaError(!app, ctx, 404, 'App not found.');
 
-  await checkUserOrganizationPermissions(ctx, app.OrganizationId, [
-    OrganizationPermission.QueryAppInvites,
-  ]);
+  await checkUserOrganizationPermissions({
+    context: ctx,
+    organizationId: app.OrganizationId,
+    requiredPermissions: [OrganizationPermission.QueryAppInvites],
+  });
 
   const appInvites = await AppInvite.findAll({
     where: { AppId: appId },

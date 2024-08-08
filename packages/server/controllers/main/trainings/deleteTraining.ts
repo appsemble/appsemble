@@ -10,9 +10,11 @@ export async function deleteTraining(ctx: Context): Promise<void> {
     pathParams: { trainingId },
   } = ctx;
 
-  await checkUserOrganizationPermissions(ctx, 'appsemble', [
-    OrganizationPermission.DeleteTrainings,
-  ]);
+  await checkUserOrganizationPermissions({
+    context: ctx,
+    organizationId: 'appsemble',
+    requiredPermissions: [OrganizationPermission.DeleteTrainings],
+  });
 
   const training = await Training.findByPk(trainingId);
   assertKoaError(!training, ctx, 404, 'Training not found');

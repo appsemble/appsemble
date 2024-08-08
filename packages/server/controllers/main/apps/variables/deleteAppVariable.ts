@@ -19,9 +19,11 @@ export async function deleteAppVariable(ctx: Context): Promise<void> {
 
   checkAppLock(ctx, app);
 
-  await checkUserOrganizationPermissions(ctx, app.OrganizationId, [
-    OrganizationPermission.DeleteAppVariables,
-  ]);
+  await checkUserOrganizationPermissions({
+    context: ctx,
+    organizationId: app.OrganizationId,
+    requiredPermissions: [OrganizationPermission.DeleteAppVariables],
+  });
 
   const appVariable = await AppVariable.findByPk(appVariableId);
   assertKoaError(!appVariable, ctx, 404, 'Cannot find the app variable to delete');

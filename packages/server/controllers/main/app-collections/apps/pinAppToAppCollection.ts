@@ -25,9 +25,11 @@ export async function pinAppToAppCollection(ctx: Context): Promise<void> {
 
   assertKoaError(!aca, ctx, 404, 'App not found in collection');
 
-  await checkUserOrganizationPermissions(ctx, aca.AppCollection.OrganizationId, [
-    OrganizationPermission.UpdateAppCollections,
-  ]);
+  await checkUserOrganizationPermissions({
+    context: ctx,
+    organizationId: aca.AppCollection.OrganizationId,
+    requiredPermissions: [OrganizationPermission.UpdateAppCollections],
+  });
 
   const pinnedAt = new Date();
   await aca.update({

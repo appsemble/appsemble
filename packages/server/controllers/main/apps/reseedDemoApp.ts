@@ -22,12 +22,16 @@ export async function reseedDemoApp(ctx: Context): Promise<void> {
 
   logger.info('Cleaning up ephemeral assets.');
 
-  await checkUserOrganizationPermissions(ctx, app.OrganizationId, [
-    OrganizationPermission.DeleteAppAssets,
-    OrganizationPermission.DeleteAppResources,
-    OrganizationPermission.CreateAppAssets,
-    OrganizationPermission.CreateAppResources,
-  ]);
+  await checkUserOrganizationPermissions({
+    context: ctx,
+    organizationId: app.OrganizationId,
+    requiredPermissions: [
+      OrganizationPermission.DeleteAppAssets,
+      OrganizationPermission.DeleteAppResources,
+      OrganizationPermission.CreateAppAssets,
+      OrganizationPermission.CreateAppResources,
+    ],
+  });
 
   const demoAssetsDeletionResult = await Asset.destroy({
     where: {

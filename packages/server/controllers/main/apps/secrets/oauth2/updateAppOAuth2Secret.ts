@@ -24,9 +24,11 @@ export async function updateAppOAuth2Secret(ctx: Context): Promise<void> {
     },
   });
 
-  await checkUserOrganizationPermissions(ctx, app.OrganizationId, [
-    OrganizationPermission.UpdateAppSecrets,
-  ]);
+  await checkUserOrganizationPermissions({
+    context: ctx,
+    organizationId: app.OrganizationId,
+    requiredPermissions: [OrganizationPermission.UpdateAppSecrets],
+  });
 
   assertKoaError(!appOAuth2Secret, ctx, 404, 'OAuth2 secret not found');
 

@@ -20,9 +20,11 @@ export async function deleteAppMessages(ctx: Context): Promise<void> {
 
   checkAppLock(ctx, app);
 
-  await checkUserOrganizationPermissions(ctx, app.OrganizationId, [
-    OrganizationPermission.DeleteAppMessages,
-  ]);
+  await checkUserOrganizationPermissions({
+    context: ctx,
+    organizationId: app.OrganizationId,
+    requiredPermissions: [OrganizationPermission.DeleteAppMessages],
+  });
 
   const affectedRows = await AppMessages.destroy({
     where: { language: language.toLowerCase(), AppId: appId },

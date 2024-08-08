@@ -18,9 +18,11 @@ export async function deleteBlockVersion(ctx: Context): Promise<void> {
 
   assertKoaError(!version, ctx, 404, 'Block version not found');
 
-  await checkUserOrganizationPermissions(ctx, organizationId, [
-    OrganizationPermission.DeleteBlocks,
-  ]);
+  await checkUserOrganizationPermissions({
+    context: ctx,
+    organizationId,
+    requiredPermissions: [OrganizationPermission.DeleteBlocks],
+  });
   const usedBlocks = await findBlockInApps(blockId, blockVersion, organizationId);
 
   assertKoaError(usedBlocks, ctx, 403, 'Cannot delete blocks that are used by apps.');

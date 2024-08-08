@@ -11,9 +11,11 @@ export async function createTraining(ctx: Context): Promise<void> {
     },
   } = ctx;
 
-  await checkUserOrganizationPermissions(ctx, 'appsemble', [
-    OrganizationPermission.CreateTrainings,
-  ]);
+  await checkUserOrganizationPermissions({
+    context: ctx,
+    organizationId: 'appsemble',
+    requiredPermissions: [OrganizationPermission.CreateTrainings],
+  });
   const training = await Training.create({
     title,
     description,
