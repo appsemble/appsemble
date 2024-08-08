@@ -85,7 +85,6 @@ export class AppMember extends Model {
   @Column(DataType.STRING)
   locale?: string;
 
-  @AllowNull(false)
   @Column(DataType.STRING)
   timezone: string;
 

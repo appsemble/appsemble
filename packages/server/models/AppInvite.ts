@@ -37,7 +37,7 @@ export class AppInvite extends Model {
   @Column(DataType.UUID)
   UserId: string;
 
-  @BelongsTo(() => User)
+  @BelongsTo(() => User, { onDelete: 'CASCADE' })
   User: Awaited<User>;
 
   @PrimaryKey
@@ -46,7 +46,7 @@ export class AppInvite extends Model {
   @Column(DataType.INTEGER)
   AppId: number;
 
-  @BelongsTo(() => App)
+  @BelongsTo(() => App, { onDelete: 'CASCADE' })
   app: Awaited<App>;
 
   @CreatedAt

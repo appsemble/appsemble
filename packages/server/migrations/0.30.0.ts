@@ -8,7 +8,6 @@ export const key = '0.30.0';
  * - TODO: Cleanup duplicate users with same email
  * - TODO: Cleanup anonymous users with only a timezone (and name)
  * - TODO: Cleanup demo login users
- * - Add column `id` to `TeamMember` table
  * - Make `AppSamlSecret.emailAttribute` non-nullable with default
  * - Add column `emailVerifiedAttribute` to `AppSamlSecret` table
  * - Make `AppMember.UserId` nullable
@@ -25,11 +24,46 @@ export const key = '0.30.0';
  * - Add column `timezone` to the `AppMember` table
  * - Add column `demo` to the `AppMember` table
  * - Add table `AppInvite`
- * - Rename table `Team` to `Group`
- * - Rename table `TeamMember` to `GroupMember`
- * - Rename column `TeamId` to `GroupId` on table `GroupMember`
- * - Rename table `TeamInvite` to `GroupInvite`
- * - Rename column `TeamId` to `GroupId` on table `GroupInvite`
+ * - Create unique index AppInvite_UserId_AppId_key on AppInvite (UserId, AppId)
+ * - Create table `Group`
+ * - Copying records from table `Team` to `Group`
+ * - Dropping table `Team`
+ * - Create table `GroupMember`
+ * - Copying records from table `TeamMember` to `GroupMember`
+ * - Dropping table `TeamMember`
+ * - Drop enum `enum_TeamMember_role`
+ * - Create table `GroupInvite`
+ * - Copying records from table `TeamInvite` to `GroupInvite`
+ * - Dropping table `TeamInvite`
+ * - Drop enum `enum_TeamInvite_role`
+ * - ALTER TYPE `enum_OrganizationInvite_role` ADD VALUE 'AppCollectionManager' BEFORE 'AppEditor'
+ * - ALTER TYPE `enum_OrganizationMember_role` ADD VALUE 'AppCollectionManager' BEFORE 'AppEditor'
+ * - ALTER TYPE `enum_OrganizationInvite_role` ADD VALUE 'AppContentsExplorer' BEFORE 'AppEditor'
+ * - ALTER TYPE `enum_OrganizationMember_role` ADD VALUE 'AppContentsExplorer' BEFORE 'AppEditor'
+ * - ALTER TYPE `enum_OrganizationInvite_role` RENAME VALUE 'AppEditor' TO 'AppContentsManager'
+ * - ALTER TYPE `enum_OrganizationMember_role` RENAME VALUE 'AppEditor' TO 'AppContentsManager'
+ * - ALTER TYPE `enum_OrganizationInvite_role` ADD VALUE 'AppGroupManager' AFTER 'AccountManager'
+ * - ALTER TYPE `enum_OrganizationMember_role` ADD VALUE 'AppGroupManager' AFTER 'AccountManager'
+ * - ALTER TYPE `enum_OrganizationInvite_role` ADD VALUE 'AppGroupMembersManager' AFTER
+ * 'AccountManager'
+ * - ALTER TYPE `enum_OrganizationMember_role` ADD VALUE 'AppGroupMembersManager' AFTER
+ * 'AccountManager'
+ * - ALTER TYPE `enum_OrganizationInvite_role` ADD VALUE 'AppManager' AFTER 'AccountManager'
+ * - ALTER TYPE `enum_OrganizationMember_role` ADD VALUE 'AppManager' AFTER 'AccountManager'
+ * - ALTER TYPE `enum_OrganizationInvite_role` RENAME VALUE 'AccountManager' TO 'AppMemberManager'
+ * - ALTER TYPE `enum_OrganizationMember_role` RENAME VALUE 'AccountManager' TO 'AppMemberManager'
+ * - ALTER TYPE `enum_OrganizationInvite_role` RENAME VALUE 'Translator' TO 'AppTranslator'
+ * - ALTER TYPE `enum_OrganizationMember_role` RENAME VALUE 'Translator' TO 'AppTranslator'
+ * - ALTER TYPE `enum_OrganizationInvite_role` ADD VALUE 'BlockManager'
+ * - ALTER TYPE `enum_OrganizationMember_role` ADD VALUE 'BlockManager'
+ * - Change role APIReader to default value
+ * - Remove APIReader from enum `enum_OrganizationInvite_role`
+ * - Change role APIReader to default value
+ * - Remove APIReader from enum `enum_OrganizationMember_role`
+ * - Change role APIUser to default value
+ * - Remove APIUser from enum `enum_OrganizationInvite_role`
+ * - Change role APIUser to default value
+ * - Remove APIUser from enum `enum_OrganizationMember_role`
  *
  * @param transaction The sequelize transaction.
  * @param db The sequelize database.
@@ -40,31 +74,6 @@ export async function up(transaction: Transaction, db: Sequelize): Promise<void>
   // TODO: make sure to delete duplicate users with same email
   // TODO: make sure to delete users with only a timezone (and name)
   // TODO: cleanup demoLoginUsers
-
-  logger.info('Add column `id` to `TeamMember` table');
-  await queryInterface.addColumn(
-    'TeamMember',
-    'id',
-    {
-      allowNull: false,
-      type: DataTypes.UUID,
-      primaryKey: true,
-    },
-    { transaction },
-  );
-
-  // Logger.info('Removing primary key from `GroupMember` table');
-  // await queryInterface.removeConstraint('GroupMember', 'GroupMember_pkey', { transaction });
-
-  // logger.info(
-  //   'Creating composite primary key on `GroupMember` table for `id`, `GroupId`, `AppMemberId`',
-  // );
-  // await queryInterface.addConstraint('GroupMember', {
-  //   fields: ['id', 'GroupId', 'AppMemberId'],
-  //   type: 'primary key',
-  //   name: 'GroupMember_pkey',
-  //   transaction,
-  // });
 
   logger.info('Making `AppSamlSecret.emailAttribute` non-nullable with default');
   await queryInterface.changeColumn(
@@ -224,6 +233,7 @@ export async function up(transaction: Transaction, db: Sequelize): Promise<void>
       },
       AppId: {
         type: DataTypes.INTEGER,
+        primaryKey: true,
         allowNull: false,
         onDelete: 'cascade',
         onUpdate: 'cascade',
@@ -246,83 +256,189 @@ export async function up(transaction: Transaction, db: Sequelize): Promise<void>
     transaction,
   });
 
-  logger.info('Rename table `Team` to `Group`');
-  await queryInterface.renameTable('Team', 'Group', { transaction });
-
-  logger.info('Rename table `TeamMember` to `GroupMember`');
-  await queryInterface.renameTable('TeamMember', 'GroupMember', { transaction });
-
-  logger.info('Rename column `TeamId` to `GroupId` in `GroupMember` table');
-  await queryInterface.renameColumn('GroupMember', 'TeamId', 'GroupId', { transaction });
-
-  logger.info('Drop the default value of column `role` column `GroupMember` table');
-  await queryInterface.sequelize.query(
-    'ALTER TABLE "GroupMember" ALTER COLUMN "role" DROP DEFAULT',
-    { transaction },
-  );
-
-  logger.info('Change the type of column `role` in `GroupMember` table');
-  await queryInterface.sequelize.query(
-    'ALTER TABLE "GroupMember" ALTER COLUMN "role" TYPE TEXT USING "role"::text',
-    { transaction },
-  );
-
-  logger.info('Change column `role` in `GroupMember` table');
-  await queryInterface.changeColumn(
-    'GroupMember',
-    'role',
+  logger.info('Create table `Group`');
+  await queryInterface.createTable(
+    'Group',
     {
-      type: DataTypes.STRING,
-      defaultValue: 'Member',
-      allowNull: false,
+      id: { autoIncrement: true, type: DataTypes.INTEGER, allowNull: false, primaryKey: true },
+      name: { type: DataTypes.STRING(255), allowNull: false },
+      AppId: {
+        onUpdate: 'CASCADE',
+        onDelete: 'CASCADE',
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        references: { model: 'App', key: 'id' },
+      },
+      created: { type: DataTypes.DATE, allowNull: false },
+      updated: { type: DataTypes.DATE, allowNull: false },
+      annotations: { type: DataTypes.JSON, allowNull: true },
     },
     { transaction },
   );
+
+  // TODO: test against prod data
+  logger.warn('Copying records from table `Team` to `Group`');
+  logger.warn('The following query might be slow depending on the amount of records present.');
+  await queryInterface.sequelize.query('INSERT INTO "Group" SELECT * FROM "Team";', {
+    transaction,
+  });
+
+  logger.warn('Dropping table `Team`');
+  await queryInterface.dropTable('Team', { force: true, transaction });
+
+  logger.info('Create table `GroupMember`');
+  await queryInterface.createTable(
+    'GroupMember',
+    {
+      id: { type: DataTypes.UUID, allowNull: false, primaryKey: true },
+      role: { type: DataTypes.STRING, allowNull: false, defaultValue: 'Member' },
+      GroupId: {
+        onUpdate: 'CASCADE',
+        onDelete: 'CASCADE',
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        primaryKey: true,
+        references: { model: 'Group', key: 'id' },
+      },
+      created: { type: DataTypes.DATE, allowNull: false },
+      updated: { type: DataTypes.DATE, allowNull: false },
+      AppMemberId: {
+        onUpdate: 'CASCADE',
+        onDelete: 'CASCADE',
+        type: DataTypes.UUID,
+        allowNull: false,
+        primaryKey: true,
+        references: { model: 'AppMember', key: 'id' },
+      },
+    },
+    { transaction },
+  );
+
+  // TODO: test against prod data
+  logger.warn('Copying records from table `TeamMember` to `GroupMember`');
+  logger.warn('The following query might be slow depending on the amount of records present.');
+  logger.warn('The following query uses `gen_random_uuid()` to generate UUIDv4s.');
+  await queryInterface.sequelize.query(
+    `INSERT INTO "GroupMember" (id, role, "GroupId", created, updated, "AppMemberId")
+      SELECT
+        gen_random_uuid(),
+        CASE role
+          WHEN 'member'::"enum_TeamMember_role" THEN 'Member'
+          WHEN 'manager'::"enum_TeamMember_role" THEN 'GroupsManager'
+        END as role,
+        "TeamId" AS "GroupId", created, updated, "AppMemberId"
+      FROM "TeamMember";`,
+    { transaction },
+  );
+
+  logger.warn('Dropping table `TeamMember`');
+  await queryInterface.dropTable('TeamMember', { force: true, transaction });
 
   logger.info('Drop enum `enum_TeamMember_role`');
   await queryInterface.sequelize.query('DROP TYPE IF EXISTS "enum_TeamMember_role"', {
     transaction,
   });
 
-  logger.info('Rename table `TeamInvite` to `GroupInvite`');
-  await queryInterface.renameTable('TeamInvite', 'GroupInvite', { transaction });
-
-  logger.info('Rename column `TeamId` to `GroupId` in `GroupInvite` table');
-  await queryInterface.renameColumn('GroupInvite', 'TeamId', 'GroupId', { transaction });
-
-  logger.info('Drop the default value of column `role` in `GroupInvite` table');
-  await queryInterface.sequelize.query(
-    'ALTER TABLE "GroupInvite" ALTER COLUMN "role" DROP DEFAULT',
-    { transaction },
-  );
-
-  logger.info('Change the type of column `role` in `GroupInvite` table');
-  await queryInterface.sequelize.query(
-    'ALTER TABLE "GroupInvite" ALTER COLUMN "role" TYPE TEXT USING "role"::text',
-    { transaction },
-  );
-
-  logger.info('Change column `role` in `GroupInvite` table');
-  await queryInterface.changeColumn(
+  logger.info('Create table `GroupInvite`');
+  await queryInterface.createTable(
     'GroupInvite',
-    'role',
     {
-      type: DataTypes.STRING,
-      defaultValue: 'Member',
-      allowNull: false,
+      GroupId: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        primaryKey: true,
+        references: { model: 'Group', key: 'id' },
+        onUpdate: 'CASCADE',
+        onDelete: 'CASCADE',
+      },
+      email: { type: DataTypes.STRING(255), allowNull: false, primaryKey: true },
+      role: { type: DataTypes.STRING(255), allowNull: false, defaultValue: 'Member' },
+      key: { type: DataTypes.STRING(255), allowNull: false },
+      created: { type: DataTypes.DATE, allowNull: false },
+      updated: { type: DataTypes.DATE, allowNull: false },
     },
     { transaction },
   );
+
+  // TODO: test against prod data
+  logger.warn('Copying records from table `TeamInvite` to `GroupInvite`');
+  logger.warn('The following query might be slow depending on the amount of records present.');
+  await queryInterface.sequelize.query(
+    `
+    INSERT INTO "GroupInvite" ("GroupId", email, role, key, created, updated)
+      SELECT "TeamId" AS "GroupId", email,
+        CASE role
+          WHEN 'member'::"enum_TeamInvite_role" THEN 'Member'
+          WHEN 'manager'::"enum_TeamInvite_role" THEN 'GroupsManager'
+        END as role,
+        key, created, updated
+      FROM "TeamInvite";`,
+    { transaction },
+  );
+
+  logger.warn('Dropping table `TeamInvite`');
+  await queryInterface.dropTable('TeamInvite', { force: true, transaction });
 
   logger.info('Drop enum `enum_TeamInvite_role`');
   await queryInterface.sequelize.query('DROP TYPE IF EXISTS "enum_TeamInvite_role"', {
     transaction,
   });
+
+  const organizationRoleActions = [
+    "ADD VALUE 'AppCollectionManager' BEFORE 'AppEditor'",
+    "ADD VALUE 'AppContentsExplorer' BEFORE 'AppEditor'",
+    "RENAME VALUE 'AppEditor' TO 'AppContentsManager'",
+    "ADD VALUE 'AppGroupManager' AFTER 'AccountManager'",
+    "ADD VALUE 'AppGroupMembersManager' AFTER 'AccountManager'",
+    "ADD VALUE 'AppManager' AFTER 'AccountManager'",
+    "RENAME VALUE 'AccountManager' TO 'AppMemberManager'",
+    "RENAME VALUE 'Translator' TO 'AppTranslator'",
+    "ADD VALUE 'BlockManager'",
+  ] satisfies string[];
+  for (const action of organizationRoleActions) {
+    logger.info(`ALTER TYPE \`enum_OrganizationInvite_role\` ${action}`);
+    await queryInterface.sequelize.query(`ALTER TYPE "enum_OrganizationInvite_role" ${action};`, {
+      transaction,
+    });
+    logger.info(`ALTER TYPE \`enum_OrganizationMember_role\` ${action}`);
+    await queryInterface.sequelize.query(`ALTER TYPE "enum_OrganizationMember_role" ${action};`, {
+      transaction,
+    });
+  }
+
+  const organizationRolesToDrop = [
+    'APIReader',
+    'APIUser',
+    // 'AccountManager',
+    // 'AppEditor',
+    // 'Translator',
+  ] satisfies string[];
+  for (const attribute of organizationRolesToDrop) {
+    logger.warn(`Change role ${attribute} to default value`);
+    logger.info(`Remove ${attribute} from enum \`enum_OrganizationInvite_role\``);
+    await queryInterface.sequelize.query(
+      `
+    UPDATE "OrganizationMember" SET role = 'Member' WHERE role = '${attribute}';
+    DELETE FROM pg_enum WHERE enumlabel = '${attribute}' AND enumtypid = (
+      SELECT oid FROM pg_type WHERE typname = 'enum_OrganizationInvite_role'
+    );`,
+      { transaction },
+    );
+    logger.warn(`Change role ${attribute} to default value`);
+    logger.info(`Remove ${attribute} from enum \`enum_OrganizationMember_role\``);
+    await queryInterface.sequelize.query(
+      `
+    UPDATE "OrganizationMember" SET role = 'Member' WHERE role = '${attribute}';
+    DELETE FROM pg_enum WHERE enumlabel = '${attribute}' AND enumtypid = (
+      SELECT oid FROM pg_type WHERE typname = 'enum_OrganizationMember_role'
+    );`,
+      { transaction },
+    );
+  }
 }
 
 /**
  * Summary:
- * - Remove column `id` from `GroupMember` table
  * - Make `AppSamlSecret.emailAttribute` nullable
  * - Remove column `emailVerifiedAttribute` from `AppSamlSecret` table
  * - Make `AppMember.UserId` non-nullable
@@ -337,20 +453,57 @@ export async function up(transaction: Transaction, db: Sequelize): Promise<void>
  * - Add column `demoLoginUser` to `User` table
  * - Remove column `timezone` from the `AppMember` table
  * - Remove column `demo` from the `AppMember` table
- * - Rename table `Group` to `Team`
- * - Rename table `GroupMember` to `TeamMember`
- * - Rename column `GroupId` to `TeamId` on table `TeamMember`
- * - Rename table `GroupInvite` to `TeamInvite`
- * - Rename column `GroupId` to `TeamId` on table `TeamInvite`
+ * - Dropping table `AppInvite`
+ * - Removing unique index `AppInvite_UserId_AppId_key` from `AppInvite` (UserId, AppId)
+ * - Create table `Team`
+ * - Copying records from table `Group` to `Team`
+ * - Dropping table `Group`
+ * - Create table `TeamMember`
+ * - Copying records from table `GroupMember` to `TeamMember`
+ * - Dropping table `GroupMember`
+ * - Create table `TeamInvite`
+ * - Copying records from table `GroupInvite` to `TeamInvite`
+ * - Dropping table `GroupInvite`
+ * - ALTER TYPE `enum_OrganizationInvite_role` ADD VALUE 'APIReader'
+ * - ALTER TYPE `enum_OrganizationMember_role` ADD VALUE 'APIReader'
+ * - ALTER TYPE `enum_OrganizationInvite_role` ADD VALUE 'APIUser'
+ * - ALTER TYPE `enum_OrganizationMember_role` ADD VALUE 'APIUser'
+ * - ALTER TYPE `enum_OrganizationInvite_role` RENAME VALUE 'AppContentsManager' TO 'AppEditor'
+ * - ALTER TYPE `enum_OrganizationMember_role` RENAME VALUE 'AppContentsManager' TO 'AppEditor'
+ * - ALTER TYPE `enum_OrganizationInvite_role` RENAME VALUE 'AppMemberManager' TO 'AccountManager'
+ * - ALTER TYPE `enum_OrganizationMember_role` RENAME VALUE 'AppMemberManager' TO 'AccountManager'
+ * - ALTER TYPE `enum_OrganizationInvite_role` RENAME VALUE 'AppTranslator' TO 'Translator'
+ * - ALTER TYPE `enum_OrganizationMember_role` RENAME VALUE 'AppTranslator' TO 'Translator'
+ * - Change role AppCollectionManager to default value
+ * - Remove AppCollectionManager from enum `enum_OrganizationInvite_role`
+ * - Change role AppCollectionManager to default value
+ * - Remove AppCollectionManager from enum `enum_OrganizationMember_role`
+ * - Change role AppContentsExplorer to default value
+ * - Remove AppContentsExplorer from enum `enum_OrganizationInvite_role`
+ * - Change role AppContentsExplorer to default value
+ * - Remove AppContentsExplorer from enum `enum_OrganizationMember_role`
+ * - Change role AppGroupManager to default value
+ * - Remove AppGroupManager from enum `enum_OrganizationInvite_role`
+ * - Change role AppGroupManager to default value
+ * - Remove AppGroupManager from enum `enum_OrganizationMember_role`
+ * - Change role AppGroupMembersManager to default value
+ * - Remove AppGroupMembersManager from enum `enum_OrganizationInvite_role`
+ * - Change role AppGroupMembersManager to default value
+ * - Remove AppGroupMembersManager from enum `enum_OrganizationMember_role`
+ * - Change role AppManager to default value
+ * - Remove AppManager from enum `enum_OrganizationInvite_role`
+ * - Change role AppManager to default value
+ * - Remove AppManager from enum `enum_OrganizationMember_role`
+ * - Change role BlockManager to default value
+ * - Remove BlockManager from enum `enum_OrganizationInvite_role`
+ * - Change role BlockManager to default value
+ * - Remove BlockManager from enum `enum_OrganizationMember_role`
  *
  * @param transaction The sequelize transaction.
  * @param db The sequelize database.
  */
 export async function down(transaction: Transaction, db: Sequelize): Promise<void> {
   const queryInterface = db.getQueryInterface();
-
-  logger.info('Remove column `id` from `GroupMember` table');
-  await queryInterface.removeColumn('GroupMember', 'id', { transaction });
 
   logger.info('Making `AppSamlSecret.emailAttribute` nullable');
   await queryInterface.changeColumn(
@@ -447,78 +600,176 @@ export async function down(transaction: Transaction, db: Sequelize): Promise<voi
   logger.info('Remove column `demo` on `AppMember` table');
   await queryInterface.removeColumn('AppMember', 'demo', { transaction });
 
-  logger.info('Dropping table AppInvite');
+  logger.info('Dropping table `AppInvite`');
   await queryInterface.dropTable('AppInvite', { transaction });
 
-  logger.info('Removing unique index AppInvite_UserId_AppId_key from AppInvite (UserId, AppId)');
+  logger.info(
+    'Removing unique index `AppInvite_UserId_AppId_key` from `AppInvite` (UserId, AppId)',
+  );
   await queryInterface.removeIndex('AppInvite', 'AppInvite_UserId_AppId_key', { transaction });
 
-  logger.info('Rename table `Group` to `Team`');
-  await queryInterface.renameTable('Group', 'Team', { transaction });
-
-  logger.info('Rename table `GroupMember` to `TeamMember`');
-  await queryInterface.renameTable('GroupMember', 'TeamMember', { transaction });
-
-  logger.info('Rename column `GroupId` to `TeamId` in `TeamMember` table');
-  await queryInterface.renameColumn('TeamMember', 'GroupId', 'TeamId', { transaction });
-
-  logger.info('Create enum `enum_TeamMember_role`');
-  await queryInterface.sequelize.query(
-    `
-    CREATE TYPE "enum_TeamMember_role" AS ENUM('member', 'manager');
-  `,
+  logger.info('Create table `Team`');
+  await queryInterface.createTable(
+    'Team',
+    {
+      id: { autoIncrement: true, type: DataTypes.INTEGER, allowNull: false, primaryKey: true },
+      name: { type: DataTypes.STRING(255), allowNull: false },
+      AppId: {
+        onUpdate: 'CASCADE',
+        onDelete: 'CASCADE',
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        references: { model: 'App', key: 'id' },
+      },
+      created: { type: DataTypes.DATE, allowNull: false },
+      updated: { type: DataTypes.DATE, allowNull: false },
+      annotations: { type: DataTypes.JSON, allowNull: true },
+    },
     { transaction },
   );
 
-  logger.info('Create column `role` in `TeamMember` table');
-  await queryInterface.changeColumn(
+  // TODO: test against prod data
+  logger.warn('Copying records from table `Group` to `Team`');
+  logger.warn('The following query might be slow depending on the amount of records present.');
+  await queryInterface.sequelize.query('INSERT INTO "Team" SELECT * FROM "Group";', {
+    transaction,
+  });
+
+  logger.warn('Dropping table `Group`');
+  await queryInterface.dropTable('Group', { force: true, transaction });
+
+  logger.info('Create table `TeamMember`');
+  await queryInterface.createTable(
     'TeamMember',
-    'role',
     {
-      type: DataTypes.ENUM('member', 'manager'),
-      allowNull: false,
+      role: { type: DataTypes.ENUM('member', 'manager'), allowNull: false, defaultValue: 'member' },
+      TeamId: {
+        onUpdate: 'CASCADE',
+        onDelete: 'CASCADE',
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        primaryKey: true,
+        references: { model: 'Team', key: 'id' },
+      },
+      created: { type: DataTypes.DATE, allowNull: false },
+      updated: { type: DataTypes.DATE, allowNull: false },
+      AppMemberId: {
+        onUpdate: 'CASCADE',
+        onDelete: 'CASCADE',
+        type: DataTypes.UUID,
+        allowNull: false,
+        primaryKey: true,
+        references: { model: 'AppMember', key: 'id' },
+      },
     },
     { transaction },
   );
 
-  logger.info('Set the default of column `role` in `TeamMember` table');
+  // TODO: test against prod data
+  logger.warn('Copying records from table `GroupMember` to `TeamMember`');
+  logger.warn('The following query might be slow depending on the amount of records present.');
   await queryInterface.sequelize.query(
-    `
-    ALTER TABLE "TeamMember" ALTER COLUMN "role" SET DEFAULT 'member'
-  `,
+    `INSERT INTO "TeamMember" (role, "TeamId", created, updated, "AppMemberId")
+      SELECT
+        CASE role
+          WHEN 'Member' THEN 'member'::"enum_TeamMember_role"
+          WHEN 'GroupsManager' THEN 'manager'::"enum_TeamMember_role"
+          ELSE 'member'::"enum_TeamMember_role"
+        END as role,
+        "GroupId" AS "TeamId", created, updated, "AppMemberId"
+      FROM "GroupMember";`,
     { transaction },
   );
 
-  logger.info('Rename table `GroupInvite` to `TeamInvite`');
-  await queryInterface.renameTable('GroupInvite', 'TeamInvite', { transaction });
+  logger.warn('Dropping table `GroupMember`');
+  await queryInterface.dropTable('GroupMember', { force: true, transaction });
 
-  logger.info('Rename column `GroupId` to `TeamId` in `TeamInvite` table');
-  await queryInterface.renameColumn('TeamInvite', 'GroupId', 'TeamId', { transaction });
-
-  logger.info('Create enum `enum_TeamInvite_role`');
-  await queryInterface.sequelize.query(
-    `
-    CREATE TYPE "enum_TeamInvite_role" AS ENUM('member', 'manager');
-  `,
-    { transaction },
-  );
-
-  logger.info('Create column `role` in `TeamInvite` table');
-  await queryInterface.changeColumn(
+  logger.info('Create table `TeamInvite`');
+  await queryInterface.createTable(
     'TeamInvite',
-    'role',
     {
-      type: DataTypes.ENUM('member', 'manager'),
-      allowNull: false,
+      TeamId: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        primaryKey: true,
+        references: { model: 'Team', key: 'id' },
+        onUpdate: 'CASCADE',
+      },
+      email: { type: DataTypes.STRING(255), allowNull: false, primaryKey: true },
+      role: { type: DataTypes.ENUM('member', 'manager'), allowNull: false, defaultValue: 'member' },
+      key: { type: DataTypes.STRING(255), allowNull: false },
+      created: { type: DataTypes.DATE, allowNull: false },
+      updated: { type: DataTypes.DATE, allowNull: false },
     },
     { transaction },
   );
 
-  logger.info('Set the default of column `role` in `TeamInvite` table');
+  // TODO: test against prod data
+  logger.warn('Copying records from table `GroupInvite` to `TeamInvite`');
+  logger.warn('The following query might be slow depending on the amount of records present.');
   await queryInterface.sequelize.query(
     `
-    ALTER TABLE "TeamInvite" ALTER COLUMN "role" SET DEFAULT 'member'
-  `,
+    INSERT INTO "TeamInvite" ("TeamId", email, role, key, created, updated)
+      SELECT "GroupId" AS "TeamId", email,
+        CASE role
+          WHEN 'Member' THEN 'member'::"enum_TeamInvite_role"
+          WHEN 'GroupsManager' THEN 'manager'::"enum_TeamInvite_role"
+          ELSE 'member'::"enum_TeamInvite_role"
+        END as role,
+        key, created, updated
+      FROM "GroupInvite";`,
     { transaction },
   );
+
+  logger.warn('Dropping table `GroupInvite`');
+  await queryInterface.dropTable('GroupInvite', { force: true, transaction });
+
+  const organizationRoleActions = [
+    "ADD VALUE 'APIReader'",
+    "ADD VALUE 'APIUser'",
+    "RENAME VALUE 'AppContentsManager' TO 'AppEditor'",
+    "RENAME VALUE 'AppMemberManager' TO 'AccountManager'",
+    "RENAME VALUE 'AppTranslator' TO 'Translator'",
+  ] satisfies string[];
+  for (const action of organizationRoleActions) {
+    logger.info(`ALTER TYPE \`enum_OrganizationInvite_role\` ${action}`);
+    await queryInterface.sequelize.query(`ALTER TYPE "enum_OrganizationInvite_role" ${action};`, {
+      transaction,
+    });
+    logger.info(`ALTER TYPE \`enum_OrganizationMember_role\` ${action}`);
+    await queryInterface.sequelize.query(`ALTER TYPE "enum_OrganizationMember_role" ${action};`, {
+      transaction,
+    });
+  }
+
+  const organizationRolesToDrop = [
+    'AppCollectionManager',
+    'AppContentsExplorer',
+    'AppGroupManager',
+    'AppGroupMembersManager',
+    'AppManager',
+    'BlockManager',
+  ] satisfies string[];
+  for (const attribute of organizationRolesToDrop) {
+    logger.warn(`Change role ${attribute} to default value`);
+    logger.info(`Remove ${attribute} from enum \`enum_OrganizationInvite_role\``);
+    await queryInterface.sequelize.query(
+      `
+    UPDATE "OrganizationMember" SET role = 'Member' WHERE role = '${attribute}';
+    DELETE FROM pg_enum WHERE enumlabel = '${attribute}' AND enumtypid = (
+      SELECT oid FROM pg_type WHERE typname = 'enum_OrganizationInvite_role'
+    );`,
+      { transaction },
+    );
+    logger.warn(`Change role ${attribute} to default value`);
+    logger.info(`Remove ${attribute} from enum \`enum_OrganizationMember_role\``);
+    await queryInterface.sequelize.query(
+      `
+    UPDATE "OrganizationMember" SET role = 'Member' WHERE role = '${attribute}';
+    DELETE FROM pg_enum WHERE enumlabel = '${attribute}' AND enumtypid = (
+      SELECT oid FROM pg_type WHERE typname = 'enum_OrganizationMember_role'
+    );`,
+      { transaction },
+    );
+  }
 }

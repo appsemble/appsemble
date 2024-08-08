@@ -37,7 +37,7 @@ export class GroupInvite extends Model {
   @Column(DataType.STRING)
   role: AppRole;
 
-  @BelongsTo(() => Group)
+  @BelongsTo(() => Group, { onDelete: 'CASCADE' })
   Group: Awaited<Group>;
 
   @CreatedAt

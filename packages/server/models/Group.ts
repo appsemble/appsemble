@@ -13,7 +13,7 @@ import {
   UpdatedAt,
 } from 'sequelize-typescript';
 
-import { App, GroupMember } from './index.js';
+import { App, GroupInvite, GroupMember } from './index.js';
 
 @Table({ tableName: 'Group' })
 export class Group extends Model {
@@ -39,6 +39,9 @@ export class Group extends Model {
 
   @HasMany(() => GroupMember)
   Members: GroupMember[];
+
+  @HasMany(() => GroupInvite)
+  Invites: GroupInvite[];
 
   @CreatedAt
   created: Date;
