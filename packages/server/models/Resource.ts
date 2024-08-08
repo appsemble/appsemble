@@ -19,7 +19,7 @@ import {
   UpdatedAt,
 } from 'sequelize-typescript';
 
-import { App, AppMember, Asset, ResourceSubscription, ResourceVersion } from './index.js';
+import { App, AppMember, Asset, Group, ResourceSubscription, ResourceVersion } from './index.js';
 
 interface ResourceToJsonOptions {
   /**
@@ -90,6 +90,14 @@ export class Resource extends Model {
 
   @BelongsTo(() => App)
   App: Awaited<App>;
+
+  @ForeignKey(() => Group)
+  @AllowNull(false)
+  @Column(DataType.INTEGER)
+  GroupId: number;
+
+  @BelongsTo(() => Group)
+  Group: Awaited<Group>;
 
   @ForeignKey(() => AppMember)
   @Column(DataType.UUID)
