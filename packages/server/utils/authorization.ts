@@ -15,6 +15,7 @@ import { App, AppMember, GroupMember, Organization, OrganizationMember } from '.
 // TODO check and fix this logic
 async function getAppMemberAcquiredAppRoles(
   appMember: AppMember,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   appId: number,
 ): Promise<string[]> {
   const groupMemberships = await GroupMember.findAll({

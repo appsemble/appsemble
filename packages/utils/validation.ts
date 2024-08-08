@@ -459,7 +459,7 @@ function validateSecurity(definition: AppDefinition, report: Report): void {
   };
 
   checkRoleExists(security.default.role, ['security', 'default', 'role']);
-  checkRoles(definition, []);
+  checkRoles(definition.security.roles, []);
   if (definition.resources) {
     for (const [resourceName, resource] of Object.entries(definition.resources)) {
       checkRoles(resource, ['resources', resourceName], [...defaultAllow, '$author']);
@@ -657,7 +657,8 @@ function validateActions(definition: AppDefinition, report: Report): void {
 
       if (action.type.startsWith('resource.')) {
         // All of the actions starting with `resource.` contain a property called `resource`.
-        const { resource: resourceName } = action as ResourceGetActionDefinition;
+        // eslint-disable-next-line no-inline-comments
+        const { resource: resourceName /* View */ } = action as ResourceGetActionDefinition;
         const resource = definition.resources?.[resourceName];
 
         if (!resource) {
@@ -666,6 +667,14 @@ function validateActions(definition: AppDefinition, report: Report): void {
         }
 
         if (!action.type.startsWith('resource.subscription.')) {
+          // Const type = action.type.split('.')[1] as
+          //   | 'count'
+          //   | 'create'
+          //   | 'delete'
+          //   | 'get'
+          //   | 'query'
+          //   | 'update';
+          // Const roles = resource?.[type]?.roles ?? resource?.roles;
           // TODO refactor resource action validation
           // if (!roles) {
           //   report(action.type, 'refers to a resource action that is currently set to private', [
@@ -678,8 +687,8 @@ function validateActions(definition: AppDefinition, report: Report): void {
           // if (roles && !roles.length && !definition.security) {
           //   report(
           //     action.type,
-          //     'refers to a resource action that is accessible when logged in, but the app has no
-          //     security definitions',
+          //     'refers to a resource action that is accessible when logged in,
+          //  but the app has no security definitions',
           //     [...path, 'resource'],
           //   );
           //   return;
@@ -703,8 +712,8 @@ function validateActions(definition: AppDefinition, report: Report): void {
           //   if (viewRoles && !viewRoles.length && !definition.security) {
           //     report(
           //       action.type,
-          //       'refers to a resource action that is accessible when logged in, but the app has
-          //       no security definitions',
+          //       'refers to a resource action that is accessible when logged in,
+          // but the app has no security definitions',
           //       [...path, 'view'],
           //     );
           //     return;

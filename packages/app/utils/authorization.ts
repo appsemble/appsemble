@@ -4,7 +4,7 @@ import {
   type GroupMember,
   type PageDefinition,
   type Security,
-  type SubPageDefinition,
+  // Type SubPageDefinition,
   type TabsPageDefinition,
   type ViewRole,
 } from '@appsemble/types';
