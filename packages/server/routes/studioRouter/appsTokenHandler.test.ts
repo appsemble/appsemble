@@ -18,8 +18,6 @@ import { createServer } from '../../utils/createServer.js';
 import { createTestUser } from '../../utils/test/authorization.js';
 import { useTestDatabase } from '../../utils/test/testSchema.js';
 
-// TODO: CHECK
-
 let user: User;
 
 useTestDatabase(import.meta);

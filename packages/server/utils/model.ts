@@ -1,7 +1,5 @@
 import type * as models from '../models/index.js';
 
-// TODO: CHECK FOR DUPLICATES
-
 /**
  * Resolves the icon url for an app based on whether it’s present and when it was updated.
  *

@@ -14,7 +14,7 @@ import { NS } from '../../../../utils/saml.js';
 const deflate = promisify(deflateRaw);
 const dom = new DOMImplementation();
 
-// TODO: handle appropriately
+// TODO: check, make sure to connect it to the app member instead of the user
 export async function createAppSamlAuthnRequest(ctx: Context): Promise<void> {
   const {
     pathParams: { appId, appSamlSecretId },
