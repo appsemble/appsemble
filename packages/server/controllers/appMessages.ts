@@ -4,8 +4,14 @@ import {
   getMessagesUtil,
   throwKoaError,
 } from '@appsemble/node-utils';
-import { type AppsembleMessages } from '@appsemble/types';
-import { compareStrings, defaultLocale, Permission } from '@appsemble/utils';
+import { type AppDefinition, type AppsembleMessages } from '@appsemble/types';
+import {
+  AppMessageValidationError,
+  compareStrings,
+  defaultLocale,
+  Permission,
+  validateMessages,
+} from '@appsemble/utils';
 import { type Context } from 'koa';
 import tags from 'language-tags';
 
@@ -25,12 +31,29 @@ async function validateAndCreateMessages(
   await AppMessages.upsert({ AppId: appId, language: language.toLowerCase(), messages });
 }
 
+function validateMessageBodies(
+  ctx: Context,
+  appDefinition: AppDefinition,
+  message: AppsembleMessages,
+): void {
+  try {
+    validateMessages(message, appDefinition);
+  } catch (error) {
+    if (error instanceof AppMessageValidationError) {
+      throwKoaError(ctx, 400, error.message);
+    }
+  }
+}
+
 export async function createMessages(ctx: Context): Promise<void> {
   const {
     pathParams: { appId },
   } = ctx;
 
-  const app = await App.findOne({ attributes: ['locked', 'OrganizationId'], where: { id: appId } });
+  const app = await App.findOne({
+    attributes: ['definition', 'locked', 'OrganizationId'],
+    where: { id: appId },
+  });
 
   assertKoaError(!app, ctx, 404, 'App not found');
 
@@ -42,15 +65,19 @@ export async function createMessages(ctx: Context): Promise<void> {
       if (!tags.check(message.language)) {
         throwKoaError(ctx, 400, `Language “${message.language}” is invalid`);
       }
+      validateMessageBodies(ctx, app.definition, message.messages);
     });
     ctx.request.body.map((message) => {
-      validateAndCreateMessages(message.language, appId, message.messages);
+      (async () => {
+        await validateAndCreateMessages(message.language, appId, message.messages);
+      })();
     });
   } else {
     if (!tags.check(ctx.request.body.language)) {
       throwKoaError(ctx, 400, `Language “${ctx.request.body.language}” is invalid`);
     }
-    validateAndCreateMessages(ctx.request.body.language, appId, ctx.request.body.messages);
+    validateMessageBodies(ctx, app.definition, ctx.request.body.messages);
+    await validateAndCreateMessages(ctx.request.body.language, appId, ctx.request.body.messages);
   }
 
   ctx.body = Array.isArray(ctx.request.body)
