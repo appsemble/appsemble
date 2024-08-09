@@ -148,7 +148,7 @@ export function Block({
       ee,
       remap,
       showMessage: push,
-      groups,
+      appMemberGroups: groups,
       updateGroup,
       getAppMemberInfo: () => appMemberInfoRef.current,
       passwordLogin,

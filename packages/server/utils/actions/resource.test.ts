@@ -152,7 +152,6 @@ describe('resource.query', () => {
 
     const result = await handleAction(query, {
       app,
-      user: null,
       action,
       mailer,
       data: {},
@@ -197,7 +196,6 @@ describe('resource.query', () => {
 
     const result = await handleAction(query, {
       app,
-      user: null,
       action,
       mailer,
       data: {},
@@ -233,7 +231,6 @@ describe('resource.get', () => {
 
     const result = await handleAction(get, {
       app,
-      user: null,
       action,
       mailer,
       data: { id: 1 },
@@ -270,7 +267,6 @@ describe('resource.get', () => {
 
     const result = await handleAction(get, {
       app,
-      user: null,
       action,
       mailer,
       data: { id: 1 },
@@ -301,7 +297,6 @@ describe('resource.get', () => {
     await expect(() =>
       handleAction(get, {
         app,
-        user: null,
         action,
         mailer,
         data: {},
@@ -344,7 +339,6 @@ describe('resource.get', () => {
     await expect(() =>
       handleAction(get, {
         app,
-        user: null,
         action,
         mailer,
         data: { id: 72_183 },
@@ -379,7 +373,6 @@ describe('resource.create', () => {
 
     const result = await handleAction(create, {
       app,
-      user: null,
       action,
       mailer,
       data: {
@@ -412,7 +405,6 @@ describe('resource.create', () => {
 
     const result = await handleAction(create, {
       app,
-      user: null,
       action,
       mailer,
       data: {
@@ -449,7 +441,6 @@ describe('resource.create', () => {
 
     const result = await handleAction(create, {
       app,
-      user: null,
       action,
       mailer,
       data: {},
@@ -476,7 +467,7 @@ describe('resource.create', () => {
     await expect(() =>
       handleAction(create, {
         app,
-        user: null,
+
         action,
         mailer,
         data: {
@@ -499,7 +490,7 @@ describe('resource.create', () => {
     await expect(() =>
       handleAction(create, {
         app,
-        user: null,
+
         action,
         mailer,
         data: {},
@@ -522,7 +513,7 @@ describe('resource.create', () => {
 
     const result = await handleAction(create, {
       app,
-      user: null,
+
       action,
       mailer,
       data: {
@@ -551,7 +542,7 @@ describe('resource.create', () => {
 
     const result = await handleAction(create, {
       app,
-      user: null,
+
       action,
       mailer,
       data: {
@@ -585,7 +576,7 @@ describe('resource.create', () => {
     await expect(() =>
       handleAction(create, {
         app,
-        user: null,
+
         action,
         mailer,
         data: {
@@ -608,7 +599,7 @@ describe('resource.create', () => {
 
     const result = await handleAction(create, {
       app,
-      user: null,
+
       action,
       mailer,
       data: [
@@ -664,7 +655,7 @@ describe('resource.update', () => {
 
     const result = await handleAction(update, {
       app,
-      user: null,
+
       action,
       mailer,
       data: {
@@ -711,7 +702,7 @@ describe('resource.update', () => {
 
     const result = await handleAction(update, {
       app,
-      user: null,
+
       action,
       mailer,
       data: {},
@@ -753,7 +744,7 @@ describe('resource.update', () => {
     await expect(() =>
       handleAction(update, {
         app,
-        user: null,
+
         action,
         mailer,
         data: {},
@@ -808,7 +799,7 @@ describe('resource.update', () => {
     await expect(() =>
       handleAction(update, {
         app,
-        user: null,
+
         action,
         mailer,
         data: {
@@ -860,7 +851,7 @@ describe('resource.update', () => {
     await expect(() =>
       handleAction(update, {
         app,
-        user: null,
+
         action,
         mailer,
         data: {
@@ -907,7 +898,7 @@ describe('resource.update', () => {
     await expect(() =>
       handleAction(update, {
         app: appB,
-        user: null,
+
         action,
         mailer,
         data: {
@@ -952,7 +943,7 @@ describe('resource.update', () => {
     await expect(() =>
       handleAction(update, {
         app,
-        user: null,
+
         action,
         mailer,
         data: {
@@ -984,7 +975,7 @@ describe('resource.update', () => {
 
     const result = await handleAction(update, {
       app,
-      user: null,
+
       action,
       mailer,
       data: {
@@ -1028,7 +1019,7 @@ describe('resource.update', () => {
 
     const result = await handleAction(update, {
       app,
-      user: null,
+
       action,
       mailer,
       data: {
@@ -1071,7 +1062,7 @@ describe('resource.update', () => {
     await expect(() =>
       handleAction(update, {
         app,
-        user: null,
+
         action,
         mailer,
         data: {
@@ -1104,7 +1095,7 @@ describe('resource.update', () => {
 
     const result = await handleAction(update, {
       app,
-      user: null,
+
       action,
       mailer,
       data: {
@@ -1148,7 +1139,7 @@ describe('resource.update', () => {
 
     const result = await handleAction(update, {
       app,
-      user: null,
+
       action,
       mailer,
       data: {
@@ -1198,7 +1189,7 @@ describe('resource.update', () => {
 
     const result = await handleAction(update, {
       app,
-      user: null,
+
       action,
       mailer,
       data: {
@@ -1248,7 +1239,7 @@ describe('resource.update', () => {
 
     const result = await handleAction(update, {
       app,
-      user: null,
+
       action,
       mailer,
       data: {
@@ -1301,7 +1292,7 @@ describe('resource.patch', () => {
 
     const result = await handleAction(patch, {
       app,
-      user: null,
+
       action,
       mailer,
       data: {
@@ -1346,7 +1337,7 @@ describe('resource.patch', () => {
 
     const result = await handleAction(patch, {
       app,
-      user: null,
+
       action,
       mailer,
       data: {},
@@ -1388,7 +1379,7 @@ describe('resource.patch', () => {
     await expect(() =>
       handleAction(patch, {
         app,
-        user: null,
+
         action,
         mailer,
         data: {},
@@ -1443,7 +1434,7 @@ describe('resource.patch', () => {
     await expect(() =>
       handleAction(patch, {
         app,
-        user: null,
+
         action,
         mailer,
         data: {
@@ -1495,7 +1486,7 @@ describe('resource.patch', () => {
     await expect(() =>
       handleAction(patch, {
         app,
-        user: null,
+
         action,
         mailer,
         data: {
@@ -1542,7 +1533,7 @@ describe('resource.patch', () => {
     await expect(() =>
       handleAction(patch, {
         app: appB,
-        user: null,
+
         action,
         mailer,
         data: {
@@ -1587,7 +1578,7 @@ describe('resource.patch', () => {
     await expect(() =>
       handleAction(patch, {
         app,
-        user: null,
+
         action,
         mailer,
         data: {
@@ -1619,7 +1610,7 @@ describe('resource.patch', () => {
 
     const result = await handleAction(patch, {
       app,
-      user: null,
+
       action,
       mailer,
       data: {
@@ -1658,7 +1649,7 @@ describe('resource.patch', () => {
 
     const result = await handleAction(patch, {
       app,
-      user: null,
+
       action,
       mailer,
       data: {
@@ -1701,7 +1692,7 @@ describe('resource.patch', () => {
 
     const result = await handleAction(patch, {
       app,
-      user: null,
+
       action,
       mailer,
       data: {
@@ -1744,7 +1735,7 @@ describe('resource.patch', () => {
     await expect(() =>
       handleAction(patch, {
         app,
-        user: null,
+
         action,
         mailer,
         data: {
@@ -1777,7 +1768,7 @@ describe('resource.patch', () => {
 
     const result = await handleAction(patch, {
       app,
-      user: null,
+
       action,
       mailer,
       data: {
@@ -1820,7 +1811,7 @@ describe('resource.patch', () => {
 
     const result = await handleAction(patch, {
       app,
-      user: null,
+
       action,
       mailer,
       data: {
@@ -1870,7 +1861,7 @@ describe('resource.patch', () => {
 
     const result = await handleAction(patch, {
       app,
-      user: null,
+
       action,
       mailer,
       data: {
@@ -1920,7 +1911,7 @@ describe('resource.patch', () => {
 
     const result = await handleAction(patch, {
       app,
-      user: null,
+
       action,
       mailer,
       data: {
@@ -1978,7 +1969,7 @@ describe('resource.delete', () => {
 
     const deletedResource = await handleAction(remove, {
       app,
-      user: null,
+
       action,
       mailer,
       data: {
@@ -2028,7 +2019,7 @@ describe('resource.delete', () => {
 
     const deletedResource = await handleAction(remove, {
       app,
-      user: null,
+
       action,
       mailer,
       data: {
@@ -2079,7 +2070,7 @@ describe('resource.delete', () => {
     await expect(() =>
       handleAction(remove, {
         app,
-        user: null,
+
         action,
         mailer,
         data: {},
@@ -2134,7 +2125,7 @@ describe('resource.delete', () => {
     await expect(() =>
       handleAction(remove, {
         app,
-        user: null,
+
         action,
         mailer,
         data: {
@@ -2186,7 +2177,7 @@ describe('resource.delete', () => {
     await expect(() =>
       handleAction(remove, {
         app,
-        user: null,
+
         action,
         mailer,
         data: {
@@ -2233,7 +2224,7 @@ describe('resource.delete', () => {
     await expect(() =>
       handleAction(remove, {
         app: appB,
-        user: null,
+
         action,
         mailer,
         data: {

@@ -1,4 +1,4 @@
-import { OrganizationPermission } from '@appsemble/utils';
+import { OrganizationPermission } from '@appsemble/types';
 import { type Context } from 'koa';
 
 import { AppCollection, Organization } from '../../../../models/index.js';

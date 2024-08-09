@@ -6,11 +6,8 @@ import {
   useData,
   useMessages,
 } from '@appsemble/react-components';
-import { type Training, type TrainingBlock } from '@appsemble/types';
-import {
-  checkOrganizationRoleOrganizationPermissions,
-  OrganizationPermission,
-} from '@appsemble/utils';
+import { OrganizationPermission, type Training, type TrainingBlock } from '@appsemble/types';
+import { checkOrganizationRoleOrganizationPermissions } from '@appsemble/utils';
 import { randomString } from '@appsemble/web-utils';
 import axios from 'axios';
 import { type ChangeEvent, type ReactNode, useCallback, useEffect, useState } from 'react';

@@ -7,12 +7,8 @@ import {
   useMeta,
   useToggle,
 } from '@appsemble/react-components';
-import { type AppInvite, type AppMemberInfo } from '@appsemble/types';
-import {
-  checkOrganizationRoleOrganizationPermissions,
-  convertToCsv,
-  OrganizationPermission,
-} from '@appsemble/utils';
+import { type AppInvite, type AppMemberInfo, OrganizationPermission } from '@appsemble/types';
+import { checkOrganizationRoleOrganizationPermissions, convertToCsv } from '@appsemble/utils';
 import { downloadBlob } from '@appsemble/web-utils';
 import { type ReactNode, useCallback } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';

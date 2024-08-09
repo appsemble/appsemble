@@ -1,4 +1,3 @@
-import { GroupRole } from '@appsemble/utils';
 import { request, setTestApp } from 'axios-test-instance';
 import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 import webpush from 'web-push';
@@ -186,12 +185,12 @@ describe('countAppResources', () => {
     await GroupMember.create({
       GroupId: group.id,
       AppMemberId: memberA.id,
-      role: GroupRole.Member,
+      role: 'Member',
     });
     await GroupMember.create({
       GroupId: group.id,
       AppMemberId: memberB.id,
-      role: GroupRole.Member,
+      role: 'Member',
     });
 
     await Resource.create({
@@ -253,12 +252,12 @@ describe('countAppResources', () => {
     await GroupMember.create({
       GroupId: group.id,
       AppMemberId: memberA.id,
-      role: GroupRole.Member,
+      role: 'Member',
     });
     await GroupMember.create({
       GroupId: group.id,
       AppMemberId: memberB.id,
-      role: GroupRole.Member,
+      role: 'Member',
     });
 
     await Resource.create({
@@ -322,12 +321,12 @@ describe('countAppResources', () => {
     await GroupMember.create({
       GroupId: group.id,
       AppMemberId: memberA.id,
-      role: GroupRole.Manager,
+      role: 'GroupMembersManager',
     });
     await GroupMember.create({
       GroupId: group.id,
       AppMemberId: memberB.id,
-      role: GroupRole.Member,
+      role: 'Member',
     });
 
     await Resource.create({
@@ -392,7 +391,7 @@ describe('countAppResources', () => {
     await GroupMember.create({
       GroupId: group.id,
       AppMemberId: memberB.id,
-      role: GroupRole.Member,
+      role: 'Member',
     });
 
     await Resource.create({
@@ -456,12 +455,12 @@ describe('countAppResources', () => {
     await GroupMember.create({
       GroupId: group.id,
       AppMemberId: memberA.id,
-      role: GroupRole.Member,
+      role: 'Member',
     });
     await GroupMember.create({
       GroupId: group.id,
       AppMemberId: memberB.id,
-      role: GroupRole.Member,
+      role: 'Member',
     });
 
     await Resource.create({
@@ -525,12 +524,12 @@ describe('countAppResources', () => {
     await GroupMember.create({
       GroupId: group.id,
       AppMemberId: memberA.id,
-      role: GroupRole.Manager,
+      role: 'GroupMembersManager',
     });
     await GroupMember.create({
       GroupId: group.id,
       AppMemberId: memberB.id,
-      role: GroupRole.Member,
+      role: 'Member',
     });
 
     await Resource.create({
@@ -611,7 +610,7 @@ describe('countAppResources', () => {
     await GroupMember.create({
       GroupId: group.id,
       AppMemberId: memberB.id,
-      role: GroupRole.Member,
+      role: 'Member',
     });
 
     await Resource.create({

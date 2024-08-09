@@ -133,7 +133,6 @@ export async function getUserInfo(
     email ??= info.email;
     emailVerified ??= info.email_verified;
     name ??= info.name;
-    profile ??= info.profile;
     picture ??= info.picture;
     locale ??= info.locale;
     zoneinfo ??= info.zoneinfo;
@@ -173,7 +172,7 @@ export async function getUserInfo(
       ? (remap(remapper, data, null) as UserInfo)
       : (data as UserInfo);
     if (!actualData.email && userEmailsUrl) {
-      const { data: emailsData } = await axios.get<UserEmail[]>(userEmailsUrl, requestConfig);
+      const { data: emailsData } = await axios.get(userEmailsUrl, requestConfig);
       if (emailsData.length > 0) {
         actualData.email = emailsData[0].email;
       }
@@ -191,7 +190,6 @@ export async function getUserInfo(
     email_verified: Boolean(emailVerified),
     name,
     picture,
-    profile,
     sub,
     locale,
     zoneinfo,

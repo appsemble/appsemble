@@ -1,8 +1,6 @@
 import { InputField, SelectField } from '@appsemble/react-components';
-import {
-  checkOrganizationRoleOrganizationPermissions,
-  OrganizationPermission,
-} from '@appsemble/utils';
+import { OrganizationPermission } from '@appsemble/types';
+import { checkOrganizationRoleOrganizationPermissions } from '@appsemble/utils';
 import { type ChangeEvent, type ReactNode, useCallback } from 'react';
 import { useIntl } from 'react-intl';
 

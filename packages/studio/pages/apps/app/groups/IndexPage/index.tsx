@@ -8,11 +8,8 @@ import {
   useData,
   useToggle,
 } from '@appsemble/react-components';
-import { type Group } from '@appsemble/types';
-import {
-  checkOrganizationRoleOrganizationPermissions,
-  OrganizationPermission,
-} from '@appsemble/utils';
+import { type Group, OrganizationPermission } from '@appsemble/types';
+import { checkOrganizationRoleOrganizationPermissions } from '@appsemble/utils';
 import axios from 'axios';
 import { type ReactNode, useCallback } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';

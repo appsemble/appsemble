@@ -1,9 +1,6 @@
 import { Button, Loader, Message, Table, useData, useToggle } from '@appsemble/react-components';
-import { type OrganizationInvite } from '@appsemble/types';
-import {
-  checkOrganizationRoleOrganizationPermissions,
-  OrganizationPermission,
-} from '@appsemble/utils';
+import { type OrganizationInvite, OrganizationPermission } from '@appsemble/types';
+import { checkOrganizationRoleOrganizationPermissions } from '@appsemble/utils';
 import { type ReactNode, useCallback } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useParams } from 'react-router-dom';

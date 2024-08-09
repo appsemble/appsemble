@@ -16,7 +16,7 @@ import {
   type App,
   type AppConfigEntry,
   type AppConfigEntryDefinition,
-  type AppMember,
+  type AppMemberInfo,
   type AppMessages,
   type AppsembleMessages,
   type Asset,
@@ -26,6 +26,7 @@ import {
 import {
   asciiLogo,
   getAppBlocks,
+  getAppRoles,
   type IdentifiableBlock,
   normalize,
   parseBlockName,
@@ -98,7 +99,7 @@ export async function handler(argv: ServeArguments): Promise<void> {
   const appPath = join(process.cwd(), argv.path);
   const [, , , appsembleApp] = await traverseAppDirectory(appPath, 'development', new FormData());
 
-  const appRoles = appsembleApp.definition.roles;
+  const appRoles = getAppRoles(appsembleApp.definition);
 
   const passedUserRole = argv['user-role'];
   if (passedUserRole && !appRoles?.includes(passedUserRole)) {
@@ -111,14 +112,15 @@ export async function handler(argv: ServeArguments): Promise<void> {
 
   const appSecurity = appsembleApp.definition.security;
 
-  const appMembers: AppMember[] = [
+  const appMembers: AppMemberInfo[] = [
     {
-      id: '1',
+      sub: '1',
       name: 'dev',
-      primaryEmail: 'dev@example.com',
+      email: 'dev@example.com',
+      email_verified: true,
       role: passedUserRole || appSecurity?.default.role,
       demo: false,
-      timezone: '',
+      zoneinfo: '',
       properties: {},
     },
   ];
@@ -136,7 +138,6 @@ export async function handler(argv: ServeArguments): Promise<void> {
       id: 1,
       name: 'group',
       size: 1,
-      role: passedGroupRole,
       annotations: {},
     },
   ];

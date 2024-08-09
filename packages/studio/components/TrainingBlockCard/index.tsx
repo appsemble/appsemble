@@ -1,9 +1,6 @@
 import { Button, Icon, useConfirmation, useMessages } from '@appsemble/react-components';
-import { type TrainingBlock } from '@appsemble/types';
-import {
-  checkOrganizationRoleOrganizationPermissions,
-  OrganizationPermission,
-} from '@appsemble/utils';
+import { OrganizationPermission, type TrainingBlock } from '@appsemble/types';
+import { checkOrganizationRoleOrganizationPermissions } from '@appsemble/utils';
 import axios from 'axios';
 import { type ReactNode, useCallback, useLayoutEffect, useRef, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';

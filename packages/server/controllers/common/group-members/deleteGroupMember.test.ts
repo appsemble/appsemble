@@ -1,4 +1,3 @@
-import { GroupRole } from '@appsemble/utils';
 import { request, setTestApp } from 'axios-test-instance';
 import type Koa from 'koa';
 import { beforeAll, beforeEach, describe, expect, it } from 'vitest';
@@ -91,7 +90,7 @@ describe('deleteGroupMember', () => {
     await GroupMember.create({
       AppMemberId: appMember.id,
       GroupId: group.id,
-      role: GroupRole.Member,
+      role: 'Member',
     });
 
     authorizeStudio();
@@ -124,7 +123,7 @@ describe('deleteGroupMember', () => {
     await GroupMember.create({
       AppMemberId: appMember.id,
       GroupId: group.id,
-      role: GroupRole.Member,
+      role: 'Member',
     });
 
     authorizeStudio();
@@ -168,12 +167,12 @@ describe('deleteGroupMember', () => {
     await GroupMember.create({
       AppMemberId: appMember1.id,
       GroupId: group.id,
-      role: GroupRole.Member,
+      role: 'Member',
     });
     await GroupMember.create({
       AppMemberId: appMember2.id,
       GroupId: group.id,
-      role: GroupRole.Manager,
+      role: 'GroupMembersManager',
     });
 
     authorizeStudio();
@@ -210,7 +209,7 @@ describe('deleteGroupMember', () => {
     await GroupMember.create({
       AppMemberId: appMember.id,
       GroupId: group.id,
-      role: GroupRole.Member,
+      role: 'Member',
     });
 
     authorizeStudio();

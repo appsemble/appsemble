@@ -1,10 +1,10 @@
-import { type AppDefinition } from '@appsemble/types';
-import { type AppRole, getAppInheritedRoles } from '@appsemble/utils';
+import { type AppDefinition, type AppRole } from '@appsemble/types';
+import { getAppInheritedRoles } from '@appsemble/utils';
 
 export function getDefaultPageName(
   isLoggedIn: boolean,
   appMemberRole: AppRole,
-  appDefinition: AppDefinition,
+  appDefinition: Pick<AppDefinition, 'defaultPage' | 'security'>,
 ): string {
   if (!isLoggedIn) {
     return appDefinition.defaultPage;

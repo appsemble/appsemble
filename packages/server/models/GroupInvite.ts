@@ -1,4 +1,4 @@
-import { type AppRole } from '@appsemble/utils';
+import { type AppRole } from '@appsemble/types';
 import {
   AllowNull,
   BelongsTo,

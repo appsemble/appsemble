@@ -21,7 +21,14 @@ describe('group.join', () => {
       .reply(() => [201, { id: 1337, role: 'member', annotations: {} }]);
     const action = createTestAction({
       definition: { type: 'group.join' },
-      getUserInfo: () => ({ sub: 'some-uuid', name: '', email: '', email_verified: false }),
+      getAppMemberInfo: () => ({
+        sub: 'some-uuid',
+        name: '',
+        email: '',
+        email_verified: false,
+        demo: false,
+        role: 'Member',
+      }),
       updateGroup,
     });
     const result = await action(1337);
@@ -33,7 +40,7 @@ describe('group.join', () => {
     const userInfo: any = undefined;
     const action = createTestAction({
       definition: { type: 'group.join' },
-      getUserInfo: () => userInfo,
+      getAppMemberInfo: () => userInfo,
       updateGroup,
     });
     await expect(action(1337)).rejects.toThrow(
@@ -50,7 +57,14 @@ describe('group.list', () => {
   it('should return the user’s groups', async () => {
     const action = createTestAction({
       definition: { type: 'group.list' },
-      groups: [{ id: 1337, name: 'IT', role: 'member', annotations: { foo: 'bar' } }],
+      appMemberGroups: [
+        {
+          groupId: 1337,
+          groupName: 'IT',
+          appMemberGroupRole: 'member',
+          groupAnnotations: { foo: 'bar' },
+        },
+      ],
     });
     const result = await action('Input data');
     expect(result).toStrictEqual([
@@ -76,8 +90,21 @@ describe('group.members', () => {
 
     const action = createTestAction({
       definition: { type: 'group.members', id: 1337 },
-      groups: [{ id: 1337, name: 'IT', role: 'member' }],
-      getUserInfo: () => ({ sub: 'some-uuid', name: '', email: '', email_verified: false }),
+      appMemberGroups: [
+        {
+          groupId: 1337,
+          groupName: 'IT',
+          appMemberGroupRole: 'member',
+        },
+      ],
+      getAppMemberInfo: () => ({
+        sub: 'some-uuid',
+        name: '',
+        email: '',
+        email_verified: false,
+        demo: false,
+        role: 'Member',
+      }),
     });
 
     const result = await action();
@@ -89,8 +116,21 @@ describe('group.members', () => {
     mock.onGet(`${apiUrl}/api/apps/42/groups/1337/members`).reply(() => [200, []]);
     const action = createTestAction({
       definition: { type: 'group.members', id: 1337 },
-      groups: [{ id: 1337, name: 'IT', role: 'member' }],
-      getUserInfo: () => ({ sub: 'some-uuid', name: '', email: '', email_verified: false }),
+      appMemberGroups: [
+        {
+          groupId: 1337,
+          groupName: 'IT',
+          appMemberGroupRole: 'member',
+        },
+      ],
+      getAppMemberInfo: () => ({
+        sub: 'some-uuid',
+        name: '',
+        email: '',
+        email_verified: false,
+        demo: false,
+        role: 'Member',
+      }),
     });
 
     await expect(action()).rejects.toThrow(
@@ -104,11 +144,17 @@ describe('group.members', () => {
 
   it('should throw an error if the user is not logged in/valid', async () => {
     mock.onGet(`${apiUrl}/api/apps/42/groups/1337/members`).reply(() => [200, []]);
-    const userInfo: any = undefined;
+    const appMemberInfo: any = undefined;
     const action = createTestAction({
       definition: { type: 'group.members', id: 1337 },
-      groups: [{ id: 1337, name: 'IT', role: 'member' }],
-      getUserInfo: () => userInfo,
+      appMemberGroups: [
+        {
+          groupId: 1337,
+          groupName: 'IT',
+          appMemberGroupRole: 'member',
+        },
+      ],
+      getAppMemberInfo: () => appMemberInfo,
     });
 
     await expect(action()).rejects.toThrow(

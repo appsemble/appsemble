@@ -11,11 +11,8 @@ import {
   SimpleFormField,
   useLocationString,
 } from '@appsemble/react-components';
-import { type App, type Template } from '@appsemble/types';
-import {
-  checkOrganizationRoleOrganizationPermissions,
-  OrganizationPermission,
-} from '@appsemble/utils';
+import { type App, OrganizationPermission, type Template } from '@appsemble/types';
+import { checkOrganizationRoleOrganizationPermissions } from '@appsemble/utils';
 import axios from 'axios';
 import { type ReactNode, useCallback, useMemo } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';

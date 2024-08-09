@@ -1,4 +1,4 @@
-import { type GroupMember } from '@appsemble/types';
+import { type AppMemberGroup } from '@appsemble/types';
 import axios from 'axios';
 
 import { type ActionCreator } from './index.js';
@@ -11,7 +11,7 @@ export const groupJoin: ActionCreator<'group.join'> = ({ getAppMemberInfo, updat
       throw new Error('App member is not logged in');
     }
 
-    const { data: group } = await axios.post<GroupMember>(
+    const { data: group } = await axios.post<AppMemberGroup>(
       `${apiUrl}/api/apps/${appId}/groups/${id}/members`,
       {
         id: appMemberInfo.sub,
@@ -22,7 +22,9 @@ export const groupJoin: ActionCreator<'group.join'> = ({ getAppMemberInfo, updat
   },
 ];
 
-export const groupList: ActionCreator<'group.list'> = ({ groups }) => [() => groups];
+export const groupList: ActionCreator<'group.list'> = ({ appMemberGroups }) => [
+  () => appMemberGroups,
+];
 
 export const groupInvite: ActionCreator<'group.invite'> = ({ definition, remap }) => [
   async (data) => {
@@ -57,7 +59,7 @@ export const groupMembers: ActionCreator<'group.members'> = ({
     }
 
     const groupMemberList = await axios
-      .get<GroupMember[]>(`${apiUrl}/api/apps/${appId}/groups/${groupId}/members`)
+      .get<AppMemberGroup[]>(`${apiUrl}/api/apps/${appId}/groups/${groupId}/members`)
       .then((response) => response.data);
 
     return groupMemberList;

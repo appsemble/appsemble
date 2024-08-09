@@ -5,7 +5,7 @@ import { beforeEach, describe, expect, it, type Mock, vi } from 'vitest';
 import { createTestAction } from '../makeActions.js';
 import { apiUrl, appId } from '../settings.js';
 
-describe('user.register', () => {
+describe('app.member.register', () => {
   let mock: MockAdapter;
   let passwordLogin: Mock;
   let refetchDemoAppMembers: Mock;
@@ -20,15 +20,15 @@ describe('user.register', () => {
     mock.onPost(`${apiUrl}/api/apps/${appId}/auth/email/register`).reply(() => [201]);
     const action = createTestAction({
       definition: {
-        type: 'user.register',
+        type: 'app.member.register',
         password: 'test',
-        displayName: { prop: 'name' },
+        name: { prop: 'name' },
         email: 'test@example.com',
         properties: { static: { test: [1, 2, 3], property: 'Property', bool: true } },
       },
       passwordLogin,
       // eslint-disable-next-line unicorn/no-useless-undefined
-      getUserInfo: () => undefined,
+      getAppMemberInfo: () => undefined,
       refetchDemoAppMembers,
     });
 
@@ -45,17 +45,19 @@ describe('user.register', () => {
     mock.onPost(`${apiUrl}/api/apps/${appId}/auth/email/register`).reply(() => [201]);
     const action = createTestAction({
       definition: {
-        type: 'user.register',
+        type: 'app.member.register',
         password: 'test',
-        displayName: { prop: 'name' },
+        name: { prop: 'name' },
         email: 'test@example.com',
       },
       passwordLogin,
-      getUserInfo: () => ({
+      getAppMemberInfo: () => ({
         sub: 'some-user-id',
         email: 'test@example.com',
         email_verified: true,
         name: 'name',
+        role: 'Member',
+        demo: false,
       }),
       refetchDemoAppMembers,
     });
@@ -79,13 +81,13 @@ describe('user.login', () => {
   it('should log the user in', async () => {
     const action = createTestAction({
       definition: {
-        type: 'user.login',
+        type: 'app.member.login',
         password: 'test',
         email: 'test@example.com',
       },
       passwordLogin,
       // eslint-disable-next-line unicorn/no-useless-undefined
-      getUserInfo: () => undefined,
+      getAppMemberInfo: () => undefined,
       refetchDemoAppMembers,
     });
 
@@ -98,16 +100,18 @@ describe('user.login', () => {
   it('should do nothing and return the data if the user is logged in', async () => {
     const action = createTestAction({
       definition: {
-        type: 'user.login',
+        type: 'app.member.login',
         password: 'test',
         email: 'test@example.com',
       },
       passwordLogin,
-      getUserInfo: () => ({
+      getAppMemberInfo: () => ({
         sub: 'some-user-id',
         email: 'test@example.com',
         email_verified: true,
         name: 'name',
+        role: 'Member',
+        demo: false,
       }),
       refetchDemoAppMembers,
     });
@@ -119,9 +123,9 @@ describe('user.login', () => {
   });
 });
 
-describe('user.update', () => {
+describe('app.member.update', () => {
   let mock: MockAdapter;
-  let setUserInfo: Mock;
+  let setAppMemberInfo: Mock;
   let refetchDemoAppMembers: Mock;
   const currentEmail = 'test@gmail.com';
   const newEmail = 'test.updated@gmail.com';
@@ -129,7 +133,7 @@ describe('user.update', () => {
 
   beforeEach(() => {
     mock = new MockAdapter(axios);
-    setUserInfo = vi.fn();
+    setAppMemberInfo = vi.fn();
     refetchDemoAppMembers = vi.fn();
   });
 
@@ -147,21 +151,22 @@ describe('user.update', () => {
     ]);
     const action = createTestAction({
       definition: {
-        type: 'user.update',
+        id: 'some-user-id',
+        type: 'app.member.update',
         name: { prop: 'name' },
-        currentEmail,
-        newEmail: currentEmail,
         properties: { static: { test: [1, 2, 3], property: 'Property', bool: true } },
       },
-      getUserInfo: () => ({
+      getAppMemberInfo: () => ({
         sub: 'some-user-id',
         name: 'old name',
         email: currentEmail,
         email_verified: true,
         picture: 'https://example.com/old-avatar.jpg',
         properties: { test: [1, 2, 3], property: 'Property', bool: true },
+        role: 'Member',
+        demo: false,
       }),
-      setUserInfo,
+      setAppMemberInfo,
       refetchDemoAppMembers,
     });
 
@@ -178,7 +183,7 @@ describe('user.update', () => {
         test: '[1,2,3]',
       },
     });
-    expect(setUserInfo).toHaveBeenCalledWith({
+    expect(setAppMemberInfo).toHaveBeenCalledWith({
       sub: 'some-user-id',
       email: currentEmail,
       email_verified: false,
@@ -192,18 +197,17 @@ describe('user.update', () => {
   it('should do nothing and return the data if the user is not logged in', async () => {
     const action = createTestAction({
       definition: {
-        type: 'user.update',
+        id: 'some-user-id',
+        type: 'app.member.update',
         name: { prop: 'name' },
-        currentEmail,
-        newEmail: currentEmail,
       },
       // eslint-disable-next-line unicorn/no-useless-undefined
-      getUserInfo: () => undefined,
+      getAppMemberInfo: () => undefined,
     });
 
     const result = await action({ name: 'name' });
     expect(result).toStrictEqual({ name: 'name' });
-    expect(setUserInfo).not.toHaveBeenCalled();
+    expect(setAppMemberInfo).not.toHaveBeenCalled();
     expect(refetchDemoAppMembers).not.toHaveBeenCalled();
   });
 
@@ -221,21 +225,22 @@ describe('user.update', () => {
     ]);
     const action = createTestAction({
       definition: {
-        type: 'user.update',
+        id: 'some-user-id',
+        type: 'app.member.update',
         name: { prop: 'name' },
-        currentEmail,
-        newEmail,
         properties: { static: { test: [1, 2, 3], property: 'Property', bool: true } },
       },
-      getUserInfo: () => ({
+      getAppMemberInfo: () => ({
         sub: 'some-user-id',
         name: 'old name',
         email: managerEmail,
         email_verified: true,
         picture: 'https://example.com/old-avatar.jpg',
         properties: {},
+        role: 'Member',
+        demo: false,
       }),
-      setUserInfo,
+      setAppMemberInfo,
       refetchDemoAppMembers,
     });
 
@@ -252,18 +257,18 @@ describe('user.update', () => {
         test: '[1,2,3]',
       },
     });
-    expect(setUserInfo).not.toHaveBeenCalled();
+    expect(setAppMemberInfo).not.toHaveBeenCalled();
     expect(refetchDemoAppMembers).toHaveBeenCalledWith();
   });
 });
 
-describe('user.query', () => {
+describe('app.member.query', () => {
   let mock: MockAdapter;
-  let setUserInfo: Mock;
+  let setAppMemberInfo: Mock;
 
   beforeEach(() => {
     mock = new MockAdapter(axios);
-    setUserInfo = vi.fn();
+    setAppMemberInfo = vi.fn();
   });
 
   it('should call the API for getting all users by roles', async () => {
@@ -299,20 +304,22 @@ describe('user.query', () => {
 
     const action = createTestAction({
       definition: {
-        type: 'user.query',
+        type: 'app.member.query',
         roles: {
           'array.from': ['Role1', 'Role2', 'Role3'],
         },
       },
-      getUserInfo: () => ({
+      getAppMemberInfo: () => ({
         sub: 'manager-id',
         name: 'name',
         email: 'manager@gmail.com',
         email_verified: true,
         picture: 'https://example.com/avatar.jpg',
         properties: {},
+        role: 'Member',
+        demo: false,
       }),
-      setUserInfo,
+      setAppMemberInfo,
     });
 
     const result = await action({
@@ -351,13 +358,13 @@ describe('user.query', () => {
   it('should do nothing and return the data if the user is not logged in', async () => {
     const action = createTestAction({
       definition: {
-        type: 'user.query',
+        type: 'app.member.query',
         roles: {
           'array.from': ['Role1', 'Role2', 'Role3'],
         },
       },
       // eslint-disable-next-line unicorn/no-useless-undefined
-      getUserInfo: () => undefined,
+      getAppMemberInfo: () => undefined,
     });
 
     const result = await action({
@@ -373,16 +380,16 @@ describe('user.query', () => {
   });
 });
 
-describe('user.remove', () => {
+describe('app.member.remove', () => {
   let mock: MockAdapter;
-  let setUserInfo: Mock;
+  let setAppMemberInfo: Mock;
   let refetchDemoAppMembers: Mock;
   const managerEmail = 'manager@gmail.com';
   const memberEmail = 'test@gmail.com';
 
   beforeEach(() => {
     mock = new MockAdapter(axios);
-    setUserInfo = vi.fn();
+    setAppMemberInfo = vi.fn();
     refetchDemoAppMembers = vi.fn();
   });
 
@@ -393,18 +400,20 @@ describe('user.remove', () => {
 
     const action = createTestAction({
       definition: {
-        type: 'user.remove',
-        email: memberEmail,
+        id: 'some-user-id',
+        type: 'app.member.remove',
       },
-      getUserInfo: () => ({
+      getAppMemberInfo: () => ({
         sub: 'manager-id',
         name: 'name',
         email: managerEmail,
         email_verified: true,
         picture: 'https://example.com/avatar.jpg',
         properties: {},
+        role: 'Member',
+        demo: false,
       }),
-      setUserInfo,
+      setAppMemberInfo,
       refetchDemoAppMembers,
     });
 
@@ -418,11 +427,11 @@ describe('user.remove', () => {
   it('should do nothing and return the data if the user is not logged in', async () => {
     const action = createTestAction({
       definition: {
-        type: 'user.remove',
-        email: managerEmail,
+        id: 'some-user-id',
+        type: 'app.member.remove',
       },
       // eslint-disable-next-line unicorn/no-useless-undefined
-      getUserInfo: () => undefined,
+      getAppMemberInfo: () => undefined,
     });
 
     const result = await action({

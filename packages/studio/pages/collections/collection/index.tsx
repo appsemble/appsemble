@@ -7,11 +7,8 @@ import {
   useData,
   useSideMenu,
 } from '@appsemble/react-components';
-import { type AppCollection } from '@appsemble/types';
-import {
-  checkOrganizationRoleOrganizationPermissions,
-  OrganizationPermission,
-} from '@appsemble/utils';
+import { type AppCollection, OrganizationPermission } from '@appsemble/types';
+import { checkOrganizationRoleOrganizationPermissions } from '@appsemble/utils';
 import { type ReactNode } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { Route, useParams } from 'react-router-dom';

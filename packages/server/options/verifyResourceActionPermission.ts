@@ -3,7 +3,8 @@ import {
   throwKoaError,
   type VerifyResourceActionPermissionParams,
 } from '@appsemble/node-utils';
-import { checkAppRole, OrganizationPermission } from '@appsemble/utils';
+import { OrganizationPermission } from '@appsemble/types';
+import { checkAppRole } from '@appsemble/utils';
 import { Op, type WhereOptions } from 'sequelize';
 
 import { AppMember, Group, GroupMember, Organization } from '../models/index.js';
@@ -45,8 +46,8 @@ export async function verifyResourceActionPermission({
       ? resourceDefinition.views[view].roles
       : resourceDefinition[action]?.roles ?? resourceDefinition.roles) || [];
 
-  if (!roles?.length && app.definition.roles?.length) {
-    roles.push(...app.definition.roles);
+  if (!roles?.length && Object.keys(app.definition.security?.roles).length) {
+    roles.push(...Object.keys(app.definition.security?.roles));
   }
 
   const functionalRoles = roles.filter((r) => specialRoles.has(r));

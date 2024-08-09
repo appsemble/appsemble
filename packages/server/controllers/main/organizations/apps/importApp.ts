@@ -6,12 +6,8 @@ import {
   getSupportedLanguages,
   handleValidatorResult,
 } from '@appsemble/node-utils';
-import {
-  normalize,
-  OrganizationPermission,
-  validateAppDefinition,
-  validateStyle,
-} from '@appsemble/utils';
+import { OrganizationPermission } from '@appsemble/types';
+import { normalize, validateAppDefinition, validateStyle } from '@appsemble/utils';
 import JSZip from 'jszip';
 import { type Context } from 'koa';
 import { type File } from 'koas-body-parser';
@@ -28,7 +24,6 @@ import {
   BlockVersion,
   Resource,
   transactional,
-  User,
 } from '../../../../models/index.js';
 import { options } from '../../../../options/options.js';
 import {
@@ -46,7 +41,6 @@ export async function importApp(ctx: Context): Promise<void> {
     openApi,
     pathParams: { organizationId },
     request: { body: importFile },
-    user: authSubject,
   } = ctx;
 
   await checkUserOrganizationPermissions(ctx, organizationId, [OrganizationPermission.CreateApps]);
@@ -145,8 +139,6 @@ export async function importApp(ctx: Context): Promise<void> {
             ctx,
           });
 
-          const user = await User.findByPk(authSubject.id, { attributes: ['name', 'id'] });
-
           const createdResources = await Resource.bulkCreate(
             resources.map(
               ({
@@ -171,8 +163,8 @@ export async function importApp(ctx: Context): Promise<void> {
             { logging: false, transaction },
           );
 
-          processReferenceHooks(user, record, createdResources[0], action, options, ctx);
-          processHooks(user, record, createdResources[0], action, options, ctx);
+          processReferenceHooks(record, createdResources[0], action, options, ctx);
+          processHooks(record, createdResources[0], action, options, ctx);
         }
 
         for (const jsZipObject of zip

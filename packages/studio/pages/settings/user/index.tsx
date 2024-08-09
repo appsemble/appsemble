@@ -18,7 +18,7 @@ import {
   useMessages,
   useMeta,
 } from '@appsemble/react-components';
-import { type UserEmail } from '@appsemble/types';
+import { type EmailAuthorization } from '@appsemble/types';
 import { defaultLocale, has } from '@appsemble/utils';
 import axios from 'axios';
 import { type ReactNode, useCallback, useEffect, useState } from 'react';
@@ -47,7 +47,7 @@ export function UserPage(): ReactNode {
     error,
     loading,
     setData: setEmails,
-  } = useData<UserEmail[]>('/api/users/current/emails');
+  } = useData<EmailAuthorization[]>('/api/users/current/emails');
   const timezones = useData<string[]>('/api/timezones');
 
   const [rerenderKey, setRerenderKey] = useState(0);

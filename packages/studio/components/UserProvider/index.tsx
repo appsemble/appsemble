@@ -1,12 +1,13 @@
 import { Loader } from '@appsemble/react-components';
 import {
   type App,
+  type AppRole,
   type JwtPayload,
   type Organization,
+  type OrganizationRole,
   type TokenResponse,
   type UserInfo,
 } from '@appsemble/types';
-import { type AppRole, type OrganizationMemberRole } from '@appsemble/utils';
 import { setUser as setSentryUser } from '@sentry/browser';
 import axios, { type AxiosHeaders } from 'axios';
 import { jwtDecode } from 'jwt-decode';
@@ -34,7 +35,7 @@ export interface UserOrganization extends Organization {
   /**
    * The user’s role within the organization.
    */
-  role: OrganizationMemberRole;
+  role: OrganizationRole;
 }
 
 /**

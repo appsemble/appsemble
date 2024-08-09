@@ -4,8 +4,8 @@ import {
   logger,
   throwKoaError,
 } from '@appsemble/node-utils';
-import { type BlockDefinition } from '@appsemble/types';
-import { has, OrganizationPermission } from '@appsemble/utils';
+import { type BlockDefinition, OrganizationPermission } from '@appsemble/types';
+import { has } from '@appsemble/utils';
 import { Validator } from 'jsonschema';
 import { type Context } from 'koa';
 import { type OpenAPIV3 } from 'openapi-types';

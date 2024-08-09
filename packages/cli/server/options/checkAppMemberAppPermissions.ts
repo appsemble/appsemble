@@ -1,3 +1,3 @@
-export function checkAppMemberAppPermissions(): Promise<Record<string, any>> {
-  return Promise.resolve({});
+export function checkAppMemberAppPermissions(): Promise<void> {
+  return Promise.resolve();
 }

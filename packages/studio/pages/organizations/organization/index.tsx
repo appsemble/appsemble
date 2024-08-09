@@ -5,11 +5,11 @@ import {
   useData,
   useSideMenu,
 } from '@appsemble/react-components';
+import { OrganizationPermission } from '@appsemble/types';
 import {
   checkOrganizationRoleOrganizationPermissions,
   normalize,
   normalized,
-  OrganizationPermission,
 } from '@appsemble/utils';
 import { type ReactNode } from 'react';
 import { FormattedMessage } from 'react-intl';

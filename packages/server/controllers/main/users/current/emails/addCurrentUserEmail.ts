@@ -3,11 +3,11 @@ import { randomBytes } from 'node:crypto';
 import { assertKoaError } from '@appsemble/node-utils';
 import { type Context } from 'koa';
 
-import { EmailAuthorization, type User } from '../../../../../models/index.js';
+import { EmailAuthorization, User } from '../../../../../models/index.js';
 import { argv } from '../../../../../utils/argv.js';
 
 export async function addCurrentUserEmail(ctx: Context): Promise<void> {
-  const { mailer, request, user } = ctx;
+  const { mailer, request, user: authSubject } = ctx;
 
   const email = request.body.email.toLowerCase();
   const dbEmail = await EmailAuthorization.findOne({
@@ -16,7 +16,7 @@ export async function addCurrentUserEmail(ctx: Context): Promise<void> {
 
   assertKoaError(Boolean(dbEmail), ctx, 409, 'This email has already been registered.');
 
-  await (user as User).reload({
+  const user = await User.findByPk(authSubject.id, {
     include: [
       {
         model: EmailAuthorization,

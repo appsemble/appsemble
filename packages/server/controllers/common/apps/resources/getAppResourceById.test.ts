@@ -1,5 +1,4 @@
 import { type Resource as ResourceType } from '@appsemble/types';
-import { GroupRole } from '@appsemble/utils';
 import { request, setTestApp } from 'axios-test-instance';
 import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 import webpush from 'web-push';
@@ -247,12 +246,12 @@ describe('getAppResourceById', () => {
     await GroupMember.create({
       GroupId: group.id,
       AppMemberId: member1.id,
-      role: GroupRole.Member,
+      role: 'Member',
     });
     await GroupMember.create({
       GroupId: group.id,
       AppMemberId: member2.id,
-      role: GroupRole.Member,
+      role: 'Member',
     });
 
     const resource = await Resource.create({
@@ -302,7 +301,7 @@ describe('getAppResourceById', () => {
     await GroupMember.create({
       GroupId: group.id,
       AppMemberId: memberB.id,
-      role: GroupRole.Member,
+      role: 'Member',
     });
 
     await AppMember.create({

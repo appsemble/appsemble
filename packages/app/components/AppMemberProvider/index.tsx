@@ -1,5 +1,5 @@
 import { Loader } from '@appsemble/react-components';
-import { type AppMemberInfo, type GroupMember } from '@appsemble/types';
+import { type AppMemberGroup, type AppMemberInfo } from '@appsemble/types';
 import { setUser as setSentryUser } from '@sentry/browser';
 import axios from 'axios';
 import { jwtDecode } from 'jwt-decode';
@@ -53,7 +53,7 @@ interface DemoLoginParams {
 interface LoginState {
   isLoggedIn: boolean;
   role: string;
-  groups: GroupMember[];
+  groups: AppMemberGroup[];
 }
 
 interface AppMemberContext extends LoginState {
@@ -174,9 +174,9 @@ export function AppMemberProvider({ children }: AppMemberProviderProps): ReactNo
           config,
         );
 
-        let groups: GroupMember[] = [];
+        let groups: AppMemberGroup[] = [];
         try {
-          const { data } = await axios.get<GroupMember[]>(
+          const { data } = await axios.get<AppMemberGroup[]>(
             `${apiUrl}/api/apps/${appId}/groups`,
             config,
           );
@@ -246,11 +246,15 @@ export function AppMemberProvider({ children }: AppMemberProviderProps): ReactNo
     [login, logout],
   );
 
-  const updateGroup: UpdateGroup = useCallback((group) => {
+  const updateGroup: UpdateGroup = useCallback((appMemberGroup) => {
     setState(({ groups, ...oldState }) => {
-      const newGroups = groups.map((t) => (t.id === group.id ? { ...t, role: group.role } : t));
-      if (!newGroups.some((t) => t.id === group.id)) {
-        newGroups.push(group);
+      const newGroups = groups.map((amg) =>
+        amg.groupId === appMemberGroup.groupId
+          ? { ...amg, role: appMemberGroup.appMemberGroupRole }
+          : amg,
+      );
+      if (!newGroups.some((amg) => amg.groupId === appMemberGroup.groupId)) {
+        newGroups.push(appMemberGroup);
       }
       return {
         ...oldState,

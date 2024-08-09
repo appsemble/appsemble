@@ -6,6 +6,6 @@ export function checkUserOrganizationPermissions({
   app,
   context,
   permissions,
-}: CheckUserOrganizationPermissionsParams): Promise<Record<string, any>> {
+}: CheckUserOrganizationPermissionsParams): Promise<void> {
   return checkUserOrganizationPermissionsServer(context, app.OrganizationId, permissions);
 }

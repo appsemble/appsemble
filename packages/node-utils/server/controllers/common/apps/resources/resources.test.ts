@@ -12,16 +12,15 @@ import { type DefaultContext, type DefaultState, type ParameterizedContext } fro
 import { type PathParams, type QueryParams } from 'koas-parameters';
 import { beforeEach, describe, expect, it, type Mock, vi } from 'vitest';
 
-import {
-  createCountResources,
-  createCreateResource,
-  createGetResourceById,
-  createQueryResources,
-} from './resources.js';
+import { createCountAppResourcesController } from './createCountAppResourcesController.js';
+import { createCreateAppResourceController } from './createCreateAppResourceController.js';
+import { createGetAppResourceByIdController } from './createGetAppResourceByIdController.js';
+import { createQueryAppResourcesController } from './createQueryAppResourcesController.js';
 import { getRemapperContext } from '../../../../../app.js';
 import { getResourceDefinition } from '../../../../../resource.js';
 import {
   type AppAsset,
+  type AuthSubject,
   type CreateAppResourcesWithAssetsParams,
   type GetAppMessagesParams,
   type GetAppParams,
@@ -67,7 +66,7 @@ describe('createQueryResources', () => {
     mockCtx = {
       pathParams: { appId: 1, resourceType: 'mockResourceType' } as PathParams,
       queryParams: { $select: 'field1, field2', $skip: 0, $top: 10 } as QueryParams,
-      user: { id: 'mockUserId', name: 'John Doe', primaryEmail: 'john@example.com' } as UtilsUser,
+      user: { id: 'mockUserId' } as AuthSubject,
     } as ParameterizedContext<DefaultState, DefaultContext>;
   });
 
@@ -93,7 +92,7 @@ describe('createQueryResources', () => {
     mockGetAppResources.mockResolvedValue(mockResources);
     mockParseQuery.mockReturnValue(mockParsedQuery);
 
-    const middleware = createQueryResources({
+    const middleware = createQueryAppResourcesController({
       getApp: mockGetApp as (params: GetAppParams) => Promise<App>,
       getAppResources: mockGetAppResources as (
         params: GetAppResourcesParams,
@@ -192,7 +191,7 @@ describe('createQueryResources', () => {
     mockGetAppResources.mockResolvedValue(mockResources);
     mockParseQuery.mockReturnValue(mockParsedQuery);
 
-    const middleware = createQueryResources({
+    const middleware = createQueryAppResourcesController({
       getApp: mockGetApp as (params: GetAppParams) => Promise<App>,
       getAppResources: mockGetAppResources as (
         params: GetAppResourcesParams,
@@ -261,7 +260,6 @@ describe('createQueryResources', () => {
     const remapperContext = await getRemapperContext(
       mockApp,
       mockApp.definition.defaultLanguage || defaultLocale,
-      null,
       options,
       mockCtx,
     );
@@ -270,7 +268,7 @@ describe('createQueryResources', () => {
       remap(resourceDefinition.views.view.remap, resource, remapperContext),
     );
 
-    const middleware = createQueryResources(options);
+    const middleware = createQueryAppResourcesController(options);
 
     await middleware(mockCtx, vi.fn());
 
@@ -287,7 +285,7 @@ describe('createCountResources', () => {
     mockCtx = {
       pathParams: { appId: 1, resourceType: 'mockResourceType' } as PathParams,
       queryParams: {} as QueryParams,
-      user: { id: 'mockUserId', name: 'John Doe', primaryEmail: 'john@example.com' } as UtilsUser,
+      user: { id: 'mockUserId' } as AuthSubject,
     } as ParameterizedContext<DefaultState, DefaultContext>;
   });
 
@@ -313,7 +311,7 @@ describe('createCountResources', () => {
     mockGetAppResources.mockResolvedValue(mockResources);
     mockParseQuery.mockReturnValue(mockParsedQuery);
 
-    const middleware = createCountResources({
+    const middleware = createCountAppResourcesController({
       getApp: mockGetApp as (params: GetAppParams) => Promise<App>,
       getAppResources: mockGetAppResources as (
         params: GetAppResourcesParams,
@@ -400,7 +398,7 @@ describe('createCountResources', () => {
     mockGetAppResources.mockResolvedValue(mockResources);
     mockParseQuery.mockReturnValue(mockParsedQuery);
 
-    const middleware = createCountResources({
+    const middleware = createCountAppResourcesController({
       getApp: mockGetApp as (params: GetAppParams) => Promise<App>,
       getAppResources: mockGetAppResources as (
         params: GetAppResourcesParams,
@@ -428,7 +426,7 @@ describe('createGetResourceById', () => {
 
     mockCtx = {
       pathParams: { appId: 1, resourceId: 1, resourceType: 'mockResourceType' } as PathParams,
-      user: { id: 'mockUserId', name: 'John Doe', primaryEmail: 'john@example.com' } as UtilsUser,
+      user: { id: 'mockUserId' } as AuthSubject,
     } as ParameterizedContext<DefaultState, DefaultContext>;
   });
 
@@ -446,7 +444,7 @@ describe('createGetResourceById', () => {
     mockGetApp.mockResolvedValue(mockApp);
     mockGetAppResource.mockResolvedValue(mockResource);
 
-    const middleware = createGetResourceById({
+    const middleware = createGetAppResourceByIdController({
       getApp: mockGetApp as (params: GetAppParams) => Promise<App>,
       getAppResource: mockGetAppResource as (params: GetAppResourceParams) => Promise<Resource>,
       verifyResourceActionPermission: mockVerifyResourceActionPermission as (
@@ -519,7 +517,7 @@ describe('createGetResourceById', () => {
     mockGetApp.mockResolvedValue(mockApp);
     mockGetAppResource.mockResolvedValue(mockResource);
 
-    const middleware = createGetResourceById({
+    const middleware = createGetAppResourceByIdController({
       getApp: mockGetApp as (params: GetAppParams) => Promise<App>,
       getAppResource: mockGetAppResource as (params: GetAppResourceParams) => Promise<Resource>,
       verifyResourceActionPermission: mockVerifyResourceActionPermission as (
@@ -574,7 +572,6 @@ describe('createGetResourceById', () => {
     const remapperContext = await getRemapperContext(
       mockApp,
       mockApp.definition.defaultLanguage || defaultLocale,
-      null,
       options,
       mockCtx,
     );
@@ -585,7 +582,7 @@ describe('createGetResourceById', () => {
       remapperContext,
     );
 
-    const middleware = createGetResourceById(options);
+    const middleware = createGetAppResourceByIdController(options);
 
     await middleware(mockCtx, vi.fn());
 
@@ -603,7 +600,7 @@ describe('createCreateResource', () => {
     mockCtxIs = vi.fn();
     mockCtx = {
       pathParams: { appId: 1, resourceType: 'mockResourceType' } as PathParams,
-      user: { id: 'mockUserId', name: 'John Doe', primaryEmail: 'john@example.com' } as UtilsUser,
+      user: { id: 'mockUserId' } as AuthSubject,
       is: mockCtxIs as () => string,
       request: {},
     } as ParameterizedContext<DefaultState, DefaultContext>;
@@ -627,7 +624,7 @@ describe('createCreateResource', () => {
     mockCreateAppResourcesWithAssets.mockResolvedValue(mockResources);
     mockGetAppAssets.mockResolvedValue([]);
 
-    const middleware = createCreateResource({
+    const middleware = createCreateAppResourceController({
       getApp: mockGetApp as (params: GetAppParams) => Promise<App>,
       createAppResourcesWithAssets: mockCreateAppResourcesWithAssets as (
         params: CreateAppResourcesWithAssetsParams,
@@ -702,7 +699,7 @@ describe('createCreateResource', () => {
     mockCreateAppResourcesWithAssets.mockResolvedValue(mockResources);
     mockGetAppAssets.mockResolvedValue([]);
 
-    const middleware = createCreateResource({
+    const middleware = createCreateAppResourceController({
       getApp: mockGetApp as (params: GetAppParams) => Promise<App>,
       createAppResourcesWithAssets: mockCreateAppResourcesWithAssets as (
         params: CreateAppResourcesWithAssetsParams,

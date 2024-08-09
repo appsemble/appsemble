@@ -1,9 +1,6 @@
 import { Button, useConfirmation, useMessages } from '@appsemble/react-components';
-import { type Training } from '@appsemble/types';
-import {
-  checkOrganizationRoleOrganizationPermissions,
-  OrganizationPermission,
-} from '@appsemble/utils';
+import { OrganizationPermission, type Training } from '@appsemble/types';
+import { checkOrganizationRoleOrganizationPermissions } from '@appsemble/utils';
 import { randomString } from '@appsemble/web-utils';
 import axios from 'axios';
 import {

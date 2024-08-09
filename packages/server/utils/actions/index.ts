@@ -75,13 +75,13 @@ export const actions = {
   'group.list': noop,
   'group.members': noop,
   throw: throwAction,
-  'user.register': noop,
-  'user.create': noop,
-  'user.login': noop,
-  'user.logout': noop,
-  'user.update': noop,
-  'user.remove': noop,
-  'user.query': noop,
+  'app.member.register': noop,
+  'app.member.create': noop,
+  'app.member.login': noop,
+  'app.member.logout': noop,
+  'app.member.update': noop,
+  'app.member.remove': noop,
+  'app.member.query': noop,
 };
 
 // https://stackoverflow.com/a/53808212

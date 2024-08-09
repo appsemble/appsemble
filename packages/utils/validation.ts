@@ -2,6 +2,7 @@ import {
   type AppDefinition,
   type AppMemberRegisterAction,
   type AppMemberUpdateAction,
+  appRoles,
   type BlockManifest,
   type PageDefinition,
   type ProjectImplementations,
@@ -16,7 +17,7 @@ import { type Promisable } from 'type-fest';
 
 import { getAppBlocks, type IdentifiableBlock, normalizeBlockName } from './blockUtils.js';
 import { has } from './has.js';
-import { appRoles, findPageByName, normalize, partialNormalized } from './index.js';
+import { findPageByName, normalize, partialNormalized } from './index.js';
 import { iterApp, type Prefix } from './iterApp.js';
 import { type ServerActionName, serverActions } from './serverActions.js';
 

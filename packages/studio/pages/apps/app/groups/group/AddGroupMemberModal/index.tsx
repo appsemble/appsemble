@@ -8,8 +8,8 @@ import {
   type Toggle,
   useMessages,
 } from '@appsemble/react-components';
-import { type GroupInvite } from '@appsemble/types';
-import { type AppRole, getAppRoles } from '@appsemble/utils';
+import { type AppRole, type GroupInvite } from '@appsemble/types';
+import { getAppRoles } from '@appsemble/utils';
 import axios from 'axios';
 import {
   type ChangeEvent,

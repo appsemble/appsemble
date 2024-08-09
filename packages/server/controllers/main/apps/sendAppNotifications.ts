@@ -1,5 +1,5 @@
 import { assertKoaError, logger } from '@appsemble/node-utils';
-import { OrganizationPermission } from '@appsemble/utils';
+import { OrganizationPermission } from '@appsemble/types';
 import { type Context } from 'koa';
 
 import { App, AppSubscription } from '../../../models/index.js';

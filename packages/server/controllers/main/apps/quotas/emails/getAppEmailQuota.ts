@@ -1,5 +1,5 @@
 import { assertKoaError } from '@appsemble/node-utils';
-import { OrganizationPermission } from '@appsemble/utils';
+import { OrganizationPermission } from '@appsemble/types';
 import { addDays, startOfDay } from 'date-fns';
 import { zonedTimeToUtc } from 'date-fns-tz';
 import { type Context } from 'koa';

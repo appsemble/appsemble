@@ -1,5 +1,5 @@
 import { assertKoaError } from '@appsemble/node-utils';
-import { OrganizationPermission } from '@appsemble/utils';
+import { OrganizationPermission } from '@appsemble/types';
 import { addYears } from 'date-fns';
 import { type Context } from 'koa';
 import forge from 'node-forge';

@@ -1,4 +1,4 @@
-import { OrganizationPermission, organizationRoles } from '@appsemble/utils';
+import { OrganizationPermission, organizationRoles } from '@appsemble/types';
 
 import { expect, test } from '../fixtures/test/index.js';
 

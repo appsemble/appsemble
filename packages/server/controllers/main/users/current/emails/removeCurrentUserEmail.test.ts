@@ -1,4 +1,3 @@
-import { type User as APIUser } from '@appsemble/types';
 import { request, setTestApp } from 'axios-test-instance';
 import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 
@@ -52,7 +51,7 @@ describe('removeCurrentUserEmail', () => {
 
     expect(response).toMatchObject({ status: 204 });
 
-    const { data } = await request.get<APIUser>('/api/users/current');
+    const { data } = await request.get('/api/users/current');
 
     expect(data.emails).not.toContainEqual({
       email: 'test2@example.com',

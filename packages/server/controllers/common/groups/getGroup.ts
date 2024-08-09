@@ -1,8 +1,8 @@
 import { assertKoaError } from '@appsemble/node-utils';
-import { AppPermission } from '@appsemble/utils';
+import { AppPermission } from '@appsemble/types';
 import { type Context } from 'koa';
 
-import { Group, GroupMember } from '../../../models/index.js';
+import { Group } from '../../../models/index.js';
 import { checkAuthSubjectAppPermissions } from '../../../utils/authorization.js';
 
 export async function getGroup(ctx: Context): Promise<void> {
@@ -14,23 +14,11 @@ export async function getGroup(ctx: Context): Promise<void> {
 
   assertKoaError(!group, ctx, 404, 'Group not found');
 
-  const appMember = await checkAuthSubjectAppPermissions(ctx, group.AppId, [
-    AppPermission.QueryGroups,
-  ]);
-
-  let groupMember;
-  if (appMember) {
-    groupMember = await GroupMember.findOne({
-      where: {
-        AppMemberId: appMember.id,
-      },
-    });
-  }
+  await checkAuthSubjectAppPermissions(ctx, group.AppId, [AppPermission.QueryGroups]);
 
   ctx.body = {
     id: group.id,
     name: group.name,
-    role: groupMember?.role,
     ...(group.annotations && { annotations: group.annotations }),
   };
 }

@@ -1,8 +1,6 @@
 import { Button, Modal, useConfirmation, useToggle } from '@appsemble/react-components';
-import {
-  checkOrganizationRoleOrganizationPermissions,
-  OrganizationPermission,
-} from '@appsemble/utils';
+import { OrganizationPermission } from '@appsemble/types';
+import { checkOrganizationRoleOrganizationPermissions } from '@appsemble/utils';
 import axios from 'axios';
 import { type ReactNode } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';

@@ -1,5 +1,5 @@
 import { assertKoaError, throwKoaError } from '@appsemble/node-utils';
-import { OrganizationPermission } from '@appsemble/utils';
+import { OrganizationPermission } from '@appsemble/types';
 import { type Context } from 'koa';
 
 import { Organization, OrganizationInvite, User } from '../../../../models/index.js';

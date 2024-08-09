@@ -1,12 +1,14 @@
 import { assertKoaError } from '@appsemble/node-utils';
-import { type CustomAppPermission } from '@appsemble/types';
 import {
   type AppRole,
+  type CustomAppPermission,
+  type OrganizationPermission,
+  type OrganizationRole,
+} from '@appsemble/types';
+import {
   checkAppRoleAppPermissions,
   checkOrganizationRoleAppPermissions,
   checkOrganizationRoleOrganizationPermissions,
-  type OrganizationPermission,
-  type OrganizationRole,
 } from '@appsemble/utils';
 import { type Context } from 'koa';
 

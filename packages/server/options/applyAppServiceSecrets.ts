@@ -1,7 +1,7 @@
 import https from 'node:https';
 
 import { type ApplyAppServiceSecretsParams, basicAuth, version } from '@appsemble/node-utils';
-import { checkAppRole } from '@appsemble/utils';
+import { checkAppRole, getAppRoles } from '@appsemble/utils';
 import axios, { type RawAxiosRequestConfig } from 'axios';
 import { type Context } from 'koa';
 import { isMatch } from 'matcher';
@@ -80,7 +80,7 @@ async function verifyPermission(ctx: Context, app: App): Promise<AppServiceSecre
     }
   }
 
-  const { roles: appRoles } = app.definition;
+  const appRoles = getAppRoles(app.definition);
   if (!appRoles.some((r) => checkAppRole(app.definition.security, r, role, null))) {
     return [];
   }

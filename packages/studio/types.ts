@@ -1,18 +1,17 @@
-import { type OAuth2Provider, type UserInfo } from '@appsemble/types';
-import { type OrganizationMemberRole } from '@appsemble/utils';
+import { type OAuth2Provider, type OrganizationRole, type UserInfo } from '@appsemble/types';
 import { type OAuth2State } from '@appsemble/web-utils';
 
 export interface OrganizationMember {
   id: string;
   name?: string;
   primaryEmail?: string;
-  role: OrganizationMemberRole;
+  role: OrganizationRole;
 }
 
 export interface Organization {
   id: string;
   name: string;
-  role: OrganizationMemberRole;
+  role: OrganizationRole;
   description: string;
   website: string;
   email: string;

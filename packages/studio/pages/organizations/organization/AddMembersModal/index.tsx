@@ -8,8 +8,11 @@ import {
   type Toggle,
   useMessages,
 } from '@appsemble/react-components';
-import { type OrganizationInvite } from '@appsemble/types';
-import { type OrganizationMemberRole, organizationRoles } from '@appsemble/utils';
+import {
+  type OrganizationInvite,
+  type OrganizationRole,
+  organizationRoles,
+} from '@appsemble/types';
 import axios from 'axios';
 import {
   type ChangeEvent,
@@ -38,7 +41,7 @@ interface AddMembersModalProps {
   readonly onInvited: (invites: OrganizationInvite[]) => void;
 }
 
-const defaultInvite = {
+const defaultInvite: OrganizationInvite = {
   email: '',
   role: 'Member',
 };
@@ -142,7 +145,7 @@ export function AddMembersModal({ onInvited, state }: AddMembersModalProps): Rea
         ...invites.slice(0, index),
         ...lines.map((line) => {
           const [email, name] = line.split('\t');
-          return { email, name, role: 'Member' };
+          return { email, name, role: 'Member' } as OrganizationInvite;
         }),
         ...invites.slice(index),
       ]);
@@ -201,7 +204,7 @@ export function AddMembersModal({ onInvited, state }: AddMembersModalProps): Rea
             >
               {roleKeys
                 .filter((r) => roleKeys.indexOf(r) <= roleKeys.indexOf(organization?.role))
-                .map((r: OrganizationMemberRole) => (
+                .map((r: OrganizationRole) => (
                   <option key={r} value={r}>
                     {formatMessage(messages[r])}
                   </option>

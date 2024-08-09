@@ -1,6 +1,6 @@
 import { createFormData } from '@appsemble/node-utils';
 import { type Resource as ResourceType } from '@appsemble/types';
-import { GroupRole, uuid4Pattern } from '@appsemble/utils';
+import { uuid4Pattern } from '@appsemble/utils';
 import { request, setTestApp } from 'axios-test-instance';
 import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 import webpush from 'web-push';
@@ -151,12 +151,12 @@ describe('patchAppResource', () => {
     await GroupMember.create({
       GroupId: group.id,
       AppMemberId: memberA.id,
-      role: GroupRole.Member,
+      role: 'Member',
     });
     await GroupMember.create({
       GroupId: group.id,
       AppMemberId: memberB.id,
-      role: GroupRole.Member,
+      role: 'Member',
     });
 
     const resource = await Resource.create({
@@ -216,7 +216,7 @@ describe('patchAppResource', () => {
     await GroupMember.create({
       GroupId: group.id,
       AppMemberId: memberB.id,
-      role: GroupRole.Member,
+      role: 'Member',
     });
     await AppMember.create({
       email: user.primaryEmail,

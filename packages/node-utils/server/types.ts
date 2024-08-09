@@ -1,7 +1,6 @@
 import {
   type App,
   type AppConfigEntry,
-  type AppMember,
   type AppMemberInfo,
   type AppMessages,
   type Asset,
@@ -11,11 +10,12 @@ import {
   type CustomAppPermission,
   type EmailActionDefinition,
   type Group,
+  type OrganizationPermission,
   type Resource,
   type ResourceDefinition,
   type Theme as ThemeType,
 } from '@appsemble/types';
-import { type IdentifiableBlock, type OrganizationPermission } from '@appsemble/utils';
+import { type IdentifiableBlock } from '@appsemble/utils';
 import { type RawAxiosRequestConfig } from 'axios';
 import {
   type Context,
@@ -40,7 +40,7 @@ declare module 'koa' {
     appBlocks: BlockManifest[];
     appMessages: AppMessages[];
     appVariables: AppConfigEntry[];
-    appMembers: AppMember[];
+    appMembers: AppMemberInfo[];
     appMemberInfo: AppMemberInfo;
     appGroups: ExtendedGroup[];
     appAssets: AppAsset[];
@@ -447,15 +447,11 @@ export interface Options {
   applyAppServiceSecrets: (
     params: ApplyAppServiceSecretsParams,
   ) => Promise<RawAxiosRequestConfig<any>>;
-  checkAppMemberAppPermissions: (
-    params: CheckAppMemberAppPermissionsParams,
-  ) => Promise<Record<string, any>>;
+  checkAppMemberAppPermissions: (params: CheckAppMemberAppPermissionsParams) => Promise<void>;
   checkUserOrganizationPermissions: (
     params: CheckUserOrganizationPermissionsParams,
-  ) => Promise<Record<string, any>>;
-  checkAuthSubjectAppPermissions: (
-    params: CheckAuthSubjectAppPermissionsParams,
-  ) => Promise<Record<string, any>>;
+  ) => Promise<void>;
+  checkAuthSubjectAppPermissions: (params: CheckAuthSubjectAppPermissionsParams) => Promise<void>;
   reloadUser: (params: ReloadUserParams) => Promise<Record<string, any>>;
   parseQuery: (params: ParseQueryParams) => ParsedQuery;
   getAppResource: (params: GetAppResourceParams) => Promise<Resource>;

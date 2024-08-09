@@ -5,9 +5,9 @@ import { AppMember } from '../../../../../models/index.js';
 
 export async function deleteAppScimUser(ctx: Context): Promise<void> {
   const {
-    pathParams: { appId, memberId },
+    pathParams: { appId, appMemberId },
   } = ctx;
 
-  const deletedRows = await AppMember.destroy({ where: { id: memberId, AppId: appId } });
+  const deletedRows = await AppMember.destroy({ where: { id: appMemberId, AppId: appId } });
   scimAssert(deletedRows, ctx, 404, 'User not found');
 }

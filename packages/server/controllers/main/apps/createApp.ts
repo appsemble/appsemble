@@ -3,13 +3,8 @@ import {
   handleValidatorResult,
   updateCompanionContainers,
 } from '@appsemble/node-utils';
-import { type AppDefinition } from '@appsemble/types';
-import {
-  normalize,
-  OrganizationPermission,
-  validateAppDefinition,
-  validateStyle,
-} from '@appsemble/utils';
+import { type AppDefinition, OrganizationPermission } from '@appsemble/types';
+import { normalize, validateAppDefinition, validateStyle } from '@appsemble/utils';
 import { type Context } from 'koa';
 import { literal } from 'sequelize';
 import webpush from 'web-push';

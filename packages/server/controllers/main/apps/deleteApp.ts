@@ -3,7 +3,7 @@ import {
   deleteCompanionContainers,
   formatServiceName,
 } from '@appsemble/node-utils';
-import { OrganizationPermission } from '@appsemble/utils';
+import { OrganizationPermission } from '@appsemble/types';
 import { type Context } from 'koa';
 
 import { App } from '../../../models/index.js';

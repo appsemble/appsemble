@@ -8,11 +8,8 @@ import {
   SimpleModalFooter,
   useToggle,
 } from '@appsemble/react-components';
-import { type App, type AppCollection } from '@appsemble/types';
-import {
-  checkOrganizationRoleOrganizationPermissions,
-  OrganizationPermission,
-} from '@appsemble/utils';
+import { type App, type AppCollection, OrganizationPermission } from '@appsemble/types';
+import { checkOrganizationRoleOrganizationPermissions } from '@appsemble/utils';
 import axios from 'axios';
 import { type ReactNode, useCallback, useEffect, useState } from 'react';
 import { FormattedMessage } from 'react-intl';

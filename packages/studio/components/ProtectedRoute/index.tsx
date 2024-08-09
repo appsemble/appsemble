@@ -1,8 +1,6 @@
 import { useLocationString, useQuery } from '@appsemble/react-components';
-import {
-  checkOrganizationRoleOrganizationPermissions,
-  type OrganizationPermission,
-} from '@appsemble/utils';
+import { type OrganizationPermission } from '@appsemble/types';
+import { checkOrganizationRoleOrganizationPermissions } from '@appsemble/utils';
 import { type ReactNode } from 'react';
 import { Navigate, Outlet } from 'react-router-dom';
 

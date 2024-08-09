@@ -1,5 +1,4 @@
 import { type Resource as ResourceType } from '@appsemble/types';
-import { GroupRole } from '@appsemble/utils';
 import { request, setTestApp } from 'axios-test-instance';
 import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 import webpush from 'web-push';
@@ -473,12 +472,12 @@ describe('queryAppResources', () => {
     await GroupMember.create({
       GroupId: group.id,
       AppMemberId: memberA.id,
-      role: GroupRole.Member,
+      role: 'Member',
     });
     await GroupMember.create({
       GroupId: group.id,
       AppMemberId: memberB.id,
-      role: GroupRole.Member,
+      role: 'Member',
     });
 
     await Resource.create({
@@ -590,27 +589,27 @@ describe('queryAppResources', () => {
     await GroupMember.create({
       GroupId: group.id,
       AppMemberId: appAMemberA.id,
-      role: GroupRole.Manager,
+      role: 'GroupMembersManager',
     });
     await GroupMember.create({
       GroupId: groupB.id,
       AppMemberId: appAMemberB.id,
-      role: GroupRole.Member,
+      role: 'Member',
     });
     await GroupMember.create({
       GroupId: group.id,
       AppMemberId: appAMemberC.id,
-      role: GroupRole.Member,
+      role: 'Member',
     });
     await GroupMember.create({
       GroupId: groupC.id,
       AppMemberId: appBMemberA.id,
-      role: GroupRole.Manager,
+      role: 'GroupMembersManager',
     });
     await GroupMember.create({
       GroupId: groupC.id,
       AppMemberId: appBMemberC.id,
-      role: GroupRole.Member,
+      role: 'Member',
     });
 
     await Resource.create({

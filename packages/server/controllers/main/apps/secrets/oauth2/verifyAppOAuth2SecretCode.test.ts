@@ -350,7 +350,7 @@ describe('verifyAppOAuth2SecretCode', () => {
       UserId: getTestUser().id,
     });
 
-    const user = await User.findByPk(auth.UserId, { include: ['AppMembers'] });
+    const user = await User.findByPk(auth.id, { include: ['AppMembers'] });
     expect(user.AppMembers[0]).toMatchObject({
       created: expect.any(Date),
       locale: null,

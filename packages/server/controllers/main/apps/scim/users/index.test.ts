@@ -1,4 +1,3 @@
-import { GroupRole } from '@appsemble/utils';
 import { request, setTestApp } from 'axios-test-instance';
 import { beforeAll, beforeEach, expect, it, vi } from 'vitest';
 
@@ -125,7 +124,7 @@ it('should add member to an existing group if the user contains a manager ID of 
   expect(result).toMatchObject({
     AppMemberId: member2.id,
     GroupId: 1,
-    role: GroupRole.Member,
+    role: 'Member',
   });
 });
 
@@ -167,6 +166,6 @@ it('should assign existing manager to new group as manager', async () => {
   expect(result).toMatchObject({
     AppMemberId: member2.id,
     GroupId: 1,
-    role: GroupRole.Manager,
+    role: 'GroupMembersManager',
   });
 }, 50_000);

@@ -1,6 +1,5 @@
+import { AppPermission } from '@appsemble/types';
 import { type OpenAPIV3 } from 'openapi-types';
-
-import { AppPermission } from '../../../constants/index.js';
 
 export const SecurityRoleDefinition: OpenAPIV3.NonArraySchemaObject = {
   type: 'object',

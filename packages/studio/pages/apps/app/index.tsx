@@ -8,12 +8,8 @@ import {
   useData,
   useSideMenu,
 } from '@appsemble/react-components';
-import { type App } from '@appsemble/types';
-import {
-  checkOrganizationRoleOrganizationPermissions,
-  compareStrings,
-  OrganizationPermission,
-} from '@appsemble/utils';
+import { type App, OrganizationPermission } from '@appsemble/types';
+import { checkOrganizationRoleOrganizationPermissions, compareStrings } from '@appsemble/utils';
 import classNames from 'classnames';
 import {
   createContext,

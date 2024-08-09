@@ -1,8 +1,8 @@
-import { type ExtendedGroup, type GetAppGroupsParams } from '@appsemble/node-utils';
+import { type ExtendedGroup, type GetAppSubEntityParams } from '@appsemble/node-utils';
 
 import { Group, GroupMember } from '../models/index.js';
 
-export async function getAppGroups({ app }: GetAppGroupsParams): Promise<ExtendedGroup[]> {
+export async function getAppGroups({ app }: GetAppSubEntityParams): Promise<ExtendedGroup[]> {
   const groups = await Group.findAll({
     where: { AppId: app.id },
     include: [{ model: GroupMember, required: false }],

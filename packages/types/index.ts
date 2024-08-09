@@ -1,4 +1,3 @@
-import { type AppPermission, type AppRole, type OrganizationRole } from '@appsemble/utils';
 import { type IconName } from '@fortawesome/fontawesome-common-types';
 import { type Schema } from 'jsonschema';
 import { type OpenAPIV3 } from 'openapi-types';
@@ -8,6 +7,8 @@ import { type Action, type LogAction } from './action.js';
 import { type AppVisibility } from './app.js';
 import { type BulmaColor } from './bulma.js';
 import { type HTTPMethods } from './http.js';
+import { type AppPermission } from './permissions.js';
+import { type AppRole, type OrganizationRole } from './roles.js';
 import { type Theme } from './theme.js';
 
 export * from './action.js';
@@ -29,6 +30,8 @@ export * from './template.js';
 export * from './theme.js';
 export * from './oauth2.js';
 export * from './quota.js';
+export * from './permissions.js';
+export * from './roles.js';
 
 /**
  * A representation of a generated OAuth2 authorization code response.
@@ -190,7 +193,7 @@ export interface AppMemberInfo extends BaseUserInfo {
   /**
    * The role of the app member.
    */
-  role: string;
+  role: AppRole;
 
   /**
    * The end-user's additional properties
@@ -201,6 +204,11 @@ export interface AppMemberInfo extends BaseUserInfo {
    * Whether this app member is used for demonstration purposes
    */
   demo: boolean;
+}
+
+export interface EmailAuthorization {
+  email: string;
+  verified: boolean;
 }
 
 /**
@@ -2243,6 +2251,13 @@ export interface GroupMember {
   role: string;
   name: string;
   email: string;
+}
+
+export interface AppMemberGroup {
+  groupId: number;
+  groupName: string;
+  groupAnnotations?: Record<string, any>;
+  appMemberGroupRole: string;
 }
 
 /**

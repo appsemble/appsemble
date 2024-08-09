@@ -4,7 +4,7 @@ import {
   useConfirmation,
   useMessages,
 } from '@appsemble/react-components';
-import { type OrganizationRole, organizationRoles } from '@appsemble/utils';
+import { type OrganizationRole, organizationRoles } from '@appsemble/types';
 import axios from 'axios';
 import { type ChangeEvent, type ReactNode, useCallback } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';

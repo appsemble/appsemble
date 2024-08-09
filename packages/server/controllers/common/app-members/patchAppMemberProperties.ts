@@ -1,5 +1,5 @@
 import { assertKoaError } from '@appsemble/node-utils';
-import { AppPermission } from '@appsemble/utils';
+import { AppPermission } from '@appsemble/types';
 import { type Context } from 'koa';
 
 import { AppMember } from '../../../models/index.js';

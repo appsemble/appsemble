@@ -14,8 +14,8 @@ import {
   useData,
   useToggle,
 } from '@appsemble/react-components';
-import { type AppMemberInfo, type Group, type GroupMember } from '@appsemble/types';
-import { type AppRole, getAppRoles } from '@appsemble/utils';
+import { type AppMemberInfo, type AppRole, type Group, type GroupMember } from '@appsemble/types';
+import { getAppRoles } from '@appsemble/utils';
 import axios from 'axios';
 import { type ChangeEvent, type ReactNode, useCallback, useEffect, useMemo, useState } from 'react';
 import { FormattedMessage } from 'react-intl';

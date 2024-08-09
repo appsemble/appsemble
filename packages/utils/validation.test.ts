@@ -934,16 +934,6 @@ describe('validateAppDefinition', () => {
     ]);
   });
 
-  it('should validate the top level default roles exist', async () => {
-    const app = createTestApp();
-    app.roles = ['Unknown'];
-    const result = await validateAppDefinition(app, () => []);
-    expect(result.valid).toBe(false);
-    expect(result.errors).toStrictEqual([
-      new ValidationError('does not exist in this app’s roles', 'Unknown', undefined, ['roles', 0]),
-    ]);
-  });
-
   it('should validate resource types against reserved keywords', async () => {
     const app = {
       name: 'Test app',
@@ -1830,7 +1820,7 @@ describe('validateAppDefinition', () => {
       version: '1.2.3',
       actions: {
         onWhatever: {
-          type: 'user.login',
+          type: 'app.member.login',
           email: 'example@example.com',
           password: 'password',
         },
@@ -1841,10 +1831,10 @@ describe('validateAppDefinition', () => {
       version: '1.2.3',
       actions: {
         onWhatever: {
-          type: 'user.register',
+          type: 'app.member.register',
           email: 'example@example.com',
           password: 'password',
-          displayName: 'Test User',
+          name: 'Test User',
         },
       },
     });
@@ -1853,9 +1843,8 @@ describe('validateAppDefinition', () => {
       version: '1.2.3',
       actions: {
         onWhatever: {
-          type: 'user.update',
-          currentEmail: 'example@example.com',
-          password: 'password',
+          type: 'app.member.update',
+          id: 'some-id',
         },
       },
     });
@@ -2127,8 +2116,8 @@ describe('validateAppDefinition', () => {
       version: '1.2.3',
       actions: {
         onWhatever: {
-          type: 'user.register',
-          displayName: 'name',
+          type: 'app.member.register',
+          name: 'name',
           email: 'email@example.com',
           password: 'password',
           properties: {
@@ -2162,60 +2151,6 @@ describe('validateAppDefinition', () => {
     ]);
   });
 
-  it('should report an error if a user create action on a block adds unsupported user properties', async () => {
-    const app = {
-      ...createTestApp(),
-      users: {
-        properties: {
-          foo: {
-            schema: {
-              type: 'string',
-            },
-          },
-        },
-      },
-    } as AppDefinition;
-    (app.pages[0] as BasicPageDefinition).blocks.push({
-      type: 'test',
-      version: '1.2.3',
-      actions: {
-        onWhatever: {
-          type: 'user.create',
-          name: 'name',
-          email: 'email@example.com',
-          password: 'password',
-          role: 'role',
-          properties: {
-            'object.from': {
-              bar: 'baz',
-            },
-          },
-        },
-      },
-    });
-
-    const result = await validateAppDefinition(app, () => [
-      {
-        name: '@appsemble/test',
-        version: '1.2.3',
-        files: [],
-        languages: [],
-        actions: {
-          onWhatever: {},
-        },
-      },
-    ]);
-    expect(result.valid).toBe(false);
-    expect(result.errors).toStrictEqual([
-      new ValidationError(
-        'contains a property that doesn’t exist in users.properties',
-        'user.create',
-        undefined,
-        ['pages', 0, 'blocks', 0, 'actions', 'onWhatever', 'properties'],
-      ),
-    ]);
-  });
-
   it('should report an error if a user update action on a block adds unsupported user properties', async () => {
     const app = {
       ...createTestApp(),
@@ -2234,11 +2169,9 @@ describe('validateAppDefinition', () => {
       version: '1.2.3',
       actions: {
         onWhatever: {
-          type: 'user.update',
+          type: 'app.member.update',
           name: 'name',
-          currentEmail: 'email@example.com',
-          newEmail: 'new-email@example.com',
-          password: 'password',
+          id: 'sub',
           role: 'role',
           properties: {
             'object.from': {

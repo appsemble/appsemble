@@ -1,3 +1,3 @@
-export function checkUserOrganizationPermissions(): Promise<Record<string, any>> {
-  return Promise.resolve({});
+export function checkUserOrganizationPermissions(): Promise<void> {
+  return Promise.resolve();
 }

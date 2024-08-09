@@ -105,7 +105,7 @@ describe('createGroupInvites', () => {
         security: {
           ...app.definition.security,
           groups: {
-            ...app.definition.security.groups,
+            ...app.definition.security,
             join: 'invite',
           },
         },
@@ -134,7 +134,7 @@ describe('createGroupInvites', () => {
         security: {
           ...app.definition.security,
           groups: {
-            ...app.definition.security.groups,
+            ...app.definition.security,
             join: 'invite',
             invite: ['$group:manager'],
           },
@@ -173,7 +173,7 @@ describe('createGroupInvites', () => {
         security: {
           ...app.definition.security,
           groups: {
-            ...app.definition.security.groups,
+            ...app.definition.security,
             join: 'invite',
             invite: ['$group:member'],
           },

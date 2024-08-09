@@ -1,5 +1,6 @@
 import { assertKoaError, throwKoaError } from '@appsemble/node-utils';
-import { OrganizationPermission, StyleValidationError, validateStyle } from '@appsemble/utils';
+import { OrganizationPermission } from '@appsemble/types';
+import { StyleValidationError, validateStyle } from '@appsemble/utils';
 import { type Context } from 'koa';
 
 import { App, AppBlockStyle, BlockVersion } from '../../../models/index.js';

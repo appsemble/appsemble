@@ -1,5 +1,6 @@
 import { assertKoaError, throwKoaError, updateCompanionContainers } from '@appsemble/node-utils';
-import { normalize, OrganizationPermission } from '@appsemble/utils';
+import { OrganizationPermission } from '@appsemble/types';
+import { normalize } from '@appsemble/utils';
 import { type Context } from 'koa';
 import { UniqueConstraintError } from 'sequelize';
 import webpush from 'web-push';

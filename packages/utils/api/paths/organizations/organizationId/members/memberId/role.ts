@@ -1,6 +1,5 @@
+import { organizationRoles } from '@appsemble/types';
 import { type OpenAPIV3 } from 'openapi-types';
-
-import { organizationRoles } from '../../../../../../constants/index.js';
 
 export const pathItems: OpenAPIV3.PathItemObject = {
   parameters: [

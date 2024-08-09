@@ -1,19 +1,16 @@
 import {
   type AppDefinition,
-  type CustomAppPermission,
-  type CustomAppResourcePermission,
-  type Security,
-} from '@appsemble/types';
-
-import {
   appOrganizationPermissionMapping,
   type AppPermission,
   type AppRole,
   appRoles,
+  type CustomAppPermission,
+  type CustomAppResourcePermission,
   type OrganizationPermission,
   type OrganizationRole,
   organizationRoles,
-} from './constants/index.js';
+  type Security,
+} from '@appsemble/types';
 
 export function getAppRoles(appDefinition: AppDefinition): string[] {
   return Array.from(

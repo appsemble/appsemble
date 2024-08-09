@@ -1,5 +1,5 @@
 import { assertKoaError } from '@appsemble/node-utils';
-import { OrganizationPermission } from '@appsemble/utils';
+import { OrganizationPermission } from '@appsemble/types';
 import { type Context } from 'koa';
 
 import { Training, TrainingBlock, UserTraining } from '../../../models/index.js';

@@ -6,7 +6,7 @@ import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { createTestAction } from '../makeActions.js';
 import { apiUrl } from '../settings.js';
 
-const app: AppDefinition = {
+const appDefinition: AppDefinition = {
   defaultPage: '',
   resources: {
     pet: { schema: { type: 'object' } },
@@ -32,7 +32,7 @@ describe('resource.get', () => {
       return [200, { type: 'cat' }, {}];
     });
     const action = createTestAction({
-      app,
+      appDefinition,
       definition: { type: 'resource.get', resource: 'pet' },
     });
     const result = await action({ id: 1 });
@@ -49,7 +49,7 @@ describe('resource.get', () => {
       return [200, { type: 'dog' }, {}];
     });
     const action = createTestAction({
-      app,
+      appDefinition,
       definition: {
         type: 'resource.get',
         resource: 'pet',
@@ -73,7 +73,7 @@ describe('resource.query', () => {
       return [200, [{ type: 'cat' }], {}];
     });
     const action = createTestAction({
-      app,
+      appDefinition,
       definition: { type: 'resource.query', resource: 'pet' },
     });
     const result = await action();
@@ -90,7 +90,7 @@ describe('resource.query', () => {
       return [200, { type: 'dog' }, {}];
     });
     const action = createTestAction({
-      app,
+      appDefinition,
       definition: {
         type: 'resource.query',
         resource: 'pet',
@@ -114,7 +114,7 @@ describe('resource.count', () => {
       return [200, 12, {}];
     });
     const action = createTestAction({
-      app,
+      appDefinition,
       definition: { type: 'resource.count', resource: 'pet' },
     });
     const result = await action();
@@ -133,7 +133,7 @@ describe('resource.create', () => {
       return [200, { ...JSON.parse(req.data), id: 84 }, {}];
     });
     const action = createTestAction({
-      app,
+      appDefinition,
       definition: { type: 'resource.create', resource: 'pet' },
     });
     const result = await action({ type: 'fish' });
@@ -152,7 +152,7 @@ describe('resource.update', () => {
       return [200, { ...JSON.parse(req.data), id: 84 }, {}];
     });
     const action = createTestAction({
-      app,
+      appDefinition,
       definition: { type: 'resource.update', resource: 'pet' },
     });
     const result = await action({ id: 84, type: 'fish' });
@@ -171,7 +171,7 @@ describe('resource.patch', () => {
       return [200, { ...JSON.parse(req.data), id: 84 }, {}];
     });
     const action = createTestAction({
-      app,
+      appDefinition,
       definition: { type: 'resource.patch', resource: 'pet' },
     });
     const result = await action({ id: 84, type: 'fish' });
@@ -190,7 +190,7 @@ describe('resource.delete', () => {
       return [204, null, {}];
     });
     const action = createTestAction({
-      app,
+      appDefinition,
       definition: { type: 'resource.delete', resource: 'pet' },
     });
     const result = await action({ id: 63 });

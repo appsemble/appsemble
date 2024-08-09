@@ -1,6 +1,5 @@
 import { assertKoaError } from '@appsemble/node-utils';
-import { type GroupMember as GroupMemberType } from '@appsemble/types';
-import { AppPermission } from '@appsemble/utils';
+import { AppPermission, type GroupMember as GroupMemberType } from '@appsemble/types';
 import { type Context } from 'koa';
 
 import { AppMember, Group, GroupMember } from '../../../../models/index.js';

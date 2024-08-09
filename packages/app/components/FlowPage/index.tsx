@@ -7,7 +7,7 @@ import {
   type FlowPageDefinition,
   type LoopPageDefinition,
   type Remapper,
-  type SubPage,
+  type SubPageDefinition,
 } from '@appsemble/types';
 import {
   type MutableRefObject,
@@ -258,7 +258,7 @@ export function FlowPage({
         remap,
         params,
         showMessage,
-        groups,
+        appMemberGroups: groups,
         updateGroup,
         getAppMemberInfo: () => appMemberInfoRef.current,
         passwordLogin,
@@ -301,11 +301,11 @@ export function FlowPage({
         .then((results: any) => {
           const { blocks } = pageDefinition.foreach;
 
-          function createSteps(): SubPage[] {
-            const newSteps: SubPage[] = [];
+          function createSteps(): SubPageDefinition[] {
+            const newSteps: SubPageDefinition[] = [];
             for (const resourceData of results) {
               if (resourceData) {
-                const newStep: SubPage = {
+                const newStep: SubPageDefinition = {
                   name: 'New loop pageDefinition',
                   blocks,
                 };

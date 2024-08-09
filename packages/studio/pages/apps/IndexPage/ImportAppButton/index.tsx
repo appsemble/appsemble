@@ -8,10 +8,8 @@ import {
   SimpleFormField,
   SimpleModalFooter,
 } from '@appsemble/react-components';
-import {
-  checkOrganizationRoleOrganizationPermissions,
-  OrganizationPermission,
-} from '@appsemble/utils';
+import { OrganizationPermission } from '@appsemble/types';
+import { checkOrganizationRoleOrganizationPermissions } from '@appsemble/utils';
 import axios from 'axios';
 import { type ChangeEvent, type ReactNode, useCallback, useState } from 'react';
 import { FormattedMessage } from 'react-intl';

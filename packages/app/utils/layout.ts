@@ -1,5 +1,4 @@
-import { type AppDefinition, type GroupMember, type PageDefinition } from '@appsemble/types';
-import { type AppRole } from '@appsemble/utils';
+import { type AppRole, type AppDefinition, type AppMemberGroup, type PageDefinition } from '@appsemble/types';
 
 import { checkPagePermissions } from './authorization.js';
 
@@ -7,7 +6,7 @@ function shouldShowPage(
   appDefinition: AppDefinition,
   pageDefinition: PageDefinition,
   appMemberRole: AppRole,
-  appMemberGroups: GroupMember[],
+  appMemberGroups: AppMemberGroup[],
 ): boolean {
   if (pageDefinition.hideNavTitle) {
     return false;
@@ -34,7 +33,7 @@ function shouldShowPage(
 export function shouldShowMenu(
   appDefinition: AppDefinition,
   appMemberRole: AppRole,
-  appMemberGroups: GroupMember[],
+  appMemberGroups: AppMemberGroup[],
 ): boolean {
   let visiblePagesCount = 0;
 

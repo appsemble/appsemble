@@ -1,6 +1,5 @@
 import { AppsembleError, authenticate, logger } from '@appsemble/node-utils';
-import { type Group } from '@appsemble/types';
-import { type GroupRole } from '@appsemble/utils';
+import { type AppRole, type Group } from '@appsemble/types';
 import axios from 'axios';
 
 interface SharedGroupParams {
@@ -38,7 +37,7 @@ interface UpdateGroupMemberParams extends SharedGroupMemberParams {
   /**
    * The new role of the group member.
    */
-  role: GroupRole;
+  role: AppRole;
 }
 
 interface UpdateGroupParams extends SharedExistingGroupParams {

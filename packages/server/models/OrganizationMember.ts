@@ -1,4 +1,4 @@
-import { type OrganizationRole, organizationRoles } from '@appsemble/utils';
+import { type OrganizationRole, organizationRoles } from '@appsemble/types';
 import {
   AllowNull,
   BelongsTo,

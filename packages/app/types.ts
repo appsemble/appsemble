@@ -4,10 +4,10 @@ import { type ShowMessage } from '@appsemble/react-components';
 import {
   type ActionDefinition,
   type AppDefinition,
+  type AppMemberGroup,
   type AppMemberInfo,
   type BlockDefinition,
   type BlockManifest,
-  type GroupMember,
   type ProjectImplementations,
   type Remapper,
   type UserInfo,
@@ -122,7 +122,7 @@ export interface FlowActions {
   to: (data: any, step: string) => Promise<any>;
 }
 
-export type UpdateGroup = (group: GroupMember) => void;
+export type UpdateGroup = (group: AppMemberGroup) => void;
 
 export interface MakeActionParameters<D extends ActionDefinition> {
   appDefinition: AppDefinition;
@@ -148,7 +148,7 @@ export interface MakeActionParameters<D extends ActionDefinition> {
   passwordLogout: () => Promise<void>;
   setAppMemberInfo: Dispatch<AppMemberInfo>;
   updateGroup: UpdateGroup;
-  appMemberGroups: GroupMember[];
+  appMemberGroups: AppMemberGroup[];
   refetchDemoAppMembers: () => Promise<void>;
 }
 

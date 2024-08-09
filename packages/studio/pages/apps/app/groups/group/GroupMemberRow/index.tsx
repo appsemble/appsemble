@@ -1,6 +1,6 @@
 import { AsyncSelect, Button, useConfirmation } from '@appsemble/react-components';
-import { type GroupMember } from '@appsemble/types';
-import { type AppRole, getAppRoles } from '@appsemble/utils';
+import { type AppRole, type GroupMember } from '@appsemble/types';
+import { getAppRoles } from '@appsemble/utils';
 import { type ChangeEvent, type ReactNode, useCallback } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 

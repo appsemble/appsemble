@@ -1,9 +1,6 @@
 import { Button, CardFooterButton, ModalCard } from '@appsemble/react-components';
-import { type App } from '@appsemble/types';
-import {
-  checkOrganizationRoleOrganizationPermissions,
-  OrganizationPermission,
-} from '@appsemble/utils';
+import { type App, OrganizationPermission } from '@appsemble/types';
+import { checkOrganizationRoleOrganizationPermissions } from '@appsemble/utils';
 import axios from 'axios';
 import { type ReactNode, useCallback } from 'react';
 import { FormattedMessage } from 'react-intl';

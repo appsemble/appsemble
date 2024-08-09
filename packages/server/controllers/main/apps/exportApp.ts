@@ -1,5 +1,5 @@
 import { assertKoaError } from '@appsemble/node-utils';
-import { OrganizationPermission } from '@appsemble/utils';
+import { OrganizationPermission } from '@appsemble/types';
 import JSZip from 'jszip';
 import { type Context } from 'koa';
 import { stringify } from 'yaml';

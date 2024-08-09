@@ -1,21 +1,21 @@
 import {
   type AppDefinition,
+  type AppMemberGroup,
+  type AppRole,
   type BlockDefinition,
-  type GroupMember,
   type PageDefinition,
   type Security,
-  // Type SubPageDefinition,
   type TabsPageDefinition,
   type ViewRole,
 } from '@appsemble/types';
-import { type AppRole, getAppInheritedRoles } from '@appsemble/utils';
+import { getAppInheritedRoles } from '@appsemble/utils';
 
 const defaultAllowedPages = new Set(['Login', 'Register']);
 
 function getAppMemberViewRoles(
   appSecurityDefinition: Security,
   appMemberRole: AppRole,
-  appMemberGroups: GroupMember[],
+  appMemberGroups: AppMemberGroup[],
 ): Set<AppRole> {
   if (!appSecurityDefinition) {
     return new Set();
@@ -23,7 +23,7 @@ function getAppMemberViewRoles(
 
   return new Set<AppRole>([
     ...getAppInheritedRoles(appSecurityDefinition, appMemberRole ? [appMemberRole] : []),
-    ...appMemberGroups.map(({ role: groupRole }) => groupRole),
+    ...appMemberGroups.map(({ appMemberGroupRole }) => appMemberGroupRole),
   ]);
 }
 
@@ -60,7 +60,7 @@ export function checkPagePermissions(
   pageDefinition: PageDefinition,
   appDefinition: AppDefinition,
   appMemberRole: AppRole,
-  appMemberGroups: GroupMember[],
+  appMemberGroups: AppMemberGroup[],
 ): boolean {
   // Users should always be able to access custom login and register pages.
   if (defaultAllowedPages.has(pageDefinition.name)) {
@@ -86,7 +86,7 @@ export function checkBlockPermissions(
   blockDefinition: BlockDefinition,
   appDefinition: AppDefinition,
   appMemberRole: AppRole,
-  appMemberGroups: GroupMember[],
+  appMemberGroups: AppMemberGroup[],
 ): boolean {
   const appMemberViewRoles = getAppMemberViewRoles(
     appDefinition.security,

@@ -1,6 +1,5 @@
 import { assertKoaError } from '@appsemble/node-utils';
-import { type App as AppType } from '@appsemble/types';
-import { OrganizationPermission } from '@appsemble/utils';
+import { type App as AppType, OrganizationPermission } from '@appsemble/types';
 import { type Context } from 'koa';
 import { col, fn, literal } from 'sequelize';
 

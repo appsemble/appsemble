@@ -1,4 +1,4 @@
-import { AppPermission } from '@appsemble/utils';
+import { AppPermission } from '@appsemble/types';
 import { type Context } from 'koa';
 
 import { Group, transactional } from '../../../../models/index.js';

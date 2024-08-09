@@ -6,6 +6,6 @@ export function checkAppMemberAppPermissions({
   app,
   context,
   permissions,
-}: CheckAppMemberAppPermissionsParams): Promise<Record<string, any>> {
+}: CheckAppMemberAppPermissionsParams): Promise<void> {
   return checkAppMemberAppPermissionsServer(context, app.id, permissions);
 }
