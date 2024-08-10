@@ -68,7 +68,12 @@ describe('group.list', () => {
     });
     const result = await action('Input data');
     expect(result).toStrictEqual([
-      { id: 1337, name: 'IT', role: 'member', annotations: { foo: 'bar' } },
+      {
+        groupId: 1337,
+        groupName: 'IT',
+        appMemberGroupRole: 'member',
+        groupAnnotations: { foo: 'bar' },
+      },
     ]);
   });
 });
