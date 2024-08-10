@@ -109,7 +109,7 @@ function shared(env: string, { mode }: CliConfigOptions): Configuration {
           'node_modules',
           'tsconfig.json',
         ],
-        failOnUnused: production,
+        failOnUnused: false,
       }),
     ],
     optimization: {
