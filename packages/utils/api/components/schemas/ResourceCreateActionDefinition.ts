@@ -18,5 +18,5 @@ export const ResourceCreateActionDefinition = extendJSONSchema(
       },
     },
   },
-  ['url'],
+  ['url', 'method'],
 );

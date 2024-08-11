@@ -1,5 +1,10 @@
+import { isDeepStrictEqual } from 'node:util';
+
 import { logger } from '@appsemble/node-utils';
 import { DataTypes, type Sequelize, type Transaction } from 'sequelize';
+import { type Document, Scalar, YAMLMap, YAMLSeq } from 'yaml';
+
+import { type Patch, type Path } from '../commands/migrateAppDefinitions.js';
 
 export const key = '0.30.0';
 
@@ -844,3 +849,476 @@ export async function down(transaction: Transaction, db: Sequelize): Promise<voi
     transaction,
   });
 }
+
+function addGuest(document: Document): void {
+  document.addIn(['security', 'guest', 'permissions'], new YAMLSeq());
+}
+
+function handlePermission(
+  document: Document,
+  resource: string,
+  action: string,
+  role: string,
+  view?: string,
+): void {
+  if (!document.hasIn(['security', 'roles']) && !document.hasIn(['security', 'guest'])) {
+    return;
+  }
+
+  const has = (path: Path, permission: string): boolean =>
+    // Permissions here is a list of string literals,
+    // because all permission have been added by us in that manner
+    (document.getIn(path) as YAMLSeq<string>).items.includes(permission);
+
+  // Consider excluding own:create for $author without a create action on the resource
+  const base = ['$resource', resource, role === '$author' && 'own', action]
+    .filter(Boolean)
+    .join(':');
+  const permission = [base, view].filter(Boolean).join(':');
+
+  const helper = (path: Path): void => {
+    if (!has(path, permission)) {
+      if (view) {
+        const sequence = document.getIn(path) as YAMLSeq;
+        const index = sequence.items.indexOf(base);
+        document.deleteIn([...path, index]);
+      }
+      document.addIn(path, permission);
+    }
+  };
+
+  if (role === '$public') {
+    const roles = (
+      document.getIn(['security', 'roles']) as YAMLMap<Scalar<string>, unknown>
+    ).items.map((pair) => pair.key.value);
+    for (const r of roles) {
+      helper(['security', 'roles', r, 'permissions']);
+    }
+    helper(['security', 'guest', 'permissions']);
+  } else if (role === '$guest') {
+    helper(['security', 'guest', 'permissions']);
+  } else if (role === '$author') {
+    const roles = (
+      document.getIn(['security', 'roles']) as YAMLMap<Scalar<string>, unknown>
+    ).items.map((pair) => pair.key.value);
+    for (const r of roles) {
+      helper(['security', 'roles', r, 'permissions']);
+    }
+  } else {
+    helper(['security', 'roles', role, 'permissions']);
+  }
+}
+
+export const appPatches: Patch[] = [
+  {
+    // TODO: test
+    message: 'Replace `remap` with `remapBefore`.',
+    path: ['*', 'actions', /.*/, /^remap$/],
+    delete: true,
+    patches: [
+      (document, transaction, stepsList) => {
+        for (const steps of stepsList) {
+          document.addIn(steps.slice(0, -1), {
+            key: 'remapBefore',
+            value: document.getIn(steps),
+          });
+        }
+      },
+    ],
+  },
+  {
+    // TODO: test
+    message: 'Replace `hideFromMenu` with `hideNavTitle`.',
+    path: ['pages', '*', 'name', '<', /^hideFromMenu$/],
+    delete: true,
+    patches: [
+      (document, transaction, stepsList) => {
+        for (const steps of stepsList) {
+          document.addIn(steps.slice(0, -2), { key: 'hideNavTitle', value: document.getIn(steps) });
+        }
+      },
+    ],
+  },
+  {
+    message: 'Replace `users` property to `members`.',
+    path: ['users'],
+    delete: true,
+    patches: [
+      (document) => {
+        document.set('members', document.get('users'));
+      },
+    ],
+  },
+  {
+    message: 'Rename user actions to app.member actions.',
+    // Cannot handle `user.update` changed to `app.member.current.patch`,
+    // `app.member.role.update`, and `app.member.properties.patch`
+    path: ['*', 'type', /user\.register|login|logout|query|remove/, '<'],
+    value(path: Path, transaction: Transaction, steps: Path) {
+      if ((steps.at(-1) as string).split('.')[1] === 'remove') {
+        return 'app.member.delete';
+      }
+      return (steps.at(-1) as string).replace('user.', 'app.member.');
+    },
+  },
+  {
+    // TODO: test
+    // Cannot handle `team.join` no replacement present.
+    message: 'Rename team actions to group.member actions.',
+    path: ['*', 'actions', /.*/, 'type', /team\.invite|list|members/, '<'],
+    value(path: Path, transaction: Transaction, steps: Path) {
+      const teamActionSuffix = (steps.at(-1) as string).split('.')[1];
+      if (teamActionSuffix === 'invite') {
+        return 'group.member.invite';
+      }
+      if (teamActionSuffix === 'list') {
+        return 'group.query';
+      }
+      if (teamActionSuffix === 'members') {
+        return 'group.member.query';
+      }
+    },
+  },
+  // TODO: remove teams from security def
+  {
+    // Teams:
+    // join: invite
+    // create:
+    //   - Reader
+    // invite:
+    //   - $team:member
+    message: 'test',
+    path: [],
+  },
+  // Security.default.policy
+  // everyone,organization
+  {
+    message: 'test',
+    path: [],
+  },
+  {
+    message: 'Delete `roles` property.',
+    path: ['roles'],
+    delete: true,
+  },
+  {
+    message: 'Delete `method` property on resource actions.',
+    path: ['*', 'actions', '*', 'type', /^resource\..*/, '<', '<', 'method'],
+    delete: true,
+  },
+  {
+    // TODO: test
+    message:
+      'Remove resource roles: $author, $none, $team:member, $team:manager, if used without security',
+    path: ['resources', '*', 'roles', /\d+/, /\$(author|none|team:member|team:manager)/],
+    patches: [
+      (document, transaction, stepsList) => {
+        if (document.has('security')) {
+          return;
+        }
+        // Reverse to make sure the roles are deleted in the right order
+        for (const steps of stepsList.reverse()) {
+          document.deleteIn(steps.slice(0, -1));
+        }
+      },
+    ],
+  },
+  {
+    message: 'Add `permissions` to roles.',
+    path: ['security', 'roles', /.*/],
+    add: true,
+    value() {
+      return { key: 'permissions', value: new YAMLSeq() };
+    },
+  },
+  {
+    message: 'Replace `$none` with `$guest` and add guest to security.',
+    path: ['*', 'roles', /\d+/, '$none', '<'],
+    value() {
+      return '$guest';
+    },
+    patches: [addGuest],
+  },
+  {
+    message: 'Add guest to security if missing when $public is used in resources.',
+    path: ['resources', '*', 'roles', /\d+/, '$public', '<'],
+    patches: [
+      (document, transaction, stepsList) => {
+        // TODO: always require security definition if resources are used
+        if (!document.has('security') || document.hasIn(['security', 'guest'])) {
+          return;
+        }
+        if (
+          stepsList.some((s) => s[0] === 'resources' && s[2] === 'roles' && s[4] === '$public') ||
+          stepsList.some(
+            (s) =>
+              s[0] === 'resources' &&
+              /create|update|patch|query|get|delete/.test(s[2] as string) &&
+              s[3] === 'roles' &&
+              s[5] === '$public',
+          ) ||
+          stepsList.some(
+            (s) =>
+              s[0] === 'resources' && s[2] === 'views' && s[4] === 'roles' && s[6] === '$public',
+          )
+        ) {
+          addGuest(document);
+        }
+      },
+    ],
+  },
+  {
+    // TODO: write new roles to security def inherit predefined roles
+    // and update db group member records with new roles
+    message: 'Add roles `Member` and `GroupsManager` to security.roles if used.',
+    path: ['*', 'roles', /\d+/, /\$team:member|\$team:manager/, '<'],
+    value(path: Path, t: Transaction, steps: Path) {
+      if (steps.at(-1) === '$team:manager') {
+        return 'GroupsManager';
+      }
+      return 'Member';
+    },
+    patches: [
+      (document, t, stepsList) => {
+        if (stepsList.some((s) => s.at(-1) === '$team:manager')) {
+          document.addIn(['security', 'roles'], {
+            key: new Scalar('GroupsManager'),
+            value: new YAMLMap(),
+          });
+          document.addIn(['security', 'roles', 'GroupsManager'], {
+            key: 'permissions',
+            value: new YAMLSeq(),
+          });
+        }
+        if (stepsList.some((s) => s.at(-1) === '$team:member')) {
+          document.addIn(['security', 'roles'], {
+            key: new Scalar('Member'),
+            value: new YAMLMap(),
+          });
+          document.addIn(['security', 'roles', 'Member'], {
+            key: 'permissions',
+            value: new YAMLSeq(),
+          });
+        }
+      },
+    ],
+  },
+  {
+    // TODO: check presedence in prod
+    message: 'Move resource roles to role permissions.',
+    path: ['resources', '*', 'roles', /.*/, '<'],
+    patches: [
+      // Handles top level resource roles
+      (document, transaction, stepsList) => {
+        const pathsToDelete: Path[] = [];
+
+        const roles = stepsList.filter((s) => s.length === 4);
+        for (const steps of roles) {
+          const role = document.getIn(steps) as string;
+          const resource = steps[1] as string;
+
+          const actions = new Set(
+            stepsList
+              .filter(
+                (s) =>
+                  s.length === 5 &&
+                  s[1] === resource &&
+                  /create|update|patch|query|get|delete/.test(s[2] as string),
+              )
+              .map((s) => s[2]),
+          );
+
+          for (const action of ['create', 'update', 'patch', 'query', 'get', 'delete'].filter(
+            (a) => !actions.has(a),
+          )) {
+            handlePermission(document, resource, action, role);
+          }
+
+          const root = steps.slice(0, -1);
+          if (!pathsToDelete.some((v) => isDeepStrictEqual(v, root))) {
+            pathsToDelete.push(root);
+          }
+        }
+
+        for (const path of pathsToDelete) {
+          document.deleteIn(path);
+        }
+      },
+      // Handles resource action roles
+      // TODO: check if the action properties are removed... in regards to resource hooks
+      (document, transaction, stepsList) => {
+        const pathsToDelete: Path[] = [];
+
+        const actions = stepsList.filter(
+          (s) => s.length === 5 && /create|update|patch|query|get|delete/.test(s[2] as string),
+        );
+        for (const steps of actions) {
+          const role = document.getIn(steps) as string;
+          const resource = steps[1] as string;
+          const action = steps[2] as string;
+
+          handlePermission(document, resource, action, role);
+
+          const root = steps.slice(0, -2);
+          if (!pathsToDelete.some((v) => isDeepStrictEqual(v, root))) {
+            pathsToDelete.push(root);
+          }
+        }
+
+        for (const path of pathsToDelete) {
+          document.deleteIn(path);
+        }
+      },
+      // Handles resource view roles
+      (document, transaction, stepsList) => {
+        const pathsToDelete: Path[] = [];
+
+        const views = stepsList.filter((s) => s.length === 6 && s[2] === 'views');
+        for (const steps of views) {
+          const role = document.getIn(steps) as string;
+          const resource = steps[1] as string;
+          const view = steps[3] as string;
+
+          for (const action of ['query', 'get']) {
+            handlePermission(document, resource, action, role, view);
+          }
+
+          const root = steps.slice(0, -3);
+          if (!pathsToDelete.some((v) => isDeepStrictEqual(v, root))) {
+            pathsToDelete.push(root);
+          }
+        }
+
+        for (const path of pathsToDelete) {
+          document.deleteIn(path);
+        }
+      },
+      // TODO: combine resource permissions
+      // (document, transaction, steps) => {
+      //   const resources = steps
+      //     .map((s) => s[1])
+      //     .filter((value, index, self) => self.indexOf(value) === index);
+      //   const roles = (document.getIn(['security', 'roles']) as YAMLMap).items.map(
+      //     (pair) => (pair.key as Scalar).value,
+      //   );
+
+      //   for (const role of roles) {
+      //     const permissions = document.getIn(['security', 'roles', role, 'permissions'])
+      // as YAMLSeq;
+      //     console.log(permissions.items);
+      //   }
+      // },
+    ],
+  },
+  {
+    // TODO: test
+    message: 'Post process away already inherited roles',
+    path: ['security', 'roles', /.*/, 'inherits'],
+    patches: [
+      (document, transaction, stepsList) => {
+        for (const steps of stepsList) {
+          const base = steps.slice(0, -1);
+          const perms = (document.getIn([...base, 'permissions']) as YAMLSeq<string>).items;
+          const roles = document.getIn(steps) as YAMLSeq<Scalar<string>>;
+          const collected = new Set<string>();
+
+          for (const { value: role } of roles.items) {
+            // Permissions here is a list of string literals,
+            // because all permission have been added by us in that manner
+            const permissions = document.getIn([
+              'security',
+              'roles',
+              role,
+              'permissions',
+            ]) as YAMLSeq<string>;
+            for (const permission of permissions.items) {
+              if (perms.includes(permission)) {
+                collected.add(permission);
+              }
+            }
+          }
+
+          // Reverse is maybe not enough scaryy...
+          for (const permission of [...collected.values()].reverse()) {
+            document.deleteIn([
+              'security',
+              'roles',
+              base.at(-1),
+              'permissions',
+              perms.indexOf(permission),
+            ]);
+          }
+        }
+      },
+    ],
+  },
+  {
+    // TODO: fix anchor support???
+    message: 'Remove `$public`.',
+    path: ['*', 'roles', /\d+/, '$public', '<'],
+    patches: [
+      (document, transaction, stepsList) => {
+        const cleanup = (path: Path): void => {
+          const roles = path.slice(0, -1);
+          // TODO: consider adding $guest if $public was used with other roles
+          if (!document.hasIn([...roles, 0])) {
+            document.deleteIn(roles);
+          }
+        };
+        for (const steps of stepsList) {
+          const path = steps.slice(0, -1);
+
+          const inPage = steps[0] === 'pages' && typeof steps[1] === 'number';
+          const inSubPage =
+            inPage &&
+            ['steps', 'tabs', 'foreach'].includes(steps[2] as string) &&
+            typeof steps[3] === 'number';
+          const inDynamicTabPage =
+            inPage &&
+            steps[2] === 'definition' &&
+            steps[3] === 'foreach' &&
+            typeof steps[4] === 'number';
+
+          const isPageRoles = steps.length === 5 && inPage && steps[2] === 'roles';
+          const isPageBlockRoles =
+            steps.length === 7 &&
+            inPage &&
+            steps[2] === 'blocks' &&
+            typeof steps[3] === 'number' &&
+            steps[4] === 'roles';
+          const isSubPageRoles = steps.length === 7 && inSubPage && steps[4] === 'roles';
+          const isSubPageBlockRoles =
+            steps.length === 9 &&
+            inSubPage &&
+            steps[4] === 'blocks' &&
+            typeof steps[5] === 'number' &&
+            steps[6] === 'roles';
+
+          const isDynamicTabPageRoles =
+            steps.length === 8 && inDynamicTabPage && steps[5] === 'roles';
+          const isDynamicTabPageBlockRoles =
+            steps.length === 10 &&
+            inDynamicTabPage &&
+            steps[5] === 'blocks' &&
+            typeof steps[6] === 'number' &&
+            steps[7] === 'roles';
+
+          if (
+            !(
+              isPageRoles ||
+              isPageBlockRoles ||
+              isSubPageRoles ||
+              isSubPageBlockRoles ||
+              isDynamicTabPageRoles ||
+              isDynamicTabPageBlockRoles
+            )
+          ) {
+            continue;
+          }
+          document.deleteIn(path);
+          cleanup(path);
+        }
+      },
+    ],
+  },
+];

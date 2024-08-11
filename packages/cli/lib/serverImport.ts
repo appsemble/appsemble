@@ -24,6 +24,7 @@ export async function serverImport<
     | 'cleanupResourcesAndAssets'
     | 'fuzzMigrations'
     | 'migrate'
+    | 'migrateAppDefinitions'
     | 'runCronJobs'
     | 'scaleContainers'
     | 'setArgv'

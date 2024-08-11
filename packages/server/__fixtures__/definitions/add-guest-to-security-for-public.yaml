@@ -1,0 +1,35 @@
+# Add guest to security
+name: test
+description: test
+defaultPage: test
+
+security:
+  default:
+    role: roleA
+    policy: everyone
+  roles:
+    roleA:
+      description: test
+    roleB:
+      description: test
+
+resources:
+  test:
+    roles: [$public]
+    schema:
+      additionalProperties: false
+      type: object
+      properties:
+        test:
+          type: string
+
+pages:
+  - name: test
+    blocks:
+      - type: action-button
+        version: 0.29.0
+        parameters:
+          icon: arrow-right
+        actions:
+          onClick:
+            type: noop
