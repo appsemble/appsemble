@@ -96,7 +96,7 @@ export class Resource extends Model {
   @Column(DataType.INTEGER)
   GroupId: number;
 
-  @BelongsTo(() => Group)
+  @BelongsTo(() => Group, { onDelete: 'CASCADE' })
   Group: Awaited<Group>;
 
   @ForeignKey(() => AppMember)
