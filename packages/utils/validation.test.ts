@@ -1813,7 +1813,7 @@ describe('validateAppDefinition', () => {
     expect(result.errors).toStrictEqual([]);
   });
 
-  it('should report an error if user actions are used without a security definition', async () => {
+  it('should report an error if app member actions are used without a security definition', async () => {
     const { security, ...app } = createTestApp();
     (app.pages[0] as BasicPageDefinition).blocks.push({
       type: 'test',
@@ -1863,20 +1863,20 @@ describe('validateAppDefinition', () => {
     expect(result.valid).toBe(false);
     expect(result.errors).toStrictEqual([
       new ValidationError(
-        'refers to a user action but the app doesn’t have a security definition',
-        'user.login',
+        'refers to an app member action but the app doesn’t have a security definition',
+        'app.member.login',
         undefined,
         ['pages', 0, 'blocks', 0, 'actions', 'onWhatever', 'type'],
       ),
       new ValidationError(
-        'refers to a user action but the app doesn’t have a security definition',
-        'user.register',
+        'refers to an app member action but the app doesn’t have a security definition',
+        'app.member.register',
         undefined,
         ['pages', 0, 'blocks', 1, 'actions', 'onWhatever', 'type'],
       ),
       new ValidationError(
-        'refers to a user action but the app doesn’t have a security definition',
-        'user.update',
+        'refers to an app member action but the app doesn’t have a security definition',
+        'app.member.update',
         undefined,
         ['pages', 0, 'blocks', 2, 'actions', 'onWhatever', 'type'],
       ),
@@ -2143,8 +2143,8 @@ describe('validateAppDefinition', () => {
     expect(result.valid).toBe(false);
     expect(result.errors).toStrictEqual([
       new ValidationError(
-        'contains a property that doesn’t exist in users.properties',
-        'user.register',
+        'contains a property that doesn’t exist in app member properties',
+        'app.member.register',
         undefined,
         ['pages', 0, 'blocks', 0, 'actions', 'onWhatever', 'properties'],
       ),
@@ -2196,8 +2196,8 @@ describe('validateAppDefinition', () => {
     expect(result.valid).toBe(false);
     expect(result.errors).toStrictEqual([
       new ValidationError(
-        'contains a property that doesn’t exist in users.properties',
-        'user.update',
+        'contains a property that doesn’t exist in app member properties',
+        'app.member.update',
         undefined,
         ['pages', 0, 'blocks', 0, 'actions', 'onWhatever', 'properties'],
       ),

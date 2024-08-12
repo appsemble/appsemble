@@ -626,17 +626,17 @@ function validateActions(definition: AppDefinition, report: Report): void {
         return;
       }
 
-      if (action.type.startsWith('user.') && !definition.security) {
+      if (action.type.startsWith('app.member.') && !definition.security) {
         report(
           action.type,
-          'refers to a user action but the app doesn’t have a security definition',
+          'refers to an app member action but the app doesn’t have a security definition',
           [...path, 'type'],
         );
         return;
       }
 
       if (
-        ['user.register', 'user.create', 'user.update'].includes(action.type) &&
+        ['app.member.register', 'app.member.create', 'app.member.update'].includes(action.type) &&
         Object.values(
           (action as AppMemberRegisterAction | AppMemberUpdateAction).properties ?? {},
         )[0] &&
@@ -648,7 +648,7 @@ function validateActions(definition: AppDefinition, report: Report): void {
           )[0],
         )) {
           if (!definition.users?.properties[propertyName]) {
-            report(action.type, 'contains a property that doesn’t exist in users.properties', [
+            report(action.type, 'contains a property that doesn’t exist in app member properties', [
               ...path,
               'properties',
             ]);

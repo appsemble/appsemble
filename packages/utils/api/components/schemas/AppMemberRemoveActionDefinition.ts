@@ -4,7 +4,7 @@ import { extendJSONSchema } from './utils.js';
 export const AppMemberRemoveActionDefinition = extendJSONSchema(BaseActionDefinition, {
   type: 'object',
   additionalProperties: false,
-  required: ['type', 'email'],
+  required: ['type', 'id'],
   properties: {
     type: {
       enum: ['app.member.remove'],

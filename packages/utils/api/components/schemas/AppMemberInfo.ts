@@ -43,6 +43,7 @@ export const AppMemberInfo: OpenAPIV3.NonArraySchemaObject = {
     properties: {
       type: 'object',
       description: 'The custom properties of the app member.',
+      additionalProperties: true,
     },
   },
 };
