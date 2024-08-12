@@ -21,7 +21,7 @@ export function createGetAppResourceByIdController(options: Options): Middleware
 
     const view = ctx.queryParams?.view;
 
-    const resourceDefinition = getResourceDefinition(app, resourceType, ctx, view);
+    const resourceDefinition = getResourceDefinition(app.definition, resourceType, ctx, view);
 
     await checkAppPermissions({
       context: ctx,

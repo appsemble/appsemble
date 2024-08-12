@@ -32,7 +32,7 @@ export async function agreeCurrentUserOAuth2AppConsent(ctx: Context): Promise<vo
   assertKoaError(!app, ctx, 404, 'App not found');
 
   assertKoaError(
-    !(await checkAppSecurityPolicy(app, user, appMember)),
+    !(await checkAppSecurityPolicy(app, user)),
     ctx,
     401,
     'User is not allowed to login due to the app’s security policy',

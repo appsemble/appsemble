@@ -28,7 +28,7 @@ export async function verifyCurrentUserOAuth2AppConsent(ctx: Context): Promise<v
 
   assertKoaError(!app, ctx, 404, 'App not found');
 
-  const isAllowed = await checkAppSecurityPolicy(app, user, appMember);
+  const isAllowed = await checkAppSecurityPolicy(app, user);
 
   assertKoaError(
     !isAllowed,

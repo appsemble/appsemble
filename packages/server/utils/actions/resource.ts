@@ -34,7 +34,7 @@ export async function get({
   }
 
   const { view } = action;
-  const resourceDefinition = getResourceDefinition(app.toJSON(), action.resource, context, view);
+  const resourceDefinition = getResourceDefinition(app.definition, action.resource, context, view);
 
   const resource = await Resource.findOne({
     include: [
@@ -81,7 +81,7 @@ export async function query({
 
   const queryParams = (remap(queryRemapper, data, internalContext) || {}) as QueryParams;
 
-  const resourceDefinition = getResourceDefinition(app.toJSON(), action.resource, context, view);
+  const resourceDefinition = getResourceDefinition(app.definition, action.resource, context, view);
 
   const parsed = parseQuery({ ...queryParams, resourceDefinition });
   const include = queryParams?.$select?.split(',').map((s) => s.trim());
@@ -134,7 +134,7 @@ export async function create({
     | Record<string, unknown>
     | Record<string, unknown>[];
 
-  const definition = getResourceDefinition(app.toJSON(), action.resource, context);
+  const definition = getResourceDefinition(app.definition, action.resource, context);
 
   const appAssets = await getAppAssets({ context, app: app.toJSON() });
   Object.assign(context, { body: serializeResource(body) });
@@ -183,7 +183,7 @@ export async function update({
     throw new Error('Missing id');
   }
 
-  const definition = getResourceDefinition(app.toJSON(), action.resource, context);
+  const definition = getResourceDefinition(app.definition, action.resource, context);
 
   const resource = await Resource.findOne({
     where: {
@@ -264,7 +264,7 @@ export async function patch({
     throw new Error('Missing id');
   }
 
-  const definition = getResourceDefinition(app.toJSON(), action.resource, context);
+  const definition = getResourceDefinition(app.definition, action.resource, context);
 
   const resource = await Resource.findOne({
     where: {
@@ -338,7 +338,7 @@ export async function remove({
 }: ServerActionParameters<ResourceDeleteActionDefinition>): Promise<unknown> {
   const body = (remap(action.body, data, internalContext) ?? data) as Record<string, unknown>;
 
-  getResourceDefinition(app.toJSON(), action.resource, context);
+  getResourceDefinition(app.definition, action.resource, context);
 
   if (!body?.id) {
     throw new Error('Missing id');

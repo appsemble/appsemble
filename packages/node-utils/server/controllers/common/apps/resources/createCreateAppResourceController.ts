@@ -13,12 +13,11 @@ export function createCreateAppResourceController(options: Options): Middleware 
       query,
       queryParams: { groupId },
     } = ctx;
-    const { checkAppPermissions, createAppResourcesWithAssets, getApp, getAppAssets } =
-      options;
+    const { checkAppPermissions, createAppResourcesWithAssets, getApp, getAppAssets } = options;
 
     const app = await getApp({ context: ctx, query: { where: { id: appId } } });
 
-    const resourceDefinition = getResourceDefinition(app, resourceType, ctx);
+    const resourceDefinition = getResourceDefinition(app.definition, resourceType, ctx);
 
     await checkAppPermissions({
       context: ctx,

@@ -57,7 +57,6 @@ describe('applyAppServiceSecrets', () => {
         security: {
           default: {
             role: 'Reader',
-            policy: 'invite',
           },
           roles: {
             Visitor: {},

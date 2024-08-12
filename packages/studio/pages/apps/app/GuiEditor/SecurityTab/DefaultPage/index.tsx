@@ -7,7 +7,7 @@ import { useApp } from '../../../index.js';
 import { InputList } from '../../Components/InputList/index.js';
 import { type tabChangeOptions } from '../index.js';
 
-const policyOptions = ['everyone', 'organization', 'invite'] as const;
+const policyOptions = ['everyone', 'organization'] as const;
 
 interface DefaultPageProps {
   readonly onChangeTab: (tab: (typeof tabChangeOptions)[number]) => void;

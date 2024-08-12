@@ -22,7 +22,7 @@ export function createQueryAppResourcesController(options: Options): Middleware 
 
     const view = ctx.queryParams?.view;
 
-    const resourceDefinition = getResourceDefinition(app, resourceType, ctx, view);
+    const resourceDefinition = getResourceDefinition(app.definition, resourceType, ctx, view);
 
     const { order, where } = generateResourceQuery(ctx, options, resourceDefinition);
 

@@ -14,11 +14,11 @@ export async function getAppResourceVersions(ctx: Context): Promise<void> {
 
   assertKoaError(!app, ctx, 404, 'App not found');
 
-  await checkUserOrganizationPermissions(
-    ctx,
-    [OrganizationPermission.QueryAppResources],
-    app.OrganizationId,
-  );
+  await checkUserOrganizationPermissions({
+    context: ctx,
+    requiredPermissions: [OrganizationPermission.QueryAppResources],
+    organizationId: app.OrganizationId,
+  });
 
   const resource = await Resource.findOne({
     where: {
@@ -34,7 +34,7 @@ export async function getAppResourceVersions(ctx: Context): Promise<void> {
 
   assertKoaError(!resource, ctx, 404, 'Resource not found');
 
-  const definition = getResourceDefinition(app.toJSON(), resourceType, ctx);
+  const definition = getResourceDefinition(app.definition, resourceType, ctx);
 
   assertKoaError(!definition.history, ctx, 404, `Resource “${resourceType}” has no history`);
 

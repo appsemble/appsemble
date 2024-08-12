@@ -8,11 +8,11 @@ import { apiUrl } from '../settings.js';
 
 describe('group.join', () => {
   let mock: MockAdapter;
-  let updateGroup: Mock;
+  let addAppMemberGroup: Mock;
 
   beforeEach(() => {
     mock = new MockAdapter(axios);
-    updateGroup = vi.fn();
+    addAppMemberGroup = vi.fn();
   });
 
   it('should join a group and update the state', async () => {
@@ -29,11 +29,11 @@ describe('group.join', () => {
         demo: false,
         role: 'Member',
       }),
-      updateGroup,
+      addAppMemberGroup,
     });
     const result = await action(1337);
     expect(result).toStrictEqual({ id: 1337, role: 'member', annotations: {} });
-    expect(updateGroup).toHaveBeenCalledWith({ id: 1337, role: 'member', annotations: {} });
+    expect(addAppMemberGroup).toHaveBeenCalledWith({ id: 1337, role: 'member', annotations: {} });
   });
 
   it('should throw if the user is not logged in', async () => {
@@ -41,7 +41,7 @@ describe('group.join', () => {
     const action = createTestAction({
       definition: { type: 'group.join' },
       getAppMemberInfo: () => userInfo,
-      updateGroup,
+      addAppMemberGroup,
     });
     await expect(action(1337)).rejects.toThrow(
       new ActionError({
@@ -59,10 +59,9 @@ describe('group.list', () => {
       definition: { type: 'group.list' },
       appMemberGroups: [
         {
-          groupId: 1337,
-          groupName: 'IT',
-          appMemberGroupRole: 'member',
-          groupAnnotations: { foo: 'bar' },
+          id: 1337,
+          name: 'IT',
+          role: 'member',
         },
       ],
     });
@@ -97,9 +96,9 @@ describe('group.members', () => {
       definition: { type: 'group.members', id: 1337 },
       appMemberGroups: [
         {
-          groupId: 1337,
-          groupName: 'IT',
-          appMemberGroupRole: 'member',
+          id: 1337,
+          name: 'IT',
+          role: 'member',
         },
       ],
       getAppMemberInfo: () => ({
@@ -123,9 +122,9 @@ describe('group.members', () => {
       definition: { type: 'group.members', id: 1337 },
       appMemberGroups: [
         {
-          groupId: 1337,
-          groupName: 'IT',
-          appMemberGroupRole: 'member',
+          id: 1337,
+          name: 'IT',
+          role: 'member',
         },
       ],
       getAppMemberInfo: () => ({
@@ -154,9 +153,9 @@ describe('group.members', () => {
       definition: { type: 'group.members', id: 1337 },
       appMemberGroups: [
         {
-          groupId: 1337,
-          groupName: 'IT',
-          appMemberGroupRole: 'member',
+          id: 1337,
+          name: 'IT',
+          role: 'member',
         },
       ],
       getAppMemberInfo: () => appMemberInfo,

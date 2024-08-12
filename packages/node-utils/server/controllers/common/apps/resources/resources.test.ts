@@ -30,16 +30,11 @@ import {
   type Options,
   type ParsedQuery,
   type ParseQueryParams,
-  type VerifyResourceActionPermissionParams,
 } from '../../../../types.js';
 
 let mockGetApp: Mock<[GetAppParams], Promise<App>>;
 let mockGetAppResources: Mock<[GetAppResourcesParams], Promise<Resource[]>>;
 let mockGetAppResource: Mock<[GetAppResourceParams], Promise<Resource>>;
-let mockVerifyResourceActionPermission: Mock<
-  [VerifyResourceActionPermissionParams],
-  Promise<Record<string, any>>
->;
 let mockParseQuery: Mock<[ParseQueryParams], ParsedQuery>;
 let mockGetAppUrl: Mock<[GetAppSubEntityParams], Promise<URL>>;
 let mockGetAppMessages: Mock<[GetAppMessagesParams], Promise<AppMessages[]>>;
@@ -57,7 +52,6 @@ describe('createQueryResources', () => {
   beforeEach(() => {
     mockGetApp = vi.fn();
     mockGetAppResources = vi.fn();
-    mockVerifyResourceActionPermission = vi.fn();
     mockParseQuery = vi.fn();
     mockGetAppUrl = vi.fn();
     mockGetAppMessages = vi.fn();
@@ -97,9 +91,6 @@ describe('createQueryResources', () => {
       getAppResources: mockGetAppResources as (
         params: GetAppResourcesParams,
       ) => Promise<Resource[]>,
-      verifyResourceActionPermission: mockVerifyResourceActionPermission as (
-        params: VerifyResourceActionPermissionParams,
-      ) => Promise<Record<string, any>>,
       parseQuery: mockParseQuery as (params: ParseQueryParams) => ParsedQuery,
     } as Options);
 
@@ -196,9 +187,6 @@ describe('createQueryResources', () => {
       getAppResources: mockGetAppResources as (
         params: GetAppResourcesParams,
       ) => Promise<Resource[]>,
-      verifyResourceActionPermission: mockVerifyResourceActionPermission as (
-        params: VerifyResourceActionPermissionParams,
-      ) => Promise<Record<string, any>>,
       parseQuery: mockParseQuery as (params: ParseQueryParams) => ParsedQuery,
     } as Options);
 
@@ -242,9 +230,6 @@ describe('createQueryResources', () => {
       getAppResources: mockGetAppResources as (
         params: GetAppResourcesParams,
       ) => Promise<Resource[]>,
-      verifyResourceActionPermission: mockVerifyResourceActionPermission as (
-        params: VerifyResourceActionPermissionParams,
-      ) => Promise<Record<string, any>>,
       parseQuery: mockParseQuery as (params: ParseQueryParams) => ParsedQuery,
       getAppUrl: mockGetAppUrl as (params: GetAppSubEntityParams) => Promise<URL>,
       getAppMessages: mockGetAppMessages as (
@@ -255,7 +240,12 @@ describe('createQueryResources', () => {
       ) => Promise<AppConfigEntry[]>,
     } as Options;
 
-    const resourceDefinition = getResourceDefinition(mockApp, 'mockResourceType', mockCtx, 'view');
+    const resourceDefinition = getResourceDefinition(
+      mockApp.definition,
+      'mockResourceType',
+      mockCtx,
+      'view',
+    );
 
     const remapperContext = await getRemapperContext(
       mockApp,
@@ -280,7 +270,6 @@ describe('createCountResources', () => {
   beforeEach(() => {
     mockGetApp = vi.fn();
     mockGetAppResources = vi.fn();
-    mockVerifyResourceActionPermission = vi.fn();
     mockParseQuery = vi.fn();
     mockCtx = {
       pathParams: { appId: 1, resourceType: 'mockResourceType' } as PathParams,
@@ -316,9 +305,6 @@ describe('createCountResources', () => {
       getAppResources: mockGetAppResources as (
         params: GetAppResourcesParams,
       ) => Promise<Resource[]>,
-      verifyResourceActionPermission: mockVerifyResourceActionPermission as (
-        params: VerifyResourceActionPermissionParams,
-      ) => Promise<Record<string, any>>,
       parseQuery: mockParseQuery as (params: ParseQueryParams) => ParsedQuery,
     } as Options);
 
@@ -403,9 +389,6 @@ describe('createCountResources', () => {
       getAppResources: mockGetAppResources as (
         params: GetAppResourcesParams,
       ) => Promise<Resource[]>,
-      verifyResourceActionPermission: mockVerifyResourceActionPermission as (
-        params: VerifyResourceActionPermissionParams,
-      ) => Promise<Record<string, any>>,
       parseQuery: mockParseQuery as (params: ParseQueryParams) => ParsedQuery,
     } as Options);
 
@@ -419,7 +402,6 @@ describe('createGetResourceById', () => {
   beforeEach(() => {
     mockGetApp = vi.fn();
     mockGetAppResource = vi.fn();
-    mockVerifyResourceActionPermission = vi.fn();
     mockGetAppUrl = vi.fn();
     mockGetAppMessages = vi.fn();
     mockGetAppVariables = vi.fn();
@@ -447,9 +429,6 @@ describe('createGetResourceById', () => {
     const middleware = createGetAppResourceByIdController({
       getApp: mockGetApp as (params: GetAppParams) => Promise<App>,
       getAppResource: mockGetAppResource as (params: GetAppResourceParams) => Promise<Resource>,
-      verifyResourceActionPermission: mockVerifyResourceActionPermission as (
-        params: VerifyResourceActionPermissionParams,
-      ) => Promise<Record<string, any>>,
     } as Options);
 
     await middleware(mockCtx, vi.fn());
@@ -520,9 +499,6 @@ describe('createGetResourceById', () => {
     const middleware = createGetAppResourceByIdController({
       getApp: mockGetApp as (params: GetAppParams) => Promise<App>,
       getAppResource: mockGetAppResource as (params: GetAppResourceParams) => Promise<Resource>,
-      verifyResourceActionPermission: mockVerifyResourceActionPermission as (
-        params: VerifyResourceActionPermissionParams,
-      ) => Promise<Record<string, any>>,
     } as Options);
 
     await middleware(mockCtx, vi.fn());
@@ -555,9 +531,6 @@ describe('createGetResourceById', () => {
     const options = {
       getApp: mockGetApp as (params: GetAppParams) => Promise<App>,
       getAppResource: mockGetAppResource as (params: GetAppResourceParams) => Promise<Resource>,
-      verifyResourceActionPermission: mockVerifyResourceActionPermission as (
-        params: VerifyResourceActionPermissionParams,
-      ) => Promise<Record<string, any>>,
       getAppUrl: mockGetAppUrl as (params: GetAppSubEntityParams) => Promise<URL>,
       getAppMessages: mockGetAppMessages as (
         params: GetAppMessagesParams,
@@ -567,7 +540,12 @@ describe('createGetResourceById', () => {
       ) => Promise<AppConfigEntry[]>,
     } as Options;
 
-    const resourceDefinition = getResourceDefinition(mockApp, 'mockResourceType', mockCtx, 'view');
+    const resourceDefinition = getResourceDefinition(
+      mockApp.definition,
+      'mockResourceType',
+      mockCtx,
+      'view',
+    );
 
     const remapperContext = await getRemapperContext(
       mockApp,
@@ -593,7 +571,6 @@ describe('createGetResourceById', () => {
 describe('createCreateResource', () => {
   beforeEach(() => {
     mockGetApp = vi.fn();
-    mockVerifyResourceActionPermission = vi.fn();
     mockCreateAppResourcesWithAssets = vi.fn();
     mockGetAppAssets = vi.fn();
 
@@ -629,9 +606,6 @@ describe('createCreateResource', () => {
       createAppResourcesWithAssets: mockCreateAppResourcesWithAssets as (
         params: CreateAppResourcesWithAssetsParams,
       ) => Promise<Resource[]>,
-      verifyResourceActionPermission: mockVerifyResourceActionPermission as (
-        params: VerifyResourceActionPermissionParams,
-      ) => Promise<Record<string, any>>,
       getAppAssets: mockGetAppAssets as (params: GetAppSubEntityParams) => Promise<AppAsset[]>,
     } as Options);
 
@@ -704,9 +678,6 @@ describe('createCreateResource', () => {
       createAppResourcesWithAssets: mockCreateAppResourcesWithAssets as (
         params: CreateAppResourcesWithAssetsParams,
       ) => Promise<Resource[]>,
-      verifyResourceActionPermission: mockVerifyResourceActionPermission as (
-        params: VerifyResourceActionPermissionParams,
-      ) => Promise<Record<string, any>>,
       getAppAssets: mockGetAppAssets as (params: GetAppSubEntityParams) => Promise<AppAsset[]>,
     } as Options);
 

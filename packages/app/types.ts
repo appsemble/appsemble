@@ -146,7 +146,7 @@ export interface MakeActionParameters<D extends ActionDefinition> {
   passwordLogin: (params: { username: string; password: string }) => Promise<void>;
   passwordLogout: () => Promise<void>;
   setAppMemberInfo: Dispatch<AppMemberInfo>;
-  appMemberGroups: Group[];
+  appMemberGroups: AppMemberGroup[];
   addAppMemberGroup: (group: Group) => void;
   refetchDemoAppMembers: () => Promise<void>;
 }

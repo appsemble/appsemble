@@ -30,7 +30,7 @@ describe('makeActions', () => {
       showShareDialog: null,
       showMessage: null,
       appMemberGroups: [],
-      updateGroup: null,
+      addAppMemberGroup: null,
       getAppMemberInfo: null,
       passwordLogin: null,
       passwordLogout: null,

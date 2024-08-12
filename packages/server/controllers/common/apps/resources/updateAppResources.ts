@@ -32,7 +32,7 @@ export async function updateAppResources(ctx: Context): Promise<void> {
 
   const appMember = await getCurrentAppMember({ context: ctx });
 
-  const definition = getResourceDefinition(app.toJSON(), resourceType, ctx);
+  const definition = getResourceDefinition(app.definition, resourceType, ctx);
 
   const resourcesPayload = extractResourceBody(ctx)[0] as ResourceInterface[];
 

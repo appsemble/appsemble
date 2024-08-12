@@ -52,7 +52,6 @@ describe('proxyGet', () => {
         security: {
           default: {
             role: 'Reader',
-            policy: 'invite',
           },
           roles: {
             Visitor: {},

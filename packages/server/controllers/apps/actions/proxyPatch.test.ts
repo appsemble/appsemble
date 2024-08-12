@@ -52,7 +52,6 @@ describe('proxyPatch', () => {
         security: {
           default: {
             role: 'Reader',
-            policy: 'invite',
           },
           roles: {
             Visitor: {},

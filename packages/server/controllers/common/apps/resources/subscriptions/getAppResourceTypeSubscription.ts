@@ -37,7 +37,7 @@ export async function getAppResourceTypeSubscription(ctx: Context): Promise<void
       },
     ],
   });
-  getResourceDefinition(app.toJSON(), resourceType, ctx);
+  getResourceDefinition(app.definition, resourceType, ctx);
 
   assertKoaError(!app.Resources.length, ctx, 404, 'Resource not found');
   assertKoaError(!app.AppSubscriptions.length, ctx, 404, 'User is not subscribed to this app.');
