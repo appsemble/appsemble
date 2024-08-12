@@ -7,6 +7,7 @@ import {
 } from '@appsemble/types';
 import {
   checkAppRoleAppPermissions,
+  checkGuestAppPermissions,
   checkOrganizationRoleAppPermissions,
   checkOrganizationRoleOrganizationPermissions,
 } from '@appsemble/utils';
@@ -89,6 +90,23 @@ async function getUserOrganizationRole(
   }
 
   return organizationMember.role;
+}
+
+export async function checkUnauthenticatedAppPermissions({
+  appId,
+  context,
+  requiredPermissions,
+}: CheckAppPermissionsParams): Promise<void> {
+  const app = await App.findByPk(appId, { attributes: ['definition'] });
+
+  assertKoaError(!app, context, 404, 'App not found');
+
+  assertKoaError(
+    !checkGuestAppPermissions(app.definition.security, requiredPermissions),
+    context,
+    403,
+    'Guest does not have sufficient app permissions.',
+  );
 }
 
 export async function checkAppMemberAppPermissions({
@@ -185,4 +203,14 @@ export function checkAuthSubjectAppPermissions(params: CheckAppPermissionsParams
   return client && 'app' in client
     ? checkAppMemberAppPermissions(params)
     : checkUserAppPermissions(params);
+}
+
+export function checkAppPermissions(params: CheckAppPermissionsParams): Promise<void> {
+  const { user: authSubject } = params.context;
+
+  if (!authSubject) {
+    return checkUnauthenticatedAppPermissions(params);
+  }
+
+  return checkAuthSubjectAppPermissions(params);
 }

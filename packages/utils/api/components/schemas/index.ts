@@ -97,6 +97,7 @@ export * from './ResourceViewDefinition.js';
 export * from './SecurityDefaultDefinition.js';
 export * from './SecurityDefinition.js';
 export * from './SecurityRoleDefinition.js';
+export * from './SecutiryGuestDefinition.js';
 export * from './ShareActionDefinition.js';
 export * from './ScimPatchOp.js';
 export * from './ScimSecret.js';

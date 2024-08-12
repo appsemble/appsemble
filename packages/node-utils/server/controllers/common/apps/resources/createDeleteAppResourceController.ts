@@ -8,11 +8,11 @@ export function createDeleteAppResourceController(options: Options): Middleware 
       queryParams: { groupId },
     } = ctx;
 
-    const { checkAuthSubjectAppPermissions, deleteAppResource, getApp, getAppResource } = options;
+    const { checkAppPermissions, deleteAppResource, getApp, getAppResource } = options;
 
     const app = await getApp({ context: ctx, query: { where: { id: appId } } });
 
-    await checkAuthSubjectAppPermissions({
+    await checkAppPermissions({
       context: ctx,
       permissions: [`$resource:${resourceType}:delete`],
       app,

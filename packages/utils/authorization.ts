@@ -12,7 +12,39 @@ import {
   type Security,
 } from '@appsemble/types';
 
-export function getAppRoles(appDefinition: AppDefinition): string[] {
+function checkAppPermissions(
+  acquiredPermissions: CustomAppPermission[],
+  requiredPermissions: CustomAppPermission[]
+): boolean {
+  return requiredPermissions.every((p) => {
+    if (acquiredPermissions.includes(p)) {
+      return true;
+    }
+
+    if (p.startsWith('$resource')) {
+      const permissionAction = p.slice(p.lastIndexOf(':') + 1);
+      return acquiredPermissions.includes(`$resource:all:${permissionAction}` as AppPermission);
+    }
+  });
+}
+
+export function getGuestAppPermissions(appSecurityDefinition: Security): CustomAppPermission[] {
+  if (!appSecurityDefinition || !appSecurityDefinition.guest) {
+    return [];
+  }
+
+  return appSecurityDefinition.guest.permissions;
+}
+
+export function checkGuestAppPermissions(
+  appSecurityDefinition: Security,
+  requiredPermissions: CustomAppPermission[],
+): boolean {
+  const guestPermissions = getGuestAppPermissions(appSecurityDefinition);
+  return checkAppPermissions(guestPermissions, requiredPermissions);
+}
+
+export function getAppRoles(appDefinition: AppDefinition): AppRole[] {
   return Array.from(
     new Set([...Object.keys(appDefinition?.security?.roles || {}), ...Object.keys(appRoles)]),
   );
@@ -73,17 +105,7 @@ export function checkAppRoleAppPermissions(
   requiredPermissions: CustomAppPermission[],
 ): boolean {
   const appRolePermissions = getAppRolePermissions(appSecurityDefinition, [appRole]);
-
-  return requiredPermissions.every((p) => {
-    if (appRolePermissions.includes(p)) {
-      return true;
-    }
-
-    if (p.startsWith('$resource')) {
-      const permissionAction = p.slice(p.lastIndexOf(':') + 1);
-      return appRolePermissions.includes(`$resource:all:${permissionAction}` as AppPermission);
-    }
-  });
+  return checkAppPermissions(appRolePermissions, requiredPermissions);
 }
 
 export function checkOrganizationRoleAppPermissions(

@@ -26,7 +26,7 @@ export const pathItems: OpenAPIV3.PathItemObject = {
         },
       },
     },
-    security: [{ studio: [] }, { app: ['groups:read'] }],
+    security: [{ studio: [] }, { app: ['groups:read'] }, {}],
   },
   post: {
     tags: ['common', 'app', 'group'],

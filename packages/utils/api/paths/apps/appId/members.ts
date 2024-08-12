@@ -10,7 +10,7 @@ export const pathItems: OpenAPIV3.PathItemObject = {
     tags: ['common', 'app', 'member'],
     description: 'Fetch all members of an app.',
     operationId: 'queryAppMembers',
-    security: [{ studio: [] }, { app: ['openid'] }],
+    security: [{ studio: [] }, { app: ['openid'] }, {}],
     responses: {
       200: {
         description: 'The list of app members.',

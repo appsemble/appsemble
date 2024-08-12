@@ -278,6 +278,13 @@ export interface CheckAuthSubjectAppPermissionsParams {
   permissions: CustomAppPermission[];
 }
 
+export interface CheckAppPermissionsParams {
+  context: ParameterizedContext<DefaultState, DefaultContextInterface, any>;
+  app: App;
+  groupId?: number;
+  permissions: CustomAppPermission[];
+}
+
 export interface ReloadUserParams {
   context: ParameterizedContext<DefaultState, DefaultContextInterface, any>;
 }
@@ -440,6 +447,7 @@ export interface Options {
     params: CheckUserOrganizationPermissionsParams,
   ) => Promise<void>;
   checkAuthSubjectAppPermissions: (params: CheckAuthSubjectAppPermissionsParams) => Promise<void>;
+  checkAppPermissions: (params: CheckAppPermissionsParams) => Promise<void>;
   reloadUser: (params: ReloadUserParams) => Promise<Record<string, any>>;
   parseQuery: (params: ParseQueryParams) => ParsedQuery;
   getAppResource: (params: GetAppResourceParams) => Promise<Resource>;

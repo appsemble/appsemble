@@ -16,7 +16,7 @@ export function createQueryAppResourcesController(options: Options): Middleware 
       queryParams: { $select, $skip, $top, groupId },
     } = ctx;
 
-    const { checkAuthSubjectAppPermissions, getApp, getAppResources } = options;
+    const { checkAppPermissions, getApp, getAppResources } = options;
 
     const app = await getApp({ context: ctx, query: { where: { id: appId } } });
 
@@ -26,7 +26,7 @@ export function createQueryAppResourcesController(options: Options): Middleware 
 
     const { order, where } = generateResourceQuery(ctx, options, resourceDefinition);
 
-    await checkAuthSubjectAppPermissions({
+    await checkAppPermissions({
       context: ctx,
       permissions: [`$resource:${resourceType}:query`],
       app,

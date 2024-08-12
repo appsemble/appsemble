@@ -10,11 +10,11 @@ export function createCountAppResourcesController(options: Options): Middleware 
       queryParams: { groupId },
     } = ctx;
 
-    const { checkAuthSubjectAppPermissions, getApp, getAppResources } = options;
+    const { checkAppPermissions, getApp, getAppResources } = options;
 
     const app = await getApp({ context: ctx, query: { where: { id: appId } } });
 
-    await checkAuthSubjectAppPermissions({
+    await checkAppPermissions({
       context: ctx,
       permissions: [`$resource:${resourceType}:query`],
       app,

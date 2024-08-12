@@ -3,6 +3,7 @@ import { type Options } from '@appsemble/node-utils';
 import {
   applyAppServiceSecrets,
   checkAppMemberAppPermissions,
+  checkAppPermissions,
   checkAuthSubjectAppPermissions,
   checkUserOrganizationPermissions,
   createAppAsset,
@@ -44,6 +45,7 @@ export const options: Options = {
   checkUserOrganizationPermissions,
   checkAppMemberAppPermissions,
   checkAuthSubjectAppPermissions,
+  checkAppPermissions,
   getAppAssets,
   getCurrentAppMember,
   applyAppServiceSecrets,

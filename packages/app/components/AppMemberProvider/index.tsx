@@ -1,5 +1,5 @@
 import { Loader } from '@appsemble/react-components';
-import { type AppMemberGroup, type AppMemberInfo } from '@appsemble/types';
+import { type AppMemberGroup, type AppMemberInfo, type AppRole } from '@appsemble/types';
 import { setUser as setSentryUser } from '@sentry/browser';
 import axios from 'axios';
 import { jwtDecode } from 'jwt-decode';
@@ -51,7 +51,7 @@ interface DemoLoginParams {
 
 interface LoginState {
   isLoggedIn: boolean;
-  role: string;
+  role: AppRole;
   groups: AppMemberGroup[];
 }
 

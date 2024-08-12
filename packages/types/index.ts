@@ -732,6 +732,10 @@ export type CustomAppResourcePermission = `$resource:${string}:${ResourceAction}
 
 export type CustomAppPermission = AppPermission | CustomAppResourcePermission;
 
+export interface GuestDefinition {
+  permissions: CustomAppPermission[];
+}
+
 export interface RoleDefinition {
   description?: string;
   defaultPage?: string;
@@ -741,9 +745,11 @@ export interface RoleDefinition {
 
 export interface Security {
   default: {
-    role: string;
-    policy?: 'everyone' | 'invite' | 'organization';
+    role: AppRole;
+    policy?: 'everyone' | 'organization';
   };
+
+  guest?: GuestDefinition;
 
   roles: Record<string, RoleDefinition>;
 }
@@ -1622,7 +1628,7 @@ export interface EventType {
   description?: string;
 }
 
-export type ViewRole = AppRole | '$none' | '$public';
+export type ViewRole = AppRole | '$guest';
 
 /**
  * This describes what a page will look like in the app.

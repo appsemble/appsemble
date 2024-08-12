@@ -16,16 +16,20 @@ function getAppMemberViewRoles(
   appSecurityDefinition: Security,
   appMemberRole: AppRole,
   appMemberSelectedGroup: AppMemberGroup,
-): AppRole[] {
+): ViewRole[] {
   if (!appSecurityDefinition) {
     return [];
+  }
+
+  if (!appMemberRole) {
+    return ['$guest'];
   }
 
   if (appMemberSelectedGroup) {
     return getAppInheritedRoles(appSecurityDefinition, [appMemberSelectedGroup.role]);
   }
 
-  return getAppInheritedRoles(appSecurityDefinition, appMemberRole ? [appMemberRole] : []);
+  return getAppInheritedRoles(appSecurityDefinition, [appMemberRole]);
 }
 
 function checkAppMemberViewRoles(
@@ -34,8 +38,6 @@ function checkAppMemberViewRoles(
 ): boolean {
   return (
     requiredRoles.length === 0 ||
-    requiredRoles.includes('$public') ||
-    (requiredRoles.includes('$none') && !appMemberViewRoles.length) ||
     requiredRoles.some((requiredRole) => appMemberViewRoles.includes(requiredRole))
   );
 }
@@ -87,7 +89,7 @@ export function checkBlockPermissions(
   blockDefinition: BlockDefinition,
   appDefinition: AppDefinition,
   appMemberRole: AppRole,
-  appMemberSelectedGroup: AppMemberGroup,
+  appMemberSelectedGroup?: AppMemberGroup,
 ): boolean {
   const appMemberViewRoles = getAppMemberViewRoles(
     appDefinition.security,

@@ -64,6 +64,9 @@ export const key = '0.30.0';
  * - Remove APIUser from enum `enum_OrganizationInvite_role`
  * - Change role APIUser to default value
  * - Remove APIUser from enum `enum_OrganizationMember_role`
+ * - Add column `GroupId` to `Resource` table
+ * - Add column `GroupId` to `Asset` table
+ * - Update unique index `UniqueAssetNameIndex` in `Asset` table
  *
  * @param transaction The sequelize transaction.
  * @param db The sequelize database.
@@ -435,6 +438,50 @@ export async function up(transaction: Transaction, db: Sequelize): Promise<void>
       { transaction },
     );
   }
+
+  logger.info('Add column `GroupId` to `Resource` table');
+  await queryInterface.addColumn(
+    'Resource',
+    'GroupId',
+    {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      onUpdate: 'cascade',
+      onDelete: 'cascade',
+      references: {
+        key: 'id',
+        model: 'Group',
+      },
+    },
+    { transaction },
+  );
+
+  logger.info('Add column `GroupId` to `Asset` table');
+  await queryInterface.addColumn(
+    'Asset',
+    'GroupId',
+    {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      onUpdate: 'cascade',
+      onDelete: 'cascade',
+      references: {
+        key: 'id',
+        model: 'Group',
+      },
+    },
+    { transaction },
+  );
+
+  logger.info('Remove index `UniqueAssetNameIndex` from `Asset` table');
+  await queryInterface.removeIndex('Asset', 'UniqueAssetNameIndex', { transaction });
+
+  logger.info('Add index `UniqueAssetNameIndex` to `Asset` table');
+  await queryInterface.addIndex('Asset', ['name', 'ephemeral', 'AppId', 'GroupId'], {
+    unique: true,
+    name: 'UniqueAssetNameIndex',
+    transaction,
+  });
 }
 
 /**
@@ -498,6 +545,9 @@ export async function up(transaction: Transaction, db: Sequelize): Promise<void>
  * - Remove BlockManager from enum `enum_OrganizationInvite_role`
  * - Change role BlockManager to default value
  * - Remove BlockManager from enum `enum_OrganizationMember_role`
+ * - Remove column `GroupId` from `Resource` table
+ * - Remove column `GroupId` from `Asset` table
+ * - Update unique index `UniqueAssetNameIndex` in `Asset` table
  *
  * @param transaction The sequelize transaction.
  * @param db The sequelize database.
@@ -772,4 +822,20 @@ export async function down(transaction: Transaction, db: Sequelize): Promise<voi
       { transaction },
     );
   }
+
+  logger.info('Remove column `GroupId` from `Resource` table');
+  await queryInterface.removeColumn('Resource', 'GroupId', { transaction });
+
+  logger.info('Remove column `GroupId` from `Asset` table');
+  await queryInterface.removeColumn('Asset', 'GroupId', { transaction });
+
+  logger.info('Remove index `UniqueAssetNameIndex` from `Asset` table');
+  await queryInterface.removeIndex('Asset', 'UniqueAssetNameIndex', { transaction });
+
+  logger.info('Add index `UniqueAssetNameIndex` to `Asset` table');
+  await queryInterface.addIndex('Asset', ['name', 'ephemeral', 'AppId'], {
+    unique: true,
+    name: 'UniqueAssetNameIndex',
+    transaction,
+  });
 }

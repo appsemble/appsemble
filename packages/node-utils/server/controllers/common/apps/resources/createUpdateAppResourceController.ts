@@ -14,19 +14,14 @@ export function createUpdateAppResourceController(options: Options): Middleware 
       queryParams: { groupId },
     } = ctx;
 
-    const {
-      checkAuthSubjectAppPermissions,
-      getApp,
-      getAppAssets,
-      getAppResource,
-      updateAppResource,
-    } = options;
+    const { checkAppPermissions, getApp, getAppAssets, getAppResource, updateAppResource } =
+      options;
 
     const app = await getApp({ context: ctx, query: { where: { id: appId } } });
 
     const resourceDefinition = getResourceDefinition(app, resourceType, ctx);
 
-    await checkAuthSubjectAppPermissions({
+    await checkAppPermissions({
       context: ctx,
       permissions: [`$resource:${resourceType}:update`],
       app,
