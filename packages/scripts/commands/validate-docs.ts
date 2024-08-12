@@ -5,6 +5,7 @@ import { AppsembleError, authenticate, logger, opendirSafe } from '@appsemble/no
 import {
   type ActionDefinition,
   type AppDefinition,
+  type AppMemberPropertyDefinition,
   type BasicPageDefinition,
   type BlockDefinition,
   type ControllerDefinition,
@@ -13,7 +14,6 @@ import {
   type LinkActionDefinition,
   type ResourceActionDefinition,
   type ResourceDefinition,
-  type UserPropertyDefinition,
 } from '@appsemble/types';
 import { allActions } from '@appsemble/utils';
 import axios from 'axios';
@@ -309,17 +309,17 @@ function appendControllerToTemplate(
   return updatedTemplate;
 }
 
-function appendUsersToTemplate(
-  users: {
-    properties: Record<string, UserPropertyDefinition>;
+function appendMembersToTemplate(
+  members: {
+    properties: Record<string, AppMemberPropertyDefinition>;
   },
   template: AppDefinition,
 ): AppDefinition {
   const updatedTemplate = template;
 
-  updatedTemplate.users = users;
+  updatedTemplate.members = members;
 
-  for (const propertyDefinition of Object.values(users.properties)) {
+  for (const propertyDefinition of Object.values(members.properties)) {
     if (propertyDefinition.reference.resource) {
       updatedTemplate.resources = {
         [propertyDefinition.reference.resource]: {
@@ -435,7 +435,7 @@ async function accumulateAppDefinitions(docsPath: string): Promise<AppDefinition
           template = appendControllerToTemplate(parsed.controller, template);
           break;
         case 'users':
-          template = appendUsersToTemplate(parsed.users, template);
+          template = appendMembersToTemplate(parsed.members, template);
           break;
         case 'security':
           template.security = template.security

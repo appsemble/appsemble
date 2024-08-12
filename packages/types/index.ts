@@ -726,11 +726,18 @@ export interface SubscriptionResponseResource {
 
 export type SubscriptionResponse = Record<string, SubscriptionResponseResource>;
 
-export type ResourceAction = 'create' | 'delete' | 'get' | 'patch' | 'query' | 'update';
+export type ResourceViewAction = 'get' | 'query';
+
+export type ResourceAction = ResourceViewAction | 'create' | 'delete' | 'patch' | 'update';
 
 export type CustomAppResourcePermission = `$resource:${string}:${ResourceAction}`;
 
-export type CustomAppPermission = AppPermission | CustomAppResourcePermission;
+export type CustomAppResourceViewPermission = `$resource:${string}:${ResourceViewAction}:${string}`;
+
+export type CustomAppPermission =
+  | AppPermission
+  | CustomAppResourcePermission
+  | CustomAppResourceViewPermission;
 
 export interface GuestDefinition {
   permissions: CustomAppPermission[];
@@ -743,16 +750,29 @@ export interface RoleDefinition {
   permissions?: CustomAppPermission[];
 }
 
-export interface Security {
+export interface MinimalSecurity {
+  guest: GuestDefinition;
+
+  default?: {
+    role: AppRole;
+    policy?: 'everyone' | 'organization';
+  };
+
+  roles?: Record<string, RoleDefinition>;
+}
+
+export interface StrictSecurity {
+  guest?: GuestDefinition;
+
   default: {
     role: AppRole;
     policy?: 'everyone' | 'organization';
   };
 
-  guest?: GuestDefinition;
-
   roles: Record<string, RoleDefinition>;
 }
+
+export type Security = MinimalSecurity | StrictSecurity;
 
 export type Navigation = 'bottom' | 'hidden' | 'left-menu';
 export type LayoutPosition = 'hidden' | 'navbar' | 'navigation';
@@ -840,7 +860,7 @@ export interface ResourceView {
   remap: Remapper;
 }
 
-export interface UserPropertyDefinition {
+export interface AppMemberPropertyDefinition {
   /**
    * The JSON schema to validate user properties against before sending it to the backend.
    */
@@ -1886,8 +1906,8 @@ export interface AppDefinition {
 
   controller?: ControllerDefinition;
 
-  users?: {
-    properties: Record<string, UserPropertyDefinition>;
+  members?: {
+    properties: Record<string, AppMemberPropertyDefinition>;
   };
 
   /**

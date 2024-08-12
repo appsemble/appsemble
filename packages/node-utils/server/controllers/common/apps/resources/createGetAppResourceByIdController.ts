@@ -12,20 +12,20 @@ export function createGetAppResourceByIdController(options: Options): Middleware
   return async (ctx: Context) => {
     const {
       pathParams: { appId, resourceId, resourceType },
-      queryParams: { groupId },
+      queryParams: { groupId, view },
     } = ctx;
 
     const { checkAppPermissions, getApp, getAppResource } = options;
 
     const app = await getApp({ context: ctx, query: { where: { id: appId } } });
 
-    const view = ctx.queryParams?.view;
-
     const resourceDefinition = getResourceDefinition(app.definition, resourceType, ctx, view);
 
     await checkAppPermissions({
       context: ctx,
-      permissions: [`$resource:${resourceType}:get`],
+      permissions: [
+        view ? `$resource:${resourceType}:get:${view}` : `$resource:${resourceType}:get`,
+      ],
       app,
       groupId,
     });

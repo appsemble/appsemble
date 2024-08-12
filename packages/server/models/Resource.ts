@@ -150,7 +150,7 @@ export class Resource extends Model {
 
     const appMembersToUpdate: Record<string, Record<string, number[] | number>> = {};
 
-    const userPropertiesDefinition = app.definition.users?.properties;
+    const userPropertiesDefinition = app.definition.members?.properties;
 
     if (!userPropertiesDefinition) {
       return;
@@ -234,7 +234,7 @@ export class Resource extends Model {
 
     const appMembersToUpdate: Record<string, Record<string, number[] | number>> = {};
 
-    const userPropertiesDefinition = app.definition.users?.properties;
+    const userPropertiesDefinition = app.definition.members?.properties;
 
     if (!userPropertiesDefinition) {
       return;

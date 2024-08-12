@@ -6,6 +6,7 @@ import {
   appRoles,
   type CustomAppPermission,
   type CustomAppResourcePermission,
+  type CustomAppResourceViewPermission,
   type OrganizationPermission,
   type OrganizationRole,
   organizationRoles,
@@ -16,14 +17,35 @@ function checkAppPermissions(
   acquiredPermissions: CustomAppPermission[],
   requiredPermissions: CustomAppPermission[],
 ): boolean {
+  const customAppResourcePermissionPattern =
+    /^\$resource:[^:]+:(get|query|create|delete|patch|update)$/;
+
+  const customAppResourceViewPermissionPattern = /^\$resource:[^:]+:(get|query):[^:]+$/;
+
   return requiredPermissions.every((p) => {
     if (acquiredPermissions.includes(p)) {
       return true;
     }
 
-    if (p.startsWith('$resource')) {
-      const permissionAction = p.slice(p.lastIndexOf(':') + 1);
-      return acquiredPermissions.includes(`$resource:all:${permissionAction}` as AppPermission);
+    if (customAppResourcePermissionPattern.test(p)) {
+      const [, , resourceAction] = (p as CustomAppResourcePermission).split(':');
+      return acquiredPermissions.includes(`$resource:all:${resourceAction}` as CustomAppPermission);
+    }
+
+    if (customAppResourceViewPermissionPattern.test(p)) {
+      const [, resourceName, resourceAction, view] = (p as CustomAppResourceViewPermission).split(
+        ':',
+      );
+
+      return (
+        acquiredPermissions.includes(
+          `$resource:${resourceName}:${resourceAction}` as CustomAppPermission,
+        ) ||
+        acquiredPermissions.includes(`$resource:all:${resourceAction}` as CustomAppPermission) ||
+        acquiredPermissions.includes(
+          `$resource:all:${resourceAction}:${view}` as CustomAppPermission,
+        )
+      );
     }
   });
 }

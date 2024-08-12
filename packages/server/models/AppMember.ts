@@ -1,5 +1,5 @@
 import { AppMemberPropertiesError, AppsembleError } from '@appsemble/node-utils';
-import { type UserPropertyDefinition } from '@appsemble/types';
+import { type AppMemberPropertyDefinition } from '@appsemble/types';
 import { Validator } from 'jsonschema';
 import { has } from 'lodash-es';
 import { type OpenAPIV3 } from 'openapi-types';
@@ -134,10 +134,10 @@ export class AppMember extends Model {
   }
 
   private static getDefaultValue(
-    propertyDefinition: OpenAPIV3.SchemaObject | UserPropertyDefinition,
+    propertyDefinition: AppMemberPropertyDefinition | OpenAPIV3.SchemaObject,
   ): Record<string, any> | boolean | number | [] | null {
     const pdSchema = has(propertyDefinition, 'schema')
-      ? (propertyDefinition as UserPropertyDefinition).schema
+      ? (propertyDefinition as AppMemberPropertyDefinition).schema
       : (propertyDefinition as OpenAPIV3.SchemaObject);
 
     const { default: pdDefault, enum: pdEnum, type: pdType } = pdSchema;
@@ -205,7 +205,7 @@ export class AppMember extends Model {
 
     const { definition: appDefinition, demoMode } = app;
 
-    const userPropertiesDefinition = appDefinition.users?.properties;
+    const userPropertiesDefinition = appDefinition.members?.properties;
     const resourcesDefinition = appDefinition.resources;
 
     const parsedProperties: Record<string, any> = instance.properties || {};
