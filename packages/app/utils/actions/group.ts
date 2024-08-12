@@ -21,7 +21,9 @@ export const groupJoin: ActionCreator<'group.join'> = ({ getAppMemberInfo }) => 
   },
 ];
 
-export const groupList: ActionCreator<'group.list'> = ({ appMemberGroups }) => [() => appMemberGroups];
+export const groupList: ActionCreator<'group.list'> = ({ appMemberGroups }) => [
+  () => appMemberGroups,
+];
 
 export const groupInvite: ActionCreator<'group.invite'> = ({ definition, remap }) => [
   async (data) => {

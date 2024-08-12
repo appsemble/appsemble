@@ -13,7 +13,7 @@ import { DemoLogin } from '../DemoLogin/index.js';
 export function ProfileDropdown(): ReactNode {
   const { formatMessage } = useIntl();
   const { definition } = useAppDefinition();
-  const { groups, info, isLoggedIn, logout } = useAppMember();
+  const { info, isLoggedIn, logout } = useAppMember();
   const { lang } = useParams<{ lang: string }>();
   const { pathname } = useLocation();
 
@@ -29,8 +29,6 @@ export function ProfileDropdown(): ReactNode {
   ) {
     return null;
   }
-
-  console.log(groups)
 
   if (!isLoggedIn) {
     return (

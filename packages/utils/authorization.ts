@@ -14,7 +14,7 @@ import {
 
 function checkAppPermissions(
   acquiredPermissions: CustomAppPermission[],
-  requiredPermissions: CustomAppPermission[]
+  requiredPermissions: CustomAppPermission[],
 ): boolean {
   return requiredPermissions.every((p) => {
     if (acquiredPermissions.includes(p)) {
