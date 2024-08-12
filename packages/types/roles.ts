@@ -151,20 +151,21 @@ const AppMembersManager = [
   AppPermission.PatchAppMemberProperties,
 ];
 
-const AppGroupsManager = [
-  ...AppMember,
-  AppPermission.QueryGroups,
-  AppPermission.CreateGroups,
-  AppPermission.UpdateGroups,
-  AppPermission.DeleteGroups,
-];
-
 const AppGroupMembersManager = [
   ...AppMember,
   AppPermission.CreateGroupInvites,
   AppPermission.QueryGroupMembers,
   AppPermission.RemoveGroupMembers,
   AppPermission.UpdateGroupMemberRoles,
+];
+
+const AppGroupsManager = [
+  ...AppMember,
+  ...AppGroupMembersManager,
+  AppPermission.QueryGroups,
+  AppPermission.CreateGroups,
+  AppPermission.UpdateGroups,
+  AppPermission.DeleteGroups,
 ];
 
 const AppResourcesManager = [
@@ -188,8 +189,8 @@ const AppOwner = [
 export const appRoles = {
   Member: AppMember,
   MembersManager: AppMembersManager,
-  GroupsManager: AppGroupsManager,
   GroupMembersManager: AppGroupMembersManager,
+  GroupsManager: AppGroupsManager,
   ResourcesManager: AppResourcesManager,
   Owner: AppOwner,
 };
