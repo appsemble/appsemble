@@ -145,7 +145,7 @@ export function MemberRow({
     action: callDelete,
   });
 
-  const roleKeys = getAppRoles(app.definition);
+  const roleKeys = getAppRoles(app.definition.security);
 
   return (
     <>

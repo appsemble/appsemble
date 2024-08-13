@@ -99,7 +99,7 @@ export async function handler(argv: ServeArguments): Promise<void> {
   const appPath = join(process.cwd(), argv.path);
   const [, , , appsembleApp] = await traverseAppDirectory(appPath, 'development', new FormData());
 
-  const appRoles = getAppRoles(appsembleApp.definition);
+  const appRoles = getAppRoles(appsembleApp.definition.security);
 
   const passedUserRole = argv['user-role'];
   if (passedUserRole && !appRoles?.includes(passedUserRole)) {

@@ -13,7 +13,6 @@ export const exampleApp = (
         testResource: {
           views: {
             testView: {
-              roles: ['Reader'],
               remap: {
                 'object.from': {
                   name: {
@@ -27,11 +26,9 @@ export const exampleApp = (
               },
             },
             publicView: {
-              roles: ['$public'],
               remap: { 'object.assign': { public: { static: true } } },
             },
             authorView: {
-              roles: ['$author'],
               remap: { 'object.assign': { author: { static: true } } },
             },
           },
@@ -85,7 +82,6 @@ export const exampleApp = (
             required: ['bar'],
             properties: { bar: { type: 'string' }, testResourceId: { type: 'number' } },
           },
-          roles: ['$public'],
           references: {
             testResourceId: {
               resource: 'testResource',
@@ -105,7 +101,6 @@ export const exampleApp = (
             required: ['bar'],
             properties: { bar: { type: 'string' }, testResourceBId: { type: 'number' } },
           },
-          roles: ['$public'],
           references: {
             testResourceBId: {
               resource: 'testResourceB',
@@ -125,7 +120,6 @@ export const exampleApp = (
             required: ['bar'],
             properties: { bar: { type: 'string' }, testResourceId: { type: 'number' } },
           },
-          roles: ['$public'],
           references: {
             testResourceId: {
               resource: 'testResource',
@@ -146,7 +140,6 @@ export const exampleApp = (
             required: ['bar'],
             properties: { bar: { type: 'string' }, testResourceId: { type: 'number' } },
           },
-          roles: ['$public'],
           references: {
             testResourceId: {
               resource: 'testResource',
@@ -167,7 +160,6 @@ export const exampleApp = (
             required: ['bar'],
             properties: { bar: { type: 'string' } },
           },
-          roles: ['$none'],
         },
         testResourceAuthorOnly: {
           schema: {
@@ -175,21 +167,9 @@ export const exampleApp = (
             required: ['foo'],
             properties: { foo: { type: 'string' } },
           },
-          create: { roles: ['$author'] },
-          count: { roles: ['$author'] },
-          delete: { roles: ['$author'] },
-          get: { roles: ['$author'] },
-          query: { roles: ['$author'] },
-          update: { roles: ['$author'] },
         },
         secured: {
           schema: { type: 'object' },
-          create: {
-            roles: ['Admin'],
-          },
-          query: {
-            roles: ['Reader'],
-          },
         },
         testResourceGroup: {
           schema: {
@@ -197,12 +177,6 @@ export const exampleApp = (
             required: ['foo'],
             properties: { foo: { type: 'string' } },
           },
-          get: { roles: ['$author', '$group:member'] },
-          query: { roles: ['$group:member'] },
-          count: { roles: ['$group:member'] },
-          update: { roles: ['$group:member'] },
-          create: { roles: ['$group:member'] },
-          delete: { roles: ['$group:member'] },
         },
         testResourceGroupManager: {
           schema: {
@@ -210,10 +184,6 @@ export const exampleApp = (
             required: ['foo'],
             properties: { foo: { type: 'string' } },
           },
-          query: { roles: ['$author', '$group:manager'] },
-          update: { roles: ['$group:manager'] },
-          create: { roles: ['$group:manager'] },
-          delete: { roles: ['$group:manager'] },
         },
         testExpirableResource: {
           expires: '10m',
@@ -222,17 +192,12 @@ export const exampleApp = (
             required: ['foo'],
             properties: { foo: { type: 'string' } },
           },
-          roles: ['$public'],
         },
         testPrivateResource: {
           schema: {
             type: 'object',
             required: ['foo'],
             properties: { foo: { type: 'string' } },
-          },
-          roles: [],
-          count: {
-            roles: ['$public'],
           },
         },
         testAssets: {
@@ -244,10 +209,8 @@ export const exampleApp = (
               string: { type: 'string' },
             },
           },
-          roles: ['$public'],
         },
         testHistoryTrue: {
-          roles: ['$public'],
           history: true,
           schema: {
             type: 'object',
@@ -257,7 +220,6 @@ export const exampleApp = (
           },
         },
         testHistoryDataTrue: {
-          roles: ['$public'],
           history: { data: true },
           schema: {
             type: 'object',
@@ -267,7 +229,6 @@ export const exampleApp = (
           },
         },
         testHistoryDataFalse: {
-          roles: ['$public'],
           history: { data: false },
           schema: {
             type: 'object',
@@ -280,7 +241,6 @@ export const exampleApp = (
       security: {
         default: {
           role: 'Reader',
-          policy: 'invite',
         },
         roles: {
           Visitor: {},

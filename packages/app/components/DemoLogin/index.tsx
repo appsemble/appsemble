@@ -94,7 +94,7 @@ function GroupControls(): ReactNode {
     return <FormattedMessage {...messages.error} />;
   }
 
-  const appRoles = getAppRoles(appDefinition);
+  const appRoles = getAppRoles(appDefinition.security);
 
   return (
     <Table>
@@ -141,7 +141,7 @@ export function DemoLogin({ modal }: DemoLoginProps): ReactNode {
 
   const busy = useToggle();
 
-  const appRoles = getAppRoles(appDefinition);
+  const appRoles = getAppRoles(appDefinition.security);
   const defaultAppRole = useMemo(
     () => appDefinition?.security?.default.role ?? appRoles[0] ?? '',
     [appDefinition?.security?.default.role, appRoles],

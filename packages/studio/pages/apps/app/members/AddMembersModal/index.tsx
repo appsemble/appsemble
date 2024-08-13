@@ -52,7 +52,7 @@ export function AddMembersModal({ onInvited, state }: AddMembersModalProps): Rea
   const [invites, setInvites] = useState<AppInvite[]>([defaultInvite]);
   const [submitting, setSubmitting] = useState(false);
 
-  const appRoles = getAppRoles(app.definition);
+  const appRoles = getAppRoles(app.definition.security);
 
   const reset = useCallback(() => {
     setInvites([defaultInvite]);

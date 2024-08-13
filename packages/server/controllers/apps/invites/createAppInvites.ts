@@ -27,7 +27,7 @@ export async function createAppInvites(ctx: Context): Promise<void> {
 
   assertKoaError(
     !(body as AppInvite[]).every((invite) =>
-      getAppRoles(app.definition).find((role) => role === invite.role),
+      getAppRoles(app.definition.security).find((role) => role === invite.role),
     ),
     ctx,
     403,

@@ -1,5 +1,4 @@
 import {
-  type AppDefinition,
   appOrganizationPermissionMapping,
   type AppPermission,
   type AppRole,
@@ -10,6 +9,7 @@ import {
   type OrganizationPermission,
   type OrganizationRole,
   organizationRoles,
+  type PredefinedAppRole,
   type Security,
 } from '@appsemble/types';
 
@@ -66,18 +66,20 @@ export function checkGuestAppPermissions(
   return checkAppPermissions(guestPermissions, requiredPermissions);
 }
 
-export function getAppRoles(appDefinition: AppDefinition): AppRole[] {
+export function getAppRoles(appSecurityDefinition: Security): AppRole[] {
   return Array.from(
-    new Set([...Object.keys(appDefinition?.security?.roles || {}), ...Object.keys(appRoles)]),
+    new Set([...Object.keys(appSecurityDefinition?.roles || {}), ...Object.keys(appRoles)]),
   );
 }
 
-export function getAppInheritedRoles(appSecurityDefinition: Security, roles: AppRole[]): AppRole[] {
+export function getAppInheritedRoles(
+  appSecurityDefinition: Security,
+  roles: AppRole[],
+  accumulatedRoles: AppRole[] = [],
+): AppRole[] {
   if (!appSecurityDefinition) {
     return [];
   }
-
-  const accumulatedRoles: AppRole[] = [];
 
   for (const role of roles) {
     if (!accumulatedRoles.includes(role)) {
@@ -86,13 +88,13 @@ export function getAppInheritedRoles(appSecurityDefinition: Security, roles: App
       const roleDefinition = appSecurityDefinition.roles[role];
       if (roleDefinition && roleDefinition.inherits) {
         accumulatedRoles.push(
-          ...getAppInheritedRoles(appSecurityDefinition, roleDefinition.inherits),
+          ...getAppInheritedRoles(appSecurityDefinition, roleDefinition.inherits, accumulatedRoles),
         );
       }
     }
   }
 
-  return accumulatedRoles;
+  return Array.from(new Set(accumulatedRoles));
 }
 
 export function getAppRolePermissions(
@@ -111,7 +113,7 @@ export function getAppRolePermissions(
         accumulatedPermissions.push(...rolePermissions);
       }
     } else {
-      const predefinedRolePermissions = appRoles[role as keyof typeof appRoles];
+      const predefinedRolePermissions = appRoles[role as PredefinedAppRole];
       if (predefinedRolePermissions) {
         accumulatedPermissions.push(...predefinedRolePermissions);
       }
@@ -119,6 +121,28 @@ export function getAppRolePermissions(
   }
 
   return Array.from(new Set(accumulatedPermissions));
+}
+
+export function getAppRolesByPermissions(
+  appSecurityDefinition: Security,
+  requiredPermissions: CustomAppPermission[],
+): (AppRole | 'Guest')[] {
+  const roles = getAppRoles(appSecurityDefinition);
+
+  const compliantRoles: AppRole[] = [];
+  for (const role of roles) {
+    if (
+      checkAppPermissions(getAppRolePermissions(appSecurityDefinition, [role]), requiredPermissions)
+    ) {
+      compliantRoles.push(role);
+    }
+  }
+
+  if (checkAppPermissions(getGuestAppPermissions(appSecurityDefinition), requiredPermissions)) {
+    compliantRoles.push('Guest');
+  }
+
+  return compliantRoles;
 }
 
 export function checkAppRoleAppPermissions(

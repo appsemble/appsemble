@@ -59,7 +59,7 @@ export function AddGroupMemberModal({
   const [invites, setInvites] = useState<GroupInvite[]>([defaultInvite]);
   const [submitting, setSubmitting] = useState(false);
 
-  const roleKeys = getAppRoles(app.definition);
+  const roleKeys = getAppRoles(app.definition.security);
 
   const reset = useCallback(() => {
     setInvites([defaultInvite]);

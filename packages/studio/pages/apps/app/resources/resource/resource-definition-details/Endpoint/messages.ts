@@ -29,8 +29,8 @@ export const messages = defineMessages({
     id: 'studio.QCmXtC',
     defaultMessage: 'Role: {role}',
   },
-  public: {
-    id: 'studio.uhu5aG',
-    defaultMessage: 'Public',
+  guest: {
+    id: 'studio.zF7Cth',
+    defaultMessage: 'Guest',
   },
 });

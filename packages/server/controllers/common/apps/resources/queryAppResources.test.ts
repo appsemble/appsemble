@@ -137,10 +137,6 @@ describe('queryAppResources', () => {
   describe('verifyAppRole', () => {
     // The same logic gets applies to query, get, create, update, and delete.
     it('should return normally on secured actions if user is authenticated and has sufficient roles', async () => {
-      app.definition.resources.testResource.query = {
-        roles: ['Reader'],
-      };
-
       await AppMember.create({
         email: user.primaryEmail,
         AppId: app.id,
@@ -185,10 +181,6 @@ describe('queryAppResources', () => {
     });
 
     it('should return normally on secured actions if user is the resource author', async () => {
-      app.definition.resources.testResource.get = {
-        roles: ['Admin', '$author'],
-      };
-
       const member = await AppMember.create({
         email: user.primaryEmail,
         timezone: 'Europe/Amsterdam',

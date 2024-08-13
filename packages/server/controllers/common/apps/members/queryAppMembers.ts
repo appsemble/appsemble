@@ -28,7 +28,7 @@ export async function queryAppMembers(ctx: Context): Promise<void> {
     });
   }
 
-  const supportedAppRoles = getAppRoles(app.definition);
+  const supportedAppRoles = getAppRoles(app.definition.security);
 
   const passedRoles = Array.isArray(roles) ? roles : [roles];
 

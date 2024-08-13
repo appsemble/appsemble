@@ -231,7 +231,6 @@ function appendBlockToTemplate(block: BlockDefinition, template: AppDefinition):
       updatedTemplate.resources = {
         ...template?.resources,
         [blockResourceActionDefinition.resource]: {
-          roles: ['$public'],
           schema: {
             type: 'object',
             additionalProperties: false,
@@ -262,7 +261,6 @@ function appendCronToTemplate(
   if (cronAction.type.startsWith('resource')) {
     updatedTemplate.resources = {
       [cronAction.resource]: {
-        roles: ['$public'],
         schema: {
           type: 'object',
           additionalProperties: false,
@@ -291,7 +289,6 @@ function appendControllerToTemplate(
     if (action.type.startsWith('resource')) {
       updatedTemplate.resources = {
         [(action as ResourceActionDefinition<'noop'>).resource]: {
-          roles: ['$public'],
           schema: {
             type: 'object',
             additionalProperties: false,
@@ -323,7 +320,6 @@ function appendMembersToTemplate(
     if (propertyDefinition.reference.resource) {
       updatedTemplate.resources = {
         [propertyDefinition.reference.resource]: {
-          roles: ['$public'],
           schema: {
             type: 'object',
             additionalProperties: false,

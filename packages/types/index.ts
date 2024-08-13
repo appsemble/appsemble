@@ -8,7 +8,7 @@ import { type AppVisibility } from './app.js';
 import { type BulmaColor } from './bulma.js';
 import { type HTTPMethods } from './http.js';
 import { type AppPermission } from './permissions.js';
-import { type AppRole, type OrganizationRole } from './roles.js';
+import { type AppRole, type OrganizationRole, type PredefinedAppRole } from './roles.js';
 import { type Theme } from './theme.js';
 
 export * from './action.js';
@@ -758,7 +758,7 @@ export interface MinimalSecurity {
     policy?: 'everyone' | 'organization';
   };
 
-  roles?: Record<string, RoleDefinition>;
+  roles?: Record<Exclude<string, PredefinedAppRole>, RoleDefinition>;
 }
 
 export interface StrictSecurity {
@@ -814,11 +814,6 @@ export interface ResourceCall {
    * Query parameters to pass along with the request.
    */
   query?: Remapper;
-
-  /**
-   * The roles that are allowed to perform this action.
-   */
-  roles?: string[];
 }
 
 export interface ResourceReferenceActionTrigger {
@@ -850,11 +845,6 @@ export interface ResourceHistoryDefinition {
 
 export interface ResourceView {
   /**
-   * The roles required to use this view.
-   */
-  roles: string[];
-
-  /**
    * The remappers used to transform the output.
    */
   remap: Remapper;
@@ -875,11 +865,6 @@ export interface AppMemberPropertyDefinition {
 }
 
 export interface ResourceDefinition {
-  /**
-   * The default list of roles used for permission checks for each action.
-   */
-  roles?: string[];
-
   /**
    * A definition of how versioning should happen for instances of this resource.
    */

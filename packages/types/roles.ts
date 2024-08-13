@@ -195,4 +195,6 @@ export const appRoles = {
   Owner: AppOwner,
 };
 
-export type AppRole = string | keyof typeof appRoles;
+export type PredefinedAppRole = keyof typeof appRoles;
+
+export type AppRole = PredefinedAppRole | string;
