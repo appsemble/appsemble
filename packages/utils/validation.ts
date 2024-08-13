@@ -796,7 +796,7 @@ function validateActions(definition: AppDefinition, report: Report): void {
         }
 
         const [toBase, toSub] = [].concat(to);
-        const toPage = findPageByName(toBase, toSub);
+        const toPage = findPageByName(definition.pages, toBase);
 
         if (!toPage) {
           report(to, 'refers to a page that doesn’t exist', [...path, 'to']);

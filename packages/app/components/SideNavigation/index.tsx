@@ -77,15 +77,10 @@ export function SideNavigation({ blockMenus, pages }: SideNavigationProps): Reac
         .filter((page) => checkPagePermissionsCallback(page))
         .map((page) => {
           if (page?.type === 'container') {
-            const [name, navName] = generateNameAndNavName(page);
+            const [, navName] = generateNameAndNavName(page);
             return (
               <CollapsibleMenuSection key={page.name}>
-                <MenuItem
-                  icon={page?.icon}
-                  key={page?.name}
-                  title={navName}
-                  to={`${url}/${normalize(name)}`}
-                >
+                <MenuItem icon={page?.icon} key={page?.name} title={navName}>
                   {navName}
                 </MenuItem>
                 <MenuSection>{renderMenu(page.pages)}</MenuSection>
@@ -97,7 +92,6 @@ export function SideNavigation({ blockMenus, pages }: SideNavigationProps): Reac
             <MenuItem
               icon={page.icon}
               key={page.name}
-              reloadDocument
               title={navName}
               to={`${url}/${normalize(name)}`}
             >

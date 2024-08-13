@@ -53,7 +53,7 @@ export function validateMessages(messages: AppsembleMessages, app: AppDefinition
 
   const coreMessages = messages.core ?? {};
   for (const [key, value] of Object.entries(coreMessages)) {
-    if (!value || typeof value !== 'string') {
+    if (typeof value !== 'string') {
       throw new AppMessageValidationError(`Invalid translation key: core.${key}`);
     }
   }

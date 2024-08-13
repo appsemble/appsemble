@@ -7,7 +7,7 @@ import {
   MetaSwitch,
   useLocationString,
 } from '@appsemble/react-components';
-import { type ContainerPageDefinition, type PageDefinition, type Remapper } from '@appsemble/types';
+import { type PageDefinition, type Remapper } from '@appsemble/types';
 import { createThemeURL, mergeThemes, normalize, remap } from '@appsemble/utils';
 import classNames from 'classnames';
 import { type ReactNode, useCallback, useEffect, useRef, useState } from 'react';
@@ -113,12 +113,26 @@ export function Page(): ReactNode {
       index = definition.pages.findIndex((p) => normalize(p.name) === pageName);
     }
   }
-
   const findPageById = useCallback(
     (pages: PageDefinition[]): PageDefinition | null => {
       for (const internalPage of pages) {
-        if (normalize(internalPage.name) === normalizedPageId) {
+        const normalizedName = normalize(internalPage.name);
+
+        if (normalizedName === normalizedPageId) {
           return internalPage;
+        }
+
+        // Check for translated page name
+        const pageMessages = appMessageIds.filter((id) => id.startsWith('pages.'));
+        const translatedPage = pageMessages.find(
+          (id) => normalize(getAppMessage({ id }).format() as string) === normalizedPageId,
+        );
+
+        if (translatedPage) {
+          const pageName = translatedPage.split('.').pop();
+          if (normalize(internalPage.name) === pageName) {
+            return internalPage;
+          }
         }
 
         if (internalPage.type === 'container') {
@@ -131,12 +145,12 @@ export function Page(): ReactNode {
 
       return null;
     },
-    [normalizedPageId],
+    [appMessageIds, getAppMessage, normalizedPageId],
   );
 
   const page = index === -1 ? findPageById(definition.pages) : definition.pages[index];
   const internalPageName = page ? normalize(page.name) : null;
-  const prefix = index === -1 ? null : `pages.${internalPageName}`;
+  const prefix = internalPageName ? `pages.${internalPageName}` : null;
   const prefixIndex = index === -1 ? null : `pages.${index}`;
 
   const remapWithContext = useCallback(
@@ -193,18 +207,6 @@ export function Page(): ReactNode {
       setPage(page);
     }
   }, [checkPagePermissionsCallback, navPage, page, setPage]);
-
-  const containerPageRenderCallback = useCallback(
-    (pageContainer: ContainerPageDefinition): ReactNode => {
-      const foundPage = pageContainer.pages?.find((p) => checkPagePermissionsCallback(p));
-      return foundPage ? (
-        <Navigate to={pathname.replace(pageId, normalize(foundPage.name))} />
-      ) : (
-        defaultErrorPage()
-      );
-    },
-    [defaultErrorPage, pageId, pathname, checkPagePermissionsCallback],
-  );
 
   // If the user is on an existing page and is allowed to view it, render it.
   if (page && checkPagePermissionsCallback(page)) {
@@ -264,7 +266,16 @@ export function Page(): ReactNode {
                     stepRef={stepRef}
                   />
                 ) : page.type === 'container' ? (
-                  containerPageRenderCallback(page)
+                  page.pages.some(checkPagePermissionsCallback) ? (
+                    <Navigate
+                      to={pathname.replace(
+                        pageId,
+                        normalize(page.pages.find(checkPagePermissionsCallback).name),
+                      )}
+                    />
+                  ) : (
+                    defaultErrorPage()
+                  )
                 ) : (
                   <BlockList
                     appStorage={appStorage.current}
