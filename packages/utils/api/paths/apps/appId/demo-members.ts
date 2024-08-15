@@ -6,13 +6,12 @@ export const pathItems: OpenAPIV3.PathItemObject = {
     { $ref: '#/components/parameters/roles' },
   ],
   get: {
-    tags: ['common', 'app', 'member'],
-    description: 'Fetch all members of an app.',
-    operationId: 'queryAppMembers',
-    security: [{ studio: [] }, { app: ['openid'] }, {}],
+    tags: ['common', 'app', 'demo-member'],
+    description: 'Fetch all demo members of an app.',
+    operationId: 'queryAppDemoMembers',
     responses: {
       200: {
-        description: 'The list of app members.',
+        description: 'The list of app demo members.',
         content: {
           'application/json': {
             schema: {

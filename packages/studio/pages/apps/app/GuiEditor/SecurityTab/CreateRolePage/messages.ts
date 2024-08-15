@@ -41,4 +41,12 @@ export const messages = defineMessages({
     id: 'studio.+a6mcJ',
     defaultMessage: 'Inherit Role',
   },
+  permissionsLabel: {
+    id: 'studio.SFuk1v',
+    defaultMessage: 'Permissions',
+  },
+  addPermissionLabel: {
+    id: 'studio.NeXetG',
+    defaultMessage: 'Add Permission',
+  },
 });

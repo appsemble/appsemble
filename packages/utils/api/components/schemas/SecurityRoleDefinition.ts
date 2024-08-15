@@ -1,4 +1,3 @@
-import { AppPermission } from '@appsemble/types';
 import { type OpenAPIV3 } from 'openapi-types';
 
 export const SecurityRoleDefinition: OpenAPIV3.NonArraySchemaObject = {
@@ -31,14 +30,7 @@ of the referenced role.
       minItems: 1,
       description: 'Specific permissions within the app, which this role should have',
       items: {
-        oneOf: [
-          {
-            enum: [Object.values(AppPermission)],
-          },
-          {
-            type: 'string',
-          },
-        ],
+        type: 'string',
       },
     },
   },

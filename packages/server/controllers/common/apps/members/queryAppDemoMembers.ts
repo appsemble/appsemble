@@ -1,14 +1,12 @@
 import { assertKoaError } from '@appsemble/node-utils';
-import { AppPermission } from '@appsemble/types';
 import { getAppRoles } from '@appsemble/utils';
 import { type Context } from 'koa';
 import { Op } from 'sequelize';
 
 import { App, AppMember } from '../../../../models/index.js';
 import { getAppMemberInfo } from '../../../../utils/appMember.js';
-import { checkAuthSubjectAppPermissions } from '../../../../utils/authorization.js';
 
-export async function queryAppMembers(ctx: Context): Promise<void> {
+export async function queryAppDemoMembers(ctx: Context): Promise<void> {
   const {
     pathParams: { appId },
     queryParams: { roles = [] },
@@ -20,11 +18,7 @@ export async function queryAppMembers(ctx: Context): Promise<void> {
 
   assertKoaError(!app, ctx, 404, 'App not found');
 
-  await checkAuthSubjectAppPermissions({
-    context: ctx,
-    appId,
-    requiredPermissions: [AppPermission.QueryAppMembers],
-  });
+  assertKoaError(!app.demoMode, ctx, 401, 'App is not in demo mode');
 
   const supportedAppRoles = getAppRoles(app.definition.security);
 
@@ -39,7 +33,7 @@ export async function queryAppMembers(ctx: Context): Promise<void> {
   const appMembers = await AppMember.findAll({
     where: {
       AppId: appId,
-      demo: false,
+      demo: true,
       ...(passedRoles.length ? { role: { [Op.in]: passedRoles } } : {}),
     },
   });

@@ -1,28 +1,20 @@
 import { defineMessages } from 'react-intl';
 
 export const messages = defineMessages({
-  groupsJoinLabel: {
-    id: 'studio.8hYalv',
-    defaultMessage: 'Join Group',
+  inheritsLabel: {
+    id: 'studio.UCMXFT',
+    defaultMessage: 'Inherit from',
   },
-  groupsCreateLabel: {
-    id: 'studio.8eDBzp',
-    defaultMessage: 'Create Group',
+  addInheritanceLabel: {
+    id: 'studio.+a6mcJ',
+    defaultMessage: 'Inherit Role',
   },
-  groupsInviteLabel: {
-    id: 'studio.l01CvH',
-    defaultMessage: 'Invite Group',
+  permissionsLabel: {
+    id: 'studio.SFuk1v',
+    defaultMessage: 'Permissions',
   },
-  noRoles: {
-    id: 'studio.cLdBYw',
-    defaultMessage: 'You first need a role to edit groups!',
-  },
-  createNewRole: {
-    id: 'studio.Lj/i+T',
-    defaultMessage: 'Create new role',
-  },
-  groupsAddRole: {
-    id: 'studio.MB3WNt',
-    defaultMessage: 'Add role',
+  addPermissionLabel: {
+    id: 'studio.NeXetG',
+    defaultMessage: 'Add Permission',
   },
 });

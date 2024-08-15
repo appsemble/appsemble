@@ -22,6 +22,8 @@ import { pathItems as appsAppIdAuthEmailResendVerification } from './apps/appId/
 import { pathItems as appsAppIdAuthEmailResetPassword } from './apps/appId/auth/email/resetPassword.js';
 import { pathItems as appsAppIdAuthEmailVerify } from './apps/appId/auth/email/verify.js';
 import { pathItems as appsAppIdBroadcast } from './apps/appId/broadcast.js';
+import { pathItems as appsAppIdDemoGroups } from './apps/appId/demo-groups.js';
+import { pathItems as appsAppIdDemoMembers } from './apps/appId/demo-members.js';
 import { pathItems as appsAppIdEmail } from './apps/appId/email.js';
 import { pathItems as appsAppIdExport } from './apps/appId/export.js';
 import { pathItems as appsAppIdGroups } from './apps/appId/groups.js';
@@ -165,6 +167,8 @@ export const paths = {
   '/api/apps/{appId}/assets/{assetId}': appsAppIdAssetsAssetId,
   '/api/apps/{appId}/assets': appsAppIdAssets,
   '/api/apps/{appId}/broadcast': appsAppIdBroadcast,
+  '/api/apps/{appId}/demo-groups': appsAppIdDemoGroups,
+  '/api/apps/{appId}/demo-members': appsAppIdDemoMembers,
   '/api/apps/{appId}/email': appsAppIdEmail,
   '/api/apps/{appId}/export': appsAppIdExport,
   '/api/apps/{appId}/groups': appsAppIdGroups,

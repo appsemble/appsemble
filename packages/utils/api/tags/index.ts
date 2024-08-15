@@ -54,6 +54,14 @@ export const tags: OpenAPIV3.TagObject[] = [
     description: 'Operations related to the currently logged in user',
   },
   {
+    name: 'demo-group',
+    description: 'Operations related to demo groups',
+  },
+  {
+    name: 'demo-member',
+    description: 'Operations related to demo members',
+  },
+  {
     name: 'email',
     description: 'Operations related to emails',
   },

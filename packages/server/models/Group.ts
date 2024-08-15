@@ -5,6 +5,7 @@ import {
   Column,
   CreatedAt,
   DataType,
+  Default,
   ForeignKey,
   HasMany,
   Model,
@@ -28,6 +29,11 @@ export class Group extends Model {
 
   @Column(DataType.JSON)
   annotations: Record<string, string>;
+
+  @AllowNull(false)
+  @Default(false)
+  @Column(DataType.BOOLEAN)
+  demo: boolean;
 
   @AllowNull(false)
   @ForeignKey(() => App)

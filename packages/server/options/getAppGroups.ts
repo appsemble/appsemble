@@ -4,7 +4,7 @@ import { Group, GroupMember } from '../models/index.js';
 
 export async function getAppGroups({ app }: GetAppSubEntityParams): Promise<ExtendedGroup[]> {
   const groups = await Group.findAll({
-    where: { AppId: app.id },
+    where: { AppId: app.id, demo: false },
     include: [{ model: GroupMember, required: false }],
     order: [['name', 'ASC']],
   });

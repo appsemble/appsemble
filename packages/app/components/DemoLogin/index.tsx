@@ -46,7 +46,7 @@ function GroupControls(): ReactNode {
     loading,
     refresh,
     setData: setGroups,
-  } = useData<GroupsResponse>(`${apiUrl}/api/apps/${appId}/groups`);
+  } = useData<GroupsResponse>(`${apiUrl}/api/apps/${appId}/demo-groups`);
 
   const changeGroupRole = useCallback(
     async (group: Group, role: AppRole) => {

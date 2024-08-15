@@ -1,6 +1,7 @@
 import {
+  type AppDefinition,
   appOrganizationPermissionMapping,
-  type AppPermission,
+  AppPermission,
   type AppRole,
   appRoles,
   type CustomAppPermission,
@@ -48,28 +49,6 @@ function checkAppPermissions(
       );
     }
   });
-}
-
-export function getGuestAppPermissions(appSecurityDefinition: Security): CustomAppPermission[] {
-  if (!appSecurityDefinition || !appSecurityDefinition.guest) {
-    return [];
-  }
-
-  return appSecurityDefinition.guest.permissions;
-}
-
-export function checkGuestAppPermissions(
-  appSecurityDefinition: Security,
-  requiredPermissions: CustomAppPermission[],
-): boolean {
-  const guestPermissions = getGuestAppPermissions(appSecurityDefinition);
-  return checkAppPermissions(guestPermissions, requiredPermissions);
-}
-
-export function getAppRoles(appSecurityDefinition: Security): AppRole[] {
-  return Array.from(
-    new Set([...Object.keys(appSecurityDefinition?.roles || {}), ...Object.keys(appRoles)]),
-  );
 }
 
 export function getAppInheritedRoles(
@@ -121,6 +100,51 @@ export function getAppRolePermissions(
   }
 
   return Array.from(new Set(accumulatedPermissions));
+}
+
+export function getGuestAppPermissions(appSecurityDefinition: Security): CustomAppPermission[] {
+  if (!appSecurityDefinition || !appSecurityDefinition.guest) {
+    return [];
+  }
+
+  return [
+    ...(appSecurityDefinition.guest.permissions || []),
+    ...getAppRolePermissions(appSecurityDefinition, appSecurityDefinition.guest.inherits),
+  ];
+}
+
+export function checkGuestAppPermissions(
+  appSecurityDefinition: Security,
+  requiredPermissions: CustomAppPermission[],
+): boolean {
+  const guestPermissions = getGuestAppPermissions(appSecurityDefinition);
+  return checkAppPermissions(guestPermissions, requiredPermissions);
+}
+
+export function getAppRoles(appSecurityDefinition: Security): AppRole[] {
+  return Array.from(
+    new Set([...Object.keys(appSecurityDefinition?.roles || {}), ...Object.keys(appRoles)]),
+  );
+}
+
+export function getAppPermissions(appDefinition: AppDefinition): CustomAppPermission[] {
+  return [
+    ...Object.values(AppPermission),
+    ...Object.entries(appDefinition.resources || {}).flatMap(
+      ([resourceName, resourceDefinition]) => [
+        `$resource:${resourceName}:create`,
+        `$resource:${resourceName}:query`,
+        `$resource:${resourceName}:get`,
+        `$resource:${resourceName}:update`,
+        `$resource:${resourceName}:patch`,
+        `$resource:${resourceName}:delete`,
+        ...Object.keys(resourceDefinition.views || {}).flatMap((resourceView) => [
+          `$resource:${resourceName}:query:${resourceView}`,
+          `$resource:${resourceName}:get:${resourceView}`,
+        ]),
+      ],
+    ),
+  ] as CustomAppPermission[];
 }
 
 export function getAppRolesByPermissions(

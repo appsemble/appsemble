@@ -741,6 +741,7 @@ export type CustomAppPermission =
 
 export interface GuestDefinition {
   permissions: CustomAppPermission[];
+  inherits?: AppRole[];
 }
 
 export interface RoleDefinition {

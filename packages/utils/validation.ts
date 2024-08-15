@@ -442,7 +442,15 @@ function validatePermissions(
         return;
       }
 
-      if (otherPermissions.some((p) => allResourcePermissionPattern.test(p))) {
+      if (
+        otherPermissions.some((p) => {
+          if (allResourcePermissionPattern.test(p)) {
+            const [, , otherResourceAction] = p.split(':');
+            return otherResourceAction === resourceAction;
+          }
+          return false;
+        })
+      ) {
         report(
           appDefinition,
           `redundant permission. A permission for the ${resourceAction} resource action with scope all is already declared`,
@@ -451,7 +459,15 @@ function validatePermissions(
         return;
       }
 
-      if (inheritedPermissions.some((p) => allResourcePermissionPattern.test(p))) {
+      if (
+        inheritedPermissions.some((p) => {
+          if (allResourcePermissionPattern.test(p)) {
+            const [, , otherResourceAction] = p.split(':');
+            return otherResourceAction === resourceAction;
+          }
+          return false;
+        })
+      ) {
         report(
           appDefinition,
           `redundant permission. A permission for the ${resourceAction} resource action with scope all is already inherited from another role`,
@@ -757,7 +773,22 @@ function validateSecurity(definition: AppDefinition, report: Report): void {
   }
 
   if (security.guest) {
-    validatePermissions(definition, security.guest.permissions, [], report, ['security', 'guest']);
+    if (security.guest.inherits && security.guest.inherits.length && !security.roles) {
+      report(definition, 'guest can not inherit roles if the roles property is not defined', [
+        'security',
+        'guest',
+        'inherits',
+      ]);
+      return;
+    }
+
+    if (security.guest.permissions) {
+      const inheritedPermissions = getAppRolePermissions(security, security.guest.inherits);
+      validatePermissions(definition, security.guest.permissions, inheritedPermissions, report, [
+        'security',
+        'guest',
+      ]);
+    }
   } else {
     checkRoleExists(security.default.role, ['security', 'default', 'role']);
   }

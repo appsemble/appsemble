@@ -1,24 +1,27 @@
-import { AppPermission } from '@appsemble/types';
 import { type OpenAPIV3 } from 'openapi-types';
 
 export const SecurityGuestDefinition: OpenAPIV3.NonArraySchemaObject = {
   type: 'object',
-  description: 'This describes a security role.',
+  description: 'This describes the permissions that unauthenticated users have.',
   additionalProperties: false,
   properties: {
+    inherits: {
+      type: 'array',
+      minItems: 1,
+      description: `The name of the role to inherit from.
+
+Note that this role must exist.
+`,
+      items: {
+        type: 'string',
+      },
+    },
     permissions: {
       type: 'array',
       minItems: 1,
-      description: 'Specific permissions within the app, which this role should have',
+      description: 'Specific permissions within the app, which unauthenticated users should have',
       items: {
-        oneOf: [
-          {
-            enum: [Object.values(AppPermission)],
-          },
-          {
-            type: 'string',
-          },
-        ],
+        type: 'string',
       },
     },
   },

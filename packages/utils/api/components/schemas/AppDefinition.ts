@@ -74,16 +74,8 @@ The most basic resource has a \`schema\` property and defines the minimal securi
       },
     },
     security: {
-      oneOf: [
-        {
-          $ref: '#/components/schemas/MinimalSecurityDefinition',
-          description: 'Minimal security needed for apps.',
-        },
-        {
-          $ref: '#/components/schemas/StrictSecurityDefinition',
-          description: 'Role definitions that may be used by the app.',
-        },
-      ],
+      $ref: '#/components/schemas/SecurityDefinition',
+      description: 'Role and guest definitions that may be used by the app.',
     },
     pages: {
       type: 'array',

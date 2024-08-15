@@ -1,7 +1,7 @@
 import { AppPermission } from '@appsemble/types';
 import { type Context } from 'koa';
 
-import { Group, transactional } from '../../../../models/index.js';
+import { App, Group, transactional } from '../../../../models/index.js';
 import { checkAuthSubjectAppPermissions } from '../../../../utils/authorization.js';
 
 export async function createAppGroup(ctx: Context): Promise<void> {
@@ -18,9 +18,11 @@ export async function createAppGroup(ctx: Context): Promise<void> {
     requiredPermissions: [AppPermission.CreateGroups],
   });
 
+  const app = await App.findByPk(appId, { attributes: ['demoMode'] });
+
   await transactional(async (transaction) => {
     const group = await Group.create(
-      { name, AppId: appId, annotations: annotations || undefined },
+      { name, AppId: appId, annotations: annotations || undefined, demo: app.demoMode },
       { transaction },
     );
 

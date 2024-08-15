@@ -275,6 +275,7 @@ export async function up(transaction: Transaction, db: Sequelize): Promise<void>
       created: { type: DataTypes.DATE, allowNull: false },
       updated: { type: DataTypes.DATE, allowNull: false },
       annotations: { type: DataTypes.JSON, allowNull: true },
+      demo: { type: DataTypes.BOOLEAN, allowNull: false, defaultValue: false },
     },
     { transaction },
   );
