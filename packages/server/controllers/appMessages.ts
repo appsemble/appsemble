@@ -86,6 +86,7 @@ export async function deleteMessages(ctx: Context): Promise<void> {
 export async function getLanguages(ctx: Context): Promise<void> {
   const {
     pathParams: { appId },
+    query: { override },
     queryParams: { includeMessages },
   } = ctx;
 
@@ -98,7 +99,7 @@ export async function getLanguages(ctx: Context): Promise<void> {
   if (includeMessages) {
     const result = [];
     for (const message of app.AppMessages) {
-      result.push(await getMessagesUtil(ctx, message.language, appId, '', options));
+      result.push(await getMessagesUtil(ctx, message.language, appId, '', options, override));
     }
     ctx.body = result;
     return;

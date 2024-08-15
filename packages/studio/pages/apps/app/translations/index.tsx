@@ -15,7 +15,7 @@ import {
   useMeta,
   useToggle,
 } from '@appsemble/react-components';
-import { type AppMessages } from '@appsemble/types';
+import { type AppMessages, type AppsembleMessages } from '@appsemble/types';
 import { compareStrings, getLanguageDisplayName, langmap } from '@appsemble/utils';
 import { downloadBlob } from '@appsemble/web-utils';
 import axios from 'axios';
@@ -142,19 +142,69 @@ export function TranslationsPage(): ReactNode {
   const defaultMessagesResult = useData<AppMessages>(
     `/api/apps/${app.id}/messages/${languageId}?override=false`,
   );
+  const createMessagesToBeExported = useCallback(
+    (appMessages: AppsembleMessages, defaultAppMessages: AppsembleMessages) => {
+      const blocks = { ...appMessages.blocks };
+      for (const blockId of Object.keys(blocks)) {
+        for (const version of Object.keys(blocks[blockId])) {
+          for (const messageId of Object.keys(blocks[blockId][version])) {
+            if (
+              defaultAppMessages.blocks[blockId][version]?.[messageId] !==
+              appMessages.blocks[blockId][version][messageId]
+            ) {
+              blocks[blockId][version][messageId] = appMessages.blocks[blockId][version][messageId];
+            }
+          }
+        }
+      }
+
+      const messagesToBeExported = {
+        app: Object.fromEntries(
+          Object.entries(appMessages.app).filter(
+            ([key, value]) => defaultAppMessages.app[key] !== value,
+          ),
+        ),
+        core: Object.fromEntries(
+          Object.entries(appMessages.core).filter(
+            ([key, value]) => defaultAppMessages.core[key] !== value,
+          ),
+        ),
+        blocks,
+        messageIds: appMessages.messageIds,
+      };
+      return messagesToBeExported;
+    },
+    [],
+  );
 
   const downloadJson = useCallback(() => {
-    const bytes = new TextEncoder().encode(JSON.stringify(result?.data?.messages, null, 2));
+    const appMessages = result?.data?.messages;
+    const defaultAppMessages = defaultMessagesResult?.data?.messages;
+    const messagesToBeExported = createMessagesToBeExported(appMessages, defaultAppMessages);
+    const bytes = new TextEncoder().encode(JSON.stringify(messagesToBeExported, null, 2));
     downloadBlob(new Blob([bytes]), `${languageId}.json`);
-  }, [languageId, result?.data?.messages]);
+  }, [createMessagesToBeExported, defaultMessagesResult, languageId, result?.data?.messages]);
 
   const exportAllMessages = useCallback(async () => {
-    const { data: allMessages } = await axios.get(
+    const { data: allMessages } = await axios.get<AppMessages[]>(
       `/api/apps/${app.id}/messages?includeMessages=true`,
     );
-    const bytes = new TextEncoder().encode(JSON.stringify(allMessages, null, 2));
+    const { data: defaultAllMessages } = await axios.get<AppMessages[]>(
+      `/api/apps/${app.id}/messages?includeMessages=true&override=false`,
+    );
+    const messagesToBeExported = allMessages.map((item, index: number) => {
+      const foundMessages = createMessagesToBeExported(
+        item.messages,
+        defaultAllMessages[index].messages,
+      );
+      return {
+        language: item.language,
+        messages: foundMessages,
+      };
+    });
+    const bytes = new TextEncoder().encode(JSON.stringify(messagesToBeExported, null, 2));
     downloadBlob(new Blob([bytes]), 'i18n.json');
-  }, [app.id]);
+  }, [app.id, createMessagesToBeExported]);
 
   const importTranslations = useCallback(() => {
     if (uploadingImportFile instanceof Blob) {

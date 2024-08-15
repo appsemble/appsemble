@@ -855,4 +855,133 @@ describe('getLanguages', () => {
       { language: 'nl', messages: { messageIds: { test: 'Geslaagd met vliegende kleuren' } } },
     ]);
   });
+
+  it('should include defaults for app messages if override is set to false', async () => {
+    const organization = await Organization.create({
+      id: 'xkcd',
+      name: 'xkcd',
+    });
+    await OrganizationMember.create({
+      OrganizationId: organization.id,
+      UserId: user.id,
+      role: 'Maintainer',
+    });
+    const formData = new FormData();
+    formData.append('name', '@xkcd/standing');
+    formData.append('version', '1.32.9');
+    formData.append('files', createFixtureStream('standing.png'), {
+      filename: encodeURIComponent('build/standing.png'),
+    });
+    formData.append('files', createFixtureStream('standing.png'), {
+      filepath: encodeURIComponent('build/testblock.js'),
+    });
+    formData.append(
+      'messages',
+      JSON.stringify({
+        en: { test: 'foo' },
+        nl: { test: 'bar' },
+      }),
+    );
+
+    await authorizeClientCredentials('blocks:write');
+    await request.post('/api/blocks', formData);
+    await BlockVersion.findOne({
+      where: { version: '1.32.9', OrganizationId: 'xkcd', name: 'standing' },
+      include: [BlockMessages],
+    });
+    await app.update({
+      definition: {
+        ...app.definition,
+        pages: [
+          { name: 'test-page', blocks: [{ type: '@xkcd/standing', version: '1.32.9' }] },
+          { name: 'test-page-2', blocks: [{ type: '@xkcd/standing', version: '1.32.9' }] },
+        ],
+      },
+    });
+
+    authorizeStudio();
+    await AppMessages.create({
+      AppId: app.id,
+      language: 'en',
+      messages: {
+        messageIds: { bla: 'bla' },
+      },
+    });
+    await AppMessages.create({
+      AppId: app.id,
+      language: 'nl',
+      messages: {
+        messageIds: { bla: 'bla in nl' },
+      },
+    });
+
+    const messages = await getAppsembleMessages('en');
+    const messagesNl = await getAppsembleMessages('nl');
+
+    const response = await request.get(
+      `/api/apps/${app.id}/messages?includeMessages=true&override=false`,
+    );
+
+    expect(response).toMatchObject({
+      status: 200,
+      data: [
+        {
+          language: 'en',
+          messages: {
+            messageIds: {},
+            core: {
+              ...Object.fromEntries(
+                Object.entries(messages).filter(
+                  ([key]) => key.startsWith('app') || key.startsWith('react-components'),
+                ),
+              ),
+            },
+            app: {
+              name: 'Test App',
+              description: 'Description',
+              'pages.test-page': 'test-page',
+              'pages.test-page-2': 'test-page-2',
+              'pages.test-page.blocks.0.test': 'foo',
+              'pages.test-page-2.blocks.0.test': 'foo',
+            },
+            blocks: {
+              '@xkcd/standing': {
+                '1.32.9': {
+                  test: 'foo',
+                },
+              },
+            },
+          },
+        },
+        {
+          language: 'nl',
+          messages: {
+            messageIds: {},
+            core: {
+              ...Object.fromEntries(
+                Object.entries(messagesNl).filter(
+                  ([key]) => key.startsWith('app') || key.startsWith('react-components'),
+                ),
+              ),
+            },
+            app: {
+              name: 'Test App',
+              description: 'Description',
+              'pages.test-page': 'test-page',
+              'pages.test-page-2': 'test-page-2',
+              'pages.test-page.blocks.0.test': 'bar',
+              'pages.test-page-2.blocks.0.test': 'bar',
+            },
+            blocks: {
+              '@xkcd/standing': {
+                '1.32.9': {
+                  test: 'bar',
+                },
+              },
+            },
+          },
+        },
+      ],
+    });
+  });
 });
