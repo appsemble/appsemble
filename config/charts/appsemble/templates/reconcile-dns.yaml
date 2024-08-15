@@ -1,0 +1,50 @@
+{{- if .Values.ingress.enabled -}}
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ include "appsemble.fullname" . }}-reconcile-dns
+  labels:
+    {{ include "appsemble.labels" . }}
+  annotations:
+    helm.sh/hook: post-install,post-upgrade
+    helm.sh/hook-weight: '1'
+    {{ include "appsemble.gitlab" . | indent 4 }}
+spec:
+  template:
+    spec:
+      restartPolicy: Never
+      serviceAccountName: {{ include "appsemble.fullname" . }}-serviceaccount
+      containers:
+        - name: {{ include "appsemble.fullname" . }}-reconcile-dns
+          image: "{{ .Values.image.repository }}:{{ include "appsemble.tag" . }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          args:
+            - reconcile-dns
+            - -vv
+          env:
+{{ include "appsemble.postgres" . | indent 12 }}
+            - name: APP_DOMAIN_STRATEGY
+              value: kubernetes-ingress
+            - name: INGRESS_CLASS_NAME
+              value: {{ .Values.ingress.className | quote }}
+            - name: INGRESS_ANNOTATIONS
+              value: {{ .Values.ingress.annotations | toJson | quote }}
+            - name: SERVICE_NAME
+              value: {{ include "appsemble.fullname" . }}
+            - name: SERVICE_PORT
+              value: http
+            - name: HOST
+              {{ if .Values.ingress.enabled -}}
+              value: {{ include "appsemble.protocol" $ }}{{ .Values.ingress.host }}
+              {{- else }}
+              value: http://{{ include "appsemble.fullname" . }}
+              {{- end }}
+            {{- with .Values.ingress.issuer }}
+            - name: ISSUER
+              value: {{ . | quote }}
+            {{- end }}
+            {{- with .Values.ingress.clusterIssuer }}
+            - name: CLUSTER_ISSUER
+              value: {{ . | quote }}
+            {{- end }}
+{{ end }}

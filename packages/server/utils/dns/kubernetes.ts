@@ -388,6 +388,16 @@ async function createSSLSecretFunction(): Promise<
   };
 }
 
+async function deleteIngress(domain: string): Promise<void> {
+  const name = normalize(domain);
+  const config = await getAxiosConfig();
+  const namespace = await readK8sSecret('namespace');
+  await axios.delete(
+    `/apis/networking.k8s.io/v1/namespaces/${namespace}/ingresses/${name}`,
+    config,
+  );
+}
+
 /**
  * Configure a method to map domain names to a service by updating a single ingress.
  *
@@ -406,6 +416,12 @@ export async function configureDNS(): Promise<void> {
    */
   Organization.afterCreate('dns', ({ id }) => createIngress(`*.${id}.${hostname}`));
 
+  Organization.afterDestroy('dns', async ({ id }) => {
+    const domain = `*.${id}.${hostname}`;
+    const name = normalize(domain);
+    await deleteIngress(name);
+  });
+
   /**
    * Register a domain name for apps which have defined a custom domain name.
    */
@@ -418,6 +434,21 @@ export async function configureDNS(): Promise<void> {
         await createSSLSecret(domain, sslCertificate, sslKey);
       }
     }
+    const oldDomain = app.previous('domain') as string;
+    if (!oldDomain) {
+      return;
+    }
+    const name = normalize(oldDomain);
+    await deleteIngress(name);
+  });
+
+  App.afterDestroy('dns', async (app) => {
+    const { domain } = app;
+    if (!domain) {
+      return;
+    }
+    const name = normalize(domain);
+    await deleteIngress(name);
   });
 
   /**
@@ -431,6 +462,24 @@ export async function configureDNS(): Promise<void> {
       if (!domain.startsWith('www.')) {
         await createIngress(`www.${domain}`, false, domain);
       }
+    }
+    const oldDomain = collection.previous('domain') as string;
+    if (!oldDomain) {
+      return;
+    }
+    const name = normalize(oldDomain);
+    await deleteIngress(name);
+  });
+
+  AppCollection.afterDestroy('dns', async (collection) => {
+    const { domain } = collection;
+    if (!domain) {
+      return;
+    }
+    const name = normalize(domain);
+    await deleteIngress(name);
+    if (!domain.startsWith('www.')) {
+      await deleteIngress(normalize(`www.${domain}`));
     }
   });
 }
@@ -491,6 +540,80 @@ export async function restoreDNS(): Promise<void> {
     if (!domain!.startsWith('www.')) {
       await createIngress(`www.${domain}`, false, domain);
     }
+  }
+}
+
+async function getIngressHosts(): Promise<{ hosts: string[]; name: string }[]> {
+  const config = await getAxiosConfig();
+  const namespace = await readK8sSecret('namespace');
+  const { data } = await axios.get<KubernetesListResult<Ingress>>(
+    `/apis/networking.k8s.io/v1/namespaces/${namespace}/ingresses`,
+    {
+      ...config,
+      params: {
+        labelSelector: `app.kubernetes.io/managed-by=${argv.serviceName}`,
+      },
+    },
+  );
+  const names = data.items.flatMap(({ metadata, spec }) => ({
+    hosts: spec.rules.map((rule) => rule.host),
+    name: metadata.name,
+  }));
+  return names;
+}
+
+export async function reconcileDNS({ dryRun = true }): Promise<void> {
+  const { hostname } = new URL(argv.host);
+  const orgWildcards = new Set<string>();
+  for await (const { id } of iterTable(Organization, { attributes: ['id'] })) {
+    orgWildcards.add(`*.${id}.${hostname}`);
+  }
+
+  const appDomains = new Set<string>();
+  for await (const { domain } of iterTable(App, {
+    attributes: ['domain'],
+    where: { [Op.and]: [{ domain: { [Op.not]: null } }, { domain: { [Op.not]: '' } }] },
+  })) {
+    appDomains.add(domain);
+  }
+
+  const appCollectionDomains = new Set<string>();
+  for await (const { domain } of iterTable(AppCollection, {
+    attributes: ['domain'],
+    where: { [Op.and]: [{ domain: { [Op.not]: null } }, { domain: { [Op.not]: '' } }] },
+  })) {
+    appCollectionDomains.add(domain);
+    if (!domain.startsWith('www.')) {
+      appCollectionDomains.add(`www.${domain}`);
+    }
+  }
+
+  const ingressHosts = await getIngressHosts();
+  const extraIngresses = ingressHosts.filter(
+    ({ hosts }) =>
+      !hosts.some((host) => appDomains.has(host)) &&
+      !hosts.some((host) => appCollectionDomains.has(host)) &&
+      !hosts.some((host) => orgWildcards.has(host)),
+  );
+  const missingIngresses = [...appDomains, ...appCollectionDomains, ...orgWildcards].filter(
+    (host) => !ingressHosts.some(({ hosts }) => hosts.includes(host)),
+  );
+  for (const { name } of extraIngresses) {
+    logger.info(`Deleting extra ingress ${name}${dryRun ? ' (Dry run)' : ''}`);
+    if (dryRun) {
+      continue;
+    }
+    await deleteIngress(name);
+    logger.info(`Deleted extra ingress ${name}`);
+  }
+  const createIngress = dryRun ? () => Promise.resolve() : await createIngressFunction();
+  for (const name of missingIngresses) {
+    logger.info(`Creating missing ingress ${name}${dryRun ? ' (Dry run)' : ''}`);
+    if (dryRun) {
+      continue;
+    }
+    await createIngress(name);
+    logger.info(`Created missing ingress ${name}`);
   }
 }
 

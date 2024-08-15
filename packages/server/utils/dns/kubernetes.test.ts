@@ -1,6 +1,7 @@
 import { Agent } from 'node:https';
 
 import { version } from '@appsemble/node-utils';
+import { normalize } from '@appsemble/utils';
 import axios, { type AxiosRequestConfig } from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 import { fs, vol } from 'memfs';
@@ -31,8 +32,11 @@ describe('kubernetes', () => {
 
   afterEach(() => {
     App.removeHook('afterSave', 'dns');
+    App.removeHook('afterDestroy', 'dns');
     Organization.removeHook('afterCreate', 'dns');
+    Organization.removeHook('afterDestroy', 'dns');
     AppCollection.removeHook('afterSave', 'dns');
+    AppCollection.removeHook('afterDestroy', 'dns');
   });
 
   describe('configureDNS', () => {
@@ -370,6 +374,258 @@ describe('kubernetes', () => {
       });
       expect(configs).toHaveLength(1);
     });
+
+    it("should delete the app's ingress when an app's domain is removed", async () => {
+      await Organization.create({ id: 'org' });
+      const app = await App.create({
+        domain: 'example.com',
+        definition: '',
+        vapidPublicKey: '',
+        vapidPrivateKey: '',
+        OrganizationId: 'org',
+      });
+
+      const configs: AxiosRequestConfig[] = [];
+      mock.onPost(/.*/).reply((request) => {
+        configs.push(request);
+        return [201, request.data];
+      });
+      mock.onDelete(/.*/).reply((request) => {
+        configs.push(request);
+        return [204];
+      });
+      setArgv({ host: 'https://host.example', serviceName: 'review-service', servicePort: 'http' });
+      await kubernetes.configureDNS();
+
+      app.domain = '';
+      await app.save();
+
+      expect(configs).toHaveLength(1);
+      expect(configs[0].method).toBe('delete');
+      expect(configs[0].url).toBe(
+        '/apis/networking.k8s.io/v1/namespaces/test/ingresses/example-com',
+      );
+    });
+
+    it("should delete the app's ingress when an app is deleted", async () => {
+      await Organization.create({ id: 'org' });
+      const app = await App.create({
+        domain: 'example.com',
+        definition: '',
+        vapidPublicKey: '',
+        vapidPrivateKey: '',
+        OrganizationId: 'org',
+      });
+
+      const configs: AxiosRequestConfig[] = [];
+      mock.onDelete(/.*/).reply((request) => {
+        configs.push(request);
+        return [204];
+      });
+      setArgv({ host: 'https://host.example', serviceName: 'review-service', servicePort: 'http' });
+      await kubernetes.configureDNS();
+
+      await app.destroy();
+
+      expect(configs).toHaveLength(1);
+      expect(configs[0].method).toBe('delete');
+      expect(configs[0].url).toBe(
+        '/apis/networking.k8s.io/v1/namespaces/test/ingresses/example-com',
+      );
+    });
+
+    it('should not delete any ingresses if the app does not have a custom domain', async () => {
+      await Organization.create({ id: 'org' });
+      const app = await App.create({
+        definition: '',
+        vapidPublicKey: '',
+        vapidPrivateKey: '',
+        OrganizationId: 'org',
+      });
+
+      const configs: AxiosRequestConfig[] = [];
+      mock.onDelete(/.*/).reply((request) => {
+        configs.push(request);
+        return [204];
+      });
+      setArgv({ host: 'https://host.example', serviceName: 'review-service', servicePort: 'http' });
+      await kubernetes.configureDNS();
+
+      await app.destroy();
+
+      expect(configs).toHaveLength(0);
+    });
+
+    it("should delete the organization's ingress when an organization is deleted", async () => {
+      setArgv({ host: 'https://host.example', serviceName: 'review-service', servicePort: 'http' });
+      await kubernetes.configureDNS();
+
+      const org = await Organization.create({ id: 'test-org' });
+
+      const configs: AxiosRequestConfig[] = [];
+      mock.onDelete(/.*/).reply((request) => {
+        configs.push(request);
+        return [204];
+      });
+
+      await org.destroy();
+
+      expect(configs).toHaveLength(1);
+      expect(configs[0].method).toBe('delete');
+      expect(configs[0].url).toBe(
+        '/apis/networking.k8s.io/v1/namespaces/test/ingresses/test-org-host-example',
+      );
+    });
+
+    it("should delete the collection's ingress when an app collection is deleted", async () => {
+      await Organization.create({ id: 'org' });
+
+      const collection = await AppCollection.create({
+        name: 'Test Collection',
+        expertName: 'Test Expert',
+        expertDescription: 'Test Description',
+        OrganizationId: 'org',
+        headerImage: Buffer.from(''),
+        headerImageMimeType: 'image/png',
+        expertProfileImage: Buffer.from(''),
+        expertProfileImageMimeType: 'image/png',
+        domain: 'example.com',
+        visibility: 'public',
+      });
+
+      const configs: AxiosRequestConfig[] = [];
+
+      mock.onDelete(/.*/).reply((request) => {
+        configs.push(request);
+        return [204];
+      });
+
+      setArgv({ host: 'https://host.example', serviceName: 'review-service', servicePort: 'http' });
+
+      await kubernetes.configureDNS();
+
+      await collection.destroy();
+
+      expect(configs).toHaveLength(2);
+      expect(configs[0].method).toBe('delete');
+      expect(configs[0].url).toBe(
+        '/apis/networking.k8s.io/v1/namespaces/test/ingresses/example-com',
+      );
+      expect(configs[1].method).toBe('delete');
+      expect(configs[1].url).toBe(
+        '/apis/networking.k8s.io/v1/namespaces/test/ingresses/www-example-com',
+      );
+
+      const collection2 = await AppCollection.create({
+        name: 'Test Collection 2',
+        expertName: 'Test Expert',
+        expertDescription: 'Test Description',
+        OrganizationId: 'org',
+        headerImage: Buffer.from(''),
+        headerImageMimeType: 'image/png',
+        expertProfileImage: Buffer.from(''),
+        expertProfileImageMimeType: 'image/png',
+        domain: 'www.example.com',
+        visibility: 'public',
+      });
+
+      configs.length = 0;
+
+      await collection2.destroy();
+
+      expect(configs).toHaveLength(1);
+      expect(configs[0].method).toBe('delete');
+      expect(configs[0].url).toBe(
+        '/apis/networking.k8s.io/v1/namespaces/test/ingresses/www-example-com',
+      );
+    });
+
+    it("should delete the app's ingress when an app's domain is changed and create a new one", async () => {
+      await Organization.create({ id: 'org' });
+
+      const app = await App.create({
+        domain: 'example.com',
+        definition: '',
+        vapidPublicKey: '',
+        vapidPrivateKey: '',
+        OrganizationId: 'org',
+      });
+
+      const configs: AxiosRequestConfig[] = [];
+
+      mock.onPost(/.*/).reply((request) => {
+        configs.push(request);
+        return [201, request.data];
+      });
+      mock.onDelete(/.*/).reply((request) => {
+        configs.push(request);
+        return [204];
+      });
+
+      setArgv({ host: 'https://host.example', serviceName: 'review-service', servicePort: 'http' });
+
+      await kubernetes.configureDNS();
+
+      app.domain = 'new.example.com';
+      await app.save();
+
+      expect(configs).toHaveLength(2);
+      expect(configs[0].method).toBe('post');
+      expect(configs[0].url).toBe('/apis/networking.k8s.io/v1/namespaces/test/ingresses');
+      expect(JSON.parse(configs[0].data).spec.rules[0].host).toBe('new.example.com');
+      expect(configs[1].method).toBe('delete');
+      expect(configs[1].url).toBe(
+        '/apis/networking.k8s.io/v1/namespaces/test/ingresses/example-com',
+      );
+    });
+
+    // Needed?
+    it("should delete the collection's ingress when an app collection's domain is changed and create a new one", async () => {
+      await Organization.create({ id: 'org' });
+
+      const collection = await AppCollection.create({
+        name: 'Test Collection',
+        expertName: 'Test Expert',
+        expertDescription: 'Test Description',
+        OrganizationId: 'org',
+        headerImage: Buffer.from(''),
+        headerImageMimeType: 'image/png',
+        expertProfileImage: Buffer.from(''),
+        expertProfileImageMimeType: 'image/png',
+        domain: 'example.com',
+        visibility: 'public',
+      });
+
+      const configs: AxiosRequestConfig[] = [];
+
+      mock.onPost(/.*/).reply((request) => {
+        configs.push(request);
+        return [201, request.data];
+      });
+      mock.onDelete(/.*/).reply((request) => {
+        configs.push(request);
+        return [204];
+      });
+
+      setArgv({ host: 'https://host.example', serviceName: 'review-service', servicePort: 'http' });
+
+      await kubernetes.configureDNS();
+
+      collection.domain = 'new.example.com';
+      await collection.save();
+
+      expect(configs).toHaveLength(3);
+      expect(configs[0].method).toBe('post');
+      expect(configs[0].url).toBe('/apis/networking.k8s.io/v1/namespaces/test/ingresses');
+      expect(JSON.parse(configs[0].data).spec.rules[0].host).toBe('new.example.com');
+      expect(configs[1].method).toBe('post');
+      expect(configs[1].url).toBe('/apis/networking.k8s.io/v1/namespaces/test/ingresses');
+      expect(JSON.parse(configs[1].data).spec.rules[0].host).toBe('www.new.example.com');
+      expect(configs[2].method).toBe('delete');
+      expect(configs[2].url).toBe(
+        '/apis/networking.k8s.io/v1/namespaces/test/ingresses/example-com',
+      );
+    });
   });
 
   describe('cleanupDNS', () => {
@@ -573,6 +829,149 @@ describe('kubernetes', () => {
             tls: [{ hosts: ['www.example.com'], secretName: 'www-example-com-tls' }],
           },
         },
+      ]);
+    });
+  });
+
+  describe('reconcileDNS', () => {
+    const configs: AxiosRequestConfig[] = [];
+
+    beforeEach(async () => {
+      setArgv({ host: 'https://host.example', serviceName: 'review-service', servicePort: 'http' });
+
+      for (const orgName of Array.from({ length: 3 }, (...[, i]) => `org${i + 1}`)) {
+        await Organization.create({ id: orgName });
+      }
+      for (const [orgName, appName] of Array.from({ length: 3 }, (...[, i]) => [
+        `org${i + 1}`,
+        `app${i + 1}`,
+      ])) {
+        await App.create({
+          domain: `${appName}.example.com`,
+          definition: {},
+          vapidPublicKey: '',
+          vapidPrivateKey: '',
+          OrganizationId: orgName,
+        });
+      }
+      for (const [orgName, collectionName] of Array.from({ length: 3 }, (...[, i]) => [
+        `org${i + 1}`,
+        `collection${i + 1}`,
+      ])) {
+        await AppCollection.create({
+          name: collectionName,
+          expertName: 'Test Expert',
+          expertDescription: 'Test Description',
+          expertProfileImage: Buffer.from(''),
+          expertProfileImageMimeType: 'image/png',
+          headerImage: Buffer.from(''),
+          headerImageMimeType: 'image/png',
+          visibility: 'public',
+          OrganizationId: orgName,
+          domain: `${collectionName}.example.com`,
+        });
+      }
+
+      // Two missing ingresses for orgs, two missing ingresses for apps,
+      // and two missing ingresses for app collections. Six total missing ingresses.
+      // Also three extra ingresses.
+      const ingresses = [];
+      for (const domain of [1, 4].flatMap((i) => [
+        `*.org${i}.host.example`,
+        `app${i}.example.com`,
+        `collection${i}.example.com`,
+        `www.collection${i}.example.com`,
+      ])) {
+        ingresses.push({
+          kind: 'Ingress',
+          apiVersion: 'networking.k8s.io/v1',
+          metadata: {
+            name: normalize(domain),
+            labels: {
+              'app.kubernetes.io/component': 'domain',
+              'app.kubernetes.io/managed-by': 'review-service',
+              'app.kubernetes.io/name': 'appsemble',
+              'app.kubernetes.io/part-of': 'review-service',
+              'app.kubernetes.io/version': version,
+            },
+          },
+          spec: {
+            ingressClassName: 'nginx',
+            rules: [
+              {
+                host: domain,
+                http: {
+                  paths: [
+                    {
+                      backend: { service: { name: 'review-service', port: { name: 'http' } } },
+                    },
+                  ],
+                },
+              },
+            ],
+            tls: [{ hosts: [domain], secretName: `${domain}-tls` }],
+          },
+        });
+      }
+
+      mock.onGet('/apis/networking.k8s.io/v1/namespaces/test/ingresses').reply(200, {
+        items: ingresses,
+      });
+      mock.onPost(/.*/).reply((request) => {
+        configs.push(request);
+        return [201, request.data];
+      });
+      mock.onDelete(/.*/).reply((request) => {
+        configs.push(request);
+        return [204];
+      });
+    });
+
+    afterEach(() => {
+      mock.reset();
+      configs.length = 0;
+    });
+
+    it('should create missing ingresses for apps, organizations, and app collections', async () => {
+      await kubernetes.reconcileDNS({ dryRun: false });
+
+      const creates = configs.filter(({ method }) => method === 'post');
+      expect(creates).toHaveLength(8);
+      for (const { url } of creates) {
+        expect(url).toBe('/apis/networking.k8s.io/v1/namespaces/test/ingresses');
+      }
+      expect(creates.map(({ data }) => JSON.parse(data).metadata.name).sort()).toStrictEqual([
+        'app2-example-com',
+        'app3-example-com',
+        'collection2-example-com',
+        'collection3-example-com',
+        'org2-host-example',
+        'org3-host-example',
+        'www-collection2-example-com',
+        'www-collection3-example-com',
+      ]);
+      expect(creates.map(({ data }) => JSON.parse(data).spec.rules[0].host).sort()).toStrictEqual([
+        '*.org2.host.example',
+        '*.org3.host.example',
+        'app2.example.com',
+        'app3.example.com',
+        'collection2.example.com',
+        'collection3.example.com',
+        'www.collection2.example.com',
+        'www.collection3.example.com',
+      ]);
+    });
+
+    it('should delete ingresses for apps, orgs, and app collections that no longer exist', async () => {
+      await kubernetes.reconcileDNS({ dryRun: false });
+
+      const deletes = configs.filter(({ method }) => method === 'delete');
+      expect(deletes).toHaveLength(4);
+      expect(deletes.map(({ url }) => url).sort()).toStrictEqual([
+        '/apis/networking.k8s.io/v1/namespaces/test/ingresses/app4-example-com',
+        '/apis/networking.k8s.io/v1/namespaces/test/ingresses/collection4-example-com',
+        '/apis/networking.k8s.io/v1/namespaces/test/ingresses/org4-host-example',
+        '/apis/networking.k8s.io/v1/namespaces/test/ingresses/www-collection4-example-com',
       ]);
     });
   });
