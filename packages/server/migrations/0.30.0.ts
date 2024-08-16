@@ -504,6 +504,7 @@ export async function up(transaction: Transaction, db: Sequelize): Promise<void>
  * - Dropping table `AppInvite`
  * - Removing unique index `AppInvite_UserId_AppId_key` from `AppInvite` (UserId, AppId)
  * - Create table `Team`
+ * - Removing column `demo` from `Group` table
  * - Copying records from table `Group` to `Team`
  * - Dropping table `Group`
  * - Create table `TeamMember`
@@ -678,6 +679,9 @@ export async function down(transaction: Transaction, db: Sequelize): Promise<voi
     },
     { transaction },
   );
+
+  logger.info('Remove column `demo` from `Group` table');
+  await queryInterface.removeColumn('Group', 'demo');
 
   // TODO: test against prod data
   logger.warn('Copying records from table `Group` to `Team`');
