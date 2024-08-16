@@ -287,20 +287,25 @@ export async function exportAppAsZip(
   remote: string,
 ): Promise<void> {
   await authenticate(remote, 'apps:export', clientCredentials);
-  const response = await axios.get(
-    `/api/apps/${appId}/export?resources=${resources}&assets=${assets}`,
-    {
-      baseURL: remote,
-      responseType: 'stream',
-    },
-  );
-  const zipFileName = join(
-    path,
-    String(extractFilenameFromContentDisposition(response.headers['content-disposition'])),
-  );
-  const writeStream = createWriteStream(zipFileName);
-  response.data.pipe(writeStream);
-  logger.info(`Successfully downloaded file: ${zipFileName}`);
+  try {
+    const response = await axios.get(
+      `/api/apps/${appId}/export?resources=${resources}&assets=${assets}`,
+      {
+        baseURL: remote,
+        responseType: 'stream',
+      },
+    );
+    const zipFileName = join(
+      path,
+      String(extractFilenameFromContentDisposition(response.headers['content-disposition'])),
+    );
+    const writeStream = createWriteStream(zipFileName);
+    response.data.pipe(writeStream);
+    logger.info(`Successfully downloaded file: ${zipFileName}`);
+  } catch (error) {
+    logger.error(error);
+    throw error;
+  }
 }
 
 /**
@@ -342,9 +347,14 @@ export async function uploadMessages(
     logger.info('No translations found 🤷');
   }
 
-  for (const language of result) {
-    await axios.post(`/api/apps/${appId}/messages`, language, { baseURL: remote });
-    logger.info(`Successfully uploaded messages for language “${language.language}” 🎉`);
+  try {
+    for (const language of result) {
+      await axios.post(`/api/apps/${appId}/messages`, language, { baseURL: remote });
+      logger.info(`Successfully uploaded messages for language “${language.language}” 🎉`);
+    }
+  } catch (error) {
+    logger.error(error);
+    throw error;
   }
 }
 
@@ -356,13 +366,18 @@ interface DeleteAppArgs {
 
 export async function deleteApp({ clientCredentials, id, remote }: DeleteAppArgs): Promise<void> {
   await authenticate(remote, 'apps:delete', clientCredentials);
-  const response = await axios.get(`/api/apps/${id}`);
-  const { name } = response.data;
-  logger.warn(`Deleting app: ${name}`);
-  await axios.delete(`/api/apps/${id}`, {
-    baseURL: remote,
-  });
-  logger.info(`Successfully deleted app with id ${id}`);
+  try {
+    const response = await axios.get(`/api/apps/${id}`);
+    const { name } = response.data;
+    logger.warn(`Deleting app: ${name}`);
+    await axios.delete(`/api/apps/${id}`, {
+      baseURL: remote,
+    });
+    logger.info(`Successfully deleted app with id ${id}`);
+  } catch (error) {
+    logger.error(error);
+    throw error;
+  }
 }
 
 export async function publishSeedResources(path: string, app: App, remote: string): Promise<void> {
@@ -1493,7 +1508,7 @@ export async function updateApp({
       });
     } catch (error) {
       logger.error(error);
-      process.exit(1);
+      throw error;
     }
   }
 

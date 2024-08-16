@@ -46,17 +46,22 @@ export async function publishAsset({
   remote,
   seed,
 }: PublishAssetParams): Promise<void> {
-  const formData = new FormData();
-  const file = createReadStream(path);
-  formData.append('file', file);
-  formData.append('clonable', String(clonable));
-  if (name) {
-    formData.append('name', normalize(name));
-  }
+  try {
+    const formData = new FormData();
+    const file = createReadStream(path);
+    formData.append('file', file);
+    formData.append('clonable', String(clonable));
+    if (name) {
+      formData.append('name', normalize(name));
+    }
 
-  const endpoint = `/api/apps/${appId}/${seed ? 'seed-' : ''}assets`;
-  const {
-    data: { id },
-  } = await axios.post<{ id: string }>(endpoint, formData, { baseURL: remote });
-  logger.info(`Published asset ${id}${name ? ` with name ${normalize(name)}` : ''}`);
+    const endpoint = `/api/apps/${appId}/${seed ? 'seed-' : ''}assets`;
+    const {
+      data: { id },
+    } = await axios.post<{ id: string }>(endpoint, formData, { baseURL: remote });
+    logger.info(`Published asset ${id}${name ? ` with name ${normalize(name)}` : ''}`);
+  } catch (error) {
+    logger.error(error);
+    throw error;
+  }
 }

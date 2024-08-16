@@ -83,11 +83,16 @@ export async function deleteBlock({
   organization,
   remote,
 }: DeleteBlockVersionParams): Promise<void> {
-  await authenticate(remote, 'blocks:delete', clientCredentials);
-  await axios.delete(`/api/blocks/@${organization}/${blockName}/versions/${blockVersion}`, {
-    baseURL: remote,
-  });
-  logger.info(`Successfully deleted ${blockName} block version.`);
+  try {
+    await authenticate(remote, 'blocks:delete', clientCredentials);
+    await axios.delete(`/api/blocks/@${organization}/${blockName}/versions/${blockVersion}`, {
+      baseURL: remote,
+    });
+    logger.info(`Successfully deleted ${blockName} block version.`);
+  } catch (error) {
+    logger.error(error);
+    throw error;
+  }
 }
 
 /**
@@ -112,11 +117,16 @@ export async function uploadAppBlockTheme(
 
   const style = await processCss(filePath);
 
-  await axios.post(
-    `/api/apps/${appId}/style/block/${organization}/${block}`,
-    { force, style },
-    { baseURL: remote },
-  );
+  try {
+    await axios.post(
+      `/api/apps/${appId}/style/block/${organization}/${block}`,
+      { force, style },
+      { baseURL: remote },
+    );
+  } catch (error) {
+    logger.error(error);
+    throw error;
+  }
 
   logger.info(`Upload of ${organization}/${block} stylesheet successful! 🎉`);
 }
