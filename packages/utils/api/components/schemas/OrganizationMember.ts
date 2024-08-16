@@ -1,4 +1,4 @@
-import { organizationRoles } from '@appsemble/types';
+import { predefinedOrganizationRoles } from '@appsemble/types';
 import { type OpenAPIV3 } from 'openapi-types';
 
 export const OrganizationMember: OpenAPIV3.NonArraySchemaObject = {
@@ -19,7 +19,7 @@ export const OrganizationMember: OpenAPIV3.NonArraySchemaObject = {
       description: 'The primary email address of the user.',
     },
     role: {
-      enum: Object.keys(organizationRoles),
+      enum: predefinedOrganizationRoles,
     },
     properties: {
       type: 'object',

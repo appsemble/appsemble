@@ -1,4 +1,4 @@
-import { type AppAccount, type AppMemberInfo } from '@appsemble/types';
+import { type AppMemberInfo } from '@appsemble/types';
 import { assignAppMemberProperties } from '@appsemble/utils';
 import { timezone } from '@appsemble/web-utils';
 import axios from 'axios';
@@ -6,7 +6,7 @@ import axios from 'axios';
 import { type ActionCreator } from './index.js';
 import { apiUrl, appId } from '../settings.js';
 
-export const register: ActionCreator<'app.member.register'> = ({
+export const appMemberRegister: ActionCreator<'app.member.register'> = ({
   definition,
   getAppMemberInfo,
   params,
@@ -56,7 +56,29 @@ export const register: ActionCreator<'app.member.register'> = ({
   },
 ];
 
-export const login: ActionCreator<'app.member.login'> = ({
+export const appMemberInvite: ActionCreator<'app.member.invite'> = ({
+  definition,
+  getAppMemberInfo,
+  remap,
+}) => [
+  async (data) => {
+    const appMemberInfo = getAppMemberInfo();
+
+    if (!appMemberInfo?.sub) {
+      // App member is not logged in, do nothing.
+      return data;
+    }
+
+    const email = remap(definition.email, data);
+    const role = remap(definition.role, data);
+
+    await axios.post(`${apiUrl}/api/apps/${appId}/invites`, { email, role });
+
+    return data;
+  },
+];
+
+export const appMemberLogin: ActionCreator<'app.member.login'> = ({
   definition,
   getAppMemberInfo,
   passwordLogin,
@@ -80,13 +102,13 @@ export const login: ActionCreator<'app.member.login'> = ({
   },
 ];
 
-export const logout: ActionCreator<'app.member.logout'> = ({ passwordLogout }) => [
+export const appMemberLogout: ActionCreator<'app.member.logout'> = ({ passwordLogout }) => [
   async () => {
     await passwordLogout();
   },
 ];
 
-export const query: ActionCreator<'app.member.query'> = ({
+export const appMemberQuery: ActionCreator<'app.member.query'> = ({
   definition,
   getAppMemberInfo,
   remap,
@@ -101,15 +123,15 @@ export const query: ActionCreator<'app.member.query'> = ({
 
     const roles = remap(definition.roles, data);
 
-    const { data: response } = await axios.get<AppAccount[]>(
-      `${apiUrl}/api/apps/${appId}/members?roles=${roles}`,
+    const { data: response } = await axios.get<AppMemberInfo[]>(
+      `${apiUrl}/api/apps/${appId}/${appMemberInfo.demo ? 'demo-' : ''}members?roles=${roles}`,
     );
 
     return response;
   },
 ];
 
-export const update: ActionCreator<'app.member.update'> = ({
+export const appMemberCurrentPatch: ActionCreator<'app.member.current.patch'> = ({
   definition,
   getAppMemberInfo,
   refetchDemoAppMembers,
@@ -124,10 +146,8 @@ export const update: ActionCreator<'app.member.update'> = ({
       return data;
     }
 
-    const id = remap(definition.id, data);
     const name = remap(definition.name, data);
     const properties = remap(definition.properties, data);
-    const role = remap(definition.role, data);
 
     const formData = new FormData();
 
@@ -135,32 +155,82 @@ export const update: ActionCreator<'app.member.update'> = ({
       formData.append('name', name);
     }
 
-    if (role) {
-      formData.append('role', role);
-    }
-
     assignAppMemberProperties(properties, formData);
 
-    let response;
-    if (appMemberInfo.sub === id) {
-      await axios.patch(`${apiUrl}/api/apps/${appId}/members/current`, formData);
+    await axios.patch(`${apiUrl}/api/apps/${appId}/members/current`, formData);
 
-      const { data: patchedAppMemberInfo } = await axios.get<AppMemberInfo>(
-        `${apiUrl}/api/apps/${appId}/members/current`,
-      );
+    const { data: patchedAppMemberInfo } = await axios.get<AppMemberInfo>(
+      `${apiUrl}/api/apps/${appId}/members/current`,
+    );
 
-      response = data;
-      setAppMemberInfo(patchedAppMemberInfo);
-    } else {
-      await axios.patch<AppMemberInfo>(`${apiUrl}/api/apps/${appId}/members/${id}`, formData);
-      await refetchDemoAppMembers();
+    setAppMemberInfo(patchedAppMemberInfo);
+
+    await refetchDemoAppMembers();
+
+    return patchedAppMemberInfo;
+  },
+];
+
+export const appMemberRoleUpdate: ActionCreator<'app.member.role.update'> = ({
+  definition,
+  getAppMemberInfo,
+  refetchDemoAppMembers,
+  remap,
+}) => [
+  async (data) => {
+    const appMemberInfo = getAppMemberInfo();
+
+    if (!appMemberInfo?.sub) {
+      // App member is not logged in, do nothing.
+      return data;
     }
+
+    const id = remap(definition.id, data);
+    const role = remap(definition.role, data);
+
+    const { data: response } = await axios.put<AppMemberInfo>(
+      `${apiUrl}/api/app-members/${id}/role`,
+      { role },
+    );
+
+    await refetchDemoAppMembers();
 
     return response;
   },
 ];
 
-export const remove: ActionCreator<'app.member.remove'> = ({
+export const appMemberPropertiesPatch: ActionCreator<'app.member.properties.patch'> = ({
+  definition,
+  getAppMemberInfo,
+  refetchDemoAppMembers,
+  remap,
+}) => [
+  async (data) => {
+    const appMemberInfo = getAppMemberInfo();
+
+    if (!appMemberInfo?.sub) {
+      // App member is not logged in, do nothing.
+      return data;
+    }
+
+    const id = remap(definition.id, data);
+    const properties = remap(definition.properties, data);
+
+    const formData = new FormData();
+    assignAppMemberProperties(properties, formData);
+
+    const { data: response } = await axios.patch<AppMemberInfo>(
+      `${apiUrl}/api/app-members/${id}/properties`,
+      formData,
+    );
+
+    await refetchDemoAppMembers();
+
+    return response;
+  },
+];
+
+export const appMemberDelete: ActionCreator<'app.member.delete'> = ({
   definition,
   getAppMemberInfo,
   refetchDemoAppMembers,
@@ -176,9 +246,10 @@ export const remove: ActionCreator<'app.member.remove'> = ({
 
     const id = remap(definition.id, data);
 
-    const { data: response } = await axios.delete(`${apiUrl}/api/apps/${appId}/members/${id}`);
+    const { data: response } = await axios.delete(`${apiUrl}/api/app-members/${id}`);
 
     await refetchDemoAppMembers();
+
     return response;
   },
 ];

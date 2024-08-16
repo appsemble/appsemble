@@ -1,9 +1,12 @@
+import { PredefinedAppRole } from '@appsemble/types';
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 import { beforeEach, describe, expect, it, type Mock, vi } from 'vitest';
 
 import { createTestAction } from '../makeActions.js';
 import { apiUrl, appId } from '../settings.js';
+
+// TODO check and fix all
 
 describe('app.member.register', () => {
   let mock: MockAdapter;
@@ -16,7 +19,7 @@ describe('app.member.register', () => {
     refetchDemoAppMembers = vi.fn();
   });
 
-  it('should call the API to register a new user', async () => {
+  it('should call the API to register a new app member', async () => {
     mock.onPost(`${apiUrl}/api/apps/${appId}/auth/email/register`).reply(() => [201]);
     const action = createTestAction({
       definition: {
@@ -56,7 +59,7 @@ describe('app.member.register', () => {
         email: 'test@example.com',
         email_verified: true,
         name: 'name',
-        role: 'Member',
+        role: PredefinedAppRole.Member,
         demo: false,
       }),
       refetchDemoAppMembers,
@@ -69,7 +72,52 @@ describe('app.member.register', () => {
   });
 });
 
-describe('user.login', () => {
+describe('app.member.invite', () => {
+  let mock: MockAdapter;
+
+  beforeEach(() => {
+    mock = new MockAdapter(axios);
+  });
+
+  it('should call the API to invite a new app member', async () => {
+    mock.onPost(`${apiUrl}/api/apps/${appId}/invites`).reply(() => [201]);
+    const action = createTestAction({
+      definition: {
+        type: 'app.member.invite',
+        email: { prop: 'email' },
+        role: { prop: 'role' },
+      },
+      getAppMemberInfo: () => ({
+        sub: 'some-user-id',
+        email: 'test@example.com',
+        email_verified: true,
+        name: 'name',
+        role: PredefinedAppRole.MembersManager,
+        demo: false,
+      }),
+    });
+
+    const result = await action({ email: 'test@example.com', role: PredefinedAppRole.Member });
+    expect(result).toStrictEqual({ email: 'test@example.com', role: PredefinedAppRole.Member });
+  });
+
+  it('should do nothing and return data if app member is not logged in', async () => {
+    mock.onPost(`${apiUrl}/api/apps/${appId}/auth/email/register`).reply(() => [201]);
+    const action = createTestAction({
+      definition: {
+        type: 'app.member.invite',
+        email: { prop: 'email' },
+        role: { prop: 'role' },
+      },
+      getAppMemberInfo: () => null,
+    });
+
+    const result = await action({ email: 'test@example.com', role: PredefinedAppRole.Member });
+    expect(result).toStrictEqual({ email: 'test@example.com', role: PredefinedAppRole.Member });
+  });
+});
+
+describe('app.member.login', () => {
   let passwordLogin: Mock;
   let refetchDemoAppMembers: Mock;
 
@@ -110,7 +158,7 @@ describe('user.login', () => {
         email: 'test@example.com',
         email_verified: true,
         name: 'name',
-        role: 'Member',
+        role: PredefinedAppRole.Member,
         demo: false,
       }),
       refetchDemoAppMembers,
@@ -123,145 +171,6 @@ describe('user.login', () => {
   });
 });
 
-describe('app.member.update', () => {
-  let mock: MockAdapter;
-  let setAppMemberInfo: Mock;
-  let refetchDemoAppMembers: Mock;
-  const currentEmail = 'test@gmail.com';
-  const newEmail = 'test.updated@gmail.com';
-  const managerEmail = 'manager@gmail.com';
-
-  beforeEach(() => {
-    mock = new MockAdapter(axios);
-    setAppMemberInfo = vi.fn();
-    refetchDemoAppMembers = vi.fn();
-  });
-
-  it('should call the API for updating the user', async () => {
-    mock.onPatch(`${apiUrl}/api/apps/${appId}/members/current`).reply(() => [
-      201,
-      {
-        id: 'some-user-id',
-        email: currentEmail,
-        emailVerified: false,
-        name: 'name',
-        picture: `${apiUrl}/api/apps/${appId}/members/some-user-id/picture`,
-        properties: { test: '[1,2,3]', property: 'Property', bool: 'true' },
-      },
-    ]);
-    const action = createTestAction({
-      definition: {
-        id: 'some-user-id',
-        type: 'app.member.update',
-        name: { prop: 'name' },
-        properties: { static: { test: [1, 2, 3], property: 'Property', bool: true } },
-      },
-      getAppMemberInfo: () => ({
-        sub: 'some-user-id',
-        name: 'old name',
-        email: currentEmail,
-        email_verified: true,
-        picture: 'https://example.com/old-avatar.jpg',
-        properties: { test: [1, 2, 3], property: 'Property', bool: true },
-        role: 'Member',
-        demo: false,
-      }),
-      setAppMemberInfo,
-      refetchDemoAppMembers,
-    });
-
-    const result = await action({ name: 'name' });
-    expect(result).toStrictEqual({
-      id: 'some-user-id',
-      name: 'name',
-      email: currentEmail,
-      emailVerified: false,
-      picture: `${apiUrl}/api/apps/42/members/some-user-id/picture`,
-      properties: {
-        bool: 'true',
-        property: 'Property',
-        test: '[1,2,3]',
-      },
-    });
-    expect(setAppMemberInfo).toHaveBeenCalledWith({
-      sub: 'some-user-id',
-      email: currentEmail,
-      email_verified: false,
-      name: 'name',
-      picture: `${apiUrl}/api/apps/${appId}/members/some-user-id/picture`,
-      properties: { test: '[1,2,3]', property: 'Property', bool: 'true' },
-    });
-    expect(refetchDemoAppMembers).toHaveBeenCalledWith();
-  });
-
-  it('should do nothing and return the data if the user is not logged in', async () => {
-    const action = createTestAction({
-      definition: {
-        id: 'some-user-id',
-        type: 'app.member.update',
-        name: { prop: 'name' },
-      },
-      // eslint-disable-next-line unicorn/no-useless-undefined
-      getAppMemberInfo: () => undefined,
-    });
-
-    const result = await action({ name: 'name' });
-    expect(result).toStrictEqual({ name: 'name' });
-    expect(setAppMemberInfo).not.toHaveBeenCalled();
-    expect(refetchDemoAppMembers).not.toHaveBeenCalled();
-  });
-
-  it('should update another user if called by account manager', async () => {
-    mock.onPatch(`${apiUrl}/api/apps/${appId}/members/current`).reply(() => [
-      201,
-      {
-        id: 'some-user-id',
-        email: newEmail,
-        emailVerified: false,
-        name: 'name',
-        picture: `${apiUrl}/api/apps/${appId}/members/some-user-id/picture`,
-        properties: { test: '[1,2,3]', property: 'Property', bool: 'true' },
-      },
-    ]);
-    const action = createTestAction({
-      definition: {
-        id: 'some-user-id',
-        type: 'app.member.update',
-        name: { prop: 'name' },
-        properties: { static: { test: [1, 2, 3], property: 'Property', bool: true } },
-      },
-      getAppMemberInfo: () => ({
-        sub: 'some-user-id',
-        name: 'old name',
-        email: managerEmail,
-        email_verified: true,
-        picture: 'https://example.com/old-avatar.jpg',
-        properties: {},
-        role: 'Member',
-        demo: false,
-      }),
-      setAppMemberInfo,
-      refetchDemoAppMembers,
-    });
-
-    const result = await action({ name: 'name' });
-    expect(result).toStrictEqual({
-      id: 'some-user-id',
-      name: 'name',
-      email: newEmail,
-      emailVerified: false,
-      picture: `${apiUrl}/api/apps/42/members/some-user-id/picture`,
-      properties: {
-        bool: 'true',
-        property: 'Property',
-        test: '[1,2,3]',
-      },
-    });
-    expect(setAppMemberInfo).not.toHaveBeenCalled();
-    expect(refetchDemoAppMembers).toHaveBeenCalledWith();
-  });
-});
-
 describe('app.member.query', () => {
   let mock: MockAdapter;
   let setAppMemberInfo: Mock;
@@ -271,7 +180,7 @@ describe('app.member.query', () => {
     setAppMemberInfo = vi.fn();
   });
 
-  it('should call the API for getting all users by roles', async () => {
+  it('should call the API for getting all app members by roles', async () => {
     mock.onGet(`${apiUrl}/api/apps/${appId}/members/roles?roles=Role1,Role2,Role3`).reply(() => [
       200,
       [
@@ -316,8 +225,94 @@ describe('app.member.query', () => {
         email_verified: true,
         picture: 'https://example.com/avatar.jpg',
         properties: {},
-        role: 'Member',
+        role: PredefinedAppRole.MembersManager,
         demo: false,
+      }),
+      setAppMemberInfo,
+    });
+
+    const result = await action({
+      roles: {
+        'array.from': ['Role1', 'Role2', 'Role3'],
+      },
+    });
+    expect(result).toStrictEqual([
+      {
+        id: 'role-1-id',
+        email: 'role1@gmail.com',
+        emailVerified: false,
+        name: 'name',
+        picture: `${apiUrl}/api/apps/${appId}/members/some-user-id/picture`,
+        properties: {},
+      },
+      {
+        id: 'role-2-id',
+        email: 'role2@gmail.com',
+        emailVerified: false,
+        name: 'name',
+        picture: `${apiUrl}/api/apps/${appId}/members/some-user-id/picture`,
+        properties: {},
+      },
+      {
+        id: 'role-3-id',
+        email: 'role3@gmail.com',
+        emailVerified: false,
+        name: 'name',
+        picture: `${apiUrl}/api/apps/${appId}/members/some-user-id/picture`,
+        properties: {},
+      },
+    ]);
+  });
+
+  it('should call the API for getting all demo app members by roles if the app member is demo', async () => {
+    mock
+      .onGet(`${apiUrl}/api/apps/${appId}/demo-members/roles?roles=Role1,Role2,Role3`)
+      .reply(() => [
+        200,
+        [
+          {
+            id: 'role-1-id',
+            email: 'role1@gmail.com',
+            emailVerified: false,
+            name: 'name',
+            picture: `${apiUrl}/api/apps/${appId}/members/some-user-id/picture`,
+            properties: {},
+          },
+          {
+            id: 'role-2-id',
+            email: 'role2@gmail.com',
+            emailVerified: false,
+            name: 'name',
+            picture: `${apiUrl}/api/apps/${appId}/members/some-user-id/picture`,
+            properties: {},
+          },
+          {
+            id: 'role-3-id',
+            email: 'role3@gmail.com',
+            emailVerified: false,
+            name: 'name',
+            picture: `${apiUrl}/api/apps/${appId}/members/some-user-id/picture`,
+            properties: {},
+          },
+        ],
+      ]);
+
+    const action = createTestAction({
+      definition: {
+        type: 'app.member.query',
+        roles: {
+          'array.from': ['Role1', 'Role2', 'Role3'],
+        },
+      },
+      getAppMemberInfo: () => ({
+        sub: 'manager-id',
+        name: 'name',
+        email: 'manager@gmail.com',
+        email_verified: true,
+        picture: 'https://example.com/avatar.jpg',
+        properties: {},
+        role: PredefinedAppRole.MembersManager,
+        demo: true,
       }),
       setAppMemberInfo,
     });
@@ -363,8 +358,7 @@ describe('app.member.query', () => {
           'array.from': ['Role1', 'Role2', 'Role3'],
         },
       },
-      // eslint-disable-next-line unicorn/no-useless-undefined
-      getAppMemberInfo: () => undefined,
+      getAppMemberInfo: () => null,
     });
 
     const result = await action({
@@ -380,7 +374,347 @@ describe('app.member.query', () => {
   });
 });
 
-describe('app.member.remove', () => {
+describe('app.member.current.patch', () => {
+  let mock: MockAdapter;
+  let setAppMemberInfo: Mock;
+  let refetchDemoAppMembers: Mock;
+
+  beforeEach(() => {
+    mock = new MockAdapter(axios);
+    setAppMemberInfo = vi.fn();
+    refetchDemoAppMembers = vi.fn();
+  });
+
+  it('should call the API for patching the app member', async () => {
+    mock.onPatch(`${apiUrl}/api/apps/${appId}/members/current`).reply(() => [
+      201,
+      {
+        id: 'some-user-id',
+        email: 'email@example.com',
+        emailVerified: false,
+        name: 'name',
+        picture: `${apiUrl}/api/apps/${appId}/members/some-user-id/picture`,
+        properties: { test: '[1,2,3]', property: 'Property', bool: 'true' },
+      },
+    ]);
+    const action = createTestAction({
+      definition: {
+        type: 'app.member.current.patch',
+        name: { prop: 'name' },
+        properties: { static: { test: [1, 2, 3], property: 'Property', bool: true } },
+      },
+      getAppMemberInfo: () => ({
+        sub: 'some-user-id',
+        name: 'old name',
+        email: 'email@example.com',
+        email_verified: true,
+        picture: 'https://example.com/old-avatar.jpg',
+        properties: { test: [1, 2, 3], property: 'Property', bool: true },
+        role: PredefinedAppRole.Member,
+        demo: false,
+      }),
+      setAppMemberInfo,
+      refetchDemoAppMembers,
+    });
+
+    const result = await action({ name: 'name' });
+    expect(result).toStrictEqual({
+      id: 'some-user-id',
+      name: 'name',
+      email: 'email@example.com',
+      emailVerified: false,
+      picture: `${apiUrl}/api/apps/42/members/some-user-id/picture`,
+      properties: {
+        bool: 'true',
+        property: 'Property',
+        test: '[1,2,3]',
+      },
+    });
+    expect(setAppMemberInfo).toHaveBeenCalledWith({
+      sub: 'some-user-id',
+      email: 'email@example.com',
+      email_verified: false,
+      name: 'name',
+      picture: `${apiUrl}/api/apps/${appId}/members/some-user-id/picture`,
+      properties: { test: '[1,2,3]', property: 'Property', bool: 'true' },
+    });
+    expect(refetchDemoAppMembers).toHaveBeenCalledWith();
+  });
+
+  it('should do nothing and return the data if the user is not logged in', async () => {
+    const action = createTestAction({
+      definition: {
+        type: 'app.member.current.patch',
+        name: { prop: 'name' },
+      },
+      // eslint-disable-next-line unicorn/no-useless-undefined
+      getAppMemberInfo: () => undefined,
+    });
+
+    const result = await action({ name: 'name' });
+    expect(result).toStrictEqual({ name: 'name' });
+    expect(setAppMemberInfo).not.toHaveBeenCalled();
+    expect(refetchDemoAppMembers).not.toHaveBeenCalled();
+  });
+});
+
+describe('app.member.role.update', () => {
+  let mock: MockAdapter;
+  let refetchDemoAppMembers: Mock;
+
+  beforeEach(() => {
+    mock = new MockAdapter(axios);
+    refetchDemoAppMembers = vi.fn();
+  });
+
+  it('should call the API for updating the role of the app member', async () => {
+    mock.onPut(`${apiUrl}/api/app-members/some-user-id`).reply(() => [
+      201,
+      {
+        id: 'some-user-id',
+        email: 'email@example.com',
+        emailVerified: false,
+        name: 'name',
+        picture: `${apiUrl}/api/apps/${appId}/members/some-user-id/picture`,
+        properties: { test: '[1,2,3]', property: 'Property', bool: 'true' },
+      },
+    ]);
+    const action = createTestAction({
+      definition: {
+        type: 'app.member.role.update',
+        id: 'some-user-id',
+        role: { prop: 'role' },
+      },
+      getAppMemberInfo: () => ({
+        sub: 'some-user-id',
+        name: 'old name',
+        email: 'email@example.com',
+        email_verified: true,
+        picture: 'https://example.com/old-avatar.jpg',
+        properties: { test: [1, 2, 3], property: 'Property', bool: true },
+        role: PredefinedAppRole.MembersManager,
+        demo: false,
+      }),
+      refetchDemoAppMembers,
+    });
+
+    const result = await action({ role: PredefinedAppRole.Member });
+    expect(result).toStrictEqual({
+      id: 'some-user-id',
+      name: 'name',
+      email: 'email@example.com',
+      emailVerified: false,
+      picture: `${apiUrl}/api/apps/42/members/some-user-id/picture`,
+      role: PredefinedAppRole.Member,
+      properties: {
+        bool: 'true',
+        property: 'Property',
+        test: '[1,2,3]',
+      },
+    });
+    expect(refetchDemoAppMembers).toHaveBeenCalledWith();
+  });
+
+  it('should do nothing and return the data if the user is not logged in', async () => {
+    const action = createTestAction({
+      definition: {
+        type: 'app.member.current.patch',
+        name: { prop: 'name' },
+      },
+      // eslint-disable-next-line unicorn/no-useless-undefined
+      getAppMemberInfo: () => undefined,
+    });
+
+    const result = await action({ name: 'name' });
+    expect(result).toStrictEqual({ name: 'name' });
+    expect(refetchDemoAppMembers).not.toHaveBeenCalled();
+  });
+
+  it('should update another app member if called by account manager', async () => {
+    mock.onPatch(`${apiUrl}/api/apps/${appId}/members/current`).reply(() => [
+      201,
+      {
+        id: 'some-user-id',
+        email: 'example@email.com',
+        emailVerified: false,
+        name: 'name',
+        picture: `${apiUrl}/api/apps/${appId}/members/some-user-id/picture`,
+        properties: { test: '[1,2,3]', property: 'Property', bool: 'true' },
+      },
+    ]);
+    const action = createTestAction({
+      definition: {
+        type: 'app.member.current.patch',
+        name: { prop: 'name' },
+        properties: { static: { test: [1, 2, 3], property: 'Property', bool: true } },
+      },
+      getAppMemberInfo: () => ({
+        sub: 'some-user-id',
+        name: 'old name',
+        email: 'example@email.com',
+        email_verified: true,
+        picture: 'https://example.com/old-avatar.jpg',
+        properties: {},
+        role: PredefinedAppRole.Member,
+        demo: false,
+      }),
+      refetchDemoAppMembers,
+    });
+
+    const result = await action({ name: 'name' });
+    expect(result).toStrictEqual({
+      id: 'some-user-id',
+      name: 'name',
+      email: 'example@email.com',
+      emailVerified: false,
+      picture: `${apiUrl}/api/apps/42/members/some-user-id/picture`,
+      properties: {
+        bool: 'true',
+        property: 'Property',
+        test: '[1,2,3]',
+      },
+    });
+    expect(refetchDemoAppMembers).toHaveBeenCalledWith();
+  });
+});
+
+describe('app.member.properties.patch', () => {
+  let mock: MockAdapter;
+  let setAppMemberInfo: Mock;
+  let refetchDemoAppMembers: Mock;
+  const currentEmail = 'test@gmail.com';
+  const newEmail = 'test.updated@gmail.com';
+  const managerEmail = 'manager@gmail.com';
+
+  beforeEach(() => {
+    mock = new MockAdapter(axios);
+    setAppMemberInfo = vi.fn();
+    refetchDemoAppMembers = vi.fn();
+  });
+
+  it('should call the API for patching the app member', async () => {
+    mock.onPatch(`${apiUrl}/api/apps/${appId}/members/current`).reply(() => [
+      201,
+      {
+        id: 'some-user-id',
+        email: currentEmail,
+        emailVerified: false,
+        name: 'name',
+        picture: `${apiUrl}/api/apps/${appId}/members/some-user-id/picture`,
+        properties: { test: '[1,2,3]', property: 'Property', bool: 'true' },
+      },
+    ]);
+    const action = createTestAction({
+      definition: {
+        type: 'app.member.current.patch',
+        name: { prop: 'name' },
+        properties: { static: { test: [1, 2, 3], property: 'Property', bool: true } },
+      },
+      getAppMemberInfo: () => ({
+        sub: 'some-user-id',
+        name: 'old name',
+        email: currentEmail,
+        email_verified: true,
+        picture: 'https://example.com/old-avatar.jpg',
+        properties: { test: [1, 2, 3], property: 'Property', bool: true },
+        role: PredefinedAppRole.Member,
+        demo: false,
+      }),
+      setAppMemberInfo,
+      refetchDemoAppMembers,
+    });
+
+    const result = await action({ name: 'name' });
+    expect(result).toStrictEqual({
+      id: 'some-user-id',
+      name: 'name',
+      email: currentEmail,
+      emailVerified: false,
+      picture: `${apiUrl}/api/apps/42/members/some-user-id/picture`,
+      properties: {
+        bool: 'true',
+        property: 'Property',
+        test: '[1,2,3]',
+      },
+    });
+    expect(setAppMemberInfo).toHaveBeenCalledWith({
+      sub: 'some-user-id',
+      email: currentEmail,
+      email_verified: false,
+      name: 'name',
+      picture: `${apiUrl}/api/apps/${appId}/members/some-user-id/picture`,
+      properties: { test: '[1,2,3]', property: 'Property', bool: 'true' },
+    });
+    expect(refetchDemoAppMembers).toHaveBeenCalledWith();
+  });
+
+  it('should do nothing and return the data if the user is not logged in', async () => {
+    const action = createTestAction({
+      definition: {
+        type: 'app.member.current.patch',
+        name: { prop: 'name' },
+      },
+      // eslint-disable-next-line unicorn/no-useless-undefined
+      getAppMemberInfo: () => undefined,
+    });
+
+    const result = await action({ name: 'name' });
+    expect(result).toStrictEqual({ name: 'name' });
+    expect(setAppMemberInfo).not.toHaveBeenCalled();
+    expect(refetchDemoAppMembers).not.toHaveBeenCalled();
+  });
+
+  it('should update another user if called by account manager', async () => {
+    mock.onPatch(`${apiUrl}/api/apps/${appId}/members/current`).reply(() => [
+      201,
+      {
+        id: 'some-user-id',
+        email: newEmail,
+        emailVerified: false,
+        name: 'name',
+        picture: `${apiUrl}/api/apps/${appId}/members/some-user-id/picture`,
+        properties: { test: '[1,2,3]', property: 'Property', bool: 'true' },
+      },
+    ]);
+    const action = createTestAction({
+      definition: {
+        type: 'app.member.current.patch',
+        name: { prop: 'name' },
+        properties: { static: { test: [1, 2, 3], property: 'Property', bool: true } },
+      },
+      getAppMemberInfo: () => ({
+        sub: 'some-user-id',
+        name: 'old name',
+        email: managerEmail,
+        email_verified: true,
+        picture: 'https://example.com/old-avatar.jpg',
+        properties: {},
+        role: PredefinedAppRole.Member,
+        demo: false,
+      }),
+      setAppMemberInfo,
+      refetchDemoAppMembers,
+    });
+
+    const result = await action({ name: 'name' });
+    expect(result).toStrictEqual({
+      id: 'some-user-id',
+      name: 'name',
+      email: newEmail,
+      emailVerified: false,
+      picture: `${apiUrl}/api/apps/42/members/some-user-id/picture`,
+      properties: {
+        bool: 'true',
+        property: 'Property',
+        test: '[1,2,3]',
+      },
+    });
+    expect(setAppMemberInfo).not.toHaveBeenCalled();
+    expect(refetchDemoAppMembers).toHaveBeenCalledWith();
+  });
+});
+
+describe('app.member.delete', () => {
   let mock: MockAdapter;
   let setAppMemberInfo: Mock;
   let refetchDemoAppMembers: Mock;
@@ -401,7 +735,7 @@ describe('app.member.remove', () => {
     const action = createTestAction({
       definition: {
         id: 'some-user-id',
-        type: 'app.member.remove',
+        type: 'app.member.delete',
       },
       getAppMemberInfo: () => ({
         sub: 'manager-id',
@@ -410,7 +744,7 @@ describe('app.member.remove', () => {
         email_verified: true,
         picture: 'https://example.com/avatar.jpg',
         properties: {},
-        role: 'Member',
+        role: PredefinedAppRole.MembersManager,
         demo: false,
       }),
       setAppMemberInfo,
@@ -428,7 +762,7 @@ describe('app.member.remove', () => {
     const action = createTestAction({
       definition: {
         id: 'some-user-id',
-        type: 'app.member.remove',
+        type: 'app.member.delete',
       },
       // eslint-disable-next-line unicorn/no-useless-undefined
       getAppMemberInfo: () => undefined,

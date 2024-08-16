@@ -1,6 +1,6 @@
 import {
   type AppDefinition,
-  appRoles,
+  predefinedAppRoles,
   type BasicPageDefinition,
   type FlowPageDefinition,
   type Security,
@@ -1752,8 +1752,7 @@ describe('validateAppDefinition', () => {
       version: '1.2.3',
       actions: {
         onWhatever: {
-          type: 'app.member.update',
-          id: 'some-id',
+          type: 'app.member.current.patch',
         },
       },
     });
@@ -2078,9 +2077,8 @@ describe('validateAppDefinition', () => {
       version: '1.2.3',
       actions: {
         onWhatever: {
-          type: 'app.member.update',
+          type: 'app.member.current.patch',
           name: 'name',
-          id: 'sub',
           role: 'role',
           properties: {
             'object.from': {
@@ -3451,7 +3449,7 @@ describe('validateAppDefinition', () => {
     const result = await validateAppDefinition(app, () => []);
     expect(result.valid).toBe(false);
     expect(result.errors).toStrictEqual(
-      Object.keys(appRoles).map(
+      predefinedAppRoles.map(
         (role) =>
           new ValidationError(`not allowed to overwrite role ${role}`, app, undefined, [
             'security',

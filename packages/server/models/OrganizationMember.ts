@@ -1,4 +1,4 @@
-import { type OrganizationRole, organizationRoles } from '@appsemble/types';
+import { type PredefinedOrganizationRole, predefinedOrganizationRoles } from '@appsemble/types';
 import {
   AllowNull,
   BelongsTo,
@@ -18,8 +18,8 @@ import { Organization, User } from './index.js';
 export class OrganizationMember extends Model {
   @AllowNull(false)
   @Default('Member')
-  @Column(DataType.ENUM(...Object.keys(organizationRoles)))
-  role: OrganizationRole;
+  @Column(DataType.ENUM(...predefinedOrganizationRoles))
+  role: PredefinedOrganizationRole;
 
   @CreatedAt
   created: Date;

@@ -4,7 +4,7 @@ import {
   type AppRole,
   type JwtPayload,
   type Organization,
-  type OrganizationRole,
+  type PredefinedOrganizationRole,
   type TokenResponse,
   type UserInfo,
 } from '@appsemble/types';
@@ -35,7 +35,7 @@ export interface UserOrganization extends Organization {
   /**
    * The user’s role within the organization.
    */
-  role: OrganizationRole;
+  role: PredefinedOrganizationRole;
 }
 
 /**

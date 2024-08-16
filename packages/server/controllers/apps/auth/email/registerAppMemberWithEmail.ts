@@ -51,16 +51,20 @@ export async function registerAppMemberWithEmail(ctx: Context): Promise<void> {
     401,
     'Self registration is disabled for this app.',
   );
+
+  assertKoaError(!app.definition?.security, ctx, 401, 'This app has no security definition');
+
   assertKoaError(
     !app.definition?.security?.default?.role,
     ctx,
-    404,
-    'This app has no security definition',
+    401,
+    'This app has no default role',
   );
 
   const appMemberExists = await AppMember.count({
     where: { email, AppId: appId },
   });
+
   assertKoaError(
     Boolean(appMemberExists),
     ctx,
@@ -81,6 +85,7 @@ export async function registerAppMemberWithEmail(ctx: Context): Promise<void> {
       properties: parseAppMemberProperties(properties),
       timezone,
       locale,
+      demo: app.demoMode,
     });
   } catch (error: unknown) {
     if (error instanceof AppMemberPropertiesError) {

@@ -1,4 +1,4 @@
-import { organizationRoles } from '@appsemble/types';
+import { predefinedOrganizationRoles } from '@appsemble/types';
 import { type OpenAPIV3 } from 'openapi-types';
 
 export const pathItems: OpenAPIV3.PathItemObject = {
@@ -23,7 +23,7 @@ export const pathItems: OpenAPIV3.PathItemObject = {
                   },
                   role: {
                     type: 'string',
-                    enum: Object.keys(organizationRoles),
+                    enum: predefinedOrganizationRoles,
                   },
                 },
               },
@@ -55,7 +55,7 @@ export const pathItems: OpenAPIV3.PathItemObject = {
                 },
                 role: {
                   type: 'string',
-                  enum: Object.keys(organizationRoles),
+                  enum: predefinedOrganizationRoles,
                 },
               },
             },

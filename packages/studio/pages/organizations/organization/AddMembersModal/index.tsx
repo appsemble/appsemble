@@ -10,8 +10,8 @@ import {
 } from '@appsemble/react-components';
 import {
   type OrganizationInvite,
-  type OrganizationRole,
-  organizationRoles,
+  PredefinedOrganizationRole,
+  predefinedOrganizationRoles,
 } from '@appsemble/types';
 import axios from 'axios';
 import {
@@ -43,10 +43,8 @@ interface AddMembersModalProps {
 
 const defaultInvite: OrganizationInvite = {
   email: '',
-  role: 'Member',
+  role: PredefinedOrganizationRole.Member,
 };
-
-const roleKeys = Object.keys(organizationRoles);
 
 /**
  * A modal form for inviting one or more people to the organization.
@@ -202,9 +200,13 @@ export function AddMembersModal({ onInvited, state }: AddMembersModalProps): Rea
               onChange={onChange}
               value={member.role}
             >
-              {roleKeys
-                .filter((r) => roleKeys.indexOf(r) <= roleKeys.indexOf(organization?.role))
-                .map((r: OrganizationRole) => (
+              {predefinedOrganizationRoles
+                .filter(
+                  (r) =>
+                    predefinedOrganizationRoles.indexOf(r) <=
+                    predefinedOrganizationRoles.indexOf(organization?.role),
+                )
+                .map((r: PredefinedOrganizationRole) => (
                   <option key={r} value={r}>
                     {formatMessage(messages[r])}
                   </option>

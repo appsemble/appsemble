@@ -8,12 +8,11 @@ import { type AppVisibility } from './app.js';
 import { type BulmaColor } from './bulma.js';
 import { type HTTPMethods } from './http.js';
 import { type AppPermission } from './permissions.js';
-import { type AppRole, type OrganizationRole, type PredefinedAppRole } from './roles.js';
+import { type AppRole, type PredefinedOrganizationRole, type PredefinedAppRole } from './roles.js';
 import { type Theme } from './theme.js';
 
 export * from './action.js';
 export * from './app.js';
-export * from './appMember.js';
 export * from './asset.js';
 export * from './authentication.js';
 export * from './author.js';
@@ -1298,23 +1297,51 @@ export interface StorageWriteActionDefinition extends BaseActionDefinition<'stor
   storage?: StorageType;
 }
 
-export interface GroupInviteActionDefinition extends BaseActionDefinition<'group.invite'> {
+export interface GroupMemberInviteActionDefinition
+  extends BaseActionDefinition<'group.member.invite'> {
   /**
    * The ID of the group to invite the user to.
    */
-  id?: Remapper;
+  id: Remapper;
 
   /**
    * The email address of the user to invite.
    */
-  email?: Remapper;
+  email: Remapper;
+
+  /**
+   * The role of the invited group member.
+   */
+  role: Remapper;
 }
 
-export interface GroupMembersActionDefinition extends BaseActionDefinition<'group.members'> {
+export interface GroupMemberQueryActionDefinition
+  extends BaseActionDefinition<'group.member.query'> {
   /**
-   * The ID of the group to get the members from.
+   * The ID of the group to query the members of.
    */
   id: Remapper;
+}
+
+export interface GroupMemberDeleteActionDefinition
+  extends BaseActionDefinition<'group.member.delete'> {
+  /**
+   * The ID of the group member to delete.
+   */
+  id: Remapper;
+}
+
+export interface GroupMemberRoleUpdateActionDefinition
+  extends BaseActionDefinition<'group.member.role.update'> {
+  /**
+   * The ID of the group member to update the role of.
+   */
+  id: Remapper;
+
+  /**
+   * The role to invite the app member with.
+   */
+  role: Remapper;
 }
 
 export interface AppMemberLoginAction extends BaseActionDefinition<'app.member.login'> {
@@ -1367,6 +1394,18 @@ export interface AppMemberRegisterAction extends BaseActionDefinition<'app.membe
   login?: boolean;
 }
 
+export interface AppMemberInviteAction extends BaseActionDefinition<'app.member.invite'> {
+  /**
+   * The email address to invite the app member with.
+   */
+  email: Remapper;
+
+  /**
+   * The role to invite the app member with.
+   */
+  role: Remapper;
+}
+
 export interface AppMemberQueryAction extends BaseActionDefinition<'app.member.query'> {
   /**
    * The roles of the users to fetch.
@@ -1374,12 +1413,35 @@ export interface AppMemberQueryAction extends BaseActionDefinition<'app.member.q
   roles?: Remapper;
 }
 
-export interface AppMemberUpdateAction extends BaseActionDefinition<'app.member.update'> {
+export interface AppMemberRoleUpdateAction extends BaseActionDefinition<'app.member.role.update'> {
   /**
    * The id of the app member to update.
    */
   id: Remapper;
 
+  /**
+   * The role of the updated app member
+   */
+  role: Remapper;
+}
+
+export interface AppMemberPropertiesPatchAction
+  extends BaseActionDefinition<'app.member.properties.patch'> {
+  /**
+   * The id of the app member to update.
+   */
+  id: Remapper;
+
+  /**
+   * Custom properties that can be assigned freely.
+   *
+   * Every value will be converted to a string.
+   */
+  properties: Remapper;
+}
+
+export interface AppMemberCurrentPatchAction
+  extends BaseActionDefinition<'app.member.current.patch'> {
   /**
    * The display name to update.
    */
@@ -1398,7 +1460,7 @@ export interface AppMemberUpdateAction extends BaseActionDefinition<'app.member.
   role?: Remapper;
 }
 
-export interface AppMemberRemoveAction extends BaseActionDefinition<'app.member.remove'> {
+export interface AppMemberDeleteAction extends BaseActionDefinition<'app.member.delete'> {
   /**
    * The id of the app member to remove.
    */
@@ -1561,20 +1623,22 @@ export type MessageActionDefinition = BaseActionDefinition<'message'> &
 
 export type ActionDefinition =
   | AnalyticsAction
+  | AppMemberCurrentPatchAction
+  | AppMemberDeleteAction
+  | AppMemberInviteAction
   | AppMemberLoginAction
   | AppMemberLogoutAction
+  | AppMemberPropertiesPatchAction
   | AppMemberQueryAction
   | AppMemberRegisterAction
-  | AppMemberRemoveAction
-  | AppMemberUpdateAction
+  | AppMemberRoleUpdateAction
   | BaseActionDefinition<'dialog.error'>
   | BaseActionDefinition<'dialog.ok'>
   | BaseActionDefinition<'flow.back'>
   | BaseActionDefinition<'flow.cancel'>
   | BaseActionDefinition<'flow.finish'>
   | BaseActionDefinition<'flow.next'>
-  | BaseActionDefinition<'group.join'>
-  | BaseActionDefinition<'group.list'>
+  | BaseActionDefinition<'group.query'>
   | BaseActionDefinition<'link.back'>
   | BaseActionDefinition<'link.next'>
   | BaseActionDefinition<'noop'>
@@ -1587,8 +1651,10 @@ export type ActionDefinition =
   | EmailActionDefinition
   | EventActionDefinition
   | FlowToActionDefinition
-  | GroupInviteActionDefinition
-  | GroupMembersActionDefinition
+  | GroupMemberDeleteActionDefinition
+  | GroupMemberInviteActionDefinition
+  | GroupMemberQueryActionDefinition
+  | GroupMemberRoleUpdateActionDefinition
   | LinkActionDefinition
   | LogActionDefinition
   | MatchActionDefinition
@@ -2216,7 +2282,7 @@ export interface OrganizationInvite {
   /**
    * The role the user should get when accepting the invite.
    */
-  role: OrganizationRole;
+  role: PredefinedOrganizationRole;
 }
 
 /**

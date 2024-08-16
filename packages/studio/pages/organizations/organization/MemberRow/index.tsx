@@ -4,7 +4,7 @@ import {
   useConfirmation,
   useMessages,
 } from '@appsemble/react-components';
-import { type OrganizationRole, organizationRoles } from '@appsemble/types';
+import { type PredefinedOrganizationRole, predefinedOrganizationRoles } from '@appsemble/types';
 import axios from 'axios';
 import { type ChangeEvent, type ReactNode, useCallback } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
@@ -124,7 +124,7 @@ export function MemberRow({
           onChange={onChangeRole}
           value={member.role}
         >
-          {Object.keys(organizationRoles).map((r: OrganizationRole) => (
+          {predefinedOrganizationRoles.map((r: PredefinedOrganizationRole) => (
             <option key={r} value={r}>
               {formatMessage(messages[r])}
             </option>

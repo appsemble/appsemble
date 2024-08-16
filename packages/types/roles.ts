@@ -1,27 +1,27 @@
 import { AppPermission, OrganizationPermission } from './permissions.js';
 
-const OrganizationMember = [
+const OrganizationMemberPermissions = [
   OrganizationPermission.QueryApps,
   OrganizationPermission.QueryOrganizationMembers,
 ];
 
-const OrganizationAppTranslator = [
-  ...OrganizationMember,
+const OrganizationAppTranslatorPermissions = [
+  ...OrganizationMemberPermissions,
   OrganizationPermission.QueryAppMessages,
   OrganizationPermission.CreateAppMessages,
   OrganizationPermission.UpdateAppMessages,
   OrganizationPermission.DeleteAppMessages,
 ];
 
-const OrganizationAppContentsExplorer = [
-  ...OrganizationMember,
+const OrganizationAppContentsExplorerPermissions = [
+  ...OrganizationMemberPermissions,
   OrganizationPermission.QueryAppAssets,
   OrganizationPermission.QueryAppResources,
   OrganizationPermission.GetAppResources,
 ];
 
-const OrganizationAppContentsManager = [
-  ...OrganizationAppContentsExplorer,
+const OrganizationAppContentsManagerPermissions = [
+  ...OrganizationAppContentsExplorerPermissions,
   OrganizationPermission.CreateAppAssets,
   OrganizationPermission.UpdateAppAssets,
   OrganizationPermission.DeleteAppAssets,
@@ -31,7 +31,7 @@ const OrganizationAppContentsManager = [
   OrganizationPermission.DeleteAppResources,
 ];
 
-const OrganizationAppMemberManager = [
+const OrganizationAppMemberManagerPermissions = [
   OrganizationPermission.CreateAppInvites,
   OrganizationPermission.QueryAppInvites,
   OrganizationPermission.QueryAppMembers,
@@ -40,26 +40,26 @@ const OrganizationAppMemberManager = [
   OrganizationPermission.PatchAppMemberProperties,
 ];
 
-const OrganizationAppGroupManager = [
+const OrganizationAppGroupManagerPermissions = [
   OrganizationPermission.QueryGroups,
   OrganizationPermission.CreateGroups,
   OrganizationPermission.UpdateGroups,
   OrganizationPermission.DeleteGroups,
 ];
 
-const OrganizationAppGroupMembersManager = [
+const OrganizationAppGroupMembersManagerPermissions = [
   OrganizationPermission.CreateGroupInvites,
   OrganizationPermission.QueryGroupInvites,
   OrganizationPermission.QueryGroupMembers,
   OrganizationPermission.RemoveGroupMembers,
 ];
 
-const OrganizationAppManager = [
-  ...OrganizationAppTranslator,
-  ...OrganizationAppContentsManager,
-  ...OrganizationAppMemberManager,
-  ...OrganizationAppGroupManager,
-  ...OrganizationAppGroupMembersManager,
+const OrganizationAppManagerPermissions = [
+  ...OrganizationAppTranslatorPermissions,
+  ...OrganizationAppContentsManagerPermissions,
+  ...OrganizationAppMemberManagerPermissions,
+  ...OrganizationAppGroupManagerPermissions,
+  ...OrganizationAppGroupMembersManagerPermissions,
   OrganizationPermission.UpdateApps,
   OrganizationPermission.ReadAppSettings,
   OrganizationPermission.UpdateAppSettings,
@@ -79,21 +79,21 @@ const OrganizationAppManager = [
   OrganizationPermission.QueryAppSnapshots,
 ];
 
-const OrganizationAppCollectionManager = [
-  ...OrganizationMember,
+const OrganizationAppCollectionManagerPermissions = [
+  ...OrganizationMemberPermissions,
   OrganizationPermission.CreateAppCollections,
   OrganizationPermission.UpdateAppCollections,
   OrganizationPermission.DeleteAppCollections,
 ];
 
-const OrganizationBlockManager = [
-  ...OrganizationMember,
+const OrganizationBlockManagerPermissions = [
+  ...OrganizationMemberPermissions,
   OrganizationPermission.PublishBlocks,
   OrganizationPermission.DeleteBlocks,
 ];
 
-const OrganizationTrainingManager = [
-  ...OrganizationMember,
+const OrganizationTrainingManagerPermissions = [
+  ...OrganizationMemberPermissions,
   OrganizationPermission.CreateTrainings,
   OrganizationPermission.UpdateTrainings,
   OrganizationPermission.DeleteTrainings,
@@ -102,11 +102,11 @@ const OrganizationTrainingManager = [
   OrganizationPermission.DeleteTrainingBlocks,
 ];
 
-const OrganizationMaintainer = [
-  ...OrganizationAppManager,
-  ...OrganizationAppCollectionManager,
-  ...OrganizationBlockManager,
-  ...OrganizationTrainingManager,
+const OrganizationMaintainerPermissions = [
+  ...OrganizationAppManagerPermissions,
+  ...OrganizationAppCollectionManagerPermissions,
+  ...OrganizationBlockManagerPermissions,
+  ...OrganizationTrainingManagerPermissions,
   OrganizationPermission.CreateApps,
   OrganizationPermission.DeleteApps,
   OrganizationPermission.CreateOrganizationInvites,
@@ -115,35 +115,53 @@ const OrganizationMaintainer = [
   OrganizationPermission.DeleteOrganizationInvites,
 ];
 
-const OrganizationOwner = [
-  ...OrganizationMaintainer,
+const OrganizationOwnerPermissions = [
+  ...OrganizationMaintainerPermissions,
   OrganizationPermission.UpdateOrganizations,
   OrganizationPermission.DeleteOrganizations,
   OrganizationPermission.RemoveOrganizationMembers,
   OrganizationPermission.UpdateOrganizationMemberRoles,
 ];
 
-export const organizationRoles = {
-  Member: OrganizationMember,
-  AppTranslator: OrganizationAppTranslator,
-  AppContentsExplorer: OrganizationAppContentsExplorer,
-  AppContentsManager: OrganizationAppContentsManager,
-  AppMemberManager: OrganizationAppMemberManager,
-  AppGroupManager: OrganizationAppGroupManager,
-  AppGroupMembersManager: OrganizationAppGroupMembersManager,
-  AppManager: OrganizationAppManager,
-  AppCollectionManager: OrganizationAppCollectionManager,
-  BlockManager: OrganizationBlockManager,
-  Maintainer: OrganizationMaintainer,
-  Owner: OrganizationOwner,
+export enum PredefinedOrganizationRole {
+  Member = 'Member',
+  AppTranslator = 'AppTranslator',
+  AppContentsExplorer = 'AppContentsExplorer',
+  AppContentsManager = 'AppContentsManager',
+  AppMemberManager = 'AppMemberManager',
+  AppGroupManager = 'AppGroupManager',
+  AppGroupMembersManager = 'AppGroupMembersManager',
+  AppManager = 'AppManager',
+  AppCollectionManager = 'AppCollectionManager',
+  BlockManager = 'BlockManager',
+  Maintainer = 'Maintainer',
+  Owner = 'Owner',
+}
+
+export const predefinedOrganizationRolePermissions = {
+  [PredefinedOrganizationRole.Member]: OrganizationMemberPermissions,
+  [PredefinedOrganizationRole.AppTranslator]: OrganizationAppTranslatorPermissions,
+  [PredefinedOrganizationRole.AppContentsExplorer]: OrganizationAppContentsExplorerPermissions,
+  [PredefinedOrganizationRole.AppContentsManager]: OrganizationAppContentsManagerPermissions,
+  [PredefinedOrganizationRole.AppMemberManager]: OrganizationAppMemberManagerPermissions,
+  [PredefinedOrganizationRole.AppGroupManager]: OrganizationAppGroupManagerPermissions,
+  [PredefinedOrganizationRole.AppGroupMembersManager]:
+    OrganizationAppGroupMembersManagerPermissions,
+  [PredefinedOrganizationRole.AppManager]: OrganizationAppManagerPermissions,
+  [PredefinedOrganizationRole.AppCollectionManager]: OrganizationAppCollectionManagerPermissions,
+  [PredefinedOrganizationRole.BlockManager]: OrganizationBlockManagerPermissions,
+  [PredefinedOrganizationRole.Maintainer]: OrganizationMaintainerPermissions,
+  [PredefinedOrganizationRole.Owner]: OrganizationOwnerPermissions,
 };
 
-export type OrganizationRole = keyof typeof organizationRoles;
+export const predefinedOrganizationRoles: PredefinedOrganizationRole[] = Object.values(
+  PredefinedOrganizationRole,
+);
 
-const AppMember: AppPermission[] = [];
+const AppMemberPermissions: AppPermission[] = [];
 
-const AppMembersManager = [
-  ...AppMember,
+const AppMembersManagerPermissions = [
+  ...AppMemberPermissions,
   AppPermission.CreateAppInvites,
   AppPermission.QueryAppMembers,
   AppPermission.DeleteAppMembers,
@@ -151,25 +169,25 @@ const AppMembersManager = [
   AppPermission.PatchAppMemberProperties,
 ];
 
-const AppGroupMembersManager = [
-  ...AppMember,
+const AppGroupMembersManagerPermissions = [
+  ...AppMemberPermissions,
   AppPermission.CreateGroupInvites,
   AppPermission.QueryGroupMembers,
   AppPermission.RemoveGroupMembers,
   AppPermission.UpdateGroupMemberRoles,
 ];
 
-const AppGroupsManager = [
-  ...AppMember,
-  ...AppGroupMembersManager,
+const AppGroupsManagerPermissions = [
+  ...AppMemberPermissions,
+  ...AppGroupMembersManagerPermissions,
   AppPermission.QueryGroups,
   AppPermission.CreateGroups,
   AppPermission.UpdateGroups,
   AppPermission.DeleteGroups,
 ];
 
-const AppResourcesManager = [
-  ...AppMember,
+const AppResourcesManagerPermissions = [
+  ...AppMemberPermissions,
   AppPermission.CreateResources,
   AppPermission.QueryResources,
   AppPermission.GetResources,
@@ -178,23 +196,32 @@ const AppResourcesManager = [
   AppPermission.DeleteResources,
 ];
 
-const AppOwner = [
-  ...AppMember,
-  ...AppMembersManager,
-  ...AppGroupsManager,
-  ...AppGroupMembersManager,
-  ...AppResourcesManager,
+const AppOwnerPermissions = [
+  ...AppMemberPermissions,
+  ...AppMembersManagerPermissions,
+  ...AppGroupMembersManagerPermissions,
+  ...AppGroupsManagerPermissions,
+  ...AppResourcesManagerPermissions,
 ];
 
-export const appRoles = {
-  Member: AppMember,
-  MembersManager: AppMembersManager,
-  GroupMembersManager: AppGroupMembersManager,
-  GroupsManager: AppGroupsManager,
-  ResourcesManager: AppResourcesManager,
-  Owner: AppOwner,
-};
-
-export type PredefinedAppRole = keyof typeof appRoles;
+export enum PredefinedAppRole {
+  Member = 'Member',
+  MembersManager = 'MembersManager',
+  GroupMembersManager = 'GroupMembersManager',
+  GroupsManager = 'GroupsManager',
+  ResourcesManager = 'ResourcesManager',
+  Owner = 'Owner',
+}
 
 export type AppRole = PredefinedAppRole | string;
+
+export const predefinedAppRolePermissions = {
+  [PredefinedAppRole.Member]: AppOwnerPermissions,
+  [PredefinedAppRole.MembersManager]: AppMembersManagerPermissions,
+  [PredefinedAppRole.GroupMembersManager]: AppGroupMembersManagerPermissions,
+  [PredefinedAppRole.GroupsManager]: AppGroupsManagerPermissions,
+  [PredefinedAppRole.ResourcesManager]: AppResourcesManagerPermissions,
+  [PredefinedAppRole.Owner]: AppOwnerPermissions,
+};
+
+export const predefinedAppRoles: PredefinedAppRole[] = Object.values(PredefinedAppRole);

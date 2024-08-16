@@ -15,7 +15,7 @@ import {
   useMessages,
   useMeta,
 } from '@appsemble/react-components';
-import { type AppAccount } from '@appsemble/types';
+import { type AppMemberInfo } from '@appsemble/types';
 import axios from 'axios';
 import { Fragment, type ReactNode, useCallback } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
@@ -31,7 +31,7 @@ import { useUser } from '../../../../components/UserProvider/index.js';
 export function DetailsPage(): ReactNode {
   const { appId } = useParams<{ appId: string }>();
   const navigate = useNavigate();
-  const result = useData<AppAccount>(`/api/user/apps/${appId}/account`);
+  const result = useData<AppMemberInfo>(`/api/user/apps/${appId}/account`);
   const { userInfo } = useUser();
   const push = useMessages();
   const { formatMessage } = useIntl();
@@ -55,7 +55,7 @@ export function DetailsPage(): ReactNode {
   });
 
   const onSubmit = useCallback(
-    async ({ email, name, picture }: AppAccount) => {
+    async ({ email, name, picture }: AppMemberInfo) => {
       const formData = new FormData();
       formData.append('name', name);
       formData.append('email', email);
@@ -64,7 +64,7 @@ export function DetailsPage(): ReactNode {
         formData.append('picture', picture);
       }
 
-      const { data } = await axios.patch<AppAccount>(`/api/user/apps/${appId}/account`, formData);
+      const { data } = await axios.patch<AppMemberInfo>(`/api/user/apps/${appId}/account`, formData);
       result.setData(data);
     },
     [appId, result],

@@ -1,5 +1,5 @@
 import { createFixtureStream, createFormData, readFixture } from '@appsemble/node-utils';
-import { type AppAccount } from '@appsemble/types';
+import { type AppMemberInfo } from '@appsemble/types';
 import { uuid4Pattern } from '@appsemble/utils';
 import { request, setTestApp } from 'axios-test-instance';
 import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
@@ -159,7 +159,7 @@ describe('patchCurrentAppMember', () => {
       timezone: 'Europe/Amsterdam',
     });
 
-    const response = await request.patch<AppAccount>(
+    const response = await request.patch<AppMemberInfo>(
       `/api/apps/${app.id}/members/current`,
       createFormData({
         email: 'user@example.com',

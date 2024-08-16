@@ -3,7 +3,7 @@ import {
   type AppRole,
   type CustomAppPermission,
   type OrganizationPermission,
-  type OrganizationRole,
+  type PredefinedOrganizationRole,
 } from '@appsemble/types';
 import {
   checkAppRoleAppPermissions,
@@ -76,7 +76,7 @@ async function getUserAppRole(userId: string, appId: number, groupId?: number): 
 async function getUserOrganizationRole(
   userId: string,
   organizationId: string,
-): Promise<OrganizationRole> {
+): Promise<PredefinedOrganizationRole> {
   const organizationMember = await OrganizationMember.findOne({
     attributes: ['role'],
     where: {

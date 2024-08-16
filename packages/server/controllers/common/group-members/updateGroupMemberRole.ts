@@ -12,6 +12,7 @@ export async function updateGroupMemberRole(ctx: Context): Promise<void> {
     request: {
       body: { role },
     },
+    user: authSubject,
   } = ctx;
 
   const groupMember = await GroupMember.findByPk(groupMemberId, {
@@ -34,6 +35,13 @@ export async function updateGroupMemberRole(ctx: Context): Promise<void> {
   });
 
   assertKoaError(!groupMember, ctx, 404, 'Group member not found.');
+
+  assertKoaError(
+    groupMember.AppMemberId === authSubject.id,
+    ctx,
+    401,
+    'Cannot use this endpoint to update your own role in the group',
+  );
 
   assertKoaError(
     !getAppRoles(groupMember.Group.App.definition.security).includes(role),

@@ -1,7 +1,17 @@
 import { type Action, type ActionDefinition } from '@appsemble/types';
 
 import { analytics } from './analytics.js';
-import { login, logout, query, register, remove, update } from './appMember.js';
+import {
+  appMemberCurrentPatch,
+  appMemberDelete,
+  appMemberInvite,
+  appMemberLogin,
+  appMemberLogout,
+  appMemberPropertiesPatch,
+  appMemberQuery,
+  appMemberRegister,
+  appMemberRoleUpdate,
+} from './appMember.js';
 import { condition } from './condition.js';
 import { controller } from './controller.js';
 import { dialog } from './dialog.js';
@@ -10,7 +20,13 @@ import { each } from './each.js';
 import { email } from './email.js';
 import { event } from './event.js';
 import * as flow from './flow.js';
-import { groupInvite, groupJoin, groupList, groupMembers } from './group.js';
+import { groupQuery } from './group.js';
+import {
+  groupMemberDelete,
+  groupMemberInvite,
+  groupMemberQuery,
+  groupMemberRoleUpdate,
+} from './groupMember.js';
 import { back, link, next } from './link.js';
 import { log } from './log.js';
 import { match } from './match.js';
@@ -92,15 +108,19 @@ export const actionCreators: ActionCreators = {
   'storage.subtract': storage.subtract,
   'storage.update': storage.update,
   'storage.delete': storage.remove,
-  'group.invite': groupInvite,
-  'group.join': groupJoin,
-  'group.list': groupList,
-  'group.members': groupMembers,
+  'group.query': groupQuery,
+  'group.member.invite': groupMemberInvite,
+  'group.member.query': groupMemberQuery,
+  'group.member.delete': groupMemberDelete,
+  'group.member.role.update': groupMemberRoleUpdate,
   throw: throwAction,
-  'app.member.login': login,
-  'app.member.register': register,
-  'app.member.update': update,
-  'app.member.logout': logout,
-  'app.member.query': query,
-  'app.member.remove': remove,
+  'app.member.login': appMemberLogin,
+  'app.member.register': appMemberRegister,
+  'app.member.invite': appMemberInvite,
+  'app.member.role.update': appMemberRoleUpdate,
+  'app.member.properties.patch': appMemberPropertiesPatch,
+  'app.member.current.patch': appMemberCurrentPatch,
+  'app.member.logout': appMemberLogout,
+  'app.member.query': appMemberQuery,
+  'app.member.delete': appMemberDelete,
 };

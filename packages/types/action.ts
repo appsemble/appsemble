@@ -53,12 +53,15 @@ export type ResourcePatchAction = RequestLikeAction<'resource.patch'>;
  */
 export type Action =
   | BaseAction<'analytics'>
+  | BaseAction<'app.member.delete'>
+  | BaseAction<'app.member.invite'>
   | BaseAction<'app.member.login'>
   | BaseAction<'app.member.logout'>
+  | BaseAction<'app.member.properties.patch'>
   | BaseAction<'app.member.query'>
   | BaseAction<'app.member.register'>
-  | BaseAction<'app.member.remove'>
-  | BaseAction<'app.member.update'>
+  | BaseAction<'app.member.role.update'>
+  | BaseAction<'app.member.current.patch'>
   | BaseAction<'condition'>
   | BaseAction<'controller'>
   | BaseAction<'dialog.error'>
@@ -73,10 +76,11 @@ export type Action =
   | BaseAction<'flow.finish'>
   | BaseAction<'flow.next'>
   | BaseAction<'flow.to'>
-  | BaseAction<'group.invite'>
-  | BaseAction<'group.join'>
-  | BaseAction<'group.list'>
-  | BaseAction<'group.members'>
+  | BaseAction<'group.member.delete'>
+  | BaseAction<'group.member.invite'>
+  | BaseAction<'group.member.query'>
+  | BaseAction<'group.member.role.update'>
+  | BaseAction<'group.query'>
   | BaseAction<'link.back'>
   | BaseAction<'link.next'>
   | BaseAction<'match'>

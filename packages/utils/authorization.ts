@@ -3,14 +3,14 @@ import {
   appOrganizationPermissionMapping,
   AppPermission,
   type AppRole,
-  appRoles,
   type CustomAppPermission,
   type CustomAppResourcePermission,
   type CustomAppResourceViewPermission,
   type OrganizationPermission,
-  type OrganizationRole,
-  organizationRoles,
-  type PredefinedAppRole,
+  PredefinedAppRole,
+  predefinedAppRolePermissions,
+  type PredefinedOrganizationRole,
+  predefinedOrganizationRolePermissions,
   type Security,
 } from '@appsemble/types';
 
@@ -92,7 +92,7 @@ export function getAppRolePermissions(
         accumulatedPermissions.push(...rolePermissions);
       }
     } else {
-      const predefinedRolePermissions = appRoles[role as PredefinedAppRole];
+      const predefinedRolePermissions = predefinedAppRolePermissions[role as PredefinedAppRole];
       if (predefinedRolePermissions) {
         accumulatedPermissions.push(...predefinedRolePermissions);
       }
@@ -123,7 +123,10 @@ export function checkGuestAppPermissions(
 
 export function getAppRoles(appSecurityDefinition: Security): AppRole[] {
   return Array.from(
-    new Set([...Object.keys(appSecurityDefinition?.roles || {}), ...Object.keys(appRoles)]),
+    new Set([
+      ...Object.keys(appSecurityDefinition?.roles || {}),
+      ...Object.keys(PredefinedAppRole),
+    ]),
   );
 }
 
@@ -179,10 +182,10 @@ export function checkAppRoleAppPermissions(
 }
 
 export function checkOrganizationRoleAppPermissions(
-  organizationRole: OrganizationRole,
+  organizationRole: PredefinedOrganizationRole,
   requiredPermissions: CustomAppPermission[],
 ): boolean {
-  const organizationRolePermissions = organizationRoles[organizationRole];
+  const organizationRolePermissions = predefinedOrganizationRolePermissions[organizationRole];
 
   return requiredPermissions.every((p) => {
     let mappedPermission = appOrganizationPermissionMapping[p as AppPermission];
@@ -203,8 +206,10 @@ export function checkOrganizationRoleAppPermissions(
 }
 
 export function checkOrganizationRoleOrganizationPermissions(
-  organizationRole: OrganizationRole,
+  organizationRole: PredefinedOrganizationRole,
   requiredPermissions: OrganizationPermission[],
 ): boolean {
-  return requiredPermissions.every((p) => organizationRoles[organizationRole].includes(p));
+  return requiredPermissions.every((p) =>
+    predefinedOrganizationRolePermissions[organizationRole].includes(p),
+  );
 }

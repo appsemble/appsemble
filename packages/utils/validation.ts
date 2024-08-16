@@ -1,11 +1,12 @@
 import {
   type AppDefinition,
+  type AppMemberCurrentPatchAction,
+  type AppMemberPropertiesPatchAction,
   type AppMemberRegisterAction,
-  type AppMemberUpdateAction,
-  appRoles,
   type BlockManifest,
   type CustomAppPermission,
-  type PredefinedAppRole,
+  PredefinedAppRole,
+  predefinedAppRolePermissions,
   type PageDefinition,
   type ProjectImplementations,
   type Remapper,
@@ -737,7 +738,7 @@ function checkCyclicRoleInheritance(
  */
 function validateSecurity(definition: AppDefinition, report: Report): void {
   const { notifications, security } = definition;
-  const predefinedRoles = Object.keys(appRoles);
+  const predefinedRoles = Object.keys(PredefinedAppRole);
 
   const checkRoleExists = (name: string, path: Prefix, roles = predefinedRoles): boolean => {
     if (!has(security.roles, name) && !roles.includes(name)) {
@@ -822,7 +823,8 @@ function validateSecurity(definition: AppDefinition, report: Report): void {
               inheritedPermissions.push(...rolePermissions);
             }
           } else {
-            const predefinedRolePermissions = appRoles[inheritedRole as PredefinedAppRole];
+            const predefinedRolePermissions =
+              predefinedAppRolePermissions[inheritedRole as PredefinedAppRole];
             if (predefinedRolePermissions) {
               inheritedPermissions.push(...predefinedRolePermissions);
             }
@@ -965,15 +967,25 @@ function validateActions(definition: AppDefinition, report: Report): void {
       }
 
       if (
-        ['app.member.register', 'app.member.create', 'app.member.update'].includes(action.type) &&
+        ['app.member.register', 'app.member.properties.patch', 'app.member.current.patch'].includes(
+          action.type,
+        ) &&
         Object.values(
-          (action as AppMemberRegisterAction | AppMemberUpdateAction).properties ?? {},
+          (
+            action as
+              | AppMemberCurrentPatchAction
+              | AppMemberPropertiesPatchAction
+              | AppMemberRegisterAction
+          ).properties ?? {},
         )[0] &&
         definition.members?.properties
       ) {
         for (const propertyName of Object.keys(
           Object.values(
-            (action as AppMemberRegisterAction | AppMemberUpdateAction).properties ?? {},
+            (action as
+              | AppMemberCurrentPatchAction
+              | AppMemberPropertiesPatchAction
+              | AppMemberRegisterAction).properties ?? {},
           )[0],
         )) {
           if (!definition.members?.properties[propertyName]) {

@@ -12,6 +12,7 @@ export async function patchAppMemberProperties(ctx: Context): Promise<void> {
     request: {
       body: { properties },
     },
+    user: authSubject,
   } = ctx;
 
   const appMember = await AppMember.findByPk(appMemberId, {
@@ -21,6 +22,13 @@ export async function patchAppMemberProperties(ctx: Context): Promise<void> {
   });
 
   assertKoaError(!appMember, ctx, 404, 'App member not found');
+
+  assertKoaError(
+    appMemberId === authSubject.id,
+    ctx,
+    401,
+    'Cannot use this endpoint to patch your own properties',
+  );
 
   await checkAuthSubjectAppPermissions({
     context: ctx,

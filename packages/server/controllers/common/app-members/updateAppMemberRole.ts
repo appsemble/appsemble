@@ -13,6 +13,7 @@ export async function updateAppMemberRole(ctx: Context): Promise<void> {
     request: {
       body: { role },
     },
+    user: authSubject,
   } = ctx;
 
   const appMember = await AppMember.findByPk(appMemberId, {
@@ -28,6 +29,13 @@ export async function updateAppMemberRole(ctx: Context): Promise<void> {
   });
 
   assertKoaError(!appMember, ctx, 404, 'App member not found');
+
+  assertKoaError(
+    appMemberId === authSubject.id,
+    ctx,
+    401,
+    'Cannot use this endpoint to update your own role',
+  );
 
   assertKoaError(
     !getAppRoles(appMember.App.definition.security).includes(role),
