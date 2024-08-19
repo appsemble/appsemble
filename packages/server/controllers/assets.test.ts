@@ -374,7 +374,7 @@ describe('getAssetById', () => {
     });
   });
 
-  it('should be able to fetch an by name', async () => {
+  it('should be able to fetch an asset by name', async () => {
     const data = Buffer.from('buffer');
     const asset = await Asset.create({
       AppId: app.id,
@@ -546,6 +546,28 @@ describe('createAsset', () => {
         "error": "Conflict",
         "message": "An asset named conflict already exists",
         "statusCode": 409,
+      }
+    `);
+  });
+
+  it('should not allow if user has insufficient permissions', async () => {
+    authorizeStudio();
+    await OrganizationMember.update(
+      { role: 'Member' },
+      { where: { OrganizationId: organization.id, UserId: user.id } },
+    );
+    const response = await request.post(
+      `/api/apps/${app.id}/assets`,
+      createFormData({ file: Buffer.alloc(0) }),
+    );
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 403 Forbidden
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "error": "Forbidden",
+        "message": "User does not have sufficient permissions.",
+        "statusCode": 403,
       }
     `);
   });
