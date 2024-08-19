@@ -53,26 +53,26 @@ resources:
         - lastName
         - email
         - department
-    properties:
-      firstName:
-        type: string
-      lastName:
-        type: string
-      email:
-        type: string
-        format: email
-      department:
-        type: enum
-        enum: ['HR', 'Engineering', 'Marketing', 'Data', 'Security']
-      picture:
-        type: string
-        format: binary
+      properties:
+        firstName:
+          type: string
+        lastName:
+          type: string
+        email:
+          type: string
+          format: email
+        department:
+          type: string
+          enum: ['HR', 'Engineering', 'Marketing', 'Data', 'Security']
+        picture:
+          type: string
+          format: binary
     create:
       roles:
         - $team:manager
     query:
       roles:
-        - $teams:member
+        - $team:member
 ```
 
 Supported resource actions are as below:

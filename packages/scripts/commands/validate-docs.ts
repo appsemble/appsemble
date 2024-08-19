@@ -229,6 +229,7 @@ function appendBlockToTemplate(block: BlockDefinition, template: AppDefinition):
 
     if (blockResourceActionDefinition) {
       updatedTemplate.resources = {
+        ...template?.resources,
         [blockResourceActionDefinition.resource]: {
           roles: ['$public'],
           schema: {
