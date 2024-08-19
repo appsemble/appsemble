@@ -120,33 +120,38 @@ export async function publishResource({
 
   let data;
   const endpoint = `/api/apps/${appId}/${seed ? 'seed-' : ''}resources/${type}`;
-  if (csv) {
-    const response = await axios.post<Resource | Resource[]>(endpoint, resources, {
-      baseURL: remote,
-      headers: { 'content-type': 'text/csv' },
-    });
-    data = response.data;
-  } else {
-    const response = await axios.post<Resource | Resource[]>(
-      endpoint,
-      (resources as Resource[]).map((resource) => {
-        const resourceWithReferences = { ...resource };
-        for (const [referencedProperty, resourceReference] of Object.entries(
-          definition?.references ?? {},
-        )) {
-          resourceWithReferences[referencedProperty] =
-            publishedResourcesIds[resourceReference.resource]?.[
-              Number(resource[`$${resourceReference.resource}`] ?? -1)
-            ];
-        }
-        return resourceWithReferences;
-      }),
-      {
+  try {
+    if (csv) {
+      const response = await axios.post<Resource | Resource[]>(endpoint, resources, {
         baseURL: remote,
-        headers: { 'content-type': 'application/json' },
-      },
-    );
-    data = response.data;
+        headers: { 'content-type': 'text/csv' },
+      });
+      data = response.data;
+    } else {
+      const response = await axios.post<Resource | Resource[]>(
+        endpoint,
+        (resources as Resource[]).map((resource) => {
+          const resourceWithReferences = { ...resource };
+          for (const [referencedProperty, resourceReference] of Object.entries(
+            definition?.references ?? {},
+          )) {
+            resourceWithReferences[referencedProperty] =
+              publishedResourcesIds[resourceReference.resource]?.[
+                Number(resource[`$${resourceReference.resource}`] ?? -1)
+              ];
+          }
+          return resourceWithReferences;
+        }),
+        {
+          baseURL: remote,
+          headers: { 'content-type': 'application/json' },
+        },
+      );
+      data = response.data;
+    }
+  } catch (error) {
+    logger.error(error);
+    throw error;
   }
 
   const ids: number[] = [].concat(data).map((d: Resource) => d.id);
@@ -230,21 +235,26 @@ export async function updateResource({
       continue;
     }
 
-    const {
-      data: { id },
-    } = await axios.put<Resource>(
-      `/api/apps/${appId}/resources/${resourceName}/${resource.id}`,
-      resource,
-      {
-        baseURL: remote,
-      },
-    );
+    try {
+      const {
+        data: { id },
+      } = await axios.put<Resource>(
+        `/api/apps/${appId}/resources/${resourceName}/${resource.id}`,
+        resource,
+        {
+          baseURL: remote,
+        },
+      );
 
-    logger.info(
-      `Successfully updated resource ${id} at ${new URL(
-        `/apps/${appId}/resources/${resourceName}/${id}`,
-        remote,
-      )}`,
-    );
+      logger.info(
+        `Successfully updated resource ${id} at ${new URL(
+          `/apps/${appId}/resources/${resourceName}/${id}`,
+          remote,
+        )}`,
+      );
+    } catch (error) {
+      logger.error(error);
+      throw error;
+    }
   }
 }

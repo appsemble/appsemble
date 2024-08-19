@@ -50,8 +50,13 @@ export async function createOrganization({
   }
 
   logger.info(`Creating organization ${id}${name ? ` (${name})` : ''}`);
-  await axios.post('/api/organizations', formData);
-  logger.info(`Successfully created organization ${id}${name ? ` (${name})` : ''}`);
+  try {
+    await axios.post('/api/organizations', formData);
+    logger.info(`Successfully created organization ${id}${name ? ` (${name})` : ''}`);
+  } catch (error) {
+    logger.error(error);
+    throw error;
+  }
 }
 
 export async function updateOrganization({
@@ -91,8 +96,13 @@ export async function updateOrganization({
     formData.append('website', website);
   }
 
-  await axios.patch(`/api/organizations/${id}`, formData);
-  logger.info(`Successfully updated organization ${id}${name ? ` (${name})` : ''}`);
+  try {
+    await axios.patch(`/api/organizations/${id}`, formData);
+    logger.info(`Successfully updated organization ${id}${name ? ` (${name})` : ''}`);
+  } catch (error) {
+    logger.error(error);
+    throw error;
+  }
 }
 
 export async function upsertOrganization({
