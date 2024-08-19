@@ -740,6 +740,139 @@ describe('createMessages', () => {
       }
     `);
   });
+
+  it('should validate app messages from request body', async () => {
+    authorizeStudio();
+    const response = await request.post(`/api/apps/${app.id}/messages`, {
+      language: 'en',
+      messages: { app: { name4: 'Test' } },
+    });
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 400 Bad Request
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "error": "Bad Request",
+        "message": "Invalid key name4",
+        "statusCode": 400,
+      }
+    `);
+  });
+
+  it('should validate app messages from array request body', async () => {
+    authorizeStudio();
+    const response = await request.post(`/api/apps/${app.id}/messages`, [
+      {
+        language: 'nl',
+        messages: { app: { name: 'Test' } },
+      },
+      {
+        language: 'en',
+        messages: { app: { name4: 'Test' } },
+      },
+    ]);
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 400 Bad Request
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "error": "Bad Request",
+        "message": "Invalid key name4",
+        "statusCode": 400,
+      }
+    `);
+    const foundMessages = await AppMessages.findAll({
+      where: { AppId: app.id },
+    });
+    expect(foundMessages).toStrictEqual([]);
+  });
+
+  it('should validate if the block is being used in the app', async () => {
+    authorizeStudio();
+    await BlockVersion.create({
+      OrganizationId: 'testorganization',
+      name: 'test',
+      version: '0.0.0',
+    });
+    const response = await request.post(`/api/apps/${app.id}/messages`, [
+      {
+        language: 'en',
+        messages: {
+          app: { name: 'Test' },
+          blocks: { '@testorganization/test': { '0.0.0': { test: 'Block Test' } } },
+        },
+      },
+    ]);
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 400 Bad Request
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "error": "Bad Request",
+        "message": "Invalid translation key: blocks.@testorganization/test
+      This block is not used in the app",
+        "statusCode": 400,
+      }
+    `);
+    const foundMessages = await AppMessages.findAll({
+      where: { AppId: app.id },
+    });
+    expect(foundMessages).toStrictEqual([]);
+    await app.update({
+      definition: {
+        name: 'Test',
+        description: 'Test description',
+        pages: [
+          { name: 'Test Page 1', blocks: [{ type: '@testorganization/test', version: '0.0.0' }] },
+        ],
+      },
+    });
+    const response2 = await request.post(`/api/apps/${app.id}/messages`, [
+      {
+        language: 'en',
+        messages: {
+          app: { name: 'Test' },
+          blocks: { '@testorganization/test': { '0.0.0': { test: 'Block Test' } } },
+        },
+      },
+    ]);
+    expect(response2.status).toBe(201);
+    const appMessages = await AppMessages.findAll();
+    expect(appMessages).toStrictEqual([
+      expect.objectContaining({
+        messages: {
+          app: { name: 'Test' },
+          blocks: {
+            '@testorganization/test': {
+              '0.0.0': {
+                test: 'Block Test',
+              },
+            },
+          },
+        },
+      }),
+    ]);
+    const response3 = await request.post(`/api/apps/${app.id}/messages`, [
+      {
+        language: 'en',
+        messages: {
+          app: { name: 'Test' },
+          blocks: { '@testorganization/test': { '0.0.1': { test: 'Block Test' } } },
+        },
+      },
+    ]);
+    expect(response3).toMatchInlineSnapshot(`
+      HTTP/1.1 400 Bad Request
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "error": "Bad Request",
+        "message": "Invalid translation key: blocks.@testorganization/test.0.0.1
+      This block version is not used in the app",
+        "statusCode": 400,
+      }
+    `);
+  });
 });
 
 describe('deleteMessages', () => {
