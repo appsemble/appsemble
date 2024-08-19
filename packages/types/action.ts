@@ -53,6 +53,7 @@ export type ResourcePatchAction = RequestLikeAction<'resource.patch'>;
  */
 export type Action =
   | BaseAction<'analytics'>
+  | BaseAction<'app.member.current.patch'>
   | BaseAction<'app.member.delete'>
   | BaseAction<'app.member.invite'>
   | BaseAction<'app.member.login'>
@@ -61,7 +62,6 @@ export type Action =
   | BaseAction<'app.member.query'>
   | BaseAction<'app.member.register'>
   | BaseAction<'app.member.role.update'>
-  | BaseAction<'app.member.current.patch'>
   | BaseAction<'condition'>
   | BaseAction<'controller'>
   | BaseAction<'dialog.error'>

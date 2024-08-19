@@ -1,4 +1,4 @@
-import { type AppMemberInfo } from '@appsemble/types';
+import { type AppMemberInfo, type SSOConfiguration } from '@appsemble/types';
 
 import { argv } from './argv.js';
 import { getGravatarUrl } from './gravatar.js';
@@ -49,4 +49,32 @@ export function parseAppMemberProperties(properties: any): Record<string, any> {
   }
 
   return parsedAppMemberProperties;
+}
+
+export function getAppMemberSSO(appMember: AppMember): SSOConfiguration[] {
+  const sso: SSOConfiguration[] = [];
+
+  if (appMember?.AppOAuth2Authorizations) {
+    for (const { AppOAuth2Secret: secret } of appMember.AppOAuth2Authorizations) {
+      sso.push({
+        type: 'oauth2',
+        icon: secret.icon,
+        url: secret.dataValues.authorizatio,
+        name: secret.name,
+      });
+    }
+  }
+
+  if (appMember?.AppSamlAuthorizations) {
+    for (const { AppSamlSecret: secret } of appMember.AppSamlAuthorizations) {
+      sso.push({
+        type: 'saml',
+        icon: secret.icon,
+        url: secret.ssoUrl,
+        name: secret.name,
+      });
+    }
+  }
+
+  return sso;
 }

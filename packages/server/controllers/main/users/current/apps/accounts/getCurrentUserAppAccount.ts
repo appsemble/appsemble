@@ -1,3 +1,4 @@
+import { type AppAccount } from '@appsemble/types';
 import { type Context } from 'koa';
 import { literal } from 'sequelize';
 
@@ -10,15 +11,18 @@ import {
   AppSamlSecret,
   Organization,
 } from '../../../../../../models/index.js';
-import { parseLanguage } from '../../../../../../utils/app.js';
+import { applyAppMessages, parseLanguage } from '../../../../../../utils/app.js';
+import { getAppMemberInfo, getAppMemberSSO } from '../../../../../../utils/appMember.js';
 
-export async function getCurrentUserAppMembers(ctx: Context): Promise<void> {
-  const { user: authSubject } = ctx;
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+export async function getCurrentUserAppAccount(ctx: Context): Promise<void> {
+  const {
+    pathParams: { appId },
+    user: authSubject,
+  } = ctx;
+
   const { baseLanguage, language, query: includeOptions } = parseLanguage(ctx, ctx.query?.language);
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const apps = await App.findAll({
+  const app = await App.findByPk(appId, {
     attributes: {
       include: [
         [literal('"App".icon IS NOT NULL'), 'hasIcon'],
@@ -61,6 +65,13 @@ export async function getCurrentUserAppMembers(ctx: Context): Promise<void> {
     ],
   });
 
-  // TODO fix this
-  // ctx.body = apps.map((app) => outputAppMember(app, language, baseLanguage));
+  applyAppMessages(app, language, baseLanguage);
+
+  const appMember = app.AppMembers[0];
+
+  ctx.body = {
+    app: app.toJSON(),
+    appMemberInfo: getAppMemberInfo(appMember),
+    sso: getAppMemberSSO(appMember),
+  } as AppAccount;
 }

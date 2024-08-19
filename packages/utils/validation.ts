@@ -982,10 +982,12 @@ function validateActions(definition: AppDefinition, report: Report): void {
       ) {
         for (const propertyName of Object.keys(
           Object.values(
-            (action as
-              | AppMemberCurrentPatchAction
-              | AppMemberPropertiesPatchAction
-              | AppMemberRegisterAction).properties ?? {},
+            (
+              action as
+                | AppMemberCurrentPatchAction
+                | AppMemberPropertiesPatchAction
+                | AppMemberRegisterAction
+            ).properties ?? {},
           )[0],
         )) {
           if (!definition.members?.properties[propertyName]) {

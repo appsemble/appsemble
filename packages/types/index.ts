@@ -8,7 +8,7 @@ import { type AppVisibility } from './app.js';
 import { type BulmaColor } from './bulma.js';
 import { type HTTPMethods } from './http.js';
 import { type AppPermission } from './permissions.js';
-import { type AppRole, type PredefinedOrganizationRole, type PredefinedAppRole } from './roles.js';
+import { type AppRole, type PredefinedAppRole, type PredefinedOrganizationRole } from './roles.js';
 import { type Theme } from './theme.js';
 
 export * from './action.js';
@@ -202,6 +202,19 @@ export interface AppMemberInfo extends BaseUserInfo {
    * Whether this app member is used for demonstration purposes
    */
   demo: boolean;
+}
+
+export interface SSOConfiguration {
+  type: 'oauth2' | 'saml';
+  url: string;
+  icon: IconName;
+  name: string;
+}
+
+export interface AppAccount {
+  app: App;
+  appMemberInfo: AppMemberInfo;
+  sso: SSOConfiguration[];
 }
 
 export interface EmailAuthorization {

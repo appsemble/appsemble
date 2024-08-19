@@ -1,8 +1,8 @@
 import {
   type AppDefinition,
-  predefinedAppRoles,
   type BasicPageDefinition,
   type FlowPageDefinition,
+  predefinedAppRoles,
   type Security,
 } from '@appsemble/types';
 import { ValidationError } from 'jsonschema';

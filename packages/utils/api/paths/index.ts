@@ -131,7 +131,8 @@ import { pathItems as trainingsTrainingIdUsersCurrent } from './trainings/traini
 import { pathItems as trainingsTrainingIdUsers } from './trainings/trainingId/users.js';
 import { pathItems as trainingsTrainingId } from './trainings/trainingId.js';
 import { pathItems as trainings } from './trainings.js';
-import { pathItems as usersCurrentAppsMembers } from './users/current/apps/members.js';
+import { pathItems as usersCurrentAppsAccounts } from './users/current/apps/accounts.js';
+import { pathItems as usersCurrentAppsAppIdAccount } from './users/current/apps/appId/account.js';
 import { pathItems as usersCurrentApps } from './users/current/apps.js';
 import { pathItems as usersCurrentAuthOAuth2AppsAppIdConsentAgree } from './users/current/auth/oauth2/apps/appId/consent/agree.js';
 import { pathItems as usersCurrentAuthOAuth2AppsAppIdConsentVerify } from './users/current/auth/oauth2/apps/appId/consent/verify.js';
@@ -296,7 +297,8 @@ export const paths = {
   '/api/trainings/{trainingId}/users': trainingsTrainingIdUsers,
   '/api/trainings/{trainingId}': trainingsTrainingId,
   '/api/trainings': trainings,
-  '/api/users/current/apps/members': usersCurrentAppsMembers,
+  '/api/users/current/apps/accounts': usersCurrentAppsAccounts,
+  '/api/users/current/apps/{appId}/account': usersCurrentAppsAppIdAccount,
   '/api/users/current/apps': usersCurrentApps,
   '/api/users/current/auth/oauth2/apps/{appId}/consent/agree':
     usersCurrentAuthOAuth2AppsAppIdConsentAgree,

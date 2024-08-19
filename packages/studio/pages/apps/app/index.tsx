@@ -8,7 +8,7 @@ import {
   useData,
   useSideMenu,
 } from '@appsemble/react-components';
-import { type App, OrganizationPermission } from '@appsemble/types';
+import { type App, OrganizationPermission, PredefinedOrganizationRole } from '@appsemble/types';
 import { checkOrganizationRoleOrganizationPermissions, compareStrings } from '@appsemble/utils';
 import classNames from 'classnames';
 import {
@@ -90,7 +90,10 @@ export function AppRoutes(): ReactNode {
     [app, organizations],
   );
 
-  const userOrganizationRole = useMemo(() => organization?.role || 'Member', [organization]);
+  const userOrganizationRole = useMemo(
+    () => organization?.role || PredefinedOrganizationRole.Member,
+    [organization],
+  );
 
   const mayVisitEditor = useMemo(
     () =>

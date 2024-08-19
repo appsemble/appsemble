@@ -11,6 +11,7 @@ import {
   useMessages,
   useQuery,
 } from '@appsemble/react-components';
+import { PredefinedOrganizationRole } from '@appsemble/types';
 import axios from 'axios';
 import { type ReactNode, useCallback, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
@@ -50,7 +51,10 @@ export function OrganizationInvitePage(): ReactNode {
         setJoined(response);
 
         if (response) {
-          setOrganizations([...organizations, { ...organization, role: 'Member' }]);
+          setOrganizations([
+            ...organizations,
+            { ...organization, role: PredefinedOrganizationRole.Member },
+          ]);
         }
       } catch (err) {
         if (axios.isAxiosError(err)) {
