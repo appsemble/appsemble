@@ -1784,7 +1784,7 @@ describe('validateAppDefinition', () => {
       ),
       new ValidationError(
         'refers to an app member action but the app doesn’t have a security definition',
-        'app.member.update',
+        'app.member.current.patch',
         undefined,
         ['pages', 0, 'blocks', 2, 'actions', 'onWhatever', 'type'],
       ),
@@ -2104,7 +2104,7 @@ describe('validateAppDefinition', () => {
     expect(result.errors).toStrictEqual([
       new ValidationError(
         'contains a property that doesn’t exist in app member properties',
-        'app.member.update',
+        'app.member.current.patch',
         undefined,
         ['pages', 0, 'blocks', 0, 'actions', 'onWhatever', 'properties'],
       ),

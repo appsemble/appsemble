@@ -64,7 +64,7 @@ export function getAppInheritedRoles(
     if (!accumulatedRoles.includes(role)) {
       accumulatedRoles.push(role);
 
-      const roleDefinition = appSecurityDefinition.roles[role];
+      const roleDefinition = appSecurityDefinition.roles?.[role];
       if (roleDefinition && roleDefinition.inherits) {
         accumulatedRoles.push(
           ...getAppInheritedRoles(appSecurityDefinition, roleDefinition.inherits, accumulatedRoles),
@@ -84,7 +84,7 @@ export function getAppRolePermissions(
   const inheritedRoles = getAppInheritedRoles(appSecurityDefinition, roles);
 
   for (const role of inheritedRoles) {
-    const roleDefinition = appSecurityDefinition.roles[role];
+    const roleDefinition = appSecurityDefinition.roles?.[role];
 
     if (roleDefinition) {
       const rolePermissions = roleDefinition.permissions;

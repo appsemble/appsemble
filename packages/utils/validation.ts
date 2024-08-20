@@ -784,7 +784,7 @@ function validateSecurity(definition: AppDefinition, report: Report): void {
     }
 
     if (security.guest.permissions) {
-      const inheritedPermissions = getAppRolePermissions(security, security.guest.inherits);
+      const inheritedPermissions = getAppRolePermissions(security, security.guest.inherits || []);
       validatePermissions(definition, security.guest.permissions, inheritedPermissions, report, [
         'security',
         'guest',
