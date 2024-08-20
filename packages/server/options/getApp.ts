@@ -5,7 +5,6 @@ import { AppMember } from '../models/AppMember.js';
 import { Organization } from '../models/Organization.js';
 import { getApp as getServerApp } from '../utils/app.js';
 
-// TODO: FIX
 export async function getApp({ context, query }: GetAppParams): Promise<AppInterface> {
   const { app } = await getServerApp(context, {
     ...query,
