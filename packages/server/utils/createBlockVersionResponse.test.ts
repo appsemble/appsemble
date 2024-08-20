@@ -1,4 +1,4 @@
-import { type BlockManifest } from '@appsemble/types';
+import { type BlockManifest, PredefinedOrganizationRole } from '@appsemble/types';
 import { setTestApp } from 'axios-test-instance';
 import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 
@@ -41,7 +41,7 @@ beforeEach(async () => {
   member = await OrganizationMember.create({
     OrganizationId: organization.id,
     UserId: user.id,
-    role: 'Owner',
+    role: PredefinedOrganizationRole.Owner,
   });
 });
 
@@ -64,7 +64,10 @@ function blockVersionMapper(
 
 describe('Create block version response', () => {
   it('should show unlisted organization blocks when user is part of organization', async () => {
-    await OrganizationMember.update({ role: 'Member' }, { where: { UserId: user.id } });
+    await OrganizationMember.update(
+      { role: PredefinedOrganizationRole.Member },
+      { where: { UserId: user.id } },
+    );
     const blockVersion = await BlockVersion.create({
       OrganizationId: organization.id,
       name: 'test',

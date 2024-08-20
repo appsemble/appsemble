@@ -498,7 +498,7 @@ describe('createAppFromTemplate', () => {
 
     expect(response.data).toMatchObject({
       statusCode: 403,
-      message: 'User is not part of this organization.',
+      message: 'User is not a member of this organization.',
     });
   });
 
@@ -514,7 +514,7 @@ describe('createAppFromTemplate', () => {
 
     expect(response.data).toMatchObject({
       statusCode: 403,
-      message: 'User is not part of this organization.',
+      message: 'User is not a member of this organization.',
     });
   });
 });

@@ -1,4 +1,5 @@
 import { readFixture } from '@appsemble/node-utils';
+import { PredefinedOrganizationRole } from '@appsemble/types';
 import { request, setTestApp } from 'axios-test-instance';
 import type Koa from 'koa';
 import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
@@ -41,7 +42,7 @@ beforeEach(async () => {
   await OrganizationMember.create({
     OrganizationId: organization.id,
     UserId: user.id,
-    role: 'Owner',
+    role: PredefinedOrganizationRole.Owner,
   });
 });
 
@@ -55,7 +56,7 @@ describe('deleteOrganization', () => {
     await OrganizationMember.create({
       OrganizationId: organization2.id,
       UserId: user.id,
-      role: 'Owner',
+      role: PredefinedOrganizationRole.Owner,
     });
     await request.delete(`/api/organizations/${organization2.id}`);
     const response = await request.get(`/api/organizations/${organization2.id}`);
@@ -89,7 +90,7 @@ describe('deleteOrganization', () => {
     await OrganizationMember.create({
       OrganizationId: organization2.id,
       UserId: user.id,
-      role: 'Owner',
+      role: PredefinedOrganizationRole.Owner,
     });
     await BlockVersion.create({
       name: 'test',
@@ -122,7 +123,7 @@ describe('deleteOrganization', () => {
     await OrganizationMember.create({
       OrganizationId: organization2.id,
       UserId: user.id,
-      role: 'Owner',
+      role: PredefinedOrganizationRole.Owner,
     });
     await AppCollection.create({
       name: 'Collection',

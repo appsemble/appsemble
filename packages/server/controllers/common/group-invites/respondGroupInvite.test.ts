@@ -1,3 +1,4 @@
+import { PredefinedOrganizationRole } from '@appsemble/types';
 import { request, setTestApp } from 'axios-test-instance';
 import type Koa from 'koa';
 import { beforeAll, beforeEach, describe, expect, it } from 'vitest';
@@ -12,7 +13,7 @@ import {
 } from '../../../models/index.js';
 import { setArgv } from '../../../utils/argv.js';
 import { createServer } from '../../../utils/createServer.js';
-import { authorizeApp, createTestUser } from '../../../utils/test/authorization.js';
+import { authorizeAppMember, createTestUser } from '../../../utils/test/authorization.js';
 import { useTestDatabase } from '../../../utils/test/testSchema.js';
 
 let organization: Organization;
@@ -61,13 +62,13 @@ beforeEach(async () => {
   await OrganizationMember.create({
     OrganizationId: organization.id,
     UserId: user.id,
-    role: 'Owner',
+    role: PredefinedOrganizationRole.Owner,
   });
 });
 
 describe('acceptAppGroupInvite', () => {
   beforeEach(() => {
-    authorizeApp(app);
+    authorizeAppMember(app);
   });
 
   it('should respond with 404 if no group invite was found', async () => {

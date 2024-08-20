@@ -20,7 +20,7 @@ export async function updateOrganizationMemberRole(ctx: Context): Promise<void> 
     !organization.Users.some((u) => u.id === user.id),
     ctx,
     404,
-    'User is not part of this organization.',
+    'User is not a member of this organization.',
   );
   assertKoaError(user.id === organizationMemberId, ctx, 400, 'Not allowed to change your own rule');
 

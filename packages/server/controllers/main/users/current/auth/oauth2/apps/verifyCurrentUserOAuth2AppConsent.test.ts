@@ -1,4 +1,4 @@
-import { type LoginCodeResponse } from '@appsemble/types';
+import { type LoginCodeResponse, PredefinedOrganizationRole } from '@appsemble/types';
 import { request, setTestApp } from 'axios-test-instance';
 import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 
@@ -48,7 +48,7 @@ describe('verifyCurrentUserOAuth2AppConsent', () => {
     await OrganizationMember.create({
       OrganizationId: organization.id,
       UserId: user.id,
-      role: 'Owner',
+      role: PredefinedOrganizationRole.Owner,
     });
   });
 

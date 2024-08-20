@@ -10,7 +10,7 @@ import { App, AppMember, AppServiceSecret, Organization, type User } from '../mo
 import { setArgv } from '../utils/argv.js';
 import { createServer } from '../utils/createServer.js';
 import { encrypt } from '../utils/crypto.js';
-import { authorizeApp, createTestUser } from '../utils/test/authorization.js';
+import { authorizeAppMember, createTestUser } from '../utils/test/authorization.js';
 import { useTestDatabase } from '../utils/test/testSchema.js';
 
 let server: Koa;
@@ -195,7 +195,7 @@ describe('applyAppServiceSecrets', () => {
       UserId: user.id,
       role: 'Admin',
     });
-    authorizeApp(app);
+    authorizeAppMember(app);
 
     await AppServiceSecret.create({
       name: 'Test service',
@@ -401,7 +401,7 @@ describe('applyAppServiceSecrets', () => {
       UserId: user.id,
       role: 'Admin',
     });
-    authorizeApp(app);
+    authorizeAppMember(app);
 
     await AppServiceSecret.create({
       name: 'Test service',
@@ -453,7 +453,7 @@ describe('applyAppServiceSecrets', () => {
       UserId: user.id,
       role: 'Admin',
     });
-    authorizeApp(app);
+    authorizeAppMember(app);
 
     await AppServiceSecret.create({
       name: 'Test service',
@@ -514,7 +514,7 @@ describe('applyAppServiceSecrets', () => {
       UserId: user.id,
       role: 'Admin',
     });
-    authorizeApp(app);
+    authorizeAppMember(app);
 
     await AppServiceSecret.create({
       name: 'Test service',
@@ -574,7 +574,7 @@ describe('applyAppServiceSecrets', () => {
       UserId: user.id,
       role: 'Admin',
     });
-    authorizeApp(app);
+    authorizeAppMember(app);
 
     await AppServiceSecret.create({
       name: 'Test service',
@@ -645,7 +645,7 @@ describe('applyAppServiceSecrets', () => {
       UserId: user.id,
       role: 'Admin',
     });
-    authorizeApp(app);
+    authorizeAppMember(app);
 
     const tokenUrl = `${proxiedRequest.defaults.baseURL}oauth/token`;
 
@@ -714,7 +714,7 @@ describe('applyAppServiceSecrets', () => {
       UserId: user.id,
       role: 'Admin',
     });
-    authorizeApp(app);
+    authorizeAppMember(app);
 
     await AppServiceSecret.create({
       name: 'Test service',
@@ -778,7 +778,7 @@ describe('applyAppServiceSecrets', () => {
       UserId: user.id,
       role: 'Admin',
     });
-    authorizeApp(app);
+    authorizeAppMember(app);
 
     await AppServiceSecret.create({
       name: 'Test service',
@@ -828,7 +828,7 @@ describe('applyAppServiceSecrets', () => {
       UserId: user.id,
       role: 'Admin',
     });
-    authorizeApp(app);
+    authorizeAppMember(app);
 
     await AppServiceSecret.create({
       name: 'Test service',
@@ -888,7 +888,7 @@ describe('applyAppServiceSecrets', () => {
       UserId: user.id,
       role: 'Admin',
     });
-    authorizeApp(app);
+    authorizeAppMember(app);
 
     await AppServiceSecret.create({
       name: 'Test service',
@@ -938,7 +938,7 @@ describe('applyAppServiceSecrets', () => {
       UserId: user.id,
       role: 'Admin',
     });
-    authorizeApp(app);
+    authorizeAppMember(app);
 
     await AppServiceSecret.create({
       name: 'Test service',
@@ -998,7 +998,7 @@ describe('applyAppServiceSecrets', () => {
       UserId: user.id,
       role: 'Admin',
     });
-    authorizeApp(app);
+    authorizeAppMember(app);
 
     await AppServiceSecret.create({
       name: 'Test service',
@@ -1050,7 +1050,7 @@ describe('applyAppServiceSecrets', () => {
       UserId: user.id,
       role: 'Admin',
     });
-    authorizeApp(app);
+    authorizeAppMember(app);
 
     await AppServiceSecret.create({
       name: 'Test service',
@@ -1111,7 +1111,7 @@ describe('applyAppServiceSecrets', () => {
       UserId: user.id,
       role: 'Admin',
     });
-    authorizeApp(app);
+    authorizeAppMember(app);
 
     await AppServiceSecret.create({
       name: 'Test service',

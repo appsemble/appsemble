@@ -1,4 +1,5 @@
 import { createFormData } from '@appsemble/node-utils';
+import { PredefinedOrganizationRole } from '@appsemble/types';
 import { request, setTestApp } from 'axios-test-instance';
 import { compare } from 'bcrypt';
 import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
@@ -40,7 +41,7 @@ beforeEach(async () => {
   await OrganizationMember.create({
     OrganizationId: organization.id,
     UserId: user.id,
-    role: 'Owner',
+    role: PredefinedOrganizationRole.Owner,
   });
 
   await Organization.create({ id: 'appsemble', name: 'Appsemble' });

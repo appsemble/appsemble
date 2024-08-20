@@ -1,3 +1,4 @@
+import { PredefinedAppRole, PredefinedOrganizationRole } from '@appsemble/types';
 import { request, setTestApp } from 'axios-test-instance';
 import type Koa from 'koa';
 import { beforeAll, beforeEach, describe, expect, it } from 'vitest';
@@ -62,7 +63,7 @@ beforeEach(async () => {
   await OrganizationMember.create({
     OrganizationId: organization.id,
     UserId: user.id,
-    role: 'Owner',
+    role: PredefinedOrganizationRole.Owner,
   });
 });
 
@@ -99,15 +100,15 @@ describe('getGroups', () => {
       UserId: user.id,
       timezone: 'Europe/Amsterdam',
       AppId: app.id,
-      role: '',
+      role: PredefinedAppRole.Member,
     });
     const groupA = await Group.create({ name: 'A', AppId: app.id });
     const groupB = await Group.create({ name: 'B', AppId: app.id });
     const groupC = await Group.create({ name: 'C', AppId: app.id });
 
     await GroupMember.bulkCreate([
-      { role: 'Member', AppMemberId: appMember.id, GroupId: groupA.id },
-      { role: 'Manager', AppMemberId: appMember.id, GroupId: groupB.id },
+      { role: PredefinedAppRole.Member, AppMemberId: appMember.id, GroupId: groupA.id },
+      { role: PredefinedAppRole.GroupsManager, AppMemberId: appMember.id, GroupId: groupB.id },
     ]);
 
     authorizeStudio();
@@ -116,8 +117,8 @@ describe('getGroups', () => {
     expect(response).toMatchObject({
       status: 200,
       data: [
-        { id: groupA.id, name: groupA.name, role: 'Member' },
-        { id: groupB.id, name: groupB.name, role: 'Manager' },
+        { id: groupA.id, name: groupA.name, role: PredefinedAppRole.Member },
+        { id: groupB.id, name: groupB.name, role: PredefinedAppRole.GroupsManager },
         { id: groupC.id, name: groupC.name },
       ],
     });

@@ -1,4 +1,5 @@
 import { readFixture } from '@appsemble/node-utils';
+import { PredefinedOrganizationRole } from '@appsemble/types';
 import { request, setTestApp } from 'axios-test-instance';
 import type Koa from 'koa';
 import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
@@ -35,7 +36,7 @@ beforeEach(async () => {
   await OrganizationMember.create({
     OrganizationId: organization.id,
     UserId: user.id,
-    role: 'Owner',
+    role: PredefinedOrganizationRole.Owner,
   });
 });
 
@@ -51,7 +52,7 @@ describe('getOrganizationMembers', () => {
           id: expect.any(String),
           name: 'Test User',
           primaryEmail: 'test@example.com',
-          role: 'Owner',
+          role: PredefinedOrganizationRole.Owner,
         },
       ],
     });
@@ -66,7 +67,7 @@ describe('getOrganizationMembers', () => {
       status: 403,
       data: {
         error: 'Forbidden',
-        message: 'User is not part of this organization.',
+        message: 'User is not a member of this organization.',
       },
     });
   });

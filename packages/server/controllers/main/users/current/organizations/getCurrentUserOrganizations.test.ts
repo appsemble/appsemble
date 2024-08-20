@@ -1,3 +1,4 @@
+import { PredefinedOrganizationRole } from '@appsemble/types';
 import { request, setTestApp } from 'axios-test-instance';
 import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 
@@ -27,7 +28,7 @@ beforeEach(async () => {
   await OrganizationMember.create({
     OrganizationId: organization.id,
     UserId: user.id,
-    role: 'Owner',
+    role: PredefinedOrganizationRole.Owner,
   });
 });
 
@@ -41,8 +42,12 @@ describe('getCurrentUserOrganizations', () => {
     expect(response).toMatchObject({
       status: 200,
       data: [
-        { id: 'testorganization', name: 'Test Organization', role: 'Owner' },
-        { id: 'testorganizationb', name: null, role: 'Member' },
+        {
+          id: 'testorganization',
+          name: 'Test Organization',
+          role: PredefinedOrganizationRole.Owner,
+        },
+        { id: 'testorganizationb', name: null, role: PredefinedOrganizationRole.Member },
       ],
     });
   });

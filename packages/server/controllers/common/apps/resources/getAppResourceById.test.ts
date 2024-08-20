@@ -16,7 +16,7 @@ import {
 import { setArgv } from '../../../../utils/argv.js';
 import { createServer } from '../../../../utils/createServer.js';
 import {
-  authorizeApp,
+  authorizeAppMember,
   authorizeClientCredentials,
   authorizeStudio,
   createTestUser,
@@ -97,7 +97,7 @@ describe('getAppResourceById', () => {
       role: 'Reader',
       timezone: 'Europe/Amsterdam',
     });
-    authorizeApp(app);
+    authorizeAppMember(app);
     const response = await request.get(
       `/api/apps/${app.id}/resources/testResource/${resource.id}`,
       { params: { view: 'testView' } },
@@ -153,7 +153,7 @@ describe('getAppResourceById', () => {
       role: 'Reader',
       timezone: 'Europe/Amsterdam',
     });
-    authorizeApp(app);
+    authorizeAppMember(app);
     const response = await request.get(
       `/api/apps/${app.id}/resources/testResource/${resource.id}`,
       { params: { view: 'missingView' } },
@@ -207,7 +207,7 @@ describe('getAppResourceById', () => {
       role: 'Visitor',
       timezone: 'Europe/Amsterdam',
     });
-    authorizeApp(app);
+    authorizeAppMember(app);
     const response = await request.get(
       `/api/apps/${app.id}/resources/testResource/${resource.id}`,
       { params: { view: 'testView' } },
@@ -319,7 +319,7 @@ describe('getAppResourceById', () => {
       AuthorId: memberB.id,
     });
 
-    authorizeApp(app);
+    authorizeAppMember(app);
     const response = await request.get(
       `/api/apps/${app.id}/resources/testResourceGroup/${resource.id}`,
     );

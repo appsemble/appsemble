@@ -1,5 +1,5 @@
 import { createFixtureStream } from '@appsemble/node-utils';
-import { type BlockManifest } from '@appsemble/types';
+import { type BlockManifest, PredefinedOrganizationRole } from '@appsemble/types';
 import { request, setTestApp } from 'axios-test-instance';
 import FormData from 'form-data';
 import { omit } from 'lodash-es';
@@ -31,7 +31,7 @@ beforeEach(async () => {
   await OrganizationMember.create({
     OrganizationId: organization.id,
     UserId: user.id,
-    role: 'Maintainer',
+    role: PredefinedOrganizationRole.Maintainer,
   });
   await setTestApp(server);
 });

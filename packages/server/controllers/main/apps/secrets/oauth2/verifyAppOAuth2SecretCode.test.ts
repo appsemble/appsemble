@@ -1,4 +1,4 @@
-import { type LoginCodeResponse } from '@appsemble/types';
+import { type LoginCodeResponse, PredefinedOrganizationRole } from '@appsemble/types';
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 import { request, setTestApp } from 'axios-test-instance';
@@ -66,7 +66,7 @@ beforeEach(async () => {
   await OrganizationMember.create({
     OrganizationId: organization.id,
     UserId: user.id,
-    role: 'Owner',
+    role: PredefinedOrganizationRole.Owner,
   });
 });
 

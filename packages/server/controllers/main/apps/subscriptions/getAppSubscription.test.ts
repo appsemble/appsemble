@@ -1,3 +1,4 @@
+import { PredefinedOrganizationRole } from '@appsemble/types';
 import { request, setTestApp } from 'axios-test-instance';
 import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 
@@ -11,7 +12,7 @@ import {
 } from '../../../../models/index.js';
 import { setArgv } from '../../../../utils/argv.js';
 import { createServer } from '../../../../utils/createServer.js';
-import { authorizeApp, createTestUser } from '../../../../utils/test/authorization.js';
+import { authorizeAppMember, createTestUser } from '../../../../utils/test/authorization.js';
 import { useTestDatabase } from '../../../../utils/test/testSchema.js';
 
 let organization: Organization;
@@ -79,7 +80,7 @@ beforeEach(async () => {
   await OrganizationMember.create({
     OrganizationId: organization.id,
     UserId: user.id,
-    role: 'Owner',
+    role: PredefinedOrganizationRole.Owner,
   });
 });
 
@@ -100,7 +101,7 @@ describe('getAppSubscription', () => {
       data: { foo: 'I am Foo.' },
     });
 
-    authorizeApp(app);
+    authorizeAppMember(app);
     await request.patch(`/api/apps/${app.id}/subscriptions`, {
       endpoint: 'https://example.com',
       resource: 'person',

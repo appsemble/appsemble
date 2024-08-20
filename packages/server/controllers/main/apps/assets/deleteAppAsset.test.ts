@@ -1,3 +1,4 @@
+import { PredefinedOrganizationRole } from '@appsemble/types';
 import { request, setTestApp } from 'axios-test-instance';
 import { beforeAll, beforeEach, describe, expect, it } from 'vitest';
 
@@ -34,7 +35,7 @@ beforeEach(async () => {
   await OrganizationMember.create({
     OrganizationId: organization.id,
     UserId: user.id,
-    role: 'Owner',
+    role: PredefinedOrganizationRole.Owner,
   });
 
   app = await App.create({
@@ -74,7 +75,10 @@ describe('deleteAppAsset', () => {
   });
 
   it('should not delete assets if the user has insufficient permissions', async () => {
-    await OrganizationMember.update({ role: 'Member' }, { where: { UserId: user.id } });
+    await OrganizationMember.update(
+      { role: PredefinedOrganizationRole.Member },
+      { where: { UserId: user.id } },
+    );
 
     const asset = await Asset.create({
       AppId: app.id,
@@ -92,7 +96,7 @@ describe('deleteAppAsset', () => {
 
       {
         "error": "Forbidden",
-        "message": "User does not have sufficient permissions.",
+        "message": "User does not have sufficient organization permissions.",
         "statusCode": 403,
       }
     `);

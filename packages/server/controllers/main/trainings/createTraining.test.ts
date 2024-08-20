@@ -1,4 +1,4 @@
-import { type Training as TrainingType } from '@appsemble/types';
+import { PredefinedOrganizationRole, type Training as TrainingType } from '@appsemble/types';
 import { request, setTestApp } from 'axios-test-instance';
 import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 
@@ -32,7 +32,7 @@ beforeEach(async () => {
   await OrganizationMember.create({
     OrganizationId: organization.id,
     UserId: user.id,
-    role: 'Owner',
+    role: PredefinedOrganizationRole.Owner,
   });
 });
 
@@ -81,7 +81,7 @@ describe('createTraining', () => {
 
       {
         "error": "Forbidden",
-        "message": "User is not part of this organization.",
+        "message": "User is not a member of this organization.",
         "statusCode": 403,
       }
     `);

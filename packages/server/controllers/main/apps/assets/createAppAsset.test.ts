@@ -1,5 +1,9 @@
 import { createFixtureStream, createFormData } from '@appsemble/node-utils';
-import { type Asset as AssetType } from '@appsemble/types';
+import {
+  type Asset as AssetType,
+  PredefinedAppRole,
+  PredefinedOrganizationRole,
+} from '@appsemble/types';
 import { uuid4Pattern } from '@appsemble/utils';
 import { request, setTestApp } from 'axios-test-instance';
 import { beforeAll, beforeEach, describe, expect, it } from 'vitest';
@@ -38,7 +42,7 @@ beforeEach(async () => {
   await OrganizationMember.create({
     OrganizationId: organization.id,
     UserId: user.id,
-    role: 'Owner',
+    role: PredefinedOrganizationRole.Owner,
   });
 
   app = await App.create({
@@ -64,6 +68,7 @@ beforeEach(async () => {
 
 describe('createAppAsset', () => {
   it('should be able to create an asset', async () => {
+    authorizeStudio();
     const data = Buffer.from([0xc0, 0xff, 0xee, 0xba, 0xbe]);
     const response = await request.post<Asset>(
       `/api/apps/${app.id}/assets`,
@@ -95,6 +100,7 @@ describe('createAppAsset', () => {
   });
 
   it('should not allow using conflicting names', async () => {
+    authorizeStudio();
     await request.post(
       `/api/apps/${app.id}/assets`,
       createFormData({ file: Buffer.alloc(0), name: 'conflict' }),
@@ -138,6 +144,7 @@ describe('createAppAsset', () => {
   });
 
   it('should accept empty files', async () => {
+    authorizeStudio();
     const response = await request.post(
       `/api/apps/${app.id}/assets`,
       createFormData({ file: Buffer.alloc(0) }),
@@ -157,6 +164,7 @@ describe('createAppAsset', () => {
   });
 
   it('should support filenames', async () => {
+    authorizeStudio();
     const response = await request.post(
       `/api/apps/${app.id}/assets`,
       createFormData({ file: createFixtureStream('10x50.png') }),
@@ -177,6 +185,7 @@ describe('createAppAsset', () => {
   });
 
   it('should not create assets for apps that don’t exist', async () => {
+    authorizeStudio();
     const response = await request.post(
       '/api/apps/0/assets',
       createFormData({ file: Buffer.alloc(0) }),
@@ -198,7 +207,7 @@ describe('createAppAsset', () => {
       email: user.primaryEmail,
       AppId: app.id,
       UserId: user.id,
-      role: '',
+      role: PredefinedAppRole.Member,
       timezone: 'Europe/Amsterdam',
     });
     authorizeStudio();
@@ -228,7 +237,7 @@ describe('createAppAsset', () => {
       email: user.primaryEmail,
       AppId: app.id,
       UserId: user.id,
-      role: '',
+      role: PredefinedAppRole.Member,
       timezone: 'Europe/Amsterdam',
     });
     authorizeStudio();
@@ -292,22 +301,15 @@ describe('createAppAsset', () => {
 
   it('should create seed assets and ephemeral assets in demo apps', async () => {
     await app.update({ demoMode: true });
-    const member = await AppMember.create({
-      email: user.primaryEmail,
-      AppId: app.id,
-      UserId: user.id,
-      role: '',
-      timezone: 'Europe/Amsterdam',
-    });
     authorizeStudio();
     const response = await request.post<AssetType>(
-      `/api/apps/${app.id}/assets`,
+      `/api/apps/${app.id}/assets?seed=true`,
       createFormData({ file: Buffer.alloc(0) }),
       { params: { seed: true } },
     );
     const asset = await Asset.findByPk(response.data.id);
 
-    expect(asset.AppMemberId).toStrictEqual(member.id);
+    expect(asset.AppMemberId).toBeNull();
     expect(response).toMatchInlineSnapshot(
       { data: { id: expect.stringMatching(uuid4Pattern) } },
       `

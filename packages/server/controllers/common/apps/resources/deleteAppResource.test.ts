@@ -15,7 +15,7 @@ import {
 import { setArgv } from '../../../../utils/argv.js';
 import { createServer } from '../../../../utils/createServer.js';
 import {
-  authorizeApp,
+  authorizeAppMember,
   authorizeClientCredentials,
   authorizeStudio,
   createTestUser,
@@ -185,7 +185,7 @@ describe('deleteAppResource', () => {
       AuthorId: memberB.id,
     });
 
-    authorizeApp(app);
+    authorizeAppMember(app);
     const response = await request.delete(
       `/api/apps/${app.id}/resources/testResourceGroup/${resource.id}`,
     );

@@ -143,7 +143,7 @@ export function AddMembersModal({ onInvited, state }: AddMembersModalProps): Rea
         ...invites.slice(0, index),
         ...lines.map((line) => {
           const [email, name] = line.split('\t');
-          return { email, name, role: 'Member' } as OrganizationInvite;
+          return { email, name, role: PredefinedOrganizationRole.Member } as OrganizationInvite;
         }),
         ...invites.slice(index),
       ]);

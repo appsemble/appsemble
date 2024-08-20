@@ -1,4 +1,5 @@
 import { createFixtureStream, createFormData, readFixture } from '@appsemble/node-utils';
+import { PredefinedOrganizationRole } from '@appsemble/types';
 import { jwtPattern } from '@appsemble/utils';
 import { request, setTestApp } from 'axios-test-instance';
 import { compare } from 'bcrypt';
@@ -42,7 +43,7 @@ beforeEach(async () => {
   await OrganizationMember.create({
     OrganizationId: organization.id,
     UserId: user.id,
-    role: 'Owner',
+    role: PredefinedOrganizationRole.Owner,
   });
 
   await Organization.create({ id: 'appsemble', name: 'Appsemble' });

@@ -15,7 +15,7 @@ import {
 import { setArgv } from '../../../../utils/argv.js';
 import { createServer } from '../../../../utils/createServer.js';
 import {
-  authorizeApp,
+  authorizeAppMember,
   authorizeStudio,
   createTestUser,
 } from '../../../../utils/test/authorization.js';
@@ -143,7 +143,7 @@ describe('countAppResources', () => {
       data: { foo: 'baz' },
     });
 
-    authorizeApp(app);
+    authorizeAppMember(app);
     const response = await request.get(
       `/api/apps/${app.id}/resources/testResourceAuthorOnly/$count`,
     );
@@ -212,7 +212,7 @@ describe('countAppResources', () => {
       AuthorId: memberC.id,
     });
 
-    authorizeApp(app);
+    authorizeAppMember(app);
     const response = await request.get(`/api/apps/${app.id}/resources/testResourceGroup/$count`);
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 200 OK
@@ -279,7 +279,7 @@ describe('countAppResources', () => {
       AuthorId: memberC.id,
     });
 
-    authorizeApp(app);
+    authorizeAppMember(app);
     const response = await request.get(
       `/api/apps/${app.id}/resources/testResource/$count?$group=member`,
     );
@@ -348,7 +348,7 @@ describe('countAppResources', () => {
       AuthorId: memberC.id,
     });
 
-    authorizeApp(app);
+    authorizeAppMember(app);
     const response = await request.get(
       `/api/apps/${app.id}/resources/testResource/$count?$group=member`,
     );
@@ -413,7 +413,7 @@ describe('countAppResources', () => {
       AuthorId: memberC.id,
     });
 
-    authorizeApp(app);
+    authorizeAppMember(app);
     const response = await request.get(
       `/api/apps/${app.id}/resources/testResource/$count?$group=member`,
     );
@@ -482,7 +482,7 @@ describe('countAppResources', () => {
       AuthorId: memberC.id,
     });
 
-    authorizeApp(app);
+    authorizeAppMember(app);
     const response = await request.get(
       `/api/apps/${app.id}/resources/testResource/$count?$group=manager`,
     );
@@ -551,7 +551,7 @@ describe('countAppResources', () => {
       AuthorId: memberC.id,
     });
 
-    authorizeApp(app);
+    authorizeAppMember(app);
     const response = await request.get(
       `/api/apps/${app.id}/resources/testResource/$count?$group=manager`,
     );
@@ -632,7 +632,7 @@ describe('countAppResources', () => {
       AuthorId: memberC.id,
     });
 
-    authorizeApp(app);
+    authorizeAppMember(app);
     const response = await request.get(
       `/api/apps/${app.id}/resources/testResource/$count?$group=manager`,
     );

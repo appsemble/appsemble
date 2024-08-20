@@ -1,3 +1,4 @@
+import { PredefinedAppRole, PredefinedOrganizationRole } from '@appsemble/types';
 import { request, setTestApp } from 'axios-test-instance';
 import type Koa from 'koa';
 import { beforeAll, beforeEach, describe, expect, it } from 'vitest';
@@ -62,7 +63,7 @@ beforeEach(async () => {
   await OrganizationMember.create({
     OrganizationId: organization.id,
     UserId: user.id,
-    role: 'Owner',
+    role: PredefinedOrganizationRole.Owner,
   });
 });
 
@@ -77,7 +78,7 @@ describe('deleteGroupMember', () => {
     await OrganizationMember.create({
       OrganizationId: organization.id,
       UserId: userB.id,
-      role: 'Member',
+      role: PredefinedOrganizationRole.Member,
     });
     const group = await Group.create({ name: 'A', AppId: app.id });
     const appMember = await AppMember.create({
@@ -85,12 +86,12 @@ describe('deleteGroupMember', () => {
       AppId: app.id,
       UserId: userB.id,
       timezone: 'Europe/Amsterdam',
-      role: '',
+      role: PredefinedAppRole.Member,
     });
     await GroupMember.create({
       AppMemberId: appMember.id,
       GroupId: group.id,
-      role: 'Member',
+      role: PredefinedAppRole.Member,
     });
 
     authorizeStudio();
@@ -110,7 +111,7 @@ describe('deleteGroupMember', () => {
     await OrganizationMember.create({
       OrganizationId: organization.id,
       UserId: userB.id,
-      role: 'Member',
+      role: PredefinedOrganizationRole.Member,
     });
     const group = await Group.create({ name: 'A', AppId: app.id });
     const appMember = await AppMember.create({
@@ -118,12 +119,12 @@ describe('deleteGroupMember', () => {
       AppId: app.id,
       email: userB.primaryEmail,
       timezone: 'Europe/Amsterdam',
-      role: '',
+      role: PredefinedAppRole.Member,
     });
     await GroupMember.create({
       AppMemberId: appMember.id,
       GroupId: group.id,
-      role: 'Member',
+      role: PredefinedAppRole.Member,
     });
 
     authorizeStudio();
@@ -143,10 +144,10 @@ describe('deleteGroupMember', () => {
     await OrganizationMember.create({
       OrganizationId: organization.id,
       UserId: userB.id,
-      role: 'Member',
+      role: PredefinedOrganizationRole.Member,
     });
     await OrganizationMember.update(
-      { role: 'Member' },
+      { role: PredefinedOrganizationRole.Member },
       { where: { UserId: user.id, OrganizationId: app.id } },
     );
     const group = await Group.create({ name: 'A', AppId: app.id });
@@ -155,24 +156,24 @@ describe('deleteGroupMember', () => {
       AppId: app.id,
       UserId: user.id,
       timezone: 'Europe/Amsterdam',
-      role: '',
+      role: PredefinedAppRole.Member,
     });
     const appMember2 = await AppMember.create({
       email: userB.primaryEmail,
       AppId: app.id,
       UserId: userB.id,
       timezone: 'Europe/Amsterdam',
-      role: '',
+      role: PredefinedAppRole.Member,
     });
     await GroupMember.create({
       AppMemberId: appMember1.id,
       GroupId: group.id,
-      role: 'Member',
+      role: PredefinedAppRole.Member,
     });
     await GroupMember.create({
       AppMemberId: appMember2.id,
       GroupId: group.id,
-      role: 'GroupMembersManager',
+      role: PredefinedAppRole.GroupMembersManager,
     });
 
     authorizeStudio();
@@ -192,10 +193,10 @@ describe('deleteGroupMember', () => {
     await OrganizationMember.create({
       OrganizationId: organization.id,
       UserId: userB.id,
-      role: 'Member',
+      role: PredefinedOrganizationRole.Member,
     });
     await OrganizationMember.update(
-      { role: 'Member' },
+      { role: PredefinedOrganizationRole.Member },
       { where: { UserId: user.id, OrganizationId: organization.id } },
     );
     const group = await Group.create({ name: 'A', AppId: app.id });
@@ -204,12 +205,12 @@ describe('deleteGroupMember', () => {
       AppId: app.id,
       UserId: userB.id,
       timezone: 'Europe/Amsterdam',
-      role: '',
+      role: PredefinedAppRole.Member,
     });
     await GroupMember.create({
       AppMemberId: appMember.id,
       GroupId: group.id,
-      role: 'Member',
+      role: PredefinedAppRole.Member,
     });
 
     authorizeStudio();
@@ -234,12 +235,12 @@ describe('deleteGroupMember', () => {
       AppId: app.id,
       UserId: userB.id,
       timezone: 'Europe/Amsterdam',
-      role: '',
+      role: PredefinedAppRole.Member,
     });
     await OrganizationMember.create({
       OrganizationId: organization.id,
       UserId: userB.id,
-      role: 'Member',
+      role: PredefinedOrganizationRole.Member,
     });
     const group = await Group.create({ name: 'A', AppId: app.id });
 

@@ -1,4 +1,5 @@
 import { assertKoaError, organizationBlocklist, throwKoaError } from '@appsemble/node-utils';
+import { PredefinedOrganizationRole } from '@appsemble/types';
 import { type Context } from 'koa';
 import { Op, UniqueConstraintError } from 'sequelize';
 
@@ -65,7 +66,7 @@ export async function createOrganization(ctx: Context): Promise<void> {
     await OrganizationMember.create({
       OrganizationId: organization.id,
       UserId: user.id,
-      role: 'Owner',
+      role: PredefinedOrganizationRole.Owner,
     });
 
     ctx.body = {
@@ -82,7 +83,7 @@ export async function createOrganization(ctx: Context): Promise<void> {
           id: user.id,
           name: user.name,
           primaryEmail: user.primaryEmail,
-          role: 'Owner',
+          role: PredefinedOrganizationRole.Owner,
         },
       ],
       invites: [],

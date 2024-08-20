@@ -16,7 +16,7 @@ export async function createAppRating(ctx: Context): Promise<void> {
 
   assertKoaError(!app, ctx, 404, 'App not found');
 
-  const user = await User.findByPk(authSubject.id, { attributes: ['name'] });
+  const user = await User.findByPk(authSubject.id, { attributes: ['id', 'name'] });
 
   const [result] = await AppRating.upsert(
     { rating, description, UserId: user.id, AppId },

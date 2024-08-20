@@ -10,7 +10,7 @@ export async function getAppResourceVersions(ctx: Context): Promise<void> {
     pathParams: { appId, resourceId, resourceType },
   } = ctx;
 
-  const app = await App.findByPk(appId, { attributes: ['OrganizationId'] });
+  const app = await App.findByPk(appId, { attributes: ['OrganizationId', 'definition'] });
 
   assertKoaError(!app, ctx, 404, 'App not found');
 
@@ -25,18 +25,18 @@ export async function getAppResourceVersions(ctx: Context): Promise<void> {
       AppId: appId,
       id: resourceId,
       type: resourceType,
-      include: [
-        { association: 'Editor' },
-        { model: ResourceVersion, include: [{ model: AppMember }], order: [['created', 'DESC']] },
-      ],
     },
+    include: [
+      { association: 'Editor' },
+      { model: ResourceVersion, include: [{ model: AppMember }] },
+    ],
   });
-
-  assertKoaError(!resource, ctx, 404, 'Resource not found');
 
   const definition = getResourceDefinition(app.definition, resourceType, ctx);
 
   assertKoaError(!definition.history, ctx, 404, `Resource “${resourceType}” has no history`);
+
+  assertKoaError(!resource, ctx, 404, 'Resource not found');
 
   ctx.body = [
     {
@@ -44,6 +44,6 @@ export async function getAppResourceVersions(ctx: Context): Promise<void> {
       data: resource.data,
       author: resource.Editor ? { id: resource.Editor.id, name: resource.Editor.name } : undefined,
     },
-    ...resource.ResourceVersions,
+    ...resource.ResourceVersions.sort((a, b) => Number(b.created) - Number(a.created)),
   ];
 }

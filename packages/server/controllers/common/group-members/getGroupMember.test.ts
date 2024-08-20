@@ -1,3 +1,4 @@
+import { PredefinedAppRole, PredefinedOrganizationRole } from '@appsemble/types';
 import { request, setTestApp } from 'axios-test-instance';
 import type Koa from 'koa';
 import { beforeAll, beforeEach, describe, expect, it } from 'vitest';
@@ -62,7 +63,7 @@ beforeEach(async () => {
   await OrganizationMember.create({
     OrganizationId: organization.id,
     UserId: user.id,
-    role: 'Owner',
+    role: PredefinedOrganizationRole.Owner,
   });
 });
 
@@ -74,12 +75,12 @@ describe('getGroupMember', () => {
       name: user.name,
       email: user.primaryEmail,
       AppId: app.id,
-      role: '',
+      role: PredefinedAppRole.Member,
     });
     await GroupMember.create({
       GroupId: group.id,
       AppMemberId: member.id,
-      role: 'Member',
+      role: PredefinedAppRole.Member,
     });
 
     authorizeStudio();
@@ -89,7 +90,7 @@ describe('getGroupMember', () => {
       id: user.id,
       name: member.name,
       primaryEmail: member.email,
-      role: 'Member',
+      role: PredefinedAppRole.Member,
     });
   });
 });

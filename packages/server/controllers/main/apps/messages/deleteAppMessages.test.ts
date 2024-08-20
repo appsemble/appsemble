@@ -1,3 +1,4 @@
+import { PredefinedOrganizationRole } from '@appsemble/types';
 import { request, setTestApp } from 'axios-test-instance';
 import { beforeAll, beforeEach, describe, expect, it } from 'vitest';
 
@@ -27,7 +28,7 @@ beforeEach(async () => {
   await OrganizationMember.create({
     OrganizationId: organization.id,
     UserId: user.id,
-    role: 'AppEditor',
+    role: PredefinedOrganizationRole.AppTranslator,
   });
   app = await App.create({
     path: 'test-app',

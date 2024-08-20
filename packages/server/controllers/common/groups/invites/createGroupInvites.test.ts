@@ -1,3 +1,4 @@
+import { PredefinedAppRole, PredefinedOrganizationRole } from '@appsemble/types';
 import { request, setTestApp } from 'axios-test-instance';
 import type Koa from 'koa';
 import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
@@ -13,7 +14,7 @@ import {
 } from '../../../../models/index.js';
 import { setArgv } from '../../../../utils/argv.js';
 import { createServer } from '../../../../utils/createServer.js';
-import { authorizeApp, createTestUser } from '../../../../utils/test/authorization.js';
+import { authorizeAppMember, createTestUser } from '../../../../utils/test/authorization.js';
 import { useTestDatabase } from '../../../../utils/test/testSchema.js';
 
 let organization: Organization;
@@ -62,13 +63,13 @@ beforeEach(async () => {
   await OrganizationMember.create({
     OrganizationId: organization.id,
     UserId: user.id,
-    role: 'Owner',
+    role: PredefinedOrganizationRole.Owner,
   });
 });
 
 describe('createGroupInvites', () => {
   beforeEach(() => {
-    authorizeApp(app);
+    authorizeAppMember(app);
   });
 
   it('should not allow to invite group members if the join policy is not invite', async () => {
@@ -78,7 +79,7 @@ describe('createGroupInvites', () => {
       AppId: app.id,
       UserId: user.id,
       timezone: 'Europe/Amsterdam',
-      role: '',
+      role: PredefinedAppRole.Member,
     });
     await GroupMember.create({ GroupId: group.id, AppMemberId: appMember.id, role: 'manager' });
 
@@ -147,7 +148,7 @@ describe('createGroupInvites', () => {
       AppId: app.id,
       UserId: user.id,
       timezone: 'Europe/Amsterdam',
-      role: '',
+      role: PredefinedAppRole.Member,
     });
     await GroupMember.create({ GroupId: group.id, AppMemberId: appMember.id, role: 'member' });
     const response = await request.post(`/api/apps/${app.id}/groups/${group.id}/invites`, {
@@ -188,7 +189,7 @@ describe('createGroupInvites', () => {
       AppId: app.id,
       UserId: user.id,
       timezone: 'Europe/Amsterdam',
-      role: '',
+      role: PredefinedAppRole.Member,
     });
     await GroupMember.create({ GroupId: group.id, AppMemberId: appMember.id, role: 'member' });
     const response = await request.post(`/api/apps/${app.id}/groups/${group.id}/invites`, {

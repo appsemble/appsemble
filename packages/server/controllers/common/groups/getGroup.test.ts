@@ -1,3 +1,4 @@
+import { PredefinedAppRole, PredefinedOrganizationRole } from '@appsemble/types';
 import { request, setTestApp } from 'axios-test-instance';
 import type Koa from 'koa';
 import { beforeAll, beforeEach, describe, expect, it } from 'vitest';
@@ -62,7 +63,7 @@ beforeEach(async () => {
   await OrganizationMember.create({
     OrganizationId: organization.id,
     UserId: user.id,
-    role: 'Owner',
+    role: PredefinedOrganizationRole.Owner,
   });
 });
 
@@ -73,16 +74,20 @@ describe('getGroup', () => {
       UserId: user.id,
       timezone: 'Europe/Amsterdam',
       AppId: app.id,
-      role: '',
+      role: PredefinedAppRole.Member,
     });
     const group = await Group.create({ name: 'A', AppId: app.id });
-    await GroupMember.create({ role: 'Member', AppMemberId: appMember.id, GroupId: group.id });
+    await GroupMember.create({
+      role: PredefinedAppRole.Member,
+      AppMemberId: appMember.id,
+      GroupId: group.id,
+    });
 
     authorizeStudio();
     const response = await request.get(`/api/apps/${app.id}/groups/${group.id}`);
     expect(response).toMatchObject({
       status: 200,
-      data: { id: group.id, name: group.name, role: 'Member' },
+      data: { id: group.id, name: group.name, role: PredefinedAppRole.Member },
     });
   });
 

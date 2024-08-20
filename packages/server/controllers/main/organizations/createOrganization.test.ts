@@ -1,4 +1,5 @@
 import { createFormData, organizationBlocklist, readFixture } from '@appsemble/node-utils';
+import { PredefinedOrganizationRole } from '@appsemble/types';
 import { request, setTestApp } from 'axios-test-instance';
 import type Koa from 'koa';
 import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
@@ -40,7 +41,7 @@ beforeEach(async () => {
   await OrganizationMember.create({
     OrganizationId: organization.id,
     UserId: user.id,
-    role: 'Owner',
+    role: PredefinedOrganizationRole.Owner,
   });
 });
 
@@ -62,7 +63,7 @@ describe('createOrganization', () => {
             id: expect.any(String),
             name: 'Test User',
             primaryEmail: 'test@example.com',
-            role: 'Owner',
+            role: PredefinedOrganizationRole.Owner,
           },
         ],
         iconUrl: null,
@@ -88,7 +89,7 @@ describe('createOrganization', () => {
             id: expect.any(String),
             name: 'Test User',
             primaryEmail: 'test@example.com',
-            role: 'Owner',
+            role: PredefinedOrganizationRole.Owner,
           },
         ],
         iconUrl: '/api/organizations/foo/icon?updated=1970-01-01T00:00:00.000Z',

@@ -1,3 +1,4 @@
+import { PredefinedAppRole, PredefinedOrganizationRole } from '@appsemble/types';
 import { uuid4Pattern } from '@appsemble/utils';
 import { request, setTestApp } from 'axios-test-instance';
 import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
@@ -35,7 +36,7 @@ beforeEach(async () => {
   await OrganizationMember.create({
     UserId: user.id,
     OrganizationId: 'testorganization',
-    role: 'Maintainer',
+    role: PredefinedOrganizationRole.AppContentsExplorer,
   });
   await App.create({
     OrganizationId: 'testorganization',
@@ -133,7 +134,7 @@ describe('getAppResourceVersions', () => {
       AppId: 1,
       UserId: user.id,
       name: user.name,
-      role: '',
+      role: PredefinedAppRole.Member,
     });
     vi.advanceTimersByTime(1000);
     await ResourceVersion.create({

@@ -1,3 +1,4 @@
+import { PredefinedOrganizationRole } from '@appsemble/types';
 import { request, setTestApp } from 'axios-test-instance';
 import type Koa from 'koa';
 import { beforeAll, beforeEach, describe, expect, it } from 'vitest';
@@ -12,7 +13,7 @@ import {
 import { setArgv } from '../../../../utils/argv.js';
 import { createServer } from '../../../../utils/createServer.js';
 import {
-  authorizeApp,
+  authorizeAppMember,
   authorizeStudio,
   createTestUser,
 } from '../../../../utils/test/authorization.js';
@@ -64,14 +65,14 @@ beforeEach(async () => {
   await OrganizationMember.create({
     OrganizationId: organization.id,
     UserId: user.id,
-    role: 'Owner',
+    role: PredefinedOrganizationRole.Owner,
   });
 });
 
 describe('createGroup', () => {
   describe('app', () => {
     beforeEach(() => {
-      authorizeApp(app);
+      authorizeAppMember(app);
     });
 
     it('should create a group if the user has the proper role', async () => {
@@ -273,7 +274,7 @@ describe('createGroup', () => {
 
       expect(response).toMatchObject({
         status: 403,
-        data: { message: 'User is not part of this organization.' },
+        data: { message: 'User is not a member of this organization.' },
       });
     });
 

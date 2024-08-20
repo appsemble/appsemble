@@ -16,7 +16,7 @@ import {
 import { setArgv } from '../../../../utils/argv.js';
 import { createServer } from '../../../../utils/createServer.js';
 import {
-  authorizeApp,
+  authorizeAppMember,
   authorizeClientCredentials,
   authorizeStudio,
   createTestUser,
@@ -237,7 +237,7 @@ describe('queryAppResources', () => {
     });
 
     it('should throw a 403 on secured actions if user is authenticated and is not a member', async () => {
-      authorizeApp(app);
+      authorizeAppMember(app);
       const response = await request.get(`/api/apps/${app.id}/resources/secured`);
 
       expect(response).toMatchInlineSnapshot(`
@@ -261,7 +261,7 @@ describe('queryAppResources', () => {
         timezone: 'Europe/Amsterdam',
       });
 
-      authorizeApp(app);
+      authorizeAppMember(app);
       const response = await request.post(`/api/apps/${app.id}/resources/secured`, {});
 
       expect(response).toMatchInlineSnapshot(`
@@ -408,7 +408,7 @@ describe('queryAppResources', () => {
     });
     await Resource.create({ AppId: app.id, type: 'testResourceB', data: { bar: 'baz' } });
 
-    authorizeApp(app);
+    authorizeAppMember(app);
     const response = await request.get(`/api/apps/${app.id}/resources/testResourceAuthorOnly`);
 
     expect(response).toMatchInlineSnapshot(
@@ -491,7 +491,7 @@ describe('queryAppResources', () => {
       AuthorId: memberC.id,
     });
 
-    authorizeApp(app);
+    authorizeAppMember(app);
     const response = await request.get(`/api/apps/${app.id}/resources/testResourceGroup`);
     expect(response).toMatchInlineSnapshot(
       { data: [{ $author: { id: expect.any(String) } }, { $author: { id: expect.any(String) } }] },
@@ -635,7 +635,7 @@ describe('queryAppResources', () => {
       AuthorId: appBMemberC.id,
     });
 
-    authorizeApp(app);
+    authorizeAppMember(app);
     const response = await request.get(`/api/apps/${app.id}/resources/testResourceGroupManager`);
 
     expect(response).toMatchInlineSnapshot(
@@ -1541,7 +1541,7 @@ describe('queryAppResources', () => {
       role: 'Reader',
       timezone: 'Europe/Amsterdam',
     });
-    authorizeApp(app);
+    authorizeAppMember(app);
     const response = await request.get(`/api/apps/${app.id}/resources/testResource`, {
       params: { view: 'testView' },
     });
@@ -1622,7 +1622,7 @@ describe('queryAppResources', () => {
       role: 'Reader',
       timezone: 'Europe/Amsterdam',
     });
-    authorizeApp(app);
+    authorizeAppMember(app);
     const response = await request.get(`/api/apps/${app.id}/resources/testResource`, {
       params: { view: 'missingView' },
     });
@@ -1664,7 +1664,7 @@ describe('queryAppResources', () => {
       role: 'Visitor',
       timezone: 'Europe/Amsterdam',
     });
-    authorizeApp(app);
+    authorizeAppMember(app);
     const response = await request.get(`/api/apps/${app.id}/resources/testResource`, {
       params: { view: 'testView' },
     });

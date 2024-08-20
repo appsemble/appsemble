@@ -1,4 +1,5 @@
 import { readFixture } from '@appsemble/node-utils';
+import { PredefinedOrganizationRole } from '@appsemble/types';
 import { request, setTestApp } from 'axios-test-instance';
 import type Koa from 'koa';
 import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
@@ -41,7 +42,7 @@ beforeEach(async () => {
   await OrganizationMember.create({
     OrganizationId: organization.id,
     UserId: user.id,
-    role: 'Owner',
+    role: PredefinedOrganizationRole.Owner,
   });
   await Organization.create({
     id: 'appsemble',
@@ -126,7 +127,7 @@ describe('deleteOrganizationInvite', () => {
     expect(response).toMatchObject({
       status: 403,
       data: {
-        message: 'User is not part of this organization.',
+        message: 'User is not a member of this organization.',
       },
     });
   });

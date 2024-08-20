@@ -1,3 +1,4 @@
+import { PredefinedOrganizationRole } from '@appsemble/types';
 import { request, setTestApp } from 'axios-test-instance';
 import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 
@@ -43,7 +44,7 @@ beforeEach(async () => {
   member = await OrganizationMember.create({
     OrganizationId: organization.id,
     UserId: user.id,
-    role: 'Owner',
+    role: PredefinedOrganizationRole.Owner,
   });
 
   await Organization.create({ id: 'appsemble', name: 'Appsemble' });
@@ -145,7 +146,7 @@ describe('deleteAppMember', () => {
       vapidPrivateKey: 'b',
       OrganizationId: organization.id,
     });
-    await member.update({ role: 'Member' });
+    await member.update({ role: PredefinedOrganizationRole.Member });
     const userB = await User.create({ timezone: 'Europe/Amsterdam' });
     await AppMember.create({
       email: 'userB@example.com',

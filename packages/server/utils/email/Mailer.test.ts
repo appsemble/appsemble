@@ -1,3 +1,4 @@
+import { PredefinedOrganizationRole } from '@appsemble/types';
 import { defaultLocale } from '@appsemble/utils';
 import { setTestApp } from 'axios-test-instance';
 import { type ImapFlow } from 'imapflow';
@@ -592,7 +593,7 @@ describe('emailQuota', () => {
     await OrganizationMember.create({
       OrganizationId: organization.id,
       UserId: user.id,
-      role: 'Owner',
+      role: PredefinedOrganizationRole.Owner,
     });
     app = await App.create({
       definition: {

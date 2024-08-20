@@ -2,6 +2,7 @@ import { writeFile } from 'node:fs/promises';
 
 import { readFixture, resolveFixture } from '@appsemble/node-utils';
 import { createServer, createTestUser, models, setArgv, useTestDatabase } from '@appsemble/server';
+import { PredefinedOrganizationRole } from '@appsemble/types';
 import { ISODateTimePattern } from '@appsemble/utils';
 import { type AxiosTestInstance, setTestApp } from 'axios-test-instance';
 import FormData from 'form-data';
@@ -62,7 +63,7 @@ beforeEach(async () => {
   await OrganizationMember.create({
     OrganizationId: organization.id,
     UserId: user.id,
-    role: 'Owner',
+    role: PredefinedOrganizationRole.Owner,
   });
 
   await Organization.create({ id: 'appsemble', name: 'Appsemble' });

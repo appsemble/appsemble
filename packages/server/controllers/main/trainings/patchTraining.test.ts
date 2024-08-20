@@ -1,5 +1,5 @@
 import { createFormData } from '@appsemble/node-utils';
-import { type Training as TrainingType } from '@appsemble/types';
+import { PredefinedOrganizationRole, type Training as TrainingType } from '@appsemble/types';
 import { request, setTestApp } from 'axios-test-instance';
 import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 
@@ -33,7 +33,7 @@ beforeEach(async () => {
   await OrganizationMember.create({
     OrganizationId: organization.id,
     UserId: user.id,
-    role: 'Owner',
+    role: PredefinedOrganizationRole.Owner,
   });
 });
 
@@ -50,7 +50,10 @@ describe('patchTraining', () => {
       competences: ['basics'],
       difficultyLevel: 2,
     });
-    await OrganizationMember.update({ role: 'Member' }, { where: { UserId: user.id } });
+    await OrganizationMember.update(
+      { role: PredefinedOrganizationRole.Member },
+      { where: { UserId: user.id } },
+    );
     authorizeStudio();
 
     const response = await request.patch<TrainingType>(
@@ -101,7 +104,7 @@ describe('patchTraining', () => {
 
         {
           "error": "Forbidden",
-          "message": "User is not part of this organization.",
+          "message": "User is not a member of this organization.",
           "statusCode": 403,
         }
       `,

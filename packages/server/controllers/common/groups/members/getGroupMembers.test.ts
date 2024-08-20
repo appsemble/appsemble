@@ -1,3 +1,4 @@
+import { PredefinedAppRole, PredefinedOrganizationRole } from '@appsemble/types';
 import { request, setTestApp } from 'axios-test-instance';
 import type Koa from 'koa';
 import { beforeAll, beforeEach, describe, expect, it } from 'vitest';
@@ -62,7 +63,7 @@ beforeEach(async () => {
   await OrganizationMember.create({
     OrganizationId: organization.id,
     UserId: user.id,
-    role: 'Owner',
+    role: PredefinedOrganizationRole.Owner,
   });
 });
 
@@ -85,7 +86,7 @@ describe('getGroupMembers', () => {
     await OrganizationMember.create({
       OrganizationId: organization.id,
       UserId: userB.id,
-      role: 'Member',
+      role: PredefinedOrganizationRole.Member,
     });
 
     const appMember = await AppMember.create({
@@ -93,7 +94,7 @@ describe('getGroupMembers', () => {
       name: user.name,
       email: user.primaryEmail,
       AppId: app.id,
-      role: '',
+      role: PredefinedAppRole.Member,
     });
     const appMemberB = await AppMember.create({
       UserId: userB.id,
@@ -101,18 +102,18 @@ describe('getGroupMembers', () => {
       email: userB.primaryEmail,
       AppId: app.id,
       timezone: 'Europe/Amsterdam',
-      role: '',
+      role: PredefinedAppRole.Member,
     });
     const group = await Group.create({ name: 'A', AppId: app.id });
     await GroupMember.create({
       GroupId: group.id,
       AppMemberId: appMember.id,
-      role: 'Manager',
+      role: PredefinedAppRole.GroupsManager,
     });
     await GroupMember.create({
       GroupId: group.id,
       AppMemberId: appMemberB.id,
-      role: 'Member',
+      role: PredefinedAppRole.Member,
     });
 
     authorizeStudio();
