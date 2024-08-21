@@ -30,7 +30,7 @@ date formatting, number formatting and more.
 Appsemble provides default translations for the core parts of an app, the part that is provided by
 Appsemble itself without any further configuration. Generally speaking, this includes messages such
 as error messages, menu options and block messages. The languages that are maintained by the
-Appsemble team are English and Dutch, with support for crowd-sourced translations via Weblate which
+Appsemble group are English and Dutch, with support for crowd-sourced translations via Weblate which
 can be found [here](https://hosted.weblate.org/projects/appsemble/#languages).
 
 It is possible to provide translations for the core messages or overwrite existing ones using the
@@ -54,7 +54,7 @@ Let’s look at a simple example of what this looks like in an app.
 ```yaml validate blocks-snippet
 blocks:
   - type: markdown
-    version: 0.29.7
+    version: 0.30.2
     parameters:
       content:
         translate: myMessage
@@ -71,7 +71,7 @@ Alternatively using `string.format`:
 ```yaml validate blocks-snippet
 blocks:
   - type: markdown
-    version: 0.29.7
+    version: 0.30.2
     parameters:
       content:
         string.format:
@@ -139,8 +139,8 @@ After filling in the translations, make sure to click the `Save` button at the b
 ## Translating using the Appsemble CLI
 
 An alternative method for providing an app with translations is to use the Appsemble CLI. This is
-what the Appsemble team uses to keep the translations from Weblate, as well as the English and Dutch
-translations up to date.
+what the Appsemble group uses to keep the translations from Weblate, as well as the English and
+Dutch translations up to date.
 
 This section assumes that the entire app structure is defined locally.
 
@@ -172,7 +172,7 @@ The format used for these translation files is similar to the format shown on th
   },
   "blocks": {
     "@appsemble/form": {
-      "0.29.7": {
+      "0.30.2": {
         "submit": "An example override of the submit message in the form block."
       }
     }

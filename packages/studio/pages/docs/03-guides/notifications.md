@@ -20,9 +20,9 @@ In order to enable notifications, you must set the
 (recommended), `login` or `startup`. Doing so allows app creators to access the “Notifications”
 page, from which notifications can be manually pushed to all users who are currently subscribed.
 
-By setting the `notifications` property, users are able to set their notification preferences in the
-app settings page. After they give permission by flipping the “subscribe” switch, they are ready to
-start receiving push notifications.
+By setting the `notifications` property, app members are able to set their notification preferences
+in the app settings page. After they give permission by flipping the “subscribe” switch, they are
+ready to start receiving push notifications.
 
 ## Resource notifications
 
@@ -47,12 +47,14 @@ security:
     role: Reader
     policy: everyone
   roles:
+    Reader:
+      description: Any authenticated user.
+      permissions:
+        - '$resource:person:query'
     Admin:
       description: Administrator who can register new people.
       inherits:
-        - Reader
-    Reader:
-      description: Any authenticated user.
+        - ResourcesManager
 
 resources:
   person:
@@ -64,22 +66,18 @@ resources:
           type: string
         lastName:
           type: string
-    query:
-      roles:
-        - Reader
     create:
       hooks:
         notification:
           to:
-            - Admin # Notify users with the Admin role when a `person` resource is created.
-          subscribe: both # Users are able to both subscribe to individual resources, as well as all `person` resources being created.
+            - Admin # Notify app members with the Admin role when a `person` resource is created.
+          subscribe: both # App members are able to both subscribe to individual resources, as well as all `person` resources being created.
 
 pages:
   - name: Person List
-    roles: []
     blocks:
       - type: data-loader
-        version: 0.29.7
+        version: 0.30.2
         actions:
           onLoad:
             type: resource.query
@@ -87,8 +85,9 @@ pages:
         events:
           emit:
             data: data
+
       - type: table
-        version: 0.29.7
+        version: 0.30.2
         parameters:
           fields:
             - value: { prop: firstName }
@@ -101,43 +100,43 @@ pages:
 ```
 
 In the example above we define a notification hook that is triggered when a `person` resource is
-created. When this happens, it sends a notification to all users with the `Admin` role, as well as
-anyone who is subscribed to receive notifications for this event. Users can enable this from the
-app’s settings page.
+created. When this happens, it sends a notification to all app members with the `Admin` role, as
+well as anyone who is subscribed to receive notifications for this event. App members can enable
+this from the app’s settings page.
 
-The `both` value in the property `subscribe` means that users are able to subscribe to individual
-resources, as well as resources of the same type. It is possible to restrict this by setting this
-property to `single` to only allow users to subscribe to individual resources, and `all` to only
-allow users to subscribe to the resource type.
+The `both` value in the property `subscribe` means that app members are able to subscribe to
+individual resources, as well as resources of the same type. It is possible to restrict this by
+setting this property to `single` to only allow app members to subscribe to individual resources,
+and `all` to only allow app members to subscribe to the resource type.
 
 This same principle can be applied to `update` and `delete` resource actions. In these actions it is
 also possible to make use of the special value `$author` within the `to` property to send
-notifications to the user who initially created the resource.
+notifications to the app member who initially created the resource.
 
 ## Subscribing to individual resources
 
-In order to allow users to subscribe to individual resources, assuming the `subscribers` property in
-the corresponding hook is set to `single` or `both`, it is possible to allow users to subscribe to
-an individual resource by making use of the action `resource.subscription.subscribe`.
+In order to allow app members to subscribe to individual resources, assuming the `subscribers`
+property in the corresponding hook is set to `single` or `both`, it is possible to allow app members
+to subscribe to an individual resource by making use of the action
+`resource.subscription.subscribe`.
 
 The `resource.subscription.subscribe` action takes the values `resource` and optionally `action`.
-`resource` refers to which resource the user should subscribe to, whereas `action` refers to which
-event should trigger it. This can be either `update` or `delete`, defaulting to `update` if not
-specified.
+`resource` refers to which resource the app member should subscribe to, whereas `action` refers to
+which event should trigger it. This can be either `update` or `delete`, defaulting to `update` if
+not specified.
 
 The same principles are applied to `resource.subscription.unsubscribe`, which unsubscribes from an
 individual resource, and `resource.subscription.toggle`, which subscribes to an individual resource
-if the user wasn’t subscribed before and vice versa.
+if the app member wasn’t subscribed before and vice versa.
 
 An example of what this could look like can be found in the code snippet below.
 
 ```yaml validate pages-snippet
 pages:
   - name: Person List
-    roles: []
     blocks:
       - type: data-loader
-        version: 0.29.7
+        version: 0.30.2
         actions:
           onLoad:
             type: resource.query
@@ -145,8 +144,9 @@ pages:
         events:
           emit:
             data: data
+
       - type: table
-        version: 0.29.7
+        version: 0.30.2
         parameters:
           fields:
             - value: { prop: firstName }
@@ -189,9 +189,6 @@ resources:
           type: string
         lastName:
           type: string
-    query:
-      roles:
-        - Reader
     create:
       hooks:
         notification:

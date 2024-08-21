@@ -32,6 +32,7 @@ The studio consists of 5 pages:
 
 ### Table of contents
 
+- [Account setup](/docs/studio/account-setup)
 - [App store](/docs/studio/app-store)
 - [Block store](/docs/studio/block-store)
 - [Organizations](/docs/studio/organizations)
