@@ -11,11 +11,11 @@ export const pathItems: OpenAPIV3.PathItemObject = {
         in: 'query',
       },
     ],
-    description: 'Get all apps that are editable by the user.',
+    description: 'Get all apps from organizations that the user is in',
     operationId: 'queryCurrentUserApps',
     responses: {
       200: {
-        description: 'The list of all editable apps.',
+        description: 'The list of all apps the user is in.',
         content: {
           'application/json': {
             schema: {
