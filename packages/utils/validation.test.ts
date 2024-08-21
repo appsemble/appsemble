@@ -50,6 +50,16 @@ function createTestApp(): AppDefinition {
           { name: 'Step B', blocks: [] },
         ],
       },
+      {
+        name: 'Container Page 1',
+        type: 'container',
+        pages: [
+          {
+            name: 'Contained Page',
+            blocks: [],
+          },
+        ],
+      },
     ],
   };
 }
@@ -1590,6 +1600,14 @@ describe('validateAppDefinition', () => {
         'defaultPage',
       ]),
     ]);
+  });
+
+  it('should check if the default page exists inside contained page', async () => {
+    const result = await validateAppDefinition(
+      { ...createTestApp(), defaultPage: 'Contained Page' },
+      () => [],
+    );
+    expect(result.valid).toBe(true);
   });
 
   it('should validate the default page doesn’t specify parameters', async () => {

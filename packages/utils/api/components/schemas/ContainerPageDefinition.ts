@@ -13,23 +13,23 @@ pages:
       - name: Contained page 1
         blocks:
           - type: action-button
-            version: 0.29.6
+            version: 0.29.8
             parameters:
               icon: git-alt
             actions:
               onClick:
-                type: log
-                remapBefore: { static: from me }
+                type: link
+                to: Contained page 2
       - name: Contained page 2
         blocks:
           - type: action-button
-            version: 0.29.6
+            version: 0.29.8
             parameters:
               icon: git-alt
             actions:
               onClick:
-                type: log
-                remapBefore: { static: world }
+                type: link
+                to: Contained page 1
 \`\`\`
 `,
   required: ['type', 'pages'],

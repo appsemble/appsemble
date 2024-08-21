@@ -74,6 +74,51 @@ describe('link', () => {
     expect(navigate).toHaveBeenCalledWith('/da/page-a', {});
   });
 
+  it('should support links to pages inside container pages', async () => {
+    const action = createTestAction({
+      app: {
+        defaultPage: '',
+        pages: [
+          { name: 'Container Page', type: 'container', pages: [{ name: 'Page A', blocks: [] }] },
+        ],
+      },
+      definition: { type: 'link', to: 'Page A' },
+      params: { lang: 'da' },
+      navigate,
+    });
+
+    const link = action.href();
+    expect(link).toBe('/da/page-a');
+    const result = await action();
+    expect(result).toBeUndefined();
+    expect(navigate).toHaveBeenCalledWith('/da/page-a', {});
+  });
+
+  it('should support links to translatable pages inside container pages', async () => {
+    const appMessages: Record<string, string> = {
+      'pages.page-a': 'Side A',
+    };
+
+    const action = createTestAction({
+      app: {
+        defaultPage: '',
+        pages: [
+          { name: 'Container Page', type: 'container', pages: [{ name: 'Page A', blocks: [] }] },
+        ],
+      },
+      definition: { type: 'link', to: 'Page A' },
+      params: { lang: 'da' },
+      getAppMessage: ({ id }) => new IntlMessageFormat(appMessages[id]),
+      navigate,
+    });
+
+    const link = action.href();
+    expect(link).toBe('/da/side-a');
+    const result = await action();
+    expect(result).toBeUndefined();
+    expect(navigate).toHaveBeenCalledWith('/da/side-a', {});
+  });
+
   it('should support links to translatable pages', async () => {
     const appMessages: Record<string, string> = {
       'pages.page-a': 'Side A',
@@ -92,6 +137,29 @@ describe('link', () => {
     const result = await action();
     expect(result).toBeUndefined();
     expect(navigate).toHaveBeenCalledWith('/da/side-a', {});
+  });
+
+  it('should support links to sub-pages inside container pages', async () => {
+    const action = createTestAction({
+      app: {
+        defaultPage: '',
+        pages: [
+          {
+            name: 'Container Page',
+            type: 'container',
+            pages: [{ name: 'Page A', type: 'tabs', tabs: [{ name: 'Subpage B', blocks: [] }] }],
+          },
+        ],
+      },
+      definition: { type: 'link', to: ['Page A', 'Subpage B'] },
+      params: { lang: 'da' },
+      navigate,
+    });
+    const link = action.href();
+    expect(link).toBe('/da/page-a/subpage-b');
+    const result = await action();
+    expect(result).toBeUndefined();
+    expect(navigate).toHaveBeenCalledWith('/da/page-a/subpage-b', {});
   });
 
   it('should support links to sub-pages', async () => {
