@@ -296,8 +296,10 @@ security:
 By specifying the [`roles`](../05-reference/app.mdx#base-page-definition-roles) property for a page,
 visiting the page requires the app member to have at least one of the roles specified in this list.
 
-If a visiting user is not logged in and tries to view the page, they will instead be prompted to log
-in.
+If `$guest` is in the list of roles of the page, unauthenticated users may also view the page.
+
+If `$guest` is not in the list of roles of the page and a visiting user is not logged in and tries
+to view the page, they will instead be prompted to log in.
 
 If they are logged in but they don’t have sufficient roles, they will instead be automatically
 redirected to the first page that they are allowed to view. If no pages can be found, the user will
