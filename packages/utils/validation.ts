@@ -924,13 +924,25 @@ function validateSecurity(definition: AppDefinition, report: Report): void {
       return;
     }
 
+    const inheritedPermissions = getAppRolePermissions(security, security.guest.inherits || []);
+
+    const possibleGuestPermissions = getAppPossibleGuestPermissions(definition);
+
+    if (inheritedPermissions.some((ip) => !possibleGuestPermissions.includes(ip))) {
+      report(
+        definition,
+        'invalid security definition. Guest cannot inherit roles that contain own resource permissions',
+        ['security', 'guest', 'inherits'],
+      );
+      return;
+    }
+
     if (security.guest.permissions) {
-      const inheritedPermissions = getAppRolePermissions(security, security.guest.inherits || []);
       validatePermissions(
         definition,
         security.guest.permissions,
         inheritedPermissions,
-        getAppPossibleGuestPermissions(definition),
+        possibleGuestPermissions,
         report,
         ['security', 'guest'],
       );
@@ -1180,7 +1192,8 @@ function validateActions(definition: AppDefinition, report: Report): void {
                     permission.split(':');
                   return (
                     ['all', resourceName].includes(permissionResourceName) &&
-                    permissionResourceAction === resourceAction
+                    (permissionResourceAction === resourceAction ||
+                      (resourceAction === 'count' && permissionResourceAction === 'query'))
                   );
                 }
                 return false;

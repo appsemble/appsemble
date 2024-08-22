@@ -3641,4 +3641,33 @@ describe('validateAppDefinition', () => {
       ]),
     ]);
   });
+
+  it('should throw an error on invalid guest inherited permissions', async () => {
+    const app = createTestApp();
+
+    app.security = {
+      guest: {
+        inherits: ['test'],
+      },
+      default: {
+        role: 'test',
+      },
+      roles: {
+        test: {
+          permissions: ['$resource:person:own:get'],
+        },
+      },
+    } as Security;
+
+    const result = await validateAppDefinition(app, () => []);
+    expect(result.valid).toBe(false);
+    expect(result.errors).toStrictEqual([
+      new ValidationError(
+        'invalid security definition. Guest cannot inherit roles that contain own resource permissions',
+        app,
+        undefined,
+        ['security', 'guest', 'inherits'],
+      ),
+    ]);
+  });
 });

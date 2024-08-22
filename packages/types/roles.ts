@@ -40,18 +40,19 @@ const OrganizationAppMemberManagerPermissions = [
   OrganizationPermission.PatchAppMemberProperties,
 ];
 
-const OrganizationAppGroupManagerPermissions = [
-  OrganizationPermission.QueryGroups,
-  OrganizationPermission.CreateGroups,
-  OrganizationPermission.UpdateGroups,
-  OrganizationPermission.DeleteGroups,
-];
-
 const OrganizationAppGroupMembersManagerPermissions = [
   OrganizationPermission.CreateGroupInvites,
   OrganizationPermission.QueryGroupInvites,
   OrganizationPermission.QueryGroupMembers,
   OrganizationPermission.RemoveGroupMembers,
+];
+
+const OrganizationAppGroupManagerPermissions = [
+  ...OrganizationAppGroupMembersManagerPermissions,
+  OrganizationPermission.QueryGroups,
+  OrganizationPermission.CreateGroups,
+  OrganizationPermission.UpdateGroups,
+  OrganizationPermission.DeleteGroups,
 ];
 
 const OrganizationAppManagerPermissions = [
