@@ -1,7 +1,7 @@
 apiVersion: v2
 name: appsemble
-version: 0.29.8
-appVersion: 0.29.8
+version: 0.29.9
+appVersion: 0.29.9
 kubeVersion: '>=1.21.0'
 type: application
 description: The open source low-code app building platform
@@ -25,32 +25,31 @@ dependencies:
 annotations:
   artifacthub.io/changes: >
     - kind: added
-      description: "Block(form): Use the accept requirement of input fields to show an
-        icon in the upload button."
+      description: "Block(detail-viewer): Add support for video asset thumbnails."
     - kind: added
-      description: "Block(list): Show the filename and filetype icon in the header of
-        list items, with a header value remapping to an asset id."
+      description: "Block(form): Add support for automatic thumbnail generation on
+        video inputs."
     - kind: added
-      description: "App: Unregister service worker in app debug page."
+      description: "Block(list): Add support for displaying a thumbnail image if a
+        video asset is passed to the image property."
     - kind: added
-      description: "Server: Add Access-Control-Expose-Headers: 'Content-Disposition'
-        header to getAssetById endpoint."
+      description: "Node-utils: Add support for thumbnail assets in processResourceBody."
     - kind: added
-      description: "Utils: Add assets content type and content disposition utils."
+      description: "Server: Add a controller for asset by id HEAD requests."
     - kind: added
-      description: "Utils: Add functions for mime type operations and icons."
+      description: "Server: Validate imported messages on server side."
+    - kind: added
+      description: "Utils: Add an API path for asset by id HEAD requests."
     - kind: changed
-      description: "Block(form): Show the upload button to the right in repeated file inputs."
+      description: "Block(list): Change the request for assets in the header to HEAD."
     - kind: changed
-      description: "Block(form): Use the mime type of files in the file input to show
-        a placeholder."
-    - kind: changed
-      description: "App: Make debug page path case insensitive."
+      description: "Studio: Only export changed translations."
     - kind: fixed
-      description: "Block(form): Don't show the message for long submission if there
-        are form errors."
+      description: "Block(detail-viewer): Don't pass poster if there is no thumbnail link."
     - kind: fixed
-      description: "Server: Allow patching resources with assets by name."
+      description: "Server: Use correct permission for asset delete permission verification."
+    - kind: fixed
+      description: "Server: Verify permissions for creating assets."
   artifacthub.io/license: LGPL-3.0-only
   artifacthub.io/links: |
     - name: Appsemble Studio

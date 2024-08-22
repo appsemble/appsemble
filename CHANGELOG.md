@@ -2,6 +2,30 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.29.9](https://gitlab.com/appsemble/appsemble/-/releases/0.29.9)] - 2024-08-22
+
+### Added
+
+- Block(`detail-viewer`): Add support for video asset thumbnails.
+- Block(`form`): Add support for automatic thumbnail generation on video inputs.
+- Block(`list`): Add support for displaying a thumbnail image if a video asset is passed to the
+  image property.
+- Node-utils: Add support for thumbnail assets in `processResourceBody`.
+- Server: Add a controller for asset by id `HEAD` requests.
+- Server: Validate imported messages on server side.
+- Utils: Add an API path for asset by id `HEAD` requests.
+
+### Changed
+
+- Block(`list`): Change the request for assets in the header to `HEAD`.
+- Studio: Only export changed translations.
+
+### Fixed
+
+- Block(`detail-viewer`): Don't pass poster if there is no thumbnail link.
+- Server: Use correct permission for asset delete permission verification.
+- Server: Verify permissions for creating assets.
+
 ## \[[0.29.8](https://gitlab.com/appsemble/appsemble/-/releases/0.29.8)] - 2024-08-08
 
 ### Added

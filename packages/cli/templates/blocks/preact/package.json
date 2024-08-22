@@ -2,8 +2,8 @@
   "private": true,
   "type": "module",
   "dependencies": {
-    "@appsemble/preact": "0.29.8",
-    "@appsemble/sdk": "0.29.8",
+    "@appsemble/preact": "0.29.9",
+    "@appsemble/sdk": "0.29.9",
     "preact": "^10.0.0"
   }
 }

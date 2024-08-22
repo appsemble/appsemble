@@ -1,1 +1,0 @@
-Only export changed translations.
