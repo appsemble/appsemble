@@ -78,7 +78,7 @@ The above resource will be recognized as an object which can be referred to from
 `/api/apps/{appId}/resources/person/{id?}`, supporting basic `CRUD` (create, read, update and
 delete) actions.
 
-> Note: By default all resource actions are private. In order to access these, refer to
+> Note: By default all resource actions are public. In order to secure these, refer to
 > [Securing resources](#securing-resources).
 
 ## type
@@ -117,7 +117,7 @@ The available resource actions are:
 - **resource.subscription.status**: Fetch the status of a resource notifications subscription. (See
   [notifications](notifications.md).)
 
-> Note: By default all resource calls are private.
+> Note: By default all resource calls are public.
 
 ## External resources
 
@@ -218,7 +218,6 @@ resources:
         description:
           type: string
     query:
-      roles: [$public] # This makes all person resource actions public by default.
       query:
         object.from: "$filter: lastName eq 'foo'" # Resolves to /resources/person?$filter=lastName eq 'foo'
 
@@ -264,8 +263,6 @@ resource. Let’s look at the following example from the Triggers app:
 ```yaml copy validate resources-snippet
 resources:
   owner:
-    roles:
-      - $public
     schema:
       type: object
       additionalProperties: false
@@ -276,8 +273,6 @@ resources:
         - name
 
   housePet:
-    roles:
-      - $public
     references:
       ownerId:
         resource: owner
@@ -302,8 +297,6 @@ resources:
         - ownerId
 
   farmPet:
-    roles:
-      - $public
     references:
       ownerId:
         resource: owner
@@ -329,8 +322,6 @@ resources:
         - ownerId
 
   wildPet:
-    roles:
-      - $public
     references:
       ownerId:
         resource: owner
@@ -445,13 +436,13 @@ Appsemble currently supports only the three cascading strategies listed above.
 
 ## Views
 
-When using roles for resources to secure the access to a resource it is usually done to protect
-sensitive data that you don’t want to expose to everyone, such as names or email addresses.
-Sometimes it is still desirable to know about parts of a resource despite of this sensitive data.
-For this purpose resource _views_ can be used.
+When using resource permissions for resources to secure the access to a resource it is usually done
+to protect sensitive data that you don’t want to expose to everyone, such as names or email
+addresses. Sometimes it is still desirable to know about parts of a resource despite of this
+sensitive data. For this purpose resource _views_ can be used.
 
-Views are alternate ways to display resources, using separate sets of roles. The output of these API
-calls can then be modified using [remappers](../04-remappers/).
+Views are alternate ways to display resources, using separate sets of resource view permissions. The
+output of these API calls can then be modified using [remappers](../04-remappers/).
 
 Let’s use an example of a resource that tracks reservations for a restaurant. Our resource contains
 the name of the person who placed the reservation, as well as the table that has been reserved. Only
@@ -459,8 +450,8 @@ the creator of the resource is allowed to view their resource, otherwise persona
 get leaked.
 
 When making reservations, however, it is still helpful to know which tables are already reserved. To
-accomplish this, views can be used. A view has a set of roles, as well as a
-[remapper](../04-remappers/) that’s used to transform the output.
+accomplish this, views can be used. A view has a [remapper](../04-remappers/) that’s used to
+transform the output.
 
 In this case only the resource ID, table name and the creation date should be included. The
 `object.from` remapper is suitable for this:
@@ -468,12 +459,6 @@ In this case only the resource ID, table name and the creation date should be in
 ```yaml validate resources-snippet
 resources:
   reservation:
-    query:
-      roles:
-        - $author
-    create:
-      roles:
-        - User
     schema:
       type: object
       additionalProperties: false
@@ -486,8 +471,6 @@ resources:
           type: string
     views:
       public:
-        roles:
-          - $public
         remap:
           object.from:
             id:
@@ -713,11 +696,43 @@ These functions have only been implemented for strings, not for collections.
 
 ## Securing resources
 
-All resources and their corresponding actions are private by default. This means that in order to
-provide access to these actions, the `roles` property or an action’s `roles` property must be
-defined, specifying the roles that the user needs to have. This makes it possible to, for example,
-restrict access to other user(s) resources by only allowing users to interact with the resources
-they made themselves.
+All resources and their corresponding actions are public by default. To secure the access to these
+resources, you can define a security definition in your app.
+
+You can define what resource permissions unauthenticated users have by using the `guest` property of
+the security definition like so:
+
+```yaml validate security-snippet
+security:
+  guest:
+    permissions:
+      - '$resource:reservation:query:public'
+      - '$resource:reservation:get:public'
+```
+
+You can also define what resource permissions different app member roles have by using the `roles`
+property of the security definition like so:
+
+```yaml validate security-snippet
+security:
+  guest:
+    permissions:
+      - '$resource:reservation:query:public'
+      - '$resource:reservation:get:public'
+  roles:
+    User:
+      permissions:
+        - '$resource:reservation:create'
+        - '$resource:reservation:own:query'
+        - '$resource:reservation:own:get'
+        - '$resource:reservation:query:public'
+        - '$resource:reservation:get:public'
+  default:
+    role: User
+```
+
+This makes it possible to, for example, restrict access to other user(s) resources by only allowing
+users to interact with the resources they made themselves.
 
 For more information about this, please refer to [this page](./security.md)
 

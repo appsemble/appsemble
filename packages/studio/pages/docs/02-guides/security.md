@@ -4,7 +4,7 @@
 
 - [Introduction](#introduction)
 - [App Privacy](#app-privacy)
-- [App account management](#app-account-management)
+- [App accounts management](#app-accounts-management)
 - [Security Definition](#security-definition)
   - [Groups](#groups)
 - [Root app roles](#root-app-roles)
@@ -40,7 +40,7 @@ Apps that aren’t marked as public will have a
 [`noindex` meta tag](https://developers.google.com/search/docs/crawling-indexing/block-indexing), as
 well as a `robots.txt` file, which both prevent search engines from indexing pages of the app.
 
-## App account management
+## App accounts management
 
 There are several methods available to secure access to apps. By going to the “Secrets” page from
 within the Appsemble Studio you can determine which login methods would be available. By default
@@ -48,10 +48,10 @@ Appsemble Studio’s OAuth2 login option is enabled, allowing users to login usi
 Studio account. This method can be useful for apps where it’s expected that users already have
 Appsemble accounts since the same account can be reused.
 
-The second login option allows for users to login using a password and email address. When enabled,
-a login form appears on the login page from which a user can login, register a new account or reset
-their password. This method also allows usage of the
-[`user.login` and `user.register` actions](../05-reference/action.mdx#user.login).
+The second login option allows for app members to login using a password and email address. When
+enabled, a login form appears on the login page from which an app member can login, register a new
+account or reset their password. This method also allows usage of the
+[`app.member.login` and `app.member.register` actions](../05-reference/action.mdx#app.member.login).
 
 This login option can be customized by naming pages `Login` and `Register`. Doing so will display
 these pages instead of the default app login and register pages.
@@ -59,19 +59,19 @@ these pages instead of the default app login and register pages.
 The third login option allows for setting up your own login methods using [OAuth2](oauth2.md) or
 [SAML2.0](saml.md) which are described in more detail in their own pages.
 
-Users who have logged into your app can be viewed from the “Users” page. From here the roles of
-users can be adjusted, as well as view and edit any custom properties associated with the user as
-set by the app.
+App members who have logged into your app can be viewed from the “App Members” page. From here the
+roles of app members can be adjusted, as well as view and edit any custom properties associated with
+the app member as set by the app.
 
 ## Security Definition
 
 The security definition, as defined [here](../05-reference/app.mdx#security-definition), can be used
-to define the roles that are used within the app. The security definition also determines how the
-default role is assigned.
+to define the roles that are used within the app as well as the app permissions each role has. The
+security definition also determines how the default role is assigned. The security definition can
+also specify permissions for unauthenticated users with the `guest` property.
 
-The `policy` property can be set to `everyone` to give everyone the default role, `organization` to
-only do this for users being in the same organization as the app and `invite` which does not assign
-roles by default at all.
+The `policy` property can be set to `everyone` to give everyone the default role or `organization`
+to only do this for users being in the same organization as the app.
 
 > **Important**: When [OAuth2](oauth2.md) or [SAML2.0](saml.md) is used in the app, you must set the
 > policy to `everyone`. This will specifically allow every configured authentication method on the
@@ -80,16 +80,200 @@ roles by default at all.
 > option) in the secrets page. If this option is enabled, any Appsemble user account is able to log
 > in to the app and will receive the default role.
 
-The roles listed in the `roles` object may be used to restrict specific parts of an app. This can be
-done by adding a `roles` property containing a list of roles that may access the property of the app
-it has been applied to. Depending on which property this is applied to, different behavior can be
-observed.
+### Permissions
 
-> Note: Every role that inherits another role will be considered sufficient when the inherited role
-> is listed as required.
->
-> For example: If the “Admin” role inherits the “Reader” role and a page requires the “Reader” role,
-> users with the “Admin” role will be able to access the page.
+Each of the roles listed in the `roles` object as well as the `guest` object can have different app
+permissions assigned to them. Specifying permissions for a role gives app members with that role
+access to different operations within the app. Specifying permissions for `guest` gives access to
+unauthenticated users to different operations within the app.
+
+Here are all the available permissions, predefined in the system, that can be assigned to roles:
+
+- `$member:invite`
+- `$member:query`
+- `$member:delete`
+- `$member:role:update`
+- `$member:properties:patch`
+
+
+- `$group:query`
+- `$group:create`
+- `$group:update`
+- `$group:delete`
+
+
+- `$group:member:invite`
+- `$group:member:query`
+- `$group:member:delete`
+- `$group:member:role:update`
+
+
+- `$resource:all:create`
+- `$resource:all:query`
+- `$resource:all:get`
+- `$resource:all:update`
+- `$resource:all:patch`
+- `$resource:all:delete`
+
+
+- `$resource:all:own:query`
+- `$resource:all:own:get`
+- `$resource:all:own:update`
+- `$resource:all:own:patch`
+- `$resource:all:own:delete`
+
+Apart from the predefined permissions, each app can have custom permissions, based on the resources
+defined in it and their views as follows:
+
+- `$resource:<resource-name>:create`
+- `$resource:<resource-name>:query`
+- `$resource:<resource-name>:get`
+- `$resource:<resource-name>:update`
+- `$resource:<resource-name>:patch`
+- `$resource:<resource-name>:delete`
+
+
+- `$resource:<resource-name>:own:query`
+- `$resource:<resource-name>:own:get`
+- `$resource:<resource-name>:own:update`
+- `$resource:<resource-name>:own:patch`
+- `$resource:<resource-name>:own:delete`
+
+
+- `$resource:<resource-name>:query:<view-name>`
+- `$resource:<resource-name>:get:<view-name>`
+
+
+- `$resource:all:query:<view-name>`
+- `$resource:all:get:<view-name>`
+
+#### Resource Permissions
+
+Resource permissions can be scoped to a certain resource or be defined for all resources in the app.
+
+They can also be defined for resources that the app member has created themselves with the `:own`
+suffix as shown in the list of permissions above. There are neither
+`$resource:<resource-name>:own:create`, nor `$resource:all:own:create` permissions because owning a
+resource does not matter for its creation. `:own` permissions cannot be defined on the `guest`, nor
+can they be inherited by the `guest` from another role because guests do not have an account and
+ownership cannot be tracked for them.
+
+There are also resource view permissions for the `get` and `query` resource actions, that scope the
+permissions down to a certain view, defined on a resource. There are no `:own` permissions with
+views because whoever created the resource can see all of its data.
+
+#### Permissions Examples
+
+- `$member:invite` - allows the role to invite new members to the app.
+
+
+- `$resource:<resource-name>:own:update` - allows the role to perform the `update` resource action
+on `<resource-name>` resources that they have created themselves.
+
+
+- `$resource:all:own:update` - allows the role to perform the `update` resource action on all
+resources within the app that they have created themselves. This supersedes
+`$resource:<resource-name>:own:update` permissions.
+
+
+- `$resource:<resource-name>:update` - allows the role to perform the `update` resource action on
+`<resource-name>` resources. This supersedes `$resource:<resource-name>:own:update` permissions.
+
+
+- `$resource:all:update` - allows the role to perform the `update` resource action on all resources
+within the app. This supersedes `$resource:<resource-name>:own:update`, `$resource:all:own:update`
+and `$resource:<resource-name>:update` permissions.
+
+
+- `$resource:<resource-name>:get:<view-name>` - allows the role to perform the `get` resource action
+on `<resource-name>` resources with the `<view-name>` view.
+
+
+- `$resource:all:get:<view-name>` - allows the role to get all resources within the app with the
+`<view-name>` view. This supersedes `$resource:<resource-name>:get:<view-name>` permissions.
+
+
+- `$resource:all:get` - allows the role to perform the `get` resource action on all resources in the
+app without a specific view. This supersedes `$resource:<resource-name>:get`,
+`$resource:<resource-name>:get:<view-name>` and `$resource:all:get:<view-name>` permissions.
+
+### Roles
+
+Roles within an app define app member access to certain parts of the app.
+
+Roles can inherit from other roles, either predefined ones or custom ones defined in the app.
+Inheriting a role gives a role all the permissions of the inherited role. It also gives it access to
+parts of the app to which the inherited role has access to.
+
+For example: If the “Admin” role inherits the “Reader” role and a page requires the “Reader” role,
+app members with the “Admin” role will be able to access the page.
+
+#### Predefined App Roles
+
+For convenience, there are some roles predefined in the system, each having a set of predefined
+permissions assigned to them, from which the guest property and custom roles defined in the app can
+inherit from. Here are all predefined app roles, along with their permissions:
+
+- `Member`
+
+
+- `MembersManager`
+  - `$member:invite`
+  - `$member:query`
+  - `$member:delete`
+  - `$member:role:update`
+  - `$member:properties:patch`
+
+
+- `GroupMembersManager`
+  - `$group:member:invite`
+  - `$group:member:query`
+  - `$group:member:delete`
+  - `$group:member:role:update`
+
+
+- `GroupsManager`
+  - `$group:member:invite`
+  - `$group:member:query`
+  - `$group:member:delete`
+  - `$group:member:role:update`
+  - `$group:query`
+  - `$group:create`
+  - `$group:update`
+  - `$group:delete`
+
+
+- `ResourcesManager`
+  - `$resource:all:create`
+  - `$resource:all:query`
+  - `$resource:all:get`
+  - `$resource:all:update`
+  - `$resource:all:patch`
+  - `$resource:all:delete`
+
+
+- `Owner`
+  - `$member:invite`
+  - `$member:query`
+  - `$member:delete`
+  - `$member:role:update`
+  - `$member:properties:patch`
+  - `$group:member:invite`
+  - `$group:member:query`
+  - `$group:member:delete`
+  - `$group:member:role:update`
+  - `$group:query`
+  - `$group:create`
+  - `$group:update`
+  - `$group:delete`
+  - `$resource:all:create`
+  - `$resource:all:query`
+  - `$resource:all:get`
+  - `$resource:all:update`
+  - `$resource:all:patch`
+  - `$resource:all:delete`
+
+Predefined roles cannot be overwritten in the app definition, they can only be inherited from.
 
 The security definition below is used in the examples on this page.
 
@@ -107,64 +291,10 @@ security:
         - Reader
 ```
 
-### Groups
-
-In addition to roles, an app may also use groups for securing the app. This can be defined using the
-`groups` property of the security definition.
-
-```yaml copy validate security-snippet
-security:
-  default:
-    role: Reader
-    policy: everyone
-  roles:
-    Reader:
-      description: Anyone viewing the app.
-    Admin:
-      description: Administrators of the app.
-      inherits:
-        - Reader
-```
-
-For more details, see the [groups guide](groups.md) and the
-[groups reference documentation](../05-reference/app.mdx#groups-definition)
-
-## Root app roles
-
-By specifying the [`roles`](../05-reference/app.mdx#app-definition-roles) property to the root of
-the app definition, each user must at least have one of these roles in order to view the app.
-Consequently, each page and block will use this property as its default implementation unless it is
-overridden by specifying another `roles` list at that level.
-
-```yaml validate
-name: Example App
-defaultPage: Example Page
-
-security:
-  default:
-    role: Reader
-    policy: everyone
-  roles:
-    Reader:
-      description: Anyone viewing the app.
-
-pages:
-  - name: Example Page
-    blocks:
-      - type: action-button
-        version: 0.29.11
-        parameters:
-          icon: home
-```
-
-> The example above signifies that everyone using the app must be logged-in in order to receive the
-> `Reader` role. This will result in each page that doesn’t have its own `roles` property defined
-> showing a login page if the user is not currently authenticated.
-
-## Page app roles
+### Restricting Pages
 
 By specifying the [`roles`](../05-reference/app.mdx#base-page-definition-roles) property for a page,
-visiting the page requires the user to have at least one of the roles specified in this list.
+visiting the page requires the app member to have at least one of the roles specified in this list.
 
 If a visiting user is not logged in and tries to view the page, they will instead be prompted to log
 in.
