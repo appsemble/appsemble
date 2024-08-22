@@ -538,6 +538,24 @@ describe('kubernetes', () => {
       expect(configs[0].url).toBe(
         '/apis/networking.k8s.io/v1/namespaces/test/ingresses/www-example-com',
       );
+
+      const collection3 = await AppCollection.create({
+        name: 'Test Collection 3',
+        expertName: 'Test Expert',
+        expertDescription: 'Test Description',
+        OrganizationId: 'org',
+        headerImage: Buffer.from(''),
+        headerImageMimeType: 'image/png',
+        expertProfileImage: Buffer.from(''),
+        expertProfileImageMimeType: 'image/png',
+        visibility: 'public',
+      });
+
+      configs.length = 0;
+
+      await collection3.destroy();
+
+      expect(configs).toHaveLength(0);
     });
 
     it("should delete the app's ingress when an app's domain is changed and create a new one", async () => {
