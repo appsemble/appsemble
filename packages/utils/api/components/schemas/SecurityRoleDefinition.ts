@@ -27,7 +27,6 @@ of the referenced role.
     },
     permissions: {
       type: 'array',
-      minItems: 1,
       description: 'Specific permissions within the app, which this role should have',
       items: {
         type: 'string',

@@ -18,7 +18,6 @@ Note that this role must exist.
     },
     permissions: {
       type: 'array',
-      minItems: 1,
       description: 'Specific permissions within the app, which unauthenticated users should have',
       items: {
         type: 'string',

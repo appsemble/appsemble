@@ -1196,6 +1196,17 @@ function validateActions(definition: AppDefinition, report: Report): void {
                       (resourceAction === 'count' && permissionResourceAction === 'query'))
                   );
                 }
+
+                if (ownResourcePermissionPattern.test(permission)) {
+                  const [, permissionResourceName, , permissionResourceAction] =
+                    permission.split(':');
+                  return (
+                    ['all', resourceName].includes(permissionResourceName) &&
+                    (permissionResourceAction === resourceAction ||
+                      (resourceAction === 'count' && permissionResourceAction === 'query'))
+                  );
+                }
+
                 return false;
               })
             ) {
