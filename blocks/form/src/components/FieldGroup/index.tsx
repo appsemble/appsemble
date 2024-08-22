@@ -62,12 +62,17 @@ interface FieldGroupProps {
     fieldName: string,
     params: { ref: MutableRef<HTMLElement>; error: string; label: string },
   ) => void;
+
+  readonly addThumbnail: (thumbnail: File) => void;
+
+  readonly removeThumbnail: (thumbnail: File) => void;
 }
 
 /**
  * A group of form fields.
  */
 export function FieldGroup({
+  addThumbnail,
   disabled,
   display = 'flex',
   errors,
@@ -76,6 +81,7 @@ export function FieldGroup({
   formValues,
   name,
   onChange,
+  removeThumbnail,
   setFieldErrorLink,
 }: FieldGroupProps): VNode {
   const handleChange = useCallback(
@@ -106,6 +112,7 @@ export function FieldGroup({
     <div className={getFieldsContainerClass()}>
       {fields.map((f) => (
         <FormInput
+          addThumbnail={addThumbnail}
           className={String(
             classNames({
               [styles['column-span']]:
@@ -122,6 +129,7 @@ export function FieldGroup({
           key={f.name}
           name={name ? `${name}.${f.name}` : f.name}
           onChange={handleChange}
+          removeThumbnail={removeThumbnail}
           setFieldErrorLink={setFieldErrorLink}
         />
       ))}

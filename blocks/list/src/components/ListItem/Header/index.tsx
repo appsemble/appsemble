@@ -63,7 +63,7 @@ export function HeaderComponent({ index, item }: HeaderComponentProps): VNode {
       if (headerValue && normalized.test(headerValue) && !fetched) {
         const headerValueAssetUrl = asset(headerValue as string);
         try {
-          const response = await fetch(headerValueAssetUrl);
+          const response = await fetch(headerValueAssetUrl, { method: 'HEAD' });
           if (response.ok) {
             const contentType = response.headers.get('Content-Type');
             setFileIcon(getMimeTypeIcon(getMimeTypeCategory(contentType)));
@@ -73,10 +73,10 @@ export function HeaderComponent({ index, item }: HeaderComponentProps): VNode {
               setHeaderValue(getFilenameFromContentDisposition(contentDisposition));
             }
           }
-          setFetched(true);
         } catch {
           // Do nothing
         }
+        setFetched(true);
       }
     })();
   }, [asset, item, headerValue, fetched]);

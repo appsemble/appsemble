@@ -26,6 +26,8 @@ interface FormInputProps extends Omit<InputProps<any, Field>, 'dirty' | 'errorLi
     fieldName: string,
     params: { ref: MutableRef<HTMLElement>; error: string; label: string },
   ) => void;
+  readonly addThumbnail: (thumbnail: File) => void;
+  readonly removeThumbnail: (thumbnail: File) => void;
 }
 
 /**

@@ -36,7 +36,7 @@ export const preProcessCSV: PreValidatePropertyFunction = (instance, key, schema
       break;
     }
     case 'array': {
-      const result = JSON.parse(value);
+      const result = JSON.parse(value || '[]');
       if (Array.isArray(result)) {
         parent[key] = result;
       }

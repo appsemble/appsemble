@@ -24,12 +24,17 @@ interface FieldsetEntryProps extends InputProps<Values, Fieldset> {
     fieldName: string,
     params: { ref: MutableRef<any>; error: string; label: string },
   ) => void;
+
+  readonly addThumbnail: (thumbnail: File) => void;
+
+  readonly removeThumbnail: (thumbnail: File) => void;
 }
 
 /**
  * An input element for a simple fieldset entry.
  */
 export function FieldsetEntry({
+  addThumbnail,
   disabled,
   display,
   error,
@@ -39,6 +44,7 @@ export function FieldsetEntry({
   index,
   name,
   onChange,
+  removeThumbnail,
   setFieldErrorLink,
 }: FieldsetEntryProps): VNode {
   const onChangeIndex = useCallback(
@@ -50,6 +56,7 @@ export function FieldsetEntry({
 
   return (
     <FieldGroup
+      addThumbnail={addThumbnail}
       disabled={disabled}
       display={display}
       errors={error as FieldErrorMap}
@@ -58,6 +65,7 @@ export function FieldsetEntry({
       formValues={formValues}
       name={name}
       onChange={index == null ? onChange : onChangeIndex}
+      removeThumbnail={removeThumbnail}
       setFieldErrorLink={setFieldErrorLink}
     />
   );

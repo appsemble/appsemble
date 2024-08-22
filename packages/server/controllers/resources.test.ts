@@ -3251,6 +3251,13 @@ describe('createResource', () => {
                       },
                     ],
                   },
+                  "$thumbnails": {
+                    "items": {
+                      "format": "binary",
+                      "type": "string",
+                    },
+                    "type": "array",
+                  },
                   "array": {
                     "type": "array",
                   },
@@ -4870,6 +4877,13 @@ describe('updateResource', () => {
                         "type": "string",
                       },
                     ],
+                  },
+                  "$thumbnails": {
+                    "items": {
+                      "format": "binary",
+                      "type": "string",
+                    },
+                    "type": "array",
                   },
                   "array": {
                     "type": "array",

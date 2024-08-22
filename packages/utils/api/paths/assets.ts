@@ -194,6 +194,16 @@ export const paths: OpenAPIV3.PathsObject = {
         },
       },
     },
+    head: {
+      tags: ['asset'],
+      description: 'Get the headers for a single asset',
+      operationId: 'getAssetHeadersById',
+      responses: {
+        200: {
+          description: 'The asset that matches the given id.',
+        },
+      },
+    },
     delete: {
       tags: ['asset'],
       description: 'Remove an existing asset',
