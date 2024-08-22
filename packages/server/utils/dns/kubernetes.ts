@@ -570,11 +570,15 @@ export async function reconcileDNS({ dryRun = true }): Promise<void> {
   }
 
   const appDomains = new Set<string>();
-  for await (const { domain } of iterTable(App, {
-    attributes: ['domain'],
+  const appDomainCertificates = new Map<string, { sslKey: string; sslCertificate: string }>();
+  for await (const { domain, sslCertificate, sslKey } of iterTable(App, {
+    attributes: ['domain', 'sslKey', 'sslCertificate'],
     where: { [Op.and]: [{ domain: { [Op.not]: null } }, { domain: { [Op.not]: '' } }] },
   })) {
     appDomains.add(domain);
+    if (sslCertificate && sslKey) {
+      appDomainCertificates.set(domain, { sslCertificate, sslKey });
+    }
   }
 
   const appCollectionDomains = new Set<string>();
@@ -607,12 +611,21 @@ export async function reconcileDNS({ dryRun = true }): Promise<void> {
     logger.info(`Deleted extra ingress ${name}`);
   }
   const createIngress = dryRun ? () => Promise.resolve() : await createIngressFunction();
+  const createSSLSecret = dryRun ? () => Promise.resolve() : await createSSLSecretFunction();
   for (const name of missingIngresses) {
     logger.info(`Creating missing ingress ${name}${dryRun ? ' (Dry run)' : ''}`);
     if (dryRun) {
       continue;
     }
-    await createIngress(name);
+    const redirect =
+      name.startsWith('www.') && appCollectionDomains.has(name.slice(4))
+        ? name.slice(4)
+        : undefined;
+    await createIngress(name, Boolean(appDomainCertificates.has(name)), redirect);
+    if (appDomainCertificates.has(name)) {
+      const { sslCertificate, sslKey } = appDomainCertificates.get(name);
+      await createSSLSecret(name, sslCertificate, sslKey);
+    }
     logger.info(`Created missing ingress ${name}`);
   }
 }
