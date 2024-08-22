@@ -61,7 +61,7 @@ export function CreateAppButton({ className }: { readonly className?: string }):
     }: typeof defaultValues) => {
       const { id, resources } = templates[selectedTemplate];
 
-      const { data } = await axios.post<App>('/api/templates', {
+      const { data } = await axios.post<App>('/api/app-templates', {
         templateId: id,
         name,
         description,
