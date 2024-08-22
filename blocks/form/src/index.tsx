@@ -20,6 +20,9 @@ const goToRef = (ref: MutableRef<any>): void => {
   ref?.current?.focus({ preventScroll: true });
 };
 
+const checkFileEquality = (file: File, otherFile: File): boolean =>
+  file.name === otherFile.name && file.size === otherFile.size && file.type === otherFile.type;
+
 bootstrap(
   ({
     actions,
@@ -65,6 +68,7 @@ bootstrap(
     const [lastChanged, setLastChanged] = useState<string>(null);
     const [triedToSubmit, setTriedToSubmit] = useState<boolean>(false);
     const [longSubmission, setLongSubmission] = useState<boolean>(false);
+    const [thumbnails, setThumbnails] = useState<File[]>([]);
 
     const errors = useMemo(
       () =>
@@ -207,7 +211,11 @@ bootstrap(
         }, longSubmissionDuration);
 
         actions
-          .onSubmit({ ...(data as Record<string, unknown>), ...values })
+          .onSubmit({
+            ...(data as Record<string, unknown>),
+            ...values,
+            $thumbnails: thumbnails,
+          })
           .catch((submitActionError: unknown) => {
             // Log the error to the console for troubleshooting.
             // eslint-disable-next-line no-console
@@ -284,6 +292,7 @@ bootstrap(
       formErrors,
       longSubmissionDuration,
       submitting,
+      thumbnails,
       triedToSubmit,
       utils,
       values,
@@ -412,6 +421,19 @@ bootstrap(
       }
     };
 
+    const addThumbnail = (thumbnail: File): void => {
+      setThumbnails((oldThumbnails) => [...oldThumbnails, thumbnail]);
+    };
+
+    const removeThumbnail = (thumbnail: File): void => {
+      setThumbnails((oldThumbnails) => {
+        const firstExistingIndex = oldThumbnails.findIndex((existingThumbnail) =>
+          checkFileEquality(existingThumbnail, thumbnail),
+        );
+        return oldThumbnails.splice(firstExistingIndex, 1);
+      });
+    };
+
     return (
       <Form
         className={`${fullWidth ? styles['root-full-width'] : styles.root} is-flex`}
@@ -438,6 +460,7 @@ bootstrap(
             .filter((f) => f.show === undefined || utils.remap(f.show, values))
             .map((f) => (
               <FormInput
+                addThumbnail={addThumbnail}
                 className={`mb-4 ${classNames({
                   [styles.dense]: dense,
                   [styles['column-span']]:
@@ -457,6 +480,7 @@ bootstrap(
                 name={f.name}
                 onChange={onChange}
                 readOnly={Boolean(utils.remap(f.readOnly, values[f.name], { values }))}
+                removeThumbnail={removeThumbnail}
                 setFieldErrorLink={setFieldErrorLink}
               />
             ))}

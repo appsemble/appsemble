@@ -1,6 +1,8 @@
 import { useBlock } from '@appsemble/preact';
 import { ImageComponent } from '@appsemble/preact-components';
+import { getMimeTypeCategory, normalized } from '@appsemble/utils';
 import { type VNode } from 'preact';
+import { useEffect, useState } from 'preact/hooks';
 
 import { type Image as ImageInterface } from '../../../../block.js';
 
@@ -31,8 +33,45 @@ export function Image({
   } = useBlock();
 
   const alternate = remap(alt, item, { index }) as string;
-  const img = remap(file, item, { index }) as string;
-  const src = /^(https?:)?\/\//.test(img) ? img : asset(img);
+  const value = remap(file, item, { index }) as string;
+
+  const [src, setSrc] = useState('');
+  const [fetched, setFetched] = useState(false);
+
+  useEffect(() => {
+    (async () => {
+      if (value) {
+        if (/^(https?:)?\/\//.test(value)) {
+          setSrc(value);
+        } else if (normalized.test(value) && !fetched) {
+          setSrc(asset(value as string));
+
+          try {
+            const response = await fetch(asset(value as string), { method: 'HEAD' });
+            if (response.ok) {
+              const contentType = response.headers.get('Content-Type');
+              if (contentType && getMimeTypeCategory(contentType) === 'video') {
+                try {
+                  const thumbnailResponse = await fetch(asset(`${value}-thumbnail`), {
+                    method: 'HEAD',
+                  });
+
+                  if (thumbnailResponse.ok) {
+                    setSrc(asset(`${value}-thumbnail`));
+                  }
+                } catch {
+                  // Do nothing
+                }
+              }
+            }
+          } catch {
+            // Do nothing
+          }
+          setFetched(true);
+        }
+      }
+    })();
+  }, [asset, item, fetched, value]);
 
   return <ImageComponent alt={alternate} id={index} rounded={rounded} size={size} src={src} />;
 }

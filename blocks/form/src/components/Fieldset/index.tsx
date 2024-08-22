@@ -24,12 +24,15 @@ interface FieldsetProps extends InputProps<Values | Values[], FieldsetType> {
     fieldName: string,
     params: { ref: MutableRef<any>; error: string; label: string },
   ) => void;
+  readonly addThumbnail: (thumbnail: File) => void;
+  readonly removeThumbnail: (thumbnail: File) => void;
 }
 
 /**
  * An input element for a fieldset
  */
 export function Fieldset({
+  addThumbnail,
   className,
   disabled,
   display = 'flex',
@@ -40,6 +43,7 @@ export function Fieldset({
   name,
   onChange,
   readOnly,
+  removeThumbnail,
   setFieldErrorLink,
 }: FieldsetProps): VNode {
   const { utils } = useBlock();
@@ -106,6 +110,7 @@ export function Fieldset({
                   )}
                 </div>
                 <FieldsetEntry
+                  addThumbnail={addThumbnail}
                   disabled={disabled}
                   display={display}
                   error={errors?.[index]}
@@ -116,6 +121,7 @@ export function Fieldset({
                   index={index}
                   name={`${name}.${index}`}
                   onChange={changeArray}
+                  removeThumbnail={removeThumbnail}
                   setFieldErrorLink={(fieldName, params) =>
                     setFieldErrorLink(`${field.name}.${index}.${fieldName}`, params)
                   }
@@ -133,6 +139,7 @@ export function Fieldset({
         </>
       ) : (
         <FieldsetEntry
+          addThumbnail={addThumbnail}
           disabled={disabled}
           error={error}
           errorLinkRef={errorLinkRef}
@@ -140,6 +147,7 @@ export function Fieldset({
           formValues={formValues}
           name={name}
           onChange={onChange}
+          removeThumbnail={removeThumbnail}
           setFieldErrorLink={setFieldErrorLink}
         />
       )}

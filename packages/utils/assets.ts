@@ -84,8 +84,10 @@ export function getMimeTypeIcon(category: MimeTypeCategory): FileIconName {
 export function getFilenameFromContentDisposition(contentDisposition: string): string | null {
   const filenameRegex = /filename="([^"]+)"/;
   const matches = filenameRegex.exec(contentDisposition);
+
   if (matches != null && matches[1]) {
     return matches[1].replaceAll(/["']/g, '');
   }
+
   return null;
 }

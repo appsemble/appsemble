@@ -144,12 +144,49 @@ export function processResourceBody(
   const assetIdMap = new Map<number, string>();
   const assetUsedMap = new Map<number, boolean>();
   const reusedAssets = new Set<string>();
-  const preparedAssets = assets.map<PreparedAsset>(({ contents, filename, mime }, index) => {
-    const id = randomUUID();
-    assetIdMap.set(index, id);
-    assetUsedMap.set(index, false);
-    return { data: contents, filename, id, mime };
-  });
+
+  const thumbnailAssets = [];
+  const regularAssets = [];
+
+  const thumbnailAssetSuffix = '-thumbnail.png';
+
+  for (const asset of assets) {
+    if (asset.filename?.endsWith(thumbnailAssetSuffix)) {
+      thumbnailAssets.push(asset);
+    } else {
+      regularAssets.push(asset);
+    }
+  }
+
+  const preparedRegularAssets = regularAssets.map<PreparedAsset>(
+    ({ contents, filename, mime }, index) => {
+      const id = randomUUID();
+      assetIdMap.set(index, id);
+      assetUsedMap.set(index, false);
+      return { data: contents, filename, id, mime };
+    },
+  );
+
+  const usedPreparedRegularAssets: string[] = [];
+  const preparedThumbnailAssets = thumbnailAssets.map<PreparedAsset>(
+    ({ contents, filename, mime }, index) => {
+      const regularAsset = preparedRegularAssets.find(
+        (ra) =>
+          !usedPreparedRegularAssets.includes(ra.id) &&
+          ra.filename.startsWith(filename.replace(thumbnailAssetSuffix, '')),
+      );
+
+      const id = regularAsset ? `${regularAsset.id}-thumbnail` : randomUUID();
+      usedPreparedRegularAssets.push(regularAsset?.id);
+
+      assetIdMap.set(index + preparedRegularAssets.length, id);
+      assetUsedMap.set(index, false);
+      return { data: contents, filename, id, mime };
+    },
+  );
+
+  const preparedAssets = [...preparedRegularAssets, ...preparedThumbnailAssets];
+
   validator.customFormats.binary = (input) => {
     if (knownAssetIds.includes(input)) {
       reusedAssets.add(input);
@@ -188,6 +225,10 @@ export function processResourceBody(
         ],
       },
       $clonable: { type: 'boolean' },
+      $thumbnails: {
+        type: 'array',
+        items: { type: 'string', format: 'binary' },
+      },
       ...Object.fromEntries(
         Object.values(definition.references ?? {}).map((reference) => [
           `$${reference.resource}`,
@@ -211,6 +252,10 @@ export function processResourceBody(
           propertyName = path[1];
         } else if (path.length === 1) {
           propertyName = path[0];
+        }
+
+        if (propertyName === '$thumbnails') {
+          return;
         }
 
         if (propertyName === '$expires') {

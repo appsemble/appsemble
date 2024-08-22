@@ -2,6 +2,7 @@ import { useBlock } from '@appsemble/preact';
 import { Modal, useObjectURL, useToggle } from '@appsemble/preact-components';
 import {
   type FileIconName,
+  getFilenameFromContentDisposition,
   getMimeTypeCategories,
   getMimeTypeCategory,
   getMimeTypeIcon,
@@ -76,15 +77,27 @@ export function createCustomSvg(iconName: any, hasPlus?: boolean): string {
 
 interface FileEntryProps extends InputProps<Blob | string, FileField> {
   readonly repeated?: boolean;
+
+  /**
+   * A function to add a thumbnail to the form collected thumbnails
+   */
+  readonly addThumbnail: (thumbnail: File) => void;
+
+  /**
+   * A function to remove a thumbnail from the form collected thumbnails
+   */
+  readonly removeThumbnail: (thumbnail: File) => void;
 }
 
 export function FileEntry({
+  addThumbnail: addThumbnailToFormPayload,
   disabled,
   errorLinkRef,
   field,
   formValues: value,
   name,
   onChange,
+  removeThumbnail,
   repeated,
 }: FileEntryProps): VNode {
   const { utils } = useBlock();
@@ -102,7 +115,10 @@ export function FileEntry({
   const modal = useToggle();
   const videoRef = useRef(null);
   const [fileType, setFileType] = useState<MimeTypeCategory | null>(null);
+  const [fileName, setFileName] = useState<string>('');
   const [firstFrameSrc, setFirstFrameSrc] = useState('');
+  const [thumbnail, setThumbnail] = useState<File>(null);
+  const [thumbnailAddedToForm, setThumbnailAddedToForm] = useState<boolean>(false);
 
   const onSelect = useCallback(
     async (event: JSX.TargetedEvent<HTMLInputElement>): Promise<void> => {
@@ -116,6 +132,7 @@ export function FileEntry({
         file = await resize(file, maxWidth, maxHeight, quality);
       }
 
+      setThumbnailAddedToForm(false);
       onChange({ currentTarget, ...event }, file);
     },
     [field, onChange],
@@ -129,9 +146,13 @@ export function FileEntry({
           const response = await fetch(assetUrl);
           if (response.ok) {
             const contentType = response.headers.get('Content-Type');
-
             if (contentType) {
               setFileType(getMimeTypeCategory(contentType));
+            }
+
+            const contentDisposition = response.headers.get('Content-Disposition');
+            if (contentDisposition) {
+              setFileName(getFilenameFromContentDisposition(contentDisposition));
             }
           } else {
             setFileType(null);
@@ -146,29 +167,64 @@ export function FileEntry({
         }
 
         setFileType(getMimeTypeCategory(value.type));
+
+        if (value instanceof File) {
+          setFileName(value.name);
+        }
       }
     })();
   }, [utils, value, valueString]);
+
+  useEffect(() => {
+    if (firstFrameSrc && fileName && !thumbnailAddedToForm) {
+      const [header, base64] = firstFrameSrc.split(',');
+      const mimeType = header.match(/:(.*?);/)[1];
+      const binary = atob(base64);
+      const array = new Uint8Array(binary.length);
+
+      for (let i = 0; i < binary.length; i += 1) {
+        array[i] = binary.charCodeAt(i);
+      }
+
+      const newThumbnail = new File(
+        [array],
+        `${fileName.slice(0, fileName.indexOf('.'))}-thumbnail.png`,
+        {
+          type: mimeType,
+        },
+      );
+
+      setThumbnail(newThumbnail);
+      addThumbnailToFormPayload(newThumbnail);
+
+      setThumbnailAddedToForm(true);
+    }
+  }, [firstFrameSrc, fileName, addThumbnailToFormPayload, thumbnailAddedToForm]);
 
   const onRemove = useCallback(
     (event: Event) => {
       event.preventDefault();
       onChange({ currentTarget: { name } } as any as Event, null);
+      removeThumbnail(thumbnail);
+      setThumbnail(null);
+      setThumbnailAddedToForm(false);
     },
-    [name, onChange],
+    [name, onChange, removeThumbnail, thumbnail],
   );
 
   const captureFirstFrame = (): void => {
     const videoElement = videoRef.current;
-    videoElement.pause();
-    videoElement.currentTime = 0;
-    const canvas = document.createElement('canvas');
-    canvas.width = videoElement.videoWidth;
-    canvas.height = videoElement.videoHeight;
-    const ctx = canvas.getContext('2d');
-    ctx.drawImage(videoElement, 0, 0, canvas.width, canvas.height);
-    const dataURL = canvas.toDataURL();
-    setFirstFrameSrc(dataURL);
+    if (videoElement) {
+      videoElement.pause();
+      videoElement.currentTime = 0;
+      const canvas = document.createElement('canvas');
+      canvas.width = videoElement.videoWidth;
+      canvas.height = videoElement.videoHeight;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(videoElement, 0, 0, canvas.width, canvas.height);
+      const dataURL = canvas.toDataURL();
+      setFirstFrameSrc(dataURL);
+    }
   };
 
   const previewAvailable = ['image', 'video'].includes(fileType);

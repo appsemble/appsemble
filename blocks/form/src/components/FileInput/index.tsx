@@ -10,9 +10,20 @@ import { getValueByNameSequence } from '../../utils/getNested.js';
 import { isRequired } from '../../utils/requirements.js';
 import { FileEntry } from '../FileEntry/index.js';
 
-type FileInputProps = InputProps<(Blob | string)[] | Blob | string, FileField>;
+interface FileInputProps extends InputProps<(Blob | string)[] | Blob | string, FileField> {
+  /**
+   * A function to add a thumbnail to the form collected thumbnails
+   */
+  readonly addThumbnail: (thumbnail: File) => void;
+
+  /**
+   * A function to remove a thumbnail from the form collected thumbnails
+   */
+  readonly removeThumbnail: (thumbnail: File) => void;
+}
 
 export function FileInput({
+  addThumbnail,
   className,
   dirty,
   disabled,
@@ -22,6 +33,7 @@ export function FileInput({
   formValues,
   name,
   onChange,
+  removeThumbnail,
 }: FileInputProps): VNode {
   const { utils } = useBlock();
   const { help, inline, label, repeated, tag } = field;
@@ -63,6 +75,7 @@ export function FileInput({
           <div className={styles.repeatedEntries}>
             {(value as string[]).map((val, index) => (
               <FileEntry
+                addThumbnail={addThumbnail}
                 disabled={disabled}
                 error={dirty ? error : null}
                 errorLinkRef={errorLinkRef}
@@ -72,11 +85,13 @@ export function FileInput({
                 key={index}
                 name={`${name}.${index}`}
                 onChange={handleInput}
+                removeThumbnail={removeThumbnail}
                 repeated={repeated}
               />
             ))}
           </div>
           <FileEntry
+            addThumbnail={addThumbnail}
             disabled={disabled}
             error={dirty ? error : null}
             errorLinkRef={errorLinkRef}
@@ -84,11 +99,13 @@ export function FileInput({
             formValues={null}
             name={`${name}.${(value as string[]).length}`}
             onChange={handleInput}
+            removeThumbnail={removeThumbnail}
             repeated={repeated}
           />
         </div>
       ) : (
         <FileEntry
+          addThumbnail={addThumbnail}
           disabled={disabled}
           error={dirty ? error : null}
           errorLinkRef={errorLinkRef}
@@ -96,6 +113,7 @@ export function FileInput({
           formValues={value as Values}
           name={name}
           onChange={onChange}
+          removeThumbnail={removeThumbnail}
         />
       )}
       {dirty && error ? <p className="help is-danger">{error}</p> : null}

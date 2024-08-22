@@ -26,7 +26,7 @@ export async function createAppResourcesWithAssets({
   let createdResources: Resource[];
   await transactional(async (transaction) => {
     createdResources = await Resource.bulkCreate(
-      resources.map(({ $clonable, $ephemeral, $expires, $seed, ...data }) => ({
+      resources.map(({ $clonable, $ephemeral, $expires, $seed, $thumbnails, ...data }) => ({
         AppId: app.id,
         type: resourceType,
         data,
@@ -44,14 +44,15 @@ export async function createAppResourcesWithAssets({
     }
 
     const cleanResources = resources.map((resource) => {
-      const { $clonable, $ephemeral, $seed, ...rest } = resource;
+      const { $clonable, $ephemeral, $seed, $thumbnails, ...rest } = resource;
       return rest;
     });
 
     await Asset.bulkCreate(
       preparedAssets.map((asset) => {
         const index = cleanResources.findIndex((resource) => {
-          const { $clonable, $ephemeral, $seed, ...cleanAssetResource } = asset.resource;
+          const { $clonable, $ephemeral, $seed, $thumbnails, ...cleanAssetResource } =
+            asset.resource;
           return isDeepStrictEqual(resource, cleanAssetResource);
         });
         const {
