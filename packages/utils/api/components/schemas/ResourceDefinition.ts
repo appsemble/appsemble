@@ -1,16 +1,5 @@
 import { type OpenAPIV3 } from 'openapi-types';
 
-const roles: OpenAPIV3.ArraySchemaObject = {
-  type: 'array',
-  description: `The list of roles that are allowed to use this action.
-
-This will override the default roles that are assigned.
-`,
-  items: {
-    type: 'string',
-  },
-};
-
 const query: OpenAPIV3.NonArraySchemaObject = {
   type: 'object',
   description: 'The query parameters to use in the request.',
@@ -101,11 +90,6 @@ name of the resource and how it should behave.
         },
       },
     },
-    roles: {
-      type: 'array',
-      description: 'The default roles that are allowed to perform all actions.',
-      items: { type: 'string' },
-    },
     url: {
       type: 'string',
       default: '/api/apps/{appId}/{resource}',
@@ -133,7 +117,6 @@ name of the resource and how it should behave.
       description: "Overrides for 'query' requests.",
       additionalProperties: false,
       properties: {
-        roles,
         query,
         method: {
           type: 'string',
@@ -152,7 +135,6 @@ name of the resource and how it should behave.
       description: "Overrides for 'get' requests.",
       additionalProperties: false,
       properties: {
-        roles,
         query,
         method: {
           type: 'string',
@@ -171,7 +153,6 @@ name of the resource and how it should behave.
       description: "Overrides for 'count' requests.",
       additionalProperties: false,
       properties: {
-        roles,
         query,
         method: {
           type: 'string',
@@ -190,7 +171,6 @@ name of the resource and how it should behave.
       description: "Overrides for 'create' requests.",
       additionalProperties: false,
       properties: {
-        roles,
         query,
         method: {
           type: 'string',
@@ -212,7 +192,6 @@ name of the resource and how it should behave.
       description: "Overrides for 'patch' requests.",
       additionalProperties: false,
       properties: {
-        roles,
         query,
         method: {
           type: 'string',
@@ -234,7 +213,6 @@ name of the resource and how it should behave.
       description: "Overrides for 'update' requests.",
       additionalProperties: false,
       properties: {
-        roles,
         query,
         method: {
           type: 'string',
@@ -256,7 +234,6 @@ name of the resource and how it should behave.
       description: "Overrides for 'delete' requests.",
       additionalProperties: false,
       properties: {
-        roles,
         query,
         method: {
           type: 'string',

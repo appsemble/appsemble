@@ -158,6 +158,11 @@ export function getAppPermissions(appDefinition: AppDefinition): CustomAppPermis
         `$resource:${resourceName}:update`,
         `$resource:${resourceName}:patch`,
         `$resource:${resourceName}:delete`,
+        `$resource:${resourceName}:own:query`,
+        `$resource:${resourceName}:own:get`,
+        `$resource:${resourceName}:own:update`,
+        `$resource:${resourceName}:own:patch`,
+        `$resource:${resourceName}:own:delete`,
         ...Object.keys(resourceDefinition.views || {}).flatMap((resourceView) => [
           `$resource:${resourceName}:query:${resourceView}`,
           `$resource:${resourceName}:get:${resourceView}`,

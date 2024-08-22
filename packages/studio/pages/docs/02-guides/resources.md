@@ -52,7 +52,6 @@ An example of a resource definition:
 ```yaml copy validate resources-snippet
 resources:
   person:
-    roles: [$public] # This makes all person resource actions public by default.
     schema:
       type: object
       additionalProperties: false # Custom properties are disallowed to ensure the shape of each person resource is fixed.
