@@ -5,9 +5,9 @@ import {
   type AppMemberRegisterAction,
   type BlockManifest,
   type CustomAppPermission,
+  type PageDefinition,
   PredefinedAppRole,
   predefinedAppRolePermissions,
-  type PageDefinition,
   type ProjectImplementations,
   type Remapper,
   type ResourceGetActionDefinition,
@@ -20,7 +20,15 @@ import { type Promisable } from 'type-fest';
 
 import { getAppBlocks, type IdentifiableBlock, normalizeBlockName } from './blockUtils.js';
 import { has } from './has.js';
-import { findPageByName, getAppInheritedRoles, getAppRolePermissions, normalize, partialNormalized } from './index.js';
+import {
+  findPageByName,
+  getAppInheritedRoles,
+  getAppPossibleGuestPermissions,
+  getAppPossiblePermissions,
+  getAppRolePermissions,
+  normalize,
+  partialNormalized,
+} from './index.js';
 import { iterApp, type Prefix } from './iterApp.js';
 import { type ServerActionName, serverActions } from './serverActions.js';
 
@@ -414,6 +422,7 @@ function validatePermissions(
   appDefinition: AppDefinition,
   permissions: CustomAppPermission[],
   inheritedPermissions: CustomAppPermission[],
+  possiblePermissions: CustomAppPermission[],
   report: Report,
   path: Prefix,
 ): void {
@@ -421,6 +430,53 @@ function validatePermissions(
   for (const [index, permission] of permissions.entries()) {
     if (checked.includes(permission)) {
       report(appDefinition, 'duplicate permission declaration', [...path, 'permissions', index]);
+      return;
+    }
+
+    if (!possiblePermissions.includes(permission)) {
+      if (
+        resourcePermissionPattern.test(permission) ||
+        ownResourcePermissionPattern.test(permission)
+      ) {
+        const [, resourceName] = permission.split(':');
+
+        if (resourceName && resourceName !== 'all' && !appDefinition.resources?.[resourceName]) {
+          report(
+            appDefinition,
+            `resource ${resourceName} does not exist in the app's resources definition`,
+            [...path, 'permissions', index],
+          );
+          return;
+        }
+      }
+
+      if (resourceViewPermissionPattern.test(permission)) {
+        const [, resourceName, , resourceView] = permission.split(':');
+
+        if (resourceName === 'all') {
+          for (const [rName, resourceDefinition] of Object.entries(appDefinition.resources)) {
+            if (!resourceDefinition.views?.[resourceView]) {
+              report(
+                appDefinition,
+                `resource ${rName} is missing a definition for the ${resourceView} view`,
+                [...path, 'permissions', index],
+              );
+              return;
+            }
+          }
+        } else {
+          if (!appDefinition.resources[resourceName]?.views?.[resourceView]) {
+            report(
+              appDefinition,
+              `resource ${resourceName} is missing a definition for the ${resourceView} view`,
+              [...path, 'permissions', index],
+            );
+            return;
+          }
+        }
+      }
+
+      report(appDefinition, 'invalid permission', [...path, 'permissions', index]);
       return;
     }
 
@@ -436,16 +492,7 @@ function validatePermissions(
     const otherPermissions = permissions.filter((p) => p !== permission);
 
     if (resourcePermissionPattern.test(permission)) {
-      const [, resourceName, resourceAction] = permission.split(':');
-
-      if (resourceName !== 'all' && !appDefinition.resources?.[resourceName]) {
-        report(
-          appDefinition,
-          `resource ${resourceName} does not exist in the app's resources definition`,
-          [...path, 'permissions', index],
-        );
-        return;
-      }
+      const [, , resourceAction] = permission.split(':');
 
       if (
         otherPermissions.some((p) => {
@@ -484,15 +531,6 @@ function validatePermissions(
 
     if (ownResourcePermissionPattern.test(permission)) {
       const [, resourceName, , resourceAction] = permission.split(':');
-
-      if (resourceName !== 'all' && !appDefinition.resources?.[resourceName]) {
-        report(
-          appDefinition,
-          `resource ${resourceName} does not exist in the app's resources definition`,
-          [...path, 'permissions', index],
-        );
-        return;
-      }
 
       if (
         otherPermissions.some((p) => {
@@ -605,32 +643,8 @@ function validatePermissions(
       }
     }
 
-    if (allResourceViewPermissionPattern.test(permission)) {
-      const [, , , view] = permission.split(':');
-
-      for (const [resourceName, resourceDefinition] of Object.entries(appDefinition.resources)) {
-        if (!resourceDefinition.views?.[view]) {
-          report(
-            appDefinition,
-            `resource ${resourceName} is missing a definition for the ${view} view`,
-            [...path, 'permissions', index],
-          );
-          return;
-        }
-      }
-    }
-
     if (resourceViewPermissionPattern.test(permission)) {
       const [, resourceName, resourceAction, resourceView] = permission.split(':');
-
-      if (resourceName !== 'all' && !appDefinition.resources[resourceName]?.views?.[resourceView]) {
-        report(
-          appDefinition,
-          `resource ${resourceName} is missing a definition for the ${resourceView} view`,
-          [...path, 'permissions', index],
-        );
-        return;
-      }
 
       // $resource:type:query:public, $resource:type:query:private
       if (
@@ -912,16 +926,22 @@ function validateSecurity(definition: AppDefinition, report: Report): void {
 
     if (security.guest.permissions) {
       const inheritedPermissions = getAppRolePermissions(security, security.guest.inherits || []);
-      validatePermissions(definition, security.guest.permissions, inheritedPermissions, report, [
-        'security',
-        'guest',
-      ]);
+      validatePermissions(
+        definition,
+        security.guest.permissions,
+        inheritedPermissions,
+        getAppPossibleGuestPermissions(definition),
+        report,
+        ['security', 'guest'],
+      );
     }
   } else {
     checkRoleExists(security.default.role, ['security', 'default', 'role']);
   }
 
   if (security.roles) {
+    const possibleAppPermissions = getAppPossiblePermissions(definition);
+
     for (const [name, role] of Object.entries(security.roles)) {
       if (predefinedRoles.includes(name)) {
         report(definition, `not allowed to overwrite role ${name}`, ['security', 'roles', name]);
@@ -960,11 +980,14 @@ function validateSecurity(definition: AppDefinition, report: Report): void {
       }
 
       if (role.permissions) {
-        validatePermissions(definition, role.permissions, inheritedPermissions, report, [
-          'security',
-          'roles',
-          name,
-        ]);
+        validatePermissions(
+          definition,
+          role.permissions,
+          inheritedPermissions,
+          possibleAppPermissions,
+          report,
+          ['security', 'roles', name],
+        );
       }
     }
   }

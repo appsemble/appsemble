@@ -1,6 +1,8 @@
 import {
   type AppDefinition,
   type BasicPageDefinition,
+  type CustomAppGuestPermission,
+  type CustomAppPermission,
   type FlowPageDefinition,
   predefinedAppRoles,
   type Security,
@@ -3590,5 +3592,53 @@ describe('validateAppDefinition', () => {
           ]),
       ),
     );
+  });
+
+  it('should throw an error on invalid role permissions', async () => {
+    const app = createTestApp();
+
+    app.security = {
+      default: {
+        role: 'test',
+      },
+      roles: {
+        test: {
+          permissions: ['$resource:person:modify' as CustomAppPermission],
+        },
+      },
+    } as Security;
+
+    const result = await validateAppDefinition(app, () => []);
+    expect(result.valid).toBe(false);
+    expect(result.errors).toStrictEqual([
+      new ValidationError('invalid permission', app, undefined, [
+        'security',
+        'roles',
+        'test',
+        'permissions',
+        0,
+      ]),
+    ]);
+  });
+
+  it('should throw an error on invalid guest permissions', async () => {
+    const app = createTestApp();
+
+    app.security = {
+      guest: {
+        permissions: ['$resource:person:own:modify' as CustomAppGuestPermission],
+      },
+    } as Security;
+
+    const result = await validateAppDefinition(app, () => []);
+    expect(result.valid).toBe(false);
+    expect(result.errors).toStrictEqual([
+      new ValidationError('invalid permission', app, undefined, [
+        'security',
+        'guest',
+        'permissions',
+        0,
+      ]),
+    ]);
   });
 });

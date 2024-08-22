@@ -1,5 +1,5 @@
 import { type AppRole, type CustomAppPermission } from '@appsemble/types';
-import { getAppPermissions, getAppRoles } from '@appsemble/utils';
+import { getAppPossibleGuestPermissions, getAppRoles } from '@appsemble/utils';
 import { type ReactNode, useCallback } from 'react';
 import { useIntl } from 'react-intl';
 
@@ -49,7 +49,7 @@ export function GuestPage(): ReactNode {
         label={formatMessage(messages.permissionsLabel)}
         labelPosition="top"
         onNewSelected={onChangePermissions}
-        options={getAppPermissions(app.definition).filter(
+        options={getAppPossibleGuestPermissions(app.definition).filter(
           (permission) => !guestPermissions.includes(permission),
         )}
         selected={guestPermissions}

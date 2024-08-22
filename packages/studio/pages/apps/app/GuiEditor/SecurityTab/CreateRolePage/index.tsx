@@ -1,6 +1,6 @@
 import { Button, useMessages } from '@appsemble/react-components';
 import { type AppRole, type CustomAppPermission, type RoleDefinition } from '@appsemble/types';
-import { getAppPermissions } from '@appsemble/utils';
+import { getAppPossiblePermissions } from '@appsemble/utils';
 import { type ChangeEvent, type ReactNode, useCallback, useState } from 'react';
 import { useIntl } from 'react-intl';
 
@@ -138,7 +138,7 @@ export function CreateRolePage(): ReactNode {
         label={formatMessage(messages.permissionsLabel)}
         labelPosition="top"
         onNewSelected={onChangePermissions}
-        options={getAppPermissions(app.definition).filter(
+        options={getAppPossiblePermissions(app.definition).filter(
           (permission) => !createRolePermissions.includes(permission),
         )}
         selected={createRolePermissions}

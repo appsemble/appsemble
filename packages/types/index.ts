@@ -750,11 +750,12 @@ export type CustomAppOwnResourcePermission = `$resource:${string}:own:${OwnResou
 
 export type CustomAppResourceViewPermission = `$resource:${string}:${ResourceViewAction}:${string}`;
 
-export type CustomAppPermission =
+export type CustomAppGuestPermission =
   | AppPermission
-  | CustomAppOwnResourcePermission
   | CustomAppResourcePermission
   | CustomAppResourceViewPermission;
+
+export type CustomAppPermission = CustomAppGuestPermission | CustomAppOwnResourcePermission;
 
 export interface GuestDefinition {
   permissions: CustomAppPermission[];

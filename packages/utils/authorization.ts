@@ -3,6 +3,7 @@ import {
   appOrganizationPermissionMapping,
   AppPermission,
   type AppRole,
+  type CustomAppGuestPermission,
   type CustomAppOwnResourcePermission,
   type CustomAppPermission,
   type CustomAppResourcePermission,
@@ -147,7 +148,30 @@ export function getAppRoles(appSecurityDefinition: Security): AppRole[] {
   );
 }
 
-export function getAppPermissions(appDefinition: AppDefinition): CustomAppPermission[] {
+export function getAppPossibleGuestPermissions(
+  appDefinition: AppDefinition,
+): CustomAppGuestPermission[] {
+  const possibleAllViews: Record<string, boolean> = {};
+
+  const resourceDefinitions = Object.values(appDefinition.resources || {});
+  for (const resourceDefinition of resourceDefinitions) {
+    for (const view of Object.keys(resourceDefinition.views || {})) {
+      possibleAllViews[view] = true;
+    }
+  }
+
+  for (const view of Object.keys(possibleAllViews)) {
+    if (resourceDefinitions.some((resourceDefinition) => !resourceDefinition.views?.[view])) {
+      possibleAllViews[view] = false;
+    }
+  }
+
+  for (const view in possibleAllViews) {
+    if (!possibleAllViews[view]) {
+      delete possibleAllViews[view];
+    }
+  }
+
   return [
     ...Object.values(AppPermission),
     ...Object.entries(appDefinition.resources || {}).flatMap(
@@ -158,17 +182,29 @@ export function getAppPermissions(appDefinition: AppDefinition): CustomAppPermis
         `$resource:${resourceName}:update`,
         `$resource:${resourceName}:patch`,
         `$resource:${resourceName}:delete`,
-        `$resource:${resourceName}:own:query`,
-        `$resource:${resourceName}:own:get`,
-        `$resource:${resourceName}:own:update`,
-        `$resource:${resourceName}:own:patch`,
-        `$resource:${resourceName}:own:delete`,
         ...Object.keys(resourceDefinition.views || {}).flatMap((resourceView) => [
           `$resource:${resourceName}:query:${resourceView}`,
           `$resource:${resourceName}:get:${resourceView}`,
         ]),
+        ...Object.keys(possibleAllViews).flatMap((view) => [
+          `$resource:all:query:${view}`,
+          `$resource:all:get:${view}`,
+        ]),
       ],
     ),
+  ] as CustomAppGuestPermission[];
+}
+
+export function getAppPossiblePermissions(appDefinition: AppDefinition): CustomAppPermission[] {
+  return [
+    ...getAppPossibleGuestPermissions(appDefinition),
+    ...Object.keys(appDefinition.resources || {}).flatMap((resourceName) => [
+      `$resource:${resourceName}:own:query`,
+      `$resource:${resourceName}:own:get`,
+      `$resource:${resourceName}:own:update`,
+      `$resource:${resourceName}:own:patch`,
+      `$resource:${resourceName}:own:delete`,
+    ]),
   ] as CustomAppPermission[];
 }
 
