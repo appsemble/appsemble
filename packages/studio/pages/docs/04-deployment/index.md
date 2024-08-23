@@ -9,3 +9,8 @@ Appsemble can be deployed using [Docker Compose](https://docs.docker.com/compose
 
 You can choose the one you prefer to proceed. For first time developers we recommend using Docker
 Compose.
+
+### Table of contents
+
+- [Docker compose](/docs/deployment/docker-compose)
+- [Helm](/docs/deployment/helm)
