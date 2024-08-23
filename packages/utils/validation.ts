@@ -1173,80 +1173,75 @@ function validateActions(definition: AppDefinition, report: Report): void {
         }
 
         if (!action.type.startsWith('resource.subscription.')) {
-          if (definition.security) {
-            const allPermissions = definition.security.guest?.permissions || [];
+          if (!definition.security) {
+            report(action.type, 'missing security definition', [...path, 'resource']);
+            return;
+          }
 
-            if (definition.security.roles) {
-              const allRolePermissions = getAppRolePermissions(
-                definition.security,
-                Object.keys(definition.security.roles),
-              );
+          const allPermissions = definition.security.guest?.permissions || [];
 
-              allPermissions.push(...allRolePermissions);
-            }
+          if (definition.security.roles) {
+            const allRolePermissions = getAppRolePermissions(
+              definition.security,
+              Object.keys(definition.security.roles),
+            );
 
-            if (
-              !allPermissions.some((permission) => {
-                if (resourcePermissionPattern.test(permission)) {
-                  const [, permissionResourceName, permissionResourceAction] =
-                    permission.split(':');
-                  return (
-                    ['all', resourceName].includes(permissionResourceName) &&
-                    (permissionResourceAction === resourceAction ||
-                      (resourceAction === 'count' && permissionResourceAction === 'query'))
-                  );
-                }
+            allPermissions.push(...allRolePermissions);
+          }
 
-                if (ownResourcePermissionPattern.test(permission)) {
-                  const [, permissionResourceName, , permissionResourceAction] =
-                    permission.split(':');
-                  return (
-                    ['all', resourceName].includes(permissionResourceName) &&
-                    (permissionResourceAction === resourceAction ||
-                      (resourceAction === 'count' && permissionResourceAction === 'query'))
-                  );
-                }
+          if (
+            !allPermissions.some((permission) => {
+              if (resourcePermissionPattern.test(permission)) {
+                const [, permissionResourceName, permissionResourceAction] = permission.split(':');
+                return (
+                  ['all', resourceName].includes(permissionResourceName) &&
+                  (permissionResourceAction === resourceAction ||
+                    (resourceAction === 'count' && permissionResourceAction === 'query'))
+                );
+              }
 
-                return false;
-              })
-            ) {
-              report(
-                action.type,
-                'there is no-one in the app, who has permissions to use this action',
-                [...path, 'resource'],
-              );
-              return;
-            }
+              if (ownResourcePermissionPattern.test(permission)) {
+                const [, permissionResourceName, , permissionResourceAction] =
+                  permission.split(':');
+                return (
+                  ['all', resourceName].includes(permissionResourceName) &&
+                  (permissionResourceAction === resourceAction ||
+                    (resourceAction === 'count' && permissionResourceAction === 'query'))
+                );
+              }
 
-            if (
-              view &&
-              !allPermissions.some((permission) => {
-                if (resourceViewPermissionPattern.test(permission)) {
-                  const [
-                    ,
-                    permissionResourceName,
-                    permissionResourceAction,
-                    permissionResourceView,
-                  ] = permission.split(':');
-                  return (
-                    ['all', resourceName].includes(permissionResourceName) &&
-                    permissionResourceAction === resourceAction &&
-                    (!permissionResourceView || permissionResourceView === view)
-                  );
-                }
-                return false;
-              })
-            ) {
-              report(
-                action.type,
-                'there is no-one in the app, who has permissions to use this action',
-                [...path, 'resource'],
-              );
-              return;
-            }
-          } else {
-            // TODO handle this properly with a warning level report
-            // warn 'that no security definition has been defined, no-one can access this resource'
+              return false;
+            })
+          ) {
+            report(
+              action.type,
+              'there is no-one in the app, who has permissions to use this action',
+              [...path, 'resource'],
+            );
+            return;
+          }
+
+          if (
+            view &&
+            !allPermissions.some((permission) => {
+              if (resourceViewPermissionPattern.test(permission)) {
+                const [, permissionResourceName, permissionResourceAction, permissionResourceView] =
+                  permission.split(':');
+                return (
+                  ['all', resourceName].includes(permissionResourceName) &&
+                  permissionResourceAction === resourceAction &&
+                  (!permissionResourceView || permissionResourceView === view)
+                );
+              }
+              return false;
+            })
+          ) {
+            report(
+              action.type,
+              'there is no-one in the app, who has permissions to use this action',
+              [...path, 'resource'],
+            );
+            return;
           }
         }
       }
