@@ -31,7 +31,6 @@ import { pathItems as appsAppIdIcon } from './apps/appId/icon.js';
 import { pathItems as appsAppIdInvites } from './apps/appId/invites.js';
 import { pathItems as appsAppIdLock } from './apps/appId/lock.js';
 import { pathItems as appsAppIdMaskableIcon } from './apps/appId/maskableIcon.js';
-import { pathItems as appsAppIdMembersCurrentAuthOAuth2 } from './apps/appId/members/current/auth/oauth2.js';
 import { pathItems as appsAppIdMembersCurrentGroups } from './apps/appId/members/current/groups.js';
 import { pathItems as appsAppIdMembersCurrentLink } from './apps/appId/members/current/link.js';
 import { pathItems as appsAppIdMembersCurrent } from './apps/appId/members/current.js';
@@ -52,11 +51,11 @@ import { pathItems as appsAppIdResources } from './apps/appId/resources.js';
 import { pathItems as appsAppIdSamlSecretIdAcs } from './apps/appId/saml/secretId/acs.js';
 import { pathItems as appsAppIdSamlSecretIdAuthn } from './apps/appId/saml/secretId/authn.js';
 import { pathItems as appsAppIdSamlAppSamlSecretIdMetadataXml } from './apps/appId/saml/secretId/metadata.js';
-import { pathItems as appsAppIdScimResourceTypesResourceTypeId } from './apps/appId/scim/resourceTypes/resourceTypeId.js';
-import { pathItems as appsAppIdScimResourceTypes } from './apps/appId/scim/resourceTypes.js';
+import { pathItems as appsAppIdScimResourceTypesResourceTypeId } from './apps/appId/scim/resource-types/resourceTypeId.js';
+import { pathItems as appsAppIdScimResourceTypes } from './apps/appId/scim/resource-types.js';
 import { pathItems as appsAppIdScimSchemasSchemaId } from './apps/appId/scim/schemas/schemaId.js';
 import { pathItems as appsAppIdScimSchemas } from './apps/appId/scim/schemas.js';
-import { pathItems as appsAppIdScimServiceProviderConfig } from './apps/appId/scim/serviceProviderConfig.js';
+import { pathItems as appsAppIdScimServiceProviderConfig } from './apps/appId/scim/service-provider-config.js';
 import { pathItems as appsAppIdScimUsersUserId } from './apps/appId/scim/users/userId.js';
 import { pathItems as appsAppIdScimUsers } from './apps/appId/scim/users.js';
 import { pathItems as appsAppIdScreenshotsScreenshotId } from './apps/appId/screenshots/screenshotId.js';
@@ -177,7 +176,6 @@ export const paths = {
   '/api/apps/{appId}/invites': appsAppIdInvites,
   '/api/apps/{appId}/lock': appsAppIdLock,
   '/api/apps/{appId}/maskable-icon': appsAppIdMaskableIcon,
-  '/api/apps/{appId}/members/current/auth/oauth2': appsAppIdMembersCurrentAuthOAuth2,
   '/api/apps/{appId}/members/current/groups': appsAppIdMembersCurrentGroups,
   '/api/apps/{appId}/members/current/link': appsAppIdMembersCurrentLink,
   '/api/apps/{appId}/members/current': appsAppIdMembersCurrent,
@@ -204,11 +202,12 @@ export const paths = {
   '/api/apps/{appId}/saml/{appSamlSecretId}/acs': appsAppIdSamlSecretIdAcs,
   '/api/apps/{appId}/saml/{appSamlSecretId}/authn': appsAppIdSamlSecretIdAuthn,
   '/api/apps/{appId}/saml/{appSamlSecretId}/metadata.xml': appsAppIdSamlAppSamlSecretIdMetadataXml,
-  '/api/apps/{appId}/scim/resourceTypes/{resourceTypeId}': appsAppIdScimResourceTypesResourceTypeId,
-  '/api/apps/{appId}/scim/resourceTypes': appsAppIdScimResourceTypes,
+  '/api/apps/{appId}/scim/resource-types/{resourceTypeId}':
+    appsAppIdScimResourceTypesResourceTypeId,
+  '/api/apps/{appId}/scim/resource-types': appsAppIdScimResourceTypes,
   '/api/apps/{appId}/scim/schemas/{schemaId}': appsAppIdScimSchemasSchemaId,
   '/api/apps/{appId}/scim/schemas': appsAppIdScimSchemas,
-  '/api/apps/{appId}/scim/serviceProviderConfig': appsAppIdScimServiceProviderConfig,
+  '/api/apps/{appId}/scim/service-provider-config': appsAppIdScimServiceProviderConfig,
   '/api/apps/{appId}/scim/users/{userId}': appsAppIdScimUsersUserId,
   '/api/apps/{appId}/scim/users': appsAppIdScimUsers,
   '/api/apps/{appId}/screenshots/{screenshotId}': appsAppIdScreenshotsScreenshotId,
@@ -233,7 +232,7 @@ export const paths = {
   '/api/apps/{appId}/variables/{appVariableId}': appsAppIdVariablesAppVariableId,
   '/api/apps/{appId}/variables': appsAppIdVariables,
   '/api/apps/{appId}': appsAppId,
-  '/api/apps/auth/email/login': appsAppIdAuthEmailLogin,
+  '/api/apps/{appId}/auth/email/login': appsAppIdAuthEmailLogin,
   '/api/apps/{appId}/auth/email/register': appsAppIdAuthEmailRegister,
   '/api/apps/{appId}/auth/email/resend-verification': appsAppIdAuthEmailResendVerification,
   '/api/apps/{appId}/auth/email/request-password-reset': appsAppIdAuthEmailRequestPasswordReset,
