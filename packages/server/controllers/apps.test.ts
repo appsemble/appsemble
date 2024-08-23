@@ -3280,6 +3280,9 @@ describe('createApp', () => {
                         {
                           "$ref": "#/components/schemas/LoopPageDefinition",
                         },
+                        {
+                          "$ref": "#/components/schemas/ContainerPageDefinition",
+                        },
                       ],
                     },
                     "minItems": 1,
@@ -4196,6 +4199,9 @@ describe('patchApp', () => {
                         {
                           "$ref": "#/components/schemas/LoopPageDefinition",
                         },
+                        {
+                          "$ref": "#/components/schemas/ContainerPageDefinition",
+                        },
                       ],
                     },
                     "minItems": 1,
@@ -4355,6 +4361,9 @@ describe('patchApp', () => {
                         },
                         {
                           "$ref": "#/components/schemas/LoopPageDefinition",
+                        },
+                        {
+                          "$ref": "#/components/schemas/ContainerPageDefinition",
                         },
                       ],
                     },

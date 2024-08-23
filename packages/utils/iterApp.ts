@@ -194,6 +194,14 @@ export function iterPage(
     );
   }
 
+  if (page.type === 'container') {
+    let result = false;
+    for (const containerPage of page.pages) {
+      result = iterPage(containerPage, callbacks, prefix);
+    }
+    return result;
+  }
+
   return iterBlockList(page.blocks, callbacks, [...prefix, 'blocks']);
 }
 

@@ -1,6 +1,7 @@
 import {
   type AppDefinition,
   type BlockManifest,
+  type PageDefinition,
   type ProjectImplementations,
   type Remapper,
   type ResourceGetActionDefinition,
@@ -16,7 +17,7 @@ import { type Promisable } from 'type-fest';
 
 import { getAppBlocks, type IdentifiableBlock, normalizeBlockName } from './blockUtils.js';
 import { has } from './has.js';
-import { partialNormalized } from './index.js';
+import { findPageByName, normalize, partialNormalized } from './index.js';
 import { iterApp, type Prefix } from './iterApp.js';
 import { type ServerActionName, serverActions } from './serverActions.js';
 
@@ -49,6 +50,41 @@ function validateJSONSchema(schema: Schema, prefix: Prefix, report: Report): voi
       report(schema, 'is missing properties', prefix);
     }
   }
+}
+
+/**
+ * Validates the pages in the app definition to ensure there are no duplicate page names.
+ *
+ * @param definition The definition of the app
+ * @param report A function used to report a value.
+ */
+function validateUniquePageNames(definition: AppDefinition, report: Report): void {
+  if (!definition.pages) {
+    return;
+  }
+
+  const pageNames = new Map<string, string[][]>();
+
+  function checkPages(pages: PageDefinition[], parentPath: string[] = []): void {
+    for (const page of pages) {
+      const pageName = page.name;
+      const normalizedPageName = normalize(page.name);
+      const pagePath = [...parentPath, pageName];
+
+      if (pageNames.has(normalizedPageName)) {
+        const paths = pageNames.get(normalizedPageName);
+        paths.push(pagePath);
+        report(pageName, 'is a duplicate page name', pagePath);
+      } else {
+        pageNames.set(normalizedPageName, [pagePath]);
+      }
+
+      if (page.type === 'container') {
+        checkPages(page.pages, pagePath);
+      }
+    }
+  }
+  checkPages(definition.pages);
 }
 
 function validateUsersSchema(definition: AppDefinition, report: Report): void {
@@ -547,8 +583,7 @@ function validateLanguage({ defaultLanguage }: AppDefinition, report: Report): v
 }
 
 function validateDefaultPage({ defaultPage, pages }: AppDefinition, report: Report): void {
-  const page = pages?.find((p) => p.name === defaultPage);
-
+  const page = findPageByName(pages, defaultPage);
   if (!page) {
     report(defaultPage, 'does not refer to an existing page', ['defaultPage']);
     return;
@@ -754,7 +789,7 @@ function validateActions(definition: AppDefinition, report: Report): void {
         }
 
         const [toBase, toSub] = [].concat(to);
-        const toPage = definition.pages.find(({ name }) => name === toBase);
+        const toPage = findPageByName(definition.pages, toBase);
 
         if (!toPage) {
           report(to, 'refers to a page that doesn’t exist', [...path, 'to']);
@@ -1046,6 +1081,7 @@ export async function validateAppDefinition(
     validateBlocks(definition, blockVersionMap, report);
     validateActions(definition, report);
     validateEvents(definition, blockVersionMap, report);
+    validateUniquePageNames(definition, report);
   } catch (error) {
     report(null, `Unexpected error: ${error instanceof Error ? error.message : error}`, []);
   }

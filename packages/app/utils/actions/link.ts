@@ -1,5 +1,5 @@
 import { type Remapper, type SubPage } from '@appsemble/types';
-import { isAppLink, normalize, partialNormalized } from '@appsemble/utils';
+import { findPageByName, isAppLink, normalize, partialNormalized } from '@appsemble/utils';
 
 import { type ActionCreator } from './index.js';
 
@@ -37,7 +37,8 @@ export const link: ActionCreator<'link'> = ({
         [toBase, toSub] = [].concat(to);
       }
 
-      const toPage = pages.find(({ name }) => name === toBase);
+      const toPage = findPageByName(pages, toBase);
+
       let subPage: SubPage;
       let index: number;
 

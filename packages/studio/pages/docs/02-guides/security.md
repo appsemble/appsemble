@@ -186,7 +186,7 @@ Pages that are not accessible to an authenticated user based on their role will 
 hidden from the app’s menu.
 
 ```yaml validate page-snippet
-- name: Example Page
+- name: Example Page Unique 1
   blocks:
     - type: action-button
       version: 0.29.9
@@ -198,7 +198,7 @@ hidden from the app’s menu.
 > on the root of the app definition
 
 ```yaml validate page-snippet
-- name: Example Page
+- name: Example Page Unique 2
   roles: []
   blocks:
     - type: action-button
@@ -212,7 +212,7 @@ hidden from the app’s menu.
 
 ```yaml validate pages-snippet
 pages:
-  - name: Example Page
+  - name: Example Page Unique 3
     roles:
       - Admin
     blocks:
@@ -220,7 +220,7 @@ pages:
         version: 0.29.9
         parameters:
           icon: home
-  - name: Example Page 2
+  - name: Example Page 4
     roles:
       - Reader
     blocks:
@@ -245,7 +245,7 @@ This can be especially useful for extending the functionality of a page for a sp
 such as a button to create a new app for the administrators of a blog.
 
 ```yaml validate page-snippet
-- name: Example Page
+- name: Example Page Unique 4
   blocks:
     - type: action-button
       version: 0.29.9

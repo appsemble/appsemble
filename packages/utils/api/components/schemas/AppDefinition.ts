@@ -99,6 +99,7 @@ The most basic resource has a \`schema\` property and defines the minimal securi
           { $ref: '#/components/schemas/TabsPageDefinition' },
           { $ref: '#/components/schemas/FlowPageDefinition' },
           { $ref: '#/components/schemas/LoopPageDefinition' },
+          { $ref: '#/components/schemas/ContainerPageDefinition' },
         ],
       },
     },

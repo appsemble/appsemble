@@ -1,6 +1,7 @@
 import {
   type ActionDefinition,
   type AppDefinition,
+  type BasicPageDefinition,
   type BlockDefinition,
   type PageDefinition,
 } from '@appsemble/types';
@@ -299,6 +300,37 @@ describe('iterPage', () => {
     const result = iterPage(page, { onBlockList, onPage });
 
     expect(onBlockList).toHaveBeenCalledWith(page.blocks, ['blocks']);
+    expect(onPage).toHaveBeenCalledWith(page, []);
+    expect(result).toBe(false);
+  });
+
+  it('should iterate over a container page', () => {
+    const onBlockList = vi.fn();
+    const onPage = vi.fn();
+
+    const page: PageDefinition = {
+      name: 'Container Page',
+      type: 'container',
+      pages: [
+        {
+          name: 'Page 1',
+          blocks: [],
+        },
+        {
+          name: 'Page 2',
+          blocks: [],
+        },
+      ],
+    };
+
+    const result = iterPage(page, { onBlockList, onPage });
+
+    expect(onBlockList).toHaveBeenCalledWith((page.pages[0] as BasicPageDefinition).blocks, [
+      'blocks',
+    ]);
+    expect(onBlockList).toHaveBeenCalledWith((page.pages[1] as BasicPageDefinition).blocks, [
+      'blocks',
+    ]);
     expect(onPage).toHaveBeenCalledWith(page, []);
     expect(result).toBe(false);
   });

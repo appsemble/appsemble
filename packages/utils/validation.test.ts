@@ -50,6 +50,16 @@ function createTestApp(): AppDefinition {
           { name: 'Step B', blocks: [] },
         ],
       },
+      {
+        name: 'Container Page 1',
+        type: 'container',
+        pages: [
+          {
+            name: 'Contained Page',
+            blocks: [],
+          },
+        ],
+      },
     ],
   };
 }
@@ -91,6 +101,25 @@ describe('validateAppDefinition', () => {
         'blocks',
         0,
         'version',
+      ]),
+    ]);
+  });
+
+  it('should report duplicate page names', async () => {
+    const app = createTestApp();
+    app.pages.push({
+      name: 'Container Page',
+      type: 'container',
+      pages: [{ name: 'Test Page', blocks: [] }],
+    });
+    const result = await validateAppDefinition(app, () => [
+      { name: '@appsemble/test', version: '0.0.0', files: [], languages: [] },
+    ]);
+    expect(result.valid).toBe(false);
+    expect(result.errors).toStrictEqual([
+      new ValidationError('is a duplicate page name', 'Test Page', undefined, [
+        'Container Page',
+        'Test Page',
       ]),
     ]);
   });
@@ -1571,6 +1600,14 @@ describe('validateAppDefinition', () => {
         'defaultPage',
       ]),
     ]);
+  });
+
+  it('should check if the default page exists inside contained page', async () => {
+    const result = await validateAppDefinition(
+      { ...createTestApp(), defaultPage: 'Contained Page' },
+      () => [],
+    );
+    expect(result.valid).toBe(true);
   });
 
   it('should validate the default page doesn’t specify parameters', async () => {

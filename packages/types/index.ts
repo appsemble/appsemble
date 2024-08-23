@@ -1725,6 +1725,11 @@ export interface BasicPageDefinition extends BasePageDefinition {
   blocks: BlockDefinition[];
 }
 
+export interface ContainerPageDefinition extends BasePageDefinition {
+  type: 'container';
+  pages: PageDefinition[];
+}
+
 export interface FlowPageDefinition extends BasePageDefinition {
   type: 'flow';
 
@@ -1812,6 +1817,7 @@ export interface TabsPageDefinition extends BasePageDefinition {
 
 export type PageDefinition =
   | BasicPageDefinition
+  | ContainerPageDefinition
   | FlowPageDefinition
   | LoopPageDefinition
   | TabsPageDefinition;

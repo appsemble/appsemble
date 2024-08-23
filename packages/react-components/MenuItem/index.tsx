@@ -29,7 +29,7 @@ interface SideNavLinkProps {
   /**
    * Where to navigate to.
    */
-  readonly to: string;
+  readonly to?: string;
 }
 
 /**
@@ -48,28 +48,35 @@ export function MenuItem({ children, end, icon, title, to }: SideNavLinkProps): 
     [collapsed, setCollapsed],
   );
 
-  return (
+  const renderMenuItem = useCallback(
+    (isActive?: boolean): ReactNode => (
+      <>
+        {icon ? <Icon className={`mr-1 ${styles.middle}`} icon={icon} size="medium" /> : null}
+        <span className={styles.text}>{children}</span>
+        {collapsible ? (
+          <Icon
+            className={styles.icon}
+            color={isActive ? 'white' : 'dark'}
+            icon={collapsed ? 'chevron-up' : 'chevron-down'}
+            onClick={clickHideButton}
+            size="medium"
+          />
+        ) : null}
+      </>
+    ),
+    [children, clickHideButton, collapsed, collapsible, icon],
+  );
+
+  return to ? (
     <NavLink
       className={classNames(`is-relative is-flex is-align-items-center ${styles.root}`)}
       end={end}
       title={title}
       to={to}
     >
-      {({ isActive }) => (
-        <>
-          {icon ? <Icon className={`mr-1 ${styles.middle}`} icon={icon} size="medium" /> : null}
-          <span className={styles.text}>{children}</span>
-          {collapsible ? (
-            <Icon
-              className={styles.icon}
-              color={isActive ? 'white' : 'dark'}
-              icon={collapsed ? 'chevron-up' : 'chevron-down'}
-              onClick={clickHideButton}
-              size="medium"
-            />
-          ) : null}
-        </>
-      )}
+      {({ isActive }) => renderMenuItem(isActive)}
     </NavLink>
+  ) : (
+    <div className={classNames('is-relative is-flex px-2 py-3 ml-1')}>{renderMenuItem()}</div>
   );
 }

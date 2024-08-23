@@ -48,6 +48,32 @@ export function Page(): ReactNode {
   const [dialog, setDialog] = useState<ShowDialogParams>();
   const stepRef = useRef<unknown>();
   const tabRef = useRef<unknown>();
+  const url = `/${lang}`;
+
+  const defaultErrorPage = useCallback(
+    (): ReactNode => (
+      <Content padding>
+        <Message color="danger">
+          <p>
+            <FormattedMessage
+              {...messages.permissionError}
+              values={{
+                link: (text) => (
+                  <a href={`${apiUrl}/apps/${appId}`} rel="noopener noreferrer" target="_blank">
+                    {text}
+                  </a>
+                ),
+              }}
+            />
+          </p>
+          <Button className="mt-4" color="danger">
+            <FormattedMessage {...messages.logout} />
+          </Button>
+        </Message>
+      </Content>
+    ),
+    [],
+  );
 
   const [shareDialogParams, setShareDialogParams] = useState<ShareDialogState>();
   const showShareDialog: ShowShareDialog = useCallback(
@@ -87,10 +113,44 @@ export function Page(): ReactNode {
       index = definition.pages.findIndex((p) => normalize(p.name) === pageName);
     }
   }
+  const findPageById = useCallback(
+    (pages: PageDefinition[]): PageDefinition | null => {
+      for (const internalPage of pages) {
+        const normalizedName = normalize(internalPage.name);
 
-  const page = index === -1 ? null : definition.pages[index];
+        if (normalizedName === normalizedPageId) {
+          return internalPage;
+        }
+
+        // Check for translated page name
+        const pageMessages = appMessageIds.filter((id) => id.startsWith('pages.'));
+        const translatedPage = pageMessages.find(
+          (id) => normalize(getAppMessage({ id }).format() as string) === normalizedPageId,
+        );
+
+        if (translatedPage) {
+          const pageName = translatedPage.split('.').pop();
+          if (normalize(internalPage.name) === pageName) {
+            return internalPage;
+          }
+        }
+
+        if (internalPage.type === 'container') {
+          const foundPage = findPageById(internalPage.pages);
+          if (foundPage) {
+            return foundPage;
+          }
+        }
+      }
+
+      return null;
+    },
+    [appMessageIds, getAppMessage, normalizedPageId],
+  );
+
+  const page = index === -1 ? findPageById(definition.pages) : definition.pages[index];
   const internalPageName = page ? normalize(page.name) : null;
-  const prefix = index === -1 ? null : `pages.${internalPageName}`;
+  const prefix = internalPageName ? `pages.${internalPageName}` : null;
   const prefixIndex = index === -1 ? null : `pages.${index}`;
 
   const remapWithContext = useCallback(
@@ -205,6 +265,17 @@ export function Page(): ReactNode {
                     showShareDialog={showShareDialog}
                     stepRef={stepRef}
                   />
+                ) : page.type === 'container' ? (
+                  page.pages.some(checkPagePermissionsCallback) ? (
+                    <Navigate
+                      to={pathname.replace(
+                        pageId,
+                        normalize(page.pages.find(checkPagePermissionsCallback).name),
+                      )}
+                    />
+                  ) : (
+                    defaultErrorPage()
+                  )
                 ) : (
                   <BlockList
                     appStorage={appStorage.current}
@@ -245,7 +316,7 @@ export function Page(): ReactNode {
   // If the user isn’t allowed to view the page, because they aren’t logged in, redirect to the
   // login page.
   if (page && !isLoggedIn) {
-    return <Navigate to={`/${lang}/Login?${new URLSearchParams({ redirect })}`} />;
+    return <Navigate to={`${url}/Login?${new URLSearchParams({ redirect })}`} />;
   }
 
   // If the user is logged in, but isn’t allowed to view the current page, redirect to the default
@@ -260,7 +331,7 @@ export function Page(): ReactNode {
       pageName = getAppMessage({ id: defaultPagePrefix }).format() as string;
     }
 
-    return <Navigate to={`/${lang}/${normalize(pageName)}`} />;
+    return <Navigate to={`${url}/${normalize(pageName)}`} />;
   }
 
   // If the user isn’t allowed to view the default page either, find a page to redirect the user to.
@@ -275,29 +346,9 @@ export function Page(): ReactNode {
       pageName = getAppMessage({ id: normalizedRedirectPageName }).format() as string;
     }
 
-    return <Navigate to={`/${lang}/${normalize(pageName)}`} />;
+    return <Navigate to={`${url}/${normalize(pageName)}`} />;
   }
 
   // If the user isn’t allowed to view any pages, show an error message.
-  return (
-    <Content padding>
-      <Message color="danger">
-        <p>
-          <FormattedMessage
-            {...messages.permissionError}
-            values={{
-              link: (text) => (
-                <a href={`${apiUrl}/apps/${appId}`} rel="noopener noreferrer" target="_blank">
-                  {text}
-                </a>
-              ),
-            }}
-          />
-        </p>
-        <Button className="mt-4" color="danger">
-          <FormattedMessage {...messages.logout} />
-        </Button>
-      </Message>
-    </Content>
-  );
+  return defaultErrorPage();
 }

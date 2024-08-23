@@ -1,12 +1,19 @@
-import { Button, MenuButton, MenuItem, MenuSection } from '@appsemble/react-components';
+import {
+  Button,
+  CollapsibleMenuSection,
+  MenuButton,
+  MenuItem,
+  MenuSection,
+} from '@appsemble/react-components';
 import { type PageDefinition } from '@appsemble/types';
 import { normalize, remap } from '@appsemble/utils';
-import { Fragment, type ReactNode } from 'react';
+import { Fragment, type ReactNode, useCallback } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useParams } from 'react-router-dom';
 
 import styles from './index.module.css';
 import { messages } from './messages.js';
+import { checkPagePermissions } from '../../utils/checkPagePermissions.js';
 import { appId, sentryDsn } from '../../utils/settings.js';
 import { useAppDefinition } from '../AppDefinitionProvider/index.js';
 import { useAppMessages } from '../AppMessagesProvider/index.js';
@@ -26,36 +33,61 @@ export function SideNavigation({ blockMenus, pages }: SideNavigationProps): Reac
   const { lang } = useParams<{ lang: string }>();
   const url = `/${lang}`;
 
+  const { definition } = useAppDefinition();
   const { getAppMessage, getMessage } = useAppMessages();
   const { getVariable } = useAppVariables();
   const {
     definition: { layout, security },
   } = useAppDefinition();
   const { formatMessage } = useIntl();
-  const { isLoggedIn, logout, userInfo } = useUser();
+  const { isLoggedIn, logout, role, teams, userInfo } = useUser();
+  const checkPagePermissionsCallback = useCallback(
+    (page: PageDefinition): boolean => checkPagePermissions(page, definition, role, teams),
+    [definition, role, teams],
+  );
 
-  return (
-    <div className="is-flex-grow-1 is-flex-shrink-1">
-      <MenuSection>
-        {pages.map((page) => {
-          const name = getAppMessage({
-            id: `pages.${normalize(page.name)}`,
-            defaultMessage: page.name,
-          }).format() as string;
-          const navName = page.navTitle
-            ? (remap(page.navTitle, null, {
-                appId,
-                appUrl: window.location.origin,
-                url: window.location.href,
-                getMessage,
-                getVariable,
-                userInfo,
-                appMember: userInfo?.appMember,
-                context: { name },
-                locale: lang,
-              }) as string)
-            : name;
+  const generateNameAndNavName = useCallback(
+    (page: PageDefinition): [string, string] => {
+      const name = getAppMessage({
+        id: `pages.${normalize(page.name)}`,
+        defaultMessage: page.name,
+      }).format() as string;
+      const navName = page.navTitle
+        ? (remap(page.navTitle, null, {
+            appId,
+            appUrl: window.location.origin,
+            url: window.location.href,
+            getMessage,
+            getVariable,
+            userInfo,
+            appMember: userInfo?.appMember,
+            context: { name },
+            locale: lang,
+          }) as string)
+        : name;
+      return [name, navName];
+    },
+    [getAppMessage, getMessage, getVariable, lang, userInfo],
+  );
 
+  const renderMenu = useCallback(
+    (internalPages: PageDefinition[]): ReactNode =>
+      internalPages
+        .filter((page) => !page.hideNavTitle)
+        .filter((page) => checkPagePermissionsCallback(page))
+        .map((page) => {
+          if (page?.type === 'container') {
+            const [, navName] = generateNameAndNavName(page);
+            return (
+              <CollapsibleMenuSection key={page.name}>
+                <MenuItem icon={page?.icon} key={page?.name} title={navName}>
+                  {navName}
+                </MenuItem>
+                <MenuSection>{renderMenu(page.pages)}</MenuSection>
+              </CollapsibleMenuSection>
+            );
+          }
+          const [name, navName] = generateNameAndNavName(page);
           return (
             <MenuItem
               icon={page.icon}
@@ -66,7 +98,14 @@ export function SideNavigation({ blockMenus, pages }: SideNavigationProps): Reac
               {navName}
             </MenuItem>
           );
-        })}
+        }),
+    [generateNameAndNavName, checkPagePermissionsCallback, url],
+  );
+
+  return (
+    <div className="is-flex-grow-1 is-flex-shrink-1">
+      <MenuSection>
+        {renderMenu(pages)}
         {layout?.settings === 'navigation' && (
           <MenuItem icon="wrench" title={formatMessage(messages.settings)} to={`${url}/Settings`}>
             <FormattedMessage {...messages.settings} />
