@@ -4,8 +4,8 @@ import { messages } from '../../organizations/messages.js';
 
 # Organizations
 
-An organization represents a collective name for groups of apps, blocks and Appsemble users. In
-order to publish new blocks or to create and manage apps, the user needs to be in an organization.
+An organization represents a collective name for groups of apps, blocks and platform users. In order
+to publish new blocks or to create and manage apps, the platform user needs to be in an organization.
 
 ## Creating an organization
 
@@ -28,13 +28,11 @@ respective steps will allow you to delete the organization.
 After creating an organization, members can be added via email. This email will contain a link that
 the recipient can click on in order to accept or decline joining the organization.
 
-Organization members can be assigned roles that affect which parts of the studio they have access
-to. Each role has all the permissions of the previous role in the list.
+Organization members can be assigned roles that affect which parts of the platform they have access
+to. These roles are the following:
 
-These roles are the following:
-
-- `Member`: The default role for new members. Organization members are able to view private apps
-  that belong to the organization.
+- `Member`: The default role for new organization members. Organization members are able to view
+private apps that belong to the organization.
 - `AppTranslator`: App translators can view and modify app messages.
 - `AppContentsExplorer`: App contents explorers can view app resources and assets.
 - `AppContentsManager`: App contents managers can view and modify app resources and assets.
