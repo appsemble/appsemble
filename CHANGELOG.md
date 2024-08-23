@@ -1031,7 +1031,7 @@ All notable changes to this project will be documented in this file.
 - Block(`image`): The Image block now has width and height (in pixel) properties.
 - App: Added `team.members` action.
 - Server: Add `resource.patch` action to server.
-- Server: Added specific `getGroupMember` endpoint.
+- Server: Added specific `getTeamMember` endpoint.
 
 ### Changed
 
@@ -2375,7 +2375,7 @@ All notable changes to this project will be documented in this file.
 
 ### Changed
 
-- Studio: Add `ManageGroups` permission to `Manager` role in organizations. Organization managers now
+- Studio: Add `ManageTeams` permission to `Manager` role in organizations. Organization managers now
   have full access to teams for apps.
 - Studio: Add various design changes.
 
@@ -2416,7 +2416,7 @@ All notable changes to this project will be documented in this file.
 ### Added
 
 - Block(`map`): Add `filterLatitudeName` and `filterLongitudeName` parameters.
-- App: Add support for `$group:member` and `$group:manager` roles in `page.roles`.
+- App: Add support for `$team:member` and `$team:manager` roles in `page.roles`.
 - Server: Add option to filter resources by user ID by applying the appropriate OData filter. For
   example: `$filter=$author/id eq 11111111-a111-11a1-aa11-111a1a11aa1a"`.
 - Server: Added possibility to upload and link assets with resources.
@@ -2485,7 +2485,7 @@ All notable changes to this project will be documented in this file.
 - Block(`form`): Added support for dynamic enum options.
 - Block(`form`): Added the new `change` event.
 - App: Add `resource.count` action.
-- App: Add support for `$group:member` and `$group:manager` in resource action roles.
+- App: Add support for `$team:member` and `$team:manager` in resource action roles.
 - App: Added Danish language support to the core parts of apps.
 - App: Added `waitFor` option for `event` action.
 - Appsemble: Add support for fetching resources based on teams.
