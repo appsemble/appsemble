@@ -1,4 +1,4 @@
-# A guide to app screenshots
+# App screenshots
 
 In Appsemble, apps can have screenshots, which are visible in the app page in the Appsemble studio.
 

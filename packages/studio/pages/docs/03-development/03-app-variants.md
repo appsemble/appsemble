@@ -1,4 +1,4 @@
-# A guide to making app variants
+# App variants
 
 Sometimes when using Appsemble, it might be needed to create a copy of an existing app using
 different branding or data. Appsemble provides a mechanism, called app variants, that allows users
@@ -23,6 +23,7 @@ maintainability.
   - [App README files](#app-readme-files)
   - [Resources](#resources)
   - [Assets](#assets)
+  - [App collection](#app-collection)
 - [How to apply an app variant?](#how-to-apply-an-app-variant)
 - [Demo mode](#demo-mode)
 - [Seeding data](#seeding-data)
@@ -150,7 +151,7 @@ the app variant and will overwrite screenshots defined in the original app.
 Screenshots are automatically published along with the app when using the `appsemble app publish`
 and `appsemble app update` commands.
 
-### [App README files](../02-guides/app-long-description.md)
+### App README files
 
 `README.md` files in different languages can be put inside the corresponding app variant directory
 (e.g. `demodam`). These files will be used when applying the app variant and will overwrite `README`
@@ -176,6 +177,13 @@ will overwrite assets defined in the original app.
 
 When using the `appsemble app publish` and the `appsemble app update` commands, assets can be
 published along with the app using the `--assets` flag.
+
+### App collection
+
+Appsemble supports defining which collections an app should be added to when published. A
+`collections` entry can be added to any context in the `.appsemblerc` file. This entry must be an
+array of collection ids. When publishing an app with a context, which has collections specified, the
+app will be automatically added to those collections after publishing.
 
 ## How to apply an app variant?
 
