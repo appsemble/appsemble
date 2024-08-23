@@ -696,8 +696,8 @@ These functions have only been implemented for strings, not for collections.
 
 ## Securing resources
 
-All resources and their corresponding actions are public by default. To secure the access to these
-resources, you can define a security definition in your app.
+All resources and their corresponding actions are private by default. To allow access to resource
+actions you need to add corresponding permissions to the app’s security definition.
 
 You can define what resource permissions unauthenticated users have by using the `guest` property of
 the security definition like so:
