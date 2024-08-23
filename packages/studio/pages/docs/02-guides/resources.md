@@ -78,7 +78,7 @@ The above resource will be recognized as an object which can be referred to from
 `/api/apps/{appId}/resources/person/{id?}`, supporting basic `CRUD` (create, read, update and
 delete) actions.
 
-> Note: By default all resource actions are public. In order to secure these, refer to
+> Note: By default all resource actions are private. In order to allow access to them, refer to
 > [Securing resources](#securing-resources).
 
 ## type
