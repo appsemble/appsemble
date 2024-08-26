@@ -491,6 +491,7 @@ export async function handler({
       // TODO: combine validation logic with playground, controllers, etc.
       const document = parseDocument(yaml);
       const appId = apps?.[index]?.id ? ` with app id: ${apps[index].id}` : '';
+
       logger.info(`Validating ${document.get('name')} app definition${appId}.`);
       const definition = document.toJS({ maxAliasCount: 10_000 }) as AppDefinitionType;
       const schemaValidationResult = validator.validate(definition, schemas.AppDefinition, {

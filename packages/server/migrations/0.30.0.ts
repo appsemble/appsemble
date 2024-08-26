@@ -871,7 +871,12 @@ function handlePermission(
     (document.getIn(path) as YAMLSeq<string>).items.includes(permission);
 
   // Consider excluding own:create for $author without a create action on the resource
-  const base = ['$resource', resource, role === '$author' && 'own', action]
+  const base = [
+    '$resource',
+    resource,
+    role === '$author' && 'own',
+    action === 'count' ? 'query' : action,
+  ]
     .filter(Boolean)
     .join(':');
   const permission = [base, view].filter(Boolean).join(':');
@@ -890,8 +895,8 @@ function handlePermission(
   if (role === '$public') {
     const roles = (
       document.getIn(['security', 'roles']) as YAMLMap<Scalar<string>, unknown>
-    ).items.map((pair) => pair.key.value);
-    for (const r of roles) {
+    )?.items?.map((pair) => pair.key.value);
+    for (const r of roles ?? []) {
       helper(['security', 'roles', r, 'permissions']);
     }
     helper(['security', 'guest', 'permissions']);
@@ -980,22 +985,33 @@ export const appPatches: Patch[] = [
     },
   },
   // TODO: remove teams from security def
-  {
-    // Teams:
-    // join: invite
-    // create:
-    //   - Reader
-    // invite:
-    //   - $team:member
-    message: 'test',
-    path: [],
-  },
-  // Security.default.policy
-  // everyone,organization
-  {
-    message: 'test',
-    path: [],
-  },
+  // {
+  //   // Teams:
+  //   // join: invite
+  //   // create:
+  //   //   - Reader
+  //   // invite:
+  //   //   - $team:member
+  //   message: 'test',
+  //   path: [],
+  //   patches: [
+  //     (document, transaction, stepsList) => {
+  //       if (document.has('security')) {
+  //         return;
+  //       }
+  //       // Reverse to make sure the roles are deleted in the right order
+  //       for (const steps of stepsList.reverse()) {
+  //         document.deleteIn(steps.slice(0, -1));
+  //       }
+  //     },
+  //   ],
+  // },
+  // // Security.default.policy
+  // // everyone,organization
+  // {
+  //   message: 'Change',
+  //   path: [],
+  // },
   {
     message: 'Delete `roles` property.',
     path: ['roles'],
@@ -1007,36 +1023,15 @@ export const appPatches: Patch[] = [
     delete: true,
   },
   {
-    // TODO: test
-    message:
-      'Remove resource roles: $author, $none, $team:member, $team:manager, if used without security',
-    path: ['resources', '*', 'roles', /\d+/, /\$(author|none|team:member|team:manager)/],
-    patches: [
-      (document, transaction, stepsList) => {
-        if (document.has('security')) {
-          return;
-        }
-        // Reverse to make sure the roles are deleted in the right order
-        for (const steps of stepsList.reverse()) {
-          document.deleteIn(steps.slice(0, -1));
-        }
-      },
-    ],
-  },
-  {
     message: 'Add `permissions` to roles.',
     path: ['security', 'roles', /.*/],
+    value: { key: 'permissions', value: new YAMLSeq() },
     add: true,
-    value() {
-      return { key: 'permissions', value: new YAMLSeq() };
-    },
   },
   {
     message: 'Replace `$none` with `$guest` and add guest to security.',
     path: ['*', 'roles', /\d+/, '$none', '<'],
-    value() {
-      return '$guest';
-    },
+    value: '$guest',
     patches: [addGuest],
   },
   {
@@ -1044,7 +1039,6 @@ export const appPatches: Patch[] = [
     path: ['resources', '*', 'roles', /\d+/, '$public', '<'],
     patches: [
       (document, transaction, stepsList) => {
-        // TODO: always require security definition if resources are used
         if (!document.has('security') || document.hasIn(['security', 'guest'])) {
           return;
         }
@@ -1053,7 +1047,7 @@ export const appPatches: Patch[] = [
           stepsList.some(
             (s) =>
               s[0] === 'resources' &&
-              /create|update|patch|query|get|delete/.test(s[2] as string) &&
+              /create|update|patch|query|get|delete|count/.test(s[2] as string) &&
               s[3] === 'roles' &&
               s[5] === '$public',
           ) ||
@@ -1067,6 +1061,7 @@ export const appPatches: Patch[] = [
       },
     ],
   },
+  // TODO fix
   {
     // TODO: write new roles to security def inherit predefined roles
     // and update db group member records with new roles
@@ -1123,14 +1118,20 @@ export const appPatches: Patch[] = [
                 (s) =>
                   s.length === 5 &&
                   s[1] === resource &&
-                  /create|update|patch|query|get|delete/.test(s[2] as string),
+                  /create|update|patch|query|get|delete|count/.test(s[2] as string),
               )
               .map((s) => s[2]),
           );
 
-          for (const action of ['create', 'update', 'patch', 'query', 'get', 'delete'].filter(
-            (a) => !actions.has(a),
-          )) {
+          for (const action of [
+            'create',
+            'update',
+            'patch',
+            'query',
+            'get',
+            'delete',
+            'count',
+          ].filter((a) => !actions.has(a))) {
             handlePermission(document, resource, action, role);
           }
 
@@ -1150,7 +1151,8 @@ export const appPatches: Patch[] = [
         const pathsToDelete: Path[] = [];
 
         const actions = stepsList.filter(
-          (s) => s.length === 5 && /create|update|patch|query|get|delete/.test(s[2] as string),
+          (s) =>
+            s.length === 5 && /create|update|patch|query|get|delete|count/.test(s[2] as string),
         );
         for (const steps of actions) {
           const role = document.getIn(steps) as string;
