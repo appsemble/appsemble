@@ -11,7 +11,7 @@ automatically sorted based on how their rating is, but you can change how this i
 like.
 
 By clicking on any of these apps you're taken to their frontpage. Depending on the app's
-[privacy setting](/docs/guides/security#app-privacy) and your role in the organization, you'll see a
+[privacy setting](../02-guides/security#app-privacy) and your role in the organization, you'll see a
 different screen.
 
 You can also create a new app on this page by clicking the [Create new App](/apps#create) button, or

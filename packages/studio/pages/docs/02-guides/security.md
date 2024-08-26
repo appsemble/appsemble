@@ -51,7 +51,7 @@ Appsemble accounts since the same account can be reused.
 The second login option allows for app members to login using a password and email address. When
 enabled, a login form appears on the login page from which an app member can login, register a new
 account or reset their password. This method also allows usage of the
-[`app.member.login` and `app.member.register` actions](../05-reference/action.mdx#app.member.login).
+[`app.member.login` and `app.member.register` actions](../07-reference/action.mdx#app.member.login).
 
 This login option can be customized by naming pages `Login` and `Register`. Doing so will display
 these pages instead of the default app login and register pages.
@@ -65,7 +65,7 @@ the app member as set by the app.
 
 ## Security Definition
 
-The security definition, as defined [here](../05-reference/app.mdx#security-definition), can be used
+The security definition, as defined [here](../07-reference/app.mdx#security-definition), can be used
 to define the roles that are used within the app as well as the app permissions each role has. The
 security definition also determines how the default role is assigned. The security definition can
 also specify permissions for unauthenticated users with the `guest` property.
@@ -287,7 +287,7 @@ security:
 
 ## Restricting Pages
 
-By specifying the [`roles`](../05-reference/app.mdx#base-page-definition-roles) property for a page,
+By specifying the [`roles`](../07-reference/app.mdx#base-page-definition-roles) property for a page,
 visiting the page requires the app member to have at least one of the roles specified in this list.
 
 If `$guest` is in the list of roles of the page, unauthenticated users may view the page.

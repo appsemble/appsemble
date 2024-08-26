@@ -665,4 +665,4 @@ continue on the result of the app created in this guide:
 - [Notifications](notifications.md)
 - [Theming](theming.md)
 - [DNS](dns.md)
-- [Reference documentation](../05-reference)
+- [Reference documentation](../07-reference)

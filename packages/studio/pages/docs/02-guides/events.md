@@ -69,7 +69,7 @@ More information about which kinds of events are supported by each block can be 
 ## Event action
 
 It is possible to emit your own events based on actions triggered from a block. This can be done by
-using an [event action](../05-reference/action.mdx#event).
+using an [event action](../07-reference/action.mdx#event).
 
 Any data received from the action will be passed to the event.
 

@@ -4,7 +4,7 @@ It’s common to connect to external web services from your Appsemble app. Often
 some way to authenticate when requesting data.
 
 In Appsemble, you can request data from other web services using the
-[request action](../05-reference/action.mdx#request). To authenticate request actions so data can be
+[request action](../07-reference/action.mdx#request). To authenticate request actions so data can be
 requested from a secured service, the `App Service Secrets` should be used to securely store them.
 
 `App Service Secrets` allow you to set a URL (or URL pattern) that matches with the URL defined in
@@ -13,7 +13,7 @@ were found.
 
 > Note: This feature requires the request to be proxied through the Appsemble server. This is
 > enabled by default, or you can set it to `true` manually with the
-> [proxy](../05-reference/action.mdx#request-proxy) property. If this is set to `false` the request
+> [proxy](../07-reference/action.mdx#request-proxy) property. If this is set to `false` the request
 > won’t be passed through the Appsemble API to authenticate the request.
 
 > Note: At the time of writing this feature is `not supported` in
