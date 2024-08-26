@@ -18,6 +18,7 @@ import {
   showAppsembleLogin,
   showAppsembleOAuth2Login,
 } from '../../utils/settings.js';
+import { useAppDefinition } from '../AppDefinitionProvider/index.js';
 import { useAppMember } from '../AppMemberProvider/index.js';
 import { OpenIDLogin, type OpenIDLoginProps } from '../OpenIDLogin/index.js';
 
@@ -25,6 +26,7 @@ export function MainLogin(): ReactNode {
   const { lang } = useParams<{ lang: string }>();
   const busy = useToggle(false);
 
+  const { definition } = useAppDefinition();
   const { logout, passwordLogin } = useAppMember();
   const linking = loadAccountLinkingState();
 
@@ -61,7 +63,7 @@ export function MainLogin(): ReactNode {
 
   return (
     <>
-      {linking ? (
+      {linking && definition.security?.default?.policy !== 'invite' ? (
         <Message>
           <FormattedMessage {...messages.link} values={{ email: linking.email }} />
         </Message>
@@ -74,16 +76,20 @@ export function MainLogin(): ReactNode {
           resetPasswordLink={`/${lang}/Reset-Password`}
         />
       ) : null}
-      <OpenIDLogin {...openIDLoginProps} />
-      {linking ? (
-        <Button
-          className={`is-fullwidth my-2 ${styles.button}`}
-          icon="arrow-left"
-          onClick={handleReturn}
-        >
-          <FormattedMessage {...messages.return} />
-        </Button>
-      ) : null}
+      {definition.security?.default?.policy === 'invite' ? null : (
+        <>
+          <OpenIDLogin {...openIDLoginProps} />
+          {linking ? (
+            <Button
+              className={`is-fullwidth my-2 ${styles.button}`}
+              icon="arrow-left"
+              onClick={handleReturn}
+            >
+              <FormattedMessage {...messages.return} />
+            </Button>
+          ) : null}
+        </>
+      )}
     </>
   );
 }

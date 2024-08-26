@@ -80,6 +80,15 @@ to only do this for users being in the same organization as the app.
 > option) in the secrets page. If this option is enabled, any Appsemble user account is able to log
 > in to the app and will receive the default role.
 
+The `policy` can also be set to `invite`, which means only app members, explicitly invited to the
+app with a specific role, can create an account and login to the app. Setting the app’s security
+policy to `invite` disables all app login methods except the password login.
+
+> **Important**: When a user is invited to an app group, and they go to the app to accept the
+> invitation, they are prompted to login or create an account. Setting the app’s security policy to
+> `invite` means that the user will not be able to create an account in the app themselves so they
+> have to be invited to app first before inviting them to a group.
+
 ### Permissions
 
 Each of the roles listed in the `roles` object as well as the `guest` object can have different app

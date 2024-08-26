@@ -12,6 +12,7 @@ import { type Context } from 'koa';
 import { App, AppMember } from '../../../../models/index.js';
 import { getAppUrl } from '../../../../utils/app.js';
 import { parseAppMemberProperties } from '../../../../utils/appMember.js';
+import { checkAppSecurityPolicy } from '../../../../utils/auth.js';
 import { createJWTResponse } from '../../../../utils/createJWTResponse.js';
 
 export async function registerAppMemberWithEmail(ctx: Context): Promise<void> {
@@ -53,6 +54,14 @@ export async function registerAppMemberWithEmail(ctx: Context): Promise<void> {
   );
 
   assertKoaError(!app.definition?.security, ctx, 401, 'This app has no security definition');
+
+  assertKoaError(
+    !(await checkAppSecurityPolicy(app)),
+    ctx,
+    401,
+    'App member is not allowed to register due to the app’s security policy',
+    { isAllowed: false },
+  );
 
   assertKoaError(
     !app.definition?.security?.default?.role,

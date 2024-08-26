@@ -9,6 +9,7 @@ import forge from 'node-forge';
 
 import { App, AppSamlSecret, SamlLoginRequest } from '../../../../models/index.js';
 import { argv } from '../../../../utils/argv.js';
+import { checkAppSecurityPolicy } from '../../../../utils/auth.js';
 import { NS } from '../../../../utils/saml.js';
 
 const deflate = promisify(deflateRaw);
@@ -21,6 +22,7 @@ export async function createAppSamlAuthnRequest(ctx: Context): Promise<void> {
     request: {
       body: { redirectUri, scope, state, timezone },
     },
+    user: authSubject,
   } = ctx;
 
   const app = await App.findOne({
@@ -37,6 +39,14 @@ export async function createAppSamlAuthnRequest(ctx: Context): Promise<void> {
   });
 
   assertKoaError(!app, ctx, 404, 'App not found');
+
+  assertKoaError(
+    !(await checkAppSecurityPolicy(app, authSubject.id)),
+    ctx,
+    401,
+    'User is not allowed to login due to the app’s security policy',
+    { isAllowed: false },
+  );
 
   const [secret] = app.AppSamlSecrets;
   assertKoaError(!secret, ctx, 404, 'SAML secret not found');

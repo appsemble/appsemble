@@ -16,7 +16,7 @@ import {
   User,
 } from '../../../../models/index.js';
 import { argv } from '../../../../utils/argv.js';
-import { handleUniqueAppMemberEmailIndex } from '../../../../utils/auth.js';
+import { checkAppSecurityPolicy, handleUniqueAppMemberEmailIndex } from '../../../../utils/auth.js';
 import { createAppOAuth2AuthorizationCode } from '../../../../utils/oauth2.js';
 import { NS } from '../../../../utils/saml.js';
 
@@ -28,6 +28,7 @@ export async function assertAppSamlConsumerService(ctx: Context): Promise<void> 
     request: {
       body: { RelayState, SAMLResponse },
     },
+    user: authSubject,
   } = ctx;
 
   const prompt = (status: SAMLStatus, query?: Record<string, string>): void =>
@@ -36,6 +37,20 @@ export async function assertAppSamlConsumerService(ctx: Context): Promise<void> 
   if (RelayState !== argv.host) {
     return prompt('invalidrelaystate');
   }
+
+  const app = await App.findByPk(appId, {
+    attributes: ['definition', 'domain', 'id', 'path', 'OrganizationId', 'scimEnabled'],
+  });
+
+  assertKoaError(!app, ctx, 404, 'App not found');
+
+  assertKoaError(
+    !(await checkAppSecurityPolicy(app, authSubject.id)),
+    ctx,
+    401,
+    'User is not allowed to login due to the app’s security policy',
+    { isAllowed: false },
+  );
 
   const appSamlSecret = await AppSamlSecret.findOne({
     attributes: ['entityId', 'idpCertificate', 'objectIdAttribute'],
@@ -111,12 +126,6 @@ export async function assertAppSamlConsumerService(ctx: Context): Promise<void> 
     include: [
       {
         model: AppSamlSecret,
-        include: [
-          {
-            model: App,
-            attributes: ['definition', 'domain', 'id', 'path', 'OrganizationId', 'scimEnabled'],
-          },
-        ],
       },
       {
         model: User,
@@ -128,7 +137,6 @@ export async function assertAppSamlConsumerService(ctx: Context): Promise<void> 
     return prompt('invalidsubjectconfirmation');
   }
 
-  const app = loginRequest.AppSamlSecret.App;
   const authorization = await AppSamlAuthorization.findOne({
     where: { nameId, AppSamlSecretId: appSamlSecretId },
     include: [{ model: AppMember, attributes: ['id'] }],

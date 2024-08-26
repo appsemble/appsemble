@@ -1,7 +1,7 @@
 import { assertKoaError } from '@appsemble/node-utils';
 import { type Context } from 'koa';
 
-import { App, AppMember, User } from '../../../../../../../models/index.js';
+import { App, AppMember } from '../../../../../../../models/index.js';
 import { checkAppSecurityPolicy } from '../../../../../../../utils/auth.js';
 import { createAppOAuth2AuthorizationCode } from '../../../../../../../utils/oauth2.js';
 
@@ -14,21 +14,19 @@ export async function verifyCurrentUserOAuth2AppConsent(ctx: Context): Promise<v
     user: authSubject,
   } = ctx;
 
-  const user = await User.findByPk(authSubject.id);
-
   const app = await App.findByPk(appId, {
     attributes: ['definition', 'domain', 'id', 'path', 'OrganizationId'],
   });
 
   const appMember = await AppMember.findOne({
     where: {
-      UserId: user.id,
+      UserId: authSubject.id,
     },
   });
 
   assertKoaError(!app, ctx, 404, 'App not found');
 
-  const isAllowed = await checkAppSecurityPolicy(app, user);
+  const isAllowed = await checkAppSecurityPolicy(app, authSubject.id);
 
   assertKoaError(
     !isAllowed,

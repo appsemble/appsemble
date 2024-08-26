@@ -50,7 +50,7 @@ export async function processEmailAuthorization(
   }
 }
 
-export async function checkAppSecurityPolicy(app: App, user: User): Promise<boolean> {
+export async function checkAppSecurityPolicy(app: App, authSubjectId?: string): Promise<boolean> {
   const policy = app.definition?.security?.default?.policy ?? 'everyone';
 
   if (policy === 'invite') {
@@ -61,13 +61,15 @@ export async function checkAppSecurityPolicy(app: App, user: User): Promise<bool
     return true;
   }
 
-  if (policy === 'organization') {
+  if (policy === 'organization' && authSubjectId) {
     return Boolean(
       await OrganizationMember.count({
-        where: { OrganizationId: app.OrganizationId, UserId: user.id },
+        where: { OrganizationId: app.OrganizationId, UserId: authSubjectId },
       }),
     );
   }
+
+  return false;
 }
 
 export async function handleUniqueAppMemberEmailIndex(
