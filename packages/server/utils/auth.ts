@@ -53,6 +53,10 @@ export async function processEmailAuthorization(
 export async function checkAppSecurityPolicy(app: App, user: User): Promise<boolean> {
   const policy = app.definition?.security?.default?.policy ?? 'everyone';
 
+  if (policy === 'invite') {
+    return false;
+  }
+
   if (policy === 'everyone') {
     return true;
   }

@@ -769,12 +769,14 @@ export interface RoleDefinition {
   permissions?: CustomAppPermission[];
 }
 
+export type SecurityPolicy = 'everyone' | 'invite' | 'organization';
+
 export interface MinimalSecurity {
   guest: GuestDefinition;
 
   default?: {
     role: AppRole;
-    policy?: 'everyone' | 'organization';
+    policy?: SecurityPolicy
   };
 
   roles?: Record<Exclude<string, PredefinedAppRole>, RoleDefinition>;
@@ -785,7 +787,7 @@ export interface StrictSecurity {
 
   default: {
     role: AppRole;
-    policy?: 'everyone' | 'organization';
+    policy?: SecurityPolicy;
   };
 
   roles: Record<string, RoleDefinition>;
