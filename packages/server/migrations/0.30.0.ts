@@ -988,8 +988,8 @@ function handlePermission(
   if (role === '$public') {
     const roles = (
       document.getIn(['security', 'roles']) as YAMLMap<Scalar<string>, unknown>
-    )?.items?.map((pair) => pair.key.value);
-    for (const r of roles ?? []) {
+    ).items.map((pair) => pair.key.value);
+    for (const r of roles) {
       helper(['security', 'roles', r, 'permissions']);
     }
     helper(['security', 'guest', 'permissions']);
