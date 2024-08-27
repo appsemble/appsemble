@@ -1271,7 +1271,6 @@ export const appPatches: Patch[] = [
       },
     ],
   },
-  // TODO fix
   {
     message: 'Add roles `GroupMember` and `GroupManager` to security.roles if used.',
     path: ['*', 'roles', /\d+/, /\$team:member|\$team:manager/, '<'],
