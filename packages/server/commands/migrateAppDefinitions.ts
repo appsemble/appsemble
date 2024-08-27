@@ -350,6 +350,10 @@ export async function applyPatch(
   document: Document,
   transaction: Transaction,
 ): Promise<boolean> {
+  if (!patch.path.length) {
+    logger.warn('Patch path empty, please provide a path.');
+    return false;
+  }
   logger.verbose(patch.message);
   const [paths, stepsList] = collectPaths(patch.path, document.contents as YAMLMap);
   if (!paths.length) {

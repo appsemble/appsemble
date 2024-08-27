@@ -985,33 +985,33 @@ export const appPatches: Patch[] = [
     },
   },
   // TODO: remove teams from security def
-  // {
-  //   // Teams:
-  //   // join: invite
-  //   // create:
-  //   //   - Reader
-  //   // invite:
-  //   //   - $team:member
-  //   message: 'test',
-  //   path: [],
-  //   patches: [
-  //     (document, transaction, stepsList) => {
-  //       if (document.has('security')) {
-  //         return;
-  //       }
-  //       // Reverse to make sure the roles are deleted in the right order
-  //       for (const steps of stepsList.reverse()) {
-  //         document.deleteIn(steps.slice(0, -1));
-  //       }
-  //     },
-  //   ],
-  // },
-  // // Security.default.policy
-  // // everyone,organization
-  // {
-  //   message: 'Change',
-  //   path: [],
-  // },
+  {
+    // Teams:
+    // join: invite
+    // create:
+    //   - Reader
+    // invite:
+    //   - $team:member
+    message: 'test',
+    path: [],
+    patches: [
+      (document, transaction, stepsList) => {
+        if (document.has('security')) {
+          return;
+        }
+        // Reverse to make sure the roles are deleted in the right order
+        for (const steps of stepsList.reverse()) {
+          document.deleteIn(steps.slice(0, -1));
+        }
+      },
+    ],
+  },
+  // Security.default.policy
+  // everyone,organization
+  {
+    message: 'Change',
+    path: [],
+  },
   {
     message: 'Delete `roles` property.',
     path: ['roles'],
