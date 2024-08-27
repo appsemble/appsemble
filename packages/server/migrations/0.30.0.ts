@@ -331,12 +331,17 @@ export async function up(transaction: Transaction, db: Sequelize): Promise<void>
     `INSERT INTO "GroupMember" (id, role, "GroupId", created, updated, "AppMemberId")
       SELECT
         gen_random_uuid(),
-        CASE role
-          WHEN 'member'::"enum_TeamMember_role" THEN 'Member'
-          WHEN 'manager'::"enum_TeamMember_role" THEN 'GroupsManager'
-        END as role,
-        "TeamId" AS "GroupId", created, updated, "AppMemberId"
-      FROM "TeamMember";`,
+        CASE
+          WHEN tm."role" = 'member'::"enum_TeamMember_role" THEN 'GroupMember' || am."role"
+          WHEN tm."role" = 'manager'::"enum_TeamMember_role" THEN 'GroupManager' || am."role"
+          ELSE tm."role"
+        END AS role,
+        tm."TeamId" AS "GroupId",
+        tm.created,
+        tm.updated,
+        tm."AppMemberId"
+      FROM "TeamMember" tm
+      JOIN "AppMember" am ON tm."AppMemberId" = am."id";`,
     { transaction },
   );
 
@@ -375,13 +380,18 @@ export async function up(transaction: Transaction, db: Sequelize): Promise<void>
   await queryInterface.sequelize.query(
     `
     INSERT INTO "GroupInvite" ("GroupId", email, role, key, created, updated)
-      SELECT "TeamId" AS "GroupId", email,
-        CASE role
-          WHEN 'member'::"enum_TeamInvite_role" THEN 'Member'
-          WHEN 'manager'::"enum_TeamInvite_role" THEN 'GroupsManager'
-        END as role,
-        key, created, updated
-      FROM "TeamInvite";`,
+       SELECT
+         ti."TeamId" AS "GroupId",
+         ti.email,
+         CASE
+           WHEN ti."role" = 'member'::"enum_TeamInvite_role" THEN 'GroupMember'
+           WHEN ti."role" = 'manager'::"enum_TeamInvite_role" THEN 'GroupManager'
+           ELSE ti."role"
+         END AS role,
+         ti.key,
+         ti.created,
+         ti.updated
+       FROM "TeamInvite" ti;`,
     { transaction },
   );
 
@@ -725,15 +735,14 @@ export async function down(transaction: Transaction, db: Sequelize): Promise<voi
     { transaction },
   );
 
-  // TODO: test against prod data
   logger.warn('Copying records from table `GroupMember` to `TeamMember`');
   logger.warn('The following query might be slow depending on the amount of records present.');
   await queryInterface.sequelize.query(
     `INSERT INTO "TeamMember" (role, "TeamId", created, updated, "AppMemberId")
       SELECT
-        CASE role
-          WHEN 'Member' THEN 'member'::"enum_TeamMember_role"
-          WHEN 'GroupsManager' THEN 'manager'::"enum_TeamMember_role"
+        CASE
+          WHEN role LIKE 'GroupMember%' THEN 'member'::"enum_TeamMember_role"
+          WHEN role LIKE 'GroupManager%' THEN 'manager'::"enum_TeamMember_role"
           ELSE 'member'::"enum_TeamMember_role"
         END as role,
         "GroupId" AS "TeamId", created, updated, "AppMemberId"
@@ -771,10 +780,10 @@ export async function down(transaction: Transaction, db: Sequelize): Promise<voi
     `
     INSERT INTO "TeamInvite" ("TeamId", email, role, key, created, updated)
       SELECT "GroupId" AS "TeamId", email,
-        CASE role
-          WHEN 'Member' THEN 'member'::"enum_TeamInvite_role"
-          WHEN 'GroupsManager' THEN 'manager'::"enum_TeamInvite_role"
-          ELSE 'member'::"enum_TeamInvite_role"
+        CASE
+          WHEN role = 'GroupMember' THEN 'member'::"enum_TeamMember_role"
+          WHEN role = 'GroupManager' THEN 'manager'::"enum_TeamMember_role"
+          ELSE 'member'::"enum_TeamMember_role"
         END as role,
         key, created, updated
       FROM "GroupInvite";`,
@@ -984,34 +993,6 @@ export const appPatches: Patch[] = [
       }
     },
   },
-  // TODO: remove teams from security def
-  {
-    // Teams:
-    // join: invite
-    // create:
-    //   - Reader
-    // invite:
-    //   - $team:member
-    message: 'test',
-    path: [],
-    patches: [
-      (document, transaction, stepsList) => {
-        if (document.has('security')) {
-          return;
-        }
-        // Reverse to make sure the roles are deleted in the right order
-        for (const steps of stepsList.reverse()) {
-          document.deleteIn(steps.slice(0, -1));
-        }
-      },
-    ],
-  },
-  // Security.default.policy
-  // everyone,organization
-  {
-    message: 'Change',
-    path: [],
-  },
   {
     message: 'Delete `roles` property.',
     path: ['roles'],
@@ -1063,42 +1044,124 @@ export const appPatches: Patch[] = [
       },
     ],
   },
-  // TODO fix
   {
-    // TODO: write new roles to security def inherit predefined roles
-    // and update db group member records with new roles
-    message: 'Add roles `Member` and `GroupsManager` to security.roles if used.',
+    message: 'Add roles `GroupMember` and `GroupManager` to security.roles if used.',
     path: ['*', 'roles', /\d+/, /\$team:member|\$team:manager/, '<'],
     value(path: Path, t: Transaction, steps: Path) {
       if (steps.at(-1) === '$team:manager') {
-        return 'GroupsManager';
+        return 'GroupManager';
       }
-      return 'Member';
+      return 'GroupMember';
     },
     patches: [
       (document, t, stepsList) => {
         if (stepsList.some((s) => s.at(-1) === '$team:manager')) {
           document.addIn(['security', 'roles'], {
-            key: new Scalar('GroupsManager'),
+            key: new Scalar('GroupManager'),
             value: new YAMLMap(),
           });
-          document.addIn(['security', 'roles', 'GroupsManager'], {
+          document.addIn(['security', 'roles', 'GroupManager'], {
             key: 'permissions',
             value: new YAMLSeq(),
           });
         }
         if (stepsList.some((s) => s.at(-1) === '$team:member')) {
           document.addIn(['security', 'roles'], {
-            key: new Scalar('Member'),
+            key: new Scalar('GroupMember'),
             value: new YAMLMap(),
           });
-          document.addIn(['security', 'roles', 'Member'], {
+          document.addIn(['security', 'roles', 'GroupMember'], {
             key: 'permissions',
             value: new YAMLSeq(),
           });
         }
       },
     ],
+  },
+  {
+    message: 'Replace special roles in teams definition.',
+    path: ['security', 'teams', /create|invite/, /\d+/],
+    value(path: Path, t: Transaction, steps: Path) {
+      if (steps.at(-1) === '$team:manager') {
+        return 'GroupManager';
+      }
+      return 'GroupMember';
+    },
+  },
+  {
+    message: 'Add permissions to roles based on teams definition',
+    path: ['security', 'teams', /create|invite/, /.*/, '<'],
+    patches: [
+      (document, t, stepsList) => {
+        const roles = stepsList.filter((s) => s.length === 4);
+        for (const steps of roles) {
+          const role = document.getIn(steps) as string;
+          const action = steps[2] as string;
+          if (action === 'invite') {
+            document.addIn(['security', 'roles', role, 'permissions'], '$group.member.invite');
+          }
+
+          if (action === 'create') {
+            document.addIn(['security', 'roles', role, 'permissions'], '$group.create');
+          }
+        }
+      },
+    ],
+  },
+  {
+    message: 'Create new roles from special roles and app roles, and inherit corresponding roles',
+    path: ['security', 'roles', /^(?!GroupManager$)(?!GroupMember$).+$/, '<'],
+    patches: [
+      (document, t, stepsList) => {
+        for (const roleSteps of stepsList) {
+          const role = roleSteps.at(-1);
+
+          const groupMemberRole = `GroupMember${role}`;
+          const groupManagerRole = `GroupManager${role}`;
+
+          document.addIn(['security', 'roles'], {
+            key: new Scalar(groupMemberRole),
+            value: new YAMLMap(),
+          });
+
+          document.addIn(['security', 'roles', groupMemberRole], {
+            key: 'permissions',
+            value: new YAMLSeq(),
+          });
+
+          document.addIn(['security', 'roles', groupMemberRole], {
+            key: 'inherits',
+            value: new YAMLSeq(),
+          });
+
+          document.addIn(['security', 'roles', groupMemberRole, 'inherits'], 'GroupMember');
+          document.addIn(['security', 'roles', groupMemberRole, 'inherits'], role);
+
+          document.addIn(['security', 'roles'], {
+            key: new Scalar(groupManagerRole),
+            value: new YAMLMap(),
+          });
+
+          document.addIn(['security', 'roles', groupManagerRole], {
+            key: 'permissions',
+            value: new YAMLSeq(),
+          });
+
+          document.addIn(['security', 'roles', groupManagerRole], {
+            key: 'inherits',
+            value: new YAMLSeq(),
+          });
+
+          document.addIn(['security', 'roles', groupManagerRole, 'inherits'], 'GroupManager');
+          document.addIn(['security', 'roles', groupManagerRole, 'inherits'], role);
+        }
+      },
+    ],
+  },
+  {
+    message: 'Remove teams definition',
+    path: ['security', 'teams'],
+    delete: true,
   },
   {
     // TODO: check presedence in prod
