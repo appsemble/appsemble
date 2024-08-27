@@ -75,14 +75,6 @@ export interface Patch {
   /**
    * Whether to add the value to a pair or sequence.
    *
-   * If you would like to add a new key to a kv pair return in {@link value}:
-   *
-   * `{ key: 'mykey', value: 'myvalue' }`
-   *
-   * And if you would like to add a new collection use:
-   *
-   * `new YAMLSeq()`
-   *
    * @default false
    */
   add?: boolean;
@@ -98,6 +90,20 @@ export interface Patch {
    * The value to apply.
    *
    * By default replaces the current value.
+   *
+   * If you would like to add a new key to a kv pair return in {@link value}:
+   *
+   * `{ key: 'mykey', value: 'myvalue' }`
+   *
+   * **Note**: you may need to wrap the key with `new Scalar('myKey')`, if you plan to access the
+   * value by key.
+   *
+   * And if you would like to add a new collection use:
+   *
+   * `new YAMLSeq()`
+   *
+   * **Note**: you _MUST_ use a callback whenever creating an instance of `YAMLMap`, `YAMLSeq` or
+   * `Scalar`, because the value would otherwise be used in multiple document branches.
    */
   value?:
     | unknown
@@ -377,9 +383,6 @@ export async function applyPatch(
           ? await patch.value(path, transaction, stepsList[index])
           : patch.value;
       if (patch.add) {
-        // For key value pairs the value must be `{ mykey: ..., myvalue: ... }`
-        // For collections the value must be `new YAMLSeq()`
-        // see https://eemeli.org/yaml/#collections
         document.addIn(path, value);
       } else {
         document.setIn(path, value);

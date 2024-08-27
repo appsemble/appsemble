@@ -66,6 +66,9 @@ resources:
       roles:
         - roleB
         - $team:manager
+    count:
+      roles:
+        - roleA
     views:
       public:
         roles:

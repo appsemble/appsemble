@@ -66,7 +66,6 @@ members:
     );
   });
 
-  // TODO: check if this works when inside anchor
   it('should rename user actions to app.member actions.', async () => {
     const definition = await readFixture(
       'definitions/rename-user-actions-to-app-member-actions.yaml',
@@ -159,7 +158,6 @@ pages:
     );
   });
 
-  // TODO: check if this works when inside anchor
   it('should delete resource.method', async () => {
     const definition = await readFixture('definitions/delete-resource-method.yaml', 'utf8');
     const [patched] = await migrateAppDefinitions([definition], appPatches, getDB());
@@ -196,7 +194,6 @@ pages:
     );
   });
 
-  // TODO: check if this works when inside anchor
   it('should replace `$none` with `$guest` and add guest to security.', async () => {
     const definition = await readFixture('definitions/replace-none-with-guest.yaml', 'utf8');
     const [patched] = await migrateAppDefinitions([definition], appPatches, getDB());
@@ -227,7 +224,6 @@ security:
     );
   });
 
-  // TODO: check if this works when inside anchor
   it('should add guest to security if missing when $public is used in resources.', async () => {
     const definition1 = await readFixture(
       'definitions/add-guest-to-security-for-public.yaml',
@@ -407,7 +403,6 @@ pages:
     );
   });
 
-  // TODO: check if this works when inside anchor
   it('should add roles `Member` and `GroupsManager` to security.roles if used.', async () => {
     const definition = await readFixture('definitions/add-group-roles.yaml', 'utf8');
     const [patched] = await migrateAppDefinitions([definition], appPatches, getDB());
@@ -471,7 +466,6 @@ pages:
     );
   });
 
-  // TODO: check if this works when inside anchor
   it('should move resource roles to role permissions', async () => {
     const definition = await readFixture(
       'definitions/move-resource-roles-to-role-permissions.yaml',
@@ -635,7 +629,6 @@ pages:
     );
   });
 
-  // TODO: check if this works when inside anchor
   it('should remove `$public`.', async () => {
     const definition = await readFixture('definitions/delete-special-public-role.yaml', 'utf8');
     const [patched] = await migrateAppDefinitions([definition], appPatches, getDB());

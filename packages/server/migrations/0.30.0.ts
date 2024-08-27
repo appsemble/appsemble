@@ -850,6 +850,8 @@ export async function down(transaction: Transaction, db: Sequelize): Promise<voi
   });
 }
 
+const resourceActionPattern = /create|update|patch|query|get|delete|count/;
+
 function addGuest(document: Document): void {
   document.addIn(['security', 'guest', 'permissions'], new YAMLSeq());
 }
@@ -866,8 +868,6 @@ function handlePermission(
   }
 
   const has = (path: Path, permission: string): boolean =>
-    // Permissions here is a list of string literals,
-    // because all permission have been added by us in that manner
     (document.getIn(path) as YAMLSeq<string>).items.includes(permission);
 
   // Consider excluding own:create for $author without a create action on the resource
@@ -895,8 +895,8 @@ function handlePermission(
   if (role === '$public') {
     const roles = (
       document.getIn(['security', 'roles']) as YAMLMap<Scalar<string>, unknown>
-    )?.items?.map((pair) => pair.key.value);
-    for (const r of roles ?? []) {
+    ).items.map((pair) => pair.key.value);
+    for (const r of roles) {
       helper(['security', 'roles', r, 'permissions']);
     }
     helper(['security', 'guest', 'permissions']);
@@ -1025,7 +1025,9 @@ export const appPatches: Patch[] = [
   {
     message: 'Add `permissions` to roles.',
     path: ['security', 'roles', /.*/],
-    value: { key: 'permissions', value: new YAMLSeq() },
+    value() {
+      return { key: 'permissions', value: new YAMLSeq() };
+    },
     add: true,
   },
   {
@@ -1047,7 +1049,7 @@ export const appPatches: Patch[] = [
           stepsList.some(
             (s) =>
               s[0] === 'resources' &&
-              /create|update|patch|query|get|delete|count/.test(s[2] as string) &&
+              resourceActionPattern.test(s[2] as string) &&
               s[3] === 'roles' &&
               s[5] === '$public',
           ) ||
@@ -1116,9 +1118,7 @@ export const appPatches: Patch[] = [
             stepsList
               .filter(
                 (s) =>
-                  s.length === 5 &&
-                  s[1] === resource &&
-                  /create|update|patch|query|get|delete|count/.test(s[2] as string),
+                  s.length === 5 && s[1] === resource && resourceActionPattern.test(s[2] as string),
               )
               .map((s) => s[2]),
           );
@@ -1151,8 +1151,7 @@ export const appPatches: Patch[] = [
         const pathsToDelete: Path[] = [];
 
         const actions = stepsList.filter(
-          (s) =>
-            s.length === 5 && /create|update|patch|query|get|delete|count/.test(s[2] as string),
+          (s) => s.length === 5 && resourceActionPattern.test(s[2] as string),
         );
         for (const steps of actions) {
           const role = document.getIn(steps) as string;
