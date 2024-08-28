@@ -1,9 +1,9 @@
-import { Button, Title, useMessages, useToggle } from '@appsemble/react-components';
+import { Button, Title, useClickOutside, useToggle } from '@appsemble/react-components';
 import { defaultLocale } from '@appsemble/utils';
 import axios from 'axios';
 import classNames from 'classnames';
 import { type ReactNode, useCallback, useEffect, useRef, useState } from 'react';
-import { FormattedMessage, useIntl } from 'react-intl';
+import { FormattedMessage } from 'react-intl';
 import { Link } from 'react-router-dom';
 
 import { AppRatings } from './AppRatings/index.js';
@@ -12,6 +12,7 @@ import styles from './index.module.css';
 import { messages } from './messages.js';
 import { AppIcon } from '../../../../components/AppIcon/index.js';
 import { AppOptionsMenu } from '../../../../components/AppOptionsMenu/index.js';
+import { AppShare } from '../../../../components/AppShare/index.js';
 import { CardHeaderControl } from '../../../../components/CardHeaderControl/index.js';
 import { CloneButton } from '../../../../components/CloneButton/index.js';
 import { MarkdownContent } from '../../../../components/MarkdownContent/index.js';
@@ -28,9 +29,6 @@ export function IndexPage(): ReactNode {
   const { app } = useApp();
   const { organizations } = useUser();
   const descriptionToggle = useToggle();
-
-  const push = useMessages();
-  const { formatMessage } = useIntl();
 
   const [checkedResources, setCheckedResources] = useState(false);
   const [checkedAssets, setCheckedAssets] = useState(false);
@@ -94,14 +92,25 @@ export function IndexPage(): ReactNode {
   const showExportResources = organizations.some(
     (organization) => organization.id === app.OrganizationId && organization.role >= 'AppEditor',
   );
+  const { disable, enabled: showAppShare, toggle } = useToggle();
+  const appShareRef = useRef<HTMLDivElement | null>();
+  useClickOutside(appShareRef, disable);
 
-  const copyToClipboard = useCallback(
-    async (value: string) => {
-      await navigator.clipboard.writeText(value);
-      push({ body: formatMessage(messages.shareSuccess), color: 'success' });
-    },
-    [formatMessage, push],
-  );
+  const showAppShareComponent = useCallback(async () => {
+    if ('share' in navigator) {
+      try {
+        await navigator.share({
+          url: window.location.href,
+          text: app.definition.description,
+          title: `Share app ${app.definition.name}`,
+        });
+      } catch {
+        toggle();
+      }
+    } else {
+      toggle();
+    }
+  }, [app.definition.name, app.definition.description, toggle]);
 
   return (
     <main>
@@ -118,14 +127,30 @@ export function IndexPage(): ReactNode {
             >
               <FormattedMessage {...messages.view} />
             </Button>
-            <Button
-              className="mb-3 ml-4"
-              color="primary"
-              icon="share"
-              onClick={() => copyToClipboard(window.location.href)}
+            <div
+              className={`dropdown ${showAppShare ? 'is-active' : ''} is-pulled-right is-right is-justify-content-flex-end`}
+              ref={appShareRef}
             >
-              <FormattedMessage {...messages.shareApp} />
-            </Button>
+              <div className="dropdown-trigger">
+                <Button
+                  className="mb-3 ml-4 dropdown-trigger"
+                  color="primary"
+                  icon="share"
+                  onClick={() => showAppShareComponent()}
+                >
+                  <FormattedMessage {...messages.shareApp} />
+                </Button>
+              </div>
+              {showAppShare ? (
+                <div className="dropdown-menu" role="menu">
+                  <AppShare
+                    appName={app.definition.name}
+                    className="dropdown-content"
+                    url={window.location.href}
+                  />
+                </div>
+              ) : null}
+            </div>
             <CloneButton app={app} />
             <ReseedButton app={app} />
             {showExport ? (

@@ -25,8 +25,4 @@ export const messages = defineMessages({
     id: 'studio.mpNJuB',
     defaultMessage: 'Share App',
   },
-  shareSuccess: {
-    id: 'studio.LRoQwS',
-    defaultMessage: 'Successfully copied link to the clipboard',
-  },
 });
