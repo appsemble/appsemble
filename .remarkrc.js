@@ -11,6 +11,16 @@ import retextSyntaxURLs from 'retext-syntax-urls';
 import { unified } from 'unified';
 
 const dictionary = () => Buffer.concat([en.dic, nl.dic]);
+const ignore = async () =>
+  (await readFile('config/retext/ignore.dic', 'utf8'))
+    .split(/[\n\r]+/)
+    .map((word) => {
+      if (word.startsWith('!')) {
+        return word.slice(1);
+      }
+      return null;
+    })
+    .filter(Boolean);
 
 export default {
   settings: {
@@ -40,6 +50,7 @@ export default {
         .use(retextSpell, {
           dictionary,
           personal: await readFile(new URL('config/retext/personal.dic', import.meta.url)),
+          ignore,
         })
         .use(retextRepeatedWords)
         .use(retextQuotes),
