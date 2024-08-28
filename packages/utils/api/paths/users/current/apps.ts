@@ -11,7 +11,7 @@ export const pathItems: OpenAPIV3.PathItemObject = {
         in: 'query',
       },
     ],
-    description: 'Get all apps from organizations that the user is in',
+    description: 'Get all apps from organizations that the user is in.',
     operationId: 'queryCurrentUserApps',
     responses: {
       200: {

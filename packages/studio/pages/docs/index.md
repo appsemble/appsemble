@@ -9,19 +9,19 @@ knowledge. Traditional software programs can get very complex and requires exten
 in order to be built properly. Appsemble lowers the bar of entry by handling all the complicated
 backend infrastructure for you, leaving you to focus on the user experience.
 
-An app is created by making an "App definition". This is a YAML-based configuration that tells
+An app is created by making an "App definition". This is a YAML-based definition that tells
 Appsemble how your app is structured, what data you need to store, and much more. You can find more
 information about this [here](/docs/guides/basic-app). Once the app is published, it becomes a
-publically available [Progressive Web App](https://web.dev/articles/what-are-pwas).
+publicly available [Progressive Web App](https://web.dev/articles/what-are-pwas).
 
 Another big part of apps are blocks. Blocks are reusable components that you can put anywhere in
 your app in order to create functional parts that determine how your app works. For example, a form
 block that allows user to fill in information which the app can store.
 
 The Appsemble framework is an open source software project. What this means is that the
-infrastructure that handles how your app works in the backend is publically available. Anyone can
-see the code, make changes to it or create their own version of it entirely. If you're interested,
-you can check it out here: https://gitlab.com/appsemble/appsemble.
+infrastructure that handles how your app works in the backend is publicly available. Anyone can see
+the code, make changes to it or create their own version of it entirely. If you're interested, you
+can check it out here: https://gitlab.com/appsemble/appsemble.
 
 ## New to Appsemble?
 

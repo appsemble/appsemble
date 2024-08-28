@@ -4,7 +4,7 @@ The app store is a webpage where all apps you can access are shown. The page is 
 categories:
 
 **My Apps** > All apps from organizations you're in\
-**All Apps** > All apps that are publically available
+**All Apps** > All apps that are publicly available
 
 Each app shows an icon, a title, which organization made it and what rating it has. Apps are
 automatically sorted based on how their rating is, but you can change how this is sorted if you'd
@@ -31,7 +31,8 @@ the app for your own use.
 
 #### Organization roles
 
-Depending on your role in the app's organization you will see different pages and buttons.
+Depending on your role in the app's organization you will see different pages and buttons in the
+left side menu.
 
 - **Member (for all roles)**: Shows the App definition page, button to clone an app and the option
   to export the app
