@@ -988,8 +988,8 @@ function handlePermission(
   if (role === '$public') {
     const roles = (
       document.getIn(['security', 'roles']) as YAMLMap<Scalar<string>, unknown>
-    ).items.map((pair) => pair.key.value);
-    for (const r of roles) {
+    )?.items?.map((pair) => pair.key.value);
+    for (const r of roles ?? []) {
       helper(['security', 'roles', r, 'permissions']);
     }
     helper(['security', 'guest', 'permissions']);
@@ -1354,6 +1354,8 @@ export const appPatches: Patch[] = [
     path: ['security', 'teams'],
     delete: true,
   },
+  // TODO: handle if roles property on resource is already empty to exclude permission
+  // roles: [], but query: roles: [...] or roles: [...], but delete: roles: []
   {
     message: 'Move resource roles to role permissions.',
     path: ['resources', '*', 'roles', /.*/, '<'],
