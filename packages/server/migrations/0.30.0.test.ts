@@ -13,6 +13,66 @@ describe('migration 0.30.0', () => {
     vi.spyOn(logger, 'error');
   });
 
+  it('should replace `remap` with `remapBefore`.', async () => {
+    const definition = await readFixture(
+      'definitions/replace-remap-with-remap-before.yaml',
+      'utf8',
+    );
+    const [patched] = await migrateAppDefinitions([definition], appPatches, getDB());
+
+    expect(logger.error).not.toHaveBeenCalled();
+    expect(patched.trim()).toBe(
+      `
+# Replace remap with remapBefore
+name: test
+description: test
+defaultPage: test
+
+pages:
+  - name: test
+    blocks:
+      - type: action-button
+        version: 0.29.0
+        parameters:
+          icon: arrow-right
+        actions:
+          onClick:
+            type: noop
+            remapBefore: { object.from: { test: test } }
+    `.trim(),
+    );
+  });
+
+  it('should replace `hideFromMenu` with `hideNavTitle`.', async () => {
+    const definition = await readFixture(
+      'definitions/replace-hide-from-menu-with-hide-nav-title.yaml',
+      'utf8',
+    );
+    const [patched] = await migrateAppDefinitions([definition], appPatches, getDB());
+
+    expect(logger.error).not.toHaveBeenCalled();
+    expect(patched.trim()).toBe(
+      `
+# Replace hideFromMenu with hideNavTitle
+name: test
+description: test
+defaultPage: test
+
+pages:
+  - name: test
+    blocks:
+      - type: action-button
+        version: 0.29.0
+        parameters:
+          icon: arrow-right
+        actions:
+          onClick:
+            type: noop
+    hideNavTitle: true
+    `.trim(),
+    );
+  });
+
   it('should rename users property to members', async () => {
     const definition = await readFixture(
       'definitions/rename-users-property-to-members.yaml',
@@ -91,6 +151,10 @@ pages:
         actions:
           onClick:
             type: app.member.register
+            email: { prop: email }
+            password: { prop: password }
+            picture: { prop: profilePicture }
+            name: { prop: username }
       - type: action-button
         version: 0.29.0
         parameters:
@@ -119,6 +183,56 @@ pages:
         actions:
           onClick:
             type: app.member.delete
+    `.trim(),
+    );
+  });
+
+  it('should rename team actions to group.member actions.', async () => {
+    const definition = await readFixture(
+      'definitions/rename-team-actions-to-group-member-actions.yaml',
+      'utf8',
+    );
+    const [patched] = await migrateAppDefinitions([definition], appPatches, getDB());
+
+    expect(logger.error).not.toHaveBeenCalled();
+    expect(patched.trim()).toBe(
+      `
+# Rename team actions to group.member actions
+name: test
+description: test
+defaultPage: test
+
+pages:
+  - name: test
+    blocks:
+      - type: action-button
+        version: 0.29.0
+        parameters:
+          icon: arrow-right
+        actions:
+          onClick:
+            type: group.member.invite
+      - type: action-button
+        version: 0.29.0
+        parameters:
+          icon: arrow-right
+        actions:
+          onClick:
+            type: group.query
+      - type: action-button
+        version: 0.29.0
+        parameters:
+          icon: arrow-right
+        actions:
+          onClick:
+            type: group.member.query
+      - type: action-button
+        version: 0.29.0
+        parameters:
+          icon: arrow-right
+        actions:
+          onClick:
+            type: team.join
     `.trim(),
     );
   });
@@ -169,15 +283,6 @@ pages:
 name: test
 description: test
 defaultPage: test
-
-resources:
-  test:
-    schema:
-      additionalProperties: false
-      type: object
-      properties:
-        test:
-          type: string
 
 pages:
   - name: test
@@ -422,26 +527,50 @@ security:
   roles:
     roleA:
       description: test
-      permissions: []
+      permissions:
+        - $group:create
     roleB:
       description: test
+      permissions:
+        - $group:member:invite
+    GroupManager:
+      permissions:
+        - $group:create
+        - $resource:test:create
+        - $resource:test:update
+        - $resource:test:patch
+        - $resource:test:query
+        - $resource:test:get
+        - $resource:test:delete
+    GroupMember:
+      permissions:
+        - $group:member:invite
+        - $resource:test:create
+        - $resource:test:update
+        - $resource:test:patch
+        - $resource:test:query
+        - $resource:test:get
+        - $resource:test:delete
+    GroupManagerroleA:
       permissions: []
-    GroupsManager:
-      permissions:
-        - $resource:test:create
-        - $resource:test:update
-        - $resource:test:patch
-        - $resource:test:query
-        - $resource:test:get
-        - $resource:test:delete
-    Member:
-      permissions:
-        - $resource:test:create
-        - $resource:test:update
-        - $resource:test:patch
-        - $resource:test:query
-        - $resource:test:get
-        - $resource:test:delete
+      inherits:
+        - GroupManager
+        - roleA
+    GroupManagerroleB:
+      permissions: []
+      inherits:
+        - GroupManager
+        - roleB
+    GroupMemberroleA:
+      permissions: []
+      inherits:
+        - GroupMember
+        - roleA
+    GroupMemberroleB:
+      permissions: []
+      inherits:
+        - GroupMember
+        - roleB
 
 resources:
   test:
@@ -489,13 +618,11 @@ security:
     roleA:
       description: test
       permissions:
-        - $resource:resourceA:create
         - $resource:resourceA:update
         - $resource:resourceA:patch
         - $resource:resourceA:query
         - $resource:resourceA:get
         - $resource:resourceA:delete
-        - $resource:resourceB:create
         - $resource:resourceB:update
         - $resource:resourceB:patch
         - $resource:resourceB:query
@@ -506,12 +633,11 @@ security:
         - $resource:resourceD:own:query
         - $resource:resourceD:own:get
         - $resource:resourceD:own:delete
-        - $resource:resourceC:create
         - $resource:resourceC:update
         - $resource:resourceC:patch
-        - $resource:resourceD:create
         - $resource:resourceC:query:public
         - $resource:resourceC:get:public
+        - $resource:all:create
     roleB:
       description: test
       permissions:
@@ -536,7 +662,7 @@ security:
         - $resource:resourceC:query
         - $resource:resourceC:delete
         - $resource:resourceD:create
-    GroupsManager:
+    GroupManager:
       permissions:
         - $resource:resourceB:create
         - $resource:resourceB:update
@@ -556,7 +682,7 @@ security:
         - $resource:resourceC:query
         - $resource:resourceC:delete
         - $resource:resourceD:create
-    Member:
+    GroupMember:
       permissions:
         - $resource:resourceB:create
         - $resource:resourceB:update
@@ -572,6 +698,26 @@ security:
         - $resource:resourceC:get
         - $resource:resourceC:query
         - $resource:resourceD:create
+    GroupManagerroleA:
+      permissions: []
+      inherits:
+        - GroupManager
+        - roleA
+    GroupManagerroleB:
+      permissions: []
+      inherits:
+        - GroupManager
+        - roleB
+    GroupMemberroleA:
+      permissions: []
+      inherits:
+        - GroupMember
+        - roleA
+    GroupMemberroleB:
+      permissions: []
+      inherits:
+        - GroupMember
+        - roleB
   guest:
     permissions:
       - $resource:resourceB:create
@@ -607,6 +753,12 @@ resources:
       properties:
         test:
           type: string
+    create:
+      hooks:
+        notification:
+          to:
+            - roleA # Notify users with the Admin role when a \`person\` resource is created.
+          subscribe: both # Users are able to both subscribe.
   resourceD:
     schema:
       additionalProperties: false
@@ -640,15 +792,6 @@ pages:
 name: test
 description: test
 defaultPage: test
-
-resources:
-  test:
-    schema:
-      additionalProperties: false
-      type: object
-      properties:
-        test:
-          type: string
 
 pages:
   - name: test

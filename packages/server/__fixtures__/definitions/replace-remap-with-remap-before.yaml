@@ -1,4 +1,4 @@
-# Delete resource.method property
+# Replace remap with remapBefore
 name: test
 description: test
 defaultPage: test
@@ -12,6 +12,5 @@ pages:
           icon: arrow-right
         actions:
           onClick:
-            type: resource.create
-            method: post
-            resource: test
+            remap: { object.from: { test: test } }
+            type: noop

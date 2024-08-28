@@ -110,7 +110,7 @@ export interface Patch {
     | ((path: Path, transaction: Transaction, ...params: unknown[]) => Promisable<unknown>);
 
   /**
-   * Additional paths to be patched.
+   * Additional patches to be applied.
    */
   patches?: ((
     document: Document,

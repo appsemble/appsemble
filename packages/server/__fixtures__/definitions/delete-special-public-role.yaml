@@ -3,16 +3,6 @@ name: test
 description: test
 defaultPage: test
 
-resources:
-  test:
-    roles: [$public]
-    schema:
-      additionalProperties: false
-      type: object
-      properties:
-        test:
-          type: string
-
 pages:
   - name: test
     roles: [$public]

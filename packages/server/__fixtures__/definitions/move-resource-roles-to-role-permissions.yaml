@@ -43,6 +43,11 @@ resources:
       roles:
         - roleA
         - $team:manager
+      hooks:
+        notification:
+          to:
+            - roleA # Notify users with the Admin role when a `person` resource is created.
+          subscribe: both # Users are able to both subscribe.
     update:
       roles:
         - roleA

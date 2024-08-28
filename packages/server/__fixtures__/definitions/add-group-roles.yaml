@@ -12,6 +12,15 @@ security:
       description: test
     roleB:
       description: test
+  teams:
+    join:
+      - roleA
+    create:
+      - roleA
+      - $team:manager
+    invite:
+      - $team:member
+      - roleB
 
 resources:
   test:
