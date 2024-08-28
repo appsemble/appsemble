@@ -42,7 +42,9 @@ The Appsemble documentation is split into different categories to make it easier
 look if you're stuck on something.
 
 - [**Studio documentation**](/docs/studio)\
-  Everything regarding the Appsemble studio (the site you are reading this from)
+  Everything regarding the Appsemble studio (the site you are reading this from).
+- [**Core concepts**](/docs/core-concepts)\
+  Documentation of the essential parts of an Appsemble app.
 - [**Guides**](/docs/guides)\
   Documentation of individual app topics.
 - [**Development**](/docs/development)\

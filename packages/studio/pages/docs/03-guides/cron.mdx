@@ -1,0 +1,80 @@
+import { serverActions } from '@appsemble/utils';
+
+# Cron Jobs
+
+Appsemble provides a way to run [actions](../08-reference/action.mdx) based on a schedule through
+cron jobs.
+
+They are especially useful for reoccurring actions like e.g. sending emails to notify your users
+about upcoming events.
+
+## Table of Contents
+
+- [Schedule](#schedule)
+- [Action](#action)
+- [Example](#example)
+
+## Schedule
+
+The format for the schedule is based on the `cron` format, to see this in action head over to
+[Crontab guru](https://crontab.guru/).
+
+**Cron format**
+
+```
+*    *    *    *    *    *
+┬    ┬    ┬    ┬    ┬    ┬
+│    │    │    │    │    |
+│    │    │    │    │    └ day of week  (0 - 7) (both 0 and 7 will have it run on Sunday)
+│    │    │    │    └───── month        (1 - 12)
+│    │    │    └────────── day of month (1 - 31)
+│    │    └─────────────── hour         (0 - 23)
+│    └──────────────────── minute       (0 - 59)
+└───────────────────────── second       (0 - 59, optional)
+```
+
+_Extra options:_
+
+- **(day of week)`L`**: the last occurrence of the specified week day for the month in progress.
+- **(day of month)`L`**: last day of the month.
+
+> Note: the current implementation of cron jobs runs jobs from the past five minutes every five
+> minutes. This means that running the job at e.g. 14:01 will not run it at 14:01, but at about
+> 14:05. It’s recommended to specify a cron job to run more than 5 minutes before it’s supposed to
+> finish to be certain that a job is scheduled on time. Let’s say you want the job to finish before
+> 14:00, then it’s recommended to be scheduled between `51 13 * * *` and `54 13 * * *` as other jobs
+> may run first.
+
+## Actions
+
+Cron jobs can be specified with only certain actions that we support on the server, they may still
+be used in older apps, but will run a `noop` action instead. The actions also work a little
+different e.g. the actions are not run by the user, so retrieving user information with the
+[user](../07-remappers/04-data.mdx#user) remapper won’t work the same.
+
+> Note: We do not recommend using resource actions with resources that have properties in binary
+> format, as assets are currently unsupported.
+
+Supported (server-side) actions:
+
+<ul>
+  {Array.from(serverActions).map((action) => (
+    <li key={action}>
+      <a href={`/docs/08-reference/action#${action}`}>{action}</a>
+    </li>
+  ))}
+</ul>
+
+## Example
+
+Cron jobs are defined at the top level of the app definition with the
+[cron](../08-reference/app.mdx#-app-definition-cron) property.
+
+```yaml copy validate cron-snippet
+cron:
+  everyDayAt10:
+    schedule: '* 10 * * *' # Quotes are required if the first character starts with `*`
+    action:
+      type: resource.query
+      resource: person
+```

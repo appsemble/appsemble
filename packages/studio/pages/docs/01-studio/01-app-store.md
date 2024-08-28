@@ -11,25 +11,25 @@ automatically sorted based on how their rating is, but you can change how this i
 like.
 
 By clicking on any of these apps you're taken to their frontpage. Depending on the app's
-[privacy setting](../02-guides/security#app-privacy) and your role in the organization, you'll see a
+[privacy setting](../03-guides/security#app-privacy) and your role in the organization, you'll see a
 different screen.
 
 You can also create a new app on this page by clicking the [Create new App](/apps#create) button, or
 you can import an app by clicking the arrow and then the [Import From File](/apps#import) button.
 
-### App page
+## App page
 
 By default, you will only see the name, description, organization, screenshots, ratings and the
 buttons to view or share the app. Different tabs and buttons are added depending on your
 organization role and certain options the app owner can toggle.
 
-#### Show app definition
+### Show app definition
 
 If the app has the option to show the app definition, an extra tab appears in the side menu that
 shows the entire app definition. A button also shows up on the index page that allows you to clone
 the app for your own use.
 
-#### Organization roles
+### Organization roles
 
 Depending on your role in the app's organization you will see different pages and buttons in the
 left side menu.

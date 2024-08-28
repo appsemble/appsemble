@@ -1,12 +1,12 @@
 # Block store
 
 The block store contains all blocks you can use in your app. This isn't limited to Appsemble blocks
-however, anyone can [develop their own blocks](../03-development/developing-blocks.md) and upload
+however, anyone can [develop their own blocks](../04-development/developing-blocks.md) and upload
 them to the server for people to use. If you see a block you might want to use in your app, you can
 click `View details` on the block's card to go to its detail page. There you can find how it works
 in order to correctly use it in your app.
 
-### Block page
+## Block page
 
 Blocks are uploaded as versions of the block. Whenever the author wants to change something about
 the block they must upload a new version. This gives app developers full control of what version of
@@ -29,11 +29,17 @@ functionality:
   example, a block might have the `icon` parameter that displays the icon provided to the parameter.
 - **actions**: Blocks can trigger actions whenever something happens like a specific user action
   (For example, `onSubmit` when the user submits a form). Whatever
-  [Action Definition](../05-actions/index.mdx) you define under that trigger is called whenever the
+  [Action Definition](../06-actions/index.mdx) you define under that trigger is called whenever the
   action happens.
 - **events**: Events are used to communicate between blocks. These are split under **listen events**
   and **emit events**
+
   - **listen event**: Listens to data from other blocks that emit to this event
   - **emit event**: Emits data to other blocks that are listening to this event
 
-<!-- TODO: When we have a dedicated Block section that explains this in detail, this page should link to that -->
+  Events are explained further [here](../03-guides/events.md)
+
+## Further reading
+
+For more information on how blocks work and how to use them in your app, you can check out the
+[Block guide](../02-core-concepts/blocks.md).

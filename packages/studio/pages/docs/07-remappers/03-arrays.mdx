@@ -1,0 +1,130 @@
+import { RemapperRef } from './RemapperRef/index.js';
+import { arrayRemappers } from '../../../../utils/reference-schemas/remappers/index.js';
+
+# Arrays
+
+## Introduction
+
+In the [Objects](../07-remappers/02-objects.mdx) page, we explained how to manipulate an object so
+it only contains specific properties/data. This only applies to a singular object however. Usually,
+you will be working with lists of objects that have to be manipulated.
+
+If you have a list of employees, for example, you can use the `array.map` remapper to map over the
+list and apply remappers to the incoming data. That way, you can make sure that every employee in
+the list is checked for a condition, gets assigned new data, etc.
+
+Let’s say you have a list of employees from your company, and you want to remove the `age` property
+from every individual employee. Instead of manually picking each individual from the list and
+applying the `object.omit` remapper, you can simply map through the list and apply the remapper
+there.
+
+For example, with the following employee data:
+
+```json
+[
+  {
+    "name": "Peter",
+    "occupation": "Photographer",
+    "age": 19
+  },
+  {
+    "name": "Otto",
+    "occupation": "Scientist",
+    "age": 50
+  },
+  {
+    "name": "Harry",
+    "occupation": "CEO",
+    "age": 20
+  }
+]
+```
+
+You only have to map through the array and omit the `age` property like so:
+
+```yaml
+array.map:
+  object.omit:
+    - age
+```
+
+You can also use this to assign a new property to the object based on an
+[if condition](./06-conditionals.mdx#if). With this data, you could check if the employee’s age is
+above a certain amount and give them the title of “Senior” instead of the age, for example:
+
+```yaml
+array.map:
+  - if:
+      condition: { gt: [{ prop: age }, 40] }
+      then:
+        object.assign:
+          title: Senior employee
+      else:
+        object.assign:
+          title: Junior employee
+  - object.omit:
+      - age
+```
+
+Now you transformed your existing array into one that fits your app’s business case better. But,
+this only holds three people. What if you want to add a new employee? Or remove an existing one?
+There are more remappers available for cases like this: [array.append](#array.append) and
+[array.omit](#array.omit).
+
+This is also just one group, but what if your company has more groups? You can create a new array
+using [array.from](#array.from) and add the group you just made, along with other groups. For
+example, the following remapper definition will take the previously made array and creates a new one
+inside of another array.
+
+```yaml
+array.from:
+  - { root: null }
+  - array.from:
+      - object.from:
+          name: Peter 2
+          occupation: Delivery driver
+      - object.from:
+          name: Harry 2
+          occupation: CEO
+```
+
+Result:
+
+```json
+[
+  [
+    {
+      "name": "Peter",
+      "occupation": "Delivery driver",
+      "title": "Junior employee"
+    },
+    {
+      "name": "Otto",
+      "occupation": "Scientist",
+      "title": "Senior employee"
+    },
+    {
+      "name": "Harry",
+      "occupation": "CEO",
+      "title": "Junior employee"
+    }
+  ],
+  [
+    {
+      "name": "Peter 2",
+      "occupation": "Delivery driver"
+    },
+    {
+      "name": "Harry 2",
+      "occupation": "CEO"
+    }
+  ]
+]
+```
+
+Once you have an array filled with the properties and data you need for your application you can
+save it in a resource, send it in an email, etc.
+
+## Remappers
+
+<RemapperRef remappers={arrayRemappers} />
