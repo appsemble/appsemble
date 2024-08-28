@@ -121,7 +121,7 @@ pages:
       - $team:manager
     blocks:
       - type: form
-        version: 0.29.9
+        version: 0.29.10
         actions:
           onSubmit:
             type: resource.create
@@ -144,7 +144,7 @@ pages:
       - $team:member
     blocks:
       - type: action-button
-        version: 0.29.9
+        version: 0.29.10
         parameters:
           icon: plus
         roles:
@@ -159,7 +159,7 @@ pages:
       - $team:member
     blocks:
       - type: form
-        version: 0.29.9
+        version: 0.29.10
         actions:
           onSubmit:
             type: resource.create
@@ -182,7 +182,7 @@ pages:
       - $team:manager
     blocks:
       - type: action-button
-        version: 0.29.9
+        version: 0.29.10
         parameters:
           icon: plus
         roles:
@@ -195,7 +195,7 @@ pages:
   - name: About
     blocks:
       - type: html
-        version: 0.29.9
+        version: 0.29.10
         parameters:
           placeholders:
             summary: This is the teams app

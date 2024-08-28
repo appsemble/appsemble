@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.29.10](https://gitlab.com/appsemble/appsemble/-/releases/0.29.10)] - 2024-08-28
+
+### Added
+
+- App: Add support for nested items in side menu.
+- Studio: Make share app feature fancier and use `navigator.share` whenever possible.
+
 ## \[[0.29.9](https://gitlab.com/appsemble/appsemble/-/releases/0.29.9)] - 2024-08-22
 
 ### Added
