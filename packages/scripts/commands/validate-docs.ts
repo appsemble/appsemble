@@ -625,7 +625,7 @@ export async function handler({ organization, remote }: Args): Promise<void> {
   logger.info('Validating docs directory');
 
   const docsPath = join(process.cwd(), 'packages', 'studio', 'pages', 'docs');
-  const actionDocsPath = join(process.cwd(), 'packages', 'studio', 'pages', 'docs', '05-actions');
+  const actionDocsPath = join(process.cwd(), 'packages', 'studio', 'pages', 'docs', '06-actions');
 
   await validateActionDocs(actionDocsPath);
 

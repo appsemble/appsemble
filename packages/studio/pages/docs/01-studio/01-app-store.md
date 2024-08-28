@@ -26,8 +26,8 @@ organization role and certain options the app owner can toggle.
 ### Show app definition
 
 If the app has the option to show the app definition, an extra tab appears in the side menu that
-shows the entire app definition. A button also shows up on the index page that allows you to clone
-the app for your own use.
+shows the entire app definition. A button also shows up on the index page that allows you to
+[clone the app](#cloning-an-app) for your own use.
 
 ### Organization roles
 
@@ -42,3 +42,13 @@ left side menu.
 - **AppEditor (and up)**: Shows the Editor, Assets, Resources, Translations, Notifications,
   Snapshots, Settings, Variables, Secrets and Quotas pages.
 - **Owner & Maintainer**: Shows button to add screenshots
+
+## Cloning an app
+
+You can clone any app that permits it by going to their store page and clicking the "Clone App"
+button. This creates a copy of the app including translations, resources, styling and optionally
+also variables and secrets. Once created, you have your very own copy of the app and can do whatever
+you want with it.
+
+Alternatively, you can also select an app to use as template when creating a new app. This works the
+same as cloning from the page directly, but you don't get the option to copy variables and secrets.

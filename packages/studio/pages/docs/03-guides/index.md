@@ -12,6 +12,7 @@ continue on this basic app to add more advanced features.
 
 - [App analytics](analytics.md)
 - [API](api.md)
+- [App collections](app-collections.md)
 - [App Icons](app-icons.md)
 - [Assets](assets.md)
 - [Basic app](basic-app.md)
