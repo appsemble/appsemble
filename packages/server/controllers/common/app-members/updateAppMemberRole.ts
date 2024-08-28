@@ -10,6 +10,7 @@ import { checkAuthSubjectAppPermissions } from '../../../utils/authorization.js'
 export async function updateAppMemberRole(ctx: Context): Promise<void> {
   const {
     pathParams: { appMemberId },
+    queryParams: { selectedGroupId },
     request: {
       body: { role },
     },
@@ -48,6 +49,7 @@ export async function updateAppMemberRole(ctx: Context): Promise<void> {
     context: ctx,
     appId: appMember.App.id,
     requiredPermissions: [AppPermission.UpdateAppMemberRoles],
+    groupId: selectedGroupId,
   });
 
   const updatedAppMember = await appMember.update({ role });

@@ -8,6 +8,7 @@ import { checkAuthSubjectAppPermissions } from '../../../utils/authorization.js'
 export async function deleteGroupMember(ctx: Context): Promise<void> {
   const {
     pathParams: { groupMemberId },
+    queryParams: { selectedGroupId },
     user: authSubject,
   } = ctx;
 
@@ -32,8 +33,8 @@ export async function deleteGroupMember(ctx: Context): Promise<void> {
   await checkAuthSubjectAppPermissions({
     context: ctx,
     appId: groupMember.AppMember.AppId,
-    groupId: groupMember.GroupId,
     requiredPermissions: [AppPermission.RemoveGroupMembers],
+    groupId: selectedGroupId,
   });
 
   await groupMember.destroy();

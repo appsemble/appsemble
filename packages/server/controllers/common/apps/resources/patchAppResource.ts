@@ -8,7 +8,7 @@ import { checkAuthSubjectAppPermissions } from '../../../../utils/authorization.
 export async function patchAppResource(ctx: Context): Promise<void> {
   const {
     pathParams: { appId, resourceId, resourceType },
-    queryParams: { groupId },
+    queryParams: { selectedGroupId },
     user: authSubject,
   } = ctx;
 
@@ -17,19 +17,19 @@ export async function patchAppResource(ctx: Context): Promise<void> {
   });
 
   const resource = await Resource.findOne({
-    where: { id: resourceId, type: resourceType, AppId: appId, GroupId: groupId ?? null },
+    where: { id: resourceId, type: resourceType, AppId: appId, GroupId: selectedGroupId ?? null },
     include: [{ association: 'Author', attributes: ['id', 'name'], required: false }],
   });
 
   await checkAuthSubjectAppPermissions({
     context: ctx,
     appId,
-    groupId,
     requiredPermissions: [
       resource.AuthorId === authSubject.id
         ? `$resource:${resourceType}:own:patch`
         : `$resource:${resourceType}:patch`,
     ],
+    groupId: selectedGroupId,
   });
 
   const appMember = await getCurrentAppMember({ context: ctx });
@@ -38,7 +38,7 @@ export async function patchAppResource(ctx: Context): Promise<void> {
 
   const appAssets = await Asset.findAll({
     attributes: ['id', 'name', 'ResourceId'],
-    where: { AppId: appId, GroupId: groupId ?? null },
+    where: { AppId: appId, GroupId: selectedGroupId ?? null },
   });
 
   assertKoaError(!resource, ctx, 404, 'Resource not found');
@@ -71,7 +71,7 @@ export async function patchAppResource(ctx: Context): Promise<void> {
           preparedAssets.map((asset) => ({
             ...asset,
             AppId: app.id,
-            GroupId: groupId ?? null,
+            GroupId: selectedGroupId ?? null,
             ResourceId: resource.id,
             AppMemberId: appMember?.sub,
           })),

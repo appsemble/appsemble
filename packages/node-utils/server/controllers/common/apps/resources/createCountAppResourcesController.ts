@@ -7,7 +7,7 @@ export function createCountAppResourcesController(options: Options): Middleware 
   return async (ctx: Context) => {
     const {
       pathParams: { appId, resourceType },
-      queryParams: { groupId },
+      queryParams: { selectedGroupId },
     } = ctx;
 
     const { checkAppPermissions, getApp, getAppResources } = options;
@@ -18,7 +18,7 @@ export function createCountAppResourcesController(options: Options): Middleware 
       context: ctx,
       permissions: [`$resource:${resourceType}:query`],
       app,
-      groupId,
+      groupId: selectedGroupId,
     });
 
     const { where } = generateResourceQuery(ctx, options);
@@ -30,7 +30,7 @@ export function createCountAppResourcesController(options: Options): Middleware 
           {
             type: resourceType,
             AppId: appId,
-            GroupId: groupId ?? null,
+            GroupId: selectedGroupId ?? null,
             expires: { or: [{ gt: new Date() }, null] },
             ...(app.demoMode ? { seed: false, ephemeral: true } : {}),
           },

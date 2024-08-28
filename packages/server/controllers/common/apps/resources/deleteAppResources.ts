@@ -13,7 +13,7 @@ import {
 export async function deleteAppResources(ctx: Context): Promise<void> {
   const {
     pathParams: { appId, resourceType },
-    queryParams: { groupId },
+    queryParams: { selectedGroupId },
     request: { body },
   } = ctx;
 
@@ -24,8 +24,8 @@ export async function deleteAppResources(ctx: Context): Promise<void> {
   await checkAuthSubjectAppPermissions({
     context: ctx,
     appId,
-    groupId,
     requiredPermissions: [`$resource:${resourceType}:delete`],
+    groupId: selectedGroupId,
   });
 
   getResourceDefinition(app.definition, resourceType, ctx);
@@ -37,7 +37,7 @@ export async function deleteAppResources(ctx: Context): Promise<void> {
         id: body.slice(deletedAmount, deletedAmount + 100),
         type: resourceType,
         AppId: appId,
-        GroupId: groupId ?? null,
+        GroupId: selectedGroupId ?? null,
       },
       limit: 100,
     })) {

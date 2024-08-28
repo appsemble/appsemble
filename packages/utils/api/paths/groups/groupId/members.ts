@@ -14,6 +14,7 @@ export const pathItems: OpenAPIV3.PathItemObject = {
     tags: ['common', 'app', 'group', 'members'],
     description: 'Fetch the members of a group and their roles within the group.',
     operationId: 'getGroupMembers',
+    parameters: [{ $ref: '#/components/parameters/selectedGroupId' }],
     responses: {
       200: {
         description: 'The list of all members.',

@@ -11,7 +11,7 @@ export function createCreateAppResourceController(options: Options): Middleware 
     const {
       pathParams: { appId, resourceType },
       query,
-      queryParams: { groupId },
+      queryParams: { selectedGroupId },
     } = ctx;
     const { checkAppPermissions, createAppResourcesWithAssets, getApp, getAppAssets } = options;
 
@@ -23,7 +23,7 @@ export function createCreateAppResourceController(options: Options): Middleware 
       context: ctx,
       permissions: [`$resource:${resourceType}:create`],
       app,
-      groupId,
+      groupId: selectedGroupId,
     });
 
     const appAssets = await getAppAssets({ app, context: ctx });
@@ -81,7 +81,7 @@ export function createCreateAppResourceController(options: Options): Middleware 
 
       createdResources = await createAppResourcesWithAssets({
         app,
-        groupId,
+        groupId: selectedGroupId,
         context: ctx,
         resources: preparedSeedResources,
         preparedAssets: preparedSeedAssets,
@@ -92,7 +92,7 @@ export function createCreateAppResourceController(options: Options): Middleware 
       if (app.demoMode) {
         createdResources = await createAppResourcesWithAssets({
           app,
-          groupId,
+          groupId: selectedGroupId,
           context: ctx,
           resources: resources.map((resource) => ({
             ...resource,
@@ -108,7 +108,7 @@ export function createCreateAppResourceController(options: Options): Middleware 
     } else {
       createdResources = await createAppResourcesWithAssets({
         app,
-        groupId,
+        groupId: selectedGroupId,
         context: ctx,
         resources: resources.map((resource) => ({
           ...resource,

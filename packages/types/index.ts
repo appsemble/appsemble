@@ -776,7 +776,7 @@ export interface MinimalSecurity {
 
   default?: {
     role: AppRole;
-    policy?: SecurityPolicy
+    policy?: SecurityPolicy;
   };
 
   roles?: Record<Exclude<string, PredefinedAppRole>, RoleDefinition>;

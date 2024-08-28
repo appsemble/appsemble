@@ -7,6 +7,7 @@ import { apiUrl } from '../settings.js';
 export const groupMemberInvite: ActionCreator<'group.member.invite'> = ({
   definition,
   getAppMemberInfo,
+  getAppMemberSelectedGroup,
   remap,
 }) => [
   async (data) => {
@@ -22,7 +23,7 @@ export const groupMemberInvite: ActionCreator<'group.member.invite'> = ({
     const role = remap(definition.role, data);
 
     const { data: response } = await axios.post<GroupInvite[]>(
-      `${apiUrl}/api/groups/${id}/invites`,
+      `${apiUrl}/api/groups/${id}/invites?selectedGroupId=${getAppMemberSelectedGroup()?.id}`,
       { email, role },
     );
 
@@ -33,6 +34,7 @@ export const groupMemberInvite: ActionCreator<'group.member.invite'> = ({
 export const groupMemberQuery: ActionCreator<'group.member.query'> = ({
   definition,
   getAppMemberInfo,
+  getAppMemberSelectedGroup,
   remap,
 }) => [
   async (data) => {
@@ -45,7 +47,9 @@ export const groupMemberQuery: ActionCreator<'group.member.query'> = ({
 
     const id = remap(definition.id, data);
 
-    const { data: response } = await axios.get<GroupMember[]>(`${apiUrl}/api/groups/${id}/members`);
+    const { data: response } = await axios.get<GroupMember[]>(
+      `${apiUrl}/api/groups/${id}/members?selectedGroupId=${getAppMemberSelectedGroup()?.id}`,
+    );
 
     return response;
   },
@@ -54,6 +58,7 @@ export const groupMemberQuery: ActionCreator<'group.member.query'> = ({
 export const groupMemberDelete: ActionCreator<'group.member.delete'> = ({
   definition,
   getAppMemberInfo,
+  getAppMemberSelectedGroup,
   remap,
 }) => [
   async (data) => {
@@ -66,13 +71,16 @@ export const groupMemberDelete: ActionCreator<'group.member.delete'> = ({
 
     const id = remap(definition.id, data);
 
-    await axios.delete(`${apiUrl}/api/group-members/${id}`);
+    await axios.delete(
+      `${apiUrl}/api/group-members/${id}?selectedGroupId=${getAppMemberSelectedGroup()?.id}`,
+    );
   },
 ];
 
 export const groupMemberRoleUpdate: ActionCreator<'group.member.role.update'> = ({
   definition,
   getAppMemberInfo,
+  getAppMemberSelectedGroup,
   remap,
 }) => [
   async (data) => {
@@ -86,9 +94,12 @@ export const groupMemberRoleUpdate: ActionCreator<'group.member.role.update'> = 
     const id = remap(definition.id, data);
     const role = remap(definition.role, data);
 
-    const { data: response } = await axios.put<GroupMember>(`${apiUrl}/api/group-members/${id}`, {
-      role,
-    });
+    const { data: response } = await axios.put<GroupMember>(
+      `${apiUrl}/api/group-members/${id}?selectedGroupId=${getAppMemberSelectedGroup()?.id}`,
+      {
+        role,
+      },
+    );
 
     return response;
   },

@@ -36,6 +36,7 @@ export const pathItems: OpenAPIV3.PathItemObject = {
     tags: ['app', 'invite'],
     description: 'Invite a new app member to an app.',
     operationId: 'createAppInvites',
+    parameters: [{ $ref: '#/components/parameters/selectedGroupId' }],
     requestBody: {
       description: 'The invite to create.',
       required: true,

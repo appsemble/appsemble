@@ -5,7 +5,7 @@ export function createDeleteAppResourceController(options: Options): Middleware 
   return async (ctx: Context) => {
     const {
       pathParams: { appId, resourceId, resourceType },
-      queryParams: { groupId },
+      queryParams: { selectedGroupId },
       user: authSubject,
     } = ctx;
 
@@ -18,7 +18,7 @@ export function createDeleteAppResourceController(options: Options): Middleware 
         id: resourceId,
         type: resourceType,
         AppId: appId,
-        GroupId: groupId ?? null,
+        GroupId: selectedGroupId ?? null,
         expires: { or: [{ gt: new Date() }, { eq: null }] },
         ...(app.demoMode ? { seed: false, ephemeral: true } : {}),
       },
@@ -42,7 +42,7 @@ export function createDeleteAppResourceController(options: Options): Middleware 
           : `$resource:${resourceType}:delete`,
       ],
       app,
-      groupId,
+      groupId: selectedGroupId,
     });
 
     await deleteAppResource({

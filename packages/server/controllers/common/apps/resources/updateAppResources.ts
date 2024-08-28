@@ -16,7 +16,7 @@ import { processHooks, processReferenceHooks } from '../../../../utils/resource.
 export async function updateAppResources(ctx: Context): Promise<void> {
   const {
     pathParams: { appId, resourceType },
-    queryParams: { groupId },
+    queryParams: { selectedGroupId },
   } = ctx;
 
   const app = await App.findByPk(appId, {
@@ -26,8 +26,8 @@ export async function updateAppResources(ctx: Context): Promise<void> {
   await checkAuthSubjectAppPermissions({
     context: ctx,
     appId,
-    groupId,
     requiredPermissions: [`$resource:${resourceType}:update`],
+    groupId: selectedGroupId,
   });
 
   const appMember = await getCurrentAppMember({ context: ctx });
@@ -55,7 +55,7 @@ export async function updateAppResources(ctx: Context): Promise<void> {
       id: resourcesPayload.map((resource) => Number(resource.id)),
       type: resourceType,
       AppId: appId,
-      GroupId: groupId ?? null,
+      GroupId: selectedGroupId ?? null,
     },
     include: [
       { association: 'Author', attributes: ['id', 'name'], required: false },
@@ -124,7 +124,7 @@ export async function updateAppResources(ctx: Context): Promise<void> {
           return {
             ...asset,
             AppId: app.id,
-            GroupId: groupId ?? null,
+            GroupId: selectedGroupId ?? null,
             ResourceId,
             AppMemberId: appMember?.sub,
           };

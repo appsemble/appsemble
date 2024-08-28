@@ -150,6 +150,7 @@ export function BlockList({
           passwordLogout: logout,
           setAppMemberInfo: setInfo,
           refetchDemoAppMembers,
+          getAppMemberSelectedGroup: () => selectedGroup,
         }),
         events: createEvents(
           ee,
@@ -188,6 +189,7 @@ export function BlockList({
     addGroup,
     setInfo,
     infoRef,
+    selectedGroup,
   ]);
 
   if (!blockList.length) {

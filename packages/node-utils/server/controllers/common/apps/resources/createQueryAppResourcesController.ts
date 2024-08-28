@@ -13,7 +13,7 @@ export function createQueryAppResourcesController(options: Options): Middleware 
   return async (ctx: Context) => {
     const {
       pathParams: { appId, resourceType },
-      queryParams: { $select, $skip, $top, groupId, view },
+      queryParams: { $select, $skip, $top, selectedGroupId, view },
     } = ctx;
 
     const { checkAppPermissions, getApp, getAppResources } = options;
@@ -30,7 +30,7 @@ export function createQueryAppResourcesController(options: Options): Middleware 
         view ? `$resource:${resourceType}:query:${view}` : `$resource:${resourceType}:query`,
       ],
       app,
-      groupId,
+      groupId: selectedGroupId,
     });
 
     const isSameOrigin = ctx?.headers?.origin === ctx?.headers?.host;
@@ -45,7 +45,7 @@ export function createQueryAppResourcesController(options: Options): Middleware 
           {
             type: resourceType,
             AppId: appId,
-            GroupId: groupId ?? null,
+            GroupId: selectedGroupId ?? null,
             expires: { or: [{ gt: new Date() }, null] },
             ...(app.demoMode && !isSameOrigin ? { seed: false, ephemeral: true } : {}),
           },

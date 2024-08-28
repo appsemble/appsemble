@@ -22,6 +22,7 @@ export async function createGroupInvites(ctx: Context): Promise<void> {
   const {
     mailer,
     pathParams: { groupId },
+    queryParams: { selectedGroupId },
     request: { body },
   } = ctx;
 
@@ -47,8 +48,8 @@ export async function createGroupInvites(ctx: Context): Promise<void> {
   await checkAuthSubjectAppPermissions({
     context: ctx,
     appId: app.id,
-    groupId,
     requiredPermissions: [AppPermission.CreateGroupInvites],
+    groupId: selectedGroupId,
   });
 
   const groupMembers = await GroupMember.findAll({

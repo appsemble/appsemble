@@ -13,12 +13,6 @@ export async function respondGroupInvite(ctx: Context): Promise<void> {
 
   const invite = await GroupInvite.findOne({
     where: { key: token },
-    include: [
-      {
-        attributes: ['id'],
-        model: Group,
-      },
-    ],
   });
 
   assertKoaError(!invite, ctx, 404, 'This token is invalid');
@@ -32,6 +26,12 @@ export async function respondGroupInvite(ctx: Context): Promise<void> {
           where: { email: invite.email },
           required: true,
         },
+        {
+          attributes: ['id'],
+          model: Group,
+          where: { id: invite.GroupId },
+          required: true,
+        },
       ],
     });
 
@@ -39,7 +39,7 @@ export async function respondGroupInvite(ctx: Context): Promise<void> {
       Boolean(existingGroupMember),
       ctx,
       409,
-      'Group member with this email already exists',
+      'Group member with this email already exists in this group',
     );
 
     const appMember = await AppMember.findOne({
@@ -49,7 +49,7 @@ export async function respondGroupInvite(ctx: Context): Promise<void> {
 
     await GroupMember.create({
       AppMemberId: appMember.id,
-      GroupId: invite.Group.id,
+      GroupId: invite.GroupId,
       role: invite.role,
     });
   }

@@ -1,7 +1,18 @@
-import { Icon, NavbarDropdown, NavbarItem, useToggle } from '@appsemble/react-components';
-import { type ReactNode } from 'react';
+import {
+  Icon,
+  type MinimalHTMLElement,
+  ModalCard,
+  NavbarDropdown,
+  NavbarItem,
+  SelectField,
+  SimpleForm,
+  SimpleFormField,
+  SimpleSubmit,
+  useToggle,
+} from '@appsemble/react-components';
+import { type ChangeEvent, type ReactNode, useCallback, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { Link, useLocation, useParams } from 'react-router-dom';
+import { Link, useLocation, useNavigate, useParams } from 'react-router-dom';
 
 import styles from './index.module.css';
 import { messages } from './messages.js';
@@ -13,14 +24,28 @@ import { DemoLogin } from '../DemoLogin/index.js';
 export function ProfileDropdown(): ReactNode {
   const { formatMessage } = useIntl();
   const { definition } = useAppDefinition();
-  const { info, isLoggedIn, logout } = useAppMember();
+  const { groups, info, isLoggedIn, logout, selectedGroup, setSelectedGroup } = useAppMember();
   const { lang } = useParams<{ lang: string }>();
   const { pathname } = useLocation();
+  const navigate = useNavigate();
 
   const showLogin = definition.security;
   const { layout } = definition;
 
+  const groupSelectionToggle = useToggle();
   const demoLoginToggle = useToggle();
+
+  const [localSelectedGroup, setLocalSelectedGroup] = useState(selectedGroup);
+
+  const changeLocalSelectedGroup = (event: ChangeEvent<MinimalHTMLElement>): void => {
+    setLocalSelectedGroup(groups.find((group) => group.id === Number(event.target.value)) || null);
+  };
+
+  const handleGroupChange = useCallback(() => {
+    setSelectedGroup(groups.find((group) => group.id === localSelectedGroup?.id) || null);
+    groupSelectionToggle.disable();
+    navigate('/');
+  }, [groupSelectionToggle, groups, localSelectedGroup?.id, navigate, setSelectedGroup]);
 
   if (
     !showLogin ||
@@ -65,6 +90,18 @@ export function ProfileDropdown(): ReactNode {
           </figure>
         }
       >
+        {Boolean(groups?.length) && (
+          <NavbarItem icon="wrench" onClick={groupSelectionToggle.enable}>
+            {selectedGroup ? (
+              <FormattedMessage
+                {...messages.changeSelectedGroup}
+                values={{ selectedGroupName: selectedGroup?.name }}
+              />
+            ) : (
+              <FormattedMessage {...messages.selectGroup} />
+            )}
+          </NavbarItem>
+        )}
         {(layout?.settings ?? 'navbar') === 'navbar' && (
           <NavbarItem icon="wrench" to={`/${lang}/Settings`}>
             <FormattedMessage {...messages.settings} />
@@ -101,6 +138,36 @@ export function ProfileDropdown(): ReactNode {
           </>
         ) : null}
       </NavbarDropdown>
+      <ModalCard
+        component={SimpleForm}
+        defaultValues={{ groupId: selectedGroup?.id }}
+        isActive={groupSelectionToggle.enabled}
+        onClose={groupSelectionToggle.disable}
+        onSubmit={handleGroupChange}
+      >
+        <div className="mb-6">
+          <SimpleFormField
+            component={SelectField}
+            disabled={groups.length < 2}
+            label={<FormattedMessage {...messages.selectGroup} />}
+            name="groupId"
+            onChange={changeLocalSelectedGroup}
+            required
+          >
+            {groups.map((group) => (
+              <option key={group.id} value={group.id}>
+                {group.name} - {group.role}
+              </option>
+            ))}
+            <option key="no-group" value={-1}>
+              <FormattedMessage {...messages.noGroup} />
+            </option>
+          </SimpleFormField>
+          <SimpleSubmit allowPristine={false} dataTestId="changeGroup">
+            <FormattedMessage {...messages.changeGroup} />
+          </SimpleSubmit>
+        </div>
+      </ModalCard>
       <DemoLogin modal={demoLoginToggle} />
     </>
   );

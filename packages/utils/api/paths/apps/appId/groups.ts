@@ -32,6 +32,7 @@ export const pathItems: OpenAPIV3.PathItemObject = {
     tags: ['common', 'app', 'group'],
     description: 'Create a new group.',
     operationId: 'createAppGroup',
+    parameters: [{ $ref: '#/components/parameters/selectedGroupId' }],
     requestBody: {
       description: 'The group to create.',
       required: true,

@@ -14,6 +14,7 @@ export const pathItems: OpenAPIV3.PathItemObject = {
     tags: ['common', 'app-member'],
     description: 'Delete an app member.',
     operationId: 'deleteAppMember',
+    parameters: [{ $ref: '#/components/parameters/selectedGroupId' }],
     responses: {
       204: {
         description: 'The app member was deleted successfully.',

@@ -8,6 +8,7 @@ import { checkAuthSubjectAppPermissions } from '../../../../utils/authorization.
 export async function getGroupMembers(ctx: Context): Promise<void> {
   const {
     pathParams: { groupId },
+    queryParams: { selectedGroupId },
   } = ctx;
 
   const group = await Group.findOne({
@@ -19,8 +20,8 @@ export async function getGroupMembers(ctx: Context): Promise<void> {
   await checkAuthSubjectAppPermissions({
     context: ctx,
     appId: group.AppId,
-    groupId,
     requiredPermissions: [AppPermission.QueryGroupMembers],
+    groupId: selectedGroupId,
   });
 
   const groupMembers = await GroupMember.findAll({

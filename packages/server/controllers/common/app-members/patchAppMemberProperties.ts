@@ -9,6 +9,7 @@ import { checkAuthSubjectAppPermissions } from '../../../utils/authorization.js'
 export async function patchAppMemberProperties(ctx: Context): Promise<void> {
   const {
     pathParams: { appMemberId },
+    queryParams: { selectedGroupId },
     request: {
       body: { properties },
     },
@@ -34,6 +35,7 @@ export async function patchAppMemberProperties(ctx: Context): Promise<void> {
     context: ctx,
     appId: appMember.AppId,
     requiredPermissions: [AppPermission.PatchAppMemberProperties],
+    groupId: selectedGroupId,
   });
 
   const updatedAppMember = await appMember.update({

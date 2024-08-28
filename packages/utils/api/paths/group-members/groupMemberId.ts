@@ -23,6 +23,7 @@ export const pathItems: OpenAPIV3.PathItemObject = {
     tags: ['common', 'group-member'],
     description: 'Remove a member from a group.',
     operationId: 'deleteGroupMember',
+    parameters: [{ $ref: '#/components/parameters/selectedGroupId' }],
     responses: {
       204: {
         description: 'The group member has been removed successfully.',

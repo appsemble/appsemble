@@ -4,6 +4,7 @@ export const pathItems: OpenAPIV3.PathItemObject = {
   parameters: [
     { $ref: '#/components/parameters/appId' },
     { $ref: '#/components/parameters/roles' },
+    { $ref: '#/components/parameters/selectedGroupId' },
   ],
   get: {
     tags: ['common', 'app', 'member'],

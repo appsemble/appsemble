@@ -205,6 +205,7 @@ export function TabsPage({
         passwordLogout: logout,
         setAppMemberInfo: setInfo,
         refetchDemoAppMembers,
+        getAppMemberSelectedGroup: () => selectedGroup,
       }),
     [
       appStorage,
@@ -213,11 +214,11 @@ export function TabsPage({
       appDefinition,
       pageDefinition,
       navigate,
-      showDialog,
-      showShareDialog,
       prefix,
       prefixIndex,
       pushNotifications,
+      showDialog,
+      showShareDialog,
       ee,
       remap,
       params,
@@ -229,6 +230,7 @@ export function TabsPage({
       setInfo,
       refetchDemoAppMembers,
       infoRef,
+      selectedGroup,
     ],
   );
 

@@ -20,7 +20,7 @@ export function GroupInvitePrompt(): ReactNode {
   const query = useQuery();
   const navigate = useNavigate();
 
-  const { addGroup } = useAppMember();
+  const { addGroup, selectedGroup, setSelectedGroup } = useAppMember();
 
   const [accepted, setAccepted] = useState(false);
   const [declined, setDeclined] = useState(false);
@@ -48,13 +48,20 @@ export function GroupInvitePrompt(): ReactNode {
     try {
       await axios.post(`${apiUrl}/api/group-invites/${token}/respond`, { response: true });
 
+      const group = { id: invite.groupId, name: invite.groupName, role: invite.role };
+
       setAccepted(true);
-      addGroup({ id: invite.groupId, name: invite.groupName, role: invite.role });
+      addGroup(group);
+
+      if (!selectedGroup) {
+        setSelectedGroup(group);
+      }
+
       navigate('/');
     } catch (error_) {
       setError(error_);
     }
-  }, [addGroup, invite, navigate, token]);
+  }, [addGroup, invite, navigate, selectedGroup, setSelectedGroup, token]);
 
   if (loading) {
     return <Loader />;

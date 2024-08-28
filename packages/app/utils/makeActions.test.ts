@@ -36,6 +36,7 @@ describe('makeActions', () => {
       passwordLogout: null,
       setAppMemberInfo: null,
       refetchDemoAppMembers: null,
+      getAppMemberSelectedGroup: null,
     };
   });
 

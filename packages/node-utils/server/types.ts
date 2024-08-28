@@ -122,7 +122,7 @@ declare module 'koas-parameters' {
     roles: string[] | string;
     includeMessages: boolean;
     demo: boolean;
-    groupId: number;
+    selectedGroupId: number;
   }
 }
 

@@ -6,7 +6,7 @@ export const pathItems: OpenAPIV3.PathItemObject = {
     { $ref: '#/components/parameters/resourceType' },
     { $ref: '#/components/parameters/resourceId' },
     { $ref: '#/components/parameters/view' },
-    { in: 'query', name: 'groupId', schema: { type: 'number' } },
+    { $ref: '#/components/parameters/selectedGroupId' },
   ],
   get: {
     tags: ['common', 'app', 'resource'],
@@ -24,7 +24,6 @@ export const pathItems: OpenAPIV3.PathItemObject = {
     tags: ['common', 'app', 'resource'],
     description: 'Update an existing app resource.',
     operationId: 'updateAppResource',
-    parameters: [{ in: 'query', name: 'groupId', schema: { type: 'number' } }],
     requestBody: {
       required: true,
       $ref: '#/components/requestBodies/resource',
@@ -41,7 +40,6 @@ export const pathItems: OpenAPIV3.PathItemObject = {
     tags: ['common', 'app', 'resource'],
     description: 'Patch an existing app resource.',
     operationId: 'patchAppResource',
-    parameters: [{ in: 'query', name: 'groupId', schema: { type: 'number' } }],
     requestBody: {
       required: true,
       $ref: '#/components/requestBodies/resource',
@@ -58,7 +56,6 @@ export const pathItems: OpenAPIV3.PathItemObject = {
     tags: ['common', 'app', 'resource'],
     description: 'Delete an existing app resource.',
     operationId: 'deleteAppResource',
-    parameters: [{ in: 'query', name: 'groupId', schema: { type: 'number' } }],
     responses: {
       204: {
         description: 'The app resource has been deleted successfully.',

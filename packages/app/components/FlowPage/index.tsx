@@ -65,7 +65,8 @@ export function FlowPage({
   const [currentStep, setCurrentStep] = useState(0);
   const pushNotifications = useServiceWorkerRegistration();
   const showMessage = useMessages();
-  const { addGroup, groups, info, infoRef, logout, passwordLogin, setInfo } = useAppMember();
+  const { addGroup, groups, info, infoRef, logout, passwordLogin, selectedGroup, setInfo } =
+    useAppMember();
   const { refetchDemoAppMembers } = useDemoAppMembers();
   const { getAppMessage, getMessage } = useAppMessages();
   const { getVariable } = useAppVariables();
@@ -257,6 +258,7 @@ export function FlowPage({
         passwordLogout: logout,
         setAppMemberInfo: setInfo,
         refetchDemoAppMembers,
+        getAppMemberSelectedGroup: () => selectedGroup,
       }),
     [
       appStorage,
@@ -282,6 +284,7 @@ export function FlowPage({
       setInfo,
       refetchDemoAppMembers,
       infoRef,
+      selectedGroup,
     ],
   );
 

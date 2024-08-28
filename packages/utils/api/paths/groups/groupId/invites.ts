@@ -44,6 +44,7 @@ export const pathItems: OpenAPIV3.PathItemObject = {
     tags: ['group', 'invite'],
     description: 'Invite a new user to a group.',
     operationId: 'createGroupInvites',
+    parameters: [{ $ref: '#/components/parameters/selectedGroupId' }],
     requestBody: {
       description: 'The group invite to create.',
       required: true,

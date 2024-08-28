@@ -23,14 +23,15 @@ see [security roles](security.md#roles). Having a role gives the group member ce
 scoped to the group. From the app’s UI, app members can select from which group they are currently
 operating. If a group is selected, the role of the app member within the group is inferred and the
 permissions for that role are used for all app operations. If no group is selected, the app member’s
-app role is used.
+app role is used instead. The id of the currently selected group is passed to all app actions that
+require certain permissions. Check out [actions](../03-actions/index.mdx) for more information.
 
 ### Resources and Assets
 
-To scope a resource for a specific group, the id of the group can be passed when using the
-`resource.create` action to create the resource. When a resource is scoped within a group, only
-members of that group with enough permissions, inferred from their role in the group, can perform
-operations on the resource.
+To scope a resource for a specific group, the id of the currently selected group is automatically
+passed to the query of the `resource.create` action. The same goes for other resource actions. When
+a resource is scoped within a group, only members of that group with enough permissions, inferred
+from their role in the group, can perform operations on the resource.
 
 For example, let’s say we have an app for managing a soccer club.
 

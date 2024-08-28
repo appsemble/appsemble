@@ -14,6 +14,7 @@ export async function createAppInvites(ctx: Context): Promise<void> {
   const {
     mailer,
     pathParams: { appId },
+    queryParams: { selectedGroupId },
     request: { body },
   } = ctx;
 
@@ -38,6 +39,7 @@ export async function createAppInvites(ctx: Context): Promise<void> {
     context: ctx,
     appId,
     requiredPermissions: [AppPermission.CreateAppInvites],
+    groupId: selectedGroupId,
   });
 
   const appMembers = await AppMember.findAll({ where: { AppId: appId }, attributes: ['email'] });

@@ -14,6 +14,7 @@ export const pathItems: OpenAPIV3.PathItemObject = {
     tags: ['common', 'app-member'],
     description: 'Patch the properties of an app member.',
     operationId: 'patchAppMemberProperties',
+    parameters: [{ $ref: '#/components/parameters/selectedGroupId' }],
     requestBody: {
       content: {
         'multipart/form-data': {

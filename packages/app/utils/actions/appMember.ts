@@ -59,6 +59,7 @@ export const appMemberRegister: ActionCreator<'app.member.register'> = ({
 export const appMemberInvite: ActionCreator<'app.member.invite'> = ({
   definition,
   getAppMemberInfo,
+  getAppMemberSelectedGroup,
   remap,
 }) => [
   async (data) => {
@@ -72,7 +73,10 @@ export const appMemberInvite: ActionCreator<'app.member.invite'> = ({
     const email = remap(definition.email, data);
     const role = remap(definition.role, data);
 
-    await axios.post(`${apiUrl}/api/apps/${appId}/invites`, { email, role });
+    await axios.post(
+      `${apiUrl}/api/apps/${appId}/invites?selectedGroupId=${getAppMemberSelectedGroup()?.id}`,
+      { email, role },
+    );
 
     return data;
   },
@@ -111,6 +115,7 @@ export const appMemberLogout: ActionCreator<'app.member.logout'> = ({ passwordLo
 export const appMemberQuery: ActionCreator<'app.member.query'> = ({
   definition,
   getAppMemberInfo,
+  getAppMemberSelectedGroup,
   remap,
 }) => [
   async (data) => {
@@ -124,7 +129,7 @@ export const appMemberQuery: ActionCreator<'app.member.query'> = ({
     const roles = remap(definition.roles, data);
 
     const { data: response } = await axios.get<AppMemberInfo[]>(
-      `${apiUrl}/api/apps/${appId}/${appMemberInfo.demo ? 'demo-' : ''}members?roles=${roles}`,
+      `${apiUrl}/api/apps/${appId}/${appMemberInfo.demo ? 'demo-' : ''}members?roles=${roles}&selectedGroupId=${getAppMemberSelectedGroup()?.id}`,
     );
 
     return response;
@@ -179,6 +184,7 @@ export const appMemberCurrentPatch: ActionCreator<'app.member.current.patch'> = 
 export const appMemberRoleUpdate: ActionCreator<'app.member.role.update'> = ({
   definition,
   getAppMemberInfo,
+  getAppMemberSelectedGroup,
   refetchDemoAppMembers,
   remap,
 }) => [
@@ -194,7 +200,7 @@ export const appMemberRoleUpdate: ActionCreator<'app.member.role.update'> = ({
     const role = remap(definition.role, data);
 
     const { data: response } = await axios.put<AppMemberInfo>(
-      `${apiUrl}/api/app-members/${sub}/role`,
+      `${apiUrl}/api/app-members/${sub}/role?selectedGroupId=${getAppMemberSelectedGroup()?.id}`,
       { role },
     );
 
@@ -207,6 +213,7 @@ export const appMemberRoleUpdate: ActionCreator<'app.member.role.update'> = ({
 export const appMemberPropertiesPatch: ActionCreator<'app.member.properties.patch'> = ({
   definition,
   getAppMemberInfo,
+  getAppMemberSelectedGroup,
   refetchDemoAppMembers,
   remap,
 }) => [
@@ -225,7 +232,7 @@ export const appMemberPropertiesPatch: ActionCreator<'app.member.properties.patc
     assignAppMemberProperties(properties, formData);
 
     const { data: response } = await axios.patch<AppMemberInfo>(
-      `${apiUrl}/api/app-members/${sub}/properties`,
+      `${apiUrl}/api/app-members/${sub}/properties?selectedGroupId=${getAppMemberSelectedGroup()?.id}`,
       formData,
     );
 
@@ -238,6 +245,7 @@ export const appMemberPropertiesPatch: ActionCreator<'app.member.properties.patc
 export const appMemberDelete: ActionCreator<'app.member.delete'> = ({
   definition,
   getAppMemberInfo,
+  getAppMemberSelectedGroup,
   refetchDemoAppMembers,
   remap,
 }) => [
@@ -251,7 +259,9 @@ export const appMemberDelete: ActionCreator<'app.member.delete'> = ({
 
     const sub = remap(definition.sub, data);
 
-    const { data: response } = await axios.delete(`${apiUrl}/api/app-members/${sub}`);
+    const { data: response } = await axios.delete(
+      `${apiUrl}/api/app-members/${sub}?selectedGroupId=${getAppMemberSelectedGroup()?.id}`,
+    );
 
     await refetchDemoAppMembers();
 

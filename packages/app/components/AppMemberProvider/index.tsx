@@ -8,6 +8,7 @@ import {
   type Dispatch,
   type MutableRefObject,
   type ReactNode,
+  type SetStateAction,
   useCallback,
   useContext,
   useEffect,
@@ -65,6 +66,7 @@ interface AppMemberContext extends LoginState {
   setInfo: Dispatch<AppMemberInfo>;
   addGroup: (group: AppMemberGroup) => void;
   selectedGroup: AppMemberGroup;
+  setSelectedGroup: Dispatch<SetStateAction<AppMemberGroup>>;
 }
 
 interface AppMemberProviderProps {
@@ -183,6 +185,10 @@ export function AppMemberProvider({ children }: AppMemberProviderProps): ReactNo
             config,
           );
           groups = data;
+
+          if (groups.length) {
+            setSelectedGroup(groups[0]);
+          }
         } catch {
           // Do nothing
         }

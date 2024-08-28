@@ -14,6 +14,7 @@ export const pathItems: OpenAPIV3.PathItemObject = {
     tags: ['common', 'app', 'member'],
     description: 'Patch an app member.',
     operationId: 'updateAppMemberRole',
+    parameters: [{ $ref: '#/components/parameters/selectedGroupId' }],
     requestBody: {
       content: {
         'application/json': {

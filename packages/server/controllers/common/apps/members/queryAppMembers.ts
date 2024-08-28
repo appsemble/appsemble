@@ -11,7 +11,7 @@ import { checkAuthSubjectAppPermissions } from '../../../../utils/authorization.
 export async function queryAppMembers(ctx: Context): Promise<void> {
   const {
     pathParams: { appId },
-    queryParams: { roles = [] },
+    queryParams: { roles = [], selectedGroupId },
   } = ctx;
 
   const app = await App.findByPk(appId, {
@@ -24,6 +24,7 @@ export async function queryAppMembers(ctx: Context): Promise<void> {
     context: ctx,
     appId,
     requiredPermissions: [AppPermission.QueryAppMembers],
+    groupId: selectedGroupId,
   });
 
   const supportedAppRoles = getAppRoles(app.definition.security);

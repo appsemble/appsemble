@@ -54,7 +54,11 @@ Supported resource actions are as below:
 This action is implemented for client as well as server side. This action is used to fetch a single
 resource. Supported fields for this action are `type`, `resource` and `view`. Fields `type` and
 `resource` are required. Resource refers to the resource to be fetched, and view is the view to use
-for the resource. Here’s an example of how you can use this action to fetch the `person` resource.
+for the resource. This action requires at least one of the app permissions `$resource:all:get`,
+`$resource:all:own:get`, `$resource:all:get:<view-name>`, `$resource:<resource-name>:get`,
+`$resource:<resource-name>:own:get` or `$resource:<resource-name>:get:<view-name>` depending on the
+context. For more information check out [security](../02-guides/security.md#permissions). Here’s an
+example of how you can use this action to fetch the `person` resource.
 
 ```yaml validate blocks-snippet
 blocks:
@@ -71,8 +75,12 @@ blocks:
 This action is implemented for client as well as the server side. This action is used to fetch all
 the resources. Similar to `resource.get` supported fields for this action are `type`, `resource` and
 `view`. Fields `type` and `resource` are required. Resource refers to the resource to be fetched,
-and view is the view to use for the resource. Here’s an example of how you can use this action to
-fetch all `person` resources.
+and view is the view to use for the resource. This action requires at least one of the app
+permissions `$resource:all:query`, `$resource:all:own:query`, `$resource:all:query:<view-name>`,
+`$resource:<resource-name>:query`, `$resource:<resource-name>:own:query` or
+`$resource:<resource-name>:query:<view-name>` depending on the context. For more information check
+out [security](../02-guides/security.md#permissions). Here’s an example of how you can use this
+action to fetch all `person` resources.
 
 ```yaml validate blocks-snippet
 blocks:
@@ -88,8 +96,10 @@ blocks:
 
 This action is implemented for client only. This action is used to fetch the count of resources.
 Supported field for this action are `type` and `resource`. Both of the fields are required. Resource
-refers to the resource whose count is to be fetched. Here’s an example of how you can use this
-action to fetch the number of resources.
+refers to the resource whose count is to be fetched. This action requires at least one of the app
+permissions `$resource:all:query` or `$resource:<resource-name>:query` depending on the context. For
+more information check out [security](../02-guides/security.md#permissions). Here’s an example of how you can use this action to fetch the
+number of resources.
 
 ```yaml validate blocks-snippet
 blocks:
@@ -105,7 +115,9 @@ blocks:
 
 This action is implemented for client as well as the server side. This action is used to create new
 resources. Supported fields for this action are `type` and `resource`. Both of the fields are
-required. Here’s an example of how you can use this action to create a new resource of type person.
+required. This action requires at least one of the app permissions `$resource:all:create` or
+`$resource:<resource-name>:create` depending on the context. For more information check out [security](../02-guides/security.md#permissions).
+Here’s an example of how you can use this action to create a new resource of type person.
 
 ```yaml validate blocks-snippet
 blocks:
@@ -122,8 +134,12 @@ blocks:
 
 This action is implemented for client as well as server side. This action is used to replace some
 resource’s data with a completely new set of values. Supported field for this action are `type` and
-`resource`. Both of the fields are required. Resource refers to the resource to be updated. Here’s
-an example of how you can use this action to update an existing resource of type person.
+`resource`. Both of the fields are required. Resource refers to the resource to be updated. This
+action requires at least one of the app permissions `$resource:all:update`,
+`$resource:all:own:update`, `$resource:<resource-name>:update` or
+`$resource:<resource-name>:own:update` depending on the context. For more information check out
+[security](../02-guides/security.md#permissions). Here’s an example of how you can use this action
+to update an existing resource of type person.
 
 ```yaml validate blocks-snippet
 blocks:
@@ -155,8 +171,11 @@ blocks:
 
 This action is implemented for client as well as the server side. This action is used to partially
 update a resource with new data. Supported field for this action are `type` and `resource`. Both of
-the fields are required. Resource refers to the resource to be partially updated. Here’s an example
-of how you can partially update a resource of type person using this action.
+the fields are required. Resource refers to the resource to be partially updated. This action
+requires at least one of the app permissions `$resource:all:patch`, `$resource:all:own:patch`,
+`$resource:<resource-name>:patch` or `$resource:<resource-name>:own:patch` depending on the context.
+For more information check out [security](../02-guides/security.md#permissions). Here’s an example of how you can partially update a
+resource of type person using this action.
 
 ```yaml validate blocks-snippet
 blocks:
@@ -179,8 +198,11 @@ blocks:
 
 This action is implemented for the client as well as the server side. This action is used to delete
 a resource from the database. Supported field for this action are `type` and `resource`. Both of the
-fields are required. Resource refers to the resource to be deleted. To delete a person resource, you
-can use the following block of code.
+fields are required. Resource refers to the resource to be deleted. This action requires at least
+one of the app permissions `$resource:all:delete`, `$resource:all:own:delete`,
+`$resource:<resource-name>:delete` or `$resource:<resource-name>:own:delete` depending on the
+context. For more information check out [security](../02-guides/security.md#permissions). To delete a person resource, you can use the
+following block of code.
 
 ```yaml validate blocks-snippet
 blocks:

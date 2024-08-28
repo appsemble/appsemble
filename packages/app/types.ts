@@ -148,6 +148,7 @@ export interface MakeActionParameters<D extends ActionDefinition> {
   setAppMemberInfo: Dispatch<AppMemberInfo>;
   appMemberGroups: AppMemberGroup[];
   addAppMemberGroup: (group: Group) => void;
+  getAppMemberSelectedGroup: () => AppMemberGroup;
   refetchDemoAppMembers: () => Promise<void>;
 }
 

@@ -6,6 +6,7 @@ export const pathItems: OpenAPIV3.PathItemObject = {
     tags: ['common', 'group-member'],
     description: 'Set the role of a member within a group.',
     operationId: 'updateGroupMemberRole',
+    parameters: [{ $ref: '#/components/parameters/selectedGroupId' }],
     requestBody: {
       description: 'The role to set.',
       required: true,
