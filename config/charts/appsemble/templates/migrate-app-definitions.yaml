@@ -6,7 +6,7 @@ metadata:
     {{ include "appsemble.labels" . }}
   annotations:
     helm.sh/hook: post-install,post-upgrade
-    helm.sh/hook-weight: '0'
+    helm.sh/hook-weight: '1' # Must be after migrate to prevent data corruption
 spec:
   template:
     metadata:
@@ -20,6 +20,15 @@ spec:
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           args:
             - migrate-app-definitions
+            {{ with .Values.migrateDefinitions.validate }}
+            - {{ . }}
+            {{ end }}
+            {{ with .Values.migrateDefinitions.save }}
+            - {{ . }}
+            {{ end }}
+            {{ with .Values.migrateDefinitions.batch }}
+            - {{ . }}
+            {{ end }}
           env:
 {{ include "appsemble.postgres" . | indent 12 }}
 {{ include "appsemble.sentry" . | indent 12 }}

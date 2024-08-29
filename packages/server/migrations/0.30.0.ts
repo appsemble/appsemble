@@ -4,7 +4,7 @@ import { logger } from '@appsemble/node-utils';
 import { DataTypes, type Sequelize, type Transaction } from 'sequelize';
 import { type Document, Scalar, YAMLMap, YAMLSeq } from 'yaml';
 
-import { type Patch, type Path } from '../commands/migrateAppDefinitions.js';
+import { type Patch, type Path } from '../utils/yaml.js';
 
 export const key = '0.30.0';
 

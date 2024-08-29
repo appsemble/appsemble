@@ -11,8 +11,9 @@ export const description = 'Migrate all app definitions in the Appsemble databas
 
 interface AdditionalArguments {
   validate?: boolean;
-  dryRun?: boolean;
+  save?: boolean;
   path?: string;
+  batch?: number;
 }
 
 export function builder(yargs: Argv): Argv<any> {
@@ -53,16 +54,22 @@ export function builder(yargs: Argv): Argv<any> {
       type: 'boolean',
       default: true,
     })
-    .option('dry-run', {
+    .option('save', {
       desc: 'Whether to save the changes.',
       type: 'boolean',
-      default: true,
+      default: false,
+    })
+    .option('batch', {
+      desc: 'The batch size of apps to patch at once.',
+      type: 'number',
+      default: 100,
     });
 }
 
 export async function handler({
-  dryRun,
+  batch,
   path,
+  save,
   validate,
   ...argv
 }: AdditionalArguments & BaseArguments): Promise<void> {
@@ -82,5 +89,5 @@ export async function handler({
       });
     }
   }
-  return migrateAppDefinitions({ dryRun, paths, validate });
+  return migrateAppDefinitions({ save, paths, validate, batch });
 }

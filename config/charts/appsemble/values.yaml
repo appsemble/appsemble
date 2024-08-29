@@ -65,6 +65,11 @@ gitlab:
 
 migrateTo: null
 
+migrateDefinitions:
+  validate: true
+  save: false
+  batch: 100
+
 forceProtocolHttps: false
 
 proxy: false

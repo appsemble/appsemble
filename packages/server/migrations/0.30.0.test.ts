@@ -2,7 +2,7 @@ import { logger, readFixture } from '@appsemble/node-utils';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { appPatches } from './0.30.0.js';
-import { migrateAppDefinitions } from '../commands/migrateAppDefinitions.js';
+import { migrateAppDefinition } from '../commands/migrateAppDefinitions.js';
 import { getDB } from '../models/index.js';
 import { useTestDatabase } from '../utils/test/testSchema.js';
 
@@ -18,7 +18,7 @@ describe('migration 0.30.0', () => {
       'definitions/replace-remap-with-remap-before.yaml',
       'utf8',
     );
-    const [patched] = await migrateAppDefinitions([definition], appPatches, getDB());
+    const patched = await migrateAppDefinition(definition, appPatches, getDB());
 
     expect(logger.error).not.toHaveBeenCalled();
     expect(patched.trim()).toBe(
@@ -48,7 +48,7 @@ pages:
       'definitions/replace-hide-from-menu-with-hide-nav-title.yaml',
       'utf8',
     );
-    const [patched] = await migrateAppDefinitions([definition], appPatches, getDB());
+    const patched = await migrateAppDefinition(definition, appPatches, getDB());
 
     expect(logger.error).not.toHaveBeenCalled();
     expect(patched.trim()).toBe(
@@ -78,7 +78,7 @@ pages:
       'definitions/rename-users-property-to-members.yaml',
       'utf8',
     );
-    const [patched] = await migrateAppDefinitions([definition], appPatches, getDB());
+    const patched = await migrateAppDefinition(definition, appPatches, getDB());
 
     expect(logger.error).not.toHaveBeenCalled();
     expect(patched.trim()).toBe(
@@ -131,7 +131,7 @@ members:
       'definitions/rename-user-actions-to-app-member-actions.yaml',
       'utf8',
     );
-    const [patched] = await migrateAppDefinitions([definition], appPatches, getDB());
+    const patched = await migrateAppDefinition(definition, appPatches, getDB());
 
     expect(logger.error).not.toHaveBeenCalled();
     expect(patched.trim()).toBe(
@@ -192,7 +192,7 @@ pages:
       'definitions/rename-team-actions-to-group-member-actions.yaml',
       'utf8',
     );
-    const [patched] = await migrateAppDefinitions([definition], appPatches, getDB());
+    const patched = await migrateAppDefinition(definition, appPatches, getDB());
 
     expect(logger.error).not.toHaveBeenCalled();
     expect(patched.trim()).toBe(
@@ -239,7 +239,7 @@ pages:
 
   it('should delete roles property', async () => {
     const definition = await readFixture('definitions/delete-roles.yaml', 'utf8');
-    const [patched] = await migrateAppDefinitions([definition], appPatches, getDB());
+    const patched = await migrateAppDefinition(definition, appPatches, getDB());
 
     expect(logger.error).not.toHaveBeenCalled();
     expect(patched.trim()).toBe(
@@ -274,7 +274,7 @@ pages:
 
   it('should delete resource.method', async () => {
     const definition = await readFixture('definitions/delete-resource-method.yaml', 'utf8');
-    const [patched] = await migrateAppDefinitions([definition], appPatches, getDB());
+    const patched = await migrateAppDefinition(definition, appPatches, getDB());
 
     expect(logger.error).not.toHaveBeenCalled();
     expect(patched.trim()).toBe(
@@ -301,7 +301,7 @@ pages:
 
   it('should replace `$none` with `$guest` and add guest to security.', async () => {
     const definition = await readFixture('definitions/replace-none-with-guest.yaml', 'utf8');
-    const [patched] = await migrateAppDefinitions([definition], appPatches, getDB());
+    const patched = await migrateAppDefinition(definition, appPatches, getDB());
 
     expect(logger.error).not.toHaveBeenCalled();
     expect(patched.trim()).toBe(
@@ -334,7 +334,7 @@ security:
       'definitions/add-guest-to-security-for-public.yaml',
       'utf8',
     );
-    const [patched1] = await migrateAppDefinitions([definition1], appPatches, getDB());
+    const patched1 = await migrateAppDefinition(definition1, appPatches, getDB());
 
     expect(logger.error).not.toHaveBeenCalled();
     expect(patched1.trim()).toBe(
@@ -402,7 +402,7 @@ pages:
       'definitions/add-guest-to-security-for-action-public.yaml',
       'utf8',
     );
-    const [patched2] = await migrateAppDefinitions([definition2], appPatches, getDB());
+    const patched2 = await migrateAppDefinition(definition2, appPatches, getDB());
 
     expect(logger.error).not.toHaveBeenCalled();
     expect(patched2.trim()).toBe(
@@ -455,7 +455,7 @@ pages:
       'definitions/add-guest-to-security-for-view-public.yaml',
       'utf8',
     );
-    const [patched3] = await migrateAppDefinitions([definition3], appPatches, getDB());
+    const patched3 = await migrateAppDefinition(definition3, appPatches, getDB());
 
     expect(logger.error).not.toHaveBeenCalled();
     expect(patched3.trim()).toBe(
@@ -512,7 +512,7 @@ pages:
 
   it('should add roles `Member` and `GroupsManager` to security.roles if used.', async () => {
     const definition = await readFixture('definitions/add-group-roles.yaml', 'utf8');
-    const [patched] = await migrateAppDefinitions([definition], appPatches, getDB());
+    const patched = await migrateAppDefinition(definition, appPatches, getDB());
 
     expect(logger.error).not.toHaveBeenCalled();
     expect(patched.trim()).toBe(
@@ -602,7 +602,7 @@ pages:
       'definitions/move-resource-roles-to-role-permissions.yaml',
       'utf8',
     );
-    const [patched] = await migrateAppDefinitions([definition], appPatches, getDB());
+    const patched = await migrateAppDefinition(definition, appPatches, getDB());
 
     expect(logger.error).not.toHaveBeenCalled();
     expect(patched.trim()).toBe(
@@ -795,7 +795,7 @@ pages:
 
   it('should remove `$public`.', async () => {
     const definition = await readFixture('definitions/delete-special-public-role.yaml', 'utf8');
-    const [patched] = await migrateAppDefinitions([definition], appPatches, getDB());
+    const patched = await migrateAppDefinition(definition, appPatches, getDB());
 
     expect(logger.error).not.toHaveBeenCalled();
     expect(patched.trim()).toBe(
