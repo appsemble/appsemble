@@ -487,6 +487,8 @@ security:
 
 resources:
   test:
+    views:
+      test: {}
     schema:
       additionalProperties: false
       type: object
@@ -759,6 +761,16 @@ resources:
           to:
             - roleA # Notify users with the Admin role when a \`person\` resource is created.
           subscribe: both # Users are able to both subscribe.
+    views:
+      public:
+        remap:
+          object.from:
+            id:
+              prop: id
+            test:
+              prop: test
+            $created:
+              prop: $created
   resourceD:
     schema:
       additionalProperties: false
