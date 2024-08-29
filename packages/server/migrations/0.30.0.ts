@@ -1318,8 +1318,6 @@ export const appPatches: Patch[] = [
     path: ['security', 'teams'],
     delete: true,
   },
-  // TODO: handle if roles property on resource is already empty to exclude permission
-  // roles: [], but query: roles: [...] or roles: [...], but delete: roles: []
   {
     message: 'Move resource roles to role permissions.',
     path: ['resources', '*', 'roles', /.*/, '<'],
@@ -1415,6 +1413,21 @@ export const appPatches: Patch[] = [
         }
       },
     ],
+  },
+  {
+    message: 'Remove uncaught empty resource roles.',
+    path: ['resources', /.*/, 'roles'],
+    delete: true,
+  },
+  {
+    message: 'Remove uncaught empty resource action roles.',
+    path: ['resources', /.*/, resourceActionPattern, 'roles'],
+    delete: true,
+  },
+  {
+    message: 'Remove uncaught empty resource view roles.',
+    path: ['resources', /.*/, 'views', /.*/, 'roles'],
+    delete: true,
   },
   {
     // Tested in resource permissions test
