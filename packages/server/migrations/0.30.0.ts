@@ -867,8 +867,12 @@ function addGuest(document: Document): void {
   if (!document.has('security')) {
     document.add({ key: new Scalar('security'), value: new YAMLMap() });
   }
-  document.addIn(['security'], { key: new Scalar('guest'), value: new YAMLMap() });
-  document.addIn(['security', 'guest'], { key: new Scalar('permissions'), value: new YAMLSeq() });
+  if (!document.hasIn(['security', 'guest'])) {
+    document.addIn(['security'], { key: new Scalar('guest'), value: new YAMLMap() });
+  }
+  if (!document.hasIn(['security', 'guest', 'permissions'])) {
+    document.addIn(['security', 'guest'], { key: new Scalar('permissions'), value: new YAMLSeq() });
+  }
 }
 
 function addGroupRoles(document: Document, t: Transaction, stepsList: Path[]): void {
@@ -1067,7 +1071,7 @@ export const appPatches: Patch[] = [
       (document, transaction, stepsList) => {
         for (const steps of stepsList) {
           document.addIn(steps.slice(0, -1), {
-            key: 'remapBefore',
+            key: new Scalar('remapBefore'),
             value: document.getIn(steps),
           });
         }
@@ -1170,7 +1174,7 @@ export const appPatches: Patch[] = [
   {
     // Can't handle `profile`, nor is this operation safe as it may break apps
     message: 'Rename `user` remapper to `app.member`.',
-    path: ['*', 'user', /sub|name|email|email_verified|picture|locale|role|properties/, '<'],
+    path: ['*', 'user', /^(sub|name|email|email_verified|picture|locale|role|properties)$/, '<'],
     patches: [
       (document, t, stepsList) => {
         for (const steps of stepsList) {
