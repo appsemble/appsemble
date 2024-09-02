@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.29.11](https://gitlab.com/appsemble/appsemble/-/releases/0.29.11)] - 2024-09-02
+
+### Fixed
+
+- Block(`detail-viewer`): Check if there is a video before trying to fetch its thumbnail.
+- Block(`list`): Check if the header has a value before converting it to a string.
+
 ## \[[0.29.10](https://gitlab.com/appsemble/appsemble/-/releases/0.29.10)] - 2024-08-28
 
 ### Added
