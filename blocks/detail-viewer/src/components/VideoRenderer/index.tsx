@@ -57,7 +57,7 @@ export function VideoRenderer({
 
   useEffect(() => {
     (async () => {
-      if (videoUrl && videoIsAsset && !fetchedAssetVideoHeaders) {
+      if (video && videoUrl && videoIsAsset && !fetchedAssetVideoHeaders) {
         try {
           const response = await fetch(asset(`${video}-thumbnail`), {
             method: 'HEAD',

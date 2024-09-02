@@ -44,7 +44,8 @@ export function HeaderComponent({ index, item }: HeaderComponentProps): VNode {
   );
 
   useEffect(() => {
-    setHeaderValue(String(remap(header, item)));
+    const remappedHeader = remap(header, item);
+    setHeaderValue(remappedHeader ? String(remappedHeader) : null);
   }, [header, item, remap]);
 
   const headerHTML = (
