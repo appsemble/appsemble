@@ -2643,7 +2643,7 @@ All notable changes to this project will be documented in this file.
 
 ### Added
 
-- Block(`detail-viewer`): Add support for teams of fields.
+- Block(`detail-viewer`): Add support for groups of fields.
 - App: Add Dutch translations.
 - App: Add the `user` remapper.
 - React-components: Add Dutch translations.
