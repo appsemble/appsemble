@@ -1,8 +1,9 @@
 import { beforeAll, beforeEach, describe, expect, it } from 'vitest';
 import { type Document, parseDocument, type YAMLMap } from 'yaml';
 
-import { applyPatch, collectPaths, extractWildcards } from './migrateAppDefinitions.js';
+import { applyPatch } from './migrateAppDefinitions.js';
 import { useTestDatabase } from '../utils/test/testSchema.js';
+import { collectPaths } from '../utils/yaml.js';
 
 useTestDatabase(import.meta);
 
@@ -131,56 +132,6 @@ describe('collectPaths', () => {
     },
   ])('should $message', ({ expected, path }) => {
     const output = collectPaths(path, document.contents as YAMLMap);
-    expect(output).toStrictEqual(expected);
-  });
-});
-
-describe.todo('extractWildcards', () => {
-  it.each([
-    {
-      message: 'handle regex',
-      path: ['d.*'],
-      steps: [['description'], ['defaultPage']],
-      expected: [['description'], ['defaultPage']],
-    },
-    {
-      message: 'handle exact paths',
-      path: ['pages', 0, 'name', 'test'],
-      steps: [['pages', 0, 'name', 'test']],
-      expected: [],
-    },
-    {
-      message: 'handle wildcards in path',
-      path: ['*', 'actions', '*', 'test'],
-      steps: [
-        ['pages', 0, 'blocks', 0, 'actions', 'onClick', 'resource', 'test'],
-        ['pages', 0, 'blocks', 1, 'actions', 'onClick', 'resource', 'test'],
-      ],
-      expected: [
-        [[0, 'blocks']],
-        [[0, 'blocks']],
-        [[0, 'actions', 'onClick']],
-        [[1, 'actions', 'onClick']],
-      ],
-    },
-    {
-      message: 'handle wildcards with back references',
-      path: ['*', 'actions', '*', 'type', '^resource\\..*', '<', '<', 'method'],
-      steps: [
-        ['pages', 0, 'blocks', 0, 'actions', 'onClick', 'type', 'resource.create', 'method'],
-        ['pages', 0, 'blocks', 1, 'actions', 'onClick', 'type', 'resource.get', 'method'],
-      ],
-      expected: [
-        [[0, 'blocks']],
-        [[0, 'blocks']],
-        [[0, 'actions']],
-        [[1, 'actions']],
-        ['resource.create'],
-        ['resource.get'],
-      ],
-    },
-  ])('should $message', ({ expected, path, steps }) => {
-    const output = extractWildcards(path, steps);
     expect(output).toStrictEqual(expected);
   });
 });

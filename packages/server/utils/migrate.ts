@@ -3,7 +3,7 @@ import semver from 'semver';
 import { type Sequelize, type Transaction } from 'sequelize';
 import { type Promisable } from 'type-fest';
 
-import { type Patch } from '../commands/migrateAppDefinitions.js';
+import { type Patch } from './yaml.js';
 import { getDB, Meta } from '../models/index.js';
 
 export interface Migration {
