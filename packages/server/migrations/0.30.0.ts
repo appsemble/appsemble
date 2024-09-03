@@ -1,7 +1,7 @@
 import { isDeepStrictEqual } from 'node:util';
 
 import { logger } from '@appsemble/node-utils';
-import { DataTypes, type Sequelize, type Transaction } from 'sequelize';
+import { DataTypes, QueryTypes, type Sequelize, type Transaction } from 'sequelize';
 import { type Document, Scalar, YAMLMap, YAMLSeq } from 'yaml';
 
 import { type Patch, type Path } from '../utils/yaml.js';
@@ -10,15 +10,10 @@ export const key = '0.30.0';
 
 /**
  * Summary:
- * - TODO: Cleanup duplicate users with same email
- * - TODO: Cleanup anonymous users with only a timezone (and name)
- * - TODO: Cleanup demo login users
  * - Make `AppSamlSecret.emailAttribute` non-nullable with default
  * - Add column `emailVerifiedAttribute` to `AppSamlSecret` table
  * - Make `AppMember.UserId` nullable
  * - Add unique index `UniqueUserEmail` to column `primaryEmail` on `User` table
- * - TODO: Remove column `UserId` from table `OAuth2AuthorizationCode`
- * - TODO: Add column `AppMemberId` to the `OAuth2AuthorizationCode` table with foreign key
  * constraint
  * - Change column `AppMemberId` to nullable on table `AppOAuth2Authorization`
  * - Add column `email` to  `AppOAuth2Authorization` table
@@ -79,9 +74,51 @@ export const key = '0.30.0';
 export async function up(transaction: Transaction, db: Sequelize): Promise<void> {
   const queryInterface = db.getQueryInterface();
 
-  // TODO: make sure to delete duplicate users with same email
-  // TODO: make sure to delete users with only a timezone (and name)
-  // TODO: cleanup demoLoginUsers
+  logger.info('Deleting `User` records without a primary email');
+  await queryInterface.sequelize.query(
+    `
+    DELETE FROM "User"
+    WHERE "primaryEmail" IS NULL;
+  `,
+    {
+      type: QueryTypes.DELETE,
+      transaction,
+    },
+  );
+
+  logger.info('Deleting `User` records with duplicate emails');
+  await queryInterface.sequelize.query(
+    `
+    DELETE FROM "User"
+    WHERE "primaryEmail" IN (
+        SELECT "primaryEmail"
+        FROM "User"
+        GROUP BY "primaryEmail"
+        HAVING COUNT(*) > 1
+    )
+    AND "id" NOT IN (
+        SELECT DISTINCT ON ("primaryEmail") "id"
+        FROM "User"
+        ORDER BY "primaryEmail", "created"
+    );
+  `,
+    {
+      type: QueryTypes.DELETE,
+      transaction,
+    },
+  );
+
+  logger.info('Deleting demo `User` records');
+  await queryInterface.sequelize.query(
+    `
+    DELETE FROM "User"
+    WHERE "demoLoginUser" = true;
+  `,
+    {
+      type: QueryTypes.DELETE,
+      transaction,
+    },
+  );
 
   logger.info('Making `AppSamlSecret.emailAttribute` non-nullable with default');
   await queryInterface.changeColumn(
@@ -118,17 +155,23 @@ export async function up(transaction: Transaction, db: Sequelize): Promise<void>
   );
 
   logger.warn('Add unique index `UniqueUserEmail` to `primaryEmail` column on `User` table');
-  logger.warn('');
   await queryInterface.addIndex('User', ['primaryEmail'], {
     unique: true,
     name: 'UniqueUserEmail',
     transaction,
   });
 
-  // TODO: handle existing connections
-  logger.info('Remove column `UserId` on `OAuth2AuthorizationCode` table');
-  await queryInterface.removeColumn('OAuth2AuthorizationCode', 'UserId', { transaction });
-  // TODO: handle existing connections
+  logger.info('Deleting all `OAuth2AuthorizationCode` records');
+  await queryInterface.sequelize.query(
+    `
+    DELETE FROM "OAuth2AuthorizationCode";
+  `,
+    {
+      type: QueryTypes.DELETE,
+      transaction,
+    },
+  );
+
   logger.info('Add column `AppMemberId` to `OAuth2AuthorizationCode` table');
   await queryInterface.addColumn(
     'OAuth2AuthorizationCode',
@@ -146,6 +189,9 @@ export async function up(transaction: Transaction, db: Sequelize): Promise<void>
     { transaction },
   );
 
+  logger.info('Remove column `UserId` on `OAuth2AuthorizationCode` table');
+  await queryInterface.removeColumn('OAuth2AuthorizationCode', 'UserId', { transaction });
+
   logger.info('Change column `AppMemberId` to nullable on `AppOAuth2Authorization` table');
   await queryInterface.changeColumn(
     'AppOAuth2Authorization',
@@ -155,24 +201,19 @@ export async function up(transaction: Transaction, db: Sequelize): Promise<void>
       allowNull: true,
       onUpdate: 'cascade',
       onDelete: 'cascade',
-      // TODO: fix the following creating new fkeys every time
-      // references: {
-      //   key: 'id',
-      //   model: 'AppMember',
-      // },
     },
     { transaction },
   );
 
-  // TODO: handle allow null true -> false
-  logger.info('Add column `email` to  `AppOAuth2Authorization` table');
+  logger.info('Add column `email` to `AppOAuth2Authorization` table');
   await queryInterface.addColumn(
     'AppOAuth2Authorization',
     'email',
-    { type: DataTypes.STRING, allowNull: true },
+    { type: DataTypes.STRING, allowNull: false },
     { transaction },
   );
-  logger.info('Add column `emailVerified` to  `AppOAuth2Authorization` table');
+
+  logger.info('Add column `emailVerified` to `AppOAuth2Authorization` table');
   await queryInterface.addColumn(
     'AppOAuth2Authorization',
     'emailVerified',
@@ -180,14 +221,14 @@ export async function up(transaction: Transaction, db: Sequelize): Promise<void>
     { transaction },
   );
 
-  // TODO: handle allow null true -> false
   logger.info('Add column `email` to `AppSamlAuthorization` table');
   await queryInterface.addColumn(
     'AppSamlAuthorization',
     'email',
-    { type: DataTypes.STRING, allowNull: true },
+    { type: DataTypes.STRING, allowNull: false },
     { transaction },
   );
+
   logger.info('Add column `emailVerified` to `AppSamlAuthorization` table');
   await queryInterface.addColumn(
     'AppSamlAuthorization',
@@ -285,7 +326,6 @@ export async function up(transaction: Transaction, db: Sequelize): Promise<void>
     { transaction },
   );
 
-  // TODO: test against prod data
   logger.warn('Copying records from table `Team` to `Group`');
   logger.warn('The following query might be slow depending on the amount of records present.');
   await queryInterface.sequelize.query('INSERT INTO "Group" SELECT * FROM "Team";', {
@@ -323,7 +363,6 @@ export async function up(transaction: Transaction, db: Sequelize): Promise<void>
     { transaction },
   );
 
-  // TODO: test against prod data
   logger.warn('Copying records from table `TeamMember` to `GroupMember`');
   logger.warn('The following query might be slow depending on the amount of records present.');
   logger.warn('The following query uses `gen_random_uuid()` to generate UUIDv4s.');
@@ -334,7 +373,7 @@ export async function up(transaction: Transaction, db: Sequelize): Promise<void>
         CASE
           WHEN tm."role" = 'member'::"enum_TeamMember_role" THEN 'GroupMember' || am."role"
           WHEN tm."role" = 'manager'::"enum_TeamMember_role" THEN 'GroupManager' || am."role"
-          ELSE tm."role"
+          ELSE tm."role"::TEXT
         END AS role,
         tm."TeamId" AS "GroupId",
         tm.created,
@@ -374,7 +413,6 @@ export async function up(transaction: Transaction, db: Sequelize): Promise<void>
     { transaction },
   );
 
-  // TODO: test against prod data
   logger.warn('Copying records from table `TeamInvite` to `GroupInvite`');
   logger.warn('The following query might be slow depending on the amount of records present.');
   await queryInterface.sequelize.query(
@@ -386,7 +424,7 @@ export async function up(transaction: Transaction, db: Sequelize): Promise<void>
          CASE
            WHEN ti."role" = 'member'::"enum_TeamInvite_role" THEN 'GroupMember'
            WHEN ti."role" = 'manager'::"enum_TeamInvite_role" THEN 'GroupManager'
-           ELSE ti."role"
+           ELSE ti."role"::TEXT
          END AS role,
          ti.key,
          ti.created,
@@ -425,13 +463,7 @@ export async function up(transaction: Transaction, db: Sequelize): Promise<void>
     });
   }
 
-  const organizationRolesToDrop = [
-    'APIReader',
-    'APIUser',
-    // 'AccountManager',
-    // 'AppEditor',
-    // 'Translator',
-  ] satisfies string[];
+  const organizationRolesToDrop = ['APIReader', 'APIUser'] satisfies string[];
   for (const attribute of organizationRolesToDrop) {
     logger.warn(`Change role ${attribute} to default value`);
     logger.info(`Remove ${attribute} from enum \`enum_OrganizationInvite_role\``);
@@ -506,8 +538,6 @@ export async function up(transaction: Transaction, db: Sequelize): Promise<void>
  * - Remove column `emailVerifiedAttribute` from `AppSamlSecret` table
  * - Make `AppMember.UserId` non-nullable
  * - Remove unique index `UniqueUserEmail` from column `primaryEmail` on `User` table
- * - TODO: Remove column `AppMemberId` on `OAuth2AuthorizationCode` table
- * - TODO: Add column `UserId` to table `OAuth2AuthorizationCode` with foreign key constraint
  * - Change column `AppMemberId` to non-nullable on table `AppOAuth2Authorization`
  * - Remove column `email` from  `AppOAuth2Authorization` table
  * - Remove column `emailVerified` from  `AppOAuth2Authorization` table
@@ -603,12 +633,18 @@ export async function down(transaction: Transaction, db: Sequelize): Promise<voi
   logger.info('Remove unique index `UniqueUserEmail` from `primaryEmail` column on `User` table');
   await queryInterface.removeIndex('User', 'UniqueUserEmail', { transaction });
 
-  // TODO: handle existing connections
-  logger.info('Remove column `AppMemberId` on `OAuth2AuthorizationCode` table');
-  await queryInterface.removeColumn('OAuth2AuthorizationCode', 'AppMemberId', { transaction });
-  // TODO: handle existing connections
-  logger.warn('Add column `UserId` to `OAuth2AuthorizationCode` table with foreign key constraint');
-  logger.warn('');
+  logger.info('Deleting all `OAuth2AuthorizationCode` records');
+  await queryInterface.sequelize.query(
+    `
+    DELETE FROM "OAuth2AuthorizationCode";
+  `,
+    {
+      type: QueryTypes.DELETE,
+      transaction,
+    },
+  );
+
+  logger.info('Add column `UserId` to `OAuth2AuthorizationCode` table');
   await queryInterface.addColumn(
     'OAuth2AuthorizationCode',
     'UserId',
@@ -625,8 +661,10 @@ export async function down(transaction: Transaction, db: Sequelize): Promise<voi
     { transaction },
   );
 
+  logger.info('Remove column `AppMemberId` on `OAuth2AuthorizationCode` table');
+  await queryInterface.removeColumn('OAuth2AuthorizationCode', 'AppMemberId', { transaction });
+
   logger.warn('Change column `AppMemberId` to non-nullable on `AppOAuth2Authorization` table');
-  logger.warn('');
   await queryInterface.changeColumn(
     'AppOAuth2Authorization',
     'AppMemberId',
@@ -635,10 +673,6 @@ export async function down(transaction: Transaction, db: Sequelize): Promise<voi
       allowNull: false,
       onUpdate: 'cascade',
       onDelete: 'cascade',
-      // References: {
-      //   key: 'id',
-      //   model: 'AppMember',
-      // },
     },
     { transaction },
   );
@@ -698,7 +732,6 @@ export async function down(transaction: Transaction, db: Sequelize): Promise<voi
   logger.info('Remove column `demo` from `Group` table');
   await queryInterface.removeColumn('Group', 'demo');
 
-  // TODO: test against prod data
   logger.warn('Copying records from table `Group` to `Team`');
   logger.warn('The following query might be slow depending on the amount of records present.');
   await queryInterface.sequelize.query('INSERT INTO "Team" SELECT * FROM "Group";', {
@@ -773,19 +806,22 @@ export async function down(transaction: Transaction, db: Sequelize): Promise<voi
     { transaction },
   );
 
-  // TODO: test against prod data
   logger.warn('Copying records from table `GroupInvite` to `TeamInvite`');
   logger.warn('The following query might be slow depending on the amount of records present.');
   await queryInterface.sequelize.query(
     `
     INSERT INTO "TeamInvite" ("TeamId", email, role, key, created, updated)
-      SELECT "GroupId" AS "TeamId", email,
+      SELECT
+        "GroupId" AS "TeamId",
+        email,
         CASE
-          WHEN role = 'GroupMember' THEN 'member'::"enum_TeamMember_role"
-          WHEN role = 'GroupManager' THEN 'manager'::"enum_TeamMember_role"
-          ELSE 'member'::"enum_TeamMember_role"
+          WHEN role = 'GroupMember' THEN 'member'::"enum_TeamInvite_role"
+          WHEN role = 'GroupManager' THEN 'manager'::"enum_TeamInvite_role"
+          ELSE 'member'::"enum_TeamInvite_role"
         END as role,
-        key, created, updated
+        key,
+        created,
+        updated
       FROM "GroupInvite";`,
     { transaction },
   );
@@ -1065,7 +1101,7 @@ export const appPatches: Patch[] = [
   },
   {
     message: 'Replace `remap` with `remapBefore`.',
-    path: ['*', 'actions', /.*/, 'remap'],
+    path: ['*', 'actions', '*', 'remap'],
     delete: true,
     patches: [
       (document, transaction, stepsList) => {

@@ -293,7 +293,7 @@ In case the database contains duplicate TeamMembers make sure to delete those fi
 requires unique TeamMembers for it to work. The following database query should help to find those.
 
   SELECT "TeamId", "AppMemberId", COUNT(*) AS "DuplicateCount"
-  FROM "TeamMember" Team BY "AppMemberId", "TeamId"
+  FROM "TeamMember" GROUP BY "AppMemberId", "TeamId"
   HAVING COUNT(*) > 1;
 `);
   await queryInterface.sequelize.query(

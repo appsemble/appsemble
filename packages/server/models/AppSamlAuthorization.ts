@@ -26,6 +26,7 @@ export class AppSamlAuthorization extends Model {
   /**
    * The email used on the SAML provider.
    */
+  @AllowNull(false)
   @Column(DataType.STRING)
   email: string;
 

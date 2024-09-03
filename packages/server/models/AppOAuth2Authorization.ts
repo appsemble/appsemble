@@ -53,6 +53,7 @@ export class AppOAuth2Authorization extends Model {
   /**
    * The email used on the OAuth2 provider.
    */
+  @AllowNull(false)
   @Column(DataType.STRING)
   email: string;
 
