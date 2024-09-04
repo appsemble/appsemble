@@ -394,13 +394,19 @@ bootstrap(
     useEffect(() => {
       // If a listener is present, wait until data has been received
       const hasListener = events.on.data(receiveData);
+      (async () => {
+        const result = (await actions?.onLoad?.()) as Values;
+        if (result) {
+          receiveData(result);
+        }
+      })();
       if (!skipInitialLoad || !initialLoad.current) {
         setDataLoading(hasListener);
       } else {
         initialLoad.current = false;
       }
       ready();
-    }, [events, ready, receiveData, skipInitialLoad]);
+    }, [actions, events, ready, receiveData, skipInitialLoad]);
 
     const loading = dataLoading || fieldsLoading;
 

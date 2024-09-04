@@ -1270,6 +1270,11 @@ declare module '@appsemble/sdk' {
      * A custom action that gets dispatched when checking form requirements.
      */
     [key: string]: never;
+
+    /**
+     * Action that can be used to load data to pre-fill the form.
+     */
+    onLoad?: never;
   }
 
   interface EventListeners {

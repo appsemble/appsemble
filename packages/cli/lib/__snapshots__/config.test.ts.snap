@@ -1817,6 +1817,9 @@ exports[`getProjectImplementations > official blocks > form 1`] = `
     "$any": {
       "description": "A custom action that gets dispatched when checking form requirements.",
     },
+    "onLoad": {
+      "description": "Action that can be used to load data to pre-fill the form.",
+    },
     "onPrevious": {
       "description": "Action that gets dispatched when the previous button is clicked.",
     },
