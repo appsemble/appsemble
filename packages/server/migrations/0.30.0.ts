@@ -120,7 +120,24 @@ export async function up(transaction: Transaction, db: Sequelize): Promise<void>
     },
   );
 
-  logger.info('Making `AppSamlSecret.emailAttribute` non-nullable with default');
+  logger.info('Give `AppSamlSecret.emailAttribute` a default value');
+  await queryInterface.changeColumn(
+    'AppSamlSecret',
+    'emailAttribute',
+    {
+      type: DataTypes.STRING,
+      defaultValue: 'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress',
+    },
+    { transaction },
+  );
+
+  logger.info('Update existing `AppSamlSecret.emailAttribute` NULL values');
+  await queryInterface.sequelize.query(
+    'UPDATE "AppSamlSecret" SET "emailAttribute" = \'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress\' WHERE "emailAttribute" IS NULL',
+    { transaction },
+  );
+
+  logger.info('Make `AppSamlSecret.emailAttribute` non-nullable');
   await queryInterface.changeColumn(
     'AppSamlSecret',
     'emailAttribute',
@@ -205,8 +222,33 @@ export async function up(transaction: Transaction, db: Sequelize): Promise<void>
     { transaction },
   );
 
-  logger.info('Add column `email` to `AppOAuth2Authorization` table');
+  logger.info('Add nullable column `email` to `AppOAuth2Authorization` table');
   await queryInterface.addColumn(
+    'AppOAuth2Authorization',
+    'email',
+    { type: DataTypes.STRING, allowNull: true },
+    { transaction },
+  );
+
+  logger.info('Set the email column in `AppOAuth2Authorization` table');
+  await queryInterface.sequelize.query(
+    `
+    UPDATE "AppOAuth2Authorization"
+    SET "email" = (
+        SELECT "email"
+        FROM "AppMember"
+        WHERE "AppMember"."id" = "AppOAuth2Authorization"."AppMemberId"
+    )
+    WHERE "AppMemberId" IS NOT NULL;
+  `,
+    {
+      type: QueryTypes.UPDATE,
+      transaction,
+    },
+  );
+
+  logger.info('Update column `email` in `AppOAuth2Authorization` table to non-nullable');
+  await queryInterface.changeColumn(
     'AppOAuth2Authorization',
     'email',
     { type: DataTypes.STRING, allowNull: false },
@@ -221,8 +263,33 @@ export async function up(transaction: Transaction, db: Sequelize): Promise<void>
     { transaction },
   );
 
-  logger.info('Add column `email` to `AppSamlAuthorization` table');
+  logger.info('Add nullable column `email` to `AppSamlAuthorization` table');
   await queryInterface.addColumn(
+    'AppSamlAuthorization',
+    'email',
+    { type: DataTypes.STRING, allowNull: true },
+    { transaction },
+  );
+
+  logger.info('Set the email column in `AppSamlAuthorization` table');
+  await queryInterface.sequelize.query(
+    `
+    UPDATE "AppSamlAuthorization"
+    SET "email" = (
+        SELECT "email"
+        FROM "AppMember"
+        WHERE "AppMember"."id" = "AppSamlAuthorization"."AppMemberId"
+    )
+    WHERE "AppMemberId" IS NOT NULL;
+  `,
+    {
+      type: QueryTypes.UPDATE,
+      transaction,
+    },
+  );
+
+  logger.info('Update column `email` in `AppSamlAuthorization` table to non-nullable');
+  await queryInterface.changeColumn(
     'AppSamlAuthorization',
     'email',
     { type: DataTypes.STRING, allowNull: false },

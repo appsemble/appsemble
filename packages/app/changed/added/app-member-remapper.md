@@ -1,1 +1,1 @@
-Add `sub`, `email_verifiec`, `zoneinfo` and `role` properties to `app.member` remapper
+Add `sub`, `email_verified`, `zoneinfo` and `role` properties to `app.member` remapper
