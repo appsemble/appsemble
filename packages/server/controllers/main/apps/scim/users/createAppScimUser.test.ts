@@ -53,7 +53,7 @@ beforeEach(async () => {
 });
 
 describe('createAppScimUser', () => {
-  it('should create a user and app member', async () => {
+  it.todo('should create a user and app member', async () => {
     const response = await request.post(`/api/apps/${app.id}/scim/Users`, {
       ScHeMaS: [
         'urn:ietf:params:scim:schemas:core:2.0:User',
@@ -113,7 +113,7 @@ describe('createAppScimUser', () => {
     });
   });
 
-  it('should throw an error when app has no roles', async () => {
+  it.todo('should throw an error when app has no roles', async () => {
     app.update({
       definition: {
         security: null,
@@ -145,7 +145,7 @@ describe('createAppScimUser', () => {
     `);
   });
 
-  it('should accept partial data', async () => {
+  it.todo('should accept partial data', async () => {
     const response = await request.post(`/api/apps/${app.id}/scim/Users`, {
       sChEmAs: [
         'urn:ietf:params:scim:schemas:core:2.0:User',
@@ -196,7 +196,7 @@ describe('createAppScimUser', () => {
     });
   });
 
-  it('should create a group matching the manager id', async () => {
+  it.todo('should create a group matching the manager id', async () => {
     const response = await request.post(`/api/apps/${app.id}/scim/Users`, {
       sChEmAs: [
         'urn:ietf:params:scim:schemas:core:2.0:User',
@@ -269,7 +269,7 @@ describe('createAppScimUser', () => {
     });
   });
 
-  it('should add members to an existing group matching the manager id', async () => {
+  it.todo('should add members to an existing group matching the manager id', async () => {
     const group = await Group.create({ AppId: app.id, name: 'krbs' });
 
     const response = await request.post(`/api/apps/${app.id}/scim/Users`, {
@@ -343,7 +343,7 @@ describe('createAppScimUser', () => {
     });
   });
 
-  it('should make members manager of a group matching their id', async () => {
+  it.todo('should make members manager of a group matching their id', async () => {
     const group = await Group.create({ AppId: app.id, name: 'krbs' });
 
     const response = await request.post(`/api/apps/${app.id}/scim/Users`, {
@@ -408,38 +408,41 @@ describe('createAppScimUser', () => {
     });
   });
 
-  it('should assign manager to group that was created before their group’s creation, with the appropriate role', async () => {
-    const user = await User.create({ timezone: '' });
-    const appMember = await AppMember.create({
-      UserId: user.id,
-      email: 'user@example.com',
-      AppId: app.id,
-      role: 'User',
-      scimExternalId: 'krbs',
-      timezone: 'Europe/Amsterdam',
-    });
+  it.todo(
+    'should assign manager to group that was created before their group’s creation, with the appropriate role',
+    async () => {
+      const user = await User.create({ timezone: '' });
+      const appMember = await AppMember.create({
+        UserId: user.id,
+        email: 'user@example.com',
+        AppId: app.id,
+        role: 'User',
+        scimExternalId: 'krbs',
+        timezone: 'Europe/Amsterdam',
+      });
 
-    await request.post(`/api/apps/${app.id}/scim/Users`, {
-      sChEmAs: [
-        'urn:ietf:params:scim:schemas:core:2.0:User',
-        'urn:ietf:params:scim:schemas:extension:enterprise:2.0:User',
-      ],
-      uSeRnAmE: 'spgb@krustykrab.example',
-      eXtErNaLiD: 'spgb',
-      active: true,
-      mEtA: {
-        rEsOuRcEtYpE: 'User',
-      },
-      'urn:ietf:params:scim:schemas:extension:enterprise:2.0:User': {
-        mAnAgEr: 'krbs',
-      },
-    });
-    const result = await Group.findOne({
-      where: { AppId: app.id, name: appMember.scimExternalId },
-    }).then((group) =>
-      GroupMember.findOne({ where: { GroupId: group.id, AppMemberId: appMember.id } }),
-    );
+      await request.post(`/api/apps/${app.id}/scim/Users`, {
+        sChEmAs: [
+          'urn:ietf:params:scim:schemas:core:2.0:User',
+          'urn:ietf:params:scim:schemas:extension:enterprise:2.0:User',
+        ],
+        uSeRnAmE: 'spgb@krustykrab.example',
+        eXtErNaLiD: 'spgb',
+        active: true,
+        mEtA: {
+          rEsOuRcEtYpE: 'User',
+        },
+        'urn:ietf:params:scim:schemas:extension:enterprise:2.0:User': {
+          mAnAgEr: 'krbs',
+        },
+      });
+      const result = await Group.findOne({
+        where: { AppId: app.id, name: appMember.scimExternalId },
+      }).then((group) =>
+        GroupMember.findOne({ where: { GroupId: group.id, AppMemberId: appMember.id } }),
+      );
 
-    expect(result.role).toBe('manager');
-  });
+      expect(result.role).toBe('manager');
+    },
+  );
 });

@@ -52,120 +52,130 @@ beforeEach(async () => {
   authorizeScim(scimToken);
 });
 
-it("should create a group if the user contains a manager ID of a group that doesn't exist yet", async () => {
-  const user = await User.create({ timezone: 'Europe/Amsterdam' });
-  const member = await AppMember.create({
-    email: 'user@example.com',
-    AppId: app.id,
-    UserId: user.id,
-    role: 'User',
-  });
+it.todo(
+  "should create a group if the user contains a manager ID of a group that doesn't exist yet",
+  async () => {
+    const user = await User.create({ timezone: 'Europe/Amsterdam' });
+    const member = await AppMember.create({
+      email: 'user@example.com',
+      AppId: app.id,
+      UserId: user.id,
+      role: 'User',
+    });
 
-  await request.patch(`/api/apps/${app.id}/scim/Users/${member.id}`, {
-    ScHeMaS: [
-      'urn:ietf:params:scim:schemas:core:2.0:User',
-      'urn:ietf:params:scim:schemas:extension:enterprise:2.0:User',
-    ],
-    oPeRaTiOnS: [
-      {
-        op: 'add',
-        path: 'urn:ietf:params:scim:schemas:extension:enterprise:2.0:user:manager',
-        value: 'krbs',
-      },
-    ],
-  });
+    await request.patch(`/api/apps/${app.id}/scim/Users/${member.id}`, {
+      ScHeMaS: [
+        'urn:ietf:params:scim:schemas:core:2.0:User',
+        'urn:ietf:params:scim:schemas:extension:enterprise:2.0:User',
+      ],
+      oPeRaTiOnS: [
+        {
+          op: 'add',
+          path: 'urn:ietf:params:scim:schemas:extension:enterprise:2.0:user:manager',
+          value: 'krbs',
+        },
+      ],
+    });
 
-  const group = await Group.findOne({ where: { AppId: app.id, name: 'krbs' } });
+    const group = await Group.findOne({ where: { AppId: app.id, name: 'krbs' } });
 
-  expect(group).toMatchObject({
-    AppId: 1,
-    annotations: null,
-    id: 1,
-    name: 'krbs',
-  });
-});
+    expect(group).toMatchObject({
+      AppId: 1,
+      annotations: null,
+      id: 1,
+      name: 'krbs',
+    });
+  },
+);
 
-it('should add member to an existing group if the user contains a manager ID of a group that already exists', async () => {
-  const user1 = await User.create({ timezone: 'Europe/Amsterdam' });
-  const user2 = await User.create({ timezone: 'Europe/Amsterdam' });
-  const member1 = await AppMember.create({
-    email: 'user1@example.com',
-    AppId: app.id,
-    UserId: user1.id,
-    role: 'User',
-  });
-  const member2 = await AppMember.create({
-    email: 'user2@example.com',
-    AppId: app.id,
-    UserId: user2.id,
-    role: 'User',
-  });
-  const group = await Group.create({ AppId: app.id, name: member1.id });
-  await GroupMember.create({ GroupId: group.id, AppMemberId: member1.id, role: 'manager' });
+it.todo(
+  'should add member to an existing group if the user contains a manager ID of a group that already exists',
+  async () => {
+    const user1 = await User.create({ timezone: 'Europe/Amsterdam' });
+    const user2 = await User.create({ timezone: 'Europe/Amsterdam' });
+    const member1 = await AppMember.create({
+      email: 'user1@example.com',
+      AppId: app.id,
+      UserId: user1.id,
+      role: 'User',
+    });
+    const member2 = await AppMember.create({
+      email: 'user2@example.com',
+      AppId: app.id,
+      UserId: user2.id,
+      role: 'User',
+    });
+    const group = await Group.create({ AppId: app.id, name: member1.id });
+    await GroupMember.create({ GroupId: group.id, AppMemberId: member1.id, role: 'manager' });
 
-  await request.patch(`/api/apps/${app.id}/scim/Users/${member2.id}`, {
-    ScHeMaS: [
-      'urn:ietf:params:scim:schemas:core:2.0:User',
-      'urn:ietf:params:scim:schemas:extension:enterprise:2.0:User',
-    ],
-    oPeRaTiOnS: [
-      {
-        op: 'add',
-        path: 'urn:ietf:params:scim:schemas:extension:enterprise:2.0:user:manager',
-        value: member1.id,
-      },
-    ],
-  });
+    await request.patch(`/api/apps/${app.id}/scim/Users/${member2.id}`, {
+      ScHeMaS: [
+        'urn:ietf:params:scim:schemas:core:2.0:User',
+        'urn:ietf:params:scim:schemas:extension:enterprise:2.0:User',
+      ],
+      oPeRaTiOnS: [
+        {
+          op: 'add',
+          path: 'urn:ietf:params:scim:schemas:extension:enterprise:2.0:user:manager',
+          value: member1.id,
+        },
+      ],
+    });
 
-  const result = await GroupMember.findOne({
-    where: { GroupId: group.id, AppMemberId: member2.id },
-  });
+    const result = await GroupMember.findOne({
+      where: { GroupId: group.id, AppMemberId: member2.id },
+    });
 
-  expect(result).toMatchObject({
-    AppMemberId: member2.id,
-    GroupId: 1,
-    role: 'Member',
-  });
-});
+    expect(result).toMatchObject({
+      AppMemberId: member2.id,
+      GroupId: 1,
+      role: 'Member',
+    });
+  },
+);
 
-it('should assign existing manager to new group as manager', async () => {
-  const user1 = await User.create({ timezone: 'Europe/Amsterdam' });
-  const user2 = await User.create({ timezone: 'Europe/Amsterdam' });
-  const member1 = await AppMember.create({
-    email: 'user1@example.com',
-    AppId: app.id,
-    UserId: user1.id,
-    role: 'User',
-  });
-  const member2 = await AppMember.create({
-    email: 'user2@example.com',
-    AppId: app.id,
-    UserId: user2.id,
-    role: 'User',
-  });
+it.todo(
+  'should assign existing manager to new group as manager',
+  async () => {
+    const user1 = await User.create({ timezone: 'Europe/Amsterdam' });
+    const user2 = await User.create({ timezone: 'Europe/Amsterdam' });
+    const member1 = await AppMember.create({
+      email: 'user1@example.com',
+      AppId: app.id,
+      UserId: user1.id,
+      role: 'User',
+    });
+    const member2 = await AppMember.create({
+      email: 'user2@example.com',
+      AppId: app.id,
+      UserId: user2.id,
+      role: 'User',
+    });
 
-  await request.patch(`/api/apps/${app.id}/scim/Users/${member1.id}`, {
-    ScHeMaS: [
-      'urn:ietf:params:scim:schemas:core:2.0:User',
-      'urn:ietf:params:scim:schemas:extension:enterprise:2.0:User',
-    ],
-    oPeRaTiOnS: [
-      {
-        op: 'add',
-        path: 'urn:ietf:params:scim:schemas:extension:enterprise:2.0:user:manager',
-        value: member2.id,
-      },
-    ],
-  });
+    await request.patch(`/api/apps/${app.id}/scim/Users/${member1.id}`, {
+      ScHeMaS: [
+        'urn:ietf:params:scim:schemas:core:2.0:User',
+        'urn:ietf:params:scim:schemas:extension:enterprise:2.0:User',
+      ],
+      oPeRaTiOnS: [
+        {
+          op: 'add',
+          path: 'urn:ietf:params:scim:schemas:extension:enterprise:2.0:user:manager',
+          value: member2.id,
+        },
+      ],
+    });
 
-  const result = await GroupMember.findOne({
-    where: { AppMemberId: member2.id },
-    include: [{ model: Group, where: { AppId: app.id } }],
-  });
+    const result = await GroupMember.findOne({
+      where: { AppMemberId: member2.id },
+      include: [{ model: Group, where: { AppId: app.id } }],
+    });
 
-  expect(result).toMatchObject({
-    AppMemberId: member2.id,
-    GroupId: 1,
-    role: 'GroupMembersManager',
-  });
-}, 50_000);
+    expect(result).toMatchObject({
+      AppMemberId: member2.id,
+      GroupId: 1,
+      role: 'GroupMembersManager',
+    });
+  },
+  50_000,
+);

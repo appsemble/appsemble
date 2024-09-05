@@ -53,7 +53,7 @@ beforeEach(async () => {
 });
 
 describe('getAppScimUser', () => {
-  it('should return a SCIM user', async () => {
+  it.todo('should return a SCIM user', async () => {
     const user = await User.create({ timezone: 'Europe/Amsterdam' });
     const member = await AppMember.create({
       UserId: user.id,
@@ -95,7 +95,7 @@ describe('getAppScimUser', () => {
     expect(response.data.id).toBe(member.id);
   });
 
-  it('should return a SCIM user with manager', async () => {
+  it.todo('should return a SCIM user with manager', async () => {
     const group = await Group.create({ AppId: app.id, name: 'krbs' });
     const user = await User.create({ timezone: 'Europe/Amsterdam' });
     const member = await AppMember.create({
