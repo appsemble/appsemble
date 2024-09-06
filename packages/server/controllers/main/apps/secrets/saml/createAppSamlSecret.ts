@@ -4,6 +4,7 @@ import { addYears } from 'date-fns';
 import { type Context } from 'koa';
 import forge from 'node-forge';
 
+import { DEFAULT_SAML_EMAIL_ATTRIBUTE } from '../../../../../models/AppSamlSecret.js';
 import { App, AppSamlSecret } from '../../../../../models/index.js';
 import { argv } from '../../../../../utils/argv.js';
 import { checkUserOrganizationPermissions } from '../../../../../utils/authorization.js';
@@ -58,6 +59,7 @@ export async function createAppSamlSecret(ctx: Context): Promise<void> {
     AppId: appId,
     spPrivateKey: forge.pki.privateKeyToPem(privateKey).trim(),
     spPublicKey: forge.pki.publicKeyToPem(publicKey).trim(),
+    emailAttribute: secret.emailAttribute || DEFAULT_SAML_EMAIL_ATTRIBUTE,
   });
 
   ctx.body = { ...secret, id };

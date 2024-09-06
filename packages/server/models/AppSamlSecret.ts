@@ -18,6 +18,9 @@ import {
 
 import { App, AppSamlAuthorization, SamlLoginRequest } from './index.js';
 
+export const DEFAULT_SAML_EMAIL_ATTRIBUTE =
+  'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress';
+
 @DefaultScope(() => ({
   attributes: [
     'id',
@@ -72,7 +75,7 @@ export class AppSamlSecret extends Model {
   spCertificate: string;
 
   @AllowNull(false)
-  @Default('http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress')
+  @Default(DEFAULT_SAML_EMAIL_ATTRIBUTE)
   @Column(DataType.STRING)
   emailAttribute: string;
 

@@ -41,7 +41,7 @@ export async function createAppSamlAuthnRequest(ctx: Context): Promise<void> {
   assertKoaError(!app, ctx, 404, 'App not found');
 
   assertKoaError(
-    !(await checkAppSecurityPolicy(app, authSubject.id)),
+    !(await checkAppSecurityPolicy(app, authSubject?.id)),
     ctx,
     401,
     'User is not allowed to login due to the app’s security policy',

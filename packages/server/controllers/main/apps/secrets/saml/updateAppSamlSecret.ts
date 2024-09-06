@@ -2,6 +2,7 @@ import { assertKoaError } from '@appsemble/node-utils';
 import { OrganizationPermission } from '@appsemble/types';
 import { type Context } from 'koa';
 
+import { DEFAULT_SAML_EMAIL_ATTRIBUTE } from '../../../../../models/AppSamlSecret.js';
 import { App, AppSamlSecret } from '../../../../../models/index.js';
 import { checkUserOrganizationPermissions } from '../../../../../utils/authorization.js';
 import { checkAppLock } from '../../../../../utils/checkAppLock.js';
@@ -30,5 +31,8 @@ export async function updateAppSamlSecret(ctx: Context): Promise<void> {
   const [secret] = app.AppSamlSecrets;
   assertKoaError(!secret, ctx, 404, 'SAML secret not found');
 
-  ctx.body = await secret.update(body);
+  ctx.body = await secret.update({
+    ...body,
+    emailAttribute: body.emailAttribute || DEFAULT_SAML_EMAIL_ATTRIBUTE,
+  });
 }
