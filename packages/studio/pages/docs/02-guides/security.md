@@ -158,11 +158,11 @@ suffix as shown in the list of permissions above. There are neither
 `$resource:<resource-name>:own:create`, nor `$resource:all:own:create` permissions because owning a
 resource does not matter for its creation. `:own` permissions cannot be defined on the `guest`, nor
 can they be inherited by the `guest` from another role because guests do not have an account and
-ownership cannot be tracked for them.
+resource ownership cannot be tracked for them.
 
 There are also resource view permissions for the `get` and `query` resource actions, that scope the
 permissions down to a certain view, defined on a resource. There are no `:own` permissions with
-views because whoever created the resource can see all of its data.
+views because whoever created the resource should be able to see all of its data.
 
 #### Permissions Examples
 
@@ -296,11 +296,11 @@ If `$guest` is not in the list of roles of the page and a visiting user is not l
 to view the page, they will instead be prompted to log in.
 
 If they are logged in but they don’t have sufficient roles, they will instead be automatically
-redirected to the first page that they are allowed to view. If no pages can be found, the user will
-be logged out of the app and be notified of this.
+redirected to the first page that they are allowed to view. If no pages can be found, the app member
+will be logged out of the app and be notified of this.
 
-Pages that are not accessible to an authenticated user based on their role will automatically be
-hidden from the app’s menu.
+Pages that are not accessible to an authenticated app member based on their role will automatically
+be hidden from the app’s menu.
 
 ```yaml validate page-snippet
 - name: Example Page Unique 1

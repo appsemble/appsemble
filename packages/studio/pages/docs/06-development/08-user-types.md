@@ -22,21 +22,22 @@ interacting with and whether they have an account for it.
 ### Platform Guests
 
 A platform guest is an end user who interacts with the platform via the
-[Appsemble Studio](studio.md), but doesn't have an Appsemble account yet. They can see all existing
-organizations in the platform, along with their blocks, Appsemble core blocks and public apps (see
-[app privacy](security.md#app-privacy)). They can also read the Appsemble documentation.
+[Appsemble Studio](../02-guides/studio.md), but doesn't have an Appsemble account yet. They can see
+all existing organizations in the platform, along with their blocks, Appsemble core blocks and
+public apps (see [app privacy](../02-guides/security.md#app-privacy)). They can also read the
+Appsemble documentation.
 
 ### Platform Users
 
-A platform user is a user who interacts with the platform via the [Appsemble Studio](studio.md) and
-has an Appsemble account. If the platform user has registered OAuth2 client credentials in the
-platform, they can also use the Appsemble CLI.
+A platform user is a user who interacts with the platform via the
+[Appsemble Studio](../02-guides/studio.md) and has an Appsemble account. If the platform user has
+registered OAuth2 client credentials in the platform, they can also use the Appsemble CLI.
 
 ### Organization Members
 
 To be able to perform any actions on the platform that require authorization, platform users must be
 a part of an Appsemble organization. For more information, check out
-[the organizations docs](organizations.mdx)
+[the organizations docs](../02-guides/organizations.mdx)
 
 ## Apps
 
@@ -46,25 +47,26 @@ Apps have different mechanisms to determine the permissions of their end users.
 
 An app guest is any end user that visits an Appsemble app without an account for that app. They can
 have different permissions within the app based on the `guest` property in the app’s
-[security definition](security.md#security-definition).
+[security definition](../02-guides/security.md#security-definition).
 
 ### App Members
 
 An app member is any end user that has an account in an app. Such an account can be obtained in
-different ways (Appsemble OAuth2, [OAuth2](oauth2.md), [SCIM](scim.md), [SAML](saml.md), etc.)
-depending on the app’s settings and security definition.
+different ways (Appsemble OAuth2, [OAuth2](../02-guides/oauth2.md), [SCIM](../02-guides/scim.md),
+[SAML](../02-guides/saml.md), etc.) depending on the app’s settings and security definition.
 
 Each app member has a role within the app, that is one of
-[the defined roles in the app definition](security.md#roles) or a
-[predefined app role](security.md#predefined-app-roles). Having a role gives the app member the
-permissions defined in that role.
+[the defined roles in the app definition](../02-guides/security.md#roles) or a
+[predefined app role](../02-guides/security.md#predefined-app-roles). Having a role gives the app
+member the permissions defined in that role.
 
 ### Group Members
 
-Group members are app members that are also a part of group in an app, see [groups](groups.md). Each
-group member has a different role in each of the groups they are part of. The possible roles within
-a group are the same as the possible roles within the app -
-[from the app definition](security.md#roles) or [predefined](security.md#predefined-app-roles).
+Group members are app members that are also a part of group in an app, see
+[groups](../02-guides/groups.md). Each group member has a different role in each of the groups they
+are part of. The possible roles within a group are the same as the possible roles within the app -
+[from the app definition](../02-guides/security.md#roles) or
+[predefined](../02-guides/security.md#predefined-app-roles).
 
 When interacting with an app, app members can select which group they are currently operating from.
 This assumes their role within the group for everything they do in the app until they switch the
@@ -72,4 +74,5 @@ selected group or select no group. If no group is selected, the role of the app 
 app is used instead.
 
 Grouping app members into groups is useful for
-[scoping access to resources and assets](groups.md#resources-and-assets) within the app.
+[scoping access to resources and assets](../02-guides/groups.md#resources-and-assets) within the
+app.

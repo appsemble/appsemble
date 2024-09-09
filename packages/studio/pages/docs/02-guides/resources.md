@@ -117,7 +117,7 @@ The available resource actions are:
 - **resource.subscription.status**: Fetch the status of a resource notifications subscription. (See
   [notifications](notifications.md).)
 
-> Note: By default all resource calls are public.
+> Note: By default all resource calls are private.
 
 ## External resources
 
@@ -160,8 +160,6 @@ resources:
     id: myId # the name of the field to use when calling get, update and delete
     url: https://example.com/api/person # the default URL to use for resource actions
     query:
-      # HTTP method to use. GET is default
-      method: GET
       # url: defaults to the base URL
 
       # Query parameters are the ones after the question mark in the URL. These can optionally be
@@ -169,16 +167,9 @@ resources:
       query:
         object.from: '$limit: 50'
     get:
-      # HTTP method to use. GET is default
-      method: GET
       # This would default to https://example.com/api/person/{myId}, but for the sake of this example,
       # the nickname property is used.
       url: https://example.com/api/person/{nickname}
-    create:
-      # HTTP method to use. POST is default
-      method: POST
-    update:
-      method: PUT # HTTP method to use. PUT is default
 ```
 
 ## Query object
