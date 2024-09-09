@@ -6,6 +6,18 @@ import { type Context, type Middleware } from 'koa';
 
 import { getResourceDefinition, processResourceBody } from '../../../../../resource.js';
 
+/**
+ * Create a controller for resource creation.
+ *
+ * The created controller handles resource creation of one or more resources,
+ * extracted from the request body.
+ *
+ * The controller can be used to seed resources into an app when the endpoint is
+ * called from the CLI with the `seed` parameter equal to `true`.
+ *
+ * @param options The options object to use for resource creation
+ * @returns A middleware function that handles resource creation.
+ */
 export function createCreateAppResourceController(options: Options): Middleware {
   return async (ctx: Context) => {
     const {
