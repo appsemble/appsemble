@@ -1,6 +1,6 @@
 import classNames from 'classnames';
 import { type MutableRefObject, type ReactNode, type Ref, useCallback, useState } from 'react';
-import { type Document, type ParsedNode } from 'yaml';
+import { type Document, type Node, type ParsedNode } from 'yaml';
 
 import styles from './index.module.css';
 import { StyleList } from './StyleList/index.js';
@@ -11,6 +11,7 @@ import { useApp } from '../../index.js';
 import { Sidebar } from '../Components/Sidebar/index.js';
 
 interface StyleTabProps {
+  readonly changeIn: (path: Iterable<unknown>, value: Node) => void;
   readonly coreStyle: string;
   readonly saveStack: Document<ParsedNode, true>;
   readonly docRef: MutableRefObject<Document<ParsedNode>>;
@@ -20,7 +21,9 @@ interface StyleTabProps {
   readonly selectedResolution: string;
   readonly setCoreStyle: (style: string) => void;
 }
+
 export function StyleTab({
+  changeIn,
   coreStyle,
   docRef,
   frameRef,
@@ -74,6 +77,7 @@ export function StyleTab({
       <Sidebar isOpen={isOpenRight} type="right">
         <div className={styles.rightBar}>
           <StylePage
+            changeIn={changeIn}
             coreStyle={coreStyle}
             docRef={docRef}
             selectedBlock={selectedBlock}

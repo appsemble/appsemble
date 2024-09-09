@@ -38,19 +38,10 @@ const languages = [
 
 const notificationOptions = ['none', 'opt-in', 'startup'];
 
-const loginOptions = ['navbar', 'navigation', 'hidden'] as const;
-const settingsOptions = ['navbar', 'navigation', 'hidden'] as const;
-const feedBackOptions = ['navigation', 'navbar', 'hidden'] as const;
-const navigationOptions = ['left-menu', 'bottom', 'hidden'] as const;
-
 const Tabs = [
   {
     tab: 'general',
     title: messages.general,
-  },
-  {
-    tab: 'layout',
-    title: messages.layout,
   },
   {
     tab: 'schedule',
@@ -124,38 +115,6 @@ export function GeneralTab({
     [changeIn, deleteIn, docRef],
   );
 
-  const onChangeLoginOption = useCallback(
-    (index: number) => {
-      const doc = docRef.current;
-      changeIn(['layout', 'login'], doc.createNode(loginOptions[index]));
-    },
-    [changeIn, docRef],
-  );
-
-  const onChangeSettingsOption = useCallback(
-    (index: number) => {
-      const doc = docRef.current;
-      changeIn(['layout', 'settings'], doc.createNode(settingsOptions[index]));
-    },
-    [changeIn, docRef],
-  );
-
-  const onChangeFeedbackOption = useCallback(
-    (index: number) => {
-      const doc = docRef.current;
-      changeIn(['layout', 'feedback'], doc.createNode(feedBackOptions[index]));
-    },
-    [changeIn, docRef],
-  );
-
-  const onChangeNavigationOption = useCallback(
-    (index: number) => {
-      const doc = docRef.current;
-      changeIn(['layout', 'navigation'], doc.createNode(navigationOptions[index]));
-    },
-    [changeIn, docRef],
-  );
-
   return (
     <>
       <Sidebar isOpen={isOpenLeft} type="left">
@@ -218,38 +177,6 @@ export function GeneralTab({
                 onChange={onChangeNotificationsOption}
                 options={notificationOptions}
                 value={docRef.current.toJS().notifications || notificationOptions[0]}
-              />
-            </div>
-          )}
-          {currentSideBar.tab === 'layout' && (
-            <div className={styles.rightBar}>
-              <InputList
-                label={formatMessage(messages.loginLabel)}
-                labelPosition="top"
-                onChange={onChangeLoginOption}
-                options={loginOptions}
-                value={docRef.current.toJS().layout?.login || loginOptions[0]}
-              />
-              <InputList
-                label={formatMessage(messages.settingsLabel)}
-                labelPosition="top"
-                onChange={onChangeSettingsOption}
-                options={settingsOptions}
-                value={docRef.current.toJS().layout?.settings || settingsOptions[0]}
-              />
-              <InputList
-                label={formatMessage(messages.feedbackLabel)}
-                labelPosition="top"
-                onChange={onChangeFeedbackOption}
-                options={feedBackOptions}
-                value={docRef.current.toJS().layout?.feedback || feedBackOptions[0]}
-              />
-              <InputList
-                label={formatMessage(messages.navigationLabel)}
-                labelPosition="top"
-                onChange={onChangeNavigationOption}
-                options={navigationOptions}
-                value={docRef.current.toJS().layout?.navigation || navigationOptions[0]}
               />
             </div>
           )}

@@ -49,4 +49,20 @@ export const messages = defineMessages({
     id: 'studio.7LHMo9',
     defaultMessage: 'Padding',
   },
+  loginLabel: {
+    id: 'studio.AyGauy',
+    defaultMessage: 'Login',
+  },
+  settingsLabel: {
+    id: 'studio.D3idYv',
+    defaultMessage: 'Settings',
+  },
+  feedbackLabel: {
+    id: 'studio.Ejhdi4',
+    defaultMessage: 'Feedback',
+  },
+  navigationLabel: {
+    id: 'studio.fBg+7V',
+    defaultMessage: 'Navigation',
+  },
 });

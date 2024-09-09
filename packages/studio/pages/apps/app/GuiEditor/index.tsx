@@ -786,6 +786,7 @@ export default function EditPage(): ReactNode {
           )}
           {currentTab.tabName === 'style' && (
             <StyleTab
+              changeIn={changeIn}
               coreStyle={coreStyle}
               docRef={docRef}
               frameRef={frame}
