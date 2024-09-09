@@ -111,6 +111,14 @@ export function StyleList({
           className={classNames(styles.parentTop, {
             'is-link': selectedProp === 'body',
           })}
+          onClick={() => onSelectProp('layout')}
+        >
+          Layout
+        </Button>
+        <Button
+          className={classNames(styles.parentTop, {
+            'is-link': selectedProp === 'body',
+          })}
           onClick={() => onSelectProp('html')}
         >
           Body
