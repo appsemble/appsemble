@@ -93,25 +93,12 @@ export function AppInvite(): ReactNode {
     );
   }
 
-  if (accepted) {
+  if (accepted || declined) {
     return (
       <Content padding>
         <Message color="success">
           <FormattedMessage
-            {...messages.accepted}
-            values={{ appName: <strong>{appName}</strong> }}
-          />
-        </Message>
-      </Content>
-    );
-  }
-
-  if (declined) {
-    return (
-      <Content padding>
-        <Message color="success">
-          <FormattedMessage
-            {...messages.declined}
+            {...(accepted ? messages.accepted : messages.declined)}
             values={{ appName: <strong>{appName}</strong> }}
           />
         </Message>

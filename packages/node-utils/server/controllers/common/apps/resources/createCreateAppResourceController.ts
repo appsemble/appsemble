@@ -55,8 +55,6 @@ export function createCreateAppResourceController(options: Options): Middleware 
 
     const resources = Array.isArray(processedBody) ? processedBody : [processedBody];
 
-    let createdResources;
-
     if (!(ctx.client && 'app' in ctx.client) && query?.seed === 'true') {
       const preparedSeedAssets = structuredClone(preparedAssets);
       const preparedSeedResources: Record<string, unknown>[] = resources.map((resource) => {
@@ -91,7 +89,7 @@ export function createCreateAppResourceController(options: Options): Middleware 
         preparedSeedResources[index] = updatedResource;
       }
 
-      createdResources = await createAppResourcesWithAssets({
+      await createAppResourcesWithAssets({
         app,
         groupId: selectedGroupId,
         context: ctx,
@@ -100,38 +98,22 @@ export function createCreateAppResourceController(options: Options): Middleware 
         resourceType,
         options,
       });
-
-      if (app.demoMode) {
-        createdResources = await createAppResourcesWithAssets({
-          app,
-          groupId: selectedGroupId,
-          context: ctx,
-          resources: resources.map((resource) => ({
-            ...resource,
-            $seed: false,
-            $ephemeral: true,
-            $clonable: false,
-          })),
-          preparedAssets,
-          resourceType,
-          options,
-        });
-      }
-    } else {
-      createdResources = await createAppResourcesWithAssets({
-        app,
-        groupId: selectedGroupId,
-        context: ctx,
-        resources: resources.map((resource) => ({
-          ...resource,
-          $seed: false,
-          $ephemeral: app.demoMode,
-        })),
-        preparedAssets,
-        resourceType,
-        options,
-      });
     }
+
+    const createdResources = await createAppResourcesWithAssets({
+      app,
+      groupId: selectedGroupId,
+      context: ctx,
+      resources: resources.map((resource) => ({
+        ...resource,
+        $seed: false,
+        $ephemeral: app.demoMode,
+        ...(app.demoMode ? { $clonable: false } : {}),
+      })),
+      preparedAssets,
+      resourceType,
+      options,
+    });
 
     ctx.body = Array.isArray(processedBody) ? createdResources : createdResources[0];
   };

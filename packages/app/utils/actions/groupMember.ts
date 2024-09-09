@@ -95,7 +95,7 @@ export const groupMemberRoleUpdate: ActionCreator<'group.member.role.update'> = 
     const role = remap(definition.role, data);
 
     const { data: response } = await axios.put<GroupMember>(
-      `${apiUrl}/api/group-members/${id}?selectedGroupId=${getAppMemberSelectedGroup()?.id}`,
+      `${apiUrl}/api/group-members/${id}/role?selectedGroupId=${getAppMemberSelectedGroup()?.id}`,
       {
         role,
       },
