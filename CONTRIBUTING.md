@@ -31,6 +31,13 @@ core blocks. These are the 3 classes of blocks:
 | custom      | suggested: plain js / Preact / mini-jsx | optionally  | https://gitlab.com/appsemble/apps                         |
 | community   | suggested: plain js / preact / mini-jsx | no          | varies                                                    |
 
+### Core
+
+#### API
+
+Please follow the guidelines and best practices for naming API endpoints described
+[here](https://restfulapi.net/resource-naming/)
+
 ### Style guide
 
 The entire code base is formatted using

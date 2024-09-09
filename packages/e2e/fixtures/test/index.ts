@@ -10,9 +10,6 @@ import { test as base, expect, type Page } from '@playwright/test';
  * @returns appId The app id.
  */
 export async function getAppId(page: Page): Promise<number> {
-  // Const token = localStorage.getItem('refresh_token');
-  // const { aud } = jwtDecode<JwtPayload>(token);
-  // return Number(aud?.split(':')[1]);
   const [path] = new URL(page.url()).hostname.split('.');
   const response = await fetch('/api/apps');
   const apps: App[] = await response.json();
