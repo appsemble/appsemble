@@ -200,13 +200,11 @@ export function FlowPage({
   const to = useCallback(
     (d: any, stepName: string) => {
       if (typeof stepName !== 'string') {
-        throw new TypeError(
-          `Expected pageDefinition to be a string, got: ${JSON.stringify(stepName)}`,
-        );
+        throw new TypeError(`Expected pagе to be a string, got: ${JSON.stringify(stepName)}`);
       }
       const found = steps.findIndex((p) => p.name === stepName);
       if (found === -1) {
-        throw new Error(`No matching pageDefinition was found for ${stepName}`);
+        throw new Error(`No matching page was found for ${stepName}`);
       }
 
       setCurrentStep(found);
@@ -301,7 +299,7 @@ export function FlowPage({
             for (const resourceData of results) {
               if (resourceData) {
                 const newStep: SubPageDefinition = {
-                  name: 'New loop pageDefinition',
+                  name: 'New loop page',
                   blocks,
                 };
                 newSteps.push(newStep);

@@ -51,8 +51,8 @@ have different permissions within the app based on the `guest` property in the a
 ### App Members
 
 An app member is any end user that has an account in an app. Such an account can be obtained in
-different ways (Appsemble OAuth2, OAuth2, SCIM, SAML, etc.) depending on the app’s settings and
-security definition.
+different ways (Appsemble OAuth2, [OAuth2](oauth2.md), [SCIM](scim.md), [SAML](saml.md), etc.)
+depending on the app’s settings and security definition.
 
 Each app member has a role within the app, that is one of
 [the defined roles in the app definition](security.md#roles) or a
