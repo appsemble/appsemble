@@ -1,13 +1,13 @@
 import { BaseActionDefinition } from './BaseActionDefinition.js';
 import { extendJSONSchema } from './utils.js';
 
-export const GroupMembersActionDefinition = extendJSONSchema(BaseActionDefinition, {
+export const GroupMemberQueryActionDefinition = extendJSONSchema(BaseActionDefinition, {
   type: 'object',
   additionalProperties: false,
   required: ['type', 'id'],
   properties: {
     type: {
-      enum: ['group.members'],
+      enum: ['group.member.query'],
       description: "Get a list of a group's members",
     },
     id: {

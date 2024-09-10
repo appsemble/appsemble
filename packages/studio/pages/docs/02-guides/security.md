@@ -6,11 +6,11 @@
 - [App Privacy](#app-privacy)
 - [App accounts management](#app-accounts-management)
 - [Security Definition](#security-definition)
-  - [Groups](#groups)
-- [Root app roles](#root-app-roles)
-- [Page app roles](#page-app-roles)
-- [Block roles](#block-roles)
-- [Resource roles](#resource-roles)
+  - [Permissions](#permissions)
+  - [Roles](#roles)
+    - [Predefined App Roles](#predefined-app-roles)
+- [Restricting Pages](#restricting-pages)
+- [Restricting Blocks](#restricting-blocks)
 
 ## Introduction
 
@@ -95,18 +95,15 @@ Here are all the available permissions, predefined in the system, that can be as
 - `$member:role:update`
 - `$member:properties:patch`
 
-
 - `$group:query`
 - `$group:create`
 - `$group:update`
 - `$group:delete`
 
-
 - `$group:member:invite`
 - `$group:member:query`
 - `$group:member:delete`
 - `$group:member:role:update`
-
 
 - `$resource:all:create`
 - `$resource:all:query`
@@ -114,7 +111,6 @@ Here are all the available permissions, predefined in the system, that can be as
 - `$resource:all:update`
 - `$resource:all:patch`
 - `$resource:all:delete`
-
 
 - `$resource:all:own:query`
 - `$resource:all:own:get`
@@ -132,17 +128,14 @@ defined in it and their views as follows:
 - `$resource:<resource-name>:patch`
 - `$resource:<resource-name>:delete`
 
-
 - `$resource:<resource-name>:own:query`
 - `$resource:<resource-name>:own:get`
 - `$resource:<resource-name>:own:update`
 - `$resource:<resource-name>:own:patch`
 - `$resource:<resource-name>:own:delete`
 
-
 - `$resource:<resource-name>:query:<view-name>`
 - `$resource:<resource-name>:get:<view-name>`
-
 
 - `$resource:all:query:<view-name>`
 - `$resource:all:get:<view-name>`
@@ -166,36 +159,29 @@ views because whoever created the resource can see all of its data.
 
 - `$member:invite` - allows the role to invite new members to the app.
 
-
 - `$resource:<resource-name>:own:update` - allows the role to perform the `update` resource action
-on `<resource-name>` resources that they have created themselves.
-
+  on `<resource-name>` resources that they have created themselves.
 
 - `$resource:all:own:update` - allows the role to perform the `update` resource action on all
-resources within the app that they have created themselves. This supersedes
-`$resource:<resource-name>:own:update` permissions.
-
+  resources within the app that they have created themselves. This supersedes
+  `$resource:<resource-name>:own:update` permissions.
 
 - `$resource:<resource-name>:update` - allows the role to perform the `update` resource action on
-`<resource-name>` resources. This supersedes `$resource:<resource-name>:own:update` permissions.
-
+  `<resource-name>` resources. This supersedes `$resource:<resource-name>:own:update` permissions.
 
 - `$resource:all:update` - allows the role to perform the `update` resource action on all resources
-within the app. This supersedes `$resource:<resource-name>:own:update`, `$resource:all:own:update`
-and `$resource:<resource-name>:update` permissions.
-
+  within the app. This supersedes `$resource:<resource-name>:own:update`, `$resource:all:own:update`
+  and `$resource:<resource-name>:update` permissions.
 
 - `$resource:<resource-name>:get:<view-name>` - allows the role to perform the `get` resource action
-on `<resource-name>` resources with the `<view-name>` view.
-
+  on `<resource-name>` resources with the `<view-name>` view.
 
 - `$resource:all:get:<view-name>` - allows the role to get all resources within the app with the
-`<view-name>` view. This supersedes `$resource:<resource-name>:get:<view-name>` permissions.
-
+  `<view-name>` view. This supersedes `$resource:<resource-name>:get:<view-name>` permissions.
 
 - `$resource:all:get` - allows the role to perform the `get` resource action on all resources in the
-app without a specific view. This supersedes `$resource:<resource-name>:get`,
-`$resource:<resource-name>:get:<view-name>` and `$resource:all:get:<view-name>` permissions.
+  app without a specific view. This supersedes `$resource:<resource-name>:get`,
+  `$resource:<resource-name>:get:<view-name>` and `$resource:all:get:<view-name>` permissions.
 
 ### Roles
 
@@ -216,23 +202,23 @@ inherit from. Here are all predefined app roles, along with their permissions:
 
 - `Member`
 
-
 - `MembersManager`
+
   - `$member:invite`
   - `$member:query`
   - `$member:delete`
   - `$member:role:update`
   - `$member:properties:patch`
 
-
 - `GroupMembersManager`
+
   - `$group:member:invite`
   - `$group:member:query`
   - `$group:member:delete`
   - `$group:member:role:update`
 
-
 - `GroupsManager`
+
   - `$group:member:invite`
   - `$group:member:query`
   - `$group:member:delete`
@@ -242,15 +228,14 @@ inherit from. Here are all predefined app roles, along with their permissions:
   - `$group:update`
   - `$group:delete`
 
-
 - `ResourcesManager`
+
   - `$resource:all:create`
   - `$resource:all:query`
   - `$resource:all:get`
   - `$resource:all:update`
   - `$resource:all:patch`
   - `$resource:all:delete`
-
 
 - `Owner`
   - `$member:invite`
@@ -291,12 +276,12 @@ security:
         - Reader
 ```
 
-### Restricting Pages
+## Restricting Pages
 
 By specifying the [`roles`](../05-reference/app.mdx#base-page-definition-roles) property for a page,
 visiting the page requires the app member to have at least one of the roles specified in this list.
 
-If `$guest` is in the list of roles of the page, unauthenticated users may also view the page.
+If `$guest` is in the list of roles of the page, unauthenticated users may view the page.
 
 If `$guest` is not in the list of roles of the page and a visiting user is not logged in and tries
 to view the page, they will instead be prompted to log in.
@@ -317,8 +302,7 @@ hidden from the app’s menu.
         icon: home
 ```
 
-> In the above example, viewing this page requires either no roles or the `roles` property specified
-> on the root of the app definition
+> By not specifying roles, no roles are required to view this page.
 
 ```yaml validate page-snippet
 - name: Example Page Unique 2
@@ -330,8 +314,35 @@ hidden from the app’s menu.
         icon: home
 ```
 
-> By specifying an empty list, no roles are required to view this page. If the root of the app
-> definition requires any roles, the user still needs to authenticate themselves.
+> By specifying an empty list, no roles are required to view this page.
+
+```yaml validate page-snippet
+- name: Example Page
+  roles:
+    - '$guest'
+  blocks:
+    - type: action-button
+      version: 0.29.7
+      parameters:
+        icon: home
+```
+
+> By specifying only '$guest', only unauthenticated users may view the page
+
+```yaml validate page-snippet
+- name: Example Page
+  roles:
+    - '$guest'
+    - Reader
+  blocks:
+    - type: action-button
+      version: 0.29.7
+      parameters:
+        icon: home
+```
+
+> By specifying “$guest” and “Reader”, both unauthenticated users and app members with the “Reader”
+> role may view the page
 
 ```yaml validate pages-snippet
 pages:
@@ -353,19 +364,17 @@ pages:
           icon: arrow-left
 ```
 
-> By specifying the `roles` property for each page, the root `roles` property of the app will be
-> overridden by the `roles` property for the page. In the above example only users with the “Admin”
-> role will be able to visit “Example Page”. Anyone else will be redirected automatically to
-> “Example Page 2”.
+> In the above example only app members with the “Admin” role will be able to visit “Example Page”.
+> All other app members will be redirected automatically to “Example Page 2”.
 
-## Block roles
+## Restricting Blocks
 
-By specifying the `roles` property for a block, it is possible to hide the block for users with
-insufficient roles. Users who don’t have any of the roles specified in the `roles` property of a
-block will not be able to view or interact with the block at all.
+By specifying the `roles` property for a block, it is possible to hide the block for app members
+with insufficient roles. App members who don’t have any of the roles specified in the `roles`
+property of a block will not be able to view or interact with the block at all.
 
-This can be especially useful for extending the functionality of a page for a specific set of users
-such as a button to create a new app for the administrators of a blog.
+This can be especially useful for extending the functionality of a page for a specific set of app
+members such as a button to create a new app for the administrators of a blog.
 
 ```yaml validate page-snippet
 - name: Example Page Unique 4
@@ -387,49 +396,4 @@ such as a button to create a new app for the administrators of a blog.
 ```
 
 > In the example above, only the “example” block will be shown to users who don’t have the “Admin”
-> role. Users who do will see both blocks.
-
-## Resource roles
-
-As described in the [Appsemble resources](resources.md) page, it is possible to define and manage
-various resources that can be used from within an app. By default the corresponding API endpoints
-are _not_ secured. They are available for modification by anyone who knows the format of the
-resource, as well as the specific endpoint being used. One exception to this is when the root of the
-app definition has a `roles` property defined. In that case, every resource action requires one of
-the roles as specified in this property, unless it is otherwise specified.
-
-By specifying the `roles` property for a specific action of a resource, it is possible to secure
-this action. For example, if your resource may be publicly viewed by anyone but not created anew by
-non-administrators, this can be managed by defining the `roles` property.
-
-```yaml validate resources-snippet
-resources:
-  blog:
-    schema:
-      type: object
-      additionalProperties: false
-      properties:
-        title:
-          type: string
-        body:
-          type: string
-```
-
-> In the above example, users with the “Reader” role will be able to view either all blog resources
-> or a singular one through the “query” and “get” resource actions, but they will not be able to
-> create, update or delete blog resources without having the “Admin” role.
-
-On top of specifying app roles to determine which users have access to resources there are a couple
-of special options that are always available regardless of the presence of roles. All of these
-require the user to be logged in.
-
-The following special options are currently supported:
-
-- **$none**: Grants access specifically to users who aren’t logged in.
-- **$public**: Grants access to everyone, even users who aren’t logged in.
-- **$author**: Grants access if the user is the same as the one who created the resource.
-- **$group:member**: Grants access if the user is in the same group as the user who created the
-  resource. See the [Groups guide](groups.md) for details.
-- **$group:manager**: Grants access if the user is in the same group as the user who created the
-  resource and has the `manager` role within the group. See the [Groups guide](groups.md) for
-  details.
+> role. App members who do will see both blocks.

@@ -35,38 +35,6 @@ resources:
           format: binary
 ```
 
-Resource actions can be used in association with [groups](../02-guides/groups.md) to limit CRUD
-actions on your resources. This can be particularly helpful in separating roles and privileges of
-various users in your organization. Following is an example of how you can limit querying `employee`
-resources to the members of group and creating resource to the manager.
-
-```yaml validate resources-snippet
-resources:
-  employee:
-    schema:
-      type: object
-      additionalProperties: false
-      required:
-        - firstName
-        - lastName
-        - email
-        - department
-    properties:
-      firstName:
-        type: string
-      lastName:
-        type: string
-      email:
-        type: string
-        format: email
-      department:
-        type: string
-        enum: ['HR', 'Engineering', 'Marketing', 'Data', 'Security']
-      picture:
-        type: string
-        format: binary
-```
-
 Supported resource actions are as below:
 
 - [`resource.get`](#resourceget)

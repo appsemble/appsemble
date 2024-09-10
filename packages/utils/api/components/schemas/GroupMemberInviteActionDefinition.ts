@@ -1,17 +1,17 @@
 import { BaseActionDefinition } from './BaseActionDefinition.js';
 import { extendJSONSchema } from './utils.js';
 
-export const GroupInviteActionDefinition = extendJSONSchema(BaseActionDefinition, {
+export const GroupMemberInviteActionDefinition = extendJSONSchema(BaseActionDefinition, {
   type: 'object',
   additionalProperties: false,
   required: ['type'],
   properties: {
     type: {
-      enum: ['group.invite'],
-      description: 'Invite a user to join a group.',
+      enum: ['group.member.invite'],
+      description: 'Invite an app member to join a group.',
     },
     id: {
-      description: 'The ID of the group to invite the user to.',
+      description: 'The ID of the group to invite the app member to.',
       $ref: '#/components/schemas/RemapperDefinition',
     },
     email: {
@@ -21,7 +21,6 @@ export const GroupInviteActionDefinition = extendJSONSchema(BaseActionDefinition
     role: {
       description: 'The role to invite the user as.',
       $ref: '#/components/schemas/RemapperDefinition',
-      default: 'member',
     },
   },
 });

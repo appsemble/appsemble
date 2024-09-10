@@ -10,35 +10,57 @@
 
 ## Introduction
 
-Groups can be used to organize groups of members in an app. Typically groups represent users that
-are linked together somehow. For example they belong to the same organizational unit or they are
-classmates. App managers can view and manage groups from the _Groups_ page in the app page in
-Appsemble Studio. In order to become a group member, a user must first be registered as an app
-member. A user can do so by logging into the app. Groups determine how its members can share
-resources with each other.
-
-To enable groups, first `security.groups` needs to be enabled in the app definition. For more
-information, see [groups security](security.md#groups)
+Groups can be used to organize app members in arbitrary collections. Typically, groups represent app
+members that are linked together somehow. For example, they belong to the same organizational unit,
+or they are classmates. Organization members or app members with sufficient permissions can create
+and manage groups. They can invite new app members to groups as well. Groups determine how their
+members can share resources with each other.
 
 ## Roles
 
-Within a group a user has one of the roles _Manager_ or _Member_. The exact difference between these
-roles is determined by the security roles in the app definition. From a security perspective it’s
-most important to configure resource roles correctly. For a good user experience, it’s best to make
-sure the app pages match the resource security definitions.
+Within a group, group members have a certain role, similar to how app members have a role in an app,
+see [security roles](security.md#roles). Having a role gives the group member certain permissions
+scoped to the group. From the app’s UI, app members can select from which group they are currently
+operating. If a group is selected, the role of the app member within the group is inferred and the
+permissions for that role are used for all app operations. If no group is selected, the app member’s
+app role is used.
 
-### Resources
+### Resources and Assets
 
-If a resource `create` definition specifies a role of `$group:manager`, only a user who is a manager
-of a group may create such a resource. If the role is `$group:member`, only a user who is a group
-member may create such a resource. The latter includes the group manager.
+To scope a resource for a specific group, the id of the group can be passed when using the
+`resource.create` action to create the resource. When a resource is scoped within a group, only
+members of that group with enough permissions, inferred from their role in the group, can perform
+operations on the resource.
 
-If a resource action definition other than `create` specifies a role of `$group:member`, then any
-group member of the resource author may perform the action on that resource. If the role is
-`$group:manager`, then only the managers of the group the author is in may perform that action on
-the resource.
+For example, let’s say we have an app for managing a soccer club.
 
-For example, let’s say we have an app for managing a soccer club:
+We need the following security definition in our app to make use of groups properly:
+
+```yaml validate security-snippet
+security:
+  default:
+    role: User
+  roles:
+    User:
+      permissions: []
+    GroupMember:
+      permissions: []
+    Manager:
+      inherits:
+        - GroupMember
+        - GroupMembersManager
+      permissions:
+        - '$resource:strategy:create'
+        - '$resource:absence:query'
+        - '$resource:absence:get'
+    Player:
+      inherits:
+        - GroupMember
+      permissions:
+        - '$resource:absence:create'
+        - '$resource:strategy:query'
+        - '$resource:strategy:get'
+```
 
 ```yaml validate resources-snippet
 resources:
@@ -50,15 +72,6 @@ resources:
         description:
           type: string
           multiline: true
-    create:
-      roles:
-        - $group:manager
-    query:
-      roles:
-        - $group:member
-    get:
-      roles:
-        - $group:member
 
   absence:
     schema:
@@ -68,43 +81,39 @@ resources:
         date:
           type: string
           format: date
-    create:
-      roles:
-        - $group:member
-    query:
-      roles:
-        - $group:manager
-    get:
-      roles:
-        - $group:manager
 ```
 
 We have the following groups:
 
-**Red group**:
+**Red Team**:
 
-- Manny (manager)
-- James
-- Alex
+- Manny (Manager)
+- James (Player)
+- Alex (Player)
 
-**Blue group**:
+**Blue Team**:
 
-- Mandy (manager)
-- Jessie
-- Alex
+- Mandy (Manager)
+- Jessie (Player)
+- Alex (Player)
+- Manny (Player)
 
-Each soccer group has their own strategy. Only the group manager may create a strategy. Manny may
-create a strategy (`$group:manager`), meaning they are now the author of that strategy. Because
-James and Alex are in the same group as Manny, they may view the strategy (`$group:member`).
+Each soccer team has their own group and strategies. Only members of a group with the role `Manager`
+within the group can create strategies. Manny may create a strategy scoped to the `Red Team`.
+Because James and Alex are in the same group as Manny and they have the `Player` role within that
+group, they may view the strategy.
 
-Mandy is the manager of the blue group. This means they can also create a strategy
-(`$group:manager`), which can then be viewed by Jessie and Alex (`$group:member`). Because Alex is
-in both the red and the blue group, Alex can see both strategies.
+Mandy has the role `Manager` in the `Blue Team` group. This means they can also create a strategy,
+which can then be viewed by Jessie, Alex and Manny, which are in the same group with role `Player`.
+Because Alex is in both the `Red Team` and `Blue Team` groups, Alex can see both strategies.
+
+Notice that Manny is a member of the `Red Team` group with role `Manager` but he is also a member of
+the `Blue Team` group with the role `Player`. This means that they can create strategies scoped to
+the `Red Team` group, but they can only see strategies scoped to the `Blue Team` group.
 
 Sometimes players (represented by group members) can’t be present at a game. In this case they need
-to report themselves absent. Players can only report their own absence (`$group:member`) using a
-create action. Let’s say Jamie calls in sick. Now only Manny can see this (`$group:manager`).
-However, if Alex reports absence, both Manny and Mandy can see it.
+to report themselves absent. Players can only report their own absence using the `resource.create`
+action. Let’s say James calls in sick. Now only Manny can see this.
 
 ### Pages
 
@@ -118,7 +127,7 @@ app’s pages:
 pages:
   - name: Create strategy
     roles:
-      - $group:manager
+      - Manager
     blocks:
       - type: form
         version: 0.29.11
@@ -141,14 +150,14 @@ pages:
 
   - name: Strategies
     roles:
-      - $group:member
+      - GroupMember
     blocks:
       - type: action-button
         version: 0.29.11
         parameters:
           icon: plus
         roles:
-          - $group:member
+          - Manager
         actions:
           onClick:
             type: link
@@ -156,7 +165,7 @@ pages:
 
   - name: Report absence
     roles:
-      - $group:member
+      - Player
     blocks:
       - type: form
         version: 0.29.11
@@ -179,14 +188,14 @@ pages:
 
   - name: View absence
     roles:
-      - $group:manager
+      - Manager
     blocks:
       - type: action-button
         version: 0.29.11
         parameters:
           icon: plus
         roles:
-          - $group:member
+          - Player
         actions:
           onClick:
             type: link
@@ -203,17 +212,17 @@ pages:
             <span data-content="summary" />
 ```
 
-According to this app definition, only the group manager may view the pages called `Create strategy`
-and `View absence`. Any group member may view the `Strategies` and `Report absence` pages, but on
-the `Strategies` page, only group managers see a button which links to `Create strategy`. This means
-anyone who isn’t part of a group can’t see any of those pages. The `About` page is accessible to
-anyone.
+According to this app definition, only group members with the role `Manager` may view the pages
+`Create strategy` and `View absence`. Only group members with the role `Player` may view the page
+`Report absence`. Any app member may view the `Strategies` page, but on it only group managers see a
+button which links to `Create strategy`. The `About` page is accessible to anyone.
 
 ## Actions
 
 The following group related actions are can be used within an app:
 
-- [`group.invite`](../actions/03-groups.mdx#groupinvite)
-- [`group.join`](../actions/03-groups.mdx#groupjoin)
-- [`group.list`](../actions/03-groups.mdx#grouplist)
-- [`group.members`](../actions/03-groups.mdx#groupmembers)
+- [`group.query`](../actions/03-groups.mdx#groupquery)
+- [`group.member.invite`](../actions/03-groups.mdx#groupmemberinvite)
+- [`group.member.query`](../actions/03-groups.mdx#groupmemberquery)
+- [`group.member.delete`](../actions/03-groups.mdx#groupmemberdelete)
+- [`group.member.role.update`](../actions/03-groups.mdx#groupmemberroleupdate)
