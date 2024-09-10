@@ -1,8 +1,12 @@
 import { type OpenAPIV3 } from 'openapi-types';
 
+import { paths as idPaths } from './assetId.js';
+import { paths as countPaths } from './count.js';
 import { normalized } from '../../../../../constants/index.js';
 
 export const paths: OpenAPIV3.PathsObject = {
+  ...idPaths,
+  ...countPaths,
   '/api/apps/{appId}/assets': {
     parameters: [{ $ref: '#/components/parameters/appId' }],
     get: {
@@ -94,64 +98,6 @@ export const paths: OpenAPIV3.PathsObject = {
         },
       },
       security: [{ studio: [] }, { app: ['resources:manage'] }, { cli: ['resources:write'] }, {}],
-    },
-  },
-  '/api/apps/{appId}/assets/\\$count': {
-    parameters: [{ $ref: '#/components/parameters/appId' }],
-    get: {
-      tags: ['common', 'app', 'asset'],
-      description: 'Get the number of assets in the app.',
-      operationId: 'countAppAssets',
-      responses: {
-        200: {
-          description: 'The number of assets in the app.',
-          content: {
-            'application/json': {
-              schema: {
-                type: 'number',
-              },
-            },
-          },
-        },
-      },
-      security: [{ studio: [] }, { app: ['resources:manage'] }, { cli: ['resources:read'] }, {}],
-    },
-  },
-  '/api/apps/{appId}/assets/{assetId}': {
-    parameters: [
-      { $ref: '#/components/parameters/appId' },
-      { $ref: '#/components/parameters/assetId' },
-    ],
-    get: {
-      tags: ['common', 'app', 'asset'],
-      description: 'Get a single asset',
-      operationId: 'getAppAssetById',
-      responses: {
-        200: {
-          description: 'The asset that matches the given id.',
-        },
-      },
-    },
-    head: {
-      tags: ['common', 'app', 'asset'],
-      description: 'Get the headers for a single asset',
-      operationId: 'getAppAssetHeadersById',
-      responses: {
-        200: {
-          description: 'The headers of the asset that matches the given id.',
-        },
-      },
-    },
-    delete: {
-      tags: ['common', 'app', 'asset'],
-      description: 'Remove an existing asset',
-      operationId: 'deleteAppAsset',
-      responses: {
-        204: {
-          description: 'The asset was successfully deleted.',
-        },
-      },
-      security: [{ studio: [] }, { app: ['resources:manage'] }],
     },
   },
 };

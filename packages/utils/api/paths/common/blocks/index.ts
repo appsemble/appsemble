@@ -1,8 +1,10 @@
 import { type OpenAPIV3 } from 'openapi-types';
 
+import { paths as blockIdPaths } from './blockId.js';
 import { paths as versionsPaths } from './versions/index.js';
 
 export const paths: OpenAPIV3.PathsObject = {
+  ...blockIdPaths,
   ...versionsPaths,
   '/api/blocks': {
     get: {
@@ -25,23 +27,6 @@ export const paths: OpenAPIV3.PathsObject = {
         },
       },
       security: [{ studio: [] }, {}],
-    },
-  },
-  '/api/blocks/@{organizationId}/{blockId}': {
-    parameters: [
-      { $ref: '#/components/parameters/organizationId' },
-      { $ref: '#/components/parameters/blockId' },
-    ],
-    get: {
-      tags: ['common', 'block'],
-      description: 'Get a single block',
-      operationId: 'getBlock',
-      responses: {
-        200: {
-          description: 'The latest version of the block that matches the given id.',
-          $ref: '#/components/responses/blockVersion',
-        },
-      },
     },
   },
 };

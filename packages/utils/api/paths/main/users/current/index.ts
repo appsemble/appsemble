@@ -4,12 +4,14 @@ import { paths as appsPaths } from './apps/index.js';
 import { paths as authPaths } from './auth/index.js';
 import { paths as emailsPaths } from './emails/index.js';
 import { paths as organizationsPaths } from './organizations/index.js';
+import { paths as unsubscribePaths } from './unsubscribe.js';
 
 export const paths: OpenAPIV3.PathsObject = {
   ...appsPaths,
   ...authPaths,
   ...emailsPaths,
   ...organizationsPaths,
+  ...unsubscribePaths,
   '/api/users/current': {
     get: {
       tags: ['main', 'user', 'current-user'],
@@ -50,34 +52,6 @@ export const paths: OpenAPIV3.PathsObject = {
         },
       },
       security: [{ studio: [] }],
-    },
-  },
-  '/api/users/current/unsubscribe': {
-    post: {
-      tags: ['main', 'user', 'current-user'],
-      description: 'Unsubscribe a user from the newsletter',
-      operationId: 'unsubscribeCurrentUser',
-      responses: {
-        201: { description: 'Unsubscribed successfully' },
-        401: { description: 'Invalid or missing admin API secret' },
-      },
-      requestBody: {
-        required: true,
-        content: {
-          'application/json': {
-            schema: {
-              type: 'object',
-              required: ['email'],
-              properties: {
-                email: {
-                  type: 'string',
-                  format: 'email',
-                },
-              },
-            },
-          },
-        },
-      },
     },
   },
 };

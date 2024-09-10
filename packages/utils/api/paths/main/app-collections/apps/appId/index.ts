@@ -1,6 +1,6 @@
 import { type OpenAPIV3 } from 'openapi-types';
 
-import { paths as pinnedPaths } from './pinnedPaths.js';
+import { paths as pinnedPaths } from './pinned.js';
 
 export const paths: OpenAPIV3.PathsObject = {
   ...pinnedPaths,

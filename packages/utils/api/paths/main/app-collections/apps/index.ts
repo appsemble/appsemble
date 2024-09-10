@@ -1,6 +1,6 @@
 import { type OpenAPIV3 } from 'openapi-types';
 
-import { paths as idPaths } from './idPaths/index.js';
+import { paths as idPaths } from './appId/index.js';
 
 export const paths: OpenAPIV3.PathsObject = {
   ...idPaths,

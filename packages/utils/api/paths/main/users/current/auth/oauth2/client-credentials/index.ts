@@ -1,6 +1,9 @@
 import { type OpenAPIV3 } from 'openapi-types';
 
+import { paths as idPaths } from './clientId.js';
+
 export const paths: OpenAPIV3.PathsObject = {
+  ...idPaths,
   '/api/users/current/auth/oauth2/client-credentials': {
     post: {
       description: 'Register new OAuth2 client credentials for the authenticated user.',
@@ -48,29 +51,6 @@ export const paths: OpenAPIV3.PathsObject = {
               },
             },
           },
-        },
-      },
-      security: [{ studio: [] }],
-    },
-  },
-  '/api/users/current/auth/oauth2/client-credentials/{clientId}': {
-    parameters: [
-      {
-        name: 'clientId',
-        in: 'path',
-        description:
-          'The client id of the OAuth2 client credentials on which to perform an operation',
-        required: true,
-        schema: { type: 'string' },
-      },
-    ],
-    delete: {
-      description: 'Revoke the client credentials',
-      tags: ['main', 'user', 'current-user', 'auth', 'oauth2', 'client-credentials'],
-      operationId: 'deleteCurrentUserOAuth2ClientCredentials',
-      responses: {
-        204: {
-          description: 'The client credentials have been revoked successfully.',
         },
       },
       security: [{ studio: [] }],

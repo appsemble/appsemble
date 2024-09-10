@@ -1,9 +1,9 @@
 import { type OpenAPIV3 } from 'openapi-types';
 
 import { paths as appsPaths } from './apps/index.js';
-import { paths as headerImagePaths } from './headerImagePaths.js';
-import { paths as idPaths } from './idPaths.js';
-import { paths as profileImagePaths } from './profileImagePaths.js';
+import { paths as idPaths } from './collectionId.js';
+import { paths as headerImagePaths } from './headerImage.js';
+import { paths as profileImagePaths } from './profileImage.js';
 
 export const paths: OpenAPIV3.PathsObject = {
   ...appsPaths,

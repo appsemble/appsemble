@@ -1,6 +1,9 @@
 import { type OpenAPIV3 } from 'openapi-types';
 
+import { paths as idPaths } from './secretId.js';
+
 export const paths: OpenAPIV3.PathsObject = {
+  ...idPaths,
   '/api/apps/{appId}/secrets/service': {
     parameters: [{ $ref: '#/components/parameters/appId' }],
     post: {
@@ -50,44 +53,6 @@ export const paths: OpenAPIV3.PathsObject = {
       responses: {
         204: {
           description: 'The deleted app service secrets.',
-        },
-      },
-    },
-  },
-  '/api/apps/{appId}/secrets/service/{serviceSecretId}': {
-    parameters: [
-      { $ref: '#/components/parameters/appId' },
-      { $ref: '#/components/parameters/serviceSecretId' },
-    ],
-    put: {
-      tags: ['main', 'app', 'secret', 'service'],
-      operationId: 'updateAppServiceSecret',
-      requestBody: {
-        content: {
-          'application/json': {
-            schema: { $ref: '#/components/schemas/AppServiceSecret' },
-          },
-        },
-      },
-      security: [{ studio: [] }],
-      responses: {
-        200: {
-          description: 'The updated app service secret.',
-          content: {
-            'application/json': {
-              schema: { $ref: '#/components/schemas/AppServiceSecret' },
-            },
-          },
-        },
-      },
-    },
-    delete: {
-      tags: ['main', 'app', 'secret', 'service'],
-      operationId: 'deleteAppServiceSecret',
-      security: [{ studio: [] }],
-      responses: {
-        204: {
-          description: 'The deleted app service secret.',
         },
       },
     },

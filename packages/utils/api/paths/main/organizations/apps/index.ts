@@ -1,6 +1,9 @@
 import { type OpenAPIV3 } from 'openapi-types';
 
+import { paths as importPaths } from './import.js';
+
 export const paths: OpenAPIV3.PathsObject = {
+  ...importPaths,
   '/api/organizations/{organizationId}/apps': {
     parameters: [{ $ref: '#/components/parameters/organizationId' }],
     get: {
@@ -32,32 +35,6 @@ export const paths: OpenAPIV3.PathsObject = {
         },
       },
       security: [{ studio: [] }, {}],
-    },
-  },
-  // TODO: FIX DUPLICATE
-  '/api/organizations/{organizationId}/apps/import': {
-    parameters: [{ $ref: '#/components/parameters/organizationId' }],
-    post: {
-      tags: ['main', 'app'],
-      description: 'Import an app from a zip file',
-      operationId: 'importApp',
-      requestBody: {
-        content: {
-          'application/zip': {
-            schema: {
-              type: 'string',
-              format: 'binary',
-            },
-          },
-        },
-      },
-      responses: {
-        200: {
-          description: 'App imported successfully',
-          $ref: '#/components/responses/app',
-        },
-      },
-      security: [{ studio: [] }, { cli: ['apps:write'] }],
     },
   },
 };

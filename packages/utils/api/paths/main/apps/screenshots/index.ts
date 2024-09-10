@@ -1,6 +1,9 @@
 import { type OpenAPIV3 } from 'openapi-types';
 
+import { paths as idPaths } from './screenshotId.js';
+
 export const paths: OpenAPIV3.PathsObject = {
+  ...idPaths,
   '/api/apps/{appId}/screenshots': {
     parameters: [{ $ref: '#/components/parameters/appId' }],
     post: {
@@ -50,33 +53,6 @@ export const paths: OpenAPIV3.PathsObject = {
               },
             },
           },
-        },
-      },
-      security: [{ studio: [] }, { cli: ['apps:write'] }],
-    },
-  },
-  '/api/apps/{appId}/screenshots/{screenshotId}': {
-    parameters: [
-      { $ref: '#/components/parameters/appId' },
-      { $ref: '#/components/parameters/screenshotId' },
-    ],
-    get: {
-      tags: ['main', 'app', 'screenshot'],
-      description: 'Get a screenshot of an app.',
-      operationId: 'getAppScreenshot',
-      responses: {
-        200: {
-          description: 'The app screenshot',
-        },
-      },
-    },
-    delete: {
-      tags: ['main', 'app', 'screenshot'],
-      description: 'Delete an existing screenshot.',
-      operationId: 'deleteAppScreenshot',
-      responses: {
-        200: {
-          description: 'The screenshot has been successfully deleted.',
         },
       },
       security: [{ studio: [] }, { cli: ['apps:write'] }],
