@@ -65,15 +65,7 @@ export function FlowPage({
   const [currentStep, setCurrentStep] = useState(0);
   const pushNotifications = useServiceWorkerRegistration();
   const showMessage = useMessages();
-  const {
-    appMemberInfo,
-    appMemberInfoRef,
-    groups,
-    logout,
-    passwordLogin,
-    setAppMemberInfo,
-    updateGroup,
-  } = useAppMember();
+  const { addGroup, groups, info, infoRef, logout, passwordLogin, setInfo } = useAppMember();
   const { refetchDemoAppMembers } = useDemoAppMembers();
   const { getAppMessage, getMessage } = useAppMessages();
   const { getVariable } = useAppVariables();
@@ -89,7 +81,7 @@ export function FlowPage({
     url: window.location.href,
     getMessage,
     getVariable,
-    appMember: appMemberInfo,
+    appMember: info,
     context: { name: pageDefinition.name },
     locale: params.lang,
   };
@@ -259,11 +251,11 @@ export function FlowPage({
         params,
         showMessage,
         appMemberGroups: groups,
-        updateGroup,
-        getAppMemberInfo: () => appMemberInfoRef.current,
+        addAppMemberGroup: addGroup,
+        getAppMemberInfo: () => infoRef.current,
         passwordLogin,
         passwordLogout: logout,
-        setAppMemberInfo,
+        setAppMemberInfo: setInfo,
         refetchDemoAppMembers,
       }),
     [
@@ -284,12 +276,12 @@ export function FlowPage({
       params,
       showMessage,
       groups,
-      updateGroup,
+      addGroup,
       passwordLogin,
       logout,
-      setAppMemberInfo,
+      setInfo,
       refetchDemoAppMembers,
-      appMemberInfoRef,
+      infoRef,
     ],
   );
 

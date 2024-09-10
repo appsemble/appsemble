@@ -32,9 +32,9 @@ export function ErrorFallback({ eventId, resetErrorBoundary }: ErrorFallbackProp
       </Message>
       <SentryForm
         dsn={sentryDsn}
-        email={appMember?.appMemberInfo?.email}
+        email={appMember?.info?.email}
         eventId={eventId}
-        name={appMember?.appMemberInfo?.name}
+        name={appMember?.info?.name}
         recovery={
           <Button className="mb-3" component={Link} onClick={resetErrorBoundary} to="/">
             <FormattedMessage {...messages.home} />

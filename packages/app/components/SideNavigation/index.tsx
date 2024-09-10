@@ -13,7 +13,7 @@ import { useParams } from 'react-router-dom';
 
 import styles from './index.module.css';
 import { messages } from './messages.js';
-import { checkPagePermissions } from '../../utils/checkPagePermissions.js';
+import { checkPagePermissions } from '../../utils/authorization.js';
 import { appId, sentryDsn } from '../../utils/settings.js';
 import { useAppDefinition } from '../AppDefinitionProvider/index.js';
 import { useAppMember } from '../AppMemberProvider/index.js';
@@ -40,10 +40,10 @@ export function SideNavigation({ blockMenus, pages }: SideNavigationProps): Reac
     definition: { layout, security },
   } = useAppDefinition();
   const { formatMessage } = useIntl();
-  const { appMemberInfo, isLoggedIn, logout, role, teams } = useAppMember();
+  const { info, isLoggedIn, logout, role, selectedGroup } = useAppMember();
   const checkPagePermissionsCallback = useCallback(
-    (page: PageDefinition): boolean => checkPagePermissions(page, definition, role, teams),
-    [definition, role, teams],
+    (page: PageDefinition): boolean => checkPagePermissions(page, definition, role, selectedGroup),
+    [definition, role, selectedGroup],
   );
 
   const generateNameAndNavName = useCallback(
@@ -59,14 +59,14 @@ export function SideNavigation({ blockMenus, pages }: SideNavigationProps): Reac
             url: window.location.href,
             getMessage,
             getVariable,
-            appMemberInfo,
+            appMemberInfo: info,
             context: { name },
             locale: lang,
           }) as string)
         : name;
       return [name, navName];
     },
-    [getAppMessage, getMessage, getVariable, lang, appMemberInfo],
+    [getAppMessage, getMessage, getVariable, lang, info],
   );
 
   const renderMenu = useCallback(

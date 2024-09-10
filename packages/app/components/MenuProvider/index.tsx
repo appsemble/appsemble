@@ -49,7 +49,7 @@ export function usePage(): MenuProviderContext {
 
 export function MenuProvider({ children }: MenuProviderProps): ReactNode {
   const { definition: appDefinition } = useAppDefinition();
-  const { groups: appMemberGroups, role: appMemberRole } = useAppMember();
+  const { role, selectedGroup } = useAppMember();
   const [page, setPage] = useState<PageDefinition>();
   const [blockMenus, setBlockMenus] = useState<BlockMenuItem[]>([]);
   const value = useMemo<MenuProviderContext>(
@@ -74,7 +74,7 @@ export function MenuProvider({ children }: MenuProviderProps): ReactNode {
     (pageDefinition) =>
       !pageDefinition.parameters &&
       !pageDefinition.hideNavTitle &&
-      checkPagePermissions(pageDefinition, appDefinition, appMemberRole, appMemberGroups),
+      checkPagePermissions(pageDefinition, appDefinition, role, selectedGroup),
   );
 
   if (!pages.length) {

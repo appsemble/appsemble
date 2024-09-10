@@ -4,7 +4,7 @@ import axios from 'axios';
 import { type ActionCreator } from './index.js';
 import { apiUrl, appId } from '../settings.js';
 
-export const groupJoin: ActionCreator<'group.join'> = ({ getAppMemberInfo, updateGroup }) => [
+export const groupJoin: ActionCreator<'group.join'> = ({ getAppMemberInfo }) => [
   async (id: number) => {
     const appMemberInfo = getAppMemberInfo();
     if (!appMemberInfo?.sub) {
@@ -17,14 +17,11 @@ export const groupJoin: ActionCreator<'group.join'> = ({ getAppMemberInfo, updat
         id: appMemberInfo.sub,
       },
     );
-    updateGroup(group);
     return group;
   },
 ];
 
-export const groupList: ActionCreator<'group.list'> = ({ appMemberGroups }) => [
-  () => appMemberGroups,
-];
+export const groupList: ActionCreator<'group.list'> = ({ appMemberGroups }) => [() => appMemberGroups];
 
 export const groupInvite: ActionCreator<'group.invite'> = ({ definition, remap }) => [
   async (data) => {

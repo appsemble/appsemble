@@ -13,7 +13,7 @@ import { DemoLogin } from '../DemoLogin/index.js';
 export function ProfileDropdown(): ReactNode {
   const { formatMessage } = useIntl();
   const { definition } = useAppDefinition();
-  const { appMemberInfo, isLoggedIn, logout } = useAppMember();
+  const { groups, info, isLoggedIn, logout } = useAppMember();
   const { lang } = useParams<{ lang: string }>();
   const { pathname } = useLocation();
 
@@ -29,6 +29,8 @@ export function ProfileDropdown(): ReactNode {
   ) {
     return null;
   }
+
+  console.log(groups)
 
   if (!isLoggedIn) {
     return (
@@ -50,11 +52,11 @@ export function ProfileDropdown(): ReactNode {
         className={`is-right ${styles.dropdown}`}
         label={
           <figure className="image is-32x32 is-clipped">
-            {appMemberInfo?.picture ? (
+            {info?.picture ? (
               <img
                 alt={formatMessage(messages.pfp)}
                 className={`is-rounded ${styles.gravatar}`}
-                src={appMemberInfo.picture}
+                src={info.picture}
               />
             ) : (
               <Icon
@@ -94,6 +96,7 @@ export function ProfileDropdown(): ReactNode {
             {(layout?.settings ?? 'navbar') === 'navbar' || layout?.feedback === 'navbar' ? (
               <hr className="navbar-divider" />
             ) : null}
+            {}
             <NavbarItem icon="sign-out-alt" onClick={logout}>
               <FormattedMessage {...messages.logoutButton} />
             </NavbarItem>

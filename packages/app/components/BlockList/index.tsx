@@ -59,14 +59,15 @@ export function BlockList({
   const push = useMessages();
   const { definition: appDefinition, revision } = useAppDefinition();
   const {
-    appMemberInfoRef,
-    groups: appMemberGroups,
+    addGroup,
+    groups,
+    infoRef,
     isLoggedIn,
     logout,
     passwordLogin,
-    role: appMemberRole,
-    setAppMemberInfo,
-    updateGroup,
+    role,
+    selectedGroup,
+    setInfo,
   } = useAppMember();
   const { refetchDemoAppMembers } = useDemoAppMembers();
   const redirect = useLocationString();
@@ -81,11 +82,9 @@ export function BlockList({
   const blockList = useMemo(
     () =>
       blocks
-        .filter((block) =>
-          checkBlockPermissions(block, appDefinition, appMemberRole, appMemberGroups),
-        )
+        .filter((block) => checkBlockPermissions(block, appDefinition, role, selectedGroup))
         .map<[BlockDefinition, number]>((block, index) => [block, index]),
-    [blocks, appDefinition, appMemberRole, appMemberGroups],
+    [blocks, appDefinition, role, selectedGroup],
   );
 
   const blockStatus = useRef(blockList.map(() => false));
@@ -144,12 +143,12 @@ export function BlockList({
           prefixIndex: 'controller',
           ee,
           remap,
-          appMemberGroups,
-          updateGroup,
-          getAppMemberInfo: () => appMemberInfoRef.current,
+          appMemberGroups: groups,
+          addAppMemberGroup: addGroup,
+          getAppMemberInfo: () => infoRef.current,
           passwordLogin,
           passwordLogout: logout,
-          setAppMemberInfo,
+          setAppMemberInfo: setInfo,
           refetchDemoAppMembers,
         }),
         events: createEvents(
@@ -185,10 +184,10 @@ export function BlockList({
     pushNotifications,
     refetchDemoAppMembers,
     remap,
-    setAppMemberInfo,
-    appMemberGroups,
-    updateGroup,
-    appMemberInfoRef,
+    groups,
+    addGroup,
+    setInfo,
+    infoRef,
   ]);
 
   if (!blockList.length) {

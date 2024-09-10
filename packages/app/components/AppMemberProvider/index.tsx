@@ -16,7 +16,6 @@ import {
   useState,
 } from 'react';
 
-import { type UpdateGroup } from '../../types.js';
 import { clearAccountLinkingState, loadAccountLinkingState } from '../../utils/accountLinking.js';
 import { oauth2Scope } from '../../utils/constants.js';
 import { apiUrl, appId, development } from '../../utils/settings.js';
@@ -61,10 +60,11 @@ interface AppMemberContext extends LoginState {
   authorizationCodeLogin: (params: AuthorizationCodeLoginParams) => Promise<void>;
   demoLogin: (props: DemoLoginParams) => Promise<void>;
   logout: () => any;
-  updateGroup: UpdateGroup;
-  appMemberInfo: AppMemberInfo;
-  appMemberInfoRef: MutableRefObject<AppMemberInfo>;
-  setAppMemberInfo: Dispatch<AppMemberInfo>;
+  info: AppMemberInfo;
+  infoRef: MutableRefObject<AppMemberInfo>;
+  setInfo: Dispatch<AppMemberInfo>;
+  addGroup: (group: AppMemberGroup) => void;
+  selectedGroup: AppMemberGroup;
 }
 
 interface AppMemberProviderProps {
@@ -96,12 +96,14 @@ export function AppMemberProvider({ children }: AppMemberProviderProps): ReactNo
   const [isLoading, setIsLoading] = useState(Boolean(definition.security));
   const [state, setState] = useState(initialState);
 
-  const [appMemberInfo, setAppMemberInfo] = useState<AppMemberInfo>(null);
+  const [info, setInfo] = useState<AppMemberInfo>(null);
+  const [selectedGroup, setSelectedGroup] = useState<AppMemberGroup>(null);
+
   const [exp, setExp] = useState(null);
   const [authorization, setAuthorization] = useState<string>(null);
 
-  const appMemberInfoRef = useRef(appMemberInfo);
-  appMemberInfoRef.current = appMemberInfo;
+  const infoRef = useRef(info);
+  infoRef.current = info;
 
   /**
    * Reset everything to its initial state for a logged out user.
@@ -111,7 +113,7 @@ export function AppMemberProvider({ children }: AppMemberProviderProps): ReactNo
     localStorage.removeItem(REFRESH_TOKEN);
     setExp(null);
     setState(initialState);
-    setAppMemberInfo(null);
+    setInfo(null);
     setAuthorization(null);
   }, []);
 
@@ -177,7 +179,7 @@ export function AppMemberProvider({ children }: AppMemberProviderProps): ReactNo
         let groups: AppMemberGroup[] = [];
         try {
           const { data } = await axios.get<AppMemberGroup[]>(
-            `${apiUrl}/api/apps/${appId}/groups`,
+            `${apiUrl}/api/apps/${appId}/members/current/groups`,
             config,
           );
           groups = data;
@@ -186,7 +188,7 @@ export function AppMemberProvider({ children }: AppMemberProviderProps): ReactNo
         }
 
         setSentryUser({ id: appMember.sub });
-        setAppMemberInfo(appMember);
+        setInfo(appMember);
         setState({
           isLoggedIn: true,
           role: appMember.role,
@@ -246,16 +248,14 @@ export function AppMemberProvider({ children }: AppMemberProviderProps): ReactNo
     [login, logout],
   );
 
-  const updateGroup: UpdateGroup = useCallback((appMemberGroup) => {
+  const addGroup: (group: AppMemberGroup) => void = useCallback((group) => {
     setState(({ groups, ...oldState }) => {
-      const newGroups = groups.map((amg) =>
-        amg.groupId === appMemberGroup.groupId
-          ? { ...amg, role: appMemberGroup.appMemberGroupRole }
-          : amg,
-      );
-      if (!newGroups.some((amg) => amg.groupId === appMemberGroup.groupId)) {
-        newGroups.push(appMemberGroup);
+      const newGroups = [...groups];
+
+      if (!newGroups.some((g) => g.id === group.id)) {
+        newGroups.push(group);
       }
+
       return {
         ...oldState,
         groups: newGroups,
@@ -343,10 +343,12 @@ export function AppMemberProvider({ children }: AppMemberProviderProps): ReactNo
       developmentLogin,
       demoLogin,
       logout,
-      updateGroup,
-      setAppMemberInfo,
-      appMemberInfo,
-      appMemberInfoRef,
+      addGroup,
+      setInfo,
+      info,
+      infoRef,
+      selectedGroup,
+      setSelectedGroup,
       ...state,
     }),
     [
@@ -355,9 +357,11 @@ export function AppMemberProvider({ children }: AppMemberProviderProps): ReactNo
       developmentLogin,
       demoLogin,
       logout,
-      updateGroup,
-      appMemberInfo,
+      addGroup,
+      info,
       state,
+      selectedGroup,
+      setSelectedGroup,
     ],
   );
 

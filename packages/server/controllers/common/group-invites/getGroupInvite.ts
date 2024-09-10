@@ -23,6 +23,7 @@ export async function getGroupInvite(ctx: Context): Promise<void> {
   assertKoaError(!invite, ctx, 404, `No invite found for token: ${token}`);
 
   ctx.body = {
+    groupId: invite.GroupId,
     groupName: invite.Group.name,
     email: invite.email,
     role: invite.role,

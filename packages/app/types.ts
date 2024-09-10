@@ -8,6 +8,7 @@ import {
   type AppMemberInfo,
   type BlockDefinition,
   type BlockManifest,
+  type Group,
   type ProjectImplementations,
   type Remapper,
   type UserInfo,
@@ -122,8 +123,6 @@ export interface FlowActions {
   to: (data: any, step: string) => Promise<any>;
 }
 
-export type UpdateGroup = (group: AppMemberGroup) => void;
-
 export interface MakeActionParameters<D extends ActionDefinition> {
   appDefinition: AppDefinition;
   getAppMessage?: MessageGetter;
@@ -147,8 +146,8 @@ export interface MakeActionParameters<D extends ActionDefinition> {
   passwordLogin: (params: { username: string; password: string }) => Promise<void>;
   passwordLogout: () => Promise<void>;
   setAppMemberInfo: Dispatch<AppMemberInfo>;
-  updateGroup: UpdateGroup;
-  appMemberGroups: AppMemberGroup[];
+  appMemberGroups: Group[];
+  addAppMemberGroup: (group: Group) => void;
   refetchDemoAppMembers: () => Promise<void>;
 }
 

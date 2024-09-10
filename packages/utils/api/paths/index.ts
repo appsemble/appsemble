@@ -30,6 +30,7 @@ import { pathItems as appsAppIdInvites } from './apps/appId/invites.js';
 import { pathItems as appsAppIdLock } from './apps/appId/lock.js';
 import { pathItems as appsAppIdMaskableIcon } from './apps/appId/maskableIcon.js';
 import { pathItems as appsAppIdMembersCurrentAuthOAuth2 } from './apps/appId/members/current/auth/oauth2.js';
+import { pathItems as appsAppIdMembersCurrentGroups } from './apps/appId/members/current/groups.js';
 import { pathItems as appsAppIdMembersCurrentLink } from './apps/appId/members/current/link.js';
 import { pathItems as appsAppIdMembersCurrent } from './apps/appId/members/current.js';
 import { pathItems as appsAppIdMembers } from './apps/appId/members.js';
@@ -172,6 +173,7 @@ export const paths = {
   '/api/apps/{appId}/lock': appsAppIdLock,
   '/api/apps/{appId}/maskable-icon': appsAppIdMaskableIcon,
   '/api/apps/{appId}/members/current/auth/oauth2': appsAppIdMembersCurrentAuthOAuth2,
+  '/api/apps/{appId}/members/current/groups': appsAppIdMembersCurrentGroups,
   '/api/apps/{appId}/members/current/link': appsAppIdMembersCurrentLink,
   '/api/apps/{appId}/members/current': appsAppIdMembersCurrent,
   '/api/apps/{appId}/members': appsAppIdMembers,

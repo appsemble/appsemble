@@ -20,7 +20,7 @@ import { useAppMember } from '../AppMemberProvider/index.js';
 
 export function ProfileSettings(): ReactNode {
   const { formatMessage } = useIntl();
-  const { appMemberInfo, setAppMemberInfo } = useAppMember();
+  const { info, setInfo } = useAppMember();
   const { lang } = useParams<{ lang: string }>();
   const push = useMessages();
 
@@ -42,22 +42,22 @@ export function ProfileSettings(): ReactNode {
         name: string;
         picture: string;
       }>(`${apiUrl}/api/user/apps/${appId}/account`, formData);
-      setAppMemberInfo({
-        ...appMemberInfo,
+      setInfo({
+        ...info,
         email: data.email,
         name: data.name,
         picture: data.picture,
       });
       push({ body: formatMessage(messages.submitSuccess), color: 'success' });
     },
-    [formatMessage, push, setAppMemberInfo, appMemberInfo, lang],
+    [formatMessage, push, setInfo, info, lang],
   );
 
   return (
     <SimpleForm
       defaultValues={{
-        name: appMemberInfo?.name || '',
-        email: appMemberInfo?.email || '',
+        name: info?.name || '',
+        email: info?.email || '',
         picture: null,
       }}
       onSubmit={onSaveProfile}
@@ -78,7 +78,7 @@ export function ProfileSettings(): ReactNode {
         help={<FormattedMessage {...messages.pictureDescription} />}
         label={<FormattedMessage {...messages.picture} />}
         name="picture"
-        preview={<PicturePreview pictureUrl={appMemberInfo?.picture} />}
+        preview={<PicturePreview pictureUrl={info?.picture} />}
       />
       <FormButtons>
         <SimpleSubmit>

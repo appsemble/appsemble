@@ -9,14 +9,14 @@ import { AppBar } from '../TitleBar/index.js';
 
 export function SentryFeedback(): ReactNode {
   useMeta(messages.feedback);
-  const { appMemberInfo } = useAppMember();
+  const { info } = useAppMember();
 
   return (
     <Content main padding>
       <AppBar>
         <FormattedMessage {...messages.feedback} />
       </AppBar>
-      <SentryForm dsn={sentryDsn} email={appMemberInfo?.email} name={appMemberInfo?.name} />
+      <SentryForm dsn={sentryDsn} email={info?.email} name={info?.name} />
     </Content>
   );
 }

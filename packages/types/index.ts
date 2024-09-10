@@ -25,7 +25,6 @@ export * from './snapshot.js';
 export * from './resource.js';
 export * from './saml.js';
 export * from './ssl.js';
-export * from './group.js';
 export * from './template.js';
 export * from './theme.js';
 export * from './oauth2.js';
@@ -2230,6 +2229,11 @@ export interface GroupInvite {
   /**
    * The name of the group.
    */
+  groupId?: number;
+
+  /**
+   * The name of the group.
+   */
   groupName?: string;
 
   /**
@@ -2244,6 +2248,26 @@ export interface GroupInvite {
 }
 
 /**
+ * Represents a group within an organization.
+ */
+export interface Group {
+  /**
+   * The ID of the group.
+   */
+  id: number;
+
+  /**
+   * The display name of the group.
+   */
+  name: string;
+
+  /**
+   * Custom annotations for the group.
+   */
+  annotations?: Record<string, string>;
+}
+
+/**
  * Group member in a group.
  */
 export interface GroupMember {
@@ -2254,10 +2278,20 @@ export interface GroupMember {
 }
 
 export interface AppMemberGroup {
-  groupId: number;
-  groupName: string;
-  groupAnnotations?: Record<string, any>;
-  appMemberGroupRole: string;
+  /**
+   * The ID of the group.
+   */
+  id: number;
+
+  /**
+   * The display name of the group.
+   */
+  name: string;
+
+  /**
+   * The role of the app member inside the group.
+   */
+  role: AppRole;
 }
 
 /**

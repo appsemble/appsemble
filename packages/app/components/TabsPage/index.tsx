@@ -60,16 +60,8 @@ export function TabsPage({
   const [data, setData] = useState<unknown>({});
   const { pathname } = useLocation();
   const navigate = useNavigate();
-  const {
-    appMemberInfo,
-    appMemberInfoRef,
-    groups: appMemberGroups,
-    logout,
-    passwordLogin,
-    role: appMemberRole,
-    setAppMemberInfo,
-    updateGroup,
-  } = useAppMember();
+  const { addGroup, groups, info, infoRef, logout, passwordLogin, role, selectedGroup, setInfo } =
+    useAppMember();
   const { refetchDemoAppMembers } = useDemoAppMembers();
   const [tabsWithPermissions, setTabsWithPermissions] = useState([]);
   const [defaultTab, setDefaultTab] = useState(null);
@@ -88,11 +80,11 @@ export function TabsPage({
       url: window.location.href,
       getMessage,
       getVariable,
-      appMemberInfo,
+      appMemberInfo: info,
       context: { name: pageDefinition.name },
       locale: lang,
     }),
-    [appMemberInfo, getMessage, getVariable, lang, pageDefinition.name],
+    [info, getMessage, getVariable, lang, pageDefinition.name],
   );
 
   const checkSubPagePermissions = useCallback(
@@ -103,9 +95,9 @@ export function TabsPage({
         roles: subPage.roles,
       };
 
-      return checkPagePermissions(pd, appDefinition, appMemberRole, appMemberGroups);
+      return checkPagePermissions(pd, appDefinition, role, selectedGroup);
     },
-    [appDefinition, appMemberGroups, appMemberRole, data, remap, remapperContext],
+    [remap, data, remapperContext, appDefinition, role, selectedGroup],
   );
 
   const events = createEvents(
@@ -206,12 +198,12 @@ export function TabsPage({
         remap,
         params,
         showMessage,
-        appMemberGroups,
-        updateGroup,
-        getAppMemberInfo: () => appMemberInfoRef.current,
+        appMemberGroups: groups,
+        addAppMemberGroup: addGroup,
+        getAppMemberInfo: () => infoRef.current,
         passwordLogin,
         passwordLogout: logout,
-        setAppMemberInfo,
+        setAppMemberInfo: setInfo,
         refetchDemoAppMembers,
       }),
     [
@@ -230,13 +222,13 @@ export function TabsPage({
       remap,
       params,
       showMessage,
-      appMemberGroups,
-      updateGroup,
+      groups,
+      addGroup,
       passwordLogin,
       logout,
-      setAppMemberInfo,
+      setInfo,
       refetchDemoAppMembers,
-      appMemberInfoRef,
+      infoRef,
     ],
   );
 

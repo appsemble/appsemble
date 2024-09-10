@@ -15,34 +15,35 @@ const defaultAllowedPages = new Set(['Login', 'Register']);
 function getAppMemberViewRoles(
   appSecurityDefinition: Security,
   appMemberRole: AppRole,
-  appMemberGroups: AppMemberGroup[],
-): Set<AppRole> {
+  appMemberSelectedGroup: AppMemberGroup,
+): AppRole[] {
   if (!appSecurityDefinition) {
-    return new Set();
+    return [];
   }
 
-  return new Set<AppRole>([
-    ...getAppInheritedRoles(appSecurityDefinition, appMemberRole ? [appMemberRole] : []),
-    ...appMemberGroups.map(({ appMemberGroupRole }) => appMemberGroupRole),
-  ]);
+  if (appMemberSelectedGroup) {
+    return getAppInheritedRoles(appSecurityDefinition, [appMemberSelectedGroup.role]);
+  }
+
+  return getAppInheritedRoles(appSecurityDefinition, appMemberRole ? [appMemberRole] : []);
 }
 
 function checkAppMemberViewRoles(
   requiredRoles: ViewRole[],
-  appMemberViewRoles: Set<AppRole>,
+  appMemberViewRoles: AppRole[],
 ): boolean {
   return (
     requiredRoles.length === 0 ||
     requiredRoles.includes('$public') ||
-    (requiredRoles.includes('$none') && !appMemberViewRoles.size) ||
-    requiredRoles.some((requiredRole) => appMemberViewRoles.has(requiredRole))
+    (requiredRoles.includes('$none') && !appMemberViewRoles.length) ||
+    requiredRoles.some((requiredRole) => appMemberViewRoles.includes(requiredRole))
   );
 }
 
 function checkTabPagePermissions(
   pageDefinition: TabsPageDefinition,
   appDefinition: AppDefinition,
-  appMemberViewRoles: Set<AppRole>,
+  appMemberViewRoles: AppRole[],
 ): boolean {
   if (Array.isArray(pageDefinition.tabs)) {
     return pageDefinition.tabs.some((tab) => {
@@ -60,7 +61,7 @@ export function checkPagePermissions(
   pageDefinition: PageDefinition,
   appDefinition: AppDefinition,
   appMemberRole: AppRole,
-  appMemberGroups: AppMemberGroup[],
+  appMemberSelectedGroup: AppMemberGroup,
 ): boolean {
   // Users should always be able to access custom login and register pages.
   if (defaultAllowedPages.has(pageDefinition.name)) {
@@ -70,7 +71,7 @@ export function checkPagePermissions(
   const appMemberViewRoles = getAppMemberViewRoles(
     appDefinition.security,
     appMemberRole,
-    appMemberGroups,
+    appMemberSelectedGroup,
   );
 
   if (pageDefinition.type === 'tabs') {
@@ -86,12 +87,12 @@ export function checkBlockPermissions(
   blockDefinition: BlockDefinition,
   appDefinition: AppDefinition,
   appMemberRole: AppRole,
-  appMemberGroups: AppMemberGroup[],
+  appMemberSelectedGroup: AppMemberGroup,
 ): boolean {
   const appMemberViewRoles = getAppMemberViewRoles(
     appDefinition.security,
     appMemberRole,
-    appMemberGroups,
+    appMemberSelectedGroup,
   );
 
   const blockRoles = blockDefinition.roles || [];

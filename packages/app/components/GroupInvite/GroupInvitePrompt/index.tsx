@@ -6,7 +6,7 @@ import {
   useData,
   useQuery,
 } from '@appsemble/react-components';
-import { type AppMemberInfo, type GroupInvite as GroupInviteType } from '@appsemble/types';
+import { type GroupInvite as GroupInviteType } from '@appsemble/types';
 import axios from 'axios';
 import { type ReactNode, useCallback, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
@@ -14,10 +14,13 @@ import { useNavigate } from 'react-router-dom';
 
 import { messages } from './messages.js';
 import { apiUrl } from '../../../utils/settings.js';
+import { useAppMember } from '../../AppMemberProvider/index.js';
 
 export function GroupInvitePrompt(): ReactNode {
   const query = useQuery();
   const navigate = useNavigate();
+
+  const { addGroup } = useAppMember();
 
   const [accepted, setAccepted] = useState(false);
   const [declined, setDeclined] = useState(false);
@@ -33,9 +36,8 @@ export function GroupInvitePrompt(): ReactNode {
 
   const decline = useCallback(async () => {
     try {
-      await axios.post<AppMemberInfo>(`${apiUrl}/api/group-invites/${token}/respond`, {
-        response: false,
-      });
+      await axios.post(`${apiUrl}/api/group-invites/${token}/respond`, { response: false });
+
       setDeclined(true);
     } catch (error_) {
       setError(error_);
@@ -44,15 +46,15 @@ export function GroupInvitePrompt(): ReactNode {
 
   const accept = useCallback(async () => {
     try {
-      await axios.post<AppMemberInfo>(`${apiUrl}/api/group-invites/${token}/respond`, {
-        response: true,
-      });
+      await axios.post(`${apiUrl}/api/group-invites/${token}/respond`, { response: true });
+
       setAccepted(true);
+      addGroup({ id: invite.groupId, name: invite.groupName, role: invite.role });
       navigate('/');
     } catch (error_) {
       setError(error_);
     }
-  }, [navigate, token]);
+  }, [addGroup, invite, navigate, token]);
 
   if (loading) {
     return <Loader />;
