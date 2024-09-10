@@ -76,7 +76,7 @@ describe('link', () => {
 
   it('should support links to pages inside container pages', async () => {
     const action = createTestAction({
-      app: {
+      appDefinition: {
         defaultPage: '',
         pages: [
           { name: 'Container Page', type: 'container', pages: [{ name: 'Page A', blocks: [] }] },
@@ -100,7 +100,7 @@ describe('link', () => {
     };
 
     const action = createTestAction({
-      app: {
+      appDefinition: {
         defaultPage: '',
         pages: [
           { name: 'Container Page', type: 'container', pages: [{ name: 'Page A', blocks: [] }] },
@@ -141,7 +141,7 @@ describe('link', () => {
 
   it('should support links to sub-pages inside container pages', async () => {
     const action = createTestAction({
-      app: {
+      appDefinition: {
         defaultPage: '',
         pages: [
           {
