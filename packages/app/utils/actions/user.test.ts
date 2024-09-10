@@ -17,7 +17,7 @@ describe('user.register', () => {
   });
 
   it('should call the API to register a new user', async () => {
-    mock.onPost(`${apiUrl}/api/user/apps/${appId}/account`).reply(() => [201]);
+    mock.onPost(`${apiUrl}/api/apps/${appId}/auth/email/register`).reply(() => [201]);
     const action = createTestAction({
       definition: {
         type: 'user.register',
@@ -42,7 +42,7 @@ describe('user.register', () => {
   });
 
   it('should do nothing and return data if user is logged in', async () => {
-    mock.onPost(`${apiUrl}/api/user/apps/${appId}/account`).reply(() => [201]);
+    mock.onPost(`${apiUrl}/api/apps/${appId}/auth/email/register`).reply(() => [201]);
     const action = createTestAction({
       definition: {
         type: 'user.register',
@@ -134,7 +134,7 @@ describe('user.update', () => {
   });
 
   it('should call the API for updating the user', async () => {
-    mock.onPatch(`${apiUrl}/api/user/apps/${appId}/accounts/${currentEmail}`).reply(() => [
+    mock.onPatch(`${apiUrl}/api/apps/${appId}/members/current`).reply(() => [
       201,
       {
         id: 'some-user-id',
@@ -208,7 +208,7 @@ describe('user.update', () => {
   });
 
   it('should update another user if called by account manager', async () => {
-    mock.onPatch(`${apiUrl}/api/user/apps/${appId}/accounts/${currentEmail}`).reply(() => [
+    mock.onPatch(`${apiUrl}/api/apps/${appId}/members/current`).reply(() => [
       201,
       {
         id: 'some-user-id',
@@ -267,7 +267,7 @@ describe('user.query', () => {
   });
 
   it('should call the API for getting all users by roles', async () => {
-    mock.onGet(`${apiUrl}/api/user/apps/${appId}/accounts?roles=Role1,Role2,Role3`).reply(() => [
+    mock.onGet(`${apiUrl}/api/apps/${appId}/members?roles=Role1,Role2,Role3`).reply(() => [
       200,
       [
         {
@@ -387,9 +387,7 @@ describe('user.remove', () => {
   });
 
   it('should call the API for removing a user', async () => {
-    mock
-      .onDelete(`${apiUrl}/api/user/apps/${appId}/accounts/${memberEmail}`)
-      .reply(() => [204, []]);
+    mock.onDelete(`${apiUrl}/api/apps/${appId}/members/${memberEmail}`).reply(() => [204, []]);
 
     const action = createTestAction({
       definition: {

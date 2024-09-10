@@ -2,28 +2,17 @@ import { gzipSync } from 'node:zlib';
 
 import { version } from '@appsemble/node-utils';
 import { type EmailActionDefinition } from '@appsemble/types';
-import axios, { type InternalAxiosRequestConfig } from 'axios';
-import MockAdapter from 'axios-mock-adapter';
 import { type AxiosTestInstance, createInstance, request, setTestApp } from 'axios-test-instance';
 import Koa, { type ParameterizedContext } from 'koa';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import {
-  App,
-  AppMember,
-  AppServiceSecret,
-  Asset,
-  Organization,
-  type User,
-} from '../../../models/index.js';
+import { App, Asset, Organization } from '../../../models/index.js';
 import { setArgv } from '../../../utils/argv.js';
 import { createServer } from '../../../utils/createServer.js';
-import { encrypt } from '../../../utils/crypto.js';
-import { authorizeApp, createTestUser } from '../../../utils/test/authorization.js';
+import { createTestUser } from '../../../utils/test/authorization.js';
 import { useTestDatabase } from '../../../utils/test/testSchema.js';
 
 let server: Koa;
-let user: User;
 let testApp: AxiosTestInstance;
 const argv = { host: 'http://localhost', secret: 'test', aesSecret: 'testSecret' };
 
@@ -31,13 +20,13 @@ useTestDatabase(import.meta);
 
 beforeEach(async () => {
   setArgv(argv);
-  user = await createTestUser();
+  await createTestUser();
   server = await createServer({});
   testApp = await setTestApp(server);
 });
 
 it('should handle if the app doesn’t exist', async () => {
-  const response = await request.get('/api/apps/1337/action/valid?data={}');
+  const response = await request.get('/api/apps/1337/actions/valid?data={}');
   expect(response).toMatchInlineSnapshot(`
     HTTP/1.1 404 Not Found
     Content-Type: application/json; charset=utf-8
@@ -67,7 +56,7 @@ it('should handle if the path doesn’t point to an action', async () => {
       ],
     },
   } as Partial<App>);
-  const response = await request.get('/api/apps/1/action/invalid?data={}');
+  const response = await request.get('/api/apps/1/actions/invalid?data={}');
   expect(response).toMatchInlineSnapshot(`
     HTTP/1.1 400 Bad Request
     Content-Type: application/json; charset=utf-8
@@ -86,7 +75,6 @@ describe('handleRequestProxy', () => {
   let proxiedRequest: AxiosTestInstance;
   let proxiedBody: any;
   let responseHeaders: Record<string, string>;
-  let app: App;
 
   beforeEach(async () => {
     vi.useFakeTimers();
@@ -101,7 +89,7 @@ describe('handleRequestProxy', () => {
     proxiedRequest = await createInstance(proxiedApp);
     const { baseURL } = proxiedRequest.defaults;
     await Organization.create({ id: 'org' });
-    app = await App.create({
+    await App.create({
       vapidPublicKey: '',
       vapidPrivateKey: '',
       OrganizationId: 'org',
@@ -193,146 +181,6 @@ describe('handleRequestProxy', () => {
     responseHeaders = undefined;
   });
 
-  it('should proxy simple GET request actions', async () => {
-    const response = await request.get('/api/apps/1/action/pages.0.blocks.0.actions.get?data={}');
-    expect(response).toMatchInlineSnapshot(`
-      HTTP/1.1 418 I'm a teapot
-      Content-Type: application/json; charset=utf-8
-
-      {
-        "message": "I’m a teapot",
-      }
-    `);
-    expect(proxiedContext.method).toBe('GET');
-    expect({ ...proxiedContext.headers }).toMatchObject({
-      accept: 'application/json, text/plain, */*',
-      'accept-encoding': 'gzip, compress, deflate, br',
-      host: new URL(proxiedRequest.defaults.baseURL).host,
-      'user-agent': `AppsembleServer/${version}`,
-    });
-    expect(proxiedContext.path).toBe('/');
-  });
-
-  it('should proxy simple DELETE request actions', async () => {
-    const response = await request.delete(
-      '/api/apps/1/action/pages.0.blocks.0.actions.delete?data={}',
-    );
-    expect(response).toMatchInlineSnapshot(`
-      HTTP/1.1 418 I'm a teapot
-      Content-Type: application/json; charset=utf-8
-
-      {
-        "message": "I’m a teapot",
-      }
-    `);
-    expect(proxiedContext.method).toBe('DELETE');
-    expect({ ...proxiedContext.headers }).toMatchObject({
-      accept: 'application/json, text/plain, */*',
-      'accept-encoding': 'gzip, compress, deflate, br',
-      host: new URL(proxiedRequest.defaults.baseURL).host,
-      'user-agent': `AppsembleServer/${version}`,
-    });
-    expect(proxiedContext.path).toBe('/');
-  });
-
-  it('should proxy simple PATCH request actions', async () => {
-    const response = await request.patch('/api/apps/1/action/pages.0.blocks.0.actions.patch', {});
-    expect(response).toMatchInlineSnapshot(`
-      HTTP/1.1 418 I'm a teapot
-      Content-Type: application/json; charset=utf-8
-
-      {
-        "message": "I’m a teapot",
-      }
-    `);
-    expect(proxiedContext.method).toBe('PATCH');
-    expect({ ...proxiedContext.headers }).toMatchObject({
-      accept: 'application/json, text/plain, */*',
-      'accept-encoding': 'gzip, compress, deflate, br',
-      'content-length': '2',
-      'content-type': 'application/json',
-      host: new URL(proxiedRequest.defaults.baseURL).host,
-      'user-agent': `AppsembleServer/${version}`,
-    });
-    expect(proxiedContext.path).toBe('/');
-  });
-
-  it('should proxy simple POST request actions', async () => {
-    const response = await request.post('/api/apps/1/action/pages.0.blocks.0.actions.post', {});
-    expect(response).toMatchInlineSnapshot(`
-      HTTP/1.1 418 I'm a teapot
-      Content-Type: application/json; charset=utf-8
-
-      {
-        "message": "I’m a teapot",
-      }
-    `);
-    expect(proxiedContext.method).toBe('POST');
-    expect({ ...proxiedContext.headers }).toMatchObject({
-      accept: 'application/json, text/plain, */*',
-      'accept-encoding': 'gzip, compress, deflate, br',
-      'content-length': '2',
-      'content-type': 'application/json',
-      host: new URL(proxiedRequest.defaults.baseURL).host,
-      'user-agent': `AppsembleServer/${version}`,
-    });
-    expect(proxiedContext.path).toBe('/');
-  });
-
-  it('should proxy binary POST requests', async () => {
-    const blob = new Blob(['New binary image'], { type: 'image/jpeg' });
-    proxiedBody = blob;
-    responseHeaders = {
-      'Content-Type': 'image/jpeg',
-    };
-    const response = await request.post(
-      '/api/apps/1/action/pages.0.blocks.0.actions.post',
-      undefined,
-      {
-        data: blob,
-        headers: responseHeaders,
-      },
-    );
-    expect(response).toMatchInlineSnapshot(`
-      HTTP/1.1 418 I'm a teapot
-      Content-Type: image/jpeg
-
-      {}
-    `);
-    expect({ ...proxiedContext.headers }).toMatchObject({
-      accept: 'application/json, text/plain, */*',
-      'accept-encoding': 'gzip, compress, deflate, br',
-      'content-type': 'image/jpeg',
-      'content-length': '0',
-      connection: 'close',
-      host: new URL(proxiedRequest.defaults.baseURL).host,
-      'user-agent': `AppsembleServer/${version}`,
-    });
-    expect(proxiedContext.path).toBe('/');
-  });
-
-  it('should proxy simple PUT request actions', async () => {
-    const response = await request.put('/api/apps/1/action/pages.0.blocks.0.actions.put', {});
-    expect(response).toMatchInlineSnapshot(`
-      HTTP/1.1 418 I'm a teapot
-      Content-Type: application/json; charset=utf-8
-
-      {
-        "message": "I’m a teapot",
-      }
-    `);
-    expect(proxiedContext.method).toBe('PUT');
-    expect({ ...proxiedContext.headers }).toMatchObject({
-      accept: 'application/json, text/plain, */*',
-      'accept-encoding': 'gzip, compress, deflate, br',
-      'content-length': '2',
-      'content-type': 'application/json',
-      host: new URL(proxiedRequest.defaults.baseURL).host,
-      'user-agent': `AppsembleServer/${version}`,
-    });
-    expect(proxiedContext.path).toBe('/');
-  });
-
   it('should not decompress responses', async () => {
     responseHeaders = {
       'content-encoding': 'gzip',
@@ -349,7 +197,7 @@ describe('handleRequestProxy', () => {
       }),
     );
 
-    const response = await request.get('/api/apps/1/action/pages.0.blocks.0.actions.get?data={}');
+    const response = await request.get('/api/apps/1/actions/pages.0.blocks.0.actions.get?data={}');
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 418 I'm a teapot
       Content-Type: application/json
@@ -375,7 +223,7 @@ describe('handleRequestProxy', () => {
   });
 
   it('should throw if the method doesn’t match the action method', async () => {
-    const response = await request.put('/api/apps/1/action/pages.0.blocks.0.actions.post', {});
+    const response = await request.put('/api/apps/1/actions/pages.0.blocks.0.actions.post', {});
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 400 Bad Request
       Content-Type: application/json; charset=utf-8
@@ -390,7 +238,7 @@ describe('handleRequestProxy', () => {
 
   it('should assign incoming content-type when present', async () => {
     const response = await request.post(
-      '/api/apps/1/action/pages.0.blocks.0.actions.post',
+      '/api/apps/1/actions/pages.0.blocks.0.actions.post',
       await new Blob([], { type: 'image/png' }).arrayBuffer(),
       {
         headers: {
@@ -418,7 +266,7 @@ describe('handleRequestProxy', () => {
 
   it('should remap url on server', async () => {
     const response = await request.get(
-      '/api/apps/1/action/pages.0.blocks.0.actions.remap?data={"dynamic": "path"}',
+      '/api/apps/1/actions/pages.0.blocks.0.actions.remap?data={"dynamic": "path"}',
     );
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 418 I'm a teapot
@@ -449,7 +297,7 @@ describe('handleRequestProxy', () => {
                 actions: {
                   sameHost: {
                     type: 'request',
-                    url: `${testApp.defaults.baseURL}api/apps/2/action/pages.0.blocks.0.actions.sameHost?data={}`,
+                    url: `${testApp.defaults.baseURL}api/apps/2/actions/pages.0.blocks.0.actions.sameHost?data={}`,
                   },
                 },
               },
@@ -459,7 +307,7 @@ describe('handleRequestProxy', () => {
       },
     } as Partial<App>);
     const response = await request.get(
-      '/api/apps/2/action/pages.0.blocks.0.actions.sameHost?data={}',
+      '/api/apps/2/actions/pages.0.blocks.0.actions.sameHost?data={}',
     );
     expect(response.status).toBe(400);
     expect(response).toMatchInlineSnapshot(`
@@ -481,7 +329,7 @@ describe('handleRequestProxy', () => {
       ctx.body = { message: 'I’m a teapot' };
     });
     const remoteServer = await createInstance(remoteApp);
-    const remoteUrl = `${remoteServer.defaults.baseURL}api/apps/2/action/pages.0.blocks.0.actions.differentHost?data={}`;
+    const remoteUrl = `${remoteServer.defaults.baseURL}api/apps/2/actions/pages.0.blocks.0.actions.differentHost?data={}`;
 
     await App.create({
       vapidPublicKey: '',
@@ -510,7 +358,7 @@ describe('handleRequestProxy', () => {
     } as Partial<App>);
 
     const response = await request.get(
-      '/api/apps/2/action/pages.0.blocks.0.actions.differentHost?data={}',
+      '/api/apps/2/actions/pages.0.blocks.0.actions.differentHost?data={}',
     );
 
     // TODO: instead ensure the remapped url requested (in the controller) matched the remote url
@@ -522,7 +370,9 @@ describe('handleRequestProxy', () => {
   });
 
   it('should throw if data is not a JSON object', async () => {
-    const response = await request.get('/api/apps/1/action/pages.0.blocks.0.actions.get?data=test');
+    const response = await request.get(
+      '/api/apps/1/actions/pages.0.blocks.0.actions.get?data=test',
+    );
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 400 Bad Request
       Content-Type: application/json; charset=utf-8
@@ -537,7 +387,7 @@ describe('handleRequestProxy', () => {
 
   it('should proxy query parameters', async () => {
     const response = await request.get(
-      '/api/apps/1/action/pages.0.blocks.0.actions.get?data={}&params={"key": "value"}',
+      '/api/apps/1/actions/pages.0.blocks.0.actions.get?data={}&params={"key": "value"}',
     );
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 418 I'm a teapot
@@ -553,7 +403,7 @@ describe('handleRequestProxy', () => {
 
   it('should throw if params is not a JSON object', async () => {
     const response = await request.get(
-      '/api/apps/1/action/pages.0.blocks.0.actions.get?data={}&params=test',
+      '/api/apps/1/actions/pages.0.blocks.0.actions.get?data={}&params=test',
     );
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 400 Bad Request
@@ -568,7 +418,7 @@ describe('handleRequestProxy', () => {
   });
 
   it('should proxy request paths', async () => {
-    const response = await request.get('/api/apps/1/action/pages.0.blocks.0.actions.path?data={}');
+    const response = await request.get('/api/apps/1/actions/pages.0.blocks.0.actions.path?data={}');
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 418 I'm a teapot
       Content-Type: application/json; charset=utf-8
@@ -584,7 +434,7 @@ describe('handleRequestProxy', () => {
 
   it('should throw if the upstream response fails', async () => {
     const response = await request.get(
-      '/api/apps/1/action/pages.0.blocks.0.actions.invalidHost?data={}',
+      '/api/apps/1/actions/pages.0.blocks.0.actions.invalidHost?data={}',
     );
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 502 Bad Gateway
@@ -596,1052 +446,6 @@ describe('handleRequestProxy', () => {
         "statusCode": 502,
       }
     `);
-  });
-
-  it('should not apply secret if unauthorized', async () => {
-    await AppMember.create({
-      email: user.primaryEmail,
-      AppId: app.id,
-      UserId: user.id,
-      role: 'Admin',
-    });
-    server.context.user = null;
-
-    await AppServiceSecret.create({
-      name: 'Test service',
-      urlPatterns: proxiedRequest.defaults.baseURL,
-      authenticationMethod: 'http-basic',
-      identifier: 'john_doe',
-      secret: encrypt('Strong_Password-123', argv.aesSecret),
-      AppId: app.id,
-    });
-
-    let outgoingRequestConfig: InternalAxiosRequestConfig;
-
-    const interceptor = axios.interceptors.request.use((config) => {
-      outgoingRequestConfig = config;
-      return config;
-    });
-
-    const response = await request.get('/api/apps/1/action/pages.0.blocks.0.actions.get?data={}');
-
-    axios.interceptors.request.eject(interceptor);
-
-    expect(outgoingRequestConfig.headers.Authorization).toBeUndefined();
-    expect(outgoingRequestConfig.httpsAgent).toBeUndefined();
-    expect(outgoingRequestConfig.params).toBeUndefined();
-
-    expect(response).toMatchInlineSnapshot(`
-      HTTP/1.1 418 I'm a teapot
-      Content-Type: application/json; charset=utf-8
-
-      {
-        "message": "I’m a teapot",
-      }
-    `);
-    expect(proxiedContext.method).toBe('GET');
-    expect({ ...proxiedContext.headers }).toMatchObject({
-      accept: 'application/json, text/plain, */*',
-      'accept-encoding': 'gzip, compress, deflate, br',
-      host: new URL(proxiedRequest.defaults.baseURL).host,
-      'user-agent': `AppsembleServer/${version}`,
-    });
-  });
-
-  it('should not apply secrets when no urls matched', async () => {
-    await AppMember.create({
-      email: user.primaryEmail,
-      AppId: app.id,
-      UserId: user.id,
-      role: 'Admin',
-    });
-    authorizeApp(app);
-
-    await AppServiceSecret.create({
-      name: 'Test service',
-      urlPatterns: `!${proxiedRequest.defaults.baseURL}`,
-      authenticationMethod: 'http-basic',
-      identifier: 'john_doe',
-      secret: encrypt('Strong_Password-123', argv.aesSecret),
-      AppId: app.id,
-    });
-
-    let outgoingRequestConfig: InternalAxiosRequestConfig;
-
-    const interceptor = axios.interceptors.request.use((config) => {
-      outgoingRequestConfig = config;
-      return config;
-    });
-
-    const response = await request.get('/api/apps/1/action/pages.0.blocks.0.actions.get?data={}');
-
-    axios.interceptors.request.eject(interceptor);
-
-    expect(outgoingRequestConfig.headers.Authorization).toBeUndefined();
-    expect(outgoingRequestConfig.httpsAgent).toBeUndefined();
-    expect(outgoingRequestConfig.params).toBeUndefined();
-
-    expect(response).toMatchInlineSnapshot(`
-      HTTP/1.1 418 I'm a teapot
-      Content-Type: application/json; charset=utf-8
-
-      {
-        "message": "I’m a teapot",
-      }
-    `);
-    expect(proxiedContext.method).toBe('GET');
-    expect({ ...proxiedContext.headers }).toMatchObject({
-      accept: 'application/json, text/plain, */*',
-      'accept-encoding': 'gzip, compress, deflate, br',
-      host: new URL(proxiedRequest.defaults.baseURL).host,
-      'user-agent': `AppsembleServer/${version}`,
-    });
-  });
-
-  it('should not apply secrets without security definition if not opted-in', async () => {
-    const { baseURL } = proxiedRequest.defaults;
-    const appWithoutSecurity = await App.create({
-      enableUnsecuredServiceSecrets: false,
-      vapidPublicKey: '',
-      vapidPrivateKey: '',
-      OrganizationId: 'org',
-      definition: {
-        defaultPage: '',
-        pages: [
-          {
-            name: '',
-            blocks: [
-              {
-                type: '',
-                version: '',
-                actions: {
-                  get: {
-                    type: 'request',
-                    url: baseURL,
-                  },
-                },
-              },
-            ],
-          },
-        ],
-      },
-    } as Partial<App>);
-    await AppMember.create({
-      email: user.primaryEmail,
-      AppId: appWithoutSecurity.id,
-      UserId: user.id,
-      role: 'Admin',
-    });
-    await AppServiceSecret.create({
-      name: 'Test service',
-      urlPatterns: proxiedRequest.defaults.baseURL,
-      authenticationMethod: 'http-basic',
-      identifier: 'john_doe',
-      secret: encrypt('Strong_Password-123', argv.aesSecret),
-      AppId: appWithoutSecurity.id,
-    });
-
-    let outgoingRequestConfig: InternalAxiosRequestConfig;
-
-    const interceptor = axios.interceptors.request.use((config) => {
-      outgoingRequestConfig = config;
-      return config;
-    });
-
-    const response = await request.get(
-      `/api/apps/${appWithoutSecurity.id}/action/pages.0.blocks.0.actions.get?data={}`,
-    );
-
-    axios.interceptors.request.eject(interceptor);
-
-    expect(outgoingRequestConfig.headers.Authorization).toBeUndefined();
-    expect(outgoingRequestConfig.httpsAgent).toBeUndefined();
-    expect(outgoingRequestConfig.params).toBeUndefined();
-
-    expect(response).toMatchInlineSnapshot(`
-      HTTP/1.1 418 I'm a teapot
-      Content-Type: application/json; charset=utf-8
-
-      {
-        "message": "I’m a teapot",
-      }
-    `);
-    expect(proxiedContext.method).toBe('GET');
-    expect({ ...proxiedContext.headers }).toMatchObject({
-      accept: 'application/json, text/plain, */*',
-      'accept-encoding': 'gzip, compress, deflate, br',
-      host: new URL(proxiedRequest.defaults.baseURL).host,
-      'user-agent': `AppsembleServer/${version}`,
-    });
-  });
-
-  it('should apply secrets without security definition if opted-in', async () => {
-    const { baseURL } = proxiedRequest.defaults;
-    const appWithoutSecurity = await App.create({
-      enableUnsecuredServiceSecrets: true,
-      vapidPublicKey: '',
-      vapidPrivateKey: '',
-      OrganizationId: 'org',
-      definition: {
-        defaultPage: '',
-        pages: [
-          {
-            name: '',
-            blocks: [
-              {
-                type: '',
-                version: '',
-                actions: {
-                  get: {
-                    type: 'request',
-                    url: baseURL,
-                  },
-                },
-              },
-            ],
-          },
-        ],
-      },
-    } as Partial<App>);
-    await AppMember.create({
-      email: user.primaryEmail,
-      AppId: appWithoutSecurity.id,
-      UserId: user.id,
-      role: 'Admin',
-    });
-    await AppServiceSecret.create({
-      name: 'Test service',
-      urlPatterns: proxiedRequest.defaults.baseURL,
-      authenticationMethod: 'http-basic',
-      identifier: 'john_doe',
-      secret: encrypt('Strong_Password-123', argv.aesSecret),
-      AppId: appWithoutSecurity.id,
-    });
-
-    let outgoingRequestConfig: InternalAxiosRequestConfig;
-
-    const interceptor = axios.interceptors.request.use((config) => {
-      outgoingRequestConfig = config;
-      return config;
-    });
-
-    const response = await request.get(
-      `/api/apps/${appWithoutSecurity.id}/action/pages.0.blocks.0.actions.get?data={}`,
-    );
-
-    axios.interceptors.request.eject(interceptor);
-
-    expect(outgoingRequestConfig.headers.Authorization).toBe(
-      'Basic am9obl9kb2U6U3Ryb25nX1Bhc3N3b3JkLTEyMw==',
-    );
-    expect(outgoingRequestConfig.httpsAgent).toBeUndefined();
-    expect(outgoingRequestConfig.params).toBeUndefined();
-
-    expect(response).toMatchInlineSnapshot(`
-      HTTP/1.1 418 I'm a teapot
-      Content-Type: application/json; charset=utf-8
-
-      {
-        "message": "I’m a teapot",
-      }
-    `);
-    expect(proxiedContext.method).toBe('GET');
-    expect({ ...proxiedContext.headers }).toMatchObject({
-      accept: 'application/json, text/plain, */*',
-      'accept-encoding': 'gzip, compress, deflate, br',
-      host: new URL(proxiedRequest.defaults.baseURL).host,
-      'user-agent': `AppsembleServer/${version}`,
-    });
-  });
-
-  it('should authenticate request action with HTTP basic authentication', async () => {
-    await AppMember.create({
-      email: user.primaryEmail,
-      AppId: app.id,
-      UserId: user.id,
-      role: 'Admin',
-    });
-    authorizeApp(app);
-
-    await AppServiceSecret.create({
-      name: 'Test service',
-      urlPatterns: proxiedRequest.defaults.baseURL,
-      authenticationMethod: 'http-basic',
-      identifier: 'john_doe',
-      secret: encrypt('Strong_Password-123', argv.aesSecret),
-      AppId: app.id,
-    });
-
-    let outgoingRequestConfig: InternalAxiosRequestConfig;
-
-    const interceptor = axios.interceptors.request.use((config) => {
-      outgoingRequestConfig = config;
-      return config;
-    });
-
-    const response = await request.get('/api/apps/1/action/pages.0.blocks.0.actions.get?data={}');
-
-    axios.interceptors.request.eject(interceptor);
-
-    expect(outgoingRequestConfig.headers.Authorization).toBe(
-      'Basic am9obl9kb2U6U3Ryb25nX1Bhc3N3b3JkLTEyMw==',
-    );
-    expect(outgoingRequestConfig.httpsAgent).toBeUndefined();
-    expect(outgoingRequestConfig.params).toBeUndefined();
-
-    expect(response).toMatchInlineSnapshot(`
-      HTTP/1.1 418 I'm a teapot
-      Content-Type: application/json; charset=utf-8
-
-      {
-        "message": "I’m a teapot",
-      }
-    `);
-    expect(proxiedContext.method).toBe('GET');
-    expect({ ...proxiedContext.headers }).toMatchObject({
-      accept: 'application/json, text/plain, */*',
-      'accept-encoding': 'gzip, compress, deflate, br',
-      host: new URL(proxiedRequest.defaults.baseURL).host,
-      'user-agent': `AppsembleServer/${version}`,
-    });
-  });
-
-  it('should not authenticate request action with HTTP basic authentication when Authorization header already specified', async () => {
-    await AppMember.create({
-      email: user.primaryEmail,
-      AppId: app.id,
-      UserId: user.id,
-      role: 'Admin',
-    });
-    authorizeApp(app);
-
-    await AppServiceSecret.create({
-      name: 'Test service',
-      urlPatterns: proxiedRequest.defaults.baseURL,
-      authenticationMethod: 'http-basic',
-      identifier: 'john_doe',
-      secret: encrypt('Strong_Password-123', argv.aesSecret),
-      AppId: app.id,
-    });
-
-    await AppServiceSecret.create({
-      name: 'Test service',
-      urlPatterns: proxiedRequest.defaults.baseURL,
-      authenticationMethod: 'http-basic',
-      identifier: 'not_john_doe',
-      secret: encrypt('Strong_Password-123', argv.aesSecret),
-      AppId: app.id,
-    });
-
-    let outgoingRequestConfig: InternalAxiosRequestConfig;
-
-    const interceptor = axios.interceptors.request.use((config) => {
-      outgoingRequestConfig = config;
-      return config;
-    });
-
-    const response = await request.get('/api/apps/1/action/pages.0.blocks.0.actions.get?data={}');
-
-    axios.interceptors.request.eject(interceptor);
-
-    expect(outgoingRequestConfig.headers.Authorization).toBe(
-      'Basic am9obl9kb2U6U3Ryb25nX1Bhc3N3b3JkLTEyMw==',
-    );
-    expect(outgoingRequestConfig.httpsAgent).toBeUndefined();
-    expect(outgoingRequestConfig.params).toBeUndefined();
-
-    expect(response).toMatchInlineSnapshot(`
-      HTTP/1.1 418 I'm a teapot
-      Content-Type: application/json; charset=utf-8
-
-      {
-        "message": "I’m a teapot",
-      }
-    `);
-    expect(proxiedContext.method).toBe('GET');
-    expect({ ...proxiedContext.headers }).toMatchObject({
-      accept: 'application/json, text/plain, */*',
-      'accept-encoding': 'gzip, compress, deflate, br',
-      host: new URL(proxiedRequest.defaults.baseURL).host,
-      'user-agent': `AppsembleServer/${version}`,
-    });
-  });
-
-  it('should authenticate request action with client certificate', async () => {
-    await AppMember.create({
-      email: user.primaryEmail,
-      AppId: app.id,
-      UserId: user.id,
-      role: 'Admin',
-    });
-    authorizeApp(app);
-
-    await AppServiceSecret.create({
-      name: 'Test service',
-      urlPatterns: proxiedRequest.defaults.baseURL,
-      authenticationMethod: 'client-certificate',
-      identifier: '-----BEGIN CERTIFICATE-----\nTEST\n-----END CERTIFICATE-----',
-      secret: encrypt(
-        '-----BEGIN PRIVATE KEY-----\nTEST\n-----END PRIVATE KEY-----',
-        argv.aesSecret,
-      ),
-      AppId: app.id,
-    });
-
-    let outgoingRequestConfig: InternalAxiosRequestConfig;
-
-    const interceptor = axios.interceptors.request.use((config) => {
-      outgoingRequestConfig = config;
-      return config;
-    });
-
-    const response = await request.get('/api/apps/1/action/pages.0.blocks.0.actions.get?data={}');
-
-    axios.interceptors.request.eject(interceptor);
-
-    expect(outgoingRequestConfig.headers.Authorization).toBeUndefined();
-    expect(outgoingRequestConfig.httpsAgent).toHaveProperty(
-      ['options', 'cert'],
-      '-----BEGIN CERTIFICATE-----\nTEST\n-----END CERTIFICATE-----',
-    );
-    expect(outgoingRequestConfig.httpsAgent).toHaveProperty(
-      ['options', 'key'],
-      '-----BEGIN PRIVATE KEY-----\nTEST\n-----END PRIVATE KEY-----',
-    );
-    expect(outgoingRequestConfig.params).toBeUndefined();
-
-    expect(response).toMatchInlineSnapshot(`
-      HTTP/1.1 418 I'm a teapot
-      Content-Type: application/json; charset=utf-8
-
-      {
-        "message": "I’m a teapot",
-      }
-    `);
-    expect(proxiedContext.method).toBe('GET');
-    expect({ ...proxiedContext.headers }).toMatchObject({
-      accept: 'application/json, text/plain, */*',
-      'accept-encoding': 'gzip, compress, deflate, br',
-      host: new URL(proxiedRequest.defaults.baseURL).host,
-      'user-agent': `AppsembleServer/${version}`,
-    });
-  });
-
-  it('should not authenticate request action with client certificate when httpsAgent already present', async () => {
-    await AppMember.create({
-      email: user.primaryEmail,
-      AppId: app.id,
-      UserId: user.id,
-      role: 'Admin',
-    });
-    authorizeApp(app);
-
-    await AppServiceSecret.create({
-      name: 'Test service',
-      urlPatterns: proxiedRequest.defaults.baseURL,
-      authenticationMethod: 'client-certificate',
-      identifier: '-----BEGIN CERTIFICATE-----\nTEST\n-----END CERTIFICATE-----',
-      secret: encrypt(
-        '-----BEGIN PRIVATE KEY-----\nTEST\n-----END PRIVATE KEY-----',
-        argv.aesSecret,
-      ),
-      AppId: app.id,
-    });
-    await AppServiceSecret.create({
-      name: 'Test service',
-      urlPatterns: proxiedRequest.defaults.baseURL,
-      authenticationMethod: 'client-certificate',
-      identifier: '-----BEGIN CERTIFICATE-----\nTEST1\n-----END CERTIFICATE-----',
-      secret: encrypt(
-        '-----BEGIN PRIVATE KEY-----\nTEST1\n-----END PRIVATE KEY-----',
-        argv.aesSecret,
-      ),
-      AppId: app.id,
-    });
-
-    let outgoingRequestConfig: InternalAxiosRequestConfig;
-
-    const interceptor = axios.interceptors.request.use((config) => {
-      outgoingRequestConfig = config;
-      return config;
-    });
-
-    const response = await request.get('/api/apps/1/action/pages.0.blocks.0.actions.get?data={}');
-
-    axios.interceptors.request.eject(interceptor);
-
-    expect(outgoingRequestConfig.headers.Authorization).toBeUndefined();
-    expect(outgoingRequestConfig.httpsAgent).toHaveProperty(
-      ['options', 'cert'],
-      '-----BEGIN CERTIFICATE-----\nTEST\n-----END CERTIFICATE-----',
-    );
-    expect(outgoingRequestConfig.httpsAgent).toHaveProperty(
-      ['options', 'key'],
-      '-----BEGIN PRIVATE KEY-----\nTEST\n-----END PRIVATE KEY-----',
-    );
-    expect(outgoingRequestConfig.params).toBeUndefined();
-
-    expect(response).toMatchInlineSnapshot(`
-      HTTP/1.1 418 I'm a teapot
-      Content-Type: application/json; charset=utf-8
-
-      {
-        "message": "I’m a teapot",
-      }
-    `);
-    expect(proxiedContext.method).toBe('GET');
-    expect({ ...proxiedContext.headers }).toMatchObject({
-      accept: 'application/json, text/plain, */*',
-      'accept-encoding': 'gzip, compress, deflate, br',
-      host: new URL(proxiedRequest.defaults.baseURL).host,
-      'user-agent': `AppsembleServer/${version}`,
-    });
-  });
-
-  it('should authenticate request action with client credentials', async () => {
-    await AppMember.create({
-      email: user.primaryEmail,
-      AppId: app.id,
-      UserId: user.id,
-      role: 'Admin',
-    });
-    authorizeApp(app);
-
-    const tokenUrl = `${proxiedRequest.defaults.baseURL}oauth/token`;
-
-    await AppServiceSecret.create({
-      name: 'Test service',
-      urlPatterns: proxiedRequest.defaults.baseURL,
-      authenticationMethod: 'client-credentials',
-      identifier: 'id',
-      secret: encrypt('secret', argv.aesSecret),
-      tokenUrl,
-      accessToken: encrypt('test', argv.aesSecret),
-      expiresAt: 6 * 1e5,
-      AppId: app.id,
-    });
-
-    let outgoingRequestConfig: InternalAxiosRequestConfig;
-
-    const mock = new MockAdapter(axios);
-
-    mock.onPost(tokenUrl).reply(200, {
-      access_token: 'abcd',
-      expires_in: 3600,
-    });
-    mock.onGet(proxiedRequest.defaults.baseURL).reply(418, { message: 'I’m a teapot' });
-
-    const requestInterceptor = axios.interceptors.request.use((config) => {
-      outgoingRequestConfig = config;
-      return config;
-    });
-
-    const responseInterceptor = axios.interceptors.response.use((response) => {
-      mock.restore();
-      return response;
-    });
-
-    const response = await request.get('/api/apps/1/action/pages.0.blocks.0.actions.get?data={}');
-
-    axios.interceptors.request.eject(requestInterceptor);
-    axios.interceptors.request.eject(responseInterceptor);
-
-    expect(outgoingRequestConfig.headers.Authorization).toBe('Bearer abcd');
-    expect(outgoingRequestConfig.httpsAgent).toBeUndefined();
-    expect(outgoingRequestConfig.params).toBeUndefined();
-
-    expect(response).toMatchInlineSnapshot(`
-      HTTP/1.1 418 I'm a teapot
-      Content-Type: application/json; charset=utf-8
-
-      {
-        "message": "I’m a teapot",
-      }
-    `);
-    expect(proxiedContext.method).toBe('GET');
-    expect({ ...proxiedContext.headers }).toMatchObject({
-      accept: 'application/json, text/plain, */*',
-      'accept-encoding': 'gzip, compress, deflate, br',
-      host: new URL(proxiedRequest.defaults.baseURL).host,
-      'user-agent': `AppsembleServer/${version}`,
-    });
-  });
-
-  it('should not authenticate request action with client credentials when Authorization header already specified', async () => {
-    await AppMember.create({
-      email: user.primaryEmail,
-      AppId: app.id,
-      UserId: user.id,
-      role: 'Admin',
-    });
-    authorizeApp(app);
-
-    await AppServiceSecret.create({
-      name: 'Test service',
-      urlPatterns: proxiedRequest.defaults.baseURL,
-      authenticationMethod: 'http-basic',
-      identifier: 'john_doe',
-      secret: encrypt('Strong_Password-123', argv.aesSecret),
-      AppId: app.id,
-    });
-
-    await AppServiceSecret.create({
-      name: 'Test service',
-      urlPatterns: proxiedRequest.defaults.baseURL,
-      authenticationMethod: 'client-credentials',
-      identifier: 'id',
-      secret: encrypt('secret', argv.aesSecret),
-      tokenUrl: `${proxiedRequest.defaults.baseURL}oauth/token`,
-      accessToken: encrypt('abcd', argv.aesSecret),
-      expiresAt: 6 * 1e5,
-      AppId: app.id,
-    });
-
-    let outgoingRequestConfig: InternalAxiosRequestConfig;
-
-    const interceptor = axios.interceptors.request.use((config) => {
-      outgoingRequestConfig = config;
-      return config;
-    });
-
-    const response = await request.get('/api/apps/1/action/pages.0.blocks.0.actions.get?data={}');
-
-    axios.interceptors.request.eject(interceptor);
-
-    expect(outgoingRequestConfig.headers.Authorization).toBe(
-      'Basic am9obl9kb2U6U3Ryb25nX1Bhc3N3b3JkLTEyMw==',
-    );
-    expect(outgoingRequestConfig.httpsAgent).toBeUndefined();
-    expect(outgoingRequestConfig.params).toBeUndefined();
-
-    expect(response).toMatchInlineSnapshot(`
-      HTTP/1.1 418 I'm a teapot
-      Content-Type: application/json; charset=utf-8
-
-      {
-        "message": "I’m a teapot",
-      }
-    `);
-    expect(proxiedContext.method).toBe('GET');
-    expect({ ...proxiedContext.headers }).toMatchObject({
-      accept: 'application/json, text/plain, */*',
-      'accept-encoding': 'gzip, compress, deflate, br',
-      host: new URL(proxiedRequest.defaults.baseURL).host,
-      'user-agent': `AppsembleServer/${version}`,
-    });
-  });
-
-  it('should authenticate request action with cookie', async () => {
-    await AppMember.create({
-      email: user.primaryEmail,
-      AppId: app.id,
-      UserId: user.id,
-      role: 'Admin',
-    });
-    authorizeApp(app);
-
-    await AppServiceSecret.create({
-      name: 'Test service',
-      urlPatterns: proxiedRequest.defaults.baseURL,
-      authenticationMethod: 'cookie',
-      identifier: 'cookie',
-      secret: encrypt('secret', argv.aesSecret),
-      AppId: app.id,
-    });
-
-    let outgoingRequestConfig: InternalAxiosRequestConfig;
-
-    const interceptor = axios.interceptors.request.use((config) => {
-      outgoingRequestConfig = config;
-      return config;
-    });
-
-    const response = await request.get('/api/apps/1/action/pages.0.blocks.0.actions.get?data={}');
-
-    axios.interceptors.request.eject(interceptor);
-
-    expect(outgoingRequestConfig.headers['Set-Cookie']).toBe('cookie=secret;');
-    expect(outgoingRequestConfig.httpsAgent).toBeUndefined();
-    expect(outgoingRequestConfig.params).toBeUndefined();
-
-    expect(response).toMatchInlineSnapshot(`
-      HTTP/1.1 418 I'm a teapot
-      Content-Type: application/json; charset=utf-8
-
-      {
-        "message": "I’m a teapot",
-      }
-    `);
-    expect(proxiedContext.method).toBe('GET');
-    expect({ ...proxiedContext.headers }).toMatchObject({
-      accept: 'application/json, text/plain, */*',
-      'accept-encoding': 'gzip, compress, deflate, br',
-      host: new URL(proxiedRequest.defaults.baseURL).host,
-      'user-agent': `AppsembleServer/${version}`,
-    });
-  });
-
-  it('should authenticate request action with 2 cookies', async () => {
-    await AppMember.create({
-      email: user.primaryEmail,
-      AppId: app.id,
-      UserId: user.id,
-      role: 'Admin',
-    });
-    authorizeApp(app);
-
-    await AppServiceSecret.create({
-      name: 'Test service',
-      urlPatterns: proxiedRequest.defaults.baseURL,
-      authenticationMethod: 'cookie',
-      identifier: 'cookie',
-      secret: encrypt('secret', argv.aesSecret),
-      AppId: app.id,
-    });
-    await AppServiceSecret.create({
-      name: 'Test service',
-      urlPatterns: proxiedRequest.defaults.baseURL,
-      authenticationMethod: 'cookie',
-      identifier: 'another-cookie',
-      secret: encrypt('another-secret', argv.aesSecret),
-      AppId: app.id,
-    });
-
-    let outgoingRequestConfig: InternalAxiosRequestConfig;
-
-    const interceptor = axios.interceptors.request.use((config) => {
-      outgoingRequestConfig = config;
-      return config;
-    });
-
-    const response = await request.get('/api/apps/1/action/pages.0.blocks.0.actions.get?data={}');
-
-    axios.interceptors.request.eject(interceptor);
-
-    expect(outgoingRequestConfig.headers['Set-Cookie']).toBe(
-      'cookie=secret; another-cookie=another-secret;',
-    );
-    expect(outgoingRequestConfig.httpsAgent).toBeUndefined();
-    expect(outgoingRequestConfig.params).toBeUndefined();
-
-    expect(response).toMatchInlineSnapshot(`
-      HTTP/1.1 418 I'm a teapot
-      Content-Type: application/json; charset=utf-8
-
-      {
-        "message": "I’m a teapot",
-      }
-    `);
-    expect(proxiedContext.method).toBe('GET');
-    expect({ ...proxiedContext.headers }).toMatchObject({
-      accept: 'application/json, text/plain, */*',
-      'accept-encoding': 'gzip, compress, deflate, br',
-      host: new URL(proxiedRequest.defaults.baseURL).host,
-      'user-agent': `AppsembleServer/${version}`,
-    });
-  });
-
-  it('should authenticate request action with custom header', async () => {
-    await AppMember.create({
-      email: user.primaryEmail,
-      AppId: app.id,
-      UserId: user.id,
-      role: 'Admin',
-    });
-    authorizeApp(app);
-
-    await AppServiceSecret.create({
-      name: 'Test service',
-      urlPatterns: proxiedRequest.defaults.baseURL,
-      authenticationMethod: 'custom-header',
-      identifier: 'custom-header',
-      secret: encrypt('secret', argv.aesSecret),
-      AppId: app.id,
-    });
-
-    let outgoingRequestConfig: InternalAxiosRequestConfig;
-
-    const interceptor = axios.interceptors.request.use((config) => {
-      outgoingRequestConfig = config;
-      return config;
-    });
-
-    const response = await request.get('/api/apps/1/action/pages.0.blocks.0.actions.get?data={}');
-
-    axios.interceptors.request.eject(interceptor);
-
-    expect(outgoingRequestConfig.headers['custom-header']).toBe('secret');
-    expect(outgoingRequestConfig.httpsAgent).toBeUndefined();
-    expect(outgoingRequestConfig.params).toBeUndefined();
-
-    expect(response).toMatchInlineSnapshot(`
-      HTTP/1.1 418 I'm a teapot
-      Content-Type: application/json; charset=utf-8
-
-      {
-        "message": "I’m a teapot",
-      }
-    `);
-    expect(proxiedContext.method).toBe('GET');
-    expect({ ...proxiedContext.headers }).toMatchObject({
-      accept: 'application/json, text/plain, */*',
-      'accept-encoding': 'gzip, compress, deflate, br',
-      host: new URL(proxiedRequest.defaults.baseURL).host,
-      'user-agent': `AppsembleServer/${version}`,
-    });
-  });
-
-  it('should not authenticate request action with header authorization', async () => {
-    await AppMember.create({
-      email: user.primaryEmail,
-      AppId: app.id,
-      UserId: user.id,
-      role: 'Admin',
-    });
-    authorizeApp(app);
-
-    await AppServiceSecret.create({
-      name: 'Test service',
-      urlPatterns: proxiedRequest.defaults.baseURL,
-      authenticationMethod: 'http-basic',
-      identifier: 'john_doe',
-      secret: encrypt('Strong_Password-123', argv.aesSecret),
-      AppId: app.id,
-    });
-    await AppServiceSecret.create({
-      name: 'Test service',
-      urlPatterns: proxiedRequest.defaults.baseURL,
-      authenticationMethod: 'custom-header',
-      identifier: 'Authorization',
-      secret: encrypt('secret', argv.aesSecret),
-      AppId: app.id,
-    });
-
-    let outgoingRequestConfig: InternalAxiosRequestConfig;
-
-    const interceptor = axios.interceptors.request.use((config) => {
-      outgoingRequestConfig = config;
-      return config;
-    });
-
-    const response = await request.get('/api/apps/1/action/pages.0.blocks.0.actions.get?data={}');
-
-    axios.interceptors.request.eject(interceptor);
-
-    expect(outgoingRequestConfig.headers.Authorization).toBe(
-      'Basic am9obl9kb2U6U3Ryb25nX1Bhc3N3b3JkLTEyMw==',
-    );
-    expect(outgoingRequestConfig.httpsAgent).toBeUndefined();
-    expect(outgoingRequestConfig.params).toBeUndefined();
-
-    expect(response).toMatchInlineSnapshot(`
-      HTTP/1.1 418 I'm a teapot
-      Content-Type: application/json; charset=utf-8
-
-      {
-        "message": "I’m a teapot",
-      }
-    `);
-    expect(proxiedContext.method).toBe('GET');
-    expect({ ...proxiedContext.headers }).toMatchObject({
-      accept: 'application/json, text/plain, */*',
-      'accept-encoding': 'gzip, compress, deflate, br',
-      host: new URL(proxiedRequest.defaults.baseURL).host,
-      'user-agent': `AppsembleServer/${version}`,
-    });
-  });
-
-  it('should authenticate request action with query secret', async () => {
-    await AppMember.create({
-      email: user.primaryEmail,
-      AppId: app.id,
-      UserId: user.id,
-      role: 'Admin',
-    });
-    authorizeApp(app);
-
-    await AppServiceSecret.create({
-      name: 'Test service',
-      urlPatterns: proxiedRequest.defaults.baseURL,
-      authenticationMethod: 'query-parameter',
-      identifier: 'authKey',
-      secret: encrypt('key', argv.aesSecret),
-      AppId: app.id,
-    });
-
-    let outgoingRequestConfig: InternalAxiosRequestConfig;
-
-    const interceptor = axios.interceptors.request.use((config) => {
-      outgoingRequestConfig = config;
-      return config;
-    });
-
-    const response = await request.get('/api/apps/1/action/pages.0.blocks.0.actions.get?data={}');
-
-    axios.interceptors.request.eject(interceptor);
-
-    expect(outgoingRequestConfig.headers.Authorization).toBeUndefined();
-    expect(outgoingRequestConfig.httpsAgent).toBeUndefined();
-    expect(outgoingRequestConfig.params).toStrictEqual({
-      authKey: 'key',
-    });
-
-    expect(response).toMatchInlineSnapshot(`
-      HTTP/1.1 418 I'm a teapot
-      Content-Type: application/json; charset=utf-8
-
-      {
-        "message": "I’m a teapot",
-      }
-    `);
-    expect(proxiedContext.method).toBe('GET');
-    expect({ ...proxiedContext.headers }).toMatchObject({
-      accept: 'application/json, text/plain, */*',
-      'accept-encoding': 'gzip, compress, deflate, br',
-      host: new URL(proxiedRequest.defaults.baseURL).host,
-      'user-agent': `AppsembleServer/${version}`,
-    });
-  });
-
-  it('should authenticate request action with 2 query secrets', async () => {
-    await AppMember.create({
-      email: user.primaryEmail,
-      AppId: app.id,
-      UserId: user.id,
-      role: 'Admin',
-    });
-    authorizeApp(app);
-
-    await AppServiceSecret.create({
-      name: 'Test service',
-      urlPatterns: proxiedRequest.defaults.baseURL,
-      authenticationMethod: 'query-parameter',
-      identifier: 'authKey',
-      secret: encrypt('key', argv.aesSecret),
-      AppId: app.id,
-    });
-    await AppServiceSecret.create({
-      name: 'Test service',
-      urlPatterns: proxiedRequest.defaults.baseURL,
-      authenticationMethod: 'query-parameter',
-      identifier: 'anotherOne',
-      secret: encrypt('w', argv.aesSecret),
-      AppId: app.id,
-    });
-
-    let outgoingRequestConfig: InternalAxiosRequestConfig;
-
-    const interceptor = axios.interceptors.request.use((config) => {
-      outgoingRequestConfig = config;
-      return config;
-    });
-
-    const response = await request.get('/api/apps/1/action/pages.0.blocks.0.actions.get?data={}');
-
-    axios.interceptors.request.eject(interceptor);
-
-    expect(outgoingRequestConfig.headers.Authorization).toBeUndefined();
-    expect(outgoingRequestConfig.httpsAgent).toBeUndefined();
-    expect(outgoingRequestConfig.params).toStrictEqual({
-      authKey: 'key',
-      anotherOne: 'w',
-    });
-
-    expect(response).toMatchInlineSnapshot(`
-      HTTP/1.1 418 I'm a teapot
-      Content-Type: application/json; charset=utf-8
-
-      {
-        "message": "I’m a teapot",
-      }
-    `);
-    expect(proxiedContext.method).toBe('GET');
-    expect({ ...proxiedContext.headers }).toMatchObject({
-      accept: 'application/json, text/plain, */*',
-      'accept-encoding': 'gzip, compress, deflate, br',
-      host: new URL(proxiedRequest.defaults.baseURL).host,
-      'user-agent': `AppsembleServer/${version}`,
-    });
-  });
-
-  it('should authenticate request action with multiple authentication methods', async () => {
-    await AppMember.create({
-      email: user.primaryEmail,
-      AppId: app.id,
-      UserId: user.id,
-      role: 'Admin',
-    });
-    authorizeApp(app);
-
-    await AppServiceSecret.create({
-      name: 'Test service',
-      urlPatterns: proxiedRequest.defaults.baseURL,
-      authenticationMethod: 'http-basic',
-      identifier: 'john_doe',
-      secret: encrypt('Strong_Password-123', argv.aesSecret),
-      AppId: app.id,
-    });
-    await AppServiceSecret.create({
-      name: 'Test service',
-      urlPatterns: proxiedRequest.defaults.baseURL,
-      authenticationMethod: 'client-certificate',
-      identifier: '-----BEGIN CERTIFICATE-----\nTEST\n-----END CERTIFICATE-----',
-      secret: encrypt(
-        '-----BEGIN PRIVATE KEY-----\nTEST\n-----END PRIVATE KEY-----',
-        argv.aesSecret,
-      ),
-      AppId: app.id,
-    });
-    await AppServiceSecret.create({
-      name: 'Test service',
-      urlPatterns: proxiedRequest.defaults.baseURL,
-      authenticationMethod: 'query-parameter',
-      identifier: 'authKey',
-      secret: encrypt('key', argv.aesSecret),
-      AppId: app.id,
-    });
-
-    let outgoingRequestConfig: InternalAxiosRequestConfig;
-
-    const interceptor = axios.interceptors.request.use((config) => {
-      outgoingRequestConfig = config;
-      return config;
-    });
-
-    const response = await request.get('/api/apps/1/action/pages.0.blocks.0.actions.get?data={}');
-
-    axios.interceptors.request.eject(interceptor);
-
-    expect(outgoingRequestConfig.headers.Authorization).toBe(
-      'Basic am9obl9kb2U6U3Ryb25nX1Bhc3N3b3JkLTEyMw==',
-    );
-    expect(outgoingRequestConfig.httpsAgent).toHaveProperty(
-      ['options', 'cert'],
-      '-----BEGIN CERTIFICATE-----\nTEST\n-----END CERTIFICATE-----',
-    );
-    expect(outgoingRequestConfig.httpsAgent).toHaveProperty(
-      ['options', 'key'],
-      '-----BEGIN PRIVATE KEY-----\nTEST\n-----END PRIVATE KEY-----',
-    );
-    expect(outgoingRequestConfig.params).toStrictEqual({
-      authKey: 'key',
-    });
-
-    expect(response).toMatchInlineSnapshot(`
-      HTTP/1.1 418 I'm a teapot
-      Content-Type: application/json; charset=utf-8
-
-      {
-        "message": "I’m a teapot",
-      }
-    `);
-    expect(proxiedContext.method).toBe('GET');
-    expect({ ...proxiedContext.headers }).toMatchObject({
-      accept: 'application/json, text/plain, */*',
-      'accept-encoding': 'gzip, compress, deflate, br',
-      host: new URL(proxiedRequest.defaults.baseURL).host,
-      'user-agent': `AppsembleServer/${version}`,
-    });
   });
 });
 
@@ -1683,7 +487,7 @@ describe('handleEmail', () => {
   it('should send emails', async () => {
     const spy = vi.spyOn(server.context.mailer, 'sendEmail');
 
-    const response = await request.post('/api/apps/1/action/pages.0.blocks.0.actions.email', {
+    const response = await request.post('/api/apps/1/actions/pages.0.blocks.0.actions.email', {
       body: 'Body',
       to: 'test@example.com',
     });
@@ -1721,7 +525,7 @@ describe('handleEmail', () => {
 
   it('should send mails using CC', async () => {
     const spy = vi.spyOn(server.context.mailer, 'sendEmail');
-    const response = await request.post('/api/apps/1/action/pages.0.blocks.0.actions.email', {
+    const response = await request.post('/api/apps/1/actions/pages.0.blocks.0.actions.email', {
       body: 'Test',
       cc: ['test@example.com', 'John Doe <test2@example.com>'],
     });
@@ -1759,7 +563,7 @@ describe('handleEmail', () => {
 
   it('should send mails using BCC', async () => {
     const spy = vi.spyOn(server.context.mailer, 'sendEmail');
-    const response = await request.post('/api/apps/1/action/pages.0.blocks.0.actions.email', {
+    const response = await request.post('/api/apps/1/actions/pages.0.blocks.0.actions.email', {
       body: 'Test',
       bcc: ['test@example.com', 'John Doe <test2@example.com>'],
     });
@@ -1796,21 +600,21 @@ describe('handleEmail', () => {
   });
 
   it('should do nothing if to, cc, and bcc are empty', async () => {
-    const responseA = await request.post('/api/apps/1/action/pages.0.blocks.0.actions.email', {
+    const responseA = await request.post('/api/apps/1/actions/pages.0.blocks.0.actions.email', {
       body: 'Test',
     });
 
-    const responseB = await request.post('/api/apps/1/action/pages.0.blocks.0.actions.email', {
+    const responseB = await request.post('/api/apps/1/actions/pages.0.blocks.0.actions.email', {
       to: '',
       body: 'Test',
     });
 
-    const responseC = await request.post('/api/apps/1/action/pages.0.blocks.0.actions.email', {
+    const responseC = await request.post('/api/apps/1/actions/pages.0.blocks.0.actions.email', {
       cc: [],
       body: 'Test',
     });
 
-    const responseD = await request.post('/api/apps/1/action/pages.0.blocks.0.actions.email', {
+    const responseD = await request.post('/api/apps/1/actions/pages.0.blocks.0.actions.email', {
       bcc: [],
       body: 'Test',
     });
@@ -1823,7 +627,7 @@ describe('handleEmail', () => {
 
   it('should attach URLs', async () => {
     const spy = vi.spyOn(server.context.mailer, 'sendEmail');
-    const response = await request.post('/api/apps/1/action/pages.0.blocks.0.actions.email', {
+    const response = await request.post('/api/apps/1/actions/pages.0.blocks.0.actions.email', {
       to: 'test@example.com',
       body: 'Body',
       attachments: ['https://via.placeholder.com/150'],
@@ -1869,7 +673,7 @@ describe('handleEmail', () => {
       filename: 'test.json',
       data: buffer,
     });
-    const response = await request.post('/api/apps/1/action/pages.0.blocks.0.actions.email', {
+    const response = await request.post('/api/apps/1/actions/pages.0.blocks.0.actions.email', {
       to: 'test@example.com',
       body: 'Body',
       attachments: [
@@ -1927,7 +731,7 @@ describe('handleEmail', () => {
 
   it('should accept assets from content', async () => {
     const spy = vi.spyOn(server.context.mailer, 'sendEmail');
-    const response = await request.post('/api/apps/1/action/pages.0.blocks.0.actions.email', {
+    const response = await request.post('/api/apps/1/actions/pages.0.blocks.0.actions.email', {
       to: 'test@example.com',
       body: 'Body',
       attachments: [{ content: 'Hello attachment!', filename: 'hello.txt' }],
@@ -1972,7 +776,7 @@ describe('handleEmail', () => {
       filename: 'test.txt',
       data: buffer,
     });
-    const response = await request.post('/api/apps/1/action/pages.0.blocks.0.actions.email', {
+    const response = await request.post('/api/apps/1/actions/pages.0.blocks.0.actions.email', {
       to: 'test@example.com',
       body: 'Body',
       attachments: [asset.id],
@@ -2011,7 +815,7 @@ describe('handleEmail', () => {
 
   it('should not attach non-existant assets', async () => {
     const spy = vi.spyOn(server.context.mailer, 'sendEmail');
-    const response = await request.post('/api/apps/1/action/pages.0.blocks.0.actions.email', {
+    const response = await request.post('/api/apps/1/actions/pages.0.blocks.0.actions.email', {
       to: 'test@example.com',
       body: 'Body',
       attachments: [100],
@@ -2049,7 +853,7 @@ describe('handleEmail', () => {
   });
 
   it('should not send emails if body or subject is empty', async () => {
-    const response = await request.post('/api/apps/1/action/pages.0.blocks.0.actions.email', {
+    const response = await request.post('/api/apps/1/actions/pages.0.blocks.0.actions.email', {
       to: 'test@example.com',
     });
 
@@ -2066,7 +870,7 @@ describe('handleEmail', () => {
   });
 
   it('should only send emails if requests are POST', async () => {
-    const response = await request.put('/api/apps/1/action/pages.0.blocks.0.actions.email', {
+    const response = await request.put('/api/apps/1/actions/pages.0.blocks.0.actions.email', {
       body: 'Body',
     });
 
@@ -2095,16 +899,16 @@ describe('handleEmail', () => {
     };
 
     expect(
-      await request.post('/api/apps/1/action/pages.0.blocks.0.actions.email', email),
+      await request.post('/api/apps/1/actions/pages.0.blocks.0.actions.email', email),
     ).toMatchInlineSnapshot('HTTP/1.1 204 No Content');
     expect(
-      await request.post('/api/apps/1/action/pages.0.blocks.0.actions.email', email),
+      await request.post('/api/apps/1/actions/pages.0.blocks.0.actions.email', email),
     ).toMatchInlineSnapshot('HTTP/1.1 204 No Content');
     expect(
-      await request.post('/api/apps/1/action/pages.0.blocks.0.actions.email', email),
+      await request.post('/api/apps/1/actions/pages.0.blocks.0.actions.email', email),
     ).toMatchInlineSnapshot('HTTP/1.1 204 No Content');
 
-    expect(await request.post('/api/apps/1/action/pages.0.blocks.0.actions.email', email))
+    expect(await request.post('/api/apps/1/actions/pages.0.blocks.0.actions.email', email))
       .toMatchInlineSnapshot(`
         HTTP/1.1 429 Too Many Requests
         Content-Type: application/json; charset=utf-8

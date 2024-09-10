@@ -1804,7 +1804,7 @@ describe('updateApp', () => {
         "hasIcon": true,
         "hasMaskableIcon": true,
         "iconBackground": "#fff999",
-        "iconUrl": "/api/apps/1/icon?maskable=true&updated=1970-01-01T00%3A00%3A00.000Z",
+        "iconUrl": "/api/common/apps/1/icon?maskable=true&updated=1970-01-01T00%3A00%3A00.000Z",
         "id": 1,
         "locked": "fullLock",
         "messages": undefined,

@@ -26,7 +26,7 @@ it('should download a block asset', async () => {
     mime: 'image/png',
     BlockVersionId: id,
   });
-  const response = await request.get('/api/blocks/@linux/tux/versions/3.1.4/tux.png', {
+  const response = await request.get('/api/common/blocks/@linux/tux/versions/3.1.4/tux.png', {
     responseType: 'arraybuffer',
   });
   expect(response.status).toBe(200);
@@ -35,7 +35,7 @@ it('should download a block asset', async () => {
 });
 
 it('should respond with 404 when trying to fetch a non existing block asset', async () => {
-  const response = await request.get('/api/blocks/@linux/tux/versions/3.1.4/tux.png');
+  const response = await request.get('/api/common/blocks/@linux/tux/versions/3.1.4/tux.png');
   expect(response).toMatchObject({
     status: 404,
     data: {

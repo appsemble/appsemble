@@ -68,7 +68,7 @@ describe('onFetch', () => {
   });
 
   it('should cache block version requests', async () => {
-    const request = new Request('/api/blocks/@appsemble/form/versions/0.1.2');
+    const request = new Request('/api/common/blocks/@appsemble/form/versions/0.1.2');
     await trigger('fetch', request);
     expect(utils.cacheFirst).toHaveBeenCalledWith(request);
     expect(utils.requestFirst).not.toHaveBeenCalled();
@@ -82,14 +82,14 @@ describe('onFetch', () => {
   });
 
   it('should cache app messages', async () => {
-    const request = new Request('/api/apps/123/messages/nl-nl');
+    const request = new Request('/api/common/apps/123/messages/nl-nl');
     await trigger('fetch', request);
     expect(utils.requestFirst).toHaveBeenCalledWith(request);
     expect(utils.cacheFirst).not.toHaveBeenCalled();
   });
 
   it('should cache block version asset requests', async () => {
-    const request = new Request('/api/blocks/@appsemble/form/versions/0.1.2/form.js');
+    const request = new Request('/api/common/blocks/@appsemble/form/versions/0.1.2/form.js');
     await trigger('fetch', request);
     expect(utils.cacheFirst).toHaveBeenCalledWith(request);
     expect(utils.requestFirst).not.toHaveBeenCalled();
