@@ -3,6 +3,7 @@ import {
   appOrganizationPermissionMapping,
   AppPermission,
   type AppRole,
+  type CustomAppOwnResourcePermission,
   type CustomAppPermission,
   type CustomAppResourcePermission,
   type CustomAppResourceViewPermission,
@@ -21,6 +22,9 @@ function checkAppPermissions(
   const customAppResourcePermissionPattern =
     /^\$resource:[^:]+:(get|query|create|delete|patch|update)$/;
 
+  const customAppOwnResourcePermissionPattern =
+    /^\$resource:[^:]+:own:(get|query|delete|patch|update)$/;
+
   const customAppResourceViewPermissionPattern = /^\$resource:[^:]+:(get|query):[^:]+$/;
 
   return requiredPermissions.every((p) => {
@@ -31,6 +35,19 @@ function checkAppPermissions(
     if (customAppResourcePermissionPattern.test(p)) {
       const [, , resourceAction] = (p as CustomAppResourcePermission).split(':');
       return acquiredPermissions.includes(`$resource:all:${resourceAction}` as CustomAppPermission);
+    }
+
+    if (customAppOwnResourcePermissionPattern.test(p)) {
+      const [, resourceName, , resourceAction] = (p as CustomAppOwnResourcePermission).split(':');
+      return (
+        acquiredPermissions.includes(`$resource:all:${resourceAction}` as CustomAppPermission) ||
+        acquiredPermissions.includes(
+          `$resource:all:own:${resourceAction}` as CustomAppPermission,
+        ) ||
+        acquiredPermissions.includes(
+          `$resource:${resourceName}:${resourceAction}` as CustomAppPermission,
+        )
+      );
     }
 
     if (customAppResourceViewPermissionPattern.test(p)) {

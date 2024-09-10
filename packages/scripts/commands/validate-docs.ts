@@ -13,7 +13,13 @@ import {
   type FlowPageDefinition,
   type LinkActionDefinition,
   type ResourceActionDefinition,
+  type ResourceCreateActionDefinition,
   type ResourceDefinition,
+  type ResourceDeleteActionDefinition,
+  type ResourceGetActionDefinition,
+  type ResourcePatchActionDefinition,
+  type ResourceQueryActionDefinition,
+  type ResourceUpdateActionDefinition,
 } from '@appsemble/types';
 import { allActions } from '@appsemble/utils';
 import axios from 'axios';
@@ -84,6 +90,7 @@ function appendRoleToTemplate(role: string, template: AppDefinition): AppDefinit
       ...updatedTemplate.security?.roles,
       [role]: {
         description: 'Description',
+        inherits: ['ResourcesManager'],
       },
     },
   };
@@ -106,10 +113,6 @@ function appendResourcesToTemplate(
 
   for (const resourceDefinition of Object.values(updatedTemplate.resources)) {
     for (const [, value] of Object.entries(resourceDefinition)) {
-      for (const role of value.roles ?? []) {
-        appendRoleToTemplate(role, updatedTemplate);
-      }
-
       const to = value.hooks?.notification?.to;
 
       if (to) {
@@ -225,7 +228,13 @@ function appendBlockToTemplate(block: BlockDefinition, template: AppDefinition):
 
     const blockResourceActionDefinition = Object.values(block.actions).find(
       (value: ActionDefinition) => value.type.startsWith('resource'),
-    ) as ResourceActionDefinition<'noop'>;
+    ) as
+      | ResourceCreateActionDefinition
+      | ResourceDeleteActionDefinition
+      | ResourceGetActionDefinition
+      | ResourcePatchActionDefinition
+      | ResourceQueryActionDefinition
+      | ResourceUpdateActionDefinition;
 
     if (blockResourceActionDefinition) {
       updatedTemplate.resources = {

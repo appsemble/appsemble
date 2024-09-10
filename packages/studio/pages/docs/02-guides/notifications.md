@@ -47,12 +47,14 @@ security:
     role: Reader
     policy: everyone
   roles:
+    Reader:
+      description: Any authenticated user.
+      permissions:
+        - '$resource:person:query'
     Admin:
       description: Administrator who can register new people.
       inherits:
         - Reader
-    Reader:
-      description: Any authenticated user.
 
 resources:
   person:
@@ -64,9 +66,6 @@ resources:
           type: string
         lastName:
           type: string
-    query:
-      roles:
-        - Reader
     create:
       hooks:
         notification:
@@ -76,7 +75,6 @@ resources:
 
 pages:
   - name: Person List
-    roles: []
     blocks:
       - type: data-loader
         version: 0.29.11
@@ -87,6 +85,7 @@ pages:
         events:
           emit:
             data: data
+
       - type: table
         version: 0.29.11
         parameters:
@@ -134,7 +133,6 @@ An example of what this could look like can be found in the code snippet below.
 ```yaml validate pages-snippet
 pages:
   - name: Person List
-    roles: []
     blocks:
       - type: data-loader
         version: 0.29.11
@@ -145,6 +143,7 @@ pages:
         events:
           emit:
             data: data
+
       - type: table
         version: 0.29.11
         parameters:
@@ -189,9 +188,6 @@ resources:
           type: string
         lastName:
           type: string
-    query:
-      roles:
-        - Reader
     create:
       hooks:
         notification:

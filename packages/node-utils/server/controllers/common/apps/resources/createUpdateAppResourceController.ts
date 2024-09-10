@@ -12,21 +12,13 @@ export function createUpdateAppResourceController(options: Options): Middleware 
     const {
       pathParams: { appId, resourceId, resourceType },
       queryParams: { groupId },
+      user: authSubject,
     } = ctx;
 
     const { checkAppPermissions, getApp, getAppAssets, getAppResource, updateAppResource } =
       options;
 
     const app = await getApp({ context: ctx, query: { where: { id: appId } } });
-
-    const resourceDefinition = getResourceDefinition(app.definition, resourceType, ctx);
-
-    await checkAppPermissions({
-      context: ctx,
-      permissions: [`$resource:${resourceType}:update`],
-      app,
-      groupId,
-    });
 
     const findOptions: FindOptions = {
       where: {
@@ -47,9 +39,22 @@ export function createUpdateAppResourceController(options: Options): Middleware 
       findOptions,
     });
 
+    await checkAppPermissions({
+      context: ctx,
+      permissions: [
+        oldResource.$author?.id === authSubject.id
+          ? `$resource:${resourceType}:own:update`
+          : `$resource:${resourceType}:update`,
+      ],
+      app,
+      groupId,
+    });
+
     assertKoaError(!oldResource, ctx, 404, 'Resource not found');
 
     const appAssets = await getAppAssets({ context: ctx, app });
+
+    const resourceDefinition = getResourceDefinition(app.definition, resourceType, ctx);
 
     const [processedBody, preparedAssets, deletedAssetIds] = processResourceBody(
       ctx,

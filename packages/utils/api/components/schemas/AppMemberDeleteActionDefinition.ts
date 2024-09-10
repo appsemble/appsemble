@@ -1,18 +1,18 @@
 import { BaseActionDefinition } from './BaseActionDefinition.js';
 import { extendJSONSchema } from './utils.js';
 
-export const AppMemberRemoveActionDefinition = extendJSONSchema(BaseActionDefinition, {
+export const AppMemberDeleteActionDefinition = extendJSONSchema(BaseActionDefinition, {
   type: 'object',
   additionalProperties: false,
-  required: ['type', 'id'],
+  required: ['type', 'sub'],
   properties: {
     type: {
-      enum: ['app.member.remove'],
+      enum: ['app.member.delete'],
       description: `Allows the app member to delete another app member.
 
 Does nothing if the app member isn’t logged in.`,
     },
-    id: {
+    sub: {
       $ref: '#/components/schemas/RemapperDefinition',
       description: 'The id of the app member to be deleted.',
     },

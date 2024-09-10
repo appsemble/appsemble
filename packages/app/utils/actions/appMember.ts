@@ -148,11 +148,16 @@ export const appMemberCurrentPatch: ActionCreator<'app.member.current.patch'> = 
 
     const name = remap(definition.name, data);
     const properties = remap(definition.properties, data);
+    const picture = remap(definition.picture, data);
 
     const formData = new FormData();
 
     if (name) {
       formData.append('name', name);
+    }
+
+    if (picture && picture instanceof File) {
+      formData.append('picture', picture);
     }
 
     assignAppMemberProperties(properties, formData);
@@ -185,11 +190,11 @@ export const appMemberRoleUpdate: ActionCreator<'app.member.role.update'> = ({
       return data;
     }
 
-    const id = remap(definition.id, data);
+    const sub = remap(definition.sub, data);
     const role = remap(definition.role, data);
 
     const { data: response } = await axios.put<AppMemberInfo>(
-      `${apiUrl}/api/app-members/${id}/role`,
+      `${apiUrl}/api/app-members/${sub}/role`,
       { role },
     );
 
@@ -213,14 +218,14 @@ export const appMemberPropertiesPatch: ActionCreator<'app.member.properties.patc
       return data;
     }
 
-    const id = remap(definition.id, data);
+    const sub = remap(definition.sub, data);
     const properties = remap(definition.properties, data);
 
     const formData = new FormData();
     assignAppMemberProperties(properties, formData);
 
     const { data: response } = await axios.patch<AppMemberInfo>(
-      `${apiUrl}/api/app-members/${id}/properties`,
+      `${apiUrl}/api/app-members/${sub}/properties`,
       formData,
     );
 
@@ -244,9 +249,9 @@ export const appMemberDelete: ActionCreator<'app.member.delete'> = ({
       return data;
     }
 
-    const id = remap(definition.id, data);
+    const sub = remap(definition.sub, data);
 
-    const { data: response } = await axios.delete(`${apiUrl}/api/app-members/${id}`);
+    const { data: response } = await axios.delete(`${apiUrl}/api/app-members/${sub}`);
 
     await refetchDemoAppMembers();
 

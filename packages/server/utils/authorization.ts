@@ -101,6 +101,10 @@ export async function checkUnauthenticatedAppPermissions({
 
   assertKoaError(!app, context, 404, 'App not found');
 
+  if (!app.definition.security) {
+    return;
+  }
+
   assertKoaError(
     !checkGuestAppPermissions(app.definition.security, requiredPermissions),
     context,
@@ -121,7 +125,9 @@ export async function checkAppMemberAppPermissions({
 
   assertKoaError(!app, context, 404, 'App not found');
 
-  assertKoaError(!app.definition.security, context, 404, 'App does not have a security definition');
+  if (!app.definition.security) {
+    return;
+  }
 
   const appMember = await AppMember.findByPk(authSubject.id, { attributes: ['id'] });
 
@@ -149,7 +155,9 @@ export async function checkUserAppPermissions({
 
   assertKoaError(!app, context, 404, 'App not found');
 
-  assertKoaError(!app.definition.security, context, 404, 'App does not have a security definition');
+  if (!app.definition.security) {
+    return;
+  }
 
   const userAppRole = await getUserAppRole(authSubject.id, appId, groupId);
 

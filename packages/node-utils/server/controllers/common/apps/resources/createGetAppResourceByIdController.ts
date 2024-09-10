@@ -13,22 +13,12 @@ export function createGetAppResourceByIdController(options: Options): Middleware
     const {
       pathParams: { appId, resourceId, resourceType },
       queryParams: { groupId, view },
+      user: authSubject,
     } = ctx;
 
     const { checkAppPermissions, getApp, getAppResource } = options;
 
     const app = await getApp({ context: ctx, query: { where: { id: appId } } });
-
-    const resourceDefinition = getResourceDefinition(app.definition, resourceType, ctx, view);
-
-    await checkAppPermissions({
-      context: ctx,
-      permissions: [
-        view ? `$resource:${resourceType}:get:${view}` : `$resource:${resourceType}:get`,
-      ],
-      app,
-      groupId,
-    });
 
     const findOptions: FindOptions = {
       where: {
@@ -51,6 +41,19 @@ export function createGetAppResourceByIdController(options: Options): Middleware
 
     assertKoaError(!resource, ctx, 404, 'Resource not found');
 
+    await checkAppPermissions({
+      context: ctx,
+      permissions: [
+        resource.$author?.id === authSubject.id
+          ? `$resource:${resourceType}:own:get`
+          : view
+            ? `$resource:${resourceType}:get:${view}`
+            : `$resource:${resourceType}:get`,
+      ],
+      app,
+      groupId,
+    });
+
     if (view) {
       const context = await getRemapperContext(
         app,
@@ -58,6 +61,8 @@ export function createGetAppResourceByIdController(options: Options): Middleware
         options,
         ctx,
       );
+
+      const resourceDefinition = getResourceDefinition(app.definition, resourceType, ctx, view);
 
       ctx.body = remap(resourceDefinition.views[view].remap, resource, context);
       return;

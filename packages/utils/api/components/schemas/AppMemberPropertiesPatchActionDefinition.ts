@@ -1,31 +1,26 @@
 import { BaseActionDefinition } from './BaseActionDefinition.js';
 import { extendJSONSchema } from './utils.js';
 
-export const AppMemberUpdateActionDefinition = extendJSONSchema(BaseActionDefinition, {
+export const AppMemberPropertiesPatchActionDefinition = extendJSONSchema(BaseActionDefinition, {
   type: 'object',
   additionalProperties: false,
-  required: ['type'],
+  required: ['type', 'sub'],
   properties: {
     type: {
-      enum: ['app.member.update'],
-      description: `Allows the app member to update another app member or themselves.
+      enum: ['app.member.properties.patch'],
+      description: `Allows the app member to patch the properties of another app member account.
 
 Does nothing if the app member isn’t logged in.`,
     },
-    id: {
-      description: 'The id of the app member.',
-    },
-    name: {
+    sub: {
+      $ref: '#/components/schemas/RemapperDefinition',
       description: 'The new full name name of the app member.',
     },
     properties: {
+      $ref: '#/components/schemas/RemapperDefinition',
       description: `The updated custom properties for the app member.
 
 Values will be validated based on \`members.properties\`, if defined in the app definition.`,
-    },
-    role: {
-      description:
-        "The role for the updated app member. Defaults to the default role in the app's security definition.",
     },
   },
 });

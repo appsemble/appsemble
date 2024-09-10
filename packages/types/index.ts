@@ -740,14 +740,19 @@ export type SubscriptionResponse = Record<string, SubscriptionResponseResource>;
 
 export type ResourceViewAction = 'get' | 'query';
 
+export type OwnResourceAction = ResourceViewAction | 'delete' | 'patch' | 'update';
+
 export type ResourceAction = ResourceViewAction | 'create' | 'delete' | 'patch' | 'update';
 
 export type CustomAppResourcePermission = `$resource:${string}:${ResourceAction}`;
+
+export type CustomAppOwnResourcePermission = `$resource:${string}:own:${OwnResourceAction}`;
 
 export type CustomAppResourceViewPermission = `$resource:${string}:${ResourceViewAction}:${string}`;
 
 export type CustomAppPermission =
   | AppPermission
+  | CustomAppOwnResourcePermission
   | CustomAppResourcePermission
   | CustomAppResourceViewPermission;
 
@@ -1430,7 +1435,7 @@ export interface AppMemberRoleUpdateAction extends BaseActionDefinition<'app.mem
   /**
    * The id of the app member to update.
    */
-  id: Remapper;
+  sub: Remapper;
 
   /**
    * The role of the updated app member
@@ -1443,7 +1448,7 @@ export interface AppMemberPropertiesPatchAction
   /**
    * The id of the app member to update.
    */
-  id: Remapper;
+  sub: Remapper;
 
   /**
    * Custom properties that can be assigned freely.
@@ -1468,16 +1473,18 @@ export interface AppMemberCurrentPatchAction
   properties?: Remapper;
 
   /**
-   * The role of the created user
+   * The profile picture to use.
+   *
+   * This must be a file, otherwise it’s discarded.
    */
-  role?: Remapper;
+  picture?: Remapper;
 }
 
 export interface AppMemberDeleteAction extends BaseActionDefinition<'app.member.delete'> {
   /**
    * The id of the app member to remove.
    */
-  id: Remapper;
+  sub: Remapper;
 }
 
 export interface RequestLikeActionDefinition<T extends Action['type'] = Action['type']>

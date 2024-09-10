@@ -13,8 +13,6 @@ an example of how you can define resources taken from the [Person](/apps/3) app.
 ```yaml validate resources-snippet
 resources:
   person:
-    roles:
-      - $public # Allow anyone to access the resource’s actions
     schema:
       type: object
       additionalProperties: false
@@ -53,26 +51,20 @@ resources:
         - lastName
         - email
         - department
-      properties:
-        firstName:
-          type: string
-        lastName:
-          type: string
-        email:
-          type: string
-          format: email
-        department:
-          type: string
-          enum: ['HR', 'Engineering', 'Marketing', 'Data', 'Security']
-        picture:
-          type: string
-          format: binary
-    create:
-      roles:
-        - $group:manager
-    query:
-      roles:
-        - $group:member
+    properties:
+      firstName:
+        type: string
+      lastName:
+        type: string
+      email:
+        type: string
+        format: email
+      department:
+        type: string
+        enum: ['HR', 'Engineering', 'Marketing', 'Data', 'Security']
+      picture:
+        type: string
+        format: binary
 ```
 
 Supported resource actions are as below:

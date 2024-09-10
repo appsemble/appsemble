@@ -482,7 +482,7 @@ describe('app.member.role.update', () => {
     const action = createTestAction({
       definition: {
         type: 'app.member.role.update',
-        id: 'some-user-id',
+        sub: 'some-user-id',
         role: { prop: 'role' },
       },
       getAppMemberInfo: () => ({
@@ -734,7 +734,7 @@ describe('app.member.delete', () => {
 
     const action = createTestAction({
       definition: {
-        id: 'some-user-id',
+        sub: 'some-user-id',
         type: 'app.member.delete',
       },
       getAppMemberInfo: () => ({
@@ -761,7 +761,7 @@ describe('app.member.delete', () => {
   it('should do nothing and return the data if the user is not logged in', async () => {
     const action = createTestAction({
       definition: {
-        id: 'some-user-id',
+        sub: 'some-user-id',
         type: 'app.member.delete',
       },
       // eslint-disable-next-line unicorn/no-useless-undefined

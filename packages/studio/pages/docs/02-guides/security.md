@@ -117,12 +117,6 @@ security:
   default:
     role: Reader
     policy: everyone
-  groups:
-    join: invite
-    create:
-      - Reader
-    invite:
-      - $group:member
   roles:
     Reader:
       description: Anyone viewing the app.
@@ -153,9 +147,6 @@ security:
   roles:
     Reader:
       description: Anyone viewing the app.
-
-roles:
-  - Reader
 
 pages:
   - name: Example Page
@@ -290,21 +281,6 @@ resources:
           type: string
         body:
           type: string
-    query:
-      roles:
-        - Reader
-    get:
-      roles:
-        - Reader
-    create:
-      roles:
-        - Admin
-    update:
-      roles:
-        - Admin
-    delete:
-      roles:
-        - Admin
 ```
 
 > In the above example, users with the “Reader” role will be able to view either all blog resources

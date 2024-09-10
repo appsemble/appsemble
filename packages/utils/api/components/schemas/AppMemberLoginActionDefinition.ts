@@ -13,9 +13,11 @@ export const AppMemberLoginActionDefinition = extendJSONSchema(BaseActionDefinit
 Does nothing if the app member is already logged in.`,
     },
     password: {
+      $ref: '#/components/schemas/RemapperDefinition',
       description: 'The password to log in with.',
     },
     email: {
+      $ref: '#/components/schemas/RemapperDefinition',
       description: 'The email to log in with.',
     },
   },

@@ -9,26 +9,32 @@ export async function patchAppResource(ctx: Context): Promise<void> {
   const {
     pathParams: { appId, resourceId, resourceType },
     queryParams: { groupId },
+    user: authSubject,
   } = ctx;
 
   const app = await App.findByPk(appId, {
     attributes: ['definition', 'id'],
   });
-  await checkAuthSubjectAppPermissions({
-    context: ctx,
-    appId,
-    groupId,
-    requiredPermissions: [`$resource:${resourceType}:patch`],
-  });
-
-  const appMember = await getCurrentAppMember({ context: ctx });
-
-  const definition = getResourceDefinition(app.definition, resourceType, ctx);
 
   const resource = await Resource.findOne({
     where: { id: resourceId, type: resourceType, AppId: appId, GroupId: groupId ?? null },
     include: [{ association: 'Author', attributes: ['id', 'name'], required: false }],
   });
+
+  await checkAuthSubjectAppPermissions({
+    context: ctx,
+    appId,
+    groupId,
+    requiredPermissions: [
+      resource.AuthorId === authSubject.id
+        ? `$resource:${resourceType}:own:patch`
+        : `$resource:${resourceType}:patch`,
+    ],
+  });
+
+  const appMember = await getCurrentAppMember({ context: ctx });
+
+  const definition = getResourceDefinition(app.definition, resourceType, ctx);
 
   const appAssets = await Asset.findAll({
     attributes: ['id', 'name', 'ResourceId'],

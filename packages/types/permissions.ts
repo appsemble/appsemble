@@ -96,6 +96,31 @@ export enum AppPermission {
    * The permission to delete app resources.
    */
   DeleteResources = '$resource:all:delete',
+
+  /**
+   * The permission to query own app resources.
+   */
+  QueryOwnResources = '$resource:all:own:query',
+
+  /**
+   * The permission to get own app resources.
+   */
+  GetOwnResources = '$resource:all:own:get',
+
+  /**
+   * The permission to update own app resources.
+   */
+  UpdateOwnResources = '$resource:all:own:update',
+
+  /**
+   * The permission to patch own app resources.
+   */
+  PatchOwnResources = '$resource:all:own:patch',
+
+  /**
+   * The permission to delete own app resources.
+   */
+  DeleteOwnResources = '$resource:all:own:delete',
 }
 
 /**
@@ -464,4 +489,9 @@ export const appOrganizationPermissionMapping: { [key in AppPermission]: Organiz
     [AppPermission.UpdateResources]: OrganizationPermission.UpdateAppResources,
     [AppPermission.PatchResources]: OrganizationPermission.PatchAppResources,
     [AppPermission.DeleteResources]: OrganizationPermission.DeleteAppResources,
+    [AppPermission.QueryOwnResources]: OrganizationPermission.QueryAppResources,
+    [AppPermission.GetOwnResources]: OrganizationPermission.GetAppResources,
+    [AppPermission.UpdateOwnResources]: OrganizationPermission.UpdateAppResources,
+    [AppPermission.PatchOwnResources]: OrganizationPermission.PatchAppResources,
+    [AppPermission.DeleteOwnResources]: OrganizationPermission.DeleteAppResources,
   };

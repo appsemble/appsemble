@@ -22,7 +22,7 @@ An example of user properties definition:
 name: Internal Comms Platform
 defaultPage: Updates
 
-users:
+members:
   properties:
     dateOfBirth:
       schema:

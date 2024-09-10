@@ -2079,7 +2079,6 @@ describe('validateAppDefinition', () => {
         onWhatever: {
           type: 'app.member.current.patch',
           name: 'name',
-          role: 'role',
           properties: {
             'object.from': {
               bar: 'baz',
@@ -2229,67 +2228,6 @@ describe('validateAppDefinition', () => {
     expect(result.errors).toStrictEqual([
       new ValidationError(
         'there is no-one in the app, who has permissions to use this action',
-        'resource.get',
-        undefined,
-        ['controller', 'actions', 'onWhatever', 'resource'],
-      ),
-    ]);
-  });
-
-  it('should report an error if a resource action exists on a block without a security definition', async () => {
-    const { security, ...app } = createTestApp();
-    (app.pages[0] as BasicPageDefinition).blocks.push({
-      type: 'test',
-      version: '1.2.3',
-      actions: {
-        onWhatever: {
-          type: 'resource.get',
-          resource: 'person',
-        },
-      },
-    });
-
-    const result = await validateAppDefinition(app, () => [
-      {
-        name: '@appsemble/test',
-        version: '1.2.3',
-        files: [],
-        languages: [],
-        actions: {
-          onWhatever: {},
-        },
-      },
-    ]);
-    expect(result.valid).toBe(false);
-    expect(result.errors).toStrictEqual([
-      new ValidationError(
-        'no security definition has been defined, no-one can access this resource',
-        'resource.get',
-        undefined,
-        ['pages', 0, 'blocks', 0, 'actions', 'onWhatever', 'resource'],
-      ),
-    ]);
-  });
-
-  it('should report an error if a resource action exists on the app controller without a security definition', async () => {
-    const { security, ...app } = createTestApp();
-    app.controller = {
-      actions: {
-        onWhatever: {
-          type: 'resource.get',
-          resource: 'person',
-        },
-      },
-    };
-    const result = await validateAppDefinition(app, () => [], {
-      actions: {
-        onWhatever: {},
-      },
-    });
-    expect(result.valid).toBe(false);
-    expect(result.errors).toStrictEqual([
-      new ValidationError(
-        'no security definition has been defined, no-one can access this resource',
         'resource.get',
         undefined,
         ['controller', 'actions', 'onWhatever', 'resource'],
@@ -3422,6 +3360,200 @@ describe('validateAppDefinition', () => {
     expect(result.errors).toStrictEqual([
       new ValidationError(
         'redundant permission. A permission for the query resource action with scope all for this view is already inherited from another role',
+        app,
+        undefined,
+        ['security', 'roles', 'test', 'permissions', 0],
+      ),
+    ]);
+  });
+
+  it('should report an error when an own resource permission references a resource that does not exist', async () => {
+    const app = createTestApp();
+
+    app.security = {
+      default: {
+        role: 'test',
+      },
+      roles: {
+        test: {
+          permissions: ['$resource:unknown:own:get'],
+        },
+      },
+    } as Security;
+
+    const result = await validateAppDefinition(app, () => []);
+    expect(result.valid).toBe(false);
+    expect(result.errors).toStrictEqual([
+      new ValidationError(
+        "resource unknown does not exist in the app's resources definition",
+        app,
+        undefined,
+        ['security', 'roles', 'test', 'permissions', 0],
+      ),
+    ]);
+  });
+
+  it('should report an error when an own resource permission is declared and there is already a generic resource permission for that action on that resource', async () => {
+    const app = createTestApp();
+
+    app.security = {
+      default: {
+        role: 'test',
+      },
+      roles: {
+        test: {
+          permissions: ['$resource:person:own:get', '$resource:person:get'],
+        },
+      },
+    } as Security;
+
+    const result = await validateAppDefinition(app, () => []);
+    expect(result.valid).toBe(false);
+    expect(result.errors).toStrictEqual([
+      new ValidationError(
+        'redundant permission. A permission for the get resource action on resource person is already declared',
+        app,
+        undefined,
+        ['security', 'roles', 'test', 'permissions', 0],
+      ),
+    ]);
+  });
+
+  it('should report an error when an own resource permission is declared and there is already a generic resource permission with scope all for that action', async () => {
+    const app = createTestApp();
+
+    app.security = {
+      default: {
+        role: 'test',
+      },
+      roles: {
+        test: {
+          permissions: ['$resource:person:own:get', '$resource:all:get'],
+        },
+      },
+    } as Security;
+
+    const result = await validateAppDefinition(app, () => []);
+    expect(result.valid).toBe(false);
+    expect(result.errors).toStrictEqual([
+      new ValidationError(
+        'redundant permission. A permission for the get resource action with scope all is already declared',
+        app,
+        undefined,
+        ['security', 'roles', 'test', 'permissions', 0],
+      ),
+    ]);
+  });
+
+  it('should report an error when an own resource permission is declared and there is already an own resource permission with scope all for that action', async () => {
+    const app = createTestApp();
+
+    app.security = {
+      default: {
+        role: 'test',
+      },
+      roles: {
+        test: {
+          permissions: ['$resource:person:own:get', '$resource:all:own:get'],
+        },
+      },
+    } as Security;
+
+    const result = await validateAppDefinition(app, () => []);
+    expect(result.valid).toBe(false);
+    expect(result.errors).toStrictEqual([
+      new ValidationError(
+        'redundant permission. An own permission for the get resource action with scope all is already declared',
+        app,
+        undefined,
+        ['security', 'roles', 'test', 'permissions', 0],
+      ),
+    ]);
+  });
+
+  it('should report an error when an own resource permission is declared and there is already an inherited generic resource permission for that action on that resource', async () => {
+    const app = createTestApp();
+
+    app.security = {
+      default: {
+        role: 'test',
+      },
+      roles: {
+        inherited: {
+          permissions: ['$resource:person:get'],
+        },
+        test: {
+          permissions: ['$resource:person:own:get'],
+          inherits: ['inherited'],
+        },
+      },
+    } as Security;
+
+    const result = await validateAppDefinition(app, () => []);
+    expect(result.valid).toBe(false);
+    expect(result.errors).toStrictEqual([
+      new ValidationError(
+        'redundant permission. A permission for the get resource action on resource person is already inherited from another role',
+        app,
+        undefined,
+        ['security', 'roles', 'test', 'permissions', 0],
+      ),
+    ]);
+  });
+
+  it('should report an error when an own resource permission is declared and there is already an inherited generic resource permission with scope all for that action', async () => {
+    const app = createTestApp();
+
+    app.security = {
+      default: {
+        role: 'test',
+      },
+      roles: {
+        inherited: {
+          permissions: ['$resource:all:get'],
+        },
+        test: {
+          permissions: ['$resource:person:own:get'],
+          inherits: ['inherited'],
+        },
+      },
+    } as Security;
+
+    const result = await validateAppDefinition(app, () => []);
+    expect(result.valid).toBe(false);
+    expect(result.errors).toStrictEqual([
+      new ValidationError(
+        'redundant permission. A permission for the get resource action with scope all is already inherited from another role',
+        app,
+        undefined,
+        ['security', 'roles', 'test', 'permissions', 0],
+      ),
+    ]);
+  });
+
+  it('should report an error when an own resource permission is declared and there is already an inherited own resource permission with scope all for that action', async () => {
+    const app = createTestApp();
+
+    app.security = {
+      default: {
+        role: 'test',
+      },
+      roles: {
+        inherited: {
+          permissions: ['$resource:all:own:get'],
+        },
+        test: {
+          permissions: ['$resource:person:own:get'],
+          inherits: ['inherited'],
+        },
+      },
+    } as Security;
+
+    const result = await validateAppDefinition(app, () => []);
+    expect(result.valid).toBe(false);
+    expect(result.errors).toStrictEqual([
+      new ValidationError(
+        'redundant permission. An own permission for the get resource action with scope all is already inherited from another role',
         app,
         undefined,
         ['security', 'roles', 'test', 'permissions', 0],

@@ -6,18 +6,12 @@ export function createDeleteAppResourceController(options: Options): Middleware 
     const {
       pathParams: { appId, resourceId, resourceType },
       queryParams: { groupId },
+      user: authSubject,
     } = ctx;
 
     const { checkAppPermissions, deleteAppResource, getApp, getAppResource } = options;
 
     const app = await getApp({ context: ctx, query: { where: { id: appId } } });
-
-    await checkAppPermissions({
-      context: ctx,
-      permissions: [`$resource:${resourceType}:delete`],
-      app,
-      groupId,
-    });
 
     const findOptions: FindOptions = {
       where: {
@@ -39,6 +33,17 @@ export function createDeleteAppResourceController(options: Options): Middleware 
     });
 
     assertKoaError(!resource, ctx, 404, 'Resource not found');
+
+    await checkAppPermissions({
+      context: ctx,
+      permissions: [
+        resource.$author?.id === authSubject.id
+          ? `$resource:${resourceType}:own:delete`
+          : `$resource:${resourceType}:delete`,
+      ],
+      app,
+      groupId,
+    });
 
     await deleteAppResource({
       app,

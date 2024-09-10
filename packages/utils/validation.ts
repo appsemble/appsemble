@@ -30,6 +30,10 @@ const allResourcePermissionPattern = /^\$resource:all:(get|query|create|delete|p
 
 const resourcePermissionPattern = /^\$resource:[^:]+:(get|query|create|delete|patch|update)$/;
 
+const allOwnResourcePermissionPattern = /^\$resource:all:own:(get|query|delete|patch|update)$/;
+
+const ownResourcePermissionPattern = /^\$resource:[^:]+:own:(get|query|delete|patch|update)$/;
+
 const allResourceViewPermissionPattern = /^\$resource:all:(get|query):[^:]+$/;
 
 const resourceViewPermissionPattern = /^\$resource:[^:]+:(get|query):[^:]+$/;
@@ -455,6 +459,129 @@ function validatePermissions(
         report(
           appDefinition,
           `redundant permission. A permission for the ${resourceAction} resource action with scope all is already declared`,
+          [...path, 'permissions', index],
+        );
+        return;
+      }
+
+      if (
+        inheritedPermissions.some((p) => {
+          if (allResourcePermissionPattern.test(p)) {
+            const [, , otherResourceAction] = p.split(':');
+            return otherResourceAction === resourceAction;
+          }
+          return false;
+        })
+      ) {
+        report(
+          appDefinition,
+          `redundant permission. A permission for the ${resourceAction} resource action with scope all is already inherited from another role`,
+          [...path, 'permissions', index],
+        );
+        return;
+      }
+    }
+
+    if (ownResourcePermissionPattern.test(permission)) {
+      const [, resourceName, , resourceAction] = permission.split(':');
+
+      if (resourceName !== 'all' && !appDefinition.resources?.[resourceName]) {
+        report(
+          appDefinition,
+          `resource ${resourceName} does not exist in the app's resources definition`,
+          [...path, 'permissions', index],
+        );
+        return;
+      }
+
+      if (
+        otherPermissions.some((p) => {
+          if (resourcePermissionPattern.test(p)) {
+            const [, otherResourceName, otherResourceAction] = p.split(':');
+            return (
+              resourceName !== 'all' &&
+              otherResourceName === resourceName &&
+              otherResourceAction === resourceAction
+            );
+          }
+          return false;
+        })
+      ) {
+        report(
+          appDefinition,
+          `redundant permission. A permission for the ${resourceAction} resource action on resource ${resourceName} is already declared`,
+          [...path, 'permissions', index],
+        );
+        return;
+      }
+
+      if (
+        otherPermissions.some((p) => {
+          if (allOwnResourcePermissionPattern.test(p)) {
+            const [, , , otherResourceAction] = p.split(':');
+            return otherResourceAction === resourceAction;
+          }
+          return false;
+        })
+      ) {
+        report(
+          appDefinition,
+          `redundant permission. An own permission for the ${resourceAction} resource action with scope all is already declared`,
+          [...path, 'permissions', index],
+        );
+        return;
+      }
+
+      if (
+        otherPermissions.some((p) => {
+          if (allResourcePermissionPattern.test(p)) {
+            const [, , otherResourceAction] = p.split(':');
+            return otherResourceAction === resourceAction;
+          }
+          return false;
+        })
+      ) {
+        report(
+          appDefinition,
+          `redundant permission. A permission for the ${resourceAction} resource action with scope all is already declared`,
+          [...path, 'permissions', index],
+        );
+        return;
+      }
+
+      if (
+        inheritedPermissions.some((p) => {
+          if (resourcePermissionPattern.test(p)) {
+            const [, otherResourceName, otherResourceAction] = p.split(':');
+            return (
+              resourceName !== 'all' &&
+              otherResourceName === resourceName &&
+              otherResourceAction === resourceAction
+            );
+          }
+          return false;
+        })
+      ) {
+        report(
+          appDefinition,
+          `redundant permission. A permission for the ${resourceAction} resource action on resource ${resourceName} is already inherited from another role`,
+          [...path, 'permissions', index],
+        );
+        return;
+      }
+
+      if (
+        inheritedPermissions.some((p) => {
+          if (allOwnResourcePermissionPattern.test(p)) {
+            const [, , , otherResourceAction] = p.split(':');
+            return otherResourceAction === resourceAction;
+          }
+          return false;
+        })
+      ) {
+        report(
+          appDefinition,
+          `redundant permission. An own permission for the ${resourceAction} resource action with scope all is already inherited from another role`,
           [...path, 'permissions', index],
         );
         return;
@@ -1011,67 +1138,68 @@ function validateActions(definition: AppDefinition, report: Report): void {
         }
 
         if (!action.type.startsWith('resource.subscription.')) {
-          if (!definition.security) {
-            report(
-              action.type,
-              'no security definition has been defined, no-one can access this resource',
-              [...path, 'resource'],
-            );
-            return;
-          }
+          if (definition.security) {
+            const allPermissions = definition.security.guest?.permissions || [];
 
-          const allPermissions = definition.security.guest?.permissions || [];
+            if (definition.security.roles) {
+              const allRolePermissions = getAppRolePermissions(
+                definition.security,
+                Object.keys(definition.security.roles),
+              );
 
-          if (definition.security.roles) {
-            const allRolePermissions = getAppRolePermissions(
-              definition.security,
-              Object.keys(definition.security.roles),
-            );
+              allPermissions.push(...allRolePermissions);
+            }
 
-            allPermissions.push(...allRolePermissions);
-          }
+            if (
+              !allPermissions.some((permission) => {
+                if (resourcePermissionPattern.test(permission)) {
+                  const [, permissionResourceName, permissionResourceAction] =
+                    permission.split(':');
+                  return (
+                    ['all', resourceName].includes(permissionResourceName) &&
+                    permissionResourceAction === resourceAction
+                  );
+                }
+                return false;
+              })
+            ) {
+              report(
+                action.type,
+                'there is no-one in the app, who has permissions to use this action',
+                [...path, 'resource'],
+              );
+              return;
+            }
 
-          if (
-            !allPermissions.some((permission) => {
-              if (resourcePermissionPattern.test(permission)) {
-                const [, permissionResourceName, permissionResourceAction] = permission.split(':');
-                return (
-                  ['all', resourceName].includes(permissionResourceName) &&
-                  permissionResourceAction === resourceAction
-                );
-              }
-              return false;
-            })
-          ) {
-            report(
-              action.type,
-              'there is no-one in the app, who has permissions to use this action',
-              [...path, 'resource'],
-            );
-            return;
-          }
-
-          if (
-            view &&
-            !allPermissions.some((permission) => {
-              if (resourceViewPermissionPattern.test(permission)) {
-                const [, permissionResourceName, permissionResourceAction, permissionResourceView] =
-                  permission.split(':');
-                return (
-                  ['all', resourceName].includes(permissionResourceName) &&
-                  permissionResourceAction === resourceAction &&
-                  (!permissionResourceView || permissionResourceView === view)
-                );
-              }
-              return false;
-            })
-          ) {
-            report(
-              action.type,
-              'there is no-one in the app, who has permissions to use this action',
-              [...path, 'resource'],
-            );
-            return;
+            if (
+              view &&
+              !allPermissions.some((permission) => {
+                if (resourceViewPermissionPattern.test(permission)) {
+                  const [
+                    ,
+                    permissionResourceName,
+                    permissionResourceAction,
+                    permissionResourceView,
+                  ] = permission.split(':');
+                  return (
+                    ['all', resourceName].includes(permissionResourceName) &&
+                    permissionResourceAction === resourceAction &&
+                    (!permissionResourceView || permissionResourceView === view)
+                  );
+                }
+                return false;
+              })
+            ) {
+              report(
+                action.type,
+                'there is no-one in the app, who has permissions to use this action',
+                [...path, 'resource'],
+              );
+              return;
+            }
+          } else {
+            // TODO handle this properly with a warning level report
+            // warn 'that no security definition has been defined, no-one can access this resource'
           }
         }
       }
