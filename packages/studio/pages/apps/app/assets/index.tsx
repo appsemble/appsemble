@@ -17,8 +17,12 @@ import {
   useMeta,
   useToggle,
 } from '@appsemble/react-components';
-import { type Asset } from '@appsemble/types';
-import { compareStrings, normalize, Permission } from '@appsemble/utils';
+import { type Asset, OrganizationPermission } from '@appsemble/types';
+import {
+  checkOrganizationRoleOrganizationPermissions,
+  compareStrings,
+  normalize,
+} from '@appsemble/utils';
 import axios from 'axios';
 import { type ChangeEvent, type ReactNode, useCallback, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
@@ -29,7 +33,6 @@ import styles from './index.module.css';
 import { messages } from './messages.js';
 import { AsyncDataView } from '../../../../components/AsyncDataView/index.js';
 import { useUser } from '../../../../components/UserProvider/index.js';
-import { checkRole } from '../../../../utils/checkRole.js';
 import { useApp } from '../index.js';
 
 interface FormValues {
@@ -67,10 +70,12 @@ export function AssetsPage(): ReactNode {
     })}`,
   );
 
-  const isOrganizationMember = organizations.find(
-    (organization) => organization.id === app.OrganizationId,
-  );
-  const mayUploadAsset = checkRole(isOrganizationMember.role, Permission.ManageAssets);
+  const userRole = organizations?.find((org) => org.id === app.OrganizationId)?.role;
+  const mayUploadAsset =
+    userRole &&
+    checkOrganizationRoleOrganizationPermissions(userRole, [
+      OrganizationPermission.CreateAppAssets,
+    ]);
 
   const [selectedAssets, setSelectedAssets] = useState<string[]>([]);
   const dialog = useToggle();
