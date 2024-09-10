@@ -69,7 +69,7 @@ describe('agreeCurrentUserOAuth2AppConsent', () => {
     });
     authorizeStudio();
     const response = await request.post<LoginCodeResponse>(
-      '/api/users/current/auth/oauth2/apps/${app.id}/consent/agree',
+      `/api/users/current/auth/oauth2/apps/${app.id}/consent/agree`,
       {
         appId: app.id,
         redirectUri: 'http://app.org.localhost:9999',
@@ -114,7 +114,7 @@ describe('agreeCurrentUserOAuth2AppConsent', () => {
     });
     authorizeStudio();
     const response = await request.post<LoginCodeResponse>(
-      '/api/users/current/auth/oauth2/apps/${app.id}/consent/agree',
+      `/api/users/current/auth/oauth2/apps/${app.id}/consent/agree`,
       {
         appId: app.id,
         redirectUri: 'http://app.example:9999',
@@ -159,7 +159,7 @@ describe('agreeCurrentUserOAuth2AppConsent', () => {
     });
     authorizeStudio();
     const response = await request.post(
-      '/api/users/current/auth/oauth2/apps/${app.id}/consent/agree',
+      `/api/users/current/auth/oauth2/apps/${app.id}/consent/agree`,
       {
         appId: app.id,
         redirectUri: 'http://invalid.example:9999',
@@ -196,7 +196,7 @@ describe('agreeCurrentUserOAuth2AppConsent', () => {
 
     authorizeStudio();
     const response = await request.post(
-      '/api/users/current/auth/oauth2/apps/${app.id}/consent/agree',
+      `/api/users/current/auth/oauth2/apps/${app.id}/consent/agree`,
       {
         appId: app.id,
         redirectUri: 'http://app.org.localhost:9999',
