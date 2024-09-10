@@ -8,7 +8,7 @@ export async function getUserAppAccount(appId: number, userId: string): Promise<
   });
 
   const user = await User.findByPk(userId, {
-    attributes: ['id', 'name', 'primaryEmail', 'locale'],
+    attributes: ['id', 'name', 'primaryEmail', 'locale', 'timezone'],
     include: [{ model: EmailAuthorization }],
   });
 
@@ -25,6 +25,7 @@ export async function getUserAppAccount(appId: number, userId: string): Promise<
       email: user.primaryEmail,
       name: user.name,
       locale: user.locale,
+      timezone: user.timezone,
       emailVerified: user.EmailAuthorizations?.[0]?.verified ?? false,
     }));
 

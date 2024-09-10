@@ -23,6 +23,7 @@ import { getDefaultPageName } from '../../utils/getDefaultPageName.js';
 import { apiUrl, appId } from '../../utils/settings.js';
 import { AppStorage } from '../../utils/storage.js';
 import { useAppDefinition } from '../AppDefinitionProvider/index.js';
+import { useAppMember } from '../AppMemberProvider/index.js';
 import { useAppMessages } from '../AppMessagesProvider/index.js';
 import { useAppVariables } from '../AppVariablesProvider/index.js';
 import { BlockList } from '../BlockList/index.js';
@@ -31,12 +32,11 @@ import { usePage } from '../MenuProvider/index.js';
 import { PageDialog } from '../PageDialog/index.js';
 import { TabsPage } from '../TabsPage/index.js';
 import { AppBar } from '../TitleBar/index.js';
-import { useUser } from '../UserProvider/index.js';
 
 export function Page(): ReactNode {
   const redirect = useLocationString();
   const { definition } = useAppDefinition();
-  const { isLoggedIn, role, teams, userInfoRef } = useUser();
+  const { appMemberInfoRef, isLoggedIn, role, teams } = useAppMember();
   const { lang, pageId } = useParams<{ lang: string; pageId: string }>();
 
   const { pathname } = useLocation();
@@ -162,8 +162,7 @@ export function Page(): ReactNode {
         getMessage,
         getVariable,
         pageData: data,
-        userInfo: userInfoRef.current,
-        appMember: userInfoRef.current?.appMember,
+        appMemberInfo: appMemberInfoRef.current,
         context,
         history,
         root: input,
@@ -171,7 +170,7 @@ export function Page(): ReactNode {
         stepRef,
         tabRef,
       }),
-    [data, getMessage, getVariable, lang, userInfoRef],
+    [data, getMessage, getVariable, lang, appMemberInfoRef],
   );
 
   const showDialog = useCallback((d: ShowDialogParams) => {

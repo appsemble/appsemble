@@ -1,4 +1,4 @@
-import { Permission } from '@appsemble/utils';
+import { Permissions } from '@appsemble/utils';
 import { type Context } from 'koa';
 
 import { App } from '../../../../../models/index.js';
@@ -15,7 +15,7 @@ export async function updateAppScimSecret(ctx: Context): Promise<void> {
   const app = await App.findByPk(appId, {
     attributes: ['id', 'OrganizationId', 'scimEnabled', 'scimToken'],
   });
-  await checkRole(ctx, app.OrganizationId, [Permission.EditApps, Permission.EditAppSettings]);
+  await checkRole(ctx, app.OrganizationId, [Permissions.EditApps, Permissions.EditAppSettings]);
 
   ctx.assert(app, 404, 'App not found');
 

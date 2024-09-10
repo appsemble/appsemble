@@ -1,5 +1,5 @@
 import { assertKoaError } from '@appsemble/node-utils';
-import { Permission } from '@appsemble/utils';
+import { Permissions } from '@appsemble/utils';
 import { type Context } from 'koa';
 
 import { Training } from '../../../models/index.js';
@@ -16,7 +16,7 @@ export async function patchTraining(ctx: Context): Promise<void> {
   const training = await Training.findByPk(trainingId);
   assertKoaError(!training, ctx, 404, 'Training not found');
 
-  await checkRole(ctx, 'appsemble', Permission.EditApps);
+  await checkRole(ctx, 'appsemble', Permissions.EditApps);
   const result: Partial<Training> = {};
 
   if (competences !== undefined) {

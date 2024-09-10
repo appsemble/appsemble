@@ -1,5 +1,5 @@
 import { assertKoaError } from '@appsemble/node-utils';
-import { Permission } from '@appsemble/utils';
+import { Permissions } from '@appsemble/utils';
 import { type Context } from 'koa';
 
 import { App, Asset } from '../../../../models/index.js';
@@ -16,7 +16,7 @@ export async function deleteAppAsset(ctx: Context): Promise<void> {
 
   assertKoaError(!app, ctx, 404, 'App not found');
 
-  await checkRole(ctx, app.OrganizationId, Permission.ReadAssets);
+  await checkRole(ctx, app.OrganizationId, Permissions.ReadAssets);
 
   const assets = await Asset.findAll({
     where: {
@@ -29,6 +29,6 @@ export async function deleteAppAsset(ctx: Context): Promise<void> {
   const [asset] = assets;
   assertKoaError(!asset, ctx, 404, 'Asset not found');
 
-  await checkRole(ctx, app.OrganizationId, Permission.ManageAssets);
+  await checkRole(ctx, app.OrganizationId, Permissions.ManageAssets);
   await asset.destroy();
 }

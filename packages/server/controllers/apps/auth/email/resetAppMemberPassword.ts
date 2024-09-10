@@ -12,25 +12,20 @@ export async function resetAppMemberPassword(ctx: Context): Promise<void> {
     },
   } = ctx;
 
-  const app = await App.findByPk(appId, {
-    attributes: [],
-    include: {
-      model: AppMember,
-      attributes: ['id'],
-      required: false,
-      where: {
-        resetKey: token,
-      },
-    },
-  });
+  const app = await App.findByPk(appId, { attributes: [] });
 
   assertKoaError(!app, ctx, 404, 'App could not be found.');
-  assertKoaError(!app.AppMembers.length, ctx, 404, `Unknown password reset token: ${token}`);
+
+  const appMember = await AppMember.findOne({
+    where: { AppId: appId, resetKey: token },
+    attributes: ['id'],
+  });
+
+  assertKoaError(!appMember, ctx, 404, `Unknown password reset token: ${token}`);
 
   const password = await hash(ctx.request.body.password, 10);
-  const [member] = app.AppMembers;
 
-  await member.update({
+  await appMember.update({
     password,
     resetKey: null,
   });

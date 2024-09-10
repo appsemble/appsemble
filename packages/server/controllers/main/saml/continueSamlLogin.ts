@@ -28,7 +28,7 @@ export async function continueSamlLogin(ctx: Context): Promise<void> {
   });
 
   // The logged in account is linked to a new SAML authorization for next time.
-  await AppSamlAuthorization.create({
+  const authorization = await AppSamlAuthorization.create({
     nameId: loginRequest.nameId,
     AppSamlSecretId: loginRequest.AppSamlSecret.id,
     UserId: loginRequest.User?.id ?? user.id,
@@ -38,7 +38,7 @@ export async function continueSamlLogin(ctx: Context): Promise<void> {
     loginRequest.AppSamlSecret.App,
     loginRequest.redirectUri,
     loginRequest.scope,
-    loginRequest.User ?? (user as User),
+    authorization.AppMember,
     ctx,
   );
   const redirect = new URL(loginRequest.redirectUri);

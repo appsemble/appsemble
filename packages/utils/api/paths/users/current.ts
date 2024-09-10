@@ -22,7 +22,7 @@ export const pathItems: OpenAPIV3.PathItemObject = {
   put: {
     tags: ['main', 'user', 'current-user'],
     description: "Update the logged in user's profile.",
-    operationId: 'updateCurrentUser',
+    operationId: 'patchCurrentUser',
     requestBody: {
       required: true,
       $ref: '#/components/requestBodies/user',

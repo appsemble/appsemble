@@ -7,6 +7,7 @@ import { getDefaultPageName } from '../../utils/getDefaultPageName.js';
 import { sentryDsn, showDemoLogin } from '../../utils/settings.js';
 import { AppDebug } from '../AppDebug/index.js';
 import { useAppDefinition } from '../AppDefinitionProvider/index.js';
+import { useAppMember } from '../AppMemberProvider/index.js';
 import { useAppMessages } from '../AppMessagesProvider/index.js';
 import { AppSettings } from '../AppSettings/index.js';
 import { EditPassword } from '../EditPassword/index.js';
@@ -17,7 +18,6 @@ import { Register } from '../Register/index.js';
 import { ResetPassword } from '../ResetPassword/index.js';
 import { SentryFeedback } from '../SentryFeedback/index.js';
 import { TeamInvite } from '../TeamInvite/index.js';
-import { useUser } from '../UserProvider/index.js';
 import { Verify } from '../Verify/index.js';
 
 /**
@@ -28,7 +28,7 @@ import { Verify } from '../Verify/index.js';
 export function AppRoutes(): ReactNode {
   const { getAppMessage } = useAppMessages();
   const { definition } = useAppDefinition();
-  const { isLoggedIn, role } = useUser();
+  const { isLoggedIn, role } = useAppMember();
 
   if (definition == null) {
     return null;

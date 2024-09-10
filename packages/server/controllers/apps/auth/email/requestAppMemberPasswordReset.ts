@@ -1,6 +1,6 @@
 import { randomBytes } from 'node:crypto';
 
-import { logger } from '@appsemble/node-utils';
+import { assertKoaError, logger } from '@appsemble/node-utils';
 import { type Context } from 'koa';
 
 import { App, AppMember } from '../../../../models/index.js';
@@ -13,7 +13,6 @@ export async function requestAppMemberPasswordReset(ctx: Context): Promise<void>
     request,
   } = ctx;
 
-  const email = request.body.email.toLowerCase();
   const app = await App.findByPk(appId, {
     attributes: [
       'definition',
@@ -27,37 +26,45 @@ export async function requestAppMemberPasswordReset(ctx: Context): Promise<void>
       'emailSecure',
       'OrganizationId',
     ],
-    include: [
-      { model: AppMember, attributes: { exclude: ['picture'] }, where: { email }, required: false },
-    ],
   });
 
-  if (app?.AppMembers.length) {
-    const [member] = app.AppMembers;
-    const resetKey = randomBytes(40).toString('hex');
+  assertKoaError(!app, ctx, 404, 'App could not be found.');
 
-    const url = new URL('/Edit-Password', getAppUrl(app));
-    url.searchParams.set('token', resetKey);
+  const email = request.body.email.toLowerCase();
 
-    await member.update({ resetKey });
-    mailer
-      .sendTranslatedEmail({
-        to: member,
-        from: app.emailName,
-        emailName: 'reset',
-        appId,
-        locale: member.locale,
-        values: {
-          link: (text) => `[${text}](${url})`,
-          appName: app.definition.name,
-          name: member.name || 'null',
-        },
-        app,
-      })
-      .catch((error: Error) => {
-        logger.error(error);
-      });
-  }
+  const appMember = await AppMember.findOne({
+    where: { email },
+    attributes: {
+      exclude: ['picture'],
+    },
+  });
+
+  assertKoaError(!appMember, ctx, 404, 'App member with this email could not be found.');
+
+  const resetKey = randomBytes(40).toString('hex');
+
+  const url = new URL('/Edit-Password', getAppUrl(app));
+  url.searchParams.set('token', resetKey);
+
+  await appMember.update({ resetKey });
+
+  mailer
+    .sendTranslatedEmail({
+      to: appMember,
+      from: app.emailName,
+      emailName: 'reset',
+      appId,
+      locale: appMember.locale,
+      values: {
+        link: (text) => `[${text}](${url})`,
+        appName: app.definition.name,
+        name: appMember.name || 'null',
+      },
+      app,
+    })
+    .catch((error: Error) => {
+      logger.error(error);
+    });
 
   ctx.status = 204;
 }

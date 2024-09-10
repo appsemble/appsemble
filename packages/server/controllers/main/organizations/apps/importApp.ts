@@ -6,7 +6,7 @@ import {
   getSupportedLanguages,
   handleValidatorResult,
 } from '@appsemble/node-utils';
-import { normalize, Permission, validateAppDefinition, validateStyle } from '@appsemble/utils';
+import { normalize, Permissions, validateAppDefinition, validateStyle } from '@appsemble/utils';
 import JSZip from 'jszip';
 import { type Context } from 'koa';
 import { type File } from 'koas-body-parser';
@@ -43,7 +43,7 @@ export async function importApp(ctx: Context): Promise<void> {
     pathParams: { organizationId },
     request: { body: importFile },
   } = ctx;
-  await checkRole(ctx, organizationId, Permission.EditApps);
+  await checkRole(ctx, organizationId, Permissions.EditApps);
 
   let result: Partial<App>;
   const zip = await JSZip.loadAsync(importFile);

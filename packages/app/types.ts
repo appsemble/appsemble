@@ -4,6 +4,7 @@ import { type ShowMessage } from '@appsemble/react-components';
 import {
   type ActionDefinition,
   type AppDefinition,
+  type AppMemberInfo,
   type BlockDefinition,
   type BlockManifest,
   type ProjectImplementations,
@@ -140,10 +141,10 @@ export interface MakeActionParameters<D extends ActionDefinition> {
   ee: EventEmitter;
   remap: (remapper: Remapper, data: any, context?: Record<string, any>) => any;
   showMessage?: ShowMessage;
-  getUserInfo: () => UserInfo;
+  getAppMemberInfo: () => AppMemberInfo;
   passwordLogin: (params: { username: string; password: string }) => Promise<void>;
   passwordLogout: () => Promise<void>;
-  setUserInfo: Dispatch<UserInfo>;
+  setAppMemberInfo: Dispatch<AppMemberInfo>;
   updateTeam: UpdateTeam;
   teams: TeamMember[];
   refetchDemoAppMembers: () => Promise<void>;

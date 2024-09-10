@@ -6,7 +6,7 @@ import {
   useObjectURL,
   useToggle,
 } from '@appsemble/react-components';
-import { Permission } from '@appsemble/utils';
+import { Permissions } from '@appsemble/utils';
 import axios from 'axios';
 import { type ChangeEvent, type ReactNode, useCallback, useRef, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
@@ -30,7 +30,7 @@ export function AppScreenshots(): ReactNode {
   const uploadingScreenshotPreview = useObjectURL(uploadingScreenshot);
 
   const userRole = organizations?.find((org) => org.id === app.OrganizationId)?.role;
-  const mayManageScreenshots = userRole && checkRole(userRole, Permission.EditAppSettings);
+  const mayManageScreenshots = userRole && checkRole(userRole, Permissions.EditAppSettings);
 
   const screenshotDiv = useRef<HTMLDivElement>();
   const scrollScreenshots = useCallback((reverse = false) => {

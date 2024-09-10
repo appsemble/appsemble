@@ -10,9 +10,9 @@ import { messages } from './messages.js';
 import { getDefaultPageName } from '../../utils/getDefaultPageName.js';
 import { showDemoLogin } from '../../utils/settings.js';
 import { useAppDefinition } from '../AppDefinitionProvider/index.js';
+import { useAppMember } from '../AppMemberProvider/index.js';
 import { Main } from '../Main/index.js';
 import { AppBar } from '../TitleBar/index.js';
-import { useUser } from '../UserProvider/index.js';
 
 /**
  * Handle the OAuth2 callback.
@@ -26,7 +26,7 @@ export function OpenIDCallback(): ReactNode {
   const state = query.get('state');
 
   const session = useMemo(() => loadOAuth2State(), []);
-  const { authorizationCodeLogin, isLoggedIn, role } = useUser();
+  const { authorizationCodeLogin, isLoggedIn, role } = useAppMember();
   const { definition } = useAppDefinition();
 
   const [error, setError] = useState(false);

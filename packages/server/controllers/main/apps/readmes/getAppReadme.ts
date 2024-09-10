@@ -7,6 +7,7 @@ export async function getAppReadme(ctx: Context): Promise<void> {
   const {
     pathParams: { appId, readmeId },
   } = ctx;
+
   const app = await App.findByPk(appId, {
     attributes: [],
     include: [

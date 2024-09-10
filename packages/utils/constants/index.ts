@@ -6,4 +6,4 @@ export * from './locale.js';
 export * from './scopes.js';
 export * from './patterns.js';
 export * from './roles.js';
-export * from './Permission.js';
+export * from './permissions.js';

@@ -4,17 +4,17 @@ import axios from 'axios';
 import { type ActionCreator } from './index.js';
 import { apiUrl, appId } from '../settings.js';
 
-export const teamJoin: ActionCreator<'team.join'> = ({ getUserInfo, updateTeam }) => [
+export const teamJoin: ActionCreator<'team.join'> = ({ getAppMemberInfo, updateTeam }) => [
   async (id: number) => {
-    const userInfo = getUserInfo();
-    if (!userInfo?.sub) {
-      throw new Error('User is not logged in');
+    const appMemberInfo = getAppMemberInfo();
+    if (!appMemberInfo?.sub) {
+      throw new Error('App member is not logged in');
     }
 
     const { data: team } = await axios.post<TeamMember>(
       `${apiUrl}/api/apps/${appId}/teams/${id}/members`,
       {
-        id: userInfo.sub,
+        id: appMemberInfo.sub,
       },
     );
     updateTeam(team);
@@ -33,12 +33,16 @@ export const teamInvite: ActionCreator<'team.invite'> = ({ definition, remap }) 
   },
 ];
 
-export const teamMembers: ActionCreator<'team.members'> = ({ definition, getUserInfo, remap }) => [
+export const teamMembers: ActionCreator<'team.members'> = ({
+  definition,
+  getAppMemberInfo,
+  remap,
+}) => [
   async (data) => {
     const teamId = definition.id ? remap(definition.id, data) : null;
-    const userInfo = getUserInfo();
+    const appMemberInfo = getAppMemberInfo();
 
-    if (!userInfo) {
+    if (!appMemberInfo) {
       throw new Error('User is not logged in');
     }
 
@@ -47,7 +51,7 @@ export const teamMembers: ActionCreator<'team.members'> = ({ definition, getUser
     }
 
     try {
-      await axios.get(`${apiUrl}/api/apps/${appId}/teams/${teamId}/members/${userInfo.sub}`);
+      await axios.get(`${apiUrl}/api/apps/${appId}/teams/${teamId}/members/${appMemberInfo.sub}`);
     } catch {
       throw new Error('User is not a member of the specified team');
     }

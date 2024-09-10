@@ -3,10 +3,10 @@ import { type Context, type Middleware } from 'koa';
 import { assertKoaError } from '../../koa.js';
 import { type Options } from '../types.js';
 
-export function createGetAppMember({ getApp, getAppMembers }: Options): Middleware {
+export function createGetAppMember({ getApp, getAppMember }: Options): Middleware {
   return async (ctx: Context) => {
     const {
-      pathParams: { appId, memberId },
+      pathParams: { appId, userId },
     } = ctx;
 
     const app = await getApp({ context: ctx, query: { where: { id: appId } } });
@@ -19,10 +19,10 @@ export function createGetAppMember({ getApp, getAppMembers }: Options): Middlewa
       'App does not have a security definition',
     );
 
-    const appMembers = await getAppMembers({ context: ctx, app, userId: memberId });
+    const appMember = await getAppMember({ context: ctx, app, id: userId });
 
-    assertKoaError(appMembers.length !== 1, ctx, 404, 'App member not found');
+    assertKoaError(!appMember, ctx, 404, 'App member not found');
 
-    ctx.body = appMembers[0];
+    ctx.body = appMember;
   };
 }

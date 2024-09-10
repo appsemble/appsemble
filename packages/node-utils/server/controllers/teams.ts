@@ -14,6 +14,6 @@ export function createGetTeams({ getApp, getAppTeams }: Options): Middleware {
 
     assertKoaError(!app, ctx, 404, 'App not found');
 
-    ctx.body = await getAppTeams({ context: ctx, app, user });
+    ctx.body = await getAppTeams({ context: ctx, app, id: user.id });
   };
 }

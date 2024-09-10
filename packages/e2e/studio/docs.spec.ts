@@ -1,4 +1,4 @@
-import { Permission, roles } from '@appsemble/utils';
+import { MainPermission, organizationMemberRoles } from '@appsemble/utils';
 
 import { expect, test } from '../fixtures/test/index.js';
 
@@ -13,8 +13,8 @@ test.describe('Docs', () => {
   test('should render the permissions table', async ({ page }) => {
     await page.goto('/en/docs/guides/organizations');
     await expect(page.getByRole('row')).toHaveText([
-      ['Permissions', ...Object.keys(roles)].join(''),
-      ...Object.values(Permission)
+      ['Permissions', ...Object.keys(organizationMemberRoles)].join(''),
+      ...Object.values(MainPermission)
         .filter((permission) => typeof permission === 'string')
         .map((permission) => new RegExp(String(permission))),
     ]);

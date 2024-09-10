@@ -1,5 +1,5 @@
 import { assertKoaError } from '@appsemble/node-utils';
-import { Permission } from '@appsemble/utils';
+import { Permissions } from '@appsemble/utils';
 import JSZip from 'jszip';
 import { type Context } from 'koa';
 import { stringify } from 'yaml';
@@ -45,7 +45,7 @@ export async function exportApp(ctx: Context): Promise<void> {
   assertKoaError(!app, ctx, 404, 'App not found');
 
   if (app.visibility === 'private' || !app.showAppDefinition) {
-    await checkRole(ctx, app.OrganizationId, Permission.ViewApps);
+    await checkRole(ctx, app.OrganizationId, Permissions.ViewApps);
   }
 
   const zip = new JSZip();
@@ -124,7 +124,7 @@ export async function exportApp(ctx: Context): Promise<void> {
   }
 
   if (resources) {
-    await checkRole(ctx, app.OrganizationId, Permission.EditApps);
+    await checkRole(ctx, app.OrganizationId, Permissions.EditApps);
     await app.reload({
       include: [Resource],
     });
@@ -141,7 +141,7 @@ export async function exportApp(ctx: Context): Promise<void> {
   }
 
   if (assets) {
-    await checkRole(ctx, app.OrganizationId, Permission.EditApps);
+    await checkRole(ctx, app.OrganizationId, Permissions.EditApps);
     await app.reload({
       include: [Asset],
     });

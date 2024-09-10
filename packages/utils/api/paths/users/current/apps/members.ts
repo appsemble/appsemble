@@ -14,7 +14,7 @@ export const pathItems: OpenAPIV3.PathItemObject = {
             schema: {
               type: 'array',
               items: {
-                $ref: '#/components/schemas/AppAccount',
+                $ref: '#/components/schemas/AppMember',
               },
             },
           },

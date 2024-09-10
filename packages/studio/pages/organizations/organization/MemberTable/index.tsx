@@ -1,6 +1,6 @@
 import { Button, Loader, Message, Table, useData, useToggle } from '@appsemble/react-components';
 import { type OrganizationInvite } from '@appsemble/types';
-import { Permission } from '@appsemble/utils';
+import { Permissions } from '@appsemble/utils';
 import { type ReactNode, useCallback } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useParams } from 'react-router-dom';
@@ -59,9 +59,9 @@ export function MemberTable(): ReactNode {
 
   const me = members?.find((member) => member.id === userInfo.sub);
   const ownerCount = me && members.filter((member) => member.role === 'Owner').length;
-  const mayEdit = me && checkRole(me.role, Permission.ManageMembers);
-  const mayEditRole = me && checkRole(me.role, Permission.ManageRoles);
-  const mayInvite = me && checkRole(me.role, Permission.InviteMember);
+  const mayEdit = me && checkRole(me.role, Permissions.ManageMembers);
+  const mayEditRole = me && checkRole(me.role, Permissions.ManageRoles);
+  const mayInvite = me && checkRole(me.role, Permissions.InviteMember);
 
   return (
     <>

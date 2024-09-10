@@ -71,8 +71,8 @@ This **must** match the name of a page defined for the app.
     controller: {
       $ref: '#/components/schemas/ControllerDefinition',
     },
-    users: {
-      $ref: '#/components/schemas/UsersDefinition',
+    members: {
+      $ref: '#/components/schemas/AppMembersDefinition',
     },
     resources: {
       type: 'object',

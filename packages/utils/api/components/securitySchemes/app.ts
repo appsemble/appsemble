@@ -20,13 +20,13 @@ export const app: OpenAPIV3.OAuth2SecurityScheme = {
   flows: {
     authorizationCode: {
       authorizationUrl: '/connect/authorize',
-      tokenUrl: '/oauth2/token',
-      refreshUrl: '/oauth2/token',
+      tokenUrl: '/apps/{appId}/auth/oauth2/token',
+      refreshUrl: '/apps/{appId}/auth/oauth2/token',
       scopes,
     },
     password: {
-      tokenUrl: '/oauth2/token',
-      refreshUrl: '/oauth2/token',
+      tokenUrl: '/apps/{appId}/auth/oauth2/token',
+      refreshUrl: '/apps/{appId}/auth/oauth2/token',
       scopes,
     },
   },

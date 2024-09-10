@@ -1,8 +1,8 @@
 import { assertKoaError } from '@appsemble/node-utils';
-import { Permission, uuid4Pattern } from '@appsemble/utils';
+import { Permissions, uuid4Pattern } from '@appsemble/utils';
 import { type Context } from 'koa';
 
-import { App, AppMember, Team, TeamMember, User } from '../../../../../models/index.js';
+import { App, AppMember, Team, TeamMember } from '../../../../../models/index.js';
 import { checkRole } from '../../../../../utils/checkRole.js';
 import { checkTeamPermission } from '../../../../../utils/team.js';
 
@@ -23,8 +23,7 @@ export async function updateAppTeamMember(ctx: Context): Promise<void> {
         include: [
           {
             model: AppMember,
-            include: [{ model: User, attributes: ['demoLoginUser'] }],
-            where: isUuid ? { UserId: memberId } : { email: memberId },
+            where: isUuid ? { id: memberId } : { email: memberId },
           },
         ],
       },
@@ -34,9 +33,9 @@ export async function updateAppTeamMember(ctx: Context): Promise<void> {
 
   assertKoaError(!team, ctx, 404, 'Team not found.');
 
-  if (!(team.App.demoMode && team.Members[0]?.AppMember.User.demoLoginUser)) {
+  if (!(team.App.demoMode && team.Members[0]?.AppMember.demo)) {
     try {
-      await checkRole(ctx, team.App.OrganizationId, Permission.ManageTeams);
+      await checkRole(ctx, team.App.OrganizationId, Permissions.ManageTeams);
     } catch {
       await checkTeamPermission(ctx, team);
     }
@@ -49,7 +48,7 @@ export async function updateAppTeamMember(ctx: Context): Promise<void> {
 
   ctx.status = 200;
   ctx.body = {
-    id: member.AppMember.UserId,
+    id: member.AppMember.id,
     name: member.AppMember.name,
     primaryEmail: member.AppMember.email,
     role,

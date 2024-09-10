@@ -1,6 +1,6 @@
 import { Button, useConfirmation, useMessages } from '@appsemble/react-components';
 import { type Training } from '@appsemble/types';
-import { Permission } from '@appsemble/utils';
+import { Permissions } from '@appsemble/utils';
 import { randomString } from '@appsemble/web-utils';
 import axios from 'axios';
 import {
@@ -60,7 +60,7 @@ export function TrainingListCard({
 
   const isAppsembleMember = organizations?.find((org) => org.id === 'appsemble');
   const mayDeleteTraining =
-    isAppsembleMember && checkRole(isAppsembleMember.role, Permission.DeleteApps);
+    isAppsembleMember && checkRole(isAppsembleMember.role, Permissions.DeleteApps);
 
   const handleSelectChange = useCallback(
     ({ currentTarget }: ChangeEvent<HTMLSelectElement>) => {

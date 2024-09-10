@@ -1,5 +1,5 @@
 import { assertKoaError } from '@appsemble/node-utils';
-import { Permission } from '@appsemble/utils';
+import { Permissions } from '@appsemble/utils';
 import { type Context } from 'koa';
 
 import { App, AppVariable } from '../../../../models/index.js';
@@ -19,7 +19,7 @@ export async function updateAppVariable(ctx: Context): Promise<void> {
   assertKoaError(!app, ctx, 404, 'App not found');
 
   checkAppLock(ctx, app);
-  await checkRole(ctx, app.OrganizationId, [Permission.EditApps, Permission.EditAppSettings]);
+  await checkRole(ctx, app.OrganizationId, [Permissions.EditApps, Permissions.EditAppSettings]);
 
   if (body.name) {
     const { name } = body;

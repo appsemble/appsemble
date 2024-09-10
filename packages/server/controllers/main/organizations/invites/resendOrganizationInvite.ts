@@ -1,5 +1,5 @@
 import { assertKoaError, throwKoaError } from '@appsemble/node-utils';
-import { Permission } from '@appsemble/utils';
+import { Permissions } from '@appsemble/utils';
 import { type Context } from 'koa';
 
 import { Organization, OrganizationInvite, User } from '../../../../models/index.js';
@@ -29,7 +29,7 @@ export async function resendOrganizationInvite(ctx: Context): Promise<void> {
 
   assertKoaError(!organization, ctx, 404, 'Organization not found.');
 
-  await checkRole(ctx, organization.id, Permission.InviteMember);
+  await checkRole(ctx, organization.id, Permissions.InviteMember);
 
   const invite = organization.OrganizationInvites.find((i) => i.email === email);
 

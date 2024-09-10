@@ -1,13 +1,7 @@
-import { assertKoaError, throwKoaError } from '@appsemble/node-utils';
+import { assertKoaError } from '@appsemble/node-utils';
 import { type Context } from 'koa';
-import { Op } from 'sequelize';
 
-import {
-  App,
-  AppMember,
-  EmailAuthorization,
-  type User,
-} from '../../../../../../../models/index.js';
+import { App, AppMember, EmailAuthorization, User } from '../../../../../../../models/index.js';
 import { checkAppSecurityPolicy } from '../../../../../../../utils/auth.js';
 import { createAppOAuth2AuthorizationCode } from '../../../../../../../utils/oauth2.js';
 
@@ -17,43 +11,51 @@ export async function agreeCurrentUserOAuth2AppConsent(ctx: Context): Promise<vo
     request: {
       body: { redirectUri, scope },
     },
-    user,
+    user: authSubject,
   } = ctx;
+
+  const user = await User.findByPk(authSubject.id);
 
   const app = await App.findByPk(appId, {
     attributes: ['domain', 'definition', 'id', 'path', 'OrganizationId'],
-    include: [{ model: AppMember, where: { UserId: user.id }, required: false }],
+  });
+
+  let appMember = await AppMember.findOne({
+    where: {
+      UserId: user.id,
+    },
   });
 
   assertKoaError(!app, ctx, 404, 'App not found');
 
-  if (!(await checkAppSecurityPolicy(app, user as User))) {
-    throwKoaError(ctx, 400, 'User is not allowed to login due to the app’s security policy', {
-      isAllowed: false,
-    });
-  }
+  assertKoaError(
+    !(await checkAppSecurityPolicy(app, user, appMember)),
+    ctx,
+    401,
+    'User is not allowed to login due to the app’s security policy',
+    { isAllowed: false },
+  );
 
-  if (app.AppMembers.length) {
-    await AppMember.update({ consent: new Date() }, { where: { id: app.AppMembers[0].id } });
+  if (appMember) {
+    await appMember.update({ consent: new Date() });
   } else {
-    await (user as User).reload({
-      include: [
-        {
-          model: EmailAuthorization,
-          where: { email: { [Op.col]: 'User.primaryEmail' } },
-          required: false,
-        },
-      ],
+    const userEmailAuthorization = await EmailAuthorization.findOne({
+      where: {
+        email: user.primaryEmail,
+      },
     });
-    await AppMember.create({
+
+    appMember = await AppMember.create({
       AppId: app.id,
       UserId: user.id,
       name: user.name,
       email: user.primaryEmail,
-      emailVerified: user.EmailAuthorizations?.[0]?.verified ?? false,
+      timezone: user.timezone,
+      emailVerified: userEmailAuthorization?.verified ?? false,
       role: app.definition.security.default.role,
       consent: new Date(),
     });
   }
-  ctx.body = await createAppOAuth2AuthorizationCode(app, redirectUri, scope, user as User, ctx);
+
+  ctx.body = await createAppOAuth2AuthorizationCode(app, redirectUri, scope, appMember, ctx);
 }

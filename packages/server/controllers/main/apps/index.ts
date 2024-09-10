@@ -17,6 +17,7 @@ export { deleteApp } from './deleteApp.js';
 export { deleteAppIcon } from './deleteAppIcon.js';
 export { deleteAppMaskableIcon } from './deleteAppMaskableIcon.js';
 export { exportApp } from './exportApp.js';
+export { importApp } from './importApp.js';
 export { getAppById } from './getAppById.js';
 export { getAppEmailSettings } from './getAppEmailSettings.js';
 export { getAppTemplates } from './getAppTemplates.js';

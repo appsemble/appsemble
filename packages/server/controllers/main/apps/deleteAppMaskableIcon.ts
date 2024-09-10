@@ -1,5 +1,5 @@
 import { assertKoaError } from '@appsemble/node-utils';
-import { Permission } from '@appsemble/utils';
+import { Permissions } from '@appsemble/utils';
 import { type Context } from 'koa';
 
 import { App } from '../../../models/index.js';
@@ -16,6 +16,6 @@ export async function deleteAppMaskableIcon(ctx: Context): Promise<void> {
   assertKoaError(!app, ctx, 404, 'App not found');
   assertKoaError(!app.maskableIcon, ctx, 404, 'App has no maskable icon');
 
-  await checkRole(ctx, app.OrganizationId, Permission.EditAppSettings);
+  await checkRole(ctx, app.OrganizationId, Permissions.EditAppSettings);
   await app.update({ maskableIcon: null });
 }

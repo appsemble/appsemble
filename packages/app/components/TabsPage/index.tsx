@@ -20,12 +20,12 @@ import { createEvents } from '../../utils/events.js';
 import { makeActions } from '../../utils/makeActions.js';
 import { appId } from '../../utils/settings.js';
 import { useAppDefinition } from '../AppDefinitionProvider/index.js';
+import { useAppMember } from '../AppMemberProvider/index.js';
 import { useAppMessages } from '../AppMessagesProvider/index.js';
 import { useAppVariables } from '../AppVariablesProvider/index.js';
 import { type BlockList } from '../BlockList/index.js';
 import { useDemoAppMembers } from '../DemoAppMembersProvider/index.js';
 import { useServiceWorkerRegistration } from '../ServiceWorkerRegistrationProvider/index.js';
-import { useUser } from '../UserProvider/index.js';
 
 interface TabsPageProps extends Omit<ComponentPropsWithoutRef<typeof BlockList>, 'blocks'> {
   readonly page: TabsPageDefinition;
@@ -55,8 +55,16 @@ export function TabsPage({
   const [data, setData] = useState<unknown>({});
   const { pathname } = useLocation();
   const navigate = useNavigate();
-  const { logout, passwordLogin, role, setUserInfo, teams, updateTeam, userInfo, userInfoRef } =
-    useUser();
+  const {
+    appMemberInfo,
+    appMemberInfoRef,
+    logout,
+    passwordLogin,
+    role,
+    setAppMemberInfo,
+    teams,
+    updateTeam,
+  } = useAppMember();
   const { refetchDemoAppMembers } = useDemoAppMembers();
   const [tabsWithPermissions, setTabsWithPermissions] = useState([]);
   const [defaultTab, setDefaultTab] = useState(null);
@@ -92,8 +100,7 @@ export function TabsPage({
     url: window.location.href,
     getMessage,
     getVariable,
-    userInfo,
-    appMember: userInfo?.appMember,
+    appMemberInfo,
     context: { name: page.name },
     locale: lang,
   };
@@ -190,10 +197,10 @@ export function TabsPage({
         showMessage,
         teams,
         updateTeam,
-        getUserInfo: () => userInfoRef.current,
+        getAppMemberInfo: () => appMemberInfoRef.current,
         passwordLogin,
         passwordLogout: logout,
-        setUserInfo,
+        setAppMemberInfo,
         refetchDemoAppMembers,
       }),
     [
@@ -216,9 +223,9 @@ export function TabsPage({
       updateTeam,
       passwordLogin,
       logout,
-      setUserInfo,
+      setAppMemberInfo,
       refetchDemoAppMembers,
-      userInfoRef,
+      appMemberInfoRef,
     ],
   );
 

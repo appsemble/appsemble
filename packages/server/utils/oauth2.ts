@@ -1,7 +1,7 @@
 import { randomBytes } from 'node:crypto';
 
 import { AppsembleError, basicAuth, throwKoaError } from '@appsemble/node-utils';
-import type * as types from '@appsemble/types';
+import { type Remapper, type TokenResponse, type UserInfo } from '@appsemble/types';
 import { remap } from '@appsemble/utils';
 import axios from 'axios';
 import { addMinutes } from 'date-fns';
@@ -9,7 +9,40 @@ import jwt from 'jsonwebtoken';
 import { type Context } from 'koa';
 
 import { argv } from './argv.js';
-import { type App, OAuth2AuthorizationCode, type User } from '../models/index.js';
+import { type App, type AppMember, OAuth2AuthorizationCode } from '../models/index.js';
+
+export class GrantError extends Error {
+  status: number;
+
+  constructor(
+    error:
+      | 'invalid_client'
+      | 'invalid_grant'
+      | 'invalid_request'
+      | 'invalid_scope'
+      | 'unsupported_grant_type',
+    status = 400,
+  ) {
+    super(error);
+    this.status = status;
+    this.name = 'GrantError';
+  }
+}
+
+export function checkTokenRequestParameters(
+  query: Record<string, string[] | string>,
+  allowed: string[],
+): Record<string, string> {
+  for (const [key, value] of Object.entries(query)) {
+    if (allowed.includes(key)) {
+      continue;
+    }
+    if (Array.isArray(value)) {
+      throw new GrantError('invalid_request');
+    }
+  }
+  return query as Record<string, string>;
+}
 
 /**
  * Check if all required scopes are granted.
@@ -40,9 +73,9 @@ export async function getAccessToken(
   redirectUri: string,
   clientId: string,
   clientSecret: string,
-): Promise<types.TokenResponse> {
+): Promise<TokenResponse> {
   // Exchange the authorization code for an access token and refresh token.
-  const { data } = await axios.post<types.TokenResponse>(
+  const { data } = await axios.post<TokenResponse>(
     tokenUrl,
     new URLSearchParams({
       grant_type: 'authorization_code',
@@ -83,9 +116,9 @@ export async function getUserInfo(
   accessToken: string,
   idToken?: string,
   userInfoUrl?: string,
-  remapper?: types.Remapper,
+  remapper?: Remapper,
   userEmailsUrl?: string,
-): Promise<Partial<types.UserInfo>> {
+): Promise<Partial<UserInfo>> {
   let email: string;
   let emailVerified: boolean;
   let name: string;
@@ -96,7 +129,7 @@ export async function getUserInfo(
   let zoneinfo: string;
   let subscribed: boolean;
 
-  function assign(info: types.UserInfo): void {
+  function assign(info: UserInfo): void {
     email ??= info.email;
     emailVerified ??= info.email_verified;
     name ??= info.name;
@@ -115,7 +148,7 @@ export async function getUserInfo(
 
   if (idToken) {
     try {
-      assign(jwt.decode(idToken) as types.UserInfo);
+      assign(jwt.decode(idToken) as UserInfo);
     } catch {
       // No ID token was provided, or it was invalid.
       // Fall back to using the access token instead.
@@ -124,7 +157,7 @@ export async function getUserInfo(
 
   if (shouldTryNext()) {
     try {
-      assign(jwt.decode(accessToken) as types.UserInfo);
+      assign(jwt.decode(accessToken) as UserInfo);
     } catch {
       // No ID token was provided, or it was invalid.
       // Fall back to requesting user info instead.
@@ -135,12 +168,12 @@ export async function getUserInfo(
     const requestConfig = {
       headers: { authorization: `Bearer ${accessToken}` },
     };
-    const { data } = await axios.get<types.UserInfo>(userInfoUrl, requestConfig);
-    const actualData: types.UserInfo = remapper
-      ? (remap(remapper, data, null) as types.UserInfo)
-      : (data as types.UserInfo);
+    const { data } = await axios.get<UserInfo>(userInfoUrl, requestConfig);
+    const actualData: UserInfo = remapper
+      ? (remap(remapper, data, null) as UserInfo)
+      : (data as UserInfo);
     if (!actualData.email && userEmailsUrl) {
-      const { data: emailsData } = await axios.get<types.UserEmail[]>(userEmailsUrl, requestConfig);
+      const { data: emailsData } = await axios.get<UserEmail[]>(userEmailsUrl, requestConfig);
       if (emailsData.length > 0) {
         actualData.email = emailsData[0].email;
       }
@@ -166,28 +199,25 @@ export async function getUserInfo(
   };
 }
 
-export async function createAppOAuth2AuthorizationCode(
+export function createAppOAuth2AuthorizationCode(
   app: App,
   redirectUri: string,
   scope: string,
-  user: User,
+  appMember: AppMember,
   ctx: Context,
-): Promise<types.OAuth2AuthorizationCode> {
+): Promise<OAuth2AuthorizationCode> {
   const appHost = `${app.path}.${app.OrganizationId}.${new URL(argv.host).hostname}`;
   const redirectHost = new URL(redirectUri).hostname;
   if (redirectHost !== appHost && redirectHost !== app.domain) {
     throwKoaError(ctx, 403, 'Invalid redirectUri');
   }
 
-  const { code } = await OAuth2AuthorizationCode.create({
+  return OAuth2AuthorizationCode.create({
     AppId: app.id,
     code: randomBytes(12).toString('hex'),
     expires: addMinutes(new Date(), 10),
     redirectUri,
     scope,
-    UserId: user.id,
+    AppMemberId: appMember.id,
   });
-  return {
-    code,
-  };
 }

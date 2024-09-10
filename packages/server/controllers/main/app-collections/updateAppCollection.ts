@@ -1,9 +1,9 @@
 import { assertKoaError } from '@appsemble/node-utils';
-import { Permission } from '@appsemble/utils';
+import { MainPermission } from '@appsemble/utils';
 import { type Context } from 'koa';
 
 import { AppCollection, Organization } from '../../../models/index.js';
-import { checkRole } from '../../../utils/checkRole.js';
+import { checkUserPermissions } from '../../../utils/authorization.js';
 
 export async function updateAppCollection(ctx: Context): Promise<void> {
   const {
@@ -17,7 +17,7 @@ export async function updateAppCollection(ctx: Context): Promise<void> {
 
   assertKoaError(!collection, ctx, 404, 'Collection not found');
 
-  await checkRole(ctx, collection.OrganizationId, Permission.EditCollections);
+  await checkUserPermissions(ctx, collection.OrganizationId, [MainPermission.UpdateAppCollections]);
 
   const updatedCollection = await collection.update({
     name: body.name ?? undefined,
@@ -30,6 +30,7 @@ export async function updateAppCollection(ctx: Context): Promise<void> {
     visibility: body.visibility ?? undefined,
     domain: body.domain ?? undefined,
   });
+
   ctx.response.status = 200;
   ctx.response.body = updatedCollection.toJSON();
 }

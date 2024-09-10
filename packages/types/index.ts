@@ -1,3 +1,4 @@
+import { type AppsPermission } from '@appsemble/utils';
 import { type IconName } from '@fortawesome/fontawesome-common-types';
 import { type Schema } from 'jsonschema';
 import { type OpenAPIV3 } from 'openapi-types';
@@ -26,7 +27,7 @@ export * from './ssl.js';
 export * from './team.js';
 export * from './template.js';
 export * from './theme.js';
-export * from './user.js';
+export * from './oauth2.js';
 export * from './quota.js';
 
 /**
@@ -141,7 +142,7 @@ export interface BlockDefinition extends ControllerDefinition {
  * The Connect2id server can be set up to provide additional custom claims, such as roles and
  * permissions.
  */
-export interface UserInfo {
+export interface BaseUserInfo {
   /**
    * The subject (end-user) identifier. This member is always present in a claims set.
    */
@@ -168,11 +169,6 @@ export interface UserInfo {
   picture?: string;
 
   /**
-   * A URL that links to the user profile.
-   */
-  profile?: string;
-
-  /**
    * The end-user’s locale, represented as a BCP47 language tag.
    */
   locale?: string;
@@ -181,26 +177,25 @@ export interface UserInfo {
    * The end-user’s time zone.
    */
   zoneinfo?: string;
+}
+
+export interface UserInfo extends BaseUserInfo {
+  /**
+   * If the user is subscribed to the newsletter
+   */
+  subscribed?: boolean;
+}
+
+export interface AppMemberInfo extends BaseUserInfo {
+  /**
+   * The role of the app member.
+   */
+  role: string;
 
   /**
    * The end-user's additional properties
    */
   properties?: Record<string, any>;
-
-  /**
-   * If the user is subscribed to the newsletter
-   */
-  subscribed?: boolean;
-
-  /**
-   * The properties of the currently logged in member of the app
-   */
-  appMember?: AppMember;
-
-  /**
-   * Returns `true` if the user has no Oauth connections and no password.
-   */
-  hasNoLoginMethods?: boolean;
 }
 
 /**
@@ -317,13 +312,17 @@ export interface Remappers {
    *
    * Supported properties:
    *
-   * - `memberId`: Get the id of the AppMember.
-   * - `userId`: Get the id of the user associated with AppMember object.
-   * - `role`: Get the role of the app member
-   * - `primaryEmail`: Get the primary email of the user associated with AppMember object.
-   * - `name`:  Get the name of the user associated with AppMember object.
+   * - `sub`: Get the id of the app member.
+   * - `name`: Get the name of the app member.
+   * - `email`: Get the email of the app member.
+   * - `email_verified`: Whether the email of the app member is verified.
+   * - `picture`: Get the picture of the app member.
+   * - `locale`: Get the locale of the app member.
+   * - `zoneinfo`: Get the zoneinfo of the app member.
+   * - `role`: Get the role of the app member.
+   * - `properties`: Get the custom properties of the app member.
    */
-  appMember: keyof AppMember;
+  'app.member': keyof AppMemberInfo;
 
   /**
    * Get a predefined app variable by name.
@@ -690,8 +689,6 @@ export interface Remappers {
    */
   translate: string;
 
-  user: keyof UserInfo;
-
   container: string;
 }
 
@@ -721,6 +718,7 @@ export interface RoleDefinition {
   description?: string;
   inherits?: string[];
   defaultPage?: string;
+  permissions?: AppsPermission[];
 }
 
 export interface Security {
@@ -1294,21 +1292,21 @@ export interface TeamMembersActionDefinition extends BaseActionDefinition<'team.
   id: Remapper;
 }
 
-export interface UserLoginAction extends BaseActionDefinition<'user.login'> {
+export interface AppMemberLoginAction extends BaseActionDefinition<'app.member.login'> {
   /**
-   * The email address to login with.
+   * The email address to log in with.
    */
   email: Remapper;
 
   /**
-   * The password to login with.
+   * The password to log in with.
    */
   password: Remapper;
 }
 
-export interface UserRegisterAction extends BaseActionDefinition<'user.register'> {
+export interface AppMemberRegisterAction extends BaseActionDefinition<'app.member.register'> {
   /**
-   * The email address to login with.
+   * The email address to register with.
    */
   email: Remapper;
 
@@ -1318,16 +1316,9 @@ export interface UserRegisterAction extends BaseActionDefinition<'user.register'
   password: Remapper;
 
   /**
-   * The display name of the user.
+   * The full name of the app member.
    */
-  displayName: Remapper;
-
-  /**
-   * Whether to login after registering.
-   *
-   * @default true
-   */
-  login?: boolean;
+  name: Remapper;
 
   /**
    * The profile picture to use.
@@ -1342,64 +1333,32 @@ export interface UserRegisterAction extends BaseActionDefinition<'user.register'
    * Every value will be converted to a string.
    */
   properties?: Remapper;
-}
-
-export interface UserCreateAction extends BaseActionDefinition<'user.create'> {
-  /**
-   * The display name of the user.
-   */
-  name: Remapper;
 
   /**
-   * The email address to login with.
-   */
-  email: Remapper;
-
-  /**
-   * The password to login with.
-   */
-  password: Remapper;
-
-  /**
-   * Custom properties that can be assigned freely.
+   * Whether to login after registering.
    *
-   * Every value will be converted to a string.
+   * @default true
    */
-  properties?: Remapper;
-
-  /**
-   * The role of the created user
-   */
-  role?: Remapper;
+  login?: boolean;
 }
 
-export interface UserQueryAction extends BaseActionDefinition<'user.query'> {
+export interface AppMemberQueryAction extends BaseActionDefinition<'app.member.query'> {
   /**
    * The roles of the users to fetch.
    */
   roles?: Remapper;
 }
 
-export interface UserUpdateAction extends BaseActionDefinition<'user.update'> {
+export interface AppMemberUpdateAction extends BaseActionDefinition<'app.member.update'> {
+  /**
+   * The id of the app member to update.
+   */
+  id: Remapper;
+
   /**
    * The display name to update.
    */
   name?: Remapper;
-
-  /**
-   * The email address of the user to update.
-   */
-  currentEmail: Remapper;
-
-  /**
-   * The new email address of the user.
-   */
-  newEmail?: Remapper;
-
-  /**
-   * The password to update.
-   */
-  password?: Remapper;
 
   /**
    * Custom properties that can be assigned freely.
@@ -1414,11 +1373,11 @@ export interface UserUpdateAction extends BaseActionDefinition<'user.update'> {
   role?: Remapper;
 }
 
-export interface UserRemoveAction extends BaseActionDefinition<'user.remove'> {
+export interface AppMemberRemoveAction extends BaseActionDefinition<'app.member.remove'> {
   /**
-   * The email address of the account to delete.
+   * The id of the app member to remove.
    */
-  email: Remapper;
+  id: Remapper;
 }
 
 export interface RequestLikeActionDefinition<T extends Action['type'] = Action['type']>
@@ -1487,7 +1446,7 @@ export type ResourceQueryActionDefinition = ResourceActionDefinition<'resource.q
 export type ResourceCountActionDefinition = ResourceActionDefinition<'resource.count'>;
 export type ResourceUpdateActionDefinition = ResourceActionDefinition<'resource.update'>;
 export type ResourcePatchActionDefinition = ResourceActionDefinition<'resource.patch'>;
-export type UserLogoutAction = BaseActionDefinition<'user.logout'>;
+export type AppMemberLogoutAction = BaseActionDefinition<'app.member.logout'>;
 
 export interface BaseResourceSubscribeActionDefinition<T extends Action['type']>
   extends BaseActionDefinition<T> {
@@ -1577,6 +1536,12 @@ export type MessageActionDefinition = BaseActionDefinition<'message'> &
 
 export type ActionDefinition =
   | AnalyticsAction
+  | AppMemberLoginAction
+  | AppMemberLogoutAction
+  | AppMemberQueryAction
+  | AppMemberRegisterAction
+  | AppMemberRemoveAction
+  | AppMemberUpdateAction
   | BaseActionDefinition<'dialog.error'>
   | BaseActionDefinition<'dialog.ok'>
   | BaseActionDefinition<'flow.back'>
@@ -1623,14 +1588,7 @@ export type ActionDefinition =
   | StorageUpdateActionDefinition
   | StorageWriteActionDefinition
   | TeamInviteActionDefinition
-  | TeamMembersActionDefinition
-  | UserCreateAction
-  | UserLoginAction
-  | UserLogoutAction
-  | UserQueryAction
-  | UserRegisterAction
-  | UserRemoveAction
-  | UserUpdateAction;
+  | TeamMembersActionDefinition;
 
 export interface ActionType {
   /**
@@ -2243,12 +2201,13 @@ export interface OrganizationInvite {
  * App member in an app.
  */
 export interface AppMember {
-  userId: string;
-  memberId: string;
+  id: string;
   name: string;
-  primaryEmail: string;
+  email: string;
+  emailVerified?: boolean;
   role: string;
   demo: boolean;
+  timezone: string;
   properties: Record<string, any>;
 }
 

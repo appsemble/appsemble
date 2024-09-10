@@ -8,7 +8,7 @@ import {
   useSideMenu,
 } from '@appsemble/react-components';
 import { type AppCollection } from '@appsemble/types';
-import { Permission } from '@appsemble/utils';
+import { Permissions } from '@appsemble/utils';
 import { type ReactNode } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { Route, useParams } from 'react-router-dom';
@@ -41,7 +41,7 @@ export function CollectionRoutes({ fallbackCollectionId }: CollectionRoutesProps
   const organizationId = collection?.OrganizationId;
   const userOrganization = organizations?.find((org) => org.id === organizationId);
 
-  const mayEdit = userOrganization && checkRole(userOrganization.role, Permission.EditCollections);
+  const mayEdit = userOrganization && checkRole(userOrganization.role, Permissions.EditCollections);
 
   const url = `collections/${collectionId}`;
 

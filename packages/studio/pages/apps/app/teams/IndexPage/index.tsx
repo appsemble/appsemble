@@ -9,7 +9,7 @@ import {
   useToggle,
 } from '@appsemble/react-components';
 import { type Team } from '@appsemble/types';
-import { Permission, type TeamRole } from '@appsemble/utils';
+import { Permissions, type TeamRole } from '@appsemble/utils';
 import axios from 'axios';
 import { type ReactNode, useCallback } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
@@ -62,7 +62,7 @@ export function IndexPage(): ReactNode {
   );
 
   const organization = organizations.find((o) => o.id === app.OrganizationId);
-  const mayCreateTeam = organization && checkRole(organization.role, Permission.ManageTeams);
+  const mayCreateTeam = organization && checkRole(organization.role, Permissions.ManageTeams);
 
   return (
     <>

@@ -1,6 +1,6 @@
 import { Button, Icon, useConfirmation, useMessages } from '@appsemble/react-components';
 import { type TrainingBlock } from '@appsemble/types';
-import { Permission } from '@appsemble/utils';
+import { Permissions } from '@appsemble/utils';
 import axios from 'axios';
 import { type ReactNode, useCallback, useLayoutEffect, useRef, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
@@ -47,7 +47,7 @@ export function TrainingBlockCard({
 
   const isAppsembleMember = organizations?.find((org) => org.id === 'appsemble');
   const mayDeleteTraining =
-    isAppsembleMember && checkRole(isAppsembleMember.role, Permission.DeleteApps);
+    isAppsembleMember && checkRole(isAppsembleMember.role, Permissions.DeleteApps);
 
   const blockDefaultValues = {
     exampleCodeBlock: exampleCode,

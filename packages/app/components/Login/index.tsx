@@ -27,17 +27,17 @@ import {
   showDemoLogin,
 } from '../../utils/settings.js';
 import { useAppDefinition } from '../AppDefinitionProvider/index.js';
+import { useAppMember } from '../AppMemberProvider/index.js';
 import { DemoLogin } from '../DemoLogin/index.js';
 import { Main } from '../Main/index.js';
 import { OpenIDLogin } from '../OpenIDLogin/index.js';
 import { AppBar } from '../TitleBar/index.js';
-import { useUser } from '../UserProvider/index.js';
 
 export function Login(): ReactNode {
   useMeta(messages.login);
 
   const { definition } = useAppDefinition();
-  const { isLoggedIn, passwordLogin, role } = useUser();
+  const { isLoggedIn, passwordLogin, role } = useAppMember();
   const qs = useQuery();
   const redirect = qs.get('redirect');
   const { lang } = useParams<{ lang: string }>();

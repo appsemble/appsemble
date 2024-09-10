@@ -1,5 +1,5 @@
 import { assertKoaError, type FindOptions, type Options } from '@appsemble/node-utils';
-import { Permission } from '@appsemble/utils';
+import { Permissions } from '@appsemble/utils';
 import { type Context, type Middleware } from 'koa';
 import { extension } from 'mime-types';
 
@@ -20,7 +20,7 @@ export function createGetAssets({ checkRole, getApp, getAppAssets }: Options): M
       where: { AppId: app.id },
     };
 
-    await checkRole({ context: ctx, app, permissions: Permission.ReadAssets, findOptions });
+    await checkRole({ context: ctx, app, permissions: Permissions.ReadAssets, findOptions });
 
     ctx.body = await getAppAssets({ app, context: ctx });
   };

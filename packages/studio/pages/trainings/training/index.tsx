@@ -7,7 +7,7 @@ import {
   useMessages,
 } from '@appsemble/react-components';
 import { type Training, type TrainingBlock } from '@appsemble/types';
-import { Permission } from '@appsemble/utils';
+import { Permissions } from '@appsemble/utils';
 import { randomString } from '@appsemble/web-utils';
 import axios from 'axios';
 import { type ChangeEvent, type ReactNode, useCallback, useEffect, useState } from 'react';
@@ -63,7 +63,7 @@ export function TrainingHomePage(): ReactNode {
   }, [trainingId]);
 
   const mayDeleteTraining =
-    isAppsembleMember && checkRole(isAppsembleMember.role, Permission.DeleteApps);
+    isAppsembleMember && checkRole(isAppsembleMember.role, Permissions.DeleteApps);
 
   const handleSelectChange = useCallback(
     ({ currentTarget }: ChangeEvent<HTMLSelectElement>) => {

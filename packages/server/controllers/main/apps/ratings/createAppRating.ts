@@ -1,7 +1,7 @@
 import { assertKoaError } from '@appsemble/node-utils';
 import { type Context } from 'koa';
 
-import { App, AppRating, type User } from '../../../../models/index.js';
+import { App, AppRating, User } from '../../../../models/index.js';
 
 export async function createAppRating(ctx: Context): Promise<void> {
   const {
@@ -9,13 +9,14 @@ export async function createAppRating(ctx: Context): Promise<void> {
     request: {
       body: { description, rating },
     },
-    user,
+    user: authSubject,
   } = ctx;
 
   const app = await App.findByPk(AppId, { attributes: ['id'] });
-  await (user as User).reload({ attributes: ['name'] });
 
   assertKoaError(!app, ctx, 404, 'App not found');
+
+  const user = await User.findByPk(authSubject.id, { attributes: ['name'] });
 
   const [result] = await AppRating.upsert(
     { rating, description, UserId: user.id, AppId },

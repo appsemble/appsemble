@@ -25,12 +25,12 @@ import { makeActions } from '../../utils/makeActions.js';
 import { apiUrl, appId } from '../../utils/settings.js';
 import { type AppStorage } from '../../utils/storage.js';
 import { useAppDefinition } from '../AppDefinitionProvider/index.js';
+import { useAppMember } from '../AppMemberProvider/index.js';
 import { useAppMessages } from '../AppMessagesProvider/index.js';
 import { useAppVariables } from '../AppVariablesProvider/index.js';
 import { useDemoAppMembers } from '../DemoAppMembersProvider/index.js';
 import { usePage } from '../MenuProvider/index.js';
 import { useServiceWorkerRegistration } from '../ServiceWorkerRegistrationProvider/index.js';
-import { useUser } from '../UserProvider/index.js';
 
 const FA_URL = [...document.styleSheets]
   .map((sheet) => sheet.href)
@@ -95,8 +95,8 @@ export function Block({
   const { getAppMessage, getBlockMessage } = useAppMessages();
   const { getVariable } = useAppVariables();
 
-  const { logout, passwordLogin, setUserInfo, teams, updateTeam, userInfo, userInfoRef } =
-    useUser();
+  const { appMemberInfoRef, logout, passwordLogin, setAppMemberInfo, teams, updateTeam } =
+    useAppMember();
   const { refetchDemoAppMembers } = useDemoAppMembers();
   const { setBlockMenu } = usePage();
 
@@ -150,10 +150,10 @@ export function Block({
       showMessage: push,
       teams,
       updateTeam,
-      getUserInfo: () => userInfoRef.current,
+      getAppMemberInfo: () => appMemberInfoRef.current,
       passwordLogin,
       passwordLogout: logout,
-      setUserInfo,
+      setAppMemberInfo,
       refetchDemoAppMembers,
     });
     const theme = mergeThemes(definition.theme, page.theme, block.theme);
@@ -239,16 +239,15 @@ export function Block({
     ready,
     remap,
     setBlockMenu,
-    setUserInfo,
     showDialog,
     showShareDialog,
     teams,
     updateTeam,
-    userInfo,
-    userInfoRef,
+    appMemberInfoRef,
     getAppMessage,
     refetchDemoAppMembers,
     getVariable,
+    setAppMemberInfo,
   ]);
 
   const { layout = manifest.layout } = block;

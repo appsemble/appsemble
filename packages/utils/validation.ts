@@ -1,14 +1,13 @@
 import {
   type AppDefinition,
+  type AppMemberRegisterAction,
+  type AppMemberUpdateAction,
   type BlockManifest,
   type PageDefinition,
   type ProjectImplementations,
   type Remapper,
   type ResourceGetActionDefinition,
   type RoleDefinition,
-  type UserCreateAction,
-  type UserRegisterAction,
-  type UserUpdateAction,
 } from '@appsemble/types';
 import cronParser from 'cron-parser';
 import { type Schema, ValidationError, Validator, type ValidatorResult } from 'jsonschema';
@@ -632,13 +631,13 @@ function validateActions(definition: AppDefinition, report: Report): void {
       if (
         ['user.register', 'user.create', 'user.update'].includes(action.type) &&
         Object.values(
-          (action as UserCreateAction | UserRegisterAction | UserUpdateAction).properties ?? {},
+          (action as AppMemberRegisterAction | AppMemberUpdateAction).properties ?? {},
         )[0] &&
         definition.users?.properties
       ) {
         for (const propertyName of Object.keys(
           Object.values(
-            (action as UserCreateAction | UserRegisterAction | UserUpdateAction).properties ?? {},
+            (action as AppMemberRegisterAction | AppMemberUpdateAction).properties ?? {},
           )[0],
         )) {
           if (!definition.users?.properties[propertyName]) {

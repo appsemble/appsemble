@@ -113,12 +113,12 @@ export async function handler(argv: ServeArguments): Promise<void> {
 
   const appMembers: AppMember[] = [
     {
-      userId: '1',
-      memberId: '1',
+      id: '1',
       name: 'dev',
       primaryEmail: 'dev@example.com',
       role: passedUserRole || appSecurity?.default.role,
       demo: false,
+      timezone: '',
       properties: {},
     },
   ];

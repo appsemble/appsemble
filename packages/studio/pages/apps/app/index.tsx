@@ -9,7 +9,7 @@ import {
   useSideMenu,
 } from '@appsemble/react-components';
 import { type App } from '@appsemble/types';
-import { compareStrings, Permission } from '@appsemble/utils';
+import { compareStrings, Permissions } from '@appsemble/utils';
 import classNames from 'classnames';
 import {
   createContext,
@@ -84,15 +84,15 @@ export function AppRoutes(): ReactNode {
 
   const organization = organizations?.find((org) => org.id === app?.OrganizationId);
 
-  const editPermission = organization && checkRole(organization.role, Permission.EditApps);
+  const editPermission = organization && checkRole(organization.role, Permissions.EditApps);
   const editMessagePermission =
-    organization && checkRole(organization.role, Permission.EditAppMessages);
+    organization && checkRole(organization.role, Permissions.EditAppMessages);
   const pushNotificationPermission =
-    organization && checkRole(organization.role, Permission.PushNotifications);
+    organization && checkRole(organization.role, Permissions.PushNotifications);
 
   const resourceNames = app?.definition.resources && Object.keys(app?.definition.resources);
-  const mayViewResources = organization && checkRole(organization.role, Permission.ReadResources);
-  const mayViewAssets = organization && checkRole(organization.role, Permission.ReadAssets);
+  const mayViewResources = organization && checkRole(organization.role, Permissions.ReadResources);
+  const mayViewAssets = organization && checkRole(organization.role, Permissions.ReadAssets);
   const canViewResources = Boolean(mayViewResources && resourceNames?.length);
 
   const value = useMemo(() => ({ app, setApp }), [app, setApp]);
@@ -232,7 +232,7 @@ export function AppRoutes(): ReactNode {
         <Route element={<IndexPage />} path="/" />
 
         <Route
-          element={<ProtectedRoute organization={organization} permission={Permission.EditApps} />}
+          element={<ProtectedRoute organization={organization} permission={Permissions.EditApps} />}
         >
           <Route
             element={
@@ -258,7 +258,7 @@ export function AppRoutes(): ReactNode {
 
         <Route
           element={
-            <ProtectedRoute organization={organization} permission={Permission.ReadAssets} />
+            <ProtectedRoute organization={organization} permission={Permissions.ReadAssets} />
           }
         >
           <Route element={<AssetsPage />} path="/assets" />
@@ -266,7 +266,7 @@ export function AppRoutes(): ReactNode {
 
         <Route
           element={
-            <ProtectedRoute organization={organization} permission={Permission.ReadResources} />
+            <ProtectedRoute organization={organization} permission={Permissions.ReadResources} />
           }
         >
           <Route element={<ResourcesRoutes />} path="/resources/*" />
@@ -274,7 +274,7 @@ export function AppRoutes(): ReactNode {
 
         <Route
           element={
-            <ProtectedRoute organization={organization} permission={Permission.EditAppMessages} />
+            <ProtectedRoute organization={organization} permission={Permissions.EditAppMessages} />
           }
         >
           <Route element={<TranslationsPage />} path="/translations" />
@@ -294,7 +294,7 @@ export function AppRoutes(): ReactNode {
         {app.definition.security ? (
           <Route
             element={
-              <ProtectedRoute organization={organization} permission={Permission.EditApps} />
+              <ProtectedRoute organization={organization} permission={Permissions.EditApps} />
             }
           >
             <Route element={<UsersPage />} path="/users" />
@@ -304,7 +304,7 @@ export function AppRoutes(): ReactNode {
         {app.definition.security?.teams ? (
           <Route
             element={
-              <ProtectedRoute organization={organization} permission={Permission.InviteMember} />
+              <ProtectedRoute organization={organization} permission={Permissions.InviteMember} />
             }
           >
             <Route element={<TeamsRoutes />} path="/teams/*" />
@@ -313,7 +313,7 @@ export function AppRoutes(): ReactNode {
 
         <Route
           element={
-            <ProtectedRoute organization={organization} permission={Permission.EditAppSettings} />
+            <ProtectedRoute organization={organization} permission={Permissions.EditAppSettings} />
           }
         >
           <Route element={<SettingsPage />} path="/settings" />
@@ -321,7 +321,10 @@ export function AppRoutes(): ReactNode {
 
         <Route
           element={
-            <ProtectedRoute organization={organization} permission={Permission.PushNotifications} />
+            <ProtectedRoute
+              organization={organization}
+              permission={Permissions.PushNotifications}
+            />
           }
         >
           <Route element={<NotificationsPage />} path="/notifications" />

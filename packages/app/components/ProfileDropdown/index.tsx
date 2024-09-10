@@ -7,13 +7,13 @@ import styles from './index.module.css';
 import { messages } from './messages.js';
 import { sentryDsn, showDemoLogin } from '../../utils/settings.js';
 import { useAppDefinition } from '../AppDefinitionProvider/index.js';
+import { useAppMember } from '../AppMemberProvider/index.js';
 import { DemoLogin } from '../DemoLogin/index.js';
-import { useUser } from '../UserProvider/index.js';
 
 export function ProfileDropdown(): ReactNode {
   const { formatMessage } = useIntl();
   const { definition } = useAppDefinition();
-  const { isLoggedIn, logout, userInfo } = useUser();
+  const { isLoggedIn, logout, userInfo } = useAppMember();
   const { lang } = useParams<{ lang: string }>();
   const { pathname } = useLocation();
 

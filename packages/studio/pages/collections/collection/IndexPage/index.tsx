@@ -7,7 +7,7 @@ import {
   useToggle,
 } from '@appsemble/react-components';
 import { type App, type AppCollection } from '@appsemble/types';
-import { Permission } from '@appsemble/utils';
+import { Permissions } from '@appsemble/utils';
 import axios from 'axios';
 import { type ReactNode, useCallback, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
@@ -110,7 +110,7 @@ export function IndexPage({ collection }: IndexPageProps): ReactNode {
 
   const { organizations } = useUser();
   const userOrganization = organizations?.find((org) => org.id === collection.OrganizationId);
-  const mayEdit = userOrganization && checkRole(userOrganization.role, Permission.EditCollections);
+  const mayEdit = userOrganization && checkRole(userOrganization.role, Permissions.EditCollections);
 
   const editMode = useToggle();
 

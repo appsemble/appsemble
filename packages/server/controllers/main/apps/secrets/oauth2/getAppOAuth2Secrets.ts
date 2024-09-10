@@ -1,9 +1,9 @@
 import { assertKoaError } from '@appsemble/node-utils';
-import { Permission } from '@appsemble/utils';
+import { MainPermission } from '@appsemble/utils';
 import { type Context } from 'koa';
 
 import { App, AppOAuth2Secret } from '../../../../../models/index.js';
-import { checkRole } from '../../../../../utils/checkRole.js';
+import { checkUserPermissions } from '../../../../../utils/authorization.js';
 
 export async function getAppOAuth2Secrets(ctx: Context): Promise<void> {
   const { appId } = ctx.pathParams;
@@ -15,7 +15,7 @@ export async function getAppOAuth2Secrets(ctx: Context): Promise<void> {
 
   assertKoaError(!app, ctx, 404, 'App not found');
 
-  await checkRole(ctx, app.OrganizationId, [Permission.EditApps, Permission.EditAppSettings]);
+  await checkUserPermissions(ctx, app.OrganizationId, [MainPermission.QueryAppSecrets]);
 
   ctx.body = app.AppOAuth2Secrets;
 }

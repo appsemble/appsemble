@@ -4,7 +4,13 @@ import { type Transaction } from 'sequelize';
 
 import { argv } from './argv.js';
 import { type Mailer } from './email/Mailer.js';
-import { type App, EmailAuthorization, OrganizationMember, User } from '../models/index.js';
+import {
+  type App,
+  type AppMember,
+  EmailAuthorization,
+  OrganizationMember,
+  User,
+} from '../models/index.js';
 
 export async function processEmailAuthorization(
   mailer: Mailer,
@@ -37,13 +43,18 @@ export async function processEmailAuthorization(
   }
 }
 
-export async function checkAppSecurityPolicy(app: App, user: User): Promise<boolean> {
+export async function checkAppSecurityPolicy(
+  app: App,
+  user: User,
+  appMember: AppMember,
+): Promise<boolean> {
   const policy = app.definition?.security?.default?.policy ?? 'everyone';
+
   if (policy === 'everyone') {
     return true;
   }
 
-  if (policy === 'invite' && !app.AppMembers.length) {
+  if (policy === 'invite' && !appMember) {
     return false;
   }
 

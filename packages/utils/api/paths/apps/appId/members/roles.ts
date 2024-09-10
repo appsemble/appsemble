@@ -4,13 +4,13 @@ export const pathItems: OpenAPIV3.PathItemObject = {
   parameters: [{ $ref: '#/components/parameters/appId' }],
   get: {
     tags: ['app', 'member'],
-    description: 'Fetch app accounts by roles.',
-    operationId: 'getAppMembersByRoles',
+    description: 'Fetch app members by roles.',
+    operationId: 'queryAppMembersByRoles',
     parameters: [{ $ref: '#/components/parameters/roles' }],
     security: [{ app: [] }],
     responses: {
       200: {
-        description: 'The accounts that were fetched.',
+        description: 'The app members that were fetched.',
       },
     },
   },

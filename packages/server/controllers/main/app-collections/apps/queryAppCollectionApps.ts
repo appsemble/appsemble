@@ -1,4 +1,4 @@
-import { assertKoaError, throwKoaError } from '@appsemble/node-utils';
+import { assertKoaError } from '@appsemble/node-utils';
 import { type Context } from 'koa';
 import { col, fn, literal, Op } from 'sequelize';
 
@@ -20,24 +20,26 @@ export async function queryAppCollectionApps(ctx: Context): Promise<void> {
   } = ctx;
   const { baseLanguage, language } = parseLanguage(ctx, ctx.query?.language);
 
-  const memberships = await OrganizationMember.findAll({
-    where: {
-      UserId: user?.id ?? null,
-    },
-    attributes: ['OrganizationId'],
-  });
-
   const collection = await AppCollection.findByPk(appCollectionId, {
     attributes: ['id', 'OrganizationId', 'visibility'],
   });
 
-  if (
-    !collection ||
-    (collection.visibility === 'private' &&
-      !memberships.some((membership) => membership.OrganizationId === collection.OrganizationId))
-  ) {
-    throwKoaError(ctx, 404, 'Collection not found');
-  }
+  assertKoaError(!collection, ctx, 403, 'App collection not found');
+
+  const organizationMember = await OrganizationMember.findOne({
+    where: {
+      UserId: user?.id ?? null,
+      OrganizationId: collection.OrganizationId,
+    },
+    attributes: ['OrganizationId'],
+  });
+
+  assertKoaError(
+    collection.visibility === 'private' && !organizationMember,
+    ctx,
+    403,
+    'You are not allowed to see this app collection',
+  );
 
   const apps = (
     await AppCollection.findByPk(appCollectionId, {
@@ -76,9 +78,7 @@ export async function queryAppCollectionApps(ctx: Context): Promise<void> {
                     visibility: 'public',
                   },
                   {
-                    OrganizationId: {
-                      [Op.in]: memberships.map((membership) => membership.OrganizationId),
-                    },
+                    OrganizationId: organizationMember.OrganizationId,
                   },
                 ],
               },
@@ -89,7 +89,7 @@ export async function queryAppCollectionApps(ctx: Context): Promise<void> {
     })
   )?.Apps;
 
-  assertKoaError(!apps, ctx, 404, 'Collection not found');
+  assertKoaError(!apps, ctx, 404, 'App collection apps not found');
 
   const ratingsMap = new Map(
     (

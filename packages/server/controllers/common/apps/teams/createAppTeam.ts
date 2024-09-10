@@ -1,11 +1,12 @@
 import { assertKoaError, throwKoaError } from '@appsemble/node-utils';
-import { checkAppRole, Permission, TeamRole } from '@appsemble/utils';
+import { checkAppRole, Permissions, TeamRole } from '@appsemble/utils';
 import { type Context } from 'koa';
 
 import { App, AppMember, Team, TeamMember, transactional, User } from '../../../../models/index.js';
 import { checkRole } from '../../../../utils/checkRole.js';
 import { assertTeamsDefinition } from '../../../../utils/team.js';
 
+// TODO: CHECK
 export async function createAppTeam(ctx: Context): Promise<void> {
   const {
     clients,
@@ -45,7 +46,7 @@ export async function createAppTeam(ctx: Context): Promise<void> {
       throwKoaError(ctx, 403, 'User is not allowed to create teams');
     }
   } else {
-    await checkRole(ctx, app.OrganizationId, Permission.ManageTeams);
+    await checkRole(ctx, app.OrganizationId, Permissions.ManageTeams);
   }
 
   let team: Team;

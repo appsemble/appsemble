@@ -146,13 +146,11 @@ export async function assertAppSamlConsumerService(ctx: Context): Promise<void> 
   const objectId = secret.objectIdAttribute && attributes.get(secret.objectIdAttribute);
   const role = app.definition.security?.default?.role;
   let member: AppMember;
-  let user: User;
 
   switch (true) {
     case authorization != null:
       // If the user is already linked to a known SAML authorization, use that account.
       member = authorization.AppMember;
-      user = member.User;
       break;
 
     case app.scimEnabled:
@@ -168,53 +166,34 @@ export async function assertAppSamlConsumerService(ctx: Context): Promise<void> 
         where: { AppId: appId, scimExternalId: objectId },
         attributes: { exclude: ['picture'] },
       });
-      user = await User.findOne({ where: { id: member.UserId } });
       break;
 
     default:
-      try {
-        await transactional(async (transaction) => {
-          // Otherwise, link to the Appsemble account that’s logged in to Appsemble Studio.
-          // If the user isn’t logged in to Appsemble studio either, create a new anonymous
-          // Appsemble account.
-          user =
-            loginRequest.User ||
-            (await User.create(
-              {
-                name: name || nameId,
-                timezone: loginRequest.timezone,
-              },
-              { transaction },
-            ));
+      await transactional(async (transaction) => {
+        member = await AppMember.findOne({
+          where: { email, AppId: appId },
+          attributes: { exclude: ['picture'] },
+        });
 
-          member = await AppMember.findOne({
-            where: { UserId: user.id, AppId: appId },
-            attributes: { exclude: ['picture'] },
-          });
-
-          if (!member) {
-            member = await AppMember.create(
-              { UserId: user.id, AppId: appId, role, email, name, emailVerified: true },
-              { transaction },
-            );
-          }
-
-          // The logged in account is linked to a new SAML authorization for next time.
-          await AppSamlAuthorization.create(
-            { nameId, AppSamlSecretId: appSamlSecretId, AppMemberId: member.id },
+        if (!member) {
+          member = await AppMember.create(
+            { AppId: appId, role, email, name, timezone: '', emailVerified: true },
             { transaction },
           );
-        });
-      } catch {
-        await loginRequest.update({ email, nameId });
-        return prompt('emailconflict', { email, id: loginRequest.id });
-      }
+        }
+
+        // The logged in account is linked to a new SAML authorization for next time.
+        await AppSamlAuthorization.create(
+          { nameId, AppSamlSecretId: appSamlSecretId, AppMemberId: member.id },
+          { transaction },
+        );
+      });
   }
   const { code } = await createAppOAuth2AuthorizationCode(
     app,
     loginRequest.redirectUri,
     loginRequest.scope,
-    user,
+    member,
     ctx,
   );
   const location = new URL(loginRequest.redirectUri);

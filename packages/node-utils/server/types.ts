@@ -14,7 +14,7 @@ import {
   type Theme as ThemeType,
   type UserInfo,
 } from '@appsemble/types';
-import { type IdentifiableBlock, type Permission } from '@appsemble/utils';
+import { type AppsPermission, type IdentifiableBlock, type MainPermission } from '@appsemble/utils';
 import { type RawAxiosRequestConfig } from 'axios';
 import {
   type Context,
@@ -23,15 +23,8 @@ import {
   type ParameterizedContext,
 } from 'koa';
 
-export interface UtilsUser {
+export interface AuthSubject {
   id: string;
-  name: string;
-  primaryEmail: string;
-  timezone: string;
-  locale: string;
-  EmailAuthorizations?: { verified: boolean }[];
-  subscribed?: boolean;
-  demoLoginUser?: boolean;
 }
 
 declare module 'koa' {
@@ -65,11 +58,11 @@ declare module 'koas-security' {
   }
 
   interface Users {
-    app: UtilsUser;
-    basic: UtilsUser;
-    cli: UtilsUser;
-    scim: UtilsUser;
-    studio: UtilsUser;
+    app: AuthSubject;
+    basic: AuthSubject;
+    cli: AuthSubject;
+    scim: AuthSubject;
+    studio: AuthSubject;
   }
 }
 
@@ -98,7 +91,7 @@ declare module 'koas-parameters' {
     snapshotId: number;
     teamId: string;
     token: string;
-    serviceSecretId: number;
+    appServiceId: number;
     appSecretId: number;
     appVariableId: number;
     userId: string;
@@ -124,7 +117,7 @@ declare module 'koas-parameters' {
     assets: boolean;
     screenshots: boolean;
     readmes: boolean;
-    roles: string[];
+    roles: string[] | string;
     includeMessages: boolean;
   }
 }
@@ -171,14 +164,14 @@ export interface GetAppMessagesParams extends GetAppSubEntityParams {
   merge?: string[] | string;
 }
 
-export interface GetAppMembersParams extends GetAppSubEntityParams {
-  userId: string;
+export interface GetAppMemberParams extends GetAppSubEntityParams {
+  id: string;
 }
 
 export interface GetAppUserInfoParams {
   context: ParameterizedContext<DefaultState, DefaultContextInterface, any>;
   client: { scope: string } | { scope: string; app: App } | {};
-  user: UtilsUser;
+  user: AuthSubject;
   ctx: Context;
 }
 
@@ -187,7 +180,7 @@ export interface ExtendedTeam extends TeamMember {
 }
 
 export interface GetAppTeamsParams extends GetAppSubEntityParams {
-  user: UtilsUser;
+  id: string;
 }
 
 export interface GetAppBlockStylesParams extends GetAppSubEntityParams {
@@ -282,10 +275,17 @@ export interface ApplyAppServiceSecretsParams {
   axiosConfig: RawAxiosRequestConfig<any>;
 }
 
-export interface CheckRoleParams {
+export interface CheckAppMemberPermissionsParams {
   context: ParameterizedContext<DefaultState, DefaultContextInterface, any>;
   app: App;
-  permissions: Permission | Permission[];
+  permissions: AppsPermission[];
+  findOptions?: FindOptions;
+}
+
+export interface CheckUserPermissionsParams {
+  context: ParameterizedContext<DefaultState, DefaultContextInterface, any>;
+  app: App;
+  permissions: MainPermission[];
   findOptions?: FindOptions;
 }
 
@@ -428,7 +428,7 @@ export interface Options {
   getApp: (params: GetAppParams) => Promise<App>;
   getAppDetails: (params: GetAppParams) => Promise<AppDetails>;
   getAppMessages: (params: GetAppMessagesParams) => Promise<AppMessages[]>;
-  getAppMembers: (params: GetAppMembersParams) => Promise<AppMember[]>;
+  getAppMember: (params: GetAppMemberParams) => Promise<AppMember | null>;
   getAppUserInfo: (params: GetAppUserInfoParams) => Promise<UserInfo>;
   getAppTeams: (params: GetAppTeamsParams) => Promise<ExtendedTeam[]>;
   getAppStyles: (params: GetAppParams | GetAppSubEntityParams) => Promise<AppStyles>;
@@ -452,7 +452,10 @@ export interface Options {
   applyAppServiceSecrets: (
     params: ApplyAppServiceSecretsParams,
   ) => Promise<RawAxiosRequestConfig<any>>;
-  checkRole: (params: CheckRoleParams) => Promise<Record<string, any>>;
+  checkAppMemberPermissions: (
+    params: CheckAppMemberPermissionsParams,
+  ) => Promise<Record<string, any>>;
+  checkUserPermissions: (params: CheckUserPermissionsParams) => Promise<Record<string, any>>;
   reloadUser: (params: ReloadUserParams) => Promise<Record<string, any>>;
   parseQuery: (params: ParseQueryParams) => ParsedQuery;
   getAppResource: (params: GetAppResourceParams) => Promise<Resource>;

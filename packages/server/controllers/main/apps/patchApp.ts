@@ -4,7 +4,7 @@ import {
   updateCompanionContainers,
 } from '@appsemble/node-utils';
 import { type AppDefinition } from '@appsemble/types';
-import { Permission, validateAppDefinition, validateStyle } from '@appsemble/utils';
+import { Permissions, validateAppDefinition, validateStyle } from '@appsemble/utils';
 import { type Context } from 'koa';
 import { literal } from 'sequelize';
 import { parse } from 'yaml';
@@ -100,13 +100,13 @@ export async function patchApp(ctx: Context): Promise<void> {
 
   checkAppLock(ctx, dbApp);
 
-  const checkPermissions: Permission[] = [];
+  const checkPermissions: Permissions[] = [];
 
   try {
     result = {};
 
     if (yaml) {
-      checkPermissions.push(Permission.EditApps);
+      checkPermissions.push(Permissions.EditApps);
       const definition = parse(yaml, { maxAliasCount: 10_000 }) as AppDefinition;
       handleValidatorResult(
         ctx,
@@ -247,7 +247,7 @@ export async function patchApp(ctx: Context): Promise<void> {
       maskableIcon !== undefined ||
       iconBackground !== undefined
     ) {
-      checkPermissions.push(Permission.EditAppSettings);
+      checkPermissions.push(Permissions.EditAppSettings);
     }
 
     await checkRole(ctx, dbApp.OrganizationId, checkPermissions);

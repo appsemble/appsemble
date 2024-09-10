@@ -5,7 +5,7 @@ import {
   throwKoaError,
 } from '@appsemble/node-utils';
 import { type BlockDefinition } from '@appsemble/types';
-import { has, Permission } from '@appsemble/utils';
+import { has, Permissions } from '@appsemble/utils';
 import { Validator } from 'jsonschema';
 import { type Context } from 'koa';
 import { type OpenAPIV3 } from 'openapi-types';
@@ -129,7 +129,7 @@ export async function createBlock(ctx: Context): Promise<void> {
     }
   }
 
-  await checkRole(ctx, OrganizationId, Permission.PublishBlocks);
+  await checkRole(ctx, OrganizationId, Permissions.PublishBlocks);
 
   const blockVersion = await BlockVersion.findOne({
     where: { name: blockId, OrganizationId },

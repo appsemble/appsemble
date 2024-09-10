@@ -11,7 +11,7 @@ import {
   useData,
 } from '@appsemble/react-components';
 import { type App } from '@appsemble/types';
-import { Permission } from '@appsemble/utils';
+import { Permissions } from '@appsemble/utils';
 import axios from 'axios';
 import { type ReactNode, useCallback, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
@@ -40,7 +40,7 @@ export function CreateAppButton({ className }: { readonly className?: string }):
   const { organizations, userInfo } = useUser();
 
   const organizationIndex = organizations?.findIndex((org) =>
-    checkRole(org.role, Permission.CreateApps),
+    checkRole(org.role, Permissions.CreateApps),
   );
 
   const defaultValues = {
@@ -86,7 +86,7 @@ export function CreateAppButton({ className }: { readonly className?: string }):
   const active = hash === '#create';
 
   const createOrganizations = organizations?.filter((org) =>
-    checkRole(org.role, Permission.CreateApps),
+    checkRole(org.role, Permissions.CreateApps),
   );
 
   if (!templates?.length) {

@@ -16,9 +16,9 @@ import { FormattedMessage } from 'react-intl';
 import { messages } from './messages.js';
 import { apiUrl, appId } from '../../utils/settings.js';
 import { useAppDefinition } from '../AppDefinitionProvider/index.js';
+import { useAppMember } from '../AppMemberProvider/index.js';
 import { BottomNavigation } from '../BottomNavigation/index.js';
 import { SideNavigation } from '../SideNavigation/index.js';
-import { useUser } from '../UserProvider/index.js';
 
 export interface BlockMenuItem {
   path: string;
@@ -50,7 +50,7 @@ export function MenuProvider({ children }: MenuProviderProps): ReactNode {
   const {
     definition: { layout = {}, ...definition },
   } = useAppDefinition();
-  const { role, teams } = useUser();
+  const { role, teams } = useAppMember();
   const [page, setPage] = useState<PageDefinition>();
   const [blockMenus, setBlockMenus] = useState<BlockMenuItem[]>([]);
   const value = useMemo<MenuProviderContext>(

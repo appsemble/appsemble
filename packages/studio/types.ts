@@ -47,7 +47,7 @@ export interface Page {
 export interface ExtendedOAuth2State extends OAuth2State {
   id: string;
   appRequest?: string;
-  userinfo?: UserInfo;
+  userinfo?: UserInfo & { profile: string };
 }
 
 declare global {

@@ -1,5 +1,5 @@
 import { createServer, createTestUser, models, setArgv, useTestDatabase } from '@appsemble/server';
-import { TeamRole } from '@appsemble/utils';
+import { TeamMemberRole } from '@appsemble/utils';
 import { type AxiosTestInstance, setTestApp } from 'axios-test-instance';
 import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 
@@ -515,7 +515,7 @@ describe('updateMember', () => {
       appId: app.id,
       remote: testApp.defaults.baseURL,
       user: user.id,
-      role: TeamRole.Manager,
+      role: TeamMemberRole.Manager,
       id: team.id,
     });
     expect(teamMember.role).toBe('member');
@@ -565,7 +565,7 @@ describe('updateMember', () => {
         appId: app.id,
         remote: testApp.defaults.baseURL,
         user: user.id,
-        role: TeamRole.Manager,
+        role: TeamMemberRole.Manager,
         id: team.id,
       }),
     ).rejects.toThrow('Request failed with status code 400');

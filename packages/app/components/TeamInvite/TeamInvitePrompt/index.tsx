@@ -13,12 +13,12 @@ import { FormattedMessage } from 'react-intl';
 
 import { messages } from './messages.js';
 import { apiUrl, appId } from '../../../utils/settings.js';
-import { useUser } from '../../UserProvider/index.js';
+import { useAppMember } from '../../AppMemberProvider/index.js';
 
 export function TeamInvitePrompt(): ReactNode {
   const query = useQuery();
   const [isAccepted, setIsAccepted] = useState(false);
-  const { updateTeam } = useUser();
+  const { updateTeam } = useAppMember();
 
   const {
     data: invite,

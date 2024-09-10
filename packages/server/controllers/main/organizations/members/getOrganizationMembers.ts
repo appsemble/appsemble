@@ -1,5 +1,5 @@
 import { assertKoaError } from '@appsemble/node-utils';
-import { Permission } from '@appsemble/utils';
+import { Permissions } from '@appsemble/utils';
 import { type Context } from 'koa';
 
 import { Organization, User } from '../../../../models/index.js';
@@ -16,7 +16,7 @@ export async function getOrganizationMembers(ctx: Context): Promise<void> {
 
   assertKoaError(!organization, ctx, 404, 'Organization not found.');
 
-  await checkRole(ctx, organization.id, Permission.ViewMembers);
+  await checkRole(ctx, organization.id, Permissions.ViewMembers);
 
   ctx.body = organization.Users.map((user) => ({
     id: user.id,

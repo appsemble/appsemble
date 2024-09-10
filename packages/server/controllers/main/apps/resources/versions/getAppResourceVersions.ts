@@ -1,37 +1,38 @@
 import { assertKoaError, getResourceDefinition } from '@appsemble/node-utils';
+import { MainPermission } from '@appsemble/utils';
 import { type Context } from 'koa';
 
 import { App, AppMember, Resource, ResourceVersion } from '../../../../../models/index.js';
+import { checkUserPermissions } from '../../../../../utils/authorization.js';
 
 export async function getAppResourceVersions(ctx: Context): Promise<void> {
   const {
     pathParams: { appId, resourceId, resourceType },
   } = ctx;
 
-  const app = await App.findOne({
-    where: { id: appId },
-    attributes: ['definition'],
-    include: [
-      {
-        model: Resource,
-        required: false,
-        where: { id: resourceId, type: resourceType },
-        include: [
-          { association: 'Editor' },
-          { model: ResourceVersion, include: [{ model: AppMember }] },
-        ],
-      },
-    ],
-  });
+  const app = await App.findByPk(appId, { attributes: ['OrganizationId'] });
 
   assertKoaError(!app, ctx, 404, 'App not found');
+
+  await checkUserPermissions(ctx, app.OrganizationId, [MainPermission.QueryAppResources]);
+
+  const resource = await Resource.findOne({
+    where: {
+      AppId: appId,
+      id: resourceId,
+      type: resourceType,
+      include: [
+        { association: 'Editor' },
+        { model: ResourceVersion, include: [{ model: AppMember }], order: [['created', 'DESC']] },
+      ],
+    },
+  });
+
+  assertKoaError(!resource, ctx, 404, 'Resource not found');
 
   const definition = getResourceDefinition(app.toJSON(), resourceType, ctx);
 
   assertKoaError(!definition.history, ctx, 404, `Resource “${resourceType}” has no history`);
-  assertKoaError(app.Resources.length !== 1, ctx, 404, 'Resource not found');
-
-  const [resource] = app.Resources;
 
   ctx.body = [
     {
@@ -39,7 +40,6 @@ export async function getAppResourceVersions(ctx: Context): Promise<void> {
       data: resource.data,
       author: resource.Editor ? { id: resource.Editor.id, name: resource.Editor.name } : undefined,
     },
-    // XXX ideally this is done using Sequelize order.
-    ...resource.ResourceVersions.sort((a, b) => Number(b.created) - Number(a.created)),
+    ...resource.ResourceVersions,
   ];
 }

@@ -5,25 +5,25 @@ import { type Security, type TeamMember } from '@appsemble/types';
  *
  * @param securityDefinition The security definition to use for checking the role.
  * @param role The role the user is checked against.
- * @param userRole The role the user has.
+ * @param appMemberRole The role the app member has.
  * @param teams The teams the user is in.
  * @returns Whether or not the user has the role.
  */
 export function checkAppRole(
   securityDefinition: Security,
   role: string,
-  userRole: string,
+  appMemberRole: string,
   teams: Pick<TeamMember, 'role'>[],
 ): boolean {
-  if (role === userRole) {
+  if (role === appMemberRole) {
     return true;
   }
 
-  if (role === '$public' && userRole) {
+  if (role === '$public' && appMemberRole) {
     return true;
   }
 
-  if (role === '$none' && !userRole) {
+  if (role === '$none' && !appMemberRole) {
     return true;
   }
 
@@ -35,12 +35,12 @@ export function checkAppRole(
     return Boolean(teams.some((team) => team.role));
   }
 
-  if (!userRole) {
+  if (!appMemberRole) {
     return false;
   }
 
-  if (securityDefinition.roles[userRole].inherits) {
-    return securityDefinition.roles[userRole].inherits.some((inheritedRole) =>
+  if (securityDefinition.roles[appMemberRole].inherits) {
+    return securityDefinition.roles[appMemberRole].inherits.some((inheritedRole) =>
       checkAppRole(securityDefinition, role, inheritedRole, teams),
     );
   }

@@ -1,4 +1,4 @@
-import { TeamRole } from '@appsemble/utils';
+import { TeamMemberRole } from '@appsemble/utils';
 import {
   AllowNull,
   BelongsTo,
@@ -28,10 +28,10 @@ export class TeamMember extends Model {
   @Column(DataType.UUID)
   AppMemberId: string;
 
-  @Default(TeamRole.Member)
+  @Default(TeamMemberRole.Member)
   @AllowNull(false)
-  @Column(DataType.ENUM(...Object.values(TeamRole)))
-  role: TeamRole;
+  @Column(DataType.ENUM(...Object.values(TeamMemberRole)))
+  role: TeamMemberRole;
 
   @BelongsTo(() => AppMember)
   AppMember: Awaited<AppMember>;

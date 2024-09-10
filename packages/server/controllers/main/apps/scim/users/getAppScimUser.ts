@@ -1,7 +1,7 @@
 import { scimAssert } from '@appsemble/node-utils';
 import { type Context } from 'koa';
 
-import { AppMember, Team, TeamMember, User } from '../../../../../models/index.js';
+import { AppMember, Team, TeamMember } from '../../../../../models/index.js';
 import { convertAppMemberToScimUser } from '../../../../../utils/scim.js';
 
 export async function getAppScimUser(ctx: Context): Promise<void> {
@@ -12,9 +12,6 @@ export async function getAppScimUser(ctx: Context): Promise<void> {
   const member = await AppMember.findOne({
     where: { AppId: appId, id: userId },
     include: [
-      {
-        model: User,
-      },
       {
         model: TeamMember,
         include: [

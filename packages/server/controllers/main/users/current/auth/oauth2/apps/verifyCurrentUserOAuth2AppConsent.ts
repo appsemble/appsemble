@@ -1,7 +1,7 @@
 import { assertKoaError } from '@appsemble/node-utils';
 import { type Context } from 'koa';
 
-import { App, AppMember, type User } from '../../../../../../../models/index.js';
+import { App, AppMember, User } from '../../../../../../../models/index.js';
 import { checkAppSecurityPolicy } from '../../../../../../../utils/auth.js';
 import { createAppOAuth2AuthorizationCode } from '../../../../../../../utils/oauth2.js';
 
@@ -11,17 +11,24 @@ export async function verifyCurrentUserOAuth2AppConsent(ctx: Context): Promise<v
     request: {
       body: { redirectUri, scope },
     },
-    user,
+    user: authSubject,
   } = ctx;
+
+  const user = await User.findByPk(authSubject.id);
 
   const app = await App.findByPk(appId, {
     attributes: ['definition', 'domain', 'id', 'path', 'OrganizationId'],
-    include: [{ model: AppMember, where: { UserId: user.id }, required: false }],
+  });
+
+  const appMember = await AppMember.findOne({
+    where: {
+      UserId: user.id,
+    },
   });
 
   assertKoaError(!app, ctx, 404, 'App not found');
 
-  const isAllowed = await checkAppSecurityPolicy(app, user as User);
+  const isAllowed = await checkAppSecurityPolicy(app, user, appMember);
 
   assertKoaError(
     !isAllowed,
@@ -33,8 +40,9 @@ export async function verifyCurrentUserOAuth2AppConsent(ctx: Context): Promise<v
       appName: app.definition.name,
     },
   );
+
   assertKoaError(
-    !app.AppMembers?.length || app.AppMembers[0].consent == null,
+    !appMember || appMember.consent == null,
     ctx,
     400,
     'User has not agreed to the requested scopes',
@@ -44,8 +52,16 @@ export async function verifyCurrentUserOAuth2AppConsent(ctx: Context): Promise<v
     },
   );
 
+  const appOauth2AuthorizationCode = await createAppOAuth2AuthorizationCode(
+    app,
+    redirectUri,
+    scope,
+    appMember,
+    ctx,
+  );
+
   ctx.body = {
-    ...(await createAppOAuth2AuthorizationCode(app, redirectUri, scope, user as User, ctx)),
+    code: appOauth2AuthorizationCode.code,
     isAllowed: true,
   };
 }

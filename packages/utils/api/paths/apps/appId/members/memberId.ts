@@ -29,45 +29,6 @@ export const pathItems: OpenAPIV3.PathItemObject = {
     },
     security: [{ studio: [] }, { app: ['openid'] }],
   },
-  post: {
-    tags: ['app'],
-    description: 'Assign an app role to a member.',
-    operationId: 'setAppMember',
-    requestBody: {
-      content: {
-        'application/json': {
-          schema: {
-            type: 'object',
-            required: ['role'],
-            properties: {
-              role: {
-                type: 'string',
-                description: 'The role to assign.',
-              },
-              properties: {
-                type: 'object',
-                additionalProperties: { type: 'string' },
-                description: 'Any additional properties that are allowed to be set for members.',
-              },
-            },
-          },
-        },
-      },
-    },
-    responses: {
-      200: {
-        description: 'The resulting app member.',
-        content: {
-          'application/json': {
-            schema: {
-              $ref: '#/components/schemas/OrganizationMember',
-            },
-          },
-        },
-      },
-    },
-    security: [{ studio: [] }],
-  },
   patch: {
     tags: ['common', 'app', 'member'],
     description: 'Patch an app member.',
@@ -117,7 +78,7 @@ export const pathItems: OpenAPIV3.PathItemObject = {
         content: {
           'application/json': {
             schema: {
-              $ref: '#/components/schemas/AppAccount',
+              $ref: '#/components/schemas/AppMember',
             },
           },
         },

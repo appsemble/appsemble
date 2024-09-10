@@ -1,5 +1,5 @@
 import { assertKoaError } from '@appsemble/node-utils';
-import { Permission } from '@appsemble/utils';
+import { Permissions } from '@appsemble/utils';
 import { type Context } from 'koa';
 
 import { Organization, OrganizationInvite } from '../../../../models/index.js';
@@ -10,7 +10,7 @@ export async function getOrganizationInvites(ctx: Context): Promise<void> {
     pathParams: { organizationId },
   } = ctx;
 
-  const member = await checkRole(ctx, organizationId, Permission.InviteMember, {
+  const member = await checkRole(ctx, organizationId, Permissions.InviteMember, {
     include: [
       {
         model: Organization,

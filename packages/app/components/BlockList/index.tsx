@@ -22,10 +22,10 @@ import { makeActions } from '../../utils/makeActions.js';
 import { appControllerCode, appControllerImplementations } from '../../utils/settings.js';
 import { type AppStorage } from '../../utils/storage.js';
 import { useAppDefinition } from '../AppDefinitionProvider/index.js';
+import { useAppMember } from '../AppMemberProvider/index.js';
 import { Block } from '../Block/index.js';
 import { useDemoAppMembers } from '../DemoAppMembersProvider/index.js';
 import { useServiceWorkerRegistration } from '../ServiceWorkerRegistrationProvider/index.js';
-import { useUser } from '../UserProvider/index.js';
 
 interface BlockListProps {
   readonly blocks: BlockDefinition[];
@@ -45,7 +45,7 @@ interface BlockListProps {
 function filterBlocks(
   security: Security,
   blocks: BlockDefinition[],
-  userRole: string,
+  appMemberRole: string,
   teams: TeamMember[],
 ): [BlockDefinition, number][] {
   return blocks
@@ -54,7 +54,7 @@ function filterBlocks(
       ([block]) =>
         block.roles === undefined ||
         block.roles.length === 0 ||
-        block.roles.some((r) => checkAppRole(security, r, userRole, teams)),
+        block.roles.some((r) => checkAppRole(security, r, appMemberRole, teams)),
     );
 }
 
@@ -76,8 +76,16 @@ export function BlockList({
   const location = useLocation();
   const push = useMessages();
   const { definition, revision } = useAppDefinition();
-  const { isLoggedIn, logout, passwordLogin, role, setUserInfo, teams, updateTeam, userInfoRef } =
-    useUser();
+  const {
+    appMemberInfoRef,
+    isLoggedIn,
+    logout,
+    passwordLogin,
+    role,
+    setAppMemberInfo,
+    teams,
+    updateTeam,
+  } = useAppMember();
   const { refetchDemoAppMembers } = useDemoAppMembers();
   const redirect = useLocationString();
 
@@ -151,10 +159,10 @@ export function BlockList({
           remap,
           teams,
           updateTeam,
-          getUserInfo: () => userInfoRef.current,
+          getAppMemberInfo: () => appMemberInfoRef.current,
           passwordLogin,
           passwordLogout: logout,
-          setUserInfo,
+          setAppMemberInfo,
           refetchDemoAppMembers,
         }),
         events: createEvents(
@@ -190,10 +198,10 @@ export function BlockList({
     pushNotifications,
     refetchDemoAppMembers,
     remap,
-    setUserInfo,
+    setAppMemberInfo,
     teams,
     updateTeam,
-    userInfoRef,
+    appMemberInfoRef,
   ]);
 
   if (!blockList.length) {

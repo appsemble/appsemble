@@ -12,7 +12,7 @@ import {
   useToggle,
 } from '@appsemble/react-components';
 import { type Team } from '@appsemble/types';
-import { Permission, TeamRole } from '@appsemble/utils';
+import { Permissions, TeamRole } from '@appsemble/utils';
 import axios from 'axios';
 import { type ReactNode, useCallback, useMemo } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
@@ -103,7 +103,7 @@ export function TeamPage(): ReactNode {
 
   const organization = organizations.find((o) => o.id === app.OrganizationId);
   const me = memberResult.data?.find((member) => member.id === userInfo.sub);
-  const mayEditTeam = organization && checkRole(organization.role, Permission.ManageTeams);
+  const mayEditTeam = organization && checkRole(organization.role, Permissions.ManageTeams);
   const mayInvite = mayEditTeam || (me && me.role === TeamRole.Manager);
 
   const defaultValues = useMemo(

@@ -1,4 +1,4 @@
-import { logger } from '@appsemble/node-utils';
+import { assertKoaError, logger } from '@appsemble/node-utils';
 import { type Context } from 'koa';
 
 import { App, AppMember } from '../../../../models/index.js';
@@ -25,32 +25,45 @@ export async function resendAppMemberEmailVerification(ctx: Context): Promise<vo
       'emailPort',
       'emailSecure',
     ],
-    include: [
-      { model: AppMember, attributes: { exclude: ['picture'] }, where: { email }, required: false },
-    ],
   });
 
-  if (app?.AppMembers.length && !app.AppMembers[0].emailVerified) {
-    const url = new URL('/Verify', getAppUrl(app));
-    url.searchParams.set('token', app.AppMembers[0].emailKey);
+  assertKoaError(!app, ctx, 404, 'App could not be found.');
 
-    mailer
-      .sendTranslatedEmail({
-        appId,
-        emailName: 'resend',
-        locale: app.AppMembers[0].locale,
-        to: app.AppMembers[0],
-        values: {
-          link: (text) => `[${text}](${url})`,
-          name: app.AppMembers[0].name || 'null',
-          appName: app.definition.name,
-        },
-        app,
-      })
-      .catch((error: Error) => {
-        logger.error(error);
-      });
-  }
+  const appMember = await AppMember.findOne({
+    where: { email },
+    attributes: {
+      exclude: ['picture'],
+    },
+  });
+
+  assertKoaError(!appMember, ctx, 404, 'App member with this email could not be found.');
+
+  assertKoaError(
+    appMember.emailVerified,
+    ctx,
+    400,
+    'The email of this app member has already been verified.',
+  );
+
+  const url = new URL('/Verify', getAppUrl(app));
+  url.searchParams.set('token', appMember.emailKey);
+
+  mailer
+    .sendTranslatedEmail({
+      appId,
+      emailName: 'resend',
+      locale: appMember.locale,
+      to: appMember,
+      values: {
+        link: (text) => `[${text}](${url})`,
+        name: appMember.name || 'null',
+        appName: app.definition.name,
+      },
+      app,
+    })
+    .catch((error: Error) => {
+      logger.error(error);
+    });
 
   ctx.status = 204;
 }

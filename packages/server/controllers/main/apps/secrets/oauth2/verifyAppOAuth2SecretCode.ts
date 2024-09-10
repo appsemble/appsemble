@@ -11,7 +11,6 @@ import {
   AppOAuth2Secret,
   OAuth2AuthorizationCode,
   transactional,
-  User,
 } from '../../../../../models/index.js';
 import { argv } from '../../../../../utils/argv.js';
 import { getAccessToken, getUserInfo } from '../../../../../utils/oauth2.js';
@@ -79,28 +78,12 @@ export async function verifyAppOAuth2SecretCode(ctx: Context): Promise<void> {
   });
 
   const authorizationCode = await transactional(async (transaction) => {
-    let userId = user?.id;
-    let appMember;
-
-    if (userId) {
-      appMember = await AppMember.findOne({
-        attributes: ['id'],
-        where: { UserId: userId, AppId: appId },
-        transaction,
-      });
-    } else if (authorization) {
-      appMember = await AppMember.findByPk(authorization.AppMemberId, { transaction });
-      userId = appMember.UserId;
-    } else {
-      // TODO: consider handling this in another way, as there is no way to login with the account,
-      // since password reset requires an email to be present.
-      userId = (await User.create({ timezone }, { transaction })).id;
-    }
+    let appMember = await AppMember.findByPk(authorization?.AppMemberId, { transaction });
 
     const role = app.definition.security?.default?.role;
     if (!appMember) {
       appMember = await AppMember.create(
-        { UserId: userId, AppId: appId, role, name, email, emailVerified },
+        { AppId: appId, role, name, email, emailVerified, timezone, UserId: user.id },
         { transaction },
       );
     }
@@ -120,11 +103,11 @@ export async function verifyAppOAuth2SecretCode(ctx: Context): Promise<void> {
     return OAuth2AuthorizationCode.create(
       {
         AppId: app.id,
+        AppMemberId: appMember.id,
         code: randomBytes(10).toString('hex'),
         expires: addMinutes(new Date(), 10),
         redirectUri,
         scope,
-        UserId: userId,
       },
       { transaction },
     );

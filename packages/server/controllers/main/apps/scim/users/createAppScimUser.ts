@@ -1,17 +1,7 @@
-import { randomBytes } from 'node:crypto';
-
 import { assertKoaError, scimAssert } from '@appsemble/node-utils';
 import { type Context } from 'koa';
 
-import {
-  App,
-  AppMember,
-  EmailAuthorization,
-  Team,
-  TeamMember,
-  transactional,
-  User,
-} from '../../../../../models/index.js';
+import { App, AppMember, Team, TeamMember, transactional } from '../../../../../models/index.js';
 import { getCaseInsensitive } from '../../../../../utils/object.js';
 import { convertAppMemberToScimUser } from '../../../../../utils/scim.js';
 
@@ -81,35 +71,20 @@ export async function createAppScimUser(ctx: Context): Promise<void> {
   );
   try {
     await transactional(async (transaction) => {
-      const user = await User.create(
-        {
-          timezone,
-          locale,
-          name: formattedName,
-          primaryEmail: userName,
-        },
-        { transaction },
-      );
-
-      const key = randomBytes(40).toString('hex');
-      await EmailAuthorization.create({ UserId: user.id, email: userName, key }, { transaction });
-
       member = await AppMember.create(
         {
-          UserId: user.id,
           AppId: appId,
           role: defaultRole,
           email: userName,
           name: formattedName,
           scimExternalId: externalId,
+          timezone,
           scimActive: active,
           locale,
           emailVerified: true,
         },
         { transaction },
       );
-
-      member.User = user;
 
       if (managerId) {
         if (!team) {

@@ -44,15 +44,15 @@ async function verifyPermission(ctx: Context, app: App): Promise<AppServiceSecre
           { model: Organization, attributes: ['id'] },
           {
             model: AppMember,
-            attributes: ['role', 'UserId'],
+            attributes: ['role'],
             required: false,
-            where: { UserId: user.id },
+            where: { id: user.id },
           },
         ]
       : [],
   });
 
-  const member = app.AppMembers?.find((m) => m.UserId === user?.id);
+  const member = app.AppMembers[0];
   const { policy = 'everyone', role: defaultRole } = app.definition.security.default;
   let role: string;
 

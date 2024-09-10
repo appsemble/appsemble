@@ -1,7 +1,7 @@
 import { randomBytes } from 'node:crypto';
 
 import { assertKoaError } from '@appsemble/node-utils';
-import { Permission } from '@appsemble/utils';
+import { Permissions } from '@appsemble/utils';
 import { type Context } from 'koa';
 import { Op } from 'sequelize';
 
@@ -26,7 +26,7 @@ export async function createOrganizationInvites(ctx: Context): Promise<void> {
     role: invite.role,
   }));
 
-  const member = await checkRole(ctx, organizationId, Permission.InviteMember, {
+  const member = await checkRole(ctx, organizationId, Permissions.InviteMember, {
     include: [
       {
         model: Organization,

@@ -3,6 +3,7 @@ import { type Context } from 'koa';
 
 import { AppMember, Team, TeamMember } from '../../../../../models/index.js';
 
+// TODO: CHECK
 export async function getAppTeamMember(ctx: Context): Promise<void> {
   const {
     pathParams: { appId, memberId, teamId },

@@ -1,9 +1,9 @@
 import { assertKoaError } from '@appsemble/node-utils';
-import { Permission } from '@appsemble/utils';
+import { MainPermission } from '@appsemble/utils';
 import { type Context } from 'koa';
 
 import { AppCollection } from '../../../models/index.js';
-import { checkRole } from '../../../utils/checkRole.js';
+import { checkUserPermissions } from '../../../utils/authorization.js';
 
 export async function deleteAppCollection(ctx: Context): Promise<void> {
   const {
@@ -16,7 +16,7 @@ export async function deleteAppCollection(ctx: Context): Promise<void> {
 
   assertKoaError(!collection, ctx, 404, 'Collection not found');
 
-  await checkRole(ctx, collection.OrganizationId, Permission.DeleteCollections);
+  await checkUserPermissions(ctx, collection.OrganizationId, [MainPermission.DeleteAppCollections]);
 
   await collection.destroy();
 

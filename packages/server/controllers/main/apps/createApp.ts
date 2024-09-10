@@ -4,7 +4,7 @@ import {
   updateCompanionContainers,
 } from '@appsemble/node-utils';
 import { type AppDefinition } from '@appsemble/types';
-import { normalize, Permission, validateAppDefinition, validateStyle } from '@appsemble/utils';
+import { normalize, Permissions, validateAppDefinition, validateStyle } from '@appsemble/utils';
 import { type Context } from 'koa';
 import { literal } from 'sequelize';
 import webpush from 'web-push';
@@ -50,7 +50,7 @@ export async function createApp(ctx: Context): Promise<void> {
   } = ctx;
 
   let result: Partial<App>;
-  await checkRole(ctx, OrganizationId, Permission.CreateApps);
+  await checkRole(ctx, OrganizationId, Permissions.CreateApps);
 
   try {
     const definition = parse(yaml, { maxAliasCount: 10_000 }) as AppDefinition;

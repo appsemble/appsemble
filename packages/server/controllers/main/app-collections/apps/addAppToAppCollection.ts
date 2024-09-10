@@ -1,10 +1,10 @@
 import { assertKoaError, throwKoaError } from '@appsemble/node-utils';
-import { Permission } from '@appsemble/utils';
+import { MainPermission } from '@appsemble/utils';
 import { type Context } from 'koa';
 import { UniqueConstraintError } from 'sequelize';
 
 import { App, AppCollection, AppCollectionApp } from '../../../../models/index.js';
-import { checkRole } from '../../../../utils/checkRole.js';
+import { checkUserPermissions } from '../../../../utils/authorization.js';
 
 export async function addAppToAppCollection(ctx: Context): Promise<void> {
   const {
@@ -20,9 +20,9 @@ export async function addAppToAppCollection(ctx: Context): Promise<void> {
     attributes: ['id', 'OrganizationId'],
   });
 
-  assertKoaError(!collection, ctx, 404, 'Collection not found');
+  assertKoaError(!collection, ctx, 404, 'App collection not found');
 
-  await checkRole(ctx, collection.OrganizationId, Permission.EditCollections);
+  await checkUserPermissions(ctx, collection.OrganizationId, [MainPermission.UpdateAppCollections]);
 
   try {
     await AppCollectionApp.create({

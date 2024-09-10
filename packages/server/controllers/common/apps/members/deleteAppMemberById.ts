@@ -5,6 +5,7 @@ import { type Context } from 'koa';
 import { App, AppMember } from '../../../../models/index.js';
 import { checkRole } from '../../../../utils/checkRole.js';
 
+// TODO: CHECK
 export async function deleteAppMemberById(ctx: Context): Promise<void> {
   const {
     pathParams: { appId, memberId },

@@ -1,6 +1,6 @@
 import { Button, CardFooterButton, ModalCard } from '@appsemble/react-components';
 import { type App } from '@appsemble/types';
-import { Permission } from '@appsemble/utils';
+import { Permissions } from '@appsemble/utils';
 import axios from 'axios';
 import { type ReactNode, useCallback } from 'react';
 import { FormattedMessage } from 'react-intl';
@@ -26,7 +26,7 @@ export function ReseedButton({ app }: ReseedButtonProps): ReactNode {
   const { organizations, userInfo } = useUser();
 
   const manageResources =
-    organizations?.filter((org) => checkRole(org.role, Permission.ManageResources)) ?? [];
+    organizations?.filter((org) => checkRole(org.role, Permissions.ManageResources)) ?? [];
 
   const reseedApp = useCallback(async () => {
     await axios.post<App>(`/api/apps/${app.id}/reseed`);

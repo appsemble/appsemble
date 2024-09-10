@@ -9,7 +9,7 @@ import {
   useMessages,
   useToggle,
 } from '@appsemble/react-components';
-import { Permission } from '@appsemble/utils';
+import { Permissions } from '@appsemble/utils';
 import axios from 'axios';
 import { type ChangeEvent, type ReactNode, useCallback, useMemo } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
@@ -35,7 +35,7 @@ export function MemberRow({ member, onChange }: AppMemberRowProperties): ReactNo
   const editModal = useToggle();
 
   const organization = organizations?.find((org) => org.id === app?.OrganizationId);
-  const editRolesPermission = checkRole(organization.role, Permission.ManageRoles);
+  const editRolesPermission = checkRole(organization.role, Permissions.ManageRoles);
 
   const defaultValues = useMemo(
     () => ({

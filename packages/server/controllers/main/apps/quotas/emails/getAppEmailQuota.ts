@@ -1,5 +1,5 @@
 import { assertKoaError } from '@appsemble/node-utils';
-import { Permission } from '@appsemble/utils';
+import { MainPermission } from '@appsemble/utils';
 import { addDays, startOfDay } from 'date-fns';
 import { zonedTimeToUtc } from 'date-fns-tz';
 import { type Context } from 'koa';
@@ -7,8 +7,8 @@ import { Op } from 'sequelize';
 
 import { App, AppEmailQuotaLog } from '../../../../../models/index.js';
 import { argv } from '../../../../../utils/argv.js';
+import { checkUserPermissions } from '../../../../../utils/authorization.js';
 import { checkAppLock } from '../../../../../utils/checkAppLock.js';
-import { checkRole } from '../../../../../utils/checkRole.js';
 
 export async function getAppEmailQuota(ctx: Context): Promise<void> {
   const {
@@ -22,7 +22,8 @@ export async function getAppEmailQuota(ctx: Context): Promise<void> {
   assertKoaError(!app, ctx, 404, 'App not found');
 
   checkAppLock(ctx, app);
-  await checkRole(ctx, app.OrganizationId, [Permission.EditApps, Permission.EditAppSettings]);
+
+  await checkUserPermissions(ctx, app.OrganizationId, [MainPermission.ReadAppSettings]);
 
   if (!argv.enableAppEmailQuota) {
     ctx.response.status = 200;
@@ -39,6 +40,7 @@ export async function getAppEmailQuota(ctx: Context): Promise<void> {
       },
     },
   });
+
   const reset = addDays(todayStartUTC, 1);
   const limit = argv.dailyAppEmailQuota;
   ctx.response.status = 200;

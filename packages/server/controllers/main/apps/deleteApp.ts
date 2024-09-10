@@ -3,7 +3,7 @@ import {
   deleteCompanionContainers,
   formatServiceName,
 } from '@appsemble/node-utils';
-import { Permission } from '@appsemble/utils';
+import { Permissions } from '@appsemble/utils';
 import { type Context } from 'koa';
 
 import { App } from '../../../models/index.js';
@@ -18,7 +18,7 @@ export async function deleteApp(ctx: Context): Promise<void> {
 
   assertKoaError(!app, ctx, 404, 'App not found');
 
-  await checkRole(ctx, app.OrganizationId, Permission.DeleteApps);
+  await checkRole(ctx, app.OrganizationId, Permissions.DeleteApps);
 
   await app.update({ path: null });
   await app.destroy();

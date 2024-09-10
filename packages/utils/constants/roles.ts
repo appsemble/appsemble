@@ -1,62 +1,102 @@
-import { Permission } from './Permission.js';
+import { MainPermission } from './permissions.js';
 
-const member = [Permission.ViewApps, Permission.ViewMembers];
-const Translator = [...member, Permission.EditAppMessages];
-const APIReader = [...member, Permission.ReadAssets, Permission.ReadResources];
-const APIUser = [...APIReader, Permission.ManageAssets, Permission.ManageResources];
-const AccountManager = [
-  Permission.CreateAppAccounts,
-  Permission.ReadAppAccounts,
-  Permission.DeleteAppAccounts,
-  Permission.EditAppAccounts,
+const OrganizationMember = [MainPermission.QueryApps, MainPermission.QueryOrganizationMembers];
+
+const OrganizationAppTranslator = [
+  ...OrganizationMember,
+  MainPermission.CreateAppMessages,
+  MainPermission.UpdateAppMessages,
+  MainPermission.DeleteAppMessages,
 ];
 
-const AppEditor = [
-  ...member,
-  Permission.EditApps,
-  Permission.EditAppMessages,
-  Permission.ManageAssets,
-  Permission.ManageResources,
-  Permission.PushNotifications,
-  Permission.ReadAssets,
-  Permission.ReadResources,
-];
-const Maintainer = [
-  ...AppEditor,
-  ...AccountManager,
-  Permission.CreateApps,
-  Permission.DeleteApps,
-  Permission.EditAppSettings,
-  Permission.InviteMember,
-  Permission.ManageTeams,
-  Permission.PublishBlocks,
-  Permission.DeleteBlocks,
-  Permission.CreateCollections,
-  Permission.DeleteCollections,
-  Permission.EditCollections,
-];
-const Owner = [
-  ...Maintainer,
-  Permission.EditOrganization,
-  Permission.DeleteOrganization,
-  Permission.ManageMembers,
-  Permission.ManageRoles,
+const OrganizationAppContentsExplorer = [
+  ...OrganizationMember,
+  MainPermission.QueryAppAssets,
+  MainPermission.QueryAppResources,
 ];
 
-export const roles = {
-  Member: member,
-  Translator,
-  APIReader,
-  APIUser,
-  AppEditor,
-  Owner,
-  Maintainer,
-  AccountManager,
-} as const;
+const OrganizationAppContentsManager = [
+  ...OrganizationAppContentsExplorer,
+  MainPermission.CreateAppAssets,
+  MainPermission.UpdateAppAssets,
+  MainPermission.DeleteAppAssets,
+  MainPermission.CreateAppResources,
+  MainPermission.UpdateAppResources,
+  MainPermission.DeleteAppResources,
+];
 
-export type Role = keyof typeof roles;
+const OrganizationAppManager = [
+  ...OrganizationAppTranslator,
+  ...OrganizationAppContentsManager,
+  MainPermission.UpdateApps,
+  MainPermission.ReadAppSettings,
+  MainPermission.UpdateAppSettings,
+  MainPermission.CreateAppScreenshots,
+  MainPermission.DeleteAppScreenshots,
+  MainPermission.CreateAppSecrets,
+  MainPermission.QueryAppSecrets,
+  MainPermission.UpdateAppSecrets,
+  MainPermission.DeleteAppSecrets,
+  MainPermission.PushAppNotifications,
+];
 
-export enum TeamRole {
+const OrganizationAppTeamManager = [
+  ...OrganizationMember,
+  MainPermission.CreateAppTeams,
+  MainPermission.DeleteAppTeams,
+  MainPermission.UpdateAppTeamMembers,
+  MainPermission.RemoveAppTeamMembers,
+];
+
+const OrganizationAppCollectionManager = [
+  ...OrganizationMember,
+  MainPermission.CreateAppCollections,
+  MainPermission.UpdateAppCollections,
+  MainPermission.DeleteAppCollections,
+];
+
+const OrganizationBlockManager = [
+  ...OrganizationMember,
+  MainPermission.PublishBlocks,
+  MainPermission.DeleteBlocks,
+];
+
+const OrganizationMaintainer = [
+  ...OrganizationAppManager,
+  ...OrganizationAppTeamManager,
+  ...OrganizationAppCollectionManager,
+  ...OrganizationBlockManager,
+  MainPermission.CreateApps,
+  MainPermission.DeleteApps,
+  MainPermission.CreateOrganizationInvites,
+  MainPermission.UpdateOrganizationInvites,
+  MainPermission.DeleteOrganizationInvites,
+];
+
+const OrganizationOwner = [
+  ...OrganizationMaintainer,
+  MainPermission.UpdateOrganizations,
+  MainPermission.DeleteOrganizations,
+  MainPermission.UpdateOrganizationMembers,
+  MainPermission.RemoveOrganizationMembers,
+];
+
+export const organizationMemberRoles = {
+  Member: OrganizationMember,
+  AppTranslator: OrganizationAppTranslator,
+  AppContentsExplorer: OrganizationAppContentsExplorer,
+  AppContentsManager: OrganizationAppContentsManager,
+  AppManager: OrganizationAppManager,
+  AppTeamManager: OrganizationAppTeamManager,
+  AppCollectionManager: OrganizationAppCollectionManager,
+  BlockManager: OrganizationBlockManager,
+  Maintainer: OrganizationMaintainer,
+  Owner: OrganizationOwner,
+};
+
+export type OrganizationMemberRole = keyof typeof organizationMemberRoles;
+
+export enum TeamMemberRole {
   Member = 'member',
   Manager = 'manager',
 }

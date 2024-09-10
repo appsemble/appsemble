@@ -9,7 +9,7 @@ export const cli: OpenAPIV3.OAuth2SecurityScheme = {
   `,
   flows: {
     clientCredentials: {
-      tokenUrl: '/oauth2/token',
+      tokenUrl: '/main/auth/oauth2/token',
       scopes: {
         'apps:export': 'Export apps as zip files',
         'apps:write': 'Create and update apps',

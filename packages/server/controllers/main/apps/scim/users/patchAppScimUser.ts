@@ -1,14 +1,7 @@
 import { scimAssert, throwKoaError } from '@appsemble/node-utils';
 import { type Context } from 'koa';
 
-import {
-  App,
-  AppMember,
-  Team,
-  TeamMember,
-  transactional,
-  User,
-} from '../../../../../models/index.js';
+import { App, AppMember, Team, TeamMember, transactional } from '../../../../../models/index.js';
 import { getCaseInsensitive } from '../../../../../utils/object.js';
 import { convertAppMemberToScimUser } from '../../../../../utils/scim.js';
 
@@ -21,9 +14,6 @@ export async function patchAppScimUser(ctx: Context): Promise<void> {
   const member = await AppMember.findOne({
     where: { AppId: appId, id: userId },
     include: [
-      {
-        model: User,
-      },
       {
         model: TeamMember,
         where: { role: 'member' },
@@ -51,15 +41,13 @@ export async function patchAppScimUser(ctx: Context): Promise<void> {
     if (lower === 'externalid') {
       member.scimExternalId = value;
     } else if (lower === 'locale') {
-      member.User.locale = value;
+      member.locale = value;
     } else if (lower === 'name.formatted') {
       member.name = value;
-      member.User.name = value;
     } else if (lower === 'timezone') {
-      member.User.timezone = value;
+      member.timezone = value;
     } else if (lower === 'username') {
       member.email = value;
-      member.User.primaryEmail = value;
     } else if (lower === 'active') {
       member.scimActive = value.toLowerCase() === 'true';
     } else if (lower === 'urn:ietf:params:scim:schemas:extension:enterprise:2.0:user:manager') {
@@ -111,10 +99,7 @@ export async function patchAppScimUser(ctx: Context): Promise<void> {
   }
 
   await transactional(async (transaction) => {
-    const promises: Promise<unknown>[] = [
-      member.save({ transaction }),
-      member.User.save({ transaction }),
-    ];
+    const promises: Promise<unknown>[] = [member.save({ transaction })];
     if (managerId != null && managerId !== '') {
       let team = await Team.findOne({
         where: { AppId: appId, name: managerId },

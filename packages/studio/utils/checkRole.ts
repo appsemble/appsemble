@@ -1,6 +1,6 @@
-import { type Permission, type Role, roles } from '@appsemble/utils';
+import { type Permissions, type Role, roles } from '@appsemble/utils';
 
-export function checkRole(role: Role, permission: Permission): boolean {
+export function checkRole(role: Role, permission: Permissions): boolean {
   if (!role) {
     return false;
   }

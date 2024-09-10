@@ -3,10 +3,10 @@ import { type ReactNode } from 'react';
 import { Navigate, useParams } from 'react-router-dom';
 
 import { TeamInvitePrompt } from './TeamInvitePrompt/index.js';
-import { useUser } from '../UserProvider/index.js';
+import { useAppMember } from '../AppMemberProvider/index.js';
 
 export function TeamInvite(): ReactNode {
-  const { isLoggedIn } = useUser();
+  const { isLoggedIn } = useAppMember();
   const redirect = useLocationString();
   const { lang } = useParams<{ lang: string }>();
 

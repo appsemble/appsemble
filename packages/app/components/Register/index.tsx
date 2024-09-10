@@ -11,12 +11,12 @@ import { useParams } from 'react-router-dom';
 
 import { messages } from './messages.js';
 import { apiUrl, appId } from '../../utils/settings.js';
-import { useUser } from '../UserProvider/index.js';
+import { useAppMember } from '../AppMemberProvider/index.js';
 
 export function Register(): ReactNode {
   useMeta(messages.register);
 
-  const { passwordLogin } = useUser();
+  const { passwordLogin } = useAppMember();
   const { lang } = useParams<{ lang: string }>();
 
   const onRegister = useCallback(

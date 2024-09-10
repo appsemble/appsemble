@@ -1,5 +1,5 @@
 import { assertKoaError, throwKoaError } from '@appsemble/node-utils';
-import { Permission, TeamRole, uuid4Pattern } from '@appsemble/utils';
+import { Permissions, TeamRole, uuid4Pattern } from '@appsemble/utils';
 import { type Context } from 'koa';
 
 import {
@@ -13,6 +13,7 @@ import {
 import { checkRole } from '../../../../../utils/checkRole.js';
 import { checkTeamPermission } from '../../../../../utils/team.js';
 
+// TODO: CHECK
 export async function addAppTeamMember(ctx: Context): Promise<void> {
   const {
     clients,
@@ -86,9 +87,21 @@ export async function addAppTeamMember(ctx: Context): Promise<void> {
     }
   } else {
     try {
-      await checkRole(ctx, team.App.OrganizationId, Permission.ManageTeams);
+      await checkRole(ctx, team.App.OrganizationId, Permissions.ManageTeams);
     } catch {
       await checkTeamPermission(ctx, team);
+      // Const appMember = await AppMember.findByPk(authSubject.id);
+      //
+      // const teamMember = await TeamMember.findOne({
+      //   where: {
+      //     TeamId: teamId,
+      //     AppMemberId: appMember.id,
+      //   },
+      // });
+      //
+      // if (!teamMember || teamMember.role !== TeamRole.Manager) {
+      //   throwKoaError(ctx, 403, 'User does not have sufficient permissions.');
+      // }
     }
   }
 

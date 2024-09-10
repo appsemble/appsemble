@@ -1,9 +1,8 @@
 import { assertKoaError } from '@appsemble/node-utils';
-import { Permission } from '@appsemble/utils';
+import { AppsPermission } from '@appsemble/utils';
 import { type Context } from 'koa';
 
 import { App, Asset } from '../../../../models/index.js';
-import { checkRole } from '../../../../utils/checkRole.js';
 
 export async function countAppAssets(ctx: Context): Promise<void> {
   const {
@@ -16,10 +15,10 @@ export async function countAppAssets(ctx: Context): Promise<void> {
 
   assertKoaError(!app, ctx, 404, 'App not found');
 
-  await checkRole(ctx, app.OrganizationId, Permission.ReadAssets);
+  // @ts-expect-error TODO: FIX
+  await checkRole(ctx, app.OrganizationId, AppsPermission);
 
-  const count = await Asset.count({
+  ctx.body = await Asset.count({
     where: { AppId: appId, ...(app.demoMode ? { seed: false, ephemeral: true } : {}) },
   });
-  ctx.body = count;
 }

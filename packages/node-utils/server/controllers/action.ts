@@ -159,25 +159,29 @@ async function handleRequestProxy(
     }
   }
 
-  const { applyAppServiceSecrets, reloadUser } = options;
-  await reloadUser({ context: ctx });
+  const { applyAppServiceSecrets, getAppMember } = options;
+  const appMember = await getAppMember({
+    context: ctx,
+    id: user?.id,
+    app,
+  });
 
   const remapperContext = await getRemapperContext(
     app,
     app.definition.defaultLanguage || defaultLocale,
-    user && {
-      sub: user.id,
-      name: user.name,
-      email: user.primaryEmail,
-      email_verified: Boolean(user.EmailAuthorizations?.[0]?.verified),
-      zoneinfo: user.timezone,
+    appMember && {
+      sub: appMember.id,
+      name: appMember.name,
+      email: appMember.primaryEmail,
+      email_verified: Boolean(appMember.emailVerified),
+      zoneinfo: appMember.timezone,
     },
     options,
     ctx,
   );
 
   const proxyUrl = new URL(String(remap(action.url, data, remapperContext)));
-  if (/\/api\/apps\/\d+\/actions\/.*/.test(proxyUrl.pathname) && ctx.URL.host === proxyUrl.host) {
+  if (/\/api\/apps\/\d+\/action\/.*/.test(proxyUrl.pathname) && ctx.URL.host === proxyUrl.host) {
     throwKoaError(
       ctx,
       400,

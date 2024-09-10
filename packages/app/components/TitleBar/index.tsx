@@ -5,10 +5,10 @@ import { FormattedMessage } from 'react-intl';
 import { messages } from './messages.js';
 import { shouldShowMenu } from '../../utils/layout.js';
 import { useAppDefinition } from '../AppDefinitionProvider/index.js';
+import { useAppMember } from '../AppMemberProvider/index.js';
 import { useAppMessages } from '../AppMessagesProvider/index.js';
 import { usePage } from '../MenuProvider/index.js';
 import { ProfileDropdown } from '../ProfileDropdown/index.js';
-import { useUser } from '../UserProvider/index.js';
 
 interface AppBarProps {
   readonly children?: ReactNode;
@@ -22,9 +22,9 @@ interface AppBarProps {
  */
 export function AppBar({ children, hideName }: AppBarProps): ReactNode {
   const { definition, demoMode } = useAppDefinition();
-  const { getAppMessage } = useAppMessages();
-  const { role, teams } = useUser();
+  const { role, teams } = useAppMember();
   const { page } = usePage();
+  const { getAppMessage } = useAppMessages();
 
   const navigation = (page?.navigation || definition?.layout?.navigation) ?? 'left-menu';
   const appName = (getAppMessage({ id: 'name' }).format() as string) ?? definition.name;

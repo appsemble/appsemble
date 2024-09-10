@@ -1,4 +1,4 @@
-import { Permission } from '@appsemble/utils';
+import { Permissions } from '@appsemble/utils';
 import { type Context } from 'koa';
 
 import { Training } from '../../../models/index.js';
@@ -11,7 +11,7 @@ export async function createTraining(ctx: Context): Promise<void> {
     },
   } = ctx;
 
-  await checkRole(ctx, 'appsemble', Permission.CreateApps);
+  await checkRole(ctx, 'appsemble', Permissions.CreateApps);
   const training = await Training.create({
     title,
     description,

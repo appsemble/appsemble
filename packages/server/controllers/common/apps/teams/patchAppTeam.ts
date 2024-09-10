@@ -1,5 +1,5 @@
 import { assertKoaError } from '@appsemble/node-utils';
-import { Permission } from '@appsemble/utils';
+import { Permissions } from '@appsemble/utils';
 import { type Context } from 'koa';
 
 import { App, AppMember, Team, TeamMember, type User } from '../../../../models/index.js';
@@ -30,7 +30,7 @@ export async function patchAppTeam(ctx: Context): Promise<void> {
 
   assertKoaError(!team, ctx, 404, 'Team not found.');
 
-  await checkRole(ctx, team.App.OrganizationId, Permission.ManageTeams);
+  await checkRole(ctx, team.App.OrganizationId, Permissions.ManageTeams);
 
   await team.update({ name: name || undefined, annotations: annotations || undefined });
   ctx.body = {

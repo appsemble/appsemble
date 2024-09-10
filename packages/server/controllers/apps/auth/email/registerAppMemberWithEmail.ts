@@ -1,12 +1,17 @@
 import { randomBytes } from 'node:crypto';
 
-import { assertKoaError, logger, throwKoaError, UserPropertiesError } from '@appsemble/node-utils';
+import {
+  AppMemberPropertiesError,
+  assertKoaError,
+  logger,
+  throwKoaError,
+} from '@appsemble/node-utils';
 import { hash } from 'bcrypt';
 import { type Context } from 'koa';
-import { DatabaseError, UniqueConstraintError } from 'sequelize';
 
-import { App, AppMember, transactional, User } from '../../../../models/index.js';
+import { App, AppMember } from '../../../../models/index.js';
 import { getAppUrl } from '../../../../utils/app.js';
+import { parseAppMemberProperties } from '../../../../utils/appMember.js';
 import { createJWTResponse } from '../../../../utils/createJWTResponse.js';
 
 export async function registerAppMemberWithEmail(ctx: Context): Promise<void> {
@@ -14,14 +19,13 @@ export async function registerAppMemberWithEmail(ctx: Context): Promise<void> {
     mailer,
     pathParams: { appId },
     request: {
-      body: { locale, name, password, picture, properties = {}, timezone },
+      body: { locale, name, password, picture, properties = {}, timezone = '' },
     },
   } = ctx;
 
   const email = ctx.request.body.email.toLowerCase();
   const hashedPassword = await hash(password, 10);
   const key = randomBytes(40).toString('hex');
-  let user: User;
 
   const app = await App.findByPk(appId, {
     attributes: [
@@ -38,17 +42,10 @@ export async function registerAppMemberWithEmail(ctx: Context): Promise<void> {
       'enableSelfRegistration',
       'demoMode',
     ],
-    include: {
-      model: AppMember,
-      attributes: {
-        exclude: ['picture'],
-      },
-      where: { email },
-      required: false,
-    },
   });
 
   assertKoaError(!app, ctx, 404, 'App could not be found.');
+
   assertKoaError(
     !app.enableSelfRegistration,
     ctx,
@@ -62,63 +59,37 @@ export async function registerAppMemberWithEmail(ctx: Context): Promise<void> {
     'This app has no security definition',
   );
 
-  // XXX: This could introduce a race condition.
-  // If this is not manually checked here, Sequelize never returns on
-  // the AppMember.create() call if there is a conflict on the email index.
+  const existingAppMember = await AppMember.findOne({
+    where: { email },
+    attributes: {
+      exclude: ['picture'],
+    },
+  });
+
   assertKoaError(
-    Boolean(app.AppMembers.length),
+    Boolean(existingAppMember),
     ctx,
     409,
-    'User with this email address already exists.',
+    'App member with this email address already exists.',
   );
 
+  let appMember = { id: '' } as AppMember;
   try {
-    await transactional(async (transaction) => {
-      user = await User.create(
-        {
-          name,
-          timezone,
-          demoLoginUser: app.demoMode,
-        },
-        { transaction },
-      );
-
-      const parsedUserProperties: Record<string, any> = {};
-      for (const [propertyName, propertyValue] of Object.entries(properties)) {
-        try {
-          parsedUserProperties[propertyName] = JSON.parse(propertyValue as string);
-        } catch {
-          parsedUserProperties[propertyName] = propertyValue;
-        }
-      }
-
-      await AppMember.create(
-        {
-          UserId: user.id,
-          AppId: appId,
-          name,
-          password: hashedPassword,
-          email,
-          role: app.definition.security.default.role,
-          emailKey: key,
-          picture: picture ? picture.contents : null,
-          properties: parsedUserProperties,
-          locale,
-        },
-        { transaction },
-      );
+    appMember = await AppMember.create({
+      AppId: appId,
+      name,
+      password: hashedPassword,
+      email,
+      role: app.definition.security.default.role,
+      emailKey: key,
+      picture: picture ? picture.contents : null,
+      properties: parseAppMemberProperties(properties),
+      timezone,
+      locale,
     });
   } catch (error: unknown) {
-    if (error instanceof UserPropertiesError) {
+    if (error instanceof AppMemberPropertiesError) {
       throwKoaError(ctx, 400, error.message);
-    }
-    if (error instanceof UniqueConstraintError) {
-      throwKoaError(ctx, 409, 'User with this email address already exists.');
-    }
-    if (error instanceof DatabaseError) {
-      // XXX: Postgres throws a generic transaction aborted error
-      // if there is a way to read the internal error, replace this code.
-      throwKoaError(ctx, 409, 'User with this email already exists.');
     }
 
     throw error;
@@ -148,5 +119,5 @@ export async function registerAppMemberWithEmail(ctx: Context): Promise<void> {
       logger.error(error);
     });
 
-  ctx.body = createJWTResponse(user.id);
+  ctx.body = createJWTResponse(appMember.id);
 }

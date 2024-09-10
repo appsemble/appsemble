@@ -1,6 +1,7 @@
 import { type Action, type ActionDefinition } from '@appsemble/types';
 
 import { analytics } from './analytics.js';
+import { login, logout, query, register, remove, update } from './appMember.js';
 import { condition } from './condition.js';
 import { controller } from './controller.js';
 import { dialog } from './dialog.js';
@@ -22,7 +23,6 @@ import { staticAction } from './static.js';
 import * as storage from './storage.js';
 import { teamInvite, teamJoin, teamList, teamMembers } from './team.js';
 import { throwAction } from './throw.js';
-import { create, login, logout, query, register, remove, update } from './user.js';
 import { type MakeActionParameters } from '../../types.js';
 
 type ActionProperties<T extends ActionDefinition['type']> = Omit<
@@ -97,11 +97,10 @@ export const actionCreators: ActionCreators = {
   'team.list': teamList,
   'team.members': teamMembers,
   throw: throwAction,
-  'user.login': login,
-  'user.register': register,
-  'user.create': create,
-  'user.update': update,
-  'user.logout': logout,
-  'user.query': query,
-  'user.remove': remove,
+  'app.member.login': login,
+  'app.member.register': register,
+  'app.member.update': update,
+  'app.member.logout': logout,
+  'app.member.query': query,
+  'app.member.remove': remove,
 };

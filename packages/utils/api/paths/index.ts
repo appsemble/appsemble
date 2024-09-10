@@ -19,6 +19,7 @@ import { pathItems as appsAppIdBroadcast } from './apps/appId/broadcast.js';
 import { pathItems as appsAppIdEmail } from './apps/appId/email.js';
 import { pathItems as appsAppIdExport } from './apps/appId/export.js';
 import { pathItems as appsAppIdIcon } from './apps/appId/icon.js';
+import { pathItems as appsAppIdInvites } from './apps/appId/invites.js';
 import { pathItems as appsAppIdLock } from './apps/appId/lock.js';
 import { pathItems as appsAppIdMaskableIcon } from './apps/appId/maskableIcon.js';
 import { pathItems as appsAppIdMembersCurrentAuthOAuth2 } from './apps/appId/members/current/auth/oauth2.js';
@@ -158,6 +159,7 @@ export const paths = {
   '/api/apps/{appId}/email': appsAppIdEmail,
   '/api/apps/{appId}/export': appsAppIdExport,
   '/api/apps/{appId}/icon': appsAppIdIcon,
+  '/api/apps/{appId}/invites': appsAppIdInvites,
   '/api/apps/{appId}/lock': appsAppIdLock,
   '/api/apps/{appId}/maskable-icon': appsAppIdMaskableIcon,
   '/api/apps/{appId}/members/current/auth/oauth2': appsAppIdMembersCurrentAuthOAuth2,

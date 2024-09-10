@@ -740,6 +740,16 @@ export function createExampleContext(
     appId: 0,
     locale: 'en',
     pageData: { default: 'Page data' },
-    appMember: userInfo?.appMember,
+    appMember: {
+      id: 'default-example-id',
+      email: 'default-app-member@example.com',
+      name: 'default-example-name',
+      demo: false,
+      role: 'Member',
+      timezone: 'Europe/Amsterdam',
+      properties: {
+        completedExamples: [],
+      },
+    },
   };
 }

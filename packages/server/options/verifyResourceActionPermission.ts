@@ -3,7 +3,7 @@ import {
   throwKoaError,
   type VerifyResourceActionPermissionParams,
 } from '@appsemble/node-utils';
-import { checkAppRole, Permission, TeamRole } from '@appsemble/utils';
+import { checkAppRole, Permissions, TeamRole } from '@appsemble/utils';
 import { Op, type WhereOptions } from 'sequelize';
 
 import { AppMember, Organization, Team, TeamMember } from '../models/index.js';
@@ -39,8 +39,8 @@ export async function verifyResourceActionPermission({
       app,
       permissions:
         action === 'count' || action === 'get' || action === 'query'
-          ? Permission.ReadResources
-          : Permission.ManageResources,
+          ? Permissions.ReadResources
+          : Permissions.ManageResources,
     });
     return;
   }

@@ -7,6 +7,7 @@ export async function getAppScreenshot(ctx: Context): Promise<void> {
   const {
     pathParams: { appId, screenshotId },
   } = ctx;
+
   const app = await App.findByPk(appId, {
     attributes: [],
     include: [
@@ -20,6 +21,7 @@ export async function getAppScreenshot(ctx: Context): Promise<void> {
   });
 
   assertKoaError(!app, ctx, 404, 'App not found');
+
   assertKoaError(!app.AppScreenshots?.length, ctx, 404, 'Screenshot not found');
 
   const [{ mime, screenshot }] = app.AppScreenshots;

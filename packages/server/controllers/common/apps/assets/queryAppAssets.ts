@@ -1,5 +1,5 @@
 import { assertKoaError } from '@appsemble/node-utils';
-import { Permission } from '@appsemble/utils';
+import { Permissions } from '@appsemble/utils';
 import { type Context } from 'koa';
 
 import { App, Asset, Resource } from '../../../../models/index.js';
@@ -17,7 +17,7 @@ export async function queryAppAssets(ctx: Context): Promise<void> {
 
   assertKoaError(!app, ctx, 404, 'App not found');
 
-  await checkRole(ctx, app.OrganizationId, Permission.ReadAssets);
+  await checkRole(ctx, app.OrganizationId, Permissions.ReadAssets);
 
   const assets = await Asset.findAll({
     attributes: ['id', 'mime', 'filename', 'name', 'ResourceId'],

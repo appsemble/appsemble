@@ -1,5 +1,5 @@
 import { assertKoaError } from '@appsemble/node-utils';
-import { Permission } from '@appsemble/utils';
+import { Permissions } from '@appsemble/utils';
 import { type Context } from 'koa';
 
 import { Organization } from '../../../models/index.js';
@@ -13,7 +13,7 @@ export async function patchOrganization(ctx: Context): Promise<void> {
     },
   } = ctx;
 
-  const member = await checkRole(ctx, organizationId, Permission.EditOrganization, {
+  const member = await checkRole(ctx, organizationId, Permissions.EditOrganization, {
     include: { model: Organization },
   });
   const organization = member.Organization;

@@ -2,7 +2,7 @@ import { type GetAppUserInfoParams, throwKoaError } from '@appsemble/node-utils'
 import { type UserInfo } from '@appsemble/types';
 import { literal, Op } from 'sequelize';
 
-import { AppMember, EmailAuthorization, User } from '../models/index.js';
+import { AppMember, EmailAuthorization, type User } from '../models/index.js';
 import { argv } from '../utils/argv.js';
 import { getGravatarUrl } from '../utils/gravatar.js';
 
@@ -21,8 +21,7 @@ export async function getAppUserInfo({
         'updated',
         'properties',
       ],
-      where: { UserId: user.id, AppId: client.app.id },
-      include: [User],
+      where: { id: user.id, AppId: client.app.id },
     });
 
     if (!appMember) {
@@ -38,15 +37,15 @@ export async function getAppUserInfo({
         ? String(
             new URL(
               `/api/apps/${client.app.id}/members/${
-                user.id
+                appMember.id
               }/picture?updated=${appMember.updated.getTime()}`,
               argv.host,
             ),
           )
         : getGravatarUrl(appMember.email),
       sub: user.id,
-      locale: appMember.User.locale,
-      zoneinfo: appMember.User.timezone,
+      locale: appMember.locale,
+      zoneinfo: appMember.timezone,
       properties: appMember.properties ?? {},
     };
   }

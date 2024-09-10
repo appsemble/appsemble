@@ -53,6 +53,12 @@ export type ResourcePatchAction = RequestLikeAction<'resource.patch'>;
  */
 export type Action =
   | BaseAction<'analytics'>
+  | BaseAction<'app.member.login'>
+  | BaseAction<'app.member.logout'>
+  | BaseAction<'app.member.query'>
+  | BaseAction<'app.member.register'>
+  | BaseAction<'app.member.remove'>
+  | BaseAction<'app.member.update'>
   | BaseAction<'condition'>
   | BaseAction<'controller'>
   | BaseAction<'dialog.error'>
@@ -90,13 +96,6 @@ export type Action =
   | BaseAction<'team.list'>
   | BaseAction<'team.members'>
   | BaseAction<'throw'>
-  | BaseAction<'user.create'>
-  | BaseAction<'user.login'>
-  | BaseAction<'user.logout'>
-  | BaseAction<'user.query'>
-  | BaseAction<'user.register'>
-  | BaseAction<'user.remove'>
-  | BaseAction<'user.update'>
   | LinkAction
   | LogAction
   | RequestAction

@@ -1,16 +1,7 @@
-import { randomBytes } from 'node:crypto';
-
 import { scimAssert } from '@appsemble/node-utils';
 import { type Context } from 'koa';
 
-import {
-  AppMember,
-  EmailAuthorization,
-  Team,
-  TeamMember,
-  transactional,
-  User,
-} from '../../../../../models/index.js';
+import { AppMember, Team, TeamMember, transactional } from '../../../../../models/index.js';
 import { getCaseInsensitive } from '../../../../../utils/object.js';
 import { convertAppMemberToScimUser } from '../../../../../utils/scim.js';
 
@@ -67,9 +58,6 @@ export async function updateAppScimUser(ctx: Context): Promise<void> {
     where: { AppId: appId, id: userId },
     include: [
       {
-        model: User,
-      },
-      {
         model: TeamMember,
         required: false,
         include: [
@@ -84,18 +72,18 @@ export async function updateAppScimUser(ctx: Context): Promise<void> {
   scimAssert(member, ctx, 404, 'User not found');
 
   await transactional(async (transaction) => {
-    const key = randomBytes(40).toString('hex');
     const promises: Promise<unknown>[] = [
       member.update(
-        { email: userName, name: formattedName, scimExternalId: externalId, scimActive: active },
+        {
+          email: userName,
+          name: formattedName,
+          scimExternalId: externalId,
+          scimActive: active,
+          timezone,
+          locale,
+        },
         { transaction },
       ),
-      member.User.update(
-        { timezone, locale, name: formattedName, primaryEmail: userName },
-        { transaction },
-      ),
-
-      EmailAuthorization.create({ UserId: member.UserId, email: userName, key }, { transaction }),
     ];
     if (managerId != null) {
       const team = await Team.findOne({ where: { AppId: appId, name: managerId } });

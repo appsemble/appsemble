@@ -9,7 +9,7 @@ import {
   useToggle,
 } from '@appsemble/react-components';
 import { type AppCollection } from '@appsemble/types';
-import { Permission } from '@appsemble/utils';
+import { Permissions } from '@appsemble/utils';
 import axios from 'axios';
 import { type ReactNode, useCallback, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
@@ -55,9 +55,9 @@ export function CollectionsPage({ organizationId }: CollectionsPageProps): React
   const { organizations } = useUser();
 
   const [mayCreateCollections, mayEditCollections, mayDeleteCollections] = [
-    Permission.CreateCollections,
-    Permission.EditCollections,
-    Permission.DeleteCollections,
+    Permissions.CreateCollections,
+    Permissions.EditCollections,
+    Permissions.DeleteCollections,
   ].map(
     (permission) =>
       organizationId != null &&

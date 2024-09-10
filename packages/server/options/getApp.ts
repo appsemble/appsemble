@@ -5,6 +5,7 @@ import { AppMember } from '../models/AppMember.js';
 import { Organization } from '../models/Organization.js';
 import { getApp as getServerApp } from '../utils/app.js';
 
+// TODO: FIX
 export async function getApp({ context, query }: GetAppParams): Promise<AppInterface> {
   const { app } = await getServerApp(context, {
     ...query,
@@ -13,9 +14,12 @@ export async function getApp({ context, query }: GetAppParams): Promise<AppInter
         { model: Organization, attributes: ['id'] },
         {
           model: AppMember,
-          attributes: ['role', 'UserId'],
+          attributes: ['role'],
           required: false,
-          where: { UserId: context.user.id },
+          where:
+            context.client && 'app' in context.client
+              ? { id: context.user.id }
+              : { UserId: context.user.id },
         },
       ],
     }),

@@ -1,11 +1,16 @@
 import { randomBytes } from 'node:crypto';
 
-import { assertKoaError, logger, throwKoaError, UserPropertiesError } from '@appsemble/node-utils';
+import {
+  AppMemberPropertiesError,
+  assertKoaError,
+  logger,
+  throwKoaError,
+} from '@appsemble/node-utils';
 import { type Context } from 'koa';
 
-import { App, type AppMember, type User } from '../../../../models/index.js';
-import { getAppUrl, parseLanguage } from '../../../../utils/app.js';
-import { createAppMemberQuery, outputAppMember } from '../../../../utils/appMember.js';
+import { App, type AppMember } from '../../../../models/index.js';
+import { getAppUrl } from '../../../../utils/app.js';
+import { getAppMemberInfo } from '../../../../utils/appMember.js';
 
 // TODO: CHECK
 export async function patchAppMemberById(ctx: Context): Promise<void> {
@@ -15,13 +20,10 @@ export async function patchAppMemberById(ctx: Context): Promise<void> {
     request: {
       body: { email, locale, name, picture, properties },
     },
-    user,
   } = ctx;
-  const { baseLanguage, language, query } = parseLanguage(ctx, ctx.query?.language);
-
   const app = await App.findOne({
     where: { id: appId },
-    ...createAppMemberQuery(user as User, query),
+    // ...createAppMemberQuery(user as User, query),
   });
 
   assertKoaError(!app, ctx, 404, 'App account not found');
@@ -81,9 +83,9 @@ export async function patchAppMemberById(ctx: Context): Promise<void> {
   try {
     await member.update(result);
   } catch (error) {
-    if (error instanceof UserPropertiesError) {
+    if (error instanceof AppMemberPropertiesError) {
       throwKoaError(ctx, 400, error.message);
     }
   }
-  ctx.body = outputAppMember(app, language, baseLanguage);
+  ctx.body = getAppMemberInfo(member);
 }

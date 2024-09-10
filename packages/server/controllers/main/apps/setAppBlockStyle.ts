@@ -1,5 +1,5 @@
 import { assertKoaError, throwKoaError } from '@appsemble/node-utils';
-import { Permission, StyleValidationError, validateStyle } from '@appsemble/utils';
+import { Permissions, StyleValidationError, validateStyle } from '@appsemble/utils';
 import { type Context } from 'koa';
 
 import { App, AppBlockStyle, BlockVersion } from '../../../models/index.js';
@@ -28,7 +28,7 @@ export async function setAppBlockStyle(ctx: Context): Promise<void> {
 
     assertKoaError(!block, ctx, 404, 'Block not found');
 
-    await checkRole(ctx, app.OrganizationId, Permission.EditApps);
+    await checkRole(ctx, app.OrganizationId, Permissions.EditApps);
 
     await (css.length
       ? AppBlockStyle.upsert({

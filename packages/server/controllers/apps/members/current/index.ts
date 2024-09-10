@@ -1,3 +1,2 @@
-export * from './auth/index.js';
-
+export { getCurrentAppMember } from './getCurrentAppMember.js';
 export { patchCurrentAppMember } from './patchCurrentAppMember.js';

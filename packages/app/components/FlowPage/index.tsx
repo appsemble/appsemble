@@ -23,13 +23,13 @@ import { type ShowDialogAction, type ShowShareDialog } from '../../types.js';
 import { makeActions } from '../../utils/makeActions.js';
 import { appId } from '../../utils/settings.js';
 import { type AppStorage } from '../../utils/storage.js';
+import { useAppMember } from '../AppMemberProvider/index.js';
 import { useAppMessages } from '../AppMessagesProvider/index.js';
 import { useAppVariables } from '../AppVariablesProvider/index.js';
 import { BlockList } from '../BlockList/index.js';
 import { useDemoAppMembers } from '../DemoAppMembersProvider/index.js';
 import { DotProgressBar } from '../DotProgressBar/index.js';
 import { useServiceWorkerRegistration } from '../ServiceWorkerRegistrationProvider/index.js';
-import { useUser } from '../UserProvider/index.js';
 
 interface FlowPageProps {
   readonly data: unknown;
@@ -65,8 +65,15 @@ export function FlowPage({
   const [currentStep, setCurrentStep] = useState(0);
   const pushNotifications = useServiceWorkerRegistration();
   const showMessage = useMessages();
-  const { logout, passwordLogin, setUserInfo, teams, updateTeam, userInfo, userInfoRef } =
-    useUser();
+  const {
+    appMemberInfo,
+    appMemberInfoRef,
+    logout,
+    passwordLogin,
+    setAppMemberInfo,
+    teams,
+    updateTeam,
+  } = useAppMember();
   const { refetchDemoAppMembers } = useDemoAppMembers();
   const { getAppMessage, getMessage } = useAppMessages();
   const { getVariable } = useAppVariables();
@@ -80,8 +87,7 @@ export function FlowPage({
     url: window.location.href,
     getMessage,
     getVariable,
-    userInfo,
-    appMember: userInfo?.appMember,
+    appMember: appMemberInfo,
     context: { name: page.name },
     locale: params.lang,
   };
@@ -249,10 +255,10 @@ export function FlowPage({
         showMessage,
         teams,
         updateTeam,
-        getUserInfo: () => userInfoRef.current,
+        getAppMemberInfo: () => appMemberInfoRef.current,
         passwordLogin,
         passwordLogout: logout,
-        setUserInfo,
+        setAppMemberInfo,
         refetchDemoAppMembers,
       }),
     [
@@ -276,9 +282,9 @@ export function FlowPage({
       updateTeam,
       passwordLogin,
       logout,
-      setUserInfo,
+      setAppMemberInfo,
       refetchDemoAppMembers,
-      userInfoRef,
+      appMemberInfoRef,
     ],
   );
 

@@ -13,7 +13,6 @@ import {
   OAuth2AuthorizationCode,
   OAuth2ClientCredentials,
   transactional,
-  User,
 } from '../../models/index.js';
 import { argv } from '../../utils/argv.js';
 import { createJWTResponse } from '../../utils/createJWTResponse.js';
@@ -201,14 +200,10 @@ export async function tokenHandler(ctx: Context): Promise<void> {
           include: [
             {
               model: AppMember,
-              include: [
-                {
-                  model: User,
-                  where: {
-                    demoLoginUser: true,
-                  },
-                },
-              ],
+              where: {
+                demo: true,
+              },
+              required: false,
             },
           ],
         });
@@ -217,7 +212,7 @@ export async function tokenHandler(ctx: Context): Promise<void> {
           throw new GrantError('invalid_client');
         }
 
-        let member: AppMember;
+        let appMember = null;
         if (appMemberId === '') {
           logger.verbose('Demo login: Creating new demo user');
 
@@ -234,20 +229,9 @@ export async function tokenHandler(ctx: Context): Promise<void> {
           await transactional(async (transaction) => {
             const identifier = Math.random().toString(36).slice(2);
             const demoEmail = `demo-${identifier}@example.com`;
-            const user = await User.create(
-              {
-                name: `User ${identifier}`,
-                primaryEmail: demoEmail,
-                timezone: 'Europe/Amsterdam',
-                demoLoginUser: true,
-              },
-              { transaction },
-            );
-
-            member = await AppMember.create(
+            appMember = await AppMember.create(
               {
                 AppId: appId,
-                UserId: user.id,
                 role,
                 email: demoEmail,
                 emailVerified: true,
@@ -257,17 +241,11 @@ export async function tokenHandler(ctx: Context): Promise<void> {
             );
           });
         } else {
-          const selectedUser = app.AppMembers.find((appMember) => appMember.UserId === appMemberId);
-          if (selectedUser) {
-            logger.verbose('Demo login: Using existing demo user');
-            member = selectedUser;
-          } else {
-            throw new GrantError('invalid_request');
-          }
+          appMember = { id: appMemberId };
         }
 
         aud = clientId;
-        sub = member.UserId;
+        sub = appMember?.id;
         scope = requestedScope;
         refreshToken = true;
         break;

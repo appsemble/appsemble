@@ -6,7 +6,7 @@ export * from './assetId.js';
 export * from './blockId.js';
 export * from './blockVersion.js';
 export * from './language.js';
-export * from './memberEmail.js';
+export * from './appMemberId.js';
 export * from './organizationId.js';
 export * from './readmeId.js';
 export * from './resourceId.js';

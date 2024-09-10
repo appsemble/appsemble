@@ -1,12 +1,12 @@
 import { assertKoaError, throwKoaError } from '@appsemble/node-utils';
 import { type AppDefinition, type AppsembleMessages } from '@appsemble/types';
-import { AppMessageValidationError, Permission, validateMessages } from '@appsemble/utils';
+import { AppMessageValidationError, MainPermission, validateMessages } from '@appsemble/utils';
 import { type Context } from 'koa';
 import tags from 'language-tags';
 
 import { App, AppMessages } from '../../../../models/index.js';
+import { checkUserPermissions } from '../../../../utils/authorization.js';
 import { checkAppLock } from '../../../../utils/checkAppLock.js';
-import { checkRole } from '../../../../utils/checkRole.js';
 
 async function validateAndCreateMessages(
   language: string,
@@ -44,7 +44,8 @@ export async function createAppMessages(ctx: Context): Promise<void> {
   assertKoaError(!app, ctx, 404, 'App not found');
 
   checkAppLock(ctx, app);
-  await checkRole(ctx, app.OrganizationId, Permission.EditAppMessages);
+
+  await checkUserPermissions(ctx, app.OrganizationId, [MainPermission.UpdateAppMessages]);
 
   if (Array.isArray(ctx.request.body)) {
     ctx.request.body.map((message) => {
