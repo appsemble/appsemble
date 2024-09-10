@@ -31,7 +31,7 @@ export function Register(): ReactNode {
         formData.append('name', values.name);
       }
 
-      await axios.post(`${apiUrl}/api/user/apps/${appId}/account`, formData);
+      await axios.post(`${apiUrl}/api/apps/${appId}/auth/email/register`, formData);
       await passwordLogin({ username: values.email, password: values.password });
     },
     [passwordLogin, lang],

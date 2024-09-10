@@ -6,7 +6,7 @@ import { type Options } from '../types.js';
 export function createGetAppMember({ getApp, getAppMembers }: Options): Middleware {
   return async (ctx: Context) => {
     const {
-      pathParams: { appId, userId },
+      pathParams: { appId, memberId },
     } = ctx;
 
     const app = await getApp({ context: ctx, query: { where: { id: appId } } });
@@ -19,7 +19,7 @@ export function createGetAppMember({ getApp, getAppMembers }: Options): Middlewa
       'App does not have a security definition',
     );
 
-    const appMembers = await getAppMembers({ context: ctx, app, userId });
+    const appMembers = await getAppMembers({ context: ctx, app, userId: memberId });
 
     assertKoaError(appMembers.length !== 1, ctx, 404, 'App member not found');
 

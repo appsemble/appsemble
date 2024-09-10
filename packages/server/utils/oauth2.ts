@@ -1,8 +1,15 @@
-import { AppsembleError, basicAuth } from '@appsemble/node-utils';
-import { type Remapper, type TokenResponse, type UserEmail, type UserInfo } from '@appsemble/types';
+import { randomBytes } from 'node:crypto';
+
+import { AppsembleError, basicAuth, throwKoaError } from '@appsemble/node-utils';
+import type * as types from '@appsemble/types';
 import { remap } from '@appsemble/utils';
 import axios from 'axios';
+import { addMinutes } from 'date-fns';
 import jwt from 'jsonwebtoken';
+import { type Context } from 'koa';
+
+import { argv } from './argv.js';
+import { type App, OAuth2AuthorizationCode, type User } from '../models/index.js';
 
 /**
  * Check if all required scopes are granted.
@@ -33,9 +40,9 @@ export async function getAccessToken(
   redirectUri: string,
   clientId: string,
   clientSecret: string,
-): Promise<TokenResponse> {
+): Promise<types.TokenResponse> {
   // Exchange the authorization code for an access token and refresh token.
-  const { data } = await axios.post<TokenResponse>(
+  const { data } = await axios.post<types.TokenResponse>(
     tokenUrl,
     new URLSearchParams({
       grant_type: 'authorization_code',
@@ -76,9 +83,9 @@ export async function getUserInfo(
   accessToken: string,
   idToken?: string,
   userInfoUrl?: string,
-  remapper?: Remapper,
+  remapper?: types.Remapper,
   userEmailsUrl?: string,
-): Promise<Partial<UserInfo>> {
+): Promise<Partial<types.UserInfo>> {
   let email: string;
   let emailVerified: boolean;
   let name: string;
@@ -89,7 +96,7 @@ export async function getUserInfo(
   let zoneinfo: string;
   let subscribed: boolean;
 
-  function assign(info: UserInfo): void {
+  function assign(info: types.UserInfo): void {
     email ??= info.email;
     emailVerified ??= info.email_verified;
     name ??= info.name;
@@ -108,7 +115,7 @@ export async function getUserInfo(
 
   if (idToken) {
     try {
-      assign(jwt.decode(idToken) as UserInfo);
+      assign(jwt.decode(idToken) as types.UserInfo);
     } catch {
       // No ID token was provided, or it was invalid.
       // Fall back to using the access token instead.
@@ -117,7 +124,7 @@ export async function getUserInfo(
 
   if (shouldTryNext()) {
     try {
-      assign(jwt.decode(accessToken) as UserInfo);
+      assign(jwt.decode(accessToken) as types.UserInfo);
     } catch {
       // No ID token was provided, or it was invalid.
       // Fall back to requesting user info instead.
@@ -128,12 +135,12 @@ export async function getUserInfo(
     const requestConfig = {
       headers: { authorization: `Bearer ${accessToken}` },
     };
-    const { data } = await axios.get<UserInfo>(userInfoUrl, requestConfig);
-    const actualData: UserInfo = remapper
-      ? (remap(remapper, data, null) as UserInfo)
-      : (data as UserInfo);
+    const { data } = await axios.get<types.UserInfo>(userInfoUrl, requestConfig);
+    const actualData: types.UserInfo = remapper
+      ? (remap(remapper, data, null) as types.UserInfo)
+      : (data as types.UserInfo);
     if (!actualData.email && userEmailsUrl) {
-      const { data: emailsData } = await axios.get<UserEmail[]>(userEmailsUrl, requestConfig);
+      const { data: emailsData } = await axios.get<types.UserEmail[]>(userEmailsUrl, requestConfig);
       if (emailsData.length > 0) {
         actualData.email = emailsData[0].email;
       }
@@ -156,5 +163,31 @@ export async function getUserInfo(
     locale,
     zoneinfo,
     subscribed,
+  };
+}
+
+export async function createAppOAuth2AuthorizationCode(
+  app: App,
+  redirectUri: string,
+  scope: string,
+  user: User,
+  ctx: Context,
+): Promise<types.OAuth2AuthorizationCode> {
+  const appHost = `${app.path}.${app.OrganizationId}.${new URL(argv.host).hostname}`;
+  const redirectHost = new URL(redirectUri).hostname;
+  if (redirectHost !== appHost && redirectHost !== app.domain) {
+    throwKoaError(ctx, 403, 'Invalid redirectUri');
+  }
+
+  const { code } = await OAuth2AuthorizationCode.create({
+    AppId: app.id,
+    code: randomBytes(12).toString('hex'),
+    expires: addMinutes(new Date(), 10),
+    redirectUri,
+    scope,
+    UserId: user.id,
+  });
+  return {
+    code,
   };
 }

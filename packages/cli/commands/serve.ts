@@ -204,7 +204,7 @@ export async function handler(argv: ServeArguments): Promise<void> {
 
     const cacheExists = existsSync(cachedBlockManifest);
     if (!cacheExists || (cacheExists && argv['overwrite-block-cache'])) {
-      const blockUrl = `/api/blocks/@${organization}/${blockName}/versions/${identifiableBlock.version}`;
+      const blockUrl = `/api/common/blocks/@${organization}/${blockName}/versions/${identifiableBlock.version}`;
 
       try {
         const { data: blockManifest }: { data: BlockManifest } = await axios.get(

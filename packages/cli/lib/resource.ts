@@ -119,7 +119,7 @@ export async function publishResource({
   logger.info(`Publishing resource(s) from ${path}`);
 
   let data;
-  const endpoint = `/api/apps/${appId}/${seed ? 'seed-' : ''}resources/${type}`;
+  const endpoint = `/api/${seed ? 'main' : 'common'}/apps/${appId}/resources/${type}`;
   try {
     if (csv) {
       const response = await axios.post<Resource | Resource[]>(endpoint, resources, {
@@ -155,7 +155,7 @@ export async function publishResource({
   }
 
   const ids: number[] = [].concat(data).map((d: Resource) => d.id);
-  const url = new URL(`/apps/${appId}/resources/${type}/`, remote);
+  const url = new URL(`/common/apps/${appId}/resources/${type}/`, remote);
   logger.info(
     `Successfully published ${ids.length} resource${resources.length === 1 ? '' : 's'} at: \n${ids
       .map((id) => `${url}${id}`)
@@ -239,7 +239,7 @@ export async function updateResource({
       const {
         data: { id },
       } = await axios.put<Resource>(
-        `/api/apps/${appId}/resources/${resourceName}/${resource.id}`,
+        `/api/common/apps/${appId}/resources/${resourceName}/${resource.id}`,
         resource,
         {
           baseURL: remote,

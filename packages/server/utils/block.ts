@@ -1,10 +1,16 @@
 import { logger } from '@appsemble/node-utils';
 import { type BlockManifest } from '@appsemble/types';
-import { compareStrings } from '@appsemble/utils';
+import {
+  compareStrings,
+  getAppBlocks,
+  type IdentifiableBlock,
+  parseBlockName,
+} from '@appsemble/utils';
 import axios from 'axios';
+import { Op } from 'sequelize';
 
 import { argv } from './argv.js';
-import { BlockAsset, BlockMessages, BlockVersion, transactional } from '../models/index.js';
+import { App, BlockAsset, BlockMessages, BlockVersion, transactional } from '../models/index.js';
 
 export function blockVersionToJson(blockVersion: BlockVersion): BlockManifest {
   const {
@@ -25,7 +31,7 @@ export function blockVersionToJson(blockVersion: BlockVersion): BlockManifest {
   const blockName = `@${OrganizationId || Organization.id}/${name}`;
   let iconUrl = null;
   if (blockVersion.icon || blockVersion.get('hasIcon')) {
-    iconUrl = `/api/blocks/${blockName}/versions/${version}/icon`;
+    iconUrl = `/api/common/blocks/${blockName}/versions/${version}/icon`;
   } else if (blockVersion.Organization?.icon || blockVersion.Organization?.get('hasIcon')) {
     iconUrl = `/api/organizations/${Organization.id}/icon?${new URLSearchParams({
       updated: blockVersion.Organization?.updated.toISOString(),
@@ -56,7 +62,7 @@ export async function syncBlock({
   version,
 }: Pick<BlockVersion, 'name' | 'OrganizationId' | 'version'>): Promise<BlockManifest | undefined> {
   const id = `@${OrganizationId}/${name}`;
-  const blockUrl = String(new URL(`/api/blocks/${id}/versions/${version}`, argv.remote));
+  const blockUrl = String(new URL(`/api/common/blocks/${id}/versions/${version}`, argv.remote));
   logger.info(`Synchronizing block from ${blockUrl}`);
   try {
     const { data: block } = await axios.get<BlockManifest>(blockUrl);
@@ -101,4 +107,53 @@ export async function syncBlock({
     }
     throw error;
   }
+}
+
+export async function getBlockVersions(blocks: IdentifiableBlock[]): Promise<BlockManifest[]> {
+  const uniqueBlocks = blocks.map(({ type, version }) => {
+    const [OrganizationId, name] = parseBlockName(type);
+    return {
+      name,
+      OrganizationId,
+      version,
+    };
+  });
+  const blockVersions = await BlockVersion.findAll({
+    attributes: { exclude: ['id'] },
+    where: { [Op.or]: uniqueBlocks },
+  });
+  const result: BlockManifest[] = blockVersions.map(blockVersionToJson);
+
+  if (argv.remote) {
+    const knownIdentifiers = new Set(
+      blockVersions.map((block) => `@${block.OrganizationId}/${block.name}@${block.version}`),
+    );
+    const unknownBlocks = uniqueBlocks.filter(
+      (block) => !knownIdentifiers.has(`@${block.OrganizationId}/${block.name}@${block.version}`),
+    );
+    const syncedBlocks = await Promise.all(unknownBlocks.map(syncBlock));
+    result.push(...syncedBlocks.filter(Boolean));
+  }
+
+  return result;
+}
+
+export async function findBlockInApps(
+  blockName: string,
+  blockVersion: string,
+  organizationId: string,
+): Promise<boolean> {
+  const apps: App[] = await App.findAll({
+    attributes: ['definition'],
+  });
+  for (const app of apps) {
+    const blocks = getAppBlocks(app.definition);
+    const usedBlocks = blocks.some(
+      (block) => block.version === blockVersion && block.type === `@${organizationId}/${blockName}`,
+    );
+    if (usedBlocks) {
+      return true;
+    }
+  }
+  return false;
 }

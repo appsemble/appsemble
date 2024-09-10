@@ -48,7 +48,7 @@ export function authentication(): AuthenticationCheckers {
 
     async scim(scimToken, { path }) {
       // This runs before the path parameter parsing, so we can’t use pathParams
-      const match = path.match(/^\/api\/apps\/(\d+)\/scim/);
+      const match = path.match(/^\/api\/main\/apps\/(\d+)\/scim/);
       if (!match) {
         return;
       }

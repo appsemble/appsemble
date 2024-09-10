@@ -14,7 +14,7 @@ export function useSSLStatus(...domains: string[]): SSLStatusMap {
     params.append('domains', domain);
   }
   const { data: sslStatus, refresh: refreshSSLStatus } = useData<SSLStatusMap>(
-    `/api/ssl?${params}`,
+    `/api/main/ssl?${params}`,
   );
 
   useEffect(() => {

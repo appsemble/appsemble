@@ -59,9 +59,9 @@ export function AssetsPage(): ReactNode {
   const rowsPerPage = limit;
   const page = limit === Number.POSITIVE_INFINITY ? 1 : Math.floor(offset / limit) + 1;
 
-  const resultCount = useData<number>(`/api/apps/${app.id}/assets/$count`);
+  const resultCount = useData<number>(`/api/common/apps/${app.id}/assets/$count`);
   const assetsResult = useData<Asset[]>(
-    `/api/apps/${app.id}/assets?${new URLSearchParams({
+    `/api/common/apps/${app.id}/assets?${new URLSearchParams({
       $skip: String(offset),
       ...(Number.isFinite(limit) && { $top: String(limit) }),
     })}`,

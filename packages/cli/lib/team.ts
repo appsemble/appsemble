@@ -95,7 +95,7 @@ export async function createTeam({
     const {
       data: { id },
     } = await axios.post<Team>(
-      `/api/apps/${appId}/teams`,
+      `/api/common/apps/${appId}/teams`,
       {
         name,
         annotations: resolveAnnotations(annotations),
@@ -118,7 +118,7 @@ export async function deleteTeam({
   await authenticate(remote, 'teams:write', clientCredentials);
   logger.info(`Deleting team ${id}`);
   try {
-    await axios.delete(`/api/apps/${appId}/teams/${id}`, { baseURL: remote });
+    await axios.delete(`/api/common/apps/${appId}/teams/${id}`, { baseURL: remote });
     logger.info(`Successfully deleted team ${id}`);
   } catch (error) {
     logger.error(error);
@@ -136,7 +136,7 @@ export async function updateTeam({
   logger.info(`Updating team ${id}`);
   try {
     await axios.patch(
-      `/api/apps/${appId}/teams/${id}`,
+      `/api/common/apps/${appId}/teams/${id}`,
       {
         name,
         annotations: resolveAnnotations(annotations),
@@ -158,7 +158,11 @@ export async function inviteMember({
 }: SharedTeamMemberParams): Promise<void> {
   logger.info(`Inviting ${user} to team ${id}`);
   try {
-    await axios.post(`/api/apps/${appId}/teams/${id}/members`, { id: user }, { baseURL: remote });
+    await axios.post(
+      `/api/common/apps/${appId}/teams/${id}/members`,
+      { id: user },
+      { baseURL: remote },
+    );
     logger.info(`Successfully invited ${user} to team ${id}`);
   } catch (error) {
     logger.error(error);
@@ -176,7 +180,7 @@ export async function updateMember({
   logger.info(`Updating ${user}’s role in team ${id} to ${role}`);
   try {
     await axios.put(
-      `/api/apps/${appId}/teams/${id}/members/${user}`,
+      `/api/common/apps/${appId}/teams/${id}/members/${user}`,
       { role },
       { baseURL: remote },
     );
@@ -189,6 +193,6 @@ export async function updateMember({
 
 export async function deleteMember({ appId, id, user }: SharedTeamMemberParams): Promise<void> {
   logger.info(`Deleting ${user} to team ${id}`);
-  await axios.delete(`/api/apps/${appId}/teams/${id}/members/${user}`);
+  await axios.delete(`/api/common/apps/${appId}/teams/${id}/members/${user}`);
   logger.info(`Successfully deleted ${user} from team ${id}`);
 }

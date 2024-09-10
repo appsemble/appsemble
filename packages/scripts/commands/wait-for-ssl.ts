@@ -12,7 +12,7 @@ export async function handler(): Promise<void> {
   const reviewDomain = `${CI_MERGE_REQUEST_IID || 'staging'}.appsemble.review`;
   await new Promise<void>((resolve, reject) => {
     const interval = setInterval(async () => {
-      const { data } = await axios.get<SSLStatusMap>(`https://${reviewDomain}/api/ssl`, {
+      const { data } = await axios.get<SSLStatusMap>(`https://${reviewDomain}/api/main/ssl`, {
         params: { domains: `wait-for-ssl.appsemble.${reviewDomain}` },
       });
       const [status] = Object.values(data);

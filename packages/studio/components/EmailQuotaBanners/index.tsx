@@ -30,7 +30,7 @@ interface BannerProps {
 }
 
 function Banner({ app, onDismiss }: BannerProps): ReactNode {
-  const { data } = useData<Quota | null>(`/api/apps/${app.id}/quotas/email`);
+  const { data } = useData<Quota | null>(`/api/main/apps/${app.id}/quotas/email`);
 
   if (!data || data.used < data.limit) {
     return null;
@@ -56,7 +56,7 @@ function Banner({ app, onDismiss }: BannerProps): ReactNode {
 export function EmailQuotaBanners(): ReactNode {
   const [dismissed, setDismissed] = useState(getDismissedApps());
 
-  const { data } = useData<App[]>('/api/user/apps');
+  const { data } = useData<App[]>('/api/main/users/current/apps');
 
   const onDismiss = useCallback(
     (dismissal: Dismissal) => {

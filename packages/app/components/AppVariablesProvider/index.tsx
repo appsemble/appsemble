@@ -34,7 +34,7 @@ export function AppVariablesProvider({ children }: AppVariablesProviderProps): R
 
   useEffect(() => {
     axios
-      .get<AppConfigEntry[]>(`${apiUrl}/api/apps/${appId}/variables`)
+      .get<AppConfigEntry[]>(`${apiUrl}/api/common/apps/${appId}/variables`)
       .then(({ data }) => {
         const parsedVariables: Record<string, ValueFromProcess> = {};
         for (const entry of data) {

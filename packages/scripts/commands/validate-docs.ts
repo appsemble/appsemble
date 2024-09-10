@@ -499,7 +499,7 @@ async function validateAppDefinitions(
       formData.append('yaml', stringify(appDefinitionWithLocation.appDefinition));
       formData.append('OrganizationId', organization);
 
-      await axios.post('/api/apps', formData, {
+      await axios.post('/api/main/apps', formData, {
         baseURL: remote,
         params: { dryRun: true },
       });

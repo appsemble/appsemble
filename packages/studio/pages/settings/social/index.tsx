@@ -42,14 +42,17 @@ export function SocialPage(): ReactNode {
     error,
     loading,
     setData: setAccounts,
-  } = useData<ConnectedAccount[]>('/api/oauth2/connected');
+  } = useData<ConnectedAccount[]>('/api/main/users/current/auth/oauth2/authorizations');
 
   const disconnect = useCallback(
     async ({ authorizationUrl, name }: OAuth2Provider) => {
       try {
-        const { data: hasNoLoginMethods } = await axios.delete<boolean>('/api/oauth2/connected', {
-          params: { authorizationUrl },
-        });
+        const { data: hasNoLoginMethods } = await axios.delete<boolean>(
+          '/api/main/users/current/auth/oauth2/authorizations',
+          {
+            params: { authorizationUrl },
+          },
+        );
         setHasNoLoginMethods(hasNoLoginMethods);
       } catch {
         push(formatMessage(messages.disconnectError, { name }));

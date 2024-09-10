@@ -49,8 +49,7 @@ export function IndexPage(): ReactNode {
   const onAccept = useCallback(() => {
     setGenerating(true);
     axios
-      .post<LoginCodeResponse>('/api/oauth2/consent/agree', {
-        appId,
+      .post<LoginCodeResponse>(`/api/main/users/current/auth/oauth2/apps/${appId}/consent/agree`, {
         redirectUri,
         scope: [...new Set(scopes)].join(' '),
       })
@@ -68,8 +67,7 @@ export function IndexPage(): ReactNode {
     }
 
     axios
-      .post<LoginCodeResponse>('/api/oauth2/consent/verify', {
-        appId,
+      .post<LoginCodeResponse>(`/api/main/users/current/auth/oauth2/apps/${appId}/consent/verify`, {
         redirectUri,
         scope,
       })

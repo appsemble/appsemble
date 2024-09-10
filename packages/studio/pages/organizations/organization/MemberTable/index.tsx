@@ -25,12 +25,12 @@ export function MemberTable(): ReactNode {
     error: membersError,
     loading: membersLoading,
     setData: setMembers,
-  } = useData<OrganizationMember[]>(`/api/organizations/${organizationId}/members`);
+  } = useData<OrganizationMember[]>(`/api/main/organizations/${organizationId}/members`);
   const {
     data: invites,
     loading: invitesLoading,
     setData: setInvites,
-  } = useData<OrganizationInvite[]>(`/api/organizations/${organizationId}/invites`);
+  } = useData<OrganizationInvite[]>(`/api/main/organizations/${organizationId}/invites`);
   const addMembersModal = useToggle();
 
   const onInvited = useCallback(

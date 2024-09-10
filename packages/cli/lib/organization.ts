@@ -51,7 +51,7 @@ export async function createOrganization({
 
   logger.info(`Creating organization ${id}${name ? ` (${name})` : ''}`);
   try {
-    await axios.post('/api/organizations', formData);
+    await axios.post('/api/main/organizations', formData);
     logger.info(`Successfully created organization ${id}${name ? ` (${name})` : ''}`);
   } catch (error) {
     logger.error(error);
@@ -97,7 +97,7 @@ export async function updateOrganization({
   }
 
   try {
-    await axios.patch(`/api/organizations/${id}`, formData);
+    await axios.patch(`/api/main/organizations/${id}`, formData);
     logger.info(`Successfully updated organization ${id}${name ? ` (${name})` : ''}`);
   } catch (error) {
     logger.error(error);
@@ -114,7 +114,7 @@ export async function upsertOrganization({
   website,
 }: OrganizationArguments): Promise<void> {
   try {
-    await axios.get(`/api/organizations/${id}`);
+    await axios.get(`/api/main/organizations/${id}`);
     await updateOrganization({ description, email, icon, id, name, website });
   } catch (error) {
     if (axios.isAxiosError(error) && error.response?.status === 404) {

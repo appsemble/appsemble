@@ -27,7 +27,7 @@ export function AppEditor({
   selectedPage,
   selectedSubParent,
 }: AppEditorProps): ReactNode {
-  const { data: blocks, error, loading } = useData<BlockManifest[]>('/api/blocks');
+  const { data: blocks, error, loading } = useData<BlockManifest[]>('/api/common/blocks');
   const [blockIndex, setBlockIndex] = useState<number>(10_000);
   const [dragIndex, setDragIndex] = useState<number>(0);
 

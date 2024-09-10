@@ -26,8 +26,12 @@ export function IndexPage({ organization }: IndexPageProps): ReactNode {
   const { organizations } = useUser();
   const { lang } = useParams<{ lang: string; organizationId: string }>();
 
-  const appsResult = useData<App[]>(`/api/organizations/${organization.id}/apps?language=${lang}`);
-  const blocksResult = useData<BlockManifest[]>(`/api/organizations/${organization.id}/blocks`);
+  const appsResult = useData<App[]>(
+    `/api/main/organizations/${organization.id}/apps?language=${lang}`,
+  );
+  const blocksResult = useData<BlockManifest[]>(
+    `/api/main/organizations/${organization.id}/blocks`,
+  );
 
   const userOrganization = organizations?.find((org) => org.id === organization.id);
   const mayEditOrganization =

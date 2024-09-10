@@ -55,7 +55,7 @@ export async function publishAsset({
       formData.append('name', normalize(name));
     }
 
-    const endpoint = `/api/apps/${appId}/${seed ? 'seed-' : ''}assets`;
+    const endpoint = seed ? `/api/main/apps/${appId}/assets` : `/api/common/apps/${appId}/assets`;
     const {
       data: { id },
     } = await axios.post<{ id: string }>(endpoint, formData, { baseURL: remote });

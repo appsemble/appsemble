@@ -55,7 +55,7 @@ export const register: ActionCreator<'user.register'> = ({
       );
     }
 
-    await axios.post(`${apiUrl}/api/user/apps/${appId}/account`, formData);
+    await axios.post(`${apiUrl}/api/apps/${appId}/auth/email/register`, formData);
     if (login) {
       await passwordLogin({ username: email, password });
     }
@@ -115,7 +115,7 @@ export const create: ActionCreator<'user.create'> = ({
       );
     }
 
-    await axios.post(`${apiUrl}/api/user/apps/${appId}/accounts`, formData);
+    await axios.post(`${apiUrl}/api/apps/${appId}/auth/email/registers`, formData);
 
     await refetchDemoAppMembers();
     return data;
@@ -162,7 +162,7 @@ export const query: ActionCreator<'user.query'> = ({ definition, getUserInfo, re
     const roles = remap(definition.roles, data);
 
     const { data: response } = await axios.get<AppAccount[]>(
-      `${apiUrl}/api/user/apps/${appId}/accounts?roles=${roles}`,
+      `${apiUrl}/api/apps/${appId}/members?roles=${roles}`,
     );
 
     return response;
@@ -219,7 +219,7 @@ export const update: ActionCreator<'user.update'> = ({
     }
 
     const { data: response } = await axios.patch<AppAccount>(
-      `${apiUrl}/api/user/apps/${appId}/accounts/${currentEmail}`,
+      `${apiUrl}/api/apps/${appId}/members/current`,
       formData,
     );
 
@@ -255,7 +255,7 @@ export const remove: ActionCreator<'user.remove'> = ({
     const email = remap(definition.email, data);
 
     const { data: response } = await axios.delete<AppAccount>(
-      `${apiUrl}/api/user/apps/${appId}/accounts/${email}`,
+      `${apiUrl}/api/apps/${appId}/members/${email}`,
     );
 
     await refetchDemoAppMembers();

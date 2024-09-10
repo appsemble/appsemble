@@ -1,0 +1,35 @@
+import { assertKoaError } from '@appsemble/node-utils';
+import { Permission } from '@appsemble/utils';
+import { type Context } from 'koa';
+
+import { AppCollection, AppCollectionApp } from '../../../../models/index.js';
+import { checkRole } from '../../../../utils/checkRole.js';
+
+export async function unpinAppFromAppCollection(ctx: Context): Promise<void> {
+  const {
+    pathParams: { appCollectionId, appId },
+  } = ctx;
+
+  const aca = await AppCollectionApp.findOne({
+    where: {
+      AppCollectionId: appCollectionId,
+      AppId: appId,
+    },
+    include: [
+      {
+        model: AppCollection,
+        attributes: ['OrganizationId'],
+      },
+    ],
+  });
+
+  assertKoaError(!aca, ctx, 404, 'App not found in collection');
+
+  await checkRole(ctx, aca.AppCollection.OrganizationId, Permission.EditCollections);
+
+  await aca.update({
+    pinnedAt: null,
+  });
+
+  ctx.response.status = 204;
+}

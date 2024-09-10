@@ -5,7 +5,7 @@ import {
   type TokenResponse,
   type UserInfo,
 } from '@appsemble/types';
-import { setUser } from '@sentry/browser';
+import { setUser as setSentryUser } from '@sentry/browser';
 import axios, { type AxiosHeaders } from 'axios';
 import { jwtDecode } from 'jwt-decode';
 import {
@@ -67,8 +67,8 @@ export function UserProvider({ children }: UserProviderProps): ReactNode {
   const accessTokenRef = useRef<string | null>(localStorage.access_token);
 
   const refreshUserInfo = useCallback(async () => {
-    const { data } = await axios.get<UserInfo>('/api/connect/userinfo');
-    setUser({ id: data.sub });
+    const { data } = await axios.get<UserInfo>('/api/main/users/current');
+    setSentryUser({ id: data.sub });
     setUserInfo(data);
   }, []);
 
@@ -80,12 +80,12 @@ export function UserProvider({ children }: UserProviderProps): ReactNode {
   }, []);
 
   const fetchOrganizations = useCallback(async () => {
-    const { data } = await axios.get<UserOrganization[]>('/api/user/organizations');
+    const { data } = await axios.get<UserOrganization[]>('/api/main/users/current/organizations');
     setOrganizations(data);
   }, []);
 
   const logout = useCallback(() => {
-    setUser(null);
+    setSentryUser(null);
     setUserInfo(null);
     setOrganizations([]);
     accessTokenRef.current = null;
@@ -141,7 +141,7 @@ export function UserProvider({ children }: UserProviderProps): ReactNode {
     const timeout = exp * 1e3 - REFRESH_BUFFER - Date.now();
     const refresh = async (): Promise<void> => {
       try {
-        const { data } = await axios.post<TokenResponse>('/api/refresh', {
+        const { data } = await axios.post<TokenResponse>('/api/main/auth/refresh-token', {
           refresh_token: tokenResponse.refresh_token,
         });
         login(data);

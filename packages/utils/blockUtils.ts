@@ -71,5 +71,5 @@ export function getAppBlocks(definition: AppDefinition): IdentifiableBlock[] {
 }
 
 export function prefixBlockURL(block: IdentifiableBlock, url: string): string {
-  return `/api/blocks/${normalizeBlockName(block.type)}/versions/${block.version}/${url}`;
+  return `/api/common/blocks/${normalizeBlockName(block.type)}/versions/${block.version}/${url}`;
 }

@@ -47,8 +47,8 @@ export function UserPage(): ReactNode {
     error,
     loading,
     setData: setEmails,
-  } = useData<UserEmail[]>('/api/user/email');
-  const timezones = useData<string[]>('/api/timezones');
+  } = useData<UserEmail[]>('/api/main/users/current/emails');
+  const timezones = useData<string[]>('/api/main/timezones');
 
   const [rerenderKey, setRerenderKey] = useState(0);
   useEffect(() => setRerenderKey((prevKey) => prevKey + 1), [pathname]);

@@ -85,7 +85,7 @@ export async function deleteBlock({
 }: DeleteBlockVersionParams): Promise<void> {
   try {
     await authenticate(remote, 'blocks:delete', clientCredentials);
-    await axios.delete(`/api/blocks/@${organization}/${blockName}/versions/${blockVersion}`, {
+    await axios.delete(`/api/main/blocks/@${organization}/${blockName}/versions/${blockVersion}`, {
       baseURL: remote,
     });
     logger.info(`Successfully deleted ${blockName} block version.`);
@@ -119,7 +119,7 @@ export async function uploadAppBlockTheme(
 
   try {
     await axios.post(
-      `/api/apps/${appId}/style/block/${organization}/${block}`,
+      `/api/main/apps/${appId}/style/block/${organization}/${block}`,
       { force, style },
       { baseURL: remote },
     );

@@ -33,13 +33,13 @@ export function onFetch(event: FetchEvent): void {
   }
 
   // Block version requests are immutable and should be cached.
-  if (/^\/api\/blocks\/@(?:[\da-z-]+\/){2}versions\//.test(pathname)) {
+  if (/^\/api\/common\/blocks\/@(?:[\da-z-]+\/){2}versions\//.test(pathname)) {
     event.respondWith(cacheFirst(request));
     return;
   }
 
   // Cache app messages
-  if (/^\/api\/apps\/\d+\/messages/.test(pathname)) {
+  if (/^\/api\/common\/apps\/\d+\/messages/.test(pathname)) {
     event.respondWith(requestFirst(request));
     return;
   }

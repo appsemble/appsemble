@@ -61,11 +61,13 @@ export function SettingsPage({ onChangeOrganization, organization }: SettingsPag
   const [fetchedBlocks, setFetchedBlocks] = useState<Block[]>([]);
 
   const fetch = useCallback(async () => {
-    const apps = await axios.get(`/api/organizations/${organization.id}/apps`);
+    const apps = await axios.get(`/api/main/organizations/${organization.id}/apps`);
     setFetchedApps(apps.data);
-    const appCollections = await axios.get(`/api/organizations/${organization.id}/appCollections`);
+    const appCollections = await axios.get(
+      `/api/main/organizations/${organization.id}/app-collections`,
+    );
     setFetchedAppCollections(appCollections.data);
-    const blocks = await axios.get(`/api/organizations/${organization.id}/blocks`);
+    const blocks = await axios.get(`/api/main/organizations/${organization.id}/blocks`);
     setFetchedBlocks(blocks.data);
   }, [organization.id]);
 
@@ -74,7 +76,7 @@ export function SettingsPage({ onChangeOrganization, organization }: SettingsPag
   }, [fetch]);
   const deleteOrganization = async (id: string): Promise<void> => {
     try {
-      await axios.delete(`/api/organizations/${id}`);
+      await axios.delete(`/api/main/organizations/${id}`);
       push({
         body: formatMessage(messages.deleteSuccess, {
           name: organization.name,

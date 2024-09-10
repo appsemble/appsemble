@@ -45,7 +45,7 @@ import {
   Resource,
   Team,
 } from './index.js';
-import { resolveIconUrl } from '../utils/model.js';
+import { resolveIconUrl } from '../utils/app.js';
 
 @Table({ tableName: 'App', paranoid: true })
 export class App extends Model {
@@ -323,9 +323,9 @@ export class App extends Model {
           return -1;
         }
         return 0;
-      }).map(({ id }) => `/api/apps/${this.id}/screenshots/${id}`),
+      }).map(({ id }) => `/api/main/apps/${this.id}/screenshots/${id}`),
       readmeUrl: this.AppReadmes?.length
-        ? `/api/apps/${this.id}/readmes/${this.AppReadmes?.[0]?.id}`
+        ? `/api/main/apps/${this.id}/readmes/${this.AppReadmes?.[0]?.id}`
         : undefined,
       messages: this.messages,
       demoMode: this.demoMode,

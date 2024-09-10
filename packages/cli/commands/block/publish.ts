@@ -54,6 +54,6 @@ export async function handler({
       await buildBlock(buildConfig);
     }
 
-    await publishProject(buildConfig, '/api/blocks', ignoreConflict);
+    await publishProject(buildConfig, '/api/main/blocks', ignoreConflict);
   }
 }

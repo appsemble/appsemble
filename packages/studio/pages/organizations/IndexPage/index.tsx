@@ -13,7 +13,7 @@ import { ListButton } from '../../../components/ListButton/index.js';
 import { useUser } from '../../../components/UserProvider/index.js';
 
 export function IndexPage(): ReactNode {
-  const result = useData<Organization[]>('/api/organizations');
+  const result = useData<Organization[]>('/api/main/organizations');
   const { organizations, userInfo } = useUser();
 
   const navigate = useNavigate();

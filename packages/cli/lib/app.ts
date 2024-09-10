@@ -289,7 +289,7 @@ export async function exportAppAsZip(
   await authenticate(remote, 'apps:export', clientCredentials);
   try {
     const response = await axios.get(
-      `/api/apps/${appId}/export?resources=${resources}&assets=${assets}`,
+      `/api/main/apps/${appId}/export?resources=${resources}&assets=${assets}`,
       {
         baseURL: remote,
         responseType: 'stream',
@@ -349,7 +349,7 @@ export async function uploadMessages(
 
   try {
     for (const language of result) {
-      await axios.post(`/api/apps/${appId}/messages`, language, { baseURL: remote });
+      await axios.post(`/api/main/apps/${appId}/messages`, language, { baseURL: remote });
       logger.info(`Successfully uploaded messages for language “${language.language}” 🎉`);
     }
   } catch (error) {
@@ -370,7 +370,7 @@ export async function deleteApp({ clientCredentials, id, remote }: DeleteAppArgs
     const response = await axios.get(`/api/apps/${id}`);
     const { name } = response.data;
     logger.warn(`Deleting app: ${name}`);
-    await axios.delete(`/api/apps/${id}`, {
+    await axios.delete(`/api/main/apps/${id}`, {
       baseURL: remote,
     });
     logger.info(`Successfully deleted app with id ${id}`);
@@ -388,7 +388,7 @@ export async function publishSeedResources(path: string, app: App, remote: strin
     logger.info(`Deleting existing seed resources from app ${app.id}`);
 
     try {
-      await axios.delete(`/api/apps/${app.id}/seed-resources`, { baseURL: remote });
+      await axios.delete(`/api/main/apps/${app.id}/resources`, { baseURL: remote });
 
       const resourceFiles = await readdir(resourcesPath, { withFileTypes: true });
       const resourcesToPublish: ResourceToPublish[] = [];
@@ -447,7 +447,7 @@ export async function publishSeedAssets(
     logger.info(`Deleting existing seed assets from app ${app.id}`);
 
     try {
-      await axios.delete(`/api/apps/${app.id}/seed-assets`, { baseURL: remote });
+      await axios.delete(`/api/main/apps/${app.id}/assets`, { baseURL: remote });
 
       const assetFiles = await readdir(assetsPath);
       const normalizedPaths = assetFiles.map((assetFile) =>
@@ -516,7 +516,7 @@ export async function publishAppConfig(path: string, app: App, remote: string): 
   if (existsSync(configPath)) {
     try {
       logger.info(`Deleting existing variables from app ${app.id}`);
-      await axios.delete(`/api/apps/${app.id}/variables`, { baseURL: remote });
+      await axios.delete(`/api/main/apps/${app.id}/variables`, { baseURL: remote });
 
       const appVariablesPath = join(configPath, 'variables.json');
       if (existsSync(appVariablesPath)) {
@@ -537,7 +537,7 @@ export async function publishAppConfig(path: string, app: App, remote: string): 
             }
 
             await axios.post(
-              `/api/apps/${app.id}/variables`,
+              `/api/main/apps/${app.id}/variables`,
               { name, ...parsedValues },
               { baseURL: remote },
             );
@@ -551,7 +551,7 @@ export async function publishAppConfig(path: string, app: App, remote: string): 
 
     try {
       logger.info(`Deleting existing service secrets from app ${app.id}`);
-      await axios.delete(`/api/apps/${app.id}/secrets/service`, { baseURL: remote });
+      await axios.delete(`/api/main/apps/${app.id}/secrets/service`, { baseURL: remote });
 
       const serviceSecretsPath = join(configPath, 'secrets', 'service.json');
       if (existsSync(serviceSecretsPath)) {
@@ -577,7 +577,7 @@ export async function publishAppConfig(path: string, app: App, remote: string): 
             }
 
             await axios.post(
-              `/api/apps/${app.id}/secrets/service`,
+              `/api/main/apps/${app.id}/secrets/service`,
               { name, ...parsedValues, ...rest },
               { baseURL: remote },
             );
@@ -591,7 +591,7 @@ export async function publishAppConfig(path: string, app: App, remote: string): 
 
     try {
       logger.info(`Deleting existing saml secrets from app ${app.id}`);
-      await axios.delete(`/api/apps/${app.id}/secrets/saml`, { baseURL: remote });
+      await axios.delete(`/api/main/apps/${app.id}/secrets/saml`, { baseURL: remote });
 
       const samlSecretsPath = join(configPath, 'secrets', 'saml.json');
       if (existsSync(samlSecretsPath)) {
@@ -617,7 +617,7 @@ export async function publishAppConfig(path: string, app: App, remote: string): 
             }
 
             await axios.post(
-              `/api/apps/${app.id}/secrets/saml`,
+              `/api/main/apps/${app.id}/secrets/saml`,
               { name, ...parsedValues, ...rest },
               { baseURL: remote },
             );
@@ -631,7 +631,7 @@ export async function publishAppConfig(path: string, app: App, remote: string): 
 
     try {
       logger.info(`Deleting existing oauth2 secrets from app ${app.id}`);
-      await axios.delete(`/api/apps/${app.id}/secrets/oauth2`, { baseURL: remote });
+      await axios.delete(`/api/main/apps/${app.id}/secrets/oauth2`, { baseURL: remote });
 
       const oauth2SecretsPath = join(configPath, 'secrets', 'oauth2.json');
       if (existsSync(oauth2SecretsPath)) {
@@ -664,7 +664,7 @@ export async function publishAppConfig(path: string, app: App, remote: string): 
             }
 
             await axios.post(
-              `/api/apps/${app.id}/secrets/oauth2`,
+              `/api/main/apps/${app.id}/secrets/oauth2`,
               { name, ...parsedValues, ...rest },
               { baseURL: remote },
             );
@@ -699,7 +699,7 @@ export async function publishAppConfig(path: string, app: App, remote: string): 
           }
 
           await axios.put(
-            `/api/apps/${app.id}/secrets/ssl`,
+            `/api/main/apps/${app.id}/secrets/ssl`,
             { ...parsedValues },
             { baseURL: remote },
           );
@@ -730,7 +730,7 @@ export async function publishAppConfig(path: string, app: App, remote: string): 
           }
 
           await axios.patch(
-            `/api/apps/${app.id}/secrets/scim`,
+            `/api/main/apps/${app.id}/secrets/scim`,
             { enabled, ...parsedValues },
             { baseURL: remote },
           );
@@ -1205,7 +1205,7 @@ export async function publishApp({
 
   let data: App;
   try {
-    ({ data } = await axios.post<App>('/api/apps', formData, {
+    ({ data } = await axios.post<App>('/api/main/apps', formData, {
       baseURL: remote,
       params: { dryRun: dryRun || undefined },
     }));
@@ -1260,7 +1260,7 @@ export async function publishApp({
     for (const collectionId of rcCollections) {
       try {
         await axios.post<App>(
-          `/api/appCollections/${collectionId}/apps`,
+          `/api/main/app-collections/${collectionId}/apps`,
           { AppId: data.id },
           {
             baseURL: remote,
@@ -1503,7 +1503,7 @@ export async function updateApp({
   if (appLock) {
     logger.info(`Setting AppLock to ${appLock}`);
     try {
-      await axios.post(`/api/apps/${id}/lock`, {
+      await axios.post(`/api/main/apps/${id}/lock`, {
         locked: appLock,
       });
     } catch (error) {
@@ -1514,7 +1514,7 @@ export async function updateApp({
 
   let data: App;
   try {
-    ({ data } = await axios.patch<App>(`/api/apps/${id}`, formData, { baseURL: remote }));
+    ({ data } = await axios.patch<App>(`/api/main/apps/${id}`, formData, { baseURL: remote }));
   } catch (error) {
     if (!axios.isAxiosError(error)) {
       throw error;
@@ -1668,13 +1668,13 @@ export async function patchApp({ id, remote, ...options }: PatchAppParams): Prom
       return;
     }
     if (formData.getLengthSync()) {
-      const { data } = await axios.patch<App>(`/api/apps/${id}`, formData);
+      const { data } = await axios.patch<App>(`/api/main/apps/${id}`, formData);
       logger.info(`Successfully updated app with id ${id}`);
       const { host, protocol } = new URL(remote);
       logger.info(`App URL: ${protocol}//${data.path}.${data.OrganizationId}.${host}`);
     }
     if (options.locked !== undefined) {
-      await axios.post(`/api/apps/${id}/lock`, {
+      await axios.post(`/api/main/apps/${id}/lock`, {
         locked: options.locked,
       });
       logger.info(`Successfully set app lock value for app with id ${id} to ${options.locked}`);

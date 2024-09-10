@@ -99,7 +99,7 @@ export function AppMessagesProvider({ children }: IntlMessagesProviderProps): Re
 
     document.documentElement.lang = lang;
     axios
-      .get<AppMessages>(`${apiUrl}/api/apps/${appId}/messages/${lang}`)
+      .get<AppMessages>(`${apiUrl}/api/common/apps/${appId}/messages/${lang}`)
       .then(({ data }) => setMessages(data.messages))
       .catch(() => setMessagesError(true))
       .finally(() => setMessagesLoading(false));

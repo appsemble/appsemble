@@ -24,12 +24,15 @@ export function TeamInvitePrompt(): ReactNode {
     data: invite,
     error,
     loading,
-  } = useData<TeamMember>(`${apiUrl}/api/apps/${appId}/team/invite?${query}`);
+  } = useData<TeamMember>(`${apiUrl}/api/apps/${appId}/team/invites?${query}`);
 
   const accept = useCallback(async () => {
-    const { data: team } = await axios.post<TeamMember>(`${apiUrl}/api/apps/${appId}/team/invite`, {
-      code: query.get('code'),
-    });
+    const { data: team } = await axios.post<TeamMember>(
+      `${apiUrl}/api/apps/${appId}/team/invites`,
+      {
+        code: query.get('code'),
+      },
+    );
     setIsAccepted(true);
     updateTeam(team);
   }, [query, updateTeam]);

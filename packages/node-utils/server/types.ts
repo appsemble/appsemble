@@ -98,7 +98,7 @@ declare module 'koas-parameters' {
     snapshotId: number;
     teamId: string;
     token: string;
-    appServiceId: number;
+    serviceSecretId: number;
     appSecretId: number;
     appVariableId: number;
     userId: string;

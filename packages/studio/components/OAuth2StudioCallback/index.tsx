@@ -63,8 +63,8 @@ export function OAuth2StudioCallback({ session }: OAuth2StudioCallbackProps): Re
   useEffect(() => {
     async function connect(): Promise<void> {
       try {
-        const { data } = await axios.post<TokenResponse | UserInfo>(
-          '/api/oauth2/connect/register',
+        const { data } = await axios.post<TokenResponse | (UserInfo & { profile: string })>(
+          '/api/main/auth/oauth2/authorizations/register',
           {
             code,
             authorizationUrl: session.authorizationUrl,
@@ -98,11 +98,14 @@ export function OAuth2StudioCallback({ session }: OAuth2StudioCallbackProps): Re
   const submit = useCallback(async () => {
     setIsSubmitting(true);
     try {
-      const { data } = await axios.post<TokenResponse>('/api/oauth2/connect/pending', {
-        code,
-        authorizationUrl: session.authorizationUrl,
-        timezone,
-      });
+      const { data } = await axios.post<TokenResponse>(
+        '/api/main/auth/oauth2/authorizations/connect',
+        {
+          code,
+          authorizationUrl: session.authorizationUrl,
+          timezone,
+        },
+      );
       finalizeLogin(data);
     } catch (err) {
       if (axios.isAxiosError(err) && err.response.status === 409) {
