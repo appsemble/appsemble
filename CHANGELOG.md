@@ -234,11 +234,11 @@ All notable changes to this project will be documented in this file.
 
 ### Fixed
 
-- Cli: Missing options in `team update` command, `context` and `app`.
+- Cli: Missing options in `group update` command, `context` and `app`.
 - Cli: Throw an error if `remote` is neither found in the specified context nor passed as an
   argument.
-- Cli: Wrong option used in `team create` command to make argument dependent on one-another. Options
-  app and context are now optional unless either is specified.
+- Cli: Wrong option used in `group create` command to make argument dependent on one-another.
+  Options app and context are now optional unless either is specified.
 - Preact-components: Make the date picker calendar display statically below the input field.
 - React-components: Add a footer to the dialog from the `dialog` action.
 - Server: The `setAppPath` function should try at least 9 times before generating hex values.
@@ -323,7 +323,7 @@ All notable changes to this project will be documented in this file.
 
 - Block(`list`): The block would throw an error when there is no data instead of displaying the
   `No data` message.
-- Cli: `team update` command should use `patch` request.
+- Cli: `group update` command should use `patch` request.
 - Utils: The `date.format` remapper would not accept strings.
 
 ## \[[0.27.12](https://gitlab.com/appsemble/appsemble/-/releases/0.27.12)] - 2024-04-10
@@ -1029,9 +1029,9 @@ All notable changes to this project will be documented in this file.
 - Block(`barcode-scan`): Supports scanning code from image file.
 - Block(`form`): Support default value for date fields.
 - Block(`image`): The Image block now has width and height (in pixel) properties.
-- App: Added `team.members` action.
+- App: Added `group.members` action.
 - Server: Add `resource.patch` action to server.
-- Server: Added specific `getTeamMember` endpoint.
+- Server: Added specific `getGroupMember` endpoint.
 
 ### Changed
 
@@ -1527,7 +1527,7 @@ All notable changes to this project will be documented in this file.
 
 ### Fixed
 
-- App: Fix issue where teams were not correctly updated when joining a team.
+- App: Fix issue where groups were not correctly updated when joining a group.
 
 ## \[[0.20.4](https://gitlab.com/appsemble/appsemble/-/releases/0.20.4)] - 2022-04-01
 
@@ -1543,12 +1543,12 @@ All notable changes to this project will be documented in this file.
 
 ### Added
 
-- App: Add `security.teams` property in app definition.
-- App: Add `team.invite` action.
-- App: Add page for accepting team invites.
+- App: Add `security.groups` property in app definition.
+- App: Add `group.invite` action.
+- App: Add page for accepting group invites.
 - App: Add support for replacing existing login and register pages with custom pages by naming the
   pages `Login` or `Register`.
-- Server: Add support for team invites.
+- Server: Add support for group invites.
 
 ### Changed
 
@@ -1730,7 +1730,7 @@ All notable changes to this project will be documented in this file.
 
 ### Fixed
 
-- Cli: Fix authentication headers not correctly being passed through for Team CLI commands.
+- Cli: Fix authentication headers not correctly being passed through for Group CLI commands.
 
 ## \[[0.19.6](https://gitlab.com/appsemble/appsemble/-/releases/0.19.6)] - 2021-11-09
 
@@ -1868,22 +1868,22 @@ All notable changes to this project will be documented in this file.
 - Cli: Add `--modify-context` flag for `app create` command. This will modify the context in
   `.appsemblerc` to include the ID of the newly created app.
 - Cli: Add `asset create` command.
-- Cli: Add support for `.appsemblerc.yaml` context usage for `resource` and `team` commands using
+- Cli: Add support for `.appsemblerc.yaml` context usage for `resource` and `group` commands using
   `--app <path>` and `--context <environment>` flags.
 - Sdk: The `IconName` type from `@fortawesome/fontawesome-common-types` is now re-exported by the
   SDK.
-- Server: Add option to define annotations when creating a team.
+- Server: Add option to define annotations when creating a group.
 
 ## \[[0.18.27](https://gitlab.com/appsemble/appsemble/-/releases/0.18.27)] - 2021-08-16
 
 ### Added
 
-- Cli: Add `team` subcommand to `app` command. The team subcommand can be used to create, update,
-  and delete teams and team members.
+- Cli: Add `group` subcommand to `app` command. The group subcommand can be used to create, update,
+  and delete groups and group members.
 
 ### Changed
 
-- Server: Replaced `PUT` with `PATCH` when updating a team.
+- Server: Replaced `PUT` with `PATCH` when updating a group.
 
 ### Fixed
 
@@ -2375,8 +2375,8 @@ All notable changes to this project will be documented in this file.
 
 ### Changed
 
-- Studio: Add `ManageTeams` permission to `Manager` role in organizations. Organization managers now
-  have full access to teams for apps.
+- Studio: Add `ManageGroups` permission to `Manager` role in organizations. Organization managers
+  now have full access to groups for apps.
 - Studio: Add various design changes.
 
 ### Fixed
@@ -2393,15 +2393,15 @@ All notable changes to this project will be documented in this file.
 ### Added
 
 - App: Add a remapper for the body of request actions.
-- App: The `team.join` action allows blocks to join a team.
-- App: The `team.list` action allows blocks to access all teams in the app.
+- App: The `group.join` action allows blocks to join a group.
+- App: The `group.list` action allows blocks to access all groups in the app.
 - Server: Add a remapper for the body of request actions.
 - Server: Add endpoints for manually replacing, creating, and removing app screenshots.
 - Studio: Add option to upload and delete screenshots.
 
 ### Changed
 
-- Server: Remove the user filter from the teams API if it’s called from an app.
+- Server: Remove the user filter from the groups API if it’s called from an app.
 
 ### Fixed
 
@@ -2409,14 +2409,14 @@ All notable changes to this project will be documented in this file.
 
 ### Security
 
-- Server: Allow users to join a team from within an app.
+- Server: Allow users to join a group from within an app.
 
 ## \[[0.17.0](https://gitlab.com/appsemble/appsemble/-/releases/0.17.0)] - 2021-01-14
 
 ### Added
 
 - Block(`map`): Add `filterLatitudeName` and `filterLongitudeName` parameters.
-- App: Add support for `$team:member` and `$team:manager` roles in `page.roles`.
+- App: Add support for `$group:member` and `$group:manager` roles in `page.roles`.
 - Server: Add option to filter resources by user ID by applying the appropriate OData filter. For
   example: `$filter=$author/id eq 11111111-a111-11a1-aa11-111a1a11aa1a"`.
 - Server: Added possibility to upload and link assets with resources.
@@ -2454,9 +2454,9 @@ All notable changes to this project will be documented in this file.
 
 - Block(`form`): Add `error` to context of `formRequirement` errors.
 - Sdk: Changed asset IDs to string.
-- Server: Add `size` property to `/api/apps/{id}/teams`.
-- Server: Add support for fetching teams from app. This is automatically filtered to only include
-  teams the user is a member of.
+- Server: Add `size` property to `/api/apps/{id}/groups`.
+- Server: Add support for fetching groups from app. This is automatically filtered to only include
+  groups the user is a member of.
 - Server: Changed asset IDs to string.
 
 ## \[[0.15.12](https://gitlab.com/appsemble/appsemble/-/releases/0.15.12)] - 2020-12-11
@@ -2485,13 +2485,13 @@ All notable changes to this project will be documented in this file.
 - Block(`form`): Added support for dynamic enum options.
 - Block(`form`): Added the new `change` event.
 - App: Add `resource.count` action.
-- App: Add support for `$team:member` and `$team:manager` in resource action roles.
+- App: Add support for `$group:member` and `$group:manager` in resource action roles.
 - App: Added Danish language support to the core parts of apps.
 - App: Added `waitFor` option for `event` action.
-- Appsemble: Add support for fetching resources based on teams.
+- Appsemble: Add support for fetching resources based on groups.
 - Server: Add `/resources/{type}/$count` endpoint.
-- Server: Add teams API.
-- Studio: Add support for teams in apps.
+- Server: Add groups API.
+- Studio: Add support for groups in apps.
 - Studio: Added Danish language support.
 
 ### Changed

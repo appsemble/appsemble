@@ -22,7 +22,7 @@ interface AppBarProps {
  */
 export function AppBar({ children, hideName }: AppBarProps): ReactNode {
   const { definition, demoMode } = useAppDefinition();
-  const { role, teams } = useAppMember();
+  const { role, groups } = useAppMember();
   const { page } = usePage();
   const { getAppMessage } = useAppMessages();
 
@@ -32,7 +32,7 @@ export function AppBar({ children, hideName }: AppBarProps): ReactNode {
   return (
     <Portal element={document.getElementsByClassName('navbar')[0]}>
       <div className="is-flex is-justify-content-space-between is-flex-grow-1">
-        {navigation === 'left-menu' && shouldShowMenu(definition, role, teams) ? (
+        {navigation === 'left-menu' && shouldShowMenu(definition, role, groups) ? (
           <div className="navbar-brand">
             <span>
               <SideMenuButton />

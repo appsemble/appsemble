@@ -31,7 +31,7 @@ export * from './reloadUser.js';
 export * from './email.js';
 export * from './sendNotifications.js';
 export * from './applyAppServiceSecrets.js';
-export * from './getAppTeams.js';
+export * from './getAppGroups.js';
 export * from './getAppVariables.js';
 export * from './checkAppMemberAppPermissions.js';
 export * from './checkUserOrganizationPermissions.js';

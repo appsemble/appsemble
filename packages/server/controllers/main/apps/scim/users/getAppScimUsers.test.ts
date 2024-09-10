@@ -6,8 +6,8 @@ import {
   App,
   AppMember,
   Organization,
-  Team,
-  TeamMember,
+  Group,
+  GroupMember,
   User,
 } from '../../../../../models/index.js';
 import { argv } from '../../../../../utils/argv.js';
@@ -103,7 +103,7 @@ describe('getAppScimUsers', () => {
   });
 
   it('should return a SCIM user with manager', async () => {
-    const team = await Team.create({ AppId: app.id, name: 'krbs' });
+    const group = await Group.create({ AppId: app.id, name: 'krbs' });
     const user = await User.create({ timezone: 'Europe/Amsterdam' });
     const member = await AppMember.create({
       UserId: user.id,
@@ -111,7 +111,7 @@ describe('getAppScimUsers', () => {
       AppId: app.id,
       role: 'User',
     });
-    await TeamMember.create({ TeamId: team.id, AppMemberId: member.id });
+    await GroupMember.create({ GroupId: group.id, AppMemberId: member.id });
 
     const response = await request.get(`/api/apps/${app.id}/scim/Users`);
 

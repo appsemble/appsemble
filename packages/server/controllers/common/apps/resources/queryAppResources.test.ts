@@ -1,5 +1,5 @@
 import { type Resource as ResourceType } from '@appsemble/types';
-import { TeamRole } from '@appsemble/utils';
+import { GroupRole } from '@appsemble/utils';
 import { request, setTestApp } from 'axios-test-instance';
 import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 import webpush from 'web-push';
@@ -10,8 +10,8 @@ import {
   Organization,
   OrganizationMember,
   Resource,
-  Team,
-  TeamMember,
+  Group,
+  GroupMember,
   User,
 } from '../../../../models/index.js';
 import { setArgv } from '../../../../utils/argv.js';
@@ -442,8 +442,8 @@ describe('queryAppResources', () => {
     );
   });
 
-  it('should only fetch resources from team members', async () => {
-    const team = await Team.create({ name: 'Test Team', AppId: app.id });
+  it('should only fetch resources from group members', async () => {
+    const group = await Group.create({ name: 'Test Group', AppId: app.id });
     const userB = await User.create({ timezone: 'Europe/Amsterdam' });
     const userC = await User.create({ timezone: 'Europe/Amsterdam' });
     const memberA = await AppMember.create({
@@ -470,30 +470,30 @@ describe('queryAppResources', () => {
       name: userC.name,
       role: 'Member',
     });
-    await TeamMember.create({ TeamId: team.id, AppMemberId: memberA.id, role: TeamRole.Member });
-    await TeamMember.create({ TeamId: team.id, AppMemberId: memberB.id, role: TeamRole.Member });
+    await GroupMember.create({ GroupId: group.id, AppMemberId: memberA.id, role: GroupRole.Member });
+    await GroupMember.create({ GroupId: group.id, AppMemberId: memberB.id, role: GroupRole.Member });
 
     await Resource.create({
       AppId: app.id,
-      type: 'testResourceTeam',
+      type: 'testResourceGroup',
       data: { foo: 'bar' },
       AuthorId: memberA.id,
     });
     await Resource.create({
       AppId: app.id,
-      type: 'testResourceTeam',
+      type: 'testResourceGroup',
       data: { foo: 'baz' },
       AuthorId: memberB.id,
     });
     await Resource.create({
       AppId: app.id,
-      type: 'testResourceTeam',
+      type: 'testResourceGroup',
       data: { foo: 'foo' },
       AuthorId: memberC.id,
     });
 
     authorizeApp(app);
-    const response = await request.get(`/api/apps/${app.id}/resources/testResourceTeam`);
+    const response = await request.get(`/api/apps/${app.id}/resources/testResourceGroup`);
     expect(response).toMatchInlineSnapshot(
       { data: [{ $author: { id: expect.any(String) } }, { $author: { id: expect.any(String) } }] },
       `
@@ -526,14 +526,14 @@ describe('queryAppResources', () => {
     );
   });
 
-  it('should only fetch resources as an author or team manager', async () => {
+  it('should only fetch resources as an author or group manager', async () => {
     const appB = await exampleApp(organization.id, 'test-app-2');
 
-    const team = await Team.create({ name: 'Test Team', AppId: app.id });
-    const teamB = await Team.create({ name: 'Test Team 2', AppId: app.id });
-    // Create a team from a different app where the user is a manager,
+    const group = await Group.create({ name: 'Test Group', AppId: app.id });
+    const groupB = await Group.create({ name: 'Test Group 2', AppId: app.id });
+    // Create a group from a different app where the user is a manager,
     // These should not be included in the result.
-    const teamC = await Team.create({ name: 'Test Team different app', AppId: appB.id });
+    const groupC = await Group.create({ name: 'Test Group different app', AppId: appB.id });
 
     const userB = await User.create({ timezone: 'Europe/Amsterdam' });
     const userC = await User.create({ timezone: 'Europe/Amsterdam' });
@@ -579,65 +579,65 @@ describe('queryAppResources', () => {
       role: 'Member',
     });
 
-    await TeamMember.create({
-      TeamId: team.id,
+    await GroupMember.create({
+      GroupId: group.id,
       AppMemberId: appAMemberA.id,
-      role: TeamRole.Manager,
+      role: GroupRole.Manager,
     });
-    await TeamMember.create({
-      TeamId: teamB.id,
+    await GroupMember.create({
+      GroupId: groupB.id,
       AppMemberId: appAMemberB.id,
-      role: TeamRole.Member,
+      role: GroupRole.Member,
     });
-    await TeamMember.create({
-      TeamId: team.id,
+    await GroupMember.create({
+      GroupId: group.id,
       AppMemberId: appAMemberC.id,
-      role: TeamRole.Member,
+      role: GroupRole.Member,
     });
-    await TeamMember.create({
-      TeamId: teamC.id,
+    await GroupMember.create({
+      GroupId: groupC.id,
       AppMemberId: appBMemberA.id,
-      role: TeamRole.Manager,
+      role: GroupRole.Manager,
     });
-    await TeamMember.create({
-      TeamId: teamC.id,
+    await GroupMember.create({
+      GroupId: groupC.id,
       AppMemberId: appBMemberC.id,
-      role: TeamRole.Member,
+      role: GroupRole.Member,
     });
 
     await Resource.create({
       AppId: app.id,
-      type: 'testResourceTeamManager',
+      type: 'testResourceGroupManager',
       data: { foo: 'bar' },
       AuthorId: appAMemberA.id,
     });
     await Resource.create({
       AppId: app.id,
-      type: 'testResourceTeamManager',
+      type: 'testResourceGroupManager',
       data: { foo: 'baz' },
       AuthorId: appAMemberB.id,
     });
     await Resource.create({
       AppId: app.id,
-      type: 'testResourceTeamManager',
+      type: 'testResourceGroupManager',
       data: { foo: 'foo' },
       AuthorId: appAMemberC.id,
     });
     await Resource.create({
       AppId: appB.id,
-      type: 'testResourceTeamManager',
+      type: 'testResourceGroupManager',
       data: { foo: 'baar' },
       AuthorId: appBMemberA.id,
     });
     await Resource.create({
       AppId: appB.id,
-      type: 'testResourceTeamManager',
+      type: 'testResourceGroupManager',
       data: { foo: 'baaar' },
       AuthorId: appBMemberC.id,
     });
 
     authorizeApp(app);
-    const response = await request.get(`/api/apps/${app.id}/resources/testResourceTeamManager`);
+    const response = await request.get(`/api/apps/${app.id}/resources/testResourceGroupManager`);
 
     expect(response).toMatchInlineSnapshot(
       { data: [{ $author: { id: expect.any(String) } }, { $author: { id: expect.any(String) } }] },

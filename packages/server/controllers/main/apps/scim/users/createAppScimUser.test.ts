@@ -6,8 +6,8 @@ import {
   App,
   AppMember,
   Organization,
-  Team,
-  TeamMember,
+  Group,
+  GroupMember,
   User,
 } from '../../../../../models/index.js';
 import { argv } from '../../../../../utils/argv.js';
@@ -196,7 +196,7 @@ describe('createAppScimUser', () => {
     });
   });
 
-  it('should create a team matching the manager id', async () => {
+  it('should create a group matching the manager id', async () => {
     const response = await request.post(`/api/apps/${app.id}/scim/Users`, {
       sChEmAs: [
         'urn:ietf:params:scim:schemas:core:2.0:User',
@@ -248,18 +248,18 @@ describe('createAppScimUser', () => {
     const member = await AppMember.findByPk(response.data.id, {
       include: [
         {
-          model: TeamMember,
-          include: [Team],
+          model: GroupMember,
+          include: [Group],
         },
       ],
     });
     expect(member).toMatchObject({
       AppId: app.id,
-      TeamMembers: [
+      GroupMembers: [
         {
-          Team: { name: 'krbs' },
+          Group: { name: 'krbs' },
           role: 'member',
-          TeamId: 1,
+          GroupId: 1,
         },
       ],
       email: 'spongebob@krustykrab.example',
@@ -269,8 +269,8 @@ describe('createAppScimUser', () => {
     });
   });
 
-  it('should add members to an existing team matching the manager id', async () => {
-    const team = await Team.create({ AppId: app.id, name: 'krbs' });
+  it('should add members to an existing group matching the manager id', async () => {
+    const group = await Group.create({ AppId: app.id, name: 'krbs' });
 
     const response = await request.post(`/api/apps/${app.id}/scim/Users`, {
       sChEmAs: [
@@ -323,17 +323,17 @@ describe('createAppScimUser', () => {
     const member = await AppMember.findByPk(response.data.id, {
       include: [
         {
-          model: TeamMember,
-          include: [Team],
+          model: GroupMember,
+          include: [Group],
         },
       ],
     });
 
     expect(member).toMatchObject({
       AppId: app.id,
-      TeamMembers: [
+      GroupMembers: [
         {
-          TeamId: team.id,
+          GroupId: group.id,
         },
       ],
       email: 'spongebob@krustykrab.example',
@@ -343,8 +343,8 @@ describe('createAppScimUser', () => {
     });
   });
 
-  it('should make members manager of a team matching their id', async () => {
-    const team = await Team.create({ AppId: app.id, name: 'krbs' });
+  it('should make members manager of a group matching their id', async () => {
+    const group = await Group.create({ AppId: app.id, name: 'krbs' });
 
     const response = await request.post(`/api/apps/${app.id}/scim/Users`, {
       sChEmAs: [
@@ -389,15 +389,15 @@ describe('createAppScimUser', () => {
     const member = await AppMember.findByPk(response.data.id, {
       include: [
         {
-          model: TeamMember,
+          model: GroupMember,
         },
       ],
     });
     expect(member).toMatchObject({
       AppId: app.id,
-      TeamMembers: [
+      GroupMembers: [
         {
-          TeamId: team.id,
+          GroupId: group.id,
           role: 'manager',
         },
       ],
@@ -408,7 +408,7 @@ describe('createAppScimUser', () => {
     });
   });
 
-  it('should assign manager to team that was created before their team’s creation, with the appropriate role', async () => {
+  it('should assign manager to group that was created before their group’s creation, with the appropriate role', async () => {
     const user = await User.create({ timezone: '' });
     const appMember = await AppMember.create({
       UserId: user.id,
@@ -434,10 +434,10 @@ describe('createAppScimUser', () => {
         mAnAgEr: 'krbs',
       },
     });
-    const result = await Team.findOne({
+    const result = await Group.findOne({
       where: { AppId: app.id, name: appMember.scimExternalId },
-    }).then((team) =>
-      TeamMember.findOne({ where: { TeamId: team.id, AppMemberId: appMember.id } }),
+    }).then((group) =>
+      GroupMember.findOne({ where: { GroupId: group.id, AppMemberId: appMember.id } }),
     );
 
     expect(result.role).toBe('manager');

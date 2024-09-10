@@ -3341,10 +3341,10 @@ storage: localStorage
               },
               {
                 "argument": [
-                  "team.invite",
+                  "group.invite",
                 ],
                 "instance": "invalid",
-                "message": "is not one of enum values: team.invite",
+                "message": "is not one of enum values: group.invite",
                 "name": "enum",
                 "path": [
                   "actions",
@@ -3353,19 +3353,19 @@ storage: localStorage
                 ],
                 "property": "instance.actions.onSubmit.type",
                 "schema": {
-                  "description": "Invite a user to join a team.",
+                  "description": "Invite a user to join a group.",
                   "enum": [
-                    "team.invite",
+                    "group.invite",
                   ],
                 },
-                "stack": "instance.actions.onSubmit.type is not one of enum values: team.invite",
+                "stack": "instance.actions.onSubmit.type is not one of enum values: group.invite",
               },
               {
                 "argument": [
-                  "team.join",
+                  "group.join",
                 ],
                 "instance": "invalid",
-                "message": "is not one of enum values: team.join",
+                "message": "is not one of enum values: group.join",
                 "name": "enum",
                 "path": [
                   "actions",
@@ -3374,19 +3374,19 @@ storage: localStorage
                 ],
                 "property": "instance.actions.onSubmit.type",
                 "schema": {
-                  "description": "Allow a user to join a team.",
+                  "description": "Allow a user to join a group.",
                   "enum": [
-                    "team.join",
+                    "group.join",
                   ],
                 },
-                "stack": "instance.actions.onSubmit.type is not one of enum values: team.join",
+                "stack": "instance.actions.onSubmit.type is not one of enum values: group.join",
               },
               {
                 "argument": [
-                  "team.list",
+                  "group.list",
                 ],
                 "instance": "invalid",
-                "message": "is not one of enum values: team.list",
+                "message": "is not one of enum values: group.list",
                 "name": "enum",
                 "path": [
                   "actions",
@@ -3395,12 +3395,12 @@ storage: localStorage
                 ],
                 "property": "instance.actions.onSubmit.type",
                 "schema": {
-                  "description": "Get a list of all of the teams in an app.",
+                  "description": "Get a list of all of the groups in an app.",
                   "enum": [
-                    "team.list",
+                    "group.list",
                   ],
                 },
-                "stack": "instance.actions.onSubmit.type is not one of enum values: team.list",
+                "stack": "instance.actions.onSubmit.type is not one of enum values: group.list",
               },
               {
                 "argument": "id",
@@ -3419,16 +3419,16 @@ storage: localStorage
                   "properties": {
                     "id": {
                       "$ref": "#/components/schemas/RemapperDefinition",
-                      "description": "The ID of a specific team to get the members from",
+                      "description": "The ID of a specific group to get the members from",
                     },
                     "onError": {},
                     "onSuccess": {},
                     "remapAfter": {},
                     "remapBefore": {},
                     "type": {
-                      "description": "Get a list of a team's members",
+                      "description": "Get a list of a group's members",
                       "enum": [
-                        "team.members",
+                        "group.members",
                       ],
                     },
                   },
@@ -3442,10 +3442,10 @@ storage: localStorage
               },
               {
                 "argument": [
-                  "team.members",
+                  "group.members",
                 ],
                 "instance": "invalid",
-                "message": "is not one of enum values: team.members",
+                "message": "is not one of enum values: group.members",
                 "name": "enum",
                 "path": [
                   "actions",
@@ -3454,12 +3454,12 @@ storage: localStorage
                 ],
                 "property": "instance.actions.onSubmit.type",
                 "schema": {
-                  "description": "Get a list of a team's members",
+                  "description": "Get a list of a group's members",
                   "enum": [
-                    "team.members",
+                    "group.members",
                   ],
                 },
-                "stack": "instance.actions.onSubmit.type is not one of enum values: team.members",
+                "stack": "instance.actions.onSubmit.type is not one of enum values: group.members",
               },
               {
                 "argument": [
@@ -3948,10 +3948,10 @@ Does nothing if the user isn’t logged in.",
                   "<#/components/schemas/StorageWriteActionDefinition>",
                   "<#/components/schemas/StorageUpdateActionDefinition>",
                   "<#/components/schemas/StorageDeleteActionDefinition>",
-                  "<#/components/schemas/TeamInviteActionDefinition>",
-                  "<#/components/schemas/TeamJoinActionDefinition>",
-                  "<#/components/schemas/TeamListActionDefinition>",
-                  "<#/components/schemas/TeamMembersActionDefinition>",
+                  "<#/components/schemas/GroupInviteActionDefinition>",
+                  "<#/components/schemas/GroupJoinActionDefinition>",
+                  "<#/components/schemas/GroupListActionDefinition>",
+                  "<#/components/schemas/GroupMembersActionDefinition>",
                   "<#/components/schemas/ThrowActionDefinition>",
                   "<#/components/schemas/UserLoginActionDefinition>",
                   "<#/components/schemas/UserLogoutActionDefinition>",
@@ -3964,7 +3964,7 @@ Does nothing if the user isn’t logged in.",
                 "instance": {
                   "type": "invalid",
                 },
-                "message": "is not any of <#/components/schemas/AnalyticsActionDefinition>,<#/components/schemas/ControllerActionDefinition>,<#/components/schemas/ConditionActionDefinition>,<#/components/schemas/DialogActionDefinition>,<#/components/schemas/DialogErrorActionDefinition>,<#/components/schemas/DialogOkActionDefinition>,<#/components/schemas/DownloadActionDefinition>,<#/components/schemas/EachActionDefinition>,<#/components/schemas/EmailActionDefinition>,<#/components/schemas/EventActionDefinition>,<#/components/schemas/FlowBackActionDefinition>,<#/components/schemas/FlowFinishActionDefinition>,<#/components/schemas/FlowNextActionDefinition>,<#/components/schemas/FlowCancelActionDefinition>,<#/components/schemas/FlowToActionDefinition>,<#/components/schemas/LinkActionDefinition>,<#/components/schemas/LinkBackActionDefinition>,<#/components/schemas/LinkNextActionDefinition>,<#/components/schemas/LogActionDefinition>,<#/components/schemas/MatchActionDefinition>,<#/components/schemas/MessageActionDefinition>,<#/components/schemas/NoopActionDefinition>,<#/components/schemas/NotifyActionDefinition>,<#/components/schemas/RequestActionDefinition>,<#/components/schemas/ResourceCountActionDefinition>,<#/components/schemas/ResourceCreateActionDefinition>,<#/components/schemas/ResourceDeleteActionDefinition>,<#/components/schemas/ResourceGetActionDefinition>,<#/components/schemas/ResourceQueryActionDefinition>,<#/components/schemas/ResourceSubscriptionStatusActionDefinition>,<#/components/schemas/ResourceSubscriptionSubscribeActionDefinition>,<#/components/schemas/ResourceSubscriptionToggleActionDefinition>,<#/components/schemas/ResourceSubscriptionUnsubscribeActionDefinition>,<#/components/schemas/ResourceUpdateActionDefinition>,<#/components/schemas/ResourcePatchActionDefinition>,<#/components/schemas/ShareActionDefinition>,<#/components/schemas/StaticActionDefinition>,<#/components/schemas/StorageAppendActionDefinition>,<#/components/schemas/StorageSubtractActionDefinition>,<#/components/schemas/StorageReadActionDefinition>,<#/components/schemas/StorageWriteActionDefinition>,<#/components/schemas/StorageUpdateActionDefinition>,<#/components/schemas/StorageDeleteActionDefinition>,<#/components/schemas/TeamInviteActionDefinition>,<#/components/schemas/TeamJoinActionDefinition>,<#/components/schemas/TeamListActionDefinition>,<#/components/schemas/TeamMembersActionDefinition>,<#/components/schemas/ThrowActionDefinition>,<#/components/schemas/UserLoginActionDefinition>,<#/components/schemas/UserLogoutActionDefinition>,<#/components/schemas/UserRegisterActionDefinition>,<#/components/schemas/UserCreateActionDefinition>,<#/components/schemas/UserUpdateActionDefinition>,<#/components/schemas/UserQueryActionDefinition>,<#/components/schemas/UserRemoveActionDefinition>",
+                "message": "is not any of <#/components/schemas/AnalyticsActionDefinition>,<#/components/schemas/ControllerActionDefinition>,<#/components/schemas/ConditionActionDefinition>,<#/components/schemas/DialogActionDefinition>,<#/components/schemas/DialogErrorActionDefinition>,<#/components/schemas/DialogOkActionDefinition>,<#/components/schemas/DownloadActionDefinition>,<#/components/schemas/EachActionDefinition>,<#/components/schemas/EmailActionDefinition>,<#/components/schemas/EventActionDefinition>,<#/components/schemas/FlowBackActionDefinition>,<#/components/schemas/FlowFinishActionDefinition>,<#/components/schemas/FlowNextActionDefinition>,<#/components/schemas/FlowCancelActionDefinition>,<#/components/schemas/FlowToActionDefinition>,<#/components/schemas/LinkActionDefinition>,<#/components/schemas/LinkBackActionDefinition>,<#/components/schemas/LinkNextActionDefinition>,<#/components/schemas/LogActionDefinition>,<#/components/schemas/MatchActionDefinition>,<#/components/schemas/MessageActionDefinition>,<#/components/schemas/NoopActionDefinition>,<#/components/schemas/NotifyActionDefinition>,<#/components/schemas/RequestActionDefinition>,<#/components/schemas/ResourceCountActionDefinition>,<#/components/schemas/ResourceCreateActionDefinition>,<#/components/schemas/ResourceDeleteActionDefinition>,<#/components/schemas/ResourceGetActionDefinition>,<#/components/schemas/ResourceQueryActionDefinition>,<#/components/schemas/ResourceSubscriptionStatusActionDefinition>,<#/components/schemas/ResourceSubscriptionSubscribeActionDefinition>,<#/components/schemas/ResourceSubscriptionToggleActionDefinition>,<#/components/schemas/ResourceSubscriptionUnsubscribeActionDefinition>,<#/components/schemas/ResourceUpdateActionDefinition>,<#/components/schemas/ResourcePatchActionDefinition>,<#/components/schemas/ShareActionDefinition>,<#/components/schemas/StaticActionDefinition>,<#/components/schemas/StorageAppendActionDefinition>,<#/components/schemas/StorageSubtractActionDefinition>,<#/components/schemas/StorageReadActionDefinition>,<#/components/schemas/StorageWriteActionDefinition>,<#/components/schemas/StorageUpdateActionDefinition>,<#/components/schemas/StorageDeleteActionDefinition>,<#/components/schemas/GroupInviteActionDefinition>,<#/components/schemas/GroupJoinActionDefinition>,<#/components/schemas/GroupListActionDefinition>,<#/components/schemas/GroupMembersActionDefinition>,<#/components/schemas/ThrowActionDefinition>,<#/components/schemas/UserLoginActionDefinition>,<#/components/schemas/UserLogoutActionDefinition>,<#/components/schemas/UserRegisterActionDefinition>,<#/components/schemas/UserCreateActionDefinition>,<#/components/schemas/UserUpdateActionDefinition>,<#/components/schemas/UserQueryActionDefinition>,<#/components/schemas/UserRemoveActionDefinition>",
                 "name": "anyOf",
                 "path": [
                   "actions",
@@ -4103,16 +4103,16 @@ Does nothing if the user isn’t logged in.",
                       "$ref": "#/components/schemas/StorageDeleteActionDefinition",
                     },
                     {
-                      "$ref": "#/components/schemas/TeamInviteActionDefinition",
+                      "$ref": "#/components/schemas/GroupInviteActionDefinition",
                     },
                     {
-                      "$ref": "#/components/schemas/TeamJoinActionDefinition",
+                      "$ref": "#/components/schemas/GroupJoinActionDefinition",
                     },
                     {
-                      "$ref": "#/components/schemas/TeamListActionDefinition",
+                      "$ref": "#/components/schemas/GroupListActionDefinition",
                     },
                     {
-                      "$ref": "#/components/schemas/TeamMembersActionDefinition",
+                      "$ref": "#/components/schemas/GroupMembersActionDefinition",
                     },
                     {
                       "$ref": "#/components/schemas/ThrowActionDefinition",
@@ -4140,7 +4140,7 @@ Does nothing if the user isn’t logged in.",
                     },
                   ],
                 },
-                "stack": "instance.actions.onSubmit is not any of <#/components/schemas/AnalyticsActionDefinition>,<#/components/schemas/ControllerActionDefinition>,<#/components/schemas/ConditionActionDefinition>,<#/components/schemas/DialogActionDefinition>,<#/components/schemas/DialogErrorActionDefinition>,<#/components/schemas/DialogOkActionDefinition>,<#/components/schemas/DownloadActionDefinition>,<#/components/schemas/EachActionDefinition>,<#/components/schemas/EmailActionDefinition>,<#/components/schemas/EventActionDefinition>,<#/components/schemas/FlowBackActionDefinition>,<#/components/schemas/FlowFinishActionDefinition>,<#/components/schemas/FlowNextActionDefinition>,<#/components/schemas/FlowCancelActionDefinition>,<#/components/schemas/FlowToActionDefinition>,<#/components/schemas/LinkActionDefinition>,<#/components/schemas/LinkBackActionDefinition>,<#/components/schemas/LinkNextActionDefinition>,<#/components/schemas/LogActionDefinition>,<#/components/schemas/MatchActionDefinition>,<#/components/schemas/MessageActionDefinition>,<#/components/schemas/NoopActionDefinition>,<#/components/schemas/NotifyActionDefinition>,<#/components/schemas/RequestActionDefinition>,<#/components/schemas/ResourceCountActionDefinition>,<#/components/schemas/ResourceCreateActionDefinition>,<#/components/schemas/ResourceDeleteActionDefinition>,<#/components/schemas/ResourceGetActionDefinition>,<#/components/schemas/ResourceQueryActionDefinition>,<#/components/schemas/ResourceSubscriptionStatusActionDefinition>,<#/components/schemas/ResourceSubscriptionSubscribeActionDefinition>,<#/components/schemas/ResourceSubscriptionToggleActionDefinition>,<#/components/schemas/ResourceSubscriptionUnsubscribeActionDefinition>,<#/components/schemas/ResourceUpdateActionDefinition>,<#/components/schemas/ResourcePatchActionDefinition>,<#/components/schemas/ShareActionDefinition>,<#/components/schemas/StaticActionDefinition>,<#/components/schemas/StorageAppendActionDefinition>,<#/components/schemas/StorageSubtractActionDefinition>,<#/components/schemas/StorageReadActionDefinition>,<#/components/schemas/StorageWriteActionDefinition>,<#/components/schemas/StorageUpdateActionDefinition>,<#/components/schemas/StorageDeleteActionDefinition>,<#/components/schemas/TeamInviteActionDefinition>,<#/components/schemas/TeamJoinActionDefinition>,<#/components/schemas/TeamListActionDefinition>,<#/components/schemas/TeamMembersActionDefinition>,<#/components/schemas/ThrowActionDefinition>,<#/components/schemas/UserLoginActionDefinition>,<#/components/schemas/UserLogoutActionDefinition>,<#/components/schemas/UserRegisterActionDefinition>,<#/components/schemas/UserCreateActionDefinition>,<#/components/schemas/UserUpdateActionDefinition>,<#/components/schemas/UserQueryActionDefinition>,<#/components/schemas/UserRemoveActionDefinition>",
+                "stack": "instance.actions.onSubmit is not any of <#/components/schemas/AnalyticsActionDefinition>,<#/components/schemas/ControllerActionDefinition>,<#/components/schemas/ConditionActionDefinition>,<#/components/schemas/DialogActionDefinition>,<#/components/schemas/DialogErrorActionDefinition>,<#/components/schemas/DialogOkActionDefinition>,<#/components/schemas/DownloadActionDefinition>,<#/components/schemas/EachActionDefinition>,<#/components/schemas/EmailActionDefinition>,<#/components/schemas/EventActionDefinition>,<#/components/schemas/FlowBackActionDefinition>,<#/components/schemas/FlowFinishActionDefinition>,<#/components/schemas/FlowNextActionDefinition>,<#/components/schemas/FlowCancelActionDefinition>,<#/components/schemas/FlowToActionDefinition>,<#/components/schemas/LinkActionDefinition>,<#/components/schemas/LinkBackActionDefinition>,<#/components/schemas/LinkNextActionDefinition>,<#/components/schemas/LogActionDefinition>,<#/components/schemas/MatchActionDefinition>,<#/components/schemas/MessageActionDefinition>,<#/components/schemas/NoopActionDefinition>,<#/components/schemas/NotifyActionDefinition>,<#/components/schemas/RequestActionDefinition>,<#/components/schemas/ResourceCountActionDefinition>,<#/components/schemas/ResourceCreateActionDefinition>,<#/components/schemas/ResourceDeleteActionDefinition>,<#/components/schemas/ResourceGetActionDefinition>,<#/components/schemas/ResourceQueryActionDefinition>,<#/components/schemas/ResourceSubscriptionStatusActionDefinition>,<#/components/schemas/ResourceSubscriptionSubscribeActionDefinition>,<#/components/schemas/ResourceSubscriptionToggleActionDefinition>,<#/components/schemas/ResourceSubscriptionUnsubscribeActionDefinition>,<#/components/schemas/ResourceUpdateActionDefinition>,<#/components/schemas/ResourcePatchActionDefinition>,<#/components/schemas/ShareActionDefinition>,<#/components/schemas/StaticActionDefinition>,<#/components/schemas/StorageAppendActionDefinition>,<#/components/schemas/StorageSubtractActionDefinition>,<#/components/schemas/StorageReadActionDefinition>,<#/components/schemas/StorageWriteActionDefinition>,<#/components/schemas/StorageUpdateActionDefinition>,<#/components/schemas/StorageDeleteActionDefinition>,<#/components/schemas/GroupInviteActionDefinition>,<#/components/schemas/GroupJoinActionDefinition>,<#/components/schemas/GroupListActionDefinition>,<#/components/schemas/GroupMembersActionDefinition>,<#/components/schemas/ThrowActionDefinition>,<#/components/schemas/UserLoginActionDefinition>,<#/components/schemas/UserLogoutActionDefinition>,<#/components/schemas/UserRegisterActionDefinition>,<#/components/schemas/UserCreateActionDefinition>,<#/components/schemas/UserUpdateActionDefinition>,<#/components/schemas/UserQueryActionDefinition>,<#/components/schemas/UserRemoveActionDefinition>",
               },
             ],
             "instance": {
@@ -4287,16 +4287,16 @@ Does nothing if the user isn’t logged in.",
                   "$ref": "#/components/schemas/StorageDeleteActionDefinition",
                 },
                 {
-                  "$ref": "#/components/schemas/TeamInviteActionDefinition",
+                  "$ref": "#/components/schemas/GroupInviteActionDefinition",
                 },
                 {
-                  "$ref": "#/components/schemas/TeamJoinActionDefinition",
+                  "$ref": "#/components/schemas/GroupJoinActionDefinition",
                 },
                 {
-                  "$ref": "#/components/schemas/TeamListActionDefinition",
+                  "$ref": "#/components/schemas/GroupListActionDefinition",
                 },
                 {
-                  "$ref": "#/components/schemas/TeamMembersActionDefinition",
+                  "$ref": "#/components/schemas/GroupMembersActionDefinition",
                 },
                 {
                   "$ref": "#/components/schemas/ThrowActionDefinition",
@@ -4493,16 +4493,16 @@ Does nothing if the user isn’t logged in.",
                   "$ref": "#/components/schemas/StorageDeleteActionDefinition",
                 },
                 {
-                  "$ref": "#/components/schemas/TeamInviteActionDefinition",
+                  "$ref": "#/components/schemas/GroupInviteActionDefinition",
                 },
                 {
-                  "$ref": "#/components/schemas/TeamJoinActionDefinition",
+                  "$ref": "#/components/schemas/GroupJoinActionDefinition",
                 },
                 {
-                  "$ref": "#/components/schemas/TeamListActionDefinition",
+                  "$ref": "#/components/schemas/GroupListActionDefinition",
                 },
                 {
-                  "$ref": "#/components/schemas/TeamMembersActionDefinition",
+                  "$ref": "#/components/schemas/GroupMembersActionDefinition",
                 },
                 {
                   "$ref": "#/components/schemas/ThrowActionDefinition",
@@ -7861,10 +7861,10 @@ storage: localStorage
       },
       {
         "argument": [
-          "team.invite",
+          "group.invite",
         ],
         "instance": "invalid",
-        "message": "is not one of enum values: team.invite",
+        "message": "is not one of enum values: group.invite",
         "name": "enum",
         "path": [
           "actions",
@@ -7873,19 +7873,19 @@ storage: localStorage
         ],
         "property": "instance.actions.onSubmit.type",
         "schema": {
-          "description": "Invite a user to join a team.",
+          "description": "Invite a user to join a group.",
           "enum": [
-            "team.invite",
+            "group.invite",
           ],
         },
-        "stack": "instance.actions.onSubmit.type is not one of enum values: team.invite",
+        "stack": "instance.actions.onSubmit.type is not one of enum values: group.invite",
       },
       {
         "argument": [
-          "team.join",
+          "group.join",
         ],
         "instance": "invalid",
-        "message": "is not one of enum values: team.join",
+        "message": "is not one of enum values: group.join",
         "name": "enum",
         "path": [
           "actions",
@@ -7894,19 +7894,19 @@ storage: localStorage
         ],
         "property": "instance.actions.onSubmit.type",
         "schema": {
-          "description": "Allow a user to join a team.",
+          "description": "Allow a user to join a group.",
           "enum": [
-            "team.join",
+            "group.join",
           ],
         },
-        "stack": "instance.actions.onSubmit.type is not one of enum values: team.join",
+        "stack": "instance.actions.onSubmit.type is not one of enum values: group.join",
       },
       {
         "argument": [
-          "team.list",
+          "group.list",
         ],
         "instance": "invalid",
-        "message": "is not one of enum values: team.list",
+        "message": "is not one of enum values: group.list",
         "name": "enum",
         "path": [
           "actions",
@@ -7915,12 +7915,12 @@ storage: localStorage
         ],
         "property": "instance.actions.onSubmit.type",
         "schema": {
-          "description": "Get a list of all of the teams in an app.",
+          "description": "Get a list of all of the groups in an app.",
           "enum": [
-            "team.list",
+            "group.list",
           ],
         },
-        "stack": "instance.actions.onSubmit.type is not one of enum values: team.list",
+        "stack": "instance.actions.onSubmit.type is not one of enum values: group.list",
       },
       {
         "argument": "id",
@@ -7939,16 +7939,16 @@ storage: localStorage
           "properties": {
             "id": {
               "$ref": "#/components/schemas/RemapperDefinition",
-              "description": "The ID of a specific team to get the members from",
+              "description": "The ID of a specific group to get the members from",
             },
             "onError": {},
             "onSuccess": {},
             "remapAfter": {},
             "remapBefore": {},
             "type": {
-              "description": "Get a list of a team's members",
+              "description": "Get a list of a group's members",
               "enum": [
-                "team.members",
+                "group.members",
               ],
             },
           },
@@ -7962,10 +7962,10 @@ storage: localStorage
       },
       {
         "argument": [
-          "team.members",
+          "group.members",
         ],
         "instance": "invalid",
-        "message": "is not one of enum values: team.members",
+        "message": "is not one of enum values: group.members",
         "name": "enum",
         "path": [
           "actions",
@@ -7974,12 +7974,12 @@ storage: localStorage
         ],
         "property": "instance.actions.onSubmit.type",
         "schema": {
-          "description": "Get a list of a team's members",
+          "description": "Get a list of a group's members",
           "enum": [
-            "team.members",
+            "group.members",
           ],
         },
-        "stack": "instance.actions.onSubmit.type is not one of enum values: team.members",
+        "stack": "instance.actions.onSubmit.type is not one of enum values: group.members",
       },
       {
         "argument": [
@@ -8468,10 +8468,10 @@ Does nothing if the user isn’t logged in.",
           "<#/components/schemas/StorageWriteActionDefinition>",
           "<#/components/schemas/StorageUpdateActionDefinition>",
           "<#/components/schemas/StorageDeleteActionDefinition>",
-          "<#/components/schemas/TeamInviteActionDefinition>",
-          "<#/components/schemas/TeamJoinActionDefinition>",
-          "<#/components/schemas/TeamListActionDefinition>",
-          "<#/components/schemas/TeamMembersActionDefinition>",
+          "<#/components/schemas/GroupInviteActionDefinition>",
+          "<#/components/schemas/GroupJoinActionDefinition>",
+          "<#/components/schemas/GroupListActionDefinition>",
+          "<#/components/schemas/GroupMembersActionDefinition>",
           "<#/components/schemas/ThrowActionDefinition>",
           "<#/components/schemas/UserLoginActionDefinition>",
           "<#/components/schemas/UserLogoutActionDefinition>",
@@ -8484,7 +8484,7 @@ Does nothing if the user isn’t logged in.",
         "instance": {
           "type": "invalid",
         },
-        "message": "is not any of <#/components/schemas/AnalyticsActionDefinition>,<#/components/schemas/ControllerActionDefinition>,<#/components/schemas/ConditionActionDefinition>,<#/components/schemas/DialogActionDefinition>,<#/components/schemas/DialogErrorActionDefinition>,<#/components/schemas/DialogOkActionDefinition>,<#/components/schemas/DownloadActionDefinition>,<#/components/schemas/EachActionDefinition>,<#/components/schemas/EmailActionDefinition>,<#/components/schemas/EventActionDefinition>,<#/components/schemas/FlowBackActionDefinition>,<#/components/schemas/FlowFinishActionDefinition>,<#/components/schemas/FlowNextActionDefinition>,<#/components/schemas/FlowCancelActionDefinition>,<#/components/schemas/FlowToActionDefinition>,<#/components/schemas/LinkActionDefinition>,<#/components/schemas/LinkBackActionDefinition>,<#/components/schemas/LinkNextActionDefinition>,<#/components/schemas/LogActionDefinition>,<#/components/schemas/MatchActionDefinition>,<#/components/schemas/MessageActionDefinition>,<#/components/schemas/NoopActionDefinition>,<#/components/schemas/NotifyActionDefinition>,<#/components/schemas/RequestActionDefinition>,<#/components/schemas/ResourceCountActionDefinition>,<#/components/schemas/ResourceCreateActionDefinition>,<#/components/schemas/ResourceDeleteActionDefinition>,<#/components/schemas/ResourceGetActionDefinition>,<#/components/schemas/ResourceQueryActionDefinition>,<#/components/schemas/ResourceSubscriptionStatusActionDefinition>,<#/components/schemas/ResourceSubscriptionSubscribeActionDefinition>,<#/components/schemas/ResourceSubscriptionToggleActionDefinition>,<#/components/schemas/ResourceSubscriptionUnsubscribeActionDefinition>,<#/components/schemas/ResourceUpdateActionDefinition>,<#/components/schemas/ResourcePatchActionDefinition>,<#/components/schemas/ShareActionDefinition>,<#/components/schemas/StaticActionDefinition>,<#/components/schemas/StorageAppendActionDefinition>,<#/components/schemas/StorageSubtractActionDefinition>,<#/components/schemas/StorageReadActionDefinition>,<#/components/schemas/StorageWriteActionDefinition>,<#/components/schemas/StorageUpdateActionDefinition>,<#/components/schemas/StorageDeleteActionDefinition>,<#/components/schemas/TeamInviteActionDefinition>,<#/components/schemas/TeamJoinActionDefinition>,<#/components/schemas/TeamListActionDefinition>,<#/components/schemas/TeamMembersActionDefinition>,<#/components/schemas/ThrowActionDefinition>,<#/components/schemas/UserLoginActionDefinition>,<#/components/schemas/UserLogoutActionDefinition>,<#/components/schemas/UserRegisterActionDefinition>,<#/components/schemas/UserCreateActionDefinition>,<#/components/schemas/UserUpdateActionDefinition>,<#/components/schemas/UserQueryActionDefinition>,<#/components/schemas/UserRemoveActionDefinition>",
+        "message": "is not any of <#/components/schemas/AnalyticsActionDefinition>,<#/components/schemas/ControllerActionDefinition>,<#/components/schemas/ConditionActionDefinition>,<#/components/schemas/DialogActionDefinition>,<#/components/schemas/DialogErrorActionDefinition>,<#/components/schemas/DialogOkActionDefinition>,<#/components/schemas/DownloadActionDefinition>,<#/components/schemas/EachActionDefinition>,<#/components/schemas/EmailActionDefinition>,<#/components/schemas/EventActionDefinition>,<#/components/schemas/FlowBackActionDefinition>,<#/components/schemas/FlowFinishActionDefinition>,<#/components/schemas/FlowNextActionDefinition>,<#/components/schemas/FlowCancelActionDefinition>,<#/components/schemas/FlowToActionDefinition>,<#/components/schemas/LinkActionDefinition>,<#/components/schemas/LinkBackActionDefinition>,<#/components/schemas/LinkNextActionDefinition>,<#/components/schemas/LogActionDefinition>,<#/components/schemas/MatchActionDefinition>,<#/components/schemas/MessageActionDefinition>,<#/components/schemas/NoopActionDefinition>,<#/components/schemas/NotifyActionDefinition>,<#/components/schemas/RequestActionDefinition>,<#/components/schemas/ResourceCountActionDefinition>,<#/components/schemas/ResourceCreateActionDefinition>,<#/components/schemas/ResourceDeleteActionDefinition>,<#/components/schemas/ResourceGetActionDefinition>,<#/components/schemas/ResourceQueryActionDefinition>,<#/components/schemas/ResourceSubscriptionStatusActionDefinition>,<#/components/schemas/ResourceSubscriptionSubscribeActionDefinition>,<#/components/schemas/ResourceSubscriptionToggleActionDefinition>,<#/components/schemas/ResourceSubscriptionUnsubscribeActionDefinition>,<#/components/schemas/ResourceUpdateActionDefinition>,<#/components/schemas/ResourcePatchActionDefinition>,<#/components/schemas/ShareActionDefinition>,<#/components/schemas/StaticActionDefinition>,<#/components/schemas/StorageAppendActionDefinition>,<#/components/schemas/StorageSubtractActionDefinition>,<#/components/schemas/StorageReadActionDefinition>,<#/components/schemas/StorageWriteActionDefinition>,<#/components/schemas/StorageUpdateActionDefinition>,<#/components/schemas/StorageDeleteActionDefinition>,<#/components/schemas/GroupInviteActionDefinition>,<#/components/schemas/GroupJoinActionDefinition>,<#/components/schemas/GroupListActionDefinition>,<#/components/schemas/GroupMembersActionDefinition>,<#/components/schemas/ThrowActionDefinition>,<#/components/schemas/UserLoginActionDefinition>,<#/components/schemas/UserLogoutActionDefinition>,<#/components/schemas/UserRegisterActionDefinition>,<#/components/schemas/UserCreateActionDefinition>,<#/components/schemas/UserUpdateActionDefinition>,<#/components/schemas/UserQueryActionDefinition>,<#/components/schemas/UserRemoveActionDefinition>",
         "name": "anyOf",
         "path": [
           "actions",
@@ -8623,16 +8623,16 @@ Does nothing if the user isn’t logged in.",
               "$ref": "#/components/schemas/StorageDeleteActionDefinition",
             },
             {
-              "$ref": "#/components/schemas/TeamInviteActionDefinition",
+              "$ref": "#/components/schemas/GroupInviteActionDefinition",
             },
             {
-              "$ref": "#/components/schemas/TeamJoinActionDefinition",
+              "$ref": "#/components/schemas/GroupJoinActionDefinition",
             },
             {
-              "$ref": "#/components/schemas/TeamListActionDefinition",
+              "$ref": "#/components/schemas/GroupListActionDefinition",
             },
             {
-              "$ref": "#/components/schemas/TeamMembersActionDefinition",
+              "$ref": "#/components/schemas/GroupMembersActionDefinition",
             },
             {
               "$ref": "#/components/schemas/ThrowActionDefinition",
@@ -8660,7 +8660,7 @@ Does nothing if the user isn’t logged in.",
             },
           ],
         },
-        "stack": "instance.actions.onSubmit is not any of <#/components/schemas/AnalyticsActionDefinition>,<#/components/schemas/ControllerActionDefinition>,<#/components/schemas/ConditionActionDefinition>,<#/components/schemas/DialogActionDefinition>,<#/components/schemas/DialogErrorActionDefinition>,<#/components/schemas/DialogOkActionDefinition>,<#/components/schemas/DownloadActionDefinition>,<#/components/schemas/EachActionDefinition>,<#/components/schemas/EmailActionDefinition>,<#/components/schemas/EventActionDefinition>,<#/components/schemas/FlowBackActionDefinition>,<#/components/schemas/FlowFinishActionDefinition>,<#/components/schemas/FlowNextActionDefinition>,<#/components/schemas/FlowCancelActionDefinition>,<#/components/schemas/FlowToActionDefinition>,<#/components/schemas/LinkActionDefinition>,<#/components/schemas/LinkBackActionDefinition>,<#/components/schemas/LinkNextActionDefinition>,<#/components/schemas/LogActionDefinition>,<#/components/schemas/MatchActionDefinition>,<#/components/schemas/MessageActionDefinition>,<#/components/schemas/NoopActionDefinition>,<#/components/schemas/NotifyActionDefinition>,<#/components/schemas/RequestActionDefinition>,<#/components/schemas/ResourceCountActionDefinition>,<#/components/schemas/ResourceCreateActionDefinition>,<#/components/schemas/ResourceDeleteActionDefinition>,<#/components/schemas/ResourceGetActionDefinition>,<#/components/schemas/ResourceQueryActionDefinition>,<#/components/schemas/ResourceSubscriptionStatusActionDefinition>,<#/components/schemas/ResourceSubscriptionSubscribeActionDefinition>,<#/components/schemas/ResourceSubscriptionToggleActionDefinition>,<#/components/schemas/ResourceSubscriptionUnsubscribeActionDefinition>,<#/components/schemas/ResourceUpdateActionDefinition>,<#/components/schemas/ResourcePatchActionDefinition>,<#/components/schemas/ShareActionDefinition>,<#/components/schemas/StaticActionDefinition>,<#/components/schemas/StorageAppendActionDefinition>,<#/components/schemas/StorageSubtractActionDefinition>,<#/components/schemas/StorageReadActionDefinition>,<#/components/schemas/StorageWriteActionDefinition>,<#/components/schemas/StorageUpdateActionDefinition>,<#/components/schemas/StorageDeleteActionDefinition>,<#/components/schemas/TeamInviteActionDefinition>,<#/components/schemas/TeamJoinActionDefinition>,<#/components/schemas/TeamListActionDefinition>,<#/components/schemas/TeamMembersActionDefinition>,<#/components/schemas/ThrowActionDefinition>,<#/components/schemas/UserLoginActionDefinition>,<#/components/schemas/UserLogoutActionDefinition>,<#/components/schemas/UserRegisterActionDefinition>,<#/components/schemas/UserCreateActionDefinition>,<#/components/schemas/UserUpdateActionDefinition>,<#/components/schemas/UserQueryActionDefinition>,<#/components/schemas/UserRemoveActionDefinition>",
+        "stack": "instance.actions.onSubmit is not any of <#/components/schemas/AnalyticsActionDefinition>,<#/components/schemas/ControllerActionDefinition>,<#/components/schemas/ConditionActionDefinition>,<#/components/schemas/DialogActionDefinition>,<#/components/schemas/DialogErrorActionDefinition>,<#/components/schemas/DialogOkActionDefinition>,<#/components/schemas/DownloadActionDefinition>,<#/components/schemas/EachActionDefinition>,<#/components/schemas/EmailActionDefinition>,<#/components/schemas/EventActionDefinition>,<#/components/schemas/FlowBackActionDefinition>,<#/components/schemas/FlowFinishActionDefinition>,<#/components/schemas/FlowNextActionDefinition>,<#/components/schemas/FlowCancelActionDefinition>,<#/components/schemas/FlowToActionDefinition>,<#/components/schemas/LinkActionDefinition>,<#/components/schemas/LinkBackActionDefinition>,<#/components/schemas/LinkNextActionDefinition>,<#/components/schemas/LogActionDefinition>,<#/components/schemas/MatchActionDefinition>,<#/components/schemas/MessageActionDefinition>,<#/components/schemas/NoopActionDefinition>,<#/components/schemas/NotifyActionDefinition>,<#/components/schemas/RequestActionDefinition>,<#/components/schemas/ResourceCountActionDefinition>,<#/components/schemas/ResourceCreateActionDefinition>,<#/components/schemas/ResourceDeleteActionDefinition>,<#/components/schemas/ResourceGetActionDefinition>,<#/components/schemas/ResourceQueryActionDefinition>,<#/components/schemas/ResourceSubscriptionStatusActionDefinition>,<#/components/schemas/ResourceSubscriptionSubscribeActionDefinition>,<#/components/schemas/ResourceSubscriptionToggleActionDefinition>,<#/components/schemas/ResourceSubscriptionUnsubscribeActionDefinition>,<#/components/schemas/ResourceUpdateActionDefinition>,<#/components/schemas/ResourcePatchActionDefinition>,<#/components/schemas/ShareActionDefinition>,<#/components/schemas/StaticActionDefinition>,<#/components/schemas/StorageAppendActionDefinition>,<#/components/schemas/StorageSubtractActionDefinition>,<#/components/schemas/StorageReadActionDefinition>,<#/components/schemas/StorageWriteActionDefinition>,<#/components/schemas/StorageUpdateActionDefinition>,<#/components/schemas/StorageDeleteActionDefinition>,<#/components/schemas/GroupInviteActionDefinition>,<#/components/schemas/GroupJoinActionDefinition>,<#/components/schemas/GroupListActionDefinition>,<#/components/schemas/GroupMembersActionDefinition>,<#/components/schemas/ThrowActionDefinition>,<#/components/schemas/UserLoginActionDefinition>,<#/components/schemas/UserLogoutActionDefinition>,<#/components/schemas/UserRegisterActionDefinition>,<#/components/schemas/UserCreateActionDefinition>,<#/components/schemas/UserUpdateActionDefinition>,<#/components/schemas/UserQueryActionDefinition>,<#/components/schemas/UserRemoveActionDefinition>",
       },
     ],
   },

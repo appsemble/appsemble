@@ -25,7 +25,7 @@ interface BottomNavigationProps {
 export function BottomNavigation({ pages }: BottomNavigationProps): ReactNode {
   const { lang } = useParams<{ lang: string }>();
   const url = `/${lang}`;
-  const { isLoggedIn, teams } = useAppMember();
+  const { isLoggedIn, groups } = useAppMember();
   const { getAppMessage, getMessage } = useAppMessages();
   const { getVariable } = useAppVariables();
   const { definition } = useAppDefinition();
@@ -33,8 +33,8 @@ export function BottomNavigation({ pages }: BottomNavigationProps): ReactNode {
   const { formatMessage } = useIntl();
 
   const showMenu = useMemo(
-    () => shouldShowMenu(definition, role, teams),
-    [definition, role, teams],
+    () => shouldShowMenu(definition, role, groups),
+    [definition, role, groups],
   );
 
   return (

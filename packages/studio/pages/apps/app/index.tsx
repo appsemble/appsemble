@@ -41,7 +41,7 @@ import { SecretsPage } from './secrets/index.js';
 import { SettingsPage } from './settings/index.js';
 import { SnapshotsRoutes } from './snapshots/index.js';
 import { SnapshotPage } from './snapshots/snapshot/index.js';
-import { TeamsRoutes } from './teams/index.js';
+import { GroupsRoutes } from './groups/index.js';
 import { TranslationsPage } from './translations/index.js';
 import { VariablesPage } from './variables/index.js';
 import { ProtectedRoute } from '../../../components/ProtectedRoute/index.js';
@@ -144,10 +144,10 @@ export function AppRoutes(): ReactNode {
     [userOrganizationRole],
   );
 
-  const mayVisitTeams = useMemo(
+  const mayVisitGroups = useMemo(
     () =>
       checkOrganizationRoleOrganizationPermissions(userOrganizationRole, [
-        OrganizationPermission.QueryTeams,
+        OrganizationPermission.QueryGroups,
       ]),
     [userOrganizationRole],
   );
@@ -271,9 +271,9 @@ export function AppRoutes(): ReactNode {
               </MenuItem>
             ) : null}
 
-            {mayVisitTeams && app.definition.security ? (
-              <MenuItem icon="hands-helping" to={`${url}/teams`}>
-                <FormattedMessage {...messages.teams} />
+            {mayVisitGroups && app.definition.security ? (
+              <MenuItem icon="hands-helping" to={`${url}/groups`}>
+                <FormattedMessage {...messages.groups} />
               </MenuItem>
             ) : null}
 
@@ -455,11 +455,11 @@ export function AppRoutes(): ReactNode {
               element={
                 <ProtectedRoute
                   organization={organization}
-                  permissions={[OrganizationPermission.QueryTeams]}
+                  permissions={[OrganizationPermission.QueryGroups]}
                 />
               }
             >
-              <Route element={<TeamsRoutes />} path="/teams/*" />
+              <Route element={<GroupsRoutes />} path="/groups/*" />
             </Route>
           </>
         ) : null}

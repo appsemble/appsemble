@@ -8,47 +8,47 @@ import { InputList } from '../../Components/InputList/index.js';
 import { OptionalList } from '../../Components/OptionalList/index.js';
 import { type tabChangeOptions } from '../index.js';
 
-const teamsJoinOptions = ['anyone', 'invite'] as const;
-const teamsInviteOptions = ['$team:member', '$team:manager'] as const;
+const groupsJoinOptions = ['anyone', 'invite'] as const;
+const groupsInviteOptions = ['$group:member', '$group:manager'] as const;
 
-interface TeamsPageProps {
+interface GroupsPageProps {
   readonly onChangeTab: (tab: (typeof tabChangeOptions)[number]) => void;
 }
-export function TeamsPage({ onChangeTab }: TeamsPageProps): ReactNode {
+export function GroupsPage({ onChangeTab }: GroupsPageProps): ReactNode {
   const { app, setApp } = useApp();
   const { formatMessage } = useIntl();
 
-  const onChangeTeamsJoin = useCallback(
+  const onChangeGroupsJoin = useCallback(
     (index: number) => {
-      if (!app.definition.security.teams) {
-        app.definition.security.teams = { invite: [], join: 'anyone' };
+      if (!app.definition.security.groups) {
+        app.definition.security.groups = { invite: [], join: 'anyone' };
       }
-      app.definition.security.teams.join = teamsJoinOptions[index];
+      app.definition.security.groups.join = groupsJoinOptions[index];
       setApp({ ...app });
     },
     [app, setApp],
   );
 
-  const onChangeTeamsCreate = useCallback(
+  const onChangeGroupsCreate = useCallback(
     (selectedRoles: string[]) => {
-      if (!app.definition.security.teams) {
-        app.definition.security.teams = { invite: [], join: 'anyone', create: [] };
+      if (!app.definition.security.groups) {
+        app.definition.security.groups = { invite: [], join: 'anyone', create: [] };
       }
-      if (!app.definition.security.teams.create) {
-        app.definition.security.teams.create = [];
+      if (!app.definition.security.groups.create) {
+        app.definition.security.groups.create = [];
       }
-      app.definition.security.teams.create = [...selectedRoles];
+      app.definition.security.groups.create = [...selectedRoles];
       setApp({ ...app });
     },
     [app, setApp],
   );
 
-  const onChangeTeamsInvite = useCallback(
+  const onChangeGroupsInvite = useCallback(
     (selectedRoles: string[]) => {
-      if (!app.definition.security.teams) {
-        app.definition.security.teams = { invite: [], join: 'anyone' };
+      if (!app.definition.security.groups) {
+        app.definition.security.groups = { invite: [], join: 'anyone' };
       }
-      app.definition.security.teams.invite = [...selectedRoles];
+      app.definition.security.groups.invite = [...selectedRoles];
       setApp({ ...app });
     },
     [app, setApp],
@@ -73,32 +73,32 @@ export function TeamsPage({ onChangeTab }: TeamsPageProps): ReactNode {
   return (
     <>
       <InputList
-        label={formatMessage(messages.teamsJoinLabel)}
+        label={formatMessage(messages.groupsJoinLabel)}
         labelPosition="top"
-        onChange={onChangeTeamsJoin}
-        options={teamsJoinOptions}
-        value={app.definition.security?.teams?.join || teamsJoinOptions[0]}
+        onChange={onChangeGroupsJoin}
+        options={groupsJoinOptions}
+        value={app.definition.security?.groups?.join || groupsJoinOptions[0]}
       />
       <OptionalList
-        addNewItemLabel={formatMessage(messages.teamsAddRole)}
-        label={formatMessage(messages.teamsCreateLabel)}
+        addNewItemLabel={formatMessage(messages.groupsAddRole)}
+        label={formatMessage(messages.groupsCreateLabel)}
         labelPosition="top"
-        onNewSelected={onChangeTeamsCreate}
+        onNewSelected={onChangeGroupsCreate}
         options={Object.entries(app.definition.security?.roles || [])
           .map(([key]) => key)
-          .filter((role) => !app.definition.security?.teams?.create?.includes(role))}
-        selected={app.definition.security?.teams?.create || []}
+          .filter((role) => !app.definition.security?.groups?.create?.includes(role))}
+        selected={app.definition.security?.groups?.create || []}
       />
       <OptionalList
-        addNewItemLabel={formatMessage(messages.teamsAddRole)}
-        label={formatMessage(messages.teamsInviteLabel)}
+        addNewItemLabel={formatMessage(messages.groupsAddRole)}
+        label={formatMessage(messages.groupsInviteLabel)}
         labelPosition="top"
-        onNewSelected={onChangeTeamsInvite}
+        onNewSelected={onChangeGroupsInvite}
         options={Object.entries(app.definition.security?.roles || [])
           .map(([key]) => key)
-          .concat(teamsInviteOptions)
-          .filter((role) => !app.definition.security?.teams?.invite?.includes(role))}
-        selected={app.definition.security?.teams?.invite || []}
+          .concat(groupsInviteOptions)
+          .filter((role) => !app.definition.security?.groups?.invite?.includes(role))}
+        selected={app.definition.security?.groups?.invite || []}
       />
     </>
   );

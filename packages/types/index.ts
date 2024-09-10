@@ -24,7 +24,7 @@ export * from './snapshot.js';
 export * from './resource.js';
 export * from './saml.js';
 export * from './ssl.js';
-export * from './team.js';
+export * from './group.js';
 export * from './template.js';
 export * from './theme.js';
 export * from './oauth2.js';
@@ -1274,9 +1274,9 @@ export interface StorageWriteActionDefinition extends BaseActionDefinition<'stor
   storage?: StorageType;
 }
 
-export interface TeamInviteActionDefinition extends BaseActionDefinition<'team.invite'> {
+export interface GroupInviteActionDefinition extends BaseActionDefinition<'group.invite'> {
   /**
-   * The ID of the team to invite the user to.
+   * The ID of the group to invite the user to.
    */
   id?: Remapper;
 
@@ -1286,9 +1286,9 @@ export interface TeamInviteActionDefinition extends BaseActionDefinition<'team.i
   email?: Remapper;
 }
 
-export interface TeamMembersActionDefinition extends BaseActionDefinition<'team.members'> {
+export interface GroupMembersActionDefinition extends BaseActionDefinition<'group.members'> {
   /**
-   * The ID of the team to get the members from.
+   * The ID of the group to get the members from.
    */
   id: Remapper;
 }
@@ -1549,11 +1549,11 @@ export type ActionDefinition =
   | BaseActionDefinition<'flow.cancel'>
   | BaseActionDefinition<'flow.finish'>
   | BaseActionDefinition<'flow.next'>
+  | BaseActionDefinition<'group.join'>
+  | BaseActionDefinition<'group.list'>
   | BaseActionDefinition<'link.back'>
   | BaseActionDefinition<'link.next'>
   | BaseActionDefinition<'noop'>
-  | BaseActionDefinition<'team.join'>
-  | BaseActionDefinition<'team.list'>
   | BaseActionDefinition<'throw'>
   | ConditionActionDefinition
   | ControllerActionDefinition
@@ -1563,6 +1563,8 @@ export type ActionDefinition =
   | EmailActionDefinition
   | EventActionDefinition
   | FlowToActionDefinition
+  | GroupInviteActionDefinition
+  | GroupMembersActionDefinition
   | LinkActionDefinition
   | LogActionDefinition
   | MatchActionDefinition
@@ -1587,9 +1589,7 @@ export type ActionDefinition =
   | StorageReadActionDefinition
   | StorageSubtractActionDefinition
   | StorageUpdateActionDefinition
-  | StorageWriteActionDefinition
-  | TeamInviteActionDefinition
-  | TeamMembersActionDefinition;
+  | StorageWriteActionDefinition;
 
 export interface ActionType {
   /**

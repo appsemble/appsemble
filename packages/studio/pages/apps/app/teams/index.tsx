@@ -4,15 +4,15 @@ import { Navigate, Route } from 'react-router-dom';
 
 import { IndexPage } from './IndexPage/index.js';
 import { messages } from './messages.js';
-import { TeamPage } from './team/index.js';
+import { GroupPage } from './group/index.js';
 
-export function TeamsRoutes(): ReactNode {
+export function GroupsRoutes(): ReactNode {
   useMeta(messages.title);
 
   return (
     <MetaSwitch>
       <Route element={<IndexPage />} path="/" />
-      <Route element={<TeamPage />} path="/:teamId" />
+      <Route element={<GroupPage />} path="/:groupId" />
       <Route element={<Navigate to="/" />} path="*" />
     </MetaSwitch>
   );

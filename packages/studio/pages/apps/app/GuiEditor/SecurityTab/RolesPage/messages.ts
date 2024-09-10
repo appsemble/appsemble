@@ -74,13 +74,13 @@ export const messages = defineMessages({
     id: 'studio.ILfqTN',
     defaultMessage: '"{roleName}" is being inherited by the following roles:',
   },
-  deleteRoleInTeamsCreate: {
+  deleteRoleInGroupsCreate: {
     id: 'studio.uxJiGG',
-    defaultMessage: '"{roleName}" is being used in in Teams Create.',
+    defaultMessage: '"{roleName}" is being used in in Groups Create.',
   },
-  deleteRoleInTeamsInvite: {
+  deleteRoleInGroupsInvite: {
     id: 'studio.n6feb1',
-    defaultMessage: '"{roleName}" is being used in in Teams Invite.',
+    defaultMessage: '"{roleName}" is being used in in Groups Invite.',
   },
   deleteRoleResourceRoles: {
     id: 'studio.utJghl',

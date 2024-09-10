@@ -24,7 +24,7 @@ import styles from './index.module.css';
 import { messages } from './messages.js';
 import { useUser } from '../../../../../components/UserProvider/index.js';
 import { useApp } from '../../index.js';
-import { AnnotationsTable } from '../../teams/team/AnnotationsTable/index.js';
+import { AnnotationsTable } from '../../groups/group/AnnotationsTable/index.js';
 
 interface AppMemberRowProperties {
   readonly member: AppMemberInfo;

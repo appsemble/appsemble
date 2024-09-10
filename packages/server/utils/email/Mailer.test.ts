@@ -122,17 +122,17 @@ describe('sendTranslatedEmail', () => {
         organization: 'Test Organization',
       },
     ],
-    teamInvite: [
+    groupInvite: [
       {
         name: 'null',
         link: (text: string) => `[${text}](https://example.com)`,
-        teamName: 'Test Team',
+        groupName: 'Test Group',
         appName: 'Test App',
       },
       {
         name: 'John Doe',
         link: (text: string) => `[${text}](https://example.com)`,
-        teamName: 'Test Team',
+        groupName: 'Test Group',
         appName: 'Test App',
       },
     ],

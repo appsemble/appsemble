@@ -5,9 +5,9 @@ export const messages = defineMessages({
     id: 'studio.lKv8ex',
     defaultMessage: 'Default',
   },
-  teamsTab: {
+  groupsTab: {
     id: 'studio.DNeuzb',
-    defaultMessage: 'Teams',
+    defaultMessage: 'Groups',
   },
   rolesTab: {
     id: 'studio.c35gM5',

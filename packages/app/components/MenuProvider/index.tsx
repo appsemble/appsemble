@@ -50,7 +50,7 @@ export function MenuProvider({ children }: MenuProviderProps): ReactNode {
   const {
     definition: { layout = {}, ...definition },
   } = useAppDefinition();
-  const { role, teams } = useAppMember();
+  const { role, groups } = useAppMember();
   const [page, setPage] = useState<PageDefinition>();
   const [blockMenus, setBlockMenus] = useState<BlockMenuItem[]>([]);
   const value = useMemo<MenuProviderContext>(
@@ -75,7 +75,7 @@ export function MenuProvider({ children }: MenuProviderProps): ReactNode {
     const roles = p.roles || definition.roles || [];
 
     return (
-      roles.length === 0 || roles.some((r) => checkAppRole(definition.security, r, role, teams))
+      roles.length === 0 || roles.some((r) => checkAppRole(definition.security, r, role, groups))
     );
   };
 

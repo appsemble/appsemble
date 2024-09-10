@@ -1,5 +1,5 @@
 import { Loader } from '@appsemble/react-components';
-import { type AppMemberInfo, type TeamMember } from '@appsemble/types';
+import { type AppMemberInfo, type GroupMember } from '@appsemble/types';
 import { setUser as setSentryUser } from '@sentry/browser';
 import axios from 'axios';
 import { jwtDecode } from 'jwt-decode';
@@ -16,7 +16,7 @@ import {
   useState,
 } from 'react';
 
-import { type UpdateTeam } from '../../types.js';
+import { type UpdateGroup } from '../../types.js';
 import { oauth2Scope } from '../../utils/constants.js';
 import { apiUrl, appId, development } from '../../utils/settings.js';
 import { useAppDefinition } from '../AppDefinitionProvider/index.js';
@@ -31,7 +31,7 @@ interface JwtPayload {
 const initialState: LoginState = {
   isLoggedIn: false,
   role: null,
-  teams: [],
+  groups: [],
 };
 
 interface PasswordLoginParams {
@@ -47,7 +47,7 @@ interface AuthorizationCodeLoginParams {
 interface LoginState {
   isLoggedIn: boolean;
   role: string;
-  teams: TeamMember[];
+  groups: GroupMember[];
 }
 
 interface DemoLoginProps {
@@ -60,7 +60,7 @@ interface AppMemberContext extends LoginState {
   demoLogin: (props: DemoLoginProps) => Promise<void>;
   authorizationCodeLogin: (params: AuthorizationCodeLoginParams) => Promise<void>;
   logout: () => any;
-  updateTeam: UpdateTeam;
+  updateGroup: UpdateGroup;
   appMemberInfo: AppMemberInfo;
   appMemberInfoRef: MutableRefObject<AppMemberInfo>;
   setAppMemberInfo: Dispatch<AppMemberInfo>;
@@ -154,9 +154,9 @@ export function AppMemberProvider({ children }: AppMemberProviderProps): ReactNo
       try {
         const [auth] = await fetchToken(grantType, params);
         const config = { headers: { authorization: auth } };
-        const [{ data: appMember }, { data: teams }] = await Promise.all([
+        const [{ data: appMember }, { data: groups }] = await Promise.all([
           axios.get<AppMemberInfo>(`${apiUrl}/api/apps/${appId}/members/current`, config),
-          axios.get<TeamMember[]>(`${apiUrl}/api/apps/${appId}/teams`, config),
+          axios.get<GroupMember[]>(`${apiUrl}/api/apps/${appId}/groups`, config),
         ]);
 
         setSentryUser({ id: appMember.sub });
@@ -164,7 +164,7 @@ export function AppMemberProvider({ children }: AppMemberProviderProps): ReactNo
         setState({
           isLoggedIn: true,
           role: appMember.role,
-          teams,
+          groups,
         });
       } catch (error: unknown) {
         logout();
@@ -219,15 +219,15 @@ export function AppMemberProvider({ children }: AppMemberProviderProps): ReactNo
     [login, logout],
   );
 
-  const updateTeam: UpdateTeam = useCallback((team) => {
-    setState(({ teams, ...oldState }) => {
-      const newTeams = teams.map((t) => (t.id === team.id ? { ...t, role: team.role } : t));
-      if (!newTeams.some((t) => t.id === team.id)) {
-        newTeams.push(team);
+  const updateGroup: UpdateGroup = useCallback((group) => {
+    setState(({ groups, ...oldState }) => {
+      const newGroups = groups.map((t) => (t.id === group.id ? { ...t, role: group.role } : t));
+      if (!newGroups.some((t) => t.id === group.id)) {
+        newGroups.push(group);
       }
       return {
         ...oldState,
-        teams: newTeams,
+        groups: newGroups,
       };
     });
   }, []);
@@ -312,7 +312,7 @@ export function AppMemberProvider({ children }: AppMemberProviderProps): ReactNo
       developmentLogin,
       demoLogin,
       logout,
-      updateTeam,
+      updateGroup,
       setAppMemberInfo,
       appMemberInfo,
       appMemberInfoRef,
@@ -324,7 +324,7 @@ export function AppMemberProvider({ children }: AppMemberProviderProps): ReactNo
       developmentLogin,
       demoLogin,
       logout,
-      updateTeam,
+      updateGroup,
       appMemberInfo,
       state,
     ],

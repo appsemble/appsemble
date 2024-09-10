@@ -15,8 +15,8 @@ which can also be connected to App Members. Cr
 - OAuthAuthorization.ts
 - ResetPasswordToken.ts
 - SamlLoginRequest.ts
-- TeamMember.ts
-- Team.ts
+- GroupMember.ts
+- Group.ts
 - Theme.ts
 - User.ts
 

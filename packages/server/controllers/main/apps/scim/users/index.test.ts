@@ -1,4 +1,4 @@
-import { TeamRole } from '@appsemble/utils';
+import { GroupRole } from '@appsemble/utils';
 import { request, setTestApp } from 'axios-test-instance';
 import { beforeAll, beforeEach, expect, it, vi } from 'vitest';
 
@@ -7,8 +7,8 @@ import {
   App,
   AppMember,
   Organization,
-  Team,
-  TeamMember,
+  Group,
+  GroupMember,
   User,
 } from '../../../../../models/index.js';
 import { argv } from '../../../../../utils/argv.js';
@@ -53,7 +53,7 @@ beforeEach(async () => {
   authorizeScim(scimToken);
 });
 
-it("should create a team if the user contains a manager ID of a team that doesn't exist yet", async () => {
+it("should create a group if the user contains a manager ID of a group that doesn't exist yet", async () => {
   const user = await User.create({ timezone: 'Europe/Amsterdam' });
   const member = await AppMember.create({
     email: 'user@example.com',
@@ -76,9 +76,9 @@ it("should create a team if the user contains a manager ID of a team that doesn'
     ],
   });
 
-  const team = await Team.findOne({ where: { AppId: app.id, name: 'krbs' } });
+  const group = await Group.findOne({ where: { AppId: app.id, name: 'krbs' } });
 
-  expect(team).toMatchObject({
+  expect(group).toMatchObject({
     AppId: 1,
     annotations: null,
     id: 1,
@@ -86,7 +86,7 @@ it("should create a team if the user contains a manager ID of a team that doesn'
   });
 });
 
-it('should add member to an existing team if the user contains a manager ID of a team that already exists', async () => {
+it('should add member to an existing group if the user contains a manager ID of a group that already exists', async () => {
   const user1 = await User.create({ timezone: 'Europe/Amsterdam' });
   const user2 = await User.create({ timezone: 'Europe/Amsterdam' });
   const member1 = await AppMember.create({
@@ -101,8 +101,8 @@ it('should add member to an existing team if the user contains a manager ID of a
     UserId: user2.id,
     role: 'User',
   });
-  const team = await Team.create({ AppId: app.id, name: member1.id });
-  await TeamMember.create({ TeamId: team.id, AppMemberId: member1.id, role: 'manager' });
+  const group = await Group.create({ AppId: app.id, name: member1.id });
+  await GroupMember.create({ GroupId: group.id, AppMemberId: member1.id, role: 'manager' });
 
   await request.patch(`/api/apps/${app.id}/scim/Users/${member2.id}`, {
     ScHeMaS: [
@@ -118,18 +118,18 @@ it('should add member to an existing team if the user contains a manager ID of a
     ],
   });
 
-  const result = await TeamMember.findOne({
-    where: { TeamId: team.id, AppMemberId: member2.id },
+  const result = await GroupMember.findOne({
+    where: { GroupId: group.id, AppMemberId: member2.id },
   });
 
   expect(result).toMatchObject({
     AppMemberId: member2.id,
-    TeamId: 1,
-    role: TeamRole.Member,
+    GroupId: 1,
+    role: GroupRole.Member,
   });
 });
 
-it('should assign existing manager to new team as manager', async () => {
+it('should assign existing manager to new group as manager', async () => {
   const user1 = await User.create({ timezone: 'Europe/Amsterdam' });
   const user2 = await User.create({ timezone: 'Europe/Amsterdam' });
   const member1 = await AppMember.create({
@@ -159,14 +159,14 @@ it('should assign existing manager to new team as manager', async () => {
     ],
   });
 
-  const result = await TeamMember.findOne({
+  const result = await GroupMember.findOne({
     where: { AppMemberId: member2.id },
-    include: [{ model: Team, where: { AppId: app.id } }],
+    include: [{ model: Group, where: { AppId: app.id } }],
   });
 
   expect(result).toMatchObject({
     AppMemberId: member2.id,
-    TeamId: 1,
-    role: TeamRole.Manager,
+    GroupId: 1,
+    role: GroupRole.Manager,
   });
 }, 50_000);

@@ -118,8 +118,8 @@ export const tags: OpenAPIV3.TagObject[] = [
     description: 'Operations related to subscriptions',
   },
   {
-    name: 'team',
-    description: 'Operations related to teams',
+    name: 'group',
+    description: 'Operations related to groups',
   },
   {
     name: 'template',

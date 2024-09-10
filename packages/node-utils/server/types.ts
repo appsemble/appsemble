@@ -12,7 +12,7 @@ import {
   type EmailActionDefinition,
   type Resource,
   type ResourceDefinition,
-  type TeamMember,
+  type GroupMember,
   type Theme as ThemeType,
 } from '@appsemble/types';
 import { type IdentifiableBlock, type OrganizationPermission } from '@appsemble/utils';
@@ -42,7 +42,7 @@ declare module 'koa' {
     appVariables: AppConfigEntry[];
     appMembers: AppMember[];
     appMemberInfo: AppMemberInfo;
-    appTeams: ExtendedTeam[];
+    appGroups: ExtendedGroup[];
     appAssets: AppAsset[];
     appReadmes: AppReadme[];
     blockConfigs: ContextBlockConfig[];
@@ -82,7 +82,7 @@ declare module 'koas-parameters' {
     language: string;
     memberId: string;
     organizationMemberId: string;
-    teamMemberId: string;
+    groupMemberId: string;
     organizationId: string;
     path: string;
     resourceId: number;
@@ -92,7 +92,7 @@ declare module 'koas-parameters' {
     screenshotId: number;
     readmeId: number;
     snapshotId: number;
-    teamId: number;
+    groupId: number;
     token: string;
     serviceSecretId: number;
     appSecretId: number;
@@ -168,11 +168,11 @@ export interface GetAppMessagesParams extends GetAppSubEntityParams {
   merge?: string[] | string;
 }
 
-export interface ExtendedTeam extends TeamMember {
+export interface ExtendedGroup extends GroupMember {
   size: number;
 }
 
-export interface GetAppTeamsParams extends GetAppSubEntityParams {
+export interface GetAppGroupsParams extends GetAppSubEntityParams {
   id: string;
 }
 
@@ -429,7 +429,7 @@ export interface Options {
   getApp: (params: GetAppParams) => Promise<App>;
   getAppDetails: (params: GetAppParams) => Promise<AppDetails>;
   getAppMessages: (params: GetAppMessagesParams) => Promise<AppMessages[]>;
-  getAppTeams: (params: GetAppTeamsParams) => Promise<ExtendedTeam[]>;
+  getAppGroups: (params: GetAppGroupsParams) => Promise<ExtendedGroup[]>;
   getAppStyles: (params: GetAppParams | GetAppSubEntityParams) => Promise<AppStyles>;
   getAppScreenshots: (params: GetAppSubEntityParams) => Promise<AppScreenshot[]>;
   getAppReadmes: (params: GetAppSubEntityParams) => Promise<AppReadme[]>;

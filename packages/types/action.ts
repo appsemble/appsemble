@@ -73,6 +73,10 @@ export type Action =
   | BaseAction<'flow.finish'>
   | BaseAction<'flow.next'>
   | BaseAction<'flow.to'>
+  | BaseAction<'group.invite'>
+  | BaseAction<'group.join'>
+  | BaseAction<'group.list'>
+  | BaseAction<'group.members'>
   | BaseAction<'link.back'>
   | BaseAction<'link.next'>
   | BaseAction<'match'>
@@ -91,10 +95,6 @@ export type Action =
   | BaseAction<'storage.subtract'>
   | BaseAction<'storage.update'>
   | BaseAction<'storage.write'>
-  | BaseAction<'team.invite'>
-  | BaseAction<'team.join'>
-  | BaseAction<'team.list'>
-  | BaseAction<'team.members'>
   | BaseAction<'throw'>
   | LinkAction
   | LogAction

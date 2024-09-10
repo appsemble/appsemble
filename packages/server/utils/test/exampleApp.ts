@@ -191,29 +191,29 @@ export const exampleApp = (
             roles: ['Reader'],
           },
         },
-        testResourceTeam: {
+        testResourceGroup: {
           schema: {
             type: 'object',
             required: ['foo'],
             properties: { foo: { type: 'string' } },
           },
-          get: { roles: ['$author', '$team:member'] },
-          query: { roles: ['$team:member'] },
-          count: { roles: ['$team:member'] },
-          update: { roles: ['$team:member'] },
-          create: { roles: ['$team:member'] },
-          delete: { roles: ['$team:member'] },
+          get: { roles: ['$author', '$group:member'] },
+          query: { roles: ['$group:member'] },
+          count: { roles: ['$group:member'] },
+          update: { roles: ['$group:member'] },
+          create: { roles: ['$group:member'] },
+          delete: { roles: ['$group:member'] },
         },
-        testResourceTeamManager: {
+        testResourceGroupManager: {
           schema: {
             type: 'object',
             required: ['foo'],
             properties: { foo: { type: 'string' } },
           },
-          query: { roles: ['$author', '$team:manager'] },
-          update: { roles: ['$team:manager'] },
-          create: { roles: ['$team:manager'] },
-          delete: { roles: ['$team:manager'] },
+          query: { roles: ['$author', '$group:manager'] },
+          update: { roles: ['$group:manager'] },
+          create: { roles: ['$group:manager'] },
+          delete: { roles: ['$group:manager'] },
         },
         testExpirableResource: {
           expires: '10m',

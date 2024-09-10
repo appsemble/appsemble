@@ -42,7 +42,7 @@ beforeEach(async () => {
       name: 'Test App',
       defaultPage: 'Test Page',
       security: {
-        teams: {
+        groups: {
           join: 'anyone',
           invite: [],
         },

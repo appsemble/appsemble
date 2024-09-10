@@ -3,11 +3,11 @@ import { defineMessages } from 'react-intl';
 export const messages = defineMessages({
   createButton: {
     id: 'studio.Wcegk9',
-    defaultMessage: 'Create new team',
+    defaultMessage: 'Create new group',
   },
-  creatingNewTeam: {
+  creatingNewGroup: {
     id: 'studio.LtlL0w',
-    defaultMessage: 'Creating a new team',
+    defaultMessage: 'Creating a new group',
   },
   logo: {
     id: 'studio.foSyCj',
@@ -17,25 +17,25 @@ export const messages = defineMessages({
     id: 'studio.47FYwb',
     defaultMessage: 'Cancel',
   },
-  teamName: {
+  groupName: {
     id: 'studio.qUrlgz',
-    defaultMessage: 'Team name',
+    defaultMessage: 'Group name',
   },
-  teams: {
+  groups: {
     id: 'studio.DNeuzb',
-    defaultMessage: 'Teams',
+    defaultMessage: 'Groups',
   },
   error: {
     id: 'studio.6GC+bV',
-    defaultMessage: 'There was a problem loading the teams.',
+    defaultMessage: 'There was a problem loading the groups.',
   },
   loading: {
     id: 'studio.lwyVoJ',
-    defaultMessage: 'Loading teams…',
+    defaultMessage: 'Loading groups…',
   },
-  noTeams: {
+  noGroups: {
     id: 'studio.NhnlVy',
-    defaultMessage: 'No teams have been created yet.',
+    defaultMessage: 'No groups have been created yet.',
   },
   Manager: {
     id: 'studio.KQzcqr',

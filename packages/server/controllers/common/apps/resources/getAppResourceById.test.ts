@@ -1,5 +1,5 @@
 import { type Resource as ResourceType } from '@appsemble/types';
-import { TeamRole } from '@appsemble/utils';
+import { GroupRole } from '@appsemble/utils';
 import { request, setTestApp } from 'axios-test-instance';
 import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 import webpush from 'web-push';
@@ -10,8 +10,8 @@ import {
   Organization,
   OrganizationMember,
   Resource,
-  Team,
-  TeamMember,
+  Group,
+  GroupMember,
   User,
 } from '../../../../models/index.js';
 import { setArgv } from '../../../../utils/argv.js';
@@ -226,8 +226,8 @@ describe('getAppResourceById', () => {
     `);
   });
 
-  it('should be able to fetch a resource you are a team member of', async () => {
-    const team = await Team.create({ name: 'Test Team', AppId: app.id });
+  it('should be able to fetch a resource you are a group member of', async () => {
+    const group = await Group.create({ name: 'Test Group', AppId: app.id });
     const userB = await User.create({ timezone: 'Europe/Amsterdam' });
     const member1 = await AppMember.create({
       email: user.primaryEmail,
@@ -244,18 +244,18 @@ describe('getAppResourceById', () => {
       timezone: 'Europe/Amsterdam',
     });
 
-    await TeamMember.create({ TeamId: team.id, AppMemberId: member1.id, role: TeamRole.Member });
-    await TeamMember.create({ TeamId: team.id, AppMemberId: member2.id, role: TeamRole.Member });
+    await GroupMember.create({ GroupId: group.id, AppMemberId: member1.id, role: GroupRole.Member });
+    await GroupMember.create({ GroupId: group.id, AppMemberId: member2.id, role: GroupRole.Member });
 
     const resource = await Resource.create({
       AppId: app.id,
-      type: 'testResourceTeam',
+      type: 'testResourceGroup',
       data: { foo: 'bar' },
       AuthorId: member2.id,
     });
     authorizeStudio();
     const response = await request.get(
-      `/api/apps/${app.id}/resources/testResourceTeam/${resource.id}`,
+      `/api/apps/${app.id}/resources/testResourceGroup/${resource.id}`,
     );
 
     expect(response).toMatchInlineSnapshot(
@@ -278,8 +278,8 @@ describe('getAppResourceById', () => {
     );
   });
 
-  it('should not be able to fetch a resource you are not a team member of', async () => {
-    const team = await Team.create({ name: 'Test Team', AppId: app.id });
+  it('should not be able to fetch a resource you are not a group member of', async () => {
+    const group = await Group.create({ name: 'Test Group', AppId: app.id });
     const userB = await User.create({
       timezone: 'Europe/Amsterdam',
       primaryEmail: 'userB@example.com',
@@ -291,7 +291,7 @@ describe('getAppResourceById', () => {
       role: 'Member',
       timezone: 'Europe/Amsterdam',
     });
-    await TeamMember.create({ TeamId: team.id, AppMemberId: memberB.id, role: TeamRole.Member });
+    await GroupMember.create({ GroupId: group.id, AppMemberId: memberB.id, role: GroupRole.Member });
 
     await AppMember.create({
       email: user.primaryEmail,
@@ -303,14 +303,14 @@ describe('getAppResourceById', () => {
 
     const resource = await Resource.create({
       AppId: app.id,
-      type: 'testResourceTeam',
+      type: 'testResourceGroup',
       data: { foo: 'bar' },
       AuthorId: memberB.id,
     });
 
     authorizeApp(app);
     const response = await request.get(
-      `/api/apps/${app.id}/resources/testResourceTeam/${resource.id}`,
+      `/api/apps/${app.id}/resources/testResourceGroup/${resource.id}`,
     );
 
     expect(response).toMatchInlineSnapshot(`

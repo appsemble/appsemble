@@ -8,7 +8,7 @@ import {
   type ProjectImplementations,
   type Remapper,
   type Security,
-  type TeamMember,
+  type GroupMember,
 } from '@appsemble/types';
 import { checkAppRole } from '@appsemble/utils';
 import { type ReactNode, useCallback, useEffect, useMemo, useRef, useState } from 'react';
@@ -46,7 +46,7 @@ function filterBlocks(
   security: Security,
   blocks: BlockDefinition[],
   appMemberRole: string,
-  teams: TeamMember[],
+  groups: GroupMember[],
 ): [BlockDefinition, number][] {
   return blocks
     .map<[BlockDefinition, number]>((block, index) => [block, index])
@@ -54,7 +54,7 @@ function filterBlocks(
       ([block]) =>
         block.roles === undefined ||
         block.roles.length === 0 ||
-        block.roles.some((r) => checkAppRole(security, r, appMemberRole, teams)),
+        block.roles.some((r) => checkAppRole(security, r, appMemberRole, groups)),
     );
 }
 
@@ -83,8 +83,8 @@ export function BlockList({
     passwordLogin,
     role,
     setAppMemberInfo,
-    teams,
-    updateTeam,
+    groups,
+    updateGroup,
   } = useAppMember();
   const { refetchDemoAppMembers } = useDemoAppMembers();
   const redirect = useLocationString();
@@ -97,8 +97,8 @@ export function BlockList({
   const [controllerInitialized, setControllerInitialized] = useState(false);
 
   const blockList = useMemo(
-    () => filterBlocks(definition.security, blocks, role, teams),
-    [blocks, definition, role, teams],
+    () => filterBlocks(definition.security, blocks, role, groups),
+    [blocks, definition, role, groups],
   );
 
   const blockStatus = useRef(blockList.map(() => false));
@@ -157,8 +157,8 @@ export function BlockList({
           prefixIndex: 'controller',
           ee,
           remap,
-          teams,
-          updateTeam,
+          groups,
+          updateGroup,
           getAppMemberInfo: () => appMemberInfoRef.current,
           passwordLogin,
           passwordLogout: logout,
@@ -199,8 +199,8 @@ export function BlockList({
     refetchDemoAppMembers,
     remap,
     setAppMemberInfo,
-    teams,
-    updateTeam,
+    groups,
+    updateGroup,
     appMemberInfoRef,
   ]);
 

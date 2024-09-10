@@ -3,17 +3,12 @@ import {
   throwKoaError,
   type VerifyResourceActionPermissionParams,
 } from '@appsemble/node-utils';
-import { checkAppRole, OrganizationPermission, teamMemberRoles } from '@appsemble/utils';
+import { checkAppRole, OrganizationPermission } from '@appsemble/utils';
 import { Op, type WhereOptions } from 'sequelize';
 
-import { AppMember, Organization, Team, TeamMember } from '../models/index.js';
+import { AppMember, Group, GroupMember, Organization } from '../models/index.js';
 
-const specialRoles = new Set([
-  '$author',
-  '$public',
-  '$none',
-  ...Object.keys(teamMemberRoles).map((r) => `$team:${r.toLowerCase()}`),
-]);
+const specialRoles = new Set(['$author', '$public', '$none', '$group:member', '$group:manager']);
 
 export async function verifyResourceActionPermission({
   action,
@@ -28,7 +23,7 @@ export async function verifyResourceActionPermission({
   const resourceDefinition = getResourceDefinition(app, resourceType, ctx, view);
 
   const {
-    query: { $team },
+    query: { $group },
     user,
     users,
   } = context;
@@ -59,8 +54,8 @@ export async function verifyResourceActionPermission({
   const isPublic = functionalRoles.includes('$public');
   const isNone = functionalRoles.includes('$none');
 
-  if ($team && !functionalRoles.includes(`$team:${$team}`)) {
-    functionalRoles.push(`$team:${$team}`);
+  if ($group && !functionalRoles.includes(`$group:${$group}`)) {
+    functionalRoles.push(`$group:${$group}`);
   }
 
   if (!functionalRoles.length && !appRoles.length) {
@@ -89,36 +84,36 @@ export async function verifyResourceActionPermission({
     result.push({ AuthorId: member.id });
   }
 
-  if (functionalRoles.includes('$team:member') && user) {
-    const teamIds = (
-      await Team.findAll({
+  if (functionalRoles.includes('$group:member') && user) {
+    const groupIds = (
+      await Group.findAll({
         where: { AppId: app.id },
-        include: [{ model: TeamMember, where: { AppMemberId: member.id } }],
+        include: [{ model: GroupMember, where: { AppMemberId: member.id } }],
         attributes: ['id'],
       })
     ).map((t) => t.id);
 
     const appMemberIds = (
-      await TeamMember.findAll({
-        where: { TeamId: teamIds },
+      await GroupMember.findAll({
+        where: { GroupId: groupIds },
         attributes: ['AppMemberId'],
       })
     ).map((tm) => tm.AppMemberId);
     result.push({ AuthorId: { [Op.in]: appMemberIds } });
   }
 
-  if (functionalRoles.includes('$team:manager') && user) {
-    const teamIds = (
-      await Team.findAll({
+  if (functionalRoles.includes('$group:manager') && user) {
+    const groupIds = (
+      await Group.findAll({
         where: { AppId: app.id },
-        include: [{ model: TeamMember, where: { AppMemberId: member.id, role: 'Manager' } }],
+        include: [{ model: GroupMember, where: { AppMemberId: member.id, role: 'Manager' } }],
         attributes: ['id'],
       })
     ).map((t) => t.id);
 
     const appMemberIds = (
-      await TeamMember.findAll({
-        where: { TeamId: teamIds },
+      await GroupMember.findAll({
+        where: { GroupId: groupIds },
         attributes: ['AppMemberId'],
       })
     ).map((tm) => tm.AppMemberId);
@@ -160,7 +155,7 @@ export async function verifyResourceActionPermission({
       }
     }
 
-    // Team roles are checked separately
+    // Group roles are checked separately
     // XXX unify this logic?
     if (
       !appRoles.some((r) => checkAppRole(app.definition.security, r, role, null)) &&

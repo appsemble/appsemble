@@ -172,9 +172,9 @@ export function convertAppMemberToScimUser(member: AppMember): ScimUser {
       : undefined,
     timezone: member.timezone,
     locale: member.locale,
-    'urn:ietf:params:scim:schemas:extension:enterprise:2.0:User': member.TeamMembers?.length
+    'urn:ietf:params:scim:schemas:extension:enterprise:2.0:User': member.GroupMembers?.length
       ? {
-          manager: { value: member.TeamMembers.at(-1).Team.name },
+          manager: { value: member.GroupMembers.at(-1).Group.name },
         }
       : undefined,
     meta: {

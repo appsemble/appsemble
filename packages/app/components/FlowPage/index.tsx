@@ -71,8 +71,8 @@ export function FlowPage({
     logout,
     passwordLogin,
     setAppMemberInfo,
-    teams,
-    updateTeam,
+    groups,
+    updateGroup,
   } = useAppMember();
   const { refetchDemoAppMembers } = useDemoAppMembers();
   const { getAppMessage, getMessage } = useAppMessages();
@@ -253,8 +253,8 @@ export function FlowPage({
         remap,
         params,
         showMessage,
-        teams,
-        updateTeam,
+        groups,
+        updateGroup,
         getAppMemberInfo: () => appMemberInfoRef.current,
         passwordLogin,
         passwordLogout: logout,
@@ -278,8 +278,8 @@ export function FlowPage({
       remap,
       params,
       showMessage,
-      teams,
-      updateTeam,
+      groups,
+      updateGroup,
       passwordLogin,
       logout,
       setAppMemberInfo,

@@ -50,13 +50,13 @@ export const messages = defineMessages({
     id: 'studio.7IeO4D',
     defaultMessage: 'AppMemberManager',
   },
-  AppTeamManager: {
+  AppGroupManager: {
     id: 'studio./b6YhM',
-    defaultMessage: 'AppTeamManager',
+    defaultMessage: 'AppGroupManager',
   },
-  AppTeamMembersManager: {
+  AppGroupMembersManager: {
     id: 'studio.bN0yuN',
-    defaultMessage: 'AppTeamMembersManager',
+    defaultMessage: 'AppGroupMembersManager',
   },
   AppManager: {
     id: 'studio.o61GlD',

@@ -40,8 +40,8 @@ interface FormValues {
   'resources:write': boolean;
   'apps:write': boolean;
   'apps:delete': boolean;
-  'teams:read': boolean;
-  'teams:write': boolean;
+  'groups:read': boolean;
+  'groups:write': boolean;
   'assets:write': boolean;
 }
 
@@ -151,8 +151,8 @@ export function ClientCredentialsPage(): ReactNode {
           'resources:read': false,
           'resources:write': false,
           'apps:write': false,
-          'teams:read': false,
-          'teams:write': false,
+          'groups:read': false,
+          'groups:write': false,
           'assets:write': false,
         }}
         footer={
@@ -250,15 +250,15 @@ export function ClientCredentialsPage(): ReactNode {
             />
             <SimpleFormField
               component={CheckboxField}
-              label="teams:read"
-              name="teams:read"
-              title={<FormattedMessage {...messages['teams:read']} />}
+              label="groups:read"
+              name="groups:read"
+              title={<FormattedMessage {...messages['groups:read']} />}
             />
             <SimpleFormField
               component={CheckboxField}
-              label="teams:write"
-              name="teams:write"
-              title={<FormattedMessage {...messages['teams:write']} />}
+              label="groups:write"
+              name="groups:write"
+              title={<FormattedMessage {...messages['groups:write']} />}
             />
             <SimpleFormField
               component={CheckboxField}

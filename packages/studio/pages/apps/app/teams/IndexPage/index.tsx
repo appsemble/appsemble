@@ -8,7 +8,7 @@ import {
   useData,
   useToggle,
 } from '@appsemble/react-components';
-import { type Team } from '@appsemble/types';
+import { type Group } from '@appsemble/types';
 import {
   checkOrganizationRoleOrganizationPermissions,
   OrganizationPermission,
@@ -24,14 +24,14 @@ import { ListButton } from '../../../../../components/ListButton/index.js';
 import { useUser } from '../../../../../components/UserProvider/index.js';
 import { useApp } from '../../index.js';
 
-const newTeam = {
+const newGroup = {
   name: '',
 };
 
 /**
- * Render a list of teams.
+ * Render a list of groups.
  *
- * The rendered list items are links to the team settings page.
+ * The rendered list items are links to the group settings page.
  */
 export function IndexPage(): ReactNode {
   const { organizations } = useUser();
@@ -39,56 +39,56 @@ export function IndexPage(): ReactNode {
   const { app } = useApp();
   const modal = useToggle();
   const { formatMessage } = useIntl();
-  const result = useData<Team[]>(`/api/apps/${app.id}/teams`);
-  const { setData: setTeams } = result;
+  const result = useData<Group[]>(`/api/apps/${app.id}/groups`);
+  const { setData: setGroups } = result;
 
-  const submitTeam = useCallback(
-    async ({ name }: Team) => {
-      const { data } = await axios.post<Team>(`/api/apps/${app.id}/teams`, {
+  const submitGroup = useCallback(
+    async ({ name }: Group) => {
+      const { data } = await axios.post<Group>(`/api/apps/${app.id}/groups`, {
         name,
       });
-      setTeams((teams) => [...teams, data]);
+      setGroups((groups) => [...groups, data]);
       modal.disable();
     },
-    [modal, app, setTeams],
+    [modal, app, setGroups],
   );
 
   const organization = organizations.find((o) => o.id === app.OrganizationId);
-  const mayCreateTeam =
+  const mayCreateGroup =
     organization &&
     checkOrganizationRoleOrganizationPermissions(organization.role, [
-      OrganizationPermission.CreateTeams,
+      OrganizationPermission.CreateGroups,
     ]);
 
   return (
     <>
       <HeaderControl
         control={
-          mayCreateTeam ? (
+          mayCreateGroup ? (
             <Button onClick={modal.enable}>
               <FormattedMessage {...messages.createButton} />
             </Button>
           ) : null
         }
       >
-        <FormattedMessage {...messages.teams} />
+        <FormattedMessage {...messages.groups} />
       </HeaderControl>
       <Content fullwidth main padding>
         <AsyncDataView
-          emptyMessage={<FormattedMessage {...messages.noTeams} />}
+          emptyMessage={<FormattedMessage {...messages.noGroups} />}
           errorMessage={<FormattedMessage {...messages.error} />}
           loadingMessage={<FormattedMessage {...messages.loading} />}
           result={result}
         >
-          {(teams) => (
+          {(groups) => (
             <ul>
-              {teams.map((team) => (
+              {groups.map((group) => (
                 <ListButton
                   alt={formatMessage(messages.logo)}
                   icon="users"
-                  key={team.id}
-                  title={team.name || team.id}
-                  to={String(team.id)}
+                  key={group.id}
+                  title={group.name || group.id}
+                  to={String(group.id)}
                 />
               ))}
             </ul>
@@ -96,7 +96,7 @@ export function IndexPage(): ReactNode {
         </AsyncDataView>
         <ModalCard
           component={SimpleForm}
-          defaultValues={newTeam}
+          defaultValues={newGroup}
           footer={
             <SimpleModalFooter
               cancelLabel={<FormattedMessage {...messages.cancelLabel} />}
@@ -106,13 +106,13 @@ export function IndexPage(): ReactNode {
           }
           isActive={modal.enabled}
           onClose={modal.disable}
-          onSubmit={submitTeam}
+          onSubmit={submitGroup}
           resetOnSuccess
-          title={<FormattedMessage {...messages.creatingNewTeam} />}
+          title={<FormattedMessage {...messages.creatingNewGroup} />}
         >
           <SimpleFormField
             icon="briefcase"
-            label={<FormattedMessage {...messages.teamName} />}
+            label={<FormattedMessage {...messages.groupName} />}
             name="name"
             required
           />

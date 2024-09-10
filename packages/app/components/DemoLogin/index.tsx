@@ -14,8 +14,8 @@ import {
   useData,
   useToggle,
 } from '@appsemble/react-components';
-import { type AppMember, type Team, type TeamMember } from '@appsemble/types';
-import { type TeamMemberRole, teamMemberRoles } from '@appsemble/utils';
+import { type AppMember, type Group, type GroupMember } from '@appsemble/types';
+import { type GroupMemberRole, groupMemberRoles } from '@appsemble/utils';
 import axios from 'axios';
 import { type ChangeEvent, type ReactNode, useCallback, useEffect, useMemo, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
@@ -32,8 +32,8 @@ interface DemoLoginProps {
   readonly modal?: Toggle;
 }
 
-function TeamControls(): ReactNode {
-  type TeamsResponse = (Partial<TeamMember> & Team)[];
+function GroupControls(): ReactNode {
+  type GroupsResponse = (Partial<GroupMember> & Group)[];
 
   const { appMemberInfo, isLoggedIn } = useAppMember();
 
@@ -42,39 +42,39 @@ function TeamControls(): ReactNode {
   const { formatMessage } = useIntl();
 
   const {
-    data: teams,
+    data: groups,
     error,
     loading,
     refresh,
-    setData: setTeams,
-  } = useData<TeamsResponse>(`${apiUrl}/api/apps/${appId}/teams`);
+    setData: setGroups,
+  } = useData<GroupsResponse>(`${apiUrl}/api/apps/${appId}/groups`);
 
-  const changeTeamRole = useCallback(
-    async (team: Team, role: TeamMemberRole) => {
-      await axios.put(`${apiUrl}/api/apps/${appId}/teams/${team.id}/members/${sub}`, {
+  const changeGroupRole = useCallback(
+    async (group: Group, role: GroupMemberRole) => {
+      await axios.put(`${apiUrl}/api/apps/${appId}/groups/${group.id}/members/${sub}`, {
         role,
       });
-      setTeams((prevTeams) => prevTeams.map((t) => (t.id === team.id ? { ...t, role } : t)));
+      setGroups((prevGroups) => prevGroups.map((t) => (t.id === group.id ? { ...t, role } : t)));
     },
-    [sub, setTeams],
+    [sub, setGroups],
   );
-  const leaveTeam = useCallback(
-    async (team: Team) => {
-      await axios.delete(`${apiUrl}/api/apps/${appId}/teams/${team.id}/members/${sub}`);
-      setTeams((prevTeams) =>
-        prevTeams.map((t) => (t.id === team.id ? { ...t, role: undefined } : t)),
+  const leaveGroup = useCallback(
+    async (group: Group) => {
+      await axios.delete(`${apiUrl}/api/apps/${appId}/groups/${group.id}/members/${sub}`);
+      setGroups((prevGroups) =>
+        prevGroups.map((t) => (t.id === group.id ? { ...t, role: undefined } : t)),
       );
     },
-    [sub, setTeams],
+    [sub, setGroups],
   );
-  const joinTeam = useCallback(
-    async (team: Team) => {
-      const result = await axios.post(`${apiUrl}/api/apps/${appId}/teams/${team.id}/members`, {
+  const joinGroup = useCallback(
+    async (group: Group) => {
+      const result = await axios.post(`${apiUrl}/api/apps/${appId}/groups/${group.id}/members`, {
         id: sub,
       });
-      setTeams((prevTeams) => prevTeams.map((t) => (t.id === team.id ? result.data : t)));
+      setGroups((prevGroups) => prevGroups.map((t) => (t.id === group.id ? result.data : t)));
     },
-    [sub, setTeams],
+    [sub, setGroups],
   );
 
   useEffect(() => {
@@ -96,29 +96,29 @@ function TeamControls(): ReactNode {
   return (
     <Table>
       <tbody>
-        {teams?.map((team) => (
-          <tr key={team.id}>
-            <td>{team.name}</td>
+        {groups?.map((group) => (
+          <tr key={group.id}>
+            <td>{group.name}</td>
             <td className="is-pulled-right">
-              {team.role == null ? (
-                <AsyncButton onClick={() => joinTeam(team)}>
-                  <FormattedMessage {...messages.joinTeam} />
+              {group.role == null ? (
+                <AsyncButton onClick={() => joinGroup(group)}>
+                  <FormattedMessage {...messages.joinGroup} />
                 </AsyncButton>
               ) : (
                 <>
                   <AsyncSelect
                     name="role"
-                    onChange={(event, value: TeamMemberRole) => changeTeamRole(team, value)}
-                    value={team.role}
+                    onChange={(event, value: GroupMemberRole) => changeGroupRole(group, value)}
+                    value={group.role}
                   >
-                    {Object.keys(teamMemberRoles).map((role: TeamMemberRole) => (
+                    {Object.keys(groupMemberRoles).map((role: GroupMemberRole) => (
                       <option key={role} value={role}>
                         {formatMessage(messages[role])}
                       </option>
                     ))}
                   </AsyncSelect>
-                  <AsyncButton onClick={() => leaveTeam(team)}>
-                    <FormattedMessage {...messages.leaveTeam} />
+                  <AsyncButton onClick={() => leaveGroup(group)}>
+                    <FormattedMessage {...messages.leaveGroup} />
                   </AsyncButton>
                 </>
               )}
@@ -281,7 +281,7 @@ export function DemoLogin({ modal }: DemoLoginProps): ReactNode {
           </SimpleSubmit>
         </>
       ) : null}
-      <TeamControls />
+      <GroupControls />
     </>
   );
 

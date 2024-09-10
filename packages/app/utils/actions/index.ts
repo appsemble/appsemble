@@ -21,7 +21,7 @@ import * as resource from './resource.js';
 import { share } from './share.js';
 import { staticAction } from './static.js';
 import * as storage from './storage.js';
-import { teamInvite, teamJoin, teamList, teamMembers } from './team.js';
+import { groupInvite, groupJoin, groupList, groupMembers } from './group.js';
 import { throwAction } from './throw.js';
 import { type MakeActionParameters } from '../../types.js';
 
@@ -92,10 +92,10 @@ export const actionCreators: ActionCreators = {
   'storage.subtract': storage.subtract,
   'storage.update': storage.update,
   'storage.delete': storage.remove,
-  'team.invite': teamInvite,
-  'team.join': teamJoin,
-  'team.list': teamList,
-  'team.members': teamMembers,
+  'group.invite': groupInvite,
+  'group.join': groupJoin,
+  'group.list': groupList,
+  'group.members': groupMembers,
   throw: throwAction,
   'app.member.login': login,
   'app.member.register': register,

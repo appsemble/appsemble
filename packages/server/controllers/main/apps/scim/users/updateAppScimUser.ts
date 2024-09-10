@@ -1,7 +1,7 @@
 import { scimAssert } from '@appsemble/node-utils';
 import { type Context } from 'koa';
 
-import { AppMember, Team, TeamMember, transactional } from '../../../../../models/index.js';
+import { AppMember, Group, GroupMember, transactional } from '../../../../../models/index.js';
 import { getCaseInsensitive } from '../../../../../utils/object.js';
 import { convertAppMemberToScimUser } from '../../../../../utils/scim.js';
 
@@ -58,11 +58,11 @@ export async function updateAppScimUser(ctx: Context): Promise<void> {
     where: { AppId: appId, id: userId },
     include: [
       {
-        model: TeamMember,
+        model: GroupMember,
         required: false,
         include: [
           {
-            model: Team,
+            model: Group,
             where: { AppId: appId },
           },
         ],
@@ -86,24 +86,24 @@ export async function updateAppScimUser(ctx: Context): Promise<void> {
       ),
     ];
     if (managerId != null) {
-      const team = await Team.findOne({ where: { AppId: appId, name: managerId } });
+      const group = await Group.findOne({ where: { AppId: appId, name: managerId } });
       if (managerId === '') {
-        if (team) {
+        if (group) {
           promises.push(
-            TeamMember.destroy({ where: { TeamId: team.id, AppMemberId: member.id }, transaction }),
+            GroupMember.destroy({ where: { GroupId: group.id, AppMemberId: member.id }, transaction }),
           );
         }
       } else {
-        if (team) {
-          if (!(await TeamMember.findOne({ where: { TeamId: team.id, AppMemberId: member.id } }))) {
+        if (group) {
+          if (!(await GroupMember.findOne({ where: { GroupId: group.id, AppMemberId: member.id } }))) {
             promises.push(
-              TeamMember.create({ TeamId: team.id, AppMemberId: member.id }, { transaction }),
+              GroupMember.create({ GroupId: group.id, AppMemberId: member.id }, { transaction }),
             );
           }
         } else {
           promises.push(
-            Team.create({ AppId: appId, name: managerId }, { transaction }).then((t) =>
-              TeamMember.create({ TeamId: t.id, AppMemberId: member.id }, { transaction }),
+            Group.create({ AppId: appId, name: managerId }, { transaction }).then((t) =>
+              GroupMember.create({ GroupId: t.id, AppMemberId: member.id }, { transaction }),
             ),
           );
         }

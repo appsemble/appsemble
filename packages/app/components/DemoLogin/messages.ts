@@ -25,9 +25,9 @@ export const messages = defineMessages({
     id: 'app.ji+1KV',
     defaultMessage: 'Select a role to create an account with',
   },
-  selectTeamRole: {
+  selectGroupRole: {
     id: 'app.obEU1l',
-    defaultMessage: 'Select a team role',
+    defaultMessage: 'Select a group role',
   },
   Member: {
     id: 'app.7L86Z5',
@@ -37,13 +37,13 @@ export const messages = defineMessages({
     id: 'app.KQzcqr',
     defaultMessage: 'Manager',
   },
-  joinTeam: {
+  joinGroup: {
     id: 'app.C5l8n7',
-    defaultMessage: 'Join team',
+    defaultMessage: 'Join group',
   },
-  leaveTeam: {
+  leaveGroup: {
     id: 'app.sPEM/n',
-    defaultMessage: 'Leave team',
+    defaultMessage: 'Leave group',
   },
   error: {
     id: 'app.ox304v',

@@ -1,4 +1,4 @@
-import { TeamRole } from '@appsemble/utils';
+import { GroupRole } from '@appsemble/utils';
 import { request, setTestApp } from 'axios-test-instance';
 import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 import webpush from 'web-push';
@@ -9,8 +9,8 @@ import {
   Organization,
   OrganizationMember,
   Resource,
-  Team,
-  TeamMember,
+  Group,
+  GroupMember,
   User,
 } from '../../../../models/index.js';
 import { setArgv } from '../../../../utils/argv.js';
@@ -157,8 +157,8 @@ describe('countAppResources', () => {
     `);
   });
 
-  it('should only count resources from team members', async () => {
-    const team = await Team.create({ name: 'Test Team', AppId: app.id });
+  it('should only count resources from group members', async () => {
+    const group = await Group.create({ name: 'Test Group', AppId: app.id });
     const userB = await User.create({ timezone: 'Europe/Amsterdam' });
     const userC = await User.create({ timezone: 'Europe/Amsterdam' });
     const memberA = await AppMember.create({
@@ -183,30 +183,30 @@ describe('countAppResources', () => {
       timezone: 'Europe/Amsterdam',
     });
 
-    await TeamMember.create({ TeamId: team.id, AppMemberId: memberA.id, role: TeamRole.Member });
-    await TeamMember.create({ TeamId: team.id, AppMemberId: memberB.id, role: TeamRole.Member });
+    await GroupMember.create({ GroupId: group.id, AppMemberId: memberA.id, role: GroupRole.Member });
+    await GroupMember.create({ GroupId: group.id, AppMemberId: memberB.id, role: GroupRole.Member });
 
     await Resource.create({
       AppId: app.id,
-      type: 'testResourceTeam',
+      type: 'testResourceGroup',
       data: { foo: 'bar' },
       AuthorId: memberA.id,
     });
     await Resource.create({
       AppId: app.id,
-      type: 'testResourceTeam',
+      type: 'testResourceGroup',
       data: { foo: 'baz' },
       AuthorId: memberB.id,
     });
     await Resource.create({
       AppId: app.id,
-      type: 'testResourceTeam',
+      type: 'testResourceGroup',
       data: { foo: 'foo' },
       AuthorId: memberC.id,
     });
 
     authorizeApp(app);
-    const response = await request.get(`/api/apps/${app.id}/resources/testResourceTeam/$count`);
+    const response = await request.get(`/api/apps/${app.id}/resources/testResourceGroup/$count`);
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 200 OK
       Content-Type: application/json; charset=utf-8
@@ -215,8 +215,8 @@ describe('countAppResources', () => {
     `);
   });
 
-  it('should only count resources from team members based on the member team filter as a member', async () => {
-    const team = await Team.create({ name: 'Test Team', AppId: app.id });
+  it('should only count resources from group members based on the member group filter as a member', async () => {
+    const group = await Group.create({ name: 'Test Group', AppId: app.id });
     const userB = await User.create({ timezone: 'Europe/Amsterdam' });
     const userC = await User.create({ timezone: 'Europe/Amsterdam' });
 
@@ -242,8 +242,8 @@ describe('countAppResources', () => {
       timezone: 'Europe/Amsterdam',
     });
 
-    await TeamMember.create({ TeamId: team.id, AppMemberId: memberA.id, role: TeamRole.Member });
-    await TeamMember.create({ TeamId: team.id, AppMemberId: memberB.id, role: TeamRole.Member });
+    await GroupMember.create({ GroupId: group.id, AppMemberId: memberA.id, role: GroupRole.Member });
+    await GroupMember.create({ GroupId: group.id, AppMemberId: memberB.id, role: GroupRole.Member });
 
     await Resource.create({
       AppId: app.id,
@@ -266,7 +266,7 @@ describe('countAppResources', () => {
 
     authorizeApp(app);
     const response = await request.get(
-      `/api/apps/${app.id}/resources/testResource/$count?$team=member`,
+      `/api/apps/${app.id}/resources/testResource/$count?$group=member`,
     );
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 200 OK
@@ -276,8 +276,8 @@ describe('countAppResources', () => {
     `);
   });
 
-  it('should only count resources from team members based on the member team filter as a manager', async () => {
-    const team = await Team.create({ name: 'Test Team', AppId: app.id });
+  it('should only count resources from group members based on the member group filter as a manager', async () => {
+    const group = await Group.create({ name: 'Test Group', AppId: app.id });
     const userB = await User.create({ timezone: 'Europe/Amsterdam' });
     const userC = await User.create({ timezone: 'Europe/Amsterdam' });
 
@@ -303,8 +303,8 @@ describe('countAppResources', () => {
       timezone: 'Europe/Amsterdam',
     });
 
-    await TeamMember.create({ TeamId: team.id, AppMemberId: memberA.id, role: TeamRole.Manager });
-    await TeamMember.create({ TeamId: team.id, AppMemberId: memberB.id, role: TeamRole.Member });
+    await GroupMember.create({ GroupId: group.id, AppMemberId: memberA.id, role: GroupRole.Manager });
+    await GroupMember.create({ GroupId: group.id, AppMemberId: memberB.id, role: GroupRole.Member });
 
     await Resource.create({
       AppId: app.id,
@@ -327,7 +327,7 @@ describe('countAppResources', () => {
 
     authorizeApp(app);
     const response = await request.get(
-      `/api/apps/${app.id}/resources/testResource/$count?$team=member`,
+      `/api/apps/${app.id}/resources/testResource/$count?$group=member`,
     );
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 200 OK
@@ -337,8 +337,8 @@ describe('countAppResources', () => {
     `);
   });
 
-  it('should not count resources from team members based on the member team filter as not a member', async () => {
-    const team = await Team.create({ name: 'Test Team', AppId: app.id });
+  it('should not count resources from group members based on the member group filter as not a member', async () => {
+    const group = await Group.create({ name: 'Test Group', AppId: app.id });
     const userB = await User.create({ timezone: 'Europe/Amsterdam' });
     const userC = await User.create({ timezone: 'Europe/Amsterdam' });
 
@@ -365,7 +365,7 @@ describe('countAppResources', () => {
       timezone: 'Europe/Amsterdam',
     });
 
-    await TeamMember.create({ TeamId: team.id, AppMemberId: memberB.id, role: TeamRole.Member });
+    await GroupMember.create({ GroupId: group.id, AppMemberId: memberB.id, role: GroupRole.Member });
 
     await Resource.create({
       AppId: app.id,
@@ -388,7 +388,7 @@ describe('countAppResources', () => {
 
     authorizeApp(app);
     const response = await request.get(
-      `/api/apps/${app.id}/resources/testResource/$count?$team=member`,
+      `/api/apps/${app.id}/resources/testResource/$count?$group=member`,
     );
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 200 OK
@@ -398,8 +398,8 @@ describe('countAppResources', () => {
     `);
   });
 
-  it('should only count resources from team members based on the manager team filter as a member', async () => {
-    const team = await Team.create({ name: 'Test Team', AppId: app.id });
+  it('should only count resources from group members based on the manager group filter as a member', async () => {
+    const group = await Group.create({ name: 'Test Group', AppId: app.id });
     const userB = await User.create({ timezone: 'Europe/Amsterdam' });
     const userC = await User.create({ timezone: 'Europe/Amsterdam' });
 
@@ -425,8 +425,8 @@ describe('countAppResources', () => {
       timezone: 'Europe/Amsterdam',
     });
 
-    await TeamMember.create({ TeamId: team.id, AppMemberId: memberA.id, role: TeamRole.Member });
-    await TeamMember.create({ TeamId: team.id, AppMemberId: memberB.id, role: TeamRole.Member });
+    await GroupMember.create({ GroupId: group.id, AppMemberId: memberA.id, role: GroupRole.Member });
+    await GroupMember.create({ GroupId: group.id, AppMemberId: memberB.id, role: GroupRole.Member });
 
     await Resource.create({
       AppId: app.id,
@@ -449,7 +449,7 @@ describe('countAppResources', () => {
 
     authorizeApp(app);
     const response = await request.get(
-      `/api/apps/${app.id}/resources/testResource/$count?$team=manager`,
+      `/api/apps/${app.id}/resources/testResource/$count?$group=manager`,
     );
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 200 OK
@@ -459,8 +459,8 @@ describe('countAppResources', () => {
     `);
   });
 
-  it('should only count resources from team members based on the manager team filter as a manager', async () => {
-    const team = await Team.create({ name: 'Test Team', AppId: app.id });
+  it('should only count resources from group members based on the manager group filter as a manager', async () => {
+    const group = await Group.create({ name: 'Test Group', AppId: app.id });
     const userB = await User.create({ timezone: 'Europe/Amsterdam' });
     const userC = await User.create({ timezone: 'Europe/Amsterdam' });
 
@@ -486,8 +486,8 @@ describe('countAppResources', () => {
       timezone: 'Europe/Amsterdam',
     });
 
-    await TeamMember.create({ TeamId: team.id, AppMemberId: memberA.id, role: TeamRole.Manager });
-    await TeamMember.create({ TeamId: team.id, AppMemberId: memberB.id, role: TeamRole.Member });
+    await GroupMember.create({ GroupId: group.id, AppMemberId: memberA.id, role: GroupRole.Manager });
+    await GroupMember.create({ GroupId: group.id, AppMemberId: memberB.id, role: GroupRole.Member });
 
     await Resource.create({
       AppId: app.id,
@@ -510,7 +510,7 @@ describe('countAppResources', () => {
 
     authorizeApp(app);
     const response = await request.get(
-      `/api/apps/${app.id}/resources/testResource/$count?$team=manager`,
+      `/api/apps/${app.id}/resources/testResource/$count?$group=manager`,
     );
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 200 OK
@@ -537,8 +537,8 @@ describe('countAppResources', () => {
     `);
   });
 
-  it('should not count resources from team members based on the manager team filter as not a team member', async () => {
-    const team = await Team.create({ name: 'Test Team', AppId: app.id });
+  it('should not count resources from group members based on the manager group filter as not a group member', async () => {
+    const group = await Group.create({ name: 'Test Group', AppId: app.id });
     const userB = await User.create({ timezone: 'Europe/Amsterdam' });
     const userC = await User.create({ timezone: 'Europe/Amsterdam' });
 
@@ -564,7 +564,7 @@ describe('countAppResources', () => {
       timezone: 'Europe/Amsterdam',
     });
 
-    await TeamMember.create({ TeamId: team.id, AppMemberId: memberB.id, role: TeamRole.Member });
+    await GroupMember.create({ GroupId: group.id, AppMemberId: memberB.id, role: GroupRole.Member });
 
     await Resource.create({
       AppId: app.id,
@@ -587,7 +587,7 @@ describe('countAppResources', () => {
 
     authorizeApp(app);
     const response = await request.get(
-      `/api/apps/${app.id}/resources/testResource/$count?$team=manager`,
+      `/api/apps/${app.id}/resources/testResource/$count?$group=manager`,
     );
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 200 OK

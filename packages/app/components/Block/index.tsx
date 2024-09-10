@@ -95,7 +95,7 @@ export function Block({
   const { getAppMessage, getBlockMessage } = useAppMessages();
   const { getVariable } = useAppVariables();
 
-  const { appMemberInfoRef, logout, passwordLogin, setAppMemberInfo, teams, updateTeam } =
+  const { appMemberInfoRef, logout, passwordLogin, setAppMemberInfo, groups, updateGroup } =
     useAppMember();
   const { refetchDemoAppMembers } = useDemoAppMembers();
   const { setBlockMenu } = usePage();
@@ -148,8 +148,8 @@ export function Block({
       ee,
       remap,
       showMessage: push,
-      teams,
-      updateTeam,
+      groups,
+      updateGroup,
       getAppMemberInfo: () => appMemberInfoRef.current,
       passwordLogin,
       passwordLogout: logout,
@@ -241,8 +241,8 @@ export function Block({
     setBlockMenu,
     showDialog,
     showShareDialog,
-    teams,
-    updateTeam,
+    groups,
+    updateGroup,
     appMemberInfoRef,
     getAppMessage,
     refetchDemoAppMembers,

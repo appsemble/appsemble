@@ -7,23 +7,23 @@ export const messages = defineMessages({
   },
   editButton: {
     id: 'studio.I8Hyi4',
-    defaultMessage: 'Edit team',
+    defaultMessage: 'Edit group',
   },
-  teamMembers: {
+  groupMembers: {
     id: 'studio.HCYBYT',
-    defaultMessage: 'Team Members',
+    defaultMessage: 'Group Members',
   },
   cancelLabel: {
     id: 'studio.47FYwb',
     defaultMessage: 'Cancel',
   },
-  editingTeam: {
+  editingGroup: {
     id: 'studio.+hX6uJ',
-    defaultMessage: 'Editing team',
+    defaultMessage: 'Editing group',
   },
-  teamName: {
+  groupName: {
     id: 'studio.qUrlgz',
-    defaultMessage: 'Team name',
+    defaultMessage: 'Group name',
   },
   name: {
     id: 'studio.HAlOn1',
@@ -39,38 +39,38 @@ export const messages = defineMessages({
   },
   noMembers: {
     id: 'studio.BwQDJK',
-    defaultMessage: 'This team currently has no members.',
+    defaultMessage: 'This group currently has no members.',
   },
   memberError: {
     id: 'studio.Ps0KeF',
-    defaultMessage: 'There was a problem loading this team’s members.',
+    defaultMessage: 'There was a problem loading this group’s members.',
   },
   loadingMembers: {
     id: 'studio.Lxkny3',
     defaultMessage: 'Loading members…',
   },
-  noTeam: {
+  noGroup: {
     id: 'studio.Qao/oV',
-    defaultMessage: 'This team could not be found.',
+    defaultMessage: 'This group could not be found.',
   },
-  teamError: {
+  groupError: {
     id: 'studio.KG15uK',
-    defaultMessage: 'There was a problem loading this team.',
+    defaultMessage: 'There was a problem loading this group.',
   },
-  loadingTeam: {
+  loadingGroup: {
     id: 'studio.Xjf6hp',
-    defaultMessage: 'Loading team…',
+    defaultMessage: 'Loading group…',
   },
-  deletingTeam: {
+  deletingGroup: {
     id: 'studio.aSV4JQ',
-    defaultMessage: 'Deleting team',
+    defaultMessage: 'Deleting group',
   },
   deleteWarning: {
     id: 'studio.IHM/v1',
-    defaultMessage: 'Are you sure you want to delete this team? This action cannot be undone.',
+    defaultMessage: 'Are you sure you want to delete this group? This action cannot be undone.',
   },
-  deleteTeam: {
+  deleteGroup: {
     id: 'studio.Omd++F',
-    defaultMessage: 'Delete team',
+    defaultMessage: 'Delete group',
   },
 });

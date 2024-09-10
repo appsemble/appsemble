@@ -23,24 +23,39 @@ export enum AppPermission {
   RemoveAppMembers = '$member:remove',
 
   /**
-   * The permission to query app teams.
+   * The permission to query app groups.
    */
-  QueryTeams = '$team:query',
+  QueryGroups = '$group:query',
 
   /**
-   * The permission to create app teams.
+   * The permission to create app groups.
    */
-  CreateTeams = '$team:create',
+  CreateGroups = '$group:create',
 
   /**
-   * The permission to update app teams.
+   * The permission to update app groups.
    */
-  UpdateTeams = '$team:update',
+  UpdateGroups = '$group:update',
 
   /**
-   * The permission to create app teams.
+   * The permission to create app groups.
    */
-  DeleteTeams = '$team:delete',
+  DeleteGroups = '$group:delete',
+
+  /**
+   * The permission to create group invites.
+   */
+  CreateGroupInvites = '$group:member:invite',
+
+  /**
+   * The permission to query app members.
+   */
+  QueryGroupMembers = '$group:member:query',
+
+  /**
+   * The permission to remove group members.
+   */
+  RemoveGroupMembers = '$group:member:remove',
 
   /**
    * The permission to create any app resources.
@@ -71,31 +86,6 @@ export enum AppPermission {
    * The permission to delete app resources.
    */
   DeleteResources = '$resource:all:delete',
-}
-
-/**
- * A permission a team member may have within an app team because of their given role.
- */
-export enum TeamPermission {
-  /**
-   * The permission to create team invites.
-   */
-  CreateTeamInvites,
-
-  /**
-   * The permission to query team members.
-   */
-  QueryTeamMembers,
-
-  /**
-   * The permission to update team members.
-   */
-  UpdateTeamMembers,
-
-  /**
-   * The permission to remove team members.
-   */
-  RemoveTeamMembers,
 }
 
 /**
@@ -343,44 +333,39 @@ export enum OrganizationPermission {
   QueryAppInvites,
 
   /**
-   * The permission to query app teams.
+   * The permission to query app groups.
    */
-  QueryTeams,
+  QueryGroups,
 
   /**
-   * The permission to create app teams.
+   * The permission to create app groups.
    */
-  CreateTeams,
+  CreateGroups,
 
   /**
-   * The permission to update app teams.
+   * The permission to update app groups.
    */
-  UpdateTeams,
+  UpdateGroups,
 
   /**
-   * The permission to create app teams.
+   * The permission to create app groups.
    */
-  DeleteTeams,
+  DeleteGroups,
 
   /**
-   * The permission to create team invites.
+   * The permission to create group invites.
    */
-  CreateTeamInvites,
+  CreateGroupInvites,
 
   /**
-   * The permission to query team members.
+   * The permission to query group members.
    */
-  QueryTeamMembers,
+  QueryGroupMembers,
 
   /**
-   * The permission to update team members.
+   * The permission to remove group members.
    */
-  UpdateTeamMembers,
-
-  /**
-   * The permission to remove team members.
-   */
-  RemoveTeamMembers,
+  RemoveGroupMembers,
 
   /**
    * The permission to query app snapshots.
@@ -444,10 +429,13 @@ export const appOrganizationPermissionMapping: { [key in AppPermission]: Organiz
     [AppPermission.QueryAppMembers]: OrganizationPermission.QueryAppMembers,
     [AppPermission.PatchAppMembers]: OrganizationPermission.PatchAppMembers,
     [AppPermission.RemoveAppMembers]: OrganizationPermission.RemoveAppMembers,
-    [AppPermission.CreateTeams]: OrganizationPermission.CreateTeams,
-    [AppPermission.QueryTeams]: OrganizationPermission.QueryTeams,
-    [AppPermission.UpdateTeams]: OrganizationPermission.UpdateTeams,
-    [AppPermission.DeleteTeams]: OrganizationPermission.DeleteTeams,
+    [AppPermission.CreateGroups]: OrganizationPermission.CreateGroups,
+    [AppPermission.QueryGroups]: OrganizationPermission.QueryGroups,
+    [AppPermission.UpdateGroups]: OrganizationPermission.UpdateGroups,
+    [AppPermission.DeleteGroups]: OrganizationPermission.DeleteGroups,
+    [AppPermission.CreateGroupInvites]: OrganizationPermission.CreateGroupInvites,
+    [AppPermission.QueryGroupMembers]: OrganizationPermission.QueryGroupMembers,
+    [AppPermission.RemoveGroupMembers]: OrganizationPermission.RemoveGroupMembers,
     [AppPermission.CreateResources]: OrganizationPermission.CreateAppResources,
     [AppPermission.QueryResources]: OrganizationPermission.QueryAppResources,
     [AppPermission.GetResources]: OrganizationPermission.GetAppResources,
@@ -455,12 +443,3 @@ export const appOrganizationPermissionMapping: { [key in AppPermission]: Organiz
     [AppPermission.PatchResources]: OrganizationPermission.PatchAppResources,
     [AppPermission.DeleteResources]: OrganizationPermission.DeleteAppResources,
   };
-
-export const teamOrganizationPermissionMapping: {
-  [key in TeamPermission]: OrganizationPermission;
-} = {
-  [TeamPermission.CreateTeamInvites]: OrganizationPermission.CreateTeamInvites,
-  [TeamPermission.QueryTeamMembers]: OrganizationPermission.QueryTeamMembers,
-  [TeamPermission.UpdateTeamMembers]: OrganizationPermission.UpdateTeamMembers,
-  [TeamPermission.RemoveTeamMembers]: OrganizationPermission.RemoveTeamMembers,
-};

@@ -1,6 +1,6 @@
 import { createFormData } from '@appsemble/node-utils';
 import { type Resource as ResourceType } from '@appsemble/types';
-import { TeamRole, uuid4Pattern } from '@appsemble/utils';
+import { GroupRole, uuid4Pattern } from '@appsemble/utils';
 import { request, setTestApp } from 'axios-test-instance';
 import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 import webpush from 'web-push';
@@ -13,8 +13,8 @@ import {
   OrganizationMember,
   Resource,
   ResourceVersion,
-  Team,
-  TeamMember,
+  Group,
+  GroupMember,
   User,
 } from '../../../../models/index.js';
 import { setArgv } from '../../../../utils/argv.js';
@@ -127,8 +127,8 @@ describe('patchAppResource', () => {
     );
   });
 
-  it('should be able to patch an existing resource from another team', async () => {
-    const team = await Team.create({ name: 'Test Team', AppId: app.id });
+  it('should be able to patch an existing resource from another group', async () => {
+    const group = await Group.create({ name: 'Test Group', AppId: app.id });
     const userB = await User.create({ timezone: 'Europe/Amsterdam' });
 
     const memberA = await AppMember.create({
@@ -148,11 +148,11 @@ describe('patchAppResource', () => {
       role: 'Member',
     });
 
-    await TeamMember.create({ TeamId: team.id, AppMemberId: memberA.id, role: TeamRole.Member });
-    await TeamMember.create({ TeamId: team.id, AppMemberId: memberB.id, role: TeamRole.Member });
+    await GroupMember.create({ GroupId: group.id, AppMemberId: memberA.id, role: GroupRole.Member });
+    await GroupMember.create({ GroupId: group.id, AppMemberId: memberB.id, role: GroupRole.Member });
 
     const resource = await Resource.create({
-      type: 'testResourceTeam',
+      type: 'testResourceGroup',
       AppId: app.id,
       data: { foo: 'I am Foo.' },
       AuthorId: memberB.id,
@@ -160,7 +160,7 @@ describe('patchAppResource', () => {
 
     authorizeStudio();
     const response = await request.patch(
-      `/api/apps/${app.id}/resources/testResourceTeam/${resource.id}`,
+      `/api/apps/${app.id}/resources/testResourceGroup/${resource.id}`,
       { foo: 'I am not Foo.' },
     );
 
@@ -193,8 +193,8 @@ describe('patchAppResource', () => {
     );
   });
 
-  it('should not be able to patch an existing resource from another team if not part of the team', async () => {
-    const team = await Team.create({ name: 'Test Team', AppId: app.id });
+  it('should not be able to patch an existing resource from another group if not part of the group', async () => {
+    const group = await Group.create({ name: 'Test Group', AppId: app.id });
     const userB = await User.create({ timezone: 'Europe/Amsterdam' });
 
     const memberB = await AppMember.create({
@@ -205,7 +205,7 @@ describe('patchAppResource', () => {
       timezone: 'Europe/Amsterdam',
     });
 
-    await TeamMember.create({ TeamId: team.id, AppMemberId: memberB.id, role: TeamRole.Member });
+    await GroupMember.create({ GroupId: group.id, AppMemberId: memberB.id, role: GroupRole.Member });
     await AppMember.create({
       email: user.primaryEmail,
       AppId: app.id,
@@ -215,7 +215,7 @@ describe('patchAppResource', () => {
     });
 
     const resource = await Resource.create({
-      type: 'testResourceTeam',
+      type: 'testResourceGroup',
       AppId: app.id,
       data: { foo: 'I am Foo.' },
       AuthorId: memberB.id,
@@ -223,7 +223,7 @@ describe('patchAppResource', () => {
 
     authorizeApp(app);
     const response = await request.patch(
-      `/api/apps/${app.id}/resources/testResourceTeam/${resource.id}`,
+      `/api/apps/${app.id}/resources/testResourceGroup/${resource.id}`,
       { foo: 'I am not Foo.' },
     );
 

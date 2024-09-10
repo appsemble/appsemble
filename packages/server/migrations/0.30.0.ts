@@ -8,7 +8,7 @@ export const key = '0.30.0';
  * - TODO: Cleanup duplicate users with same email
  * - TODO: Cleanup anonymous users with only a timezone (and name)
  * - TODO: Cleanup demo login users
- * - Add column `id` to `TeamMember` table
+ * - Add column `id` to `GroupMember` table
  * - Making `AppMember.UserId` nullable
  * - Add unique index `UniqueUserEmail` to column `primaryEmail` on `User` table
  * - TODO: Remove column `UserId` from table `OAuth2AuthorizationCode`
@@ -19,6 +19,12 @@ export const key = '0.30.0';
  * - Add column `timezone` to the `AppMember` table
  * - Add column `demo` to the `AppMember` table
  * - Add table `AppInvite`
+ * - Rename table `Team` to `Group`
+ * - Rename table `TeamMember` to `GroupMember`
+ * - Rename table `TeamInvite` to `GroupInvite`
+ * - Add column `roles` to `Group` table
+ * - Remove column `role` from `GroupMember` table
+ * - Remove column `role` from `GroupInvite` table
  *
  * @param transaction The sequelize transaction.
  * @param db The sequelize database.
@@ -30,9 +36,9 @@ export async function up(transaction: Transaction, db: Sequelize): Promise<void>
   // TODO: make sure to delete users with only a timezone (and name)
   // TODO: cleanup demoLoginUsers
 
-  logger.info('Add column `id` to `TeamMember` table');
+  logger.info('Add column `id` to `GroupMember` table');
   await queryInterface.addColumn(
-    'TeamMember',
+    'GroupMember',
     'id',
     {
       allowNull: false,
@@ -42,16 +48,16 @@ export async function up(transaction: Transaction, db: Sequelize): Promise<void>
     { transaction },
   );
 
-  // Logger.info('Removing primary key from `TeamMember` table');
-  // await queryInterface.removeConstraint('TeamMember', 'TeamMember_pkey', { transaction });
+  // Logger.info('Removing primary key from `GroupMember` table');
+  // await queryInterface.removeConstraint('GroupMember', 'GroupMember_pkey', { transaction });
 
   // logger.info(
-  //   'Creating composite primary key on `TeamMember` table for `id`, `TeamId`, `AppMemberId`',
+  //   'Creating composite primary key on `GroupMember` table for `id`, `GroupId`, `AppMemberId`',
   // );
-  // await queryInterface.addConstraint('TeamMember', {
-  //   fields: ['id', 'TeamId', 'AppMemberId'],
+  // await queryInterface.addConstraint('GroupMember', {
+  //   fields: ['id', 'GroupId', 'AppMemberId'],
   //   type: 'primary key',
-  //   name: 'TeamMember_pkey',
+  //   name: 'GroupMember_pkey',
   //   transaction,
   // });
 
@@ -139,7 +145,7 @@ export async function up(transaction: Transaction, db: Sequelize): Promise<void>
     { transaction },
   );
 
-  logger.info('Adding table `AppInvite`');
+  logger.info('Add table `AppInvite`');
   await queryInterface.createTable(
     'AppInvite',
     {
@@ -173,17 +179,37 @@ export async function up(transaction: Transaction, db: Sequelize): Promise<void>
     { transaction },
   );
 
-  logger.info('Creating unique index AppInvite_UserId_AppId_key on AppInvite (UserId, AppId)');
+  logger.info('Create unique index AppInvite_UserId_AppId_key on AppInvite (UserId, AppId)');
   await queryInterface.addIndex('AppInvite', ['UserId', 'AppId'], {
     name: 'AppInvite_UserId_AppId_key',
     unique: true,
     transaction,
   });
+
+  logger.info('Rename table `Team` to `Group`');
+  await queryInterface.renameTable('Team', 'Group', { transaction });
+
+  logger.info('Rename table `TeamMember` to `GroupMember`');
+  await queryInterface.renameTable('TeamMember', 'GroupMember', { transaction });
+
+  logger.info('Rename table `TeamInvite` to `GroupInvite`');
+  await queryInterface.renameTable('TeamInvite', 'GroupInvite', { transaction });
+
+  logger.info('Add column `roles` to `Group` table');
+  await queryInterface.addColumn('Group', 'roles', DataTypes.ARRAY(DataTypes.STRING), {
+    transaction,
+  });
+
+  logger.info('Remove column `role` from `GroupMember` table');
+  await queryInterface.removeColumn('GroupMember', 'role', { transaction });
+
+  logger.info('Remove column `role` from `GroupInvite` table');
+  await queryInterface.removeColumn('GroupInvite', 'role', { transaction });
 }
 
 /**
  * Summary:
- * - Remove column `id` from `TeamMember` table
+ * - Remove column `id` from `GroupMember` table
  * - Making `AppMember.UserId` non-nullable
  * - Remove unique index `UniqueUserEmail` from column `primaryEmail` on `User` table
  * - TODO: Remove column `AppMemberId` on `OAuth2AuthorizationCode` table
@@ -192,6 +218,12 @@ export async function up(transaction: Transaction, db: Sequelize): Promise<void>
  * - Add column `demoLoginUser` to `User` table
  * - Remove column `timezone` from the `AppMember` table
  * - Remove column `demo` from the `AppMember` table
+ * - Rename table `Group` to `Team`
+ * - Rename table `GroupMember` to `TeamMember`
+ * - Rename table `GroupInvite` to `TeamInvite`
+ * - Remove column `roles` from `Team` table
+ * - Add column `role` to `TeamMember` table
+ * - Add column `role` to `TeamInvite` table
  *
  * @param transaction The sequelize transaction.
  * @param db The sequelize database.
@@ -199,8 +231,8 @@ export async function up(transaction: Transaction, db: Sequelize): Promise<void>
 export async function down(transaction: Transaction, db: Sequelize): Promise<void> {
   const queryInterface = db.getQueryInterface();
 
-  logger.info('Remove column `id` from `TeamMember` table');
-  await queryInterface.removeColumn('TeamMember', 'id', { transaction });
+  logger.info('Remove column `id` from `GroupMember` table');
+  await queryInterface.removeColumn('GroupMember', 'id', { transaction });
 
   logger.warn('Making `AppMember.UserId` non-nullable');
   logger.warn('');
@@ -276,4 +308,40 @@ export async function down(transaction: Transaction, db: Sequelize): Promise<voi
 
   logger.info('Removing unique index AppInvite_UserId_AppId_key from AppInvite (UserId, AppId)');
   await queryInterface.removeIndex('AppInvite', 'AppInvite_UserId_AppId_key', { transaction });
+
+  logger.info('Rename table `Group` to `Team`');
+  await queryInterface.renameTable('Group', 'Team', { transaction });
+
+  logger.info('Rename table `GroupMember` to `TeamMember`');
+  await queryInterface.renameTable('GroupMember', 'TeamMember', { transaction });
+
+  logger.info('Rename table `GroupInvite` to `TeamInvite`');
+  await queryInterface.renameTable('GroupInvite', 'TeamInvite', { transaction });
+
+  logger.info('Remove column `roles` from `Team` table');
+  await queryInterface.removeColumn('Team', 'roles', { transaction });
+
+  logger.info('Add column `role` to `GroupMember` table');
+  await queryInterface.addColumn(
+    'GroupMember',
+    'role',
+    {
+      type: DataTypes.ENUM('Member', 'Manager'),
+      allowNull: false,
+      defaultValue: 'Member',
+    },
+    { transaction },
+  );
+
+  logger.info('Add column `role` to `GroupInvite` table');
+  await queryInterface.addColumn(
+    'GroupInvite',
+    'role',
+    {
+      type: DataTypes.ENUM('Member', 'Manager'),
+      allowNull: false,
+      defaultValue: 'Member',
+    },
+    { transaction },
+  );
 }

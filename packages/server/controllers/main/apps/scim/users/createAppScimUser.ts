@@ -1,7 +1,7 @@
 import { assertKoaError, scimAssert } from '@appsemble/node-utils';
 import { type Context } from 'koa';
 
-import { App, AppMember, Team, TeamMember, transactional } from '../../../../../models/index.js';
+import { App, AppMember, Group, GroupMember, transactional } from '../../../../../models/index.js';
 import { getCaseInsensitive } from '../../../../../utils/object.js';
 import { convertAppMemberToScimUser } from '../../../../../utils/scim.js';
 
@@ -55,11 +55,11 @@ export async function createAppScimUser(ctx: Context): Promise<void> {
   );
 
   let member: AppMember;
-  let team: Team;
+  let group: Group;
   if (managerId) {
-    team = await Team.findOne({ where: { AppId: appId, name: managerId } });
+    group = await Group.findOne({ where: { AppId: appId, name: managerId } });
   }
-  const managerTeam = await Team.findOne({ where: { AppId: appId, name: externalId } });
+  const managerGroup = await Group.findOne({ where: { AppId: appId, name: externalId } });
   const defaultRole = (await App.findByPk(appId, { attributes: ['definition'] }))?.definition
     .security?.default?.role;
 
@@ -87,39 +87,39 @@ export async function createAppScimUser(ctx: Context): Promise<void> {
       );
 
       if (managerId) {
-        if (!team) {
-          team = await Team.create({ AppId: appId, name: managerId }, { transaction });
-          const teamManager = await AppMember.findOne({
-            where: { AppId: appId, scimExternalId: team.name },
+        if (!group) {
+          group = await Group.create({ AppId: appId, name: managerId }, { transaction });
+          const groupManager = await AppMember.findOne({
+            where: { AppId: appId, scimExternalId: group.name },
           });
 
-          if (teamManager) {
-            await TeamMember.create(
+          if (groupManager) {
+            await GroupMember.create(
               {
-                TeamId: team.id,
-                AppMemberId: teamManager.id,
+                GroupId: group.id,
+                AppMemberId: groupManager.id,
                 role: 'manager',
               },
               { transaction },
             );
           }
         }
-        const teamMember = await TeamMember.create(
+        const groupMember = await GroupMember.create(
           {
-            TeamId: team.id,
+            GroupId: group.id,
             AppMemberId: member.id,
             role: 'member',
           },
           { transaction },
         );
-        teamMember.Team = team;
-        member.TeamMembers = [teamMember];
+        groupMember.Group = group;
+        member.GroupMembers = [groupMember];
       }
 
-      if (managerTeam) {
-        await TeamMember.create(
+      if (managerGroup) {
+        await GroupMember.create(
           {
-            TeamId: managerTeam.id,
+            GroupId: managerGroup.id,
             AppMemberId: member.id,
             role: 'manager',
           },

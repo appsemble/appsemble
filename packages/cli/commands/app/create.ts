@@ -23,7 +23,7 @@ interface AppArgs {
   resource?: string;
   security?: boolean;
   cronJobs?: boolean;
-  teams?: boolean;
+  groups?: boolean;
 }
 
 export async function builder(yargs: Argv): Promise<Argv<any>> {
@@ -112,8 +112,8 @@ export async function handler(args: AppArgs): Promise<void> {
         default: false,
       },
       {
-        name: 'teams',
-        message: 'Will you be using teams in your app.',
+        name: 'groups',
+        message: 'Will you be using groups in your app.',
         type: 'confirm',
         default: false,
         when: (appOptions: AppArgs) => appOptions.security,
@@ -139,7 +139,7 @@ export async function handler(args: AppArgs): Promise<void> {
   const resource = answers.resource || args.resource;
   const security = answers.security || args.security;
   const cronJobs = answers['cron-jobs'] || args.cronJobs;
-  const { teams } = answers;
+  const { groups } = answers;
 
   const outputDirectory = join(path, name);
   const inputDirectory = join(`${templatesDir}/`, template);
@@ -180,10 +180,10 @@ export async function handler(args: AppArgs): Promise<void> {
           description: 'A sample user to be included in the app definition',
         },
       },
-      teams: teams
+      groups: groups
         ? {
             join: 'invite',
-            invite: ['$team:member'],
+            invite: ['$group:member'],
           }
         : undefined,
     });

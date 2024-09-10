@@ -213,8 +213,8 @@ apps, which provides the following mechanisms for easier demonstration:
 - Adds a `Change role` button in the profile dropdown menu that allows you to easily switch
   accounts.
 
-- Lets you switch between “Team Member” and “Team Manager” as well as join/leave teams on the fly,
-  through the profile dropdown menu.
+- Lets you switch between “Group Member” and “Group Manager” as well as join/leave groups on the
+  fly, through the profile dropdown menu.
 
 A `demoMode: true` flag can be added to any context inside the `.appsemblerc.yaml` file.
 

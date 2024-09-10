@@ -36,7 +36,7 @@ import { AppBar } from '../TitleBar/index.js';
 export function Page(): ReactNode {
   const redirect = useLocationString();
   const { definition } = useAppDefinition();
-  const { appMemberInfoRef, isLoggedIn, role, teams } = useAppMember();
+  const { appMemberInfoRef, isLoggedIn, role, groups } = useAppMember();
   const { lang, pageId } = useParams<{ lang: string; pageId: string }>();
 
   const { pathname } = useLocation();
@@ -197,8 +197,8 @@ export function Page(): ReactNode {
   );
 
   const checkPagePermissionsCallback = useCallback(
-    (p: PageDefinition): boolean => checkPagePermissions(p, definition, role, teams),
-    [definition, role, teams],
+    (p: PageDefinition): boolean => checkPagePermissions(p, definition, role, groups),
+    [definition, role, groups],
   );
 
   useEffect(() => {

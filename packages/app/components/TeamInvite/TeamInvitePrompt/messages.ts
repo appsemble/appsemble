@@ -7,7 +7,7 @@ export const messages = defineMessages({
   },
   description: {
     id: 'app.bWEMmt',
-    defaultMessage: 'Would you like to join {teamName}?',
+    defaultMessage: 'Would you like to join {groupName}?',
   },
   error: {
     id: 'app.SLVblb',
@@ -19,6 +19,6 @@ export const messages = defineMessages({
   },
   accepted: {
     id: 'app.AciR6R',
-    defaultMessage: 'Successfully joined {teamName}',
+    defaultMessage: 'Successfully joined {groupName}',
   },
 });

@@ -28,7 +28,7 @@ import {
   AppSamlAuthorization,
   OAuth2AuthorizationCode,
   Resource,
-  TeamMember,
+  GroupMember,
   User,
 } from './index.js';
 
@@ -118,8 +118,8 @@ export class AppMember extends Model {
   @BelongsTo(() => User, { onDelete: 'CASCADE' })
   User: Awaited<User>;
 
-  @HasMany(() => TeamMember)
-  TeamMembers: TeamMember[];
+  @HasMany(() => GroupMember)
+  GroupMembers: GroupMember[];
 
   @HasMany(() => AppOAuth2Authorization)
   AppOAuth2Authorizations: AppOAuth2Authorization[];

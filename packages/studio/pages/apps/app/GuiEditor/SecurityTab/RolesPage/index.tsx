@@ -27,8 +27,8 @@ interface RolesPageProps {
 }
 interface RoleReferences {
   inheritReferences: string[];
-  foundInTeamsCreate: boolean;
-  foundInTeamsInvite: boolean;
+  foundInGroupsCreate: boolean;
+  foundInGroupsInvite: boolean;
   foundInAppRoles: boolean;
   foundInDefaultRole: boolean;
   resourceRolesReferences: string[];
@@ -77,20 +77,20 @@ export function RolesPage({ selectedRole }: RolesPageProps): ReactNode {
             );
           }
         }
-        // Rename roles in teams
+        // Rename roles in groups
         if (
-          app.definition.security.teams?.create &&
-          app.definition.security.teams?.create.length > 0
+          app.definition.security.groups?.create &&
+          app.definition.security.groups?.create.length > 0
         ) {
-          app.definition.security.teams.create = app.definition.security.teams.create.map((role) =>
+          app.definition.security.groups.create = app.definition.security.groups.create.map((role) =>
             role === oldRole ? newRole : role,
           );
         }
         if (
-          app.definition.security.teams?.invite &&
-          app.definition.security.teams?.invite.length > 0
+          app.definition.security.groups?.invite &&
+          app.definition.security.groups?.invite.length > 0
         ) {
-          app.definition.security.teams.invite = app.definition.security.teams.invite.map((role) =>
+          app.definition.security.groups.invite = app.definition.security.groups.invite.map((role) =>
             role === oldRole ? newRole : role,
           );
         }
@@ -231,9 +231,9 @@ export function RolesPage({ selectedRole }: RolesPageProps): ReactNode {
       const foundInAppRoles = app.definition.roles?.includes(key);
       // Search in default security settings
       const foundInDefaultRole = app.definition.security.default.role === key;
-      // Search in teams
-      const foundInTeamsCreate = app.definition.security.teams?.create?.includes(key);
-      const foundInTeamsInvite = app.definition.security.teams?.invite?.includes(key);
+      // Search in groups
+      const foundInGroupsCreate = app.definition.security.groups?.create?.includes(key);
+      const foundInGroupsInvite = app.definition.security.groups?.invite?.includes(key);
       // Search in resources
       const resourceRolesReferences: string[] = [];
       const resourceViewsRolesReferences: string[] = [];
@@ -282,8 +282,8 @@ export function RolesPage({ selectedRole }: RolesPageProps): ReactNode {
       }
       if (
         inheritReferences.length > 0 ||
-        foundInTeamsCreate ||
-        foundInTeamsInvite ||
+        foundInGroupsCreate ||
+        foundInGroupsInvite ||
         foundInDefaultRole ||
         foundInAppRoles ||
         resourceRolesReferences.length > 0 ||
@@ -294,8 +294,8 @@ export function RolesPage({ selectedRole }: RolesPageProps): ReactNode {
       ) {
         setRoleReferences({
           inheritReferences,
-          foundInTeamsCreate,
-          foundInTeamsInvite,
+          foundInGroupsCreate,
+          foundInGroupsInvite,
           foundInAppRoles,
           foundInDefaultRole,
           resourceRolesReferences,
@@ -329,24 +329,24 @@ export function RolesPage({ selectedRole }: RolesPageProps): ReactNode {
         blockRolesReferences,
         foundInAppRoles,
         foundInDefaultRole,
-        foundInTeamsCreate,
-        foundInTeamsInvite,
+        foundInGroupsCreate,
+        foundInGroupsInvite,
         inheritReferences,
         pageRolesReferences,
         resourceQueryRolesReferences,
         resourceRolesReferences,
         resourceViewsRolesReferences,
       } = roleReferences;
-      if (foundInTeamsCreate) {
-        app.definition.security.teams.create = app.definition.security.teams.create.filter(
+      if (foundInGroupsCreate) {
+        app.definition.security.groups.create = app.definition.security.groups.create.filter(
           (role) => role !== selectedRole,
         );
-        if (app.definition.security.teams.create.length === 0) {
-          delete app.definition.security.teams.create;
+        if (app.definition.security.groups.create.length === 0) {
+          delete app.definition.security.groups.create;
         }
       }
-      if (foundInTeamsInvite) {
-        app.definition.security.teams.invite = app.definition.security.teams.invite.filter(
+      if (foundInGroupsInvite) {
+        app.definition.security.groups.invite = app.definition.security.groups.invite.filter(
           (role) => role !== selectedRole,
         );
       }
@@ -857,16 +857,16 @@ export function RolesPage({ selectedRole }: RolesPageProps): ReactNode {
                         ))}
                       </>
                     )}
-                    {roleReferences?.foundInTeamsCreate ? (
+                    {roleReferences?.foundInGroupsCreate ? (
                       <p className="is-size-6 has-text-weight-bold has-text-primary">
-                        {formatMessage(messages.deleteRoleInTeamsCreate, {
+                        {formatMessage(messages.deleteRoleInGroupsCreate, {
                           roleName: selectedRole,
                         })}
                       </p>
                     ) : null}
-                    {roleReferences?.foundInTeamsInvite ? (
+                    {roleReferences?.foundInGroupsInvite ? (
                       <p className="is-size-6 has-text-weight-bold has-text-primary">
-                        {formatMessage(messages.deleteRoleInTeamsInvite, {
+                        {formatMessage(messages.deleteRoleInGroupsInvite, {
                           roleName: selectedRole,
                         })}
                       </p>

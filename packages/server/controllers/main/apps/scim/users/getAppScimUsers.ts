@@ -2,7 +2,7 @@ import { type Context } from 'koa';
 import { type Compare, parse } from 'scim2-parse-filter';
 import { col, fn, where, type WhereOptions } from 'sequelize';
 
-import { AppMember, Team, TeamMember } from '../../../../../models/index.js';
+import { AppMember, Group, GroupMember } from '../../../../../models/index.js';
 import { convertAppMemberToScimUser } from '../../../../../utils/scim.js';
 
 export async function getAppScimUsers(ctx: Context): Promise<void> {
@@ -14,10 +14,10 @@ export async function getAppScimUsers(ctx: Context): Promise<void> {
   const parsedFilter = filter ? (parse(filter) as Compare) : undefined;
   const include = [
     {
-      model: TeamMember,
+      model: GroupMember,
       include: [
         {
-          model: Team,
+          model: Group,
           required: false,
         },
       ],

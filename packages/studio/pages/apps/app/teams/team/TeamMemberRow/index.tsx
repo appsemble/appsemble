@@ -1,26 +1,26 @@
 import { AsyncSelect, Button, useConfirmation } from '@appsemble/react-components';
-import { TeamRole } from '@appsemble/utils';
+import { GroupRole } from '@appsemble/utils';
 import { type ChangeEvent, type ReactNode, useCallback } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 
 import { messages } from './messages.js';
-import { type TeamMember } from '../../../../../../types.js';
+import { type GroupMember } from '../../../../../../types.js';
 
-interface TeamMemberRowProps {
-  readonly member: TeamMember;
+interface GroupMemberRowProps {
+  readonly member: GroupMember;
   readonly mayInvite: boolean;
-  readonly onEdit: (member: TeamMember, role: TeamRole) => Promise<void>;
-  readonly onRemove: (member: TeamMember) => Promise<void>;
+  readonly onEdit: (member: GroupMember, role: GroupRole) => Promise<void>;
+  readonly onRemove: (member: GroupMember) => Promise<void>;
 }
 
-export function TeamMemberRow({
+export function GroupMemberRow({
   mayInvite,
   member,
   onEdit,
   onRemove,
-}: TeamMemberRowProps): ReactNode {
+}: GroupMemberRowProps): ReactNode {
   const editRole = useCallback(
-    (event: ChangeEvent, role: TeamRole) => onEdit(member, role),
+    (event: ChangeEvent, role: GroupRole) => onEdit(member, role),
     [member, onEdit],
   );
   const removeMember = useCallback(() => onRemove(member), [member, onRemove]);
@@ -40,7 +40,7 @@ export function TeamMemberRow({
       <td align="right">
         {mayInvite ? (
           <AsyncSelect name="role" onChange={editRole} value={member.role}>
-            {Object.values(TeamRole).map((role) => (
+            {Object.values(GroupRole).map((role) => (
               <option key={role} value={role}>
                 {formatMessage(messages[role])}
               </option>

@@ -18,6 +18,11 @@ import { pathItems as appsAppIdAuthEmailVerify } from './apps/appId/auth/email/v
 import { pathItems as appsAppIdBroadcast } from './apps/appId/broadcast.js';
 import { pathItems as appsAppIdEmail } from './apps/appId/email.js';
 import { pathItems as appsAppIdExport } from './apps/appId/export.js';
+import { pathItems as appsGroupInvites } from './apps/appId/group-invites.js';
+import { pathItems as appsAppIdGroupsGroupIdInvites } from './apps/appId/groups/groupId/invites.js';
+import { pathItems as appsAppIdGroupsGroupIdMembersMemberId } from './apps/appId/groups/members/memberId.js';
+import { pathItems as appsAppIdGroupsGroupIdMembers } from './apps/appId/groups/members.js';
+import { pathItems as appsAppIdGroups } from './apps/appId/groups.js';
 import { pathItems as appsAppIdIcon } from './apps/appId/icon.js';
 import { pathItems as appsAppIdInvitesTokenRespond } from './apps/appId/invites/token/respond.js';
 import { pathItems as appsAppIdInvitesToken } from './apps/appId/invites/token.js';
@@ -69,11 +74,6 @@ import { pathItems as appsAppIdStyleBlockOrganizationIdBLockId } from './apps/ap
 import { pathItems as appsAppIdStyleCore } from './apps/appId/style/core.js';
 import { pathItems as appsAppIdStyleShared } from './apps/appId/style/shared.js';
 import { pathItems as appsAppIdSubscriptions } from './apps/appId/subscriptions.js';
-import { pathItems as appsTeamInvites } from './apps/appId/team-invites.js';
-import { pathItems as appsAppIdTeamsTeamIdMembersMemberId } from './apps/appId/teams/members/memberId.js';
-import { pathItems as appsAppIdTeamsTeamIdMembers } from './apps/appId/teams/members.js';
-import { pathItems as appsAppIdTeamsTeamIdInvites } from './apps/appId/teams/teamId/invites.js';
-import { pathItems as appsAppIdTeams } from './apps/appId/teams.js';
 import { pathItems as appsAppIdVariablesAppVariableId } from './apps/appId/variables/variableId.js';
 import { pathItems as appsAppIdVariables } from './apps/appId/variables.js';
 import { pathItems as appsAppId } from './apps/appId.js';
@@ -97,6 +97,8 @@ import { pathItems as blocksOrganizationIdBlockIdVersions } from './blocks/organ
 import { pathItems as blocksOrganizationIdBlockId } from './blocks/organizationId/blockId.js';
 import { pathItems as blocks } from './blocks.js';
 import { pathItems as containersAppIdLogsContainer } from './containerLogs.js';
+import { pathItems as groupsMembersGroupMemberId } from './group-members/groupMemberId.js';
+import { pathItems as groupsGroupId } from './groups/groupId.js';
 import { pathItems as health } from './health.js';
 import { pathItems as messagesLanguage } from './messages/language.js';
 import { pathItems as messages } from './messages.js';
@@ -116,8 +118,6 @@ import { pathItems as organizationsOragnizationId } from './organizations/organi
 import { pathItems as organizations } from './organizations.js';
 import { pathItems as samlContinue } from './saml/continue.js';
 import { pathItems as ssl } from './ssl.js';
-import { pathItems as teamsMembersTeamMemberId } from './team-members/teamMemberId.js';
-import { pathItems as teamsTeamId } from './teams/teamId.js';
 import { pathItems as timezones } from './timezones.js';
 import { pathItems as trainingBlocksTrainingBlockId } from './trainingBlocks/trainingBlockId.js';
 import { pathItems as trainingsTrainingIdBlocks } from './trainings/trainingId/blocks.js';
@@ -159,6 +159,11 @@ export const paths = {
   '/api/apps/{appId}/broadcast': appsAppIdBroadcast,
   '/api/apps/{appId}/email': appsAppIdEmail,
   '/api/apps/{appId}/export': appsAppIdExport,
+  '/api/apps/{appId}/group-invites': appsGroupInvites,
+  '/api/apps/{appId}/groups/{groupId}/members/{memberId}': appsAppIdGroupsGroupIdMembersMemberId,
+  '/api/apps/{appId}/groups/{groupId}/members': appsAppIdGroupsGroupIdMembers,
+  '/api/apps/{appId}/groups/{groupId}/invites': appsAppIdGroupsGroupIdInvites,
+  '/api/apps/{appId}/groups': appsAppIdGroups,
   '/api/apps/{appId}/icon': appsAppIdIcon,
   '/api/apps/{appId}/invites/{token}/respond': appsAppIdInvitesTokenRespond,
   '/api/apps/{appId}/invites/{token}': appsAppIdInvitesToken,
@@ -218,11 +223,6 @@ export const paths = {
   '/api/apps/{appId}/style/core': appsAppIdStyleCore,
   '/api/apps/{appId}/style/shared': appsAppIdStyleShared,
   '/api/apps/{appId}/subscriptions': appsAppIdSubscriptions,
-  '/api/apps/{appId}/team-invites': appsTeamInvites,
-  '/api/apps/{appId}/teams/{teamId}/members/{memberId}': appsAppIdTeamsTeamIdMembersMemberId,
-  '/api/apps/{appId}/teams/{teamId}/members': appsAppIdTeamsTeamIdMembers,
-  '/api/apps/{appId}/teams/{teamId}/invites': appsAppIdTeamsTeamIdInvites,
-  '/api/apps/{appId}/teams': appsAppIdTeams,
   '/api/apps/{appId}/variables/{appVariableId}': appsAppIdVariablesAppVariableId,
   '/api/apps/{appId}/variables': appsAppIdVariables,
   '/api/apps/{appId}': appsAppId,
@@ -279,8 +279,8 @@ export const paths = {
   '/api/organizations': organizations,
   '/api/saml/continue': samlContinue,
   '/api/ssl': ssl,
-  '/api/teams-members/{teamMemberId}': teamsMembersTeamMemberId,
-  '/api/teams/{teamId}': teamsTeamId,
+  '/api/groups-members/{groupMemberId}': groupsMembersGroupMemberId,
+  '/api/groups/{groupId}': groupsGroupId,
   '/api/timezones': timezones,
   '/api/training-blocks/{trainingBlockId}': trainingBlocksTrainingBlockId,
   '/api/trainings/{trainingId}/blocks': trainingsTrainingIdBlocks,

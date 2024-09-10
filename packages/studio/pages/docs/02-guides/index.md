@@ -17,7 +17,7 @@ continue on this basic app to add more advanced features.
 7. [Screenshots](screenshots.md)
 8. [App long description](app-long-description.md)
 9. [Custom domain name](dns.md)
-10. [Teams](teams.md)
+10. [Groups](groups.md)
 11. [Analytics](analytics.md)
 12. [Custom dependencies](custom-dependencies.md)
 13. [YAML syntax](yaml-syntax.mdx)

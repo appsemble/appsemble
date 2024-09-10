@@ -43,7 +43,7 @@ import {
   Asset,
   Organization,
   Resource,
-  Team,
+  Group,
 } from './index.js';
 import { resolveIconUrl } from '../utils/app.js';
 
@@ -245,8 +245,8 @@ export class App extends Model {
   @HasMany(() => AppReadme)
   AppReadmes: AppReadme[];
 
-  @HasMany(() => Team)
-  Teams: Team[];
+  @HasMany(() => Group)
+  Groups: Group[];
 
   @HasMany(() => AppServiceSecret)
   AppServiceSecrets: AppServiceSecret[];

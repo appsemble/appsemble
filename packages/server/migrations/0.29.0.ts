@@ -23,9 +23,9 @@ export const key = '0.29.0';
  * - Adding AccountManager to enum_OrganizationMember_role
  * - Adding Translator, APIReader, APIUser, AccountManager to enum_OrganizationInvite_role
  * - Making SamlLoginRequest.timezone non-nullable
- * - Changing TeamInvite.role default value to member and to enum
- * - Changing TeamMember.role default value to member
- * - Adding primary key to TeamMember
+ * - Changing GroupInvite.role default value to member and to enum
+ * - Changing GroupMember.role default value to member
+ * - Adding primary key to GroupMember
  * - Making AppMember.scimActive non-nullable and default to false
  * - Making ResourceVersion.AppMemberId nullable
  * - Making Training.competences non-nullable
@@ -42,7 +42,7 @@ export const key = '0.29.0';
  * - Setting Resource.AppId constraints to ON UPDATE CASCADE ON DELETE CASCADE
  * - Setting Asset.AppId constraints to ON UPDATE CASCADE ON DELETE CASCADE
  * - Setting ResourceVersion.ResourceId constraints to ON UPDATE CASCADE ON DELETE CASCADE
- * - Setting TeamInvite.TeamId constraints to ON UPDATE CASCADE ON DELETE NO ACTION
+ * - Setting GroupInvite.GroupId constraints to ON UPDATE CASCADE ON DELETE NO ACTION
  * - Setting UserTraining.UserId constraints to ON UPDATE CASCADE ON DELETE CASCADE
  * - Setting UserTraining.TrainingId constraints to ON UPDATE CASCADE ON DELETE CASCADE
  * - Setting TrainingBlock.TrainingId constraints to ON UPDATE CASCADE ON DELETE CASCADE
@@ -266,39 +266,39 @@ and determine whether to add a default timezone manually or to remove those.
     },
     { transaction },
   );
-  logger.info('Changing TeamInvite.role default value to member and to enum');
+  logger.info('Changing GroupInvite.role default value to member and to enum');
   await queryInterface.sequelize.query(
     `
     DO $$ BEGIN
-      IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'enum_TeamInvite_role') THEN
-        CREATE TYPE "enum_TeamInvite_role" AS ENUM ('manager', 'member');
+      IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'enum_GroupInvite_role') THEN
+        CREATE TYPE "enum_GroupInvite_role" AS ENUM ('manager', 'member');
       END IF;
-      ALTER TABLE "TeamInvite"
-        ALTER COLUMN "role" TYPE "enum_TeamInvite_role" USING "role"::"enum_TeamInvite_role",
-        ALTER COLUMN "role" SET DEFAULT 'member'::public."enum_TeamInvite_role";
+      ALTER TABLE "GroupInvite"
+        ALTER COLUMN "role" TYPE "enum_GroupInvite_role" USING "role"::"enum_GroupInvite_role",
+        ALTER COLUMN "role" SET DEFAULT 'member'::public."enum_GroupInvite_role";
     END $$;
   `,
     { transaction },
   );
-  logger.info('Changing TeamMember.role default value to member');
+  logger.info('Changing GroupMember.role default value to member');
   await queryInterface.sequelize.query(
     `
-    ALTER TABLE "TeamMember" ALTER COLUMN "role" SET DEFAULT 'member';
+    ALTER TABLE "GroupMember" ALTER COLUMN "role" SET DEFAULT 'member';
     `,
     { transaction },
   );
-  logger.warn('Adding primary key to TeamMember');
+  logger.warn('Adding primary key to GroupMember');
   logger.warn(`The following may result in errors depending on the data present in the database.
-In case the database contains duplicate TeamMembers make sure to delete those first as this migration,
-requires unique TeamMembers for it to work. The following database query should help to find those.
+In case the database contains duplicate GroupMembers make sure to delete those first as this migration,
+requires unique GroupMembers for it to work. The following database query should help to find those.
 
-  SELECT "TeamId", "AppMemberId", COUNT(*) AS "DuplicateCount"
-  FROM "TeamMember" GROUP BY "AppMemberId", "TeamId"
+  SELECT "GroupId", "AppMemberId", COUNT(*) AS "DuplicateCount"
+  FROM "GroupMember" GROUP BY "AppMemberId", "GroupId"
   HAVING COUNT(*) > 1;
 `);
   await queryInterface.sequelize.query(
     `
-    ALTER TABLE "TeamMember" ADD PRIMARY KEY ("TeamId", "AppMemberId");
+    ALTER TABLE "GroupMember" ADD PRIMARY KEY ("GroupId", "AppMemberId");
   `,
     { transaction },
   );
@@ -376,7 +376,7 @@ difficultyLevel manually.`);
     ['Resource', 'AppId', 'App', 'CASCADE', 'CASCADE'],
     ['Asset', 'AppId', 'App', 'CASCADE', 'CASCADE'],
     ['ResourceVersion', 'ResourceId', 'Resource', 'CASCADE', 'CASCADE'],
-    ['TeamInvite', 'TeamId', 'Team', 'CASCADE', 'NO ACTION'],
+    ['GroupInvite', 'GroupId', 'Group', 'CASCADE', 'NO ACTION'],
     ['UserTraining', 'UserId', 'User', 'CASCADE', 'CASCADE'],
     ['UserTraining', 'TrainingId', 'Training', 'CASCADE', 'CASCADE'],
     ['TrainingBlock', 'TrainingId', 'Training', 'CASCADE', 'CASCADE'],
@@ -427,10 +427,10 @@ difficultyLevel manually.`);
  * - Removing AccountManager from enum_OrganizationMember_role
  * - Removing Translator, APIReader, APIUser, AccountManager from enum_OrganizationInvite_role
  * - Making SamlLoginRequest.timezone nullable
- * - Changing TeamInvite.role to string
- * - Removing type enum enum_TeamInvite_role
- * - Changing TeamMember.role default value to null
- * - Removing primary key from TeamMember
+ * - Changing GroupInvite.role to string
+ * - Removing type enum enum_GroupInvite_role
+ * - Changing GroupMember.role default value to null
+ * - Removing primary key from GroupMember
  * - Making AppMember.scimActive nullable and default to true
  * - Making ResourceVersion.AppMemberId non-nullable
  * - Making Training.competences nullable
@@ -447,7 +447,7 @@ difficultyLevel manually.`);
  * - Setting Resource.AppId constraints to ON UPDATE CASCADE ON DELETE SET NULL
  * - Setting Asset.AppId constraints to ON UPDATE CASCADE ON DELETE NO ACTION
  * - Setting ResourceVersion.ResourceId constraints to ON UPDATE NO ACTION ON DELETE CASCADE
- * - Setting TeamInvite.TeamId constraints to ON UPDATE NO ACTION ON DELETE NO ACTION
+ * - Setting GroupInvite.GroupId constraints to ON UPDATE NO ACTION ON DELETE NO ACTION
  * - Setting UserTraining.UserId constraints to ON UPDATE NO ACTION ON DELETE NO ACTION
  * - Setting UserTraining.TrainingId constraints to ON UPDATE NO ACTION ON DELETE NO ACTION
  * - Setting TrainingBlock.TrainingId constraints to ON UPDATE NO ACTION ON DELETE NO ACTION
@@ -638,9 +638,9 @@ export async function down(transaction: Transaction, db: Sequelize): Promise<voi
     },
     { transaction },
   );
-  logger.info('Changing TeamInvite.role to string');
+  logger.info('Changing GroupInvite.role to string');
   await queryInterface.changeColumn(
-    'TeamInvite',
+    'GroupInvite',
     'role',
     {
       type: DataTypes.STRING,
@@ -648,19 +648,19 @@ export async function down(transaction: Transaction, db: Sequelize): Promise<voi
     },
     { transaction },
   );
-  logger.info('Removing type enum enum_TeamInvite_role');
-  await queryInterface.sequelize.query('DROP TYPE "enum_TeamInvite_role";', { transaction });
-  logger.info('Changing TeamMember.role default value to null');
+  logger.info('Removing type enum enum_GroupInvite_role');
+  await queryInterface.sequelize.query('DROP TYPE "enum_GroupInvite_role";', { transaction });
+  logger.info('Changing GroupMember.role default value to null');
   await queryInterface.sequelize.query(
     `
-    ALTER TABLE "TeamMember" ALTER COLUMN "role" SET DEFAULT null;
+    ALTER TABLE "GroupMember" ALTER COLUMN "role" SET DEFAULT null;
   `,
     { transaction },
   );
-  logger.info('Removing primary key from TeamMember');
+  logger.info('Removing primary key from GroupMember');
   await queryInterface.sequelize.query(
     `
-    ALTER TABLE "TeamMember" DROP CONSTRAINT "TeamMember_pkey";
+    ALTER TABLE "GroupMember" DROP CONSTRAINT "GroupMember_pkey";
   `,
     { transaction },
   );
@@ -752,7 +752,7 @@ connect the ID manually or to delete them.
     ['Resource', 'AppId', 'App', 'CASCADE', 'SET NULL'],
     ['Asset', 'AppId', 'App', 'CASCADE', 'NO ACTION'],
     ['ResourceVersion', 'ResourceId', 'Resource', 'NO ACTION', 'CASCADE'],
-    ['TeamInvite', 'TeamId', 'Team', 'NO ACTION', 'NO ACTION'],
+    ['GroupInvite', 'GroupId', 'Group', 'NO ACTION', 'NO ACTION'],
     ['UserTraining', 'UserId', 'User', 'NO ACTION', 'NO ACTION'],
     ['UserTraining', 'TrainingId', 'Training', 'NO ACTION', 'NO ACTION'],
     ['TrainingBlock', 'TrainingId', 'Training', 'NO ACTION', 'NO ACTION'],

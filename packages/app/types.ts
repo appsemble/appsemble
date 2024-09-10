@@ -9,7 +9,7 @@ import {
   type BlockManifest,
   type ProjectImplementations,
   type Remapper,
-  type TeamMember,
+  type GroupMember,
   type UserInfo,
 } from '@appsemble/types';
 import { type AppConfigEntryGetter, type MessageGetter } from '@appsemble/utils';
@@ -120,7 +120,7 @@ export interface FlowActions {
   to: (data: any, step: string) => Promise<any>;
 }
 
-export type UpdateTeam = (team: TeamMember) => void;
+export type UpdateGroup = (group: GroupMember) => void;
 
 export interface MakeActionParameters<D extends ActionDefinition> {
   app: AppDefinition;
@@ -145,8 +145,8 @@ export interface MakeActionParameters<D extends ActionDefinition> {
   passwordLogin: (params: { username: string; password: string }) => Promise<void>;
   passwordLogout: () => Promise<void>;
   setAppMemberInfo: Dispatch<AppMemberInfo>;
-  updateTeam: UpdateTeam;
-  teams: TeamMember[];
+  updateGroup: UpdateGroup;
+  groups: GroupMember[];
   refetchDemoAppMembers: () => Promise<void>;
 }
 

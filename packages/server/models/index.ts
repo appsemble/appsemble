@@ -37,9 +37,9 @@ import { Resource } from './Resource.js';
 import { ResourceSubscription } from './ResourceSubscription.js';
 import { ResourceVersion } from './ResourceVersion.js';
 import { SamlLoginRequest } from './SamlLoginRequest.js';
-import { Team } from './Team.js';
-import { TeamInvite } from './TeamInvite.js';
-import { TeamMember } from './TeamMember.js';
+import { Group } from './Group.js';
+import { GroupInvite } from './GroupInvite.js';
+import { GroupMember } from './GroupMember.js';
 import { Theme } from './Theme.js';
 import { Training } from './Training.js';
 import { TrainingBlock } from './TrainingBlock.js';
@@ -95,9 +95,9 @@ export {
   Resource,
   ResourceVersion,
   ResourceSubscription,
-  Team,
-  TeamInvite,
-  TeamMember,
+  Group,
+  GroupInvite,
+  GroupMember,
   Theme,
   SamlLoginRequest,
   User,
@@ -158,9 +158,9 @@ export function initDB({
       Resource,
       ResourceSubscription,
       ResourceVersion,
-      Team,
-      TeamInvite,
-      TeamMember,
+      Group,
+      GroupInvite,
+      GroupMember,
       Theme,
       SamlLoginRequest,
       User,

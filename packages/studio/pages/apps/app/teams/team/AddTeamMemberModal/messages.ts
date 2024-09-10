@@ -19,7 +19,7 @@ export const messages = defineMessages({
   },
   noMembers: {
     id: 'studio.ikCfb7',
-    defaultMessage: 'There aren’t any members that can be added to this team.',
+    defaultMessage: 'There aren’t any members that can be added to this group.',
   },
   loading: {
     id: 'studio.Lxkny3',

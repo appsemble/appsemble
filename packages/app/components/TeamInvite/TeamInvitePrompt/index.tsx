@@ -6,7 +6,7 @@ import {
   useData,
   useQuery,
 } from '@appsemble/react-components';
-import { type TeamMember } from '@appsemble/types';
+import { type GroupMember } from '@appsemble/types';
 import axios from 'axios';
 import { type ReactNode, useCallback, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
@@ -15,27 +15,27 @@ import { messages } from './messages.js';
 import { apiUrl, appId } from '../../../utils/settings.js';
 import { useAppMember } from '../../AppMemberProvider/index.js';
 
-export function TeamInvitePrompt(): ReactNode {
+export function GroupInvitePrompt(): ReactNode {
   const query = useQuery();
   const [isAccepted, setIsAccepted] = useState(false);
-  const { updateTeam } = useAppMember();
+  const { updateGroup } = useAppMember();
 
   const {
     data: invite,
     error,
     loading,
-  } = useData<TeamMember>(`${apiUrl}/api/apps/${appId}/team/invites?${query}`);
+  } = useData<GroupMember>(`${apiUrl}/api/apps/${appId}/group/invites?${query}`);
 
   const accept = useCallback(async () => {
-    const { data: team } = await axios.post<TeamMember>(
-      `${apiUrl}/api/apps/${appId}/team/invites`,
+    const { data: group } = await axios.post<GroupMember>(
+      `${apiUrl}/api/apps/${appId}/group/invites`,
       {
         code: query.get('code'),
       },
     );
     setIsAccepted(true);
-    updateTeam(team);
-  }, [query, updateTeam]);
+    updateGroup(group);
+  }, [query, updateGroup]);
 
   if (loading) {
     return <Loader />;
@@ -61,7 +61,7 @@ export function TeamInvitePrompt(): ReactNode {
         <Message color="success">
           <FormattedMessage
             {...messages.accepted}
-            values={{ teamName: <strong>{invite.name}</strong> }}
+            values={{ groupName: <strong>{invite.name}</strong> }}
           />
         </Message>
       </Content>
@@ -73,7 +73,7 @@ export function TeamInvitePrompt(): ReactNode {
       <p className="content has-text-centered">
         <FormattedMessage
           {...messages.description}
-          values={{ teamName: <strong>{invite.name}</strong> }}
+          values={{ groupName: <strong>{invite.name}</strong> }}
         />
       </p>
       <div className="is-flex is-justify-content-center">

@@ -74,6 +74,6 @@ export const pathItems: OpenAPIV3.PathItemObject = {
         },
       },
     },
-    security: [{ studio: [] }, { app: ['teams:write'] }],
+    security: [{ studio: [] }, { app: ['groups:write'] }],
   },
 };

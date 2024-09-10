@@ -1150,16 +1150,16 @@ export function ResourcesTab({
                         Author
                       </option>
                       <option
-                        title={formatMessage(messages.teamMemberRoleInfo)}
-                        value="$team:member"
+                        title={formatMessage(messages.groupMemberRoleInfo)}
+                        value="$group:member"
                       >
-                        team:member
+                        group:member
                       </option>
                       <option
-                        title={formatMessage(messages.teamManagerRoleInfo)}
-                        value="$team:manager"
+                        title={formatMessage(messages.groupManagerRoleInfo)}
+                        value="$group:manager"
                       >
-                        team:manager
+                        group:manager
                       </option>
                       {/* {resourceRoles?.map((role: string) => {
                         const formattedRole = formatRoleString(role);

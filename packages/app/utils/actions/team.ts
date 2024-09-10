@@ -1,65 +1,65 @@
-import { type TeamMember } from '@appsemble/types';
+import { type GroupMember } from '@appsemble/types';
 import axios from 'axios';
 
 import { type ActionCreator } from './index.js';
 import { apiUrl, appId } from '../settings.js';
 
-export const teamJoin: ActionCreator<'team.join'> = ({ getAppMemberInfo, updateTeam }) => [
+export const groupJoin: ActionCreator<'group.join'> = ({ getAppMemberInfo, updateGroup }) => [
   async (id: number) => {
     const appMemberInfo = getAppMemberInfo();
     if (!appMemberInfo?.sub) {
       throw new Error('App member is not logged in');
     }
 
-    const { data: team } = await axios.post<TeamMember>(
-      `${apiUrl}/api/apps/${appId}/teams/${id}/members`,
+    const { data: group } = await axios.post<GroupMember>(
+      `${apiUrl}/api/apps/${appId}/groups/${id}/members`,
       {
         id: appMemberInfo.sub,
       },
     );
-    updateTeam(team);
-    return team;
+    updateGroup(group);
+    return group;
   },
 ];
 
-export const teamList: ActionCreator<'team.list'> = ({ teams }) => [() => teams];
+export const groupList: ActionCreator<'group.list'> = ({ groups }) => [() => groups];
 
-export const teamInvite: ActionCreator<'team.invite'> = ({ definition, remap }) => [
+export const groupInvite: ActionCreator<'group.invite'> = ({ definition, remap }) => [
   async (data) => {
     const id = definition.id ? await remap(definition.id, data) : (data as any).id;
     const email = definition.email ? await remap(definition.email, data) : (data as any).email;
 
-    await axios.post<unknown>(`${apiUrl}/api/apps/${appId}/teams/${id}/invite`, { email });
+    await axios.post<unknown>(`${apiUrl}/api/apps/${appId}/groups/${id}/invite`, { email });
   },
 ];
 
-export const teamMembers: ActionCreator<'team.members'> = ({
+export const groupMembers: ActionCreator<'group.members'> = ({
   definition,
   getAppMemberInfo,
   remap,
 }) => [
   async (data) => {
-    const teamId = definition.id ? remap(definition.id, data) : null;
+    const groupId = definition.id ? remap(definition.id, data) : null;
     const appMemberInfo = getAppMemberInfo();
 
     if (!appMemberInfo) {
       throw new Error('User is not logged in');
     }
 
-    if (!teamId) {
-      throw new Error('Team id is not valid');
+    if (!groupId) {
+      throw new Error('Group id is not valid');
     }
 
     try {
-      await axios.get(`${apiUrl}/api/apps/${appId}/teams/${teamId}/members/${appMemberInfo.sub}`);
+      await axios.get(`${apiUrl}/api/apps/${appId}/groups/${groupId}/members/${appMemberInfo.sub}`);
     } catch {
-      throw new Error('User is not a member of the specified team');
+      throw new Error('User is not a member of the specified group');
     }
 
-    const teamMemberList = await axios
-      .get<TeamMember[]>(`${apiUrl}/api/apps/${appId}/teams/${teamId}/members`)
+    const groupMemberList = await axios
+      .get<GroupMember[]>(`${apiUrl}/api/apps/${appId}/groups/${groupId}/members`)
       .then((response) => response.data);
 
-    return teamMemberList;
+    return groupMemberList;
   },
 ];

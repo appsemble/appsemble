@@ -6,7 +6,7 @@
 - [App Privacy](#app-privacy)
 - [App account management](#app-account-management)
 - [Security Definition](#security-definition)
-  - [Teams](#teams)
+  - [Groups](#groups)
 - [Root app roles](#root-app-roles)
 - [Page app roles](#page-app-roles)
 - [Block roles](#block-roles)
@@ -107,22 +107,22 @@ security:
         - Reader
 ```
 
-### Teams
+### Groups
 
-In addition to roles, an app may also use teams for securing the app. This can be defined using the
-`teams` property of the security definition.
+In addition to roles, an app may also use groups for securing the app. This can be defined using the
+`groups` property of the security definition.
 
 ```yaml copy validate security-snippet
 security:
   default:
     role: Reader
     policy: everyone
-  teams:
+  groups:
     join: invite
     create:
       - Reader
     invite:
-      - $team:member
+      - $group:member
   roles:
     Reader:
       description: Anyone viewing the app.
@@ -132,8 +132,8 @@ security:
         - Reader
 ```
 
-For more details, see the [teams guide](teams.md) and the
-[teams reference documentation](../05-reference/app.mdx#teams-definition)
+For more details, see the [groups guide](groups.md) and the
+[groups reference documentation](../05-reference/app.mdx#groups-definition)
 
 ## Root app roles
 
@@ -320,7 +320,8 @@ The following special options are currently supported:
 - **$none**: Grants access specifically to users who aren’t logged in.
 - **$public**: Grants access to everyone, even users who aren’t logged in.
 - **$author**: Grants access if the user is the same as the one who created the resource.
-- **$team:member**: Grants access if the user is in the same team as the user who created the
-  resource. See the [Teams guide](teams.md) for details.
-- **$team:manager**: Grants access if the user is in the same team as the user who created the
-  resource and has the `manager` role within the team. See the [Teams guide](teams.md) for details.
+- **$group:member**: Grants access if the user is in the same group as the user who created the
+  resource. See the [Groups guide](groups.md) for details.
+- **$group:manager**: Grants access if the user is in the same group as the user who created the
+  resource and has the `manager` role within the group. See the [Groups guide](groups.md) for
+  details.

@@ -40,8 +40,8 @@ export function IndexPage(): ReactNode {
         'openid',
         'profile',
         'resources:manage',
-        'teams:read',
-        'teams:write',
+        'groups:read',
+        'groups:write',
       ]),
     [qs],
   );

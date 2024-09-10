@@ -18,7 +18,7 @@ import { Page } from '../Page/index.js';
 import { Register } from '../Register/index.js';
 import { ResetPassword } from '../ResetPassword/index.js';
 import { SentryFeedback } from '../SentryFeedback/index.js';
-import { TeamInvite } from '../TeamInvite/index.js';
+import { GroupInvite } from '../GroupInvite/index.js';
 import { Verify } from '../Verify/index.js';
 
 /**
@@ -59,7 +59,7 @@ export function AppRoutes(): ReactNode {
           />
         ) : null}
 
-        <Route caseSensitive element={<TeamInvite />} path="/Team-Invite" />
+        <Route caseSensitive element={<GroupInvite />} path="/Group-Invite" />
         <Route caseSensitive element={<AppInvite />} path="/App-Invite" />
         <Route caseSensitive element={<ResetPassword />} path="/Reset-Password" />
         <Route caseSensitive element={<EditPassword />} path="/Edit-Password" />

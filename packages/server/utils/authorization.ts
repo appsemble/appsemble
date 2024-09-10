@@ -1,39 +1,95 @@
 import { assertKoaError } from '@appsemble/node-utils';
+import { type CustomAppPermission } from '@appsemble/types';
 import {
-  type CustomAppPermission,
-  type CustomAppResourcePermission,
-  type Security,
-} from '@appsemble/types';
-import {
-  appMemberRoles,
-  appOrganizationPermissionMapping,
-  type AppPermission,
+  type AppMemberRole,
   checkAppRoleAppPermissions,
   checkOrganizationRoleAppPermissions,
   checkOrganizationRoleOrganizationPermissions,
   type OrganizationMemberRole,
-  organizationMemberRoles,
   type OrganizationPermission,
-  teamMemberRoles,
-  teamOrganizationPermissionMapping,
-  type TeamPermission,
 } from '@appsemble/utils';
 import { type Context } from 'koa';
 
 import {
   App,
   AppMember,
+  Group,
+  GroupMember,
   Organization,
   OrganizationMember,
-  Team,
-  TeamMember,
 } from '../models/index.js';
+
+async function getAppMemberAcquiredAppRoles(
+  appMember: AppMember,
+  appId: number,
+): Promise<string[]> {
+  const groupMemberships = await GroupMember.findAll({
+    attributes: ['id'],
+    where: {
+      AppId: appId,
+      AppMemberId: appMember.id,
+    },
+    include: {
+      model: Group,
+      attributes: ['roles'],
+    },
+  });
+
+  const groupRoles = groupMemberships.flatMap((groupMembership) => groupMembership.Group.roles);
+
+  return Array.from(new Set(...groupRoles, appMember.role));
+}
+
+async function getAppMemberAppRoles(appMemberId: string, appId: number): Promise<AppMemberRole[]> {
+  const appMember = await AppMember.findByPk(appMemberId, { attributes: ['role'] });
+
+  if (!appMember) {
+    return [];
+  }
+
+  return getAppMemberAcquiredAppRoles(appMember, appId);
+}
+
+async function getUserAppRoles(userId: string, appId: number): Promise<AppMemberRole[]> {
+  const appMember = await AppMember.findOne({
+    attributes: ['role'],
+    where: {
+      AppId: appId,
+      UserId: userId,
+    },
+  });
+
+  if (!appMember) {
+    return [];
+  }
+
+  return getAppMemberAcquiredAppRoles(appMember, appId);
+}
+
+async function getUserOrganizationRoles(
+  userId: string,
+  organizationId: string,
+): Promise<OrganizationMemberRole[]> {
+  const organizationMember = await OrganizationMember.findOne({
+    attributes: ['role'],
+    where: {
+      UserId: userId,
+      OrganizationId: organizationId,
+    },
+  });
+
+  if (!organizationMember) {
+    return [];
+  }
+
+  return [organizationMember.role];
+}
 
 export async function checkAppMemberAppPermissions(
   ctx: Context,
   appId: number,
-  permissions: CustomAppPermission[],
-): Promise<AppMember> {
+  requiredAppPermissions: CustomAppPermission[],
+): Promise<void> {
   const { user: authSubject } = ctx;
 
   const app = await App.findByPk(appId, { attributes: ['definition'] });
@@ -42,85 +98,27 @@ export async function checkAppMemberAppPermissions(
 
   assertKoaError(!app.definition.security, ctx, 404, 'App does not have a security definition');
 
-  const appMember = await AppMember.findByPk(authSubject.id);
+  const appMember = await AppMember.findByPk(authSubject.id, { attributes: ['id'] });
+
+  assertKoaError(!appMember, ctx, 403, 'App member not found');
+
+  const appMemberAppRoles = await getAppMemberAppRoles(appMember.id, appId);
 
   assertKoaError(
-    !checkAppRoleAppPermissions(app.definition.security, appMember.role, permissions),
+    !appMemberAppRoles.some((appMemberAppRole) =>
+      checkAppRoleAppPermissions(app.definition.security, appMemberAppRole, requiredAppPermissions),
+    ),
     ctx,
     403,
     'App member does not have sufficient app permissions.',
   );
-
-  return appMember;
-}
-
-export async function checkAppMemberTeamPermissions(
-  ctx: Context,
-  teamId: number,
-  permissions: TeamPermission[],
-): Promise<TeamMember> {
-  const { user: authSubject } = ctx;
-
-  const team = await Team.findByPk(teamId, { attributes: ['id'] });
-
-  assertKoaError(!team, ctx, 404, 'Team not found.');
-
-  const teamMember = await TeamMember.findOne({
-    where: {
-      TeamId: teamId,
-      AppMemberId: authSubject.id,
-    },
-  });
-
-  assertKoaError(!teamMember, ctx, 403, 'App member is not a member of this team.');
-
-  const teamMemberRole = teamMemberRoles[teamMember.role];
-
-  assertKoaError(
-    !permissions.every((p) => teamMemberRole.includes(p)),
-    ctx,
-    403,
-    'App member does not have sufficient team permissions.',
-  );
-
-  return teamMember;
-}
-
-export async function checkUserOrganizationPermissions(
-  ctx: Context,
-  organizationId: string,
-  permissions: OrganizationPermission[],
-): Promise<OrganizationMember> {
-  const { user: authSubject } = ctx;
-
-  const organization = await Organization.findByPk(organizationId, { attributes: ['id'] });
-
-  assertKoaError(!organization, ctx, 403, 'Organization not found.');
-
-  const organizationMember = await OrganizationMember.findOne({
-    where: {
-      OrganizationId: organizationId,
-      UserId: authSubject.id,
-    },
-  });
-
-  assertKoaError(!organizationMember, ctx, 403, 'User is not a member of this organization.');
-
-  assertKoaError(
-    !checkOrganizationRoleOrganizationPermissions(organizationMember.role, permissions),
-    ctx,
-    403,
-    'User does not have sufficient organization permissions.',
-  );
-
-  return organizationMember;
 }
 
 export async function checkUserAppPermissions(
   ctx: Context,
   appId: number,
-  permissions: CustomAppPermission[],
-): Promise<AppMember> {
+  requiredAppPermissions: CustomAppPermission[],
+): Promise<void> {
   const { user: authSubject } = ctx;
 
   const app = await App.findByPk(appId, { attributes: ['definition', 'OrganizationId'] });
@@ -129,117 +127,69 @@ export async function checkUserAppPermissions(
 
   assertKoaError(!app.definition.security, ctx, 404, 'App does not have a security definition');
 
-  const appMember = await AppMember.findOne({
-    where: {
-      AppId: appId,
-      UserId: authSubject.id,
-    },
-  });
+  const userAppRoles = await getUserAppRoles(authSubject.id, appId);
 
-  const organizationMember = await OrganizationMember.findOne({
-    where: {
-      OrganizationId: app.OrganizationId,
-      UserId: authSubject.id,
-    },
-  });
+  const userOrganizationRoles = await getUserOrganizationRoles(authSubject.id, app.OrganizationId);
 
   assertKoaError(
     !(
-      (appMember &&
-        checkAppRoleAppPermissions(app.definition.security, appMember.role, permissions)) ||
-      (organizationMember &&
-        checkOrganizationRoleAppPermissions(organizationMember.role, permissions))
+      userAppRoles.some((userAppRole) =>
+        checkAppRoleAppPermissions(app.definition.security, userAppRole, requiredAppPermissions),
+      ) ||
+      userOrganizationRoles.some((userOrganizationRole) =>
+        checkOrganizationRoleAppPermissions(userOrganizationRole, requiredAppPermissions),
+      )
     ),
     ctx,
     403,
     'User does not have sufficient app permissions.',
   );
-
-  return appMember;
 }
 
-export async function checkUserTeamPermissions(
+export async function checkUserOrganizationPermissions(
   ctx: Context,
-  teamId: number,
-  permissions: TeamPermission[],
-): Promise<TeamMember> {
+  organizationId: string,
+  requiredOrganizationPermissions: OrganizationPermission[],
+): Promise<void> {
   const { user: authSubject } = ctx;
 
-  const team = await Team.findByPk(teamId, { attributes: ['id', 'AppId'] });
+  const organization = await Organization.findByPk(organizationId, { attributes: ['id'] });
 
-  assertKoaError(!team, ctx, 404, 'Team not found.');
+  assertKoaError(!organization, ctx, 404, 'Organization not found.');
 
-  const app = await App.findByPk(team.AppId, { attributes: ['definition', 'OrganizationId'] });
-
-  assertKoaError(!app, ctx, 404, 'App not found');
-
-  const appMember = await AppMember.findOne({
+  const organizationMember = await OrganizationMember.findOne({
     attributes: ['id'],
     where: {
       UserId: authSubject.id,
-      AppId: team.AppId,
+      OrganizationId: organizationId,
     },
   });
 
-  let teamMember;
-  let teamMemberRolePermissions: TeamPermission[] = [];
-  if (appMember) {
-    teamMember = await TeamMember.findOne({
-      where: {
-        TeamId: teamId,
-        AppMemberId: appMember.id,
-      },
-    });
+  assertKoaError(!organizationMember, ctx, 403, 'User is not a member of this organization.');
 
-    teamMemberRolePermissions = teamMemberRoles[teamMember.role];
-  }
-
-  const organizationMember = await OrganizationMember.findOne({
-    where: {
-      OrganizationId: app.OrganizationId,
-      UserId: authSubject.id,
-    },
-  });
-
-  let organizationRolePermissions: OrganizationPermission[] = [];
-  if (organizationMember) {
-    organizationRolePermissions = organizationMemberRoles[organizationMember.role];
-  }
+  const userOrganizationRoles = await getUserOrganizationRoles(authSubject.id, organizationId);
 
   assertKoaError(
-    !permissions.every(
-      (p) =>
-        teamMemberRolePermissions.includes(p) ||
-        organizationRolePermissions.includes(teamOrganizationPermissionMapping[p]),
+    !userOrganizationRoles.some((userOrganizationRole) =>
+      checkOrganizationRoleOrganizationPermissions(
+        userOrganizationRole,
+        requiredOrganizationPermissions,
+      ),
     ),
     ctx,
     403,
-    'User does not have sufficient team permissions.',
+    'User does not have sufficient organization permissions.',
   );
-
-  return teamMember;
 }
 
 export function checkAuthSubjectAppPermissions(
   ctx: Context,
   appId: number,
-  permissions: CustomAppPermission[],
-): Promise<AppMember> {
+  requiredAppPermissions: CustomAppPermission[],
+): Promise<void> {
   const { client } = ctx;
 
   return client && 'app' in client
-    ? checkAppMemberAppPermissions(ctx, appId, permissions)
-    : checkUserAppPermissions(ctx, appId, permissions);
-}
-
-export function checkAuthSubjectTeamPermissions(
-  ctx: Context,
-  teamId: number,
-  permissions: TeamPermission[],
-): Promise<TeamMember> {
-  const { client } = ctx;
-
-  return client && 'app' in client
-    ? checkAppMemberTeamPermissions(ctx, teamId, permissions)
-    : checkUserTeamPermissions(ctx, teamId, permissions);
+    ? checkAppMemberAppPermissions(ctx, appId, requiredAppPermissions)
+    : checkUserAppPermissions(ctx, appId, requiredAppPermissions);
 }

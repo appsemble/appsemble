@@ -12,26 +12,26 @@ import { FormattedMessage } from 'react-intl';
 
 import { messages } from './messages.js';
 import { AsyncDataView } from '../../../../../../components/AsyncDataView/index.js';
-import { type OrganizationMember, type TeamMember } from '../../../../../../types.js';
+import { type OrganizationMember, type GroupMember } from '../../../../../../types.js';
 import { useApp } from '../../../index.js';
 
-interface AddTeamMemberModalProps {
-  readonly teamMembers: TeamMember[];
+interface AddGroupMemberModalProps {
+  readonly groupMembers: GroupMember[];
   readonly toggle: Toggle;
   readonly onAdd: (id: string) => Promise<void>;
 }
 
-export function AddTeamMemberModal({
+export function AddGroupMemberModal({
   onAdd,
-  teamMembers,
+  groupMembers,
   toggle,
-}: AddTeamMemberModalProps): ReactNode {
+}: AddGroupMemberModalProps): ReactNode {
   const { app } = useApp();
   const result = useData<OrganizationMember[]>(`/api/apps/${app.id}/members`);
   const onSubmit = useCallback(({ memberId }: typeof defaultValues) => onAdd(memberId), [onAdd]);
 
   const defaultValues = {
-    memberId: result?.data?.find((member) => !teamMembers.map((tm) => tm.id).includes(member.id))
+    memberId: result?.data?.find((member) => !groupMembers.map((tm) => tm.id).includes(member.id))
       ?.id,
   };
 
@@ -67,7 +67,7 @@ export function AddTeamMemberModal({
             required
           >
             {members
-              .filter((member) => !teamMembers.map((tm) => tm.id).includes(member.id))
+              .filter((member) => !groupMembers.map((tm) => tm.id).includes(member.id))
               .map((member) => (
                 <option key={member.id} value={member.id}>
                   {member.name || member.primaryEmail || member.id}

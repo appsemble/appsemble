@@ -23,6 +23,6 @@ export const messages = defineMessages({
   },
   removeWarning: {
     id: 'studio.dCQxJz',
-    defaultMessage: 'Are you sure you want to remove this member from the team?',
+    defaultMessage: 'Are you sure you want to remove this member from the group?',
   },
 });

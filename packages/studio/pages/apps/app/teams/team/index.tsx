@@ -11,56 +11,56 @@ import {
   useMeta,
   useToggle,
 } from '@appsemble/react-components';
-import { type Team } from '@appsemble/types';
+import { type Group } from '@appsemble/types';
 import {
   checkOrganizationRoleOrganizationPermissions,
   OrganizationPermission,
-  type TeamMemberRole,
+  type GroupMemberRole,
 } from '@appsemble/utils';
 import axios from 'axios';
 import { type ReactNode, useCallback, useMemo } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 
-import { AddTeamMemberModal } from './AddTeamMemberModal/index.js';
+import { AddGroupMemberModal } from './AddGroupMemberModal/index.js';
 import { AnnotationsTable } from './AnnotationsTable/index.js';
 import { messages } from './messages.js';
-import { TeamMemberRow } from './TeamMemberRow/index.js';
+import { GroupMemberRow } from './GroupMemberRow/index.js';
 import { AsyncDataView } from '../../../../../components/AsyncDataView/index.js';
 import { HeaderControl } from '../../../../../components/HeaderControl/index.js';
 import { useUser } from '../../../../../components/UserProvider/index.js';
-import { type TeamMember } from '../../../../../types.js';
+import { type GroupMember } from '../../../../../types.js';
 import { useApp } from '../../index.js';
 
-export function TeamPage(): ReactNode {
-  const { teamId } = useParams<{ teamId: string }>();
+export function GroupPage(): ReactNode {
+  const { groupId } = useParams<{ groupId: string }>();
   const { app } = useApp();
   const { organizations, userInfo } = useUser();
   const navigate = useNavigate();
   const { pathname } = useLocation();
   const { formatMessage } = useIntl();
 
-  const teamResult = useData<Team>(`/api/teams/${teamId}`);
-  useMeta(teamResult.data?.name || teamId);
-  const memberResult = useData<TeamMember[]>(`/api/teams/${teamId}/members`);
+  const groupResult = useData<Group>(`/api/groups/${groupId}`);
+  useMeta(groupResult.data?.name || groupId);
+  const memberResult = useData<GroupMember[]>(`/api/groups/${groupId}/members`);
   const editModal = useToggle();
   const addModal = useToggle();
 
-  const submitTeam = useCallback(
+  const submitGroup = useCallback(
     async ({ annotations, name }: typeof defaultValues) => {
-      const { data } = await axios.patch<Team>(`/api/teams/${teamId}`, {
+      const { data } = await axios.patch<Group>(`/api/groups/${groupId}`, {
         name,
         annotations: Object.fromEntries(annotations),
       });
       editModal.disable();
-      teamResult.setData(data);
+      groupResult.setData(data);
     },
-    [editModal, teamResult, teamId],
+    [editModal, groupResult, groupId],
   );
 
   const onEdit = useCallback(
-    async ({ id }: TeamMember, role: TeamMemberRole) => {
-      const { data: updated } = await axios.put<TeamMember>(`/api/team-members/${id}`, { role });
+    async ({ id }: GroupMember, role: GroupMemberRole) => {
+      const { data: updated } = await axios.put<GroupMember>(`/api/group-members/${id}`, { role });
       memberResult.setData((members) =>
         members.map((member) => (member.id === id ? updated : member)),
       );
@@ -70,31 +70,31 @@ export function TeamPage(): ReactNode {
 
   const onAdd = useCallback(
     async (id: string) => {
-      const { data: newMember } = await axios.post<TeamMember>(`/api/teams/${teamId}/members`, {
+      const { data: newMember } = await axios.post<GroupMember>(`/api/groups/${groupId}/members`, {
         id,
       });
       memberResult.setData((members) => [...members, newMember]);
       addModal.disable();
     },
-    [addModal, memberResult, teamId],
+    [addModal, memberResult, groupId],
   );
 
   const onDelete = useCallback(async () => {
-    await axios.delete(`/api/teams/${teamId}`);
-    navigate(pathname.replace(`/teams/${teamId}`, '/teams'), { replace: true });
-  }, [navigate, teamId, pathname]);
+    await axios.delete(`/api/groups/${groupId}`);
+    navigate(pathname.replace(`/groups/${groupId}`, '/groups'), { replace: true });
+  }, [navigate, groupId, pathname]);
 
   const onDeleteClick = useConfirmation({
-    title: <FormattedMessage {...messages.deletingTeam} />,
+    title: <FormattedMessage {...messages.deletingGroup} />,
     body: <FormattedMessage {...messages.deleteWarning} />,
     cancelLabel: <FormattedMessage {...messages.cancelLabel} />,
-    confirmLabel: <FormattedMessage {...messages.deleteTeam} />,
+    confirmLabel: <FormattedMessage {...messages.deleteGroup} />,
     action: onDelete,
   });
 
-  const onRemoveTeamMember = useCallback(
-    async ({ id }: TeamMember) => {
-      await axios.delete(`/api/team-members/${id}`);
+  const onRemoveGroupMember = useCallback(
+    async ({ id }: GroupMember) => {
+      await axios.delete(`/api/group-members/${id}`);
       memberResult.setData((members) => members.filter((member) => member.id !== id));
     },
     [memberResult],
@@ -102,33 +102,33 @@ export function TeamPage(): ReactNode {
 
   const organization = organizations.find((o) => o.id === app.OrganizationId);
   const me = memberResult.data?.find((member) => member.id === userInfo.sub);
-  const mayEditTeam =
+  const mayEditGroup =
     organization &&
     checkOrganizationRoleOrganizationPermissions(organization.role, [
-      OrganizationPermission.UpdateTeams,
+      OrganizationPermission.UpdateGroups,
     ]);
-  const mayInvite = mayEditTeam || (me && me.role === 'Manager');
+  const mayInvite = mayEditGroup || (me && me.role === 'Manager');
 
   const defaultValues = useMemo(
     () => ({
-      name: teamResult?.data?.name,
-      annotations: Object.entries(teamResult?.data?.annotations || {}),
+      name: groupResult?.data?.name,
+      annotations: Object.entries(groupResult?.data?.annotations || {}),
     }),
-    [teamResult?.data],
+    [groupResult?.data],
   );
 
   return (
     <AsyncDataView
-      emptyMessage={<FormattedMessage {...messages.noTeam} />}
-      errorMessage={<FormattedMessage {...messages.teamError} />}
-      loadingMessage={<FormattedMessage {...messages.loadingTeam} />}
-      result={teamResult}
+      emptyMessage={<FormattedMessage {...messages.noGroup} />}
+      errorMessage={<FormattedMessage {...messages.groupError} />}
+      loadingMessage={<FormattedMessage {...messages.loadingGroup} />}
+      result={groupResult}
     >
-      {(team) => (
+      {(group) => (
         <>
           <HeaderControl
             control={
-              mayEditTeam ? (
+              mayEditGroup ? (
                 <div>
                   <Button onClick={editModal.enable}>
                     <FormattedMessage {...messages.editButton} />
@@ -138,14 +138,14 @@ export function TeamPage(): ReactNode {
                     color="danger"
                     icon="trash-alt"
                     onClick={onDeleteClick}
-                    title={formatMessage(messages.deleteTeam)}
+                    title={formatMessage(messages.deleteGroup)}
                   />
                 </div>
               ) : null
             }
             level={4}
           >
-            {team.name}
+            {group.name}
           </HeaderControl>
           <HeaderControl
             control={
@@ -157,7 +157,7 @@ export function TeamPage(): ReactNode {
             }
             level={5}
           >
-            <FormattedMessage {...messages.teamMembers} />
+            <FormattedMessage {...messages.groupMembers} />
           </HeaderControl>
           <AsyncDataView
             emptyMessage={<FormattedMessage {...messages.noMembers} />}
@@ -179,19 +179,19 @@ export function TeamPage(): ReactNode {
                 </thead>
                 <tbody>
                   {members.map((member) => (
-                    <TeamMemberRow
+                    <GroupMemberRow
                       key={member.id}
                       mayInvite={mayInvite}
                       member={member}
                       onEdit={onEdit}
-                      onRemove={onRemoveTeamMember}
+                      onRemove={onRemoveGroupMember}
                     />
                   ))}
                 </tbody>
               </Table>
             )}
           </AsyncDataView>
-          {mayEditTeam ? (
+          {mayEditGroup ? (
             <ModalCard
               component={SimpleForm}
               defaultValues={defaultValues}
@@ -204,12 +204,12 @@ export function TeamPage(): ReactNode {
               }
               isActive={editModal.enabled}
               onClose={editModal.disable}
-              onSubmit={submitTeam}
-              title={<FormattedMessage {...messages.editingTeam} />}
+              onSubmit={submitGroup}
+              title={<FormattedMessage {...messages.editingGroup} />}
             >
               <SimpleFormField
                 icon="briefcase"
-                label={<FormattedMessage {...messages.teamName} />}
+                label={<FormattedMessage {...messages.groupName} />}
                 name="name"
                 required
               />
@@ -221,7 +221,7 @@ export function TeamPage(): ReactNode {
             </ModalCard>
           ) : null}
           {mayInvite ? (
-            <AddTeamMemberModal onAdd={onAdd} teamMembers={memberResult.data} toggle={addModal} />
+            <AddGroupMemberModal onAdd={onAdd} groupMembers={memberResult.data} toggle={addModal} />
           ) : null}
         </>
       )}

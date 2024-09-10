@@ -2,10 +2,10 @@ import { useLocationString } from '@appsemble/react-components';
 import { type ReactNode } from 'react';
 import { Navigate, useParams } from 'react-router-dom';
 
-import { TeamInvitePrompt } from './TeamInvitePrompt/index.js';
+import { GroupInvitePrompt } from './GroupInvitePrompt/index.js';
 import { useAppMember } from '../AppMemberProvider/index.js';
 
-export function TeamInvite(): ReactNode {
+export function GroupInvite(): ReactNode {
   const { isLoggedIn } = useAppMember();
   const redirect = useLocationString();
   const { lang } = useParams<{ lang: string }>();
@@ -18,5 +18,5 @@ export function TeamInvite(): ReactNode {
     );
   }
 
-  return <TeamInvitePrompt />;
+  return <GroupInvitePrompt />;
 }

@@ -6,51 +6,51 @@ import { beforeEach, describe, expect, it, type Mock, vi } from 'vitest';
 import { createTestAction } from '../makeActions.js';
 import { apiUrl } from '../settings.js';
 
-describe('team.join', () => {
+describe('group.join', () => {
   let mock: MockAdapter;
-  let updateTeam: Mock;
+  let updateGroup: Mock;
 
   beforeEach(() => {
     mock = new MockAdapter(axios);
-    updateTeam = vi.fn();
+    updateGroup = vi.fn();
   });
 
-  it('should join a team and update the state', async () => {
+  it('should join a group and update the state', async () => {
     mock
-      .onPost(`${apiUrl}/api/apps/42/teams/1337/members`)
+      .onPost(`${apiUrl}/api/apps/42/groups/1337/members`)
       .reply(() => [201, { id: 1337, role: 'member', annotations: {} }]);
     const action = createTestAction({
-      definition: { type: 'team.join' },
+      definition: { type: 'group.join' },
       getUserInfo: () => ({ sub: 'some-uuid', name: '', email: '', email_verified: false }),
-      updateTeam,
+      updateGroup,
     });
     const result = await action(1337);
     expect(result).toStrictEqual({ id: 1337, role: 'member', annotations: {} });
-    expect(updateTeam).toHaveBeenCalledWith({ id: 1337, role: 'member', annotations: {} });
+    expect(updateGroup).toHaveBeenCalledWith({ id: 1337, role: 'member', annotations: {} });
   });
 
   it('should throw if the user is not logged in', async () => {
     const userInfo: any = undefined;
     const action = createTestAction({
-      definition: { type: 'team.join' },
+      definition: { type: 'group.join' },
       getUserInfo: () => userInfo,
-      updateTeam,
+      updateGroup,
     });
     await expect(action(1337)).rejects.toThrow(
       new ActionError({
         cause: 'User is not logged in',
         data: null,
-        definition: { type: 'team.join' },
+        definition: { type: 'group.join' },
       }),
     );
   });
 });
 
-describe('team.list', () => {
-  it('should return the user’s teams', async () => {
+describe('group.list', () => {
+  it('should return the user’s groups', async () => {
     const action = createTestAction({
-      definition: { type: 'team.list' },
-      teams: [{ id: 1337, name: 'IT', role: 'member', annotations: { foo: 'bar' } }],
+      definition: { type: 'group.list' },
+      groups: [{ id: 1337, name: 'IT', role: 'member', annotations: { foo: 'bar' } }],
     });
     const result = await action('Input data');
     expect(result).toStrictEqual([
@@ -59,24 +59,24 @@ describe('team.list', () => {
   });
 });
 
-describe('team.members', () => {
+describe('group.members', () => {
   let mock: MockAdapter;
 
   beforeEach(() => {
     mock = new MockAdapter(axios);
   });
 
-  it('should get the members of the specified team', async () => {
+  it('should get the members of the specified group', async () => {
     mock
-      .onGet(`${apiUrl}/api/apps/42/teams/1337/members/some-uuid`)
+      .onGet(`${apiUrl}/api/apps/42/groups/1337/members/some-uuid`)
       .reply(() => [200, { id: 1337, role: 'member', annotations: {} }]);
     mock
-      .onGet(`${apiUrl}/api/apps/42/teams/1337/members`)
+      .onGet(`${apiUrl}/api/apps/42/groups/1337/members`)
       .reply(() => [200, [{ id: 1337, role: 'member', annotations: {} }]]);
 
     const action = createTestAction({
-      definition: { type: 'team.members', id: 1337 },
-      teams: [{ id: 1337, name: 'IT', role: 'member' }],
+      definition: { type: 'group.members', id: 1337 },
+      groups: [{ id: 1337, name: 'IT', role: 'member' }],
       getUserInfo: () => ({ sub: 'some-uuid', name: '', email: '', email_verified: false }),
     });
 
@@ -85,29 +85,29 @@ describe('team.members', () => {
     expect(result).toStrictEqual([{ id: 1337, role: 'member', annotations: {} }]);
   });
 
-  it('should throw an error if the user isn’t in the team', async () => {
-    mock.onGet(`${apiUrl}/api/apps/42/teams/1337/members`).reply(() => [200, []]);
+  it('should throw an error if the user isn’t in the group', async () => {
+    mock.onGet(`${apiUrl}/api/apps/42/groups/1337/members`).reply(() => [200, []]);
     const action = createTestAction({
-      definition: { type: 'team.members', id: 1337 },
-      teams: [{ id: 1337, name: 'IT', role: 'member' }],
+      definition: { type: 'group.members', id: 1337 },
+      groups: [{ id: 1337, name: 'IT', role: 'member' }],
       getUserInfo: () => ({ sub: 'some-uuid', name: '', email: '', email_verified: false }),
     });
 
     await expect(action()).rejects.toThrow(
       new ActionError({
-        cause: 'User is not a member of the specified team',
+        cause: 'User is not a member of the specified group',
         data: null,
-        definition: { type: 'team.members', id: 1337 },
+        definition: { type: 'group.members', id: 1337 },
       }),
     );
   });
 
   it('should throw an error if the user is not logged in/valid', async () => {
-    mock.onGet(`${apiUrl}/api/apps/42/teams/1337/members`).reply(() => [200, []]);
+    mock.onGet(`${apiUrl}/api/apps/42/groups/1337/members`).reply(() => [200, []]);
     const userInfo: any = undefined;
     const action = createTestAction({
-      definition: { type: 'team.members', id: 1337 },
-      teams: [{ id: 1337, name: 'IT', role: 'member' }],
+      definition: { type: 'group.members', id: 1337 },
+      groups: [{ id: 1337, name: 'IT', role: 'member' }],
       getUserInfo: () => userInfo,
     });
 
@@ -115,7 +115,7 @@ describe('team.members', () => {
       new ActionError({
         cause: 'User is not logged in',
         data: null,
-        definition: { type: 'team.members', id: 1337 },
+        definition: { type: 'group.members', id: 1337 },
       }),
     );
   });

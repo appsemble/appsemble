@@ -1,4 +1,4 @@
-import { type Security, type TeamMember } from '@appsemble/types';
+import { type GroupMember, type Security } from '@appsemble/types';
 
 /**
  * Check if the given user has access to any of the given scopes.
@@ -6,14 +6,14 @@ import { type Security, type TeamMember } from '@appsemble/types';
  * @param securityDefinition The security definition to use for checking the role.
  * @param role The role the user is checked against.
  * @param appMemberRole The role the app member has.
- * @param teams The teams the user is in.
+ * @param groups The groups the user is in.
  * @returns Whether or not the user has the role.
  */
 export function checkAppRole(
   securityDefinition: Security,
   role: string,
   appMemberRole: string,
-  teams: Pick<TeamMember, 'role'>[],
+  groups: Pick<GroupMember, 'role'>[],
 ): boolean {
   if (role === appMemberRole) {
     return true;
@@ -27,12 +27,12 @@ export function checkAppRole(
     return true;
   }
 
-  if (role === '$team:manager') {
-    return teams.some((team) => team.role === 'Manager');
+  if (role === '$group:manager') {
+    return groups.some((group) => group.role === 'Manager');
   }
 
-  if (role === '$team:member') {
-    return Boolean(teams.some((team) => team.role));
+  if (role === '$group:member') {
+    return Boolean(groups.some((group) => group.role));
   }
 
   if (!appMemberRole) {
@@ -41,7 +41,7 @@ export function checkAppRole(
 
   if (securityDefinition.roles[appMemberRole].inherits) {
     return securityDefinition.roles[appMemberRole].inherits.some((inheritedRole) =>
-      checkAppRole(securityDefinition, role, inheritedRole, teams),
+      checkAppRole(securityDefinition, role, inheritedRole, groups),
     );
   }
 

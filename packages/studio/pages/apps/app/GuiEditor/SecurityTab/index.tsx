@@ -8,7 +8,7 @@ import { DefaultPage } from './DefaultPage/index.js';
 import styles from './index.module.css';
 import { messages } from './messages.js';
 import { RolesPage } from './RolesPage/index.js';
-import { TeamsPage } from './TeamsPage/index.js';
+import { GroupsPage } from './GroupsPage/index.js';
 import { AppPreview } from '../../../../../components/AppPreview/index.js';
 import { useFullscreenContext } from '../../../../../components/FullscreenProvider/index.js';
 import { useApp } from '../../index.js';
@@ -27,8 +27,8 @@ const Tabs = [
     title: messages.defaultTab,
   },
   {
-    tab: 'teams',
-    title: messages.teamsTab,
+    tab: 'groups',
+    title: messages.groupsTab,
   },
   {
     tab: 'roles',
@@ -36,7 +36,7 @@ const Tabs = [
   },
 ] as const;
 type LeftSidebar = (typeof Tabs)[number];
-export const tabChangeOptions = ['default', 'teams', 'roles', 'createRole'] as const;
+export const tabChangeOptions = ['default', 'groups', 'roles', 'createRole'] as const;
 
 export function SecurityTab({
   isOpenLeft,
@@ -116,7 +116,7 @@ export function SecurityTab({
       <Sidebar isOpen={isOpenRight} type="right">
         <div className={styles.rightBar}>
           {currentSideBar.tab === 'default' && <DefaultPage onChangeTab={onChangeTab} />}
-          {currentSideBar.tab === 'teams' && <TeamsPage onChangeTab={onChangeTab} />}
+          {currentSideBar.tab === 'groups' && <GroupsPage onChangeTab={onChangeTab} />}
           {currentSideBar.tab === 'roles' && selectedRole ? (
             <RolesPage selectedRole={selectedRole} />
           ) : null}

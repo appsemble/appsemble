@@ -62,8 +62,8 @@ export function TabsPage({
     passwordLogin,
     role,
     setAppMemberInfo,
-    teams,
-    updateTeam,
+    groups,
+    updateGroup,
   } = useAppMember();
   const { refetchDemoAppMembers } = useDemoAppMembers();
   const [tabsWithPermissions, setTabsWithPermissions] = useState([]);
@@ -81,10 +81,10 @@ export function TabsPage({
       const roles = p.roles || definition.roles || [];
 
       return (
-        roles.length === 0 || roles.some((r) => checkAppRole(definition.security, r, role, teams))
+        roles.length === 0 || roles.some((r) => checkAppRole(definition.security, r, role, groups))
       );
     },
-    [definition.roles, definition.security, role, teams],
+    [definition.roles, definition.security, role, groups],
   );
 
   const events = createEvents(
@@ -195,8 +195,8 @@ export function TabsPage({
         remap,
         params,
         showMessage,
-        teams,
-        updateTeam,
+        groups,
+        updateGroup,
         getAppMemberInfo: () => appMemberInfoRef.current,
         passwordLogin,
         passwordLogout: logout,
@@ -219,8 +219,8 @@ export function TabsPage({
       remap,
       params,
       showMessage,
-      teams,
-      updateTeam,
+      groups,
+      updateGroup,
       passwordLogin,
       logout,
       setAppMemberInfo,

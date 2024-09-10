@@ -37,10 +37,10 @@ resources:
           format: binary
 ```
 
-Resource actions can be used in association with [teams](../02-guides/teams.md) to limit CRUD
+Resource actions can be used in association with [groups](../02-guides/groups.md) to limit CRUD
 actions on your resources. This can be particularly helpful in separating roles and privileges of
 various users in your organization. Following is an example of how you can limit querying `employee`
-resources to the members of team and creating resource to the manager.
+resources to the members of group and creating resource to the manager.
 
 ```yaml validate resources-snippet
 resources:
@@ -69,10 +69,10 @@ resources:
           format: binary
     create:
       roles:
-        - $team:manager
+        - $group:manager
     query:
       roles:
-        - $team:member
+        - $group:member
 ```
 
 Supported resource actions are as below:
