@@ -36,7 +36,7 @@ import { AppBar } from '../TitleBar/index.js';
 export function Page(): ReactNode {
   const redirect = useLocationString();
   const { definition: appDefinition } = useAppDefinition();
-  const { infoRef, isLoggedIn, role, selectedGroup } = useAppMember();
+  const { appMemberInfoRef, appMemberRole, appMemberSelectedGroup, isLoggedIn } = useAppMember();
   const { lang, pageId } = useParams<{ lang: string; pageId: string }>();
 
   const { pathname } = useLocation();
@@ -163,7 +163,7 @@ export function Page(): ReactNode {
         getMessage,
         getVariable,
         pageData: data,
-        appMemberInfo: infoRef.current,
+        appMemberInfo: appMemberInfoRef.current,
         context,
         history,
         root: input,
@@ -171,7 +171,7 @@ export function Page(): ReactNode {
         stepRef,
         tabRef,
       }),
-    [getMessage, getVariable, data, infoRef, lang],
+    [getMessage, getVariable, data, appMemberInfoRef, lang],
   );
 
   const showDialog = useCallback((d: ShowDialogParams) => {
@@ -198,8 +198,9 @@ export function Page(): ReactNode {
   );
 
   const checkPagePermissionsCallback = useCallback(
-    (pd: PageDefinition): boolean => checkPagePermissions(pd, appDefinition, role, selectedGroup),
-    [appDefinition, role, selectedGroup],
+    (pd: PageDefinition): boolean =>
+      checkPagePermissions(pd, appDefinition, appMemberRole, appMemberSelectedGroup),
+    [appDefinition, appMemberRole, appMemberSelectedGroup],
   );
 
   useEffect(() => {
@@ -325,7 +326,7 @@ export function Page(): ReactNode {
 
   // If the user is logged in, but isn’t allowed to view the current page, redirect to the default
   // page.
-  const defaultPageName = getDefaultPageName(isLoggedIn, role, appDefinition);
+  const defaultPageName = getDefaultPageName(isLoggedIn, appMemberRole, appDefinition);
   const defaultPage = appDefinition.pages.find((p) => p.name === defaultPageName);
 
   if (checkPagePermissionsCallback(defaultPage)) {

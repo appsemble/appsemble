@@ -95,8 +95,15 @@ export function Block({
   const { getAppMessage, getBlockMessage } = useAppMessages();
   const { getVariable } = useAppVariables();
 
-  const { addGroup, groups, infoRef, logout, passwordLogin, selectedGroup, setInfo } =
-    useAppMember();
+  const {
+    addAppMemberGroup,
+    appMemberGroups,
+    appMemberInfoRef,
+    appMemberSelectedGroup,
+    logout,
+    passwordLogin,
+    setAppMemberInfo,
+  } = useAppMember();
   const { refetchDemoAppMembers } = useDemoAppMembers();
   const { setBlockMenu } = usePage();
 
@@ -148,14 +155,14 @@ export function Block({
       ee,
       remap,
       showMessage: push,
-      appMemberGroups: groups,
-      addAppMemberGroup: addGroup,
-      getAppMemberInfo: () => infoRef.current,
+      appMemberGroups,
+      addAppMemberGroup,
+      getAppMemberInfo: () => appMemberInfoRef.current,
       passwordLogin,
       passwordLogout: logout,
-      setAppMemberInfo: setInfo,
+      setAppMemberInfo,
       refetchDemoAppMembers,
-      getAppMemberSelectedGroup: () => selectedGroup,
+      getAppMemberSelectedGroup: () => appMemberSelectedGroup,
     });
     const theme = mergeThemes(appDefinition.theme, pageDefinition.theme, block.theme);
 
@@ -242,14 +249,14 @@ export function Block({
     setBlockMenu,
     showDialog,
     showShareDialog,
-    groups,
-    addGroup,
-    infoRef,
     getAppMessage,
     refetchDemoAppMembers,
     getVariable,
-    setInfo,
-    selectedGroup,
+    appMemberGroups,
+    addAppMemberGroup,
+    setAppMemberInfo,
+    appMemberInfoRef,
+    appMemberSelectedGroup,
   ]);
 
   const { layout = manifest.layout } = block;

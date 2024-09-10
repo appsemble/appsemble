@@ -10,13 +10,13 @@ type MainProps = ComponentPropsWithoutRef<'main'>;
 
 export function Main({ className, ...props }: MainProps): ReactNode {
   const { definition } = useAppDefinition();
-  const { role, selectedGroup } = useAppMember();
+  const { appMemberRole, appMemberSelectedGroup } = useAppMember();
 
   const hasBottomNav = useMemo(
     () =>
       definition?.layout?.navigation === 'bottom' &&
-      shouldShowMenu(definition, role, selectedGroup),
-    [definition, role, selectedGroup],
+      shouldShowMenu(definition, appMemberRole, appMemberSelectedGroup),
+    [definition, appMemberRole, appMemberSelectedGroup],
   );
 
   return (

@@ -35,10 +35,10 @@ interface DemoLoginProps {
 function GroupControls(): ReactNode {
   type GroupsResponse = (Group & Partial<GroupMember>)[];
 
-  const { info, isLoggedIn } = useAppMember();
+  const { appMemberInfo, isLoggedIn } = useAppMember();
   const { definition: appDefinition } = useAppDefinition();
 
-  const sub = info?.sub;
+  const sub = appMemberInfo?.sub;
 
   const {
     data: groups,

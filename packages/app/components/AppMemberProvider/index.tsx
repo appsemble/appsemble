@@ -31,8 +31,8 @@ interface JwtPayload {
 
 const initialState: LoginState = {
   isLoggedIn: false,
-  role: null,
-  groups: [],
+  appMemberRole: null,
+  appMemberGroups: [],
 };
 
 interface PasswordLoginParams {
@@ -52,8 +52,8 @@ interface DemoLoginParams {
 
 interface LoginState {
   isLoggedIn: boolean;
-  role: AppRole;
-  groups: AppMemberGroup[];
+  appMemberRole: AppRole;
+  appMemberGroups: AppMemberGroup[];
 }
 
 interface AppMemberContext extends LoginState {
@@ -61,12 +61,12 @@ interface AppMemberContext extends LoginState {
   authorizationCodeLogin: (params: AuthorizationCodeLoginParams) => Promise<void>;
   demoLogin: (props: DemoLoginParams) => Promise<void>;
   logout: () => any;
-  info: AppMemberInfo;
-  infoRef: MutableRefObject<AppMemberInfo>;
-  setInfo: Dispatch<AppMemberInfo>;
-  addGroup: (group: AppMemberGroup) => void;
-  selectedGroup: AppMemberGroup;
-  setSelectedGroup: Dispatch<SetStateAction<AppMemberGroup>>;
+  appMemberInfo: AppMemberInfo;
+  appMemberInfoRef: MutableRefObject<AppMemberInfo>;
+  setAppMemberInfo: Dispatch<AppMemberInfo>;
+  addAppMemberGroup: (group: AppMemberGroup) => void;
+  appMemberSelectedGroup: AppMemberGroup;
+  setAppMemberSelectedGroup: Dispatch<SetStateAction<AppMemberGroup>>;
 }
 
 interface AppMemberProviderProps {
@@ -98,14 +98,14 @@ export function AppMemberProvider({ children }: AppMemberProviderProps): ReactNo
   const [isLoading, setIsLoading] = useState(Boolean(definition.security));
   const [state, setState] = useState(initialState);
 
-  const [info, setInfo] = useState<AppMemberInfo>(null);
-  const [selectedGroup, setSelectedGroup] = useState<AppMemberGroup>(null);
+  const [appMemberInfo, setAppMemberInfo] = useState<AppMemberInfo>(null);
+  const [appMemberSelectedGroup, setAppMemberSelectedGroup] = useState<AppMemberGroup>(null);
 
   const [exp, setExp] = useState(null);
   const [authorization, setAuthorization] = useState<string>(null);
 
-  const infoRef = useRef(info);
-  infoRef.current = info;
+  const appMemberInfoRef = useRef(appMemberInfo);
+  appMemberInfoRef.current = appMemberInfo;
 
   /**
    * Reset everything to its initial state for a logged out user.
@@ -115,7 +115,7 @@ export function AppMemberProvider({ children }: AppMemberProviderProps): ReactNo
     localStorage.removeItem(REFRESH_TOKEN);
     setExp(null);
     setState(initialState);
-    setInfo(null);
+    setAppMemberInfo(null);
     setAuthorization(null);
   }, []);
 
@@ -178,27 +178,27 @@ export function AppMemberProvider({ children }: AppMemberProviderProps): ReactNo
           config,
         );
 
-        let groups: AppMemberGroup[] = [];
+        let appMemberGroups: AppMemberGroup[] = [];
         try {
           const { data } = await axios.get<AppMemberGroup[]>(
             `${apiUrl}/api/apps/${appId}/members/current/groups`,
             config,
           );
-          groups = data;
+          appMemberGroups = data;
 
-          if (groups.length) {
-            setSelectedGroup(groups[0]);
+          if (appMemberGroups.length) {
+            setAppMemberSelectedGroup(appMemberGroups[0]);
           }
         } catch {
           // Do nothing
         }
 
         setSentryUser({ id: appMember.sub });
-        setInfo(appMember);
+        setAppMemberInfo(appMember);
         setState({
           isLoggedIn: true,
-          role: appMember.role,
-          groups,
+          appMemberRole: appMember.role,
+          appMemberGroups,
         });
         clearAccountLinkingState();
       } catch (error: unknown) {
@@ -254,9 +254,9 @@ export function AppMemberProvider({ children }: AppMemberProviderProps): ReactNo
     [login, logout],
   );
 
-  const addGroup: (group: AppMemberGroup) => void = useCallback((group) => {
-    setState(({ groups, ...oldState }) => {
-      const newGroups = [...groups];
+  const addAppMemberGroup: (group: AppMemberGroup) => void = useCallback((group) => {
+    setState(({ appMemberGroups, ...oldState }) => {
+      const newGroups = [...appMemberGroups];
 
       if (!newGroups.some((g) => g.id === group.id)) {
         newGroups.push(group);
@@ -264,7 +264,7 @@ export function AppMemberProvider({ children }: AppMemberProviderProps): ReactNo
 
       return {
         ...oldState,
-        groups: newGroups,
+        appMemberGroups: newGroups,
       };
     });
   }, []);
@@ -349,12 +349,12 @@ export function AppMemberProvider({ children }: AppMemberProviderProps): ReactNo
       developmentLogin,
       demoLogin,
       logout,
-      addGroup,
-      setInfo,
-      info,
-      infoRef,
-      selectedGroup,
-      setSelectedGroup,
+      addAppMemberGroup,
+      setAppMemberInfo,
+      appMemberInfo,
+      appMemberInfoRef,
+      appMemberSelectedGroup,
+      setAppMemberSelectedGroup,
       ...state,
     }),
     [
@@ -363,11 +363,11 @@ export function AppMemberProvider({ children }: AppMemberProviderProps): ReactNo
       developmentLogin,
       demoLogin,
       logout,
-      addGroup,
-      info,
+      addAppMemberGroup,
+      appMemberInfo,
       state,
-      selectedGroup,
-      setSelectedGroup,
+      appMemberSelectedGroup,
+      setAppMemberSelectedGroup,
     ],
   );
 

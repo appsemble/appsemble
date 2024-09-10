@@ -23,7 +23,7 @@ interface ErrorFallbackProps {
  * Capture renderer errors using Sentry.
  */
 export function ErrorFallback({ eventId, resetErrorBoundary }: ErrorFallbackProps): ReactNode {
-  const appMember = useAppMember();
+  const appMemberContext = useAppMember();
 
   return (
     <Content className="py-3">
@@ -32,9 +32,9 @@ export function ErrorFallback({ eventId, resetErrorBoundary }: ErrorFallbackProp
       </Message>
       <SentryForm
         dsn={sentryDsn}
-        email={appMember?.info?.email}
+        email={appMemberContext?.appMemberInfo?.email}
         eventId={eventId}
-        name={appMember?.info?.name}
+        name={appMemberContext?.appMemberInfo?.name}
         recovery={
           <Button className="mb-3" component={Link} onClick={resetErrorBoundary} to="/">
             <FormattedMessage {...messages.home} />

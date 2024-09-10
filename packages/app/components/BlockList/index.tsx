@@ -59,15 +59,15 @@ export function BlockList({
   const push = useMessages();
   const { definition: appDefinition, revision } = useAppDefinition();
   const {
-    addGroup,
-    groups,
-    infoRef,
+    addAppMemberGroup,
+    appMemberGroups,
+    appMemberInfoRef,
+    appMemberRole,
+    appMemberSelectedGroup,
     isLoggedIn,
     logout,
     passwordLogin,
-    role,
-    selectedGroup,
-    setInfo,
+    setAppMemberInfo,
   } = useAppMember();
   const { refetchDemoAppMembers } = useDemoAppMembers();
   const redirect = useLocationString();
@@ -82,9 +82,11 @@ export function BlockList({
   const blockList = useMemo(
     () =>
       blocks
-        .filter((block) => checkBlockPermissions(block, appDefinition, role, selectedGroup))
+        .filter((block) =>
+          checkBlockPermissions(block, appDefinition, appMemberRole, appMemberSelectedGroup),
+        )
         .map<[BlockDefinition, number]>((block, index) => [block, index]),
-    [blocks, appDefinition, role, selectedGroup],
+    [blocks, appDefinition, appMemberRole, appMemberSelectedGroup],
   );
 
   const blockStatus = useRef(blockList.map(() => false));
@@ -143,14 +145,14 @@ export function BlockList({
           prefixIndex: 'controller',
           ee,
           remap,
-          appMemberGroups: groups,
-          addAppMemberGroup: addGroup,
-          getAppMemberInfo: () => infoRef.current,
+          appMemberGroups,
+          addAppMemberGroup,
+          getAppMemberInfo: () => appMemberInfoRef.current,
           passwordLogin,
           passwordLogout: logout,
-          setAppMemberInfo: setInfo,
+          setAppMemberInfo,
           refetchDemoAppMembers,
-          getAppMemberSelectedGroup: () => selectedGroup,
+          getAppMemberSelectedGroup: () => appMemberSelectedGroup,
         }),
         events: createEvents(
           ee,
@@ -185,11 +187,11 @@ export function BlockList({
     pushNotifications,
     refetchDemoAppMembers,
     remap,
-    groups,
-    addGroup,
-    setInfo,
-    infoRef,
-    selectedGroup,
+    appMemberGroups,
+    addAppMemberGroup,
+    setAppMemberInfo,
+    appMemberInfoRef,
+    appMemberSelectedGroup,
   ]);
 
   if (!blockList.length) {

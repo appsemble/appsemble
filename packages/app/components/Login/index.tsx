@@ -28,12 +28,12 @@ export function Login(): ReactNode {
   useMeta(messages.login);
 
   const { definition } = useAppDefinition();
-  const { isLoggedIn, role } = useAppMember();
+  const { appMemberRole, isLoggedIn } = useAppMember();
   const qs = useQuery();
   const redirect = qs.get('redirect');
 
   if (isLoggedIn || !definition.security) {
-    const defaultPageName = getDefaultPageName(isLoggedIn, role, definition);
+    const defaultPageName = getDefaultPageName(isLoggedIn, appMemberRole, definition);
     return <Navigate to={redirect || normalize(defaultPageName)} />;
   }
 

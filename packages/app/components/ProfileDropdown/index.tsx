@@ -24,7 +24,14 @@ import { DemoLogin } from '../DemoLogin/index.js';
 export function ProfileDropdown(): ReactNode {
   const { formatMessage } = useIntl();
   const { definition } = useAppDefinition();
-  const { groups, info, isLoggedIn, logout, selectedGroup, setSelectedGroup } = useAppMember();
+  const {
+    appMemberGroups,
+    appMemberInfo,
+    appMemberSelectedGroup,
+    isLoggedIn,
+    logout,
+    setAppMemberSelectedGroup,
+  } = useAppMember();
   const { lang } = useParams<{ lang: string }>();
   const { pathname } = useLocation();
   const navigate = useNavigate();
@@ -35,17 +42,27 @@ export function ProfileDropdown(): ReactNode {
   const groupSelectionToggle = useToggle();
   const demoLoginToggle = useToggle();
 
-  const [localSelectedGroup, setLocalSelectedGroup] = useState(selectedGroup);
+  const [localSelectedGroup, setLocalSelectedGroup] = useState(appMemberSelectedGroup);
 
   const changeLocalSelectedGroup = (event: ChangeEvent<MinimalHTMLElement>): void => {
-    setLocalSelectedGroup(groups.find((group) => group.id === Number(event.target.value)) || null);
+    setLocalSelectedGroup(
+      appMemberGroups.find((group) => group.id === Number(event.target.value)) || null,
+    );
   };
 
   const handleGroupChange = useCallback(() => {
-    setSelectedGroup(groups.find((group) => group.id === localSelectedGroup?.id) || null);
+    setAppMemberSelectedGroup(
+      appMemberGroups.find((group) => group.id === localSelectedGroup?.id) || null,
+    );
     groupSelectionToggle.disable();
     navigate('/');
-  }, [groupSelectionToggle, groups, localSelectedGroup?.id, navigate, setSelectedGroup]);
+  }, [
+    groupSelectionToggle,
+    appMemberGroups,
+    localSelectedGroup?.id,
+    navigate,
+    setAppMemberSelectedGroup,
+  ]);
 
   if (
     !showLogin ||
@@ -75,11 +92,11 @@ export function ProfileDropdown(): ReactNode {
         className={`is-right ${styles.dropdown}`}
         label={
           <figure className="image is-32x32 is-clipped">
-            {info?.picture ? (
+            {appMemberInfo?.picture ? (
               <img
                 alt={formatMessage(messages.pfp)}
                 className={`is-rounded ${styles.gravatar}`}
-                src={info.picture}
+                src={appMemberInfo.picture}
               />
             ) : (
               <Icon
@@ -90,12 +107,12 @@ export function ProfileDropdown(): ReactNode {
           </figure>
         }
       >
-        {Boolean(groups?.length) && (
+        {Boolean(appMemberGroups?.length) && (
           <NavbarItem icon="wrench" onClick={groupSelectionToggle.enable}>
-            {selectedGroup ? (
+            {appMemberSelectedGroup ? (
               <FormattedMessage
                 {...messages.changeSelectedGroup}
-                values={{ selectedGroupName: selectedGroup?.name }}
+                values={{ selectedGroupName: appMemberSelectedGroup?.name }}
               />
             ) : (
               <FormattedMessage {...messages.selectGroup} />
@@ -140,7 +157,7 @@ export function ProfileDropdown(): ReactNode {
       </NavbarDropdown>
       <ModalCard
         component={SimpleForm}
-        defaultValues={{ groupId: selectedGroup?.id }}
+        defaultValues={{ groupId: appMemberSelectedGroup?.id }}
         isActive={groupSelectionToggle.enabled}
         onClose={groupSelectionToggle.disable}
         onSubmit={handleGroupChange}
@@ -148,13 +165,13 @@ export function ProfileDropdown(): ReactNode {
         <div className="mb-6">
           <SimpleFormField
             component={SelectField}
-            disabled={groups.length < 2}
+            disabled={appMemberGroups.length < 2}
             label={<FormattedMessage {...messages.selectGroup} />}
             name="groupId"
             onChange={changeLocalSelectedGroup}
             required
           >
-            {groups.map((group) => (
+            {appMemberGroups.map((group) => (
               <option key={group.id} value={group.id}>
                 {group.name} - {group.role}
               </option>

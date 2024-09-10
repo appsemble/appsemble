@@ -29,13 +29,13 @@ import { Verify } from '../Verify/index.js';
 export function AppRoutes(): ReactNode {
   const { getAppMessage } = useAppMessages();
   const { definition } = useAppDefinition();
-  const { isLoggedIn, role } = useAppMember();
+  const { appMemberRole, isLoggedIn } = useAppMember();
 
   if (definition == null) {
     return null;
   }
 
-  const defaultPageName = getDefaultPageName(isLoggedIn, role, definition);
+  const defaultPageName = getDefaultPageName(isLoggedIn, appMemberRole, definition);
   const hasCustomLogin = definition.pages.some((page) => page.name === 'Login');
   const hasCustomRegister = definition.pages.some((page) => page.name === 'Register');
 

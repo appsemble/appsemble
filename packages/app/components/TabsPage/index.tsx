@@ -5,7 +5,7 @@ import {
   type SubPageDefinition,
   type TabsPageDefinition,
 } from '@appsemble/types';
-import { normalize } from '@appsemble/utils';
+import { normalize, type RemapperContext } from '@appsemble/utils';
 import {
   type ChangeEvent,
   type ComponentPropsWithoutRef,
@@ -60,8 +60,17 @@ export function TabsPage({
   const [data, setData] = useState<unknown>({});
   const { pathname } = useLocation();
   const navigate = useNavigate();
-  const { addGroup, groups, info, infoRef, logout, passwordLogin, role, selectedGroup, setInfo } =
-    useAppMember();
+  const {
+    addAppMemberGroup,
+    appMemberGroups,
+    appMemberInfo,
+    appMemberInfoRef,
+    appMemberRole,
+    appMemberSelectedGroup,
+    logout,
+    passwordLogin,
+    setAppMemberInfo,
+  } = useAppMember();
   const { refetchDemoAppMembers } = useDemoAppMembers();
   const [tabsWithPermissions, setTabsWithPermissions] = useState([]);
   const [defaultTab, setDefaultTab] = useState(null);
@@ -74,17 +83,18 @@ export function TabsPage({
   const [createdTabs, setCreatedTabs] = useState([]);
 
   const remapperContext = useMemo(
-    () => ({
-      appId,
-      appUrl: window.location.origin,
-      url: window.location.href,
-      getMessage,
-      getVariable,
-      appMemberInfo: info,
-      context: { name: pageDefinition.name },
-      locale: lang,
-    }),
-    [info, getMessage, getVariable, lang, pageDefinition.name],
+    () =>
+      ({
+        appId,
+        appUrl: window.location.origin,
+        url: window.location.href,
+        getMessage,
+        getVariable,
+        appMemberInfo,
+        context: { name: pageDefinition.name },
+        locale: lang,
+      }) as RemapperContext,
+    [appMemberInfo, getMessage, getVariable, lang, pageDefinition.name],
   );
 
   const checkSubPagePermissions = useCallback(
@@ -95,9 +105,9 @@ export function TabsPage({
         roles: subPage.roles,
       };
 
-      return checkPagePermissions(pd, appDefinition, role, selectedGroup);
+      return checkPagePermissions(pd, appDefinition, appMemberRole, appMemberSelectedGroup);
     },
-    [remap, data, remapperContext, appDefinition, role, selectedGroup],
+    [remap, data, remapperContext, appDefinition, appMemberRole, appMemberSelectedGroup],
   );
 
   const events = createEvents(
@@ -198,14 +208,14 @@ export function TabsPage({
         remap,
         params,
         showMessage,
-        appMemberGroups: groups,
-        addAppMemberGroup: addGroup,
-        getAppMemberInfo: () => infoRef.current,
+        appMemberGroups,
+        addAppMemberGroup,
+        getAppMemberInfo: () => appMemberInfoRef.current,
         passwordLogin,
         passwordLogout: logout,
-        setAppMemberInfo: setInfo,
+        setAppMemberInfo,
         refetchDemoAppMembers,
-        getAppMemberSelectedGroup: () => selectedGroup,
+        getAppMemberSelectedGroup: () => appMemberSelectedGroup,
       }),
     [
       appStorage,
@@ -223,14 +233,14 @@ export function TabsPage({
       remap,
       params,
       showMessage,
-      groups,
-      addGroup,
+      appMemberGroups,
+      addAppMemberGroup,
       passwordLogin,
       logout,
-      setInfo,
+      setAppMemberInfo,
       refetchDemoAppMembers,
-      infoRef,
-      selectedGroup,
+      appMemberInfoRef,
+      appMemberSelectedGroup,
     ],
   );
 

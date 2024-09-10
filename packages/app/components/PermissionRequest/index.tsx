@@ -10,7 +10,7 @@ import { useServiceWorkerRegistration } from '../ServiceWorkerRegistrationProvid
  */
 export function PermissionRequest(): ReactNode {
   const { definition } = useAppDefinition();
-  const { info } = useAppMember();
+  const { appMemberInfo } = useAppMember();
   const { permission, requestPermission, subscribe } = useServiceWorkerRegistration();
 
   useEffect(() => {
@@ -24,7 +24,7 @@ export function PermissionRequest(): ReactNode {
 
     if (
       definition.notifications === 'startup' ||
-      (definition.notifications === 'login' && info?.sub)
+      (definition.notifications === 'login' && appMemberInfo?.sub)
     ) {
       requestPermission().then((p) => {
         if (p === 'granted') {
@@ -32,7 +32,7 @@ export function PermissionRequest(): ReactNode {
         }
       });
     }
-  }, [definition.notifications, requestPermission, subscribe, info?.sub]);
+  }, [definition.notifications, requestPermission, subscribe, appMemberInfo?.sub]);
 
   return permission === 'pending' ? <div className={`modal-background ${styles.overlay}`} /> : null;
 }

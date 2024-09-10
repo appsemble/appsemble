@@ -9,6 +9,7 @@ import {
   type Remapper,
   type SubPageDefinition,
 } from '@appsemble/types';
+import { type RemapperContext } from '@appsemble/utils';
 import {
   type MutableRefObject,
   type ReactNode,
@@ -65,8 +66,16 @@ export function FlowPage({
   const [currentStep, setCurrentStep] = useState(0);
   const pushNotifications = useServiceWorkerRegistration();
   const showMessage = useMessages();
-  const { addGroup, groups, info, infoRef, logout, passwordLogin, selectedGroup, setInfo } =
-    useAppMember();
+  const {
+    addAppMemberGroup,
+    appMemberGroups,
+    appMemberInfo,
+    appMemberInfoRef,
+    appMemberSelectedGroup,
+    logout,
+    passwordLogin,
+    setAppMemberInfo,
+  } = useAppMember();
   const { refetchDemoAppMembers } = useDemoAppMembers();
   const { getAppMessage, getMessage } = useAppMessages();
   const { getVariable } = useAppVariables();
@@ -76,13 +85,13 @@ export function FlowPage({
   const [error, setError] = useState(false);
   const [loopData, setLoopData] = useState<Object[]>();
   const [stepsData, setStepsData] = useState<Object[]>();
-  const remapperContext = {
+  const remapperContext: RemapperContext = {
     appId,
     appUrl: window.location.origin,
     url: window.location.href,
     getMessage,
     getVariable,
-    appMember: info,
+    appMemberInfo,
     context: { name: pageDefinition.name },
     locale: params.lang,
   };
@@ -249,14 +258,14 @@ export function FlowPage({
         remap,
         params,
         showMessage,
-        appMemberGroups: groups,
-        addAppMemberGroup: addGroup,
-        getAppMemberInfo: () => infoRef.current,
+        appMemberGroups,
+        addAppMemberGroup,
+        getAppMemberInfo: () => appMemberInfoRef.current,
         passwordLogin,
         passwordLogout: logout,
-        setAppMemberInfo: setInfo,
+        setAppMemberInfo,
         refetchDemoAppMembers,
-        getAppMemberSelectedGroup: () => selectedGroup,
+        getAppMemberSelectedGroup: () => appMemberSelectedGroup,
       }),
     [
       appStorage,
@@ -275,14 +284,14 @@ export function FlowPage({
       remap,
       params,
       showMessage,
-      groups,
-      addGroup,
+      appMemberGroups,
+      addAppMemberGroup,
       passwordLogin,
       logout,
-      setInfo,
+      setAppMemberInfo,
       refetchDemoAppMembers,
-      infoRef,
-      selectedGroup,
+      appMemberInfoRef,
+      appMemberSelectedGroup,
     ],
   );
 

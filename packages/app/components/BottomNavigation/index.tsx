@@ -25,15 +25,16 @@ interface BottomNavigationProps {
 export function BottomNavigation({ pages }: BottomNavigationProps): ReactNode {
   const { lang } = useParams<{ lang: string }>();
   const url = `/${lang}`;
-  const { info, isLoggedIn, logout, role, selectedGroup } = useAppMember();
+  const { appMemberInfo, appMemberRole, appMemberSelectedGroup, isLoggedIn, logout } =
+    useAppMember();
   const { getAppMessage, getMessage } = useAppMessages();
   const { getVariable } = useAppVariables();
   const { definition } = useAppDefinition();
   const { formatMessage } = useIntl();
 
   const showMenu = useMemo(
-    () => shouldShowMenu(definition, role, selectedGroup),
-    [definition, role, selectedGroup],
+    () => shouldShowMenu(definition, appMemberRole, appMemberSelectedGroup),
+    [definition, appMemberRole, appMemberSelectedGroup],
   );
 
   return (
@@ -52,7 +53,7 @@ export function BottomNavigation({ pages }: BottomNavigationProps): ReactNode {
                   url: window.location.href,
                   getMessage,
                   getVariable,
-                  appMemberInfo: info,
+                  appMemberInfo,
                   context: { name },
                   locale: lang,
                 }) as ReactNode)

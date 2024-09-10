@@ -43,7 +43,7 @@ export function OpenIDCallback(): ReactNode {
   });
 
   const session = useMemo(() => loadOAuth2State<OAuth2State>(), []);
-  const { authorizationCodeLogin, isLoggedIn, role } = useAppMember();
+  const { appMemberRole, authorizationCodeLogin, isLoggedIn } = useAppMember();
 
   const { definition } = useAppDefinition();
 
@@ -75,7 +75,7 @@ export function OpenIDCallback(): ReactNode {
   }
 
   if (isLoggedIn) {
-    const defaultPageName = getDefaultPageName(isLoggedIn, role, definition);
+    const defaultPageName = getDefaultPageName(isLoggedIn, appMemberRole, definition);
     return <Navigate to={showDemoLogin ? '/Login' : redirect || normalize(defaultPageName)} />;
   }
 

@@ -20,7 +20,7 @@ export function GroupInvitePrompt(): ReactNode {
   const query = useQuery();
   const navigate = useNavigate();
 
-  const { addGroup, selectedGroup, setSelectedGroup } = useAppMember();
+  const { addAppMemberGroup, appMemberSelectedGroup, setAppMemberSelectedGroup } = useAppMember();
 
   const [accepted, setAccepted] = useState(false);
   const [declined, setDeclined] = useState(false);
@@ -51,17 +51,24 @@ export function GroupInvitePrompt(): ReactNode {
       const group = { id: invite.groupId, name: invite.groupName, role: invite.role };
 
       setAccepted(true);
-      addGroup(group);
+      addAppMemberGroup(group);
 
-      if (!selectedGroup) {
-        setSelectedGroup(group);
+      if (!appMemberSelectedGroup) {
+        setAppMemberSelectedGroup(group);
       }
 
       navigate('/');
     } catch (error_) {
       setError(error_);
     }
-  }, [addGroup, invite, navigate, selectedGroup, setSelectedGroup, token]);
+  }, [
+    addAppMemberGroup,
+    invite,
+    navigate,
+    appMemberSelectedGroup,
+    setAppMemberSelectedGroup,
+    token,
+  ]);
 
   if (loading) {
     return <Loader />;

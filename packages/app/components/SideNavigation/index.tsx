@@ -40,10 +40,12 @@ export function SideNavigation({ blockMenus, pages }: SideNavigationProps): Reac
     definition: { layout, security },
   } = useAppDefinition();
   const { formatMessage } = useIntl();
-  const { info, isLoggedIn, logout, role, selectedGroup } = useAppMember();
+  const { appMemberInfo, appMemberRole, appMemberSelectedGroup, isLoggedIn, logout } =
+    useAppMember();
   const checkPagePermissionsCallback = useCallback(
-    (page: PageDefinition): boolean => checkPagePermissions(page, definition, role, selectedGroup),
-    [definition, role, selectedGroup],
+    (page: PageDefinition): boolean =>
+      checkPagePermissions(page, definition, appMemberRole, appMemberSelectedGroup),
+    [appMemberRole, appMemberSelectedGroup, definition],
   );
 
   const generateNameAndNavName = useCallback(
@@ -59,14 +61,14 @@ export function SideNavigation({ blockMenus, pages }: SideNavigationProps): Reac
             url: window.location.href,
             getMessage,
             getVariable,
-            appMemberInfo: info,
+            appMemberInfo,
             context: { name },
             locale: lang,
           }) as string)
         : name;
       return [name, navName];
     },
-    [getAppMessage, getMessage, getVariable, lang, info],
+    [getAppMessage, getMessage, getVariable, lang, appMemberInfo],
   );
 
   const renderMenu = useCallback(
