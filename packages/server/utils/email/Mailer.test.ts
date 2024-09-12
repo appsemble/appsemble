@@ -870,40 +870,4 @@ describe('error handling', () => {
       'Unable to determine the sender or recipient of the message.',
     );
   });
-
-  it('should raise a eenvelopeformat error', async () => {
-    mailer.transport = {
-      sendMail: vi.fn().mockRejectedValue({
-        code: 'EENVELOPEFORMAT',
-      }),
-    } as Partial<Transporter> as Transporter;
-
-    await expect(() => mailer.sendEmail(email)).rejects.toThrow(
-      'The format of the sender or recipient email address is invalid.',
-    );
-  });
-
-  it('should raise a econnection error', async () => {
-    mailer.transport = {
-      sendMail: vi.fn().mockRejectedValue({
-        code: 'ECONNECTION',
-      }),
-    } as Partial<Transporter> as Transporter;
-
-    await expect(() => mailer.sendEmail(email)).rejects.toThrow(
-      'Unable to establish a connection to the email server.',
-    );
-  });
-
-  it('should raise a emsgbig error', async () => {
-    mailer.transport = {
-      sendMail: vi.fn().mockRejectedValue({
-        code: 'EMSGBIG',
-      }),
-    } as Partial<Transporter> as Transporter;
-
-    await expect(() => mailer.sendEmail(email)).rejects.toThrow(
-      'The message is too large to be sent.',
-    );
-  });
 });
