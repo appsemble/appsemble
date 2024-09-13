@@ -145,7 +145,19 @@ type MailerArgs = Partial<
 export class Mailer {
   transport: Transporter;
 
-  imap: ImapFlow;
+  connection: boolean;
+
+  private imapCopyToSentFolder: boolean;
+
+  private imapHost: string;
+
+  private imapPass: string;
+
+  private imapPort: number;
+
+  private imapSecure: boolean;
+
+  private imapUser: string;
 
   constructor({
     imapCopyToSentFolder,
@@ -163,6 +175,7 @@ export class Mailer {
   }: MailerArgs) {
     if (smtpHost) {
       const auth = (smtpUser && smtpPass && { user: smtpUser, pass: smtpPass }) || null;
+      this.connection = true;
       this.transport = createTransport(
         {
           port: smtpPort || smtpSecure ? 465 : 587,
@@ -174,16 +187,13 @@ export class Mailer {
         { from: smtpFrom },
       );
     }
-    if (imapHost && imapCopyToSentFolder) {
-      this.imap = new ImapFlow({
-        host: imapHost,
-        port: imapPort || 993,
-        secure: imapSecure,
-        auth: {
-          user: imapUser,
-          pass: imapPass,
-        },
-      });
+    if (imapHost) {
+      this.imapCopyToSentFolder = imapCopyToSentFolder;
+      this.imapHost = imapHost;
+      this.imapPass = imapPass;
+      this.imapPort = imapPort || 993;
+      this.imapSecure = imapSecure;
+      this.imapUser = imapUser;
     }
   }
 
@@ -459,7 +469,7 @@ export class Mailer {
       })
         .compile()
         .build();
-      if (this.imap) {
+      if (this.imapCopyToSentFolder) {
         await this.copyToSentFolder(message);
       } else {
         logger.warn('IMAP hasn’t been configured. Not moving email to sent folder.');
@@ -469,7 +479,22 @@ export class Mailer {
   }
 
   async copyToSentFolder(body: Buffer | string): Promise<void> {
-    await this.imap.connect();
-    await this.imap.append('Sent', String(body), ['\\Seen']);
+    const imap = new ImapFlow({
+      host: this.imapHost,
+      port: this.imapPort || 993,
+      secure: this.imapSecure,
+      auth: {
+        user: this.imapUser,
+        pass: this.imapPass,
+      },
+    });
+    await imap.connect();
+    const lock = await imap.getMailboxLock('Sent');
+    try {
+      await imap.append('Sent', String(body), ['\\Seen']);
+    } finally {
+      lock.release();
+      imap.logout();
+    }
   }
 }
