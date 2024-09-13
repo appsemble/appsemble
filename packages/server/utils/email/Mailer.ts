@@ -175,7 +175,6 @@ export class Mailer {
   }: MailerArgs) {
     if (smtpHost) {
       const auth = (smtpUser && smtpPass && { user: smtpUser, pass: smtpPass }) || null;
-      this.connection = true;
       this.transport = createTransport(
         {
           port: smtpPort || smtpSecure ? 465 : 587,
