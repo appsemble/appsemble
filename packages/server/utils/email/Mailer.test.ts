@@ -833,3 +833,41 @@ describe('emailQuota', () => {
     );
   });
 });
+
+describe('error handling', () => {
+  beforeEach(async () => {
+    const server = await createServer();
+    await setTestApp(server);
+  });
+
+  const email: Parameters<Mailer['sendEmail']>[0] = {
+    to: 'test@example.com',
+    from: 'test@example.com',
+    subject: 'Test',
+    text: 'Test',
+    html: '<p>Test</p>',
+    attachments: [],
+  };
+
+  it('should raise a generic error', async () => {
+    mailer.transport = {
+      sendMail: vi.fn().mockRejectedValue({}),
+    } as Partial<Transporter> as Transporter;
+
+    await expect(() => mailer.sendEmail(email)).rejects.toThrow(
+      'Something went wrong when sending the email.',
+    );
+  });
+
+  it('should raise a eenvelope error', async () => {
+    mailer.transport = {
+      sendMail: vi.fn().mockRejectedValue({
+        code: 'EENVELOPE',
+      }),
+    } as Partial<Transporter> as Transporter;
+
+    await expect(() => mailer.sendEmail(email)).rejects.toThrow(
+      'Unable to determine the sender or recipient of the message.',
+    );
+  });
+});
