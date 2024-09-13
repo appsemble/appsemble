@@ -147,8 +147,6 @@ export class Mailer {
 
   connection: boolean;
 
-  private imapCopyToSentFolder: boolean;
-
   private imapHost: string;
 
   private imapPass: string;
@@ -160,7 +158,6 @@ export class Mailer {
   private imapUser: string;
 
   constructor({
-    imapCopyToSentFolder,
     imapHost,
     imapPass,
     imapPort,
@@ -187,7 +184,6 @@ export class Mailer {
       );
     }
     if (imapHost) {
-      this.imapCopyToSentFolder = imapCopyToSentFolder;
       this.imapHost = imapHost;
       this.imapPass = imapPass;
       this.imapPort = imapPort || 993;
@@ -468,7 +464,7 @@ export class Mailer {
       })
         .compile()
         .build();
-      if (this.imapCopyToSentFolder) {
+      if (argv.imapHost) {
         await this.copyToSentFolder(message);
       } else {
         logger.warn('IMAP hasn’t been configured. Not moving email to sent folder.');
@@ -477,7 +473,7 @@ export class Mailer {
     }
   }
 
-  async copyToSentFolder(body: Buffer | string): Promise<void> {
+  createImapFlow(): ImapFlow {
     const imap = new ImapFlow({
       host: this.imapHost,
       port: this.imapPort || 993,
@@ -487,6 +483,11 @@ export class Mailer {
         pass: this.imapPass,
       },
     });
+    return imap;
+  }
+
+  async copyToSentFolder(body: Buffer | string): Promise<void> {
+    const imap = this.createImapFlow();
     await imap.connect();
     const lock = await imap.getMailboxLock('Sent');
     try {
