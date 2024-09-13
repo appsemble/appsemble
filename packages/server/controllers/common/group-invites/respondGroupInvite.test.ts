@@ -5,6 +5,7 @@ import { beforeAll, beforeEach, describe, expect, it } from 'vitest';
 
 import {
   App,
+  AppMember,
   Group,
   GroupInvite,
   Organization,
@@ -67,12 +68,20 @@ beforeEach(async () => {
 });
 
 describe('acceptAppGroupInvite', () => {
-  beforeEach(() => {
-    authorizeAppMember(app);
+  let appMember: AppMember;
+
+  beforeEach(async () => {
+    appMember = await AppMember.create({
+      AppId: app.id,
+      UserId: user.id,
+      email: user.primaryEmail,
+      role: 'Manager',
+    });
+    authorizeAppMember(app, appMember);
   });
 
   it('should respond with 404 if no group invite was found', async () => {
-    const response = await request.post(`/api/apps/${app.id}/group/invites`, { code: 'invalid' });
+    const response = await request.post('/api/group-invites/invalid/respond', { response: false });
 
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 404 Not Found
@@ -80,7 +89,7 @@ describe('acceptAppGroupInvite', () => {
 
       {
         "error": "Not Found",
-        "message": "No invite found for code: invalid",
+        "message": "This token is invalid",
         "statusCode": 404,
       }
     `);
@@ -90,24 +99,14 @@ describe('acceptAppGroupInvite', () => {
     const group = await Group.create({ name: 'Fooz', AppId: app.id });
     const invite = await GroupInvite.create({
       GroupId: group.id,
-      key: 'super secret',
+      key: 'super-secret',
       email: 'test@example.com',
     });
-    const response = await request.post(`/api/apps/${app.id}/group/invites`, {
-      code: 'super secret',
+    const response = await request.post('/api/group-invites/super-secret/respond', {
+      response: true,
     });
 
-    expect(response).toMatchInlineSnapshot(`
-      HTTP/1.1 200 OK
-      Content-Type: application/json; charset=utf-8
-
-      {
-        "annotations": {},
-        "id": 1,
-        "name": "Fooz",
-        "role": "member",
-      }
-    `);
+    expect(response).toMatchInlineSnapshot('HTTP/1.1 204 No Content');
     await expect(invite.reload()).rejects.toBeDefined();
   });
 });

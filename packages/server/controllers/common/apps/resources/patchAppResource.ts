@@ -21,6 +21,8 @@ export async function patchAppResource(ctx: Context): Promise<void> {
     include: [{ association: 'Author', attributes: ['id', 'name'], required: false }],
   });
 
+  assertKoaError(!resource, ctx, 404, 'Resource not found');
+
   await checkAuthSubjectAppPermissions({
     context: ctx,
     appId,

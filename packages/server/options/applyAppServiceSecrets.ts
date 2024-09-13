@@ -16,6 +16,9 @@ export async function applyAppServiceSecrets({
 }: ApplyAppServiceSecretsParams): Promise<RawAxiosRequestConfig> {
   const newAxiosConfig = axiosConfig;
 
+  if (!context.user) {
+    return newAxiosConfig;
+  }
   await checkAuthSubjectAppPermissions({ context, app, permissions: [] });
 
   const appServiceSecrets = (

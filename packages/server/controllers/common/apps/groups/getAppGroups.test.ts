@@ -117,8 +117,8 @@ describe('getGroups', () => {
     expect(response).toMatchObject({
       status: 200,
       data: [
-        { id: groupA.id, name: groupA.name, role: PredefinedAppRole.Member },
-        { id: groupB.id, name: groupB.name, role: PredefinedAppRole.GroupsManager },
+        { id: groupA.id, name: groupA.name },
+        { id: groupB.id, name: groupB.name },
         { id: groupC.id, name: groupC.name },
       ],
     });

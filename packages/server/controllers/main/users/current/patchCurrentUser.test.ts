@@ -37,7 +37,7 @@ beforeEach(async () => {
   });
 });
 
-describe('updateCurrentUser', () => {
+describe('patchCurrentUser', () => {
   it('should update the user display name', async () => {
     authorizeStudio();
     const response = await request.put('/api/users/current', { name: 'John' });

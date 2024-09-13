@@ -1172,13 +1172,13 @@ describe('createApp', () => {
     );
 
     expect(response).toMatchInlineSnapshot(`
-      HTTP/1.1 403 Forbidden
+      HTTP/1.1 404 Not Found
       Content-Type: application/json; charset=utf-8
 
       {
-        "error": "Forbidden",
-        "message": "User is not a member of this organization.",
-        "statusCode": 403,
+        "error": "Not Found",
+        "message": "Organization not found.",
+        "statusCode": 404,
       }
     `);
   });
@@ -2292,6 +2292,9 @@ describe('createApp', () => {
                     "$ref": "#/components/schemas/AppLayoutDefinition",
                     "description": "Properties related to the layout of the app.",
                   },
+                  "members": {
+                    "$ref": "#/components/schemas/AppMembersDefinition",
+                  },
                   "name": {
                     "description": "The human readable name of the app.
 
@@ -2359,27 +2362,12 @@ describe('createApp', () => {
       ",
                     "type": "object",
                   },
-                  "roles": {
-                    "description": "The list of roles that are allowed to view this app.
-
-      This list is used as the default roles for the roles property on pages and blocks, which can be
-      overridden by defining them for a specific page or block. Note that these roles must be defined in
-      \`security.roles\`.
-      ",
-                    "items": {
-                      "type": "string",
-                    },
-                    "type": "array",
-                  },
                   "security": {
                     "$ref": "#/components/schemas/SecurityDefinition",
-                    "description": "Role definitions that may be used by the app.",
+                    "description": "Role and guest definitions that may be used by the app.",
                   },
                   "theme": {
                     "$ref": "#/components/schemas/Theme",
-                  },
-                  "users": {
-                    "$ref": "#/components/schemas/UsersDefinition",
                   },
                 },
                 "required": [

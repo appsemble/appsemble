@@ -13,12 +13,15 @@ export async function queryOrganizationAppCollections(ctx: Context): Promise<voi
 
   assertKoaError(!organization, ctx, 404, 'Organization not found.');
 
-  const organizationMember = await OrganizationMember.findOne({
-    where: {
-      UserId: authSubject.id,
-      OrganizationId: organizationId,
-    },
-  });
+  let organizationMember;
+  if (authSubject) {
+    organizationMember = await OrganizationMember.findOne({
+      where: {
+        UserId: authSubject.id,
+        OrganizationId: organizationId,
+      },
+    });
+  }
 
   const collections = await AppCollection.findAll({
     include: [

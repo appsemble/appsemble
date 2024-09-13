@@ -72,7 +72,7 @@ export const pathItems: OpenAPIV3.PathItemObject = {
         },
       },
     },
-    security: [{ studio: [] }, {}, { cli: ['assets:write'] }],
+    security: [{ studio: [] }, { cli: ['assets:write'] }, {}],
   },
   delete: {
     tags: ['common', 'app', 'asset'],

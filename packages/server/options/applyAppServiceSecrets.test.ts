@@ -189,13 +189,13 @@ describe('applyAppServiceSecrets', () => {
   });
 
   it('should not apply secrets when no urls matched', async () => {
-    await AppMember.create({
+    const member = await AppMember.create({
       email: user.primaryEmail,
       AppId: app.id,
       UserId: user.id,
       role: 'Admin',
     });
-    authorizeAppMember(app);
+    authorizeAppMember(app, member);
 
     await AppServiceSecret.create({
       name: 'Test service',
@@ -343,12 +343,13 @@ describe('applyAppServiceSecrets', () => {
         ],
       },
     } as Partial<App>);
-    await AppMember.create({
+    const member = await AppMember.create({
       email: user.primaryEmail,
       AppId: appWithoutSecurity.id,
       UserId: user.id,
       role: 'Admin',
     });
+    authorizeAppMember(app, member);
     await AppServiceSecret.create({
       name: 'Test service',
       urlPatterns: proxiedRequest.defaults.baseURL,
@@ -395,13 +396,13 @@ describe('applyAppServiceSecrets', () => {
   });
 
   it('should authenticate request action with HTTP basic authentication', async () => {
-    await AppMember.create({
+    const appMember = await AppMember.create({
       email: user.primaryEmail,
       AppId: app.id,
       UserId: user.id,
       role: 'Admin',
     });
-    authorizeAppMember(app);
+    authorizeAppMember(app, appMember);
 
     await AppServiceSecret.create({
       name: 'Test service',
@@ -447,13 +448,13 @@ describe('applyAppServiceSecrets', () => {
   });
 
   it('should not authenticate request action with HTTP basic authentication when Authorization header already specified', async () => {
-    await AppMember.create({
+    const member = await AppMember.create({
       email: user.primaryEmail,
       AppId: app.id,
       UserId: user.id,
       role: 'Admin',
     });
-    authorizeAppMember(app);
+    authorizeAppMember(app, member);
 
     await AppServiceSecret.create({
       name: 'Test service',
@@ -508,13 +509,13 @@ describe('applyAppServiceSecrets', () => {
   });
 
   it('should authenticate request action with client certificate', async () => {
-    await AppMember.create({
+    const member = await AppMember.create({
       email: user.primaryEmail,
       AppId: app.id,
       UserId: user.id,
       role: 'Admin',
     });
-    authorizeAppMember(app);
+    authorizeAppMember(app, member);
 
     await AppServiceSecret.create({
       name: 'Test service',
@@ -568,13 +569,13 @@ describe('applyAppServiceSecrets', () => {
   });
 
   it('should not authenticate request action with client certificate when httpsAgent already present', async () => {
-    await AppMember.create({
+    const member = await AppMember.create({
       email: user.primaryEmail,
       AppId: app.id,
       UserId: user.id,
       role: 'Admin',
     });
-    authorizeAppMember(app);
+    authorizeAppMember(app, member);
 
     await AppServiceSecret.create({
       name: 'Test service',
@@ -639,13 +640,13 @@ describe('applyAppServiceSecrets', () => {
   });
 
   it('should authenticate request action with client credentials', async () => {
-    await AppMember.create({
+    const member = await AppMember.create({
       email: user.primaryEmail,
       AppId: app.id,
       UserId: user.id,
       role: 'Admin',
     });
-    authorizeAppMember(app);
+    authorizeAppMember(app, member);
 
     const tokenUrl = `${proxiedRequest.defaults.baseURL}oauth/token`;
 
@@ -708,13 +709,13 @@ describe('applyAppServiceSecrets', () => {
   });
 
   it('should not authenticate request action with client credentials when Authorization header already specified', async () => {
-    await AppMember.create({
+    const member = await AppMember.create({
       email: user.primaryEmail,
       AppId: app.id,
       UserId: user.id,
       role: 'Admin',
     });
-    authorizeAppMember(app);
+    authorizeAppMember(app, member);
 
     await AppServiceSecret.create({
       name: 'Test service',
@@ -772,13 +773,13 @@ describe('applyAppServiceSecrets', () => {
   });
 
   it('should authenticate request action with cookie', async () => {
-    await AppMember.create({
+    const member = await AppMember.create({
       email: user.primaryEmail,
       AppId: app.id,
       UserId: user.id,
       role: 'Admin',
     });
-    authorizeAppMember(app);
+    authorizeAppMember(app, member);
 
     await AppServiceSecret.create({
       name: 'Test service',
@@ -822,13 +823,13 @@ describe('applyAppServiceSecrets', () => {
   });
 
   it('should authenticate request action with 2 cookies', async () => {
-    await AppMember.create({
+    const member = await AppMember.create({
       email: user.primaryEmail,
       AppId: app.id,
       UserId: user.id,
       role: 'Admin',
     });
-    authorizeAppMember(app);
+    authorizeAppMember(app, member);
 
     await AppServiceSecret.create({
       name: 'Test service',
@@ -882,13 +883,13 @@ describe('applyAppServiceSecrets', () => {
   });
 
   it('should authenticate request action with custom header', async () => {
-    await AppMember.create({
+    const member = await AppMember.create({
       email: user.primaryEmail,
       AppId: app.id,
       UserId: user.id,
       role: 'Admin',
     });
-    authorizeAppMember(app);
+    authorizeAppMember(app, member);
 
     await AppServiceSecret.create({
       name: 'Test service',
@@ -932,13 +933,13 @@ describe('applyAppServiceSecrets', () => {
   });
 
   it('should not authenticate request action with header authorization', async () => {
-    await AppMember.create({
+    const member = await AppMember.create({
       email: user.primaryEmail,
       AppId: app.id,
       UserId: user.id,
       role: 'Admin',
     });
-    authorizeAppMember(app);
+    authorizeAppMember(app, member);
 
     await AppServiceSecret.create({
       name: 'Test service',
@@ -992,13 +993,13 @@ describe('applyAppServiceSecrets', () => {
   });
 
   it('should authenticate request action with query secret', async () => {
-    await AppMember.create({
+    const member = await AppMember.create({
       email: user.primaryEmail,
       AppId: app.id,
       UserId: user.id,
       role: 'Admin',
     });
-    authorizeAppMember(app);
+    authorizeAppMember(app, member);
 
     await AppServiceSecret.create({
       name: 'Test service',
@@ -1044,13 +1045,13 @@ describe('applyAppServiceSecrets', () => {
   });
 
   it('should authenticate request action with 2 query secrets', async () => {
-    await AppMember.create({
+    const member = await AppMember.create({
       email: user.primaryEmail,
       AppId: app.id,
       UserId: user.id,
       role: 'Admin',
     });
-    authorizeAppMember(app);
+    authorizeAppMember(app, member);
 
     await AppServiceSecret.create({
       name: 'Test service',
@@ -1105,13 +1106,13 @@ describe('applyAppServiceSecrets', () => {
   });
 
   it('should authenticate request action with multiple authentication methods', async () => {
-    await AppMember.create({
+    const member = await AppMember.create({
       email: user.primaryEmail,
       AppId: app.id,
       UserId: user.id,
       role: 'Admin',
     });
-    authorizeAppMember(app);
+    authorizeAppMember(app, member);
 
     await AppServiceSecret.create({
       name: 'Test service',

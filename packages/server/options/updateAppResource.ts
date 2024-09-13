@@ -34,6 +34,7 @@ export function updateAppResource({
       include: [
         { association: 'Author', attributes: ['id', 'name'], required: false },
         { model: Asset, attributes: ['id'], required: false },
+        { association: 'Group', attributes: ['id', 'name'], required: false },
       ],
     });
 

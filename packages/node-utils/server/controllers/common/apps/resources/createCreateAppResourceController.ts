@@ -29,14 +29,14 @@ export function createCreateAppResourceController(options: Options): Middleware 
 
     const app = await getApp({ context: ctx, query: { where: { id: appId } } });
 
-    const resourceDefinition = getResourceDefinition(app.definition, resourceType, ctx);
-
     await checkAppPermissions({
       context: ctx,
       permissions: [`$resource:${resourceType}:create`],
       app,
       groupId: selectedGroupId,
     });
+
+    const resourceDefinition = getResourceDefinition(app.definition, resourceType, ctx);
 
     const appAssets = await getAppAssets({ app, context: ctx });
 

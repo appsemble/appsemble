@@ -18,6 +18,7 @@ export const pathItems: OpenAPIV3.PathItemObject = {
         },
       },
     },
+    security: [{ studio: [] }, { app: [] }],
   },
   delete: {
     tags: ['common', 'group-member'],

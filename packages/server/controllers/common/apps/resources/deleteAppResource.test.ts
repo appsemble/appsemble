@@ -1,3 +1,4 @@
+import { PredefinedAppRole, PredefinedOrganizationRole } from '@appsemble/types';
 import { request, setTestApp } from 'axios-test-instance';
 import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 import webpush from 'web-push';
@@ -51,7 +52,7 @@ beforeEach(async () => {
   orgMember = await OrganizationMember.create({
     UserId: user.id,
     OrganizationId: organization.id,
-    role: 'Maintainer',
+    role: PredefinedOrganizationRole.Maintainer,
   });
   app = await exampleApp(organization.id);
 });
@@ -69,6 +70,7 @@ describe('deleteAppResource', () => {
       data: { foo: 'I am Foo.' },
     });
 
+    authorizeStudio();
     const responseGetA = await request.get(
       `/api/apps/${app.id}/resources/testResource/${resource.id}`,
     );
@@ -85,7 +87,6 @@ describe('deleteAppResource', () => {
       }
     `);
 
-    authorizeStudio();
     const response = await request.delete(
       `/api/apps/${app.id}/resources/testResource/${resource.id}`,
     );
@@ -116,14 +117,14 @@ describe('deleteAppResource', () => {
       email: user.primaryEmail,
       AppId: app.id,
       UserId: user.id,
-      role: 'Member',
+      role: PredefinedAppRole.Member,
       timezone: 'Europe/Amsterdam',
     });
     const memberB = await AppMember.create({
       email: 'userB@example.com',
       AppId: app.id,
       UserId: userB.id,
-      role: 'Member',
+      role: PredefinedAppRole.Member,
       timezone: 'Europe/Amsterdam',
     });
 
@@ -161,7 +162,7 @@ describe('deleteAppResource', () => {
       email: 'userB@example.com',
       AppId: app.id,
       UserId: userB.id,
-      role: 'Member',
+      role: PredefinedAppRole.Member,
       timezone: 'Europe/Amsterdam',
     });
 
@@ -170,11 +171,11 @@ describe('deleteAppResource', () => {
       AppMemberId: memberB.id,
       role: 'Member',
     });
-    await AppMember.create({
+    const member = await AppMember.create({
       email: user.primaryEmail,
       AppId: app.id,
       UserId: user.id,
-      role: 'Member',
+      role: PredefinedAppRole.Member,
       timezone: 'Europe/Amsterdam',
     });
 
@@ -185,19 +186,19 @@ describe('deleteAppResource', () => {
       AuthorId: memberB.id,
     });
 
-    authorizeAppMember(app);
+    authorizeAppMember(app, member);
     const response = await request.delete(
-      `/api/apps/${app.id}/resources/testResourceGroup/${resource.id}`,
+      `/api/apps/${app.id}/resources/testResourceGroup/${resource.id}?groupId=${group.id}`,
     );
 
     expect(response).toMatchInlineSnapshot(`
-      HTTP/1.1 404 Not Found
+      HTTP/1.1 403 Forbidden
       Content-Type: application/json; charset=utf-8
 
       {
-        "error": "Not Found",
-        "message": "Resource not found",
-        "statusCode": 404,
+        "error": "Forbidden",
+        "message": "App member does not have sufficient app permissions.",
+        "statusCode": 403,
       }
     `);
   });
@@ -314,7 +315,7 @@ describe('deleteAppResource', () => {
 
   it('should not allow organization members to delete resources using Studio', async () => {
     await orgMember.update({
-      role: 'Member',
+      role: PredefinedOrganizationRole.Member,
     });
 
     const resource = await Resource.create({
@@ -332,7 +333,7 @@ describe('deleteAppResource', () => {
 
       {
         "error": "Forbidden",
-        "message": "User does not have sufficient permissions.",
+        "message": "User does not have sufficient app permissions.",
         "statusCode": 403,
       }
     `);
@@ -353,7 +354,7 @@ describe('deleteAppResource', () => {
 
   it('should not allow organization members to delete resources using client credentials', async () => {
     await orgMember.update({
-      role: 'Member',
+      role: PredefinedOrganizationRole.Member,
     });
 
     const resource = await Resource.create({
@@ -371,7 +372,7 @@ describe('deleteAppResource', () => {
 
       {
         "error": "Forbidden",
-        "message": "User does not have sufficient permissions.",
+        "message": "User does not have sufficient app permissions.",
         "statusCode": 403,
       }
     `);
@@ -390,6 +391,7 @@ describe('deleteAppResource', () => {
       data: { foo: 'I reference Foo.', testResourceId: testResource.id },
     });
 
+    authorizeStudio();
     const responseGetTestResource = await request.get(
       `/api/apps/${app.id}/resources/testResource/${testResource.id}`,
     );
@@ -423,7 +425,6 @@ describe('deleteAppResource', () => {
       }
     `);
 
-    authorizeStudio();
     const responseDeleteTestResource = await request.delete(
       `/api/apps/${app.id}/resources/testResource/${testResource.id}`,
     );
@@ -453,6 +454,7 @@ describe('deleteAppResource', () => {
       data: { foo: 'I reference Foo.', testResourceId: testResource.id },
     });
 
+    authorizeStudio();
     const responseGetTestResource = await request.get(
       `/api/apps/${app.id}/resources/testResource/${testResource.id}`,
     );
@@ -513,6 +515,7 @@ describe('deleteAppResource', () => {
       data: { foo: 'I reference Foo.', testResourceId: testResource.id },
     });
 
+    authorizeStudio();
     const responseGetTestResource = await request.get(
       `/api/apps/${app.id}/resources/testResource/${testResource.id}`,
     );
@@ -546,7 +549,6 @@ describe('deleteAppResource', () => {
       }
     `);
 
-    authorizeStudio();
     const responseDeleteTestResource = await request.delete(
       `/api/apps/${app.id}/resources/testResource/${testResource.id}`,
     );
@@ -584,6 +586,7 @@ describe('deleteAppResource', () => {
       data: { foo: 'I reference Foo.', testResourceId: testResource.id },
     });
 
+    authorizeStudio();
     const responseGetTestResource = await request.get(
       `/api/apps/${app.id}/resources/testResource/${testResource.id}`,
     );
@@ -617,7 +620,6 @@ describe('deleteAppResource', () => {
       }
     `);
 
-    authorizeStudio();
     const responseDeleteTestResource = await request.delete(
       `/api/apps/${app.id}/resources/testResource/${testResource.id}`,
     );

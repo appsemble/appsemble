@@ -7,7 +7,8 @@ export function createCountAppResourcesController(options: Options): Middleware 
   return async (ctx: Context) => {
     const {
       pathParams: { appId, resourceType },
-      queryParams: { selectedGroupId },
+      queryParams: { $own, selectedGroupId },
+      user: authSubject,
     } = ctx;
 
     const { checkAppPermissions, getApp, getAppResources } = options;
@@ -16,7 +17,9 @@ export function createCountAppResourcesController(options: Options): Middleware 
 
     await checkAppPermissions({
       context: ctx,
-      permissions: [`$resource:${resourceType}:query`],
+      permissions: [
+        $own ? `$resource:${resourceType}:own:query` : `$resource:${resourceType}:query`,
+      ],
       app,
       groupId: selectedGroupId,
     });
@@ -33,6 +36,7 @@ export function createCountAppResourcesController(options: Options): Middleware 
             GroupId: selectedGroupId ?? null,
             expires: { or: [{ gt: new Date() }, null] },
             ...(app.demoMode ? { seed: false, ephemeral: true } : {}),
+            ...($own ? { AuthorId: authSubject?.id } : {}),
           },
         ],
       },

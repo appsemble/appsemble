@@ -259,7 +259,7 @@ export function checkOrganizationRoleAppPermissions(
       }
     }
 
-    return organizationRolePermissions.includes(mappedPermission);
+    return organizationRolePermissions?.includes(mappedPermission);
   });
 }
 

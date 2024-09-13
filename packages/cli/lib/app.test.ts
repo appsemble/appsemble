@@ -257,7 +257,10 @@ describe('publishApp', () => {
 
   it('should publish app with resources and assets', async () => {
     vi.useRealTimers();
-    const clientCredentials = await authorizeCLI('apps:write resources:write', testApp);
+    const clientCredentials = await authorizeCLI(
+      'apps:write resources:write assets:write',
+      testApp,
+    );
     await publishApp({
       path: resolveFixture('apps/test'),
       organization: organization.id,
@@ -421,7 +424,10 @@ describe('publishApp', () => {
       visibility: 'public',
     });
     vi.useRealTimers();
-    const clientCredentials = await authorizeCLI('apps:write resources:write', testApp);
+    const clientCredentials = await authorizeCLI(
+      'apps:write resources:write assets:write',
+      testApp,
+    );
     await publishApp({
       path: resolveFixture('apps/test'),
       organization: organization.id,
@@ -589,7 +595,10 @@ describe('publishApp', () => {
 
   it('should publish app with app variant patches applied', async () => {
     vi.useRealTimers();
-    const clientCredentials = await authorizeCLI('apps:write resources:write', testApp);
+    const clientCredentials = await authorizeCLI(
+      'apps:write resources:write assets:write',
+      testApp,
+    );
     await publishApp({
       path: resolveFixture('apps/test'),
       organization: organization.id,
@@ -845,6 +854,7 @@ describe('publishApp', () => {
 
     expect(appSamlSecret.toJSON()).toStrictEqual({
       emailAttribute: 'email',
+      emailVerifiedAttribute: null,
       entityId: 'http://localhost:1234',
       icon: 'redhat',
       id: 1,
@@ -1097,7 +1107,10 @@ describe('updateApp', () => {
 
   it('should update app with resources and assets', async () => {
     vi.useRealTimers();
-    const clientCredentials = await authorizeCLI('apps:write resources:write', testApp);
+    const clientCredentials = await authorizeCLI(
+      'apps:write resources:write assets:write',
+      testApp,
+    );
     await updateApp({
       id: app.id,
       path: resolveFixture('apps/test'),
@@ -1262,7 +1275,10 @@ describe('updateApp', () => {
       visibility: 'public',
     });
     vi.useRealTimers();
-    const clientCredentials = await authorizeCLI('apps:write resources:write', testApp);
+    const clientCredentials = await authorizeCLI(
+      'apps:write resources:write assets:write',
+      testApp,
+    );
     await updateApp({
       path: resolveFixture('apps/test'),
       id: app.id,
@@ -1432,7 +1448,10 @@ describe('updateApp', () => {
 
   it('should update app with app variant patches applied', async () => {
     vi.useRealTimers();
-    const clientCredentials = await authorizeCLI('apps:write resources:write', testApp);
+    const clientCredentials = await authorizeCLI(
+      'apps:write resources:write assets:write',
+      testApp,
+    );
     await updateApp({
       path: resolveFixture('apps/test'),
       id: app.id,
@@ -1690,6 +1709,7 @@ describe('updateApp', () => {
 
     expect(appSamlSecret.toJSON()).toStrictEqual({
       emailAttribute: 'email',
+      emailVerifiedAttribute: null,
       entityId: 'http://localhost:1234',
       icon: 'redhat',
       id: 1,

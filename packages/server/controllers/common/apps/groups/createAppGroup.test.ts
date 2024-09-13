@@ -71,27 +71,28 @@ beforeEach(async () => {
 
 describe('createGroup', () => {
   describe('app', () => {
-    beforeEach(() => {
-      authorizeAppMember(app);
-    });
-
     it('should create a group if the user has the proper role', async () => {
       await app.update({
         definition: {
           ...app.definition,
           security: {
             ...app.definition.security,
-            groups: { create: ['GroupCreator'] },
-            roles: { GroupCreator: {} },
+            roles: {
+              GroupCreator: {
+                permissions: ['$group:create'],
+                inherits: [],
+              },
+            },
           },
         },
       });
-      await AppMember.create({
+      const appMember = await AppMember.create({
         email: user.primaryEmail,
         AppId: app.id,
         UserId: user.id,
         role: 'GroupCreator',
       });
+      authorizeAppMember(app, appMember);
 
       const response = await request.post(`/api/apps/${app.id}/groups`, {
         name: 'Test Group',
@@ -104,7 +105,6 @@ describe('createGroup', () => {
           "annotations": {},
           "id": 1,
           "name": "Test Group",
-          "role": "manager",
         }
       `);
     });
@@ -120,12 +120,13 @@ describe('createGroup', () => {
           },
         },
       });
-      await AppMember.create({
+      const appMember = await AppMember.create({
         email: user.primaryEmail,
         AppId: app.id,
         UserId: user.id,
         role: 'Invalid',
       });
+      authorizeAppMember(app, appMember);
 
       const response = await request.post(`/api/apps/${app.id}/groups`, {
         name: 'Test Group',
@@ -136,34 +137,7 @@ describe('createGroup', () => {
 
         {
           "error": "Forbidden",
-          "message": "User is not allowed to create groups",
-          "statusCode": 403,
-        }
-      `);
-    });
-
-    it('should reject if the user is not an app member', async () => {
-      await app.update({
-        definition: {
-          ...app.definition,
-          security: {
-            ...app.definition.security,
-            groups: { create: ['GroupCreator'] },
-            roles: { GroupCreator: {}, Invalid: {} },
-          },
-        },
-      });
-
-      const response = await request.post(`/api/apps/${app.id}/groups`, {
-        name: 'Test Group',
-      });
-      expect(response).toMatchInlineSnapshot(`
-        HTTP/1.1 403 Forbidden
-        Content-Type: application/json; charset=utf-8
-
-        {
-          "error": "Forbidden",
-          "message": "User is not an app member",
+          "message": "App member does not have sufficient app permissions.",
           "statusCode": 403,
         }
       `);
@@ -182,7 +156,7 @@ describe('createGroup', () => {
 
       expect(response).toMatchObject({
         status: 201,
-        data: { id: expect.any(Number), name: 'Test Group', role: 'Manager' },
+        data: { id: expect.any(Number), name: 'Test Group' },
       });
     });
 
@@ -197,7 +171,6 @@ describe('createGroup', () => {
         data: {
           id: expect.any(Number),
           name: 'Test Group',
-          role: 'Manager',
           annotations: { testKey: 'foo' },
         },
       });
@@ -214,6 +187,7 @@ describe('createGroup', () => {
         vapidPrivateKey: 'b',
         OrganizationId: organization.id,
       });
+      authorizeStudio();
 
       const response = await request.post(`/api/apps/${noSecurity.id}/groups`, {
         name: 'Test Group',
@@ -221,13 +195,13 @@ describe('createGroup', () => {
 
       expect(response).toMatchObject({
         status: 400,
-        data: { message: 'App does not have a security definition.' },
+        data: { message: 'App does not have a security definition' },
       });
     });
 
     it('should not create a group if user is not an Owner', async () => {
       await OrganizationMember.update(
-        { role: 'AppEditor' },
+        { role: 'Member' },
         { where: { UserId: user.id, OrganizationId: organization.id } },
       );
       const response = await request.post(`/api/apps/${app.id}/groups`, {
@@ -236,7 +210,7 @@ describe('createGroup', () => {
 
       expect(response).toMatchObject({
         status: 403,
-        data: { message: 'User does not have sufficient permissions.' },
+        data: { message: 'User does not have sufficient app permissions.' },
       });
     });
 
@@ -274,7 +248,7 @@ describe('createGroup', () => {
 
       expect(response).toMatchObject({
         status: 403,
-        data: { message: 'User is not a member of this organization.' },
+        data: { message: 'User does not have sufficient app permissions.' },
       });
     });
 
@@ -284,7 +258,7 @@ describe('createGroup', () => {
 
       expect(response).toMatchObject({
         status: 404,
-        data: { message: 'App not found.' },
+        data: { message: 'App not found' },
       });
     });
   });

@@ -82,6 +82,21 @@ export const exampleApp = (
             required: ['bar'],
             properties: { bar: { type: 'string' }, testResourceId: { type: 'number' } },
           },
+          views: {
+            testView: {
+              remap: {
+                'object.from': {
+                  name: {
+                    'string.format': {
+                      template: '{id}-{foo}',
+                      values: { id: { prop: 'id' }, foo: { prop: 'foo' } },
+                    },
+                  },
+                  randomValue: 'Some random value',
+                },
+              },
+            },
+          },
           references: {
             testResourceId: {
               resource: 'testResource',
@@ -239,12 +254,22 @@ export const exampleApp = (
         },
       },
       security: {
+        guest: {
+          permissions: [
+            '$resource:testResource:own:get',
+            '$resource:testResource:query',
+            '$resource:testResourceNone:query',
+          ],
+          inherits: [],
+        },
         default: {
           role: 'Reader',
         },
         roles: {
           Visitor: {},
-          Reader: {},
+          Reader: {
+            permissions: ['$resource:testResourceAuthorOnly:own:query'],
+          },
           Admin: {
             inherits: ['Reader'],
           },

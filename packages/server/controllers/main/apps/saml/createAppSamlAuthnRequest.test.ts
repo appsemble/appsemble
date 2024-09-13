@@ -2,12 +2,13 @@ import { promisify } from 'node:util';
 import { inflateRaw } from 'node:zlib';
 
 import { readFixture } from '@appsemble/node-utils';
-import { type SAMLRedirectResponse } from '@appsemble/types';
+import { PredefinedAppRole, type SAMLRedirectResponse } from '@appsemble/types';
 import { request, setTestApp } from 'axios-test-instance';
 import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import {
   App,
+  AppMember,
   AppSamlSecret,
   Organization,
   SamlLoginRequest,
@@ -67,6 +68,12 @@ afterAll(() => {
 
 describe('createAuthnRequest', () => {
   it('should generate SAML parameters', async () => {
+    const member = await AppMember.create({
+      AppId: app.id,
+      UserId: user.id,
+      email: user.primaryEmail,
+      role: PredefinedAppRole.Member,
+    });
     authorizeStudio();
     const response = await request.post<SAMLRedirectResponse>(
       `/api/apps/${app.id}/saml/${secret.id}/authn`,
@@ -96,7 +103,7 @@ describe('createAuthnRequest', () => {
     expect(loginRequest).toMatchObject({
       id: expect.any(String),
       AppSamlSecretId: secret.id,
-      UserId: user.id,
+      AppMemberId: member.id,
       redirectUri: 'https://app.example',
       scope: 'email openid profile',
       state: 'secret state',
@@ -137,6 +144,12 @@ describe('createAuthnRequest', () => {
 
   it('should throw if the SAML secret ID is invalid', async () => {
     authorizeStudio();
+    await AppMember.create({
+      AppId: app.id,
+      UserId: user.id,
+      email: user.primaryEmail,
+      role: PredefinedAppRole.Member,
+    });
     const response = await request.post(`/api/apps/${app.id}/saml/26/authn`, {
       redirectUri: 'https://app.example',
       scope: 'email openid profile',

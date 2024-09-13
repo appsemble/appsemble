@@ -44,7 +44,7 @@ export function createGetAppResourceByIdController(options: Options): Middleware
     await checkAppPermissions({
       context: ctx,
       permissions: [
-        resource.$author?.id === authSubject.id
+        resource.$author?.id === authSubject?.id
           ? `$resource:${resourceType}:own:get`
           : view
             ? `$resource:${resourceType}:get:${view}`

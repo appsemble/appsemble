@@ -138,8 +138,11 @@ describe('setAppLock', () => {
     expect(app.locked).toBe('unlocked');
   });
 
-  it('should not be possible to set the lock status as an app editor', async () => {
-    await OrganizationMember.update({ role: 'AppEditor' }, { where: { UserId: user.id } });
+  it('should not be possible to set the lock status as an app translator', async () => {
+    await OrganizationMember.update(
+      { role: PredefinedOrganizationRole.AppTranslator },
+      { where: { UserId: user.id } },
+    );
 
     authorizeStudio();
     const app = await App.create({
@@ -158,7 +161,7 @@ describe('setAppLock', () => {
 
       {
         "error": "Forbidden",
-        "message": "User does not have sufficient permissions.",
+        "message": "User does not have sufficient organization permissions.",
         "statusCode": 403,
       }
     `);

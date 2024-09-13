@@ -274,9 +274,9 @@ export const paths = {
   '/api/organizations/{organizationId}/icon': organizationsOrganizationIdIcon,
   '/api/organizations/{organizationId}/invites/resend': organizationsOrganizationIdInvitesResend,
   '/api/organizations/{organizationId}/invites': organizationsOrganizationIdInvites,
-  '/api/organizations/{organizationId}/members/{memberId}/role':
+  '/api/organizations/{organizationId}/members/{organizationMemberId}/role':
     organizationsOrganizationIdMembersMemberIdRole,
-  '/api/organizations/{organizationId}/members/{memberId}':
+  '/api/organizations/{organizationId}/members/{organizationMemberId}':
     organizationsOrganizationIdMembersMemberId,
   '/api/organizations/{organizationId}/members': organizationsOrganizationIdMembers,
   '/api/organizations/{organizationId}': organizationsOrganizationId,

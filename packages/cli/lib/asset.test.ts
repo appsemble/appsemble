@@ -36,7 +36,7 @@ beforeEach(async () => {
   await OrganizationMember.create({
     OrganizationId: organization.id,
     UserId: user.id,
-    role: PredefinedOrganizationRole.Member,
+    role: PredefinedOrganizationRole.Owner,
   });
 
   await Organization.create({ id: 'appsemble', name: 'Appsemble' });
@@ -75,6 +75,7 @@ describe('publishAsset', () => {
       {
         "AppId": 1,
         "AppMemberId": null,
+        "GroupId": null,
         "ResourceId": null,
         "clonable": false,
         "created": 1970-01-01T00:00:00.000Z,

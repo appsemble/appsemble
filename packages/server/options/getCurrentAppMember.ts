@@ -5,6 +5,6 @@ import { getAppMemberInfoById } from '../utils/appMember.js';
 
 export function getCurrentAppMember({
   context: { user: authSubject },
-}: GetCurrentAppMemberParams): Promise<AppMemberInfo> {
-  return getAppMemberInfoById(authSubject.id);
+}: GetCurrentAppMemberParams): Promise<AppMemberInfo | null> {
+  return authSubject ? getAppMemberInfoById(authSubject.id) : null;
 }

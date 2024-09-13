@@ -56,7 +56,7 @@ describe('updateOrganizationMemberRole', () => {
     authorizeStudio();
     const response = await request.put(
       `/api/organizations/testorganization/members/${userB.id}/role`,
-      { role: 'AppEditor' },
+      { role: PredefinedOrganizationRole.Maintainer },
     );
 
     expect(response).toMatchObject({
@@ -65,7 +65,7 @@ describe('updateOrganizationMemberRole', () => {
         id: userB.id,
         name: 'Foo',
         primaryEmail: 'test2@example.com',
-        role: 'AppEditor',
+        role: PredefinedOrganizationRole.Maintainer,
       },
     });
   });

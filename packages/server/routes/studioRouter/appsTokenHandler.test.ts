@@ -15,7 +15,7 @@ import {
 import { setArgv } from '../../utils/argv.js';
 import { createJWTResponse } from '../../utils/createJWTResponse.js';
 import { createServer } from '../../utils/createServer.js';
-import { createTestUser } from '../../utils/test/authorization.js';
+import { createTestAppMember, createTestUser } from '../../utils/test/authorization.js';
 import { useTestDatabase } from '../../utils/test/testSchema.js';
 
 let user: User;
@@ -41,7 +41,7 @@ afterAll(() => {
 });
 
 it('should not accept invalid content types', async () => {
-  const response = await request.post('/oauth2/token', {});
+  const response = await request.post('/apps/1/auth/oauth2/token', {});
   expect(response).toMatchObject({
     status: 400,
     data: {
@@ -51,7 +51,7 @@ it('should not accept invalid content types', async () => {
 });
 
 it('should not accept missing grant types', async () => {
-  const response = await request.post('/oauth2/token', '');
+  const response = await request.post('/apps/1/auth/oauth2/token', '');
   expect(response).toMatchObject({
     status: 400,
     data: {
@@ -61,7 +61,7 @@ it('should not accept missing grant types', async () => {
 });
 
 it('should not accept unsupported grant types', async () => {
-  const response = await request.post('/oauth2/token', 'grant_type=unsupported');
+  const response = await request.post('/apps/1/auth/oauth2/token', 'grant_type=unsupported');
   expect(response).toMatchObject({
     status: 400,
     data: {
@@ -73,7 +73,7 @@ it('should not accept unsupported grant types', async () => {
 describe('authorization_code', () => {
   it('should handle a missing referer header', async () => {
     const response = await request.post(
-      '/oauth2/token',
+      '/apps/1/auth/oauth2/token',
       new URLSearchParams({
         client_id: 'app:123',
         code: '123',
@@ -92,7 +92,7 @@ describe('authorization_code', () => {
 
   it('should fail if the referer doesn’t match the redirect URI', async () => {
     const response = await request.post(
-      '/oauth2/token',
+      '/apps/1/auth/oauth2/token',
       new URLSearchParams({
         client_id: 'app:42',
         code: '123',
@@ -112,7 +112,7 @@ describe('authorization_code', () => {
 
   it('should fail if the client id doesn’t match an app id', async () => {
     const response = await request.post(
-      '/oauth2/token',
+      '/apps/1/auth/oauth2/token',
       new URLSearchParams({
         client_id: 'invalid',
         code: '123',
@@ -132,7 +132,7 @@ describe('authorization_code', () => {
 
   it('should fail if no authorization code has been registered', async () => {
     const response = await request.post(
-      '/oauth2/token',
+      '/apps/1/auth/oauth2/token',
       new URLSearchParams({
         client_id: 'app:42',
         code: '123',
@@ -158,17 +158,18 @@ describe('authorization_code', () => {
       vapidPrivateKey: '',
       vapidPublicKey: '',
     });
+    const appMember = await createTestAppMember(app.id);
     const expires = new Date('1999-12-31T23:00:00Z');
     const authCode = await OAuth2AuthorizationCode.create({
       AppId: app.id,
       code: '123',
-      UserId: user.id,
+      AppMemberId: appMember.id,
       expires,
       redirectUri: 'http://foo.bar.localhost:9999/',
       scope: 'openid',
     });
     const response = await request.post(
-      '/oauth2/token',
+      '/apps/1/auth/oauth2/token',
       new URLSearchParams({
         client_id: `app:${app.id}`,
         code: '123',
@@ -197,16 +198,17 @@ describe('authorization_code', () => {
       vapidPublicKey: '',
     });
     const expires = new Date('2000-01-01T00:10:00Z');
+    const appMember = await createTestAppMember(app.id);
     await OAuth2AuthorizationCode.create({
       AppId: app.id,
       code: '123',
-      UserId: user.id,
+      AppMemberId: appMember.id,
       expires,
       redirectUri: 'http://foo.bar.localhost:9999/',
       scope: 'openid',
     });
     const response = await request.post(
-      '/oauth2/token',
+      '/apps/1/auth/oauth2/token',
       new URLSearchParams({
         client_id: `app:${app.id}`,
         code: '123',
@@ -232,17 +234,18 @@ describe('authorization_code', () => {
       vapidPrivateKey: '',
       vapidPublicKey: '',
     });
+    const appMember = await createTestAppMember(app.id);
     const expires = new Date('2000-01-01T00:10:00Z');
     const authCode = await OAuth2AuthorizationCode.create({
       AppId: app.id,
       code: '123',
-      UserId: user.id,
+      AppMemberId: appMember.id,
       expires,
       redirectUri: 'http://foo.bar.localhost:9999/',
       scope: 'email openid',
     });
     const response = await request.post<TokenResponse>(
-      '/oauth2/token',
+      '/apps/1/auth/oauth2/token',
       new URLSearchParams({
         client_id: `app:${app.id}`,
         code: '123',
@@ -271,7 +274,7 @@ describe('authorization_code', () => {
       iat: 946_684_800,
       iss: 'http://localhost',
       scope: 'openid',
-      sub: user.id,
+      sub: appMember.id,
     });
   });
 });
@@ -289,7 +292,10 @@ describe('client_credentials', () => {
   });
 
   it('should handle a missing authorization header', async () => {
-    const response = await request.post('/oauth2/token', 'grant_type=client_credentials');
+    const response = await request.post(
+      '/apps/1/auth/oauth2/token',
+      'grant_type=client_credentials',
+    );
     expect(response).toMatchObject({
       status: 400,
       data: {
@@ -299,11 +305,15 @@ describe('client_credentials', () => {
   });
 
   it('should handle invalid authentication types', async () => {
-    const response = await request.post('/oauth2/token', 'grant_type=client_credentials', {
-      headers: {
-        authorization: 'Bearer foo',
+    const response = await request.post(
+      '/apps/1/auth/oauth2/token',
+      'grant_type=client_credentials',
+      {
+        headers: {
+          authorization: 'Bearer foo',
+        },
       },
-    });
+    );
     expect(response).toMatchObject({
       status: 400,
       data: {
@@ -313,11 +323,15 @@ describe('client_credentials', () => {
   });
 
   it('should handle invalidly encoded basic authentication', async () => {
-    const response = await request.post('/oauth2/token', 'grant_type=client_credentials', {
-      headers: {
-        authorization: 'Basic invalid',
+    const response = await request.post(
+      '/apps/1/auth/oauth2/token',
+      'grant_type=client_credentials',
+      {
+        headers: {
+          authorization: 'Basic invalid',
+        },
       },
-    });
+    );
     expect(response).toMatchObject({
       status: 400,
       data: {
@@ -327,9 +341,13 @@ describe('client_credentials', () => {
   });
 
   it('should handle invalid client credentials', async () => {
-    const response = await request.post('/oauth2/token', 'grant_type=client_credentials', {
-      headers: { authorization: basicAuth('invalidId', 'invalidSecret') },
-    });
+    const response = await request.post(
+      '/apps/1/auth/oauth2/token',
+      'grant_type=client_credentials',
+      {
+        headers: { authorization: basicAuth('invalidId', 'invalidSecret') },
+      },
+    );
     expect(response).toMatchObject({
       status: 400,
       data: {
@@ -340,9 +358,13 @@ describe('client_credentials', () => {
 
   it('should handle expired clients', async () => {
     vi.setSystemTime(new Date('2000-03-01T00:00:00Z'));
-    const response = await request.post('/oauth2/token', 'grant_type=client_credentials', {
-      headers: { authorization: basicAuth('testClientId', 'testClientSecret') },
-    });
+    const response = await request.post(
+      '/apps/1/auth/oauth2/token',
+      'grant_type=client_credentials',
+      {
+        headers: { authorization: basicAuth('testClientId', 'testClientSecret') },
+      },
+    );
     expect(response).toMatchObject({
       status: 400,
       data: {
@@ -353,7 +375,7 @@ describe('client_credentials', () => {
 
   it('should handle unauthorized client scopes', async () => {
     const response = await request.post(
-      '/oauth2/token',
+      '/apps/1/auth/oauth2/token',
       'grant_type=client_credentials&scope=blocks:write organizations:write',
       { headers: { authorization: basicAuth('testClientId', 'testClientSecret') } },
     );
@@ -367,7 +389,7 @@ describe('client_credentials', () => {
 
   it('should return an access token response if the request is made correctly', async () => {
     const response = await request.post<TokenResponse>(
-      '/oauth2/token',
+      '/apps/1/auth/oauth2/token',
       'grant_type=client_credentials&scope=blocks:write',
       { headers: { authorization: basicAuth('testClientId', 'testClientSecret') } },
     );
@@ -394,7 +416,7 @@ describe('client_credentials', () => {
 describe('refresh_token', () => {
   it('should verify the refresh token', async () => {
     const response = await request.post(
-      '/oauth2/token',
+      'apps/1/auth/oauth2/token',
       new URLSearchParams({
         grant_type: 'refresh_token',
         refresh_token: 'invalid.refresh.token',
@@ -411,7 +433,7 @@ describe('refresh_token', () => {
 
   it('should create a refresh token', async () => {
     const response = await request.post<TokenResponse>(
-      '/oauth2/token',
+      'apps/1/auth/oauth2/token',
       new URLSearchParams({
         grant_type: 'refresh_token',
         refresh_token: createJWTResponse(user.id).refresh_token,

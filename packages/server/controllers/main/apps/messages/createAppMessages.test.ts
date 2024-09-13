@@ -1,3 +1,4 @@
+import { PredefinedOrganizationRole } from '@appsemble/types';
 import { request, setTestApp } from 'axios-test-instance';
 import { beforeAll, beforeEach, describe, expect, it } from 'vitest';
 
@@ -34,7 +35,7 @@ beforeEach(async () => {
   await OrganizationMember.create({
     OrganizationId: organization.id,
     UserId: user.id,
-    role: 'AppEditor',
+    role: PredefinedOrganizationRole.AppTranslator,
   });
   app = await App.create({
     path: 'test-app',
@@ -161,7 +162,7 @@ describe('createAppMessages', () => {
 
   it('should validate app messages from request body', async () => {
     authorizeStudio();
-    const response = await request.post(`/api/main/apps/${app.id}/messages`, {
+    const response = await request.post(`/api/apps/${app.id}/messages`, {
       language: 'en',
       messages: { app: { name4: 'Test' } },
     });
@@ -179,7 +180,7 @@ describe('createAppMessages', () => {
 
   it('should validate app messages from array request body', async () => {
     authorizeStudio();
-    const response = await request.post(`/api/main/apps/${app.id}/messages`, [
+    const response = await request.post(`/api/apps/${app.id}/messages`, [
       {
         language: 'nl',
         messages: { app: { name: 'Test' } },
@@ -212,7 +213,7 @@ describe('createAppMessages', () => {
       name: 'test',
       version: '0.0.0',
     });
-    const response = await request.post(`/api/main/apps/${app.id}/messages`, [
+    const response = await request.post(`/api/apps/${app.id}/messages`, [
       {
         language: 'en',
         messages: {
@@ -245,7 +246,7 @@ describe('createAppMessages', () => {
         ],
       },
     });
-    const response2 = await request.post(`/api/main/apps/${app.id}/messages`, [
+    const response2 = await request.post(`/api/apps/${app.id}/messages`, [
       {
         language: 'en',
         messages: {
@@ -270,7 +271,7 @@ describe('createAppMessages', () => {
         },
       }),
     ]);
-    const response3 = await request.post(`/api/main/apps/${app.id}/messages`, [
+    const response3 = await request.post(`/api/apps/${app.id}/messages`, [
       {
         language: 'en',
         messages: {

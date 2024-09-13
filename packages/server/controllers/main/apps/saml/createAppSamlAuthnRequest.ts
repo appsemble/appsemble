@@ -7,7 +7,7 @@ import { DOMImplementation } from '@xmldom/xmldom';
 import { type Context } from 'koa';
 import forge from 'node-forge';
 
-import { App, AppSamlSecret, SamlLoginRequest } from '../../../../models/index.js';
+import { App, AppMember, AppSamlSecret, SamlLoginRequest } from '../../../../models/index.js';
 import { argv } from '../../../../utils/argv.js';
 import { checkAppSecurityPolicy } from '../../../../utils/auth.js';
 import { NS } from '../../../../utils/saml.js';
@@ -27,7 +27,7 @@ export async function createAppSamlAuthnRequest(ctx: Context): Promise<void> {
 
   const app = await App.findOne({
     where: { id: appId },
-    attributes: [],
+    attributes: ['id'],
     include: [
       {
         model: AppSamlSecret,
@@ -48,6 +48,12 @@ export async function createAppSamlAuthnRequest(ctx: Context): Promise<void> {
     { isAllowed: false },
   );
 
+  const appMember = await AppMember.findOne({
+    where: { AppId: app.id, UserId: authSubject.id },
+    attributes: ['id'],
+  });
+
+  assertKoaError(!appMember, ctx, 404, 'App member not found');
   const [secret] = app.AppSamlSecrets;
   assertKoaError(!secret, ctx, 404, 'SAML secret not found');
 
@@ -89,6 +95,7 @@ export async function createAppSamlAuthnRequest(ctx: Context): Promise<void> {
 
   await SamlLoginRequest.create({
     id: loginId,
+    AppMemberId: appMember.id,
     AppSamlSecretId: appSamlSecretId,
     redirectUri,
     state,

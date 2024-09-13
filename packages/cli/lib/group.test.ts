@@ -14,9 +14,18 @@ import {
 } from './group.js';
 import { initAxios } from './initAxios.js';
 import { authorizeCLI } from './testUtils.js';
+import { createTestAppMember } from '../../server/utils/test/authorization.js';
 
-const { App, AppMember, BlockVersion, Group, GroupMember, Organization, OrganizationMember } =
-  models;
+const {
+  App,
+  AppMember,
+  BlockVersion,
+  Group,
+  GroupInvite,
+  GroupMember,
+  Organization,
+  OrganizationMember,
+} = models;
 
 const argv = { host: 'http://localhost', secret: 'test', aesSecret: 'testSecret' };
 let user: models.User;
@@ -108,6 +117,7 @@ describe('createGroup', () => {
         "AppId": 1,
         "annotations": null,
         "created": 1970-01-01T00:00:00.000Z,
+        "demo": false,
         "id": 1,
         "name": "test",
         "updated": 1970-01-01T00:00:00.000Z,
@@ -170,6 +180,7 @@ describe('deleteGroup', () => {
         "AppId": 1,
         "annotations": null,
         "created": 1970-01-01T00:00:00.000Z,
+        "demo": false,
         "id": 1,
         "name": "test",
         "updated": 1970-01-01T00:00:00.000Z,
@@ -252,6 +263,7 @@ describe('updateGroup', () => {
         "AppId": 1,
         "annotations": null,
         "created": 1970-01-01T00:00:00.000Z,
+        "demo": false,
         "id": 1,
         "name": "test2",
         "updated": 1970-01-01T00:00:00.000Z,
@@ -380,63 +392,24 @@ describe('inviteMember', () => {
       appId: app.id,
       id: group.id,
       remote: testApp.defaults.baseURL,
-      user: user.id,
+      user: user.primaryEmail,
     });
-    const member = await GroupMember.findOne();
-    expect(member.dataValues).toMatchInlineSnapshot(
+    const invite = await GroupInvite.findOne();
+    expect(invite.dataValues).toMatchInlineSnapshot(
       {
-        AppMemberId: expect.any(String),
+        key: expect.any(String),
       },
       `
       {
-        "AppMemberId": Any<String>,
         "GroupId": 1,
         "created": 1970-01-01T00:00:00.000Z,
-        "role": "member",
+        "email": "test@example.com",
+        "key": Any<String>,
+        "role": "Member",
         "updated": 1970-01-01T00:00:00.000Z,
       }
     `,
     );
-  });
-
-  it('should throw an error if the user is not AppMember', async () => {
-    const app = await App.create({
-      definition: {
-        name: 'Test App',
-        defaultPage: 'Test Page',
-        security: {
-          groups: {
-            join: 'anyone',
-            invite: [],
-          },
-          default: {
-            role: 'Reader',
-            policy: 'everyone',
-          },
-          roles: {
-            Reader: {},
-          },
-        },
-      },
-      path: 'test-app',
-      vapidPublicKey: 'a',
-      vapidPrivateKey: 'b',
-      OrganizationId: organization.id,
-    });
-    const group = await Group.create({
-      AppId: app.id,
-      name: 'test',
-    });
-
-    await authorizeCLI('groups:write', testApp);
-    await expect(() =>
-      inviteMember({
-        appId: app.id,
-        id: group.id,
-        remote: testApp.defaults.baseURL,
-        user: user.id,
-      }),
-    ).rejects.toThrow('Request failed with status code 404');
   });
 
   it('should throw an error if the group does not exist', async () => {
@@ -463,21 +436,16 @@ describe('inviteMember', () => {
       vapidPrivateKey: 'b',
       OrganizationId: organization.id,
     });
-    const group = await Group.create({
-      AppId: app.id,
-      name: 'test',
-    });
-    await group.destroy();
 
     await authorizeCLI('groups:write', testApp);
     await expect(() =>
       inviteMember({
         appId: app.id,
-        id: group.id,
+        id: 10,
         remote: testApp.defaults.baseURL,
-        user: user.id,
+        user: user.primaryEmail,
       }),
-    ).rejects.toThrow('Request failed with status code 404');
+    ).rejects.toThrow('Request failed with status code 400');
   });
 });
 
@@ -525,13 +493,13 @@ describe('updateMember', () => {
     await updateMember({
       appId: app.id,
       remote: testApp.defaults.baseURL,
-      user: user.id,
+      user: groupMember.id,
       role: 'GroupMembersManager',
       id: group.id,
     });
-    expect(groupMember.role).toBe('member');
+    expect(groupMember.role).toBe('Member');
     await groupMember.reload();
-    expect(groupMember.role).toBe('manager');
+    expect(groupMember.role).toBe('GroupMembersManager');
   });
 
   it('should throw an error if the user is not a GroupMember', async () => {
@@ -579,7 +547,7 @@ describe('updateMember', () => {
         role: 'GroupMembersManager',
         id: group.id,
       }),
-    ).rejects.toThrow('Request failed with status code 400');
+    ).rejects.toThrow('Request failed with status code 404');
   });
 });
 
@@ -616,22 +584,28 @@ describe('deleteMember', () => {
       email: user.primaryEmail,
       AppId: app.id,
       UserId: user.id,
-      role: 'Manager',
+      role: 'Maintainer',
       name: user.name,
     });
+    await authorizeCLI('groups:write', testApp);
+    await createTestUser('test2@example.com');
+    const member2 = await createTestAppMember(app.id, 'test2@example.com');
     await GroupMember.create({
       GroupId: group.id,
       AppMemberId: member.id,
     });
-    await authorizeCLI('groups:write', testApp);
+    const { id: groupMemberId } = await GroupMember.create({
+      GroupId: group.id,
+      AppMemberId: member2.id,
+    });
 
     await deleteMember({
       id: group.id,
       appId: app.id,
-      user: user.id,
+      user: groupMemberId,
       remote: testApp.defaults.baseURL,
     });
-    const foundGroupMember = await GroupMember.findOne();
+    const foundGroupMember = await GroupMember.findByPk(groupMemberId);
     expect(foundGroupMember).toBeNull();
   });
 
@@ -679,7 +653,7 @@ describe('deleteMember', () => {
         user: user.id,
         id: group.id,
       }),
-    ).rejects.toThrow('Request failed with status code 400');
+    ).rejects.toThrow('Request failed with status code 404');
   });
 });
 

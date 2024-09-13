@@ -1,7 +1,7 @@
 import { assertKoaError, throwKoaError } from '@appsemble/node-utils';
 import { OrganizationPermission } from '@appsemble/types';
 import { type Context } from 'koa';
-import { UniqueConstraintError } from 'sequelize';
+import { DatabaseError } from 'sequelize';
 
 import { App, Asset } from '../../../../models/index.js';
 import { checkUserOrganizationPermissions } from '../../../../utils/authorization.js';
@@ -67,7 +67,7 @@ export async function createAppAsset(ctx: Context): Promise<void> {
       });
     }
   } catch (error: unknown) {
-    if (error instanceof UniqueConstraintError) {
+    if (error instanceof DatabaseError) {
       throwKoaError(ctx, 409, `An asset named ${name} already exists`);
     }
     throw error;

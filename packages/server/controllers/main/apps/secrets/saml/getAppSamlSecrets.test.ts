@@ -73,7 +73,8 @@ describe('getAppSamlSecrets', () => {
 
       [
         {
-          "emailAttribute": null,
+          "emailAttribute": "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress",
+          "emailVerifiedAttribute": null,
           "entityId": "https://example.com/saml/metadata.xml",
           "icon": "",
           "id": 1,
@@ -128,7 +129,8 @@ describe('getAppSamlSecrets', () => {
 
       [
         {
-          "emailAttribute": null,
+          "emailAttribute": "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress",
+          "emailVerifiedAttribute": null,
           "entityId": "https://example.com/saml/metadata.xml",
           "icon": "",
           "id": 1,
@@ -171,7 +173,7 @@ describe('getAppSamlSecrets', () => {
 
       {
         "error": "Forbidden",
-        "message": "User does not have sufficient permissions.",
+        "message": "User does not have sufficient organization permissions.",
         "statusCode": 403,
       }
     `);

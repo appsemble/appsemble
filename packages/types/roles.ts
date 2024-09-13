@@ -217,7 +217,7 @@ export enum PredefinedAppRole {
 export type AppRole = PredefinedAppRole | string;
 
 export const predefinedAppRolePermissions = {
-  [PredefinedAppRole.Member]: AppOwnerPermissions,
+  [PredefinedAppRole.Member]: AppMemberPermissions,
   [PredefinedAppRole.MembersManager]: AppMembersManagerPermissions,
   [PredefinedAppRole.GroupMembersManager]: AppGroupMembersManagerPermissions,
   [PredefinedAppRole.GroupsManager]: AppGroupsManagerPermissions,

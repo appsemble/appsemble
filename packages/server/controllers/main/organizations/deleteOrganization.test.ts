@@ -74,7 +74,7 @@ describe('deleteOrganization', () => {
     authorizeStudio();
     const response = await request.delete(`/api/organizations/${organization.id}`);
     expect(response).toMatchObject({
-      data: { message: 'User does not have sufficient permissions.' },
+      data: { message: 'User does not have sufficient organization permissions.' },
       status: 403,
     });
 

@@ -24,7 +24,7 @@ export async function deleteGroupMember(ctx: Context): Promise<void> {
   assertKoaError(!groupMember, ctx, 404, 'Group member not found.');
 
   assertKoaError(
-    groupMember.AppMemberId === authSubject.id,
+    groupMember.AppMember.id === authSubject.id,
     ctx,
     401,
     'Cannot use this endpoint to remove yourself from the group',

@@ -12,7 +12,7 @@ import {
 } from '../../../../models/index.js';
 import { setArgv } from '../../../../utils/argv.js';
 import { createServer } from '../../../../utils/createServer.js';
-import { authorizeAppMember, createTestUser } from '../../../../utils/test/authorization.js';
+import { authorizeStudio, createTestUser } from '../../../../utils/test/authorization.js';
 import { useTestDatabase } from '../../../../utils/test/testSchema.js';
 
 let organization: Organization;
@@ -101,7 +101,7 @@ describe('getAppSubscription', () => {
       data: { foo: 'I am Foo.' },
     });
 
-    authorizeAppMember(app);
+    authorizeStudio();
     await request.patch(`/api/apps/${app.id}/subscriptions`, {
       endpoint: 'https://example.com',
       resource: 'person',

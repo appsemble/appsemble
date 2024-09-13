@@ -63,10 +63,10 @@ describe('patchGroup', () => {
   it('should update the name of the group', async () => {
     const group = await Group.create({ name: 'A', AppId: app.id });
     authorizeStudio();
-    const response = await request.patch(`/api/apps/${app.id}/groups/${group.id}`, {
+    const response = await request.patch(`/api/groups/${group.id}`, {
       name: 'B',
     });
-    const responseB = await request.get<Group>(`/api/apps/${app.id}/groups/${group.id}`);
+    const responseB = await request.get<Group>(`/api/groups/${group.id}`);
 
     expect(response).toMatchObject({ status: 200, data: { id: group.id, name: 'B' } });
     expect(responseB.data.name).toBe('B');
@@ -75,11 +75,11 @@ describe('patchGroup', () => {
   it('should update annotations', async () => {
     const group = await Group.create({ name: 'A', AppId: app.id });
     authorizeStudio();
-    const response = await request.patch(`/api/apps/${app.id}/groups/${group.id}`, {
+    const response = await request.patch(`/api/groups/${group.id}`, {
       name: 'B',
       annotations: { testKey: 'foo' },
     });
-    const responseB = await request.get(`/api/apps/${app.id}/groups/${group.id}`);
+    const responseB = await request.get(`/api/groups/${group.id}`);
 
     expect(response).toMatchObject({
       status: 200,
@@ -94,26 +94,26 @@ describe('patchGroup', () => {
 
   it('should not update without sufficient permissions', async () => {
     await OrganizationMember.update(
-      { role: 'AppEditor' },
+      { role: PredefinedOrganizationRole.Member },
       { where: { UserId: user.id, OrganizationId: organization.id } },
     );
     const group = await Group.create({ name: 'A', AppId: app.id });
     authorizeStudio();
-    const response = await request.patch(`/api/apps/${app.id}/groups/${group.id}`, {
+    const response = await request.patch(`/api/groups/${group.id}`, {
       name: 'B',
     });
 
     expect(response).toMatchObject({
       status: 403,
-      data: { message: 'User does not have sufficient permissions.' },
+      data: { message: 'User does not have sufficient app permissions.' },
     });
   });
 
   it('should not update a non-existent group', async () => {
     authorizeStudio();
-    const response = await request.patch(`/api/apps/${app.id}/groups/80000`, { name: 'B' });
+    const response = await request.patch('/api/groups/80000', { name: 'B' });
 
-    expect(response).toMatchObject({ status: 404, data: { message: 'Group not found.' } });
+    expect(response).toMatchObject({ status: 404, data: { message: 'Group not found' } });
   });
 
   it('should not update a group from another organization', async () => {
@@ -142,13 +142,13 @@ describe('patchGroup', () => {
     });
     const group = await Group.create({ name: 'A', AppId: appB.id });
     authorizeStudio();
-    const response = await request.patch(`/api/apps/${appB.id}/groups/${group.id}`, {
+    const response = await request.patch(`/api/groups/${group.id}`, {
       name: 'B',
     });
 
     expect(response).toMatchObject({
       status: 403,
-      data: { message: 'User is not a member of this organization.' },
+      data: { message: 'User does not have sufficient app permissions.' },
     });
   });
 });

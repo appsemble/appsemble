@@ -41,7 +41,7 @@ beforeEach(async () => {
   await OrganizationMember.create({
     OrganizationId: organization.id,
     UserId: user.id,
-    role: 'AppEditor',
+    role: 'Owner',
   });
   app = await App.create({
     path: 'test-app',

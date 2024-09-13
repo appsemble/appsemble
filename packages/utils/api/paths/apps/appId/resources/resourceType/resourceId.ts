@@ -5,11 +5,19 @@ export const pathItems: OpenAPIV3.PathItemObject = {
     { $ref: '#/components/parameters/appId' },
     { $ref: '#/components/parameters/resourceType' },
     { $ref: '#/components/parameters/resourceId' },
-    { $ref: '#/components/parameters/view' },
     { $ref: '#/components/parameters/selectedGroupId' },
   ],
   get: {
     tags: ['common', 'app', 'resource'],
+    parameters: [
+      { $ref: '#/components/parameters/view' },
+      {
+        name: '$own',
+        schema: { type: 'boolean' },
+        description: 'If the resources created by the authenticated app member should be included',
+        in: 'query',
+      },
+    ],
     description: 'Get a single app resource.',
     operationId: 'getAppResourceById',
     responses: {

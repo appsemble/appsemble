@@ -16,7 +16,11 @@ import {
 } from '../../../models/index.js';
 import { setArgv } from '../../../utils/argv.js';
 import { createServer } from '../../../utils/createServer.js';
-import { authorizeStudio, createTestUser } from '../../../utils/test/authorization.js';
+import {
+  authorizeAppMember,
+  authorizeStudio,
+  createTestUser,
+} from '../../../utils/test/authorization.js';
 import { useTestDatabase } from '../../../utils/test/testSchema.js';
 
 let organization: Organization;
@@ -68,49 +72,9 @@ afterAll(() => {
 });
 
 describe('deleteAppMember', () => {
-  it('should throw 404 if the app doesn’t exist', async () => {
-    authorizeStudio();
-    const response = await request.delete(
-      '/api/apps/253/members/e1f0eda6-b2cd-4e66-ae8d-f9dee33d1624',
-    );
-
-    expect(response).toMatchInlineSnapshot(`
-      HTTP/1.1 404 Not Found
-      Content-Type: application/json; charset=utf-8
-
-      {
-        "error": "Not Found",
-        "message": "App not found",
-        "statusCode": 404,
-      }
-    `);
-  });
-
   it('should throw 404 if the app member doesn’t exist', async () => {
     authorizeStudio();
-    const app = await App.create({
-      definition: {
-        name: 'Test App',
-        defaultPage: 'Test Page',
-        security: {
-          default: {
-            role: 'Reader',
-            policy: 'everyone',
-          },
-          roles: {
-            Reader: {},
-            Admin: {},
-          },
-        },
-      },
-      path: 'test-app',
-      vapidPublicKey: 'a',
-      vapidPrivateKey: 'b',
-      OrganizationId: organization.id,
-    });
-    const response = await request.delete(
-      `/api/apps/${app.id}/members/e1f0eda6-b2cd-4e66-ae8d-f9dee33d1624`,
-    );
+    const response = await request.delete('/api/app-members/e1f0eda6-b2cd-4e66-ae8d-f9dee33d1624');
 
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 404 Not Found
@@ -148,14 +112,14 @@ describe('deleteAppMember', () => {
     });
     await member.update({ role: PredefinedOrganizationRole.Member });
     const userB = await User.create({ timezone: 'Europe/Amsterdam' });
-    await AppMember.create({
+    const appMemberB = await AppMember.create({
       email: 'userB@example.com',
       UserId: userB.id,
       AppId: app.id,
       role: 'Reader',
       timezone: 'Europe/Amsterdam',
     });
-    const response = await request.delete(`/api/apps/${app.id}/members/${userB.id}`);
+    const response = await request.delete(`/api/app-members/${appMemberB.id}`);
 
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 403 Forbidden
@@ -163,7 +127,7 @@ describe('deleteAppMember', () => {
 
       {
         "error": "Forbidden",
-        "message": "User does not have sufficient permissions.",
+        "message": "User does not have sufficient app permissions.",
         "statusCode": 403,
       }
     `);
@@ -199,7 +163,7 @@ describe('deleteAppMember', () => {
       role: 'Reader',
       timezone: 'Europe/Amsterdam',
     });
-    const response = await request.delete(`/api/apps/${app.id}/members/${userB.id}`);
+    const response = await request.delete(`/api/app-members/${appMember.id}`);
 
     expect(response).toMatchInlineSnapshot('HTTP/1.1 204 No Content');
     await expect(() => appMember.reload()).rejects.toThrow(
@@ -207,7 +171,7 @@ describe('deleteAppMember', () => {
     );
   });
 
-  it('should allow app users to delete their own account', async () => {
+  it('should not allow app user to delete their account using this endpoint', async () => {
     const app = await App.create({
       definition: {
         name: 'Test App',
@@ -228,20 +192,30 @@ describe('deleteAppMember', () => {
       vapidPrivateKey: 'b',
       OrganizationId: organization.id,
     });
-    const userB = await User.create({ timezone: 'Europe/Amsterdam' });
+    const userB = await User.create({
+      timezone: 'Europe/Amsterdam',
+      primaryEmail: 'userB@example.com',
+    });
     const appMember = await AppMember.create({
       email: 'userB@example.com',
       UserId: userB.id,
       AppId: app.id,
       role: 'Reader',
     });
-    authorizeStudio(userB);
-    const response = await request.delete(`/api/apps/${app.id}/members/${userB.id}`);
+    authorizeAppMember(app, appMember);
+    const response = await request.delete(`/api/app-members/${appMember.id}`);
 
-    expect(response).toMatchInlineSnapshot('HTTP/1.1 204 No Content');
-    await expect(() => appMember.reload()).rejects.toThrow(
-      'Instance could not be reloaded because it does not exist anymore (find call returned null)',
-    );
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 401 Unauthorized
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "error": "Unauthorized",
+        "message": "Cannot use this endpoint to delete your own account",
+        "statusCode": 401,
+      }
+    `);
+    expect(appMember).not.toBeNull();
   });
 
   it('should cascade correctly', async () => {
@@ -298,16 +272,18 @@ describe('deleteAppMember', () => {
       AppSamlSecretId: samlSecret.id,
       AppMemberId: appMember.id,
       nameId: 'foo',
+      email: appMember.email,
     });
     const oauth2Authorization = await AppOAuth2Authorization.create({
       AppOAuth2SecretId: oauth2Secret.id,
       AppMemberId: appMember.id,
+      email: appMember.email,
       accessToken: 'foo.bar.baz',
       sub: '42',
       refreshToken: 'refresh',
       expiresAt: new Date(),
     });
-    const response = await request.delete(`/api/apps/${app.id}/members/${userB.id}`);
+    const response = await request.delete(`/api/app-members/${appMember.id}`);
 
     expect(response).toMatchObject({
       status: 204,

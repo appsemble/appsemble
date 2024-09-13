@@ -67,6 +67,8 @@ export const key = '0.30.0';
  * - Add column `GroupId` to `Resource` table
  * - Add column `GroupId` to `Asset` table
  * - Update unique index `UniqueAssetNameIndex` in `Asset` table
+ * - Add column `AppMemberId` to `SamlLoginRequest` table
+ * - Remove column `UserId` from `SamlLoginRequest` table
  *
  * @param transaction The sequelize transaction.
  * @param db The sequelize database.
@@ -597,6 +599,24 @@ export async function up(transaction: Transaction, db: Sequelize): Promise<void>
     name: 'UniqueAssetNameIndex',
     transaction,
   });
+
+  logger.info('Add column `AppMemberId` to `SamlLoginRequest` table');
+  await queryInterface.addColumn(
+    'SamlLoginRequest',
+    'AppMemberId',
+    {
+      type: DataTypes.UUID,
+      onUpdate: 'cascade',
+      onDelete: 'cascade',
+      references: {
+        key: 'id',
+        model: 'AppMember',
+      },
+    },
+    { transaction },
+  );
+  logger.info('Remove column `UserId` on `SamlLoginRequest` table');
+  await queryInterface.removeColumn('SamlLoginRequest', 'UserId', { transaction });
 }
 
 /**
@@ -960,6 +980,25 @@ export async function down(transaction: Transaction, db: Sequelize): Promise<voi
     name: 'UniqueAssetNameIndex',
     transaction,
   });
+  logger.info('Add column `UserId` to `SamlLoginRequest` table');
+  await queryInterface.addColumn(
+    'SamlLoginRequest',
+    'UserId',
+    {
+      type: DataTypes.UUID,
+      allowNull: false,
+      onUpdate: 'cascade',
+      onDelete: 'cascade',
+      references: {
+        key: 'id',
+        model: 'User',
+      },
+    },
+    { transaction },
+  );
+
+  logger.info('Remove column `AppMemberId` on `SamlLoginRequest` table');
+  await queryInterface.removeColumn('SamlLoginRequest', 'AppMemberId', { transaction });
 }
 
 const resourceActionPattern = /create|update|patch|query|get|delete|count/;
