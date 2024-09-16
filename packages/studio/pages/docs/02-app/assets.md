@@ -22,13 +22,13 @@ changed. In order to change them, they need to be deleted and uploaded again.
 
 Assets can typically be used for 2 use cases:
 
-- To link binary data to a [resource](../02-core-concepts/resources.md).
+- To link binary data to a [resource](resources.md).
 - To store static app assets that can be referenced in the app definition or custom CSS.
 
 ## Resources
 
 When creating a resource, it’s possible to link binary assets to it. These assets are unnamed. For
-more information, see the [resource assets](../02-core-concepts/resources.md#assets) guide.
+more information, see the [resource assets](resources.md#assets) guide.
 
 ## Studio
 
@@ -38,7 +38,7 @@ entered through which the asset can be referenced in the API.
 
 ## CLI
 
-Assets can be uploaded using the [Appsemble CLI](https://www.npmjs.com/package/@appsemble/cli).
+Assets can be uploaded using the [Appsemble CLI](../09-packages/cli.md#assets).
 
 ```sh
 appsemble asset publish --app-id "$MY_APP_ID" path/to/example.png
@@ -56,7 +56,7 @@ Executing the `appsemble app update` command with the `--assets` flag will repla
 assets with the ones currently in the assets directory of the app.
 
 `seed` assets and `ephemeral` assets behave the same way as
-[seed resources and ephemeral resources](../02-core-concepts/resources.md#seed-resources).
+[seed resources and ephemeral resources](resources.md#seed-resources).
 
 ## Clonable assets
 

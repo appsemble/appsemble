@@ -42,4 +42,4 @@ functionality:
 ## Further reading
 
 For more information on how blocks work and how to use them in your app, you can check out the
-[Block guide](../02-core-concepts/blocks.md).
+[Block guide](../02-app/blocks.md).

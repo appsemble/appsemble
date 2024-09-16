@@ -79,8 +79,8 @@ Appsemble blocks.
 ## Styling
 
 Blocks come with their own styling to make them look the way the developer wanted. If you want to
-change how the block looks in your app, you can add [custom css](../03-guides/theming.md) to add to
-or override the existing styling.
+change how the block looks in your app, you can add [custom css](theming.md) to add to or override
+the existing styling.
 
 ## Indentation and dashes
 
@@ -94,7 +94,7 @@ that this element is potentially part of a longer list of different elements (ar
 the code more readable.
 
 This is all a part of the YAML syntax. There are more rules like this, so it's a good idea to look
-through the [YAML syntax guide](./yaml-syntax.mdx) in order to know the most common ones.
+through the [YAML syntax guide](../03-guides/yaml-syntax.mdx) in order to know the most common ones.
 
 ## Creating your own blocks
 

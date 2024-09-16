@@ -3,7 +3,7 @@
 Notifications can be used to keep in touch with the users of your app by sending them messages when
 certain events happen, such as creating a new blog post. Appsemble can automate this process by
 integrating sending out notifications related to changes being made to
-[resources](../02-core-concepts/resources.md).
+[resources](../02-app/resources.md).
 
 This page serves to explain the concepts used to send out these notifications.
 

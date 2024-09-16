@@ -44,7 +44,7 @@ Service secrets will still be applied without a security definition or app roles
 `Unsecured Service Secrets`. If a security definition is defined. The app service secrets will be
 applied based on the security policy.
 
-See [Security](../03-guides/security.md) for more on the security definition and policies.
+See [Security](../02-app/security.md) for more on the security definition and policies.
 
 ## URL matching
 
