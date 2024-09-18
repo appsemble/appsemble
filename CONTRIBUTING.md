@@ -335,6 +335,9 @@ npm run appsemble migrate -- --migrate-to 0.24.12
 
 ## Releasing
 
+Push to the `staging` branch before pushing to main and releasing to test and review the changes in
+the new release.
+
 Before releasing, manually inspect the changelog to be published (quoting from the `.release` job):
 
 ```sh

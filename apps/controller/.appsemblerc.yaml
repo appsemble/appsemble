@@ -12,6 +12,7 @@ context:
     organization: appsemble
     visibility: public
   staging:
+    id: 1030
     organization: appsemble
     remote: https://staging.appsemble.review
     visibility: public

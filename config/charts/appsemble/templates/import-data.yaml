@@ -1,0 +1,74 @@
+{{ if .Values.importData }}
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ include "appsemble.fullname" . }}-import-data
+  labels:
+    {{ include "appsemble.labels" . }}
+  annotations:
+    helm.sh/hook: post-install,post-upgrade
+    helm.sh/hook-weight: '0'
+    {{ include "appsemble.gitlab" . | indent 4 }}
+spec:
+  template:
+    spec:
+      restartPolicy: Never
+      volumes:
+        - name: shared-data
+          emptyDir: { }
+      initContainers:
+        - name: {{ include "appsemble.fullname" . }}-download-data
+          image: alpine:latest
+          command: [ "/bin/sh", "-c" ]
+          args:
+            - |
+              apk add --no-cache rclone
+
+              rclone config create stack webdav url {{ .Values.importData.remoteStorage.url | quote }} vendor other user {{ .Values.importData.remoteStorage.user | quote }}
+              rclone config password stack pass "$REMOTE_STORAGE_SECRET"
+
+              echo "Listing files in the remote directory:"
+              rclone lsf {{ .Values.importData.remoteStorage.location }}/
+
+              TARGET=$(rclone lsf {{ .Values.importData.remoteStorage.location }}/ 2>/dev/null | grep ^{{ .Values.importData.remoteStorage.filename }} | tail -n1)
+              echo "Target file: $TARGET"
+
+              if [ $? -ne 0 ] || [ -z "$TARGET" ]; then
+                echo "No matching file found in the remote directory. Exiting."
+                exit 0
+              else
+                rclone copyto -v -I "{{ .Values.importData.remoteStorage.location }}/$TARGET" /data/backup.gz
+                echo "Downloaded file to /data/backup.gz"
+              fi
+          env:
+            - name: REMOTE_STORAGE_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.importData.remoteStorage.existingPasswordSecret }}
+                  key: {{ .Values.importData.remoteStorage.passwordSecretKey | quote }}
+          volumeMounts:
+            - name: shared-data
+              mountPath: /data
+      containers:
+        - name: {{ include "appsemble.fullname" . }}-import-data
+          image: "bitnami/postgresql:15"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          command: ["/bin/sh", "-c"]
+          args:
+            - gunzip < /data/backup.gz | psql -d {{ .Values.global.postgresql.auth.database }}
+          env:
+            - name: PGHOST
+              value: {{ .Values.postgresql.fullnameOverride }}
+            - name: PGPORT
+              value: {{ .Values.global.postgresql.service.ports.postgresql | quote }}
+            - name: PGUSER
+              value: {{ .Values.global.postgresql.auth.username }}
+            - name: PGPASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.global.postgresql.auth.existingSecret }}
+                  key: {{ .Values.global.postgresql.auth.secretKeys.userPasswordKey | quote }}
+          volumeMounts:
+            - name: shared-data
+              mountPath: /data
+{{ end }}
