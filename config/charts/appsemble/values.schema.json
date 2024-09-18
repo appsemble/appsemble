@@ -258,6 +258,53 @@
           }
         }
       }
+    },
+    "importData": {
+      "type": "object",
+      "description": "Configuration for importing data.",
+      "additionalProperties": false,
+      "required": ["remoteStorage"],
+      "properties": {
+        "remoteStorage": {
+          "type": "object",
+          "description": "The configuration for the remote storage.",
+          "additionalProperties": false,
+          "required": [
+            "url",
+            "user",
+            "existingPasswordSecret",
+            "passwordSecretKey",
+            "location",
+            "filename"
+          ],
+          "properties": {
+            "url": {
+              "type": "string",
+              "description": "The url of the remote storage."
+            },
+            "user": {
+              "type": "string",
+              "description": "The user for the remote storage."
+            },
+            "existingPasswordSecret": {
+              "type": "string",
+              "description": "The name of the password secret for the remote storage."
+            },
+            "passwordSecretKey": {
+              "type": "string",
+              "description": "The key within the password secret for the remote storage."
+            },
+            "location": {
+              "type": "string",
+              "description": "The directory of the data."
+            },
+            "filename": {
+              "type": "string",
+              "description": "The name of the data file."
+            }
+          }
+        }
+      }
     }
   }
 }

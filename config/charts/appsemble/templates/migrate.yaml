@@ -6,7 +6,7 @@ metadata:
     {{ include "appsemble.labels" . }}
   annotations:
     helm.sh/hook: post-install,post-upgrade
-    helm.sh/hook-weight: '0'
+    helm.sh/hook-weight: '1'
 spec:
   template:
     metadata:

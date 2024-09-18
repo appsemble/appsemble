@@ -9,6 +9,12 @@ stages:
   - deploy
   - provision
   - performance
+  - backup
+  - cleanup
+
+variables:
+  BACKUPS_LOCATION: stack:appsemble/backups
+  PROD_BACKUP_NAME: appsemble_prod_backup
 
 workflow:
   rules:
@@ -16,8 +22,8 @@ workflow:
     - if: $CI_MERGE_REQUEST_ID
     # By default, run jobs for every commit on main.
     - if: $CI_COMMIT_BRANCH == 'main'
-    # By default, run jobs for every schedule
-    - if: $CI_PIPELINE_SOURCE == 'schedule'
+    # By default, run jobs for every commit on staging.
+    - if: $CI_COMMIT_BRANCH == 'staging'
     # By default, run jobs for every tag
     - if: $CI_COMMIT_TAG
 
@@ -279,7 +285,6 @@ e2e:
     - build docker image
   rules:
     - if: $CI_MERGE_REQUEST_ID && $CI_MERGE_REQUEST_SOURCE_PROJECT_PATH == 'appsemble/appsemble'
-    - if: $CI_PIPELINE_SOURCE == 'schedule'
     - if: $CI_COMMIT_TAG
   variables:
     APPSEMBLE_IMAGE: '$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG'
@@ -302,7 +307,6 @@ e2e apps:
     - build docker image
   rules:
     - if: $CI_MERGE_REQUEST_ID && $CI_MERGE_REQUEST_SOURCE_PROJECT_PATH == 'appsemble/appsemble'
-    - if: $CI_PIPELINE_SOURCE == 'schedule'
     - if: $CI_COMMIT_TAG
   inherit:
     variables: false
@@ -478,24 +482,13 @@ release minor:
 #  Deploy Stage                                                                                   #
 ###################################################################################################
 
-# Delete all successful jobs for review environments nightly
-cleanup k8s jobs:
-  image: dtzar/helm-kubectl:3
-  stage: deploy
-  rules:
-    - if: $CI_PIPELINE_SOURCE == 'schedule'
-  script:
-    - kubectl config use-context "$CI_PROJECT_PATH:development"
-    - kubectl config set-context --current --namespace review
-    - kubectl delete jobs.batch --field-selector 'status.successful=1'
-
 # Update lockfile and fix formatting where possible
 update dependencies:
   stage: deploy
   variables:
     GIT_STRATEGY: none
   rules:
-    - if: $CI_PIPELINE_SOURCE == 'schedule'
+    - if: $CI_PIPELINE_SOURCE == 'schedule' && $UPDATE_PROJECT_DEPS == 'true'
   cache:
     policy: push
     key:
@@ -609,7 +602,7 @@ staging:
     - job: helm package
       artifacts: true
   rules:
-    - if: $CI_PIPELINE_SOURCE == 'schedule'
+    - if: $CI_COMMIT_BRANCH == 'staging'
   environment:
     name: staging
     url: https://staging.appsemble.review
@@ -624,6 +617,7 @@ staging:
     - kubectl delete namespace "companion-containers-staging" || true
     - helm install staging ./public/appsemble-*.tgz
       --atomic
+      --timeout 15m0s
       --set "gitlab.app=$CI_PROJECT_PATH_SLUG"
       --set "gitlab.env=$CI_ENVIRONMENT_SLUG"
       --set "global.postgresql.auth.existingSecret=postgresql-secret"
@@ -643,6 +637,12 @@ staging:
       --set "provision.account.name=$BOT_ACCOUNT_NAME"
       --set "provision.account.password=$BOT_ACCOUNT_PASSWORD"
       --set "provision.account.timezone=Europe/Amsterdam"
+      --set "importData.remoteStorage.url=$REMOTE_STORAGE_URL"
+      --set "importData.remoteStorage.user=$REMOTE_STORAGE_USER"
+      --set "importData.remoteStorage.existingPasswordSecret=remote-storage-secret"
+      --set "importData.remoteStorage.passwordSecretKey=password"
+      --set "importData.remoteStorage.location=$BACKUPS_LOCATION"
+      --set "importData.remoteStorage.filename=$PROD_BACKUP_NAME"
       --set "proxy=true"
       --set "remote=https://appsemble.app"
       --set "sentry.allowedDomains={*.appsemble.review}"
@@ -746,21 +746,17 @@ provision staging:
   extends: .npm
   stage: provision
   rules:
-    - if: $CI_PIPELINE_SOURCE == 'schedule'
+    - if: $CI_COMMIT_BRANCH == 'staging'
   needs:
     - staging
   script:
     - npm run scripts -- release patch
     - npm run appsemble -- config set context staging
     - npm run appsemble -- config set remote https://staging.appsemble.review
-    - npm run appsemble -- organization create appsemble
-      --description 'The open source low-code app building platform'
-      --email support@appsemble.com
-      --icon packages/server/assets/appsemble.png
-      --name Appsemble
-      --website https://appsemble.com
     - npm run appsemble -- -vv block publish blocks/*
-    - npm run appsemble -- -vv app publish apps/* --resources --assets --assets-clonable --modify-context
+    - apt-get update
+    - apt-get install --yes git gnupg yq
+    - ./scripts/publish-or-update-apps.sh staging
 
 # Provision the production environment with the blocks that were built in the build stage.
 provision production:
@@ -800,7 +796,6 @@ lighthouse:
       optional: true
   rules:
     - if: $CI_MERGE_REQUEST_ID && $CI_MERGE_REQUEST_SOURCE_PROJECT_PATH == 'appsemble/appsemble'
-    - if: $CI_PIPELINE_SOURCE == 'schedule'
     - if: $CI_COMMIT_TAG
   script:
     - npm run scripts -- wait-for-ssl
@@ -811,3 +806,64 @@ lighthouse:
     when: always
     paths:
       - .lighthouseci
+
+###################################################################################################
+#  Backup Stage                                                                                   #
+###################################################################################################
+
+backup production data:
+  stage: backup
+  image: postgres:15-alpine
+  tags:
+    - sole-occupant
+  rules:
+    - if: $CI_COMMIT_BRANCH == 'main'
+      when: manual
+  allow_failure: true
+  variables:
+    GIT_STRATEGY: none
+  script:
+    - apk add --no-cache rclone
+    - rclone config create stack webdav url "$REMOTE_STORAGE_URL" vendor other user "$REMOTE_STORAGE_USER"
+    - rclone config password stack pass "$REMOTE_STORAGE_PASSWORD"
+    - LATEST_TARGET="${PROD_BACKUP_NAME}.sql.gz"
+    - VERSIONED_TARGET="${PROD_BACKUP_NAME}_$(date '+%Y%m%d%H%M').sql.gz"
+    - pg_dump "$PRODUCTION_DB_URL" | gzip > "$VERSIONED_TARGET"
+    - rclone copy -v -I "$VERSIONED_TARGET" "$BACKUPS_LOCATION"
+    - rclone copyto -v -I "$VERSIONED_TARGET" "$BACKUPS_LOCATION/$LATEST_TARGET"
+
+###################################################################################################
+#  Cleanup Stage                                                                                  #
+###################################################################################################
+
+# Stop and cleanup all review environments.
+cleanup review environments:
+  image: dtzar/helm-kubectl:3
+  dependencies: []
+  stage: cleanup
+  rules:
+    - if: $CI_COMMIT_BRANCH == 'main'
+      when: manual
+    - if: $CI_PIPELINE_SOURCE == 'schedule' && $CLEANUP_REVIEW_ENVIRONMENTS == 'true'
+  allow_failure: true
+  variables:
+    GIT_STRATEGY: none
+  script:
+    - kubectl config use-context "$CI_PROJECT_PATH:development"
+    - kubectl config set-context --current --namespace review
+    # Delete all review managed ingresses instead of relying on the pre-delete hooks
+    - kubectl get ingress --selector app.kubernetes.io/managed-by -o jsonpath='{range .items[*]}{.metadata.name}{" "}{.metadata.labels.app\.kubernetes\.io/managed-by}{"\n"}{end}' | grep '^.* review-' | awk '{print "kubectl delete ingress " $1}' | bash
+    # Delete all review managed secrets instead of relying on the pre-delete hooks
+    - kubectl get secret --selector app.kubernetes.io/managed-by -o jsonpath='{range .items[*]}{.metadata.name}{" "}{.metadata.labels.app\.kubernetes\.io/managed-by}{"\n"}{end}' | grep '^.* review-' | awk '{print "kubectl delete secret " $1}' | bash
+    # Delete all helm review releases without hooks
+    - helm list --short | grep '^review-' | xargs -I {} helm delete {} --no-hooks
+    # Delete all remaining review kubernetes resources with instance selector
+    - kubectl get all --selector app.kubernetes.io/instance -o jsonpath='{range .items[*]}{.metadata.name}{" "}{.metadata.labels.app\.kubernetes\.io/instance}{" "}{.kind}{"\n"}{end}' | grep '^.* review-' | awk '{kind=tolower($3); print "kubectl delete " kind " " $1;}' | bash
+    # Delete all persistent volume claims from review environments
+    - kubectl get pvc --selector app.kubernetes.io/instance -o jsonpath='{range .items[*]}{.metadata.name}{" "}{.metadata.labels.app\.kubernetes\.io/instance}{"\n"}{end}' | grep '^.* review-' | awk '{print "kubectl delete pvc " $1}' | bash
+    # Delete all companion container namespaces for review environments
+    - kubectl get namespaces --no-headers -o custom-columns=:metadata.name | grep '^companion-containers-review-' | xargs -I{} kubectl delete namespace {}
+    # Delete all ingresses for review environments
+    - kubectl get ingress --no-headers -o custom-columns=:metadata.name | grep '^review-' | xargs -I{} kubectl delete ingress {}
+    # Delete all secrets for review environments
+    - kubectl get secrets --no-headers -o custom-columns=:metadata.name | grep '^review-' | xargs -I{} kubectl delete secret {}

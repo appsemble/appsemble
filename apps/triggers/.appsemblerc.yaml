@@ -21,6 +21,7 @@ context:
     visibility: public
     resources: true
   staging:
+    id: 1129
     organization: appsemble
     remote: https://staging.appsemble.review
     visibility: public
