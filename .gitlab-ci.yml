@@ -320,7 +320,7 @@ e2e apps:
             'appsemble/apps/sittard-geleen',
             'appsemble/apps/eindhoven',
             'appsemble/apps/amersfoort',
-            'appsemble/sounding-bodies',
+            'appsemble/apps/sounding-bodies',
             'appsemble/apps/tbvwonen',
           ]
   trigger:
