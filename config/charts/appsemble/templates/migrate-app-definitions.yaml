@@ -21,13 +21,13 @@ spec:
           args:
             - migrate-app-definitions
             {{ with .Values.migrateDefinitions.validate }}
-            - {{ . }}
+            - "--validate={{ . }}"
             {{ end }}
             {{ with .Values.migrateDefinitions.save }}
-            - {{ . }}
+            - "--save={{ . }}"
             {{ end }}
             {{ with .Values.migrateDefinitions.batch }}
-            - {{ . }}
+            - "--batch={{ . }}"
             {{ end }}
           env:
 {{ include "appsemble.postgres" . | indent 12 }}

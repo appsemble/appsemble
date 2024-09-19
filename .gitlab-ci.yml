@@ -645,6 +645,7 @@ staging:
       --set "importData.remoteStorage.passwordSecretKey=password"
       --set "importData.remoteStorage.location=$BACKUPS_LOCATION"
       --set "importData.remoteStorage.filename=$PROD_BACKUP_NAME"
+      --set "migrateDefinitions.save=true"
       --set "proxy=true"
       --set "remote=https://appsemble.app"
       --set "sentry.allowedDomains={*.appsemble.review}"
