@@ -95,7 +95,7 @@ The resources tab houses an editor for resources. However it is not yet implemen
 
 ## Security Tab
 
-The security tab allows the user to set roles and teams by adding them in the right sidebar menu.
+The security tab allows the user to set roles and groups by adding them in the right sidebar menu.
 The created roles show up in the left sidebar.
 
 ## Further Reading

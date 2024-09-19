@@ -7,8 +7,8 @@ import {
   useData,
   useSideMenu,
 } from '@appsemble/react-components';
-import { type AppCollection } from '@appsemble/types';
-import { Permission } from '@appsemble/utils';
+import { type AppCollection, OrganizationPermission } from '@appsemble/types';
+import { checkOrganizationRoleOrganizationPermissions } from '@appsemble/utils';
 import { type ReactNode } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { Route, useParams } from 'react-router-dom';
@@ -18,7 +18,6 @@ import { IndexPage } from './IndexPage/index.js';
 import { messages } from './messages.js';
 import { SettingsPage } from './SettingsPage/index.js';
 import { useUser } from '../../../components/UserProvider/index.js';
-import { checkRole } from '../../../utils/checkRole.js';
 
 interface CollectionRoutesProps {
   readonly fallbackCollectionId?: number;
@@ -35,13 +34,17 @@ export function CollectionRoutes({ fallbackCollectionId }: CollectionRoutesProps
     error,
     loading,
     setData: setCollection,
-  } = useData<AppCollection>(`/api/appCollections/${id}`);
+  } = useData<AppCollection>(`/api/app-collections/${id}`);
 
   const { organizations } = useUser();
   const organizationId = collection?.OrganizationId;
   const userOrganization = organizations?.find((org) => org.id === organizationId);
 
-  const mayEdit = userOrganization && checkRole(userOrganization.role, Permission.EditCollections);
+  const mayEdit =
+    userOrganization &&
+    checkOrganizationRoleOrganizationPermissions(userOrganization.role, [
+      OrganizationPermission.UpdateAppCollections,
+    ]);
 
   const url = `collections/${collectionId}`;
 

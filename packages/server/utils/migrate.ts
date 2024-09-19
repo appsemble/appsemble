@@ -3,6 +3,7 @@ import semver from 'semver';
 import { type Sequelize, type Transaction } from 'sequelize';
 import { type Promisable } from 'type-fest';
 
+import { type Patch } from './yaml.js';
 import { getDB, Meta } from '../models/index.js';
 
 export interface Migration {
@@ -11,6 +12,8 @@ export interface Migration {
   up: (transaction: Transaction, db: Sequelize) => Promisable<void>;
 
   down: (transaction: Transaction, db: Sequelize) => Promisable<void>;
+
+  appPatches?: Patch[];
 }
 
 async function handleMigration(

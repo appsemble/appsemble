@@ -63,7 +63,7 @@ export function SettingsPage({ onChangeOrganization, organization }: SettingsPag
   const fetch = useCallback(async () => {
     const apps = await axios.get(`/api/organizations/${organization.id}/apps`);
     setFetchedApps(apps.data);
-    const appCollections = await axios.get(`/api/organizations/${organization.id}/appCollections`);
+    const appCollections = await axios.get(`/api/organizations/${organization.id}/app-collections`);
     setFetchedAppCollections(appCollections.data);
     const blocks = await axios.get(`/api/organizations/${organization.id}/blocks`);
     setFetchedBlocks(blocks.data);

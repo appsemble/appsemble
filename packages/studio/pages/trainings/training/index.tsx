@@ -6,8 +6,8 @@ import {
   useData,
   useMessages,
 } from '@appsemble/react-components';
-import { type Training, type TrainingBlock } from '@appsemble/types';
-import { Permission } from '@appsemble/utils';
+import { OrganizationPermission, type Training, type TrainingBlock } from '@appsemble/types';
+import { checkOrganizationRoleOrganizationPermissions } from '@appsemble/utils';
 import { randomString } from '@appsemble/web-utils';
 import axios from 'axios';
 import { type ChangeEvent, type ReactNode, useCallback, useEffect, useState } from 'react';
@@ -26,7 +26,6 @@ import {
   TrainingModal,
 } from '../../../components/TrainingModal/index.js';
 import { useUser } from '../../../components/UserProvider/index.js';
-import { checkRole } from '../../../utils/checkRole.js';
 
 export function TrainingHomePage(): ReactNode {
   const { formatMessage } = useIntl();
@@ -63,7 +62,10 @@ export function TrainingHomePage(): ReactNode {
   }, [trainingId]);
 
   const mayDeleteTraining =
-    isAppsembleMember && checkRole(isAppsembleMember.role, Permission.DeleteApps);
+    isAppsembleMember &&
+    checkOrganizationRoleOrganizationPermissions(isAppsembleMember.role, [
+      OrganizationPermission.DeleteTrainings,
+    ]);
 
   const handleSelectChange = useCallback(
     ({ currentTarget }: ChangeEvent<HTMLSelectElement>) => {

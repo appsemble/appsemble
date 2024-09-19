@@ -5,6 +5,7 @@ import { AppsembleError, authenticate, logger, opendirSafe } from '@appsemble/no
 import {
   type ActionDefinition,
   type AppDefinition,
+  type AppMemberPropertyDefinition,
   type BasicPageDefinition,
   type BlockDefinition,
   type ControllerDefinition,
@@ -12,8 +13,13 @@ import {
   type FlowPageDefinition,
   type LinkActionDefinition,
   type ResourceActionDefinition,
+  type ResourceCreateActionDefinition,
   type ResourceDefinition,
-  type UserPropertyDefinition,
+  type ResourceDeleteActionDefinition,
+  type ResourceGetActionDefinition,
+  type ResourcePatchActionDefinition,
+  type ResourceQueryActionDefinition,
+  type ResourceUpdateActionDefinition,
 } from '@appsemble/types';
 import { allActions } from '@appsemble/utils';
 import axios from 'axios';
@@ -84,6 +90,7 @@ function appendRoleToTemplate(role: string, template: AppDefinition): AppDefinit
       ...updatedTemplate.security?.roles,
       [role]: {
         description: 'Description',
+        inherits: ['ResourcesManager'],
       },
     },
   };
@@ -106,10 +113,6 @@ function appendResourcesToTemplate(
 
   for (const resourceDefinition of Object.values(updatedTemplate.resources)) {
     for (const [, value] of Object.entries(resourceDefinition)) {
-      for (const role of value.roles ?? []) {
-        appendRoleToTemplate(role, updatedTemplate);
-      }
-
       const to = value.hooks?.notification?.to;
 
       if (to) {
@@ -225,13 +228,18 @@ function appendBlockToTemplate(block: BlockDefinition, template: AppDefinition):
 
     const blockResourceActionDefinition = Object.values(block.actions).find(
       (value: ActionDefinition) => value.type.startsWith('resource'),
-    ) as ResourceActionDefinition<'noop'>;
+    ) as
+      | ResourceCreateActionDefinition
+      | ResourceDeleteActionDefinition
+      | ResourceGetActionDefinition
+      | ResourcePatchActionDefinition
+      | ResourceQueryActionDefinition
+      | ResourceUpdateActionDefinition;
 
     if (blockResourceActionDefinition) {
       updatedTemplate.resources = {
         ...template?.resources,
         [blockResourceActionDefinition.resource]: {
-          roles: ['$public'],
           schema: {
             type: 'object',
             additionalProperties: false,
@@ -262,7 +270,6 @@ function appendCronToTemplate(
   if (cronAction.type.startsWith('resource')) {
     updatedTemplate.resources = {
       [cronAction.resource]: {
-        roles: ['$public'],
         schema: {
           type: 'object',
           additionalProperties: false,
@@ -291,7 +298,6 @@ function appendControllerToTemplate(
     if (action.type.startsWith('resource')) {
       updatedTemplate.resources = {
         [(action as ResourceActionDefinition<'noop'>).resource]: {
-          roles: ['$public'],
           schema: {
             type: 'object',
             additionalProperties: false,
@@ -309,21 +315,20 @@ function appendControllerToTemplate(
   return updatedTemplate;
 }
 
-function appendUsersToTemplate(
-  users: {
-    properties: Record<string, UserPropertyDefinition>;
+function appendMembersToTemplate(
+  members: {
+    properties: Record<string, AppMemberPropertyDefinition>;
   },
   template: AppDefinition,
 ): AppDefinition {
   const updatedTemplate = template;
 
-  updatedTemplate.users = users;
+  updatedTemplate.members = members;
 
-  for (const propertyDefinition of Object.values(users.properties)) {
+  for (const propertyDefinition of Object.values(members.properties)) {
     if (propertyDefinition.reference.resource) {
       updatedTemplate.resources = {
         [propertyDefinition.reference.resource]: {
-          roles: ['$public'],
           schema: {
             type: 'object',
             additionalProperties: false,
@@ -435,7 +440,7 @@ async function accumulateAppDefinitions(docsPath: string): Promise<AppDefinition
           template = appendControllerToTemplate(parsed.controller, template);
           break;
         case 'users':
-          template = appendUsersToTemplate(parsed.users, template);
+          template = appendMembersToTemplate(parsed.members, template);
           break;
         case 'security':
           template.security = template.security

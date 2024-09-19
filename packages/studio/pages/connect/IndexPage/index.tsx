@@ -40,8 +40,8 @@ export function IndexPage(): ReactNode {
         'openid',
         'profile',
         'resources:manage',
-        'teams:read',
-        'teams:write',
+        'groups:read',
+        'groups:write',
       ]),
     [qs],
   );
@@ -49,13 +49,19 @@ export function IndexPage(): ReactNode {
   const onAccept = useCallback(() => {
     setGenerating(true);
     axios
-      .post<LoginCodeResponse>('/api/oauth2/consent/agree', {
-        appId,
+      .post<LoginCodeResponse>(`/api/users/current/auth/oauth2/apps/${appId}/consent/agree`, {
         redirectUri,
         scope: [...new Set(scopes)].join(' '),
       })
       .then(({ data }) => oauth2Redirect(qs, { code: data.code }))
-      .catch(() => oauth2Redirect(qs, { error: 'server_error' }));
+      .catch((err) => {
+        // In case of a conflict navigate the user back to the login page to link,
+        // an existing account with any of the already associated login methods.
+        if (axios.isAxiosError(err) && err.response.status === 409) {
+          return oauth2Redirect(qs, { ...err.response.data.data });
+        }
+        return oauth2Redirect(qs, { error: 'server_error' });
+      });
   }, [appId, qs, redirectUri, scopes]);
 
   const onDeny = useCallback(() => {
@@ -68,8 +74,7 @@ export function IndexPage(): ReactNode {
     }
 
     axios
-      .post<LoginCodeResponse>('/api/oauth2/consent/verify', {
-        appId,
+      .post<LoginCodeResponse>(`/api/users/current/auth/oauth2/apps/${appId}/consent/verify`, {
         redirectUri,
         scope,
       })

@@ -130,10 +130,6 @@ export function ResourcesTab({
   const [toUpdate, setToUpdate] = useState<boolean>(false);
   const [fromSelection, setFromSelection] = useState<boolean>(false);
   const [originalFormValues, setOriginalFormValues] = useState<FormValues>();
-  const resourcesObject = useMemo(
-    () => (app?.definition?.resources && app?.definition?.resources) ?? [],
-    [app?.definition?.resources],
-  );
 
   const [callUnsavedChanges, setCallUnsavedChanges] = useState(false);
   const [callCancelCreate, setCallCancelCreate] = useState(false);
@@ -171,19 +167,6 @@ export function ResourcesTab({
     setIsCreating(false);
     setFromSelection(false);
   }, []);
-
-  const extractResourceRoles = useCallback((): string[] => {
-    if (selectedResource > -1 && resourcesObject) {
-      const resourcesArray = Object.entries(resourcesObject);
-      const selectedResourceName = resourceNames[selectedResource];
-      const selectedResourceEntry = resourcesArray.find(([key]) => key === selectedResourceName);
-      if (selectedResourceEntry) {
-        const [, resourceDetails] = selectedResourceEntry;
-        return resourceDetails.roles;
-      }
-    }
-    return [];
-  }, [resourceNames, resourcesObject, selectedResource]);
 
   const extractOriginalFormValues = useCallback(
     (selection?: number) => {
@@ -227,7 +210,6 @@ export function ResourcesTab({
 
       const extractedFormValues = {
         resourceName: resourceNames[resourceIndex],
-        roles: currentResource.roles,
         expires: currentResource.expires,
         clonable: currentResource.clonable,
         fields: originalFields,
@@ -391,7 +373,6 @@ export function ResourcesTab({
 
     const newFormValues = {
       resourceName: resourceNames[resourceIndex],
-      roles: currentResource.roles,
       expires: currentResource.expires,
       clonable: currentResource.clonable,
       fields: newFields,
@@ -399,7 +380,6 @@ export function ResourcesTab({
 
     extractOriginalFormValues(resourceIndex);
     setFormValues(newFormValues);
-    setMultipleSelect(currentResource.roles);
 
     if (resourceToConfirm > -1) {
       setResourceToConfirm(-1);
@@ -429,15 +409,8 @@ export function ResourcesTab({
         properties: {},
       },
       references: {},
-      roles: [],
     };
 
-    newResource.roles =
-      multipleSelect?.length > 0
-        ? multipleSelect
-        : extractResourceRoles()?.length > 0
-          ? extractResourceRoles()
-          : ['$none'];
     if (formValues.clonable) {
       newResource.clonable = formValues.clonable;
     }
@@ -489,9 +462,6 @@ export function ResourcesTab({
     if (newResource.schema.required.length === 0) {
       delete newResource.schema.required;
     }
-    if (newResource.roles.length === 0) {
-      delete newResource.roles;
-    }
     if (Object.keys(newResource.references).length === 0) {
       delete newResource.references;
     }
@@ -519,13 +489,11 @@ export function ResourcesTab({
     changeIn,
     deleteIn,
     docRef,
-    extractResourceRoles,
     formValues.clonable,
     formValues.fields,
     formValues.resourceName,
     isCreating,
     isUpdating,
-    multipleSelect,
     resetForm,
     resourceNames,
     selectedResource,
@@ -1150,16 +1118,16 @@ export function ResourcesTab({
                         Author
                       </option>
                       <option
-                        title={formatMessage(messages.teamMemberRoleInfo)}
-                        value="$team:member"
+                        title={formatMessage(messages.groupMemberRoleInfo)}
+                        value="$group:member"
                       >
-                        team:member
+                        group:member
                       </option>
                       <option
-                        title={formatMessage(messages.teamManagerRoleInfo)}
-                        value="$team:manager"
+                        title={formatMessage(messages.groupManagerRoleInfo)}
+                        value="$group:manager"
                       >
-                        team:manager
+                        group:manager
                       </option>
                       {/* {resourceRoles?.map((role: string) => {
                         const formattedRole = formatRoleString(role);

@@ -20,7 +20,7 @@ export function RegisterPage(): ReactNode {
   const { login } = useUser();
   const register = useCallback(
     async (values: RegistrationFormValues) => {
-      const { data } = await axios.post<TokenResponse>('/api/email', {
+      const { data } = await axios.post<TokenResponse>('/api/auth/email/register', {
         ...values,
         timezone,
         locale: lang,

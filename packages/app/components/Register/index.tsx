@@ -11,12 +11,12 @@ import { useParams } from 'react-router-dom';
 
 import { messages } from './messages.js';
 import { apiUrl, appId } from '../../utils/settings.js';
-import { useUser } from '../UserProvider/index.js';
+import { useAppMember } from '../AppMemberProvider/index.js';
 
 export function Register(): ReactNode {
   useMeta(messages.register);
 
-  const { passwordLogin } = useUser();
+  const { passwordLogin } = useAppMember();
   const { lang } = useParams<{ lang: string }>();
 
   const onRegister = useCallback(
@@ -31,7 +31,7 @@ export function Register(): ReactNode {
         formData.append('name', values.name);
       }
 
-      await axios.post(`${apiUrl}/api/user/apps/${appId}/account`, formData);
+      await axios.post(`${apiUrl}/api/apps/${appId}/auth/email/register`, formData);
       await passwordLogin({ username: values.email, password: values.password });
     },
     [passwordLogin, lang],

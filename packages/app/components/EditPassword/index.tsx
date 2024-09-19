@@ -23,7 +23,10 @@ export function EditPassword(): ReactNode {
   const { lang } = useParams<{ lang: string }>();
   const onSubmit = useCallback(
     async ({ password }: EditPasswordValues) => {
-      await axios.post(`${apiUrl}/api/user/apps/${appId}/account/reset`, { token, password });
+      await axios.post(`${apiUrl}/api/apps/${appId}/auth/email/reset-password`, {
+        token,
+        password,
+      });
       setSuccess(true);
     },
     [token],

@@ -175,6 +175,24 @@
       "type": ["string", "null"],
       "description": "If specified, the database will be migrated to this specific version. To upgrade to the latest version, specify `next`"
     },
+    "migrateDefinitions": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "validate": {
+          "type": ["boolean", "null"],
+          "description": "If `true`, will validate app definitions before saving them."
+        },
+        "save": {
+          "type": ["boolean", "null"],
+          "description": "If `true`, will save the migrated app definitions after they have been patched successfully."
+        },
+        "batch": {
+          "type": ["integer", "null"],
+          "description": "If specified, will patch the number of apps specified per iteration."
+        }
+      }
+    },
     "proxy": {
       "type": "boolean",
       "description": "If `true`, The proxy is trusted for logging purposes."

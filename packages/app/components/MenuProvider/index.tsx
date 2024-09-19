@@ -1,7 +1,7 @@
 import { SideMenuProvider } from '@appsemble/react-components';
 import { type MenuItem } from '@appsemble/sdk';
 import { type PageDefinition } from '@appsemble/types';
-import { checkAppRole, noop } from '@appsemble/utils';
+import { noop } from '@appsemble/utils';
 import {
   createContext,
   type Dispatch,
@@ -14,11 +14,12 @@ import {
 import { FormattedMessage } from 'react-intl';
 
 import { messages } from './messages.js';
+import { checkPagePermissions } from '../../utils/authorization.js';
 import { apiUrl, appId } from '../../utils/settings.js';
 import { useAppDefinition } from '../AppDefinitionProvider/index.js';
+import { useAppMember } from '../AppMemberProvider/index.js';
 import { BottomNavigation } from '../BottomNavigation/index.js';
 import { SideNavigation } from '../SideNavigation/index.js';
-import { useUser } from '../UserProvider/index.js';
 
 export interface BlockMenuItem {
   path: string;
@@ -47,10 +48,8 @@ export function usePage(): MenuProviderContext {
 }
 
 export function MenuProvider({ children }: MenuProviderProps): ReactNode {
-  const {
-    definition: { layout = {}, ...definition },
-  } = useAppDefinition();
-  const { role, teams } = useUser();
+  const { definition: appDefinition } = useAppDefinition();
+  const { appMemberRole, appMemberSelectedGroup } = useAppMember();
   const [page, setPage] = useState<PageDefinition>();
   const [blockMenus, setBlockMenus] = useState<BlockMenuItem[]>([]);
   const value = useMemo<MenuProviderContext>(
@@ -71,16 +70,11 @@ export function MenuProvider({ children }: MenuProviderProps): ReactNode {
     [page],
   );
 
-  const checkPagePermissions = (p: PageDefinition): boolean => {
-    const roles = p.roles || definition.roles || [];
-
-    return (
-      roles.length === 0 || roles.some((r) => checkAppRole(definition.security, r, role, teams))
-    );
-  };
-
-  const pages = definition.pages.filter(
-    (p) => !p.parameters && !p.hideNavTitle && checkPagePermissions(p),
+  const pages = appDefinition.pages.filter(
+    (pageDefinition) =>
+      !pageDefinition.parameters &&
+      !pageDefinition.hideNavTitle &&
+      checkPagePermissions(pageDefinition, appDefinition, appMemberRole, appMemberSelectedGroup),
   );
 
   if (!pages.length) {
@@ -89,7 +83,7 @@ export function MenuProvider({ children }: MenuProviderProps): ReactNode {
   }
 
   let navigationElement: ReactNode;
-  const navigation = page?.navigation || layout?.navigation;
+  const navigation = page?.navigation || appDefinition.layout?.navigation;
 
   switch (navigation) {
     case 'bottom':

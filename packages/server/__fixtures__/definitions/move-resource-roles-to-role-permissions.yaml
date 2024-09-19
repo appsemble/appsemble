@@ -1,0 +1,110 @@
+# Move resource roles to role permissions:
+name: test
+description: test
+defaultPage: test
+
+security:
+  default:
+    role: roleA
+    policy: everyone
+  roles:
+    roleA:
+      description: test
+    roleB:
+      description: test
+
+resources:
+  resourceA:
+    roles: [roleA, roleB]
+    schema:
+      additionalProperties: false
+      type: object
+      properties:
+        test:
+          type: string
+  resourceB:
+    roles: [roleB, $public]
+    schema:
+      additionalProperties: false
+      type: object
+      properties:
+        test:
+          type: string
+  resourceC:
+    # ignore this, only if the action done doesn't define roles
+    roles: [roleA, $team:manager, $team:member]
+    schema:
+      additionalProperties: false
+      type: object
+      properties:
+        test:
+          type: string
+    create:
+      roles:
+        - roleA
+        - $team:manager
+      hooks:
+        notification:
+          to:
+            - roleA # Notify users with the Admin role when a `person` resource is created.
+          subscribe: both # Users are able to both subscribe.
+    update:
+      roles:
+        - roleA
+        - $team:manager
+    patch:
+      roles:
+        - roleA
+        - $team:manager
+    get:
+      roles:
+        - roleB
+        - roleA
+        - $team:manager
+        - $team:member
+    query:
+      roles:
+        - roleB
+        - $team:manager
+        - $team:member
+    delete:
+      roles:
+        - roleB
+        - $team:manager
+    count:
+      roles:
+        - roleA
+    views:
+      public:
+        roles:
+          - roleA
+          - $none
+        remap:
+          object.from:
+            id:
+              prop: id
+            test:
+              prop: test
+            $created:
+              prop: $created
+  resourceD:
+    roles: [$author]
+    create:
+      roles: [$public]
+    schema:
+      additionalProperties: false
+      type: object
+      properties:
+        test:
+          type: string
+
+pages:
+  - name: test
+    blocks:
+      - type: action-button
+        version: 0.29.0
+        parameters:
+          icon: arrow-right
+        actions:
+          onClick:
+            type: noop

@@ -13,13 +13,12 @@ import { request } from './request.js';
 import * as resource from './resource.js';
 import { staticAction } from './static.js';
 import { throwAction } from './throw.js';
-import { type App, type User } from '../../models/index.js';
+import { type App } from '../../models/index.js';
 import { type Mailer } from '../email/Mailer.js';
 
 export interface ServerActionParameters<T extends ActionDefinition = ActionDefinition> {
   app: App;
   action: T;
-  user: User;
   mailer: Mailer;
   data: unknown;
   internalContext?: RemapperContext;
@@ -71,18 +70,21 @@ export const actions = {
   'storage.subtract': noop,
   'storage.update': noop,
   'storage.delete': noop,
-  'team.invite': noop,
-  'team.join': noop,
-  'team.list': noop,
-  'team.members': noop,
+  'group.member.invite': noop,
+  'group.member.delete': noop,
+  'group.member.role.update': noop,
+  'group.member.query': noop,
+  'group.query': noop,
   throw: throwAction,
-  'user.register': noop,
-  'user.create': noop,
-  'user.login': noop,
-  'user.logout': noop,
-  'user.update': noop,
-  'user.remove': noop,
-  'user.query': noop,
+  'app.member.register': noop,
+  'app.member.invite': noop,
+  'app.member.login': noop,
+  'app.member.logout': noop,
+  'app.member.role.update': noop,
+  'app.member.properties.patch': noop,
+  'app.member.current.patch': noop,
+  'app.member.delete': noop,
+  'app.member.query': noop,
 };
 
 // https://stackoverflow.com/a/53808212

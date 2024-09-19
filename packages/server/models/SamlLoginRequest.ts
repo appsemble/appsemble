@@ -13,7 +13,7 @@ import {
 
 import { AppSamlSecret, User } from './index.js';
 
-@Table({ tableName: 'SamlLoginRequest', paranoid: false })
+@Table({ tableName: 'SamlLoginRequest' })
 export class SamlLoginRequest extends Model {
   /**
    * The SAML login ID that is sent to the SAML server.

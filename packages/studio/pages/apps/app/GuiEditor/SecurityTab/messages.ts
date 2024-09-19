@@ -1,13 +1,13 @@
 import { defineMessages } from 'react-intl';
 
 export const messages = defineMessages({
+  guestTab: {
+    id: 'studio.zF7Cth',
+    defaultMessage: 'Guest',
+  },
   defaultTab: {
     id: 'studio.lKv8ex',
     defaultMessage: 'Default',
-  },
-  teamsTab: {
-    id: 'studio.DNeuzb',
-    defaultMessage: 'Teams',
   },
   rolesTab: {
     id: 'studio.c35gM5',

@@ -55,12 +55,12 @@ then have to specify the generated address from ngrok using the `--host` flag.
 
 At the moment, Appsemble supports the following “customappsso Attributes”:
 
-| SCIM target attribute                                              | Appsemble mapped attribute             |
-| ------------------------------------------------------------------ | -------------------------------------- |
-| externalId                                                         | `AppMember`.scimExternalId             |
-| userName                                                           | `AppMember`.email                      |
-| active                                                             | `AppMember`.scimActive                 |
-| name.formatted                                                     | `AppMember`.name & `User`.name         |
-| locale                                                             | `User`.locale                          |
-| timezone                                                           | `User`.timezone                        |
-| urn:ietf:params:scim:schemas:extension:enterprise:2.0:User:manager | `Team`.name = (Manager) `AppMember`.id |
+| SCIM target attribute                                              | Appsemble mapped attribute              |
+| ------------------------------------------------------------------ | --------------------------------------- |
+| externalId                                                         | `AppMember`.scimExternalId              |
+| userName                                                           | `AppMember`.email                       |
+| active                                                             | `AppMember`.scimActive                  |
+| name.formatted                                                     | `AppMember`.name & `User`.name          |
+| locale                                                             | `User`.locale                           |
+| timezone                                                           | `User`.timezone                         |
+| urn:ietf:params:scim:schemas:extension:enterprise:2.0:User:manager | `Group`.name = (Manager) `AppMember`.id |

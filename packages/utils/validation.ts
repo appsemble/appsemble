@@ -1,14 +1,17 @@
 import {
   type AppDefinition,
+  type AppMemberCurrentPatchAction,
+  type AppMemberPropertiesPatchAction,
+  type AppMemberRegisterAction,
   type BlockManifest,
+  type CustomAppPermission,
   type PageDefinition,
+  PredefinedAppRole,
+  predefinedAppRolePermissions,
   type ProjectImplementations,
   type Remapper,
   type ResourceGetActionDefinition,
   type RoleDefinition,
-  type UserCreateAction,
-  type UserRegisterAction,
-  type UserUpdateAction,
 } from '@appsemble/types';
 import cronParser from 'cron-parser';
 import { type Schema, ValidationError, Validator, type ValidatorResult } from 'jsonschema';
@@ -17,11 +20,31 @@ import { type Promisable } from 'type-fest';
 
 import { getAppBlocks, type IdentifiableBlock, normalizeBlockName } from './blockUtils.js';
 import { has } from './has.js';
-import { findPageByName, normalize, partialNormalized } from './index.js';
+import {
+  findPageByName,
+  getAppInheritedRoles,
+  getAppPossibleGuestPermissions,
+  getAppPossiblePermissions,
+  getAppRolePermissions,
+  normalize,
+  partialNormalized,
+} from './index.js';
 import { iterApp, type Prefix } from './iterApp.js';
 import { type ServerActionName, serverActions } from './serverActions.js';
 
 type Report = (instance: unknown, message: string, path: (number | string)[]) => void;
+
+const allResourcePermissionPattern = /^\$resource:all:(get|query|create|delete|patch|update)$/;
+
+const resourcePermissionPattern = /^\$resource:[^:]+:(get|query|create|delete|patch|update)$/;
+
+const allOwnResourcePermissionPattern = /^\$resource:all:own:(get|query|delete|patch|update)$/;
+
+const ownResourcePermissionPattern = /^\$resource:[^:]+:own:(get|query|delete|patch|update)$/;
+
+const allResourceViewPermissionPattern = /^\$resource:all:(get|query):[^:]+$/;
+
+const resourceViewPermissionPattern = /^\$resource:[^:]+:(get|query):[^:]+$/;
 
 /**
  * Check whether or not the given link represents a link related to the Appsemble core.
@@ -87,19 +110,19 @@ function validateUniquePageNames(definition: AppDefinition, report: Report): voi
   checkPages(definition.pages);
 }
 
-function validateUsersSchema(definition: AppDefinition, report: Report): void {
-  if (!definition.users) {
+function validateMembersSchema(definition: AppDefinition, report: Report): void {
+  if (!definition.members) {
     return;
   }
 
-  for (const [propertyName, propertyDefinition] of Object.entries(definition.users.properties)) {
+  for (const [propertyName, propertyDefinition] of Object.entries(definition.members.properties)) {
     // Handled by schema validation
     if (!propertyDefinition?.schema) {
       continue;
     }
 
     const { schema } = propertyDefinition;
-    const prefix = ['users', 'properties', propertyName, 'schema'];
+    const prefix = ['members', 'properties', propertyName, 'schema'];
 
     validateJSONSchema(schema, prefix, report);
 
@@ -114,7 +137,7 @@ function validateUsersSchema(definition: AppDefinition, report: Report): void {
 
       if (!resourceDefinition) {
         report(resourceName, 'refers to a resource that doesn’t exist', [
-          'users',
+          'members',
           'properties',
           propertyName,
           'reference',
@@ -395,16 +418,446 @@ function validateBlocks(
   });
 }
 
+function validatePermissions(
+  appDefinition: AppDefinition,
+  permissions: CustomAppPermission[],
+  inheritedPermissions: CustomAppPermission[],
+  possiblePermissions: CustomAppPermission[],
+  report: Report,
+  path: Prefix,
+): void {
+  const checked: CustomAppPermission[] = [];
+  for (const [index, permission] of permissions.entries()) {
+    if (checked.includes(permission)) {
+      report(appDefinition, 'duplicate permission declaration', [...path, 'permissions', index]);
+      return;
+    }
+
+    if (!possiblePermissions.includes(permission)) {
+      if (
+        resourcePermissionPattern.test(permission) ||
+        ownResourcePermissionPattern.test(permission)
+      ) {
+        const [, resourceName] = permission.split(':');
+
+        if (resourceName && resourceName !== 'all' && !appDefinition.resources?.[resourceName]) {
+          report(
+            appDefinition,
+            `resource ${resourceName} does not exist in the app's resources definition`,
+            [...path, 'permissions', index],
+          );
+          return;
+        }
+      }
+
+      if (resourceViewPermissionPattern.test(permission)) {
+        const [, resourceName, , resourceView] = permission.split(':');
+
+        if (resourceName === 'all') {
+          for (const [rName, resourceDefinition] of Object.entries(appDefinition.resources)) {
+            if (!resourceDefinition.views?.[resourceView]) {
+              report(
+                appDefinition,
+                `resource ${rName} is missing a definition for the ${resourceView} view`,
+                [...path, 'permissions', index],
+              );
+              return;
+            }
+          }
+        } else {
+          if (!appDefinition.resources[resourceName]?.views?.[resourceView]) {
+            report(
+              appDefinition,
+              `resource ${resourceName} is missing a definition for the ${resourceView} view`,
+              [...path, 'permissions', index],
+            );
+            return;
+          }
+        }
+      }
+
+      report(appDefinition, 'invalid permission', [...path, 'permissions', index]);
+      return;
+    }
+
+    if (inheritedPermissions.includes(permission)) {
+      report(appDefinition, 'permission is already inherited from another role', [
+        ...path,
+        'permissions',
+        index,
+      ]);
+      return;
+    }
+
+    const otherPermissions = permissions.filter((p) => p !== permission);
+
+    if (resourcePermissionPattern.test(permission)) {
+      const [, , resourceAction] = permission.split(':');
+
+      if (
+        otherPermissions.some((p) => {
+          if (allResourcePermissionPattern.test(p)) {
+            const [, , otherResourceAction] = p.split(':');
+            return otherResourceAction === resourceAction;
+          }
+          return false;
+        })
+      ) {
+        report(
+          appDefinition,
+          `redundant permission. A permission for the ${resourceAction} resource action with scope all is already declared`,
+          [...path, 'permissions', index],
+        );
+        return;
+      }
+
+      if (
+        inheritedPermissions.some((p) => {
+          if (allResourcePermissionPattern.test(p)) {
+            const [, , otherResourceAction] = p.split(':');
+            return otherResourceAction === resourceAction;
+          }
+          return false;
+        })
+      ) {
+        report(
+          appDefinition,
+          `redundant permission. A permission for the ${resourceAction} resource action with scope all is already inherited from another role`,
+          [...path, 'permissions', index],
+        );
+        return;
+      }
+    }
+
+    if (ownResourcePermissionPattern.test(permission)) {
+      const [, resourceName, , resourceAction] = permission.split(':');
+
+      if (
+        otherPermissions.some((p) => {
+          if (resourcePermissionPattern.test(p)) {
+            const [, otherResourceName, otherResourceAction] = p.split(':');
+            return (
+              resourceName !== 'all' &&
+              otherResourceName === resourceName &&
+              otherResourceAction === resourceAction
+            );
+          }
+          return false;
+        })
+      ) {
+        report(
+          appDefinition,
+          `redundant permission. A permission for the ${resourceAction} resource action on resource ${resourceName} is already declared`,
+          [...path, 'permissions', index],
+        );
+        return;
+      }
+
+      if (
+        otherPermissions.some((p) => {
+          if (allOwnResourcePermissionPattern.test(p)) {
+            const [, , , otherResourceAction] = p.split(':');
+            return otherResourceAction === resourceAction;
+          }
+          return false;
+        })
+      ) {
+        report(
+          appDefinition,
+          `redundant permission. An own permission for the ${resourceAction} resource action with scope all is already declared`,
+          [...path, 'permissions', index],
+        );
+        return;
+      }
+
+      if (
+        otherPermissions.some((p) => {
+          if (allResourcePermissionPattern.test(p)) {
+            const [, , otherResourceAction] = p.split(':');
+            return otherResourceAction === resourceAction;
+          }
+          return false;
+        })
+      ) {
+        report(
+          appDefinition,
+          `redundant permission. A permission for the ${resourceAction} resource action with scope all is already declared`,
+          [...path, 'permissions', index],
+        );
+        return;
+      }
+
+      if (
+        inheritedPermissions.some((p) => {
+          if (resourcePermissionPattern.test(p)) {
+            const [, otherResourceName, otherResourceAction] = p.split(':');
+            return (
+              resourceName !== 'all' &&
+              otherResourceName === resourceName &&
+              otherResourceAction === resourceAction
+            );
+          }
+          return false;
+        })
+      ) {
+        report(
+          appDefinition,
+          `redundant permission. A permission for the ${resourceAction} resource action on resource ${resourceName} is already inherited from another role`,
+          [...path, 'permissions', index],
+        );
+        return;
+      }
+
+      if (
+        inheritedPermissions.some((p) => {
+          if (allOwnResourcePermissionPattern.test(p)) {
+            const [, , , otherResourceAction] = p.split(':');
+            return otherResourceAction === resourceAction;
+          }
+          return false;
+        })
+      ) {
+        report(
+          appDefinition,
+          `redundant permission. An own permission for the ${resourceAction} resource action with scope all is already inherited from another role`,
+          [...path, 'permissions', index],
+        );
+        return;
+      }
+
+      if (
+        inheritedPermissions.some((p) => {
+          if (allResourcePermissionPattern.test(p)) {
+            const [, , otherResourceAction] = p.split(':');
+            return otherResourceAction === resourceAction;
+          }
+          return false;
+        })
+      ) {
+        report(
+          appDefinition,
+          `redundant permission. A permission for the ${resourceAction} resource action with scope all is already inherited from another role`,
+          [...path, 'permissions', index],
+        );
+        return;
+      }
+    }
+
+    if (resourceViewPermissionPattern.test(permission)) {
+      const [, resourceName, resourceAction, resourceView] = permission.split(':');
+
+      // $resource:type:query:public, $resource:type:query:private
+      if (
+        otherPermissions.some((p) => {
+          if (resourceViewPermissionPattern.test(p)) {
+            const [, otherResourceName, otherResourceAction] = p.split(':');
+            return (
+              otherResourceName !== 'all' &&
+              otherResourceName === resourceName &&
+              otherResourceAction === resourceAction
+            );
+          }
+          return false;
+        })
+      ) {
+        report(
+          appDefinition,
+          `a view permission for the ${resourceAction} action on resource ${resourceName} is already declared`,
+          [...path, 'permissions', index],
+        );
+        return;
+      }
+
+      // $resource:type:query:public, $resource:all:query:private
+      if (
+        otherPermissions.some((p) => {
+          if (allResourceViewPermissionPattern.test(p)) {
+            const [, , otherResourceAction, otherResourceView] = p.split(':');
+            return otherResourceAction === resourceAction && otherResourceView !== resourceView;
+          }
+          return false;
+        })
+      ) {
+        report(
+          appDefinition,
+          `a view permission for the ${resourceAction} action with scope all is already declared`,
+          [...path, 'permissions', index],
+        );
+        return;
+      }
+
+      // $resource:type:query:public, $resource:type:query
+      if (
+        otherPermissions.some((p) => {
+          if (resourcePermissionPattern.test(p)) {
+            const [, otherResourceName, otherResourceAction] = p.split(':');
+            return otherResourceName === resourceName && otherResourceAction === resourceAction;
+          }
+          return false;
+        })
+      ) {
+        report(
+          appDefinition,
+          `redundant permission. A permission for the ${resourceAction} action on resource ${resourceName} without a specific view is already declared`,
+          [...path, 'permissions', index],
+        );
+        return;
+      }
+
+      // $resource:type:query:public, $resource:all:query
+      if (
+        otherPermissions.some((p) => {
+          if (resourcePermissionPattern.test(p)) {
+            const [, otherResourceName, otherResourceAction] = p.split(':');
+            return otherResourceName === 'all' && otherResourceAction === resourceAction;
+          }
+          return false;
+        })
+      ) {
+        report(
+          appDefinition,
+          `redundant permission. A permission for the ${resourceAction} resource action with scope all without a specific view is already declared`,
+          [...path, 'permissions', index],
+        );
+        return;
+      }
+
+      // $resource:type:query:public, $resource:all:query:public
+      if (
+        otherPermissions.some((p) => {
+          if (allResourceViewPermissionPattern.test(p)) {
+            const [, otherResourceName, otherResourceAction, otherResourceView] = p.split(':');
+            return (
+              otherResourceName === 'all' &&
+              otherResourceAction === resourceAction &&
+              otherResourceView === resourceView
+            );
+          }
+          return false;
+        })
+      ) {
+        report(
+          appDefinition,
+          `redundant permission. A permission for the ${resourceAction} resource action with scope all for this view is already declared`,
+          [...path, 'permissions', index],
+        );
+        return;
+      }
+
+      // $resource:type:query:private
+      // $resource:type:query:public
+      if (
+        inheritedPermissions.some((p) => {
+          if (resourceViewPermissionPattern.test(p)) {
+            const [, otherResourceName, otherResourceAction] = p.split(':');
+            return (
+              otherResourceName !== 'all' &&
+              otherResourceName === resourceName &&
+              otherResourceAction === resourceAction
+            );
+          }
+          return false;
+        })
+      ) {
+        report(
+          appDefinition,
+          `a view permission for the ${resourceAction} action on resource ${resourceName} is already inherited from another role`,
+          [...path, 'permissions', index],
+        );
+        return;
+      }
+
+      // $resource:all:query:private
+      // $resource:type:query:public
+      if (
+        inheritedPermissions.some((p) => {
+          if (allResourceViewPermissionPattern.test(p)) {
+            const [, , otherResourceAction, otherResourceView] = p.split(':');
+            return otherResourceAction === resourceAction && otherResourceView !== resourceView;
+          }
+          return false;
+        })
+      ) {
+        report(
+          appDefinition,
+          `a view permission for the ${resourceAction} action with scope all is already inherited from another role`,
+          [...path, 'permissions', index],
+        );
+        return;
+      }
+
+      // $resource:type:query
+      // $resource:type:query:public
+      if (
+        inheritedPermissions.some((p) => {
+          if (resourcePermissionPattern.test(p)) {
+            const [, otherResourceName, otherResourceAction] = p.split(':');
+            return otherResourceName === resourceName && otherResourceAction === resourceAction;
+          }
+          return false;
+        })
+      ) {
+        report(
+          appDefinition,
+          `redundant permission. A permission for the ${resourceAction} action on resource ${resourceName} without a specific view is already inherited from another role`,
+          [...path, 'permissions', index],
+        );
+        return;
+      }
+
+      // $resource:all:query
+      // $resource:type:query:public
+      if (
+        inheritedPermissions.some((p) => {
+          if (allResourcePermissionPattern.test(p)) {
+            const [, , otherResourceAction] = p.split(':');
+            return otherResourceAction === resourceAction;
+          }
+          return false;
+        })
+      ) {
+        report(
+          appDefinition,
+          `redundant permission. A permission for the ${resourceAction} resource action with scope all without a specific view is already inherited from another role`,
+          [...path, 'permissions', index],
+        );
+        return;
+      }
+
+      // $resource:all:query:public
+      // $resource:type:query:public
+      if (
+        inheritedPermissions.some((p) => {
+          if (allResourceViewPermissionPattern.test(p)) {
+            const [, , otherResourceAction, otherResourceView] = p.split(':');
+            return otherResourceAction === resourceAction && otherResourceView === resourceView;
+          }
+          return false;
+        })
+      ) {
+        report(
+          appDefinition,
+          `redundant permission. A permission for the ${resourceAction} resource action with scope all for this view is already inherited from another role`,
+          [...path, 'permissions', index],
+        );
+        return;
+      }
+    }
+
+    checked.push(permission);
+  }
+}
+
 function checkCyclicRoleInheritance(
   roles: Record<string, RoleDefinition>,
   name: string,
   report: Report,
 ): void {
-  let lastchecked: string;
+  let lastChecked: string;
   const stack: string[] = [];
 
   const checkRoleRecursively = (role: string): boolean => {
-    lastchecked = role;
+    lastChecked = role;
     if (stack.includes(role)) {
       return true;
     }
@@ -413,8 +866,8 @@ function checkCyclicRoleInheritance(
   };
 
   const duplicate = checkRoleRecursively(name);
-  if (duplicate && lastchecked === name) {
-    report(roles[name], 'cyclicly inherits itself', ['security', 'roles', name]);
+  if (duplicate && lastChecked === name) {
+    report(roles[name], 'cyclically inherits itself', ['security', 'roles', name]);
   }
 }
 
@@ -426,86 +879,132 @@ function checkCyclicRoleInheritance(
  */
 function validateSecurity(definition: AppDefinition, report: Report): void {
   const { notifications, security } = definition;
-  const defaultAllow = ['$none', '$public', '$team:member', '$team:manager'];
+  const predefinedRoles = Object.keys(PredefinedAppRole);
 
-  if (!security) {
-    if (notifications === 'login') {
-      report(notifications, 'only works if security is defined', ['notifications']);
-    }
-
-    return;
-  }
-
-  const checkRoleExists = (name: string, path: Prefix, allow = defaultAllow): boolean => {
-    if (!has(security.roles, name) && !allow.includes(name)) {
+  const checkRoleExists = (name: string, path: Prefix, roles = predefinedRoles): boolean => {
+    if (!has(security.roles, name) && !roles.includes(name)) {
       report(name, 'does not exist in this app’s roles', path);
       return false;
     }
     return true;
   };
 
-  const checkRoles = (object: { roles?: string[] }, path: Prefix, allow = defaultAllow): void => {
+  const checkRoles = (object: { roles?: string[] }, path: Prefix): void => {
     if (!object?.roles) {
       return;
     }
     for (const [index, role] of object.roles.entries()) {
-      checkRoleExists(role, [...path, 'roles', index], allow);
+      checkRoleExists(role, [...path, 'roles', index], ['$guest', ...predefinedRoles]);
     }
   };
 
-  checkRoleExists(security.default.role, ['security', 'default', 'role']);
-  checkRoles(definition, []);
-  if (definition.resources) {
-    for (const [resourceName, resource] of Object.entries(definition.resources)) {
-      checkRoles(resource, ['resources', resourceName], [...defaultAllow, '$author']);
-      checkRoles(
-        resource.count,
-        ['resources', resourceName, 'count'],
-        [...defaultAllow, '$author'],
-      );
-      checkRoles(resource.create, ['resources', resourceName, 'create']);
-      checkRoles(
-        resource.delete,
-        ['resources', resourceName, 'delete'],
-        [...defaultAllow, '$author'],
-      );
-      checkRoles(resource.get, ['resources', resourceName, 'get'], [...defaultAllow, '$author']);
-      checkRoles(
-        resource.query,
-        ['resources', resourceName, 'query'],
-        [...defaultAllow, '$author'],
-      );
-      checkRoles(
-        resource.update,
-        ['resources', resourceName, 'update'],
-        [...defaultAllow, '$author'],
-      );
+  if (!security) {
+    if (notifications === 'login') {
+      report(notifications, 'only works if security is defined', ['notifications']);
+    }
+    return;
+  }
 
-      if (resource.views) {
-        for (const [viewName, view] of Object.entries(resource.views)) {
-          checkRoles(
-            view,
-            ['resources', resourceName, 'views', viewName],
-            [...defaultAllow, '$author'],
-          );
+  if ((!security.default || !security.roles) && !security.guest) {
+    report(
+      definition,
+      'invalid security definition. Must define either guest or roles and default',
+      ['security'],
+    );
+    return;
+  }
+
+  if (security.guest) {
+    if (security.guest.inherits && security.guest.inherits.length && !security.roles) {
+      report(definition, 'guest can not inherit roles if the roles property is not defined', [
+        'security',
+        'guest',
+        'inherits',
+      ]);
+      return;
+    }
+
+    const inheritedPermissions = getAppRolePermissions(security, security.guest.inherits || []);
+
+    const possibleGuestPermissions = getAppPossibleGuestPermissions(definition);
+
+    if (inheritedPermissions.some((ip) => !possibleGuestPermissions.includes(ip))) {
+      report(
+        definition,
+        'invalid security definition. Guest cannot inherit roles that contain own resource permissions',
+        ['security', 'guest', 'inherits'],
+      );
+      return;
+    }
+
+    if (security.guest.permissions) {
+      validatePermissions(
+        definition,
+        security.guest.permissions,
+        inheritedPermissions,
+        possibleGuestPermissions,
+        report,
+        ['security', 'guest'],
+      );
+    }
+  } else {
+    checkRoleExists(security.default.role, ['security', 'default', 'role']);
+  }
+
+  if (security.roles) {
+    const possibleAppPermissions = getAppPossiblePermissions(definition);
+
+    for (const [name, role] of Object.entries(security.roles)) {
+      if (predefinedRoles.includes(name)) {
+        report(definition, `not allowed to overwrite role ${name}`, ['security', 'roles', name]);
+      }
+
+      const inheritedPermissions: CustomAppPermission[] = [];
+
+      if (role?.inherits) {
+        let found = false;
+        for (const [index, inherited] of (role.inherits || []).entries()) {
+          found ||= checkRoleExists(inherited, ['security', 'roles', name, 'inherits', index]);
         }
+
+        if (found) {
+          checkCyclicRoleInheritance(security.roles, name, report);
+        }
+
+        const inheritedRoles = getAppInheritedRoles(security, [name]).filter((r) => r !== name);
+
+        for (const inheritedRole of inheritedRoles) {
+          const roleDefinition = security.roles[inheritedRole];
+
+          if (roleDefinition) {
+            const rolePermissions = roleDefinition.permissions;
+            if (rolePermissions) {
+              inheritedPermissions.push(...rolePermissions);
+            }
+          } else {
+            const predefinedRolePermissions =
+              predefinedAppRolePermissions[inheritedRole as PredefinedAppRole];
+            if (predefinedRolePermissions) {
+              inheritedPermissions.push(...predefinedRolePermissions);
+            }
+          }
+        }
+      }
+
+      if (role.permissions) {
+        validatePermissions(
+          definition,
+          role.permissions,
+          inheritedPermissions,
+          possibleAppPermissions,
+          report,
+          ['security', 'roles', name],
+        );
       }
     }
   }
-  iterApp(definition, { onBlock: checkRoles, onPage: checkRoles });
 
-  for (const [name, role] of Object.entries(security.roles)) {
-    if (!role?.inherits) {
-      continue;
-    }
-    let found = false;
-    for (const [index, inheritee] of role.inherits.entries()) {
-      found ||= checkRoleExists(inheritee, ['security', 'roles', name, 'inherits', index]);
-    }
-    if (found) {
-      checkCyclicRoleInheritance(security.roles, name, report);
-    }
-  }
+  iterApp(definition, { onBlock: checkRoles, onPage: checkRoles });
 }
 
 /**
@@ -620,29 +1119,41 @@ function validateActions(definition: AppDefinition, report: Report): void {
         return;
       }
 
-      if (action.type.startsWith('user.') && !definition.security) {
+      if (action.type.startsWith('app.member.') && !definition.security) {
         report(
           action.type,
-          'refers to a user action but the app doesn’t have a security definition',
+          'refers to an app member action but the app doesn’t have a security definition',
           [...path, 'type'],
         );
         return;
       }
 
       if (
-        ['user.register', 'user.create', 'user.update'].includes(action.type) &&
+        ['app.member.register', 'app.member.properties.patch', 'app.member.current.patch'].includes(
+          action.type,
+        ) &&
         Object.values(
-          (action as UserCreateAction | UserRegisterAction | UserUpdateAction).properties ?? {},
+          (
+            action as
+              | AppMemberCurrentPatchAction
+              | AppMemberPropertiesPatchAction
+              | AppMemberRegisterAction
+          ).properties ?? {},
         )[0] &&
-        definition.users?.properties
+        definition.members?.properties
       ) {
         for (const propertyName of Object.keys(
           Object.values(
-            (action as UserCreateAction | UserRegisterAction | UserUpdateAction).properties ?? {},
+            (
+              action as
+                | AppMemberCurrentPatchAction
+                | AppMemberPropertiesPatchAction
+                | AppMemberRegisterAction
+            ).properties ?? {},
           )[0],
         )) {
-          if (!definition.users?.properties[propertyName]) {
-            report(action.type, 'contains a property that doesn’t exist in users.properties', [
+          if (!definition.members?.properties[propertyName]) {
+            report(action.type, 'contains a property that doesn’t exist in app member properties', [
               ...path,
               'properties',
             ]);
@@ -654,6 +1165,7 @@ function validateActions(definition: AppDefinition, report: Report): void {
         // All of the actions starting with `resource.` contain a property called `resource`.
         const { resource: resourceName, view } = action as ResourceGetActionDefinition;
         const resource = definition.resources?.[resourceName];
+        const [, resourceAction] = action.type.split('.');
 
         if (!resource) {
           report(action.type, 'refers to a resource that doesn’t exist', [...path, 'resource']);
@@ -661,54 +1173,75 @@ function validateActions(definition: AppDefinition, report: Report): void {
         }
 
         if (!action.type.startsWith('resource.subscription.')) {
-          const type = action.type.split('.')[1] as
-            | 'count'
-            | 'create'
-            | 'delete'
-            | 'get'
-            | 'query'
-            | 'update';
-          const roles = resource?.[type]?.roles ?? resource?.roles;
-          if (!roles) {
-            report(action.type, 'refers to a resource action that is currently set to private', [
-              ...path,
-              'resource',
-            ]);
+          if (!definition.security) {
+            report(action.type, 'missing security definition', [...path, 'resource']);
             return;
           }
 
-          if (roles && !roles.length && !definition.security) {
+          const allPermissions = definition.security.guest?.permissions || [];
+
+          if (definition.security.roles) {
+            const allRolePermissions = getAppRolePermissions(
+              definition.security,
+              Object.keys(definition.security.roles),
+            );
+
+            allPermissions.push(...allRolePermissions);
+          }
+
+          if (
+            !allPermissions.some((permission) => {
+              if (resourcePermissionPattern.test(permission)) {
+                const [, permissionResourceName, permissionResourceAction] = permission.split(':');
+                return (
+                  ['all', resourceName].includes(permissionResourceName) &&
+                  (permissionResourceAction === resourceAction ||
+                    (resourceAction === 'count' && permissionResourceAction === 'query'))
+                );
+              }
+
+              if (ownResourcePermissionPattern.test(permission)) {
+                const [, permissionResourceName, , permissionResourceAction] =
+                  permission.split(':');
+                return (
+                  ['all', resourceName].includes(permissionResourceName) &&
+                  (permissionResourceAction === resourceAction ||
+                    (resourceAction === 'count' && permissionResourceAction === 'query'))
+                );
+              }
+
+              return false;
+            })
+          ) {
             report(
               action.type,
-              'refers to a resource action that is accessible when logged in, but the app has no security definitions',
+              'there is no-one in the app, who has permissions to use this action',
               [...path, 'resource'],
             );
             return;
           }
 
-          if ((type === 'get' || type === 'query') && view) {
-            if (!resource.views?.[view]) {
-              report(action.type, 'refers to a view that doesn’t exist', [...path, 'view']);
-              return;
-            }
-
-            const viewRoles = resource?.views?.[view].roles;
-            if (!viewRoles?.length) {
-              report(action.type, 'refers to a resource view that is currently set to private', [
-                ...path,
-                'view',
-              ]);
-              return;
-            }
-
-            if (viewRoles && !viewRoles.length && !definition.security) {
-              report(
-                action.type,
-                'refers to a resource action that is accessible when logged in, but the app has no security definitions',
-                [...path, 'view'],
-              );
-              return;
-            }
+          if (
+            view &&
+            !allPermissions.some((permission) => {
+              if (resourceViewPermissionPattern.test(permission)) {
+                const [, permissionResourceName, permissionResourceAction, permissionResourceView] =
+                  permission.split(':');
+                return (
+                  ['all', resourceName].includes(permissionResourceName) &&
+                  permissionResourceAction === resourceAction &&
+                  (!permissionResourceView || permissionResourceView === view)
+                );
+              }
+              return false;
+            })
+          ) {
+            report(
+              action.type,
+              'there is no-one in the app, who has permissions to use this action',
+              [...path, 'resource'],
+            );
+            return;
           }
         }
       }
@@ -1075,7 +1608,7 @@ export async function validateAppDefinition(
     validateHooks(definition, report);
     validateLanguage(definition, report);
     validateResourceReferences(definition, report);
-    validateUsersSchema(definition, report);
+    validateMembersSchema(definition, report);
     validateResourceSchemas(definition, report);
     validateSecurity(definition, report);
     validateBlocks(definition, blockVersionMap, report);

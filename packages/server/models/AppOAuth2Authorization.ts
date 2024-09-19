@@ -4,6 +4,7 @@ import {
   Column,
   CreatedAt,
   DataType,
+  Default,
   ForeignKey,
   Model,
   PrimaryKey,
@@ -49,6 +50,21 @@ export class AppOAuth2Authorization extends Model {
   @Column(DataType.TEXT)
   refreshToken: string;
 
+  /**
+   * The email used on the OAuth2 provider.
+   */
+  @AllowNull(false)
+  @Column(DataType.STRING)
+  email: string;
+
+  /**
+   * Whether the linked email is verified on the OAuth2 provider.
+   */
+  @Default(false)
+  @AllowNull(false)
+  @Column(DataType.BOOLEAN)
+  emailVerified: boolean;
+
   @CreatedAt
   created: Date;
 
@@ -59,7 +75,6 @@ export class AppOAuth2Authorization extends Model {
    * The id of the linked app user.
    */
   @ForeignKey(() => AppMember)
-  @AllowNull(false)
   @Column(DataType.UUID)
   AppMemberId: string;
 

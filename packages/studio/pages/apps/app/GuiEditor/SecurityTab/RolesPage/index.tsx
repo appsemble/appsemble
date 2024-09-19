@@ -6,11 +6,7 @@ import {
   useMessages,
   useToggle,
 } from '@appsemble/react-components';
-import {
-  type BasicPageDefinition,
-  type ResourceCall,
-  type ResourceDefinition,
-} from '@appsemble/types';
+import { type BasicPageDefinition } from '@appsemble/types';
 import { type ChangeEvent, type ReactNode, useCallback, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 
@@ -27,13 +23,7 @@ interface RolesPageProps {
 }
 interface RoleReferences {
   inheritReferences: string[];
-  foundInTeamsCreate: boolean;
-  foundInTeamsInvite: boolean;
-  foundInAppRoles: boolean;
   foundInDefaultRole: boolean;
-  resourceRolesReferences: string[];
-  resourceViewsRolesReferences: string[];
-  resourceQueryRolesReferences: string[];
   pageRolesReferences: string[];
   blockRolesReferences: string[];
 }
@@ -59,12 +49,7 @@ export function RolesPage({ selectedRole }: RolesPageProps): ReactNode {
           }
         }
         // Rename every reference to the role
-        // Rename role is roles that view page
-        if (app.definition.roles) {
-          app.definition.roles = app.definition.roles.map((role) =>
-            role === oldRole ? newRole : role,
-          );
-        }
+
         // Rename role in default policy
         if (app.definition.security.default.role === oldRole) {
           app.definition.security.default.role = newRole;
@@ -77,57 +62,7 @@ export function RolesPage({ selectedRole }: RolesPageProps): ReactNode {
             );
           }
         }
-        // Rename roles in teams
-        if (
-          app.definition.security.teams?.create &&
-          app.definition.security.teams?.create.length > 0
-        ) {
-          app.definition.security.teams.create = app.definition.security.teams.create.map((role) =>
-            role === oldRole ? newRole : role,
-          );
-        }
-        if (
-          app.definition.security.teams?.invite &&
-          app.definition.security.teams?.invite.length > 0
-        ) {
-          app.definition.security.teams.invite = app.definition.security.teams.invite.map((role) =>
-            role === oldRole ? newRole : role,
-          );
-        }
-        // Rename role in resources
-        for (const [key, resource] of Object.entries(app.definition.resources || [])) {
-          if (resource.roles?.includes(oldRole)) {
-            app.definition.resources[key].roles = resource.roles.map((role) =>
-              role === oldRole ? newRole : role,
-            );
-          }
-          for (const [viewKey, view] of Object.entries(resource.views || [])) {
-            if (view.roles?.includes(oldRole)) {
-              app.definition.resources[key].views[viewKey].roles = view.roles.map((role) =>
-                role === oldRole ? newRole : role,
-              );
-            }
-          }
-          for (const queryKeys of Object.keys(resource)) {
-            if (['create', 'delete', 'get', 'query', 'count', 'update'].includes(queryKeys)) {
-              const queryKey = queryKeys as keyof ResourceDefinition;
-              const query = resource[queryKey] as ResourceCall;
-              if (query.roles?.includes(oldRole)) {
-                (app.definition.resources[key][queryKey] as ResourceCall).roles = query.roles.map(
-                  (role) => (role === oldRole ? newRole : role),
-                );
-              }
-            }
-            if (['create', 'delete', 'update'].includes(queryKeys)) {
-              const queryKey = queryKeys as keyof ResourceDefinition;
-              const query = resource[queryKey] as ResourceCall;
-              if (query.hooks?.notification?.to?.includes(oldRole)) {
-                (app.definition.resources[key][queryKey] as ResourceCall).hooks.notification.to =
-                  query.hooks.notification.to.map((role) => (role === oldRole ? newRole : role));
-              }
-            }
-          }
-        }
+
         // Rename role in pages
         app.definition.pages.map((page) =>
           page.roles?.includes(oldRole)
@@ -227,43 +162,8 @@ export function RolesPage({ selectedRole }: RolesPageProps): ReactNode {
           inheritReferences.push(roleKey);
         }
       }
-      // Search in app roles
-      const foundInAppRoles = app.definition.roles?.includes(key);
       // Search in default security settings
       const foundInDefaultRole = app.definition.security.default.role === key;
-      // Search in teams
-      const foundInTeamsCreate = app.definition.security.teams?.create?.includes(key);
-      const foundInTeamsInvite = app.definition.security.teams?.invite?.includes(key);
-      // Search in resources
-      const resourceRolesReferences: string[] = [];
-      const resourceViewsRolesReferences: string[] = [];
-      const resourceQueryRolesReferences: string[] = [];
-      for (const [resourceKey, resource] of Object.entries(app.definition.resources || [])) {
-        if (resource.roles?.includes(key)) {
-          resourceRolesReferences.push(resourceKey);
-        }
-        for (const [viewKey, view] of Object.entries(resource.views || [])) {
-          if (view.roles?.includes(key)) {
-            resourceViewsRolesReferences.push(`${resourceKey}.${viewKey}`);
-          }
-        }
-        for (const queryKeys of Object.keys(resource)) {
-          if (['create', 'delete', 'get', 'query', 'count', 'update'].includes(queryKeys)) {
-            const queryKey = queryKeys as keyof ResourceDefinition;
-            const query = resource[queryKey] as ResourceCall;
-            if (query.roles?.includes(key)) {
-              resourceQueryRolesReferences.push(`${resourceKey}.${queryKey}`);
-            }
-          }
-          if (['create', 'delete', 'update'].includes(queryKeys)) {
-            const queryKey = queryKeys as keyof ResourceDefinition;
-            const query = resource[queryKey] as ResourceCall;
-            if (query.hooks?.notification?.to?.includes(key)) {
-              resourceQueryRolesReferences.push(`${resourceKey}.${queryKey}.hooks.notification.to`);
-            }
-          }
-        }
-      }
       // Search in pages
       const pageRolesReferences: string[] = [];
       const blockRolesReferences: string[] = [];
@@ -282,25 +182,13 @@ export function RolesPage({ selectedRole }: RolesPageProps): ReactNode {
       }
       if (
         inheritReferences.length > 0 ||
-        foundInTeamsCreate ||
-        foundInTeamsInvite ||
         foundInDefaultRole ||
-        foundInAppRoles ||
-        resourceRolesReferences.length > 0 ||
-        resourceViewsRolesReferences.length > 0 ||
-        resourceQueryRolesReferences.length > 0 ||
         pageRolesReferences.length > 0 ||
         blockRolesReferences.length > 0
       ) {
         setRoleReferences({
           inheritReferences,
-          foundInTeamsCreate,
-          foundInTeamsInvite,
-          foundInAppRoles,
           foundInDefaultRole,
-          resourceRolesReferences,
-          resourceViewsRolesReferences,
-          resourceQueryRolesReferences,
           pageRolesReferences,
           blockRolesReferences,
         });
@@ -325,34 +213,8 @@ export function RolesPage({ selectedRole }: RolesPageProps): ReactNode {
 
   const onForceDeleteRole = useCallback(() => {
     if (roleReferences) {
-      const {
-        blockRolesReferences,
-        foundInAppRoles,
-        foundInDefaultRole,
-        foundInTeamsCreate,
-        foundInTeamsInvite,
-        inheritReferences,
-        pageRolesReferences,
-        resourceQueryRolesReferences,
-        resourceRolesReferences,
-        resourceViewsRolesReferences,
-      } = roleReferences;
-      if (foundInTeamsCreate) {
-        app.definition.security.teams.create = app.definition.security.teams.create.filter(
-          (role) => role !== selectedRole,
-        );
-        if (app.definition.security.teams.create.length === 0) {
-          delete app.definition.security.teams.create;
-        }
-      }
-      if (foundInTeamsInvite) {
-        app.definition.security.teams.invite = app.definition.security.teams.invite.filter(
-          (role) => role !== selectedRole,
-        );
-      }
-      if (foundInAppRoles) {
-        app.definition.roles = app.definition.roles.filter((role) => role !== selectedRole);
-      }
+      const { blockRolesReferences, foundInDefaultRole, inheritReferences, pageRolesReferences } =
+        roleReferences;
       if (foundInDefaultRole) {
         app.definition.security.default.role = Object.entries(app.definition.security.roles)
           .map(([key]) => key)
@@ -402,70 +264,6 @@ export function RolesPage({ selectedRole }: RolesPageProps): ReactNode {
           }
           return page;
         });
-      }
-      if (resourceRolesReferences.length > 0) {
-        for (const [resourceKey, resource] of Object.entries(app.definition.resources || [])) {
-          if (resource.roles?.includes(selectedRole)) {
-            app.definition.resources[resourceKey].roles = resource.roles.filter(
-              (role) => role !== selectedRole,
-            );
-            if (app.definition.resources[resourceKey].roles.length === 0) {
-              delete app.definition.resources[resourceKey].roles;
-            }
-          }
-        }
-      }
-      if (resourceViewsRolesReferences.length > 0) {
-        for (const [resourceKey, resource] of Object.entries(app.definition.resources || [])) {
-          for (const [viewKey, view] of Object.entries(resource.views || [])) {
-            if (view.roles?.includes(selectedRole)) {
-              app.definition.resources[resourceKey].views[viewKey].roles = view.roles.filter(
-                (role) => role !== selectedRole,
-              );
-              if (app.definition.resources[resourceKey].views[viewKey].roles.length === 0) {
-                delete app.definition.resources[resourceKey].views[viewKey].roles;
-              }
-            }
-          }
-        }
-      }
-      if (resourceQueryRolesReferences.length > 0) {
-        for (const [resourceKey, resource] of Object.entries(app.definition.resources || [])) {
-          for (const queryKeys of Object.keys(resource)) {
-            if (['create', 'delete', 'get', 'query', 'count', 'update'].includes(queryKeys)) {
-              const queryKey = queryKeys as keyof ResourceDefinition;
-              const query = resource[queryKey] as ResourceCall;
-              if (query.roles?.includes(selectedRole)) {
-                (app.definition.resources[resourceKey][queryKey] as ResourceCall).roles =
-                  query.roles.filter((role) => role !== selectedRole);
-                if (
-                  (app.definition.resources[resourceKey][queryKey] as ResourceCall).roles.length ===
-                  0
-                ) {
-                  delete (app.definition.resources[resourceKey][queryKey] as ResourceCall).roles;
-                }
-              }
-            }
-            if (['create', 'delete', 'update'].includes(queryKeys)) {
-              const queryKey = queryKeys as keyof ResourceDefinition;
-              const query = resource[queryKey] as ResourceCall;
-              if (query.hooks?.notification?.to?.includes(selectedRole)) {
-                (
-                  app.definition.resources[resourceKey][queryKey] as ResourceCall
-                ).hooks.notification.to = query.hooks.notification.to.filter(
-                  (role) => role !== selectedRole,
-                );
-                if (
-                  (app.definition.resources[resourceKey][queryKey] as ResourceCall).hooks
-                    .notification.to.length === 0
-                ) {
-                  delete (app.definition.resources[resourceKey][queryKey] as ResourceCall).hooks
-                    .notification.to;
-                }
-              }
-            }
-          }
-        }
       }
 
       /* Send API request to server to delete roles from users currently using it,
@@ -476,9 +274,6 @@ export function RolesPage({ selectedRole }: RolesPageProps): ReactNode {
       } else {
         delete app.definition.security.roles[selectedRole];
       }
-      if (foundInAppRoles) {
-        app.definition.roles = app.definition.roles.filter((role) => role !== selectedRole);
-      }
       if (foundInDefaultRole) {
         app.definition.security.default.role = Object.entries(app.definition.security.roles)
           .map(([key]) => key)
@@ -528,42 +323,6 @@ export function RolesPage({ selectedRole }: RolesPageProps): ReactNode {
           }
           return page;
         });
-      }
-      if (resourceRolesReferences.length > 0) {
-        for (const [resourceKey, resource] of Object.entries(app.definition.resources || [])) {
-          if (resource.roles?.includes(selectedRole)) {
-            app.definition.resources[resourceKey].roles = resource.roles.filter(
-              (role) => role !== selectedRole,
-            );
-            if (app.definition.resources[resourceKey].roles.length === 0) {
-              delete app.definition.resources[resourceKey].roles;
-            }
-          }
-        }
-      }
-      if (resourceViewsRolesReferences.length > 0) {
-        for (const [resourceKey, resource] of Object.entries(app.definition.resources || [])) {
-          for (const [viewKey, view] of Object.entries(resource.views || [])) {
-            if (view.roles?.includes(selectedRole)) {
-              app.definition.resources[resourceKey].views[viewKey].roles = view.roles.filter(
-                (role) => role !== selectedRole,
-              );
-              if (app.definition.resources[resourceKey].views[viewKey].roles.length === 0) {
-                delete app.definition.resources[resourceKey].views[viewKey].roles;
-              }
-            }
-          }
-        }
-      }
-      if (resourceQueryRolesReferences.length > 0) {
-        for (const [resourceKey, resource] of Object.entries(app.definition.resources || [])) {
-          app.definition.resources[resourceKey].query.roles = resource.query.roles.filter(
-            (role) => role !== selectedRole,
-          );
-          if (app.definition.resources[resourceKey].query.roles.length === 0) {
-            delete app.definition.resources[resourceKey].query.roles;
-          }
-        }
       }
 
       /* Send API request to server to delete roles from users currently using it,
@@ -574,9 +333,6 @@ export function RolesPage({ selectedRole }: RolesPageProps): ReactNode {
       } else {
         delete app.definition.security.roles[selectedRole];
       }
-      if (foundInAppRoles) {
-        app.definition.roles = app.definition.roles.filter((role) => role !== selectedRole);
-      }
       if (foundInDefaultRole) {
         app.definition.security.default.role = Object.entries(app.definition.security.roles)
           .map(([key]) => key)
@@ -626,42 +382,6 @@ export function RolesPage({ selectedRole }: RolesPageProps): ReactNode {
           }
           return page;
         });
-      }
-      if (resourceRolesReferences.length > 0) {
-        for (const [resourceKey, resource] of Object.entries(app.definition.resources || [])) {
-          if (resource.roles?.includes(selectedRole)) {
-            app.definition.resources[resourceKey].roles = resource.roles.filter(
-              (role) => role !== selectedRole,
-            );
-            if (app.definition.resources[resourceKey].roles.length === 0) {
-              delete app.definition.resources[resourceKey].roles;
-            }
-          }
-        }
-      }
-      if (resourceViewsRolesReferences.length > 0) {
-        for (const [resourceKey, resource] of Object.entries(app.definition.resources || [])) {
-          for (const [viewKey, view] of Object.entries(resource.views || [])) {
-            if (view.roles?.includes(selectedRole)) {
-              app.definition.resources[resourceKey].views[viewKey].roles = view.roles.filter(
-                (role) => role !== selectedRole,
-              );
-              if (app.definition.resources[resourceKey].views[viewKey].roles.length === 0) {
-                delete app.definition.resources[resourceKey].views[viewKey].roles;
-              }
-            }
-          }
-        }
-      }
-      if (resourceQueryRolesReferences.length > 0) {
-        for (const [resourceKey, resource] of Object.entries(app.definition.resources || [])) {
-          app.definition.resources[resourceKey].query.roles = resource.query.roles.filter(
-            (role) => role !== selectedRole,
-          );
-          if (app.definition.resources[resourceKey].query.roles.length === 0) {
-            delete app.definition.resources[resourceKey].query.roles;
-          }
-        }
       }
 
       /* Send API request to server to delete roles from users currently using it,
@@ -791,48 +511,6 @@ export function RolesPage({ selectedRole }: RolesPageProps): ReactNode {
                         ))}
                       </>
                     )}
-                    {roleReferences?.resourceRolesReferences?.length > 0 && (
-                      <>
-                        <p className="is-size-6 has-text-weight-bold">
-                          {formatMessage(messages.deleteRoleResourceRoles, {
-                            roleName: selectedRole,
-                          })}
-                        </p>
-                        {roleReferences.resourceRolesReferences.map((reference) => (
-                          <p className="is-size-6 has-text-primary-dark" key={reference}>
-                            - {reference}
-                          </p>
-                        ))}
-                      </>
-                    )}
-                    {roleReferences?.resourceViewsRolesReferences?.length > 0 && (
-                      <>
-                        <p className="is-size-6 has-text-weight-bold">
-                          {formatMessage(messages.deleteRoleResourceViews, {
-                            roleName: selectedRole,
-                          })}
-                        </p>
-                        {roleReferences.resourceViewsRolesReferences.map((reference) => (
-                          <p className="is-size-6 has-text-primary-dark" key={reference}>
-                            - {reference}
-                          </p>
-                        ))}
-                      </>
-                    )}
-                    {roleReferences?.resourceQueryRolesReferences?.length > 0 && (
-                      <>
-                        <p className="is-size-6 has-text-weight-bold">
-                          {formatMessage(messages.deleteRoleResourceQuery, {
-                            roleName: selectedRole,
-                          })}
-                        </p>
-                        {roleReferences.resourceQueryRolesReferences.map((reference) => (
-                          <p className="is-size-6 has-text-primary-dark" key={reference}>
-                            - {reference}
-                          </p>
-                        ))}
-                      </>
-                    )}
                     {roleReferences?.pageRolesReferences?.length > 0 && (
                       <>
                         <p className="is-size-6 has-text-weight-bold">
@@ -857,27 +535,6 @@ export function RolesPage({ selectedRole }: RolesPageProps): ReactNode {
                         ))}
                       </>
                     )}
-                    {roleReferences?.foundInTeamsCreate ? (
-                      <p className="is-size-6 has-text-weight-bold has-text-primary">
-                        {formatMessage(messages.deleteRoleInTeamsCreate, {
-                          roleName: selectedRole,
-                        })}
-                      </p>
-                    ) : null}
-                    {roleReferences?.foundInTeamsInvite ? (
-                      <p className="is-size-6 has-text-weight-bold has-text-primary">
-                        {formatMessage(messages.deleteRoleInTeamsInvite, {
-                          roleName: selectedRole,
-                        })}
-                      </p>
-                    ) : null}
-                    {roleReferences?.foundInAppRoles ? (
-                      <p className="is-size-6 has-text-weight-bold has-text-primary">
-                        {formatMessage(messages.deleteRoleInAppRoles, {
-                          roleName: selectedRole,
-                        })}
-                      </p>
-                    ) : null}
                     {roleReferences?.foundInDefaultRole ? (
                       <p className="is-size-6 has-text-weight-bold has-text-primary">
                         {formatMessage(messages.deleteRoleInDefaultRole, {

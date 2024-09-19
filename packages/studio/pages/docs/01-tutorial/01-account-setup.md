@@ -17,7 +17,7 @@ When you want to create a new app you will be prompted to create an organization
 
 ![Create Organization](assets/create-organization.png 'Create Organization')
 
-People and apps need to be part of an organization so apps and rights can easily be shared and
+People and apps need to be part of an organization so apps and permissions can easily be shared and
 configured with or by your colleagues and users.
 
 After you fill out the information about your organization you will be prompted to fill out the

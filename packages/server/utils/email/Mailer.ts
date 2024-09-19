@@ -5,6 +5,7 @@ import {
   getSupportedLanguages,
   logger,
 } from '@appsemble/node-utils';
+import { PredefinedOrganizationRole } from '@appsemble/types';
 import { defaultLocale, has } from '@appsemble/utils';
 import { startOfDay } from 'date-fns';
 import { zonedTimeToUtc } from 'date-fns-tz';
@@ -324,7 +325,7 @@ export class Mailer {
           });
           const members = await OrganizationMember.findAll({
             where: {
-              role: 'Owner',
+              role: PredefinedOrganizationRole.Owner,
               OrganizationId: fullApp.OrganizationId,
             },
             include: [

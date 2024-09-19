@@ -8,6 +8,7 @@ import {
   DeletedAt,
   ForeignKey,
   HasMany,
+  Index,
   IsUUID,
   Model,
   PrimaryKey,
@@ -18,7 +19,6 @@ import {
 import {
   AppMember,
   EmailAuthorization,
-  OAuth2AuthorizationCode,
   OAuthAuthorization,
   Organization,
   OrganizationMember,
@@ -39,6 +39,7 @@ export class User extends Model {
   name: string;
 
   @ForeignKey(() => EmailAuthorization)
+  @Index({ name: 'UniqueUserEmail', unique: true })
   @Column(DataType.STRING)
   primaryEmail: string;
 
@@ -57,14 +58,6 @@ export class User extends Model {
   @Column(DataType.BOOLEAN)
   subscribed: boolean;
 
-  /**
-   * Whether this user is created by the demo login feature.
-   */
-  @AllowNull(false)
-  @Default(false)
-  @Column(DataType.BOOLEAN)
-  demoLoginUser: boolean;
-
   @BelongsToMany(() => Organization, () => OrganizationMember)
   Organizations: Organization[];
 
@@ -74,8 +67,8 @@ export class User extends Model {
   @HasMany(() => EmailAuthorization)
   EmailAuthorizations: EmailAuthorization[];
 
-  @HasMany(() => OAuth2AuthorizationCode)
-  OAuth2AuthorizationCodes: OAuth2AuthorizationCode[];
+  // @HasMany(() => OAuth2AuthorizationCode)
+  // OAuth2AuthorizationCodes: OAuth2AuthorizationCode[];
 
   @HasMany(() => OAuthAuthorization)
   OAuthAuthorizations: OAuthAuthorization[];

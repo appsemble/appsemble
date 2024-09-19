@@ -9,7 +9,7 @@ export const cli: OpenAPIV3.OAuth2SecurityScheme = {
   `,
   flows: {
     clientCredentials: {
-      tokenUrl: '/oauth2/token',
+      tokenUrl: '/auth/oauth2/token',
       scopes: {
         'apps:export': 'Export apps as zip files',
         'apps:write': 'Create and update apps',
@@ -20,8 +20,8 @@ export const cli: OpenAPIV3.OAuth2SecurityScheme = {
         'resources:read': 'Read app resources on behalf of a user.',
         'resources:write': 'Modify app resources on behalf of a user.',
         'assets:write': 'Create app assets on behalf of a user.',
-        'teams:read': 'Read information about the user’s teams.',
-        'teams:write': 'Read information about the user’s teams.',
+        'groups:read': 'Read information about the user’s groups.',
+        'groups:write': 'Read information about the user’s groups.',
       },
     },
   },

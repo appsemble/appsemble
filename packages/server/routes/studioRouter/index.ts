@@ -2,17 +2,22 @@ import { tinyRouter } from '@appsemble/node-utils';
 import { noop } from '@appsemble/utils';
 import { type Middleware } from 'koa';
 
+import { appsTokenHandler } from './appsTokenHandler.js';
 import { faviconHandler } from './faviconHandler.js';
 import { iconHandler } from './iconHandler.js';
 import { indexHandler } from './indexHandler.js';
+import { mainTokenHandler } from './mainTokenHandler.js';
 import { securitytxtHandler } from './securitytxtHandler.js';
-import { tokenHandler } from './tokenHandler.js';
 import { staticHandler } from '../static.js';
 
 export const studioRouter: Middleware = tinyRouter([
   {
-    route: '/oauth2/token',
-    post: tokenHandler,
+    route: '/auth/oauth2/token',
+    post: mainTokenHandler,
+  },
+  {
+    route: /\/apps\/\d+\/auth\/oauth2\/token/,
+    post: appsTokenHandler,
   },
   {
     route: '/favicon.ico',

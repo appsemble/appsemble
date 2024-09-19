@@ -41,11 +41,11 @@ import {
   AppSubscription,
   AppVariable,
   Asset,
+  Group,
   Organization,
   Resource,
-  Team,
 } from './index.js';
-import { resolveIconUrl } from '../utils/model.js';
+import { resolveIconUrl } from '../utils/app.js';
 
 @Table({ tableName: 'App', paranoid: true })
 export class App extends Model {
@@ -245,8 +245,8 @@ export class App extends Model {
   @HasMany(() => AppReadme)
   AppReadmes: AppReadme[];
 
-  @HasMany(() => Team)
-  Teams: Team[];
+  @HasMany(() => Group)
+  Groups: Group[];
 
   @HasMany(() => AppServiceSecret)
   AppServiceSecrets: AppServiceSecret[];

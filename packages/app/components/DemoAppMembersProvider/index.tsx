@@ -1,4 +1,4 @@
-import { type AppMember } from '@appsemble/types';
+import { type AppMemberInfo } from '@appsemble/types';
 import axios from 'axios';
 import {
   createContext,
@@ -13,7 +13,7 @@ import {
 import { apiUrl, appId, showDemoLogin } from '../../utils/settings.js';
 
 interface DemoAppMembersContext {
-  demoAppMembers: AppMember[];
+  demoAppMembers: AppMemberInfo[];
   refetchDemoAppMembers: () => Promise<void>;
 }
 
@@ -24,13 +24,13 @@ interface DemoAppMembersProviderProps {
 const Context = createContext<DemoAppMembersContext>(null);
 
 export function DemoAppMembersProvider({ children }: DemoAppMembersProviderProps): ReactNode {
-  const [demoAppMembers, setDemoAppMembers] = useState<AppMember[]>([]);
+  const [demoAppMembers, setDemoAppMembers] = useState<AppMemberInfo[]>([]);
 
   const refetchDemoAppMembers = useCallback(async () => {
     if (showDemoLogin) {
-      const response = await axios.get(`${apiUrl}/api/apps/${appId}/demoMembers`);
+      const response = await axios.get<AppMemberInfo[]>(`${apiUrl}/api/apps/${appId}/demo-members`);
       if (response.data) {
-        setDemoAppMembers(response.data.filter((appMember: AppMember) => appMember.demo));
+        setDemoAppMembers(response.data);
       }
     }
   }, []);

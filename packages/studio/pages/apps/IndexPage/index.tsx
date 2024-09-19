@@ -22,7 +22,7 @@ interface MyAppsListProps {
 
 function MyAppsList({ filter, sort }: MyAppsListProps): ReactNode {
   const { lang } = useParams<{ lang: string }>();
-  const myAppsResult = useData<App[]>(`/api/user/apps?language=${lang}`);
+  const myAppsResult = useData<App[]>(`/api/users/current/apps?language=${lang}`);
   return (
     <Collapsible title={<FormattedMessage {...messages.myApps} />}>
       <AppList

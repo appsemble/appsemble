@@ -76,7 +76,7 @@ export async function authenticate(
   }
   logger.verbose(`Logging in to ${remote}`);
   const { data } = await axios.post<TokenResponse>(
-    '/oauth2/token',
+    '/auth/oauth2/token',
     new URLSearchParams({ grant_type: 'client_credentials', scope }),
     {
       headers: { authorization: `Basic ${Buffer.from(credentials).toString('base64')}` },

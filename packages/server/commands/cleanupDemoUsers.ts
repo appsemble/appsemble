@@ -3,7 +3,7 @@ import { Op } from 'sequelize';
 import { type Argv } from 'yargs';
 
 import { databaseBuilder } from './builder/database.js';
-import { AppMember, initDB, Resource, TeamMember, transactional, User } from '../models/index.js';
+import { AppMember, GroupMember, initDB, Resource, transactional, User } from '../models/index.js';
 import { argv } from '../utils/argv.js';
 import { handleDBError } from '../utils/sqlUtils.js';
 
@@ -48,12 +48,12 @@ export async function handler(): Promise<void> {
       },
     }).then((appMembers) => appMembers.map((appMember) => appMember.id));
 
-    const teamMembersDestroyed = await TeamMember.destroy({
+    const groupMembersDestroyed = await GroupMember.destroy({
       where: {
         AppMemberId: { [Op.in]: appMemberIdsToDelete },
       },
     });
-    logger.info(`Removed ${teamMembersDestroyed} demo team members.`);
+    logger.info(`Removed ${groupMembersDestroyed} demo group members.`);
 
     const appMembersDestroyed = await AppMember.destroy({
       where: {

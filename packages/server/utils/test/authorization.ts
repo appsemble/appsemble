@@ -1,15 +1,22 @@
 import { randomBytes } from 'node:crypto';
 
-import { type TokenResponse } from '@appsemble/types';
+import { PredefinedAppRole, type TokenResponse } from '@appsemble/types';
 import { api } from '@appsemble/utils';
 import { request } from 'axios-test-instance';
 import { hash } from 'bcrypt';
 import { type OpenAPIV3 } from 'openapi-types';
 
-import { type App, EmailAuthorization, OAuth2ClientCredentials, User } from '../../models/index.js';
+import {
+  type App,
+  AppMember,
+  EmailAuthorization,
+  OAuth2ClientCredentials,
+  User,
+} from '../../models/index.js';
 import { createJWTResponse } from '../createJWTResponse.js';
 
 let testUser: User;
+let testAppMember: AppMember;
 
 /**
  * Create a new test user.
@@ -37,6 +44,38 @@ export async function createTestUser(email = 'test@example.com'): Promise<User> 
 }
 
 /**
+ * Create a new test app member.
+ *
+ * The test app member will be used by other test utilities in this module.
+ *
+ * The test user and authorizations will be reset after each test.
+ *
+ * @param appId The id of the app to add the app member to.
+ * @param email The email address to assign to the test app member.
+ * @param role The role of the app member in the app
+ * @returns The test app member.
+ * @see getTestAppMember
+ */
+export async function createTestAppMember(
+  appId: number,
+  email = 'test@example.com',
+  role = PredefinedAppRole.Member,
+): Promise<AppMember> {
+  const password = await hash('testpassword', 10);
+  testAppMember = await AppMember.create({
+    AppId: appId,
+    email,
+    password,
+    role,
+    name: 'Test App Member',
+    primaryEmail: email,
+    locale: 'en',
+    timezone: 'Europe/Amsterdam',
+  });
+  return testAppMember;
+}
+
+/**
  * Retrieve active user.
  *
  * @returns The test user.
@@ -44,6 +83,16 @@ export async function createTestUser(email = 'test@example.com'): Promise<User> 
  */
 export function getTestUser(): User {
   return testUser;
+}
+
+/**
+ * Retrieve active app member.
+ *
+ * @returns The test app member.
+ * @see createTestAppMember
+ */
+export function getTestAppMember(): AppMember {
+  return testAppMember;
 }
 
 /**
@@ -57,13 +106,13 @@ function bearer(response: { access_token: string }): string {
 }
 
 /**
- * Authorize the default axios test instance as if its logged in using an app user.
+ * Authorize the default axios test instance as if it's logged in using an app member.
  *
- * @param app The app to login as.
- * @param user The user to login as.
+ * @param app The app to login in.
+ * @param appMember The user to login as.
  */
-export function authorizeApp(app: App, user = testUser): void {
-  const tokens = createJWTResponse(user.id, {
+export function authorizeAppMember(app: App, appMember = testAppMember): void {
+  const tokens = createJWTResponse(appMember.id, {
     aud: `app:${app.id}`,
     scope: Object.keys(
       (api('').components.securitySchemes.app as OpenAPIV3.OAuth2SecurityScheme).flows

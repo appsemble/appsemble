@@ -15,7 +15,6 @@ export async function request({
   context,
   data,
   options,
-  user,
 }: ServerActionParameters): Promise<any> {
   let method: 'DELETE' | 'GET' | 'PATCH' | 'POST' | 'PUT';
   const definition = action as RequestLikeActionDefinition;
@@ -53,13 +52,6 @@ export async function request({
   const remapperContext = await getRemapperContext(
     app.toJSON(),
     app.definition.defaultLanguage || defaultLocale,
-    user && {
-      sub: user.id,
-      name: user.name,
-      email: user.primaryEmail,
-      email_verified: Boolean(user.EmailAuthorizations?.[0]?.verified),
-      zoneinfo: user.timezone,
-    },
     options,
     context,
   );

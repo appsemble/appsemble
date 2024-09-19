@@ -1,13 +1,28 @@
 import { randomBytes } from 'node:crypto';
 
-import { assertKoaError, mergeMessages, throwKoaError } from '@appsemble/node-utils';
-import { extractAppMessages } from '@appsemble/utils';
+import {
+  assertKoaError,
+  getSupportedLanguages,
+  logger,
+  mergeMessages,
+  throwKoaError,
+} from '@appsemble/node-utils';
+import { extractAppMessages, StyleValidationError } from '@appsemble/utils';
 import { type Context } from 'koa';
+import { type File } from 'koas-body-parser';
 import tags from 'language-tags';
-import { type FindOptions, type IncludeOptions, Op } from 'sequelize';
+import { lookup } from 'mime-types';
+import {
+  type FindOptions,
+  type IncludeOptions,
+  Op,
+  type Transaction,
+  UniqueConstraintError,
+} from 'sequelize';
+import sharp from 'sharp';
 
 import { argv } from './argv.js';
-import { App, AppMessages } from '../models/index.js';
+import { App, AppMessages, AppReadme, AppScreenshot } from '../models/index.js';
 
 interface GetAppValue {
   /**
@@ -201,4 +216,160 @@ export async function setAppPath(ctx: Context, app: Partial<App>, path: string):
       throwKoaError(ctx, 400, 'Invalid path for app, please update the name of your app.');
     }
   }
+}
+
+export async function createAppScreenshots(
+  appId: number,
+  screenshots: File[],
+  transaction: Transaction,
+  ctx: Context,
+): Promise<AppScreenshot[]> {
+  const screenshotsByLanguage: Record<string, File[]> = {};
+  const supportedLanguages = await getSupportedLanguages();
+
+  for (const screenshot of screenshots) {
+    const { filename } = screenshot;
+    let language = filename.slice(0, filename.indexOf('-'));
+
+    if (!supportedLanguages.has(language)) {
+      language = 'unspecified';
+    }
+
+    screenshotsByLanguage[language] = [...(screenshotsByLanguage[language] || []), screenshot];
+  }
+
+  let createdScreenshots: AppScreenshot[] = [];
+  for (const [language, languageScreenshots] of Object.entries(screenshotsByLanguage)) {
+    const lastExistingScreenshot = await AppScreenshot.findOne({
+      where: {
+        AppId: appId,
+        language,
+      },
+      attributes: ['index', 'language'],
+      order: [['index', 'DESC']],
+    });
+
+    const sortedScreenshots = languageScreenshots.sort((a, b) => {
+      const { filename: aFilename } = a;
+      const { filename: bFilename } = b;
+      if (aFilename > bFilename) {
+        return 1;
+      }
+      if (aFilename < bFilename) {
+        return -1;
+      }
+      return 0;
+    });
+
+    logger.verbose(`Storing ${languageScreenshots?.length ?? 0} ${language} screenshots`);
+
+    const createdLanguageScreenshots = await AppScreenshot.bulkCreate(
+      await Promise.all(
+        sortedScreenshots.map(async ({ contents }: File, index) => {
+          const img = sharp(contents);
+
+          const { format, height, width } = await img.metadata();
+          const mime = lookup(format);
+
+          assertKoaError(!mime, ctx, 404, `Unknown screenshot mime type: ${mime}`);
+
+          return {
+            screenshot: contents,
+            AppId: appId,
+            index: lastExistingScreenshot ? lastExistingScreenshot.index + index + 1 : index,
+            language,
+            mime,
+            width,
+            height,
+          };
+        }),
+      ),
+      // These queries provide huge logs.
+      { transaction, logging: false },
+    );
+
+    createdScreenshots = [...createdScreenshots, ...createdLanguageScreenshots];
+  }
+
+  return createdScreenshots;
+}
+
+export async function createAppReadmes(
+  appId: number,
+  readmes: File[],
+  transaction: Transaction,
+): Promise<AppReadme[]> {
+  const supportedLanguages = await getSupportedLanguages();
+
+  return AppReadme.bulkCreate(
+    await Promise.all(
+      readmes.map(({ contents, filename }: File) => {
+        let language = filename.slice(filename.indexOf('.') + 1, filename.lastIndexOf('.'));
+
+        if (!supportedLanguages.has(language)) {
+          language = 'unspecified';
+        }
+
+        return {
+          AppId: appId,
+          file: contents,
+          language,
+        };
+      }),
+    ),
+    // These queries provide huge logs.
+    { transaction, logging: false },
+  );
+}
+
+export function handleAppValidationError(ctx: Context, error: Error, app: Partial<App>): never {
+  if (error instanceof UniqueConstraintError) {
+    throwKoaError(
+      ctx,
+      409,
+      `Another app with path “@${app.OrganizationId}/${app.path}” already exists`,
+    );
+  }
+
+  if (error instanceof StyleValidationError) {
+    throwKoaError(ctx, 400, 'Provided CSS was invalid.');
+  }
+
+  if (error.message === 'Expected file ´coreStyle´ to be css') {
+    throwKoaError(ctx, 400, error.message);
+  }
+
+  if (error.message === 'Expected file ´sharedStyle´ to be css') {
+    throwKoaError(ctx, 400, error.message);
+  }
+
+  throw error;
+}
+
+/**
+ * Resolves the icon url for an app based on whether it’s present and when it was updated.
+ *
+ * @param app The app to resolve the icon url for.
+ * @returns A URL that can be safely cached.
+ */
+export function resolveIconUrl(app: App): string {
+  const hasIcon = app.get('hasIcon') ?? Boolean(app.icon);
+
+  if (hasIcon) {
+    return `/api/apps/${app.id}/icon?${new URLSearchParams({
+      maskable: 'true',
+      updated: app.updated.toISOString(),
+    })}`;
+  }
+
+  const organizationHasIcon = app.Organization?.get('hasIcon');
+  if (organizationHasIcon) {
+    return `/api/organizations/${app.OrganizationId}/icon?${new URLSearchParams({
+      background: app.iconBackground || '#ffffff',
+      maskable: 'true',
+      updated: app.Organization.updated.toISOString(),
+    })}`;
+  }
+
+  return null;
 }

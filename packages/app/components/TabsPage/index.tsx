@@ -1,7 +1,11 @@
 import { applyRefs, MetaSwitch, Tab, Tabs, useMessages } from '@appsemble/react-components';
 import { type BootstrapParams } from '@appsemble/sdk';
-import { type SubPage, type TabsPageDefinition } from '@appsemble/types';
-import { checkAppRole, normalize } from '@appsemble/utils';
+import {
+  type PageDefinition,
+  type SubPageDefinition,
+  type TabsPageDefinition,
+} from '@appsemble/types';
+import { normalize, type RemapperContext } from '@appsemble/utils';
 import {
   type ChangeEvent,
   type ComponentPropsWithoutRef,
@@ -16,26 +20,27 @@ import {
 import { Navigate, Route, useLocation, useNavigate, useParams } from 'react-router-dom';
 
 import { TabContent } from './TabContent/index.js';
+import { checkPagePermissions } from '../../utils/authorization.js';
 import { createEvents } from '../../utils/events.js';
 import { makeActions } from '../../utils/makeActions.js';
 import { appId } from '../../utils/settings.js';
 import { useAppDefinition } from '../AppDefinitionProvider/index.js';
+import { useAppMember } from '../AppMemberProvider/index.js';
 import { useAppMessages } from '../AppMessagesProvider/index.js';
 import { useAppVariables } from '../AppVariablesProvider/index.js';
 import { type BlockList } from '../BlockList/index.js';
 import { useDemoAppMembers } from '../DemoAppMembersProvider/index.js';
 import { useServiceWorkerRegistration } from '../ServiceWorkerRegistrationProvider/index.js';
-import { useUser } from '../UserProvider/index.js';
 
 interface TabsPageProps extends Omit<ComponentPropsWithoutRef<typeof BlockList>, 'blocks'> {
-  readonly page: TabsPageDefinition;
+  readonly pageDefinition: TabsPageDefinition;
   readonly tabRef: MutableRefObject<unknown>;
 }
 
 export function TabsPage({
   appStorage,
   ee,
-  page,
+  pageDefinition,
   prefix,
   prefixIndex,
   remap,
@@ -44,7 +49,7 @@ export function TabsPage({
   tabRef,
   ...blockListProps
 }: TabsPageProps): ReactNode {
-  const { definition, pageManifests } = useAppDefinition();
+  const { definition: appDefinition, pageManifests } = useAppDefinition();
   const {
     '*': wildcard,
     lang,
@@ -55,8 +60,17 @@ export function TabsPage({
   const [data, setData] = useState<unknown>({});
   const { pathname } = useLocation();
   const navigate = useNavigate();
-  const { logout, passwordLogin, role, setUserInfo, teams, updateTeam, userInfo, userInfoRef } =
-    useUser();
+  const {
+    addAppMemberGroup,
+    appMemberGroups,
+    appMemberInfo,
+    appMemberInfoRef,
+    appMemberRole,
+    appMemberSelectedGroup,
+    logout,
+    passwordLogin,
+    setAppMemberInfo,
+  } = useAppMember();
   const { refetchDemoAppMembers } = useDemoAppMembers();
   const [tabsWithPermissions, setTabsWithPermissions] = useState([]);
   const [defaultTab, setDefaultTab] = useState(null);
@@ -68,35 +82,41 @@ export function TabsPage({
   const [pageReady, setPageReady] = useState<Promise<void>>();
   const [createdTabs, setCreatedTabs] = useState([]);
 
-  const checkSubPagePermissions = useCallback(
-    (p: SubPage): boolean => {
-      const roles = p.roles || definition.roles || [];
+  const remapperContext = useMemo(
+    () =>
+      ({
+        appId,
+        appUrl: window.location.origin,
+        url: window.location.href,
+        getMessage,
+        getVariable,
+        appMemberInfo,
+        context: { name: pageDefinition.name },
+        locale: lang,
+      }) as RemapperContext,
+    [appMemberInfo, getMessage, getVariable, lang, pageDefinition.name],
+  );
 
-      return (
-        roles.length === 0 || roles.some((r) => checkAppRole(definition.security, r, role, teams))
-      );
+  const checkSubPagePermissions = useCallback(
+    (subPage: SubPageDefinition): boolean => {
+      const pd: PageDefinition = {
+        name: remap(subPage.name, data, remapperContext) as string,
+        type: undefined,
+        roles: subPage.roles,
+      };
+
+      return checkPagePermissions(pd, appDefinition, appMemberRole, appMemberSelectedGroup);
     },
-    [definition.roles, definition.security, role, teams],
+    [remap, data, remapperContext, appDefinition, appMemberRole, appMemberSelectedGroup],
   );
 
   const events = createEvents(
     ee,
     pageReady,
     pageManifests.events,
-    page.definition ? page.definition.events : null,
+    pageDefinition.definition ? pageDefinition.definition.events : null,
   );
   const resolvePageReady = useRef<Function>();
-  const remapperContext = {
-    appId,
-    appUrl: window.location.origin,
-    url: window.location.href,
-    getMessage,
-    getVariable,
-    userInfo,
-    appMember: userInfo?.appMember,
-    context: { name: page.name },
-    locale: lang,
-  };
 
   useEffect(() => {
     setPageReady(
@@ -104,15 +124,15 @@ export function TabsPage({
         resolvePageReady.current = resolve;
       }),
     );
-  }, [page.definition]);
+  }, [pageDefinition.definition]);
 
   useEffect(() => {
-    if (page.tabs) {
-      const { tabs } = page;
+    if (pageDefinition.tabs) {
+      const { tabs } = pageDefinition;
 
       const filteredTabs = tabs.filter((tab) => checkSubPagePermissions(tab));
       setTabsWithPermissions(filteredTabs);
-      const id = page.tabs.indexOf(filteredTabs[0]);
+      const id = pageDefinition.tabs.indexOf(filteredTabs[0]);
       setDefaultTab({
         id,
         name: filteredTabs[0]?.name,
@@ -124,7 +144,7 @@ export function TabsPage({
         name: '',
       });
     }
-  }, [checkSubPagePermissions, page, actions, createdTabs, setCreatedTabs]);
+  }, [checkSubPagePermissions, pageDefinition, actions, createdTabs, setCreatedTabs]);
 
   useEffect(() => {
     actions.onLoad().then((results) => {
@@ -139,16 +159,16 @@ export function TabsPage({
       event.preventDefault();
     });
     const callback = (d: any): void => {
-      const { blocks, name } = page.definition.foreach;
-      function createTabs(): SubPage[] {
-        const newTabs: SubPage[] = [];
+      const { blocks, name } = pageDefinition.definition.foreach;
+      function createTabs(): SubPageDefinition[] {
+        const newTabs: SubPageDefinition[] = [];
         for (const [i, resourceData] of d.entries()) {
           if (resourceData) {
             let remappedName: string | undefined;
             if (typeof name !== 'string') {
               remappedName = remap(name, resourceData, remapperContext);
             }
-            const newTab: SubPage = {
+            const newTab: SubPageDefinition = {
               name: typeof name === 'string' ? `${name}${i}` : remappedName || `Generated Tab ${i}`,
               blocks,
             };
@@ -174,8 +194,8 @@ export function TabsPage({
         getAppMessage,
         getAppVariable: getVariable,
         actions: { onLoad: {} },
-        app: definition,
-        context: page,
+        appDefinition,
+        context: pageDefinition,
         navigate,
         extraCreators: {},
         prefix,
@@ -188,46 +208,51 @@ export function TabsPage({
         remap,
         params,
         showMessage,
-        teams,
-        updateTeam,
-        getUserInfo: () => userInfoRef.current,
+        appMemberGroups,
+        addAppMemberGroup,
+        getAppMemberInfo: () => appMemberInfoRef.current,
         passwordLogin,
         passwordLogout: logout,
-        setUserInfo,
+        setAppMemberInfo,
         refetchDemoAppMembers,
+        getAppMemberSelectedGroup: () => appMemberSelectedGroup,
       }),
     [
       appStorage,
       getAppMessage,
       getVariable,
-      definition,
-      page,
+      appDefinition,
+      pageDefinition,
       navigate,
-      showDialog,
-      showShareDialog,
       prefix,
       prefixIndex,
       pushNotifications,
+      showDialog,
+      showShareDialog,
       ee,
       remap,
       params,
       showMessage,
-      teams,
-      updateTeam,
+      appMemberGroups,
+      addAppMemberGroup,
       passwordLogin,
       logout,
-      setUserInfo,
+      setAppMemberInfo,
       refetchDemoAppMembers,
-      userInfoRef,
+      appMemberInfoRef,
+      appMemberSelectedGroup,
     ],
   );
 
   const onChange = useCallback((event: ChangeEvent, value: string) => navigate(value), [navigate]);
 
-  const pageName = getAppMessage({ id: prefix, defaultMessage: page.name }).format() as string;
+  const pageName = getAppMessage({
+    id: prefix,
+    defaultMessage: pageDefinition.name,
+  }).format() as string;
 
   if (tabsWithPermissions.length) {
-    const pageTabs = page.tabs ?? createdTabs;
+    const pageTabs = pageDefinition.tabs ?? createdTabs;
     return (
       <>
         <Tabs centered onChange={onChange} size="medium" value={pathname}>
@@ -269,7 +294,7 @@ export function TabsPage({
                       data={data}
                       ee={ee}
                       name={translatedName}
-                      page={page}
+                      pageDefinition={pageDefinition}
                       prefix={`${prefix}.tabs.${index}.blocks`}
                       prefixIndex={`${prefixIndex}.tabs.${index}.blocks`}
                       remap={remap}
@@ -281,7 +306,7 @@ export function TabsPage({
                 }
                 key={name}
                 path={`/${normalize(translatedName)}${String(
-                  (page.parameters || []).map((param) => `/:${param}`),
+                  (pageDefinition.parameters || []).map((param) => `/:${param}`),
                 )}`}
               />
             );

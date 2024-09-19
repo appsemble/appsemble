@@ -4,11 +4,10 @@ import {
   useConfirmation,
   useMessages,
 } from '@appsemble/react-components';
-import { type Role, roles } from '@appsemble/utils';
+import { type PredefinedOrganizationRole, predefinedOrganizationRoles } from '@appsemble/types';
 import axios from 'axios';
 import { type ChangeEvent, type ReactNode, useCallback } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { useParams } from 'react-router-dom';
 
 import { messages } from './messages.js';
 import { useUser } from '../../../../components/UserProvider/index.js';
@@ -16,14 +15,14 @@ import { type OrganizationMember } from '../../../../types.js';
 
 interface MemberRowProps {
   /**
-   * Whether the user may delete members.
+   * Whether the user may update the roles of members.
    */
-  readonly mayEdit: boolean;
+  readonly mayUpdateRoles: boolean;
 
   /**
-   * Whether the user has the permission to edit other user’s roles.
+   * Whether the user may delete members.
    */
-  readonly mayEditRole: boolean;
+  readonly mayDelete: boolean;
 
   /**
    * The member represented by this row.
@@ -51,8 +50,8 @@ interface MemberRowProps {
  * A single row for managing an organization member from the members table.
  */
 export function MemberRow({
-  mayEdit,
-  mayEditRole,
+  mayDelete,
+  mayUpdateRoles,
   member,
   onChanged,
   onDeleted,
@@ -60,7 +59,6 @@ export function MemberRow({
 }: MemberRowProps): ReactNode {
   const { id, name, primaryEmail } = member;
   const { formatMessage } = useIntl();
-  const { organizationId } = useParams<{ organizationId: string }>();
   const push = useMessages();
   const {
     userInfo: { sub },
@@ -68,24 +66,23 @@ export function MemberRow({
 
   const onChangeRole = useCallback(
     async (event: ChangeEvent<HTMLSelectElement>, role: string) => {
-      const { data } = await axios.put<OrganizationMember>(
-        `/api/organizations/${organizationId}/members/${id}/role`,
-        { role },
-      );
+      const { data } = await axios.put<OrganizationMember>(`/api/organization-members/${id}/role`, {
+        role,
+      });
       onChanged(data);
     },
-    [id, onChanged, organizationId],
+    [id, onChanged],
   );
 
   const callDelete = useCallback(async () => {
-    await axios.delete(`/api/organizations/${organizationId}/members/${id}`);
+    await axios.delete(`/api/organization-members/${id}`);
     onDeleted(member);
 
     push({
       body: formatMessage(messages.deleteSuccess, { member: name || primaryEmail }),
       color: 'info',
     });
-  }, [formatMessage, id, member, name, onDeleted, organizationId, primaryEmail, push]);
+  }, [formatMessage, id, member, name, onDeleted, primaryEmail, push]);
 
   const deleteMember = useConfirmation({
     title: <FormattedMessage {...messages.deleteMember} />,
@@ -121,13 +118,13 @@ export function MemberRow({
       <td align="right">
         <AsyncSelect
           className="mr-2"
-          disabled={!mayEditRole || (member.role === 'Owner' && ownerCount < 2) || id === sub}
+          disabled={!mayUpdateRoles || (member.role === 'Owner' && ownerCount < 2) || id === sub}
           id={`role-${id}`}
           name="role"
           onChange={onChangeRole}
           value={member.role}
         >
-          {Object.keys(roles).map((r: Role) => (
+          {predefinedOrganizationRoles.map((r: PredefinedOrganizationRole) => (
             <option key={r} value={r}>
               {formatMessage(messages[r])}
             </option>
@@ -143,7 +140,7 @@ export function MemberRow({
             <FormattedMessage {...messages.leave} />
           </AsyncButton>
         ) : (
-          mayEdit && (
+          mayDelete && (
             <AsyncButton
               color="danger"
               icon="trash-alt"

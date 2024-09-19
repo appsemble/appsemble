@@ -6,7 +6,8 @@ import {
   useObjectURL,
   useToggle,
 } from '@appsemble/react-components';
-import { Permission } from '@appsemble/utils';
+import { OrganizationPermission } from '@appsemble/types';
+import { checkOrganizationRoleOrganizationPermissions } from '@appsemble/utils';
 import axios from 'axios';
 import { type ChangeEvent, type ReactNode, useCallback, useRef, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
@@ -16,7 +17,6 @@ import { AppScreenshot } from './AppScreenshot/index.js';
 import styles from './index.module.css';
 import { messages } from './messages.js';
 import { useUser } from '../../../../../components/UserProvider/index.js';
-import { checkRole } from '../../../../../utils/checkRole.js';
 import { useApp } from '../../index.js';
 
 export function AppScreenshots(): ReactNode {
@@ -30,7 +30,11 @@ export function AppScreenshots(): ReactNode {
   const uploadingScreenshotPreview = useObjectURL(uploadingScreenshot);
 
   const userRole = organizations?.find((org) => org.id === app.OrganizationId)?.role;
-  const mayManageScreenshots = userRole && checkRole(userRole, Permission.EditAppSettings);
+  const mayCreateScreenshots =
+    userRole &&
+    checkOrganizationRoleOrganizationPermissions(userRole, [
+      OrganizationPermission.CreateAppScreenshots,
+    ]);
 
   const screenshotDiv = useRef<HTMLDivElement>();
   const scrollScreenshots = useCallback((reverse = false) => {
@@ -71,14 +75,14 @@ export function AppScreenshots(): ReactNode {
     closeModal();
   }, [uploadingScreenshot, app, lang, setApp, closeModal]);
 
-  if (!mayManageScreenshots && !app.screenshotUrls.length) {
+  if (!mayCreateScreenshots && !app.screenshotUrls.length) {
     return null;
   }
 
   return (
     <>
       <div className={`has-background-white-ter is-flex ${styles.wrapper}`}>
-        {mayManageScreenshots ? (
+        {mayCreateScreenshots ? (
           <Button
             className={`my-2 mr-5 ${styles.createScreenshotButton}`}
             onClick={screenshotModal.enable}
@@ -95,7 +99,7 @@ export function AppScreenshots(): ReactNode {
             />
             <div className={`px-4 ${styles.screenshots}`} ref={screenshotDiv}>
               {app.screenshotUrls.map((url) => (
-                <AppScreenshot key={url} mayManageScreenshots={mayManageScreenshots} url={url} />
+                <AppScreenshot key={url} url={url} />
               ))}
             </div>
             <Button

@@ -1,0 +1,16 @@
+# Replace hideFromMenu with hideNavTitle
+name: test
+description: test
+defaultPage: test
+
+pages:
+  - name: test
+    hideFromMenu: true
+    blocks:
+      - type: action-button
+        version: 0.29.0
+        parameters:
+          icon: arrow-right
+        actions:
+          onClick:
+            type: noop

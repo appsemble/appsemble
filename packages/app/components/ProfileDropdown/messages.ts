@@ -13,6 +13,22 @@ export const messages = defineMessages({
     id: 'app.Ejhdi4',
     defaultMessage: 'Feedback',
   },
+  changeSelectedGroup: {
+    id: 'app.T6jAnc',
+    defaultMessage: 'Change Selected Group “{selectedGroupName}”',
+  },
+  selectGroup: {
+    id: 'app.UHsAfL',
+    defaultMessage: 'Select Group',
+  },
+  changeGroup: {
+    id: 'app.0Mbf4A',
+    defaultMessage: 'Change Group',
+  },
+  noGroup: {
+    id: 'app.KciU4I',
+    defaultMessage: 'No Group',
+  },
   settings: {
     id: 'app.D3idYv',
     defaultMessage: 'Settings',

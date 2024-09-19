@@ -4,11 +4,13 @@ import { type ShowMessage } from '@appsemble/react-components';
 import {
   type ActionDefinition,
   type AppDefinition,
+  type AppMemberGroup,
+  type AppMemberInfo,
   type BlockDefinition,
   type BlockManifest,
+  type Group,
   type ProjectImplementations,
   type Remapper,
-  type TeamMember,
   type UserInfo,
 } from '@appsemble/types';
 import { type AppConfigEntryGetter, type MessageGetter } from '@appsemble/utils';
@@ -51,6 +53,13 @@ export interface User extends UserInfo {
   scope: string;
 }
 
+export interface Login {
+  icon: IconName;
+  id: number;
+  name: string;
+  type: 'oauth2' | 'saml';
+}
+
 declare global {
   interface Window {
     /**
@@ -72,12 +81,7 @@ declare global {
       definition: AppDefinition;
       demoMode: boolean;
       languages: string[];
-      logins: {
-        icon: IconName;
-        id: number;
-        name: string;
-        type: 'oauth2' | 'saml';
-      }[];
+      logins: Login[];
       sentryDsn: string;
       sentryEnvironment: string;
       showAppsembleLogin: boolean;
@@ -119,10 +123,8 @@ export interface FlowActions {
   to: (data: any, step: string) => Promise<any>;
 }
 
-export type UpdateTeam = (team: TeamMember) => void;
-
 export interface MakeActionParameters<D extends ActionDefinition> {
-  app: AppDefinition;
+  appDefinition: AppDefinition;
   getAppMessage?: MessageGetter;
   getAppVariable?: AppConfigEntryGetter;
   appStorage: AppStorage;
@@ -140,12 +142,13 @@ export interface MakeActionParameters<D extends ActionDefinition> {
   ee: EventEmitter;
   remap: (remapper: Remapper, data: any, context?: Record<string, any>) => any;
   showMessage?: ShowMessage;
-  getUserInfo: () => UserInfo;
+  getAppMemberInfo: () => AppMemberInfo;
   passwordLogin: (params: { username: string; password: string }) => Promise<void>;
   passwordLogout: () => Promise<void>;
-  setUserInfo: Dispatch<UserInfo>;
-  updateTeam: UpdateTeam;
-  teams: TeamMember[];
+  setAppMemberInfo: Dispatch<AppMemberInfo>;
+  appMemberGroups: AppMemberGroup[];
+  addAppMemberGroup: (group: Group) => void;
+  getAppMemberSelectedGroup: () => AppMemberGroup;
   refetchDemoAppMembers: () => Promise<void>;
 }
 

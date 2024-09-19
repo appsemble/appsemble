@@ -11,6 +11,6 @@ export const scopes = [
   'resources:read',
   'resources:write',
   'assets:write',
-  'teams:read',
-  'teams:write',
+  'groups:read',
+  'groups:write',
 ] as const;

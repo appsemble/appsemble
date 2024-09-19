@@ -1,8 +1,10 @@
 import {
+  AllowNull,
   BelongsTo,
   Column,
   CreatedAt,
   DataType,
+  Default,
   ForeignKey,
   Model,
   PrimaryKey,
@@ -20,6 +22,21 @@ export class AppSamlAuthorization extends Model {
   @PrimaryKey
   @Column(DataType.STRING)
   nameId: string;
+
+  /**
+   * The email used on the SAML provider.
+   */
+  @AllowNull(false)
+  @Column(DataType.STRING)
+  email: string;
+
+  /**
+   * Whether the linked email is verified on the SAML provider.
+   */
+  @Default(false)
+  @AllowNull(false)
+  @Column(DataType.BOOLEAN)
+  emailVerified: boolean;
 
   /**
    * The id of the linked app SAML secret.

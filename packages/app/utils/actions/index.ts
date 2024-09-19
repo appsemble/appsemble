@@ -1,6 +1,17 @@
 import { type Action, type ActionDefinition } from '@appsemble/types';
 
 import { analytics } from './analytics.js';
+import {
+  appMemberCurrentPatch,
+  appMemberDelete,
+  appMemberInvite,
+  appMemberLogin,
+  appMemberLogout,
+  appMemberPropertiesPatch,
+  appMemberQuery,
+  appMemberRegister,
+  appMemberRoleUpdate,
+} from './appMember.js';
 import { condition } from './condition.js';
 import { controller } from './controller.js';
 import { dialog } from './dialog.js';
@@ -9,6 +20,13 @@ import { each } from './each.js';
 import { email } from './email.js';
 import { event } from './event.js';
 import * as flow from './flow.js';
+import { groupQuery } from './group.js';
+import {
+  groupMemberDelete,
+  groupMemberInvite,
+  groupMemberQuery,
+  groupMemberRoleUpdate,
+} from './groupMember.js';
 import { back, link, next } from './link.js';
 import { log } from './log.js';
 import { match } from './match.js';
@@ -20,9 +38,7 @@ import * as resource from './resource.js';
 import { share } from './share.js';
 import { staticAction } from './static.js';
 import * as storage from './storage.js';
-import { teamInvite, teamJoin, teamList, teamMembers } from './team.js';
 import { throwAction } from './throw.js';
-import { create, login, logout, query, register, remove, update } from './user.js';
 import { type MakeActionParameters } from '../../types.js';
 
 type ActionProperties<T extends ActionDefinition['type']> = Omit<
@@ -92,16 +108,19 @@ export const actionCreators: ActionCreators = {
   'storage.subtract': storage.subtract,
   'storage.update': storage.update,
   'storage.delete': storage.remove,
-  'team.invite': teamInvite,
-  'team.join': teamJoin,
-  'team.list': teamList,
-  'team.members': teamMembers,
+  'group.query': groupQuery,
+  'group.member.invite': groupMemberInvite,
+  'group.member.query': groupMemberQuery,
+  'group.member.delete': groupMemberDelete,
+  'group.member.role.update': groupMemberRoleUpdate,
   throw: throwAction,
-  'user.login': login,
-  'user.register': register,
-  'user.create': create,
-  'user.update': update,
-  'user.logout': logout,
-  'user.query': query,
-  'user.remove': remove,
+  'app.member.login': appMemberLogin,
+  'app.member.register': appMemberRegister,
+  'app.member.invite': appMemberInvite,
+  'app.member.role.update': appMemberRoleUpdate,
+  'app.member.properties.patch': appMemberPropertiesPatch,
+  'app.member.current.patch': appMemberCurrentPatch,
+  'app.member.logout': appMemberLogout,
+  'app.member.query': appMemberQuery,
+  'app.member.delete': appMemberDelete,
 };

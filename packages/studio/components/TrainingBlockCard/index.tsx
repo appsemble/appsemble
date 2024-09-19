@@ -1,6 +1,6 @@
 import { Button, Icon, useConfirmation, useMessages } from '@appsemble/react-components';
-import { type TrainingBlock } from '@appsemble/types';
-import { Permission } from '@appsemble/utils';
+import { OrganizationPermission, type TrainingBlock } from '@appsemble/types';
+import { checkOrganizationRoleOrganizationPermissions } from '@appsemble/utils';
 import axios from 'axios';
 import { type ReactNode, useCallback, useLayoutEffect, useRef, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
@@ -8,7 +8,6 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 
 import styles from './index.module.css';
 import { messages } from './messages.js';
-import { checkRole } from '../../utils/checkRole.js';
 import TrainingBlockModal, { type defaults } from '../TrainingBlockModal/index.js';
 import { useUser } from '../UserProvider/index.js';
 
@@ -46,8 +45,18 @@ export function TrainingBlockCard({
   const [showMenu, setShowMenu] = useState(false);
 
   const isAppsembleMember = organizations?.find((org) => org.id === 'appsemble');
-  const mayDeleteTraining =
-    isAppsembleMember && checkRole(isAppsembleMember.role, Permission.DeleteApps);
+
+  const mayUpdateTrainingBlock =
+    isAppsembleMember &&
+    checkOrganizationRoleOrganizationPermissions(isAppsembleMember.role, [
+      OrganizationPermission.UpdateTrainingBlocks,
+    ]);
+
+  const mayDeleteTrainingBlock =
+    isAppsembleMember &&
+    checkOrganizationRoleOrganizationPermissions(isAppsembleMember.role, [
+      OrganizationPermission.UpdateTrainingBlocks,
+    ]);
 
   const blockDefaultValues = {
     exampleCodeBlock: exampleCode,
@@ -148,42 +157,46 @@ export function TrainingBlockCard({
   return (
     <div className={`card ${styles.block} mb-3`}>
       <div className={`card-content ${styles.content}`}>
-        {mayDeleteTraining ? (
-          <div className="dropdown is-pulled-right is-right is-active" ref={dropdownRef}>
-            <div className="dropdown-trigger">
-              <Button
-                aria-controls="dropdown-menu"
-                aria-haspopup="true"
-                icon="ellipsis-vertical"
-                onClick={() => setShowMenu(!showMenu)}
-              />
-            </div>
-            {showMenu ? (
-              <div className="dropdown-menu" role="menu">
-                <div className={`dropdown-content ${styles.menu}`}>
+        <div className="dropdown is-pulled-right is-right is-active" ref={dropdownRef}>
+          <div className="dropdown-trigger">
+            <Button
+              aria-controls="dropdown-menu"
+              aria-haspopup="true"
+              icon="ellipsis-vertical"
+              onClick={() => setShowMenu(!showMenu)}
+            />
+          </div>
+          {showMenu ? (
+            <div className="dropdown-menu" role="menu">
+              <div className={`dropdown-content ${styles.menu}`}>
+                {mayUpdateTrainingBlock ? (
                   <div className="dropdown-item">
                     <Button className="is-ghost" onClick={openEditDialog}>
                       <FormattedMessage {...messages.edit} />
                     </Button>
                   </div>
+                ) : null}
+
+                {mayDeleteTrainingBlock ? (
                   <div className="dropdown-item">
                     <Button className="is-ghost" onClick={onDeleteTrainingBlock}>
                       <FormattedMessage {...messages.deleteBlock} />
                     </Button>
                   </div>
-                  <TrainingBlockModal
-                    defaultValues={blockDefaultValues}
-                    errorMessage={<FormattedMessage {...messages.errorEditBlock} />}
-                    isActive={active}
-                    modalTitle={<FormattedMessage {...messages.editTrainingBlock} />}
-                    onClose={closeEditDialog}
-                    onSubmit={onEditTrainingBlock}
-                  />
-                </div>
+                ) : null}
+
+                <TrainingBlockModal
+                  defaultValues={blockDefaultValues}
+                  errorMessage={<FormattedMessage {...messages.errorEditBlock} />}
+                  isActive={active}
+                  modalTitle={<FormattedMessage {...messages.editTrainingBlock} />}
+                  onClose={closeEditDialog}
+                  onSubmit={onEditTrainingBlock}
+                />
               </div>
-            ) : null}
-          </div>
-        ) : null}
+            </div>
+          ) : null}
+        </div>
         <div className="title is-size-5">{title}</div>
         <div className="list">
           <ul>

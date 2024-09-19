@@ -48,7 +48,7 @@ export const examples: Record<RemapperExampleKeys, RemapperExample> = {
     },
     result: 'https://example-app.example-organization.example.com',
   },
-  appMember: {
+  'app.member': {
     input: null,
     remapper: {},
     result: {},
@@ -671,12 +671,6 @@ export const examples: Record<RemapperExampleKeys, RemapperExample> = {
     result: {},
     skip: true,
   },
-  user: {
-    input: null,
-    remapper: {},
-    result: {},
-    skip: true,
-  },
   container: {
     input: null,
     remapper: {},
@@ -729,17 +723,22 @@ export function createExampleContext(
     getVariable: (name) => (name === 'MY_VARIABLE' ? 'variable value' : null),
     url: String(url),
     appUrl: `${url.protocol}//example-app.example-organization.${url.host}`,
-    userInfo: userInfo ?? {
-      sub: 'default-example-sub',
-      name: 'default-example-name',
-      email: 'default@example.com',
-      email_verified: false,
-    },
     context: {},
     history: history ?? ['Default example value'],
     appId: 0,
     locale: 'en',
     pageData: { default: 'Page data' },
-    appMember: userInfo?.appMember,
+    appMemberInfo: {
+      sub: 'default-example-id',
+      email: 'default-app-member@example.com',
+      email_verified: true,
+      name: 'default-example-name',
+      demo: false,
+      role: 'Member',
+      zoneinfo: 'Europe/Amsterdam',
+      properties: {
+        completedExamples: [],
+      },
+    },
   };
 }

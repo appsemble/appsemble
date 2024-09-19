@@ -388,7 +388,7 @@ export async function publishSeedResources(path: string, app: App, remote: strin
     logger.info(`Deleting existing seed resources from app ${app.id}`);
 
     try {
-      await axios.delete(`/api/apps/${app.id}/seed-resources`, { baseURL: remote });
+      await axios.delete(`/api/apps/${app.id}/resources`, { baseURL: remote });
 
       const resourceFiles = await readdir(resourcesPath, { withFileTypes: true });
       const resourcesToPublish: ResourceToPublish[] = [];
@@ -447,7 +447,11 @@ export async function publishSeedAssets(
     logger.info(`Deleting existing seed assets from app ${app.id}`);
 
     try {
-      await axios.delete(`/api/apps/${app.id}/seed-assets`, { baseURL: remote });
+      await axios.delete(`/api/apps/${app.id}/assets`, {
+        data: [],
+        baseURL: remote,
+        params: { seed: true },
+      });
 
       const assetFiles = await readdir(assetsPath);
       const normalizedPaths = assetFiles.map((assetFile) =>
@@ -1260,7 +1264,7 @@ export async function publishApp({
     for (const collectionId of rcCollections) {
       try {
         await axios.post<App>(
-          `/api/appCollections/${collectionId}/apps`,
+          `/api/app-collections/${collectionId}/apps`,
           { AppId: data.id },
           {
             baseURL: remote,

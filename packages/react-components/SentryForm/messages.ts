@@ -2,8 +2,8 @@ import { defineMessages } from 'react-intl';
 
 export const messages = defineMessages({
   disclaimer: {
-    id: 'react-components.He6Nzr',
-    defaultMessage: 'Your feedback will be shared with the Appsemble team using Sentry',
+    id: 'react-components.2825oe',
+    defaultMessage: 'Your feedback will be shared with the Appsemble group using Sentry',
   },
   submitError: {
     id: 'react-components.9i2X0U',

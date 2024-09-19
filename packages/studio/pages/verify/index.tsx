@@ -17,7 +17,7 @@ export function VerifyPage(): ReactNode {
   useEffect(() => {
     (async () => {
       try {
-        await axios.post('/api/email/verify', { token });
+        await axios.post('/api/auth/email/verify', { token });
         setSuccess(true);
         await refreshUserInfo();
       } catch {

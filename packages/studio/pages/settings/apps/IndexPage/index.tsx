@@ -9,7 +9,7 @@ import { AppCard } from '../../../../components/AppCard/index.js';
 import { AsyncDataView } from '../../../../components/AsyncDataView/index.js';
 
 export function IndexPage(): ReactNode {
-  const result = useData<AppAccount[]>('/api/user/apps/accounts');
+  const result = useData<AppAccount[]>('/api/users/current/apps/accounts');
 
   return (
     <main>

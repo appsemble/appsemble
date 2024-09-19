@@ -25,6 +25,9 @@ export function RolesInheritanceList({
 
   const checkAllowedToInherit = (roleToCheck: string): boolean => {
     const checkInheritance = (role: string): boolean => {
+      if (!app.definition.security.roles[role]) {
+        return true;
+      }
       if (!app.definition.security.roles[role].inherits) {
         return true;
       }

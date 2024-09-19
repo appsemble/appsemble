@@ -1,0 +1,47 @@
+# Rename user actions to app.member actions
+name: test
+description: test
+defaultPage: test
+
+pages:
+  - name: test
+    blocks:
+      - type: action-button
+        version: 0.29.0
+        parameters:
+          icon: arrow-right
+        actions:
+          onClick:
+            type: user.register
+            email: { prop: email }
+            password: { prop: password }
+            displayName: { prop: username }
+            picture: { prop: profilePicture }
+      - type: action-button
+        version: 0.29.0
+        parameters:
+          icon: arrow-right
+        actions:
+          onClick:
+            type: user.login
+      - type: action-button
+        version: 0.29.0
+        parameters:
+          icon: arrow-right
+        actions:
+          onClick:
+            type: user.logout
+      - type: action-button
+        version: 0.29.0
+        parameters:
+          icon: arrow-right
+        actions:
+          onClick:
+            type: user.query
+      - type: action-button
+        version: 0.29.0
+        parameters:
+          icon: arrow-right
+        actions:
+          onClick:
+            type: user.remove

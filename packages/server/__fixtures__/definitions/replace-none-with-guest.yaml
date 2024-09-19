@@ -1,0 +1,16 @@
+# Replace $none with $guest
+name: test
+description: test
+defaultPage: test
+
+pages:
+  - name: test
+    roles: [$none]
+    blocks:
+      - type: action-button
+        version: 0.29.0
+        parameters:
+          icon: arrow-right
+        actions:
+          onClick:
+            type: noop

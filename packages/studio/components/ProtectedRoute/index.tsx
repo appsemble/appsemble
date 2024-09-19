@@ -1,18 +1,18 @@
 import { useLocationString, useQuery } from '@appsemble/react-components';
-import { type Permission } from '@appsemble/utils';
+import { type OrganizationPermission } from '@appsemble/types';
+import { checkOrganizationRoleOrganizationPermissions } from '@appsemble/utils';
 import { type ReactNode } from 'react';
 import { Navigate, Outlet } from 'react-router-dom';
 
 import { type Organization } from '../../types.js';
-import { checkRole } from '../../utils/checkRole.js';
 import { useUser } from '../UserProvider/index.js';
 
 interface ProtectedRouteProps {
-  readonly permission?: Permission;
+  readonly permissions?: OrganizationPermission[];
   readonly organization?: Organization;
 }
 
-export function ProtectedRoute({ organization, permission }: ProtectedRouteProps): ReactNode {
+export function ProtectedRoute({ organization, permissions }: ProtectedRouteProps): ReactNode {
   const redirect = useLocationString();
   const { userInfo } = useUser();
   const qs = useQuery();
@@ -23,7 +23,10 @@ export function ProtectedRoute({ organization, permission }: ProtectedRouteProps
     return <Navigate to={{ pathname: '/login', search: `?${search}` }} />;
   }
 
-  if (permission && (!organization || !checkRole(organization.role, permission))) {
+  if (
+    permissions &&
+    (!organization || !checkOrganizationRoleOrganizationPermissions(organization.role, permissions))
+  ) {
     return <Navigate to="/" />;
   }
 

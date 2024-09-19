@@ -1,5 +1,6 @@
 import { resolveFixture } from '@appsemble/node-utils';
 import { createServer, createTestUser, models, setArgv, useTestDatabase } from '@appsemble/server';
+import { PredefinedOrganizationRole } from '@appsemble/types';
 import { type AxiosTestInstance, setTestApp } from 'axios-test-instance';
 import concat from 'concat-stream';
 import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
@@ -36,7 +37,7 @@ beforeEach(async () => {
   await OrganizationMember.create({
     OrganizationId: organization.id,
     UserId: user.id,
-    role: 'Owner',
+    role: PredefinedOrganizationRole.Owner,
   });
 
   await Organization.create({ id: 'appsemble', name: 'Appsemble' });

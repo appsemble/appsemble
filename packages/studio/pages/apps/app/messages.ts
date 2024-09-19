@@ -61,9 +61,9 @@ export const messages = defineMessages({
     id: 'studio.c/TTro',
     defaultMessage: 'App members',
   },
-  teams: {
-    id: 'studio.DNeuzb',
-    defaultMessage: 'Teams',
+  groups: {
+    id: 'studio.hzmswI',
+    defaultMessage: 'Groups',
   },
   translations: {
     id: 'studio.aFyu8N',

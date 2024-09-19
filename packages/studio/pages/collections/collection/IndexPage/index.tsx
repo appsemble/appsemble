@@ -6,8 +6,8 @@ import {
   useData,
   useToggle,
 } from '@appsemble/react-components';
-import { type App, type AppCollection } from '@appsemble/types';
-import { Permission } from '@appsemble/utils';
+import { type App, type AppCollection, OrganizationPermission } from '@appsemble/types';
+import { checkOrganizationRoleOrganizationPermissions } from '@appsemble/utils';
 import axios from 'axios';
 import { type ReactNode, useCallback, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
@@ -24,7 +24,6 @@ import {
 } from '../../../../components/AppListControls/index.js';
 import { usePageHeader } from '../../../../components/PageHeader/index.js';
 import { useUser } from '../../../../components/UserProvider/index.js';
-import { checkRole } from '../../../../utils/checkRole.js';
 
 interface IndexPageProps {
   readonly collection: AppCollection;
@@ -69,7 +68,7 @@ export function IndexPage({ collection }: IndexPageProps): ReactNode {
   const { lang } = useParams();
 
   const appsResult = useData<PinnableApp[]>(
-    `/api/appCollections/${collection.id}/apps?language=${lang}`,
+    `/api/app-collections/${collection.id}/apps?language=${lang}`,
   );
 
   const onSortChange = useCallback((name: AppSortFunctionName, reverse: boolean) => {
@@ -82,7 +81,7 @@ export function IndexPage({ collection }: IndexPageProps): ReactNode {
     confirmLabel: <FormattedMessage {...messages.confirm} />,
     title: <FormattedMessage {...messages.deleteAppFromCollection} />,
     async action(app: App) {
-      await axios.delete(`/api/appCollections/${collection.id}/apps/${app.id}`);
+      await axios.delete(`/api/app-collections/${collection.id}/apps/${app.id}`);
       appsResult.setData((apps) => apps.filter((a) => a.id !== app.id));
     },
   });
@@ -93,11 +92,11 @@ export function IndexPage({ collection }: IndexPageProps): ReactNode {
         const {
           data: { pinnedAt },
         } = await axios.post<{ pinnedAt: string }>(
-          `/api/appCollections/${collection.id}/apps/${app.id}/pinned`,
+          `/api/app-collections/${collection.id}/apps/${app.id}/pinned`,
         );
         appsResult.setData((apps) => apps.map((a) => (a.id === app.id ? { ...a, pinnedAt } : a)));
       } else {
-        await axios.delete(`/api/appCollections/${collection.id}/apps/${app.id}/pinned`);
+        await axios.delete(`/api/app-collections/${collection.id}/apps/${app.id}/pinned`);
         appsResult.setData((apps) =>
           apps.map((a) => (a.id === app.id ? { ...a, pinnedAt: null } : a)),
         );
@@ -110,7 +109,11 @@ export function IndexPage({ collection }: IndexPageProps): ReactNode {
 
   const { organizations } = useUser();
   const userOrganization = organizations?.find((org) => org.id === collection.OrganizationId);
-  const mayEdit = userOrganization && checkRole(userOrganization.role, Permission.EditCollections);
+  const mayEdit =
+    userOrganization &&
+    checkOrganizationRoleOrganizationPermissions(userOrganization.role, [
+      OrganizationPermission.UpdateAppCollections,
+    ]);
 
   const editMode = useToggle();
 

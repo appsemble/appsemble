@@ -6,7 +6,7 @@ import { Readable } from 'node:stream';
 
 import {
   AppsembleError,
-  type ExtendedTeam,
+  type ExtendedGroup,
   logger,
   opendirSafe,
   readData,
@@ -16,7 +16,7 @@ import {
   type App,
   type AppConfigEntry,
   type AppConfigEntryDefinition,
-  type AppMember,
+  type AppMemberInfo,
   type AppMessages,
   type AppsembleMessages,
   type Asset,
@@ -26,6 +26,7 @@ import {
 import {
   asciiLogo,
   getAppBlocks,
+  getAppRoles,
   type IdentifiableBlock,
   normalize,
   parseBlockName,
@@ -51,7 +52,7 @@ export interface ServeArguments {
   port: number;
   'api-port': number;
   'user-role': string;
-  'team-role': string;
+  'group-role': string;
   'overwrite-block-cache': boolean;
 }
 
@@ -77,8 +78,8 @@ export function builder(yargs: Argv): Argv<any> {
       desc: 'The role to set to the mocked authenticated user.',
       type: 'string',
     })
-    .option('team-role', {
-      desc: 'The role to set to the mocked authenticated user in the team.',
+    .option('group-role', {
+      desc: 'The role to set to the mocked authenticated user in the group.',
       type: 'string',
       default: 'member',
     })
@@ -98,7 +99,7 @@ export async function handler(argv: ServeArguments): Promise<void> {
   const appPath = join(process.cwd(), argv.path);
   const [, , , appsembleApp] = await traverseAppDirectory(appPath, 'development', new FormData());
 
-  const appRoles = appsembleApp.definition.roles;
+  const appRoles = getAppRoles(appsembleApp.definition.security);
 
   const passedUserRole = argv['user-role'];
   if (passedUserRole && !appRoles?.includes(passedUserRole)) {
@@ -111,32 +112,32 @@ export async function handler(argv: ServeArguments): Promise<void> {
 
   const appSecurity = appsembleApp.definition.security;
 
-  const appMembers: AppMember[] = [
+  const appMembers: AppMemberInfo[] = [
     {
-      userId: '1',
-      memberId: '1',
+      sub: '1',
       name: 'dev',
-      primaryEmail: 'dev@example.com',
+      email: 'dev@example.com',
+      email_verified: true,
       role: passedUserRole || appSecurity?.default.role,
       demo: false,
+      zoneinfo: '',
       properties: {},
     },
   ];
 
-  const allowedTeamRoles = ['manager', 'member'] as const;
-  const passedTeamRole = argv['team-role'] as (typeof allowedTeamRoles)[number];
-  if (passedTeamRole && !allowedTeamRoles.includes(passedTeamRole)) {
+  const allowedGroupRoles = ['manager', 'member'] as const;
+  const passedGroupRole = argv['group-role'] as (typeof allowedGroupRoles)[number];
+  if (passedGroupRole && !allowedGroupRoles.includes(passedGroupRole)) {
     throw new AppsembleError(
-      `The specified team role ${passedTeamRole} is not supported. Allowed roles are [member,manager]`,
+      `The specified group role ${passedGroupRole} is not supported. Allowed roles are [member,manager]`,
     );
   }
 
-  const appTeams: ExtendedTeam[] = [
+  const appGroups: ExtendedGroup[] = [
     {
       id: 1,
-      name: 'team',
+      name: 'group',
       size: 1,
-      role: passedTeamRole,
       annotations: {},
     },
   ];
@@ -378,7 +379,7 @@ export async function handler(argv: ServeArguments): Promise<void> {
         ? {
             appMembers,
             appUserInfo,
-            appTeams,
+            appGroups,
           }
         : {}),
       appAssets,
@@ -407,7 +408,7 @@ export async function handler(argv: ServeArguments): Promise<void> {
         ? {
             appMembers,
             appUserInfo,
-            appTeams,
+            appGroups,
           }
         : {}),
       appAssets,

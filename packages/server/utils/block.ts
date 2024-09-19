@@ -1,10 +1,16 @@
 import { logger } from '@appsemble/node-utils';
 import { type BlockManifest } from '@appsemble/types';
-import { compareStrings } from '@appsemble/utils';
+import {
+  compareStrings,
+  getAppBlocks,
+  type IdentifiableBlock,
+  parseBlockName,
+} from '@appsemble/utils';
 import axios from 'axios';
+import { Op } from 'sequelize';
 
 import { argv } from './argv.js';
-import { BlockAsset, BlockMessages, BlockVersion, transactional } from '../models/index.js';
+import { App, BlockAsset, BlockMessages, BlockVersion, transactional } from '../models/index.js';
 
 export function blockVersionToJson(blockVersion: BlockVersion): BlockManifest {
   const {
@@ -101,4 +107,53 @@ export async function syncBlock({
     }
     throw error;
   }
+}
+
+export async function getBlockVersions(blocks: IdentifiableBlock[]): Promise<BlockManifest[]> {
+  const uniqueBlocks = blocks.map(({ type, version }) => {
+    const [OrganizationId, name] = parseBlockName(type);
+    return {
+      name,
+      OrganizationId,
+      version,
+    };
+  });
+  const blockVersions = await BlockVersion.findAll({
+    attributes: { exclude: ['id'] },
+    where: { [Op.or]: uniqueBlocks },
+  });
+  const result: BlockManifest[] = blockVersions.map(blockVersionToJson);
+
+  if (argv.remote) {
+    const knownIdentifiers = new Set(
+      blockVersions.map((block) => `@${block.OrganizationId}/${block.name}@${block.version}`),
+    );
+    const unknownBlocks = uniqueBlocks.filter(
+      (block) => !knownIdentifiers.has(`@${block.OrganizationId}/${block.name}@${block.version}`),
+    );
+    const syncedBlocks = await Promise.all(unknownBlocks.map(syncBlock));
+    result.push(...syncedBlocks.filter(Boolean));
+  }
+
+  return result;
+}
+
+export async function findBlockInApps(
+  blockName: string,
+  blockVersion: string,
+  organizationId: string,
+): Promise<boolean> {
+  const apps: App[] = await App.findAll({
+    attributes: ['definition'],
+  });
+  for (const app of apps) {
+    const blocks = getAppBlocks(app.definition);
+    const usedBlocks = blocks.some(
+      (block) => block.version === blockVersion && block.type === `@${organizationId}/${blockName}`,
+    );
+    if (usedBlocks) {
+      return true;
+    }
+  }
+  return false;
 }

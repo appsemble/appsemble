@@ -186,6 +186,7 @@ check migrations:
   services:
     - postgres:15
   variables:
+    FORCE_COLOR: '1' # Required for Chalk.js
     POSTGRES_DB: testAppsemble
     POSTGRES_USER: admin
     POSTGRES_PASSWORD: password
@@ -200,6 +201,7 @@ check down migrations:
   services:
     - postgres:15
   variables:
+    FORCE_COLOR: '1' # Required for Chalk.js
     POSTGRES_DB: testAppsemble
     POSTGRES_USER: admin
     POSTGRES_PASSWORD: password
@@ -289,10 +291,10 @@ e2e:
   variables:
     APPSEMBLE_IMAGE: '$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG'
   script:
-    - docker compose --project-name appsemble-e2e --file docker-compose-e2e.yaml up -d
+    - docker compose --file docker-compose-e2e.yaml up -d
     - . scripts/e2e.sh
   after_script:
-    - docker compose --project-name appsemble-e2e --file docker-compose-e2e.yaml down --volumes
+    - docker compose --file docker-compose-e2e.yaml down --volumes
   artifacts:
     expose_as: Playwright videos
     when: always
