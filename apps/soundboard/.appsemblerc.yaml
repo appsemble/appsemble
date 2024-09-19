@@ -24,6 +24,7 @@ context:
     assets: true
     assetsClonable: true
   staging:
+    id: 369
     organization: appsemble
     remote: https://staging.appsemble.review
     template: true

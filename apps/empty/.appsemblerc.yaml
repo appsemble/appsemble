@@ -19,6 +19,7 @@ context:
     template: true
     visibility: public
   staging:
+    id: 9
     organization: appsemble
     remote: https://staging.appsemble.review
     template: true

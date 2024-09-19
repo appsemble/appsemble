@@ -9,7 +9,7 @@ metadata:
     {{ include "appsemble.labels" . }}
   annotations:
     helm.sh/hook: post-install,post-upgrade
-    helm.sh/hook-weight: '1'
+    helm.sh/hook-weight: '2'
     {{ include "appsemble.gitlab" . | indent 4 }}
 spec:
   template:
@@ -25,6 +25,10 @@ spec:
             - "--command"
             - |
               BEGIN;
+                DELETE FROM "EmailAuthorization" WHERE "UserId" IN (
+                  SELECT id FROM "User" WHERE "primaryEmail" = {{ .Values.provision.account.email | squote }}
+                );
+                DELETE FROM "User" WHERE "primaryEmail" = {{ .Values.provision.account.email | squote }};
                 INSERT INTO "User" (id, name, "primaryEmail", password, timezone, created, updated) VALUES (
                   {{ $userId | squote }},
                   {{ .Values.provision.account.name | squote }},

@@ -18,6 +18,7 @@ context:
     visibility: public
     resources: true
   staging:
+    id: 3
     organization: appsemble
     remote: https://staging.appsemble.review
     template: true

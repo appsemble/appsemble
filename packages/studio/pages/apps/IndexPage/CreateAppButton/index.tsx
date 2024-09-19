@@ -42,6 +42,10 @@ export function CreateAppButton({ className }: { readonly className?: string }):
     checkOrganizationRoleOrganizationPermissions(org.role, [OrganizationPermission.CreateApps]),
   );
 
+  const createOrganizations = organizations?.filter((org) =>
+    checkRole(org.role, Permission.CreateApps),
+  );
+
   const defaultValues = {
     name: '',
     description: '',
@@ -65,13 +69,13 @@ export function CreateAppButton({ className }: { readonly className?: string }):
         templateId: id,
         name,
         description,
-        organizationId: organizations[selectedOrganization].id,
+        organizationId: createOrganizations[selectedOrganization].id,
         resources: resources && includeResources,
         visibility,
       });
       navigate(`${data.id}/edit#editor`);
     },
-    [navigate, organizations, selectedTemplate, templates],
+    [createOrganizations, navigate, selectedTemplate, templates],
   );
 
   const openCreateDialog = useCallback(() => {
