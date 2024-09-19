@@ -43,7 +43,7 @@ export function CreateAppButton({ className }: { readonly className?: string }):
   );
 
   const createOrganizations = organizations?.filter((org) =>
-    checkRole(org.role, Permission.CreateApps),
+    checkOrganizationRoleOrganizationPermissions(org.role, [OrganizationPermission.CreateApps]),
   );
 
   const defaultValues = {
@@ -87,10 +87,6 @@ export function CreateAppButton({ className }: { readonly className?: string }):
   }, [navigate]);
 
   const active = hash === '#create';
-
-  const createOrganizations = organizations?.filter((org) =>
-    checkOrganizationRoleOrganizationPermissions(org.role, [OrganizationPermission.CreateApps]),
-  );
 
   if (!templates?.length) {
     return null;
