@@ -625,7 +625,7 @@ staging:
       --set "global.postgresql.auth.existingSecret=postgresql-secret"
       --set "image.pullPolicy=Always"
       --set "image.repository=$CI_REGISTRY_IMAGE"
-      --set "image.tag=main"
+      --set "image.tag=staging"
       --set "ingress.clusterIssuer=acme-issuer-dev"
       --set "ingress.enabled=true"
       --set "ingress.host=staging.appsemble.review"
