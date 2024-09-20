@@ -521,31 +521,27 @@ export async function up(transaction: Transaction, db: Sequelize): Promise<void>
     transaction,
   });
 
-  const organizationRoleActions = [
-    "ADD VALUE 'AppCollectionManager' BEFORE 'AppEditor'",
-    "ADD VALUE 'AppContentsExplorer' BEFORE 'AppEditor'",
-    "RENAME VALUE 'AppEditor' TO 'AppContentsManager'",
-    "ADD VALUE 'AppGroupManager' AFTER 'AccountManager'",
-    "ADD VALUE 'AppGroupMembersManager' AFTER 'AccountManager'",
-    "ADD VALUE 'AppManager' AFTER 'AccountManager'",
-    "RENAME VALUE 'AccountManager' TO 'AppMemberManager'",
-    "RENAME VALUE 'Translator' TO 'AppTranslator'",
-    "ADD VALUE 'BlockManager'",
-  ] satisfies string[];
-  for (const action of organizationRoleActions) {
-    logger.info(`ALTER TYPE \`enum_OrganizationInvite_role\` ${action}`);
-    await queryInterface.sequelize.query(`ALTER TYPE "enum_OrganizationInvite_role" ${action};`, {
-      transaction,
-    });
-    logger.info(`ALTER TYPE \`enum_OrganizationMember_role\` ${action}`);
-    await queryInterface.sequelize.query(`ALTER TYPE "enum_OrganizationMember_role" ${action};`, {
-      transaction,
-    });
-  }
+  for (const table of ['OrganizationInvite', 'OrganizationMember']) {
+    const organizationRoleActions = [
+      "ADD VALUE 'AppCollectionManager' BEFORE 'AppEditor'",
+      "ADD VALUE 'AppContentsExplorer' BEFORE 'AppEditor'",
+      "RENAME VALUE 'AppEditor' TO 'AppContentsManager'",
+      "ADD VALUE 'AppGroupManager' AFTER 'AccountManager'",
+      "ADD VALUE 'AppGroupMembersManager' AFTER 'AccountManager'",
+      "ADD VALUE 'AppManager' AFTER 'AccountManager'",
+      "RENAME VALUE 'AccountManager' TO 'AppMemberManager'",
+      "RENAME VALUE 'Translator' TO 'AppTranslator'",
+      "ADD VALUE 'BlockManager'",
+    ] satisfies string[];
+    for (const action of organizationRoleActions) {
+      logger.info(`ALTER TYPE \`enum_${table}_role\` ${action}`);
+      await queryInterface.sequelize.query(`ALTER TYPE "enum_${table}_role" ${action};`, {
+        transaction,
+      });
+    }
 
-  const organizationRolesToDrop = ['APIReader', 'APIUser'] satisfies string[];
-  for (const attribute of organizationRolesToDrop) {
-    for (const table of ['OrganizationInvite', 'OrganizationMember']) {
+    const organizationRolesToDrop = ['APIReader', 'APIUser'] satisfies string[];
+    for (const attribute of organizationRolesToDrop) {
       logger.warn(`Change ${table} role ${attribute} to default value`);
       await queryInterface.sequelize.query(
         `
@@ -553,40 +549,54 @@ export async function up(transaction: Transaction, db: Sequelize): Promise<void>
         `,
         { transaction, type: QueryTypes.UPDATE },
       );
-
-      const rolesResult = await queryInterface.sequelize.query(
-        `SELECT DISTINCT "role" FROM "${table}";`,
-        { type: QueryTypes.SELECT },
-      );
-
-      const roles = rolesResult.map((row: { role: string }) => row.role);
-
-      const newEnumValues = roles.filter((value) => !organizationRolesToDrop.includes(value));
-
-      const newEnumValuesString = newEnumValues.map((value) => `'${value}'`).join(', ');
-
-      await queryInterface.sequelize.query(
-        `CREATE TYPE "new_enum_${table}_role" AS ENUM (${newEnumValuesString});`,
-        { transaction },
-      );
-
-      await queryInterface.sequelize.query(
-        `
-        ALTER TABLE "${table}"
-        ALTER COLUMN "role" TYPE "new_enum_${table}_role" USING role::text::"new_enum_${table}_role";
-        `,
-        { transaction },
-      );
-
-      await queryInterface.sequelize.query(`DROP TYPE IF EXISTS "enum_${table}_role"`, {
-        transaction,
-      });
-
-      await queryInterface.sequelize.query(
-        `ALTER TYPE "new_enum_${table}_role" RENAME TO "enum_${table}_role";`,
-        { transaction },
-      );
     }
+
+    await queryInterface.sequelize.query(
+      `CREATE TYPE "new_enum_${table}_role" AS ENUM (${[
+        'Member',
+        'AppTranslator',
+        'AppContentsExplorer',
+        'AppContentsManager',
+        'AppMemberManager',
+        'AppGroupManager',
+        'AppGroupMembersManager',
+        'AppManager',
+        'AppCollectionManager',
+        'BlockManager',
+        'Maintainer',
+        'Owner',
+      ]
+        .map((value) => `'${value}'`)
+        .join(', ')});`,
+      { transaction },
+    );
+
+    await queryInterface.sequelize.query(
+      `ALTER TABLE "${table}" ALTER COLUMN "role" DROP DEFAULT;`,
+      { transaction },
+    );
+
+    await queryInterface.sequelize.query(
+      `
+        ALTER TABLE "${table}"
+        ALTER COLUMN "role" TYPE "new_enum_${table}_role" USING "role"::text::"new_enum_${table}_role";
+        `,
+      { transaction },
+    );
+
+    await queryInterface.sequelize.query(
+      `ALTER TABLE "${table}" ALTER COLUMN "role" SET DEFAULT 'Member'::"new_enum_${table}_role";`,
+      { transaction },
+    );
+
+    await queryInterface.sequelize.query(`DROP TYPE IF EXISTS "enum_${table}_role"`, {
+      transaction,
+    });
+
+    await queryInterface.sequelize.query(
+      `ALTER TYPE "new_enum_${table}_role" RENAME TO "enum_${table}_role";`,
+      { transaction },
+    );
   }
 
   logger.info('Add column `GroupId` to `Resource` table');
@@ -931,34 +941,30 @@ export async function down(transaction: Transaction, db: Sequelize): Promise<voi
   logger.warn('Dropping table `GroupInvite`');
   await queryInterface.dropTable('GroupInvite', { force: true, transaction });
 
-  const organizationRoleActions = [
-    "ADD VALUE 'APIReader'",
-    "ADD VALUE 'APIUser'",
-    "RENAME VALUE 'AppContentsManager' TO 'AppEditor'",
-    "RENAME VALUE 'AppMemberManager' TO 'AccountManager'",
-    "RENAME VALUE 'AppTranslator' TO 'Translator'",
-  ] satisfies string[];
-  for (const action of organizationRoleActions) {
-    logger.info(`ALTER TYPE \`enum_OrganizationInvite_role\` ${action}`);
-    await queryInterface.sequelize.query(`ALTER TYPE "enum_OrganizationInvite_role" ${action};`, {
-      transaction,
-    });
-    logger.info(`ALTER TYPE \`enum_OrganizationMember_role\` ${action}`);
-    await queryInterface.sequelize.query(`ALTER TYPE "enum_OrganizationMember_role" ${action};`, {
-      transaction,
-    });
-  }
+  for (const table of ['OrganizationInvite', 'OrganizationMember']) {
+    const organizationRoleActions = [
+      "ADD VALUE 'APIReader'",
+      "ADD VALUE 'APIUser'",
+      "RENAME VALUE 'AppContentsManager' TO 'AppEditor'",
+      "RENAME VALUE 'AppMemberManager' TO 'AccountManager'",
+      "RENAME VALUE 'AppTranslator' TO 'Translator'",
+    ] satisfies string[];
+    for (const action of organizationRoleActions) {
+      logger.info(`ALTER TYPE \`enum_${table}_role\` ${action}`);
+      await queryInterface.sequelize.query(`ALTER TYPE "enum_${table}_role" ${action};`, {
+        transaction,
+      });
+    }
 
-  const organizationRolesToDrop = [
-    'AppCollectionManager',
-    'AppContentsExplorer',
-    'AppGroupManager',
-    'AppGroupMembersManager',
-    'AppManager',
-    'BlockManager',
-  ] satisfies string[];
-  for (const attribute of organizationRolesToDrop) {
-    for (const table of ['OrganizationInvite', 'OrganizationMember']) {
+    const organizationRolesToDrop = [
+      'AppCollectionManager',
+      'AppContentsExplorer',
+      'AppGroupManager',
+      'AppGroupMembersManager',
+      'AppManager',
+      'BlockManager',
+    ] satisfies string[];
+    for (const attribute of organizationRolesToDrop) {
       logger.warn(`Change ${table} role ${attribute} to default value`);
       await queryInterface.sequelize.query(
         `
@@ -966,40 +972,50 @@ export async function down(transaction: Transaction, db: Sequelize): Promise<voi
         `,
         { transaction, type: QueryTypes.UPDATE },
       );
-
-      const rolesResult = await queryInterface.sequelize.query(
-        `SELECT DISTINCT "role" FROM "${table}";`,
-        { type: QueryTypes.SELECT },
-      );
-
-      const roles = rolesResult.map((row: { role: string }) => row.role);
-
-      const newEnumValues = roles.filter((value) => !organizationRolesToDrop.includes(value));
-
-      const newEnumValuesString = newEnumValues.map((value) => `'${value}'`).join(', ');
-
-      await queryInterface.sequelize.query(
-        `CREATE TYPE "new_enum_${table}_role" AS ENUM (${newEnumValuesString});`,
-        { transaction },
-      );
-
-      await queryInterface.sequelize.query(
-        `
-        ALTER TABLE "${table}"
-        ALTER COLUMN "role" TYPE "new_enum_${table}_role" USING role::text::"new_enum_${table}_role";
-        `,
-        { transaction },
-      );
-
-      await queryInterface.sequelize.query(`DROP TYPE IF EXISTS "enum_${table}_role"`, {
-        transaction,
-      });
-
-      await queryInterface.sequelize.query(
-        `ALTER TYPE "new_enum_${table}_role" RENAME TO "enum_${table}_role";`,
-        { transaction },
-      );
     }
+
+    await queryInterface.sequelize.query(
+      `CREATE TYPE "new_enum_${table}_role" AS ENUM (${[
+        'Member',
+        'Translator',
+        'APIReader',
+        'APIUser',
+        'AppEditor',
+        'Owner',
+        'Maintainer',
+        'AccountManager',
+      ]
+        .map((value) => `'${value}'`)
+        .join(', ')});`,
+      { transaction },
+    );
+
+    await queryInterface.sequelize.query(
+      `ALTER TABLE "${table}" ALTER COLUMN "role" DROP DEFAULT;`,
+      { transaction },
+    );
+
+    await queryInterface.sequelize.query(
+      `
+        ALTER TABLE "${table}"
+        ALTER COLUMN "role" TYPE "new_enum_${table}_role" USING "role"::text::"new_enum_${table}_role";
+        `,
+      { transaction },
+    );
+
+    await queryInterface.sequelize.query(
+      `ALTER TABLE "${table}" ALTER COLUMN "role" SET DEFAULT 'Member'::"new_enum_${table}_role";`,
+      { transaction },
+    );
+
+    await queryInterface.sequelize.query(`DROP TYPE IF EXISTS "enum_${table}_role"`, {
+      transaction,
+    });
+
+    await queryInterface.sequelize.query(
+      `ALTER TYPE "new_enum_${table}_role" RENAME TO "enum_${table}_role";`,
+      { transaction },
+    );
   }
 
   logger.info('Remove column `GroupId` from `Resource` table');
