@@ -545,25 +545,38 @@ export async function up(transaction: Transaction, db: Sequelize): Promise<void>
 
   const organizationRolesToDrop = ['APIReader', 'APIUser'] satisfies string[];
   for (const attribute of organizationRolesToDrop) {
-    logger.warn(`Change role ${attribute} to default value`);
+    logger.warn(`Change \`OrganizationInvite\` role ${attribute} to default value`);
+    await queryInterface.sequelize.query(
+      `
+    UPDATE "OrganizationInvite" SET role = 'Member' WHERE role = '${attribute}';
+    `,
+      { transaction, type: QueryTypes.UPDATE },
+    );
+
     logger.info(`Remove ${attribute} from enum \`enum_OrganizationInvite_role\``);
     await queryInterface.sequelize.query(
       `
-    UPDATE "OrganizationMember" SET role = 'Member' WHERE role = '${attribute}';
     DELETE FROM pg_enum WHERE enumlabel = '${attribute}' AND enumtypid = (
       SELECT oid FROM pg_type WHERE typname = 'enum_OrganizationInvite_role'
     );`,
-      { transaction },
+      { transaction, type: QueryTypes.DELETE },
     );
-    logger.warn(`Change role ${attribute} to default value`);
-    logger.info(`Remove ${attribute} from enum \`enum_OrganizationMember_role\``);
+
+    logger.warn(`Change \`OrganizationMember\` role ${attribute} to default value`);
     await queryInterface.sequelize.query(
       `
     UPDATE "OrganizationMember" SET role = 'Member' WHERE role = '${attribute}';
+    `,
+      { transaction, type: QueryTypes.UPDATE },
+    );
+
+    logger.info(`Remove ${attribute} from enum \`enum_OrganizationMember_role\``);
+    await queryInterface.sequelize.query(
+      `
     DELETE FROM pg_enum WHERE enumlabel = '${attribute}' AND enumtypid = (
       SELECT oid FROM pg_type WHERE typname = 'enum_OrganizationMember_role'
     );`,
-      { transaction },
+      { transaction, type: QueryTypes.DELETE },
     );
   }
 
@@ -936,25 +949,38 @@ export async function down(transaction: Transaction, db: Sequelize): Promise<voi
     'BlockManager',
   ] satisfies string[];
   for (const attribute of organizationRolesToDrop) {
-    logger.warn(`Change role ${attribute} to default value`);
+    logger.warn(`Change \`OrganizationInvite\` role ${attribute} to default value`);
+    await queryInterface.sequelize.query(
+      `
+    UPDATE "OrganizationInvite" SET role = 'Member' WHERE role = '${attribute}';
+    `,
+      { transaction, type: QueryTypes.UPDATE },
+    );
+
     logger.info(`Remove ${attribute} from enum \`enum_OrganizationInvite_role\``);
     await queryInterface.sequelize.query(
       `
-    UPDATE "OrganizationMember" SET role = 'Member' WHERE role = '${attribute}';
     DELETE FROM pg_enum WHERE enumlabel = '${attribute}' AND enumtypid = (
       SELECT oid FROM pg_type WHERE typname = 'enum_OrganizationInvite_role'
     );`,
-      { transaction },
+      { transaction, type: QueryTypes.DELETE },
     );
-    logger.warn(`Change role ${attribute} to default value`);
-    logger.info(`Remove ${attribute} from enum \`enum_OrganizationMember_role\``);
+
+    logger.warn(`Change \`OrganizationMember\` role ${attribute} to default value`);
     await queryInterface.sequelize.query(
       `
     UPDATE "OrganizationMember" SET role = 'Member' WHERE role = '${attribute}';
+    `,
+      { transaction, type: QueryTypes.UPDATE },
+    );
+
+    logger.info(`Remove ${attribute} from enum \`enum_OrganizationMember_role\``);
+    await queryInterface.sequelize.query(
+      `
     DELETE FROM pg_enum WHERE enumlabel = '${attribute}' AND enumtypid = (
       SELECT oid FROM pg_type WHERE typname = 'enum_OrganizationMember_role'
     );`,
-      { transaction },
+      { transaction, type: QueryTypes.DELETE },
     );
   }
 
