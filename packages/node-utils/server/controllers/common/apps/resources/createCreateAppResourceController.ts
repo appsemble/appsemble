@@ -1,10 +1,9 @@
 import { randomUUID } from 'node:crypto';
 import { isDeepStrictEqual } from 'node:util';
 
-import { type Options } from '@appsemble/node-utils';
 import { type Context, type Middleware } from 'koa';
 
-import { getResourceDefinition, processResourceBody } from '../../../../../resource.js';
+import { getResourceDefinition, type Options, processResourceBody } from '../../../../../index.js';
 
 /**
  * Create a controller for resource creation.
@@ -89,7 +88,7 @@ export function createCreateAppResourceController(options: Options): Middleware 
         preparedSeedResources[index] = updatedResource;
       }
 
-      await createAppResourcesWithAssets({
+      const createdSeedResources = await createAppResourcesWithAssets({
         app,
         groupId: selectedGroupId,
         context: ctx,
@@ -98,6 +97,10 @@ export function createCreateAppResourceController(options: Options): Middleware 
         resourceType,
         options,
       });
+      if (!app.demoMode) {
+        ctx.body = Array.isArray(processedBody) ? createdSeedResources : createdSeedResources[0];
+        return;
+      }
     }
 
     const createdResources = await createAppResourcesWithAssets({

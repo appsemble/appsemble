@@ -2,6 +2,7 @@ import {
   type App,
   type AppConfigEntry,
   type AppDefinition,
+  type AppMemberInfo,
   type AppMessages,
   type Resource,
   type ResourceDefinition,
@@ -21,12 +22,14 @@ import { getResourceDefinition } from '../../../../../resource.js';
 import {
   type AppAsset,
   type AuthSubject,
+  type CheckAppPermissionsParams,
   type CreateAppResourcesWithAssetsParams,
   type GetAppMessagesParams,
   type GetAppParams,
   type GetAppResourceParams,
   type GetAppResourcesParams,
   type GetAppSubEntityParams,
+  type GetCurrentAppMemberParams,
   type Options,
   type ParsedQuery,
   type ParseQueryParams,
@@ -44,6 +47,8 @@ let mockCreateAppResourcesWithAssets: Mock<
   Promise<Resource[]>
 >;
 let mockGetAppAssets: Mock<[GetAppSubEntityParams], Promise<AppAsset[]>>;
+let mockCheckAppPermissions: Mock<[CheckAppPermissionsParams], Promise<void>>;
+let mockGetCurrentAppMember: Mock<[GetCurrentAppMemberParams], Promise<AppMemberInfo>>;
 
 let mockCtx: ParameterizedContext<DefaultState, DefaultContext>;
 let mockCtxIs: Mock<[], string>;
@@ -56,11 +61,13 @@ describe('createQueryResources', () => {
     mockGetAppUrl = vi.fn();
     mockGetAppMessages = vi.fn();
     mockGetAppVariables = vi.fn();
+    mockCheckAppPermissions = vi.fn();
+    mockGetCurrentAppMember = vi.fn();
 
     mockCtx = {
       pathParams: { appId: 1, resourceType: 'mockResourceType' } as PathParams,
       queryParams: { $select: 'field1, field2', $skip: 0, $top: 10 } as QueryParams,
-      user: { id: 'mockUserId' } as AuthSubject,
+      user: { id: 'mockUserId', name: 'John Doe', primaryEmail: 'john@example.com' } as AuthSubject,
     } as ParameterizedContext<DefaultState, DefaultContext>;
   });
 
@@ -92,6 +99,7 @@ describe('createQueryResources', () => {
         params: GetAppResourcesParams,
       ) => Promise<Resource[]>,
       parseQuery: mockParseQuery as (params: ParseQueryParams) => ParsedQuery,
+      checkAppPermissions: mockCheckAppPermissions as (params: CheckAppPermissionsParams) => void,
     } as Options);
 
     await middleware(mockCtx, vi.fn());
@@ -188,6 +196,7 @@ describe('createQueryResources', () => {
         params: GetAppResourcesParams,
       ) => Promise<Resource[]>,
       parseQuery: mockParseQuery as (params: ParseQueryParams) => ParsedQuery,
+      checkAppPermissions: mockCheckAppPermissions as (params: CheckAppPermissionsParams) => void,
     } as Options);
 
     await middleware(mockCtx, vi.fn());
@@ -238,6 +247,8 @@ describe('createQueryResources', () => {
       getAppVariables: mockGetAppVariables as (
         params: GetAppSubEntityParams,
       ) => Promise<AppConfigEntry[]>,
+      getCurrentAppMember: mockGetCurrentAppMember as (params: GetCurrentAppMemberParams) => void,
+      checkAppPermissions: mockCheckAppPermissions as (params: CheckAppPermissionsParams) => void,
     } as Options;
 
     const resourceDefinition = getResourceDefinition(
@@ -274,7 +285,7 @@ describe('createCountResources', () => {
     mockCtx = {
       pathParams: { appId: 1, resourceType: 'mockResourceType' } as PathParams,
       queryParams: {} as QueryParams,
-      user: { id: 'mockUserId' } as AuthSubject,
+      user: { id: 'mockUserId', name: 'John Doe', primaryEmail: 'john@example.com' } as AuthSubject,
     } as ParameterizedContext<DefaultState, DefaultContext>;
   });
 
@@ -306,6 +317,7 @@ describe('createCountResources', () => {
         params: GetAppResourcesParams,
       ) => Promise<Resource[]>,
       parseQuery: mockParseQuery as (params: ParseQueryParams) => ParsedQuery,
+      checkAppPermissions: mockCheckAppPermissions as (params: CheckAppPermissionsParams) => void,
     } as Options);
 
     await middleware(mockCtx, vi.fn());
@@ -390,6 +402,7 @@ describe('createCountResources', () => {
         params: GetAppResourcesParams,
       ) => Promise<Resource[]>,
       parseQuery: mockParseQuery as (params: ParseQueryParams) => ParsedQuery,
+      checkAppPermissions: mockCheckAppPermissions as (params: CheckAppPermissionsParams) => void,
     } as Options);
 
     await middleware(mockCtx, vi.fn());
@@ -408,7 +421,8 @@ describe('createGetResourceById', () => {
 
     mockCtx = {
       pathParams: { appId: 1, resourceId: 1, resourceType: 'mockResourceType' } as PathParams,
-      user: { id: 'mockUserId' } as AuthSubject,
+      user: { id: 'mockUserId', name: 'John Doe', primaryEmail: 'john@example.com' } as AuthSubject,
+      queryParams: {},
     } as ParameterizedContext<DefaultState, DefaultContext>;
   });
 
@@ -429,6 +443,8 @@ describe('createGetResourceById', () => {
     const middleware = createGetAppResourceByIdController({
       getApp: mockGetApp as (params: GetAppParams) => Promise<App>,
       getAppResource: mockGetAppResource as (params: GetAppResourceParams) => Promise<Resource>,
+      parseQuery: mockParseQuery as (params: ParseQueryParams) => ParsedQuery,
+      checkAppPermissions: mockCheckAppPermissions as (params: CheckAppPermissionsParams) => void,
     } as Options);
 
     await middleware(mockCtx, vi.fn());
@@ -499,6 +515,8 @@ describe('createGetResourceById', () => {
     const middleware = createGetAppResourceByIdController({
       getApp: mockGetApp as (params: GetAppParams) => Promise<App>,
       getAppResource: mockGetAppResource as (params: GetAppResourceParams) => Promise<Resource>,
+      checkAppPermissions: mockCheckAppPermissions as (params: CheckAppPermissionsParams) => void,
+      parseQuery: mockParseQuery as (params: ParseQueryParams) => ParsedQuery,
     } as Options);
 
     await middleware(mockCtx, vi.fn());
@@ -538,6 +556,8 @@ describe('createGetResourceById', () => {
       getAppVariables: mockGetAppVariables as (
         params: GetAppSubEntityParams,
       ) => Promise<AppConfigEntry[]>,
+      checkAppPermissions: mockCheckAppPermissions as (params: CheckAppPermissionsParams) => void,
+      getCurrentAppMember: mockGetCurrentAppMember as (params: GetCurrentAppMemberParams) => void,
     } as Options;
 
     const resourceDefinition = getResourceDefinition(
@@ -577,9 +597,10 @@ describe('createCreateResource', () => {
     mockCtxIs = vi.fn();
     mockCtx = {
       pathParams: { appId: 1, resourceType: 'mockResourceType' } as PathParams,
-      user: { id: 'mockUserId' } as AuthSubject,
+      user: { id: 'mockUserId', name: 'John Doe', primaryEmail: 'john@example.com' } as AuthSubject,
       is: mockCtxIs as () => string,
       request: {},
+      queryParams: {},
     } as ParameterizedContext<DefaultState, DefaultContext>;
   });
 
@@ -607,6 +628,9 @@ describe('createCreateResource', () => {
         params: CreateAppResourcesWithAssetsParams,
       ) => Promise<Resource[]>,
       getAppAssets: mockGetAppAssets as (params: GetAppSubEntityParams) => Promise<AppAsset[]>,
+      checkAppPermissions: mockCheckAppPermissions as (params: CheckAppPermissionsParams) => void,
+      getCurrentAppMember: mockGetCurrentAppMember as (params: GetCurrentAppMemberParams) => void,
+      parseQuery: mockParseQuery as (params: ParseQueryParams) => ParsedQuery,
     } as Options);
 
     await middleware(mockCtx, vi.fn());
@@ -679,6 +703,9 @@ describe('createCreateResource', () => {
         params: CreateAppResourcesWithAssetsParams,
       ) => Promise<Resource[]>,
       getAppAssets: mockGetAppAssets as (params: GetAppSubEntityParams) => Promise<AppAsset[]>,
+      checkAppPermissions: mockCheckAppPermissions as (params: CheckAppPermissionsParams) => void,
+      getCurrentAppMember: mockGetCurrentAppMember as (params: GetCurrentAppMemberParams) => void,
+      parseQuery: mockParseQuery as (params: ParseQueryParams) => ParsedQuery,
     } as Options);
 
     await middleware(mockCtx, vi.fn());

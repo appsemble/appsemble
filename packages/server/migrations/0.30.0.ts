@@ -986,7 +986,7 @@ export async function down(transaction: Transaction, db: Sequelize): Promise<voi
     'UserId',
     {
       type: DataTypes.UUID,
-      allowNull: false,
+      allowNull: true,
       onUpdate: 'cascade',
       onDelete: 'cascade',
       references: {

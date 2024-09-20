@@ -1,4 +1,11 @@
-import { createServer, createTestUser, models, setArgv, useTestDatabase } from '@appsemble/server';
+import {
+  createServer,
+  createTestAppMember,
+  createTestUser,
+  models,
+  setArgv,
+  useTestDatabase,
+} from '@appsemble/server';
 import { PredefinedOrganizationRole } from '@appsemble/types';
 import { type AxiosTestInstance, setTestApp } from 'axios-test-instance';
 import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
@@ -14,7 +21,6 @@ import {
 } from './group.js';
 import { initAxios } from './initAxios.js';
 import { authorizeCLI } from './testUtils.js';
-import { createTestAppMember } from '../../server/utils/test/authorization.js';
 
 const {
   App,

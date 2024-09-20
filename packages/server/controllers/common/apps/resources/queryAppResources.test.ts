@@ -152,18 +152,18 @@ describe('queryAppResources', () => {
       });
       await Resource.create({
         AppId: app.id,
-        type: 'testResource',
+        type: 'testResourceB',
         data: { foo: 'bar' },
       });
       await Resource.create({
         AppId: app.id,
-        type: 'testResource',
+        type: 'testResourceB',
         data: { foo: 'baz' },
       });
-      await Resource.create({ AppId: app.id, type: 'testResourceB', data: { bar: 'baz' } });
+      await Resource.create({ AppId: app.id, type: 'testResource', data: { bar: 'baz' } });
 
       authorizeAppMember(app, member);
-      const response = await request.get(`/api/apps/${app.id}/resources/testResource`);
+      const response = await request.get(`/api/apps/${app.id}/resources/testResourceB`);
 
       expect(response).toMatchInlineSnapshot(`
         HTTP/1.1 200 OK
@@ -197,7 +197,7 @@ describe('queryAppResources', () => {
       });
       await Resource.create({
         AppId: app.id,
-        type: 'testResource',
+        type: 'testResourceAuthorOnly',
         data: { foo: 'bar' },
         AuthorId: member.id,
       });
@@ -210,20 +210,22 @@ describe('queryAppResources', () => {
       expect(response).toMatchInlineSnapshot(
         { data: [{ $author: { id: expect.any(String) } }] },
         `
-      HTTP/1.1 200 OK
-      Content-Type: application/json; charset=utf-8
+        HTTP/1.1 200 OK
+        Content-Type: application/json; charset=utf-8
 
-      [{
-        "$author": {
-          "id": Any<String>,
-          "name": "Test User",
-        },
-        "$created": "1970-01-01T00:00:00.000Z",
-        "$updated": "1970-01-01T00:00:00.000Z",
-        "foo": "bar",
-        "id": 1,
-      }]
-    `,
+        [
+          {
+            "$author": {
+              "id": Any<String>,
+              "name": "Test User",
+            },
+            "$created": "1970-01-01T00:00:00.000Z",
+            "$updated": "1970-01-01T00:00:00.000Z",
+            "foo": "bar",
+            "id": 1,
+          },
+        ]
+      `,
       );
     });
 

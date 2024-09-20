@@ -87,6 +87,8 @@ describe('app.member.invite', () => {
         email: { prop: 'email' },
         role: { prop: 'role' },
       },
+      // eslint-disable-next-line unicorn/no-useless-undefined
+      getAppMemberSelectedGroup: () => undefined,
       getAppMemberInfo: () => ({
         sub: 'some-user-id',
         email: 'test@example.com',
@@ -109,6 +111,8 @@ describe('app.member.invite', () => {
         email: { prop: 'email' },
         role: { prop: 'role' },
       },
+      // eslint-disable-next-line unicorn/no-useless-undefined
+      getAppMemberSelectedGroup: () => undefined,
       getAppMemberInfo: () => null,
     });
 
@@ -181,7 +185,7 @@ describe('app.member.query', () => {
   });
 
   it('should call the API for getting all app members by roles', async () => {
-    mock.onGet(`${apiUrl}/api/apps/${appId}/members/roles?roles=Role1,Role2,Role3`).reply(() => [
+    mock.onGet(`${apiUrl}/api/apps/${appId}/members?roles=Role1,Role2,Role3`).reply(() => [
       200,
       [
         {
@@ -189,7 +193,7 @@ describe('app.member.query', () => {
           email: 'role1@gmail.com',
           emailVerified: false,
           name: 'name',
-          picture: `${apiUrl}/api/apps/${appId}/members/some-user-id/picture`,
+          picture: `${apiUrl}/api/app-members/some-user-id/picture`,
           properties: {},
         },
         {
@@ -197,7 +201,7 @@ describe('app.member.query', () => {
           email: 'role2@gmail.com',
           emailVerified: false,
           name: 'name',
-          picture: `${apiUrl}/api/apps/${appId}/members/some-user-id/picture`,
+          picture: `${apiUrl}/api/app-members/some-user-id/picture`,
           properties: {},
         },
         {
@@ -205,7 +209,7 @@ describe('app.member.query', () => {
           email: 'role3@gmail.com',
           emailVerified: false,
           name: 'name',
-          picture: `${apiUrl}/api/apps/${appId}/members/some-user-id/picture`,
+          picture: `${apiUrl}/api/app-members/some-user-id/picture`,
           properties: {},
         },
       ],
@@ -218,6 +222,8 @@ describe('app.member.query', () => {
           'array.from': ['Role1', 'Role2', 'Role3'],
         },
       },
+      // eslint-disable-next-line unicorn/no-useless-undefined
+      getAppMemberSelectedGroup: () => undefined,
       getAppMemberInfo: () => ({
         sub: 'manager-id',
         name: 'name',
@@ -242,7 +248,7 @@ describe('app.member.query', () => {
         email: 'role1@gmail.com',
         emailVerified: false,
         name: 'name',
-        picture: `${apiUrl}/api/apps/${appId}/members/some-user-id/picture`,
+        picture: `${apiUrl}/api/app-members/some-user-id/picture`,
         properties: {},
       },
       {
@@ -250,7 +256,7 @@ describe('app.member.query', () => {
         email: 'role2@gmail.com',
         emailVerified: false,
         name: 'name',
-        picture: `${apiUrl}/api/apps/${appId}/members/some-user-id/picture`,
+        picture: `${apiUrl}/api/app-members/some-user-id/picture`,
         properties: {},
       },
       {
@@ -258,44 +264,42 @@ describe('app.member.query', () => {
         email: 'role3@gmail.com',
         emailVerified: false,
         name: 'name',
-        picture: `${apiUrl}/api/apps/${appId}/members/some-user-id/picture`,
+        picture: `${apiUrl}/api/app-members/some-user-id/picture`,
         properties: {},
       },
     ]);
   });
 
   it('should call the API for getting all demo app members by roles if the app member is demo', async () => {
-    mock
-      .onGet(`${apiUrl}/api/apps/${appId}/demo-members/roles?roles=Role1,Role2,Role3`)
-      .reply(() => [
-        200,
-        [
-          {
-            id: 'role-1-id',
-            email: 'role1@gmail.com',
-            emailVerified: false,
-            name: 'name',
-            picture: `${apiUrl}/api/apps/${appId}/members/some-user-id/picture`,
-            properties: {},
-          },
-          {
-            id: 'role-2-id',
-            email: 'role2@gmail.com',
-            emailVerified: false,
-            name: 'name',
-            picture: `${apiUrl}/api/apps/${appId}/members/some-user-id/picture`,
-            properties: {},
-          },
-          {
-            id: 'role-3-id',
-            email: 'role3@gmail.com',
-            emailVerified: false,
-            name: 'name',
-            picture: `${apiUrl}/api/apps/${appId}/members/some-user-id/picture`,
-            properties: {},
-          },
-        ],
-      ]);
+    mock.onGet(`${apiUrl}/api/apps/${appId}/demo-members?roles=Role1,Role2,Role3`).reply(() => [
+      200,
+      [
+        {
+          id: 'role-1-id',
+          email: 'role1@gmail.com',
+          emailVerified: false,
+          name: 'name',
+          picture: `${apiUrl}/api/app-members/some-user-id/picture`,
+          properties: {},
+        },
+        {
+          id: 'role-2-id',
+          email: 'role2@gmail.com',
+          emailVerified: false,
+          name: 'name',
+          picture: `${apiUrl}/api/app-members/some-user-id/picture`,
+          properties: {},
+        },
+        {
+          id: 'role-3-id',
+          email: 'role3@gmail.com',
+          emailVerified: false,
+          name: 'name',
+          picture: `${apiUrl}/api/app-members/some-user-id/picture`,
+          properties: {},
+        },
+      ],
+    ]);
 
     const action = createTestAction({
       definition: {
@@ -314,6 +318,8 @@ describe('app.member.query', () => {
         role: PredefinedAppRole.MembersManager,
         demo: true,
       }),
+      // eslint-disable-next-line unicorn/no-useless-undefined
+      getAppMemberSelectedGroup: () => undefined,
       setAppMemberInfo,
     });
 
@@ -328,7 +334,7 @@ describe('app.member.query', () => {
         email: 'role1@gmail.com',
         emailVerified: false,
         name: 'name',
-        picture: `${apiUrl}/api/apps/${appId}/members/some-user-id/picture`,
+        picture: `${apiUrl}/api/app-members/some-user-id/picture`,
         properties: {},
       },
       {
@@ -336,7 +342,7 @@ describe('app.member.query', () => {
         email: 'role2@gmail.com',
         emailVerified: false,
         name: 'name',
-        picture: `${apiUrl}/api/apps/${appId}/members/some-user-id/picture`,
+        picture: `${apiUrl}/api/app-members/some-user-id/picture`,
         properties: {},
       },
       {
@@ -344,7 +350,7 @@ describe('app.member.query', () => {
         email: 'role3@gmail.com',
         emailVerified: false,
         name: 'name',
-        picture: `${apiUrl}/api/apps/${appId}/members/some-user-id/picture`,
+        picture: `${apiUrl}/api/app-members/some-user-id/picture`,
         properties: {},
       },
     ]);
@@ -359,6 +365,8 @@ describe('app.member.query', () => {
         },
       },
       getAppMemberInfo: () => null,
+      // eslint-disable-next-line unicorn/no-useless-undefined
+      getAppMemberSelectedGroup: () => undefined,
     });
 
     const result = await action({
@@ -386,14 +394,15 @@ describe('app.member.current.patch', () => {
   });
 
   it('should call the API for patching the app member', async () => {
-    mock.onPatch(`${apiUrl}/api/apps/${appId}/members/current`).reply(() => [
-      201,
+    mock.onPatch(`${apiUrl}/api/apps/${appId}/members/current`).reply(() => [200]);
+    mock.onGet(`${apiUrl}/api/apps/${appId}/members/current`).reply(() => [
+      200,
       {
         id: 'some-user-id',
         email: 'email@example.com',
         emailVerified: false,
         name: 'name',
-        picture: `${apiUrl}/api/apps/${appId}/members/some-user-id/picture`,
+        picture: `${apiUrl}/api/app-members/some-user-id/picture`,
         properties: { test: '[1,2,3]', property: 'Property', bool: 'true' },
       },
     ]);
@@ -423,7 +432,7 @@ describe('app.member.current.patch', () => {
       name: 'name',
       email: 'email@example.com',
       emailVerified: false,
-      picture: `${apiUrl}/api/apps/42/members/some-user-id/picture`,
+      picture: `${apiUrl}/api/app-members/some-user-id/picture`,
       properties: {
         bool: 'true',
         property: 'Property',
@@ -431,11 +440,11 @@ describe('app.member.current.patch', () => {
       },
     });
     expect(setAppMemberInfo).toHaveBeenCalledWith({
-      sub: 'some-user-id',
+      id: 'some-user-id',
       email: 'email@example.com',
-      email_verified: false,
+      emailVerified: false,
       name: 'name',
-      picture: `${apiUrl}/api/apps/${appId}/members/some-user-id/picture`,
+      picture: `${apiUrl}/api/app-members/some-user-id/picture`,
       properties: { test: '[1,2,3]', property: 'Property', bool: 'true' },
     });
     expect(refetchDemoAppMembers).toHaveBeenCalledWith();
@@ -455,6 +464,57 @@ describe('app.member.current.patch', () => {
     expect(result).toStrictEqual({ name: 'name' });
     expect(setAppMemberInfo).not.toHaveBeenCalled();
     expect(refetchDemoAppMembers).not.toHaveBeenCalled();
+  });
+
+  it('should update another app member if called by account manager', async () => {
+    mock.onPatch(`${apiUrl}/api/apps/${appId}/members/current`).reply(() => [200]);
+    mock.onGet(`${apiUrl}/api/apps/${appId}/members/current`).reply(() => [
+      200,
+      {
+        id: 'some-user-id',
+        email: 'example@email.com',
+        emailVerified: false,
+        name: 'name',
+        picture: `${apiUrl}/api/app-members/some-user-id/picture`,
+        properties: { test: '[1,2,3]', property: 'Property', bool: 'true' },
+      },
+    ]);
+    const action = createTestAction({
+      definition: {
+        type: 'app.member.current.patch',
+        name: { prop: 'name' },
+        properties: { static: { test: [1, 2, 3], property: 'Property', bool: true } },
+      },
+      getAppMemberInfo: () => ({
+        sub: 'some-user-id',
+        name: 'old name',
+        email: 'example@email.com',
+        email_verified: true,
+        picture: 'https://example.com/old-avatar.jpg',
+        properties: {},
+        role: PredefinedAppRole.Member,
+        demo: false,
+      }),
+      // eslint-disable-next-line unicorn/no-useless-undefined
+      getAppMemberSelectedGroup: () => undefined,
+      setAppMemberInfo,
+      refetchDemoAppMembers,
+    });
+
+    const result = await action({ name: 'name' });
+    expect(result).toStrictEqual({
+      id: 'some-user-id',
+      name: 'name',
+      email: 'example@email.com',
+      emailVerified: false,
+      picture: `${apiUrl}/api/app-members/some-user-id/picture`,
+      properties: {
+        bool: 'true',
+        property: 'Property',
+        test: '[1,2,3]',
+      },
+    });
+    expect(refetchDemoAppMembers).toHaveBeenCalledWith();
   });
 });
 
@@ -468,14 +528,15 @@ describe('app.member.role.update', () => {
   });
 
   it('should call the API for updating the role of the app member', async () => {
-    mock.onPut(`${apiUrl}/api/app-members/some-user-id`).reply(() => [
+    mock.onPut(`${apiUrl}/api/app-members/some-user-id/role`).reply(() => [
       201,
       {
         id: 'some-user-id',
         email: 'email@example.com',
         emailVerified: false,
         name: 'name',
-        picture: `${apiUrl}/api/apps/${appId}/members/some-user-id/picture`,
+        role: PredefinedAppRole.Member,
+        picture: `${apiUrl}/api/app-members/some-user-id/picture`,
         properties: { test: '[1,2,3]', property: 'Property', bool: 'true' },
       },
     ]);
@@ -486,7 +547,7 @@ describe('app.member.role.update', () => {
         role: { prop: 'role' },
       },
       getAppMemberInfo: () => ({
-        sub: 'some-user-id',
+        sub: 'manager-id',
         name: 'old name',
         email: 'email@example.com',
         email_verified: true,
@@ -495,6 +556,8 @@ describe('app.member.role.update', () => {
         role: PredefinedAppRole.MembersManager,
         demo: false,
       }),
+      // eslint-disable-next-line unicorn/no-useless-undefined
+      getAppMemberSelectedGroup: () => undefined,
       refetchDemoAppMembers,
     });
 
@@ -504,7 +567,7 @@ describe('app.member.role.update', () => {
       name: 'name',
       email: 'email@example.com',
       emailVerified: false,
-      picture: `${apiUrl}/api/apps/42/members/some-user-id/picture`,
+      picture: `${apiUrl}/api/app-members/some-user-id/picture`,
       role: PredefinedAppRole.Member,
       properties: {
         bool: 'true',
@@ -518,8 +581,9 @@ describe('app.member.role.update', () => {
   it('should do nothing and return the data if the user is not logged in', async () => {
     const action = createTestAction({
       definition: {
-        type: 'app.member.current.patch',
-        name: { prop: 'name' },
+        type: 'app.member.role.update',
+        sub: 'some-user-id',
+        role: PredefinedAppRole.ResourcesManager,
       },
       // eslint-disable-next-line unicorn/no-useless-undefined
       getAppMemberInfo: () => undefined,
@@ -529,89 +593,38 @@ describe('app.member.role.update', () => {
     expect(result).toStrictEqual({ name: 'name' });
     expect(refetchDemoAppMembers).not.toHaveBeenCalled();
   });
-
-  it('should update another app member if called by account manager', async () => {
-    mock.onPatch(`${apiUrl}/api/apps/${appId}/members/current`).reply(() => [
-      201,
-      {
-        id: 'some-user-id',
-        email: 'example@email.com',
-        emailVerified: false,
-        name: 'name',
-        picture: `${apiUrl}/api/apps/${appId}/members/some-user-id/picture`,
-        properties: { test: '[1,2,3]', property: 'Property', bool: 'true' },
-      },
-    ]);
-    const action = createTestAction({
-      definition: {
-        type: 'app.member.current.patch',
-        name: { prop: 'name' },
-        properties: { static: { test: [1, 2, 3], property: 'Property', bool: true } },
-      },
-      getAppMemberInfo: () => ({
-        sub: 'some-user-id',
-        name: 'old name',
-        email: 'example@email.com',
-        email_verified: true,
-        picture: 'https://example.com/old-avatar.jpg',
-        properties: {},
-        role: PredefinedAppRole.Member,
-        demo: false,
-      }),
-      refetchDemoAppMembers,
-    });
-
-    const result = await action({ name: 'name' });
-    expect(result).toStrictEqual({
-      id: 'some-user-id',
-      name: 'name',
-      email: 'example@email.com',
-      emailVerified: false,
-      picture: `${apiUrl}/api/apps/42/members/some-user-id/picture`,
-      properties: {
-        bool: 'true',
-        property: 'Property',
-        test: '[1,2,3]',
-      },
-    });
-    expect(refetchDemoAppMembers).toHaveBeenCalledWith();
-  });
 });
 
 describe('app.member.properties.patch', () => {
   let mock: MockAdapter;
-  let setAppMemberInfo: Mock;
   let refetchDemoAppMembers: Mock;
   const currentEmail = 'test@gmail.com';
-  const newEmail = 'test.updated@gmail.com';
-  const managerEmail = 'manager@gmail.com';
 
   beforeEach(() => {
     mock = new MockAdapter(axios);
-    setAppMemberInfo = vi.fn();
     refetchDemoAppMembers = vi.fn();
   });
 
   it('should call the API for patching the app member', async () => {
-    mock.onPatch(`${apiUrl}/api/apps/${appId}/members/current`).reply(() => [
+    mock.onPatch(`${apiUrl}/api/app-members/some-user-id/properties`).reply(() => [
       201,
       {
         id: 'some-user-id',
         email: currentEmail,
         emailVerified: false,
         name: 'name',
-        picture: `${apiUrl}/api/apps/${appId}/members/some-user-id/picture`,
+        picture: `${apiUrl}/api/app-members/some-user-id/picture`,
         properties: { test: '[1,2,3]', property: 'Property', bool: 'true' },
       },
     ]);
     const action = createTestAction({
       definition: {
-        type: 'app.member.current.patch',
-        name: { prop: 'name' },
+        type: 'app.member.properties.patch',
+        sub: 'some-user-id',
         properties: { static: { test: [1, 2, 3], property: 'Property', bool: true } },
       },
       getAppMemberInfo: () => ({
-        sub: 'some-user-id',
+        sub: 'manager-id',
         name: 'old name',
         email: currentEmail,
         email_verified: true,
@@ -620,7 +633,8 @@ describe('app.member.properties.patch', () => {
         role: PredefinedAppRole.Member,
         demo: false,
       }),
-      setAppMemberInfo,
+      // eslint-disable-next-line unicorn/no-useless-undefined
+      getAppMemberSelectedGroup: () => undefined,
       refetchDemoAppMembers,
     });
 
@@ -630,20 +644,12 @@ describe('app.member.properties.patch', () => {
       name: 'name',
       email: currentEmail,
       emailVerified: false,
-      picture: `${apiUrl}/api/apps/42/members/some-user-id/picture`,
+      picture: `${apiUrl}/api/app-members/some-user-id/picture`,
       properties: {
         bool: 'true',
         property: 'Property',
         test: '[1,2,3]',
       },
-    });
-    expect(setAppMemberInfo).toHaveBeenCalledWith({
-      sub: 'some-user-id',
-      email: currentEmail,
-      email_verified: false,
-      name: 'name',
-      picture: `${apiUrl}/api/apps/${appId}/members/some-user-id/picture`,
-      properties: { test: '[1,2,3]', property: 'Property', bool: 'true' },
     });
     expect(refetchDemoAppMembers).toHaveBeenCalledWith();
   });
@@ -651,92 +657,43 @@ describe('app.member.properties.patch', () => {
   it('should do nothing and return the data if the user is not logged in', async () => {
     const action = createTestAction({
       definition: {
-        type: 'app.member.current.patch',
-        name: { prop: 'name' },
+        type: 'app.member.properties.patch',
+        sub: 'some-user-id',
+        properties: { static: { test: [1, 2, 3], property: 'Property', bool: true } },
       },
+      // eslint-disable-next-line unicorn/no-useless-undefined
+      getAppMemberSelectedGroup: () => undefined,
       // eslint-disable-next-line unicorn/no-useless-undefined
       getAppMemberInfo: () => undefined,
     });
 
     const result = await action({ name: 'name' });
     expect(result).toStrictEqual({ name: 'name' });
-    expect(setAppMemberInfo).not.toHaveBeenCalled();
     expect(refetchDemoAppMembers).not.toHaveBeenCalled();
-  });
-
-  it('should update another user if called by account manager', async () => {
-    mock.onPatch(`${apiUrl}/api/apps/${appId}/members/current`).reply(() => [
-      201,
-      {
-        id: 'some-user-id',
-        email: newEmail,
-        emailVerified: false,
-        name: 'name',
-        picture: `${apiUrl}/api/apps/${appId}/members/some-user-id/picture`,
-        properties: { test: '[1,2,3]', property: 'Property', bool: 'true' },
-      },
-    ]);
-    const action = createTestAction({
-      definition: {
-        type: 'app.member.current.patch',
-        name: { prop: 'name' },
-        properties: { static: { test: [1, 2, 3], property: 'Property', bool: true } },
-      },
-      getAppMemberInfo: () => ({
-        sub: 'some-user-id',
-        name: 'old name',
-        email: managerEmail,
-        email_verified: true,
-        picture: 'https://example.com/old-avatar.jpg',
-        properties: {},
-        role: PredefinedAppRole.Member,
-        demo: false,
-      }),
-      setAppMemberInfo,
-      refetchDemoAppMembers,
-    });
-
-    const result = await action({ name: 'name' });
-    expect(result).toStrictEqual({
-      id: 'some-user-id',
-      name: 'name',
-      email: newEmail,
-      emailVerified: false,
-      picture: `${apiUrl}/api/apps/42/members/some-user-id/picture`,
-      properties: {
-        bool: 'true',
-        property: 'Property',
-        test: '[1,2,3]',
-      },
-    });
-    expect(setAppMemberInfo).not.toHaveBeenCalled();
-    expect(refetchDemoAppMembers).toHaveBeenCalledWith();
   });
 });
 
 describe('app.member.delete', () => {
   let mock: MockAdapter;
-  let setAppMemberInfo: Mock;
   let refetchDemoAppMembers: Mock;
   const managerEmail = 'manager@gmail.com';
   const memberEmail = 'test@gmail.com';
 
   beforeEach(() => {
     mock = new MockAdapter(axios);
-    setAppMemberInfo = vi.fn();
     refetchDemoAppMembers = vi.fn();
   });
 
   it('should call the API for removing a user', async () => {
-    mock
-      .onDelete(`${apiUrl}/api/apps/${appId}/members/email/${memberEmail}`)
-      .reply(() => [204, []]);
+    mock.onDelete(`${apiUrl}/api/app-members/some-user-id`).reply(() => [204, []]);
 
     const action = createTestAction({
       definition: {
         sub: 'some-user-id',
         type: 'app.member.delete',
       },
+      // eslint-disable-next-line unicorn/no-useless-undefined
+      getAppMemberSelectedGroup: () => undefined,
       getAppMemberInfo: () => ({
         sub: 'manager-id',
         name: 'name',
@@ -747,7 +704,6 @@ describe('app.member.delete', () => {
         role: PredefinedAppRole.MembersManager,
         demo: false,
       }),
-      setAppMemberInfo,
       refetchDemoAppMembers,
     });
 
@@ -766,6 +722,8 @@ describe('app.member.delete', () => {
       },
       // eslint-disable-next-line unicorn/no-useless-undefined
       getAppMemberInfo: () => undefined,
+      // eslint-disable-next-line unicorn/no-useless-undefined
+      getAppMemberSelectedGroup: () => undefined,
     });
 
     const result = await action({

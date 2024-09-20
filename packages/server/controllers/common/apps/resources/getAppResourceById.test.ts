@@ -199,7 +199,7 @@ describe('getAppResourceById', () => {
   it('should check for the correct role when using resource views', async () => {
     const resource = await Resource.create({
       AppId: app.id,
-      type: 'testResource',
+      type: 'testResourceB',
       data: { foo: 'bar' },
     });
     const member = await AppMember.create({

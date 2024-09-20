@@ -128,7 +128,7 @@ describe('countAppResources', () => {
       email: user.primaryEmail,
       AppId: app.id,
       UserId: user.id,
-      role: PredefinedOrganizationRole.Member,
+      role: 'Reader',
       timezone: 'Europe/Amsterdam',
     });
 

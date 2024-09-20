@@ -73,10 +73,11 @@ export const appMemberInvite: ActionCreator<'app.member.invite'> = ({
     const email = remap(definition.email, data);
     const role = remap(definition.role, data);
 
-    await axios.post(
-      `${apiUrl}/api/apps/${appId}/invites?selectedGroupId=${getAppMemberSelectedGroup()?.id}`,
-      { email, role },
-    );
+    const selectedGroupId = getAppMemberSelectedGroup()?.id;
+    const url = selectedGroupId
+      ? `${apiUrl}/api/apps/${appId}/invites?selectedGroupId=${selectedGroupId}`
+      : `${apiUrl}/api/apps/${appId}/invites`;
+    await axios.post(url, { email, role });
 
     return data;
   },
@@ -127,10 +128,10 @@ export const appMemberQuery: ActionCreator<'app.member.query'> = ({
     }
 
     const roles = remap(definition.roles, data);
+    const selectedGroupId = getAppMemberSelectedGroup()?.id;
+    const url = `${apiUrl}/api/apps/${appId}/${appMemberInfo.demo ? 'demo-' : ''}members?roles=${roles}${selectedGroupId ? `&selectedGroupId=${selectedGroupId}` : ''}`;
 
-    const { data: response } = await axios.get<AppMemberInfo[]>(
-      `${apiUrl}/api/apps/${appId}/${appMemberInfo.demo ? 'demo-' : ''}members?roles=${roles}&selectedGroupId=${getAppMemberSelectedGroup()?.id}`,
-    );
+    const { data: response } = await axios.get<AppMemberInfo[]>(url);
 
     return response;
   },
@@ -198,9 +199,10 @@ export const appMemberRoleUpdate: ActionCreator<'app.member.role.update'> = ({
 
     const sub = remap(definition.sub, data);
     const role = remap(definition.role, data);
+    const selectedGroupId = getAppMemberSelectedGroup?.();
 
     const { data: response } = await axios.put<AppMemberInfo>(
-      `${apiUrl}/api/app-members/${sub}/role?selectedGroupId=${getAppMemberSelectedGroup()?.id}`,
+      `${apiUrl}/api/app-members/${sub}/role${selectedGroupId ? `?selectedGroupId=${selectedGroupId}` : ''}`,
       { role },
     );
 
@@ -230,9 +232,10 @@ export const appMemberPropertiesPatch: ActionCreator<'app.member.properties.patc
 
     const formData = new FormData();
     assignAppMemberProperties(properties, formData);
+    const selectedGroupId = getAppMemberSelectedGroup()?.id;
 
     const { data: response } = await axios.patch<AppMemberInfo>(
-      `${apiUrl}/api/app-members/${sub}/properties?selectedGroupId=${getAppMemberSelectedGroup()?.id}`,
+      `${apiUrl}/api/app-members/${sub}/properties${selectedGroupId ? `?selectedGroupId=${selectedGroupId}` : ''}`,
       formData,
     );
 
@@ -258,9 +261,10 @@ export const appMemberDelete: ActionCreator<'app.member.delete'> = ({
     }
 
     const sub = remap(definition.sub, data);
+    const selectedGroupId = getAppMemberSelectedGroup()?.id;
 
     const { data: response } = await axios.delete(
-      `${apiUrl}/api/app-members/${sub}?selectedGroupId=${getAppMemberSelectedGroup()?.id}`,
+      `${apiUrl}/api/app-members/${sub}${selectedGroupId ? `?selectedGroupId=${selectedGroupId}` : ''}`,
     );
 
     await refetchDemoAppMembers();
