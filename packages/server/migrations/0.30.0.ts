@@ -74,6 +74,19 @@ export const key = '0.30.0';
 export async function up(transaction: Transaction, db: Sequelize): Promise<void> {
   const queryInterface = db.getQueryInterface();
 
+  logger.info('Deleting `EmailAuthorization` records without a primary email on their `User`');
+  await queryInterface.sequelize.query(
+    `
+    DELETE FROM "EmailAuthorization" WHERE "UserId" IN (
+        SELECT id FROM "User" WHERE "primaryEmail" is NULL
+    );
+  `,
+    {
+      type: QueryTypes.DELETE,
+      transaction,
+    },
+  );
+
   logger.info('Deleting `User` records without a primary email');
   await queryInterface.sequelize.query(
     `
