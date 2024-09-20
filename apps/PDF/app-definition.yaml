@@ -9,9 +9,7 @@ security:
   roles:
     User:
       description: User
-
-roles:
-  - User
+      permissions: []
 
 containers:
   - name: pdf-generator

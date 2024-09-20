@@ -1,10 +1,14 @@
 name: Soundboard
 description: This app displays buttons which play sounds when you click on them.
 defaultPage: Soundboard
+
+security:
+  guest:
+    permissions:
+      - $resource:audio:query
+
 resources:
   audio:
-    query:
-      roles: [$public]
     schema:
       type: object
       additionalProperties: false

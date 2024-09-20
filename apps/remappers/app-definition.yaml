@@ -8,11 +8,24 @@ security:
   roles:
     User:
       description: user
+      permissions:
+        - $resource:people:create
+        - $resource:people:update
+        - $resource:people:patch
+        - $resource:people:query
+        - $resource:people:get
+        - $resource:people:delete
+  guest:
+    permissions:
+      - $resource:people:create
+      - $resource:people:update
+      - $resource:people:patch
+      - $resource:people:query
+      - $resource:people:get
+      - $resource:people:delete
 
 resources:
   people:
-    roles:
-      - $public
     schema:
       type: object
       additionalProperties: false
@@ -954,23 +967,26 @@ pages:
           listen:
             data: pageData
 
-      # user
+      # app.member
       - type: markdown
         version: *block-version
         layout: static
         parameters:
           content: |
-            * ## user
+            * ## app.member
       - type: html
         version: *block-version
         parameters:
           placeholders:
-            sub: { user: sub }
-            name: { user: name }
-            email: { user: email }
-            verified: { user: email_verified }
-            picture: { user: picture }
-            locale: { user: locale }
+            sub: { app.member: sub }
+            name: { app.member: name }
+            email: { app.member: email }
+            verified: { app.member: email_verified }
+            picture: { app.member: picture }
+            locale: { app.member: locale }
+            zoneinfo: { app.member: zoneinfo }
+            role: { app.member: role }
+            properties: { app.member: properties }
           content: |
             <b>Sub:</b>
             <br><span data-content="sub"></span>
@@ -984,6 +1000,12 @@ pages:
             <br><span data-content="locale"></span>
             <br><b>Picture link:</b>
             <br><span data-content="picture"></span>
+            <br><b>Timezone:</b>
+            <br><span data-content="zoneinfo"></span>
+            <br><b>Role:</b>
+            <br><span data-content="role"></span>
+            <br><b>Properties:</b>
+            <br><span data-content="properties"></span>
 
       # context
       - type: markdown
