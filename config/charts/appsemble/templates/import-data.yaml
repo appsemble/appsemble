@@ -62,7 +62,7 @@ spec:
             - name: PGPORT
               value: {{ .Values.global.postgresql.service.ports.postgresql | quote }}
             - name: PGUSER
-              value: {{ .Values.global.postgresql.auth.username }}
+              value: postgres
             - name: PGPASSWORD
               valueFrom:
                 secretKeyRef:
