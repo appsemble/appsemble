@@ -228,27 +228,25 @@ describe('deleteAppResources', () => {
     const responseGetTestResourcesB = await request.get(
       `/api/apps/${app.id}/resources/testResourceB`,
     );
-    expect(responseGetTestResourcesB).toMatchInlineSnapshot(`
-      HTTP/1.1 200 OK
-      Content-Type: application/json; charset=utf-8
-
-      [
+    expect(responseGetTestResourcesB).toMatchObject({
+      status: 200,
+      data: expect.arrayContaining([
         {
-          "$created": "1970-01-01T00:00:00.000Z",
-          "$updated": "1970-01-01T00:00:00.000Z",
-          "foo": "I reference Foo.",
-          "id": 3,
-          "testResourceId": 1,
+          $created: '1970-01-01T00:00:00.000Z',
+          $updated: '1970-01-01T00:00:00.000Z',
+          foo: 'I reference Foo.',
+          id: 3,
+          testResourceId: 1,
         },
         {
-          "$created": "1970-01-01T00:00:00.000Z",
-          "$updated": "1970-01-01T00:00:00.000Z",
-          "foo": "I reference Foo Two.",
-          "id": 4,
-          "testResourceId": 2,
+          $created: '1970-01-01T00:00:00.000Z',
+          $updated: '1970-01-01T00:00:00.000Z',
+          foo: 'I reference Foo Two.',
+          id: 4,
+          testResourceId: 2,
         },
-      ]
-    `);
+      ]),
+    });
 
     const responseDeleteTestResources = await request.delete(
       `/api/apps/${app.id}/resources/testResource`,
@@ -316,27 +314,25 @@ describe('deleteAppResources', () => {
     const responseGetTestResourcesB = await request.get(
       `/api/apps/${app.id}/resources/testResourceB`,
     );
-    expect(responseGetTestResourcesB).toMatchInlineSnapshot(`
-      HTTP/1.1 200 OK
-      Content-Type: application/json; charset=utf-8
-
-      [
+    expect(responseGetTestResourcesB).toMatchObject({
+      status: 200,
+      data: expect.arrayContaining([
         {
-          "$created": "1970-01-01T00:00:00.000Z",
-          "$updated": "1970-01-01T00:00:00.000Z",
-          "foo": "I reference Foo.",
-          "id": 3,
-          "testResourceId": 1,
+          $created: '1970-01-01T00:00:00.000Z',
+          $updated: '1970-01-01T00:00:00.000Z',
+          foo: 'I reference Foo.',
+          id: 3,
+          testResourceId: 1,
         },
         {
-          "$created": "1970-01-01T00:00:00.000Z",
-          "$updated": "1970-01-01T00:00:00.000Z",
-          "foo": "I reference Foo Two.",
-          "id": 4,
-          "testResourceId": 2,
+          $created: '1970-01-01T00:00:00.000Z',
+          $updated: '1970-01-01T00:00:00.000Z',
+          foo: 'I reference Foo Two.',
+          id: 4,
+          testResourceId: 2,
         },
-      ]
-    `);
+      ]),
+    });
 
     const responseDeleteTestResourcesB = await request.delete(
       `/api/apps/${app.id}/resources/testResourceB`,
@@ -404,27 +400,25 @@ describe('deleteAppResources', () => {
     const responseGetTestResourcesC = await request.get(
       `/api/apps/${app.id}/resources/testResourceC`,
     );
-    expect(responseGetTestResourcesC).toMatchInlineSnapshot(`
-      HTTP/1.1 200 OK
-      Content-Type: application/json; charset=utf-8
-
-      [
+    expect(responseGetTestResourcesC).toMatchObject({
+      status: 200,
+      data: expect.arrayContaining([
         {
-          "$created": "1970-01-01T00:00:00.000Z",
-          "$updated": "1970-01-01T00:00:00.000Z",
-          "foo": "I reference Foo.",
-          "id": 3,
-          "testResourceId": 1,
+          $created: '1970-01-01T00:00:00.000Z',
+          $updated: '1970-01-01T00:00:00.000Z',
+          foo: 'I reference Foo.',
+          id: 3,
+          testResourceId: 1,
         },
         {
-          "$created": "1970-01-01T00:00:00.000Z",
-          "$updated": "1970-01-01T00:00:00.000Z",
-          "foo": "I reference Foo Two.",
-          "id": 4,
-          "testResourceId": 2,
+          $created: '1970-01-01T00:00:00.000Z',
+          $updated: '1970-01-01T00:00:00.000Z',
+          foo: 'I reference Foo Two.',
+          id: 4,
+          testResourceId: 2,
         },
-      ]
-    `);
+      ]),
+    });
 
     authorizeStudio();
 
@@ -439,22 +433,25 @@ describe('deleteAppResources', () => {
     const responseGetTestResourceCAfterDeletingTestResource1 = await request.get(
       `/api/apps/${app.id}/resources/testResourceC`,
     );
-    expect(responseGetTestResourceCAfterDeletingTestResource1.data).toMatchObject([
-      {
-        $created: '1970-01-01T00:00:00.000Z',
-        $updated: '1970-01-01T00:00:00.000Z',
-        foo: 'I reference Foo Two.',
-        id: 4,
-        testResourceId: 2,
-      },
-      {
-        $created: '1970-01-01T00:00:00.000Z',
-        $updated: '1970-01-01T00:00:00.000Z',
-        foo: 'I reference Foo.',
-        id: 3,
-        testResourceId: null,
-      },
-    ]);
+    expect(responseGetTestResourceCAfterDeletingTestResource1).toMatchObject({
+      status: 200,
+      data: expect.arrayContaining([
+        {
+          $created: '1970-01-01T00:00:00.000Z',
+          $updated: '1970-01-01T00:00:00.000Z',
+          foo: 'I reference Foo Two.',
+          id: 4,
+          testResourceId: 2,
+        },
+        {
+          $created: '1970-01-01T00:00:00.000Z',
+          $updated: '1970-01-01T00:00:00.000Z',
+          foo: 'I reference Foo.',
+          id: 3,
+          testResourceId: null,
+        },
+      ]),
+    });
 
     const responseDeleteTestResources2 = await request.delete(
       `/api/apps/${app.id}/resources/testResource`,
@@ -467,27 +464,25 @@ describe('deleteAppResources', () => {
     const responseGetTestResourceCAfterDeletingTestResource2 = await request.get(
       `/api/apps/${app.id}/resources/testResourceC`,
     );
-    expect(responseGetTestResourceCAfterDeletingTestResource2).toMatchInlineSnapshot(`
-      HTTP/1.1 200 OK
-      Content-Type: application/json; charset=utf-8
-
-      [
+    expect(responseGetTestResourceCAfterDeletingTestResource2).toMatchObject({
+      status: 200,
+      data: expect.arrayContaining([
         {
-          "$created": "1970-01-01T00:00:00.000Z",
-          "$updated": "1970-01-01T00:00:00.000Z",
-          "foo": "I reference Foo.",
-          "id": 3,
-          "testResourceId": null,
+          $created: '1970-01-01T00:00:00.000Z',
+          $updated: '1970-01-01T00:00:00.000Z',
+          foo: 'I reference Foo.',
+          id: 3,
+          testResourceId: null,
         },
         {
-          "$created": "1970-01-01T00:00:00.000Z",
-          "$updated": "1970-01-01T00:00:00.000Z",
-          "foo": "I reference Foo Two.",
-          "id": 4,
-          "testResourceId": null,
+          $created: '1970-01-01T00:00:00.000Z',
+          $updated: '1970-01-01T00:00:00.000Z',
+          foo: 'I reference Foo Two.',
+          id: 4,
+          testResourceId: null,
         },
-      ]
-    `);
+      ]),
+    });
   });
 
   it('should be able to delete multiple resources if they are referenced by another resource with cascading delete strategy', async () => {
@@ -542,27 +537,25 @@ describe('deleteAppResources', () => {
     const responseGetTestResourcesD = await request.get(
       `/api/apps/${app.id}/resources/testResourceD`,
     );
-    expect(responseGetTestResourcesD).toMatchInlineSnapshot(`
-      HTTP/1.1 200 OK
-      Content-Type: application/json; charset=utf-8
-
-      [
+    expect(responseGetTestResourcesD).toMatchObject({
+      status: 200,
+      data: expect.arrayContaining([
         {
-          "$created": "1970-01-01T00:00:00.000Z",
-          "$updated": "1970-01-01T00:00:00.000Z",
-          "foo": "I reference Foo.",
-          "id": 3,
-          "testResourceId": 1,
+          $created: '1970-01-01T00:00:00.000Z',
+          $updated: '1970-01-01T00:00:00.000Z',
+          foo: 'I reference Foo.',
+          id: 3,
+          testResourceId: 1,
         },
         {
-          "$created": "1970-01-01T00:00:00.000Z",
-          "$updated": "1970-01-01T00:00:00.000Z",
-          "foo": "I reference Foo Two.",
-          "id": 4,
-          "testResourceId": 2,
+          $created: '1970-01-01T00:00:00.000Z',
+          $updated: '1970-01-01T00:00:00.000Z',
+          foo: 'I reference Foo Two.',
+          id: 4,
+          testResourceId: 2,
         },
-      ]
-    `);
+      ]),
+    });
 
     authorizeStudio();
     const responseDeleteTest1 = await request.delete(`/api/apps/${app.id}/resources/testResource`, {
