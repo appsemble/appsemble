@@ -24,6 +24,7 @@ continue on this basic app to add more advanced features.
 - [External environments](external-environment.md)
 - [Notifications](notifications.md)
 - [OAuth2](oauth2.md)
+- [Page types](page-types.md)
 - [Generating PDF documents](pdf-generation.md)
 - [SAML2.0](saml.md)
 - [SCIM](scim.md)
