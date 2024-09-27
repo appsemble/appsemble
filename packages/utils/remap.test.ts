@@ -851,6 +851,16 @@ describe('type', () => {
       mappers: { type: null },
       expected: 'string',
     },
+    'null input type remapper test': {
+      input: null,
+      mappers: { type: null },
+      expected: null,
+    },
+    'undefined input type remapper test': {
+      input: undefined,
+      mappers: { type: null },
+      expected: 'undefined',
+    },
   });
 });
 
@@ -1034,6 +1044,16 @@ describe('array.filter', () => {
       input: ['Craig', 'Joey', 'Stuart'],
       mappers: [{ 'array.filter': { equals: [{ array: 'item' }, 'Peter'] } }],
       expected: [],
+    },
+    'it should filter arrays with mixed content type(string)': {
+      input: ['Craig', 5, 'Joey', 7, 'Stuart'],
+      mappers: [{ 'array.filter': { equals: [{ array: 'item' }, 'Stuart'] } }],
+      expected: ['Stuart'],
+    },
+    'it should filter arrays with mixed content type based on type of the item': {
+      input: ['Craig', 5, 'Joey', 7, 'Stuart'],
+      mappers: [{ 'array.filter': { equals: [{ type: { array: 'item' } }, 'number'] } } as never],
+      expected: [5, 7],
     },
   });
 });

@@ -357,7 +357,8 @@ const mapperImplementations: MapperImplementations = {
   },
 
   type(args, input) {
-    if (input == null) {
+    // eslint-disable-next-line eqeqeq
+    if (input === null) {
       return null;
     }
 
