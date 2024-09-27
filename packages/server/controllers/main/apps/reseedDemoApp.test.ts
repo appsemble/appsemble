@@ -248,7 +248,7 @@ describe('reseedDemoApp', () => {
       definition: {
         name: 'Test App',
         defaultPage: 'Test Page',
-        users: {
+        members: {
           properties: {
             completedTasks: {
               schema: { type: 'array', items: { type: 'integer' } },
