@@ -54,10 +54,9 @@ describe('removeCurrentUserEmail', () => {
 
     const { data } = await request.get('/api/users/current');
 
-    expect(data.emails).not.toContainEqual({
+    expect(data).not.toContainEqual({
       email: 'test2@example.com',
-      verified: true,
-      primary: false,
+      email_verified: true,
     });
   });
 

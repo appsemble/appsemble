@@ -1,3 +1,4 @@
+import { PredefinedAppRole, PredefinedOrganizationRole } from '@appsemble/types';
 import { request, setTestApp } from 'axios-test-instance';
 import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 import webpush from 'web-push';
@@ -49,7 +50,7 @@ beforeEach(async () => {
   await OrganizationMember.create({
     UserId: user.id,
     OrganizationId: organization.id,
-    role: 'Maintainer',
+    role: PredefinedOrganizationRole.Maintainer,
   });
   app = await exampleApp(organization.id);
 });
@@ -123,7 +124,7 @@ describe('countAppResources', () => {
   });
 
   it('should only count resources the user has access to', async () => {
-    const member = await AppMember.create({
+    const memberA = await AppMember.create({
       email: user.primaryEmail,
       AppId: app.id,
       UserId: user.id,
@@ -135,7 +136,7 @@ describe('countAppResources', () => {
       AppId: app.id,
       type: 'testResourceAuthorOnly',
       data: { foo: 'bar' },
-      AuthorId: member.id,
+      AuthorId: memberA.id,
     });
     await Resource.create({
       AppId: app.id,
@@ -143,9 +144,9 @@ describe('countAppResources', () => {
       data: { foo: 'baz' },
     });
 
-    authorizeAppMember(app);
+    authorizeAppMember(app, memberA);
     const response = await request.get(
-      `/api/apps/${app.id}/resources/testResourceAuthorOnly/$count`,
+      `/api/apps/${app.id}/resources/testResourceAuthorOnly/$count?$own=true`,
     );
 
     expect(response).toMatchInlineSnapshot(`
@@ -164,28 +165,28 @@ describe('countAppResources', () => {
       email: user.primaryEmail,
       AppId: app.id,
       UserId: user.id,
-      role: 'Member',
+      role: PredefinedAppRole.Member,
       timezone: 'Europe/Amsterdam',
     });
     const memberB = await AppMember.create({
       email: 'userB@example.com',
       AppId: app.id,
       UserId: userB.id,
-      role: 'Member',
+      role: PredefinedAppRole.Member,
       timezone: 'Europe/Amsterdam',
     });
     const memberC = await AppMember.create({
       email: 'userC@example.com',
       AppId: app.id,
       UserId: userC.id,
-      role: 'Member',
+      role: PredefinedAppRole.Member,
       timezone: 'Europe/Amsterdam',
     });
 
     await GroupMember.create({
       GroupId: group.id,
       AppMemberId: memberA.id,
-      role: 'Member',
+      role: 'ResourcesManager',
     });
     await GroupMember.create({
       GroupId: group.id,
@@ -198,12 +199,14 @@ describe('countAppResources', () => {
       type: 'testResourceGroup',
       data: { foo: 'bar' },
       AuthorId: memberA.id,
+      GroupId: group.id,
     });
     await Resource.create({
       AppId: app.id,
       type: 'testResourceGroup',
       data: { foo: 'baz' },
       AuthorId: memberB.id,
+      GroupId: group.id,
     });
     await Resource.create({
       AppId: app.id,
@@ -212,348 +215,9 @@ describe('countAppResources', () => {
       AuthorId: memberC.id,
     });
 
-    authorizeAppMember(app);
-    const response = await request.get(`/api/apps/${app.id}/resources/testResourceGroup/$count`);
-    expect(response).toMatchInlineSnapshot(`
-      HTTP/1.1 200 OK
-      Content-Type: application/json; charset=utf-8
-
-      2
-    `);
-  });
-
-  it('should only count resources from group members based on the member group filter as a member', async () => {
-    const group = await Group.create({ name: 'Test Group', AppId: app.id });
-    const userB = await User.create({ timezone: 'Europe/Amsterdam' });
-    const userC = await User.create({ timezone: 'Europe/Amsterdam' });
-
-    const memberA = await AppMember.create({
-      email: user.primaryEmail,
-      AppId: app.id,
-      UserId: user.id,
-      role: 'Member',
-      timezone: 'Europe/Amsterdam',
-    });
-    const memberB = await AppMember.create({
-      email: 'userB@example.com',
-      AppId: app.id,
-      UserId: userB.id,
-      role: 'Member',
-      timezone: 'Europe/Amsterdam',
-    });
-    const memberC = await AppMember.create({
-      email: 'userC@example.com',
-      AppId: app.id,
-      UserId: userC.id,
-      role: 'Member',
-      timezone: 'Europe/Amsterdam',
-    });
-
-    await GroupMember.create({
-      GroupId: group.id,
-      AppMemberId: memberA.id,
-      role: 'Member',
-    });
-    await GroupMember.create({
-      GroupId: group.id,
-      AppMemberId: memberB.id,
-      role: 'Member',
-    });
-
-    await Resource.create({
-      AppId: app.id,
-      type: 'testResource',
-      data: { foo: 'bar' },
-      AuthorId: memberA.id,
-    });
-    await Resource.create({
-      AppId: app.id,
-      type: 'testResource',
-      data: { foo: 'baz' },
-      AuthorId: memberB.id,
-    });
-    await Resource.create({
-      AppId: app.id,
-      type: 'testResource',
-      data: { foo: 'foo' },
-      AuthorId: memberC.id,
-    });
-
-    authorizeAppMember(app);
+    authorizeAppMember(app, memberA);
     const response = await request.get(
-      `/api/apps/${app.id}/resources/testResource/$count?$group=member`,
-    );
-    expect(response).toMatchInlineSnapshot(`
-      HTTP/1.1 200 OK
-      Content-Type: application/json; charset=utf-8
-
-      2
-    `);
-  });
-
-  it('should only count resources from group members based on the member group filter as a manager', async () => {
-    const group = await Group.create({ name: 'Test Group', AppId: app.id });
-    const userB = await User.create({ timezone: 'Europe/Amsterdam' });
-    const userC = await User.create({ timezone: 'Europe/Amsterdam' });
-
-    const memberA = await AppMember.create({
-      email: user.primaryEmail,
-      AppId: app.id,
-      UserId: user.id,
-      role: 'Member',
-      timezone: 'Europe/Amsterdam',
-    });
-    const memberB = await AppMember.create({
-      email: 'userB@example.com',
-      AppId: app.id,
-      UserId: userB.id,
-      role: 'Member',
-      timezone: 'Europe/Amsterdam',
-    });
-    const memberC = await AppMember.create({
-      email: 'userC@example.com',
-      AppId: app.id,
-      UserId: userC.id,
-      role: 'Member',
-      timezone: 'Europe/Amsterdam',
-    });
-
-    await GroupMember.create({
-      GroupId: group.id,
-      AppMemberId: memberA.id,
-      role: 'GroupMembersManager',
-    });
-    await GroupMember.create({
-      GroupId: group.id,
-      AppMemberId: memberB.id,
-      role: 'Member',
-    });
-
-    await Resource.create({
-      AppId: app.id,
-      type: 'testResource',
-      data: { foo: 'bar' },
-      AuthorId: memberA.id,
-    });
-    await Resource.create({
-      AppId: app.id,
-      type: 'testResource',
-      data: { foo: 'baz' },
-      AuthorId: memberB.id,
-    });
-    await Resource.create({
-      AppId: app.id,
-      type: 'testResource',
-      data: { foo: 'foo' },
-      AuthorId: memberC.id,
-    });
-
-    authorizeAppMember(app);
-    const response = await request.get(
-      `/api/apps/${app.id}/resources/testResource/$count?$group=member`,
-    );
-    expect(response).toMatchInlineSnapshot(`
-      HTTP/1.1 200 OK
-      Content-Type: application/json; charset=utf-8
-
-      2
-    `);
-  });
-
-  it('should not count resources from group members based on the member group filter as not a member', async () => {
-    const group = await Group.create({ name: 'Test Group', AppId: app.id });
-    const userB = await User.create({ timezone: 'Europe/Amsterdam' });
-    const userC = await User.create({ timezone: 'Europe/Amsterdam' });
-
-    const memberA = await AppMember.create({
-      email: user.primaryEmail,
-      AppId: app.id,
-      UserId: user.id,
-      role: 'Member',
-
-      timezone: 'Europe/Amsterdam',
-    });
-    const memberB = await AppMember.create({
-      email: 'userB@example.com',
-      AppId: app.id,
-      UserId: userB.id,
-      role: 'Member',
-      timezone: 'Europe/Amsterdam',
-    });
-    const memberC = await AppMember.create({
-      email: 'userC@example.com',
-      AppId: app.id,
-      UserId: userC.id,
-      role: 'Member',
-      timezone: 'Europe/Amsterdam',
-    });
-
-    await GroupMember.create({
-      GroupId: group.id,
-      AppMemberId: memberB.id,
-      role: 'Member',
-    });
-
-    await Resource.create({
-      AppId: app.id,
-      type: 'testResource',
-      data: { foo: 'bar' },
-      AuthorId: memberA.id,
-    });
-    await Resource.create({
-      AppId: app.id,
-      type: 'testResource',
-      data: { foo: 'baz' },
-      AuthorId: memberB.id,
-    });
-    await Resource.create({
-      AppId: app.id,
-      type: 'testResource',
-      data: { foo: 'foo' },
-      AuthorId: memberC.id,
-    });
-
-    authorizeAppMember(app);
-    const response = await request.get(
-      `/api/apps/${app.id}/resources/testResource/$count?$group=member`,
-    );
-    expect(response).toMatchInlineSnapshot(`
-      HTTP/1.1 200 OK
-      Content-Type: application/json; charset=utf-8
-
-      0
-    `);
-  });
-
-  it('should only count resources from group members based on the manager group filter as a member', async () => {
-    const group = await Group.create({ name: 'Test Group', AppId: app.id });
-    const userB = await User.create({ timezone: 'Europe/Amsterdam' });
-    const userC = await User.create({ timezone: 'Europe/Amsterdam' });
-
-    const memberA = await AppMember.create({
-      email: user.primaryEmail,
-      AppId: app.id,
-      UserId: user.id,
-      role: 'Member',
-      timezone: 'Europe/Amsterdam',
-    });
-    const memberB = await AppMember.create({
-      email: 'userB@example.com',
-      AppId: app.id,
-      UserId: userB.id,
-      role: 'Member',
-      timezone: 'Europe/Amsterdam',
-    });
-    const memberC = await AppMember.create({
-      email: 'userC@example.com',
-      AppId: app.id,
-      UserId: userC.id,
-      role: 'Member',
-      timezone: 'Europe/Amsterdam',
-    });
-
-    await GroupMember.create({
-      GroupId: group.id,
-      AppMemberId: memberA.id,
-      role: 'Member',
-    });
-    await GroupMember.create({
-      GroupId: group.id,
-      AppMemberId: memberB.id,
-      role: 'Member',
-    });
-
-    await Resource.create({
-      AppId: app.id,
-      type: 'testResource',
-      data: { foo: 'bar' },
-      AuthorId: memberA.id,
-    });
-    await Resource.create({
-      AppId: app.id,
-      type: 'testResource',
-      data: { foo: 'baz' },
-      AuthorId: memberB.id,
-    });
-    await Resource.create({
-      AppId: app.id,
-      type: 'testResource',
-      data: { foo: 'foo' },
-      AuthorId: memberC.id,
-    });
-
-    authorizeAppMember(app);
-    const response = await request.get(
-      `/api/apps/${app.id}/resources/testResource/$count?$group=manager`,
-    );
-    expect(response).toMatchInlineSnapshot(`
-      HTTP/1.1 200 OK
-      Content-Type: application/json; charset=utf-8
-
-      0
-    `);
-  });
-
-  it('should only count resources from group members based on the manager group filter as a manager', async () => {
-    const group = await Group.create({ name: 'Test Group', AppId: app.id });
-    const userB = await User.create({ timezone: 'Europe/Amsterdam' });
-    const userC = await User.create({ timezone: 'Europe/Amsterdam' });
-
-    const memberA = await AppMember.create({
-      email: user.primaryEmail,
-      AppId: app.id,
-      UserId: user.id,
-      role: 'Member',
-      timezone: 'Europe/Amsterdam',
-    });
-    const memberB = await AppMember.create({
-      email: 'userA@example.com',
-      AppId: app.id,
-      UserId: userB.id,
-      role: 'Member',
-      timezone: 'Europe/Amsterdam',
-    });
-    const memberC = await AppMember.create({
-      email: 'userC@example.com',
-      AppId: app.id,
-      UserId: userC.id,
-      role: 'Member',
-      timezone: 'Europe/Amsterdam',
-    });
-
-    await GroupMember.create({
-      GroupId: group.id,
-      AppMemberId: memberA.id,
-      role: 'GroupMembersManager',
-    });
-    await GroupMember.create({
-      GroupId: group.id,
-      AppMemberId: memberB.id,
-      role: 'Member',
-    });
-
-    await Resource.create({
-      AppId: app.id,
-      type: 'testResource',
-      data: { foo: 'bar' },
-      AuthorId: memberA.id,
-    });
-    await Resource.create({
-      AppId: app.id,
-      type: 'testResource',
-      data: { foo: 'baz' },
-      AuthorId: memberB.id,
-    });
-    await Resource.create({
-      AppId: app.id,
-      type: 'testResource',
-      data: { foo: 'foo' },
-      AuthorId: memberC.id,
-    });
-
-    authorizeAppMember(app);
-    const response = await request.get(
-      `/api/apps/${app.id}/resources/testResource/$count?$group=manager`,
+      `/api/apps/${app.id}/resources/testResourceGroup/$count?selectedGroupId=${group.id}`,
     );
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 200 OK
@@ -580,67 +244,35 @@ describe('countAppResources', () => {
     `);
   });
 
-  it('should not count resources from group members based on the manager group filter as not a group member', async () => {
-    const group = await Group.create({ name: 'Test Group', AppId: app.id });
-    const userB = await User.create({ timezone: 'Europe/Amsterdam' });
-    const userC = await User.create({ timezone: 'Europe/Amsterdam' });
-
+  it('should throw if the user does not have enough permissions', async () => {
     const memberA = await AppMember.create({
       email: user.primaryEmail,
       AppId: app.id,
       UserId: user.id,
-      role: 'Member',
+      role: PredefinedAppRole.Member,
       timezone: 'Europe/Amsterdam',
-    });
-    const memberB = await AppMember.create({
-      email: 'userA@example.com',
-      AppId: app.id,
-      UserId: userB.id,
-      role: 'Member',
-      timezone: 'Europe/Amsterdam',
-    });
-    const memberC = await AppMember.create({
-      email: 'userC@example.com',
-      AppId: app.id,
-      UserId: userC.id,
-      role: 'Member',
-      timezone: 'Europe/Amsterdam',
-    });
-
-    await GroupMember.create({
-      GroupId: group.id,
-      AppMemberId: memberB.id,
-      role: 'Member',
     });
 
     await Resource.create({
       AppId: app.id,
-      type: 'testResource',
+      type: 'testResourceAuthorOnly',
       data: { foo: 'bar' },
-      AuthorId: memberA.id,
-    });
-    await Resource.create({
-      AppId: app.id,
-      type: 'testResource',
-      data: { foo: 'baz' },
-      AuthorId: memberB.id,
-    });
-    await Resource.create({
-      AppId: app.id,
-      type: 'testResource',
-      data: { foo: 'foo' },
-      AuthorId: memberC.id,
     });
 
-    authorizeAppMember(app);
+    authorizeAppMember(app, memberA);
     const response = await request.get(
-      `/api/apps/${app.id}/resources/testResource/$count?$group=manager`,
+      `/api/apps/${app.id}/resources/testResourceAuthorOnly/$count`,
     );
+
     expect(response).toMatchInlineSnapshot(`
-      HTTP/1.1 200 OK
+      HTTP/1.1 403 Forbidden
       Content-Type: application/json; charset=utf-8
 
-      0
+      {
+        "error": "Forbidden",
+        "message": "App member does not have sufficient app permissions.",
+        "statusCode": 403,
+      }
     `);
   });
 });

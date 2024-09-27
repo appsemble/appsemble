@@ -13,7 +13,7 @@ import {
   OAuth2AuthorizationCode,
   Organization,
   OrganizationMember,
-  User,
+  type User,
 } from '../../../../../models/index.js';
 import { setArgv } from '../../../../../utils/argv.js';
 import { createServer } from '../../../../../utils/createServer.js';
@@ -26,6 +26,7 @@ import { useTestDatabase } from '../../../../../utils/test/testSchema.js';
 
 let app: App;
 let mock: MockAdapter;
+let user: User;
 
 useTestDatabase(import.meta);
 
@@ -44,7 +45,7 @@ beforeEach(() => {
 });
 
 beforeEach(async () => {
-  const user = await createTestUser();
+  user = await createTestUser();
   const organization = await Organization.create({
     id: 'testorganization',
     name: 'Test Organization',
@@ -62,6 +63,7 @@ beforeEach(async () => {
         roles: { Test: {} },
       },
     },
+    path: 'test-app',
   });
   await OrganizationMember.create({
     OrganizationId: organization.id,
@@ -198,13 +200,14 @@ describe('verifyAppOAuth2SecretCode', () => {
       refresh_token: '',
       token_type: 'bearer',
     });
+    mock.onGet('https://example.com/oauth/userinfo').reply(200, {});
 
     authorizeStudio();
     const response = await request.post<LoginCodeResponse>(
       `/api/apps/${app.id}/secrets/oauth2/${secret.id}/verify`,
       {
         code: 'authorization_code',
-        redirectUri: 'http://app.appsemble.localhost',
+        redirectUri: 'http://test-app.testorganization.localhost',
         scope: 'resources:manage',
         timezone: 'Europe/Amsterdam',
       },
@@ -226,10 +229,12 @@ describe('verifyAppOAuth2SecretCode', () => {
       where: { code: response.data.code },
     });
     expect(auth).toMatchObject({
+      AppId: app.id,
+      AppMemberId: expect.any(String),
+      code: expect.any(String),
       expires: expect.any(Date),
-      redirectUri: 'http://app.appsemble.localhost',
+      redirectUri: 'http://test-app.testorganization.localhost',
       scope: 'resources:manage',
-      UserId: getTestUser().id,
     });
   });
 
@@ -251,6 +256,19 @@ describe('verifyAppOAuth2SecretCode', () => {
       refresh_token: '',
       token_type: 'bearer',
     });
+    mock.onGet('https://example.com/oauth/userinfo').reply(() => [
+      200,
+      {
+        email: 'user@example.com',
+        email_verified: false,
+        name: 'User',
+        profile: 'https://example.com/user',
+        picture: 'https://example.com/user.png',
+        locale: undefined,
+        subscribed: false,
+        zoneinfo: undefined,
+      },
+    ]);
     const appMember = await AppMember.create({
       UserId: getTestUser().id,
       AppId: app.id,
@@ -263,13 +281,14 @@ describe('verifyAppOAuth2SecretCode', () => {
       refreshToken: '',
       sub: '42',
       AppMemberId: appMember.id,
+      email: appMember.email,
     });
 
     const response = await request.post<LoginCodeResponse>(
       `/api/apps/${app.id}/secrets/oauth2/${secret.id}/verify`,
       {
         code: 'authorization_code',
-        redirectUri: 'http://app.appsemble.localhost',
+        redirectUri: 'http://test-app.testorganization.localhost',
         scope: 'resources:manage',
         timezone: 'Europe/Amsterdam',
       },
@@ -292,9 +311,11 @@ describe('verifyAppOAuth2SecretCode', () => {
     });
     expect(auth).toMatchObject({
       expires: expect.any(Date),
-      redirectUri: 'http://app.appsemble.localhost',
+      redirectUri: 'http://test-app.testorganization.localhost',
       scope: 'resources:manage',
-      UserId: getTestUser().id,
+      AppId: app.id,
+      code: expect.any(String),
+      AppMemberId: expect.any(String),
     });
   });
 
@@ -310,6 +331,19 @@ describe('verifyAppOAuth2SecretCode', () => {
       },
       'random',
     );
+    mock.onGet('https://example.com/oauth/userinfo').reply(() => [
+      200,
+      {
+        email: 'user@example.com',
+        email_verified: false,
+        name: 'User',
+        profile: 'https://example.com/user',
+        picture: 'https://example.com/user.png',
+        locale: undefined,
+        subscribed: false,
+        zoneinfo: undefined,
+      },
+    ]);
     mock.onPost('https://example.com/oauth/token').reply(200, {
       access_token: accessToken,
       id_token: '',
@@ -322,7 +356,7 @@ describe('verifyAppOAuth2SecretCode', () => {
       `/api/apps/${app.id}/secrets/oauth2/${secret.id}/verify`,
       {
         code: 'authorization_code',
-        redirectUri: 'http://app.appsemble.localhost',
+        redirectUri: 'http://test-app.testorganization.localhost',
         scope: 'resources:manage',
         timezone: 'Europe/Amsterdam',
       },
@@ -345,19 +379,22 @@ describe('verifyAppOAuth2SecretCode', () => {
     });
     expect(auth).toMatchObject({
       expires: expect.any(Date),
-      redirectUri: 'http://app.appsemble.localhost',
+      redirectUri: 'http://test-app.testorganization.localhost',
       scope: 'resources:manage',
-      UserId: getTestUser().id,
+      AppId: app.id,
+      AppMemberId: expect.any(String),
+      code: response.data.code,
     });
 
-    const user = await User.findByPk(auth.id, { include: ['AppMembers'] });
-    expect(user.AppMembers[0]).toMatchObject({
+    const member = await AppMember.findByPk(auth.AppMemberId);
+    expect(member).toMatchObject({
       created: expect.any(Date),
       locale: null,
       AppId: 1,
       consent: null,
       password: null,
-      UserId: user.id,
+      UserId: null,
+      demo: false,
       name: 'User',
       email: 'user@example.com',
       emailKey: null,
@@ -369,6 +406,7 @@ describe('verifyAppOAuth2SecretCode', () => {
       role: 'Test',
       scimActive: false,
       scimExternalId: null,
+      timezone: 'Europe/Amsterdam',
       updated: expect.any(Date),
     });
   });

@@ -77,20 +77,19 @@ describe('getGroupMember', () => {
       AppId: app.id,
       role: PredefinedAppRole.Member,
     });
-    await GroupMember.create({
+    const groupMember = await GroupMember.create({
       GroupId: group.id,
       AppMemberId: member.id,
       role: PredefinedAppRole.Member,
     });
 
     authorizeStudio();
-    const response = await request.get(`/api/apps/${app.id}/groups/${group.id}/members/${user.id}`);
+    const response = await request.get(`/api/group-members/${groupMember.id}`);
 
     expect(response.data).toStrictEqual({
-      id: user.id,
+      id: groupMember.id,
       name: member.name,
       primaryEmail: member.email,
-      role: PredefinedAppRole.Member,
     });
   });
 });

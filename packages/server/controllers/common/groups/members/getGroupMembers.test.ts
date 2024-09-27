@@ -71,7 +71,7 @@ describe('getGroupMembers', () => {
   it('should return an empty array', async () => {
     const group = await Group.create({ name: 'A', AppId: app.id });
     authorizeStudio();
-    const response = await request.get(`/api/apps/${app.id}/groups/${group.id}/members`);
+    const response = await request.get(`/api/groups/${group.id}/members`);
 
     expect(response).toMatchObject({ status: 200, data: [] });
   });
@@ -105,33 +105,33 @@ describe('getGroupMembers', () => {
       role: PredefinedAppRole.Member,
     });
     const group = await Group.create({ name: 'A', AppId: app.id });
-    await GroupMember.create({
+    const groupMember = await GroupMember.create({
       GroupId: group.id,
       AppMemberId: appMember.id,
       role: PredefinedAppRole.GroupsManager,
     });
-    await GroupMember.create({
+    const groupMemberB = await GroupMember.create({
       GroupId: group.id,
       AppMemberId: appMemberB.id,
       role: PredefinedAppRole.Member,
     });
 
     authorizeStudio();
-    const response = await request.get(`/api/apps/${app.id}/groups/${group.id}/members`);
+    const response = await request.get(`/api/groups/${group.id}/members`);
 
     expect(response).toMatchObject({
       status: 200,
       data: [
         {
-          id: appMember.id,
+          id: groupMember.id,
           name: appMember.name,
-          primaryEmail: appMember.email,
-          role: 'Manager',
+          email: appMember.email,
+          role: 'GroupsManager',
         },
         {
-          id: appMemberB.id,
+          id: groupMemberB.id,
           name: appMemberB.name,
-          primaryEmail: appMemberB.email,
+          email: appMemberB.email,
           role: 'Member',
         },
       ],
@@ -140,7 +140,7 @@ describe('getGroupMembers', () => {
 
   it('should not fetch members of non-existent groups', async () => {
     authorizeStudio();
-    const response = await request.get(`/api/apps/${app.id}/groups/80000/members`);
+    const response = await request.get('/api/groups/80000/members');
 
     expect(response).toMatchObject({
       status: 404,

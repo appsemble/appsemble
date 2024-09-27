@@ -100,8 +100,8 @@ describe('getAppMembers', () => {
       {
         data: [
           {
-            memberId: expect.stringMatching(uuid4Pattern),
-            userId: expect.stringMatching(uuid4Pattern),
+            picture: expect.any(String),
+            sub: expect.stringMatching(uuid4Pattern),
           },
         ],
       },
@@ -112,61 +112,15 @@ describe('getAppMembers', () => {
       [
         {
           "demo": false,
-          "memberId": StringMatching /\\^\\[\\\\d\\[a-f\\]\\{8\\}-\\[\\\\da-f\\]\\{4\\}-4\\[\\\\da-f\\]\\{3\\}-\\[\\\\da-f\\]\\{4\\}-\\[\\\\d\\[a-f\\]\\{12\\}\\$/,
+          "email": "member@example.com",
+          "email_verified": false,
+          "locale": null,
           "name": "Test Member",
-          "primaryEmail": "member@example.com",
+          "picture": Any<String>,
           "properties": {},
           "role": "Admin",
-          "userId": StringMatching /\\^\\[\\\\d\\[a-f\\]\\{8\\}-\\[\\\\da-f\\]\\{4\\}-4\\[\\\\da-f\\]\\{3\\}-\\[\\\\da-f\\]\\{4\\}-\\[\\\\d\\[a-f\\]\\{12\\}\\$/,
-        },
-      ]
-    `,
-    );
-  });
-
-  it('should include organization members with the default role if policy is not invite', async () => {
-    const app = await App.create({
-      definition: {
-        name: 'Test App',
-        defaultPage: 'Test Page',
-        security: {
-          default: {
-            role: 'Reader',
-            policy: 'everyone',
-          },
-          roles: {
-            Reader: {},
-            Admin: {},
-          },
-        },
-      },
-      path: 'test-app',
-      vapidPublicKey: 'a',
-      vapidPrivateKey: 'b',
-      OrganizationId: organization.id,
-    });
-
-    authorizeStudio();
-    const response = await request.get(`/api/apps/${app.id}/members`);
-    expect(response).toMatchInlineSnapshot(
-      {
-        data: [
-          {
-            userId: expect.stringMatching(uuid4Pattern),
-          },
-        ],
-      },
-      `
-      HTTP/1.1 200 OK
-      Content-Type: application/json; charset=utf-8
-
-      [
-        {
-          "demo": false,
-          "name": "Test User",
-          "primaryEmail": "test@example.com",
-          "role": "Reader",
-          "userId": StringMatching /\\^\\[\\\\d\\[a-f\\]\\{8\\}-\\[\\\\da-f\\]\\{4\\}-4\\[\\\\da-f\\]\\{3\\}-\\[\\\\da-f\\]\\{4\\}-\\[\\\\d\\[a-f\\]\\{12\\}\\$/,
+          "sub": StringMatching /\\^\\[\\\\d\\[a-f\\]\\{8\\}-\\[\\\\da-f\\]\\{4\\}-4\\[\\\\da-f\\]\\{3\\}-\\[\\\\da-f\\]\\{4\\}-\\[\\\\d\\[a-f\\]\\{12\\}\\$/,
+          "zoneinfo": null,
         },
       ]
     `,

@@ -23,9 +23,9 @@ import { type Options } from 'nodemailer/lib/smtp-transport';
 import { Op } from 'sequelize';
 
 import { renderEmail } from './renderEmail.js';
-import { AppEmailQuotaLog } from '../../models/AppEmailQuotaLog.js';
 import {
   App,
+  AppEmailQuotaLog,
   AppMessages,
   Organization,
   OrganizationMember,

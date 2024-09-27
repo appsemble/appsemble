@@ -8,7 +8,7 @@ import { apiUrl, appId } from '../settings.js';
 
 export const get: ActionCreator<'resource.get'> = (args) => {
   const { appDefinition, definition, getAppMemberSelectedGroup } = args;
-  const { view } = definition;
+  const { own, view } = definition;
   const resource = appDefinition.resources[definition.resource];
   const method = resource?.get?.method || 'GET';
   const url =
@@ -22,9 +22,17 @@ export const get: ActionCreator<'resource.get'> = (args) => {
     query.push({ 'object.assign': { view } });
   }
 
-  const selectedGroup = getAppMemberSelectedGroup();
+  if (own) {
+    query.push({ 'object.assign': { own } });
+  }
+
+  const selectedGroup = getAppMemberSelectedGroup?.();
   if (selectedGroup) {
     query.push({ 'object.assign': { selectedGroupId: selectedGroup.id } });
+  }
+
+  if (selectedGroup) {
+    query.push({ 'object.assign': { author: selectedGroup?.id } });
   }
 
   return request({
@@ -63,7 +71,7 @@ export const query: ActionCreator<'resource.query'> = (args) => {
     queryRemapper.push({ 'object.assign': { view } });
   }
 
-  const selectedGroup = getAppMemberSelectedGroup();
+  const selectedGroup = getAppMemberSelectedGroup?.();
   if (selectedGroup) {
     queryRemapper.push({ 'object.assign': { selectedGroupId: selectedGroup.id } });
   }
@@ -95,7 +103,7 @@ export const count: ActionCreator<'resource.count'> = (args) => {
     .concat(definition?.query ?? resource?.count?.query)
     .filter(Boolean);
 
-  const selectedGroup = getAppMemberSelectedGroup();
+  const selectedGroup = getAppMemberSelectedGroup?.();
   if (selectedGroup) {
     queryRemapper.push({ 'object.assign': { selectedGroupId: selectedGroup.id } });
   }
@@ -127,7 +135,7 @@ export const create: ActionCreator<'resource.create'> = (args) => {
     .concat(definition?.query ?? resource?.create?.query)
     .filter(Boolean);
 
-  const selectedGroup = getAppMemberSelectedGroup();
+  const selectedGroup = getAppMemberSelectedGroup?.();
   if (selectedGroup) {
     queryRemapper.push({ 'object.assign': { selectedGroupId: selectedGroup.id } });
   }
@@ -161,7 +169,7 @@ export const update: ActionCreator<'resource.update'> = (args) => {
     .concat(definition?.query ?? resource?.update?.query)
     .filter(Boolean);
 
-  const selectedGroup = getAppMemberSelectedGroup();
+  const selectedGroup = getAppMemberSelectedGroup?.();
   if (selectedGroup) {
     queryRemapper.push({ 'object.assign': { selectedGroupId: selectedGroup.id } });
   }
@@ -199,7 +207,7 @@ export const patch: ActionCreator<'resource.patch'> = (args) => {
     .concat(definition?.query ?? resource?.patch?.query)
     .filter(Boolean);
 
-  const selectedGroup = getAppMemberSelectedGroup();
+  const selectedGroup = getAppMemberSelectedGroup?.();
   if (selectedGroup) {
     queryRemapper.push({ 'object.assign': { selectedGroupId: selectedGroup.id } });
   }
@@ -237,7 +245,7 @@ export const remove: ActionCreator<'resource.delete'> = (args) => {
     .concat(definition?.query ?? resource?.delete?.query)
     .filter(Boolean);
 
-  const selectedGroup = getAppMemberSelectedGroup();
+  const selectedGroup = getAppMemberSelectedGroup?.();
   if (selectedGroup) {
     queryRemapper.push({ 'object.assign': { selectedGroupId: selectedGroup.id } });
   }

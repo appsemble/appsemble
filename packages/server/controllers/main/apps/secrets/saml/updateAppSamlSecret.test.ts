@@ -86,7 +86,8 @@ describe('updateAppSamlSecret', () => {
       Content-Type: application/json; charset=utf-8
 
       {
-        "emailAttribute": null,
+        "emailAttribute": "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress",
+        "emailVerifiedAttribute": null,
         "entityId": "https://updated.example/saml/metadata.xml",
         "icon": "updated",
         "id": 1,
@@ -164,7 +165,7 @@ describe('updateAppSamlSecret', () => {
 
       {
         "error": "Forbidden",
-        "message": "User does not have sufficient permissions.",
+        "message": "User does not have sufficient organization permissions.",
         "statusCode": 403,
       }
     `);

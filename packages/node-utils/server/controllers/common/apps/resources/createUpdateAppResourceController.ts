@@ -39,18 +39,18 @@ export function createUpdateAppResourceController(options: Options): Middleware 
       findOptions,
     });
 
+    assertKoaError(!oldResource, ctx, 404, 'Resource not found');
+
     await checkAppPermissions({
       context: ctx,
       permissions: [
-        oldResource.$author?.id === authSubject.id
+        oldResource.$author?.id === authSubject?.id
           ? `$resource:${resourceType}:own:update`
           : `$resource:${resourceType}:update`,
       ],
       app,
       groupId: selectedGroupId,
     });
-
-    assertKoaError(!oldResource, ctx, 404, 'Resource not found');
 
     const appAssets = await getAppAssets({ context: ctx, app });
 

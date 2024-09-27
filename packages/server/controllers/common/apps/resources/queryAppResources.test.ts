@@ -1,4 +1,8 @@
-import { type Resource as ResourceType } from '@appsemble/types';
+import {
+  PredefinedAppRole,
+  PredefinedOrganizationRole,
+  type Resource as ResourceType,
+} from '@appsemble/types';
 import { request, setTestApp } from 'axios-test-instance';
 import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 import webpush from 'web-push';
@@ -52,7 +56,7 @@ beforeEach(async () => {
   orgMember = await OrganizationMember.create({
     UserId: user.id,
     OrganizationId: organization.id,
-    role: 'Maintainer',
+    role: PredefinedOrganizationRole.Maintainer,
   });
   app = await exampleApp(organization.id);
 });
@@ -76,6 +80,7 @@ describe('queryAppResources', () => {
     });
     await Resource.create({ AppId: app.id, type: 'testResourceB', data: { bar: 'baz' } });
 
+    authorizeStudio();
     const response = await request.get(`/api/apps/${app.id}/resources/testResource`);
 
     expect(response).toMatchInlineSnapshot(`
@@ -111,6 +116,7 @@ describe('queryAppResources', () => {
       data: { foo: 'baz', bar: 'fooz', fooz: 'bar', baz: 'foo' },
     });
 
+    authorizeStudio();
     const response = await request.get(`/api/apps/${app.id}/resources/testResource`, {
       params: { $select: 'id,foo,bar' },
     });
@@ -137,27 +143,27 @@ describe('queryAppResources', () => {
   describe('verifyAppRole', () => {
     // The same logic gets applies to query, get, create, update, and delete.
     it('should return normally on secured actions if user is authenticated and has sufficient roles', async () => {
-      await AppMember.create({
+      const member = await AppMember.create({
         email: user.primaryEmail,
         AppId: app.id,
         UserId: user.id,
-        role: 'Reader',
+        role: PredefinedAppRole.ResourcesManager,
         timezone: 'Europe/Amsterdam',
       });
       await Resource.create({
         AppId: app.id,
-        type: 'testResource',
+        type: 'testResourceB',
         data: { foo: 'bar' },
       });
       await Resource.create({
         AppId: app.id,
-        type: 'testResource',
+        type: 'testResourceB',
         data: { foo: 'baz' },
       });
-      await Resource.create({ AppId: app.id, type: 'testResourceB', data: { bar: 'baz' } });
+      await Resource.create({ AppId: app.id, type: 'testResource', data: { bar: 'baz' } });
 
-      authorizeStudio();
-      const response = await request.get(`/api/apps/${app.id}/resources/testResource`);
+      authorizeAppMember(app, member);
+      const response = await request.get(`/api/apps/${app.id}/resources/testResourceB`);
 
       expect(response).toMatchInlineSnapshot(`
         HTTP/1.1 200 OK
@@ -189,55 +195,41 @@ describe('queryAppResources', () => {
         name: user.name,
         role: 'Reader',
       });
-      const resource = await Resource.create({
+      await Resource.create({
         AppId: app.id,
-        type: 'testResource',
+        type: 'testResourceAuthorOnly',
         data: { foo: 'bar' },
         AuthorId: member.id,
       });
 
-      authorizeStudio();
+      authorizeAppMember(app, member);
       const response = await request.get(
-        `/api/apps/${app.id}/resources/testResource/${resource.id}`,
+        `/api/apps/${app.id}/resources/testResourceAuthorOnly?$own=true`,
       );
 
       expect(response).toMatchInlineSnapshot(
-        { data: { $author: { id: expect.any(String) } } },
+        { data: [{ $author: { id: expect.any(String) } }] },
         `
-      HTTP/1.1 200 OK
-      Content-Type: application/json; charset=utf-8
+        HTTP/1.1 200 OK
+        Content-Type: application/json; charset=utf-8
 
-      {
-        "$author": {
-          "id": Any<String>,
-          "name": "Test User",
-        },
-        "$created": "1970-01-01T00:00:00.000Z",
-        "$updated": "1970-01-01T00:00:00.000Z",
-        "foo": "bar",
-        "id": 1,
-      }
-    `,
+        [
+          {
+            "$author": {
+              "id": Any<String>,
+              "name": "Test User",
+            },
+            "$created": "1970-01-01T00:00:00.000Z",
+            "$updated": "1970-01-01T00:00:00.000Z",
+            "foo": "bar",
+            "id": 1,
+          },
+        ]
+      `,
       );
     });
 
     it('should return a 401 on unauthorized requests if roles are present', async () => {
-      const response = await request.get(`/api/apps/${app.id}/resources/secured`);
-
-      expect(response).toMatchInlineSnapshot(`
-        HTTP/1.1 401 Unauthorized
-        Content-Type: application/json; charset=utf-8
-
-        {
-          "error": "Unauthorized",
-          "message": "User is not logged in.",
-          "statusCode": 401,
-        }
-      `);
-    });
-
-    it('should throw a 403 on secured actions if user is authenticated and is not a member', async () => {
-      authorizeAppMember(app);
       const response = await request.get(`/api/apps/${app.id}/resources/secured`);
 
       expect(response).toMatchInlineSnapshot(`
@@ -246,22 +238,22 @@ describe('queryAppResources', () => {
 
         {
           "error": "Forbidden",
-          "message": "User is not a member of the app.",
+          "message": "Guest does not have sufficient app permissions.",
           "statusCode": 403,
         }
       `);
     });
 
     it('should throw a 403 on secured actions if user is authenticated and has insufficient roles', async () => {
-      await AppMember.create({
+      const member = await AppMember.create({
         email: user.primaryEmail,
         AppId: app.id,
         UserId: user.id,
-        role: 'Reader',
+        role: PredefinedAppRole.Member,
         timezone: 'Europe/Amsterdam',
       });
 
-      authorizeAppMember(app);
+      authorizeAppMember(app, member);
       const response = await request.post(`/api/apps/${app.id}/resources/secured`, {});
 
       expect(response).toMatchInlineSnapshot(`
@@ -270,7 +262,7 @@ describe('queryAppResources', () => {
 
         {
           "error": "Forbidden",
-          "message": "User does not have sufficient permissions.",
+          "message": "App member does not have sufficient app permissions.",
           "statusCode": 403,
         }
       `);
@@ -289,6 +281,7 @@ describe('queryAppResources', () => {
       data: { foo: 'baz', bar: 'fooz', fooz: 'bar', baz: 'foo' },
     });
 
+    authorizeStudio();
     const response = await request.get(`/api/apps/${app.id}/resources/testResource`, {
       params: { $select: '  fooz ,    baz     ' },
     });
@@ -322,6 +315,7 @@ describe('queryAppResources', () => {
       data: { foo: 'baz', bar: 'fooz', fooz: 'bar', baz: 'foo' },
     });
 
+    authorizeStudio();
     const response = await request.get(`/api/apps/${app.id}/resources/testResource`, {
       params: { $select: 'unknown' },
     });
@@ -337,42 +331,28 @@ describe('queryAppResources', () => {
     `);
   });
 
-  it('should be possible to query resources without credentials with the $none role', async () => {
-    const member = await AppMember.create({
-      email: user.primaryEmail,
-      timezone: 'Europe/Amsterdam',
-      AppId: app.id,
-      UserId: user.id,
-      name: user.name,
-      role: 'User',
-    });
+  it('should be possible to query resources without credentials with the guest role', async () => {
     await Resource.create({
       AppId: app.id,
-      AuthorId: member.id,
       type: 'testResourceNone',
       data: { bar: 'bar' },
     });
 
     const response = await request.get(`/api/apps/${app.id}/resources/testResourceNone`);
     expect(response).toMatchInlineSnapshot(
-      { data: [{ $author: { id: expect.any(String) } }] },
       `
-      HTTP/1.1 200 OK
-      Content-Type: application/json; charset=utf-8
+        HTTP/1.1 200 OK
+        Content-Type: application/json; charset=utf-8
 
-      [
-        {
-          "$author": {
-            "id": Any<String>,
-            "name": "Test User",
+        [
+          {
+            "$created": "1970-01-01T00:00:00.000Z",
+            "$updated": "1970-01-01T00:00:00.000Z",
+            "bar": "bar",
+            "id": 1,
           },
-          "$created": "1970-01-01T00:00:00.000Z",
-          "$updated": "1970-01-01T00:00:00.000Z",
-          "bar": "bar",
-          "id": 1,
-        },
-      ]
-    `,
+        ]
+      `,
     );
   });
 
@@ -383,14 +363,14 @@ describe('queryAppResources', () => {
       AppId: app.id,
       UserId: user.id,
       name: user.name,
-      role: 'Admin',
+      role: 'Reader',
     });
     const userB = await User.create({ timezone: 'Europe/Amsterdam' });
     const memberB = await AppMember.create({
       email: 'userB@example.com',
       AppId: app.id,
       UserId: userB.id,
-      role: 'Admin',
+      role: PredefinedAppRole.ResourcesManager,
       timezone: 'Europe/Amsterdam',
     });
 
@@ -408,8 +388,10 @@ describe('queryAppResources', () => {
     });
     await Resource.create({ AppId: app.id, type: 'testResourceB', data: { bar: 'baz' } });
 
-    authorizeAppMember(app);
-    const response = await request.get(`/api/apps/${app.id}/resources/testResourceAuthorOnly`);
+    authorizeAppMember(app, memberA);
+    const response = await request.get(
+      `/api/apps/${app.id}/resources/testResourceAuthorOnly?$own=true`,
+    );
 
     expect(response).toMatchInlineSnapshot(
       { data: [{ $author: { id: expect.any(String) } }] },
@@ -443,7 +425,7 @@ describe('queryAppResources', () => {
       AppId: app.id,
       UserId: user.id,
       name: user.name,
-      role: 'Member',
+      role: PredefinedAppRole.Owner,
     });
     const memberB = await AppMember.create({
       email: 'userB@example.com',
@@ -451,7 +433,7 @@ describe('queryAppResources', () => {
       AppId: app.id,
       UserId: userB.id,
       name: userB.name,
-      role: 'Member',
+      role: PredefinedAppRole.Member,
     });
     const memberC = await AppMember.create({
       email: 'userC@example.com',
@@ -459,12 +441,12 @@ describe('queryAppResources', () => {
       AppId: app.id,
       UserId: userC.id,
       name: userC.name,
-      role: 'Member',
+      role: PredefinedAppRole.Member,
     });
     await GroupMember.create({
       GroupId: group.id,
       AppMemberId: memberA.id,
-      role: 'Member',
+      role: 'ResourcesManager',
     });
     await GroupMember.create({
       GroupId: group.id,
@@ -477,12 +459,14 @@ describe('queryAppResources', () => {
       type: 'testResourceGroup',
       data: { foo: 'bar' },
       AuthorId: memberA.id,
+      GroupId: group.id,
     });
     await Resource.create({
       AppId: app.id,
       type: 'testResourceGroup',
       data: { foo: 'baz' },
       AuthorId: memberB.id,
+      GroupId: group.id,
     });
     await Resource.create({
       AppId: app.id,
@@ -491,8 +475,10 @@ describe('queryAppResources', () => {
       AuthorId: memberC.id,
     });
 
-    authorizeAppMember(app);
-    const response = await request.get(`/api/apps/${app.id}/resources/testResourceGroup`);
+    authorizeAppMember(app, memberA);
+    const response = await request.get(
+      `/api/apps/${app.id}/resources/testResourceGroup?selectedGroupId=${group.id}`,
+    );
     expect(response).toMatchInlineSnapshot(
       { data: [{ $author: { id: expect.any(String) } }, { $author: { id: expect.any(String) } }] },
       `
@@ -506,6 +492,10 @@ describe('queryAppResources', () => {
             "name": "Test User",
           },
           "$created": "1970-01-01T00:00:00.000Z",
+          "$group": {
+            "id": 1,
+            "name": "Test Group",
+          },
           "$updated": "1970-01-01T00:00:00.000Z",
           "foo": "bar",
           "id": 1,
@@ -516,154 +506,13 @@ describe('queryAppResources', () => {
             "name": null,
           },
           "$created": "1970-01-01T00:00:00.000Z",
+          "$group": {
+            "id": 1,
+            "name": "Test Group",
+          },
           "$updated": "1970-01-01T00:00:00.000Z",
           "foo": "baz",
           "id": 2,
-        },
-      ]
-    `,
-    );
-  });
-
-  it('should only fetch resources as an author or group manager', async () => {
-    const appB = await exampleApp(organization.id, 'test-app-2');
-
-    const group = await Group.create({ name: 'Test Group', AppId: app.id });
-    const groupB = await Group.create({ name: 'Test Group 2', AppId: app.id });
-    // Create a group from a different app where the user is a manager,
-    // These should not be included in the result.
-    const groupC = await Group.create({ name: 'Test Group different app', AppId: appB.id });
-
-    const userB = await User.create({ timezone: 'Europe/Amsterdam' });
-    const userC = await User.create({ timezone: 'Europe/Amsterdam' });
-
-    const appAMemberA = await AppMember.create({
-      email: user.primaryEmail,
-      timezone: 'Europe/Amsterdam',
-      AppId: app.id,
-      UserId: user.id,
-      name: user.name,
-      role: 'Member',
-    });
-    const appAMemberB = await AppMember.create({
-      email: 'userB@example.com',
-      timezone: 'Europe/Amsterdam',
-      AppId: app.id,
-      UserId: userB.id,
-      name: userB.name,
-      role: 'Member',
-    });
-    const appAMemberC = await AppMember.create({
-      email: 'userC@example.com',
-      timezone: 'Europe/Amsterdam',
-      AppId: app.id,
-      UserId: userC.id,
-      name: userC.name,
-      role: 'Member',
-    });
-    const appBMemberA = await AppMember.create({
-      email: user.primaryEmail,
-      timezone: 'Europe/Amsterdam',
-      AppId: appB.id,
-      UserId: user.id,
-      name: user.name,
-      role: 'Member',
-    });
-    const appBMemberC = await AppMember.create({
-      email: 'userC@example.com',
-      timezone: 'Europe/Amsterdam',
-      AppId: appB.id,
-      UserId: userC.id,
-      name: userC.name,
-      role: 'Member',
-    });
-
-    await GroupMember.create({
-      GroupId: group.id,
-      AppMemberId: appAMemberA.id,
-      role: 'GroupMembersManager',
-    });
-    await GroupMember.create({
-      GroupId: groupB.id,
-      AppMemberId: appAMemberB.id,
-      role: 'Member',
-    });
-    await GroupMember.create({
-      GroupId: group.id,
-      AppMemberId: appAMemberC.id,
-      role: 'Member',
-    });
-    await GroupMember.create({
-      GroupId: groupC.id,
-      AppMemberId: appBMemberA.id,
-      role: 'GroupMembersManager',
-    });
-    await GroupMember.create({
-      GroupId: groupC.id,
-      AppMemberId: appBMemberC.id,
-      role: 'Member',
-    });
-
-    await Resource.create({
-      AppId: app.id,
-      type: 'testResourceGroupManager',
-      data: { foo: 'bar' },
-      AuthorId: appAMemberA.id,
-    });
-    await Resource.create({
-      AppId: app.id,
-      type: 'testResourceGroupManager',
-      data: { foo: 'baz' },
-      AuthorId: appAMemberB.id,
-    });
-    await Resource.create({
-      AppId: app.id,
-      type: 'testResourceGroupManager',
-      data: { foo: 'foo' },
-      AuthorId: appAMemberC.id,
-    });
-    await Resource.create({
-      AppId: appB.id,
-      type: 'testResourceGroupManager',
-      data: { foo: 'baar' },
-      AuthorId: appBMemberA.id,
-    });
-    await Resource.create({
-      AppId: appB.id,
-      type: 'testResourceGroupManager',
-      data: { foo: 'baaar' },
-      AuthorId: appBMemberC.id,
-    });
-
-    authorizeAppMember(app);
-    const response = await request.get(`/api/apps/${app.id}/resources/testResourceGroupManager`);
-
-    expect(response).toMatchInlineSnapshot(
-      { data: [{ $author: { id: expect.any(String) } }, { $author: { id: expect.any(String) } }] },
-      `
-      HTTP/1.1 200 OK
-      Content-Type: application/json; charset=utf-8
-
-      [
-        {
-          "$author": {
-            "id": Any<String>,
-            "name": "Test User",
-          },
-          "$created": "1970-01-01T00:00:00.000Z",
-          "$updated": "1970-01-01T00:00:00.000Z",
-          "foo": "bar",
-          "id": 1,
-        },
-        {
-          "$author": {
-            "id": Any<String>,
-            "name": null,
-          },
-          "$created": "1970-01-01T00:00:00.000Z",
-          "$updated": "1970-01-01T00:00:00.000Z",
-          "foo": "foo",
-          "id": 3,
         },
       ]
     `,
@@ -677,6 +526,7 @@ describe('queryAppResources', () => {
       data: { foo: 'bar' },
     });
     await Resource.create({ AppId: app.id, type: 'testResource', data: { foo: 'baz' } });
+    authorizeStudio();
 
     const response = await request.get(`/api/apps/${app.id}/resources/testResource?$top=1`);
 
@@ -707,6 +557,7 @@ describe('queryAppResources', () => {
       type: 'testResource',
       data: { foo: 'baz' },
     });
+    authorizeStudio();
 
     const responseA = await request.get(
       `/api/apps/${app.id}/resources/testResource?$orderby=foo asc`,
@@ -820,6 +671,7 @@ describe('queryAppResources', () => {
       data: { number: 9.2 },
     });
 
+    authorizeStudio();
     const responseA = await request.get(
       `/api/apps/${app.id}/resources/testResource?$orderby=number asc`,
     );
@@ -892,6 +744,7 @@ describe('queryAppResources', () => {
       data: { integer: 10 },
     });
 
+    authorizeStudio();
     const responseA = await request.get(
       `/api/apps/${app.id}/resources/testResource?$orderby=integer asc`,
     );
@@ -952,6 +805,7 @@ describe('queryAppResources', () => {
       data: { boolean: true },
     });
 
+    authorizeStudio();
     const responseA = await request.get(
       `/api/apps/${app.id}/resources/testResource?$orderby=boolean asc`,
     );
@@ -1012,6 +866,7 @@ describe('queryAppResources', () => {
       data: { enum: 'B' },
     });
 
+    authorizeStudio();
     const responseA = await request.get(
       `/api/apps/${app.id}/resources/testResource?$orderby=enum asc`,
     );
@@ -1084,6 +939,7 @@ describe('queryAppResources', () => {
       data: { date: '2024-05-14' },
     });
 
+    authorizeStudio();
     const responseA = await request.get(
       `/api/apps/${app.id}/resources/testResource?$orderby=date asc`,
     );
@@ -1162,6 +1018,7 @@ describe('queryAppResources', () => {
       data: { foo: 'foo' },
     });
     await Resource.create({ AppId: app.id, type: 'testResource', data: { foo: 'bar' } });
+    authorizeStudio();
 
     const response = await request.get(
       `/api/apps/${app.id}/resources/testResource?$filter=foo eq 'foo'`,
@@ -1189,6 +1046,7 @@ describe('queryAppResources', () => {
       data: { foo: 'foo', bar: 1 },
     });
     await Resource.create({ AppId: app.id, type: 'testResource', data: { foo: 'bar', bar: 2 } });
+    authorizeStudio();
 
     const response = await request.get(`/api/apps/${app.id}/resources/testResource`, {
       params: { $filter: `contains(foo, 'oo') and id le ${resource.id}` },
@@ -1218,7 +1076,7 @@ describe('queryAppResources', () => {
       AppId: app.id,
       UserId: user.id,
       name: user.name,
-      role: 'Member',
+      role: PredefinedAppRole.Member,
     });
     const memberB = await AppMember.create({
       email: 'userB@example.com',
@@ -1226,7 +1084,7 @@ describe('queryAppResources', () => {
       AppId: app.id,
       UserId: userB.id,
       name: userB.name,
-      role: 'Member',
+      role: PredefinedAppRole.Member,
     });
     await Resource.create({
       AppId: app.id,
@@ -1240,6 +1098,7 @@ describe('queryAppResources', () => {
       data: { foo: 'bar', bar: 2 },
       AuthorId: memberB.id,
     });
+    authorizeStudio();
 
     const response = await request.get(`/api/apps/${app.id}/resources/testResource`, {
       params: { $filter: `$author/id eq ${memberB.id}` },
@@ -1280,6 +1139,7 @@ describe('queryAppResources', () => {
       type: 'testResource',
       data: { foo: 'bar', bar: 2 },
     });
+    authorizeStudio();
 
     const response = await request.get(`/api/apps/${app.id}/resources/testResource`, {
       params: { $filter: "contains(foo, 'oo') or foo eq 'bar'", $orderby: '$updated desc' },
@@ -1315,7 +1175,7 @@ describe('queryAppResources', () => {
       AppId: app.id,
       UserId: user.id,
       name: user.name,
-      role: 'Member',
+      role: PredefinedAppRole.Member,
     });
     await Resource.create({
       AppId: app.id,
@@ -1325,6 +1185,7 @@ describe('queryAppResources', () => {
       EditorId: member.id,
     });
 
+    authorizeStudio();
     const response = await request.get(`/api/apps/${app.id}/resources/testResource`);
 
     expect(response).toMatchInlineSnapshot(
@@ -1355,6 +1216,7 @@ describe('queryAppResources', () => {
   });
 
   it('should not fetch expired resources', async () => {
+    authorizeStudio();
     await request.post<ResourceType>(`/api/apps/${app.id}/resources/testExpirableResource`, {
       foo: 'test',
       $expires: '1970-01-01T00:05:00.000Z',
@@ -1433,7 +1295,7 @@ describe('queryAppResources', () => {
 
   it('should not allow organization members to query resources using Studio', async () => {
     await orgMember.update({
-      role: 'Member',
+      role: PredefinedOrganizationRole.Member,
     });
 
     await Resource.create({
@@ -1449,7 +1311,7 @@ describe('queryAppResources', () => {
 
       {
         "error": "Forbidden",
-        "message": "User does not have sufficient permissions.",
+        "message": "User does not have sufficient app permissions.",
         "statusCode": 403,
       }
     `);
@@ -1480,7 +1342,7 @@ describe('queryAppResources', () => {
 
   it('should not allow organization members to query resources using client credentials', async () => {
     await orgMember.update({
-      role: 'Member',
+      role: PredefinedOrganizationRole.Member,
     });
 
     await Resource.create({
@@ -1496,7 +1358,7 @@ describe('queryAppResources', () => {
 
       {
         "error": "Forbidden",
-        "message": "User does not have sufficient permissions.",
+        "message": "User does not have sufficient app permissions.",
         "statusCode": 403,
       }
     `);
@@ -1515,7 +1377,7 @@ describe('queryAppResources', () => {
 
       {
         "error": "Forbidden",
-        "message": "This action is private.",
+        "message": "Guest does not have sufficient app permissions.",
         "statusCode": 403,
       }
     `);
@@ -1534,14 +1396,14 @@ describe('queryAppResources', () => {
     });
     await Resource.create({ AppId: app.id, type: 'testResource', data: { bar: 'baz' } });
 
-    await AppMember.create({
+    const member = await AppMember.create({
       email: user.primaryEmail,
       AppId: app.id,
       UserId: user.id,
-      role: 'Reader',
+      role: PredefinedAppRole.Owner,
       timezone: 'Europe/Amsterdam',
     });
-    authorizeAppMember(app);
+    authorizeAppMember(app, member);
     const response = await request.get(`/api/apps/${app.id}/resources/testResource`, {
       params: { view: 'testView' },
     });
@@ -1567,7 +1429,7 @@ describe('queryAppResources', () => {
     `);
   });
 
-  it('should be able to fetch a public resource view', async () => {
+  it('should be able to fetch a public resource', async () => {
     await Resource.create({
       AppId: app.id,
       type: 'testResource',
@@ -1580,9 +1442,7 @@ describe('queryAppResources', () => {
     });
     await Resource.create({ AppId: app.id, type: 'testResource', data: { bar: 'baz' } });
 
-    const response = await request.get(`/api/apps/${app.id}/resources/testResource`, {
-      params: { view: 'publicView' },
-    });
+    const response = await request.get(`/api/apps/${app.id}/resources/testResource`);
 
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 200 OK
@@ -1594,35 +1454,32 @@ describe('queryAppResources', () => {
           "$updated": "1970-01-01T00:00:00.000Z",
           "foo": "bar",
           "id": 1,
-          "public": true,
         },
         {
           "$created": "1970-01-01T00:00:00.000Z",
           "$updated": "1970-01-01T00:00:00.000Z",
           "foo": "baz",
           "id": 2,
-          "public": true,
         },
         {
           "$created": "1970-01-01T00:00:00.000Z",
           "$updated": "1970-01-01T00:00:00.000Z",
           "bar": "baz",
           "id": 3,
-          "public": true,
         },
       ]
     `);
   });
 
   it('should return 404 for non-existing resource views', async () => {
-    await AppMember.create({
+    const member = await AppMember.create({
       email: user.primaryEmail,
       AppId: app.id,
       UserId: user.id,
-      role: 'Reader',
+      role: PredefinedAppRole.ResourcesManager,
       timezone: 'Europe/Amsterdam',
     });
-    authorizeAppMember(app);
+    authorizeAppMember(app, member);
     const response = await request.get(`/api/apps/${app.id}/resources/testResource`, {
       params: { view: 'missingView' },
     });
@@ -1640,31 +1497,31 @@ describe('queryAppResources', () => {
   });
 
   it('should check for authentication when using resource views', async () => {
-    const response = await request.get(`/api/apps/${app.id}/resources/testResource`, {
+    const response = await request.get(`/api/apps/${app.id}/resources/testResourceB`, {
       params: { view: 'testView' },
     });
 
     expect(response).toMatchInlineSnapshot(`
-      HTTP/1.1 401 Unauthorized
+      HTTP/1.1 403 Forbidden
       Content-Type: application/json; charset=utf-8
 
       {
-        "error": "Unauthorized",
-        "message": "User is not logged in.",
-        "statusCode": 401,
+        "error": "Forbidden",
+        "message": "Guest does not have sufficient app permissions.",
+        "statusCode": 403,
       }
     `);
   });
 
   it('should check for the correct role when using resource views', async () => {
-    await AppMember.create({
+    const member = await AppMember.create({
       email: user.primaryEmail,
       AppId: app.id,
       UserId: user.id,
-      role: 'Visitor',
+      role: PredefinedOrganizationRole.Member,
       timezone: 'Europe/Amsterdam',
     });
-    authorizeAppMember(app);
+    authorizeAppMember(app, member);
     const response = await request.get(`/api/apps/${app.id}/resources/testResource`, {
       params: { view: 'testView' },
     });
@@ -1675,7 +1532,7 @@ describe('queryAppResources', () => {
 
       {
         "error": "Forbidden",
-        "message": "User does not have sufficient permissions.",
+        "message": "App member does not have sufficient app permissions.",
         "statusCode": 403,
       }
     `);

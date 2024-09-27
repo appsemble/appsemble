@@ -354,6 +354,7 @@ describe('createAppFromTemplate', () => {
         'icon',
         'nameAttribute',
         'emailAttribute',
+        'emailVerifiedAttribute',
         'idpCertificate',
         'spPrivateKey',
         'spPublicKey',
@@ -367,6 +368,7 @@ describe('createAppFromTemplate', () => {
 
     expect(appSamlSecret.toJSON()).toStrictEqual({
       emailAttribute: 'emailAttribute',
+      emailVerifiedAttribute: null,
       entityId: 'entityId',
       icon: 'icon',
       id: 2,

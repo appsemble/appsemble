@@ -11,7 +11,7 @@ import {
 } from '../../../../models/index.js';
 import { setArgv } from '../../../../utils/argv.js';
 import { createServer } from '../../../../utils/createServer.js';
-import { authorizeAppMember, createTestUser } from '../../../../utils/test/authorization.js';
+import { authorizeStudio, createTestUser } from '../../../../utils/test/authorization.js';
 import { useTestDatabase } from '../../../../utils/test/testSchema.js';
 
 let organization: Organization;
@@ -87,7 +87,7 @@ describe('createAppSubscription', () => {
   it('should subscribe to apps', async () => {
     const app = await defaultApp(organization.id);
 
-    authorizeAppMember(app);
+    authorizeStudio();
     const response = await request.post(`/api/apps/${app.id}/subscriptions`, {
       endpoint: 'https://example.com',
       keys: { p256dh: 'abc', auth: 'def' },

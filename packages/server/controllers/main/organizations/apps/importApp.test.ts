@@ -100,7 +100,7 @@ describe('importApp', () => {
 
       {
         "error": "Forbidden",
-        "message": "User does not have sufficient permissions.",
+        "message": "User does not have sufficient organization permissions.",
         "statusCode": 403,
       }
     `);
@@ -111,6 +111,11 @@ describe('importApp', () => {
       name: 'Test App',
       defaultPage: 'Test Page',
       pages: [{ name: 'Test Page', blocks: [{ type: 'test', version: '0.0.0' }] }],
+      security: {
+        guest: {
+          permissions: ['$resource:testResource:create'],
+        },
+      },
       resources: {
         testResource: {
           schema: {
@@ -119,7 +124,6 @@ describe('importApp', () => {
             required: ['foo'],
             properties: { foo: { type: 'string' } },
           },
-          roles: ['$public'],
         },
       },
     } as AppDefinition;
@@ -132,11 +136,17 @@ describe('importApp', () => {
     zip.file('screenshots/0.png', await readFixture('standing.png'));
     zip.file('screenshots/en/0.png', await readFixture('en-standing.png'));
     zip.file('screenshots/nl/0.png', await readFixture('nl-standing.png'));
-    zip.file('resources/testResource.json', Buffer.from('[{"foo":"bar"}]'));
+    zip.file(
+      'resources/testResource.json',
+      Buffer.from('[{"data":{"foo":"bar"}, "$clonable":false,"$seed":false, "$ephemeral":false }]'),
+    );
     zip.file('assets/10x50.png', await readFixture('10x50.png'));
     vi.useRealTimers();
     const content = zip.generateNodeStream();
-    await OrganizationMember.update({ role: 'AppEditor' }, { where: { UserId: user.id } });
+    await OrganizationMember.update(
+      { role: PredefinedOrganizationRole.Maintainer },
+      { where: { UserId: user.id } },
+    );
     authorizeStudio();
 
     const response = await request.post(
@@ -304,9 +314,6 @@ describe('importApp', () => {
           ],
           "resources": {
             "testResource": {
-              "roles": [
-                "$public",
-              ],
               "schema": {
                 "additionalProperties": false,
                 "properties": {
@@ -319,6 +326,13 @@ describe('importApp', () => {
                 ],
                 "type": "object",
               },
+            },
+          },
+          "security": {
+            "guest": {
+              "permissions": [
+                "$resource:testResource:create",
+              ],
             },
           },
         },
@@ -349,6 +363,10 @@ describe('importApp', () => {
           blocks:
             - type: test
               version: 0.0.0
+      security:
+        guest:
+          permissions:
+            - $resource:testResource:create
       resources:
         testResource:
           schema:
@@ -359,8 +377,6 @@ describe('importApp', () => {
             properties:
               foo:
                 type: string
-          roles:
-            - $public
       ",
       }
     `,
@@ -392,7 +408,10 @@ describe('importApp', () => {
     zip.file('assets/10x50.png', await readFixture('10x50.png'));
     vi.useRealTimers();
     const content = zip.generateNodeStream();
-    await OrganizationMember.update({ role: 'AppEditor' }, { where: { UserId: user.id } });
+    await OrganizationMember.update(
+      { role: PredefinedOrganizationRole.Maintainer },
+      { where: { UserId: user.id } },
+    );
     authorizeStudio();
 
     const response = await request.post(

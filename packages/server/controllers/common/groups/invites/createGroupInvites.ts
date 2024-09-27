@@ -27,6 +27,7 @@ export async function createGroupInvites(ctx: Context): Promise<void> {
   } = ctx;
 
   const group = await Group.findOne({ where: { id: groupId } });
+  assertKoaError(!group, ctx, 400, `Group ${groupId} does not exist`);
 
   const app = await App.findByPk(group.AppId, {
     attributes: ['id', 'definition', 'path', 'OrganizationId', 'domain'],

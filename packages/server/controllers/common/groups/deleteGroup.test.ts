@@ -63,7 +63,7 @@ describe('deleteGroup', () => {
   it('should delete a group', async () => {
     const group = await Group.create({ name: 'A', AppId: app.id });
     authorizeStudio();
-    const response = await request.delete(`/api/apps/${app.id}/groups/${group.id}`);
+    const response = await request.delete(`/api/groups/${group.id}`);
     const responseB = await request.get(`/api/apps/${app.id}/groups`);
 
     expect(response.status).toBe(204);
@@ -72,16 +72,16 @@ describe('deleteGroup', () => {
 
   it('should not delete without sufficient permissions', async () => {
     await OrganizationMember.update(
-      { role: 'AppEditor' },
+      { role: PredefinedOrganizationRole.Member },
       { where: { UserId: user.id, OrganizationId: organization.id } },
     );
     const group = await Group.create({ name: 'A', AppId: app.id });
     authorizeStudio();
-    const response = await request.delete(`/api/apps/${app.id}/groups/${group.id}`);
+    const response = await request.delete(`/api/groups/${group.id}`);
 
     expect(response).toMatchObject({
       status: 403,
-      data: { message: 'User does not have sufficient permissions.' },
+      data: { message: 'User does not have sufficient app permissions.' },
     });
   });
 
@@ -108,10 +108,10 @@ describe('deleteGroup', () => {
     });
     const group = await Group.create({ name: 'A', AppId: appB.id });
     authorizeStudio();
-    const response = await request.delete(`/api/apps/${appB.id}/groups/${group.id}`);
+    const response = await request.delete(`/api/groups/${group.id}`);
     expect(response).toMatchObject({
       status: 403,
-      data: { message: 'User is not a member of this organization.' },
+      data: { message: 'User does not have sufficient app permissions.' },
     });
   });
 });

@@ -13,7 +13,8 @@ export function createQueryAppResourcesController(options: Options): Middleware 
   return async (ctx: Context) => {
     const {
       pathParams: { appId, resourceType },
-      queryParams: { $select, $skip, $top, selectedGroupId, view },
+      queryParams: { $own, $select, $skip, $top, selectedGroupId, view },
+      user: authSubject,
     } = ctx;
 
     const { checkAppPermissions, getApp, getAppResources } = options;
@@ -27,7 +28,11 @@ export function createQueryAppResourcesController(options: Options): Middleware 
     await checkAppPermissions({
       context: ctx,
       permissions: [
-        view ? `$resource:${resourceType}:query:${view}` : `$resource:${resourceType}:query`,
+        $own
+          ? `$resource:${resourceType}:own:query`
+          : view
+            ? `$resource:${resourceType}:query:${view}`
+            : `$resource:${resourceType}:query`,
       ],
       app,
       groupId: selectedGroupId,
@@ -48,6 +53,7 @@ export function createQueryAppResourcesController(options: Options): Middleware 
             GroupId: selectedGroupId ?? null,
             expires: { or: [{ gt: new Date() }, null] },
             ...(app.demoMode && !isSameOrigin ? { seed: false, ephemeral: true } : {}),
+            ...($own ? { AuthorId: authSubject?.id } : {}),
           },
         ],
       },

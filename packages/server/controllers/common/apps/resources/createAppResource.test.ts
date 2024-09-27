@@ -1,5 +1,9 @@
 import { createFormData } from '@appsemble/node-utils';
-import { type Resource as ResourceType } from '@appsemble/types';
+import {
+  PredefinedAppRole,
+  PredefinedOrganizationRole,
+  type Resource as ResourceType,
+} from '@appsemble/types';
 import { request, setTestApp } from 'axios-test-instance';
 import stripIndent from 'strip-indent';
 import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
@@ -17,6 +21,7 @@ import {
 import { setArgv } from '../../../../utils/argv.js';
 import { createServer } from '../../../../utils/createServer.js';
 import {
+  authorizeAppMember,
   authorizeClientCredentials,
   authorizeStudio,
   createTestUser,
@@ -52,7 +57,7 @@ beforeEach(async () => {
   orgMember = await OrganizationMember.create({
     UserId: user.id,
     OrganizationId: organization.id,
-    role: 'Maintainer',
+    role: PredefinedOrganizationRole.Maintainer,
   });
   app = await exampleApp(organization.id);
 });
@@ -65,6 +70,7 @@ afterAll(() => {
 describe('createAppResource', () => {
   it('should be able to create a new resource', async () => {
     const resource = { foo: 'bar' };
+    authorizeStudio();
     const response = await request.post(`/api/apps/${app.id}/resources/testResource`, resource);
 
     expect(response).toMatchInlineSnapshot(`
@@ -82,6 +88,7 @@ describe('createAppResource', () => {
 
   it('should validate resources', async () => {
     const resource = {};
+    authorizeStudio();
     const response = await request.post(`/api/apps/${app.id}/resources/testResource`, resource);
 
     expect(response).toMatchInlineSnapshot(`
@@ -180,6 +187,7 @@ describe('createAppResource', () => {
   });
 
   it('should check if an app has a specific resource definition', async () => {
+    authorizeStudio();
     const response = await request.get(`/api/apps/${app.id}/resources/thisDoesNotExist`);
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 404 Not Found
@@ -201,6 +209,7 @@ describe('createAppResource', () => {
       vapidPrivateKey: 'b',
       OrganizationId: organization.id,
     });
+    authorizeStudio();
     const response = await request.get(`/api/apps/${appA.id}/resources/thisDoesNotExist`);
 
     expect(response).toMatchInlineSnapshot(`
@@ -216,6 +225,7 @@ describe('createAppResource', () => {
   });
 
   it('should calculate resource expiration', async () => {
+    authorizeStudio();
     const response = await request.post(`/api/apps/${app.id}/resources/testExpirableResource`, {
       foo: 'test',
     });
@@ -235,6 +245,7 @@ describe('createAppResource', () => {
   });
 
   it('should set resource expiration', async () => {
+    authorizeStudio();
     const response = await request.post(`/api/apps/${app.id}/resources/testExpirableResource`, {
       foo: 'test',
       $expires: '1970-01-01T00:05:00.000Z',
@@ -258,6 +269,7 @@ describe('createAppResource', () => {
     // 10 minutes
     vi.advanceTimersByTime(600e3);
 
+    authorizeStudio();
     const response = await request.post(`/api/apps/${app.id}/resources/testExpirableResource`, {
       foo: 'test',
       $expires: '1970-01-01T00:05:00.000Z',
@@ -289,6 +301,7 @@ describe('createAppResource', () => {
   });
 
   it('should accept assets as form data', async () => {
+    authorizeStudio();
     const response = await request.post<ResourceType>(
       `/api/apps/${app.id}/resources/testAssets`,
       createFormData({
@@ -318,6 +331,7 @@ describe('createAppResource', () => {
         ResourceId: 1,
         clonable: false,
         AppMemberId: null,
+        GroupId: null,
         created: new Date('1970-01-01T00:00:00.000Z'),
         data: expect.any(Buffer),
         ephemeral: false,
@@ -333,6 +347,7 @@ describe('createAppResource', () => {
   });
 
   it('should disallow unused files', async () => {
+    authorizeStudio();
     const response = await request.post(
       `/api/apps/${app.id}/resources/testAssets`,
       createFormData({
@@ -370,6 +385,7 @@ describe('createAppResource', () => {
   });
 
   it('should disallow duplicate file references', async () => {
+    authorizeStudio();
     const response = await request.post(
       `/api/apps/${app.id}/resources/testAssets`,
       createFormData({
@@ -410,6 +426,7 @@ describe('createAppResource', () => {
   });
 
   it('should accept an array of resources', async () => {
+    authorizeStudio();
     const response = await request.post<ResourceType>(
       `/api/apps/${app.id}/resources/testResource`,
       [{ foo: 'bar' }, { foo: 'baz' }],
@@ -437,6 +454,7 @@ describe('createAppResource', () => {
   });
 
   it('should accept assets as form data with multiple resources', async () => {
+    authorizeStudio();
     const response = await request.post<ResourceType[]>(
       `/api/apps/${app.id}/resources/testAssets`,
       createFormData({
@@ -478,6 +496,7 @@ describe('createAppResource', () => {
         AppId: app.id,
         ResourceId: 1,
         AppMemberId: null,
+        GroupId: null,
         clonable: false,
         created: new Date('1970-01-01T00:00:00.000Z'),
         data: Buffer.from('Test resource a'),
@@ -493,6 +512,7 @@ describe('createAppResource', () => {
         AppId: app.id,
         ResourceId: 2,
         AppMemberId: null,
+        GroupId: null,
         clonable: false,
         created: new Date('1970-01-01T00:00:00.000Z'),
         data: Buffer.from('Test resource b'),
@@ -509,6 +529,7 @@ describe('createAppResource', () => {
   });
 
   it('should block unknown asset references', async () => {
+    authorizeStudio();
     const response = await request.post(
       `/api/apps/${app.id}/resources/testAssets`,
       createFormData({
@@ -553,28 +574,23 @@ describe('createAppResource', () => {
       foo: 'bar',
     });
     expect(response).toMatchInlineSnapshot(
-      { data: { $author: { id: expect.any(String) } } },
       `
-      HTTP/1.1 201 Created
-      Content-Type: application/json; charset=utf-8
+        HTTP/1.1 201 Created
+        Content-Type: application/json; charset=utf-8
 
-      {
-        "$author": {
-          "id": Any<String>,
-          "name": "Test User",
-        },
-        "$created": "1970-01-01T00:00:00.000Z",
-        "$updated": "1970-01-01T00:00:00.000Z",
-        "foo": "bar",
-        "id": 1,
-      }
-    `,
+        {
+          "$created": "1970-01-01T00:00:00.000Z",
+          "$updated": "1970-01-01T00:00:00.000Z",
+          "foo": "bar",
+          "id": 1,
+        }
+      `,
     );
   });
 
   it('should not allow organization members to create resources using Studio', async () => {
     await orgMember.update({
-      role: 'Member',
+      role: PredefinedOrganizationRole.Member,
     });
 
     authorizeStudio();
@@ -587,7 +603,7 @@ describe('createAppResource', () => {
 
       {
         "error": "Forbidden",
-        "message": "User does not have sufficient permissions.",
+        "message": "User does not have sufficient app permissions.",
         "statusCode": 403,
       }
     `);
@@ -599,28 +615,23 @@ describe('createAppResource', () => {
       foo: 'bar',
     });
     expect(response).toMatchInlineSnapshot(
-      { data: { $author: { id: expect.any(String) } } },
       `
-      HTTP/1.1 201 Created
-      Content-Type: application/json; charset=utf-8
+        HTTP/1.1 201 Created
+        Content-Type: application/json; charset=utf-8
 
-      {
-        "$author": {
-          "id": Any<String>,
-          "name": "Test User",
-        },
-        "$created": "1970-01-01T00:00:00.000Z",
-        "$updated": "1970-01-01T00:00:00.000Z",
-        "foo": "bar",
-        "id": 1,
-      }
-    `,
+        {
+          "$created": "1970-01-01T00:00:00.000Z",
+          "$updated": "1970-01-01T00:00:00.000Z",
+          "foo": "bar",
+          "id": 1,
+        }
+      `,
     );
   });
 
   it('should not allow organization members to create resources using client credentials', async () => {
     await orgMember.update({
-      role: 'Member',
+      role: PredefinedOrganizationRole.Member,
     });
 
     await authorizeClientCredentials('resources:write');
@@ -633,13 +644,14 @@ describe('createAppResource', () => {
 
       {
         "error": "Forbidden",
-        "message": "User does not have sufficient permissions.",
+        "message": "User does not have sufficient app permissions.",
         "statusCode": 403,
       }
     `);
   });
 
   it('should accept text/csv', async () => {
+    authorizeStudio();
     const response = await request.post(
       `/api/apps/${app.id}/resources/testResource`,
       stripIndent(`
@@ -685,62 +697,33 @@ describe('createAppResource', () => {
   });
 
   it("should assign the user's AppMember account to the resource", async () => {
-    const { id } = await AppMember.create({
+    const member = await AppMember.create({
       email: user.primaryEmail,
       UserId: user.id,
       AppId: app.id,
-      role: 'user',
+      role: PredefinedAppRole.ResourcesManager,
       timezone: 'Europe/Amsterdam',
     });
-    authorizeStudio();
+    authorizeAppMember(app, member);
 
     const resource = { foo: 'bar' };
     const response = await request.post(`/api/apps/${app.id}/resources/testResource`, resource);
 
     expect(response).toMatchInlineSnapshot(
-      { data: { $author: { id: expect.any(String) } } },
       `
-      HTTP/1.1 201 Created
-      Content-Type: application/json; charset=utf-8
+        HTTP/1.1 201 Created
+        Content-Type: application/json; charset=utf-8
 
-      {
-        "$author": {
-          "id": Any<String>,
-          "name": null,
-        },
-        "$created": "1970-01-01T00:00:00.000Z",
-        "$updated": "1970-01-01T00:00:00.000Z",
-        "foo": "bar",
-        "id": 1,
-      }
-    `,
+        {
+          "$created": "1970-01-01T00:00:00.000Z",
+          "$updated": "1970-01-01T00:00:00.000Z",
+          "foo": "bar",
+          "id": 1,
+        }
+      `,
     );
-    expect(response.data.$author.id).toBe(id);
-  });
-
-  it('should create a new AppMember account if the user does not have one yet, and assign it to the resource', async () => {
-    authorizeStudio();
-    const resource = { foo: 'bar' };
-    const response = await request.post(`/api/apps/${app.id}/resources/testResource`, resource);
-
-    expect(response).toMatchInlineSnapshot(
-      { data: { $author: { id: expect.any(String) } } },
-      `
-      HTTP/1.1 201 Created
-      Content-Type: application/json; charset=utf-8
-
-      {
-        "$author": {
-          "id": Any<String>,
-          "name": "Test User",
-        },
-        "$created": "1970-01-01T00:00:00.000Z",
-        "$updated": "1970-01-01T00:00:00.000Z",
-        "foo": "bar",
-        "id": 1,
-      }
-    `,
-    );
+    const foundResource = await Resource.findByPk(response.data.id);
+    expect(foundResource.dataValues.AuthorId).toBe(member.id);
   });
 
   it('should create ephemeral resources in demo apps', async () => {
@@ -753,23 +736,18 @@ describe('createAppResource', () => {
     const response = await request.post(`/api/apps/${app.id}/resources/testResource`, resource);
 
     expect(response).toMatchInlineSnapshot(
-      { data: { $author: { id: expect.any(String) } } },
       `
-      HTTP/1.1 201 Created
-      Content-Type: application/json; charset=utf-8
+        HTTP/1.1 201 Created
+        Content-Type: application/json; charset=utf-8
 
-      {
-        "$author": {
-          "id": Any<String>,
-          "name": "Test User",
-        },
-        "$created": "1970-01-01T00:00:00.000Z",
-        "$ephemeral": true,
-        "$updated": "1970-01-01T00:00:00.000Z",
-        "foo": "bar",
-        "id": 1,
-      }
-    `,
+        {
+          "$created": "1970-01-01T00:00:00.000Z",
+          "$ephemeral": true,
+          "$updated": "1970-01-01T00:00:00.000Z",
+          "foo": "bar",
+          "id": 1,
+        }
+      `,
     );
 
     const ephemeralResource = await Resource.findOne({
@@ -807,7 +785,6 @@ describe('createAppResource', () => {
     expect(response).toMatchInlineSnapshot(
       {
         data: {
-          $author: { id: expect.any(String) },
           file: expect.stringMatching(/^[0-f]{8}(?:-[0-f]{4}){3}-[0-f]{12}$/),
         },
       },
@@ -816,10 +793,6 @@ describe('createAppResource', () => {
       Content-Type: application/json; charset=utf-8
 
       {
-        "$author": {
-          "id": Any<String>,
-          "name": "Test User",
-        },
         "$created": "1970-01-01T00:00:00.000Z",
         "$ephemeral": true,
         "$updated": "1970-01-01T00:00:00.000Z",
@@ -866,14 +839,14 @@ describe('createAppResource', () => {
       [
         {
           id: expect.stringMatching(/^[0-f]{8}(?:-[0-f]{4}){3}-[0-f]{12}$/),
-          AppMemberId: expect.stringMatching(/^[0-f]{8}(?:-[0-f]{4}){3}-[0-f]{12}$/),
         },
       ],
       `
       [
         {
           "AppId": 1,
-          "AppMemberId": StringMatching /\\^\\[0-f\\]\\{8\\}\\(\\?:-\\[0-f\\]\\{4\\}\\)\\{3\\}-\\[0-f\\]\\{12\\}\\$/,
+          "AppMemberId": null,
+          "GroupId": null,
           "ResourceId": 1,
           "clonable": false,
           "created": 1970-01-01T00:00:00.000Z,
@@ -903,22 +876,17 @@ describe('createAppResource', () => {
     });
 
     expect(response).toMatchInlineSnapshot(
-      { data: { $author: { id: expect.any(String) } } },
       `
-      HTTP/1.1 201 Created
-      Content-Type: application/json; charset=utf-8
+        HTTP/1.1 201 Created
+        Content-Type: application/json; charset=utf-8
 
-      {
-        "$author": {
-          "id": Any<String>,
-          "name": "Test User",
-        },
-        "$created": "1970-01-01T00:00:00.000Z",
-        "$updated": "1970-01-01T00:00:00.000Z",
-        "foo": "bar",
-        "id": 1,
-      }
-    `,
+        {
+          "$created": "1970-01-01T00:00:00.000Z",
+          "$updated": "1970-01-01T00:00:00.000Z",
+          "foo": "bar",
+          "id": 1,
+        }
+      `,
     );
 
     const seedResource = await Resource.findOne({
@@ -951,23 +919,18 @@ describe('createAppResource', () => {
     });
 
     expect(response).toMatchInlineSnapshot(
-      { data: { $author: { id: expect.any(String) } } },
       `
-      HTTP/1.1 201 Created
-      Content-Type: application/json; charset=utf-8
+        HTTP/1.1 201 Created
+        Content-Type: application/json; charset=utf-8
 
-      {
-        "$author": {
-          "id": Any<String>,
-          "name": "Test User",
-        },
-        "$created": "1970-01-01T00:00:00.000Z",
-        "$ephemeral": true,
-        "$updated": "1970-01-01T00:00:00.000Z",
-        "foo": "bar",
-        "id": 2,
-      }
-    `,
+        {
+          "$created": "1970-01-01T00:00:00.000Z",
+          "$ephemeral": true,
+          "$updated": "1970-01-01T00:00:00.000Z",
+          "foo": "bar",
+          "id": 2,
+        }
+      `,
     );
 
     const seedResource = await Resource.findOne({
@@ -1019,7 +982,6 @@ describe('createAppResource', () => {
     expect(response).toMatchInlineSnapshot(
       {
         data: {
-          $author: { id: expect.any(String) },
           file: expect.stringMatching(/^[0-f]{8}(?:-[0-f]{4}){3}-[0-f]{12}$/),
         },
       },
@@ -1028,10 +990,6 @@ describe('createAppResource', () => {
       Content-Type: application/json; charset=utf-8
 
       {
-        "$author": {
-          "id": Any<String>,
-          "name": "Test User",
-        },
         "$created": "1970-01-01T00:00:00.000Z",
         "$updated": "1970-01-01T00:00:00.000Z",
         "file": StringMatching /\\^\\[0-f\\]\\{8\\}\\(\\?:-\\[0-f\\]\\{4\\}\\)\\{3\\}-\\[0-f\\]\\{12\\}\\$/,
@@ -1076,14 +1034,14 @@ describe('createAppResource', () => {
       [
         {
           id: expect.stringMatching(/^[0-f]{8}(?:-[0-f]{4}){3}-[0-f]{12}$/),
-          AppMemberId: expect.stringMatching(/^[0-f]{8}(?:-[0-f]{4}){3}-[0-f]{12}$/),
         },
       ],
       `
       [
         {
           "AppId": 1,
-          "AppMemberId": StringMatching /\\^\\[0-f\\]\\{8\\}\\(\\?:-\\[0-f\\]\\{4\\}\\)\\{3\\}-\\[0-f\\]\\{12\\}\\$/,
+          "AppMemberId": null,
+          "GroupId": null,
           "ResourceId": 1,
           "clonable": false,
           "created": 1970-01-01T00:00:00.000Z,
@@ -1122,7 +1080,6 @@ describe('createAppResource', () => {
     expect(response).toMatchInlineSnapshot(
       {
         data: {
-          $author: { id: expect.any(String) },
           file: expect.stringMatching(/^[0-f]{8}(?:-[0-f]{4}){3}-[0-f]{12}$/),
         },
       },
@@ -1131,10 +1088,6 @@ describe('createAppResource', () => {
       Content-Type: application/json; charset=utf-8
 
       {
-        "$author": {
-          "id": Any<String>,
-          "name": "Test User",
-        },
         "$created": "1970-01-01T00:00:00.000Z",
         "$ephemeral": true,
         "$updated": "1970-01-01T00:00:00.000Z",
@@ -1180,14 +1133,14 @@ describe('createAppResource', () => {
       [
         {
           id: expect.stringMatching(/^[0-f]{8}(?:-[0-f]{4}){3}-[0-f]{12}$/),
-          AppMemberId: expect.stringMatching(/^[0-f]{8}(?:-[0-f]{4}){3}-[0-f]{12}$/),
         },
       ],
       `
       [
         {
           "AppId": 1,
-          "AppMemberId": StringMatching /\\^\\[0-f\\]\\{8\\}\\(\\?:-\\[0-f\\]\\{4\\}\\)\\{3\\}-\\[0-f\\]\\{12\\}\\$/,
+          "AppMemberId": null,
+          "GroupId": null,
           "ResourceId": 1,
           "clonable": false,
           "created": 1970-01-01T00:00:00.000Z,
@@ -1244,14 +1197,14 @@ describe('createAppResource', () => {
       [
         {
           id: expect.stringMatching(/^[0-f]{8}(?:-[0-f]{4}){3}-[0-f]{12}$/),
-          AppMemberId: expect.stringMatching(/^[0-f]{8}(?:-[0-f]{4}){3}-[0-f]{12}$/),
         },
       ],
       `
       [
         {
           "AppId": 1,
-          "AppMemberId": StringMatching /\\^\\[0-f\\]\\{8\\}\\(\\?:-\\[0-f\\]\\{4\\}\\)\\{3\\}-\\[0-f\\]\\{12\\}\\$/,
+          "AppMemberId": null,
+          "GroupId": null,
           "ResourceId": 2,
           "clonable": false,
           "created": 1970-01-01T00:00:00.000Z,

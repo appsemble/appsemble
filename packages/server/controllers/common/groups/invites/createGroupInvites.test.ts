@@ -68,35 +68,18 @@ beforeEach(async () => {
 });
 
 describe('createGroupInvites', () => {
-  beforeEach(() => {
-    authorizeAppMember(app);
-  });
+  let appMember: AppMember;
 
-  it('should not allow to invite group members if the join policy is not invite', async () => {
-    const group = await Group.create({ name: 'A', AppId: app.id });
-    const appMember = await AppMember.create({
+  beforeEach(async () => {
+    appMember = await AppMember.create({
       email: user.primaryEmail,
       AppId: app.id,
       UserId: user.id,
       timezone: 'Europe/Amsterdam',
       role: PredefinedAppRole.Member,
     });
-    await GroupMember.create({ GroupId: group.id, AppMemberId: appMember.id, role: 'manager' });
 
-    const response = await request.post(`/api/apps/${app.id}/groups/${group.id}/invites`, {
-      email: 'newuser@example.com',
-    });
-
-    expect(response).toMatchInlineSnapshot(`
-      HTTP/1.1 400 Bad Request
-      Content-Type: application/json; charset=utf-8
-
-      {
-        "error": "Bad Request",
-        "message": "Group invites are not supported",
-        "statusCode": 400,
-      }
-    `);
+    authorizeAppMember(app, appMember);
   });
 
   it('should not allow to create an invite for a non existent group', async () => {
@@ -112,9 +95,12 @@ describe('createGroupInvites', () => {
         },
       },
     });
-    const response = await request.post(`/api/apps/${app.id}/groups/83/invites`, {
-      email: 'newuser@example.com',
-    });
+    const response = await request.post('/api/groups/83/invites', [
+      {
+        email: 'newuser@example.com',
+        role: 'GroupMember',
+      },
+    ]);
 
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 400 Bad Request
@@ -134,26 +120,23 @@ describe('createGroupInvites', () => {
         ...app.definition,
         security: {
           ...app.definition.security,
+          roles: { GroupMember: {} },
           groups: {
             ...app.definition.security,
             join: 'invite',
-            invite: ['$group:manager'],
+            invite: ['GroupManager'],
           },
         },
       },
     });
     const group = await Group.create({ name: 'A', AppId: app.id });
-    const appMember = await AppMember.create({
-      email: user.primaryEmail,
-      AppId: app.id,
-      UserId: user.id,
-      timezone: 'Europe/Amsterdam',
-      role: PredefinedAppRole.Member,
-    });
-    await GroupMember.create({ GroupId: group.id, AppMemberId: appMember.id, role: 'member' });
-    const response = await request.post(`/api/apps/${app.id}/groups/${group.id}/invites`, {
-      email: 'newuser@example.com',
-    });
+    await GroupMember.create({ GroupId: group.id, AppMemberId: appMember.id });
+    const response = await request.post(`/api/groups/${group.id}/invites`, [
+      {
+        email: 'newuser@example.com',
+        role: 'GroupMember',
+      },
+    ]);
 
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 403 Forbidden
@@ -161,7 +144,7 @@ describe('createGroupInvites', () => {
 
       {
         "error": "Forbidden",
-        "message": "User is not allowed to invite members to this group",
+        "message": "App member does not have sufficient app permissions.",
         "statusCode": 403,
       }
     `);
@@ -173,30 +156,45 @@ describe('createGroupInvites', () => {
         ...app.definition,
         security: {
           ...app.definition.security,
+          roles: {
+            GroupMember: {
+              permissions: ['$group:member:invite'],
+            },
+          },
           groups: {
             ...app.definition.security,
             join: 'invite',
-            invite: ['$group:member'],
+            invite: ['GroupMember'],
           },
         },
       },
     });
 
-    vi.spyOn(server.context.mailer, 'sendTranslatedEmail');
-    const group = await Group.create({ name: 'A', AppId: app.id });
-    const appMember = await AppMember.create({
-      email: user.primaryEmail,
-      AppId: app.id,
-      UserId: user.id,
-      timezone: 'Europe/Amsterdam',
-      role: PredefinedAppRole.Member,
-    });
-    await GroupMember.create({ GroupId: group.id, AppMemberId: appMember.id, role: 'member' });
-    const response = await request.post(`/api/apps/${app.id}/groups/${group.id}/invites`, {
-      email: 'newuser@example.com',
+    await appMember.update({
+      role: PredefinedAppRole.GroupsManager,
     });
 
-    expect(response).toMatchInlineSnapshot('HTTP/1.1 204 No Content');
+    vi.spyOn(server.context.mailer, 'sendTranslatedEmail');
+    const group = await Group.create({ name: 'A', AppId: app.id });
+    await GroupMember.create({ GroupId: group.id, AppMemberId: appMember.id, role: 'Manager' });
+    const response = await request.post(`/api/groups/${group.id}/invites`, [
+      {
+        email: 'newuser@example.com',
+        role: 'GroupMember',
+      },
+    ]);
+
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 200 OK
+      Content-Type: application/json; charset=utf-8
+
+      [
+        {
+          "email": "newuser@example.com",
+          "role": "GroupMember",
+        },
+      ]
+    `);
 
     expect(server.context.mailer.sendTranslatedEmail).toHaveBeenCalledWith({
       emailName: 'groupInvite',

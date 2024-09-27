@@ -87,7 +87,10 @@ describe('resendOrganizationInvite', () => {
   });
 
   it('should not resend an invitation if the user does not have the right permissions', async () => {
-    await OrganizationMember.update({ role: 'AppEditor' }, { where: { UserId: user.id } });
+    await OrganizationMember.update(
+      { role: PredefinedOrganizationRole.AppTranslator },
+      { where: { UserId: user.id } },
+    );
     const userB = await User.create({
       primaryEmail: 'test2@example.com',
       name: 'John',
@@ -112,7 +115,7 @@ describe('resendOrganizationInvite', () => {
       status: 403,
       data: {
         error: 'Forbidden',
-        message: 'User does not have sufficient permissions.',
+        message: 'User does not have sufficient organization permissions.',
         statusCode: 403,
       },
     });

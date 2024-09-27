@@ -5,11 +5,13 @@ import { checkAppPermissions as checkAppPermissionsServer } from '../utils/autho
 export function checkAppPermissions({
   app,
   context,
+  groupId,
   permissions,
 }: CheckAppPermissionsParams): Promise<void> {
   return checkAppPermissionsServer({
     context,
-    appId: app.id,
+    appId: app?.id,
     requiredPermissions: permissions,
+    groupId,
   });
 }

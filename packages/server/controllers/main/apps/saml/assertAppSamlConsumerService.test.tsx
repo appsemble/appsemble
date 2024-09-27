@@ -8,7 +8,7 @@ import { App, AppSamlSecret, Organization } from '../../../../models/index.js';
 import { type CreateSamlResponseOptions } from '../../../../types/index.js';
 import { setArgv } from '../../../../utils/argv.js';
 import { createServer } from '../../../../utils/createServer.js';
-import { createTestUser } from '../../../../utils/test/authorization.js';
+import { authorizeStudio, createTestUser } from '../../../../utils/test/authorization.js';
 import { useTestDatabase } from '../../../../utils/test/testSchema.js';
 
 let app: App;
@@ -269,7 +269,7 @@ describe('assertAppSamlConsumerService', () => {
 
   it('should handle if no secret can be found', async () => {
     const response = await request.post(
-      '/api/apps/23/saml/93/acs',
+      `/api/apps/${app.id}/saml/93/acs`,
       new URLSearchParams({
         SAMLResponse: createSamlResponse(),
         RelayState: 'http://localhost',
@@ -283,6 +283,7 @@ describe('assertAppSamlConsumerService', () => {
   });
 
   it('should handle an invalid status code', async () => {
+    authorizeStudio();
     const response = await request.post(
       `/api/apps/${app.id}/saml/${secret.id}/acs`,
       new URLSearchParams({

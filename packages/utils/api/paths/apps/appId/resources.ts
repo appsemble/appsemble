@@ -11,6 +11,6 @@ export const pathItems: OpenAPIV3.PathItemObject = {
         description: 'The app resources have been deleted successfully.',
       },
     },
-    security: [{ cli: ['resources:write'] }],
+    security: [{ cli: ['resources:write'] }, {}],
   },
 };

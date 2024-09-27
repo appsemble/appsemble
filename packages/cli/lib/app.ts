@@ -1205,6 +1205,10 @@ export async function publishApp({
     authScope += ' resources:write';
   }
 
+  if (assets) {
+    authScope += ' assets:write';
+  }
+
   await authenticate(remote, authScope, clientCredentials);
 
   let data: App;

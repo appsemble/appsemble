@@ -243,6 +243,10 @@ export function checkOrganizationRoleAppPermissions(
   organizationRole: PredefinedOrganizationRole,
   requiredPermissions: CustomAppPermission[],
 ): boolean {
+  if (!organizationRole) {
+    return false;
+  }
+
   const organizationRolePermissions = predefinedOrganizationRolePermissions[organizationRole];
 
   return requiredPermissions.every((p) => {

@@ -4,10 +4,11 @@ export const pathItems: OpenAPIV3.PathItemObject = {
   parameters: [
     { $ref: '#/components/parameters/organizationId' },
     {
-      name: 'memberId',
+      name: 'organizationMemberId',
       in: 'path',
       description: 'The ID of the member to remove',
       required: true,
+      $ref: '#/components/schemas/User/properties/id',
       schema: { $ref: '#/components/schemas/User/properties/id' },
     },
   ],

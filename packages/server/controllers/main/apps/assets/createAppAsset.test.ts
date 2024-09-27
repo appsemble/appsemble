@@ -1,16 +1,11 @@
 import { createFixtureStream, createFormData } from '@appsemble/node-utils';
-import {
-  type Asset as AssetType,
-  PredefinedAppRole,
-  PredefinedOrganizationRole,
-} from '@appsemble/types';
+import { type Asset as AssetType, PredefinedOrganizationRole } from '@appsemble/types';
 import { uuid4Pattern } from '@appsemble/utils';
 import { request, setTestApp } from 'axios-test-instance';
 import { beforeAll, beforeEach, describe, expect, it } from 'vitest';
 
 import {
   App,
-  AppMember,
   Asset,
   Organization,
   OrganizationMember,
@@ -101,10 +96,11 @@ describe('createAppAsset', () => {
 
   it('should not allow using conflicting names', async () => {
     authorizeStudio();
-    await request.post(
-      `/api/apps/${app.id}/assets`,
-      createFormData({ file: Buffer.alloc(0), name: 'conflict' }),
-    );
+    await Asset.create({
+      data: Buffer.alloc(0),
+      name: 'conflict',
+      AppId: app.id,
+    });
     const response = await request.post(
       `/api/apps/${app.id}/assets`,
       createFormData({ file: Buffer.alloc(0), name: 'conflict' }),
@@ -137,7 +133,7 @@ describe('createAppAsset', () => {
 
       {
         "error": "Forbidden",
-        "message": "User does not have sufficient permissions.",
+        "message": "User does not have sufficient organization permissions.",
         "statusCode": 403,
       }
     `);
@@ -202,110 +198,12 @@ describe('createAppAsset', () => {
     `);
   });
 
-  it('should associate the app member if the user is authenticated', async () => {
-    const member = await AppMember.create({
-      email: user.primaryEmail,
-      AppId: app.id,
-      UserId: user.id,
-      role: PredefinedAppRole.Member,
-      timezone: 'Europe/Amsterdam',
-    });
-    authorizeStudio();
-    const response = await request.post<AssetType>(
-      `/api/apps/${app.id}/assets`,
-      createFormData({ file: Buffer.alloc(0) }),
-    );
-    const asset = await Asset.findByPk(response.data.id);
-
-    expect(asset.AppMemberId).toStrictEqual(member.id);
-    expect(response).toMatchInlineSnapshot(
-      { data: { id: expect.stringMatching(uuid4Pattern) } },
-      `
-      HTTP/1.1 201 Created
-      Content-Type: application/json; charset=utf-8
-
-      {
-        "id": StringMatching /\\^\\[\\\\d\\[a-f\\]\\{8\\}-\\[\\\\da-f\\]\\{4\\}-4\\[\\\\da-f\\]\\{3\\}-\\[\\\\da-f\\]\\{4\\}-\\[\\\\d\\[a-f\\]\\{12\\}\\$/,
-        "mime": "application/octet-stream",
-      }
-    `,
-    );
-  });
-
   it('should create seed assets in all apps', async () => {
-    const member = await AppMember.create({
-      email: user.primaryEmail,
-      AppId: app.id,
-      UserId: user.id,
-      role: PredefinedAppRole.Member,
-      timezone: 'Europe/Amsterdam',
-    });
     authorizeStudio();
     const response = await request.post<AssetType>(
       `/api/apps/${app.id}/assets`,
       createFormData({ file: Buffer.alloc(0) }),
-      { params: { seed: true } },
-    );
-    const asset = await Asset.findByPk(response.data.id);
-
-    expect(asset.AppMemberId).toStrictEqual(member.id);
-    expect(response).toMatchInlineSnapshot(
-      { data: { id: expect.stringMatching(uuid4Pattern) } },
-      `
-      HTTP/1.1 201 Created
-      Content-Type: application/json; charset=utf-8
-
-      {
-        "id": StringMatching /\\^\\[\\\\d\\[a-f\\]\\{8\\}-\\[\\\\da-f\\]\\{4\\}-4\\[\\\\da-f\\]\\{3\\}-\\[\\\\da-f\\]\\{4\\}-\\[\\\\d\\[a-f\\]\\{12\\}\\$/,
-        "mime": "application/octet-stream",
-      }
-    `,
-    );
-
-    const seedAsset = await Asset.findOne({
-      where: {
-        AppId: app.id,
-        seed: true,
-        ephemeral: false,
-      },
-    });
-    expect(seedAsset.dataValues).toMatchInlineSnapshot(
-      {
-        id: expect.any(String),
-        AppMemberId: expect.any(String),
-        created: expect.any(Date),
-        updated: expect.any(Date),
-      },
-      `
-      {
-        "AppId": 1,
-        "AppMemberId": Any<String>,
-        "ResourceId": null,
-        "clonable": false,
-        "created": Any<Date>,
-        "data": {
-          "data": [],
-          "type": "Buffer",
-        },
-        "ephemeral": false,
-        "filename": null,
-        "id": Any<String>,
-        "mime": "application/octet-stream",
-        "name": null,
-        "seed": true,
-        "updated": Any<Date>,
-      }
-    `,
-    );
-  });
-
-  it('should create seed assets and ephemeral assets in demo apps', async () => {
-    await app.update({ demoMode: true });
-    authorizeStudio();
-    const response = await request.post<AssetType>(
-      `/api/apps/${app.id}/assets?seed=true`,
-      createFormData({ file: Buffer.alloc(0) }),
-      { params: { seed: true } },
+      { params: { seed: 'true' } },
     );
     const asset = await Asset.findByPk(response.data.id);
 
@@ -333,14 +231,74 @@ describe('createAppAsset', () => {
     expect(seedAsset.dataValues).toMatchInlineSnapshot(
       {
         id: expect.any(String),
-        AppMemberId: expect.any(String),
         created: expect.any(Date),
         updated: expect.any(Date),
       },
       `
       {
         "AppId": 1,
-        "AppMemberId": Any<String>,
+        "AppMemberId": null,
+        "GroupId": null,
+        "ResourceId": null,
+        "clonable": false,
+        "created": Any<Date>,
+        "data": {
+          "data": [],
+          "type": "Buffer",
+        },
+        "ephemeral": false,
+        "filename": null,
+        "id": Any<String>,
+        "mime": "application/octet-stream",
+        "name": null,
+        "seed": true,
+        "updated": Any<Date>,
+      }
+    `,
+    );
+  });
+
+  it('should create seed assets and ephemeral assets in demo apps', async () => {
+    await app.update({ demoMode: true });
+    authorizeStudio();
+    const response = await request.post<AssetType>(
+      `/api/apps/${app.id}/assets?seed=true`,
+      createFormData({ file: Buffer.alloc(0) }),
+    );
+    const asset = await Asset.findByPk(response.data.id);
+
+    expect(asset.AppMemberId).toBeNull();
+    expect(response).toMatchInlineSnapshot(
+      { data: { id: expect.stringMatching(uuid4Pattern) } },
+      `
+      HTTP/1.1 201 Created
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "id": StringMatching /\\^\\[\\\\d\\[a-f\\]\\{8\\}-\\[\\\\da-f\\]\\{4\\}-4\\[\\\\da-f\\]\\{3\\}-\\[\\\\da-f\\]\\{4\\}-\\[\\\\d\\[a-f\\]\\{12\\}\\$/,
+        "mime": "application/octet-stream",
+      }
+    `,
+    );
+
+    const seedAsset = await Asset.findOne({
+      where: {
+        AppId: app.id,
+        seed: true,
+        ephemeral: false,
+      },
+    });
+    expect(seedAsset.dataValues).toMatchInlineSnapshot(
+      {
+        id: expect.any(String),
+        created: expect.any(Date),
+        updated: expect.any(Date),
+      },
+      `
+      {
+        "AppId": 1,
+        "AppMemberId": null,
+        "GroupId": null,
         "ResourceId": null,
         "clonable": false,
         "created": Any<Date>,
@@ -369,14 +327,14 @@ describe('createAppAsset', () => {
     expect(ephemeralAsset.dataValues).toMatchInlineSnapshot(
       {
         id: expect.any(String),
-        AppMemberId: expect.any(String),
         created: expect.any(Date),
         updated: expect.any(Date),
       },
       `
       {
         "AppId": 1,
-        "AppMemberId": Any<String>,
+        "AppMemberId": null,
+        "GroupId": null,
         "ResourceId": null,
         "clonable": false,
         "created": Any<Date>,

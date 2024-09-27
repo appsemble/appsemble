@@ -17,7 +17,6 @@ export async function deleteAppMember(ctx: Context): Promise<void> {
   });
 
   assertKoaError(!appMember, ctx, 404, 'App member not found');
-
   assertKoaError(
     appMemberId === authSubject.id,
     ctx,

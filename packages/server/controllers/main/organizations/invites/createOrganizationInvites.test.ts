@@ -52,17 +52,20 @@ beforeEach(async () => {
 
 describe('createOrganizationInvites', () => {
   it('should require the InviteMember permission', async () => {
-    await OrganizationMember.update({ role: 'Member' }, { where: { UserId: user.id } });
+    await OrganizationMember.update(
+      { role: PredefinedOrganizationRole.Member },
+      { where: { UserId: user.id } },
+    );
 
     authorizeStudio();
     const response = await request.post('/api/organizations/testorganization/invites', [
-      { email: 'a@example.com', role: 'Member' },
+      { email: 'a@example.com', role: PredefinedOrganizationRole.Member },
     ]);
     expect(response).toMatchObject({
       status: 403,
       data: {
         error: 'Forbidden',
-        message: 'User does not have sufficient permissions.',
+        message: 'User does not have sufficient organization permissions.',
         statusCode: 403,
       },
     });
@@ -86,8 +89,8 @@ describe('createOrganizationInvites', () => {
 
     authorizeStudio();
     const response = await request.post('/api/organizations/testorganization/invites', [
-      { email: 'a@example.com', role: 'Member' },
-      { email: 'b@example.com', role: 'Member' },
+      { email: 'a@example.com', role: PredefinedOrganizationRole.Member },
+      { email: 'b@example.com', role: PredefinedOrganizationRole.Member },
     ]);
     expect(response).toMatchObject({
       status: 400,
@@ -116,8 +119,8 @@ describe('createOrganizationInvites', () => {
 
     authorizeStudio();
     const response = await request.post('/api/organizations/testorganization/invites', [
-      { email: 'a@example.com', role: 'Member' },
-      { email: 'b@example.com', role: 'Member' },
+      { email: 'a@example.com', role: PredefinedOrganizationRole.Member },
+      { email: 'b@example.com', role: PredefinedOrganizationRole.Member },
     ]);
     expect(response).toMatchObject({
       status: 400,
@@ -142,20 +145,20 @@ describe('createOrganizationInvites', () => {
 
     authorizeStudio();
     const response = await request.post('/api/organizations/testorganization/invites', [
-      { email: 'aa@example.com', role: 'Member' },
+      { email: 'aa@example.com', role: PredefinedOrganizationRole.Member },
     ]);
     const invite = await OrganizationInvite.findOne();
 
     expect(response).toMatchObject({
       status: 201,
-      data: [{ email: 'a@example.com', role: 'Member' }],
+      data: [{ email: 'a@example.com', role: PredefinedOrganizationRole.Member }],
     });
     expect(invite).toMatchObject({
       email: 'a@example.com',
       key: expect.stringMatching(/^\w{40}$/),
       OrganizationId: 'testorganization',
       UserId: userA.id,
-      role: 'Member',
+      role: PredefinedOrganizationRole.Member,
     });
     expect(server.context.mailer.sendTranslatedEmail).toHaveBeenCalledWith({
       emailName: 'organizationInvite',
@@ -176,20 +179,20 @@ describe('createOrganizationInvites', () => {
   it('should invite unknown email addresses', async () => {
     authorizeStudio();
     const response = await request.post('/api/organizations/testorganization/invites', [
-      { email: 'a@example.com', role: 'Member' },
+      { email: 'a@example.com', role: PredefinedOrganizationRole.Member },
     ]);
     const invite = await OrganizationInvite.findOne();
 
     expect(response).toMatchObject({
       status: 201,
-      data: [{ email: 'a@example.com', role: 'Member' }],
+      data: [{ email: 'a@example.com', role: PredefinedOrganizationRole.Member }],
     });
     expect(invite).toMatchObject({
       email: 'a@example.com',
       key: expect.stringMatching(/^\w{40}$/),
       OrganizationId: 'testorganization',
       UserId: null,
-      role: 'Member',
+      role: PredefinedOrganizationRole.Member,
     });
     expect(server.context.mailer.sendTranslatedEmail).toHaveBeenCalledWith({
       emailName: 'organizationInvite',

@@ -32,7 +32,8 @@ export class Asset extends Model {
   @Column(DataType.BLOB)
   data: Buffer;
 
-  @Index({ name: 'UniqueAssetNameIndex', unique: true })
+  @Index({ name: 'UniqueAssetWithNullGroupId', unique: true })
+  @Index({ name: 'UniqueAssetWithGroupId', unique: true })
   @Column(DataType.STRING)
   name: string;
 
@@ -57,7 +58,8 @@ export class Asset extends Model {
    */
   @AllowNull(false)
   @Default(false)
-  @Index({ name: 'UniqueAssetNameIndex', unique: true })
+  @Index({ name: 'UniqueAssetWithNullGroupId', unique: true })
+  @Index({ name: 'UniqueAssetWithGroupId', unique: true })
   @Column(DataType.BOOLEAN)
   ephemeral: boolean;
 
@@ -69,7 +71,8 @@ export class Asset extends Model {
 
   @AllowNull(false)
   @ForeignKey(() => App)
-  @Index({ name: 'UniqueAssetNameIndex', unique: true })
+  @Index({ name: 'UniqueAssetWithNullGroupId', unique: true })
+  @Index({ name: 'UniqueAssetWithGroupId', unique: true })
   @Column(DataType.INTEGER)
   AppId: number;
 
@@ -78,7 +81,7 @@ export class Asset extends Model {
 
   @AllowNull(true)
   @ForeignKey(() => Group)
-  @Index({ name: 'UniqueAssetNameIndex', unique: true })
+  @Index({ name: 'UniqueAssetWithGroupId', unique: true })
   @Column(DataType.INTEGER)
   GroupId: number;
 

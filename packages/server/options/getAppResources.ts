@@ -14,6 +14,7 @@ export async function getAppResources({
     include: [
       { association: 'Author', attributes: ['id', 'name'], required: false },
       { association: 'Editor', attributes: ['id', 'name'], required: false },
+      { association: 'Group', attributes: ['id', 'name'], required: false },
       { association: 'App', attributes: ['template'] },
     ],
   });

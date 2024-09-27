@@ -189,10 +189,7 @@ describe('registerAppMemberWithEmail', () => {
 
     const m = await AppMember.findOne({ where: { email: 'test@example.com' } });
 
-    const responseB = await request.get(`/api/apps/${app.id}/members/${m.id}/picture`, {
-      responseType: 'arraybuffer',
-    });
-    const responseC = await request.get(`/api/apps/${app.id}/members/${m.UserId}/picture`, {
+    const responseB = await request.get(`/api/app-members/${m.id}/picture`, {
       responseType: 'arraybuffer',
     });
     expect(response).toMatchInlineSnapshot(
@@ -216,7 +213,6 @@ describe('registerAppMemberWithEmail', () => {
     );
     expect(m.picture).toStrictEqual(await readFixture('tux.png'));
     expect(responseB.data).toStrictEqual(await readFixture('tux.png'));
-    expect(responseC.data).toStrictEqual(await readFixture('tux.png'));
   });
 
   it('should not register invalid email addresses', async () => {
@@ -294,7 +290,7 @@ describe('registerAppMemberWithEmail', () => {
 
       {
         "error": "Conflict",
-        "message": "User with this email address already exists.",
+        "message": "App member with this email address already exists.",
         "statusCode": 409,
       }
     `);

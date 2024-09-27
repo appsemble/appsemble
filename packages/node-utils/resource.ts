@@ -1,6 +1,5 @@
 import { randomUUID } from 'node:crypto';
 
-import { handleValidatorResult, type PreparedAsset } from '@appsemble/node-utils';
 import {
   type AppDefinition,
   type ResourceDefinition,
@@ -18,6 +17,7 @@ import { type File } from 'koas-body-parser';
 import parseDuration from 'parse-duration';
 
 import { preProcessCSV } from './csv.js';
+import { handleValidatorResult, type PreparedAsset } from './index.js';
 import { throwKoaError } from './koa.js';
 
 export function stripResource({

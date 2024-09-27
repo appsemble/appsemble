@@ -10,7 +10,7 @@ Content-Type: application/json; charset=utf-8
       {
         "argument": {
           "id": "[subschema 1]",
-          "length": 100,
+          "length": 108,
           "valid": {
             "disableFormat": false,
             "errors": [
@@ -1633,17 +1633,6 @@ disabled by setting this to \`false\`
 
 If not specified, the raw input data is used.
 ",
-                    },
-                    "method": {
-                      "default": "get",
-                      "description": "The type of request to make.",
-                      "enum": [
-                        "delete",
-                        "get",
-                        "patch",
-                        "post",
-                        "put",
-                      ],
                     },
                     "onError": {},
                     "onSuccess": {},
@@ -3341,10 +3330,10 @@ storage: localStorage
               },
               {
                 "argument": [
-                  "group.invite",
+                  "group.member.invite",
                 ],
                 "instance": "invalid",
-                "message": "is not one of enum values: group.invite",
+                "message": "is not one of enum values: group.member.invite",
                 "name": "enum",
                 "path": [
                   "actions",
@@ -3353,54 +3342,12 @@ storage: localStorage
                 ],
                 "property": "instance.actions.onSubmit.type",
                 "schema": {
-                  "description": "Invite a user to join a group.",
+                  "description": "Invite an app member to join a group.",
                   "enum": [
-                    "group.invite",
+                    "group.member.invite",
                   ],
                 },
-                "stack": "instance.actions.onSubmit.type is not one of enum values: group.invite",
-              },
-              {
-                "argument": [
-                  "group.join",
-                ],
-                "instance": "invalid",
-                "message": "is not one of enum values: group.join",
-                "name": "enum",
-                "path": [
-                  "actions",
-                  "onSubmit",
-                  "type",
-                ],
-                "property": "instance.actions.onSubmit.type",
-                "schema": {
-                  "description": "Allow a user to join a group.",
-                  "enum": [
-                    "group.join",
-                  ],
-                },
-                "stack": "instance.actions.onSubmit.type is not one of enum values: group.join",
-              },
-              {
-                "argument": [
-                  "group.list",
-                ],
-                "instance": "invalid",
-                "message": "is not one of enum values: group.list",
-                "name": "enum",
-                "path": [
-                  "actions",
-                  "onSubmit",
-                  "type",
-                ],
-                "property": "instance.actions.onSubmit.type",
-                "schema": {
-                  "description": "Get a list of all of the groups in an app.",
-                  "enum": [
-                    "group.list",
-                  ],
-                },
-                "stack": "instance.actions.onSubmit.type is not one of enum values: group.list",
+                "stack": "instance.actions.onSubmit.type is not one of enum values: group.member.invite",
               },
               {
                 "argument": "id",
@@ -3428,7 +3375,7 @@ storage: localStorage
                     "type": {
                       "description": "Get a list of a group's members",
                       "enum": [
-                        "group.members",
+                        "group.member.query",
                       ],
                     },
                   },
@@ -3442,10 +3389,10 @@ storage: localStorage
               },
               {
                 "argument": [
-                  "group.members",
+                  "group.member.query",
                 ],
                 "instance": "invalid",
-                "message": "is not one of enum values: group.members",
+                "message": "is not one of enum values: group.member.query",
                 "name": "enum",
                 "path": [
                   "actions",
@@ -3456,10 +3403,197 @@ storage: localStorage
                 "schema": {
                   "description": "Get a list of a group's members",
                   "enum": [
-                    "group.members",
+                    "group.member.query",
                   ],
                 },
-                "stack": "instance.actions.onSubmit.type is not one of enum values: group.members",
+                "stack": "instance.actions.onSubmit.type is not one of enum values: group.member.query",
+              },
+              {
+                "argument": "id",
+                "instance": {
+                  "type": "invalid",
+                },
+                "message": "requires property "id"",
+                "name": "required",
+                "path": [
+                  "actions",
+                  "onSubmit",
+                ],
+                "property": "instance.actions.onSubmit",
+                "schema": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "id": {
+                      "$ref": "#/components/schemas/RemapperDefinition",
+                      "description": "The id of the group member to delete",
+                    },
+                    "onError": {},
+                    "onSuccess": {},
+                    "remapAfter": {},
+                    "remapBefore": {},
+                    "type": {
+                      "description": "Allow a user to join a group.",
+                      "enum": [
+                        "group.member.delete",
+                      ],
+                    },
+                  },
+                  "required": [
+                    "type",
+                    "id",
+                  ],
+                  "type": "object",
+                },
+                "stack": "instance.actions.onSubmit requires property "id"",
+              },
+              {
+                "argument": [
+                  "group.member.delete",
+                ],
+                "instance": "invalid",
+                "message": "is not one of enum values: group.member.delete",
+                "name": "enum",
+                "path": [
+                  "actions",
+                  "onSubmit",
+                  "type",
+                ],
+                "property": "instance.actions.onSubmit.type",
+                "schema": {
+                  "description": "Allow a user to join a group.",
+                  "enum": [
+                    "group.member.delete",
+                  ],
+                },
+                "stack": "instance.actions.onSubmit.type is not one of enum values: group.member.delete",
+              },
+              {
+                "argument": "id",
+                "instance": {
+                  "type": "invalid",
+                },
+                "message": "requires property "id"",
+                "name": "required",
+                "path": [
+                  "actions",
+                  "onSubmit",
+                ],
+                "property": "instance.actions.onSubmit",
+                "schema": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "id": {
+                      "$ref": "#/components/schemas/RemapperDefinition",
+                      "description": "The id of the group member to update the role of.",
+                    },
+                    "onError": {},
+                    "onSuccess": {},
+                    "remapAfter": {},
+                    "remapBefore": {},
+                    "role": {
+                      "$ref": "#/components/schemas/RemapperDefinition",
+                      "description": "The new role of the group member.",
+                    },
+                    "type": {
+                      "description": "Update the role of a group member.",
+                      "enum": [
+                        "group.member.role.update",
+                      ],
+                    },
+                  },
+                  "required": [
+                    "type",
+                    "id",
+                    "role",
+                  ],
+                  "type": "object",
+                },
+                "stack": "instance.actions.onSubmit requires property "id"",
+              },
+              {
+                "argument": "role",
+                "instance": {
+                  "type": "invalid",
+                },
+                "message": "requires property "role"",
+                "name": "required",
+                "path": [
+                  "actions",
+                  "onSubmit",
+                ],
+                "property": "instance.actions.onSubmit",
+                "schema": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "id": {
+                      "$ref": "#/components/schemas/RemapperDefinition",
+                      "description": "The id of the group member to update the role of.",
+                    },
+                    "onError": {},
+                    "onSuccess": {},
+                    "remapAfter": {},
+                    "remapBefore": {},
+                    "role": {
+                      "$ref": "#/components/schemas/RemapperDefinition",
+                      "description": "The new role of the group member.",
+                    },
+                    "type": {
+                      "description": "Update the role of a group member.",
+                      "enum": [
+                        "group.member.role.update",
+                      ],
+                    },
+                  },
+                  "required": [
+                    "type",
+                    "id",
+                    "role",
+                  ],
+                  "type": "object",
+                },
+                "stack": "instance.actions.onSubmit requires property "role"",
+              },
+              {
+                "argument": [
+                  "group.member.role.update",
+                ],
+                "instance": "invalid",
+                "message": "is not one of enum values: group.member.role.update",
+                "name": "enum",
+                "path": [
+                  "actions",
+                  "onSubmit",
+                  "type",
+                ],
+                "property": "instance.actions.onSubmit.type",
+                "schema": {
+                  "description": "Update the role of a group member.",
+                  "enum": [
+                    "group.member.role.update",
+                  ],
+                },
+                "stack": "instance.actions.onSubmit.type is not one of enum values: group.member.role.update",
+              },
+              {
+                "argument": [
+                  "group.query",
+                ],
+                "instance": "invalid",
+                "message": "is not one of enum values: group.query",
+                "name": "enum",
+                "path": [
+                  "actions",
+                  "onSubmit",
+                  "type",
+                ],
+                "property": "instance.actions.onSubmit.type",
+                "schema": {
+                  "description": "Get a list of all of the groups in an app.",
+                  "enum": [
+                    "group.query",
+                  ],
+                },
+                "stack": "instance.actions.onSubmit.type is not one of enum values: group.query",
               },
               {
                 "argument": [
@@ -3487,10 +3621,10 @@ This can be used to create a custom error that ends up in the error action handl
               },
               {
                 "argument": [
-                  "user.login",
+                  "app.member.login",
                 ],
                 "instance": "invalid",
-                "message": "is not one of enum values: user.login",
+                "message": "is not one of enum values: app.member.login",
                 "name": "enum",
                 "path": [
                   "actions",
@@ -3499,21 +3633,21 @@ This can be used to create a custom error that ends up in the error action handl
                 ],
                 "property": "instance.actions.onSubmit.type",
                 "schema": {
-                  "description": "Allows the user to login using an email address and a password.
+                  "description": "Allows the app member to login using an email address and a password.
 
-Does nothing if the user is already logged in.",
+Does nothing if the app member is already logged in.",
                   "enum": [
-                    "user.login",
+                    "app.member.login",
                   ],
                 },
-                "stack": "instance.actions.onSubmit.type is not one of enum values: user.login",
+                "stack": "instance.actions.onSubmit.type is not one of enum values: app.member.login",
               },
               {
                 "argument": [
-                  "user.logout",
+                  "app.member.logout",
                 ],
                 "instance": "invalid",
-                "message": "is not one of enum values: user.logout",
+                "message": "is not one of enum values: app.member.logout",
                 "name": "enum",
                 "path": [
                   "actions",
@@ -3522,324 +3656,12 @@ Does nothing if the user is already logged in.",
                 ],
                 "property": "instance.actions.onSubmit.type",
                 "schema": {
-                  "description": "Allow the users to logout of the application.",
+                  "description": "Allow the app members to log out of the application.",
                   "enum": [
-                    "user.logout",
+                    "app.member.logout",
                   ],
                 },
-                "stack": "instance.actions.onSubmit.type is not one of enum values: user.logout",
-              },
-              {
-                "argument": "email",
-                "instance": {
-                  "type": "invalid",
-                },
-                "message": "requires property "email"",
-                "name": "required",
-                "path": [
-                  "actions",
-                  "onSubmit",
-                ],
-                "property": "instance.actions.onSubmit",
-                "schema": {
-                  "additionalProperties": false,
-                  "properties": {
-                    "displayName": {
-                      "description": "The display name of the user.",
-                    },
-                    "email": {
-                      "description": "The email to login with.",
-                    },
-                    "login": {
-                      "default": true,
-                      "description": "Whether to login after registering.",
-                    },
-                    "onError": {},
-                    "onSuccess": {},
-                    "password": {
-                      "description": "The password to login with.",
-                    },
-                    "picture": {
-                      "description": "The image to use for the profile picture of the user.",
-                    },
-                    "properties": {
-                      "description": "The custom properties for the user.
-
-Values will be validated based on \`user.properties\`, if defined in the app definition.",
-                    },
-                    "remapAfter": {},
-                    "remapBefore": {},
-                    "type": {
-                      "description": "Allows the user to register a new account using an email address and a password.
-
-Does nothing if the user is already logged in.",
-                      "enum": [
-                        "user.register",
-                      ],
-                    },
-                  },
-                  "required": [
-                    "email",
-                    "password",
-                  ],
-                  "type": "object",
-                },
-                "stack": "instance.actions.onSubmit requires property "email"",
-              },
-              {
-                "argument": "password",
-                "instance": {
-                  "type": "invalid",
-                },
-                "message": "requires property "password"",
-                "name": "required",
-                "path": [
-                  "actions",
-                  "onSubmit",
-                ],
-                "property": "instance.actions.onSubmit",
-                "schema": {
-                  "additionalProperties": false,
-                  "properties": {
-                    "displayName": {
-                      "description": "The display name of the user.",
-                    },
-                    "email": {
-                      "description": "The email to login with.",
-                    },
-                    "login": {
-                      "default": true,
-                      "description": "Whether to login after registering.",
-                    },
-                    "onError": {},
-                    "onSuccess": {},
-                    "password": {
-                      "description": "The password to login with.",
-                    },
-                    "picture": {
-                      "description": "The image to use for the profile picture of the user.",
-                    },
-                    "properties": {
-                      "description": "The custom properties for the user.
-
-Values will be validated based on \`user.properties\`, if defined in the app definition.",
-                    },
-                    "remapAfter": {},
-                    "remapBefore": {},
-                    "type": {
-                      "description": "Allows the user to register a new account using an email address and a password.
-
-Does nothing if the user is already logged in.",
-                      "enum": [
-                        "user.register",
-                      ],
-                    },
-                  },
-                  "required": [
-                    "email",
-                    "password",
-                  ],
-                  "type": "object",
-                },
-                "stack": "instance.actions.onSubmit requires property "password"",
-              },
-              {
-                "argument": [
-                  "user.register",
-                ],
-                "instance": "invalid",
-                "message": "is not one of enum values: user.register",
-                "name": "enum",
-                "path": [
-                  "actions",
-                  "onSubmit",
-                  "type",
-                ],
-                "property": "instance.actions.onSubmit.type",
-                "schema": {
-                  "description": "Allows the user to register a new account using an email address and a password.
-
-Does nothing if the user is already logged in.",
-                  "enum": [
-                    "user.register",
-                  ],
-                },
-                "stack": "instance.actions.onSubmit.type is not one of enum values: user.register",
-              },
-              {
-                "argument": "email",
-                "instance": {
-                  "type": "invalid",
-                },
-                "message": "requires property "email"",
-                "name": "required",
-                "path": [
-                  "actions",
-                  "onSubmit",
-                ],
-                "property": "instance.actions.onSubmit",
-                "schema": {
-                  "additionalProperties": false,
-                  "properties": {
-                    "email": {
-                      "description": "The email to login with.",
-                    },
-                    "name": {
-                      "description": "The display name of the user.",
-                    },
-                    "onError": {},
-                    "onSuccess": {},
-                    "password": {
-                      "description": "The password to login with.",
-                    },
-                    "properties": {
-                      "description": "The custom properties for the user.
-
-Values will be validated based on \`user.properties\`, if defined in the app definition.",
-                    },
-                    "remapAfter": {},
-                    "remapBefore": {},
-                    "role": {
-                      "description": "The role for the created account. Defaults to the default role in the app's security definition.",
-                    },
-                    "type": {
-                      "description": "Allows the user to create a new account using an email address and a password.
-
-Does nothing if the user is already logged in.",
-                      "enum": [
-                        "user.create",
-                      ],
-                    },
-                  },
-                  "required": [
-                    "email",
-                    "password",
-                  ],
-                  "type": "object",
-                },
-                "stack": "instance.actions.onSubmit requires property "email"",
-              },
-              {
-                "argument": "password",
-                "instance": {
-                  "type": "invalid",
-                },
-                "message": "requires property "password"",
-                "name": "required",
-                "path": [
-                  "actions",
-                  "onSubmit",
-                ],
-                "property": "instance.actions.onSubmit",
-                "schema": {
-                  "additionalProperties": false,
-                  "properties": {
-                    "email": {
-                      "description": "The email to login with.",
-                    },
-                    "name": {
-                      "description": "The display name of the user.",
-                    },
-                    "onError": {},
-                    "onSuccess": {},
-                    "password": {
-                      "description": "The password to login with.",
-                    },
-                    "properties": {
-                      "description": "The custom properties for the user.
-
-Values will be validated based on \`user.properties\`, if defined in the app definition.",
-                    },
-                    "remapAfter": {},
-                    "remapBefore": {},
-                    "role": {
-                      "description": "The role for the created account. Defaults to the default role in the app's security definition.",
-                    },
-                    "type": {
-                      "description": "Allows the user to create a new account using an email address and a password.
-
-Does nothing if the user is already logged in.",
-                      "enum": [
-                        "user.create",
-                      ],
-                    },
-                  },
-                  "required": [
-                    "email",
-                    "password",
-                  ],
-                  "type": "object",
-                },
-                "stack": "instance.actions.onSubmit requires property "password"",
-              },
-              {
-                "argument": [
-                  "user.create",
-                ],
-                "instance": "invalid",
-                "message": "is not one of enum values: user.create",
-                "name": "enum",
-                "path": [
-                  "actions",
-                  "onSubmit",
-                  "type",
-                ],
-                "property": "instance.actions.onSubmit.type",
-                "schema": {
-                  "description": "Allows the user to create a new account using an email address and a password.
-
-Does nothing if the user is already logged in.",
-                  "enum": [
-                    "user.create",
-                  ],
-                },
-                "stack": "instance.actions.onSubmit.type is not one of enum values: user.create",
-              },
-              {
-                "argument": [
-                  "user.update",
-                ],
-                "instance": "invalid",
-                "message": "is not one of enum values: user.update",
-                "name": "enum",
-                "path": [
-                  "actions",
-                  "onSubmit",
-                  "type",
-                ],
-                "property": "instance.actions.onSubmit.type",
-                "schema": {
-                  "description": "Allows the user to update their existing account.
-
-Does nothing if the user isn’t logged in.",
-                  "enum": [
-                    "user.update",
-                  ],
-                },
-                "stack": "instance.actions.onSubmit.type is not one of enum values: user.update",
-              },
-              {
-                "argument": [
-                  "user.query",
-                ],
-                "instance": "invalid",
-                "message": "is not one of enum values: user.query",
-                "name": "enum",
-                "path": [
-                  "actions",
-                  "onSubmit",
-                  "type",
-                ],
-                "property": "instance.actions.onSubmit.type",
-                "schema": {
-                  "description": "Allows the user to fetch a list of accounts by their roles.
-
-Does nothing if the user isn’t logged in.",
-                  "enum": [
-                    "user.query",
-                  ],
-                },
-                "stack": "instance.actions.onSubmit.type is not one of enum values: user.query",
+                "stack": "instance.actions.onSubmit.type is not one of enum values: app.member.logout",
               },
               {
                 "argument": "email",
@@ -3858,34 +3680,123 @@ Does nothing if the user isn’t logged in.",
                   "properties": {
                     "email": {
                       "$ref": "#/components/schemas/RemapperDefinition",
-                      "description": "The email of the account to be deleted.",
+                      "description": "The email to log in with.",
+                    },
+                    "login": {
+                      "default": true,
+                      "description": "Whether to login after registering.",
+                      "type": "boolean",
+                    },
+                    "name": {
+                      "$ref": "#/components/schemas/RemapperDefinition",
+                      "description": "The full name of the app member.",
                     },
                     "onError": {},
                     "onSuccess": {},
+                    "password": {
+                      "$ref": "#/components/schemas/RemapperDefinition",
+                      "description": "The password to log in with.",
+                    },
+                    "picture": {
+                      "$ref": "#/components/schemas/RemapperDefinition",
+                      "description": "The image to use for the profile picture of the app member.",
+                    },
+                    "properties": {
+                      "$ref": "#/components/schemas/RemapperDefinition",
+                      "description": "The custom properties for the app member.
+
+Values will be validated based on \`members.properties\`, if defined in the app definition.",
+                    },
                     "remapAfter": {},
                     "remapBefore": {},
                     "type": {
-                      "description": "Allows the user to delete an existing account.
+                      "description": "Allows the app member to register using an email address and a password.
 
-Does nothing if the user isn’t logged in.",
+Does nothing if the app member is already logged in.",
                       "enum": [
-                        "user.remove",
+                        "app.member.register",
                       ],
                     },
                   },
                   "required": [
+                    "type",
                     "email",
+                    "password",
                   ],
                   "type": "object",
                 },
                 "stack": "instance.actions.onSubmit requires property "email"",
               },
               {
+                "argument": "password",
+                "instance": {
+                  "type": "invalid",
+                },
+                "message": "requires property "password"",
+                "name": "required",
+                "path": [
+                  "actions",
+                  "onSubmit",
+                ],
+                "property": "instance.actions.onSubmit",
+                "schema": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "email": {
+                      "$ref": "#/components/schemas/RemapperDefinition",
+                      "description": "The email to log in with.",
+                    },
+                    "login": {
+                      "default": true,
+                      "description": "Whether to login after registering.",
+                      "type": "boolean",
+                    },
+                    "name": {
+                      "$ref": "#/components/schemas/RemapperDefinition",
+                      "description": "The full name of the app member.",
+                    },
+                    "onError": {},
+                    "onSuccess": {},
+                    "password": {
+                      "$ref": "#/components/schemas/RemapperDefinition",
+                      "description": "The password to log in with.",
+                    },
+                    "picture": {
+                      "$ref": "#/components/schemas/RemapperDefinition",
+                      "description": "The image to use for the profile picture of the app member.",
+                    },
+                    "properties": {
+                      "$ref": "#/components/schemas/RemapperDefinition",
+                      "description": "The custom properties for the app member.
+
+Values will be validated based on \`members.properties\`, if defined in the app definition.",
+                    },
+                    "remapAfter": {},
+                    "remapBefore": {},
+                    "type": {
+                      "description": "Allows the app member to register using an email address and a password.
+
+Does nothing if the app member is already logged in.",
+                      "enum": [
+                        "app.member.register",
+                      ],
+                    },
+                  },
+                  "required": [
+                    "type",
+                    "email",
+                    "password",
+                  ],
+                  "type": "object",
+                },
+                "stack": "instance.actions.onSubmit requires property "password"",
+              },
+              {
                 "argument": [
-                  "user.remove",
+                  "app.member.register",
                 ],
                 "instance": "invalid",
-                "message": "is not one of enum values: user.remove",
+                "message": "is not one of enum values: app.member.register",
                 "name": "enum",
                 "path": [
                   "actions",
@@ -3894,14 +3805,375 @@ Does nothing if the user isn’t logged in.",
                 ],
                 "property": "instance.actions.onSubmit.type",
                 "schema": {
-                  "description": "Allows the user to delete an existing account.
+                  "description": "Allows the app member to register using an email address and a password.
 
-Does nothing if the user isn’t logged in.",
+Does nothing if the app member is already logged in.",
                   "enum": [
-                    "user.remove",
+                    "app.member.register",
                   ],
                 },
-                "stack": "instance.actions.onSubmit.type is not one of enum values: user.remove",
+                "stack": "instance.actions.onSubmit.type is not one of enum values: app.member.register",
+              },
+              {
+                "argument": "email",
+                "instance": {
+                  "type": "invalid",
+                },
+                "message": "requires property "email"",
+                "name": "required",
+                "path": [
+                  "actions",
+                  "onSubmit",
+                ],
+                "property": "instance.actions.onSubmit",
+                "schema": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "email": {
+                      "$ref": "#/components/schemas/RemapperDefinition",
+                      "description": "The email to invite.",
+                    },
+                    "onError": {},
+                    "onSuccess": {},
+                    "remapAfter": {},
+                    "remapBefore": {},
+                    "role": {
+                      "$ref": "#/components/schemas/RemapperDefinition",
+                      "description": "The role of the invited app member.",
+                    },
+                    "type": {
+                      "description": "Allows the app member to invite another app member using an email address and a role.
+
+Does nothing if the app member is not logged in.",
+                      "enum": [
+                        "app.member.invite",
+                      ],
+                    },
+                  },
+                  "required": [
+                    "type",
+                    "email",
+                    "role",
+                  ],
+                  "type": "object",
+                },
+                "stack": "instance.actions.onSubmit requires property "email"",
+              },
+              {
+                "argument": "role",
+                "instance": {
+                  "type": "invalid",
+                },
+                "message": "requires property "role"",
+                "name": "required",
+                "path": [
+                  "actions",
+                  "onSubmit",
+                ],
+                "property": "instance.actions.onSubmit",
+                "schema": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "email": {
+                      "$ref": "#/components/schemas/RemapperDefinition",
+                      "description": "The email to invite.",
+                    },
+                    "onError": {},
+                    "onSuccess": {},
+                    "remapAfter": {},
+                    "remapBefore": {},
+                    "role": {
+                      "$ref": "#/components/schemas/RemapperDefinition",
+                      "description": "The role of the invited app member.",
+                    },
+                    "type": {
+                      "description": "Allows the app member to invite another app member using an email address and a role.
+
+Does nothing if the app member is not logged in.",
+                      "enum": [
+                        "app.member.invite",
+                      ],
+                    },
+                  },
+                  "required": [
+                    "type",
+                    "email",
+                    "role",
+                  ],
+                  "type": "object",
+                },
+                "stack": "instance.actions.onSubmit requires property "role"",
+              },
+              {
+                "argument": [
+                  "app.member.invite",
+                ],
+                "instance": "invalid",
+                "message": "is not one of enum values: app.member.invite",
+                "name": "enum",
+                "path": [
+                  "actions",
+                  "onSubmit",
+                  "type",
+                ],
+                "property": "instance.actions.onSubmit.type",
+                "schema": {
+                  "description": "Allows the app member to invite another app member using an email address and a role.
+
+Does nothing if the app member is not logged in.",
+                  "enum": [
+                    "app.member.invite",
+                  ],
+                },
+                "stack": "instance.actions.onSubmit.type is not one of enum values: app.member.invite",
+              },
+              {
+                "argument": "sub",
+                "instance": {
+                  "type": "invalid",
+                },
+                "message": "requires property "sub"",
+                "name": "required",
+                "path": [
+                  "actions",
+                  "onSubmit",
+                ],
+                "property": "instance.actions.onSubmit",
+                "schema": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "onError": {},
+                    "onSuccess": {},
+                    "remapAfter": {},
+                    "remapBefore": {},
+                    "role": {
+                      "$ref": "#/components/schemas/RemapperDefinition",
+                      "description": "The updated role of the app member.
+
+The role must exist in the roles property of the app's security definition or in the predefined app roles in the system -
+\`Member\`, \`MembersManager\`, \`GroupMembersManager\`, \`GroupsManager\`, \`ResourcesManager\` and \`Owner\`",
+                    },
+                    "sub": {
+                      "$ref": "#/components/schemas/RemapperDefinition",
+                      "description": "The id of the app member.",
+                    },
+                    "type": {
+                      "description": "Allows the app member to update the role of another app member account.
+
+Does nothing if the app member isn’t logged in.",
+                      "enum": [
+                        "app.member.role.update",
+                      ],
+                    },
+                  },
+                  "required": [
+                    "type",
+                    "sub",
+                  ],
+                  "type": "object",
+                },
+                "stack": "instance.actions.onSubmit requires property "sub"",
+              },
+              {
+                "argument": [
+                  "app.member.role.update",
+                ],
+                "instance": "invalid",
+                "message": "is not one of enum values: app.member.role.update",
+                "name": "enum",
+                "path": [
+                  "actions",
+                  "onSubmit",
+                  "type",
+                ],
+                "property": "instance.actions.onSubmit.type",
+                "schema": {
+                  "description": "Allows the app member to update the role of another app member account.
+
+Does nothing if the app member isn’t logged in.",
+                  "enum": [
+                    "app.member.role.update",
+                  ],
+                },
+                "stack": "instance.actions.onSubmit.type is not one of enum values: app.member.role.update",
+              },
+              {
+                "argument": [
+                  "app.member.current.patch",
+                ],
+                "instance": "invalid",
+                "message": "is not one of enum values: app.member.current.patch",
+                "name": "enum",
+                "path": [
+                  "actions",
+                  "onSubmit",
+                  "type",
+                ],
+                "property": "instance.actions.onSubmit.type",
+                "schema": {
+                  "description": "Allows the app member to patch their own app member account.
+
+Does nothing if the app member isn’t logged in.",
+                  "enum": [
+                    "app.member.current.patch",
+                  ],
+                },
+                "stack": "instance.actions.onSubmit.type is not one of enum values: app.member.current.patch",
+              },
+              {
+                "argument": "sub",
+                "instance": {
+                  "type": "invalid",
+                },
+                "message": "requires property "sub"",
+                "name": "required",
+                "path": [
+                  "actions",
+                  "onSubmit",
+                ],
+                "property": "instance.actions.onSubmit",
+                "schema": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "onError": {},
+                    "onSuccess": {},
+                    "properties": {
+                      "$ref": "#/components/schemas/RemapperDefinition",
+                      "description": "The updated custom properties for the app member.
+
+Values will be validated based on \`members.properties\`, if defined in the app definition.",
+                    },
+                    "remapAfter": {},
+                    "remapBefore": {},
+                    "sub": {
+                      "$ref": "#/components/schemas/RemapperDefinition",
+                      "description": "The new full name name of the app member.",
+                    },
+                    "type": {
+                      "description": "Allows the app member to patch the properties of another app member account.
+
+Does nothing if the app member isn’t logged in.",
+                      "enum": [
+                        "app.member.properties.patch",
+                      ],
+                    },
+                  },
+                  "required": [
+                    "type",
+                    "sub",
+                  ],
+                  "type": "object",
+                },
+                "stack": "instance.actions.onSubmit requires property "sub"",
+              },
+              {
+                "argument": [
+                  "app.member.properties.patch",
+                ],
+                "instance": "invalid",
+                "message": "is not one of enum values: app.member.properties.patch",
+                "name": "enum",
+                "path": [
+                  "actions",
+                  "onSubmit",
+                  "type",
+                ],
+                "property": "instance.actions.onSubmit.type",
+                "schema": {
+                  "description": "Allows the app member to patch the properties of another app member account.
+
+Does nothing if the app member isn’t logged in.",
+                  "enum": [
+                    "app.member.properties.patch",
+                  ],
+                },
+                "stack": "instance.actions.onSubmit.type is not one of enum values: app.member.properties.patch",
+              },
+              {
+                "argument": [
+                  "app.member.query",
+                ],
+                "instance": "invalid",
+                "message": "is not one of enum values: app.member.query",
+                "name": "enum",
+                "path": [
+                  "actions",
+                  "onSubmit",
+                  "type",
+                ],
+                "property": "instance.actions.onSubmit.type",
+                "schema": {
+                  "description": "Allows the currently logged in app member to fetch a list of app members by their roles.
+
+Does nothing if the app member isn’t logged in.",
+                  "enum": [
+                    "app.member.query",
+                  ],
+                },
+                "stack": "instance.actions.onSubmit.type is not one of enum values: app.member.query",
+              },
+              {
+                "argument": "sub",
+                "instance": {
+                  "type": "invalid",
+                },
+                "message": "requires property "sub"",
+                "name": "required",
+                "path": [
+                  "actions",
+                  "onSubmit",
+                ],
+                "property": "instance.actions.onSubmit",
+                "schema": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "onError": {},
+                    "onSuccess": {},
+                    "remapAfter": {},
+                    "remapBefore": {},
+                    "sub": {
+                      "$ref": "#/components/schemas/RemapperDefinition",
+                      "description": "The id of the app member to be deleted.",
+                    },
+                    "type": {
+                      "description": "Allows the app member to delete another app member.
+
+Does nothing if the app member isn’t logged in.",
+                      "enum": [
+                        "app.member.delete",
+                      ],
+                    },
+                  },
+                  "required": [
+                    "type",
+                    "sub",
+                  ],
+                  "type": "object",
+                },
+                "stack": "instance.actions.onSubmit requires property "sub"",
+              },
+              {
+                "argument": [
+                  "app.member.delete",
+                ],
+                "instance": "invalid",
+                "message": "is not one of enum values: app.member.delete",
+                "name": "enum",
+                "path": [
+                  "actions",
+                  "onSubmit",
+                  "type",
+                ],
+                "property": "instance.actions.onSubmit.type",
+                "schema": {
+                  "description": "Allows the app member to delete another app member.
+
+Does nothing if the app member isn’t logged in.",
+                  "enum": [
+                    "app.member.delete",
+                  ],
+                },
+                "stack": "instance.actions.onSubmit.type is not one of enum values: app.member.delete",
               },
               {
                 "argument": [
@@ -3948,23 +4220,26 @@ Does nothing if the user isn’t logged in.",
                   "<#/components/schemas/StorageWriteActionDefinition>",
                   "<#/components/schemas/StorageUpdateActionDefinition>",
                   "<#/components/schemas/StorageDeleteActionDefinition>",
-                  "<#/components/schemas/GroupInviteActionDefinition>",
-                  "<#/components/schemas/GroupJoinActionDefinition>",
-                  "<#/components/schemas/GroupListActionDefinition>",
-                  "<#/components/schemas/GroupMembersActionDefinition>",
+                  "<#/components/schemas/GroupMemberInviteActionDefinition>",
+                  "<#/components/schemas/GroupMemberQueryActionDefinition>",
+                  "<#/components/schemas/GroupMemberDeleteActionDefinition>",
+                  "<#/components/schemas/GroupMemberRoleUpdateActionDefinition>",
+                  "<#/components/schemas/GroupQueryActionDefinition>",
                   "<#/components/schemas/ThrowActionDefinition>",
-                  "<#/components/schemas/UserLoginActionDefinition>",
-                  "<#/components/schemas/UserLogoutActionDefinition>",
-                  "<#/components/schemas/UserRegisterActionDefinition>",
-                  "<#/components/schemas/UserCreateActionDefinition>",
-                  "<#/components/schemas/UserUpdateActionDefinition>",
-                  "<#/components/schemas/UserQueryActionDefinition>",
-                  "<#/components/schemas/UserRemoveActionDefinition>",
+                  "<#/components/schemas/AppMemberLoginActionDefinition>",
+                  "<#/components/schemas/AppMemberLogoutActionDefinition>",
+                  "<#/components/schemas/AppMemberRegisterActionDefinition>",
+                  "<#/components/schemas/AppMemberInviteActionDefinition>",
+                  "<#/components/schemas/AppMemberRoleUpdateActionDefinition>",
+                  "<#/components/schemas/AppMemberCurrentPatchActionDefinition>",
+                  "<#/components/schemas/AppMemberPropertiesPatchActionDefinition>",
+                  "<#/components/schemas/AppMemberQueryActionDefinition>",
+                  "<#/components/schemas/AppMemberDeleteActionDefinition>",
                 ],
                 "instance": {
                   "type": "invalid",
                 },
-                "message": "is not any of <#/components/schemas/AnalyticsActionDefinition>,<#/components/schemas/ControllerActionDefinition>,<#/components/schemas/ConditionActionDefinition>,<#/components/schemas/DialogActionDefinition>,<#/components/schemas/DialogErrorActionDefinition>,<#/components/schemas/DialogOkActionDefinition>,<#/components/schemas/DownloadActionDefinition>,<#/components/schemas/EachActionDefinition>,<#/components/schemas/EmailActionDefinition>,<#/components/schemas/EventActionDefinition>,<#/components/schemas/FlowBackActionDefinition>,<#/components/schemas/FlowFinishActionDefinition>,<#/components/schemas/FlowNextActionDefinition>,<#/components/schemas/FlowCancelActionDefinition>,<#/components/schemas/FlowToActionDefinition>,<#/components/schemas/LinkActionDefinition>,<#/components/schemas/LinkBackActionDefinition>,<#/components/schemas/LinkNextActionDefinition>,<#/components/schemas/LogActionDefinition>,<#/components/schemas/MatchActionDefinition>,<#/components/schemas/MessageActionDefinition>,<#/components/schemas/NoopActionDefinition>,<#/components/schemas/NotifyActionDefinition>,<#/components/schemas/RequestActionDefinition>,<#/components/schemas/ResourceCountActionDefinition>,<#/components/schemas/ResourceCreateActionDefinition>,<#/components/schemas/ResourceDeleteActionDefinition>,<#/components/schemas/ResourceGetActionDefinition>,<#/components/schemas/ResourceQueryActionDefinition>,<#/components/schemas/ResourceSubscriptionStatusActionDefinition>,<#/components/schemas/ResourceSubscriptionSubscribeActionDefinition>,<#/components/schemas/ResourceSubscriptionToggleActionDefinition>,<#/components/schemas/ResourceSubscriptionUnsubscribeActionDefinition>,<#/components/schemas/ResourceUpdateActionDefinition>,<#/components/schemas/ResourcePatchActionDefinition>,<#/components/schemas/ShareActionDefinition>,<#/components/schemas/StaticActionDefinition>,<#/components/schemas/StorageAppendActionDefinition>,<#/components/schemas/StorageSubtractActionDefinition>,<#/components/schemas/StorageReadActionDefinition>,<#/components/schemas/StorageWriteActionDefinition>,<#/components/schemas/StorageUpdateActionDefinition>,<#/components/schemas/StorageDeleteActionDefinition>,<#/components/schemas/GroupInviteActionDefinition>,<#/components/schemas/GroupJoinActionDefinition>,<#/components/schemas/GroupListActionDefinition>,<#/components/schemas/GroupMembersActionDefinition>,<#/components/schemas/ThrowActionDefinition>,<#/components/schemas/UserLoginActionDefinition>,<#/components/schemas/UserLogoutActionDefinition>,<#/components/schemas/UserRegisterActionDefinition>,<#/components/schemas/UserCreateActionDefinition>,<#/components/schemas/UserUpdateActionDefinition>,<#/components/schemas/UserQueryActionDefinition>,<#/components/schemas/UserRemoveActionDefinition>",
+                "message": "is not any of <#/components/schemas/AnalyticsActionDefinition>,<#/components/schemas/ControllerActionDefinition>,<#/components/schemas/ConditionActionDefinition>,<#/components/schemas/DialogActionDefinition>,<#/components/schemas/DialogErrorActionDefinition>,<#/components/schemas/DialogOkActionDefinition>,<#/components/schemas/DownloadActionDefinition>,<#/components/schemas/EachActionDefinition>,<#/components/schemas/EmailActionDefinition>,<#/components/schemas/EventActionDefinition>,<#/components/schemas/FlowBackActionDefinition>,<#/components/schemas/FlowFinishActionDefinition>,<#/components/schemas/FlowNextActionDefinition>,<#/components/schemas/FlowCancelActionDefinition>,<#/components/schemas/FlowToActionDefinition>,<#/components/schemas/LinkActionDefinition>,<#/components/schemas/LinkBackActionDefinition>,<#/components/schemas/LinkNextActionDefinition>,<#/components/schemas/LogActionDefinition>,<#/components/schemas/MatchActionDefinition>,<#/components/schemas/MessageActionDefinition>,<#/components/schemas/NoopActionDefinition>,<#/components/schemas/NotifyActionDefinition>,<#/components/schemas/RequestActionDefinition>,<#/components/schemas/ResourceCountActionDefinition>,<#/components/schemas/ResourceCreateActionDefinition>,<#/components/schemas/ResourceDeleteActionDefinition>,<#/components/schemas/ResourceGetActionDefinition>,<#/components/schemas/ResourceQueryActionDefinition>,<#/components/schemas/ResourceSubscriptionStatusActionDefinition>,<#/components/schemas/ResourceSubscriptionSubscribeActionDefinition>,<#/components/schemas/ResourceSubscriptionToggleActionDefinition>,<#/components/schemas/ResourceSubscriptionUnsubscribeActionDefinition>,<#/components/schemas/ResourceUpdateActionDefinition>,<#/components/schemas/ResourcePatchActionDefinition>,<#/components/schemas/ShareActionDefinition>,<#/components/schemas/StaticActionDefinition>,<#/components/schemas/StorageAppendActionDefinition>,<#/components/schemas/StorageSubtractActionDefinition>,<#/components/schemas/StorageReadActionDefinition>,<#/components/schemas/StorageWriteActionDefinition>,<#/components/schemas/StorageUpdateActionDefinition>,<#/components/schemas/StorageDeleteActionDefinition>,<#/components/schemas/GroupMemberInviteActionDefinition>,<#/components/schemas/GroupMemberQueryActionDefinition>,<#/components/schemas/GroupMemberDeleteActionDefinition>,<#/components/schemas/GroupMemberRoleUpdateActionDefinition>,<#/components/schemas/GroupQueryActionDefinition>,<#/components/schemas/ThrowActionDefinition>,<#/components/schemas/AppMemberLoginActionDefinition>,<#/components/schemas/AppMemberLogoutActionDefinition>,<#/components/schemas/AppMemberRegisterActionDefinition>,<#/components/schemas/AppMemberInviteActionDefinition>,<#/components/schemas/AppMemberRoleUpdateActionDefinition>,<#/components/schemas/AppMemberCurrentPatchActionDefinition>,<#/components/schemas/AppMemberPropertiesPatchActionDefinition>,<#/components/schemas/AppMemberQueryActionDefinition>,<#/components/schemas/AppMemberDeleteActionDefinition>",
                 "name": "anyOf",
                 "path": [
                   "actions",
@@ -4103,44 +4378,53 @@ Does nothing if the user isn’t logged in.",
                       "$ref": "#/components/schemas/StorageDeleteActionDefinition",
                     },
                     {
-                      "$ref": "#/components/schemas/GroupInviteActionDefinition",
+                      "$ref": "#/components/schemas/GroupMemberInviteActionDefinition",
                     },
                     {
-                      "$ref": "#/components/schemas/GroupJoinActionDefinition",
+                      "$ref": "#/components/schemas/GroupMemberQueryActionDefinition",
                     },
                     {
-                      "$ref": "#/components/schemas/GroupListActionDefinition",
+                      "$ref": "#/components/schemas/GroupMemberDeleteActionDefinition",
                     },
                     {
-                      "$ref": "#/components/schemas/GroupMembersActionDefinition",
+                      "$ref": "#/components/schemas/GroupMemberRoleUpdateActionDefinition",
+                    },
+                    {
+                      "$ref": "#/components/schemas/GroupQueryActionDefinition",
                     },
                     {
                       "$ref": "#/components/schemas/ThrowActionDefinition",
                     },
                     {
-                      "$ref": "#/components/schemas/UserLoginActionDefinition",
+                      "$ref": "#/components/schemas/AppMemberLoginActionDefinition",
                     },
                     {
-                      "$ref": "#/components/schemas/UserLogoutActionDefinition",
+                      "$ref": "#/components/schemas/AppMemberLogoutActionDefinition",
                     },
                     {
-                      "$ref": "#/components/schemas/UserRegisterActionDefinition",
+                      "$ref": "#/components/schemas/AppMemberRegisterActionDefinition",
                     },
                     {
-                      "$ref": "#/components/schemas/UserCreateActionDefinition",
+                      "$ref": "#/components/schemas/AppMemberInviteActionDefinition",
                     },
                     {
-                      "$ref": "#/components/schemas/UserUpdateActionDefinition",
+                      "$ref": "#/components/schemas/AppMemberRoleUpdateActionDefinition",
                     },
                     {
-                      "$ref": "#/components/schemas/UserQueryActionDefinition",
+                      "$ref": "#/components/schemas/AppMemberCurrentPatchActionDefinition",
                     },
                     {
-                      "$ref": "#/components/schemas/UserRemoveActionDefinition",
+                      "$ref": "#/components/schemas/AppMemberPropertiesPatchActionDefinition",
+                    },
+                    {
+                      "$ref": "#/components/schemas/AppMemberQueryActionDefinition",
+                    },
+                    {
+                      "$ref": "#/components/schemas/AppMemberDeleteActionDefinition",
                     },
                   ],
                 },
-                "stack": "instance.actions.onSubmit is not any of <#/components/schemas/AnalyticsActionDefinition>,<#/components/schemas/ControllerActionDefinition>,<#/components/schemas/ConditionActionDefinition>,<#/components/schemas/DialogActionDefinition>,<#/components/schemas/DialogErrorActionDefinition>,<#/components/schemas/DialogOkActionDefinition>,<#/components/schemas/DownloadActionDefinition>,<#/components/schemas/EachActionDefinition>,<#/components/schemas/EmailActionDefinition>,<#/components/schemas/EventActionDefinition>,<#/components/schemas/FlowBackActionDefinition>,<#/components/schemas/FlowFinishActionDefinition>,<#/components/schemas/FlowNextActionDefinition>,<#/components/schemas/FlowCancelActionDefinition>,<#/components/schemas/FlowToActionDefinition>,<#/components/schemas/LinkActionDefinition>,<#/components/schemas/LinkBackActionDefinition>,<#/components/schemas/LinkNextActionDefinition>,<#/components/schemas/LogActionDefinition>,<#/components/schemas/MatchActionDefinition>,<#/components/schemas/MessageActionDefinition>,<#/components/schemas/NoopActionDefinition>,<#/components/schemas/NotifyActionDefinition>,<#/components/schemas/RequestActionDefinition>,<#/components/schemas/ResourceCountActionDefinition>,<#/components/schemas/ResourceCreateActionDefinition>,<#/components/schemas/ResourceDeleteActionDefinition>,<#/components/schemas/ResourceGetActionDefinition>,<#/components/schemas/ResourceQueryActionDefinition>,<#/components/schemas/ResourceSubscriptionStatusActionDefinition>,<#/components/schemas/ResourceSubscriptionSubscribeActionDefinition>,<#/components/schemas/ResourceSubscriptionToggleActionDefinition>,<#/components/schemas/ResourceSubscriptionUnsubscribeActionDefinition>,<#/components/schemas/ResourceUpdateActionDefinition>,<#/components/schemas/ResourcePatchActionDefinition>,<#/components/schemas/ShareActionDefinition>,<#/components/schemas/StaticActionDefinition>,<#/components/schemas/StorageAppendActionDefinition>,<#/components/schemas/StorageSubtractActionDefinition>,<#/components/schemas/StorageReadActionDefinition>,<#/components/schemas/StorageWriteActionDefinition>,<#/components/schemas/StorageUpdateActionDefinition>,<#/components/schemas/StorageDeleteActionDefinition>,<#/components/schemas/GroupInviteActionDefinition>,<#/components/schemas/GroupJoinActionDefinition>,<#/components/schemas/GroupListActionDefinition>,<#/components/schemas/GroupMembersActionDefinition>,<#/components/schemas/ThrowActionDefinition>,<#/components/schemas/UserLoginActionDefinition>,<#/components/schemas/UserLogoutActionDefinition>,<#/components/schemas/UserRegisterActionDefinition>,<#/components/schemas/UserCreateActionDefinition>,<#/components/schemas/UserUpdateActionDefinition>,<#/components/schemas/UserQueryActionDefinition>,<#/components/schemas/UserRemoveActionDefinition>",
+                "stack": "instance.actions.onSubmit is not any of <#/components/schemas/AnalyticsActionDefinition>,<#/components/schemas/ControllerActionDefinition>,<#/components/schemas/ConditionActionDefinition>,<#/components/schemas/DialogActionDefinition>,<#/components/schemas/DialogErrorActionDefinition>,<#/components/schemas/DialogOkActionDefinition>,<#/components/schemas/DownloadActionDefinition>,<#/components/schemas/EachActionDefinition>,<#/components/schemas/EmailActionDefinition>,<#/components/schemas/EventActionDefinition>,<#/components/schemas/FlowBackActionDefinition>,<#/components/schemas/FlowFinishActionDefinition>,<#/components/schemas/FlowNextActionDefinition>,<#/components/schemas/FlowCancelActionDefinition>,<#/components/schemas/FlowToActionDefinition>,<#/components/schemas/LinkActionDefinition>,<#/components/schemas/LinkBackActionDefinition>,<#/components/schemas/LinkNextActionDefinition>,<#/components/schemas/LogActionDefinition>,<#/components/schemas/MatchActionDefinition>,<#/components/schemas/MessageActionDefinition>,<#/components/schemas/NoopActionDefinition>,<#/components/schemas/NotifyActionDefinition>,<#/components/schemas/RequestActionDefinition>,<#/components/schemas/ResourceCountActionDefinition>,<#/components/schemas/ResourceCreateActionDefinition>,<#/components/schemas/ResourceDeleteActionDefinition>,<#/components/schemas/ResourceGetActionDefinition>,<#/components/schemas/ResourceQueryActionDefinition>,<#/components/schemas/ResourceSubscriptionStatusActionDefinition>,<#/components/schemas/ResourceSubscriptionSubscribeActionDefinition>,<#/components/schemas/ResourceSubscriptionToggleActionDefinition>,<#/components/schemas/ResourceSubscriptionUnsubscribeActionDefinition>,<#/components/schemas/ResourceUpdateActionDefinition>,<#/components/schemas/ResourcePatchActionDefinition>,<#/components/schemas/ShareActionDefinition>,<#/components/schemas/StaticActionDefinition>,<#/components/schemas/StorageAppendActionDefinition>,<#/components/schemas/StorageSubtractActionDefinition>,<#/components/schemas/StorageReadActionDefinition>,<#/components/schemas/StorageWriteActionDefinition>,<#/components/schemas/StorageUpdateActionDefinition>,<#/components/schemas/StorageDeleteActionDefinition>,<#/components/schemas/GroupMemberInviteActionDefinition>,<#/components/schemas/GroupMemberQueryActionDefinition>,<#/components/schemas/GroupMemberDeleteActionDefinition>,<#/components/schemas/GroupMemberRoleUpdateActionDefinition>,<#/components/schemas/GroupQueryActionDefinition>,<#/components/schemas/ThrowActionDefinition>,<#/components/schemas/AppMemberLoginActionDefinition>,<#/components/schemas/AppMemberLogoutActionDefinition>,<#/components/schemas/AppMemberRegisterActionDefinition>,<#/components/schemas/AppMemberInviteActionDefinition>,<#/components/schemas/AppMemberRoleUpdateActionDefinition>,<#/components/schemas/AppMemberCurrentPatchActionDefinition>,<#/components/schemas/AppMemberPropertiesPatchActionDefinition>,<#/components/schemas/AppMemberQueryActionDefinition>,<#/components/schemas/AppMemberDeleteActionDefinition>",
               },
             ],
             "instance": {
@@ -4287,40 +4571,49 @@ Does nothing if the user isn’t logged in.",
                   "$ref": "#/components/schemas/StorageDeleteActionDefinition",
                 },
                 {
-                  "$ref": "#/components/schemas/GroupInviteActionDefinition",
+                  "$ref": "#/components/schemas/GroupMemberInviteActionDefinition",
                 },
                 {
-                  "$ref": "#/components/schemas/GroupJoinActionDefinition",
+                  "$ref": "#/components/schemas/GroupMemberQueryActionDefinition",
                 },
                 {
-                  "$ref": "#/components/schemas/GroupListActionDefinition",
+                  "$ref": "#/components/schemas/GroupMemberDeleteActionDefinition",
                 },
                 {
-                  "$ref": "#/components/schemas/GroupMembersActionDefinition",
+                  "$ref": "#/components/schemas/GroupMemberRoleUpdateActionDefinition",
+                },
+                {
+                  "$ref": "#/components/schemas/GroupQueryActionDefinition",
                 },
                 {
                   "$ref": "#/components/schemas/ThrowActionDefinition",
                 },
                 {
-                  "$ref": "#/components/schemas/UserLoginActionDefinition",
+                  "$ref": "#/components/schemas/AppMemberLoginActionDefinition",
                 },
                 {
-                  "$ref": "#/components/schemas/UserLogoutActionDefinition",
+                  "$ref": "#/components/schemas/AppMemberLogoutActionDefinition",
                 },
                 {
-                  "$ref": "#/components/schemas/UserRegisterActionDefinition",
+                  "$ref": "#/components/schemas/AppMemberRegisterActionDefinition",
                 },
                 {
-                  "$ref": "#/components/schemas/UserCreateActionDefinition",
+                  "$ref": "#/components/schemas/AppMemberInviteActionDefinition",
                 },
                 {
-                  "$ref": "#/components/schemas/UserUpdateActionDefinition",
+                  "$ref": "#/components/schemas/AppMemberRoleUpdateActionDefinition",
                 },
                 {
-                  "$ref": "#/components/schemas/UserQueryActionDefinition",
+                  "$ref": "#/components/schemas/AppMemberCurrentPatchActionDefinition",
                 },
                 {
-                  "$ref": "#/components/schemas/UserRemoveActionDefinition",
+                  "$ref": "#/components/schemas/AppMemberPropertiesPatchActionDefinition",
+                },
+                {
+                  "$ref": "#/components/schemas/AppMemberQueryActionDefinition",
+                },
+                {
+                  "$ref": "#/components/schemas/AppMemberDeleteActionDefinition",
                 },
               ],
             },
@@ -4329,7 +4622,7 @@ Does nothing if the user isn’t logged in.",
         "instance": {
           "type": "invalid",
         },
-        "message": "does not match allOf schema [subschema 1] with 100 error[s]:",
+        "message": "does not match allOf schema [subschema 1] with 108 error[s]:",
         "name": "allOf",
         "path": [
           "actions",
@@ -4493,46 +4786,55 @@ Does nothing if the user isn’t logged in.",
                   "$ref": "#/components/schemas/StorageDeleteActionDefinition",
                 },
                 {
-                  "$ref": "#/components/schemas/GroupInviteActionDefinition",
+                  "$ref": "#/components/schemas/GroupMemberInviteActionDefinition",
                 },
                 {
-                  "$ref": "#/components/schemas/GroupJoinActionDefinition",
+                  "$ref": "#/components/schemas/GroupMemberQueryActionDefinition",
                 },
                 {
-                  "$ref": "#/components/schemas/GroupListActionDefinition",
+                  "$ref": "#/components/schemas/GroupMemberDeleteActionDefinition",
                 },
                 {
-                  "$ref": "#/components/schemas/GroupMembersActionDefinition",
+                  "$ref": "#/components/schemas/GroupMemberRoleUpdateActionDefinition",
+                },
+                {
+                  "$ref": "#/components/schemas/GroupQueryActionDefinition",
                 },
                 {
                   "$ref": "#/components/schemas/ThrowActionDefinition",
                 },
                 {
-                  "$ref": "#/components/schemas/UserLoginActionDefinition",
+                  "$ref": "#/components/schemas/AppMemberLoginActionDefinition",
                 },
                 {
-                  "$ref": "#/components/schemas/UserLogoutActionDefinition",
+                  "$ref": "#/components/schemas/AppMemberLogoutActionDefinition",
                 },
                 {
-                  "$ref": "#/components/schemas/UserRegisterActionDefinition",
+                  "$ref": "#/components/schemas/AppMemberRegisterActionDefinition",
                 },
                 {
-                  "$ref": "#/components/schemas/UserCreateActionDefinition",
+                  "$ref": "#/components/schemas/AppMemberInviteActionDefinition",
                 },
                 {
-                  "$ref": "#/components/schemas/UserUpdateActionDefinition",
+                  "$ref": "#/components/schemas/AppMemberRoleUpdateActionDefinition",
                 },
                 {
-                  "$ref": "#/components/schemas/UserQueryActionDefinition",
+                  "$ref": "#/components/schemas/AppMemberCurrentPatchActionDefinition",
                 },
                 {
-                  "$ref": "#/components/schemas/UserRemoveActionDefinition",
+                  "$ref": "#/components/schemas/AppMemberPropertiesPatchActionDefinition",
+                },
+                {
+                  "$ref": "#/components/schemas/AppMemberQueryActionDefinition",
+                },
+                {
+                  "$ref": "#/components/schemas/AppMemberDeleteActionDefinition",
                 },
               ],
             },
           ],
         },
-        "stack": "instance.actions.onSubmit does not match allOf schema [subschema 1] with 100 error[s]:",
+        "stack": "instance.actions.onSubmit does not match allOf schema [subschema 1] with 108 error[s]:",
       },
       {
         "argument": "target",
@@ -6153,17 +6455,6 @@ disabled by setting this to \`false\`
 
 If not specified, the raw input data is used.
 ",
-            },
-            "method": {
-              "default": "get",
-              "description": "The type of request to make.",
-              "enum": [
-                "delete",
-                "get",
-                "patch",
-                "post",
-                "put",
-              ],
             },
             "onError": {},
             "onSuccess": {},
@@ -7861,10 +8152,10 @@ storage: localStorage
       },
       {
         "argument": [
-          "group.invite",
+          "group.member.invite",
         ],
         "instance": "invalid",
-        "message": "is not one of enum values: group.invite",
+        "message": "is not one of enum values: group.member.invite",
         "name": "enum",
         "path": [
           "actions",
@@ -7873,54 +8164,12 @@ storage: localStorage
         ],
         "property": "instance.actions.onSubmit.type",
         "schema": {
-          "description": "Invite a user to join a group.",
+          "description": "Invite an app member to join a group.",
           "enum": [
-            "group.invite",
+            "group.member.invite",
           ],
         },
-        "stack": "instance.actions.onSubmit.type is not one of enum values: group.invite",
-      },
-      {
-        "argument": [
-          "group.join",
-        ],
-        "instance": "invalid",
-        "message": "is not one of enum values: group.join",
-        "name": "enum",
-        "path": [
-          "actions",
-          "onSubmit",
-          "type",
-        ],
-        "property": "instance.actions.onSubmit.type",
-        "schema": {
-          "description": "Allow a user to join a group.",
-          "enum": [
-            "group.join",
-          ],
-        },
-        "stack": "instance.actions.onSubmit.type is not one of enum values: group.join",
-      },
-      {
-        "argument": [
-          "group.list",
-        ],
-        "instance": "invalid",
-        "message": "is not one of enum values: group.list",
-        "name": "enum",
-        "path": [
-          "actions",
-          "onSubmit",
-          "type",
-        ],
-        "property": "instance.actions.onSubmit.type",
-        "schema": {
-          "description": "Get a list of all of the groups in an app.",
-          "enum": [
-            "group.list",
-          ],
-        },
-        "stack": "instance.actions.onSubmit.type is not one of enum values: group.list",
+        "stack": "instance.actions.onSubmit.type is not one of enum values: group.member.invite",
       },
       {
         "argument": "id",
@@ -7948,7 +8197,7 @@ storage: localStorage
             "type": {
               "description": "Get a list of a group's members",
               "enum": [
-                "group.members",
+                "group.member.query",
               ],
             },
           },
@@ -7962,10 +8211,10 @@ storage: localStorage
       },
       {
         "argument": [
-          "group.members",
+          "group.member.query",
         ],
         "instance": "invalid",
-        "message": "is not one of enum values: group.members",
+        "message": "is not one of enum values: group.member.query",
         "name": "enum",
         "path": [
           "actions",
@@ -7976,10 +8225,197 @@ storage: localStorage
         "schema": {
           "description": "Get a list of a group's members",
           "enum": [
-            "group.members",
+            "group.member.query",
           ],
         },
-        "stack": "instance.actions.onSubmit.type is not one of enum values: group.members",
+        "stack": "instance.actions.onSubmit.type is not one of enum values: group.member.query",
+      },
+      {
+        "argument": "id",
+        "instance": {
+          "type": "invalid",
+        },
+        "message": "requires property "id"",
+        "name": "required",
+        "path": [
+          "actions",
+          "onSubmit",
+        ],
+        "property": "instance.actions.onSubmit",
+        "schema": {
+          "additionalProperties": false,
+          "properties": {
+            "id": {
+              "$ref": "#/components/schemas/RemapperDefinition",
+              "description": "The id of the group member to delete",
+            },
+            "onError": {},
+            "onSuccess": {},
+            "remapAfter": {},
+            "remapBefore": {},
+            "type": {
+              "description": "Allow a user to join a group.",
+              "enum": [
+                "group.member.delete",
+              ],
+            },
+          },
+          "required": [
+            "type",
+            "id",
+          ],
+          "type": "object",
+        },
+        "stack": "instance.actions.onSubmit requires property "id"",
+      },
+      {
+        "argument": [
+          "group.member.delete",
+        ],
+        "instance": "invalid",
+        "message": "is not one of enum values: group.member.delete",
+        "name": "enum",
+        "path": [
+          "actions",
+          "onSubmit",
+          "type",
+        ],
+        "property": "instance.actions.onSubmit.type",
+        "schema": {
+          "description": "Allow a user to join a group.",
+          "enum": [
+            "group.member.delete",
+          ],
+        },
+        "stack": "instance.actions.onSubmit.type is not one of enum values: group.member.delete",
+      },
+      {
+        "argument": "id",
+        "instance": {
+          "type": "invalid",
+        },
+        "message": "requires property "id"",
+        "name": "required",
+        "path": [
+          "actions",
+          "onSubmit",
+        ],
+        "property": "instance.actions.onSubmit",
+        "schema": {
+          "additionalProperties": false,
+          "properties": {
+            "id": {
+              "$ref": "#/components/schemas/RemapperDefinition",
+              "description": "The id of the group member to update the role of.",
+            },
+            "onError": {},
+            "onSuccess": {},
+            "remapAfter": {},
+            "remapBefore": {},
+            "role": {
+              "$ref": "#/components/schemas/RemapperDefinition",
+              "description": "The new role of the group member.",
+            },
+            "type": {
+              "description": "Update the role of a group member.",
+              "enum": [
+                "group.member.role.update",
+              ],
+            },
+          },
+          "required": [
+            "type",
+            "id",
+            "role",
+          ],
+          "type": "object",
+        },
+        "stack": "instance.actions.onSubmit requires property "id"",
+      },
+      {
+        "argument": "role",
+        "instance": {
+          "type": "invalid",
+        },
+        "message": "requires property "role"",
+        "name": "required",
+        "path": [
+          "actions",
+          "onSubmit",
+        ],
+        "property": "instance.actions.onSubmit",
+        "schema": {
+          "additionalProperties": false,
+          "properties": {
+            "id": {
+              "$ref": "#/components/schemas/RemapperDefinition",
+              "description": "The id of the group member to update the role of.",
+            },
+            "onError": {},
+            "onSuccess": {},
+            "remapAfter": {},
+            "remapBefore": {},
+            "role": {
+              "$ref": "#/components/schemas/RemapperDefinition",
+              "description": "The new role of the group member.",
+            },
+            "type": {
+              "description": "Update the role of a group member.",
+              "enum": [
+                "group.member.role.update",
+              ],
+            },
+          },
+          "required": [
+            "type",
+            "id",
+            "role",
+          ],
+          "type": "object",
+        },
+        "stack": "instance.actions.onSubmit requires property "role"",
+      },
+      {
+        "argument": [
+          "group.member.role.update",
+        ],
+        "instance": "invalid",
+        "message": "is not one of enum values: group.member.role.update",
+        "name": "enum",
+        "path": [
+          "actions",
+          "onSubmit",
+          "type",
+        ],
+        "property": "instance.actions.onSubmit.type",
+        "schema": {
+          "description": "Update the role of a group member.",
+          "enum": [
+            "group.member.role.update",
+          ],
+        },
+        "stack": "instance.actions.onSubmit.type is not one of enum values: group.member.role.update",
+      },
+      {
+        "argument": [
+          "group.query",
+        ],
+        "instance": "invalid",
+        "message": "is not one of enum values: group.query",
+        "name": "enum",
+        "path": [
+          "actions",
+          "onSubmit",
+          "type",
+        ],
+        "property": "instance.actions.onSubmit.type",
+        "schema": {
+          "description": "Get a list of all of the groups in an app.",
+          "enum": [
+            "group.query",
+          ],
+        },
+        "stack": "instance.actions.onSubmit.type is not one of enum values: group.query",
       },
       {
         "argument": [
@@ -8007,10 +8443,10 @@ This can be used to create a custom error that ends up in the error action handl
       },
       {
         "argument": [
-          "user.login",
+          "app.member.login",
         ],
         "instance": "invalid",
-        "message": "is not one of enum values: user.login",
+        "message": "is not one of enum values: app.member.login",
         "name": "enum",
         "path": [
           "actions",
@@ -8019,21 +8455,21 @@ This can be used to create a custom error that ends up in the error action handl
         ],
         "property": "instance.actions.onSubmit.type",
         "schema": {
-          "description": "Allows the user to login using an email address and a password.
+          "description": "Allows the app member to login using an email address and a password.
 
-Does nothing if the user is already logged in.",
+Does nothing if the app member is already logged in.",
           "enum": [
-            "user.login",
+            "app.member.login",
           ],
         },
-        "stack": "instance.actions.onSubmit.type is not one of enum values: user.login",
+        "stack": "instance.actions.onSubmit.type is not one of enum values: app.member.login",
       },
       {
         "argument": [
-          "user.logout",
+          "app.member.logout",
         ],
         "instance": "invalid",
-        "message": "is not one of enum values: user.logout",
+        "message": "is not one of enum values: app.member.logout",
         "name": "enum",
         "path": [
           "actions",
@@ -8042,324 +8478,12 @@ Does nothing if the user is already logged in.",
         ],
         "property": "instance.actions.onSubmit.type",
         "schema": {
-          "description": "Allow the users to logout of the application.",
+          "description": "Allow the app members to log out of the application.",
           "enum": [
-            "user.logout",
+            "app.member.logout",
           ],
         },
-        "stack": "instance.actions.onSubmit.type is not one of enum values: user.logout",
-      },
-      {
-        "argument": "email",
-        "instance": {
-          "type": "invalid",
-        },
-        "message": "requires property "email"",
-        "name": "required",
-        "path": [
-          "actions",
-          "onSubmit",
-        ],
-        "property": "instance.actions.onSubmit",
-        "schema": {
-          "additionalProperties": false,
-          "properties": {
-            "displayName": {
-              "description": "The display name of the user.",
-            },
-            "email": {
-              "description": "The email to login with.",
-            },
-            "login": {
-              "default": true,
-              "description": "Whether to login after registering.",
-            },
-            "onError": {},
-            "onSuccess": {},
-            "password": {
-              "description": "The password to login with.",
-            },
-            "picture": {
-              "description": "The image to use for the profile picture of the user.",
-            },
-            "properties": {
-              "description": "The custom properties for the user.
-
-Values will be validated based on \`user.properties\`, if defined in the app definition.",
-            },
-            "remapAfter": {},
-            "remapBefore": {},
-            "type": {
-              "description": "Allows the user to register a new account using an email address and a password.
-
-Does nothing if the user is already logged in.",
-              "enum": [
-                "user.register",
-              ],
-            },
-          },
-          "required": [
-            "email",
-            "password",
-          ],
-          "type": "object",
-        },
-        "stack": "instance.actions.onSubmit requires property "email"",
-      },
-      {
-        "argument": "password",
-        "instance": {
-          "type": "invalid",
-        },
-        "message": "requires property "password"",
-        "name": "required",
-        "path": [
-          "actions",
-          "onSubmit",
-        ],
-        "property": "instance.actions.onSubmit",
-        "schema": {
-          "additionalProperties": false,
-          "properties": {
-            "displayName": {
-              "description": "The display name of the user.",
-            },
-            "email": {
-              "description": "The email to login with.",
-            },
-            "login": {
-              "default": true,
-              "description": "Whether to login after registering.",
-            },
-            "onError": {},
-            "onSuccess": {},
-            "password": {
-              "description": "The password to login with.",
-            },
-            "picture": {
-              "description": "The image to use for the profile picture of the user.",
-            },
-            "properties": {
-              "description": "The custom properties for the user.
-
-Values will be validated based on \`user.properties\`, if defined in the app definition.",
-            },
-            "remapAfter": {},
-            "remapBefore": {},
-            "type": {
-              "description": "Allows the user to register a new account using an email address and a password.
-
-Does nothing if the user is already logged in.",
-              "enum": [
-                "user.register",
-              ],
-            },
-          },
-          "required": [
-            "email",
-            "password",
-          ],
-          "type": "object",
-        },
-        "stack": "instance.actions.onSubmit requires property "password"",
-      },
-      {
-        "argument": [
-          "user.register",
-        ],
-        "instance": "invalid",
-        "message": "is not one of enum values: user.register",
-        "name": "enum",
-        "path": [
-          "actions",
-          "onSubmit",
-          "type",
-        ],
-        "property": "instance.actions.onSubmit.type",
-        "schema": {
-          "description": "Allows the user to register a new account using an email address and a password.
-
-Does nothing if the user is already logged in.",
-          "enum": [
-            "user.register",
-          ],
-        },
-        "stack": "instance.actions.onSubmit.type is not one of enum values: user.register",
-      },
-      {
-        "argument": "email",
-        "instance": {
-          "type": "invalid",
-        },
-        "message": "requires property "email"",
-        "name": "required",
-        "path": [
-          "actions",
-          "onSubmit",
-        ],
-        "property": "instance.actions.onSubmit",
-        "schema": {
-          "additionalProperties": false,
-          "properties": {
-            "email": {
-              "description": "The email to login with.",
-            },
-            "name": {
-              "description": "The display name of the user.",
-            },
-            "onError": {},
-            "onSuccess": {},
-            "password": {
-              "description": "The password to login with.",
-            },
-            "properties": {
-              "description": "The custom properties for the user.
-
-Values will be validated based on \`user.properties\`, if defined in the app definition.",
-            },
-            "remapAfter": {},
-            "remapBefore": {},
-            "role": {
-              "description": "The role for the created account. Defaults to the default role in the app's security definition.",
-            },
-            "type": {
-              "description": "Allows the user to create a new account using an email address and a password.
-
-Does nothing if the user is already logged in.",
-              "enum": [
-                "user.create",
-              ],
-            },
-          },
-          "required": [
-            "email",
-            "password",
-          ],
-          "type": "object",
-        },
-        "stack": "instance.actions.onSubmit requires property "email"",
-      },
-      {
-        "argument": "password",
-        "instance": {
-          "type": "invalid",
-        },
-        "message": "requires property "password"",
-        "name": "required",
-        "path": [
-          "actions",
-          "onSubmit",
-        ],
-        "property": "instance.actions.onSubmit",
-        "schema": {
-          "additionalProperties": false,
-          "properties": {
-            "email": {
-              "description": "The email to login with.",
-            },
-            "name": {
-              "description": "The display name of the user.",
-            },
-            "onError": {},
-            "onSuccess": {},
-            "password": {
-              "description": "The password to login with.",
-            },
-            "properties": {
-              "description": "The custom properties for the user.
-
-Values will be validated based on \`user.properties\`, if defined in the app definition.",
-            },
-            "remapAfter": {},
-            "remapBefore": {},
-            "role": {
-              "description": "The role for the created account. Defaults to the default role in the app's security definition.",
-            },
-            "type": {
-              "description": "Allows the user to create a new account using an email address and a password.
-
-Does nothing if the user is already logged in.",
-              "enum": [
-                "user.create",
-              ],
-            },
-          },
-          "required": [
-            "email",
-            "password",
-          ],
-          "type": "object",
-        },
-        "stack": "instance.actions.onSubmit requires property "password"",
-      },
-      {
-        "argument": [
-          "user.create",
-        ],
-        "instance": "invalid",
-        "message": "is not one of enum values: user.create",
-        "name": "enum",
-        "path": [
-          "actions",
-          "onSubmit",
-          "type",
-        ],
-        "property": "instance.actions.onSubmit.type",
-        "schema": {
-          "description": "Allows the user to create a new account using an email address and a password.
-
-Does nothing if the user is already logged in.",
-          "enum": [
-            "user.create",
-          ],
-        },
-        "stack": "instance.actions.onSubmit.type is not one of enum values: user.create",
-      },
-      {
-        "argument": [
-          "user.update",
-        ],
-        "instance": "invalid",
-        "message": "is not one of enum values: user.update",
-        "name": "enum",
-        "path": [
-          "actions",
-          "onSubmit",
-          "type",
-        ],
-        "property": "instance.actions.onSubmit.type",
-        "schema": {
-          "description": "Allows the user to update their existing account.
-
-Does nothing if the user isn’t logged in.",
-          "enum": [
-            "user.update",
-          ],
-        },
-        "stack": "instance.actions.onSubmit.type is not one of enum values: user.update",
-      },
-      {
-        "argument": [
-          "user.query",
-        ],
-        "instance": "invalid",
-        "message": "is not one of enum values: user.query",
-        "name": "enum",
-        "path": [
-          "actions",
-          "onSubmit",
-          "type",
-        ],
-        "property": "instance.actions.onSubmit.type",
-        "schema": {
-          "description": "Allows the user to fetch a list of accounts by their roles.
-
-Does nothing if the user isn’t logged in.",
-          "enum": [
-            "user.query",
-          ],
-        },
-        "stack": "instance.actions.onSubmit.type is not one of enum values: user.query",
+        "stack": "instance.actions.onSubmit.type is not one of enum values: app.member.logout",
       },
       {
         "argument": "email",
@@ -8378,34 +8502,123 @@ Does nothing if the user isn’t logged in.",
           "properties": {
             "email": {
               "$ref": "#/components/schemas/RemapperDefinition",
-              "description": "The email of the account to be deleted.",
+              "description": "The email to log in with.",
+            },
+            "login": {
+              "default": true,
+              "description": "Whether to login after registering.",
+              "type": "boolean",
+            },
+            "name": {
+              "$ref": "#/components/schemas/RemapperDefinition",
+              "description": "The full name of the app member.",
             },
             "onError": {},
             "onSuccess": {},
+            "password": {
+              "$ref": "#/components/schemas/RemapperDefinition",
+              "description": "The password to log in with.",
+            },
+            "picture": {
+              "$ref": "#/components/schemas/RemapperDefinition",
+              "description": "The image to use for the profile picture of the app member.",
+            },
+            "properties": {
+              "$ref": "#/components/schemas/RemapperDefinition",
+              "description": "The custom properties for the app member.
+
+Values will be validated based on \`members.properties\`, if defined in the app definition.",
+            },
             "remapAfter": {},
             "remapBefore": {},
             "type": {
-              "description": "Allows the user to delete an existing account.
+              "description": "Allows the app member to register using an email address and a password.
 
-Does nothing if the user isn’t logged in.",
+Does nothing if the app member is already logged in.",
               "enum": [
-                "user.remove",
+                "app.member.register",
               ],
             },
           },
           "required": [
+            "type",
             "email",
+            "password",
           ],
           "type": "object",
         },
         "stack": "instance.actions.onSubmit requires property "email"",
       },
       {
+        "argument": "password",
+        "instance": {
+          "type": "invalid",
+        },
+        "message": "requires property "password"",
+        "name": "required",
+        "path": [
+          "actions",
+          "onSubmit",
+        ],
+        "property": "instance.actions.onSubmit",
+        "schema": {
+          "additionalProperties": false,
+          "properties": {
+            "email": {
+              "$ref": "#/components/schemas/RemapperDefinition",
+              "description": "The email to log in with.",
+            },
+            "login": {
+              "default": true,
+              "description": "Whether to login after registering.",
+              "type": "boolean",
+            },
+            "name": {
+              "$ref": "#/components/schemas/RemapperDefinition",
+              "description": "The full name of the app member.",
+            },
+            "onError": {},
+            "onSuccess": {},
+            "password": {
+              "$ref": "#/components/schemas/RemapperDefinition",
+              "description": "The password to log in with.",
+            },
+            "picture": {
+              "$ref": "#/components/schemas/RemapperDefinition",
+              "description": "The image to use for the profile picture of the app member.",
+            },
+            "properties": {
+              "$ref": "#/components/schemas/RemapperDefinition",
+              "description": "The custom properties for the app member.
+
+Values will be validated based on \`members.properties\`, if defined in the app definition.",
+            },
+            "remapAfter": {},
+            "remapBefore": {},
+            "type": {
+              "description": "Allows the app member to register using an email address and a password.
+
+Does nothing if the app member is already logged in.",
+              "enum": [
+                "app.member.register",
+              ],
+            },
+          },
+          "required": [
+            "type",
+            "email",
+            "password",
+          ],
+          "type": "object",
+        },
+        "stack": "instance.actions.onSubmit requires property "password"",
+      },
+      {
         "argument": [
-          "user.remove",
+          "app.member.register",
         ],
         "instance": "invalid",
-        "message": "is not one of enum values: user.remove",
+        "message": "is not one of enum values: app.member.register",
         "name": "enum",
         "path": [
           "actions",
@@ -8414,14 +8627,375 @@ Does nothing if the user isn’t logged in.",
         ],
         "property": "instance.actions.onSubmit.type",
         "schema": {
-          "description": "Allows the user to delete an existing account.
+          "description": "Allows the app member to register using an email address and a password.
 
-Does nothing if the user isn’t logged in.",
+Does nothing if the app member is already logged in.",
           "enum": [
-            "user.remove",
+            "app.member.register",
           ],
         },
-        "stack": "instance.actions.onSubmit.type is not one of enum values: user.remove",
+        "stack": "instance.actions.onSubmit.type is not one of enum values: app.member.register",
+      },
+      {
+        "argument": "email",
+        "instance": {
+          "type": "invalid",
+        },
+        "message": "requires property "email"",
+        "name": "required",
+        "path": [
+          "actions",
+          "onSubmit",
+        ],
+        "property": "instance.actions.onSubmit",
+        "schema": {
+          "additionalProperties": false,
+          "properties": {
+            "email": {
+              "$ref": "#/components/schemas/RemapperDefinition",
+              "description": "The email to invite.",
+            },
+            "onError": {},
+            "onSuccess": {},
+            "remapAfter": {},
+            "remapBefore": {},
+            "role": {
+              "$ref": "#/components/schemas/RemapperDefinition",
+              "description": "The role of the invited app member.",
+            },
+            "type": {
+              "description": "Allows the app member to invite another app member using an email address and a role.
+
+Does nothing if the app member is not logged in.",
+              "enum": [
+                "app.member.invite",
+              ],
+            },
+          },
+          "required": [
+            "type",
+            "email",
+            "role",
+          ],
+          "type": "object",
+        },
+        "stack": "instance.actions.onSubmit requires property "email"",
+      },
+      {
+        "argument": "role",
+        "instance": {
+          "type": "invalid",
+        },
+        "message": "requires property "role"",
+        "name": "required",
+        "path": [
+          "actions",
+          "onSubmit",
+        ],
+        "property": "instance.actions.onSubmit",
+        "schema": {
+          "additionalProperties": false,
+          "properties": {
+            "email": {
+              "$ref": "#/components/schemas/RemapperDefinition",
+              "description": "The email to invite.",
+            },
+            "onError": {},
+            "onSuccess": {},
+            "remapAfter": {},
+            "remapBefore": {},
+            "role": {
+              "$ref": "#/components/schemas/RemapperDefinition",
+              "description": "The role of the invited app member.",
+            },
+            "type": {
+              "description": "Allows the app member to invite another app member using an email address and a role.
+
+Does nothing if the app member is not logged in.",
+              "enum": [
+                "app.member.invite",
+              ],
+            },
+          },
+          "required": [
+            "type",
+            "email",
+            "role",
+          ],
+          "type": "object",
+        },
+        "stack": "instance.actions.onSubmit requires property "role"",
+      },
+      {
+        "argument": [
+          "app.member.invite",
+        ],
+        "instance": "invalid",
+        "message": "is not one of enum values: app.member.invite",
+        "name": "enum",
+        "path": [
+          "actions",
+          "onSubmit",
+          "type",
+        ],
+        "property": "instance.actions.onSubmit.type",
+        "schema": {
+          "description": "Allows the app member to invite another app member using an email address and a role.
+
+Does nothing if the app member is not logged in.",
+          "enum": [
+            "app.member.invite",
+          ],
+        },
+        "stack": "instance.actions.onSubmit.type is not one of enum values: app.member.invite",
+      },
+      {
+        "argument": "sub",
+        "instance": {
+          "type": "invalid",
+        },
+        "message": "requires property "sub"",
+        "name": "required",
+        "path": [
+          "actions",
+          "onSubmit",
+        ],
+        "property": "instance.actions.onSubmit",
+        "schema": {
+          "additionalProperties": false,
+          "properties": {
+            "onError": {},
+            "onSuccess": {},
+            "remapAfter": {},
+            "remapBefore": {},
+            "role": {
+              "$ref": "#/components/schemas/RemapperDefinition",
+              "description": "The updated role of the app member.
+
+The role must exist in the roles property of the app's security definition or in the predefined app roles in the system -
+\`Member\`, \`MembersManager\`, \`GroupMembersManager\`, \`GroupsManager\`, \`ResourcesManager\` and \`Owner\`",
+            },
+            "sub": {
+              "$ref": "#/components/schemas/RemapperDefinition",
+              "description": "The id of the app member.",
+            },
+            "type": {
+              "description": "Allows the app member to update the role of another app member account.
+
+Does nothing if the app member isn’t logged in.",
+              "enum": [
+                "app.member.role.update",
+              ],
+            },
+          },
+          "required": [
+            "type",
+            "sub",
+          ],
+          "type": "object",
+        },
+        "stack": "instance.actions.onSubmit requires property "sub"",
+      },
+      {
+        "argument": [
+          "app.member.role.update",
+        ],
+        "instance": "invalid",
+        "message": "is not one of enum values: app.member.role.update",
+        "name": "enum",
+        "path": [
+          "actions",
+          "onSubmit",
+          "type",
+        ],
+        "property": "instance.actions.onSubmit.type",
+        "schema": {
+          "description": "Allows the app member to update the role of another app member account.
+
+Does nothing if the app member isn’t logged in.",
+          "enum": [
+            "app.member.role.update",
+          ],
+        },
+        "stack": "instance.actions.onSubmit.type is not one of enum values: app.member.role.update",
+      },
+      {
+        "argument": [
+          "app.member.current.patch",
+        ],
+        "instance": "invalid",
+        "message": "is not one of enum values: app.member.current.patch",
+        "name": "enum",
+        "path": [
+          "actions",
+          "onSubmit",
+          "type",
+        ],
+        "property": "instance.actions.onSubmit.type",
+        "schema": {
+          "description": "Allows the app member to patch their own app member account.
+
+Does nothing if the app member isn’t logged in.",
+          "enum": [
+            "app.member.current.patch",
+          ],
+        },
+        "stack": "instance.actions.onSubmit.type is not one of enum values: app.member.current.patch",
+      },
+      {
+        "argument": "sub",
+        "instance": {
+          "type": "invalid",
+        },
+        "message": "requires property "sub"",
+        "name": "required",
+        "path": [
+          "actions",
+          "onSubmit",
+        ],
+        "property": "instance.actions.onSubmit",
+        "schema": {
+          "additionalProperties": false,
+          "properties": {
+            "onError": {},
+            "onSuccess": {},
+            "properties": {
+              "$ref": "#/components/schemas/RemapperDefinition",
+              "description": "The updated custom properties for the app member.
+
+Values will be validated based on \`members.properties\`, if defined in the app definition.",
+            },
+            "remapAfter": {},
+            "remapBefore": {},
+            "sub": {
+              "$ref": "#/components/schemas/RemapperDefinition",
+              "description": "The new full name name of the app member.",
+            },
+            "type": {
+              "description": "Allows the app member to patch the properties of another app member account.
+
+Does nothing if the app member isn’t logged in.",
+              "enum": [
+                "app.member.properties.patch",
+              ],
+            },
+          },
+          "required": [
+            "type",
+            "sub",
+          ],
+          "type": "object",
+        },
+        "stack": "instance.actions.onSubmit requires property "sub"",
+      },
+      {
+        "argument": [
+          "app.member.properties.patch",
+        ],
+        "instance": "invalid",
+        "message": "is not one of enum values: app.member.properties.patch",
+        "name": "enum",
+        "path": [
+          "actions",
+          "onSubmit",
+          "type",
+        ],
+        "property": "instance.actions.onSubmit.type",
+        "schema": {
+          "description": "Allows the app member to patch the properties of another app member account.
+
+Does nothing if the app member isn’t logged in.",
+          "enum": [
+            "app.member.properties.patch",
+          ],
+        },
+        "stack": "instance.actions.onSubmit.type is not one of enum values: app.member.properties.patch",
+      },
+      {
+        "argument": [
+          "app.member.query",
+        ],
+        "instance": "invalid",
+        "message": "is not one of enum values: app.member.query",
+        "name": "enum",
+        "path": [
+          "actions",
+          "onSubmit",
+          "type",
+        ],
+        "property": "instance.actions.onSubmit.type",
+        "schema": {
+          "description": "Allows the currently logged in app member to fetch a list of app members by their roles.
+
+Does nothing if the app member isn’t logged in.",
+          "enum": [
+            "app.member.query",
+          ],
+        },
+        "stack": "instance.actions.onSubmit.type is not one of enum values: app.member.query",
+      },
+      {
+        "argument": "sub",
+        "instance": {
+          "type": "invalid",
+        },
+        "message": "requires property "sub"",
+        "name": "required",
+        "path": [
+          "actions",
+          "onSubmit",
+        ],
+        "property": "instance.actions.onSubmit",
+        "schema": {
+          "additionalProperties": false,
+          "properties": {
+            "onError": {},
+            "onSuccess": {},
+            "remapAfter": {},
+            "remapBefore": {},
+            "sub": {
+              "$ref": "#/components/schemas/RemapperDefinition",
+              "description": "The id of the app member to be deleted.",
+            },
+            "type": {
+              "description": "Allows the app member to delete another app member.
+
+Does nothing if the app member isn’t logged in.",
+              "enum": [
+                "app.member.delete",
+              ],
+            },
+          },
+          "required": [
+            "type",
+            "sub",
+          ],
+          "type": "object",
+        },
+        "stack": "instance.actions.onSubmit requires property "sub"",
+      },
+      {
+        "argument": [
+          "app.member.delete",
+        ],
+        "instance": "invalid",
+        "message": "is not one of enum values: app.member.delete",
+        "name": "enum",
+        "path": [
+          "actions",
+          "onSubmit",
+          "type",
+        ],
+        "property": "instance.actions.onSubmit.type",
+        "schema": {
+          "description": "Allows the app member to delete another app member.
+
+Does nothing if the app member isn’t logged in.",
+          "enum": [
+            "app.member.delete",
+          ],
+        },
+        "stack": "instance.actions.onSubmit.type is not one of enum values: app.member.delete",
       },
       {
         "argument": [
@@ -8468,23 +9042,26 @@ Does nothing if the user isn’t logged in.",
           "<#/components/schemas/StorageWriteActionDefinition>",
           "<#/components/schemas/StorageUpdateActionDefinition>",
           "<#/components/schemas/StorageDeleteActionDefinition>",
-          "<#/components/schemas/GroupInviteActionDefinition>",
-          "<#/components/schemas/GroupJoinActionDefinition>",
-          "<#/components/schemas/GroupListActionDefinition>",
-          "<#/components/schemas/GroupMembersActionDefinition>",
+          "<#/components/schemas/GroupMemberInviteActionDefinition>",
+          "<#/components/schemas/GroupMemberQueryActionDefinition>",
+          "<#/components/schemas/GroupMemberDeleteActionDefinition>",
+          "<#/components/schemas/GroupMemberRoleUpdateActionDefinition>",
+          "<#/components/schemas/GroupQueryActionDefinition>",
           "<#/components/schemas/ThrowActionDefinition>",
-          "<#/components/schemas/UserLoginActionDefinition>",
-          "<#/components/schemas/UserLogoutActionDefinition>",
-          "<#/components/schemas/UserRegisterActionDefinition>",
-          "<#/components/schemas/UserCreateActionDefinition>",
-          "<#/components/schemas/UserUpdateActionDefinition>",
-          "<#/components/schemas/UserQueryActionDefinition>",
-          "<#/components/schemas/UserRemoveActionDefinition>",
+          "<#/components/schemas/AppMemberLoginActionDefinition>",
+          "<#/components/schemas/AppMemberLogoutActionDefinition>",
+          "<#/components/schemas/AppMemberRegisterActionDefinition>",
+          "<#/components/schemas/AppMemberInviteActionDefinition>",
+          "<#/components/schemas/AppMemberRoleUpdateActionDefinition>",
+          "<#/components/schemas/AppMemberCurrentPatchActionDefinition>",
+          "<#/components/schemas/AppMemberPropertiesPatchActionDefinition>",
+          "<#/components/schemas/AppMemberQueryActionDefinition>",
+          "<#/components/schemas/AppMemberDeleteActionDefinition>",
         ],
         "instance": {
           "type": "invalid",
         },
-        "message": "is not any of <#/components/schemas/AnalyticsActionDefinition>,<#/components/schemas/ControllerActionDefinition>,<#/components/schemas/ConditionActionDefinition>,<#/components/schemas/DialogActionDefinition>,<#/components/schemas/DialogErrorActionDefinition>,<#/components/schemas/DialogOkActionDefinition>,<#/components/schemas/DownloadActionDefinition>,<#/components/schemas/EachActionDefinition>,<#/components/schemas/EmailActionDefinition>,<#/components/schemas/EventActionDefinition>,<#/components/schemas/FlowBackActionDefinition>,<#/components/schemas/FlowFinishActionDefinition>,<#/components/schemas/FlowNextActionDefinition>,<#/components/schemas/FlowCancelActionDefinition>,<#/components/schemas/FlowToActionDefinition>,<#/components/schemas/LinkActionDefinition>,<#/components/schemas/LinkBackActionDefinition>,<#/components/schemas/LinkNextActionDefinition>,<#/components/schemas/LogActionDefinition>,<#/components/schemas/MatchActionDefinition>,<#/components/schemas/MessageActionDefinition>,<#/components/schemas/NoopActionDefinition>,<#/components/schemas/NotifyActionDefinition>,<#/components/schemas/RequestActionDefinition>,<#/components/schemas/ResourceCountActionDefinition>,<#/components/schemas/ResourceCreateActionDefinition>,<#/components/schemas/ResourceDeleteActionDefinition>,<#/components/schemas/ResourceGetActionDefinition>,<#/components/schemas/ResourceQueryActionDefinition>,<#/components/schemas/ResourceSubscriptionStatusActionDefinition>,<#/components/schemas/ResourceSubscriptionSubscribeActionDefinition>,<#/components/schemas/ResourceSubscriptionToggleActionDefinition>,<#/components/schemas/ResourceSubscriptionUnsubscribeActionDefinition>,<#/components/schemas/ResourceUpdateActionDefinition>,<#/components/schemas/ResourcePatchActionDefinition>,<#/components/schemas/ShareActionDefinition>,<#/components/schemas/StaticActionDefinition>,<#/components/schemas/StorageAppendActionDefinition>,<#/components/schemas/StorageSubtractActionDefinition>,<#/components/schemas/StorageReadActionDefinition>,<#/components/schemas/StorageWriteActionDefinition>,<#/components/schemas/StorageUpdateActionDefinition>,<#/components/schemas/StorageDeleteActionDefinition>,<#/components/schemas/GroupInviteActionDefinition>,<#/components/schemas/GroupJoinActionDefinition>,<#/components/schemas/GroupListActionDefinition>,<#/components/schemas/GroupMembersActionDefinition>,<#/components/schemas/ThrowActionDefinition>,<#/components/schemas/UserLoginActionDefinition>,<#/components/schemas/UserLogoutActionDefinition>,<#/components/schemas/UserRegisterActionDefinition>,<#/components/schemas/UserCreateActionDefinition>,<#/components/schemas/UserUpdateActionDefinition>,<#/components/schemas/UserQueryActionDefinition>,<#/components/schemas/UserRemoveActionDefinition>",
+        "message": "is not any of <#/components/schemas/AnalyticsActionDefinition>,<#/components/schemas/ControllerActionDefinition>,<#/components/schemas/ConditionActionDefinition>,<#/components/schemas/DialogActionDefinition>,<#/components/schemas/DialogErrorActionDefinition>,<#/components/schemas/DialogOkActionDefinition>,<#/components/schemas/DownloadActionDefinition>,<#/components/schemas/EachActionDefinition>,<#/components/schemas/EmailActionDefinition>,<#/components/schemas/EventActionDefinition>,<#/components/schemas/FlowBackActionDefinition>,<#/components/schemas/FlowFinishActionDefinition>,<#/components/schemas/FlowNextActionDefinition>,<#/components/schemas/FlowCancelActionDefinition>,<#/components/schemas/FlowToActionDefinition>,<#/components/schemas/LinkActionDefinition>,<#/components/schemas/LinkBackActionDefinition>,<#/components/schemas/LinkNextActionDefinition>,<#/components/schemas/LogActionDefinition>,<#/components/schemas/MatchActionDefinition>,<#/components/schemas/MessageActionDefinition>,<#/components/schemas/NoopActionDefinition>,<#/components/schemas/NotifyActionDefinition>,<#/components/schemas/RequestActionDefinition>,<#/components/schemas/ResourceCountActionDefinition>,<#/components/schemas/ResourceCreateActionDefinition>,<#/components/schemas/ResourceDeleteActionDefinition>,<#/components/schemas/ResourceGetActionDefinition>,<#/components/schemas/ResourceQueryActionDefinition>,<#/components/schemas/ResourceSubscriptionStatusActionDefinition>,<#/components/schemas/ResourceSubscriptionSubscribeActionDefinition>,<#/components/schemas/ResourceSubscriptionToggleActionDefinition>,<#/components/schemas/ResourceSubscriptionUnsubscribeActionDefinition>,<#/components/schemas/ResourceUpdateActionDefinition>,<#/components/schemas/ResourcePatchActionDefinition>,<#/components/schemas/ShareActionDefinition>,<#/components/schemas/StaticActionDefinition>,<#/components/schemas/StorageAppendActionDefinition>,<#/components/schemas/StorageSubtractActionDefinition>,<#/components/schemas/StorageReadActionDefinition>,<#/components/schemas/StorageWriteActionDefinition>,<#/components/schemas/StorageUpdateActionDefinition>,<#/components/schemas/StorageDeleteActionDefinition>,<#/components/schemas/GroupMemberInviteActionDefinition>,<#/components/schemas/GroupMemberQueryActionDefinition>,<#/components/schemas/GroupMemberDeleteActionDefinition>,<#/components/schemas/GroupMemberRoleUpdateActionDefinition>,<#/components/schemas/GroupQueryActionDefinition>,<#/components/schemas/ThrowActionDefinition>,<#/components/schemas/AppMemberLoginActionDefinition>,<#/components/schemas/AppMemberLogoutActionDefinition>,<#/components/schemas/AppMemberRegisterActionDefinition>,<#/components/schemas/AppMemberInviteActionDefinition>,<#/components/schemas/AppMemberRoleUpdateActionDefinition>,<#/components/schemas/AppMemberCurrentPatchActionDefinition>,<#/components/schemas/AppMemberPropertiesPatchActionDefinition>,<#/components/schemas/AppMemberQueryActionDefinition>,<#/components/schemas/AppMemberDeleteActionDefinition>",
         "name": "anyOf",
         "path": [
           "actions",
@@ -8623,44 +9200,53 @@ Does nothing if the user isn’t logged in.",
               "$ref": "#/components/schemas/StorageDeleteActionDefinition",
             },
             {
-              "$ref": "#/components/schemas/GroupInviteActionDefinition",
+              "$ref": "#/components/schemas/GroupMemberInviteActionDefinition",
             },
             {
-              "$ref": "#/components/schemas/GroupJoinActionDefinition",
+              "$ref": "#/components/schemas/GroupMemberQueryActionDefinition",
             },
             {
-              "$ref": "#/components/schemas/GroupListActionDefinition",
+              "$ref": "#/components/schemas/GroupMemberDeleteActionDefinition",
             },
             {
-              "$ref": "#/components/schemas/GroupMembersActionDefinition",
+              "$ref": "#/components/schemas/GroupMemberRoleUpdateActionDefinition",
+            },
+            {
+              "$ref": "#/components/schemas/GroupQueryActionDefinition",
             },
             {
               "$ref": "#/components/schemas/ThrowActionDefinition",
             },
             {
-              "$ref": "#/components/schemas/UserLoginActionDefinition",
+              "$ref": "#/components/schemas/AppMemberLoginActionDefinition",
             },
             {
-              "$ref": "#/components/schemas/UserLogoutActionDefinition",
+              "$ref": "#/components/schemas/AppMemberLogoutActionDefinition",
             },
             {
-              "$ref": "#/components/schemas/UserRegisterActionDefinition",
+              "$ref": "#/components/schemas/AppMemberRegisterActionDefinition",
             },
             {
-              "$ref": "#/components/schemas/UserCreateActionDefinition",
+              "$ref": "#/components/schemas/AppMemberInviteActionDefinition",
             },
             {
-              "$ref": "#/components/schemas/UserUpdateActionDefinition",
+              "$ref": "#/components/schemas/AppMemberRoleUpdateActionDefinition",
             },
             {
-              "$ref": "#/components/schemas/UserQueryActionDefinition",
+              "$ref": "#/components/schemas/AppMemberCurrentPatchActionDefinition",
             },
             {
-              "$ref": "#/components/schemas/UserRemoveActionDefinition",
+              "$ref": "#/components/schemas/AppMemberPropertiesPatchActionDefinition",
+            },
+            {
+              "$ref": "#/components/schemas/AppMemberQueryActionDefinition",
+            },
+            {
+              "$ref": "#/components/schemas/AppMemberDeleteActionDefinition",
             },
           ],
         },
-        "stack": "instance.actions.onSubmit is not any of <#/components/schemas/AnalyticsActionDefinition>,<#/components/schemas/ControllerActionDefinition>,<#/components/schemas/ConditionActionDefinition>,<#/components/schemas/DialogActionDefinition>,<#/components/schemas/DialogErrorActionDefinition>,<#/components/schemas/DialogOkActionDefinition>,<#/components/schemas/DownloadActionDefinition>,<#/components/schemas/EachActionDefinition>,<#/components/schemas/EmailActionDefinition>,<#/components/schemas/EventActionDefinition>,<#/components/schemas/FlowBackActionDefinition>,<#/components/schemas/FlowFinishActionDefinition>,<#/components/schemas/FlowNextActionDefinition>,<#/components/schemas/FlowCancelActionDefinition>,<#/components/schemas/FlowToActionDefinition>,<#/components/schemas/LinkActionDefinition>,<#/components/schemas/LinkBackActionDefinition>,<#/components/schemas/LinkNextActionDefinition>,<#/components/schemas/LogActionDefinition>,<#/components/schemas/MatchActionDefinition>,<#/components/schemas/MessageActionDefinition>,<#/components/schemas/NoopActionDefinition>,<#/components/schemas/NotifyActionDefinition>,<#/components/schemas/RequestActionDefinition>,<#/components/schemas/ResourceCountActionDefinition>,<#/components/schemas/ResourceCreateActionDefinition>,<#/components/schemas/ResourceDeleteActionDefinition>,<#/components/schemas/ResourceGetActionDefinition>,<#/components/schemas/ResourceQueryActionDefinition>,<#/components/schemas/ResourceSubscriptionStatusActionDefinition>,<#/components/schemas/ResourceSubscriptionSubscribeActionDefinition>,<#/components/schemas/ResourceSubscriptionToggleActionDefinition>,<#/components/schemas/ResourceSubscriptionUnsubscribeActionDefinition>,<#/components/schemas/ResourceUpdateActionDefinition>,<#/components/schemas/ResourcePatchActionDefinition>,<#/components/schemas/ShareActionDefinition>,<#/components/schemas/StaticActionDefinition>,<#/components/schemas/StorageAppendActionDefinition>,<#/components/schemas/StorageSubtractActionDefinition>,<#/components/schemas/StorageReadActionDefinition>,<#/components/schemas/StorageWriteActionDefinition>,<#/components/schemas/StorageUpdateActionDefinition>,<#/components/schemas/StorageDeleteActionDefinition>,<#/components/schemas/GroupInviteActionDefinition>,<#/components/schemas/GroupJoinActionDefinition>,<#/components/schemas/GroupListActionDefinition>,<#/components/schemas/GroupMembersActionDefinition>,<#/components/schemas/ThrowActionDefinition>,<#/components/schemas/UserLoginActionDefinition>,<#/components/schemas/UserLogoutActionDefinition>,<#/components/schemas/UserRegisterActionDefinition>,<#/components/schemas/UserCreateActionDefinition>,<#/components/schemas/UserUpdateActionDefinition>,<#/components/schemas/UserQueryActionDefinition>,<#/components/schemas/UserRemoveActionDefinition>",
+        "stack": "instance.actions.onSubmit is not any of <#/components/schemas/AnalyticsActionDefinition>,<#/components/schemas/ControllerActionDefinition>,<#/components/schemas/ConditionActionDefinition>,<#/components/schemas/DialogActionDefinition>,<#/components/schemas/DialogErrorActionDefinition>,<#/components/schemas/DialogOkActionDefinition>,<#/components/schemas/DownloadActionDefinition>,<#/components/schemas/EachActionDefinition>,<#/components/schemas/EmailActionDefinition>,<#/components/schemas/EventActionDefinition>,<#/components/schemas/FlowBackActionDefinition>,<#/components/schemas/FlowFinishActionDefinition>,<#/components/schemas/FlowNextActionDefinition>,<#/components/schemas/FlowCancelActionDefinition>,<#/components/schemas/FlowToActionDefinition>,<#/components/schemas/LinkActionDefinition>,<#/components/schemas/LinkBackActionDefinition>,<#/components/schemas/LinkNextActionDefinition>,<#/components/schemas/LogActionDefinition>,<#/components/schemas/MatchActionDefinition>,<#/components/schemas/MessageActionDefinition>,<#/components/schemas/NoopActionDefinition>,<#/components/schemas/NotifyActionDefinition>,<#/components/schemas/RequestActionDefinition>,<#/components/schemas/ResourceCountActionDefinition>,<#/components/schemas/ResourceCreateActionDefinition>,<#/components/schemas/ResourceDeleteActionDefinition>,<#/components/schemas/ResourceGetActionDefinition>,<#/components/schemas/ResourceQueryActionDefinition>,<#/components/schemas/ResourceSubscriptionStatusActionDefinition>,<#/components/schemas/ResourceSubscriptionSubscribeActionDefinition>,<#/components/schemas/ResourceSubscriptionToggleActionDefinition>,<#/components/schemas/ResourceSubscriptionUnsubscribeActionDefinition>,<#/components/schemas/ResourceUpdateActionDefinition>,<#/components/schemas/ResourcePatchActionDefinition>,<#/components/schemas/ShareActionDefinition>,<#/components/schemas/StaticActionDefinition>,<#/components/schemas/StorageAppendActionDefinition>,<#/components/schemas/StorageSubtractActionDefinition>,<#/components/schemas/StorageReadActionDefinition>,<#/components/schemas/StorageWriteActionDefinition>,<#/components/schemas/StorageUpdateActionDefinition>,<#/components/schemas/StorageDeleteActionDefinition>,<#/components/schemas/GroupMemberInviteActionDefinition>,<#/components/schemas/GroupMemberQueryActionDefinition>,<#/components/schemas/GroupMemberDeleteActionDefinition>,<#/components/schemas/GroupMemberRoleUpdateActionDefinition>,<#/components/schemas/GroupQueryActionDefinition>,<#/components/schemas/ThrowActionDefinition>,<#/components/schemas/AppMemberLoginActionDefinition>,<#/components/schemas/AppMemberLogoutActionDefinition>,<#/components/schemas/AppMemberRegisterActionDefinition>,<#/components/schemas/AppMemberInviteActionDefinition>,<#/components/schemas/AppMemberRoleUpdateActionDefinition>,<#/components/schemas/AppMemberCurrentPatchActionDefinition>,<#/components/schemas/AppMemberPropertiesPatchActionDefinition>,<#/components/schemas/AppMemberQueryActionDefinition>,<#/components/schemas/AppMemberDeleteActionDefinition>",
       },
     ],
   },

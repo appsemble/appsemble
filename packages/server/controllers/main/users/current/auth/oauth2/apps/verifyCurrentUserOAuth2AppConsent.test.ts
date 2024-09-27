@@ -68,7 +68,7 @@ describe('verifyCurrentUserOAuth2AppConsent', () => {
       vapidPublicKey: '',
       vapidPrivateKey: '',
     });
-    await AppMember.create({
+    const member = await AppMember.create({
       AppId: app.id,
       UserId: user.id,
       email: user.primaryEmail,
@@ -98,7 +98,7 @@ describe('verifyCurrentUserOAuth2AppConsent', () => {
       expires: new Date('2000-01-01T00:10:00.000Z'),
       redirectUri: 'http://app.org.localhost:9999',
       scope: 'openid',
-      UserId: user.id,
+      AppMemberId: member.id,
     });
   });
 
@@ -119,7 +119,7 @@ describe('verifyCurrentUserOAuth2AppConsent', () => {
       vapidPublicKey: '',
       vapidPrivateKey: '',
     });
-    await AppMember.create({
+    const member = await AppMember.create({
       email: user.primaryEmail,
       AppId: app.id,
       UserId: user.id,
@@ -149,7 +149,7 @@ describe('verifyCurrentUserOAuth2AppConsent', () => {
       expires: new Date('2000-01-01T00:10:00.000Z'),
       redirectUri: 'http://app.example:9999',
       scope: 'email',
-      UserId: user.id,
+      AppMemberId: member.id,
     });
   });
 

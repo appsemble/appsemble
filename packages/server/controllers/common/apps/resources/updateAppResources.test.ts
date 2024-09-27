@@ -1,5 +1,5 @@
 import { createFormData } from '@appsemble/node-utils';
-import { type Resource as ResourceType } from '@appsemble/types';
+import { PredefinedOrganizationRole, type Resource as ResourceType } from '@appsemble/types';
 import { uuid4Pattern } from '@appsemble/utils';
 import { request, setTestApp } from 'axios-test-instance';
 import stripIndent from 'strip-indent';
@@ -17,7 +17,7 @@ import {
 } from '../../../../models/index.js';
 import { setArgv } from '../../../../utils/argv.js';
 import { createServer } from '../../../../utils/createServer.js';
-import { createTestUser } from '../../../../utils/test/authorization.js';
+import { authorizeStudio, createTestUser } from '../../../../utils/test/authorization.js';
 import { exampleApp } from '../../../../utils/test/exampleApp.js';
 import { useTestDatabase } from '../../../../utils/test/testSchema.js';
 
@@ -48,7 +48,7 @@ beforeEach(async () => {
   await OrganizationMember.create({
     UserId: user.id,
     OrganizationId: organization.id,
-    role: 'Maintainer',
+    role: PredefinedOrganizationRole.Maintainer,
   });
   app = await exampleApp(organization.id);
 });
@@ -60,6 +60,7 @@ afterAll(() => {
 
 describe('updateAppResources', () => {
   it('should be able to update existing resources', async () => {
+    authorizeStudio();
     const { data: resources } = await request.post<{ foo: string }[]>(
       `/api/apps/${app.id}/resources/testResource`,
       [{ foo: 'bar' }, { foo: 'baz' }],
@@ -91,6 +92,7 @@ describe('updateAppResources', () => {
   });
 
   it('should accept text/csv', async () => {
+    authorizeStudio();
     const { data: resources } = await request.post<{ id: string }[]>(
       `/api/apps/${app.id}/resources/testResource`,
       [
@@ -142,6 +144,7 @@ describe('updateAppResources', () => {
   });
 
   it('should accept assets as form data with multiple resources', async () => {
+    authorizeStudio();
     const resources = await request.post<ResourceType[]>(
       `/api/apps/${app.id}/resources/testAssets`,
       createFormData({
@@ -166,6 +169,7 @@ describe('updateAppResources', () => {
       {
         AppId: app.id,
         ResourceId: 1,
+        GroupId: null,
         AppMemberId: null,
         clonable: false,
         created: new Date('1970-01-01T00:00:00.000Z'),
@@ -208,6 +212,7 @@ describe('updateAppResources', () => {
   });
 
   it('should not be able to update existing resources if one of them is missing an ID', async () => {
+    authorizeStudio();
     const { data: resources } = await request.post<{ foo: string }[]>(
       `/api/apps/${app.id}/resources/testResource`,
       [{ foo: 'bar' }, { foo: 'baz' }],
@@ -228,13 +233,14 @@ describe('updateAppResources', () => {
           },
         ],
         "error": "Bad Request",
-        "message": "List of resources contained a resource without an ID.",
+        "message": "There is a resource with a missing id.",
         "statusCode": 400,
       }
     `);
   });
 
   it('should not be able to update existing resources if one the resources don’t exist', async () => {
+    authorizeStudio();
     const { data: resources } = await request.post<{ foo: string }[]>(
       `/api/apps/${app.id}/resources/testResource`,
       [{ foo: 'bar' }, { foo: 'baz' }],
@@ -268,6 +274,7 @@ describe('updateAppResources', () => {
       type: 'testHistoryTrue',
       data: { string: 'rev1' },
     });
+    authorizeStudio();
     const response = await request.put(`/api/apps/${app.id}/resources/testHistoryTrue`, [
       { string: 'rev2', id: resource.id },
     ]);
@@ -304,6 +311,7 @@ describe('updateAppResources', () => {
       type: 'testHistoryDataTrue',
       data: { string: 'rev1' },
     });
+    authorizeStudio();
     const response = await request.put(`/api/apps/${app.id}/resources/testHistoryDataTrue`, [
       { string: 'rev2', id: resource.id },
     ]);
@@ -340,6 +348,7 @@ describe('updateAppResources', () => {
       type: 'testHistoryDataFalse',
       data: { string: 'rev1' },
     });
+    authorizeStudio();
     const response = await request.put(`/api/apps/${app.id}/resources/testHistoryDataFalse`, [
       { string: 'rev2', id: resource.id },
     ]);

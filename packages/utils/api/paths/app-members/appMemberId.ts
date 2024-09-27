@@ -20,6 +20,6 @@ export const pathItems: OpenAPIV3.PathItemObject = {
         description: 'The app member was deleted successfully.',
       },
     },
-    security: [{ studio: [] }],
+    security: [{ studio: [] }, { app: ['resources:manage'] }, {}],
   },
 };

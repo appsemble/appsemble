@@ -90,7 +90,7 @@ describe('agreeCurrentUserOAuth2AppConsent', () => {
       expires: new Date('2000-01-01T00:10:00.000Z'),
       redirectUri: 'http://app.org.localhost:9999',
       scope: 'openid',
-      UserId: user.id,
+      AppMemberId: expect.any(String),
     });
   });
 
@@ -134,7 +134,7 @@ describe('agreeCurrentUserOAuth2AppConsent', () => {
       expires: new Date('2000-01-01T00:10:00.000Z'),
       redirectUri: 'http://app.example:9999',
       scope: 'email',
-      UserId: user.id,
+      AppMemberId: expect.any(String),
     });
   });
 
@@ -200,11 +200,11 @@ describe('agreeCurrentUserOAuth2AppConsent', () => {
       },
     );
     expect(response).toMatchObject({
-      status: 400,
+      status: 401,
       data: {
         data: { isAllowed: false },
         message: 'User is not allowed to login due to the app’s security policy',
-        statusCode: 400,
+        statusCode: 401,
       },
     });
   });

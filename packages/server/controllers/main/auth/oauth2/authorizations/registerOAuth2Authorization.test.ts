@@ -78,6 +78,19 @@ describe('registerOAuth2Authorization', () => {
     argv.gitlabClientId = 'gitlab_client_id';
     argv.gitlabClientSecret = 'gitlab_client_secret';
     let tokenRequest: AxiosRequestConfig;
+    mock.onGet('https://gitlab.com/oauth/userinfo').reply(() => [
+      200,
+      {
+        email: 'me@example.com',
+        email_verified: false,
+        name: 'User',
+        profile: 'https://example.com/user',
+        locale: undefined,
+        subscribed: false,
+        zoneinfo: undefined,
+      },
+    ]);
+
     mock.onPost('https://gitlab.com/oauth/token').reply((config) => {
       tokenRequest = config;
       return [
@@ -114,7 +127,6 @@ describe('registerOAuth2Authorization', () => {
         email: 'user@example.com',
         name: 'User',
         picture: 'https://exmaple.com/user.jpg',
-        profile: 'https://example.com/user',
       },
     });
 
@@ -154,6 +166,19 @@ describe('registerOAuth2Authorization', () => {
         },
       ];
     });
+    mock.onGet('https://gitlab.com/oauth/userinfo').reply(() => [
+      200,
+      {
+        email: 'me@example.com',
+        email_verified: false,
+        name: 'User',
+        profile: 'https://example.com/user',
+        picture: 'https://example.com/user.png',
+        locale: undefined,
+        subscribed: false,
+        zoneinfo: undefined,
+      },
+    ]);
 
     await OAuthAuthorization.create({
       UserId: user.id,

@@ -5,7 +5,7 @@ export const pathItems: OpenAPIV3.PathItemObject = {
   parameters: [
     { $ref: '#/components/parameters/organizationId' },
     {
-      name: 'memberId',
+      name: 'organizationMemberId',
       in: 'path',
       description: 'The ID of the member',
       required: true,

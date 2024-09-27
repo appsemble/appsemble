@@ -875,6 +875,9 @@ describe('patchApp', () => {
                     "$ref": "#/components/schemas/AppLayoutDefinition",
                     "description": "Properties related to the layout of the app.",
                   },
+                  "members": {
+                    "$ref": "#/components/schemas/AppMembersDefinition",
+                  },
                   "name": {
                     "description": "The human readable name of the app.
 
@@ -942,27 +945,12 @@ describe('patchApp', () => {
       ",
                     "type": "object",
                   },
-                  "roles": {
-                    "description": "The list of roles that are allowed to view this app.
-
-      This list is used as the default roles for the roles property on pages and blocks, which can be
-      overridden by defining them for a specific page or block. Note that these roles must be defined in
-      \`security.roles\`.
-      ",
-                    "items": {
-                      "type": "string",
-                    },
-                    "type": "array",
-                  },
                   "security": {
                     "$ref": "#/components/schemas/SecurityDefinition",
-                    "description": "Role definitions that may be used by the app.",
+                    "description": "Role and guest definitions that may be used by the app.",
                   },
                   "theme": {
                     "$ref": "#/components/schemas/Theme",
-                  },
-                  "users": {
-                    "$ref": "#/components/schemas/UsersDefinition",
                   },
                 },
                 "required": [
@@ -1038,6 +1026,9 @@ describe('patchApp', () => {
                     "$ref": "#/components/schemas/AppLayoutDefinition",
                     "description": "Properties related to the layout of the app.",
                   },
+                  "members": {
+                    "$ref": "#/components/schemas/AppMembersDefinition",
+                  },
                   "name": {
                     "description": "The human readable name of the app.
 
@@ -1105,27 +1096,12 @@ describe('patchApp', () => {
       ",
                     "type": "object",
                   },
-                  "roles": {
-                    "description": "The list of roles that are allowed to view this app.
-
-      This list is used as the default roles for the roles property on pages and blocks, which can be
-      overridden by defining them for a specific page or block. Note that these roles must be defined in
-      \`security.roles\`.
-      ",
-                    "items": {
-                      "type": "string",
-                    },
-                    "type": "array",
-                  },
                   "security": {
                     "$ref": "#/components/schemas/SecurityDefinition",
-                    "description": "Role definitions that may be used by the app.",
+                    "description": "Role and guest definitions that may be used by the app.",
                   },
                   "theme": {
                     "$ref": "#/components/schemas/Theme",
-                  },
-                  "users": {
-                    "$ref": "#/components/schemas/UsersDefinition",
                   },
                 },
                 "required": [

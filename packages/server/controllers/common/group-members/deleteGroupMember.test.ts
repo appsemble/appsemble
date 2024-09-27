@@ -14,7 +14,11 @@ import {
 } from '../../../models/index.js';
 import { setArgv } from '../../../utils/argv.js';
 import { createServer } from '../../../utils/createServer.js';
-import { authorizeStudio, createTestUser } from '../../../utils/test/authorization.js';
+import {
+  authorizeAppMember,
+  createTestAppMember,
+  createTestUser,
+} from '../../../utils/test/authorization.js';
 import { useTestDatabase } from '../../../utils/test/testSchema.js';
 
 let organization: Organization;
@@ -81,56 +85,26 @@ describe('deleteGroupMember', () => {
       role: PredefinedOrganizationRole.Member,
     });
     const group = await Group.create({ name: 'A', AppId: app.id });
-    const appMember = await AppMember.create({
+    const appMember = await createTestAppMember(
+      app.id,
+      user.primaryEmail,
+      PredefinedAppRole.GroupMembersManager,
+    );
+    const appMemberB = await AppMember.create({
       email: userB.primaryEmail,
       AppId: app.id,
       UserId: userB.id,
       timezone: 'Europe/Amsterdam',
       role: PredefinedAppRole.Member,
     });
-    await GroupMember.create({
-      AppMemberId: appMember.id,
+    const groupMember = await GroupMember.create({
+      AppMemberId: appMemberB.id,
       GroupId: group.id,
       role: PredefinedAppRole.Member,
     });
 
-    authorizeStudio();
-    const response = await request.delete(
-      `/api/apps/${app.id}/groups/${group.id}/members/${userB.id}`,
-    );
-    expect(response.status).toBe(204);
-  });
-
-  it('should remove a group member from a group by their primary email', async () => {
-    const userB = await User.create({
-      password: user.password,
-      name: 'Test User',
-      primaryEmail: 'testuser@example.com',
-      timezone: 'Europe/Amsterdam',
-    });
-    await OrganizationMember.create({
-      OrganizationId: organization.id,
-      UserId: userB.id,
-      role: PredefinedOrganizationRole.Member,
-    });
-    const group = await Group.create({ name: 'A', AppId: app.id });
-    const appMember = await AppMember.create({
-      UserId: user.id,
-      AppId: app.id,
-      email: userB.primaryEmail,
-      timezone: 'Europe/Amsterdam',
-      role: PredefinedAppRole.Member,
-    });
-    await GroupMember.create({
-      AppMemberId: appMember.id,
-      GroupId: group.id,
-      role: PredefinedAppRole.Member,
-    });
-
-    authorizeStudio();
-    const response = await request.delete(
-      `/api/apps/${app.id}/groups/${group.id}/members/${appMember.email}`,
-    );
+    authorizeAppMember(app, appMember);
+    const response = await request.delete(`/api/group-members/${groupMember.id}`);
     expect(response.status).toBe(204);
   });
 
@@ -168,17 +142,17 @@ describe('deleteGroupMember', () => {
     await GroupMember.create({
       AppMemberId: appMember1.id,
       GroupId: group.id,
-      role: PredefinedAppRole.Member,
+      role: 'GroupMembersManager',
     });
-    await GroupMember.create({
+    const groupMember = await GroupMember.create({
       AppMemberId: appMember2.id,
       GroupId: group.id,
-      role: PredefinedAppRole.GroupMembersManager,
+      role: 'Member',
     });
 
-    authorizeStudio();
+    authorizeAppMember(app, appMember1);
     const response = await request.delete(
-      `/api/apps/${app.id}/groups/${group.id}/members/${userB.id}`,
+      `/api/group-members/${groupMember.id}?selectedGroupId=${group.id}`,
     );
     expect(response.status).toBe(204);
   });
@@ -200,26 +174,29 @@ describe('deleteGroupMember', () => {
       { where: { UserId: user.id, OrganizationId: organization.id } },
     );
     const group = await Group.create({ name: 'A', AppId: app.id });
-    const appMember = await AppMember.create({
+    const appMember = await createTestAppMember(
+      app.id,
+      user.primaryEmail,
+      PredefinedAppRole.Member,
+    );
+    const appMemberB = await AppMember.create({
       email: userB.primaryEmail,
       AppId: app.id,
       UserId: userB.id,
       timezone: 'Europe/Amsterdam',
       role: PredefinedAppRole.Member,
     });
-    await GroupMember.create({
-      AppMemberId: appMember.id,
+    const groupMember = await GroupMember.create({
+      AppMemberId: appMemberB.id,
       GroupId: group.id,
       role: PredefinedAppRole.Member,
     });
 
-    authorizeStudio();
-    const response = await request.delete(
-      `/api/apps/${app.id}/groups/${group.id}/members/${userB.id}`,
-    );
+    authorizeAppMember(app, appMember);
+    const response = await request.delete(`/api/group-members/${groupMember.id}`);
     expect(response).toMatchObject({
       status: 403,
-      data: { message: 'User does not have sufficient permissions.' },
+      data: { message: 'App member does not have sufficient app permissions.' },
     });
   });
 
@@ -230,7 +207,7 @@ describe('deleteGroupMember', () => {
       primaryEmail: 'testuser@example.com',
       timezone: 'Europe/Amsterdam',
     });
-    await AppMember.create({
+    const member = await AppMember.create({
       email: userB.primaryEmail,
       AppId: app.id,
       UserId: userB.id,
@@ -242,16 +219,14 @@ describe('deleteGroupMember', () => {
       UserId: userB.id,
       role: PredefinedOrganizationRole.Member,
     });
-    const group = await Group.create({ name: 'A', AppId: app.id });
+    await Group.create({ name: 'A', AppId: app.id });
 
-    authorizeStudio();
-    const response = await request.delete(
-      `/api/apps/${app.id}/groups/${group.id}/members/${userB.id}`,
-    );
+    authorizeAppMember(app, member);
+    const response = await request.delete(`/api/group-members/${userB.id}`);
 
     expect(response).toMatchObject({
-      status: 400,
-      data: { message: 'This user is not a member of this group.' },
+      status: 404,
+      data: { message: 'Group member not found.' },
     });
   });
 });

@@ -5,7 +5,7 @@ export const user: OpenAPIV3.RequestBodyObject = {
   content: {
     'application/json': {
       schema: {
-        $ref: '#/components/schemas/User',
+        $ref: '#/components/schemas/UserInfo',
       },
     },
   },

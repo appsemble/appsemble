@@ -16,13 +16,16 @@ export async function getOrganizationApps(ctx: Context): Promise<void> {
   const organization = await Organization.findByPk(organizationId);
 
   assertKoaError(!organization, ctx, 404, 'Organization not found.');
+  let organizationMember;
 
-  const organizationMember = await OrganizationMember.findOne({
-    where: {
-      UserId: authSubject.id,
-      OrganizationId: organizationId,
-    },
-  });
+  if (authSubject) {
+    organizationMember = await OrganizationMember.findOne({
+      where: {
+        UserId: authSubject.id,
+        OrganizationId: organizationId,
+      },
+    });
+  }
 
   const apps = await App.findAll({
     attributes: {

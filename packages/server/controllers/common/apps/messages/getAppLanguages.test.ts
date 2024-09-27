@@ -1,4 +1,5 @@
 import { createFixtureStream, getAppsembleMessages } from '@appsemble/node-utils';
+import { PredefinedOrganizationRole } from '@appsemble/types';
 import { request, setTestApp } from 'axios-test-instance';
 import FormData from 'form-data';
 import { beforeAll, beforeEach, describe, expect, it } from 'vitest';
@@ -41,7 +42,7 @@ beforeEach(async () => {
   await OrganizationMember.create({
     OrganizationId: organization.id,
     UserId: user.id,
-    role: 'AppEditor',
+    role: PredefinedOrganizationRole.Owner,
   });
   app = await App.create({
     path: 'test-app',
@@ -148,7 +149,7 @@ describe('getAppLanguages', () => {
     await OrganizationMember.create({
       OrganizationId: organization.id,
       UserId: user.id,
-      role: 'Maintainer',
+      role: PredefinedOrganizationRole.Maintainer,
     });
     const formData = new FormData();
     formData.append('name', '@xkcd/standing');
@@ -203,7 +204,7 @@ describe('getAppLanguages', () => {
     const messagesNl = await getAppsembleMessages('nl');
 
     const response = await request.get(
-      `/api/common/apps/${app.id}/messages?includeMessages=true&override=false`,
+      `/api/apps/${app.id}/messages?includeMessages=true&override=false`,
     );
 
     expect(response).toMatchObject({

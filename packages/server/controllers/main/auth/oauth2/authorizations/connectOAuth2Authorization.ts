@@ -1,5 +1,6 @@
 import { assertKoaError, throwKoaError } from '@appsemble/node-utils';
 import { type Context } from 'koa';
+import { DatabaseError } from 'sequelize';
 
 import {
   EmailAuthorization,
@@ -52,14 +53,24 @@ export async function connectOAuth2Authorization(ctx: Context): Promise<void> {
       preset.userEmailsUrl,
     );
     await transactional(async (transaction) => {
-      user = await User.create(
-        {
-          name: userInfo.name,
-          primaryEmail: userInfo.email,
-          timezone: userInfo.zoneinfo || timezone,
-        },
-        { transaction },
-      );
+      try {
+        user = await User.create(
+          {
+            name: userInfo.name,
+            primaryEmail: userInfo.email,
+            timezone: userInfo.zoneinfo || timezone,
+          },
+          { transaction },
+        );
+      } catch (error) {
+        if (error instanceof DatabaseError) {
+          throwKoaError(
+            ctx,
+            409,
+            'This email address has already been linked to an existing account',
+          );
+        }
+      }
       await authorization.update({ UserId: user.id }, { transaction });
       if (userInfo.email) {
         // We’ll try to link this email address to the new user, even though no password has been

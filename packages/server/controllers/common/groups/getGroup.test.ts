@@ -84,20 +84,20 @@ describe('getGroup', () => {
     });
 
     authorizeStudio();
-    const response = await request.get(`/api/apps/${app.id}/groups/${group.id}`);
+    const response = await request.get(`/api/groups/${group.id}`);
     expect(response).toMatchObject({
       status: 200,
-      data: { id: group.id, name: group.name, role: PredefinedAppRole.Member },
+      data: { id: group.id, name: group.name },
     });
   });
 
   it('should not return a group that doesn’t exist', async () => {
     authorizeStudio();
-    const response = await request.get(`/api/apps/${app.id}/groups/80000`);
+    const response = await request.get('/api/groups/80000');
 
     expect(response).toMatchObject({
       status: 404,
-      data: { message: 'Group not found.' },
+      data: { message: 'Group not found' },
     });
   });
 
@@ -122,13 +122,21 @@ describe('getGroup', () => {
       vapidPrivateKey: 'b',
       OrganizationId: organization.id,
     });
+    const userB = await createTestUser('newUser@example.com');
+    await AppMember.create({
+      email: userB.primaryEmail,
+      UserId: user.id,
+      timezone: 'Europe/Amsterdam',
+      AppId: appB.id,
+      role: PredefinedAppRole.Member,
+    });
 
-    authorizeStudio();
-    const response = await request.get(`/api/apps/${appB.id}/groups/${group.id}`);
+    authorizeStudio(userB);
+    const response = await request.get(`/api/groups/${group.id}`);
 
     expect(response).toMatchObject({
-      status: 404,
-      data: { message: 'Group not found.' },
+      status: 403,
+      data: { message: 'User does not have sufficient app permissions.' },
     });
   });
 });

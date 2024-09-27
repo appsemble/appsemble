@@ -123,6 +123,7 @@ declare module 'koas-parameters' {
     includeMessages: boolean;
     demo: boolean;
     selectedGroupId: number;
+    $own: boolean;
   }
 }
 

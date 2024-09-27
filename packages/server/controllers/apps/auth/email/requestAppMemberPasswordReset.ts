@@ -39,32 +39,32 @@ export async function requestAppMemberPasswordReset(ctx: Context): Promise<void>
     },
   });
 
-  assertKoaError(!appMember, ctx, 404, 'App member with this email could not be found.');
+  if (appMember) {
+    const resetKey = randomBytes(40).toString('hex');
 
-  const resetKey = randomBytes(40).toString('hex');
+    const url = new URL('/Edit-Password', getAppUrl(app));
+    url.searchParams.set('token', resetKey);
 
-  const url = new URL('/Edit-Password', getAppUrl(app));
-  url.searchParams.set('token', resetKey);
+    await appMember.update({ resetKey });
 
-  await appMember.update({ resetKey });
-
-  mailer
-    .sendTranslatedEmail({
-      to: appMember,
-      from: app.emailName,
-      emailName: 'reset',
-      appId,
-      locale: appMember.locale,
-      values: {
-        link: (text) => `[${text}](${url})`,
-        appName: app.definition.name,
-        name: appMember.name || 'null',
-      },
-      app,
-    })
-    .catch((error: Error) => {
-      logger.error(error);
-    });
+    mailer
+      .sendTranslatedEmail({
+        to: appMember,
+        from: app.emailName,
+        emailName: 'reset',
+        appId,
+        locale: appMember.locale,
+        values: {
+          link: (text) => `[${text}](${url})`,
+          appName: app.definition.name,
+          name: appMember.name || 'null',
+        },
+        app,
+      })
+      .catch((error: Error) => {
+        logger.error(error);
+      });
+  }
 
   ctx.status = 204;
 }

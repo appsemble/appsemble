@@ -75,7 +75,10 @@ describe('deleteOrganizationInvite', () => {
       OrganizationId: 'testorganization',
     });
 
-    await OrganizationMember.update({ role: 'AppEditor' }, { where: { UserId: user.id } });
+    await OrganizationMember.update(
+      { role: PredefinedOrganizationRole.AppTranslator },
+      { where: { UserId: user.id } },
+    );
 
     authorizeStudio();
     const response = await request.delete('/api/organizations/testorganization/invites', {
@@ -86,7 +89,7 @@ describe('deleteOrganizationInvite', () => {
       status: 403,
       data: {
         error: 'Forbidden',
-        message: 'User does not have sufficient permissions.',
+        message: 'User does not have sufficient organization permissions.',
         statusCode: 403,
       },
     });

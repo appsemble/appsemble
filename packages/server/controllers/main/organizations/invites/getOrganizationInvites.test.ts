@@ -102,7 +102,7 @@ describe('getOrganizationInvites', () => {
       status: 403,
       data: {
         error: 'Forbidden',
-        message: 'User does not have sufficient permissions.',
+        message: 'User does not have sufficient organization permissions.',
       },
     });
   });

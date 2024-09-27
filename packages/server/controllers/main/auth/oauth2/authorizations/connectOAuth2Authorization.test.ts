@@ -115,17 +115,37 @@ describe('connectOAuth2Authorization', () => {
   });
 
   it('should create a new user if the user isn’t logged in', async () => {
+    const accessToken = jwt.sign(
+      {
+        email: 'me@example.com',
+        name: 'Me',
+        picture: 'https://example.com/me.jpg',
+        profile: 'https://example.com/me',
+        sub: '42',
+      },
+      'secret',
+    );
+    mock.onPost('https://gitlab.com/oauth/authorize').reply(200, {
+      access_token: accessToken,
+      id_token: '',
+      refresh_token: '',
+      token_type: 'bearer',
+    });
+    mock.onGet('https://gitlab.com/oauth/userinfo').reply(() => [
+      200,
+      {
+        email: 'me@example.com',
+        email_verified: false,
+        name: 'User',
+        profile: 'https://example.com/user',
+        picture: 'https://example.com/user.png',
+        locale: undefined,
+        subscribed: false,
+        zoneinfo: undefined,
+      },
+    ]);
     const oauthAuthorization = await OAuthAuthorization.create({
-      accessToken: jwt.sign(
-        {
-          email: 'me@example.com',
-          name: 'Me',
-          picture: 'https://example.com/me.jpg',
-          profile: 'https://example.com/me',
-          sub: '42',
-        },
-        'secret',
-      ),
+      accessToken,
       email: '',
       authorizationUrl: 'https://gitlab.com/oauth/authorize',
       code: '789',
@@ -150,23 +170,42 @@ describe('connectOAuth2Authorization', () => {
   });
 
   it('should throw a conflict if the email address conflicts with another user', async () => {
+    const accessToken = jwt.sign(
+      {
+        email: 'me@example.com',
+        name: 'Me',
+        picture: 'https://example.com/me.jpg',
+        profile: 'https://example.com/me',
+        sub: '42',
+      },
+      'secret',
+    );
+    mock.onPost('https://gitlab.com/oauth/authorize').reply(200, {
+      access_token: accessToken,
+      id_token: '',
+      refresh_token: '',
+      token_type: 'bearer',
+    });
+    mock.onGet('https://gitlab.com/oauth/userinfo').reply(() => [
+      200,
+      {
+        email: 'me@example.com',
+        email_verified: false,
+        name: 'User',
+        profile: 'https://example.com/user',
+        picture: 'https://example.com/user.png',
+        locale: undefined,
+        subscribed: false,
+        zoneinfo: undefined,
+      },
+    ]);
     const userB = await User.create({
       primaryEmail: 'me@example.com',
       timezone: 'Europe/Amsterdam',
     });
     await EmailAuthorization.create({ UserId: userB.id, email: 'me@example.com' });
     await OAuthAuthorization.create({
-      accessToken: jwt.sign(
-        {
-          email: 'me@example.com',
-          name: 'Me',
-          picture: 'https://example.com/me.jpg',
-          profile: 'https://example.com/me',
-          sub: '42',
-        },
-        'secret',
-      ),
-
+      accessToken,
       email: userB.primaryEmail,
       authorizationUrl: 'https://gitlab.com/oauth/authorize',
       code: '789',
@@ -181,24 +220,45 @@ describe('connectOAuth2Authorization', () => {
       status: 409,
       data: {
         error: 'Conflict',
-        message: 'This email address has already been linked to an existing account.',
+        message: 'This email address has already been linked to an existing account',
         statusCode: 409,
       },
     });
   });
 
   it('should create an email authorization if a new email address is registered', async () => {
+    const accessToken = jwt.sign(
+      {
+        email: 'me@example.com',
+        name: 'Me',
+        picture: 'https://example.com/me.jpg',
+        profile: 'https://example.com/me',
+        sub: '42',
+      },
+      'secret',
+    );
+    mock.onPost('https://gitlab.com/oauth/authorize').reply(200, {
+      access_token: accessToken,
+      id_token: '',
+      refresh_token: '',
+      token_type: 'bearer',
+    });
+
+    mock.onGet('https://gitlab.com/oauth/userinfo').reply(() => [
+      200,
+      {
+        email: 'me@example.com',
+        email_verified: false,
+        name: 'User',
+        profile: 'https://example.com/user',
+        picture: 'https://example.com/user.png',
+        locale: undefined,
+        subscribed: false,
+        zoneinfo: undefined,
+      },
+    ]);
     const oauthAuthorization = await OAuthAuthorization.create({
-      accessToken: jwt.sign(
-        {
-          email: 'me@example.com',
-          name: 'Me',
-          picture: 'https://example.com/me.jpg',
-          profile: 'https://example.com/me',
-          sub: '42',
-        },
-        'secret',
-      ),
+      accessToken,
       email: '',
       authorizationUrl: 'https://gitlab.com/oauth/authorize',
       code: '789',

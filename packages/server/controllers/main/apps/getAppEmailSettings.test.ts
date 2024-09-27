@@ -118,7 +118,10 @@ describe('getAppEmailSettings', () => {
       password: encrypt('password', 'key'),
     });
 
-    await OrganizationMember.update({ role: 'AppEditor' }, { where: { UserId: user.id } });
+    await OrganizationMember.update(
+      { role: PredefinedOrganizationRole.AppTranslator },
+      { where: { UserId: user.id } },
+    );
 
     authorizeStudio(user);
     const response = await request.get(`/api/apps/${app.id}/email`);
@@ -129,7 +132,7 @@ describe('getAppEmailSettings', () => {
 
       {
         "error": "Forbidden",
-        "message": "User does not have sufficient permissions.",
+        "message": "User does not have sufficient organization permissions.",
         "statusCode": 403,
       }
     `);

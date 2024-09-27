@@ -47,7 +47,7 @@ export const pathItems: OpenAPIV3.PathItemObject = {
         description: 'The subscription has successfully been registered.',
       },
     },
-    security: [{ app: ['openid'] }, {}],
+    security: [{ studio: [] }, { app: ['openid'] }, {}],
   },
   patch: {
     tags: ['main', 'app', 'subscription'],
@@ -88,6 +88,6 @@ export const pathItems: OpenAPIV3.PathItemObject = {
         description: 'The subscription has successfully been updated.',
       },
     },
-    security: [{ app: ['openid'] }, {}],
+    security: [{ studio: [] }, { app: ['openid'] }, {}],
   },
 };

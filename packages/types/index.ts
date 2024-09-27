@@ -1540,6 +1540,11 @@ interface ViewResourceDefinition {
    * The view to use for the request.
    */
   view?: string;
+
+  /**
+   * If the resources created by the authenticated app member should be included
+   */
+  own?: boolean;
 }
 
 export interface ControllerActionDefinition extends BaseActionDefinition<'controller'> {
