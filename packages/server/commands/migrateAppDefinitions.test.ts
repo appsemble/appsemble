@@ -68,7 +68,7 @@ describe('collectPaths', () => {
   it.each([
     {
       message: 'handle regex',
-      path: ['d.*'],
+      path: [/d.*/],
       expected: [
         [['description'], ['defaultPage']],
         [['description'], ['defaultPage']],
@@ -95,7 +95,7 @@ describe('collectPaths', () => {
     },
     {
       message: 'handle wildcards with back references',
-      path: ['*', 'actions', '*', 'type', '^resource\\..*', '<', '<', 'method'],
+      path: ['*', 'actions', '*', 'type', /^resource\..*/, '<', '<', 'method'],
       expected: [
         [
           ['pages', 0, 'blocks', 0, 'actions', 'onClick', 'method'],
@@ -109,7 +109,7 @@ describe('collectPaths', () => {
     },
     {
       message: 'handle back reference at the end of a path',
-      path: ['resources', '\\w+', 'roles', '.*', '<'],
+      path: ['resources', /\w+/, 'roles', /.*/, '<'],
       expected: [[['resources', 'test', 'roles']], [['resources', 'test', 'roles', 0]]],
     },
     {
@@ -124,8 +124,8 @@ describe('collectPaths', () => {
         ],
         [
           ['pages', 0, 'blocks', 0, 'version', 'anchors', 0, '0.0.0'],
-          ['pages', 0, 'blocks', 3, 'anchors', 3, 'version', '0.0.0'],
-          ['pages', 0, 'blocks', 4, 'anchors', 4, 'version', 'anchors', 1, '0.0.0'],
+          ['pages', 0, 'blocks', 'anchors', 3, 'version', '0.0.0'],
+          ['pages', 0, 'blocks', 'anchors', 4, 'version', 'anchors', 1, '0.0.0'],
           ['pages', 0, 'blocks', 5, 'version', 'anchors', 5, '0.0.0'],
         ],
       ],
@@ -177,7 +177,7 @@ pages:
 
   it.each([
     {
-      patch: { message: 'handle delete operation', path: ['pages|resources'], delete: true },
+      patch: { message: 'handle delete operation', path: [/pages|resources/], delete: true },
       changed: true,
       expected: `
 name: test
@@ -227,7 +227,7 @@ pages:
     {
       patch: {
         message: 'handle replace function with additional paths',
-        path: ['*', 'actions', '*', 'type', '^resource\\..*', '<', '<', 'method'],
+        path: ['*', 'actions', '*', 'type', /^resource\..*/, '<', '<', 'method'],
         delete: true,
       },
       changed: true,

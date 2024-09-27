@@ -593,12 +593,25 @@ export async function up(transaction: Transaction, db: Sequelize): Promise<void>
   logger.info('Remove index `UniqueAssetNameIndex` from `Asset` table');
   await queryInterface.removeIndex('Asset', 'UniqueAssetNameIndex', { transaction });
 
-  logger.info('Add index `UniqueAssetNameIndex` to `Asset` table');
-  await queryInterface.addIndex('Asset', ['name', 'ephemeral', 'AppId', 'GroupId'], {
-    unique: true,
-    name: 'UniqueAssetNameIndex',
-    transaction,
-  });
+  logger.info('Add index `UniqueAssetWithGroupId` to `Asset` table');
+  await queryInterface.sequelize.query(
+    `
+    CREATE UNIQUE INDEX "UniqueAssetWithGroupId"
+    ON "Asset" (name, ephemeral, "AppId", "GroupId")
+    WHERE "GroupId" IS NOT NULL;
+  `,
+    { transaction },
+  );
+
+  logger.info('Add index `UniqueAssetWithNullGroupId` to `Asset` table');
+  await queryInterface.sequelize.query(
+    `
+    CREATE UNIQUE INDEX "UniqueAssetWithNullGroupId"
+    ON "Asset" (name, ephemeral, "AppId")
+    WHERE "GroupId" IS NULL;
+  `,
+    { transaction },
+  );
 
   logger.info('Add column `AppMemberId` to `SamlLoginRequest` table');
   await queryInterface.addColumn(
@@ -972,7 +985,10 @@ export async function down(transaction: Transaction, db: Sequelize): Promise<voi
   await queryInterface.removeColumn('Asset', 'GroupId', { transaction });
 
   logger.info('Remove index `UniqueAssetNameIndex` from `Asset` table');
-  await queryInterface.removeIndex('Asset', 'UniqueAssetNameIndex', { transaction });
+  await queryInterface.removeIndex('Asset', 'UniqueAssetWithGroupId', { transaction });
+
+  logger.info('Remove index `UniqueAssetNameIndex` from `Asset` table');
+  await queryInterface.removeIndex('Asset', 'UniqueAssetWithNullGroupId', { transaction });
 
   logger.info('Add index `UniqueAssetNameIndex` to `Asset` table');
   await queryInterface.addIndex('Asset', ['name', 'ephemeral', 'AppId'], {
@@ -980,6 +996,7 @@ export async function down(transaction: Transaction, db: Sequelize): Promise<voi
     name: 'UniqueAssetNameIndex',
     transaction,
   });
+
   logger.info('Add column `UserId` to `SamlLoginRequest` table');
   await queryInterface.addColumn(
     'SamlLoginRequest',
