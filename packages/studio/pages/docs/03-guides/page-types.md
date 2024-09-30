@@ -1,7 +1,5 @@
 # Page types
 
-## Page type
-
 You can specify a couple different types of pages that achieve a different functionality. Each page
 extends upon the standard page definition, so all the page properties can be used on any of these
 variations:
@@ -12,7 +10,7 @@ variations:
 - [Loop page](../08-reference/app.mdx#-loop-page-definition)
 <!-- - [Container page](../08-reference/app.mdx#-container-page-definition) -->
 
-### Tabs page
+## Tabs page
 
 ![Tab page example](./assets/tab-page-example.png 'Tab page example') _Taken from 'Holidays' app_
 
@@ -38,14 +36,81 @@ pages:
 If you'd like to see how this works in more detail or mess around with the code yourself, you can
 check it out [here](https://appsemble.app/en/apps/10/holidays).
 
-#### Dynamic tabs
+### Dynamic tabs
 
-The regular tabs definition only allows you to set pre-defined pages. If you need to create pages
-based on incoming data, you can use the `definition`
+The regular tabs definition only allows you to set pre-defined pages. With some extra steps, it's
+also possible to generate pages dynamically based on incoming data. This is done using the
+`definition` property.
 
-<!-- TODO -->
+The dynamic tab page consists of two flows:
 
-### Flow page
+- **Loading the data**: First, you need to make sure the data you want to display gets to the right
+  place in the right format.
+- **Defining the page template**: With your data format in mind, you need to design the page
+  template that your data will populate.
+
+#### Loading the data
+
+Data for the dynamic tabs get loaded using the `event` property. By defining an event listener, you
+can get data from any other place in the app. The tab page has its own action for this that you can
+use too, namely the `onLoad` action.
+
+In practice, this looks like this:
+
+```yaml
+name: Knowledgebase
+type: tabs
+# Retrieve data from resource
+actions:
+  onLoad:
+    type: resource.query
+    resource: courseType
+    onSuccess:
+      type: event
+      event: tabs
+definition:
+  # Load data into dynamic tab definition
+  events:
+    listen:
+      data: tabs
+```
+
+The expected data is an **array of objects**, where each object is used to populate a page.
+
+#### Defining the page template
+
+Once you know what the data will look like, you can define the template that the page will use. This
+can be entered in the `foreach` property of the `definition` as a regular sub-page.
+
+Let's assume the previously loaded in data looks like this:
+
+```json
+[{ "course": "English" }, { "course": "Science" }, { "course": "History" }]
+```
+
+And we define the following page template:
+
+```yaml
+foreach:
+  name: { prop: course }
+  blocks:
+    - type: markdown
+      version: 0.29.11
+      parameters:
+        content:
+          string.format:
+            template: This is the {course} page
+            values:
+              course: { tab.name: null }
+```
+
+> **Note**: The [`tab.name`](../07-remappers/04-data.mdx#tab.name) remapper can be used to retrieve
+> the name of the current page.
+
+Then the result will be 3 tab pages called English, Science and History where each tells the user
+which course page they are on.
+
+## Flow page
 
 ![Flow page example](./assets/flow-page-example.png 'Flow page example') _Taken from 'Survey' app_
 
@@ -109,7 +174,7 @@ Once the flow is finished using the `flow.finish` action, the data of all sub pa
 the action definition. This data is presented as a single object where all the key-value pairs are
 based on the form input fields.
 
-### Loop page
+## Loop page
 
 The loop page is a dynamic way to make a flow page. On the user side it works exactly the same as a
 flow page, but instead of having to statically define the pages you can have them be created

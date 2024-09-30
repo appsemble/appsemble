@@ -37,15 +37,28 @@ graph TD
 For a basic tutorial on how to use some of these systems to create a small app, check out the
 [Basic app guide](../03-guides/basic-app.md).
 
-## App members
+## Users
 
-As an app developer you can allow users to sign up for your app. This creates a persistant account
-(also called `App member`) which they can use to log in with. When a member is logged in you can use
-additional functionalities in your app related to persistant accounts like
-[security roles](./security.md#root-app-roles), [teams](./teams.md) and more. You can see in which
-apps you have an account by going to [Connected Apps](/settings/user/apps).
+### Guests
+
+Guests are users of apps, who are interacting with it without an account. Their permissions can be
+set by using the guest property in the app definition file. For more information check out
+[security](./security.md).
+
+### Members
+
+App members are users of an apps, who have an account in it. Apps with a basic security definition
+require you to be registered and logged in into the app. App members can perform various tasks
+depending on the roles assigned to them and the app permissions that these roles have.
 
 App members are configured by creating a [security definition](./security.md#security-definition).
+
+If you have enough organization permissions, you can access `AppMembers` of your app in the studio
+on the `AppMember` page in the studio and even export the data as
+[CSV](https://en.wikipedia.org/wiki/Comma-separated_values) file.
+
+You can view which apps are connected to your Appsemble account at [Connected Apps](/settings/apps)
+page.
 
 ## Settings
 
@@ -85,8 +98,8 @@ For further information, check the [documentation](config.md).
 ## Transfer
 
 Apps can be transferred out of the system as a zip file using the export feature. This can either be
-done on the app's store page, or using the [CLI](../09-packages/cli#apps). You can import a zipped
-up app again in the [app store](/apps#import), or using the CLI `publish` command.
+done on the app's store page, or using the [CLI](../09-packages/cli#apps). You can import an
+archived app again in the [app store](/apps#import), or using the CLI `publish` command.
 
 For more details, see the [documentation](../03-guides/basic-app.md#export-import).
 
