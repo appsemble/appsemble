@@ -41,7 +41,7 @@ export function ProfileSettings(): ReactNode {
         id: string;
         name: string;
         picture: string;
-      }>(`${apiUrl}/api/user/apps/${appId}/account`, formData);
+      }>(`${apiUrl}/api/users/current/apps/${appId}/account`, formData);
       setAppMemberInfo({
         ...appMemberInfo,
         email: data.email,

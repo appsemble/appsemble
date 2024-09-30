@@ -23,7 +23,7 @@ export function LanguageDropdown({ className }: LanguageDropdownProps): ReactNod
     localStorage.setItem('preferredLanguage', language);
     if (userInfo) {
       userInfo.locale = language;
-      await axios.put('/api/user', {
+      await axios.put('/api/users/current', {
         name: userInfo.name,
         locale: language,
         timezone: userInfo.zoneinfo,

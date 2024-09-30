@@ -38,7 +38,7 @@ export function TrainingHomePage(): ReactNode {
   const [comp, setComp] = useState(null);
   const trainingBlocks = useData<TrainingBlock[]>(`/api/trainings/${trainingId}/blocks`);
   const isEnrolled = useData<{ enrolled: boolean; completed: boolean }>(
-    `/api/trainings/${trainingId}/enroll`,
+    `/api/trainings/${trainingId}/users/current`,
   );
 
   const isAppsembleMember = organizations?.find((org) => org.id === 'appsemble');
@@ -52,12 +52,12 @@ export function TrainingHomePage(): ReactNode {
   const markAsCompleted = useCallback(async () => {
     const formData = new FormData();
     formData.set('completed', 'true');
-    await axios.patch(`/api/trainings/${trainingId}/enroll`, formData);
+    await axios.patch(`/api/trainings/${trainingId}/users/current`, formData);
     window.location.reload();
   }, [trainingId]);
 
   const onEnroll = useCallback(async () => {
-    await axios.post(`/api/trainings/${trainingId}/enroll`);
+    await axios.post(`/api/trainings/${trainingId}/users/current`);
     window.location.reload();
   }, [trainingId]);
 

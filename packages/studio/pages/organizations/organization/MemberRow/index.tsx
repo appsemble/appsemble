@@ -43,6 +43,11 @@ interface MemberRowProps {
    */
   readonly onDeleted: (member: OrganizationMember) => void;
 
+  /**
+   * ID of the app's organization
+   */
+  readonly organizationId: string;
+
   readonly ownerCount: number;
 }
 
@@ -55,6 +60,7 @@ export function MemberRow({
   member,
   onChanged,
   onDeleted,
+  organizationId,
   ownerCount,
 }: MemberRowProps): ReactNode {
   const { id, name, primaryEmail } = member;
@@ -66,23 +72,26 @@ export function MemberRow({
 
   const onChangeRole = useCallback(
     async (event: ChangeEvent<HTMLSelectElement>, role: string) => {
-      const { data } = await axios.put<OrganizationMember>(`/api/organization-members/${id}/role`, {
-        role,
-      });
+      const { data } = await axios.put<OrganizationMember>(
+        `/api/organizations/${organizationId}/members/${id}/role`,
+        {
+          role,
+        },
+      );
       onChanged(data);
     },
-    [id, onChanged],
+    [id, onChanged, organizationId],
   );
 
   const callDelete = useCallback(async () => {
-    await axios.delete(`/api/organization-members/${id}`);
+    await axios.delete(`/api/organizations/${organizationId}/members/${id}`);
     onDeleted(member);
 
     push({
       body: formatMessage(messages.deleteSuccess, { member: name || primaryEmail }),
       color: 'info',
     });
-  }, [formatMessage, id, member, name, onDeleted, primaryEmail, push]);
+  }, [formatMessage, id, member, name, onDeleted, organizationId, primaryEmail, push]);
 
   const deleteMember = useConfirmation({
     title: <FormattedMessage {...messages.deleteMember} />,
