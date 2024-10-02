@@ -676,7 +676,7 @@ staging:
       --set "quotas.appEmail.dailyLimit=10"
       --set "quotas.appEmail.alertOrganizationOwner=true"
       --set "mailpit.mailpit.smtp.tls.secretName=staging-mailpit-tls"
-      --set "postgresql.fullnameOverride=staging-appsemble-mailpit"
+      --set "mailpit.fullnameOverride=staging-appsemble-mailpit"
 
 production:
   image: dtzar/helm-kubectl:3
