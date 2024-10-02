@@ -98,3 +98,18 @@ quotas:
     enabled: false
     dailyLimit: 10
     alertOrganizationOwner: false
+
+mailpit:
+  mailpit:
+    smtp:
+      tls:
+        enabled: true
+      authFile:
+        enabled: true
+        existingSecret:
+          name: mailpit-smtp
+    ui:
+      authFile:
+        enabled: true
+        existingSecret:
+          name: mailpit-ui

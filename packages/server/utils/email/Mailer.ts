@@ -118,7 +118,14 @@ export interface SendMailOptions {
    */
   app?: Pick<
     App,
-    'emailHost' | 'emailName' | 'emailPassword' | 'emailPort' | 'emailSecure' | 'emailUser' | 'id'
+    | 'demoMode'
+    | 'emailHost'
+    | 'emailName'
+    | 'emailPassword'
+    | 'emailPort'
+    | 'emailSecure'
+    | 'emailUser'
+    | 'id'
   >;
 }
 
@@ -166,7 +173,7 @@ export class Mailer {
       const auth = (smtpUser && smtpPass && { user: smtpUser, pass: smtpPass }) || null;
       this.transport = createTransport(
         {
-          port: smtpPort || smtpSecure ? 465 : 587,
+          port: smtpPort || (smtpSecure ? 465 : 587),
           pool: true,
           host: smtpHost,
           secure: smtpSecure,
