@@ -627,7 +627,7 @@ staging:
     - kubectl delete namespace "companion-containers-staging" || true
     - kubectl delete secret staging-mailpit-tls || true
     - apk add --no-cache openssl
-    - openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout mailpit.key -out mailpit.crt -subj "/CN=staging-mailpit-smtp" -addext "subjectAltName=DNS:staging-mailpit-smtp"
+    - openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout mailpit.key -out mailpit.crt -subj "/CN=staging-appsemble-mailpit-smtp" -addext "subjectAltName=DNS:staging-appsemble-mailpit-smtp"
     - kubectl create secret tls staging-mailpit-tls --cert=mailpit.crt --key=mailpit.key --dry-run=client -o yaml | kubectl apply -f -
     - rm mailpit.key mailpit.crt
     - helm install staging ./public/appsemble-*.tgz
