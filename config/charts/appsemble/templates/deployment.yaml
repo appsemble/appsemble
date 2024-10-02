@@ -81,7 +81,7 @@ spec:
             - name: SMTP_HOST
               valueFrom:
                 secretKeyRef:
-                  name: {{ .Values.secretName  | quote }}
+                  name: {{ .Values.smtpSecret  | quote }}
                   key: host
             {{- end }}
             {{- with .Values.smtpSecret }}
