@@ -2,5 +2,8 @@ dependencies:
 - name: postgresql
   repository: https://charts.bitnami.com/bitnami
   version: 11.6.3
-digest: sha256:f15afee1a1ec39fb0498a102f0e7434649a5f225bcf20b7354eb62a01d299756
-generated: "2022-06-07T10:48:27.666942571+02:00"
+- name: mailpit
+  repository: https://jouve.github.io/charts
+  version: 0.18.3
+digest: sha256:bad56f1add0424608a6d2c4967f8d1d8ccadb13630ed0106cf2e90c9ab411f49
+generated: "2024-10-01T10:56:19.525905+03:00"
