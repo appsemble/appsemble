@@ -122,6 +122,7 @@ export function MemberTable(): ReactNode {
                 member={member}
                 onChanged={onMemberChanged}
                 onDeleted={onMemberDeleted}
+                organizationId={organizationId}
                 ownerCount={ownerCount}
               />
             ))}

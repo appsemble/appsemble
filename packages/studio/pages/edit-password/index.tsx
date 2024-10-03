@@ -18,7 +18,7 @@ export function EditPasswordPage(): ReactNode {
   const token = qs.get('token');
   const onSubmit = useCallback(
     async ({ password }: EditPasswordValues) => {
-      await axios.post('/api/email/reset', { token, password });
+      await axios.post('/api/auth/email/reset-password', { token, password });
     },
     [token],
   );
