@@ -17,6 +17,7 @@ export const pathItems: OpenAPIV3.PathItemObject = {
       { $ref: '#/components/parameters/$select' },
       { $ref: '#/components/parameters/$skip' },
       { $ref: '#/components/parameters/$top' },
+      { $ref: '#/components/parameters/$own' },
     ],
     responses: {
       200: {

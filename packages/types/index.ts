@@ -1540,9 +1540,11 @@ interface ViewResourceDefinition {
    * The view to use for the request.
    */
   view?: string;
+}
 
+interface OwnResourceDefinition {
   /**
-   * If the resources created by the authenticated app member should be included
+   * If only the resources created by the authenticated app member should be included
    */
   own?: boolean;
 }
@@ -1556,9 +1558,11 @@ export type ResourceCreateActionDefinition = ResourceActionDefinition<'resource.
 export type ResourceDeleteActionDefinition = ResourceActionDefinition<'resource.delete'>;
 export type ResourceGetActionDefinition = ResourceActionDefinition<'resource.get'> &
   ViewResourceDefinition;
-export type ResourceQueryActionDefinition = ResourceActionDefinition<'resource.query'> &
+export type ResourceQueryActionDefinition = OwnResourceDefinition &
+  ResourceActionDefinition<'resource.query'> &
   ViewResourceDefinition;
-export type ResourceCountActionDefinition = ResourceActionDefinition<'resource.count'>;
+export type ResourceCountActionDefinition = OwnResourceDefinition &
+  ResourceActionDefinition<'resource.count'>;
 export type ResourceUpdateActionDefinition = ResourceActionDefinition<'resource.update'>;
 export type ResourcePatchActionDefinition = ResourceActionDefinition<'resource.patch'>;
 export type AppMemberLogoutAction = BaseActionDefinition<'app.member.logout'>;

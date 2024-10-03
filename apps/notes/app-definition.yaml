@@ -41,6 +41,7 @@ pages:
           onLoad:
             type: resource.query
             resource: note
+            own: true
         events:
           listen:
             refresh: refreshNotes

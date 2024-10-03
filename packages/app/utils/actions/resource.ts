@@ -8,7 +8,7 @@ import { apiUrl, appId } from '../settings.js';
 
 export const get: ActionCreator<'resource.get'> = (args) => {
   const { appDefinition, definition, getAppMemberSelectedGroup } = args;
-  const { own, view } = definition;
+  const { view } = definition;
   const resource = appDefinition.resources[definition.resource];
   const method = resource?.get?.method || 'GET';
   const url =
@@ -18,12 +18,9 @@ export const get: ActionCreator<'resource.get'> = (args) => {
   const { id = 'id' } = resource;
 
   const query: Remapper = [].concat(definition?.query ?? resource?.query?.query).filter(Boolean);
+
   if (view) {
     query.push({ 'object.assign': { view } });
-  }
-
-  if (own) {
-    query.push({ 'object.assign': { own } });
   }
 
   const selectedGroup = getAppMemberSelectedGroup?.();
@@ -56,7 +53,7 @@ export const get: ActionCreator<'resource.get'> = (args) => {
 
 export const query: ActionCreator<'resource.query'> = (args) => {
   const { appDefinition, definition, getAppMemberSelectedGroup } = args;
-  const { view } = definition;
+  const { own, view } = definition;
   const resource = appDefinition.resources[definition.resource];
   const method = resource?.query?.method || 'GET';
   const url =
@@ -67,8 +64,13 @@ export const query: ActionCreator<'resource.query'> = (args) => {
   const queryRemapper: Remapper = []
     .concat(definition?.query ?? resource?.query?.query)
     .filter(Boolean);
+
   if (view) {
     queryRemapper.push({ 'object.assign': { view } });
+  }
+
+  if (own) {
+    queryRemapper.push({ 'object.assign': { $own: own } });
   }
 
   const selectedGroup = getAppMemberSelectedGroup?.();
@@ -92,6 +94,7 @@ export const query: ActionCreator<'resource.query'> = (args) => {
 
 export const count: ActionCreator<'resource.count'> = (args) => {
   const { appDefinition, definition, getAppMemberSelectedGroup } = args;
+  const { own } = definition;
   const resource = appDefinition.resources[definition.resource];
   const method = resource?.count?.method || 'GET';
   const url =
@@ -102,6 +105,10 @@ export const count: ActionCreator<'resource.count'> = (args) => {
   const queryRemapper: Remapper = []
     .concat(definition?.query ?? resource?.count?.query)
     .filter(Boolean);
+
+  if (own) {
+    queryRemapper.push({ 'object.assign': { $own: own } });
+  }
 
   const selectedGroup = getAppMemberSelectedGroup?.();
   if (selectedGroup) {

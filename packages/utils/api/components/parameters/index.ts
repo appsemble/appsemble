@@ -21,6 +21,7 @@ export * from './$orderby.js';
 export * from './$select.js';
 export * from './$skip.js';
 export * from './$top.js';
+export * from './$own.js';
 export * from './endpoint.js';
 export * from './groupId.js';
 export * from './roles.js';

@@ -105,6 +105,28 @@ describe('resource.query', () => {
     expect(request.data).toBeUndefined();
     expect(result).toStrictEqual({ type: 'dog' });
   });
+
+  it('should make a GET request with $own', async () => {
+    mock.onAny(/.*/).reply((req) => {
+      request = req;
+      return [200, { type: 'dog' }, {}];
+    });
+    const action = createTestAction({
+      appDefinition,
+      definition: {
+        type: 'resource.query',
+        resource: 'pet',
+        own: true,
+        query: { static: { $filter: "type eq 'dog'" } },
+      },
+    });
+    const result = await action({ id: 1 });
+    expect(request.method).toBe('get');
+    expect(request.url).toBe(`${apiUrl}/api/apps/42/resources/pet`);
+    expect(request.params).toStrictEqual({ $filter: "type eq 'dog'", $own: true });
+    expect(request.data).toBeUndefined();
+    expect(result).toStrictEqual({ type: 'dog' });
+  });
 });
 
 describe('resource.count', () => {
@@ -121,6 +143,23 @@ describe('resource.count', () => {
     expect(request.method).toBe('get');
     expect(request.url).toBe(`${apiUrl}/api/apps/42/resources/pet/$count`);
     expect(request.params).toBeUndefined();
+    expect(request.data).toBeUndefined();
+    expect(result).toBe(12);
+  });
+
+  it('should make a GET request with $own', async () => {
+    mock.onAny(/.*/).reply((req) => {
+      request = req;
+      return [200, 12, {}];
+    });
+    const action = createTestAction({
+      appDefinition,
+      definition: { type: 'resource.count', resource: 'pet', own: true },
+    });
+    const result = await action();
+    expect(request.method).toBe('get');
+    expect(request.url).toBe(`${apiUrl}/api/apps/42/resources/pet/$count`);
+    expect(request.params).toStrictEqual({ $own: true });
     expect(request.data).toBeUndefined();
     expect(result).toBe(12);
   });

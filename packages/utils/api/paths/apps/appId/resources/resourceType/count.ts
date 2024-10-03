@@ -5,18 +5,15 @@ export const pathItems: OpenAPIV3.PathItemObject = {
     { $ref: '#/components/parameters/appId' },
     { $ref: '#/components/parameters/resourceType' },
     { $ref: '#/components/parameters/selectedGroupId' },
-    {
-      name: '$own',
-      schema: { type: 'boolean' },
-      description: 'If the resources created by the authenticated app member should be included',
-      in: 'query',
-    },
   ],
   get: {
     tags: ['common', 'app', 'resource'],
     description: 'Get a count of all resources of this app.',
     operationId: 'countAppResources',
-    parameters: [{ $ref: '#/components/parameters/$filter' }],
+    parameters: [
+      { $ref: '#/components/parameters/$filter' },
+      { $ref: '#/components/parameters/$own' },
+    ],
     responses: {
       200: {
         description: 'The count of all this app’s resources of this type.',
