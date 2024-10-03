@@ -74,13 +74,14 @@ blocks:
 
 This action is implemented for client as well as the server side. This action is used to fetch all
 the resources. Similar to `resource.get` supported fields for this action are `type`, `resource` and
-`view`. Fields `type` and `resource` are required. Resource refers to the resource to be fetched,
-and view is the view to use for the resource. This action requires at least one of the app
-permissions `$resource:all:query`, `$resource:all:own:query`, `$resource:all:query:<view-name>`,
-`$resource:<resource-name>:query`, `$resource:<resource-name>:own:query` or
-`$resource:<resource-name>:query:<view-name>` depending on the context. For more information check
-out [security](../02-guides/security.md#permissions). Here’s an example of how you can use this
-action to fetch all `person` resources.
+`view`. This action also supports the `own` field, which can be used to fetch only resources created
+by the authenticated app member. Fields `type` and `resource` are required. Resource refers to the
+resource to be fetched, and view is the view to use for the resource. This action requires at least
+one of the app permissions `$resource:all:query`, `$resource:all:own:query`,
+`$resource:all:query:<view-name>`, `$resource:<resource-name>:query`,
+`$resource:<resource-name>:own:query` or `$resource:<resource-name>:query:<view-name>` depending on
+the context. For more information check out [security](../02-guides/security.md#permissions). Here’s
+an example of how you can use this action to fetch all `person` resources.
 
 ```yaml validate blocks-snippet
 blocks:
@@ -95,11 +96,12 @@ blocks:
 ### resource.count<Side name="resource.count" />
 
 This action is implemented for client only. This action is used to fetch the count of resources.
-Supported field for this action are `type` and `resource`. Both of the fields are required. Resource
-refers to the resource whose count is to be fetched. This action requires at least one of the app
-permissions `$resource:all:query` or `$resource:<resource-name>:query` depending on the context. For
-more information check out [security](../02-guides/security.md#permissions). Here’s an example of how you can use this action to fetch the
-number of resources.
+Supported field for this action are `type`, `resource` and `own`. The fields `type` and `resource`
+are required. The `own` field can be used to fetch only resources created by the authenticated app
+member. Resource refers to the resource whose count is to be fetched. This action requires at least
+one of the app permissions `$resource:all:query` or `$resource:<resource-name>:query` depending on
+the context. For more information check out [security](../02-guides/security.md#permissions). Here’s an example of how you can use this
+action to fetch the number of resources.
 
 ```yaml validate blocks-snippet
 blocks:

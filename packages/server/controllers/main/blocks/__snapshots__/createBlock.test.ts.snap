@@ -1552,6 +1552,10 @@ If not specified, the raw input data is used.
                     },
                     "onError": {},
                     "onSuccess": {},
+                    "own": {
+                      "description": "If only the resources created by the authenticated app member should be included",
+                      "type": "boolean",
+                    },
                     "proxy": {
                       "default": true,
                       "description": "By default requests will be proxied through the Appsemble API.
@@ -1925,6 +1929,10 @@ If not specified, the raw input data is used.
                     },
                     "onError": {},
                     "onSuccess": {},
+                    "own": {
+                      "description": "If only the resources created by the authenticated app member should be included",
+                      "type": "boolean",
+                    },
                     "proxy": {
                       "default": true,
                       "description": "By default requests will be proxied through the Appsemble API.
@@ -6374,6 +6382,10 @@ If not specified, the raw input data is used.
             },
             "onError": {},
             "onSuccess": {},
+            "own": {
+              "description": "If only the resources created by the authenticated app member should be included",
+              "type": "boolean",
+            },
             "proxy": {
               "default": true,
               "description": "By default requests will be proxied through the Appsemble API.
@@ -6747,6 +6759,10 @@ If not specified, the raw input data is used.
             },
             "onError": {},
             "onSuccess": {},
+            "own": {
+              "description": "If only the resources created by the authenticated app member should be included",
+              "type": "boolean",
+            },
             "proxy": {
               "default": true,
               "description": "By default requests will be proxied through the Appsemble API.
