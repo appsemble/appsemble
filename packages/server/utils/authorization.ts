@@ -181,6 +181,8 @@ export async function checkUserOrganizationPermissions({
 }: CheckOrganizationPermissionsParams): Promise<void> {
   const { user: authSubject } = context;
 
+  assertKoaError(!authSubject, context, 401);
+
   const organization = await Organization.findByPk(organizationId, { attributes: ['id'] });
 
   assertKoaError(!organization, context, 404, 'Organization not found.');
