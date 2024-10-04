@@ -165,7 +165,7 @@ export function ProfileDropdown(): ReactNode {
         <div className="mb-6">
           <SimpleFormField
             component={SelectField}
-            disabled={appMemberGroups.length < 2}
+            disabled={appMemberGroups.length < 1}
             label={<FormattedMessage {...messages.selectGroup} />}
             name="groupId"
             onChange={changeLocalSelectedGroup}
