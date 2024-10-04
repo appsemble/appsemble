@@ -117,6 +117,7 @@ export function AppMemberProvider({ children }: AppMemberProviderProps): ReactNo
     setState(initialState);
     setAppMemberInfo(null);
     setAuthorization(null);
+    setAppMemberSelectedGroup(null);
   }, []);
 
   /**
@@ -186,9 +187,7 @@ export function AppMemberProvider({ children }: AppMemberProviderProps): ReactNo
           );
           appMemberGroups = data;
 
-          if (appMemberGroups.length) {
-            setAppMemberSelectedGroup(appMemberGroups[0]);
-          }
+          setAppMemberSelectedGroup(appMemberGroups.length ? appMemberGroups[0] : null);
         } catch {
           // Do nothing
         }

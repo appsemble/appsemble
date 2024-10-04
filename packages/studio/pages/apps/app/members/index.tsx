@@ -37,6 +37,13 @@ export function MembersPage(): ReactNode {
   } = useData<AppMemberInfo[]>(`/api/apps/${app.id}/members`);
 
   const {
+    data: demoMembers,
+    error: demoMembersError,
+    loading: demoMembersLoading,
+    setData: setDemoMembers,
+  } = useData<AppMemberInfo[]>(`/api/apps/${app.id}/demo-members`);
+
+  const {
     data: invites,
     loading: invitesLoading,
     setData: setInvites,
@@ -51,9 +58,20 @@ export function MembersPage(): ReactNode {
     [members, setMembers],
   );
 
+  const onDemoMemberChanged = useCallback(
+    (member: AppMemberInfo) =>
+      setDemoMembers(demoMembers.map((m) => (m.sub === member.sub ? member : m))),
+    [demoMembers, setDemoMembers],
+  );
+
   const onMemberDeleted = useCallback(
     (member: AppMemberInfo) => setMembers(members.filter((m) => m.sub !== member.sub)),
     [members, setMembers],
+  );
+
+  const onDemoMemberDeleted = useCallback(
+    (member: AppMemberInfo) => setDemoMembers(demoMembers.filter((m) => m.sub !== member.sub)),
+    [demoMembers, setDemoMembers],
   );
 
   const onMemberExport = useCallback(() => {
@@ -103,9 +121,9 @@ export function MembersPage(): ReactNode {
       >
         <FormattedMessage {...messages.members} />
       </HeaderControl>
-      {membersLoading || invitesLoading ? (
+      {membersLoading || demoMembersLoading || invitesLoading ? (
         <Loader />
-      ) : membersError ? (
+      ) : membersError || demoMembersError ? (
         <Message color="danger">
           <FormattedMessage {...messages.membersError} />
         </Message>
@@ -146,6 +164,17 @@ export function MembersPage(): ReactNode {
                   member={member}
                   onChanged={onMemberChanged}
                   onDeleted={onMemberDeleted}
+                />
+              ))}
+              {demoMembers.map((member) => (
+                <MemberRow
+                  key={member.sub}
+                  mayDelete={mayDelete}
+                  mayPatchProperties={mayPatchProperties}
+                  mayUpdateRoles={mayUpdateRoles}
+                  member={member}
+                  onChanged={onDemoMemberChanged}
+                  onDeleted={onDemoMemberDeleted}
                 />
               ))}
               {invites?.map((invite) => (

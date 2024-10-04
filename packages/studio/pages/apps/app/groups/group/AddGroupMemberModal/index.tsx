@@ -6,9 +6,10 @@ import {
   ModalCard,
   Select,
   type Toggle,
+  useData,
   useMessages,
 } from '@appsemble/react-components';
-import { type AppRole, type GroupInvite } from '@appsemble/types';
+import { type AppMemberInfo, type AppRole, type GroupInvite } from '@appsemble/types';
 import { getAppRoles } from '@appsemble/utils';
 import axios from 'axios';
 import {
@@ -58,6 +59,10 @@ export function AddGroupMemberModal({
   const push = useMessages();
   const [invites, setInvites] = useState<GroupInvite[]>([defaultInvite]);
   const [submitting, setSubmitting] = useState(false);
+
+  const { data: members } = useData<AppMemberInfo[]>(`/api/apps/${app.id}/members`);
+
+  const { data: demoMembers } = useData<AppMemberInfo[]>(`/api/apps/${app.id}/demo-members`);
 
   const roleKeys = getAppRoles(app.definition.security);
 
@@ -186,6 +191,7 @@ export function AddGroupMemberModal({
           >
             <Input
               className="mr-2"
+              datalist={[...(members || []), ...(demoMembers || [])].map((m) => m.email)}
               disabled={submitting}
               id={`email-${index}`}
               name="email"

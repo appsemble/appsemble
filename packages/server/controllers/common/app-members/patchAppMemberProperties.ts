@@ -1,4 +1,4 @@
-import { assertKoaError } from '@appsemble/node-utils';
+import { AppMemberPropertiesError, assertKoaError, throwKoaError } from '@appsemble/node-utils';
 import { AppPermission } from '@appsemble/types';
 import { type Context } from 'koa';
 
@@ -38,9 +38,16 @@ export async function patchAppMemberProperties(ctx: Context): Promise<void> {
     groupId: selectedGroupId,
   });
 
-  const updatedAppMember = await appMember.update({
-    properties: parseAppMemberProperties(properties),
-  });
+  try {
+    const updatedAppMember = await appMember.update({
+      properties: parseAppMemberProperties(properties),
+    });
 
-  ctx.body = getAppMemberInfo(updatedAppMember);
+    ctx.body = getAppMemberInfo(updatedAppMember);
+  } catch (error: any) {
+    if (error instanceof AppMemberPropertiesError) {
+      throwKoaError(ctx, 400, error.message);
+    }
+    throw error;
+  }
 }
