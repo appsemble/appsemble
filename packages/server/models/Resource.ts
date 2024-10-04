@@ -312,7 +312,7 @@ export class Resource extends Model {
       result.$editor = { id: this.Editor.id, name: this.Editor.name };
     }
 
-    if (this.GroupId) {
+    if (this.Group) {
       result.$group = { id: this.Group.id, name: this.Group.name };
     }
 

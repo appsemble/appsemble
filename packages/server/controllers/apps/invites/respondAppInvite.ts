@@ -20,7 +20,9 @@ export async function respondAppInvite(ctx: Context): Promise<void> {
 
   assertKoaError(!invite, ctx, 404, 'This token is invalid');
 
-  const app = await App.findByPk(invite.AppId, { attributes: ['id', 'definition'] });
+  const app = await App.findByPk(invite.AppId, {
+    attributes: ['id', 'definition', 'OrganizationId', 'path'],
+  });
 
   if (response) {
     const existingAppMember = await AppMember.findOne({

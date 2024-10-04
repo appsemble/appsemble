@@ -1506,6 +1506,10 @@ export async function updateApp({
     authScope += ' resources:write';
   }
 
+  if (assets) {
+    authScope += ' assets:write';
+  }
+
   await authenticate(remote, authScope, clientCredentials);
 
   if (appLock) {
