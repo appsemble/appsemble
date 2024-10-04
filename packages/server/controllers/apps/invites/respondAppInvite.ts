@@ -21,7 +21,7 @@ export async function respondAppInvite(ctx: Context): Promise<void> {
   assertKoaError(!invite, ctx, 404, 'This token is invalid');
 
   const app = await App.findByPk(invite.AppId, {
-    attributes: ['id', 'definition', 'OrganizationId', 'path'],
+    attributes: ['id', 'definition', 'OrganizationId', 'path', 'demoMode'],
   });
 
   if (response) {
@@ -42,6 +42,7 @@ export async function respondAppInvite(ctx: Context): Promise<void> {
           emailKey: key,
           timezone,
           locale,
+          demo: app.demoMode,
         }));
 
     const url = new URL('/Verify', getAppUrl(app));

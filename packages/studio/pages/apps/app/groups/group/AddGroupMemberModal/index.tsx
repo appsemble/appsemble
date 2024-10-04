@@ -60,9 +60,9 @@ export function AddGroupMemberModal({
   const [invites, setInvites] = useState<GroupInvite[]>([defaultInvite]);
   const [submitting, setSubmitting] = useState(false);
 
-  const { data: members } = useData<AppMemberInfo[]>(`/api/apps/${app.id}/members`);
-
-  const { data: demoMembers } = useData<AppMemberInfo[]>(`/api/apps/${app.id}/demo-members`);
+  const { data: members } = useData<AppMemberInfo[]>(
+    `/api/apps/${app.id}/${app.demoMode ? 'demo-' : ''}members`,
+  );
 
   const roleKeys = getAppRoles(app.definition.security);
 
@@ -191,7 +191,7 @@ export function AddGroupMemberModal({
           >
             <Input
               className="mr-2"
-              datalist={[...(members || []), ...(demoMembers || [])].map((m) => m.email)}
+              datalist={(members || []).map((m) => m.email)}
               disabled={submitting}
               id={`email-${index}`}
               name="email"
