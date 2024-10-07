@@ -45,6 +45,7 @@ const OrganizationAppGroupMembersManagerPermissions = [
   OrganizationPermission.QueryGroupInvites,
   OrganizationPermission.QueryGroupMembers,
   OrganizationPermission.RemoveGroupMembers,
+  OrganizationPermission.UpdateGroupMemberRoles,
 ];
 
 const OrganizationAppGroupManagerPermissions = [
@@ -121,7 +122,7 @@ const OrganizationOwnerPermissions = [
   OrganizationPermission.UpdateOrganizations,
   OrganizationPermission.DeleteOrganizations,
   OrganizationPermission.RemoveOrganizationMembers,
-  OrganizationPermission.UpdateGroupMemberRoles,
+  OrganizationPermission.UpdateOrganizationMemberRoles,
 ];
 
 export enum PredefinedOrganizationRole {
