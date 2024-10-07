@@ -1,6 +1,6 @@
 import { defaultLocale } from '@appsemble/utils';
 import { setTestApp } from 'axios-test-instance';
-import { type ImapFlow } from 'imapflow';
+import { type ImapFlow, type MailboxLockObject } from 'imapflow';
 import { type Transporter } from 'nodemailer';
 import {
   afterAll,
@@ -525,7 +525,7 @@ describe('copyToSentFolder', () => {
   });
 
   beforeEach(() => {
-    setArgv({ ...baseArgv, imapCopyToSentFolder: true });
+    setArgv({ ...baseArgv, imapCopyToSentFolder: true, imapHost: 'test' });
   });
 
   afterAll(() => {
@@ -534,14 +534,21 @@ describe('copyToSentFolder', () => {
   });
 
   it('should copy the email to the sent folder', async () => {
-    const appendMock = vi.fn<[string, string, string[]], ReturnType<ImapFlow['append']>>();
     mailer.transport = {
       sendMail: vi.fn(),
     } as Partial<Transporter> as Transporter;
-    mailer.imap = {
-      append: appendMock,
+    const mockedLock: Partial<MailboxLockObject> = {
+      release: vi.fn(),
+    };
+    const mockedFlow: Partial<ImapFlow> = {
       connect: vi.fn(),
-    } as Partial<ImapFlow> as ImapFlow;
+      getMailboxLock: vi.fn().mockResolvedValue(mockedLock),
+      append: vi.fn<[string, string, string[]], ReturnType<ImapFlow['append']>>(),
+      logout: vi.fn(),
+    };
+    const appendMock = mockedFlow.append as ReturnType<typeof vi.fn>;
+    vi.spyOn(mailer, 'createImapFlow').mockReturnValue(mockedFlow as ImapFlow);
+    vi.spyOn(mailer, 'copyToSentFolder');
     await mailer.sendEmail({
       to: 'Me <test@example.com>',
       from: 'test@example.com',
@@ -558,7 +565,8 @@ describe('copyToSentFolder', () => {
       html: '<p>Test</p>',
       attachments: [],
     });
-    expect(mailer.imap.connect).toHaveBeenCalledWith();
+    expect(mailer.copyToSentFolder).toHaveBeenCalledOnce();
+    expect(mockedFlow.append).toHaveBeenCalledOnce();
     expect(appendMock.mock.calls[0][0]).toBe('Sent');
     const appendCallBody = appendMock.mock.calls[0][1]
       .replaceAll(/^\s*boundary=.*$/gm, '')
