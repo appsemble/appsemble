@@ -43,8 +43,7 @@ export function OrganizationInvitePage(): ReactNode {
       setSubmitting(true);
 
       try {
-        await axios.post(`/api/organizations/${organization.id}/join`, {
-          token: qs.get('token'),
+        await axios.post(`/api/organization-invites/${qs.get('token')}/respond`, {
           response,
         });
         setSuccess(true);
