@@ -23,7 +23,7 @@ export const pathItems: OpenAPIV3.PathItemObject = {
         'application/json': {
           schema: {
             type: 'object',
-            required: ['response', 'token'],
+            required: ['response'],
             properties: {
               response: {
                 type: 'boolean',

@@ -16,6 +16,7 @@ import {
   useRef,
   useState,
 } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 import { clearAccountLinkingState, loadAccountLinkingState } from '../../utils/accountLinking.js';
 import { oauth2Scope } from '../../utils/constants.js';
@@ -38,6 +39,7 @@ const initialState: LoginState = {
 interface PasswordLoginParams {
   username: string;
   password: string;
+  redirect?: string;
 }
 
 interface AuthorizationCodeLoginParams {
@@ -97,6 +99,8 @@ export function AppMemberProvider({ children }: AppMemberProviderProps): ReactNo
   // If there is no security definition, don’t even bother going into the loading state.
   const [isLoading, setIsLoading] = useState(Boolean(definition.security));
   const [state, setState] = useState(initialState);
+
+  const navigate = useNavigate();
 
   const [appMemberInfo, setAppMemberInfo] = useState<AppMemberInfo>(null);
   const [appMemberSelectedGroup, setAppMemberSelectedGroup] = useState<AppMemberGroup>(null);
@@ -200,12 +204,16 @@ export function AppMemberProvider({ children }: AppMemberProviderProps): ReactNo
           appMemberGroups,
         });
         clearAccountLinkingState();
+
+        if ((params as unknown as PasswordLoginParams).redirect) {
+          navigate((params as unknown as PasswordLoginParams).redirect);
+        }
       } catch (error: unknown) {
         logout();
         throw error;
       }
     },
-    [fetchToken, logout],
+    [fetchToken, logout, navigate],
   );
 
   /**

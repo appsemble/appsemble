@@ -3,6 +3,7 @@ import {
   Register as RegisterForm,
   type RegistrationFormValues,
   useMeta,
+  useQuery,
 } from '@appsemble/react-components';
 import { timezone } from '@appsemble/web-utils';
 import axios from 'axios';
@@ -18,6 +19,8 @@ export function Register(): ReactNode {
 
   const { passwordLogin } = useAppMember();
   const { lang } = useParams<{ lang: string }>();
+  const qs = useQuery();
+  const redirect = qs.get('redirect');
 
   const onRegister = useCallback(
     async (values: RegistrationFormValues): Promise<void> => {
@@ -32,9 +35,9 @@ export function Register(): ReactNode {
       }
 
       await axios.post(`${apiUrl}/api/apps/${appId}/auth/email/register`, formData);
-      await passwordLogin({ username: values.email, password: values.password });
+      await passwordLogin({ username: values.email, password: values.password, redirect });
     },
-    [passwordLogin, lang],
+    [lang, passwordLogin, redirect],
   );
 
   return (

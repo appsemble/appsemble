@@ -121,7 +121,7 @@ const OrganizationOwnerPermissions = [
   OrganizationPermission.UpdateOrganizations,
   OrganizationPermission.DeleteOrganizations,
   OrganizationPermission.RemoveOrganizationMembers,
-  OrganizationPermission.UpdateOrganizationMemberRoles,
+  OrganizationPermission.UpdateGroupMemberRoles,
 ];
 
 export enum PredefinedOrganizationRole {

@@ -413,6 +413,11 @@ export enum OrganizationPermission {
   RemoveGroupMembers,
 
   /**
+   * The permission to update group member roles.
+   */
+  UpdateGroupMemberRoles,
+
+  /**
    * The permission to query app snapshots.
    */
   QueryAppSnapshots,
@@ -482,7 +487,7 @@ export const appOrganizationPermissionMapping: { [key in AppPermission]: Organiz
     [AppPermission.CreateGroupInvites]: OrganizationPermission.CreateGroupInvites,
     [AppPermission.QueryGroupMembers]: OrganizationPermission.QueryGroupMembers,
     [AppPermission.RemoveGroupMembers]: OrganizationPermission.RemoveGroupMembers,
-    [AppPermission.UpdateGroupMemberRoles]: OrganizationPermission.UpdateOrganizationMemberRoles,
+    [AppPermission.UpdateGroupMemberRoles]: OrganizationPermission.UpdateGroupMemberRoles,
     [AppPermission.CreateResources]: OrganizationPermission.CreateAppResources,
     [AppPermission.QueryResources]: OrganizationPermission.QueryAppResources,
     [AppPermission.GetResources]: OrganizationPermission.GetAppResources,

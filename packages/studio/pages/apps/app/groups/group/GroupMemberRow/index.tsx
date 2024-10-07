@@ -9,13 +9,15 @@ import { useApp } from '../../../index.js';
 
 interface GroupMemberRowProps {
   readonly member: GroupMember;
-  readonly mayInvite: boolean;
+  readonly mayUpdateRole: boolean;
+  readonly mayRemove: boolean;
   readonly onEdit: (member: GroupMember, role: AppRole) => Promise<void>;
   readonly onRemove: (member: GroupMember) => Promise<void>;
 }
 
 export function GroupMemberRow({
-  mayInvite,
+  mayRemove,
+  mayUpdateRole,
   member,
   onEdit,
   onRemove,
@@ -45,7 +47,7 @@ export function GroupMemberRow({
     <tr key={member.id}>
       <td>{member.name || member.email || member.id}</td>
       <td align="right">
-        {mayInvite ? (
+        {mayUpdateRole ? (
           <AsyncSelect name="role" onChange={editRole} value={member.role}>
             {roleKeys.map((role) => (
               <option key={role} value={role}>
@@ -56,7 +58,7 @@ export function GroupMemberRow({
         ) : (
           <span>{member.role}</span>
         )}
-        {mayInvite ? (
+        {mayRemove ? (
           <Button
             className="ml-2"
             color="danger"

@@ -64,7 +64,6 @@ export function GroupPage(): ReactNode {
   );
 
   const onEditMember = useCallback(
-    // Async ({ id }: GroupMember, role: GroupMemberRole) => {
     async ({ id }: GroupMember, role: any) => {
       const { data: updated } = await axios.put<GroupMember>(`/api/group-members/${id}/role`, {
         role,
@@ -121,6 +120,18 @@ export function GroupPage(): ReactNode {
     organization &&
     checkOrganizationRoleOrganizationPermissions(organization.role, [
       OrganizationPermission.CreateGroupInvites,
+    ]);
+
+  const mayUpdateRole =
+    organization &&
+    checkOrganizationRoleOrganizationPermissions(organization.role, [
+      OrganizationPermission.UpdateGroupMemberRoles,
+    ]);
+
+  const mayRemove =
+    organization &&
+    checkOrganizationRoleOrganizationPermissions(organization.role, [
+      OrganizationPermission.RemoveGroupMembers,
     ]);
 
   const defaultValues = useMemo(
@@ -195,7 +206,8 @@ export function GroupPage(): ReactNode {
                   {members.map((member) => (
                     <GroupMemberRow
                       key={member.id}
-                      mayInvite={mayInvite}
+                      mayRemove={mayRemove}
+                      mayUpdateRole={mayUpdateRole}
                       member={member}
                       onEdit={onEditMember}
                       onRemove={onRemoveGroupMember}
