@@ -9,6 +9,7 @@ export async function respondGroupInvite(ctx: Context): Promise<void> {
     request: {
       body: { response },
     },
+    user: authSubject,
   } = ctx;
 
   const invite = await GroupInvite.findOne({
@@ -16,6 +17,17 @@ export async function respondGroupInvite(ctx: Context): Promise<void> {
   });
 
   assertKoaError(!invite, ctx, 404, 'This token is invalid');
+
+  const authenticatedAppMember = await AppMember.findByPk(authSubject.id, {
+    attributes: ['email'],
+  });
+
+  assertKoaError(
+    authenticatedAppMember.email !== invite.email,
+    ctx,
+    401,
+    'The emails of the group invite and the authenticated app member do not match',
+  );
 
   if (response) {
     const existingGroupMember = await GroupMember.findOne({
@@ -46,6 +58,8 @@ export async function respondGroupInvite(ctx: Context): Promise<void> {
       attributes: ['id'],
       where: { email: invite.email },
     });
+
+    assertKoaError(!appMember, ctx, 400, 'The invited email is not a member of the app');
 
     await GroupMember.create({
       AppMemberId: appMember.id,

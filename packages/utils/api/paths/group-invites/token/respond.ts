@@ -38,5 +38,6 @@ export const pathItems: OpenAPIV3.PathItemObject = {
         description: 'The response has been processed.',
       },
     },
+    security: [{ app: [] }],
   },
 };
