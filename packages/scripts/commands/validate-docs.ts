@@ -10,6 +10,7 @@ import {
   type BlockDefinition,
   type ControllerDefinition,
   type CronDefinition,
+  type CustomAppGuestPermission,
   type FlowPageDefinition,
   type LinkActionDefinition,
   type ResourceActionDefinition,
@@ -63,7 +64,7 @@ const snippetTypes = {
   cron: 'cron-snippet',
   controller: 'controller-snippet',
   security: 'security-snippet',
-  users: 'users-snippet',
+  members: 'members-snippet',
 };
 
 type SnippetType = keyof typeof snippetTypes;
@@ -98,6 +99,24 @@ function appendRoleToTemplate(role: string, template: AppDefinition): AppDefinit
   return updatedTemplate;
 }
 
+function appendGuestPermissionsToTemplate(
+  permissions: CustomAppGuestPermission[],
+  template: AppDefinition,
+): AppDefinition {
+  const updatedTemplate = template;
+
+  updatedTemplate.security = {
+    ...updatedTemplate.security,
+    guest: {
+      permissions: Array.from(
+        new Set([...(updatedTemplate.security?.guest?.permissions || []), ...permissions]),
+      ),
+    },
+  };
+
+  return updatedTemplate;
+}
+
 function appendResourcesToTemplate(
   resources: Record<string, ResourceDefinition>,
   template: AppDefinition,
@@ -111,7 +130,7 @@ function appendResourcesToTemplate(
       }
     : resources;
 
-  for (const resourceDefinition of Object.values(updatedTemplate.resources)) {
+  for (const [resourceName, resourceDefinition] of Object.entries(updatedTemplate.resources)) {
     for (const [, value] of Object.entries(resourceDefinition)) {
       const to = value.hooks?.notification?.to;
 
@@ -124,6 +143,28 @@ function appendResourcesToTemplate(
           }
         }
       }
+    }
+
+    const defaultPermissions = ['create', 'update', 'patch', 'delete'].map(
+      (action) => `$resource:${resourceName}:${action}` as CustomAppGuestPermission,
+    );
+
+    if (resourceDefinition.views) {
+      for (const view of Object.keys(resourceDefinition.views)) {
+        appendGuestPermissionsToTemplate(
+          [
+            `$resource:${resourceName}:query:${view}`,
+            `$resource:${resourceName}:get:${view}`,
+            ...defaultPermissions,
+          ],
+          template,
+        );
+      }
+    } else {
+      appendGuestPermissionsToTemplate(
+        [`$resource:${resourceName}:query`, `$resource:${resourceName}:get`, ...defaultPermissions],
+        template,
+      );
     }
   }
 
@@ -237,20 +278,22 @@ function appendBlockToTemplate(block: BlockDefinition, template: AppDefinition):
       | ResourceUpdateActionDefinition;
 
     if (blockResourceActionDefinition) {
-      updatedTemplate.resources = {
-        ...template?.resources,
-        [blockResourceActionDefinition.resource]: {
-          schema: {
-            type: 'object',
-            additionalProperties: false,
-            properties: {
-              property: {
-                type: 'string',
+      appendResourcesToTemplate(
+        {
+          [blockResourceActionDefinition.resource]: {
+            schema: {
+              type: 'object',
+              additionalProperties: false,
+              properties: {
+                property: {
+                  type: 'string',
+                },
               },
             },
           },
         },
-      };
+        template,
+      );
     }
   }
 
@@ -268,19 +311,22 @@ function appendCronToTemplate(
   const cronAction = Object.values(cron)[0].action as ResourceActionDefinition<'noop'>;
 
   if (cronAction.type.startsWith('resource')) {
-    updatedTemplate.resources = {
-      [cronAction.resource]: {
-        schema: {
-          type: 'object',
-          additionalProperties: false,
-          properties: {
-            property: {
-              type: 'string',
+    appendResourcesToTemplate(
+      {
+        [cronAction.resource]: {
+          schema: {
+            type: 'object',
+            additionalProperties: false,
+            properties: {
+              property: {
+                type: 'string',
+              },
             },
           },
         },
       },
-    };
+      template,
+    );
   }
 
   return updatedTemplate;
@@ -439,7 +485,7 @@ async function accumulateAppDefinitions(docsPath: string): Promise<AppDefinition
         case 'controller':
           template = appendControllerToTemplate(parsed.controller, template);
           break;
-        case 'users':
+        case 'members':
           template = appendMembersToTemplate(parsed.members, template);
           break;
         case 'security':

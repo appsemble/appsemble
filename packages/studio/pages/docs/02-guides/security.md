@@ -326,12 +326,12 @@ be hidden from the app’s menu.
 > By specifying an empty list, no roles are required to view this page.
 
 ```yaml validate page-snippet
-- name: Example Page
+- name: Example Page Unique 3
   roles:
     - '$guest'
   blocks:
     - type: action-button
-      version: 0.29.7
+      version: 0.29.11
       parameters:
         icon: home
 ```
@@ -339,13 +339,13 @@ be hidden from the app’s menu.
 > By specifying only '$guest', only unauthenticated users may view the page
 
 ```yaml validate page-snippet
-- name: Example Page
+- name: Example Page Unique 4
   roles:
     - '$guest'
     - Reader
   blocks:
     - type: action-button
-      version: 0.29.7
+      version: 0.29.11
       parameters:
         icon: home
 ```
@@ -355,7 +355,7 @@ be hidden from the app’s menu.
 
 ```yaml validate pages-snippet
 pages:
-  - name: Example Page Unique 3
+  - name: Example Page Unique 5
     roles:
       - Admin
     blocks:
@@ -386,7 +386,7 @@ This can be especially useful for extending the functionality of a page for a sp
 members such as a button to create a new app for the administrators of a blog.
 
 ```yaml validate page-snippet
-- name: Example Page Unique 4
+- name: Example Page Unique 6
   blocks:
     - type: action-button
       version: 0.29.11

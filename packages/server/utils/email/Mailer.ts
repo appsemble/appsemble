@@ -473,7 +473,7 @@ export class Mailer {
         .compile()
         .build();
       if (argv.imapHost) {
-        this.copyToSentFolder(message);
+        await this.copyToSentFolder(message);
       } else {
         logger.warn('IMAP hasn’t been configured. Not moving email to sent folder.');
       }

@@ -187,6 +187,11 @@ Below is an example of what the query object looks like when in use.
 name: Demo App
 defaultPage: Example Page
 
+security:
+  guest:
+    permissions:
+      - '$resource:person:query'
+
 resources:
   person:
     schema:
