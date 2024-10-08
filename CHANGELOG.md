@@ -2,6 +2,185 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.30.0](https://gitlab.com/appsemble/appsemble/-/releases/0.30.0)] - 2024-10-08
+
+### Added
+
+- Block(`form`): Add `onLoad` action to load fields without using the `data-loader` block.
+- App: Add `app.member.current.patch` action.
+- App: Add `app.member.invite` action.
+- App: Add `app.member.properties.patch` action.
+- App: Add `app.member.role.update` action.
+- App: Add `group.member.delete` action.
+- App: Add `group.member.role.update` action.
+- App: Add `sub`, `email_verified`, `zoneinfo` and `role` properties to `app.member` remapper.
+- App: Resources and assets can now be scoped to a group (previously team). The roles of group
+  members within the group determine who within the group has access to them.
+- Server: Add permissions concept.
+- Server: Add predefined app roles that can be inherited.
+- Server: Apps will now be migrated whenever a breaking change is made to the app definition. A new
+  app snapshot is made. (todo: add ability to approve of the snapshot to be published).
+- Studio: Add `email` attribute field to SAML secret. The default value used is
+  `http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress`.
+- Studio: Add the ability to invite emails to apps with a certain app role, making them app members.
+- Studio: Add the ability to invite emails to groups with a certain app role, making them group
+  members.
+- Utils: New endpoint `/api/app-invites/{token}/respond`.
+- Utils: New endpoint `/api/app-invites/{token}`.
+- Utils: New endpoint `/api/app-members/{appMemberId}/properties`.
+- Utils: New endpoint `/api/app-members/{appMemberId}/role`.
+- Utils: New endpoint `/api/app-members/{appMemberId}`.
+- Utils: New endpoint `/api/apps/{appId}/auth/email/login`.
+- Utils: New endpoint `/api/apps/{appId}/auth/email/register`.
+- Utils: New endpoint `/api/apps/{appId}/demo-groups`.
+- Utils: New endpoint `/api/apps/{appId}/demo-members`.
+- Utils: New endpoint `/api/apps/{appId}/groups`.
+- Utils: New endpoint `/api/apps/{appId}/invites`.
+- Utils: New endpoint `/api/apps/{appId}/members/current/groups`.
+- Utils: New endpoint `/api/apps/{appId}/members/current/link`.
+- Utils: New endpoint `/api/apps/{appId}/resources`.
+- Utils: New endpoint `/api/group-invites/{token}/respond`.
+- Utils: New endpoint `/api/group-invites/{token}`.
+- Utils: New endpoint `/api/group-members/{groupMemberId}/role`.
+- Utils: New endpoint `/api/group-members/{groupMemberId}`.
+- Utils: New endpoint `/api/groups/{groupId}/invites`.
+- Utils: New endpoint `/api/groups/{groupId}/members`.
+- Utils: New endpoint `/api/groups/{groupId}`.
+- Utils: New endpoint `/api/training-blocks/{trainingBlockId}`.
+
+### Changed
+
+- App: **Breaking(migrated)** - Remove `appMember` remapper. Use `app.member` instead.
+- App: **Breaking(migrated)** - Rename `team.invite` action to `group.member.invite`.
+- App: **Breaking(migrated)** - Rename `team.list` action to `group.query`.
+- App: **Breaking(migrated)** - Rename `team.members` action to `group.member.query`.
+- App: **Breaking(migrated)** - Rename `user.login` action to `app.member.login`.
+- App: **Breaking(migrated)** - Rename `user.logout` action to `app.member.logout`.
+- App: **Breaking(migrated)** - Rename `user.query` action to `app.member.query`.
+- App: **Breaking(migrated)** - Rename `user.register` action to `app.member.register`.
+- App: **Breaking(migrated)** - Rename `user.remove` action to `app.member.delete`.
+- App: **Breaking(migrated)** - Rename `user` remapper to `app.member`.
+- App: **Breaking(migrated)** - Rename `users` property to `members` in app definitions.
+- Server: **Breaking(migrated)** - Don't use roles on resource actions in the app definition, use
+  permissions instead.
+- Server: **Breaking(migrated)** - Remove special role `$author` in resource roles, use `:own`
+  permissions instead.
+- Server: **Breaking(migrated)** - Remove special role `$none`, use `$guest` instead, which is meant
+  for unauthenticated users.
+- Server: **Breaking(migrated)** - Remove special roles `$team:member`, `$team:manager`, use roles
+  and group selection instead.
+- Server: App member accounts are now standalone accounts not requiring a platform user to be
+  connected. This results in all tokens being invalid, requiring the user to logout and log back in
+  again.
+- Server: Rename Teams to Groups.
+- Studio: Move layout settings from general tab to style tab.
+- Utils: Rename endpoint `/api/appCollections/{appCollectionId}/apps/{appId}/pinned` to
+  `/api/app-collections/{appCollectionId}/apps/{appId}/pinned`.
+- Utils: Rename endpoint `/api/appCollections/{appCollectionId}/apps/{appId}` to
+  `/api/app-collections/{appCollectionId}/apps/{appId}`.
+- Utils: Rename endpoint `/api/appCollections/{appCollectionId}/apps` to
+  `/api/app-collections/{appCollectionId}/apps`.
+- Utils: Rename endpoint `/api/appCollections/{appCollectionId}/expert/profileImage` to
+  `/api/app-collections/{appCollectionId}/expert/profile-image`.
+- Utils: Rename endpoint `/api/appCollections/{appCollectionId}/headerImage` to
+  `/api/app-collections/{appCollectionId}/header-image`.
+- Utils: Rename endpoint `/api/appCollections/{appCollectionId}` to
+  `/api/app-collections/{appCollectionId}`.
+- Utils: Rename endpoint `/api/appCollections` to `/api/app-collections`.
+- Utils: Rename endpoint `/api/apps/import/organization/{organizationId}` to
+  `/api/organizations/{organizationId}/apps/import`.
+- Utils: Rename endpoint `/api/apps/{appId}/maskableIcon` to `/api/apps/{appId}/maskable-icon`.
+- Utils: Rename endpoint `/api/apps/{appId}/members/{memberId}/picture` to
+  `/api/app-members/{appMemberId}/picture`.
+- Utils: Rename endpoint `/api/apps/{appId}/resources/{resourceType}/{resourceId}/history` to
+  `/api/apps/{appId}/resources/{resourceType}/{resourceId}/versions`.
+- Utils: Rename endpoint `/api/apps/{appId}/saml/{appSamlSecretId}` to
+  `/api/apps/{appId}/secrets/saml/{appSamlSecretId}`.
+- Utils: Rename endpoint `/api/apps/{appId}/scim/ResourceTypes/{resourceTypeId}` to
+  `/api/apps/{appId}/scim/resource-types/{resourceTypeId}`.
+- Utils: Rename endpoint `/api/apps/{appId}/scim/ResourceTypes` to
+  `/api/apps/{appId}/scim/resource-types`.
+- Utils: Rename endpoint `/api/apps/{appId}/scim/Schemas/{schemaId}` to
+  `/api/apps/{appId}/scim/schemas/{schemaId}`.
+- Utils: Rename endpoint `/api/apps/{appId}/scim/Schemas` to `/api/apps/{appId}/scim/schemas`.
+- Utils: Rename endpoint `/api/apps/{appId}/scim/Users/{userId}` to
+  `/api/apps/{appId}/scim/users/{userId}`.
+- Utils: Rename endpoint `/api/apps/{appId}/scim/Users` to `/api/apps/{appId}/scim/users`.
+- Utils: Rename endpoint `/api/apps/{appId}/scim/serviceProviderConfig` to
+  `/api/apps/{appId}/scim/service-provider-config`.
+- Utils: Rename endpoint `/api/connect/userinfo` to `/api/apps/{appId}/members/current`.
+- Utils: Rename endpoint `/api/email/resend` to `/api/auth/email/resend-verification`.
+- Utils: Rename endpoint `/api/email/reset/request` to `/api/auth/email/request-password-reset`.
+- Utils: Rename endpoint `/api/email/reset` to `/api/auth/email/reset-password`.
+- Utils: Rename endpoint `/api/email/verify` to `/api/auth/email/verify`.
+- Utils: Rename endpoint `/api/email` to `/api/auth/email/register`.
+- Utils: Rename endpoint `/api/invites/{token}` to `/api/organization-invites/{token}`.
+- Utils: Rename endpoint `/api/login` to `/api/auth/email/login`.
+- Utils: Rename endpoint `/api/oauth2/client-credentials/{clientId}` to
+  `/api/users/current/auth/oauth2/client-credentials/{clientId}`.
+- Utils: Rename endpoint `/api/oauth2/client-credentials` to
+  `/api/users/current/auth/oauth2/client-credentials`.
+- Utils: Rename endpoint `/api/oauth2/connect/pending` to `/api/auth/oauth2/authorizations/connect`.
+- Utils: Rename endpoint `/api/oauth2/connect/register` to
+  `/api/auth/oauth2/authorizations/register`.
+- Utils: Rename endpoint `/api/oauth2/connected` to `/api/users/current/auth/oauth2/authorizations`.
+- Utils: Rename endpoint `/api/oauth2/consent/agree` to
+  `/api/users/current/auth/oauth2/apps/{appId}/consent/agree`.
+- Utils: Rename endpoint `/api/oauth2/consent/verify` to
+  `/api/users/current/auth/oauth2/apps/{appId}/consent/verify`.
+- Utils: Rename endpoint `/api/organizations/{organizationId}/appCollections` to
+  `/api/organizations/{organizationId}/app-collections`.
+- Utils: Rename endpoint `/api/organizations/{organizationId}/join` to
+  `/api/organization-invites/{token}/respond`.
+- Utils: Rename endpoint `/api/refresh` to `/api/auth/refresh-token`.
+- Utils: Rename endpoint `/api/subscribed` to `/api/users/subscribed`.
+- Utils: Rename endpoint `/api/templates` to `/api/app-templates`.
+- Utils: Rename endpoint `/api/trainings/{trainingId}/enroll/users` to
+  `/api/trainings/{trainingId}/users`.
+- Utils: Rename endpoint `/api/trainings/{trainingId}/enroll` to
+  `/api/trainings/{trainingId}/users/current`.
+- Utils: Rename endpoint `/api/unsubscribe` to `/api/users/current/unsubscribe`.
+- Utils: Rename endpoint `/api/user/apps/accounts` to `/api/users/current/apps/accounts`.
+- Utils: Rename endpoint `/api/user/apps/{appId}/account/resend` to
+  `/api/apps/{appId}/auth/email/resend-verification`.
+- Utils: Rename endpoint `/api/user/apps/{appId}/account/reset/request` to
+  `/api/apps/{appId}/auth/email/request-password-reset`.
+- Utils: Rename endpoint `/api/user/apps/{appId}/account/reset` to
+  `/api/apps/{appId}/auth/email/reset-password`.
+- Utils: Rename endpoint `/api/user/apps/{appId}/account/verify` to
+  `/api/apps/{appId}/auth/email/verify`.
+- Utils: Rename endpoint `/api/user/apps/{appId}/account` to
+  `/api/users/current/apps/{appId}/account`.
+- Utils: Rename endpoint `/api/user/apps` to `/api/users/current/apps`.
+- Utils: Rename endpoint `/api/user/email` to `/api/users/current/emails`.
+- Utils: Rename endpoint `/api/user/organizations` to `/api/users/current/organizations`.
+- Utils: Rename endpoint `/api/user` to `/api/users/current`.
+
+### Removed
+
+- App: **Breaking(_not_ migrated)** - Remove `team.join` action.
+- App: **Breaking(_not_ migrated)** - Remove `user.create` action.
+- App: **Breaking(_not_ migrated)** - Remove `user.update` action. Use `app.member.current.patch`,
+  `app.member.role.update` or `app.member.properties.patch` instead.
+- App: **Breaking(_not_ migrated)** - Remove the `profile` property on the `app.member` remapper
+  (previously `user`).
+- App: **Breaking(migrated)** - Remove the `method` property in resource actions.
+- App: **Breaking(migrated)** - Remove the `roles` property from resource definitions.
+- Utils: Remove endpoint `/api/apps/{appId}/seed-assets`. `/api/apps/{appId}/assets` with query
+  parameter `seed` should be used instead.
+- Utils: Remove endpoint `/api/apps/{appId}/seed-resources/{resourceType}`.
+  `/api/apps/{appId}/resources/{resourceType}` with query parameter `seed` should be used instead.
+- Utils: Remove endpoint `/api/apps/{appId}/teams/{teamId}/invite`.
+- Utils: Remove endpoint `/api/apps/{appId}/teams/{teamId}/members`.
+- Utils: Remove endpoint `/api/apps/{appId}/teams/{teamId}`.
+- Utils: Remove endpoint `/api/apps/{appId}/teams`.
+- Utils: Remove endpoint `/api/organizations/{organizationId}/invite`.
+- Utils: Remove endpoint `/api/training/blocks/{trainingBlockId}`.
+
+### Fixed
+
+- App: Apps now consistently handle account linking between multiple login methods.
+
 ## \[[0.29.11](https://gitlab.com/appsemble/appsemble/-/releases/0.29.11)] - 2024-09-02
 
 ### Fixed
