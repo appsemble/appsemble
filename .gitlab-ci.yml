@@ -744,6 +744,7 @@ production:
       --set "postgresql.fullnameOverride=$POSTGRESQL_HOST"
       --set "postgresql.enabled=false"
       --set 'postgresSSL=true'
+      --set "migrateDefinitions.save=true"
       --set "proxy=true"
       --set "sentry.allowedDomains={*.appsemble.app, appsemble.app}"
       --set "sentry.environment=production"
