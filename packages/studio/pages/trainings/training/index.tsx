@@ -6,8 +6,8 @@ import {
   useData,
   useMessages,
 } from '@appsemble/react-components';
-import { type Training, type TrainingBlock } from '@appsemble/types';
-import { Permission } from '@appsemble/utils';
+import { OrganizationPermission, type Training, type TrainingBlock } from '@appsemble/types';
+import { checkOrganizationRoleOrganizationPermissions } from '@appsemble/utils';
 import { randomString } from '@appsemble/web-utils';
 import axios from 'axios';
 import { type ChangeEvent, type ReactNode, useCallback, useEffect, useState } from 'react';
@@ -26,7 +26,6 @@ import {
   TrainingModal,
 } from '../../../components/TrainingModal/index.js';
 import { useUser } from '../../../components/UserProvider/index.js';
-import { checkRole } from '../../../utils/checkRole.js';
 
 export function TrainingHomePage(): ReactNode {
   const { formatMessage } = useIntl();
@@ -39,7 +38,7 @@ export function TrainingHomePage(): ReactNode {
   const [comp, setComp] = useState(null);
   const trainingBlocks = useData<TrainingBlock[]>(`/api/trainings/${trainingId}/blocks`);
   const isEnrolled = useData<{ enrolled: boolean; completed: boolean }>(
-    `/api/trainings/${trainingId}/enroll`,
+    `/api/trainings/${trainingId}/users/current`,
   );
 
   const isAppsembleMember = organizations?.find((org) => org.id === 'appsemble');
@@ -53,17 +52,20 @@ export function TrainingHomePage(): ReactNode {
   const markAsCompleted = useCallback(async () => {
     const formData = new FormData();
     formData.set('completed', 'true');
-    await axios.patch(`/api/trainings/${trainingId}/enroll`, formData);
+    await axios.patch(`/api/trainings/${trainingId}/users/current`, formData);
     window.location.reload();
   }, [trainingId]);
 
   const onEnroll = useCallback(async () => {
-    await axios.post(`/api/trainings/${trainingId}/enroll`);
+    await axios.post(`/api/trainings/${trainingId}/users/current`);
     window.location.reload();
   }, [trainingId]);
 
   const mayDeleteTraining =
-    isAppsembleMember && checkRole(isAppsembleMember.role, Permission.DeleteApps);
+    isAppsembleMember &&
+    checkOrganizationRoleOrganizationPermissions(isAppsembleMember.role, [
+      OrganizationPermission.DeleteTrainings,
+    ]);
 
   const handleSelectChange = useCallback(
     ({ currentTarget }: ChangeEvent<HTMLSelectElement>) => {

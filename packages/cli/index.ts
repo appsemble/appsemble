@@ -14,16 +14,17 @@ import * as cleanupDemoUsers from './commands/cleanupDemoUsers.js';
 import * as cleanupResourcesAndAssets from './commands/cleanupResourcesAndAssets.js';
 import * as config from './commands/config/index.js';
 import * as fuzzMigrations from './commands/fuzzMigrations.js';
+import * as group from './commands/group/index.js';
 import * as login from './commands/login.js';
 import * as logout from './commands/logout.js';
 import * as migrate from './commands/migrate.js';
+import * as migrateAppDefinitions from './commands/migrateAppDefinitions.js';
 import * as organization from './commands/organization/index.js';
 import * as resource from './commands/resource/index.js';
 import * as runCronJobs from './commands/runCronJobs.js';
 import * as scaleContainers from './commands/scaleContainers.js';
 import * as serve from './commands/serve.js';
 import * as start from './commands/start.js';
-import * as team from './commands/team/index.js';
 import { coerceRemote } from './lib/coercers.js';
 import { initAxios } from './lib/initAxios.js';
 
@@ -65,13 +66,14 @@ let parser = yargs(process.argv.slice(2))
   .command(login as unknown as CommandModule)
   .command(logout as unknown as CommandModule)
   .command(migrate as unknown as CommandModule)
+  .command(migrateAppDefinitions as unknown as CommandModule)
   .command(organization)
   .command(resource)
   .command(runCronJobs as unknown as CommandModule)
   .command(start as unknown as CommandModule)
   .command(serve as unknown as CommandModule)
   .command(scaleContainers as unknown as CommandModule)
-  .command(team)
+  .command(group)
   .demandCommand(1)
   // .strict() isn’t used because of https://github.com/yargs/yargs/issues/2058
   .strictCommands()

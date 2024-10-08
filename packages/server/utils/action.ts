@@ -35,8 +35,7 @@ export async function handleAction(
     getVariable() {
       return null;
     },
-    userInfo: undefined,
-    appMember: undefined,
+    appMemberInfo: undefined,
     locale,
   };
   let data =

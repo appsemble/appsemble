@@ -40,8 +40,8 @@ interface FormValues {
   'resources:write': boolean;
   'apps:write': boolean;
   'apps:delete': boolean;
-  'teams:read': boolean;
-  'teams:write': boolean;
+  'groups:read': boolean;
+  'groups:write': boolean;
   'assets:write': boolean;
 }
 
@@ -59,7 +59,7 @@ export function ClientCredentialsPage(): ReactNode {
     loading,
     refresh,
     setData: setClients,
-  } = useData<OAuth2ClientCredentials[]>('/api/oauth2/client-credentials');
+  } = useData<OAuth2ClientCredentials[]>('/api/users/current/auth/oauth2/client-credentials');
   const [newClientCredentials, setNewClientCredentials] = useState<string>(null);
   const modal = useToggle(Boolean(callback));
 
@@ -74,11 +74,14 @@ export function ClientCredentialsPage(): ReactNode {
       const scopes = Object.entries(values)
         .filter(([key, value]) => value && (knownScopes as readonly string[]).includes(key))
         .map(([key]) => key);
-      const { data } = await axios.post<OAuth2ClientCredentials>('/api/oauth2/client-credentials', {
-        description,
-        expires: expires ? new Date(expires) : undefined,
-        scopes,
-      });
+      const { data } = await axios.post<OAuth2ClientCredentials>(
+        '/api/users/current/auth/oauth2/client-credentials',
+        {
+          description,
+          expires: expires ? new Date(expires) : undefined,
+          scopes,
+        },
+      );
       const newCredentials = `${data.id}:${data.secret}`;
       if (/^\d{4,5}$/.test(callback)) {
         try {
@@ -101,7 +104,7 @@ export function ClientCredentialsPage(): ReactNode {
     cancelLabel: <FormattedMessage {...messages.deleteCancel} />,
     confirmLabel: <FormattedMessage {...messages.deleteConfirm} />,
     async action(client: OAuth2ClientCredentials) {
-      await axios.delete(`/api/oauth2/client-credentials/${client.id}`);
+      await axios.delete(`/api/users/current/auth/oauth2/client-credentials/${client.id}`);
       setClients(clients.filter((c) => c.id !== client.id));
     },
   });
@@ -148,8 +151,8 @@ export function ClientCredentialsPage(): ReactNode {
           'resources:read': false,
           'resources:write': false,
           'apps:write': false,
-          'teams:read': false,
-          'teams:write': false,
+          'groups:read': false,
+          'groups:write': false,
           'assets:write': false,
         }}
         footer={
@@ -247,15 +250,15 @@ export function ClientCredentialsPage(): ReactNode {
             />
             <SimpleFormField
               component={CheckboxField}
-              label="teams:read"
-              name="teams:read"
-              title={<FormattedMessage {...messages['teams:read']} />}
+              label="groups:read"
+              name="groups:read"
+              title={<FormattedMessage {...messages['groups:read']} />}
             />
             <SimpleFormField
               component={CheckboxField}
-              label="teams:write"
-              name="teams:write"
-              title={<FormattedMessage {...messages['teams:write']} />}
+              label="groups:write"
+              name="groups:write"
+              title={<FormattedMessage {...messages['groups:write']} />}
             />
             <SimpleFormField
               component={CheckboxField}

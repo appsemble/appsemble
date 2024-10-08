@@ -117,10 +117,27 @@ column to a table etc.
 
 **To add a new server endpoint the following steps should be followed.**
 
-- Find the suitable file for the path that will be used to access the new endpoint in
-  `packages/utils/api/paths`.
-- Add the path and the method to the file.
+- Find or create a suitable file in `packages/utils/api/paths`. The path to the file should match
+  the path segments of the endpoint.
+
+> **Example**:
+>
+> The configuration for the endpoint `/api/app-collections/{appCollectionId}/apps/{appId}` should be
+> placed in `packages/utils/api/paths/app-collections/appCollectionId/apps/appId.ts`
+
+- Add the method and its configuration to the file.
 - Add the code for your controller in a suitable file in `packages/server/controllers/`.
+
+> **Note**:
+>
+> Controllers in the `main` directory are supposed to be used only from the platform (Appsemble
+> Studio or CLI).
+>
+> Controllers in the `common` directory are supposed to be used from the platform and from within
+> apps.
+>
+> Controllers in the `apps` directory are supposed to be used only from within apps.
+
 - Add tests for your code in the relative `.test.ts` file.
 - If a change in documentation is required, update the documentation in
   `packages/studio/pages/docs`.

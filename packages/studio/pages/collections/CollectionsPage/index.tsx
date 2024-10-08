@@ -8,8 +8,8 @@ import {
   useMessages,
   useToggle,
 } from '@appsemble/react-components';
-import { type AppCollection } from '@appsemble/types';
-import { Permission } from '@appsemble/utils';
+import { type AppCollection, OrganizationPermission } from '@appsemble/types';
+import { checkOrganizationRoleOrganizationPermissions } from '@appsemble/utils';
 import axios from 'axios';
 import { type ReactNode, useCallback, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
@@ -21,7 +21,6 @@ import { messages } from './messages.js';
 import { CollectionCard } from '../../../components/CollectionCard/index.js';
 import { HeaderControl } from '../../../components/HeaderControl/index.js';
 import { useUser } from '../../../components/UserProvider/index.js';
-import { checkRole } from '../../../utils/checkRole.js';
 import { messages as settingsMessages } from '../collection/SettingsPage/messages.js';
 
 interface CollectionsPageProps {
@@ -34,8 +33,8 @@ export function CollectionsPage({ organizationId }: CollectionsPageProps): React
   const navigate = useNavigate();
 
   const target = organizationId
-    ? `/api/organizations/${organizationId}/appCollections`
-    : '/api/appCollections';
+    ? `/api/organizations/${organizationId}/app-collections`
+    : '/api/app-collections';
   const {
     data: collections,
     error: collectionsError,
@@ -55,13 +54,16 @@ export function CollectionsPage({ organizationId }: CollectionsPageProps): React
   const { organizations } = useUser();
 
   const [mayCreateCollections, mayEditCollections, mayDeleteCollections] = [
-    Permission.CreateCollections,
-    Permission.EditCollections,
-    Permission.DeleteCollections,
+    OrganizationPermission.CreateAppCollections,
+    OrganizationPermission.UpdateAppCollections,
+    OrganizationPermission.DeleteAppCollections,
   ].map(
     (permission) =>
       organizationId != null &&
-      checkRole(organizations?.find((org) => org.id === organizationId).role, permission),
+      checkOrganizationRoleOrganizationPermissions(
+        organizations?.find((org) => org.id === organizationId).role,
+        [permission],
+      ),
   );
 
   const editCollection = useCallback(
@@ -78,7 +80,7 @@ export function CollectionsPage({ organizationId }: CollectionsPageProps): React
     body: <FormattedMessage {...settingsMessages.deleteWarning} />,
     action(collection: AppCollection) {
       axios
-        .delete(`/api/appCollections/${collection.id}`)
+        .delete(`/api/app-collections/${collection.id}`)
         .then(() => setCollections(collections.filter((c) => c.id !== collection.id)))
         .then(() => push({ color: 'info', body: formatMessage(settingsMessages.deleteSuccess) }))
         .catch(() => push({ color: 'danger', body: formatMessage(settingsMessages.deleteError) }));

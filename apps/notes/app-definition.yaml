@@ -8,9 +8,13 @@ security:
   roles:
     User:
       description: A user who keeps their own notes.
-
-roles:
-  - User
+      permissions:
+        - $resource:note:own:update
+        - $resource:note:own:patch
+        - $resource:note:own:query
+        - $resource:note:own:get
+        - $resource:note:own:delete
+        - $resource:note:create
 
 resources:
   note:
@@ -26,11 +30,6 @@ resources:
         body:
           title: Body
           type: string
-    roles:
-      - $author
-    create:
-      roles:
-        - User
 
 pages:
   - name: Notes
@@ -42,6 +41,7 @@ pages:
           onLoad:
             type: resource.query
             resource: note
+            own: true
         events:
           listen:
             refresh: refreshNotes

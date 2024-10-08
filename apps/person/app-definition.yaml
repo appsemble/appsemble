@@ -1,10 +1,19 @@
 name: Person
 description: A simple form and data viewing app using the resource API
 defaultPage: Person Registration Form
+
+security:
+  guest:
+    permissions:
+      - $resource:person:create
+      - $resource:person:update
+      - $resource:person:patch
+      - $resource:person:query
+      - $resource:person:get
+      - $resource:person:delete
+
 resources:
   person:
-    roles:
-      - $public # Allow anyone to access the resource’s actions
     schema:
       type: object
       additionalProperties: false

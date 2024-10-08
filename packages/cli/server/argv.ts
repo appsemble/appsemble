@@ -55,11 +55,11 @@ export interface Argv {
   'user-role'?: string;
 
   /**
-   * The role to set to the mocked authenticated user in the team.
+   * The role to set to the mocked authenticated user in the group.
    *
    * @default 'member'
    */
-  'team-role'?: string;
+  'group-role'?: string;
 }
 
 const defaults: Argv = {
@@ -72,7 +72,7 @@ const defaults: Argv = {
   remote: undefined,
   'overwrite-block-cache': false,
   'user-role': undefined,
-  'team-role': undefined,
+  'group-role': undefined,
 };
 
 export const argv = { ...defaults };

@@ -16,11 +16,11 @@ import { useParams } from 'react-router-dom';
 import { messages } from './messages.js';
 import { PicturePreview } from './PicturePreview/index.js';
 import { apiUrl, appId } from '../../utils/settings.js';
-import { useUser } from '../UserProvider/index.js';
+import { useAppMember } from '../AppMemberProvider/index.js';
 
 export function ProfileSettings(): ReactNode {
   const { formatMessage } = useIntl();
-  const { setUserInfo, userInfo } = useUser();
+  const { appMemberInfo, setAppMemberInfo } = useAppMember();
   const { lang } = useParams<{ lang: string }>();
   const push = useMessages();
 
@@ -41,23 +41,23 @@ export function ProfileSettings(): ReactNode {
         id: string;
         name: string;
         picture: string;
-      }>(`${apiUrl}/api/user/apps/${appId}/account`, formData);
-      setUserInfo({
-        ...userInfo,
+      }>(`${apiUrl}/api/users/current/apps/${appId}/account`, formData);
+      setAppMemberInfo({
+        ...appMemberInfo,
         email: data.email,
         name: data.name,
         picture: data.picture,
       });
       push({ body: formatMessage(messages.submitSuccess), color: 'success' });
     },
-    [formatMessage, push, setUserInfo, userInfo, lang],
+    [formatMessage, push, setAppMemberInfo, appMemberInfo, lang],
   );
 
   return (
     <SimpleForm
       defaultValues={{
-        name: userInfo?.name || '',
-        email: userInfo?.email || '',
+        name: appMemberInfo?.name || '',
+        email: appMemberInfo?.email || '',
         picture: null,
       }}
       onSubmit={onSaveProfile}
@@ -78,7 +78,7 @@ export function ProfileSettings(): ReactNode {
         help={<FormattedMessage {...messages.pictureDescription} />}
         label={<FormattedMessage {...messages.picture} />}
         name="picture"
-        preview={<PicturePreview pictureUrl={userInfo?.picture} />}
+        preview={<PicturePreview pictureUrl={appMemberInfo?.picture} />}
       />
       <FormButtons>
         <SimpleSubmit>

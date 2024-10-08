@@ -1,27 +1,21 @@
-import { type OAuth2Provider, type UserInfo } from '@appsemble/types';
-import { type TeamRole } from '@appsemble/utils';
+import {
+  type OAuth2Provider,
+  type PredefinedOrganizationRole,
+  type UserInfo,
+} from '@appsemble/types';
 import { type OAuth2State } from '@appsemble/web-utils';
-
-export type Role = 'AppEditor' | 'Maintainer' | 'Member' | 'Owner';
 
 export interface OrganizationMember {
   id: string;
   name?: string;
   primaryEmail?: string;
-  role: Role;
-}
-
-export interface TeamMember {
-  id: string;
-  name?: string;
-  primaryEmail?: string;
-  role: TeamRole;
+  role: PredefinedOrganizationRole;
 }
 
 export interface Organization {
   id: string;
   name: string;
-  role: Role;
+  role: PredefinedOrganizationRole;
   description: string;
   website: string;
   email: string;
@@ -47,7 +41,7 @@ export interface Page {
 export interface ExtendedOAuth2State extends OAuth2State {
   id: string;
   appRequest?: string;
-  userinfo?: UserInfo;
+  userinfo?: UserInfo & { profile: string };
 }
 
 declare global {

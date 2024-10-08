@@ -6,10 +6,18 @@ theme:
   splashColor: '#ffffff'
   primaryColor: '#eb0000'
 
+security:
+  guest:
+    permissions:
+      - $resource:all:create
+      - $resource:all:update
+      - $resource:all:patch
+      - $resource:all:query
+      - $resource:all:get
+      - $resource:all:delete
+
 resources:
   litter:
-    roles:
-      - $public # Allow anyone to access the resource’s actions
     schema:
       type: object
       additionalProperties: false
@@ -46,8 +54,6 @@ resources:
             longitude:
               type: number
   litterReply:
-    roles:
-      - $public # Allow anyone to access the resource’s actions
     references:
       litterId:
         resource: litter

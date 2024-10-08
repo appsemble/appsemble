@@ -31,6 +31,13 @@ core blocks. These are the 3 classes of blocks:
 | custom      | suggested: plain js / Preact / mini-jsx | optionally  | https://gitlab.com/appsemble/apps                         |
 | community   | suggested: plain js / preact / mini-jsx | no          | varies                                                    |
 
+### Core
+
+#### API
+
+Please follow the guidelines and best practices for naming API endpoints described
+[here](https://restfulapi.net/resource-naming/)
+
 ### Style guide
 
 The entire code base is formatted using
@@ -154,9 +161,14 @@ equal to the up migration in red.
 
 ### Permissions
 
-After adding a new permission to the `Permission` enum, add the permission to the relevant role at
-`packages/utils/constants/roles.ts`. Similarly add the permission and it’s description to
+After adding a new permission to the `OrganizationPermission` enum in
+`packages/types/permissions.ts` add the permission and it’s description to
 `packages/studio/pages/organizations/messages.ts`.
+
+After adding a new permission to the `AppPermission` enum in `packages/types/permissions.ts`, add a
+corresponding one to the `OrganizationPermission` enum and map them in the
+`appOrganizationPermissionMapping` object. Then add the permissions to the relevant roles at
+`packages/types/roles.ts`.
 
 ### Testing
 

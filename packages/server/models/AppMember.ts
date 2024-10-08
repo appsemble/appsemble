@@ -1,5 +1,5 @@
-import { AppsembleError, UserPropertiesError } from '@appsemble/node-utils';
-import { type UserPropertyDefinition } from '@appsemble/types';
+import { AppMemberPropertiesError, AppsembleError } from '@appsemble/node-utils';
+import { type AppMemberPropertyDefinition } from '@appsemble/types';
 import { Validator } from 'jsonschema';
 import { has } from 'lodash-es';
 import { type OpenAPIV3 } from 'openapi-types';
@@ -26,48 +26,11 @@ import {
   App,
   AppOAuth2Authorization,
   AppSamlAuthorization,
+  GroupMember,
+  OAuth2AuthorizationCode,
   Resource,
-  TeamMember,
   User,
 } from './index.js';
-
-function getDefaultValue(
-  propertyDefinition: OpenAPIV3.SchemaObject | UserPropertyDefinition,
-): Record<string, any> | boolean | number | [] | null {
-  const pdSchema = has(propertyDefinition, 'schema')
-    ? (propertyDefinition as UserPropertyDefinition).schema
-    : (propertyDefinition as OpenAPIV3.SchemaObject);
-
-  const { default: pdDefault, enum: pdEnum, type: pdType } = pdSchema;
-
-  if (pdDefault) {
-    return pdDefault;
-  }
-
-  if (pdEnum) {
-    return pdEnum[0];
-  }
-
-  const objectDefaultValue = {} as Record<string, any>;
-  switch (pdType) {
-    case 'array':
-      return [];
-    case 'object':
-      for (const [subPropertyName, subPropertyDefinition] of Object.entries(
-        pdSchema.properties as Record<string, OpenAPIV3.SchemaObject>,
-      )) {
-        objectDefaultValue[subPropertyName] = getDefaultValue(subPropertyDefinition);
-      }
-      return objectDefaultValue;
-    case 'boolean':
-      return false;
-    case 'number':
-    case 'integer':
-      return 0;
-    default:
-      return null;
-  }
-}
 
 @Table({ tableName: 'AppMember' })
 export class AppMember extends Model {
@@ -122,6 +85,14 @@ export class AppMember extends Model {
   @Column(DataType.STRING)
   locale?: string;
 
+  @Column(DataType.STRING)
+  timezone: string;
+
+  @AllowNull(false)
+  @Default(false)
+  @Column(DataType.BOOLEAN)
+  demo: boolean;
+
   @CreatedAt
   created: Date;
 
@@ -138,7 +109,6 @@ export class AppMember extends Model {
   @BelongsTo(() => App)
   App: Awaited<App>;
 
-  @AllowNull(false)
   @ForeignKey(() => User)
   @Index({ name: 'UniqueAppMemberIndex', unique: true })
   @Column(DataType.UUID)
@@ -147,17 +117,58 @@ export class AppMember extends Model {
   @BelongsTo(() => User, { onDelete: 'CASCADE' })
   User: Awaited<User>;
 
-  @HasMany(() => TeamMember)
-  TeamMembers: TeamMember[];
+  @HasMany(() => GroupMember)
+  GroupMembers: GroupMember[];
 
   @HasMany(() => AppOAuth2Authorization)
   AppOAuth2Authorizations: AppOAuth2Authorization[];
+
+  @HasMany(() => OAuth2AuthorizationCode, { onDelete: 'CASCADE', onUpdate: 'CASCADE' })
+  OAuth2AuthorizationCodes: OAuth2AuthorizationCode[];
 
   @HasMany(() => AppSamlAuthorization)
   AppSamlAuthorizations: AppSamlAuthorization[];
 
   get hasPicture(): boolean {
     return this.get('hasPicture');
+  }
+
+  private static getDefaultValue(
+    propertyDefinition: AppMemberPropertyDefinition | OpenAPIV3.SchemaObject,
+  ): Record<string, any> | boolean | number | [] | null {
+    const pdSchema = has(propertyDefinition, 'schema')
+      ? (propertyDefinition as AppMemberPropertyDefinition).schema
+      : (propertyDefinition as OpenAPIV3.SchemaObject);
+
+    const { default: pdDefault, enum: pdEnum, type: pdType } = pdSchema;
+
+    if (pdDefault) {
+      return pdDefault;
+    }
+
+    if (pdEnum) {
+      return pdEnum[0];
+    }
+
+    const objectDefaultValue = {} as Record<string, any>;
+    switch (pdType) {
+      case 'array':
+        return [];
+      case 'object':
+        for (const [subPropertyName, subPropertyDefinition] of Object.entries(
+          pdSchema.properties as Record<string, OpenAPIV3.SchemaObject>,
+        )) {
+          objectDefaultValue[subPropertyName] = this.getDefaultValue(subPropertyDefinition);
+        }
+        return objectDefaultValue;
+      case 'boolean':
+        return false;
+      case 'number':
+      case 'integer':
+        return 0;
+      default:
+        return null;
+    }
   }
 
   @BeforeCreate
@@ -194,7 +205,7 @@ export class AppMember extends Model {
 
     const { definition: appDefinition, demoMode } = app;
 
-    const userPropertiesDefinition = appDefinition.users?.properties;
+    const userPropertiesDefinition = appDefinition.members?.properties;
     const resourcesDefinition = appDefinition.resources;
 
     const parsedProperties: Record<string, any> = instance.properties || {};
@@ -204,7 +215,7 @@ export class AppMember extends Model {
       if (instance.properties) {
         for (const propertyName of Object.keys(instance.properties)) {
           if (!userPropertiesDefinition[propertyName]) {
-            throw new UserPropertiesError(`User property ${propertyName} is not allowed`);
+            throw new AppMemberPropertiesError(`User property ${propertyName} is not allowed`);
           }
         }
       }
@@ -220,13 +231,13 @@ export class AppMember extends Model {
 
         if (referencedResource) {
           if (!resourcesDefinition) {
-            throw new UserPropertiesError(
+            throw new AppMemberPropertiesError(
               `Invalid reference to ${referencedResource} resource. This app has no resources definition`,
             );
           }
 
           if (!resourcesDefinition[referencedResource]) {
-            throw new UserPropertiesError(
+            throw new AppMemberPropertiesError(
               `Invalid reference to ${referencedResource} resource. Resource ${referencedResource} does not exist in this app`,
             );
           }
@@ -239,7 +250,7 @@ export class AppMember extends Model {
           );
 
           if (propertyValueValidationResult.errors.length) {
-            throw new UserPropertiesError(
+            throw new AppMemberPropertiesError(
               `Invalid ${typeof propertyValue} value ${JSON.stringify(propertyValue)} for property ${propertyName}`,
             );
           }
@@ -252,7 +263,7 @@ export class AppMember extends Model {
               });
 
               if (validationResult.errors.length) {
-                throw new UserPropertiesError(
+                throw new AppMemberPropertiesError(
                   `Invalid value ${
                     propertyValue[validationResult.errors[0].path[0] as number]
                   } for property id in ${referencedResource} resource reference`,
@@ -270,7 +281,7 @@ export class AppMember extends Model {
                   },
                 });
                 if (!existingResource) {
-                  throw new UserPropertiesError(
+                  throw new AppMemberPropertiesError(
                     `Invalid value ${entry} for property id in ${referencedResource} resource reference. No ${referencedResource} resource exists with this id`,
                   );
                 }
@@ -286,12 +297,12 @@ export class AppMember extends Model {
                 },
               });
               if (!existingResource) {
-                throw new UserPropertiesError(
+                throw new AppMemberPropertiesError(
                   `Invalid value ${propertyValue} for property id in ${referencedResource} resource reference. No ${referencedResource} resource exists with this id`,
                 );
               }
             } else {
-              throw new UserPropertiesError(
+              throw new AppMemberPropertiesError(
                 `Invalid ${
                   propertyType || 'string'
                 } value ${propertyValue} for property id in ${referencedResource} resource reference`,
@@ -307,13 +318,13 @@ export class AppMember extends Model {
                 continue;
               }
 
-              propertyValue[subPropertyName] = getDefaultValue(subPropertyDefinition);
+              propertyValue[subPropertyName] = this.getDefaultValue(subPropertyDefinition);
             }
           }
 
           parsedProperties[propertyName] = propertyValue;
         } else {
-          parsedProperties[propertyName] = getDefaultValue(propertyDefinition);
+          parsedProperties[propertyName] = this.getDefaultValue(propertyDefinition);
         }
       }
     }

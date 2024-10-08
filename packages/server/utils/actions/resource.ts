@@ -16,7 +16,7 @@ import { defaultLocale, remap, serializeResource } from '@appsemble/utils';
 import { Op } from 'sequelize';
 
 import { type ServerActionParameters } from './index.js';
-import { AppMember, Asset, Resource, ResourceVersion, transactional } from '../../models/index.js';
+import { Asset, Resource, ResourceVersion, transactional } from '../../models/index.js';
 import { parseQuery, processHooks, processReferenceHooks } from '../resource.js';
 
 export async function get({
@@ -26,7 +26,6 @@ export async function get({
   data,
   internalContext,
   options,
-  user,
 }: ServerActionParameters<ResourceGetActionDefinition>): Promise<unknown> {
   const body = (remap(action.body, data, internalContext) ?? data) as Record<string, unknown>;
 
@@ -35,7 +34,7 @@ export async function get({
   }
 
   const { view } = action;
-  const resourceDefinition = getResourceDefinition(app.toJSON(), action.resource, context, view);
+  const resourceDefinition = getResourceDefinition(app.definition, action.resource, context, view);
 
   const resource = await Resource.findOne({
     include: [
@@ -60,19 +59,9 @@ export async function get({
     return parsedResource;
   }
 
-  const appMember =
-    user && (await AppMember.findOne({ where: { AppId: app.id, UserId: user.id } }));
-
   const remapperContext = await getRemapperContext(
     app.toJSON(),
     app.definition.defaultLanguage || defaultLocale,
-    appMember && {
-      sub: user.id,
-      name: appMember.name,
-      email: appMember.email,
-      email_verified: appMember.emailVerified,
-      zoneinfo: user.timezone,
-    },
     options,
     context,
   );
@@ -86,14 +75,13 @@ export async function query({
   data,
   internalContext,
   options,
-  user,
 }: ServerActionParameters<ResourceQueryActionDefinition>): Promise<unknown> {
   const { view } = action;
   const queryRemapper = action?.query ?? app.definition.resources[action.resource]?.query?.query;
 
   const queryParams = (remap(queryRemapper, data, internalContext) || {}) as QueryParams;
 
-  const resourceDefinition = getResourceDefinition(app.toJSON(), action.resource, context, view);
+  const resourceDefinition = getResourceDefinition(app.definition, action.resource, context, view);
 
   const parsed = parseQuery({ ...queryParams, resourceDefinition });
   const include = queryParams?.$select?.split(',').map((s) => s.trim());
@@ -122,19 +110,9 @@ export async function query({
     return mappedResources;
   }
 
-  const appMember =
-    user && (await AppMember.findOne({ where: { AppId: app.id, UserId: user.id } }));
-
   const remapperContext = await getRemapperContext(
     app.toJSON(),
     app.definition.defaultLanguage || defaultLocale,
-    appMember && {
-      sub: user.id,
-      name: appMember.name,
-      email: appMember.email,
-      email_verified: appMember.emailVerified,
-      zoneinfo: user.timezone,
-    },
     options,
     context,
   );
@@ -150,14 +128,13 @@ export async function create({
   data,
   internalContext,
   options,
-  user,
 }: ServerActionParameters<ResourceCreateActionDefinition>): Promise<unknown> {
   const { getAppAssets } = options;
   const body = (remap(action.body, data, internalContext) ?? data) as
     | Record<string, unknown>
     | Record<string, unknown>[];
 
-  const definition = getResourceDefinition(app.toJSON(), action.resource, context);
+  const definition = getResourceDefinition(app.definition, action.resource, context);
 
   const appAssets = await getAppAssets({ context, app: app.toJSON() });
   Object.assign(context, { body: serializeResource(body) });
@@ -175,15 +152,14 @@ export async function create({
       type: action.resource,
       data: resourceData,
       AppId: app.id,
-      AuthorId: user?.id,
       expires: $expires,
       seed: false,
       ephemeral: app.demoMode,
     })),
   );
 
-  processReferenceHooks(user, app, createdResources[0], 'create', options, context);
-  processHooks(user, app, createdResources[0], 'create', options, context);
+  processReferenceHooks(app, createdResources[0], 'create', options, context);
+  processHooks(app, createdResources[0], 'create', options, context);
 
   const mappedResources = createdResources.map((r) => r.toJSON());
 
@@ -197,7 +173,6 @@ export async function update({
   data: actionData,
   internalContext,
   options,
-  user,
 }: ServerActionParameters<ResourceUpdateActionDefinition>): Promise<unknown> {
   const body = (remap(action.body, actionData, internalContext) ?? actionData) as Record<
     string,
@@ -208,7 +183,7 @@ export async function update({
     throw new Error('Missing id');
   }
 
-  const definition = getResourceDefinition(app.toJSON(), action.resource, context);
+  const definition = getResourceDefinition(app.definition, action.resource, context);
 
   const resource = await Resource.findOne({
     where: {
@@ -266,8 +241,8 @@ export async function update({
   });
   await resource.reload({ include: [{ association: 'Editor' }] });
 
-  processReferenceHooks(user, app, resource, 'update', options, context);
-  processHooks(user, app, resource, 'update', options, context);
+  processReferenceHooks(app, resource, 'update', options, context);
+  processHooks(app, resource, 'update', options, context);
 
   return resource.toJSON();
 }
@@ -289,7 +264,7 @@ export async function patch({
     throw new Error('Missing id');
   }
 
-  const definition = getResourceDefinition(app.toJSON(), action.resource, context);
+  const definition = getResourceDefinition(app.definition, action.resource, context);
 
   const resource = await Resource.findOne({
     where: {
@@ -360,11 +335,10 @@ export async function remove({
   data,
   internalContext,
   options,
-  user,
 }: ServerActionParameters<ResourceDeleteActionDefinition>): Promise<unknown> {
   const body = (remap(action.body, data, internalContext) ?? data) as Record<string, unknown>;
 
-  getResourceDefinition(app.toJSON(), action.resource, context);
+  getResourceDefinition(app.definition, action.resource, context);
 
   if (!body?.id) {
     throw new Error('Missing id');
@@ -391,8 +365,8 @@ export async function remove({
 
   await resource.destroy();
 
-  processReferenceHooks(user, app, resource, 'delete', options, context);
-  processHooks(user, app, resource, 'delete', options, context);
+  processReferenceHooks(app, resource, 'delete', options, context);
+  processHooks(app, resource, 'delete', options, context);
 
   // Returning empty string just like in the client-side resource.delete action.
   return '';

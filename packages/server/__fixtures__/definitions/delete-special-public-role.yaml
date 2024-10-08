@@ -1,0 +1,99 @@
+# Delete $public
+name: test
+description: test
+defaultPage: test
+
+pages:
+  - name: test
+    roles: [$public]
+    blocks:
+      - type: action-button
+        roles: [$public]
+        version: 0.29.0
+        parameters:
+          icon: arrow-right
+        actions:
+          onClick:
+            remapBefore:
+              roles: []
+            type: resource.create
+            method: post
+            resource: test
+  - name: tabs
+    type: tabs
+    roles: [$public]
+    tabs:
+      - name: subpage
+        roles: [$public]
+        blocks:
+          - type: action-button
+            roles: [$public]
+            version: 0.29.0
+            parameters:
+              icon: arrow-right
+            actions:
+              onClick:
+                remapBefore:
+                  roles: []
+                type: resource.create
+                method: post
+                resource: test
+  - name: tabs
+    type: tabs
+    roles: [$public]
+    definition:
+      events: {}
+      foreach:
+        - name: dynamic tab
+          roles: [$public]
+          blocks:
+            - type: action-button
+              roles: [$public]
+              version: 0.29.0
+              parameters:
+                icon: arrow-right
+              actions:
+                onClick:
+                  remapBefore:
+                    roles: []
+                  type: resource.create
+                  method: post
+                  resource: test
+  - name: flow
+    type: flow
+    roles: [$public]
+    steps:
+      - name: subpage
+        roles: [$public]
+        blocks:
+          - type: action-button
+            roles: [$public]
+            version: 0.29.0
+            parameters:
+              icon: arrow-right
+            actions:
+              onClick:
+                remapBefore:
+                  roles: []
+                type: resource.create
+                method: post
+                resource: test
+  - name: loop
+    type: loop
+    roles: [$public]
+    foreach:
+      - name: subpage
+        roles: [$public]
+        blocks:
+          - type: action-button
+            roles: [$public]
+            version: 0.29.0
+            parameters:
+              icon: arrow-right
+            actions:
+              onClick:
+                remapBefore:
+                  roles: []
+                type: resource.create
+                method: post
+                resource: test

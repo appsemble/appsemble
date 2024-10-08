@@ -1,20 +1,30 @@
 import { Button, Modal, useConfirmation, useToggle } from '@appsemble/react-components';
+import { OrganizationPermission } from '@appsemble/types';
+import { checkOrganizationRoleOrganizationPermissions } from '@appsemble/utils';
 import axios from 'axios';
 import { type ReactNode } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 
 import styles from './index.module.css';
 import { messages } from './messages.js';
+import { useUser } from '../../../../../../components/UserProvider/index.js';
 import { useApp } from '../../../index.js';
 
 interface AppScreenshotProps {
   readonly url: string;
-  readonly mayManageScreenshots: boolean;
 }
-export function AppScreenshot({ mayManageScreenshots, url }: AppScreenshotProps): ReactNode {
+export function AppScreenshot({ url }: AppScreenshotProps): ReactNode {
   const { app, setApp } = useApp();
   const { formatMessage } = useIntl();
   const modal = useToggle();
+  const { organizations } = useUser();
+
+  const userRole = organizations?.find((org) => org.id === app.OrganizationId)?.role;
+  const mayDeleteScreenshots =
+    userRole &&
+    checkOrganizationRoleOrganizationPermissions(userRole, [
+      OrganizationPermission.DeleteAppScreenshots,
+    ]);
 
   const onDeleteScreenshotClick = useConfirmation({
     title: <FormattedMessage {...messages.deleteScreenshotTitle} />,
@@ -32,7 +42,7 @@ export function AppScreenshot({ mayManageScreenshots, url }: AppScreenshotProps)
 
   return (
     <div className={`mx-3 ${styles.screenshotWrapper}`} key={url}>
-      {mayManageScreenshots ? (
+      {mayDeleteScreenshots ? (
         <Button
           className={`${styles.deleteScreenshotButton} mx-2 my-2 is-rounded is-small`}
           color="danger"

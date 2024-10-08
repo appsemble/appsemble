@@ -45,9 +45,9 @@ have an Azure Active Directory already set up and filled with users.
    definition needs to contain a basic
    [security definition](../02-guides/security.md#security-definition).
 
-   **(Optional)** If your application wants to use the [Teams](../02-guides/teams.md) functionality,
-   this security definition also has to contain a
-   [teams definition](../02-guides/security.md#teams).
+   **(Optional)** If your application wants to use the [Groups](../02-guides/groups.md)
+   functionality, this security definition also has to contain a
+   [groups definition](../02-guides/security.md#groups).
 
 2. In your application, go to **Secrets** -> **SCIM**.
 

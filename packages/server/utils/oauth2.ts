@@ -1,8 +1,48 @@
-import { AppsembleError, basicAuth } from '@appsemble/node-utils';
-import { type Remapper, type TokenResponse, type UserEmail, type UserInfo } from '@appsemble/types';
+import { randomBytes } from 'node:crypto';
+
+import { AppsembleError, basicAuth, throwKoaError } from '@appsemble/node-utils';
+import { type Remapper, type TokenResponse, type UserInfo } from '@appsemble/types';
 import { remap } from '@appsemble/utils';
 import axios from 'axios';
+import { addMinutes } from 'date-fns';
 import jwt from 'jsonwebtoken';
+import { type Context } from 'koa';
+
+import { argv } from './argv.js';
+import { type App, type AppMember, OAuth2AuthorizationCode } from '../models/index.js';
+
+export class GrantError extends Error {
+  status: number;
+
+  constructor(
+    error:
+      | 'invalid_client'
+      | 'invalid_grant'
+      | 'invalid_request'
+      | 'invalid_scope'
+      | 'unsupported_grant_type',
+    status = 400,
+  ) {
+    super(error);
+    this.status = status;
+    this.name = 'GrantError';
+  }
+}
+
+export function checkTokenRequestParameters(
+  query: Record<string, string[] | string>,
+  allowed: string[],
+): Record<string, string> {
+  for (const [key, value] of Object.entries(query)) {
+    if (allowed.includes(key)) {
+      continue;
+    }
+    if (Array.isArray(value)) {
+      throw new GrantError('invalid_request');
+    }
+  }
+  return query as Record<string, string>;
+}
 
 /**
  * Check if all required scopes are granted.
@@ -93,7 +133,6 @@ export async function getUserInfo(
     email ??= info.email;
     emailVerified ??= info.email_verified;
     name ??= info.name;
-    profile ??= info.profile;
     picture ??= info.picture;
     locale ??= info.locale;
     zoneinfo ??= info.zoneinfo;
@@ -133,7 +172,7 @@ export async function getUserInfo(
       ? (remap(remapper, data, null) as UserInfo)
       : (data as UserInfo);
     if (!actualData.email && userEmailsUrl) {
-      const { data: emailsData } = await axios.get<UserEmail[]>(userEmailsUrl, requestConfig);
+      const { data: emailsData } = await axios.get(userEmailsUrl, requestConfig);
       if (emailsData.length > 0) {
         actualData.email = emailsData[0].email;
       }
@@ -151,10 +190,32 @@ export async function getUserInfo(
     email_verified: Boolean(emailVerified),
     name,
     picture,
-    profile,
     sub,
     locale,
     zoneinfo,
     subscribed,
   };
+}
+
+export function createAppOAuth2AuthorizationCode(
+  app: App,
+  redirectUri: string,
+  scope: string,
+  appMember: AppMember,
+  ctx: Context,
+): Promise<OAuth2AuthorizationCode> {
+  const appHost = `${app.path}.${app.OrganizationId}.${new URL(argv.host).hostname}`;
+  const redirectHost = new URL(redirectUri).hostname;
+  if (redirectHost !== appHost && redirectHost !== app.domain) {
+    throwKoaError(ctx, 403, 'Invalid redirectUri');
+  }
+
+  return OAuth2AuthorizationCode.create({
+    AppId: app.id,
+    code: randomBytes(12).toString('hex'),
+    expires: addMinutes(new Date(), 10),
+    redirectUri,
+    scope,
+    AppMemberId: appMember.id,
+  });
 }

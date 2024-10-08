@@ -12,18 +12,10 @@ export async function notify({
   context,
   data,
   options,
-  user,
 }: ServerActionParameters<NotifyActionDefinition>): Promise<any> {
   const remapperContext = await getRemapperContext(
     app.toJSON(),
     app.definition.defaultLanguage || defaultLocale,
-    user && {
-      sub: user.id,
-      name: user.name,
-      email: user.primaryEmail,
-      email_verified: Boolean(user.EmailAuthorizations?.[0]?.verified),
-      zoneinfo: user.timezone,
-    },
     options,
     context,
   );

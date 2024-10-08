@@ -139,13 +139,13 @@ export const messages = defineMessages({
     id: 'studio.kukswA',
     defaultMessage: 'Create, update, and delete app resources',
   },
-  'teams:read': {
-    id: 'studio.6gdRox',
-    defaultMessage: 'Read app teams',
+  'groups:read': {
+    id: 'studio.V6/PgG',
+    defaultMessage: 'Read app groups',
   },
-  'teams:write': {
-    id: 'studio.KGEkyt',
-    defaultMessage: 'Create and manage app teams',
+  'groups:write': {
+    id: 'studio.JV/lzM',
+    defaultMessage: 'Create and manage app groups',
   },
   'assets:write': {
     id: 'studio.2lwxpZ',

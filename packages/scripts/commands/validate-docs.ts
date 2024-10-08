@@ -5,15 +5,22 @@ import { AppsembleError, authenticate, logger, opendirSafe } from '@appsemble/no
 import {
   type ActionDefinition,
   type AppDefinition,
+  type AppMemberPropertyDefinition,
   type BasicPageDefinition,
   type BlockDefinition,
   type ControllerDefinition,
   type CronDefinition,
+  type CustomAppGuestPermission,
   type FlowPageDefinition,
   type LinkActionDefinition,
   type ResourceActionDefinition,
+  type ResourceCreateActionDefinition,
   type ResourceDefinition,
-  type UserPropertyDefinition,
+  type ResourceDeleteActionDefinition,
+  type ResourceGetActionDefinition,
+  type ResourcePatchActionDefinition,
+  type ResourceQueryActionDefinition,
+  type ResourceUpdateActionDefinition,
 } from '@appsemble/types';
 import { allActions } from '@appsemble/utils';
 import axios from 'axios';
@@ -57,7 +64,7 @@ const snippetTypes = {
   cron: 'cron-snippet',
   controller: 'controller-snippet',
   security: 'security-snippet',
-  users: 'users-snippet',
+  members: 'members-snippet',
 };
 
 type SnippetType = keyof typeof snippetTypes;
@@ -84,7 +91,26 @@ function appendRoleToTemplate(role: string, template: AppDefinition): AppDefinit
       ...updatedTemplate.security?.roles,
       [role]: {
         description: 'Description',
+        inherits: ['ResourcesManager'],
       },
+    },
+  };
+
+  return updatedTemplate;
+}
+
+function appendGuestPermissionsToTemplate(
+  permissions: CustomAppGuestPermission[],
+  template: AppDefinition,
+): AppDefinition {
+  const updatedTemplate = template;
+
+  updatedTemplate.security = {
+    ...updatedTemplate.security,
+    guest: {
+      permissions: Array.from(
+        new Set([...(updatedTemplate.security?.guest?.permissions || []), ...permissions]),
+      ),
     },
   };
 
@@ -104,12 +130,8 @@ function appendResourcesToTemplate(
       }
     : resources;
 
-  for (const resourceDefinition of Object.values(updatedTemplate.resources)) {
+  for (const [resourceName, resourceDefinition] of Object.entries(updatedTemplate.resources)) {
     for (const [, value] of Object.entries(resourceDefinition)) {
-      for (const role of value.roles ?? []) {
-        appendRoleToTemplate(role, updatedTemplate);
-      }
-
       const to = value.hooks?.notification?.to;
 
       if (to) {
@@ -121,6 +143,28 @@ function appendResourcesToTemplate(
           }
         }
       }
+    }
+
+    const defaultPermissions = ['create', 'update', 'patch', 'delete'].map(
+      (action) => `$resource:${resourceName}:${action}` as CustomAppGuestPermission,
+    );
+
+    if (resourceDefinition.views) {
+      for (const view of Object.keys(resourceDefinition.views)) {
+        appendGuestPermissionsToTemplate(
+          [
+            `$resource:${resourceName}:query:${view}`,
+            `$resource:${resourceName}:get:${view}`,
+            ...defaultPermissions,
+          ],
+          template,
+        );
+      }
+    } else {
+      appendGuestPermissionsToTemplate(
+        [`$resource:${resourceName}:query`, `$resource:${resourceName}:get`, ...defaultPermissions],
+        template,
+      );
     }
   }
 
@@ -225,24 +269,31 @@ function appendBlockToTemplate(block: BlockDefinition, template: AppDefinition):
 
     const blockResourceActionDefinition = Object.values(block.actions).find(
       (value: ActionDefinition) => value.type.startsWith('resource'),
-    ) as ResourceActionDefinition<'noop'>;
+    ) as
+      | ResourceCreateActionDefinition
+      | ResourceDeleteActionDefinition
+      | ResourceGetActionDefinition
+      | ResourcePatchActionDefinition
+      | ResourceQueryActionDefinition
+      | ResourceUpdateActionDefinition;
 
     if (blockResourceActionDefinition) {
-      updatedTemplate.resources = {
-        ...template?.resources,
-        [blockResourceActionDefinition.resource]: {
-          roles: ['$public'],
-          schema: {
-            type: 'object',
-            additionalProperties: false,
-            properties: {
-              property: {
-                type: 'string',
+      appendResourcesToTemplate(
+        {
+          [blockResourceActionDefinition.resource]: {
+            schema: {
+              type: 'object',
+              additionalProperties: false,
+              properties: {
+                property: {
+                  type: 'string',
+                },
               },
             },
           },
         },
-      };
+        template,
+      );
     }
   }
 
@@ -260,20 +311,22 @@ function appendCronToTemplate(
   const cronAction = Object.values(cron)[0].action as ResourceActionDefinition<'noop'>;
 
   if (cronAction.type.startsWith('resource')) {
-    updatedTemplate.resources = {
-      [cronAction.resource]: {
-        roles: ['$public'],
-        schema: {
-          type: 'object',
-          additionalProperties: false,
-          properties: {
-            property: {
-              type: 'string',
+    appendResourcesToTemplate(
+      {
+        [cronAction.resource]: {
+          schema: {
+            type: 'object',
+            additionalProperties: false,
+            properties: {
+              property: {
+                type: 'string',
+              },
             },
           },
         },
       },
-    };
+      template,
+    );
   }
 
   return updatedTemplate;
@@ -291,7 +344,6 @@ function appendControllerToTemplate(
     if (action.type.startsWith('resource')) {
       updatedTemplate.resources = {
         [(action as ResourceActionDefinition<'noop'>).resource]: {
-          roles: ['$public'],
           schema: {
             type: 'object',
             additionalProperties: false,
@@ -309,21 +361,20 @@ function appendControllerToTemplate(
   return updatedTemplate;
 }
 
-function appendUsersToTemplate(
-  users: {
-    properties: Record<string, UserPropertyDefinition>;
+function appendMembersToTemplate(
+  members: {
+    properties: Record<string, AppMemberPropertyDefinition>;
   },
   template: AppDefinition,
 ): AppDefinition {
   const updatedTemplate = template;
 
-  updatedTemplate.users = users;
+  updatedTemplate.members = members;
 
-  for (const propertyDefinition of Object.values(users.properties)) {
+  for (const propertyDefinition of Object.values(members.properties)) {
     if (propertyDefinition.reference.resource) {
       updatedTemplate.resources = {
         [propertyDefinition.reference.resource]: {
-          roles: ['$public'],
           schema: {
             type: 'object',
             additionalProperties: false,
@@ -434,8 +485,8 @@ async function accumulateAppDefinitions(docsPath: string): Promise<AppDefinition
         case 'controller':
           template = appendControllerToTemplate(parsed.controller, template);
           break;
-        case 'users':
-          template = appendUsersToTemplate(parsed.users, template);
+        case 'members':
+          template = appendMembersToTemplate(parsed.members, template);
           break;
         case 'security':
           template.security = template.security

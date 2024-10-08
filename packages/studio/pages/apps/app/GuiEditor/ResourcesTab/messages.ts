@@ -124,15 +124,15 @@ export const messages = defineMessages({
     id: 'studio.8b9Mkg',
     defaultMessage: 'Grants access if the user is the same as the one who created the resource.',
   },
-  teamMemberRoleInfo: {
-    id: 'studio.z1iBkr',
+  groupMemberRoleInfo: {
+    id: 'studio.N07voO',
     defaultMessage:
-      'Grants access if the user is in the same team as the user who created the resource.',
+      'Grants access if the user is in the same group as the user who created the resource.',
   },
-  teamManagerRoleInfo: {
-    id: 'studio.tOoKCv',
+  groupManagerRoleInfo: {
+    id: 'studio.6Ttiou',
     defaultMessage:
-      'Grants access if the user is in the same team as the user who created the resource and has the manager role within the team.',
+      'Grants access if the user is in the same group as the user who created the resource and has the manager role within the group.',
   },
   expiresInfo: {
     id: 'studio.bmwyz0',

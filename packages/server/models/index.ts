@@ -6,6 +6,7 @@ import { AppBlockStyle } from './AppBlockStyle.js';
 import { AppCollection } from './AppCollection.js';
 import { AppCollectionApp } from './AppCollectionApp.js';
 import { AppEmailQuotaLog } from './AppEmailQuotaLog.js';
+import { AppInvite } from './AppInvite.js';
 import { AppMember } from './AppMember.js';
 import { AppMessages } from './AppMessages.js';
 import { AppOAuth2Authorization } from './AppOAuth2Authorization.js';
@@ -24,6 +25,9 @@ import { BlockAsset } from './BlockAsset.js';
 import { BlockMessages } from './BlockMessages.js';
 import { BlockVersion } from './BlockVersion.js';
 import { EmailAuthorization } from './EmailAuthorization.js';
+import { Group } from './Group.js';
+import { GroupInvite } from './GroupInvite.js';
+import { GroupMember } from './GroupMember.js';
 import { Meta } from './Meta.js';
 import { OAuth2AuthorizationCode } from './OAuth2AuthorizationCode.js';
 import { OAuth2ClientCredentials } from './OAuth2ClientCredentials.js';
@@ -36,9 +40,6 @@ import { Resource } from './Resource.js';
 import { ResourceSubscription } from './ResourceSubscription.js';
 import { ResourceVersion } from './ResourceVersion.js';
 import { SamlLoginRequest } from './SamlLoginRequest.js';
-import { Team } from './Team.js';
-import { TeamInvite } from './TeamInvite.js';
-import { TeamMember } from './TeamMember.js';
 import { Theme } from './Theme.js';
 import { Training } from './Training.js';
 import { TrainingBlock } from './TrainingBlock.js';
@@ -65,6 +66,7 @@ export {
   AppCollection,
   AppCollectionApp,
   AppEmailQuotaLog,
+  AppInvite,
   AppMember,
   AppOAuth2Authorization,
   AppOAuth2Secret,
@@ -93,9 +95,9 @@ export {
   Resource,
   ResourceVersion,
   ResourceSubscription,
-  Team,
-  TeamInvite,
-  TeamMember,
+  Group,
+  GroupInvite,
+  GroupMember,
   Theme,
   SamlLoginRequest,
   User,
@@ -127,6 +129,7 @@ export function initDB({
       AppCollection,
       AppCollectionApp,
       AppEmailQuotaLog,
+      AppInvite,
       AppMember,
       AppOAuth2Authorization,
       AppOAuth2Secret,
@@ -155,9 +158,9 @@ export function initDB({
       Resource,
       ResourceSubscription,
       ResourceVersion,
-      Team,
-      TeamInvite,
-      TeamMember,
+      Group,
+      GroupInvite,
+      GroupMember,
       Theme,
       SamlLoginRequest,
       User,

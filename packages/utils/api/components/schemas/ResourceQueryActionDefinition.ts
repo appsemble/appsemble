@@ -20,6 +20,11 @@ export const ResourceQueryActionDefinition = extendJSONSchema(
         type: 'string',
         description: 'The view to use for the resource.',
       },
+      own: {
+        type: 'boolean',
+        description:
+          'If only the resources created by the authenticated app member should be included',
+      },
     },
   },
   ['url'],

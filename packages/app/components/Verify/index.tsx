@@ -20,7 +20,7 @@ export function Verify(): ReactNode {
   useEffect(() => {
     (async () => {
       try {
-        await axios.post(`${apiUrl}/api/user/apps/${appId}/account/verify`, { token });
+        await axios.post(`${apiUrl}/api/apps/${appId}/auth/email/verify`, { token });
         setSuccess(true);
       } catch {
         setSuccess(false);

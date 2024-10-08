@@ -1,18 +1,19 @@
 import { Button, Content, Loader, Message, useMeta, useQuery } from '@appsemble/react-components';
 import { normalize } from '@appsemble/utils';
-import { clearOAuth2State, loadOAuth2State } from '@appsemble/web-utils';
+import { clearOAuth2State, loadOAuth2State, type OAuth2State } from '@appsemble/web-utils';
 import { type ReactNode, useEffect, useMemo, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { Link, Navigate } from 'react-router-dom';
 
 import styles from './index.module.css';
 import { messages } from './messages.js';
+import { startAccountLinking } from '../../utils/accountLinking.js';
 import { getDefaultPageName } from '../../utils/getDefaultPageName.js';
 import { showDemoLogin } from '../../utils/settings.js';
 import { useAppDefinition } from '../AppDefinitionProvider/index.js';
+import { useAppMember } from '../AppMemberProvider/index.js';
 import { Main } from '../Main/index.js';
 import { AppBar } from '../TitleBar/index.js';
-import { useUser } from '../UserProvider/index.js';
 
 /**
  * Handle the OAuth2 callback.
@@ -25,8 +26,25 @@ export function OpenIDCallback(): ReactNode {
   const errorMessage = query.get('error');
   const state = query.get('state');
 
-  const session = useMemo(() => loadOAuth2State(), []);
-  const { authorizationCodeLogin, isLoggedIn, role } = useUser();
+  const sub = query.get('externalId');
+  const secret = query.get('secret');
+  const email = query.get('email');
+  const showAppsembleOAuth2Login = query.get('user') === 'true';
+  const showAppsembleLogin = query.get('password') === 'true';
+  const logins = query.get('logins');
+
+  const shouldLink = startAccountLinking({
+    externalId: sub,
+    secret,
+    email,
+    showAppsembleOAuth2Login,
+    showAppsembleLogin,
+    logins,
+  });
+
+  const session = useMemo(() => loadOAuth2State<OAuth2State>(), []);
+  const { appMemberRole, authorizationCodeLogin, isLoggedIn } = useAppMember();
+
   const { definition } = useAppDefinition();
 
   const [error, setError] = useState(false);
@@ -36,7 +54,7 @@ export function OpenIDCallback(): ReactNode {
   const isOk = code && !errorMessage && !error && !isLoggedIn && stateOk;
 
   useEffect(() => {
-    if (isOk) {
+    if (isOk && !shouldLink) {
       authorizationCodeLogin({
         code,
         redirect_uri: `${window.location.origin}/Callback`,
@@ -44,7 +62,7 @@ export function OpenIDCallback(): ReactNode {
         setError(true);
       });
     }
-  }, [authorizationCodeLogin, code, isOk]);
+  }, [authorizationCodeLogin, code, isOk, shouldLink]);
 
   useEffect(() => {
     if (isLoggedIn) {
@@ -52,8 +70,12 @@ export function OpenIDCallback(): ReactNode {
     }
   }, [isLoggedIn]);
 
+  if (shouldLink) {
+    return <Navigate to="/Login" />;
+  }
+
   if (isLoggedIn) {
-    const defaultPageName = getDefaultPageName(isLoggedIn, role, definition);
+    const defaultPageName = getDefaultPageName(isLoggedIn, appMemberRole, definition);
     return <Navigate to={showDemoLogin ? '/Login' : redirect || normalize(defaultPageName)} />;
   }
 

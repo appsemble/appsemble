@@ -7,9 +7,9 @@ import { type ServiceWorkerRegistrationContextType } from '../../types.js';
 import { apiUrl, appId } from '../settings.js';
 
 export const get: ActionCreator<'resource.get'> = (args) => {
-  const { app, definition } = args;
+  const { appDefinition, definition, getAppMemberSelectedGroup } = args;
   const { view } = definition;
-  const resource = app.resources[definition.resource];
+  const resource = appDefinition.resources[definition.resource];
   const method = resource?.get?.method || 'GET';
   const url =
     resource?.get?.url ??
@@ -18,8 +18,18 @@ export const get: ActionCreator<'resource.get'> = (args) => {
   const { id = 'id' } = resource;
 
   const query: Remapper = [].concat(definition?.query ?? resource?.query?.query).filter(Boolean);
+
   if (view) {
     query.push({ 'object.assign': { view } });
+  }
+
+  const selectedGroup = getAppMemberSelectedGroup?.();
+  if (selectedGroup) {
+    query.push({ 'object.assign': { selectedGroupId: selectedGroup.id } });
+  }
+
+  if (selectedGroup) {
+    query.push({ 'object.assign': { author: selectedGroup?.id } });
   }
 
   return request({
@@ -42,9 +52,9 @@ export const get: ActionCreator<'resource.get'> = (args) => {
 };
 
 export const query: ActionCreator<'resource.query'> = (args) => {
-  const { app, definition } = args;
-  const { view } = definition;
-  const resource = app.resources[definition.resource];
+  const { appDefinition, definition, getAppMemberSelectedGroup } = args;
+  const { own, view } = definition;
+  const resource = appDefinition.resources[definition.resource];
   const method = resource?.query?.method || 'GET';
   const url =
     resource?.query?.url ??
@@ -54,8 +64,18 @@ export const query: ActionCreator<'resource.query'> = (args) => {
   const queryRemapper: Remapper = []
     .concat(definition?.query ?? resource?.query?.query)
     .filter(Boolean);
+
   if (view) {
     queryRemapper.push({ 'object.assign': { view } });
+  }
+
+  if (own) {
+    queryRemapper.push({ 'object.assign': { $own: own } });
+  }
+
+  const selectedGroup = getAppMemberSelectedGroup?.();
+  if (selectedGroup) {
+    queryRemapper.push({ 'object.assign': { selectedGroupId: selectedGroup.id } });
   }
 
   return request({
@@ -73,19 +93,33 @@ export const query: ActionCreator<'resource.query'> = (args) => {
 };
 
 export const count: ActionCreator<'resource.count'> = (args) => {
-  const { app, definition } = args;
-  const resource = app.resources[definition.resource];
+  const { appDefinition, definition, getAppMemberSelectedGroup } = args;
+  const { own } = definition;
+  const resource = appDefinition.resources[definition.resource];
   const method = resource?.count?.method || 'GET';
   const url =
     resource?.count?.url ??
     resource?.url ??
     `${apiUrl}/api/apps/${appId}/resources/${definition.resource}/$count`;
 
+  const queryRemapper: Remapper = []
+    .concat(definition?.query ?? resource?.count?.query)
+    .filter(Boolean);
+
+  if (own) {
+    queryRemapper.push({ 'object.assign': { $own: own } });
+  }
+
+  const selectedGroup = getAppMemberSelectedGroup?.();
+  if (selectedGroup) {
+    queryRemapper.push({ 'object.assign': { selectedGroupId: selectedGroup.id } });
+  }
+
   return request({
     ...args,
     definition: {
       ...definition,
-      query: definition?.query ?? resource?.count?.query,
+      query: queryRemapper.length ? queryRemapper : undefined,
       method,
       proxy: false,
       type: 'request',
@@ -96,19 +130,28 @@ export const count: ActionCreator<'resource.count'> = (args) => {
 };
 
 export const create: ActionCreator<'resource.create'> = (args) => {
-  const { app, definition } = args;
-  const resource = app.resources[definition.resource];
+  const { appDefinition, definition, getAppMemberSelectedGroup } = args;
+  const resource = appDefinition.resources[definition.resource];
   const method = resource?.create?.method || 'POST';
   const url =
     resource?.create?.url ||
     resource.url ||
     `${apiUrl}/api/apps/${appId}/resources/${definition.resource}`;
 
+  const queryRemapper: Remapper = []
+    .concat(definition?.query ?? resource?.create?.query)
+    .filter(Boolean);
+
+  const selectedGroup = getAppMemberSelectedGroup?.();
+  if (selectedGroup) {
+    queryRemapper.push({ 'object.assign': { selectedGroupId: selectedGroup.id } });
+  }
+
   const [dispatch, properties] = request({
     ...args,
     definition: {
       ...definition,
-      query: definition?.query ?? resource?.create?.query,
+      query: queryRemapper.length ? queryRemapper : undefined,
       method,
       proxy: false,
       type: 'request',
@@ -120,8 +163,8 @@ export const create: ActionCreator<'resource.create'> = (args) => {
 };
 
 export const update: ActionCreator<'resource.update'> = (args) => {
-  const { app, definition } = args;
-  const resource = app.resources[definition.resource];
+  const { appDefinition, definition, getAppMemberSelectedGroup } = args;
+  const resource = appDefinition.resources[definition.resource];
   const method = resource?.update?.method || 'PUT';
   const url =
     resource?.update?.url ||
@@ -129,11 +172,20 @@ export const update: ActionCreator<'resource.update'> = (args) => {
     `${apiUrl}/api/apps/${appId}/resources/${definition.resource}`;
   const { id = 'id' } = resource;
 
+  const queryRemapper: Remapper = []
+    .concat(definition?.query ?? resource?.update?.query)
+    .filter(Boolean);
+
+  const selectedGroup = getAppMemberSelectedGroup?.();
+  if (selectedGroup) {
+    queryRemapper.push({ 'object.assign': { selectedGroupId: selectedGroup.id } });
+  }
+
   return request({
     ...args,
     definition: {
       ...definition,
-      query: definition?.query ?? resource?.update?.query,
+      query: queryRemapper.length ? queryRemapper : undefined,
       method,
       proxy: false,
       type: 'request',
@@ -149,8 +201,8 @@ export const update: ActionCreator<'resource.update'> = (args) => {
 };
 
 export const patch: ActionCreator<'resource.patch'> = (args) => {
-  const { app, definition } = args;
-  const resource = app.resources[definition.resource];
+  const { appDefinition, definition, getAppMemberSelectedGroup } = args;
+  const resource = appDefinition.resources[definition.resource];
   const method = resource?.update?.method || 'PATCH';
   const url =
     resource?.update?.url ||
@@ -158,11 +210,20 @@ export const patch: ActionCreator<'resource.patch'> = (args) => {
     `${apiUrl}/api/apps/${appId}/resources/${definition.resource}`;
   const { id = 'id' } = resource;
 
+  const queryRemapper: Remapper = []
+    .concat(definition?.query ?? resource?.patch?.query)
+    .filter(Boolean);
+
+  const selectedGroup = getAppMemberSelectedGroup?.();
+  if (selectedGroup) {
+    queryRemapper.push({ 'object.assign': { selectedGroupId: selectedGroup.id } });
+  }
+
   return request({
     ...args,
     definition: {
       ...definition,
-      query: definition?.query ?? resource?.patch?.query,
+      query: queryRemapper.length ? queryRemapper : undefined,
       method,
       proxy: false,
       type: 'request',
@@ -178,8 +239,8 @@ export const patch: ActionCreator<'resource.patch'> = (args) => {
 };
 
 export const remove: ActionCreator<'resource.delete'> = (args) => {
-  const { app, definition } = args;
-  const resource = app.resources[definition.resource];
+  const { appDefinition, definition, getAppMemberSelectedGroup } = args;
+  const resource = appDefinition.resources[definition.resource];
   const method = resource?.delete?.method || 'DELETE';
   const url =
     resource?.delete?.url ||
@@ -187,11 +248,20 @@ export const remove: ActionCreator<'resource.delete'> = (args) => {
     `${apiUrl}/api/apps/${appId}/resources/${definition.resource}`;
   const { id = 'id' } = resource;
 
+  const queryRemapper: Remapper = []
+    .concat(definition?.query ?? resource?.delete?.query)
+    .filter(Boolean);
+
+  const selectedGroup = getAppMemberSelectedGroup?.();
+  if (selectedGroup) {
+    queryRemapper.push({ 'object.assign': { selectedGroupId: selectedGroup.id } });
+  }
+
   return request({
     ...args,
     definition: {
       ...definition,
-      query: definition?.query ?? resource?.delete?.query,
+      query: queryRemapper.length ? queryRemapper : undefined,
       method,
       proxy: false,
       type: 'request',
@@ -229,11 +299,11 @@ async function getSubscription(
 }
 
 export const subscribe: ActionCreator<'resource.subscription.subscribe'> = ({
-  app,
+  appDefinition,
   definition,
   pushNotifications,
 }) => {
-  const resource = app.resources[definition.resource];
+  const resource = appDefinition.resources[definition.resource];
   const { id = 'id' } = resource;
 
   return [
@@ -253,11 +323,11 @@ export const subscribe: ActionCreator<'resource.subscription.subscribe'> = ({
 };
 
 export const unsubscribe: ActionCreator<'resource.subscription.unsubscribe'> = ({
-  app,
+  appDefinition,
   definition,
   pushNotifications,
 }) => {
-  const resource = app.resources[definition.resource];
+  const resource = appDefinition.resources[definition.resource];
   const { id = 'id' } = resource;
 
   return [
@@ -277,11 +347,11 @@ export const unsubscribe: ActionCreator<'resource.subscription.unsubscribe'> = (
 };
 
 export const toggle: ActionCreator<'resource.subscription.toggle'> = ({
-  app,
+  appDefinition,
   definition,
   pushNotifications,
 }) => {
-  const resource = app.resources[definition.resource];
+  const resource = appDefinition.resources[definition.resource];
   const { id = 'id' } = resource;
 
   return [
@@ -300,11 +370,11 @@ export const toggle: ActionCreator<'resource.subscription.toggle'> = ({
 };
 
 export const status: ActionCreator<'resource.subscription.status'> = ({
-  app,
+  appDefinition,
   definition,
   pushNotifications,
 }) => {
-  const resource = app.resources[definition.resource];
+  const resource = appDefinition.resources[definition.resource];
   const { id = 'id' } = resource;
 
   return [

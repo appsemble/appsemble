@@ -58,6 +58,15 @@ export const messages = defineMessages({
     defaultMessage:
       'If specified, this SAML attribute is used to determine the user’s email address',
   },
+  emailVerifiedAttributeLabel: {
+    id: 'studio.tVSG3w',
+    defaultMessage: 'Email verified attribute',
+  },
+  emailVerifiedAttributeHelp: {
+    id: 'studio.4DJroh',
+    defaultMessage:
+      'If specified, this SAML attribute is used to determine if the user’s email address is verified',
+  },
   nameAttributeLabel: {
     id: 'studio.KtTNmO',
     defaultMessage: 'Name attribute',

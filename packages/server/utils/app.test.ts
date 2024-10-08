@@ -1,5 +1,4 @@
 import { getRemapperContext } from '@appsemble/node-utils';
-import { type UserInfo } from '@appsemble/types';
 import { beforeEach, describe, expect, it } from 'vitest';
 
 import { compareApps, getApp } from './app.js';
@@ -194,19 +193,10 @@ describe('getRemapperContext', () => {
       language: 'nl-nl-brabants',
       messages: { messageIds: { bye: 'Houdoe' } },
     });
-    const userInfo: UserInfo = {
-      email: '',
-      email_verified: true,
-      picture: '',
-      profile: '',
-      name: '',
-      sub: '',
-    };
 
     const remapperContext = await getRemapperContext(
       app.toJSON(),
       'nl-nl-brabants',
-      userInfo,
       options,
       {} as any,
     );
@@ -215,7 +205,6 @@ describe('getRemapperContext', () => {
     const bye = remapperContext.getMessage({ id: 'bye' });
     const nothing = remapperContext.getMessage({ id: 'nothing' });
 
-    expect(remapperContext.userInfo).toBe(userInfo);
     expect(word.format()).toBe('Woord');
     expect(hello.format()).toBe('Hoi');
     expect(bye.format()).toBe('Houdoe');

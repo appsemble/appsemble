@@ -13,9 +13,12 @@ export async function getApp({ context, query }: GetAppParams): Promise<AppInter
         { model: Organization, attributes: ['id'] },
         {
           model: AppMember,
-          attributes: ['role', 'UserId'],
+          attributes: ['role'],
           required: false,
-          where: { UserId: context.user.id },
+          where:
+            context.client && 'app' in context.client
+              ? { id: context.user.id }
+              : { UserId: context.user.id },
         },
       ],
     }),

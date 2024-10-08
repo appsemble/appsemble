@@ -22,6 +22,10 @@ dependencies:
     version: 11.6.3
     repository: https://charts.bitnami.com/bitnami
     condition: postgresql.enabled
+  - name: mailpit
+    version: 0.18.3
+    repository: https://jouve.github.io/charts
+    condition: mailpit.enabled
 annotations:
   artifacthub.io/changes: >
     - kind: fixed

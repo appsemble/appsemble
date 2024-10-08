@@ -25,5 +25,12 @@ of the referenced role.
         type: 'string',
       },
     },
+    permissions: {
+      type: 'array',
+      description: 'Specific permissions within the app, which this role should have',
+      items: {
+        type: 'string',
+      },
+    },
   },
 };

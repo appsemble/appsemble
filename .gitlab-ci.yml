@@ -186,6 +186,7 @@ check migrations:
   services:
     - postgres:15
   variables:
+    FORCE_COLOR: '1' # Required for Chalk.js
     POSTGRES_DB: testAppsemble
     POSTGRES_USER: admin
     POSTGRES_PASSWORD: password
@@ -200,6 +201,7 @@ check down migrations:
   services:
     - postgres:15
   variables:
+    FORCE_COLOR: '1' # Required for Chalk.js
     POSTGRES_DB: testAppsemble
     POSTGRES_USER: admin
     POSTGRES_PASSWORD: password
@@ -289,10 +291,10 @@ e2e:
   variables:
     APPSEMBLE_IMAGE: '$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG'
   script:
-    - docker compose --project-name appsemble-e2e --file docker-compose-e2e.yaml up -d
+    - docker compose --file docker-compose-e2e.yaml up -d
     - . scripts/e2e.sh
   after_script:
-    - docker compose --project-name appsemble-e2e --file docker-compose-e2e.yaml down --volumes
+    - docker compose --file docker-compose-e2e.yaml down --volumes
   artifacts:
     expose_as: Playwright videos
     when: always
@@ -545,6 +547,11 @@ review:
     - helm delete "review-$CI_MERGE_REQUEST_IID" || true
     - kubectl delete pvc --selector "app.kubernetes.io/instance=review-$CI_MERGE_REQUEST_IID" || true
     - kubectl delete namespace "companion-containers-review-$CI_MERGE_REQUEST_IID" || true
+    - kubectl delete secret review-$CI_MERGE_REQUEST_IID-mailpit-tls || true
+    - apk add --no-cache openssl
+    - openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout mailpit.key -out mailpit.crt -subj "/CN=review-${CI_MERGE_REQUEST_IID}-mailpit-smtp" -addext "subjectAltName=DNS:review-${CI_MERGE_REQUEST_IID}-mailpit-smtp"
+    - kubectl create secret tls review-$CI_MERGE_REQUEST_IID-mailpit-tls --cert=mailpit.crt --key=mailpit.key --dry-run=client -o yaml | kubectl apply -f -
+    - rm mailpit.key mailpit.crt
     - helm install "review-$CI_MERGE_REQUEST_IID" ./public/appsemble-*.tgz
       --atomic
       --set "fullnameOverride=review-$CI_MERGE_REQUEST_IID"
@@ -560,17 +567,20 @@ review:
       --set "ingress.tls.wildcardSecretName=review-$CI_MERGE_REQUEST_IID-tls-wildcard"
       --set "migrateTo=next"
       --set "global.postgresql.auth.existingSecret=postgresql-secret"
-      --set "provision.account.clientCredentials=$APPSEMBLE_CLIENT_CREDENTIALS"
-      --set "provision.account.email=$BOT_ACCOUNT_EMAIL"
-      --set "provision.account.name=$BOT_ACCOUNT_NAME"
-      --set "provision.account.password=$BOT_ACCOUNT_PASSWORD"
-      --set "provision.account.timezone=Europe/Amsterdam"
+      --set "provision.organization.id=appsemble"
+      --set "provision.user.organizationRole=Maintainer"
+      --set "provision.user.clientCredentials=$APPSEMBLE_CLIENT_CREDENTIALS"
+      --set "provision.user.email=$BOT_ACCOUNT_EMAIL"
+      --set "provision.user.name=$BOT_ACCOUNT_NAME"
+      --set "provision.user.password=$BOT_ACCOUNT_PASSWORD"
+      --set "provision.user.timezone=Europe/Amsterdam"
       --set "postgresql.fullnameOverride=review-$CI_MERGE_REQUEST_IID-postgresql"
       --set "proxy=true"
       --set "remote=https://appsemble.app"
       --set "sentry.allowedDomains={*.appsemble.review}"
       --set "sentry.environment=review-$CI_MERGE_REQUEST_IID"
       --set "sentry.secret=sentry"
+      --set "mailpit.mailpit.smtp.tls.secretName=review-$CI_MERGE_REQUEST_IID-mailpit-tls"
 
 # Stop a review environment.
 stop review:
@@ -615,6 +625,11 @@ staging:
     - helm delete staging || true
     - kubectl delete pvc --selector "app.kubernetes.io/instance=staging" || true
     - kubectl delete namespace "companion-containers-staging" || true
+    - kubectl delete secret staging-mailpit-tls || true
+    - apk add --no-cache openssl
+    - openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout mailpit.key -out mailpit.crt -subj "/CN=staging-appsemble-mailpit-smtp" -addext "subjectAltName=DNS:staging-appsemble-mailpit-smtp"
+    - kubectl create secret tls staging-mailpit-tls --cert=mailpit.crt --key=mailpit.key --dry-run=client -o yaml | kubectl apply -f -
+    - rm mailpit.key mailpit.crt
     - helm install staging ./public/appsemble-*.tgz
       --atomic
       --timeout 15m0s
@@ -623,26 +638,35 @@ staging:
       --set "global.postgresql.auth.existingSecret=postgresql-secret"
       --set "image.pullPolicy=Always"
       --set "image.repository=$CI_REGISTRY_IMAGE"
-      --set "image.tag=main"
+      --set "image.tag=staging"
       --set "ingress.clusterIssuer=acme-issuer-dev"
       --set "ingress.enabled=true"
       --set "ingress.host=staging.appsemble.review"
       --set "ingress.tls.secretName=staging-tls"
       --set "ingress.tls.wildcardSecretName=staging-tls-wildcard"
+      --set "ingress.annotations.nginx\.ingress\.kubernetes\.io/proxy-body-size=50m"
+      --set "ingress.annotations.nginx\.ingress\.kubernetes\.io/force-ssl-redirect=\"true\""
+      --set "ingress.annotations.nginx\.ingress\.kubernetes\.io/ssl-redirect=\"true\""
+      --set "ingress.annotations.nginx\.ingress\.kubernetes\.io/hsts=\"true\""
+      --set "ingress.annotations.nginx\.ingress\.kubernetes\.io/hsts-include-subdomains=\"true\""
+      --set "ingress.annotations.nginx\.ingress\.kubernetes\.io/hsts-max-age=\"31536000\""
       --set "migrateTo=next"
       --set "oauthSecret=oauth2"
       --set "postgresql.fullnameOverride=staging-postgresql"
-      --set "provision.account.clientCredentials=$APPSEMBLE_CLIENT_CREDENTIALS"
-      --set "provision.account.email=$BOT_ACCOUNT_EMAIL"
-      --set "provision.account.name=$BOT_ACCOUNT_NAME"
-      --set "provision.account.password=$BOT_ACCOUNT_PASSWORD"
-      --set "provision.account.timezone=Europe/Amsterdam"
+      --set "provision.organization.id=appsemble"
+      --set "provision.user.organizationRole=Maintainer"
+      --set "provision.user.clientCredentials=$APPSEMBLE_CLIENT_CREDENTIALS"
+      --set "provision.user.email=$BOT_ACCOUNT_EMAIL"
+      --set "provision.user.name=$BOT_ACCOUNT_NAME"
+      --set "provision.user.password=$BOT_ACCOUNT_PASSWORD"
+      --set "provision.user.timezone=Europe/Amsterdam"
       --set "importData.remoteStorage.url=$REMOTE_STORAGE_URL"
       --set "importData.remoteStorage.user=$REMOTE_STORAGE_USER"
       --set "importData.remoteStorage.existingPasswordSecret=remote-storage-secret"
       --set "importData.remoteStorage.passwordSecretKey=password"
       --set "importData.remoteStorage.location=$BACKUPS_LOCATION"
       --set "importData.remoteStorage.filename=$PROD_BACKUP_NAME"
+      --set "migrateDefinitions.save=true"
       --set "proxy=true"
       --set "remote=https://appsemble.app"
       --set "sentry.allowedDomains={*.appsemble.review}"
@@ -651,6 +675,8 @@ staging:
       --set "quotas.appEmail.enabled=true"
       --set "quotas.appEmail.dailyLimit=10"
       --set "quotas.appEmail.alertOrganizationOwner=true"
+      --set "mailpit.mailpit.smtp.tls.secretName=staging-mailpit-tls"
+      --set "mailpit.fullnameOverride=staging-appsemble-mailpit"
 
 production:
   image: dtzar/helm-kubectl:3
@@ -688,6 +714,11 @@ production:
         echo "Maximum number of attempts reached. Chart not found."
         exit 1
       fi
+    - kubectl delete secret appsemble-mailpit-tls || true
+    - apk add --no-cache openssl
+    - openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout mailpit.key -out mailpit.crt -subj "/CN=appsemble-mailpit-smtp" -addext "subjectAltName=DNS:appsemble-mailpit-smtp"
+    - kubectl create secret tls appsemble-mailpit-tls --cert=mailpit.crt --key=mailpit.key --dry-run=client -o yaml | kubectl apply -f -
+    - rm mailpit.key mailpit.crt
     - helm upgrade appsemble appsemble/appsemble
       --debug
       --timeout 30m
@@ -713,6 +744,7 @@ production:
       --set "postgresql.fullnameOverride=$POSTGRESQL_HOST"
       --set "postgresql.enabled=false"
       --set 'postgresSSL=true'
+      --set "migrateDefinitions.save=true"
       --set "proxy=true"
       --set "sentry.allowedDomains={*.appsemble.app, appsemble.app}"
       --set "sentry.environment=production"
@@ -720,6 +752,7 @@ production:
       --set "quotas.appEmail.enabled=true"
       --set "quotas.appEmail.dailyLimit=10"
       --set "quotas.appEmail.alertOrganizationOwner=true"
+      --set "mailpit.mailpit.smtp.tls.secretName=appsemble-mailpit-tls"
       --wait
 
 ###################################################################################################
@@ -739,7 +772,11 @@ provision review:
     - npm run appsemble -- config set context review
     - npm run appsemble -- config set remote "https://$CI_MERGE_REQUEST_IID.appsemble.review"
     - npm run scripts -- wait-for-api
-    - . scripts/setup-appsemble.sh
+    - npm run appsemble -- block create --organization appsemble --template vanilla --name template-vanilla --path blocks
+    - npm run appsemble -- block create --organization appsemble --template preact --name template-preact --path blocks
+    - npm run appsemble -- block create --organization appsemble --template mini-jsx --name template-mini-jsx --path blocks
+    - npm run appsemble -- block publish 'blocks/*'
+    - npm run appsemble -- app publish 'apps/*' --resources --assets --assets-clonable --modify-context
 
 # Provision the staging environment with the blocks that were built in the build stage.
 provision staging:

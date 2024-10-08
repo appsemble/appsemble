@@ -53,6 +53,15 @@ export type ResourcePatchAction = RequestLikeAction<'resource.patch'>;
  */
 export type Action =
   | BaseAction<'analytics'>
+  | BaseAction<'app.member.current.patch'>
+  | BaseAction<'app.member.delete'>
+  | BaseAction<'app.member.invite'>
+  | BaseAction<'app.member.login'>
+  | BaseAction<'app.member.logout'>
+  | BaseAction<'app.member.properties.patch'>
+  | BaseAction<'app.member.query'>
+  | BaseAction<'app.member.register'>
+  | BaseAction<'app.member.role.update'>
   | BaseAction<'condition'>
   | BaseAction<'controller'>
   | BaseAction<'dialog.error'>
@@ -67,6 +76,11 @@ export type Action =
   | BaseAction<'flow.finish'>
   | BaseAction<'flow.next'>
   | BaseAction<'flow.to'>
+  | BaseAction<'group.member.delete'>
+  | BaseAction<'group.member.invite'>
+  | BaseAction<'group.member.query'>
+  | BaseAction<'group.member.role.update'>
+  | BaseAction<'group.query'>
   | BaseAction<'link.back'>
   | BaseAction<'link.next'>
   | BaseAction<'match'>
@@ -85,18 +99,7 @@ export type Action =
   | BaseAction<'storage.subtract'>
   | BaseAction<'storage.update'>
   | BaseAction<'storage.write'>
-  | BaseAction<'team.invite'>
-  | BaseAction<'team.join'>
-  | BaseAction<'team.list'>
-  | BaseAction<'team.members'>
   | BaseAction<'throw'>
-  | BaseAction<'user.create'>
-  | BaseAction<'user.login'>
-  | BaseAction<'user.logout'>
-  | BaseAction<'user.query'>
-  | BaseAction<'user.register'>
-  | BaseAction<'user.remove'>
-  | BaseAction<'user.update'>
   | LinkAction
   | LogAction
   | RequestAction

@@ -8,14 +8,13 @@ import {
   SimpleModalFooter,
   useToggle,
 } from '@appsemble/react-components';
-import { type App, type AppCollection } from '@appsemble/types';
-import { Permission } from '@appsemble/utils';
+import { type App, type AppCollection, OrganizationPermission } from '@appsemble/types';
+import { checkOrganizationRoleOrganizationPermissions } from '@appsemble/utils';
 import axios from 'axios';
 import { type ReactNode, useCallback, useEffect, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 
 import { messages } from './messages.js';
-import { checkRole } from '../../utils/checkRole.js';
 import { useUser } from '../UserProvider/index.js';
 
 interface AppToCollectionButtonProps {
@@ -46,9 +45,13 @@ export function AddToCollectionButton({ app, className }: AppToCollectionButtonP
       const collections = (
         await Promise.all(
           organizations
-            ?.filter((org) => checkRole(org.role, Permission.EditCollections))
+            ?.filter((org) =>
+              checkOrganizationRoleOrganizationPermissions(org.role, [
+                OrganizationPermission.UpdateAppCollections,
+              ]),
+            )
             .map((org) =>
-              axios.get<AppCollection[]>(`/api/organizations/${org.id}/appCollections`),
+              axios.get<AppCollection[]>(`/api/organizations/${org.id}/app-collections`),
             ),
         )
       ).flatMap((response) => response.data);
@@ -61,7 +64,7 @@ export function AddToCollectionButton({ app, className }: AppToCollectionButtonP
 
   const onSubmit = useCallback(
     async ({ collectionId }: typeof defaultValues) => {
-      await axios.post(`/api/appCollections/${collectionId}/apps`, {
+      await axios.post(`/api/app-collections/${collectionId}/apps`, {
         AppId: app.id,
       });
       modalToggle.disable();

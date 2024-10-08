@@ -1,6 +1,6 @@
 import { Button, useConfirmation, useMessages } from '@appsemble/react-components';
-import { type Training } from '@appsemble/types';
-import { Permission } from '@appsemble/utils';
+import { OrganizationPermission, type Training } from '@appsemble/types';
+import { checkOrganizationRoleOrganizationPermissions } from '@appsemble/utils';
 import { randomString } from '@appsemble/web-utils';
 import axios from 'axios';
 import {
@@ -18,7 +18,6 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 
 import styles from './index.module.css';
 import { messages } from './messages.js';
-import { checkRole } from '../../utils/checkRole.js';
 import { StarRating } from '../StarRating/index.js';
 import { defaultTrainingValues, TrainingModal } from '../TrainingModal/index.js';
 import { useUser } from '../UserProvider/index.js';
@@ -59,8 +58,18 @@ export function TrainingListCard({
   const { organizations } = useUser();
 
   const isAppsembleMember = organizations?.find((org) => org.id === 'appsemble');
+
+  const mayUpdateTraining =
+    isAppsembleMember &&
+    checkOrganizationRoleOrganizationPermissions(isAppsembleMember.role, [
+      OrganizationPermission.UpdateTrainings,
+    ]);
+
   const mayDeleteTraining =
-    isAppsembleMember && checkRole(isAppsembleMember.role, Permission.DeleteApps);
+    isAppsembleMember &&
+    checkOrganizationRoleOrganizationPermissions(isAppsembleMember.role, [
+      OrganizationPermission.DeleteTrainings,
+    ]);
 
   const handleSelectChange = useCallback(
     ({ currentTarget }: ChangeEvent<HTMLSelectElement>) => {
@@ -148,47 +157,51 @@ export function TrainingListCard({
   });
   return (
     <div>
-      {mayDeleteTraining ? (
-        <div className="dropdown is-pulled-right is-right is-active" ref={dropdownRef}>
-          <div className="dropdown-trigger">
-            <Button
-              aria-controls="dropdown-menu"
-              aria-haspopup="true"
-              icon="ellipsis-vertical"
-              onClick={() => setShowMenu(!showMenu)}
-            />
-          </div>
-          {showMenu ? (
-            <div className="dropdown-menu" role="menu">
-              <div className="dropdown-content">
+      <div className="dropdown is-pulled-right is-right is-active" ref={dropdownRef}>
+        <div className="dropdown-trigger">
+          <Button
+            aria-controls="dropdown-menu"
+            aria-haspopup="true"
+            icon="ellipsis-vertical"
+            onClick={() => setShowMenu(!showMenu)}
+          />
+        </div>
+        {showMenu ? (
+          <div className="dropdown-menu" role="menu">
+            <div className="dropdown-content">
+              {mayUpdateTraining ? (
                 <div className="dropdown-item">
                   <Button className="is-ghost" onClick={onEdit}>
                     <FormattedMessage {...messages.editTraining} />
                   </Button>
                 </div>
+              ) : null}
+
+              {mayDeleteTraining ? (
                 <div className="dropdown-item">
                   <Button className="is-ghost" onClick={onDeleteTraining}>
                     <FormattedMessage {...messages.deleteTraining} />
                   </Button>
                 </div>
-                <TrainingModal
-                  defaultValues={{
-                    title: trainingData.title,
-                    description: trainingData.description,
-                    difficultyLevel: trainingData.difficultyLevel,
-                    competences: comp,
-                  }}
-                  isActive={isEditModalActive}
-                  modalTitle={<FormattedMessage {...messages.editTraining} />}
-                  onClose={closeEditDialog}
-                  onSelectChange={handleSelectChange}
-                  onSubmit={onEditTraining}
-                />
-              </div>
+              ) : null}
+
+              <TrainingModal
+                defaultValues={{
+                  title: trainingData.title,
+                  description: trainingData.description,
+                  difficultyLevel: trainingData.difficultyLevel,
+                  competences: comp,
+                }}
+                isActive={isEditModalActive}
+                modalTitle={<FormattedMessage {...messages.editTraining} />}
+                onClose={closeEditDialog}
+                onSelectChange={handleSelectChange}
+                onSubmit={onEditTraining}
+              />
             </div>
-          ) : null}
-        </div>
-      ) : null}
+          </div>
+        ) : null}
+      </div>
       <li className="my-4" id={id}>
         <Wrapper className={`box px-4 py-4 ${styles.wrapper}`} {...props}>
           <div className="columns is-multiline">

@@ -17,7 +17,7 @@ export function ResetPassword(): ReactNode {
 
   const [success, setSuccess] = useState(false);
   const onSubmit = useCallback(async (email: string): Promise<void> => {
-    await axios.post(`${apiUrl}/api/user/apps/${appId}/account/reset/request`, { email });
+    await axios.post(`${apiUrl}/api/apps/${appId}/auth/email/request-password-reset`, { email });
     setSuccess(true);
   }, []);
   const { lang } = useParams<{ lang: string }>();

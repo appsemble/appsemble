@@ -11,9 +11,9 @@ import { messages } from './messages.js';
 import { shouldShowMenu } from '../../utils/layout.js';
 import { appId, sentryDsn } from '../../utils/settings.js';
 import { useAppDefinition } from '../AppDefinitionProvider/index.js';
+import { useAppMember } from '../AppMemberProvider/index.js';
 import { useAppMessages } from '../AppMessagesProvider/index.js';
 import { useAppVariables } from '../AppVariablesProvider/index.js';
-import { useUser } from '../UserProvider/index.js';
 
 interface BottomNavigationProps {
   readonly pages: PageDefinition[];
@@ -25,16 +25,16 @@ interface BottomNavigationProps {
 export function BottomNavigation({ pages }: BottomNavigationProps): ReactNode {
   const { lang } = useParams<{ lang: string }>();
   const url = `/${lang}`;
-  const { isLoggedIn, teams } = useUser();
+  const { appMemberInfo, appMemberRole, appMemberSelectedGroup, isLoggedIn, logout } =
+    useAppMember();
   const { getAppMessage, getMessage } = useAppMessages();
   const { getVariable } = useAppVariables();
   const { definition } = useAppDefinition();
-  const { logout, role, userInfo } = useUser();
   const { formatMessage } = useIntl();
 
   const showMenu = useMemo(
-    () => shouldShowMenu(definition, role, teams),
-    [definition, role, teams],
+    () => shouldShowMenu(definition, appMemberRole, appMemberSelectedGroup),
+    [definition, appMemberRole, appMemberSelectedGroup],
   );
 
   return (
@@ -53,8 +53,7 @@ export function BottomNavigation({ pages }: BottomNavigationProps): ReactNode {
                   url: window.location.href,
                   getMessage,
                   getVariable,
-                  userInfo,
-                  appMember: userInfo.appMember,
+                  appMemberInfo,
                   context: { name },
                   locale: lang,
                 }) as ReactNode)

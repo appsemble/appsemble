@@ -56,7 +56,7 @@ function Banner({ app, onDismiss }: BannerProps): ReactNode {
 export function EmailQuotaBanners(): ReactNode {
   const [dismissed, setDismissed] = useState(getDismissedApps());
 
-  const { data } = useData<App[]>('/api/user/apps');
+  const { data } = useData<App[]>('/api/users/current/apps');
 
   const onDismiss = useCallback(
     (dismissal: Dismissal) => {

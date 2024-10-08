@@ -5,9 +5,9 @@ import { useNavigate } from 'react-router-dom';
 
 import { messages } from './messages.js';
 import { useAppDefinition } from '../AppDefinitionProvider/index.js';
+import { useAppMember } from '../AppMemberProvider/index.js';
 import { Main } from '../Main/index.js';
 import { AppBar } from '../TitleBar/index.js';
-import { useUser } from '../UserProvider/index.js';
 
 /**
  * Page containing debugging options for an app
@@ -15,7 +15,7 @@ import { useUser } from '../UserProvider/index.js';
 export function AppDebug(): ReactNode {
   useMeta(messages.debug);
   const { snapshotId } = useAppDefinition();
-  const { logout } = useUser();
+  const { logout } = useAppMember();
   const navigate = useNavigate();
   const { formatMessage } = useIntl();
 

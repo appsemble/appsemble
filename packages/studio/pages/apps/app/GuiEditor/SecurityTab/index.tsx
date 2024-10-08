@@ -5,10 +5,10 @@ import { useIntl } from 'react-intl';
 
 import { CreateRolePage } from './CreateRolePage/index.js';
 import { DefaultPage } from './DefaultPage/index.js';
+import { GuestPage } from './GuestPage/index.js';
 import styles from './index.module.css';
 import { messages } from './messages.js';
 import { RolesPage } from './RolesPage/index.js';
-import { TeamsPage } from './TeamsPage/index.js';
 import { AppPreview } from '../../../../../components/AppPreview/index.js';
 import { useFullscreenContext } from '../../../../../components/FullscreenProvider/index.js';
 import { useApp } from '../../index.js';
@@ -23,20 +23,22 @@ interface SecurityTabProps {
 
 const Tabs = [
   {
-    tab: 'default',
-    title: messages.defaultTab,
+    tab: 'guest',
+    title: messages.guestTab,
   },
   {
-    tab: 'teams',
-    title: messages.teamsTab,
+    tab: 'default',
+    title: messages.defaultTab,
   },
   {
     tab: 'roles',
     title: messages.rolesTab,
   },
 ] as const;
+
 type LeftSidebar = (typeof Tabs)[number];
-export const tabChangeOptions = ['default', 'teams', 'roles', 'createRole'] as const;
+
+export const tabChangeOptions = ['guest', 'default', 'roles', 'createRole'] as const;
 
 export function SecurityTab({
   isOpenLeft,
@@ -115,8 +117,8 @@ export function SecurityTab({
       </div>
       <Sidebar isOpen={isOpenRight} type="right">
         <div className={styles.rightBar}>
+          {currentSideBar.tab === 'guest' && <GuestPage />}
           {currentSideBar.tab === 'default' && <DefaultPage onChangeTab={onChangeTab} />}
-          {currentSideBar.tab === 'teams' && <TeamsPage onChangeTab={onChangeTab} />}
           {currentSideBar.tab === 'roles' && selectedRole ? (
             <RolesPage selectedRole={selectedRole} />
           ) : null}

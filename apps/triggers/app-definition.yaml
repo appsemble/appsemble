@@ -1,10 +1,19 @@
 name: Triggers
 description: This app demonstrates resource referencing, triggers and cascading strategies
 defaultPage: Owners' Pets
+
+security:
+  guest:
+    permissions:
+      - $resource:all:create
+      - $resource:all:update
+      - $resource:all:patch
+      - $resource:all:query
+      - $resource:all:get
+      - $resource:all:delete
+
 resources:
   owner:
-    roles:
-      - $public
     schema:
       type: object
       additionalProperties: false
@@ -15,8 +24,6 @@ resources:
         - name
 
   housePet:
-    roles:
-      - $public
     references:
       ownerId:
         resource: owner
@@ -41,8 +48,6 @@ resources:
         - ownerId
 
   farmPet:
-    roles:
-      - $public
     references:
       ownerId:
         resource: owner
@@ -68,8 +73,6 @@ resources:
         - ownerId
 
   wildPet:
-    roles:
-      - $public
     references:
       ownerId:
         resource: owner

@@ -1,0 +1,34 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ include "appsemble.fullname" . }}-migrate-app-definitions
+  labels:
+    {{ include "appsemble.labels" . }}
+  annotations:
+    helm.sh/hook: post-install,post-upgrade
+    helm.sh/hook-weight: '2' # Must be after migrate to prevent data corruption
+spec:
+  template:
+    metadata:
+      annotations:
+        {{ include "appsemble.gitlab" . | indent 8 }}
+    spec:
+      restartPolicy: Never
+      containers:
+        - name: {{ include "appsemble.fullname" . }}-migrate-app-definitions
+          image: "{{ .Values.image.repository }}:{{ include "appsemble.tag" . }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          args:
+            - migrate-app-definitions
+            {{ with .Values.migrateDefinitions.validate }}
+            - "--validate={{ . }}"
+            {{ end }}
+            {{ with .Values.migrateDefinitions.save }}
+            - "--save={{ . }}"
+            {{ end }}
+            {{ with .Values.migrateDefinitions.batch }}
+            - "--batch={{ . }}"
+            {{ end }}
+          env:
+{{ include "appsemble.postgres" . | indent 12 }}
+{{ include "appsemble.sentry" . | indent 12 }}

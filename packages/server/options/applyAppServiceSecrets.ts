@@ -1,92 +1,13 @@
 import https from 'node:https';
 
 import { type ApplyAppServiceSecretsParams, basicAuth, version } from '@appsemble/node-utils';
-import { checkAppRole } from '@appsemble/utils';
 import axios, { type RawAxiosRequestConfig } from 'axios';
-import { type Context } from 'koa';
 import { isMatch } from 'matcher';
 
-import { App, AppMember, AppServiceSecret, Organization } from '../models/index.js';
+import { checkAuthSubjectAppPermissions } from './checkAuthSubjectAppPermissions.js';
+import { AppServiceSecret } from '../models/index.js';
 import { argv } from '../utils/argv.js';
 import { decrypt, encrypt } from '../utils/crypto.js';
-
-async function verifyPermission(ctx: Context, app: App): Promise<AppServiceSecret[]> {
-  if (!app) {
-    return [];
-  }
-
-  const appServiceSecrets = await AppServiceSecret.findAll({
-    where: { AppId: app.id },
-  });
-
-  if (!appServiceSecrets.length) {
-    return [];
-  }
-
-  if (!app.definition.security) {
-    // Apply service secrets without security when opted-in.
-    if (app.enableUnsecuredServiceSecrets) {
-      return appServiceSecrets.map<AppServiceSecret>((secret) => secret.toJSON());
-    }
-    return [];
-  }
-
-  const { user } = ctx;
-
-  if (!user) {
-    return [];
-  }
-
-  await app.reload({
-    attributes: ['id', 'OrganizationId', 'definition'],
-    include: user
-      ? [
-          { model: Organization, attributes: ['id'] },
-          {
-            model: AppMember,
-            attributes: ['role', 'UserId'],
-            required: false,
-            where: { UserId: user.id },
-          },
-        ]
-      : [],
-  });
-
-  const member = app.AppMembers?.find((m) => m.UserId === user?.id);
-  const { policy = 'everyone', role: defaultRole } = app.definition.security.default;
-  let role: string;
-
-  if (member) {
-    ({ role } = member);
-  } else {
-    switch (policy) {
-      case 'everyone':
-        role = defaultRole;
-        break;
-
-      case 'organization':
-        if (!(await app.Organization.$has('User', user.id))) {
-          return [];
-        }
-
-        role = defaultRole;
-        break;
-
-      case 'invite':
-        return [];
-
-      default:
-        role = null;
-    }
-  }
-
-  const { roles: appRoles } = app.definition;
-  if (!appRoles.some((r) => checkAppRole(app.definition.security, r, role, null))) {
-    return [];
-  }
-
-  return appServiceSecrets.map<AppServiceSecret>((secret) => secret.toJSON());
-}
 
 export async function applyAppServiceSecrets({
   app,
@@ -95,13 +16,16 @@ export async function applyAppServiceSecrets({
 }: ApplyAppServiceSecretsParams): Promise<RawAxiosRequestConfig> {
   const newAxiosConfig = axiosConfig;
 
-  const persistedApp = await App.findOne({
-    where: {
-      id: app.id,
-    },
-  });
+  if (!context.user) {
+    return newAxiosConfig;
+  }
+  await checkAuthSubjectAppPermissions({ context, app, permissions: [] });
 
-  const appServiceSecrets = await verifyPermission(context, persistedApp);
+  const appServiceSecrets = (
+    await AppServiceSecret.findAll({
+      where: { AppId: app.id },
+    })
+  ).map<AppServiceSecret>((secret) => secret.toJSON());
 
   for (const serviceSecret of appServiceSecrets) {
     if (!isMatch(axiosConfig.url, serviceSecret.urlPatterns.split(','))) {

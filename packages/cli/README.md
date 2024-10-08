@@ -15,7 +15,7 @@
   - [Organizations](#organizations)
   - [Apps](#apps)
   - [Blocks](#blocks)
-  - [Teams](#teams)
+  - [Groups](#groups)
   - [Assets](#assets)
   - [Resources](#resources)
   - [Cronjobs](#cronjobs)
@@ -66,10 +66,10 @@ The following option allows you to view the app with a specified role:
 appsemble serve <path-to-app-directory> --user-role test
 ```
 
-The following option allows you to view the app as a Manager of a team:
+The following option allows you to view the app as a Manager of a group:
 
 ```sh
-appsemble serve <path-to-app-directory> --team-role Manager
+appsemble serve <path-to-app-directory> --group-role Manager
 ```
 
 App data is stored within a `db.json` file in your machine’s cache directory. Each app has their own
@@ -250,13 +250,13 @@ npm install webpack@webpack-4 @appsemble/webpack-config
 For a more in-depth explanation of how to build apps, use our
 [block development guide](https://appsemble.app/docs/02-development/developing-blocks).
 
-### Teams
+### Groups
 
-The Appsemble CLI can be used to manage teams for apps. For example, the following command creates a
-new team named `My Team`:
+The Appsemble CLI can be used to manage groups for apps. For example, the following command creates
+a new group named `My Group`:
 
 ```sh
-appsemble team create 'My Team' --app-id 1 --context development
+appsemble group create 'My Group' --app-id 1 --context development
 ```
 
 ### Assets

@@ -142,7 +142,7 @@ export function IconTool({ disabled }: IconToolProps): ReactNode {
       const { id } = app;
 
       try {
-        await axios.delete(`/api/apps/${id}/maskableIcon`);
+        await axios.delete(`/api/apps/${id}/maskable-icon`);
         push({
           body: formatMessage(messages.deleteIconSuccess),
           color: 'info',

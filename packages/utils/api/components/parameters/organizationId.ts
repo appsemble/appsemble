@@ -1,9 +1,7 @@
-import { type OpenAPIV3 } from 'openapi-types';
-
-export const organizationId: OpenAPIV3.ParameterObject = {
+export const organizationId = {
   name: 'organizationId',
+  required: true,
   in: 'path',
   description: 'The ID of the organization on which to perform an operation',
-  required: true,
   schema: { $ref: '#/components/schemas/Organization/properties/id' },
 };

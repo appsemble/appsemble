@@ -5,7 +5,12 @@ import {
   useData,
   useSideMenu,
 } from '@appsemble/react-components';
-import { normalize, normalized, Permission } from '@appsemble/utils';
+import { OrganizationPermission } from '@appsemble/types';
+import {
+  checkOrganizationRoleOrganizationPermissions,
+  normalize,
+  normalized,
+} from '@appsemble/utils';
 import { type ReactNode } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { Navigate, Route, useParams } from 'react-router-dom';
@@ -19,7 +24,6 @@ import { AsyncDataView } from '../../../components/AsyncDataView/index.js';
 import { ProtectedRoute } from '../../../components/ProtectedRoute/index.js';
 import { useUser } from '../../../components/UserProvider/index.js';
 import { type Organization } from '../../../types.js';
-import { checkRole } from '../../../utils/checkRole.js';
 
 /**
  * Render routes related to apps.
@@ -31,7 +35,11 @@ export function OrganizationRoutes(): ReactNode {
 
   const result = useData<Organization>(`/api/organizations/${organizationId}`);
   const userOrganization = organizations?.find((org) => org.id === organizationId);
-  const mayEdit = userOrganization && checkRole(userOrganization.role, Permission.EditOrganization);
+  const mayEdit =
+    userOrganization &&
+    checkOrganizationRoleOrganizationPermissions(userOrganization.role, [
+      OrganizationPermission.UpdateOrganizations,
+    ]);
 
   useSideMenu(
     result.data && (
@@ -76,7 +84,7 @@ export function OrganizationRoutes(): ReactNode {
             element={
               <ProtectedRoute
                 organization={userOrganization}
-                permission={Permission.EditOrganization}
+                permissions={[OrganizationPermission.UpdateOrganizations]}
               />
             }
           >

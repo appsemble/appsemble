@@ -4,10 +4,13 @@ defaultPage: Survey
 layout:
   navigation: hidden
 
+security:
+  guest:
+    permissions:
+      - $resource:answer:create
+
 resources:
   answer:
-    create:
-      roles: [$public]
     schema:
       type: object
       additionalProperties: false

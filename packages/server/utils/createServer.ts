@@ -3,16 +3,11 @@ import {
   conditional,
   errorMiddleware,
   frontend,
-  type GetApiKeyUser,
-  type GetHttpUser,
-  type GetOAuth2User,
   loggerMiddleware,
   parameters,
   security,
-  type SecurityOptions,
   serializer,
   throwKoaError,
-  type UtilsUser,
   version,
 } from '@appsemble/node-utils';
 import { api } from '@appsemble/utils';
@@ -29,19 +24,10 @@ import { swaggerUI } from 'koas-swagger-ui';
 import { type Configuration } from 'webpack';
 
 import { argv } from './argv.js';
-import { authentication } from './authentication.js';
 import { Mailer } from './email/Mailer.js';
 import * as controllers from '../controllers/index.js';
-import { appMapper } from '../middleware/appMapper.js';
+import { appMapper, authentication } from '../middleware/index.js';
 import { appRouter, studioRouter } from '../routes/index.js';
-
-export interface AuthenticationCheckers {
-  basic: GetHttpUser<UtilsUser>;
-  app: GetOAuth2User<UtilsUser>;
-  cli: GetOAuth2User<UtilsUser>;
-  scim: GetApiKeyUser<UtilsUser>;
-  studio: GetApiKeyUser<UtilsUser>;
-}
 
 interface CreateServerOptions {
   /**
@@ -86,11 +72,17 @@ export async function createServer({
   app.use(
     appMapper(
       compose([
-        conditional((ctx) => ctx.path.startsWith('/api') || ctx.path === '/oauth2/token', cors()),
+        conditional(
+          (ctx) =>
+            ctx.path.startsWith('/api') ||
+            ctx.path === '/auth/oauth2/token' ||
+            /\/apps\/\d+\/auth\/oauth2\/token/.test(ctx.path),
+          cors(),
+        ),
         koas(api(version, argv), [
           specHandler(),
           swaggerUI({ url: '/api-explorer' }),
-          security(authentication() as SecurityOptions),
+          security(authentication()),
           parameters(),
           bodyParser(),
           serializer(),

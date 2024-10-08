@@ -5,10 +5,10 @@ import { FormattedMessage } from 'react-intl';
 import { messages } from './messages.js';
 import { shouldShowMenu } from '../../utils/layout.js';
 import { useAppDefinition } from '../AppDefinitionProvider/index.js';
+import { useAppMember } from '../AppMemberProvider/index.js';
 import { useAppMessages } from '../AppMessagesProvider/index.js';
 import { usePage } from '../MenuProvider/index.js';
 import { ProfileDropdown } from '../ProfileDropdown/index.js';
-import { useUser } from '../UserProvider/index.js';
 
 interface AppBarProps {
   readonly children?: ReactNode;
@@ -22,9 +22,9 @@ interface AppBarProps {
  */
 export function AppBar({ children, hideName }: AppBarProps): ReactNode {
   const { definition, demoMode } = useAppDefinition();
-  const { getAppMessage } = useAppMessages();
-  const { role, teams } = useUser();
+  const { appMemberRole, appMemberSelectedGroup } = useAppMember();
   const { page } = usePage();
+  const { getAppMessage } = useAppMessages();
 
   const navigation = (page?.navigation || definition?.layout?.navigation) ?? 'left-menu';
   const appName = (getAppMessage({ id: 'name' }).format() as string) ?? definition.name;
@@ -32,7 +32,8 @@ export function AppBar({ children, hideName }: AppBarProps): ReactNode {
   return (
     <Portal element={document.getElementsByClassName('navbar')[0]}>
       <div className="is-flex is-justify-content-space-between is-flex-grow-1">
-        {navigation === 'left-menu' && shouldShowMenu(definition, role, teams) ? (
+        {navigation === 'left-menu' &&
+        shouldShowMenu(definition, appMemberRole, appMemberSelectedGroup) ? (
           <div className="navbar-brand">
             <span>
               <SideMenuButton />

@@ -5,8 +5,8 @@ const scopes = {
   openid: 'Login the user to the requesting app using OpenID.',
   profile: 'Read the user profile, including the display name and profile picture.',
   'resources:manage': 'Manage app resources on behalf of a user.',
-  'teams:read': 'Read the teams the user is a part of.',
-  'teams:write': 'Add new members to a team.',
+  'groups:read': 'Read the groups the user is a part of.',
+  'groups:write': 'Add new members to a group.',
 };
 
 export const app: OpenAPIV3.OAuth2SecurityScheme = {
@@ -20,13 +20,13 @@ export const app: OpenAPIV3.OAuth2SecurityScheme = {
   flows: {
     authorizationCode: {
       authorizationUrl: '/connect/authorize',
-      tokenUrl: '/oauth2/token',
-      refreshUrl: '/oauth2/token',
+      tokenUrl: '/apps/{appId}/auth/oauth2/token',
+      refreshUrl: '/apps/{appId}/auth/oauth2/token',
       scopes,
     },
     password: {
-      tokenUrl: '/oauth2/token',
-      refreshUrl: '/oauth2/token',
+      tokenUrl: '/apps/{appId}/auth/oauth2/token',
+      refreshUrl: '/apps/{appId}/auth/oauth2/token',
       scopes,
     },
   },
