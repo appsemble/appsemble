@@ -70,9 +70,9 @@ export const messages = defineMessages({
     id: 'studio.o+nqjA',
     defaultMessage: 'The permission to change the roles of organization members.',
   },
-  ManageTeams: {
-    id: 'studio.kyHYHZ',
-    defaultMessage: 'The permission to create and delete teams and manage its members.',
+  ManageGroups: {
+    id: 'studio.34gsJP',
+    defaultMessage: 'The permission to create and delete groups and manage its members.',
   },
   PublishBlocks: {
     id: 'studio.Z8Fm9O',

@@ -1,0 +1,25 @@
+# Delete roles property
+name: test
+description: test
+defaultPage: test
+
+security:
+  default:
+    role: test
+    policy: everyone
+  roles:
+    test:
+      description: test
+roles:
+  - test
+
+pages:
+  - name: test
+    blocks:
+      - type: action-button
+        version: 0.29.0
+        parameters:
+          icon: arrow-right
+        actions:
+          onClick:
+            type: noop

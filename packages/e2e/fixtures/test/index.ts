@@ -1,4 +1,24 @@
-import { test as base, expect } from '@playwright/test';
+import { createFormData } from '@appsemble/node-utils';
+import { type App } from '@appsemble/types';
+import { test as base, expect, type Page } from '@playwright/test';
+import axios from 'axios';
+import stripIndent from 'strip-indent';
+
+/**
+ * Get the appId.
+ *
+ * TODO: figure out a better way of getting the app id.
+ *
+ * @param page The playwright page.
+ * @returns appId The app id.
+ */
+export async function getAppId(page: Page): Promise<number> {
+  const [path] = new URL(page.url()).hostname.split('.');
+  const response = await fetch('/api/apps');
+  const apps: App[] = await response.json();
+  const index = apps.findIndex((app) => app.path === path);
+  return apps[index].id;
+}
 
 interface Fixtures {
   /**
@@ -24,6 +44,11 @@ interface Fixtures {
    * Login to an Appsemble app.
    */
   loginApp: () => Promise<void>;
+
+  /**
+   * Create a test app.
+   */
+  createTestApp: (organization: string, yaml: string) => Promise<App>;
 }
 
 export const test = base.extend<Fixtures>({
@@ -70,11 +95,14 @@ export const test = base.extend<Fixtures>({
       await page.waitForSelector('.appsemble-loader', { state: 'hidden' });
 
       if (await emailInput.isVisible()) {
-        await page.getByTestId('email').fill('bot@appsemble.com');
+        await page.getByTestId('email').fill(process.env.BOT_ACCOUNT_EMAIL);
         await page.getByTestId('password').fill(process.env.BOT_ACCOUNT_PASSWORD);
         await page.getByTestId('login').click();
 
-        const response = await page.waitForResponse('/api/oauth2/consent/verify');
+        const appId = await getAppId(page);
+        const response = await page.waitForResponse(
+          `/api/users/current/auth/oauth2/apps/${appId}/consent/verify`,
+        );
         if (response.ok()) {
           return;
         }
@@ -90,6 +118,20 @@ export const test = base.extend<Fixtures>({
       if (await allowButton.isVisible()) {
         await allowButton.click();
       }
+    });
+  },
+
+  // TODO: handle this by seeding an app beforehand with logins configured
+  async createTestApp({}, use) {
+    await use(async (organization, yaml) => {
+      const response = await axios.post<App>(
+        '/api/apps',
+        createFormData({
+          OrganizationId: organization.toLowerCase(),
+          yaml: stripIndent(yaml),
+        }),
+      );
+      return response.data;
     });
   },
 });

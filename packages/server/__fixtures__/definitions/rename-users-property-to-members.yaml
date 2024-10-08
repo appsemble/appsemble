@@ -1,0 +1,40 @@
+# Rename users property to members
+name: test
+description: test
+defaultPage: test
+
+users:
+  properties:
+    dateOfBirth:
+      schema:
+        type: string
+    job:
+      schema:
+        enum:
+          - Chef
+          - Barista
+          - Bartender
+        default: Chef
+    lastCompletedTask:
+      schema:
+        type: integer
+      reference:
+        resource: tasks
+    readUpdates:
+      schema:
+        type: array
+        items:
+          type: integer
+      reference:
+        resource: updates
+
+pages:
+  - name: test
+    blocks:
+      - type: action-button
+        version: 0.29.0
+        parameters:
+          icon: arrow-right
+        actions:
+          onClick:
+            type: noop

@@ -29,7 +29,7 @@ interface Options {
 /**
  * Create a JSON web token response.
  *
- * @param sub The id of the user that is authenticated using the token.
+ * @param sub The id of the authentication subject that is authenticated using the token.
  * @param options The options for creating the JWS response.
  * @returns A JWT based OAuth2 response body.
  * @see https://www.iana.org/assignments/jwt/jwt.xhtml
@@ -51,13 +51,13 @@ export function createJWTResponse(
     sub,
   };
   const response: TokenResponse = {
-    // The access token token expires in an hour.
+    // The access token expires in an hour.
     access_token: jwt.sign({ ...payload, exp: iat + expires }, argv.secret),
     expires_in: expires,
     token_type: 'bearer',
   };
   if (refreshToken) {
-    // The refresh token token expires in a month.
+    // The refresh token expires in a month.
     response.refresh_token = jwt.sign({ ...payload, exp: iat + 60 * 60 * 24 * 30 }, argv.secret);
   }
   return response;

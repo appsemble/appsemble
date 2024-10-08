@@ -17,6 +17,11 @@ export const ResourceCountActionDefinition = extendJSONSchema(
         type: 'string',
         description: 'The type of the resource to count.',
       },
+      own: {
+        type: 'boolean',
+        description:
+          'If only the resources created by the authenticated app member should be included',
+      },
     },
   },
   ['url'],

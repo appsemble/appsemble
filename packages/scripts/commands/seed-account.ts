@@ -88,7 +88,7 @@ export async function handler({
       clientId,
       hashedClientPassword,
       'Used for provisioning the review environment',
-      'apps:write resources:write assets:write blocks:write organizations:write teams:write',
+      'apps:write resources:write assets:write blocks:write organizations:write groups:write',
       'NOW()',
       UserId,
     ],

@@ -10,6 +10,6 @@ export async function handler(): Promise<void> {
   const { host, port } = argv;
   const url = new URL(host);
   url.port = String(port);
-  await axios.get(`${url}/api/health`);
+  await axios.get(`${url}/main/api/health`);
   logger.info('API is healthy');
 }

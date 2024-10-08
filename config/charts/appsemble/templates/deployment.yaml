@@ -74,12 +74,17 @@ spec:
                 secretKeyRef:
                   name: {{ .Values.secretSecret | quote }}
                   key: aes-secret
-            {{- with .Values.smtpSecret }}
+            {{- if hasPrefix "review-" (include "appsemble.fullname" .) }}
+            - name: SMTP_HOST
+              value: "{{ include "appsemble.fullname" . }}-mailpit-smtp"
+            {{- else }}
             - name: SMTP_HOST
               valueFrom:
                 secretKeyRef:
-                  name: {{ . | quote }}
+                  name: {{ .Values.smtpSecret  | quote }}
                   key: host
+            {{- end }}
+            {{- with .Values.smtpSecret }}
             - name: SMTP_PORT
               valueFrom:
                 secretKeyRef:
@@ -207,6 +212,22 @@ spec:
             - name: ENABLE_APP_EMAIL_QUOTA_ALERTS
               value: {{ .Values.quotas.appEmail.alertOrganizationOwner | quote }}
             {{- end }}
+            {{- if .Values.mailpit.mailpit.smtp.tls.secretName }}
+            - name: NODE_EXTRA_CA_CERTS
+              value: /tmp/mailpit.crt
+            {{- end }}
+          {{- if .Values.mailpit.mailpit.smtp.tls.secretName }}
+          volumeMounts:
+            - name: mailpit-cert
+              mountPath: /tmp/mailpit.crt
+              subPath: tls.crt
+          {{- end }}
+      {{- if .Values.mailpit.mailpit.smtp.tls.secretName }}
+      volumes:
+        - name: mailpit-cert
+          secret:
+            secretName: {{ .Values.mailpit.mailpit.smtp.tls.secretName }}
+      {{- end }}
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}

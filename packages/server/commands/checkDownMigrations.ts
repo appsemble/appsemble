@@ -44,14 +44,14 @@ export async function handler(): Promise<void> {
     const counts = handleDiff(
       fromUp,
       fromDown,
-      `<= ${migrations[index - 1].key}`,
+      `up migrations <= ${migrations[index - 1].key}`,
       `${migration.key} down migration`,
     );
     if (counts.tables + counts.enums > 0) {
       logger.error(
-        `Down migration ${migration.key} out of sync with migrate up of ${migrations[index - 1].key}`,
+        `Down migration ${migration.key} out of sync with up migration from ${migrations[index - 1].key}`,
       );
-      logger.info(`Use the following command to connect to the test database for further debugging:
+      logger.info(`For further debugging use the following command, to connect to the database:
 
   psql postgres://admin:password@localhost:54321/${dbName}`);
       process.exit(1);

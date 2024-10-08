@@ -33,14 +33,19 @@ export function OAuth2AppCallback({ session }: OAuth2AppCallbackProps): ReactNod
         timezone,
       })
       .then(({ data }) => oauth2Redirect(appRequest, data))
-      .catch((err) =>
-        oauth2Redirect(appRequest, {
+      .catch((err) => {
+        // In case of a conflict navigate the user back to the login page to link,
+        // an existing account with any of the already associated login methods.
+        if (axios.isAxiosError(err) && err.response.status === 409) {
+          return oauth2Redirect(appRequest, { ...err.response.data.data });
+        }
+        return oauth2Redirect(appRequest, {
           code:
             axios.isAxiosError(err) && err.response.status < 500
               ? 'invalid_request'
               : 'server_error',
-        }),
-      );
+        });
+      });
   }, [qs, session]);
 
   return <Loader />;

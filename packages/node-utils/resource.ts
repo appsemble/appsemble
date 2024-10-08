@@ -1,7 +1,10 @@
 import { randomUUID } from 'node:crypto';
 
-import { handleValidatorResult, type PreparedAsset } from '@appsemble/node-utils';
-import { type App, type ResourceDefinition, type Resource as ResourceType } from '@appsemble/types';
+import {
+  type AppDefinition,
+  type ResourceDefinition,
+  type Resource as ResourceType,
+} from '@appsemble/types';
 import { addMilliseconds, isPast, parseISO } from 'date-fns';
 import { type PreValidatePropertyFunction, ValidationError, Validator } from 'jsonschema';
 import {
@@ -14,6 +17,7 @@ import { type File } from 'koas-body-parser';
 import parseDuration from 'parse-duration';
 
 import { preProcessCSV } from './csv.js';
+import { handleValidatorResult, type PreparedAsset } from './index.js';
 import { throwKoaError } from './koa.js';
 
 export function stripResource({
@@ -21,6 +25,7 @@ export function stripResource({
   $created,
   $editor,
   $ephemeral,
+  $group,
   $seed,
   $updated,
   ...data
@@ -33,19 +38,19 @@ export function stripResource({
  *
  * If there is no match, a 404 HTTP error is thrown.
  *
- * @param app The app to get the resource definition of
+ * @param appDefinition The app definition to get the resource definition of
  * @param resourceType The name of the resource definition to get.
  * @param ctx Context used to throw back the errors.
  * @param view The view that’s being used.
  * @returns The matching resource definition.
  */
 export function getResourceDefinition(
-  app: App,
+  appDefinition: AppDefinition,
   resourceType: string,
   ctx?: Context,
   view?: string,
 ): ResourceDefinition {
-  if (!app) {
+  if (!appDefinition) {
     if (ctx === undefined) {
       throw new Error('App not found');
     } else {
@@ -53,7 +58,7 @@ export function getResourceDefinition(
     }
   }
 
-  const definition = app.definition.resources?.[resourceType];
+  const definition = appDefinition.resources?.[resourceType];
 
   if (!definition) {
     if (ctx === undefined || ctx.response === undefined) {

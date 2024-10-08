@@ -9,7 +9,6 @@ export async function email({
   data,
   mailer,
   options,
-  user,
 }: EmailParams): Promise<void> {
   const { getApp } = options;
   const {
@@ -33,5 +32,5 @@ export async function email({
     ],
   });
 
-  await serverEmail({ app: persistedApp, action, data, mailer, user, options, context });
+  await serverEmail({ app: persistedApp, action, data, mailer, options, context });
 }

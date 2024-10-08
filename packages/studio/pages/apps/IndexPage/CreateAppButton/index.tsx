@@ -10,8 +10,8 @@ import {
   SimpleModalFooter,
   useData,
 } from '@appsemble/react-components';
-import { type App } from '@appsemble/types';
-import { Permission } from '@appsemble/utils';
+import { type App, OrganizationPermission } from '@appsemble/types';
+import { checkOrganizationRoleOrganizationPermissions } from '@appsemble/utils';
 import axios from 'axios';
 import { type ReactNode, useCallback, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
@@ -21,7 +21,6 @@ import { messages } from './messages.js';
 import { CreateOrganizationModal } from '../../../../components/CreateOrganizationModal/index.js';
 import { ResendEmailButton } from '../../../../components/ResendEmailButton/index.js';
 import { useUser } from '../../../../components/UserProvider/index.js';
-import { checkRole } from '../../../../utils/checkRole.js';
 
 interface Template {
   id: number;
@@ -31,7 +30,7 @@ interface Template {
 }
 
 export function CreateAppButton({ className }: { readonly className?: string }): ReactNode {
-  const { data: templates } = useData<Template[]>('/api/templates');
+  const { data: templates } = useData<Template[]>('/api/app-templates');
   const [selectedTemplate, setSelectedTemplate] = useState(0);
 
   const navigate = useNavigate();
@@ -40,11 +39,11 @@ export function CreateAppButton({ className }: { readonly className?: string }):
   const { organizations, userInfo } = useUser();
 
   const organizationIndex = organizations?.findIndex((org) =>
-    checkRole(org.role, Permission.CreateApps),
+    checkOrganizationRoleOrganizationPermissions(org.role, [OrganizationPermission.CreateApps]),
   );
 
   const createOrganizations = organizations?.filter((org) =>
-    checkRole(org.role, Permission.CreateApps),
+    checkOrganizationRoleOrganizationPermissions(org.role, [OrganizationPermission.CreateApps]),
   );
 
   const defaultValues = {
@@ -66,7 +65,7 @@ export function CreateAppButton({ className }: { readonly className?: string }):
     }: typeof defaultValues) => {
       const { id, resources } = templates[selectedTemplate];
 
-      const { data } = await axios.post<App>('/api/templates', {
+      const { data } = await axios.post<App>('/api/app-templates', {
         templateId: id,
         name,
         description,

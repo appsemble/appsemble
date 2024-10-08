@@ -13,7 +13,7 @@ import {
   UpdatedAt,
 } from 'sequelize-typescript';
 
-import { App, AppMember, Resource } from './index.js';
+import { App, AppMember, Group, Resource } from './index.js';
 
 @Table({ tableName: 'Asset' })
 export class Asset extends Model {
@@ -32,7 +32,8 @@ export class Asset extends Model {
   @Column(DataType.BLOB)
   data: Buffer;
 
-  @Index({ name: 'UniqueAssetNameIndex', unique: true })
+  @Index({ name: 'UniqueAssetWithNullGroupId', unique: true })
+  @Index({ name: 'UniqueAssetWithGroupId', unique: true })
   @Column(DataType.STRING)
   name: string;
 
@@ -57,7 +58,8 @@ export class Asset extends Model {
    */
   @AllowNull(false)
   @Default(false)
-  @Index({ name: 'UniqueAssetNameIndex', unique: true })
+  @Index({ name: 'UniqueAssetWithNullGroupId', unique: true })
+  @Index({ name: 'UniqueAssetWithGroupId', unique: true })
   @Column(DataType.BOOLEAN)
   ephemeral: boolean;
 
@@ -69,12 +71,22 @@ export class Asset extends Model {
 
   @AllowNull(false)
   @ForeignKey(() => App)
-  @Index({ name: 'UniqueAssetNameIndex', unique: true })
+  @Index({ name: 'UniqueAssetWithNullGroupId', unique: true })
+  @Index({ name: 'UniqueAssetWithGroupId', unique: true })
   @Column(DataType.INTEGER)
   AppId: number;
 
   @BelongsTo(() => App)
   App: Awaited<App>;
+
+  @AllowNull(true)
+  @ForeignKey(() => Group)
+  @Index({ name: 'UniqueAssetWithGroupId', unique: true })
+  @Column(DataType.INTEGER)
+  GroupId: number;
+
+  @BelongsTo(() => Group, { onDelete: 'CASCADE' })
+  Group: Awaited<Group>;
 
   @ForeignKey(() => AppMember)
   @Column(DataType.UUID)

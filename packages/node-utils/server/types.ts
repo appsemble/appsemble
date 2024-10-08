@@ -1,37 +1,30 @@
 import {
   type App,
   type AppConfigEntry,
-  type AppMember,
+  type AppMemberInfo,
   type AppMessages,
   type Asset,
   type BlockDefinition,
   type BlockManifest,
   type ControllerDefinition,
+  type CustomAppPermission,
   type EmailActionDefinition,
+  type Group,
+  type OrganizationPermission,
   type Resource,
   type ResourceDefinition,
-  type TeamMember,
   type Theme as ThemeType,
-  type UserInfo,
 } from '@appsemble/types';
-import { type IdentifiableBlock, type Permission } from '@appsemble/utils';
+import { type IdentifiableBlock } from '@appsemble/utils';
 import { type RawAxiosRequestConfig } from 'axios';
 import {
-  type Context,
   type DefaultContext as DefaultContextInterface,
   type DefaultState,
   type ParameterizedContext,
 } from 'koa';
 
-export interface UtilsUser {
+export interface AuthSubject {
   id: string;
-  name: string;
-  primaryEmail: string;
-  timezone: string;
-  locale: string;
-  EmailAuthorizations?: { verified: boolean }[];
-  subscribed?: boolean;
-  demoLoginUser?: boolean;
 }
 
 declare module 'koa' {
@@ -46,9 +39,9 @@ declare module 'koa' {
     appBlocks: BlockManifest[];
     appMessages: AppMessages[];
     appVariables: AppConfigEntry[];
-    appMembers: AppMember[];
-    appUserInfo: UserInfo;
-    appTeams: ExtendedTeam[];
+    appMembers: AppMemberInfo[];
+    appMemberInfo: AppMemberInfo;
+    appGroups: ExtendedGroup[];
     appAssets: AppAsset[];
     appReadmes: AppReadme[];
     blockConfigs: ContextBlockConfig[];
@@ -65,11 +58,11 @@ declare module 'koas-security' {
   }
 
   interface Users {
-    app: UtilsUser;
-    basic: UtilsUser;
-    cli: UtilsUser;
-    scim: UtilsUser;
-    studio: UtilsUser;
+    app: AuthSubject;
+    basic: AuthSubject;
+    cli: AuthSubject;
+    scim: AuthSubject;
+    studio: AuthSubject;
   }
 }
 
@@ -86,7 +79,9 @@ declare module 'koas-parameters' {
     controllerVersion: string;
     clientId: string;
     language: string;
-    memberId: string;
+    organizationMemberId: string;
+    groupMemberId: string;
+    appMemberId: string;
     organizationId: string;
     path: string;
     resourceId: number;
@@ -96,9 +91,9 @@ declare module 'koas-parameters' {
     screenshotId: number;
     readmeId: number;
     snapshotId: number;
-    teamId: string;
+    groupId: number;
     token: string;
-    appServiceId: number;
+    serviceSecretId: number;
     appSecretId: number;
     appVariableId: number;
     userId: string;
@@ -124,8 +119,11 @@ declare module 'koas-parameters' {
     assets: boolean;
     screenshots: boolean;
     readmes: boolean;
-    roles: string[];
+    roles: string[] | string;
     includeMessages: boolean;
+    demo: boolean;
+    selectedGroupId: number;
+    $own: boolean;
   }
 }
 
@@ -171,23 +169,8 @@ export interface GetAppMessagesParams extends GetAppSubEntityParams {
   merge?: string[] | string;
 }
 
-export interface GetAppMembersParams extends GetAppSubEntityParams {
-  userId: string;
-}
-
-export interface GetAppUserInfoParams {
-  context: ParameterizedContext<DefaultState, DefaultContextInterface, any>;
-  client: { scope: string } | { scope: string; app: App } | {};
-  user: UtilsUser;
-  ctx: Context;
-}
-
-export interface ExtendedTeam extends TeamMember {
+export interface ExtendedGroup extends Group {
   size: number;
-}
-
-export interface GetAppTeamsParams extends GetAppSubEntityParams {
-  user: UtilsUser;
 }
 
 export interface GetAppBlockStylesParams extends GetAppSubEntityParams {
@@ -264,17 +247,12 @@ export interface GetCspParams {
   nonce: string;
 }
 
+export interface GetCurrentAppMemberParams {
+  context: ParameterizedContext<DefaultState, DefaultContextInterface, any>;
+}
+
 export type ResourceAction = 'create' | 'delete' | 'update';
 export type Action = ResourceAction | 'count' | 'get' | 'patch' | 'query';
-
-export interface VerifyResourceActionPermissionParams {
-  context: ParameterizedContext<DefaultState, DefaultContextInterface, any>;
-  app: App;
-  resourceType: string;
-  action: Action;
-  options: Options;
-  ctx: Context;
-}
 
 export interface ApplyAppServiceSecretsParams {
   context: ParameterizedContext<DefaultState, DefaultContextInterface, any>;
@@ -282,11 +260,30 @@ export interface ApplyAppServiceSecretsParams {
   axiosConfig: RawAxiosRequestConfig<any>;
 }
 
-export interface CheckRoleParams {
+export interface CheckAppMemberAppPermissionsParams {
+  context: ParameterizedContext<DefaultState, DefaultContextInterface, any>;
+  permissions: CustomAppPermission[];
+  app: App;
+}
+
+export interface CheckUserOrganizationPermissionsParams {
+  context: ParameterizedContext<DefaultState, DefaultContextInterface, any>;
+  permissions: OrganizationPermission[];
+  app: App;
+}
+
+export interface CheckAuthSubjectAppPermissionsParams {
   context: ParameterizedContext<DefaultState, DefaultContextInterface, any>;
   app: App;
-  permissions: Permission | Permission[];
-  findOptions?: FindOptions;
+  groupId?: number;
+  permissions: CustomAppPermission[];
+}
+
+export interface CheckAppPermissionsParams {
+  context: ParameterizedContext<DefaultState, DefaultContextInterface, any>;
+  app: App;
+  groupId?: number;
+  permissions: CustomAppPermission[];
 }
 
 export interface ReloadUserParams {
@@ -319,8 +316,8 @@ export interface CreateAppResourcesWithAssetsParams extends GetAppSubEntityParam
   resources: Record<string, unknown>[];
   preparedAssets: PreparedAsset[];
   resourceType: string;
-  action: ResourceAction;
   options: Options;
+  groupId?: number;
 }
 
 export interface UpdateAppResourceParams extends GetAppSubEntityParams {
@@ -331,7 +328,6 @@ export interface UpdateAppResourceParams extends GetAppSubEntityParams {
   deletedAssetIds: string[];
   type: string;
   options: Options;
-  action: ResourceAction;
 }
 
 export interface DeleteAppResourceParams extends GetAppSubEntityParams {
@@ -348,6 +344,7 @@ export interface CreateAppAssetParams extends GetAppSubEntityParams {
     name: string;
     data: Buffer;
   };
+  seed?: boolean;
 }
 
 export interface DeleteAppAssetParams extends GetAppSubEntityParams {
@@ -359,7 +356,6 @@ export interface EmailParams {
   action: EmailActionDefinition;
   data: any;
   mailer: any;
-  user: any;
   options: Options;
   context: ParameterizedContext<DefaultState, DefaultContextInterface, any>;
 }
@@ -424,12 +420,11 @@ export interface ParsedQuery {
 export type ContentSecurityPolicy = Record<string, (string | false)[]>;
 
 export interface Options {
+  getCurrentAppMember: (params: GetCurrentAppMemberParams) => Promise<AppMemberInfo>;
   getApp: (params: GetAppParams) => Promise<App>;
   getAppDetails: (params: GetAppParams) => Promise<AppDetails>;
   getAppMessages: (params: GetAppMessagesParams) => Promise<AppMessages[]>;
-  getAppMembers: (params: GetAppMembersParams) => Promise<AppMember[]>;
-  getAppUserInfo: (params: GetAppUserInfoParams) => Promise<UserInfo>;
-  getAppTeams: (params: GetAppTeamsParams) => Promise<ExtendedTeam[]>;
+  getAppGroups: (params: GetAppSubEntityParams) => Promise<ExtendedGroup[]>;
   getAppStyles: (params: GetAppParams | GetAppSubEntityParams) => Promise<AppStyles>;
   getAppScreenshots: (params: GetAppSubEntityParams) => Promise<AppScreenshot[]>;
   getAppReadmes: (params: GetAppSubEntityParams) => Promise<AppReadme[]>;
@@ -445,13 +440,15 @@ export interface Options {
   getHost: (params: GetHostParams) => string;
   getCsp: (params: GetCspParams) => ContentSecurityPolicy;
   createSettings: (params: CreateSettingsParams) => Promise<[digest: string, script: string]>;
-  verifyResourceActionPermission: (
-    params: VerifyResourceActionPermissionParams,
-  ) => Promise<Record<string, any>>;
   applyAppServiceSecrets: (
     params: ApplyAppServiceSecretsParams,
   ) => Promise<RawAxiosRequestConfig<any>>;
-  checkRole: (params: CheckRoleParams) => Promise<Record<string, any>>;
+  checkAppMemberAppPermissions: (params: CheckAppMemberAppPermissionsParams) => Promise<void>;
+  checkUserOrganizationPermissions: (
+    params: CheckUserOrganizationPermissionsParams,
+  ) => Promise<void>;
+  checkAuthSubjectAppPermissions: (params: CheckAuthSubjectAppPermissionsParams) => Promise<void>;
+  checkAppPermissions: (params: CheckAppPermissionsParams) => Promise<void>;
   reloadUser: (params: ReloadUserParams) => Promise<Record<string, any>>;
   parseQuery: (params: ParseQueryParams) => ParsedQuery;
   getAppResource: (params: GetAppResourceParams) => Promise<Resource>;

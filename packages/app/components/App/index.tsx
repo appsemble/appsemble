@@ -3,6 +3,7 @@ import { type ReactNode } from 'react';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 
 import { AppDefinitionProvider } from '../AppDefinitionProvider/index.js';
+import { AppMemberProvider } from '../AppMemberProvider/index.js';
 import { AppMessagesProvider } from '../AppMessagesProvider/index.js';
 import { AppRoutes } from '../AppRoutes/index.js';
 import { AppVariablesProvider } from '../AppVariablesProvider/index.js';
@@ -12,7 +13,6 @@ import { MenuProvider } from '../MenuProvider/index.js';
 import { PageTracker } from '../PageTracker/index.js';
 import { PermissionRequest } from '../PermissionRequest/index.js';
 import { ServiceWorkerRegistrationProvider } from '../ServiceWorkerRegistrationProvider/index.js';
-import { UserProvider } from '../UserProvider/index.js';
 
 interface AppProps {
   readonly serviceWorkerRegistrationPromise: Promise<ServiceWorkerRegistration>;
@@ -33,14 +33,14 @@ export function App({ serviceWorkerRegistrationPromise }: AppProps): ReactNode {
               <ServiceWorkerRegistrationProvider
                 serviceWorkerRegistrationPromise={serviceWorkerRegistrationPromise}
               >
-                <UserProvider>
+                <AppMemberProvider>
                   <DemoAppMembersProvider>
                     <MenuProvider>
                       <PermissionRequest />
                       <AppRoutes />
                     </MenuProvider>
                   </DemoAppMembersProvider>
-                </UserProvider>
+                </AppMemberProvider>
               </ServiceWorkerRegistrationProvider>
             </ErrorHandler>
           </MessagesProvider>

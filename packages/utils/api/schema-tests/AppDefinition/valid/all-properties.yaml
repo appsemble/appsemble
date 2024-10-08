@@ -31,43 +31,37 @@ resources:
       url: /api/apps/{appId}/{resource}
       query:
         foo: bar
-      roles:
-        - User
+
     create:
       method: POST
       url: /api/apps/{appId/{resource}/{id}}
       query:
         foo: bar
-      roles:
-        - Admin
+
     delete:
       method: DELETE
       url: /api/apps/{appId/{resource}/{id}}
       query:
         foo: bar
-      roles:
-        - Admin
+
     get:
       method: GET
       url: /api/apps/{appId}/{resource}/{id}
       query:
         foo: bar
-      roles:
-        - User
+
     query:
       method: GET
       url: /api/apps/{appId}/{resource}
       query:
         foo: bar
-      roles:
-        - User
+
     update:
       method: PUT
       url: /api/apps/{appId}/{resource}/{id}
       query:
         foo: bar
-      roles:
-        - Admin
+
     references:
       foo:
         create:
@@ -98,9 +92,6 @@ security:
 
 anchors:
   - test
-
-roles:
-  - User
 
 pages:
   - name: Test Page

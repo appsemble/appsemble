@@ -1,5 +1,5 @@
 import { Title } from '@appsemble/react-components';
-import { generateDataFromSchema } from '@appsemble/utils';
+import { generateDataFromSchema, getAppRolesByPermissions } from '@appsemble/utils';
 import { type ReactNode } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { useParams } from 'react-router-dom';
@@ -35,9 +35,11 @@ export function Endpoint({ guiResourceName, hasBody, type }: CombinedProps): Rea
   const { resourceName: paramResourceName } = useParams<{ resourceName: string }>();
   const resourceName: string = guiResourceName || paramResourceName;
   const resource = app.definition.resources[resourceName];
-  const roles = (resource[type === '$count' ? 'count' : type]?.roles ?? resource.roles ?? []).map(
-    (role) => app.messages?.app[`app.roles.${role}`] || role,
-  );
+
+  const roles = getAppRolesByPermissions(app.definition.security, [
+    `$resource:${resourceName}:${type === '$count' ? 'query' : type}`,
+  ]);
+
   const [method, postfix] = methods[type];
 
   return (
@@ -46,9 +48,9 @@ export function Endpoint({ guiResourceName, hasBody, type }: CombinedProps): Rea
         <FormattedMessage {...messages[type]} values={{ resourceName }} />
       </Title>
       <div className="is-inline">
-        {roles.includes('$public') ? (
+        {roles.includes('Guest') ? (
           <span className="tag is-warning">
-            <FormattedMessage {...messages.public} />
+            <FormattedMessage {...messages.guest} />
           </span>
         ) : (
           roles.map((role) => (

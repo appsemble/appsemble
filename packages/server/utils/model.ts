@@ -1,12 +1,4 @@
-import { randomBytes } from 'node:crypto';
-
-import { throwKoaError } from '@appsemble/node-utils';
-import type * as types from '@appsemble/types';
-import { addMinutes } from 'date-fns';
-import { type Context } from 'koa';
-
-import { argv } from './argv.js';
-import * as models from '../models/index.js';
+import type * as models from '../models/index.js';
 
 /**
  * Resolves the icon url for an app based on whether it’s present and when it was updated.
@@ -34,30 +26,4 @@ export function resolveIconUrl(app: models.App): string {
   }
 
   return null;
-}
-
-export async function createOAuth2AuthorizationCode(
-  app: models.App,
-  redirectUri: string,
-  scope: string,
-  user: models.User,
-  ctx: Context,
-): Promise<types.OAuth2AuthorizationCode> {
-  const appHost = `${app.path}.${app.OrganizationId}.${new URL(argv.host).hostname}`;
-  const redirectHost = new URL(redirectUri).hostname;
-  if (redirectHost !== appHost && redirectHost !== app.domain) {
-    throwKoaError(ctx, 403, 'Invalid redirectUri');
-  }
-
-  const { code } = await models.OAuth2AuthorizationCode.create({
-    AppId: app.id,
-    code: randomBytes(12).toString('hex'),
-    expires: addMinutes(new Date(), 10),
-    redirectUri,
-    scope,
-    UserId: user.id,
-  });
-  return {
-    code,
-  };
 }

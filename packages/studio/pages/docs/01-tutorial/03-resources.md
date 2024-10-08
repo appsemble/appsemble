@@ -12,7 +12,6 @@ this resource for a participant overview for example.
 ```yaml validate resources-snippet
 resources:
   person:
-    roles: [$public]
     schema:
       type: object
       additionalProperties: false

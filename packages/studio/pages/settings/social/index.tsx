@@ -3,7 +3,7 @@ import {
   Content,
   Loader,
   Message,
-  OAuth2LoginButton,
+  SSOLoginButton,
   Title,
   useData,
   useLocationString,
@@ -42,14 +42,17 @@ export function SocialPage(): ReactNode {
     error,
     loading,
     setData: setAccounts,
-  } = useData<ConnectedAccount[]>('/api/oauth2/connected');
+  } = useData<ConnectedAccount[]>('/api/users/current/auth/oauth2/authorizations');
 
   const disconnect = useCallback(
     async ({ authorizationUrl, name }: OAuth2Provider) => {
       try {
-        const { data: hasNoLoginMethods } = await axios.delete<boolean>('/api/oauth2/connected', {
-          params: { authorizationUrl },
-        });
+        const { data: hasNoLoginMethods } = await axios.delete<boolean>(
+          '/api/users/current/auth/oauth2/authorizations',
+          {
+            params: { authorizationUrl },
+          },
+        );
         setHasNoLoginMethods(hasNoLoginMethods);
       } catch {
         push(formatMessage(messages.disconnectError, { name }));
@@ -93,7 +96,7 @@ export function SocialPage(): ReactNode {
             <FormattedMessage {...messages.disconnectAccount} values={{ name: provider.name }} />
           </AsyncButton>
         ) : (
-          <OAuth2LoginButton
+          <SSOLoginButton
             authorizationUrl={provider.authorizationUrl}
             className={`${styles.button} mb-4`}
             clientId={provider.clientId}
@@ -106,7 +109,7 @@ export function SocialPage(): ReactNode {
             scope={provider.scope}
           >
             <FormattedMessage {...messages.connectAccount} values={{ name: provider.name }} />
-          </OAuth2LoginButton>
+          </SSOLoginButton>
         ),
       )}
     </Content>

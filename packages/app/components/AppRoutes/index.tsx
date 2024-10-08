@@ -7,17 +7,18 @@ import { getDefaultPageName } from '../../utils/getDefaultPageName.js';
 import { sentryDsn, showDemoLogin } from '../../utils/settings.js';
 import { AppDebug } from '../AppDebug/index.js';
 import { useAppDefinition } from '../AppDefinitionProvider/index.js';
+import { AppInvite } from '../AppInvite/index.js';
+import { useAppMember } from '../AppMemberProvider/index.js';
 import { useAppMessages } from '../AppMessagesProvider/index.js';
 import { AppSettings } from '../AppSettings/index.js';
 import { EditPassword } from '../EditPassword/index.js';
+import { GroupInvite } from '../GroupInvite/index.js';
 import { Login } from '../Login/index.js';
 import { OpenIDCallback } from '../OpenIDCallback/index.js';
 import { Page } from '../Page/index.js';
 import { Register } from '../Register/index.js';
 import { ResetPassword } from '../ResetPassword/index.js';
 import { SentryFeedback } from '../SentryFeedback/index.js';
-import { TeamInvite } from '../TeamInvite/index.js';
-import { useUser } from '../UserProvider/index.js';
 import { Verify } from '../Verify/index.js';
 
 /**
@@ -28,13 +29,13 @@ import { Verify } from '../Verify/index.js';
 export function AppRoutes(): ReactNode {
   const { getAppMessage } = useAppMessages();
   const { definition } = useAppDefinition();
-  const { isLoggedIn, role } = useUser();
+  const { appMemberRole, isLoggedIn } = useAppMember();
 
   if (definition == null) {
     return null;
   }
 
-  const defaultPageName = getDefaultPageName(isLoggedIn, role, definition);
+  const defaultPageName = getDefaultPageName(isLoggedIn, appMemberRole, definition);
   const hasCustomLogin = definition.pages.some((page) => page.name === 'Login');
   const hasCustomRegister = definition.pages.some((page) => page.name === 'Register');
 
@@ -58,7 +59,8 @@ export function AppRoutes(): ReactNode {
           />
         ) : null}
 
-        <Route caseSensitive element={<TeamInvite />} path="/Team-Invite" />
+        <Route caseSensitive element={<GroupInvite />} path="/Group-Invite" />
+        <Route caseSensitive element={<AppInvite />} path="/App-Invite" />
         <Route caseSensitive element={<ResetPassword />} path="/Reset-Password" />
         <Route caseSensitive element={<EditPassword />} path="/Edit-Password" />
         <Route caseSensitive element={<Verify />} path="/Verify" />

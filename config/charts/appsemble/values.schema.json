@@ -175,6 +175,24 @@
       "type": ["string", "null"],
       "description": "If specified, the database will be migrated to this specific version. To upgrade to the latest version, specify `next`"
     },
+    "migrateDefinitions": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "validate": {
+          "type": ["boolean", "null"],
+          "description": "If `true`, will validate app definitions before saving them."
+        },
+        "save": {
+          "type": ["boolean", "null"],
+          "description": "If `true`, will save the migrated app definitions after they have been patched successfully."
+        },
+        "batch": {
+          "type": ["integer", "null"],
+          "description": "If specified, will patch the number of apps specified per iteration."
+        }
+      }
+    },
     "proxy": {
       "type": "boolean",
       "description": "If `true`, The proxy is trusted for logging purposes."
@@ -226,11 +244,11 @@
       "type": "object",
       "description": "Provision the database with a preconfigured account and client credentials. This is for development purposes only.",
       "additionalProperties": false,
-      "required": ["account"],
+      "required": ["user"],
       "properties": {
-        "account": {
+        "user": {
           "type": "object",
-          "description": "The account to create.",
+          "description": "The user account to provision.",
           "additionalProperties": false,
           "required": ["clientCredentials", "email", "name", "password", "timezone"],
           "properties": {
@@ -254,6 +272,35 @@
             "timezone": {
               "type": "string",
               "description": "The timezone of the user account"
+            },
+            "organizationRole": {
+              "enum": [
+                "Member",
+                "AppTranslator",
+                "AppContentsExplorer",
+                "AppContentsManager",
+                "AppMemberManager",
+                "AppGroupManager",
+                "AppGroupMembersManager",
+                "AppManager",
+                "AppCollectionManager",
+                "BlockManager",
+                "Maintainer",
+                "Owner"
+              ],
+              "description": "The role of the provisioned user account inside the provisioned organization"
+            }
+          }
+        },
+        "organization": {
+          "type": "object",
+          "description": "The organization to provision.",
+          "additionalProperties": false,
+          "required": ["id"],
+          "properties": {
+            "id": {
+              "type": "string",
+              "description": "The id of the organization to provision. Ignored if the organization exists in imported data"
             }
           }
         }
@@ -305,6 +352,9 @@
           }
         }
       }
+    },
+    "mailpit": {
+      "type": "object"
     }
   }
 }

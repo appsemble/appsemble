@@ -1,3 +1,4 @@
+import { PredefinedOrganizationRole } from '@appsemble/types';
 import { defaultLocale } from '@appsemble/utils';
 import { setTestApp } from 'axios-test-instance';
 import { type ImapFlow, type MailboxLockObject } from 'imapflow';
@@ -122,17 +123,17 @@ describe('sendTranslatedEmail', () => {
         organization: 'Test Organization',
       },
     ],
-    teamInvite: [
+    groupInvite: [
       {
         name: 'null',
         link: (text: string) => `[${text}](https://example.com)`,
-        teamName: 'Test Team',
+        groupName: 'Test Group',
         appName: 'Test App',
       },
       {
         name: 'John Doe',
         link: (text: string) => `[${text}](https://example.com)`,
-        teamName: 'Test Team',
+        groupName: 'Test Group',
         appName: 'Test App',
       },
     ],
@@ -600,7 +601,7 @@ describe('emailQuota', () => {
     await OrganizationMember.create({
       OrganizationId: organization.id,
       UserId: user.id,
-      role: 'Owner',
+      role: PredefinedOrganizationRole.Owner,
     });
     app = await App.create({
       definition: {

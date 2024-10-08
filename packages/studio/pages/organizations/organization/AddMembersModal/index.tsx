@@ -8,8 +8,11 @@ import {
   type Toggle,
   useMessages,
 } from '@appsemble/react-components';
-import { type OrganizationInvite } from '@appsemble/types';
-import { type Role, roles } from '@appsemble/utils';
+import {
+  type OrganizationInvite,
+  PredefinedOrganizationRole,
+  predefinedOrganizationRoles,
+} from '@appsemble/types';
 import axios from 'axios';
 import {
   type ChangeEvent,
@@ -38,12 +41,10 @@ interface AddMembersModalProps {
   readonly onInvited: (invites: OrganizationInvite[]) => void;
 }
 
-const defaultInvite = {
+const defaultInvite: OrganizationInvite = {
   email: '',
-  role: 'Member',
+  role: PredefinedOrganizationRole.Member,
 };
-
-const roleKeys = Object.keys(roles);
 
 /**
  * A modal form for inviting one or more people to the organization.
@@ -142,7 +143,7 @@ export function AddMembersModal({ onInvited, state }: AddMembersModalProps): Rea
         ...invites.slice(0, index),
         ...lines.map((line) => {
           const [email, name] = line.split('\t');
-          return { email, name, role: 'Member' };
+          return { email, name, role: PredefinedOrganizationRole.Member } as OrganizationInvite;
         }),
         ...invites.slice(index),
       ]);
@@ -199,9 +200,13 @@ export function AddMembersModal({ onInvited, state }: AddMembersModalProps): Rea
               onChange={onChange}
               value={member.role}
             >
-              {roleKeys
-                .filter((r) => roleKeys.indexOf(r) <= roleKeys.indexOf(organization?.role))
-                .map((r: Role) => (
+              {predefinedOrganizationRoles
+                .filter(
+                  (r) =>
+                    predefinedOrganizationRoles.indexOf(r) <=
+                    predefinedOrganizationRoles.indexOf(organization?.role),
+                )
+                .map((r: PredefinedOrganizationRole) => (
                   <option key={r} value={r}>
                     {formatMessage(messages[r])}
                   </option>

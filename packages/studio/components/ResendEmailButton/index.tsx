@@ -21,7 +21,7 @@ export function ResendEmailButton({ email, ...props }: ResendEmailButtonProps): 
 
   const resendVerification = useCallback(async () => {
     try {
-      await axios.post('/api/email/resend', { email });
+      await axios.post('/api/auth/email/resend-verification', { email });
       push({
         body: formatMessage(messages.resendVerificationSent),
         color: 'info',

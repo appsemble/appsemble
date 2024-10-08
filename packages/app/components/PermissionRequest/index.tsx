@@ -2,15 +2,15 @@ import { type ReactNode, useEffect } from 'react';
 
 import styles from './index.module.css';
 import { useAppDefinition } from '../AppDefinitionProvider/index.js';
+import { useAppMember } from '../AppMemberProvider/index.js';
 import { useServiceWorkerRegistration } from '../ServiceWorkerRegistrationProvider/index.js';
-import { useUser } from '../UserProvider/index.js';
 
 /**
  * Render all different authentication methods for an app.
  */
 export function PermissionRequest(): ReactNode {
   const { definition } = useAppDefinition();
-  const { userInfo } = useUser();
+  const { appMemberInfo } = useAppMember();
   const { permission, requestPermission, subscribe } = useServiceWorkerRegistration();
 
   useEffect(() => {
@@ -24,7 +24,7 @@ export function PermissionRequest(): ReactNode {
 
     if (
       definition.notifications === 'startup' ||
-      (definition.notifications === 'login' && userInfo?.sub)
+      (definition.notifications === 'login' && appMemberInfo?.sub)
     ) {
       requestPermission().then((p) => {
         if (p === 'granted') {
@@ -32,7 +32,7 @@ export function PermissionRequest(): ReactNode {
         }
       });
     }
-  }, [definition.notifications, requestPermission, subscribe, userInfo?.sub]);
+  }, [definition.notifications, requestPermission, subscribe, appMemberInfo?.sub]);
 
   return permission === 'pending' ? <div className={`modal-background ${styles.overlay}`} /> : null;
 }

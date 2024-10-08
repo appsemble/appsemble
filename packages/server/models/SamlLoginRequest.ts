@@ -11,9 +11,9 @@ import {
   UpdatedAt,
 } from 'sequelize-typescript';
 
-import { AppSamlSecret, User } from './index.js';
+import { AppMember, AppSamlSecret } from './index.js';
 
-@Table({ tableName: 'SamlLoginRequest', paranoid: false })
+@Table({ tableName: 'SamlLoginRequest' })
 export class SamlLoginRequest extends Model {
   /**
    * The SAML login ID that is sent to the SAML server.
@@ -79,15 +79,15 @@ export class SamlLoginRequest extends Model {
   /**
    * An optional ID of the user who’s logged in to Appsemble Studio at the time of the request.
    */
-  @ForeignKey(() => User)
+  @ForeignKey(() => AppMember)
   @Column(DataType.UUID)
-  UserId: string;
+  AppMemberId: string;
 
   /**
    * An optional user who’s logged in to Appsemble Studio at the time of the request.
    */
-  @BelongsTo(() => User, { onDelete: 'CASCADE' })
-  User: Awaited<User>;
+  @BelongsTo(() => AppMember, { onDelete: 'CASCADE' })
+  AppMember: Awaited<AppMember>;
 
   @CreatedAt
   created: Date;

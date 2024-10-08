@@ -307,22 +307,34 @@ parameters:
 
 `,
   },
-  user: {
-    enum: ['sub', 'name', 'email', 'email_verified', 'picture', 'profile', 'locale', 'properties'],
+  'app.member': {
+    enum: [
+      'sub',
+      'name',
+      'email',
+      'email_verified',
+      'picture',
+      'locale',
+      'zoneinfo',
+      'role',
+      'properties',
+    ],
     description: `
-> **Note:** For this remapper to work, the user that activated the remapper has to be logged in to
+> **Note:** For this remapper to work, the app member that activated the remapper has to be logged in to
 > the app
 
-Provides some fields of user information taken from the OpenID user info. These fields are:
+Provides some fields of app member information taken from the OpenID user info. These fields are:
 
-- \`email\`: User’s **primary** email address
-- \`email_verified\`: Whether the user’s primary email address is verified or not (\`boolean\`)
-- \`locale\`: The user’s default language [\`BCP47\`](https://en.wikipedia.org/wiki/IETF_language_tag)
+- \`sub\`: The app member’s identifier
+- \`name\`: The app member’s name
+- \`email\`: The app member’s **primary** email address
+- \`email_verified\`: Whether the app member’s primary email address is verified or not (\`boolean\`)
+- \`picture\`: Full URL to the app member’s profile picture web address
+- \`locale\`: The app member’s default language [\`BCP47\`](https://en.wikipedia.org/wiki/IETF_language_tag)
   language tag (ex. \`en\`) (Broken)
-- \`name\`: The user’s name
-- \`picture\`: Full URL to the user’s profile picture web address
-- \`sub\`: The user’s identifier
-- \`properties\`: Custom properties defined on the user
+- \`zoneinfo\`: The app member’s timezone
+- \`role\`: The role of the app member in the app
+- \`properties\`: Custom properties defined on the app member
 
 Example:
 
@@ -335,33 +347,6 @@ Example:
   "picture": "https://www.gravatar.com/avatar/f46b82357ce29bcd1099915946cda468?s=128&d=mp",
   "sub": "5c6270e2-ad31-414f-bcab-6752a2c4dcfd",
   "properties": {}
-}
-\`\`\`
-    `,
-  },
-  appMember: {
-    enum: ['userId', 'memberId', 'name', 'primary_email', 'role'],
-    description: `
-> **Note:** For this remapper to work, the user that activated the remapper has to be logged in to
-> the app
-
-Provides some fields of the appMember object.
-
-- \`userId\`: The id of the user to which the appMember object belongs.
-- \`memberId\`: The id of the appMember object itself. This value should be used when fetching resources created by the current user.
-- \`primary_email\`: User’s **primary** email address.
-- \`name\`: The user’s name.
-- \`role\`: User's role in the context of the app.
-
-Example:
-
-\`\`\`json
-{
-  "memberId": "1f433c7a-54ea-466e-89f7-5dbb8f324b12",
-  "name": "Test User"
-  "primaryEmail": "example@hotmail.nl",
-  "role": "Medewerker",
-  "userId": "5c6270e2-ad31-414f-bcab-6752a2c4dcfd"
 }
 \`\`\`
     `,

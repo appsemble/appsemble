@@ -92,9 +92,9 @@ export class AppCollection extends Model {
       $expert: {
         name: this.expertName,
         description: this.expertDescription,
-        profileImage: `/api/appCollections/${this.id}/expert/profileImage`,
+        profileImage: `/api/app-collections/${this.id}/expert/profile-image`,
       },
-      headerImage: `/api/appCollections/${this.id}/headerImage`,
+      headerImage: `/api/app-collections/${this.id}/header-image`,
       domain: this.domain,
       $created: this.created?.toISOString(),
       $updated: this.updated?.toISOString(),

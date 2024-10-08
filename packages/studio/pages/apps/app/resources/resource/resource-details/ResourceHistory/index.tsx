@@ -19,7 +19,7 @@ export function ResourceHistory(): ReactNode {
     resourceId: string;
   }>();
   const result = useData<ResourceVersion[]>(
-    `/api/apps/${id}/resources/${resourceName}/${resourceId}/history`,
+    `/api/apps/${id}/resources/${resourceName}/${resourceId}/versions`,
   );
 
   const modal = useToggle();

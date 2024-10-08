@@ -3,7 +3,6 @@ import { type ReactNode } from 'react';
 import { useParams } from 'react-router-dom';
 
 import { ConfigurationError } from './ConfigurationError/index.js';
-import { EmailConflict } from './EmailConflict/index.js';
 import { messages } from './messages.js';
 
 export function SAMLResponsePage(): ReactNode {
@@ -22,8 +21,6 @@ export function SAMLResponsePage(): ReactNode {
       return <ConfigurationError message={messages.missingSubject} />;
     case 'missingnameid':
       return <ConfigurationError message={messages.missingNameID} />;
-    case 'emailconflict':
-      return <EmailConflict />;
     default:
       return <div>Oh no</div>;
   }

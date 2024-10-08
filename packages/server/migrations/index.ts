@@ -11,6 +11,7 @@ import * as m0_27_8 from './0.27.8.js';
 import * as m0_28_0 from './0.28.0.js';
 import * as m0_29_0 from './0.29.0.js';
 import * as m0_29_1 from './0.29.1.js';
+import * as m0_30_0 from './0.30.0.js';
 import { type Migration } from '../utils/migrate.js';
 
 export const migrations: Migration[] = [
@@ -27,4 +28,5 @@ export const migrations: Migration[] = [
   m0_28_0,
   m0_29_0,
   m0_29_1,
+  m0_30_0,
 ];

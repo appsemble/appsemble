@@ -1,5 +1,6 @@
 import { createFixtureStream, readFixture } from '@appsemble/node-utils';
 import { createServer, createTestUser, models, setArgv, useTestDatabase } from '@appsemble/server';
+import { PredefinedOrganizationRole } from '@appsemble/types';
 import { type AxiosTestInstance, setTestApp } from 'axios-test-instance';
 import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 
@@ -85,7 +86,7 @@ describe('updateOrganization', () => {
     await OrganizationMember.create({
       OrganizationId: organization.id,
       UserId: user.id,
-      role: 'Owner',
+      role: PredefinedOrganizationRole.Owner,
     });
     await authorizeCLI('organizations:write', testApp);
     await updateOrganization({
@@ -125,7 +126,7 @@ describe('updateOrganization', () => {
     await OrganizationMember.create({
       OrganizationId: organization.id,
       UserId: user.id,
-      role: 'Owner',
+      role: PredefinedOrganizationRole.Owner,
     });
     await organization.destroy();
     await authorizeCLI('organizations:write', testApp);
@@ -149,7 +150,7 @@ describe('updateOrganization', () => {
     await OrganizationMember.create({
       OrganizationId: organization.id,
       UserId: user.id,
-      role: 'Owner',
+      role: PredefinedOrganizationRole.Owner,
     });
     await expect(() =>
       updateOrganization({
@@ -194,7 +195,7 @@ describe('upsertOrganization', () => {
     await OrganizationMember.create({
       OrganizationId: organization.id,
       UserId: user.id,
-      role: 'Owner',
+      role: PredefinedOrganizationRole.Owner,
     });
     await authorizeCLI('organizations:write', testApp);
     await upsertOrganization({

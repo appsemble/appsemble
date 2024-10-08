@@ -5,7 +5,7 @@ import { Link } from 'react-router-dom';
 
 import { messages } from './messages.js';
 import { sentryDsn } from '../../utils/settings.js';
-import { useUser } from '../UserProvider/index.js';
+import { useAppMember } from '../AppMemberProvider/index.js';
 
 interface ErrorFallbackProps {
   /**
@@ -23,7 +23,7 @@ interface ErrorFallbackProps {
  * Capture renderer errors using Sentry.
  */
 export function ErrorFallback({ eventId, resetErrorBoundary }: ErrorFallbackProps): ReactNode {
-  const user = useUser();
+  const appMemberContext = useAppMember();
 
   return (
     <Content className="py-3">
@@ -32,9 +32,9 @@ export function ErrorFallback({ eventId, resetErrorBoundary }: ErrorFallbackProp
       </Message>
       <SentryForm
         dsn={sentryDsn}
-        email={user?.userInfo?.email}
+        email={appMemberContext?.appMemberInfo?.email}
         eventId={eventId}
-        name={user?.userInfo?.name}
+        name={appMemberContext?.appMemberInfo?.name}
         recovery={
           <Button className="mb-3" component={Link} onClick={resetErrorBoundary} to="/">
             <FormattedMessage {...messages.home} />

@@ -111,7 +111,6 @@ export async function handler(): Promise<void> {
         const action = actions[job.action.type];
         await handleAction(action, {
           app,
-          user: null,
           action: job.action,
           mailer,
           data: null,

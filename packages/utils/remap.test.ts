@@ -1,8 +1,8 @@
 import {
   type AppConfigEntry,
+  type AppMemberInfo,
   type AppMessages,
   type Remapper,
-  type UserInfo,
 } from '@appsemble/types';
 import { IntlMessageFormat } from 'intl-messageformat';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
@@ -42,7 +42,7 @@ interface TestCase {
   expected: any;
   messages?: AppMessages['messages'];
   variables?: AppConfigEntry[];
-  userInfo?: UserInfo;
+  appMemberInfo?: AppMemberInfo;
   context?: Record<string, any>;
   history?: unknown[];
 }
@@ -50,7 +50,7 @@ interface TestCase {
 function runTests(tests: Record<string, TestCase>): void {
   it.each(Object.entries(tests))(
     'should %s',
-    (name, { context, expected, history, input, mappers, messages, userInfo, variables }) => {
+    (name, { appMemberInfo, context, expected, history, input, mappers, messages, variables }) => {
       const result = remap(mappers, input, {
         getMessage: ({ defaultMessage, id }) =>
           new IntlMessageFormat(messages?.messageIds?.[id] ?? defaultMessage),
@@ -58,13 +58,12 @@ function runTests(tests: Record<string, TestCase>): void {
           variables.find((variable) => variable.name === variableName)?.value,
         url: 'https://example.com/en/example',
         appUrl: 'https://example.com',
-        userInfo,
         context,
         history,
         appId: 6789,
         locale: 'en',
         pageData: { hello: 'Page data' },
-        appMember: userInfo?.appMember,
+        appMemberInfo,
       });
       expect(result).toStrictEqual(expected);
     },
@@ -341,13 +340,13 @@ describe('log', () => {
       (
         name,
         {
+          appMemberInfo,
           context,
           expected: expectedInput,
           history,
           input,
           mappers,
           messages,
-          userInfo,
           variables,
         },
       ) => {
@@ -377,13 +376,12 @@ describe('log', () => {
             variables.find((variable) => variable.name === variableName).value,
           url: 'https://example.com/en/example',
           appUrl: 'https://example.com',
-          userInfo,
           context,
           history,
           appId: 6789,
           locale: 'en',
           pageData: { hello: 'Page data' },
-          appMember: userInfo?.appMember,
+          appMemberInfo,
         });
         expect(console[(mappers as { log: 'error' | 'info' | 'warn' }).log]).toHaveBeenCalledWith(
           expected,
@@ -1417,15 +1415,16 @@ describe('user', () => {
   runTests({
     'insert user info': {
       input: null,
-      mappers: { user: 'name' },
+      mappers: { 'app.member': 'name' },
       expected: 'Me',
-      userInfo: {
+      appMemberInfo: {
         sub: '1',
         name: 'Me',
         email: 'me@example.com',
         email_verified: true,
         picture: '',
-        profile: '',
+        role: 'Member',
+        demo: false,
       },
     },
   });

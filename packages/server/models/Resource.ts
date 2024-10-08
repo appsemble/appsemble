@@ -19,7 +19,7 @@ import {
   UpdatedAt,
 } from 'sequelize-typescript';
 
-import { App, AppMember, Asset, ResourceSubscription, ResourceVersion } from './index.js';
+import { App, AppMember, Asset, Group, ResourceSubscription, ResourceVersion } from './index.js';
 
 interface ResourceToJsonOptions {
   /**
@@ -91,6 +91,14 @@ export class Resource extends Model {
   @BelongsTo(() => App)
   App: Awaited<App>;
 
+  @ForeignKey(() => Group)
+  @AllowNull(true)
+  @Column(DataType.INTEGER)
+  GroupId: number;
+
+  @BelongsTo(() => Group, { onDelete: 'CASCADE' })
+  Group: Awaited<Group>;
+
   @ForeignKey(() => AppMember)
   @Column(DataType.UUID)
   AuthorId: string;
@@ -142,7 +150,7 @@ export class Resource extends Model {
 
     const appMembersToUpdate: Record<string, Record<string, number[] | number>> = {};
 
-    const userPropertiesDefinition = app.definition.users?.properties;
+    const userPropertiesDefinition = app.definition.members?.properties;
 
     if (!userPropertiesDefinition) {
       return;
@@ -226,7 +234,7 @@ export class Resource extends Model {
 
     const appMembersToUpdate: Record<string, Record<string, number[] | number>> = {};
 
-    const userPropertiesDefinition = app.definition.users?.properties;
+    const userPropertiesDefinition = app.definition.members?.properties;
 
     if (!userPropertiesDefinition) {
       return;
@@ -304,6 +312,10 @@ export class Resource extends Model {
       result.$editor = { id: this.Editor.id, name: this.Editor.name };
     }
 
+    if (this.Group) {
+      result.$group = { id: this.Group.id, name: this.Group.name };
+    }
+
     if (this.clonable != null) {
       result.$clonable = this.clonable;
     }
@@ -327,11 +339,13 @@ export class Resource extends Model {
         }
       }
     }
+
     if (exclude) {
       for (const name of exclude) {
         delete result[name];
       }
     }
+
     return result;
   }
 }

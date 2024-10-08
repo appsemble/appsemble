@@ -40,7 +40,7 @@ exports[`sendTranslatedEmail > appEmailQuotaLimitHit > en > should render appEma
 <p>Hello,</p>
 <p>Your app Test App has hit its email quota limit.</p>
 <p>Kind regards,</p>
-<p><em>The Appsemble Team</em></p>
+<p><em>The Appsemble Group</em></p>
 </body>
 </html>
 ",
@@ -51,7 +51,7 @@ Your app Test App has hit its email quota limit.
 
 Kind regards,
 
-_The Appsemble Team_
+_The Appsemble Group_
 ",
   "to": "test@example.com",
 }
@@ -73,7 +73,7 @@ exports[`sendTranslatedEmail > appEmailQuotaLimitHit > en > should render appEma
 <p>Hello John Doe,</p>
 <p>Your app Test App has hit its email quota limit.</p>
 <p>Kind regards,</p>
-<p><em>The Appsemble Team</em></p>
+<p><em>The Appsemble Group</em></p>
 </body>
 </html>
 ",
@@ -84,7 +84,7 @@ Your app Test App has hit its email quota limit.
 
 Kind regards,
 
-_The Appsemble Team_
+_The Appsemble Group_
 ",
   "to": "John Doe <test@example.com>",
 }
@@ -403,7 +403,7 @@ exports[`sendTranslatedEmail > emailAdded > en > should render emailAdded 2 for 
 <p><strong>Didn’t request this email?</strong>.</p>
 <p>No worries! Your address may have been entered by mistake. If you ignore or delete this email, nothing will be done with this email address.</p>
 <p>Kind regards,</p>
-<p><em>The Appsemble Team</em></p>
+<p><em>The Appsemble Group</em></p>
 </body>
 </html>
 ",
@@ -420,7 +420,7 @@ No worries! Your address may have been entered by mistake. If you ignore or dele
 
 Kind regards,
 
-_The Appsemble Team_
+_The Appsemble Group_
 ",
   "to": "test@example.com",
 }
@@ -445,7 +445,7 @@ exports[`sendTranslatedEmail > emailAdded > en > should render emailAdded 3 for 
 <p><strong>Didn’t request this email?</strong>.</p>
 <p>No worries! Your address may have been entered by mistake. If you ignore or delete this email, nothing will be done with this email address.</p>
 <p>Kind regards,</p>
-<p><em>The Appsemble Team</em></p>
+<p><em>The Appsemble Group</em></p>
 </body>
 </html>
 ",
@@ -462,7 +462,7 @@ No worries! Your address may have been entered by mistake. If you ignore or dele
 
 Kind regards,
 
-_The Appsemble Team_
+_The Appsemble Group_
 ",
   "to": "John Doe <test@example.com>",
 }
@@ -636,6 +636,150 @@ _Het Appsemble Team_
 }
 `;
 
+exports[`sendTranslatedEmail > groupInvite > en > should render groupInvite 0 for locale en 1`] = `undefined`;
+
+exports[`sendTranslatedEmail > groupInvite > en > should render groupInvite 0 for locale en 2`] = `
+{
+  "attachments": [],
+  "from": "Appsemble <test@example.com>",
+  "html": "<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1" name="viewport">
+</head>
+<body>
+<p>Hello,</p>
+<p>You have been invited to join the group <strong>Test Group</strong> for the app <strong>Test App</strong>.</p>
+<p>You can accept this invitation by following <a href="https://example.com">this link</a>.</p>
+<p>Kind regards,</p>
+<p><em>The Test App Group</em></p>
+</body>
+</html>
+",
+  "subject": "Invited to group",
+  "text": "Hello,
+
+You have been invited to join the group **Test Group** for the app **Test App**.
+
+You can accept this invitation by following [this link](https://example.com).
+
+Kind regards,
+
+_The Test App Group_
+",
+  "to": "test@example.com",
+}
+`;
+
+exports[`sendTranslatedEmail > groupInvite > en > should render groupInvite 1 for locale en 1`] = `undefined`;
+
+exports[`sendTranslatedEmail > groupInvite > en > should render groupInvite 1 for locale en 2`] = `
+{
+  "attachments": [],
+  "from": "Appsemble <test@example.com>",
+  "html": "<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1" name="viewport">
+</head>
+<body>
+<p>Hello John Doe,</p>
+<p>You have been invited to join the group <strong>Test Group</strong> for the app <strong>Test App</strong>.</p>
+<p>You can accept this invitation by following <a href="https://example.com">this link</a>.</p>
+<p>Kind regards,</p>
+<p><em>The Test App Group</em></p>
+</body>
+</html>
+",
+  "subject": "Invited to group",
+  "text": "Hello John Doe,
+
+You have been invited to join the group **Test Group** for the app **Test App**.
+
+You can accept this invitation by following [this link](https://example.com).
+
+Kind regards,
+
+_The Test App Group_
+",
+  "to": "John Doe <test@example.com>",
+}
+`;
+
+exports[`sendTranslatedEmail > groupInvite > nl > should render groupInvite 0 for locale nl 1`] = `undefined`;
+
+exports[`sendTranslatedEmail > groupInvite > nl > should render groupInvite 0 for locale nl 2`] = `
+{
+  "attachments": [],
+  "from": "Appsemble <test@example.com>",
+  "html": "<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1" name="viewport">
+</head>
+<body>
+<p>Hallo,</p>
+<p>Je bent uitgenodigd om deel uit te maken van het group <strong>Test Group</strong> voor de app <strong>Test App</strong>.</p>
+<p>U kunt deze uitnodiging accepteren door <a href="https://example.com">deze link</a> te volgen.</p>
+<p>Met vriendelijke groet,</p>
+<p><em>Het Test App Team</em></p>
+</body>
+</html>
+",
+  "subject": "Uitgenodigd voor group",
+  "text": "Hallo,
+
+Je bent uitgenodigd om deel uit te maken van het group **Test Group** voor de app **Test App**.
+
+U kunt deze uitnodiging accepteren door [deze link](https://example.com) te volgen.
+
+Met vriendelijke groet,
+
+_Het Test App Team_
+",
+  "to": "test@example.com",
+}
+`;
+
+exports[`sendTranslatedEmail > groupInvite > nl > should render groupInvite 1 for locale nl 1`] = `undefined`;
+
+exports[`sendTranslatedEmail > groupInvite > nl > should render groupInvite 1 for locale nl 2`] = `
+{
+  "attachments": [],
+  "from": "Appsemble <test@example.com>",
+  "html": "<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1" name="viewport">
+</head>
+<body>
+<p>Hallo John Doe,</p>
+<p>Je bent uitgenodigd om deel uit te maken van het group <strong>Test Group</strong> voor de app <strong>Test App</strong>.</p>
+<p>U kunt deze uitnodiging accepteren door <a href="https://example.com">deze link</a> te volgen.</p>
+<p>Met vriendelijke groet,</p>
+<p><em>Het Test App Team</em></p>
+</body>
+</html>
+",
+  "subject": "Uitgenodigd voor group",
+  "text": "Hallo John Doe,
+
+Je bent uitgenodigd om deel uit te maken van het group **Test Group** voor de app **Test App**.
+
+U kunt deze uitnodiging accepteren door [deze link](https://example.com) te volgen.
+
+Met vriendelijke groet,
+
+_Het Test App Team_
+",
+  "to": "John Doe <test@example.com>",
+}
+`;
+
 exports[`sendTranslatedEmail > organizationInvite > en > should render organizationInvite 0 for locale en 1`] = `undefined`;
 
 exports[`sendTranslatedEmail > organizationInvite > en > should render organizationInvite 0 for locale en 2`] = `
@@ -654,7 +798,7 @@ exports[`sendTranslatedEmail > organizationInvite > en > should render organizat
 <p>Joining an organization allows you to view private applications as well as create and edit apps belonging to an organization.</p>
 <p>You can accept or decline this invitation by following <a href="https://example.com">this link</a>.</p>
 <p>Kind regards,</p>
-<p><em>The Appsemble Team</em></p>
+<p><em>The Appsemble Group</em></p>
 </body>
 </html>
 ",
@@ -669,7 +813,7 @@ You can accept or decline this invitation by following [this link](https://examp
 
 Kind regards,
 
-_The Appsemble Team_
+_The Appsemble Group_
 ",
   "to": "test@example.com",
 }
@@ -693,7 +837,7 @@ exports[`sendTranslatedEmail > organizationInvite > en > should render organizat
 <p>Joining an organization allows you to view private applications as well as create and edit apps belonging to an organization.</p>
 <p>You can accept or decline this invitation by following <a href="https://example.com">this link</a>.</p>
 <p>Kind regards,</p>
-<p><em>The Appsemble Team</em></p>
+<p><em>The Appsemble Group</em></p>
 </body>
 </html>
 ",
@@ -708,7 +852,7 @@ You can accept or decline this invitation by following [this link](https://examp
 
 Kind regards,
 
-_The Appsemble Team_
+_The Appsemble Group_
 ",
   "to": "John Doe <test@example.com>",
 }
@@ -1111,150 +1255,6 @@ Jouw e-mailadres is mogelijk per ongeluk ingevoerd. Deze e-mail kan veilig worde
 Met vriendelijke groet,
 
 _Test App_
-",
-  "to": "John Doe <test@example.com>",
-}
-`;
-
-exports[`sendTranslatedEmail > teamInvite > en > should render teamInvite 0 for locale en 1`] = `undefined`;
-
-exports[`sendTranslatedEmail > teamInvite > en > should render teamInvite 0 for locale en 2`] = `
-{
-  "attachments": [],
-  "from": "Appsemble <test@example.com>",
-  "html": "<!doctype html>
-<html lang="en">
-<head>
-<meta charset="utf-8">
-<meta content="width=device-width, initial-scale=1" name="viewport">
-</head>
-<body>
-<p>Hello,</p>
-<p>You have been invited to join the team <strong>Test Team</strong> for the app <strong>Test App</strong>.</p>
-<p>You can accept this invitation by following <a href="https://example.com">this link</a>.</p>
-<p>Kind regards,</p>
-<p><em>The Test App Team</em></p>
-</body>
-</html>
-",
-  "subject": "Invited to team",
-  "text": "Hello,
-
-You have been invited to join the team **Test Team** for the app **Test App**.
-
-You can accept this invitation by following [this link](https://example.com).
-
-Kind regards,
-
-_The Test App Team_
-",
-  "to": "test@example.com",
-}
-`;
-
-exports[`sendTranslatedEmail > teamInvite > en > should render teamInvite 1 for locale en 1`] = `undefined`;
-
-exports[`sendTranslatedEmail > teamInvite > en > should render teamInvite 1 for locale en 2`] = `
-{
-  "attachments": [],
-  "from": "Appsemble <test@example.com>",
-  "html": "<!doctype html>
-<html lang="en">
-<head>
-<meta charset="utf-8">
-<meta content="width=device-width, initial-scale=1" name="viewport">
-</head>
-<body>
-<p>Hello John Doe,</p>
-<p>You have been invited to join the team <strong>Test Team</strong> for the app <strong>Test App</strong>.</p>
-<p>You can accept this invitation by following <a href="https://example.com">this link</a>.</p>
-<p>Kind regards,</p>
-<p><em>The Test App Team</em></p>
-</body>
-</html>
-",
-  "subject": "Invited to team",
-  "text": "Hello John Doe,
-
-You have been invited to join the team **Test Team** for the app **Test App**.
-
-You can accept this invitation by following [this link](https://example.com).
-
-Kind regards,
-
-_The Test App Team_
-",
-  "to": "John Doe <test@example.com>",
-}
-`;
-
-exports[`sendTranslatedEmail > teamInvite > nl > should render teamInvite 0 for locale nl 1`] = `undefined`;
-
-exports[`sendTranslatedEmail > teamInvite > nl > should render teamInvite 0 for locale nl 2`] = `
-{
-  "attachments": [],
-  "from": "Appsemble <test@example.com>",
-  "html": "<!doctype html>
-<html lang="en">
-<head>
-<meta charset="utf-8">
-<meta content="width=device-width, initial-scale=1" name="viewport">
-</head>
-<body>
-<p>Hallo,</p>
-<p>Je bent uitgenodigd om deel uit te maken van het team <strong>Test Team</strong> voor de app <strong>Test App</strong>.</p>
-<p>U kunt deze uitnodiging accepteren door <a href="https://example.com">deze link</a> te volgen.</p>
-<p>Met vriendelijke groet,</p>
-<p><em>Het Test App Team</em></p>
-</body>
-</html>
-",
-  "subject": "Uitgenodigd voor team",
-  "text": "Hallo,
-
-Je bent uitgenodigd om deel uit te maken van het team **Test Team** voor de app **Test App**.
-
-U kunt deze uitnodiging accepteren door [deze link](https://example.com) te volgen.
-
-Met vriendelijke groet,
-
-_Het Test App Team_
-",
-  "to": "test@example.com",
-}
-`;
-
-exports[`sendTranslatedEmail > teamInvite > nl > should render teamInvite 1 for locale nl 1`] = `undefined`;
-
-exports[`sendTranslatedEmail > teamInvite > nl > should render teamInvite 1 for locale nl 2`] = `
-{
-  "attachments": [],
-  "from": "Appsemble <test@example.com>",
-  "html": "<!doctype html>
-<html lang="en">
-<head>
-<meta charset="utf-8">
-<meta content="width=device-width, initial-scale=1" name="viewport">
-</head>
-<body>
-<p>Hallo John Doe,</p>
-<p>Je bent uitgenodigd om deel uit te maken van het team <strong>Test Team</strong> voor de app <strong>Test App</strong>.</p>
-<p>U kunt deze uitnodiging accepteren door <a href="https://example.com">deze link</a> te volgen.</p>
-<p>Met vriendelijke groet,</p>
-<p><em>Het Test App Team</em></p>
-</body>
-</html>
-",
-  "subject": "Uitgenodigd voor team",
-  "text": "Hallo John Doe,
-
-Je bent uitgenodigd om deel uit te maken van het team **Test Team** voor de app **Test App**.
-
-U kunt deze uitnodiging accepteren door [deze link](https://example.com) te volgen.
-
-Met vriendelijke groet,
-
-_Het Test App Team_
 ",
   "to": "John Doe <test@example.com>",
 }

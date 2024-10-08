@@ -55,10 +55,12 @@ export async function publishAsset({
       formData.append('name', normalize(name));
     }
 
-    const endpoint = `/api/apps/${appId}/${seed ? 'seed-' : ''}assets`;
     const {
       data: { id },
-    } = await axios.post<{ id: string }>(endpoint, formData, { baseURL: remote });
+    } = await axios.post<{ id: string }>(`/api/apps/${appId}/assets`, formData, {
+      baseURL: remote,
+      params: { seed },
+    });
     logger.info(`Published asset ${id}${name ? ` with name ${normalize(name)}` : ''}`);
   } catch (error) {
     logger.error(error);

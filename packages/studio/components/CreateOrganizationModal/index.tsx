@@ -8,7 +8,7 @@ import {
   SimpleModalFooter,
   type Toggle,
 } from '@appsemble/react-components';
-import { type Organization } from '@appsemble/types';
+import { type Organization, PredefinedOrganizationRole } from '@appsemble/types';
 import { normalize } from '@appsemble/utils';
 import axios from 'axios';
 import { type ReactNode, useCallback } from 'react';
@@ -128,7 +128,7 @@ export function CreateOrganizationModal({
       }
 
       const { data } = await axios.post<Organization>('/api/organizations', formData);
-      setOrganizations([...organizations, { ...data, role: 'Owner' }]);
+      setOrganizations([...organizations, { ...data, role: PredefinedOrganizationRole.Owner }]);
       onCreateOrganization?.(data);
     },
     [setOrganizations, organizations, onCreateOrganization],

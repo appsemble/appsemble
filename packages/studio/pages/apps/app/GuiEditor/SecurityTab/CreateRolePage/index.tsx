@@ -1,5 +1,6 @@
 import { Button, useMessages } from '@appsemble/react-components';
-import { type RoleDefinition } from '@appsemble/types';
+import { type AppRole, type CustomAppPermission, type RoleDefinition } from '@appsemble/types';
+import { getAppPossiblePermissions } from '@appsemble/utils';
 import { type ChangeEvent, type ReactNode, useCallback, useState } from 'react';
 import { useIntl } from 'react-intl';
 
@@ -16,7 +17,8 @@ export function CreateRolePage(): ReactNode {
   const push = useMessages();
   const [createRoleName, setCreateRoleName] = useState<string>('');
   const [createRoleDescription, setCreateRoleDescription] = useState<string>('');
-  const [createRoleInherits, setCreateRoleInherits] = useState<string[]>([]);
+  const [createRoleInherits, setCreateRoleInherits] = useState<AppRole[]>([]);
+  const [createRolePermissions, setCreateRolePermissions] = useState<CustomAppPermission[]>([]);
   const [createRoleDefaultPage, setCreateRoleDefaultPage] = useState<string>(null);
 
   const onCreateRoleName = useCallback((event: ChangeEvent<HTMLInputElement>, input: string) => {
@@ -35,10 +37,17 @@ export function CreateRolePage(): ReactNode {
   );
 
   const onChangeInheritance = useCallback(
-    (selectedRoles: string[]) => {
+    (selectedRoles: AppRole[]) => {
       setCreateRoleInherits([...selectedRoles]);
     },
     [setCreateRoleInherits],
+  );
+
+  const onChangePermissions = useCallback(
+    (permissions: CustomAppPermission[]) => {
+      setCreateRolePermissions([...permissions]);
+    },
+    [setCreateRolePermissions],
   );
 
   const onCreateRoleDescription = useCallback((input: string) => {
@@ -124,6 +133,16 @@ export function CreateRolePage(): ReactNode {
           selected={createRoleInherits}
         />
       )}
+      <OptionalList
+        addNewItemLabel={formatMessage(messages.addPermissionLabel)}
+        label={formatMessage(messages.permissionsLabel)}
+        labelPosition="top"
+        onNewSelected={onChangePermissions}
+        options={getAppPossiblePermissions(app.definition).filter(
+          (permission) => !createRolePermissions.includes(permission),
+        )}
+        selected={createRolePermissions}
+      />
       <Button color="primary" onClick={onRoleCreate}>
         {formatMessage(messages.createRoleButton)}
       </Button>

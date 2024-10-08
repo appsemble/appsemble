@@ -37,7 +37,6 @@ Add the following to the app definition at the root of the YAML:
 ```yaml copy validate resources-snippet
 resources:
   person:
-    roles: [$public]
     schema:
       type: object
       additionalProperties: false # Custom properties are disallowed to ensure the shape of each person resource is fixed.
@@ -159,6 +158,20 @@ Let’s add such a `data-loader` block.
             label: Surname
 ```
 
+The `data-loader` block uses the `resource.query` action when it loads. To use this action, the user
+currently using the app, must have enough permissions. We can make sure of that by adding a
+`security` definition with the appropriate permission to our app like so:
+
+```yaml copy validate security-snippet
+security:
+  guest:
+    permissions:
+      - '$resource:person:query'
+```
+
+This will allow guest (unauthenticated) users to use the `resource.query` action on the person
+resource.
+
 When the app is saved, it will start off by showing a spinner. It then quickly turns into some
 familiar headers. The data has been loaded. However, there is no data to display, as no people have
 been registered yet.
@@ -169,9 +182,13 @@ At this point, the total app definition should look like this:
 name: My App
 defaultPage: People
 
+security:
+  guest:
+    permissions:
+      - '$resource:person:query'
+
 resources:
   person:
-    roles: [$public]
     schema:
       type: object
       additionalProperties: false
@@ -272,6 +289,17 @@ parameter called `fields` which contains a list of fields of different types. In
 `string` fields, where the first three are required and have a length requirement, and the last one
 is optional and allows for multi line input.
 
+We must also make sure to add the `$resource:perso:create` permission to our security definition to
+allow guest users to create `person` resources like so:
+
+```yaml copy validate security-snippet
+security:
+  guest:
+    permissions:
+      - '$resource:person:query'
+      - '$resource:person:create'
+```
+
 After saving, the page can be opened from the app’s side menu. When data is entered and the form is
 saved, a new person is registered. The user is then redirected to the _“People”_ page. This page now
 displays the newly created person.
@@ -283,9 +311,14 @@ name: My App
 description: ''
 defaultPage: People
 
+security:
+  guest:
+    permissions:
+      - '$resource:person:query'
+      - '$resource:person:create'
+
 resources:
   person:
-    roles: [$public]
     schema:
       type: object
       additionalProperties: false
@@ -417,6 +450,18 @@ The `id` parameter refers to a parameter in the URL of the page. The `id` is use
 person data to load. Since the page can’t work without the context of the `id` value, there is no
 good way to link it from the side menu.
 
+We must also make sure to add the `$resource:person:get` permission to our security definition to
+allow guest users to get single `person` resources like so:
+
+```yaml copy validate security-snippet
+security:
+  guest:
+    permissions:
+      - '$resource:person:query'
+      - '$resource:person:create'
+      - '$resource:person:get'
+```
+
 To use this page, it must be linked from a place where the context is known. This is where the
 _“Register”_ page comes in. The `table` block has an optional `onClick` action. This action passes
 along context of a single entity.
@@ -430,9 +475,15 @@ name: My App
 description: ''
 defaultPage: People
 
+security:
+  guest:
+    permissions:
+      - '$resource:person:create'
+      - '$resource:person:query'
+      - '$resource:person:get'
+
 resources:
   person:
-    roles: [$public]
     schema:
       type: object
       additionalProperties: false

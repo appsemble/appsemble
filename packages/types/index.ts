@@ -4,14 +4,15 @@ import { type OpenAPIV3 } from 'openapi-types';
 import { type JsonObject, type RequireExactlyOne } from 'type-fest';
 
 import { type Action, type LogAction } from './action.js';
-import { type AppVisibility, type TeamsDefinition } from './app.js';
+import { type AppVisibility } from './app.js';
 import { type BulmaColor } from './bulma.js';
 import { type HTTPMethods } from './http.js';
+import { type AppPermission } from './permissions.js';
+import { type AppRole, type PredefinedAppRole, type PredefinedOrganizationRole } from './roles.js';
 import { type Theme } from './theme.js';
 
 export * from './action.js';
 export * from './app.js';
-export * from './appMember.js';
 export * from './asset.js';
 export * from './authentication.js';
 export * from './author.js';
@@ -23,11 +24,12 @@ export * from './snapshot.js';
 export * from './resource.js';
 export * from './saml.js';
 export * from './ssl.js';
-export * from './team.js';
 export * from './template.js';
 export * from './theme.js';
-export * from './user.js';
+export * from './oauth2.js';
 export * from './quota.js';
+export * from './permissions.js';
+export * from './roles.js';
 
 /**
  * A representation of a generated OAuth2 authorization code response.
@@ -124,7 +126,7 @@ export interface BlockDefinition extends ControllerDefinition {
   /**
    * A list of roles that are allowed to view this block.
    */
-  roles?: string[];
+  roles?: ViewRole[];
 
   /**
    * A free form mapping of named parameters.
@@ -141,7 +143,7 @@ export interface BlockDefinition extends ControllerDefinition {
  * The Connect2id server can be set up to provide additional custom claims, such as roles and
  * permissions.
  */
-export interface UserInfo {
+export interface BaseUserInfo {
   /**
    * The subject (end-user) identifier. This member is always present in a claims set.
    */
@@ -168,11 +170,6 @@ export interface UserInfo {
   picture?: string;
 
   /**
-   * A URL that links to the user profile.
-   */
-  profile?: string;
-
-  /**
    * The end-user’s locale, represented as a BCP47 language tag.
    */
   locale?: string;
@@ -181,6 +178,20 @@ export interface UserInfo {
    * The end-user’s time zone.
    */
   zoneinfo?: string;
+}
+
+export interface UserInfo extends BaseUserInfo {
+  /**
+   * If the user is subscribed to the newsletter
+   */
+  subscribed?: boolean;
+}
+
+export interface AppMemberInfo extends BaseUserInfo {
+  /**
+   * The role of the app member.
+   */
+  role: AppRole;
 
   /**
    * The end-user's additional properties
@@ -188,19 +199,27 @@ export interface UserInfo {
   properties?: Record<string, any>;
 
   /**
-   * If the user is subscribed to the newsletter
+   * Whether this app member is used for demonstration purposes
    */
-  subscribed?: boolean;
+  demo: boolean;
+}
 
-  /**
-   * The properties of the currently logged in member of the app
-   */
-  appMember?: AppMember;
+export interface SSOConfiguration {
+  type: 'oauth2' | 'saml';
+  url: string;
+  icon: IconName;
+  name: string;
+}
 
-  /**
-   * Returns `true` if the user has no Oauth connections and no password.
-   */
-  hasNoLoginMethods?: boolean;
+export interface AppAccount {
+  app: App;
+  appMemberInfo: AppMemberInfo;
+  sso: SSOConfiguration[];
+}
+
+export interface EmailAuthorization {
+  email: string;
+  verified: boolean;
 }
 
 /**
@@ -317,13 +336,17 @@ export interface Remappers {
    *
    * Supported properties:
    *
-   * - `memberId`: Get the id of the AppMember.
-   * - `userId`: Get the id of the user associated with AppMember object.
-   * - `role`: Get the role of the app member
-   * - `primaryEmail`: Get the primary email of the user associated with AppMember object.
-   * - `name`:  Get the name of the user associated with AppMember object.
+   * - `sub`: Get the id of the app member.
+   * - `name`: Get the name of the app member.
+   * - `email`: Get the email of the app member.
+   * - `email_verified`: Whether the email of the app member is verified.
+   * - `picture`: Get the picture of the app member.
+   * - `locale`: Get the locale of the app member.
+   * - `zoneinfo`: Get the zoneinfo of the app member.
+   * - `role`: Get the role of the app member.
+   * - `properties`: Get the custom properties of the app member.
    */
-  appMember: keyof AppMember;
+  'app.member': keyof AppMemberInfo;
 
   /**
    * Get a predefined app variable by name.
@@ -690,8 +713,6 @@ export interface Remappers {
    */
   translate: string;
 
-  user: keyof UserInfo;
-
   container: string;
 }
 
@@ -717,25 +738,62 @@ export interface SubscriptionResponseResource {
 
 export type SubscriptionResponse = Record<string, SubscriptionResponseResource>;
 
-export interface RoleDefinition {
-  description?: string;
-  inherits?: string[];
-  defaultPage?: string;
+export type ResourceViewAction = 'get' | 'query';
+
+export type OwnResourceAction = ResourceViewAction | 'delete' | 'patch' | 'update';
+
+export type ResourceAction = ResourceViewAction | 'create' | 'delete' | 'patch' | 'update';
+
+export type CustomAppResourcePermission = `$resource:${string}:${ResourceAction}`;
+
+export type CustomAppOwnResourcePermission = `$resource:${string}:own:${OwnResourceAction}`;
+
+export type CustomAppResourceViewPermission = `$resource:${string}:${ResourceViewAction}:${string}`;
+
+export type CustomAppGuestPermission =
+  | AppPermission
+  | CustomAppResourcePermission
+  | CustomAppResourceViewPermission;
+
+export type CustomAppPermission = CustomAppGuestPermission | CustomAppOwnResourcePermission;
+
+export interface GuestDefinition {
+  permissions?: CustomAppPermission[];
+  inherits?: AppRole[];
 }
 
-export interface Security {
+export interface RoleDefinition {
+  description?: string;
+  defaultPage?: string;
+  inherits?: AppRole[];
+  permissions?: CustomAppPermission[];
+}
+
+export type SecurityPolicy = 'everyone' | 'invite' | 'organization';
+
+export interface MinimalSecurity {
+  guest: GuestDefinition;
+
+  default?: {
+    role: AppRole;
+    policy?: SecurityPolicy;
+  };
+
+  roles?: Record<Exclude<string, PredefinedAppRole>, RoleDefinition>;
+}
+
+export interface StrictSecurity {
+  guest?: GuestDefinition;
+
   default: {
-    role: string;
-    policy?: 'everyone' | 'invite' | 'organization';
+    role: AppRole;
+    policy?: SecurityPolicy;
   };
 
   roles: Record<string, RoleDefinition>;
-
-  /**
-   * Define how teams are handled by the app.
-   */
-  teams?: TeamsDefinition;
 }
+
+export type Security = MinimalSecurity | StrictSecurity;
 
 export type Navigation = 'bottom' | 'hidden' | 'left-menu';
 export type LayoutPosition = 'hidden' | 'navbar' | 'navigation';
@@ -777,11 +835,6 @@ export interface ResourceCall {
    * Query parameters to pass along with the request.
    */
   query?: Remapper;
-
-  /**
-   * The roles that are allowed to perform this action.
-   */
-  roles?: string[];
 }
 
 export interface ResourceReferenceActionTrigger {
@@ -813,17 +866,12 @@ export interface ResourceHistoryDefinition {
 
 export interface ResourceView {
   /**
-   * The roles required to use this view.
-   */
-  roles: string[];
-
-  /**
    * The remappers used to transform the output.
    */
   remap: Remapper;
 }
 
-export interface UserPropertyDefinition {
+export interface AppMemberPropertyDefinition {
   /**
    * The JSON schema to validate user properties against before sending it to the backend.
    */
@@ -838,11 +886,6 @@ export interface UserPropertyDefinition {
 }
 
 export interface ResourceDefinition {
-  /**
-   * The default list of roles used for permission checks for each action.
-   */
-  roles?: string[];
-
   /**
    * A definition of how versioning should happen for instances of this resource.
    */
@@ -1275,40 +1318,68 @@ export interface StorageWriteActionDefinition extends BaseActionDefinition<'stor
   storage?: StorageType;
 }
 
-export interface TeamInviteActionDefinition extends BaseActionDefinition<'team.invite'> {
+export interface GroupMemberInviteActionDefinition
+  extends BaseActionDefinition<'group.member.invite'> {
   /**
-   * The ID of the team to invite the user to.
+   * The ID of the group to invite the user to.
    */
-  id?: Remapper;
+  id: Remapper;
 
   /**
    * The email address of the user to invite.
    */
-  email?: Remapper;
+  email: Remapper;
+
+  /**
+   * The role of the invited group member.
+   */
+  role: Remapper;
 }
 
-export interface TeamMembersActionDefinition extends BaseActionDefinition<'team.members'> {
+export interface GroupMemberQueryActionDefinition
+  extends BaseActionDefinition<'group.member.query'> {
   /**
-   * The ID of the team to get the members from.
+   * The ID of the group to query the members of.
    */
   id: Remapper;
 }
 
-export interface UserLoginAction extends BaseActionDefinition<'user.login'> {
+export interface GroupMemberDeleteActionDefinition
+  extends BaseActionDefinition<'group.member.delete'> {
   /**
-   * The email address to login with.
+   * The ID of the group member to delete.
+   */
+  id: Remapper;
+}
+
+export interface GroupMemberRoleUpdateActionDefinition
+  extends BaseActionDefinition<'group.member.role.update'> {
+  /**
+   * The ID of the group member to update the role of.
+   */
+  id: Remapper;
+
+  /**
+   * The role to invite the app member with.
+   */
+  role: Remapper;
+}
+
+export interface AppMemberLoginAction extends BaseActionDefinition<'app.member.login'> {
+  /**
+   * The email address to log in with.
    */
   email: Remapper;
 
   /**
-   * The password to login with.
+   * The password to log in with.
    */
   password: Remapper;
 }
 
-export interface UserRegisterAction extends BaseActionDefinition<'user.register'> {
+export interface AppMemberRegisterAction extends BaseActionDefinition<'app.member.register'> {
   /**
-   * The email address to login with.
+   * The email address to register with.
    */
   email: Remapper;
 
@@ -1318,16 +1389,9 @@ export interface UserRegisterAction extends BaseActionDefinition<'user.register'
   password: Remapper;
 
   /**
-   * The display name of the user.
+   * The full name of the app member.
    */
-  displayName: Remapper;
-
-  /**
-   * Whether to login after registering.
-   *
-   * @default true
-   */
-  login?: boolean;
+  name: Remapper;
 
   /**
    * The profile picture to use.
@@ -1342,64 +1406,67 @@ export interface UserRegisterAction extends BaseActionDefinition<'user.register'
    * Every value will be converted to a string.
    */
   properties?: Remapper;
+
+  /**
+   * Whether to login after registering.
+   *
+   * @default true
+   */
+  login?: boolean;
 }
 
-export interface UserCreateAction extends BaseActionDefinition<'user.create'> {
+export interface AppMemberInviteAction extends BaseActionDefinition<'app.member.invite'> {
   /**
-   * The display name of the user.
-   */
-  name: Remapper;
-
-  /**
-   * The email address to login with.
+   * The email address to invite the app member with.
    */
   email: Remapper;
 
   /**
-   * The password to login with.
+   * The role to invite the app member with.
    */
-  password: Remapper;
-
-  /**
-   * Custom properties that can be assigned freely.
-   *
-   * Every value will be converted to a string.
-   */
-  properties?: Remapper;
-
-  /**
-   * The role of the created user
-   */
-  role?: Remapper;
+  role: Remapper;
 }
 
-export interface UserQueryAction extends BaseActionDefinition<'user.query'> {
+export interface AppMemberQueryAction extends BaseActionDefinition<'app.member.query'> {
   /**
    * The roles of the users to fetch.
    */
   roles?: Remapper;
 }
 
-export interface UserUpdateAction extends BaseActionDefinition<'user.update'> {
+export interface AppMemberRoleUpdateAction extends BaseActionDefinition<'app.member.role.update'> {
+  /**
+   * The id of the app member to update.
+   */
+  sub: Remapper;
+
+  /**
+   * The role of the updated app member
+   */
+  role: Remapper;
+}
+
+export interface AppMemberPropertiesPatchAction
+  extends BaseActionDefinition<'app.member.properties.patch'> {
+  /**
+   * The id of the app member to update.
+   */
+  sub: Remapper;
+
+  /**
+   * Custom properties that can be assigned freely.
+   *
+   * Every value will be converted to a string.
+   */
+  properties: Remapper;
+}
+
+export interface AppMemberCurrentPatchAction
+  extends BaseActionDefinition<'app.member.current.patch'> {
   /**
    * The display name to update.
    */
   name?: Remapper;
-
-  /**
-   * The email address of the user to update.
-   */
-  currentEmail: Remapper;
-
-  /**
-   * The new email address of the user.
-   */
-  newEmail?: Remapper;
-
-  /**
-   * The password to update.
-   */
-  password?: Remapper;
 
   /**
    * Custom properties that can be assigned freely.
@@ -1409,16 +1476,18 @@ export interface UserUpdateAction extends BaseActionDefinition<'user.update'> {
   properties?: Remapper;
 
   /**
-   * The role of the created user
+   * The profile picture to use.
+   *
+   * This must be a file, otherwise it’s discarded.
    */
-  role?: Remapper;
+  picture?: Remapper;
 }
 
-export interface UserRemoveAction extends BaseActionDefinition<'user.remove'> {
+export interface AppMemberDeleteAction extends BaseActionDefinition<'app.member.delete'> {
   /**
-   * The email address of the account to delete.
+   * The id of the app member to remove.
    */
-  email: Remapper;
+  sub: Remapper;
 }
 
 export interface RequestLikeActionDefinition<T extends Action['type'] = Action['type']>
@@ -1473,6 +1542,13 @@ interface ViewResourceDefinition {
   view?: string;
 }
 
+interface OwnResourceDefinition {
+  /**
+   * If only the resources created by the authenticated app member should be included
+   */
+  own?: boolean;
+}
+
 export interface ControllerActionDefinition extends BaseActionDefinition<'controller'> {
   handler: string;
 }
@@ -1482,12 +1558,14 @@ export type ResourceCreateActionDefinition = ResourceActionDefinition<'resource.
 export type ResourceDeleteActionDefinition = ResourceActionDefinition<'resource.delete'>;
 export type ResourceGetActionDefinition = ResourceActionDefinition<'resource.get'> &
   ViewResourceDefinition;
-export type ResourceQueryActionDefinition = ResourceActionDefinition<'resource.query'> &
+export type ResourceQueryActionDefinition = OwnResourceDefinition &
+  ResourceActionDefinition<'resource.query'> &
   ViewResourceDefinition;
-export type ResourceCountActionDefinition = ResourceActionDefinition<'resource.count'>;
+export type ResourceCountActionDefinition = OwnResourceDefinition &
+  ResourceActionDefinition<'resource.count'>;
 export type ResourceUpdateActionDefinition = ResourceActionDefinition<'resource.update'>;
 export type ResourcePatchActionDefinition = ResourceActionDefinition<'resource.patch'>;
-export type UserLogoutAction = BaseActionDefinition<'user.logout'>;
+export type AppMemberLogoutAction = BaseActionDefinition<'app.member.logout'>;
 
 export interface BaseResourceSubscribeActionDefinition<T extends Action['type']>
   extends BaseActionDefinition<T> {
@@ -1577,17 +1655,25 @@ export type MessageActionDefinition = BaseActionDefinition<'message'> &
 
 export type ActionDefinition =
   | AnalyticsAction
+  | AppMemberCurrentPatchAction
+  | AppMemberDeleteAction
+  | AppMemberInviteAction
+  | AppMemberLoginAction
+  | AppMemberLogoutAction
+  | AppMemberPropertiesPatchAction
+  | AppMemberQueryAction
+  | AppMemberRegisterAction
+  | AppMemberRoleUpdateAction
   | BaseActionDefinition<'dialog.error'>
   | BaseActionDefinition<'dialog.ok'>
   | BaseActionDefinition<'flow.back'>
   | BaseActionDefinition<'flow.cancel'>
   | BaseActionDefinition<'flow.finish'>
   | BaseActionDefinition<'flow.next'>
+  | BaseActionDefinition<'group.query'>
   | BaseActionDefinition<'link.back'>
   | BaseActionDefinition<'link.next'>
   | BaseActionDefinition<'noop'>
-  | BaseActionDefinition<'team.join'>
-  | BaseActionDefinition<'team.list'>
   | BaseActionDefinition<'throw'>
   | ConditionActionDefinition
   | ControllerActionDefinition
@@ -1597,6 +1683,10 @@ export type ActionDefinition =
   | EmailActionDefinition
   | EventActionDefinition
   | FlowToActionDefinition
+  | GroupMemberDeleteActionDefinition
+  | GroupMemberInviteActionDefinition
+  | GroupMemberQueryActionDefinition
+  | GroupMemberRoleUpdateActionDefinition
   | LinkActionDefinition
   | LogActionDefinition
   | MatchActionDefinition
@@ -1621,16 +1711,7 @@ export type ActionDefinition =
   | StorageReadActionDefinition
   | StorageSubtractActionDefinition
   | StorageUpdateActionDefinition
-  | StorageWriteActionDefinition
-  | TeamInviteActionDefinition
-  | TeamMembersActionDefinition
-  | UserCreateAction
-  | UserLoginAction
-  | UserLogoutAction
-  | UserQueryAction
-  | UserRegisterAction
-  | UserRemoveAction
-  | UserUpdateAction;
+  | StorageWriteActionDefinition;
 
 export interface ActionType {
   /**
@@ -1650,6 +1731,8 @@ export interface EventType {
    */
   description?: string;
 }
+
+export type ViewRole = AppRole | '$guest';
 
 /**
  * This describes what a page will look like in the app.
@@ -1691,7 +1774,7 @@ export interface BasePageDefinition {
   /**
    * A list of roles that may view the page.
    */
-  roles?: string[];
+  roles?: ViewRole[];
 
   /**
    * An optional icon from the fontawesome icon set
@@ -1714,9 +1797,9 @@ export interface BasePageDefinition {
 /**
  * A subset of page for use within flow pages and tab pages.
  */
-export interface SubPage {
+export interface SubPageDefinition {
   name: Remapper;
-  roles?: string[];
+  roles?: ViewRole[];
   blocks: BlockDefinition[];
 }
 
@@ -1733,7 +1816,7 @@ export interface ContainerPageDefinition extends BasePageDefinition {
 export interface FlowPageDefinition extends BasePageDefinition {
   type: 'flow';
 
-  steps: SubPage[];
+  steps: SubPageDefinition[];
 
   /**
    * A mapping of actions that can be fired by the page to action handlers.
@@ -1766,7 +1849,7 @@ export interface LoopPageDefinition extends BasePageDefinition {
   /**
    * Template step that the loop will pass data onto
    */
-  foreach?: SubPage;
+  foreach?: SubPageDefinition;
 
   /**
    * A mapping of actions that can be fired by the page to action handlers.
@@ -1795,7 +1878,7 @@ export interface LoopPageDefinition extends BasePageDefinition {
 }
 
 export interface AlternateTabsDefinition {
-  foreach: SubPage;
+  foreach: SubPageDefinition;
   events: {
     listen?: Record<string, string>;
     emit?: Record<string, string>;
@@ -1804,7 +1887,7 @@ export interface AlternateTabsDefinition {
 
 export interface TabsPageDefinition extends BasePageDefinition {
   type: 'tabs';
-  tabs?: SubPage[];
+  tabs?: SubPageDefinition[];
   definition?: AlternateTabsDefinition;
 
   /**
@@ -1848,11 +1931,6 @@ export interface AppDefinition {
    * This determines user roles and login behavior.
    */
   security?: Security;
-
-  /**
-   * A list of roles that are required to view pages. Specific page roles override this property.
-   */
-  roles?: string[];
 
   /**
    * The default page of the app.
@@ -1912,8 +1990,8 @@ export interface AppDefinition {
 
   controller?: ControllerDefinition;
 
-  users?: {
-    properties: Record<string, UserPropertyDefinition>;
+  members?: {
+    properties: Record<string, AppMemberPropertyDefinition>;
   };
 
   /**
@@ -1966,7 +2044,7 @@ export interface App {
    */
   id?: number;
 
-  /*
+  /**
    * A domain name on which this app should be served.
    */
   domain?: string;
@@ -2236,20 +2314,94 @@ export interface OrganizationInvite {
   /**
    * The role the user should get when accepting the invite.
    */
+  role: PredefinedOrganizationRole;
+}
+
+/**
+ * An invite for an app.
+ */
+export interface AppInvite {
+  /**
+   * The email address of the app member to invite.
+   */
+  email: string;
+
+  /**
+   * The role the app member should get when accepting the invite.
+   */
   role: string;
 }
 
 /**
- * App member in an app.
+ * An invite for a group.
  */
-export interface AppMember {
-  userId: string;
-  memberId: string;
+export interface GroupInvite {
+  /**
+   * The name of the group.
+   */
+  groupId?: number;
+
+  /**
+   * The name of the group.
+   */
+  groupName?: string;
+
+  /**
+   * The email address of the group member to invite.
+   */
+  email: string;
+
+  /**
+   * The role the group member should get when accepting the invite.
+   */
+  role: AppRole;
+}
+
+/**
+ * Represents a group within an organization.
+ */
+export interface Group {
+  /**
+   * The ID of the group.
+   */
+  id: number;
+
+  /**
+   * The display name of the group.
+   */
   name: string;
-  primaryEmail: string;
+
+  /**
+   * Custom annotations for the group.
+   */
+  annotations?: Record<string, string>;
+}
+
+/**
+ * Group member in a group.
+ */
+export interface GroupMember {
+  id: string;
   role: string;
-  demo: boolean;
-  properties: Record<string, any>;
+  name: string;
+  email: string;
+}
+
+export interface AppMemberGroup {
+  /**
+   * The ID of the group.
+   */
+  id: number;
+
+  /**
+   * The display name of the group.
+   */
+  name: string;
+
+  /**
+   * The role of the app member inside the group.
+   */
+  role: AppRole;
 }
 
 /**

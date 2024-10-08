@@ -1,26 +1,31 @@
-import { type AppDefinition, type PageDefinition, type TeamMember } from '@appsemble/types';
-import { checkAppRole } from '@appsemble/utils';
+import {
+  type AppDefinition,
+  type AppMemberGroup,
+  type AppRole,
+  type PageDefinition,
+} from '@appsemble/types';
+
+import { checkPagePermissions } from './authorization.js';
 
 function shouldShowPage(
-  app: AppDefinition,
-  page: PageDefinition,
-  userRole: string,
-  teams: TeamMember[],
+  appDefinition: AppDefinition,
+  pageDefinition: PageDefinition,
+  appMemberRole: AppRole,
+  appMemberSelectedGroup: AppMemberGroup,
 ): boolean {
-  if (page.hideNavTitle) {
+  if (pageDefinition.hideNavTitle) {
     return false;
   }
-  if (page.parameters) {
+  if (pageDefinition.parameters) {
     return false;
   }
-  const roles = page.roles || app.roles || [];
-  if (roles.length && !roles.some((r) => checkAppRole(app.security, r, userRole, teams))) {
+  if (!checkPagePermissions(pageDefinition, appDefinition, appMemberRole, appMemberSelectedGroup)) {
     return false;
   }
 
-  if (page.type === 'container' && page.pages) {
-    for (const nestedPage of page.pages) {
-      if (shouldShowPage(app, nestedPage, userRole, teams)) {
+  if (pageDefinition.type === 'container' && pageDefinition.pages) {
+    for (const nestedPage of pageDefinition.pages) {
+      if (shouldShowPage(appDefinition, nestedPage, appMemberRole, appMemberSelectedGroup)) {
         return true;
       }
     }
@@ -30,11 +35,15 @@ function shouldShowPage(
   return true;
 }
 
-export function shouldShowMenu(app: AppDefinition, userRole: string, teams: TeamMember[]): boolean {
+export function shouldShowMenu(
+  appDefinition: AppDefinition,
+  appMemberRole: AppRole,
+  appMemberSelectedGroup: AppMemberGroup,
+): boolean {
   let visiblePagesCount = 0;
 
-  for (const page of app.pages) {
-    if (shouldShowPage(app, page, userRole, teams)) {
+  for (const pageDefinition of appDefinition.pages) {
+    if (shouldShowPage(appDefinition, pageDefinition, appMemberRole, appMemberSelectedGroup)) {
       visiblePagesCount += 1;
     }
     if (visiblePagesCount > 1) {
@@ -44,8 +53,8 @@ export function shouldShowMenu(app: AppDefinition, userRole: string, teams: Team
 
   return (
     visiblePagesCount > 1 ||
-    app.layout?.feedback === 'navigation' ||
-    app.layout?.login === 'navigation' ||
-    app.layout?.settings === 'navigation'
+    appDefinition.layout?.feedback === 'navigation' ||
+    appDefinition.layout?.login === 'navigation' ||
+    appDefinition.layout?.settings === 'navigation'
   );
 }

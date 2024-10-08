@@ -5,6 +5,7 @@ import {
   getSupportedLanguages,
   logger,
 } from '@appsemble/node-utils';
+import { PredefinedOrganizationRole } from '@appsemble/types';
 import { defaultLocale, has } from '@appsemble/utils';
 import { startOfDay } from 'date-fns';
 import { zonedTimeToUtc } from 'date-fns-tz';
@@ -22,9 +23,9 @@ import { type Options } from 'nodemailer/lib/smtp-transport';
 import { Op } from 'sequelize';
 
 import { renderEmail } from './renderEmail.js';
-import { AppEmailQuotaLog } from '../../models/AppEmailQuotaLog.js';
 import {
   App,
+  AppEmailQuotaLog,
   AppMessages,
   Organization,
   OrganizationMember,
@@ -117,7 +118,14 @@ export interface SendMailOptions {
    */
   app?: Pick<
     App,
-    'emailHost' | 'emailName' | 'emailPassword' | 'emailPort' | 'emailSecure' | 'emailUser' | 'id'
+    | 'demoMode'
+    | 'emailHost'
+    | 'emailName'
+    | 'emailPassword'
+    | 'emailPort'
+    | 'emailSecure'
+    | 'emailUser'
+    | 'id'
   >;
 }
 
@@ -174,7 +182,7 @@ export class Mailer {
       const auth = (smtpUser && smtpPass && { user: smtpUser, pass: smtpPass }) || null;
       this.transport = createTransport(
         {
-          port: smtpPort || smtpSecure ? 465 : 587,
+          port: smtpPort || (smtpSecure ? 465 : 587),
           pool: true,
           host: smtpHost,
           secure: smtpSecure,
@@ -329,7 +337,7 @@ export class Mailer {
           });
           const members = await OrganizationMember.findAll({
             where: {
-              role: 'Owner',
+              role: PredefinedOrganizationRole.Owner,
               OrganizationId: fullApp.OrganizationId,
             },
             include: [

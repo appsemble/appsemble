@@ -119,12 +119,13 @@ export async function publishResource({
   logger.info(`Publishing resource(s) from ${path}`);
 
   let data;
-  const endpoint = `/api/apps/${appId}/${seed ? 'seed-' : ''}resources/${type}`;
+  const endpoint = `/api/apps/${appId}/resources/${type}`;
   try {
     if (csv) {
       const response = await axios.post<Resource | Resource[]>(endpoint, resources, {
         baseURL: remote,
         headers: { 'content-type': 'text/csv' },
+        params: { seed },
       });
       data = response.data;
     } else {
@@ -145,6 +146,7 @@ export async function publishResource({
         {
           baseURL: remote,
           headers: { 'content-type': 'application/json' },
+          params: { seed },
         },
       );
       data = response.data;

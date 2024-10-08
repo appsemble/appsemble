@@ -9,7 +9,7 @@ import {
   Table,
 } from 'sequelize-typescript';
 
-import { App, User } from './index.js';
+import { App, AppMember } from './index.js';
 
 @Table({ tableName: 'OAuth2AuthorizationCode', createdAt: false, updatedAt: false })
 export class OAuth2AuthorizationCode extends Model {
@@ -31,12 +31,9 @@ export class OAuth2AuthorizationCode extends Model {
   expires: Date;
 
   @AllowNull(false)
-  @ForeignKey(() => User)
+  @ForeignKey(() => AppMember)
   @Column(DataType.UUID)
-  UserId: string;
-
-  @BelongsTo(() => User, { onDelete: 'CASCADE' })
-  User: Awaited<User>;
+  AppMemberId: string;
 
   @AllowNull(false)
   @ForeignKey(() => App)

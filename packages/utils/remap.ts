@@ -1,9 +1,8 @@
 import {
-  type AppMember,
+  type AppMemberInfo,
   type ArrayRemapper,
   type Remapper,
   type Remappers,
-  type UserInfo,
   type ValueFromProcess,
 } from '@appsemble/types';
 import { addMilliseconds, format, parse, parseISO } from 'date-fns';
@@ -100,19 +99,14 @@ export interface RemapperContext {
   pageData?: unknown;
 
   /**
-   * The OpenID compatible userinfo object for the current user.
+   * The OpenID compatible userinfo object for the current app member.
    */
-  userInfo: UserInfo;
+  appMemberInfo: AppMemberInfo;
 
   /**
    * A custom context passed to the remap function.
    */
   context: Record<string, any>;
-
-  /**
-   * The appMember object for the current user in the app.
-   */
-  appMember: AppMember;
 }
 
 interface InternalContext extends RemapperContext {
@@ -628,9 +622,7 @@ const mapperImplementations: MapperImplementations = {
     return message.format() || `{${messageId}}`;
   },
 
-  user: (property, input, context) => context.userInfo?.[property],
-
-  appMember: (property, input, context) => context.userInfo?.appMember?.[property],
+  'app.member': (property, input, context) => context.appMemberInfo?.[property],
 
   container(property, input, context) {
     // This value is replaced when the request is made

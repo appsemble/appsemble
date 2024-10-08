@@ -15,7 +15,7 @@ import {
   useMessages,
   useMeta,
 } from '@appsemble/react-components';
-import { type AppAccount } from '@appsemble/types';
+import { type AppAccount, type AppMemberInfo } from '@appsemble/types';
 import axios from 'axios';
 import { Fragment, type ReactNode, useCallback } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
@@ -26,16 +26,17 @@ import { PicturePreview } from './PicturePreview/index.js';
 import { AppIcon } from '../../../../components/AppIcon/index.js';
 import { AsyncDataView } from '../../../../components/AsyncDataView/index.js';
 import { CardHeaderControl } from '../../../../components/CardHeaderControl/index.js';
-import { useUser } from '../../../../components/UserProvider/index.js';
 
 export function DetailsPage(): ReactNode {
   const { appId } = useParams<{ appId: string }>();
   const navigate = useNavigate();
-  const result = useData<AppAccount>(`/api/user/apps/${appId}/account`);
-  const { userInfo } = useUser();
   const push = useMessages();
   const { formatMessage } = useIntl();
-  useMeta(result.data?.app?.messages?.app?.name ?? result.data?.app?.definition.name ?? appId);
+
+  const result = useData<AppAccount>(`/api/users/current/apps/${appId}/account`);
+  const appAccount = result.data;
+
+  useMeta(appAccount?.app.messages?.app.name ?? appAccount?.app.definition.name ?? appId);
 
   const onDelete = useConfirmation({
     body: <FormattedMessage {...messages.deleteBody} />,
@@ -45,7 +46,7 @@ export function DetailsPage(): ReactNode {
     color: 'danger',
     async action() {
       try {
-        await axios.delete(`/api/apps/${appId}/members/${userInfo.sub}`);
+        await axios.delete(`/api/app-members/${appAccount.appMemberInfo.sub}`);
         push({ body: formatMessage(messages.deleteSuccess), color: 'success' });
         navigate('.', { replace: true });
       } catch {
@@ -55,16 +56,18 @@ export function DetailsPage(): ReactNode {
   });
 
   const onSubmit = useCallback(
-    async ({ email, name, picture }: AppAccount) => {
+    async ({ name, picture }: AppMemberInfo) => {
       const formData = new FormData();
       formData.append('name', name);
-      formData.append('email', email);
 
       if (picture) {
         formData.append('picture', picture);
       }
 
-      const { data } = await axios.patch<AppAccount>(`/api/user/apps/${appId}/account`, formData);
+      const { data } = await axios.patch<AppAccount>(
+        `/api/users/current/apps/${appId}/account`,
+        formData,
+      );
       result.setData(data);
     },
     [appId, result],
@@ -77,7 +80,7 @@ export function DetailsPage(): ReactNode {
       loadingMessage={<FormattedMessage {...messages.loading} />}
       result={result}
     >
-      {({ app, sso, ...rest }) => (
+      {({ app, appMemberInfo, sso }) => (
         <CardHeaderControl
           controls={
             <>
@@ -96,6 +99,7 @@ export function DetailsPage(): ReactNode {
           }
           description={app.messages?.app?.description || app.definition.description}
           icon={<AppIcon app={app} />}
+          key={app.id}
           subtitle={
             <Link to={`../../../organizations/${app.OrganizationId}`}>
               {app.OrganizationName || app.OrganizationId}
@@ -103,13 +107,13 @@ export function DetailsPage(): ReactNode {
           }
           title={app.messages?.app?.name || app.definition.name}
         >
-          <SimpleForm className="card-content" defaultValues={rest} onSubmit={onSubmit}>
+          <SimpleForm className="card-content" defaultValues={appMemberInfo} onSubmit={onSubmit}>
             <SimpleFormError>
               {() => <FormattedMessage {...messages.submitError} />}
             </SimpleFormError>
             <SimpleFormField
               help={
-                app.messages?.app?.[`app,roles.${rest.role}.description`] || (
+                app.messages?.app?.[`app,roles.${appMemberInfo.role}.description`] || (
                   <FormattedMessage {...messages.roleHelp} />
                 )
               }
@@ -128,17 +132,6 @@ export function DetailsPage(): ReactNode {
               }}
             />
             <SimpleFormField
-              help={<FormattedMessage {...messages.emailHelp} />}
-              label={<FormattedMessage {...messages.emailLabel} />}
-              name="email"
-              required
-              type="email"
-              validityMessages={{
-                typeMismatch: <FormattedMessage {...messages.emailInvalid} />,
-                valueMissing: <FormattedMessage {...messages.emailRequired} />,
-              }}
-            />
-            <SimpleFormField
               accept="image/jpeg, image/png, image/tiff, image/webp"
               component={FileUpload}
               fileButtonLabel={<FormattedMessage {...messages.picture} />}
@@ -146,7 +139,7 @@ export function DetailsPage(): ReactNode {
               help={<FormattedMessage {...messages.pictureDescription} />}
               label={<FormattedMessage {...messages.picture} />}
               name="picture"
-              preview={<PicturePreview pictureUrl={userInfo?.picture} />}
+              preview={<PicturePreview pictureUrl={appMemberInfo?.picture} />}
             />
             <FormButtons>
               <SimpleSubmit>

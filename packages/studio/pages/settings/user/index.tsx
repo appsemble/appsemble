@@ -18,7 +18,7 @@ import {
   useMessages,
   useMeta,
 } from '@appsemble/react-components';
-import { type UserEmail } from '@appsemble/types';
+import { type EmailAuthorization } from '@appsemble/types';
 import { defaultLocale, has } from '@appsemble/utils';
 import axios from 'axios';
 import { type ReactNode, useCallback, useEffect, useState } from 'react';
@@ -47,7 +47,7 @@ export function UserPage(): ReactNode {
     error,
     loading,
     setData: setEmails,
-  } = useData<UserEmail[]>('/api/user/email');
+  } = useData<EmailAuthorization[]>('/api/users/current/emails');
   const timezones = useData<string[]>('/api/timezones');
 
   const [rerenderKey, setRerenderKey] = useState(0);
@@ -56,7 +56,7 @@ export function UserPage(): ReactNode {
   const onSaveProfile = useCallback(
     async (values: { name: string; locale: string; timezone: string; subscribed: boolean }) => {
       localStorage.setItem('preferredLanguage', values.locale);
-      await axios.put('/api/user', values);
+      await axios.put('/api/users/current', values);
       refreshUserInfo();
       push({ body: formatMessage(messages.submitSuccess), color: 'success' });
       navigate(pathname.replace(lang, values.locale), { replace: true });
@@ -67,7 +67,7 @@ export function UserPage(): ReactNode {
   const onAddNewEmail = useCallback(
     async (values: { email: string }) => {
       const email = values.email.toLowerCase();
-      await axios.post('/api/user/email', { email });
+      await axios.post('/api/users/current/emails', { email });
       push({
         body: formatMessage(messages.addEmailSuccess),
         color: 'success',
@@ -83,7 +83,7 @@ export function UserPage(): ReactNode {
 
   const setPrimaryEmail = useCallback(
     async (email: string) => {
-      await axios.put('/api/user', { email });
+      await axios.put('/api/users/current', { email });
       refreshUserInfo();
       push({
         body: formatMessage(messages.primaryEmailSuccess, { email }),
@@ -100,7 +100,7 @@ export function UserPage(): ReactNode {
     confirmLabel: <FormattedMessage {...messages.deleteEmail} />,
     color: 'danger',
     async action(deleting: string) {
-      await axios.delete('/api/user/email', { data: { email: deleting } });
+      await axios.delete('/api/users/current/emails', { data: { email: deleting } });
       setEmails(emails.filter(({ email }) => email !== deleting));
       push({ body: formatMessage(messages.deleteEmailSuccess), color: 'info' });
     },

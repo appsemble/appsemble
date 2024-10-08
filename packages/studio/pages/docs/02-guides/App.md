@@ -4,11 +4,13 @@
 
 - [Introduction](#introduction)
 - [Transfer](#transfer)
-- [Relation to App Members](#members)
-- [App secrets](#secrets)
-- [App Settings](#settings)
+- [Users](#users)
+  - [Guests](#guests)
+  - [Members](#members)
+- [Secrets](#secrets)
+- [Settings](#settings)
 
-### Introduction
+## Introduction
 
 An app in the Appsemble ecosystem is written using [YAML](yaml-syntax.mdx) and is intended to
 provide the functionality of a fully fledged web app. An app consists of a definition, messages,
@@ -25,7 +27,7 @@ prior experience can leverage the CLI. An app may consist of one or more pages w
 have one or more [blocks](/blocks). Blocks provide visual as well as functional capabilities to the
 apps.
 
-### Transfer
+## Transfer
 
 An app in Appsemble can be transferred out of the system as a zip file using the export feature,
 which is available in the studio as well as the CLI. On the other hand, to import an app, you can
@@ -43,16 +45,29 @@ update an existing app, you can use the `app update` command.
 
 ---
 
+## Users
+
+### Guests
+
+Guests are users of apps, who are interacting with it without an account. Their permissions can be
+set by using the guest property in the app definition file. For more information check out
+[security](./security.md).
+
 ### Members
 
-App members are the user who have signed up for an app. Apps with a basic security definition
-require you to be registered and logged in into the app. You can view which apps are connected to
-your Appsemble account at [Connected Apps](/settings/apps) page. Members can perform various tasks
-depending upon the roles assigned to them. If you have enough permissions, you can access
-`AppMembers` of your app in the studio on the `AppMember` page in the studio and even export the
-data as [CSV](https://en.wikipedia.org/wiki/Comma-separated_values) file.
+App members are users of an apps, who have an account in it. Apps with a basic security definition
+require you to be registered and logged in into the app. App members can perform various tasks
+depending on the roles assigned to them and the app permissions that these roles have. For more
+information check out [security](./security.md/#).
 
-### Secrets
+If you have enough organization permissions, you can access `AppMembers` of your app in the studio
+on the `AppMember` page in the studio and even export the data as
+[CSV](https://en.wikipedia.org/wiki/Comma-separated_values) file.
+
+You can view which apps are connected to your Appsemble account at [Connected Apps](/settings/apps)
+page.
+
+## Secrets
 
 Generally most of the app related setting like schema and roles are configured in the app definition
 itself but due to security reasons and not exposing secrets and API keys to people with insufficient
@@ -80,7 +95,7 @@ From version `0.27.12` onwards, secrets can be defined in the `config/secrets` d
 directory in their corresponding JSON files - `service.json`, `oauth2.json`, `saml.json`, `ssl.json`
 and `scim.json`. For more information see [config.md](config.md).
 
-### Settings
+## Settings
 
 You can configure even more things about your app with sufficient [permissions](organizations.mdx).
 Open the settings page of your app and you will find the options to change the logo of your app, add
