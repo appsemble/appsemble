@@ -9,9 +9,9 @@ properties, which are stored as a JSON object.
 
 ## Defining app member properties
 
-Sometimes it is good to define a concrete structure for the JSON object of the app member 
-properties. This can be done in the [app definition](../05-reference/app.mdx#app-definition)
-within `member.properties`.
+Sometimes it is good to define a concrete structure for the JSON object of the app member
+properties. This can be done in the [app definition](../05-reference/app.mdx#app-definition) within
+`member.properties`.
 
 The shape of a property is defined using [JSON Schema](https://json-schema.org/). This makes it
 possible for submitted data to be validated on types and required properties automatically.
