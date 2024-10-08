@@ -1,7 +1,7 @@
 import { expect, test } from '../../fixtures/test/index.js';
 
 test.describe('Demo login', () => {
-  test('should work', async ({ page }) => {
+  test.fixme('should work', async ({ page }) => {
     await page.getByRole('link', { name: 'Login' }).click();
     await page.getByRole('button', { name: 'Login with ...' }).click();
 

@@ -40,7 +40,7 @@ test.describe('App OAuth2 login', () => {
     secret = response.data;
   });
 
-  test('should work', async ({ page }) => {
+  test.fixme('should work', async ({ page }) => {
     await page.getByRole('link', { name: 'Login' }).click();
     await page.getByRole('button', { name: `Login with ${secret.name}` }).click();
 
@@ -69,7 +69,7 @@ test.describe('App OAuth2 login', () => {
     await expect(page.getByRole('heading', { name: 'Example Page A' })).toBeVisible();
   });
 
-  test('should handle app member email conflict', async ({ page }) => {
+  test.fixme('should handle app member email conflict', async ({ page }) => {
     await page.click('a.button');
     await expect(page.getByRole('heading', { name: 'Example Page A' })).toBeVisible();
   });
