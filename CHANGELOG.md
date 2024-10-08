@@ -234,11 +234,11 @@ All notable changes to this project will be documented in this file.
 
 ### Fixed
 
-- Cli: Missing options in `group update` command, `context` and `app`.
+- Cli: Missing options in `team update` command, `context` and `app`.
 - Cli: Throw an error if `remote` is neither found in the specified context nor passed as an
   argument.
-- Cli: Wrong option used in `group create` command to make argument dependent on one-another.
-  Options app and context are now optional unless either is specified.
+- Cli: Wrong option used in `team create` command to make argument dependent on one-another. Options
+  app and context are now optional unless either is specified.
 - Preact-components: Make the date picker calendar display statically below the input field.
 - React-components: Add a footer to the dialog from the `dialog` action.
 - Server: The `setAppPath` function should try at least 9 times before generating hex values.
