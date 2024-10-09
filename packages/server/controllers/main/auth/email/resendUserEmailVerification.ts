@@ -9,7 +9,6 @@ export async function resendUserEmailVerification(ctx: Context): Promise<void> {
 
   const email = request.body.email.toLowerCase();
   const record = await EmailAuthorization.findByPk(email, {
-    raw: true,
     include: [{ model: User, attributes: ['name', 'locale'] }],
   });
   if (record && !record.verified) {
