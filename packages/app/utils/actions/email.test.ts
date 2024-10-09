@@ -11,7 +11,7 @@ describe('email', () => {
 
   beforeEach(() => {
     mock = new MockAdapter(axios);
-    mock.onPost(`${apiUrl}/api/apps/42/action/pages.0.blocks.0.actions.onClick`).reply((req) => {
+    mock.onPost(`${apiUrl}/api/apps/42/actions/pages.0.blocks.0.actions.onClick`).reply((req) => {
       request = req;
       return [200, {}];
     });
