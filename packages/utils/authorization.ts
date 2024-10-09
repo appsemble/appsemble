@@ -74,7 +74,7 @@ export function getAppInheritedRoles(
   roles: AppRole[],
   accumulatedRoles: AppRole[] = [],
 ): AppRole[] {
-  if (!appSecurityDefinition) {
+  if (!appSecurityDefinition || !roles) {
     return [];
   }
 
