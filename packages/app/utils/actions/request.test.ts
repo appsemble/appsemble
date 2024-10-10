@@ -46,7 +46,7 @@ describe('request', () => {
     });
     const result = await action({ hello: 'get' });
     expect(request.method).toBe('get');
-    expect(request.url).toBe(`${apiUrl}/api/apps/42/action/pages.0.blocks.0.actions.onClick`);
+    expect(request.url).toBe(`${apiUrl}/api/apps/42/actions/pages.0.blocks.0.actions.onClick`);
     expect(request.params).toStrictEqual({ data: '{"hello":"get"}' });
     expect(request.data).toBeUndefined();
     expect(result).toStrictEqual({ hello: 'data' });
@@ -64,7 +64,7 @@ describe('request', () => {
     });
     const result = await action({ hello: 'delete' });
     expect(request.method).toBe('delete');
-    expect(request.url).toBe(`${apiUrl}/api/apps/42/action/pages.0.blocks.0.actions.onClick`);
+    expect(request.url).toBe(`${apiUrl}/api/apps/42/actions/pages.0.blocks.0.actions.onClick`);
     expect(request.params).toStrictEqual({ data: '{"hello":"delete"}' });
     expect(request.data).toBeUndefined();
     expect(result).toStrictEqual({ hello: 'data' });
@@ -82,7 +82,7 @@ describe('request', () => {
     });
     const result = await action({ hello: 'get' });
     expect(request.method).toBe('get');
-    expect(request.url).toBe(`${apiUrl}/api/apps/42/action/pages.0.blocks.0.actions.onClick`);
+    expect(request.url).toBe(`${apiUrl}/api/apps/42/actions/pages.0.blocks.0.actions.onClick`);
     expect(request.params).toStrictEqual({ data: '{"hello":"get"}' });
     expect(request.data).toBeUndefined();
     expect(result).toStrictEqual({ hello: 'data' });
@@ -100,7 +100,7 @@ describe('request', () => {
     });
     const result = await action({ hello: 'patch' });
     expect(request.method).toBe('patch');
-    expect(request.url).toBe(`${apiUrl}/api/apps/42/action/pages.0.blocks.0.actions.onClick`);
+    expect(request.url).toBe(`${apiUrl}/api/apps/42/actions/pages.0.blocks.0.actions.onClick`);
     expect(request.params).toBeUndefined();
     expect(request.data).toBe('{"hello":"patch"}');
     expect(result).toStrictEqual({ hello: 'data' });
@@ -118,7 +118,7 @@ describe('request', () => {
     });
     const result = await action({ hello: 'post' });
     expect(request.method).toBe('post');
-    expect(request.url).toBe(`${apiUrl}/api/apps/42/action/pages.0.blocks.0.actions.onClick`);
+    expect(request.url).toBe(`${apiUrl}/api/apps/42/actions/pages.0.blocks.0.actions.onClick`);
     expect(request.params).toBeUndefined();
     expect(request.data).toBe('{"hello":"post"}');
     expect(result).toStrictEqual({ hello: 'data' });
@@ -144,7 +144,7 @@ describe('request', () => {
     await action(imageData);
 
     expect(request.method).toBe('post');
-    expect(request.url).toBe(`${apiUrl}/api/apps/42/action/pages.0.blocks.0.actions.onClick`);
+    expect(request.url).toBe(`${apiUrl}/api/apps/42/actions/pages.0.blocks.0.actions.onClick`);
     expect(request.params).toBeUndefined();
     expect({ ...request.headers }).toMatchObject({
       Accept: 'application/json, text/plain, */*',
@@ -164,7 +164,7 @@ describe('request', () => {
     });
     const result = await action({ hello: 'put' });
     expect(request.method).toBe('put');
-    expect(request.url).toBe(`${apiUrl}/api/apps/42/action/pages.0.blocks.0.actions.onClick`);
+    expect(request.url).toBe(`${apiUrl}/api/apps/42/actions/pages.0.blocks.0.actions.onClick`);
     expect(request.params).toBeUndefined();
     expect(request.data).toBe('{"hello":"put"}');
     expect(result).toStrictEqual({ hello: 'data' });
@@ -518,7 +518,7 @@ describe('request', () => {
       });
       const result = await action({ hello: 'data' });
       expect(request.method).toBe(requestType.toLocaleLowerCase());
-      expect(request.url).toBe(`${apiUrl}/api/apps/42/action/pages.0.blocks.0.actions.onClick`);
+      expect(request.url).toBe(`${apiUrl}/api/apps/42/actions/pages.0.blocks.0.actions.onClick`);
       expect(request.params).toStrictEqual(expectedResult);
       expect(result).toStrictEqual({ hello: 'data' });
     },

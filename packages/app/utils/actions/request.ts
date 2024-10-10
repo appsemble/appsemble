@@ -14,7 +14,7 @@ export const request: ActionCreator<'request'> = ({ definition, prefixIndex, rem
       const req: RawAxiosRequestConfig = proxy
         ? {
             method,
-            url: `${apiUrl}/api/apps/${appId}/action/${prefixIndex}`,
+            url: `${apiUrl}/api/apps/${appId}/actions/${prefixIndex}`,
             responseType: 'arraybuffer',
           }
         : formatRequestAction(definition, data, remap, context);
