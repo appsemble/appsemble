@@ -6,7 +6,8 @@ export const messages = defineMessages({
     defaultMessage: 'Request failed. Token may be invalid.',
   },
   requestSuccess: {
-    id: 'studio.Tk9rN+',
-    defaultMessage: 'Your email was successfully verified! \nYou may now log into Appsemble.',
+    id: 'studio.fbMdX+',
+    defaultMessage:
+      'Your email was successfully verified! \nHave fun exploring Appsemble. Redirecting in 3 seconds.',
   },
 });
