@@ -2,8 +2,8 @@ default:
   image: node:18.18.0-bookworm-slim
 
 stages:
-  - test
   - build
+  - test
   - end 2 end
   - publish
   - deploy
@@ -89,141 +89,6 @@ workflow:
       fi
 
 ###################################################################################################
-#  Test Stage                                                                                     #
-###################################################################################################
-
-# Spell check using cspell
-cspell:
-  extends: .npm
-  script:
-    - npx -- cspell
-
-# Lint JavaScript code using ESLint.
-eslint:
-  extends: .npm
-  script:
-    - npx -- eslint --format gitlab .
-  artifacts:
-    reports:
-      codequality: gl-codequality.json
-
-# Lint Helm charts.
-helm lint:
-  image: dtzar/helm-kubectl:3
-  script:
-    - helm lint config/charts/*
-
-# Lint shell scripts
-shellcheck:
-  image: koalaman/shellcheck-alpine
-  script:
-    - printf "Evaluating:\n$(find . -name '*.sh')"
-    - find . -name '*.sh' | xargs shellcheck
-
-# Verify app messages are in sync with the app definition.
-i18n:
-  extends: .npm
-  script:
-    - npm run appsemble -- app extract-messages --verify nl apps/*
-
-# Check formatting using prettier.
-prettier:
-  extends: .npm
-  script:
-    - npx -- prettier .
-
-# Lint Markdown using remark.
-remark lint:
-  extends: .npm
-  script:
-    - npx -- remark --frail --no-stdout .
-
-# Lint CSS using stylelint.
-stylelint:
-  extends: .npm
-  script:
-    - npx -- stylelint .
-
-# Run unittests using NodeJS 18.
-test node 18:
-  interruptible: true
-  services:
-    - postgres:15
-  variables:
-    POSTGRES_DB: testAppsemble
-    POSTGRES_USER: admin
-    POSTGRES_PASSWORD: password
-    DATABASE_URL: 'postgres://admin:password@postgres:5432/testAppsemble'
-  script:
-    - npm ci
-    - npm test -- --coverage --shard=$CI_NODE_INDEX/$CI_NODE_TOTAL
-  parallel: 3
-  artifacts:
-    paths:
-      - coverage
-    reports:
-      junit: junit.xml
-      coverage_report:
-        coverage_format: cobertura
-        path: coverage/cobertura-coverage.xml
-
-# Check type validity for our TypeScript files.
-tsc:
-  extends: .npm
-  script:
-    - npx --workspaces tsc
-
-# Check type validity for our TypeScript files.
-validate:
-  extends: .npm
-  script:
-    - npm run scripts -- validate
-
-# Check migrations are in sync with Sequelize models
-check migrations:
-  extends: .npm
-  interruptible: true
-  services:
-    - postgres:15
-  variables:
-    FORCE_COLOR: '1' # Required for Chalk.js
-    POSTGRES_DB: testAppsemble
-    POSTGRES_USER: admin
-    POSTGRES_PASSWORD: password
-    DATABASE_URL: 'postgres://admin:password@postgres:5432/testAppsemble'
-  script:
-    - npm run appsemble -- check-migrations
-
-# Check down migrations
-check down migrations:
-  extends: .npm
-  interruptible: true
-  services:
-    - postgres:15
-  variables:
-    FORCE_COLOR: '1' # Required for Chalk.js
-    POSTGRES_DB: testAppsemble
-    POSTGRES_USER: admin
-    POSTGRES_PASSWORD: password
-    DATABASE_URL: 'postgres://admin:password@postgres:5432/testAppsemble'
-  script:
-    - npm run appsemble -- check-down-migrations
-
-# Fuzz test migrations for anomalous up and down migration failures
-fuzz migrations:
-  extends: .npm
-  interruptible: true
-  services:
-    - postgres:15
-  variables:
-    POSTGRES_DB: testAppsemble
-    POSTGRES_USER: admin
-    POSTGRES_PASSWORD: password
-    DATABASE_URL: 'postgres://admin:password@postgres:5432/testAppsemble'
-  script:
-    - npm run appsemble -- fuzz-migrations
-
-###################################################################################################
 #  Build Stage                                                                                    #
 ###################################################################################################
 
@@ -231,7 +96,6 @@ fuzz migrations:
 build docker image:
   extends: .docker
   stage: build
-  needs: []
   script:
     - docker build -t "$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG" --build-arg "version=$CI_COMMIT_REF_NAME" --build-arg "date=$CI_JOB_STARTED_AT" .
     - docker push "$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG"
@@ -274,6 +138,185 @@ helm package:
     expose_as: Helm chart
     paths:
       - public/
+
+###################################################################################################
+#  Test Stage                                                                                     #
+###################################################################################################
+
+# Spell check using cspell
+cspell:
+  extends: .npm
+  stage: test
+  needs: []
+  script:
+    - npx -- cspell
+
+# Lint JavaScript code using ESLint.
+eslint:
+  extends: .npm
+  stage: test
+  needs: []
+  script:
+    - npx -- eslint --format gitlab .
+  artifacts:
+    reports:
+      codequality: gl-codequality.json
+
+# Lint Helm charts.
+helm lint:
+  image: dtzar/helm-kubectl:3
+  stage: test
+  needs: []
+  script:
+    - helm lint config/charts/*
+
+# Lint shell scripts
+shellcheck:
+  image: koalaman/shellcheck-alpine
+  stage: test
+  needs: []
+  script:
+    - printf "Evaluating:\n$(find . -name '*.sh')"
+    - find . -name '*.sh' | xargs shellcheck
+
+# Verify app messages are in sync with the app definition.
+i18n:
+  extends: .npm
+  stage: test
+  needs: []
+  script:
+    - npm run appsemble -- app extract-messages --verify nl apps/*
+
+# Check formatting using prettier.
+prettier:
+  extends: .npm
+  stage: test
+  needs: []
+  script:
+    - npx -- prettier .
+
+# Lint Markdown using remark.
+remark lint:
+  extends: .npm
+  stage: test
+  needs: []
+  script:
+    - npx -- remark --frail --no-stdout .
+
+# Lint CSS using stylelint.
+stylelint:
+  extends: .npm
+  stage: test
+  needs: []
+  script:
+    - npx -- stylelint .
+
+# Run unittests using NodeJS 18.
+test node 18:
+  interruptible: true
+  services:
+    - postgres:15
+  variables:
+    POSTGRES_DB: testAppsemble
+    POSTGRES_USER: admin
+    POSTGRES_PASSWORD: password
+    DATABASE_URL: 'postgres://admin:password@postgres:5432/testAppsemble'
+  stage: test
+  needs: []
+  script:
+    - npm ci
+    - npm test -- --coverage --shard=$CI_NODE_INDEX/$CI_NODE_TOTAL
+  parallel: 3
+  artifacts:
+    paths:
+      - coverage
+    reports:
+      junit: junit.xml
+      coverage_report:
+        coverage_format: cobertura
+        path: coverage/cobertura-coverage.xml
+
+# Check type validity for our TypeScript files.
+tsc:
+  extends: .npm
+  stage: test
+  needs: []
+  script:
+    - npx --workspaces tsc
+
+# Check type validity for our TypeScript files.
+validate:
+  extends: .npm
+  stage: test
+  needs: []
+  script:
+    - npm run scripts -- validate
+
+# Check migrations are in sync with Sequelize models
+check migrations:
+  extends: .npm
+  stage: test
+  needs: []
+  interruptible: true
+  services:
+    - postgres:15
+  variables:
+    FORCE_COLOR: '1' # Required for Chalk.js
+    POSTGRES_DB: testAppsemble
+    POSTGRES_USER: admin
+    POSTGRES_PASSWORD: password
+    DATABASE_URL: 'postgres://admin:password@postgres:5432/testAppsemble'
+  script:
+    - npm run appsemble -- check-migrations
+
+# Check down migrations
+check down migrations:
+  extends: .npm
+  stage: test
+  needs: []
+  interruptible: true
+  services:
+    - postgres:15
+  variables:
+    FORCE_COLOR: '1' # Required for Chalk.js
+    POSTGRES_DB: testAppsemble
+    POSTGRES_USER: admin
+    POSTGRES_PASSWORD: password
+    DATABASE_URL: 'postgres://admin:password@postgres:5432/testAppsemble'
+  script:
+    - npm run appsemble -- check-down-migrations
+
+# Fuzz test migrations for anomalous up and down migration failures
+fuzz migrations:
+  extends: .npm
+  stage: test
+  needs: []
+  interruptible: true
+  services:
+    - postgres:15
+  variables:
+    POSTGRES_DB: testAppsemble
+    POSTGRES_USER: admin
+    POSTGRES_PASSWORD: password
+    DATABASE_URL: 'postgres://admin:password@postgres:5432/testAppsemble'
+  script:
+    - npm run appsemble -- fuzz-migrations
+
+include:
+  # https://gitlab.com/gitlab-org/gitlab/-/blob/master/lib/gitlab/ci/templates/Jobs/Container-Scanning.gitlab-ci.yml
+  # https://docs.gitlab.com/ee/user/application_security/container_scanning
+  # Uses https://github.com/aquasecurity/trivy
+  # The 'latest' template is used to enable merge-request scanning
+  # The generated report is used for https://gitlab.com/appsemble/security-policy-management/-/blob/main/.gitlab/security-policies/policy.yml
+  - template: Jobs/Container-Scanning.latest.gitlab-ci.yml
+
+container_scanning:
+  needs:
+    - build docker image
+  variables:
+    GIT_STRATEGY: fetch
+    CS_DISABLE_LANGUAGE_VULNERABILITY_SCAN: false
+    CS_IMAGE: '$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG'
 
 ###################################################################################################
 #  End 2 End Stage                                                                               #
