@@ -70,6 +70,10 @@ export function checkPagePermissions(
     return true;
   }
 
+  if (appDefinition.security && !appDefinition.security.guest && !appMemberRole) {
+    return false;
+  }
+
   const appMemberViewRoles = getAppMemberViewRoles(
     appDefinition.security,
     appMemberRole,
