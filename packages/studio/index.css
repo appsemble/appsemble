@@ -6,11 +6,6 @@ body {
   height: 100vh;
 }
 
-/* stylelint-disable-next-line selector-max-id */
-#app {
-  height: calc(100vh - 3.25rem);
-}
-
 .browsers {
   margin: auto;
   text-align: center;
