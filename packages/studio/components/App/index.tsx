@@ -18,7 +18,6 @@ import { customDomainAppCollection } from '../../utils/settings.js';
 import { Breadcrumbs } from '../Breadcrumbs/index.js';
 import { BreadCrumbsDecorationProvider } from '../BreadCrumbsDecoration/index.js';
 import { CodeBlock } from '../CodeBlock/index.js';
-import { EmailQuotaBanners } from '../EmailQuotaBanners/index.js';
 import { ErrorFallback } from '../ErrorFallback/index.js';
 import { FullscreenProvider, useFullscreenContext } from '../FullscreenProvider/index.js';
 import { HighlightedCode } from '../HighlightedCode/index.js';
@@ -48,7 +47,6 @@ function StudioContent(): ReactNode {
         >
           <PasswordBanner />
           <VerifyBanner />
-          <EmailQuotaBanners />
           <BreadCrumbsDecorationProvider>
             <PageHeaderProvider>
               <Breadcrumbs />
