@@ -37,7 +37,7 @@ registered OAuth2 client credentials in the platform, they can also use the Apps
 
 To be able to perform any actions on the platform that require authorization, platform users must be
 a part of an Appsemble organization. For more information, check out
-[the organizations docs](../02-guides/organizations.mdx)
+[the organizations docs](../01-studio/organizations.mdx)
 
 ## Apps
 

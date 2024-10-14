@@ -32,9 +32,9 @@ The studio consists of 5 pages:
 
 ### Table of contents
 
-- [Account setup](00-account-setup.md)
-- [App store](01-app-store.md)
-- [Block store](02-block-store.md)
-- [Organizations](03-organizations.mdx)
+- [Account setup](account-setup.md)
+- [App store](app-store.md)
+- [Block store](block-store.md)
+- [Organizations](organizations.mdx)
 - [Account management](account-management.md)
 - [GUI editor](gui-editor.md)

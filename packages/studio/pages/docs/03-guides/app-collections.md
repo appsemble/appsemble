@@ -1,7 +1,8 @@
 # App collections
 
-Organizations can put apps into collections. Any user in an organization with the `EditCollections`
-permission can add any app of an organization they're into an app collection.
+Organizations can put apps into collections. Any user in an organization with the
+`CreateAppCollections` or `UpdateAppCollections` permission can add any app of an organization
+they're a part of into an app collection.
 
 An example of what an app collection looks like can be found [here](https://openapps.nl)
 

@@ -69,7 +69,7 @@ have an Azure Active Directory already set up and filled with users.
 
 2. Under **Mappings**, set up the desired attribute mappings you need for your application. The
    supported attributes can be found at
-   [Supported attribute mappings](../04-development/06-SCIM-development.md#supported-attribute-mappings).
+   [Supported attribute mappings](../04-development/SCIM-development.md#supported-attribute-mappings).
 
    **Note:** As of now, “Group” mappings are not supported. Turn these off to prevent provisioning
    issues.

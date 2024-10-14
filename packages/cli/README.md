@@ -248,7 +248,7 @@ npm install webpack@webpack-4 @appsemble/webpack-config
 ```
 
 For a more in-depth explanation of how to build apps, use our
-[block development guide](https://appsemble.app/docs/02-development/developing-blocks).
+[block development guide](https://appsemble.app/docs/04-development/developing-blocks).
 
 ### Groups
 

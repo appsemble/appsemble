@@ -222,8 +222,8 @@ button which links to `Create strategy`. The `About` page is accessible to anyon
 
 The following group related actions are can be used within an app:
 
-- [`group.query`](../actions/03-groups.mdx#groupquery)
-- [`group.member.invite`](../actions/03-groups.mdx#groupmemberinvite)
-- [`group.member.query`](../actions/03-groups.mdx#groupmemberquery)
-- [`group.member.delete`](../actions/03-groups.mdx#groupmemberdelete)
-- [`group.member.role.update`](../actions/03-groups.mdx#groupmemberroleupdate)
+- [`group.query`](../actions/groups.mdx#groupquery)
+- [`group.member.invite`](../actions/groups.mdx#groupmemberinvite)
+- [`group.member.query`](../actions/groups.mdx#groupmemberquery)
+- [`group.member.delete`](../actions/groups.mdx#groupmemberdelete)
+- [`group.member.role.update`](../actions/groups.mdx#groupmemberroleupdate)

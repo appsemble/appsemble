@@ -57,7 +57,7 @@ OAuth2 credentials [here](/settings/client-credentials), these credentials can b
 setting the APPSEMBLE_CLIENT_CREDENTIALS environment variable.
 
 After completing the login, the first step is to create an
-[organization](../03-guides/organizations.mdx). This can be done either via the CLI or the studio.
+[organization](../01-studio/organizations.mdx). This can be done either via the CLI or the studio.
 To create an organization from the CLI, use the following command.
 
 ```sh
@@ -78,9 +78,9 @@ organization.
 
 ---
 
-The next step is to publish the [blocks](./02-developing-blocks.md) available in the repository.
-This can only be done via the CLI and the following command is used to publish all the blocks in
-blocks directory.
+The next step is to publish the [blocks](developing-blocks.md) available in the repository. This can
+only be done via the CLI and the following command is used to publish all the blocks in blocks
+directory.
 
 ```sh copy
 npm run appsemble block publish blocks/*

@@ -25,7 +25,7 @@ only works when you have a page defined with the name Home.
 
 ```yaml copy validate block-snippet
 - type: action-button
-  version: 0.29.10
+  version: 0.30.2
   parameters:
     icon: home
   actions:
@@ -47,7 +47,7 @@ pages:
   - name: Home
     blocks:
       - type: action-button
-        version: 0.29.10
+        version: 0.30.2
         parameters:
           icon: arrow-right
         actions:
@@ -58,7 +58,7 @@ pages:
   - name: Other Page
     blocks:
       - type: action-button
-        version: 0.29.10
+        version: 0.30.2
         parameters:
           icon: home
         actions:
@@ -100,4 +100,4 @@ through the [YAML syntax guide](./yaml-syntax.mdx) in order to know the most com
 
 If none of the blocks in the block store quite suit your needs you can try to create your own. For
 more information, you can check out the
-[Developing Blocks guide](../04-development/02-developing-blocks.md)
+[Developing Blocks guide](../04-development/developing-blocks.md)

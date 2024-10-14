@@ -97,16 +97,16 @@ and `scim.json`. For more information see [config.md](config.md).
 
 ## Settings
 
-You can configure even more things about your app with sufficient [permissions](organizations.mdx).
-Open the settings page of your app and you will find the options to change the logo of your app, add
-a detailed description about your app which is displayed in the details page of your app. You can
-also configure whether to make the app publicly visible or restrict its visibility, similarly you
-have the option to hide or show the app definition from users outside of your organization. You can
-set a `path` for your app which is generally parsed from the name of your app set in the app
-definition, similarly, to use a custom domain for your app, you can set the domain in `Domain name`
-field. We have the option to configure the name displayed for the emails sent for the app. Google
-analytics field allows you to apply [Google analytics](analytics.md#google-analytics) to your app.
-Sentry environments can be applied and configured in the `Sentry DSN` and `Sentry Environment`
-fields. Finally we have the option to set the `lock` for our app and delete your app. A locked can
-not be updated either way. Deleting an app requires special permissions and this change can’t be
-reversed.
+You can configure even more things about your app with sufficient
+[permissions](../01-studio/organizations.mdx). Open the settings page of your app and you will find
+the options to change the logo of your app, add a detailed description about your app which is
+displayed in the details page of your app. You can also configure whether to make the app publicly
+visible or restrict its visibility, similarly you have the option to hide or show the app definition
+from users outside of your organization. You can set a `path` for your app which is generally parsed
+from the name of your app set in the app definition, similarly, to use a custom domain for your app,
+you can set the domain in `Domain name` field. We have the option to configure the name displayed
+for the emails sent for the app. Google analytics field allows you to apply
+[Google analytics](analytics.md#google-analytics) to your app. Sentry environments can be applied
+and configured in the `Sentry DSN` and `Sentry Environment` fields. Finally we have the option to
+set the `lock` for our app and delete your app. A locked can not be updated either way. Deleting an
+app requires special permissions and this change can’t be reversed.

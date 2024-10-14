@@ -14,6 +14,7 @@ continue on this basic app to add more advanced features.
 - [API](api.md)
 - [App collections](app-collections.md)
 - [App Icons](app-icons.md)
+- [App member properties](app-member-properties.md)
 - [Assets](assets.md)
 - [Basic app](basic-app.md)
 - [Companion containers](companion-containers.md)
@@ -34,5 +35,4 @@ continue on this basic app to add more advanced features.
 - [Teams](teams.md)
 - [TLS](tls.md)
 - [Translating](translating.md)
-- [User properties](user-properties.md)
 - [YAML syntax](yaml-syntax.mdx)
