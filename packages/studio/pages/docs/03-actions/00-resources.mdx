@@ -100,8 +100,8 @@ Supported field for this action are `type`, `resource` and `own`. The fields `ty
 are required. The `own` field can be used to fetch only resources created by the authenticated app
 member. Resource refers to the resource whose count is to be fetched. This action requires at least
 one of the app permissions `$resource:all:query` or `$resource:<resource-name>:query` depending on
-the context. For more information check out [security](../02-guides/security.md#permissions). Here’s an example of how you can use this
-action to fetch the number of resources.
+the context. For more information check out [security](../02-guides/security.md#permissions). Here’s
+an example of how you can use this action to fetch the number of resources.
 
 ```yaml validate blocks-snippet
 blocks:
@@ -118,8 +118,9 @@ blocks:
 This action is implemented for client as well as the server side. This action is used to create new
 resources. Supported fields for this action are `type` and `resource`. Both of the fields are
 required. This action requires at least one of the app permissions `$resource:all:create` or
-`$resource:<resource-name>:create` depending on the context. For more information check out [security](../02-guides/security.md#permissions).
-Here’s an example of how you can use this action to create a new resource of type person.
+`$resource:<resource-name>:create` depending on the context. For more information check out
+[security](../02-guides/security.md#permissions). Here’s an example of how you can use this action
+to create a new resource of type person.
 
 ```yaml validate blocks-snippet
 blocks:
@@ -176,8 +177,8 @@ update a resource with new data. Supported field for this action are `type` and 
 the fields are required. Resource refers to the resource to be partially updated. This action
 requires at least one of the app permissions `$resource:all:patch`, `$resource:all:own:patch`,
 `$resource:<resource-name>:patch` or `$resource:<resource-name>:own:patch` depending on the context.
-For more information check out [security](../02-guides/security.md#permissions). Here’s an example of how you can partially update a
-resource of type person using this action.
+For more information check out [security](../02-guides/security.md#permissions). Here’s an example
+of how you can partially update a resource of type person using this action.
 
 ```yaml validate blocks-snippet
 blocks:
@@ -203,8 +204,8 @@ a resource from the database. Supported field for this action are `type` and `re
 fields are required. Resource refers to the resource to be deleted. This action requires at least
 one of the app permissions `$resource:all:delete`, `$resource:all:own:delete`,
 `$resource:<resource-name>:delete` or `$resource:<resource-name>:own:delete` depending on the
-context. For more information check out [security](../02-guides/security.md#permissions). To delete a person resource, you can use the
-following block of code.
+context. For more information check out [security](../02-guides/security.md#permissions). To delete
+a person resource, you can use the following block of code.
 
 ```yaml validate blocks-snippet
 blocks:

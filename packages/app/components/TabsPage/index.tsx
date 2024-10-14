@@ -180,8 +180,9 @@ export function TabsPage({
               defaultMessage: remap(tab.name, data, remapperContext),
             }).format() as string;
 
-            const value = `${['', lang, pageId, normalize(translatedName)].join('/')}${wildcard.includes('/') ? wildcard.slice(wildcard.indexOf('/')) : ''
-              }`;
+            const value = `${['', lang, pageId, normalize(translatedName)].join('/')}${
+              wildcard.includes('/') ? wildcard.slice(wildcard.indexOf('/')) : ''
+            }`;
 
             return checkSubPagePermissions(tab) ? (
               <Tab href={value} key={tab.name} value={value}>

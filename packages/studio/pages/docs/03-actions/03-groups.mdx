@@ -19,8 +19,8 @@ Supported group actions are as follow.
 
 This action allows an app member with sufficient permissions to query groups within the app, in
 which the app member is a member of. Type is the only required value for using this action. This
-action requires the `$group:query` app permission. For more information check out [security](../02-guides/security.md#permissions). Here
-is an example of how you can use this action.
+action requires the `$group:query` app permission. For more information check out
+[security](../02-guides/security.md#permissions). Here is an example of how you can use this action.
 
 ```yaml validate blocks-snippet
 blocks:
@@ -39,12 +39,12 @@ blocks:
 
 This action allows a user with sufficient permissions to invite app members to a group. Supported
 fields for this action are `type`, `id`, `email`, and `role`. `id` is the id of the group to which
-the user will be invited, `email` is the email of the user to be invited to join the group and `role`
-is the role as which the user is being invited. The `role` must exist in the roles property of the
-app's security definition or in the predefined app roles in the system - `Member`, `MembersManager`,
-`GroupMembersManager`, `GroupsManager`, `ResourcesManager` and `Owner`. This action requires the
-`$group:member:invite` app permission. For more information check out [security](../02-guides/security.md#permissions).Here is an example
-of how you can use this action.
+the user will be invited, `email` is the email of the user to be invited to join the group and
+`role` is the role as which the user is being invited. The `role` must exist in the roles property
+of the app's security definition or in the predefined app roles in the system - `Member`,
+`MembersManager`, `GroupMembersManager`, `GroupsManager`, `ResourcesManager` and `Owner`. This
+action requires the `$group:member:invite` app permission. For more information check out
+[security](../02-guides/security.md#permissions).Here is an example of how you can use this action.
 
 ```yaml validate blocks-snippet
 blocks:
@@ -93,8 +93,8 @@ blocks:
 
 This action allows an app member with sufficient permissions to delete a group member from a group,
 in which the app member is a member of. `id` is the id of the group member to delete. This action
-requires the `$group:member:delete` app permission. For more information check out [security](../02-guides/security.md#permissions). Here
-is an example of how you can use this action.
+requires the `$group:member:delete` app permission. For more information check out
+[security](../02-guides/security.md#permissions). Here is an example of how you can use this action.
 
 ```yaml validate blocks-snippet
 blocks:
