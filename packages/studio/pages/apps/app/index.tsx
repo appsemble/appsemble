@@ -37,7 +37,6 @@ import { ResourcesRoutes } from './resources/index.js';
 import { SecretsPage } from './secrets/index.js';
 import { SettingsPage } from './settings/index.js';
 import { SnapshotsRoutes } from './snapshots/index.js';
-import { SnapshotPage } from './snapshots/snapshot/index.js';
 import { TranslationsPage } from './translations/index.js';
 import { VariablesPage } from './variables/index.js';
 import { ProtectedRoute } from '../../../components/ProtectedRoute/index.js';
@@ -471,7 +470,6 @@ export function AppRoutes(): ReactNode {
             />
           }
         >
-          <Route element={<SnapshotPage />} path="/snapshots" />
           <Route element={<SnapshotsRoutes />} path="/snapshots/*" />
           <Route element={<QuotasPage />} path="/quotas" />
         </Route>
