@@ -30,6 +30,11 @@ interface SideNavLinkProps {
    * Where to navigate to.
    */
   readonly to?: string;
+
+  /**
+   * Count to be shown next to the item.
+   */
+  readonly count?: number;
 }
 
 /**
@@ -37,7 +42,7 @@ interface SideNavLinkProps {
  *
  * https://bulma.io/documentation/components/menu
  */
-export function MenuItem({ children, end, icon, title, to }: SideNavLinkProps): ReactNode {
+export function MenuItem({ children, count, end, icon, title, to }: SideNavLinkProps): ReactNode {
   const { collapsed, collapsible, setCollapsed } = useContext(CollapsedContext);
   const clickHideButton = useCallback(
     (event: MouseEvent<HTMLSpanElement>) => {
@@ -53,6 +58,9 @@ export function MenuItem({ children, end, icon, title, to }: SideNavLinkProps): 
       <>
         {icon ? <Icon className={`mr-1 ${styles.middle}`} icon={icon} size="medium" /> : null}
         <span className={styles.text}>{children}</span>
+        {count ? (
+          <sub className={`tag is-rounded ml-1 ${isActive ? '' : 'is-dark'}`}>{count}</sub>
+        ) : null}
         {collapsible ? (
           <Icon
             className={styles.icon}
@@ -64,7 +72,7 @@ export function MenuItem({ children, end, icon, title, to }: SideNavLinkProps): 
         ) : null}
       </>
     ),
-    [children, clickHideButton, collapsed, collapsible, icon],
+    [children, clickHideButton, collapsed, collapsible, count, icon],
   );
 
   return to ? (

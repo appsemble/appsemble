@@ -6,13 +6,14 @@ import {
   Message,
   MetaSwitch,
   useLocationString,
+  useMessages,
 } from '@appsemble/react-components';
 import { type PageDefinition, type Remapper } from '@appsemble/types';
 import { createThemeURL, mergeThemes, normalize, remap } from '@appsemble/utils';
 import classNames from 'classnames';
-import { type ReactNode, useCallback, useEffect, useRef, useState } from 'react';
+import { type ReactNode, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
-import { Navigate, Route, useLocation, useParams } from 'react-router-dom';
+import { Navigate, Route, useLocation, useNavigate, useParams } from 'react-router-dom';
 
 import styles from './index.module.css';
 import { messages } from './messages.js';
@@ -20,6 +21,7 @@ import { ShareDialog, type ShareDialogState } from './ShareDialog/index.js';
 import { type ShowDialogParams, type ShowShareDialog } from '../../types.js';
 import { checkPagePermissions } from '../../utils/authorization.js';
 import { getDefaultPageName } from '../../utils/getDefaultPageName.js';
+import { makeActions } from '../../utils/makeActions.js';
 import { apiUrl, appId } from '../../utils/settings.js';
 import { AppStorage } from '../../utils/storage.js';
 import { useAppDefinition } from '../AppDefinitionProvider/index.js';
@@ -27,22 +29,39 @@ import { useAppMember } from '../AppMemberProvider/index.js';
 import { useAppMessages } from '../AppMessagesProvider/index.js';
 import { useAppVariables } from '../AppVariablesProvider/index.js';
 import { BlockList } from '../BlockList/index.js';
+import { useDemoAppMembers } from '../DemoAppMembersProvider/index.js';
 import { FlowPage } from '../FlowPage/index.js';
 import { usePage } from '../MenuProvider/index.js';
 import { PageDialog } from '../PageDialog/index.js';
+import { useServiceWorkerRegistration } from '../ServiceWorkerRegistrationProvider/index.js';
 import { TabsPage } from '../TabsPage/index.js';
 import { AppBar } from '../TitleBar/index.js';
 
 export function Page(): ReactNode {
   const redirect = useLocationString();
   const { definition: appDefinition } = useAppDefinition();
-  const { appMemberInfoRef, appMemberRole, appMemberSelectedGroup, isLoggedIn } = useAppMember();
+  const {
+    addAppMemberGroup,
+    appMemberGroups,
+    appMemberInfoRef,
+    appMemberRole,
+    appMemberSelectedGroup,
+    isLoggedIn,
+    logout,
+    passwordLogin,
+    setAppMemberInfo,
+  } = useAppMember();
   const { lang, pageId } = useParams<{ lang: string; pageId: string }>();
 
   const { pathname } = useLocation();
+  const params = useParams();
   const { appMessageIds, getAppMessage, getMessage } = useAppMessages();
   const { getVariable } = useAppVariables();
   const { page: navPage, setPage } = usePage();
+  const pushNotifications = useServiceWorkerRegistration();
+  const { refetchDemoAppMembers } = useDemoAppMembers();
+  const showMessage = useMessages();
+  const navigate = useNavigate();
 
   const [data, setData] = useState<unknown>({});
   const [dialog, setDialog] = useState<ShowDialogParams>();
@@ -173,13 +192,68 @@ export function Page(): ReactNode {
       }),
     [getMessage, getVariable, data, appMemberInfoRef, lang],
   );
-
   const showDialog = useCallback((d: ShowDialogParams) => {
     setDialog(d);
     return () => {
       setDialog(null);
     };
   }, []);
+
+  const actions = useMemo(
+    () =>
+      makeActions({
+        addAppMemberGroup,
+        appStorage: appStorage.current,
+        appMemberGroups,
+        getAppMessage,
+        getAppVariable: getVariable,
+        actions: { onLoad: {} },
+        appDefinition,
+        context: pageDefinition,
+        navigate,
+        extraCreators: {},
+        prefix,
+        prefixIndex,
+        pushNotifications,
+        showDialog,
+        showShareDialog,
+        ee: ee.current,
+        pageReady: null,
+        remap,
+        params,
+        showMessage,
+        getAppMemberSelectedGroup: () => appMemberSelectedGroup,
+        getAppMemberInfo: () => appMemberInfoRef.current,
+        passwordLogin,
+        passwordLogout: logout,
+        setAppMemberInfo,
+        refetchDemoAppMembers,
+      }),
+    [
+      appStorage,
+      getAppMessage,
+      getVariable,
+      appDefinition,
+      pageDefinition,
+      navigate,
+      showDialog,
+      showShareDialog,
+      prefix,
+      prefixIndex,
+      pushNotifications,
+      ee,
+      params,
+      showMessage,
+      passwordLogin,
+      logout,
+      setAppMemberInfo,
+      refetchDemoAppMembers,
+      appMemberInfoRef,
+      appMemberSelectedGroup,
+      appMemberGroups,
+      addAppMemberGroup,
+    ],
+  );
 
   useEffect(() => {
     if (!pageDefinition) {
@@ -196,6 +270,12 @@ export function Page(): ReactNode {
     },
     [pageDefinition],
   );
+
+  useEffect(() => {
+    actions.onLoad().then((results) => {
+      setData(results);
+    });
+  }, [setData, actions]);
 
   const checkPagePermissionsCallback = useCallback(
     (pd: PageDefinition): boolean =>

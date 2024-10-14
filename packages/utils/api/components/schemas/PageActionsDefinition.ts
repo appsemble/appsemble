@@ -1,6 +1,6 @@
 import { type OpenAPIV3 } from 'openapi-types';
 
-export const TabsPageActionsDefinition: OpenAPIV3.NonArraySchemaObject = {
+export const PageActionsDefinition: OpenAPIV3.NonArraySchemaObject = {
   type: 'object',
   description: 'Action fired on page events',
   additionalProperties: false,

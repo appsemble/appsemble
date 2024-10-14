@@ -263,7 +263,11 @@ will remain the same until it is manually updated.
           ],
           "properties": {
             "actions": {
-              "$ref": "#/components/schemas/TabsPageActionsDefinition",
+              "$ref": "#/components/schemas/PageActionsDefinition",
+            },
+            "badgeCount": {
+              "$ref": "#/components/schemas/RemapperDefinition",
+              "description": "A Remapper that resolves to a number to be visibile in the side-menu.",
             },
             "definition": {
               "additionalProperties": false,
@@ -407,6 +411,10 @@ instructed to contact the app owner to get permissions.
             "actions": {
               "$ref": "#/components/schemas/FlowPageActionsDefinition",
             },
+            "badgeCount": {
+              "$ref": "#/components/schemas/RemapperDefinition",
+              "description": "A Remapper that resolves to a number to be visibile in the side-menu.",
+            },
             "hideName": {
               "description": "Whether or not the page name should be displayed in the *app bar*.",
               "type": "boolean",
@@ -549,6 +557,10 @@ instructed to contact the app owner to get permissions.
             "actions": {
               "$ref": "#/components/schemas/FlowPageActionsDefinition",
             },
+            "badgeCount": {
+              "$ref": "#/components/schemas/RemapperDefinition",
+              "description": "A Remapper that resolves to a number to be visibile in the side-menu.",
+            },
             "hideName": {
               "description": "Whether or not the page name should be displayed in the *app bar*.",
               "type": "boolean",
@@ -690,6 +702,10 @@ instructed to contact the app owner to get permissions.
           "properties": {
             "actions": {
               "$ref": "#/components/schemas/FlowPageActionsDefinition",
+            },
+            "badgeCount": {
+              "$ref": "#/components/schemas/RemapperDefinition",
+              "description": "A Remapper that resolves to a number to be visibile in the side-menu.",
             },
             "hideName": {
               "description": "Whether or not the page name should be displayed in the *app bar*.",
@@ -839,6 +855,10 @@ This feature is still under development and is very unstable
             "actions": {
               "$ref": "#/components/schemas/LoopPageActionsDefinition",
             },
+            "badgeCount": {
+              "$ref": "#/components/schemas/RemapperDefinition",
+              "description": "A Remapper that resolves to a number to be visibile in the side-menu.",
+            },
             "foreach": {
               "$ref": "#/components/schemas/SubPage",
             },
@@ -982,6 +1002,10 @@ This feature is still under development and is very unstable
           "properties": {
             "actions": {
               "$ref": "#/components/schemas/LoopPageActionsDefinition",
+            },
+            "badgeCount": {
+              "$ref": "#/components/schemas/RemapperDefinition",
+              "description": "A Remapper that resolves to a number to be visibile in the side-menu.",
             },
             "foreach": {
               "$ref": "#/components/schemas/SubPage",
@@ -1127,6 +1151,10 @@ This feature is still under development and is very unstable
             "actions": {
               "$ref": "#/components/schemas/LoopPageActionsDefinition",
             },
+            "badgeCount": {
+              "$ref": "#/components/schemas/RemapperDefinition",
+              "description": "A Remapper that resolves to a number to be visibile in the side-menu.",
+            },
             "foreach": {
               "$ref": "#/components/schemas/SubPage",
             },
@@ -1270,6 +1298,10 @@ This feature is still under development and is very unstable
           "properties": {
             "actions": {
               "$ref": "#/components/schemas/LoopPageActionsDefinition",
+            },
+            "badgeCount": {
+              "$ref": "#/components/schemas/RemapperDefinition",
+              "description": "A Remapper that resolves to a number to be visibile in the side-menu.",
             },
             "foreach": {
               "$ref": "#/components/schemas/SubPage",
@@ -1433,6 +1465,10 @@ pages:
 \`\`\`
 ",
           "properties": {
+            "badgeCount": {
+              "$ref": "#/components/schemas/RemapperDefinition",
+              "description": "A Remapper that resolves to a number to be visibile in the side-menu.",
+            },
             "hideName": {
               "description": "Whether or not the page name should be displayed in the *app bar*.",
               "type": "boolean",
@@ -1600,6 +1636,10 @@ pages:
 \`\`\`
 ",
           "properties": {
+            "badgeCount": {
+              "$ref": "#/components/schemas/RemapperDefinition",
+              "description": "A Remapper that resolves to a number to be visibile in the side-menu.",
+            },
             "hideName": {
               "description": "Whether or not the page name should be displayed in the *app bar*.",
               "type": "boolean",
@@ -1767,6 +1807,10 @@ pages:
 \`\`\`
 ",
           "properties": {
+            "badgeCount": {
+              "$ref": "#/components/schemas/RemapperDefinition",
+              "description": "A Remapper that resolves to a number to be visibile in the side-menu.",
+            },
             "hideName": {
               "description": "Whether or not the page name should be displayed in the *app bar*.",
               "type": "boolean",
@@ -2201,7 +2245,11 @@ will remain the same until it is manually updated.
           ],
           "properties": {
             "actions": {
-              "$ref": "#/components/schemas/TabsPageActionsDefinition",
+              "$ref": "#/components/schemas/PageActionsDefinition",
+            },
+            "badgeCount": {
+              "$ref": "#/components/schemas/RemapperDefinition",
+              "description": "A Remapper that resolves to a number to be visibile in the side-menu.",
             },
             "definition": {
               "additionalProperties": false,
@@ -2345,6 +2393,10 @@ instructed to contact the app owner to get permissions.
             "actions": {
               "$ref": "#/components/schemas/FlowPageActionsDefinition",
             },
+            "badgeCount": {
+              "$ref": "#/components/schemas/RemapperDefinition",
+              "description": "A Remapper that resolves to a number to be visibile in the side-menu.",
+            },
             "hideName": {
               "description": "Whether or not the page name should be displayed in the *app bar*.",
               "type": "boolean",
@@ -2487,6 +2539,10 @@ instructed to contact the app owner to get permissions.
             "actions": {
               "$ref": "#/components/schemas/FlowPageActionsDefinition",
             },
+            "badgeCount": {
+              "$ref": "#/components/schemas/RemapperDefinition",
+              "description": "A Remapper that resolves to a number to be visibile in the side-menu.",
+            },
             "hideName": {
               "description": "Whether or not the page name should be displayed in the *app bar*.",
               "type": "boolean",
@@ -2628,6 +2684,10 @@ instructed to contact the app owner to get permissions.
           "properties": {
             "actions": {
               "$ref": "#/components/schemas/FlowPageActionsDefinition",
+            },
+            "badgeCount": {
+              "$ref": "#/components/schemas/RemapperDefinition",
+              "description": "A Remapper that resolves to a number to be visibile in the side-menu.",
             },
             "hideName": {
               "description": "Whether or not the page name should be displayed in the *app bar*.",
@@ -2777,6 +2837,10 @@ This feature is still under development and is very unstable
             "actions": {
               "$ref": "#/components/schemas/LoopPageActionsDefinition",
             },
+            "badgeCount": {
+              "$ref": "#/components/schemas/RemapperDefinition",
+              "description": "A Remapper that resolves to a number to be visibile in the side-menu.",
+            },
             "foreach": {
               "$ref": "#/components/schemas/SubPage",
             },
@@ -2920,6 +2984,10 @@ This feature is still under development and is very unstable
           "properties": {
             "actions": {
               "$ref": "#/components/schemas/LoopPageActionsDefinition",
+            },
+            "badgeCount": {
+              "$ref": "#/components/schemas/RemapperDefinition",
+              "description": "A Remapper that resolves to a number to be visibile in the side-menu.",
             },
             "foreach": {
               "$ref": "#/components/schemas/SubPage",
@@ -3065,6 +3133,10 @@ This feature is still under development and is very unstable
             "actions": {
               "$ref": "#/components/schemas/LoopPageActionsDefinition",
             },
+            "badgeCount": {
+              "$ref": "#/components/schemas/RemapperDefinition",
+              "description": "A Remapper that resolves to a number to be visibile in the side-menu.",
+            },
             "foreach": {
               "$ref": "#/components/schemas/SubPage",
             },
@@ -3208,6 +3280,10 @@ This feature is still under development and is very unstable
           "properties": {
             "actions": {
               "$ref": "#/components/schemas/LoopPageActionsDefinition",
+            },
+            "badgeCount": {
+              "$ref": "#/components/schemas/RemapperDefinition",
+              "description": "A Remapper that resolves to a number to be visibile in the side-menu.",
             },
             "foreach": {
               "$ref": "#/components/schemas/SubPage",
@@ -3371,6 +3447,10 @@ pages:
 \`\`\`
 ",
           "properties": {
+            "badgeCount": {
+              "$ref": "#/components/schemas/RemapperDefinition",
+              "description": "A Remapper that resolves to a number to be visibile in the side-menu.",
+            },
             "hideName": {
               "description": "Whether or not the page name should be displayed in the *app bar*.",
               "type": "boolean",
@@ -3538,6 +3618,10 @@ pages:
 \`\`\`
 ",
           "properties": {
+            "badgeCount": {
+              "$ref": "#/components/schemas/RemapperDefinition",
+              "description": "A Remapper that resolves to a number to be visibile in the side-menu.",
+            },
             "hideName": {
               "description": "Whether or not the page name should be displayed in the *app bar*.",
               "type": "boolean",
@@ -3705,6 +3789,10 @@ pages:
 \`\`\`
 ",
           "properties": {
+            "badgeCount": {
+              "$ref": "#/components/schemas/RemapperDefinition",
+              "description": "A Remapper that resolves to a number to be visibile in the side-menu.",
+            },
             "hideName": {
               "description": "Whether or not the page name should be displayed in the *app bar*.",
               "type": "boolean",

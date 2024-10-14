@@ -48,27 +48,33 @@ export function SideNavigation({ blockMenus, pages }: SideNavigationProps): Reac
     [appMemberRole, appMemberSelectedGroup, definition],
   );
 
+  const createRemapperContext = useCallback(
+    (name: string) => ({
+      appId,
+      appUrl: window.location.origin,
+      url: window.location.href,
+      getMessage,
+      getVariable,
+      appMemberInfo,
+      context: { name },
+      locale: lang,
+    }),
+    [getMessage, getVariable, lang, appMemberInfo],
+  );
+
   const generateNameAndNavName = useCallback(
     (page: PageDefinition): [string, string] => {
       const name = getAppMessage({
         id: `pages.${normalize(page.name)}`,
         defaultMessage: page.name,
       }).format() as string;
+      const remapperContext = createRemapperContext(name);
       const navName = page.navTitle
-        ? (remap(page.navTitle, null, {
-            appId,
-            appUrl: window.location.origin,
-            url: window.location.href,
-            getMessage,
-            getVariable,
-            appMemberInfo,
-            context: { name },
-            locale: lang,
-          }) as string)
+        ? (remap(page.navTitle, null, remapperContext) as string)
         : name;
       return [name, navName];
     },
-    [getAppMessage, getMessage, getVariable, lang, appMemberInfo],
+    [getAppMessage, createRemapperContext],
   );
 
   const renderMenu = useCallback(
@@ -91,6 +97,11 @@ export function SideNavigation({ blockMenus, pages }: SideNavigationProps): Reac
           const [name, navName] = generateNameAndNavName(page);
           return (
             <MenuItem
+              count={
+                page.badgeCount
+                  ? (remap(page.badgeCount, null, createRemapperContext(name)) as number)
+                  : undefined
+              }
               icon={page.icon}
               key={page.name}
               title={navName}
@@ -100,7 +111,7 @@ export function SideNavigation({ blockMenus, pages }: SideNavigationProps): Reac
             </MenuItem>
           );
         }),
-    [generateNameAndNavName, checkPagePermissionsCallback, url],
+    [generateNameAndNavName, checkPagePermissionsCallback, createRemapperContext, url],
   );
 
   return (

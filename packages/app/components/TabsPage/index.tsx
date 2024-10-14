@@ -1,5 +1,4 @@
-import { applyRefs, MetaSwitch, Tab, Tabs, useMessages } from '@appsemble/react-components';
-import { type BootstrapParams } from '@appsemble/sdk';
+import { applyRefs, MetaSwitch, Tab, Tabs } from '@appsemble/react-components';
 import {
   type PageDefinition,
   type SubPageDefinition,
@@ -22,15 +21,12 @@ import { Navigate, Route, useLocation, useNavigate, useParams } from 'react-rout
 import { TabContent } from './TabContent/index.js';
 import { checkPagePermissions } from '../../utils/authorization.js';
 import { createEvents } from '../../utils/events.js';
-import { makeActions } from '../../utils/makeActions.js';
 import { appId } from '../../utils/settings.js';
 import { useAppDefinition } from '../AppDefinitionProvider/index.js';
 import { useAppMember } from '../AppMemberProvider/index.js';
 import { useAppMessages } from '../AppMessagesProvider/index.js';
 import { useAppVariables } from '../AppVariablesProvider/index.js';
 import { type BlockList } from '../BlockList/index.js';
-import { useDemoAppMembers } from '../DemoAppMembersProvider/index.js';
-import { useServiceWorkerRegistration } from '../ServiceWorkerRegistrationProvider/index.js';
 
 interface TabsPageProps extends Omit<ComponentPropsWithoutRef<typeof BlockList>, 'blocks'> {
   readonly pageDefinition: TabsPageDefinition;
@@ -60,25 +56,10 @@ export function TabsPage({
   const [data, setData] = useState<unknown>({});
   const { pathname } = useLocation();
   const navigate = useNavigate();
-  const {
-    addAppMemberGroup,
-    appMemberGroups,
-    appMemberInfo,
-    appMemberInfoRef,
-    appMemberRole,
-    appMemberSelectedGroup,
-    logout,
-    passwordLogin,
-    setAppMemberInfo,
-  } = useAppMember();
-  const { refetchDemoAppMembers } = useDemoAppMembers();
+  const { appMemberInfo, appMemberRole, appMemberSelectedGroup } = useAppMember();
   const [tabsWithPermissions, setTabsWithPermissions] = useState([]);
   const [defaultTab, setDefaultTab] = useState(null);
   const { getVariable } = useAppVariables();
-  const pushNotifications = useServiceWorkerRegistration();
-  const params = useParams();
-  const showMessage = useMessages();
-  let actions: BootstrapParams['actions'];
   const [pageReady, setPageReady] = useState<Promise<void>>();
   const [createdTabs, setCreatedTabs] = useState([]);
 
@@ -144,13 +125,7 @@ export function TabsPage({
         name: '',
       });
     }
-  }, [checkSubPagePermissions, pageDefinition, actions, createdTabs, setCreatedTabs]);
-
-  useEffect(() => {
-    actions.onLoad().then((results) => {
-      setData(results);
-    });
-  }, [setData, actions]);
+  }, [checkSubPagePermissions, pageDefinition, createdTabs, setCreatedTabs]);
 
   useEffect(() => {
     const script = document.createElement('script');
@@ -187,63 +162,6 @@ export function TabsPage({
     return () => events.off.data(callback) as any;
   });
 
-  actions = useMemo(
-    () =>
-      makeActions({
-        appStorage,
-        getAppMessage,
-        getAppVariable: getVariable,
-        actions: { onLoad: {} },
-        appDefinition,
-        context: pageDefinition,
-        navigate,
-        extraCreators: {},
-        prefix,
-        prefixIndex,
-        pushNotifications,
-        showDialog,
-        showShareDialog,
-        ee,
-        pageReady: null,
-        remap,
-        params,
-        showMessage,
-        appMemberGroups,
-        addAppMemberGroup,
-        getAppMemberInfo: () => appMemberInfoRef.current,
-        passwordLogin,
-        passwordLogout: logout,
-        setAppMemberInfo,
-        refetchDemoAppMembers,
-        getAppMemberSelectedGroup: () => appMemberSelectedGroup,
-      }),
-    [
-      appStorage,
-      getAppMessage,
-      getVariable,
-      appDefinition,
-      pageDefinition,
-      navigate,
-      prefix,
-      prefixIndex,
-      pushNotifications,
-      showDialog,
-      showShareDialog,
-      ee,
-      remap,
-      params,
-      showMessage,
-      appMemberGroups,
-      addAppMemberGroup,
-      passwordLogin,
-      logout,
-      setAppMemberInfo,
-      refetchDemoAppMembers,
-      appMemberInfoRef,
-      appMemberSelectedGroup,
-    ],
-  );
-
   const onChange = useCallback((event: ChangeEvent, value: string) => navigate(value), [navigate]);
 
   const pageName = getAppMessage({
@@ -262,9 +180,8 @@ export function TabsPage({
               defaultMessage: remap(tab.name, data, remapperContext),
             }).format() as string;
 
-            const value = `${['', lang, pageId, normalize(translatedName)].join('/')}${
-              wildcard.includes('/') ? wildcard.slice(wildcard.indexOf('/')) : ''
-            }`;
+            const value = `${['', lang, pageId, normalize(translatedName)].join('/')}${wildcard.includes('/') ? wildcard.slice(wildcard.indexOf('/')) : ''
+              }`;
 
             return checkSubPagePermissions(tab) ? (
               <Tab href={value} key={tab.name} value={value}>

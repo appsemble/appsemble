@@ -104,14 +104,14 @@ export interface BlockDefinition extends ControllerDefinition {
    * For floating blocks this property defines where the block should float.
    */
   position?:
-    | 'bottom left'
-    | 'bottom right'
-    | 'bottom'
-    | 'left'
-    | 'right'
-    | 'top left'
-    | 'top right'
-    | 'top';
+  | 'bottom left'
+  | 'bottom right'
+  | 'bottom'
+  | 'left'
+  | 'right'
+  | 'top left'
+  | 'top right'
+  | 'top';
 
   /**
    * Whether to render the block or not.
@@ -1792,6 +1792,18 @@ export interface BasePageDefinition {
    * The global theme for the page.
    */
   theme?: Partial<Theme>;
+
+  /**
+   * A Remapper that resolves to a number to be visible in the side-menu.
+   */
+  badgeCount?: Remapper;
+
+  /**
+   * A mapping of actions that can be fired by the page to action handlers.
+   */
+  actions?: {
+    onLoad?: ActionDefinition;
+  };
 }
 
 /**
@@ -1813,7 +1825,7 @@ export interface ContainerPageDefinition extends BasePageDefinition {
   pages: PageDefinition[];
 }
 
-export interface FlowPageDefinition extends BasePageDefinition {
+export interface FlowPageDefinition extends Omit<BasePageDefinition, 'actions'> {
   type: 'flow';
 
   steps: SubPageDefinition[];
