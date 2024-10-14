@@ -73,6 +73,11 @@ export enum AppPermission {
   CreateResources = '$resource:all:create',
 
   /**
+   * The permission to fetch history of a resource.
+   */
+  GetResourceHistory = '$resource:all:getHistory',
+
+  /**
    * The permission to query app resources.
    */
   QueryResources = '$resource:all:query',
@@ -251,6 +256,11 @@ export enum OrganizationPermission {
    * The permission to create app resources.
    */
   CreateAppResources,
+
+  /**
+   * The permission to fetch history of a resource.
+   */
+  GetAppResourceHistory,
 
   /**
    * The permission to query app resources.
@@ -491,6 +501,7 @@ export const appOrganizationPermissionMapping: { [key in AppPermission]: Organiz
     [AppPermission.CreateResources]: OrganizationPermission.CreateAppResources,
     [AppPermission.QueryResources]: OrganizationPermission.QueryAppResources,
     [AppPermission.GetResources]: OrganizationPermission.GetAppResources,
+    [AppPermission.GetResourceHistory]: OrganizationPermission.GetAppResourceHistory,
     [AppPermission.UpdateResources]: OrganizationPermission.UpdateAppResources,
     [AppPermission.PatchResources]: OrganizationPermission.PatchAppResources,
     [AppPermission.DeleteResources]: OrganizationPermission.DeleteAppResources,

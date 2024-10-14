@@ -83,6 +83,7 @@ export * from './ResourceCreateActionDefinition.js';
 export * from './ResourceDefinition.js';
 export * from './ResourceDeleteActionDefinition.js';
 export * from './ResourceGetActionDefinition.js';
+export * from './ResourceHistoryGetActionDefinition.js';
 export * from './ResourceHistoryDefinition.js';
 export * from './ResourceHooksDefinition.js';
 export * from './ResourceQueryActionDefinition.js';

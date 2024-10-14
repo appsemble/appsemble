@@ -1,4 +1,5 @@
 export * from './subscriptions/index.js';
+export * from './versions/index.js';
 
 export { countAppResources } from './countAppResources.js';
 export { createAppResource } from './createAppResource.js';

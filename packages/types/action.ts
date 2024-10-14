@@ -43,6 +43,7 @@ export type RequestAction = RequestLikeAction<'request'>;
 export type ResourceCreateAction = RequestLikeAction<'resource.create'>;
 export type ResourceDeleteAction = RequestLikeAction<'resource.delete'>;
 export type ResourceGetAction = RequestLikeAction<'resource.get'>;
+export type ResourceHistoryGetAction = RequestLikeAction<'resource.getHistory'>;
 export type ResourceQueryAction = RequestLikeAction<'resource.query'>;
 export type ResourceCountAction = RequestLikeAction<'resource.count'>;
 export type ResourceUpdateAction = RequestLikeAction<'resource.update'>;
@@ -107,6 +108,7 @@ export type Action =
   | ResourceCreateAction
   | ResourceDeleteAction
   | ResourceGetAction
+  | ResourceHistoryGetAction
   | ResourcePatchAction
   | ResourceQueryAction
   | ResourceUpdateAction;

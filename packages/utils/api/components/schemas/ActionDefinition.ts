@@ -59,6 +59,7 @@ export const ActionDefinition: OpenAPIV3.NonArraySchemaObject = {
         { $ref: '#/components/schemas/ResourceCreateActionDefinition' },
         { $ref: '#/components/schemas/ResourceDeleteActionDefinition' },
         { $ref: '#/components/schemas/ResourceGetActionDefinition' },
+        { $ref: '#/components/schemas/ResourceHistoryGetActionDefinition' },
         { $ref: '#/components/schemas/ResourceQueryActionDefinition' },
         { $ref: '#/components/schemas/ResourceSubscriptionStatusActionDefinition' },
         { $ref: '#/components/schemas/ResourceSubscriptionSubscribeActionDefinition' },
