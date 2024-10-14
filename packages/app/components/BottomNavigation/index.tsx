@@ -66,7 +66,8 @@ export function BottomNavigation({ pages }: BottomNavigationProps): ReactNode {
               <li className="bottom-nav-item" key={page.name}>
                 <NavLink
                   className={({ isActive }) =>
-                    `bottom-nav-item-link is-flex px-4 py-4 has-text-centered ${isActive && 'is-active'
+                    `bottom-nav-item-link is-flex px-4 py-4 has-text-centered ${
+                      isActive && 'is-active'
                     }`
                   }
                   title={navName as string}
@@ -97,7 +98,8 @@ export function BottomNavigation({ pages }: BottomNavigationProps): ReactNode {
             <li className="bottom-nav-item">
               <NavLink
                 className={({ isActive }) =>
-                  `bottom-nav-item-link is-flex px-4 py-4 has-text-centered ${isActive && 'is-active'
+                  `bottom-nav-item-link is-flex px-4 py-4 has-text-centered ${
+                    isActive && 'is-active'
                   }`
                 }
                 title={formatMessage(messages.settings)}
@@ -114,7 +116,8 @@ export function BottomNavigation({ pages }: BottomNavigationProps): ReactNode {
             <li className="bottom-nav-item">
               <NavLink
                 className={({ isActive }) =>
-                  `bottom-nav-item-link is-flex px-4 py-4 has-text-centered ${isActive && 'is-active'
+                  `bottom-nav-item-link is-flex px-4 py-4 has-text-centered ${
+                    isActive && 'is-active'
                   }`
                 }
                 title={formatMessage(messages.feedback)}
@@ -145,7 +148,8 @@ export function BottomNavigation({ pages }: BottomNavigationProps): ReactNode {
               <li className="bottom-nav-item">
                 <NavLink
                   className={({ isActive }) =>
-                    `bottom-nav-item-link is-flex px-4 py-4 has-text-centered ${isActive && 'is-active'
+                    `bottom-nav-item-link is-flex px-4 py-4 has-text-centered ${
+                      isActive && 'is-active'
                     }`
                   }
                   title={formatMessage(messages.login)}
