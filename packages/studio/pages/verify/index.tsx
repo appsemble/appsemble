@@ -2,6 +2,7 @@ import { Loader, Message, useQuery } from '@appsemble/react-components';
 import axios from 'axios';
 import { type ReactNode, useEffect, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
+import { useNavigate } from 'react-router-dom';
 
 import styles from './index.module.css';
 import { messages } from './messages.js';
@@ -13,6 +14,7 @@ export function VerifyPage(): ReactNode {
   const qs = useQuery();
   const token = qs.get('token');
   const { refreshUserInfo } = useUser();
+  const navigate = useNavigate();
 
   useEffect(() => {
     (async () => {
@@ -33,6 +35,7 @@ export function VerifyPage(): ReactNode {
   }
 
   if (success) {
+    setTimeout(() => navigate('/apps/', { replace: true }), 3000);
     return (
       <div className={`container px-3 py-3 ${styles.root}`}>
         <Message color="success">
