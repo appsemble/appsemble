@@ -1,5 +1,9 @@
 import { useIntl } from 'react-intl';
-import { roles, Permission } from '@appsemble/utils';
+import {
+  OrganizationPermission,
+  predefinedOrganizationRoles,
+  predefinedOrganizationRolePermissions,
+} from '@appsemble/types';
 import { messages } from '../../organizations/messages.js';
 
 # Organizations
@@ -52,35 +56,41 @@ to. These roles are the following:
 - `Owner`: Owners can update and delete organizations. They can also remove members and update their
   roles.
 
-<table>
-  <thead>
-    <tr>
-      <th>Permissions</th>
-      <th />
-      {Object.keys(roles).map((role) => (
-        <th key={role}>{role}</th>
-      ))}
-    </tr>
-  </thead>
-  <tbody>
-    {Object.keys(Permission)
-      .filter((permission) => isNaN(Number(permission)))
-      .map((permission) => (
-        <tr key={permission}>
-          <td>{permission}</td>
-          <td>
-            <i
-              title={useIntl().formatMessage(messages[permission])}
-              flow="right"
-              className="fa fa-circle-question"
-            />
-          </td>
-          {Object.keys(roles).map((role) => (
-            <td key={role} align="center">
-              {roles[role].includes(Permission[permission]) ? '✓' : ''}
+<div style={{ overflowX: 'auto' }}>
+  <table>
+    <thead>
+      <tr>
+        <th>Permissions</th>
+        <th />
+        {predefinedOrganizationRoles.map((role) => (
+          <th key={role}>{role}</th>
+        ))}
+      </tr>
+    </thead>
+    <tbody>
+      {Object.keys(OrganizationPermission)
+        .filter((permission) => isNaN(Number(permission)))
+        .map((permission) => (
+          <tr key={permission}>
+            <td>{permission}</td>
+            <td>
+              <i
+                title={useIntl().formatMessage(messages[permission])}
+                flow="right"
+                className="fa fa-circle-question"
+              />
             </td>
-          ))}
-        </tr>
-      ))}
-  </tbody>
-</table>
+            {predefinedOrganizationRoles.map((role) => (
+              <td key={role} align="center">
+                {predefinedOrganizationRolePermissions[role].includes(
+                  OrganizationPermission[permission],
+                )
+                  ? '✓'
+                  : ''}
+              </td>
+            ))}
+          </tr>
+        ))}
+    </tbody>
+  </table>
+</div>
