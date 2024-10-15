@@ -356,6 +356,19 @@ const mapperImplementations: MapperImplementations = {
     return result;
   },
 
+  type(args, input) {
+    // eslint-disable-next-line eqeqeq
+    if (input === null) {
+      return null;
+    }
+
+    if (Array.isArray(input)) {
+      return 'array';
+    }
+
+    return typeof input;
+  },
+
   'array.map': (mapper, input: any[], context) =>
     input?.map((item, index) =>
       remap(mapper, item, {
@@ -389,6 +402,22 @@ const mapperImplementations: MapperImplementations = {
   },
 
   array: (prop, input, context) => context.array?.[prop],
+
+  'array.filter'(mapper, input: any[], context) {
+    if (!Array.isArray(input)) {
+      console.error(`${input} is not an array!`);
+      return null;
+    }
+
+    return input?.filter((item, index) => {
+      const remapped = remap(mapper, item, {
+        ...context,
+        array: { index, length: input.length, item },
+      });
+
+      return remapped;
+    });
+  },
 
   'array.find'(mapper, input: any[], context) {
     if (!Array.isArray(input)) {

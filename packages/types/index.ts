@@ -445,6 +445,11 @@ export interface Remappers {
   log: 'error' | 'info' | 'warn';
 
   /**
+   * Get input object type.
+   */
+  type: null;
+
+  /**
    * Builds an array based on the given data and remappers.
    *
    * The remappers gets applied to each item in the array.
@@ -502,6 +507,12 @@ export interface Remappers {
    * Returns nothing if array.map’s context isn’t set.
    */
   array: 'index' | 'item' | 'length';
+
+  /**
+   *
+   * Returns an array containing the items matching the specified conditions.
+   */
+  'array.filter': Remapper;
 
   /**
    * Returns an object based on the specified condition

@@ -54,6 +54,11 @@ export const examples: Record<RemapperExampleKeys, RemapperExample> = {
     result: {},
     skip: true,
   },
+  type: {
+    input: [1, 2, 3],
+    remapper: { type: null },
+    result: 'array',
+  },
   array: {
     input: ['a', 'b', 'c'],
     remapper: {
@@ -132,6 +137,30 @@ export const examples: Record<RemapperExampleKeys, RemapperExample> = {
         occupation: 'News reporter',
       },
     ],
+  },
+  'array.filter': {
+    input: [
+      {
+        name: 'Peter',
+      },
+      {
+        name: 'Louis',
+      },
+      {
+        name: 'Brian',
+      },
+    ],
+    remapper: {
+      'array.filter': {
+        equals: [
+          {
+            prop: 'name',
+          },
+          'Louis',
+        ],
+      },
+    },
+    result: [{ name: 'Louis' }],
   },
   'array.find': {
     input: [

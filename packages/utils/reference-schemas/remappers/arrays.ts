@@ -106,6 +106,38 @@ remapper is a filtered list:
 \`\`\`
     `,
   },
+  'array.filter': {
+    $ref: '#/components/schemas/RemapperDefinition',
+    description: `
+Filters out values based on the input conditions provided.
+
+For example:
+
+${schemaExample('array.filter')}
+
+Example of how it can be used to filter a number array.
+
+Input:
+
+\`\`\`json
+[1,2,1,3,4,1,5]
+\`\`\`
+
+\`\`\`yaml
+array.filter:
+  equals:
+    - array: item
+    - 1
+\`\`\`
+
+Result:
+
+\`\`\`json
+[1,1,1]
+\`\`\`
+    `,
+  },
+
   'array.find': {
     $ref: '#/components/schemas/RemapperDefinition',
     description: `

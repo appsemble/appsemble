@@ -826,6 +826,44 @@ describe('object.assign', () => {
   });
 });
 
+describe('type', () => {
+  runTests({
+    'input array, type remapper test': {
+      input: [
+        { firstName: 'John', lastName: 'Doe' },
+        { firstName: 'Jane', lastName: 'Smith' },
+      ],
+      mappers: { type: null },
+      expected: 'array',
+    },
+    'input object, type remapper test': {
+      input: { firstName: 'John', lastName: 'Doe' },
+      mappers: { type: null },
+      expected: 'object',
+    },
+    'input number, type remapper test': {
+      input: 1,
+      mappers: { type: null },
+      expected: 'number',
+    },
+    'input string, type remapper test': {
+      input: 'I am a string',
+      mappers: { type: null },
+      expected: 'string',
+    },
+    'null input type remapper test': {
+      input: null,
+      mappers: { type: null },
+      expected: null,
+    },
+    'undefined input type remapper test': {
+      input: undefined,
+      mappers: { type: null },
+      expected: 'undefined',
+    },
+  });
+});
+
 describe('array.map', () => {
   runTests({
     'apply remappers to each array item': {
@@ -981,6 +1019,41 @@ describe('array', () => {
         { value: 'b', index: 1, length: 3, item: { value: 'b' } },
         { value: 'c', index: 2, length: 3, item: { value: 'c' } },
       ],
+    },
+  });
+});
+
+describe('array.filter', () => {
+  runTests({
+    'return a new array containing the object with specified value from array': {
+      input: [{ name: 'Craig' }, { name: 'Joey' }, { name: 'Stuart' }],
+      mappers: [{ 'array.filter': { equals: [{ prop: 'name' }, 'Craig'] } }],
+      expected: [{ name: 'Craig' }],
+    },
+    'return a new array containing the 2 objects with specified value from array': {
+      input: [{ name: 'Craig' }, { name: 'Joey' }, { name: 'Stuart' }, { name: 'Craig' }],
+      mappers: [{ 'array.filter': { equals: [{ prop: 'name' }, 'Craig'] } }],
+      expected: [{ name: 'Craig' }, { name: 'Craig' }],
+    },
+    'return a new array containing a single value when the array does not include objects': {
+      input: ['Craig', 'Joey', 'Stuart'],
+      mappers: [{ 'array.filter': { equals: [{ array: 'item' }, 'Craig'] } }],
+      expected: ['Craig'],
+    },
+    'return an empty array when condition doesn’t match anything': {
+      input: ['Craig', 'Joey', 'Stuart'],
+      mappers: [{ 'array.filter': { equals: [{ array: 'item' }, 'Peter'] } }],
+      expected: [],
+    },
+    'it should filter arrays with mixed content type(string)': {
+      input: ['Craig', 5, 'Joey', 7, 'Stuart'],
+      mappers: [{ 'array.filter': { equals: [{ array: 'item' }, 'Stuart'] } }],
+      expected: ['Stuart'],
+    },
+    'it should filter arrays with mixed content type based on type of the item': {
+      input: ['Craig', 5, 'Joey', 7, 'Stuart'],
+      mappers: [{ 'array.filter': { equals: [{ type: { array: 'item' } }, 'number'] } } as never],
+      expected: [5, 7],
     },
   });
 });
