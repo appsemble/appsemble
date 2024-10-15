@@ -14,29 +14,26 @@ import {
 import { setArgv } from '../../../utils/argv.js';
 import { createServer } from '../../../utils/createServer.js';
 import { authorizeClientCredentials, createTestUser } from '../../../utils/test/authorization.js';
-import { useTestDatabase } from '../../../utils/test/testSchema.js';
-
-useTestDatabase(import.meta);
 
 let user: User;
 
-beforeEach(async () => {
-  setArgv({ host: 'http://localhost', secret: 'test' });
-  const server = await createServer();
-  user = await createTestUser();
-  const organization = await Organization.create({
-    id: 'xkcd',
-    name: 'xkcd',
-  });
-  await OrganizationMember.create({
-    OrganizationId: organization.id,
-    UserId: user.id,
-    role: PredefinedOrganizationRole.Maintainer,
-  });
-  await setTestApp(server);
-});
-
 describe('queryBlocks', () => {
+  beforeEach(async () => {
+    setArgv({ host: 'http://localhost', secret: 'test' });
+    const server = await createServer();
+    user = await createTestUser();
+    const organization = await Organization.create({
+      id: 'xkcd',
+      name: 'xkcd',
+    });
+    await OrganizationMember.create({
+      OrganizationId: organization.id,
+      UserId: user.id,
+      role: PredefinedOrganizationRole.Maintainer,
+    });
+    await setTestApp(server);
+  });
+
   it('should be possible to query block definitions', async () => {
     const formDataA = new FormData();
     formDataA.append('name', '@xkcd/apple');

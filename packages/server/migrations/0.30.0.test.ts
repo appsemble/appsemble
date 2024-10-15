@@ -4,9 +4,6 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { appPatches } from './0.30.0.js';
 import { migrateAppDefinition } from '../commands/migrateAppDefinitions.js';
 import { getDB } from '../models/index.js';
-import { useTestDatabase } from '../utils/test/testSchema.js';
-
-useTestDatabase(import.meta);
 
 describe('migration 0.30.0', () => {
   beforeEach(() => {

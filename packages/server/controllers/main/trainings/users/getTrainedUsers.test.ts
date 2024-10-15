@@ -12,41 +12,38 @@ import {
 } from '../../../../models/index.js';
 import { createServer } from '../../../../utils/createServer.js';
 import { authorizeStudio, createTestUser } from '../../../../utils/test/authorization.js';
-import { useTestDatabase } from '../../../../utils/test/testSchema.js';
-
-useTestDatabase(import.meta);
 
 let organization: Organization;
 let user: User;
 
-beforeAll(async () => {
-  vi.useFakeTimers();
-  setArgv({ host: 'http://localhost', secret: 'test' });
-  const server = await createServer();
-  setTestApp(server);
-});
-
-beforeEach(async () => {
-  vi.clearAllTimers();
-  vi.setSystemTime(0);
-
-  user = await createTestUser();
-  organization = await Organization.create({
-    id: 'appsemble',
-    name: 'Appsemble',
-  });
-  await OrganizationMember.create({
-    OrganizationId: organization.id,
-    UserId: user.id,
-    role: PredefinedOrganizationRole.Owner,
-  });
-});
-
-afterAll(() => {
-  vi.useRealTimers();
-});
-
 describe('getTrainedUsers', () => {
+  beforeAll(async () => {
+    vi.useFakeTimers();
+    setArgv({ host: 'http://localhost', secret: 'test' });
+    const server = await createServer();
+    setTestApp(server);
+  });
+
+  beforeEach(async () => {
+    vi.clearAllTimers();
+    vi.setSystemTime(0);
+
+    user = await createTestUser();
+    organization = await Organization.create({
+      id: 'appsemble',
+      name: 'Appsemble',
+    });
+    await OrganizationMember.create({
+      OrganizationId: organization.id,
+      UserId: user.id,
+      role: PredefinedOrganizationRole.Owner,
+    });
+  });
+
+  afterAll(() => {
+    vi.useRealTimers();
+  });
+
   it('should not fetch users for a non-existent training', async () => {
     await Training.create({
       id: 1,

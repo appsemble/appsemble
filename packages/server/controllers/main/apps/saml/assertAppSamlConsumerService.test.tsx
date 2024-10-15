@@ -9,7 +9,6 @@ import { type CreateSamlResponseOptions } from '../../../../types/index.js';
 import { setArgv } from '../../../../utils/argv.js';
 import { createServer } from '../../../../utils/createServer.js';
 import { authorizeStudio, createTestUser } from '../../../../utils/test/authorization.js';
-import { useTestDatabase } from '../../../../utils/test/testSchema.js';
 
 let app: App;
 let secret: AppSamlSecret;
@@ -162,48 +161,46 @@ function createSamlResponse({
   return buf.toString('base64');
 }
 
-useTestDatabase(import.meta);
-
-beforeAll(async () => {
-  vi.useFakeTimers();
-  setArgv({ host: 'http://localhost', secret: 'test' });
-  const server = await createServer();
-  await setTestApp(server);
-});
-
-beforeEach(async () => {
-  // https://github.com/vitest-dev/vitest/issues/1154#issuecomment-1138717832
-  vi.clearAllTimers();
-  vi.setSystemTime(0);
-  await createTestUser();
-  const organization = await Organization.create({
-    id: 'testorganization',
-    name: 'Test Organization',
-  });
-  app = await App.create({
-    OrganizationId: organization.id,
-    vapidPublicKey: '',
-    vapidPrivateKey: '',
-    definition: {},
-  });
-  secret = await AppSamlSecret.create({
-    AppId: app.id,
-    entityId: 'https://example.com/saml/metadata.xml',
-    ssoUrl: 'https://example.com/saml/login',
-    idpCertificate: await readFixture('saml/idp-certificate.pem', 'utf8'),
-    icon: '',
-    name: '',
-    spCertificate: await readFixture('saml/sp-certificate.pem', 'utf8'),
-    spPrivateKey: await readFixture('saml/sp-private-key.pem', 'utf8'),
-    spPublicKey: await readFixture('saml/sp-public-key.pem', 'utf8'),
-  });
-});
-
-afterAll(() => {
-  vi.useRealTimers();
-});
-
 describe('assertAppSamlConsumerService', () => {
+  beforeAll(async () => {
+    vi.useFakeTimers();
+    setArgv({ host: 'http://localhost', secret: 'test' });
+    const server = await createServer();
+    await setTestApp(server);
+  });
+
+  beforeEach(async () => {
+    // https://github.com/vitest-dev/vitest/issues/1154#issuecomment-1138717832
+    vi.clearAllTimers();
+    vi.setSystemTime(0);
+    await createTestUser();
+    const organization = await Organization.create({
+      id: 'testorganization',
+      name: 'Test Organization',
+    });
+    app = await App.create({
+      OrganizationId: organization.id,
+      vapidPublicKey: '',
+      vapidPrivateKey: '',
+      definition: {},
+    });
+    secret = await AppSamlSecret.create({
+      AppId: app.id,
+      entityId: 'https://example.com/saml/metadata.xml',
+      ssoUrl: 'https://example.com/saml/login',
+      idpCertificate: await readFixture('saml/idp-certificate.pem', 'utf8'),
+      icon: '',
+      name: '',
+      spCertificate: await readFixture('saml/sp-certificate.pem', 'utf8'),
+      spPrivateKey: await readFixture('saml/sp-private-key.pem', 'utf8'),
+      spPublicKey: await readFixture('saml/sp-public-key.pem', 'utf8'),
+    });
+  });
+
+  afterAll(() => {
+    vi.useRealTimers();
+  });
+
   // eslint-disable-next-line vitest/no-disabled-tests
   it.skip('should authorize new app member and redirect with valid code', async () => {
     const response = await request.post(

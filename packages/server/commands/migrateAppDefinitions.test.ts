@@ -2,10 +2,7 @@ import { beforeAll, beforeEach, describe, expect, it } from 'vitest';
 import { type Document, parseDocument, type YAMLMap } from 'yaml';
 
 import { applyPatch } from './migrateAppDefinitions.js';
-import { useTestDatabase } from '../utils/test/testSchema.js';
 import { collectPaths } from '../utils/yaml.js';
-
-useTestDatabase(import.meta);
 
 describe('collectPaths', () => {
   let document: Document;

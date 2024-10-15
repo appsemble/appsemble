@@ -7,29 +7,26 @@ import { OAuth2ClientCredentials } from '../../../../../../../models/index.js';
 import { setArgv } from '../../../../../../../utils/argv.js';
 import { createServer } from '../../../../../../../utils/createServer.js';
 import { authorizeStudio, createTestUser } from '../../../../../../../utils/test/authorization.js';
-import { useTestDatabase } from '../../../../../../../utils/test/testSchema.js';
-
-useTestDatabase(import.meta);
-
-beforeAll(async () => {
-  vi.useFakeTimers();
-  setArgv({ host: 'http://localhost', secret: 'test' });
-  const server = await createServer();
-  await setTestApp(server);
-});
-
-beforeEach(async () => {
-  // https://github.com/vitest-dev/vitest/issues/1154#issuecomment-1138717832
-  vi.clearAllTimers();
-  vi.setSystemTime(new Date('2000-01-01T00:00:00Z'));
-  await createTestUser();
-});
-
-afterAll(() => {
-  vi.useRealTimers();
-});
 
 describe('registerCurrentUserOAuth2ClientCredentials', () => {
+  beforeAll(async () => {
+    vi.useFakeTimers();
+    setArgv({ host: 'http://localhost', secret: 'test' });
+    const server = await createServer();
+    await setTestApp(server);
+  });
+
+  beforeEach(async () => {
+    // https://github.com/vitest-dev/vitest/issues/1154#issuecomment-1138717832
+    vi.clearAllTimers();
+    vi.setSystemTime(new Date('2000-01-01T00:00:00Z'));
+    await createTestUser();
+  });
+
+  afterAll(() => {
+    vi.useRealTimers();
+  });
+
   it('should register OAuth2 client credentials', async () => {
     authorizeStudio();
     const response = await request.post<OAuth2ClientCredentialsType>(

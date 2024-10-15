@@ -14,7 +14,6 @@ import {
 import { type Argv, setArgv } from '../../../../utils/argv.js';
 import { createServer } from '../../../../utils/createServer.js';
 import { authorizeStudio, createTestUser } from '../../../../utils/test/authorization.js';
-import { useTestDatabase } from '../../../../utils/test/testSchema.js';
 
 let organization: Organization;
 let user: User;
@@ -22,70 +21,68 @@ let funAndProductivityApp: App;
 let collections: AppCollection[];
 const argv: Partial<Argv> = { host: 'http://localhost', secret: 'test', aesSecret: 'test' };
 
-useTestDatabase(import.meta);
-
-beforeAll(async () => {
-  vi.useFakeTimers();
-  setArgv(argv);
-  const server = await createServer({});
-  await setTestApp(server);
-});
-
-beforeEach(async () => {
-  // https://github.com/vitest-dev/vitest/issues/1154#issuecomment-1138717832
-  vi.clearAllTimers();
-  vi.setSystemTime(0);
-  user = await createTestUser();
-  organization = await Organization.create({
-    id: 'testorganization',
-    name: 'Test Organization',
+describe('addAppToAppCollection', () => {
+  beforeAll(async () => {
+    vi.useFakeTimers();
+    setArgv(argv);
+    const server = await createServer({});
+    await setTestApp(server);
   });
-  await OrganizationMember.create({
-    OrganizationId: organization.id,
-    UserId: user.id,
-    role: PredefinedOrganizationRole.Owner,
-  });
-  const tuxPng = await readFixture('tux.png');
-  const standingPng = await readFixture('standing.png');
-  collections = await Promise.all(
-    ['Productivity', 'Fun', 'Collaboration'].map((name) =>
-      AppCollection.create({
-        name,
-        expertName: 'Expert van den Expert',
-        expertProfileImage: tuxPng,
-        expertProfileImageMimeType: 'image/png',
-        headerImage: standingPng,
-        headerImageMimeType: 'image/png',
-        expertDescription: 'I’m an expert, trust me.',
-        OrganizationId: organization.id,
-        visibility: 'public',
-      }),
-    ),
-  );
 
-  funAndProductivityApp = await App.create({
-    definition: {
-      name: 'Fun and Productivity App',
-      defaultPage: 'Test Page',
-      security: {
-        default: {
-          role: 'Reader',
-          policy: 'everyone',
-        },
-        roles: {
-          Reader: {},
-          Admin: {},
+  beforeEach(async () => {
+    // https://github.com/vitest-dev/vitest/issues/1154#issuecomment-1138717832
+    vi.clearAllTimers();
+    vi.setSystemTime(0);
+    user = await createTestUser();
+    organization = await Organization.create({
+      id: 'testorganization',
+      name: 'Test Organization',
+    });
+    await OrganizationMember.create({
+      OrganizationId: organization.id,
+      UserId: user.id,
+      role: PredefinedOrganizationRole.Owner,
+    });
+    const tuxPng = await readFixture('tux.png');
+    const standingPng = await readFixture('standing.png');
+    collections = await Promise.all(
+      ['Productivity', 'Fun', 'Collaboration'].map((name) =>
+        AppCollection.create({
+          name,
+          expertName: 'Expert van den Expert',
+          expertProfileImage: tuxPng,
+          expertProfileImageMimeType: 'image/png',
+          headerImage: standingPng,
+          headerImageMimeType: 'image/png',
+          expertDescription: 'I’m an expert, trust me.',
+          OrganizationId: organization.id,
+          visibility: 'public',
+        }),
+      ),
+    );
+
+    funAndProductivityApp = await App.create({
+      definition: {
+        name: 'Fun and Productivity App',
+        defaultPage: 'Test Page',
+        security: {
+          default: {
+            role: 'Reader',
+            policy: 'everyone',
+          },
+          roles: {
+            Reader: {},
+            Admin: {},
+          },
         },
       },
-    },
-    path: 'fun-and-productivity-app',
-    vapidPublicKey: 'a',
-    vapidPrivateKey: 'b',
-    OrganizationId: organization.id,
+      path: 'fun-and-productivity-app',
+      vapidPublicKey: 'a',
+      vapidPrivateKey: 'b',
+      OrganizationId: organization.id,
+    });
   });
-});
 
-describe('addAppToAppCollection', () => {
   it('should add an app to an app collection', async () => {
     authorizeStudio(user);
     const response = await request.post(`/api/app-collections/${collections[0].id}/apps`, {

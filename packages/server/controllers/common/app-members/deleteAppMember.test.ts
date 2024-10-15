@@ -21,57 +21,54 @@ import {
   authorizeStudio,
   createTestUser,
 } from '../../../utils/test/authorization.js';
-import { useTestDatabase } from '../../../utils/test/testSchema.js';
 
 let organization: Organization;
 let member: OrganizationMember;
 let user: User;
 
-useTestDatabase(import.meta);
-
-beforeAll(async () => {
-  vi.useFakeTimers();
-  setArgv({ host: 'http://localhost', secret: 'test' });
-  const server = await createServer();
-  await setTestApp(server);
-});
-
-beforeEach(async () => {
-  // https://github.com/vitest-dev/vitest/issues/1154#issuecomment-1138717832
-  vi.clearAllTimers();
-  vi.setSystemTime(0);
-  user = await createTestUser();
-  organization = await Organization.create({
-    id: 'testorganization',
-    name: 'Test Organization',
-  });
-  member = await OrganizationMember.create({
-    OrganizationId: organization.id,
-    UserId: user.id,
-    role: PredefinedOrganizationRole.Owner,
+describe('deleteAppMember', () => {
+  beforeAll(async () => {
+    vi.useFakeTimers();
+    setArgv({ host: 'http://localhost', secret: 'test' });
+    const server = await createServer();
+    await setTestApp(server);
   });
 
-  await Organization.create({ id: 'appsemble', name: 'Appsemble' });
-  await BlockVersion.create({
-    name: 'test',
-    version: '0.0.0',
-    OrganizationId: 'appsemble',
-    parameters: {
-      properties: {
-        type: 'object',
-        foo: {
-          type: 'number',
+  beforeEach(async () => {
+    // https://github.com/vitest-dev/vitest/issues/1154#issuecomment-1138717832
+    vi.clearAllTimers();
+    vi.setSystemTime(0);
+    user = await createTestUser();
+    organization = await Organization.create({
+      id: 'testorganization',
+      name: 'Test Organization',
+    });
+    member = await OrganizationMember.create({
+      OrganizationId: organization.id,
+      UserId: user.id,
+      role: PredefinedOrganizationRole.Owner,
+    });
+
+    await Organization.create({ id: 'appsemble', name: 'Appsemble' });
+    await BlockVersion.create({
+      name: 'test',
+      version: '0.0.0',
+      OrganizationId: 'appsemble',
+      parameters: {
+        properties: {
+          type: 'object',
+          foo: {
+            type: 'number',
+          },
         },
       },
-    },
+    });
   });
-});
 
-afterAll(() => {
-  vi.useRealTimers();
-});
+  afterAll(() => {
+    vi.useRealTimers();
+  });
 
-describe('deleteAppMember', () => {
   it('should throw 404 if the app member doesn’t exist', async () => {
     authorizeStudio();
     const response = await request.delete('/api/app-members/e1f0eda6-b2cd-4e66-ae8d-f9dee33d1624');

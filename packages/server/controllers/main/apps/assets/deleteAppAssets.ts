@@ -14,7 +14,7 @@ export async function deleteAppAssets(ctx: Context): Promise<void> {
   } = ctx;
 
   const app = await App.findByPk(appId, {
-    attributes: ['OrganizationId', 'demoMode', 'OrganizationId'],
+    attributes: ['OrganizationId', 'demoMode'],
   });
 
   assertKoaError(!app, ctx, 404, 'App not found');
@@ -35,12 +35,14 @@ export async function deleteAppAssets(ctx: Context): Promise<void> {
     attributes: ['id'],
     where: {
       AppId: appId,
-      ...(isSeed ? {} : { id: body }),
       ...(isSeed
         ? {
             [Op.or]: [{ seed: true, ephemeral: false }, handleEphemeral],
           }
-        : handleEphemeral),
+        : {
+            id: body,
+            ...handleEphemeral,
+          }),
     },
   };
 

@@ -22,65 +22,53 @@ import {
   createTestUser,
   getTestUser,
 } from '../../../../../utils/test/authorization.js';
-import { useTestDatabase } from '../../../../../utils/test/testSchema.js';
 
 let app: App;
 let mock: MockAdapter;
 let user: User;
 
-useTestDatabase(import.meta);
-
-beforeAll(async () => {
-  vi.useFakeTimers();
-  setArgv({ host: 'http://localhost', secret: 'test' });
-  const server = await createServer();
-  await setTestApp(server);
-});
-
-beforeEach(() => {
-  // https://github.com/vitest-dev/vitest/issues/1154#issuecomment-1138717832
-  vi.clearAllTimers();
-  vi.setSystemTime(0);
-  mock = new MockAdapter(axios);
-});
-
-beforeEach(async () => {
-  user = await createTestUser();
-  const organization = await Organization.create({
-    id: 'testorganization',
-    name: 'Test Organization',
-  });
-  app = await App.create({
-    OrganizationId: organization.id,
-    vapidPublicKey: '',
-    vapidPrivateKey: '',
-    definition: {
-      security: {
-        default: {
-          role: 'Test',
-          policy: 'everyone',
-        },
-        roles: { Test: {} },
-      },
-    },
-    path: 'test-app',
-  });
-  await OrganizationMember.create({
-    OrganizationId: organization.id,
-    UserId: user.id,
-    role: PredefinedOrganizationRole.Owner,
-  });
-});
-
-// https://github.com/vitest-dev/vitest/issues/1154#issuecomment-1138717832
-afterAll(() => {
-  vi.useRealTimers();
-});
-
 describe('verifyAppOAuth2SecretCode', () => {
   let secret: AppOAuth2Secret;
 
+  beforeAll(async () => {
+    vi.useFakeTimers();
+    setArgv({ host: 'http://localhost', secret: 'test' });
+    const server = await createServer();
+    await setTestApp(server);
+  });
+
   beforeEach(async () => {
+    // https://github.com/vitest-dev/vitest/issues/1154#issuecomment-1138717832
+    vi.clearAllTimers();
+    vi.setSystemTime(0);
+    mock = new MockAdapter(axios);
+
+    user = await createTestUser();
+    const organization = await Organization.create({
+      id: 'testorganization',
+      name: 'Test Organization',
+    });
+    app = await App.create({
+      OrganizationId: organization.id,
+      vapidPublicKey: '',
+      vapidPrivateKey: '',
+      definition: {
+        security: {
+          default: {
+            role: 'Test',
+            policy: 'everyone',
+          },
+          roles: { Test: {} },
+        },
+      },
+      path: 'test-app',
+    });
+    await OrganizationMember.create({
+      OrganizationId: organization.id,
+      UserId: user.id,
+      role: PredefinedOrganizationRole.Owner,
+    });
+
     secret = await AppOAuth2Secret.create({
       AppId: app.id,
       authorizationUrl: 'https://example.com/oauth/authorize',
@@ -92,6 +80,11 @@ describe('verifyAppOAuth2SecretCode', () => {
       tokenUrl: 'https://example.com/oauth/token',
       userInfoUrl: 'https://example.com/oauth/userinfo',
     });
+  });
+
+  // https://github.com/vitest-dev/vitest/issues/1154#issuecomment-1138717832
+  afterAll(() => {
+    vi.useRealTimers();
   });
 
   it('should throw 400 if the referer is missing', async () => {

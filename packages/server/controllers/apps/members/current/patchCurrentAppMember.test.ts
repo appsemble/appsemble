@@ -8,56 +8,53 @@ import { App, type AppMember, BlockVersion, Organization } from '../../../../mod
 import { setArgv } from '../../../../utils/argv.js';
 import { createServer } from '../../../../utils/createServer.js';
 import { authorizeAppMember, createTestAppMember } from '../../../../utils/test/authorization.js';
-import { useTestDatabase } from '../../../../utils/test/testSchema.js';
 
 let app: App;
 let appMember: AppMember;
 
-useTestDatabase(import.meta);
-
-beforeAll(async () => {
-  vi.useFakeTimers();
-  setArgv({ host: 'http://localhost', secret: 'test' });
-  const server = await createServer();
-  await setTestApp(server);
-});
-
-beforeEach(async () => {
-  // https://github.com/vitest-dev/vitest/issues/1154#issuecomment-1138717832
-  vi.clearAllTimers();
-  vi.setSystemTime(0);
-
-  const organization = await Organization.create({ id: 'appsemble', name: 'Appsemble' });
-
-  app = await App.create({
-    OrganizationId: organization.id,
-    vapidPublicKey: '',
-    vapidPrivateKey: '',
-    definition: {},
+describe('patchCurrentAppMember', () => {
+  beforeAll(async () => {
+    vi.useFakeTimers();
+    setArgv({ host: 'http://localhost', secret: 'test' });
+    const server = await createServer();
+    await setTestApp(server);
   });
 
-  appMember = await createTestAppMember(app.id);
+  beforeEach(async () => {
+    // https://github.com/vitest-dev/vitest/issues/1154#issuecomment-1138717832
+    vi.clearAllTimers();
+    vi.setSystemTime(0);
 
-  await BlockVersion.create({
-    name: 'test',
-    version: '0.0.0',
-    OrganizationId: 'appsemble',
-    parameters: {
-      properties: {
-        type: 'object',
-        foo: {
-          type: 'number',
+    const organization = await Organization.create({ id: 'appsemble', name: 'Appsemble' });
+
+    app = await App.create({
+      OrganizationId: organization.id,
+      vapidPublicKey: '',
+      vapidPrivateKey: '',
+      definition: {},
+    });
+
+    appMember = await createTestAppMember(app.id);
+
+    await BlockVersion.create({
+      name: 'test',
+      version: '0.0.0',
+      OrganizationId: 'appsemble',
+      parameters: {
+        properties: {
+          type: 'object',
+          foo: {
+            type: 'number',
+          },
         },
       },
-    },
+    });
   });
-});
 
-afterAll(() => {
-  vi.useRealTimers();
-});
+  afterAll(() => {
+    vi.useRealTimers();
+  });
 
-describe('patchCurrentAppMember', () => {
   it('should update and return the app member', async () => {
     authorizeAppMember(app);
 

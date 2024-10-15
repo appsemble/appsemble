@@ -11,20 +11,10 @@ import { setArgv } from '../utils/argv.js';
 import { createServer } from '../utils/createServer.js';
 import { encrypt } from '../utils/crypto.js';
 import { authorizeAppMember, createTestUser } from '../utils/test/authorization.js';
-import { useTestDatabase } from '../utils/test/testSchema.js';
 
 let server: Koa;
 let user: User;
 const argv = { host: 'http://localhost', secret: 'test', aesSecret: 'testSecret' };
-
-useTestDatabase(import.meta);
-
-beforeEach(async () => {
-  setArgv(argv);
-  user = await createTestUser();
-  server = await createServer({});
-  await setTestApp(server);
-});
 
 describe('applyAppServiceSecrets', () => {
   let proxiedApp: Koa;
@@ -35,6 +25,11 @@ describe('applyAppServiceSecrets', () => {
   let app: App;
 
   beforeEach(async () => {
+    setArgv(argv);
+    user = await createTestUser();
+    server = await createServer({});
+    await setTestApp(server);
+
     vi.useFakeTimers();
     proxiedApp = new Koa().use((ctx) => {
       ctx.body = proxiedBody || { message: 'I’m a teapot' };

@@ -1,6 +1,6 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`getProjectImplementations > official blocks > action-button 1`] = `
+exports[`config > getProjectImplementations > official blocks > action-button 1`] = `
 {
   "actions": {
     "onClick": {
@@ -33,7 +33,7 @@ Describe what the button does. This helps with accessibility for people using sc
 }
 `;
 
-exports[`getProjectImplementations > official blocks > audio 1`] = `
+exports[`config > getProjectImplementations > official blocks > audio 1`] = `
 {
   "actions": undefined,
   "events": {
@@ -64,7 +64,7 @@ The result must be either a audio URL or an object containing a property \`url\`
 }
 `;
 
-exports[`getProjectImplementations > official blocks > barcode-scan 1`] = `
+exports[`config > getProjectImplementations > official blocks > barcode-scan 1`] = `
 {
   "actions": undefined,
   "events": {
@@ -167,7 +167,7 @@ Type 'camera' allows to scan code using webcam.",
 }
 `;
 
-exports[`getProjectImplementations > official blocks > button-list 1`] = `
+exports[`config > getProjectImplementations > official blocks > button-list 1`] = `
 {
   "actions": {
     "$any": {
@@ -299,7 +299,7 @@ Describe what the button does. This helps with accessibility for people using sc
 }
 `;
 
-exports[`getProjectImplementations > official blocks > chart 1`] = `
+exports[`config > getProjectImplementations > official blocks > chart 1`] = `
 {
   "actions": {
     "onClick": {
@@ -449,7 +449,7 @@ By default the primary color of the theme will be used.",
 }
 `;
 
-exports[`getProjectImplementations > official blocks > control-buttons 1`] = `
+exports[`config > getProjectImplementations > official blocks > control-buttons 1`] = `
 {
   "actions": {
     "onBack": {
@@ -525,7 +525,7 @@ Set to \`false\` to hide forward button.",
 }
 `;
 
-exports[`getProjectImplementations > official blocks > data-loader 1`] = `
+exports[`config > getProjectImplementations > official blocks > data-loader 1`] = `
 {
   "actions": {
     "onLoad": {
@@ -570,7 +570,7 @@ By setting this to \`true\`, this won’t happen.",
 }
 `;
 
-exports[`getProjectImplementations > official blocks > data-notifier 1`] = `
+exports[`config > getProjectImplementations > official blocks > data-notifier 1`] = `
 {
   "actions": undefined,
   "events": {
@@ -641,7 +641,7 @@ This will be called with the \`count\` parameter, which refers to the amount of 
 }
 `;
 
-exports[`getProjectImplementations > official blocks > detail-viewer 1`] = `
+exports[`config > getProjectImplementations > official blocks > detail-viewer 1`] = `
 {
   "actions": undefined,
   "events": {
@@ -1044,7 +1044,7 @@ If the content is an object it will be converted using \`JSON.stringify()\`.",
 }
 `;
 
-exports[`getProjectImplementations > official blocks > feed 1`] = `
+exports[`config > getProjectImplementations > official blocks > feed 1`] = `
 {
   "actions": {
     "onAvatarClick": {
@@ -1292,7 +1292,7 @@ If not defined, the Asset API will be used instead.",
 }
 `;
 
-exports[`getProjectImplementations > official blocks > filter 1`] = `
+exports[`config > getProjectImplementations > official blocks > filter 1`] = `
 {
   "actions": {
     "onLoad": {
@@ -1811,7 +1811,7 @@ This means this field will be displayed directly on the screen instead of in the
 }
 `;
 
-exports[`getProjectImplementations > official blocks > form 1`] = `
+exports[`config > getProjectImplementations > official blocks > form 1`] = `
 {
   "actions": {
     "$any": {
@@ -4520,7 +4520,7 @@ By setting this to \`true\`, this won’t happen.",
 }
 `;
 
-exports[`getProjectImplementations > official blocks > html 1`] = `
+exports[`config > getProjectImplementations > official blocks > html 1`] = `
 {
   "actions": {
     "$any": {
@@ -4571,7 +4571,7 @@ All elements specifying \`data-content\` will be updated each time this event is
 }
 `;
 
-exports[`getProjectImplementations > official blocks > image 1`] = `
+exports[`config > getProjectImplementations > official blocks > image 1`] = `
 {
   "actions": {
     "onChange": {
@@ -4659,7 +4659,7 @@ Value should be same as property name in resources where it is going to be store
 }
 `;
 
-exports[`getProjectImplementations > official blocks > list 1`] = `
+exports[`config > getProjectImplementations > official blocks > list 1`] = `
 {
   "actions": {
     "$any": {
@@ -5025,7 +5025,7 @@ Will only apply to the first list in grouped lists.",
 }
 `;
 
-exports[`getProjectImplementations > official blocks > map 1`] = `
+exports[`config > getProjectImplementations > official blocks > map 1`] = `
 {
   "actions": {
     "onMarkerClick": {
@@ -5246,7 +5246,7 @@ Decreasing will make more, smaller clusters. One can also use a function that ac
 }
 `;
 
-exports[`getProjectImplementations > official blocks > markdown 1`] = `
+exports[`config > getProjectImplementations > official blocks > markdown 1`] = `
 {
   "actions": undefined,
   "events": {
@@ -5291,7 +5291,7 @@ If defined, a loader will be shown until this event is triggered.",
 }
 `;
 
-exports[`getProjectImplementations > official blocks > openai 1`] = `
+exports[`config > getProjectImplementations > official blocks > openai 1`] = `
 {
   "actions": undefined,
   "events": {
@@ -5317,7 +5317,7 @@ exports[`getProjectImplementations > official blocks > openai 1`] = `
 }
 `;
 
-exports[`getProjectImplementations > official blocks > pdf-viewer 1`] = `
+exports[`config > getProjectImplementations > official blocks > pdf-viewer 1`] = `
 {
   "actions": {
     "onLoad": {
@@ -5355,7 +5355,7 @@ exports[`getProjectImplementations > official blocks > pdf-viewer 1`] = `
 }
 `;
 
-exports[`getProjectImplementations > official blocks > qr-scan 1`] = `
+exports[`config > getProjectImplementations > official blocks > qr-scan 1`] = `
 {
   "actions": undefined,
   "events": {
@@ -5392,7 +5392,7 @@ foundQr event only holds the string of the QR.",
 }
 `;
 
-exports[`getProjectImplementations > official blocks > stats 1`] = `
+exports[`config > getProjectImplementations > official blocks > stats 1`] = `
 {
   "actions": undefined,
   "events": {
@@ -5450,7 +5450,7 @@ exports[`getProjectImplementations > official blocks > stats 1`] = `
 }
 `;
 
-exports[`getProjectImplementations > official blocks > table 1`] = `
+exports[`config > getProjectImplementations > official blocks > table 1`] = `
 {
   "actions": {
     "$any": {
@@ -5884,7 +5884,7 @@ If this isn’t specified, no label will be shown. If no fields have a label, th
 }
 `;
 
-exports[`getProjectImplementations > official blocks > tiles 1`] = `
+exports[`config > getProjectImplementations > official blocks > tiles 1`] = `
 {
   "actions": {
     "onClick": {
@@ -5936,7 +5936,7 @@ This takes precedence over an icon.",
 }
 `;
 
-exports[`getProjectImplementations > official blocks > timer 1`] = `
+exports[`config > getProjectImplementations > official blocks > timer 1`] = `
 {
   "actions": undefined,
   "events": {
@@ -5965,7 +5965,7 @@ exports[`getProjectImplementations > official blocks > timer 1`] = `
 }
 `;
 
-exports[`getProjectImplementations > official blocks > video 1`] = `
+exports[`config > getProjectImplementations > official blocks > video 1`] = `
 {
   "actions": {
     "onFinish": {
@@ -6039,7 +6039,7 @@ Note that this is ignored if the onVideo event listener is set.",
 }
 `;
 
-exports[`getProjectImplementations > official blocks > wordcloud 1`] = `
+exports[`config > getProjectImplementations > official blocks > wordcloud 1`] = `
 {
   "actions": undefined,
   "events": {

@@ -226,7 +226,7 @@ test node 18:
   script:
     - npm ci
     - npm test -- --coverage --shard=$CI_NODE_INDEX/$CI_NODE_TOTAL
-  parallel: 3
+  parallel: 5
   artifacts:
     paths:
       - coverage

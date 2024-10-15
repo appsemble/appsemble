@@ -7,19 +7,9 @@ import { App, Organization } from '../../../models/index.js';
 import { setArgv } from '../../../utils/argv.js';
 import { createServer } from '../../../utils/createServer.js';
 import { createTestUser } from '../../../utils/test/authorization.js';
-import { useTestDatabase } from '../../../utils/test/testSchema.js';
 
 let server: Koa;
 const argv = { host: 'http://localhost', secret: 'test', aesSecret: 'testSecret' };
-
-useTestDatabase(import.meta);
-
-beforeEach(async () => {
-  setArgv(argv);
-  await createTestUser();
-  server = await createServer({});
-  await setTestApp(server);
-});
 
 describe('proxyDelete', () => {
   let proxiedApp: Koa;
@@ -29,6 +19,11 @@ describe('proxyDelete', () => {
   let responseHeaders: Record<string, string>;
 
   beforeEach(async () => {
+    setArgv(argv);
+    await createTestUser();
+    server = await createServer({});
+    await setTestApp(server);
+
     vi.useFakeTimers();
     proxiedApp = new Koa().use((ctx) => {
       ctx.body = proxiedBody || { message: 'I’m a teapot' };

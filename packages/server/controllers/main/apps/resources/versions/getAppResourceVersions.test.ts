@@ -15,52 +15,49 @@ import {
 import { setArgv } from '../../../../../utils/argv.js';
 import { createServer } from '../../../../../utils/createServer.js';
 import { authorizeStudio, createTestUser } from '../../../../../utils/test/authorization.js';
-import { useTestDatabase } from '../../../../../utils/test/testSchema.js';
 
 let user: User;
 
-useTestDatabase(import.meta);
-
-beforeAll(async () => {
-  setArgv({ host: 'http://localhost', secret: 'test' });
-  const server = await createServer();
-  await setTestApp(server);
-});
-
-beforeEach(async () => {
-  user = await createTestUser();
-  await Organization.create({
-    id: 'testorganization',
-    name: 'Test Organization',
-  });
-  await OrganizationMember.create({
-    UserId: user.id,
-    OrganizationId: 'testorganization',
-    role: PredefinedOrganizationRole.AppContentsExplorer,
-  });
-  await App.create({
-    OrganizationId: 'testorganization',
-    vapidPublicKey: '',
-    vapidPrivateKey: '',
-    definition: {
-      name: 'Test App',
-      resources: {
-        noHistory: {},
-        yesHistory: {
-          history: true,
-        },
-      },
-      pages: [],
-    },
-  });
-  authorizeStudio(user);
-});
-
-afterEach(() => {
-  vi.useRealTimers();
-});
-
 describe('getAppResourceVersions', () => {
+  beforeAll(async () => {
+    setArgv({ host: 'http://localhost', secret: 'test' });
+    const server = await createServer();
+    await setTestApp(server);
+  });
+
+  beforeEach(async () => {
+    user = await createTestUser();
+    await Organization.create({
+      id: 'testorganization',
+      name: 'Test Organization',
+    });
+    await OrganizationMember.create({
+      UserId: user.id,
+      OrganizationId: 'testorganization',
+      role: PredefinedOrganizationRole.AppContentsExplorer,
+    });
+    await App.create({
+      OrganizationId: 'testorganization',
+      vapidPublicKey: '',
+      vapidPrivateKey: '',
+      definition: {
+        name: 'Test App',
+        resources: {
+          noHistory: {},
+          yesHistory: {
+            history: true,
+          },
+        },
+        pages: [],
+      },
+    });
+    authorizeStudio(user);
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
   it('should return 404 if no app was found', async () => {
     const response = await request.get('/api/apps/789/resources/any/1/versions');
 
