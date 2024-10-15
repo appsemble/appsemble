@@ -21,7 +21,7 @@ function checkAppPermissions(
   requiredPermissions: CustomAppPermission[],
 ): boolean {
   const customAppResourcePermissionPattern =
-    /^\$resource:[^:]+:(get|getHistory|query|create|delete|patch|update)$/;
+    /^\$resource:[^:]+:(get|history:get|query|create|delete|patch|update)$/;
 
   const customAppOwnResourcePermissionPattern =
     /^\$resource:[^:]+:own:(get|query|delete|patch|update)$/;
@@ -179,7 +179,7 @@ export function getAppPossibleGuestPermissions(
         `$resource:${resourceName}:create`,
         `$resource:${resourceName}:query`,
         `$resource:${resourceName}:get`,
-        `$resource:${resourceName}:getHistory`,
+        `$resource:${resourceName}:history:get`,
         `$resource:${resourceName}:update`,
         `$resource:${resourceName}:patch`,
         `$resource:${resourceName}:delete`,

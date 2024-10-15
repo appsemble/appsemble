@@ -75,7 +75,7 @@ export enum AppPermission {
   /**
    * The permission to fetch history of a resource.
    */
-  GetResourceHistory = '$resource:all:getHistory',
+  GetResourceHistory = '$resource:all:history:get',
 
   /**
    * The permission to query app resources.

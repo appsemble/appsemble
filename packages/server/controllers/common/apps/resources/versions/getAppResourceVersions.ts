@@ -7,6 +7,7 @@ import { checkAppPermissions } from '../../../../../options/checkAppPermissions.
 export async function getAppResourceVersions(ctx: Context): Promise<void> {
   const {
     pathParams: { appId, resourceId, resourceType },
+    queryParams: { selectedGroupId },
   } = ctx;
 
   const app = await App.findByPk(appId, { attributes: ['id', 'OrganizationId', 'definition'] });
@@ -15,9 +16,9 @@ export async function getAppResourceVersions(ctx: Context): Promise<void> {
 
   await checkAppPermissions({
     context: ctx,
-    // Permissions: [`$resource:${resourceType}:getHistory`],
-    permissions: ['$resource:all:getHistory'],
+    permissions: [`$resource:${resourceType}:history:get`],
     app: app.toJSON(),
+    groupId: selectedGroupId,
   });
 
   const resource = await Resource.findOne({
@@ -25,6 +26,7 @@ export async function getAppResourceVersions(ctx: Context): Promise<void> {
       AppId: appId,
       id: resourceId,
       type: resourceType,
+      GroupId: selectedGroupId ?? null,
     },
     include: [
       { association: 'Editor' },

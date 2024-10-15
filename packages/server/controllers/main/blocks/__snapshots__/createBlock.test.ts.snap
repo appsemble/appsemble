@@ -1956,7 +1956,7 @@ disabled by setting this to \`false\`
                     "type": {
                       "description": "Get the complete history of a resource.",
                       "enum": [
-                        "resource.getHistory",
+                        "resource.history.get",
                       ],
                     },
                   },
@@ -1970,10 +1970,10 @@ disabled by setting this to \`false\`
               },
               {
                 "argument": [
-                  "resource.getHistory",
+                  "resource.history.get",
                 ],
                 "instance": "invalid",
-                "message": "is not one of enum values: resource.getHistory",
+                "message": "is not one of enum values: resource.history.get",
                 "name": "enum",
                 "path": [
                   "actions",
@@ -1984,10 +1984,10 @@ disabled by setting this to \`false\`
                 "schema": {
                   "description": "Get the complete history of a resource.",
                   "enum": [
-                    "resource.getHistory",
+                    "resource.history.get",
                   ],
                 },
-                "stack": "instance.actions.onSubmit.type is not one of enum values: resource.getHistory",
+                "stack": "instance.actions.onSubmit.type is not one of enum values: resource.history.get",
               },
               {
                 "argument": "resource",
@@ -6891,7 +6891,7 @@ disabled by setting this to \`false\`
             "type": {
               "description": "Get the complete history of a resource.",
               "enum": [
-                "resource.getHistory",
+                "resource.history.get",
               ],
             },
           },
@@ -6905,10 +6905,10 @@ disabled by setting this to \`false\`
       },
       {
         "argument": [
-          "resource.getHistory",
+          "resource.history.get",
         ],
         "instance": "invalid",
-        "message": "is not one of enum values: resource.getHistory",
+        "message": "is not one of enum values: resource.history.get",
         "name": "enum",
         "path": [
           "actions",
@@ -6919,10 +6919,10 @@ disabled by setting this to \`false\`
         "schema": {
           "description": "Get the complete history of a resource.",
           "enum": [
-            "resource.getHistory",
+            "resource.history.get",
           ],
         },
-        "stack": "instance.actions.onSubmit.type is not one of enum values: resource.getHistory",
+        "stack": "instance.actions.onSubmit.type is not one of enum values: resource.history.get",
       },
       {
         "argument": "resource",

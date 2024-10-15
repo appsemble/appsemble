@@ -9,7 +9,7 @@ export const ResourceHistoryGetActionDefinition = extendJSONSchema(
     required: ['type', 'resource'],
     properties: {
       type: {
-        enum: ['resource.getHistory'],
+        enum: ['resource.history.get'],
         description: 'Get the complete history of a resource.',
       },
       resource: {

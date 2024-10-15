@@ -6,16 +6,19 @@ import { request } from './request.js';
 import { type ServiceWorkerRegistrationContextType } from '../../types.js';
 import { apiUrl, appId } from '../settings.js';
 
-export const historyGet: ActionCreator<'resource.getHistory'> = (args) => {
-  const { appDefinition, definition } = args;
+export const historyGet: ActionCreator<'resource.history.get'> = (args) => {
+  const { appDefinition, definition, getAppMemberSelectedGroup } = args;
   const resource = appDefinition.resources[definition.resource];
   const { id = 'id' } = resource;
 
+  const selectedGroupId = getAppMemberSelectedGroup?.();
   return request({
     ...args,
     definition: {
       ...definition,
-      query: undefined,
+      query: selectedGroupId
+        ? { 'object.assign': { selectedGroupId: selectedGroupId.id } }
+        : undefined,
       method: 'GET',
       proxy: false,
       type: 'request',

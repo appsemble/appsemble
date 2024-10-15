@@ -54,6 +54,7 @@ export const actions = {
   'resource.create': resource.create,
   'resource.delete': resource.remove,
   'resource.get': resource.get,
+  'resource.history.get': noop,
   'resource.query': resource.query,
   'resource.update': resource.update,
   'resource.patch': resource.patch,

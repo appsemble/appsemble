@@ -757,7 +757,7 @@ export type ResourceAction =
   | ResourceViewAction
   | 'create'
   | 'delete'
-  | 'getHistory'
+  | 'history.get'
   | 'patch'
   | 'update';
 
@@ -1573,7 +1573,7 @@ export interface ControllerActionDefinition extends BaseActionDefinition<'contro
 export type RequestActionDefinition = RequestLikeActionDefinition<'request'>;
 export type ResourceCreateActionDefinition = ResourceActionDefinition<'resource.create'>;
 export type ResourceDeleteActionDefinition = ResourceActionDefinition<'resource.delete'>;
-export type ResourceHistoryGetActionDefinition = ResourceActionDefinition<'resource.getHistory'>;
+export type ResourceHistoryGetActionDefinition = ResourceActionDefinition<'resource.history.get'>;
 export type ResourceGetActionDefinition = ResourceActionDefinition<'resource.get'> &
   ViewResourceDefinition;
 export type ResourceQueryActionDefinition = OwnResourceDefinition &

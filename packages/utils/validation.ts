@@ -35,10 +35,10 @@ import { type ServerActionName, serverActions } from './serverActions.js';
 type Report = (instance: unknown, message: string, path: (number | string)[]) => void;
 
 const allResourcePermissionPattern =
-  /^\$resource:all:(get|getHistory|query|create|delete|patch|update)$/;
+  /^\$resource:all:(get|history:get|query|create|delete|patch|update)$/;
 
 const resourcePermissionPattern =
-  /^\$resource:[^:]+:(get|getHistory|query|create|delete|patch|update)$/;
+  /^\$resource:[^:]+:(get|history:get|query|create|delete|patch|update)$/;
 
 const allOwnResourcePermissionPattern = /^\$resource:all:own:(get|query|delete|patch|update)$/;
 
