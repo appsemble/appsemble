@@ -18,59 +18,56 @@ import {
   authorizeStudio,
   createTestUser,
 } from '../../../utils/test/authorization.js';
-import { useTestDatabase } from '../../../utils/test/testSchema.js';
 
 let organization: Organization;
 let user: User;
 
 const argv = { host: 'http://localhost', secret: 'test', aesSecret: 'testSecret' };
 
-useTestDatabase(import.meta);
-
-beforeAll(async () => {
-  vi.useFakeTimers();
-  setArgv(argv);
-  const server = await createServer();
-  await setTestApp(server);
-});
-
-beforeEach(async () => {
-  // https://github.com/vitest-dev/vitest/issues/1154#issuecomment-1138717832
-  vi.clearAllTimers();
-  vi.setSystemTime(0);
-  user = await createTestUser();
-  organization = await Organization.create({
-    id: 'testorganization',
-    name: 'Test Organization',
-  });
-  await OrganizationMember.create({
-    OrganizationId: organization.id,
-    UserId: user.id,
-    role: PredefinedOrganizationRole.Owner,
+describe('deleteApp', () => {
+  beforeAll(async () => {
+    vi.useFakeTimers();
+    setArgv(argv);
+    const server = await createServer();
+    await setTestApp(server);
   });
 
-  await Organization.create({ id: 'appsemble', name: 'Appsemble' });
+  beforeEach(async () => {
+    // https://github.com/vitest-dev/vitest/issues/1154#issuecomment-1138717832
+    vi.clearAllTimers();
+    vi.setSystemTime(0);
+    user = await createTestUser();
+    organization = await Organization.create({
+      id: 'testorganization',
+      name: 'Test Organization',
+    });
+    await OrganizationMember.create({
+      OrganizationId: organization.id,
+      UserId: user.id,
+      role: PredefinedOrganizationRole.Owner,
+    });
 
-  await BlockVersion.create({
-    name: 'test',
-    OrganizationId: 'appsemble',
-    version: '0.0.0',
-    parameters: {
-      type: 'object',
-      properties: {
-        foo: {
-          type: 'number',
+    await Organization.create({ id: 'appsemble', name: 'Appsemble' });
+
+    await BlockVersion.create({
+      name: 'test',
+      OrganizationId: 'appsemble',
+      version: '0.0.0',
+      parameters: {
+        type: 'object',
+        properties: {
+          foo: {
+            type: 'number',
+          },
         },
       },
-    },
+    });
   });
-});
 
-afterAll(() => {
-  vi.useRealTimers();
-});
+  afterAll(() => {
+    vi.useRealTimers();
+  });
 
-describe('deleteApp', () => {
   it('should delete an app', async () => {
     authorizeStudio();
     const {

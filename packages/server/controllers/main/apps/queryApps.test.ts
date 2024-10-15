@@ -6,43 +6,40 @@ import { App, AppRating, Organization, OrganizationMember, User } from '../../..
 import { setArgv } from '../../../utils/argv.js';
 import { createServer } from '../../../utils/createServer.js';
 import { createTestUser } from '../../../utils/test/authorization.js';
-import { useTestDatabase } from '../../../utils/test/testSchema.js';
 
 let organization: Organization;
 let user: User;
 
 const argv = { host: 'http://localhost', secret: 'test', aesSecret: 'testSecret' };
 
-useTestDatabase(import.meta);
-
-beforeAll(async () => {
-  vi.useFakeTimers();
-  setArgv(argv);
-  const server = await createServer();
-  await setTestApp(server);
-});
-
-beforeEach(async () => {
-  // https://github.com/vitest-dev/vitest/issues/1154#issuecomment-1138717832
-  vi.clearAllTimers();
-  vi.setSystemTime(0);
-  user = await createTestUser();
-  organization = await Organization.create({
-    id: 'testorganization',
-    name: 'Test Organization',
-  });
-  await OrganizationMember.create({
-    OrganizationId: organization.id,
-    UserId: user.id,
-    role: PredefinedOrganizationRole.Owner,
-  });
-});
-
-afterAll(() => {
-  vi.useRealTimers();
-});
-
 describe('queryApps', () => {
+  beforeAll(async () => {
+    vi.useFakeTimers();
+    setArgv(argv);
+    const server = await createServer();
+    await setTestApp(server);
+  });
+
+  beforeEach(async () => {
+    // https://github.com/vitest-dev/vitest/issues/1154#issuecomment-1138717832
+    vi.clearAllTimers();
+    vi.setSystemTime(0);
+    user = await createTestUser();
+    organization = await Organization.create({
+      id: 'testorganization',
+      name: 'Test Organization',
+    });
+    await OrganizationMember.create({
+      OrganizationId: organization.id,
+      UserId: user.id,
+      role: PredefinedOrganizationRole.Owner,
+    });
+  });
+
+  afterAll(() => {
+    vi.useRealTimers();
+  });
+
   it('should return an empty array of apps', async () => {
     const response = await request.get('/api/apps');
 

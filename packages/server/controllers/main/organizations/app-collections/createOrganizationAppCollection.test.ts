@@ -12,38 +12,35 @@ import {
 import { type Argv, setArgv } from '../../../../utils/argv.js';
 import { createServer } from '../../../../utils/createServer.js';
 import { authorizeStudio, createTestUser } from '../../../../utils/test/authorization.js';
-import { useTestDatabase } from '../../../../utils/test/testSchema.js';
 
 let organization: Organization;
 let user: User;
 const argv: Partial<Argv> = { host: 'http://localhost', secret: 'test', aesSecret: 'test' };
 
-useTestDatabase(import.meta);
-
-beforeAll(async () => {
-  vi.useFakeTimers();
-  setArgv(argv);
-  const server = await createServer({});
-  await setTestApp(server);
-});
-
-beforeEach(async () => {
-  // https://github.com/vitest-dev/vitest/issues/1154#issuecomment-1138717832
-  vi.clearAllTimers();
-  vi.setSystemTime(0);
-  user = await createTestUser();
-  organization = await Organization.create({
-    id: 'testorganization',
-    name: 'Test Organization',
-  });
-  await OrganizationMember.create({
-    OrganizationId: organization.id,
-    UserId: user.id,
-    role: PredefinedOrganizationRole.Owner,
-  });
-});
-
 describe('createOrganizationAppCollection', () => {
+  beforeAll(async () => {
+    vi.useFakeTimers();
+    setArgv(argv);
+    const server = await createServer({});
+    await setTestApp(server);
+  });
+
+  beforeEach(async () => {
+    // https://github.com/vitest-dev/vitest/issues/1154#issuecomment-1138717832
+    vi.clearAllTimers();
+    vi.setSystemTime(0);
+    user = await createTestUser();
+    organization = await Organization.create({
+      id: 'testorganization',
+      name: 'Test Organization',
+    });
+    await OrganizationMember.create({
+      OrganizationId: organization.id,
+      UserId: user.id,
+      role: PredefinedOrganizationRole.Owner,
+    });
+  });
+
   it('should create a new app collection', async () => {
     authorizeStudio(user);
     const response = await request.post(

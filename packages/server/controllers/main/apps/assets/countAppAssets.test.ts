@@ -12,54 +12,51 @@ import {
 import { setArgv } from '../../../../utils/argv.js';
 import { createServer } from '../../../../utils/createServer.js';
 import { authorizeStudio, createTestUser } from '../../../../utils/test/authorization.js';
-import { useTestDatabase } from '../../../../utils/test/testSchema.js';
 
 let organization: Organization;
 let user: User;
 let app: App;
 
-useTestDatabase(import.meta);
-
-beforeAll(async () => {
-  setArgv({ host: 'http://localhost', secret: 'test' });
-  const server = await createServer();
-  await setTestApp(server);
-});
-
-beforeEach(async () => {
-  user = await createTestUser();
-  organization = await Organization.create({
-    id: 'testorganization',
-    name: 'Test Organization',
-  });
-  await OrganizationMember.create({
-    OrganizationId: organization.id,
-    UserId: user.id,
-    role: PredefinedOrganizationRole.Owner,
+describe('countAppAssets', () => {
+  beforeAll(async () => {
+    setArgv({ host: 'http://localhost', secret: 'test' });
+    const server = await createServer();
+    await setTestApp(server);
   });
 
-  app = await App.create({
-    definition: {
-      name: 'Test App',
-      defaultPage: 'Test Page',
-      security: {
-        default: {
-          role: 'Reader',
-          policy: 'everyone',
-        },
-        roles: {
-          Reader: {},
+  beforeEach(async () => {
+    user = await createTestUser();
+    organization = await Organization.create({
+      id: 'testorganization',
+      name: 'Test Organization',
+    });
+    await OrganizationMember.create({
+      OrganizationId: organization.id,
+      UserId: user.id,
+      role: PredefinedOrganizationRole.Owner,
+    });
+
+    app = await App.create({
+      definition: {
+        name: 'Test App',
+        defaultPage: 'Test Page',
+        security: {
+          default: {
+            role: 'Reader',
+            policy: 'everyone',
+          },
+          roles: {
+            Reader: {},
+          },
         },
       },
-    },
-    path: 'test-app',
-    vapidPublicKey: 'a',
-    vapidPrivateKey: 'b',
-    OrganizationId: organization.id,
+      path: 'test-app',
+      vapidPublicKey: 'a',
+      vapidPrivateKey: 'b',
+      OrganizationId: organization.id,
+    });
   });
-});
 
-describe('countAppAssets', () => {
   it('should return 0 if no assets exist', async () => {
     authorizeStudio();
     const response = await request.get(`/api/apps/${app.id}/assets/$count`);

@@ -1,10 +1,7 @@
 import { describe, expect, it, vi } from 'vitest';
 
 import { iterTable } from './database.js';
-import { useTestDatabase } from './test/testSchema.js';
 import { User } from '../models/index.js';
-
-useTestDatabase(import.meta);
 
 describe('iterTable', () => {
   it('should iterate if the length is not divisible by chunk size', async () => {

@@ -5,14 +5,11 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { appMapper } from './appMapper.js';
 import { AppCollection, Organization } from '../models/index.js';
 import { setArgv } from '../utils/argv.js';
-import { useTestDatabase } from '../utils/test/testSchema.js';
 
 let platformMiddleware: Middleware;
 let appMiddleware: Middleware;
 let fakeHostname: string;
 let context: Context;
-
-useTestDatabase(import.meta);
 
 describe('Appsemble server', () => {
   beforeEach(async () => {

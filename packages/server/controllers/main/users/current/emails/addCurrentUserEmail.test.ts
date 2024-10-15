@@ -6,33 +6,30 @@ import { Organization, OrganizationMember, type User } from '../../../../../mode
 import { setArgv } from '../../../../../utils/argv.js';
 import { createServer } from '../../../../../utils/createServer.js';
 import { authorizeStudio, createTestUser } from '../../../../../utils/test/authorization.js';
-import { useTestDatabase } from '../../../../../utils/test/testSchema.js';
 
 let user: User;
 
-useTestDatabase(import.meta);
-
-beforeAll(async () => {
-  setArgv({ host: 'http://localhost', secret: 'test' });
-  const server = await createServer();
-  await setTestApp(server);
-});
-
-beforeEach(async () => {
-  vi.useFakeTimers();
-  user = await createTestUser();
-  const organization = await Organization.create({
-    id: 'testorganization',
-    name: 'Test Organization',
-  });
-  await OrganizationMember.create({
-    OrganizationId: organization.id,
-    UserId: user.id,
-    role: PredefinedOrganizationRole.Owner,
-  });
-});
-
 describe('addCurrentUserEmail', () => {
+  beforeAll(async () => {
+    setArgv({ host: 'http://localhost', secret: 'test' });
+    const server = await createServer();
+    await setTestApp(server);
+  });
+
+  beforeEach(async () => {
+    vi.useFakeTimers();
+    user = await createTestUser();
+    const organization = await Organization.create({
+      id: 'testorganization',
+      name: 'Test Organization',
+    });
+    await OrganizationMember.create({
+      OrganizationId: organization.id,
+      UserId: user.id,
+      role: PredefinedOrganizationRole.Owner,
+    });
+  });
+
   it('should be possible to add new email addresses', async () => {
     authorizeStudio();
     const response = await request.post('/api/users/current/emails', {

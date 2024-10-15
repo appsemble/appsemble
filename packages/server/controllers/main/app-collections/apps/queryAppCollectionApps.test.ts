@@ -15,7 +15,6 @@ import {
 import { type Argv, setArgv } from '../../../../utils/argv.js';
 import { createServer } from '../../../../utils/createServer.js';
 import { authorizeStudio, createTestUser } from '../../../../utils/test/authorization.js';
-import { useTestDatabase } from '../../../../utils/test/testSchema.js';
 
 let organization: Organization;
 let user: User;
@@ -23,91 +22,89 @@ let apps: App[];
 let collections: AppCollection[];
 const argv: Partial<Argv> = { host: 'http://localhost', secret: 'test', aesSecret: 'test' };
 
-useTestDatabase(import.meta);
-
-beforeAll(async () => {
-  vi.useFakeTimers();
-  setArgv(argv);
-  const server = await createServer({});
-  await setTestApp(server);
-});
-
-beforeEach(async () => {
-  // https://github.com/vitest-dev/vitest/issues/1154#issuecomment-1138717832
-  vi.clearAllTimers();
-  vi.setSystemTime(0);
-  user = await createTestUser();
-  organization = await Organization.create({
-    id: 'testorganization',
-    name: 'Test Organization',
+describe('queryAppCollectionApps', () => {
+  beforeAll(async () => {
+    vi.useFakeTimers();
+    setArgv(argv);
+    const server = await createServer({});
+    await setTestApp(server);
   });
-  await OrganizationMember.create({
-    OrganizationId: organization.id,
-    UserId: user.id,
-    role: PredefinedOrganizationRole.Owner,
-  });
-  apps = await Promise.all(
-    [
-      'Productivity and Collaboration App',
-      'Fun and Collaboration App',
-      'Productivity App',
-      'Fun App',
-    ].map((name) =>
-      App.create({
-        definition: {
-          name,
-          defaultPage: 'Test Page',
-          security: {
-            default: {
-              role: 'Reader',
-              policy: 'everyone',
-            },
-            roles: {
-              Reader: {},
-              Admin: {},
+
+  beforeEach(async () => {
+    // https://github.com/vitest-dev/vitest/issues/1154#issuecomment-1138717832
+    vi.clearAllTimers();
+    vi.setSystemTime(0);
+    user = await createTestUser();
+    organization = await Organization.create({
+      id: 'testorganization',
+      name: 'Test Organization',
+    });
+    await OrganizationMember.create({
+      OrganizationId: organization.id,
+      UserId: user.id,
+      role: PredefinedOrganizationRole.Owner,
+    });
+    apps = await Promise.all(
+      [
+        'Productivity and Collaboration App',
+        'Fun and Collaboration App',
+        'Productivity App',
+        'Fun App',
+      ].map((name) =>
+        App.create({
+          definition: {
+            name,
+            defaultPage: 'Test Page',
+            security: {
+              default: {
+                role: 'Reader',
+                policy: 'everyone',
+              },
+              roles: {
+                Reader: {},
+                Admin: {},
+              },
             },
           },
-        },
-        path: name.toLowerCase().replaceAll(' ', '-'),
-        vapidPublicKey: 'a',
-        vapidPrivateKey: 'b',
-        visibility: 'public',
-        OrganizationId: organization.id,
-      }),
-    ),
-  );
-  const tuxPng = await readFixture('tux.png');
-  const standingPng = await readFixture('standing.png');
-  collections = await Promise.all(
-    ['Productivity', 'Fun', 'Collaboration'].map((name) =>
-      AppCollection.create({
-        name,
-        expertName: 'Expert van den Expert',
-        expertProfileImage: tuxPng,
-        expertProfileImageMimeType: 'image/png',
-        headerImage: standingPng,
-        headerImageMimeType: 'image/png',
-        expertDescription: 'I’m an expert, trust me.',
-        OrganizationId: organization.id,
-        visibility: 'public',
-      }),
-    ),
-  );
-
-  await Promise.all(
-    collections
-      .flatMap((collection) =>
-        apps
-          .filter((app) => app.definition.name?.includes(collection.name))
-          .map((app) => [collection, app] as [AppCollection, App]),
-      )
-      .map(([collection, app]) =>
-        AppCollectionApp.create({ AppCollectionId: collection.id, AppId: app.id }),
+          path: name.toLowerCase().replaceAll(' ', '-'),
+          vapidPublicKey: 'a',
+          vapidPrivateKey: 'b',
+          visibility: 'public',
+          OrganizationId: organization.id,
+        }),
       ),
-  );
-});
+    );
+    const tuxPng = await readFixture('tux.png');
+    const standingPng = await readFixture('standing.png');
+    collections = await Promise.all(
+      ['Productivity', 'Fun', 'Collaboration'].map((name) =>
+        AppCollection.create({
+          name,
+          expertName: 'Expert van den Expert',
+          expertProfileImage: tuxPng,
+          expertProfileImageMimeType: 'image/png',
+          headerImage: standingPng,
+          headerImageMimeType: 'image/png',
+          expertDescription: 'I’m an expert, trust me.',
+          OrganizationId: organization.id,
+          visibility: 'public',
+        }),
+      ),
+    );
 
-describe('queryAppCollectionApps', () => {
+    await Promise.all(
+      collections
+        .flatMap((collection) =>
+          apps
+            .filter((app) => app.definition.name?.includes(collection.name))
+            .map((app) => [collection, app] as [AppCollection, App]),
+        )
+        .map(([collection, app]) =>
+          AppCollectionApp.create({ AppCollectionId: collection.id, AppId: app.id }),
+        ),
+    );
+  });
+
   it('should return the apps in an app collection', async () => {
     const response = await request.get(`/api/app-collections/${collections[0].id}/apps`);
     expect(response.status).toBe(200);

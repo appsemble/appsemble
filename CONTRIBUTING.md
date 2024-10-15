@@ -199,6 +199,11 @@ mentioned with the `-u` argument. Or when in watch mode by pressing the
 npm test -- -u
 ```
 
+> **Important!**
+>
+> When writing tests, make sure to put any hooks like `beforeAll` and `afterEach` within a describe
+> block to make sure the global hooks are respected.
+
 #### End 2 End Tests
 
 The end 2 end tests are run using

@@ -12,7 +12,6 @@ import {
 import { setArgv } from '../../../../../utils/argv.js';
 import { createServer } from '../../../../../utils/createServer.js';
 import { authorizeStudio, createTestUser } from '../../../../../utils/test/authorization.js';
-import { useTestDatabase } from '../../../../../utils/test/testSchema.js';
 
 let app: App;
 let user: User;
@@ -20,60 +19,58 @@ let member: OrganizationMember;
 const date = new Date('2000-01-01').toISOString();
 const argv = { host: 'http://localhost', secret: 'test', aesSecret: 'testSecret' };
 
-useTestDatabase(import.meta);
-
-beforeAll(async () => {
-  vi.useFakeTimers();
-  setArgv(argv);
-  const server = await createServer({});
-  await setTestApp(server);
-});
-
-beforeEach(async () => {
-  // https://github.com/vitest-dev/vitest/issues/1154#issuecomment-1138717832
-  vi.clearAllTimers();
-  vi.setSystemTime(date);
-  user = await createTestUser();
-  const organization = await Organization.create({
-    id: 'testorganization',
-    name: 'Test Organization',
+describe('deleteAppServiceSecret', () => {
+  beforeAll(async () => {
+    vi.useFakeTimers();
+    setArgv(argv);
+    const server = await createServer({});
+    await setTestApp(server);
   });
-  app = await App.create({
-    definition: {
-      name: 'Test App',
-      defaultPage: 'Test Page',
-      security: {
-        groups: {
-          join: 'anyone',
-          invite: [],
-        },
-        default: {
-          role: 'Reader',
-          policy: 'everyone',
-        },
-        roles: {
-          Reader: {},
+
+  beforeEach(async () => {
+    // https://github.com/vitest-dev/vitest/issues/1154#issuecomment-1138717832
+    vi.clearAllTimers();
+    vi.setSystemTime(date);
+    user = await createTestUser();
+    const organization = await Organization.create({
+      id: 'testorganization',
+      name: 'Test Organization',
+    });
+    app = await App.create({
+      definition: {
+        name: 'Test App',
+        defaultPage: 'Test Page',
+        security: {
+          groups: {
+            join: 'anyone',
+            invite: [],
+          },
+          default: {
+            role: 'Reader',
+            policy: 'everyone',
+          },
+          roles: {
+            Reader: {},
+          },
         },
       },
-    },
-    path: 'test-app',
-    vapidPublicKey: 'a',
-    vapidPrivateKey: 'b',
-    OrganizationId: organization.id,
+      path: 'test-app',
+      vapidPublicKey: 'a',
+      vapidPrivateKey: 'b',
+      OrganizationId: organization.id,
+    });
+    member = await OrganizationMember.create({
+      OrganizationId: organization.id,
+      UserId: user.id,
+      role: PredefinedOrganizationRole.Owner,
+    });
+    authorizeStudio();
   });
-  member = await OrganizationMember.create({
-    OrganizationId: organization.id,
-    UserId: user.id,
-    role: PredefinedOrganizationRole.Owner,
+
+  afterAll(() => {
+    vi.useRealTimers();
   });
-  authorizeStudio();
-});
 
-afterAll(() => {
-  vi.useRealTimers();
-});
-
-describe('deleteAppServiceSecret', () => {
   it('should delete a single app service secret', async () => {
     await AppServiceSecret.create({
       name: 'Test service',

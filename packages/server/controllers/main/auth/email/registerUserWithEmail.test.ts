@@ -7,19 +7,16 @@ import { beforeAll, describe, expect, it, vi } from 'vitest';
 import { EmailAuthorization, User } from '../../../../models/index.js';
 import { setArgv } from '../../../../utils/argv.js';
 import { createServer } from '../../../../utils/createServer.js';
-import { useTestDatabase } from '../../../../utils/test/testSchema.js';
 
 let server: Koa;
 
-useTestDatabase(import.meta);
-
-beforeAll(async () => {
-  setArgv({ host: 'http://localhost', secret: 'test' });
-  server = await createServer();
-  await setTestApp(server);
-});
-
 describe('registerUserWithEmail', () => {
+  beforeAll(async () => {
+    setArgv({ host: 'http://localhost', secret: 'test' });
+    server = await createServer();
+    await setTestApp(server);
+  });
+
   it('should register valid email addresses', async () => {
     const spy = vi.spyOn(server.context.mailer, 'sendTranslatedEmail');
     const data = {

@@ -4,18 +4,15 @@ import { beforeAll, describe, expect, it, vi } from 'vitest';
 import { getDB } from '../../models/index.js';
 import { setArgv } from '../../utils/argv.js';
 import { createServer } from '../../utils/createServer.js';
-import { useTestDatabase } from '../../utils/test/testSchema.js';
-
-useTestDatabase(import.meta);
-
-beforeAll(async () => {
-  setArgv({ host: 'http://localhost', secret: 'test' });
-
-  const server = await createServer();
-  await setTestApp(server);
-});
 
 describe('checkHealth', () => {
+  beforeAll(async () => {
+    setArgv({ host: 'http://localhost', secret: 'test' });
+
+    const server = await createServer();
+    await setTestApp(server);
+  });
+
   it('should return status ok if all services are connected properly', async () => {
     const response = await request.get('/api/health');
 

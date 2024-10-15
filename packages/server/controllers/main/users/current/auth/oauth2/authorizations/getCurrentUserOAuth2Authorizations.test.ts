@@ -7,25 +7,22 @@ import { OAuthAuthorization, User } from '../../../../../../../models/index.js';
 import { setArgv } from '../../../../../../../utils/argv.js';
 import { createServer } from '../../../../../../../utils/createServer.js';
 import { authorizeStudio, createTestUser } from '../../../../../../../utils/test/authorization.js';
-import { useTestDatabase } from '../../../../../../../utils/test/testSchema.js';
 
 const mock = new MockAdapter(axios);
 let user: User;
 
-useTestDatabase(import.meta);
-
-beforeEach(async () => {
-  setArgv({ host: 'http://localhost', secret: 'test' });
-  const server = await createServer();
-  await setTestApp(server);
-  user = await createTestUser();
-});
-
-afterEach(() => {
-  mock.reset();
-});
-
 describe('getCurrentUserOAuth2Authorizations', () => {
+  beforeEach(async () => {
+    setArgv({ host: 'http://localhost', secret: 'test' });
+    const server = await createServer();
+    await setTestApp(server);
+    user = await createTestUser();
+  });
+
+  afterEach(() => {
+    mock.reset();
+  });
+
   it('should return the linked accounts of the logged in user', async () => {
     await OAuthAuthorization.create({
       email: '',

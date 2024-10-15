@@ -1,11 +1,16 @@
+import { randomUUID } from 'node:crypto';
+
 import { setFixtureBase, setLogLevel } from '@appsemble/node-utils';
 import axiosSnapshotSerializer, { setResponseTransformer } from 'jest-axios-snapshot';
 // @ts-expect-error We define this manually to make it compatible with Vite.
 // https://vitest.dev/guide/snapshot.html#image-snapshots
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { toMatchImageSnapshot } from 'jest-image-snapshot';
+import { type Sequelize } from 'sequelize';
 // eslint-disable-next-line import/no-extraneous-dependencies
-import { expect } from 'vitest';
+import { beforeAll, beforeEach, expect } from 'vitest';
+
+import { setupTestDatabase } from './utils/test/testSchema.js';
 
 interface CustomMatchers<R = unknown> {
   toMatchImageSnapshot: () => R;
@@ -22,6 +27,16 @@ setFixtureBase(import.meta);
 setLogLevel(0);
 
 expect.extend({ toMatchImageSnapshot });
+
+let testDB: Sequelize;
+
+beforeAll(async () => {
+  [testDB] = await setupTestDatabase(randomUUID().slice(0, 10));
+});
+
+beforeEach(async () => {
+  await testDB.sync({ force: true });
+});
 
 setResponseTransformer(
   ({

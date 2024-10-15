@@ -27,7 +27,6 @@ import {
   createTestUser,
 } from '../../../../utils/test/authorization.js';
 import { exampleApp } from '../../../../utils/test/exampleApp.js';
-import { useTestDatabase } from '../../../../utils/test/testSchema.js';
 
 let organization: Organization;
 let orgMember: OrganizationMember;
@@ -35,39 +34,37 @@ let user: User;
 let app: App;
 let originalSendNotification: typeof webpush.sendNotification;
 
-useTestDatabase(import.meta);
-
-beforeAll(async () => {
-  vi.useFakeTimers();
-  setArgv({ host: 'http://localhost', secret: 'test' });
-  const server = await createServer();
-  await setTestApp(server);
-  originalSendNotification = webpush.sendNotification;
-});
-
-beforeEach(async () => {
-  // https://github.com/vitest-dev/vitest/issues/1154#issuecomment-1138717832
-  vi.clearAllTimers();
-  vi.setSystemTime(0);
-  user = await createTestUser();
-  organization = await Organization.create({
-    id: 'testorganization',
-    name: 'Test Organization',
-  });
-  orgMember = await OrganizationMember.create({
-    UserId: user.id,
-    OrganizationId: organization.id,
-    role: PredefinedOrganizationRole.Maintainer,
-  });
-  app = await exampleApp(organization.id);
-});
-
-afterAll(() => {
-  webpush.sendNotification = originalSendNotification;
-  vi.useRealTimers();
-});
-
 describe('createAppResource', () => {
+  beforeAll(async () => {
+    vi.useFakeTimers();
+    setArgv({ host: 'http://localhost', secret: 'test' });
+    const server = await createServer();
+    await setTestApp(server);
+    originalSendNotification = webpush.sendNotification;
+  });
+
+  beforeEach(async () => {
+    // https://github.com/vitest-dev/vitest/issues/1154#issuecomment-1138717832
+    vi.clearAllTimers();
+    vi.setSystemTime(0);
+    user = await createTestUser();
+    organization = await Organization.create({
+      id: 'testorganization',
+      name: 'Test Organization',
+    });
+    orgMember = await OrganizationMember.create({
+      UserId: user.id,
+      OrganizationId: organization.id,
+      role: PredefinedOrganizationRole.Maintainer,
+    });
+    app = await exampleApp(organization.id);
+  });
+
+  afterAll(() => {
+    webpush.sendNotification = originalSendNotification;
+    vi.useRealTimers();
+  });
+
   it('should be able to create a new resource', async () => {
     const resource = { foo: 'bar' };
     authorizeStudio();

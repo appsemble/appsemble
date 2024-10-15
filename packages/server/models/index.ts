@@ -48,6 +48,7 @@ import { UserTraining } from './UserTraining.js';
 import { logSQL } from '../utils/sqlUtils.js';
 
 let db: Sequelize;
+const schemas: Record<string, Sequelize> = {};
 
 export interface InitDBParams {
   host?: string;
@@ -57,6 +58,7 @@ export interface InitDBParams {
   database?: string;
   uri?: string;
   ssl?: boolean;
+  schema?: string;
 }
 
 export {
@@ -111,11 +113,16 @@ export function initDB({
   host = process.env.NODE_ENV === 'production' ? 'postgres' : 'localhost',
   password,
   port,
+  schema,
   ssl = false,
   uri,
   username,
 }: InitDBParams): Sequelize {
-  if (db) {
+  if (schema && schemas[schema]) {
+    throw new Error(
+      'initDB() was called multiple times within the same context with the same schema.',
+    );
+  } else if (db) {
     throw new Error('initDB() was called multiple times within the same context.');
   }
 
@@ -168,6 +175,14 @@ export function initDB({
       UserTraining,
       TrainingBlock,
     ],
+    ...(schema
+      ? {
+          dialectOptions: {
+            prependSearchPath: true,
+          },
+          searchPath: schema,
+        }
+      : {}),
   };
   const args: [Options] | [string, Options] = uri
     ? [uri, options]
@@ -184,8 +199,13 @@ export function initDB({
           },
         }),
       ];
-  db = new Sequelize(...(args as [Options]));
 
+  if (schema) {
+    schemas[schema] = new Sequelize(...(args as [Options]));
+    return schemas[schema];
+  }
+
+  db = new Sequelize(...(args as [Options]));
   return db;
 }
 

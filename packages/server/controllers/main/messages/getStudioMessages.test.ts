@@ -5,13 +5,13 @@ import { setArgv } from '../../../index.js';
 import { type AppMessages } from '../../../models/index.js';
 import { createServer } from '../../../utils/createServer.js';
 
-beforeAll(async () => {
-  setArgv({ host: 'http://localhost', secret: 'test' });
-  const server = await createServer();
-  await setTestApp(server);
-});
-
 describe('getStudioMessages', () => {
+  beforeAll(async () => {
+    setArgv({ host: 'http://localhost', secret: 'test' });
+    const server = await createServer();
+    await setTestApp(server);
+  });
+
   it('should return all translations for a language', async () => {
     const result = await request.get<AppMessages>('/api/messages/nl');
     const keys = Object.keys(result.data.messages);

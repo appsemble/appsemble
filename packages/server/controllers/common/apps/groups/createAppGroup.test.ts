@@ -17,59 +17,56 @@ import {
   authorizeStudio,
   createTestUser,
 } from '../../../../utils/test/authorization.js';
-import { useTestDatabase } from '../../../../utils/test/testSchema.js';
 
 let organization: Organization;
 let app: App;
 let user: User;
 let server: Koa;
 
-useTestDatabase(import.meta);
-
-beforeAll(async () => {
-  setArgv({ host: 'http://localhost', secret: 'test' });
-  server = await createServer();
-  await setTestApp(server);
-});
-
-beforeEach(async () => {
-  user = await createTestUser();
-  organization = await Organization.create({
-    id: 'testorganization',
-    name: 'Test Organization',
+describe('createGroup', () => {
+  beforeAll(async () => {
+    setArgv({ host: 'http://localhost', secret: 'test' });
+    server = await createServer();
+    await setTestApp(server);
   });
-  app = await App.create({
-    definition: {
-      name: 'Test App',
-      defaultPage: 'Test Page',
-      security: {
-        groups: {
-          join: 'anyone',
-          invite: [],
-        },
-        default: {
-          role: 'Reader',
-          policy: 'everyone',
-        },
-        roles: {
-          Reader: {},
+
+  beforeEach(async () => {
+    user = await createTestUser();
+    organization = await Organization.create({
+      id: 'testorganization',
+      name: 'Test Organization',
+    });
+    app = await App.create({
+      definition: {
+        name: 'Test App',
+        defaultPage: 'Test Page',
+        security: {
+          groups: {
+            join: 'anyone',
+            invite: [],
+          },
+          default: {
+            role: 'Reader',
+            policy: 'everyone',
+          },
+          roles: {
+            Reader: {},
+          },
         },
       },
-    },
-    path: 'test-app',
-    vapidPublicKey: 'a',
-    vapidPrivateKey: 'b',
-    OrganizationId: organization.id,
+      path: 'test-app',
+      vapidPublicKey: 'a',
+      vapidPrivateKey: 'b',
+      OrganizationId: organization.id,
+    });
+
+    await OrganizationMember.create({
+      OrganizationId: organization.id,
+      UserId: user.id,
+      role: PredefinedOrganizationRole.Owner,
+    });
   });
 
-  await OrganizationMember.create({
-    OrganizationId: organization.id,
-    UserId: user.id,
-    role: PredefinedOrganizationRole.Owner,
-  });
-});
-
-describe('createGroup', () => {
   describe('app', () => {
     it('should create a group if the user has the proper role', async () => {
       await app.update({

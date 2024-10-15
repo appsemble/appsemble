@@ -13,34 +13,25 @@ import {
 import { setArgv } from '../../../../../../../utils/argv.js';
 import { createServer } from '../../../../../../../utils/createServer.js';
 import { authorizeStudio, createTestUser } from '../../../../../../../utils/test/authorization.js';
-import { useTestDatabase } from '../../../../../../../utils/test/testSchema.js';
 
 let user: User;
-
-useTestDatabase(import.meta);
-
-beforeAll(async () => {
-  vi.useFakeTimers();
-  setArgv({ host: 'http://localhost', secret: 'test' });
-  const server = await createServer();
-  await setTestApp(server);
-});
-
-beforeEach(async () => {
-  // https://github.com/vitest-dev/vitest/issues/1154#issuecomment-1138717832
-  vi.clearAllTimers();
-  vi.setSystemTime(new Date('2000-01-01T00:00:00Z'));
-  user = await createTestUser();
-});
-
-afterAll(() => {
-  vi.useRealTimers();
-});
 
 describe('verifyCurrentUserOAuth2AppConsent', () => {
   let organization: Organization;
 
+  beforeAll(async () => {
+    vi.useFakeTimers();
+    setArgv({ host: 'http://localhost', secret: 'test' });
+    const server = await createServer();
+    await setTestApp(server);
+  });
+
   beforeEach(async () => {
+    // https://github.com/vitest-dev/vitest/issues/1154#issuecomment-1138717832
+    vi.clearAllTimers();
+    vi.setSystemTime(new Date('2000-01-01T00:00:00Z'));
+    user = await createTestUser();
+
     organization = await Organization.create({
       id: 'org',
       name: 'Test Organization',
@@ -50,6 +41,10 @@ describe('verifyCurrentUserOAuth2AppConsent', () => {
       UserId: user.id,
       role: PredefinedOrganizationRole.Owner,
     });
+  });
+
+  afterAll(() => {
+    vi.useRealTimers();
   });
 
   it('should create an authorization code for the user and app on a default domain if the user has previously agreed', async () => {

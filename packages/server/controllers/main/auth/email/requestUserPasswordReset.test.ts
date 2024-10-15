@@ -6,19 +6,16 @@ import { beforeAll, describe, expect, it } from 'vitest';
 import { EmailAuthorization, ResetPasswordToken, User } from '../../../../models/index.js';
 import { setArgv } from '../../../../utils/argv.js';
 import { createServer } from '../../../../utils/createServer.js';
-import { useTestDatabase } from '../../../../utils/test/testSchema.js';
 
 let server: Koa;
 
-useTestDatabase(import.meta);
-
-beforeAll(async () => {
-  setArgv({ host: 'http://localhost', secret: 'test' });
-  server = await createServer();
-  await setTestApp(server);
-});
-
 describe('requestUserPasswordReset', () => {
+  beforeAll(async () => {
+    setArgv({ host: 'http://localhost', secret: 'test' });
+    server = await createServer();
+    await setTestApp(server);
+  });
+
   it('should create a password reset token', async () => {
     const data = { email: 'test@example.com', password: 'password', timezone: 'Europe/Amsterdam' };
     await request.post('/api/auth/email/register', data);

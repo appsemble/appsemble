@@ -7,9 +7,6 @@ import { beforeAll, beforeEach, expect, it, vi } from 'vitest';
 
 import { studioRouter } from './index.js';
 import { setArgv } from '../../utils/argv.js';
-import { useTestDatabase } from '../../utils/test/testSchema.js';
-
-useTestDatabase(import.meta);
 
 beforeAll(async () => {
   setArgv({ host: 'https://app.example:9999' });

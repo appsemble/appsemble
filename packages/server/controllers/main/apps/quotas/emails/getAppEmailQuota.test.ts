@@ -12,7 +12,6 @@ import {
 import { type Argv, setArgv } from '../../../../../utils/argv.js';
 import { createServer } from '../../../../../utils/createServer.js';
 import { authorizeStudio, createTestUser } from '../../../../../utils/test/authorization.js';
-import { useTestDatabase } from '../../../../../utils/test/testSchema.js';
 
 let app: App;
 let user: User;
@@ -24,54 +23,52 @@ const argv: Partial<Argv> = {
   dailyAppEmailQuota: 10,
 };
 
-useTestDatabase(import.meta);
-
-beforeAll(async () => {
-  vi.useFakeTimers();
-  setArgv(argv);
-  const server = await createServer();
-  await setTestApp(server);
-});
-
-beforeEach(async () => {
-  // https://github.com/vitest-dev/vitest/issues/1154#issuecomment-1138717832
-  vi.clearAllTimers();
-  vi.setSystemTime(0);
-
-  user = await createTestUser();
-  const organization = await Organization.create({
-    id: 'testorganization',
-    name: 'Test Organization',
+describe('getAppEmailQuota', () => {
+  beforeAll(async () => {
+    vi.useFakeTimers();
+    setArgv(argv);
+    const server = await createServer();
+    await setTestApp(server);
   });
-  app = await App.create({
-    definition: {
-      name: 'Test App',
-      defaultPage: 'Test Page',
-      security: {
-        default: {
-          role: 'Reader',
-          policy: 'everyone',
-        },
-        roles: {
-          Reader: {},
-          Admin: {},
+
+  beforeEach(async () => {
+    // https://github.com/vitest-dev/vitest/issues/1154#issuecomment-1138717832
+    vi.clearAllTimers();
+    vi.setSystemTime(0);
+
+    user = await createTestUser();
+    const organization = await Organization.create({
+      id: 'testorganization',
+      name: 'Test Organization',
+    });
+    app = await App.create({
+      definition: {
+        name: 'Test App',
+        defaultPage: 'Test Page',
+        security: {
+          default: {
+            role: 'Reader',
+            policy: 'everyone',
+          },
+          roles: {
+            Reader: {},
+            Admin: {},
+          },
         },
       },
-    },
-    path: 'test-app',
-    vapidPublicKey: 'a',
-    vapidPrivateKey: 'b',
-    OrganizationId: organization.id,
+      path: 'test-app',
+      vapidPublicKey: 'a',
+      vapidPrivateKey: 'b',
+      OrganizationId: organization.id,
+    });
+    await OrganizationMember.create({
+      OrganizationId: organization.id,
+      UserId: user.id,
+      role: PredefinedOrganizationRole.Owner,
+    });
+    authorizeStudio();
   });
-  await OrganizationMember.create({
-    OrganizationId: organization.id,
-    UserId: user.id,
-    role: PredefinedOrganizationRole.Owner,
-  });
-  authorizeStudio();
-});
 
-describe('getAppEmailQuota', () => {
   it('should get email quota for an app', async () => {
     await AppEmailQuotaLog.create({
       AppId: app.id,

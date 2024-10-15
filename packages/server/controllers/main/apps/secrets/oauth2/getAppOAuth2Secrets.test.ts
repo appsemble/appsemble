@@ -11,58 +11,55 @@ import {
 import { setArgv } from '../../../../../utils/argv.js';
 import { createServer } from '../../../../../utils/createServer.js';
 import { authorizeStudio, createTestUser } from '../../../../../utils/test/authorization.js';
-import { useTestDatabase } from '../../../../../utils/test/testSchema.js';
 
 let app: App;
 
-useTestDatabase(import.meta);
-
-beforeAll(async () => {
-  vi.useFakeTimers();
-  setArgv({ host: 'http://localhost', secret: 'test' });
-  const server = await createServer();
-  await setTestApp(server);
-});
-
-beforeEach(() => {
-  // https://github.com/vitest-dev/vitest/issues/1154#issuecomment-1138717832
-  vi.clearAllTimers();
-  vi.setSystemTime(0);
-});
-
-beforeEach(async () => {
-  const user = await createTestUser();
-  const organization = await Organization.create({
-    id: 'testorganization',
-    name: 'Test Organization',
-  });
-  app = await App.create({
-    OrganizationId: organization.id,
-    vapidPublicKey: '',
-    vapidPrivateKey: '',
-    definition: {
-      security: {
-        default: {
-          role: 'Test',
-          policy: 'everyone',
-        },
-        roles: { Test: {} },
-      },
-    },
-  });
-  await OrganizationMember.create({
-    OrganizationId: organization.id,
-    UserId: user.id,
-    role: PredefinedOrganizationRole.Owner,
-  });
-});
-
-// https://github.com/vitest-dev/vitest/issues/1154#issuecomment-1138717832
-afterAll(() => {
-  vi.useRealTimers();
-});
-
 describe('getAppOAuth2Secrets', () => {
+  beforeAll(async () => {
+    vi.useFakeTimers();
+    setArgv({ host: 'http://localhost', secret: 'test' });
+    const server = await createServer();
+    await setTestApp(server);
+  });
+
+  beforeEach(() => {
+    // https://github.com/vitest-dev/vitest/issues/1154#issuecomment-1138717832
+    vi.clearAllTimers();
+    vi.setSystemTime(0);
+  });
+
+  beforeEach(async () => {
+    const user = await createTestUser();
+    const organization = await Organization.create({
+      id: 'testorganization',
+      name: 'Test Organization',
+    });
+    app = await App.create({
+      OrganizationId: organization.id,
+      vapidPublicKey: '',
+      vapidPrivateKey: '',
+      definition: {
+        security: {
+          default: {
+            role: 'Test',
+            policy: 'everyone',
+          },
+          roles: { Test: {} },
+        },
+      },
+    });
+    await OrganizationMember.create({
+      OrganizationId: organization.id,
+      UserId: user.id,
+      role: PredefinedOrganizationRole.Owner,
+    });
+  });
+
+  // https://github.com/vitest-dev/vitest/issues/1154#issuecomment-1138717832
+  afterAll(() => {
+    vi.useRealTimers();
+  });
+
   it('should return OAuth2 secrets for an app', async () => {
     const secret = await AppOAuth2Secret.create({
       AppId: app.id,

@@ -97,7 +97,8 @@
     "@types/postcss-import": "^14.0.0",
     "@types/postcss-url": "^10.0.0",
     "concat-stream": "^2.0.0",
-    "vitest": "^1.0.0"
+    "vitest": "^1.0.0",
+    "sequelize": "^6.0.0"
   },
   "peerDependencies": {},
   "optionalDependencies": {

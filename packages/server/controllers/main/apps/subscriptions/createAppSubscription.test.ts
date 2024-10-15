@@ -12,7 +12,6 @@ import {
 import { setArgv } from '../../../../utils/argv.js';
 import { createServer } from '../../../../utils/createServer.js';
 import { authorizeStudio, createTestUser } from '../../../../utils/test/authorization.js';
-import { useTestDatabase } from '../../../../utils/test/testSchema.js';
 
 let organization: Organization;
 let user: User;
@@ -60,30 +59,28 @@ const defaultApp = (OrganizationId: string): Promise<App> =>
     OrganizationId,
   });
 
-useTestDatabase(import.meta);
-
-beforeAll(async () => {
-  setArgv({ host: 'http://localhost', secret: 'test' });
-  const server = await createServer({});
-  await setTestApp(server);
-});
-
-beforeEach(async () => {
-  vi.useFakeTimers();
-
-  user = await createTestUser();
-  organization = await Organization.create({
-    id: 'testorganization',
-    name: 'Test Organization',
-  });
-  await OrganizationMember.create({
-    OrganizationId: organization.id,
-    UserId: user.id,
-    role: PredefinedOrganizationRole.Owner,
-  });
-});
-
 describe('createAppSubscription', () => {
+  beforeAll(async () => {
+    setArgv({ host: 'http://localhost', secret: 'test' });
+    const server = await createServer({});
+    await setTestApp(server);
+  });
+
+  beforeEach(async () => {
+    vi.useFakeTimers();
+
+    user = await createTestUser();
+    organization = await Organization.create({
+      id: 'testorganization',
+      name: 'Test Organization',
+    });
+    await OrganizationMember.create({
+      OrganizationId: organization.id,
+      UserId: user.id,
+      role: PredefinedOrganizationRole.Owner,
+    });
+  });
+
   it('should subscribe to apps', async () => {
     const app = await defaultApp(organization.id);
 

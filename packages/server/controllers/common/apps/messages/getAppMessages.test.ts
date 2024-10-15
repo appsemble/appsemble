@@ -19,44 +19,41 @@ import {
   authorizeStudio,
   createTestUser,
 } from '../../../../utils/test/authorization.js';
-import { useTestDatabase } from '../../../../utils/test/testSchema.js';
 
 let app: App;
 let user: User;
 
-useTestDatabase(import.meta);
-
-beforeAll(async () => {
-  setArgv({ host: 'http://localhost', secret: 'test' });
-  const server = await createServer();
-  await setTestApp(server);
-});
-
-beforeEach(async () => {
-  user = await createTestUser();
-  const organization = await Organization.create({
-    id: 'testorganization',
-    name: 'Test Organization',
-  });
-  await OrganizationMember.create({
-    OrganizationId: organization.id,
-    UserId: user.id,
-    role: 'Owner',
-  });
-  app = await App.create({
-    path: 'test-app',
-    vapidPublicKey: 'a',
-    vapidPrivateKey: 'b',
-    OrganizationId: 'testorganization',
-    definition: {
-      name: 'Test App',
-      description: 'Description',
-      pages: [],
-    },
-  });
-});
-
 describe('getAppMessages', () => {
+  beforeAll(async () => {
+    setArgv({ host: 'http://localhost', secret: 'test' });
+    const server = await createServer();
+    await setTestApp(server);
+  });
+
+  beforeEach(async () => {
+    user = await createTestUser();
+    const organization = await Organization.create({
+      id: 'testorganization',
+      name: 'Test Organization',
+    });
+    await OrganizationMember.create({
+      OrganizationId: organization.id,
+      UserId: user.id,
+      role: 'Owner',
+    });
+    app = await App.create({
+      path: 'test-app',
+      vapidPublicKey: 'a',
+      vapidPrivateKey: 'b',
+      OrganizationId: 'testorganization',
+      definition: {
+        name: 'Test App',
+        description: 'Description',
+        pages: [],
+      },
+    });
+  });
+
   it('should return the messages for an existing language', async () => {
     authorizeStudio();
     await request.post(`/api/apps/${app.id}/messages`, {

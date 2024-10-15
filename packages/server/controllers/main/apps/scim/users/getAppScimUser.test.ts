@@ -14,45 +14,43 @@ import { argv } from '../../../../../utils/argv.js';
 import { createServer } from '../../../../../utils/createServer.js';
 import { encrypt } from '../../../../../utils/crypto.js';
 import { authorizeScim } from '../../../../../utils/test/authorization.js';
-import { useTestDatabase } from '../../../../../utils/test/testSchema.js';
 
 let app: App;
 
-useTestDatabase(import.meta);
-vi.useFakeTimers().setSystemTime(new Date('2000-01-01'));
+describe('getAppScimUser', () => {
+  vi.useFakeTimers().setSystemTime(new Date('2000-01-01'));
 
-beforeAll(async () => {
-  setArgv({ host: 'http://localhost', secret: 'test', aesSecret: 'test' });
-  const server = await createServer();
-  request.defaults.headers['content-type'] = 'application/scim+json';
-  await setTestApp(server);
-});
+  beforeAll(async () => {
+    setArgv({ host: 'http://localhost', secret: 'test', aesSecret: 'test' });
+    const server = await createServer();
+    request.defaults.headers['content-type'] = 'application/scim+json';
+    await setTestApp(server);
+  });
 
-beforeEach(async () => {
-  const organization = await Organization.create({ id: 'testorganization' });
-  const scimToken = 'test';
-  app = await App.create({
-    definition: {
-      security: {
-        default: {
-          role: 'User',
-          policy: 'everyone',
-        },
-        roles: {
-          User: { description: 'Default SCIM User for testing.' },
+  beforeEach(async () => {
+    const organization = await Organization.create({ id: 'testorganization' });
+    const scimToken = 'test';
+    app = await App.create({
+      definition: {
+        security: {
+          default: {
+            role: 'User',
+            policy: 'everyone',
+          },
+          roles: {
+            User: { description: 'Default SCIM User for testing.' },
+          },
         },
       },
-    },
-    vapidPublicKey: 'a',
-    vapidPrivateKey: 'b',
-    OrganizationId: organization.id,
-    scimEnabled: true,
-    scimToken: encrypt(scimToken, argv.aesSecret),
+      vapidPublicKey: 'a',
+      vapidPrivateKey: 'b',
+      OrganizationId: organization.id,
+      scimEnabled: true,
+      scimToken: encrypt(scimToken, argv.aesSecret),
+    });
+    authorizeScim(scimToken);
   });
-  authorizeScim(scimToken);
-});
 
-describe('getAppScimUser', () => {
   it.todo('should return a SCIM user', async () => {
     const user = await User.create({ timezone: 'Europe/Amsterdam' });
     const member = await AppMember.create({

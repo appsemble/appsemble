@@ -7,35 +7,33 @@ import { argv } from '../../../../../utils/argv.js';
 import { createServer } from '../../../../../utils/createServer.js';
 import { encrypt } from '../../../../../utils/crypto.js';
 import { authorizeScim } from '../../../../../utils/test/authorization.js';
-import { useTestDatabase } from '../../../../../utils/test/testSchema.js';
 
 let app: App;
 
-useTestDatabase(import.meta);
-vi.useFakeTimers().setSystemTime(new Date('2000-01-01'));
-
-beforeAll(async () => {
-  setArgv({ host: 'http://localhost', secret: 'test', aesSecret: 'test' });
-  const server = await createServer();
-  request.defaults.headers['content-type'] = 'application/scim+json';
-  await setTestApp(server);
-});
-
-beforeEach(async () => {
-  const organization = await Organization.create({ id: 'testorganization' });
-  const scimToken = 'test';
-  app = await App.create({
-    definition: {},
-    vapidPublicKey: 'a',
-    vapidPrivateKey: 'b',
-    OrganizationId: organization.id,
-    scimEnabled: true,
-    scimToken: encrypt(scimToken, argv.aesSecret),
-  });
-  authorizeScim(scimToken);
-});
-
 describe('getAppScimServiceProviderConfig', () => {
+  vi.useFakeTimers().setSystemTime(new Date('2000-01-01'));
+
+  beforeAll(async () => {
+    setArgv({ host: 'http://localhost', secret: 'test', aesSecret: 'test' });
+    const server = await createServer();
+    request.defaults.headers['content-type'] = 'application/scim+json';
+    await setTestApp(server);
+  });
+
+  beforeEach(async () => {
+    const organization = await Organization.create({ id: 'testorganization' });
+    const scimToken = 'test';
+    app = await App.create({
+      definition: {},
+      vapidPublicKey: 'a',
+      vapidPrivateKey: 'b',
+      OrganizationId: organization.id,
+      scimEnabled: true,
+      scimToken: encrypt(scimToken, argv.aesSecret),
+    });
+    authorizeScim(scimToken);
+  });
+
   it.todo('should fetch all SCIM schemas for an app', async () => {
     const response = await request.get(`/api/apps/${app.id}/scim/ServiceProviderConfig`);
 

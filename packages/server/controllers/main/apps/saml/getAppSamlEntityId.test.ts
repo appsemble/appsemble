@@ -6,52 +6,50 @@ import { App, AppSamlSecret, Organization } from '../../../../models/index.js';
 import { setArgv } from '../../../../utils/argv.js';
 import { createServer } from '../../../../utils/createServer.js';
 import { createTestUser } from '../../../../utils/test/authorization.js';
-import { useTestDatabase } from '../../../../utils/test/testSchema.js';
 
 let app: App;
 let secret: AppSamlSecret;
-useTestDatabase(import.meta);
-
-beforeAll(async () => {
-  vi.useFakeTimers();
-  setArgv({ host: 'http://localhost', secret: 'test' });
-  const server = await createServer();
-  await setTestApp(server);
-});
-
-beforeEach(async () => {
-  // https://github.com/vitest-dev/vitest/issues/1154#issuecomment-1138717832
-  vi.clearAllTimers();
-  vi.setSystemTime(0);
-  await createTestUser();
-  const organization = await Organization.create({
-    id: 'testorganization',
-    name: 'Test Organization',
-  });
-  app = await App.create({
-    OrganizationId: organization.id,
-    vapidPublicKey: '',
-    vapidPrivateKey: '',
-    definition: {},
-  });
-  secret = await AppSamlSecret.create({
-    AppId: app.id,
-    entityId: 'https://example.com/saml/metadata.xml',
-    ssoUrl: 'https://example.com/saml/login',
-    idpCertificate: await readFixture('saml/idp-certificate.pem', 'utf8'),
-    icon: '',
-    name: '',
-    spCertificate: await readFixture('saml/sp-certificate.pem', 'utf8'),
-    spPrivateKey: await readFixture('saml/sp-private-key.pem', 'utf8'),
-    spPublicKey: await readFixture('saml/sp-public-key.pem', 'utf8'),
-  });
-});
-
-afterAll(() => {
-  vi.useRealTimers();
-});
 
 describe('getEntityId', () => {
+  beforeAll(async () => {
+    vi.useFakeTimers();
+    setArgv({ host: 'http://localhost', secret: 'test' });
+    const server = await createServer();
+    await setTestApp(server);
+  });
+
+  beforeEach(async () => {
+    // https://github.com/vitest-dev/vitest/issues/1154#issuecomment-1138717832
+    vi.clearAllTimers();
+    vi.setSystemTime(0);
+    await createTestUser();
+    const organization = await Organization.create({
+      id: 'testorganization',
+      name: 'Test Organization',
+    });
+    app = await App.create({
+      OrganizationId: organization.id,
+      vapidPublicKey: '',
+      vapidPrivateKey: '',
+      definition: {},
+    });
+    secret = await AppSamlSecret.create({
+      AppId: app.id,
+      entityId: 'https://example.com/saml/metadata.xml',
+      ssoUrl: 'https://example.com/saml/login',
+      idpCertificate: await readFixture('saml/idp-certificate.pem', 'utf8'),
+      icon: '',
+      name: '',
+      spCertificate: await readFixture('saml/sp-certificate.pem', 'utf8'),
+      spPrivateKey: await readFixture('saml/sp-private-key.pem', 'utf8'),
+      spPublicKey: await readFixture('saml/sp-public-key.pem', 'utf8'),
+    });
+  });
+
+  afterAll(() => {
+    vi.useRealTimers();
+  });
+
   it('should handle if no secret can be found', async () => {
     const response = await request.get('/api/apps/23/saml/93/metadata.xml');
 
