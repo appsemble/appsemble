@@ -138,7 +138,7 @@ export enum OrganizationPermission {
   DeleteBlocks,
 
   /**
-   * The permission to create apps.
+   * The permission to create apps in an organization
    */
   CreateApps,
 
@@ -148,12 +148,12 @@ export enum OrganizationPermission {
   QueryApps,
 
   /**
-   * The permission to update apps.
+   * The permission to update apps in an organization.
    */
   UpdateApps,
 
   /**
-   * The permission to delete apps.
+   * The permission to delete apps in an organization.
    */
   DeleteApps,
 
@@ -308,22 +308,22 @@ export enum OrganizationPermission {
   DeleteOrganizations,
 
   /**
-   * The permission to create organization invites,
+   * The permission to create organization invites.
    */
   CreateOrganizationInvites,
 
   /**
-   * The permission to query organization invites,
+   * The permission to query organization invites.
    */
   QueryOrganizationInvites,
 
   /**
-   * The permission to update organization invites,
+   * The permission to update organization invites.
    */
   UpdateOrganizationInvites,
 
   /**
-   * The permission to delete organization invites,
+   * The permission to delete organization invites.
    */
   DeleteOrganizationInvites,
 

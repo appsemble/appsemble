@@ -9,113 +9,280 @@ export const messages = defineMessages({
     id: 'studio.rgudrj',
     defaultMessage: 'Browse the different organizations who are using Appsemble',
   },
-  CreateApps: {
-    id: 'studio.na98ss',
-    defaultMessage: 'The permission to create new apps or copy them from templates.',
-  },
-  CreateCollections: {
-    id: 'studio.2Hd0c4',
-    defaultMessage: 'The permission to create new app collections.',
-  },
-  DeleteApps: {
-    id: 'studio.jNtX+C',
-    defaultMessage: 'The permission to delete apps.',
-  },
-  DeleteCollections: {
-    id: 'studio.9TomUe',
-    defaultMessage: 'The permission to delete app collections.',
-  },
-  DeleteOrganization: {
-    id: 'studio.gXv9ZK',
-    defaultMessage: 'The permission to delete an organization.',
-  },
-  EditAppMessages: {
-    id: 'studio.773Bdo',
-    defaultMessage: 'The permission to edit the app’s translations.',
-  },
-  EditAppSettings: {
-    id: 'studio.84sYlI',
-    defaultMessage: 'The permission to edit the app’s settings.',
-  },
-  EditApps: {
-    id: 'studio.1qiYs4',
-    defaultMessage: 'The permission to edit the app definition.',
-  },
-  EditCollections: {
-    id: 'studio.xZ6x8f',
-    defaultMessage: 'The permission to edit app collections.',
-  },
-  EditOrganization: {
-    id: 'studio.K0PWHi',
-    defaultMessage: 'The permission to edit the name and logo of an organization.',
-  },
-  InviteMember: {
-    id: 'studio.4SSVOk',
-    defaultMessage:
-      'The permission to invite new members into an organization, removing existing invites, and resending invites.',
-  },
-  ManageAssets: {
-    id: 'studio.K3Oxal',
-    defaultMessage: 'The permission to create and delete assets.',
-  },
-  ManageMembers: {
-    id: 'studio./BTTpN',
-    defaultMessage: 'The permission to remove organization members.',
-  },
-  ManageResources: {
-    id: 'studio.8B+epK',
-    defaultMessage: 'The permission to create, edit, and delete resources.',
-  },
-  ManageRoles: {
-    id: 'studio.o+nqjA',
-    defaultMessage: 'The permission to change the roles of organization members.',
-  },
-  ManageGroups: {
-    id: 'studio.34gsJP',
-    defaultMessage: 'The permission to create and delete groups and manage its members.',
-  },
   PublishBlocks: {
     id: 'studio.Z8Fm9O',
     defaultMessage: 'The permission to publish blocks for an organization.',
   },
   DeleteBlocks: {
-    id: 'studio.wz8voK',
-    defaultMessage: 'The permission to delete block versions.',
+    id: 'studio.sMvj26',
+    defaultMessage: 'The permission to delete blocks for an organization.',
   },
-  PushNotifications: {
-    id: 'studio.+7+1T0',
-    defaultMessage: 'The permission to send manual push notifications for an app.',
+  CreateApps: {
+    id: 'studio.FNNM8q',
+    defaultMessage: 'The permission to create apps in an organization.',
   },
-  ReadAssets: {
-    id: 'studio.GUT+Tf',
-    defaultMessage: 'The permission to read assets.',
-  },
-  ReadResources: {
-    id: 'studio.Mz+9Xq',
-    defaultMessage: 'The permission to read resources.',
-  },
-  ViewApps: {
+  QueryApps: {
     id: 'studio.uzN4CO',
     defaultMessage: 'The permission to view private apps of an organization.',
   },
-  ViewMembers: {
+  UpdateApps: {
+    id: 'studio.5mGXnp',
+    defaultMessage: 'The permission to update apps in an organization.',
+  },
+  DeleteApps: {
+    id: 'studio.lCKQlO',
+    defaultMessage: 'The permission to delete apps in an organization.',
+  },
+  QueryAppMessages: {
+    id: 'studio.Ld4hwc',
+    defaultMessage: 'The permission to query app translations.',
+  },
+  CreateAppMessages: {
+    id: 'studio.g7HwgE',
+    defaultMessage: 'The permission to create app translations.',
+  },
+  UpdateAppMessages: {
+    id: 'studio.4NDcCC',
+    defaultMessage: 'The permission to update app translations.',
+  },
+  DeleteAppMessages: {
+    id: 'studio.6Ev9Ll',
+    defaultMessage: 'The permission to delete app translations.',
+  },
+  ReadAppSettings: {
+    id: 'studio.fQLSXx',
+    defaultMessage: 'The permission to read app settings.',
+  },
+  UpdateAppSettings: {
+    id: 'studio.bthoYl',
+    defaultMessage: 'The permission to update app settings.',
+  },
+  CreateAppScreenshots: {
+    id: 'studio.RCOsOL',
+    defaultMessage: 'The permission to create app screenshots.',
+  },
+  DeleteAppScreenshots: {
+    id: 'studio.nS1qCT',
+    defaultMessage: 'The permission to delete app screenshots.',
+  },
+  CreateAppReadmes: {
+    id: 'studio.GJO0Ao',
+    defaultMessage: 'The permission to create app readmes.',
+  },
+  DeleteAppReadmes: {
+    id: 'studio.76J8Yx',
+    defaultMessage: 'The permission to delete app readmes.',
+  },
+  CreateAppSecrets: {
+    id: 'studio.vqCIsd',
+    defaultMessage: 'The permission to create app secrets.',
+  },
+  QueryAppSecrets: {
+    id: 'studio.RcZRz+',
+    defaultMessage: 'The permission to query app secrets.',
+  },
+  UpdateAppSecrets: {
+    id: 'studio.BG373v',
+    defaultMessage: 'The permission to update app secrets.',
+  },
+  DeleteAppSecrets: {
+    id: 'studio.6spWOs',
+    defaultMessage: 'The permission to delete app secrets.',
+  },
+  QueryAppVariables: {
+    id: 'studio.+xONLL',
+    defaultMessage: 'The permission to query app variables.',
+  },
+  CreateAppVariables: {
+    id: 'studio.MQ17NC',
+    defaultMessage: 'The permission to create app variables.',
+  },
+  UpdateAppVariables: {
+    id: 'studio.PEMz2L',
+    defaultMessage: 'The permission to update app variables.',
+  },
+  DeleteAppVariables: {
+    id: 'studio.9Z805R',
+    defaultMessage: 'The permission to delete app variables.',
+  },
+  CreateAppResources: {
+    id: 'studio.BPiNPW',
+    defaultMessage: 'The permission to create app resources.',
+  },
+  QueryAppResources: {
+    id: 'studio.rjAlQ4',
+    defaultMessage: 'The permission to query app resources.',
+  },
+  GetAppResources: {
+    id: 'studio.+Fvztk',
+    defaultMessage: 'The permission to get app resources.',
+  },
+  UpdateAppResources: {
+    id: 'studio.zR3D4p',
+    defaultMessage: 'The permission to update app resources.',
+  },
+  PatchAppResources: {
+    id: 'studio.ZRF/CV',
+    defaultMessage: 'The permission to patch app resources.',
+  },
+  DeleteAppResources: {
+    id: 'studio.zHUl3w',
+    defaultMessage: 'The permission to delete app resources.',
+  },
+  CreateAppAssets: {
+    id: 'studio.+xp9k4',
+    defaultMessage: 'The permission to create app assets.',
+  },
+  QueryAppAssets: {
+    id: 'studio.HezXr1',
+    defaultMessage: 'The permission to query app assets.',
+  },
+  UpdateAppAssets: {
+    id: 'studio.cvsZgz',
+    defaultMessage: 'The permission to update app assets.',
+  },
+  DeleteAppAssets: {
+    id: 'studio.QQcj9y',
+    defaultMessage: 'The permission to delete app assets.',
+  },
+  UpdateOrganizations: {
+    id: 'studio./uHCud',
+    defaultMessage: 'The permission to update organizations.',
+  },
+  DeleteOrganizations: {
+    id: 'studio.kfTLvf',
+    defaultMessage: 'The permission to delete organizations.',
+  },
+  CreateOrganizationInvites: {
+    id: 'studio.me/6nr',
+    defaultMessage: 'The permission to create organization invites.',
+  },
+  QueryOrganizationInvites: {
+    id: 'studio.zeLyJL',
+    defaultMessage: 'The permission to query organization invites.',
+  },
+  UpdateOrganizationInvites: {
+    id: 'studio.O/xXEL',
+    defaultMessage: 'The permission to update organization invites.',
+  },
+  DeleteOrganizationInvites: {
+    id: 'studio.gUZ9Rb',
+    defaultMessage: 'The permission to delete organization invites.',
+  },
+  QueryOrganizationMembers: {
     id: 'studio.BzTzOo',
     defaultMessage: 'The permission to view the list of members in an organization.',
   },
-  CreateAppAccounts: {
-    defaultMessage: 'The permission to create app accounts.',
-    id: 'studio.Jo/vHM',
+  RemoveOrganizationMembers: {
+    id: 'studio./BTTpN',
+    defaultMessage: 'The permission to remove organization members.',
   },
-  ReadAppAccounts: {
-    defaultMessage: 'The permission to read app accounts.',
-    id: 'studio.3aechi',
+  UpdateOrganizationMemberRoles: {
+    id: 'studio.o+nqjA',
+    defaultMessage: 'The permission to change the roles of organization members.',
   },
-  DeleteAppAccounts: {
-    defaultMessage: 'The permission to delete app accounts.',
-    id: 'studio.+CISCb',
+  CreateAppInvites: {
+    id: 'studio.32vEnD',
+    defaultMessage: 'The permission to create app invites.',
   },
-  EditAppAccounts: {
-    defaultMessage: 'The permission to edit app accounts.',
-    id: 'studio.jcL6sQ',
+  QueryAppInvites: {
+    id: 'studio.yMyg2P',
+    defaultMessage: 'The permission to query app invites.',
+  },
+  QueryAppMembers: {
+    id: 'studio.DZWIKx',
+    defaultMessage: 'The permission to query app members.',
+  },
+  DeleteAppMembers: {
+    id: 'studio.VWyf7F',
+    defaultMessage: 'The permission to delete app members.',
+  },
+  UpdateAppMemberRoles: {
+    id: 'studio.huHOtm',
+    defaultMessage: 'The permission to update the role of app members.',
+  },
+  PatchAppMemberProperties: {
+    id: 'studio.nbL8T0',
+    defaultMessage: 'The permission to patch the properties of app members.',
+  },
+  QueryGroups: {
+    id: 'studio.cGDbtk',
+    defaultMessage: 'The permission to query app groups.',
+  },
+  CreateGroups: {
+    id: 'studio.1d0Fca',
+    defaultMessage: 'The permission to create app groups.',
+  },
+  UpdateGroups: {
+    id: 'studio.2TrzH5',
+    defaultMessage: 'The permission to update app groups.',
+  },
+  DeleteGroups: {
+    id: 'studio.4owxuc',
+    defaultMessage: 'The permission to delete app groups.',
+  },
+  CreateGroupInvites: {
+    id: 'studio.utlWEf',
+    defaultMessage: 'The permission to create group invites.',
+  },
+  QueryGroupInvites: {
+    id: 'studio.e1uw1Q',
+    defaultMessage: 'The permission to query group invites.',
+  },
+  QueryGroupMembers: {
+    id: 'studio.YB73Dp',
+    defaultMessage: 'The permission to query group members.',
+  },
+  RemoveGroupMembers: {
+    id: 'studio.FUKP1D',
+    defaultMessage: 'The permission to remove group members.',
+  },
+  UpdateGroupMemberRoles: {
+    id: 'studio.VYTzq3',
+    defaultMessage: 'The permission to update group member roles.',
+  },
+  QueryAppSnapshots: {
+    id: 'studio.LbII3k',
+    defaultMessage: 'The permission to query app snapshots.',
+  },
+  CreateAppCollections: {
+    id: 'studio.UBNfTT',
+    defaultMessage: 'The permission to create app collections.',
+  },
+  DeleteAppCollections: {
+    id: 'studio.9TomUe',
+    defaultMessage: 'The permission to delete app collections.',
+  },
+  UpdateAppCollections: {
+    id: 'studio.JBnV+S',
+    defaultMessage: 'The permission to update app collections.',
+  },
+  PushAppNotifications: {
+    id: 'studio.+7+1T0',
+    defaultMessage: 'The permission to send manual push notifications for an app.',
+  },
+  CreateTrainings: {
+    id: 'studio.puSpQ5',
+    defaultMessage: 'The permission to create trainings.',
+  },
+  UpdateTrainings: {
+    id: 'studio.zcQwQW',
+    defaultMessage: 'The permission to update trainings.',
+  },
+  DeleteTrainings: {
+    id: 'studio.D4iR4a',
+    defaultMessage: 'The permission to delete trainings.',
+  },
+  CreateTrainingBlocks: {
+    id: 'studio.0Lp17s',
+    defaultMessage: 'The permission to create training blocks.',
+  },
+  UpdateTrainingBlocks: {
+    id: 'studio.0Lp17s',
+    defaultMessage: 'The permission to create training blocks.',
+  },
+  DeleteTrainingBlocks: {
+    id: 'studio.0Lp17s',
+    defaultMessage: 'The permission to create training blocks.',
   },
 });
