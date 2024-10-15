@@ -976,6 +976,8 @@ pages:
             * ## app.member
       - type: html
         version: *block-version
+        roles:
+          - User
         parameters:
           placeholders:
             sub: { app.member: sub }
