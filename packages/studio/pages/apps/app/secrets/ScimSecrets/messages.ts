@@ -13,7 +13,7 @@ export const messages = defineMessages({
   enabledLabel: { id: 'studio.3p36Vm', defaultMessage: 'Enable SCIM' },
   enabledHelp: { id: 'studio.dXuEkZ', defaultMessage: 'Check to enable SCIM for this app' },
   tenantUrlLabel: { id: 'studio.cB7Zdd', defaultMessage: 'Tenant URL' },
-  tenantUrlHelp: { id: 'studio.LQiBIn', defaultMessage: 'The SCIM tenant URL ' },
+  tenantUrlHelp: { id: 'studio.YJjxNi', defaultMessage: 'The SCIM tenant URL' },
   tenantUrlCopySuccess: { id: 'studio.IsDF9d', defaultMessage: 'Copied tenant URL to clipboard' },
   tenantUrlCopyError: { id: 'studio.NBoEQT', defaultMessage: 'Failed to copy tenant URL' },
   tokenLabel: { id: 'studio.sEJCEI', defaultMessage: 'SCIM token' },

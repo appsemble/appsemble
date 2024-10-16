@@ -38,8 +38,8 @@ export const messages = defineMessages({
     defaultMessage: 'Select a file',
   },
   pictureDescription: {
-    id: 'app.KGZ3lm',
-    defaultMessage: 'The public picture to use for your profile.',
+    id: 'app.FGdxVQ',
+    defaultMessage: 'The picture to use for your public profile.',
   },
   camera: {
     id: 'app.J6ywQ3',
