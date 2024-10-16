@@ -8,7 +8,7 @@ export { handler as start } from './commands/start.js';
 export { handler as migrate } from './commands/migrate.js';
 export { handler as migrateAppDefinitions } from './commands/migrateAppDefinitions.js';
 export { handler as cleanupResourcesAndAssets } from './commands/cleanupResourcesAndAssets.js';
-export { handler as cleanupDemoUsers } from './commands/cleanupDemoUsers.js';
+export { handler as cleanupDemoAppMembers } from './commands/cleanupDemoAppMembers.js';
 export { handler as checkMigrations } from './commands/checkMigrations.js';
 export { handler as checkDownMigrations } from './commands/checkDownMigrations.js';
 export { handler as runCronJobs } from './commands/runCronJobs.js';
