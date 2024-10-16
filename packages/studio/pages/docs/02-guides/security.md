@@ -306,7 +306,7 @@ be hidden from the app’s menu.
 - name: Example Page Unique 1
   blocks:
     - type: action-button
-      version: 0.30.1
+      version: 0.30.2
       parameters:
         icon: home
 ```
@@ -318,7 +318,7 @@ be hidden from the app’s menu.
   roles: []
   blocks:
     - type: action-button
-      version: 0.30.1
+      version: 0.30.2
       parameters:
         icon: home
 ```
@@ -331,7 +331,7 @@ be hidden from the app’s menu.
     - '$guest'
   blocks:
     - type: action-button
-      version: 0.30.1
+      version: 0.30.2
       parameters:
         icon: home
 ```
@@ -345,7 +345,7 @@ be hidden from the app’s menu.
     - Reader
   blocks:
     - type: action-button
-      version: 0.30.1
+      version: 0.30.2
       parameters:
         icon: home
 ```
@@ -360,7 +360,7 @@ pages:
       - Admin
     blocks:
       - type: action-button
-        version: 0.30.1
+        version: 0.30.2
         parameters:
           icon: home
   - name: Example Page 4
@@ -368,7 +368,7 @@ pages:
       - Reader
     blocks:
       - type: action-button
-        version: 0.30.1
+        version: 0.30.2
         parameters:
           icon: arrow-left
 ```
@@ -389,11 +389,11 @@ members such as a button to create a new app for the administrators of a blog.
 - name: Example Page Unique 6
   blocks:
     - type: action-button
-      version: 0.30.1
+      version: 0.30.2
       parameters:
         icon: home
     - type: table
-      version: 0.30.1
+      version: 0.30.2
       parameters:
         fields:
           - value: { prop: firstName }

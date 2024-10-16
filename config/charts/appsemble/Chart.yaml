@@ -1,7 +1,7 @@
 apiVersion: v2
 name: appsemble
-version: 0.30.1
-appVersion: 0.30.1
+version: 0.30.2
+appVersion: 0.30.2
 kubeVersion: '>=1.21.0'
 type: application
 description: The open source low-code app building platform
@@ -27,8 +27,10 @@ dependencies:
     repository: https://jouve.github.io/charts
     condition: mailpit.enabled
 annotations:
-  artifacthub.io/changes: |
-    []
+  artifacthub.io/changes: >
+    - kind: added
+      description: "App: Add support for badgeCount property on a page that shows a
+        counter in the side menu or bottom navigation."
   artifacthub.io/license: LGPL-3.0-only
   artifacthub.io/links: |
     - name: Appsemble Studio

@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.30.2](https://gitlab.com/appsemble/appsemble/-/releases/0.30.2)] - 2024-10-16
+
+### Added
+
+- App: Add support for `badgeCount` property on a page that shows a counter in the side menu or
+  bottom navigation.
+
 ## \[[0.30.1](https://gitlab.com/appsemble/appsemble/-/releases/0.30.1)] - 2024-10-08
 
 ## \[[0.30.0](https://gitlab.com/appsemble/appsemble/-/releases/0.30.0)] - 2024-10-08
