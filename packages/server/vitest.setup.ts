@@ -31,11 +31,12 @@ expect.extend({ toMatchImageSnapshot });
 let testDB: Sequelize;
 
 beforeAll(async () => {
-  [testDB] = await setupTestDatabase(randomUUID().slice(0, 10));
+  [testDB] = await setupTestDatabase(randomUUID());
+  await testDB.sync();
 });
 
 beforeEach(async () => {
-  await testDB.sync({ force: true });
+  await testDB.truncate({ truncate: true, cascade: true, force: true, restartIdentity: true });
 });
 
 setResponseTransformer(

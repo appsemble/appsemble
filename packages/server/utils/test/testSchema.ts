@@ -1,5 +1,3 @@
-import { createHash } from 'node:crypto';
-
 import { Sequelize } from 'sequelize';
 
 import { initDB, type InitDBParams } from '../../models/index.js';
@@ -11,10 +9,6 @@ const rootDB = new Sequelize(CONNECTION, {
   logging: false,
   retry: { max: 3 },
 });
-
-export function getTestNameHash(name: string): string {
-  return createHash('sha256').update(name).digest('hex').slice(0, 10);
-}
 
 function getUniqueName(name: string): string {
   return rootDB
