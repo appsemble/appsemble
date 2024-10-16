@@ -216,8 +216,6 @@ test node 18:
   interruptible: true
   services:
     - postgres:15
-  tags:
-    - test-runner
   variables:
     POSTGRES_DB: testAppsemble
     POSTGRES_USER: admin
@@ -228,7 +226,7 @@ test node 18:
   script:
     - npm ci
     - npm test -- --no-file-parallelism --coverage --shard=$CI_NODE_INDEX/$CI_NODE_TOTAL
-  parallel: 5
+  parallel: 9
   artifacts:
     paths:
       - coverage
