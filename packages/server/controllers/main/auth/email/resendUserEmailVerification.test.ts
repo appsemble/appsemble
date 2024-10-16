@@ -7,19 +7,16 @@ import { EmailAuthorization, User } from '../../../../models/index.js';
 import { setArgv } from '../../../../utils/argv.js';
 import { createServer } from '../../../../utils/createServer.js';
 import { authorizeStudio } from '../../../../utils/test/authorization.js';
-import { useTestDatabase } from '../../../../utils/test/testSchema.js';
 
 let server: Koa;
 
-useTestDatabase(import.meta);
-
-beforeAll(async () => {
-  setArgv({ host: 'http://localhost', secret: 'test' });
-  server = await createServer();
-  await setTestApp(server);
-});
-
 describe('resendEmailVerification', () => {
+  beforeAll(async () => {
+    setArgv({ host: 'http://localhost', secret: 'test' });
+    server = await createServer();
+    await setTestApp(server);
+  });
+
   it('should re-send the verification email', async () => {
     const email = 'test@example.com';
     const password = await hash('password', 10);
