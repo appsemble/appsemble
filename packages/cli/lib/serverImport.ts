@@ -20,7 +20,7 @@ export async function serverImport<
   T extends
     | 'checkDownMigrations'
     | 'checkMigrations'
-    | 'cleanupDemoUsers'
+    | 'cleanupDemoAppMembers'
     | 'cleanupResourcesAndAssets'
     | 'fuzzMigrations'
     | 'migrate'

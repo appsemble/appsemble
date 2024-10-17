@@ -5,7 +5,7 @@ import yargs, { type CommandModule } from 'yargs';
 import * as checkDownMigrations from './commands/checkDownMigrations.js';
 import * as checkMigrations from './commands/checkMigrations.js';
 import * as cleanup from './commands/cleanup.js';
-import * as cleanupDemoUsers from './commands/cleanupDemoUsers.js';
+import * as cleanupDemoAppMembers from './commands/cleanupDemoAppMembers.js';
 import * as cleanupResourcesAndAssets from './commands/cleanupResourcesAndAssets.js';
 import * as fuzzMigrations from './commands/fuzzMigrations.js';
 import * as health from './commands/health.js';
@@ -46,7 +46,7 @@ const parser = yargs()
   .middleware([setArgv, configureLogger, configureSentry])
   .command(cleanup as CommandModule)
   .command(cleanupResourcesAndAssets as CommandModule)
-  .command(cleanupDemoUsers as CommandModule)
+  .command(cleanupDemoAppMembers as CommandModule)
   .command(checkMigrations as CommandModule)
   .command(checkDownMigrations as CommandModule)
   .command(fuzzMigrations as CommandModule)

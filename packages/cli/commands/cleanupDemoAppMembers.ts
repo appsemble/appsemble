@@ -3,8 +3,8 @@ import { type Argv } from 'yargs';
 import { serverImport } from '../lib/serverImport.js';
 import { type BaseArguments } from '../types.js';
 
-export const command = 'cleanup-demo-users';
-export const description = 'Deletes all demo users from the database.';
+export const command = 'cleanup-demo-app-members';
+export const description = 'Deletes all demo app members from the database.';
 
 export function builder(yargs: Argv): Argv<any> {
   return yargs
@@ -39,7 +39,7 @@ export function builder(yargs: Argv): Argv<any> {
 }
 
 export async function handler(argv: BaseArguments): Promise<void> {
-  const { cleanupDemoUsers, setArgv } = await serverImport('setArgv', 'cleanupDemoUsers');
+  const { cleanupDemoAppMembers, setArgv } = await serverImport('setArgv', 'cleanupDemoAppMembers');
   setArgv(argv);
-  return cleanupDemoUsers();
+  return cleanupDemoAppMembers();
 }

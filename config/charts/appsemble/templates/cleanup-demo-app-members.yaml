@@ -2,7 +2,7 @@
 apiVersion: batch/v1
 kind: CronJob
 metadata:
-  name: {{ include "appsemble.fullname" . }}-cleanup-demo-users
+  name: {{ include "appsemble.fullname" . }}-cleanup-demo-app-members
   labels:
     {{ include "appsemble.labels" . }}
 spec:
@@ -18,11 +18,11 @@ spec:
         spec:
           restartPolicy: Never
           containers:
-            - name: {{ include "appsemble.fullname" . }}-cronjob-cleanup-demo-users
+            - name: {{ include "appsemble.fullname" . }}-cronjob-cleanup-demo-app-members
               image: "{{ .Values.image.repository }}:{{ include "appsemble.tag" . }}"
               imagePullPolicy: {{ .Values.image.pullPolicy }}
               args:
-                - cleanup-demo-users
+                - cleanup-demo-app-members
                 - -vv
               env:
 {{ include "appsemble.postgres" . | indent 16 }}
