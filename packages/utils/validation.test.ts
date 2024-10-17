@@ -2237,22 +2237,30 @@ describe('validateAppDefinition', () => {
     ]);
   });
 
-  it('should ignore if an app is null', async () => {
+  it('should throw if an app is null', async () => {
     const result = await validateAppDefinition(null, () => []);
-    expect(result.valid).toBe(true);
-    expect(result.errors).toStrictEqual([]);
+    expect(result.valid).toBe(false);
+    expect(result.errors).toStrictEqual([
+      expect.objectContaining({
+        message: 'App definition can not be null',
+        instance: null,
+        schema: {},
+      }),
+    ]);
   });
 
-  it('should if app pages are not an array', async () => {
-    const result = await validateAppDefinition(null, () => []);
-    expect(result.valid).toBe(true);
-    expect(result.errors).toStrictEqual([]);
-  });
-
-  it('should report an error if app validation fails for an unexpected reason', async () => {
-    const result = await validateAppDefinition(null, () => []);
-    expect(result.valid).toBe(true);
-    expect(result.errors).toStrictEqual([]);
+  it('should report an error if the defaultPage does not exist', async () => {
+    const result = await validateAppDefinition(
+      { name: 'Test App', pages: [], defaultPage: 'Test Page' },
+      () => [],
+    );
+    expect(result.valid).toBe(false);
+    expect(result.errors).toStrictEqual([
+      expect.objectContaining({
+        instance: 'Test Page',
+        message: 'does not refer to an existing page',
+      }),
+    ]);
   });
 
   it('should handle if an unexpected error occurs', async () => {

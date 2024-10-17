@@ -1583,6 +1583,7 @@ export async function validateAppDefinition(
   }
 
   if (!definition) {
+    result.addError('App definition can not be null');
     return result;
   }
 
