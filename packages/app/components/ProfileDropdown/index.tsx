@@ -36,7 +36,7 @@ export function ProfileDropdown(): ReactNode {
   const { pathname } = useLocation();
   const navigate = useNavigate();
 
-  const showLogin = definition.security;
+  const showLogin = definition.security && Object.hasOwn(definition.security, 'roles');
   const { layout } = definition;
 
   const groupSelectionToggle = useToggle();
@@ -185,7 +185,7 @@ export function ProfileDropdown(): ReactNode {
           </SimpleSubmit>
         </div>
       </ModalCard>
-      <DemoLogin modal={demoLoginToggle} />
+      {showDemoLogin ? <DemoLogin modal={demoLoginToggle} /> : null}
     </>
   );
 }

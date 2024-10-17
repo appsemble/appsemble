@@ -12,7 +12,7 @@ export function getDefaultPageName(
 
   if (appDefinition.security) {
     for (const role of getAppInheritedRoles(appDefinition.security, [appMemberRole])) {
-      const roleDefinition = appDefinition.security.roles[role];
+      const roleDefinition = appDefinition.security.roles?.[role];
       if (roleDefinition && roleDefinition.defaultPage) {
         return roleDefinition.defaultPage;
       }
