@@ -18,7 +18,7 @@ export { handler as fuzzMigrations } from './commands/fuzzMigrations.js';
 /**
  * These are exported, so @appsemble/cli can use them for integration testing.
  */
-export { setupTestDatabase } from './utils/test/testSchema.js';
+export { setupTestDatabase, rootDB } from './utils/test/testSchema.js';
 export {
   authorizeClientCredentials,
   createTestAppMember,
