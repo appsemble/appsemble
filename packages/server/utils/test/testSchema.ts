@@ -5,7 +5,7 @@ import { initDB, type InitDBParams } from '../../models/index.js';
 const CONNECTION =
   process.env.DATABASE_URL || 'postgres://admin:password@localhost:54321/appsemble';
 
-const rootDB = new Sequelize(CONNECTION, {
+export const rootDB = new Sequelize(CONNECTION, {
   logging: false,
   retry: { max: 3 },
 });

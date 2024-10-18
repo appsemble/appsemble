@@ -8,9 +8,9 @@ import axiosSnapshotSerializer, { setResponseTransformer } from 'jest-axios-snap
 import { toMatchImageSnapshot } from 'jest-image-snapshot';
 import { type Sequelize } from 'sequelize';
 // eslint-disable-next-line import/no-extraneous-dependencies
-import { beforeAll, beforeEach, expect } from 'vitest';
+import { afterAll, beforeAll, beforeEach, expect } from 'vitest';
 
-import { setupTestDatabase } from './utils/test/testSchema.js';
+import { rootDB, setupTestDatabase } from './utils/test/testSchema.js';
 
 interface CustomMatchers<R = unknown> {
   toMatchImageSnapshot: () => R;
@@ -37,6 +37,13 @@ beforeAll(async () => {
 
 beforeEach(async () => {
   await testDB.truncate({ truncate: true, cascade: true, force: true, restartIdentity: true });
+});
+
+afterAll(async () => {
+  await testDB.close();
+  // We need to drop the test database from the root database
+  // testDB.drop() doesn't actually delete the database
+  await rootDB.query(`DROP DATABASE ${testDB.getDatabaseName()}`);
 });
 
 setResponseTransformer(
