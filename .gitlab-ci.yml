@@ -97,7 +97,10 @@ build docker image:
   extends: .docker
   stage: build
   script:
-    - docker build -t "$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG" --build-arg "version=$CI_COMMIT_REF_NAME" --build-arg "date=$CI_JOB_STARTED_AT" .
+    # We're pulling latest if no previous builds exist because we want the greatest possibility of cache hits for build layers.
+    - CACHE_IMAGE="$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG"
+    - if ! docker pull "$CACHE_IMAGE"; then CACHE_IMAGE="$CI_REGISTRY_IMAGE:latest"; docker pull "$CACHE_IMAGE" || true; fi
+    - docker build -t "$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG" --cache-from "$CACHE_IMAGE" --build-arg "BUILDKIT_INLINE_CACHE=1" --build-arg "version=$CI_COMMIT_REF_NAME" --build-arg "date=$CI_JOB_STARTED_AT" .
     - docker push "$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG"
 
 # Build the npm packages that should be published.

@@ -1,9 +1,28 @@
+# syntax=docker/dockerfile:1.7-labs
 # Build production files
 FROM node:18.18.0-bookworm-slim AS build
 WORKDIR /app
-COPY . .
+
+# FOR REVIEW: Is this a bit too much?
+# The goal is to get the system dependencies installed regardless of any package.json or lockfile changes
+# (those dependencies should be versioned by the container's distro repos anyways, and I expect the
+# latest available version of playwright to not omit any system
+# packages required by the playwright in our lockfile - if they are missing, the command is ran a
+# second time below anyways)
+RUN npx playwright install-deps
+
+COPY package-lock.json package-lock.json
+COPY package.json package.json
+
+# this statement requires experimental syntax, declared at the top of the file
+COPY --parents packages/**/package.json .
+
 RUN npm ci
+
 RUN npx playwright install --with-deps chromium
+
+COPY . .
+
 RUN npm run scripts -- build
 RUN npm --workspace @appsemble/types run prepack
 RUN npm --workspace @appsemble/sdk run prepack
