@@ -2,66 +2,73 @@
 icon: book-open
 ---
 
-# Reading guide
+# What is Appsemble?
 
-Some of the contents in the Appsemble documentation are of interest to a wide range of software
-developers and IT professionals. This section provides links to topics that are organized by
-professional role and common task scenarios.
+Appsemble is a low-code platform that allows you to easily create an app without much technical
+knowledge. Traditional software programs can get very complex and requires extensive IT experience
+in order to be built properly. Appsemble lowers the bar of entry by handling all the complicated
+backend infrastructure for you, leaving you to focus on the user experience.
 
-## Table of Contents
+An app is created by making an "App definition". This is a YAML-based definition that tells
+Appsemble how your app is structured, what data you need to store, and much more. You can find more
+information about this [here](/docs/guides/basic-app). Once the app is published, it becomes a
+publicly available [Progressive Web App](https://web.dev/articles/what-are-pwas).
 
-- [New to Appsemble?](#new-to-appsemble)
-- [App Builder](#app-builder)
-- [System Admin](#system-admin)
-- [Block Developer](#block-developer)
-- [Core Developer](#core-developer)
+Another big part of apps are blocks. Blocks are reusable components that you can put anywhere in
+your app in order to create functional parts that determine how your app works. For example, a form
+block that allows user to fill in information which the app can store.
+
+The Appsemble framework is an open source software project. What this means is that the
+infrastructure that handles how your app works in the backend is publicly available. Anyone can see
+the code, make changes to it or create their own version of it entirely. If you're interested, you
+can check it out here: https://gitlab.com/appsemble/appsemble.
 
 ## New to Appsemble?
 
-Creating an app all by yourself can be a difficult task. To help you get started with Appsemble, we
-have provided an easy to understand tutorial, so you can get right into creating your very own app.
+<!-- TODO: Should link to trainings once they are done. -->
 
-- [Appsemble tutorial](./01-tutorial/index.md)
+Appsemble can be a difficult piece of software to understand right away. We recommend you first
+learn the basics by reading our documentation before diving into creating an app.
 
-## App Builder
+By going through the following docs, we're confident that you will understand the basics of
+Appsemble:
 
-Apps can be created using the Appsemble studio. You can get started by creating a new app using one
-of the available templates. Templates are small apps that come preconfigured at varying degrees of
-complexity.
+- [Studio documentation](/docs/studio)
+- [Basic app](/docs/guides/basic-app)
 
-Check out the resources below for more information on how to develop apps using Appsemble.
+## Documentation structure
 
-- [App development guide](./02-guides/)
-- [Documentation on blocks](/blocks)
+The Appsemble documentation is split into different categories to make it easier to know where to
+look if you're stuck on something.
 
-## System Admin
+- [**Studio documentation**](/docs/studio)\
+  Everything regarding the Appsemble studio (the site you are reading this from).
+- [**Core concepts**](/docs/core-concepts)\
+  Documentation of the essential parts of an Appsemble app.
+- [**Guides**](/docs/guides)\
+  Documentation of individual app topics.
+- [**Development**](/docs/development)\
+  Interested in working on the Appsemble code? These documents explain various development-centered
+  topics.
+- [**Deployment**](/docs/deployment)\
+  As a system admin, you might be interested in learning how to deploy an app on your own server.
+  These documents can help you with that.
+- [**Actions**](/docs/actions)\
+  Each app action explained in detail.
+- [**Remappers**](/docs/remappers)\
+  Each remapper explained in detail.
+- [**Reference**](/docs/reference)\
+  List of all properties available in an app.
+- [**Packages**](/docs/packages)\
+  Documentation of the various packages that Appsemble consists of.
 
-As a system admin, you might be interested in learning more about how Appsemble’s infrastructure
-works or how Appsemble can be deployed on your own server.
-
-For more information, please refer to the links below.
-
-- [Deployment using Docker Compose](./07-deployment/docker-compose.md)
-- [Deployment using Helm](./07-deployment/helm.md)
-
-## Block Developer
-
-Blocks are what app developers will use to build apps. Pages in apps can be composed using blocks in
-order to create apps that do exactly what the user needs. Blocks can be freely developed and
-submitted to Appsemble for use within apps. Check out the links below for some resources on getting
-started.
-
-- [Tutorial on getting started with a new block](./06-development/02-developing-blocks.md)
-- [Documentation on existing blocks](/blocks)
-
-## Core Developer
+## Related content
 
 The Appsemble core consists of all the systems that make Appsemble whole, like the API, database,
 authentication provider and the app components used to display apps.
 
 See also:
 
-- [Core development](./06-development/07-core-development.md)
 - [API documentation](/api-explorer)
 - [Source code on GitLab](https://gitlab.com/appsemble/appsemble)
 - [Contribution guidelines](/docs/contributing)

@@ -6,6 +6,11 @@
       "name": "custom-words",
       "path": "./config/retext/personal.dic",
       "addWords": true
+    },
+    {
+      "name": "ignore-words",
+      "path": "./config/retext/ignore.dic",
+      "addWords": true
     }
   ],
   "files": ["**/*.ts", "**/*.tsx"],

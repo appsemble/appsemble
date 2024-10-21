@@ -1,0 +1,109 @@
+import { RemapperRef } from './RemapperRef/index.js';
+import { objectRemappers } from '../../../../utils/reference-schemas/remappers/index.js';
+
+# Objects
+
+## Introduction
+
+Object remappers are very versatile in their functionality. You can easily create or update objects
+in whatever way you want to. There are object remappers available to add or remove properties from
+an existing object, or you can even create your own object. When creating a complex app with lots of
+big data streams being sent around, this can get really useful, as you get full control of what the
+data looks like. If you get an object with lots of properties, but you only need a few, you can just
+omit the ones you don’t need. Alternatively, you can just create a new object with just the ones you
+need.
+
+In the [Remapper tutorial](../07-remappers/), we referred to the Spotify song data that contains a
+ton of properties with different types of data like `acoustincness`, `danceability`, and more.
+There, we filtered the data by only referencing certain properties in the table block. This still
+means the data is there, however. If you want to store this data somewhere, it still contains the
+full list of properties.
+
+To solve this, you can directly alter the object itself to only contain the data you want it to
+have. One way to do this, similar to the table example in the tutorial, is to create a new object
+with only the properties you want it to have and then use that for any future functionalities.
+
+For example, here is the data received when querying the ‘Audio Features’ endpoint for a Spotify
+track:
+
+```json
+{
+  "acousticness": 0.346,
+  "analysis_url": "https://api.spotify.com/v1/audio-analysis/2GfQhXyoUXYTkMHDXJhCU5",
+  "danceability": 0.565,
+  "duration_ms": 544518,
+  "energy": 0.906,
+  "id": "2GfQhXyoUXYTkMHDXJhCU5",
+  "instrumentalness": 0.00474,
+  "key": 9,
+  "liveness": 0.0718,
+  "loudness": -5.229,
+  "mode": 0,
+  "speechiness": 0.124,
+  "tempo": 119.856,
+  "time_signature": 4,
+  "track_href": "https://api.spotify.com/v1/tracks/2GfQhXyoUXYTkMHDXJhCU5",
+  "type": "audio_features",
+  "uri": "spotify:track:2GfQhXyoUXYTkMHDXJhCU5",
+  "valence": 0.38
+}
+```
+
+If you want to store this data but don’t need all the data, like the Spotify-specific references,
+you can create an object using just the properties you want.
+
+With the following remapper definition, you create an object that only stores the `danceability`,
+`liveness`, `tempo`, and `time_signature`:
+
+```yaml
+object.from:
+  danceability: { prop: danceability }
+  liveness: { prop: liveness }
+  tempo: { prop: tempo }
+  time-signature: { prop: time_signature }
+```
+
+If you want to add some additional information, you can use the `history` remapper in combination
+with these remappers to create an even more extensive object. With this, you create your own object
+using the different data sources from Spotify. Additionally, you can create a nested object by
+specifying the `object.from` remapper within a property. By combining this, you can create an object
+containing the song’s audio features and track info to then store in a resource.
+
+This is what the remapper definition would look like (where `history: 1` is the object we created
+before):
+
+```yaml
+# Call Spotify track’s API endpoint
+object.from:
+  audio_features: { history: 1 }
+  track_info:
+    object.from:
+      name: { prop: name }
+      popularity: { prop: popularity }
+      spotify_url: [{ prop: external_urls }, { prop: spotify }]
+```
+
+If you did this right, you should get an object like this:
+
+```json
+{
+  "audio_features": {
+    "danceability": 0.565,
+    "liveness": 0.0718,
+    "tempo": 119.856,
+    "time_signature": 4
+  },
+  "track_info": {
+    "name": "Iron Lung",
+    "popularity": 54,
+    "spotify_url": "https://open.spotify.com/track/2GfQhXyoUXYTkMHDXJhCU5"
+  }
+},
+```
+
+You could do this for every song you want, allowing you to create your own playlist for your app
+containing only the data you want.
+
+## Remappers
+
+<RemapperRef remappers={objectRemappers} />

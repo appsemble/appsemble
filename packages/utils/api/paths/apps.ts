@@ -125,11 +125,11 @@ export const pathItems: OpenAPIV3.PathItemObject = {
         in: 'query',
       },
     ],
-    description: 'Get all existing apps.',
+    description: 'Get all publically available apps.',
     operationId: 'queryApps',
     responses: {
       200: {
-        description: 'The list of all apps.',
+        description: 'The list of all public apps.',
         content: {
           'application/json': {
             schema: {
