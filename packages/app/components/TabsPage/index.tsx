@@ -122,7 +122,7 @@ export function TabsPage({
       setTabsWithPermissions(createdTabs);
       setDefaultTab({
         id: '0',
-        name: '',
+        name: createdTabs[0]?.name || '',
       });
     }
   }, [checkSubPagePermissions, pageDefinition, createdTabs, setCreatedTabs]);
