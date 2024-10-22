@@ -2,7 +2,7 @@ import { useBlock } from '@appsemble/preact';
 import { type VNode } from 'preact';
 import { type MutableRef, useCallback, useEffect, useRef, useState } from 'preact/hooks';
 
-import { type Field, type FormDisplay, type InputProps } from '../../../block.js';
+import { type Field, type FormDisplay, type InputProps, type Values } from '../../../block.js';
 import { getValueByNameSequence } from '../../utils/getNested.js';
 import { BooleanInput } from '../BooleanInput/index.js';
 import { DateInput } from '../DateInput/index.js';
@@ -28,6 +28,7 @@ interface FormInputProps extends Omit<InputProps<any, Field>, 'dirty' | 'errorLi
   ) => void;
   readonly addThumbnail: (thumbnail: File) => void;
   readonly removeThumbnail: (thumbnail: File) => void;
+  readonly fieldsetEntryValues?: Values;
 }
 
 /**
