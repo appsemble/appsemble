@@ -26,7 +26,7 @@ export async function getAppDemoGroups(ctx: Context): Promise<void> {
   ctx.body = groups.map((group) => ({
     id: group.id,
     name: group.name,
-    size: group.Members.length,
+    size: group.Members?.length ?? 0,
     annotations: group.annotations ?? {},
   }));
 }
