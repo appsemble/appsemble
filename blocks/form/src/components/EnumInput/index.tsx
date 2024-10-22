@@ -19,6 +19,7 @@ export function EnumInput({
   disabled,
   errorLinkRef,
   field,
+  fieldsetEntryValues,
   formValues,
   name,
   onChange,
@@ -26,11 +27,18 @@ export function EnumInput({
 }: EnumInputProps): VNode {
   const { actions, events, utils } = useBlock();
   const [loading, setLoading] = useState('action' in field || 'event' in field);
-  const [options, setOptions] = useState('action' in field || 'event' in field ? [] : field.enum);
+  const [options, setOptions] = useState(
+    'action' in field || 'event' in field
+      ? []
+      : 'remapper' in field
+        ? (utils.remap(field.remapper, { formValues, fieldsetEntryValues }) as Choice[])
+        : field.enum,
+  );
   const [error, setError] = useState<string>(null);
 
   const { icon, inline, label, placeholder, tag } = field;
   const value = getValueByNameSequence(name, formValues);
+
   const required = isRequired(field, utils, formValues);
 
   useEffect(() => {
@@ -42,6 +50,11 @@ export function EnumInput({
 
   useEffect(() => {
     if ('enum' in field) {
+      return;
+    }
+
+    if ('remapper' in field) {
+      setOptions(utils.remap(field.remapper, { formValues, fieldsetEntryValues }) as Choice[]);
       return;
     }
 
@@ -70,7 +83,7 @@ export function EnumInput({
       events.on[field.event](eventHandler);
       return () => events.off[field.event](eventHandler);
     }
-  }, [actions, events, field, utils]);
+  }, [actions, events, field, fieldsetEntryValues, formValues, utils]);
 
   return (
     <SelectField

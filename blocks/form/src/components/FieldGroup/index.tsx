@@ -108,6 +108,12 @@ export function FieldGroup({
     }
   };
 
+  const fieldsetEntryValues: Values = {};
+
+  for (const field of fields) {
+    fieldsetEntryValues[field.name] = getValueByNameSequence(`${name}.${field.name}`, formValues);
+  }
+
   return (
     <div className={getFieldsContainerClass()}>
       {fields.map((f) => (
@@ -125,6 +131,7 @@ export function FieldGroup({
           display={display}
           error={errors?.[f.name]}
           field={f}
+          fieldsetEntryValues={fieldsetEntryValues}
           formValues={formValues}
           key={f.name}
           name={name ? `${name}.${f.name}` : f.name}

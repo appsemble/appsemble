@@ -747,6 +747,16 @@ interface SyncEnumField extends AbstractEnumField {
 }
 
 /**
+ * A dropdown list containing a list of remapped values.
+ */
+interface RemapperEnumField extends AbstractEnumField {
+  /**
+   * The inline remapper to get the enum options.
+   */
+  remapper: Remapper;
+}
+
+/**
  * A dropdown list containing a list of values based on the output of an action.
  */
 interface ActionEnumField extends AbstractEnumField {
@@ -788,7 +798,7 @@ interface EventEnumField extends AbstractEnumField {
   loadError?: Remapper;
 }
 
-export type EnumField = ActionEnumField | EventEnumField | SyncEnumField;
+export type EnumField = ActionEnumField | EventEnumField | RemapperEnumField | SyncEnumField;
 
 export interface AbstractListField extends AbstractField, InlineField {
   /**
@@ -1221,6 +1231,11 @@ export interface InputProps<T, F extends Field> {
    * The current form values.
    */
   formValues: Values;
+
+  /**
+   * The current fieldset entry values.
+   */
+  fieldsetEntryValues?: Values;
 
   /**
    * The ref to the element used for scrolling to the field error

@@ -2505,6 +2505,9 @@ Replaces the optional label if the field is optional. Won’t display if the fie
             "$ref": "#/definitions/EventEnumField",
           },
           {
+            "$ref": "#/definitions/RemapperEnumField",
+          },
+          {
             "$ref": "#/definitions/SyncEnumField",
           },
         ],
@@ -3699,6 +3702,90 @@ Supported values: \`g\`, \`m\`, \`i\`, \`y\`, \`u\`, \`s\`",
         },
         "required": [
           "regex",
+        ],
+        "type": "object",
+      },
+      "RemapperEnumField": {
+        "additionalProperties": false,
+        "description": "A dropdown list containing a list of remapped values.",
+        "properties": {
+          "defaultValue": {
+            "$ref": "#/definitions/JsonValue",
+            "description": "The default value of the field.",
+          },
+          "disabled": {
+            "default": false,
+            "description": "Whether the field should always be be disabled.",
+            "format": "remapper",
+          },
+          "help": {
+            "description": "A description for the text field. For adding more information about the field.",
+            "format": "remapper",
+          },
+          "icon": {
+            "description": "Name of the [Font Awesome icon](https://fontawesome.com/icons?m=free) to be displayed next to the label.",
+            "format": "fontawesome",
+            "type": "string",
+          },
+          "inline": {
+            "const": true,
+            "description": "Combines fields on the same row.
+
+Fields are combined in order if set to true.",
+            "type": "boolean",
+          },
+          "label": {
+            "description": "The label displayed next to the field.",
+            "format": "remapper",
+          },
+          "name": {
+            "description": "The name used when storing this field.",
+            "type": "string",
+          },
+          "placeholder": {
+            "description": "The placeholder to display when the field is empty.",
+            "format": "remapper",
+          },
+          "readOnly": {
+            "default": false,
+            "description": "Whether the field should be read-only.",
+            "format": "remapper",
+          },
+          "remapper": {
+            "description": "The inline remapper to get the enum options.",
+            "format": "remapper",
+          },
+          "requirements": {
+            "description": "The requirements that are used to validate the field with.
+
+These are evaluated in the order they are defined in.",
+            "items": {
+              "$ref": "#/definitions/RequiredRequirement",
+            },
+            "type": "array",
+          },
+          "show": {
+            "description": "Displays field only if condition is true.
+
+If not specified, the field will display.",
+            "format": "remapper",
+          },
+          "tag": {
+            "description": "The label that is shown to the right of the label.
+
+Replaces the optional label if the field is optional. Won’t display if the field has no label of its own.",
+            "format": "remapper",
+          },
+          "type": {
+            "const": "enum",
+            "description": "The type of the field.",
+            "type": "string",
+          },
+        },
+        "required": [
+          "name",
+          "remapper",
+          "type",
         ],
         "type": "object",
       },
