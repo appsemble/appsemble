@@ -1204,6 +1204,16 @@ describe('prop', () => {
       mappers: { prop: 'foo' },
       expected: null,
     },
+    'handle array input': {
+      input: ['one', 'two', 'three', 'four'],
+      mappers: { prop: 1 },
+      expected: 'two',
+    },
+    'handle array input and negative index': {
+      input: ['one', 'two', 'three', 'four'],
+      mappers: { prop: -3 },
+      expected: 'two',
+    },
   });
 });
 

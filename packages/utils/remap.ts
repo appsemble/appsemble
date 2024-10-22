@@ -505,7 +505,10 @@ const mapperImplementations: MapperImplementations = {
         console.error(`Invalid remapper ${JSON.stringify(prop)}`);
       }
     } else if (typeof prop === 'number' || typeof prop === 'string') {
-      result = result[prop];
+      result =
+        Array.isArray(result) && typeof prop === 'number' && prop < 0
+          ? result[result.length + prop]
+          : result[prop];
     }
 
     return result;
