@@ -9,10 +9,12 @@ interface Item {
   id?: number;
 }
 
-bootstrap(({ events, parameters: { fields }, ready, utils }) => {
+bootstrap(({ events, parameters: { caption, fields }, ready, utils }) => {
   const [data, setData] = useState<Item[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
+
+  const remappedCaption = utils.remap(caption, {}) as string;
 
   const headers = useMemo<VNode>(() => {
     const heads = fields.flatMap((field) => {
@@ -71,6 +73,7 @@ bootstrap(({ events, parameters: { fields }, ready, utils }) => {
 
   return (
     <table className="table is-hoverable is-striped is-fullwidth" role="grid">
+      {remappedCaption ? <caption className="is-size-5 mb-2 p-1">{remappedCaption}</caption> : null}
       {headers}
       <tbody>
         {data.map((item, index) => (

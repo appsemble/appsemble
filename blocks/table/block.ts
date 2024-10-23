@@ -246,6 +246,11 @@ declare module '@appsemble/sdk' {
      * A list of fields to display.
      */
     fields: (Button | Dropdown | Field | Image | RepeatedField | StringField)[];
+
+    /**
+     * Caption text for the table.
+     */
+    caption?: Remapper;
   }
 
   interface Actions {
