@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.30.3](https://gitlab.com/appsemble/appsemble/-/releases/0.30.3)] - 2024-10-23
+
+### Added
+
+- Block(`form`): Add an option for enum fields with values remapped from other form fields.
+- Block(`table`): Add a new field `caption` to add captions to tables.
+- Utils: Support negative index in `prop` remapper for array inputs.
+
+### Fixed
+
+- App: Disable login if no roles are defined in the security definition.
+
 ## \[[0.30.2](https://gitlab.com/appsemble/appsemble/-/releases/0.30.2)] - 2024-10-16
 
 ### Added
