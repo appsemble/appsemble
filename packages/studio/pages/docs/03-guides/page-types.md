@@ -8,7 +8,7 @@ variations:
 - [Tabs page](../08-reference/app.mdx#-tabs-page-definition)
 - [Flow page](../08-reference/app.mdx#-flow-page-definition)
 - [Loop page](../08-reference/app.mdx#-loop-page-definition)
-<!-- - [Container page](../08-reference/app.mdx#-container-page-definition) -->
+- [Container page](../08-reference/app.mdx#-container-page-definition)
 
 ## Tabs page
 
@@ -19,7 +19,7 @@ using the `tabs` property. Sub pages are a very primitive version of the regular
 accepting a `name`, `blocks` and `roles`. The following code is (roughly) used to create the
 "Holidays" app from the image above:
 
-```yaml
+```yaml copy validate
 pages:
   - name: Holidays in Europe
     icon: globe-europe
@@ -57,7 +57,7 @@ use too, namely the `onLoad` action.
 
 In practice, this looks like this:
 
-```yaml
+```yaml copy validate page-snippet
 name: Knowledgebase
 type: tabs
 # Retrieve data from resource
@@ -90,7 +90,7 @@ Let's assume the previously loaded in data looks like this:
 
 And we define the following page template:
 
-```yaml
+```yaml copy validate
 foreach:
   name: { prop: course }
   blocks:
@@ -120,7 +120,7 @@ over how the user goes through this order using [flow actions](../06-actions/04-
 
 The base syntax of a flow page looks very much like that of a tabs page:
 
-```yaml
+```yaml copy validate
 pages:
   - name: Survey
     type: flow
@@ -147,7 +147,7 @@ do this you can use the flow actions:
 
 If you take the previous code as an example and zoom in on the Introduction page, you get this:
 
-```yaml
+```yaml copy validate page-snippet
 name: Introduction
 blocks:
   - type: markdown
@@ -202,7 +202,7 @@ First, define what kind of questions you want to ask:
 
 You can then load these in the `onLoad` action:
 
-```yaml
+```yaml copy validate
 pages:
   - name: Fill in survey
     parameters:
@@ -218,7 +218,7 @@ Now that the data gets loaded into the page, you can define a template sub page 
 use this data to dynamically create new pages in the `foreach` parameter. You can use the `step`
 remapper to access the data that's assigned to that page:
 
-```yaml
+```yaml copy validate
 foreach:
   name: Title
   blocks:
@@ -247,9 +247,42 @@ This then generates a flow page with 3 sub-pages, each containing a different qu
 > **Tip**: The `flow.next` action automatically calls the `onFlowFinish` action if there are no more
 > pages to go to.
 
-<!--
-### Container pages
+## Container pages
 
-As of now container pages don't seem to work according to the reference documentation. Once this is
-fixed we should create documentation for this, otherwise we'd just confuse the user.
--->
+![Container page example](./assets/container-page-example.png 'Container page example')
+
+Container pages allow you to group several other pages under one page. These pages are then shown in
+the side menu nested below the parent page as shown in the example above. In contrary to the
+previous page types, these pages are full pages instead of
+[sub pages](../08-reference/app.mdx#-sub-page).
+
+This makes container pages very easy to define, as the syntax is exactly the same as a regular page.
+On the parent page, you only need to set the `type` to `container` and define the `pages`.
+
+The example above was created using the following page definition (minus Page 2):
+
+```yaml copy validate page-snippet
+name: Page 1
+type: container
+pages:
+  - name: Contained page 1
+    blocks:
+      - type: action-button
+        version: 0.30.3
+        parameters:
+          icon: git-alt
+        actions:
+          onClick:
+            type: link
+            to: Contained page 2
+  - name: Contained page 2
+    blocks:
+      - type: action-button
+        version: 0.30.3
+        parameters:
+          icon: git-alt
+        actions:
+          onClick:
+            type: link
+            to: Contained page 1
+```
