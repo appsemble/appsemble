@@ -19,7 +19,7 @@ using the `tabs` property. Sub pages are a very primitive version of the regular
 accepting a `name`, `blocks` and `roles`. The following code is (roughly) used to create the
 "Holidays" app from the image above:
 
-```yaml copy validate
+```yaml copy
 pages:
   - name: Holidays in Europe
     icon: globe-europe
@@ -90,7 +90,7 @@ Let's assume the previously loaded in data looks like this:
 
 And we define the following page template:
 
-```yaml copy validate
+```yaml copy
 foreach:
   name: { prop: course }
   blocks:
@@ -120,7 +120,7 @@ over how the user goes through this order using [flow actions](../06-actions/04-
 
 The base syntax of a flow page looks very much like that of a tabs page:
 
-```yaml copy validate
+```yaml copy
 pages:
   - name: Survey
     type: flow
@@ -202,7 +202,7 @@ First, define what kind of questions you want to ask:
 
 You can then load these in the `onLoad` action:
 
-```yaml copy validate
+```yaml copy
 pages:
   - name: Fill in survey
     parameters:
@@ -218,7 +218,7 @@ Now that the data gets loaded into the page, you can define a template sub page 
 use this data to dynamically create new pages in the `foreach` parameter. You can use the `step`
 remapper to access the data that's assigned to that page:
 
-```yaml copy validate
+```yaml copy
 foreach:
   name: Title
   blocks:

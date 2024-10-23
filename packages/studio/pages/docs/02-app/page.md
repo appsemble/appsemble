@@ -92,7 +92,7 @@ page's URL, which can then later be used by actions to get that certain resource
 For example, if you want to have a page for displaying the details of a certain customer you simply
 want to pass their ID to the page and have it fetch the details automatically. You can do this
 
-```yaml copy validate
+```yaml copy
 pages:
   - name: Person details
     parameters:
@@ -106,7 +106,7 @@ Some actions use this parameter for their logic. The most common one is the
 resource matching it. The following code automatically uses the ID from the parameter to fetch the
 resource:
 
-```yaml
+```yaml copy
 type: resource.get
 resource: person
 ```

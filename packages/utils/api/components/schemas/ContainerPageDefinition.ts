@@ -4,7 +4,8 @@ import { extendJSONSchema } from './utils.js';
 export const ContainerPageDefinition = extendJSONSchema(BasePageDefinition, {
   type: 'object',
   additionalProperties: false,
-  description: `Use this page type to group pages in the menu, this doesn't actually group pages for now. Following is an example of how this can be used
+  description: `Groups pages together under a collapsible parent page. Following is an example of
+how this can be used:
 \`\`\`yaml
 pages:
   - name: Page 1
