@@ -50,6 +50,17 @@ export function EnumInput({
 
   useEffect(() => {
     if ('enum' in field) {
+      if ('filter' in field) {
+        if (field.filter) {
+          const filterInput = 'Aa';
+          const filteredOptions = options.filter((choice) =>
+            String(choice.value).indexOf(filterInput),
+          );
+          setOptions(filteredOptions as Choice[]);
+        } else {
+          return;
+        }
+      }
       return;
     }
 
@@ -83,7 +94,7 @@ export function EnumInput({
       events.on[field.event](eventHandler);
       return () => events.off[field.event](eventHandler);
     }
-  }, [actions, events, field, fieldsetEntryValues, formValues, utils]);
+  }, [actions, events, field, fieldsetEntryValues, formValues, options, utils]);
 
   const handleChange = (n: Event | string, v?: string): void => {
     if (onSelect) {
