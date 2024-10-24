@@ -10,6 +10,8 @@ import raw from 'raw-body';
 import {
   App,
   AppMember,
+  Group,
+  GroupMember,
   OAuth2AuthorizationCode,
   OAuth2ClientCredentials,
   transactional,
@@ -197,7 +199,7 @@ export async function appsTokenHandler(ctx: Context): Promise<void> {
 
         const appId = Number(clientId.replace('app:', ''));
         const app = await App.findByPk(appId, {
-          attributes: ['demoMode', 'definition', 'OrganizationId'],
+          attributes: ['demoMode', 'definition', 'id', 'OrganizationId'],
           include: [
             {
               model: AppMember,
@@ -213,7 +215,7 @@ export async function appsTokenHandler(ctx: Context): Promise<void> {
           throw new GrantError('invalid_client');
         }
 
-        let appMember = null;
+        let appMember: Pick<AppMember, 'id'> | null = null;
         if (appMemberId === '') {
           logger.verbose('Demo login: Creating new demo user');
 
@@ -240,6 +242,16 @@ export async function appsTokenHandler(ctx: Context): Promise<void> {
                 timezone: '',
                 demo: true,
               },
+              { transaction },
+            );
+            const appGroups = await Group.findAll({ where: { AppId: app.id } });
+            await GroupMember.bulkCreate(
+              appGroups.map((group) => ({
+                GroupId: group.id,
+                demo: true,
+                AppId: app.id,
+                AppMemberId: appMember.id,
+              })),
               { transaction },
             );
           });

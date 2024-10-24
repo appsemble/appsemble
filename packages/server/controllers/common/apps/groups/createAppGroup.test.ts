@@ -1,4 +1,4 @@
-import { PredefinedOrganizationRole } from '@appsemble/types';
+import { PredefinedAppRole, PredefinedOrganizationRole } from '@appsemble/types';
 import { request, setTestApp } from 'axios-test-instance';
 import type Koa from 'koa';
 import { beforeAll, beforeEach, describe, expect, it } from 'vitest';
@@ -6,6 +6,7 @@ import { beforeAll, beforeEach, describe, expect, it } from 'vitest';
 import {
   App,
   AppMember,
+  GroupMember,
   Organization,
   OrganizationMember,
   type User,
@@ -138,6 +139,76 @@ describe('createGroup', () => {
           "statusCode": 403,
         }
       `);
+    });
+
+    it('should add all app members to newly created group for a demo app', async () => {
+      await app.update({
+        demoMode: true,
+        definition: {
+          ...app.definition,
+          security: {
+            ...app.definition.security,
+            roles: {
+              GroupCreator: {
+                permissions: ['$group:create'],
+                inherits: [],
+              },
+            },
+          },
+        },
+      });
+      const appMember = await AppMember.create({
+        email: user.primaryEmail,
+        AppId: app.id,
+        UserId: user.id,
+        role: 'GroupCreator',
+      });
+      await AppMember.bulkCreate(
+        [...Array.from({ length: 5 }).keys()].map((key) => ({
+          email: `test${key}@example.com`,
+          AppId: app.id,
+          role: PredefinedAppRole.Member,
+          demo: true,
+        })),
+      );
+      authorizeAppMember(app, appMember);
+
+      const response = await request.post(`/api/apps/${app.id}/groups`, {
+        name: 'Test Group',
+      });
+      expect(response).toMatchInlineSnapshot(`
+        HTTP/1.1 201 Created
+        Content-Type: application/json; charset=utf-8
+
+        {
+          "annotations": {},
+          "id": 1,
+          "name": "Test Group",
+        }
+      `);
+      const foundMembers = await GroupMember.findAll({ where: { GroupId: 1 } });
+      expect(foundMembers).toMatchObject([
+        {
+          GroupId: 1,
+          role: PredefinedAppRole.Member,
+        },
+        {
+          GroupId: 1,
+          role: PredefinedAppRole.Member,
+        },
+        {
+          GroupId: 1,
+          role: PredefinedAppRole.Member,
+        },
+        {
+          GroupId: 1,
+          role: PredefinedAppRole.Member,
+        },
+        {
+          GroupId: 1,
+          role: PredefinedAppRole.Member,
+        },
+      ]);
     });
   });
 

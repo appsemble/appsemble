@@ -1,7 +1,4 @@
 import {
-  AsyncButton,
-  AsyncSelect,
-  Loader,
   type MinimalHTMLElement,
   ModalCard,
   SelectField,
@@ -9,20 +6,16 @@ import {
   SimpleFormError,
   SimpleFormField,
   SimpleSubmit,
-  Table,
   type Toggle,
-  useData,
   useToggle,
 } from '@appsemble/react-components';
-import { type AppMemberInfo, type AppRole, type Group, type GroupMember } from '@appsemble/types';
+import { type AppMemberInfo, type AppRole } from '@appsemble/types';
 import { getAppRoles } from '@appsemble/utils';
-import axios from 'axios';
-import { type ChangeEvent, type ReactNode, useCallback, useEffect, useMemo, useState } from 'react';
+import { type ChangeEvent, type ReactNode, useCallback, useMemo, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 
 import styles from './index.module.css';
 import { messages } from './messages.js';
-import { apiUrl, appId } from '../../utils/settings.js';
 import { useAppDefinition } from '../AppDefinitionProvider/index.js';
 import { useAppMember } from '../AppMemberProvider/index.js';
 import { useAppMessages } from '../AppMessagesProvider/index.js';
@@ -30,107 +23,6 @@ import { useDemoAppMembers } from '../DemoAppMembersProvider/index.js';
 
 interface DemoLoginProps {
   readonly modal?: Toggle;
-}
-
-function GroupControls(): ReactNode {
-  type GroupsResponse = (Group & Partial<GroupMember>)[];
-
-  const { appMemberInfo, isLoggedIn } = useAppMember();
-  const { definition: appDefinition } = useAppDefinition();
-
-  const sub = appMemberInfo?.sub;
-
-  const {
-    data: groups,
-    error,
-    loading,
-    refresh,
-    setData: setGroups,
-  } = useData<GroupsResponse>(`${apiUrl}/api/apps/${appId}/demo-groups`);
-
-  const changeGroupRole = useCallback(
-    async (group: Group, role: AppRole) => {
-      await axios.put(`${apiUrl}/api/apps/${appId}/groups/${group.id}/members/${sub}`, {
-        role,
-      });
-      setGroups((prevGroups) => prevGroups.map((t) => (t.id === group.id ? { ...t, role } : t)));
-    },
-    [sub, setGroups],
-  );
-
-  const leaveGroup = useCallback(
-    async (group: Group) => {
-      await axios.delete(`${apiUrl}/api/apps/${appId}/groups/${group.id}/members/${sub}`);
-      setGroups((prevGroups) =>
-        prevGroups.map((t) => (t.id === group.id ? { ...t, role: undefined } : t)),
-      );
-    },
-    [sub, setGroups],
-  );
-
-  const joinGroup = useCallback(
-    async (group: Group) => {
-      const result = await axios.post(`${apiUrl}/api/apps/${appId}/groups/${group.id}/members`, {
-        id: sub,
-      });
-      setGroups((prevGroups) => prevGroups.map((t) => (t.id === group.id ? result.data : t)));
-    },
-    [sub, setGroups],
-  );
-
-  useEffect(() => {
-    refresh();
-  }, [isLoggedIn, refresh]);
-
-  if (!isLoggedIn) {
-    return null;
-  }
-
-  if (loading) {
-    return <Loader />;
-  }
-
-  if (isLoggedIn && error) {
-    return <FormattedMessage {...messages.error} />;
-  }
-
-  const appRoles = getAppRoles(appDefinition.security);
-
-  return (
-    <Table>
-      <tbody>
-        {groups?.map((group) => (
-          <tr key={group.id}>
-            <td>{group.name}</td>
-            <td className="is-pulled-right">
-              {group.role == null ? (
-                <AsyncButton onClick={() => joinGroup(group)}>
-                  <FormattedMessage {...messages.joinGroup} />
-                </AsyncButton>
-              ) : (
-                <>
-                  <AsyncSelect
-                    name="role"
-                    onChange={(event, value: AppRole) => changeGroupRole(group, value)}
-                    value={group.role}
-                  >
-                    {appRoles.map((role: AppRole) => (
-                      <option key={role} value={role}>
-                        {role}
-                      </option>
-                    ))}
-                  </AsyncSelect>
-                  <AsyncButton onClick={() => leaveGroup(group)}>
-                    <FormattedMessage {...messages.leaveGroup} />
-                  </AsyncButton>
-                </>
-              )}
-            </td>
-          </tr>
-        ))}
-      </tbody>
-    </Table>
-  );
 }
 
 export function DemoLogin({ modal }: DemoLoginProps): ReactNode {
@@ -279,7 +171,6 @@ export function DemoLogin({ modal }: DemoLoginProps): ReactNode {
           </SimpleSubmit>
         </>
       ) : null}
-      <GroupControls />
     </>
   );
 
