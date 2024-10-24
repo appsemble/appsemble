@@ -1,0 +1,14 @@
+{
+  "app": {
+    "app.roles.User": "Korisnik",
+    "app.roles.User.description": "Korisnik",
+    "description": "Demonstrira kako prikazati PDF dokumente pomoću popratnih kontejnera i predložaka za dokumente.",
+    "name": "PDF",
+    "pages.create-report": "Izradi izvještaj"
+  },
+  "messageIds": {
+    "author": "Autor",
+    "content": "Sadržaj",
+    "reportTitle": "Naslov izvještaja"
+  }
+}
