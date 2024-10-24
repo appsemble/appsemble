@@ -179,7 +179,7 @@
   "server.emails.reset.body": "{Name, select, null {Hallo,} andere {Hallo {Name},}}\n\nFür Ihr Konto wurde ein neues Passwort angefordert. Bitte klicken Sie auf <link>hier</link> um Ihr Passwort zurückzusetzen.\n\n**Diese E-Mail wurde nicht angefordert?**\n\nIhre E-Mail-Adresse wurde möglicherweise versehentlich eingegeben. Diese E-Mail können Sie getrost ignorieren.\n\nMit freundlichen Grüßen,\n\n{{appName, select, null {Das Appsemble Team} andere {{appName}}}_",
   "server.emails.reset.subject": "Passwort zurücksetzen",
   "server.emails.welcome.body": "{Name, select, null {Hallo,} andere {Hallo {Name},}}\n\nVielen Dank, dass Sie Ihr Konto registriert haben. Bevor Sie Ihr Konto nutzen können, müssen wir Ihre E-Mail-Adresse verifizieren.\n\nBitte klicken Sie auf <link>hier</link>, um Ihre E-Mail-Adresse zu verifizieren.\n\nMit freundlichen Grüßen,\n\n_{appName, select, null {Das Appsemble Team} andere {{appName}}}_",
-  "server.emails.welcome.subject": "Willkommen bei {appName}",
+  "server.emails.welcome.subject": "",
   "studio.+7+1T0": "Die Berechtigung, manuelle Push-Benachrichtigungen für eine App zu senden.",
   "studio.+7HI4W": "Es gibt ein Problem beim Hochladen des Assets. Bitte versuchen Sie es erneut.",
   "studio.+Fvztk": "Die Erlaubnis, App-Ressourcen zu erhalten.",
