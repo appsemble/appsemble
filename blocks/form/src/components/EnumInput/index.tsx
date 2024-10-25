@@ -2,7 +2,8 @@ import { useBlock } from '@appsemble/preact';
 import { Option, SelectField } from '@appsemble/preact-components';
 import classNames from 'classnames';
 import { type VNode } from 'preact';
-import { useEffect, useState } from 'preact/hooks';
+import { type ChangeEvent } from 'preact/compat';
+import { useCallback, useEffect, useState } from 'preact/hooks';
 
 import { type Choice, type EnumField, type InputProps } from '../../../block.js';
 import { getValueByNameSequence } from '../../utils/getNested.js';
@@ -35,6 +36,7 @@ export function EnumInput({
         : field.enum,
   );
   const [error, setError] = useState<string>(null);
+  const [filter, setFilter] = useState<string>('');
 
   const { icon, inline, label, placeholder, tag } = field;
   const value = getValueByNameSequence(name, formValues);
@@ -50,12 +52,10 @@ export function EnumInput({
 
   useEffect(() => {
     if ('enum' in field) {
+      // Maybe make it like action/event/remapper
       if ('filter' in field) {
         if (field.filter) {
-          const filterInput = 'Aa';
-          const filteredOptions = options.filter((choice) =>
-            String(choice.value).indexOf(filterInput),
-          );
+          const filteredOptions = options.filter((choice) => String(choice.value).indexOf(filter));
           setOptions(filteredOptions as Choice[]);
         } else {
           return;
@@ -94,34 +94,40 @@ export function EnumInput({
       events.on[field.event](eventHandler);
       return () => events.off[field.event](eventHandler);
     }
-  }, [actions, events, field, fieldsetEntryValues, formValues, options, utils]);
+  }, [actions, events, field, fieldsetEntryValues, filter, formValues, options, utils]);
+
+  const filterChange = useCallback((e: ChangeEvent<HTMLInputElement>, input: string): void => {
+    setFilter(input);
+  }, []);
 
   return (
-    <SelectField
-      className={classNames('appsemble-enum', className)}
-      disabled={disabled || loading || options.length === 0}
-      error={dirty ? error : null}
-      errorLinkRef={errorLinkRef}
-      help={utils.remap(field.help, value) as string}
-      icon={icon}
-      inline={inline}
-      label={(utils.remap(label, value) as string) ?? name}
-      loading={loading}
-      name={name}
-      onChange={onChange}
-      optionalLabel={utils.formatMessage('optionalLabel')}
-      placeholder={utils.remap(placeholder, {}) as string}
-      readOnly={readOnly}
-      required={required}
-      tag={utils.remap(tag, value) as string}
-      value={value}
-    >
-      {loading ||
-        options.map((choice) => (
+    <div>
+      <input onChange={() => filterChange} placeholder="Search" value={filter} />
+      <SelectField
+        className={classNames('appsemble-enum', className)}
+        disabled={disabled || loading || options.length === 0}
+        error={dirty ? error : null}
+        errorLinkRef={errorLinkRef}
+        help={utils.remap(field.help, value) as string}
+        icon={icon}
+        inline={inline}
+        label={(utils.remap(label, value) as string) ?? name}
+        loading={loading}
+        name={name}
+        onChange={onChange}
+        optionalLabel={utils.formatMessage('optionalLabel')}
+        placeholder={utils.remap(placeholder, {}) as string}
+        readOnly={readOnly}
+        required={required}
+        tag={utils.remap(tag, value) as string}
+        value={value}
+      >
+        {options.map((choice) => (
           <Option disabled={choice.disabled} key={choice.value} value={choice.value}>
             {(utils.remap(choice.label, value) as string) ?? (choice.value as string)}
           </Option>
         ))}
-    </SelectField>
+      </SelectField>
+    </div>
   );
 }
