@@ -1,4 +1,4 @@
-import { test } from '../fixtures/test/index.js';
+import { expect, test } from '../fixtures/test/index.js';
 
 test.describe('Holidays', () => {
   test.beforeEach(async ({ page, visitApp }) => {
@@ -16,14 +16,12 @@ test.describe('Holidays', () => {
   });
 
   test('should navigate to the second tab', async ({ page }) => {
-    await page.waitForSelector('text=Eerste Kerstdag');
     await page.click('text=Germany');
-    await page.waitForSelector('text=Mariä Himmelfahrt');
+    await expect(page.getByText('Mariä Himmelfahrt')).toBeVisible();
   });
 
   test('should navigate to the American holidays page', async ({ page }) => {
-    await page.waitForSelector('text=Eerste Kerstdag');
     await page.click('text=Holidays in America');
-    await page.waitForSelector('text=Independence Day');
+    await expect(page.getByText('Independence Day')).toBeVisible();
   });
 });

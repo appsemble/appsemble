@@ -10,15 +10,11 @@ test.describe('Notes', () => {
     const date = Date.now();
 
     await loginApp();
-    await page.waitForSelector('.button.is-rounded');
     await page.click('.button.is-rounded');
-
-    await page.waitForLoadState('domcontentloaded');
-    await page.waitForSelector('.appsemble-loader', { state: 'hidden' });
-
     await page.fill('#title', `Title ${date}`);
     await page.fill('#body', `Body ${date}`);
     await page.click('button[type="submit"]');
+
     const entry = page.locator(`text=Title ${date}`);
     await expect(entry).toBeVisible();
     await entry.click();

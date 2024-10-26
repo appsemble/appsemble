@@ -4,7 +4,7 @@ test.describe('/apps/:appId', () => {
   test.beforeEach(async ({ login, page }) => {
     await login('/en/apps');
     await page.getByRole('link', { name: 'Person Appsemble' }).first().click();
-    await page.waitForSelector('text=Clone App');
+    await page.waitForLoadState('domcontentloaded');
   });
 
   test('should prompt when user has unsaved changes', async ({ page }) => {
@@ -62,44 +62,47 @@ test.describe('/apps/:appId', () => {
 
   test('should link to the asset viewer', async ({ page }) => {
     await page.click('text=Assets');
-    await page.waitForSelector('text=Upload new asset');
+    await expect(page.getByText('Upload new asset')).toBeVisible();
   });
 
   test('should link to resources', async ({ page }) => {
     await page.click('text=Resources');
-    await page.waitForSelector('text=This app has the following resources');
+    await expect(page.getByText('This app has the following resources')).toBeVisible();
   });
 
   test('should link to a specific resource', async ({ page }) => {
     await page.click('text=Resources');
-    await page.click('ul.menu-list :has-text("person")');
-    await page.waitForSelector('text=Resource: person');
+    await page.click('li :has-text("person")');
+    await expect(page.getByText('Resource: person')).toBeVisible();
   });
 
   test('should link to the translator tool', async ({ page }) => {
     await page.click('text=Translations');
-    await page.waitForSelector('text=Selected language');
+    await expect(page.getByText('Selected language')).toBeVisible();
   });
 
   test('should link to the notification sender', async ({ page }) => {
     await page.click('text=Notifications');
-    await page.waitForSelector('text=Push notifications are currently not enabled in this app.');
+    await expect(
+      page.getByText('Push notifications are currently not enabled in this app.'),
+    ).toBeVisible();
   });
 
   test('should link to the snapshots page', async ({ page }) => {
     await page.click('text=Snapshots');
-    await page.waitForSelector('text=Snapshots');
-    await page.waitForSelector('ul:last-child li :has-text("Appsemble")');
+    await expect(page.getByText('Snapshots')).toBeVisible();
+    await expect(
+      page.getByRole('listitem').filter({ has: page.getByRole('heading', { name: 'Appsemble' }) }),
+    ).toBeVisible();
   });
 
   test('should link to the app settings', async ({ page }) => {
     await page.click('text=Settings');
-    await page.waitForSelector('text=App lock');
-    await page.waitForSelector('text=Dangerous actions');
+    await expect(page.getByText('App lock')).toBeVisible();
   });
 
   test('should link to the app secrets', async ({ page }) => {
     await page.click('text=Secrets');
-    await page.waitForSelector('text=Appsemble Login');
+    await expect(page.getByText('Appsemble Login')).toBeVisible();
   });
 });

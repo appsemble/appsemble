@@ -1,4 +1,4 @@
-import { test } from '../fixtures/test/index.js';
+import { expect, test } from '../fixtures/test/index.js';
 
 test.describe('Person', () => {
   test.beforeEach(async ({ visitApp }) => {
@@ -20,13 +20,11 @@ test.describe('Person', () => {
 
     await page.click('button[type="submit"]');
 
-    await page.waitForSelector(`td:has-text("${firstName}")`);
-    await page.waitForSelector(`td:has-text("${lastName}")`);
     await page.click(`td:has-text("${firstName}")`);
 
-    await page.waitForSelector(`:has-text("${firstName}")`);
-    await page.waitForSelector(`:has-text("${lastName}")`);
-    await page.waitForSelector(`:has-text("${email}")`);
-    await page.waitForSelector(`:has-text("${description}")`);
+    await expect(page.getByText(firstName)).toBeVisible();
+    await expect(page.getByText(lastName)).toBeVisible();
+    await expect(page.getByText(email)).toBeVisible();
+    await expect(page.getByText(description)).toBeVisible();
   });
 });
