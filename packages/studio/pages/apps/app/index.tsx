@@ -96,10 +96,11 @@ export function AppRoutes(): ReactNode {
 
   const mayVisitEditor = useMemo(
     () =>
+      organization &&
       checkOrganizationRoleOrganizationPermissions(userOrganizationRole, [
         OrganizationPermission.UpdateApps,
       ]),
-    [userOrganizationRole],
+    [userOrganizationRole, organization],
   );
 
   const mayVisitAssets = useMemo(
@@ -217,19 +218,18 @@ export function AppRoutes(): ReactNode {
         <MenuItem end icon="info" to={url}>
           <FormattedMessage {...messages.details} />
         </MenuItem>
+        {mayVisitEditor ? (
+          <MenuItem icon="edit" to={`${url}/edit#editor`}>
+            <FormattedMessage {...messages.editor} />
+          </MenuItem>
+        ) : app.yaml ? (
+          <MenuItem icon="code" to={`${url}/definition`}>
+            <FormattedMessage {...messages.definition} />
+          </MenuItem>
+        ) : null}
 
         {organization ? (
           <>
-            {mayVisitEditor ? (
-              <MenuItem icon="edit" to={`${url}/edit#editor`}>
-                <FormattedMessage {...messages.editor} />
-              </MenuItem>
-            ) : app.yaml ? (
-              <MenuItem icon="code" to={`${url}/definition`}>
-                <FormattedMessage {...messages.definition} />
-              </MenuItem>
-            ) : null}
-
             {mayVisitAssets ? (
               <MenuItem icon="layer-group" to={`${url}/assets`}>
                 <FormattedMessage {...messages.assets} />
