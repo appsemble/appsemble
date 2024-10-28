@@ -1,0 +1,9 @@
+{
+  "app": {
+    "app.roles.User": "User",
+    "app.roles.User.description": "A user.",
+    "description": "An app that demonstrates the email action in demo mode.",
+    "name": "Mail",
+    "pages.send-mail": "Send Mail"
+  }
+}

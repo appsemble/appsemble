@@ -95,6 +95,6 @@ export const pathItems: OpenAPIV3.PathItemObject = {
         description: 'The app assets have been deleted successfully.',
       },
     },
-    security: [{ studio: [] }, { app: ['resources:manage'] }, { cli: ['resources:write'] }, {}],
+    security: [{ studio: [] }, { app: ['resources:manage'] }, { cli: ['assets:write'] }, {}],
   },
 };
