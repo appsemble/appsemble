@@ -38,6 +38,7 @@ resources:
 Supported resource actions are as below:
 
 - [`resource.get`](#resourceget)
+- [`resource.history.get`](#resourcehistoryget)
 - [`resource.query`](#resourcequery)
 - [`resource.count`](#resourcecount)
 - [`resource.create`](#resourcecreate)
@@ -67,6 +68,26 @@ blocks:
     actions:
       onLoad:
         type: resource.get
+        resource: person
+```
+
+### resource.history.get<Side name="resource.history.get" />
+
+This action is implemented for client side only. This action is used to fetch the history of a
+single resource, `history` attribute of the resource should be set to true for this action to work.
+Supported fields for this action are `type` and `resource`. Fields `type` and `resource` are
+required. Resource refers to the resource to be fetched. This action requires at least one of the
+app permissions `$resource:all:history:get` or `$resource:<resource-name>:history:get` depending on
+the context. For more information check out [security](../02-guides/security.md#permissions). Here’s
+an example of how you can use this action to fetch the `person` resource.
+
+```yaml validate blocks-snippet
+blocks:
+  - type: data-loader
+    version: 0.30.1
+    actions:
+      onLoad:
+        type: resource.history.get
         resource: person
 ```
 

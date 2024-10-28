@@ -192,6 +192,7 @@ const AppResourcesManagerPermissions = [
   ...AppMemberPermissions,
   AppPermission.CreateResources,
   AppPermission.QueryResources,
+  AppPermission.GetResourceHistory,
   AppPermission.GetResources,
   AppPermission.UpdateResources,
   AppPermission.PatchResources,

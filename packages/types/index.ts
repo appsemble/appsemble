@@ -753,7 +753,13 @@ export type ResourceViewAction = 'get' | 'query';
 
 export type OwnResourceAction = ResourceViewAction | 'delete' | 'patch' | 'update';
 
-export type ResourceAction = ResourceViewAction | 'create' | 'delete' | 'patch' | 'update';
+export type ResourceAction =
+  | ResourceViewAction
+  | 'create'
+  | 'delete'
+  | 'history.get'
+  | 'patch'
+  | 'update';
 
 export type CustomAppResourcePermission = `$resource:${string}:${ResourceAction}`;
 
@@ -1567,6 +1573,7 @@ export interface ControllerActionDefinition extends BaseActionDefinition<'contro
 export type RequestActionDefinition = RequestLikeActionDefinition<'request'>;
 export type ResourceCreateActionDefinition = ResourceActionDefinition<'resource.create'>;
 export type ResourceDeleteActionDefinition = ResourceActionDefinition<'resource.delete'>;
+export type ResourceHistoryGetActionDefinition = ResourceActionDefinition<'resource.history.get'>;
 export type ResourceGetActionDefinition = ResourceActionDefinition<'resource.get'> &
   ViewResourceDefinition;
 export type ResourceQueryActionDefinition = OwnResourceDefinition &
@@ -1708,6 +1715,7 @@ export type ActionDefinition =
   | ResourceCreateActionDefinition
   | ResourceDeleteActionDefinition
   | ResourceGetActionDefinition
+  | ResourceHistoryGetActionDefinition
   | ResourcePatchActionDefinition
   | ResourceQueryActionDefinition
   | ResourceSubscriptionStatusActionDefinition

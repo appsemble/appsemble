@@ -90,6 +90,7 @@ export const actionCreators: ActionCreators = {
   notify,
   request,
   'resource.get': resource.get,
+  'resource.history.get': resource.historyGet,
   'resource.query': resource.query,
   'resource.count': resource.count,
   'resource.create': resource.create,

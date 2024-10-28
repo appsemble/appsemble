@@ -1,23 +1,24 @@
 import { assertKoaError, getResourceDefinition } from '@appsemble/node-utils';
-import { OrganizationPermission } from '@appsemble/types';
 import { type Context } from 'koa';
 
 import { App, AppMember, Resource, ResourceVersion } from '../../../../../models/index.js';
-import { checkUserOrganizationPermissions } from '../../../../../utils/authorization.js';
+import { checkAppPermissions } from '../../../../../options/checkAppPermissions.js';
 
 export async function getAppResourceVersions(ctx: Context): Promise<void> {
   const {
     pathParams: { appId, resourceId, resourceType },
+    queryParams: { selectedGroupId },
   } = ctx;
 
-  const app = await App.findByPk(appId, { attributes: ['OrganizationId', 'definition'] });
+  const app = await App.findByPk(appId, { attributes: ['id', 'OrganizationId', 'definition'] });
 
   assertKoaError(!app, ctx, 404, 'App not found');
 
-  await checkUserOrganizationPermissions({
+  await checkAppPermissions({
     context: ctx,
-    requiredPermissions: [OrganizationPermission.QueryAppResources],
-    organizationId: app.OrganizationId,
+    permissions: [`$resource:${resourceType}:history:get`],
+    app: app.toJSON(),
+    groupId: selectedGroupId,
   });
 
   const resource = await Resource.findOne({
@@ -25,6 +26,7 @@ export async function getAppResourceVersions(ctx: Context): Promise<void> {
       AppId: appId,
       id: resourceId,
       type: resourceType,
+      GroupId: selectedGroupId ?? null,
     },
     include: [
       { association: 'Editor' },

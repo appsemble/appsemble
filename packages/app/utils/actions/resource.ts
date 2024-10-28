@@ -6,6 +6,33 @@ import { request } from './request.js';
 import { type ServiceWorkerRegistrationContextType } from '../../types.js';
 import { apiUrl, appId } from '../settings.js';
 
+export const historyGet: ActionCreator<'resource.history.get'> = (args) => {
+  const { appDefinition, definition, getAppMemberSelectedGroup } = args;
+  const resource = appDefinition.resources[definition.resource];
+  const { id = 'id' } = resource;
+
+  const selectedGroupId = getAppMemberSelectedGroup?.();
+  return request({
+    ...args,
+    definition: {
+      ...definition,
+      query: selectedGroupId
+        ? { 'object.assign': { selectedGroupId: selectedGroupId.id } }
+        : undefined,
+      method: 'GET',
+      proxy: false,
+      type: 'request',
+      url: {
+        'string.format': {
+          template: `${apiUrl}/api/apps/${appId}/resources/${definition.resource}/{id}/versions`,
+          values: { id: { prop: id as string } },
+        },
+      },
+      schema: resource.schema,
+    },
+  });
+};
+
 export const get: ActionCreator<'resource.get'> = (args) => {
   const { appDefinition, definition, getAppMemberSelectedGroup } = args;
   const { view } = definition;
