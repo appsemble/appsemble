@@ -57,7 +57,7 @@ export function EnumInput({
       if ('filter' in field) {
         if (field.filter) {
           const filteredOptions = originalOptions.filter((choice) =>
-            String(choice.value).includes(filter),
+            String(choice.value).toLowerCase().includes(filter.toLowerCase()),
           );
           setOptions(filteredOptions);
         } else {
@@ -115,7 +115,7 @@ export function EnumInput({
 
   return (
     <div>
-      <Input onChange={filterChange} placeholder="Search" value={filter} />
+      {field.filter ? <Input onChange={filterChange} placeholder="Search" value={filter} /> : null}
       <SelectField
         className={classNames('appsemble-enum', className)}
         disabled={disabled || loading || options.length === 0}
