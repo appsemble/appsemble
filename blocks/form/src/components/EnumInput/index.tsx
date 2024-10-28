@@ -1,5 +1,5 @@
 import { useBlock } from '@appsemble/preact';
-import { Option, SelectField } from '@appsemble/preact-components';
+import { Input, Option, SelectField } from '@appsemble/preact-components';
 import classNames from 'classnames';
 import { type VNode } from 'preact';
 import { type ChangeEvent } from 'preact/compat';
@@ -37,6 +37,7 @@ export function EnumInput({
   );
   const [error, setError] = useState<string>(null);
   const [filter, setFilter] = useState<string>('');
+  const [originalOptions] = useState<Choice[]>(options);
 
   const { icon, inline, label, onSelect, placeholder, tag } = field;
   const value = getValueByNameSequence(name, formValues);
@@ -55,8 +56,10 @@ export function EnumInput({
       // Maybe make it like action/event/remapper
       if ('filter' in field) {
         if (field.filter) {
-          const filteredOptions = options.filter((choice) => String(choice.value).indexOf(filter));
-          setOptions(filteredOptions as Choice[]);
+          const filteredOptions = originalOptions.filter((choice) =>
+            String(choice.value).includes(filter),
+          );
+          setOptions(filteredOptions);
         } else {
           return;
         }
@@ -94,7 +97,17 @@ export function EnumInput({
       events.on[field.event](eventHandler);
       return () => events.off[field.event](eventHandler);
     }
-  }, [actions, events, field, fieldsetEntryValues, filter, formValues, options, utils]);
+  }, [
+    actions,
+    events,
+    field,
+    fieldsetEntryValues,
+    filter,
+    formValues,
+    options,
+    originalOptions,
+    utils,
+  ]);
 
   const filterChange = useCallback((e: ChangeEvent<HTMLInputElement>, input: string): void => {
     setFilter(input);
@@ -110,7 +123,7 @@ export function EnumInput({
 
   return (
     <div>
-      <input onChange={() => filterChange} placeholder="Search" value={filter} />
+      <Input onChange={filterChange} placeholder="Search" value={filter} />
       <SelectField
         className={classNames('appsemble-enum', className)}
         disabled={disabled || loading || options.length === 0}
