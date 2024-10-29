@@ -734,6 +734,15 @@ interface AbstractEnumField extends AbstractField, InlineField {
    * These are evaluated in the order they are defined in.
    */
   requirements?: RequiredRequirement[];
+
+  /**
+   * This action will be fired when an option is selected.
+   *
+   * Must be present in the actions of the form
+   *
+   * @format action
+   */
+  onSelect?: string;
 }
 
 /**

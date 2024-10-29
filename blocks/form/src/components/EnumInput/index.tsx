@@ -36,7 +36,7 @@ export function EnumInput({
   );
   const [error, setError] = useState<string>(null);
 
-  const { icon, inline, label, placeholder, tag } = field;
+  const { icon, inline, label, onSelect, placeholder, tag } = field;
   const value = getValueByNameSequence(name, formValues);
 
   const required = isRequired(field, utils, formValues);
@@ -85,6 +85,14 @@ export function EnumInput({
     }
   }, [actions, events, field, fieldsetEntryValues, formValues, utils]);
 
+  const handleChange = (n: Event | string, v?: string): void => {
+    if (onSelect) {
+      actions[onSelect]({ value: v });
+    }
+
+    onChange(n, v);
+  };
+
   return (
     <SelectField
       className={classNames('appsemble-enum', className)}
@@ -97,7 +105,7 @@ export function EnumInput({
       label={(utils.remap(label, value) as string) ?? name}
       loading={loading}
       name={name}
-      onChange={onChange}
+      onChange={handleChange}
       optionalLabel={utils.formatMessage('optionalLabel')}
       placeholder={utils.remap(placeholder, {}) as string}
       readOnly={readOnly}
