@@ -63,7 +63,6 @@ export function EnumInput({
 
   useEffect(() => {
     if ('enum' in field) {
-      // Maybe make it like action/event/remapper
       if ('filter' in field) {
         if (field.filter) {
           const filteredOptions = originalOptions.filter((choice) =>
