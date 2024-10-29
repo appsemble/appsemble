@@ -53,7 +53,6 @@ export function EnumInput({
 
   useEffect(() => {
     if ('enum' in field) {
-      // Maybe make it like action/event/remapper
       if ('filter' in field) {
         if (field.filter) {
           const filteredOptions = originalOptions.filter((choice) =>
@@ -122,8 +121,16 @@ export function EnumInput({
   };
 
   return (
-    <div>
-      {field.filter ? <Input onChange={filterChange} placeholder="Search" value={filter} /> : null}
+    // eslint-disable-next-line react/forbid-dom-props
+    <div style={{ position: 'relative', display: 'inline-block' }}>
+      {field.filter ? (
+        <Input
+          onChange={filterChange}
+          placeholder="Search"
+          style={{ position: 'absolute', top: '43%', zIndex: '100' }}
+          value={filter}
+        />
+      ) : null}
       <SelectField
         className={classNames('appsemble-enum', className)}
         disabled={disabled || loading || options.length === 0}
