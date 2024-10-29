@@ -1968,6 +1968,13 @@ Fields are combined in order if set to true.",
             "description": "The name used when storing this field.",
             "type": "string",
           },
+          "onSelect": {
+            "description": "This action will be fired when an option is selected.
+
+Must be present in the actions of the form",
+            "format": "action",
+            "type": "string",
+          },
           "placeholder": {
             "description": "The placeholder to display when the field is empty.",
             "format": "remapper",
@@ -2559,6 +2566,13 @@ Fields are combined in order if set to true.",
           },
           "name": {
             "description": "The name used when storing this field.",
+            "type": "string",
+          },
+          "onSelect": {
+            "description": "This action will be fired when an option is selected.
+
+Must be present in the actions of the form",
+            "format": "action",
             "type": "string",
           },
           "placeholder": {
@@ -3742,6 +3756,13 @@ Fields are combined in order if set to true.",
             "description": "The name used when storing this field.",
             "type": "string",
           },
+          "onSelect": {
+            "description": "This action will be fired when an option is selected.
+
+Must be present in the actions of the form",
+            "format": "action",
+            "type": "string",
+          },
           "placeholder": {
             "description": "The placeholder to display when the field is empty.",
             "format": "remapper",
@@ -4165,6 +4186,13 @@ Fields are combined in order if set to true.",
           },
           "name": {
             "description": "The name used when storing this field.",
+            "type": "string",
+          },
+          "onSelect": {
+            "description": "This action will be fired when an option is selected.
+
+Must be present in the actions of the form",
+            "format": "action",
             "type": "string",
           },
           "placeholder": {
