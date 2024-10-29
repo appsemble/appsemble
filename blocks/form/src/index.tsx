@@ -13,7 +13,7 @@ import { debounce } from './utils/debounce.js';
 import { generateDefaultValidity } from './utils/generateDefaultValidity.js';
 import { generateDefaultValues } from './utils/generateDefaultValues.js';
 import { isFormValid } from './utils/validity.js';
-import { type FieldEventParameters, type StringField, type Values } from '../block.js';
+import { type Field, type FieldEventParameters, type StringField, type Values } from '../block.js';
 
 const goToRef = (ref: MutableRef<any>): void => {
   ref?.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
@@ -440,6 +440,11 @@ bootstrap(
       });
     };
 
+    const show = useCallback(
+      (field: Field) => field.show === undefined || Boolean(utils.remap(field.show, values)),
+      [utils, values],
+    );
+
     return (
       <Form
         className={`${fullWidth ? styles['root-full-width'] : styles.root} is-flex`}
@@ -463,11 +468,11 @@ bootstrap(
         </Message>
         <div className={getFieldsContainerClass()}>
           {fields
-            .filter((f) => f.show === undefined || utils.remap(f.show, values))
+            .filter((f) => f.type === 'enum' || show(f))
             .map((f) => (
               <FormInput
                 addThumbnail={addThumbnail}
-                className={`mb-4 ${classNames({
+                className={`mb-4 ${f.type === 'enum' && !show(f) ? 'is-hidden' : ''} ${classNames({
                   [styles.dense]: dense,
                   [styles['column-span']]:
                     ['fieldset', 'tags', 'file', 'selection'].includes(f.type) ||
