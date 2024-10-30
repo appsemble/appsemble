@@ -176,6 +176,7 @@ export function EnumInput({
   useClickOutside(ref, disable);
 
   return (
+<<<<<<< HEAD
     <div>
       {field.filter ? (
         <div className={classNames('dropdown', className, { 'is-active': enabled })} ref={ref}>
