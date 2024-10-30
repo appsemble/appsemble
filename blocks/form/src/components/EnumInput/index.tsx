@@ -114,16 +114,6 @@ export function EnumInput({
 
     if ('action' in field) {
       actions[field.action]().then(handleOptions, handleError);
-      if ('filter' in field) {
-        if (field.filter) {
-          const filteredOptions = originalOptions.filter((choice) =>
-            String(choice.value).toLowerCase().includes(filter.toLowerCase()),
-          );
-          setOptions(filteredOptions);
-        } else {
-          return;
-        }
-      }
     }
 
     if ('event' in field) {
@@ -134,18 +124,6 @@ export function EnumInput({
           handleOptions(data);
         }
       };
-
-      if ('filter' in field) {
-        if (field.filter) {
-          const filteredOptions = originalOptions.filter((choice) =>
-            String(choice.value).toLowerCase().includes(filter.toLowerCase()),
-          );
-          setOptions(filteredOptions);
-        } else {
-          return;
-        }
-      }
-
       events.on[field.event](eventHandler);
       return () => events.off[field.event](eventHandler);
     }
