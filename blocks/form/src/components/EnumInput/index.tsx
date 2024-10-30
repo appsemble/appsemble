@@ -37,7 +37,7 @@ export function EnumInput({
   );
   const [error, setError] = useState<string>(null);
   const [filter, setFilter] = useState<string>('');
-  const [originalOptions] = useState<Choice[]>(options);
+  const [originalOptions, setOriginalOptions] = useState<Choice[]>(options);
 
   const { icon, inline, label, onSelect, placeholder, tag } = field;
   const value = getValueByNameSequence(name, formValues);
@@ -68,11 +68,22 @@ export function EnumInput({
 
     if ('remapper' in field) {
       setOptions(utils.remap(field.remapper, { formValues, fieldsetEntryValues }) as Choice[]);
+      if ('filter' in field) {
+        if (field.filter) {
+          const filteredOptions = originalOptions.filter((choice) =>
+            String(choice.value).toLowerCase().includes(filter.toLowerCase()),
+          );
+          setOptions(filteredOptions);
+        } else {
+          return;
+        }
+      }
       return;
     }
 
     const handleOptions = (result: Choice[]): void => {
       setOptions(result);
+      setOriginalOptions(result);
       setLoading(false);
     };
 
@@ -83,6 +94,16 @@ export function EnumInput({
 
     if ('action' in field) {
       actions[field.action]().then(handleOptions, handleError);
+      if ('filter' in field) {
+        if (field.filter) {
+          const filteredOptions = originalOptions.filter((choice) =>
+            String(choice.value).toLowerCase().includes(filter.toLowerCase()),
+          );
+          setOptions(filteredOptions);
+        } else {
+          return;
+        }
+      }
     }
 
     if ('event' in field) {
@@ -93,6 +114,18 @@ export function EnumInput({
           handleOptions(data);
         }
       };
+
+      if ('filter' in field) {
+        if (field.filter) {
+          const filteredOptions = originalOptions.filter((choice) =>
+            String(choice.value).toLowerCase().includes(filter.toLowerCase()),
+          );
+          setOptions(filteredOptions);
+        } else {
+          return;
+        }
+      }
+
       events.on[field.event](eventHandler);
       return () => events.off[field.event](eventHandler);
     }
@@ -152,7 +185,7 @@ export function EnumInput({
         <Input
           onChange={filterChange}
           placeholder={utils.formatMessage('search')}
-          style={{ marginLeft: '5%', maxWidth: '40%', bottom: '0' }}
+          style={{ marginLeft: '5%', maxWidth: '40%', bottom: '0', right: '0' }}
           value={filter}
         />
       ) : null}
