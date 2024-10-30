@@ -1,0 +1,343 @@
+name: KCCAntwoord
+description: Appsemble applicatie voor het afhandelen en doorsturen van telefoon notities
+defaultPage: Start
+defaultLanguage: nl
+
+theme:
+  primaryColor: '#257ab9'
+  themeColor: '#0062a8'
+
+security:
+  default:
+    role: User
+    policy: everyone
+  roles:
+    User:
+      description: A user of the KCC app.
+      permissions:
+        - '$resource:all:query'
+
+anchors:
+  - &blocks-version 0.30.3
+
+resources:
+  # DoorstuurBericht:
+  #   schema:
+  #     type: object
+  #     additionalProperties: false
+  #     required:
+  #       - id
+  #       - Doorsturen naar
+  #     properties:
+  #       id:
+  #         title: id
+  #         type: integer
+  #       Doorsturen naar:
+  #         enum:
+  #           - KCC
+  #           - Collega
+  #           - Knooppunt
+  #       opmerking:
+  #         title: opmerking
+  #         type: string
+  collegas:
+    schema:
+      type: object
+      additionalProperties: false
+      required:
+        - collegaID
+        - login
+        - naam
+        - email
+      properties:
+        collegaID:
+          type: integer
+        login:
+          type: string
+          maxLength: 80
+        naam:
+          type: string
+          maxLength: 80
+        email:
+          type: string
+          maxLength: 80
+  knooppunten:
+    schema:
+      type: object
+      additionalProperties: false
+      required:
+        - naam
+        - knooppuntID
+      properties:
+        naam:
+          type: string
+          maxLength: 80
+        knooppuntID:
+          type: integer
+  telefoonnotities:
+    schema:
+      type: object
+      additionalProperties: false
+      required:
+        - id
+      properties:
+        id:
+          type: integer
+pages:
+  - name: Start
+    blocks:
+      - type: data-loader
+        version: *blocks-version
+        actions:
+          onLoad:
+            type: resource.query
+            resource: telefoonnotities
+        events:
+          emit:
+            data: Kccdata
+
+      - type: markdown
+        version: *blocks-version
+        layout: grow
+        events:
+          listen:
+            data: Kccdata
+        parameters:
+          alignment: center
+          content:
+            string.format:
+              template: |
+                Telefoonnotitie {id}
+              values:
+                id: 32890
+
+      - type: button-list
+        version: *blocks-version
+        parameters:
+          buttons:
+            - label: { translate: afhandelen }
+              color: primary
+              onClick: afhandelKlik
+              icon: angle-right
+              iconSide: false
+              fullwidth: true
+              size: medium
+              title: Afhandelen
+            - label: { translate: doorsturen }
+              color: primary
+              onClick: doorstuurKlik
+              icon: angle-right
+              iconSide: false
+              fullwidth: true
+              size: medium
+              title: Doorsturen
+        actions:
+          afhandelKlik:
+            type: link
+            to: [KCC, Afhandelen]
+          doorstuurKlik:
+            type: link
+            to: [KCC, Doorsturen]
+
+  - name: KCC
+    type: tabs
+    tabs:
+      - name: Afhandelen
+        blocks:
+          - type: data-loader
+            version: *blocks-version
+            actions:
+              onLoad:
+                type: resource.query
+                resource: telefoonnotities
+                onSuccess:
+                  type: event
+                  event: Kccdata
+            events:
+              emit:
+                data: Kccdata
+          - type: markdown
+            version: *blocks-version
+            layout: grow
+            events:
+              listen:
+                data: Kccdata
+            parameters:
+              alignment: center
+              content:
+                string.format:
+                  template: |
+                    Telefoonnotitie {id}
+                  values:
+                    id: 32890
+          - type: data-loader
+            version: *blocks-version
+            actions:
+              onLoad:
+                type: resource.query
+                resource: collegas
+                onSuccess:
+                  type: event
+                  event: collegaOptions
+          - type: form
+            version: *blocks-version
+            actions:
+              loadCollegas:
+                type: resource.query
+                resource: collegas
+                remapAfter:
+                  array.map:
+                    object.from:
+                      label: { prop: naam }
+                      value: { prop: naam }
+            parameters:
+              fields:
+                - type: enum
+                  name: Afhandelveld
+                  label: { translate: afhandeling }
+                  placeholder: { translate: selecteer-afhandel-methode }
+                  disabled: false
+                  enum:
+                    - value: Teruggebeld
+                      label: Teruggebeld
+                    - value: Teruggebeld - geen gehoor
+                      label: Teruggebeld - geen gehoor
+                    - value: Email gestuurd
+                      label: Email gestuurd
+                    - value: Foutief Telefoonnummer / Emailadress
+                      label: Foutief Telefoonnummer / Emailadress
+                    - value: Acquisitie
+                      label: Acquisitie
+                  requirements:
+                    - required: true
+                - type: enum
+                  name: Doorsturen naar Collega
+                  label: { translate: collega }
+                  placeholder: { translate: selecteer-collega }
+                  disabled: false
+                  action: loadCollegas
+                  requirements:
+                    - required: true
+                - type: string
+                  name: Opmerking
+                  label: { translate: opmerking }
+                  placeholder: { translate: aanvullende-opmerking }
+                  multiline: true
+                  requirements:
+                    - required: false
+            events:
+              listen:
+                data: collegaOptions
+      - name: Doorsturen
+        blocks:
+          - type: data-loader
+            version: *blocks-version
+            actions:
+              onLoad:
+                type: resource.query
+                resource: telefoonnotities
+                onSuccess:
+                  type: event
+                  event: Kccdata
+          - type: markdown
+            version: *blocks-version
+            layout: grow
+            events:
+              listen:
+                data: Kccdata
+            parameters:
+              alignment: center
+              content:
+                string.format:
+                  template: |
+                    Telefoonnotitie {id}
+                  values:
+                    id: 32890
+          - type: form
+            version: *blocks-version
+            actions:
+              checkBeschikbaar:
+                # type: condition
+                # if: { equals: [{ prop: adress }, collega] }
+                # then:
+                type: dialog
+                closable: true
+                title: { translate: automatisch-antwoord }
+                blocks:
+                  - type: html
+                    version: *blocks-version
+                    events:
+                      listen:
+                        data: Kccdata
+                    parameters:
+                      content:
+                        <p><b>Afwezig, geen begin- en eindtijd aangegeven</b></p> <p>Omdat ik
+                        momenteel op vakantie ben kan ik op dit moment uw mail niet lezen.<p>
+                # else:
+                #   type: noop
+              loadCollegas:
+                type: resource.query
+                resource: collegas
+                remapAfter:
+                  array.map:
+                    object.from:
+                      label: { prop: naam }
+                      value: { prop: naam }
+              loadKnooppunten:
+                type: resource.query
+                resource: knooppunten
+                remapAfter:
+                  array.map:
+                    object.from:
+                      label: { prop: naam }
+                      value: { prop: naam }
+                # url: "https://secure.sittard-geleen.nl/apexapi/ords/ws_kccantwoord/KCCNotitie/T\
+                #   el/sleutel"
+              onSubmit:
+                type: log
+                onSuccess:
+                  type: message
+                  body: { translate: telefoon-notitie-doorgestuurd }
+                  layout: top
+                  color: success
+            parameters:
+              skipInitialLoad: true
+              fields:
+                - type: radio
+                  name: adress
+                  label: { translate: adress }
+                  options:
+                    - label: KCC
+                      value: KCC
+                    - label: knooppunt
+                      value: knooppunt
+                    - label: collega
+                      value: collega
+                  requirements:
+                    - required: true
+                - type: enum
+                  show: { equals: [{ prop: adress }, collega] }
+                  name: stuurCollega
+                  label: { translate: collega }
+                  placeholder: { translate: selecteer-collega }
+                  disabled: false
+                  action: loadCollegas
+                  requirements: [{ required: { not: [{ prop: stuurKnooppunt }] } }]
+                  onSelect: checkBeschikbaar
+                - type: enum
+                  show: { equals: [{ prop: adress }, knooppunt] }
+                  name: stuurKnooppunt
+                  label: { translate: knooppunt }
+                  placeholder: { translate: selecteer-knooppunt }
+                  disabled: false
+                  action: loadKnooppunten
+                  requirements: [{ required: { not: [{ prop: stuurCollega }] } }]
+                - type: string
+                  name: toelichting
+                  label: { translate: toelichting }
+                  placeholder: { translate: aanvullende-toelichting }
+                  multiline: true
+                  requirements:
+                    - required: false
+layout:
+  navigation: hidden
