@@ -104,6 +104,16 @@ export function EnumInput({
 
     if ('action' in field) {
       actions[field.action]().then(handleOptions, handleError);
+      if ('filter' in field) {
+        if (field.filter) {
+          const filteredOptions = originalOptions.filter((choice) =>
+            String(choice.value).toLowerCase().includes(filter.toLowerCase()),
+          );
+          setOptions(filteredOptions);
+        } else {
+          return;
+        }
+      }
     }
 
     if ('event' in field) {
@@ -114,6 +124,18 @@ export function EnumInput({
           handleOptions(data);
         }
       };
+
+      if ('filter' in field) {
+        if (field.filter) {
+          const filteredOptions = originalOptions.filter((choice) =>
+            String(choice.value).toLowerCase().includes(filter.toLowerCase()),
+          );
+          setOptions(filteredOptions);
+        } else {
+          return;
+        }
+      }
+
       events.on[field.event](eventHandler);
       return () => events.off[field.event](eventHandler);
     }
@@ -142,12 +164,7 @@ export function EnumInput({
   };
 
   return (
-<<<<<<< HEAD
     <div>
-=======
-    // eslint-disable-next-line react/forbid-dom-props
-    <div style={{ position: 'relative', display: 'flex' }}>
->>>>>>> e799765ac (Move search field to right hand side)
       <SelectField
         className={classNames('appsemble-enum', className)}
         disabled={disabled || loading || options.length === 0}
