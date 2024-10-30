@@ -10,5 +10,6 @@
   "selectionNoOptions": "Nema daljnjih opcija",
   "selectionOptionsError": "Dogodila se greška prilikom učitavanja opcija",
   "submitError": "Dogodila se greška tijekom slanja ovog obrasca",
-  "submitLabel": "Pošalji"
+  "submitLabel": "Pošalji",
+  "search": ""
 }

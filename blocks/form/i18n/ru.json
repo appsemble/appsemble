@@ -10,5 +10,6 @@
   "selectionNoOptions": "Больше нет доступных вариантов",
   "selectionOptionsError": "Возникла ошибка при загрузке опций",
   "submitError": "При отправке этой формы возникла проблема",
-  "submitLabel": "Отправить"
+  "submitLabel": "Отправить",
+  "search": ""
 }

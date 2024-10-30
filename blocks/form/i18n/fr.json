@@ -10,5 +10,6 @@
   "selectionNoOptions": "Plus d'options disponibles",
   "selectionOptionsError": "Il y a eu une erreur de chargement des options",
   "submitError": "Un problème est survenu lors de l'envoi de ce formulaire",
-  "submitLabel": "Signaler"
+  "submitLabel": "Signaler",
+  "search": ""
 }
