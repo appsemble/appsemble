@@ -1351,6 +1351,7 @@ declare module '@appsemble/sdk' {
     formRequirementError: never;
     invalidLabel: never;
     previousLabel: never;
+    search: never;
     selectionNoOptions: never;
     selectionOptionsError: never;
     fixErrors: never;

@@ -10,5 +10,6 @@
   "selectionNoOptions": "",
   "selectionOptionsError": "",
   "submitError": "Beim Senden dieses Formulars ist ein Problem aufgetreten",
-  "submitLabel": "Übermitteln"
+  "submitLabel": "Übermitteln",
+  "search": ""
 }

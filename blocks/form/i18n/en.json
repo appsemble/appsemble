@@ -10,5 +10,6 @@
   "selectionNoOptions": "No more available options",
   "selectionOptionsError": "There was an error loading the options",
   "submitError": "There was a problem submitting this form",
-  "submitLabel": "Submit"
+  "submitLabel": "Submit",
+  "search": "Search"
 }
