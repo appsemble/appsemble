@@ -114,15 +114,7 @@ export function EnumInput({
 
   return (
     // eslint-disable-next-line react/forbid-dom-props
-    <div style={{ position: 'relative', display: 'inline-block' }}>
-      {field.filter ? (
-        <Input
-          onChange={filterChange}
-          placeholder="Search"
-          style={{ position: 'absolute', top: '43%', zIndex: '100' }}
-          value={filter}
-        />
-      ) : null}
+    <div style={{ position: 'relative', display: 'flex' }}>
       <SelectField
         className={classNames('appsemble-enum', className)}
         disabled={disabled || loading || options.length === 0}
@@ -148,6 +140,14 @@ export function EnumInput({
           </Option>
         ))}
       </SelectField>
+      {field.filter ? (
+        <Input
+          onChange={filterChange}
+          placeholder={utils.formatMessage('search')}
+          style={{ marginLeft: '5%', maxWidth: '40%', bottom: '0' }}
+          value={filter}
+        />
+      ) : null}
     </div>
   );
 }

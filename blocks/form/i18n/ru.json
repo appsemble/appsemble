@@ -10,5 +10,6 @@
   "selectionNoOptions": "",
   "selectionOptionsError": "",
   "submitError": "При отправке этой формы возникла проблема",
-  "submitLabel": "Отправить"
+  "submitLabel": "Отправить",
+  "search": ""
 }
