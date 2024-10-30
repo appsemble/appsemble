@@ -142,7 +142,12 @@ export function EnumInput({
   };
 
   return (
+<<<<<<< HEAD
     <div>
+=======
+    // eslint-disable-next-line react/forbid-dom-props
+    <div style={{ position: 'relative', display: 'flex' }}>
+>>>>>>> e799765ac (Move search field to right hand side)
       <SelectField
         className={classNames('appsemble-enum', className)}
         disabled={disabled || loading || options.length === 0}
