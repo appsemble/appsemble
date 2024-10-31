@@ -216,6 +216,7 @@ pages:
                   placeholder: { translate: selecteer-collega }
                   disabled: false
                   action: loadCollegas
+                  filter: true
                   requirements:
                     - required: true
                 - type: string
@@ -331,6 +332,7 @@ pages:
                   placeholder: { translate: selecteer-knooppunt }
                   disabled: false
                   action: loadKnooppunten
+                  filter: true
                   requirements: [{ required: { not: [{ prop: stuurCollega }] } }]
                 - type: string
                   name: toelichting
