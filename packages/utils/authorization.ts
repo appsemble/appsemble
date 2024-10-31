@@ -9,7 +9,7 @@ import {
   type CustomAppResourcePermission,
   type CustomAppResourceViewPermission,
   type OrganizationPermission,
-  PredefinedAppRole,
+  type PredefinedAppRole,
   predefinedAppRolePermissions,
   type PredefinedOrganizationRole,
   predefinedOrganizationRolePermissions,
@@ -140,12 +140,7 @@ export function checkGuestAppPermissions(
 }
 
 export function getAppRoles(appSecurityDefinition: Security): AppRole[] {
-  return Array.from(
-    new Set([
-      ...Object.keys(appSecurityDefinition?.roles || {}),
-      ...Object.keys(PredefinedAppRole),
-    ]),
-  );
+  return Array.from(new Set(Object.keys(appSecurityDefinition?.roles || {})));
 }
 
 export function getAppPossibleGuestPermissions(
