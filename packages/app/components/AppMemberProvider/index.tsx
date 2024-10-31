@@ -190,8 +190,6 @@ export function AppMemberProvider({ children }: AppMemberProviderProps): ReactNo
             config,
           );
           appMemberGroups = data;
-
-          setAppMemberSelectedGroup(appMemberGroups.length ? appMemberGroups[0] : null);
         } catch {
           // Do nothing
         }
