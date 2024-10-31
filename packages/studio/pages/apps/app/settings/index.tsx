@@ -276,7 +276,22 @@ export function SettingsPage(): ReactNode {
           />
           <SimpleFormField
             disabled={app.locked !== 'unlocked'}
-            help={<FormattedMessage {...messages.googleAnalyticsIDDescription} />}
+            help={
+              <FormattedMessage
+                {...messages.googleAnalyticsIDDescription}
+                values={{
+                  link: (link) => (
+                    <Link
+                      rel="noopener noreferrer"
+                      target="_blank"
+                      to="../../../docs/guides/analytics"
+                    >
+                      {link}
+                    </Link>
+                  ),
+                }}
+              />
+            }
             label={<FormattedMessage {...messages.googleAnalyticsIDLabel} />}
             maxLength={15}
             name="googleAnalyticsID"

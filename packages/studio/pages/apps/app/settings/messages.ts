@@ -113,8 +113,9 @@ export const messages = defineMessages({
     defaultMessage: 'Google Analytics ID',
   },
   googleAnalyticsIDDescription: {
-    id: 'studio.jVdy7u',
-    defaultMessage: 'If this is specified, Google analytics will be applied to your app.',
+    id: 'studio.w6wF5r',
+    defaultMessage:
+      'If this is specified, Google analytics will be applied to your app. For more information, please refer to the <link>documentation</link>.',
   },
   googleAnalyticsError: {
     id: 'studio.slZvEA',

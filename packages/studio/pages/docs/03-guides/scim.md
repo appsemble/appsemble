@@ -43,7 +43,7 @@ have an Azure Active Directory already set up and filled with users.
 
 1. Firstly, to configure your Appsemble application so that individual users can log in, your app
    definition needs to contain a basic
-   [security definition](../02-core-concepts/security.md#security-definition).
+   [security definition](../02-app/security.md#security-definition).
 
    **(Optional)** If your application wants to use the [Groups](../02-guides/groups.md)
    functionality, this security definition also has to contain a

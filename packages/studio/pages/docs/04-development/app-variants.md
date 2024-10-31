@@ -125,7 +125,7 @@ file contains an array of changes with their paths inside the `app-definition` l
 ]
 ```
 
-### [Config](../03-guides/config.md)
+### [Config](../02-app/config.md)
 
 A `config` directory, containing JSON files for app variables and secrets can be put inside the
 corresponding app variant directory (e.g. `demodam`). These variables and secrets will be used when
@@ -160,7 +160,7 @@ files defined in the original app.
 `README` files are automatically processed and their contents are published along with the app when
 using the `appsemble app publish` and `appsemble app update` commands.
 
-### [Resources](../02-core-concepts/resources.md)
+### [Resources](../02-app/resources.md)
 
 A `resources` directory, containing resources for the app variant, can be put inside the
 corresponding app variant directory (e.g. `demodam`). These resources will be used when applying the
@@ -169,7 +169,7 @@ app variant and will overwrite resources defined in the original app.
 When using the `appsemble app publish` and the `appsemble app update` commands, resources can be
 published along with the app using the `--resources` flag.
 
-### [Assets](../03-guides/assets.md)
+### [Assets](../02-app/assets.md)
 
 An `assets` directory, containing assets for the app variant, can be put inside the corresponding
 app variant directory (e.g. `demodam`). These assets will be used when applying the app variant and

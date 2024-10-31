@@ -660,9 +660,9 @@ If you got to this point, you have seen the basics of creating apps using Appsem
 complex apps require more features than creating and viewing resources. The following guides
 continue on the result of the app created in this guide:
 
-- [Resources](../02-core-concepts/resources.md)
-- [Security](../02-core-concepts/security.md)
+- [Resources](../02-app/resources.md)
+- [Security](../02-app/security.md)
 - [Notifications](notifications.md)
-- [Theming](../02-core-concepts/theming.md)
+- [Theming](../02-app/theming.md)
 - [DNS](dns.md)
 - [Reference documentation](../08-reference)

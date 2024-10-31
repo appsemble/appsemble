@@ -3,13 +3,7 @@ import { extendJSONSchema } from './utils.js';
 
 export const LoopPageDefinition = extendJSONSchema(BasePageDefinition, {
   type: 'object',
-  description: `This describes what a loop page will look like in the app.
-
-!!
-This feature is still under development and is very unstable
-!!
-
-  `,
+  description: 'Generates sub pages dynamically based on data and display in a flow page.',
   required: ['type', 'foreach', 'actions'],
   additionalProperties: false,
   properties: {

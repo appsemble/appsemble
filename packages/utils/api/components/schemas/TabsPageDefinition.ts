@@ -3,7 +3,7 @@ import { extendJSONSchema } from './utils.js';
 
 export const TabsPageDefinition = extendJSONSchema(BasePageDefinition, {
   type: 'object',
-  description: 'This describes what a page will look like in the app.',
+  description: 'Shows a set of subpages as tabs at the top of the page.',
   oneOf: [
     {
       required: ['type', 'tabs'],

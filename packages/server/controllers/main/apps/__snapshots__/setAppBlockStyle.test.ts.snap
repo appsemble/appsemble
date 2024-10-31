@@ -158,7 +158,7 @@ will remain the same until it is manually updated.
         "property": "instance.pages[0]",
         "schema": {
           "additionalProperties": true,
-          "description": "This describes what a page will look like in the app.",
+          "description": "Shows a set of subpages as tabs at the top of the page.",
           "oneOf": [
             {
               "required": [
@@ -319,7 +319,7 @@ instructed to contact the app owner to get permissions.
         "property": "instance.pages[0]",
         "schema": {
           "additionalProperties": false,
-          "description": "This describes what a page will look like in the app.",
+          "description": "Shows a set of sub pages in a certain order which the user can navigate through.",
           "properties": {
             "actions": {
               "$ref": "#/components/schemas/FlowPageActionsDefinition",
@@ -466,7 +466,7 @@ instructed to contact the app owner to get permissions.
         "property": "instance.pages[0]",
         "schema": {
           "additionalProperties": false,
-          "description": "This describes what a page will look like in the app.",
+          "description": "Shows a set of sub pages in a certain order which the user can navigate through.",
           "properties": {
             "actions": {
               "$ref": "#/components/schemas/FlowPageActionsDefinition",
@@ -613,7 +613,7 @@ instructed to contact the app owner to get permissions.
         "property": "instance.pages[0]",
         "schema": {
           "additionalProperties": false,
-          "description": "This describes what a page will look like in the app.",
+          "description": "Shows a set of sub pages in a certain order which the user can navigate through.",
           "properties": {
             "actions": {
               "$ref": "#/components/schemas/FlowPageActionsDefinition",
@@ -760,13 +760,7 @@ instructed to contact the app owner to get permissions.
         "property": "instance.pages[0]",
         "schema": {
           "additionalProperties": false,
-          "description": "This describes what a loop page will look like in the app.
-
-!!
-This feature is still under development and is very unstable
-!!
-
-  ",
+          "description": "Generates sub pages dynamically based on data and display in a flow page.",
           "properties": {
             "actions": {
               "$ref": "#/components/schemas/LoopPageActionsDefinition",
@@ -909,13 +903,7 @@ instructed to contact the app owner to get permissions.
         "property": "instance.pages[0]",
         "schema": {
           "additionalProperties": false,
-          "description": "This describes what a loop page will look like in the app.
-
-!!
-This feature is still under development and is very unstable
-!!
-
-  ",
+          "description": "Generates sub pages dynamically based on data and display in a flow page.",
           "properties": {
             "actions": {
               "$ref": "#/components/schemas/LoopPageActionsDefinition",
@@ -1058,13 +1046,7 @@ instructed to contact the app owner to get permissions.
         "property": "instance.pages[0]",
         "schema": {
           "additionalProperties": false,
-          "description": "This describes what a loop page will look like in the app.
-
-!!
-This feature is still under development and is very unstable
-!!
-
-  ",
+          "description": "Generates sub pages dynamically based on data and display in a flow page.",
           "properties": {
             "actions": {
               "$ref": "#/components/schemas/LoopPageActionsDefinition",
@@ -1207,13 +1189,7 @@ instructed to contact the app owner to get permissions.
         "property": "instance.pages[0]",
         "schema": {
           "additionalProperties": false,
-          "description": "This describes what a loop page will look like in the app.
-
-!!
-This feature is still under development and is very unstable
-!!
-
-  ",
+          "description": "Generates sub pages dynamically based on data and display in a flow page.",
           "properties": {
             "actions": {
               "$ref": "#/components/schemas/LoopPageActionsDefinition",
@@ -1356,7 +1332,8 @@ instructed to contact the app owner to get permissions.
         "property": "instance.pages[0]",
         "schema": {
           "additionalProperties": false,
-          "description": "Use this page type to group pages in the menu, this doesn't actually group pages for now. Following is an example of how this can be used
+          "description": "Groups pages together under a collapsible parent page. Following is an example of
+how this can be used:
 \`\`\`yaml
 pages:
   - name: Page 1
@@ -1528,7 +1505,8 @@ instructed to contact the app owner to get permissions.
         "property": "instance.pages[0]",
         "schema": {
           "additionalProperties": false,
-          "description": "Use this page type to group pages in the menu, this doesn't actually group pages for now. Following is an example of how this can be used
+          "description": "Groups pages together under a collapsible parent page. Following is an example of
+how this can be used:
 \`\`\`yaml
 pages:
   - name: Page 1
@@ -1700,7 +1678,8 @@ instructed to contact the app owner to get permissions.
         "property": "instance.pages[0]",
         "schema": {
           "additionalProperties": false,
-          "description": "Use this page type to group pages in the menu, this doesn't actually group pages for now. Following is an example of how this can be used
+          "description": "Groups pages together under a collapsible parent page. Following is an example of
+how this can be used:
 \`\`\`yaml
 pages:
   - name: Page 1

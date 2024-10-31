@@ -66,7 +66,7 @@ it is not ready for use yet.
 
 The PDF generator image requires a secret to be set before starting. This secret is required for
 authentication when sending requests later. To learn more about secrets, refer to the
-[secrets](../02-core-concepts/app.md#secrets) guide and for setup refer to the
+[secrets](../02-app/app.md#secrets) guide and for setup refer to the
 [service secrets](./service.md#header-based-authentication) guide.
 
 In short, a service secret needs to be created from the `secrets` page with the following paramters:
@@ -102,7 +102,7 @@ healthcheck to make sure, by sending a request to the `/health` endpoint. The
 #### Security
 
 To use the Appsemble secrets and to have the **Authorization** header attached to your requests, you
-need to setup a [security schema](../02-core-concepts/security.md) and be logged in the app.
+need to setup a [security schema](../02-app/security.md) and be logged in the app.
 
 ## PDF template
 
@@ -129,7 +129,8 @@ Result: `Hello, Bob. My name is John`
 ### Uploading a template
 
 After creating a template, it should be uploaded as an asset in the app. This can be done through
-the **Assets** side menu. Details on how assets work in Appsemble can be found [here](./assets.md).
+the **Assets** side menu. Details on how assets work in Appsemble can be found
+[here](../02-app/assets.md).
 
 When uploading an asset it is recommended to give it a name, for covenience. This name will be
 displayed as `Id`, and if left empty, will default to a randomly generated `Id`.

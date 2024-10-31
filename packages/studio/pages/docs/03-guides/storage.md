@@ -28,9 +28,9 @@ Storing data on the server enables the option to share data between multiple cli
 
 Below are some materials on server based storage.
 
-- **[Resources](../02-core-concepts/resources.md)**: Allows you to persist structured data with the
-  resource [actions](../08-reference/action.mdx).
-- **[Assets](../03-guides/assets.md)**: Allows for (public) file and media storage.
+- **[Resources](../02-app/resources.md)**: Allows you to persist structured data with the resource
+  [actions](../08-reference/action.mdx).
+- **[Assets](../02-app/assets.md)**: Allows for (public) file and media storage.
 
 ## Client Storage
 

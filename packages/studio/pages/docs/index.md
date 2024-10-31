@@ -43,7 +43,7 @@ look if you're stuck on something.
 
 - [**Studio documentation**](/docs/studio)\
   Everything regarding the Appsemble studio (the site you are reading this from).
-- [**Core concepts**](/docs/core-concepts)\
+- [**App**](/docs/app)\
   Documentation of the essential parts of an Appsemble app.
 - [**Guides**](/docs/guides)\
   Documentation of individual app topics.
