@@ -7,15 +7,21 @@ export async function getAppAsset({
   context: ctx,
   id: assetId,
 }: GetAppAssetParams): Promise<AppAsset> {
-  const assets = await Asset.findAll({
-    attributes: ['id', 'name', 'ResourceId'],
-    where: {
-      AppId: app.id,
-      ...(app.demoMode ? { seed: false, ephemeral: true } : {}),
-    },
-  });
-  // Pick asset id over asset name
-  const asset = assets.find((a) => a.id === assetId) || assets.find((a) => a.name === assetId);
+  const asset =
+    (await Asset.findOne({
+      where: {
+        AppId: app.id,
+        id: assetId,
+        ...(app.demoMode ? { seed: false, ephemeral: true } : {}),
+      },
+    })) ??
+    (await Asset.findOne({
+      where: {
+        AppId: app.id,
+        name: assetId,
+        ...(app.demoMode ? { seed: false, ephemeral: true } : {}),
+      },
+    }));
   assertKoaError(!asset, ctx, 404, 'Asset not found');
   return asset;
 }

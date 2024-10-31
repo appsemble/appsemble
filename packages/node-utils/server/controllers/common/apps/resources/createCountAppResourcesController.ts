@@ -27,6 +27,7 @@ export function createCountAppResourcesController(options: Options): Middleware 
     const { where } = generateResourceQuery(ctx, options);
 
     const findOptions: FindOptions = {
+      attributes: ['id'],
       where: {
         and: [
           where || {},
