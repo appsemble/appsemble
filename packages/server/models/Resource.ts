@@ -13,6 +13,7 @@ import {
   Default,
   ForeignKey,
   HasMany,
+  Index,
   Model,
   PrimaryKey,
   Table,
@@ -43,11 +44,13 @@ export class Resource extends Model {
   id: number;
 
   @AllowNull(false)
+  @Index({ name: 'resourceTypeComposite' })
   @Column(DataType.STRING)
   type: string;
 
   @AllowNull(false)
   @Column(DataType.JSONB)
+  @Index({ name: 'resourceDataIndex' })
   data: any;
 
   /**
@@ -75,6 +78,7 @@ export class Resource extends Model {
   ephemeral: boolean;
 
   @Column(DataType.DATE)
+  @Index({ name: 'resourceTypeComposite' })
   expires: Date;
 
   @CreatedAt
@@ -84,6 +88,7 @@ export class Resource extends Model {
   updated: Date;
 
   @ForeignKey(() => App)
+  @Index({ name: 'resourceTypeComposite' })
   @AllowNull(false)
   @Column(DataType.INTEGER)
   AppId: number;
@@ -92,6 +97,7 @@ export class Resource extends Model {
   App: Awaited<App>;
 
   @ForeignKey(() => Group)
+  @Index({ name: 'resourceTypeComposite' })
   @AllowNull(true)
   @Column(DataType.INTEGER)
   GroupId: number;

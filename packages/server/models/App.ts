@@ -64,6 +64,7 @@ export class App extends Model {
    * is 253, is explained on https://devblogs.microsoft.com/oldnewthing/20120412-00/?p=7873.
    */
   @Column({ type: DataType.STRING(253) })
+  @Index({ name: 'appDomainComposite' })
   domain: string;
 
   @Column({ type: DataType.TEXT })
@@ -198,6 +199,7 @@ export class App extends Model {
   created: Date;
 
   @DeletedAt
+  @Index({ name: 'appDomainComposite' })
   deleted: Date;
 
   @AllowNull(false)

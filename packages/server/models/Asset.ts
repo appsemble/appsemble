@@ -34,6 +34,8 @@ export class Asset extends Model {
 
   @Index({ name: 'UniqueAssetWithNullGroupId', unique: true })
   @Index({ name: 'UniqueAssetWithGroupId', unique: true })
+  @Index({ name: 'assetNameIndex' })
+  @Index({ name: 'assetAppIdNameIndex' })
   @Column(DataType.STRING)
   name: string;
 
@@ -73,6 +75,8 @@ export class Asset extends Model {
   @ForeignKey(() => App)
   @Index({ name: 'UniqueAssetWithNullGroupId', unique: true })
   @Index({ name: 'UniqueAssetWithGroupId', unique: true })
+  @Index({ name: 'assetAppIdIndex' })
+  @Index({ name: 'assetAppIdNameIndex' })
   @Column(DataType.INTEGER)
   AppId: number;
 

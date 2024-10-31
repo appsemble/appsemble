@@ -6,6 +6,7 @@ import {
   CreatedAt,
   DataType,
   ForeignKey,
+  Index,
   Model,
   PrimaryKey,
   Table,
@@ -33,6 +34,7 @@ export class BlockAsset extends Model {
 
   @AllowNull(false)
   @Column(DataType.STRING)
+  @Index({ name: 'blockAssetFilenameIndex' })
   filename: string;
 
   @Column(DataType.STRING)

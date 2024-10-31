@@ -11,6 +11,7 @@ import {
   DataType,
   ForeignKey,
   HasMany,
+  Index,
   Model,
   PrimaryKey,
   Table,
@@ -74,12 +75,14 @@ export class AppCollection extends Model {
    * is 253, is explained on https://devblogs.microsoft.com/oldnewthing/20120412-00/?p=7873.
    */
   @Column({ type: DataType.STRING(253) })
+  @Index({ name: 'appCollectionComposite' })
   domain?: string;
 
   @CreatedAt
   created: Date;
 
   @UpdatedAt
+  @Index({ name: 'appCollectionComposite', order: 'DESC' })
   updated: Date;
 
   toJSON(): AppCollectionType {
