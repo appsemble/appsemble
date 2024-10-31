@@ -4,6 +4,7 @@ import {
   type AppDefinition,
   type AppMemberInfo,
   type AppMessages,
+  type Asset,
   type Resource,
   type ResourceDefinition,
   type ResourceView,
@@ -20,7 +21,6 @@ import { createQueryAppResourcesController } from './createQueryAppResourcesCont
 import { getRemapperContext } from '../../../../../app.js';
 import { getResourceDefinition } from '../../../../../resource.js';
 import {
-  type AppAsset,
   type AuthSubject,
   type CheckAppPermissionsParams,
   type CreateAppResourcesWithAssetsParams,
@@ -46,7 +46,7 @@ let mockCreateAppResourcesWithAssets: Mock<
   [CreateAppResourcesWithAssetsParams],
   Promise<Resource[]>
 >;
-let mockGetAppAssets: Mock<[GetAppSubEntityParams], Promise<AppAsset[]>>;
+let mockGetAppAssets: Mock<[GetAppSubEntityParams], Promise<Asset[]>>;
 let mockCheckAppPermissions: Mock<[CheckAppPermissionsParams], Promise<void>>;
 let mockGetCurrentAppMember: Mock<[GetCurrentAppMemberParams], Promise<AppMemberInfo>>;
 
@@ -627,7 +627,7 @@ describe('createCreateResource', () => {
       createAppResourcesWithAssets: mockCreateAppResourcesWithAssets as (
         params: CreateAppResourcesWithAssetsParams,
       ) => Promise<Resource[]>,
-      getAppAssets: mockGetAppAssets as (params: GetAppSubEntityParams) => Promise<AppAsset[]>,
+      getAppAssets: mockGetAppAssets as (params: GetAppSubEntityParams) => Promise<Asset[]>,
       checkAppPermissions: mockCheckAppPermissions as (params: CheckAppPermissionsParams) => void,
       getCurrentAppMember: mockGetCurrentAppMember as (params: GetCurrentAppMemberParams) => void,
       parseQuery: mockParseQuery as (params: ParseQueryParams) => ParsedQuery,
@@ -702,7 +702,7 @@ describe('createCreateResource', () => {
       createAppResourcesWithAssets: mockCreateAppResourcesWithAssets as (
         params: CreateAppResourcesWithAssetsParams,
       ) => Promise<Resource[]>,
-      getAppAssets: mockGetAppAssets as (params: GetAppSubEntityParams) => Promise<AppAsset[]>,
+      getAppAssets: mockGetAppAssets as (params: GetAppSubEntityParams) => Promise<Asset[]>,
       checkAppPermissions: mockCheckAppPermissions as (params: CheckAppPermissionsParams) => void,
       getCurrentAppMember: mockGetCurrentAppMember as (params: GetCurrentAppMemberParams) => void,
       parseQuery: mockParseQuery as (params: ParseQueryParams) => ParsedQuery,

@@ -20,6 +20,7 @@ export * from './createAppResourcesWithAssets.js';
 export * from './updateAppResource.js';
 export * from './deleteAppResource.js';
 export * from './parseQuery.js';
+export * from './getAppAsset.js';
 export * from './getAppAssets.js';
 export * from './createAppAsset.js';
 export * from './getBlockMessages.js';

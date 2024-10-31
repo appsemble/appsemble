@@ -4,7 +4,7 @@ import { extension } from 'mime-types';
 import { assertKoaError } from '../../../../../koa.js';
 import { type Options } from '../../../../types.js';
 
-export function createGetAppAssetByIdController({ getApp, getAppAssets }: Options): Middleware {
+export function createGetAppAssetByIdController({ getApp, getAppAsset }: Options): Middleware {
   return async (ctx: Context) => {
     const {
       pathParams: { appId, assetId },
@@ -14,12 +14,7 @@ export function createGetAppAssetByIdController({ getApp, getAppAssets }: Option
 
     assertKoaError(!app, ctx, 404, 'App not found');
 
-    const assets = await getAppAssets({ app, context: ctx });
-
-    // Pick asset id over asset name
-    const asset = assets.find((a) => a.id === assetId) || assets.find((a) => a.name === assetId);
-
-    assertKoaError(!asset, ctx, 404, 'Asset not found');
+    const asset = await getAppAsset({ app, context: ctx, id: assetId });
 
     if (assetId !== asset.id) {
       // Redirect to asset using current asset ID

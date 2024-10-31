@@ -302,6 +302,10 @@ export interface GetAppResourceParams extends GetAppSubEntityParams {
   id: number | string;
 }
 
+export interface GetAppAssetParams extends GetAppSubEntityParams {
+  id: string;
+}
+
 export interface GetAppResourcesParams extends GetAppSubEntityParams {
   findOptions: FindOptions;
   type: string;
@@ -456,7 +460,8 @@ export interface Options {
   createAppResourcesWithAssets: (params: CreateAppResourcesWithAssetsParams) => Promise<Resource[]>;
   updateAppResource: (params: UpdateAppResourceParams) => Promise<Resource | null>;
   deleteAppResource: (params: DeleteAppResourceParams) => Promise<void>;
-  getAppAssets: (params: GetAppSubEntityParams) => Promise<AppAsset[]>;
+  getAppAssets: (params: GetAppSubEntityParams) => Promise<Asset[]>;
+  getAppAsset: (params: GetAppAssetParams) => Promise<AppAsset>;
   createAppAsset: (params: CreateAppAssetParams) => Promise<AppAsset>;
   deleteAppAsset: (params: DeleteAppAssetParams) => Promise<number>;
   email: (params: EmailParams) => Promise<void>;
