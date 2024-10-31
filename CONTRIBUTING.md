@@ -404,7 +404,7 @@ showing the page in its entirety it's not immediately clear what each element do
 individual parts and clarifying what they are makes it easier for the reader to understand how the
 feature works.
 
-![Tab page example](./packages/studio/pages/docs/03-guides/assets/tab-page-example.png 'Tab page example')
+![Tab page example](./packages/studio/pages/docs/guides/assets/tab-page-example.png 'Tab page example')
 
 When making a highlight, please try to follow these guidelines for styling:
 

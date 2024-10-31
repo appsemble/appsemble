@@ -1,0 +1,107 @@
+---
+icon: gears
+---
+
+import { importDocs } from './index.js';
+
+# Actions
+
+## Introduction
+
+Actions are behaviors that define what happens when certain events within blocks or pages trigger.
+Examples of such triggers are the `onLoad` action in the
+[data-loader block](/blocks/@appsemble/data-loader) that gets called when the data-loader loads its
+initial data, and the `onSubmit` action in the [form block](/blocks/@appsemble/form) that gets
+triggered whenever the user presses the submit button.
+
+The behavior of an action can be defined within the `actions` object in a block or page. An action
+always requires the property `type`, which is what is used to determine which action should be used
+whenever its associated trigger occurs.
+
+Actions have specific implementations for each environment, i.e. `client` side and `server` side.
+Client actions only work on pages and blocks in app. Server actions are used in Cron Jobs. An entire
+list of server side actions can be found [here](../guides/cron.mdx#actions). If an action is client
+only then it’s defined as `noop` on the server.
+
+Here’s an example of how you can use `onLoad` to trigger an action:
+
+```yaml validate blocks-snippet
+blocks:
+  - type: data-loader
+    version: 0.30.3
+    actions:
+      onLoad:
+        type: resource.query
+        resource: person
+```
+
+Here the `data-loader` block queries the `person` resource when the block is rendered.
+
+Similarly, for onSubmit action:
+
+```yaml validate pages-snippet
+pages:
+  - name: Create Person
+    blocks:
+      - type: form
+        version: 0.30.3
+        actions:
+          onSubmit:
+            remapBefore: { null.strip }
+            type: resource.create
+            resource: person
+            onSuccess:
+              type: link
+              to: Person List
+            onError:
+              type: link
+              to: Error Page
+  - name: Person List
+    blocks:
+      - type: markdown
+        version: 0.30.3
+        parameters:
+          content: |
+            ## Person list
+
+            | Person   | Age |
+            | -------- | --- |
+            | Person 1 | 35  |
+            | Person 2 | 52  |
+            | Person 3 | 61  |
+  - name: Error Page
+    blocks:
+      - type: markdown
+        version: 0.30.3
+        parameters:
+          content: |
+            Something went wrong creating this resource :/
+
+            Please try again later
+```
+
+Here when data is submitted via the `form` block, a `person` resource is created. If the resource is
+created without an error, `onSuccess` action is fired and users are redirected to the Person List
+page, whereas, in the case of an error, it redirects the users to an Error Page.
+
+The `onSuccess` and `onError` properties can be used to define additional actions that should be
+called depending on whether the action that was initially dispatched ran successfully or not as
+illustrated above. This can be useful for triggering multiple actions in a row, such as calling the
+`log` action before proceeding with a `link` action.
+
+Actions will copy their data before being executed onto the `history` stack. This allows you to
+retrieve this data in a later action by for example using `remapAfter` with the `history`,
+`assign.history` or `omit.history` remappers. This is useful whenever an action overwrites data the
+current data.
+
+Below you can find the actions grouped by type that Appsemble supports.
+
+### Table of contents
+
+<div>
+  {importDocs().map((section) => (
+    <li key={section.title.toLowerCase()}>
+      <a href={`/docs/actions/${section.title.toLowerCase()}`}>{section.title}</a>
+    </li>
+  ))}
+</div>

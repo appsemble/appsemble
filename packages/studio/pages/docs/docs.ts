@@ -1,8 +1,19 @@
-import { applyPackages } from './09-packages/index.js';
+import { applyPackages } from './packages/index.js';
 
 const context = require.context('.', true, /\.mdx?$/);
+const order = [
+  'studio',
+  'app',
+  'guides',
+  'development',
+  'deployment',
+  'actions',
+  'remappers',
+  'reference',
+  'packages',
+];
 
-const documents = context
+export const docs = context
   .keys()
   .map((key) => {
     const {
@@ -16,22 +27,13 @@ const documents = context
       path: key
         .replace(/^\.\//, '')
         .replace(/\.mdx?$/, '')
-        .replace(/(^|\/)index$/, '/'),
+        .replace(/(^|\/)index$/, '/')
+        .toLowerCase(),
       searchIndex,
       title,
       ...frontmatter,
     };
   })
-  .sort((a, b) => a.path.localeCompare(b.path));
+  .sort((a, b) => order.indexOf(a.path.split('/')[0]) - order.indexOf(b.path.split('/')[0]));
 
-applyPackages(documents);
-
-export const docs = documents.map((doc) => ({
-  ...doc,
-  // Replace ordering prefixes at the start of a path with ''
-  // and all the following of format `/number-` with '/'
-  path: doc.path
-    .replace(/^\d+-/, '')
-    .replaceAll(/\/\d+-/g, '/')
-    .toLowerCase(),
-}));
+applyPackages(docs);
