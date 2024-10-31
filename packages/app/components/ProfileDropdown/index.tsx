@@ -10,6 +10,7 @@ import {
   SimpleSubmit,
   useToggle,
 } from '@appsemble/react-components';
+import { type AppMemberGroup } from '@appsemble/types';
 import { type ChangeEvent, type ReactNode, useCallback, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Link, useLocation, useNavigate, useParams } from 'react-router-dom';
@@ -43,6 +44,11 @@ export function ProfileDropdown(): ReactNode {
   const demoLoginToggle = useToggle();
 
   const [localSelectedGroup, setLocalSelectedGroup] = useState(appMemberSelectedGroup);
+
+  const enableGroupChanging = (): void => {
+    setLocalSelectedGroup({ id: -1 } as AppMemberGroup);
+    groupSelectionToggle.enable();
+  };
 
   const changeLocalSelectedGroup = (event: ChangeEvent<MinimalHTMLElement>): void => {
     setLocalSelectedGroup(
@@ -108,7 +114,7 @@ export function ProfileDropdown(): ReactNode {
         }
       >
         {Boolean(appMemberGroups?.length) && (
-          <NavbarItem icon="wrench" onClick={groupSelectionToggle.enable}>
+          <NavbarItem icon="wrench" onClick={enableGroupChanging}>
             {appMemberSelectedGroup ? (
               <FormattedMessage
                 {...messages.changeSelectedGroup}
@@ -157,7 +163,7 @@ export function ProfileDropdown(): ReactNode {
       </NavbarDropdown>
       <ModalCard
         component={SimpleForm}
-        defaultValues={{ groupId: appMemberSelectedGroup?.id }}
+        defaultValues={{ groupId: localSelectedGroup?.id }}
         isActive={groupSelectionToggle.enabled}
         onClose={groupSelectionToggle.disable}
         onSubmit={handleGroupChange}
