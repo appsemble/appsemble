@@ -20,7 +20,7 @@ different parts of the app. This is where client storage comes into play.
 - [Client storage](#client-storage): Allows you to store data in the browser or application. Often
   used for more private temporary storage.
 
-> Note: All client storage types can be cleared by clearing your browser cache.
+> **Note**: All client storage types can be cleared by clearing your browser cache.
 
 ## Server Storage
 
@@ -34,7 +34,7 @@ Below are some materials on server based storage.
 
 ## Client Storage
 
-All client storage types can be accessed through the storage [actions](../08-reference/action.mdx).
+All client storage types can be accessed through the [storage actions](../06-actions/storage.mdx).
 Storage actions allow you to share data between blocks. There are 2 main Client Storage options,
 `Browser` and `App` Storage.
 
