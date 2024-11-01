@@ -6,6 +6,7 @@ import {
   CreatedAt,
   DataType,
   ForeignKey,
+  Index,
   Model,
   PrimaryKey,
   Table,
@@ -25,11 +26,13 @@ export class AppSnapshot extends Model {
   yaml: string;
 
   @CreatedAt
+  @Index({ name: 'appSnapshotComposite' })
   created: Date;
 
   @ForeignKey(() => App)
   @AllowNull(false)
   @Column(DataType.INTEGER)
+  @Index({ name: 'appSnapshotComposite' })
   AppId: number;
 
   @BelongsTo(() => App)

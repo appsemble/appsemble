@@ -6,6 +6,7 @@ import {
   CreatedAt,
   DataType,
   ForeignKey,
+  Index,
   Model,
   PrimaryKey,
   Table,
@@ -19,6 +20,7 @@ export class AppMessages extends Model implements MessagesType {
   @PrimaryKey
   @ForeignKey(() => App)
   @Column(DataType.INTEGER)
+  @Index({ name: 'appMessagesComposite' })
   AppId: number;
 
   @BelongsTo(() => App)
@@ -26,6 +28,7 @@ export class AppMessages extends Model implements MessagesType {
 
   @PrimaryKey
   @Column(DataType.STRING)
+  @Index({ name: 'appMessagesComposite' })
   language: string;
 
   @Column(DataType.JSON)
