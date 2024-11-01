@@ -11,21 +11,18 @@ export async function getAppAssetById(ctx: Context): Promise<void> {
   } = ctx;
 
   const app = await App.findByPk(appId, {
-    attributes: ['OrganizationId'],
+    attributes: ['OrganizationId', 'demoMode'],
   });
 
   assertKoaError(!app, ctx, 404, 'App not found');
 
-  const assets = await Asset.findAll({
+  const asset = await Asset.findOne({
     where: {
       AppId: appId,
       [Op.or]: [{ id: assetId }, { name: assetId }],
       ...(app.demoMode ? { seed: false, ephemeral: true } : {}),
     },
   });
-
-  // Pick asset id over asset name.
-  const asset = assets.find((a) => a.id === assetId) || assets.find((a) => a.name === assetId);
 
   assertKoaError(!asset, ctx, 404, 'Asset not found');
 

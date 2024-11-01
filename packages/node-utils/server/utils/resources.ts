@@ -45,6 +45,7 @@ export async function deleteResourcesRecursively(
   }
 
   const resourcesToDeleteFindOptions: FindOptions = {
+    attributes: ['id'],
     where: {
       type,
       AppId: app.id,

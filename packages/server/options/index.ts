@@ -23,6 +23,7 @@ export * from './createAppResourcesWithAssets.js';
 export * from './updateAppResource.js';
 export * from './deleteAppResource.js';
 export * from './getAppResource.js';
+export * from './getAppAsset.js';
 export * from './getAppAssets.js';
 export * from './deleteAppAsset.js';
 export * from './getBlockMessages.js';
