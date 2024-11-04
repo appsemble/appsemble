@@ -225,6 +225,7 @@ export async function handler({
   const patches = migrations.at(-1).appPatches;
   if (!patches?.length) {
     logger.info('No patches found, nothing to migrate.');
+    process.exit();
     return;
   }
 
