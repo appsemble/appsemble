@@ -32,7 +32,7 @@ export async function createAppGroup(ctx: Context): Promise<void> {
   if (app.demoMode) {
     const demoMembers = await AppMember.findAll({
       where: { AppId: appId, demo: true },
-      attributes: ['id'],
+      attributes: ['id', 'role'],
     });
     await GroupMember.bulkCreate(
       demoMembers.map((member) => ({

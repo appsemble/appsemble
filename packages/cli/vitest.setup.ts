@@ -21,9 +21,9 @@ beforeEach(async () => {
   await testDB.truncate({ truncate: true, cascade: true, force: true, restartIdentity: true });
 });
 
-afterAll(async () => {
-  await testDB.close();
+afterAll(() => {
+  testDB.close();
   // We need to drop the test database from the root database
   // testDB.drop() doesn't actually delete the database
-  await rootDB.query(`DROP DATABASE ${testDB.getDatabaseName()}`);
+  rootDB.query(`DROP DATABASE ${testDB.getDatabaseName()}`);
 });

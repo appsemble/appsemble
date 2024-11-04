@@ -362,10 +362,6 @@ describe('group', () => {
           name: 'Test App',
           defaultPage: 'Test Page',
           security: {
-            groups: {
-              join: 'anyone',
-              invite: [],
-            },
             default: {
               role: 'Reader',
               policy: 'everyone',
@@ -388,7 +384,7 @@ describe('group', () => {
         email: user.primaryEmail,
         AppId: app.id,
         UserId: user.id,
-        role: 'Manager',
+        role: 'Reader',
         name: user.name,
       });
       await authorizeCLI('groups:write', testApp);
@@ -397,6 +393,7 @@ describe('group', () => {
         id: group.id,
         remote: testApp.defaults.baseURL,
         user: user.primaryEmail,
+        role: 'Reader',
       });
       const invite = await GroupInvite.findOne();
       expect(invite.dataValues).toMatchInlineSnapshot(
@@ -409,7 +406,7 @@ describe('group', () => {
         "created": 1970-01-01T00:00:00.000Z,
         "email": "test@example.com",
         "key": Any<String>,
-        "role": "Member",
+        "role": "Reader",
         "updated": 1970-01-01T00:00:00.000Z,
       }
     `,
@@ -448,6 +445,7 @@ describe('group', () => {
           id: 10,
           remote: testApp.defaults.baseURL,
           user: user.primaryEmail,
+          role: 'Reader',
         }),
       ).rejects.toThrow('Request failed with status code 400');
     });
@@ -460,16 +458,15 @@ describe('group', () => {
           name: 'Test App',
           defaultPage: 'Test Page',
           security: {
-            groups: {
-              join: 'anyone',
-              invite: [],
-            },
             default: {
               role: 'Reader',
               policy: 'everyone',
             },
             roles: {
               Reader: {},
+              Updater: {
+                inherits: ['Manager'],
+              },
             },
           },
         },
@@ -486,24 +483,25 @@ describe('group', () => {
         email: user.primaryEmail,
         AppId: app.id,
         UserId: user.id,
-        role: 'Manager',
+        role: 'Updater',
         name: user.name,
       });
       const groupMember = await GroupMember.create({
         GroupId: group.id,
         AppMemberId: member.id,
+        role: 'Reader',
       });
       await authorizeCLI('groups:write', testApp);
       await updateMember({
         appId: app.id,
         remote: testApp.defaults.baseURL,
         user: groupMember.id,
-        role: 'GroupMembersManager',
+        role: 'Updater',
         id: group.id,
       });
-      expect(groupMember.role).toBe('Member');
+      expect(groupMember.role).toBe('Reader');
       await groupMember.reload();
-      expect(groupMember.role).toBe('GroupMembersManager');
+      expect(groupMember.role).toBe('Updater');
     });
 
     it('should throw an error if the user is not a GroupMember', async () => {
@@ -522,6 +520,9 @@ describe('group', () => {
             },
             roles: {
               Reader: {},
+              Updater: {
+                inherits: ['Manager'],
+              },
             },
           },
         },
@@ -538,7 +539,7 @@ describe('group', () => {
         email: user.primaryEmail,
         AppId: app.id,
         UserId: user.id,
-        role: 'Manager',
+        role: 'Updater',
         name: user.name,
       });
 
@@ -548,7 +549,7 @@ describe('group', () => {
           appId: app.id,
           remote: testApp.defaults.baseURL,
           user: user.id,
-          role: 'GroupMembersManager',
+          role: 'Updater',
           id: group.id,
         }),
       ).rejects.toThrow('Request failed with status code 404');
@@ -572,6 +573,9 @@ describe('group', () => {
             },
             roles: {
               Reader: {},
+              Updater: {
+                inherits: ['Maintainer'],
+              },
             },
           },
         },
@@ -588,7 +592,7 @@ describe('group', () => {
         email: user.primaryEmail,
         AppId: app.id,
         UserId: user.id,
-        role: 'Maintainer',
+        role: 'Updater',
         name: user.name,
       });
       await authorizeCLI('groups:write', testApp);
@@ -597,10 +601,12 @@ describe('group', () => {
       await GroupMember.create({
         GroupId: group.id,
         AppMemberId: member.id,
+        role: 'Updater',
       });
       const { id: groupMemberId } = await GroupMember.create({
         GroupId: group.id,
         AppMemberId: member2.id,
+        role: 'Reader',
       });
 
       await deleteMember({
