@@ -28,6 +28,7 @@ bootstrap(
     actions,
     data,
     events,
+    pageParameters,
     parameters: {
       autofill,
       dense = true,
@@ -395,7 +396,7 @@ bootstrap(
       // If a listener is present, wait until data has been received
       const hasListener = events.on.data(receiveData);
       (async () => {
-        const result = (await actions?.onLoad?.()) as Values;
+        const result = (await actions?.onLoad?.({ ...pageParameters })) as Values;
         if (result) {
           receiveData(result);
         }
@@ -406,7 +407,7 @@ bootstrap(
         initialLoad.current = false;
       }
       ready();
-    }, [actions, events, ready, receiveData, skipInitialLoad]);
+    }, [actions, events, ready, receiveData, skipInitialLoad, pageParameters]);
 
     const loading = dataLoading || fieldsLoading;
 
