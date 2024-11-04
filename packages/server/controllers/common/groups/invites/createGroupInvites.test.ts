@@ -125,7 +125,7 @@ describe('createGroupInvites', () => {
       },
     });
     const group = await Group.create({ name: 'A', AppId: app.id });
-    await GroupMember.create({ GroupId: group.id, AppMemberId: appMember.id });
+    await GroupMember.create({ GroupId: group.id, AppMemberId: appMember.id, role: 'Reader' });
     const response = await request.post(`/api/groups/${group.id}/invites`, [
       {
         email: 'newuser@example.com',

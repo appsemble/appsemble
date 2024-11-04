@@ -11,6 +11,7 @@ interface InviteGroupArguments extends BaseArguments {
   user: string;
   context: string;
   app: string;
+  role: string;
 }
 
 export const command = 'invite <user>';
@@ -34,6 +35,10 @@ export function builder(yargs: Argv): Argv<any> {
       describe: 'If specified, use the specified context from .appsemblerc.yaml',
       demandOption: 'app',
     })
+    .option('role', {
+      describe: 'The user will be invited to the group with this role',
+      demandOption: true,
+    })
     .positional('user', {
       describe: 'The ID or email address of the user you want to invite.',
       demandOption: true,
@@ -47,6 +52,7 @@ export async function handler({
   context,
   id,
   remote,
+  role,
   user,
 }: InviteGroupArguments): Promise<void> {
   const [resolvedAppId, resolvedRemote] = await resolveAppIdAndRemote(app, context, remote, appId);
@@ -57,5 +63,6 @@ export async function handler({
     appId: resolvedAppId,
     user,
     remote: resolvedRemote,
+    role,
   });
 }

@@ -25,7 +25,6 @@ export class GroupMember extends Model {
   @Column(DataType.UUID)
   id: string;
 
-  @Default('Member')
   @AllowNull(false)
   @Column(DataType.STRING)
   role: AppRole;

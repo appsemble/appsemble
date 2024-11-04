@@ -33,6 +33,13 @@ interface SharedGroupMemberParams extends SharedExistingGroupParams {
   user: string;
 }
 
+interface InviteGroupMemberParams extends SharedGroupMemberParams {
+  /**
+   * The role to invite the group member with.
+   */
+  role: AppRole;
+}
+
 interface UpdateGroupMemberParams extends SharedGroupMemberParams {
   /**
    * The new role of the group member.
@@ -132,9 +139,14 @@ export async function updateGroup({
   logger.info(`Successfully updated group ${id}`);
 }
 
-export async function inviteMember({ id, remote, user }: SharedGroupMemberParams): Promise<void> {
+export async function inviteMember({
+  id,
+  remote,
+  role,
+  user,
+}: InviteGroupMemberParams): Promise<void> {
   logger.info(`Inviting ${user} to group ${id}`);
-  await axios.post(`/api/groups/${id}/invites`, [{ email: user, role: 'Member' }], {
+  await axios.post(`/api/groups/${id}/invites`, [{ email: user, role }], {
     baseURL: remote,
   });
   logger.info(`Successfully invited ${user} to group ${id}`);

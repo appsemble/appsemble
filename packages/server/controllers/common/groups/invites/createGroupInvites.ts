@@ -37,10 +37,10 @@ export async function createGroupInvites(ctx: Context): Promise<void> {
 
   assertKoaError(!app.definition.security, ctx, 403, 'App does not have a security definition.');
 
+  const appRoles = getAppRoles(app.definition.security);
+
   assertKoaError(
-    !(body as GroupInvite[]).every((invite) =>
-      getAppRoles(app.definition.security).find((role) => role === invite.role),
-    ),
+    (body as GroupInvite[]).some((invite) => !appRoles.includes(invite.role)),
     ctx,
     403,
     'Role not allowed.',
