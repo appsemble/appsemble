@@ -18,5 +18,5 @@ export const ResourceUpdateActionDefinition = extendJSONSchema(
       },
     },
   },
-  ['url'],
+  ['url', 'method'],
 );

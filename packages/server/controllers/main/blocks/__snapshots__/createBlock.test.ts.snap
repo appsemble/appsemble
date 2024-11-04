@@ -1539,17 +1539,6 @@ converted to JSON.
 If not specified, the raw input data is used.
 ",
                     },
-                    "method": {
-                      "default": "get",
-                      "description": "The type of request to make.",
-                      "enum": [
-                        "delete",
-                        "get",
-                        "patch",
-                        "post",
-                        "put",
-                      ],
-                    },
                     "onError": {},
                     "onSuccess": {},
                     "own": {
@@ -1722,17 +1711,6 @@ disabled by setting this to \`false\`
 If not specified, the raw input data is used.
 ",
                     },
-                    "method": {
-                      "default": "get",
-                      "description": "The type of request to make.",
-                      "enum": [
-                        "delete",
-                        "get",
-                        "patch",
-                        "post",
-                        "put",
-                      ],
-                    },
                     "onError": {},
                     "onSuccess": {},
                     "proxy": {
@@ -1816,17 +1794,6 @@ disabled by setting this to \`false\`
 
 If not specified, the raw input data is used.
 ",
-                    },
-                    "method": {
-                      "default": "get",
-                      "description": "The type of request to make.",
-                      "enum": [
-                        "delete",
-                        "get",
-                        "patch",
-                        "post",
-                        "put",
-                      ],
                     },
                     "onError": {},
                     "onSuccess": {},
@@ -2010,17 +1977,6 @@ disabled by setting this to \`false\`
 
 If not specified, the raw input data is used.
 ",
-                    },
-                    "method": {
-                      "default": "get",
-                      "description": "The type of request to make.",
-                      "enum": [
-                        "delete",
-                        "get",
-                        "patch",
-                        "post",
-                        "put",
-                      ],
                     },
                     "onError": {},
                     "onSuccess": {},
@@ -2382,17 +2338,6 @@ disabled by setting this to \`false\`
 If not specified, the raw input data is used.
 ",
                     },
-                    "method": {
-                      "default": "get",
-                      "description": "The type of request to make.",
-                      "enum": [
-                        "delete",
-                        "get",
-                        "patch",
-                        "post",
-                        "put",
-                      ],
-                    },
                     "onError": {},
                     "onSuccess": {},
                     "proxy": {
@@ -2476,17 +2421,6 @@ disabled by setting this to \`false\`
 
 If not specified, the raw input data is used.
 ",
-                    },
-                    "method": {
-                      "default": "get",
-                      "description": "The type of request to make.",
-                      "enum": [
-                        "delete",
-                        "get",
-                        "patch",
-                        "post",
-                        "put",
-                      ],
                     },
                     "onError": {},
                     "onSuccess": {},
@@ -6474,17 +6408,6 @@ converted to JSON.
 If not specified, the raw input data is used.
 ",
             },
-            "method": {
-              "default": "get",
-              "description": "The type of request to make.",
-              "enum": [
-                "delete",
-                "get",
-                "patch",
-                "post",
-                "put",
-              ],
-            },
             "onError": {},
             "onSuccess": {},
             "own": {
@@ -6657,17 +6580,6 @@ disabled by setting this to \`false\`
 If not specified, the raw input data is used.
 ",
             },
-            "method": {
-              "default": "get",
-              "description": "The type of request to make.",
-              "enum": [
-                "delete",
-                "get",
-                "patch",
-                "post",
-                "put",
-              ],
-            },
             "onError": {},
             "onSuccess": {},
             "proxy": {
@@ -6751,17 +6663,6 @@ disabled by setting this to \`false\`
 
 If not specified, the raw input data is used.
 ",
-            },
-            "method": {
-              "default": "get",
-              "description": "The type of request to make.",
-              "enum": [
-                "delete",
-                "get",
-                "patch",
-                "post",
-                "put",
-              ],
             },
             "onError": {},
             "onSuccess": {},
@@ -6945,17 +6846,6 @@ disabled by setting this to \`false\`
 
 If not specified, the raw input data is used.
 ",
-            },
-            "method": {
-              "default": "get",
-              "description": "The type of request to make.",
-              "enum": [
-                "delete",
-                "get",
-                "patch",
-                "post",
-                "put",
-              ],
             },
             "onError": {},
             "onSuccess": {},
@@ -7317,17 +7207,6 @@ disabled by setting this to \`false\`
 If not specified, the raw input data is used.
 ",
             },
-            "method": {
-              "default": "get",
-              "description": "The type of request to make.",
-              "enum": [
-                "delete",
-                "get",
-                "patch",
-                "post",
-                "put",
-              ],
-            },
             "onError": {},
             "onSuccess": {},
             "proxy": {
@@ -7411,17 +7290,6 @@ disabled by setting this to \`false\`
 
 If not specified, the raw input data is used.
 ",
-            },
-            "method": {
-              "default": "get",
-              "description": "The type of request to make.",
-              "enum": [
-                "delete",
-                "get",
-                "patch",
-                "post",
-                "put",
-              ],
             },
             "onError": {},
             "onSuccess": {},

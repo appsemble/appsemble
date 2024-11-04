@@ -18,5 +18,5 @@ export const ResourceDeleteActionDefinition = extendJSONSchema(
       },
     },
   },
-  ['url'],
+  ['url', 'method'],
 );
