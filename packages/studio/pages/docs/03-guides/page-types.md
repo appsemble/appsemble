@@ -268,7 +268,7 @@ pages:
   - name: Contained page 1
     blocks:
       - type: action-button
-        version: 0.30.5
+        version: 0.30.6
         parameters:
           icon: git-alt
         actions:
@@ -278,7 +278,7 @@ pages:
   - name: Contained page 2
     blocks:
       - type: action-button
-        version: 0.30.5
+        version: 0.30.6
         parameters:
           icon: git-alt
         actions:
