@@ -1,7 +1,7 @@
 apiVersion: v2
 name: appsemble
-version: 0.30.3
-appVersion: 0.30.3
+version: 0.30.4
+appVersion: 0.30.4
 kubeVersion: '>=1.21.0'
 type: application
 description: The open source low-code app building platform
@@ -29,14 +29,33 @@ dependencies:
 annotations:
   artifacthub.io/changes: >
     - kind: added
-      description: "Block(form): Add an option for enum fields with values remapped
-        from other form fields."
+      description: "Block(form): Add onSelect option to enum fields to fire an action
+        when the value changes."
     - kind: added
-      description: "Block(table): Add a new field caption to add captions to tables."
+      description: "App: Add all demo app members to newly created group in demo apps."
     - kind: added
-      description: "Utils: Support negative index in prop remapper for array inputs."
+      description: "App: Add demo app members created by demo login to existing groups
+        in demo apps."
+    - kind: added
+      description: "App: Add new action resource.history.get to fetch the history of a
+        resource."
+    - kind: added
+      description: "Server: Add caching to improve app asset query imporvements."
+    - kind: added
+      description: "Server: Add indexes to tables to improve query performance."
+    - kind: changed
+      description: "Cli: Require a role for inviting a user to a group through the cli."
+    - kind: removed
+      description: "App: Remove option to join groups in demo apps."
     - kind: fixed
-      description: "App: Disable login if no roles are defined in the security definition."
+      description: "Block(form): Display enum fields as hidden when show is false so
+        they can still listen to events."
+    - kind: fixed
+      description: "App: Fix group selection from profile dropdown."
+    - kind: fixed
+      description: "Studio: App Definition menu section not being visible in the side menu."
+    - kind: fixed
+      description: "Utils: Fix delete assets endpoint security."
   artifacthub.io/license: LGPL-3.0-only
   artifacthub.io/links: |
     - name: Appsemble Studio

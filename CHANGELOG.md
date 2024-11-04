@@ -2,6 +2,33 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.30.4](https://gitlab.com/appsemble/appsemble/-/releases/0.30.4)] - 2024-11-04
+
+### Added
+
+- Block(`form`): Add `onSelect` option to enum fields to fire an action when the value changes.
+- App: Add all demo app members to newly created group in demo apps.
+- App: Add demo app members created by demo login to existing groups in demo apps.
+- App: Add new action `resource.history.get` to fetch the history of a resource.
+- Server: Add caching to improve app asset query imporvements.
+- Server: Add indexes to tables to improve query performance.
+
+### Changed
+
+- Cli: Require a role for inviting a user to a group through the cli.
+
+### Removed
+
+- App: Remove option to join groups in demo apps.
+
+### Fixed
+
+- Block(`form`): Display enum fields as hidden when `show` is `false` so they can still listen to
+  events.
+- App: Fix group selection from profile dropdown.
+- Studio: `App Definition` menu section not being visible in the side menu.
+- Utils: Fix delete assets endpoint security.
+
 ## \[[0.30.3](https://gitlab.com/appsemble/appsemble/-/releases/0.30.3)] - 2024-10-23
 
 ### Added
