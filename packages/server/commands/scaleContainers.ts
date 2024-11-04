@@ -6,4 +6,5 @@ export const description =
 
 export async function handler(): Promise<void> {
   await stopIdleContainers();
+  process.exit();
 }

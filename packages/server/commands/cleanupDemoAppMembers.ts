@@ -62,4 +62,5 @@ export async function handler(): Promise<void> {
   });
 
   await db.close();
+  process.exit();
 }

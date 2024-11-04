@@ -206,4 +206,5 @@ export async function handler(): Promise<void> {
   logger.info(`Removed ${resourcesDeletionResult} resources.`);
 
   await db.close();
+  process.exit();
 }

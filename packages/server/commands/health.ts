@@ -12,4 +12,5 @@ export async function handler(): Promise<void> {
   url.port = String(port);
   await axios.get(`${url}/main/api/health`);
   logger.info('API is healthy');
+  process.exit();
 }

@@ -308,4 +308,5 @@ export async function handler({
   logger.info(`Saved ${saved} app(s).`);
 
   await db.close();
+  process.exit();
 }

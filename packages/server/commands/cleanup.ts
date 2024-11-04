@@ -53,4 +53,5 @@ export async function handler(): Promise<void> {
   }
 
   await cleanupDNS();
+  process.exit();
 }
