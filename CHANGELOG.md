@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.30.5](https://gitlab.com/appsemble/appsemble/-/releases/0.30.5)] - 2024-11-04
+
+### Removed
+
+- Utils: Remove redundant property `method` from resource actions.
+
 ## \[[0.30.4](https://gitlab.com/appsemble/appsemble/-/releases/0.30.4)] - 2024-11-04
 
 ### Added
