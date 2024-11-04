@@ -41,4 +41,5 @@ export async function handler(): Promise<void> {
 
   await migrate(migrateTo, migrations);
   await db.close();
+  process.exit();
 }
