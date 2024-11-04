@@ -168,7 +168,7 @@ export async function handler(): Promise<void> {
 
   logger.info('Cleaning up ephemeral assets from regular apps.');
 
-  const assetsDeletionResult = await Resource.destroy({
+  const assetsDeletionResult = await Asset.destroy({
     where: {
       id: { [Op.in]: assetsToDestroy.map((asset) => asset.id) },
     },

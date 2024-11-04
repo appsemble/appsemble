@@ -4,6 +4,17 @@ import { extension } from 'mime-types';
 import { Op } from 'sequelize';
 
 import { App, Asset } from '../../../../models/index.js';
+import { assetsCache } from '../../../../utils/assetCache.js';
+
+function setHeaders(ctx: Context, mime: string, filename: string | null): void {
+  ctx.set('content-type', mime || 'application/octet-stream');
+  if (filename) {
+    ctx.set('content-disposition', `attachment; filename=${JSON.stringify(filename)}`);
+  }
+
+  ctx.set('Access-Control-Expose-Headers', 'Content-Disposition');
+  ctx.set('Cache-Control', 'max-age=31536000,immutable');
+}
 
 export async function getAppAssetById(ctx: Context): Promise<void> {
   const {
@@ -15,6 +26,13 @@ export async function getAppAssetById(ctx: Context): Promise<void> {
   });
 
   assertKoaError(!app, ctx, 404, 'App not found');
+  const cacheKey = `${appId}-${assetId}`;
+  const cachedAsset = assetsCache.get(cacheKey);
+  if (cachedAsset) {
+    setHeaders(ctx, cachedAsset.mime, cachedAsset.filename);
+    ctx.body = cachedAsset.data;
+    return;
+  }
 
   const asset = await Asset.findOne({
     where: {
@@ -35,6 +53,7 @@ export async function getAppAssetById(ctx: Context): Promise<void> {
   }
 
   let { filename, mime } = asset;
+  assetsCache.set(cacheKey, asset.dataValues);
   if (!filename) {
     filename = asset.id;
     if (mime) {
@@ -44,12 +63,6 @@ export async function getAppAssetById(ctx: Context): Promise<void> {
       }
     }
   }
-  ctx.set('content-type', mime || 'application/octet-stream');
-  if (filename) {
-    ctx.set('content-disposition', `attachment; filename=${JSON.stringify(filename)}`);
-  }
-
-  ctx.set('Access-Control-Expose-Headers', 'Content-Disposition');
-  ctx.set('Cache-Control', 'max-age=31536000,immutable');
+  setHeaders(ctx, mime, filename);
   ctx.body = asset.data;
 }
