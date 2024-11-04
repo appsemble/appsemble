@@ -11,7 +11,7 @@ import {
 } from '../../../../models/index.js';
 import { setArgv } from '../../../../utils/argv.js';
 import { createServer } from '../../../../utils/createServer.js';
-import { createTestUser } from '../../../../utils/test/authorization.js';
+import { authorizeStudio, createTestUser } from '../../../../utils/test/authorization.js';
 
 let organization: Organization;
 let user: User;
@@ -176,6 +176,34 @@ describe('getAppAssetById', () => {
 
     const response = await request.get(`/api/apps/${app.id}/assets/${asset.id}`);
 
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 404 Not Found
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "error": "Not Found",
+        "message": "Asset not found",
+        "statusCode": 404,
+      }
+    `);
+  });
+
+  it('should not fetch deleted assets', async () => {
+    const data = Buffer.from('buffer');
+    const asset = await Asset.create({
+      AppId: app.id,
+      mime: 'application/octet-stream',
+      filename: 'test.bin',
+      data,
+    });
+
+    const assetId = asset.id;
+    const { status } = await request.get(`/api/apps/${app.id}/assets/${assetId}`);
+    expect(status).toBe(200);
+    authorizeStudio();
+    const deletedAsset = await request.delete(`/api/apps/${app.id}/assets/${assetId}`);
+    expect(deletedAsset.status).toBe(204);
+    const response = await request.get(`/api/apps/${app.id}/assets/${assetId}`);
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 404 Not Found
       Content-Type: application/json; charset=utf-8

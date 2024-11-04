@@ -3,6 +3,7 @@ import { OrganizationPermission } from '@appsemble/types';
 import { type Context } from 'koa';
 
 import { App, Asset } from '../../../../models/index.js';
+import { assetsCache } from '../../../../utils/assetCache.js';
 import { checkUserOrganizationPermissions } from '../../../../utils/authorization.js';
 
 export async function deleteAppAsset(ctx: Context): Promise<void> {
@@ -34,6 +35,7 @@ export async function deleteAppAsset(ctx: Context): Promise<void> {
   });
 
   assertKoaError(!asset, ctx, 404, 'Asset not found');
+  assetsCache.del(`${asset.AppId}-${asset.id}`);
 
   await asset.destroy();
 }

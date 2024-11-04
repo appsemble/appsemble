@@ -4,6 +4,7 @@ import { type Context } from 'koa';
 import { type FindOptions, Op } from 'sequelize';
 
 import { App, Asset } from '../../../../models/index.js';
+import { assetsCache } from '../../../../utils/assetCache.js';
 import { checkUserOrganizationPermissions } from '../../../../utils/authorization.js';
 
 export async function deleteAppAssets(ctx: Context): Promise<void> {
@@ -49,6 +50,7 @@ export async function deleteAppAssets(ctx: Context): Promise<void> {
   const assets = await Asset.findAll(query);
   assertKoaError(!isSeed && assets.length === 0, ctx, 404, 'No assets found');
   assets.map(async (asset) => {
+    assetsCache.del(`${appId}-${asset.id}`);
     await asset.destroy();
   });
 

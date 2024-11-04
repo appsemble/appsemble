@@ -10,6 +10,7 @@ import {
   type User,
 } from '../../../../models/index.js';
 import { setArgv } from '../../../../utils/argv.js';
+import { assetsCache } from '../../../../utils/assetCache.js';
 import { createServer } from '../../../../utils/createServer.js';
 import { authorizeStudio, createTestUser } from '../../../../utils/test/authorization.js';
 
@@ -67,6 +68,32 @@ describe('deleteAppAsset', () => {
 
     authorizeStudio();
     const response = await request.delete(`/api/apps/${app.id}/assets/${asset.id}`);
+
+    expect(response).toMatchInlineSnapshot('HTTP/1.1 204 No Content');
+  });
+
+  it('should clear existing assets in cache', async () => {
+    const asset = await Asset.create({
+      AppId: app.id,
+      mime: 'application/octet-stream',
+      filename: 'test.bin',
+      data: Buffer.from('buffer'),
+    });
+    const assetId = asset.id;
+    await request.get(`/api/apps/${app.id}/assets/${assetId}`);
+    expect(assetsCache.get(`${app.id}-${assetId}`)).toMatchObject({
+      AppId: 1,
+      clonable: false,
+      ephemeral: false,
+      filename: 'test.bin',
+      mime: 'application/octet-stream',
+      name: null,
+      seed: false,
+    });
+
+    authorizeStudio();
+    const response = await request.delete(`/api/apps/${app.id}/assets/${asset.id}`);
+    expect(assetsCache.get(`${app.id}-${assetId}`)).toBeUndefined();
 
     expect(response).toMatchInlineSnapshot('HTTP/1.1 204 No Content');
   });
