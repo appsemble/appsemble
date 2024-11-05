@@ -33,7 +33,7 @@ export async function getAppAssetHeadersById(ctx: Context): Promise<void> {
   if (assetId !== asset.id) {
     // Redirect to asset using current asset ID
     ctx.status = 302;
-    ctx.set('location', `/api/common/apps/${appId}/assets/${asset.id}`);
+    ctx.set('location', `/api/apps/${appId}/assets/${asset.id}`);
     ctx.type = null;
     return;
   }
