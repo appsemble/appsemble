@@ -27,6 +27,8 @@ spec:
           image: "{{ .Values.image.repository }}:{{ include "appsemble.tag" . }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           args: ['start', '-vv']
+          securityContext:
+            readOnlyRootFilesystem: true
           ports:
             - name: http
               containerPort: 9999

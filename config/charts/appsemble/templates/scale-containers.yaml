@@ -22,6 +22,8 @@ spec:
             - name: {{ include "appsemble.fullname" . }}-scale-containers
               image: "{{ .Values.image.repository }}:{{ include "appsemble.tag" . }}"
               imagePullPolicy: {{ .Values.image.pullPolicy }}
+              securityContext:
+                readOnlyRootFilesystem: true
               args:
                 - scale-containers # Command that handles scaling
                 - -vv
