@@ -71,7 +71,7 @@ export async function createSettings({
         model: AppSamlSecret,
       },
       {
-        attributes: ['id', 'yaml'],
+        attributes: ['id'],
         order: [['created', 'DESC']],
         limit: 1,
         model: AppSnapshot,
