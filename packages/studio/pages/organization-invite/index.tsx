@@ -134,7 +134,7 @@ export function OrganizationInvitePage(): ReactNode {
           color="primary"
           component={Link}
           icon="sign-in-alt"
-          to={{ pathname: 'login', search: `?${search}` }}
+          to={{ pathname: '../login', search: `?${search}` }}
         >
           <FormattedMessage {...messages.login} />
         </Button>
