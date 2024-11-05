@@ -22,7 +22,7 @@ import { callBootstrap } from '../../utils/bootstrapper.js';
 import { createEvents } from '../../utils/events.js';
 import { injectCSS } from '../../utils/injectCSS.js';
 import { makeActions } from '../../utils/makeActions.js';
-import { apiUrl, appId } from '../../utils/settings.js';
+import { apiUrl, appId, appUpdated } from '../../utils/settings.js';
 import { type AppStorage } from '../../utils/storage.js';
 import { useAppDefinition } from '../AppDefinitionProvider/index.js';
 import { useAppMember } from '../AppMemberProvider/index.js';
@@ -200,8 +200,8 @@ export function Block({
             ...manifest.files
               .filter((url) => url.endsWith('.css'))
               .map((url) => prefixBlockURL(block, url)),
-            '/shared.css',
-            `/${manifest.name}.css`,
+            `/shared.css?updated=${appUpdated}`,
+            `/${manifest.name}.css?updated=${appUpdated}`,
           ].map((url) => injectCSS(shadowRoot, url)),
         );
       }

@@ -285,16 +285,18 @@ export function AppMemberProvider({ children }: AppMemberProviderProps): ReactNo
       developmentLogin();
     }
 
-    const rt = localStorage.getItem(REFRESH_TOKEN);
-    if (rt) {
-      // If a refresh token is known, start a new session.
-      login('refresh_token', { refresh_token: rt }).finally(() => setIsLoading(false));
-    } else {
-      // Otherwise make sure the state is fully reset.
-      logout();
-      setIsLoading(false);
+    if (!appMemberInfo) {
+      const rt = localStorage.getItem(REFRESH_TOKEN);
+      if (rt) {
+        // If a refresh token is known, start a new session.
+        login('refresh_token', { refresh_token: rt }).finally(() => setIsLoading(false));
+      } else {
+        // Otherwise make sure the state is fully reset.
+        logout();
+        setIsLoading(false);
+      }
     }
-  }, [definition, developmentLogin, login, logout]);
+  }, [appMemberInfo, definition, developmentLogin, login, logout]);
 
   // Handle refreshing access tokens
   useEffect(() => {

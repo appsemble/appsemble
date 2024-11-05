@@ -30,7 +30,7 @@ export async function getAppAssetById(ctx: Context): Promise<void> {
   const cachedAsset = assetsCache.get(cacheKey);
   if (cachedAsset) {
     setHeaders(ctx, cachedAsset.mime, cachedAsset.filename);
-    ctx.body = cachedAsset.data;
+    ctx.body = Buffer.from(cachedAsset.data);
     return;
   }
 

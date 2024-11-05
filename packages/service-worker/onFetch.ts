@@ -44,6 +44,24 @@ export function onFetch(event: FetchEvent): void {
     return;
   }
 
+  // Cache bulma and fa styles
+  if (/\/(bulma\.min|fa.*all\.min)\.css$/.test(pathname)) {
+    event.respondWith(cacheFirst(request));
+    return;
+  }
+
+  // Cache block styles
+  if (/^\/@appsemble\/[^/?]+\.css/.test(pathname)) {
+    event.respondWith(cacheFirst(request));
+    return;
+  }
+
+  // Cache shared styles
+  if (/^\/shared.css/.test(pathname)) {
+    event.respondWith(cacheFirst(request));
+    return;
+  }
+
   // Static app files are immutable, because they are hashed, and should be cached.
   if (/^\/_\/.+/.test(pathname)) {
     event.respondWith(cacheFirst(request));
