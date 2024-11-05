@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.30.7](https://gitlab.com/appsemble/appsemble/-/releases/0.30.7)] - 2024-11-05
+
+### Fixed
+
+- Server: Fetch only snapshot ID when querying `AppSnapshot` for creating settings.
+- Studio: Fix redirect in organization invite flow.
+
 ## \[[0.30.6](https://gitlab.com/appsemble/appsemble/-/releases/0.30.6)] - 2024-11-04
 
 ## \[[0.30.5](https://gitlab.com/appsemble/appsemble/-/releases/0.30.5)] - 2024-11-04
