@@ -19,6 +19,8 @@ spec:
       initContainers:
         - name: {{ include "appsemble.fullname" . }}-download-data
           image: alpine:latest
+          securityContext:
+            readOnlyRootFilesystem: true
           command: [ "/bin/sh", "-c" ]
           args:
             - |
@@ -53,6 +55,8 @@ spec:
         - name: {{ include "appsemble.fullname" . }}-import-data
           image: "bitnami/postgresql:15"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
+          securityContext:
+            readOnlyRootFilesystem: true
           command: ["/bin/sh", "-c"]
           args:
             - gunzip < /data/backup.gz | psql -d {{ .Values.global.postgresql.auth.database }}

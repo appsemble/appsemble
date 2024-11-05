@@ -21,6 +21,8 @@ spec:
             - name: {{ include "appsemble.fullname" . }}-cronjob-cleanup-resources-and-assets
               image: "{{ .Values.image.repository }}:{{ include "appsemble.tag" . }}"
               imagePullPolicy: {{ .Values.image.pullPolicy }}
+              securityContext:
+                readOnlyRootFilesystem: true
               args:
                 - cleanup-resources-and-assets
                 - -vv
