@@ -85,6 +85,7 @@ services:
         cp -r /app-ro/packages/utils /app/packages/utils && \
         cp -r /app-ro/packages/types /app/packages/types && \
         cp -r /app-ro/packages/sdk /app/packages/sdk && \
+        cp -r /app-ro/packages/preact /app/packages/preact && \
         cp -r /app-ro/packages/preact-components /app/packages/preact-components && \
         cp -r /app-ro/packages/tsconfig /app/packages/tsconfig && \
         cp -r /app-ro/packages/webpack-core /app/packages/webpack-core && \
@@ -134,7 +135,10 @@ services:
       - '-c'
       - |
         cp -r /app-ro/scripts /app/scripts && \
+
+        mkdir /app/packages && \
         cp -r /app-ro/packages/e2e /app/packages/e2e && \
+
         cp /app-ro/package.json /app && \
         cp /app-ro/package-lock.json /app && \
         exec /bin/bash
