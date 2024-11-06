@@ -118,7 +118,7 @@ export async function handler(argv: ServeArguments): Promise<void> {
       name: 'dev',
       email: 'dev@example.com',
       email_verified: true,
-      role: passedUserRole || appSecurity?.default.role,
+      role: passedUserRole || appSecurity?.default?.role,
       demo: false,
       zoneinfo: '',
       properties: {},

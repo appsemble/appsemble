@@ -251,6 +251,11 @@ export interface GetCurrentAppMemberParams {
   context: ParameterizedContext<DefaultState, DefaultContextInterface, any>;
 }
 
+export interface GetCurrentAppMemberGroupsParams {
+  context: ParameterizedContext<DefaultState, DefaultContextInterface, any>;
+  app: App;
+}
+
 export type ResourceAction = 'create' | 'delete' | 'update';
 export type Action = ResourceAction | 'count' | 'get' | 'patch' | 'query';
 
@@ -425,6 +430,7 @@ export type ContentSecurityPolicy = Record<string, (string | false)[]>;
 
 export interface Options {
   getCurrentAppMember: (params: GetCurrentAppMemberParams) => Promise<AppMemberInfo>;
+  getCurrentAppMemberGroups: (params: GetCurrentAppMemberGroupsParams) => Promise<Group[]>;
   getApp: (params: GetAppParams) => Promise<App>;
   getAppDetails: (params: GetAppParams) => Promise<AppDetails>;
   getAppMessages: (params: GetAppMessagesParams) => Promise<AppMessages[]>;

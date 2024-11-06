@@ -30,6 +30,7 @@ export * from './email.js';
 export * from './sendNotifications.js';
 export * from './applyAppServiceSecrets.js';
 export * from './getCurrentAppMember.js';
+export * from './getCurrentAppMemberGroups.js';
 export * from './getAppGroups.js';
 export * from './getAppReadmes.js';
 export * from './getAppVariables.js';
