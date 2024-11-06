@@ -5,6 +5,7 @@ import { type Argv } from 'yargs';
 import { databaseBuilder } from './builder/database.js';
 import { App, Asset, initDB, Resource } from '../models/index.js';
 import { argv } from '../utils/argv.js';
+import { assetsCache } from '../utils/assetCache.js';
 import { reseedResourcesRecursively } from '../utils/resource.js';
 import { handleDBError } from '../utils/sqlUtils.js';
 
@@ -34,23 +35,15 @@ export async function handler(): Promise<void> {
   }
 
   const demoAssetsToDestroy = await Asset.findAll({
-    attributes: ['id'],
-    include: [
-      {
-        model: App,
-        attributes: ['id'],
-        where: {
-          demoMode: true,
-        },
-        required: true,
-      },
-    ],
+    attributes: ['id', 'AppId'],
     where: {
       ephemeral: true,
     },
   });
 
   logger.info('Cleaning up ephemeral assets from demo apps.');
+
+  assetsCache.del(demoAssetsToDestroy.map((asset) => `${asset.AppId}-${asset.id}`));
 
   const demoAssetsDeletionResult = await Asset.destroy({
     where: {
@@ -91,17 +84,7 @@ export async function handler(): Promise<void> {
 
   const date = new Date();
   const demoResourcesToDestroy = await Resource.findAll({
-    attributes: ['id', 'AppId', 'type'],
-    include: [
-      {
-        model: App,
-        attributes: ['definition'],
-        where: {
-          demoMode: true,
-        },
-        required: true,
-      },
-    ],
+    attributes: ['id'],
     where: {
       [Op.or]: [{ seed: false, expires: { [Op.lt]: date } }, { ephemeral: true }],
     },
@@ -151,16 +134,6 @@ export async function handler(): Promise<void> {
 
   const assetsToDestroy = await Asset.findAll({
     attributes: ['id'],
-    include: [
-      {
-        model: App,
-        attributes: ['id'],
-        where: {
-          demoMode: false,
-        },
-        required: true,
-      },
-    ],
     where: {
       ephemeral: true,
     },
@@ -168,6 +141,7 @@ export async function handler(): Promise<void> {
 
   logger.info('Cleaning up ephemeral assets from regular apps.');
 
+  assetsCache.del(assetsToDestroy.map((asset) => `${asset.AppId}-${asset.id}`));
   const assetsDeletionResult = await Asset.destroy({
     where: {
       id: { [Op.in]: assetsToDestroy.map((asset) => asset.id) },
@@ -177,17 +151,7 @@ export async function handler(): Promise<void> {
   logger.info(`Removed ${assetsDeletionResult} assets.`);
 
   const resourcesToDestroy = await Resource.findAll({
-    attributes: ['id', 'AppId', 'type'],
-    include: [
-      {
-        model: App,
-        attributes: ['definition'],
-        where: {
-          demoMode: false,
-        },
-        required: true,
-      },
-    ],
+    attributes: ['id'],
     where: {
       [Op.or]: [{ expires: { [Op.lt]: date } }, { ephemeral: true }],
     },
