@@ -1,4 +1,3 @@
-import { createFormData } from '@appsemble/node-utils';
 import { type App } from '@appsemble/types';
 import { test as base, expect, type Page } from '@playwright/test';
 import axios from 'axios';
@@ -124,13 +123,12 @@ export const test = base.extend<Fixtures>({
   // TODO: handle this by seeding an app beforehand with logins configured
   async createTestApp({}, use) {
     await use(async (organization, yaml) => {
-      const response = await axios.post<App>(
-        '/api/apps',
-        createFormData({
-          OrganizationId: organization.toLowerCase(),
-          yaml: stripIndent(yaml),
-        }),
-      );
+      const formData = new FormData();
+
+      formData.append('OrganizationId', organization.toLowerCase());
+      formData.append('yaml', stripIndent(yaml));
+
+      const response = await axios.post<App>('/api/apps', formData);
       return response.data;
     });
   },
