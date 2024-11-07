@@ -334,10 +334,10 @@ e2e:
   variables:
     APPSEMBLE_IMAGE: '$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG'
   script:
-    - docker compose --file docker-compose-e2e.yaml up -d
+    - docker compose --file docker-compose-e2e-ci.yaml up -d
     - . scripts/e2e.sh
   after_script:
-    - docker compose --file docker-compose-e2e.yaml down --volumes
+    - docker compose --file docker-compose-e2e-ci.yaml down --volumes
   artifacts:
     expose_as: Playwright videos
     when: always

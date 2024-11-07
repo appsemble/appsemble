@@ -70,58 +70,14 @@ services:
     tty: true
     stdin_open: true
     working_dir: /app
-    entrypoint:
-      - 'sh'
-      - '-c'
-      - |
-        cp -r /app-ro/apps /app/apps && \
-        cp -r /app-ro/blocks /app/blocks && \
-        cp -r /app-ro/scripts /app/scripts && \
-
-        mkdir /app/packages && \
-        cp -r /app-ro/packages/cli /app/packages/cli && \
-        cp -r /app-ro/packages/scripts /app/packages/scripts && \
-        cp -r /app-ro/packages/node-utils /app/packages/node-utils && \
-        cp -r /app-ro/packages/utils /app/packages/utils && \
-        cp -r /app-ro/packages/types /app/packages/types && \
-        cp -r /app-ro/packages/sdk /app/packages/sdk && \
-        cp -r /app-ro/packages/preact /app/packages/preact && \
-        cp -r /app-ro/packages/preact-components /app/packages/preact-components && \
-        cp -r /app-ro/packages/tsconfig /app/packages/tsconfig && \
-        cp -r /app-ro/packages/webpack-core /app/packages/webpack-core && \
-        cp -r /app-ro/packages/webpack-config /app/packages/webpack-config && \
-
-        mkdir -p /app/packages/server/assets && \
-        cp /app-ro/packages/server/assets/appsemble.png /app/packages/server/assets && \
-
-        mkdir -p /app/packages/studio/pages/docs && \
-        cp -r /app-ro/packages/studio/pages/docs /app/packages/studio/pages && \
-
-        cp /app-ro/LICENSE.md /app && \
-        cp /app-ro/tsconfig.json /app && \
-        cp /app-ro/package.json /app && \
-        cp /app-ro/package-lock.json /app && \
-
-        tail -f /dev/null
     volumes:
-      - ./:/app-ro:ro
-      - seeder-excluded:/app-ro/packages/cli/node_modules
-      - seeder-excluded:/app-ro/packages/scripts/node_modules
-      - seeder-excluded:/app-ro/packages/node-utils/node_modules
-      - seeder:/app
-    healthcheck:
-      test: ['CMD-SHELL', '[ -f /app/package-lock.json ] || exit 1']
-      interval: 5s
-      timeout: 2s
-      retries: 5
+      - ./:/app
+      - /app/node_modules
 
   playwright:
     container_name: playwright
     image: mcr.microsoft.com/playwright
     networks: [appsemble-e2e]
-    depends_on:
-      seeder:
-        condition: service_healthy
     environment:
       BOT_ACCOUNT_NAME: *bot-account-name
       BOT_ACCOUNT_EMAIL: *bot-account-email
@@ -130,21 +86,10 @@ services:
       CI: true
     tty: true
     stdin_open: true
-    entrypoint:
-      - 'sh'
-      - '-c'
-      - |
-        cp -r /app-ro/scripts /app/scripts && \
-
-        mkdir /app/packages && \
-        cp -r /app-ro/packages/e2e /app/packages/e2e && \
-
-        cp /app-ro/package.json /app && \
-        cp /app-ro/package-lock.json /app && \
-        exec /bin/bash
     working_dir: /app
     volumes:
-      - ./:/app-ro:ro
+      - ./:/app
+      - /app/node_modules
     links:
       - 'appsemble:controller.appsemble.appsemble'
       - 'appsemble:empty.appsemble.appsemble'
@@ -156,7 +101,3 @@ services:
       - 'appsemble:survey.appsemble.appsemble'
       - 'appsemble:triggers.appsemble.appsemble'
       - 'appsemble:unlittered.appsemble.appsemble'
-
-volumes:
-  seeder:
-  seeder-excluded:

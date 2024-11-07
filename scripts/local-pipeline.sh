@@ -6,7 +6,7 @@
   # setup
   npm ci
   export DATABASE_URL='postgres://admin:password@localhost:5433/appsemble'
-  docker compose --project-name pipeline --file docker-compose-pipeline.yaml up -d
+  docker compose --project-name pipeline --file docker-compose-pipeline-local.yaml up -d
 
   # cspell
   npx -- cspell
@@ -42,4 +42,4 @@
 )
 
 # cleanup
-docker compose --project-name pipeline --file docker-compose-pipeline.yaml down --volumes
+docker compose --project-name pipeline --file docker-compose-pipeline-local.yaml down --volumes
