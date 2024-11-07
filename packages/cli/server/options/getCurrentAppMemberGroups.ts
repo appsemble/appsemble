@@ -1,3 +1,5 @@
+import { type GetAppSubEntityParams } from '@appsemble/node-utils';
 import { type Group } from '@appsemble/types';
 
-export const getCurrentAppMemberGroups = (): Promise<Group[]> => Promise.resolve([]);
+export const getCurrentAppMemberGroups = ({ context }: GetAppSubEntityParams): Promise<Group[]> =>
+  Promise.resolve(context.appGroups);

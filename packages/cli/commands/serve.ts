@@ -21,7 +21,6 @@ import {
   type AppsembleMessages,
   type Asset,
   type BlockManifest,
-  type UserInfo,
 } from '@appsemble/types';
 import {
   asciiLogo,
@@ -112,18 +111,18 @@ export async function handler(argv: ServeArguments): Promise<void> {
 
   const appSecurity = appsembleApp.definition.security;
 
-  const appMembers: AppMemberInfo[] = [
-    {
-      sub: '1',
-      name: 'dev',
-      email: 'dev@example.com',
-      email_verified: true,
-      role: passedUserRole || appSecurity?.default?.role,
-      demo: false,
-      zoneinfo: '',
-      properties: {},
-    },
-  ];
+  const appMemberInfo: AppMemberInfo = {
+    sub: '1',
+    name: 'dev',
+    email: 'dev@example.com',
+    email_verified: true,
+    role: passedUserRole || appSecurity?.default?.role,
+    demo: false,
+    zoneinfo: '',
+    properties: {},
+  };
+
+  const appMembers: AppMemberInfo[] = [appMemberInfo];
 
   const allowedGroupRoles = ['manager', 'member'] as const;
   const passedGroupRole = argv['group-role'] as (typeof allowedGroupRoles)[number];
@@ -141,13 +140,6 @@ export async function handler(argv: ServeArguments): Promise<void> {
       annotations: {},
     },
   ];
-
-  const appUserInfo: UserInfo = {
-    email: 'dev@example.com',
-    email_verified: true,
-    name: 'dev',
-    sub: '1',
-  };
 
   const appName = normalize(appsembleApp.definition.name);
   const appId = 1;
@@ -378,7 +370,7 @@ export async function handler(argv: ServeArguments): Promise<void> {
       ...(appSecurity
         ? {
             appMembers,
-            appUserInfo,
+            appMemberInfo,
             appGroups,
           }
         : {}),
@@ -407,7 +399,7 @@ export async function handler(argv: ServeArguments): Promise<void> {
       ...(appSecurity
         ? {
             appMembers,
-            appUserInfo,
+            appMemberInfo,
             appGroups,
           }
         : {}),
