@@ -1507,6 +1507,14 @@ export interface AppMemberDeleteAction extends BaseActionDefinition<'app.member.
   sub: Remapper;
 }
 
+interface RequestActionHeaders {
+  'Content-Type':
+    | 'application/x-www-form-urlencoded'
+    | 'application/xml'
+    | 'multipart/form-data'
+    | 'text/plain';
+}
+
 export interface RequestLikeActionDefinition<T extends Action['type'] = Action['type']>
   extends BaseActionDefinition<T> {
   /**
@@ -1542,6 +1550,11 @@ export interface RequestLikeActionDefinition<T extends Action['type'] = Action['
    * If this isn’t specified, the raw input data is used.
    */
   body?: Remapper;
+
+  /**
+   * Headers for the outgoing request.
+   */
+  headers?: RequestActionHeaders;
 }
 
 export interface ResourceActionDefinition<T extends Action['type']>
