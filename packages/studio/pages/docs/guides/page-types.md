@@ -57,7 +57,7 @@ use too, namely the `onLoad` action.
 
 In practice, this looks like this:
 
-```yaml copy validate page-snippet
+```yaml copy
 name: Knowledgebase
 type: tabs
 # Retrieve data from resource
@@ -147,7 +147,7 @@ do this you can use the flow actions:
 
 If you take the previous code as an example and zoom in on the Introduction page, you get this:
 
-```yaml copy validate page-snippet
+```yaml copy
 name: Introduction
 blocks:
   - type: markdown
@@ -262,27 +262,27 @@ On the parent page, you only need to set the `type` to `container` and define th
 The example above was created using the following page definition (minus Page 2):
 
 ```yaml copy validate page-snippet
-name: Page 1
-type: container
-pages:
-  - name: Contained page 1
-    blocks:
-      - type: action-button
-        version: 0.30.7
-        parameters:
-          icon: git-alt
-        actions:
-          onClick:
-            type: link
-            to: Contained page 2
-  - name: Contained page 2
-    blocks:
-      - type: action-button
-        version: 0.30.7
-        parameters:
-          icon: git-alt
-        actions:
-          onClick:
-            type: link
-            to: Contained page 1
+- name: Page 1
+  type: container
+  pages:
+    - name: Contained page 1
+      blocks:
+        - type: action-button
+          version: 0.30.7
+          parameters:
+            icon: git-alt
+          actions:
+            onClick:
+              type: link
+              to: Contained page 2
+    - name: Contained page 2
+      blocks:
+        - type: action-button
+          version: 0.30.7
+          parameters:
+            icon: git-alt
+          actions:
+            onClick:
+              type: link
+              to: Contained page 1
 ```

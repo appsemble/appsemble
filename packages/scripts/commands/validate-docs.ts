@@ -145,7 +145,7 @@ function appendResourcesToTemplate(
       }
     }
 
-    const defaultPermissions = ['create', 'update', 'patch', 'delete'].map(
+    const defaultPermissions = ['create', 'update', 'patch', 'delete', 'history:get'].map(
       (action) => `$resource:${resourceName}:${action}` as CustomAppGuestPermission,
     );
 

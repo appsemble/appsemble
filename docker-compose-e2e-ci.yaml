@@ -12,7 +12,7 @@ x-bot-account-password: &bot-account-password password
 x-appsemble-organization: &appsemble-organization appsemble
 x-appsemble-client-credentials: &appsemble-client-credentials 'user:password'
 
-x-appsemble-remote: &appsemble-remote 'http://localhost:9999'
+x-appsemble-remote: &appsemble-remote 'http://appsemble:9999'
 
 name: appsemble-e2e
 networks:
@@ -37,6 +37,7 @@ services:
     depends_on: [database]
     environment:
       SECRET: secret
+      AES_SECRET: secret
       HOST: *appsemble-remote
       DATABASE_HOST: *database-host
       DATABASE_PORT: *database-port
@@ -77,7 +78,6 @@ services:
     container_name: playwright
     image: mcr.microsoft.com/playwright
     networks: [appsemble-e2e]
-    depends_on: [appsemble]
     environment:
       BOT_ACCOUNT_NAME: *bot-account-name
       BOT_ACCOUNT_EMAIL: *bot-account-email
@@ -86,19 +86,18 @@ services:
       CI: true
     tty: true
     stdin_open: true
-    entrypoint: /bin/bash
     working_dir: /app
     volumes:
       - ./:/app
       - /app/node_modules
     links:
-      - 'appsemble:controller.appsemble.localhost'
-      - 'appsemble:empty.appsemble.localhost'
-      - 'appsemble:holidays.appsemble.localhost'
-      - 'appsemble:notes.appsemble.localhost'
-      - 'appsemble:person.appsemble.localhost'
-      - 'appsemble:remappers.appsemble.localhost'
-      - 'appsemble:soundboard.appsemble.localhost'
-      - 'appsemble:survey.appsemble.localhost'
-      - 'appsemble:triggers.appsemble.localhost'
-      - 'appsemble:unlittered.appsemble.localhost'
+      - 'appsemble:controller.appsemble.appsemble'
+      - 'appsemble:empty.appsemble.appsemble'
+      - 'appsemble:holidays.appsemble.appsemble'
+      - 'appsemble:notes.appsemble.appsemble'
+      - 'appsemble:person.appsemble.appsemble'
+      - 'appsemble:remappers.appsemble.appsemble'
+      - 'appsemble:soundboard.appsemble.appsemble'
+      - 'appsemble:survey.appsemble.appsemble'
+      - 'appsemble:triggers.appsemble.appsemble'
+      - 'appsemble:unlittered.appsemble.appsemble'
