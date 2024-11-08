@@ -45,7 +45,7 @@ services:
       DATABASE_USER: *database-user
       DATABASE_PASSWORD: *database-password
       migrateTo: next
-    ports: ['9999:9999']
+    ports: ['9998:9999']
     tty: true
     stdin_open: true
     working_dir: /app
@@ -112,7 +112,7 @@ services:
       test: ['CMD-SHELL', '[ -f /app/package-lock.json ] || exit 1']
       interval: 5s
       timeout: 2s
-      retries: 5
+      retries: 10
 
   playwright:
     container_name: playwright
