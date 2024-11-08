@@ -281,11 +281,10 @@ export function AppMemberProvider({ children }: AppMemberProviderProps): ReactNo
       return;
     }
 
-    if (development) {
-      developmentLogin();
-    }
-
     if (!appMemberInfo) {
+      if (development) {
+        developmentLogin();
+      }
       const rt = localStorage.getItem(REFRESH_TOKEN);
       if (rt) {
         // If a refresh token is known, start a new session.

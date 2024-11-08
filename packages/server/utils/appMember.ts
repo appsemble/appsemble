@@ -1,8 +1,12 @@
-import { type AppMemberInfo, type SSOConfiguration } from '@appsemble/types';
+import {
+  type AppMemberInfo,
+  type Group as GroupType,
+  type SSOConfiguration,
+} from '@appsemble/types';
 
 import { argv } from './argv.js';
 import { getGravatarUrl } from './gravatar.js';
-import { AppMember } from '../models/index.js';
+import { AppMember, Group, GroupMember } from '../models/index.js';
 
 export function getAppMemberPicture(appMember: AppMember): string {
   return appMember.picture
@@ -30,6 +34,24 @@ export function getAppMemberInfo(appMember: AppMember): AppMemberInfo {
     role: appMember.role,
     demo: appMember.demo,
   } as AppMemberInfo;
+}
+
+export async function getAppMemberGroups(id: string, appId: number): Promise<GroupType[]> {
+  const appMemberGroups = await Group.findAll({
+    where: { AppId: appId },
+    include: [
+      {
+        model: GroupMember,
+        where: { AppMemberId: id },
+        required: true,
+      },
+    ],
+  });
+
+  return appMemberGroups.map((group) => ({
+    id: group.id,
+    name: group.name,
+  }));
 }
 
 export async function getAppMemberInfoById(id: string): Promise<AppMemberInfo> {

@@ -33,6 +33,7 @@ import {
   getBlocksAssetsPaths,
   getCsp,
   getCurrentAppMember,
+  getCurrentAppMemberGroups,
   getDbUpdated,
   getHost,
   getTheme,
@@ -82,4 +83,5 @@ export const options: Options = {
   checkAppMemberAppPermissions,
   checkAuthSubjectAppPermissions,
   getCurrentAppMember,
+  getCurrentAppMemberGroups,
 };
