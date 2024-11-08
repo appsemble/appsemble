@@ -9,7 +9,7 @@ import {
   BlockVersion,
   Organization,
   OrganizationMember,
-  type User,
+  User,
 } from '../../../../models/index.js';
 import { setArgv } from '../../../../utils/argv.js';
 import { createServer } from '../../../../utils/createServer.js';
@@ -18,7 +18,7 @@ import { authorizeStudio, createTestUser } from '../../../../utils/test/authoriz
 let organization: Organization;
 let user: User;
 
-describe('getAppMembers', () => {
+describe('queryAppMembers', () => {
   beforeAll(async () => {
     vi.useFakeTimers();
     setArgv({ host: 'http://localhost', secret: 'test' });
@@ -116,6 +116,295 @@ describe('getAppMembers', () => {
           "picture": Any<String>,
           "properties": {},
           "role": "Admin",
+          "sub": StringMatching /\\^\\[\\\\d\\[a-f\\]\\{8\\}-\\[\\\\da-f\\]\\{4\\}-4\\[\\\\da-f\\]\\{3\\}-\\[\\\\da-f\\]\\{4\\}-\\[\\\\d\\[a-f\\]\\{12\\}\\$/,
+          "zoneinfo": null,
+        },
+      ]
+    `,
+    );
+  });
+
+  it('should fetch app members by roles', async () => {
+    const app = await App.create({
+      definition: {
+        name: 'Test App',
+        defaultPage: 'Test Page',
+        security: {
+          default: {
+            role: 'Staff',
+            policy: 'everyone',
+          },
+          roles: {
+            User: {},
+            Staff: {},
+            Manager: {},
+          },
+        },
+      },
+      path: 'test-app',
+      vapidPublicKey: 'a',
+      vapidPrivateKey: 'b',
+      OrganizationId: organization.id,
+    });
+
+    const user1 = await User.create({
+      primaryEmail: 'user@example.com',
+      timezone: 'whatever',
+    });
+
+    const user2 = await User.create({
+      primaryEmail: 'staff@example.com',
+      timezone: 'whatever',
+    });
+
+    const user3 = await User.create({
+      primaryEmail: 'manager@example.com',
+      timezone: 'whatever',
+    });
+
+    await AppMember.create({
+      UserId: user1.id,
+      AppId: app.id,
+      name: 'Test Member',
+      email: 'user@example.com',
+      role: 'User',
+    });
+
+    await AppMember.create({
+      UserId: user2.id,
+      AppId: app.id,
+      name: 'Test Member',
+      email: 'staff@example.com',
+      role: 'Staff',
+    });
+
+    await AppMember.create({
+      UserId: user3.id,
+      AppId: app.id,
+      name: 'Test Member',
+      email: 'manager@example.com',
+      role: 'Manager',
+    });
+
+    authorizeStudio();
+    const response = await request.get(`/api/apps/${app.id}/members?roles=Staff,Manager`);
+    expect(response).toMatchInlineSnapshot(
+      {
+        data: [
+          {
+            picture: expect.any(String),
+            sub: expect.stringMatching(uuid4Pattern),
+          },
+          {
+            picture: expect.any(String),
+            sub: expect.stringMatching(uuid4Pattern),
+          },
+        ],
+      },
+      `
+      HTTP/1.1 200 OK
+      Content-Type: application/json; charset=utf-8
+
+      [
+        {
+          "demo": false,
+          "email": "manager@example.com",
+          "email_verified": false,
+          "locale": null,
+          "name": "Test Member",
+          "picture": Any<String>,
+          "properties": {},
+          "role": "Manager",
+          "sub": StringMatching /\\^\\[\\\\d\\[a-f\\]\\{8\\}-\\[\\\\da-f\\]\\{4\\}-4\\[\\\\da-f\\]\\{3\\}-\\[\\\\da-f\\]\\{4\\}-\\[\\\\d\\[a-f\\]\\{12\\}\\$/,
+          "zoneinfo": null,
+        },
+        {
+          "demo": false,
+          "email": "staff@example.com",
+          "email_verified": false,
+          "locale": null,
+          "name": "Test Member",
+          "picture": Any<String>,
+          "properties": {},
+          "role": "Staff",
+          "sub": StringMatching /\\^\\[\\\\d\\[a-f\\]\\{8\\}-\\[\\\\da-f\\]\\{4\\}-4\\[\\\\da-f\\]\\{3\\}-\\[\\\\da-f\\]\\{4\\}-\\[\\\\d\\[a-f\\]\\{12\\}\\$/,
+          "zoneinfo": null,
+        },
+      ]
+    `,
+    );
+  });
+
+  it('should fetch app members by a single role', async () => {
+    const app = await App.create({
+      definition: {
+        name: 'Test App',
+        defaultPage: 'Test Page',
+        security: {
+          default: {
+            role: 'Staff',
+            policy: 'everyone',
+          },
+          roles: {
+            Staff: {},
+            Manager: {},
+          },
+        },
+      },
+      path: 'test-app',
+      vapidPublicKey: 'a',
+      vapidPrivateKey: 'b',
+      OrganizationId: organization.id,
+    });
+
+    const user1 = await User.create({
+      primaryEmail: 'staff@example.com',
+      timezone: 'whatever',
+    });
+
+    const user2 = await User.create({
+      primaryEmail: 'manager@example.com',
+      timezone: 'whatever',
+    });
+
+    await AppMember.create({
+      UserId: user1.id,
+      AppId: app.id,
+      name: 'Test Member',
+      email: 'staff@example.com',
+      role: 'Staff',
+    });
+
+    await AppMember.create({
+      UserId: user2.id,
+      AppId: app.id,
+      name: 'Test Member',
+      email: 'manager@example.com',
+      role: 'Manager',
+    });
+
+    authorizeStudio();
+    const response = await request.get(`/api/apps/${app.id}/members?roles=Staff`);
+    expect(response).toMatchInlineSnapshot(
+      {
+        data: [
+          {
+            picture: expect.any(String),
+            sub: expect.stringMatching(uuid4Pattern),
+          },
+        ],
+      },
+      `
+      HTTP/1.1 200 OK
+      Content-Type: application/json; charset=utf-8
+
+      [
+        {
+          "demo": false,
+          "email": "staff@example.com",
+          "email_verified": false,
+          "locale": null,
+          "name": "Test Member",
+          "picture": Any<String>,
+          "properties": {},
+          "role": "Staff",
+          "sub": StringMatching /\\^\\[\\\\d\\[a-f\\]\\{8\\}-\\[\\\\da-f\\]\\{4\\}-4\\[\\\\da-f\\]\\{3\\}-\\[\\\\da-f\\]\\{4\\}-\\[\\\\d\\[a-f\\]\\{12\\}\\$/,
+          "zoneinfo": null,
+        },
+      ]
+    `,
+    );
+  });
+
+  it('should fetch app members by no roles', async () => {
+    const app = await App.create({
+      definition: {
+        name: 'Test App',
+        defaultPage: 'Test Page',
+        security: {
+          default: {
+            role: 'Staff',
+            policy: 'everyone',
+          },
+          roles: {
+            Staff: {},
+            Manager: {},
+          },
+        },
+      },
+      path: 'test-app',
+      vapidPublicKey: 'a',
+      vapidPrivateKey: 'b',
+      OrganizationId: organization.id,
+    });
+
+    const user1 = await User.create({
+      primaryEmail: 'staff@example.com',
+      timezone: 'whatever',
+    });
+
+    const user2 = await User.create({
+      primaryEmail: 'manager@example.com',
+      timezone: 'whatever',
+    });
+
+    await AppMember.create({
+      UserId: user1.id,
+      AppId: app.id,
+      name: 'Test Member',
+      email: 'staff@example.com',
+      role: 'Staff',
+    });
+
+    await AppMember.create({
+      UserId: user2.id,
+      AppId: app.id,
+      name: 'Test Member',
+      email: 'manager@example.com',
+      role: 'Manager',
+    });
+
+    authorizeStudio();
+    const response = await request.get(`/api/apps/${app.id}/members?roles=`);
+    expect(response).toMatchInlineSnapshot(
+      {
+        data: [
+          {
+            picture: expect.any(String),
+            sub: expect.stringMatching(uuid4Pattern),
+          },
+          {
+            picture: expect.any(String),
+            sub: expect.stringMatching(uuid4Pattern),
+          },
+        ],
+      },
+      `
+      HTTP/1.1 200 OK
+      Content-Type: application/json; charset=utf-8
+
+      [
+        {
+          "demo": false,
+          "email": "manager@example.com",
+          "email_verified": false,
+          "locale": null,
+          "name": "Test Member",
+          "picture": Any<String>,
+          "properties": {},
+          "role": "Manager",
+          "sub": StringMatching /\\^\\[\\\\d\\[a-f\\]\\{8\\}-\\[\\\\da-f\\]\\{4\\}-4\\[\\\\da-f\\]\\{3\\}-\\[\\\\da-f\\]\\{4\\}-\\[\\\\d\\[a-f\\]\\{12\\}\\$/,
+          "zoneinfo": null,
+        },
+        {
+          "demo": false,
+          "email": "staff@example.com",
+          "email_verified": false,
+          "locale": null,
+          "name": "Test Member",
+          "picture": Any<String>,
+          "properties": {},
+          "role": "Staff",
           "sub": StringMatching /\\^\\[\\\\d\\[a-f\\]\\{8\\}-\\[\\\\da-f\\]\\{4\\}-4\\[\\\\da-f\\]\\{3\\}-\\[\\\\da-f\\]\\{4\\}-\\[\\\\d\\[a-f\\]\\{12\\}\\$/,
           "zoneinfo": null,
         },

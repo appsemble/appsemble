@@ -119,7 +119,7 @@ declare module 'koas-parameters' {
     assets: boolean;
     screenshots: boolean;
     readmes: boolean;
-    roles: string[] | string;
+    roles?: string;
     includeMessages: boolean;
     demo: boolean;
     selectedGroupId: number;
