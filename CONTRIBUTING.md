@@ -210,6 +210,18 @@ The end 2 end tests are run using
 [![](https://avatars.githubusercontent.com/u/89237858?s=16) Playwright](https://playwright.dev).
 They reside in [`packages/e2e`](packages/e2e).
 
+End 2 end tests can be run locally using the `docker-compose-e2e-local.yaml` file by running
+`docker compose --file docker-compose-e2e-local.yaml up -d` and `. scripts/e2e.sh` without local
+files getting modified (except e2e test results).
+
+On Windows you can run the e2e script with wsl or Git bash by navigating to the appsemble directory
+and running `bash scripts/e2e.sh`.
+
+You can delete the docker containers and their volumes by running
+`docker compose --file docker-compose-e2e-local.yaml down -v`.
+
+`docker-compose-e2e-ci.yaml` is used in CI because there we don't care about modifying local files.
+
 ### Local CI
 
 When changes are pushed to a merge request branch, Appsemble runs a CI pipeline in GitLab. The first
