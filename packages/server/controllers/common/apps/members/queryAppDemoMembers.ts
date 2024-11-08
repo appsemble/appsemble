@@ -9,7 +9,7 @@ import { getAppMemberInfo } from '../../../../utils/appMember.js';
 export async function queryAppDemoMembers(ctx: Context): Promise<void> {
   const {
     pathParams: { appId },
-    queryParams: { roles = [] },
+    queryParams: { roles },
   } = ctx;
 
   const app = await App.findByPk(appId, {
@@ -22,12 +22,12 @@ export async function queryAppDemoMembers(ctx: Context): Promise<void> {
 
   const supportedAppRoles = getAppRoles(app.definition.security);
 
-  const passedRoles = Array.isArray(roles) ? roles : [roles];
+  const passedRoles = roles ? roles.split(',') : [];
 
   if (passedRoles.length) {
     const passedRolesAreSupported = passedRoles.every((role) => supportedAppRoles.includes(role));
 
-    assertKoaError(passedRolesAreSupported, ctx, 400, 'Unsupported role in filter!');
+    assertKoaError(!passedRolesAreSupported, ctx, 400, 'Unsupported role in filter!');
   }
 
   const appMembers = await AppMember.findAll({
