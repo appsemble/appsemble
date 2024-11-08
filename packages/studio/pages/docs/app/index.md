@@ -27,8 +27,10 @@ graph TD
   C -.Can be connected to .-B
   J --> I
   A -->|Configured by| K(App definition)
+  click A href "#"
   click B href "./resources.md"
   click C href "./assets.md"
+  click D href "./page.md"
   click E href "./security.md"
   click F href "./translating.md"
   click J href "./blocks.md"
