@@ -85,4 +85,33 @@ export const pathItems: OpenAPIV3.PathItemObject = {
     },
     security: [{ studio: [] }, { app: ['groups:write'] }, { cli: ['groups:write'] }],
   },
+  delete: {
+    tags: ['group', 'invite'],
+    description: 'Revoke a group member invitation.',
+    operationId: 'deleteGroupInvite',
+    requestBody: {
+      description: 'The email address to revoke the invite of.',
+      required: true,
+      content: {
+        'application/json': {
+          schema: {
+            type: 'object',
+            required: ['email'],
+            properties: {
+              email: {
+                type: 'string',
+                format: 'email',
+              },
+            },
+          },
+        },
+      },
+    },
+    responses: {
+      204: {
+        description: 'The invitation has been successfully revoked.',
+      },
+    },
+    security: [{ studio: [] }],
+  },
 };

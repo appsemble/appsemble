@@ -46,6 +46,7 @@ export function GroupMemberRow({
   return (
     <tr key={member.id}>
       <td>{member.name || member.email || member.id}</td>
+      <td>{member.name ? `${member.name} (${member.email})` : member.email}</td>
       <td align="right">
         {mayUpdateRole ? (
           <AsyncSelect name="role" onChange={editRole} value={member.role}>

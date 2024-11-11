@@ -34,6 +34,7 @@ const OrganizationAppContentsManagerPermissions = [
 const OrganizationAppMemberManagerPermissions = [
   OrganizationPermission.CreateAppInvites,
   OrganizationPermission.QueryAppInvites,
+  OrganizationPermission.DeleteAppInvites,
   OrganizationPermission.QueryAppMembers,
   OrganizationPermission.DeleteAppMembers,
   OrganizationPermission.UpdateAppMemberRoles,
@@ -43,6 +44,7 @@ const OrganizationAppMemberManagerPermissions = [
 const OrganizationAppGroupMembersManagerPermissions = [
   OrganizationPermission.CreateGroupInvites,
   OrganizationPermission.QueryGroupInvites,
+  OrganizationPermission.DeleteGroupInvites,
   OrganizationPermission.QueryGroupMembers,
   OrganizationPermission.RemoveGroupMembers,
   OrganizationPermission.UpdateGroupMemberRoles,

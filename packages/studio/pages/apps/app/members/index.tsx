@@ -19,7 +19,6 @@ import { MemberRow } from './MemberRow/index.js';
 import { messages } from './messages.js';
 import { HeaderControl } from '../../../../components/HeaderControl/index.js';
 import { useUser } from '../../../../components/UserProvider/index.js';
-import styles from '../../../organizations/organization/MemberTable/index.module.css';
 import { useApp } from '../index.js';
 
 export function MembersPage(): ReactNode {
@@ -56,6 +55,11 @@ export function MembersPage(): ReactNode {
     [members, setMembers],
   );
 
+  const onAppInviteDeleted = useCallback(
+    (invite: AppInvite) => setInvites(invites.filter((i) => i.email !== invite.email)),
+    [invites, setInvites],
+  );
+
   const onMemberExport = useCallback(() => {
     const csv = convertToCsv(members);
     downloadBlob(csv, 'members.csv');
@@ -87,6 +91,12 @@ export function MembersPage(): ReactNode {
       OrganizationPermission.CreateAppInvites,
     ]);
 
+  const mayDeleteInvites =
+    userOrganization &&
+    checkOrganizationRoleOrganizationPermissions(userOrganization.role, [
+      OrganizationPermission.DeleteAppInvites,
+    ]);
+
   return (
     <>
       <HeaderControl
@@ -116,7 +126,7 @@ export function MembersPage(): ReactNode {
               <FormattedMessage {...messages.export} />
             </Button>
           </div>
-          <Table className={styles.table}>
+          <Table>
             <thead>
               <tr>
                 <th>
@@ -149,7 +159,13 @@ export function MembersPage(): ReactNode {
                 />
               ))}
               {invites?.map((invite) => (
-                <InviteRow invite={invite} key={invite.email} mayInvite={mayInvite} />
+                <InviteRow
+                  invite={invite}
+                  key={invite.email}
+                  mayDeleteInvites={mayDeleteInvites}
+                  mayInvite={mayInvite}
+                  onDelete={onAppInviteDeleted}
+                />
               ))}
             </tbody>
           </Table>

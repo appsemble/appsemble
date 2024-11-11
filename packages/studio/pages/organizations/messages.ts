@@ -189,6 +189,10 @@ export const messages = defineMessages({
     id: 'studio.yMyg2P',
     defaultMessage: 'The permission to query app invites.',
   },
+  DeleteAppInvites: {
+    id: 'studio.Jrk0SZ',
+    defaultMessage: 'The permission to delete app invites.',
+  },
   QueryAppMembers: {
     id: 'studio.DZWIKx',
     defaultMessage: 'The permission to query app members.',
@@ -228,6 +232,10 @@ export const messages = defineMessages({
   QueryGroupInvites: {
     id: 'studio.e1uw1Q',
     defaultMessage: 'The permission to query group invites.',
+  },
+  DeleteGroupInvites: {
+    id: 'studio.ErwI1g',
+    defaultMessage: 'The permission to delete group invites.',
   },
   QueryGroupMembers: {
     id: 'studio.YB73Dp',

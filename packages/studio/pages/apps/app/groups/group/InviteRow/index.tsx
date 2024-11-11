@@ -1,5 +1,5 @@
 import { AsyncButton, useConfirmation, useMessages } from '@appsemble/react-components';
-import { type AppInvite, type GroupInvite } from '@appsemble/types';
+import { type GroupInvite } from '@appsemble/types';
 import axios from 'axios';
 import { type ReactNode, useCallback, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
@@ -11,7 +11,7 @@ interface InviteRowProps {
   /**
    * The invite represented by this row.
    */
-  readonly invite: AppInvite;
+  readonly invite: GroupInvite;
 
   readonly mayInvite: boolean;
 
@@ -35,7 +35,7 @@ export function InviteRow({
   onDelete,
 }: InviteRowProps): ReactNode {
   const { formatMessage } = useIntl();
-  const { id: appId } = useParams<{ id: string }>();
+  const { groupId } = useParams<{ groupId: string }>();
   const push = useMessages();
 
   // Prevent spamming
@@ -43,7 +43,7 @@ export function InviteRow({
 
   const resendInvitation = useCallback(async () => {
     try {
-      await axios.post(`/api/apps/${appId}/invites/resend`, {
+      await axios.post(`/api/groups/${groupId}/invites/resend`, {
         email: invite.email,
       });
     } catch {
@@ -52,27 +52,21 @@ export function InviteRow({
     }
     setResent(true);
     push({ body: formatMessage(messages.resendSuccess), color: 'info' });
-  }, [formatMessage, push, invite, appId]);
+  }, [formatMessage, push, invite, groupId]);
+
+  const deleteInvite = useCallback(() => onDelete(invite), [invite, onDelete]);
 
   const confirmDelete = useConfirmation({
     title: <FormattedMessage {...messages.deleteInvite} />,
     body: <FormattedMessage {...messages.deleteConfirmationBody} />,
     cancelLabel: <FormattedMessage {...messages.cancelLabel} />,
     confirmLabel: <FormattedMessage {...messages.deleteInvite} />,
-    async action() {
-      await axios.delete(`/api/apps/${appId}/invites`, {
-        data: invite,
-      });
-      onDelete(invite);
-    },
+    action: deleteInvite,
   });
 
   return (
     <tr>
       <td>{invite.email}</td>
-      <td />
-      <td />
-      <td />
       <td align="right">
         {mayInvite ? (
           <AsyncButton className="mr-2" disabled={resent} onClick={resendInvitation}>
