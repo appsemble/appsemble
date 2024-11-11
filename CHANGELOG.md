@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.30.8](https://gitlab.com/appsemble/appsemble/-/releases/0.30.8)] - 2024-11-11
+
+### Added
+
+- Preact-components: Lazy load images in the `ImageComponent`.
+- Studio: Add options for resending and deleting app and group invites.
+
+### Fixed
+
+- Block(`form`): Fix page params being added to data even when `onLoad` action is not defined.
+- App: Fix passing empty roles array to `/api/apps/{appId}/members`.
+- Server: Clear assets cache every hour.
+- Server: Fix querying app members by roles.
+- Studio: Fix app, page apps causing errors.
+
 ## \[[0.30.7](https://gitlab.com/appsemble/appsemble/-/releases/0.30.7)] - 2024-11-05
 
 ### Fixed
