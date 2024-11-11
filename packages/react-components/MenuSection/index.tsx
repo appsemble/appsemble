@@ -20,6 +20,11 @@ interface MenuSectionProps {
    * An optional label to render on top of the menu list.
    */
   readonly label?: ReactNode;
+
+  /**
+   * The data-testid to apply to the element. Used for Playwright testing.
+   */
+  readonly testId?: string;
 }
 
 /**
@@ -27,11 +32,11 @@ interface MenuSectionProps {
  *
  * https://bulma.io/documentation/components/menu
  */
-export function MenuSection({ children, className, label }: MenuSectionProps): ReactNode {
+export function MenuSection({ children, className, label, testId }: MenuSectionProps): ReactNode {
   return (
     <>
       {label ? <p className={`menu-label pl-1 ${styles.label}`}>{label}</p> : null}
-      <ul className={classNames('menu-list', { [className]: className })}>
+      <ul className={classNames('menu-list', { [className]: className })} data-testid={testId}>
         {Children.map(children, (child) => (
           <li>{child}</li>
         ))}

@@ -66,7 +66,8 @@ export const test = base.extend<Fixtures>({
       await page.getByTestId('email').fill(process.env.BOT_ACCOUNT_EMAIL);
       await page.getByTestId('password').fill(process.env.BOT_ACCOUNT_PASSWORD);
       await page.getByTestId('login').click();
-      await page.waitForLoadState('domcontentloaded');
+      await page.waitForURL(redirect);
+
       await expect(page).toHaveURL(redirect);
     });
   },
@@ -85,35 +86,9 @@ export const test = base.extend<Fixtures>({
   async loginApp({ page }, use) {
     await use(async () => {
       await page.getByTestId('login-with-appsemble').click();
-
-      const emailInput = page.getByTestId('email');
-
-      if (await emailInput.isVisible()) {
-        await page.getByTestId('email').fill(process.env.BOT_ACCOUNT_EMAIL);
-        await page.getByTestId('password').fill(process.env.BOT_ACCOUNT_PASSWORD);
-        await page.getByTestId('login').click();
-
-        const appId = await getAppId(page);
-        const response = await page.waitForResponse(
-          `/api/users/current/auth/oauth2/apps/${appId}/consent/verify`,
-        );
-        if (response.ok()) {
-          await page.waitForLoadState('domcontentloaded');
-          return;
-        }
-        const responseBody = await response.text();
-        if (responseBody.includes('User has not agreed to the requested scopes')) {
-          await page.getByTestId('allow').click();
-          await page.waitForLoadState('domcontentloaded');
-          return;
-        }
-      }
-      const allowButton = page.getByTestId('allow');
-
-      if (await allowButton.isVisible()) {
-        await allowButton.click();
-        await page.waitForLoadState('domcontentloaded');
-      }
+      await page.addLocatorHandler(page.getByTestId('allow'), async () => {
+        await page.getByTestId('allow').click();
+      });
     });
   },
 
