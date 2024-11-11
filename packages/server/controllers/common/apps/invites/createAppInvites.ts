@@ -6,9 +6,9 @@ import { getAppRoles } from '@appsemble/utils';
 import { type Context } from 'koa';
 import { Op } from 'sequelize';
 
-import { App, AppInvite, AppMember, EmailAuthorization, User } from '../../../models/index.js';
-import { getAppUrl } from '../../../utils/app.js';
-import { checkAuthSubjectAppPermissions } from '../../../utils/authorization.js';
+import { App, AppInvite, AppMember, EmailAuthorization, User } from '../../../../models/index.js';
+import { getAppUrl } from '../../../../utils/app.js';
+import { checkAuthSubjectAppPermissions } from '../../../../utils/authorization.js';
 
 export async function createAppInvites(ctx: Context): Promise<void> {
   const {

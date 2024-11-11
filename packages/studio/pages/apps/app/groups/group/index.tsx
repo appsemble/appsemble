@@ -1,5 +1,7 @@
 import {
   Button,
+  Loader,
+  Message,
   ModalCard,
   SimpleForm,
   SimpleFormField,
@@ -26,6 +28,7 @@ import { useLocation, useNavigate, useParams } from 'react-router-dom';
 
 import { AddGroupMemberModal } from './AddGroupMemberModal/index.js';
 import { GroupMemberRow } from './GroupMemberRow/index.js';
+import { InviteRow } from './InviteRow/index.js';
 import { messages } from './messages.js';
 import { AnnotationsTable } from '../../../../../components/AnnotationsTable/index.js';
 import { AsyncDataView } from '../../../../../components/AsyncDataView/index.js';
@@ -44,11 +47,19 @@ export function GroupPage(): ReactNode {
   const { groupId } = useParams<{ groupId: string }>();
 
   const groupResult = useData<Group>(`/api/groups/${groupId}`);
-  const memberResult = useData<GroupMember[]>(`/api/groups/${groupId}/members`);
 
-  const { data: invites, setData: setInvites } = useData<GroupInvite[]>(
-    `/api/groups/${groupId}/invites`,
-  );
+  const {
+    data: members,
+    error: membersError,
+    loading: membersLoading,
+    setData: setMembers,
+  } = useData<GroupMember[]>(`/api/groups/${groupId}/members`);
+
+  const {
+    data: invites,
+    loading: invitesLoading,
+    setData: setInvites,
+  } = useData<GroupInvite[]>(`/api/groups/${groupId}/invites`);
 
   useMeta(groupResult.data?.name || groupId);
 
@@ -68,11 +79,11 @@ export function GroupPage(): ReactNode {
       const { data: updated } = await axios.put<GroupMember>(`/api/group-members/${id}/role`, {
         role,
       });
-      memberResult.setData((members) =>
-        members.map((member) => (member.id === id ? updated : member)),
+      setMembers((prevMembers) =>
+        prevMembers.map((member) => (member.id === id ? updated : member)),
       );
     },
-    [memberResult],
+    [setMembers],
   );
 
   const onEditGroup = useCallback(
@@ -103,9 +114,19 @@ export function GroupPage(): ReactNode {
   const onRemoveGroupMember = useCallback(
     async ({ id }: GroupMember) => {
       await axios.delete(`/api/group-members/${id}`);
-      memberResult.setData((members) => members.filter((member) => member.id !== id));
+      setMembers((prevMembers) => prevMembers.filter((member) => member.id !== id));
     },
-    [memberResult],
+    [setMembers],
+  );
+
+  const onDeleteGroupInvite = useCallback(
+    async (invite: GroupInvite) => {
+      await axios.delete(`/api/groups/${groupId}/invites`, {
+        data: invite,
+      });
+      setInvites((prevInvites) => prevInvites.filter((i) => i.email !== invite.email));
+    },
+    [groupId, setInvites],
   );
 
   const organization = organizations.find((o) => o.id === app.OrganizationId);
@@ -120,6 +141,12 @@ export function GroupPage(): ReactNode {
     organization &&
     checkOrganizationRoleOrganizationPermissions(organization.role, [
       OrganizationPermission.CreateGroupInvites,
+    ]);
+
+  const mayDeleteInvites =
+    organization &&
+    checkOrganizationRoleOrganizationPermissions(organization.role, [
+      OrganizationPermission.DeleteGroupInvites,
     ]);
 
   const mayUpdateRole =
@@ -184,39 +211,47 @@ export function GroupPage(): ReactNode {
           >
             <FormattedMessage {...messages.groupMembers} />
           </HeaderControl>
-          <AsyncDataView
-            emptyMessage={<FormattedMessage {...messages.noMembers} />}
-            errorMessage={<FormattedMessage {...messages.memberError} />}
-            loadingMessage={<FormattedMessage {...messages.loadingMembers} />}
-            result={memberResult}
-          >
-            {(members) => (
-              <Table>
-                <thead>
-                  <tr>
-                    <th>
-                      <FormattedMessage {...messages.name} />
-                    </th>
-                    <th align="right">
-                      <FormattedMessage {...messages.actions} />
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {members.map((member) => (
-                    <GroupMemberRow
-                      key={member.id}
-                      mayRemove={mayRemove}
-                      mayUpdateRole={mayUpdateRole}
-                      member={member}
-                      onEdit={onEditMember}
-                      onRemove={onRemoveGroupMember}
-                    />
-                  ))}
-                </tbody>
-              </Table>
-            )}
-          </AsyncDataView>
+          {membersLoading || invitesLoading ? (
+            <Loader />
+          ) : membersError ? (
+            <Message color="danger">
+              <FormattedMessage {...messages.memberError} />
+            </Message>
+          ) : (
+            <Table>
+              <thead>
+                <tr>
+                  <th>
+                    <FormattedMessage {...messages.name} />
+                  </th>
+                  <th align="right">
+                    <FormattedMessage {...messages.actions} />
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {members.map((member) => (
+                  <GroupMemberRow
+                    key={member.id}
+                    mayRemove={mayRemove}
+                    mayUpdateRole={mayUpdateRole}
+                    member={member}
+                    onEdit={onEditMember}
+                    onRemove={onRemoveGroupMember}
+                  />
+                ))}
+                {invites?.map((invite) => (
+                  <InviteRow
+                    invite={invite}
+                    key={invite.email}
+                    mayDeleteInvites={mayDeleteInvites}
+                    mayInvite={mayInvite}
+                    onDelete={onDeleteGroupInvite}
+                  />
+                ))}
+              </tbody>
+            </Table>
+          )}
           {mayEditGroup ? (
             <ModalCard
               component={SimpleForm}

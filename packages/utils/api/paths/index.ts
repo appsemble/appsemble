@@ -28,6 +28,7 @@ import { pathItems as appsAppIdEmail } from './apps/appId/email.js';
 import { pathItems as appsAppIdExport } from './apps/appId/export.js';
 import { pathItems as appsAppIdGroups } from './apps/appId/groups.js';
 import { pathItems as appsAppIdIcon } from './apps/appId/icon.js';
+import { pathItems as appsAppIdInvitesResend } from './apps/appId/invites/resend.js';
 import { pathItems as appsAppIdInvites } from './apps/appId/invites.js';
 import { pathItems as appsAppIdLock } from './apps/appId/lock.js';
 import { pathItems as appsAppIdMaskableIcon } from './apps/appId/maskableIcon.js';
@@ -102,6 +103,7 @@ import { pathItems as groupInvitesTokenRespond } from './group-invites/token/res
 import { pathItems as groupInvitesToken } from './group-invites/token.js';
 import { pathItems as groupsMembersGroupMemberIdRole } from './group-members/groupMemberId/role.js';
 import { pathItems as groupsMembersGroupMemberId } from './group-members/groupMemberId.js';
+import { pathItems as groupsGroupIdInvitesResend } from './groups/groupId/invites/resend.js';
 import { pathItems as groupsGroupIdInvites } from './groups/groupId/invites.js';
 import { pathItems as groupsGroupIdMembers } from './groups/groupId/members.js';
 import { pathItems as groupsGroupId } from './groups/groupId.js';
@@ -173,6 +175,7 @@ export const paths = {
   '/api/apps/{appId}/export': appsAppIdExport,
   '/api/apps/{appId}/groups': appsAppIdGroups,
   '/api/apps/{appId}/icon': appsAppIdIcon,
+  '/api/apps/{appId}/invites/resend': appsAppIdInvitesResend,
   '/api/apps/{appId}/invites': appsAppIdInvites,
   '/api/apps/{appId}/lock': appsAppIdLock,
   '/api/apps/{appId}/maskable-icon': appsAppIdMaskableIcon,
@@ -286,6 +289,7 @@ export const paths = {
   '/api/group-invites/{token}': groupInvitesToken,
   '/api/group-members/{groupMemberId}/role': groupsMembersGroupMemberIdRole,
   '/api/group-members/{groupMemberId}': groupsMembersGroupMemberId,
+  '/api/groups/{groupId}/invites/resend': groupsGroupIdInvitesResend,
   '/api/groups/{groupId}/invites': groupsGroupIdInvites,
   '/api/groups/{groupId}/members': groupsGroupIdMembers,
   '/api/groups/{groupId}': groupsGroupId,

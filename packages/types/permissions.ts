@@ -363,6 +363,11 @@ export enum OrganizationPermission {
   QueryAppInvites,
 
   /**
+   * The permission to delete app invites.
+   */
+  DeleteAppInvites,
+
+  /**
    * The permission to query app members.
    */
   QueryAppMembers,
@@ -411,6 +416,11 @@ export enum OrganizationPermission {
    * The permission to query group invites.
    */
   QueryGroupInvites,
+
+  /**
+   * The permission to delete group invites.
+   */
+  DeleteGroupInvites,
 
   /**
    * The permission to query group members.

@@ -2,8 +2,8 @@ import { assertKoaError } from '@appsemble/node-utils';
 import { OrganizationPermission } from '@appsemble/types';
 import { type Context } from 'koa';
 
-import { App, AppInvite } from '../../../models/index.js';
-import { checkUserOrganizationPermissions } from '../../../utils/authorization.js';
+import { App, AppInvite } from '../../../../models/index.js';
+import { checkUserOrganizationPermissions } from '../../../../utils/authorization.js';
 
 export async function getAppInvites(ctx: Context): Promise<void> {
   const {

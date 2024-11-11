@@ -7,6 +7,7 @@ export * from './organizations/index.js';
 export * from './training-blocks/index.js';
 export * from './trainings/index.js';
 export * from './users/index.js';
+export * from './groups/index.js';
 
 export { checkHealth } from './checkHealth.js';
 export { getSslStatus } from './getSslStatus.js';
