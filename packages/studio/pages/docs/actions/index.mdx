@@ -18,10 +18,10 @@ The behavior of an action can be defined within the `actions` object in a block 
 always requires the property `type`, which is what is used to determine which action should be used
 whenever its associated trigger occurs.
 
-Actions have specific implementations for each environment, i.e. `client` side and `server` side.
-Client actions only work on pages and blocks in app. Server actions are used in Cron Jobs. An entire
-list of server side actions can be found [here](../guides/cron.mdx#actions). If an action is client
-only then it’s defined as `noop` on the server.
+All actions work on pages and blocks in an app by default (defined as `client`). Not all of them
+work in [Cron Jobs](../guides/cron.mdx), however (defined as `server`). A full list of actions that
+work on the `server` can be found [here](../guides/cron.mdx#actions). Alternatively, each action has
+a tag that specifies whether they work on the `server` or not.
 
 Here’s an example of how you can use `onLoad` to trigger an action:
 

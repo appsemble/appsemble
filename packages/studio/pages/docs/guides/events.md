@@ -109,7 +109,7 @@ blocks:
           label: Surname
 ```
 
-> **Note**: The [prop remapper](../07-remappers/data.mdx#prop) allows you to access the value at the
+> **Note**: The [prop remapper](../remappers/data.mdx#prop) allows you to access the value at the
 > given property of the incoming data. In this example, we set the value of the table rows to be
 > that of the `firstName` and `lastName` properties.
 
