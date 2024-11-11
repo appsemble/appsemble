@@ -27,6 +27,16 @@ export const request: ActionCreator<'request'> = ({ definition, prefixIndex, rem
           };
           req.data = requestData;
         } else {
+          // Content type inferred from the blob type should be preferred
+          // Excluding some common types which should be inferred from BLOB type.
+          const contentType = definition.headers?.['Content-Type'];
+          if (contentType) {
+            Object.assign(req, {
+              headers: {
+                'Content-Type': definition.headers['Content-Type'],
+              },
+            });
+          }
           req.data = serializeResource(body ? remap(body, data, context) : data);
         }
       } else if (proxy) {

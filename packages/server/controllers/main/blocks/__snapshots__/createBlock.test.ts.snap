@@ -1425,6 +1425,22 @@ Nothing is sent if the value is **not** a valid user id.
 If not specified, the raw input data is used.
 ",
                     },
+                    "headers": {
+                      "additionalProperties": false,
+                      "description": "The headers to be set for the outgoing request",
+                      "properties": {
+                        "Content-Type": {
+                          "description": "Content type for the outgoing request",
+                          "enum": [
+                            "application/xml",
+                            "text/plain",
+                            "application/x-www-form-urlencoded",
+                            "multipart/form-data",
+                          ],
+                        },
+                      },
+                      "type": "object",
+                    },
                     "method": {
                       "default": "get",
                       "description": "The type of request to make.",
@@ -1539,6 +1555,22 @@ converted to JSON.
 If not specified, the raw input data is used.
 ",
                     },
+                    "headers": {
+                      "additionalProperties": false,
+                      "description": "The headers to be set for the outgoing request",
+                      "properties": {
+                        "Content-Type": {
+                          "description": "Content type for the outgoing request",
+                          "enum": [
+                            "application/xml",
+                            "text/plain",
+                            "application/x-www-form-urlencoded",
+                            "multipart/form-data",
+                          ],
+                        },
+                      },
+                      "type": "object",
+                    },
                     "onError": {},
                     "onSuccess": {},
                     "own": {
@@ -1627,6 +1659,22 @@ disabled by setting this to \`false\`
 If not specified, the raw input data is used.
 ",
                     },
+                    "headers": {
+                      "additionalProperties": false,
+                      "description": "The headers to be set for the outgoing request",
+                      "properties": {
+                        "Content-Type": {
+                          "description": "Content type for the outgoing request",
+                          "enum": [
+                            "application/xml",
+                            "text/plain",
+                            "application/x-www-form-urlencoded",
+                            "multipart/form-data",
+                          ],
+                        },
+                      },
+                      "type": "object",
+                    },
                     "onError": {},
                     "onSuccess": {},
                     "proxy": {
@@ -1711,6 +1759,22 @@ disabled by setting this to \`false\`
 If not specified, the raw input data is used.
 ",
                     },
+                    "headers": {
+                      "additionalProperties": false,
+                      "description": "The headers to be set for the outgoing request",
+                      "properties": {
+                        "Content-Type": {
+                          "description": "Content type for the outgoing request",
+                          "enum": [
+                            "application/xml",
+                            "text/plain",
+                            "application/x-www-form-urlencoded",
+                            "multipart/form-data",
+                          ],
+                        },
+                      },
+                      "type": "object",
+                    },
                     "onError": {},
                     "onSuccess": {},
                     "proxy": {
@@ -1794,6 +1858,22 @@ disabled by setting this to \`false\`
 
 If not specified, the raw input data is used.
 ",
+                    },
+                    "headers": {
+                      "additionalProperties": false,
+                      "description": "The headers to be set for the outgoing request",
+                      "properties": {
+                        "Content-Type": {
+                          "description": "Content type for the outgoing request",
+                          "enum": [
+                            "application/xml",
+                            "text/plain",
+                            "application/x-www-form-urlencoded",
+                            "multipart/form-data",
+                          ],
+                        },
+                      },
+                      "type": "object",
                     },
                     "onError": {},
                     "onSuccess": {},
@@ -1882,6 +1962,22 @@ disabled by setting this to \`false\`
 
 If not specified, the raw input data is used.
 ",
+                    },
+                    "headers": {
+                      "additionalProperties": false,
+                      "description": "The headers to be set for the outgoing request",
+                      "properties": {
+                        "Content-Type": {
+                          "description": "Content type for the outgoing request",
+                          "enum": [
+                            "application/xml",
+                            "text/plain",
+                            "application/x-www-form-urlencoded",
+                            "multipart/form-data",
+                          ],
+                        },
+                      },
+                      "type": "object",
                     },
                     "method": {
                       "default": "get",
@@ -1977,6 +2073,22 @@ disabled by setting this to \`false\`
 
 If not specified, the raw input data is used.
 ",
+                    },
+                    "headers": {
+                      "additionalProperties": false,
+                      "description": "The headers to be set for the outgoing request",
+                      "properties": {
+                        "Content-Type": {
+                          "description": "Content type for the outgoing request",
+                          "enum": [
+                            "application/xml",
+                            "text/plain",
+                            "application/x-www-form-urlencoded",
+                            "multipart/form-data",
+                          ],
+                        },
+                      },
+                      "type": "object",
                     },
                     "onError": {},
                     "onSuccess": {},
@@ -2338,6 +2450,22 @@ disabled by setting this to \`false\`
 If not specified, the raw input data is used.
 ",
                     },
+                    "headers": {
+                      "additionalProperties": false,
+                      "description": "The headers to be set for the outgoing request",
+                      "properties": {
+                        "Content-Type": {
+                          "description": "Content type for the outgoing request",
+                          "enum": [
+                            "application/xml",
+                            "text/plain",
+                            "application/x-www-form-urlencoded",
+                            "multipart/form-data",
+                          ],
+                        },
+                      },
+                      "type": "object",
+                    },
                     "onError": {},
                     "onSuccess": {},
                     "proxy": {
@@ -2421,6 +2549,22 @@ disabled by setting this to \`false\`
 
 If not specified, the raw input data is used.
 ",
+                    },
+                    "headers": {
+                      "additionalProperties": false,
+                      "description": "The headers to be set for the outgoing request",
+                      "properties": {
+                        "Content-Type": {
+                          "description": "Content type for the outgoing request",
+                          "enum": [
+                            "application/xml",
+                            "text/plain",
+                            "application/x-www-form-urlencoded",
+                            "multipart/form-data",
+                          ],
+                        },
+                      },
+                      "type": "object",
                     },
                     "onError": {},
                     "onSuccess": {},
@@ -6294,6 +6438,22 @@ Nothing is sent if the value is **not** a valid user id.
 If not specified, the raw input data is used.
 ",
             },
+            "headers": {
+              "additionalProperties": false,
+              "description": "The headers to be set for the outgoing request",
+              "properties": {
+                "Content-Type": {
+                  "description": "Content type for the outgoing request",
+                  "enum": [
+                    "application/xml",
+                    "text/plain",
+                    "application/x-www-form-urlencoded",
+                    "multipart/form-data",
+                  ],
+                },
+              },
+              "type": "object",
+            },
             "method": {
               "default": "get",
               "description": "The type of request to make.",
@@ -6408,6 +6568,22 @@ converted to JSON.
 If not specified, the raw input data is used.
 ",
             },
+            "headers": {
+              "additionalProperties": false,
+              "description": "The headers to be set for the outgoing request",
+              "properties": {
+                "Content-Type": {
+                  "description": "Content type for the outgoing request",
+                  "enum": [
+                    "application/xml",
+                    "text/plain",
+                    "application/x-www-form-urlencoded",
+                    "multipart/form-data",
+                  ],
+                },
+              },
+              "type": "object",
+            },
             "onError": {},
             "onSuccess": {},
             "own": {
@@ -6496,6 +6672,22 @@ disabled by setting this to \`false\`
 If not specified, the raw input data is used.
 ",
             },
+            "headers": {
+              "additionalProperties": false,
+              "description": "The headers to be set for the outgoing request",
+              "properties": {
+                "Content-Type": {
+                  "description": "Content type for the outgoing request",
+                  "enum": [
+                    "application/xml",
+                    "text/plain",
+                    "application/x-www-form-urlencoded",
+                    "multipart/form-data",
+                  ],
+                },
+              },
+              "type": "object",
+            },
             "onError": {},
             "onSuccess": {},
             "proxy": {
@@ -6580,6 +6772,22 @@ disabled by setting this to \`false\`
 If not specified, the raw input data is used.
 ",
             },
+            "headers": {
+              "additionalProperties": false,
+              "description": "The headers to be set for the outgoing request",
+              "properties": {
+                "Content-Type": {
+                  "description": "Content type for the outgoing request",
+                  "enum": [
+                    "application/xml",
+                    "text/plain",
+                    "application/x-www-form-urlencoded",
+                    "multipart/form-data",
+                  ],
+                },
+              },
+              "type": "object",
+            },
             "onError": {},
             "onSuccess": {},
             "proxy": {
@@ -6663,6 +6871,22 @@ disabled by setting this to \`false\`
 
 If not specified, the raw input data is used.
 ",
+            },
+            "headers": {
+              "additionalProperties": false,
+              "description": "The headers to be set for the outgoing request",
+              "properties": {
+                "Content-Type": {
+                  "description": "Content type for the outgoing request",
+                  "enum": [
+                    "application/xml",
+                    "text/plain",
+                    "application/x-www-form-urlencoded",
+                    "multipart/form-data",
+                  ],
+                },
+              },
+              "type": "object",
             },
             "onError": {},
             "onSuccess": {},
@@ -6751,6 +6975,22 @@ disabled by setting this to \`false\`
 
 If not specified, the raw input data is used.
 ",
+            },
+            "headers": {
+              "additionalProperties": false,
+              "description": "The headers to be set for the outgoing request",
+              "properties": {
+                "Content-Type": {
+                  "description": "Content type for the outgoing request",
+                  "enum": [
+                    "application/xml",
+                    "text/plain",
+                    "application/x-www-form-urlencoded",
+                    "multipart/form-data",
+                  ],
+                },
+              },
+              "type": "object",
             },
             "method": {
               "default": "get",
@@ -6846,6 +7086,22 @@ disabled by setting this to \`false\`
 
 If not specified, the raw input data is used.
 ",
+            },
+            "headers": {
+              "additionalProperties": false,
+              "description": "The headers to be set for the outgoing request",
+              "properties": {
+                "Content-Type": {
+                  "description": "Content type for the outgoing request",
+                  "enum": [
+                    "application/xml",
+                    "text/plain",
+                    "application/x-www-form-urlencoded",
+                    "multipart/form-data",
+                  ],
+                },
+              },
+              "type": "object",
             },
             "onError": {},
             "onSuccess": {},
@@ -7207,6 +7463,22 @@ disabled by setting this to \`false\`
 If not specified, the raw input data is used.
 ",
             },
+            "headers": {
+              "additionalProperties": false,
+              "description": "The headers to be set for the outgoing request",
+              "properties": {
+                "Content-Type": {
+                  "description": "Content type for the outgoing request",
+                  "enum": [
+                    "application/xml",
+                    "text/plain",
+                    "application/x-www-form-urlencoded",
+                    "multipart/form-data",
+                  ],
+                },
+              },
+              "type": "object",
+            },
             "onError": {},
             "onSuccess": {},
             "proxy": {
@@ -7290,6 +7562,22 @@ disabled by setting this to \`false\`
 
 If not specified, the raw input data is used.
 ",
+            },
+            "headers": {
+              "additionalProperties": false,
+              "description": "The headers to be set for the outgoing request",
+              "properties": {
+                "Content-Type": {
+                  "description": "Content type for the outgoing request",
+                  "enum": [
+                    "application/xml",
+                    "text/plain",
+                    "application/x-www-form-urlencoded",
+                    "multipart/form-data",
+                  ],
+                },
+              },
+              "type": "object",
             },
             "onError": {},
             "onSuccess": {},

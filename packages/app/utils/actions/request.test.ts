@@ -124,6 +124,28 @@ describe('request', () => {
     expect(result).toStrictEqual({ hello: 'data' });
   });
 
+  it('should support content-type header', async () => {
+    mock.onAny(/.*/).reply((req) => {
+      request = req;
+      return [200, { hello: 'data' }, {}];
+    });
+    const action = createTestAction({
+      definition: { type: 'request', method: 'post', headers: { 'Content-Type': 'text/plain' } },
+      prefix: 'pages.test.blocks.0.actions.onClick',
+      prefixIndex: 'pages.0.blocks.0.actions.onClick',
+    });
+    const result = await action({ hello: 'post' });
+    expect(request.method).toBe('post');
+    expect(request.url).toBe(`${apiUrl}/api/apps/42/actions/pages.0.blocks.0.actions.onClick`);
+    expect(request.params).toBeUndefined();
+    expect(request.data).toBe('{"hello":"post"}');
+    expect(result).toStrictEqual({ hello: 'data' });
+    expect({ ...request.headers }).toMatchObject({
+      Accept: 'application/json, text/plain, */*',
+      'Content-Type': 'text/plain',
+    });
+  });
+
   it('should inherit content-type when the request data is a single binary blob', async () => {
     mock.onAny(/.*/).reply((req) => {
       request = req;
@@ -136,6 +158,37 @@ describe('request', () => {
         type: 'request',
         method: 'post',
         body: { static: imageData },
+      },
+      prefix: 'pages.test.blocks.0.actions.onClick',
+      prefixIndex: 'pages.0.blocks.0.actions.onClick',
+    });
+
+    await action(imageData);
+
+    expect(request.method).toBe('post');
+    expect(request.url).toBe(`${apiUrl}/api/apps/42/actions/pages.0.blocks.0.actions.onClick`);
+    expect(request.params).toBeUndefined();
+    expect({ ...request.headers }).toMatchObject({
+      Accept: 'application/json, text/plain, */*',
+      'Content-Type': 'image/jpeg',
+    });
+  });
+
+  it('should ignore the content type from action definition when the request data is a single binary blob', async () => {
+    mock.onAny(/.*/).reply((req) => {
+      request = req;
+      return [200, { hello: 'data' }, {}];
+    });
+
+    const imageData = new Blob([], { type: 'image/jpeg' });
+    const action = createTestAction({
+      definition: {
+        type: 'request',
+        method: 'post',
+        body: { static: imageData },
+        headers: {
+          'Content-Type': 'text/plain',
+        },
       },
       prefix: 'pages.test.blocks.0.actions.onClick',
       prefixIndex: 'pages.0.blocks.0.actions.onClick',

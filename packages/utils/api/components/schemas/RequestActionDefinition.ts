@@ -56,5 +56,21 @@ disabled by setting this to \`false\`
       description: 'The name of the schema to validate against before submitting data.',
       $ref: '#/components/schemas/JSONSchema',
     },
+    headers: {
+      type: 'object',
+      description: 'The headers to be set for the outgoing request',
+      additionalProperties: false,
+      properties: {
+        'Content-Type': {
+          description: 'Content type for the outgoing request',
+          enum: [
+            'application/xml',
+            'text/plain',
+            'application/x-www-form-urlencoded',
+            'multipart/form-data',
+          ],
+        },
+      },
+    },
   },
 });
