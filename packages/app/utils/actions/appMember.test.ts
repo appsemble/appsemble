@@ -270,6 +270,86 @@ describe('app.member.query', () => {
     ]);
   });
 
+  it('should call the API for getting all app members by undefined roles', async () => {
+    mock.onGet(`${apiUrl}/api/apps/${appId}/members?roles=`).reply(() => [
+      200,
+      [
+        {
+          id: 'role-1-id',
+          email: 'role1@gmail.com',
+          emailVerified: false,
+          name: 'name',
+          picture: `${apiUrl}/api/app-members/some-user-id/picture`,
+          properties: {},
+        },
+        {
+          id: 'role-2-id',
+          email: 'role2@gmail.com',
+          emailVerified: false,
+          name: 'name',
+          picture: `${apiUrl}/api/app-members/some-user-id/picture`,
+          properties: {},
+        },
+        {
+          id: 'role-3-id',
+          email: 'role3@gmail.com',
+          emailVerified: false,
+          name: 'name',
+          picture: `${apiUrl}/api/app-members/some-user-id/picture`,
+          properties: {},
+        },
+      ],
+    ]);
+
+    const action = createTestAction({
+      definition: {
+        type: 'app.member.query',
+        roles: null,
+      },
+      // eslint-disable-next-line unicorn/no-useless-undefined
+      getAppMemberSelectedGroup: () => undefined,
+      getAppMemberInfo: () => ({
+        sub: 'manager-id',
+        name: 'name',
+        email: 'manager@gmail.com',
+        email_verified: true,
+        picture: 'https://example.com/avatar.jpg',
+        properties: {},
+        role: PredefinedAppRole.MembersManager,
+        demo: false,
+      }),
+      setAppMemberInfo,
+    });
+
+    const result = await action();
+    expect(result).toStrictEqual([
+      {
+        id: 'role-1-id',
+        email: 'role1@gmail.com',
+        emailVerified: false,
+        name: 'name',
+        picture: `${apiUrl}/api/app-members/some-user-id/picture`,
+        properties: {},
+      },
+      {
+        id: 'role-2-id',
+        email: 'role2@gmail.com',
+        emailVerified: false,
+        name: 'name',
+        picture: `${apiUrl}/api/app-members/some-user-id/picture`,
+        properties: {},
+      },
+      {
+        id: 'role-3-id',
+        email: 'role3@gmail.com',
+        emailVerified: false,
+        name: 'name',
+        picture: `${apiUrl}/api/app-members/some-user-id/picture`,
+        properties: {},
+      },
+    ]);
+  });
+
   it('should call the API for getting all demo app members by roles if the app member is demo', async () => {
     mock.onGet(`${apiUrl}/api/apps/${appId}/demo-members?roles=Role1,Role2,Role3`).reply(() => [
       200,

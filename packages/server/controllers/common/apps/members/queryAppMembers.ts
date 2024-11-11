@@ -11,7 +11,7 @@ import { checkAuthSubjectAppPermissions } from '../../../../utils/authorization.
 export async function queryAppMembers(ctx: Context): Promise<void> {
   const {
     pathParams: { appId },
-    queryParams: { roles = [], selectedGroupId },
+    queryParams: { roles, selectedGroupId },
   } = ctx;
 
   const app = await App.findByPk(appId, {
@@ -29,12 +29,12 @@ export async function queryAppMembers(ctx: Context): Promise<void> {
 
   const supportedAppRoles = getAppRoles(app.definition.security);
 
-  const passedRoles = Array.isArray(roles) ? roles : [roles];
+  const passedRoles = roles ? roles.split(',') : [];
 
   if (passedRoles.length) {
     const passedRolesAreSupported = passedRoles.every((role) => supportedAppRoles.includes(role));
 
-    assertKoaError(passedRolesAreSupported, ctx, 400, 'Unsupported role in filter!');
+    assertKoaError(!passedRolesAreSupported, ctx, 400, 'Unsupported role in filter!');
   }
 
   const appMembers = await AppMember.findAll({
@@ -43,6 +43,7 @@ export async function queryAppMembers(ctx: Context): Promise<void> {
       demo: false,
       ...(passedRoles.length ? { role: { [Op.in]: passedRoles } } : {}),
     },
+    order: [['role', 'ASC']],
   });
 
   ctx.body = appMembers.map((appMember) => getAppMemberInfo(appMember));

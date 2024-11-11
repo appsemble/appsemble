@@ -5,16 +5,6 @@ export const roles: OpenAPIV3.ParameterObject = {
   in: 'query',
   description: 'The roles of app members on which to perform an operation',
   schema: {
-    oneOf: [
-      {
-        type: 'array',
-        items: {
-          $ref: '#/components/schemas/AppMember/properties/role',
-        },
-      },
-      {
-        type: 'string',
-      },
-    ],
+    type: 'string',
   },
 };
