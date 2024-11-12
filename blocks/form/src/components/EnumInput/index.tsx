@@ -175,6 +175,21 @@ export function EnumInput({
 
   useClickOutside(ref, disable);
 
+  /**
+   * Render an aria compliant Bulma dropdown menu.
+   */
+
+  const onKeyDown = useCallback(
+    (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        disable();
+      }
+    },
+    [disable],
+  );
+
+  useClickOutside(ref, disable);
+
   return (
     <div>
       {field.filter ? (
