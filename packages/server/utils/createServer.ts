@@ -42,9 +42,15 @@ interface CreateServerOptions {
    * Webpack configurations to serve using Webpack dev server middleware.
    */
   webpackConfigs?: Configuration[];
+
+  /**
+   * The node cache instance to use for caching assets.
+   */
+  assetsCache?: NodeCache;
 }
 
 export async function createServer({
+  assetsCache,
   middleware,
   webpackConfigs,
 }: CreateServerOptions = {}): Promise<Koa> {
@@ -61,7 +67,7 @@ export async function createServer({
   app.use(range);
 
   Object.assign(app.context, { mailer: new Mailer(argv) });
-  Object.assign(app.context, { assetsCache: new NodeCache({ stdTTL: 3600 }) });
+  Object.assign(app.context, { assetsCache: assetsCache || new NodeCache({ stdTTL: 3600 }) });
 
   if (process.env.NODE_ENV === 'production') {
     app.use(compress());

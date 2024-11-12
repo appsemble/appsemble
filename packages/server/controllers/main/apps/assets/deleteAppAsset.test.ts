@@ -1,4 +1,5 @@
 import { PredefinedOrganizationRole } from '@appsemble/types';
+import NodeCache from '@cacheable/node-cache';
 import { request, setTestApp } from 'axios-test-instance';
 import { beforeAll, beforeEach, describe, expect, it } from 'vitest';
 
@@ -10,18 +11,19 @@ import {
   type User,
 } from '../../../../models/index.js';
 import { setArgv } from '../../../../utils/argv.js';
-import { assetsCache } from '../../../../utils/assetCache.js';
 import { createServer } from '../../../../utils/createServer.js';
 import { authorizeStudio, createTestUser } from '../../../../utils/test/authorization.js';
 
 let organization: Organization;
 let user: User;
 let app: App;
+let assetsCache: NodeCache;
 
 describe('deleteAppAsset', () => {
   beforeAll(async () => {
     setArgv({ host: 'http://localhost', secret: 'test' });
-    const server = await createServer();
+    assetsCache = new NodeCache();
+    const server = await createServer({ assetsCache });
     await setTestApp(server);
   });
 
@@ -82,13 +84,9 @@ describe('deleteAppAsset', () => {
     const assetId = asset.id;
     await request.get(`/api/apps/${app.id}/assets/${assetId}`);
     expect(assetsCache.get(`${app.id}-${assetId}`)).toMatchObject({
-      AppId: 1,
-      clonable: false,
-      ephemeral: false,
       filename: 'test.bin',
       mime: 'application/octet-stream',
       name: null,
-      seed: false,
     });
 
     authorizeStudio();

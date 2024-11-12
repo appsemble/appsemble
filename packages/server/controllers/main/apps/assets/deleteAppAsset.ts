@@ -37,7 +37,7 @@ export async function deleteAppAsset(ctx: Context): Promise<void> {
 
   assertKoaError(!asset, ctx, 404, 'Asset not found');
 
-  assetsCache.mdel([`${asset.AppId}-${asset.id}`, `${asset.AppId}-${asset.name}`]);
+  assetsCache.mdel([`${appId}-${asset.id}`, `${appId}-${asset.name}`]);
 
   await asset.destroy();
 }

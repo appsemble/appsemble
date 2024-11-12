@@ -26,7 +26,7 @@ export async function getAppAssetById(ctx: Context): Promise<void> {
     return;
   }
 
-  const where = {
+  const where: { AppId: number; OriginalId: string; [Op.or]: any[] } = {
     AppId: appId,
     OriginalId: null,
     [Op.or]: [{ id: assetId }, { name: assetId }],

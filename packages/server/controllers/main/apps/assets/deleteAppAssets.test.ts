@@ -1,6 +1,7 @@
 import { createFormData } from '@appsemble/node-utils';
 import { PredefinedOrganizationRole } from '@appsemble/types';
 import { uuid4Pattern } from '@appsemble/utils';
+import NodeCache from '@cacheable/node-cache';
 import { request, setTestApp } from 'axios-test-instance';
 import { beforeAll, beforeEach, describe, expect, it } from 'vitest';
 
@@ -12,18 +13,19 @@ import {
   type User,
 } from '../../../../models/index.js';
 import { setArgv } from '../../../../utils/argv.js';
-import { assetsCache } from '../../../../utils/assetCache.js';
 import { createServer } from '../../../../utils/createServer.js';
 import { authorizeStudio, createTestUser } from '../../../../utils/test/authorization.js';
 
 let organization: Organization;
 let user: User;
 let app: App;
+let assetsCache: NodeCache;
 
 describe('deleteAppAssets', () => {
   beforeAll(async () => {
     setArgv({ host: 'http://localhost', secret: 'test' });
-    const server = await createServer();
+    assetsCache = new NodeCache();
+    const server = await createServer({ assetsCache });
     await setTestApp(server);
   });
 
@@ -163,12 +165,10 @@ describe('deleteAppAssets', () => {
     await request.get(`/api/apps/${app.id}/assets/${assetBId}`);
     expect(assetsCache.get(`${app.id}-${assetA.id}`)).toMatchObject({
       id: assetAId,
-      AppId: app.id,
       filename: 'test.bin',
     });
     expect(assetsCache.get(`${app.id}-${assetB.id}`)).toMatchObject({
       id: assetBId,
-      AppId: app.id,
       filename: 'test.bin',
     });
 
