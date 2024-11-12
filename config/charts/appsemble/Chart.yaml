@@ -1,7 +1,7 @@
 apiVersion: v2
 name: appsemble
-version: 0.30.8
-appVersion: 0.30.8
+version: 0.30.9
+appVersion: 0.30.9
 kubeVersion: '>=1.21.0'
 type: application
 description: The open source low-code app building platform
@@ -27,22 +27,9 @@ dependencies:
     repository: https://jouve.github.io/charts
     condition: mailpit.enabled
 annotations:
-  artifacthub.io/changes: >
+  artifacthub.io/changes: |
     - kind: added
-      description: "Preact-components: Lazy load images in the ImageComponent."
-    - kind: added
-      description: "Studio: Add options for resending and deleting app and group invites."
-    - kind: fixed
-      description: "Block(form): Fix page params being added to data even when onLoad
-        action is not defined."
-    - kind: fixed
-      description: "App: Fix passing empty roles array to /api/apps/{appId}/members."
-    - kind: fixed
-      description: "Server: Clear assets cache every hour."
-    - kind: fixed
-      description: "Server: Fix querying app members by roles."
-    - kind: fixed
-      description: "Studio: Fix app, page apps causing errors."
+      description: "App: App support for content-type header in request action."
   artifacthub.io/license: LGPL-3.0-only
   artifacthub.io/links: |
     - name: Appsemble Studio

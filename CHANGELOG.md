@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.30.9](https://gitlab.com/appsemble/appsemble/-/releases/0.30.9)] - 2024-11-12
+
+### Added
+
+- App: App support for `content-type` header in request action.
+
 ## \[[0.30.8](https://gitlab.com/appsemble/appsemble/-/releases/0.30.8)] - 2024-11-11
 
 ### Added
