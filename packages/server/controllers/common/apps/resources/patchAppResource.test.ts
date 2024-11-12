@@ -510,6 +510,7 @@ describe('patchAppResource', () => {
         ResourceId: 1,
         AppMemberId: null,
         GroupId: null,
+        OriginalId: null,
         clonable: false,
         ephemeral: false,
         seed: false,

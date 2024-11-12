@@ -1,4 +1,8 @@
+import { logger } from '@appsemble/node-utils';
+import { type Transaction } from 'sequelize';
 import {
+  AfterBulkCreate,
+  AfterCreate,
   AllowNull,
   BelongsTo,
   Column,
@@ -6,12 +10,14 @@ import {
   DataType,
   Default,
   ForeignKey,
+  HasOne,
   Index,
   Model,
   PrimaryKey,
   Table,
   UpdatedAt,
 } from 'sequelize-typescript';
+import sharp from 'sharp';
 
 import { App, AppMember, Group, Resource } from './index.js';
 
@@ -105,4 +111,64 @@ export class Asset extends Model {
 
   @BelongsTo(() => Resource, { onDelete: 'SET NULL' })
   Resource: Awaited<Resource>;
+
+  @HasOne(() => Asset, { foreignKey: 'OriginalId', onDelete: 'CASCADE' })
+  Compressed: Awaited<Asset>;
+
+  @ForeignKey(() => Asset)
+  @Column(DataType.STRING)
+  OriginalId: string;
+
+  @BelongsTo(() => Asset, { onDelete: 'SET NULL' })
+  Original: Awaited<Asset>;
+
+  private static async createCompressedAsset(
+    instance: Asset,
+    transaction?: Transaction,
+  ): Promise<void> {
+    if (
+      instance.mime?.startsWith('image') &&
+      instance.mime !== 'image/avif' &&
+      instance.OriginalId == null
+    ) {
+      try {
+        const compressed = await sharp(instance.data).toFormat('avif').toBuffer();
+
+        await Asset.create(
+          {
+            name: instance.name ? `${instance.name}_compressed` : null,
+            filename: `${instance.filename.slice(0, instance.filename.lastIndexOf('.'))}.avif`,
+            mime: 'image/avif',
+            data: compressed,
+            seed: instance.seed,
+            ephemeral: instance.ephemeral,
+            OriginalId: instance.id,
+            AppId: instance.AppId,
+          },
+          { transaction },
+        );
+      } catch (error) {
+        logger.error(`Failed to compress image ${instance.filename}`);
+        logger.error(error);
+      }
+    }
+  }
+
+  @AfterCreate
+  static async afterCreateHook(
+    instance: Asset,
+    options: { transaction?: Transaction },
+  ): Promise<void> {
+    await Asset.createCompressedAsset(instance, options.transaction);
+  }
+
+  @AfterBulkCreate
+  static async afterBulkCreateHook(
+    instances: Asset[],
+    options: { transaction?: Transaction },
+  ): Promise<void> {
+    await Promise.all(
+      instances.map((instance) => Asset.createCompressedAsset(instance, options.transaction)),
+    );
+  }
 }

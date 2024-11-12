@@ -6,6 +6,7 @@ import { PredefinedOrganizationRole } from '@appsemble/types';
 import { ISODateTimePattern } from '@appsemble/utils';
 import { type AxiosTestInstance, setTestApp } from 'axios-test-instance';
 import FormData from 'form-data';
+import sharp from 'sharp';
 import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import {
@@ -405,9 +406,11 @@ describe('app', () => {
       ]
     `,
       );
-      const assets = await Asset.findAll();
+      const assets = await Asset.findAll({ order: [['filename', 'ASC']] });
+      const tuxData = await readFixture('apps/test/assets/tux.png');
       expect(assets.map((a) => a.data)).toStrictEqual([
-        await readFixture('apps/test/assets/tux.png'),
+        await sharp(tuxData).toFormat('avif').toBuffer(),
+        tuxData,
       ]);
     });
 
@@ -582,11 +585,10 @@ describe('app', () => {
       ]
     `,
       );
-      const assets = await Asset.findAll();
-      expect(assets.map((a) => a.data)).toStrictEqual([
-        await readFixture('apps/test/assets/tux.png'),
-        await readFixture('apps/test/assets/tux.png'),
-      ]);
+      const assets = await Asset.findAll({ order: [['filename', 'ASC']] });
+      const tuxData = await readFixture('apps/test/assets/tux.png');
+      const tuxAvifData = await sharp(tuxData).toFormat('avif').toBuffer();
+      expect(assets.map((a) => a.data)).toStrictEqual([tuxAvifData, tuxAvifData, tuxData, tuxData]);
       const appCollectionApp = await AppCollectionApp.findOne();
       expect(appCollectionApp.AppId).toBe(1);
       expect(appCollectionApp.AppCollectionId).toBe(1);
@@ -741,9 +743,11 @@ describe('app', () => {
       ]
     `,
       );
-      const assets = await Asset.findAll();
+      const assets = await Asset.findAll({ order: [['filename', 'ASC']] });
+      const tuxData = await readFixture('apps/test/variants/tux/assets/small-tux.png');
       expect(assets.map((a) => a.data)).toStrictEqual([
-        await readFixture('apps/test/variants/tux/assets/small-tux.png'),
+        await sharp(tuxData).toFormat('avif').toBuffer(),
+        tuxData,
       ]);
     });
 
@@ -1256,9 +1260,11 @@ describe('app', () => {
       ]
     `,
       );
-      const assets = await Asset.findAll();
+      const assets = await Asset.findAll({ order: [['filename', 'ASC']] });
+      const tuxData = await readFixture('apps/test/assets/tux.png');
       expect(assets.map((a) => a.data)).toStrictEqual([
-        await readFixture('apps/test/assets/tux.png'),
+        await sharp(tuxData).toFormat('avif').toBuffer(),
+        tuxData,
       ]);
     });
 
@@ -1434,11 +1440,10 @@ describe('app', () => {
       ]
     `,
       );
-      const assets = await Asset.findAll();
-      expect(assets.map((a) => a.data)).toStrictEqual([
-        await readFixture('apps/test/assets/tux.png'),
-        await readFixture('apps/test/assets/tux.png'),
-      ]);
+      const assets = await Asset.findAll({ order: [['filename', 'ASC']] });
+      const tuxData = await readFixture('apps/test/assets/tux.png');
+      const tuxAvifData = await sharp(tuxData).toFormat('avif').toBuffer();
+      expect(assets.map((a) => a.data)).toStrictEqual([tuxAvifData, tuxAvifData, tuxData, tuxData]);
       // TODO: not yet implemented
       // const appCollectionApp = await AppCollectionApp.findOne();
       // expect(appCollectionApp.AppId).toBe(1);
@@ -1596,9 +1601,7 @@ describe('app', () => {
     `,
       );
       const assets = await Asset.findAll();
-      expect(assets.map((a) => a.data)).toStrictEqual([
-        await readFixture('apps/test/variants/tux/assets/small-tux.png'),
-      ]);
+      expect(assets.map((a) => a.filename)).toStrictEqual(['small-tux.png', 'small-tux.avif']);
     });
 
     it('should update app variables and secrets', async () => {

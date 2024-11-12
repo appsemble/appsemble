@@ -20,9 +20,11 @@ export async function getAppAssetHeadersById(ctx: Context): Promise<void> {
     attributes: ['id', 'mime', 'filename', 'name'],
     where: {
       AppId: appId,
+      OriginalId: null,
       [Op.or]: [{ id: assetId }, { name: assetId }],
       ...(app.demoMode ? { seed: false, ephemeral: true } : {}),
     },
+    include: [{ model: Asset, as: 'Compressed' }],
   });
 
   // Pick asset id over asset name.
@@ -38,9 +40,10 @@ export async function getAppAssetHeadersById(ctx: Context): Promise<void> {
     return;
   }
 
-  let { filename, mime } = asset;
+  const baseAsset = asset.Compressed || asset;
+  let { filename, mime } = baseAsset;
   if (!filename) {
-    filename = asset.id;
+    filename = baseAsset.id;
     if (mime) {
       const ext = extension(mime);
       if (ext) {

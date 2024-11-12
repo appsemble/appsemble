@@ -553,6 +553,7 @@ describe('exportApp', () => {
       'i18n/',
       'assets/',
       'assets/nodejs-logo.png',
+      'assets/nodejs-logo.avif',
     ]);
 
     expect(await archive.file('app-definition.yaml').async('text')).toMatchInlineSnapshot(

@@ -34,13 +34,19 @@ export async function getAppAssetById(ctx: Context): Promise<void> {
     return;
   }
 
-  const asset = await Asset.findOne({
-    where: {
-      AppId: appId,
-      [Op.or]: [{ id: assetId }, { name: assetId }],
-      ...(app.demoMode ? { seed: false, ephemeral: true } : {}),
-    },
+  const where = {
+    AppId: appId,
+    [Op.or]: [{ id: assetId }, { name: assetId }],
+    ...(app.demoMode ? { seed: false, ephemeral: true } : {}),
+  };
+
+  const assetWithCompressed = await Asset.findOne({
+    where: { ...where, OriginalId: null },
+    attributes: { exclude: ['data'] },
+    include: [{ model: Asset, as: 'Compressed', required: true }],
   });
+
+  const asset = assetWithCompressed || (await Asset.findOne({ where }));
 
   assertKoaError(!asset, ctx, 404, 'Asset not found');
 
@@ -52,10 +58,11 @@ export async function getAppAssetById(ctx: Context): Promise<void> {
     return;
   }
 
-  let { filename, mime } = asset;
-  assetsCache.set(cacheKey, asset.dataValues);
+  const baseAsset = asset.Compressed || asset;
+  let { filename, mime } = baseAsset;
+  assetsCache.set(cacheKey, baseAsset.dataValues);
   if (!filename) {
-    filename = asset.id;
+    filename = baseAsset.id;
     if (mime) {
       const ext = extension(mime);
       if (ext) {
@@ -64,5 +71,5 @@ export async function getAppAssetById(ctx: Context): Promise<void> {
     }
   }
   setHeaders(ctx, mime, filename);
-  ctx.body = asset.data;
+  ctx.body = baseAsset.data;
 }

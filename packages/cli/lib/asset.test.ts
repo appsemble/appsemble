@@ -75,6 +75,7 @@ describe('asset', () => {
         "AppId": 1,
         "AppMemberId": null,
         "GroupId": null,
+        "OriginalId": null,
         "ResourceId": null,
         "clonable": false,
         "created": 1970-01-01T00:00:00.000Z,
