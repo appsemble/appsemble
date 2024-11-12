@@ -132,7 +132,7 @@ export class Asset extends Model {
       instance.OriginalId == null
     ) {
       try {
-        const compressed = await sharp(instance.data).toFormat('avif').toBuffer();
+        const compressed = await sharp(instance.data).rotate().toFormat('avif').toBuffer();
 
         await Asset.create(
           {
