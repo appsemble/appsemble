@@ -32,9 +32,13 @@ export async function queryAppAssets(ctx: Context): Promise<void> {
         required: false,
       },
     ],
-    where: { AppId: appId, ...(app.demoMode ? { seed: false, ephemeral: true } : {}) },
+    where: {
+      AppId: appId,
+      ...(app.demoMode ? { seed: false, ephemeral: true } : {}),
+    },
     offset: $skip,
     limit: $top,
+    order: [['filename', 'ASC']],
   });
 
   ctx.body = assets.map((asset) => ({

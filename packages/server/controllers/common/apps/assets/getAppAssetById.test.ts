@@ -1,5 +1,7 @@
+import { readFixture } from '@appsemble/node-utils';
 import { PredefinedOrganizationRole } from '@appsemble/types';
 import { request, setTestApp } from 'axios-test-instance';
+import sharp from 'sharp';
 import { beforeAll, beforeEach, describe, expect, it } from 'vitest';
 
 import {
@@ -100,6 +102,30 @@ describe('getAppAssetById', () => {
         'content-type': 'text/plain; charset=utf-8',
       }),
       data: 'Found',
+    });
+  });
+
+  it('should fetch the compressed version of an image asset', async () => {
+    const data = await readFixture('nodejs-logo.png');
+    const asset = await Asset.create({
+      AppId: app.id,
+      mime: 'image/png',
+      filename: 'logo.png',
+      data,
+    });
+
+    const response = await request.get(`/api/apps/${app.id}/assets/${asset.id}`, {
+      responseType: 'arraybuffer',
+    });
+
+    expect(response).toMatchObject({
+      status: 200,
+      headers: expect.objectContaining({
+        'content-type': 'image/avif',
+        'content-disposition': 'attachment; filename="logo.avif"',
+        'cache-control': 'max-age=31536000,immutable',
+      }),
+      data: sharp(data).toFormat('avif').toBuffer(),
     });
   });
 

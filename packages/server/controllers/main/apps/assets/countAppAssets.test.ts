@@ -1,3 +1,4 @@
+import { readFixture } from '@appsemble/node-utils';
 import { PredefinedOrganizationRole } from '@appsemble/types';
 import { request, setTestApp } from 'axios-test-instance';
 import { beforeAll, beforeEach, describe, expect, it } from 'vitest';
@@ -81,6 +82,31 @@ describe('countAppAssets', () => {
       mime: 'application/octet-stream',
       filename: 'foo.bin',
       data: Buffer.from('bar'),
+    });
+
+    authorizeStudio();
+    const response = await request.get(`/api/apps/${app.id}/assets/$count`);
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 200 OK
+      Content-Type: application/json; charset=utf-8
+
+      2
+    `);
+  });
+
+  it('should return the number of assets even if compressed versions exist', async () => {
+    await Asset.create({
+      AppId: app.id,
+      mime: 'application/octet-stream',
+      filename: 'test.bin',
+      data: Buffer.from('buffer'),
+    });
+
+    await Asset.create({
+      AppId: app.id,
+      mime: 'image/png',
+      filename: 'logo.png',
+      data: await readFixture('nodejs-logo.png'),
     });
 
     authorizeStudio();

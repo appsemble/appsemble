@@ -15,6 +15,10 @@ export async function countAppAssets(ctx: Context): Promise<void> {
   assertKoaError(!app, ctx, 404, 'App not found');
 
   ctx.body = await Asset.count({
-    where: { AppId: appId, ...(app.demoMode ? { seed: false, ephemeral: true } : {}) },
+    where: {
+      AppId: appId,
+      OriginalId: null,
+      ...(app.demoMode ? { seed: false, ephemeral: true } : {}),
+    },
   });
 }

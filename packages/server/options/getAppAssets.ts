@@ -8,6 +8,7 @@ export async function getAppAssets({ app }: GetAppSubEntityParams): Promise<AppA
     attributes: ['id', 'name', 'ResourceId'],
     where: {
       AppId: app.id,
+      OriginalId: null,
       ...(app.demoMode ? { seed: false, ephemeral: true } : {}),
     },
   });

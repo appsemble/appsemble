@@ -610,6 +610,7 @@ describe('updateAppResource', () => {
         AppId: app.id,
         ResourceId: 1,
         GroupId: null,
+        OriginalId: null,
         AppMemberId: null,
         clonable: false,
         created: new Date('1970-01-01T00:00:00.000Z'),
