@@ -10,9 +10,10 @@ import { Image } from '../Image/index.js';
 interface HeaderProps {
   readonly id: number | string;
   readonly option: SelectionChoice;
+  readonly isVisible: boolean;
 }
 
-export function Header({ id, option }: HeaderProps): VNode {
+export function Header({ id, isVisible, option }: HeaderProps): VNode {
   const {
     utils: { remap },
   } = useBlock();
@@ -33,7 +34,7 @@ export function Header({ id, option }: HeaderProps): VNode {
       <div className={`is-flex ${styles.image}`}>
         <div>
           {image && image.alignment === 'header' ? (
-            <Image id={id} image={image} option={option} />
+            <Image id={id} image={image} isVisible={isVisible} option={option} />
           ) : null}
         </div>
         <div className={`${styles.item} has-text-left is-block`}>{headerHTML}</div>

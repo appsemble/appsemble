@@ -21,11 +21,17 @@ interface ImageComponentProps {
    * The data to display.
    */
   readonly item: unknown;
+
+  /**
+   * Whether the list item is visible on the screen.
+   */
+  readonly isVisible: boolean;
 }
 
 export function Image({
   field: { alt, file, rounded, size = 48 },
   index,
+  isVisible,
   item,
 }: ImageComponentProps): VNode {
   const {
@@ -39,6 +45,10 @@ export function Image({
   const [fetched, setFetched] = useState(false);
 
   useEffect(() => {
+    if (!isVisible) {
+      return;
+    }
+
     (async () => {
       if (value) {
         if (/^(https?:)?\/\//.test(value)) {
@@ -71,7 +81,7 @@ export function Image({
         }
       }
     })();
-  }, [asset, item, fetched, value]);
+  }, [asset, item, fetched, value, isVisible]);
 
   return <ImageComponent alt={alternate} id={index} rounded={rounded} size={size} src={src} />;
 }

@@ -3,21 +3,12 @@ import { type Context } from 'koa';
 import { extension } from 'mime-types';
 import { Op } from 'sequelize';
 
+import { setHeaders } from './utils.js';
 import { App, Asset } from '../../../../models/index.js';
-import { assetsCache } from '../../../../utils/assetCache.js';
-
-function setHeaders(ctx: Context, mime: string, filename: string | null): void {
-  ctx.set('content-type', mime || 'application/octet-stream');
-  if (filename) {
-    ctx.set('content-disposition', `attachment; filename=${JSON.stringify(filename)}`);
-  }
-
-  ctx.set('Access-Control-Expose-Headers', 'Content-Disposition');
-  ctx.set('Cache-Control', 'max-age=31536000,immutable');
-}
 
 export async function getAppAssetById(ctx: Context): Promise<void> {
   const {
+    assetsCache,
     pathParams: { appId, assetId },
   } = ctx;
 
@@ -26,9 +17,10 @@ export async function getAppAssetById(ctx: Context): Promise<void> {
   });
 
   assertKoaError(!app, ctx, 404, 'App not found');
-  const cacheKey = `${appId}-${assetId}`;
-  const cachedAsset = assetsCache.get(cacheKey);
-  if (cachedAsset) {
+
+  const cachedAsset = assetsCache.get(`${appId}-${assetId}`);
+
+  if (cachedAsset && cachedAsset.data) {
     setHeaders(ctx, cachedAsset.mime, cachedAsset.filename);
     ctx.body = Buffer.from(cachedAsset.data);
     return;
@@ -36,33 +28,41 @@ export async function getAppAssetById(ctx: Context): Promise<void> {
 
   const where = {
     AppId: appId,
+    OriginalId: null,
     [Op.or]: [{ id: assetId }, { name: assetId }],
     ...(app.demoMode ? { seed: false, ephemeral: true } : {}),
   };
 
   const assetWithCompressed = await Asset.findOne({
-    where: { ...where, OriginalId: null },
-    attributes: { exclude: ['data'] },
-    include: [{ model: Asset, as: 'Compressed', required: true }],
+    where,
+    attributes: ['id', 'mime', 'filename', 'name'],
+    include: [
+      {
+        model: Asset,
+        as: 'Compressed',
+        required: true,
+        attributes: ['id', 'mime', 'filename', 'name', 'data'],
+      },
+    ],
   });
 
-  const asset = assetWithCompressed || (await Asset.findOne({ where }));
+  const originalAsset =
+    assetWithCompressed ||
+    (await Asset.findOne({ where, attributes: ['id', 'mime', 'filename', 'name', 'data'] }));
 
-  assertKoaError(!asset, ctx, 404, 'Asset not found');
+  assertKoaError(!originalAsset, ctx, 404, 'Asset not found');
 
-  if (assetId !== asset.id) {
-    // Redirect to asset using current asset ID
-    ctx.status = 302;
-    ctx.set('location', `/api/apps/${appId}/assets/${asset.id}`);
-    ctx.type = null;
-    return;
+  const asset = originalAsset.Compressed || originalAsset;
+  let { filename, mime } = asset;
+
+  assetsCache.set(`${appId}-${originalAsset.id}`, asset.dataValues);
+
+  if (originalAsset.name) {
+    assetsCache.set(`${appId}-${originalAsset.name}`, asset.dataValues);
   }
 
-  const baseAsset = asset.Compressed || asset;
-  let { filename, mime } = baseAsset;
-  assetsCache.set(cacheKey, baseAsset.dataValues);
   if (!filename) {
-    filename = baseAsset.id;
+    filename = asset.id;
     if (mime) {
       const ext = extension(mime);
       if (ext) {
@@ -70,6 +70,7 @@ export async function getAppAssetById(ctx: Context): Promise<void> {
       }
     }
   }
+
   setHeaders(ctx, mime, filename);
-  ctx.body = baseAsset.data;
+  ctx.body = asset.data;
 }

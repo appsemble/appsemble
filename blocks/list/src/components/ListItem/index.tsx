@@ -1,6 +1,7 @@
 import { useBlock } from '@appsemble/preact';
 import { Icon } from '@appsemble/preact-components';
 import { type VNode } from 'preact';
+import { useEffect, useRef, useState } from 'preact/hooks';
 
 import { ContentComponent } from './Content/index.js';
 import { HeaderComponent } from './Header/index.js';
@@ -31,20 +32,54 @@ export function ListItem({ index, item }: ListItemProps): VNode {
     image.alignment = 'default';
   }
 
+  const [isVisible, setIsVisible] = useState(false);
+
+  const ref = useRef();
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (entry.isIntersecting) {
+            setIsVisible(true);
+            observer.unobserve(entry.target);
+          }
+        }
+      },
+      {
+        // Trigger when 10% of the ref is visible
+        threshold: 0.1,
+      },
+    );
+
+    if (ref.current) {
+      observer.observe(ref.current);
+    }
+
+    return () => {
+      if (ref.current) {
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+        observer.unobserve(ref.current);
+      }
+    };
+  }, [index]);
+
   return (
-    <div className={`${styles.item} has-text-left is-flex my-1 pt-4 pr-6 pb-4 pl-5`}>
+    <div className={`${styles.item} has-text-left is-flex my-1 pt-4 pr-6 pb-4 pl-5`} ref={ref}>
       {image && !imageInline ? (
         <div className={styles.image}>
-          {image.alignment === 'default' ? <Image field={image} index={index} item={item} /> : null}
+          {image.alignment === 'default' ? (
+            <Image field={image} index={index} isVisible={isVisible} item={item} />
+          ) : null}
         </div>
       ) : null}
       <div className={`${styles.contentWrapper} is-inline-block`}>
         {image && imageInline ? (
           <figure className={`image ${styles.image}`}>
-            <Image field={image} index={index} item={item} />
+            <Image field={image} index={index} isVisible={isVisible} item={item} />
           </figure>
         ) : null}
-        <HeaderComponent index={index} item={item} />
+        <HeaderComponent index={index} isVisible={isVisible} item={item} />
         <ContentComponent index={index} item={item} />
       </div>
       {actions.onClick.type !== 'noop' && button == null && (

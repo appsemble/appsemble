@@ -5,7 +5,6 @@ import { type Argv } from 'yargs';
 import { databaseBuilder } from './builder/database.js';
 import { App, Asset, initDB, Resource } from '../models/index.js';
 import { argv } from '../utils/argv.js';
-import { assetsCache } from '../utils/assetCache.js';
 import { reseedResourcesRecursively } from '../utils/resource.js';
 import { handleDBError } from '../utils/sqlUtils.js';
 
@@ -42,8 +41,6 @@ export async function handler(): Promise<void> {
   });
 
   logger.info('Cleaning up ephemeral assets from demo apps.');
-
-  assetsCache.del(demoAssetsToDestroy.map((asset) => `${asset.AppId}-${asset.id}`));
 
   const demoAssetsDeletionResult = await Asset.destroy({
     where: {
@@ -141,7 +138,6 @@ export async function handler(): Promise<void> {
 
   logger.info('Cleaning up ephemeral assets from regular apps.');
 
-  assetsCache.del(assetsToDestroy.map((asset) => `${asset.AppId}-${asset.id}`));
   const assetsDeletionResult = await Asset.destroy({
     where: {
       id: { [Op.in]: assetsToDestroy.map((asset) => asset.id) },

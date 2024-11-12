@@ -3,11 +3,11 @@ import { OrganizationPermission } from '@appsemble/types';
 import { type Context } from 'koa';
 
 import { App, Asset } from '../../../../models/index.js';
-import { assetsCache } from '../../../../utils/assetCache.js';
 import { checkUserOrganizationPermissions } from '../../../../utils/authorization.js';
 
 export async function deleteAppAsset(ctx: Context): Promise<void> {
   const {
+    assetsCache,
     pathParams: { appId, assetId },
   } = ctx;
 
@@ -27,6 +27,7 @@ export async function deleteAppAsset(ctx: Context): Promise<void> {
   });
 
   const asset = await Asset.findOne({
+    attributes: ['id', 'name'],
     where: {
       AppId: appId,
       id: assetId,
@@ -35,7 +36,8 @@ export async function deleteAppAsset(ctx: Context): Promise<void> {
   });
 
   assertKoaError(!asset, ctx, 404, 'Asset not found');
-  assetsCache.del(`${asset.AppId}-${asset.id}`);
+
+  assetsCache.mdel([`${asset.AppId}-${asset.id}`, `${asset.AppId}-${asset.name}`]);
 
   await asset.destroy();
 }

@@ -11,6 +11,7 @@ import {
   version,
 } from '@appsemble/node-utils';
 import { api } from '@appsemble/utils';
+import NodeCache from '@cacheable/node-cache';
 import cors from '@koa/cors';
 import Koa, { type Context, type Middleware } from 'koa';
 import compose from 'koa-compose';
@@ -60,6 +61,7 @@ export async function createServer({
   app.use(range);
 
   Object.assign(app.context, { mailer: new Mailer(argv) });
+  Object.assign(app.context, { assetsCache: new NodeCache({ stdTTL: 3600 }) });
 
   if (process.env.NODE_ENV === 'production') {
     app.use(compress());

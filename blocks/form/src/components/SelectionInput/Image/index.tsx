@@ -21,11 +21,17 @@ interface ImageComponentProps {
    * The data to get properties from.
    */
   readonly option: SelectionChoice;
+
+  /**
+   * Whether the list item is visible on the screen.
+   */
+  readonly isVisible: boolean;
 }
 
 export function Image({
   id,
   image: { alt, file, rounded, size = 48 },
+  isVisible,
   option,
 }: ImageComponentProps): VNode {
   const {
@@ -39,6 +45,10 @@ export function Image({
   const [fetched, setFetched] = useState(false);
 
   useEffect(() => {
+    if (!isVisible) {
+      return;
+    }
+
     (async () => {
       if (value) {
         if (/^(https?:)?\/\//.test(value)) {
@@ -71,7 +81,7 @@ export function Image({
         }
       }
     })();
-  }, [asset, option, fetched, value]);
+  }, [asset, option, fetched, value, isVisible]);
 
   return <ImageComponent alt={alternate} id={id} rounded={rounded} size={size} src={src} />;
 }
