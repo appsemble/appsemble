@@ -1,7 +1,7 @@
 apiVersion: v2
 name: appsemble
-version: 0.30.9
-appVersion: 0.30.9
+version: 0.30.10
+appVersion: 0.30.10
 kubeVersion: '>=1.21.0'
 type: application
 description: The open source low-code app building platform
@@ -27,9 +27,13 @@ dependencies:
     repository: https://jouve.github.io/charts
     condition: mailpit.enabled
 annotations:
-  artifacthub.io/changes: |
-    - kind: added
-      description: "App: App support for content-type header in request action."
+  artifacthub.io/changes: >
+    - kind: changed
+      description: "Webpack-core: Enable mermaid for local diagram renders."
+    - kind: fixed
+      description: "Server: Properly apply the EXIF meta tag to images when compressing them."
+    - kind: fixed
+      description: "Studio: Fix mermaid diagram renders."
   artifacthub.io/license: LGPL-3.0-only
   artifacthub.io/links: |
     - name: Appsemble Studio

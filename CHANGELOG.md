@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.30.10](https://gitlab.com/appsemble/appsemble/-/releases/0.30.10)] - 2024-11-12
+
+### Changed
+
+- Webpack-core: Enable mermaid for local diagram renders.
+
+### Fixed
+
+- Server: Properly apply the EXIF meta tag to images when compressing them.
+- Studio: Fix mermaid diagram renders.
+
 ## \[[0.30.9](https://gitlab.com/appsemble/appsemble/-/releases/0.30.9)] - 2024-11-12
 
 ### Added
