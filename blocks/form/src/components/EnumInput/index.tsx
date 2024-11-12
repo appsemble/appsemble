@@ -1,9 +1,15 @@
 import { useBlock } from '@appsemble/preact';
-import { Input, Option, SelectField } from '@appsemble/preact-components';
+import {
+  Input,
+  Option,
+  SelectField,
+  useClickOutside,
+  useToggle,
+} from '@appsemble/preact-components';
 import classNames from 'classnames';
 import { type VNode } from 'preact';
 import { type ChangeEvent } from 'preact/compat';
-import { useCallback, useEffect, useState } from 'preact/hooks';
+import { useCallback, useEffect, useRef, useState } from 'preact/hooks';
 
 import { type Choice, type EnumField, type InputProps } from '../../../block.js';
 import { getValueByNameSequence } from '../../utils/getNested.js';
@@ -38,6 +44,8 @@ export function EnumInput({
   const [error, setError] = useState<string>(null);
   const [filter, setFilter] = useState<string>('');
   const [originalOptions, setOriginalOptions] = useState<Choice[]>(options);
+  const ref = useRef<HTMLDivElement>();
+  const { disable, enabled, toggle } = useToggle();
 
   const { icon, inline, label, onSelect, placeholder, tag } = field;
   const value = getValueByNameSequence(name, formValues);
@@ -141,41 +149,85 @@ export function EnumInput({
     onChange(n, v);
   };
 
+  /**
+   * Render an aria compliant Bulma dropdown menu.
+   */
+
+  const onKeyDown = useCallback(
+    (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        disable();
+      }
+    },
+    [disable],
+  );
+
+  useClickOutside(ref, disable);
+
   return (
     <div>
-      <SelectField
-        className={classNames('appsemble-enum', className)}
-        disabled={disabled || loading || options.length === 0}
-        error={dirty ? error : null}
-        errorLinkRef={errorLinkRef}
-        help={utils.remap(field.help, value) as string}
-        icon={icon}
-        inline={inline}
-        label={(utils.remap(label, value) as string) ?? name}
-        loading={loading}
-        name={name}
-        onChange={onChange}
-        optionalLabel={utils.formatMessage('optionalLabel')}
-        placeholder={utils.remap(placeholder, {}) as string}
-        readOnly={readOnly}
-        required={required}
-        tag={utils.remap(tag, value) as string}
-        value={value}
-      >
-        {options.map((choice) => (
-          <Option disabled={choice.disabled} key={choice.value} value={choice.value}>
-            {(utils.remap(choice.label, value) as string) ?? (choice.value as string)}
-          </Option>
-        ))}
-      </SelectField>
       {field.filter ? (
-        <Input
-          onChange={filterChange}
-          placeholder={utils.formatMessage('search')}
-          style={{ maxWidth: '40%' }}
-          value={filter}
-        />
-      ) : null}
+        <div className={classNames('dropdown', className, { 'is-active': enabled })} ref={ref}>
+          <div className="dropdown-trigger">
+            <Input
+              className={classNames('field', className)}
+              disabled={disabled || loading || options.length === 0}
+              errorLinkRef={errorLinkRef}
+              icon={icon}
+              loading={loading}
+              name={name}
+              onChange={filterChange}
+              onClick={toggle}
+              onKeyDown={onKeyDown}
+              placeholder={utils.remap(placeholder, {}) as string}
+              readOnly={readOnly}
+              required={required}
+            />
+          </div>
+          <div
+            className="dropdown-menu"
+            id="dropdown-menu"
+            onClick={toggle}
+            onKeyDown={onKeyDown}
+            role="menu"
+            tabIndex={0}
+          >
+            <div className="dropdown-content">
+              {options.map((choice) => (
+                <Option disabled={choice.disabled} key={choice.value} value={choice.value}>
+                  {(utils.remap(choice.label, value) as string) ?? (choice.value as string)}
+                </Option>
+              ))}
+            </div>
+          </div>
+        </div>
+      ) : (
+        <SelectField
+          className={classNames('appsemble-enum', className)}
+          disabled={disabled || loading || options.length === 0}
+          error={dirty ? error : null}
+          errorLinkRef={errorLinkRef}
+          help={utils.remap(field.help, value) as string}
+          icon={icon}
+          inline={inline}
+          label={(utils.remap(label, value) as string) ?? name}
+          loading={loading}
+          name={name}
+          onChange={handleChange}
+          optionalLabel={utils.formatMessage('optionalLabel')}
+          placeholder={utils.remap(placeholder, {}) as string}
+          readOnly={readOnly}
+          required={required}
+          tag={utils.remap(tag, value) as string}
+          value={value}
+        >
+          {options.map((choice) => (
+            <Option disabled={choice.disabled} key={choice.value} value={choice.value}>
+              {(utils.remap(choice.label, value) as string) ?? (choice.value as string)}
+            </Option>
+          ))}
+        </SelectField>
+      )}
     </div>
   );
 }

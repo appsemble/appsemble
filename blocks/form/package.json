@@ -17,10 +17,10 @@
     "test": "vitest"
   },
   "dependencies": {
-    "@appsemble/preact": "0.30.10",
-    "@appsemble/preact-components": "0.30.10",
-    "@appsemble/sdk": "0.30.10",
-    "@appsemble/utils": "0.30.10",
+    "@appsemble/preact": "0.30.7",
+    "@appsemble/preact-components": "0.30.7",
+    "@appsemble/sdk": "0.30.7",
+    "@appsemble/utils": "0.30.7",
     "@types/leaflet": "^1.0.0",
     "classnames": "^2.0.0",
     "date-fns": "^2.0.0",
