@@ -31,7 +31,6 @@ graph TD
     I(data-loader)
     J(detail-viewer)
   end
-  click A href "https://appsemble.app/en/apps/3/person"
 ```
 
 **The following properties are required**:

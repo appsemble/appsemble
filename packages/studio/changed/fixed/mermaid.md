@@ -1,0 +1,1 @@
+Fix mermaid diagram renders.
