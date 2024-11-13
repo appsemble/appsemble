@@ -170,8 +170,8 @@ export function EnumInput({
         <div className={classNames('dropdown', className, { 'is-active': enabled })} ref={ref}>
           <div className="dropdown-trigger">
             <Input
-              className={classNames('field', className)}
-              disabled={disabled || loading || options.length === 0}
+              className={classNames('appsemble-enum field', className)}
+              disabled={disabled || loading || originalOptions.length === 0}
               errorLinkRef={errorLinkRef}
               icon={icon}
               loading={loading}
@@ -194,9 +194,9 @@ export function EnumInput({
           >
             <div className="dropdown-content">
               {options.map((choice) => (
-                <Option disabled={choice.disabled} key={choice.value} value={choice.value}>
+                <div className="dropdown-item" disabled={choice.disabled} key={choice.value}>
                   {(utils.remap(choice.label, value) as string) ?? (choice.value as string)}
-                </Option>
+                </div>
               ))}
             </div>
           </div>
