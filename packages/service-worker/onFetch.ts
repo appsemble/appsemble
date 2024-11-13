@@ -14,9 +14,17 @@ export function onFetch(event: FetchEvent): void {
   if (request.method !== 'GET') {
     return;
   }
+
   const { origin, pathname } = new URL(request.url);
 
-  // This is a request to an external service or the Appsemble API. This should not be cached.
+  // App assets are immutable and can be cached.
+  if (/^\/api\/apps\/\d+\/assets\//.test(pathname)) {
+    event.respondWith(cacheFirst(request));
+    return;
+  }
+
+  // This is an unhandled request to an external service or the Appsemble API. This should not be
+  // cached.
   if (origin !== globalThis.location.origin) {
     return;
   }
