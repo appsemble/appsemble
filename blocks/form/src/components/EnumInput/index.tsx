@@ -188,6 +188,15 @@ export function EnumInput({
     [disable],
   );
 
+  const handleSelect = useCallback(
+    (choice: Choice) => {
+      setInputValue(choice.value as string);
+      handleChange(name, choice.value as string);
+      disable();
+    },
+    [disable, handleChange, name],
+  );
+
   useClickOutside(ref, disable);
 
   return (
