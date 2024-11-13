@@ -10,8 +10,8 @@ import { cacheFirst, requestFirst } from './utils.js';
 export function onFetch(event: FetchEvent): void {
   const { request } = event;
 
-  // Pass through any non GET requests.
-  if (request.method !== 'GET') {
+  // Pass through any non GET or HEAD requests.
+  if (request.method !== 'GET' && request.method !== 'HEAD') {
     return;
   }
 
