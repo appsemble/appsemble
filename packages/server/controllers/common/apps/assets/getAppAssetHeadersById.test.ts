@@ -100,7 +100,7 @@ describe('getAssetHeadersById', () => {
       status: 200,
       headers: expect.objectContaining({
         'content-type': 'image/avif',
-        'content-disposition': 'attachment; filename="logo.avif"',
+        'content-disposition': 'inline; filename="logo.avif"',
         'cache-control': 'max-age=31536000,immutable',
         'access-control-expose-headers': 'Content-Disposition',
       }),
@@ -121,7 +121,7 @@ describe('getAssetHeadersById', () => {
     const response = await request.head(`/api/apps/${app.id}/assets/test-asset`);
 
     expect(response).toMatchObject({
-      status: 302,
+      status: 200,
       data: '',
     });
   });

@@ -5,7 +5,7 @@ export function setHeaders(ctx: Context, mime: string, filename: string | null):
   if (filename) {
     ctx.set(
       'content-disposition',
-      `${mime.startsWith('image') ? 'inline' : 'attachment'}; filename=${JSON.stringify(filename)}`,
+      `${mime?.startsWith('image') ? 'inline' : 'attachment'}; filename=${JSON.stringify(filename)}`,
     );
   }
 
