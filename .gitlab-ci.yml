@@ -2,7 +2,6 @@ default:
   image: node:18.18.0-bookworm-slim
 
 stages:
-  - cleanup
   - build
   - test
   - end 2 end
@@ -11,6 +10,7 @@ stages:
   - provision
   - performance
   - backup
+  - cleanup
 
 variables:
   BACKUPS_LOCATION: stack:appsemble/backups
@@ -923,8 +923,6 @@ cleanup review environments:
   dependencies: []
   stage: cleanup
   rules:
-    - if: $CI_MERGE_REQUEST_ID && $CI_MERGE_REQUEST_SOURCE_PROJECT_PATH == 'appsemble/appsemble'
-      when: manual
     - if: $CI_PIPELINE_SOURCE == 'schedule' && $CLEANUP_REVIEW_ENVIRONMENTS == 'true'
     - if: $CI_COMMIT_BRANCH == 'main'
       when: manual
