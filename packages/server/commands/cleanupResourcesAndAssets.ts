@@ -5,6 +5,7 @@ import { type Argv } from 'yargs';
 import { databaseBuilder } from './builder/database.js';
 import { App, Asset, initDB, Resource } from '../models/index.js';
 import { argv } from '../utils/argv.js';
+import { assetsCache } from '../utils/assetCache.js';
 import { reseedResourcesRecursively } from '../utils/resource.js';
 import { handleDBError } from '../utils/sqlUtils.js';
 
@@ -34,13 +35,20 @@ export async function handler(): Promise<void> {
   }
 
   const demoAssetsToDestroy = await Asset.findAll({
-    attributes: ['id', 'AppId'],
+    attributes: ['id', 'name', 'AppId'],
     where: {
       ephemeral: true,
     },
   });
 
   logger.info('Cleaning up ephemeral assets from demo apps.');
+
+  assetsCache.mdel(
+    demoAssetsToDestroy.flatMap((asset) => [
+      `${asset.AppId}-${asset.id}`,
+      `${asset.AppId}-${asset.name}`,
+    ]),
+  );
 
   const demoAssetsDeletionResult = await Asset.destroy({
     where: {
@@ -130,13 +138,20 @@ export async function handler(): Promise<void> {
   logger.info(`Reseeded ${demoResourcesToReseed.length} ephemeral resources into demo apps.`);
 
   const assetsToDestroy = await Asset.findAll({
-    attributes: ['id'],
+    attributes: ['id', 'name'],
     where: {
       ephemeral: true,
     },
   });
 
   logger.info('Cleaning up ephemeral assets from regular apps.');
+
+  assetsCache.mdel(
+    assetsToDestroy.flatMap((asset) => [
+      `${asset.AppId}-${asset.id}`,
+      `${asset.AppId}-${asset.name}`,
+    ]),
+  );
 
   const assetsDeletionResult = await Asset.destroy({
     where: {

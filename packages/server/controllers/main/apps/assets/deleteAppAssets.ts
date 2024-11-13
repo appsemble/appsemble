@@ -4,11 +4,11 @@ import { type Context } from 'koa';
 import { type FindOptions, Op } from 'sequelize';
 
 import { App, Asset } from '../../../../models/index.js';
+import { assetsCache } from '../../../../utils/assetCache.js';
 import { checkUserOrganizationPermissions } from '../../../../utils/authorization.js';
 
 export async function deleteAppAssets(ctx: Context): Promise<void> {
   const {
-    assetsCache,
     pathParams: { appId },
     query: { seed },
     request: { body },

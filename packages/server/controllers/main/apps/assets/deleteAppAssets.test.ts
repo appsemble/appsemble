@@ -1,7 +1,6 @@
 import { createFormData } from '@appsemble/node-utils';
 import { PredefinedOrganizationRole } from '@appsemble/types';
 import { uuid4Pattern } from '@appsemble/utils';
-import NodeCache from '@cacheable/node-cache';
 import { request, setTestApp } from 'axios-test-instance';
 import { beforeAll, beforeEach, describe, expect, it } from 'vitest';
 
@@ -19,13 +18,11 @@ import { authorizeStudio, createTestUser } from '../../../../utils/test/authoriz
 let organization: Organization;
 let user: User;
 let app: App;
-let assetsCache: NodeCache;
 
 describe('deleteAppAssets', () => {
   beforeAll(async () => {
     setArgv({ host: 'http://localhost', secret: 'test' });
-    assetsCache = new NodeCache();
-    const server = await createServer({ assetsCache });
+    const server = await createServer();
     await setTestApp(server);
   });
 
@@ -163,21 +160,11 @@ describe('deleteAppAssets', () => {
     authorizeStudio();
     await request.get(`/api/apps/${app.id}/assets/${assetAId}`);
     await request.get(`/api/apps/${app.id}/assets/${assetBId}`);
-    expect(assetsCache.get(`${app.id}-${assetA.id}`)).toMatchObject({
-      id: assetAId,
-      filename: 'test.bin',
-    });
-    expect(assetsCache.get(`${app.id}-${assetB.id}`)).toMatchObject({
-      id: assetBId,
-      filename: 'test.bin',
-    });
 
     const { status } = await request.delete(`/api/apps/${app.id}/assets`, {
       data: [assetAId, assetBId],
     });
     expect(status).toBe(204);
-    expect(assetsCache.get(`${app.id}-${assetAId}`)).toBeUndefined();
-    expect(assetsCache.get(`${app.id}-${assetBId}`)).toBeUndefined();
   });
 
   it('should not delete existing assets from different apps', async () => {

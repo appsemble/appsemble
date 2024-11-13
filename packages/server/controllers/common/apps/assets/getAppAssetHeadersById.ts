@@ -5,10 +5,10 @@ import { Op } from 'sequelize';
 
 import { setHeaders } from './utils.js';
 import { App, Asset } from '../../../../models/index.js';
+import { assetsCache } from '../../../../utils/assetCache.js';
 
 export async function getAppAssetHeadersById(ctx: Context): Promise<void> {
   const {
-    assetsCache,
     pathParams: { appId, assetId },
   } = ctx;
 
