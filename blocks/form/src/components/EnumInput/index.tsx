@@ -1,5 +1,6 @@
 import { useBlock } from '@appsemble/preact';
 import {
+  Button,
   Input,
   Option,
   SelectField,
@@ -44,6 +45,7 @@ export function EnumInput({
   const [error, setError] = useState<string>(null);
   const [filter, setFilter] = useState<string>('');
   const [originalOptions, setOriginalOptions] = useState<Choice[]>(options);
+  const [inputValue, setInputValue] = useState<string>('');
   const ref = useRef<HTMLDivElement>();
   const { disable, enabled, toggle } = useToggle();
 
@@ -138,20 +140,20 @@ export function EnumInput({
   ]);
 
   const filterChange = useCallback((e: ChangeEvent<HTMLInputElement>, input: string): void => {
+    setInputValue(input);
     setFilter(input);
   }, []);
 
-  const handleChange = (n: Event | string, v?: string): void => {
-    if (onSelect) {
-      actions[onSelect]({ value: v });
-    }
+  const handleChange = useCallback(
+    (n: Event | string, v?: string) => {
+      if (onSelect) {
+        actions[onSelect]({ value: v });
+      }
 
-    onChange(n, v);
-  };
-
-  /**
-   * Render an aria compliant Bulma dropdown menu.
-   */
+      onChange(n, v);
+    },
+    [actions, onChange, onSelect],
+  );
 
   const onKeyDown = useCallback(
     (event: KeyboardEvent) => {
@@ -160,6 +162,15 @@ export function EnumInput({
       }
     },
     [disable],
+  );
+
+  const handleSelect = useCallback(
+    (choice: Choice) => {
+      setInputValue(choice.value as string);
+      handleChange(name, choice.value as string);
+      disable();
+    },
+    [disable, handleChange, name],
   );
 
   useClickOutside(ref, disable);
@@ -182,6 +193,7 @@ export function EnumInput({
               placeholder={utils.remap(placeholder, {}) as string}
               readOnly={readOnly}
               required={required}
+              value={inputValue}
             />
           </div>
           <div
@@ -194,9 +206,14 @@ export function EnumInput({
           >
             <div className="dropdown-content">
               {options.map((choice) => (
-                <div className="dropdown-item" disabled={choice.disabled} key={choice.value}>
+                <Button
+                  className="dropdown-item"
+                  disabled={choice.disabled}
+                  key={choice.value}
+                  onClick={() => handleSelect(choice)}
+                >
                   {(utils.remap(choice.label, value) as string) ?? (choice.value as string)}
-                </div>
+                </Button>
               ))}
             </div>
           </div>
