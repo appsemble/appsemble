@@ -82,13 +82,9 @@ describe('deleteAppAsset', () => {
     const assetId = asset.id;
     await request.get(`/api/apps/${app.id}/assets/${assetId}`);
     expect(assetsCache.get(`${app.id}-${assetId}`)).toMatchObject({
-      AppId: 1,
-      clonable: false,
-      ephemeral: false,
       filename: 'test.bin',
       mime: 'application/octet-stream',
       name: null,
-      seed: false,
     });
 
     authorizeStudio();

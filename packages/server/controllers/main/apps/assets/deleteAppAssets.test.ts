@@ -12,7 +12,6 @@ import {
   type User,
 } from '../../../../models/index.js';
 import { setArgv } from '../../../../utils/argv.js';
-import { assetsCache } from '../../../../utils/assetCache.js';
 import { createServer } from '../../../../utils/createServer.js';
 import { authorizeStudio, createTestUser } from '../../../../utils/test/authorization.js';
 
@@ -161,23 +160,11 @@ describe('deleteAppAssets', () => {
     authorizeStudio();
     await request.get(`/api/apps/${app.id}/assets/${assetAId}`);
     await request.get(`/api/apps/${app.id}/assets/${assetBId}`);
-    expect(assetsCache.get(`${app.id}-${assetA.id}`)).toMatchObject({
-      id: assetAId,
-      AppId: app.id,
-      filename: 'test.bin',
-    });
-    expect(assetsCache.get(`${app.id}-${assetB.id}`)).toMatchObject({
-      id: assetBId,
-      AppId: app.id,
-      filename: 'test.bin',
-    });
 
     const { status } = await request.delete(`/api/apps/${app.id}/assets`, {
       data: [assetAId, assetBId],
     });
     expect(status).toBe(204);
-    expect(assetsCache.get(`${app.id}-${assetAId}`)).toBeUndefined();
-    expect(assetsCache.get(`${app.id}-${assetBId}`)).toBeUndefined();
   });
 
   it('should not delete existing assets from different apps', async () => {

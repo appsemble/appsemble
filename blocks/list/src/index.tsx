@@ -37,10 +37,13 @@ bootstrap(
 
         if (Array.isArray(newData)) {
           setData(newData);
-          setLoading(false);
+
+          if (!events.on.data) {
+            setLoading(false);
+          }
         }
       }
-    }, [base, blockData]);
+    }, [base, blockData, events.on.data]);
 
     useEffect(() => {
       if (data != null) {

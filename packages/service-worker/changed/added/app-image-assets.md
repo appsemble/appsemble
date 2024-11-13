@@ -1,0 +1,1 @@
+Cache app image assets.

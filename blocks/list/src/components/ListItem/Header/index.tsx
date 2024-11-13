@@ -22,9 +22,10 @@ import { Image } from '../Image/index.js';
 interface HeaderComponentProps {
   readonly index: number;
   readonly item: Item;
+  readonly isVisible: boolean;
 }
 
-export function HeaderComponent({ index, item }: HeaderComponentProps): VNode {
+export function HeaderComponent({ index, isVisible, item }: HeaderComponentProps): VNode {
   const {
     actions,
     parameters: { button, dropdown, fields, header, icon, image, toggleButton },
@@ -60,6 +61,10 @@ export function HeaderComponent({ index, item }: HeaderComponentProps): VNode {
   );
 
   useEffect(() => {
+    if (!isVisible) {
+      return;
+    }
+
     (async () => {
       if (headerValue && normalized.test(headerValue) && !fetched) {
         const headerValueAssetUrl = asset(headerValue as string);
@@ -80,14 +85,14 @@ export function HeaderComponent({ index, item }: HeaderComponentProps): VNode {
         setFetched(true);
       }
     })();
-  }, [asset, item, headerValue, fetched]);
+  }, [asset, item, headerValue, fetched, isVisible]);
 
   return (
     <div className={`${styles.headerWrapper} is-flex`}>
       <div className={`is-flex ${styles.image}`}>
         <div>
           {image && image.alignment === 'header' ? (
-            <Image field={image} index={index} item={item} />
+            <Image field={image} index={index} isVisible={isVisible} item={item} />
           ) : null}
         </div>
         {actions.onClick.type === 'link' ? (

@@ -5,8 +5,9 @@ async function put(
   response: Response,
   fallback: () => Promisable<Response>,
 ): Promise<Response> {
-  // Only cache responses if the status code is 2xx.
-  if (response.ok) {
+  // Only cache responses if the status code is 2xx
+  // or if the status is 0 due to cors and the destination is an image
+  if (response.ok || (response.status === 0 && request.destination === 'image')) {
     const cache = await caches.open('appsemble');
     cache.put(request, response.clone());
     return response;
@@ -18,6 +19,17 @@ async function tryCached(
   request: Request,
   fallback: () => Promisable<Response>,
 ): Promise<Response> {
+  if (request.method === 'HEAD') {
+    const cached = await caches.match(new Request(request.url, { method: 'GET' }));
+    if (cached) {
+      return new Response(null, {
+        status: cached.status || 200,
+        headers: new Headers(cached.headers),
+      });
+    }
+    return fallback();
+  }
+
   const cached = await caches.match(request);
   if (cached) {
     return cached;

@@ -85,7 +85,7 @@ describe('getAppAssetById', () => {
 
   it('should be able to fetch an by name', async () => {
     const data = Buffer.from('buffer');
-    const asset = await Asset.create({
+    await Asset.create({
       AppId: app.id,
       mime: 'application/octet-stream',
       filename: 'test.mp3',
@@ -96,12 +96,13 @@ describe('getAppAssetById', () => {
     const response = await request.get(`/api/apps/${app.id}/assets/test-asset`);
 
     expect(response).toMatchObject({
-      status: 302,
+      status: 200,
       headers: expect.objectContaining({
-        location: `/api/apps/1/assets/${asset.id}`,
-        'content-type': 'text/plain; charset=utf-8',
+        'content-type': 'application/octet-stream',
+        'content-disposition': 'attachment; filename="test.mp3"',
+        'cache-control': 'max-age=31536000,immutable',
       }),
-      data: 'Found',
+      data: 'buffer',
     });
   });
 
@@ -122,7 +123,7 @@ describe('getAppAssetById', () => {
       status: 200,
       headers: expect.objectContaining({
         'content-type': 'image/avif',
-        'content-disposition': 'attachment; filename="logo.avif"',
+        'content-disposition': 'inline; filename="logo.avif"',
         'cache-control': 'max-age=31536000,immutable',
       }),
       data: sharp(data).toFormat('avif').toBuffer(),

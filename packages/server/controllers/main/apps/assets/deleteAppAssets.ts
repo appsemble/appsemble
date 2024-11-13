@@ -33,7 +33,7 @@ export async function deleteAppAssets(ctx: Context): Promise<void> {
 
   const handleEphemeral = app.demoMode ? { seed: false, ephemeral: true } : {};
   const query: FindOptions = {
-    attributes: ['id'],
+    attributes: ['id', 'name'],
     where: {
       AppId: appId,
       ...(isSeed
@@ -48,9 +48,11 @@ export async function deleteAppAssets(ctx: Context): Promise<void> {
   };
 
   const assets = await Asset.findAll(query);
+
   assertKoaError(!isSeed && assets.length === 0, ctx, 404, 'No assets found');
+
   assets.map(async (asset) => {
-    assetsCache.del(`${appId}-${asset.id}`);
+    assetsCache.mdel([`${appId}-${asset.id}`, `${appId}-${asset.name}`]);
     await asset.destroy();
   });
 

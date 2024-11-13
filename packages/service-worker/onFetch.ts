@@ -10,13 +10,21 @@ import { cacheFirst, requestFirst } from './utils.js';
 export function onFetch(event: FetchEvent): void {
   const { request } = event;
 
-  // Pass through any non GET requests.
-  if (request.method !== 'GET') {
+  // Pass through any non GET or HEAD requests.
+  if (request.method !== 'GET' && request.method !== 'HEAD') {
     return;
   }
+
   const { origin, pathname } = new URL(request.url);
 
-  // This is a request to an external service or the Appsemble API. This should not be cached.
+  // App assets are immutable and can be cached.
+  if (/^\/api\/apps\/\d+\/assets\//.test(pathname)) {
+    event.respondWith(cacheFirst(request));
+    return;
+  }
+
+  // This is an unhandled request to an external service or the Appsemble API. This should not be
+  // cached.
   if (origin !== globalThis.location.origin) {
     return;
   }

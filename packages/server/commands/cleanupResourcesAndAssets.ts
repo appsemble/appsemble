@@ -35,7 +35,7 @@ export async function handler(): Promise<void> {
   }
 
   const demoAssetsToDestroy = await Asset.findAll({
-    attributes: ['id', 'AppId'],
+    attributes: ['id', 'name', 'AppId'],
     where: {
       ephemeral: true,
     },
@@ -43,7 +43,12 @@ export async function handler(): Promise<void> {
 
   logger.info('Cleaning up ephemeral assets from demo apps.');
 
-  assetsCache.del(demoAssetsToDestroy.map((asset) => `${asset.AppId}-${asset.id}`));
+  assetsCache.mdel(
+    demoAssetsToDestroy.flatMap((asset) => [
+      `${asset.AppId}-${asset.id}`,
+      `${asset.AppId}-${asset.name}`,
+    ]),
+  );
 
   const demoAssetsDeletionResult = await Asset.destroy({
     where: {
@@ -133,7 +138,7 @@ export async function handler(): Promise<void> {
   logger.info(`Reseeded ${demoResourcesToReseed.length} ephemeral resources into demo apps.`);
 
   const assetsToDestroy = await Asset.findAll({
-    attributes: ['id'],
+    attributes: ['id', 'name'],
     where: {
       ephemeral: true,
     },
@@ -141,7 +146,13 @@ export async function handler(): Promise<void> {
 
   logger.info('Cleaning up ephemeral assets from regular apps.');
 
-  assetsCache.del(assetsToDestroy.map((asset) => `${asset.AppId}-${asset.id}`));
+  assetsCache.mdel(
+    assetsToDestroy.flatMap((asset) => [
+      `${asset.AppId}-${asset.id}`,
+      `${asset.AppId}-${asset.name}`,
+    ]),
+  );
+
   const assetsDeletionResult = await Asset.destroy({
     where: {
       id: { [Op.in]: assetsToDestroy.map((asset) => asset.id) },

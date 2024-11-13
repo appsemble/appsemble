@@ -27,6 +27,7 @@ export async function deleteAppAsset(ctx: Context): Promise<void> {
   });
 
   const asset = await Asset.findOne({
+    attributes: ['id', 'name'],
     where: {
       AppId: appId,
       id: assetId,
@@ -35,7 +36,8 @@ export async function deleteAppAsset(ctx: Context): Promise<void> {
   });
 
   assertKoaError(!asset, ctx, 404, 'Asset not found');
-  assetsCache.del(`${asset.AppId}-${asset.id}`);
+
+  assetsCache.mdel([`${appId}-${asset.id}`, `${appId}-${asset.name}`]);
 
   await asset.destroy();
 }
