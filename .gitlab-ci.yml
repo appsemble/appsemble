@@ -923,9 +923,11 @@ cleanup review environments:
   dependencies: []
   stage: cleanup
   rules:
-    - if: $CI_COMMIT_BRANCH == 'main'
+    - if: $CI_MERGE_REQUEST_ID && $CI_MERGE_REQUEST_SOURCE_PROJECT_PATH == 'appsemble/appsemble'
       when: manual
     - if: $CI_PIPELINE_SOURCE == 'schedule' && $CLEANUP_REVIEW_ENVIRONMENTS == 'true'
+    - if: $CI_COMMIT_BRANCH == 'main'
+      when: manual
   allow_failure: true
   variables:
     GIT_STRATEGY: none
@@ -933,18 +935,18 @@ cleanup review environments:
     - kubectl config use-context "$CI_PROJECT_PATH:development"
     - kubectl config set-context --current --namespace review
     # Delete all review managed ingresses instead of relying on the pre-delete hooks
-    - kubectl get ingress --selector app.kubernetes.io/managed-by -o jsonpath='{range .items[*]}{.metadata.name}{" "}{.metadata.labels.app\.kubernetes\.io/managed-by}{"\n"}{end}' | grep '^.* review-' | awk '{print "kubectl delete ingress " $1}' | bash
+    - kubectl get ingress --selector app.kubernetes.io/managed-by -o jsonpath='{range .items[*]}{.metadata.name}{" "}{.metadata.labels.app\.kubernetes\.io/managed-by}{"\n"}{end}' | grep '^.* review-' | awk '{print "kubectl delete ingress " $1}' | bash || true
     # Delete all review managed secrets instead of relying on the pre-delete hooks
-    - kubectl get secret --selector app.kubernetes.io/managed-by -o jsonpath='{range .items[*]}{.metadata.name}{" "}{.metadata.labels.app\.kubernetes\.io/managed-by}{"\n"}{end}' | grep '^.* review-' | awk '{print "kubectl delete secret " $1}' | bash
+    - kubectl get secret --selector app.kubernetes.io/managed-by -o jsonpath='{range .items[*]}{.metadata.name}{" "}{.metadata.labels.app\.kubernetes\.io/managed-by}{"\n"}{end}' | grep '^.* review-' | awk '{print "kubectl delete secret " $1}' | bash || true
     # Delete all helm review releases without hooks
-    - helm list --short | grep '^review-' | xargs -I {} helm delete {} --no-hooks
+    - helm list --short | grep '^review-' | xargs -I {} helm delete {} --no-hooks || true
     # Delete all remaining review kubernetes resources with instance selector
-    - kubectl get all --selector app.kubernetes.io/instance -o jsonpath='{range .items[*]}{.metadata.name}{" "}{.metadata.labels.app\.kubernetes\.io/instance}{" "}{.kind}{"\n"}{end}' | grep '^.* review-' | awk '{kind=tolower($3); print "kubectl delete " kind " " $1;}' | bash
+    - kubectl get all --selector app.kubernetes.io/instance -o jsonpath='{range .items[*]}{.metadata.name}{" "}{.metadata.labels.app\.kubernetes\.io/instance}{" "}{.kind}{"\n"}{end}' | grep '^.* review-' | awk '{kind=tolower($3); print "kubectl delete " kind " " $1;}' | bash || true
     # Delete all persistent volume claims from review environments
-    - kubectl get pvc --selector app.kubernetes.io/instance -o jsonpath='{range .items[*]}{.metadata.name}{" "}{.metadata.labels.app\.kubernetes\.io/instance}{"\n"}{end}' | grep '^.* review-' | awk '{print "kubectl delete pvc " $1}' | bash
+    - kubectl get pvc --selector app.kubernetes.io/instance -o jsonpath='{range .items[*]}{.metadata.name}{" "}{.metadata.labels.app\.kubernetes\.io/instance}{"\n"}{end}' | grep '^.* review-' | awk '{print "kubectl delete pvc " $1}' | bash || true
     # Delete all companion container namespaces for review environments
-    - kubectl get namespaces --no-headers -o custom-columns=:metadata.name | grep '^companion-containers-review-' | xargs -I{} kubectl delete namespace {}
+    - kubectl get namespaces --no-headers -o custom-columns=:metadata.name | grep '^companion-containers-review-' | xargs -I{} kubectl delete namespace {} || true
     # Delete all ingresses for review environments
-    - kubectl get ingress --no-headers -o custom-columns=:metadata.name | grep '^review-' | xargs -I{} kubectl delete ingress {}
+    - kubectl get ingress --no-headers -o custom-columns=:metadata.name | grep '^review-' | xargs -I{} kubectl delete ingress {} || true
     # Delete all secrets for review environments
-    - kubectl get secrets --no-headers -o custom-columns=:metadata.name | grep '^review-' | xargs -I{} kubectl delete secret {}
+    - kubectl get secrets --no-headers -o custom-columns=:metadata.name | grep '^review-' | xargs -I{} kubectl delete secret {} || true
