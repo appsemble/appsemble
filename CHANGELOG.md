@@ -2,6 +2,23 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.30.11](https://gitlab.com/appsemble/appsemble/-/releases/0.30.11)] - 2024-11-13
+
+### Added
+
+- Service-worker: Cache `HEAD` requests by matching them against cached `GET` requests.
+- Service-worker: Cache app image assets.
+
+### Changed
+
+- Block(`list`): Don't use the data passed to the block if there is a data event listener present.
+
+### Fixed
+
+- Block(`form`): Fetch image headers in the selection input, only when the item is visible.
+- Block(`list`): Fetch image headers in the list, only when the item is visible.
+- Server: Don't load asset data of the compressed image when fetching asset headers.
+
 ## \[[0.30.10](https://gitlab.com/appsemble/appsemble/-/releases/0.30.10)] - 2024-11-12
 
 ### Changed

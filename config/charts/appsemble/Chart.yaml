@@ -1,7 +1,7 @@
 apiVersion: v2
 name: appsemble
-version: 0.30.10
-appVersion: 0.30.10
+version: 0.30.11
+appVersion: 0.30.11
 kubeVersion: '>=1.21.0'
 type: application
 description: The open source low-code app building platform
@@ -28,12 +28,23 @@ dependencies:
     condition: mailpit.enabled
 annotations:
   artifacthub.io/changes: >
+    - kind: added
+      description: "Service-worker: Cache HEAD requests by matching them against
+        cached GET requests."
+    - kind: added
+      description: "Service-worker: Cache app image assets."
     - kind: changed
-      description: "Webpack-core: Enable mermaid for local diagram renders."
+      description: "Block(list): Don't use the data passed to the block if there is a
+        data event listener present."
     - kind: fixed
-      description: "Server: Properly apply the EXIF meta tag to images when compressing them."
+      description: "Block(form): Fetch image headers in the selection input, only when
+        the item is visible."
     - kind: fixed
-      description: "Studio: Fix mermaid diagram renders."
+      description: "Block(list): Fetch image headers in the list, only when the item
+        is visible."
+    - kind: fixed
+      description: "Server: Don't load asset data of the compressed image when
+        fetching asset headers."
   artifacthub.io/license: LGPL-3.0-only
   artifacthub.io/links: |
     - name: Appsemble Studio
