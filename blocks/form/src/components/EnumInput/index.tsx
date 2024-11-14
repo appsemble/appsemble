@@ -218,7 +218,6 @@ export function EnumInput({
               readOnly={readOnly}
               required={required}
               value={inputValue}
-              width={100}
             />
           </div>
           <div
