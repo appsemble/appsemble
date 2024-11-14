@@ -179,7 +179,7 @@ export function EnumInput({
     <div>
       {field.filter ? (
         <div className={classNames('dropdown', className, { 'is-active': enabled })} ref={ref}>
-          <div className="dropdown-trigger">
+          <div className="dropdown-trigger is-fullwidth">
             <Input
               className={classNames('appsemble-enum field', className)}
               disabled={disabled || loading || originalOptions.length === 0}
@@ -194,7 +194,6 @@ export function EnumInput({
               readOnly={readOnly}
               required={required}
               value={inputValue}
-              width={100}
             />
           </div>
           <div
