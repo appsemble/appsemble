@@ -2,13 +2,14 @@
 
 Appsemble out of the box provides its own method of storing and retrieving data specific to apps. It
 can also retrieve and store external data outside Appsemble. Data that is created via an app is
-called a ´resource´.
+called a `resource`.
 
 ## Table of Contents
 
 - [Defining resources](#defining-resources)
   - [type](#type)
 - [Resource actions](#resource-actions)
+  - [Example](#example)
 - [Securing resources](#securing-resources)
 - [Assets](#assets)
 
@@ -76,22 +77,99 @@ These are configured to use Appsemble APIs by default, but can be overridden man
 
 The available resource actions are:
 
-- **resource.query**: Fetch all resources.
-- **resource.count**: Count all resources.
-- **resource.get**: Fetch a single resource.
-- **resource.create**: Create a new resource.
-- **resource.update**: Update an existing resource.
-- **resource.delete**: Delete an existing resource.
-- **resource.subscription.subscribe**: Subscribe to an existing resource to receive push
-  notifications. (See [notifications](../guides/notifications.md).)
-- **resource.subscription.unsubscribe**: Unsubscribes from an existing resource notification
-  subscription. (See [notifications](../guides/notifications.md).)
-- **resource.subscription.toggle**: Toggle between subscribing and unsubscribing to an existing
-  resource notifications. (See [notifications](../guides/notifications.md).)
-- **resource.subscription.status**: Fetch the status of a resource notifications subscription. (See
+- [**resource.query**](../actions/resources.mdx#resourcequery): Fetch all resources.
+- [**resource.count**](../actions/resources.mdx#resourcecount): Count all resources.
+- [**resource.get**](../actions/resources.mdx#resourceget): Fetch a single resource.
+- [**resource.create**](../actions/resources.mdx#resourcecreate): Create a new resource.
+- [**resource.update**](../actions/resources.mdx#resourceupdate): Update an existing resource.
+- [**resource.delete**](../actions/resources.mdx#resourcedelete): Delete an existing resource.
+- [**resource.subscription.subscribe**](../actions/resources.mdx#resourcesubscriptionsubscribe):
+  Subscribe to an existing resource to receive push notifications. (See
+  [notifications](../guides/notifications.md).)
+- [**resource.subscription.unsubscribe**](../actions/resources.mdx#resourcesubscriptionunsubscribe):
+  Unsubscribes from an existing resource notification subscription. (See
+  [notifications](../guides/notifications.md).)
+- [**resource.subscription.toggle**](../actions/resources.mdx#resourcesubscriptiontoggle): Toggle
+  between subscribing and unsubscribing to an existing resource notifications. (See
+  [notifications](../guides/notifications.md).)
+- [**resource.subscription.status**](../actions/resources.mdx#resourcesubscriptionstatus): Fetch the
+  status of a resource notifications subscription. (See
   [notifications](../guides/notifications.md).)
 
-> Note: By default all resource calls are private.
+> **Note**: By default all resource calls are private.
+
+### Example
+
+Here is an example of how to get a resource using the `resource.query` action.
+
+First, we define a resource to query. In this example, we have `answers`:
+
+```yaml validate resources-snippet
+resources:
+  answers:
+    schema:
+      type: object
+      additionalProperties: false
+      properties:
+        rating:
+          title: Rating
+          enum:
+            - happy
+            - neutral
+            - sad
+```
+
+The `answers` resource has only one property, called "Rating". The values in this property are an
+`enum`, meaning they can only be one of the values described in the definition (**happy**,
+**neutral** or **sad**).
+
+The resource is filled with data which we'd like to use in our app. You can get this data using the
+`resource.query` action. This fetches all the entries in a resource. So, the following block will
+return all entries from the `answers` resource:
+
+```yaml validate block-snippet
+- type: data-loader
+  version: 0.30.11
+  actions:
+    onLoad:
+      type: resource.query
+      resource: answers
+```
+
+Returns:
+
+```json
+[
+  {
+    "$author": {
+      "id": 12345,
+      "name": "Joe"
+    },
+    "$created": "2022-10-27T08:32:34.181Z",
+    "$updated": "2022-10-27T08:32:34.181Z",
+    "id": 24039,
+    "rating": "sad",
+  },
+  {
+    "$author": {
+      "id": 12345,
+      "name": "Joe"
+    },
+    "$created": "2022-10-27T08:32:31.310Z",
+    "$updated": "2022-10-27T08:32:31.310Z",
+    "id": 24038,
+    "rating": "neutral",
+  },
+  ...
+]
+```
+
+The result of the query has a lot of extra data you might not need like information about when it
+was created or the author's name. You can transform this data further using
+[remappers](../remappers/index.mdx) to make sure it only includes what you need.
+
+Once the data is how you need it to be you can send it to other blocks using
+[events](../guides/events.md).
 
 ## Securing resources
 
@@ -101,7 +179,7 @@ actions you need to add corresponding permissions to the app’s security defini
 You can define what resource permissions unauthenticated users have by using the `guest` property of
 the security definition like so:
 
-```yaml validate security-snippet
+```yaml
 security:
   guest:
     permissions:
@@ -112,7 +190,7 @@ security:
 You can also define what resource permissions different app member roles have by using the `roles`
 property of the security definition like so:
 
-```yaml validate security-snippet
+```yaml
 security:
   guest:
     permissions:
