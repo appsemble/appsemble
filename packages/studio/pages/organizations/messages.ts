@@ -117,6 +117,10 @@ export const messages = defineMessages({
     id: 'studio.+Fvztk',
     defaultMessage: 'The permission to get app resources.',
   },
+  GetAppResourceHistory: {
+    id: 'studio.fbd33j',
+    defaultMessage: 'The permission to get the app resource history',
+  },
   UpdateAppResources: {
     id: 'studio.zR3D4p',
     defaultMessage: 'The permission to update app resources.',
