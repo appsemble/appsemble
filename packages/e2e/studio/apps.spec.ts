@@ -12,22 +12,24 @@ test.describe('Apps', () => {
 
   test('should display “My Apps” when logged in', async ({ login, page }) => {
     await login('/en/apps');
-    await page.waitForSelector('text=My Apps');
+    await expect(page.getByText('My Apps')).toBeVisible();
   });
 
   test('should render a list of apps', async ({ page }) => {
-    await page.waitForSelector('text="Empty App"');
-    await page.waitForSelector('text="Holidays"');
-    await page.waitForSelector('text="Notes"');
-    await page.waitForSelector('text="Person"');
-    await page.waitForSelector('text="Survey"');
-    await page.waitForSelector('text="Unlittered"');
+    await expect(page.getByText('Empty App')).toBeVisible();
+    await expect(page.getByText('Holidays')).toBeVisible();
+    await expect(page.getByText('Notes')).toBeVisible();
+    await expect(page.getByText('Person')).toBeVisible();
+    await expect(page.getByText('Survey')).toBeVisible();
+    await expect(page.getByText('Unlittered')).toBeVisible();
   });
 
   test('should link to app details', async ({ page }) => {
     await page.click('text=Empty App');
-    await page.waitForSelector(
-      'text="Empty App is a bare-bones app with two pages and buttons switching between them."',
-    );
+    await expect(
+      page.getByText(
+        'Empty App is a bare-bones app with two pages and buttons switching between them.',
+      ),
+    ).toBeVisible();
   });
 });

@@ -209,11 +209,15 @@ export function AppRoutes(): ReactNode {
             {app.locked === 'unlocked' ? null : (
               <Icon icon="lock" title={formatMessage(messages.locked)} />
             )}
-            <span className={classNames({ 'pl-1': app.locked === 'unlocked' })}>
+            <span
+              className={classNames({ 'pl-1': app.locked === 'unlocked' })}
+              data-testid="studio-app-side-menu-name"
+            >
               {app.definition.name}
             </span>
           </>
         }
+        testId="studio-app-side-menu"
       >
         <MenuItem end icon="info" to={url}>
           <FormattedMessage {...messages.details} />
