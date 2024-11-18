@@ -56,7 +56,7 @@ Executing the `appsemble app update` command with the `--assets` flag will repla
 assets with the ones currently in the assets directory of the app.
 
 `seed` assets and `ephemeral` assets behave the same way as
-[seed resources and ephemeral resources](resources.md#seed-resources).
+[seed resources and ephemeral resources](../guides/sharing-resources.md).
 
 ## Clonable assets
 
