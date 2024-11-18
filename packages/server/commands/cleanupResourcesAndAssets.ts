@@ -71,6 +71,7 @@ export async function handler(): Promise<void> {
       },
     ],
     where: {
+      OriginalId: null,
       seed: true,
     },
   });
