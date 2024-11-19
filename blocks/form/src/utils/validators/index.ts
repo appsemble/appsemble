@@ -2,9 +2,10 @@ import { type BlockUtils, type Remapper } from '@appsemble/sdk';
 import { has } from '@appsemble/utils';
 
 import { validateDateTime } from './validateDateTime.js';
-import { validateEnum, validateRadio } from './validateEnum.js';
+import { validateEnum } from './validateEnum.js';
 import { validateFile } from './validateFile.js';
 import { validateNumber } from './validateNumber.js';
+import { validateRadio } from './validateRadio.js';
 import { validateSelection } from './validateSelection.js';
 import { validateString } from './validateString.js';
 import { validateTags } from './validateTags.js';

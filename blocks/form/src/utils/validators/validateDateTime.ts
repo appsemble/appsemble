@@ -4,6 +4,7 @@ import {
   type DateField,
   type DateTimeField,
   type DateTimeRequirement,
+  Requirement,
   type Values,
 } from '../../../block.js';
 import { isValidDate } from '../requirements.js';
@@ -24,11 +25,15 @@ export function validateDateTime(
   values?: Values,
 ): DateTimeRequirement {
   return field.requirements?.find((requirement) => {
-    if ('required' in requirement && !value) {
+    if (Requirement.Required in requirement && !value) {
       return true;
     }
 
-    if ('from' in requirement && value) {
+    if (Requirement.Prohibited in requirement && value) {
+      return true;
+    }
+
+    if (Requirement.From in requirement && value) {
       const fromDate = new Date(remap(requirement.from, values));
 
       if (!isValidDate(fromDate)) {
@@ -40,7 +45,7 @@ export function validateDateTime(
       return isoDate > value;
     }
 
-    if ('to' in requirement && value) {
+    if (Requirement.To in requirement && value) {
       const toDate = new Date(remap(requirement.to, values));
 
       if (!isValidDate(toDate)) {

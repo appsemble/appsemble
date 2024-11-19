@@ -25,6 +25,17 @@ describe('validateDateTime', () => {
     expect(validateDateTime(field, '2020-02-02T20:20:02.02Z', remap)).toBeUndefined();
   });
 
+  it('should validate prohibited requirements', () => {
+    const field: DateTimeField = {
+      type: 'date-time',
+      name: 'test',
+      requirements: [{ prohibited: true }],
+    };
+
+    expect(validateDateTime(field, '1969-12-31T14:00:00.000Z', remap)).toBe(field.requirements[0]);
+    expect(validateDateTime(field, undefined, remap)).toBeUndefined();
+  });
+
   it('should validate from requirements', () => {
     const field: DateTimeField = {
       type: 'date-time',

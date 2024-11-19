@@ -1,6 +1,24 @@
 import { type BulmaColor, type BulmaSize, type IconName, type Remapper } from '@appsemble/sdk';
 import { type MutableRef } from 'preact/hooks';
 
+export enum Requirement {
+  Required = 'required',
+  Prohibited = 'prohibited',
+  From = 'from',
+  To = 'to',
+  Min = 'min',
+  Max = 'max',
+  MinLength = 'minLength',
+  MaxLength = 'maxLength',
+  MinItems = 'minItems',
+  MaxItems = 'maxItems',
+  MinSize = 'minSize',
+  MaxSize = 'maxSize',
+  Accept = 'accept',
+  Step = 'step',
+  Regex = 'regex',
+}
+
 type JsonValue = JsonValue[] | boolean | number | string | { [key: string]: JsonValue } | null;
 
 /**
@@ -53,6 +71,21 @@ export interface RequiredRequirement extends BaseRequirement {
    * This way you can conditionally control if the field is required.
    */
   required: Remapper;
+}
+
+/**
+ * Requirement used to mark the field as prohibited.
+ */
+export interface ProhibitedRequirement extends BaseRequirement {
+  /**
+   * Whether the field is prohibited, e.g. must not have a value.
+   *
+   * We recommend passing a boolean value e.g. `true`.
+   *
+   * Another option is to pass a remapper returning a boolean value.
+   * This way you can conditionally control if the field is prohibited.
+   */
+  prohibited: Remapper;
 }
 
 interface FormRequirement extends BaseRequirement {
@@ -264,12 +297,40 @@ export type SelectionRequirement = CountRequirement;
 /**
  * All requirements applicable to string fields.
  */
-export type StringRequirement = LengthRequirement | RegexRequirement | RequiredRequirement;
+export type StringRequirement =
+  | LengthRequirement
+  | ProhibitedRequirement
+  | RegexRequirement
+  | RequiredRequirement;
 
 /**
  * All requirements applicable to number fields.
  */
-export type NumberRequirement = MinMaxRequirement | RequiredRequirement | StepRequirement;
+export type NumberRequirement =
+  | MinMaxRequirement
+  | ProhibitedRequirement
+  | RequiredRequirement
+  | StepRequirement;
+
+/**
+ * All requirements applicable to boolean fields.
+ */
+export type BooleanRequirement = ProhibitedRequirement | RequiredRequirement;
+
+/**
+ * All requirements applicable to radio fields.
+ */
+export type RadioRequirement = ProhibitedRequirement | RequiredRequirement;
+
+/**
+ * All requirements applicable to enum fields.
+ */
+export type EnumRequirement = ProhibitedRequirement | RequiredRequirement;
+
+/**
+ * All requirements applicable to list fields.
+ */
+export type ListRequirement = ProhibitedRequirement | RequiredRequirement;
 
 /**
  * All requirements applicable to file fields.
@@ -277,6 +338,7 @@ export type NumberRequirement = MinMaxRequirement | RequiredRequirement | StepRe
 export type FileRequirement =
   | AcceptRequirement
   | LengthRequirement
+  | ProhibitedRequirement
   | RequiredRequirement
   | SizeRequirement;
 
@@ -285,6 +347,7 @@ export type FileRequirement =
  */
 export type DateTimeRequirement =
   | EnabledDayRequirement
+  | ProhibitedRequirement
   | RangeRequirement
   | RequiredRequirement
   | TimeRangeRequirement;
@@ -294,7 +357,7 @@ export type DateTimeRequirement =
  */
 export type FieldsetRequirement = LengthRequirement;
 
-export type GeocoordinateRequirement = RequiredRequirement;
+export type GeocoordinateRequirement = ProhibitedRequirement | RequiredRequirement;
 
 /**
  * An option that is displayed in a dropdown menu or radio button field.
@@ -690,7 +753,7 @@ export interface BooleanField extends AbstractField, InlineField {
    *
    * This typically means that the checkbox *must* be checked.
    */
-  requirements?: RequiredRequirement[];
+  requirements?: BooleanRequirement[];
 }
 
 /**
@@ -714,7 +777,7 @@ export interface RadioField extends AbstractField {
    *
    * These are evaluated in the order they are defined in.
    */
-  requirements?: RequiredRequirement[];
+  requirements?: RadioRequirement[];
 }
 
 interface AbstractEnumField extends AbstractField, InlineField {
@@ -733,7 +796,7 @@ interface AbstractEnumField extends AbstractField, InlineField {
    *
    * These are evaluated in the order they are defined in.
    */
-  requirements?: RequiredRequirement[];
+  requirements?: EnumRequirement[];
 
   /**
    * This action will be fired when an option is selected.
@@ -820,7 +883,7 @@ export interface AbstractListField extends AbstractField, InlineField {
    *
    * These are evaluated in the order they are defined in.
    */
-  requirements?: RequiredRequirement[];
+  requirements?: ListRequirement[];
 }
 
 export interface EventListField extends AbstractListField {
