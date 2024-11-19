@@ -43,5 +43,9 @@ export const AppServiceSecret: OpenAPIV3.NonArraySchemaObject = {
       type: 'string',
       description: 'The URL to request access tokens from.',
     },
+    scope: {
+      type: 'string',
+      description: 'The scope to request access tokens for.',
+    },
   },
 };

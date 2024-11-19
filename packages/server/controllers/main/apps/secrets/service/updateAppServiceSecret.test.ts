@@ -104,6 +104,7 @@ describe('updateAppServiceSecret', () => {
         "id": 2,
         "identifier": "x-key",
         "name": "Test service",
+        "scope": null,
         "tokenUrl": null,
         "urlPatterns": "https://example.com",
       }

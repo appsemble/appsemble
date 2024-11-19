@@ -76,6 +76,7 @@ export async function applyAppServiceSecrets({
             method: 'POST',
             data: {
               grant_type: 'client_credentials',
+              ...(serviceSecret.scope ? { scope: serviceSecret.scope } : {}),
             },
             headers: {
               'user-agent': `AppsembleServer/${version}`,

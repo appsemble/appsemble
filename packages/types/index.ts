@@ -2623,6 +2623,11 @@ export interface AppServiceSecretDefinition {
    * The tokenUrl used for client-credentials method.
    */
   tokenUrl?: string;
+
+  /**
+   * The scope used for client-credentials method.
+   */
+  scope?: string;
 }
 
 export interface AppServiceSecret extends AppServiceSecretDefinition {

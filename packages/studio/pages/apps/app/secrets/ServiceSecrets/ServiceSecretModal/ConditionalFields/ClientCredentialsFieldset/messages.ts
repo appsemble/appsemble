@@ -25,4 +25,12 @@ export const messages = defineMessages({
     id: 'studio.GbCZS7',
     defaultMessage: 'The URL to retrieve the token form',
   },
+  scopeLabel: {
+    id: 'studio.nso3Mj',
+    defaultMessage: 'Scope',
+  },
+  scopeHelp: {
+    id: 'studio.RODeNG',
+    defaultMessage: 'The scope to retrieve the token for',
+  },
 });

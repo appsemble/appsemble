@@ -35,6 +35,13 @@ export function ClientCredentialsFieldset({ disabled }: ClientCredentialsFieldse
         placeholder="https://example.com/oauth/token"
         required
       />
+      <SimpleFormField
+        disabled={disabled}
+        help={<FormattedMessage {...messages.scopeHelp} />}
+        label={<FormattedMessage {...messages.scopeLabel} />}
+        name="scope"
+        placeholder="https://example.com/.default"
+      />
     </>
   );
 }

@@ -83,7 +83,35 @@ describe('createAppServiceSecret', () => {
         "id": 1,
         "identifier": "key",
         "name": "Test service",
+        "scope": null,
         "tokenUrl": null,
+        "urlPatterns": "example.com",
+      }
+    `);
+  });
+
+  it('should create new app service secret with tokenUrl and scope', async () => {
+    const response = await request.post(`/api/apps/${app.id}/secrets/service`, {
+      name: 'Test service',
+      urlPatterns: 'example.com',
+      authenticationMethod: 'query-parameter',
+      identifier: 'key',
+      secret: 'c6a5e780dee8e2f1f576538c8',
+      tokenUrl: 'https://example.com/tenant-id/oauth2/v2.0/token/',
+      scope: 'https://example.com/.default',
+    });
+
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 201 Created
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "authenticationMethod": "query-parameter",
+        "id": 1,
+        "identifier": "key",
+        "name": "Test service",
+        "scope": "https://example.com/.default",
+        "tokenUrl": "https://example.com/tenant-id/oauth2/v2.0/token/",
         "urlPatterns": "example.com",
       }
     `);
