@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.30.12](https://gitlab.com/appsemble/appsemble/-/releases/0.30.12)] - 2024-11-19
+
+### Added
+
+- Block(`form`): Add `prohibited` requirement.
+- Server: Add `scope` to `client-credentials` service secrets.
+- Studio: Add `scope` to `client-credentials` service secrets.
+- Utils: Add `scope` to `client-credentials` service secrets.
+
+### Fixed
+
+- Block(`form`): Refactor types and validation.
+- Studio: Add missing translation `GetAppResourceHistory`.
+
 ## \[[0.30.11](https://gitlab.com/appsemble/appsemble/-/releases/0.30.11)] - 2024-11-13
 
 ### Added

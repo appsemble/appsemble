@@ -1,1 +1,0 @@
-Refactor types and validation
