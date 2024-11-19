@@ -1,4 +1,4 @@
-import { type SelectionField, type TagsRequirement } from '../../../block.js';
+import { Requirement, type SelectionField, type TagsRequirement } from '../../../block.js';
 
 export function validateSelection(field: SelectionField, value: unknown[]): TagsRequirement {
   return field.requirements?.find((requirement) => {
@@ -6,11 +6,11 @@ export function validateSelection(field: SelectionField, value: unknown[]): Tags
       return true;
     }
 
-    if ('minItems' in requirement && value.length < requirement.minItems) {
+    if (Requirement.MinItems in requirement && value.length < requirement.minItems) {
       return true;
     }
 
-    if ('maxItems' in requirement && value.length > requirement.maxItems) {
+    if (Requirement.MaxItems in requirement && value.length > requirement.maxItems) {
       return true;
     }
 

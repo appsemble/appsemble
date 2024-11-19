@@ -1989,7 +1989,7 @@ Must be present in the actions of the form",
 
 These are evaluated in the order they are defined in.",
             "items": {
-              "$ref": "#/definitions/RequiredRequirement",
+              "$ref": "#/definitions/EnumRequirement",
             },
             "type": "array",
           },
@@ -2079,7 +2079,7 @@ These are evaluated in the order they are defined in.
 
 This typically means that the checkbox *must* be checked.",
             "items": {
-              "$ref": "#/definitions/RequiredRequirement",
+              "$ref": "#/definitions/BooleanRequirement",
             },
             "type": "array",
           },
@@ -2130,6 +2130,17 @@ Replaces the optional label if the field is optional. Won’t display if the fie
           "type",
         ],
         "type": "object",
+      },
+      "BooleanRequirement": {
+        "anyOf": [
+          {
+            "$ref": "#/definitions/ProhibitedRequirement",
+          },
+          {
+            "$ref": "#/definitions/RequiredRequirement",
+          },
+        ],
+        "description": "All requirements applicable to boolean fields.",
       },
       "BulmaColor": {
         "description": "A color known to Bulma.",
@@ -2446,6 +2457,9 @@ Replaces the optional label if the field is optional. Won’t display if the fie
             "$ref": "#/definitions/EnabledDayRequirement",
           },
           {
+            "$ref": "#/definitions/ProhibitedRequirement",
+          },
+          {
             "$ref": "#/definitions/RangeRequirement",
           },
           {
@@ -2519,6 +2533,17 @@ Replaces the optional label if the field is optional. Won’t display if the fie
           },
         ],
       },
+      "EnumRequirement": {
+        "anyOf": [
+          {
+            "$ref": "#/definitions/ProhibitedRequirement",
+          },
+          {
+            "$ref": "#/definitions/RequiredRequirement",
+          },
+        ],
+        "description": "All requirements applicable to enum fields.",
+      },
       "EventEnumField": {
         "additionalProperties": false,
         "description": "A dropdown list containing a list of values based on the output of an event.",
@@ -2589,7 +2614,7 @@ Must be present in the actions of the form",
 
 These are evaluated in the order they are defined in.",
             "items": {
-              "$ref": "#/definitions/RequiredRequirement",
+              "$ref": "#/definitions/EnumRequirement",
             },
             "type": "array",
           },
@@ -2669,7 +2694,7 @@ Fields are combined in order if set to true.",
 
 These are evaluated in the order they are defined in.",
             "items": {
-              "$ref": "#/definitions/RequiredRequirement",
+              "$ref": "#/definitions/ListRequirement",
             },
             "type": "array",
           },
@@ -3045,6 +3070,9 @@ Replaces the optional label if the field is optional. Won’t display if the fie
             "$ref": "#/definitions/LengthRequirement",
           },
           {
+            "$ref": "#/definitions/ProhibitedRequirement",
+          },
+          {
             "$ref": "#/definitions/RequiredRequirement",
           },
           {
@@ -3183,7 +3211,14 @@ Replaces the optional label if the field is optional. Won’t display if the fie
         "type": "object",
       },
       "GeocoordinateRequirement": {
-        "$ref": "#/definitions/RequiredRequirement",
+        "anyOf": [
+          {
+            "$ref": "#/definitions/ProhibitedRequirement",
+          },
+          {
+            "$ref": "#/definitions/RequiredRequirement",
+          },
+        ],
       },
       "HiddenField": {
         "additionalProperties": false,
@@ -3353,6 +3388,17 @@ image can either be url or uploaded image",
           },
         ],
       },
+      "ListRequirement": {
+        "anyOf": [
+          {
+            "$ref": "#/definitions/ProhibitedRequirement",
+          },
+          {
+            "$ref": "#/definitions/RequiredRequirement",
+          },
+        ],
+        "description": "All requirements applicable to list fields.",
+      },
       "MinMaxRequirement": {
         "additionalProperties": false,
         "description": "Minimum and maximum form requirements for number fields.",
@@ -3483,6 +3529,9 @@ Replaces the optional label if the field is optional. Won’t display if the fie
             "$ref": "#/definitions/MinMaxRequirement",
           },
           {
+            "$ref": "#/definitions/ProhibitedRequirement",
+          },
+          {
             "$ref": "#/definitions/RequiredRequirement",
           },
           {
@@ -3490,6 +3539,28 @@ Replaces the optional label if the field is optional. Won’t display if the fie
           },
         ],
         "description": "All requirements applicable to number fields.",
+      },
+      "ProhibitedRequirement": {
+        "additionalProperties": false,
+        "description": "Requirement used to mark the field as prohibited.",
+        "properties": {
+          "errorMessage": {
+            "description": "The error message that is displayed when the requirement is not met.",
+            "format": "remapper",
+          },
+          "prohibited": {
+            "description": "Whether the field is prohibited, e.g. must not have a value.
+
+We recommend passing a boolean value e.g. \`true\`.
+
+Another option is to pass a remapper returning a boolean value. This way you can conditionally control if the field is prohibited.",
+            "format": "remapper",
+          },
+        },
+        "required": [
+          "prohibited",
+        ],
+        "type": "object",
       },
       "RadioField": {
         "additionalProperties": false,
@@ -3542,7 +3613,7 @@ Replaces the optional label if the field is optional. Won’t display if the fie
 
 These are evaluated in the order they are defined in.",
             "items": {
-              "$ref": "#/definitions/RequiredRequirement",
+              "$ref": "#/definitions/RadioRequirement",
             },
             "type": "array",
           },
@@ -3568,6 +3639,17 @@ Replaces the optional label if the field is optional. Won’t display if the fie
           "type",
         ],
         "type": "object",
+      },
+      "RadioRequirement": {
+        "anyOf": [
+          {
+            "$ref": "#/definitions/ProhibitedRequirement",
+          },
+          {
+            "$ref": "#/definitions/RequiredRequirement",
+          },
+        ],
+        "description": "All requirements applicable to radio fields.",
       },
       "RangeField": {
         "additionalProperties": false,
@@ -3781,7 +3863,7 @@ Must be present in the actions of the form",
 
 These are evaluated in the order they are defined in.",
             "items": {
-              "$ref": "#/definitions/RequiredRequirement",
+              "$ref": "#/definitions/EnumRequirement",
             },
             "type": "array",
           },
@@ -4136,6 +4218,9 @@ Replaces the optional label if the field is optional. Won’t display if the fie
             "$ref": "#/definitions/LengthRequirement",
           },
           {
+            "$ref": "#/definitions/ProhibitedRequirement",
+          },
+          {
             "$ref": "#/definitions/RegexRequirement",
           },
           {
@@ -4209,7 +4294,7 @@ Must be present in the actions of the form",
 
 These are evaluated in the order they are defined in.",
             "items": {
-              "$ref": "#/definitions/RequiredRequirement",
+              "$ref": "#/definitions/EnumRequirement",
             },
             "type": "array",
           },
@@ -4291,7 +4376,7 @@ Fields are combined in order if set to true.",
 
 These are evaluated in the order they are defined in.",
             "items": {
-              "$ref": "#/definitions/RequiredRequirement",
+              "$ref": "#/definitions/ListRequirement",
             },
             "type": "array",
           },

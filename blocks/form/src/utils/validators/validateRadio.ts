@@ -1,13 +1,13 @@
-import { type EnumField, type EnumRequirement, Requirement } from '../../../block.js';
+import { type RadioField, type RadioRequirement, Requirement } from '../../../block.js';
 
 /**
- * Validates an enum picker based on a set of requirements.
+ * Validates a radio picker based on a set of requirements.
  *
  * @param field The field to validate.
  * @param value The value of the field.
  * @returns The first requirement that failed validation.
  */
-export function validateEnum(field: EnumField, value?: any): EnumRequirement {
+export function validateRadio(field: RadioField, value?: any): RadioRequirement {
   return field.requirements?.find((requirement) => {
     if (Requirement.Required in requirement) {
       return value === undefined;
