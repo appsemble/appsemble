@@ -26,7 +26,15 @@ export async function getAppServiceSecrets(ctx: Context): Promise<void> {
   });
 
   const serviceSecrets = await AppServiceSecret.findAll({
-    attributes: ['id', 'name', 'urlPatterns', 'authenticationMethod', 'identifier', 'tokenUrl'],
+    attributes: [
+      'id',
+      'name',
+      'urlPatterns',
+      'authenticationMethod',
+      'identifier',
+      'tokenUrl',
+      'scope',
+    ],
     where: {
       AppId: appId,
     },

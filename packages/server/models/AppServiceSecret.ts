@@ -59,6 +59,12 @@ export class AppServiceSecret extends Model {
   tokenUrl: string;
 
   /**
+   * Used for the client-credentials flow.
+   */
+  @Column(DataType.STRING)
+  scope: string;
+
+  /**
    * The client-credentials access token used to authenticate outgoing requests.
    */
   @Column(DataType.BLOB)

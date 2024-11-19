@@ -709,6 +709,7 @@
   "studio.RJTU10": "Are you sure you want to remove {member} from this organization?",
   "studio.RN522K": "Successfully imported resources {ids}",
   "studio.RNKP0a": "View members",
+  "studio.RODeNG": "The scope to retrieve the token for",
   "studio.RPmD9J": "The state parameter is invalid. Please try again.",
   "studio.RQ4EKT": "Layout",
   "studio.RQEFoh": "OAuth2 Secret",
