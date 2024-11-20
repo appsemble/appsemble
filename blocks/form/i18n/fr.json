@@ -1,14 +1,14 @@
 {
   "confirmLabel": "Confirmer",
   "fieldErrorLabel": "L'une des exigences de ce champ n'est pas valide.",
-  "fixErrors": "",
+  "fixErrors": "Veuillez corriger les erreurs suivantes :",
   "formRequirementError": "L'une des exigences de ce formulaire n'est pas valide.",
   "invalidLabel": "Cette valeur n'est pas valide",
-  "longSubmissionWarning": "",
+  "longSubmissionWarning": "Le formulaire est en cours de soumission, veuillez patienter.",
   "optionalLabel": "(Optionnel)",
   "previousLabel": "Précédent",
-  "selectionNoOptions": "",
-  "selectionOptionsError": "",
+  "selectionNoOptions": "Plus d'options disponibles",
+  "selectionOptionsError": "Il y a eu une erreur de chargement des options",
   "submitError": "Un problème est survenu lors de l'envoi de ce formulaire",
   "submitLabel": "Signaler"
 }

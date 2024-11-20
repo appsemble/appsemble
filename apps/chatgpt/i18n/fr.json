@@ -1,6 +1,6 @@
 {
   "app": {
-    "description": "Démontre l'utilisation du ChatGPT d'OpenAI dans Appsemble.",
+    "description": "Démontre l'utilisation de ChatGPT d'OpenAI dans Appsemble.",
     "name": "ChatGPT",
     "pages.chat": "Chat"
   },

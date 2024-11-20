@@ -1,14 +1,14 @@
 {
-  "confirmLabel": "",
+  "confirmLabel": "Bekræft",
   "fieldErrorLabel": "Et af kravene i dette felt er ugyldigt.",
-  "fixErrors": "",
+  "fixErrors": "Ret venligst følgende fejl:",
   "formRequirementError": "Et af kravene i denne formular er ugyldigt.",
   "invalidLabel": "Denne værdi er ugyldig",
-  "longSubmissionWarning": "",
+  "longSubmissionWarning": "Formularen er stadig ved at blive indsendt, vent venligst.",
   "optionalLabel": "(Valgfri)",
   "previousLabel": "Foregående",
-  "selectionNoOptions": "",
-  "selectionOptionsError": "",
+  "selectionNoOptions": "Ikke flere tilgængelige muligheder",
+  "selectionOptionsError": "Der opstod en fejl ved indlæsning af indstillingerne",
   "submitError": "Der opstod et problem med at indsende denne formular",
   "submitLabel": "Indsend"
 }
