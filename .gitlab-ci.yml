@@ -44,16 +44,10 @@ workflow:
 # A preconfigured environment for using npm.
 .npm:
   interruptible: true
-  dependencies: []
-  cache:
-    key:
-      files:
-        - package-lock.json
-    paths:
-      - node_modules
-      - '**/node_modules'
-  before_script:
-    - npm ci
+  dependencies: [npm_ci]
+  needs:
+    - job: npm_ci
+      artifacts: true
 
 # A template for creating a minor or patch release
 .release:
@@ -92,19 +86,51 @@ workflow:
 #  Build Stage                                                                                    #
 ###################################################################################################
 
+npm_ci:
+  stage: build
+  cache:
+    key:
+      files:
+        - package-lock.json
+    paths:
+      - node_modules/
+      - '**/node_modules'
+      - /root/.npm/
+  artifacts:
+    paths:
+      - node_modules/
+      - '**/node_modules'
+    expire_in: 1 day
+  script:
+    - npm ci
+
 # Build the Docker image.
 build docker image:
   extends: .docker
   stage: build
+  cache:
+    key: '$CI_COMMIT_REF_NAME'
+    paths:
+      - /root/.npm/
   script:
-    - docker build -t "$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG" --build-arg "version=$CI_COMMIT_REF_NAME" --build-arg "date=$CI_JOB_STARTED_AT" .
+    # https://docs.gitlab.com/ee/ci/docker/docker_layer_caching.html
+    # We're pulling latest if no previous builds exist because we want the greatest possibility of cache hits for build layers.
+    - CACHE_IMAGE="$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG"
+    # We wouldn't like anything funny to happen to us because of cache
+    - if [ "$CI_COMMIT_REF_NAME" == "main" ] || [ "$CI_COMMIT_REF_NAME" == "staging" ]; then USE_CACHE="0"; else USE_CACHE="1"; fi
+    - if ! docker pull "$CACHE_IMAGE"; then CACHE_IMAGE="$CI_REGISTRY_IMAGE:latest"; docker pull "$CACHE_IMAGE" || true; fi
+    - docker build
+      -t "$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG"
+      --cache-from "$CACHE_IMAGE"
+      --build-arg "BUILDKIT_INLINE_CACHE=$USE_CACHE"
+      --build-arg "version=$CI_COMMIT_REF_NAME"
+      --build-arg "date=$CI_JOB_STARTED_AT" .
     - docker push "$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG"
 
 # Build the npm packages that should be published.
 pack:
   extends: .npm
   stage: build
-  needs: []
   script:
     - mkdir build/
     - npm --pack-destination build --workspace @appsemble/types pack
@@ -147,7 +173,6 @@ helm package:
 cspell:
   extends: .npm
   stage: test
-  needs: []
   script:
     - npx -- cspell
 
@@ -155,7 +180,6 @@ cspell:
 eslint:
   extends: .npm
   stage: test
-  needs: []
   script:
     - npx -- eslint --format gitlab .
   artifacts:
@@ -183,7 +207,6 @@ shellcheck:
 i18n:
   extends: .npm
   stage: test
-  needs: []
   script:
     - npm run appsemble -- app extract-messages --verify nl apps/*
 
@@ -191,7 +214,6 @@ i18n:
 prettier:
   extends: .npm
   stage: test
-  needs: []
   script:
     - npx -- prettier .
 
@@ -199,7 +221,6 @@ prettier:
 remark lint:
   extends: .npm
   stage: test
-  needs: []
   script:
     - npx -- remark --frail --no-stdout .
 
@@ -207,13 +228,12 @@ remark lint:
 stylelint:
   extends: .npm
   stage: test
-  needs: []
   script:
     - npx -- stylelint .
 
 # Run unittests using NodeJS 18.
 test node 18:
-  interruptible: true
+  extends: .npm
   services:
     - postgres:15
   variables:
@@ -222,9 +242,7 @@ test node 18:
     POSTGRES_PASSWORD: password
     DATABASE_URL: 'postgres://admin:password@postgres:5432/testAppsemble'
   stage: test
-  needs: []
   script:
-    - npm ci
     - npm test -- --no-file-parallelism --coverage --shard=$CI_NODE_INDEX/$CI_NODE_TOTAL
   parallel: 9
   artifacts:
@@ -240,7 +258,6 @@ test node 18:
 tsc:
   extends: .npm
   stage: test
-  needs: []
   script:
     - npx --workspaces tsc
 
@@ -248,7 +265,6 @@ tsc:
 validate:
   extends: .npm
   stage: test
-  needs: []
   script:
     - npm run scripts -- validate
 
@@ -256,7 +272,6 @@ validate:
 check migrations:
   extends: .npm
   stage: test
-  needs: []
   interruptible: true
   services:
     - postgres:15
@@ -273,7 +288,6 @@ check migrations:
 check down migrations:
   extends: .npm
   stage: test
-  needs: []
   interruptible: true
   services:
     - postgres:15
@@ -290,7 +304,6 @@ check down migrations:
 fuzz migrations:
   extends: .npm
   stage: test
-  needs: []
   interruptible: true
   services:
     - postgres:15
@@ -383,7 +396,6 @@ twitter:
   # This is new and mainly used to update nice-to-have metadata.
   # Allow failure to prevent blocking of important jobs.
   allow_failure: true
-  needs: []
   rules:
     - if: $CI_COMMIT_TAG
   script:
@@ -396,7 +408,6 @@ docker metadata:
   # This is new and mainly used to update nice-to-have metadata.
   # Allow failure to prevent blocking of important jobs.
   allow_failure: true
-  needs: []
   rules:
     - if: $CI_COMMIT_TAG
   script:
@@ -409,7 +420,6 @@ github release:
   # This is new and mainly used to update nice-to-have metadata.
   # Allow failure to prevent blocking of important jobs.
   allow_failure: true
-  needs: []
   rules:
     - if: $CI_COMMIT_TAG
   script:
@@ -422,7 +432,6 @@ gitlab release:
   # This is new and mainly used to update nice-to-have metadata.
   # Allow failure to prevent blocking of important jobs.
   allow_failure: true
-  needs: []
   rules:
     - if: $CI_COMMIT_TAG
   script:
@@ -811,6 +820,7 @@ provision review:
     - if: $CI_MERGE_REQUEST_ID && $CI_MERGE_REQUEST_SOURCE_PROJECT_PATH == 'appsemble/appsemble'
   needs:
     - review
+    - npm_ci
   script:
     - npm run scripts -- release patch
     - npm run appsemble -- config set context review
@@ -830,6 +840,7 @@ provision staging:
     - if: $CI_COMMIT_BRANCH == 'staging'
   needs:
     - staging
+    - npm_ci
   script:
     - npm run scripts -- release patch
     - npm run appsemble -- config set context staging
@@ -847,6 +858,7 @@ provision production:
     - if: $CI_COMMIT_TAG
   needs:
     - production
+    - npm_ci
   environment:
     name: production
     action: prepare
@@ -869,6 +881,7 @@ lighthouse:
   extends: .npm
   image: $CI_REGISTRY/appsemble/docker-node-chrome
   needs:
+    - npm_ci
     - job: provision review
       optional: true
     - job: provision staging
