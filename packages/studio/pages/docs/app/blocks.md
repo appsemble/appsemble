@@ -79,8 +79,8 @@ Appsemble blocks.
 ## Styling
 
 Blocks come with their own styling to make them look the way the developer wanted. If you want to
-change how the block looks in your app, you can add [custom css](theming.md) to add to or override
-the existing styling.
+change how the block looks in your app, you can add [custom css](../guides/custom-css.md) to add to
+or override the existing styling.
 
 ## Indentation and dashes
 
