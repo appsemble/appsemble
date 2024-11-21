@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.30.13](https://gitlab.com/appsemble/appsemble/-/releases/0.30.13)] - 2024-11-21
+
+### Fixed
+
+- App: Fix app member patch form and use the right URL.
+- Server: Properly connect app members to app OAuth2 authorizations.
+- Studio: Remapper docs links on index remapper page.
+
 ## \[[0.30.12](https://gitlab.com/appsemble/appsemble/-/releases/0.30.12)] - 2024-11-19
 
 ### Added
