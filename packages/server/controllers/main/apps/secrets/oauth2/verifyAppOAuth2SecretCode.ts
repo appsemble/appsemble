@@ -103,7 +103,7 @@ export async function verifyAppOAuth2SecretCode(ctx: Context): Promise<void> {
         emailVerified,
         timezone,
       });
-      await handleAuthorization();
+      await handleAuthorization(appMember);
     } catch (error) {
       await handleUniqueAppMemberEmailIndex(ctx, error, email, emailVerified, async (data) => {
         const { AppOAuth2SecretId, sub: subject } = await handleAuthorization();
