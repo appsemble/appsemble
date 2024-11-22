@@ -7,8 +7,12 @@ import styles from './wordcloud.module.css';
 
 function mapArrayToWordcloudObject(words: string[]): ListEntry[] {
   const kvPair: Record<string, number> = Object.create(null);
+  const wordsMapped = words.map((value) => {
+    const dateValue = new Date(value).toLocaleString();
+    return dateValue === 'Invalid Date' ? value : dateValue;
+  });
 
-  for (const word of words) {
+  for (const word of wordsMapped) {
     kvPair[word] = (kvPair[word] || 0) + 1;
   }
 
