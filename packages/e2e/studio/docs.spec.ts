@@ -1,4 +1,9 @@
-import { OrganizationPermission, predefinedOrganizationRoles } from '@appsemble/types';
+import {
+  AppPermission,
+  OrganizationPermission,
+  predefinedAppRoles,
+  predefinedOrganizationRoles,
+} from '@appsemble/types';
 
 import { expect, test } from '../fixtures/test/index.js';
 
@@ -17,6 +22,17 @@ test.describe('Docs', () => {
       ...Object.values(OrganizationPermission)
         .filter((permission) => typeof permission === 'string')
         .map((permission) => new RegExp(String(permission))),
+    ]);
+  });
+
+  test('should render the app member permissions table', async ({ page }) => {
+    await page.goto('/en/docs/app/security');
+    await expect(page.getByRole('row')).toHaveText([
+      ['Permissions', ...predefinedAppRoles].join(''),
+      ...Object.values(AppPermission)
+        .filter((permission) => !permission.startsWith('$resource:all:own'))
+        .filter((permission) => typeof permission === 'string')
+        .map((permission) => new RegExp(`\\${String(permission)}`)),
     ]);
   });
 });
