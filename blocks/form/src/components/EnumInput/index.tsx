@@ -1,7 +1,7 @@
 import { useBlock } from '@appsemble/preact';
 import {
   Button,
-  Input,
+  InputField,
   Option,
   SelectField,
   useClickOutside,
@@ -178,24 +178,25 @@ export function EnumInput({
   return (
     <div>
       {field.filter ? (
-        <div className={classNames('dropdown', className, { 'is-active': enabled })} ref={ref}>
-          <div className="dropdown-trigger is-fullwidth">
-            <Input
-              className={classNames('appsemble-enum field', className)}
-              disabled={disabled || loading || originalOptions.length === 0}
-              errorLinkRef={errorLinkRef}
-              icon={icon}
-              loading={loading}
-              name={name}
-              onChange={filterChange}
-              onClick={toggle}
-              onKeyDown={onKeyDown}
-              placeholder={utils.remap(placeholder, {}) as string}
-              readOnly={readOnly}
-              required={required}
-              value={inputValue}
-            />
-          </div>
+        <div className={classNames('appsemble-enum dropdown', { 'is-active': enabled })} ref={ref}>
+          <InputField
+            autocomplete="off"
+            className={classNames('field dropdown-trigger', className)}
+            disabled={disabled || loading || originalOptions.length === 0}
+            errorLinkRef={errorLinkRef}
+            help={utils.remap(field.help, value) as string}
+            icon={icon}
+            label={(utils.remap(label, value) as string) ?? name}
+            loading={loading}
+            name={name}
+            onChange={filterChange}
+            onClick={toggle}
+            onKeyDown={onKeyDown}
+            placeholder={utils.remap(placeholder, {}) as string}
+            readOnly={readOnly}
+            required={required}
+            value={inputValue}
+          />
           <div
             className="dropdown-menu"
             id="dropdown-menu"
