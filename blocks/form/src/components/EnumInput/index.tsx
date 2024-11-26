@@ -12,6 +12,7 @@ import { type VNode } from 'preact';
 import { type ChangeEvent } from 'preact/compat';
 import { useCallback, useEffect, useRef, useState } from 'preact/hooks';
 
+import styles from './index.module.css';
 import { type Choice, type EnumField, type InputProps } from '../../../block.js';
 import { getValueByNameSequence } from '../../utils/getNested.js';
 import { isRequired } from '../../utils/requirements.js';
@@ -178,7 +179,12 @@ export function EnumInput({
   return (
     <div>
       {field.filter ? (
-        <div className={classNames('appsemble-enum dropdown', { 'is-active': enabled })} ref={ref}>
+        <div
+          className={classNames(`appsemble-enum dropdown ${styles.fullwidth}`, {
+            'is-active': enabled,
+          })}
+          ref={ref}
+        >
           <InputField
             autocomplete="off"
             className={classNames('field dropdown-trigger', className)}
