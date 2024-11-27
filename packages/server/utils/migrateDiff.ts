@@ -53,7 +53,7 @@ export async function apply(db: Sequelize, name: string, fn: () => Promise<void>
                 // Again contains ordinal positions
                 informationSchemaValue: {},
                 // Ingore already present on table under indices
-                indices: [],
+                indices: [] as unknown[],
               },
             ]),
           ),

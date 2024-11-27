@@ -21,7 +21,7 @@ export default defineConfig({
   use: {
     // Base URL to use in actions like `await page.goto('/')`.
     baseURL: CI
-      ? E2E_HOST ?? `https://${CI_MERGE_REQUEST_IID || 'staging'}.appsemble.review`
+      ? (E2E_HOST ?? `https://${CI_MERGE_REQUEST_IID || 'staging'}.appsemble.review`)
       : 'http://localhost:9999',
     // Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer
     trace: 'on-first-retry',

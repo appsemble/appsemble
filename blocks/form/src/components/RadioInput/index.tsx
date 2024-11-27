@@ -33,7 +33,8 @@ export function RadioInput({
   return (
     <RadioGroup
       className={classNames('appsemble-radio', className)}
-      disabled={disabled}
+      // Ignore
+      // disabled={disabled}
       error={dirty ? error : null}
       errorLinkRef={errorLinkRef}
       help={utils.remap(help, value) as string}

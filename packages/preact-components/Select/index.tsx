@@ -37,6 +37,18 @@ export interface SelectProps
    * The ref to use for the error link
    */
   readonly errorLinkRef?: MutableRef<HTMLElement>;
+
+  /**
+   * TODO: comment me well
+   * The placeholder
+   */
+  readonly placeholder?: string;
+
+  /*
+   * TODO: comment me well
+   * The readonly attribute
+   */
+  readonly readOnly?: boolean;
 }
 
 /**
@@ -55,6 +67,7 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
       value,
       errorLinkRef,
       id = name,
+      readOnly,
       ...props
     },
     ref,
@@ -96,6 +109,7 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
       >
         <select
           className={classNames({ 'is-fullwidth': fullWidth })}
+          disabled={readOnly}
           id={id}
           name={name}
           onChange={handleChange}

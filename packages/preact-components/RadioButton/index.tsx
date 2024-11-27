@@ -26,6 +26,23 @@ interface RadioButtonProps<T>
    * The class used for the wrapper div.
    */
   readonly wrapperClassName?: string;
+
+  readonly icon?: IconName;
+
+  /**
+   * TODO: comment well
+   */
+  readonly disabled?: boolean;
+
+  /**
+   * TODO: comment well
+   */
+  readonly readOnly?: boolean;
+
+  /**
+   * TODO: comment well
+   */
+  readonly required?: boolean;
 }
 
 /**
