@@ -3,6 +3,14 @@
 Custom styling is supported using a hierarchical model by allowing developers to upload CSS which
 gets injected during the runtime of an application.
 
+## Table of Contents
+
+- [Hierarchy](#hierarchy)
+- [Applying themes for an application](#applying-themes-for-an-application)
+- [Applying themes to specific blocks or pages](#applying-themes-to-specific-blocks-or-pages)
+- [Appsemble classes](#appsemble-classes)
+- [Using the CLI](#using-the-cli)
+
 ## Hierarchy
 
 <span class="is-pulled-right"></span>
@@ -24,12 +32,18 @@ modules _do not_ get applied to blocks.
 useful for applying styles to elements that can appear in both the core modules and blocks such as
 input fields. It can also be used to apply [CSS variables][css-variables].
 
+> **Note**: Block styling can currently only be created by externally uploading the app
+> [using the cli](#using-the-cli).
+
 ## Applying themes for an application
 
 Open the Appsemble studio located at the base URL of Appsemble. Login and create your first app.
 Within the editor, tabs for `shared` and `core` are available. These tabs contain the current
 styling for these modules. Tabs containing styling for specific blocks are automatically added and
 removed depending on which blocks are used within the app definition.
+
+To preview a style change, simply enter CSS in the corresponding tabs and press the `Publish`
+button.
 
 Example shared styling:
 
