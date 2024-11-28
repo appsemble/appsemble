@@ -8,6 +8,7 @@ import { defaultLocale, formatRequestAction, remap } from '@appsemble/utils';
 import axios from 'axios';
 
 import { type ServerActionParameters } from './index.js';
+import { applyAppServiceSecrets } from '../../options/applyAppServiceSecrets.js';
 
 export async function request({
   action,
@@ -61,7 +62,12 @@ export async function request({
     (remapper, d) => remap(remapper, d, remapperContext),
     context.context,
   );
-  const response = await axios(axiosConfig);
+  const newAxiosConfig = await applyAppServiceSecrets({
+    app: app.toJSON(),
+    context,
+    axiosConfig,
+  });
+  const response = await axios(newAxiosConfig);
 
   return response.data;
 }
