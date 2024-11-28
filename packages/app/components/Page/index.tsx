@@ -272,9 +272,11 @@ export function Page(): ReactNode {
   );
 
   useEffect(() => {
-    actions.onLoad().then((results) => {
-      setData(results);
-    });
+    if (actions.onLoad.type !== 'noop') {
+      actions.onLoad().then((results) => {
+        setData(results);
+      });
+    }
   }, [setData, actions]);
 
   const checkPagePermissionsCallback = useCallback(
