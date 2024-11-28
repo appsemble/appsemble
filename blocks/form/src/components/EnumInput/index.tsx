@@ -55,6 +55,13 @@ export function EnumInput({
 
   const required = isRequired(field, utils, formValues);
 
+  const applyFilter = useCallback((): void => {
+    const filteredOptions = originalOptions.filter((choice) =>
+      String(choice.value).toLowerCase().includes(filter.toLowerCase()),
+    );
+    setOptions(filteredOptions);
+  }, [filter, originalOptions]);
+
   useEffect(() => {
     if (!loading && value !== undefined && !options.some((option) => option.value === value)) {
       // Explicitly set value to undefined if value does not exist in the new set of options.
@@ -66,10 +73,7 @@ export function EnumInput({
     if ('enum' in field) {
       if ('filter' in field) {
         if (field.filter) {
-          const filteredOptions = originalOptions.filter((choice) =>
-            String(choice.value).toLowerCase().includes(filter.toLowerCase()),
-          );
-          setOptions(filteredOptions);
+          applyFilter();
         } else {
           return;
         }
@@ -81,10 +85,7 @@ export function EnumInput({
       setOptions(utils.remap(field.remapper, { formValues, fieldsetEntryValues }) as Choice[]);
       if ('filter' in field) {
         if (field.filter) {
-          const filteredOptions = originalOptions.filter((choice) =>
-            String(choice.value).toLowerCase().includes(filter.toLowerCase()),
-          );
-          setOptions(filteredOptions);
+          applyFilter();
         } else {
           return;
         }
@@ -97,10 +98,7 @@ export function EnumInput({
       setOriginalOptions(result);
       if ('filter' in field) {
         if (field.filter) {
-          const filteredOptions = originalOptions.filter((choice) =>
-            String(choice.value).toLowerCase().includes(filter.toLowerCase()),
-          );
-          setOptions(filteredOptions);
+          applyFilter();
         } else {
           return;
         }
@@ -130,6 +128,7 @@ export function EnumInput({
     }
   }, [
     actions,
+    applyFilter,
     events,
     field,
     fieldsetEntryValues,

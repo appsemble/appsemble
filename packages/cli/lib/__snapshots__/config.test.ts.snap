@@ -1882,6 +1882,9 @@ Include an array of fields in \`fields\` to replace the current list of fields i
     "previousLabel": {
       "description": undefined,
     },
+    "search": {
+      "description": undefined,
+    },
     "selectionNoOptions": {
       "description": undefined,
     },
@@ -1938,6 +1941,10 @@ The action should return an array of objects that contain the \`label\` and \`va
             "default": false,
             "description": "Whether the field should always be be disabled.",
             "format": "remapper",
+          },
+          "filter": {
+            "description": "The filter applied to the options",
+            "type": "boolean",
           },
           "help": {
             "description": "A description for the text field. For adding more information about the field.",
@@ -2563,6 +2570,10 @@ Replaces the optional label if the field is optional. Won’t display if the fie
 The event should return an array of objects that contain the \`label\` and \`value\` property.",
             "format": "event-listener",
             "type": "string",
+          },
+          "filter": {
+            "description": "The filter applied to the options",
+            "type": "boolean",
           },
           "help": {
             "description": "A description for the text field. For adding more information about the field.",
@@ -3814,6 +3825,10 @@ Supported values: \`g\`, \`m\`, \`i\`, \`y\`, \`u\`, \`s\`",
             "description": "Whether the field should always be be disabled.",
             "format": "remapper",
           },
+          "filter": {
+            "description": "The filter applied to the options",
+            "type": "boolean",
+          },
           "help": {
             "description": "A description for the text field. For adding more information about the field.",
             "format": "remapper",
@@ -4248,6 +4263,10 @@ Replaces the optional label if the field is optional. Won’t display if the fie
               "$ref": "#/definitions/Choice",
             },
             "type": "array",
+          },
+          "filter": {
+            "description": "The filter applied to the options",
+            "type": "boolean",
           },
           "help": {
             "description": "A description for the text field. For adding more information about the field.",
