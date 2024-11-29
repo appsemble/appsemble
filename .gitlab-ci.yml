@@ -61,7 +61,7 @@ workflow:
     - apt-get update
     - apt-get install --yes git gnupg
     - gpg --import "$GPG_PRIVATE_KEY"
-    - npm run scripts -- release "$INCREMENT"
+    - npm run scripts -- release "$INCREMENT" "$IDENTIFIER"
     - npm install
     - VERSION="$(npm --silent run appsemble -- --version)"
     - |
@@ -519,6 +519,20 @@ sentry release:
   script:
     - sentry-cli releases new --finalize "$CI_COMMIT_TAG"
     - sentry-cli releases set-commits --auto "$CI_COMMIT_TAG"
+
+# Create a test pre-release
+release test:
+  extends: .release
+  variables:
+    INCREMENT: prerelease
+    IDENTIFIER: test
+
+# Create a rc pre-release
+release rc:
+  extends: .release
+  variables:
+    INCREMENT: prerelease
+    IDENTIFIER: rc
 
 # Create a patch release
 release patch:
