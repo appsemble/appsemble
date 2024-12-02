@@ -25,11 +25,19 @@ export function validateDateTime(
   values?: Values,
 ): DateTimeRequirement {
   return field.requirements?.find((requirement) => {
-    if (Requirement.Required in requirement && !value) {
+    if (
+      Requirement.Required in requirement &&
+      Boolean(remap(requirement.required, values)) &&
+      !value
+    ) {
       return true;
     }
 
-    if (Requirement.Prohibited in requirement && value) {
+    if (
+      Requirement.Prohibited in requirement &&
+      Boolean(remap(requirement.prohibited, values)) &&
+      value
+    ) {
       return true;
     }
 
