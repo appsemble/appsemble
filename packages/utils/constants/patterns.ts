@@ -1,7 +1,7 @@
 /**
  * A pattern for extracting a semver value.
  */
-export const partialSemver = /\d+\.\d+\.\d+/;
+export const partialSemver = /\d+\.\d+\.\d+(-[\d.a-z-]+)?/;
 
 /**
  * A pattern for validating a hexadecimal RGB color.
