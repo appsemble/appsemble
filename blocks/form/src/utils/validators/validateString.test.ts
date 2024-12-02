@@ -1,3 +1,4 @@
+import { remap } from '@appsemble/utils';
 import { describe, expect, it } from 'vitest';
 
 import { validateString } from './validateString.js';
@@ -11,7 +12,7 @@ describe('validateString', () => {
       requirements: [{ required: true }, { minLength: 1 }],
     };
 
-    expect(validateString(field, null)).toStrictEqual(field.requirements[0]);
+    expect(validateString(field, null, remap)).toStrictEqual(field.requirements[0]);
   });
 
   it('should should return undefined if it validates correctly', () => {
@@ -21,7 +22,17 @@ describe('validateString', () => {
       requirements: [{ required: true }, { minLength: 1 }],
     };
 
-    expect(validateString(field, 'hello')).toBeUndefined();
+    expect(validateString(field, 'hello', remap)).toBeUndefined();
+  });
+
+  it('should ignore the required requirement if it resolves to false', () => {
+    const field: StringField = {
+      type: 'string',
+      name: 'test',
+      requirements: [{ required: false }],
+    };
+
+    expect(validateString(field, null, remap)).toBeUndefined();
   });
 
   it('should validate prohibited requirements', () => {
@@ -31,8 +42,18 @@ describe('validateString', () => {
       requirements: [{ prohibited: true }],
     };
 
-    expect(validateString(field, 'h')).toStrictEqual(field.requirements[0]);
-    expect(validateString(field, '')).toBeUndefined();
+    expect(validateString(field, 'h', remap)).toStrictEqual(field.requirements[0]);
+    expect(validateString(field, '', remap)).toBeUndefined();
+  });
+
+  it('should ignore the prohibited requirement if it resolves to false', () => {
+    const field: StringField = {
+      type: 'string',
+      name: 'test',
+      requirements: [{ prohibited: false }],
+    };
+
+    expect(validateString(field, 'h', remap)).toBeUndefined();
   });
 
   it('should validate minLength requirements', () => {
@@ -42,8 +63,8 @@ describe('validateString', () => {
       requirements: [{ minLength: 1 }],
     };
 
-    expect(validateString(field, 'h')).toBeUndefined();
-    expect(validateString(field, '')).toStrictEqual(field.requirements[0]);
+    expect(validateString(field, 'h', remap)).toBeUndefined();
+    expect(validateString(field, '', remap)).toStrictEqual(field.requirements[0]);
   });
 
   it('should validate maxLength requirements', () => {
@@ -53,8 +74,8 @@ describe('validateString', () => {
       requirements: [{ maxLength: 1 }],
     };
 
-    expect(validateString(field, 'h')).toBeUndefined();
-    expect(validateString(field, 'hh')).toStrictEqual(field.requirements[0]);
+    expect(validateString(field, 'h', remap)).toBeUndefined();
+    expect(validateString(field, 'hh', remap)).toStrictEqual(field.requirements[0]);
   });
 
   it('should validate regex requirements', () => {
@@ -64,8 +85,8 @@ describe('validateString', () => {
       requirements: [{ regex: 'abc' }],
     };
 
-    expect(validateString(field, 'abc')).toBeUndefined();
-    expect(validateString(field, 'abd')).toStrictEqual(field.requirements[0]);
+    expect(validateString(field, 'abc', remap)).toBeUndefined();
+    expect(validateString(field, 'abd', remap)).toStrictEqual(field.requirements[0]);
   });
 
   it('should apply regex flags', () => {
@@ -75,6 +96,6 @@ describe('validateString', () => {
       requirements: [{ regex: 'abc', flags: 'i' }],
     };
 
-    expect(validateString(field, 'ABC')).toBeUndefined();
+    expect(validateString(field, 'ABC', remap)).toBeUndefined();
   });
 });
