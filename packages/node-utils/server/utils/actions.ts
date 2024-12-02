@@ -220,6 +220,7 @@ async function handleRequestProxy(
   logger.verbose(`Forwarding request to ${axios.getUri(axiosConfig)}`);
   try {
     response = await axios(axiosConfig);
+    logger.verbose(response);
   } catch (err: unknown) {
     // If request is sent to a companion container and fails
     // Try to start it anew and retry the request
