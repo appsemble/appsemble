@@ -383,8 +383,8 @@ A release can be created by a maintainer triggering one of the release jos in th
 
 We support the following releases:
 
-- prerelease test - Internal testing or testing with clients
-- prerelease rc - "Release Candidate" close to final, pending minor fixes
+- prerelease --identifier test - Internal testing or testing with clients
+- prerelease --identifier rc - "Release Candidate" close to final, pending minor fixes
 - patch - Backward-compatible bug fixes
 - minor - Backward-compatible new features or significant updates
 
