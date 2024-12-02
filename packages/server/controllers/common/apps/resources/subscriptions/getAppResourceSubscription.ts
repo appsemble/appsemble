@@ -24,7 +24,7 @@ export async function getAppResourceSubscription(ctx: Context): Promise<void> {
         required: false,
       },
       {
-        attributes: ['id', 'UserId'],
+        attributes: ['id'],
         model: AppSubscription,
         include: [
           {

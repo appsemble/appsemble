@@ -13,7 +13,7 @@ import {
   UpdatedAt,
 } from 'sequelize-typescript';
 
-import { App, ResourceSubscription, User } from './index.js';
+import { App, AppMember, ResourceSubscription } from './index.js';
 
 @Table({ tableName: 'AppSubscription' })
 export class AppSubscription extends Model {
@@ -42,9 +42,9 @@ export class AppSubscription extends Model {
   @BelongsTo(() => App)
   App: Awaited<App>;
 
-  @ForeignKey(() => User)
+  @ForeignKey(() => AppMember)
   @Column(DataType.UUID)
-  UserId: string;
+  AppMemberId: string;
 
   @CreatedAt
   created: Date;
@@ -52,8 +52,8 @@ export class AppSubscription extends Model {
   @UpdatedAt
   updated: Date;
 
-  @BelongsTo(() => User, { onDelete: 'SET NULL' })
-  User: Awaited<User>;
+  @BelongsTo(() => AppMember, { onDelete: 'SET NULL' })
+  AppMember: Awaited<AppMember>;
 
   @HasMany(() => ResourceSubscription, { onDelete: 'CASCADE' })
   ResourceSubscriptions: ResourceSubscription[];

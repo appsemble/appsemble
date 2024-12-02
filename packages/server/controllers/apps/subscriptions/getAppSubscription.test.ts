@@ -9,10 +9,14 @@ import {
   OrganizationMember,
   Resource,
   type User,
-} from '../../../../models/index.js';
-import { setArgv } from '../../../../utils/argv.js';
-import { createServer } from '../../../../utils/createServer.js';
-import { authorizeStudio, createTestUser } from '../../../../utils/test/authorization.js';
+} from '../../../models/index.js';
+import { setArgv } from '../../../utils/argv.js';
+import { createServer } from '../../../utils/createServer.js';
+import {
+  authorizeAppMember,
+  createTestAppMember,
+  createTestUser,
+} from '../../../utils/test/authorization.js';
 
 let organization: Organization;
 let user: User;
@@ -84,6 +88,7 @@ describe('getAppSubscription', () => {
 
   it('should subscription statuses to resources', async () => {
     const app = await defaultApp(organization.id);
+    const appMember = await createTestAppMember(app.id);
 
     await AppSubscription.create({
       AppId: app.id,
@@ -98,7 +103,7 @@ describe('getAppSubscription', () => {
       data: { foo: 'I am Foo.' },
     });
 
-    authorizeStudio();
+    authorizeAppMember(app, appMember);
     await request.patch(`/api/apps/${app.id}/subscriptions`, {
       endpoint: 'https://example.com',
       resource: 'person',

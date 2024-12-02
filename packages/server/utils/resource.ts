@@ -16,7 +16,13 @@ import { type Literal } from 'sequelize/types/utils';
 
 import { type FieldType, odataFilterToSequelize, odataOrderbyToSequelize } from './odata.js';
 import { sendNotification, type SendNotificationOptions } from './sendNotification.js';
-import { App, AppSubscription, Resource, ResourceSubscription, User } from '../models/index.js';
+import {
+  App,
+  AppMember,
+  AppSubscription,
+  Resource,
+  ResourceSubscription,
+} from '../models/index.js';
 
 export function renameOData(name: string): string {
   switch (name) {
@@ -61,7 +67,7 @@ export function renameODataWithCasting(name: string, type?: FieldType): Literal 
 async function sendSubscriptionNotifications(
   app: App,
   notification: NotificationDefinition,
-  resourceUserId: string,
+  resourceAppMemberId: string,
   resourceType: string,
   action: 'create' | 'delete' | 'update',
   resourceId: number,
@@ -69,7 +75,7 @@ async function sendSubscriptionNotifications(
 ): Promise<void> {
   const to = notification.to || [];
   const roles = to.filter((n) => n !== '$author');
-  const author = resourceUserId && to.includes('$author');
+  const author = resourceAppMemberId && to.includes('$author');
   const subscribers = notification.subscribe;
 
   if (!roles.length && !author && !subscribers) {
@@ -84,7 +90,7 @@ async function sendSubscriptionNotifications(
       attributes: ['id', 'auth', 'p256dh', 'endpoint'],
       include: [
         {
-          model: User,
+          model: AppMember,
           attributes: [],
           required: true,
           include: [
@@ -96,7 +102,7 @@ async function sendSubscriptionNotifications(
                 attributes: [],
                 where: {
                   [Op.or]: [
-                    ...(author ? [{ UserId: resourceUserId }] : []),
+                    ...(author ? [{ AppMemberId: resourceAppMemberId }] : []),
                     ...(roles.length ? [{ role: roles }] : []),
                   ],
                 },

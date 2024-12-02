@@ -749,6 +749,10 @@ export interface SubscriptionResponseResource {
 
 export type SubscriptionResponse = Record<string, SubscriptionResponseResource>;
 
+export const resourceSubscribableAction = ['create', 'update', 'delete'] as const;
+
+export type ResourceSubscribableAction = (typeof resourceSubscribableAction)[number];
+
 export type ResourceViewAction = 'get' | 'query';
 
 export type OwnResourceAction = ResourceViewAction | 'delete' | 'patch' | 'update';

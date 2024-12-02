@@ -8,10 +8,14 @@ import {
   Organization,
   OrganizationMember,
   type User,
-} from '../../../../models/index.js';
-import { setArgv } from '../../../../utils/argv.js';
-import { createServer } from '../../../../utils/createServer.js';
-import { authorizeStudio, createTestUser } from '../../../../utils/test/authorization.js';
+} from '../../../models/index.js';
+import { setArgv } from '../../../utils/argv.js';
+import { createServer } from '../../../utils/createServer.js';
+import {
+  authorizeAppMember,
+  createTestAppMember,
+  createTestUser,
+} from '../../../utils/test/authorization.js';
 
 let organization: Organization;
 let user: User;
@@ -83,8 +87,9 @@ describe('createAppSubscription', () => {
 
   it('should subscribe to apps', async () => {
     const app = await defaultApp(organization.id);
+    const appMember = await createTestAppMember(app.id);
 
-    authorizeStudio();
+    authorizeAppMember(app, appMember);
     const response = await request.post(`/api/apps/${app.id}/subscriptions`, {
       endpoint: 'https://example.com',
       keys: { p256dh: 'abc', auth: 'def' },
@@ -101,7 +106,7 @@ describe('createAppSubscription', () => {
       p256dh: 'abc',
       auth: 'def',
       AppId: app.id,
-      UserId: user.id,
+      AppMemberId: appMember.id,
       created: new Date(),
       updated: new Date(),
     });

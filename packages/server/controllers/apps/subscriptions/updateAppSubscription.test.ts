@@ -4,16 +4,21 @@ import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import {
   App,
+  AppMember,
   AppSubscription,
   Organization,
   OrganizationMember,
   Resource,
   ResourceSubscription,
-  User,
-} from '../../../../models/index.js';
-import { setArgv } from '../../../../utils/argv.js';
-import { createServer } from '../../../../utils/createServer.js';
-import { authorizeStudio, createTestUser } from '../../../../utils/test/authorization.js';
+  type User,
+} from '../../../models/index.js';
+import { setArgv } from '../../../utils/argv.js';
+import { createServer } from '../../../utils/createServer.js';
+import {
+  authorizeAppMember,
+  createTestAppMember,
+  createTestUser,
+} from '../../../utils/test/authorization.js';
 
 let organization: Organization;
 let user: User;
@@ -85,6 +90,8 @@ describe('updateAppSubscription', () => {
 
   it('should update resource type subscription settings', async () => {
     const app = await defaultApp(organization.id);
+    const appMember = await createTestAppMember(app.id);
+
     await AppSubscription.create({
       AppId: app.id,
       endpoint: 'https://example.com',
@@ -92,7 +99,8 @@ describe('updateAppSubscription', () => {
       auth: 'def',
     });
 
-    authorizeStudio();
+    authorizeAppMember(app, appMember);
+
     const response = await request.patch(`/api/apps/${app.id}/subscriptions`, {
       endpoint: 'https://example.com',
       resource: 'person',
@@ -126,11 +134,13 @@ describe('updateAppSubscription', () => {
         },
       }
     `);
-    expect(subscription.UserId).toStrictEqual(user.id);
+    expect(subscription.AppMemberId).toStrictEqual(appMember.id);
   });
 
   it('should update individual resource subscription settings', async () => {
     const app = await defaultApp(organization.id);
+    const appMember = await createTestAppMember(app.id);
+
     await AppSubscription.create({
       AppId: app.id,
       endpoint: 'https://example.com',
@@ -139,7 +149,8 @@ describe('updateAppSubscription', () => {
     });
     const { id } = await Resource.create({ AppId: app.id, type: 'person', data: {} });
 
-    authorizeStudio();
+    authorizeAppMember(app, appMember);
+
     const response = await request.patch(`/api/apps/${app.id}/subscriptions`, {
       endpoint: 'https://example.com',
       resource: 'person',
@@ -155,7 +166,7 @@ describe('updateAppSubscription', () => {
     const subscription = await AppSubscription.findOne({
       where: { endpoint: 'https://example.com' },
       include: {
-        model: User,
+        model: AppMember,
         attributes: ['id'],
       },
     });
@@ -184,11 +195,13 @@ describe('updateAppSubscription', () => {
         },
       }
     `);
-    expect(subscription.User.id).toStrictEqual(user.id);
+    expect(subscription.AppMember.id).toStrictEqual(appMember.id);
   });
 
   it('should remove resource type subscription settings if set to false', async () => {
     const app = await defaultApp(organization.id);
+    const appMember = await createTestAppMember(app.id);
+
     const subscription = await AppSubscription.create({
       AppId: app.id,
       endpoint: 'https://example.com',
@@ -201,7 +214,7 @@ describe('updateAppSubscription', () => {
       action: 'create',
     });
 
-    authorizeStudio();
+    authorizeAppMember(app, appMember);
     const response = await request.patch(`/api/apps/${app.id}/subscriptions`, {
       endpoint: 'https://example.com',
       resource: 'person',
@@ -234,6 +247,8 @@ describe('updateAppSubscription', () => {
 
   it('should remove individual resource subscription settings if set to false', async () => {
     const app = await defaultApp(organization.id);
+    const appMember = await createTestAppMember(app.id);
+
     const subscription = await AppSubscription.create({
       AppId: app.id,
       endpoint: 'https://example.com',
@@ -253,7 +268,7 @@ describe('updateAppSubscription', () => {
       params: { endpoint: 'https://example.com' },
     });
 
-    authorizeStudio();
+    authorizeAppMember(app, appMember);
     const response = await request.patch(`/api/apps/${app.id}/subscriptions`, {
       endpoint: 'https://example.com',
       resource: 'person',
@@ -310,6 +325,8 @@ describe('updateAppSubscription', () => {
 
   it('should toggle resource type subscriptions if value isn’t set', async () => {
     const app = await defaultApp(organization.id);
+    const appMember = await createTestAppMember(app.id);
+
     await AppSubscription.create({
       AppId: app.id,
       endpoint: 'https://example.com',
@@ -317,7 +334,7 @@ describe('updateAppSubscription', () => {
       auth: 'def',
     });
 
-    authorizeStudio();
+    authorizeAppMember(app, appMember);
     await request.patch(`/api/apps/${app.id}/subscriptions`, {
       endpoint: 'https://example.com',
       resource: 'person',
@@ -374,6 +391,8 @@ describe('updateAppSubscription', () => {
 
   it('should toggle individual resource subscriptions if value isn’t set', async () => {
     const app = await defaultApp(organization.id);
+    const appMember = await createTestAppMember(app.id);
+
     await AppSubscription.create({
       AppId: app.id,
       endpoint: 'https://example.com',
@@ -382,7 +401,7 @@ describe('updateAppSubscription', () => {
     });
     const { id } = await Resource.create({ AppId: app.id, type: 'person', data: {} });
 
-    authorizeStudio();
+    authorizeAppMember(app, appMember);
     await request.patch(`/api/apps/${app.id}/subscriptions`, {
       endpoint: 'https://example.com',
       resource: 'person',
