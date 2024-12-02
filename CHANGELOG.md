@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.30.14-test.0](https://gitlab.com/appsemble/appsemble/-/releases/0.30.14-test.0)] - 2024-12-02
+
+### Added
+
+- App: Automatically subscribe to all resource actions notifications.
+- Scripts: Add support for `test` and `rc` pre-releases.
+- Server: Log proxied responses in verbose mode.
+
+### Fixed
+
+- Server: Associate app subscriptions to app members instead of users.
+
 ## \[[0.30.13](https://gitlab.com/appsemble/appsemble/-/releases/0.30.13)] - 2024-11-21
 
 ### Fixed
