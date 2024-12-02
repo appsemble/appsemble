@@ -1,7 +1,7 @@
 apiVersion: v2
 name: appsemble
-version: 0.30.14-test.0
-appVersion: 0.30.14-test.0
+version: 0.30.14-test.1
+appVersion: 0.30.14-test.1
 kubeVersion: '>=1.21.0'
 type: application
 description: The open source low-code app building platform
@@ -27,15 +27,8 @@ dependencies:
     repository: https://jouve.github.io/charts
     condition: mailpit.enabled
 annotations:
-  artifacthub.io/changes: >
-    - kind: added
-      description: "App: Automatically subscribe to all resource actions notifications."
-    - kind: added
-      description: "Scripts: Add support for test and rc pre-releases."
-    - kind: added
-      description: "Server: Log proxied responses in verbose mode."
-    - kind: fixed
-      description: "Server: Associate app subscriptions to app members instead of users."
+  artifacthub.io/changes: |
+    []
   artifacthub.io/license: LGPL-3.0-only
   artifacthub.io/links: |
     - name: Appsemble Studio
