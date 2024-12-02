@@ -347,6 +347,7 @@ export async function handler(): Promise<void> {
   const latestVersion = semver.maxSatisfying(
     workspaces.map(({ pkg }) => pkg.version),
     '*',
+    { includePrerelease: true },
   );
 
   for (const workspace of workspaces) {
