@@ -1,7 +1,7 @@
 import { assertKoaError } from '@appsemble/node-utils';
 import { type Context } from 'koa';
 
-import { App, AppSubscription, ResourceSubscription } from '../../../../models/index.js';
+import { App, AppSubscription, ResourceSubscription } from '../../../models/index.js';
 
 export async function updateAppSubscription(ctx: Context): Promise<void> {
   const {
@@ -9,14 +9,14 @@ export async function updateAppSubscription(ctx: Context): Promise<void> {
     request: {
       body: { action, endpoint, resource, resourceId, value },
     },
-    user,
+    user: appMember,
   } = ctx;
 
   const app = await App.findByPk(appId, {
     attributes: [],
     include: [
       {
-        attributes: ['id', 'UserId'],
+        attributes: ['id', 'AppMemberId'],
         model: AppSubscription,
         include: [
           {
@@ -40,8 +40,8 @@ export async function updateAppSubscription(ctx: Context): Promise<void> {
   const [appSubscription] = app.AppSubscriptions;
   assertKoaError(!appSubscription, ctx, 404, 'Subscription not found');
 
-  if (user?.id && !appSubscription.UserId) {
-    await appSubscription.update({ UserId: user.id });
+  if (appMember?.id && !appSubscription.AppMemberId) {
+    await appSubscription.update({ AppMemberId: appMember.id });
   }
 
   const [resourceSubscription] = appSubscription.ResourceSubscriptions;

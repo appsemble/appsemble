@@ -23,7 +23,7 @@ export async function getAppResourceTypeSubscription(ctx: Context): Promise<void
         required: false,
       },
       {
-        attributes: ['id', 'UserId'],
+        attributes: ['id'],
         model: AppSubscription,
         include: [
           {
@@ -40,7 +40,12 @@ export async function getAppResourceTypeSubscription(ctx: Context): Promise<void
   getResourceDefinition(app.definition, resourceType, ctx);
 
   assertKoaError(!app.Resources.length, ctx, 404, 'Resource not found');
-  assertKoaError(!app.AppSubscriptions.length, ctx, 404, 'User is not subscribed to this app.');
+  assertKoaError(
+    !app.AppSubscriptions.length,
+    ctx,
+    404,
+    'App member is not subscribed to this app.',
+  );
 
   const [appSubscription] = app.AppSubscriptions;
 

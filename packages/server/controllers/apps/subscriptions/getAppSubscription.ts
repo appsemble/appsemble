@@ -2,7 +2,7 @@ import { assertKoaError } from '@appsemble/node-utils';
 import { type SubscriptionResponse } from '@appsemble/types';
 import { type Context } from 'koa';
 
-import { App, AppSubscription, ResourceSubscription } from '../../../../models/index.js';
+import { App, AppSubscription, ResourceSubscription } from '../../../models/index.js';
 
 export async function getAppSubscription(ctx: Context): Promise<void> {
   const {

@@ -1,7 +1,7 @@
 import { assertKoaError } from '@appsemble/node-utils';
 import { type Context } from 'koa';
 
-import { App, AppSubscription } from '../../../../models/index.js';
+import { App, AppSubscription } from '../../../models/index.js';
 
 export async function createAppSubscription(ctx: Context): Promise<void> {
   const {
@@ -9,7 +9,7 @@ export async function createAppSubscription(ctx: Context): Promise<void> {
     request: {
       body: { endpoint, keys },
     },
-    user,
+    user: appMember,
   } = ctx;
 
   const app = await App.findByPk(appId, { attributes: [], include: [AppSubscription] });
@@ -21,6 +21,6 @@ export async function createAppSubscription(ctx: Context): Promise<void> {
     endpoint,
     p256dh: keys.p256dh,
     auth: keys.auth,
-    UserId: user ? user.id : null,
+    AppMemberId: appMember ? appMember.id : null,
   });
 }
