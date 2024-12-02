@@ -263,7 +263,7 @@ export function builder(yargs: Argv): Argv<any> {
       description: 'Whether to increment the minor, patch or pre-release version',
       choices: ['minor', 'patch', 'prerelease'],
     })
-    .positional('identifier', {
+    .option('identifier', {
       description: `The identifier to use for the pre-release version:
         - test: Internal testing or testing with clients (e.g., test.3).
         - rc: "Release Candidate", close to final, pending minor fixes (e.g., rc.0).`,
@@ -280,7 +280,7 @@ export function builder(yargs: Argv): Argv<any> {
     .epilogue(
       'Examples:\n' +
         '  Increment to the next test version:\n' +
-        '    npm run scripts -- release prerelease test\n' +
+        '    npm run scripts -- release prerelease --identifier test\n' +
         '  Increment the minor version:\n' +
         '    npm run scripts -- release minor\n' +
         '  Increment the patch version:\n' +

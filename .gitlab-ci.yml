@@ -61,7 +61,7 @@ workflow:
     - apt-get update
     - apt-get install --yes git gnupg
     - gpg --import "$GPG_PRIVATE_KEY"
-    - npm run scripts -- release "$INCREMENT" "$IDENTIFIER"
+    - npm run scripts -- release "$INCREMENT" --identifier "$IDENTIFIER"
     - npm install
     - VERSION="$(npm --silent run appsemble -- --version)"
     - |
