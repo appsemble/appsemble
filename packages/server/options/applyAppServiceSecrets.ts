@@ -1,6 +1,11 @@
 import https from 'node:https';
 
-import { type ApplyAppServiceSecretsParams, basicAuth, version } from '@appsemble/node-utils';
+import {
+  type ApplyAppServiceSecretsParams,
+  basicAuth,
+  logger,
+  version,
+} from '@appsemble/node-utils';
 import axios, { type RawAxiosRequestConfig } from 'axios';
 import { isMatch } from 'matcher';
 
@@ -71,33 +76,53 @@ export async function applyAppServiceSecrets({
               key: decrypt(clientCertSecret.secret, argv.aesSecret),
             });
           }
-          const response = await axios({
-            url: serviceSecret.tokenUrl,
-            method: 'POST',
-            data: {
-              grant_type: 'client_credentials',
-              ...(serviceSecret.scope ? { scope: serviceSecret.scope } : {}),
-            },
-            headers: {
-              'user-agent': `AppsembleServer/${version}`,
-              'content-type': 'application/x-www-form-urlencoded',
-              Authorization: basicAuth(serviceSecret.identifier, decryptedSecret),
-            },
-            httpsAgent,
-          });
-          const updatedSecret = (
-            await AppServiceSecret.update(
-              {
-                accessToken: encrypt(response.data.access_token, argv.aesSecret),
-                expiresAt: Date.now() + response.data.expires_in * 1e3,
+
+          let response;
+          try {
+            response = await axios({
+              url: serviceSecret.tokenUrl,
+              method: 'POST',
+              data: {
+                grant_type: 'client_credentials',
+                ...(serviceSecret.scope ? { scope: serviceSecret.scope } : {}),
               },
-              { where: { id: serviceSecret.id }, returning: true },
-            )
-          )[1][0];
-          newAxiosConfig.headers.Authorization = `Bearer ${decrypt(
-            updatedSecret.accessToken,
-            argv.aesSecret,
-          )}`;
+              headers: {
+                'user-agent': `AppsembleServer/${version}`,
+                'content-type': 'application/x-www-form-urlencoded',
+                Authorization: basicAuth(serviceSecret.identifier, decryptedSecret),
+              },
+              httpsAgent,
+            });
+          } catch (error) {
+            logger.verbose(`Failed to fetch token from ${serviceSecret.tokenUrl}`);
+            logger.error(error);
+            logger.error(String(error));
+          }
+
+          let updatedSecret;
+          if (response) {
+            try {
+              updatedSecret = (
+                await AppServiceSecret.update(
+                  {
+                    accessToken: encrypt(response.data.access_token, argv.aesSecret),
+                    expiresAt: Date.now() + response.data.expires_in * 1e3,
+                  },
+                  { where: { id: serviceSecret.id }, returning: true },
+                )
+              )[1][0];
+            } catch (error) {
+              logger.verbose(`Failed to update service secret ${serviceSecret.name}`);
+              logger.error(error);
+            }
+          }
+
+          if (updatedSecret) {
+            newAxiosConfig.headers.Authorization = `Bearer ${decrypt(
+              updatedSecret.accessToken,
+              argv.aesSecret,
+            )}`;
+          }
         } else {
           newAxiosConfig.headers.Authorization = `Bearer ${decrypt(
             serviceSecret.accessToken,
