@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.30.14-test.2](https://gitlab.com/appsemble/appsemble/-/releases/0.30.14-test.2)] - 2024-12-03
+
+### Added
+
+- Server: Log proxy OAuth2 token errors.
+
 ## \[[0.30.14-test.1](https://gitlab.com/appsemble/appsemble/-/releases/0.30.14-test.1)] - 2024-12-02
 
 ## \[[0.30.14-test.0](https://gitlab.com/appsemble/appsemble/-/releases/0.30.14-test.0)] - 2024-12-02
