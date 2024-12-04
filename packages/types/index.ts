@@ -1337,6 +1337,11 @@ export interface StorageWriteActionDefinition extends BaseActionDefinition<'stor
    * @default 'indexedDB'
    */
   storage?: StorageType;
+
+  /**
+   * Expiry of the data stored, to be used with `localStorage`.
+   */
+  expiry?: '1d' | '3d' | '7d' | '12h';
 }
 
 export interface GroupMemberInviteActionDefinition

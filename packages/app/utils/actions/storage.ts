@@ -31,6 +31,27 @@ export function getDB(): Promise<IDBPDatabase> {
   return dbPromise;
 }
 
+function readFromLocalStorage(key: string): Object | null {
+  const value = JSON.parse(localStorage.getItem(`appsemble-${appId}-${key}`));
+  if (!value) {
+    throw new Error('Could not find data at this key.');
+  }
+  const { expiry } = value;
+  if (!expiry) {
+    if (value?.value) {
+      return value.value;
+    }
+    // For compatibility with the older versions.
+    return value;
+  }
+  const now = Date.now();
+  if (now > expiry) {
+    localStorage.removeItem(`appsemble-${appId}-${key}`);
+    return null;
+  }
+  return value.value;
+}
+
 export async function readStorage(
   storageType: StorageType,
   key: string,
@@ -54,11 +75,14 @@ export async function readStorage(
   }
   if (storage !== 'indexedDB') {
     const store = storage === 'localStorage' ? localStorage : sessionStorage;
-    const value = store.getItem(`appsemble-${appId}-${key}`);
-    if (!value) {
-      throw new Error('Could not find data at this key.');
+    if (storage === 'sessionStorage') {
+      const value = store.getItem(`appsemble-${appId}-${key}`);
+      if (!value) {
+        throw new Error('Could not find data at this key.');
+      }
+      return JSON.parse(value);
     }
-    return JSON.parse(value);
+    return readFromLocalStorage(key);
   }
 
   const db = await getDB();
@@ -69,11 +93,34 @@ export async function readStorage(
   return value;
 }
 
+function writeToLocalStorage(
+  key: string,
+  value: string,
+  expiry?: '1d' | '3d' | '7d' | '12h',
+): void {
+  const millisecondsInADay = 1 * 24 * 60 * 60 * 1000;
+  const expiryToTimeObject = {
+    '1d': millisecondsInADay,
+    '3d': 3 * millisecondsInADay,
+    '7d': 7 * millisecondsInADay,
+    '12h': (1 / 2) * millisecondsInADay,
+  };
+  if (expiryToTimeObject[expiry]) {
+    localStorage.setItem(
+      `appsemble-${appId}-${key}`,
+      JSON.stringify({ value, expiry: Date.now() + expiryToTimeObject[expiry] }),
+    );
+  } else {
+    localStorage.setItem(`appsemble-${appId}-${key}`, JSON.stringify({ value }));
+  }
+}
+
 export function writeStorage(
   storage: StorageType,
   key: string,
   value: any,
   appStorage: AppStorage,
+  expiry?: '1d' | '3d' | '7d' | '12h',
 ): Promise<void> {
   async function write(): Promise<void> {
     switch (storage) {
@@ -81,7 +128,7 @@ export function writeStorage(
         appStorage.set(key, value);
         break;
       case 'localStorage':
-        localStorage.setItem(`appsemble-${appId}-${key}`, JSON.stringify(value));
+        writeToLocalStorage(key, value, expiry);
         break;
       case 'sessionStorage':
         sessionStorage.setItem(`appsemble-${appId}-${key}`, JSON.stringify(value));
@@ -138,7 +185,7 @@ export const write: ActionCreator<'storage.write'> = ({ appStorage, definition, 
     const value = remap(definition.value, data, context);
 
     withMutex(`${definition.storage}:${key}`, () =>
-      writeStorage(definition.storage, key, value, appStorage),
+      writeStorage(definition.storage, key, value, appStorage, definition.expiry),
     );
 
     return data;
