@@ -1,38 +1,72 @@
 # Theming
 
+## Table of Contents
+
+- [Introduction](#introduction)
+- [Variables](#variables)
+  - [Common variables](#common-variables)
+  - [Semantics](#semantics)
+  - [Block specific](#block-specific)
+  - [Mobile only](#mobile-only)
+- [Example](#example)
+- [Bulma Extensions](#bulma-extensions)
+
+## Introduction
+
 The Bulma CSS framework uses a set of colors for different parts of its elements. Appsemble supports
 customizing a subset of these variables by including a `theme` object at different points within the
 app definition.
 
-The supported variables are:
-
-- `themeColor`
-- `splashColor`
-- `primaryColor`
-- `linkColor`
-- `successColor`
-- `infoColor`
-- `warningColor`
-- `dangerColor`
-- `font`
-- `tileLayer`
-
-The `themeColor` and `splashColor` variables are not visible at all times. These define the colors
-that appear when starting up the app after installing it on a mobile device.
+## Variables
 
 Each variable can be assigned with a [hexadecimal value][hex] representing the desired color.
-
-The `font` property can be used to specify which font family to use. Any font family from [Google
-Fonts][google-fonts] may be used. Additionally any custom font can be used by specifying the source
-to be `custom` and uploading the font file(s) as asset(s), then applying it in the App’s CSS using
-the [`@font-face`][font-face] at-rule.
-
-The tile layer used on components that display a map (such as `map` and `form`) can be customized
-using the `tileLayer` property by specifying a URL template.
 
 > **Note**: These variables can also be accessed in the app's CSS using kebab-case. For example:
 > `background-color: var(--primary-color)`. An appropriately readable shade for the text of each
 > color can be found by appending `-invert` to the variable name.
+
+### Common variables
+
+These change the styling for some of the most common elements of an app.
+
+| Variable       | Purpose                                                                                              |
+| -------------- | ---------------------------------------------------------------------------------------------------- |
+| `primaryColor` | The color that is most commonly used in your app in order to create a distinct identity for your app |
+| `linkColor`    | Color of links. This sets the (background) color for any element with the `<a>` tag                  |
+| `font`         | Which font family to use in the app.                                                                 |
+
+Any font family from [Google Fonts][google-fonts] may be used. Additionally any custom font can be
+used by specifying the source to be `custom` and uploading the font file(s) as asset(s), then
+applying it in the App’s CSS using the [`@font-face`][font-face] at-rule.
+
+### Semantics
+
+These are used to convey messages. For example, <span style="color:green">green</span> is positive
+so this color can be used to convey success to the user.
+
+| Variable       | Purpose                                                                               |
+| -------------- | ------------------------------------------------------------------------------------- |
+| `successColor` | Color for success messages. Most commonly used for `message` popups of type `success` |
+| `infoColor`    | Color for info messages. Most commonly used for `message` popups of type `info`       |
+| `warningColor` | Color for warning messages. Most commonly used for `message` popups of type `warning` |
+| `dangerColor`  | Color for danger messages. Most commonly used for `message` popups of type `danger`   |
+
+### Block specific
+
+These variables are only used in specific blocks.
+
+| Variable    | Purpose                                                                                                           |
+| ----------- | ----------------------------------------------------------------------------------------------------------------- |
+| `tileLayer` | The tile layer used on components that display a map (example: https://cartodb-basemaps-c.global.ssl.fastly.net/) |
+
+### Mobile only
+
+These themes are only seen on mobile versions of the app.
+
+| Variable      | Purpose                                                                                                                        |
+| ------------- | ------------------------------------------------------------------------------------------------------------------------------ |
+| `splashColor` | The background color of the splash screen                                                                                      |
+| `themeColor`  | The backround color of the notification window at the top of the screen, and the splash screen if `splashColor` is not defined |
 
 ## Example
 
@@ -51,7 +85,7 @@ pages:
       primaryColor: '#FF0000' # Red
     blocks:
       - type: action-button
-        version: 0.30.13
+        version: 0.30.14-test.3
         parameters:
           icon: plus
         theme:
@@ -77,3 +111,8 @@ variables Bulma uses. The list of extensions is as follows:
 [hex]: https://htmlcolorcodes.com/
 [google-fonts]: https://fonts.google.com
 [font-face]: https://developer.mozilla.org/en-US/docs/Web/CSS/@font-face
+
+## Related subjects
+
+- [Styling](../app/styling.md)
+- [Custom CSS](custom-css.md)
