@@ -1,0 +1,10 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`should render a button with text \`test\` 1`] = `
+<button
+  class="button"
+  type="button"
+>
+  test
+</button>
+`;

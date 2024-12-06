@@ -26,7 +26,10 @@ interface MessageProps {
 
 export function Message({ children, className, color, header }: MessageProps): VNode {
   return (
-    <div className={classNames('message', className, { [`is-${color}`]: color })}>
+    <div
+      className={classNames('message', className, { [`is-${color}`]: color })}
+      data-testid="message-comp"
+    >
       {header ? <h6 className="message-header">{header}</h6> : null}
       <div className="message-body">{children}</div>
     </div>

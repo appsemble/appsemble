@@ -48,7 +48,11 @@ export function Dropdown({ children, className, icon, label }: DropdownProps): V
   useClickOutside(ref, disable);
 
   return (
-    <div className={classNames('dropdown', className, { 'is-active': enabled })} ref={ref}>
+    <div
+      className={classNames('dropdown', className, { 'is-active': enabled })}
+      data-testid="dropdown"
+      ref={ref}
+    >
       <div className="dropdown-trigger">
         <Button aria-haspopup icon={icon} onClick={toggle} onKeyDown={onKeyDown}>
           {label}
@@ -56,6 +60,7 @@ export function Dropdown({ children, className, icon, label }: DropdownProps): V
       </div>
       <div
         className="dropdown-menu"
+        data-testid="dropdown-menu"
         onClick={toggle}
         onKeyDown={onKeyDown}
         role="menu"

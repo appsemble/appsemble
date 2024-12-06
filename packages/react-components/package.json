@@ -58,7 +58,7 @@
     "react-transition-group": "^4.0.0"
   },
   "devDependencies": {
-    "@testing-library/react": "^14.0.0",
+    "@testing-library/react": "^16.0.0",
     "vitest": "^1.0.0"
   }
 }

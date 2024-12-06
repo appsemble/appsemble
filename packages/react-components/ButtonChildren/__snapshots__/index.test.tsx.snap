@@ -1,0 +1,38 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`should render an icon 1`] = `
+<div
+  role="tab"
+>
+  <span
+    class="icon"
+  >
+    <i
+      class="fas fa-home"
+    />
+  </span>
+  <span>
+    <div>
+      test div
+    </div>
+  </span>
+</div>
+`;
+
+exports[`should render every child of the component 1`] = `
+<div
+  role="tab"
+>
+  <div>
+    test div
+  </div>
+  <button
+    type="button"
+  >
+    test button
+  </button>
+  <input
+    placeholder="test-input"
+  />
+</div>
+`;

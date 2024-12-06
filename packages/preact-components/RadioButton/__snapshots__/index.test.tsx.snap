@@ -1,0 +1,11 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`should render a radio button 1`] = `
+<input
+  class="is-checkradio"
+  id="test-id"
+  name="test name"
+  type="radio"
+  value="false"
+/>
+`;

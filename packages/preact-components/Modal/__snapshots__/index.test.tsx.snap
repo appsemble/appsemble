@@ -1,0 +1,25 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`should not render a bulma modal when it is inactive 1`] = `<div />`;
+
+exports[`should render a bulma modal when it is active 1`] = `
+<div>
+  <div
+    class="is-active modal root open"
+  >
+    <div
+      class="modal-background"
+      role="presentation"
+    />
+    <div
+      class="modal-content is-hidden-desktop"
+    >
+      test
+    </div>
+    <button
+      class="modal-close is-large"
+      type="button"
+    />
+  </div>
+</div>
+`;
