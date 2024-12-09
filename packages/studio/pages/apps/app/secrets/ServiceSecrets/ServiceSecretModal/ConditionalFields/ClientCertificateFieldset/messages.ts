@@ -17,4 +17,13 @@ export const messages = defineMessages({
     id: 'studio./EEoOd',
     defaultMessage: 'The private key for client certificate authentication in PEM format',
   },
+  caLabel: {
+    id: 'studio.ulrsBf',
+    defaultMessage: 'Certificate authority',
+  },
+  caHelp: {
+    id: 'studio.wRZVkH',
+    defaultMessage:
+      'The custom certificate authority. Can be a chain of certificates in PEM format',
+  },
 });

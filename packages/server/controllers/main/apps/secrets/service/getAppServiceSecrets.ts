@@ -34,6 +34,7 @@ export async function getAppServiceSecrets(ctx: Context): Promise<void> {
       'identifier',
       'tokenUrl',
       'scope',
+      'ca',
     ],
     where: {
       AppId: appId,

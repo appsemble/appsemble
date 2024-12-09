@@ -101,6 +101,7 @@ describe('updateAppServiceSecret', () => {
 
       {
         "authenticationMethod": "cookie",
+        "ca": null,
         "id": 2,
         "identifier": "x-key",
         "name": "Test service",
