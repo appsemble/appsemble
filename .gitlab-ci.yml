@@ -832,11 +832,15 @@ provision review:
   stage: provision
   rules:
     - if: $CI_MERGE_REQUEST_ID && $CI_MERGE_REQUEST_SOURCE_PROJECT_PATH == 'appsemble/appsemble'
+      when: manual
+  variables:
+    INCREMENT: patch
+    IDENTIFIER: ''
   needs:
     - review
     - npm_ci
   script:
-    - npm run scripts -- release patch
+    - npm run scripts -- release "$INCREMENT" --identifier "$IDENTIFIER"
     - npm run appsemble -- config set context review
     - npm run appsemble -- config set remote "https://$CI_MERGE_REQUEST_IID.appsemble.review"
     - npm run scripts -- wait-for-api
@@ -852,11 +856,15 @@ provision staging:
   stage: provision
   rules:
     - if: $CI_COMMIT_BRANCH == 'staging'
+      when: manual
+  variables:
+    INCREMENT: patch
+    IDENTIFIER: ''
   needs:
     - staging
     - npm_ci
   script:
-    - npm run scripts -- release patch
+    - npm run scripts -- release "$INCREMENT" --identifier "$IDENTIFIER"
     - npm run appsemble -- config set context staging
     - npm run appsemble -- config set remote https://staging.appsemble.review
     - npm run appsemble -- -vv block publish blocks/*
