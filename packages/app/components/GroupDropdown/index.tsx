@@ -30,7 +30,15 @@ export function GroupDropdown(): ReactNode {
             ? `${formatMessage(messages.group)} ${appMemberSelectedGroup?.name}`
             : formatMessage(messages.noGroup)}
           {' - '}
-          {appMemberSelectedGroup?.role || appMemberInfo.role}
+          {appMemberSelectedGroup?.role
+            ? getAppMessage({
+                id: `app.roles.${appMemberSelectedGroup?.role}`,
+                defaultMessage: appMemberSelectedGroup?.role,
+              }).format()
+            : getAppMessage({
+                id: `app.roles.${appMemberInfo.role}`,
+                defaultMessage: appMemberInfo.role,
+              }).format()}
         </div>
       }
     >
@@ -44,6 +52,14 @@ export function GroupDropdown(): ReactNode {
           }).format()}
         </NavbarItem>
       ))}
+      <NavbarItem key="no-group" onClick={() => handleGroupChange(null)}>
+        {formatMessage(messages.noGroup)}
+        {' - '}
+        {getAppMessage({
+          id: `app.roles.${appMemberInfo.role}`,
+          defaultMessage: appMemberInfo.role,
+        }).format()}
+      </NavbarItem>
     </NavbarDropdown>
   );
 }
