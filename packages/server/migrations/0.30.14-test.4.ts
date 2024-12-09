@@ -13,7 +13,7 @@ export async function up(transaction: Transaction, db: Sequelize): Promise<void>
 
   logger.info('Add column `ca` to `AppServiceSecret` table');
   await queryInterface.addColumn('AppServiceSecret', 'ca', {
-    type: DataTypes.STRING,
+    type: DataTypes.TEXT,
     allowNull: true,
   });
 }

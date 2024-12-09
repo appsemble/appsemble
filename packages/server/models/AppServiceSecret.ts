@@ -67,7 +67,7 @@ export class AppServiceSecret extends Model {
   /**
    * Used for the client-certificate flow.
    */
-  @Column(DataType.STRING)
+  @Column(DataType.TEXT)
   ca: string;
 
   /**
