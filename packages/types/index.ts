@@ -2632,6 +2632,11 @@ export interface AppServiceSecretDefinition {
    * The scope used for client-credentials method.
    */
   scope?: string;
+
+  /**
+   * The custom certificate authority used for client-certificate method.
+   */
+  ca?: string;
 }
 
 export interface AppServiceSecret extends AppServiceSecretDefinition {
