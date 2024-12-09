@@ -18,7 +18,7 @@ websites of these tools.
 - [Git](https://git-scm.com/)
 - [Docker](https://www.docker.com/)
 - [Docker Compose](https://docs.docker.com/compose/)
-- [NodeJS 18](https://nodejs.org/)
+- [NodeJS 20.18](https://nodejs.org/docs/latest-v20.x/api/index.html)
 
 You can start local development by cloning the git repository and installing the dependencies. Run
 the following commands to get started.

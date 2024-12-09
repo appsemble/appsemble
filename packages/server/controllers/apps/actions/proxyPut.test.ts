@@ -12,7 +12,7 @@ import { createTestUser } from '../../../utils/test/authorization.js';
 let server: Koa;
 const argv = { host: 'http://localhost', secret: 'test', aesSecret: 'testSecret' };
 
-describe('proxyGet', () => {
+describe('proxyPut', () => {
   let proxiedApp: Koa;
   let proxiedContext: ParameterizedContext;
   let proxiedRequest: AxiosTestInstance;

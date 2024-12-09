@@ -139,5 +139,5 @@ dependsOn:
     - name: Docker
     - name: Docker Compose
     - name: NodeJS
-      versionMin: 18
+      versionMin: 20
     - name: appsemble/appsemble

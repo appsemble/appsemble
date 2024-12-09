@@ -1,5 +1,5 @@
 default:
-  image: node:18.18.0-bookworm-slim
+  image: node:20.18-bookworm-slim
 
 stages:
   - cleanup
@@ -231,8 +231,8 @@ stylelint:
   script:
     - npx -- stylelint .
 
-# Run unittests using NodeJS 18.
-test node 18:
+# Run unittests using NodeJS.
+test node:
   extends: .npm
   services:
     - postgres:15
