@@ -1,0 +1,49 @@
+import { NavbarDropdown, NavbarItem } from '@appsemble/react-components';
+import { type AppMemberGroup } from '@appsemble/types';
+import { type ReactNode } from 'react';
+import { useIntl } from 'react-intl';
+import { useNavigate } from 'react-router-dom';
+
+import styles from './index.module.css';
+import { messages } from './messages.js';
+import { useAppMember } from '../AppMemberProvider/index.js';
+import { useAppMessages } from '../AppMessagesProvider/index.js';
+
+export function GroupDropdown(): ReactNode {
+  const { formatMessage } = useIntl();
+  const { getAppMessage } = useAppMessages();
+  const navigate = useNavigate();
+  const { appMemberGroups, appMemberInfo, appMemberSelectedGroup, setAppMemberSelectedGroup } =
+    useAppMember();
+
+  const handleGroupChange = (group: AppMemberGroup): void => {
+    setAppMemberSelectedGroup(group);
+    navigate('/');
+  };
+
+  return (
+    <NavbarDropdown
+      className={`is-right ${styles.dropdown}`}
+      label={
+        <div className="selected flex">
+          {appMemberSelectedGroup?.name
+            ? `${formatMessage(messages.group)} ${appMemberSelectedGroup?.name}`
+            : formatMessage(messages.noGroup)}
+          {' - '}
+          {appMemberSelectedGroup?.role || appMemberInfo.role}
+        </div>
+      }
+    >
+      {appMemberGroups.map((group) => (
+        <NavbarItem key={group.id} onClick={() => handleGroupChange(group)}>
+          {formatMessage(messages.group)} {group.name}
+          {' - '}
+          {getAppMessage({
+            id: `app.roles.${group.role}`,
+            defaultMessage: group.role,
+          }).format()}
+        </NavbarItem>
+      ))}
+    </NavbarDropdown>
+  );
+}

@@ -1,0 +1,54 @@
+/* CSS hacks to override Bulma’s media queries */
+.dropdown > button {
+  align-items: center;
+  display: flex;
+
+  &::after {
+    border-color: var(--primary-color-invert) !important;
+  }
+}
+
+.dropdown > div {
+  background-color: hsl(0deg 0% 100%);
+  border-bottom-left-radius: 6px;
+  border-bottom-right-radius: 6px;
+  border-top: 2px solid hsl(0deg 0% 86%);
+  box-shadow: 0 8px 8px rgb(10 10 10 / 10%);
+  display: none;
+  font-size: 0.875rem !important;
+  left: auto;
+  min-width: 100%;
+  position: absolute;
+  right: 0;
+  top: 100%;
+  z-index: 20;
+}
+
+.dropdown button {
+  font-size: 0.875rem;
+}
+
+.dropdown :global(.navbar-item) {
+  padding: 0.375rem 1rem;
+  white-space: nowrap;
+
+  &:global(.is-active) {
+    background-color: hsl(0deg 0% 21%);
+    color: hsl(0deg 0% 100%);
+  }
+}
+
+.dropdown hr {
+  display: block;
+}
+
+.dropdown:global(.is-active) {
+  & > div,
+  & > hr {
+    display: block;
+  }
+
+  & > button {
+    color: hsl(0deg 0% 100%);
+  }
+}

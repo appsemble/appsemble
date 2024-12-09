@@ -11,6 +11,6 @@ export class Meta extends Model {
    * This field _**must**_ stay consistent across versions!
    */
   @PrimaryKey
-  @Column(DataType.STRING(11))
+  @Column(DataType.STRING)
   version: string;
 }

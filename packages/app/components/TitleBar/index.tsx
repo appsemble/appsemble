@@ -7,6 +7,7 @@ import { shouldShowMenu } from '../../utils/layout.js';
 import { useAppDefinition } from '../AppDefinitionProvider/index.js';
 import { useAppMember } from '../AppMemberProvider/index.js';
 import { useAppMessages } from '../AppMessagesProvider/index.js';
+import { GroupDropdown } from '../GroupDropdown/index.js';
 import { usePage } from '../MenuProvider/index.js';
 import { ProfileDropdown } from '../ProfileDropdown/index.js';
 
@@ -22,7 +23,7 @@ interface AppBarProps {
  */
 export function AppBar({ children, hideName }: AppBarProps): ReactNode {
   const { definition, demoMode } = useAppDefinition();
-  const { appMemberRole, appMemberSelectedGroup } = useAppMember();
+  const { appMemberGroups, appMemberRole, appMemberSelectedGroup } = useAppMember();
   const { page } = usePage();
   const { getAppMessage } = useAppMessages();
 
@@ -46,6 +47,11 @@ export function AppBar({ children, hideName }: AppBarProps): ReactNode {
         {demoMode ? (
           <div className="tag is-rounded is-warning mx-1 my-1">
             <FormattedMessage {...messages.demo} />
+          </div>
+        ) : null}
+        {appMemberGroups.length ? (
+          <div className="navbar-end is-flex is-align-items-stretch is-justify-content-flex-end ml-auto">
+            <GroupDropdown />
           </div>
         ) : null}
         {definition.layout?.login == null || definition.layout?.login === 'navbar' ? (
