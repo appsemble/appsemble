@@ -31,7 +31,7 @@
       "eslint"
     ],
     "**/{messages.ts,package.json,tsconfig.json,vitest.config.js,LICENSE.md,packages/{cli/assets/appsemblerc.schema.json,types/cli.ts}}": [
-      "TS_NODE_PROJECT=packages/scripts/tsconfig.json node --import ./loader.mjs packages/scripts/index.ts validate"
+      "sh -c 'TS_NODE_PROJECT=packages/scripts/tsconfig.json node --import ./loader.mjs packages/scripts/index.ts validate'"
     ]
   },
   "overrides": {
