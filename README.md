@@ -61,7 +61,7 @@ must be installed.
 
 - [Docker][]
 - [Docker Compose][]
-- [NodeJS 18][nodejs]
+- [NodeJS 20.18][nodejs]
 
 ### Getting started
 
@@ -221,4 +221,4 @@ Please read our [security policy](./SECURITY.md).
 [docker]: https://docker.com
 [docker compose]: https://docs.docker.com/compose
 [vitest cli options]: https://vitest.dev/guide/cli.html#options
-[nodejs]: https://nodejs.org
+[nodejs]: https://nodejs.org/docs/latest-v20.x/api/index.html

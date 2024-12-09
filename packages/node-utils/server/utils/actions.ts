@@ -197,6 +197,7 @@ async function handleRequestProxy(
   }
 
   axiosConfig.headers['user-agent'] = `AppsembleServer/${version}`;
+  axiosConfig.headers.connection = 'close';
   axiosConfig.responseType = 'stream';
   axiosConfig.validateStatus = () => true;
   axiosConfig.decompress = false;
