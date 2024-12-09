@@ -1,3 +1,5 @@
+import { AppPermission, predefinedAppRoles, predefinedAppRolePermissions } from '@appsemble/types';
+
 # Security
 
 ## Table of Contents
@@ -210,63 +212,33 @@ For convenience, there are some roles predefined in the system, each having a se
 permissions assigned to them, from which the guest property and custom roles defined in the app can
 inherit from. Here are all predefined app roles, along with their permissions:
 
-- `Member`
-
-- `MembersManager`
-
-  - `$member:invite`
-  - `$member:query`
-  - `$member:delete`
-  - `$member:role:update`
-  - `$member:properties:patch`
-
-- `GroupMembersManager`
-
-  - `$group:member:invite`
-  - `$group:member:query`
-  - `$group:member:delete`
-  - `$group:member:role:update`
-
-- `GroupsManager`
-
-  - `$group:member:invite`
-  - `$group:member:query`
-  - `$group:member:delete`
-  - `$group:member:role:update`
-  - `$group:query`
-  - `$group:create`
-  - `$group:update`
-  - `$group:delete`
-
-- `ResourcesManager`
-
-  - `$resource:all:create`
-  - `$resource:all:query`
-  - `$resource:all:get`
-  - `$resource:all:update`
-  - `$resource:all:patch`
-  - `$resource:all:delete`
-
-- `Owner`
-  - `$member:invite`
-  - `$member:query`
-  - `$member:delete`
-  - `$member:role:update`
-  - `$member:properties:patch`
-  - `$group:member:invite`
-  - `$group:member:query`
-  - `$group:member:delete`
-  - `$group:member:role:update`
-  - `$group:query`
-  - `$group:create`
-  - `$group:update`
-  - `$group:delete`
-  - `$resource:all:create`
-  - `$resource:all:query`
-  - `$resource:all:get`
-  - `$resource:all:update`
-  - `$resource:all:patch`
-  - `$resource:all:delete`
+<div style={{ overflowX: 'auto' }}>
+  <table>
+    <thead>
+      <tr>
+        <th>Permissions</th>
+        {predefinedAppRoles.map((role) => (
+          <th key={role}>{role}</th>
+        ))}
+      </tr>
+    </thead>
+    <tbody>
+      {Object.values(AppPermission)
+        .filter((permission) => isNaN(Number(permission)))
+        .filter((permission) => !permission.startsWith('$resource:all:own'))
+        .map((permission) => (
+          <tr key={permission}>
+            <td>{permission}</td>
+            {predefinedAppRoles.map((role) => (
+              <td key={role} align="center">
+                {predefinedAppRolePermissions[role].includes(permission) ? '✓' : ''}
+              </td>
+            ))}
+          </tr>
+        ))}
+    </tbody>
+  </table>
+</div>
 
 Predefined roles cannot be overwritten in the app definition, they can only be inherited from.
 
