@@ -1,7 +1,7 @@
 apiVersion: v2
 name: appsemble
-version: 0.30.14-test.2
-appVersion: 0.30.14-test.2
+version: 0.30.14-test.3
+appVersion: 0.30.14-test.3
 kubeVersion: '>=1.21.0'
 type: application
 description: The open source low-code app building platform
@@ -27,9 +27,11 @@ dependencies:
     repository: https://jouve.github.io/charts
     condition: mailpit.enabled
 annotations:
-  artifacthub.io/changes: |
-    - kind: added
-      description: "Server: Log proxy OAuth2 token errors."
+  artifacthub.io/changes: >
+    - kind: changed
+      description: "App: Move group selection to a separate dropdown in the navbar."
+    - kind: fixed
+      description: "Studio: Add empty scope when creating secrets without scope."
   artifacthub.io/license: LGPL-3.0-only
   artifacthub.io/links: |
     - name: Appsemble Studio

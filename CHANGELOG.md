@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.30.14-test.3](https://gitlab.com/appsemble/appsemble/-/releases/0.30.14-test.3)] - 2024-12-09
+
+### Changed
+
+- App: Move group selection to a separate dropdown in the navbar.
+
+### Fixed
+
+- Studio: Add empty `scope` when creating secrets without scope.
+
 ## \[[0.30.14-test.2](https://gitlab.com/appsemble/appsemble/-/releases/0.30.14-test.2)] - 2024-12-03
 
 ### Added
