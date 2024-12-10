@@ -663,6 +663,6 @@ continue on the result of the app created in this guide:
 - [Resources](../app/resources.md)
 - [Security](../app/security.md)
 - [Notifications](notifications.md)
-- [Theming](../app/theming.md)
+- [Styling](../app/styling.md)
 - [DNS](dns.md)
 - [Reference documentation](../reference)
