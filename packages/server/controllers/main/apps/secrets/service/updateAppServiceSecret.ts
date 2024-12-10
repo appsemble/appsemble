@@ -37,7 +37,7 @@ export async function updateAppServiceSecret(ctx: Context): Promise<void> {
     AppId: appId,
   });
 
-  const { authenticationMethod, id, identifier, name, scope, tokenUrl, urlPatterns } =
+  const { authenticationMethod, ca, id, identifier, name, scope, tokenUrl, urlPatterns } =
     appServiceSecret;
 
   await updateNamespacedSecret(name, body.secret, app.path, String(appId));
@@ -50,5 +50,6 @@ export async function updateAppServiceSecret(ctx: Context): Promise<void> {
     urlPatterns,
     tokenUrl,
     scope,
+    ca,
   };
 }

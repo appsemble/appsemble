@@ -7,13 +7,13 @@
     "apps/*/controller"
   ],
   "scripts": {
-    "appsemble": "ts-node-esm -T packages/cli/index.ts",
-    "create-appsemble": "ts-node-esm -T packages/create-appsemble/index.ts",
+    "appsemble": "TS_NODE_PROJECT=packages/cli/tsconfig.json node --import ./loader.mjs packages/cli/index.ts",
+    "create-appsemble": "TS_NODE_PROJECT=packages/create-appsemble/tsconfig.json node --import ./loader.mjs packages/create-appsemble/index.ts",
     "e2e": "npm --workspace @appsemble/e2e run e2e",
     "prepare": "husky install || true",
     "prettier": "prettier --check",
-    "scripts": "ts-node-esm -T packages/scripts/index.ts",
-    "start": "ts-node-esm -T packages/cli/index.ts start --remote https://appsemble.app",
+    "scripts": "TS_NODE_PROJECT=packages/scripts/tsconfig.json node --import ./loader.mjs packages/scripts/index.ts",
+    "start": "TS_NODE_PROJECT=packages/cli/tsconfig.json node --import ./loader.mjs packages/cli/index.ts start --remote https://appsemble.app",
     "stylelint": "stylelint .",
     "test": "vitest"
   },
@@ -31,7 +31,7 @@
       "eslint"
     ],
     "**/{messages.ts,package.json,tsconfig.json,vitest.config.js,LICENSE.md,packages/{cli/assets/appsemblerc.schema.json,types/cli.ts}}": [
-      "ts-node-esm -T packages/scripts/index.ts validate"
+      "sh -c 'TS_NODE_PROJECT=packages/scripts/tsconfig.json node --import ./loader.mjs packages/scripts/index.ts validate'"
     ]
   },
   "overrides": {
@@ -99,7 +99,7 @@
     "stylelint-order": "^6.0.0",
     "stylelint-prettier": "^5.0.0",
     "ts-json-schema-generator": "^1.0.0",
-    "ts-node": "^10.0.0",
+    "ts-node": "^10.9.0",
     "typescript": "^5.0.0",
     "unified": "^11.0.0",
     "unified-consistency": "^2.0.0",
@@ -107,7 +107,7 @@
     "vitest": "^1.0.0"
   },
   "engines": {
-    "node": ">=18"
+    "node": ">=20"
   },
   "appsembleServer": {
     "database-host": "localhost",

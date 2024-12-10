@@ -74,6 +74,7 @@ export async function applyAppServiceSecrets({
             httpsAgent = new https.Agent({
               cert: clientCertSecret.identifier,
               key: decrypt(clientCertSecret.secret, argv.aesSecret),
+              ...(clientCertSecret.ca ? { ca: clientCertSecret.ca } : {}),
             });
           }
 

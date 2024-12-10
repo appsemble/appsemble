@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.30.14-test.4](https://gitlab.com/appsemble/appsemble/-/releases/0.30.14-test.4)] - 2024-12-09
+
+### Added
+
+- Server: Support ca in `client-certificate` service secrets.
+
+### Fixed
+
+- App: Allow selecting no group in group dropdown, translate app roles.
+- Server: Fix flaky update app collection tests.
+
 ## \[[0.30.14-test.3](https://gitlab.com/appsemble/appsemble/-/releases/0.30.14-test.3)] - 2024-12-09
 
 ### Changed
