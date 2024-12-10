@@ -36,8 +36,9 @@ export async function sendNotification(
       }),
       {
         vapidDetails: {
-          // XXX: Make this configurable
-          subject: 'mailto: support@appsemble.com',
+          // TODO: Make this configurable
+          // Important to be in the correct format for apple notifications
+          subject: 'mailto:support@appsemble.com',
           publicKey: app.vapidPublicKey,
           privateKey: app.vapidPrivateKey,
         },
