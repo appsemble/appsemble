@@ -86,7 +86,14 @@ export function Fieldset({
     <fieldset
       className={classNames('appsemble-fieldset mb-4', className, styles['fieldset-wrapper'])}
     >
-      <div className="title is-5 mb-4">{utils.remap(field.label, localValues) as string}</div>
+      <div className="is-flex is-justify-content-space-between">
+        <div className="title is-5 mb-4">{utils.remap(field.label, localValues) as string}</div>
+        {field.repeated && !minLength ? (
+          <span className="is-pulled-right has-text-weight-normal">
+            {utils.formatMessage('optionalLabel')}
+          </span>
+        ) : null}
+      </div>
       {field.repeated ? (
         <>
           <div className={styles[`fieldset-entries-wrapper-${display}`]}>
