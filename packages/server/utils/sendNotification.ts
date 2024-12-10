@@ -48,6 +48,8 @@ export async function sendNotification(
       throw error;
     }
 
+    logger.error(`Failed to send notification: ${error instanceof Error ? error.message : error}`);
+
     logger.verbose(`Removing push notification subscription ${subscription.id} for app ${app.id}`);
     await subscription.destroy();
   }

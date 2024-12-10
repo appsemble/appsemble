@@ -31,9 +31,11 @@ export async function sendAppNotifications(ctx: Context): Promise<void> {
   logger.verbose(`Sending ${app.AppSubscriptions.length} notifications for app ${appId}`);
 
   try {
-    for (const subscription of app.AppSubscriptions) {
-      sendNotification(app, subscription, { title, body });
-    }
+    await Promise.all(
+      app.AppSubscriptions.map((subscription) =>
+        sendNotification(app, subscription, { title, body }),
+      ),
+    );
   } catch (error) {
     logger.error(error);
     throwKoaError(ctx, 500, 'There was a problem sending notifications');
