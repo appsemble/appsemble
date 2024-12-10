@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.30.14-test.5](https://gitlab.com/appsemble/appsemble/-/releases/0.30.14-test.5)] - 2024-12-10
+
+### Fixed
+
+- Server: Fix notifications subject.
+
 ## \[[0.30.14-test.4](https://gitlab.com/appsemble/appsemble/-/releases/0.30.14-test.4)] - 2024-12-09
 
 ### Added
