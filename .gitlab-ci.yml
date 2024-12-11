@@ -840,7 +840,7 @@ provision review:
     - review
     - npm_ci
   script:
-    - npm run scripts -- release "$INCREMENT" --identifier "$IDENTIFIER"
+    - npm run scripts -- release "$INCREMENT" ${IDENTIFIER:+--identifier "$IDENTIFIER"}
     - npm run appsemble -- config set context review
     - npm run appsemble -- config set remote "https://$CI_MERGE_REQUEST_IID.appsemble.review"
     - npm run scripts -- wait-for-api
@@ -864,7 +864,7 @@ provision staging:
     - staging
     - npm_ci
   script:
-    - npm run scripts -- release "$INCREMENT" --identifier "$IDENTIFIER"
+    - npm run scripts -- release "$INCREMENT" ${IDENTIFIER:+--identifier "$IDENTIFIER"}
     - npm run appsemble -- config set context staging
     - npm run appsemble -- config set remote https://staging.appsemble.review
     - npm run appsemble -- -vv block publish blocks/*
