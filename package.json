@@ -7,13 +7,13 @@
     "apps/*/controller"
   ],
   "scripts": {
-    "appsemble": "TS_NODE_PROJECT=packages/cli/tsconfig.json node --import ./loader.mjs packages/cli/index.ts",
-    "create-appsemble": "TS_NODE_PROJECT=packages/create-appsemble/tsconfig.json node --import ./loader.mjs packages/create-appsemble/index.ts",
+    "appsemble": "cross-env TS_NODE_PROJECT=packages/cli/tsconfig.json node --import ./loader.mjs packages/cli/index.ts",
+    "create-appsemble": "cross-env TS_NODE_PROJECT=packages/create-appsemble/tsconfig.json node --import ./loader.mjs packages/create-appsemble/index.ts",
     "e2e": "npm --workspace @appsemble/e2e run e2e",
     "prepare": "husky install || true",
     "prettier": "prettier --check",
-    "scripts": "TS_NODE_PROJECT=packages/scripts/tsconfig.json node --import ./loader.mjs packages/scripts/index.ts",
-    "start": "TS_NODE_PROJECT=packages/cli/tsconfig.json node --import ./loader.mjs packages/cli/index.ts start --remote https://appsemble.app",
+    "scripts": "cross-env TS_NODE_PROJECT=packages/scripts/tsconfig.json node --import ./loader.mjs packages/scripts/index.ts",
+    "start": "cross-env TS_NODE_PROJECT=packages/cli/tsconfig.json node --import ./loader.mjs packages/cli/index.ts start --remote https://appsemble.app",
     "stylelint": "stylelint .",
     "test": "vitest"
   },
@@ -123,5 +123,8 @@
     "remote": "http://localhost:9999",
     "secret": "Local Appsemble development secret",
     "aes-secret": "Local Appsmeble development AES secret"
+  },
+  "dependencies": {
+    "cross-env": "^7.0.3"
   }
 }
