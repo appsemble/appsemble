@@ -5,7 +5,7 @@ import { type Context, type Middleware } from 'koa';
 
 import { organizationBlocklist } from '../../../organizationBlocklist.js';
 import { makeCSP, render } from '../../../render.js';
-import { bulmaVersion, faVersion } from '../../../versions.cjs';
+import { bulmaVersion, faVersion } from '../../../versions.js';
 import { type Options } from '../../types.js';
 
 export const bulmaURL = `/bulma/${bulmaVersion}/bulma.min.css`;
