@@ -125,6 +125,7 @@
     "aes-secret": "Local Appsmeble development AES secret"
   },
   "dependencies": {
-    "cross-env": "^7.0.3"
+    "cross-env": "^7.0.0",
+    "vite-tsconfig-paths": "^5.0.0"
   }
 }
