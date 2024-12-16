@@ -18,9 +18,10 @@ import { getProjectImplementations } from './config.js';
 
 export async function buildProject(config: ProjectBuildConfig): Promise<BuildResult> {
   const buildOptions: BuildOptions = {
-    entryPoints: ['index.ts'],
+    entryPoints: ['./src/index'],
     bundle: true,
     write: false,
+    outdir: 'dist',
     absWorkingDir: join(config.dir),
     loader: {
       '.png': 'dataurl',
