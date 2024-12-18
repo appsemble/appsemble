@@ -897,32 +897,34 @@ provision production:
 #  Performance Stage                                                                               #
 ###################################################################################################
 
-lighthouse:
-  interruptible: true
-  stage: performance
-  extends: .npm
-  image: $CI_REGISTRY/appsemble/docker-node-chrome
-  needs:
-    - npm_ci
-    - job: provision review
-      optional: true
-    - job: provision staging
-      optional: true
-    - job: provision production
-      optional: true
-  rules:
-    - when: never # Disabling lighthouse for now
-    - if: $CI_MERGE_REQUEST_ID && $CI_MERGE_REQUEST_SOURCE_PROJECT_PATH == 'appsemble/appsemble'
-    - if: $CI_COMMIT_TAG
-  script:
-    - npm run scripts -- wait-for-ssl
-    - npx -- lhci collect
-    - npx -- lhci assert
-  artifacts:
-    expose_as: Lighthouse reports
-    when: always
-    paths:
-      - .lighthouseci
+#
+# --- Disabled for now ---
+#
+# lighthouse:
+#   interruptible: true
+#   stage: performance
+#   extends: .npm
+#   image: $CI_REGISTRY/appsemble/docker-node-chrome
+#   needs:
+#     - npm_ci
+#     - job: provision review
+#       optional: true
+#     - job: provision staging
+#       optional: true
+#     - job: provision production
+#       optional: true
+#   rules:
+#     - if: $CI_MERGE_REQUEST_ID && $CI_MERGE_REQUEST_SOURCE_PROJECT_PATH == 'appsemble/appsemble'
+#     - if: $CI_COMMIT_TAG
+#   script:
+#     - npm run scripts -- wait-for-ssl
+#     - npx -- lhci collect
+#     - npx -- lhci assert
+#   artifacts:
+#     expose_as: Lighthouse reports
+#     when: always
+#     paths:
+#       - .lighthouseci
 
 ###################################################################################################
 #  Backup Stage                                                                                   #
