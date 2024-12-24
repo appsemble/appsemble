@@ -1,4 +1,5 @@
 import {
+  CollapsibleMenuSection,
   Icon,
   Loader,
   MenuItem,
@@ -241,7 +242,7 @@ export function AppRoutes(): ReactNode {
             ) : null}
 
             {mayVisitResources && resourceNames?.length ? (
-              <>
+              <CollapsibleMenuSection>
                 <MenuItem icon="cubes" to={`${url}/resources`}>
                   <FormattedMessage {...messages.resources} />
                 </MenuItem>
@@ -252,7 +253,7 @@ export function AppRoutes(): ReactNode {
                     </MenuItem>
                   ))}
                 </MenuSection>
-              </>
+              </CollapsibleMenuSection>
             ) : null}
 
             {mayVisitTranslations ? (
