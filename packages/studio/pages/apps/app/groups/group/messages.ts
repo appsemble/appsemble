@@ -29,6 +29,10 @@ export const messages = defineMessages({
     id: 'studio.HAlOn1',
     defaultMessage: 'Name',
   },
+  email: {
+    id: 'studio.sy+pv5',
+    defaultMessage: 'Email',
+  },
   actions: {
     id: 'studio.wL7VAE',
     defaultMessage: 'Actions',

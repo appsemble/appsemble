@@ -17,4 +17,8 @@ export const messages = defineMessages({
     id: 'studio.FAnTZ3',
     defaultMessage: 'Are you sure you want to remove this member from the group?',
   },
+  itsYou: {
+    id: 'studio.bDz3Hi',
+    defaultMessage: 'It’s you!',
+  },
 });

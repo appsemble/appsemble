@@ -5,6 +5,7 @@ import { type ChangeEvent, type ReactNode, useCallback } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 
 import { messages } from './messages.js';
+import { useUser } from '../../../../../../components/UserProvider/index.js';
 import { useApp } from '../../../index.js';
 
 interface GroupMemberRowProps {
@@ -25,6 +26,9 @@ export function GroupMemberRow({
   const { formatMessage } = useIntl();
 
   const { app } = useApp();
+  const {
+    userInfo: { email: currentUserEmail },
+  } = useUser();
 
   const editRole = useCallback(
     (event: ChangeEvent, role: AppRole) => onEdit(member, role),
@@ -45,8 +49,15 @@ export function GroupMemberRow({
 
   return (
     <tr key={member.id}>
-      <td>{member.name || member.email || member.id}</td>
-      <td>{member.name ? `${member.name} (${member.email})` : member.email}</td>
+      <td>{(member.name || member.id) ?? member.email}</td>
+      <td>
+        {member.email}
+        {member.email === currentUserEmail ? (
+          <span className="tag is-success ml-1">
+            <FormattedMessage {...messages.itsYou} />
+          </span>
+        ) : null}
+      </td>
       <td align="right">
         {mayUpdateRole ? (
           <AsyncSelect name="role" onChange={editRole} value={member.role}>

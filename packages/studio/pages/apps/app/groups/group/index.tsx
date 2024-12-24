@@ -118,6 +118,9 @@ export function GroupPage(): ReactNode {
     },
     [setMembers],
   );
+  const {
+    userInfo: { email: currentUserEmail },
+  } = useUser();
 
   const onDeleteGroupInvite = useCallback(
     async (invite: GroupInvite) => {
@@ -224,13 +227,22 @@ export function GroupPage(): ReactNode {
                   <th>
                     <FormattedMessage {...messages.name} />
                   </th>
+                  <th>
+                    <FormattedMessage {...messages.email} />
+                  </th>
                   <th align="right">
                     <FormattedMessage {...messages.actions} />
                   </th>
                 </tr>
               </thead>
               <tbody>
-                {members.map((member) => (
+                {(members.some((member) => member.email === currentUserEmail)
+                  ? [
+                      members.find((member) => member.email === currentUserEmail),
+                      ...members.filter((member) => member.email !== currentUserEmail),
+                    ]
+                  : members
+                ).map((member) => (
                   <GroupMemberRow
                     key={member.id}
                     mayRemove={mayRemove}
