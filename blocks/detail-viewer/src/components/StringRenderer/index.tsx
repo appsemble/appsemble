@@ -12,6 +12,7 @@ export function StringRenderer({ data, field }: RendererProps<StringField>): VNo
 
   const label = utils.remap(field.label, data);
   const value = utils.remap(field.value, data);
+  const dateValue = new Date(value as string).toLocaleString();
 
   return (
     <div className="appsemble-string mb-5">
@@ -19,7 +20,13 @@ export function StringRenderer({ data, field }: RendererProps<StringField>): VNo
       {value ? (
         <>
           {field.icon ? <Icon icon={field.icon} /> : null}
-          <div className="content">{typeof value === 'string' ? value : JSON.stringify(value)}</div>
+          <div className="content">
+            {typeof value === 'string'
+              ? dateValue === 'Invalid Date'
+                ? value
+                : dateValue
+              : JSON.stringify(value)}
+          </div>
         </>
       ) : null}
     </div>

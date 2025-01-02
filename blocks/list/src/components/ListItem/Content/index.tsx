@@ -28,27 +28,34 @@ export function ContentComponent({ index, item }: ContentComponentProps): VNode 
     [actions, item],
   );
 
-  const contentHTML = (field: Field, label: unknown, value: unknown): VNode => (
-    <div className={`${styles.fieldWrapper} is-flex`}>
-      <span className={`${styles.itemField} mr-1 is-inline-block`}>
-        {field.icon ? <Icon icon={field.icon} /> : null}
-        {label == null ? null : (
-          <span>
-            {label}
-            {value ? ': ' : null}
-          </span>
-        )}
-        {value ? (
-          <strong className="has-text-bold">
-            {typeof value === 'string' ? value : JSON.stringify(value)}
-          </strong>
+  const contentHTML = (field: Field, label: unknown, value: unknown): VNode => {
+    const dateValue = new Date(value as string).toLocaleString();
+    return (
+      <div className={`${styles.fieldWrapper} is-flex`}>
+        <span className={`${styles.itemField} mr-1 is-inline-block`}>
+          {field.icon ? <Icon icon={field.icon} /> : null}
+          {label == null ? null : (
+            <span>
+              {label}
+              {value ? ': ' : null}
+            </span>
+          )}
+          {value ? (
+            <strong className="has-text-bold">
+              {typeof value === 'string'
+                ? dateValue === 'Invalid Date'
+                  ? value
+                  : dateValue
+                : JSON.stringify(value)}
+            </strong>
+          ) : null}
+        </span>
+        {button && button.alignment === 'field' ? (
+          <ButtonComponent field={button} index={index} item={item} />
         ) : null}
-      </span>
-      {button && button.alignment === 'field' ? (
-        <ButtonComponent field={button} index={index} item={item} />
-      ) : null}
-    </div>
-  );
+      </div>
+    );
+  };
 
   return (
     <div>

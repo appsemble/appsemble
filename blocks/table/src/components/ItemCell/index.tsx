@@ -99,6 +99,7 @@ export function ItemCell({
   } else {
     content = renderValue(remap(field.value, item, { index, repeatedIndex }));
   }
+  const dateContent = new Date(content as string).toLocaleString();
 
   return (
     <td
@@ -113,7 +114,7 @@ export function ItemCell({
           'string' in field && styles.editable,
         )}
       >
-        {content}
+        {dateContent === 'Invalid Date' ? content : dateContent}
       </div>
     </td>
   );
