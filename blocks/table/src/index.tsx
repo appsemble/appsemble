@@ -1,9 +1,10 @@
 import { bootstrap } from '@appsemble/preact';
-import { Loader } from '@appsemble/preact-components';
+import { Icon, Loader } from '@appsemble/preact-components';
 import { type VNode } from 'preact';
-import { useEffect, useMemo, useState } from 'preact/hooks';
+import { useCallback, useEffect, useMemo, useState } from 'preact/hooks';
 
 import { ItemRow } from './components/ItemRow/index.js';
+import styles from './index.module.css';
 
 interface Item {
   id?: number;
@@ -13,17 +14,55 @@ bootstrap(({ events, parameters: { caption, fields }, ready, utils }) => {
   const [data, setData] = useState<Item[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
+  const [order, setOrder] = useState<'asc' | 'default' | 'desc'>('default');
+  const [loadedData, setLoadedData] = useState<Item[]>([]);
 
   const remappedCaption = utils.remap(caption, {}) as string;
+  const onTableHeaderClick = useCallback(
+    (fieldName: string) => {
+      if (order === 'desc') {
+        setData(loadedData);
+        setOrder('default');
+        return;
+      }
+      const sortedData = (data as any[]).sort((a, b) => {
+        const aFieldName = a[fieldName];
+        const bFieldName = b[fieldName];
+        if (typeof aFieldName === 'string' && typeof bFieldName === 'string') {
+          return aFieldName.localeCompare(bFieldName);
+        }
+        if (typeof aFieldName === 'number' && typeof bFieldName === 'number') {
+          return a - b;
+        }
+        if (typeof aFieldName === 'boolean' && typeof bFieldName === 'boolean') {
+          return Number(aFieldName) - Number(bFieldName);
+        }
+      });
+      if (order === 'default') {
+        setData(sortedData);
+        setOrder('asc');
+      } else {
+        setData(sortedData.reverse());
+        setOrder('desc');
+      }
+    },
+    [data, order, loadedData],
+  );
 
   const headers = useMemo<VNode>(() => {
     const heads = fields.flatMap((field) => {
       if ('label' in field) {
-        return utils.remap(field.label, {});
+        return {
+          label: utils.remap(field.label, {}),
+          name: field.name ?? '',
+        };
       }
 
       if ('repeat' in field) {
-        return field.repeat.map((subField) => utils.remap(subField.label, {}));
+        return field.repeat.map((subField) => ({
+          label: utils.remap(subField.label, {}),
+          name: subField.name,
+        }));
       }
     });
 
@@ -35,13 +74,37 @@ bootstrap(({ events, parameters: { caption, fields }, ready, utils }) => {
     return (
       <thead>
         <tr>
-          {heads.map((header) => (
-            <th key={header}>{header as string}</th>
-          ))}
+          {heads.map((header) =>
+            header ? (
+              <th
+                className={styles.pointer}
+                key={header?.label}
+                onClick={() => onTableHeaderClick(header?.name)}
+              >
+                {header.label as string}
+                <span className="ml-1">
+                  {header.name ? (
+                    <Icon
+                      icon={
+                        order === 'default'
+                          ? 'arrows-up-down'
+                          : order === 'asc'
+                            ? 'arrow-up'
+                            : 'arrow-down'
+                      }
+                      size="small"
+                    />
+                  ) : null}
+                </span>
+              </th>
+            ) : (
+              ''
+            ),
+          )}
         </tr>
       </thead>
     );
-  }, [fields, utils]);
+  }, [fields, onTableHeaderClick, order, utils]);
 
   useEffect(() => {
     const callback = (d: Item | Item[], err: string): void => {
@@ -49,7 +112,9 @@ bootstrap(({ events, parameters: { caption, fields }, ready, utils }) => {
         setError(true);
       } else {
         const items = Array.isArray(d) ? d : [d];
-        setData(items.filter((item) => item != null));
+        const filteredItems = items.filter((item) => item != null);
+        setData(filteredItems);
+        setLoadedData(filteredItems);
         setError(false);
       }
       setLoading(false);
