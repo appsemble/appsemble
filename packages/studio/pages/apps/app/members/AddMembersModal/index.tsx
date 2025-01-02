@@ -16,6 +16,7 @@ import {
   type ClipboardEvent,
   type ReactNode,
   useCallback,
+  useMemo,
   useState,
 } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
@@ -37,11 +38,6 @@ interface AddMembersModalProps {
   readonly onInvited: (invites: AppInvite[]) => void;
 }
 
-const defaultInvite = {
-  email: '',
-  role: 'Member',
-};
-
 /**
  * A modal form for inviting one or more people to the organization.
  */
@@ -49,15 +45,21 @@ export function AddMembersModal({ onInvited, state }: AddMembersModalProps): Rea
   const { app } = useApp();
   const push = useMessages();
   const { formatMessage } = useIntl();
+  const appRoles = getAppRoles(app.definition.security);
+  const defaultInvite = useMemo(
+    () => ({
+      email: '',
+      role: appRoles[0],
+    }),
+    [appRoles],
+  );
   const [invites, setInvites] = useState<AppInvite[]>([defaultInvite]);
   const [submitting, setSubmitting] = useState(false);
-
-  const appRoles = getAppRoles(app.definition.security);
 
   const reset = useCallback(() => {
     setInvites([defaultInvite]);
     state.disable();
-  }, [state]);
+  }, [defaultInvite, state]);
 
   const onSubmit = useCallback(async () => {
     setSubmitting(true);
@@ -75,7 +77,7 @@ export function AddMembersModal({ onInvited, state }: AddMembersModalProps): Rea
     state.disable();
     setSubmitting(false);
     setInvites([defaultInvite]);
-  }, [app?.id, formatMessage, invites, onInvited, push, state]);
+  }, [app?.id, defaultInvite, formatMessage, invites, onInvited, push, state]);
 
   const onChange = useCallback(
     (
@@ -92,7 +94,7 @@ export function AddMembersModal({ onInvited, state }: AddMembersModalProps): Rea
       }
       setInvites(copy);
     },
-    [invites],
+    [defaultInvite, invites],
   );
 
   const onBlur = useCallback(
