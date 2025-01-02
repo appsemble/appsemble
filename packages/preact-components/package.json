@@ -46,5 +46,10 @@
     "leaflet": "~1.5.0",
     "nouislider": "^15.0.0",
     "preact": "^10.0.0"
+  },
+  "devDependencies": {
+    "@testing-library/preact": "^3.0.0",
+    "@testing-library/user-event": "^14.0.0",
+    "vitest": "^1.0.0"
   }
 }

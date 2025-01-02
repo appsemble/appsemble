@@ -1,0 +1,9 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`should render an input element 1`] = `
+<input
+  class="slider is-fullwidth"
+  data-testid="slider-test"
+  type="range"
+/>
+`;

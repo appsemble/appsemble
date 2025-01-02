@@ -1,0 +1,17 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`should render a group of buttons 1`] = `
+<div>
+  <div
+    class="buttons has-addons"
+  >
+    <span />
+    <button
+      class="button"
+      type="button"
+    >
+      Button
+    </button>
+  </div>
+</div>
+`;

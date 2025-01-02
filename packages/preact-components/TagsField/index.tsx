@@ -37,8 +37,10 @@ export const TagsField = forwardRef<HTMLInputElement, TagsFieldProps>(
       ).element.previousElementSibling.querySelector('div.tags-input > input');
 
       bulmaInputElement.ref = errorLinkRef;
-      // eslint-disable-next-line no-param-reassign
-      errorLinkRef.current = bulmaInputElement;
+      if (errorLinkRef) {
+        // eslint-disable-next-line no-param-reassign
+        errorLinkRef.current = bulmaInputElement;
+      }
       // Bulma tags input can’t be updated. Don’t support updating the delimiter on the fly.
       // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);

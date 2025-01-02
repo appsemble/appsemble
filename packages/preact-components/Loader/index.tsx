@@ -9,5 +9,10 @@ export interface LoaderProps {
 }
 
 export function Loader({ className, component: Component = 'div' }: LoaderProps): VNode {
-  return <Component className={classNames(styles.loader, 'appsemble-loader', className)} />;
+  return (
+    <Component
+      className={classNames(styles.loader, 'appsemble-loader', className)}
+      data-testid="loader-comp"
+    />
+  );
 }

@@ -124,7 +124,10 @@ export const FormComponent = forwardRef<HTMLDivElement, FormComponentProps>(
     ref,
   ) => {
     const helpContent = (
-      <span className={classNames(`help ${styles.help}`, { 'is-danger': error })}>
+      <span
+        className={classNames(`help ${styles.help}`, { 'is-danger': error })}
+        data-testid="help-formcomp"
+      >
         {isValidElement(error) || typeof error === 'string' || Number.isFinite(error)
           ? error
           : help}
@@ -145,12 +148,18 @@ export const FormComponent = forwardRef<HTMLDivElement, FormComponentProps>(
     );
 
     return (
-      <div className={classNames('field', className, { [styles.inline]: inline })} ref={ref}>
+      <div
+        className={classNames('field', className, { [styles.inline]: inline })}
+        data-testid="submit-formcomp"
+        ref={ref}
+      >
         {label ? (
-          <label className="label" htmlFor={id}>
+          <label className="label" data-testid="label-formcomp" htmlFor={id}>
             {label}
             {!required || tag ? (
-              <span className="is-pulled-right has-text-weight-normal">{tag || optionalLabel}</span>
+              <span className="is-pulled-right has-text-weight-normal" data-testid="tag-formcomp">
+                {tag || optionalLabel}
+              </span>
             ) : null}
           </label>
         ) : null}
@@ -165,9 +174,11 @@ export const FormComponent = forwardRef<HTMLDivElement, FormComponentProps>(
           controls
         )}
         {disableHelp ? null : helpExtra ? (
-          <div className={`is-flex ${styles.helpWrapper}`}>
+          <div className={`is-flex ${styles.helpWrapper}`} data-testid>
             {helpContent}
-            <span className={`help ml-1 ${styles.counter}`}>{helpExtra}</span>
+            <span className={`help ml-1 ${styles.counter}`} data-testid="help-extra-formcomp">
+              {helpExtra}
+            </span>
           </div>
         ) : (
           helpContent

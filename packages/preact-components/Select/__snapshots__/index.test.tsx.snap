@@ -1,0 +1,18 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`should render a select component 1`] = `
+<select
+  data-testid="select-test"
+>
+  <option
+    value="0"
+  >
+    Hmm
+  </option>
+  <option
+    value="1"
+  >
+    Hmm 2
+  </option>
+</select>
+`;
