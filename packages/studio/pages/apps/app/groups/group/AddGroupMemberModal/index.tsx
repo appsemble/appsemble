@@ -17,6 +17,7 @@ import {
   type ClipboardEvent,
   type ReactNode,
   useCallback,
+  useMemo,
   useState,
 } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
@@ -43,11 +44,6 @@ interface AddMembersModalProps {
   readonly onInvited: (invites: GroupInvite[]) => void;
 }
 
-const defaultInvite = {
-  email: '',
-  role: 'Member',
-};
-
 export function AddGroupMemberModal({
   groupId,
   onInvited,
@@ -57,6 +53,14 @@ export function AddGroupMemberModal({
   const { formatMessage } = useIntl();
 
   const push = useMessages();
+  const roleKeys = getAppRoles(app.definition.security);
+  const defaultInvite = useMemo(
+    () => ({
+      email: '',
+      role: roleKeys[0],
+    }),
+    [roleKeys],
+  );
   const [invites, setInvites] = useState<GroupInvite[]>([defaultInvite]);
   const [submitting, setSubmitting] = useState(false);
 
@@ -64,12 +68,10 @@ export function AddGroupMemberModal({
     `/api/apps/${app.id}/${app.demoMode ? 'demo-' : ''}members`,
   );
 
-  const roleKeys = getAppRoles(app.definition.security);
-
   const reset = useCallback(() => {
     setInvites([defaultInvite]);
     state.disable();
-  }, [state]);
+  }, [defaultInvite, state]);
 
   const onSubmit = useCallback(async () => {
     setSubmitting(true);
@@ -87,7 +89,7 @@ export function AddGroupMemberModal({
     state.disable();
     setSubmitting(false);
     setInvites([defaultInvite]);
-  }, [formatMessage, groupId, invites, onInvited, push, state]);
+  }, [defaultInvite, formatMessage, groupId, invites, onInvited, push, state]);
 
   const onChange = useCallback(
     (
@@ -104,7 +106,7 @@ export function AddGroupMemberModal({
       }
       setInvites(copy);
     },
-    [invites],
+    [defaultInvite, invites],
   );
 
   const onBlur = useCallback(
