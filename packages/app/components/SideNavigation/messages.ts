@@ -17,4 +17,8 @@ export const messages = defineMessages({
     id: 'app.C81/uG',
     defaultMessage: 'Logout',
   },
+  install: {
+    id: 'app.ubmFc8',
+    defaultMessage: 'Install',
+  },
 });

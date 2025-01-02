@@ -2,6 +2,7 @@ import { Icon, NavbarDropdown, NavbarItem, useToggle } from '@appsemble/react-co
 import { type ReactNode } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Link, useLocation, useParams } from 'react-router-dom';
+import { usePWAInstall } from 'react-use-pwa-install';
 
 import styles from './index.module.css';
 import { messages } from './messages.js';
@@ -21,6 +22,7 @@ export function ProfileDropdown(): ReactNode {
   const { layout } = definition;
 
   const demoLoginToggle = useToggle();
+  const install = usePWAInstall();
 
   if (
     !showLogin ||
@@ -44,6 +46,10 @@ export function ProfileDropdown(): ReactNode {
     );
   }
 
+  const showSettings = (layout?.settings ?? 'navbar') === 'navbar';
+  const showFeedback = (layout?.feedback ?? 'navbar') === 'navbar' && sentryDsn;
+  const showInstall = (layout?.install ?? 'navbar') === 'navbar' && install;
+
   return (
     <>
       <NavbarDropdown
@@ -65,14 +71,14 @@ export function ProfileDropdown(): ReactNode {
           </figure>
         }
       >
-        {(layout?.settings ?? 'navbar') === 'navbar' && (
+        {showSettings ? (
           <NavbarItem icon="wrench" to={`/${lang}/Settings`}>
             <FormattedMessage {...messages.settings} />
           </NavbarItem>
-        )}
-        {(layout?.feedback ?? 'navbar') === 'navbar' && sentryDsn ? (
+        ) : null}
+        {showFeedback ? (
           <>
-            {(layout?.settings ?? 'navbar') === 'navbar' ? <hr className="navbar-divider" /> : null}
+            {showSettings ? <hr className="navbar-divider" /> : null}
             <NavbarItem icon="comment" to={`/${lang}/Feedback`}>
               <FormattedMessage {...messages.feedback} />
             </NavbarItem>
@@ -80,21 +86,25 @@ export function ProfileDropdown(): ReactNode {
         ) : null}
         {showDemoLogin ? (
           <>
-            {(layout?.settings ?? 'navbar') === 'navbar' ||
-            (layout?.feedback === 'navbar' && sentryDsn) ? (
-              <hr className="navbar-divider" />
-            ) : null}
+            {showSettings || showFeedback ? <hr className="navbar-divider" /> : null}
             <NavbarItem dataTestId="change-role" onClick={demoLoginToggle.enable}>
               <FormattedMessage {...messages.demoLogin} />
             </NavbarItem>
           </>
         ) : null}
-        {showLogin ? (
+        {showInstall ? (
           <>
-            {(layout?.settings ?? 'navbar') === 'navbar' || layout?.feedback === 'navbar' ? (
+            {showSettings || showFeedback || showDemoLogin ? (
               <hr className="navbar-divider" />
             ) : null}
-            {}
+            <NavbarItem dataTestId="install" onClick={install}>
+              <FormattedMessage {...messages.install} />
+            </NavbarItem>
+          </>
+        ) : null}
+        {showLogin ? (
+          <>
+            {showSettings || showFeedback || showInstall ? <hr className="navbar-divider" /> : null}
             <NavbarItem icon="sign-out-alt" onClick={logout}>
               <FormattedMessage {...messages.logoutButton} />
             </NavbarItem>

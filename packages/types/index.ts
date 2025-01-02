@@ -2020,6 +2020,15 @@ export interface AppDefinition {
     feedback?: LayoutPosition;
 
     /**
+     * The location of the install button.
+     *
+     * If set to `navigation`, it will only be visible if `login` is also visible in `navigation`.
+     *
+     * @default 'navbar'
+     */
+    install?: LayoutPosition;
+
+    /**
      * The navigation type to use.
      *
      * If this is omitted, a collapsible side navigation menu will be rendered on the left.
