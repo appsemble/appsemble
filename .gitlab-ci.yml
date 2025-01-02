@@ -833,6 +833,7 @@ provision review:
   rules:
     - if: $CI_MERGE_REQUEST_ID && $CI_MERGE_REQUEST_SOURCE_PROJECT_PATH == 'appsemble/appsemble'
       when: manual
+      allow_failure: true
   variables:
     INCREMENT: patch
     IDENTIFIER: ''
@@ -857,6 +858,7 @@ provision staging:
   rules:
     - if: $CI_COMMIT_BRANCH == 'staging'
       when: manual
+      allow_failure: true
   variables:
     INCREMENT: patch
     IDENTIFIER: ''
