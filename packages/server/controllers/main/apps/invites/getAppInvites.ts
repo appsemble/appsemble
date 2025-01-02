@@ -26,7 +26,8 @@ export async function getAppInvites(ctx: Context): Promise<void> {
     where: { AppId: appId },
   });
 
-  ctx.body = appInvites.map(({ email }) => ({
+  ctx.body = appInvites.map(({ email, role }) => ({
     email,
+    role,
   }));
 }
