@@ -1,1 +1,0 @@
-Default date render behavior.

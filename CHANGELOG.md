@@ -2,6 +2,26 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.30.14-test.6](https://gitlab.com/appsemble/appsemble/-/releases/0.30.14-test.6)] - 2025-01-02
+
+### Added
+
+- Block(`table`): Add new field `name` to enable sorting fields.
+- App: Allow expiring data in `localStorage` using storage actions.
+
+### Changed
+
+- Block(`detail-viewer`): Default date render behavior.
+- Block(`list`): Default date render behavior.
+- Block(`table`): Default date render behavior.
+- Block(`wordcloud`): Default date render behavior.
+
+### Fixed
+
+- Block(`form`): Properly denote optional fieldset and selection fields.
+- App: Properly clear page data when the page changes.
+- Studio: App member and group invites default role.
+
 ## \[[0.30.14-test.5](https://gitlab.com/appsemble/appsemble/-/releases/0.30.14-test.5)] - 2024-12-10
 
 ### Fixed
