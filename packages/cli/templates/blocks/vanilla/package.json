@@ -1,6 +1,9 @@
 {
   "private": true,
   "type": "module",
+  "sideEffects": [
+    "*.css"
+  ],
   "dependencies": {
     "@appsemble/sdk": "0.32.1-test.8"
   }

@@ -1,6 +1,9 @@
 {
   "name": "@appsemble/form",
   "version": "0.32.1-test.8",
+  "sideEffects": [
+    "*.css"
+  ],
   "private": true,
   "description": "A block used for inputting and submitting sets of data.",
   "homepage": "https://appsemble.app",
@@ -22,6 +25,11 @@
     "@appsemble/sdk": "0.32.1-test.8",
     "@appsemble/utils": "0.32.1-test.8",
     "@appsemble/types": "0.32.1-test.8",
+    "@fortawesome/fontawesome-svg-core": "^6.5.1",
+    "@fortawesome/free-solid-svg-icons": "^6.5.1",
+    "@milkdown/crepe": "^7.5.7",
+    "@milkdown/kit": "^7.5.5",
+    "@milkdown/plugin-listener": "^7.5.0",
     "@types/leaflet": "^1.0.0",
     "classnames": "^2.0.0",
     "date-fns": "^2.0.0",
@@ -29,8 +37,10 @@
     "leaflet": "~1.5.0",
     "merge": "^2.0.0",
     "preact": "^10.0.0",
-    "@fortawesome/fontawesome-svg-core": "^6.5.1",
-    "@fortawesome/free-solid-svg-icons": "^6.5.1"
+    "remark-parse": "^11.0.0",
+    "remark-stringify": "^11.0.0",
+    "unified": "^11.0.5",
+    "unist-util-visit": "^5.0.0"
   },
   "devDependencies": {
     "vitest": "^2.0.0"
