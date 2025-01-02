@@ -64,6 +64,11 @@ export function Page(): ReactNode {
   const navigate = useNavigate();
 
   const [data, setData] = useState<unknown>({});
+
+  useEffect(() => {
+    setData({});
+  }, [pageId]);
+
   const [dialog, setDialog] = useState<ShowDialogParams>();
   const stepRef = useRef<unknown>();
   const tabRef = useRef<unknown>();
