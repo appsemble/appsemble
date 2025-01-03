@@ -1,1 +1,1 @@
-Add a PWA installation button to apps.
+Add a PWA installation button and modal prompt to apps.
