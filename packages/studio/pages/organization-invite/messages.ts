@@ -45,9 +45,9 @@ export const messages = defineMessages({
       'Successfully declined the invitation. You can go back to Appsemble <makeApps>here</makeApps>.',
   },
   noInvite: {
-    id: 'studio.B18Y2h',
+    id: 'studio.aNgs41',
     defaultMessage:
-      'No invite has been found. It may have been used or revoked. You can return to Appsemble <link>here</link>.',
+      'No invite has been found. It may have been used or revoked. You might want to create an account first. If you already have another account, try logging into that as the invite might have been directed at another user. You can return to Appsemble <link>here</link>.',
   },
   alreadyJoined: {
     id: 'studio.1utknZ',
