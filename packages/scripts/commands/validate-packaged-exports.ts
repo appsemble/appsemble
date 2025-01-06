@@ -27,7 +27,6 @@ export async function handler({ paths }: { paths: string[] }): Promise<void> {
 
     const outDir = file.replace('.tgz', '');
     await mkdir(outDir);
-    // TODO: fix this
     await tar.x({
       file,
       C: outDir,
@@ -44,11 +43,11 @@ export async function handler({ paths }: { paths: string[] }): Promise<void> {
 
     // eslint-disable-next-line no-console
     console.log('Installing package dependencies in local folder');
+    // TODO: find more efficient way to handle monorepo dependency stuff here
+    // dependencies are fractured between main node_modules folder and workspace folders, which
+    // did not happen with yarn
     const installChild = spawn('npm', ['install', '--omit=dev'], { cwd: outDir });
     await new Promise((resolve, reject) => {
-      // TODO: Ignore
-      // installChild.stdout.pipe(process.stdout);
-      // installChild.stderr.pipe(process.stderr);
       installChild.on('error', (err) => {
         // eslint-disable-next-line no-console
         console.error(err);
@@ -65,13 +64,15 @@ export async function handler({ paths }: { paths: string[] }): Promise<void> {
     const child = spawn('node', ['-e', 'import("./index.js")'], {
       cwd: outDir,
       stdio: ['ignore', 'pipe', 'pipe'],
+      env: {
+        ...process.env,
+        // eslint-disable-next-line @typescript-eslint/naming-convention
+        NODE_NO_WARNINGS: '1',
+      },
     });
     // This will exit when an error was received while importing.
     try {
       await new Promise<void>((resolve, reject) => {
-        // TODO: Ignore
-        // child.stdout.pipe(process.stdout);
-        // child.stderr.pipe(process.stderr);
         child.stderr.on('data', (err) => {
           // Ignore required subcommands exiting with code (1)
           if (String(err).includes('<command>')) {

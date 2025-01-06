@@ -27,7 +27,6 @@
   "exports": {
     ".": {
       "ts-source": "./index.ts",
-      "import": "./index.ts",
       "default": "./index.js"
     },
     "./README.md": "./README.md"

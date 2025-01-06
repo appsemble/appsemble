@@ -24,7 +24,6 @@
   "exports": {
     ".": {
       "ts-source": "./index.ts",
-      "import": "./index.ts",
       "default": "./index.js"
     },
     "./types": "./types.d.ts",
