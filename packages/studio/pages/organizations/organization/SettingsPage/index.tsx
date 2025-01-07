@@ -157,7 +157,7 @@ export function SettingsPage({ onChangeOrganization, organization }: SettingsPag
       website: organization.website?.replace(/^https?:\/\//, '') || '',
       websiteProtocol: organization.website?.startsWith('http://') ? 'http' : 'https',
       description: organization.description || '',
-      icon: null,
+      icon: null as null,
     }),
     [organization],
   );

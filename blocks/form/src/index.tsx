@@ -9,11 +9,11 @@ import { type MutableRef, useCallback, useEffect, useMemo, useRef, useState } fr
 
 import { FormInput } from './components/FormInput/index.js';
 import styles from './index.module.css';
+import { type Field, type FieldEventParameters, type StringField, type Values } from '../block.js';
 import { debounce } from './utils/debounce.js';
 import { generateDefaultValidity } from './utils/generateDefaultValidity.js';
 import { generateDefaultValues } from './utils/generateDefaultValues.js';
 import { isFormValid } from './utils/validity.js';
-import { type Field, type FieldEventParameters, type StringField, type Values } from '../block.js';
 
 const goToRef = (ref: MutableRef<any>): void => {
   ref?.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });

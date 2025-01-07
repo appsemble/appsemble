@@ -2,6 +2,12 @@
   float: right;
 }
 
+/*
+ * As per https://caniuse.com/css-marker-pseudo,
+ * "Safari support is limited to color and font-size"
+ * so this actually isn't an issue
+ */
+/* stylelint-disable-next-line plugin/no-unsupported-browser-features */
 .expertDescription li::marker {
   color: var(--primary-color);
   font-size: 1.5rem;

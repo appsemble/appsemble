@@ -43,6 +43,8 @@ type CheckboxProps = Omit<
    * @default 'normal'
    */
   size?: BulmaSize;
+
+  icon?: IconName;
 };
 
 /**

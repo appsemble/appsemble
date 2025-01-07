@@ -78,7 +78,7 @@ export async function getProjectsBuildConfigs(root: string): Promise<ProjectBuil
       .concat(root)
       .map((path) => getProjectBuildConfig(path))
       // Ignore non-project workspaces.
-      .map((p) => p.catch(() => null)),
+      .map((p) => p.catch((): null => null)),
   );
   return projectBuildConfigs.filter(Boolean);
 }

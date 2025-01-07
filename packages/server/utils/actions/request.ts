@@ -20,7 +20,7 @@ export async function request({
   const definition = action as RequestLikeActionDefinition;
   const query: Remapper = []
     .concat(
-      definition?.query ?? action.type.startsWith('resource.')
+      (definition?.query ?? action.type.startsWith('resource.'))
         ? app.definition.resources[(action as ResourceQueryActionDefinition).resource]?.query?.query
         : undefined,
     )

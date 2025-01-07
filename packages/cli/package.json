@@ -22,10 +22,10 @@
   "author": "Appsemble <info@appsemble.com> (https://appsemble.com)",
   "type": "module",
   "exports": {
-    ".": [
-      "./index.js",
-      "./index.ts"
-    ],
+    ".": {
+      "ts-source": "./index.ts",
+      "default": "./index.js"
+    },
     "./README.md": "./README.md"
   },
   "bin": {
@@ -46,7 +46,7 @@
     "@appsemble/types": "0.30.14-test.6",
     "@appsemble/utils": "0.30.14-test.6",
     "@fortawesome/fontawesome-common-types": "^6.0.0",
-    "@koa/cors": "^4.0.0",
+    "@koa/cors": "^5.0.0",
     "@odata/parser": "^0.2.0",
     "axios": "^1.0.0",
     "chalk": "^5.0.0",
@@ -96,6 +96,7 @@
     "@types/normalize-path": "^3.0.0",
     "@types/postcss-import": "^14.0.0",
     "@types/postcss-url": "^10.0.0",
+    "@types/koa__cors": "^5.0.0",
     "concat-stream": "^2.0.0",
     "vitest": "^1.0.0",
     "sequelize": "^6.0.0"

@@ -1,6 +1,6 @@
 import { addBreadcrumb, init } from '@sentry/browser';
 
-import pkg from './package.json';
+import pkg from './package.json' with { type: 'json' };
 
 export function setupSentry(dsn: string, environment: string): void {
   init({ dsn, environment, release: pkg.version });
