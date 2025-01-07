@@ -62,10 +62,6 @@ function shared(env: string, { mode }: CliConfigOptions): Configuration {
   return {
     name: `@appsemble/${env}`,
     devtool: 'source-map',
-    stats: {
-      // TODO: remove when webpack is okay
-      errorDetails: true,
-    },
     mode,
     entry: { [env]: [join(projectDir, 'index.tsx')] },
     output: {

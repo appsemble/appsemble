@@ -32,16 +32,13 @@ export async function handler({ paths }: { paths: string[] }): Promise<void> {
       C: outDir,
       strip: 1,
     });
-    // eslint-disable-next-line no-console
     console.log(`Extracted ${file}\nImporting ${outDir}/index.js`);
 
     const packageJson = JSON.parse(await readFile(join(outDir, 'package.json'), 'utf8'));
     packageJson.devDependencies = {};
     await writeFile(join(outDir, 'package.json'), JSON.stringify(packageJson, null, 2));
-    // eslint-disable-next-line no-console
     console.log(`Rewrote package.json in ${outDir}`);
 
-    // eslint-disable-next-line no-console
     console.log('Installing package dependencies in local folder');
     // TODO: find more efficient way to handle monorepo dependency stuff here
     // dependencies are fractured between main node_modules folder and workspace folders, which
@@ -49,14 +46,12 @@ export async function handler({ paths }: { paths: string[] }): Promise<void> {
     const installChild = spawn('npm', ['install', '--omit=dev'], { cwd: outDir });
     await new Promise((resolve, reject) => {
       installChild.on('error', (err) => {
-        // eslint-disable-next-line no-console
         console.error(err);
         reject(err);
         process.exit(1);
       });
       installChild.on('exit', resolve);
     });
-    // eslint-disable-next-line no-console
     console.log('Installed package dependencies in local folder');
 
     // A child process is required when a bin file is hit to avoid the script
@@ -76,7 +71,6 @@ export async function handler({ paths }: { paths: string[] }): Promise<void> {
         child.stderr.on('data', (err) => {
           // Ignore required subcommands exiting with code (1)
           if (String(err).includes('<command>')) {
-            // eslint-disable-next-line no-console
             console.log('CLI command printed usage help, ignoring');
             child.kill();
             resolve();
@@ -87,9 +81,7 @@ export async function handler({ paths }: { paths: string[] }): Promise<void> {
         child.on('exit', resolve);
       });
     } catch (error) {
-      // eslint-disable-next-line no-console
       console.error(String(error));
-      // eslint-disable-next-line no-console
       console.log('EXITING');
       process.exit(1);
     }
