@@ -633,6 +633,7 @@ review:
       --set "ingress.tls.wildcardSecretName=review-$CI_MERGE_REQUEST_IID-tls-wildcard"
       --set "migrateTo=next"
       --set "global.postgresql.auth.existingSecret=postgresql-secret"
+      --set "global.postgresql.persistence.size=1Gi"
       --set "provision.organization.id=appsemble"
       --set "provision.user.organizationRole=Maintainer"
       --set "provision.user.clientCredentials=$APPSEMBLE_CLIENT_CREDENTIALS"
