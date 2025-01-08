@@ -58,7 +58,7 @@
     "form-data": "^4.0.0",
     "global-cache-dir": "^6.0.0",
     "inquirer": "^9.0.0",
-    "jsonschema": "^1.0.0",
+    "jsonschema": "~1.4.1",
     "koa": "^2.0.0",
     "koa-compose": "^4.0.0",
     "koa-compress": "^5.0.0",
