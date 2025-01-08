@@ -618,6 +618,7 @@ review:
     - openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout mailpit.key -out mailpit.crt -subj "/CN=review-${CI_MERGE_REQUEST_IID}-mailpit-smtp" -addext "subjectAltName=DNS:review-${CI_MERGE_REQUEST_IID}-mailpit-smtp"
     - kubectl create secret tls review-$CI_MERGE_REQUEST_IID-mailpit-tls --cert=mailpit.crt --key=mailpit.key --dry-run=client -o yaml | kubectl apply -f -
     - rm mailpit.key mailpit.crt
+    # default bitnami postgresql PVC size is 8Gi, but that much should not be needed for a review environment
     - helm install "review-$CI_MERGE_REQUEST_IID" ./public/appsemble-*.tgz
       --atomic
       --set "fullnameOverride=review-$CI_MERGE_REQUEST_IID"
@@ -633,6 +634,7 @@ review:
       --set "ingress.tls.wildcardSecretName=review-$CI_MERGE_REQUEST_IID-tls-wildcard"
       --set "migrateTo=next"
       --set "global.postgresql.auth.existingSecret=postgresql-secret"
+      --set "global.postgresql.persistence.size=1Gi"
       --set "provision.organization.id=appsemble"
       --set "provision.user.organizationRole=Maintainer"
       --set "provision.user.clientCredentials=$APPSEMBLE_CLIENT_CREDENTIALS"
