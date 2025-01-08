@@ -129,9 +129,9 @@ Enter this app definition, save it, and it should display the new block in the a
 contains two pages that link to each other by clicking the button created by the new test block.
 
 > **Note**: You may have noticed the block already has the `button` class and a specific style. This
-> is because Appsemble automatically injects the [Bulma][] CSS framework and [Font Awesome][] into each
-> block. It is possible, recommended even, to use Bulma classes to add minimal styling to your block.
-> This allows app builders and organizations to add custom styling when they use your block.
+> is because Appsemble automatically injects the [Bulma][] CSS framework and [Font Awesome][] into
+> each block. It is possible, recommended even, to use Bulma classes to add minimal styling to your
+> block. This allows app builders and organizations to add custom styling when they use your block.
 
 ## Modifying the Block
 
