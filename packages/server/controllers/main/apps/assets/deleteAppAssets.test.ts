@@ -135,6 +135,56 @@ describe('deleteAppAssets', () => {
     );
   });
 
+  it('should soft delete assets', async () => {
+    const assetA = await Asset.create({
+      AppId: app.id,
+      mime: 'application/octet-stream',
+      filename: 'test.bin',
+      data: Buffer.from('buffer'),
+    });
+    const assetB = await Asset.create({
+      AppId: app.id,
+      mime: 'application/octet-stream',
+      filename: 'test.bin',
+      data: Buffer.from('buffer'),
+    });
+    await Asset.create({
+      AppId: app.id,
+      mime: 'application/octet-stream',
+      filename: 'test.bin',
+      data: Buffer.from('buffer'),
+    });
+
+    const assetIds = [assetA.id, assetB.id];
+    authorizeStudio();
+    const response = await request.delete(`/api/apps/${app.id}/assets`, {
+      data: assetIds,
+    });
+    expect(response).toMatchInlineSnapshot('HTTP/1.1 204 No Content');
+    const assets = await Asset.findAll({
+      where: {
+        id: assetIds,
+      },
+      paranoid: false,
+    });
+    expect(assets).toMatchObject([
+      {
+        AppId: app.id,
+        mime: 'application/octet-stream',
+        filename: 'test.bin',
+        data: Buffer.from('buffer'),
+        deleted: expect.any(Date),
+      },
+      {
+        AppId: app.id,
+        mime: 'application/octet-stream',
+        filename: 'test.bin',
+        data: Buffer.from('buffer'),
+        deleted: expect.any(Date),
+      },
+    ]);
+  });
+
   it('should delete items from cache when an asset is deleted', async () => {
     const assetA = await Asset.create({
       AppId: app.id,

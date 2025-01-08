@@ -615,6 +615,7 @@ describe('updateAppResource', () => {
         clonable: false,
         created: new Date('1970-01-01T00:00:00.000Z'),
         data: expect.any(Buffer),
+        deleted: null,
         ephemeral: false,
         filename: null,
         id: response.data.file,

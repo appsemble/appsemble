@@ -103,7 +103,6 @@ describe('deleteAppResources', () => {
       ]
     `);
 
-    authorizeStudio();
     const response = await request.delete(`/api/apps/${app.id}/resources/testResource`, {
       data: [resourceA.id, resourceB.id],
     });
@@ -123,6 +122,54 @@ describe('deleteAppResources', () => {
         },
       ]
     `);
+  });
+
+  it('should soft-delete resources', async () => {
+    const resourceA = await Resource.create({
+      type: 'testResource',
+      AppId: app.id,
+      data: { foo: 'I am Foo.' },
+    });
+    const resourceB = await Resource.create({
+      type: 'testResource',
+      AppId: app.id,
+      data: { foo: 'I am Foo Too.' },
+    });
+    await Resource.create({
+      type: 'testResource',
+      AppId: app.id,
+      data: { foo: 'I am Foo Three.' },
+    });
+
+    authorizeStudio();
+    const resourceIds = [resourceA.id, resourceB.id];
+
+    const response = await request.delete(`/api/apps/${app.id}/resources/testResource`, {
+      data: resourceIds,
+    });
+
+    expect(response).toMatchInlineSnapshot('HTTP/1.1 204 No Content');
+
+    const resources = await Resource.findAll({
+      where: {
+        id: resourceIds,
+      },
+      paranoid: false,
+    });
+    expect(resources).toMatchObject([
+      {
+        type: 'testResource',
+        AppId: app.id,
+        data: { foo: 'I am Foo.' },
+        deleted: expect.any(Date),
+      },
+      {
+        type: 'testResource',
+        AppId: app.id,
+        data: { foo: 'I am Foo Too.' },
+        deleted: expect.any(Date),
+      },
+    ]);
   });
 
   it('should delete large number of resources', async () => {

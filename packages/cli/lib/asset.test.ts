@@ -71,24 +71,25 @@ describe('asset', () => {
           data: expect.any(Buffer),
         },
         `
-      {
-        "AppId": 1,
-        "AppMemberId": null,
-        "GroupId": null,
-        "OriginalId": null,
-        "ResourceId": null,
-        "clonable": false,
-        "created": 1970-01-01T00:00:00.000Z,
-        "data": Any<Buffer>,
-        "ephemeral": false,
-        "filename": "tux.png",
-        "id": Any<String>,
-        "mime": "image/png",
-        "name": "test",
-        "seed": false,
-        "updated": 1970-01-01T00:00:00.000Z,
-      }
-    `,
+        {
+          "AppId": 1,
+          "AppMemberId": null,
+          "GroupId": null,
+          "OriginalId": null,
+          "ResourceId": null,
+          "clonable": false,
+          "created": 1970-01-01T00:00:00.000Z,
+          "data": Any<Buffer>,
+          "deleted": null,
+          "ephemeral": false,
+          "filename": "tux.png",
+          "id": Any<String>,
+          "mime": "image/png",
+          "name": "test",
+          "seed": false,
+          "updated": 1970-01-01T00:00:00.000Z,
+        }
+      `,
       );
     });
 

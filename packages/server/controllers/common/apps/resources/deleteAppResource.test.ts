@@ -106,6 +106,27 @@ describe('deleteAppResource', () => {
     `);
   });
 
+  it('should soft-delete a resource', async () => {
+    const { id } = await Resource.create({
+      type: 'testResource',
+      AppId: app.id,
+      data: { foo: 'I am Foo.' },
+    });
+
+    authorizeStudio();
+
+    const response = await request.delete(`/api/apps/${app.id}/resources/testResource/${id}`);
+
+    expect(response).toMatchInlineSnapshot('HTTP/1.1 204 No Content');
+    const deletedResource = await Resource.findByPk(id, { paranoid: false });
+    expect(deletedResource).toMatchObject({
+      type: 'testResource',
+      AppId: app.id,
+      data: { foo: 'I am Foo.' },
+      deleted: expect.any(Date),
+    });
+  });
+
   it('should delete another group member’s resource', async () => {
     const group = await Group.create({ name: 'Test Group', AppId: app.id });
     const userB = await User.create({ timezone: 'Europe/Amsterdam' });
