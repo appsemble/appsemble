@@ -1,7 +1,7 @@
 import http from 'node:http';
 import https from 'node:https';
 
-import { logger, readFileOrString, version } from '@appsemble/node-utils';
+import { AppsembleError, logger, readFileOrString, version } from '@appsemble/node-utils';
 import { api, asciiLogo } from '@appsemble/utils';
 import { captureException } from '@sentry/node';
 import { type Context } from 'koa';
@@ -15,6 +15,7 @@ import { argv } from '../utils/argv.js';
 import { createServer } from '../utils/createServer.js';
 import { configureDNS } from '../utils/dns/index.js';
 import { migrate } from '../utils/migrate.js';
+import { initS3Client } from '../utils/s3.js';
 import { handleDBError } from '../utils/sqlUtils.js';
 
 interface AdditionalArguments {
@@ -150,6 +151,18 @@ export async function handler({ webpackConfigs }: AdditionalArguments = {}): Pro
 
   if (argv.migrateTo) {
     await migrate(argv.migrateTo, migrations);
+  }
+
+  try {
+    initS3Client({
+      endPoint: argv.s3Host,
+      port: argv.s3Port,
+      useSSL: argv.s3Ssl,
+      accessKey: argv.s3AccessKey,
+      secretKey: argv.s3SecretKey,
+    });
+  } catch (error: unknown) {
+    throw new AppsembleError(`S3Error: ${error}`);
   }
 
   await configureDNS();

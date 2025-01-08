@@ -363,6 +363,41 @@ export interface Argv {
    * @default 0
    */
   scaleTo: number;
+
+  /**
+   * The host of the Amazon S3 compatible object storage server
+   *
+   * default undefined
+   */
+  s3Host: string;
+
+  /**
+   * The host of the Amazon S3 compatible object storage server
+   *
+   * default 9000
+   */
+  s3Port: number;
+
+  /**
+   * Whether ssl should be used for the Amazon S3 compatible object storage server
+   *
+   * default true
+   */
+  s3Ssl: boolean;
+
+  /**
+   * The access key of the Amazon S3 compatible object storage server
+   *
+   * default undefined
+   */
+  s3AccessKey: string;
+
+  /**
+   * The secret key of the Amazon S3 compatible object storage server
+   *
+   * default undefined
+   */
+  s3SecretKey: string;
 }
 
 const defaults: Argv = {
@@ -420,6 +455,11 @@ const defaults: Argv = {
   remote: null,
   adminApiSecret: undefined,
   scaleTo: 0,
+  s3Host: undefined,
+  s3Port: 9000,
+  s3Ssl: true,
+  s3AccessKey: undefined,
+  s3SecretKey: undefined,
 };
 
 export const argv = { ...defaults };

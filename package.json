@@ -125,7 +125,11 @@
     "migrate-to": "next",
     "remote": "http://localhost:9999",
     "secret": "Local Appsemble development secret",
-    "aes-secret": "Local Appsmeble development AES secret"
+    "aes-secret": "Local Appsmeble development AES secret",
+    "s3-host": "localhost",
+    "s3-ssl": false,
+    "s3-access-key": "admin",
+    "s3-secret-key": "password"
   },
   "dependencies": {
     "vite-tsconfig-paths": "^5.0.0"
