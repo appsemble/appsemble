@@ -1,3 +1,5 @@
+import { type Readable } from 'node:stream';
+
 import { Client } from 'minio';
 
 let s3Client: Client;
@@ -8,6 +10,10 @@ export interface InitS3ClientParams {
   useSSL?: boolean;
   accessKey: string;
   secretKey: string;
+}
+
+interface MinioError extends Error {
+  code?: 'NoSuchKey';
 }
 
 export function initS3Client({
@@ -29,4 +35,26 @@ export function initS3Client({
 export async function listBuckets(): Promise<void> {
   const buckets = await s3Client.listBuckets();
   console.log('minio buckets', buckets);
+}
+
+export async function assertBucket(name: string): Promise<void> {
+  const bucketExists = await s3Client.bucketExists(name);
+  if (!bucketExists) {
+    await s3Client.makeBucket(name);
+  }
+}
+
+export async function uploadFile(
+  bucket: string,
+  key: string,
+  content: Buffer | Readable | string,
+): Promise<void> {
+  try {
+    await s3Client.statObject(bucket, key);
+  } catch (err) {
+    const error = err as MinioError;
+    if (error.code === 'NoSuchKey') {
+      await s3Client.putObject(bucket, key, content);
+    }
+  }
 }

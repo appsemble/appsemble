@@ -474,3 +474,9 @@ export interface Options {
   sendNotifications: (params: SendNotificationsParams) => Promise<void>;
   getAppVariables: (params: GetAppVariablesParams) => Promise<AppConfigEntry[]>;
 }
+
+export interface TempFile {
+  path: string;
+  filename: string;
+  mimeType: string;
+}

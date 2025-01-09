@@ -97,10 +97,13 @@ export function extractResourceBody(
   let preValidateProperty: PreValidatePropertyFunction;
 
   if (ctx?.request?.body && ctx.is('multipart/form-data')) {
-    ({ assets = [], resource: body } = ctx.request.body);
+    ({ resource: body } = ctx.request.body);
+
     if (Array.isArray(body) && body.length === 1) {
       [body] = body;
     }
+
+    assets = ctx.state.savedFiles || [];
   } else if (ctx?.request?.body) {
     if (ctx.is('text/csv')) {
       preValidateProperty = preProcessCSV;

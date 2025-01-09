@@ -86,6 +86,7 @@
     "language-tags": "^1.0.0",
     "lodash-es": "^4.0.0",
     "matcher": "^5.0.0",
+    "memfs": "^4.15.3",
     "merge": "^2.0.0",
     "mime-types": "^2.0.0",
     "minio": "^8.0.3",
@@ -148,7 +149,6 @@
     "axios-test-instance": "^7.0.0",
     "express-to-koa": "^2.0.0",
     "jest-image-snapshot": "^6.0.0",
-    "memfs": "^4.0.0",
     "strip-indent": "^4.0.0",
     "vitest": "^2.0.0"
   },

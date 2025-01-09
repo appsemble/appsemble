@@ -4,7 +4,7 @@ import { bufferParser, jsonParser, bodyParser as koaBodyParser } from 'koas-body
 import { type Plugin } from 'koas-core';
 import { serializer as koaSerializer } from 'koas-serializer';
 
-import { csvParser, xWwwFormUrlencodedParser } from './parsers.js';
+import { csvParser, streamParser, xWwwFormUrlencodedParser } from './parsers.js';
 
 function serializer(): Plugin {
   return koaSerializer({
@@ -22,6 +22,7 @@ function bodyParser(): Plugin {
       'application/scim+json': jsonParser,
       'application/x-www-form-urlencoded': xWwwFormUrlencodedParser,
       'text/csv': csvParser,
+      'multipart/form-data': streamParser,
       '*/*': bufferParser,
     },
   });
