@@ -1,5 +1,6 @@
 import { type Readable } from 'node:stream';
 
+import { logger } from '@appsemble/node-utils';
 import { Client } from 'minio';
 
 let s3Client: Client;
@@ -10,10 +11,6 @@ export interface InitS3ClientParams {
   useSSL?: boolean;
   accessKey: string;
   secretKey: string;
-}
-
-interface MinioError extends Error {
-  code?: 'NoSuchKey';
 }
 
 export function initS3Client({
@@ -32,15 +29,14 @@ export function initS3Client({
   });
 }
 
-export async function listBuckets(): Promise<void> {
-  const buckets = await s3Client.listBuckets();
-  console.log('minio buckets', buckets);
-}
-
-export async function assertBucket(name: string): Promise<void> {
-  const bucketExists = await s3Client.bucketExists(name);
-  if (!bucketExists) {
-    await s3Client.makeBucket(name);
+async function ensureBucket(name: string): Promise<void> {
+  try {
+    const bucketExists = await s3Client.bucketExists(name);
+    if (!bucketExists) {
+      await s3Client.makeBucket(name);
+    }
+  } catch (error) {
+    logger.error(error);
   }
 }
 
@@ -50,11 +46,33 @@ export async function uploadFile(
   content: Buffer | Readable | string,
 ): Promise<void> {
   try {
-    await s3Client.statObject(bucket, key);
-  } catch (err) {
-    const error = err as MinioError;
-    if (error.code === 'NoSuchKey') {
-      await s3Client.putObject(bucket, key, content);
-    }
+    await ensureBucket(bucket);
+    await s3Client.putObject(bucket, key, content);
+  } catch (error) {
+    logger.error(error);
+  }
+}
+
+export async function getFile(bucket: string, key: string): Promise<Readable> {
+  try {
+    return await s3Client.getObject(bucket, key);
+  } catch (error) {
+    logger.error(error);
+  }
+}
+
+export async function deleteFile(bucket: string, key: string): Promise<void> {
+  try {
+    await s3Client.removeObject(bucket, key);
+  } catch (error) {
+    logger.error(error);
+  }
+}
+
+export async function deleteFiles(bucket: string, keys: string[]): Promise<void> {
+  try {
+    await s3Client.removeObjects(bucket, keys);
+  } catch (error) {
+    logger.error(error);
   }
 }

@@ -5,6 +5,7 @@ import { parse } from 'node:querystring';
 
 import busboy from 'busboy';
 import { parse as parseCSV } from 'csv-parse';
+import { ensureDir } from 'fs-extra';
 import { bufferParser, type Parser } from 'koas-body-parser';
 import { SchemaValidationError } from 'koas-core';
 import { type OpenAPIV3 } from 'openapi-types';
@@ -79,7 +80,6 @@ export const streamParser: Parser<Record<string, unknown>> = async (
   const { properties = {} } = resolveRef(schema) || {};
 
   const response: Record<string, any> = {};
-  // Const streams: Record<string, FileStream | FileStream[]> = {};
   const tempFiles: Record<string, TempFile | TempFile[]> = {};
 
   await new Promise((resolve, reject) => {
@@ -91,6 +91,7 @@ export const streamParser: Parser<Record<string, unknown>> = async (
     bb.on('file', (fieldname, stream, { filename, mimeType }) => {
       const propertySchema = resolveRef(properties[fieldname]);
 
+      ensureDir('uploads');
       const path = join('uploads', randomUUID());
       const fileWriteStream = createWriteStream(path);
       stream.pipe(fileWriteStream);

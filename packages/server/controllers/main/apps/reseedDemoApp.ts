@@ -4,9 +4,9 @@ import { type Context } from 'koa';
 import { Op } from 'sequelize';
 
 import { App, Asset, Resource } from '../../../models/index.js';
-import { assetsCache } from '../../../utils/assetCache.js';
 import { checkUserOrganizationPermissions } from '../../../utils/authorization.js';
 import { reseedResourcesRecursively } from '../../../utils/resource.js';
+import { deleteFiles } from '../../../utils/s3.js';
 
 export async function reseedDemoApp(ctx: Context): Promise<void> {
   const {
@@ -47,8 +47,10 @@ export async function reseedDemoApp(ctx: Context): Promise<void> {
       },
     },
   });
-  assetsCache.mdel(
-    demoAssetsToDelete.flatMap((asset) => [`${appId}-${asset.id}`, `${appId}-${asset.name}`]),
+
+  await deleteFiles(
+    `app-${appId}`,
+    demoAssetsToDelete.map((asset) => asset.id),
   );
 
   const demoAssetsDeletionResult = await Asset.destroy({

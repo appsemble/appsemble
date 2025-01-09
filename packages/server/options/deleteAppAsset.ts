@@ -1,13 +1,13 @@
 import { type DeleteAppAssetParams } from '@appsemble/node-utils';
 
 import { Asset } from '../models/index.js';
-import { assetsCache } from '../utils/assetCache.js';
+import { deleteFile } from '../utils/s3.js';
 
-export function deleteAppAsset({
+export async function deleteAppAsset({
   app: { id: AppId },
   id,
   transaction,
 }: DeleteAppAssetParams): Promise<number> {
-  assetsCache.del(`${AppId}-${id}`);
+  await deleteFile(`app-${AppId}`, id);
   return Asset.destroy({ where: { id }, transaction });
 }
