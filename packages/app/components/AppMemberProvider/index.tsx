@@ -103,7 +103,9 @@ export function AppMemberProvider({ children }: AppMemberProviderProps): ReactNo
   const navigate = useNavigate();
 
   const [appMemberInfo, setAppMemberInfo] = useState<AppMemberInfo>(null);
-  const [appMemberSelectedGroup, setAppMemberSelectedGroup] = useState<AppMemberGroup>(null);
+  const [appMemberSelectedGroup, setAppMemberSelectedGroup] = useState<AppMemberGroup>(
+    JSON.parse(sessionStorage.getItem(`appsemble-group-${appId}-appMemberSelectedGroup`)),
+  );
 
   const [exp, setExp] = useState(null);
   const [authorization, setAuthorization] = useState<string>(null);
