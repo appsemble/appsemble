@@ -1,7 +1,7 @@
 import { logger } from '@appsemble/node-utils';
 import { DataTypes, type Sequelize, type Transaction } from 'sequelize';
 
-export const key = '0.30.14-test.8';
+export const key = '0.30.14-test.7';
 
 /**
  * Summary:
