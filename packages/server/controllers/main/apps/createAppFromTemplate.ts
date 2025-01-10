@@ -1,4 +1,10 @@
-import { assertKoaError, throwKoaError, updateCompanionContainers } from '@appsemble/node-utils';
+import {
+  assertKoaError,
+  getS3File,
+  throwKoaError,
+  updateCompanionContainers,
+  uploadS3File,
+} from '@appsemble/node-utils';
 import { OrganizationPermission } from '@appsemble/types';
 import { normalize } from '@appsemble/utils';
 import { type Context } from 'koa';
@@ -119,10 +125,9 @@ export async function createAppFromTemplate(ctx: Context): Promise<void> {
         })) as Resource[],
       }),
       ...(assets && {
-        Assets: template.Assets.map(({ data, filename, mime, name: assetName, seed }) => ({
+        Assets: template.Assets.map(({ filename, mime, name: assetName, seed }) => ({
           mime,
           filename,
-          data,
           name: assetName,
           seed,
         })) as Asset[],
@@ -217,6 +222,12 @@ export async function createAppFromTemplate(ctx: Context): Promise<void> {
         AppSamlSecret,
       ],
     });
+
+    for (const templateAsset of result.Assets) {
+      const templateStream = await getS3File(`app-${result.id}`, templateAsset.id);
+      const createdAsset = record.Assets.find((asset) => asset.name === templateAsset.name);
+      await uploadS3File(`app-${record.id}`, createdAsset.id, templateStream);
+    }
 
     const doc = parseDocument(template.AppSnapshots[0].yaml);
     doc.setIn(['description'], result.definition.description);

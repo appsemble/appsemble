@@ -1,11 +1,9 @@
-import { assertKoaError } from '@appsemble/node-utils';
+import { assertKoaError, getS3File, getS3FileStats, setAssetHeaders } from '@appsemble/node-utils';
 import { type Context } from 'koa';
 import { extension } from 'mime-types';
 import { Op } from 'sequelize';
 
-import { setHeaders } from './utils.js';
 import { App, Asset } from '../../../../models/index.js';
-import { getFile } from '../../../../utils/s3.js';
 
 export async function getAppAssetById(ctx: Context): Promise<void> {
   const {
@@ -41,9 +39,10 @@ export async function getAppAssetById(ctx: Context): Promise<void> {
     }
   }
 
-  const stream = getFile(`app-${appId}`, asset.id);
+  const stats = await getS3FileStats(`app-${appId}`, asset.id);
+  const stream = await getS3File(`app-${appId}`, asset.id);
 
-  setHeaders(ctx, mime, filename);
+  setAssetHeaders(ctx, mime, filename, stats);
 
   ctx.body = stream;
 }

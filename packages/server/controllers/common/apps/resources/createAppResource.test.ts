@@ -1,4 +1,4 @@
-import { createFormData } from '@appsemble/node-utils';
+import { createFormData, getS3File, streamToBuffer } from '@appsemble/node-utils';
 import {
   PredefinedAppRole,
   PredefinedOrganizationRole,
@@ -298,6 +298,7 @@ describe('createAppResource', () => {
   });
 
   it('should accept assets as form data', async () => {
+    vi.useRealTimers();
     authorizeStudio();
     const response = await request.post<ResourceType>(
       `/api/apps/${app.id}/resources/testAssets`,
@@ -314,8 +315,6 @@ describe('createAppResource', () => {
       Content-Type: application/json; charset=utf-8
 
       {
-        "$created": "1970-01-01T00:00:00.000Z",
-        "$updated": "1970-01-01T00:00:00.000Z",
         "file": StringMatching /\\^\\[0-f\\]\\{8\\}\\(\\?:-\\[0-f\\]\\{4\\}\\)\\{3\\}-\\[0-f\\]\\{12\\}\\$/,
         "id": 1,
       }
@@ -323,15 +322,13 @@ describe('createAppResource', () => {
     );
     const assets = await Asset.findAll({ where: { ResourceId: response.data.id }, raw: true });
     expect(assets).toStrictEqual([
-      {
+      expect.objectContaining({
         AppId: app.id,
         ResourceId: 1,
         clonable: false,
         AppMemberId: null,
         GroupId: null,
-        OriginalId: null,
         created: new Date('1970-01-01T00:00:00.000Z'),
-        data: expect.any(Buffer),
         deleted: null,
         ephemeral: false,
         filename: null,
@@ -339,10 +336,12 @@ describe('createAppResource', () => {
         mime: 'application/octet-stream',
         name: null,
         seed: false,
-        updated: new Date('1970-01-01T00:00:00.000Z'),
-      },
+      }),
     ]);
-    expect(Buffer.from('Test resource a').equals(assets[0].data)).toBe(true);
+    const assetsData = await Promise.all(
+      assets.map(async (asset) => streamToBuffer(await getS3File(`app-${app.id}`, asset.id))),
+    );
+    expect(Buffer.from('Test resource a').equals(assetsData[0])).toBe(true);
   });
 
   it('should disallow unused files', async () => {
@@ -528,7 +527,10 @@ describe('createAppResource', () => {
         updated: new Date('1970-01-01T00:00:00.000Z'),
       },
     ]);
-    expect(Buffer.from('Test resource a').equals(assets[0].data)).toBe(true);
+    const assetsData = await Promise.all(
+      assets.map(async (asset) => streamToBuffer(await getS3File(`app-${app.id}`, asset.id))),
+    );
+    expect(Buffer.from('Test resource a').equals(assetsData[0])).toBe(true);
   });
 
   it('should block unknown asset references', async () => {
@@ -1071,6 +1073,7 @@ describe('createAppResource', () => {
   });
 
   it('should create seed resources with assets and ephemeral resources with assets in demo apps', async () => {
+    vi.useRealTimers();
     authorizeStudio();
     await app.update({
       demoMode: true,
@@ -1080,7 +1083,7 @@ describe('createAppResource', () => {
       `/api/apps/${app.id}/resources/testAssets`,
       createFormData({
         resource: { file: '0' },
-        assets: Buffer.alloc(0),
+        assets: [Buffer.from('Test asset')],
       }),
       { params: { seed: true } },
     );

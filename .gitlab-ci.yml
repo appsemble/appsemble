@@ -241,11 +241,19 @@ test node:
   extends: .npm
   services:
     - postgres:15
+    - name: minio/minio:latest
+      alias: minio
+      command: ['server', '/data']
+      variables:
+        MINIO_ROOT_USER: admin
+        MINIO_ROOT_PASSWORD: password
   variables:
     POSTGRES_DB: testAppsemble
     POSTGRES_USER: admin
     POSTGRES_PASSWORD: password
     DATABASE_URL: 'postgres://admin:password@postgres:5432/testAppsemble'
+    S3_HOST: 'minio'
+    S3_PORT: 9000
   stage: test
   script:
     - npm test -- --no-file-parallelism --coverage --shard=$CI_NODE_INDEX/$CI_NODE_TOTAL

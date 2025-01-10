@@ -41,11 +41,10 @@ export const pathItems: OpenAPIV3.PathItemObject = {
             required: ['file'],
             properties: {
               file: {
-                properties: {
-                  path: { type: 'string' },
-                  mimeType: { type: 'string' },
-                  filename: { type: 'string' },
-                },
+                type: 'string',
+                format: 'binary',
+                writeOnly: true,
+                description: 'The binary data of the asset. This may include a filename.',
               },
               name: {
                 type: 'string',

@@ -1,6 +1,10 @@
+import { createReadStream } from 'node:fs';
+import { unlink } from 'node:fs/promises';
+
 import {
   assertKoaError,
   handleValidatorResult,
+  streamToBuffer,
   updateCompanionContainers,
 } from '@appsemble/node-utils';
 import { type AppDefinition, OrganizationPermission } from '@appsemble/types';
@@ -250,11 +254,13 @@ export async function patchApp(ctx: Context): Promise<void> {
     }
 
     if (icon) {
-      result.icon = icon.contents;
+      result.icon = await streamToBuffer(createReadStream(icon.path));
+      await unlink(icon.path);
     }
 
     if (maskableIcon) {
-      result.maskableIcon = maskableIcon.contents;
+      result.maskableIcon = await streamToBuffer(createReadStream(maskableIcon.path));
+      await unlink(icon.path);
     }
 
     if (iconBackground) {

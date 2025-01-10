@@ -1,6 +1,10 @@
+import { createReadStream } from 'node:fs';
+import { unlink } from 'node:fs/promises';
+
 import {
   AppsembleError,
   handleValidatorResult,
+  streamToBuffer,
   updateCompanionContainers,
 } from '@appsemble/node-utils';
 import { type AppDefinition, OrganizationPermission } from '@appsemble/types';
@@ -107,11 +111,14 @@ export async function createApp(ctx: Context): Promise<void> {
     result.containers = definition.containers;
     result.registry = definition.registry;
     if (icon) {
-      result.icon = icon.contents;
+      const stream = createReadStream(icon.path);
+      result.icon = await streamToBuffer(stream);
+      await unlink(icon.path);
     }
 
     if (maskableIcon) {
-      result.maskableIcon = maskableIcon.contents;
+      result.maskableIcon = await streamToBuffer(createReadStream(maskableIcon.path));
+      await unlink(maskableIcon.path);
     }
 
     await setAppPath(ctx, result, path);

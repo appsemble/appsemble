@@ -372,7 +372,7 @@ export interface Argv {
   s3Host: string;
 
   /**
-   * The host of the Amazon S3 compatible object storage server
+   * The port of the Amazon S3 compatible object storage server
    *
    * default 9000
    */

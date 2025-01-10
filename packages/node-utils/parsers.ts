@@ -1,4 +1,3 @@
-import { randomUUID } from 'node:crypto';
 import { createWriteStream } from 'node:fs';
 import { join } from 'node:path';
 import { parse } from 'node:querystring';
@@ -88,11 +87,11 @@ export const streamParser: Parser<Record<string, unknown>> = async (
       reject(error);
     }
 
-    bb.on('file', (fieldname, stream, { filename, mimeType }) => {
+    bb.on('file', (fieldname, stream, { filename, mimeType: mime }) => {
       const propertySchema = resolveRef(properties[fieldname]);
 
       ensureDir('uploads');
-      const path = join('uploads', randomUUID());
+      const path = join('uploads', `${Date.now()}-${filename || 'file'}`);
       const fileWriteStream = createWriteStream(path);
       stream.pipe(fileWriteStream);
 
@@ -104,10 +103,10 @@ export const streamParser: Parser<Record<string, unknown>> = async (
           tempFiles[fieldname] = [];
         }
         (response[fieldname] as string[]).push('');
-        (tempFiles[fieldname] as TempFile[]).push({ path, mimeType, filename });
+        (tempFiles[fieldname] as TempFile[]).push({ path, mime, filename });
       } else {
         response[fieldname] = '';
-        tempFiles[fieldname] = { path, mimeType, filename };
+        tempFiles[fieldname] = { path, mime, filename };
       }
     })
       .on('field', (fieldname, content) => {
@@ -144,7 +143,7 @@ export const streamParser: Parser<Record<string, unknown>> = async (
       }
       if (
         !is(
-          value.mimeType,
+          value.mime,
           encoding[key].contentType.split(',').map((contentType) => contentType.trim()),
         )
       ) {

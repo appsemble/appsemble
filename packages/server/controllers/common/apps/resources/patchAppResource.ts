@@ -3,6 +3,7 @@ import { type Context } from 'koa';
 
 import { App, Asset, Resource, ResourceVersion, transactional } from '../../../../models/index.js';
 import { getCurrentAppMember } from '../../../../options/index.js';
+import { getCompressedFileMeta, uploadAssetFile } from '../../../../utils/assets.js';
 import { checkAppPermissions } from '../../../../utils/authorization.js';
 
 export async function patchAppResource(ctx: Context): Promise<void> {
@@ -69,16 +70,29 @@ export async function patchAppResource(ctx: Context): Promise<void> {
 
     if (preparedAssets.length) {
       promises.push(
-        Asset.bulkCreate(
-          preparedAssets.map((asset) => ({
-            ...asset,
-            AppId: app.id,
-            GroupId: selectedGroupId ?? null,
-            ResourceId: resource.id,
-            AppMemberId: appMember?.sub,
-          })),
-          { logging: false, transaction },
-        ),
+        (async () => {
+          const createdAssets = await Asset.bulkCreate(
+            preparedAssets.map((asset) => ({
+              ...asset,
+              AppId: app.id,
+              GroupId: selectedGroupId ?? null,
+              ResourceId: resource.id,
+              AppMemberId: appMember?.sub,
+            })),
+            { logging: false, transaction },
+          );
+
+          for (const asset of preparedAssets) {
+            await uploadAssetFile(app.id, asset.id, {
+              mime: asset.mime,
+              path: asset.path,
+            });
+          }
+
+          for (const asset of createdAssets) {
+            await asset.update(getCompressedFileMeta(asset), { transaction });
+          }
+        })(),
       );
     }
 

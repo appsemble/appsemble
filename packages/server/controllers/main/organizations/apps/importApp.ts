@@ -5,12 +5,12 @@ import {
   assertKoaError,
   getSupportedLanguages,
   handleValidatorResult,
+  type TempFile,
 } from '@appsemble/node-utils';
 import { OrganizationPermission } from '@appsemble/types';
 import { normalize, validateAppDefinition, validateStyle } from '@appsemble/utils';
 import JSZip from 'jszip';
 import { type Context } from 'koa';
-import { type File } from 'koas-body-parser';
 import { lookup } from 'mime-types';
 import webpush from 'web-push';
 import { parse } from 'yaml';
@@ -181,14 +181,13 @@ export async function importApp(ctx: Context): Promise<void> {
         }
 
         const supportedLanguages = await getSupportedLanguages();
-        const screenshots: File[] = [];
+        const screenshots: TempFile[] = [];
         for (const jsZipObject of zip
           .folder('screenshots')
           .filter((filename) => !['.DS_Store'].includes(filename))) {
           if (!jsZipObject.dir) {
-            const contents = await jsZipObject.async('nodebuffer');
-
             const { name } = jsZipObject;
+
             const screenshotDirectoryPath = dirname(name);
             const screenshotDirectoryName = basename(screenshotDirectoryPath);
 
@@ -199,22 +198,22 @@ export async function importApp(ctx: Context): Promise<void> {
             screenshots.push({
               filename: `${language}-${name}`,
               mime: lookup(name) || '',
-              contents,
+              path: name,
             });
           }
         }
 
         await createAppScreenshots(record.id, screenshots, transaction, ctx);
 
-        const readmeFiles: File[] = [];
+        const readmeFiles: TempFile[] = [];
         for (const jsZipObject of zip.filter(
           (filename) => filename.toLowerCase().startsWith('readme') && filename.endsWith('md'),
         )) {
-          const contents = await jsZipObject.async('nodebuffer');
+          const { name } = jsZipObject;
           readmeFiles.push({
             mime: 'text/markdown',
-            filename: jsZipObject.name,
-            contents,
+            filename: name,
+            path: name,
           });
         }
         await createAppReadmes(record.id, readmeFiles, transaction);

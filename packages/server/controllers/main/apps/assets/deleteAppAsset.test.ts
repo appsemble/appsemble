@@ -10,7 +10,6 @@ import {
   type User,
 } from '../../../../models/index.js';
 import { setArgv } from '../../../../utils/argv.js';
-import { assetsCache } from '../../../../utils/assetCache.js';
 import { createServer } from '../../../../utils/createServer.js';
 import { authorizeStudio, createTestUser } from '../../../../utils/test/authorization.js';
 
@@ -77,7 +76,6 @@ describe('deleteAppAsset', () => {
       AppId: app.id,
       mime: 'application/octet-stream',
       filename: 'test.bin',
-      data: Buffer.from('buffer'),
     });
 
     authorizeStudio();
@@ -90,31 +88,8 @@ describe('deleteAppAsset', () => {
       AppId: app.id,
       mime: 'application/octet-stream',
       filename: 'test.bin',
-      data: Buffer.from('buffer'),
       deleted: expect.any(Date),
     });
-  });
-
-  it('should clear existing assets in cache', async () => {
-    const asset = await Asset.create({
-      AppId: app.id,
-      mime: 'application/octet-stream',
-      filename: 'test.bin',
-      data: Buffer.from('buffer'),
-    });
-    const assetId = asset.id;
-    await request.get(`/api/apps/${app.id}/assets/${assetId}`);
-    expect(assetsCache.get(`${app.id}-${assetId}`)).toMatchObject({
-      filename: 'test.bin',
-      mime: 'application/octet-stream',
-      name: null,
-    });
-
-    authorizeStudio();
-    const response = await request.delete(`/api/apps/${app.id}/assets/${asset.id}`);
-    expect(assetsCache.get(`${app.id}-${assetId}`)).toBeUndefined();
-
-    expect(response).toMatchInlineSnapshot('HTTP/1.1 204 No Content');
   });
 
   it('should not delete assets if the user has insufficient permissions', async () => {

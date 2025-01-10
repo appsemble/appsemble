@@ -7,13 +7,13 @@ import {
   getSupportedLanguages,
   logger,
   mergeMessages,
+  streamToBuffer,
   type TempFile,
   throwKoaError,
 } from '@appsemble/node-utils';
 import { extractAppMessages, StyleValidationError } from '@appsemble/utils';
 import { type Context } from 'koa';
 import tags from 'language-tags';
-import { streamToBuffer } from 'memfs/lib/node/util.js';
 import { lookup } from 'mime-types';
 import {
   type FindOptions,

@@ -1,4 +1,4 @@
-import { assertKoaError, logger } from '@appsemble/node-utils';
+import { assertKoaError, deleteS3Files, logger } from '@appsemble/node-utils';
 import { OrganizationPermission } from '@appsemble/types';
 import { type Context } from 'koa';
 import { Op } from 'sequelize';
@@ -6,7 +6,6 @@ import { Op } from 'sequelize';
 import { App, Asset, Resource } from '../../../models/index.js';
 import { checkUserOrganizationPermissions } from '../../../utils/authorization.js';
 import { reseedResourcesRecursively } from '../../../utils/resource.js';
-import { deleteFiles } from '../../../utils/s3.js';
 
 export async function reseedDemoApp(ctx: Context): Promise<void> {
   const {
@@ -48,7 +47,7 @@ export async function reseedDemoApp(ctx: Context): Promise<void> {
     },
   });
 
-  await deleteFiles(
+  await deleteS3Files(
     `app-${appId}`,
     demoAssetsToDelete.map((asset) => asset.id),
   );

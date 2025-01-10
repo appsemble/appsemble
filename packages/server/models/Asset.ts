@@ -7,7 +7,6 @@ import {
   Default,
   DeletedAt,
   ForeignKey,
-  HasOne,
   Index,
   Model,
   PrimaryKey,
@@ -29,10 +28,6 @@ export class Asset extends Model {
 
   @Column(DataType.STRING)
   filename: string;
-
-  @AllowNull(false)
-  @Column(DataType.BLOB)
-  data: Buffer;
 
   @Index({ name: 'UniqueAssetWithNullGroupId', unique: true })
   @Index({ name: 'UniqueAssetWithGroupId', unique: true })
@@ -110,14 +105,4 @@ export class Asset extends Model {
 
   @BelongsTo(() => Resource, { onDelete: 'CASCADE' })
   Resource: Awaited<Resource>;
-
-  @HasOne(() => Asset, { foreignKey: 'OriginalId', onDelete: 'CASCADE' })
-  Compressed: Awaited<Asset>;
-
-  @ForeignKey(() => Asset)
-  @Column(DataType.STRING)
-  OriginalId: string;
-
-  @BelongsTo(() => Asset, { onDelete: 'SET NULL' })
-  Original: Awaited<Asset>;
 }

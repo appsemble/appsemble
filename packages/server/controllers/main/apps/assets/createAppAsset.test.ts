@@ -1,4 +1,9 @@
-import { createFixtureStream, createFormData } from '@appsemble/node-utils';
+import {
+  createFixtureStream,
+  createFormData,
+  getS3File,
+  streamToBuffer,
+} from '@appsemble/node-utils';
 import { type Asset as AssetType, PredefinedOrganizationRole } from '@appsemble/types';
 import { uuid4Pattern } from '@appsemble/utils';
 import { request, setTestApp } from 'axios-test-instance';
@@ -83,12 +88,23 @@ describe('createAppAsset', () => {
     const asset = await Asset.findByPk(response.data.id);
     expect(asset).toMatchObject({
       AppId: app.id,
-      data,
       filename: null,
       mime: 'application/octet-stream',
       name: 'test-asset',
       AppMemberId: null,
     });
+  });
+
+  it('should save files to s3', async () => {
+    authorizeStudio();
+    const data = Buffer.from([0xc0, 0xff, 0xee, 0xba, 0xbe]);
+    const response = await request.post<Asset>(
+      `/api/apps/${app.id}/assets`,
+      createFormData({ file: data, name: 'test-asset' }),
+    );
+    expect(await streamToBuffer(await getS3File(`app-${app.id}`, response.data.id))).toStrictEqual(
+      data,
+    );
   });
 
   it('should not allow using conflicting names', async () => {
@@ -199,7 +215,7 @@ describe('createAppAsset', () => {
     authorizeStudio();
     const response = await request.post<AssetType>(
       `/api/apps/${app.id}/assets`,
-      createFormData({ file: Buffer.alloc(0) }),
+      createFormData({ file: Buffer.from('Test asset') }),
       { params: { seed: 'true' } },
     );
     const asset = await Asset.findByPk(response.data.id);
@@ -236,14 +252,9 @@ describe('createAppAsset', () => {
         "AppId": 1,
         "AppMemberId": null,
         "GroupId": null,
-        "OriginalId": null,
         "ResourceId": null,
         "clonable": false,
         "created": Any<Date>,
-        "data": {
-          "data": [],
-          "type": "Buffer",
-        },
         "deleted": null,
         "ephemeral": false,
         "filename": null,
@@ -262,7 +273,7 @@ describe('createAppAsset', () => {
     authorizeStudio();
     const response = await request.post<AssetType>(
       `/api/apps/${app.id}/assets?seed=true`,
-      createFormData({ file: Buffer.alloc(0) }),
+      createFormData({ file: Buffer.from('Test asset') }),
     );
     const asset = await Asset.findByPk(response.data.id);
 
@@ -298,14 +309,9 @@ describe('createAppAsset', () => {
         "AppId": 1,
         "AppMemberId": null,
         "GroupId": null,
-        "OriginalId": null,
         "ResourceId": null,
         "clonable": false,
         "created": Any<Date>,
-        "data": {
-          "data": [],
-          "type": "Buffer",
-        },
         "deleted": null,
         "ephemeral": false,
         "filename": null,
@@ -336,14 +342,9 @@ describe('createAppAsset', () => {
         "AppId": 1,
         "AppMemberId": null,
         "GroupId": null,
-        "OriginalId": null,
         "ResourceId": null,
         "clonable": false,
         "created": Any<Date>,
-        "data": {
-          "data": [],
-          "type": "Buffer",
-        },
         "deleted": null,
         "ephemeral": true,
         "filename": null,

@@ -176,7 +176,7 @@ function shared(env: string, { mode }: CliConfigOptions): Configuration {
                   remarkRewriteLinks,
                 ],
                 rehypePlugins: [
-                  production && rehypeMermaid,
+                  rehypeMermaid,
                   rehypeMdxImportMedia,
                   rehypeMdxCodeProps,
                   rehypeMdxTitle,

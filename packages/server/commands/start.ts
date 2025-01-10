@@ -1,7 +1,13 @@
 import http from 'node:http';
 import https from 'node:https';
 
-import { AppsembleError, logger, readFileOrString, version } from '@appsemble/node-utils';
+import {
+  AppsembleError,
+  initS3Client,
+  logger,
+  readFileOrString,
+  version,
+} from '@appsemble/node-utils';
 import { api, asciiLogo } from '@appsemble/utils';
 import { captureException } from '@sentry/node';
 import { type Context } from 'koa';
@@ -15,7 +21,6 @@ import { argv } from '../utils/argv.js';
 import { createServer } from '../utils/createServer.js';
 import { configureDNS } from '../utils/dns/index.js';
 import { migrate } from '../utils/migrate.js';
-import { initS3Client } from '../utils/s3.js';
 import { handleDBError } from '../utils/sqlUtils.js';
 
 interface AdditionalArguments {

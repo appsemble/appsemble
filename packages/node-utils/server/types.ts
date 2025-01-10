@@ -1,3 +1,5 @@
+import { type Readable } from 'node:stream';
+
 import {
   type App,
   type AppConfigEntry,
@@ -317,7 +319,7 @@ export interface GetAppResourcesParams extends GetAppSubEntityParams {
 }
 
 export interface PreparedAsset extends Pick<Asset, 'filename' | 'id' | 'mime'> {
-  data: Buffer;
+  path: string;
   resource?: Record<string, unknown>;
 }
 
@@ -351,7 +353,7 @@ export interface CreateAppAssetParams extends GetAppSubEntityParams {
     filename: string;
     mime: string;
     name: string;
-    data: Buffer;
+    path: string;
   };
   seed?: boolean;
 }
@@ -404,7 +406,7 @@ export interface AppBlockStyle {
 }
 
 export interface AppAsset extends Asset {
-  data: Buffer;
+  stream: Readable;
 }
 
 export interface ProjectAsset {
@@ -466,7 +468,7 @@ export interface Options {
   createAppResourcesWithAssets: (params: CreateAppResourcesWithAssetsParams) => Promise<Resource[]>;
   updateAppResource: (params: UpdateAppResourceParams) => Promise<Resource | null>;
   deleteAppResource: (params: DeleteAppResourceParams) => Promise<void>;
-  getAppAssets: (params: GetAppSubEntityParams) => Promise<Asset[]>;
+  getAppAssets: (params: GetAppSubEntityParams) => Promise<AppAsset[]>;
   getAppAsset: (params: GetAppAssetParams) => Promise<AppAsset>;
   createAppAsset: (params: CreateAppAssetParams) => Promise<AppAsset>;
   deleteAppAsset: (params: DeleteAppAssetParams) => Promise<number>;
@@ -478,5 +480,5 @@ export interface Options {
 export interface TempFile {
   path: string;
   filename: string;
-  mimeType: string;
+  mime: string;
 }

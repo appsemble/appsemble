@@ -1,9 +1,8 @@
-import { assertKoaError } from '@appsemble/node-utils';
+import { assertKoaError, setAssetHeaders } from '@appsemble/node-utils';
 import { type Context } from 'koa';
 import { extension } from 'mime-types';
 import { Op } from 'sequelize';
 
-import { setHeaders } from './utils.js';
 import { App, Asset } from '../../../../models/index.js';
 
 export async function getAppAssetHeadersById(ctx: Context): Promise<void> {
@@ -40,5 +39,5 @@ export async function getAppAssetHeadersById(ctx: Context): Promise<void> {
     }
   }
 
-  setHeaders(ctx, mime, filename);
+  setAssetHeaders(ctx, mime, filename);
 }
