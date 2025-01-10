@@ -12,8 +12,8 @@ test.describe('Organizations', () => {
   test('should link to organization details', async ({ page }) => {
     await page.getByRole('link', { name: 'Appsemble appsemble' }).click();
     await expect(page.getByText('The open source low-code app building platform')).toBeVisible();
-    await expect(page.getByRole('button', { name: 'Apps' })).toBeVisible();
-    await expect(page.getByRole('button', { name: 'Blocks' })).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Apps', exact: true })).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Blocks', exact: true })).toBeVisible();
     await expect(page.getByText('Unlittered')).toBeVisible();
     await expect(page.getByText('action-button')).toBeVisible();
   });
