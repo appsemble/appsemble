@@ -61,7 +61,7 @@
     "fs-extra": "^11.0.0",
     "inquirer": "^9.0.0",
     "intl-messageformat": "^10.0.0",
-    "jsonschema": "^1.0.0",
+    "jsonschema": "~1.4.1",
     "keytar": "^7.0.0",
     "koa": "^2.0.0",
     "koa-compose": "^4.0.0",
