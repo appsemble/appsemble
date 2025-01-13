@@ -1,1 +1,1 @@
-Allow setting resource id explicitly in `resource.get` action.
+Allow setting resource id explicitly in `resource.get` and `resource.patch` actions.

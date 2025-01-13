@@ -237,6 +237,22 @@ describe('resource.patch', () => {
     expect(request.data).toBe('{"id":84,"type":"fish"}');
     expect(result).toStrictEqual({ id: 84, type: 'fish' });
   });
+
+  it('should allow resource id to be explicit', async () => {
+    mock.onPatch(/.*/).reply((req) => {
+      request = req;
+      return [200, { ...JSON.parse(req.data), id: 84 }, {}];
+    });
+    const action = createTestAction({
+      appDefinition,
+      definition: { type: 'resource.patch', resource: 'pet', id: 84 },
+    });
+    const result = await action({ type: 'fish' });
+    expect(request.method).toBe('patch');
+    expect(request.url).toBe(`${apiUrl}/api/apps/42/resources/pet/84`);
+    expect(request.data).toBe('{"type":"fish"}');
+    expect(result).toStrictEqual({ id: 84, type: 'fish' });
+  });
 });
 
 describe('resource.delete', () => {

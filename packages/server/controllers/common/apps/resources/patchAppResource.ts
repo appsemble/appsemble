@@ -3,7 +3,7 @@ import { type Context } from 'koa';
 
 import { App, Asset, Resource, ResourceVersion, transactional } from '../../../../models/index.js';
 import { getCurrentAppMember } from '../../../../options/index.js';
-import { checkAuthSubjectAppPermissions } from '../../../../utils/authorization.js';
+import { checkAppPermissions } from '../../../../utils/authorization.js';
 
 export async function patchAppResource(ctx: Context): Promise<void> {
   const {
@@ -23,11 +23,11 @@ export async function patchAppResource(ctx: Context): Promise<void> {
 
   assertKoaError(!resource, ctx, 404, 'Resource not found');
 
-  await checkAuthSubjectAppPermissions({
+  await checkAppPermissions({
     context: ctx,
     appId,
     requiredPermissions: [
-      resource.AuthorId === authSubject.id
+      resource.AuthorId === authSubject?.id
         ? `$resource:${resourceType}:own:patch`
         : `$resource:${resourceType}:patch`,
     ],

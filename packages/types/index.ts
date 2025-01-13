@@ -1588,7 +1588,7 @@ interface OwnResourceDefinition {
   own?: boolean;
 }
 
-interface ResourceGetDefinition {
+interface ResourceActionWithIdDefinition {
   /**
    * Id of the resource to fetch
    */
@@ -1604,7 +1604,7 @@ export type ResourceCreateActionDefinition = ResourceActionDefinition<'resource.
 export type ResourceDeleteActionDefinition = ResourceActionDefinition<'resource.delete'>;
 export type ResourceHistoryGetActionDefinition = ResourceActionDefinition<'resource.history.get'>;
 export type ResourceGetActionDefinition = ResourceActionDefinition<'resource.get'> &
-  ResourceGetDefinition &
+  ResourceActionWithIdDefinition &
   ViewResourceDefinition;
 export type ResourceQueryActionDefinition = OwnResourceDefinition &
   ResourceActionDefinition<'resource.query'> &
@@ -1612,7 +1612,8 @@ export type ResourceQueryActionDefinition = OwnResourceDefinition &
 export type ResourceCountActionDefinition = OwnResourceDefinition &
   ResourceActionDefinition<'resource.count'>;
 export type ResourceUpdateActionDefinition = ResourceActionDefinition<'resource.update'>;
-export type ResourcePatchActionDefinition = ResourceActionDefinition<'resource.patch'>;
+export type ResourcePatchActionDefinition = ResourceActionDefinition<'resource.patch'> &
+  ResourceActionWithIdDefinition;
 export type AppMemberLogoutAction = BaseActionDefinition<'app.member.logout'>;
 
 export interface BaseResourceSubscribeActionDefinition<T extends Action['type']>
