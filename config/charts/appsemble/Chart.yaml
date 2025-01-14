@@ -1,7 +1,7 @@
 apiVersion: v2
 name: appsemble
-version: 0.30.14-test.6
-appVersion: 0.30.14-test.6
+version: 0.30.14-test.7
+appVersion: 0.30.14-test.7
 kubeVersion: '>=1.21.0'
 type: application
 description: The open source low-code app building platform
@@ -29,23 +29,9 @@ dependencies:
 annotations:
   artifacthub.io/changes: >
     - kind: added
-      description: "Block(table): Add new field name to enable sorting fields."
-    - kind: added
-      description: "App: Allow expiring data in localStorage using storage actions."
+      description: "App: Add a PWA installation button and modal prompt to apps."
     - kind: changed
-      description: "Block(detail-viewer): Default date render behavior."
-    - kind: changed
-      description: "Block(list): Default date render behavior."
-    - kind: changed
-      description: "Block(table): Default date render behavior."
-    - kind: changed
-      description: "Block(wordcloud): Default date render behavior."
-    - kind: fixed
-      description: "Block(form): Properly denote optional fieldset and selection fields."
-    - kind: fixed
-      description: "App: Properly clear page data when the page changes."
-    - kind: fixed
-      description: "Studio: App member and group invites default role."
+      description: "Server: Soft delete assets and resources."
   artifacthub.io/license: LGPL-3.0-only
   artifacthub.io/links: |
     - name: Appsemble Studio

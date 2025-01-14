@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.30.14-test.7](https://gitlab.com/appsemble/appsemble/-/releases/0.30.14-test.7)] - 2025-01-14
+
+### Added
+
+- App: Add a PWA installation button and modal prompt to apps.
+
+### Changed
+
+- Server: Soft delete assets and resources.
+
 ## \[[0.30.14-test.6](https://gitlab.com/appsemble/appsemble/-/releases/0.30.14-test.6)] - 2025-01-02
 
 ### Added
