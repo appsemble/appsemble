@@ -238,12 +238,32 @@ async function handleRequestProxy(
         response = await axios(axiosConfig);
       } catch {
         logger.error(err);
+        logger.verbose('Response Status:', response?.status);
+        logger.verbose('Response Status Text:', response?.statusText);
+        logger.verbose('Response Headers:', response?.headers);
+        logger.verbose('Response Data:', response?.data);
+        logger.verbose('Request URL:', response?.config?.url);
+        logger.verbose('Request Method:', response?.config?.method);
+        logger.verbose('Axios config headers: ', axiosConfig.headers);
+        logger.verbose('Axios config data: ', axiosConfig.data);
+        throwKoaError(ctx, 502, 'Bad Gateway');
+
         throwKoaError(ctx, 502, 'Bad Gateway');
       } finally {
         await setLastRequestAnnotation(namespace, deploymentName);
       }
     } else {
       logger.error(err);
+      logger.verbose('Response Status:', response?.status);
+      logger.verbose('Response Status Text:', response?.statusText);
+      logger.verbose('Response Headers:', response?.headers);
+      logger.verbose('Response Data:', response?.data);
+      logger.verbose('Request URL:', response?.config?.url);
+      logger.verbose('Request Method:', response?.config?.method);
+      logger.verbose('Axios config headers: ', axiosConfig.headers);
+      logger.verbose('Axios config data: ', axiosConfig.data);
+      throwKoaError(ctx, 502, 'Bad Gateway');
+
       throwKoaError(ctx, 502, 'Bad Gateway');
     }
   }
