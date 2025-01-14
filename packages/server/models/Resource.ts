@@ -11,6 +11,7 @@ import {
   CreatedAt,
   DataType,
   Default,
+  DeletedAt,
   ForeignKey,
   HasMany,
   Index,
@@ -36,7 +37,7 @@ interface ResourceToJsonOptions {
   include?: string[];
 }
 
-@Table({ tableName: 'Resource' })
+@Table({ tableName: 'Resource', paranoid: true })
 export class Resource extends Model {
   @PrimaryKey
   @AutoIncrement
@@ -86,6 +87,9 @@ export class Resource extends Model {
 
   @UpdatedAt
   updated: Date;
+
+  @DeletedAt
+  deleted: Date;
 
   @ForeignKey(() => App)
   @Index({ name: 'resourceTypeComposite' })

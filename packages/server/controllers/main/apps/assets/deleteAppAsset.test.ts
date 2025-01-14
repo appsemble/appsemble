@@ -72,6 +72,29 @@ describe('deleteAppAsset', () => {
     expect(response).toMatchInlineSnapshot('HTTP/1.1 204 No Content');
   });
 
+  it('should soft-delete assets', async () => {
+    const asset = await Asset.create({
+      AppId: app.id,
+      mime: 'application/octet-stream',
+      filename: 'test.bin',
+      data: Buffer.from('buffer'),
+    });
+
+    authorizeStudio();
+    const assetId = asset.id;
+    const response = await request.delete(`/api/apps/${app.id}/assets/${asset.id}`);
+
+    expect(response).toMatchInlineSnapshot('HTTP/1.1 204 No Content');
+    const deletedAsset = await Asset.findByPk(assetId, { paranoid: false });
+    expect(deletedAsset).toMatchObject({
+      AppId: app.id,
+      mime: 'application/octet-stream',
+      filename: 'test.bin',
+      data: Buffer.from('buffer'),
+      deleted: expect.any(Date),
+    });
+  });
+
   it('should clear existing assets in cache', async () => {
     const asset = await Asset.create({
       AppId: app.id,
