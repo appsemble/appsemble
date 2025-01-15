@@ -1,6 +1,5 @@
 {
   "compilerOptions": {
-    "incremental": true,
     "declaration": true,
     "experimentalDecorators": true,
     "isolatedModules": true,
