@@ -1,5 +1,5 @@
 import { spawn } from 'node:child_process';
-import { mkdir, readFile, writeFile } from 'node:fs/promises';
+import { access, cp, mkdir, readFile } from 'node:fs/promises';
 import { join } from 'node:path';
 
 import fg from 'fast-glob';
@@ -35,24 +35,17 @@ export async function handler({ paths }: { paths: string[] }): Promise<void> {
     console.log(`Extracted ${file}\nImporting ${outDir}/index.js`);
 
     const packageJson = JSON.parse(await readFile(join(outDir, 'package.json'), 'utf8'));
-    packageJson.devDependencies = {};
-    await writeFile(join(outDir, 'package.json'), JSON.stringify(packageJson, null, 2));
-    console.log(`Rewrote package.json in ${outDir}`);
-
-    console.log('Installing package dependencies in local folder');
-    // TODO: find more efficient way to handle monorepo dependency stuff here
-    // dependencies are fractured between main node_modules folder and workspace folders, which
-    // did not happen with yarn
-    const installChild = spawn('npm', ['install', '--omit=dev'], { cwd: outDir });
-    await new Promise((resolve, reject) => {
-      installChild.on('error', (err) => {
-        console.error(err);
-        reject(err);
-        process.exit(1);
-      });
-      installChild.on('exit', resolve);
-    });
-    console.log('Installed package dependencies in local folder');
+    const nodeModulesPath = join(process.cwd(), packageJson.repository.directory, 'node_modules');
+    const outDirNodeModulesPath = join(outDir, 'node_modules');
+    if (
+      await access(nodeModulesPath)
+        .then(() => true)
+        .catch(() => false)
+    ) {
+      console.log(`Copying node_modules from ${nodeModulesPath} to ${outDirNodeModulesPath}`);
+      await mkdir(outDirNodeModulesPath, { recursive: true });
+      await cp(nodeModulesPath, outDirNodeModulesPath, { recursive: true });
+    }
 
     // A child process is required when a bin file is hit to avoid the script
     // getting stuck waiting for user input.
