@@ -93,6 +93,9 @@ describe('createAppRating', () => {
       rating: 5,
     });
 
+    vi.useRealTimers();
+    vi.useFakeTimers();
+    vi.setSystemTime(0);
     vi.advanceTimersByTime(20e3);
 
     const response = await request.post(`/api/apps/${app.id}/ratings`, {

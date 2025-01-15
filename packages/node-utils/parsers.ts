@@ -1,3 +1,4 @@
+import { randomUUID } from 'node:crypto';
 import { createWriteStream } from 'node:fs';
 import { join } from 'node:path';
 import { parse } from 'node:querystring';
@@ -91,7 +92,7 @@ export const streamParser: Parser<Record<string, unknown>> = async (
       const propertySchema = resolveRef(properties[fieldname]);
 
       ensureDir('uploads');
-      const path = join('uploads', `${Date.now()}-${filename || 'file'}`);
+      const path = join('uploads', `${Date.now()}-${randomUUID()}`);
       const fileWriteStream = createWriteStream(path);
       stream.pipe(fileWriteStream);
 

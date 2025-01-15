@@ -10,7 +10,7 @@ import {
 import { rootDB, setupTestDatabase } from '@appsemble/server';
 import { type Sequelize } from 'sequelize';
 // eslint-disable-next-line import/no-extraneous-dependencies
-import { afterAll, beforeAll, beforeEach } from 'vitest';
+import { afterAll, beforeAll, beforeEach, vi } from 'vitest';
 
 setFixtureBase(import.meta);
 delete process.env[CREDENTIALS_ENV_VAR];
@@ -32,6 +32,7 @@ beforeAll(async () => {
 
 beforeEach(async () => {
   await testDB.truncate({ truncate: true, cascade: true, force: true, restartIdentity: true });
+  vi.useRealTimers();
   await clearAllS3Buckets();
 });
 

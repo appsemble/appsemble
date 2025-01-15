@@ -562,6 +562,8 @@ describe('resource', () => {
 
     it('should not set resource expiration if given date has already passed', async () => {
       // 10 minutes
+      vi.useRealTimers();
+      vi.useFakeTimers();
       vi.advanceTimersByTime(600e3);
 
       const action: ActionDefinition = {
@@ -1040,6 +1042,8 @@ describe('resource', () => {
 
     it('should not set $expires if the date has already passed', async () => {
       // 10 minutes
+      vi.useRealTimers();
+      vi.useFakeTimers();
       vi.advanceTimersByTime(600e3);
 
       const action: ActionDefinition = {
@@ -1713,6 +1717,8 @@ describe('resource', () => {
 
     it('should not set $expires if the date has already passed', async () => {
       // 10 minutes
+      vi.useRealTimers();
+      vi.useFakeTimers();
       vi.advanceTimersByTime(600e3);
 
       const action: ActionDefinition = {

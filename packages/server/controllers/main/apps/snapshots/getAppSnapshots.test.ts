@@ -61,6 +61,9 @@ describe('getAppSnapshots', () => {
       UserId: user.id,
       yaml: "name: Test App\ndefaultPage: 'Test Page'",
     });
+    vi.useRealTimers();
+    vi.useFakeTimers();
+    vi.setSystemTime(0);
     vi.advanceTimersByTime(60_000);
     await AppSnapshot.create({
       AppId: app.id,

@@ -1,7 +1,6 @@
-import { assertKoaError } from '@appsemble/node-utils';
+import { assertKoaError, type TempFile } from '@appsemble/node-utils';
 import { OrganizationPermission } from '@appsemble/types';
 import { type Context } from 'koa';
-import { type File } from 'koas-body-parser';
 
 import { App, AppScreenshot, transactional } from '../../../../models/index.js';
 import { createAppScreenshots } from '../../../../utils/app.js';
@@ -38,7 +37,7 @@ export async function createAppScreenshot(ctx: Context): Promise<void> {
     },
   });
 
-  const languageScreenshots = screenshots.map((screenshot: File) => {
+  const languageScreenshots = screenshots.map((screenshot: TempFile) => {
     const { filename } = screenshot;
     return {
       ...screenshot,

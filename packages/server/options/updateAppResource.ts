@@ -1,10 +1,13 @@
-import { type UpdateAppResourceParams } from '@appsemble/node-utils';
+import {
+  getCompressedFileMeta,
+  type UpdateAppResourceParams,
+  uploadAssets,
+} from '@appsemble/node-utils';
 import { type Resource as ResourceInterface } from '@appsemble/types';
 
 import { getCurrentAppMember } from './getCurrentAppMember.js';
 import { App, Asset, ResourceVersion, transactional } from '../models/index.js';
 import { Resource } from '../models/Resource.js';
-import { getCompressedFileMeta, uploadAssetFile } from '../utils/assets.js';
 import { processHooks, processReferenceHooks } from '../utils/resource.js';
 
 export function updateAppResource({
@@ -53,9 +56,10 @@ export function updateAppResource({
     );
 
     if (preparedAssets.length) {
-      const createdAssets = await Asset.bulkCreate(
+      await Asset.bulkCreate(
         preparedAssets.map((asset) => ({
           ...asset,
+          ...getCompressedFileMeta(asset),
           AppId: app.id,
           ResourceId: id,
           AppMemberId: member?.sub,
@@ -66,16 +70,7 @@ export function updateAppResource({
         { logging: false, transaction },
       );
 
-      for (const asset of preparedAssets) {
-        await uploadAssetFile(app.id, asset.id, {
-          mime: asset.mime,
-          path: asset.path,
-        });
-      }
-
-      for (const asset of createdAssets) {
-        await asset.update(getCompressedFileMeta(asset), { transaction });
-      }
+      await uploadAssets(app.id, preparedAssets);
     }
 
     if (resourceDefinition.history) {

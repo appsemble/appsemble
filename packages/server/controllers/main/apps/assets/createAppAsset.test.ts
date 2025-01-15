@@ -1,9 +1,4 @@
-import {
-  createFixtureStream,
-  createFormData,
-  getS3File,
-  streamToBuffer,
-} from '@appsemble/node-utils';
+import { createFixtureStream, createFormData, getS3FileBuffer } from '@appsemble/node-utils';
 import { type Asset as AssetType, PredefinedOrganizationRole } from '@appsemble/types';
 import { uuid4Pattern } from '@appsemble/utils';
 import { request, setTestApp } from 'axios-test-instance';
@@ -102,9 +97,7 @@ describe('createAppAsset', () => {
       `/api/apps/${app.id}/assets`,
       createFormData({ file: data, name: 'test-asset' }),
     );
-    expect(await streamToBuffer(await getS3File(`app-${app.id}`, response.data.id))).toStrictEqual(
-      data,
-    );
+    expect(await getS3FileBuffer(`app-${app.id}`, response.data.id)).toStrictEqual(data);
   });
 
   it('should not allow using conflicting names', async () => {

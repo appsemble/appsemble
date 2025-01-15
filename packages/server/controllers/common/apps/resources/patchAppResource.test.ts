@@ -1,4 +1,4 @@
-import { createFormData, getS3File, streamToBuffer } from '@appsemble/node-utils';
+import { createFormData, getS3FileBuffer } from '@appsemble/node-utils';
 import {
   PredefinedAppRole,
   PredefinedOrganizationRole,
@@ -75,6 +75,9 @@ describe('patchAppResource', () => {
       data: { foo: 'I am Foo.', bar: 'I am Bar.' },
     });
 
+    vi.useRealTimers();
+    vi.useFakeTimers();
+    vi.setSystemTime(0);
     vi.advanceTimersByTime(20e3);
 
     authorizeStudio();
@@ -437,6 +440,8 @@ describe('patchAppResource', () => {
 
   it('should not set $expires if the date has already passed', async () => {
     // 10 minutes
+    vi.useRealTimers();
+    vi.useFakeTimers();
     vi.advanceTimersByTime(600e3);
     authorizeStudio();
 
@@ -523,7 +528,7 @@ describe('patchAppResource', () => {
       }),
     ]);
     const assetsData = await Promise.all(
-      assets.map(async (asset) => streamToBuffer(await getS3File(`app-${app.id}`, asset.id))),
+      assets.map((asset) => getS3FileBuffer(`app-${app.id}`, asset.id)),
     );
     expect(Buffer.from('Test resource a').equals(assetsData[0])).toBe(true);
   });

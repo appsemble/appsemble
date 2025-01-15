@@ -1,4 +1,4 @@
-import { createFormData, getS3File, streamToBuffer } from '@appsemble/node-utils';
+import { createFormData, getS3FileBuffer } from '@appsemble/node-utils';
 import {
   PredefinedAppRole,
   PredefinedOrganizationRole,
@@ -264,6 +264,8 @@ describe('createAppResource', () => {
 
   it('should not set resource expiration if given date has already passed', async () => {
     // 10 minutes
+    vi.useRealTimers();
+    vi.useFakeTimers();
     vi.advanceTimersByTime(600e3);
 
     authorizeStudio();
@@ -300,25 +302,19 @@ describe('createAppResource', () => {
   it('should accept assets as form data', async () => {
     vi.useRealTimers();
     authorizeStudio();
+    const assetContent = Buffer.from('Test resource a');
     const response = await request.post<ResourceType>(
       `/api/apps/${app.id}/resources/testAssets`,
       createFormData({
         resource: { file: '0' },
-        assets: Buffer.from('Test resource a'),
+        assets: assetContent,
       }),
     );
 
-    expect(response).toMatchInlineSnapshot(
-      { data: { file: expect.stringMatching(/^[0-f]{8}(?:-[0-f]{4}){3}-[0-f]{12}$/) } },
-      `
-      HTTP/1.1 201 Created
-      Content-Type: application/json; charset=utf-8
-
-      {
-        "file": StringMatching /\\^\\[0-f\\]\\{8\\}\\(\\?:-\\[0-f\\]\\{4\\}\\)\\{3\\}-\\[0-f\\]\\{12\\}\\$/,
-        "id": 1,
-      }
-    `,
+    expect(response.data).toStrictEqual(
+      expect.objectContaining({
+        file: expect.stringMatching(/^[0-f]{8}(?:-[0-f]{4}){3}-[0-f]{12}$/),
+      }),
     );
     const assets = await Asset.findAll({ where: { ResourceId: response.data.id }, raw: true });
     expect(assets).toStrictEqual([
@@ -338,10 +334,7 @@ describe('createAppResource', () => {
         seed: false,
       }),
     ]);
-    const assetsData = await Promise.all(
-      assets.map(async (asset) => streamToBuffer(await getS3File(`app-${app.id}`, asset.id))),
-    );
-    expect(Buffer.from('Test resource a').equals(assetsData[0])).toBe(true);
+    expect(await getS3FileBuffer(`app-${app.id}`, assets[0].id)).toStrictEqual(assetContent);
   });
 
   it('should disallow unused files', async () => {
@@ -452,85 +445,67 @@ describe('createAppResource', () => {
   });
 
   it('should accept assets as form data with multiple resources', async () => {
+    vi.useRealTimers();
     authorizeStudio();
+    const assetAContent = Buffer.from('Test resource a');
+    const assetBContent = Buffer.from('Test resource b');
+
     const response = await request.post<ResourceType[]>(
       `/api/apps/${app.id}/resources/testAssets`,
       createFormData({
         resource: [{ file: '0' }, { file: '1' }],
-        assets: [Buffer.from('Test resource a'), Buffer.from('Test resource b')],
+        assets: [assetAContent, assetBContent],
       }),
     );
 
-    expect(response).toMatchInlineSnapshot(
-      {
-        data: [
-          { file: expect.stringMatching(/^[0-f]{8}(?:-[0-f]{4}){3}-[0-f]{12}$/) },
-          { file: expect.stringMatching(/^[0-f]{8}(?:-[0-f]{4}){3}-[0-f]{12}$/) },
-        ],
-      },
-      `
-      HTTP/1.1 201 Created
-      Content-Type: application/json; charset=utf-8
-
-      [
-        {
-          "$created": "1970-01-01T00:00:00.000Z",
-          "$updated": "1970-01-01T00:00:00.000Z",
-          "file": StringMatching /\\^\\[0-f\\]\\{8\\}\\(\\?:-\\[0-f\\]\\{4\\}\\)\\{3\\}-\\[0-f\\]\\{12\\}\\$/,
-          "id": 1,
-        },
-        {
-          "$created": "1970-01-01T00:00:00.000Z",
-          "$updated": "1970-01-01T00:00:00.000Z",
-          "file": StringMatching /\\^\\[0-f\\]\\{8\\}\\(\\?:-\\[0-f\\]\\{4\\}\\)\\{3\\}-\\[0-f\\]\\{12\\}\\$/,
-          "id": 2,
-        },
-      ]
-    `,
-    );
+    expect(response.data).toStrictEqual([
+      expect.objectContaining({
+        file: expect.stringMatching(/^[0-f]{8}(?:-[0-f]{4}){3}-[0-f]{12}$/),
+      }),
+      expect.objectContaining({
+        file: expect.stringMatching(/^[0-f]{8}(?:-[0-f]{4}){3}-[0-f]{12}$/),
+      }),
+    ]);
     const assets = await Asset.findAll({ raw: true });
+    const assetAId = response.data[0].file as string;
+    const assetBId = response.data[1].file as string;
     expect(assets).toStrictEqual([
       {
         AppId: app.id,
         ResourceId: 1,
         AppMemberId: null,
         GroupId: null,
-        OriginalId: null,
         clonable: false,
-        created: new Date('1970-01-01T00:00:00.000Z'),
-        data: Buffer.from('Test resource a'),
+        created: expect.any(Date),
         deleted: null,
         ephemeral: false,
         filename: null,
-        id: response.data[0].file,
+        id: assetAId,
         mime: 'application/octet-stream',
         name: null,
         seed: false,
-        updated: new Date('1970-01-01T00:00:00.000Z'),
+        updated: expect.any(Date),
       },
       {
         AppId: app.id,
         ResourceId: 2,
         AppMemberId: null,
         GroupId: null,
-        OriginalId: null,
         clonable: false,
-        created: new Date('1970-01-01T00:00:00.000Z'),
-        data: Buffer.from('Test resource b'),
+        created: expect.any(Date),
         deleted: null,
         ephemeral: false,
         filename: null,
-        id: response.data[1].file,
+        id: assetBId,
         mime: 'application/octet-stream',
         name: null,
         seed: false,
-        updated: new Date('1970-01-01T00:00:00.000Z'),
+        updated: expect.any(Date),
       },
     ]);
-    const assetsData = await Promise.all(
-      assets.map(async (asset) => streamToBuffer(await getS3File(`app-${app.id}`, asset.id))),
-    );
-    expect(Buffer.from('Test resource a').equals(assetsData[0])).toBe(true);
+
+    expect(await getS3FileBuffer(`app-${app.id}`, assetAId)).toStrictEqual(assetAContent);
+    expect(await getS3FileBuffer(`app-${app.id}`, assetBId)).toStrictEqual(assetBContent);
   });
 
   it('should block unknown asset references', async () => {
@@ -774,6 +749,7 @@ describe('createAppResource', () => {
   });
 
   it('should create ephemeral resources with ephemeral assets in demo apps', async () => {
+    vi.useRealTimers();
     authorizeStudio();
     await app.update({
       demoMode: true,
@@ -783,28 +759,15 @@ describe('createAppResource', () => {
       `/api/apps/${app.id}/resources/testAssets`,
       createFormData({
         resource: { file: '0' },
-        assets: Buffer.alloc(0),
+        assets: Buffer.from('Test resource a'),
       }),
     );
 
-    expect(response).toMatchInlineSnapshot(
-      {
-        data: {
-          file: expect.stringMatching(/^[0-f]{8}(?:-[0-f]{4}){3}-[0-f]{12}$/),
-        },
-      },
-      `
-      HTTP/1.1 201 Created
-      Content-Type: application/json; charset=utf-8
-
-      {
-        "$created": "1970-01-01T00:00:00.000Z",
-        "$ephemeral": true,
-        "$updated": "1970-01-01T00:00:00.000Z",
-        "file": StringMatching /\\^\\[0-f\\]\\{8\\}\\(\\?:-\\[0-f\\]\\{4\\}\\)\\{3\\}-\\[0-f\\]\\{12\\}\\$/,
-        "id": 1,
-      }
-    `,
+    expect(response.data).toStrictEqual(
+      expect.objectContaining({
+        file: expect.stringMatching(/^[0-f]{8}(?:-[0-f]{4}){3}-[0-f]{12}$/),
+        $ephemeral: true,
+      }),
     );
 
     const ephemeralResources = await Resource.findAll({
@@ -814,24 +777,12 @@ describe('createAppResource', () => {
         ephemeral: true,
       },
     });
-    expect(ephemeralResources.map((r) => r.toJSON())).toMatchInlineSnapshot(
-      [
-        {
-          file: expect.stringMatching(/^[0-f]{8}(?:-[0-f]{4}){3}-[0-f]{12}$/),
-        },
-      ],
-      `
-      [
-        {
-          "$created": "1970-01-01T00:00:00.000Z",
-          "$ephemeral": true,
-          "$updated": "1970-01-01T00:00:00.000Z",
-          "file": StringMatching /\\^\\[0-f\\]\\{8\\}\\(\\?:-\\[0-f\\]\\{4\\}\\)\\{3\\}-\\[0-f\\]\\{12\\}\\$/,
-          "id": 1,
-        },
-      ]
-    `,
-    );
+    expect(ephemeralResources.map((r) => r.toJSON())).toStrictEqual([
+      expect.objectContaining({
+        file: expect.stringMatching(/^[0-f]{8}(?:-[0-f]{4}){3}-[0-f]{12}$/),
+        $ephemeral: true,
+      }),
+    ]);
 
     const ephemeralAssets = await Asset.findAll({
       where: {
@@ -840,38 +791,18 @@ describe('createAppResource', () => {
         ephemeral: true,
       },
     });
-    expect(ephemeralAssets.map((r) => r.toJSON())).toMatchInlineSnapshot(
-      [
-        {
-          id: expect.stringMatching(/^[0-f]{8}(?:-[0-f]{4}){3}-[0-f]{12}$/),
-        },
-      ],
-      `
-      [
-        {
-          "AppId": 1,
-          "AppMemberId": null,
-          "GroupId": null,
-          "OriginalId": null,
-          "ResourceId": 1,
-          "clonable": false,
-          "created": 1970-01-01T00:00:00.000Z,
-          "data": {
-            "data": [],
-            "type": "Buffer",
-          },
-          "deleted": null,
-          "ephemeral": true,
-          "filename": null,
-          "id": StringMatching /\\^\\[0-f\\]\\{8\\}\\(\\?:-\\[0-f\\]\\{4\\}\\)\\{3\\}-\\[0-f\\]\\{12\\}\\$/,
-          "mime": "application/octet-stream",
-          "name": null,
-          "seed": false,
-          "updated": 1970-01-01T00:00:00.000Z,
-        },
-      ]
-    `,
+    expect(ephemeralAssets.map((r) => r.toJSON())).toStrictEqual([
+      expect.objectContaining({
+        id: expect.stringMatching(/^[0-f]{8}(?:-[0-f]{4}){3}-[0-f]{12}$/),
+        seed: false,
+        ephemeral: true,
+        clonable: false,
+      }),
+    ]);
+    const ephemeraAssetsData = await Promise.all(
+      ephemeralAssets.map((asset) => getS3FileBuffer(`app-${app.id}`, asset.id)),
     );
+    expect(Buffer.from('Test resource a').equals(ephemeraAssetsData[0])).toBe(true);
   });
 
   it('should create seed resources in all apps', async () => {
@@ -975,34 +906,22 @@ describe('createAppResource', () => {
   });
 
   it('should create seed resources with assets in all apps', async () => {
+    vi.useRealTimers();
     authorizeStudio();
 
     const response = await request.post<ResourceType>(
       `/api/apps/${app.id}/resources/testAssets`,
       createFormData({
         resource: { file: '0' },
-        assets: Buffer.alloc(0),
+        assets: Buffer.from('Test resource a'),
       }),
       { params: { seed: true } },
     );
 
-    expect(response).toMatchInlineSnapshot(
-      {
-        data: {
-          file: expect.stringMatching(/^[0-f]{8}(?:-[0-f]{4}){3}-[0-f]{12}$/),
-        },
-      },
-      `
-      HTTP/1.1 201 Created
-      Content-Type: application/json; charset=utf-8
-
-      {
-        "$created": "1970-01-01T00:00:00.000Z",
-        "$updated": "1970-01-01T00:00:00.000Z",
-        "file": StringMatching /\\^\\[0-f\\]\\{8\\}\\(\\?:-\\[0-f\\]\\{4\\}\\)\\{3\\}-\\[0-f\\]\\{12\\}\\$/,
-        "id": 1,
-      }
-    `,
+    expect(response.data).toStrictEqual(
+      expect.objectContaining({
+        file: expect.stringMatching(/^[0-f]{8}(?:-[0-f]{4}){3}-[0-f]{12}$/),
+      }),
     );
 
     const seedResources = await Resource.findAll({
@@ -1012,23 +931,11 @@ describe('createAppResource', () => {
         ephemeral: false,
       },
     });
-    expect(seedResources.map((r) => r.toJSON())).toMatchInlineSnapshot(
-      [
-        {
-          file: expect.stringMatching(/^[0-f]{8}(?:-[0-f]{4}){3}-[0-f]{12}$/),
-        },
-      ],
-      `
-      [
-        {
-          "$created": "1970-01-01T00:00:00.000Z",
-          "$updated": "1970-01-01T00:00:00.000Z",
-          "file": StringMatching /\\^\\[0-f\\]\\{8\\}\\(\\?:-\\[0-f\\]\\{4\\}\\)\\{3\\}-\\[0-f\\]\\{12\\}\\$/,
-          "id": 1,
-        },
-      ]
-    `,
-    );
+    expect(seedResources.map((r) => r.toJSON())).toStrictEqual([
+      expect.objectContaining({
+        file: expect.stringMatching(/^[0-f]{8}(?:-[0-f]{4}){3}-[0-f]{12}$/),
+      }),
+    ]);
 
     const seedAssets = await Asset.findAll({
       where: {
@@ -1038,38 +945,18 @@ describe('createAppResource', () => {
         ephemeral: false,
       },
     });
-    expect(seedAssets.map((a) => a.toJSON())).toMatchInlineSnapshot(
-      [
-        {
-          id: expect.stringMatching(/^[0-f]{8}(?:-[0-f]{4}){3}-[0-f]{12}$/),
-        },
-      ],
-      `
-      [
-        {
-          "AppId": 1,
-          "AppMemberId": null,
-          "GroupId": null,
-          "OriginalId": null,
-          "ResourceId": 1,
-          "clonable": false,
-          "created": 1970-01-01T00:00:00.000Z,
-          "data": {
-            "data": [],
-            "type": "Buffer",
-          },
-          "deleted": null,
-          "ephemeral": false,
-          "filename": null,
-          "id": StringMatching /\\^\\[0-f\\]\\{8\\}\\(\\?:-\\[0-f\\]\\{4\\}\\)\\{3\\}-\\[0-f\\]\\{12\\}\\$/,
-          "mime": "application/octet-stream",
-          "name": null,
-          "seed": true,
-          "updated": 1970-01-01T00:00:00.000Z,
-        },
-      ]
-    `,
+    expect(seedAssets.map((a) => a.toJSON())).toStrictEqual([
+      expect.objectContaining({
+        id: expect.stringMatching(/^[0-f]{8}(?:-[0-f]{4}){3}-[0-f]{12}$/),
+        seed: true,
+        ephemeral: false,
+        clonable: false,
+      }),
+    ]);
+    const seedAssetsData = await Promise.all(
+      seedAssets.map((asset) => getS3FileBuffer(`app-${app.id}`, asset.id)),
     );
+    expect(Buffer.from('Test resource a').equals(seedAssetsData[0])).toBe(true);
   });
 
   it('should create seed resources with assets and ephemeral resources with assets in demo apps', async () => {
@@ -1088,24 +975,11 @@ describe('createAppResource', () => {
       { params: { seed: true } },
     );
 
-    expect(response).toMatchInlineSnapshot(
-      {
-        data: {
-          file: expect.stringMatching(/^[0-f]{8}(?:-[0-f]{4}){3}-[0-f]{12}$/),
-        },
-      },
-      `
-      HTTP/1.1 201 Created
-      Content-Type: application/json; charset=utf-8
-
-      {
-        "$created": "1970-01-01T00:00:00.000Z",
-        "$ephemeral": true,
-        "$updated": "1970-01-01T00:00:00.000Z",
-        "file": StringMatching /\\^\\[0-f\\]\\{8\\}\\(\\?:-\\[0-f\\]\\{4\\}\\)\\{3\\}-\\[0-f\\]\\{12\\}\\$/,
-        "id": 2,
-      }
-    `,
+    expect(response.data).toStrictEqual(
+      expect.objectContaining({
+        file: expect.stringMatching(/^[0-f]{8}(?:-[0-f]{4}){3}-[0-f]{12}$/),
+        $ephemeral: true,
+      }),
     );
 
     const seedResources = await Resource.findAll({
@@ -1115,23 +989,11 @@ describe('createAppResource', () => {
         ephemeral: false,
       },
     });
-    expect(seedResources.map((r) => r.toJSON())).toMatchInlineSnapshot(
-      [
-        {
-          file: expect.stringMatching(/^[0-f]{8}(?:-[0-f]{4}){3}-[0-f]{12}$/),
-        },
-      ],
-      `
-      [
-        {
-          "$created": "1970-01-01T00:00:00.000Z",
-          "$updated": "1970-01-01T00:00:00.000Z",
-          "file": StringMatching /\\^\\[0-f\\]\\{8\\}\\(\\?:-\\[0-f\\]\\{4\\}\\)\\{3\\}-\\[0-f\\]\\{12\\}\\$/,
-          "id": 1,
-        },
-      ]
-    `,
-    );
+    expect(seedResources.map((r) => r.toJSON())).toStrictEqual([
+      expect.objectContaining({
+        file: expect.stringMatching(/^[0-f]{8}(?:-[0-f]{4}){3}-[0-f]{12}$/),
+      }),
+    ]);
 
     const seedAssets = await Asset.findAll({
       where: {
@@ -1140,38 +1002,18 @@ describe('createAppResource', () => {
         ephemeral: false,
       },
     });
-    expect(seedAssets.map((r) => r.toJSON())).toMatchInlineSnapshot(
-      [
-        {
-          id: expect.stringMatching(/^[0-f]{8}(?:-[0-f]{4}){3}-[0-f]{12}$/),
-        },
-      ],
-      `
-      [
-        {
-          "AppId": 1,
-          "AppMemberId": null,
-          "GroupId": null,
-          "OriginalId": null,
-          "ResourceId": 1,
-          "clonable": false,
-          "created": 1970-01-01T00:00:00.000Z,
-          "data": {
-            "data": [],
-            "type": "Buffer",
-          },
-          "deleted": null,
-          "ephemeral": false,
-          "filename": null,
-          "id": StringMatching /\\^\\[0-f\\]\\{8\\}\\(\\?:-\\[0-f\\]\\{4\\}\\)\\{3\\}-\\[0-f\\]\\{12\\}\\$/,
-          "mime": "application/octet-stream",
-          "name": null,
-          "seed": true,
-          "updated": 1970-01-01T00:00:00.000Z,
-        },
-      ]
-    `,
+    expect(seedAssets.map((r) => r.toJSON())).toStrictEqual([
+      expect.objectContaining({
+        id: expect.stringMatching(/^[0-f]{8}(?:-[0-f]{4}){3}-[0-f]{12}$/),
+        seed: true,
+        ephemeral: false,
+        clonable: false,
+      }),
+    ]);
+    const seedAssetsData = await Promise.all(
+      seedAssets.map((asset) => getS3FileBuffer(`app-${app.id}`, asset.id)),
     );
+    expect(Buffer.from('Test asset').equals(seedAssetsData[0])).toBe(true);
 
     const ephemeralResources = await Resource.findAll({
       where: {
@@ -1180,24 +1022,12 @@ describe('createAppResource', () => {
         ephemeral: true,
       },
     });
-    expect(ephemeralResources.map((r) => r.toJSON())).toMatchInlineSnapshot(
-      [
-        {
-          file: expect.stringMatching(/^[0-f]{8}(?:-[0-f]{4}){3}-[0-f]{12}$/),
-        },
-      ],
-      `
-      [
-        {
-          "$created": "1970-01-01T00:00:00.000Z",
-          "$ephemeral": true,
-          "$updated": "1970-01-01T00:00:00.000Z",
-          "file": StringMatching /\\^\\[0-f\\]\\{8\\}\\(\\?:-\\[0-f\\]\\{4\\}\\)\\{3\\}-\\[0-f\\]\\{12\\}\\$/,
-          "id": 2,
-        },
-      ]
-    `,
-    );
+    expect(ephemeralResources.map((r) => r.toJSON())).toStrictEqual([
+      expect.objectContaining({
+        file: expect.stringMatching(/^[0-f]{8}(?:-[0-f]{4}){3}-[0-f]{12}$/),
+        $ephemeral: true,
+      }),
+    ]);
 
     const ephemeralAssets = await Asset.findAll({
       where: {
@@ -1206,37 +1036,17 @@ describe('createAppResource', () => {
         ephemeral: true,
       },
     });
-    expect(ephemeralAssets.map((r) => r.toJSON())).toMatchInlineSnapshot(
-      [
-        {
-          id: expect.stringMatching(/^[0-f]{8}(?:-[0-f]{4}){3}-[0-f]{12}$/),
-        },
-      ],
-      `
-      [
-        {
-          "AppId": 1,
-          "AppMemberId": null,
-          "GroupId": null,
-          "OriginalId": null,
-          "ResourceId": 2,
-          "clonable": false,
-          "created": 1970-01-01T00:00:00.000Z,
-          "data": {
-            "data": [],
-            "type": "Buffer",
-          },
-          "deleted": null,
-          "ephemeral": true,
-          "filename": null,
-          "id": StringMatching /\\^\\[0-f\\]\\{8\\}\\(\\?:-\\[0-f\\]\\{4\\}\\)\\{3\\}-\\[0-f\\]\\{12\\}\\$/,
-          "mime": "application/octet-stream",
-          "name": null,
-          "seed": false,
-          "updated": 1970-01-01T00:00:00.000Z,
-        },
-      ]
-    `,
+    expect(ephemeralAssets.map((r) => r.toJSON())).toStrictEqual([
+      expect.objectContaining({
+        id: expect.stringMatching(/^[0-f]{8}(?:-[0-f]{4}){3}-[0-f]{12}$/),
+        seed: false,
+        ephemeral: true,
+        clonable: false,
+      }),
+    ]);
+    const ephemeralAssetsData = await Promise.all(
+      ephemeralAssets.map((asset) => getS3FileBuffer(`app-${app.id}`, asset.id)),
     );
+    expect(Buffer.from('Test asset').equals(ephemeralAssetsData[0])).toBe(true);
   });
 });

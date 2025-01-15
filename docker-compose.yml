@@ -46,7 +46,7 @@ services:
       - '9000:9000' # MinIO API
       - '9001:9001' # MinIO Console
     volumes:
-      - minio-data:/data
+      - minio:/data
 
   # MinIO test service for assets
   minio-test:
@@ -57,10 +57,10 @@ services:
       MINIO_ROOT_PASSWORD: password
     command: server /data
     ports:
-      - '9009:9000' # MinIO API
+      - '9009:9000'
     volumes:
-      - minio-test-data:/data
+      - minio-test:/data
 
 volumes:
-  minio-data:
-  minio-test-data:
+  minio:
+  minio-test:

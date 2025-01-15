@@ -1,15 +1,13 @@
 import { randomBytes } from 'node:crypto';
-import { createReadStream } from 'node:fs';
-import { unlink } from 'node:fs/promises';
 
 import {
   assertKoaError,
   getSupportedLanguages,
   logger,
   mergeMessages,
-  streamToBuffer,
   type TempFile,
   throwKoaError,
+  uploadToBuffer,
 } from '@appsemble/node-utils';
 import { extractAppMessages, StyleValidationError } from '@appsemble/utils';
 import { type Context } from 'koa';
@@ -269,8 +267,7 @@ export async function createAppScreenshots(
     const createdLanguageScreenshots = await AppScreenshot.bulkCreate(
       await Promise.all(
         sortedScreenshots.map(async ({ path }: TempFile, index) => {
-          const contents = await streamToBuffer(createReadStream(path));
-          await unlink(path);
+          const contents = await uploadToBuffer(path);
           const img = sharp(contents);
 
           const { format, height, width } = await img.metadata();
@@ -309,8 +306,7 @@ export async function createAppReadmes(
   return AppReadme.bulkCreate(
     await Promise.all(
       readmes.map(async ({ filename, path }: TempFile) => {
-        const contents = await streamToBuffer(createReadStream(path));
-        await unlink(path);
+        const contents = await uploadToBuffer(path);
         let language = filename.slice(filename.indexOf('.') + 1, filename.lastIndexOf('.'));
 
         if (!supportedLanguages.has(language)) {

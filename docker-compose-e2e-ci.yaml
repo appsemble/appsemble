@@ -6,6 +6,10 @@ x-database-name: &database-name appsemble
 x-database-user: &database-user admin
 x-database-password: &database-password password
 
+x-minio-host: &minio-host minio
+x-minio-root-user: &minio-root-user admin
+x-minio-root-password: &minio-root-password password
+
 x-bot-account-name: &bot-account-name bot
 x-bot-account-email: &bot-account-email bot@example.com
 x-bot-account-password: &bot-account-password password
@@ -30,6 +34,16 @@ services:
       POSTGRES_PASSWORD: *database-password
     ports: ['5434:5432']
 
+  minio:
+    image: minio/minio:latest
+    environment:
+      MINIO_ROOT_USER: *minio-root-user
+      MINIO_ROOT_PASSWORD: *minio-root-password
+    command: server /data
+    ports: ['9000:9000']
+    volumes:
+      - minio:/data
+
   appsemble:
     container_name: appsemble
     image: '${APPSEMBLE_IMAGE:-appsemble/appsemble:latest}'
@@ -44,6 +58,10 @@ services:
       DATABASE_NAME: *database-name
       DATABASE_USER: *database-user
       DATABASE_PASSWORD: *database-password
+      S3_HOST: *minio-host
+      S3_SSL: false
+      S3_ACCESS_KEY: *minio-root-user
+      S3_SECRET_KEY: *minio-root-password
       migrateTo: next
     ports: ['9999:9999']
     tty: true
@@ -101,3 +119,6 @@ services:
       - 'appsemble:survey.appsemble.appsemble'
       - 'appsemble:triggers.appsemble.appsemble'
       - 'appsemble:unlittered.appsemble.appsemble'
+
+volumes:
+  minio:

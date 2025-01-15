@@ -1,12 +1,14 @@
 import { isDeepStrictEqual } from 'node:util';
 
-import { type CreateAppResourcesWithAssetsParams } from '@appsemble/node-utils';
+import {
+  type CreateAppResourcesWithAssetsParams,
+  getCompressedFileMeta,
+} from '@appsemble/node-utils';
 import { type Resource as ResourceInterface } from '@appsemble/types';
 
 import { getCurrentAppMember } from './getCurrentAppMember.js';
 import { App, Asset, transactional } from '../models/index.js';
 import { Resource } from '../models/Resource.js';
-import { getCompressedFileMeta, uploadAssetFile } from '../utils/assets.js';
 import { processHooks, processReferenceHooks } from '../utils/resource.js';
 
 export async function createAppResourcesWithAssets({
@@ -46,7 +48,7 @@ export async function createAppResourcesWithAssets({
       return rest;
     });
 
-    const createdAssets = await Asset.bulkCreate(
+    await Asset.bulkCreate(
       preparedAssets.map((asset) => {
         const index = cleanResources.findIndex((resource) => {
           const { $clonable, $ephemeral, $seed, $thumbnails, ...cleanAssetResource } =
@@ -61,6 +63,7 @@ export async function createAppResourcesWithAssets({
         } = createdResources[index];
         return {
           ...asset,
+          ...getCompressedFileMeta(asset),
           AppId: app.id,
           GroupId: groupId ?? null,
           ResourceId,
@@ -72,17 +75,6 @@ export async function createAppResourcesWithAssets({
       }),
       { logging: false, transaction },
     );
-
-    for (const asset of preparedAssets) {
-      await uploadAssetFile(app.id, asset.id, {
-        mime: asset.mime,
-        path: asset.path,
-      });
-    }
-
-    for (const asset of createdAssets) {
-      await asset.update(getCompressedFileMeta(asset), { transaction });
-    }
   });
 
   const persistedApp = await App.findOne({ where: { id: app.id } });

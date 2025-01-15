@@ -1,4 +1,10 @@
-import { assertKoaError, deleteS3Files, logger } from '@appsemble/node-utils';
+import {
+  assertKoaError,
+  deleteS3Files,
+  getS3File,
+  logger,
+  uploadS3File,
+} from '@appsemble/node-utils';
 import { OrganizationPermission } from '@appsemble/types';
 import { type Context } from 'koa';
 import { Op } from 'sequelize';
@@ -62,7 +68,7 @@ export async function reseedDemoApp(ctx: Context): Promise<void> {
   logger.info(`Removed ${demoAssetsDeletionResult} ephemeral assets.`);
 
   const demoAssetsToReseed = await Asset.findAll({
-    attributes: ['mime', 'filename', 'data', 'name', 'AppId', 'ResourceId'],
+    attributes: ['id', 'mime', 'filename', 'name', 'AppId', 'ResourceId'],
     include: [
       {
         model: App,
@@ -82,11 +88,13 @@ export async function reseedDemoApp(ctx: Context): Promise<void> {
   logger.info('Reseeding ephemeral assets.');
 
   for (const asset of demoAssetsToReseed) {
-    await Asset.create({
-      ...asset.dataValues,
+    const { id, ...values } = asset.dataValues;
+    const created = await Asset.create({
+      ...values,
       ephemeral: true,
       seed: false,
     });
+    await uploadS3File(`app-${appId}`, created.id, await getS3File(`app-${appId}`, id));
   }
 
   logger.info(`Reseeded ${demoAssetsToReseed.length} ephemeral assets.`);

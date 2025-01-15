@@ -1329,7 +1329,10 @@ describe('patchApp', () => {
         "errors": [
           {
             "argument": "text/css",
-            "instance": ".foo { margin: 0 auto; }",
+            "instance": {
+              "coreStyle": "",
+              "definition": "{"name":"Test App","defaultPage":"Test Page","path":"a","pages":[{"name":"Test Page","blocks":[{"type":"test","version":"0.0.0"}]}]}",
+            },
             "message": "has an invalid content type",
             "name": "contentType",
             "path": [

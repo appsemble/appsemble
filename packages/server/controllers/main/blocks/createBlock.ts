@@ -1,12 +1,9 @@
-import { createReadStream } from 'node:fs';
-import { unlink } from 'node:fs/promises';
-
 import {
   assertKoaError,
   handleValidatorResult,
   logger,
-  streamToBuffer,
   throwKoaError,
+  uploadToBuffer,
 } from '@appsemble/node-utils';
 import { type BlockDefinition, OrganizationPermission } from '@appsemble/types';
 import { has } from '@appsemble/utils';
@@ -160,16 +157,12 @@ export async function createBlock(ctx: Context): Promise<void> {
         {
           ...data,
           visibility: data.visibility || 'public',
-          icon: icon ? await streamToBuffer(createReadStream(icon.path)) : undefined,
+          icon: icon ? await uploadToBuffer(icon.path) : undefined,
           name: blockId,
           OrganizationId,
         },
         { transaction },
       );
-
-      if (icon) {
-        await unlink(icon.path);
-      }
 
       for (const file of files) {
         logger.verbose(
@@ -178,17 +171,13 @@ export async function createBlock(ctx: Context): Promise<void> {
       }
       createdBlock.BlockAssets = await BlockAsset.bulkCreate(
         await Promise.all(
-          files.map(async (file) => {
-            const result = {
-              name: blockId,
-              BlockVersionId: createdBlock.id,
-              filename: decodeURIComponent(file.filename),
-              mime: file.mime,
-              content: await streamToBuffer(createReadStream(file.path)),
-            };
-            await unlink(file.path);
-            return result;
-          }),
+          files.map(async (file) => ({
+            name: blockId,
+            BlockVersionId: createdBlock.id,
+            filename: decodeURIComponent(file.filename),
+            mime: file.mime,
+            content: await uploadToBuffer(file.path),
+          })),
         ),
         { logging: false, transaction },
       );

@@ -3,7 +3,13 @@ import { isDeepStrictEqual } from 'node:util';
 
 import { type Context, type Middleware } from 'koa';
 
-import { getResourceDefinition, type Options, processResourceBody } from '../../../../../index.js';
+import {
+  type AssetToUpload,
+  getResourceDefinition,
+  type Options,
+  processResourceBody,
+  uploadAssets,
+} from '../../../../../index.js';
 
 /**
  * Create a controller for resource creation.
@@ -54,6 +60,7 @@ export function createCreateAppResourceController(options: Options): Middleware 
 
     const resources = Array.isArray(processedBody) ? processedBody : [processedBody];
 
+    const assetsToUpload: AssetToUpload[] = [];
     if (!(ctx.client && 'app' in ctx.client) && query?.seed === 'true') {
       const preparedSeedAssets = structuredClone(preparedAssets);
       const preparedSeedResources: Record<string, unknown>[] = resources.map((resource) => {
@@ -97,10 +104,14 @@ export function createCreateAppResourceController(options: Options): Middleware 
         resourceType,
         options,
       });
+
       if (!app.demoMode) {
         ctx.body = Array.isArray(processedBody) ? createdSeedResources : createdSeedResources[0];
+        await uploadAssets(app.id, preparedSeedAssets);
         return;
       }
+
+      assetsToUpload.push(...preparedSeedAssets);
     }
 
     const createdResources = await createAppResourcesWithAssets({
@@ -117,6 +128,9 @@ export function createCreateAppResourceController(options: Options): Middleware 
       resourceType,
       options,
     });
+
+    assetsToUpload.push(...preparedAssets);
+    await uploadAssets(app.id, assetsToUpload);
 
     ctx.body = Array.isArray(processedBody) ? createdResources : createdResources[0];
   };

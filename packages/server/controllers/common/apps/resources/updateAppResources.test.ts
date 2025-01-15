@@ -1,4 +1,4 @@
-import { createFormData, getS3File, streamToBuffer } from '@appsemble/node-utils';
+import { createFormData, getS3FileBuffer } from '@appsemble/node-utils';
 import { PredefinedOrganizationRole, type Resource as ResourceType } from '@appsemble/types';
 import { uuid4Pattern } from '@appsemble/utils';
 import { request, setTestApp } from 'axios-test-instance';
@@ -180,7 +180,7 @@ describe('updateAppResources', () => {
       }),
     ]);
     const assetsData = await Promise.all(
-      assets.map(async (asset) => streamToBuffer(await getS3File(`app-${app.id}`, asset.id))),
+      assets.map((asset) => getS3FileBuffer(`app-${app.id}`, asset.id)),
     );
     expect(Buffer.from('Test Resource A').equals(assetsData[0])).toBe(true);
 

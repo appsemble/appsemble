@@ -1,7 +1,8 @@
-import { resolveFixture } from '@appsemble/node-utils';
+import { getS3FileBuffer, readFixture, resolveFixture } from '@appsemble/node-utils';
 import { createServer, createTestUser, models, setArgv } from '@appsemble/server';
 import { PredefinedOrganizationRole } from '@appsemble/types';
 import { type AxiosTestInstance, setTestApp } from 'axios-test-instance';
+import sharp from 'sharp';
 import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { publishAsset } from './asset.js';
@@ -47,6 +48,7 @@ describe('asset', () => {
 
   describe('publishAsset', () => {
     it('should publish an asset from a file', async () => {
+      vi.useRealTimers();
       const app = await App.create({
         path: 'test-app',
         definition: { name: 'Test App', defaultPage: 'Test Page' },
@@ -65,31 +67,17 @@ describe('asset', () => {
         seed: false,
       });
       const asset = await Asset.findOne();
-      expect(asset.dataValues).toMatchInlineSnapshot(
-        {
-          id: expect.any(String),
-          data: expect.any(Buffer),
-        },
-        `
-        {
-          "AppId": 1,
-          "AppMemberId": null,
-          "GroupId": null,
-          "OriginalId": null,
-          "ResourceId": null,
-          "clonable": false,
-          "created": 1970-01-01T00:00:00.000Z,
-          "data": Any<Buffer>,
-          "deleted": null,
-          "ephemeral": false,
-          "filename": "tux.png",
-          "id": Any<String>,
-          "mime": "image/png",
-          "name": "test",
-          "seed": false,
-          "updated": 1970-01-01T00:00:00.000Z,
-        }
-      `,
+      expect(asset).toStrictEqual(
+        expect.objectContaining({
+          filename: 'tux.avif',
+          name: 'test',
+          mime: 'image/avif',
+        }),
+      );
+      expect(await getS3FileBuffer(`app-${app.id}`, asset.id)).toStrictEqual(
+        await sharp(await readFixture('apps/tux.png'))
+          .toFormat('avif')
+          .toBuffer(),
       );
     });
 

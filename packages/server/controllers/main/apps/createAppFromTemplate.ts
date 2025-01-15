@@ -54,6 +54,7 @@ export async function createAppFromTemplate(ctx: Context): Promise<void> {
   const template = await App.findOne({
     where: { id: templateId },
     attributes: [
+      'id',
       'definition',
       'coreStyle',
       'sharedStyle',
@@ -125,7 +126,8 @@ export async function createAppFromTemplate(ctx: Context): Promise<void> {
         })) as Resource[],
       }),
       ...(assets && {
-        Assets: template.Assets.map(({ filename, mime, name: assetName, seed }) => ({
+        Assets: template.Assets.map(({ filename, id, mime, name: assetName, seed }) => ({
+          id,
           mime,
           filename,
           name: assetName,
@@ -209,24 +211,29 @@ export async function createAppFromTemplate(ctx: Context): Promise<void> {
       delete m.messages?.app?.name;
       delete m.messages?.app?.description;
     }
-    const record = await App.create(result, {
-      include: [
-        Resource,
-        Asset,
-        AppMessages,
-        AppScreenshot,
-        AppReadme,
-        AppVariable,
-        AppOAuth2Secret,
-        AppServiceSecret,
-        AppSamlSecret,
-      ],
-    });
+    const record = await App.create(
+      { ...result, Assets: result.Assets?.map(({ id, ...rest }) => rest) },
+      {
+        include: [
+          Resource,
+          Asset,
+          AppMessages,
+          AppScreenshot,
+          AppReadme,
+          AppVariable,
+          AppOAuth2Secret,
+          AppServiceSecret,
+          AppSamlSecret,
+        ],
+      },
+    );
 
-    for (const templateAsset of result.Assets) {
-      const templateStream = await getS3File(`app-${result.id}`, templateAsset.id);
-      const createdAsset = record.Assets.find((asset) => asset.name === templateAsset.name);
-      await uploadS3File(`app-${record.id}`, createdAsset.id, templateStream);
+    if (result.Assets) {
+      for (const templateAsset of result.Assets) {
+        const templateStream = await getS3File(`app-${template.id}`, templateAsset.id);
+        const createdAsset = record.Assets.find((asset) => asset.name === templateAsset.name);
+        await uploadS3File(`app-${record.id}`, createdAsset.id, templateStream);
+      }
     }
 
     const doc = parseDocument(template.AppSnapshots[0].yaml);

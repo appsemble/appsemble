@@ -1,4 +1,4 @@
-import { assertKoaError } from '@appsemble/node-utils';
+import { assertKoaError, uploadToBuffer } from '@appsemble/node-utils';
 import { OrganizationPermission } from '@appsemble/types';
 import { type Context } from 'koa';
 
@@ -29,7 +29,7 @@ export async function patchOrganization(ctx: Context): Promise<void> {
   }
 
   if (icon !== undefined) {
-    result.icon = icon ? icon.contents : null;
+    result.icon = icon ? await uploadToBuffer(icon.path) : null;
   }
 
   if (description !== undefined) {

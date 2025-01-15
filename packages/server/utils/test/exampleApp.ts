@@ -258,6 +258,7 @@ export const exampleApp = (
           permissions: [
             '$resource:testResource:own:get',
             '$resource:testResource:query',
+            '$resource:testExpirableResource:query',
             '$resource:testResourceNone:query',
           ],
           inherits: [],

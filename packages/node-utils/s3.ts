@@ -1,5 +1,6 @@
 import { type Readable } from 'node:stream';
 
+import { streamToBuffer } from 'memfs/lib/node/util.js';
 import { type BucketItemFromList, type BucketItemStat, Client } from 'minio';
 
 import { logger } from './logger.js';
@@ -30,7 +31,6 @@ export function initS3Client({
       secretKey,
     });
   } catch (error) {
-    console.log(error)
     logger.error(error);
   }
 }
@@ -42,7 +42,6 @@ async function ensureBucket(name: string): Promise<void> {
       await s3Client.makeBucket(name);
     }
   } catch (error) {
-    console.log(error)
     logger.error(error);
   }
 }
@@ -56,7 +55,6 @@ export async function uploadS3File(
     await ensureBucket(bucket);
     await s3Client.putObject(bucket, key, content);
   } catch (error) {
-    console.log(error)
     logger.error(error);
   }
 }
@@ -65,7 +63,6 @@ export async function getS3Buckets(): Promise<BucketItemFromList[]> {
   try {
     return await s3Client.listBuckets();
   } catch (error) {
-    console.log(error)
     logger.error(error);
   }
 }
@@ -74,8 +71,18 @@ export async function getS3File(bucket: string, key: string): Promise<Readable> 
   try {
     return await s3Client.getObject(bucket, key);
   } catch (error) {
-    console.log(error)
     logger.error(error);
+    return null;
+  }
+}
+
+export async function getS3FileBuffer(bucket: string, key: string): Promise<Buffer> {
+  try {
+    const stream = await getS3File(bucket, key);
+    return stream ? streamToBuffer(stream) : null;
+  } catch (error) {
+    logger.error(error);
+    return null;
   }
 }
 
@@ -83,7 +90,6 @@ export async function getS3FileStats(bucket: string, key: string): Promise<Bucke
   try {
     return await s3Client.statObject(bucket, key);
   } catch (error) {
-    console.log(error)
     logger.error(error);
   }
 }
@@ -92,7 +98,6 @@ export async function deleteS3File(bucket: string, key: string): Promise<void> {
   try {
     await s3Client.removeObject(bucket, key);
   } catch (error) {
-    console.log(error)
     logger.error(error);
   }
 }
@@ -101,7 +106,6 @@ export async function deleteS3Files(bucket: string, keys: string[]): Promise<voi
   try {
     await s3Client.removeObjects(bucket, keys);
   } catch (error) {
-    console.log(error)
     logger.error(error);
   }
 }
@@ -121,7 +125,6 @@ export async function clearAllS3Buckets(): Promise<void> {
       await s3Client.removeBucket(bucket.name);
     }
   } catch (error) {
-    console.log(error)
     logger.error(error);
   }
 }

@@ -1,9 +1,11 @@
 import {
   deleteS3Files,
   extractResourceBody,
+  getCompressedFileMeta,
   getResourceDefinition,
   processResourceBody,
   throwKoaError,
+  uploadAssets,
 } from '@appsemble/node-utils';
 import { type Resource as ResourceInterface } from '@appsemble/types';
 import { type Context } from 'koa';
@@ -11,7 +13,6 @@ import { type Context } from 'koa';
 import { App, Asset, Resource, ResourceVersion, transactional } from '../../../../models/index.js';
 import { getCurrentAppMember } from '../../../../options/index.js';
 import { options } from '../../../../options/options.js';
-import { getCompressedFileMeta, uploadAssetFile } from '../../../../utils/assets.js';
 import { checkAuthSubjectAppPermissions } from '../../../../utils/authorization.js';
 import { processHooks, processReferenceHooks } from '../../../../utils/resource.js';
 
@@ -121,12 +122,13 @@ export async function updateAppResources(ctx: Context): Promise<void> {
     }
 
     if (preparedAssets.length) {
-      const createdAssets = await Asset.bulkCreate(
+      await Asset.bulkCreate(
         preparedAssets.map((asset) => {
           const index = processedResources.indexOf(asset.resource as ResourceInterface);
           const { id: ResourceId } = processedResources[index];
           return {
             ...asset,
+            ...getCompressedFileMeta(asset),
             AppId: app.id,
             GroupId: selectedGroupId ?? null,
             ResourceId,
@@ -136,16 +138,7 @@ export async function updateAppResources(ctx: Context): Promise<void> {
         { logging: false, transaction },
       );
 
-      for (const asset of preparedAssets) {
-        await uploadAssetFile(app.id, asset.id, {
-          mime: asset.mime,
-          path: asset.path,
-        });
-      }
-
-      for (const asset of createdAssets) {
-        await asset.update(getCompressedFileMeta(asset), { transaction });
-      }
+      await uploadAssets(app.id, preparedAssets);
     }
   });
 

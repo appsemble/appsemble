@@ -336,6 +336,8 @@ describe('queryAppCollectionApps', () => {
       pinnedAt: new Date(),
     });
 
+    vi.useRealTimers();
+    vi.useFakeTimers();
     vi.advanceTimersByTime(60 * 1000);
 
     await AppCollectionApp.update(

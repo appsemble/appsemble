@@ -1,13 +1,11 @@
 import { randomBytes } from 'node:crypto';
-import { createReadStream } from 'node:fs';
-import { unlink } from 'node:fs/promises';
 
 import {
   AppMemberPropertiesError,
   assertKoaError,
   logger,
-  streamToBuffer,
   throwKoaError,
+  uploadToBuffer,
 } from '@appsemble/node-utils';
 import { hash } from 'bcrypt';
 import { type Context } from 'koa';
@@ -93,15 +91,12 @@ export async function registerAppMemberWithEmail(ctx: Context): Promise<void> {
       email,
       role: app.definition.security.default.role,
       emailKey: key,
-      picture: picture ? await streamToBuffer(createReadStream(picture.path)) : null,
+      picture: picture ? await uploadToBuffer(picture.path) : null,
       properties: parseAppMemberProperties(properties),
       timezone,
       locale,
       demo: app.demoMode,
     });
-    if (picture) {
-      await unlink(picture.path);
-    }
   } catch (error: unknown) {
     if (error instanceof AppMemberPropertiesError) {
       throwKoaError(ctx, 400, error.message);

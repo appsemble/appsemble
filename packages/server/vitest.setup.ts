@@ -13,7 +13,7 @@ import axiosSnapshotSerializer, { setResponseTransformer } from 'jest-axios-snap
 import { toMatchImageSnapshot } from 'jest-image-snapshot';
 import { type Sequelize } from 'sequelize';
 // eslint-disable-next-line import/no-extraneous-dependencies
-import { afterAll, beforeAll, beforeEach, expect } from 'vitest';
+import { afterAll, beforeAll, beforeEach, expect, vi } from 'vitest';
 
 import { rootDB, setupTestDatabase } from './utils/test/testSchema.js';
 
@@ -49,6 +49,7 @@ beforeAll(async () => {
 
 beforeEach(async () => {
   await testDB.truncate({ truncate: true, cascade: true, force: true, restartIdentity: true });
+  vi.useRealTimers();
   await clearAllS3Buckets();
 });
 

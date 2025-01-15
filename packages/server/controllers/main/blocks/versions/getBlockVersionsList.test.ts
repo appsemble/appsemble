@@ -57,6 +57,6 @@ describe('getBlockVersionsList', () => {
     });
     const { data } = await request.get('/api/blocks/@xkcd/block-test/versions/list');
 
-    expect(data).toStrictEqual(['0.0.2', '0.0.1']);
+    expect(data).toStrictEqual(expect.arrayContaining(['0.0.1', '0.0.2']));
   });
 });

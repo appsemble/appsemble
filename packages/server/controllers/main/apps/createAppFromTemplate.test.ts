@@ -1,3 +1,4 @@
+import { getS3FileBuffer, uploadS3File } from '@appsemble/node-utils';
 import {
   type AppConfigEntry,
   type AppMessages as AppMessagesType,
@@ -93,13 +94,15 @@ describe('createAppFromTemplate', () => {
     });
     await Resource.create({ AppId: t2.id, type: 'test', data: { name: 'foo' }, clonable: true });
     await Resource.create({ AppId: t2.id, type: 'test', data: { name: 'bar' } });
-    await Asset.create({
+    const asset1 = await Asset.create({
       AppId: t2.id,
       name: 'test-clonable',
-      data: Buffer.from('test'),
       clonable: true,
     });
-    await Asset.create({ AppId: t2.id, name: 'test', data: Buffer.from('test') });
+    vi.useRealTimers();
+    await uploadS3File(`app-${t2.id}`, asset1.id, Buffer.from('test'));
+    const asset2 = await Asset.create({ AppId: t2.id, name: 'test' });
+    await uploadS3File(`app-${t2.id}`, asset2.id, Buffer.from('test'));
     await AppMessages.create({
       AppId: t2.id,
       language: 'nl-nl',
@@ -165,6 +168,8 @@ describe('createAppFromTemplate', () => {
       UserId: user.id,
       yaml: '',
     });
+    vi.useRealTimers();
+    vi.useFakeTimers();
     vi.advanceTimersByTime(1000);
     t1.AppSnapshots = [
       snapshot1,
@@ -206,11 +211,8 @@ describe('createAppFromTemplate', () => {
       organizationId: 'testorganization',
     });
 
-    expect(response).toMatchObject({
-      status: 201,
-      data: {
-        $created: '1970-01-01T00:00:01.000Z',
-        $updated: '1970-01-01T00:00:01.000Z',
+    expect(response.data).toStrictEqual(
+      expect.objectContaining({
         OrganizationId: 'testorganization',
         definition: {
           description: 'This is a test app',
@@ -222,12 +224,13 @@ describe('createAppFromTemplate', () => {
         path: 'test-app',
         visibility: 'unlisted',
         yaml: "'name': Test app\n'description': This is a test app\n\n# comment\n\npages: []\n",
-      },
-    });
+      }),
+    );
   });
 
   it('should create a new app with example resources', async () => {
     const [, template] = templates;
+    vi.useRealTimers();
     authorizeStudio();
     const response = await request.post<AppType>('/api/app-templates', {
       templateId: template.id,
@@ -245,6 +248,7 @@ describe('createAppFromTemplate', () => {
 
   it('should create a new app with example assets', async () => {
     const [, template] = templates;
+    vi.useRealTimers();
     authorizeStudio();
     const response = await request.post<AppType>('/api/app-templates', {
       templateId: template.id,
@@ -257,11 +261,16 @@ describe('createAppFromTemplate', () => {
     const { id } = response.data;
     const assets = await Asset.findAll({ where: { AppId: id } });
 
+    for (const asset of assets) {
+      expect(asset.name).toBe('test-clonable');
+      expect(await getS3FileBuffer(`app-${id}`, asset.id)).toStrictEqual(Buffer.from('test'));
+    }
     expect(assets.map((a) => a.name)).toStrictEqual(['test-clonable']);
   });
 
   it('should include the app’s styles when cloning an app', async () => {
     const [, template] = templates;
+    vi.useRealTimers();
     authorizeStudio();
     const response = await request.post<AppType>('/api/app-templates', {
       templateId: template.id,
@@ -281,6 +290,7 @@ describe('createAppFromTemplate', () => {
 
   it('should copy app messages when cloning an app', async () => {
     const [, template] = templates;
+    vi.useRealTimers();
     authorizeStudio();
     const response = await request.post<App>('/api/app-templates', {
       templateId: template.id,
@@ -299,6 +309,7 @@ describe('createAppFromTemplate', () => {
 
   it('should copy app variables when cloning an app', async () => {
     const [, template] = templates;
+    vi.useRealTimers();
     authorizeStudio();
     const response = await request.post<App>('/api/app-templates', {
       templateId: template.id,
@@ -320,6 +331,7 @@ describe('createAppFromTemplate', () => {
 
   it('should copy app secrets when cloning an app', async () => {
     const [, template] = templates;
+    vi.useRealTimers();
     authorizeStudio();
     const response = await request.post<App>('/api/app-templates', {
       templateId: template.id,
@@ -411,6 +423,7 @@ describe('createAppFromTemplate', () => {
 
   it('should remove name and description when cloning an app', async () => {
     const [, template] = templates;
+    vi.useRealTimers();
     authorizeStudio();
     const {
       data: { id },
