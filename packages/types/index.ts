@@ -693,6 +693,21 @@ export interface Remappers {
   'string.case': 'lower' | 'upper';
 
   /**
+   * Check if the initial characters of the string matches with the input string.
+   */
+  'string.startsWith': string;
+
+  /**
+   * Check if the last characters of the string matches with the input string.
+   */
+  'string.endsWith': string;
+
+  /**
+   * Extract a section of the string.
+   */
+  'string.slice': number | [number, number];
+
+  /**
    * Format a string using remapped input variables.
    */
   'string.format': {

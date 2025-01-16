@@ -1374,6 +1374,53 @@ describe('string.case', () => {
   });
 });
 
+describe('string.startsWith', () => {
+  runTests({
+    'should return true': {
+      input: 'Random string here',
+      mappers: { 'string.startsWith': 'Random' },
+      expected: true,
+    },
+    'should return false': {
+      input: 'Random string here',
+      mappers: { 'string.startsWith': 'Not random' },
+      expected: false,
+    },
+  });
+});
+
+describe('string.endsWith', () => {
+  runTests({
+    'should return true': {
+      input: 'Random string here',
+      mappers: { 'string.endsWith': 'here' },
+      expected: true,
+    },
+    'should return false': {
+      input: 'Random string here',
+      mappers: { 'string.endsWith': 'Not here' },
+      expected: false,
+    },
+  });
+});
+
+describe('string.slice', () => {
+  runTests({
+    'should support number as remapper input': {
+      input: 'laziness',
+      mappers: { 'string.slice': 3 },
+      expected: 'iness',
+    },
+  });
+  runTests({
+    'should support numbers array as remapper input': {
+      input: 'laziness',
+      mappers: { 'string.slice': [1, 5] },
+      expected: 'azin',
+    },
+  });
+});
+
 describe('string.format', () => {
   runTests({
     'format a template string': {

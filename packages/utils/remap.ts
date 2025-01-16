@@ -623,6 +623,18 @@ const mapperImplementations: MapperImplementations = {
     return input;
   },
 
+  'string.startsWith'(substring: string, input: string) {
+    return input.startsWith(substring);
+  },
+
+  'string.endsWith'(substring: string, input: string) {
+    return input.endsWith(substring);
+  },
+
+  'string.slice'(sliceIndex: number | [number, number], input: string) {
+    return Array.isArray(sliceIndex) ? input.slice(...sliceIndex) : input.slice(sliceIndex);
+  },
+
   log(level, input, context) {
     console[level ?? 'info'](JSON.stringify({ input, context }, null, 2));
     return input;
