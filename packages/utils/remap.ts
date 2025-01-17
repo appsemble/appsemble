@@ -237,7 +237,6 @@ const mapperImplementations: MapperImplementations = {
     if (mappers.length <= 1) {
       return true;
     }
-
     const values = mappers.map((mapper) => remap(mapper, input, context));
     return values.every((value) => equal(values[0], value));
   },
@@ -246,10 +245,24 @@ const mapperImplementations: MapperImplementations = {
     if (mappers.length <= 1) {
       return !remap(mappers[0], input, context);
     }
-
     const [firstValue, ...otherValues] = mappers.map((mapper) => remap(mapper, input, context));
-
     return !otherValues.some((value) => equal(firstValue, value));
+  },
+
+  and(mappers, input, context) {
+    if (mappers.length <= 1) {
+      return remap(mappers[0], input, context);
+    }
+    const values = mappers.map((mapper) => remap(mapper, input, context));
+    return values.every((value) => value === true);
+  },
+
+  or(mappers, input, context) {
+    if (mappers.length <= 1) {
+      return remap(mappers[0], input, context);
+    }
+    const values = mappers.map((mapper) => remap(mapper, input, context));
+    return values.includes(true);
   },
 
   step(mapper, input, context) {
