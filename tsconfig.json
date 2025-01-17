@@ -16,8 +16,5 @@
     "target": "ES2020",
     "types": []
   },
-  "ts-node": {
-    "esm": true
-  },
   "exclude": ["**/dist", "**/templates", "**/__fixtures__"]
 }

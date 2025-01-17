@@ -186,7 +186,7 @@ solved by downgrading your npm version to `18.18.0`.
 This error generally occurs when you don’t have an active database connection, easiest way to solve
 this problem is to run the `docker compose up -d command`.
 
-- **sh: line 1: `ts-node-esm`: command not found**
+- **sh: line 1: `tsx`: command not found**
 
 This error is caused by the absence of `node_modules` folder in your directory and can simply be
 solved by running `npm ci` or `npm clean-install`.
