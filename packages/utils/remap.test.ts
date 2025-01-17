@@ -521,6 +521,86 @@ describe('not', () => {
   });
 });
 
+describe('and', () => {
+  runTests({
+    'return false if any of the values are equal to false': {
+      input: [true, true, false],
+      mappers: { and: [{ prop: '0' }, { prop: '1' }, { prop: '2' }] },
+      expected: false,
+    },
+    'return true if all values are true': {
+      input: [true, true, true],
+      mappers: { and: [{ prop: '0' }, { prop: '1' }, { prop: '2' }] },
+      expected: true,
+    },
+    'return false if all values are false': {
+      input: [false, false, false],
+      mappers: { and: [{ prop: '0' }, { prop: '1' }, { prop: '2' }] },
+      expected: false,
+    },
+    'not use deep equality': {
+      input: [{ foo: { bar: true } }, { foo: { bar: true } }],
+      mappers: { and: [{ prop: '0' }, { prop: '1' }] },
+      expected: false,
+    },
+    'return false if (computed) input is false': {
+      input: false,
+      mappers: { and: [{ root: null }] },
+      expected: false,
+    },
+    'return true if (computed) input is true': {
+      input: true,
+      mappers: { and: [{ root: null }] },
+      expected: true,
+    },
+    'return undefined when mappers is empty': {
+      input: true,
+      mappers: { and: [] },
+      expected: undefined,
+    },
+  });
+});
+
+describe('or', () => {
+  runTests({
+    'return true if any of the values are equal to true': {
+      input: [false, true, false],
+      mappers: { or: [{ prop: '0' }, { prop: '1' }, { prop: '2' }] },
+      expected: true,
+    },
+    'return false if all values are false': {
+      input: [false, false, false],
+      mappers: { or: [{ prop: '0' }, { prop: '1' }, { prop: '2' }] },
+      expected: false,
+    },
+    'return true if all values are true': {
+      input: [true, true, true],
+      mappers: { or: [{ prop: '0' }, { prop: '1' }, { prop: '2' }] },
+      expected: true,
+    },
+    'not use deep equality': {
+      input: [{ foo: { bar: true } }, { foo: { bar: false } }],
+      mappers: { or: [{ prop: '0' }, { prop: '1' }] },
+      expected: false,
+    },
+    'return false if (computed) input is false': {
+      input: false,
+      mappers: { or: [{ root: null }] },
+      expected: false,
+    },
+    'return true if (computed) input is true': {
+      input: true,
+      mappers: { or: [{ root: null }] },
+      expected: true,
+    },
+    'return undefined when mappers is empty': {
+      input: true,
+      mappers: { or: [] },
+      expected: undefined,
+    },
+  });
+});
+
 describe('ics', () => {
   runTests({
     'support string date': {
