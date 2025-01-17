@@ -134,7 +134,7 @@ export function builder(yargs: Argv): Argv<any> {
       type: 'number',
       default: 9000,
     })
-    .option('s3-ssl', {
+    .option('s3-secure', {
       desc: 'Whether ssl should be used for the Amazon S3 compatible object storage server',
       type: 'boolean',
       default: true,

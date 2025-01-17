@@ -35,7 +35,9 @@ services:
     ports: ['5434:5432']
 
   minio:
+    container_name: *minio-host
     image: minio/minio:latest
+    networks: [appsemble-e2e]
     environment:
       MINIO_ROOT_USER: *minio-root-user
       MINIO_ROOT_PASSWORD: *minio-root-password
@@ -59,7 +61,7 @@ services:
       DATABASE_USER: *database-user
       DATABASE_PASSWORD: *database-password
       S3_HOST: *minio-host
-      S3_SSL: false
+      S3_SECURE: false
       S3_ACCESS_KEY: *minio-root-user
       S3_SECRET_KEY: *minio-root-password
       migrateTo: next

@@ -46,9 +46,6 @@ export async function reseedDemoApp(ctx: Context): Promise<void> {
           ephemeral: true,
           AppId: appId,
         },
-        OriginalId: {
-          [Op.not]: null,
-        },
       },
     },
   });

@@ -324,7 +324,6 @@ describe('createAppResource', () => {
         clonable: false,
         AppMemberId: null,
         GroupId: null,
-        created: new Date('1970-01-01T00:00:00.000Z'),
         deleted: null,
         ephemeral: false,
         filename: null,

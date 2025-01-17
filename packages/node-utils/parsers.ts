@@ -1,16 +1,17 @@
 import { randomUUID } from 'node:crypto';
 import { createWriteStream } from 'node:fs';
+import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { parse } from 'node:querystring';
 
 import busboy from 'busboy';
 import { parse as parseCSV } from 'csv-parse';
-import { ensureDir } from 'fs-extra';
 import { bufferParser, type Parser } from 'koas-body-parser';
 import { SchemaValidationError } from 'koas-core';
 import { type OpenAPIV3 } from 'openapi-types';
 import { is } from 'type-is';
 
+import { logger } from './logger.js';
 import { type TempFile } from './server/types.js';
 
 export const xWwwFormUrlencodedParser: Parser<unknown> = async (
@@ -88,39 +89,43 @@ export const streamParser: Parser<Record<string, unknown>> = async (
       reject(error);
     }
 
-    bb.on('file', (fieldname, stream, { filename, mimeType: mime }) => {
-      const propertySchema = resolveRef(properties[fieldname]);
+    bb.on('file', (fieldName, stream, { filename, mimeType: mime }) => {
+      const propertySchema = resolveRef(properties[fieldName]);
+      const path = join(tmpdir(), `${Date.now()}-${randomUUID()}`);
 
-      ensureDir('uploads');
-      const path = join('uploads', `${Date.now()}-${randomUUID()}`);
-      const fileWriteStream = createWriteStream(path);
-      stream.pipe(fileWriteStream);
+      try {
+        const fileWriteStream = createWriteStream(path);
+        stream.pipe(fileWriteStream);
+      } catch (error) {
+        logger.error(error);
+        throw error;
+      }
 
       if (propertySchema && propertySchema.type === 'array') {
-        if (!Object.hasOwnProperty.call(response, fieldname)) {
-          response[fieldname] = [];
+        if (!Object.hasOwnProperty.call(response, fieldName)) {
+          response[fieldName] = [];
         }
-        if (!Object.hasOwnProperty.call(tempFiles, fieldname)) {
-          tempFiles[fieldname] = [];
+        if (!Object.hasOwnProperty.call(tempFiles, fieldName)) {
+          tempFiles[fieldName] = [];
         }
-        (response[fieldname] as string[]).push('');
-        (tempFiles[fieldname] as TempFile[]).push({ path, mime, filename });
+        (response[fieldName] as string[]).push('');
+        (tempFiles[fieldName] as TempFile[]).push({ path, mime, filename });
       } else {
-        response[fieldname] = '';
-        tempFiles[fieldname] = { path, mime, filename };
+        response[fieldName] = '';
+        tempFiles[fieldName] = { path, mime, filename };
       }
     })
-      .on('field', (fieldname, content) => {
-        const propertySchema = resolveRef(properties[fieldname]);
+      .on('field', (fieldName, content) => {
+        const propertySchema = resolveRef(properties[fieldName]);
         if (propertySchema && propertySchema.type === 'array') {
-          if (!Object.hasOwnProperty.call(response, fieldname)) {
-            response[fieldname] = [];
+          if (!Object.hasOwnProperty.call(response, fieldName)) {
+            response[fieldName] = [];
           }
-          (response[fieldname] as string[]).push(
+          (response[fieldName] as string[]).push(
             fromString(resolveRef(propertySchema.items), content),
           );
         } else {
-          response[fieldname] = fromString(propertySchema, content);
+          response[fieldName] = fromString(propertySchema, content);
         }
       })
       .on('close', () => {

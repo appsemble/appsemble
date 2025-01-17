@@ -754,6 +754,7 @@ staging:
       --set "quotas.appEmail.alertOrganizationOwner=true"
       --set "mailpit.mailpit.smtp.tls.secretName=staging-mailpit-tls"
       --set "mailpit.fullnameOverride=staging-appsemble-mailpit"
+      --set "mailpit.fullnameOverride=staging-appsemble-minio"
 
 production:
   image: dtzar/helm-kubectl:3

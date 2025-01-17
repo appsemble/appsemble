@@ -1,7 +1,7 @@
 import { type Readable } from 'node:stream';
 
 import { streamToBuffer } from 'memfs/lib/node/util.js';
-import { type BucketItemFromList, type BucketItemStat, Client } from 'minio';
+import { type BucketItemStat, Client } from 'minio';
 
 import { logger } from './logger.js';
 
@@ -9,7 +9,7 @@ let s3Client: Client;
 
 export interface InitS3ClientParams {
   endPoint: string;
-  port: number;
+  port?: number;
   useSSL?: boolean;
   accessKey: string;
   secretKey: string;
@@ -18,7 +18,7 @@ export interface InitS3ClientParams {
 export function initS3Client({
   accessKey,
   endPoint,
-  port,
+  port = 9000,
   secretKey,
   useSSL = true,
 }: InitS3ClientParams): void {
@@ -43,6 +43,7 @@ async function ensureBucket(name: string): Promise<void> {
     }
   } catch (error) {
     logger.error(error);
+    throw error;
   }
 }
 
@@ -56,14 +57,7 @@ export async function uploadS3File(
     await s3Client.putObject(bucket, key, content);
   } catch (error) {
     logger.error(error);
-  }
-}
-
-export async function getS3Buckets(): Promise<BucketItemFromList[]> {
-  try {
-    return await s3Client.listBuckets();
-  } catch (error) {
-    logger.error(error);
+    throw error;
   }
 }
 
@@ -91,6 +85,7 @@ export async function getS3FileStats(bucket: string, key: string): Promise<Bucke
     return await s3Client.statObject(bucket, key);
   } catch (error) {
     logger.error(error);
+    throw error;
   }
 }
 
@@ -99,6 +94,7 @@ export async function deleteS3File(bucket: string, key: string): Promise<void> {
     await s3Client.removeObject(bucket, key);
   } catch (error) {
     logger.error(error);
+    throw error;
   }
 }
 
@@ -107,6 +103,7 @@ export async function deleteS3Files(bucket: string, keys: string[]): Promise<voi
     await s3Client.removeObjects(bucket, keys);
   } catch (error) {
     logger.error(error);
+    throw error;
   }
 }
 
@@ -126,5 +123,6 @@ export async function clearAllS3Buckets(): Promise<void> {
     }
   } catch (error) {
     logger.error(error);
+    throw error;
   }
 }

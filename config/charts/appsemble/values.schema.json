@@ -115,6 +115,10 @@
       "type": "string",
       "description": "The secret to use for configuring IMAP. The secret should contain the following values: `imap-host`, `imap-port`, `imap-secure`, `imap-user`, `imap-pass`, `imap-copy-to-sent-folder`."
     },
+    "s3Secret": {
+      "type": "string",
+      "description": "The secret to use for configuring S3. The secret should contain the following values: `host`, `port`, `secure`, `secret-key`, `access-key`."
+    },
     "adminApiSecret": {
       "type": "string",
       "description": "The secret to use for authenticating admin users, e.g. for newsletter-related endpoints. The secret should contain the following values: `admin-api-secret`."
@@ -354,6 +358,9 @@
       }
     },
     "mailpit": {
+      "type": "object"
+    },
+    "minio": {
       "type": "object"
     }
   }

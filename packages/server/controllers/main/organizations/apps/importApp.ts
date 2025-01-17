@@ -1,5 +1,6 @@
 import { existsSync, mkdirSync } from 'node:fs';
 import { writeFile } from 'node:fs/promises';
+import { tmpdir } from 'node:os';
 import { basename, dirname, join } from 'node:path';
 
 import {
@@ -200,7 +201,7 @@ export async function importApp(ctx: Context): Promise<void> {
               ? screenshotDirectoryName
               : 'unspecified';
 
-            const uploadsPath = join('uploads', 'screenshots');
+            const uploadsPath = join(tmpdir(), 'screenshots');
             if (!existsSync(uploadsPath)) {
               mkdirSync(uploadsPath);
             }
@@ -230,7 +231,7 @@ export async function importApp(ctx: Context): Promise<void> {
           const { name } = jsZipObject;
           const contents = await jsZipObject.async('nodebuffer');
 
-          const uploadsPath = join('uploads', 'readmes');
+          const uploadsPath = join(tmpdir(), 'readmes');
           if (!existsSync(uploadsPath)) {
             mkdirSync(uploadsPath);
           }

@@ -383,7 +383,7 @@ export interface Argv {
    *
    * default true
    */
-  s3Ssl: boolean;
+  s3Secure: boolean;
 
   /**
    * The access key of the Amazon S3 compatible object storage server
@@ -457,7 +457,7 @@ const defaults: Argv = {
   scaleTo: 0,
   s3Host: undefined,
   s3Port: 9000,
-  s3Ssl: true,
+  s3Secure: true,
   s3AccessKey: undefined,
   s3SecretKey: undefined,
 };

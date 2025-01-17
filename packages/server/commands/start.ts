@@ -136,6 +136,25 @@ export function builder(yargs: Argv): Argv {
     .option('proxy', {
       desc: 'Trust proxy headers. This is used to detect the source IP for logging.',
       default: false,
+    })
+    .option('s3-host', {
+      desc: 'The host of the Amazon S3 compatible object storage server',
+    })
+    .option('s3-port', {
+      desc: 'The port of the Amazon S3 compatible object storage server',
+      type: 'number',
+      default: 9000,
+    })
+    .option('s3-secure', {
+      desc: 'Whether ssl should be used for the Amazon S3 compatible object storage server',
+      type: 'boolean',
+      default: true,
+    })
+    .option('s3-access-key', {
+      desc: 'The access key of the Amazon S3 compatible object storage server',
+    })
+    .option('s3-secret-key', {
+      desc: 'The secret key of the Amazon S3 compatible object storage server',
     });
 }
 
@@ -162,7 +181,7 @@ export async function handler({ webpackConfigs }: AdditionalArguments = {}): Pro
     initS3Client({
       endPoint: argv.s3Host,
       port: argv.s3Port,
-      useSSL: argv.s3Ssl,
+      useSSL: argv.s3Secure,
       accessKey: argv.s3AccessKey,
       secretKey: argv.s3SecretKey,
     });

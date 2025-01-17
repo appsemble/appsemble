@@ -26,6 +26,10 @@ dependencies:
     version: 0.18.3
     repository: https://jouve.github.io/charts
     condition: mailpit.enabled
+  - name: minio
+    version: 14.10.0
+    repository: https://charts.bitnami.com/bitnami
+    condition: minio.enabled
 annotations:
   artifacthub.io/changes: >
     - kind: added

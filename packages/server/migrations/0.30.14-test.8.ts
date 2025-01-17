@@ -17,7 +17,7 @@ export async function up(transaction: Transaction, db: Sequelize): Promise<void>
     initS3Client({
       endPoint: argv.s3Host,
       port: argv.s3Port,
-      useSSL: argv.s3Ssl,
+      useSSL: argv.s3Secure,
       accessKey: argv.s3AccessKey,
       secretKey: argv.s3SecretKey,
     });

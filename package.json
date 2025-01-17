@@ -127,7 +127,7 @@
     "secret": "Local Appsemble development secret",
     "aes-secret": "Local Appsemble development AES secret",
     "s3-host": "localhost",
-    "s3-ssl": false,
+    "s3-secure": false,
     "s3-access-key": "admin",
     "s3-secret-key": "password"
   },

@@ -172,14 +172,12 @@ describe('deleteAppAssets', () => {
         AppId: app.id,
         mime: 'application/octet-stream',
         filename: 'test.bin',
-        data: Buffer.from('buffer'),
         deleted: expect.any(Date),
       },
       {
         AppId: app.id,
         mime: 'application/octet-stream',
         filename: 'test.bin',
-        data: Buffer.from('buffer'),
         deleted: expect.any(Date),
       },
     ]);
