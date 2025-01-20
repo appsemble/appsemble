@@ -783,6 +783,11 @@ export interface GuestDefinition {
   inherits?: AppRole[];
 }
 
+export interface CronSecurityDefinition {
+  permissions?: CustomAppPermission[];
+  inherits?: AppRole[];
+}
+
 export interface RoleDefinition {
   description?: string;
   defaultPage?: string;
@@ -795,6 +800,7 @@ export type SecurityPolicy = 'everyone' | 'invite' | 'organization';
 export interface MinimalSecurity {
   guest: GuestDefinition;
 
+  cron?: CronSecurityDefinition;
   default?: {
     role: AppRole;
     policy?: SecurityPolicy;
@@ -806,6 +812,7 @@ export interface MinimalSecurity {
 export interface StrictSecurity {
   guest?: GuestDefinition;
 
+  cron?: CronSecurityDefinition;
   default: {
     role: AppRole;
     policy?: SecurityPolicy;

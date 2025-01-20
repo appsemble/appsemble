@@ -11,6 +11,7 @@ import { parse } from 'yaml';
 
 import {
   App,
+  AppMember,
   AppReadme,
   AppScreenshot,
   AppSnapshot,
@@ -125,6 +126,24 @@ export async function patchApp(ctx: Context): Promise<void> {
         'App validation failed',
       );
       result.definition = definition;
+      if (definition.cron && definition.security?.cron) {
+        const appMember = await AppMember.findOne({
+          where: {
+            AppId: appId,
+            role: 'cron',
+          },
+        });
+
+        if (!appMember) {
+          const identifier = Math.random().toString(36).slice(2);
+          const cronEmail = `cron-${identifier}@example.com`;
+          await AppMember.create({
+            email: cronEmail,
+            role: 'cron',
+            AppId: appId,
+          });
+        }
+      }
 
       // Make the actual update
       await updateCompanionContainers(

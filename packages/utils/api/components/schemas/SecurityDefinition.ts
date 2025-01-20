@@ -7,6 +7,7 @@ export const SecurityDefinition: OpenAPIV3.NonArraySchemaObject = {
   properties: {
     default: { $ref: '#/components/schemas/SecurityDefaultDefinition' },
     guest: { $ref: '#/components/schemas/SecurityGuestDefinition' },
+    cron: { $ref: '#/components/schemas/SecurityCronDefinition' },
     roles: {
       type: 'object',
       description: 'This property defines the app roles that are available within the app.',
