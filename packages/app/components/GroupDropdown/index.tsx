@@ -2,23 +2,26 @@ import { NavbarDropdown, NavbarItem } from '@appsemble/react-components';
 import { type AppMemberGroup } from '@appsemble/types';
 import { type ReactNode } from 'react';
 import { useIntl } from 'react-intl';
-import { useNavigate } from 'react-router-dom';
 
 import styles from './index.module.css';
 import { messages } from './messages.js';
+import { appId } from '../../utils/settings.js';
 import { useAppMember } from '../AppMemberProvider/index.js';
 import { useAppMessages } from '../AppMessagesProvider/index.js';
 
 export function GroupDropdown(): ReactNode {
   const { formatMessage } = useIntl();
   const { getAppMessage } = useAppMessages();
-  const navigate = useNavigate();
   const { appMemberGroups, appMemberInfo, appMemberSelectedGroup, setAppMemberSelectedGroup } =
     useAppMember();
 
   const handleGroupChange = (group: AppMemberGroup): void => {
     setAppMemberSelectedGroup(group);
-    navigate('/');
+    sessionStorage.setItem(
+      `appsemble-group-${appId}-appMemberSelectedGroup`,
+      JSON.stringify(group),
+    );
+    window.location.reload();
   };
 
   return (
