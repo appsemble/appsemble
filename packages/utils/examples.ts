@@ -679,9 +679,12 @@ export const examples: Record<RemapperExampleKeys, RemapperExample> = {
   'string.endsWith': {
     input: 'Random string here',
     remapper: {
-      'string.endsWith': 'not here',
+      'string.endsWith': {
+        substring: 'Here',
+        strict: false,
+      },
     },
-    result: false,
+    result: true,
   },
   'string.slice': {
     input: 'Laziness',

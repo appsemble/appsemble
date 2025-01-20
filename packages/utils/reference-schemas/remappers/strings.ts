@@ -34,9 +34,28 @@ ${schemaExample('string.slice')}`,
     ],
   },
   'string.endsWith': {
-    type: 'string',
+    oneOf: [
+      {
+        type: 'string',
+      },
+      {
+        type: 'object',
+        description: 'Alternative way to define input to facilitate the case-insensitive matching',
+        required: ['substring'],
+        additionalProperties: false,
+        properties: {
+          substring: {
+            type: 'string',
+          },
+          strict: {
+            type: 'boolean',
+          },
+        },
+      },
+    ],
     description: `Check if the last characters of the string matches with the input string,
-this remapper is case-sensitive.
+this remapper is case-sensitive unless specified explicitly,
+To make the remapper ignore casing of the input and passed string, use the following example
 ${schemaExample('string.endsWith')}
 `,
   },

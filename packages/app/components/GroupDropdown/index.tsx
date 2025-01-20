@@ -2,6 +2,7 @@ import { NavbarDropdown, NavbarItem } from '@appsemble/react-components';
 import { type AppMemberGroup } from '@appsemble/types';
 import { type ReactNode } from 'react';
 import { useIntl } from 'react-intl';
+import { useNavigate } from 'react-router-dom';
 
 import styles from './index.module.css';
 import { messages } from './messages.js';
@@ -12,6 +13,7 @@ import { useAppMessages } from '../AppMessagesProvider/index.js';
 export function GroupDropdown(): ReactNode {
   const { formatMessage } = useIntl();
   const { getAppMessage } = useAppMessages();
+  const navigate = useNavigate();
   const { appMemberGroups, appMemberInfo, appMemberSelectedGroup, setAppMemberSelectedGroup } =
     useAppMember();
 
@@ -21,7 +23,7 @@ export function GroupDropdown(): ReactNode {
       `appsemble-group-${appId}-appMemberSelectedGroup`,
       JSON.stringify(group),
     );
-    window.location.reload();
+    navigate(0);
   };
 
   return (
