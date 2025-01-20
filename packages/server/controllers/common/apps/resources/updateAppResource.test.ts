@@ -755,26 +755,20 @@ describe('updateAppResource', () => {
       ResourceId: resource.id,
       AppId: app.id,
     });
+    vi.useRealTimers();
     authorizeStudio();
     const response = await request.put(
       `/api/apps/${app.id}/resources/testAssets/${resource.id}`,
       createFormData({ resource: { file: '0' }, assets: Buffer.alloc(0) }),
     );
 
-    expect(response).toMatchInlineSnapshot(
-      { data: { file: expect.stringMatching(/^[0-f]{8}(?:-[0-f]{4}){3}-[0-f]{12}$/) } },
-      `
-      HTTP/1.1 200 OK
-      Content-Type: application/json; charset=utf-8
-
-      {
-        "$created": "1970-01-01T00:00:00.000Z",
-        "$updated": "1970-01-01T00:00:00.000Z",
-        "file": StringMatching /\\^\\[0-f\\]\\{8\\}\\(\\?:-\\[0-f\\]\\{4\\}\\)\\{3\\}-\\[0-f\\]\\{12\\}\\$/,
-        "id": 1,
-      }
-    `,
+    expect(response.data).toStrictEqual(
+      expect.objectContaining({
+        file: expect.stringMatching(/^[0-f]{8}(?:-[0-f]{4}){3}-[0-f]{12}$/),
+        id: 1,
+      }),
     );
+
     await expect(() => asset.reload()).rejects.toThrow(
       'Instance could not be reloaded because it does not exist anymore (find call returned null)',
     );

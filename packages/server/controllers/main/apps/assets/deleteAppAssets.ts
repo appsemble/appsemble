@@ -55,9 +55,9 @@ export async function deleteAppAssets(ctx: Context): Promise<void> {
     assets.map((asset) => asset.id),
   );
 
-  assets.map(async (asset) => {
+  for (const asset of assets) {
     await asset.destroy();
-  });
+  }
 
   ctx.status = 204;
 }
