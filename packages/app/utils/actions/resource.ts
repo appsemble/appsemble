@@ -70,7 +70,7 @@ export const get: ActionCreator<'resource.get'> = (args) => {
       url: {
         'string.format': {
           template: `${url}${url.endsWith('/') ? '' : '/'}{id}`,
-          values: { id: { prop: id as string } },
+          values: { id: definition.id ?? { prop: id as string } },
         },
       },
       schema: resource.schema,
@@ -257,7 +257,7 @@ export const patch: ActionCreator<'resource.patch'> = (args) => {
       url: {
         'string.format': {
           template: `${url}${url.endsWith('/') ? '' : '/'}{id}`,
-          values: { id: { prop: id as string } },
+          values: { id: definition.id ?? { prop: id as string } },
         },
       },
       schema: resource.schema,

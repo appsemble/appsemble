@@ -1875,6 +1875,9 @@ If not specified, the raw input data is used.
                       },
                       "type": "object",
                     },
+                    "id": {
+                      "$ref": "#/components/schemas/RemapperDefinition",
+                    },
                     "onError": {},
                     "onSuccess": {},
                     "proxy": {
@@ -2565,6 +2568,9 @@ If not specified, the raw input data is used.
                         },
                       },
                       "type": "object",
+                    },
+                    "id": {
+                      "$ref": "#/components/schemas/RemapperDefinition",
                     },
                     "onError": {},
                     "onSuccess": {},
@@ -6906,6 +6912,9 @@ If not specified, the raw input data is used.
               },
               "type": "object",
             },
+            "id": {
+              "$ref": "#/components/schemas/RemapperDefinition",
+            },
             "onError": {},
             "onSuccess": {},
             "proxy": {
@@ -7596,6 +7605,9 @@ If not specified, the raw input data is used.
                 },
               },
               "type": "object",
+            },
+            "id": {
+              "$ref": "#/components/schemas/RemapperDefinition",
             },
             "onError": {},
             "onSuccess": {},

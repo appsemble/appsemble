@@ -1588,6 +1588,13 @@ interface OwnResourceDefinition {
   own?: boolean;
 }
 
+interface ResourceActionWithIdDefinition {
+  /**
+   * Id of the resource to fetch
+   */
+  id?: Remapper;
+}
+
 export interface ControllerActionDefinition extends BaseActionDefinition<'controller'> {
   handler: string;
 }
@@ -1597,6 +1604,7 @@ export type ResourceCreateActionDefinition = ResourceActionDefinition<'resource.
 export type ResourceDeleteActionDefinition = ResourceActionDefinition<'resource.delete'>;
 export type ResourceHistoryGetActionDefinition = ResourceActionDefinition<'resource.history.get'>;
 export type ResourceGetActionDefinition = ResourceActionDefinition<'resource.get'> &
+  ResourceActionWithIdDefinition &
   ViewResourceDefinition;
 export type ResourceQueryActionDefinition = OwnResourceDefinition &
   ResourceActionDefinition<'resource.query'> &
@@ -1604,7 +1612,8 @@ export type ResourceQueryActionDefinition = OwnResourceDefinition &
 export type ResourceCountActionDefinition = OwnResourceDefinition &
   ResourceActionDefinition<'resource.count'>;
 export type ResourceUpdateActionDefinition = ResourceActionDefinition<'resource.update'>;
-export type ResourcePatchActionDefinition = ResourceActionDefinition<'resource.patch'>;
+export type ResourcePatchActionDefinition = ResourceActionDefinition<'resource.patch'> &
+  ResourceActionWithIdDefinition;
 export type AppMemberLogoutAction = BaseActionDefinition<'app.member.logout'>;
 
 export interface BaseResourceSubscribeActionDefinition<T extends Action['type']>

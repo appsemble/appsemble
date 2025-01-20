@@ -16,6 +16,9 @@ export const ResourcePatchActionDefinition = extendJSONSchema(
         type: 'string',
         description: 'The type of the resource to patch.',
       },
+      id: {
+        $ref: '#/components/schemas/RemapperDefinition',
+      },
     },
   },
   ['url', 'method'],

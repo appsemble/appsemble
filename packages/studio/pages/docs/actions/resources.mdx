@@ -53,9 +53,11 @@ Supported resource actions are as below:
 ### resource.get<Side name="resource.get" />
 
 This action is used to fetch a single resource. Supported fields for this action are `type`,
-`resource` and `view`. Fields `type` and `resource` are required. Resource refers to the resource to
-be fetched, and view is the view to use for the resource. This action requires at least one of the
-app permissions `$resource:all:get`, `$resource:all:own:get`, `$resource:all:get:<view-name>`,
+`resource`, `id` and `view`. Fields `type` and `resource` are required. Resource refers to the
+resource to be fetched, id can be specified explicitly using the parameter `id` or appsemble can
+infer it from the data passed to the action function, explicitly defined id is preferred by the
+system and view is the view to use for the resource. This action requires at least one of the app
+permissions `$resource:all:get`, `$resource:all:own:get`, `$resource:all:get:<view-name>`,
 `$resource:<resource-name>:get`, `$resource:<resource-name>:own:get` or
 `$resource:<resource-name>:get:<view-name>` depending on the context. For more information check out
 [security](../app/security.md#permissions). Here’s an example of how you can use this action to
@@ -155,8 +157,10 @@ blocks:
 ### resource.update<Side name="resource.update" />
 
 This action is used to replace some resource’s data with a completely new set of values. Supported
-field for this action are `type` and `resource`. Both of the fields are required. Resource refers to
-the resource to be updated. This action requires at least one of the app permissions
+field for this action are `type`, `id` and `resource`. The fields `type` and `resource` are
+required. Resource refers to the resource to be updated, id can be specified explicitly using the
+parameter `id` or appsemble can infer it from the data passed to the action function, explicitly
+defined id is preferred by the system. This action requires at least one of the app permissions
 `$resource:all:update`, `$resource:all:own:update`, `$resource:<resource-name>:update` or
 `$resource:<resource-name>:own:update` depending on the context. For more information check out
 [security](../app/security.md#permissions). Here’s an example of how you can use this action to
