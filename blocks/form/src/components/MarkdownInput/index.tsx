@@ -1,4 +1,5 @@
 import { useBlock } from '@appsemble/preact';
+import { FormComponent } from '@appsemble/preact-components';
 import { Crepe } from '@milkdown/crepe';
 import { linkTooltipAPI } from '@milkdown/kit/component/link-tooltip';
 import { commandsCtx, editorViewCtx } from '@milkdown/kit/core';
@@ -10,6 +11,7 @@ import {
 } from '@milkdown/kit/preset/commonmark';
 import { gfm, toggleStrikethroughCommand } from '@milkdown/kit/preset/gfm';
 import { type MarkType } from '@milkdown/kit/prose/model';
+import { type EditorView } from '@milkdown/kit/prose/view';
 import { listenerCtx, listener as listenerPlugin } from '@milkdown/plugin-listener';
 import classNames from 'classnames';
 import { type VNode } from 'preact';
@@ -22,7 +24,6 @@ import { visit } from 'unist-util-visit';
 import styles from './MarkdownInput.module.css';
 import { type InputProps, type MarkdownField } from '../../../block.js';
 import { getValueByNameSequence } from '../../utils/getNested.js';
-import { getMaxLength, getMinLength } from '../../utils/requirements.js';
 
 type MarkdownInputProps = InputProps<string, MarkdownField>;
 
@@ -51,27 +52,23 @@ function stripImages(markdown: string): string {
 
 export function MarkdownInput({
   className,
-  dirty,
   disabled,
   error,
-  errorLinkRef,
   field,
   formValues,
   name,
   onChange,
 }: MarkdownInputProps): VNode {
-  const { utils } = useBlock();
+  const { shadowRoot, utils } = useBlock();
 
   const crepeRef = useRef<Crepe | undefined>();
   const crepeRootRef = useRef<HTMLDivElement | null>(null);
 
   const value = getValueByNameSequence(name, formValues) as string;
 
-  const { defaultValue, help, icon, label, placeholder, tag } = field;
+  const { defaultValue, help, icon, label, tag } = field;
 
   const remappedLabel = utils.remap(label, value) ?? name;
-  const maxLength = getMaxLength(field);
-  const minLength = getMinLength(field);
 
   const initValueRef = useRef<string | undefined>();
   const initValue = useMemo(() => {
@@ -92,6 +89,7 @@ export function MarkdownInput({
               onChange('md-updated', imagelessMarkdown);
             }
           });
+          ctx.update(editorViewCtx, (prev) => ({ ...prev, editable: true }) as EditorView);
         })
         // Github-flavored Markdown
         .use(gfm)
@@ -111,8 +109,6 @@ export function MarkdownInput({
       });
       const crepe = crepeRef.current;
       configure(crepe);
-      // FOR TESTING PURPOSES
-      (window as any).crepe = crepe;
       return () => {
         crepe.destroy();
       };
@@ -153,11 +149,26 @@ export function MarkdownInput({
   }, []);
 
   useEffect(() => {
+    const editorElement = shadowRoot
+      .getElementById('root-crepe')
+      .getElementsByTagName('div')
+      .item(0)
+      ?.getElementsByTagName('div')
+      ?.item(0);
+    editorElement?.classList.add('p-0');
+    editorElement?.setAttribute('contenteditable', 'true');
     crepeRef.current?.setReadonly(disabled);
-  }, [disabled]);
+  }, [disabled, shadowRoot]);
 
   return (
-    <form className={className} onSubmit={(e) => e.preventDefault()}>
+    <FormComponent
+      className={className}
+      error={error}
+      help={help}
+      icon={icon}
+      label={remappedLabel as string}
+      tag={tag}
+    >
       <div className={classNames('is-flex is-flex-direction-row', styles.gap)}>
         <button className="button" onClick={toggleBold} title="Bold" type="button">
           <i className="fas fa-bold" />
@@ -172,7 +183,7 @@ export function MarkdownInput({
           <i className="fas fa-link" />
         </button>
       </div>
-      <div ref={crepeRootRef} />
-    </form>
+      <div id="root-crepe" ref={crepeRootRef} />
+    </FormComponent>
   );
 }
