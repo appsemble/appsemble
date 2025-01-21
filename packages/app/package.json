@@ -45,7 +45,7 @@
     "@sentry/browser": "^7.0.0",
     "@types/css-modules": "^1.0.0",
     "@types/events": "^3.0.0",
-    "@types/gtag.js": "^0.0.18",
+    "@types/gtag.js": "^0.0.20",
     "@types/react": "^18.0.0",
     "@types/react-dom": "^18.0.0",
     "@types/react-router-dom": "^5.0.0",
