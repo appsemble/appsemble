@@ -553,6 +553,16 @@ describe('and', () => {
       mappers: { and: [{ root: null }] },
       expected: true,
     },
+    'return false if input is a non-boolean value': {
+      input: 'string',
+      mappers: { and: [{ root: null }] },
+      expected: 'string',
+    },
+    'return false if input is non-boolean values': {
+      input: ['string', 'string2'],
+      mappers: { and: [{ prop: '0' }, { prop: '1' }] },
+      expected: false,
+    },
     'return undefined when mappers is empty': {
       input: true,
       mappers: { and: [] },
@@ -592,6 +602,16 @@ describe('or', () => {
       input: true,
       mappers: { or: [{ root: null }] },
       expected: true,
+    },
+    'return input if input is a non-boolean value': {
+      input: 'string',
+      mappers: { or: [{ root: null }] },
+      expected: 'string',
+    },
+    'return false if input is non-boolean values': {
+      input: ['string', false],
+      mappers: { or: [{ prop: 0 }, { prop: 1 }] },
+      expected: false,
     },
     'return undefined when mappers is empty': {
       input: true,
