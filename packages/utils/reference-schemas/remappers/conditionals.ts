@@ -130,4 +130,32 @@ ${schemaExample('match')}
       },
     },
   },
+  and: {
+    type: 'array',
+    items: {
+      $ref: '#/components/schemas/RemapperDefinition',
+    },
+    description: `Compare all computed remapper values against each other.
+
+Returns \`true\` if all entries are equal to \`true\`, otherwise \`false\`.
+
+If only one remapper or none is passed, the remapper value gets computed.
+
+${schemaExample('and')}
+`,
+  },
+  or: {
+    type: 'array',
+    items: {
+      $ref: '#/components/schemas/RemapperDefinition',
+    },
+    description: `Compare all computed remapper values against each other.
+
+Returns \`false\` if all entries are equal to \`false\`, otherwise \`true\`.
+
+If only one remapper or none is passed, the remapper value gets computed.
+
+${schemaExample('or')}
+`,
+  },
 };
