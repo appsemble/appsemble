@@ -2,8 +2,9 @@ import { defineMessages } from 'react-intl';
 
 export const messages = defineMessages({
   bannerTitle: {
-    id: 'app.20L+vr',
-    defaultMessage: 'It seems you use the app frequently. You can install it in the following way:',
+    id: 'app.Y9hyon',
+    defaultMessage:
+      'It seems you use the app frequently, you can either install the app from the next prompt or you can install it in the following way:',
   },
   bannerAppleStep1: {
     id: 'app.IiEaZ5',

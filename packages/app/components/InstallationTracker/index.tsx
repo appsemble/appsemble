@@ -1,5 +1,5 @@
 import { ModalCard, useToggle } from '@appsemble/react-components';
-import { type ReactNode } from 'react';
+import { type ReactNode, useCallback, useEffect, useRef, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 
 import { messages } from './messages.js';
@@ -9,47 +9,6 @@ interface BeforeInstallPromptEvent extends Event {
   userChoice: Promise<{ outcome: 'accepted' | 'dismissed' }>;
 }
 
-const visitCountKey = 'visitCount';
-const lastPromptTimeKey = 'lastPromptTime';
-
-const visitThreshold = 3;
-const cooldownPeriod = 5 * 24 * 60 * 60 * 1000;
-
-const visitCountString = localStorage.getItem(visitCountKey) || '0';
-const visitCount = Number.parseInt(visitCountString);
-localStorage.setItem(visitCountKey, String(visitCount + 1));
-
-const currentTime = Date.now();
-const lastPromptTimeString = localStorage.getItem(lastPromptTimeKey) || '0';
-const lastPromptTime = Number.parseInt(lastPromptTimeString);
-
-const showInstallationPrompt =
-  visitCount + 1 >= visitThreshold &&
-  (!lastPromptTime || currentTime - lastPromptTime > cooldownPeriod);
-
-const promptSupported = 'onbeforeinstallprompt' in window;
-
-function setPrompted(): void {
-  localStorage.setItem(visitCountKey, '0');
-  localStorage.setItem(lastPromptTimeKey, String(currentTime));
-}
-
-if (showInstallationPrompt && promptSupported) {
-  window.addEventListener('beforeinstallprompt', (e) => {
-    e.preventDefault();
-    const prompt = e as BeforeInstallPromptEvent;
-    document.body.addEventListener(
-      'click',
-      async () => {
-        await prompt.prompt();
-        await prompt.userChoice;
-        setPrompted();
-      },
-      { once: true },
-    );
-  });
-}
-
 const userAgent = navigator.userAgent.toLowerCase();
 
 const isApple = userAgent.includes('iphone') || userAgent.includes('ipad');
@@ -57,8 +16,64 @@ const isAndroid = userAgent.includes('android');
 
 export function InstallationTracker(): ReactNode {
   const promptToggle = useToggle(true);
+  const hasPromptedRef = useRef(false);
+  const [showPrompt, setShowPrompt] = useState(false);
 
-  if (promptSupported || !showInstallationPrompt || !promptToggle.enabled) {
+  const visitCountKey = 'visitCount';
+  const lastPromptTimeKey = 'lastPromptTime';
+
+  const visitThreshold = 3;
+  const cooldownPeriod = 5 * 24 * 60 * 60 * 1000;
+
+  const visitCountString = localStorage.getItem(visitCountKey) || '0';
+  const visitCount = Number.parseInt(visitCountString);
+  localStorage.setItem(visitCountKey, String(visitCount + 1));
+
+  const currentTime = Date.now();
+  const lastPromptTimeString = localStorage.getItem(lastPromptTimeKey) || '0';
+  const lastPromptTime = Number.parseInt(lastPromptTimeString);
+
+  const showInstallationPrompt =
+    visitCount + 1 >= visitThreshold &&
+    (!lastPromptTime || currentTime - lastPromptTime > cooldownPeriod);
+
+  const promptSupported = 'onbeforeinstallprompt' in window;
+
+  const setPrompted = useCallback(() => {
+    localStorage.setItem(visitCountKey, '0');
+    localStorage.setItem(lastPromptTimeKey, String(currentTime));
+    hasPromptedRef.current = true;
+    setShowPrompt(false);
+  }, [currentTime]);
+
+  useEffect(() => {
+    if (showInstallationPrompt && promptSupported && !hasPromptedRef.current) {
+      const handleBeforeInstallPrompt = (e: BeforeInstallPromptEvent): void => {
+        e.preventDefault();
+        const prompt = e;
+        setShowPrompt(true);
+
+        document.body.addEventListener(
+          'click',
+          async () => {
+            await prompt.prompt();
+            await prompt.userChoice;
+            setPrompted();
+          },
+          { once: true },
+        );
+      };
+
+      window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+
+      // Cleanup the event listener on component unmount
+      return () => {
+        window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+      };
+    }
+  }, [setPrompted, showInstallationPrompt, promptSupported]);
+
+  if (!promptSupported || !showInstallationPrompt || !promptToggle.enabled || !showPrompt) {
     return null;
   }
 
