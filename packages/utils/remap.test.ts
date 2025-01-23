@@ -538,10 +538,10 @@ describe('and', () => {
       mappers: { and: [{ prop: '0' }, { prop: '1' }, { prop: '2' }] },
       expected: false,
     },
-    'not use deep equality': {
+    'use deep equality': {
       input: [{ foo: { bar: true } }, { foo: { bar: true } }],
       mappers: { and: [{ prop: '0' }, { prop: '1' }] },
-      expected: false,
+      expected: true,
     },
     'return false if (computed) input is false': {
       input: false,
@@ -553,20 +553,20 @@ describe('and', () => {
       mappers: { and: [{ root: null }] },
       expected: true,
     },
-    'return false if input is a non-boolean value': {
+    'return true if input is a truty value': {
       input: 'string',
       mappers: { and: [{ root: null }] },
-      expected: 'string',
+      expected: true,
     },
-    'return false if input is non-boolean values': {
+    'return true if input is truthy values': {
       input: ['string', 'string2'],
       mappers: { and: [{ prop: '0' }, { prop: '1' }] },
-      expected: false,
+      expected: true,
     },
-    'return undefined when mappers is empty': {
+    'return true when mappers is empty': {
       input: true,
       mappers: { and: [] },
-      expected: undefined,
+      expected: true,
     },
   });
 });
@@ -588,10 +588,10 @@ describe('or', () => {
       mappers: { or: [{ prop: '0' }, { prop: '1' }, { prop: '2' }] },
       expected: true,
     },
-    'not use deep equality': {
+    'use deep equality': {
       input: [{ foo: { bar: true } }, { foo: { bar: false } }],
       mappers: { or: [{ prop: '0' }, { prop: '1' }] },
-      expected: false,
+      expected: true,
     },
     'return false if (computed) input is false': {
       input: false,
@@ -603,20 +603,20 @@ describe('or', () => {
       mappers: { or: [{ root: null }] },
       expected: true,
     },
-    'return input if input is a non-boolean value': {
+    'return true if imput is one truthy value': {
       input: 'string',
       mappers: { or: [{ root: null }] },
-      expected: 'string',
+      expected: true,
     },
-    'return false if input is non-boolean values': {
+    'return true if input contains a truty value': {
       input: ['string', false],
       mappers: { or: [{ prop: 0 }, { prop: 1 }] },
-      expected: false,
+      expected: true,
     },
-    'return undefined when mappers is empty': {
+    'return true when mappers is empty': {
       input: true,
       mappers: { or: [] },
-      expected: undefined,
+      expected: true,
     },
   });
 });
