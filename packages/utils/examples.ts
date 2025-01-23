@@ -669,6 +669,31 @@ export const examples: Record<RemapperExampleKeys, RemapperExample> = {
     },
     result: 'PATRICK',
   },
+  'string.startsWith': {
+    input: 'Random string here',
+    remapper: {
+      'string.startsWith': 'Random',
+    },
+    result: true,
+  },
+  'string.endsWith': {
+    input: 'Random string here',
+    remapper: {
+      'string.endsWith': {
+        substring: 'Here',
+        strict: false,
+      },
+    },
+    result: true,
+  },
+  'string.slice': {
+    input: 'Laziness',
+    remapper: {
+      'string.slice': [3, 6],
+    },
+    result: 'ine',
+  },
+
   'string.format': {
     input: {
       lotteryPrize: '5000',

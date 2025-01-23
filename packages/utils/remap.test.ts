@@ -984,7 +984,7 @@ describe('array.flatten', () => {
 
 describe('array', () => {
   runTests({
-    'return undefined if not in the context of array.map': {
+    'return undefined if not in the context of array.map or if the input is not an array': {
       input: {},
       mappers: [
         {
@@ -1019,6 +1019,19 @@ describe('array', () => {
         { value: 'b', index: 1, length: 3, item: { value: 'b' } },
         { value: 'c', index: 2, length: 3, item: { value: 'c' } },
       ],
+    },
+    'return the length of the input array if not in the context': {
+      input: [1, 2, 3, 4],
+      mappers: [
+        {
+          'object.from': {
+            index: [{ array: 'index' }],
+            length: [{ array: 'length' }],
+            item: [{ array: 'item' }],
+          },
+        },
+      ],
+      expected: { index: undefined, length: 4, item: undefined },
     },
   });
 });
@@ -1370,6 +1383,89 @@ describe('string.case', () => {
       input: 'We’re all Goofy Goobers',
       mappers: { 'string.case': 'lower' },
       expected: 'we’re all goofy goobers',
+    },
+  });
+});
+
+describe('string.startsWith', () => {
+  runTests({
+    'should return true': {
+      input: 'Random string here',
+      mappers: { 'string.startsWith': 'Random' },
+      expected: true,
+    },
+    'should do case sensitive matching by default': {
+      input: 'Random string here',
+      mappers: {
+        'string.startsWith': 'random',
+      },
+      expected: false,
+    },
+    'should support disabling the strict case checks': {
+      input: 'Random string here',
+      mappers: {
+        'string.startsWith': {
+          substring: 'random',
+          strict: false,
+        },
+      },
+      expected: true,
+    },
+    'should return false': {
+      input: 'Random string here',
+      mappers: {
+        'string.startsWith': 'Not here',
+      },
+      expected: false,
+    },
+  });
+});
+
+describe('string.endsWith', () => {
+  runTests({
+    'should return true': {
+      input: 'Random string here',
+      mappers: { 'string.endsWith': 'here' },
+      expected: true,
+    },
+    'should do case sensitive matching by default': {
+      input: 'Random string here',
+      mappers: {
+        'string.endsWith': 'Here',
+      },
+      expected: false,
+    },
+    'should support disabling the strict case checks': {
+      input: 'Random string here',
+      mappers: {
+        'string.endsWith': {
+          substring: 'Here',
+          strict: false,
+        },
+      },
+      expected: true,
+    },
+    'should return false': {
+      input: 'Random string here',
+      mappers: { 'string.endsWith': 'Not here' },
+      expected: false,
+    },
+  });
+});
+
+describe('string.slice', () => {
+  runTests({
+    'should support number as remapper input': {
+      input: 'lazy crazy fox, fix my pipeline',
+      mappers: { 'string.slice': 5 },
+      expected: 'crazy fox, fix my pipeline',
+    },
+  });
+  runTests({
+    'should support numbers array as remapper input': {
+      input: 'lazy crazy fox, fix my pipeline',
+      mappers: { 'string.slice': [5, 10] },
+      expected: 'crazy',
     },
   });
 });

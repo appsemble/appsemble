@@ -10,6 +10,55 @@ export const stringRemappers: Record<string, OpenAPIV3.ReferenceObject | OpenAPI
 ${schemaExample('string.case')}
 `,
   },
+  'string.startsWith': {
+    type: 'string',
+    description: `Check if the initial characters of the string matches with the input string,
+this remapper is case-sensitive.
+${schemaExample('string.startsWith')}
+`,
+  },
+  'string.slice': {
+    description: `Extract characters from a string,
+accepts either an array of two numbers (indexes of starting point and ending point)
+or a number (index of the starting point).
+startIndex is inclusive whereas the endIndex is not.
+${schemaExample('string.slice')}`,
+    oneOf: [
+      {
+        type: 'array',
+        items: {
+          type: 'number',
+        },
+      },
+      { type: 'number' },
+    ],
+  },
+  'string.endsWith': {
+    oneOf: [
+      {
+        type: 'string',
+      },
+      {
+        type: 'object',
+        description: 'Alternative way to define input to facilitate the case-insensitive matching',
+        required: ['substring'],
+        additionalProperties: false,
+        properties: {
+          substring: {
+            type: 'string',
+          },
+          strict: {
+            type: 'boolean',
+          },
+        },
+      },
+    ],
+    description: `Check if the last characters of the string matches with the input string,
+this remapper is case-sensitive unless specified explicitly,
+To make the remapper ignore casing of the input and passed string, use the following example
+${schemaExample('string.endsWith')}
+`,
+  },
   'string.format': {
     type: 'object',
     additionalProperties: false,

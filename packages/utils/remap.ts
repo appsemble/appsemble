@@ -3,6 +3,7 @@ import {
   type ArrayRemapper,
   type Remapper,
   type Remappers,
+  type SubstringCaseType,
   type ValueFromProcess,
 } from '@appsemble/types';
 import { addMilliseconds, format, parse, parseISO } from 'date-fns';
@@ -401,7 +402,9 @@ const mapperImplementations: MapperImplementations = {
     });
   },
 
-  array: (prop, input, context) => context.array?.[prop],
+  array: (prop, input: any[], context) =>
+    context.array?.[prop] ??
+    (prop === 'length' && Array.isArray(input) ? input?.[prop] : undefined),
 
   'array.filter'(mapper, input: any[], context) {
     if (!Array.isArray(input)) {
@@ -621,6 +624,30 @@ const mapperImplementations: MapperImplementations = {
       return String(input).toUpperCase();
     }
     return input;
+  },
+
+  'string.startsWith'(substring: SubstringCaseType, input: string) {
+    if (typeof substring === 'string') {
+      return input.startsWith(substring);
+    }
+    if (substring.strict || substring.strict === undefined) {
+      return input.startsWith(substring.substring);
+    }
+    return input.toLowerCase().startsWith(substring.substring.toLowerCase());
+  },
+
+  'string.endsWith'(substring: SubstringCaseType, input: string) {
+    if (typeof substring === 'string') {
+      return input.endsWith(substring);
+    }
+    if (substring.strict || substring.strict === undefined) {
+      return input.endsWith(substring.substring);
+    }
+    return input.toLowerCase().endsWith(substring.substring.toLowerCase());
+  },
+
+  'string.slice'(sliceIndex: number | [number, number], input: string) {
+    return Array.isArray(sliceIndex) ? input.slice(...sliceIndex) : input.slice(sliceIndex);
   },
 
   log(level, input, context) {

@@ -319,6 +319,18 @@ interface EndTimeICSRemapper extends BaseICSRemapper {
   end: Remapper;
 }
 
+export interface SubstringCaseType {
+  /**
+   * Whether to match the case of the substring.
+   */
+  strict?: boolean;
+
+  /**
+   * Substring to match.
+   */
+  substring: string;
+}
+
 export interface Remappers {
   /**
    * Get app metadata.
@@ -504,7 +516,8 @@ export interface Remappers {
   /**
    * Get the current array.map’s index or length.
    *
-   * Returns nothing if array.map’s context isn’t set.
+   * Returns length of the input array if array.map’s context isn’t set or nothing if the input is
+   * not an array.
    */
   array: 'index' | 'item' | 'length';
 
@@ -691,6 +704,21 @@ export interface Remappers {
    * Convert an input to lower or upper case.
    */
   'string.case': 'lower' | 'upper';
+
+  /**
+   * Check if the initial characters of the string matches with the input string.
+   */
+  'string.startsWith': SubstringCaseType | string;
+
+  /**
+   * Check if the last characters of the string matches with the input string.
+   */
+  'string.endsWith': SubstringCaseType | string;
+
+  /**
+   * Extract a section of the string.
+   */
+  'string.slice': number | [number, number];
 
   /**
    * Format a string using remapped input variables.
