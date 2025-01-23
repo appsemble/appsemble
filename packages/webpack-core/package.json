@@ -40,7 +40,7 @@
     "@types/hast": "^3.0.0",
     "@types/mdast": "^4.0.0",
     "@types/unused-webpack-plugin": "^2.0.0",
-    "bulma": "0.9.3",
+    "bulma": "0.9.4",
     "case-sensitive-paths-webpack-plugin": "^2.0.0",
     "css-loader": "^6.0.0",
     "css-minimizer-webpack-plugin": "^5.0.0",

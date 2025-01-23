@@ -54,7 +54,7 @@
     "@xmldom/xmldom": "^0.8.0",
     "axios": "^1.0.0",
     "bcrypt": "^5.0.0",
-    "bulma": "0.9.3",
+    "bulma": "0.9.4",
     "chalk": "^5.0.0",
     "cli-highlight": "^2.0.0",
     "cron-parser": "^4.0.0",
