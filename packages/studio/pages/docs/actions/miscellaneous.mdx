@@ -1,4 +1,7 @@
 import { ClientServerActionSupport as Side } from './ClientServerActionSupport/index.tsx';
+import { ActionRef } from './ActionRef/index.tsx';
+import { miscellaneousActions as actions } from '../../../../utils/reference-schemas/actions/miscellaneous.ts';
+import { ActionDefinition } from '../../../../utils/api/components/schemas/ActionDefinition.ts';
 
 # Miscellaneous
 
@@ -14,6 +17,8 @@ miscellaneous supported actions.
 - [`controller`](#controller)
 - [`download`](#download)
 - [`dialog`](#dialog)
+- [`dialog.ok`](#dialogok)
+- [`dialog.error`](#dialogerror)
 - [`each`](#each)
 - [`event`](#event)
 - [`email`](#email)
@@ -27,7 +32,14 @@ miscellaneous supported actions.
 - [`static`](#static)
 - [`throw`](#throw)
 
+## Base properties:
+
+<ActionRef action={ActionDefinition.allOf[0]} excludeBase={false} />
+
+## Actions
+
 ### analytics<Side name="analytics" />
+<ActionRef action={actions['analytics']} />
 
 This action sends a Google Analytics event and returns the input data. Supported fields for this
 action are `type`, `target` and `config`. Type is `analytics` in this case, target is the name of
@@ -48,6 +60,7 @@ blocks:
 ```
 
 ### condition<Side name="condition" />
+<ActionRef action={actions['condition']} />
 
 This action runs another action if a certain condition is met. Supported fields for this action are
 `type`, `if`, `then` and `else`. If is a remapper to determine the condition to check. If this
@@ -82,6 +95,7 @@ blocks:
 ```
 
 ### controller<Side name="controller" />
+<ActionRef action={actions['controller']} />
 
 This action is used to specify a custom function from a JavaScript file to be used as the controller
 to handle the action. This can help the user to overcome the limitations of `yaml` with logic
@@ -115,6 +129,7 @@ blocks:
 ```
 
 ### download<Side name="download" />
+<ActionRef action={actions['download']} />
 
 This action is used to download data as a file. Supported fields for this action are `type` and
 `filename`. Both fields are required, type is `download` in this case whereas `filename` is the
@@ -144,6 +159,7 @@ blocks:
 ```
 
 ### dialog<Side name="dialog" />
+<ActionRef action={actions['dialog']} />
 
 This action opens a pop-up dialog that can display blocks temporarily. Dialogs can be closed by
 calling the `dialog.ok` or `dialog.error`. Users can still manually close dialogs, which should be
@@ -195,6 +211,7 @@ blocks:
 ```
 
 #### dialog.ok<Side name="dialog.ok" />
+<ActionRef action={actions['dialog.ok']} />
 
 This action closes an open dialog. Type for this action is `dialog.ok`. Here is an example of this
 action in use.
@@ -223,6 +240,7 @@ blocks:
 ```
 
 #### dialog.error<Side name="dialog.error" />
+<ActionRef action={actions['dialog.error']} />
 
 This action also closes an open dialog but the dialog action that opened the dialog will be rejected
 with the data passed to this action. Type for this action is `dialog.error`. Here is an example of
@@ -254,6 +272,7 @@ blocks:
 ```
 
 ### each<Side name="each" />
+<ActionRef action={actions['each']} />
 
 This action is used to run an action for each entry in an array. The actions are run in parallel. If
 the input is not an array, the action will be applied to the input instead. Supported fields for
@@ -285,6 +304,7 @@ blocks:
 ```
 
 ### event<Side name="event" />
+<ActionRef action={actions['event']} />
 
 This action allows for other blocks to emit data upon triggering the action. This can be used to
 make blocks interact with each other, such as triggering the `data-loader` block to refresh itself
@@ -320,6 +340,7 @@ blocks:
 ```
 
 ### email<Side name="email" />
+<ActionRef action={actions['email']} />
 
 The email action can be used to send emails via the Appsemble server. If `to`, `cc`, and `bcc` all
 end up being empty, no emails will be sent but the action will still continue as normal. Supported
@@ -378,6 +399,7 @@ blocks:
 ```
 
 ### log<Side name="log" />
+<ActionRef action={actions['log']} />
 
 This action is used to output the result of the action into the console, this is mostly useful for
 debugging during app development. This action supports `type` and `level` fields. Only required
@@ -411,6 +433,7 @@ blocks:
 ```
 
 ### match<Side name="match" />
+<ActionRef action={actions['match']} />
 
 This action runs another action if one of the cases is true, only the first case that equals true is
 called. This action supports `type` and `match` fields. Both of the fields are required to use this
@@ -448,6 +471,7 @@ blocks:
 ```
 
 ### message<Side name="message" />
+<ActionRef action={actions['message']} />
 
 This action is used to display a message to the user, this is useful in combination with action
 chaining to notify users they have performed a certain action. This action supports `type`, `body`,
@@ -483,6 +507,7 @@ blocks:
 ```
 
 ### noop<Side name="noop" />
+<ActionRef action={actions['noop']} />
 
 This action is used to do nothing when this action is triggered, this is the default action for
 block actions that are not required. The name of the action corresponds to no-operation. This action
@@ -502,6 +527,7 @@ blocks:
 ```
 
 ### notify<Side name="notify" />
+<ActionRef action={actions['notify']} />
 
 This action is used to send notifications to one or all the users of an app. This action supports
 `type`, `to`, `title` and `body` fields. All the fields are required to make this action work. Title
@@ -527,6 +553,7 @@ blocks:
 ```
 
 ### request<Side name="request" />
+<ActionRef action={actions['request']} />
 
 This action performs an HTTP request. This can be used to call the Appsemble API or an external API
 in order to fetch data or send data. When sending `POST`, `PUT`, `DELETE` and `PATCH` calls the data
@@ -583,6 +610,7 @@ blocks:
 ```
 
 ### share<Side name="share" />
+<ActionRef action={actions['share']} />
 
 This action can be used to display a prompt that allows the user to share something with others,
 primarily via social media. Depending on whether the user’s browser supports a native share function
@@ -608,6 +636,7 @@ blocks:
 ```
 
 ### static<Side name="static" />
+<ActionRef action={actions['static']} />
 
 This action returns static data defined in the action definition, this is useful for example for
 stubbing data. This action supports `type` and `value`. Both of the values are required to use this
@@ -630,6 +659,7 @@ blocks:
 ```
 
 ### throw<Side name="throw" />
+<ActionRef action={actions['throw']} />
 
 This action throws a new exception based on the data that is passed through, this can be used to
 create a custom error that ends up in the error action handler. The only supported field for this

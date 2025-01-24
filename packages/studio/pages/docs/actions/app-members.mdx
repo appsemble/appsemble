@@ -1,4 +1,7 @@
 import { ClientServerActionSupport as Side } from './ClientServerActionSupport/index.tsx';
+import { ActionRef } from './ActionRef/index.tsx';
+import { appMemberActions as actions } from '../../../../utils/reference-schemas/actions/appMember.ts';
+import { ActionDefinition } from '../../../../utils/api/components/schemas/ActionDefinition.ts';
 
 # App Member
 
@@ -28,7 +31,15 @@ security:
     User: {}
 ```
 
+## Base properties:
+
+<ActionRef action={ActionDefinition.allOf[0]} excludeBase={false} />
+
+## Actions
+
 ### app.member.register<Side name="app.member.register" />
+
+<ActionRef action={actions['app.member.register']} />
 
 This action allows the user to register a new app member account using an email address and a
 password and does nothing if the user is already logged in. Supported fields for this action are
@@ -78,6 +89,8 @@ blocks:
 
 ### app.member.invite<Side name="app.member.invite" />
 
+<ActionRef action={actions['app.member.invite']} />
+
 This action allows the user to invite a new app member to the app by specifying their email and a
 role. The action does nothing if the user is not logged in. Supported fields for this action are
 `type`, `email` and `role`. The `role` must exist in the roles property of the app's security
@@ -111,6 +124,8 @@ blocks:
 ```
 
 ### app.member.login<Side name="app.member.login" />
+
+<ActionRef action={actions['app.member.login']} />
 
 This action allows the user to login using an email address and a password and does nothing if the
 user is already logged in. Supported fields for this action are `type`, `email` and `password`.
@@ -147,6 +162,8 @@ blocks:
 
 ### app.member.logout<Side name="app.member.logout" />
 
+<ActionRef action={actions['app.member.logout']} />
+
 This action allow the users to logout of the application. Supported field for this action is `type`,
 which is `app.member.logout` in this case. Here is an example of this action in use.
 
@@ -164,6 +181,8 @@ blocks:
 ```
 
 ### app.member.query<Side name="app.member.query" />
+
+<ActionRef action={actions['app.member.query']} />
 
 This action allows the user to fetch a list of app member accounts by their roles and does nothing
 if the user is not logged in. Supported fields for this action are `type` and `roles`. Type is
@@ -185,6 +204,8 @@ blocks:
 ```
 
 ### app.member.current.patch<Side name="app.member.current.patch" />
+
+<ActionRef action={actions['app.member.current.patch']} />
 
 This action allows the user to update their app member account and does nothing if the user isn’t
 logged in. Supported fields for this action are `type`, `name`, `properties` and `picture`. `name`
@@ -212,6 +233,8 @@ blocks:
 ```
 
 ### app.member.role.update<Side name="app.member.role.update" />
+
+<ActionRef action={actions['app.member.role.update']} />
 
 This action allows the user to update the role of another app member and does nothing if the user
 isn’t logged in. Supported fields for this action are `type` and `role`. The `role` must exist in
@@ -241,6 +264,8 @@ blocks:
 
 ### app.member.properties.patch<Side name="app.member.properties.patch" />
 
+<ActionRef action={actions['app.member.properties.patch']} />
+
 This action allows the user to update the properties of another app member and does nothing if the
 user isn’t logged in. Supported fields for this action are `type` and `properties`. All the values
 for properties are converted into strings. This action requires the `$member:properties:patch` app
@@ -269,6 +294,8 @@ blocks:
 ```
 
 ### app.member.delete<Side name="app.member.delete" />
+
+<ActionRef action={actions['app.member.delete']} />
 
 This action allows the user to delete another app member account and does nothing if the user is not
 logged in. Supported fields for this action are `type` and `sub`. Type is `app.member.remove` and

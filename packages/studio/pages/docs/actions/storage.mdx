@@ -1,4 +1,7 @@
 import { ClientServerActionSupport as Side } from './ClientServerActionSupport/index.tsx';
+import { ActionRef } from './ActionRef/index.tsx';
+import { storageActions as actions } from '../../../../utils/reference-schemas/actions/storage.ts';
+import { ActionDefinition } from '../../../../utils/api/components/schemas/ActionDefinition.ts';
 
 # Storage
 
@@ -21,7 +24,14 @@ visit this [page](../guides/storage.md). Supported storage actions are as below:
 - [`storage.update`](#storageupdate)
 - [`storage.delete`](#storagedelete)
 
+## Base properties:
+
+<ActionRef action={ActionDefinition.allOf[0]} excludeBase={false} />
+
+## Actions
+
 ### storage.read<Side name="storage.read" />
+<ActionRef action={actions['storage.read']} />
 
 This action can be used to read data from indexedDB, localStorage, sessionStorage, and appStorage.
 Usage of this action requires the `key` and `type` fields. Supported fields for the usage of the
@@ -44,6 +54,7 @@ blocks:
 ```
 
 ### storage.write<Side name="storage.write" />
+<ActionRef action={actions['storage.write']} />
 
 This action is used to write data to indexedDB, localStorage, sessionStorage, and appStorage. Usage
 of this action requires the `key`, `value` and `type` fields. Supported fields for the usage of the
@@ -71,6 +82,7 @@ blocks:
 ```
 
 ### storage.append<Side name="storage.append" />
+<ActionRef action={actions['storage.append']} />
 
 This action is used to append data to an existing array in storage. If the storage entry is a single
 object, it turns it into an array to append the data on. Supported fields for the usage of the
@@ -105,6 +117,7 @@ blocks:
 ```
 
 ### storage.subtract<Side name="storage.subtract" />
+<ActionRef action={actions['storage.subtract']} />
 
 This action is used to subtract the last item from a storage entry. If the entry consists of only
 one item, the value is turned into a singular object. If the entry is a single item, the entry is
@@ -128,6 +141,7 @@ blocks:
 ```
 
 ### storage.update<Side name="storage.update" />
+<ActionRef action={actions['storage.update']} />
 
 This action is used to update an existing item in storage, or update an item inside a stored array.
 Supported fields for the usage of the action are `type`, `key`, `item`, `value` and `storage`. Item
@@ -163,6 +177,7 @@ blocks:
 ```
 
 ### storage.delete<Side name="storage.delete" />
+<ActionRef action={actions['storage.delete']} />
 
 This action is used to delete the item that is stored at the specified key. Usage of this action
 requires the `key` and `type` fields. Supported fields for the usage of the action are `type`, `key`

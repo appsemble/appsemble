@@ -1,4 +1,7 @@
 import { ClientServerActionSupport as Side } from './ClientServerActionSupport/index.tsx';
+import { ActionRef } from './ActionRef/index.tsx';
+import { flowActions as actions } from '../../../../utils/reference-schemas/actions/flow.ts';
+import { ActionDefinition } from '../../../../utils/api/components/schemas/ActionDefinition.ts';
 
 # Flow
 
@@ -49,7 +52,14 @@ To use flow actions, you need a flow page:
               type: flow.finish
 ```
 
+## Base properties:
+
+<ActionRef action={ActionDefinition.allOf[0]} excludeBase={false} />
+
+## Actions
+
 ### flow.next<Side name="flow.next" />
+<ActionRef action={actions['flow.next']} />
 
 On a flow page, this action proceed to the next page if it is present. Otherwise, the flow is
 considered to be complete and [\`flow.finish\`](#flowfinish) will be called instead. Supported field
@@ -71,6 +81,7 @@ blocks:
 ```
 
 ### flow.finish<Side name="flow.finish" />
+<ActionRef action={actions['flow.finish']} />
 
 On a flow page, this action triggers the `onFlowFinish` action on the page. Supported field for this
 action is `type`, which is `flow.finish` in this case. Here is an example of this action being used.
@@ -90,6 +101,7 @@ blocks:
 ```
 
 ### flow.back<Side name="flow.back" />
+<ActionRef action={actions['flow.back']} />
 
 On a flow page, this action returns to the previous page if it is present. If this action is called
 on the first page, nothing happens. Supported field for this action is `type`, which is `flow.back`
@@ -110,6 +122,7 @@ blocks:
 ```
 
 ### flow.cancel<Side name="flow.cancel" />
+<ActionRef action={actions['flow.cancel']} />
 
 On a flow page, calling this action triggers the `onFlowCancel` action. Supported field for this
 action is `type`, which is `flow.cancel` in this case. Here is an example of how to use this action.
@@ -126,6 +139,7 @@ blocks:
 ```
 
 ### flow.to<Side name="flow.to" />
+<ActionRef action={actions['flow.to']} />
 
 On a flow page, this action is used to move to a specific step. Supported fields for this action are
 `type` and `step`. Step is the name of the step to move to, this is a remapper which gets called

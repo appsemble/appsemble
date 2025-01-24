@@ -1,4 +1,7 @@
 import { ClientServerActionSupport as Side } from './ClientServerActionSupport/index.tsx';
+import { ActionRef } from './ActionRef/index.tsx';
+import { resourceActions as actions } from '../../../../utils/reference-schemas/actions/resources.ts';
+import { ActionDefinition } from '../../../../utils/api/components/schemas/ActionDefinition.ts';
 
 # Resources
 
@@ -52,7 +55,14 @@ Supported resource actions are as below:
 - [`resource.subscription.toggle`](#resourcesubscriptiontoggle)
 - [`resource.subscription.status`](#resourcesubscriptionstatus)
 
+## Base properties:
+
+<ActionRef action={ActionDefinition.allOf[0]} excludeBase={false} />
+
+## Actions
+
 ### resource.get<Side name="resource.get" />
+<ActionRef action={actions['resource.get']} />
 
 This action is used to fetch a single resource. Supported fields for this action are `type`,
 `resource`, `id` and `view`. Fields `type` and `resource` are required. Resource refers to the
@@ -76,6 +86,7 @@ blocks:
 ```
 
 ### resource.history.get<Side name="resource.history.get" />
+<ActionRef action={actions['resource.history.get']} />
 
 This action is used to fetch the history of a single resource, `history` attribute of the resource
 should be set to true for this action to work. Supported fields for this action are `type` and
@@ -96,6 +107,7 @@ blocks:
 ```
 
 ### resource.query<Side name="resource.query" />
+<ActionRef action={actions['resource.query']} />
 
 This action is used to fetch all the resources. Similar to `resource.get` supported fields for this
 action are `type`, `resource` and `view`. This action also supports the `own` field, which can be
@@ -118,6 +130,7 @@ blocks:
 ```
 
 ### resource.count<Side name="resource.count" />
+<ActionRef action={actions['resource.count']} />
 
 This action is used to fetch the count of resources. Supported field for this action are `type`,
 `resource` and `own`. The fields `type` and `resource` are required. The `own` field can be used to
@@ -138,6 +151,7 @@ blocks:
 ```
 
 ### resource.create<Side name="resource.create" />
+<ActionRef action={actions['resource.create']} />
 
 This action is used to create new resources. Supported fields for this action are `type` and
 `resource`. Both of the fields are required. This action requires at least one of the app
@@ -157,6 +171,7 @@ blocks:
 ```
 
 ### resource.update<Side name="resource.update" />
+<ActionRef action={actions['resource.update']} />
 
 This action is used to replace some resource’s data with a completely new set of values. Supported
 field for this action are `type`, `id` and `resource`. The fields `type` and `resource` are
@@ -195,6 +210,7 @@ blocks:
 ```
 
 ### resource.patch<Side name="resource.patch" />
+<ActionRef action={actions['resource.patch']} />
 
 This action is used to partially update a resource with new data. Supported field for this action
 are `type` and `resource`. Both of the fields are required. Resource refers to the resource to be
@@ -222,6 +238,7 @@ blocks:
 ```
 
 ### resource.delete<Side name="resource.delete" />
+<ActionRef action={actions['resource.delete']} />
 
 This action is used to delete a resource from the database. Supported field for this action are
 `type` and `resource`. Both of the fields are required. Resource refers to the resource to be
@@ -318,6 +335,7 @@ blocks:
 ```
 
 ### resource.subscription.subscribe<Side name="resource.subscription.subscribe" />
+<ActionRef action={actions['resource.subscription.subscribe']} />
 
 This action is used to subscribe to resource modification for push notifications. Supported fields
 for this action are `type`, `resource` and `action`. Fields type and resource are required, the
@@ -344,6 +362,7 @@ blocks:
 ```
 
 ### resource.subscription.unsubscribe<Side name="resource.subscription.unsubscribe" />
+<ActionRef action={actions['resource.subscription.unsubscribe']} />
 
 This action is used to unsubscribe from resource modifications. Supported fields for this action are
 `type`, `resource` and `action`. Fields type and resource are required, the field action refers to
@@ -365,6 +384,7 @@ blocks:
 ```
 
 ### resource.subscription.toggle<Side name="resource.subscription.toggle" />
+<ActionRef action={actions['resource.subscription.toggle']} />
 
 This action is used to toggle push notifications for resource modification. i.e. It will set the
 subscribed property to `true` if it’s set to `false` and vice versa. Supported fields for this
@@ -387,6 +407,7 @@ blocks:
 ```
 
 ### resource.subscription.status<Side name="resource.subscription.status" />
+<ActionRef action={actions['resource.subscription.status']} />
 
 This action can be used to access the status of notification subscriptions for a resource. Supported
 fields for this action are `type`, `resource` and `action`. Fields type and resource are required,

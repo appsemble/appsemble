@@ -1,4 +1,7 @@
 import { ClientServerActionSupport as Side } from './ClientServerActionSupport/index.tsx';
+import { ActionRef } from './ActionRef/index.tsx';
+import { linkActions as actions } from '../../../../utils/reference-schemas/actions/link.ts';
+import { ActionDefinition } from '../../../../utils/api/components/schemas/ActionDefinition.ts';
 
 # Link
 
@@ -11,7 +14,14 @@ useful for navigation or redirecting. Supported link actions are the following.
 - [`link.back`](../reference/action.mdx#link.back)
 - [`link.next`](../reference/action.mdx#link.next)
 
+## Base properties:
+
+<ActionRef action={ActionDefinition.allOf[0]} excludeBase={false} />
+
+## Actions
+
 ### link<Side name="link" />
+<ActionRef action={actions['link']} />
 
 This action is used to redirect the user to other pages or absolute URLs. Supported fields for this
 action are `type` and `to`. To is the name of the page to link to. Sub-pages can be referred to
@@ -32,6 +42,7 @@ blocks:
 ```
 
 ### link.back<Side name="link.back" />
+<ActionRef action={actions['link.back']} />
 
 This action is used to link to the previous page in the browser history. Supported field for this
 action is `type`, which is `link.back` in this case. The following is an example of this action
@@ -50,6 +61,7 @@ blocks:
 ```
 
 ### link.next<Side name="link.next" />
+<ActionRef action={actions['link.next']} />
 
 This action is used to link to the next page in the browser history. Supported field for this action
 is `type`, which is `link.next` in this case. The following is an example of this action being used

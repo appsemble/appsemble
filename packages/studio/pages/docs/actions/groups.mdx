@@ -1,4 +1,7 @@
 import { ClientServerActionSupport as Side } from './ClientServerActionSupport/index.tsx';
+import { ActionRef } from './ActionRef/index.tsx';
+import { groupActions as actions } from '../../../../utils/reference-schemas/actions/group.ts';
+import { ActionDefinition } from '../../../../utils/api/components/schemas/ActionDefinition.ts';
 
 # Group
 
@@ -14,7 +17,14 @@ actions are as follow.
 - [`group.member.delete`](#groupmemberdelete)
 - [`group.member.role.update`](#groupmemberroleupdate)
 
+## Base properties:
+
+<ActionRef action={ActionDefinition.allOf[0]} excludeBase={false} />
+
+## Actions
+
 ### group.query<Side name="group.query" />
+<ActionRef action={actions['group.query']} />
 
 This action allows an app member with sufficient permissions to query groups within the app, in
 which the app member is a member of. Type is the only required value for using this action. This
@@ -35,6 +45,7 @@ blocks:
 ```
 
 ### group.member.invite<Side name="group.member.invite" />
+<ActionRef action={actions['group.member.invite']} />
 
 This action allows a user with sufficient permissions to invite app members to a group. Supported
 fields for this action are `type`, `id`, `email`, and `role`. `id` is the id of the group to which
@@ -68,6 +79,7 @@ blocks:
 ```
 
 ### group.member.query<Side name="group.member.query" />
+<ActionRef action={actions['group.member.query']} />
 
 This action allows an app member with sufficient permissions to query group members within a group,
 in which the app member is a member of. `id` is the id of the group of which to query the members.
@@ -89,6 +101,7 @@ blocks:
 ```
 
 ### group.member.delete<Side name="group.member.delete" />
+<ActionRef action={actions['group.member.delete']} />
 
 This action allows an app member with sufficient permissions to delete a group member from a group,
 in which the app member is a member of. `id` is the id of the group member to delete. This action
@@ -110,6 +123,7 @@ blocks:
 ```
 
 ### group.member.role.update<Side name="group.member.role.update" />
+<ActionRef action={actions['group.member.role.update']} />
 
 This action allows an app member with sufficient permissions to update the role of a member in a
 group, in which the app member is a member of. `id` is the id of the group member whose role will be
