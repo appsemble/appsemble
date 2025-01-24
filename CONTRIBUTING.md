@@ -384,7 +384,6 @@ A release can be created by a maintainer triggering one of the release jos in th
 We support the following releases:
 
 - prerelease --identifier test - Internal testing or testing with clients
-- prerelease --identifier rc - "Release Candidate" close to final, pending minor fixes
 - patch - Backward-compatible bug fixes
 - minor - Backward-compatible new features or significant updates
 
