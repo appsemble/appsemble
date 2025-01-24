@@ -542,7 +542,10 @@ _Test App_
       const mockedFlow: Partial<ImapFlow> = {
         connect: vi.fn(),
         getMailboxLock: vi.fn().mockResolvedValue(mockedLock),
-        append: vi.fn<[string, string, string[]], ReturnType<ImapFlow['append']>>(),
+        append:
+          vi.fn<
+            (path: string, content: string, flags: string[]) => ReturnType<ImapFlow['append']>
+          >(),
         logout: vi.fn(),
       };
       const appendMock = mockedFlow.append as ReturnType<typeof vi.fn>;

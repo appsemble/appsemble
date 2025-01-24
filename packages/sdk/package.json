@@ -46,6 +46,6 @@
     "type-fest": "^4.0.0"
   },
   "devDependencies": {
-    "vitest": "^1.0.0"
+    "vitest": "^2.0.0"
   }
 }

@@ -5,9 +5,9 @@ import { type ShowDialogParams } from '../../types.js';
 import { createTestAction } from '../makeActions.js';
 
 describe('dialog', () => {
-  let close: Mock<[], void>;
+  let close: Mock<() => void>;
   let options: ShowDialogParams;
-  let showDialog: Mock<[ShowDialogParams], () => void>;
+  let showDialog: Mock<(params: ShowDialogParams) => () => void>;
 
   beforeEach(() => {
     close = vi.fn();

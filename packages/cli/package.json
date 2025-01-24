@@ -98,7 +98,7 @@
     "@types/postcss-url": "^10.0.0",
     "@types/koa__cors": "^5.0.0",
     "concat-stream": "^2.0.0",
-    "vitest": "^1.0.0",
+    "vitest": "^2.0.0",
     "sequelize": "^6.0.0"
   },
   "peerDependencies": {},

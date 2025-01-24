@@ -72,6 +72,8 @@
     "fake-indexeddb": "^5.0.0",
     "happy-dom": "^15.11.6",
     "jsdom": "^22.0.0",
-    "vitest": "^1.0.0"
+    "vitest": "^2.0.0",
+    "react-is": "^18.0.0",
+    "@types/react-is": "^18.0.0"
   }
 }
