@@ -538,6 +538,16 @@ export const examples: Record<RemapperExampleKeys, RemapperExample> = {
     remapper: { not: [{ prop: 'number' }, 4] },
     result: true,
   },
+  and: {
+    input: { foo: true },
+    remapper: { and: [{ prop: 'foo' }, true] },
+    result: true,
+  },
+  or: {
+    input: { foo: true },
+    remapper: { or: [{ prop: 'foo' }, false] },
+    result: true,
+  },
   'null.strip': {
     input: null,
     remapper: {},

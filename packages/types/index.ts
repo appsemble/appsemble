@@ -431,6 +431,24 @@ export interface Remappers {
   not: Remapper[];
 
   /**
+   * Compare all computed remapper values against each other.
+   *
+   * Returns `true` if all entries are true, otherwise `false`.
+   *
+   * If only one remapper is passed, the remapper is returned.
+   */
+  and: Remapper[];
+
+  /**
+   * Compare all computed remapper values against each other.
+   *
+   * Returns `false` if all entries are false, otherwise `true`.
+   *
+   * If only one remapper is passed, the remapper is returned.
+   */
+  or: Remapper[];
+
+  /**
    * Get data stored at the current flow page step
    */
   step: string;
