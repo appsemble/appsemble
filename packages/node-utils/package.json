@@ -31,6 +31,8 @@
     "**/*.d.ts",
     "**/*.js",
     "**/*.cjs",
+    "!**/*.test.js",
+    "!**/*.test.d.ts",
     "!*.config.js"
   ],
   "scripts": {

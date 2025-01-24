@@ -35,6 +35,8 @@
     "**/*.d.ts",
     "**/*.js",
     "!*.config.js",
+    "!**/*.test.js",
+    "!**/*.test.d.ts",
     "templates"
   ],
   "scripts": {
