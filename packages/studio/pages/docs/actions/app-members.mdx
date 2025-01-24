@@ -41,15 +41,11 @@ security:
 
 <ActionRef action={actions['app.member.register']} />
 
-This action allows the user to register a new app member account using an email address and a
-password and does nothing if the user is already logged in. Supported fields for this action are
-`type`, `email`, `password`, `name`, `properties`, `login` and `picture`. Email and password are
-used for logging in, `name` is the full name of the app member, `login` is a boolean value
-representing whether to login the app member after registration (default value is true), picture is
-the profile picture of the app member and properties is used to denote any custom properties
-associated with the app member. All the values for properties are converted into strings. Here is an
-example of this action in use. The created app member account will assume the default role defined
-in the app's security definition or `Member` if a default role is not defined.
+The `properties` property is used to denote any custom properties associated with the app member.
+All the values for properties are converted into strings.
+
+Here is an example of this action in use. The created app member account will assume the default
+role defined in the app's security definition or `Member` if a default role is not defined.
 
 ```yaml validate blocks-snippet
 blocks:
@@ -91,13 +87,10 @@ blocks:
 
 <ActionRef action={actions['app.member.invite']} />
 
-This action allows the user to invite a new app member to the app by specifying their email and a
-role. The action does nothing if the user is not logged in. Supported fields for this action are
-`type`, `email` and `role`. The `role` must exist in the roles property of the app's security
-definition or in the predefined app roles in the system - `Member`, `MembersManager`,
-`GroupMembersManager`, `GroupsManager`, `ResourcesManager` and `Owner`. This action requires the
-`$member:invite` app permission. For more information check out
-[security](../app/security.md#permissions).
+The `role` property must exist in the roles property of the app's security definition or in the
+predefined app roles in the system - `Member`, `MembersManager`, `GroupMembersManager`,
+`GroupsManager`, `ResourcesManager` and `Owner`. This action requires the `$member:invite` app
+permission. For more information check out [security](../app/security.md#permissions).
 
 ```yaml validate blocks-snippet
 blocks:
@@ -127,10 +120,8 @@ blocks:
 
 <ActionRef action={actions['app.member.login']} />
 
-This action allows the user to login using an email address and a password and does nothing if the
-user is already logged in. Supported fields for this action are `type`, `email` and `password`.
-Email and password are similar to those used at the time of registering. Here is an example of this
-action in use.
+The `email` and `password` properties are similar to those used at the time of registering. Here is
+an example of this action in use.
 
 ```yaml validate blocks-snippet
 blocks:
@@ -164,8 +155,7 @@ blocks:
 
 <ActionRef action={actions['app.member.logout']} />
 
-This action allow the users to logout of the application. Supported field for this action is `type`,
-which is `app.member.logout` in this case. Here is an example of this action in use.
+Here is an example of this action in use.
 
 ```yaml validate blocks-snippet
 blocks:
@@ -184,10 +174,7 @@ blocks:
 
 <ActionRef action={actions['app.member.query']} />
 
-This action allows the user to fetch a list of app member accounts by their roles and does nothing
-if the user is not logged in. Supported fields for this action are `type` and `roles`. Type is
-`app.member.query` and roles is a remapper that represents the roles of app members that would be
-fetched. This action requires the `$member:query` app permission. For more information check out
+This action requires the `$member:query` app permission. For more information check out
 [security](../app/security.md#permissions). Below is an example of this action being used to fetch
 app members data.
 
@@ -207,11 +194,8 @@ blocks:
 
 <ActionRef action={actions['app.member.current.patch']} />
 
-This action allows the user to update their app member account and does nothing if the user isn’t
-logged in. Supported fields for this action are `type`, `name`, `properties` and `picture`. `name`
-is the full name of the user, `picture` is the profile picture of the user and `properties` is used
-to denote any custom properties associated with the user. All the values for properties are
-converted into strings. Here is an example of this action in use.
+All the values for the properties are converted into strings. Here is an example of this action in
+use.
 
 ```yaml validate blocks-snippet
 blocks:
@@ -236,10 +220,6 @@ blocks:
 
 <ActionRef action={actions['app.member.role.update']} />
 
-This action allows the user to update the role of another app member and does nothing if the user
-isn’t logged in. Supported fields for this action are `type` and `role`. The `role` must exist in
-the roles property of the app's security definition or in the predefined app roles in the system -
-`Member`, `MembersManager`, `GroupMembersManager`, `GroupsManager`, `ResourcesManager` and `Owner`.
 This action requires the `$member:role:update` app permission. For more information check out
 [security](../app/security.md#permissions). Here is an example of this action in use.
 
@@ -266,11 +246,9 @@ blocks:
 
 <ActionRef action={actions['app.member.properties.patch']} />
 
-This action allows the user to update the properties of another app member and does nothing if the
-user isn’t logged in. Supported fields for this action are `type` and `properties`. All the values
-for properties are converted into strings. This action requires the `$member:properties:patch` app
-permission. For more information check out [security](../app/security.md#permissions). Here is an
-example of this action in use.
+All the values for properties are converted into strings. This action requires the
+`$member:properties:patch` app permission. For more information check out
+[security](../app/security.md#permissions). Here is an example of this action in use.
 
 ```yaml validate blocks-snippet
 blocks:
@@ -297,11 +275,8 @@ blocks:
 
 <ActionRef action={actions['app.member.delete']} />
 
-This action allows the user to delete another app member account and does nothing if the user is not
-logged in. Supported fields for this action are `type` and `sub`. Type is `app.member.remove` and
-`sub` is a remapper representing the id of the account to be deleted. This action requires the
-`$member:delete` app permission. For more information check out
-[security](../app/security.md#permissions).Here is an example of this action in use.
+This action requires the `$member:delete` app permission. For more information check out
+[security](../app/security.md#permissions). Here is an example of this action in use.
 
 ```yaml validate blocks-snippet
 blocks:
