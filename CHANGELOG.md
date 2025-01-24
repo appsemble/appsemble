@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.30.14-rc.0](https://gitlab.com/appsemble/appsemble/-/releases/0.30.14-rc.0)] - 2025-01-24
+
+### Added
+
+- App: Allow setting resource id explicitly in `resource.get` and `resource.patch` actions.
+- Utils: Add AND and OR remappers.
+
+### Fixed
+
+- App: Switching groups should not navigate to Home page.
+- Server: Resource patch endpoint returning error for non-logged in users.
+
 ## \[[0.30.14-test.7](https://gitlab.com/appsemble/appsemble/-/releases/0.30.14-test.7)] - 2025-01-14
 
 ### Added

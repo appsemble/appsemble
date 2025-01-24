@@ -1,8 +1,8 @@
-# ![](https://gitlab.com/appsemble/appsemble/-/raw/0.30.14-test.7/config/assets/logo.svg) Appsemble Web Utilities
+# ![](https://gitlab.com/appsemble/appsemble/-/raw/0.30.14-rc.0/config/assets/logo.svg) Appsemble Web Utilities
 
 > Internal web based utility functions used across multiple Appsemble projects.
 
-[![GitLab CI](https://gitlab.com/appsemble/appsemble/badges/0.30.14-test.7/pipeline.svg)](https://gitlab.com/appsemble/appsemble/-/releases/0.30.14-test.7)
+[![GitLab CI](https://gitlab.com/appsemble/appsemble/badges/0.30.14-rc.0/pipeline.svg)](https://gitlab.com/appsemble/appsemble/-/releases/0.30.14-rc.0)
 [![Prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg)](https://prettier.io)
 
 ## Table of Contents
@@ -16,5 +16,5 @@ The functions in this repository depend on web specific APIs, such as the DOM.
 
 ## License
 
-[LGPL-3.0-only](https://gitlab.com/appsemble/appsemble/-/blob/0.30.14-test.7/LICENSE.md) ©
+[LGPL-3.0-only](https://gitlab.com/appsemble/appsemble/-/blob/0.30.14-rc.0/LICENSE.md) ©
 [Appsemble](https://appsemble.com)

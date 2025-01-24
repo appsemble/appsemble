@@ -1,6 +1,6 @@
 {
   "name": "@appsemble/types",
-  "version": "0.30.14-test.7",
+  "version": "0.30.14-rc.0",
   "description": "TypeScript definitions reused within Appsemble internally",
   "keywords": [
     "app",

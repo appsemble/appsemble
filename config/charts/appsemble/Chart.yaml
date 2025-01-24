@@ -1,7 +1,7 @@
 apiVersion: v2
 name: appsemble
-version: 0.30.14-test.7
-appVersion: 0.30.14-test.7
+version: 0.30.14-rc.0
+appVersion: 0.30.14-rc.0
 kubeVersion: '>=1.21.0'
 type: application
 description: The open source low-code app building platform
@@ -29,9 +29,14 @@ dependencies:
 annotations:
   artifacthub.io/changes: >
     - kind: added
-      description: "App: Add a PWA installation button and modal prompt to apps."
-    - kind: changed
-      description: "Server: Soft delete assets and resources."
+      description: "App: Allow setting resource id explicitly in resource.get and
+        resource.patch actions."
+    - kind: added
+      description: "Utils: Add AND and OR remappers."
+    - kind: fixed
+      description: "App: Switching groups should not navigate to Home page."
+    - kind: fixed
+      description: "Server: Resource patch endpoint returning error for non-logged in users."
   artifacthub.io/license: LGPL-3.0-only
   artifacthub.io/links: |
     - name: Appsemble Studio
