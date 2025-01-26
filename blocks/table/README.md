@@ -2,7 +2,7 @@ A block that can be used to display larger sets of data.
 
 ### Context fields
 
-The [context](https://appsemble.app/docs/remapper/data#context) of this block will contain: `index`
+The [context](https://appsemble.app/docs/remappers/data#context) of this block will contain: `index`
 for the index of the rows in the table as a whole, as well as `repeatedIndex` for any repeated row
 within the table. This is `0` by default.
 

@@ -36,7 +36,7 @@ bootstrap(({ events, parameters: { fields }, utils: { fa, formatMessage, remap }
       wrapper.append(
         ...fields.map(({ icon, label, value }) => {
           // The remap utility is a powerful tool to transform user data. A full reference is found
-          // on https://appsemble.app/docs/reference/remapper. However, for the block all that
+          // on https://appsemble.app/docs/remappers. However, for the block all that
           // matters is we can pass in a user defined remapper and a value, and get the value the
           // user wants to use.
           const remappedLabel = remap(label, data) as string;
