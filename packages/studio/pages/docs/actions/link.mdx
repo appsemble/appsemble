@@ -21,13 +21,10 @@ useful for navigation or redirecting. Supported link actions are the following.
 ## Actions
 
 ### link<Side name="link" />
+
 <ActionRef action={actions['link']} />
 
-This action is used to redirect the user to other pages or absolute URLs. Supported fields for this
-action are `type` and `to`. To is the name of the page to link to. Sub-pages can be referred to
-using arrays. If this matches with an absolute URL, link action will open this instead of matching
-it with a page or sub-page. Both fields are required. Here is how you can use this action in your
-app.
+Here is how you can use this action in your app.
 
 ```yaml validate blocks-snippet
 blocks:
@@ -42,11 +39,10 @@ blocks:
 ```
 
 ### link.back<Side name="link.back" />
+
 <ActionRef action={actions['link.back']} />
 
-This action is used to link to the previous page in the browser history. Supported field for this
-action is `type`, which is `link.back` in this case. The following is an example of this action
-being used in an app.
+The following is an example of this action being used in an app.
 
 ```yaml validate blocks-snippet
 blocks:
@@ -61,11 +57,10 @@ blocks:
 ```
 
 ### link.next<Side name="link.next" />
+
 <ActionRef action={actions['link.next']} />
 
-This action is used to link to the next page in the browser history. Supported field for this action
-is `type`, which is `link.next` in this case. The following is an example of this action being used
-in an app.
+The following is an example of this action being used in an app.
 
 ```yaml validate blocks-snippet
 blocks:
