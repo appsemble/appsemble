@@ -61,7 +61,6 @@ workflow:
     - apt-get update
     - apt-get install --yes git gnupg
     - gpg --import "$GPG_PRIVATE_KEY"
-    - npm run scripts -- release "$INCREMENT" --identifier "$IDENTIFIER"
     - |
       if [ -n "$IDENTIFIER" ]; then
         npm run scripts -- release "$INCREMENT" --identifier "$IDENTIFIER"
