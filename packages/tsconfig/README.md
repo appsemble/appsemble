@@ -1,9 +1,9 @@
-# ![](https://gitlab.com/appsemble/appsemble/-/raw/0.30.14-rc.0/config/assets/logo.svg) Appsemble TypeScript presets
+# ![](https://gitlab.com/appsemble/appsemble/-/raw/0.31.0/config/assets/logo.svg) Appsemble TypeScript presets
 
 > Reusable TypeScript presets recommended by Appsemble
 
 [![npm](https://img.shields.io/npm/v/@appsemble/sdk)](https://www.npmjs.com/package/@appsemble/sdk)
-[![GitLab CI](https://gitlab.com/appsemble/appsemble/badges/0.30.14-rc.0/pipeline.svg)](https://gitlab.com/appsemble/appsemble/-/releases/0.30.14-rc.0)
+[![GitLab CI](https://gitlab.com/appsemble/appsemble/badges/0.31.0/pipeline.svg)](https://gitlab.com/appsemble/appsemble/-/releases/0.31.0)
 [![Prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg)](https://prettier.io)
 
 ## Table of Contents
@@ -63,5 +63,5 @@ To use it, add the following to your `tsconfig.json` file.
 
 ## License
 
-[LGPL-3.0-only](https://gitlab.com/appsemble/appsemble/-/blob/0.30.14-rc.0/LICENSE.md) ©
+[LGPL-3.0-only](https://gitlab.com/appsemble/appsemble/-/blob/0.31.0/LICENSE.md) ©
 [Appsemble](https://appsemble.com)
