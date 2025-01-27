@@ -1,10 +1,11 @@
-import { version } from '@appsemble/node-utils';
+import { logger, version } from '@appsemble/node-utils';
 import { type EmailActionDefinition } from '@appsemble/types';
 import { type AxiosTestInstance, createInstance, request, setTestApp } from 'axios-test-instance';
 import Koa, { type ParameterizedContext } from 'koa';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { App, Organization } from '../../../models/index.js';
+import pkg from '../../../package.json' with { type: 'json' };
 import { setArgv } from '../../../utils/argv.js';
 import { createServer } from '../../../utils/createServer.js';
 import { createTestUser } from '../../../utils/test/authorization.js';
@@ -148,6 +149,30 @@ describe('proxyPost', () => {
       'user-agent': `AppsembleServer/${version}`,
     });
     expect(proxiedContext.path).toBe('/');
+  });
+
+  it('should log axios config', async () => {
+    vi.spyOn(logger, 'verbose').mockImplementation(() => logger);
+    const baseUrl = proxiedRequest.defaults.baseURL;
+    proxiedRequest.close();
+    await request.post('/api/apps/1/actions/pages.0.blocks.0.actions.post', {
+      foo: 'bar',
+    });
+    expect(logger.verbose).toHaveBeenCalledWith(`Forwarding request to ${baseUrl}`);
+    expect(logger.verbose).toHaveBeenCalledWith(
+      'Axios config headers: ',
+      expect.objectContaining({
+        'Content-Type': 'application/json',
+        'user-agent': `AppsembleServer/${pkg.version}`,
+      }),
+    );
+    expect(logger.verbose).toHaveBeenCalledWith('Axios config data: ', { foo: 'bar' });
+    expect(logger.verbose).toHaveBeenCalledWith('Response Status:', undefined);
+    expect(logger.verbose).toHaveBeenCalledWith('Response Status Text:', undefined);
+    expect(logger.verbose).toHaveBeenCalledWith('Response Headers:', undefined);
+    expect(logger.verbose).toHaveBeenCalledWith('Response Data:', undefined);
+    expect(logger.verbose).toHaveBeenCalledWith('Request URL:', baseUrl);
+    expect(logger.verbose).toHaveBeenCalledWith('Request Method:', 'post');
   });
 
   it('should proxy binary POST requests', async () => {
