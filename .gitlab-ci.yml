@@ -527,13 +527,6 @@ release test:
     INCREMENT: prerelease
     IDENTIFIER: test
 
-# Create a rc pre-release
-release rc:
-  extends: .release
-  variables:
-    INCREMENT: prerelease
-    IDENTIFIER: rc
-
 # Create a patch release
 release patch:
   extends: .release

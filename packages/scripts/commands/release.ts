@@ -36,7 +36,7 @@ export const description = 'Prepare files for a new release.';
 
 interface Args {
   increment: 'minor' | 'patch' | 'prerelease';
-  identifier: 'rc' | 'test';
+  identifier: 'test';
 }
 
 interface Changes {
@@ -265,9 +265,8 @@ export function builder(yargs: Argv): Argv<any> {
     })
     .option('identifier', {
       description: `The identifier to use for the pre-release version:
-        - test: Internal testing or testing with clients (e.g., test.3).
-        - rc: "Release Candidate", close to final, pending minor fixes (e.g., rc.0).`,
-      choices: ['test', 'rc'],
+        - test: Internal testing or testing with clients (e.g., test.3).`,
+      choices: ['test'],
     })
     .check((argv) => {
       if (argv.increment === 'prerelease' && !argv.identifier) {
