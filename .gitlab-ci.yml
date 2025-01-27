@@ -510,14 +510,9 @@ publish npm:
       aud: sigstore
   script:
     - npm config set //registry.npmjs.org/:_authToken "$NPM_TOKEN"
-    - |
-      if [ "$CI_SERVER_HOST" = "gitlab.com" ]; then
-        echo "Running on an official GitLab runner. Publishing with provenance.";
-        find . -exec npm publish --access public --provenance {} \;
-      else
-        echo "Not running on an official GitLab runner. Publishing without provenance.";
-        find . -exec npm publish --access public \;
-      fi
+    # Disable provenance for now
+    # - find . -exec npm publish --access public --provenance {} \;
+    - find . -exec npm publish --access public \;
 
 # Perform various post release actions.
 sentry release:
