@@ -39,12 +39,10 @@ miscellaneous supported actions.
 ## Actions
 
 ### analytics<Side name="analytics" />
+
 <ActionRef action={actions['analytics']} />
 
-This action sends a Google Analytics event and returns the input data. Supported fields for this
-action are `type`, `target` and `config`. Type is `analytics` in this case, target is the name of
-the analytics target event to send and config is a remapper whose result will be sent to Google
-Analytics as additional context. Below is an example of this action in use.
+Below is an example of this action in use.
 
 ```yaml validate blocks-snippet
 blocks:
@@ -60,12 +58,10 @@ blocks:
 ```
 
 ### condition<Side name="condition" />
+
 <ActionRef action={actions['condition']} />
 
-This action runs another action if a certain condition is met. Supported fields for this action are
-`type`, `if`, `then` and `else`. If is a remapper to determine the condition to check. If this
-yields a truthy value, the `then` action is called, otherwise the `else` action is called. Fields
-`type` and `if` are required. Here is how you can use this action in your app.
+Here is how you can use this action in your app.
 
 ```yaml validate blocks-snippet
 blocks:
@@ -95,6 +91,7 @@ blocks:
 ```
 
 ### controller<Side name="controller" />
+
 <ActionRef action={actions['controller']} />
 
 This action is used to specify a custom function from a JavaScript file to be used as the controller
@@ -129,12 +126,10 @@ blocks:
 ```
 
 ### download<Side name="download" />
+
 <ActionRef action={actions['download']} />
 
-This action is used to download data as a file. Supported fields for this action are `type` and
-`filename`. Both fields are required, type is `download` in this case whereas `filename` is the
-filename to save the file as. This must include a file extension. Here is an example of this action
-being used.
+Here is an example of this action being used.
 
 ```yaml validate blocks-snippet
 blocks:
@@ -159,16 +154,9 @@ blocks:
 ```
 
 ### dialog<Side name="dialog" />
+
 <ActionRef action={actions['dialog']} />
 
-This action opens a pop-up dialog that can display blocks temporarily. Dialogs can be closed by
-calling the `dialog.ok` or `dialog.error`. Users can still manually close dialogs, which should be
-supported by the app. Blocks with the layout type `float` (e.g. `action-button`) do not work in this
-action. Supported fields for this action are `type`, `title`, `closable`, `fullscreen` and `blocks`.
-Title is an optional title to set in the dialog header, closable is a boolean representing whether
-users are allowed to close the dialog by clicking outside of it or on the close button, fullscreen
-denotes whether the dialog should be displayed full screen as if it’s a new page, or as a pop-up,
-blocks is a list of blocks to display in the dialog. Fields `type` and `blocks` are required.
 Following is an example of how to use this action.
 
 ```yaml validate blocks-snippet
@@ -211,10 +199,10 @@ blocks:
 ```
 
 #### dialog.ok<Side name="dialog.ok" />
+
 <ActionRef action={actions['dialog.ok']} />
 
-This action closes an open dialog. Type for this action is `dialog.ok`. Here is an example of this
-action in use.
+Here is an example of this action in use.
 
 ```yaml validate blocks-snippet
 blocks:
@@ -240,11 +228,10 @@ blocks:
 ```
 
 #### dialog.error<Side name="dialog.error" />
+
 <ActionRef action={actions['dialog.error']} />
 
-This action also closes an open dialog but the dialog action that opened the dialog will be rejected
-with the data passed to this action. Type for this action is `dialog.error`. Here is an example of
-this action being used.
+Here is an example of this action being used.
 
 ```yaml validate blocks-snippet
 blocks:
@@ -272,13 +259,10 @@ blocks:
 ```
 
 ### each<Side name="each" />
+
 <ActionRef action={actions['each']} />
 
-This action is used to run an action for each entry in an array. The actions are run in parallel. If
-the input is not an array, the action will be applied to the input instead. Supported fields for
-this action are `type`, `serial` and `do`. Type is `each`, setting serial option runs the action in
-series instead of parallel and do is the action to be called for each item in the input array. Below
-is an example of this action in use.
+Below is an example of this action in use.
 
 ```yaml validate blocks-snippet
 blocks:
@@ -304,15 +288,10 @@ blocks:
 ```
 
 ### event<Side name="event" />
+
 <ActionRef action={actions['event']} />
 
-This action allows for other blocks to emit data upon triggering the action. This can be used to
-make blocks interact with each other, such as triggering the `data-loader` block to refresh itself
-by sending an event action that matches the name of what the block is listening to. This action
-supports `type`, `event` and `waitFor` fields. Fields `type` and `event` are required to execute
-this action. Event is the name of the event to emit. If waitFor field is specified, the action will
-wait for this event to have been emitted and responds with its data. Here is how you can use this
-action.
+Here is how you can use this action.
 
 ```yaml validate blocks-snippet
 blocks:
@@ -340,32 +319,10 @@ blocks:
 ```
 
 ### email<Side name="email" />
+
 <ActionRef action={actions['email']} />
 
-The email action can be used to send emails via the Appsemble server. If `to`, `cc`, and `bcc` all
-end up being empty, no emails will be sent but the action will still continue as normal. Supported
-fields for this action are `to`, `cc`, `bcc`, `from`, `subject`, `body` and `attachments`. Fields
-`type`, `subject` and `body` are required. To is the address the email should be sent to, can be
-either in the format of `test@example.com`, or `John Doe <test@example.com>`, From is the name of
-the sender of the email. Cc is the list of email addresses to send a carbon copy to. Uses the same
-format as `to`. Every email address in the CC is visible to all recipients, bcc is the list of email
-addresses to send a blind carbon copy to. Uses the same format as `to`. Email addresses in the BCC
-are hidden from other recipients, subject is the subject of the email, body is the body of the
-email. The content of the body is converted to HTML using the Markdown syntax. Attachment are the
-attachments to include in the email.
-
-The remapper must resolve to an object containing the following properties:
-
-- `target`: The asset ID or link to download contents from to add as an attachment. This is mutually
-  exclusive with `content`.
-- `content`: The raw content to include as the file content. This is mutually exclusive with
-  `target`.
-- `filename`: The filename to include the attachment as.
-- `accept` If the target is a URL, this will be set as the HTTP `Accept` header when downloading the
-  file.
-
-If the attachment is a string, it will be treated as the target. Following is an example of email
-action in use.
+Following is an example of email action in use.
 
 ```yaml validate blocks-snippet
 blocks:
@@ -399,12 +356,10 @@ blocks:
 ```
 
 ### log<Side name="log" />
+
 <ActionRef action={actions['log']} />
 
-This action is used to output the result of the action into the console, this is mostly useful for
-debugging during app development. This action supports `type` and `level` fields. Only required
-field is `type`. Level is the logging level on which to log and defaults to `info`. Available
-options for level are `info`, `error` and `warn`. Below is an example of this action in use.
+Below is an example of this action in use.
 
 ```yaml validate blocks-snippet
 blocks:
@@ -433,13 +388,10 @@ blocks:
 ```
 
 ### match<Side name="match" />
+
 <ActionRef action={actions['match']} />
 
-This action runs another action if one of the cases is true, only the first case that equals true is
-called. This action supports `type` and `match` fields. Both of the fields are required to use this
-action. Match is array of objects, each object has two required properties, `case` and `action`.
-Case is the case to be matched and action is the action to be executed when the case is thruthy. The
-following is how you can use this action in your app.
+The following is how you can use this action in your app.
 
 ```yaml validate blocks-snippet
 blocks:
@@ -471,17 +423,10 @@ blocks:
 ```
 
 ### message<Side name="message" />
+
 <ActionRef action={actions['message']} />
 
-This action is used to display a message to the user, this is useful in combination with action
-chaining to notify users they have performed a certain action. This action supports `type`, `body`,
-`color`, `layout`, `dismissable` and `timeout`. Body is a remapper representing the body of the
-message, color represents the Bulma color to apply to the message and its value can be either of
-`dark`, `primary`, `link`, `success`, `info`, `warning` or `danger`, layout is the position of the
-message on the screen, its value can be either of `top` or `bottom`. Dismissable is a boolean value
-indicating whether the user is able to dismiss the message manually and timeout is the time in
-milliseconds how long the message should be visible. Fields `type` and `body` are required. Below is
-an example of this action being used in an app.
+Below is an example of this action being used in an app.
 
 ```yaml validate blocks-snippet
 blocks:
@@ -507,12 +452,11 @@ blocks:
 ```
 
 ### noop<Side name="noop" />
+
 <ActionRef action={actions['noop']} />
 
-This action is used to do nothing when this action is triggered, this is the default action for
-block actions that are not required. The name of the action corresponds to no-operation. This action
-returns the data passed to it. This action only supports a single field `type`. The following is an
-example of this action in use.
+The name of this action corresponds to no-operation. This action returns the data passed to it. This
+action only supports a single field `type`. The following is an example of this action in use.
 
 ```yaml validate blocks-snippet
 blocks:
@@ -527,15 +471,10 @@ blocks:
 ```
 
 ### notify<Side name="notify" />
+
 <ActionRef action={actions['notify']} />
 
-This action is used to send notifications to one or all the users of an app. This action supports
-`type`, `to`, `title` and `body` fields. All the fields are required to make this action work. Title
-is a remapper that represents the title of the notification. Similarly, to is a remapper
-representing to whom the notification should be sent. Use `all` to send the notification to all app
-subscribed users. Or notify specific users by passing either a single user id or an array of user
-ids. Nothing is sent if the value is **not** a valid user id. Body is a remapper containing the body
-of the notifications. Below is how you can use this action in your app.
+Below is how you can use this action in your app.
 
 ```yaml validate blocks-snippet
 blocks:
@@ -553,6 +492,7 @@ blocks:
 ```
 
 ### request<Side name="request" />
+
 <ActionRef action={actions['request']} />
 
 This action performs an HTTP request. This can be used to call the Appsemble API or an external API
@@ -610,15 +550,10 @@ blocks:
 ```
 
 ### share<Side name="share" />
+
 <ActionRef action={actions['share']} />
 
-This action can be used to display a prompt that allows the user to share something with others,
-primarily via social media. Depending on whether the user’s browser supports a native share function
-it will either display a native dialog for sharing links, or display a more limited fallback in a
-dialog. This action supports `type`, `url`, `title` and `text` fields. Url is a remapper
-representing the url that is being shared. Similarly, title is a remapper that represents The title
-that should be shared and body is the main body that should be shared. Field `type` is the only
-required field. The following is an example of this action in use.
+The following is an example of this action in use.
 
 ```yaml validate blocks-snippet
 blocks:
@@ -636,12 +571,10 @@ blocks:
 ```
 
 ### static<Side name="static" />
+
 <ActionRef action={actions['static']} />
 
-This action returns static data defined in the action definition, this is useful for example for
-stubbing data. This action supports `type` and `value`. Both of the values are required to use this
-action. Value is the static value to return. The following is an example of this action being used
-in an app.
+The following is an example of this action being used in an app.
 
 ```yaml validate blocks-snippet
 blocks:
@@ -659,11 +592,10 @@ blocks:
 ```
 
 ### throw<Side name="throw" />
+
 <ActionRef action={actions['throw']} />
 
-This action throws a new exception based on the data that is passed through, this can be used to
-create a custom error that ends up in the error action handler. The only supported field for this
-action is `type`. The following is an example of how this action can be used:
+The following is an example of how this action can be used:
 
 ```yaml validate blocks-snippet
 blocks:
