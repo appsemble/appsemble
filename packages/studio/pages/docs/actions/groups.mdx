@@ -24,12 +24,13 @@ actions are as follow.
 ## Actions
 
 ### group.query<Side name="group.query" />
+
 <ActionRef action={actions['group.query']} />
 
 This action allows an app member with sufficient permissions to query groups within the app, in
-which the app member is a member of. Type is the only required value for using this action. This
-action requires the `$group:query` app permission. For more information check out
-[security](../app/security.md#permissions). Here is an example of how you can use this action.
+which the app member is a member of. This action requires the `$group:query` app permission. For
+more information check out [security](../app/security.md#permissions). Here is an example of how you
+can use this action.
 
 ```yaml validate blocks-snippet
 blocks:
@@ -45,16 +46,15 @@ blocks:
 ```
 
 ### group.member.invite<Side name="group.member.invite" />
+
 <ActionRef action={actions['group.member.invite']} />
 
-This action allows a user with sufficient permissions to invite app members to a group. Supported
-fields for this action are `type`, `id`, `email`, and `role`. `id` is the id of the group to which
-the user will be invited, `email` is the email of the user to be invited to join the group and
-`role` is the role as which the user is being invited. The `role` must exist in the roles property
-of the app's security definition or in the predefined app roles in the system - `Member`,
-`MembersManager`, `GroupMembersManager`, `GroupsManager`, `ResourcesManager` and `Owner`. This
-action requires the `$group:member:invite` app permission. For more information check out
-[security](../app/security.md#permissions).Here is an example of how you can use this action.
+This action allows a user with sufficient permissions to invite app members to a group. The `role`
+specified must exist in the roles property of the app's security definition or in the predefined app
+roles in the system - `Member`, `MembersManager`, `GroupMembersManager`, `GroupsManager`,
+`ResourcesManager` and `Owner`. This action requires the `$group:member:invite` app permission. For
+more information check out [security](../app/security.md#permissions).Here is an example of how you
+can use this action.
 
 ```yaml validate blocks-snippet
 blocks:
@@ -79,12 +79,13 @@ blocks:
 ```
 
 ### group.member.query<Side name="group.member.query" />
+
 <ActionRef action={actions['group.member.query']} />
 
 This action allows an app member with sufficient permissions to query group members within a group,
-in which the app member is a member of. `id` is the id of the group of which to query the members.
-This action requires the `$group:member:query` app permission. For more information check out
-[security](../app/security.md#permissions).Here is an example of how you can use this action.
+in which the app member is a member of. This action requires the `$group:member:query` app
+permission. For more information check out [security](../app/security.md#permissions).Here is an
+example of how you can use this action.
 
 ```yaml validate blocks-snippet
 blocks:
@@ -101,12 +102,13 @@ blocks:
 ```
 
 ### group.member.delete<Side name="group.member.delete" />
+
 <ActionRef action={actions['group.member.delete']} />
 
 This action allows an app member with sufficient permissions to delete a group member from a group,
-in which the app member is a member of. `id` is the id of the group member to delete. This action
-requires the `$group:member:delete` app permission. For more information check out
-[security](../app/security.md#permissions). Here is an example of how you can use this action.
+in which the app member is a member of. This action requires the `$group:member:delete` app
+permission. For more information check out [security](../app/security.md#permissions). Here is an
+example of how you can use this action.
 
 ```yaml validate blocks-snippet
 blocks:
@@ -123,12 +125,12 @@ blocks:
 ```
 
 ### group.member.role.update<Side name="group.member.role.update" />
+
 <ActionRef action={actions['group.member.role.update']} />
 
 This action allows an app member with sufficient permissions to update the role of a member in a
-group, in which the app member is a member of. `id` is the id of the group member whose role will be
-updated, `role` is the new role of the group member. The `role` must exist in the roles property of
-the app's security definition or in the predefined app roles in the system - `Member`,
+group, in which the app member is a member of. The `role` specified must exist in the roles property
+of the app's security definition or in the predefined app roles in the system - `Member`,
 `MembersManager`, `GroupMembersManager`, `GroupsManager`, `ResourcesManager` and `Owner`. This
 action requires the `$group:member:role:update` app permission. For more information check out
 [security](../app/security.md#permissions).Here is an example of how you can use this action.

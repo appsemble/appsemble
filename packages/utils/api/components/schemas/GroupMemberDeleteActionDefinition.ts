@@ -8,7 +8,7 @@ export const GroupMemberDeleteActionDefinition = extendJSONSchema(BaseActionDefi
   properties: {
     type: {
       enum: ['group.member.delete'],
-      description: 'Allow a user to join a group.',
+      description: 'Delete a group member from the group in which the invoking user is a member',
     },
     id: {
       $ref: '#/components/schemas/RemapperDefinition',
