@@ -267,11 +267,17 @@ export function builder(yargs: Argv): Argv<any> {
       description: `The identifier to use for the pre-release version:
         - test: Internal testing or testing with clients (e.g., test.3).`,
       choices: ['test'],
+      default: undefined,
     })
     .check((argv) => {
       if (argv.increment === 'prerelease' && !argv.identifier) {
         throw new Error(
           'The "identifier" must be specified when incrementing the pre-release version.',
+        );
+      }
+      if (argv.increment !== 'prerelease' && argv.identifier) {
+        throw new Error(
+          'The "identifier" option can only be used with the "prerelease" increment.',
         );
       }
       return true;
