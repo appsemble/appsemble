@@ -8,7 +8,7 @@ export const FlowFinishActionDefinition = extendJSONSchema(BaseActionDefinition,
   properties: {
     type: {
       enum: ['flow.finish'],
-      description: `On [flow pages](#flow-page-definition-sub-pages), triggers the
+      description: `On [flow pages](../guides/page-types#flow-page), triggers the
 [\`onFlowFinish\`](#flow-page-actions-definition-on-flow-finish) action on the page.
 `,
     },

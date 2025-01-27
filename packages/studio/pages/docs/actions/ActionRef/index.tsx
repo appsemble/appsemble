@@ -56,7 +56,7 @@ export function ActionRef({ action, excludeBase = true }: ActionRefProps): React
     : schema;
 
   return (
-    <main lang={defaultLocale}>
+    <main className="mb-4" lang={defaultLocale}>
       <Schema anchors idPrefix="app" renderRef={Ref} schema={entry} />
     </main>
   );
