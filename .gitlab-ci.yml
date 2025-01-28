@@ -670,6 +670,7 @@ stop review:
     - helm delete "review-$CI_MERGE_REQUEST_IID"
     - kubectl delete pvc --selector "app.kubernetes.io/instance=review-$CI_MERGE_REQUEST_IID"
     - kubectl delete namespace "companion-containers-review-$CI_MERGE_REQUEST_IID" || true
+    - kubectl get secrets --no-headers -o custom-columns=:metadata.name | grep "^review-$CI_MERGE_REQUEST_IID" | xargs -I{} kubectl delete secret {} || true
 
 # Deploy the Docker image for main to the staging environment.
 staging:
