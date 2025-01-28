@@ -56,7 +56,7 @@ export function Title({
     >
       {id && anchor ? (
         <a className={styles.anchor} href={`#${id}`}>
-          <span className={`fas fa-link fa-xs has-text-grey-lighter mr-${size}`} />
+          <span className="fas fa-link fa-xs has-text-grey-lighter" />
         </a>
       ) : null}
       {children}
