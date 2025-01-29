@@ -534,8 +534,7 @@ export interface Remappers {
   /**
    * Get the current array.map’s index or length.
    *
-   * Returns length of the input array if array.map’s context isn’t set or nothing if the input is
-   * not an array.
+   * Returns nothing if array.map’s context isn’t set.
    */
   array: 'index' | 'item' | 'length';
 
@@ -642,6 +641,12 @@ export interface Remappers {
    * If the input is not an array, the input is returned as-is.
    */
   'random.string': { choice: string; length: number };
+
+  /**
+   * This remapper returns the length of the input array or a string, this remapper
+   * doesn't require array to be in the context unlike `{ array: length }` remapper.
+   */
+  length: null;
 
   /**
    * Get the input data as it was initially passed to the remap function.

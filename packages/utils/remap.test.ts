@@ -1084,7 +1084,7 @@ describe('array.flatten', () => {
 
 describe('array', () => {
   runTests({
-    'return undefined if not in the context of array.map or if the input is not an array': {
+    'return undefined if not in the context of array.map': {
       input: {},
       mappers: [
         {
@@ -1092,7 +1092,7 @@ describe('array', () => {
             index: [{ array: 'index' }],
             length: [{ array: 'length' }],
             item: [{ array: 'item' }],
-          },
+          } as never,
         },
       ],
       expected: { index: undefined, length: undefined, item: undefined },
@@ -1109,7 +1109,7 @@ describe('array', () => {
                 index: [{ array: 'index' }],
                 length: [{ array: 'length' }],
                 item: [{ array: 'item' }],
-              },
+              } as never,
             },
           ],
         },
@@ -1119,19 +1119,6 @@ describe('array', () => {
         { value: 'b', index: 1, length: 3, item: { value: 'b' } },
         { value: 'c', index: 2, length: 3, item: { value: 'c' } },
       ],
-    },
-    'return the length of the input array if not in the context': {
-      input: [1, 2, 3, 4],
-      mappers: [
-        {
-          'object.from': {
-            index: [{ array: 'index' }],
-            length: [{ array: 'length' }],
-            item: [{ array: 'item' }],
-          },
-        },
-      ],
-      expected: { index: undefined, length: 4, item: undefined },
     },
   });
 });
@@ -1150,17 +1137,17 @@ describe('array.filter', () => {
     },
     'return a new array containing a single value when the array does not include objects': {
       input: ['Craig', 'Joey', 'Stuart'],
-      mappers: [{ 'array.filter': { equals: [{ array: 'item' }, 'Craig'] } }],
+      mappers: [{ 'array.filter': { equals: [{ array: 'item' }, 'Craig'] } as never }],
       expected: ['Craig'],
     },
     'return an empty array when condition doesn’t match anything': {
       input: ['Craig', 'Joey', 'Stuart'],
-      mappers: [{ 'array.filter': { equals: [{ array: 'item' }, 'Peter'] } }],
+      mappers: [{ 'array.filter': { equals: [{ array: 'item' }, 'Peter'] } as never }],
       expected: [],
     },
     'it should filter arrays with mixed content type(string)': {
       input: ['Craig', 5, 'Joey', 7, 'Stuart'],
-      mappers: [{ 'array.filter': { equals: [{ array: 'item' }, 'Stuart'] } }],
+      mappers: [{ 'array.filter': { equals: [{ array: 'item' }, 'Stuart'] } as never }],
       expected: ['Stuart'],
     },
     'it should filter arrays with mixed content type based on type of the item': {
@@ -1281,7 +1268,7 @@ describe('prop', () => {
     },
     'handle a single remapper': {
       input: { en: 'English', nl: 'Dutch' },
-      mappers: [{ prop: { app: 'locale' } }],
+      mappers: [{ prop: { app: 'locale' } as never }],
       expected: 'English',
     },
     'handle an array of remappers': {
@@ -1354,7 +1341,7 @@ describe('random.integer', () => {
   runTests({
     'return the input if the input is not an array': {
       input: { input: undefined },
-      mappers: [{ 'random.integer': [5, 10] }],
+      mappers: [{ 'random.integer': [5, 10] as never }],
       expected: 7,
     },
   });
@@ -1368,7 +1355,7 @@ describe('random.float', () => {
   runTests({
     'return the input if the input is not an array': {
       input: { input: undefined },
-      mappers: [{ 'random.float': [5, 10] }],
+      mappers: [{ 'random.float': [5, 10] as never }],
       expected: 7.5,
     },
   });
@@ -1397,6 +1384,26 @@ describe('random.string', () => {
       input: { input: undefined },
       mappers: [{ 'random.string': { choice: 'abcdefghijklmnopqrstuvwzyx', length: 12 } }],
       expected: 'aknpsufhknszp',
+    },
+  });
+});
+
+describe('length', () => {
+  runTests({
+    'return the length of input array': {
+      input: [1, 2, 3, 4, 5],
+      mappers: [{ length: null }],
+      expected: 5,
+    },
+    'return undefined if the input is not an array or a string': {
+      input: { hello: 'world' },
+      mappers: [{ length: null }],
+      expected: undefined,
+    },
+    'return the length of input string': {
+      input: 'foo',
+      mappers: [{ length: null }],
+      expected: 3,
     },
   });
 });

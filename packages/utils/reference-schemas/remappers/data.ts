@@ -242,6 +242,14 @@ The result of the final page’s log would then be:
 ${schemaExample('prop')}
 `,
   },
+  length: {
+    enum: [null],
+    description: `
+Returns the length of an input array or an input string, unlike { array: length } remapper this remapper does not require
+an array to be in the context. This can be very useful when working with nested arrays.
+${schemaExample('length')}
+`,
+  },
   root: {
     enum: [null],
     description: `Gets the input data as it was initially passed to the remapper function.

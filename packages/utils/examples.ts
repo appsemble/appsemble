@@ -94,6 +94,11 @@ export const examples: Record<RemapperExampleKeys, RemapperExample> = {
       },
     ],
   },
+  length: {
+    input: 'string',
+    remapper: { length: null },
+    result: 6,
+  },
   'array.append': {
     input: [
       {
