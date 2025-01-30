@@ -165,6 +165,10 @@ describe('proxyPost', () => {
         data: { foo: 'bar' },
         method: 'post',
         params: undefined,
+        headers: expect.objectContaining({
+          'Content-Type': 'application/json',
+          'user-agent': `AppsembleServer/${pkg.version}`,
+        }),
       }),
     );
     expect(logger.verbose).toHaveBeenCalledWith('Response:');
