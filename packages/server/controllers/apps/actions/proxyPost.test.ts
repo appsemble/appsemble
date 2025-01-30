@@ -159,20 +159,16 @@ describe('proxyPost', () => {
       foo: 'bar',
     });
     expect(logger.verbose).toHaveBeenCalledWith(`Forwarding request to ${baseUrl}`);
+    expect(logger.verbose).toHaveBeenCalledWith('Axios Config:');
     expect(logger.verbose).toHaveBeenCalledWith(
-      'Axios config headers: ',
       expect.objectContaining({
-        'Content-Type': 'application/json',
-        'user-agent': `AppsembleServer/${pkg.version}`,
+        data: { foo: 'bar' },
+        method: 'post',
+        params: undefined,
       }),
     );
-    expect(logger.verbose).toHaveBeenCalledWith('Axios config data: ', { foo: 'bar' });
-    expect(logger.verbose).toHaveBeenCalledWith('Response Status:', undefined);
-    expect(logger.verbose).toHaveBeenCalledWith('Response Status Text:', undefined);
-    expect(logger.verbose).toHaveBeenCalledWith('Response Headers:', undefined);
-    expect(logger.verbose).toHaveBeenCalledWith('Response Data:', undefined);
-    expect(logger.verbose).toHaveBeenCalledWith('Request URL:', baseUrl);
-    expect(logger.verbose).toHaveBeenCalledWith('Request Method:', 'post');
+    expect(logger.verbose).toHaveBeenCalledWith('Response:');
+    expect(logger.verbose).toHaveBeenCalledWith(undefined);
   });
 
   it('should proxy binary POST requests', async () => {
