@@ -9,6 +9,7 @@ export function toOData(fields: Field[], values: FilterValues): string {
         return null;
       }
 
+      const modifiedValue = (value as string).replaceAll("'", "''").replaceAll('\\', '\\\\');
       switch (field.type) {
         case 'boolean':
           return `${field.name} eq '${value}'`;
@@ -41,9 +42,9 @@ export function toOData(fields: Field[], values: FilterValues): string {
         }
         case 'string':
           if (field.exact) {
-            return `${field.name} eq '${value}'`;
+            return `${field.name} eq '${modifiedValue}'`;
           }
-          return `contains(tolower(${field.name}),'${(value as string).toLowerCase()}')`;
+          return `contains(tolower(${field.name}),'${(modifiedValue as string).toLowerCase()}')`;
         default:
           return null;
       }
