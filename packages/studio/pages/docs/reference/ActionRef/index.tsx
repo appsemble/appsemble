@@ -44,7 +44,7 @@ function Ref({ isArray, jsonRef }: RenderRefProps): ReactNode {
         'ActionDefinition'
       ) : (
         <Link
-          to={name === 'RemapperDefinition' ? '../../remapper' : `./app#${camelToHyphen(name)}`}
+          to={name === 'RemapperDefinition' ? '../../remappers' : `./app#${camelToHyphen(name)}`}
         >
           {name}
         </Link>

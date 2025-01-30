@@ -146,7 +146,7 @@ export function Schema({
       {mergedSchema.format ? (
         <SchemaDescriptor label={<FormattedMessage {...messages.format} />}>
           {mergedSchema.format === 'remapper' ? (
-            <Link rel="noopener noreferrer" target="_blank" to="docs/remapper">
+            <Link rel="noopener noreferrer" target="_blank" to="docs/remappers">
               Remapper
             </Link>
           ) : (
