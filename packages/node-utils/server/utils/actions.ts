@@ -219,8 +219,8 @@ async function handleRequestProxy(
   }
 
   logger.verbose(`Forwarding request to ${axios.getUri(axiosConfig)}`);
-  logger.verbose('Axios config headers: ', axiosConfig.headers);
-  logger.verbose('Axios config data: ', axiosConfig.data);
+  logger.verbose('Axios Config:');
+  logger.verbose(axiosConfig);
   try {
     response = await axios(axiosConfig);
     logger.verbose(response);
@@ -245,12 +245,8 @@ async function handleRequestProxy(
       }
     } else {
       logger.error(err);
-      logger.verbose('Response Status:', response?.status);
-      logger.verbose('Response Status Text:', response?.statusText);
-      logger.verbose('Response Headers:', response?.headers);
-      logger.verbose('Response Data:', response?.data);
-      logger.verbose('Request URL:', axiosConfig.url);
-      logger.verbose('Request Method:', axiosConfig.method);
+      logger.verbose('Response:');
+      logger.verbose(response);
 
       throwKoaError(ctx, 502, 'Bad Gateway');
     }
