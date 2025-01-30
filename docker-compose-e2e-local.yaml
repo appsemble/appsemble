@@ -99,7 +99,7 @@ services:
         cp -r /app-ro/packages/studio/pages/docs /app/packages/studio/pages && \
 
         cp /app-ro/LICENSE.md /app && \
-        cp /app-ro/.postcssrc.yaml /app && \
+        cp /app-ro/.postcssrc.json /app && \
         cp /app-ro/tsconfig.json /app && \
         cp /app-ro/package.json /app && \
         cp /app-ro/package-lock.json /app && \
