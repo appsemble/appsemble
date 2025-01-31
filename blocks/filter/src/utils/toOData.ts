@@ -9,7 +9,11 @@ export function toOData(fields: Field[], values: FilterValues): string {
         return null;
       }
 
-      const modifiedValue = (value as string).replaceAll("'", "''").replaceAll('\\', '\\\\');
+      const modifiedValue =
+        // See https://docs.oasis-open.org/odata/odata/v4.01/cs01/part2-url-conventions/odata-v4.01-cs01-part2-url-conventions.html#sec_URLComponents
+        typeof value === 'string'
+          ? value.replaceAll("'", "''").replaceAll('\\', '\\\\')
+          : undefined;
       switch (field.type) {
         case 'boolean':
           return `${field.name} eq '${value}'`;
