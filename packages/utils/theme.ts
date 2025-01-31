@@ -34,5 +34,5 @@ export function createThemeURL(theme: Theme): string {
   const params = new URLSearchParams({ ...rest, fontFamily: font.family, fontSource: font.source });
   // Sort for cacheability.
   params.sort();
-  return `/bulma/0.9.4/bulma.min.css?${params}`;
+  return `/bulma/0.9.3/bulma.min.css?${params}`;
 }
