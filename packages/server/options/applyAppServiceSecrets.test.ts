@@ -521,6 +521,7 @@ describe('applyAppServiceSecrets', () => {
         '-----BEGIN PRIVATE KEY-----\nTEST\n-----END PRIVATE KEY-----',
         argv.aesSecret,
       ),
+      ca: '-----BEGIN CERTIFICATE-----\nTEST\n-----END CERTIFICATE-----\n-----BEGIN CERTIFICATE-----\nTEST\n-----END CERTIFICATE-----',
       AppId: app.id,
     });
 
@@ -543,6 +544,10 @@ describe('applyAppServiceSecrets', () => {
     expect(outgoingRequestConfig.httpsAgent).toHaveProperty(
       ['options', 'key'],
       '-----BEGIN PRIVATE KEY-----\nTEST\n-----END PRIVATE KEY-----',
+    );
+    expect(outgoingRequestConfig.httpsAgent).toHaveProperty(
+      ['options', 'ca'],
+      '-----BEGIN CERTIFICATE-----\nTEST\n-----END CERTIFICATE-----\n-----BEGIN CERTIFICATE-----\nTEST\n-----END CERTIFICATE-----',
     );
     expect(outgoingRequestConfig.params).toBeUndefined();
 
