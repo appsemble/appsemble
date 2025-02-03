@@ -45,7 +45,7 @@
     "css-loader": "^6.0.0",
     "css-minimizer-webpack-plugin": "^5.0.0",
     "estree-util-value-to-estree": "^3.0.0",
-    "hast-util-to-text": "4.0.0",
+    "hast-util-to-text": "4.0.2",
     "html-webpack-plugin": "^5.0.0",
     "mdast-util-mdx": "^3.0.0",
     "mini-css-extract-plugin": "^2.0.0",
