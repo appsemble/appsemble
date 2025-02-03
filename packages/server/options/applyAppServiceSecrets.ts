@@ -67,6 +67,7 @@ export async function applyAppServiceSecrets({
         newAxiosConfig.httpsAgent = new https.Agent({
           cert: serviceSecret.identifier,
           key: decryptedSecret,
+          ca: serviceSecret.ca,
         });
         break;
       case 'client-credentials':
