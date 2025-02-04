@@ -6,7 +6,7 @@ import { usePWAInstall } from 'react-use-pwa-install';
 
 import styles from './index.module.css';
 import { messages } from './messages.js';
-import { sentryDsn, showDemoLogin } from '../../utils/settings.js';
+import { demoMode, sentryDsn, showDemoLogin } from '../../utils/settings.js';
 import { useAppDefinition } from '../AppDefinitionProvider/index.js';
 import { useAppMember } from '../AppMemberProvider/index.js';
 import { DemoLogin } from '../DemoLogin/index.js';
@@ -52,6 +52,9 @@ export function ProfileDropdown(): ReactNode {
 
   return (
     <>
+      {appMemberInfo?.name && !demoMode ? (
+        <span className="m-1 is-size-6 is-align-content-center">{appMemberInfo.name}</span>
+      ) : null}
       <NavbarDropdown
         className={`is-right ${styles.dropdown}`}
         label={
