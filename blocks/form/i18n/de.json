@@ -10,5 +10,6 @@
   "selectionNoOptions": "Keine weiteren Optionen verfügbar",
   "selectionOptionsError": "Es gab einen Fehler beim Laden der Optionen",
   "submitError": "Beim Senden dieses Formulars ist ein Problem aufgetreten",
-  "submitLabel": "Übermitteln"
+  "submitLabel": "Übermitteln",
+  "search": ""
 }

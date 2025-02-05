@@ -792,6 +792,11 @@ interface AbstractEnumField extends AbstractField, InlineField {
   defaultValue?: JsonValue;
 
   /**
+   * The filter applied to the options
+   */
+  filter?: boolean;
+
+  /**
    * The requirements that are used to validate the field with.
    *
    * These are evaluated in the order they are defined in.
@@ -1409,6 +1414,7 @@ declare module '@appsemble/sdk' {
     formRequirementError: never;
     invalidLabel: never;
     previousLabel: never;
+    search: never;
     selectionNoOptions: never;
     selectionOptionsError: never;
     fixErrors: never;

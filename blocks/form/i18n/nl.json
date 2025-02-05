@@ -10,5 +10,6 @@
   "selectionNoOptions": "Geen beschikbare opties meer",
   "selectionOptionsError": "Er is een fout opgetreden bij het laden van de opties",
   "submitError": "Er is iets misgegaan bij het versturen van dit formulier",
-  "submitLabel": "Versturen"
+  "submitLabel": "Versturen",
+  "search": "Zoeken"
 }

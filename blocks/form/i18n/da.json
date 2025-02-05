@@ -10,5 +10,6 @@
   "selectionNoOptions": "Ikke flere tilgængelige muligheder",
   "selectionOptionsError": "Der opstod en fejl ved indlæsning af indstillingerne",
   "submitError": "Der opstod et problem med at indsende denne formular",
-  "submitLabel": "Indsend"
+  "submitLabel": "Indsend",
+  "search": "Suchen"
 }

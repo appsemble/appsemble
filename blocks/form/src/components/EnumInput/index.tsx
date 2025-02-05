@@ -1,8 +1,16 @@
 import { useBlock } from '@appsemble/preact';
-import { Option, SelectField } from '@appsemble/preact-components';
+import {
+  Button,
+  InputField,
+  Option,
+  SelectField,
+  useClickOutside,
+  useToggle,
+} from '@appsemble/preact-components';
 import classNames from 'classnames';
 import { type VNode } from 'preact';
-import { useEffect, useState } from 'preact/hooks';
+import { type ChangeEvent } from 'preact/compat';
+import { useCallback, useEffect, useRef, useState } from 'preact/hooks';
 
 import { type Choice, type EnumField, type InputProps } from '../../../block.js';
 import { getValueByNameSequence } from '../../utils/getNested.js';
@@ -35,11 +43,23 @@ export function EnumInput({
         : field.enum,
   );
   const [error, setError] = useState<string>(null);
+  const [filter, setFilter] = useState<string>('');
+  const [originalOptions, setOriginalOptions] = useState<Choice[]>(options);
+  const [inputValue, setInputValue] = useState<string>('');
+  const ref = useRef<HTMLDivElement>();
+  const { disable, enabled, toggle } = useToggle();
 
   const { icon, inline, label, onSelect, placeholder, tag } = field;
   const value = getValueByNameSequence(name, formValues);
 
   const required = isRequired(field, utils, formValues);
+
+  const applyFilter = useCallback((): void => {
+    const filteredOptions = originalOptions.filter((choice) =>
+      String(choice.value).toLowerCase().includes(filter.toLowerCase()),
+    );
+    setOptions(filteredOptions);
+  }, [filter, originalOptions]);
 
   useEffect(() => {
     if (!loading && value !== undefined && !options.some((option) => option.value === value)) {
@@ -50,16 +70,38 @@ export function EnumInput({
 
   useEffect(() => {
     if ('enum' in field) {
+      if ('filter' in field) {
+        if (field.filter) {
+          applyFilter();
+        } else {
+          return;
+        }
+      }
       return;
     }
 
     if ('remapper' in field) {
       setOptions(utils.remap(field.remapper, { formValues, fieldsetEntryValues }) as Choice[]);
+      if ('filter' in field) {
+        if (field.filter) {
+          applyFilter();
+        } else {
+          return;
+        }
+      }
       return;
     }
 
     const handleOptions = (result: Choice[]): void => {
       setOptions(result);
+      setOriginalOptions(result);
+      if ('filter' in field) {
+        if (field.filter) {
+          applyFilter();
+        } else {
+          return;
+        }
+      }
       setLoading(false);
     };
 
@@ -83,42 +125,131 @@ export function EnumInput({
       events.on[field.event](eventHandler);
       return () => events.off[field.event](eventHandler);
     }
-  }, [actions, events, field, fieldsetEntryValues, formValues, utils]);
+  }, [
+    actions,
+    applyFilter,
+    events,
+    field,
+    fieldsetEntryValues,
+    filter,
+    formValues,
+    options,
+    originalOptions,
+    utils,
+  ]);
 
-  const handleChange = (n: Event | string, v?: string): void => {
-    if (onSelect) {
-      actions[onSelect]({ value: v });
-    }
+  const filterChange = useCallback((e: ChangeEvent<HTMLInputElement>, input: string): void => {
+    setInputValue(input);
+    setFilter(input);
+  }, []);
 
-    onChange(n, v);
-  };
+  const handleChange = useCallback(
+    (n: Event | string, v?: string) => {
+      if (onSelect) {
+        actions[onSelect]({ value: v });
+      }
+
+      onChange(n, v);
+    },
+    [actions, onChange, onSelect],
+  );
+
+  const onKeyDown = useCallback(
+    (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        disable();
+      }
+    },
+    [disable],
+  );
+
+  const handleSelect = useCallback(
+    (choice: Choice) => {
+      setInputValue(choice.value as string);
+      handleChange(name, choice.value as string);
+      disable();
+    },
+    [disable, handleChange, name],
+  );
+
+  useClickOutside(ref, disable);
 
   return (
-    <SelectField
-      className={classNames('appsemble-enum', className)}
-      disabled={disabled || loading || options.length === 0}
-      error={dirty ? error : null}
-      errorLinkRef={errorLinkRef}
-      help={utils.remap(field.help, value) as string}
-      icon={icon}
-      inline={inline}
-      label={(utils.remap(label, value) as string) ?? name}
-      loading={loading}
-      name={name}
-      onChange={handleChange}
-      optionalLabel={utils.formatMessage('optionalLabel')}
-      placeholder={utils.remap(placeholder, {}) as string}
-      readOnly={readOnly}
-      required={required}
-      tag={utils.remap(tag, value) as string}
-      value={value}
-    >
-      {loading ||
-        options.map((choice) => (
-          <Option disabled={choice.disabled} key={choice.value} value={choice.value}>
-            {(utils.remap(choice.label, value) as string) ?? (choice.value as string)}
-          </Option>
-        ))}
-    </SelectField>
+    <div>
+      {field.filter ? (
+        <div
+          className={classNames('appsemble-enum dropdown is-block', {
+            'is-active': enabled,
+          })}
+          ref={ref}
+        >
+          <InputField
+            autocomplete="off"
+            className={classNames('field dropdown-trigger', className)}
+            disabled={disabled || loading || originalOptions.length === 0}
+            errorLinkRef={errorLinkRef}
+            help={utils.remap(field.help, value) as string}
+            icon={icon}
+            label={(utils.remap(label, value) as string) ?? name}
+            loading={loading}
+            name={name}
+            onChange={filterChange}
+            onClick={toggle}
+            onKeyDown={onKeyDown}
+            placeholder={utils.remap(placeholder, {}) as string}
+            readOnly={readOnly}
+            required={required}
+            value={inputValue}
+          />
+          <div
+            className="dropdown-menu"
+            id="dropdown-menu"
+            onClick={toggle}
+            onKeyDown={onKeyDown}
+            role="menu"
+            tabIndex={0}
+          >
+            <div className="dropdown-content">
+              {options.map((choice) => (
+                <Button
+                  className="dropdown-item"
+                  disabled={choice.disabled}
+                  key={choice.value}
+                  onClick={() => handleSelect(choice)}
+                >
+                  {(utils.remap(choice.label, value) as string) ?? (choice.value as string)}
+                </Button>
+              ))}
+            </div>
+          </div>
+        </div>
+      ) : (
+        <SelectField
+          className={classNames('appsemble-enum', className)}
+          disabled={disabled || loading || options.length === 0}
+          error={dirty ? error : null}
+          errorLinkRef={errorLinkRef}
+          help={utils.remap(field.help, value) as string}
+          icon={icon}
+          inline={inline}
+          label={(utils.remap(label, value) as string) ?? name}
+          loading={loading}
+          name={name}
+          onChange={handleChange}
+          optionalLabel={utils.formatMessage('optionalLabel')}
+          placeholder={utils.remap(placeholder, {}) as string}
+          readOnly={readOnly}
+          required={required}
+          tag={utils.remap(tag, value) as string}
+          value={value}
+        >
+          {options.map((choice) => (
+            <Option disabled={choice.disabled} key={choice.value} value={choice.value}>
+              {(utils.remap(choice.label, value) as string) ?? (choice.value as string)}
+            </Option>
+          ))}
+        </SelectField>
+      )}
+    </div>
   );
 }
