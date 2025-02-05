@@ -6,6 +6,7 @@ import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vites
 
 import {
   App,
+  AppMember,
   BlockVersion,
   Organization,
   OrganizationMember,
@@ -1203,6 +1204,55 @@ describe('patchApp', () => {
 
       body { color: blue; }
     `);
+  });
+
+  it("should create a new app member with role `cron` if doesn't exist already", async () => {
+    const app = await App.create(
+      {
+        path: 'bar',
+        definition: {
+          name: 'Test App',
+          defaultPage: 'Test Page',
+          cron: { testCron: { schedule: '*/5 * * * *', action: { type: 'noop' } } },
+        },
+        vapidPublicKey: 'a',
+        vapidPrivateKey: 'b',
+        OrganizationId: organization.id,
+      },
+      { raw: true },
+    );
+    authorizeStudio();
+    const member = await AppMember.findOne({ where: { AppId: app.id, role: 'cron' } });
+    expect(member).toBeNull();
+    const response = await request.patch(
+      `/api/apps/${app.id}`,
+      createFormData({
+        yaml: stripIndent(`
+          name: 'Test App'
+          defaultPage: 'Test Page'
+          security:
+            cron:
+              permissions: []
+          pages:
+            - name: Test Page
+              blocks:
+                - type: 'test'
+                  version: 0.0.0
+          cron:
+            testCron:
+              schedule: '*/5 * * * *'
+              action:
+                type: noop
+        `),
+      }),
+    );
+    expect(response.status).toBe(200);
+    const foundMember = await AppMember.findOne({ where: { AppId: app.id, role: 'cron' } });
+    expect(foundMember.dataValues).toMatchObject({
+      AppId: app.id,
+      role: 'cron',
+      email: expect.stringMatching('cron.*example'),
+    });
   });
 
   it('should not allow invalid core stylesheets when updating an app', async () => {

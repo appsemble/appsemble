@@ -1,4 +1,4 @@
-import { assertKoaError, logger } from '@appsemble/node-utils';
+import { assertKoaError, logger, throwKoaError } from '@appsemble/node-utils';
 import { OrganizationPermission } from '@appsemble/types';
 import { type Context } from 'koa';
 
@@ -15,7 +15,7 @@ export async function sendAppNotifications(ctx: Context): Promise<void> {
   } = ctx;
 
   const app = await App.findByPk(appId, {
-    attributes: ['OrganizationId'],
+    attributes: ['id', 'OrganizationId', 'path', 'vapidPublicKey', 'vapidPrivateKey'],
     include: [{ model: AppSubscription, attributes: ['id', 'auth', 'p256dh', 'endpoint'] }],
   });
 
@@ -30,7 +30,14 @@ export async function sendAppNotifications(ctx: Context): Promise<void> {
   // XXX: Replace with paginated requests
   logger.verbose(`Sending ${app.AppSubscriptions.length} notifications for app ${appId}`);
 
-  for (const subscription of app.AppSubscriptions) {
-    sendNotification(app, subscription, { title, body });
+  try {
+    await Promise.all(
+      app.AppSubscriptions.map((subscription) =>
+        sendNotification(app, subscription, { title, body }),
+      ),
+    );
+  } catch (error) {
+    logger.error(error);
+    throwKoaError(ctx, 500, 'There was a problem sending notifications');
   }
 }

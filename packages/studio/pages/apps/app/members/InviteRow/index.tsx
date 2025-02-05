@@ -72,7 +72,7 @@ export function InviteRow({
       <td>{invite.email}</td>
       <td />
       <td />
-      <td />
+      <td>{invite.role}</td>
       <td align="right">
         {mayInvite ? (
           <AsyncButton className="mr-2" disabled={resent} onClick={resendInvitation}>

@@ -43,6 +43,23 @@ describe('resource.get', () => {
     expect(result).toStrictEqual({ type: 'cat' });
   });
 
+  it('should support explicit id param', async () => {
+    mock.onGet(/.*/).reply((req) => {
+      request = req;
+      return [200, { type: 'crow' }, {}];
+    });
+    const action = createTestAction({
+      appDefinition,
+      definition: { type: 'resource.get', resource: 'pet', id: { prop: 'test' } },
+    });
+    const result = await action({ test: 33 });
+    expect(request.method).toBe('get');
+    expect(request.url).toBe(`${apiUrl}/api/apps/42/resources/pet/33`);
+    expect(request.params).toBeUndefined();
+    expect(request.data).toBeUndefined();
+    expect(result).toStrictEqual({ type: 'crow' });
+  });
+
   it('should make a GET request with views', async () => {
     mock.onAny(/.*/).reply((req) => {
       request = req;
@@ -218,6 +235,22 @@ describe('resource.patch', () => {
     expect(request.url).toBe(`${apiUrl}/api/apps/42/resources/pet/84`);
     expect(request.params).toBeUndefined();
     expect(request.data).toBe('{"id":84,"type":"fish"}');
+    expect(result).toStrictEqual({ id: 84, type: 'fish' });
+  });
+
+  it('should allow resource id to be explicit', async () => {
+    mock.onPatch(/.*/).reply((req) => {
+      request = req;
+      return [200, { ...JSON.parse(req.data), id: 84 }, {}];
+    });
+    const action = createTestAction({
+      appDefinition,
+      definition: { type: 'resource.patch', resource: 'pet', id: 84 },
+    });
+    const result = await action({ type: 'fish' });
+    expect(request.method).toBe('patch');
+    expect(request.url).toBe(`${apiUrl}/api/apps/42/resources/pet/84`);
+    expect(request.data).toBe('{"type":"fish"}');
     expect(result).toStrictEqual({ id: 84, type: 'fish' });
   });
 });

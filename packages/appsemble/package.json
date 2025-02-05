@@ -1,6 +1,6 @@
 {
   "name": "appsemble",
-  "version": "0.30.13",
+  "version": "0.31.1-test.2",
   "description": "A simple wrapper for @appsemble/cli",
   "keywords": [
     "app",
@@ -22,10 +22,10 @@
   "author": "Appsemble <info@appsemble.com> (https://appsemble.com)",
   "type": "module",
   "exports": {
-    ".": [
-      "./index.js",
-      "./index.ts"
-    ]
+    ".": {
+      "ts-source": "./index.ts",
+      "default": "./index.js"
+    }
   },
   "bin": "./index.js",
   "files": [
@@ -36,6 +36,6 @@
     "test": "vitest"
   },
   "dependencies": {
-    "@appsemble/cli": "0.30.13"
+    "@appsemble/cli": "0.31.1-test.2"
   }
 }

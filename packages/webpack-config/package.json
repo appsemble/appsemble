@@ -1,6 +1,6 @@
 {
   "name": "@appsemble/webpack-config",
-  "version": "0.30.13",
+  "version": "0.31.1-test.2",
   "description": "NodeJS utilities used by Appsemble internally.",
   "keywords": [
     "app",
@@ -22,16 +22,18 @@
   "sideEffects": false,
   "type": "module",
   "exports": {
-    ".": [
-      "./index.js",
-      "./index.ts"
-    ],
+    ".": {
+      "ts-source": "./index.ts",
+      "default": "./index.js"
+    },
     "./types": "./types.d.ts",
     "./README.md": "./README.md"
   },
   "files": [
     "**/*.d.ts",
     "**/*.js",
+    "!**/*.test.js",
+    "!**/*.test.d.ts",
     "!*.config.js"
   ],
   "scripts": {
@@ -39,7 +41,7 @@
     "test": "vitest"
   },
   "dependencies": {
-    "@appsemble/types": "0.30.13",
+    "@appsemble/types": "0.31.1-test.2",
     "case-sensitive-paths-webpack-plugin": "^2.0.0",
     "css-loader": "^6.0.0",
     "css-minimizer-webpack-plugin": "^5.0.0",
@@ -57,6 +59,6 @@
     "typescript": "^5"
   },
   "engines": {
-    "node": ">=18"
+    "node": ">=20"
   }
 }

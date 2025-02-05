@@ -26,7 +26,7 @@ To use flow actions, you need a flow page:
     - name: Step 1
       blocks:
         - type: form
-          version: 0.30.13
+          version: 0.31.1-test.2
           parameters:
             fields:
               - type: string
@@ -38,7 +38,7 @@ To use flow actions, you need a flow page:
     - name: Step 2
       blocks:
         - type: form
-          version: 0.30.13
+          version: 0.31.1-test.2
           parameters:
             fields:
               - type: string
@@ -59,7 +59,7 @@ being used.
 ```yaml validate flow-blocks-snippet
 blocks:
   - type: button-list
-    version: 0.30.13
+    version: 0.31.1-test.2
     parameters:
       buttons:
         - label: { translate: start }
@@ -78,7 +78,7 @@ action is `type`, which is `flow.finish` in this case. Here is an example of thi
 ```yaml validate flow-blocks-snippet
 blocks:
   - type: form
-    version: 0.30.13
+    version: 0.31.1-test.2
     parameters:
       fields:
         - type: string
@@ -98,7 +98,7 @@ in this case. Here is an example of this action being used.
 ```yaml validate flow-blocks-snippet
 blocks:
   - type: form
-    version: 0.30.13
+    version: 0.31.1-test.2
     parameters:
       fields:
         - type: string
@@ -117,7 +117,7 @@ action is `type`, which is `flow.cancel` in this case. Here is an example of how
 ```yaml validate flow-blocks-snippet
 blocks:
   - type: action-button
-    version: 0.30.13
+    version: 0.31.1-test.2
     parameters:
       icon: ban
     actions:
@@ -135,7 +135,7 @@ how you can use this action in your app.
 ```yaml validate flow-blocks-snippet
 blocks:
   - type: form
-    version: 0.30.13
+    version: 0.31.1-test.2
     parameters:
       fields:
         - name: username

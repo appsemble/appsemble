@@ -8,7 +8,6 @@ export * from './scim/index.js';
 export * from './screenshots/index.js';
 export * from './secrets/index.js';
 export * from './snapshots/index.js';
-export * from './subscriptions/index.js';
 export * from './variables/index.js';
 export * from './assets/index.js';
 export * from './invites/index.js';

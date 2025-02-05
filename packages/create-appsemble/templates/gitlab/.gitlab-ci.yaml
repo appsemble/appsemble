@@ -11,7 +11,7 @@ workflow:
     - if: $CI_PIPELINE_SOURCE == 'schedule'
 
 .npm:
-  image: node18-alpine
+  image: node:20.18-bookworm-slim
   before_script:
     - npm ci
 

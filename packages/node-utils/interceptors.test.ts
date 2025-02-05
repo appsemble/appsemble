@@ -1,3 +1,5 @@
+import { arch, type } from 'node:os';
+
 import axios, { type AxiosInstance } from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 import { highlight } from 'cli-highlight';
@@ -89,7 +91,7 @@ describe('configureAxios', () => {
     configureAxios('TestClient', '1.2.3');
 
     expect(axios.defaults.headers.common['user-agent']).toBe(
-      `TestClient/1.2.3 (Linux x64; Node ${process.version})`,
+      `TestClient/1.2.3 (${type()} ${arch()}; Node ${process.version})`,
     );
   });
 

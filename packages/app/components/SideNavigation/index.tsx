@@ -10,6 +10,7 @@ import { normalize, remap } from '@appsemble/utils';
 import { Fragment, type ReactNode, useCallback } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useParams } from 'react-router-dom';
+import { usePWAInstall } from 'react-use-pwa-install';
 
 import styles from './index.module.css';
 import { messages } from './messages.js';
@@ -36,6 +37,7 @@ export function SideNavigation({ blockMenus, pages }: SideNavigationProps): Reac
   const { definition } = useAppDefinition();
   const { getAppMessage, getMessage } = useAppMessages();
   const { getVariable } = useAppVariables();
+  const install = usePWAInstall();
   const {
     definition: { layout, security },
   } = useAppDefinition();
@@ -144,6 +146,11 @@ export function SideNavigation({ blockMenus, pages }: SideNavigationProps): Reac
               <FormattedMessage {...messages.login} />
             </MenuItem>
           )
+        ) : null}
+        {layout?.install === 'navigation' && install ? (
+          <MenuButton active={false} icon="download" onClick={install} title="Install">
+            <FormattedMessage {...messages.install} />
+          </MenuButton>
         ) : null}
       </MenuSection>
       {blockMenus.map((menu) => (

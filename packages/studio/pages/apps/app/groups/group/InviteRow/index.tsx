@@ -66,6 +66,7 @@ export function InviteRow({
 
   return (
     <tr>
+      <td>{invite.role}</td>
       <td>{invite.email}</td>
       <td align="right">
         {mayInvite ? (

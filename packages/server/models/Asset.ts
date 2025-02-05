@@ -9,6 +9,7 @@ import {
   CreatedAt,
   DataType,
   Default,
+  DeletedAt,
   ForeignKey,
   HasOne,
   Index,
@@ -21,7 +22,7 @@ import sharp from 'sharp';
 
 import { App, AppMember, Group, Resource } from './index.js';
 
-@Table({ tableName: 'Asset' })
+@Table({ tableName: 'Asset', paranoid: true })
 export class Asset extends Model {
   @PrimaryKey
   @Default(DataType.UUIDV4)
@@ -76,6 +77,9 @@ export class Asset extends Model {
 
   @UpdatedAt
   updated: Date;
+
+  @DeletedAt
+  deleted: Date;
 
   @AllowNull(false)
   @ForeignKey(() => App)

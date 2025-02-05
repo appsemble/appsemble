@@ -1,4 +1,6 @@
-import { type FileField, type FileRequirement, Requirement } from '../../../block.js';
+import { type Remapper } from '@appsemble/sdk';
+
+import { type FileField, type FileRequirement, Requirement, type Values } from '../../../block.js';
 
 function testType(acceptedType: string, type: string): boolean {
   return new RegExp(/^[^/]+\/\*$/).test(acceptedType)
@@ -6,14 +8,23 @@ function testType(acceptedType: string, type: string): boolean {
     : acceptedType === type;
 }
 
-export function validateFile(field: FileField, value: File | File[]): FileRequirement {
+export function validateFile(
+  field: FileField,
+  value: File | File[],
+  remap: (remapper: Remapper, data: any, context?: Record<string, any>) => any,
+  values?: Values,
+): FileRequirement {
   return field.requirements?.find((requirement) => {
     if (value == null) {
-      return Requirement.Required in requirement;
+      return Requirement.Required in requirement && Boolean(remap(requirement.required, values));
     }
 
     if (field.repeated) {
-      if (Requirement.Prohibited in requirement && (value as File[]).length) {
+      if (
+        Requirement.Prohibited in requirement &&
+        Boolean(remap(requirement.prohibited, values)) &&
+        (value as File[]).length
+      ) {
         return true;
       }
 
@@ -60,7 +71,11 @@ export function validateFile(field: FileField, value: File | File[]): FileRequir
         );
       }
     } else {
-      if (Requirement.Prohibited in requirement && (value as File)) {
+      if (
+        Requirement.Prohibited in requirement &&
+        Boolean(remap(requirement.prohibited, values)) &&
+        (value as File)
+      ) {
         return true;
       }
 

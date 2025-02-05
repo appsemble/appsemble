@@ -8,9 +8,9 @@ Content-Type: application/json; charset=utf-8
   "data": {
     "errors": [
       {
-        "argument": "^\\d+\\.\\d+\\.\\d+$",
+        "argument": "^\\d+\\.\\d+\\.\\d+(-[\\d.a-z-]+)?$",
         "instance": "0.0.0'",
-        "message": "does not match pattern "^\\\\d+\\\\.\\\\d+\\\\.\\\\d+$"",
+        "message": "does not match pattern "^\\\\d+\\\\.\\\\d+\\\\.\\\\d+(-[\\\\d.a-z-]+)?$"",
         "name": "pattern",
         "path": [
           "pages",
@@ -26,10 +26,10 @@ Content-Type: application/json; charset=utf-8
 Since blocks may change over time, a version must be specified in order to ensure that the block
 will remain the same until it is manually updated.
 ",
-          "pattern": "^\\d+\\.\\d+\\.\\d+$",
+          "pattern": "^\\d+\\.\\d+\\.\\d+(-[\\d.a-z-]+)?$",
           "type": "string",
         },
-        "stack": "instance.pages[0].blocks[0].version does not match pattern "^\\\\d+\\\\.\\\\d+\\\\.\\\\d+$"",
+        "stack": "instance.pages[0].blocks[0].version does not match pattern "^\\\\d+\\\\.\\\\d+\\\\.\\\\d+(-[\\\\d.a-z-]+)?$"",
       },
       {
         "argument": "type",

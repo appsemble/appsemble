@@ -95,7 +95,7 @@ foreach:
   name: { prop: course }
   blocks:
     - type: markdown
-      version: 0.29.11
+      version: 0.30.13
       parameters:
         content:
           string.format:
@@ -151,13 +151,13 @@ If you take the previous code as an example and zoom in on the Introduction page
 name: Introduction
 blocks:
   - type: markdown
-    version: 0.20.28
+    version: 0.30.13
     layout: static
     parameters:
       content:
         This app is a template app used to demo how a survey app could be created using Appsemble.
   - type: button-list
-    version: 0.20.28
+    version: 0.30.13
     parameters:
       buttons:
         - label: Start
@@ -224,11 +224,11 @@ foreach:
   blocks:
     - type: markdown
       layout: static
-      version: 0.20.28
+      version: 0.30.13
       parameters:
         content: { step: question }
     - type: form
-      version: 0.20.28
+      version: 0.30.13
       layout: grow
       parameters:
         disableDefault: true
@@ -268,7 +268,7 @@ The example above was created using the following page definition (minus Page 2)
     - name: Contained page 1
       blocks:
         - type: action-button
-          version: 0.30.13
+          version: 0.31.1-test.2
           parameters:
             icon: git-alt
           actions:
@@ -278,7 +278,7 @@ The example above was created using the following page definition (minus Page 2)
     - name: Contained page 2
       blocks:
         - type: action-button
-          version: 0.30.13
+          version: 0.31.1-test.2
           parameters:
             icon: git-alt
           actions:

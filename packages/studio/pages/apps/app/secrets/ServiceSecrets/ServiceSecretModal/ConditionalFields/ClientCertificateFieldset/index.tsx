@@ -36,6 +36,14 @@ export function ClientCertificateFieldset({ disabled }: ClientCertificateFieldse
         placeholder={keyPlaceholder}
         required
       />
+      <SimpleFormField
+        component={TextAreaField}
+        disabled={disabled}
+        help={<FormattedMessage {...messages.caHelp} />}
+        label={<FormattedMessage {...messages.caLabel} />}
+        name="ca"
+        placeholder={keyPlaceholder}
+      />
     </>
   );
 }

@@ -1,5 +1,9 @@
 import { CheckboxField, FormComponent, Loader, useMessages } from '@appsemble/react-components';
-import { type ResourceHooks, type SubscriptionResponse } from '@appsemble/types';
+import {
+  type ResourceHooks,
+  resourceSubscribableAction,
+  type SubscriptionResponse,
+} from '@appsemble/types';
 import { has } from '@appsemble/utils';
 import axios from 'axios';
 import { type ChangeEvent, type ReactNode, useEffect, useState } from 'react';
@@ -104,7 +108,18 @@ export function AppSubscriptions(): ReactNode {
     }
 
     try {
-      await subscribe();
+      const resourceActionsToSubscribeTo = Object.entries(subscriptions).flatMap(
+        ([resourceType, subscriptionState]) =>
+          resourceSubscribableAction
+            .filter(
+              (action) =>
+                subscriptionState[action]?.notification?.subscribe === 'all' ||
+                subscriptionState[action]?.notification?.subscribe === 'both',
+            )
+            .map((action) => ({ resourceType, action })),
+      );
+
+      await subscribe(resourceActionsToSubscribeTo);
       push({ body: formatMessage(messages.subscribeSuccessful), color: 'success' });
     } catch {
       push({ body: formatMessage(messages.subscribeError), color: 'danger' });

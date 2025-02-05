@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1.7-labs
 # Build production files
-FROM node:18.18.0-bookworm-slim AS build
+FROM node:20.18-bookworm-slim AS build
 WORKDIR /app
 
 # Get the system dependencies installed regardless of any package.json or lockfile changes
@@ -30,7 +30,7 @@ RUN npm --workspace @appsemble/node-utils run prepack
 RUN npm --workspace @appsemble/server run prepack
 
 # Install production dependencies
-FROM node:18.18.0-bookworm-slim AS prod
+FROM node:20.18-bookworm-slim AS prod
 WORKDIR /app
 COPY --from=build /app/packages/node-utils packages/node-utils
 COPY --from=build /app/packages/sdk packages/sdk
@@ -45,8 +45,8 @@ RUN find . -name '*.ts' -delete
 RUN rm -r package-lock.json
 
 # Setup the production docker image.
-FROM node:18.18.0-bookworm-slim
-ARG version=0.30.13
+FROM node:20.18-bookworm-slim
+ARG version=0.31.1-test.2
 ARG date
 
 COPY --from=prod /app /app

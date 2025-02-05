@@ -25,7 +25,7 @@ only works when you have a page defined with the name Home.
 
 ```yaml copy validate block-snippet
 - type: action-button
-  version: 0.30.13
+  version: 0.31.1-test.2
   parameters:
     icon: home
   actions:
@@ -47,7 +47,7 @@ pages:
   - name: Home
     blocks:
       - type: action-button
-        version: 0.30.13
+        version: 0.31.1-test.2
         parameters:
           icon: arrow-right
         actions:
@@ -58,7 +58,7 @@ pages:
   - name: Other Page
     blocks:
       - type: action-button
-        version: 0.30.13
+        version: 0.31.1-test.2
         parameters:
           icon: home
         actions:
@@ -79,8 +79,8 @@ Appsemble blocks.
 ## Styling
 
 Blocks come with their own styling to make them look the way the developer wanted. If you want to
-change how the block looks in your app, you can add [custom css](theming.md) to add to or override
-the existing styling.
+change how the block looks in your app, you can add [custom css](../guides/custom-css.md) to add to
+or override the existing styling.
 
 ## Indentation and dashes
 

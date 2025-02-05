@@ -1,6 +1,6 @@
 {
   "name": "@appsemble/scripts",
-  "version": "0.30.13",
+  "version": "0.31.1-test.2",
   "private": true,
   "description": "Internal scripts for managing the Appsemble repository",
   "keywords": [
@@ -22,19 +22,19 @@
   "author": "Appsemble <info@appsemble.com> (https://appsemble.com)",
   "type": "module",
   "exports": {
-    ".": [
-      "./index.js",
-      "./index.ts"
-    ]
+    ".": {
+      "ts-source": "./index.ts",
+      "default": "./index.js"
+    }
   },
   "scripts": {
     "test": "vitest"
   },
   "dependencies": {
-    "@appsemble/node-utils": "0.30.13",
-    "@appsemble/types": "0.30.13",
-    "@appsemble/utils": "0.30.13",
-    "@appsemble/webpack-core": "0.30.13",
+    "@appsemble/node-utils": "0.31.1-test.2",
+    "@appsemble/types": "0.31.1-test.2",
+    "@appsemble/utils": "0.31.1-test.2",
+    "@appsemble/webpack-core": "0.31.1-test.2",
     "@formatjs/cli-lib": "^6.0.0",
     "@types/fs-extra": "^11.0.0",
     "@types/lodash-es": "^4.0.0",
@@ -72,6 +72,6 @@
     "yargs": "^17.0.0"
   },
   "engines": {
-    "node": ">=18"
+    "node": ">=20"
   }
 }

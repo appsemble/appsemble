@@ -4,6 +4,7 @@ import { normalize, remap } from '@appsemble/utils';
 import { type ReactNode, useMemo } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { NavLink, useParams } from 'react-router-dom';
+import { usePWAInstall } from 'react-use-pwa-install';
 
 import './index.css';
 import styles from './index.module.css';
@@ -31,6 +32,7 @@ export function BottomNavigation({ pages }: BottomNavigationProps): ReactNode {
   const { getVariable } = useAppVariables();
   const { definition } = useAppDefinition();
   const { formatMessage } = useIntl();
+  const install = usePWAInstall();
 
   const showMenu = useMemo(
     () => shouldShowMenu(definition, appMemberRole, appMemberSelectedGroup),
@@ -128,6 +130,20 @@ export function BottomNavigation({ pages }: BottomNavigationProps): ReactNode {
                   <FormattedMessage {...messages.feedback} />
                 </span>
               </NavLink>
+            </li>
+          ) : null}
+          {definition.layout?.install === 'navigation' && install ? (
+            <li className="bottom-nav-item">
+              <Button
+                className="bottom-nav-item-button is-flex-direction-column is-flex px-4 py-4 has-text-centered"
+                icon="download"
+                iconSize="large"
+                iconSizeModifier="3x"
+                onClick={install}
+                title={formatMessage(messages.install)}
+              >
+                <FormattedMessage {...messages.install} />
+              </Button>
             </li>
           ) : null}
           {definition.security && definition.layout?.login === 'navigation' ? (

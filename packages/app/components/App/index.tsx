@@ -9,6 +9,7 @@ import { AppRoutes } from '../AppRoutes/index.js';
 import { AppVariablesProvider } from '../AppVariablesProvider/index.js';
 import { DemoAppMembersProvider } from '../DemoAppMembersProvider/index.js';
 import { ErrorFallback } from '../ErrorFallback/index.js';
+import { InstallationTracker } from '../InstallationTracker/index.js';
 import { MenuProvider } from '../MenuProvider/index.js';
 import { PageTracker } from '../PageTracker/index.js';
 import { PermissionRequest } from '../PermissionRequest/index.js';
@@ -36,6 +37,7 @@ export function App({ serviceWorkerRegistrationPromise }: AppProps): ReactNode {
                 <AppMemberProvider>
                   <DemoAppMembersProvider>
                     <MenuProvider>
+                      <InstallationTracker />
                       <PermissionRequest />
                       <AppRoutes />
                     </MenuProvider>

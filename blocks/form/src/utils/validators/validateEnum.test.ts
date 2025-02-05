@@ -1,3 +1,4 @@
+import { remap } from '@appsemble/utils';
 import { describe, expect, it } from 'vitest';
 
 import { validateEnum } from './validateEnum.js';
@@ -12,7 +13,8 @@ describe('validateEnum', () => {
       requirements: [{ required: true }],
     };
 
-    expect(validateEnum(field)).toBe(field.requirements[0]);
+    expect(validateEnum(field, undefined, remap)).toBe(field.requirements[0]);
+    expect(validateEnum(field, null, remap)).toBe(field.requirements[0]);
   });
 
   it('should return undefined if it validates correctly', () => {
@@ -23,7 +25,19 @@ describe('validateEnum', () => {
       requirements: [{ required: true }],
     };
 
-    expect(validateEnum(field, 'a')).toBeUndefined();
+    expect(validateEnum(field, 'a', remap)).toBeUndefined();
+  });
+
+  it('should ignore the required requirement if it resolves to false', () => {
+    const field: EnumField = {
+      type: 'enum',
+      name: 'test',
+      enum: [{ value: 'a' }, { value: 'b' }, { value: 'c' }],
+      requirements: [{ required: false }],
+    };
+
+    expect(validateEnum(field, undefined, remap)).toBeUndefined();
+    expect(validateEnum(field, null, remap)).toBeUndefined();
   });
 
   it('should validate prohibited requirements', () => {
@@ -34,8 +48,20 @@ describe('validateEnum', () => {
       requirements: [{ prohibited: true }],
     };
 
-    expect(validateEnum(field, 'a')).toStrictEqual(field.requirements[0]);
-    expect(validateEnum(field)).toBeUndefined();
+    expect(validateEnum(field, 'a', remap)).toStrictEqual(field.requirements[0]);
+    expect(validateEnum(field, undefined, remap)).toBeUndefined();
+    expect(validateEnum(field, null, remap)).toBeUndefined();
+  });
+
+  it('should ignore the prohibited requirement if it resolves to false', () => {
+    const field: EnumField = {
+      type: 'enum',
+      name: 'test',
+      enum: [{ value: 'a' }, { value: 'b' }, { value: 'c' }],
+      requirements: [{ prohibited: false }],
+    };
+
+    expect(validateEnum(field, 'a', remap)).toBeUndefined();
   });
 
   it('should return undefined on valid falsy values', () => {
@@ -46,6 +72,6 @@ describe('validateEnum', () => {
       requirements: [{ required: true }],
     };
 
-    expect(validateEnum(field, '')).toBeUndefined();
+    expect(validateEnum(field, '', remap)).toBeUndefined();
   });
 });

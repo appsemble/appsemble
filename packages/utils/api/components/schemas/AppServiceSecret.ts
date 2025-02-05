@@ -47,5 +47,9 @@ export const AppServiceSecret: OpenAPIV3.NonArraySchemaObject = {
       type: 'string',
       description: 'The scope to request access tokens for.',
     },
+    ca: {
+      type: 'string',
+      description: 'The custom certificate authority.',
+    },
   },
 };

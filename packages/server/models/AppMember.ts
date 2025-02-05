@@ -172,6 +172,22 @@ export class AppMember extends Model {
   }
 
   @BeforeCreate
+  static async validateCronJobMember(instance: AppMember): Promise<void> {
+    if (instance.role !== 'cron') {
+      return;
+    }
+    const memberCount = await AppMember.count({
+      where: {
+        role: 'cron',
+        AppId: instance.AppId,
+      },
+    });
+    if (memberCount > 0) {
+      throw new AppsembleError('App member with role `cron` already exists for this app');
+    }
+  }
+
+  @BeforeCreate
   @BeforeUpdate
   static async validateUserProperties(instance: AppMember): Promise<void> {
     const app = await App.findOne({

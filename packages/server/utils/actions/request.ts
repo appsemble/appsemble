@@ -8,6 +8,7 @@ import { defaultLocale, formatRequestAction, remap } from '@appsemble/utils';
 import axios from 'axios';
 
 import { type ServerActionParameters } from './index.js';
+import { applyAppServiceSecrets } from '../../options/applyAppServiceSecrets.js';
 
 export async function request({
   action,
@@ -20,7 +21,7 @@ export async function request({
   const definition = action as RequestLikeActionDefinition;
   const query: Remapper = []
     .concat(
-      definition?.query ?? action.type.startsWith('resource.')
+      (definition?.query ?? action.type.startsWith('resource.'))
         ? app.definition.resources[(action as ResourceQueryActionDefinition).resource]?.query?.query
         : undefined,
     )
@@ -61,7 +62,12 @@ export async function request({
     (remapper, d) => remap(remapper, d, remapperContext),
     context.context,
   );
-  const response = await axios(axiosConfig);
+  const newAxiosConfig = await applyAppServiceSecrets({
+    app: app.toJSON(),
+    context,
+    axiosConfig,
+  });
+  const response = await axios(newAxiosConfig);
 
   return response.data;
 }

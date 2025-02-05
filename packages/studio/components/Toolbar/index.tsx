@@ -6,7 +6,7 @@ import { Link } from 'react-router-dom';
 import styles from './index.module.css';
 import { LanguageDropdown } from './LanguageDropdown/index.js';
 import { messages } from './messages.js';
-import pkg from '../../package.json';
+import pkg from '../../package.json' with { type: 'json' };
 import { ProfileDropdown } from '../ProfileDropdown/index.js';
 
 export function Toolbar(): ReactNode {

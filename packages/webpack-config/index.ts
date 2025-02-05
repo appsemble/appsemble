@@ -35,7 +35,11 @@ export default function createWebpackConfig(
     output: {
       filename: `${blockName}.js`,
     },
+    stats: {
+      errorDetails: true,
+    },
     resolve: {
+      conditionNames: ['ts-source', '...'],
       extensions: ['.js', '.ts', '.tsx', '.json'],
       extensionAlias: {
         '.js': ['.js', '.ts', '.tsx'],

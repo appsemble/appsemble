@@ -129,9 +129,9 @@ Enter this app definition, save it, and it should display the new block in the a
 contains two pages that link to each other by clicking the button created by the new test block.
 
 > **Note**: You may have noticed the block already has the `button` class and a specific style. This
-> is because Appsemble automatically injects the [Bulma][] CSS framework and [Font Awesome][] into each
-> block. It is possible, recommended even, to use Bulma classes to add minimal styling to your block.
-> This allows app builders and organizations to add custom styling when they use your block.
+> is because Appsemble automatically injects the [Bulma][] CSS framework and [Font Awesome][] into
+> each block. It is possible, recommended even, to use Bulma classes to add minimal styling to your
+> block. This allows app builders and organizations to add custom styling when they use your block.
 
 ## Modifying the Block
 
@@ -292,7 +292,7 @@ to the page to see the event is received by both blocks.
 
 To get a better idea of how blocks work, or for inspiration of what blocks can be created, please
 have a look at the
-[officially supported Appsemble blocks](https://gitlab.com/appsemble/appsemble/-/tree/0.30.13/blocks).
+[officially supported Appsemble blocks](https://gitlab.com/appsemble/appsemble/-/tree/0.31.1-test.2/blocks).
 For example, if you want to create a block to display a set of dynamically loaded data, have a look
 at the `table` or `tiles` block. If you’re interested in displaying a single entity, have a look at
 the `detail-viewer` or `stats` block. If you would like to create a block to process data based on

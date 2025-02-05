@@ -1,6 +1,6 @@
 {
   "name": "@appsemble/cli",
-  "version": "0.30.13",
+  "version": "0.31.1-test.2",
   "description": "The CLI for developing with Appsemble apps and blocks",
   "keywords": [
     "app",
@@ -22,10 +22,10 @@
   "author": "Appsemble <info@appsemble.com> (https://appsemble.com)",
   "type": "module",
   "exports": {
-    ".": [
-      "./index.js",
-      "./index.ts"
-    ],
+    ".": {
+      "ts-source": "./index.ts",
+      "default": "./index.js"
+    },
     "./README.md": "./README.md"
   },
   "bin": {
@@ -35,6 +35,8 @@
     "**/*.d.ts",
     "**/*.js",
     "!*.config.js",
+    "!**/*.test.js",
+    "!**/*.test.d.ts",
     "templates"
   ],
   "scripts": {
@@ -42,23 +44,23 @@
     "test": "vitest"
   },
   "dependencies": {
-    "@appsemble/node-utils": "0.30.13",
-    "@appsemble/types": "0.30.13",
-    "@appsemble/utils": "0.30.13",
+    "@appsemble/node-utils": "0.31.1-test.2",
+    "@appsemble/types": "0.31.1-test.2",
+    "@appsemble/utils": "0.31.1-test.2",
     "@fortawesome/fontawesome-common-types": "^6.0.0",
-    "@koa/cors": "^4.0.0",
+    "@koa/cors": "^5.0.0",
     "@odata/parser": "^0.2.0",
     "axios": "^1.0.0",
     "chalk": "^5.0.0",
     "comment-parser": "^1.0.0",
     "cosmiconfig": "^7.0.0",
     "csvtojson": "^2.0.0",
-    "esbuild": "^0.19.0",
+    "esbuild": "^0.21.5",
     "fast-glob": "^3.0.0",
     "form-data": "^4.0.0",
     "global-cache-dir": "^6.0.0",
     "inquirer": "^9.0.0",
-    "jsonschema": "^1.0.0",
+    "jsonschema": "~1.4.1",
     "koa": "^2.0.0",
     "koa-compose": "^4.0.0",
     "koa-compress": "^5.0.0",
@@ -87,8 +89,8 @@
     "yargs": "^17.0.0"
   },
   "devDependencies": {
-    "@appsemble/types": "0.30.13",
-    "@appsemble/server": "0.30.13",
+    "@appsemble/types": "0.31.1-test.2",
+    "@appsemble/server": "0.31.1-test.2",
     "bcrypt": "^5.0.0",
     "axios-test-instance": "^7.0.0",
     "@types/concat-stream": "^2.0.0",
@@ -96,8 +98,9 @@
     "@types/normalize-path": "^3.0.0",
     "@types/postcss-import": "^14.0.0",
     "@types/postcss-url": "^10.0.0",
+    "@types/koa__cors": "^5.0.0",
     "concat-stream": "^2.0.0",
-    "vitest": "^1.0.0",
+    "vitest": "^2.0.0",
     "sequelize": "^6.0.0"
   },
   "peerDependencies": {},
@@ -105,6 +108,6 @@
     "keytar": "^7.0.0"
   },
   "engines": {
-    "node": ">=18"
+    "node": ">=20"
   }
 }

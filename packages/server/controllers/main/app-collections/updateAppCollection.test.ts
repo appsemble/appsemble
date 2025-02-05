@@ -44,25 +44,21 @@ describe('updateAppCollection', () => {
   it('should update an app collection', async () => {
     const tuxPng = await readFixture('tux.png');
     const standingPng = await readFixture('standing.png');
-    const collections = await Promise.all(
-      ['Productivity', 'Fun', 'Collaboration'].map((name) =>
-        AppCollection.create({
-          name,
-          expertName: 'Expert van den Expert',
-          expertProfileImage: tuxPng,
-          expertProfileImageMimeType: 'image/png',
-          headerImage: standingPng,
-          headerImageMimeType: 'image/png',
-          expertDescription: 'I’m an expert, trust me.',
-          OrganizationId: organization.id,
-          visibility: 'public',
-        }),
-      ),
-    );
+    const collection = await AppCollection.create({
+      name: 'Productivity',
+      expertName: 'Expert van den Expert',
+      expertProfileImage: tuxPng,
+      expertProfileImageMimeType: 'image/png',
+      headerImage: standingPng,
+      headerImageMimeType: 'image/png',
+      expertDescription: 'I’m an expert, trust me.',
+      OrganizationId: organization.id,
+      visibility: 'public',
+    });
 
     authorizeStudio(user);
     const response = await request.patch(
-      `/api/app-collections/${collections[0].id}`,
+      `/api/app-collections/${collection.id}`,
       createFormData({
         name: 'New Name',
         visibility: 'private',
@@ -74,14 +70,14 @@ describe('updateAppCollection', () => {
     );
     expect(response.status).toBe(200);
     expect(response.data).toStrictEqual({
-      id: collections[0].id,
+      id: collection.id,
       name: 'New Name',
       $expert: {
         name: 'New Expert Name',
         description: 'New Expert Description',
-        profileImage: `/api/app-collections/${collections[0].id}/expert/profile-image`,
+        profileImage: `/api/app-collections/${collection.id}/expert/profile-image`,
       },
-      headerImage: `/api/app-collections/${collections[0].id}/header-image`,
+      headerImage: `/api/app-collections/${collection.id}/header-image`,
       OrganizationId: organization.id,
       OrganizationName: organization.name,
       visibility: 'private',
@@ -90,7 +86,7 @@ describe('updateAppCollection', () => {
       $updated: new Date(0).toISOString(),
     });
 
-    const collection = await AppCollection.findByPk(collections[0].id);
+    await collection.reload();
     expect(collection).not.toBeNull();
     expect(collection?.name).toBe('New Name');
     expect(collection?.visibility).toBe('private');
@@ -114,7 +110,7 @@ describe('updateAppCollection', () => {
     expect(response3.data).toStrictEqual(await readFixture('tux.png'));
 
     const response4 = await request.patch(
-      `/api/app-collections/${collections[0].id}`,
+      `/api/app-collections/${collection.id}`,
       createFormData({
         name: 'New Name 2',
       }),
@@ -127,33 +123,22 @@ describe('updateAppCollection', () => {
   });
 
   it('should not allow a user to update a collection without permission', async () => {
-    const tuxPng = await readFixture('tux.png');
-    const standingPng = await readFixture('standing.png');
-    const collections = await Promise.all(
-      ['Productivity', 'Fun', 'Collaboration'].map((name) =>
-        AppCollection.create({
-          name,
-          expertName: 'Expert van den Expert',
-          expertProfileImage: tuxPng,
-          expertProfileImageMimeType: 'image/png',
-          headerImage: standingPng,
-          headerImageMimeType: 'image/png',
-          expertDescription: 'I’m an expert, trust me.',
-          OrganizationId: organization.id,
-          visibility: 'public',
-        }),
-      ),
-    );
+    const collection = await AppCollection.create({
+      name: 'Productivity',
+      expertName: 'Expert van den Expert',
+      expertProfileImage: Buffer.from('expertProfileImage'),
+      expertProfileImageMimeType: 'image/png',
+      headerImage: Buffer.from('headerImage'),
+      headerImageMimeType: 'image/png',
+      expertDescription: 'I’m an expert, trust me.',
+      OrganizationId: organization.id,
+      visibility: 'public',
+    });
 
     const response = await request.patch(
-      `/api/app-collections/${collections[0].id}`,
+      `/api/app-collections/${collection.id}`,
       createFormData({
         name: 'New Name',
-        visibility: 'private',
-        expertName: 'New Expert Name',
-        expertDescription: 'New Expert Description',
-        expertProfileImage: createFixtureStream('standing.png'),
-        headerImage: createFixtureStream('tux.png'),
       }),
     );
     expect(response).toMatchInlineSnapshot(`
@@ -167,14 +152,9 @@ describe('updateAppCollection', () => {
     authorizeStudio(unprivilegedUser);
 
     const response2 = await request.patch(
-      `/api/app-collections/${collections[0].id}`,
+      `/api/app-collections/${collection.id}`,
       createFormData({
         name: 'New Name',
-        visibility: 'private',
-        expertName: 'New Expert Name',
-        expertDescription: 'New Expert Description',
-        expertProfileImage: createFixtureStream('standing.png'),
-        headerImage: createFixtureStream('tux.png'),
       }),
     );
     expect(response2).toMatchInlineSnapshot(`

@@ -123,7 +123,7 @@ export function AppListControls({
             {actionButton || null}
             {actionImportButton ? (
               <div className={`dropdown ${isActive ? 'is-active' : ''} is-pulled-right is-right`}>
-                <div className="dropdown-trigger">
+                <div className="dropdown-trigger ml-4">
                   <Button
                     aria-controls="dropdown-trigger"
                     aria-haspopup="true"
@@ -132,7 +132,7 @@ export function AppListControls({
                   />
                 </div>
                 <div className="dropdown-menu" role="menu">
-                  <div className="dropdown-content">{actionImportButton || null}</div>
+                  <div className="dropdown-content px-4">{actionImportButton || null}</div>
                 </div>
               </div>
             ) : null}

@@ -512,6 +512,7 @@ describe('patchAppResource', () => {
         GroupId: null,
         OriginalId: null,
         clonable: false,
+        deleted: null,
         ephemeral: false,
         seed: false,
         created: new Date('1970-01-01T00:00:00.000Z'),

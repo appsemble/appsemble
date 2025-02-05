@@ -20,6 +20,7 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import styles from './index.module.css';
 import { messages } from './messages.js';
 import { AnnotationsTable } from '../../../../../components/AnnotationsTable/index.js';
+import { useUser } from '../../../../../components/UserProvider/index.js';
 import { useApp } from '../../index.js';
 
 interface AppMemberRowProperties {
@@ -64,6 +65,9 @@ export function MemberRow({
   onDeleted,
 }: AppMemberRowProperties): ReactNode {
   const { demo, email, name, properties, role, sub } = member;
+  const {
+    userInfo: { email: currentUserEmail },
+  } = useUser();
   const { app } = useApp();
   const { formatMessage } = useIntl();
 
@@ -152,6 +156,11 @@ export function MemberRow({
       <tr key={sub}>
         <td className={styles.noWrap}>
           <span>{name ? (email ? `${name} (${email})` : name) : email || sub}</span>
+          {email === currentUserEmail ? (
+            <span className="tag is-success ml-1">
+              <FormattedMessage {...messages.you} />
+            </span>
+          ) : null}
         </td>
         <td className={styles.propertyRow}>
           <div className="is-flex is-justify-content-space-between is-flex-grow-1">

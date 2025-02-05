@@ -13,8 +13,8 @@ TLS stands for Transport Layer Security. It’s successor to the widely known Se
 
 Appsemble supports securing your app using TLS/SSL certificates.
 
-By default, we secure your applications using [Let’s Encrypt]. There’s nothing you have to do to obtain
-this. It’s applied automatically for each new app.
+By default, we secure your applications using [Let’s Encrypt]. There’s nothing you have to do to
+obtain this. It’s applied automatically for each new app.
 
 You can also opt to bring your own certificates.
 

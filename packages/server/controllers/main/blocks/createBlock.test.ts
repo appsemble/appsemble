@@ -478,7 +478,7 @@ considered invalid.
               },
               version: {
                 description: 'A [semver](https://semver.org) representation of the block version.',
-                pattern: '^\\d+\\.\\d+\\.\\d+$',
+                pattern: '^\\d+\\.\\d+\\.\\d+(-[\\d.a-z-]+)?$',
                 type: 'string',
               },
               visibility: {

@@ -1,6 +1,6 @@
 {
   "name": "@appsemble/tsconfig",
-  "version": "0.30.13",
+  "version": "0.31.1-test.2",
   "type": "commonjs",
   "description": "The recommended TypeScript configuration for building Appsemble blocks",
   "keywords": [
@@ -37,6 +37,6 @@
     "test": "vitest"
   },
   "engines": {
-    "node": ">=18"
+    "node": ">=20"
   }
 }

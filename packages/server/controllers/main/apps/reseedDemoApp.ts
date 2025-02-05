@@ -36,8 +36,15 @@ export async function reseedDemoApp(ctx: Context): Promise<void> {
   const demoAssetsToDelete = await Asset.findAll({
     attributes: ['id', 'name'],
     where: {
-      ephemeral: true,
-      AppId: appId,
+      [Op.or]: {
+        [Op.and]: {
+          ephemeral: true,
+          AppId: appId,
+        },
+        OriginalId: {
+          [Op.not]: null,
+        },
+      },
     },
   });
   assetsCache.mdel(
@@ -48,6 +55,7 @@ export async function reseedDemoApp(ctx: Context): Promise<void> {
     where: {
       id: { [Op.in]: demoAssetsToDelete.map((asset) => asset.id) },
     },
+    force: true,
   });
 
   logger.info(`Removed ${demoAssetsDeletionResult} ephemeral assets.`);

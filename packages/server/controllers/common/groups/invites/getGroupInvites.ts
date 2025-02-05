@@ -32,7 +32,8 @@ export async function getGroupInvites(ctx: Context): Promise<void> {
     where: { GroupId: groupId },
   });
 
-  ctx.body = groupInvites.map(({ email }) => ({
+  ctx.body = groupInvites.map(({ email, role }) => ({
     email,
+    role,
   }));
 }

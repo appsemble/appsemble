@@ -1,3 +1,4 @@
+import { remap } from '@appsemble/utils';
 import { describe, expect, it } from 'vitest';
 
 import { validateRadio } from './validateRadio.js';
@@ -12,7 +13,7 @@ describe('validateRadio', () => {
       requirements: [{ required: true }],
     };
 
-    expect(validateRadio(field)).toBe(field.requirements[0]);
+    expect(validateRadio(field, null, remap)).toBe(field.requirements[0]);
   });
 
   it('should return undefined if it validates correctly', () => {
@@ -23,7 +24,19 @@ describe('validateRadio', () => {
       requirements: [{ required: true }],
     };
 
-    expect(validateRadio(field, 'a')).toBeUndefined();
+    expect(validateRadio(field, 'a', remap)).toBeUndefined();
+  });
+
+  it('should ignore the required requirement if it resolves to false', () => {
+    const field: RadioField = {
+      type: 'radio',
+      name: 'test',
+      options: [{ value: 'a' }, { value: 'b' }, { value: 'c' }],
+      requirements: [{ required: false }],
+    };
+
+    expect(validateRadio(field, undefined, remap)).toBeUndefined();
+    expect(validateRadio(field, null, remap)).toBeUndefined();
   });
 
   it('should validate prohibited requirements', () => {
@@ -34,8 +47,19 @@ describe('validateRadio', () => {
       requirements: [{ prohibited: true }],
     };
 
-    expect(validateRadio(field, 'a')).toStrictEqual(field.requirements[0]);
-    expect(validateRadio(field)).toBeUndefined();
+    expect(validateRadio(field, 'a', remap)).toStrictEqual(field.requirements[0]);
+    expect(validateRadio(field, undefined, remap)).toBeUndefined();
+  });
+
+  it('should ignore the prohibited requirement if it resolves to false', () => {
+    const field: RadioField = {
+      type: 'radio',
+      name: 'test',
+      options: [{ value: 'a' }, { value: 'b' }, { value: 'c' }],
+      requirements: [{ prohibited: false }],
+    };
+
+    expect(validateRadio(field, 'a', remap)).toBeUndefined();
   });
 
   it('should return undefined on valid falsy values', () => {
@@ -46,6 +70,6 @@ describe('validateRadio', () => {
       requirements: [{ required: true }],
     };
 
-    expect(validateRadio(field, '')).toBeUndefined();
+    expect(validateRadio(field, '', remap)).toBeUndefined();
   });
 });

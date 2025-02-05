@@ -1,6 +1,6 @@
 {
   "name": "@appsemble/react-components",
-  "version": "0.30.13",
+  "version": "0.31.1-test.2",
   "private": true,
   "description": "Reusable React components for internal use",
   "keywords": [
@@ -23,18 +23,18 @@
   "sideEffects": false,
   "type": "module",
   "exports": {
-    ".": [
-      "./index.js",
-      "./index.ts"
-    ]
+    ".": {
+      "ts-source": "./index.ts",
+      "default": "./index.js"
+    }
   },
   "scripts": {
     "test": "vitest"
   },
   "dependencies": {
-    "@appsemble/types": "0.30.13",
-    "@appsemble/utils": "0.30.13",
-    "@appsemble/web-utils": "0.30.13",
+    "@appsemble/types": "0.31.1-test.2",
+    "@appsemble/utils": "0.31.1-test.2",
+    "@appsemble/web-utils": "0.31.1-test.2",
     "@creativebulma/bulma-tagsinput": "^1.0.0",
     "@fortawesome/fontawesome-common-types": "^6.0.0",
     "@sentry/browser": "^7.0.0",
@@ -58,7 +58,7 @@
     "react-transition-group": "^4.0.0"
   },
   "devDependencies": {
-    "@testing-library/react": "^14.0.0",
-    "vitest": "^1.0.0"
+    "@testing-library/react": "^16.0.0",
+    "vitest": "^2.0.0"
   }
 }

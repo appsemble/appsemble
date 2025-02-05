@@ -35,7 +35,8 @@ export const command = 'release <increment>';
 export const description = 'Prepare files for a new release.';
 
 interface Args {
-  increment: 'minor' | 'patch';
+  increment: 'minor' | 'patch' | 'prerelease';
+  identifier: 'test';
 }
 
 interface Changes {
@@ -257,16 +258,45 @@ async function updateAppTranslations(newVersion: string): Promise<void> {
 }
 
 export function builder(yargs: Argv): Argv<any> {
-  return yargs.positional('increment', {
-    description: 'Whether to increment the minor or patch version',
-    choices: ['minor', 'patch'],
-  });
+  return yargs
+    .positional('increment', {
+      description: 'Whether to increment the minor, patch or pre-release version',
+      choices: ['minor', 'patch', 'prerelease'],
+    })
+    .option('identifier', {
+      description: `The identifier to use for the pre-release version:
+        - test: Internal testing or testing with clients (e.g., test.3).`,
+      choices: ['test'],
+      default: undefined,
+    })
+    .check((argv) => {
+      if (argv.increment === 'prerelease' && !argv.identifier) {
+        throw new Error(
+          'The "identifier" must be specified when incrementing the pre-release version.',
+        );
+      }
+      if (argv.increment !== 'prerelease' && argv.identifier) {
+        throw new Error(
+          'The "identifier" option can only be used with the "prerelease" increment.',
+        );
+      }
+      return true;
+    })
+    .epilogue(
+      'Examples:\n' +
+        '  Increment to the next test version:\n' +
+        '    npm run scripts -- release prerelease --identifier test\n' +
+        '  Increment the minor version:\n' +
+        '    npm run scripts -- release minor\n' +
+        '  Increment the patch version:\n' +
+        '    npm run scripts -- release patch',
+    );
 }
 
-export async function handler({ increment }: Args): Promise<void> {
+export async function handler({ identifier, increment }: Args): Promise<void> {
   const workspaces = await getWorkspaces(process.cwd());
   logger.info(`Old version: ${version}`);
-  const newVersion = semver.inc(version, increment);
+  const newVersion = semver.inc(version, increment, identifier);
   logger.info(`New version: ${newVersion}`);
   const paths = await globby(
     [

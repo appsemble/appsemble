@@ -27,6 +27,14 @@ If set to \`navigation\`, it will only be visible if \`login\` is also visible i
 If set to \`navigation\`, it will only be visible if \`login\` is also visible in \`navigation\`.
 `,
     },
+    install: {
+      enum: ['navbar', 'navigation', 'hidden'],
+      default: 'navigation',
+      description: `The location of the install button.
+
+If set to \`navigation\`, it will only be visible if \`login\` is also visible in \`navigation\`.
+`,
+    },
     navigation: {
       enum: ['bottom', 'left-menu', 'hidden'],
       default: 'left-menu',

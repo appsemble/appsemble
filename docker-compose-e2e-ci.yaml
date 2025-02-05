@@ -52,7 +52,7 @@ services:
 
   seeder:
     container_name: seeder
-    image: node:18.18.0-bookworm-slim
+    image: node:20.18-bookworm-slim
     networks: [appsemble-e2e]
     depends_on: [database]
     environment:

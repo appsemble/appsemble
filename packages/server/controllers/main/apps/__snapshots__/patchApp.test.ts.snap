@@ -112,7 +112,7 @@ Some examples:
 Since blocks may change over time, a version must be specified in order to ensure that the block
 will remain the same until it is manually updated.
 ",
-              "pattern": "^\\d+\\.\\d+\\.\\d+$",
+              "pattern": "^\\d+\\.\\d+\\.\\d+(-[\\d.a-z-]+)?$",
               "type": "string",
             },
           },
@@ -2073,7 +2073,7 @@ Some examples:
 Since blocks may change over time, a version must be specified in order to ensure that the block
 will remain the same until it is manually updated.
 ",
-              "pattern": "^\\d+\\.\\d+\\.\\d+$",
+              "pattern": "^\\d+\\.\\d+\\.\\d+(-[\\d.a-z-]+)?$",
               "type": "string",
             },
           },

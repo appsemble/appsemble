@@ -5802,6 +5802,10 @@ Describe what the button does. This helps with accessibility for people using sc
 If this isn’t specified, no label will be shown. If no fields have a label, the table header row won’t be shown.",
             "format": "remapper",
           },
+          "name": {
+            "description": "Name of the field to use for sorting the table.",
+            "type": "string",
+          },
           "onClick": {
             "description": "The name of the action to trigger when clicking on this field.",
             "format": "action",
@@ -5866,6 +5870,10 @@ If this isn’t specified, no label will be shown. If no fields have a label, th
 If this isn’t specified, no label will be shown. If no fields have a label, the table header row won’t be shown.",
             "format": "remapper",
           },
+          "name": {
+            "description": "Name of the field to use for sorting the table.",
+            "type": "string",
+          },
         },
         "required": [
           "dropdown",
@@ -5913,6 +5921,10 @@ If this isn’t specified, no label will be shown. If no fields have a label, th
 
 If this isn’t specified, no label will be shown. If no fields have a label, the table header row won’t be shown.",
             "format": "remapper",
+          },
+          "name": {
+            "description": "Name of the field to use for sorting the table.",
+            "type": "string",
           },
           "onClick": {
             "description": "The name of the action to trigger when clicking on this field.",
@@ -5965,6 +5977,10 @@ image can either be url or uploaded image",
 
 If this isn’t specified, no label will be shown. If no fields have a label, the table header row won’t be shown.",
             "format": "remapper",
+          },
+          "name": {
+            "description": "Name of the field to use for sorting the table.",
+            "type": "string",
           },
         },
         "required": [
@@ -6025,6 +6041,10 @@ Should be an array of data.",
 
 If this isn’t specified, no label will be shown. If no fields have a label, the table header row won’t be shown.",
             "format": "remapper",
+          },
+          "name": {
+            "description": "Name of the field to use for sorting the table.",
+            "type": "string",
           },
           "string": {
             "additionalProperties": false,

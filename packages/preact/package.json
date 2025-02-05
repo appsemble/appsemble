@@ -1,6 +1,6 @@
 {
   "name": "@appsemble/preact",
-  "version": "0.30.13",
+  "version": "0.31.1-test.2",
   "description": "Build your own blocks using Preact",
   "keywords": [
     "app",
@@ -26,10 +26,10 @@
   "sideEffects": false,
   "type": "module",
   "exports": {
-    ".": [
-      "./index.js",
-      "./index.tsx"
-    ],
+    ".": {
+      "ts-source": "./index.tsx",
+      "default": "./index.js"
+    },
     "./README.md": "./README.md"
   },
   "files": [
@@ -42,7 +42,7 @@
     "test": "vitest"
   },
   "peerDependencies": {
-    "@appsemble/sdk": "0.30.13",
+    "@appsemble/sdk": "0.31.1-test.2",
     "preact": "^10"
   }
 }

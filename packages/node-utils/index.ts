@@ -30,7 +30,7 @@ export * from './server/routes/appRouter/iconHandler.js';
 export * from './server/controllers/index.js';
 export * from './server/types.js';
 export * from './koa.js';
-export { bulmaVersion, faVersion, version } from './versions.cjs';
+export { bulmaVersion, faVersion, version } from './versions.js';
 export * from './EmailQuotaExceededError.js';
 export * from './EmailError.js';
 export * from './AppMemberPropertiesError.js';

@@ -4,7 +4,7 @@ import { IntlMessageFormat } from 'intl-messageformat';
 
 import { actions, type ServerActionParameters } from './actions/index.js';
 import { argv } from './argv.js';
-import { AppMessages } from '../models/AppMessages.js';
+import { AppMember, AppMessages } from '../models/index.js';
 
 export async function handleAction(
   action: (params: ServerActionParameters) => Promise<unknown>,
@@ -49,7 +49,17 @@ export async function handleAction(
   };
 
   try {
-    data = await action({ ...params, data, internalContext: updatedContext });
+    const appMemberInfo = await AppMember.findOne({
+      where: { AppId: params.app.id, role: 'cron' },
+    });
+    data = await action({
+      ...params,
+      context: params.app?.definition?.security?.cron
+        ? { ...params.context, user: appMemberInfo, client: { app: params.app.toJSON() } }
+        : { ...params.context },
+      data,
+      internalContext: updatedContext,
+    });
     if ('remapAfter' in params.action) {
       data = remap(params.action.remapAfter, data, updatedContext);
     }

@@ -32,7 +32,7 @@ import { visit } from 'unist-util-visit';
 import { parse, stringify } from 'yaml';
 import { type Argv } from 'yargs';
 
-import pkg from '../package.json' assert { type: 'json' };
+import pkg from '../package.json' with { type: 'json' };
 
 export const command = 'validate-docs';
 export const description = 'Validate all app definition code blocks in docs are valid';

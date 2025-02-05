@@ -6,8 +6,8 @@ import { useCallback, useEffect, useMemo, useState } from 'preact/hooks';
 
 import { FieldComponent } from './components/FieldComponent/index.js';
 import styles from './index.module.css';
-import { toOData } from './utils/toOData.js';
 import { type FilterValue, type FilterValues } from '../block.js';
+import { toOData } from './utils/toOData.js';
 
 bootstrap(
   ({ actions, events, parameters: { fields, fullscreen, highlight, icon }, ready, utils }) => {

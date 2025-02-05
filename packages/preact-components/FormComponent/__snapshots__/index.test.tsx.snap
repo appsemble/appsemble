@@ -1,0 +1,23 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`should render a form component with children elements 1`] = `
+<div
+  class="field"
+  data-testid="submit-formcomp"
+>
+  <div
+    class="control control"
+  >
+    <input
+      class="input"
+    />
+    <input
+      class="input"
+    />
+  </div>
+  <span
+    class="help help"
+    data-testid="help-formcomp"
+  />
+</div>
+`;

@@ -187,6 +187,7 @@ export class Mailer {
           host: smtpHost,
           secure: smtpSecure,
           auth,
+          ...(logger.isVerboseEnabled() ? { debug: true, logger: true } : {}),
         } as Options,
         { from: smtpFrom },
       );

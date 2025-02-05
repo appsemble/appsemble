@@ -149,4 +149,4 @@ Or, you can use the path to target a specific block you want to change the styli
 }
 ```
 
-To learn more, see [Theming](./theming.md#applying-themes-to-specific-blocks-or-pages).
+To learn more, see [Styling](../guides/custom-css.md#applying-themes-to-specific-blocks-or-pages).

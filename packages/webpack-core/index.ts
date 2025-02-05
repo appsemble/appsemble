@@ -71,6 +71,7 @@ function shared(env: string, { mode }: CliConfigOptions): Configuration {
       chunkFilename: production ? '[contenthash].js' : '[id].js',
     },
     resolve: {
+      conditionNames: ['ts-source', '...'],
       extensions: ['.js', '.ts', '.tsx', '.json'],
       extensionAlias: {
         '.js': ['.js', '.ts', '.tsx'],
@@ -80,6 +81,7 @@ function shared(env: string, { mode }: CliConfigOptions): Configuration {
       fallback: {
         path: false,
       },
+      modules: [join(projectDir, 'node_modules'), fileURLToPath(new URL('node_modules', rootDir))],
     },
     plugins: [
       new HtmlWebpackPlugin({

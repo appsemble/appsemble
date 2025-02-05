@@ -28,7 +28,7 @@ export async function createAppServiceSecret(ctx: Context): Promise<void> {
     requiredPermissions: [OrganizationPermission.CreateAppSecrets],
   });
 
-  const { authenticationMethod, id, identifier, name, scope, tokenUrl, urlPatterns } =
+  const { authenticationMethod, ca, id, identifier, name, scope, tokenUrl, urlPatterns } =
     await AppServiceSecret.create({
       ...body,
       secret: encrypt(body.secret, argv.aesSecret),
@@ -46,5 +46,6 @@ export async function createAppServiceSecret(ctx: Context): Promise<void> {
     urlPatterns,
     tokenUrl,
     scope,
+    ca,
   };
 }

@@ -133,7 +133,14 @@ export function SelectionInput({
       id={name}
       ref={errorLinkRef as unknown as Ref<HTMLDivElement>}
     >
-      <div className="title is-5 mb-4">{utils.remap(field.label, selectedOptions) as string}</div>
+      <div className="is-flex is-justify-content-space-between">
+        <div className="title is-5 mb-4">{utils.remap(field.label, selectedOptions) as string}</div>
+        {minItems ? null : (
+          <span className="is-pulled-right has-text-weight-normal">
+            {utils.formatMessage('optionalLabel')}
+          </span>
+        )}
+      </div>
       <div>
         {selectedOptions.map((option) => (
           <SelectionEntry

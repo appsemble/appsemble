@@ -1,6 +1,6 @@
 {
   "name": "@appsemble/utils",
-  "version": "0.30.13",
+  "version": "0.31.1-test.2",
   "description": "Utility functions used in Appsemble internally",
   "keywords": [
     "app",
@@ -22,14 +22,16 @@
   "sideEffects": false,
   "type": "module",
   "exports": {
-    ".": [
-      "./index.js",
-      "./index.ts"
-    ]
+    ".": {
+      "ts-source": "./index.ts",
+      "default": "./index.js"
+    }
   },
   "files": [
     "**/*.d.ts",
     "**/*.js",
+    "!**/*.test.js",
+    "!**/*.test.d.ts",
     "!*.config.js"
   ],
   "scripts": {
@@ -37,14 +39,14 @@
     "test": "vitest"
   },
   "dependencies": {
-    "@appsemble/types": "0.30.13",
+    "@appsemble/types": "0.31.1-test.2",
     "axios": "^1.0.0",
     "cron-parser": "^4.0.0",
     "date-fns": "^2.0.0",
     "fast-deep-equal": "^3.0.0",
     "ics": "^3.0.0",
     "intl-messageformat": "^10.0.0",
-    "jsonschema": "^1.0.0",
+    "jsonschema": "~1.4.1",
     "langmap": "^0.0.16",
     "language-tags": "^1.0.0",
     "lcm": "^0.0.3",
@@ -60,9 +62,9 @@
     "@types/lcm": "^0.0.2",
     "bulma": "0.9.3",
     "koas-core": "^0.7.0",
-    "vitest": "^1.0.0"
+    "vitest": "^2.0.0"
   },
   "engines": {
-    "node": ">=18"
+    "node": ">=20"
   }
 }

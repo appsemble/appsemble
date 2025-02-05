@@ -18,7 +18,7 @@ websites of these tools.
 - [Git](https://git-scm.com/)
 - [Docker](https://www.docker.com/)
 - [Docker Compose](https://docs.docker.com/compose/)
-- [NodeJS 18](https://nodejs.org/)
+- [NodeJS 20.18](https://nodejs.org/docs/latest-v20.x/api/index.html)
 
 You can start local development by cloning the git repository and installing the dependencies. Run
 the following commands to get started.
@@ -186,7 +186,7 @@ solved by downgrading your npm version to `18.18.0`.
 This error generally occurs when you don’t have an active database connection, easiest way to solve
 this problem is to run the `docker compose up -d command`.
 
-- **sh: line 1: `ts-node-esm`: command not found**
+- **sh: line 1: `tsx`: command not found**
 
 This error is caused by the absence of `node_modules` folder in your directory and can simply be
 solved by running `npm ci` or `npm clean-install`.

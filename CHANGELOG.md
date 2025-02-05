@@ -2,6 +2,103 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.31.1-test.2](https://gitlab.com/appsemble/appsemble/-/releases/0.31.1-test.2)] - 2025-02-03
+
+## \[[0.31.1-test.1](https://gitlab.com/appsemble/appsemble/-/releases/0.31.1-test.1)] - 2025-01-31
+
+## \[[0.31.1-test.0](https://gitlab.com/appsemble/appsemble/-/releases/0.31.1-test.0)] - 2025-01-27
+
+## \[[0.31.0](https://gitlab.com/appsemble/appsemble/-/releases/0.31.0)] - 2025-01-27
+
+## \[[0.30.14-rc.0](https://gitlab.com/appsemble/appsemble/-/releases/0.30.14-rc.0)] - 2025-01-24
+
+### Added
+
+- App: Allow setting resource id explicitly in `resource.get` and `resource.patch` actions.
+- Utils: Add AND and OR remappers.
+
+### Fixed
+
+- App: Switching groups should not navigate to Home page.
+- Server: Resource patch endpoint returning error for non-logged in users.
+
+## \[[0.30.14-test.7](https://gitlab.com/appsemble/appsemble/-/releases/0.30.14-test.7)] - 2025-01-14
+
+### Added
+
+- App: Add a PWA installation button and modal prompt to apps.
+
+### Changed
+
+- Server: Soft delete assets and resources.
+
+## \[[0.30.14-test.6](https://gitlab.com/appsemble/appsemble/-/releases/0.30.14-test.6)] - 2025-01-02
+
+### Added
+
+- Block(`table`): Add new field `name` to enable sorting fields.
+- App: Allow expiring data in `localStorage` using storage actions.
+
+### Changed
+
+- Block(`detail-viewer`): Default date render behavior.
+- Block(`list`): Default date render behavior.
+- Block(`table`): Default date render behavior.
+- Block(`wordcloud`): Default date render behavior.
+
+### Fixed
+
+- Block(`form`): Properly denote optional fieldset and selection fields.
+- App: Properly clear page data when the page changes.
+- Studio: App member and group invites default role.
+
+## \[[0.30.14-test.5](https://gitlab.com/appsemble/appsemble/-/releases/0.30.14-test.5)] - 2024-12-10
+
+### Fixed
+
+- Server: Fix notifications subject.
+
+## \[[0.30.14-test.4](https://gitlab.com/appsemble/appsemble/-/releases/0.30.14-test.4)] - 2024-12-09
+
+### Added
+
+- Server: Support ca in `client-certificate` service secrets.
+
+### Fixed
+
+- App: Allow selecting no group in group dropdown, translate app roles.
+- Server: Fix flaky update app collection tests.
+
+## \[[0.30.14-test.3](https://gitlab.com/appsemble/appsemble/-/releases/0.30.14-test.3)] - 2024-12-09
+
+### Changed
+
+- App: Move group selection to a separate dropdown in the navbar.
+
+### Fixed
+
+- Studio: Add empty `scope` when creating secrets without scope.
+
+## \[[0.30.14-test.2](https://gitlab.com/appsemble/appsemble/-/releases/0.30.14-test.2)] - 2024-12-03
+
+### Added
+
+- Server: Log proxy OAuth2 token errors.
+
+## \[[0.30.14-test.1](https://gitlab.com/appsemble/appsemble/-/releases/0.30.14-test.1)] - 2024-12-02
+
+## \[[0.30.14-test.0](https://gitlab.com/appsemble/appsemble/-/releases/0.30.14-test.0)] - 2024-12-02
+
+### Added
+
+- App: Automatically subscribe to all resource actions notifications.
+- Scripts: Add support for `test` and `rc` pre-releases.
+- Server: Log proxied responses in verbose mode.
+
+### Fixed
+
+- Server: Associate app subscriptions to app members instead of users.
+
 ## \[[0.30.13](https://gitlab.com/appsemble/appsemble/-/releases/0.30.13)] - 2024-11-21
 
 ### Fixed

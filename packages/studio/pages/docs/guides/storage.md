@@ -46,8 +46,8 @@ often used for user preferences.
 There are 3 main browser storage options:
 
 - **[indexedDB](https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API)**: Allows you to
-  persist on most browsers [up to 10% to 60% of the disk space available][]. Files will also be stored
-  and retrievable.
+  persist on most browsers [up to 10% to 60% of the disk space available][]. Files will also be
+  stored and retrievable.
 - **[localStorage](https://developer.mozilla.org/en-US/docs/Web/API/Web_Storage_API)**: Allows you
   to persist [up to a maximum of 5 MiB on all browsers][]. Uploading files will not work and instead
   results in an empty object being returned.

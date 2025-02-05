@@ -1,6 +1,6 @@
 {
   "name": "@appsemble/studio",
-  "version": "0.30.13",
+  "version": "0.31.1-test.2",
   "private": true,
   "description": "The frontend for managing Appsemble apps and organizations",
   "keywords": [
@@ -22,19 +22,19 @@
   "author": "Appsemble <info@appsemble.com> (https://appsemble.com)",
   "type": "module",
   "exports": {
-    ".": [
-      "./index.js",
-      "./index.ts"
-    ]
+    ".": {
+      "ts-source": "./index.ts",
+      "default": "./index.js"
+    }
   },
   "scripts": {
     "test": "vitest"
   },
   "dependencies": {
-    "@appsemble/react-components": "0.30.13",
-    "@appsemble/types": "0.30.13",
-    "@appsemble/utils": "0.30.13",
-    "@appsemble/web-utils": "0.30.13",
+    "@appsemble/react-components": "0.31.1-test.2",
+    "@appsemble/types": "0.31.1-test.2",
+    "@appsemble/utils": "0.31.1-test.2",
+    "@appsemble/web-utils": "0.31.1-test.2",
     "@browser-logos/chrome": "^2.0.0",
     "@browser-logos/edge": "^2.0.0",
     "@browser-logos/firefox": "^3.0.0",
@@ -45,10 +45,10 @@
     "@sentry/browser": "^7.0.0",
     "@types/css-modules": "^1.0.0",
     "@types/mdx": "^2.0.0",
+    "@types/react": "^18.0.0",
     "@types/react-avatar-editor": "^13.0.0",
     "@types/react-dom": "^18.0.0",
     "@types/react-router-dom": "^5.0.0",
-    "@types/react": "^18.0.0",
     "@types/webpack-env": "^1.0.0",
     "axios": "^1.0.0",
     "classnames": "^2.0.0",
@@ -56,18 +56,18 @@
     "fast-deep-equal": "^3.0.0",
     "indent-string": "^5.0.0",
     "intl-messageformat": "^10.0.0",
-    "jsonschema": "^1.0.0",
+    "jsonschema": "~1.4.1",
     "jwt-decode": "^4.0.0",
     "monaco-editor": "^0.41.0",
     "monaco-marker-data-provider": "^1.0.0",
     "monaco-worker-manager": "^2.0.0",
-    "monaco-yaml": "^5.0.0",
+    "monaco-yaml": "^5.2.0",
     "openapi-types": "^12.0.0",
+    "react": "^18.0.0",
     "react-avatar-editor": "^13.0.0",
     "react-dom": "^18.0.0",
     "react-intl": "^6.0.0",
     "react-router-dom": "^6.0.0",
-    "react": "^18.0.0",
     "reactflow": "^11.0.0",
     "rehype-react": "^8.0.0",
     "rehype-sanitize": "^6.0.0",
@@ -79,6 +79,6 @@
     "yaml": "^2.0.0"
   },
   "devDependencies": {
-    "vitest": "^1.0.0"
+    "vitest": "^2.0.0"
   }
 }

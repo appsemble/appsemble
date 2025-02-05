@@ -197,15 +197,16 @@ async function handleRequestProxy(
   }
 
   axiosConfig.headers['user-agent'] = `AppsembleServer/${version}`;
+  axiosConfig.headers.connection = 'close';
   axiosConfig.responseType = 'stream';
   axiosConfig.validateStatus = () => true;
   axiosConfig.decompress = false;
 
   let response;
-  const urlPattern = /^http:\/\/(([\da-z-]+).){2}svc.cluster.local/;
+  const containerUrlPattern = /^http:\/\/(([\da-z-]+).){2}svc.cluster.local/;
 
   // Restricting access to only the containers defined by the app
-  if (urlPattern.test(String(proxyUrl))) {
+  if (containerUrlPattern.test(String(proxyUrl))) {
     axiosConfig.url = axiosConfig.url.replace(
       axiosConfig.url.split('.')[1],
       getContainerNamespace(),
@@ -218,12 +219,15 @@ async function handleRequestProxy(
   }
 
   logger.verbose(`Forwarding request to ${axios.getUri(axiosConfig)}`);
+  logger.verbose('Axios Config:');
+  logger.verbose(axiosConfig);
   try {
     response = await axios(axiosConfig);
+    logger.verbose(response);
   } catch (err: unknown) {
     // If request is sent to a companion container and fails
     // Try to start it anew and retry the request
-    if (urlPattern.test(String(proxyUrl))) {
+    if (containerUrlPattern.test(String(proxyUrl))) {
       const { deploymentName, namespace } = parseServiceUrl(String(proxyUrl));
       try {
         await scaleDeployment(namespace, deploymentName, 1);
@@ -235,13 +239,15 @@ async function handleRequestProxy(
 
         response = await axios(axiosConfig);
       } catch {
-        logger.error(err);
         throwKoaError(ctx, 502, 'Bad Gateway');
       } finally {
         await setLastRequestAnnotation(namespace, deploymentName);
       }
     } else {
       logger.error(err);
+      logger.verbose('Response:');
+      logger.verbose(response);
+
       throwKoaError(ctx, 502, 'Bad Gateway');
     }
   }

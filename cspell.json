@@ -1,6 +1,5 @@
 {
   "dictionaries": ["custom-words", "typescript", "node", "css", "html", "fonts", "companies"],
-
   "dictionaryDefinitions": [
     {
       "name": "custom-words",
@@ -190,6 +189,7 @@
     "Pinnable",
     "nosniff",
     "typname",
-    "psql"
+    "psql",
+    "formcomp"
   ]
 }

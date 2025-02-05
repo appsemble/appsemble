@@ -217,7 +217,7 @@ async function validate(
   /**
    * Validate tsconfig.json
    */
-  const tsConfig = await fsExtra.readJson(join(dir, 'tsconfig.json')).catch(() => null);
+  const tsConfig = await fsExtra.readJson(join(dir, 'tsconfig.json')).catch((): null => null);
   assert(tsConfig, 'tsconfig.json', 'The workspace should have a TypeScript configuration');
   if (tsConfig) {
     if (isBlock || isController) {
@@ -252,8 +252,8 @@ async function validate(
   /**
    * Validate the license matches the Appsemble license.
    */
-  const license = await readFile(join(dir, 'LICENSE.md'), 'utf8').catch(() => null);
-  assert(license, 'LICENSE.md', 'The workspace should have a license');
+  const license = await readFile(join(dir, 'LICENSE.md'), 'utf8').catch((): null => null);
+  assert(Boolean(license), 'LICENSE.md', 'The workspace should have a license');
   assert(
     license === projectLicense,
     'LICENSE.md',
@@ -347,6 +347,7 @@ export async function handler(): Promise<void> {
   const latestVersion = semver.maxSatisfying(
     workspaces.map(({ pkg }) => pkg.version),
     '*',
+    { includePrerelease: true },
   );
 
   for (const workspace of workspaces) {

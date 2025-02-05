@@ -907,10 +907,10 @@ function validateSecurity(definition: AppDefinition, report: Report): void {
     return;
   }
 
-  if ((!security.default || !security.roles) && !security.guest) {
+  if ((!security.default || !security.roles) && !security.guest && !security.cron) {
     report(
       definition,
-      'invalid security definition. Must define either guest or roles and default',
+      'invalid security definition. Must define either guest or cron or roles and default',
       ['security'],
     );
     return;
@@ -949,6 +949,43 @@ function validateSecurity(definition: AppDefinition, report: Report): void {
         ['security', 'guest'],
       );
     }
+  } else if (security.cron) {
+    if (!definition.cron) {
+      report(definition, 'can not define cron definition without a cron job', ['security', 'cron']);
+      return;
+    }
+    if (security.cron.inherits && security.cron.inherits.length && !security.roles) {
+      report(definition, 'cron can not inherit roles if the roles property is not defined', [
+        'security',
+        'cron',
+        'inherits',
+      ]);
+      return;
+    }
+
+    const inheritedPermissions = getAppRolePermissions(security, security.cron.inherits || []);
+
+    const possibleCronPermissions = getAppPossibleGuestPermissions(definition);
+
+    if (inheritedPermissions.some((ip) => !possibleCronPermissions.includes(ip))) {
+      report(
+        definition,
+        'invalid security definition. Guest cannot inherit roles that contain own resource permissions',
+        ['security', 'cron', 'inherits'],
+      );
+      return;
+    }
+
+    if (security.cron.permissions) {
+      validatePermissions(
+        definition,
+        security.cron.permissions,
+        inheritedPermissions,
+        possibleCronPermissions,
+        report,
+        ['security', 'cron'],
+      );
+    }
   } else {
     checkRoleExists(security.default.role, ['security', 'default', 'role']);
   }
@@ -957,7 +994,7 @@ function validateSecurity(definition: AppDefinition, report: Report): void {
     const possibleAppPermissions = getAppPossiblePermissions(definition);
 
     for (const [name, role] of Object.entries(security.roles)) {
-      if (predefinedRoles.includes(name)) {
+      if ([...predefinedRoles, 'cron'].includes(name)) {
         report(definition, `not allowed to overwrite role ${name}`, ['security', 'roles', name]);
       }
 

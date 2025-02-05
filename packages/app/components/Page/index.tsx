@@ -64,6 +64,11 @@ export function Page(): ReactNode {
   const navigate = useNavigate();
 
   const [data, setData] = useState<unknown>({});
+
+  useEffect(() => {
+    setData({});
+  }, [pageId]);
+
   const [dialog, setDialog] = useState<ShowDialogParams>();
   const stepRef = useRef<unknown>();
   const tabRef = useRef<unknown>();
@@ -272,9 +277,11 @@ export function Page(): ReactNode {
   );
 
   useEffect(() => {
-    actions.onLoad().then((results) => {
-      setData(results);
-    });
+    if (actions.onLoad.type !== 'noop') {
+      actions.onLoad().then((results) => {
+        setData(results);
+      });
+    }
   }, [setData, actions]);
 
   const checkPagePermissionsCallback = useCallback(

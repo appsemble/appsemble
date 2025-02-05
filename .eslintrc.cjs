@@ -28,6 +28,12 @@ module.exports = {
   },
   overrides: [
     {
+      files: ['packages/scripts/**'],
+      rules: {
+        'no-console': 'off',
+      },
+    },
+    {
       files: ['*.ts', '*.tsx'],
       rules: {
         'appsemble/enforce-index-decorator': 'error',

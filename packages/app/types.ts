@@ -11,6 +11,7 @@ import {
   type Group,
   type ProjectImplementations,
   type Remapper,
+  type ResourceSubscribableAction,
   type UserInfo,
 } from '@appsemble/types';
 import { type AppConfigEntryGetter, type MessageGetter } from '@appsemble/utils';
@@ -155,7 +156,12 @@ export interface MakeActionParameters<D extends ActionDefinition> {
 export type Permission = NotificationPermission | 'pending';
 
 export interface ServiceWorkerRegistrationContextType {
-  subscribe: () => Promise<PushSubscription>;
+  subscribe: (
+    resourceActionsToSubscribeTo?: {
+      resourceType: string;
+      action: ResourceSubscribableAction;
+    }[],
+  ) => Promise<PushSubscription>;
   unsubscribe: () => Promise<boolean>;
   permission: Permission;
   subscription: PushSubscription;

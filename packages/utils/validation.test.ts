@@ -2372,11 +2372,28 @@ describe('validateAppDefinition', () => {
     expect(result.valid).toBe(false);
     expect(result.errors).toStrictEqual([
       new ValidationError(
-        'invalid security definition. Must define either guest or roles and default',
+        'invalid security definition. Must define either guest or cron or roles and default',
         app,
         undefined,
         ['security'],
       ),
+    ]);
+  });
+
+  it('should report if there is a cron security definition but cron is not defined', async () => {
+    const app = createTestApp();
+    app.security = {
+      cron: {
+        permissions: ['$group:query'],
+      },
+    } as Security;
+    const result = await validateAppDefinition(app, () => []);
+    expect(result.valid).toBe(false);
+    expect(result.errors).toStrictEqual([
+      new ValidationError('can not define cron definition without a cron job', app, undefined, [
+        'security',
+        'cron',
+      ]),
     ]);
   });
 
@@ -3585,13 +3602,14 @@ describe('validateAppDefinition', () => {
         GroupsManager: {},
         ResourcesManager: {},
         Owner: {},
+        cron: {},
       },
     } as Security;
 
     const result = await validateAppDefinition(app, () => []);
     expect(result.valid).toBe(false);
     expect(result.errors).toStrictEqual(
-      predefinedAppRoles.map(
+      [...predefinedAppRoles, 'cron'].map(
         (role) =>
           new ValidationError(`not allowed to overwrite role ${role}`, app, undefined, [
             'security',

@@ -1,7 +1,7 @@
 apiVersion: v2
 name: appsemble
-version: 0.30.13
-appVersion: 0.30.13
+version: 0.31.1-test.2
+appVersion: 0.31.1-test.2
 kubeVersion: '>=1.21.0'
 type: application
 description: The open source low-code app building platform
@@ -27,13 +27,8 @@ dependencies:
     repository: https://jouve.github.io/charts
     condition: mailpit.enabled
 annotations:
-  artifacthub.io/changes: >
-    - kind: fixed
-      description: "App: Fix app member patch form and use the right URL."
-    - kind: fixed
-      description: "Server: Properly connect app members to app OAuth2 authorizations."
-    - kind: fixed
-      description: "Studio: Remapper docs links on index remapper page."
+  artifacthub.io/changes: |
+    []
   artifacthub.io/license: LGPL-3.0-only
   artifacthub.io/links: |
     - name: Appsemble Studio

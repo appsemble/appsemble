@@ -33,6 +33,10 @@ remapBefore:
       $ref: '#/components/schemas/RemapperDefinition',
       description: 'The data to write to the storage entry.',
     },
+    expiry: {
+      enum: ['1d', '3d', '7d', '12h'],
+      description: 'Set an expiry for your data, only works with the localStorage',
+    },
     storage: {
       enum: ['indexedDB', 'localStorage', 'sessionStorage', 'appStorage'],
       description: 'The mechanism used to store the data.',

@@ -106,6 +106,7 @@ export function ModalCard<T extends ElementType = 'div'>({
 
   return (
     <div className={classNames(`is-active modal ${styles.root} ${openClass}`, wrapperClassName)}>
+      {/* eslint-disable-next-line jsx-a11y/prefer-tag-over-role */}
       <div
         className="modal-background"
         onClick={closable ? onClose : null}

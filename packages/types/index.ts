@@ -319,6 +319,18 @@ interface EndTimeICSRemapper extends BaseICSRemapper {
   end: Remapper;
 }
 
+export interface SubstringCaseType {
+  /**
+   * Whether to match the case of the substring.
+   */
+  strict?: boolean;
+
+  /**
+   * Substring to match.
+   */
+  substring: string;
+}
+
 export interface Remappers {
   /**
    * Get app metadata.
@@ -419,6 +431,24 @@ export interface Remappers {
   not: Remapper[];
 
   /**
+   * Compare all computed remapper values against each other.
+   *
+   * Returns `true` if all entries are true, otherwise `false`.
+   *
+   * If only one remapper is passed, the remapper is returned.
+   */
+  and: Remapper[];
+
+  /**
+   * Compare all computed remapper values against each other.
+   *
+   * Returns `false` if all entries are false, otherwise `true`.
+   *
+   * If only one remapper is passed, the remapper is returned.
+   */
+  or: Remapper[];
+
+  /**
    * Get data stored at the current flow page step
    */
   step: string;
@@ -504,7 +534,8 @@ export interface Remappers {
   /**
    * Get the current array.map’s index or length.
    *
-   * Returns nothing if array.map’s context isn’t set.
+   * Returns length of the input array if array.map’s context isn’t set or nothing if the input is
+   * not an array.
    */
   array: 'index' | 'item' | 'length';
 
@@ -693,6 +724,21 @@ export interface Remappers {
   'string.case': 'lower' | 'upper';
 
   /**
+   * Check if the initial characters of the string matches with the input string.
+   */
+  'string.startsWith': SubstringCaseType | string;
+
+  /**
+   * Check if the last characters of the string matches with the input string.
+   */
+  'string.endsWith': SubstringCaseType | string;
+
+  /**
+   * Extract a section of the string.
+   */
+  'string.slice': number | [number, number];
+
+  /**
    * Format a string using remapped input variables.
    */
   'string.format': {
@@ -749,6 +795,10 @@ export interface SubscriptionResponseResource {
 
 export type SubscriptionResponse = Record<string, SubscriptionResponseResource>;
 
+export const resourceSubscribableAction = ['create', 'update', 'delete'] as const;
+
+export type ResourceSubscribableAction = (typeof resourceSubscribableAction)[number];
+
 export type ResourceViewAction = 'get' | 'query';
 
 export type OwnResourceAction = ResourceViewAction | 'delete' | 'patch' | 'update';
@@ -779,6 +829,11 @@ export interface GuestDefinition {
   inherits?: AppRole[];
 }
 
+export interface CronSecurityDefinition {
+  permissions?: CustomAppPermission[];
+  inherits?: AppRole[];
+}
+
 export interface RoleDefinition {
   description?: string;
   defaultPage?: string;
@@ -791,6 +846,7 @@ export type SecurityPolicy = 'everyone' | 'invite' | 'organization';
 export interface MinimalSecurity {
   guest: GuestDefinition;
 
+  cron?: CronSecurityDefinition;
   default?: {
     role: AppRole;
     policy?: SecurityPolicy;
@@ -802,6 +858,7 @@ export interface MinimalSecurity {
 export interface StrictSecurity {
   guest?: GuestDefinition;
 
+  cron?: CronSecurityDefinition;
   default: {
     role: AppRole;
     policy?: SecurityPolicy;
@@ -1333,6 +1390,11 @@ export interface StorageWriteActionDefinition extends BaseActionDefinition<'stor
    * @default 'indexedDB'
    */
   storage?: StorageType;
+
+  /**
+   * Expiry of the data stored, to be used with `localStorage`.
+   */
+  expiry?: '1d' | '3d' | '7d' | '12h';
 }
 
 export interface GroupMemberInviteActionDefinition
@@ -1579,6 +1641,13 @@ interface OwnResourceDefinition {
   own?: boolean;
 }
 
+interface ResourceActionWithIdDefinition {
+  /**
+   * Id of the resource to fetch
+   */
+  id?: Remapper;
+}
+
 export interface ControllerActionDefinition extends BaseActionDefinition<'controller'> {
   handler: string;
 }
@@ -1588,6 +1657,7 @@ export type ResourceCreateActionDefinition = ResourceActionDefinition<'resource.
 export type ResourceDeleteActionDefinition = ResourceActionDefinition<'resource.delete'>;
 export type ResourceHistoryGetActionDefinition = ResourceActionDefinition<'resource.history.get'>;
 export type ResourceGetActionDefinition = ResourceActionDefinition<'resource.get'> &
+  ResourceActionWithIdDefinition &
   ViewResourceDefinition;
 export type ResourceQueryActionDefinition = OwnResourceDefinition &
   ResourceActionDefinition<'resource.query'> &
@@ -1595,7 +1665,8 @@ export type ResourceQueryActionDefinition = OwnResourceDefinition &
 export type ResourceCountActionDefinition = OwnResourceDefinition &
   ResourceActionDefinition<'resource.count'>;
 export type ResourceUpdateActionDefinition = ResourceActionDefinition<'resource.update'>;
-export type ResourcePatchActionDefinition = ResourceActionDefinition<'resource.patch'>;
+export type ResourcePatchActionDefinition = ResourceActionDefinition<'resource.patch'> &
+  ResourceActionWithIdDefinition;
 export type AppMemberLogoutAction = BaseActionDefinition<'app.member.logout'>;
 
 export interface BaseResourceSubscribeActionDefinition<T extends Action['type']>
@@ -2009,6 +2080,15 @@ export interface AppDefinition {
      * @default 'navbar'
      */
     feedback?: LayoutPosition;
+
+    /**
+     * The location of the install button.
+     *
+     * If set to `navigation`, it will only be visible if `login` is also visible in `navigation`.
+     *
+     * @default 'navbar'
+     */
+    install?: LayoutPosition;
 
     /**
      * The navigation type to use.
@@ -2628,6 +2708,11 @@ export interface AppServiceSecretDefinition {
    * The scope used for client-credentials method.
    */
   scope?: string;
+
+  /**
+   * The custom certificate authority used for client-certificate method.
+   */
+  ca?: string;
 }
 
 export interface AppServiceSecret extends AppServiceSecretDefinition {

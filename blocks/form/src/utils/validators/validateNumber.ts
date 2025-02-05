@@ -1,12 +1,32 @@
-import { type NumberField, type NumberRequirement, Requirement } from '../../../block.js';
+import { type Remapper } from '@appsemble/sdk';
 
-export function validateNumber(field: NumberField, value: number): NumberRequirement {
+import {
+  type NumberField,
+  type NumberRequirement,
+  Requirement,
+  type Values,
+} from '../../../block.js';
+
+export function validateNumber(
+  field: NumberField,
+  value: number,
+  remap: (remapper: Remapper, data: any, context?: Record<string, any>) => any,
+  values?: Values,
+): NumberRequirement {
   return field.requirements?.find((requirement) => {
-    if (Requirement.Required in requirement && !Number.isFinite(value)) {
+    if (
+      Requirement.Required in requirement &&
+      Boolean(remap(requirement.required, values)) &&
+      !Number.isFinite(value)
+    ) {
       return true;
     }
 
-    if (Requirement.Prohibited in requirement && Number.isFinite(value)) {
+    if (
+      Requirement.Prohibited in requirement &&
+      Boolean(remap(requirement.prohibited, values)) &&
+      Number.isFinite(value)
+    ) {
       return true;
     }
 

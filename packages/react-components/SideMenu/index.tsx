@@ -106,6 +106,7 @@ export function SideMenuProvider({ base, bottom, children }: SideMenuProviderPro
           [styles.toggleable]: isClosableOnDesktop,
         })}
       >
+        {/* eslint-disable-next-line jsx-a11y/prefer-tag-over-role */}
         <div
           className={classNames(styles.backdrop, 'is-hidden-dekstop', {
             [styles.closed]: !enabled,

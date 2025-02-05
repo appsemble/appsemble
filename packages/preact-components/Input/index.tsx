@@ -97,7 +97,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
           type={type}
         />
         {datalist ? (
-          <datalist id={datalist ? `${id}-dataset` : null}>
+          <datalist data-testid="test-id-datalist" id={datalist ? `${id}-dataset` : null}>
             {datalist.map((option) => (
               <option key={option} value={option} />
             ))}

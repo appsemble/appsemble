@@ -1,6 +1,6 @@
 {
   "name": "@appsemble/app",
-  "version": "0.30.13",
+  "version": "0.31.1-test.2",
   "private": true,
   "description": "The base for Appsemble apps",
   "keywords": [
@@ -22,20 +22,20 @@
   "author": "Appsemble <info@appsemble.com> (https://appsemble.com)",
   "type": "module",
   "exports": {
-    ".": [
-      "./index.js",
-      "./index.ts"
-    ]
+    ".": {
+      "ts-source": "./index.ts",
+      "default": "./index.js"
+    }
   },
   "scripts": {
     "test": "vitest"
   },
   "dependencies": {
-    "@appsemble/react-components": "0.30.13",
-    "@appsemble/sdk": "0.30.13",
-    "@appsemble/types": "0.30.13",
-    "@appsemble/utils": "0.30.13",
-    "@appsemble/web-utils": "0.30.13",
+    "@appsemble/react-components": "0.31.1-test.2",
+    "@appsemble/sdk": "0.31.1-test.2",
+    "@appsemble/types": "0.31.1-test.2",
+    "@appsemble/utils": "0.31.1-test.2",
+    "@appsemble/web-utils": "0.31.1-test.2",
     "@browser-logos/chrome": "^2.0.0",
     "@browser-logos/edge": "^2.0.0",
     "@browser-logos/firefox": "^3.0.0",
@@ -45,7 +45,7 @@
     "@sentry/browser": "^7.0.0",
     "@types/css-modules": "^1.0.0",
     "@types/events": "^3.0.0",
-    "@types/gtag.js": "^0.0.18",
+    "@types/gtag.js": "^0.0.20",
     "@types/react": "^18.0.0",
     "@types/react-dom": "^18.0.0",
     "@types/react-router-dom": "^5.0.0",
@@ -63,14 +63,17 @@
     "react-dom": "^18.0.0",
     "react-intl": "^6.0.0",
     "react-router-dom": "^6.0.0",
+    "react-use-pwa-install": "^1.0.3",
     "type-fest": "^4.0.0",
     "xast-util-to-xml": "^4.0.0"
   },
   "devDependencies": {
     "@types/jsdom": "^21.0.0",
     "fake-indexeddb": "^5.0.0",
-    "happy-dom": "^12.0.0",
+    "happy-dom": "^15.11.6",
     "jsdom": "^22.0.0",
-    "vitest": "^1.0.0"
+    "vitest": "^2.0.0",
+    "react-is": "^18.0.0",
+    "@types/react-is": "^18.0.0"
   }
 }

@@ -58,7 +58,7 @@ export async function extractMessages(): Promise<Translations> {
   for (const locale of locales) {
     for (const [key, value] of Object.entries(messages)) {
       newTranslations[locale][key] =
-        locale === defaultLocale ? value.defaultMessage : currentTranslations[locale][key] ?? '';
+        locale === defaultLocale ? value.defaultMessage : (currentTranslations[locale][key] ?? '');
     }
 
     for (const key of serverMessageKeys) {

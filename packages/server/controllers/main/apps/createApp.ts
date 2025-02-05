@@ -10,7 +10,7 @@ import { literal } from 'sequelize';
 import webpush from 'web-push';
 import { parse } from 'yaml';
 
-import { App, AppSnapshot, Organization, transactional } from '../../../models/index.js';
+import { App, AppMember, AppSnapshot, Organization, transactional } from '../../../models/index.js';
 import {
   createAppReadmes,
   createAppScreenshots,
@@ -138,6 +138,13 @@ export async function createApp(ctx: Context): Promise<void> {
           throw new AppsembleError('Dry run');
         }
       });
+      if (record.definition.cron && record.definition.security?.cron) {
+        const identifier = Math.random().toString(36).slice(2);
+        const cronEmail = `cron-${identifier}@example.com`;
+        record.AppMembers = [
+          await AppMember.create({ AppId: record.id, role: 'cron', email: cronEmail }),
+        ];
+      }
     } catch (error: unknown) {
       // AppsembleError is only thrown when dryRun is set, meaning it’s only used to test
       if (error instanceof AppsembleError) {

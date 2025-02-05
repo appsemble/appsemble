@@ -106,5 +106,5 @@ For more details, see the [documentation](../guides/basic-app.md#export-import).
 - [Resources](resources.md)
 - [Security](security.md)
 - [Groups](groups.md)
-- [Theming](theming.md)
+- [Styling](styling.md)
 - [Translating](translating.md)

@@ -1,5 +1,5 @@
 default:
-  image: node:18.18.0-bookworm-slim
+  image: node:20.18-bookworm-slim
 
 stages:
   - cleanup
@@ -61,7 +61,12 @@ workflow:
     - apt-get update
     - apt-get install --yes git gnupg
     - gpg --import "$GPG_PRIVATE_KEY"
-    - npm run scripts -- release "$INCREMENT"
+    - |
+      if [ -n "$IDENTIFIER" ]; then
+        npm run scripts -- release "$INCREMENT" --identifier "$IDENTIFIER"
+      else
+        npm run scripts -- release "$INCREMENT"
+      fi
     - npm install
     - VERSION="$(npm --silent run appsemble -- --version)"
     - |
@@ -231,8 +236,8 @@ stylelint:
   script:
     - npx -- stylelint .
 
-# Run unittests using NodeJS 18.
-test node 18:
+# Run unittests using NodeJS.
+test node:
   extends: .npm
   services:
     - postgres:15
@@ -505,7 +510,9 @@ publish npm:
       aud: sigstore
   script:
     - npm config set //registry.npmjs.org/:_authToken "$NPM_TOKEN"
-    - find . -exec npm publish --access public --provenance {} \;
+    # Disable provenance for now
+    # - find . -exec npm publish --access public --provenance {} \;
+    - find . -exec npm publish --access public \;
 
 # Perform various post release actions.
 sentry release:
@@ -519,6 +526,13 @@ sentry release:
   script:
     - sentry-cli releases new --finalize "$CI_COMMIT_TAG"
     - sentry-cli releases set-commits --auto "$CI_COMMIT_TAG"
+
+# Create a test pre-release
+release test:
+  extends: .release
+  variables:
+    INCREMENT: prerelease
+    IDENTIFIER: test
 
 # Create a patch release
 release patch:
@@ -604,6 +618,7 @@ review:
     - openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout mailpit.key -out mailpit.crt -subj "/CN=review-${CI_MERGE_REQUEST_IID}-mailpit-smtp" -addext "subjectAltName=DNS:review-${CI_MERGE_REQUEST_IID}-mailpit-smtp"
     - kubectl create secret tls review-$CI_MERGE_REQUEST_IID-mailpit-tls --cert=mailpit.crt --key=mailpit.key --dry-run=client -o yaml | kubectl apply -f -
     - rm mailpit.key mailpit.crt
+    # default bitnami postgresql PVC size is 8Gi, but that much should not be needed for a review environment
     - helm install "review-$CI_MERGE_REQUEST_IID" ./public/appsemble-*.tgz
       --atomic
       --set "fullnameOverride=review-$CI_MERGE_REQUEST_IID"
@@ -619,6 +634,7 @@ review:
       --set "ingress.tls.wildcardSecretName=review-$CI_MERGE_REQUEST_IID-tls-wildcard"
       --set "migrateTo=next"
       --set "global.postgresql.auth.existingSecret=postgresql-secret"
+      --set "postgresql.primary.persistence.size=1Gi"
       --set "provision.organization.id=appsemble"
       --set "provision.user.organizationRole=Maintainer"
       --set "provision.user.clientCredentials=$APPSEMBLE_CLIENT_CREDENTIALS"
@@ -654,6 +670,7 @@ stop review:
     - helm delete "review-$CI_MERGE_REQUEST_IID"
     - kubectl delete pvc --selector "app.kubernetes.io/instance=review-$CI_MERGE_REQUEST_IID"
     - kubectl delete namespace "companion-containers-review-$CI_MERGE_REQUEST_IID" || true
+    - kubectl get secrets --no-headers -o custom-columns=:metadata.name | grep "^review-$CI_MERGE_REQUEST_IID" | xargs -I{} kubectl delete secret {} || true
 
 # Deploy the Docker image for main to the staging environment.
 staging:
@@ -818,11 +835,16 @@ provision review:
   stage: provision
   rules:
     - if: $CI_MERGE_REQUEST_ID && $CI_MERGE_REQUEST_SOURCE_PROJECT_PATH == 'appsemble/appsemble'
+      when: manual
+      allow_failure: true
+  variables:
+    INCREMENT: patch
+    IDENTIFIER: ''
   needs:
     - review
     - npm_ci
   script:
-    - npm run scripts -- release patch
+    - npm run scripts -- release "$INCREMENT" ${IDENTIFIER:+--identifier "$IDENTIFIER"}
     - npm run appsemble -- config set context review
     - npm run appsemble -- config set remote "https://$CI_MERGE_REQUEST_IID.appsemble.review"
     - npm run scripts -- wait-for-api
@@ -838,11 +860,16 @@ provision staging:
   stage: provision
   rules:
     - if: $CI_COMMIT_BRANCH == 'staging'
+      when: manual
+      allow_failure: true
+  variables:
+    INCREMENT: patch
+    IDENTIFIER: ''
   needs:
     - staging
     - npm_ci
   script:
-    - npm run scripts -- release patch
+    - npm run scripts -- release "$INCREMENT" ${IDENTIFIER:+--identifier "$IDENTIFIER"}
     - npm run appsemble -- config set context staging
     - npm run appsemble -- config set remote https://staging.appsemble.review
     - npm run appsemble -- -vv block publish blocks/*
@@ -875,31 +902,34 @@ provision production:
 #  Performance Stage                                                                               #
 ###################################################################################################
 
-lighthouse:
-  interruptible: true
-  stage: performance
-  extends: .npm
-  image: $CI_REGISTRY/appsemble/docker-node-chrome
-  needs:
-    - npm_ci
-    - job: provision review
-      optional: true
-    - job: provision staging
-      optional: true
-    - job: provision production
-      optional: true
-  rules:
-    - if: $CI_MERGE_REQUEST_ID && $CI_MERGE_REQUEST_SOURCE_PROJECT_PATH == 'appsemble/appsemble'
-    - if: $CI_COMMIT_TAG
-  script:
-    - npm run scripts -- wait-for-ssl
-    - npx -- lhci collect
-    - npx -- lhci assert
-  artifacts:
-    expose_as: Lighthouse reports
-    when: always
-    paths:
-      - .lighthouseci
+#
+# --- Disabled for now ---
+#
+# lighthouse:
+#   interruptible: true
+#   stage: performance
+#   extends: .npm
+#   image: $CI_REGISTRY/appsemble/docker-node-chrome
+#   needs:
+#     - npm_ci
+#     - job: provision review
+#       optional: true
+#     - job: provision staging
+#       optional: true
+#     - job: provision production
+#       optional: true
+#   rules:
+#     - if: $CI_MERGE_REQUEST_ID && $CI_MERGE_REQUEST_SOURCE_PROJECT_PATH == 'appsemble/appsemble'
+#     - if: $CI_COMMIT_TAG
+#   script:
+#     - npm run scripts -- wait-for-ssl
+#     - npx -- lhci collect
+#     - npx -- lhci assert
+#   artifacts:
+#     expose_as: Lighthouse reports
+#     when: always
+#     paths:
+#       - .lighthouseci
 
 ###################################################################################################
 #  Backup Stage                                                                                   #

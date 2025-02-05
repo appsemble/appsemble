@@ -1,6 +1,6 @@
 {
   "name": "@appsemble/webpack-core",
-  "version": "0.30.13",
+  "version": "0.31.1-test.2",
   "private": true,
   "description": "The Webpack configuration for the Appsemble core",
   "keywords": [
@@ -22,18 +22,18 @@
   "author": "Appsemble <info@appsemble.com> (https://appsemble.com)",
   "type": "module",
   "exports": {
-    ".": [
-      "./index.js",
-      "./index.ts"
-    ]
+    ".": {
+      "ts-source": "./index.ts",
+      "default": "./index.js"
+    }
   },
   "scripts": {
     "prepack": "tsc --noEmit false",
     "test": "vitest"
   },
   "dependencies": {
-    "@appsemble/node-utils": "0.30.13",
-    "@appsemble/utils": "0.30.13",
+    "@appsemble/node-utils": "0.31.1-test.2",
+    "@appsemble/utils": "0.31.1-test.2",
     "@fortawesome/fontawesome-free": "^6.0.0",
     "@mdx-js/loader": "^3.0.0",
     "@types/case-sensitive-paths-webpack-plugin": "^2.0.0",
@@ -45,7 +45,7 @@
     "css-loader": "^6.0.0",
     "css-minimizer-webpack-plugin": "^5.0.0",
     "estree-util-value-to-estree": "^3.0.0",
-    "hast-util-to-text": "4.0.0",
+    "hast-util-to-text": "4.0.2",
     "html-webpack-plugin": "^5.0.0",
     "mdast-util-mdx": "^3.0.0",
     "mini-css-extract-plugin": "^2.0.0",
@@ -71,6 +71,6 @@
     "workbox-webpack-plugin": "^7.0.0"
   },
   "engines": {
-    "node": ">=18"
+    "node": ">=20"
   }
 }

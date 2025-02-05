@@ -10,6 +10,7 @@ import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, vi } 
 
 import {
   App,
+  AppMember,
   AppScreenshot,
   BlockAsset,
   BlockMessages,
@@ -149,6 +150,43 @@ describe('createApp', () => {
     `);
     const { data: retrieved } = await request.get(`/api/apps/${createdResponse.data.id}`);
     expect(retrieved).toStrictEqual(createdResponse.data);
+  });
+
+  it('should create an app member with role `cron` if the security definition has cron defined', async () => {
+    authorizeStudio();
+    const response = await request.post<AppType>(
+      '/api/apps',
+      createFormData({
+        OrganizationId: organization.id,
+        icon: createFixtureStream('nodejs-logo.png'),
+        yaml: stripIndent(`
+          name: Test App
+          defaultPage: Test Page
+          cron:
+            testCron:
+              schedule : '*/5 * * * *'
+              action:
+                type: noop
+          security:
+            cron:
+              permissions: []
+          pages:
+            - name: Test Page
+              blocks:
+                - type: test
+                  version: 0.0.0
+        `),
+      }),
+    );
+    expect(response.status).toBe(201);
+    const foundMember = await AppMember.findOne({
+      where: { AppId: response.data.id, role: 'cron' },
+    });
+    expect(foundMember.dataValues).toMatchObject({
+      email: expect.stringMatching('cron.*example'),
+      AppId: response.data.id,
+      role: 'cron',
+    });
   });
 
   it('should return an error if generated path is longer than 30 characters', async () => {

@@ -35,23 +35,22 @@ import {
   type ParseQueryParams,
 } from '../../../../types.js';
 
-let mockGetApp: Mock<[GetAppParams], Promise<App>>;
-let mockGetAppResources: Mock<[GetAppResourcesParams], Promise<Resource[]>>;
-let mockGetAppResource: Mock<[GetAppResourceParams], Promise<Resource>>;
-let mockParseQuery: Mock<[ParseQueryParams], ParsedQuery>;
-let mockGetAppUrl: Mock<[GetAppSubEntityParams], Promise<URL>>;
-let mockGetAppMessages: Mock<[GetAppMessagesParams], Promise<AppMessages[]>>;
-let mockGetAppVariables: Mock<[GetAppSubEntityParams], Promise<AppConfigEntry[]>>;
+let mockGetApp: Mock<(params: GetAppParams) => Promise<App>>;
+let mockGetAppResources: Mock<(params: GetAppResourcesParams) => Promise<Resource[]>>;
+let mockGetAppResource: Mock<(params: GetAppResourceParams) => Promise<Resource>>;
+let mockParseQuery: Mock<(params: ParseQueryParams) => ParsedQuery>;
+let mockGetAppUrl: Mock<(params: GetAppSubEntityParams) => Promise<URL>>;
+let mockGetAppMessages: Mock<(params: GetAppMessagesParams) => Promise<AppMessages[]>>;
+let mockGetAppVariables: Mock<(params: GetAppSubEntityParams) => Promise<AppConfigEntry[]>>;
 let mockCreateAppResourcesWithAssets: Mock<
-  [CreateAppResourcesWithAssetsParams],
-  Promise<Resource[]>
+  (params: CreateAppResourcesWithAssetsParams) => Promise<Resource[]>
 >;
-let mockGetAppAssets: Mock<[GetAppSubEntityParams], Promise<Asset[]>>;
-let mockCheckAppPermissions: Mock<[CheckAppPermissionsParams], Promise<void>>;
-let mockGetCurrentAppMember: Mock<[GetCurrentAppMemberParams], Promise<AppMemberInfo>>;
+let mockGetAppAssets: Mock<(params: GetAppSubEntityParams) => Promise<Asset[]>>;
+let mockCheckAppPermissions: Mock<(params: CheckAppPermissionsParams) => Promise<void>>;
+let mockGetCurrentAppMember: Mock<(params: GetCurrentAppMemberParams) => Promise<AppMemberInfo>>;
 
 let mockCtx: ParameterizedContext<DefaultState, DefaultContext>;
-let mockCtxIs: Mock<[], string>;
+let mockCtxIs: Mock<() => string>;
 
 describe('createQueryResources', () => {
   beforeEach(() => {

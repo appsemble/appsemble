@@ -40,6 +40,26 @@ describe('storage.read', () => {
     expect(result).toBe(expectedResult);
   });
 
+  it('should fetch non-expired items', async () => {
+    const expiry = Date.now() + 5 * 1000;
+    localStorage.setItem('appsemble-42-test', JSON.stringify({ value: 'testValue', expiry }));
+    const action = createTestAction({
+      definition: { type: 'storage.read', key: 'test', storage: 'localStorage' },
+    });
+    const result = await action({});
+    expect(result).toBe('testValue');
+  });
+
+  it('should not fetch expired items', async () => {
+    const expiry = Date.now() - 5 * 1000;
+    localStorage.setItem('appsemble-42-test', JSON.stringify({ value: 'test', expiry }));
+    const action = createTestAction({
+      definition: { type: 'storage.read', key: 'test', storage: 'localStorage' },
+    });
+    const result = await action({});
+    expect(result).toBeNull();
+  });
+
   it('should return undefined for unknown keys in the store', async () => {
     const action = createTestAction({
       definition: { type: 'storage.read', key: { prop: 'test' } },
@@ -101,6 +121,24 @@ describe('storage.write', () => {
     const storageData = await readStorage(storageType, 'key', appStorage);
     expect(result).toStrictEqual({ key: 'key', data });
     expect(storageData).toStrictEqual(data);
+  });
+
+  it('should set an expiry for the data', async () => {
+    const action = createTestAction({
+      definition: {
+        type: 'storage.write',
+        key: 'test-key',
+        value: 'test-value',
+        storage: 'localStorage',
+        expiry: '1d',
+      },
+    });
+    await action({});
+    const storageData = JSON.parse(localStorage.getItem('appsemble-42-test-key'));
+    expect(storageData).toMatchObject({
+      expiry: expect.any(Number),
+      value: 'test-value',
+    });
   });
 });
 

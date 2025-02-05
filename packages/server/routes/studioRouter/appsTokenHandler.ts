@@ -221,8 +221,8 @@ export async function appsTokenHandler(ctx: Context): Promise<void> {
 
           const role =
             appRole === ''
-              ? app.definition.security?.default?.role ??
-                Object.keys(app.definition.security?.roles)[0]
+              ? (app.definition.security?.default?.role ??
+                Object.keys(app.definition.security?.roles)[0])
               : appRole;
 
           if (!role) {

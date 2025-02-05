@@ -1,4 +1,4 @@
-import { Button, Title, useToggle } from '@appsemble/react-components';
+import { Title, useToggle } from '@appsemble/react-components';
 import classNames from 'classnames';
 import { type ReactNode } from 'react';
 
@@ -57,24 +57,39 @@ export function Collapsible({
   size = 4,
   title,
 }: CollapsibleProps): ReactNode {
-  const collapsed = useToggle(defaultValue);
+  const { enabled, toggle } = useToggle(defaultValue);
 
+  const Heading = `h${level}` as keyof JSX.IntrinsicElements;
   return (
     <>
       <div className={`${styles.titleContainer} is-flex mb-5`}>
-        <Button
-          className={`${styles.toggle} pl-0`}
-          icon={collapsed.enabled ? 'chevron-right' : 'chevron-down'}
-          iconPosition="right"
-          onClick={collapsed.toggle}
+        <Heading
+          className={classNames(
+            styles.toggle,
+            'mb-0 mt-2',
+            className,
+            'is-flex',
+            'is-align-items-center',
+            'hoverable-header',
+          )}
+          onClick={toggle}
+          style={{ cursor: 'pointer' }}
         >
           <Title className={classNames('mb-0', className)} level={level} size={size}>
             {title}
           </Title>
-        </Button>
+          <i
+            className={classNames(
+              'icon',
+              'ml-2',
+              { 'is-small': size <= 4 },
+              enabled ? 'fas fa-chevron-right' : 'fas fa-chevron-down',
+            )}
+          />
+        </Heading>
       </div>
-      <div className="is-size-7">{help}</div>
-      <div className={classNames(styles.list, { 'is-hidden': collapsed.enabled })}>{children}</div>
+      <div className="is-size-7 pl-3">{help}</div>
+      <div className={classNames({ 'is-hidden': enabled })}>{children}</div>
     </>
   );
 }

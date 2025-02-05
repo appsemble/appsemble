@@ -49,7 +49,7 @@ export function Title({
 
   return (
     <Component
-      className={classNames(`title is-${size}`, styles.root, className)}
+      className={classNames(`title is-${size} `, styles.root, className)}
       id={id}
       ref={ref}
       {...props}

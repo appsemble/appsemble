@@ -12,7 +12,11 @@ import {
 } from '../../../../../models/index.js';
 import { setArgv } from '../../../../../utils/argv.js';
 import { createServer } from '../../../../../utils/createServer.js';
-import { authorizeStudio, createTestUser } from '../../../../../utils/test/authorization.js';
+import {
+  authorizeAppMember,
+  createTestAppMember,
+  createTestUser,
+} from '../../../../../utils/test/authorization.js';
 import { exampleApp } from '../../../../../utils/test/exampleApp.js';
 
 let organization: Organization;
@@ -52,6 +56,7 @@ describe('getAppResourceSubscription', () => {
   });
 
   it('should fetch resource subscriptions', async () => {
+    const appMember = await createTestAppMember(app.id);
     await AppSubscription.create({
       AppId: app.id,
       endpoint: 'https://example.com',
@@ -63,7 +68,7 @@ describe('getAppResourceSubscription', () => {
       AppId: app.id,
       data: { foo: 'I am Foo.' },
     });
-    authorizeStudio();
+    authorizeAppMember(app, appMember);
     await request.patch(`/api/apps/${app.id}/subscriptions`, {
       endpoint: 'https://example.com',
       resource: 'testResource',
@@ -90,6 +95,7 @@ describe('getAppResourceSubscription', () => {
   });
 
   it('should return normally if user is not subscribed to the specific resource', async () => {
+    const appMember = await createTestAppMember(app.id);
     await AppSubscription.create({
       AppId: app.id,
       endpoint: 'https://example.com',
@@ -102,7 +108,7 @@ describe('getAppResourceSubscription', () => {
       data: { foo: 'I am Foo.' },
     });
 
-    authorizeStudio();
+    authorizeAppMember(app, appMember);
     const response = await request.get(
       `/api/apps/${app.id}/resources/testResource/${resource.id}/subscriptions`,
       { params: { endpoint: 'https://example.com' } },
@@ -121,6 +127,8 @@ describe('getAppResourceSubscription', () => {
   });
 
   it('should 404 if resource is not found', async () => {
+    const appMember = await createTestAppMember(app.id);
+
     await AppSubscription.create({
       AppId: app.id,
       endpoint: 'https://example.com',
@@ -128,7 +136,7 @@ describe('getAppResourceSubscription', () => {
       auth: 'def',
     });
 
-    authorizeStudio();
+    authorizeAppMember(app, appMember);
     const response = await request.get(
       `/api/apps/${app.id}/resources/testResource/0/subscriptions`,
       { params: { endpoint: 'https://example.com' } },
@@ -147,12 +155,14 @@ describe('getAppResourceSubscription', () => {
   });
 
   it('should return 200 if user is not subscribed', async () => {
+    const appMember = await createTestAppMember(app.id);
+
     const resource = await Resource.create({
       type: 'testResource',
       AppId: app.id,
       data: { foo: 'I am Foo.' },
     });
-    authorizeStudio();
+    authorizeAppMember(app, appMember);
     const response = await request.get(
       `/api/apps/${app.id}/resources/testResource/${resource.id}/subscriptions`,
       { params: { endpoint: 'https://example.com' } },

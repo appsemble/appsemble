@@ -36,8 +36,9 @@ export async function sendNotification(
       }),
       {
         vapidDetails: {
-          // XXX: Make this configurable
-          subject: 'mailto: support@appsemble.com',
+          // TODO: Make this configurable
+          // Important to be in the correct format for apple notifications
+          subject: 'mailto:support@appsemble.com',
           publicKey: app.vapidPublicKey,
           privateKey: app.vapidPrivateKey,
         },
@@ -47,6 +48,8 @@ export async function sendNotification(
     if (!(error instanceof webpush.WebPushError && error.statusCode === 410)) {
       throw error;
     }
+
+    logger.error(`Failed to send notification: ${error instanceof Error ? error.message : error}`);
 
     logger.verbose(`Removing push notification subscription ${subscription.id} for app ${app.id}`);
     await subscription.destroy();

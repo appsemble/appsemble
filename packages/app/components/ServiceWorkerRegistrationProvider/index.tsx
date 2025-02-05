@@ -1,3 +1,4 @@
+import { type ResourceSubscribableAction } from '@appsemble/types';
 import { urlB64ToUint8Array } from '@appsemble/web-utils';
 import axios from 'axios';
 import {
@@ -48,33 +49,50 @@ export function ServiceWorkerRegistrationProvider({
     return newPermission;
   }, []);
 
-  const subscribe = useCallback(async () => {
-    const registration = await serviceWorkerRegistrationPromise;
+  const subscribe = useCallback(
+    async (
+      resourceActionsToSubscribeTo: {
+        resourceType: string;
+        action: ResourceSubscribableAction;
+      }[] = [],
+    ) => {
+      const registration = await serviceWorkerRegistrationPromise;
 
-    if (window.Notification?.permission !== 'granted') {
-      const newPermission = await requestPermission();
-      if (newPermission !== 'granted') {
-        return null;
+      if (window.Notification?.permission !== 'granted') {
+        const newPermission = await requestPermission();
+        if (newPermission !== 'granted') {
+          return null;
+        }
       }
-    }
 
-    let sub = await registration?.pushManager?.getSubscription();
+      let sub = await registration?.pushManager?.getSubscription();
 
-    if (!sub) {
-      const options = {
-        applicationServerKey: urlB64ToUint8Array(vapidPublicKey),
-        userVisibleOnly: true,
-      };
+      if (!sub) {
+        const options = {
+          applicationServerKey: urlB64ToUint8Array(vapidPublicKey),
+          userVisibleOnly: true,
+        };
 
-      sub = await registration?.pushManager?.subscribe(options);
-      const { endpoint, keys } = sub.toJSON();
-      await axios.post(`${apiUrl}/api/apps/${appId}/subscriptions`, { endpoint, keys });
-    }
+        sub = await registration?.pushManager?.subscribe(options);
+        const { endpoint, keys } = sub.toJSON();
+        await axios.post(`${apiUrl}/api/apps/${appId}/subscriptions`, { endpoint, keys });
 
-    setSubscription(sub);
+        for (const { action, resourceType } of resourceActionsToSubscribeTo) {
+          await axios.patch(`${apiUrl}/api/apps/${appId}/subscriptions`, {
+            endpoint,
+            resource: resourceType,
+            action,
+            value: true,
+          });
+        }
+      }
 
-    return sub;
-  }, [requestPermission, serviceWorkerRegistrationPromise]);
+      setSubscription(sub);
+
+      return sub;
+    },
+    [requestPermission, serviceWorkerRegistrationPromise],
+  );
 
   const unsubscribe = useCallback(async () => {
     if (!subscription) {

@@ -97,6 +97,7 @@ describe('getAppServiceSecrets', () => {
       [
         {
           "authenticationMethod": "query",
+          "ca": null,
           "id": 1,
           "identifier": "key",
           "name": "Test service",
@@ -106,6 +107,7 @@ describe('getAppServiceSecrets', () => {
         },
         {
           "authenticationMethod": "basic",
+          "ca": null,
           "id": 2,
           "identifier": "john_doe",
           "name": "Test service",

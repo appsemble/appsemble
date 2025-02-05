@@ -1,6 +1,6 @@
 {
   "name": "@appsemble/preact-components",
-  "version": "0.30.13",
+  "version": "0.31.1-test.2",
   "private": true,
   "description": "Reusable Preact components for internal use",
   "keywords": [
@@ -23,18 +23,18 @@
   "sideEffects": false,
   "type": "module",
   "exports": {
-    ".": [
-      "./index.js",
-      "./index.ts"
-    ]
+    ".": {
+      "ts-source": "./index.ts",
+      "default": "./index.js"
+    }
   },
   "scripts": {
     "test": "vitest"
   },
   "dependencies": {
-    "@appsemble/preact": "0.30.13",
-    "@appsemble/types": "0.30.13",
-    "@appsemble/web-utils": "0.30.13",
+    "@appsemble/preact": "0.31.1-test.2",
+    "@appsemble/types": "0.31.1-test.2",
+    "@appsemble/web-utils": "0.31.1-test.2",
     "@creativebulma/bulma-tagsinput": "^1.0.0",
     "@types/creativebulma__bulma-tagsinput": "^1.0.0",
     "@fortawesome/fontawesome-common-types": "^6.0.0",
@@ -46,5 +46,10 @@
     "leaflet": "~1.5.0",
     "nouislider": "^15.0.0",
     "preact": "^10.0.0"
+  },
+  "devDependencies": {
+    "@testing-library/preact": "^3.0.0",
+    "@testing-library/user-event": "^14.0.0",
+    "vitest": "^2.0.0"
   }
 }

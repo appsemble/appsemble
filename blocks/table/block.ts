@@ -10,6 +10,11 @@ interface BaseField {
   label?: Remapper;
 
   /**
+   * Name of the field to use for sorting the table.
+   */
+  name?: string;
+
+  /**
    * Whether the content of the cell should be aligned left, right, or centered
    */
   alignment?: 'center' | 'left' | 'right';

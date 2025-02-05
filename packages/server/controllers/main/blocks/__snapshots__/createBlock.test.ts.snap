@@ -1875,6 +1875,9 @@ If not specified, the raw input data is used.
                       },
                       "type": "object",
                     },
+                    "id": {
+                      "$ref": "#/components/schemas/RemapperDefinition",
+                    },
                     "onError": {},
                     "onSuccess": {},
                     "proxy": {
@@ -2566,6 +2569,9 @@ If not specified, the raw input data is used.
                       },
                       "type": "object",
                     },
+                    "id": {
+                      "$ref": "#/components/schemas/RemapperDefinition",
+                    },
                     "onError": {},
                     "onSuccess": {},
                     "proxy": {
@@ -3087,6 +3093,15 @@ storage: localStorage
                 "schema": {
                   "additionalProperties": false,
                   "properties": {
+                    "expiry": {
+                      "description": "Set an expiry for your data, only works with the localStorage",
+                      "enum": [
+                        "1d",
+                        "3d",
+                        "7d",
+                        "12h",
+                      ],
+                    },
                     "key": {
                       "$ref": "#/components/schemas/RemapperDefinition",
                       "description": "The key of the storage entry.",
@@ -3155,6 +3170,15 @@ remapBefore:
                 "schema": {
                   "additionalProperties": false,
                   "properties": {
+                    "expiry": {
+                      "description": "Set an expiry for your data, only works with the localStorage",
+                      "enum": [
+                        "1d",
+                        "3d",
+                        "7d",
+                        "12h",
+                      ],
+                    },
                     "key": {
                       "$ref": "#/components/schemas/RemapperDefinition",
                       "description": "The key of the storage entry.",
@@ -6888,6 +6912,9 @@ If not specified, the raw input data is used.
               },
               "type": "object",
             },
+            "id": {
+              "$ref": "#/components/schemas/RemapperDefinition",
+            },
             "onError": {},
             "onSuccess": {},
             "proxy": {
@@ -7579,6 +7606,9 @@ If not specified, the raw input data is used.
               },
               "type": "object",
             },
+            "id": {
+              "$ref": "#/components/schemas/RemapperDefinition",
+            },
             "onError": {},
             "onSuccess": {},
             "proxy": {
@@ -8100,6 +8130,15 @@ storage: localStorage
         "schema": {
           "additionalProperties": false,
           "properties": {
+            "expiry": {
+              "description": "Set an expiry for your data, only works with the localStorage",
+              "enum": [
+                "1d",
+                "3d",
+                "7d",
+                "12h",
+              ],
+            },
             "key": {
               "$ref": "#/components/schemas/RemapperDefinition",
               "description": "The key of the storage entry.",
@@ -8168,6 +8207,15 @@ remapBefore:
         "schema": {
           "additionalProperties": false,
           "properties": {
+            "expiry": {
+              "description": "Set an expiry for your data, only works with the localStorage",
+              "enum": [
+                "1d",
+                "3d",
+                "7d",
+                "12h",
+              ],
+            },
             "key": {
               "$ref": "#/components/schemas/RemapperDefinition",
               "description": "The key of the storage entry.",

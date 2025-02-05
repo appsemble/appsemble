@@ -36,12 +36,17 @@ spec:
                   {{- else }}
                   value: http://{{ include "appsemble.fullname" . }}
                   {{- end }}
-                {{- with .Values.smtpSecret }}
+                {{- if hasPrefix "review-" (include "appsemble.fullname" .) }}
+                - name: SMTP_HOST
+                  value: "{{ include "appsemble.fullname" . }}-mailpit-smtp"
+                {{- else }}
                 - name: SMTP_HOST
                   valueFrom:
                     secretKeyRef:
-                      name: {{ . | quote }}
+                      name: {{ .Values.smtpSecret  | quote }}
                       key: host
+                {{- end }}
+                {{- with .Values.smtpSecret }}
                 - name: SMTP_PORT
                   valueFrom:
                     secretKeyRef:

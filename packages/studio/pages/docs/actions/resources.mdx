@@ -53,9 +53,11 @@ Supported resource actions are as below:
 ### resource.get<Side name="resource.get" />
 
 This action is used to fetch a single resource. Supported fields for this action are `type`,
-`resource` and `view`. Fields `type` and `resource` are required. Resource refers to the resource to
-be fetched, and view is the view to use for the resource. This action requires at least one of the
-app permissions `$resource:all:get`, `$resource:all:own:get`, `$resource:all:get:<view-name>`,
+`resource`, `id` and `view`. Fields `type` and `resource` are required. Resource refers to the
+resource to be fetched, id can be specified explicitly using the parameter `id` or appsemble can
+infer it from the data passed to the action function, explicitly defined id is preferred by the
+system and view is the view to use for the resource. This action requires at least one of the app
+permissions `$resource:all:get`, `$resource:all:own:get`, `$resource:all:get:<view-name>`,
 `$resource:<resource-name>:get`, `$resource:<resource-name>:own:get` or
 `$resource:<resource-name>:get:<view-name>` depending on the context. For more information check out
 [security](../app/security.md#permissions). Here’s an example of how you can use this action to
@@ -64,7 +66,7 @@ fetch the `person` resource.
 ```yaml validate blocks-snippet
 blocks:
   - type: data-loader
-    version: 0.30.13
+    version: 0.31.1-test.2
     actions:
       onLoad:
         type: resource.get
@@ -84,7 +86,7 @@ fetch the `person` resource.
 ```yaml validate blocks-snippet
 blocks:
   - type: data-loader
-    version: 0.30.13
+    version: 0.31.1-test.2
     actions:
       onLoad:
         type: resource.history.get
@@ -106,7 +108,7 @@ example of how you can use this action to fetch all `person` resources.
 ```yaml validate blocks-snippet
 blocks:
   - type: data-loader
-    version: 0.30.13
+    version: 0.31.1-test.2
     actions:
       onLoad:
         type: resource.query
@@ -126,7 +128,7 @@ use this action to fetch the number of resources.
 ```yaml validate blocks-snippet
 blocks:
   - type: data-loader
-    version: 0.30.13
+    version: 0.31.1-test.2
     actions:
       onLoad:
         type: resource.count
@@ -144,7 +146,7 @@ you can use this action to create a new resource of type person.
 ```yaml validate blocks-snippet
 blocks:
   - type: form
-    version: 0.30.13
+    version: 0.31.1-test.2
     actions:
       onSubmit:
         type: resource.create
@@ -155,8 +157,10 @@ blocks:
 ### resource.update<Side name="resource.update" />
 
 This action is used to replace some resource’s data with a completely new set of values. Supported
-field for this action are `type` and `resource`. Both of the fields are required. Resource refers to
-the resource to be updated. This action requires at least one of the app permissions
+field for this action are `type`, `id` and `resource`. The fields `type` and `resource` are
+required. Resource refers to the resource to be updated, id can be specified explicitly using the
+parameter `id` or appsemble can infer it from the data passed to the action function, explicitly
+defined id is preferred by the system. This action requires at least one of the app permissions
 `$resource:all:update`, `$resource:all:own:update`, `$resource:<resource-name>:update` or
 `$resource:<resource-name>:own:update` depending on the context. For more information check out
 [security](../app/security.md#permissions). Here’s an example of how you can use this action to
@@ -165,7 +169,7 @@ update an existing resource of type person.
 ```yaml validate blocks-snippet
 blocks:
   - type: form
-    version: 0.30.13
+    version: 0.31.1-test.2
     parameters:
       fields:
         - type: string
@@ -201,7 +205,7 @@ resource of type person using this action.
 ```yaml validate blocks-snippet
 blocks:
   - type: form
-    version: 0.30.13
+    version: 0.31.1-test.2
     parameters:
       fields:
         - type: string
@@ -228,7 +232,7 @@ block of code.
 ```yaml validate blocks-snippet
 blocks:
   - type: button-list
-    version: 0.30.13
+    version: 0.31.1-test.2
     parameters:
       buttons:
         - label: { translate: cancel }
@@ -257,7 +261,7 @@ person:
 ```yaml validate blocks-snippet
 blocks:
   - type: table
-    version: 0.30.13
+    version: 0.31.1-test.2
     parameters:
       fields:
         - value: { prop: firstName }
@@ -282,7 +286,7 @@ action to unsubscribe to the delete notifications related to resource person.
 ```yaml validate blocks-snippet
 blocks:
   - type: action-button
-    version: 0.30.13
+    version: 0.31.1-test.2
     parameters:
       icon: bell-slash
     actions:
@@ -304,7 +308,7 @@ how you can use this action.
 ```yaml validate blocks-snippet
 blocks:
   - type: action-button
-    version: 0.30.13
+    version: 0.31.1-test.2
     parameters:
       icon: toggle-on
     actions:
@@ -325,7 +329,7 @@ action is `update`. Here’s an example of usage of this action.
 ```yaml validate blocks-snippet
 blocks:
   - type: action-button
-    version: 0.30.13
+    version: 0.31.1-test.2
     parameters:
       icon: envelope
     actions:

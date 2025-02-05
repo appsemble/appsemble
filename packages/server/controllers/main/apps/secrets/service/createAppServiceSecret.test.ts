@@ -80,6 +80,7 @@ describe('createAppServiceSecret', () => {
 
       {
         "authenticationMethod": "query-parameter",
+        "ca": null,
         "id": 1,
         "identifier": "key",
         "name": "Test service",
@@ -107,6 +108,7 @@ describe('createAppServiceSecret', () => {
 
       {
         "authenticationMethod": "query-parameter",
+        "ca": null,
         "id": 1,
         "identifier": "key",
         "name": "Test service",

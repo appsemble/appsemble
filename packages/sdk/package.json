@@ -1,6 +1,6 @@
 {
   "name": "@appsemble/sdk",
-  "version": "0.30.13",
+  "version": "0.31.1-test.2",
   "description": "Build your own blocks",
   "keywords": [
     "app",
@@ -25,15 +25,17 @@
   "sideEffects": false,
   "type": "module",
   "exports": {
-    ".": [
-      "./index.js",
-      "./index.ts"
-    ],
+    ".": {
+      "ts-source": "./index.ts",
+      "default": "./index.js"
+    },
     "./README.md": "./README.md"
   },
   "files": [
     "**/*.d.ts",
     "**/*.js",
+    "!**/*.test.js",
+    "!**/*.test.d.ts",
     "!*.config.js"
   ],
   "scripts": {
@@ -41,11 +43,11 @@
     "test": "vitest"
   },
   "dependencies": {
-    "@appsemble/types": "0.30.13",
+    "@appsemble/types": "0.31.1-test.2",
     "@fortawesome/fontawesome-common-types": "^6.0.0",
     "type-fest": "^4.0.0"
   },
   "devDependencies": {
-    "vitest": "^1.0.0"
+    "vitest": "^2.0.0"
   }
 }

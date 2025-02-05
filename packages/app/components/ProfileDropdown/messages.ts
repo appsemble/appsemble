@@ -41,4 +41,8 @@ export const messages = defineMessages({
     id: 'app.AyGauy',
     defaultMessage: 'Login',
   },
+  install: {
+    id: 'app.ubmFc8',
+    defaultMessage: 'Install',
+  },
 });

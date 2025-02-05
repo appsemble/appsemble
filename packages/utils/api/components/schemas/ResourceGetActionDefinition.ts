@@ -20,6 +20,9 @@ export const ResourceGetActionDefinition = extendJSONSchema(
         type: 'string',
         description: 'The view to use for the resource.',
       },
+      id: {
+        $ref: '#/components/schemas/RemapperDefinition',
+      },
     },
   },
   ['url', 'method'],
