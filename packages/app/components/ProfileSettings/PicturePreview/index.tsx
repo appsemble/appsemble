@@ -16,7 +16,7 @@ export function PicturePreview({ pictureUrl }: PicturePreviewProps): ReactNode {
   const { formatMessage } = useIntl();
   const { values } = useSimpleForm();
 
-  const iconUrl = useObjectURL(values.picture || pictureUrl);
+  const iconUrl = useObjectURL((values.picture ?? values.pictureCamera) || pictureUrl);
 
   return (
     <figure className="image is-128x128 mb-2">

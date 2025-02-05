@@ -41,4 +41,17 @@ export const messages = defineMessages({
     id: 'app.KGZ3lm',
     defaultMessage: 'The public picture to use for your profile.',
   },
+  camera: {
+    id: 'app.J6ywQ3',
+    defaultMessage: 'Camera',
+  },
+  clickPicture: {
+    id: 'app.Z7RWBU',
+    defaultMessage: 'Click a Picture',
+  },
+  clickDescription: {
+    id: 'app.1krH2X',
+    defaultMessage:
+      'Click a picture straight from your camera, (Only works if no file is being uploaded)',
+  },
 });

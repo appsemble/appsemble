@@ -27,6 +27,7 @@ type FileUploadProps = Omit<
 export const FileUpload = forwardRef<HTMLInputElement, FileUploadProps>(
   (
     {
+      capture,
       name,
       id = name,
       accept,
@@ -69,6 +70,7 @@ export const FileUpload = forwardRef<HTMLInputElement, FileUploadProps>(
           <label className={`file-label ${className}`} htmlFor={id}>
             <input
               accept={accept}
+              capture={capture}
               className="file-input"
               id={id}
               name={name}
