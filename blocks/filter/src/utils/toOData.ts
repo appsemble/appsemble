@@ -9,6 +9,11 @@ export function toOData(fields: Field[], values: FilterValues): string {
         return null;
       }
 
+      const modifiedValue =
+        // See https://docs.oasis-open.org/odata/odata/v4.01/cs01/part2-url-conventions/odata-v4.01-cs01-part2-url-conventions.html#sec_URLComponents
+        typeof value === 'string'
+          ? value.replaceAll("'", "''").replaceAll('\\', '\\\\')
+          : undefined;
       switch (field.type) {
         case 'boolean':
           return `${field.name} eq '${value}'`;
@@ -41,9 +46,9 @@ export function toOData(fields: Field[], values: FilterValues): string {
         }
         case 'string':
           if (field.exact) {
-            return `${field.name} eq '${value}'`;
+            return `${field.name} eq '${modifiedValue}'`;
           }
-          return `contains(tolower(${field.name}),'${(value as string).toLowerCase()}')`;
+          return `contains(tolower(${field.name}),'${(modifiedValue as string).toLowerCase()}')`;
         default:
           return null;
       }
