@@ -81,6 +81,7 @@ export async function importApp(ctx: Context): Promise<void> {
       vapidPublicKey: keys.publicKey,
       vapidPrivateKey: keys.privateKey,
       showAppsembleLogin: false,
+      displayAppMemberName: false,
       showAppsembleOAuth2Login: true,
       enableSelfRegistration: true,
       showAppDefinition: true,

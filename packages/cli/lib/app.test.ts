@@ -109,95 +109,96 @@ describe('app', () => {
           iconUrl: expect.any(String),
         },
         `
-      {
-        "$created": StringMatching /\\\\d\\{4\\}\\(\\.\\\\d\\{2\\}\\)\\{2\\}\\(\\\\s\\|T\\)\\(\\\\d\\{2\\}\\.\\)\\{2\\}\\\\d\\{2\\}/,
-        "$updated": StringMatching /\\\\d\\{4\\}\\(\\.\\\\d\\{2\\}\\)\\{2\\}\\(\\\\s\\|T\\)\\(\\\\d\\{2\\}\\.\\)\\{2\\}\\\\d\\{2\\}/,
-        "OrganizationId": "testorganization",
-        "OrganizationName": undefined,
-        "controllerCode": null,
-        "controllerImplementations": null,
-        "coreStyle": ".tux {
-        color: rgb(0 0 0);
-      }
-      ",
-        "definition": {
-          "defaultPage": "Test Page",
-          "name": "Test App",
-          "pages": [
-            {
-              "blocks": [
-                {
-                  "type": "test",
-                  "version": "0.0.0",
-                },
-              ],
-              "name": "Test Page",
-            },
-          ],
-          "resources": {
-            "test": {
-              "schema": {
-                "additionalProperties": false,
-                "properties": {
-                  "test": {
-                    "format": "binary",
-                    "type": "string",
+        {
+          "$created": StringMatching /\\\\d\\{4\\}\\(\\.\\\\d\\{2\\}\\)\\{2\\}\\(\\\\s\\|T\\)\\(\\\\d\\{2\\}\\.\\)\\{2\\}\\\\d\\{2\\}/,
+          "$updated": StringMatching /\\\\d\\{4\\}\\(\\.\\\\d\\{2\\}\\)\\{2\\}\\(\\\\s\\|T\\)\\(\\\\d\\{2\\}\\.\\)\\{2\\}\\\\d\\{2\\}/,
+          "OrganizationId": "testorganization",
+          "OrganizationName": undefined,
+          "controllerCode": null,
+          "controllerImplementations": null,
+          "coreStyle": ".tux {
+          color: rgb(0 0 0);
+        }
+        ",
+          "definition": {
+            "defaultPage": "Test Page",
+            "name": "Test App",
+            "pages": [
+              {
+                "blocks": [
+                  {
+                    "type": "test",
+                    "version": "0.0.0",
                   },
+                ],
+                "name": "Test Page",
+              },
+            ],
+            "resources": {
+              "test": {
+                "schema": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "test": {
+                      "format": "binary",
+                      "type": "string",
+                    },
+                  },
+                  "type": "object",
                 },
-                "type": "object",
               },
             },
           },
-        },
-        "demoMode": false,
-        "domain": null,
-        "emailName": null,
-        "enableSelfRegistration": true,
-        "enableUnsecuredServiceSecrets": false,
-        "googleAnalyticsID": null,
-        "hasClonableAssets": undefined,
-        "hasClonableResources": undefined,
-        "hasIcon": true,
-        "hasMaskableIcon": true,
-        "iconBackground": "#ffffff",
-        "iconUrl": Any<String>,
-        "id": 1,
-        "locked": "unlocked",
-        "messages": undefined,
-        "path": "test-app",
-        "rating": undefined,
-        "readmeUrl": undefined,
-        "screenshotUrls": undefined,
-        "sentryDsn": null,
-        "sentryEnvironment": null,
-        "sharedStyle": ".tux {
-        color: rgb(0 0 0);
-      }
-      ",
-        "showAppDefinition": true,
-        "showAppsembleLogin": false,
-        "showAppsembleOAuth2Login": true,
-        "template": false,
-        "visibility": "unlisted",
-        "yaml": "name: Test App
-      defaultPage: Test Page
-      resources:
-        test:
-          schema:
-            additionalProperties: false
-            type: object
-            properties:
-              test:
-                type: string
-                format: binary
-      pages:
-        - name: Test Page
-          blocks:
-            - type: test
-              version: 0.0.0
-      ",
-      }
-    `,
+          "demoMode": false,
+          "displayAppMemberName": false,
+          "domain": null,
+          "emailName": null,
+          "enableSelfRegistration": true,
+          "enableUnsecuredServiceSecrets": false,
+          "googleAnalyticsID": null,
+          "hasClonableAssets": undefined,
+          "hasClonableResources": undefined,
+          "hasIcon": true,
+          "hasMaskableIcon": true,
+          "iconBackground": "#ffffff",
+          "iconUrl": Any<String>,
+          "id": 1,
+          "locked": "unlocked",
+          "messages": undefined,
+          "path": "test-app",
+          "rating": undefined,
+          "readmeUrl": undefined,
+          "screenshotUrls": undefined,
+          "sentryDsn": null,
+          "sentryEnvironment": null,
+          "sharedStyle": ".tux {
+          color: rgb(0 0 0);
+        }
+        ",
+          "showAppDefinition": true,
+          "showAppsembleLogin": false,
+          "showAppsembleOAuth2Login": true,
+          "template": false,
+          "visibility": "unlisted",
+          "yaml": "name: Test App
+        defaultPage: Test Page
+        resources:
+          test:
+            schema:
+              additionalProperties: false
+              type: object
+              properties:
+                test:
+                  type: string
+                  format: binary
+        pages:
+          - name: Test Page
+            blocks:
+              - type: test
+                version: 0.0.0
+        ",
+        }
+      `,
       );
       expect(app.icon).toStrictEqual(await readFixture('apps/test/icon.png'));
       expect(app.maskableIcon).toStrictEqual(await readFixture('apps/test/maskable-icon.png'));
@@ -282,95 +283,96 @@ describe('app', () => {
           iconUrl: expect.any(String),
         },
         `
-      {
-        "$created": StringMatching /\\\\d\\{4\\}\\(\\.\\\\d\\{2\\}\\)\\{2\\}\\(\\\\s\\|T\\)\\(\\\\d\\{2\\}\\.\\)\\{2\\}\\\\d\\{2\\}/,
-        "$updated": StringMatching /\\\\d\\{4\\}\\(\\.\\\\d\\{2\\}\\)\\{2\\}\\(\\\\s\\|T\\)\\(\\\\d\\{2\\}\\.\\)\\{2\\}\\\\d\\{2\\}/,
-        "OrganizationId": "testorganization",
-        "OrganizationName": undefined,
-        "controllerCode": null,
-        "controllerImplementations": null,
-        "coreStyle": ".tux {
-        color: rgb(0 0 0);
-      }
-      ",
-        "definition": {
-          "defaultPage": "Test Page",
-          "name": "Test App",
-          "pages": [
-            {
-              "blocks": [
-                {
-                  "type": "test",
-                  "version": "0.0.0",
-                },
-              ],
-              "name": "Test Page",
-            },
-          ],
-          "resources": {
-            "test": {
-              "schema": {
-                "additionalProperties": false,
-                "properties": {
-                  "test": {
-                    "format": "binary",
-                    "type": "string",
+        {
+          "$created": StringMatching /\\\\d\\{4\\}\\(\\.\\\\d\\{2\\}\\)\\{2\\}\\(\\\\s\\|T\\)\\(\\\\d\\{2\\}\\.\\)\\{2\\}\\\\d\\{2\\}/,
+          "$updated": StringMatching /\\\\d\\{4\\}\\(\\.\\\\d\\{2\\}\\)\\{2\\}\\(\\\\s\\|T\\)\\(\\\\d\\{2\\}\\.\\)\\{2\\}\\\\d\\{2\\}/,
+          "OrganizationId": "testorganization",
+          "OrganizationName": undefined,
+          "controllerCode": null,
+          "controllerImplementations": null,
+          "coreStyle": ".tux {
+          color: rgb(0 0 0);
+        }
+        ",
+          "definition": {
+            "defaultPage": "Test Page",
+            "name": "Test App",
+            "pages": [
+              {
+                "blocks": [
+                  {
+                    "type": "test",
+                    "version": "0.0.0",
                   },
+                ],
+                "name": "Test Page",
+              },
+            ],
+            "resources": {
+              "test": {
+                "schema": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "test": {
+                      "format": "binary",
+                      "type": "string",
+                    },
+                  },
+                  "type": "object",
                 },
-                "type": "object",
               },
             },
           },
-        },
-        "demoMode": false,
-        "domain": null,
-        "emailName": null,
-        "enableSelfRegistration": true,
-        "enableUnsecuredServiceSecrets": false,
-        "googleAnalyticsID": null,
-        "hasClonableAssets": undefined,
-        "hasClonableResources": undefined,
-        "hasIcon": true,
-        "hasMaskableIcon": true,
-        "iconBackground": "#ffffff",
-        "iconUrl": Any<String>,
-        "id": 1,
-        "locked": "unlocked",
-        "messages": undefined,
-        "path": "test-app",
-        "rating": undefined,
-        "readmeUrl": undefined,
-        "screenshotUrls": undefined,
-        "sentryDsn": null,
-        "sentryEnvironment": null,
-        "sharedStyle": ".tux {
-        color: rgb(0 0 0);
-      }
-      ",
-        "showAppDefinition": true,
-        "showAppsembleLogin": false,
-        "showAppsembleOAuth2Login": true,
-        "template": false,
-        "visibility": "unlisted",
-        "yaml": "name: Test App
-      defaultPage: Test Page
-      resources:
-        test:
-          schema:
-            additionalProperties: false
-            type: object
-            properties:
-              test:
-                type: string
-                format: binary
-      pages:
-        - name: Test Page
-          blocks:
-            - type: test
-              version: 0.0.0
-      ",
-      }
-    `,
+          "demoMode": false,
+          "displayAppMemberName": false,
+          "domain": null,
+          "emailName": null,
+          "enableSelfRegistration": true,
+          "enableUnsecuredServiceSecrets": false,
+          "googleAnalyticsID": null,
+          "hasClonableAssets": undefined,
+          "hasClonableResources": undefined,
+          "hasIcon": true,
+          "hasMaskableIcon": true,
+          "iconBackground": "#ffffff",
+          "iconUrl": Any<String>,
+          "id": 1,
+          "locked": "unlocked",
+          "messages": undefined,
+          "path": "test-app",
+          "rating": undefined,
+          "readmeUrl": undefined,
+          "screenshotUrls": undefined,
+          "sentryDsn": null,
+          "sentryEnvironment": null,
+          "sharedStyle": ".tux {
+          color: rgb(0 0 0);
+        }
+        ",
+          "showAppDefinition": true,
+          "showAppsembleLogin": false,
+          "showAppsembleOAuth2Login": true,
+          "template": false,
+          "visibility": "unlisted",
+          "yaml": "name: Test App
+        defaultPage: Test Page
+        resources:
+          test:
+            schema:
+              additionalProperties: false
+              type: object
+              properties:
+                test:
+                  type: string
+                  format: binary
+        pages:
+          - name: Test Page
+            blocks:
+              - type: test
+                version: 0.0.0
+        ",
+        }
+      `,
       );
       expect(app.icon).toStrictEqual(await readFixture('apps/test/icon.png'));
       expect(app.maskableIcon).toStrictEqual(await readFixture('apps/test/maskable-icon.png'));
@@ -450,95 +452,96 @@ describe('app', () => {
           iconUrl: expect.any(String),
         },
         `
-      {
-        "$created": StringMatching /\\\\d\\{4\\}\\(\\.\\\\d\\{2\\}\\)\\{2\\}\\(\\\\s\\|T\\)\\(\\\\d\\{2\\}\\.\\)\\{2\\}\\\\d\\{2\\}/,
-        "$updated": StringMatching /\\\\d\\{4\\}\\(\\.\\\\d\\{2\\}\\)\\{2\\}\\(\\\\s\\|T\\)\\(\\\\d\\{2\\}\\.\\)\\{2\\}\\\\d\\{2\\}/,
-        "OrganizationId": "testorganization",
-        "OrganizationName": undefined,
-        "controllerCode": null,
-        "controllerImplementations": null,
-        "coreStyle": ".tux {
-        color: rgb(0 0 0);
-      }
-      ",
-        "definition": {
-          "defaultPage": "Test Page",
-          "name": "Test App",
-          "pages": [
-            {
-              "blocks": [
-                {
-                  "type": "test",
-                  "version": "0.0.0",
-                },
-              ],
-              "name": "Test Page",
-            },
-          ],
-          "resources": {
-            "test": {
-              "schema": {
-                "additionalProperties": false,
-                "properties": {
-                  "test": {
-                    "format": "binary",
-                    "type": "string",
+        {
+          "$created": StringMatching /\\\\d\\{4\\}\\(\\.\\\\d\\{2\\}\\)\\{2\\}\\(\\\\s\\|T\\)\\(\\\\d\\{2\\}\\.\\)\\{2\\}\\\\d\\{2\\}/,
+          "$updated": StringMatching /\\\\d\\{4\\}\\(\\.\\\\d\\{2\\}\\)\\{2\\}\\(\\\\s\\|T\\)\\(\\\\d\\{2\\}\\.\\)\\{2\\}\\\\d\\{2\\}/,
+          "OrganizationId": "testorganization",
+          "OrganizationName": undefined,
+          "controllerCode": null,
+          "controllerImplementations": null,
+          "coreStyle": ".tux {
+          color: rgb(0 0 0);
+        }
+        ",
+          "definition": {
+            "defaultPage": "Test Page",
+            "name": "Test App",
+            "pages": [
+              {
+                "blocks": [
+                  {
+                    "type": "test",
+                    "version": "0.0.0",
                   },
+                ],
+                "name": "Test Page",
+              },
+            ],
+            "resources": {
+              "test": {
+                "schema": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "test": {
+                      "format": "binary",
+                      "type": "string",
+                    },
+                  },
+                  "type": "object",
                 },
-                "type": "object",
               },
             },
           },
-        },
-        "demoMode": true,
-        "domain": null,
-        "emailName": null,
-        "enableSelfRegistration": true,
-        "enableUnsecuredServiceSecrets": false,
-        "googleAnalyticsID": "test",
-        "hasClonableAssets": undefined,
-        "hasClonableResources": undefined,
-        "hasIcon": true,
-        "hasMaskableIcon": true,
-        "iconBackground": "#000000",
-        "iconUrl": Any<String>,
-        "id": 1,
-        "locked": "unlocked",
-        "messages": undefined,
-        "path": "test-app",
-        "rating": undefined,
-        "readmeUrl": undefined,
-        "screenshotUrls": undefined,
-        "sentryDsn": "https://public@sentry.example.com/1",
-        "sentryEnvironment": "test",
-        "sharedStyle": ".tux {
-        color: rgb(0 0 0);
-      }
-      ",
-        "showAppDefinition": true,
-        "showAppsembleLogin": false,
-        "showAppsembleOAuth2Login": true,
-        "template": true,
-        "visibility": "public",
-        "yaml": "name: Test App
-      defaultPage: Test Page
-      resources:
-        test:
-          schema:
-            additionalProperties: false
-            type: object
-            properties:
-              test:
-                type: string
-                format: binary
-      pages:
-        - name: Test Page
-          blocks:
-            - type: test
-              version: 0.0.0
-      ",
-      }
-    `,
+          "demoMode": true,
+          "displayAppMemberName": false,
+          "domain": null,
+          "emailName": null,
+          "enableSelfRegistration": true,
+          "enableUnsecuredServiceSecrets": false,
+          "googleAnalyticsID": "test",
+          "hasClonableAssets": undefined,
+          "hasClonableResources": undefined,
+          "hasIcon": true,
+          "hasMaskableIcon": true,
+          "iconBackground": "#000000",
+          "iconUrl": Any<String>,
+          "id": 1,
+          "locked": "unlocked",
+          "messages": undefined,
+          "path": "test-app",
+          "rating": undefined,
+          "readmeUrl": undefined,
+          "screenshotUrls": undefined,
+          "sentryDsn": "https://public@sentry.example.com/1",
+          "sentryEnvironment": "test",
+          "sharedStyle": ".tux {
+          color: rgb(0 0 0);
+        }
+        ",
+          "showAppDefinition": true,
+          "showAppsembleLogin": false,
+          "showAppsembleOAuth2Login": true,
+          "template": true,
+          "visibility": "public",
+          "yaml": "name: Test App
+        defaultPage: Test Page
+        resources:
+          test:
+            schema:
+              additionalProperties: false
+              type: object
+              properties:
+                test:
+                  type: string
+                  format: binary
+        pages:
+          - name: Test Page
+            blocks:
+              - type: test
+                version: 0.0.0
+        ",
+        }
+      `,
       );
       expect(app.icon).toStrictEqual(await readFixture('apps/test/icon.png'));
       expect(app.maskableIcon).toStrictEqual(await readFixture('apps/test/maskable-icon.png'));
@@ -622,89 +625,90 @@ describe('app', () => {
           iconUrl: expect.any(String),
         },
         `
-      {
-        "$created": StringMatching /\\\\d\\{4\\}\\(\\.\\\\d\\{2\\}\\)\\{2\\}\\(\\\\s\\|T\\)\\(\\\\d\\{2\\}\\.\\)\\{2\\}\\\\d\\{2\\}/,
-        "$updated": StringMatching /\\\\d\\{4\\}\\(\\.\\\\d\\{2\\}\\)\\{2\\}\\(\\\\s\\|T\\)\\(\\\\d\\{2\\}\\.\\)\\{2\\}\\\\d\\{2\\}/,
-        "OrganizationId": "testorganization",
-        "OrganizationName": undefined,
-        "controllerCode": null,
-        "controllerImplementations": null,
-        "coreStyle": ".tux{color:rgb(1 2 3)}",
-        "definition": {
-          "defaultPage": "Test Page",
-          "name": "Test App",
-          "pages": [
-            {
-              "blocks": [
-                {
-                  "type": "test",
-                  "version": "0.0.0",
-                },
-              ],
-              "name": "Test Page",
-            },
-          ],
-          "resources": {
-            "test": {
-              "schema": {
-                "additionalProperties": false,
-                "properties": {
-                  "tux": {
-                    "format": "binary",
-                    "type": "string",
+        {
+          "$created": StringMatching /\\\\d\\{4\\}\\(\\.\\\\d\\{2\\}\\)\\{2\\}\\(\\\\s\\|T\\)\\(\\\\d\\{2\\}\\.\\)\\{2\\}\\\\d\\{2\\}/,
+          "$updated": StringMatching /\\\\d\\{4\\}\\(\\.\\\\d\\{2\\}\\)\\{2\\}\\(\\\\s\\|T\\)\\(\\\\d\\{2\\}\\.\\)\\{2\\}\\\\d\\{2\\}/,
+          "OrganizationId": "testorganization",
+          "OrganizationName": undefined,
+          "controllerCode": null,
+          "controllerImplementations": null,
+          "coreStyle": ".tux{color:rgb(1 2 3)}",
+          "definition": {
+            "defaultPage": "Test Page",
+            "name": "Test App",
+            "pages": [
+              {
+                "blocks": [
+                  {
+                    "type": "test",
+                    "version": "0.0.0",
                   },
+                ],
+                "name": "Test Page",
+              },
+            ],
+            "resources": {
+              "test": {
+                "schema": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "tux": {
+                      "format": "binary",
+                      "type": "string",
+                    },
+                  },
+                  "type": "object",
                 },
-                "type": "object",
               },
             },
           },
-        },
-        "demoMode": false,
-        "domain": null,
-        "emailName": null,
-        "enableSelfRegistration": true,
-        "enableUnsecuredServiceSecrets": false,
-        "googleAnalyticsID": null,
-        "hasClonableAssets": undefined,
-        "hasClonableResources": undefined,
-        "hasIcon": true,
-        "hasMaskableIcon": true,
-        "iconBackground": "#ffffff",
-        "iconUrl": Any<String>,
-        "id": 1,
-        "locked": "unlocked",
-        "messages": undefined,
-        "path": "test-app",
-        "rating": undefined,
-        "readmeUrl": undefined,
-        "screenshotUrls": undefined,
-        "sentryDsn": null,
-        "sentryEnvironment": null,
-        "sharedStyle": ".tux{color:rgb(1 2 3)}",
-        "showAppDefinition": true,
-        "showAppsembleLogin": false,
-        "showAppsembleOAuth2Login": true,
-        "template": false,
-        "visibility": "unlisted",
-        "yaml": "name: Test App
-      defaultPage: Test Page
-      resources:
-        test:
-          schema:
-            additionalProperties: false
-            type: object
-            properties:
-              tux:
-                type: string
-                format: binary
-      pages:
-        - name: Test Page
-          blocks:
-            - type: test
-              version: 0.0.0
-      ",
-      }
-    `,
+          "demoMode": false,
+          "displayAppMemberName": false,
+          "domain": null,
+          "emailName": null,
+          "enableSelfRegistration": true,
+          "enableUnsecuredServiceSecrets": false,
+          "googleAnalyticsID": null,
+          "hasClonableAssets": undefined,
+          "hasClonableResources": undefined,
+          "hasIcon": true,
+          "hasMaskableIcon": true,
+          "iconBackground": "#ffffff",
+          "iconUrl": Any<String>,
+          "id": 1,
+          "locked": "unlocked",
+          "messages": undefined,
+          "path": "test-app",
+          "rating": undefined,
+          "readmeUrl": undefined,
+          "screenshotUrls": undefined,
+          "sentryDsn": null,
+          "sentryEnvironment": null,
+          "sharedStyle": ".tux{color:rgb(1 2 3)}",
+          "showAppDefinition": true,
+          "showAppsembleLogin": false,
+          "showAppsembleOAuth2Login": true,
+          "template": false,
+          "visibility": "unlisted",
+          "yaml": "name: Test App
+        defaultPage: Test Page
+        resources:
+          test:
+            schema:
+              additionalProperties: false
+              type: object
+              properties:
+                tux:
+                  type: string
+                  format: binary
+        pages:
+          - name: Test Page
+            blocks:
+              - type: test
+                version: 0.0.0
+        ",
+        }
+      `,
       );
       expect(app.icon).toStrictEqual(await readFixture('apps/test/variants/tux/icon.png'));
       expect(app.maskableIcon).toStrictEqual(
@@ -970,95 +974,96 @@ describe('app', () => {
           iconUrl: expect.any(String),
         },
         `
-      {
-        "$created": StringMatching /\\\\d\\{4\\}\\(\\.\\\\d\\{2\\}\\)\\{2\\}\\(\\\\s\\|T\\)\\(\\\\d\\{2\\}\\.\\)\\{2\\}\\\\d\\{2\\}/,
-        "$updated": StringMatching /\\\\d\\{4\\}\\(\\.\\\\d\\{2\\}\\)\\{2\\}\\(\\\\s\\|T\\)\\(\\\\d\\{2\\}\\.\\)\\{2\\}\\\\d\\{2\\}/,
-        "OrganizationId": "testorganization",
-        "OrganizationName": undefined,
-        "controllerCode": null,
-        "controllerImplementations": null,
-        "coreStyle": ".tux {
-        color: rgb(0 0 0);
-      }
-      ",
-        "definition": {
-          "defaultPage": "Test Page",
-          "name": "Test App",
-          "pages": [
-            {
-              "blocks": [
-                {
-                  "type": "test",
-                  "version": "0.0.0",
-                },
-              ],
-              "name": "Test Page",
-            },
-          ],
-          "resources": {
-            "test": {
-              "schema": {
-                "additionalProperties": false,
-                "properties": {
-                  "test": {
-                    "format": "binary",
-                    "type": "string",
+        {
+          "$created": StringMatching /\\\\d\\{4\\}\\(\\.\\\\d\\{2\\}\\)\\{2\\}\\(\\\\s\\|T\\)\\(\\\\d\\{2\\}\\.\\)\\{2\\}\\\\d\\{2\\}/,
+          "$updated": StringMatching /\\\\d\\{4\\}\\(\\.\\\\d\\{2\\}\\)\\{2\\}\\(\\\\s\\|T\\)\\(\\\\d\\{2\\}\\.\\)\\{2\\}\\\\d\\{2\\}/,
+          "OrganizationId": "testorganization",
+          "OrganizationName": undefined,
+          "controllerCode": null,
+          "controllerImplementations": null,
+          "coreStyle": ".tux {
+          color: rgb(0 0 0);
+        }
+        ",
+          "definition": {
+            "defaultPage": "Test Page",
+            "name": "Test App",
+            "pages": [
+              {
+                "blocks": [
+                  {
+                    "type": "test",
+                    "version": "0.0.0",
                   },
+                ],
+                "name": "Test Page",
+              },
+            ],
+            "resources": {
+              "test": {
+                "schema": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "test": {
+                      "format": "binary",
+                      "type": "string",
+                    },
+                  },
+                  "type": "object",
                 },
-                "type": "object",
               },
             },
           },
-        },
-        "demoMode": false,
-        "domain": null,
-        "emailName": null,
-        "enableSelfRegistration": true,
-        "enableUnsecuredServiceSecrets": false,
-        "googleAnalyticsID": null,
-        "hasClonableAssets": undefined,
-        "hasClonableResources": undefined,
-        "hasIcon": true,
-        "hasMaskableIcon": true,
-        "iconBackground": "#ffffff",
-        "iconUrl": Any<String>,
-        "id": 1,
-        "locked": "unlocked",
-        "messages": undefined,
-        "path": "test-app",
-        "rating": undefined,
-        "readmeUrl": undefined,
-        "screenshotUrls": undefined,
-        "sentryDsn": null,
-        "sentryEnvironment": null,
-        "sharedStyle": ".tux {
-        color: rgb(0 0 0);
-      }
-      ",
-        "showAppDefinition": false,
-        "showAppsembleLogin": false,
-        "showAppsembleOAuth2Login": true,
-        "template": false,
-        "visibility": "unlisted",
-        "yaml": "name: Test App
-      defaultPage: Test Page
-      resources:
-        test:
-          schema:
-            additionalProperties: false
-            type: object
-            properties:
-              test:
-                type: string
-                format: binary
-      pages:
-        - name: Test Page
-          blocks:
-            - type: test
-              version: 0.0.0
-      ",
-      }
-    `,
+          "demoMode": false,
+          "displayAppMemberName": false,
+          "domain": null,
+          "emailName": null,
+          "enableSelfRegistration": true,
+          "enableUnsecuredServiceSecrets": false,
+          "googleAnalyticsID": null,
+          "hasClonableAssets": undefined,
+          "hasClonableResources": undefined,
+          "hasIcon": true,
+          "hasMaskableIcon": true,
+          "iconBackground": "#ffffff",
+          "iconUrl": Any<String>,
+          "id": 1,
+          "locked": "unlocked",
+          "messages": undefined,
+          "path": "test-app",
+          "rating": undefined,
+          "readmeUrl": undefined,
+          "screenshotUrls": undefined,
+          "sentryDsn": null,
+          "sentryEnvironment": null,
+          "sharedStyle": ".tux {
+          color: rgb(0 0 0);
+        }
+        ",
+          "showAppDefinition": false,
+          "showAppsembleLogin": false,
+          "showAppsembleOAuth2Login": true,
+          "template": false,
+          "visibility": "unlisted",
+          "yaml": "name: Test App
+        defaultPage: Test Page
+        resources:
+          test:
+            schema:
+              additionalProperties: false
+              type: object
+              properties:
+                test:
+                  type: string
+                  format: binary
+        pages:
+          - name: Test Page
+            blocks:
+              - type: test
+                version: 0.0.0
+        ",
+        }
+      `,
       );
       expect(app.icon).toStrictEqual(await readFixture('apps/test/icon.png'));
       expect(app.maskableIcon).toStrictEqual(await readFixture('apps/test/maskable-icon.png'));
@@ -1136,95 +1141,96 @@ describe('app', () => {
           iconUrl: expect.any(String),
         },
         `
-      {
-        "$created": StringMatching /\\\\d\\{4\\}\\(\\.\\\\d\\{2\\}\\)\\{2\\}\\(\\\\s\\|T\\)\\(\\\\d\\{2\\}\\.\\)\\{2\\}\\\\d\\{2\\}/,
-        "$updated": StringMatching /\\\\d\\{4\\}\\(\\.\\\\d\\{2\\}\\)\\{2\\}\\(\\\\s\\|T\\)\\(\\\\d\\{2\\}\\.\\)\\{2\\}\\\\d\\{2\\}/,
-        "OrganizationId": "testorganization",
-        "OrganizationName": undefined,
-        "controllerCode": null,
-        "controllerImplementations": null,
-        "coreStyle": ".tux {
-        color: rgb(0 0 0);
-      }
-      ",
-        "definition": {
-          "defaultPage": "Test Page",
-          "name": "Test App",
-          "pages": [
-            {
-              "blocks": [
-                {
-                  "type": "test",
-                  "version": "0.0.0",
-                },
-              ],
-              "name": "Test Page",
-            },
-          ],
-          "resources": {
-            "test": {
-              "schema": {
-                "additionalProperties": false,
-                "properties": {
-                  "test": {
-                    "format": "binary",
-                    "type": "string",
+        {
+          "$created": StringMatching /\\\\d\\{4\\}\\(\\.\\\\d\\{2\\}\\)\\{2\\}\\(\\\\s\\|T\\)\\(\\\\d\\{2\\}\\.\\)\\{2\\}\\\\d\\{2\\}/,
+          "$updated": StringMatching /\\\\d\\{4\\}\\(\\.\\\\d\\{2\\}\\)\\{2\\}\\(\\\\s\\|T\\)\\(\\\\d\\{2\\}\\.\\)\\{2\\}\\\\d\\{2\\}/,
+          "OrganizationId": "testorganization",
+          "OrganizationName": undefined,
+          "controllerCode": null,
+          "controllerImplementations": null,
+          "coreStyle": ".tux {
+          color: rgb(0 0 0);
+        }
+        ",
+          "definition": {
+            "defaultPage": "Test Page",
+            "name": "Test App",
+            "pages": [
+              {
+                "blocks": [
+                  {
+                    "type": "test",
+                    "version": "0.0.0",
                   },
+                ],
+                "name": "Test Page",
+              },
+            ],
+            "resources": {
+              "test": {
+                "schema": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "test": {
+                      "format": "binary",
+                      "type": "string",
+                    },
+                  },
+                  "type": "object",
                 },
-                "type": "object",
               },
             },
           },
-        },
-        "demoMode": false,
-        "domain": null,
-        "emailName": null,
-        "enableSelfRegistration": true,
-        "enableUnsecuredServiceSecrets": false,
-        "googleAnalyticsID": null,
-        "hasClonableAssets": undefined,
-        "hasClonableResources": undefined,
-        "hasIcon": true,
-        "hasMaskableIcon": true,
-        "iconBackground": "#ffffff",
-        "iconUrl": Any<String>,
-        "id": 1,
-        "locked": "unlocked",
-        "messages": undefined,
-        "path": "test-app",
-        "rating": undefined,
-        "readmeUrl": undefined,
-        "screenshotUrls": undefined,
-        "sentryDsn": null,
-        "sentryEnvironment": null,
-        "sharedStyle": ".tux {
-        color: rgb(0 0 0);
-      }
-      ",
-        "showAppDefinition": false,
-        "showAppsembleLogin": false,
-        "showAppsembleOAuth2Login": true,
-        "template": false,
-        "visibility": "unlisted",
-        "yaml": "name: Test App
-      defaultPage: Test Page
-      resources:
-        test:
-          schema:
-            additionalProperties: false
-            type: object
-            properties:
-              test:
-                type: string
-                format: binary
-      pages:
-        - name: Test Page
-          blocks:
-            - type: test
-              version: 0.0.0
-      ",
-      }
-    `,
+          "demoMode": false,
+          "displayAppMemberName": false,
+          "domain": null,
+          "emailName": null,
+          "enableSelfRegistration": true,
+          "enableUnsecuredServiceSecrets": false,
+          "googleAnalyticsID": null,
+          "hasClonableAssets": undefined,
+          "hasClonableResources": undefined,
+          "hasIcon": true,
+          "hasMaskableIcon": true,
+          "iconBackground": "#ffffff",
+          "iconUrl": Any<String>,
+          "id": 1,
+          "locked": "unlocked",
+          "messages": undefined,
+          "path": "test-app",
+          "rating": undefined,
+          "readmeUrl": undefined,
+          "screenshotUrls": undefined,
+          "sentryDsn": null,
+          "sentryEnvironment": null,
+          "sharedStyle": ".tux {
+          color: rgb(0 0 0);
+        }
+        ",
+          "showAppDefinition": false,
+          "showAppsembleLogin": false,
+          "showAppsembleOAuth2Login": true,
+          "template": false,
+          "visibility": "unlisted",
+          "yaml": "name: Test App
+        defaultPage: Test Page
+        resources:
+          test:
+            schema:
+              additionalProperties: false
+              type: object
+              properties:
+                test:
+                  type: string
+                  format: binary
+        pages:
+          - name: Test Page
+            blocks:
+              - type: test
+                version: 0.0.0
+        ",
+        }
+      `,
       );
       expect(app.icon).toStrictEqual(await readFixture('apps/test/icon.png'));
       expect(app.maskableIcon).toStrictEqual(await readFixture('apps/test/maskable-icon.png'));
@@ -1305,95 +1311,96 @@ describe('app', () => {
           iconUrl: expect.any(String),
         },
         `
-      {
-        "$created": StringMatching /\\\\d\\{4\\}\\(\\.\\\\d\\{2\\}\\)\\{2\\}\\(\\\\s\\|T\\)\\(\\\\d\\{2\\}\\.\\)\\{2\\}\\\\d\\{2\\}/,
-        "$updated": StringMatching /\\\\d\\{4\\}\\(\\.\\\\d\\{2\\}\\)\\{2\\}\\(\\\\s\\|T\\)\\(\\\\d\\{2\\}\\.\\)\\{2\\}\\\\d\\{2\\}/,
-        "OrganizationId": "testorganization",
-        "OrganizationName": undefined,
-        "controllerCode": null,
-        "controllerImplementations": null,
-        "coreStyle": ".tux {
-        color: rgb(0 0 0);
-      }
-      ",
-        "definition": {
-          "defaultPage": "Test Page",
-          "name": "Test App",
-          "pages": [
-            {
-              "blocks": [
-                {
-                  "type": "test",
-                  "version": "0.0.0",
-                },
-              ],
-              "name": "Test Page",
-            },
-          ],
-          "resources": {
-            "test": {
-              "schema": {
-                "additionalProperties": false,
-                "properties": {
-                  "test": {
-                    "format": "binary",
-                    "type": "string",
+        {
+          "$created": StringMatching /\\\\d\\{4\\}\\(\\.\\\\d\\{2\\}\\)\\{2\\}\\(\\\\s\\|T\\)\\(\\\\d\\{2\\}\\.\\)\\{2\\}\\\\d\\{2\\}/,
+          "$updated": StringMatching /\\\\d\\{4\\}\\(\\.\\\\d\\{2\\}\\)\\{2\\}\\(\\\\s\\|T\\)\\(\\\\d\\{2\\}\\.\\)\\{2\\}\\\\d\\{2\\}/,
+          "OrganizationId": "testorganization",
+          "OrganizationName": undefined,
+          "controllerCode": null,
+          "controllerImplementations": null,
+          "coreStyle": ".tux {
+          color: rgb(0 0 0);
+        }
+        ",
+          "definition": {
+            "defaultPage": "Test Page",
+            "name": "Test App",
+            "pages": [
+              {
+                "blocks": [
+                  {
+                    "type": "test",
+                    "version": "0.0.0",
                   },
+                ],
+                "name": "Test Page",
+              },
+            ],
+            "resources": {
+              "test": {
+                "schema": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "test": {
+                      "format": "binary",
+                      "type": "string",
+                    },
+                  },
+                  "type": "object",
                 },
-                "type": "object",
               },
             },
           },
-        },
-        "demoMode": true,
-        "domain": null,
-        "emailName": null,
-        "enableSelfRegistration": true,
-        "enableUnsecuredServiceSecrets": false,
-        "googleAnalyticsID": "test",
-        "hasClonableAssets": undefined,
-        "hasClonableResources": undefined,
-        "hasIcon": true,
-        "hasMaskableIcon": true,
-        "iconBackground": "#000000",
-        "iconUrl": Any<String>,
-        "id": 1,
-        "locked": "studioLock",
-        "messages": undefined,
-        "path": "test-app",
-        "rating": undefined,
-        "readmeUrl": undefined,
-        "screenshotUrls": undefined,
-        "sentryDsn": "https://public@sentry.example.com/1",
-        "sentryEnvironment": "test",
-        "sharedStyle": ".tux {
-        color: rgb(0 0 0);
-      }
-      ",
-        "showAppDefinition": false,
-        "showAppsembleLogin": false,
-        "showAppsembleOAuth2Login": true,
-        "template": true,
-        "visibility": "public",
-        "yaml": "name: Test App
-      defaultPage: Test Page
-      resources:
-        test:
-          schema:
-            additionalProperties: false
-            type: object
-            properties:
-              test:
-                type: string
-                format: binary
-      pages:
-        - name: Test Page
-          blocks:
-            - type: test
-              version: 0.0.0
-      ",
-      }
-    `,
+          "demoMode": true,
+          "displayAppMemberName": false,
+          "domain": null,
+          "emailName": null,
+          "enableSelfRegistration": true,
+          "enableUnsecuredServiceSecrets": false,
+          "googleAnalyticsID": "test",
+          "hasClonableAssets": undefined,
+          "hasClonableResources": undefined,
+          "hasIcon": true,
+          "hasMaskableIcon": true,
+          "iconBackground": "#000000",
+          "iconUrl": Any<String>,
+          "id": 1,
+          "locked": "studioLock",
+          "messages": undefined,
+          "path": "test-app",
+          "rating": undefined,
+          "readmeUrl": undefined,
+          "screenshotUrls": undefined,
+          "sentryDsn": "https://public@sentry.example.com/1",
+          "sentryEnvironment": "test",
+          "sharedStyle": ".tux {
+          color: rgb(0 0 0);
+        }
+        ",
+          "showAppDefinition": false,
+          "showAppsembleLogin": false,
+          "showAppsembleOAuth2Login": true,
+          "template": true,
+          "visibility": "public",
+          "yaml": "name: Test App
+        defaultPage: Test Page
+        resources:
+          test:
+            schema:
+              additionalProperties: false
+              type: object
+              properties:
+                test:
+                  type: string
+                  format: binary
+        pages:
+          - name: Test Page
+            blocks:
+              - type: test
+                version: 0.0.0
+        ",
+        }
+      `,
       );
       expect(app.icon).toStrictEqual(await readFixture('apps/test/icon.png'));
       expect(app.maskableIcon).toStrictEqual(await readFixture('apps/test/maskable-icon.png'));
@@ -1479,89 +1486,90 @@ describe('app', () => {
           iconUrl: expect.any(String),
         },
         `
-      {
-        "$created": StringMatching /\\\\d\\{4\\}\\(\\.\\\\d\\{2\\}\\)\\{2\\}\\(\\\\s\\|T\\)\\(\\\\d\\{2\\}\\.\\)\\{2\\}\\\\d\\{2\\}/,
-        "$updated": StringMatching /\\\\d\\{4\\}\\(\\.\\\\d\\{2\\}\\)\\{2\\}\\(\\\\s\\|T\\)\\(\\\\d\\{2\\}\\.\\)\\{2\\}\\\\d\\{2\\}/,
-        "OrganizationId": "testorganization",
-        "OrganizationName": undefined,
-        "controllerCode": null,
-        "controllerImplementations": null,
-        "coreStyle": ".tux{color:rgb(1 2 3)}",
-        "definition": {
-          "defaultPage": "Test Page",
-          "name": "Test App",
-          "pages": [
-            {
-              "blocks": [
-                {
-                  "type": "test",
-                  "version": "0.0.0",
-                },
-              ],
-              "name": "Test Page",
-            },
-          ],
-          "resources": {
-            "test": {
-              "schema": {
-                "additionalProperties": false,
-                "properties": {
-                  "tux": {
-                    "format": "binary",
-                    "type": "string",
+        {
+          "$created": StringMatching /\\\\d\\{4\\}\\(\\.\\\\d\\{2\\}\\)\\{2\\}\\(\\\\s\\|T\\)\\(\\\\d\\{2\\}\\.\\)\\{2\\}\\\\d\\{2\\}/,
+          "$updated": StringMatching /\\\\d\\{4\\}\\(\\.\\\\d\\{2\\}\\)\\{2\\}\\(\\\\s\\|T\\)\\(\\\\d\\{2\\}\\.\\)\\{2\\}\\\\d\\{2\\}/,
+          "OrganizationId": "testorganization",
+          "OrganizationName": undefined,
+          "controllerCode": null,
+          "controllerImplementations": null,
+          "coreStyle": ".tux{color:rgb(1 2 3)}",
+          "definition": {
+            "defaultPage": "Test Page",
+            "name": "Test App",
+            "pages": [
+              {
+                "blocks": [
+                  {
+                    "type": "test",
+                    "version": "0.0.0",
                   },
+                ],
+                "name": "Test Page",
+              },
+            ],
+            "resources": {
+              "test": {
+                "schema": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "tux": {
+                      "format": "binary",
+                      "type": "string",
+                    },
+                  },
+                  "type": "object",
                 },
-                "type": "object",
               },
             },
           },
-        },
-        "demoMode": false,
-        "domain": null,
-        "emailName": null,
-        "enableSelfRegistration": true,
-        "enableUnsecuredServiceSecrets": false,
-        "googleAnalyticsID": null,
-        "hasClonableAssets": undefined,
-        "hasClonableResources": undefined,
-        "hasIcon": true,
-        "hasMaskableIcon": true,
-        "iconBackground": "#ffffff",
-        "iconUrl": Any<String>,
-        "id": 1,
-        "locked": "unlocked",
-        "messages": undefined,
-        "path": "test-app",
-        "rating": undefined,
-        "readmeUrl": undefined,
-        "screenshotUrls": undefined,
-        "sentryDsn": null,
-        "sentryEnvironment": null,
-        "sharedStyle": ".tux{color:rgb(1 2 3)}",
-        "showAppDefinition": false,
-        "showAppsembleLogin": false,
-        "showAppsembleOAuth2Login": true,
-        "template": false,
-        "visibility": "unlisted",
-        "yaml": "name: Test App
-      defaultPage: Test Page
-      resources:
-        test:
-          schema:
-            additionalProperties: false
-            type: object
-            properties:
-              tux:
-                type: string
-                format: binary
-      pages:
-        - name: Test Page
-          blocks:
-            - type: test
-              version: 0.0.0
-      ",
-      }
-    `,
+          "demoMode": false,
+          "displayAppMemberName": false,
+          "domain": null,
+          "emailName": null,
+          "enableSelfRegistration": true,
+          "enableUnsecuredServiceSecrets": false,
+          "googleAnalyticsID": null,
+          "hasClonableAssets": undefined,
+          "hasClonableResources": undefined,
+          "hasIcon": true,
+          "hasMaskableIcon": true,
+          "iconBackground": "#ffffff",
+          "iconUrl": Any<String>,
+          "id": 1,
+          "locked": "unlocked",
+          "messages": undefined,
+          "path": "test-app",
+          "rating": undefined,
+          "readmeUrl": undefined,
+          "screenshotUrls": undefined,
+          "sentryDsn": null,
+          "sentryEnvironment": null,
+          "sharedStyle": ".tux{color:rgb(1 2 3)}",
+          "showAppDefinition": false,
+          "showAppsembleLogin": false,
+          "showAppsembleOAuth2Login": true,
+          "template": false,
+          "visibility": "unlisted",
+          "yaml": "name: Test App
+        defaultPage: Test Page
+        resources:
+          test:
+            schema:
+              additionalProperties: false
+              type: object
+              properties:
+                tux:
+                  type: string
+                  format: binary
+        pages:
+          - name: Test Page
+            blocks:
+              - type: test
+                version: 0.0.0
+        ",
+        }
+      `,
       );
       expect(app.icon).toStrictEqual(await readFixture('apps/test/variants/tux/icon.png'));
       expect(app.maskableIcon).toStrictEqual(
@@ -1817,6 +1825,7 @@ describe('app', () => {
             },
           },
           "demoMode": false,
+          "displayAppMemberName": false,
           "domain": null,
           "emailName": null,
           "enableSelfRegistration": true,
@@ -1896,6 +1905,7 @@ describe('app', () => {
             "name": "Test App",
           },
           "demoMode": false,
+          "displayAppMemberName": false,
           "domain": null,
           "emailName": null,
           "enableSelfRegistration": true,
@@ -1967,6 +1977,7 @@ describe('app', () => {
           },
           "deleted": null,
           "demoMode": false,
+          "displayAppMemberName": false,
           "domain": null,
           "emailHost": null,
           "emailName": null,
@@ -2053,6 +2064,7 @@ describe('app', () => {
           },
           "deleted": null,
           "demoMode": true,
+          "displayAppMemberName": false,
           "domain": null,
           "emailHost": null,
           "emailName": null,

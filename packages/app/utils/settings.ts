@@ -7,6 +7,7 @@ export const {
   definition,
   demoMode,
   development,
+  displayAppMemberName,
   enableSelfRegistration,
   id: appId,
   languages,

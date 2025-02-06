@@ -17,6 +17,7 @@ interface PatchAppArguments extends BaseArguments {
   locked?: AppLock;
   showAppsembleOAuth2Login?: boolean;
   showAppsembleLogin?: boolean;
+  displayAppMemberName?: boolean;
   enableSelfRegistration?: boolean;
 }
 
@@ -66,6 +67,10 @@ export function builder(yargs: Argv): Argv<any> {
     })
     .option('enableSelfRegistration', {
       description: 'Whether new users should be able to register themselves',
+      type: 'boolean',
+    })
+    .option('displayAppMemberName', {
+      description: 'Whether to display the app member name in the title bar',
       type: 'boolean',
     })
     .option('force', {

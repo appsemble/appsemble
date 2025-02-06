@@ -92,6 +92,7 @@ declare global {
       appUpdated: string;
       development: boolean;
       snapshotId?: number;
+      displayAppMemberName?: boolean;
     };
   }
 }

@@ -115,6 +115,9 @@ export const pathItems: OpenAPIV3.PathItemObject = {
                 type: 'boolean',
                 description: 'Whether new users should be able to register themselves.',
               },
+              displayAppMemberName: {
+                $ref: '#/components/schemas/App/properties/displayAppMemberName',
+              },
               emailName: {
                 type: 'string',
                 description: 'The name used for emails.',

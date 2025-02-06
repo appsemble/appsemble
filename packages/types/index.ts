@@ -2229,6 +2229,11 @@ export interface App {
   showAppsembleLogin: boolean;
 
   /**
+   * Whether to display App member's name in the title bar.
+   */
+  displayAppMemberName: boolean;
+
+  /**
    * Whether the Appsemble OAuth2 login method should be shown.
    */
   showAppsembleOAuth2Login: boolean;
