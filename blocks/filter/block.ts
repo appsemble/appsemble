@@ -75,7 +75,7 @@ export interface BooleanField extends AbstractField<'boolean', boolean> {
   size?: BulmaSize;
 
   /**
-   * The color of the checkbox.
+   * The text to be rendered as the label.
    */
   labelText?: Remapper;
 

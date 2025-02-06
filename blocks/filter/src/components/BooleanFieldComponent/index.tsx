@@ -18,9 +18,7 @@ export function BooleanFieldComponent({
   value,
 }: FieldComponentProps<BooleanField>): VNode {
   const { utils } = useBlock();
-  const { color, label, labelText, size, switch: switchType } = field;
-
-  const checkboxLabel = utils.remap(label, value);
+  const { color, labelText, size, switch: switchType } = field;
 
   return (
     <div
@@ -32,7 +30,7 @@ export function BooleanFieldComponent({
       <Checkbox
         color={color}
         id={field.name}
-        label={(utils.remap(labelText, value) as string) ?? (checkboxLabel as string) ?? ''}
+        label={(utils.remap(labelText, value) as string) ?? ''}
         name={field.name}
         onChange={onChange}
         size={size}

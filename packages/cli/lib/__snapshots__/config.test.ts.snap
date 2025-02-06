@@ -1383,7 +1383,7 @@ exports[`config > getProjectImplementations > official blocks > filter 1`] = `
             "format": "remapper",
           },
           "labelText": {
-            "description": "The color of the checkbox.",
+            "description": "The text to be rendered as the label.",
             "format": "remapper",
           },
           "name": {
