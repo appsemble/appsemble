@@ -46,7 +46,7 @@ RUN rm -r package-lock.json
 
 # Setup the production docker image.
 FROM node:20.18-bookworm-slim
-ARG version=0.31.1-test.2
+ARG version=0.31.1-test.3
 ARG date
 
 COPY --from=prod /app /app

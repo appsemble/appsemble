@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.31.1-test.3](https://gitlab.com/appsemble/appsemble/-/releases/0.31.1-test.3)] - 2025-02-06
+
+### Added
+
+- Block(`form`): Add filter option to enum field.
+
+### Fixed
+
+- Block(`filter`): Escape single quote and back-slash characters.
+- Studio: Remapper links in docs generated from a schema.
+
 ## \[[0.31.1-test.2](https://gitlab.com/appsemble/appsemble/-/releases/0.31.1-test.2)] - 2025-02-03
 
 ## \[[0.31.1-test.1](https://gitlab.com/appsemble/appsemble/-/releases/0.31.1-test.1)] - 2025-01-31

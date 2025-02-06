@@ -1,6 +1,6 @@
 {
   "name": "eslint-plugin-appsemble",
-  "version": "0.31.1-test.2",
+  "version": "0.31.1-test.3",
   "private": true,
   "description": "Custom eslint rules used internally at Appsemble.",
   "keywords": [
