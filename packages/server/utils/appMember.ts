@@ -12,9 +12,7 @@ export function getAppMemberPicture(appMember: AppMember): string {
   return appMember.picture
     ? String(
         new URL(
-          `/api/apps/${appMember.AppId}/members/${
-            appMember.id
-          }/picture?updated=${appMember.updated.getTime()}`,
+          `/api/app-members/${appMember.id}/picture?updated=${appMember.updated.getTime()}`,
           argv.host,
         ),
       )
