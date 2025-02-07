@@ -7,6 +7,7 @@ import * as checkMigrations from './commands/checkMigrations.js';
 import * as cleanup from './commands/cleanup.js';
 import * as cleanupDemoAppMembers from './commands/cleanupDemoAppMembers.js';
 import * as cleanupResourcesAndAssets from './commands/cleanupResourcesAndAssets.js';
+import * as cleanupSoftDeletedRecords from './commands/cleanupSoftDeletedRecords.js';
 import * as fuzzMigrations from './commands/fuzzMigrations.js';
 import * as health from './commands/health.js';
 import * as migrate from './commands/migrate.js';
@@ -57,6 +58,7 @@ const parser = yargs()
   .command(migrate as CommandModule)
   .command(migrateAppDefinitions as CommandModule)
   .command(restore as CommandModule)
+  .command(cleanupSoftDeletedRecords)
   .fail(handleError)
   .help('help', 'Show this help message.')
   .alias('h', 'help')

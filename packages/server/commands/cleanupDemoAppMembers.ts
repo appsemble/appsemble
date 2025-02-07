@@ -33,7 +33,7 @@ export async function handler(): Promise<void> {
 
   logger.info('Cleaning up all demo users');
 
-  await transactional(async () => {
+  await transactional(async (transaction) => {
     const appMemberIdsToDelete = await AppMember.findAll({
       attributes: ['id', 'demo'],
       where: {
@@ -45,6 +45,7 @@ export async function handler(): Promise<void> {
       where: {
         AppMemberId: { [Op.in]: appMemberIdsToDelete },
       },
+      transaction,
     });
     logger.info(`Removed ${groupMembersDestroyed} demo group members.`);
 
@@ -52,11 +53,14 @@ export async function handler(): Promise<void> {
       where: {
         AuthorId: { [Op.in]: appMemberIdsToDelete },
       },
+      force: true,
+      transaction,
     });
     logger.info(`Removed ${resourcesDestroyed} demo resources.`);
 
     const appMembersDestroyed = await AppMember.destroy({
       where: { demo: true },
+      transaction,
     });
     logger.info(`Removed ${appMembersDestroyed} demo app members.`);
   });
