@@ -59,6 +59,7 @@ export async function createSettings({
       'googleAnalyticsID',
       'controllerCode',
       'controllerImplementations',
+      'displayAppMemberName',
     ],
     where: { id: app.id },
     include: [
@@ -121,6 +122,7 @@ export async function createSettings({
       snapshotId: persistedApp.AppSnapshots?.[0]?.id,
       demoMode: persistedApp.demoMode,
       showAppsembleLogin: persistedApp.showAppsembleLogin ?? false,
+      displayAppMemberName: persistedApp.displayAppMemberName ?? false,
       showAppsembleOAuth2Login: persistedApp.showAppsembleOAuth2Login ?? true,
       enableSelfRegistration: persistedApp.enableSelfRegistration ?? true,
       showDemoLogin: persistedApp.demoMode ?? false,

@@ -102,6 +102,7 @@ export async function createApp(ctx: Context): Promise<void> {
       demoMode: Boolean(demoMode),
       controllerCode,
       controllerImplementations,
+      displayAppMemberName: false,
     };
     result.containers = definition.containers;
     result.registry = definition.registry;

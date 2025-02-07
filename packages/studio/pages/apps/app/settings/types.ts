@@ -13,4 +13,5 @@ export interface FormValues {
   domain: string;
   locked: AppLock;
   showAppDefinition: boolean;
+  displayAppMemberName: boolean;
 }

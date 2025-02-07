@@ -68,6 +68,10 @@ This doesn’t affect whether or not the app can be accessed on its own domain.
       and to make any changes from the studio, this should be set to \`unlocked\`.
 `,
     },
+    displayAppMemberName: {
+      type: 'boolean',
+      description: 'Whether to display app member name in the title bar.',
+    },
     template: {
       type: 'boolean',
       description: 'Determines whether this app should be included when fetching for templates.',

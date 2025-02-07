@@ -223,4 +223,12 @@ export const messages = defineMessages({
     defaultMessage:
       'The name displayed for emails sent for this app. The email address won’t change.',
   },
+  displayAppMemberNameLabel: {
+    id: 'studio.xWGGQF',
+    defaultMessage: 'Display App Member Name',
+  },
+  displayAppMemberNameDescription: {
+    id: 'studio.VfE8ed',
+    defaultMessage: "Whether to display the logged in app member's name in the title bar",
+  },
 });

@@ -1618,6 +1618,11 @@ interface PatchAppParams {
   showAppsembleLogin?: boolean;
 
   /**
+   * Whether to display the app member name in the title bar.
+   */
+  displayAppMemberName?: boolean;
+
+  /**
    * Whether the Appsemble OAuth2 login method should be shown.
    */
   showAppsembleOAuth2Login?: boolean;
@@ -1665,6 +1670,10 @@ export async function patchApp({ id, remote, ...options }: PatchAppParams): Prom
   if (options.showAppsembleLogin !== undefined) {
     logger.info(`Setting showAppsembleLogin to ${options.showAppsembleLogin}`);
     formData.append('showAppsembleLogin', String(options.showAppsembleLogin));
+  }
+  if (options.displayAppMemberName !== undefined) {
+    logger.info(`Setting displayAppMemberName to ${options.displayAppMemberName}`);
+    formData.append('displayAppMemberName', String(options.displayAppMemberName));
   }
   if (options.showAppsembleOAuth2Login !== undefined) {
     logger.info(`Setting showAppsembleOAuth2Login to ${options.showAppsembleOAuth2Login}`);

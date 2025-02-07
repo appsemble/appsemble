@@ -86,6 +86,7 @@ export function SettingsPage(): ReactNode {
       visibility: app.visibility,
       locked: app.locked,
       showAppDefinition: app.showAppDefinition,
+      displayAppMemberName: app.displayAppMemberName || false,
     }),
     [app],
   );
@@ -101,6 +102,7 @@ export function SettingsPage(): ReactNode {
     form.set('visibility', values.visibility);
     form.set('iconBackground', values.iconBackground);
     form.set('showAppDefinition', String(values.showAppDefinition));
+    form.set('displayAppMemberName', String(values.displayAppMemberName));
     if (values.icon !== app.iconUrl) {
       form.set('icon', values.icon);
     }
@@ -195,6 +197,13 @@ export function SettingsPage(): ReactNode {
             help={<FormattedMessage {...messages.showAppDefinitionDescription} />}
             label={<FormattedMessage {...messages.showAppDefinitionLabel} />}
             name="showAppDefinition"
+          />
+          <SimpleFormField
+            component={CheckboxField}
+            disabled={app.locked !== 'unlocked'}
+            help={<FormattedMessage {...messages.displayAppMemberNameDescription} />}
+            label={<FormattedMessage {...messages.displayAppMemberNameLabel} />}
+            name="displayAppMemberName"
           />
           <SimpleFormField
             addonLeft={

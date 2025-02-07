@@ -39,6 +39,7 @@ export async function patchApp(ctx: Context): Promise<void> {
         controllerImplementations,
         coreStyle,
         demoMode,
+        displayAppMemberName,
         domain,
         emailHost,
         emailName,
@@ -222,6 +223,10 @@ export async function patchApp(ctx: Context): Promise<void> {
 
     if (showAppsembleLogin !== undefined) {
       result.showAppsembleLogin = showAppsembleLogin;
+    }
+
+    if (displayAppMemberName !== undefined) {
+      result.displayAppMemberName = displayAppMemberName;
     }
 
     if (showAppsembleOAuth2Login !== undefined) {

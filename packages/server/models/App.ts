@@ -137,6 +137,10 @@ export class App extends Model {
   @Column(DataType.BOOLEAN)
   showAppsembleLogin: boolean;
 
+  @Default(false)
+  @Column(DataType.BOOLEAN)
+  displayAppMemberName: boolean;
+
   @Default(true)
   @Column(DataType.BOOLEAN)
   enableSelfRegistration: boolean;
@@ -303,6 +307,7 @@ export class App extends Model {
       showAppsembleOAuth2Login: this.showAppsembleOAuth2Login ?? true,
       enableSelfRegistration: this.enableSelfRegistration ?? true,
       enableUnsecuredServiceSecrets: this.enableUnsecuredServiceSecrets ?? false,
+      displayAppMemberName: this.displayAppMemberName ?? false,
       rating:
         this.RatingAverage == null
           ? undefined
