@@ -1,13 +1,7 @@
 import http from 'node:http';
 import https from 'node:https';
 
-import {
-  AppsembleError,
-  initS3Client,
-  logger,
-  readFileOrString,
-  version,
-} from '@appsemble/node-utils';
+import { initS3Client, logger, readFileOrString, version } from '@appsemble/node-utils';
 import { api, asciiLogo } from '@appsemble/utils';
 import { captureException } from '@sentry/node';
 import { type Context } from 'koa';
@@ -136,25 +130,6 @@ export function builder(yargs: Argv): Argv {
     .option('proxy', {
       desc: 'Trust proxy headers. This is used to detect the source IP for logging.',
       default: false,
-    })
-    .option('s3-host', {
-      desc: 'The host of the Amazon S3 compatible object storage server',
-    })
-    .option('s3-port', {
-      desc: 'The port of the Amazon S3 compatible object storage server',
-      type: 'number',
-      default: 9000,
-    })
-    .option('s3-secure', {
-      desc: 'Whether ssl should be used for the Amazon S3 compatible object storage server',
-      type: 'boolean',
-      default: true,
-    })
-    .option('s3-access-key', {
-      desc: 'The access key of the Amazon S3 compatible object storage server',
-    })
-    .option('s3-secret-key', {
-      desc: 'The secret key of the Amazon S3 compatible object storage server',
     });
 }
 
@@ -173,10 +148,6 @@ export async function handler({ webpackConfigs }: AdditionalArguments = {}): Pro
     handleDBError(error as Error);
   }
 
-  if (argv.migrateTo) {
-    await migrate(argv.migrateTo, migrations);
-  }
-
   try {
     initS3Client({
       endPoint: argv.s3Host,
@@ -186,7 +157,12 @@ export async function handler({ webpackConfigs }: AdditionalArguments = {}): Pro
       secretKey: argv.s3SecretKey,
     });
   } catch (error: unknown) {
-    throw new AppsembleError(`S3Error: ${error}`);
+    logger.warn(`S3Error: ${error}`);
+    logger.warn('Features related to file uploads will not work correctly!');
+  }
+
+  if (argv.migrateTo) {
+    await migrate(argv.migrateTo, migrations);
   }
 
   await configureDNS();

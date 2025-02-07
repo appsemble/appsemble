@@ -234,30 +234,23 @@ describe('createAppAsset', () => {
         ephemeral: false,
       },
     });
-    expect(seedAsset.dataValues).toMatchInlineSnapshot(
-      {
+    expect(seedAsset.dataValues).toStrictEqual(
+      expect.objectContaining({
         id: expect.any(String),
         created: expect.any(Date),
         updated: expect.any(Date),
-      },
-      `
-      {
-        "AppId": 1,
-        "AppMemberId": null,
-        "GroupId": null,
-        "ResourceId": null,
-        "clonable": false,
-        "created": Any<Date>,
-        "deleted": null,
-        "ephemeral": false,
-        "filename": null,
-        "id": Any<String>,
-        "mime": "application/octet-stream",
-        "name": null,
-        "seed": true,
-        "updated": Any<Date>,
-      }
-    `,
+        AppId: 1,
+        AppMemberId: null,
+        GroupId: null,
+        ResourceId: null,
+        clonable: false,
+        deleted: null,
+        ephemeral: false,
+        filename: null,
+        mime: 'application/octet-stream',
+        name: null,
+        seed: true,
+      }),
     );
   });
 
@@ -291,30 +284,23 @@ describe('createAppAsset', () => {
         ephemeral: false,
       },
     });
-    expect(seedAsset.dataValues).toMatchInlineSnapshot(
-      {
+    expect(seedAsset.dataValues).toStrictEqual(
+      expect.objectContaining({
         id: expect.any(String),
         created: expect.any(Date),
         updated: expect.any(Date),
-      },
-      `
-      {
-        "AppId": 1,
-        "AppMemberId": null,
-        "GroupId": null,
-        "ResourceId": null,
-        "clonable": false,
-        "created": Any<Date>,
-        "deleted": null,
-        "ephemeral": false,
-        "filename": null,
-        "id": Any<String>,
-        "mime": "application/octet-stream",
-        "name": null,
-        "seed": true,
-        "updated": Any<Date>,
-      }
-    `,
+        AppId: 1,
+        AppMemberId: null,
+        GroupId: null,
+        ResourceId: null,
+        clonable: false,
+        deleted: null,
+        ephemeral: false,
+        filename: null,
+        mime: 'application/octet-stream',
+        name: null,
+        seed: true,
+      }),
     );
 
     const ephemeralAsset = await Asset.findOne({
@@ -324,30 +310,23 @@ describe('createAppAsset', () => {
         ephemeral: true,
       },
     });
-    expect(ephemeralAsset.dataValues).toMatchInlineSnapshot(
-      {
+    expect(ephemeralAsset.dataValues).toStrictEqual(
+      expect.objectContaining({
         id: expect.any(String),
         created: expect.any(Date),
         updated: expect.any(Date),
-      },
-      `
-      {
-        "AppId": 1,
-        "AppMemberId": null,
-        "GroupId": null,
-        "ResourceId": null,
-        "clonable": false,
-        "created": Any<Date>,
-        "deleted": null,
-        "ephemeral": true,
-        "filename": null,
-        "id": Any<String>,
-        "mime": "application/octet-stream",
-        "name": null,
-        "seed": false,
-        "updated": Any<Date>,
-      }
-    `,
+        AppId: 1,
+        AppMemberId: null,
+        GroupId: null,
+        ResourceId: null,
+        clonable: false,
+        deleted: null,
+        ephemeral: true,
+        filename: null,
+        mime: 'application/octet-stream',
+        name: null,
+        seed: false,
+      }),
     );
   });
 });

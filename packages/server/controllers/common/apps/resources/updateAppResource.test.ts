@@ -762,6 +762,7 @@ describe('updateAppResource', () => {
       createFormData({ resource: { file: '0' }, assets: Buffer.alloc(0) }),
     );
 
+    expect(response.status).toBe(200);
     expect(response.data).toStrictEqual(
       expect.objectContaining({
         file: expect.stringMatching(/^[0-f]{8}(?:-[0-f]{4}){3}-[0-f]{12}$/),

@@ -86,6 +86,7 @@ export const streamParser: Parser<Record<string, unknown>> = async (
   await new Promise((resolve, reject) => {
     function onError(error: Error): void {
       bb.removeAllListeners();
+      logger.error(error);
       reject(error);
     }
 
@@ -96,9 +97,11 @@ export const streamParser: Parser<Record<string, unknown>> = async (
       try {
         const fileWriteStream = createWriteStream(path);
         stream.pipe(fileWriteStream);
+
+        stream.on('error', onError);
+        fileWriteStream.on('error', onError);
       } catch (error) {
-        logger.error(error);
-        throw error;
+        onError(error as Error);
       }
 
       if (propertySchema && propertySchema.type === 'array') {

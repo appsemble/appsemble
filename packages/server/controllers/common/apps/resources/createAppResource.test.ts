@@ -311,6 +311,7 @@ describe('createAppResource', () => {
       }),
     );
 
+    expect(response.status).toBe(201);
     expect(response.data).toStrictEqual(
       expect.objectContaining({
         file: expect.stringMatching(/^[0-f]{8}(?:-[0-f]{4}){3}-[0-f]{12}$/),
@@ -457,6 +458,7 @@ describe('createAppResource', () => {
       }),
     );
 
+    expect(response.status).toBe(201);
     expect(response.data).toStrictEqual([
       expect.objectContaining({
         file: expect.stringMatching(/^[0-f]{8}(?:-[0-f]{4}){3}-[0-f]{12}$/),
@@ -469,7 +471,7 @@ describe('createAppResource', () => {
     const assetAId = response.data[0].file as string;
     const assetBId = response.data[1].file as string;
     expect(assets).toStrictEqual([
-      {
+      expect.objectContaining({
         AppId: app.id,
         ResourceId: 1,
         AppMemberId: null,
@@ -484,8 +486,8 @@ describe('createAppResource', () => {
         name: null,
         seed: false,
         updated: expect.any(Date),
-      },
-      {
+      }),
+      expect.objectContaining({
         AppId: app.id,
         ResourceId: 2,
         AppMemberId: null,
@@ -500,7 +502,7 @@ describe('createAppResource', () => {
         name: null,
         seed: false,
         updated: expect.any(Date),
-      },
+      }),
     ]);
 
     expect(await getS3FileBuffer(`app-${app.id}`, assetAId)).toStrictEqual(assetAContent);
@@ -762,6 +764,7 @@ describe('createAppResource', () => {
       }),
     );
 
+    expect(response.status).toBe(201);
     expect(response.data).toStrictEqual(
       expect.objectContaining({
         file: expect.stringMatching(/^[0-f]{8}(?:-[0-f]{4}){3}-[0-f]{12}$/),
@@ -917,6 +920,7 @@ describe('createAppResource', () => {
       { params: { seed: true } },
     );
 
+    expect(response.status).toBe(201);
     expect(response.data).toStrictEqual(
       expect.objectContaining({
         file: expect.stringMatching(/^[0-f]{8}(?:-[0-f]{4}){3}-[0-f]{12}$/),
@@ -974,6 +978,7 @@ describe('createAppResource', () => {
       { params: { seed: true } },
     );
 
+    expect(response.status).toBe(201);
     expect(response.data).toStrictEqual(
       expect.objectContaining({
         file: expect.stringMatching(/^[0-f]{8}(?:-[0-f]{4}){3}-[0-f]{12}$/),

@@ -211,6 +211,7 @@ describe('createAppFromTemplate', () => {
       organizationId: 'testorganization',
     });
 
+    expect(response.status).toBe(201);
     expect(response.data).toStrictEqual(
       expect.objectContaining({
         OrganizationId: 'testorganization',

@@ -7,6 +7,7 @@ import {
   Default,
   DeletedAt,
   ForeignKey,
+  HasOne,
   Index,
   Model,
   PrimaryKey,
@@ -71,6 +72,10 @@ export class Asset extends Model {
   @DeletedAt
   deleted: Date;
 
+  // TODO remove in 0.32.1
+  @Column(DataType.BLOB)
+  data: Buffer;
+
   @AllowNull(false)
   @ForeignKey(() => App)
   @Index({ name: 'UniqueAssetWithNullGroupId', unique: true })
@@ -105,4 +110,17 @@ export class Asset extends Model {
 
   @BelongsTo(() => Resource, { onDelete: 'CASCADE' })
   Resource: Awaited<Resource>;
+
+  // TODO remove in 0.32.1
+  @HasOne(() => Asset, { foreignKey: 'OriginalId', onDelete: 'CASCADE' })
+  Compressed: Awaited<Asset>;
+
+  // TODO remove in 0.32.1
+  @ForeignKey(() => Asset)
+  @Column(DataType.STRING)
+  OriginalId: string;
+
+  // TODO remove in 0.32.1
+  @BelongsTo(() => Asset, { onDelete: 'SET NULL' })
+  Original: Awaited<Asset>;
 }

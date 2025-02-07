@@ -45,6 +45,7 @@ spec:
             {{- toYaml .Values.resources | nindent 12 }}
           env:
 {{ include "appsemble.postgres" . | indent 12 }}
+{{ include "appsemble.minio" . | indent 12 }}
 {{ include "appsemble.sentry" . | indent 12 }}
             - name: HOST
               {{ if .Values.ingress.enabled -}}
@@ -214,52 +215,25 @@ spec:
             - name: ENABLE_APP_EMAIL_QUOTA_ALERTS
               value: {{ .Values.quotas.appEmail.alertOrganizationOwner | quote }}
             {{- end }}
-            {{- if .Values.mailpit.mailpit.smtp.tls.secretName }}
+            {{- if .Values.extraCertsSecret }}
             - name: NODE_EXTRA_CA_CERTS
-              value: /tmp/mailpit.crt
-            {{- end }}
-            {{- with .Values.s3Secret }}
-            - name: S3_HOST
-              valueFrom:
-                secretKeyRef:
-                  name: {{ . | quote }}
-                  key: host
-            - name: S3_PORT
-              valueFrom:
-                secretKeyRef:
-                  name: {{ . | quote }}
-                  key: port
-            - name: S3_SECURE
-              valueFrom:
-                secretKeyRef:
-                  name: {{ . | quote }}
-                  key: secure
-            - name: S3_ACCESS_KEY
-              valueFrom:
-                secretKeyRef:
-                  name: {{ . | quote }}
-                  key: access-key
-            - name: S3_SECRET_KEY
-              valueFrom:
-                secretKeyRef:
-                  name: {{ . | quote }}
-                  key: secret-key
+              value: /tmp/extra-certs.crt
             {{- end }}
           volumeMounts:
             - name: tmp-volume
               mountPath: /tmp
-          {{- if .Values.mailpit.mailpit.smtp.tls.secretName }}
-            - name: mailpit-cert
-              mountPath: /tmp/mailpit.crt
+          {{- if .Values.extraCertsSecret }}
+            - name: extra-certs
+              mountPath: /tmp/extra-certs.crt
               subPath: tls.crt
           {{- end }}
-      {{- if .Values.mailpit.mailpit.smtp.tls.secretName }}
+      {{- if .Values.extraCertsSecret }}
       volumes:
         - name: tmp-volume
           emptyDir: {}
-        - name: mailpit-cert
+        - name: extra-certs
           secret:
-            secretName: {{ .Values.mailpit.mailpit.smtp.tls.secretName }}
+            secretName: {{ .Values.extraCertsSecret }}
       {{- end }}
       {{- with .Values.nodeSelector }}
       nodeSelector:

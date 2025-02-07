@@ -1,30 +1,15 @@
-import { AppsembleError, initS3Client, logger, uploadS3File } from '@appsemble/node-utils';
+import { logger, uploadS3File } from '@appsemble/node-utils';
 import { DataTypes, QueryTypes, type Sequelize, type Transaction } from 'sequelize';
 
-import { argv } from '../utils/argv.js';
-
-export const key = '0.30.14-test.8';
+export const key = '0.32.0';
 
 /**
  * Summary:
  * - Migrate assets data to s3
- * - Remove column `data` from `Asset` table
- * - Remove column `OriginalId` from `Asset` table
+ * - Make `data` column on table `Asset` nullable
  */
 
 export async function up(transaction: Transaction, db: Sequelize): Promise<void> {
-  try {
-    initS3Client({
-      endPoint: argv.s3Host,
-      port: argv.s3Port,
-      useSSL: argv.s3Secure,
-      accessKey: argv.s3AccessKey,
-      secretKey: argv.s3SecretKey,
-    });
-  } catch (error: unknown) {
-    throw new AppsembleError(`S3Error: ${error}`);
-  }
-
   const queryInterface = db.getQueryInterface();
 
   const batchSize = 10;
@@ -78,46 +63,33 @@ export async function up(transaction: Transaction, db: Sequelize): Promise<void>
     offset += batchSize;
   }
 
-  logger.info('Remove column `OriginalId` from `Asset` table');
-  await queryInterface.removeColumn('Asset', 'OriginalId', { transaction });
-
-  logger.info('Remove column `data` from `Asset` table');
-  await queryInterface.removeColumn('Asset', 'data', { transaction });
+  logger.info('Changing column `data` on `Asset` table to nullable');
+  await queryInterface.changeColumn(
+    'Asset',
+    'data',
+    {
+      type: DataTypes.BLOB,
+      allowNull: true,
+    },
+    { transaction },
+  );
 }
 
 /**
  * Summary:
- * - Add column `data` to `Asset` table
- * - Add column `OriginalId` to `Asset` table
+ * - Make `data` column on table `Asset` not nullable
  */
 
 export async function down(transaction: Transaction, db: Sequelize): Promise<void> {
   const queryInterface = db.getQueryInterface();
 
-  logger.info('Add column `data` to `Asset` table');
-  await queryInterface.addColumn(
+  logger.info('Changing column `data` on `Asset` table to not nullable');
+  await queryInterface.changeColumn(
     'Asset',
     'data',
     {
       type: DataTypes.BLOB,
       allowNull: false,
-    },
-    { transaction },
-  );
-
-  logger.info('Add column `OriginalId` to `Asset` table');
-  await queryInterface.addColumn(
-    'Asset',
-    'OriginalId',
-    {
-      type: DataTypes.STRING,
-      allowNull: true,
-      references: {
-        model: 'Asset',
-        key: 'id',
-      },
-      onDelete: 'CASCADE',
-      onUpdate: 'CASCADE',
     },
     { transaction },
   );

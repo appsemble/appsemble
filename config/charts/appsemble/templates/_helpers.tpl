@@ -92,6 +92,34 @@ Configure the environment variables for Appsemble to connect with the Postgres i
 
 
 {{/*
+Configure the environment variables for Appsemble to connect with the Minio instance.
+*/}}
+{{- define "appsemble.minio" -}}
+- name: S3_HOST
+  value: {{ .Values.minio.fullnameOverride | quote }}
+- name: S3_PORT
+  value: {{ .Values.minio.service.ports.api | quote }}
+{{- with .Values.minio.auth.existingSecret }}
+- name: S3_SECURE
+  valueFrom:
+    secretKeyRef:
+      name: {{ . | quote }}
+      key: secure
+- name: S3_ACCESS_KEY
+  valueFrom:
+    secretKeyRef:
+      name: {{ . | quote }}
+      key: access-key
+- name: S3_SECRET_KEY
+  valueFrom:
+    secretKeyRef:
+      name: {{ . | quote }}
+      key: secret-key
+{{- end }}
+{{- end -}}
+
+
+{{/*
 Configure the environment variables for Sentry.
 */}}
 {{- define "appsemble.sentry" -}}

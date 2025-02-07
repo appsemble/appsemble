@@ -27,4 +27,5 @@ spec:
             {{ end }}
           env:
 {{ include "appsemble.postgres" . | indent 12 }}
+{{ include "appsemble.minio" . | indent 12 }}
 {{ include "appsemble.sentry" . | indent 12 }}

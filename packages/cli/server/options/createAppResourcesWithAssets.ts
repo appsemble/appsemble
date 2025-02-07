@@ -24,11 +24,9 @@ export async function createAppResourcesWithAssets({
     resourceType,
   );
 
-  const assetPromises = preparedAssets.map((asset) => {
+  for (const asset of preparedAssets) {
     context.appAssets.push({ ...asset, stream: createReadStream(asset.path) });
-  });
-
-  await Promise.all(assetPromises);
+  }
 
   return createdResources;
 }

@@ -32,6 +32,7 @@ export function initS3Client({
     });
   } catch (error) {
     logger.error(error);
+    throw error;
   }
 }
 
