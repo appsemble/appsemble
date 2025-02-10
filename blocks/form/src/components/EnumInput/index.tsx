@@ -82,6 +82,7 @@ export function EnumInput({
     }
 
     if ('remapper' in field) {
+      setOptions(utils.remap(field.remapper, { formValues, fieldsetEntryValues }) as Choice[]);
       if ('filter' in field) {
         if (field.filter) {
           applyFilter();
