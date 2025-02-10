@@ -113,7 +113,7 @@ export class Asset extends Model {
   @Column(DataType.INTEGER)
   ResourceId: number;
 
-  @BelongsTo(() => Resource, { onDelete: 'SET NULL' })
+  @BelongsTo(() => Resource, { onDelete: 'CASCADE' })
   Resource: Awaited<Resource>;
 
   @HasOne(() => Asset, { foreignKey: 'OriginalId', onDelete: 'CASCADE' })

@@ -3,7 +3,15 @@ import { Op } from 'sequelize';
 import { type Argv } from 'yargs';
 
 import { databaseBuilder } from './builder/database.js';
-import { App, Asset, initDB, Organization, Resource, transactional } from '../models/index.js';
+import {
+  App,
+  Asset,
+  initDB,
+  Organization,
+  Resource,
+  transactional,
+  User,
+} from '../models/index.js';
 import { argv } from '../utils/argv.js';
 import { handleDBError } from '../utils/sqlUtils.js';
 
@@ -60,6 +68,10 @@ export async function handler(): Promise<void> {
     logger.info(`Deleting assets soft deleted before ${deletedAtParsed}`);
     const deletedAssets = await Asset.destroy(deleteQuery);
     logger.info(`Successfully deleted ${deletedAssets} assets.`);
+
+    logger.info(`Deleting users soft deleted before ${deletedAtParsed}`);
+    const deletedUsers = await User.destroy(deleteQuery);
+    logger.info(`Successfully deleted ${deletedUsers} users.`);
   });
   await db.close();
   process.exit();
