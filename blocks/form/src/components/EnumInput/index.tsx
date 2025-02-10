@@ -67,30 +67,7 @@ export function EnumInput({
       // Explicitly set value to undefined if value does not exist in the new set of options.
       onChange(field.name);
     }
-  }, [field, loading, onChange, options, value]); 
-
-  useEffect(() => {
-    const handleOptions = (result: Choice[]): void => {
-      setOriginalOptions(result);
-      if ('filter' in field) {
-        if (field.filter) {
-          applyFilter();
-        } else {
-          return;
-        }
-      }
-      setLoading(false);
-    };
-
-    // const handleError = (): void => {
-    //   setError(utils.remap(field.loadError ?? 'Error loading options', {}) as string);
-    //   setLoading(false);
-    // };
-
-    if ('action' in field) {
-      actions[field.action]().then(handleOptions);
-    }
-  }, [filter]);
+  }, [field, loading, onChange, options, value]);
 
   useEffect(() => {
     if ('enum' in field) {
@@ -117,6 +94,13 @@ export function EnumInput({
 
     const handleOptions = (result: Choice[]): void => {
       setOriginalOptions(result);
+      if ('filter' in field) {
+        if (field.filter) {
+          applyFilter();
+        } else {
+          return;
+        }
+      }
       setLoading(false);
     };
 
@@ -124,6 +108,36 @@ export function EnumInput({
       setError(utils.remap(field.loadError ?? 'Error loading options', {}) as string);
       setLoading(false);
     };
+
+    if ('action' in field) {
+      actions[field.action]().then(handleOptions, handleError);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [filter]);
+
+  useEffect(() => {
+    if ('enum' in field) {
+      return;
+    }
+
+    if ('remapper' in field) {
+      return;
+    }
+
+    const handleOptions = (result: Choice[]): void => {
+      setOriginalOptions(result);
+      setOptions(result);
+      setLoading(false);
+    };
+
+    const handleError = (): void => {
+      setError(utils.remap(field.loadError ?? 'Error loading options', {}) as string);
+      setLoading(false);
+    };
+
+    if ('action' in field) {
+      actions[field.action]().then(handleOptions, handleError);
+    }
 
     if ('event' in field) {
       const eventHandler = (data: Choice[], e: string): void => {
@@ -252,7 +266,3 @@ export function EnumInput({
     </div>
   );
 }
-function componentDidMount() {
-  throw new Error('Function not implemented.');
-}
-
