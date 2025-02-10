@@ -46,6 +46,7 @@ export function EnumInput({
   const [filter, setFilter] = useState<string>('');
   const [originalOptions, setOriginalOptions] = useState<Choice[]>(options);
   const [inputValue, setInputValue] = useState<string>('');
+
   const ref = useRef<HTMLDivElement>();
   const { disable, enabled, toggle } = useToggle();
 
@@ -66,7 +67,30 @@ export function EnumInput({
       // Explicitly set value to undefined if value does not exist in the new set of options.
       onChange(field.name);
     }
-  }, [field, loading, onChange, options, value]);
+  }, [field, loading, onChange, options, value]); 
+
+  useEffect(() => {
+    const handleOptions = (result: Choice[]): void => {
+      setOriginalOptions(result);
+      if ('filter' in field) {
+        if (field.filter) {
+          applyFilter();
+        } else {
+          return;
+        }
+      }
+      setLoading(false);
+    };
+
+    // const handleError = (): void => {
+    //   setError(utils.remap(field.loadError ?? 'Error loading options', {}) as string);
+    //   setLoading(false);
+    // };
+
+    if ('action' in field) {
+      actions[field.action]().then(handleOptions);
+    }
+  }, [filter]);
 
   useEffect(() => {
     if ('enum' in field) {
@@ -81,7 +105,6 @@ export function EnumInput({
     }
 
     if ('remapper' in field) {
-      setOptions(utils.remap(field.remapper, { formValues, fieldsetEntryValues }) as Choice[]);
       if ('filter' in field) {
         if (field.filter) {
           applyFilter();
@@ -93,15 +116,7 @@ export function EnumInput({
     }
 
     const handleOptions = (result: Choice[]): void => {
-      setOptions(result);
       setOriginalOptions(result);
-      if ('filter' in field) {
-        if (field.filter) {
-          applyFilter();
-        } else {
-          return;
-        }
-      }
       setLoading(false);
     };
 
@@ -109,10 +124,6 @@ export function EnumInput({
       setError(utils.remap(field.loadError ?? 'Error loading options', {}) as string);
       setLoading(false);
     };
-
-    if ('action' in field) {
-      actions[field.action]().then(handleOptions, handleError);
-    }
 
     if ('event' in field) {
       const eventHandler = (data: Choice[], e: string): void => {
@@ -125,18 +136,7 @@ export function EnumInput({
       events.on[field.event](eventHandler);
       return () => events.off[field.event](eventHandler);
     }
-  }, [
-    actions,
-    applyFilter,
-    events,
-    field,
-    fieldsetEntryValues,
-    filter,
-    formValues,
-    options,
-    originalOptions,
-    utils,
-  ]);
+  }, [actions, events, field, fieldsetEntryValues, formValues, utils]);
 
   const filterChange = useCallback((e: ChangeEvent<HTMLInputElement>, input: string): void => {
     setInputValue(input);
@@ -148,7 +148,6 @@ export function EnumInput({
       if (onSelect) {
         actions[onSelect]({ value: v });
       }
-
       onChange(n, v);
     },
     [actions, onChange, onSelect],
@@ -253,3 +252,7 @@ export function EnumInput({
     </div>
   );
 }
+function componentDidMount() {
+  throw new Error('Function not implemented.');
+}
+
