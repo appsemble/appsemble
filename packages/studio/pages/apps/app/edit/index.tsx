@@ -187,6 +187,7 @@ export default function EditPage(): ReactNode {
 
       // Update App State
       setApp(data);
+      setPristine(true);
     } catch {
       push(formatMessage(messages.errorUpdate));
     }
@@ -457,7 +458,7 @@ export default function EditPage(): ReactNode {
           />
         </div>
       </div>
-      <Prompt message={formatMessage(messages.notification)} when={appDefinition !== app.yaml} />
+      <Prompt message={formatMessage(messages.notification)} when={!pristine} />
       <div className={`ml-3 ${styles.rightPanel} ${styles[selectedRatio]}`}>
         <div className={styles.formatSelection}>
           <InputList
