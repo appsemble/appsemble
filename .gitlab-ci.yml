@@ -599,7 +599,7 @@ update dependencies:
 
 # Deploy the Docker image for a branch to a review environment.
 review:
-  image: dtzar/helm-kubectl:3
+  image: dtzar/helm-kubectl:3.16.0
   stage: deploy
   needs:
     - build docker image
@@ -622,19 +622,10 @@ review:
     - kubectl delete pvc --selector "app.kubernetes.io/instance=review-$CI_MERGE_REQUEST_IID" || true
     - kubectl delete namespace "companion-containers-review-$CI_MERGE_REQUEST_IID" || true
     - kubectl delete secret review-$CI_MERGE_REQUEST_IID-mailpit-tls || true
-    - kubectl delete secret review-$CI_MERGE_REQUEST_IID-minio-tls || true
-    - kubectl delete secret review-$CI_MERGE_REQUEST_IID-extra-certs-tls || true
     - apk add --no-cache openssl
     - openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout mailpit.key -out mailpit.crt -subj "/CN=review-${CI_MERGE_REQUEST_IID}-mailpit-smtp" -addext "subjectAltName=DNS:review-${CI_MERGE_REQUEST_IID}-mailpit-smtp"
-    - openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout minio.key -out minio.crt -subj "/CN=review-${CI_MERGE_REQUEST_IID}-minio" -addext "subjectAltName=DNS:review-${CI_MERGE_REQUEST_IID}-minio"
-    - cat mailpit.key minio.key > extra-certs.key
-    - cat mailpit.crt minio.crt > extra-certs.crt
     - kubectl create secret tls review-$CI_MERGE_REQUEST_IID-mailpit-tls --cert=mailpit.crt --key=mailpit.key --dry-run=client -o yaml | kubectl apply -f -
-    - kubectl create secret tls review-$CI_MERGE_REQUEST_IID-minio-tls --cert=minio.crt --key=minio.key --dry-run=client -o yaml | kubectl apply -f -
-    - kubectl create secret tls review-$CI_MERGE_REQUEST_IID-extra-certs-tls --cert=extra-certs.crt --key=extra-certs.key --dry-run=client -o yaml | kubectl apply -f -
     - rm mailpit.key mailpit.crt
-    - rm minio.key minio.crt
-    - rm extra-certs.key extra-certs.crt
     # default bitnami postgresql PVC size is 8Gi, but that much should not be needed for a review environment
     - helm install "review-$CI_MERGE_REQUEST_IID" ./public/appsemble-*.tgz
       --atomic
@@ -660,15 +651,17 @@ review:
       --set "provision.user.password=$BOT_ACCOUNT_PASSWORD"
       --set "provision.user.timezone=Europe/Amsterdam"
       --set "postgresql.fullnameOverride=review-$CI_MERGE_REQUEST_IID-postgresql"
-      --set "minio.fullnameOverride=review-$CI_MERGE_REQUEST_IID-minio"
-      --set "minio.tls.existingSecret=review-$CI_MERGE_REQUEST_IID-minio-tls"
       --set "proxy=true"
       --set "remote=https://appsemble.app"
       --set "sentry.allowedDomains={*.appsemble.review}"
       --set "sentry.environment=review-$CI_MERGE_REQUEST_IID"
       --set "sentry.secret=sentry"
       --set "mailpit.mailpit.smtp.tls.secretName=review-$CI_MERGE_REQUEST_IID-mailpit-tls"
-      --set "extraCertsSecret=review-$CI_MERGE_REQUEST_IID-extra-certs-tls"
+      --set "minio.fullnameOverride=review-$CI_MERGE_REQUEST_IID-minio"
+      --set "minio.ingress.hostname=console.minio.${CI_ENVIRONMENT_URL/https:\/\//}"
+      --set "minio.ingress.annotations.cert-manager\\.io/cluster-issuer=acme-issuer-dev"
+      --set "minio.apiIngress.hostname=api.minio.${CI_ENVIRONMENT_URL/https:\/\//}"
+      --set "minio.apiIngress.annotations.cert-manager\\.io/cluster-issuer=acme-issuer-dev"
 
 # Stop a review environment.
 stop review:
@@ -742,7 +735,6 @@ staging:
       --set "migrateTo=next"
       --set "oauthSecret=oauth2"
       --set "postgresql.fullnameOverride=staging-postgresql"
-      --set "minio.fullnameOverride=staging-minio"
       --set "provision.organization.id=appsemble"
       --set "provision.user.organizationRole=Maintainer"
       --set "provision.user.clientCredentials=$APPSEMBLE_CLIENT_CREDENTIALS"
@@ -767,6 +759,11 @@ staging:
       --set "quotas.appEmail.alertOrganizationOwner=true"
       --set "mailpit.mailpit.smtp.tls.secretName=staging-mailpit-tls"
       --set "mailpit.fullnameOverride=staging-appsemble-mailpit"
+      --set "minio.fullnameOverride=staging-minio"
+      --set "minio.ingress.hostname=console.minio.staging.appsemble.review"
+      --set "minio.ingress.annotations.cert-manager\\.io/cluster-issuer=acme-issuer-dev"
+      --set "minio.apiIngress.hostname=api.minio.staging.appsemble.review"
+      --set "minio.apiIngress.annotations.cert-manager\\.io/cluster-issuer=acme-issuer-dev"
 
 production:
   image: dtzar/helm-kubectl:3
@@ -844,6 +841,10 @@ production:
       --set "quotas.appEmail.dailyLimit=10"
       --set "quotas.appEmail.alertOrganizationOwner=true"
       --set "mailpit.mailpit.smtp.tls.secretName=appsemble-mailpit-tls"
+      --set "minio.ingress.hostname=console.minio.appsemble.app"
+      --set "minio.ingress.annotations.cert-manager\\.io/cluster-issuer=acme-issuer-prod"
+      --set "minio.apiIngress.hostname=api.minio.appsemble.app"
+      --set "minio.apiIngress.annotations.cert-manager\\.io/cluster-issuer=acme-issuer-prod"
       --wait
 
 ###################################################################################################

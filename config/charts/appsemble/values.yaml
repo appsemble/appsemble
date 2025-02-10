@@ -118,14 +118,13 @@ minio:
   fullnameOverride: appsemble-minio
   auth:
     existingSecret: s3
-    rootUserSecretKey: secret-key
-    rootPasswordSecretKey: access-key
-  tls:
+    rootUserSecretKey: access-key
+    rootPasswordSecretKey: secret-key
+  ingress:
     enabled: true
-    existingSecret: minio-tls
-  service:
-    ports:
-      api: 9000
-      console: 9001
-
-extraCertsSecret: extra-certs-tls
+    tls: true
+    ingressClassName: nginx
+  apiIngress:
+    enabled: true
+    tls: true
+    ingressClassName: nginx

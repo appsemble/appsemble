@@ -358,10 +358,6 @@
     },
     "minio": {
       "type": "object"
-    },
-    "extraCertsSecret": {
-      "type": "string",
-      "description": "The Kubernetes secret which holds the extra certs to be passed to the Appsemble deployment."
     }
   }
 }

@@ -45,7 +45,7 @@ spec:
             {{- toYaml .Values.resources | nindent 12 }}
           env:
 {{ include "appsemble.postgres" . | indent 12 }}
-{{ include "appsemble.minio" . | indent 12 }}
+{{ include "appsemble.s3" . | indent 12 }}
 {{ include "appsemble.sentry" . | indent 12 }}
             - name: HOST
               {{ if .Values.ingress.enabled -}}
@@ -215,25 +215,25 @@ spec:
             - name: ENABLE_APP_EMAIL_QUOTA_ALERTS
               value: {{ .Values.quotas.appEmail.alertOrganizationOwner | quote }}
             {{- end }}
-            {{- if .Values.extraCertsSecret }}
+            {{- if .Values.mailpit.mailpit.smtp.tls.secretName }}
             - name: NODE_EXTRA_CA_CERTS
-              value: /tmp/extra-certs.crt
+              value: /tmp/mailpit.crt
             {{- end }}
           volumeMounts:
             - name: tmp-volume
               mountPath: /tmp
-          {{- if .Values.extraCertsSecret }}
-            - name: extra-certs
-              mountPath: /tmp/extra-certs.crt
+          {{- if .Values.mailpit.mailpit.smtp.tls.secretName }}
+            - name: mailpit-cert
+              mountPath: /tmp/mailpit.crt
               subPath: tls.crt
           {{- end }}
-      {{- if .Values.extraCertsSecret }}
+      {{- if .Values.mailpit.mailpit.smtp.tls.secretName}}
       volumes:
         - name: tmp-volume
           emptyDir: {}
-        - name: extra-certs
+        - name: mailpit-cert
           secret:
-            secretName: {{ .Values.extraCertsSecret }}
+            secretName: {{ .Values.mailpit.mailpit.smtp.tls.secretName }}
       {{- end }}
       {{- with .Values.nodeSelector }}
       nodeSelector:
