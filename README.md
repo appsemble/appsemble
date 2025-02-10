@@ -73,6 +73,7 @@ Clone and setup the project.
 git clone https://gitlab.com/appsemble/appsemble.git
 cd appsemble
 npm ci
+npx playwright install chromium
 ```
 
 The project requires a PostgreSQL database. This project contains a Docker Compose configuration to
