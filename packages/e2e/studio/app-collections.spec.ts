@@ -45,8 +45,8 @@ async function createCollection({
 }
 
 test.describe('App Collections', () => {
-  test.beforeEach(async ({ login }) => {
-    await login(`/en/organizations/${organization}`);
+  test.beforeEach(async ({ page }) => {
+    await page.goto(`/en/organizations/${organization}`);
   });
 
   test('should create an app collection', async ({ browserName, page }) => {
@@ -87,7 +87,7 @@ test.describe('App Collections', () => {
     });
   });
 
-  test('should create a private app collection', async ({ browserName, logout, page }) => {
+  test('should create a private app collection', async ({ browserName, logoutStudio, page }) => {
     const collectionName = `Private test ${browserName.slice(0, 8)}`;
     await createCollection({
       page,
@@ -105,7 +105,7 @@ test.describe('App Collections', () => {
       timeout: 5000,
     });
 
-    await logout();
+    await logoutStudio();
     await page.goto('/en/collections');
     await page.getByRole('heading', { name: 'App collections' }).waitFor({ state: 'visible' });
     await expect(page.getByRole('link', { name: collectionName })).toBeHidden({

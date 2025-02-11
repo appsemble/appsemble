@@ -8,15 +8,16 @@ dist/
 # This may be used for testing create-appsemble
 /blocks/test/
 
-# Jest output
+# Vitest output
 coverage/
 __diff_output__/
 junit.xml
 
-# Cypress test output and configuration
+# Playwright test output and configuration
 /packages/e2e/test-results/
 /packages/e2e/playwright-report/
 /packages/e2e/playwright/.cache/
+/packages/e2e/.auth/
 /packages/e2e/results.xml
 
 # Use this prefix for GitLab reports
