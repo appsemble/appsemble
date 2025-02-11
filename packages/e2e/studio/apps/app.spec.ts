@@ -16,17 +16,18 @@ test.describe('/apps/:appId', () => {
 
   test('should prompt when user has unsaved changes', async ({ page }) => {
     await clickSideMenuItem(page, 'Editor');
+    page.on('dialog', (alert) => {
+      expect(alert.type()).toBe('confirm');
+      expect(alert.message()).toBe('You have unsaved changes. Do you wish to continue?');
+      alert.dismiss();
+    });
+
     await expect(page.getByRole('button', { name: 'Publish' })).toBeDisabled();
     await page.getByRole('code').getByText('Person', { exact: true }).dblclick();
     await page.getByRole('code').getByText('Person', { exact: true }).press('Backspace');
     await page.getByRole('code').getByText('name:').first().press('t+e+s+t');
     await expect(page.getByRole('button', { name: 'Publish' })).toBeEnabled();
 
-    page.on('dialog', (alert) => {
-      expect(alert.type()).toBe('confirm');
-      expect(alert.message()).toBe('You have unsaved changes. Do you wish to continue?');
-      alert.dismiss();
-    });
     await page.getByRole('link', { name: 'Details' }).click();
 
     await expect(page.getByText('Clone App')).toBeHidden();
@@ -34,6 +35,14 @@ test.describe('/apps/:appId', () => {
 
   test('should not prompt when user has saved their changes', async ({ page }) => {
     await clickSideMenuItem(page, 'Editor');
+    await page.route('/api/apps/*', (route) => {
+      route.fulfill({ path: 'fixtures/data/person-app-definition.json' });
+    });
+    page.on('dialog', (alert) => {
+      // If a dialog comes up at all, the test should fail
+      expect(alert).toBeNull();
+    });
+
     await expect(page.getByRole('button', { name: 'Publish' })).toBeDisabled();
     await page.getByRole('code').getByText('Person', { exact: true }).dblclick();
     await page.getByRole('code').getByText('Person', { exact: true }).press('Backspace');
@@ -41,14 +50,8 @@ test.describe('/apps/:appId', () => {
 
     await page.getByRole('button', { name: 'Publish' }).click();
 
-    // The validation needs to catch up otherwise the dialog will still open.
-    await page.waitForResponse('/api/apps/*');
-
     await expect(page.getByText('Successfully updated app definition')).toBeVisible();
-    page.on('dialog', (alert) => {
-      // If a dialog comes up at all, the test should fail
-      expect(alert).toBeNull();
-    });
+
     await page.getByRole('link', { name: 'Details' }).click();
 
     await expect(page.getByText('Clone App')).toBeVisible();
