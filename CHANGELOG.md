@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.31.1-test.5](https://gitlab.com/appsemble/appsemble/-/releases/0.31.1-test.5)] - 2025-02-12
+
+### Added
+
+- Utils: New remapper `length` to fetch the length of the input array or string.
+
 ## \[[0.31.1-test.4](https://gitlab.com/appsemble/appsemble/-/releases/0.31.1-test.4)] - 2025-02-12
 
 ### Added

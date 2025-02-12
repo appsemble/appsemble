@@ -1,7 +1,7 @@
 apiVersion: v2
 name: appsemble
-version: 0.31.1-test.4
-appVersion: 0.31.1-test.4
+version: 0.31.1-test.5
+appVersion: 0.31.1-test.5
 kubeVersion: '>=1.21.0'
 type: application
 description: The open source low-code app building platform
@@ -29,18 +29,8 @@ dependencies:
 annotations:
   artifacthub.io/changes: >
     - kind: added
-      description: "App: Display name of the logged in app member in the title bar."
-    - kind: added
-      description: "App: Option to add profile picture from the camera in mobile devices."
-    - kind: fixed
-      description: "Block(filter): Render only one label for boolean fields."
-    - kind: fixed
-      description: "Cli: Fix block build command."
-    - kind: fixed
-      description: "Server: Wrong app member picture url."
-    - kind: fixed
-      description: 'Studio: Fix "Unsaved changes" popup appearing in the editor even
-        after the app has been saved.'
+      description: "Utils: New remapper length to fetch the length of the input array
+        or string."
   artifacthub.io/license: LGPL-3.0-only
   artifacthub.io/links: |
     - name: Appsemble Studio
