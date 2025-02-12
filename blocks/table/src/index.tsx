@@ -16,6 +16,7 @@ bootstrap(({ events, parameters: { caption, fields }, ready, utils }) => {
   const [error, setError] = useState(false);
   const [order, setOrder] = useState<'asc' | 'default' | 'desc'>('default');
   const [loadedData, setLoadedData] = useState<Item[]>([]);
+  const [highlighted, setHighlighted] = useState<String>();
 
   const remappedCaption = utils.remap(caption, {}) as string;
   const onTableHeaderClick = useCallback(
@@ -23,9 +24,10 @@ bootstrap(({ events, parameters: { caption, fields }, ready, utils }) => {
       if (order === 'desc') {
         setData(loadedData);
         setOrder('default');
+        setHighlighted('');
         return;
       }
-      const sortedData = (data as any[]).sort((a, b) => {
+      const sortedData = ([...data] as any[]).sort((a, b) => {
         const aFieldName = a[fieldName];
         const bFieldName = b[fieldName];
         if (typeof aFieldName === 'string' && typeof bFieldName === 'string') {
@@ -41,9 +43,11 @@ bootstrap(({ events, parameters: { caption, fields }, ready, utils }) => {
       if (order === 'default') {
         setData(sortedData);
         setOrder('asc');
+        setHighlighted(fieldName);
       } else {
         setData(sortedData.reverse());
         setOrder('desc');
+        setHighlighted(fieldName);
       }
     },
     [data, order, loadedData],
@@ -77,7 +81,7 @@ bootstrap(({ events, parameters: { caption, fields }, ready, utils }) => {
           {heads.map((header) =>
             header ? (
               <th
-                className={styles.pointer}
+                className={`${styles.pointer} ${header?.name === highlighted ? 'has-background-warning' : ''}`}
                 key={header?.label}
                 onClick={() => onTableHeaderClick(header?.name)}
               >
@@ -104,7 +108,7 @@ bootstrap(({ events, parameters: { caption, fields }, ready, utils }) => {
         </tr>
       </thead>
     );
-  }, [fields, onTableHeaderClick, order, utils]);
+  }, [fields, highlighted, onTableHeaderClick, order, utils]);
 
   useEffect(() => {
     const callback = (d: Item | Item[], err: string): void => {
