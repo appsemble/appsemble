@@ -1,6 +1,6 @@
 {
   "name": "@appsemble/form",
-  "version": "0.31.1-test.3",
+  "version": "0.31.1-test.4",
   "private": true,
   "description": "A block used for inputting and submitting sets of data.",
   "homepage": "https://appsemble.app",
@@ -17,11 +17,11 @@
     "test": "vitest"
   },
   "dependencies": {
-    "@appsemble/preact": "0.31.1-test.3",
-    "@appsemble/preact-components": "0.31.1-test.3",
-    "@appsemble/sdk": "0.31.1-test.3",
-    "@appsemble/utils": "0.31.1-test.3",
-    "@appsemble/types": "0.31.1-test.3",
+    "@appsemble/preact": "0.31.1-test.4",
+    "@appsemble/preact-components": "0.31.1-test.4",
+    "@appsemble/sdk": "0.31.1-test.4",
+    "@appsemble/utils": "0.31.1-test.4",
+    "@appsemble/types": "0.31.1-test.4",
     "@types/leaflet": "^1.0.0",
     "classnames": "^2.0.0",
     "date-fns": "^2.0.0",

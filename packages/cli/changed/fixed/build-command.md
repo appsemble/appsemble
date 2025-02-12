@@ -1,1 +1,0 @@
-Fix `block build` command.
