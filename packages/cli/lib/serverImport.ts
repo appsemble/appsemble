@@ -22,6 +22,7 @@ export async function serverImport<
     | 'checkMigrations'
     | 'cleanupDemoAppMembers'
     | 'cleanupResourcesAndAssets'
+    | 'cleanupSoftDeletedRecords'
     | 'fuzzMigrations'
     | 'migrate'
     | 'migrateAppDefinitions'

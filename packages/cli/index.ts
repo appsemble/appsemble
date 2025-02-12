@@ -12,6 +12,7 @@ import * as checkDownMigrations from './commands/checkDownMigrations.js';
 import * as checkMigrations from './commands/checkMigrations.js';
 import * as cleanupDemoAppMembers from './commands/cleanupDemoAppMembers.js';
 import * as cleanupResourcesAndAssets from './commands/cleanupResourcesAndAssets.js';
+import * as cleanupSoftDeletedRecords from './commands/cleanupSoftDeletedRecords.js';
 import * as config from './commands/config/index.js';
 import * as fuzzMigrations from './commands/fuzzMigrations.js';
 import * as group from './commands/group/index.js';
@@ -59,6 +60,7 @@ let parser = yargs(process.argv.slice(2))
   .command(block)
   .command(cleanupResourcesAndAssets as unknown as CommandModule)
   .command(cleanupDemoAppMembers as unknown as CommandModule)
+  .command(cleanupSoftDeletedRecords as unknown as CommandModule)
   .command(checkMigrations as unknown as CommandModule)
   .command(checkDownMigrations as unknown as CommandModule)
   .command(fuzzMigrations as unknown as CommandModule)
