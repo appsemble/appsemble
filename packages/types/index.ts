@@ -646,7 +646,7 @@ export interface Remappers {
    * This remapper returns the length of the input array or a string, this remapper
    * doesn't require array to be in the context unlike `{ array: length }` remapper.
    */
-  length: null;
+  len: null;
 
   /**
    * Get the input data as it was initially passed to the remap function.

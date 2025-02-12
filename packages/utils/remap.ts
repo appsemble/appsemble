@@ -592,7 +592,7 @@ const mapperImplementations: MapperImplementations = {
 
   root: (args, input, context) => context.root,
 
-  length: (args, input: any[] | string) => input?.length,
+  len: (args, input: any[] | string) => input?.length,
 
   history: (index, input, context) => context.history?.[index],
 
