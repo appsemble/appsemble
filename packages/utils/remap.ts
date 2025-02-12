@@ -654,8 +654,12 @@ const mapperImplementations: MapperImplementations = {
     return input.toLowerCase().endsWith(substring.substring.toLowerCase());
   },
 
-  'string.slice'(sliceIndex: number | [number, number], input: string) {
-    return Array.isArray(sliceIndex) ? input.slice(...sliceIndex) : input.slice(sliceIndex);
+  slice(sliceIndex: number | [number, number], input: string | []) {
+    try {
+      return Array.isArray(sliceIndex) ? input.slice(...sliceIndex) : input.slice(sliceIndex);
+    } catch {
+      return null;
+    }
   },
 
   log(level, input, context) {
