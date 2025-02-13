@@ -29,7 +29,8 @@ export async function serverImport<
     | 'runCronJobs'
     | 'scaleContainers'
     | 'setArgv'
-    | 'start',
+    | 'start'
+    | 'synchronizeTrainings',
 >(...members: T[]): Promise<Record<T, any>> {
   try {
     // eslint-disable-next-line @typescript-eslint/prefer-ts-expect-error

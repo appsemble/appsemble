@@ -42,9 +42,8 @@ import { ResourceVersion } from './ResourceVersion.js';
 import { SamlLoginRequest } from './SamlLoginRequest.js';
 import { Theme } from './Theme.js';
 import { Training } from './Training.js';
-import { TrainingBlock } from './TrainingBlock.js';
+import { TrainingCompleted } from './TrainingCompleted.js';
 import { User } from './User.js';
-import { UserTraining } from './UserTraining.js';
 import { logSQL } from '../utils/sqlUtils.js';
 
 let db: Sequelize;
@@ -103,9 +102,8 @@ export {
   Theme,
   SamlLoginRequest,
   User,
-  UserTraining,
   Training,
-  TrainingBlock,
+  TrainingCompleted,
 };
 
 export function initDB({
@@ -172,8 +170,7 @@ export function initDB({
       SamlLoginRequest,
       User,
       Training,
-      UserTraining,
-      TrainingBlock,
+      TrainingCompleted,
     ],
     ...(schema
       ? {

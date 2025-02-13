@@ -64,7 +64,7 @@ data-loader-->txt-to-json-->sum-->report
 ```
 
 More information about which kinds of events are supported by each block can be found in the
-[blocks documentation](/blocks).
+[block's documentation](/blocks).
 
 ## Event action
 

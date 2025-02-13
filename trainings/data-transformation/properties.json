@@ -1,0 +1,5 @@
+{
+  "blockedBy": "storing-data",
+  "title": "Data transformation",
+  "trainingOrder": ["what-are-remappers", "remapper-chaining", "remapper-history"]
+}

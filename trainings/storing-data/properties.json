@@ -1,0 +1,5 @@
+{
+  "blockedBy": "data-flow",
+  "title": "Storing data",
+  "trainingOrder": ["what-is-a-resource", "storing-resource-entry", "fetching-resources"]
+}
