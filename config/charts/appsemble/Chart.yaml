@@ -1,7 +1,7 @@
 apiVersion: v2
 name: appsemble
-version: 0.31.1-test.5
-appVersion: 0.31.1-test.5
+version: 0.31.1-test.6
+appVersion: 0.31.1-test.6
 kubeVersion: '>=1.21.0'
 type: application
 description: The open source low-code app building platform
@@ -27,10 +27,8 @@ dependencies:
     repository: https://jouve.github.io/charts
     condition: mailpit.enabled
 annotations:
-  artifacthub.io/changes: >
-    - kind: added
-      description: "Utils: New remapper length to fetch the length of the input array
-        or string."
+  artifacthub.io/changes: |
+    []
   artifacthub.io/license: LGPL-3.0-only
   artifacthub.io/links: |
     - name: Appsemble Studio
