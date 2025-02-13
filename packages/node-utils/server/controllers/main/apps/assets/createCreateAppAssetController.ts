@@ -9,7 +9,7 @@ export function createCreateAppAssetController({ createAppAsset, getApp }: Optio
       pathParams: { appId },
       request: {
         body: {
-          file: { contents, filename, mime },
+          file: { filename, mime, path },
           name,
         },
       },
@@ -22,7 +22,7 @@ export function createCreateAppAssetController({ createAppAsset, getApp }: Optio
     const asset = await createAppAsset({
       app,
       context: ctx,
-      payload: { filename, mime, name, data: contents },
+      payload: { filename, mime, name, path },
     });
 
     ctx.status = 201;

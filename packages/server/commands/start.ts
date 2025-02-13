@@ -1,7 +1,7 @@
 import http from 'node:http';
 import https from 'node:https';
 
-import { logger, readFileOrString, version } from '@appsemble/node-utils';
+import { initS3Client, logger, readFileOrString, version } from '@appsemble/node-utils';
 import { api, asciiLogo } from '@appsemble/utils';
 import { captureException } from '@sentry/node';
 import { type Context } from 'koa';
@@ -147,6 +147,19 @@ export async function handler({ webpackConfigs }: AdditionalArguments = {}): Pro
     });
   } catch (error: unknown) {
     handleDBError(error as Error);
+  }
+
+  try {
+    initS3Client({
+      endPoint: argv.s3Host,
+      port: argv.s3Port,
+      useSSL: argv.s3Secure,
+      accessKey: argv.s3AccessKey,
+      secretKey: argv.s3SecretKey,
+    });
+  } catch (error: unknown) {
+    logger.warn(`S3Error: ${error}`);
+    logger.warn('Features related to file uploads will not work correctly!');
   }
 
   if (argv.migrateTo) {

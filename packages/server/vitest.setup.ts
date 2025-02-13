@@ -1,6 +1,11 @@
 import { randomUUID } from 'node:crypto';
 
-import { setFixtureBase, setLogLevel } from '@appsemble/node-utils';
+import {
+  clearAllS3Buckets,
+  initS3Client,
+  setFixtureBase,
+  setLogLevel,
+} from '@appsemble/node-utils';
 import axiosSnapshotSerializer, { setResponseTransformer } from 'jest-axios-snapshot';
 // @ts-expect-error We define this manually to make it compatible with Vite.
 // https://vitest.dev/guide/snapshot.html#image-snapshots
@@ -8,7 +13,7 @@ import axiosSnapshotSerializer, { setResponseTransformer } from 'jest-axios-snap
 import { toMatchImageSnapshot } from 'jest-image-snapshot';
 import { type Sequelize } from 'sequelize';
 // eslint-disable-next-line import/no-extraneous-dependencies
-import { afterAll, beforeAll, beforeEach, expect } from 'vitest';
+import { afterAll, beforeAll, beforeEach, expect, vi } from 'vitest';
 
 import { rootDB, setupTestDatabase } from './utils/test/testSchema.js';
 
@@ -33,10 +38,19 @@ let testDB: Sequelize;
 beforeAll(async () => {
   [testDB] = await setupTestDatabase(randomUUID());
   await testDB.sync();
+  await initS3Client({
+    accessKey: 'admin',
+    secretKey: 'password',
+    endPoint: process.env.S3_HOST || 'localhost',
+    port: Number(process.env.S3_PORT) || 9009,
+    useSSL: false,
+  });
 });
 
 beforeEach(async () => {
   await testDB.truncate({ truncate: true, cascade: true, force: true, restartIdentity: true });
+  vi.useRealTimers();
+  await clearAllS3Buckets();
 });
 
 afterAll(() => {

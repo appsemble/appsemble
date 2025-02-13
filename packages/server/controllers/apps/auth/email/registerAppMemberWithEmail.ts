@@ -5,6 +5,7 @@ import {
   assertKoaError,
   logger,
   throwKoaError,
+  uploadToBuffer,
 } from '@appsemble/node-utils';
 import { hash } from 'bcrypt';
 import { type Context } from 'koa';
@@ -90,7 +91,7 @@ export async function registerAppMemberWithEmail(ctx: Context): Promise<void> {
       email,
       role: app.definition.security.default.role,
       emailKey: key,
-      picture: picture ? picture.contents : null,
+      picture: picture ? await uploadToBuffer(picture.path) : null,
       properties: parseAppMemberProperties(properties),
       timezone,
       locale,

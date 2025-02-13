@@ -3,7 +3,7 @@ import { PredefinedOrganizationRole } from '@appsemble/types';
 import { request, setTestApp } from 'axios-test-instance';
 import FormData from 'form-data';
 import type Koa from 'koa';
-import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
+import { beforeAll, beforeEach, describe, expect, it } from 'vitest';
 
 import { Organization, OrganizationMember, type User } from '../../../models/index.js';
 import { setArgv } from '../../../utils/argv.js';
@@ -16,16 +16,12 @@ let user: User;
 
 describe('patchOrganization', () => {
   beforeAll(async () => {
-    vi.useFakeTimers();
     setArgv({ host: 'http://localhost', secret: 'test' });
     server = await createServer();
     await setTestApp(server);
   });
 
   beforeEach(async () => {
-    // https://github.com/vitest-dev/vitest/issues/1154#issuecomment-1138717832
-    vi.clearAllTimers();
-    vi.setSystemTime(0);
     user = await createTestUser();
     organization = await Organization.create({
       id: 'testorganization',

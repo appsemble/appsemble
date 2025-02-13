@@ -33,3 +33,34 @@ services:
       PGADMIN_DEFAULT_PASSWORD: password
     ports:
       - '2345:80'
+
+  # MinIO service for assets
+  minio:
+    image: minio/minio:latest
+    restart: always
+    environment:
+      MINIO_ROOT_USER: admin
+      MINIO_ROOT_PASSWORD: password
+    command: server /data --console-address ":9001"
+    ports:
+      - '9000:9000' # MinIO API
+      - '9001:9001' # MinIO Console
+    volumes:
+      - minio:/data
+
+  # MinIO test service for assets
+  minio-test:
+    image: minio/minio:latest
+    restart: always
+    environment:
+      MINIO_ROOT_USER: admin
+      MINIO_ROOT_PASSWORD: password
+    command: server /data
+    ports:
+      - '9009:9000'
+    volumes:
+      - minio-test:/data
+
+volumes:
+  minio:
+  minio-test:

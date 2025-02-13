@@ -1,6 +1,6 @@
 import { gzipSync } from 'node:zlib';
 
-import { version } from '@appsemble/node-utils';
+import { uploadS3File, version } from '@appsemble/node-utils';
 import { type EmailActionDefinition } from '@appsemble/types';
 import { type AxiosTestInstance, createInstance, request, setTestApp } from 'axios-test-instance';
 import Koa, { type ParameterizedContext } from 'koa';
@@ -672,8 +672,8 @@ describe('actions', () => {
         AppId: 1,
         mime: 'application/json',
         filename: 'test.json',
-        data: buffer,
       });
+      await uploadS3File(`app-${1}`, asset.id, buffer);
       const response = await request.post('/api/apps/1/actions/pages.0.blocks.0.actions.email', {
         to: 'test@example.com',
         body: 'Body',
@@ -779,8 +779,8 @@ describe('actions', () => {
         AppId: 1,
         mime: 'text/plain',
         filename: 'test.txt',
-        data: buffer,
       });
+      await uploadS3File(`app-${1}`, asset.id, buffer);
       const response = await request.post('/api/apps/1/actions/pages.0.blocks.0.actions.email', {
         to: 'test@example.com',
         body: 'Body',

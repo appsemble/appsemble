@@ -1,8 +1,11 @@
 import {
+  deleteS3Files,
   extractResourceBody,
+  getCompressedFileMeta,
   getResourceDefinition,
   processResourceBody,
   throwKoaError,
+  uploadAssets,
 } from '@appsemble/node-utils';
 import { type Resource as ResourceInterface } from '@appsemble/types';
 import { type Context } from 'koa';
@@ -114,6 +117,8 @@ export async function updateAppResources(ctx: Context): Promise<void> {
         },
         transaction,
       });
+
+      await deleteS3Files(`app-${appId}`, unusedAssetIds);
     }
 
     if (preparedAssets.length) {
@@ -123,6 +128,7 @@ export async function updateAppResources(ctx: Context): Promise<void> {
           const { id: ResourceId } = processedResources[index];
           return {
             ...asset,
+            ...getCompressedFileMeta(asset),
             AppId: app.id,
             GroupId: selectedGroupId ?? null,
             ResourceId,
@@ -131,6 +137,8 @@ export async function updateAppResources(ctx: Context): Promise<void> {
         }),
         { logging: false, transaction },
       );
+
+      await uploadAssets(app.id, preparedAssets);
     }
   });
 

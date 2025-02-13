@@ -1,4 +1,9 @@
-import { type AppAsset, assertKoaError, type GetAppAssetParams } from '@appsemble/node-utils';
+import {
+  type AppAsset,
+  assertKoaError,
+  type GetAppAssetParams,
+  getS3File,
+} from '@appsemble/node-utils';
 
 import { Asset } from '../models/index.js';
 
@@ -23,5 +28,5 @@ export async function getAppAsset({
       },
     }));
   assertKoaError(!asset, ctx, 404, 'Asset not found');
-  return asset;
+  return { ...asset, stream: await getS3File(`app-${app.id}`, assetId) };
 }

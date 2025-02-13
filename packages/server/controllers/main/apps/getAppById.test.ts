@@ -154,6 +154,8 @@ describe('getAppById', () => {
       OrganizationId: organization.id,
     });
     await AppSnapshot.create({ AppId: app.id, yaml: 'name: Test App\ndefaultPage Test Page\n' });
+    vi.useRealTimers();
+    vi.useFakeTimers();
     vi.advanceTimersByTime(3600);
     await AppSnapshot.create({ AppId: app.id, yaml: '{ name: Test App, defaultPage Test Page }' });
     const response = await request.get(`/api/apps/${app.id}`);

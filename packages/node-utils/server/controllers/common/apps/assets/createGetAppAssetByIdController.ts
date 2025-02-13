@@ -42,6 +42,6 @@ export function createGetAppAssetByIdController({ getApp, getAppAsset }: Options
     }
 
     ctx.set('Cache-Control', 'max-age=31536000,immutable');
-    ctx.body = asset.data;
+    ctx.body = asset.stream;
   };
 }

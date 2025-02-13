@@ -37,4 +37,7 @@ export * from './AppMemberPropertiesError.js';
 export * from './authentication.js';
 export * from './getMessagesUtil.js';
 export * from './container/index.js';
+export * from './s3.js';
+export * from './uploads.js';
+export * from './assets.js';
 export * from './getValidTrainings.js';

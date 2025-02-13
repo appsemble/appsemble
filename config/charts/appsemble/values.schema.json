@@ -355,6 +355,9 @@
     },
     "mailpit": {
       "type": "object"
+    },
+    "minio": {
+      "type": "object"
     }
   }
 }

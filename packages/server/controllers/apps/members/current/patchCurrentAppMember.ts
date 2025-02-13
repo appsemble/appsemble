@@ -1,4 +1,9 @@
-import { AppMemberPropertiesError, assertKoaError, throwKoaError } from '@appsemble/node-utils';
+import {
+  AppMemberPropertiesError,
+  assertKoaError,
+  throwKoaError,
+  uploadToBuffer,
+} from '@appsemble/node-utils';
 import { type Context } from 'koa';
 
 import { App, AppMember } from '../../../../models/index.js';
@@ -30,7 +35,7 @@ export async function patchCurrentAppMember(ctx: Context): Promise<void> {
   }
 
   if (picture) {
-    result.picture = picture.contents;
+    result.picture = await uploadToBuffer(picture.path);
   }
 
   if (properties) {

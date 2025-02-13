@@ -1,10 +1,16 @@
 import { randomUUID } from 'node:crypto';
 
-import { CREDENTIALS_ENV_VAR, setFixtureBase, setLogLevel } from '@appsemble/node-utils';
+import {
+  clearAllS3Buckets,
+  CREDENTIALS_ENV_VAR,
+  initS3Client,
+  setFixtureBase,
+  setLogLevel,
+} from '@appsemble/node-utils';
 import { rootDB, setupTestDatabase } from '@appsemble/server';
 import { type Sequelize } from 'sequelize';
 // eslint-disable-next-line import/no-extraneous-dependencies
-import { afterAll, beforeAll, beforeEach } from 'vitest';
+import { afterAll, beforeAll, beforeEach, vi } from 'vitest';
 
 setFixtureBase(import.meta);
 delete process.env[CREDENTIALS_ENV_VAR];
@@ -15,10 +21,19 @@ let testDB: Sequelize;
 beforeAll(async () => {
   [testDB] = await setupTestDatabase(randomUUID());
   await testDB.sync();
+  await initS3Client({
+    accessKey: 'admin',
+    secretKey: 'password',
+    endPoint: process.env.S3_HOST || 'localhost',
+    port: Number(process.env.S3_PORT) || 9009,
+    useSSL: false,
+  });
 });
 
 beforeEach(async () => {
   await testDB.truncate({ truncate: true, cascade: true, force: true, restartIdentity: true });
+  vi.useRealTimers();
+  await clearAllS3Buckets();
 });
 
 afterAll(() => {

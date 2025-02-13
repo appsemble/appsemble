@@ -1,4 +1,4 @@
-import { getRemapperContext, throwKoaError } from '@appsemble/node-utils';
+import { getRemapperContext, getS3FileBuffer, throwKoaError } from '@appsemble/node-utils';
 import { type EmailActionDefinition } from '@appsemble/types';
 import { defaultLocale, remap } from '@appsemble/utils';
 import { extension } from 'mime-types';
@@ -105,7 +105,10 @@ export async function email({
       const ext = extension(attachment?.accept || asset.mime);
       const filename =
         attachment?.filename || asset.filename || (ext ? `${asset.id}.${ext}` : asset.id);
-      attachments.push({ content: asset.data, filename });
+      attachments.push({
+        content: await getS3FileBuffer(`app-${app.id}`, asset.id),
+        filename,
+      });
     }
   }
 

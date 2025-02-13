@@ -5,11 +5,12 @@ import {
   getSupportedLanguages,
   logger,
   mergeMessages,
+  type TempFile,
   throwKoaError,
+  uploadToBuffer,
 } from '@appsemble/node-utils';
 import { extractAppMessages, StyleValidationError } from '@appsemble/utils';
 import { type Context } from 'koa';
-import { type File } from 'koas-body-parser';
 import tags from 'language-tags';
 import { lookup } from 'mime-types';
 import {
@@ -220,11 +221,11 @@ export async function setAppPath(ctx: Context, app: Partial<App>, path: string):
 
 export async function createAppScreenshots(
   appId: number,
-  screenshots: File[],
+  screenshots: TempFile[],
   transaction: Transaction,
   ctx: Context,
 ): Promise<AppScreenshot[]> {
-  const screenshotsByLanguage: Record<string, File[]> = {};
+  const screenshotsByLanguage: Record<string, TempFile[]> = {};
   const supportedLanguages = await getSupportedLanguages();
 
   for (const screenshot of screenshots) {
@@ -265,7 +266,8 @@ export async function createAppScreenshots(
 
     const createdLanguageScreenshots = await AppScreenshot.bulkCreate(
       await Promise.all(
-        sortedScreenshots.map(async ({ contents }: File, index) => {
+        sortedScreenshots.map(async ({ path }: TempFile, index) => {
+          const contents = await uploadToBuffer(path);
           const img = sharp(contents);
 
           const { format, height, width } = await img.metadata();
@@ -296,14 +298,15 @@ export async function createAppScreenshots(
 
 export async function createAppReadmes(
   appId: number,
-  readmes: File[],
+  readmes: TempFile[],
   transaction: Transaction,
 ): Promise<AppReadme[]> {
   const supportedLanguages = await getSupportedLanguages();
 
   return AppReadme.bulkCreate(
     await Promise.all(
-      readmes.map(({ contents, filename }: File) => {
+      readmes.map(async ({ filename, path }: TempFile) => {
+        const contents = await uploadToBuffer(path);
         let language = filename.slice(filename.indexOf('.') + 1, filename.lastIndexOf('.'));
 
         if (!supportedLanguages.has(language)) {

@@ -118,6 +118,9 @@ describe('getAppEmailQuota', () => {
       }
     `);
 
+    vi.useRealTimers();
+    vi.useFakeTimers();
+    vi.setSystemTime(0);
     vi.advanceTimersByTime(24 * 60 * 60 * 1000);
     authorizeStudio(user);
 

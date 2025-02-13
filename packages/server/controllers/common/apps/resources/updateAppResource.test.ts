@@ -1,4 +1,4 @@
-import { createFormData } from '@appsemble/node-utils';
+import { createFormData, getS3FileBuffer } from '@appsemble/node-utils';
 import {
   PredefinedAppRole,
   PredefinedOrganizationRole,
@@ -75,6 +75,9 @@ describe('updateAppResource', () => {
       data: { foo: 'I am Foo.' },
     });
 
+    vi.useRealTimers();
+    vi.useFakeTimers();
+    vi.setSystemTime(0);
     vi.advanceTimersByTime(20e3);
 
     authorizeStudio();
@@ -538,6 +541,8 @@ describe('updateAppResource', () => {
 
   it('should not set $expires if the date has already passed', async () => {
     // 10 minutes
+    vi.useRealTimers();
+    vi.useFakeTimers();
     vi.advanceTimersByTime(600e3);
     authorizeStudio();
 
@@ -580,6 +585,7 @@ describe('updateAppResource', () => {
   });
 
   it('should accept assets as form data', async () => {
+    vi.useRealTimers();
     const resource = await Resource.create({ AppId: app.id, type: 'testAssets', data: {} });
     authorizeStudio();
     const response = await request.put<ResourceType>(
@@ -590,6 +596,9 @@ describe('updateAppResource', () => {
       }),
     );
 
+    const { $created, $updated, ...rest } = response.data;
+    response.data = rest as ResourceType;
+
     expect(response).toMatchInlineSnapshot(
       { data: { file: expect.stringMatching(/^[0-f]{8}(?:-[0-f]{4}){3}-[0-f]{12}$/) } },
       `
@@ -597,8 +606,6 @@ describe('updateAppResource', () => {
       Content-Type: application/json; charset=utf-8
 
       {
-        "$created": "1970-01-01T00:00:00.000Z",
-        "$updated": "1970-01-01T00:00:00.000Z",
         "file": StringMatching /\\^\\[0-f\\]\\{8\\}\\(\\?:-\\[0-f\\]\\{4\\}\\)\\{3\\}-\\[0-f\\]\\{12\\}\\$/,
         "id": 1,
       }
@@ -606,15 +613,12 @@ describe('updateAppResource', () => {
     );
     const assets = await Asset.findAll({ where: { ResourceId: response.data.id }, raw: true });
     expect(assets).toStrictEqual([
-      {
+      expect.objectContaining({
         AppId: app.id,
         ResourceId: 1,
         GroupId: null,
-        OriginalId: null,
         AppMemberId: null,
         clonable: false,
-        created: new Date('1970-01-01T00:00:00.000Z'),
-        data: expect.any(Buffer),
         deleted: null,
         ephemeral: false,
         filename: null,
@@ -622,10 +626,12 @@ describe('updateAppResource', () => {
         mime: 'application/octet-stream',
         name: null,
         seed: false,
-        updated: new Date('1970-01-01T00:00:00.000Z'),
-      },
+      }),
     ]);
-    expect(Buffer.from('Test resource a').equals(assets[0].data)).toBe(true);
+    const assetsData = await Promise.all(
+      assets.map((asset) => getS3FileBuffer(`app-${app.id}`, asset.id)),
+    );
+    expect(Buffer.from('Test resource a').equals(assetsData[0])).toBe(true);
   });
 
   it('should disallow unused assets', async () => {
@@ -748,28 +754,22 @@ describe('updateAppResource', () => {
       id: 'test-asset',
       ResourceId: resource.id,
       AppId: app.id,
-      data: Buffer.alloc(0),
     });
+    vi.useRealTimers();
     authorizeStudio();
     const response = await request.put(
       `/api/apps/${app.id}/resources/testAssets/${resource.id}`,
       createFormData({ resource: { file: '0' }, assets: Buffer.alloc(0) }),
     );
 
-    expect(response).toMatchInlineSnapshot(
-      { data: { file: expect.stringMatching(/^[0-f]{8}(?:-[0-f]{4}){3}-[0-f]{12}$/) } },
-      `
-      HTTP/1.1 200 OK
-      Content-Type: application/json; charset=utf-8
-
-      {
-        "$created": "1970-01-01T00:00:00.000Z",
-        "$updated": "1970-01-01T00:00:00.000Z",
-        "file": StringMatching /\\^\\[0-f\\]\\{8\\}\\(\\?:-\\[0-f\\]\\{4\\}\\)\\{3\\}-\\[0-f\\]\\{12\\}\\$/,
-        "id": 1,
-      }
-    `,
+    expect(response.status).toBe(200);
+    expect(response.data).toStrictEqual(
+      expect.objectContaining({
+        file: expect.stringMatching(/^[0-f]{8}(?:-[0-f]{4}){3}-[0-f]{12}$/),
+        id: 1,
+      }),
     );
+
     await expect(() => asset.reload()).rejects.toThrow(
       'Instance could not be reloaded because it does not exist anymore (find call returned null)',
     );

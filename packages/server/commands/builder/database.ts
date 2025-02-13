@@ -35,5 +35,24 @@ export function databaseBuilder(yargs: Argv): Argv {
         production && 'database-user',
         production && 'database-password',
       ].filter(Boolean),
+    })
+    .option('s3-host', {
+      desc: 'The host of the Amazon S3 compatible object storage server',
+    })
+    .option('s3-port', {
+      desc: 'The port of the Amazon S3 compatible object storage server',
+      type: 'number',
+      default: 9000,
+    })
+    .option('s3-secure', {
+      desc: 'Whether ssl should be used for the Amazon S3 compatible object storage server',
+      type: 'boolean',
+      default: true,
+    })
+    .option('s3-access-key', {
+      desc: 'The access key of the Amazon S3 compatible object storage server',
+    })
+    .option('s3-secret-key', {
+      desc: 'The secret key of the Amazon S3 compatible object storage server',
     });
 }

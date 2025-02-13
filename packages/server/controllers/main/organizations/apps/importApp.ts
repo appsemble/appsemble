@@ -1,16 +1,20 @@
-import { basename, dirname } from 'node:path';
+import { existsSync, mkdirSync } from 'node:fs';
+import { writeFile } from 'node:fs/promises';
+import { tmpdir } from 'node:os';
+import { basename, dirname, join } from 'node:path';
 
 import {
   AppsembleError,
   assertKoaError,
   getSupportedLanguages,
   handleValidatorResult,
+  type TempFile,
+  uploadS3File,
 } from '@appsemble/node-utils';
 import { OrganizationPermission } from '@appsemble/types';
 import { normalize, validateAppDefinition, validateStyle } from '@appsemble/utils';
 import JSZip from 'jszip';
 import { type Context } from 'koa';
-import { type File } from 'koas-body-parser';
 import { lookup } from 'mime-types';
 import webpush from 'web-push';
 import { parse } from 'yaml';
@@ -168,27 +172,28 @@ export async function importApp(ctx: Context): Promise<void> {
             const data = await jsZipObject.async('nodebuffer');
             const { name } = jsZipObject;
 
-            await Asset.create(
+            const asset = await Asset.create(
               {
                 AppId: record.id,
-                data,
                 filename: name,
                 mime: lookup(name),
               },
               { transaction },
             );
+
+            await uploadS3File(`app-${appId}`, asset.id, data);
           }
         }
 
         const supportedLanguages = await getSupportedLanguages();
-        const screenshots: File[] = [];
+        const screenshots: TempFile[] = [];
         for (const jsZipObject of zip
           .folder('screenshots')
           .filter((filename) => !['.DS_Store'].includes(filename))) {
           if (!jsZipObject.dir) {
+            const { name } = jsZipObject;
             const contents = await jsZipObject.async('nodebuffer');
 
-            const { name } = jsZipObject;
             const screenshotDirectoryPath = dirname(name);
             const screenshotDirectoryName = basename(screenshotDirectoryPath);
 
@@ -196,25 +201,48 @@ export async function importApp(ctx: Context): Promise<void> {
               ? screenshotDirectoryName
               : 'unspecified';
 
+            const uploadsPath = join(tmpdir(), 'screenshots');
+            if (!existsSync(uploadsPath)) {
+              mkdirSync(uploadsPath);
+            }
+
+            const languagePath = join(uploadsPath, language);
+            if (!existsSync(languagePath)) {
+              mkdirSync(languagePath);
+            }
+
+            const screenshotPath = join(languagePath, basename(name));
+            await writeFile(screenshotPath, contents);
+
             screenshots.push({
               filename: `${language}-${name}`,
               mime: lookup(name) || '',
-              contents,
+              path: screenshotPath,
             });
           }
         }
 
         await createAppScreenshots(record.id, screenshots, transaction, ctx);
 
-        const readmeFiles: File[] = [];
+        const readmeFiles: TempFile[] = [];
         for (const jsZipObject of zip.filter(
           (filename) => filename.toLowerCase().startsWith('readme') && filename.endsWith('md'),
         )) {
+          const { name } = jsZipObject;
           const contents = await jsZipObject.async('nodebuffer');
+
+          const uploadsPath = join(tmpdir(), 'readmes');
+          if (!existsSync(uploadsPath)) {
+            mkdirSync(uploadsPath);
+          }
+
+          const readmePath = join(uploadsPath, basename(name));
+          await writeFile(readmePath, contents);
+
           readmeFiles.push({
             mime: 'text/markdown',
-            filename: jsZipObject.name,
-            contents,
+            filename: name,
+            path: readmePath,
           });
         }
         await createAppReadmes(record.id, readmeFiles, transaction);

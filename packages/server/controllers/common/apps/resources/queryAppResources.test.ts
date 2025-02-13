@@ -543,6 +543,9 @@ describe('queryAppResources', () => {
   });
 
   it('should be able to sort fetched resources', async () => {
+    vi.useRealTimers();
+    vi.useFakeTimers();
+    vi.setSystemTime(0);
     await Resource.create({
       AppId: app.id,
       type: 'testResource',
@@ -650,6 +653,9 @@ describe('queryAppResources', () => {
   });
 
   it('should be able to sort fetched resources by a number field', async () => {
+    vi.useRealTimers();
+    vi.useFakeTimers();
+    vi.setSystemTime(0);
     await Resource.create({
       AppId: app.id,
       type: 'testResource',
@@ -734,6 +740,9 @@ describe('queryAppResources', () => {
       type: 'testResource',
       data: { integer: 9 },
     });
+    vi.useRealTimers();
+    vi.useFakeTimers();
+    vi.setSystemTime(0);
     vi.advanceTimersByTime(20e3);
     await Resource.create({
       AppId: app.id,
@@ -795,6 +804,9 @@ describe('queryAppResources', () => {
       type: 'testResource',
       data: { boolean: false },
     });
+    vi.useRealTimers();
+    vi.useFakeTimers();
+    vi.setSystemTime(0);
     vi.advanceTimersByTime(20e3);
     await Resource.create({
       AppId: app.id,
@@ -856,6 +868,9 @@ describe('queryAppResources', () => {
       type: 'testResource',
       data: { enum: 'A' },
     });
+    vi.useRealTimers();
+    vi.useFakeTimers();
+    vi.setSystemTime(0);
     vi.advanceTimersByTime(20e3);
     await Resource.create({
       AppId: app.id,
@@ -912,6 +927,9 @@ describe('queryAppResources', () => {
   });
 
   it('should be able to sort fetched resources by a date field', async () => {
+    vi.useRealTimers();
+    vi.useFakeTimers();
+    vi.setSystemTime(0);
     await Resource.create({
       AppId: app.id,
       type: 'testResource',
@@ -1130,6 +1148,9 @@ describe('queryAppResources', () => {
       type: 'testResource',
       data: { foo: 'foo', bar: 1 },
     });
+    vi.useRealTimers();
+    vi.useFakeTimers();
+    vi.setSystemTime(0);
     vi.advanceTimersByTime(20e3);
     await Resource.create({
       AppId: app.id,
@@ -1225,6 +1246,9 @@ describe('queryAppResources', () => {
     const responseA = await request.get(`/api/apps/${app.id}/resources/testExpirableResource`);
 
     // The resource A expires after 5 minutes.
+    vi.useRealTimers();
+    vi.useFakeTimers();
+    vi.setSystemTime(0);
     vi.advanceTimersByTime(301e3);
 
     const responseB = await request.get(`/api/apps/${app.id}/resources/testExpirableResource`);

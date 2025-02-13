@@ -471,6 +471,8 @@ describe('getAppResourceById', () => {
     );
 
     // The resource expires after 10 minutes.
+    vi.useRealTimers();
+    vi.useFakeTimers();
     vi.advanceTimersByTime(601e3);
 
     const responseB = await request.get(

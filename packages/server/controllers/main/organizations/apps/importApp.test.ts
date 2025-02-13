@@ -1,4 +1,4 @@
-import { readFixture } from '@appsemble/node-utils';
+import { getS3FileBuffer, readFixture } from '@appsemble/node-utils';
 import { type AppDefinition, PredefinedOrganizationRole } from '@appsemble/types';
 import { request, setTestApp } from 'axios-test-instance';
 import JSZip from 'jszip';
@@ -181,19 +181,11 @@ describe('importApp', () => {
       );
     }
 
-    const assets = await Asset.findAll({
-      attributes: ['AppId', 'data'],
-      where: {
-        AppId: 1,
-      },
-    });
+    const asset = await Asset.findOne({ where: { AppId: 1 } });
 
-    for (const asset of assets) {
-      expect(asset.toJSON()).toStrictEqual({
-        AppId: 1,
-        data: expect.any(Buffer),
-      });
-    }
+    expect(await getS3FileBuffer(`app-${1}`, asset.id)).toStrictEqual(
+      await readFixture('10x50.png'),
+    );
 
     const defaultScreenshot = await AppScreenshot.findOne({
       attributes: ['AppId', 'screenshot', 'language', 'index'],

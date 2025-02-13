@@ -3,17 +3,7 @@ import { defaultLocale } from '@appsemble/utils';
 import { setTestApp } from 'axios-test-instance';
 import { type ImapFlow, type MailboxLockObject } from 'imapflow';
 import { type Transporter } from 'nodemailer';
-import {
-  afterAll,
-  afterEach,
-  beforeAll,
-  beforeEach,
-  describe,
-  expect,
-  it,
-  type Mock,
-  vi,
-} from 'vitest';
+import { afterAll, afterEach, beforeEach, describe, expect, it, type Mock, vi } from 'vitest';
 
 import { Mailer } from './Mailer.js';
 import { App, AppMessages, Organization, OrganizationMember, User } from '../../models/index.js';
@@ -514,17 +504,14 @@ _Test App_
   });
 
   describe('copyToSentFolder', () => {
-    beforeAll(() => {
+    beforeEach(() => {
+      setArgv({ ...baseArgv, imapCopyToSentFolder: true, imapHost: 'test' });
       vi.useFakeTimers({
         shouldAdvanceTime: true,
       });
       // https://github.com/vitest-dev/vitest/issues/1154#issuecomment-1138717832
       vi.clearAllTimers();
       vi.setSystemTime(0);
-    });
-
-    beforeEach(() => {
-      setArgv({ ...baseArgv, imapCopyToSentFolder: true, imapHost: 'test' });
     });
 
     afterAll(() => {

@@ -1,7 +1,13 @@
-import { readFixture } from '@appsemble/node-utils';
+import {
+  getCompressedFileMeta,
+  readFixture,
+  resolveFixture,
+  uploadAsset,
+} from '@appsemble/node-utils';
 import { PredefinedOrganizationRole } from '@appsemble/types';
 import { request, setTestApp } from 'axios-test-instance';
 import JSZip from 'jszip';
+import sharp from 'sharp';
 import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import {
@@ -520,13 +526,19 @@ describe('exportApp', () => {
       vapidPrivateKey: 'b',
     });
 
-    await Asset.create({
+    const asset = await Asset.create({
       AppId: app.id,
-      mime: 'image/png',
-      filename: 'nodejs-logo.png',
-      data: await readFixture('nodejs-logo.png'),
+      ...getCompressedFileMeta({ mime: 'image/png', filename: 'nodejs-logo.png' }),
     });
+
     vi.useRealTimers();
+
+    await uploadAsset(app.id, {
+      id: asset.id,
+      mime: 'image/png',
+      path: resolveFixture('nodejs-logo.png'),
+    });
+
     authorizeStudio();
     const response = await request.get(`/api/apps/${app.id}/export?assets=true`, {
       responseType: 'stream',
@@ -552,7 +564,6 @@ describe('exportApp', () => {
       'theme/shared/index.css',
       'i18n/',
       'assets/',
-      'assets/nodejs-logo.png',
       'assets/nodejs-logo.avif',
     ]);
 
@@ -577,8 +588,10 @@ describe('exportApp', () => {
               color: var(--link-color)
             }"
     `);
-    expect(await archive.file('assets/nodejs-logo.png').async('nodebuffer')).toStrictEqual(
-      await readFixture('nodejs-logo.png'),
+    expect(await archive.file('assets/nodejs-logo.avif').async('nodebuffer')).toStrictEqual(
+      await sharp(await readFixture('nodejs-logo.png'))
+        .toFormat('avif')
+        .toBuffer(),
     );
   });
 

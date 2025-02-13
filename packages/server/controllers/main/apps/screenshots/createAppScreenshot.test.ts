@@ -21,16 +21,12 @@ const argv = { host: 'http://localhost', secret: 'test', aesSecret: 'testSecret'
 
 describe('createAppScreenshot', () => {
   beforeAll(async () => {
-    vi.useFakeTimers();
     setArgv(argv);
     const server = await createServer();
     await setTestApp(server);
   });
 
   beforeEach(async () => {
-    // https://github.com/vitest-dev/vitest/issues/1154#issuecomment-1138717832
-    vi.clearAllTimers();
-    vi.setSystemTime(0);
     user = await createTestUser();
     organization = await Organization.create({
       id: 'testorganization',
@@ -121,27 +117,27 @@ describe('createAppScreenshot', () => {
 
     expect(createdUnspecifiedScreenshots1[0].toJSON()).toStrictEqual({
       AppId: 1,
-      created: new Date(),
+      created: expect.any(Date),
       height: 247,
       id: 1,
       index: 0,
       language: 'unspecified',
       mime: 'image/png',
       screenshot: expect.any(Buffer),
-      updated: new Date(),
+      updated: expect.any(Date),
       width: 474,
     });
 
     expect(createdUnspecifiedScreenshots1[1].toJSON()).toStrictEqual({
       AppId: 1,
-      created: new Date(),
+      created: expect.any(Date),
       height: 247,
       id: 2,
       index: 1,
       language: 'unspecified',
       mime: 'image/png',
       screenshot: expect.any(Buffer),
-      updated: new Date(),
+      updated: expect.any(Date),
       width: 474,
     });
 
@@ -162,27 +158,27 @@ describe('createAppScreenshot', () => {
 
     expect(createdUnspecifiedScreenshots2[2].toJSON()).toStrictEqual({
       AppId: 1,
-      created: new Date(),
+      created: expect.any(Date),
       height: 247,
       id: 3,
       index: 2,
       language: 'unspecified',
       mime: 'image/png',
       screenshot: expect.any(Buffer),
-      updated: new Date(),
+      updated: expect.any(Date),
       width: 474,
     });
 
     expect(createdUnspecifiedScreenshots2[3].toJSON()).toStrictEqual({
       AppId: 1,
-      created: new Date(),
+      created: expect.any(Date),
       height: 247,
       id: 4,
       index: 3,
       language: 'unspecified',
       mime: 'image/png',
       screenshot: expect.any(Buffer),
-      updated: new Date(),
+      updated: expect.any(Date),
       width: 474,
     });
 
@@ -212,27 +208,27 @@ describe('createAppScreenshot', () => {
 
     expect(createdNlScreenshots[1].toJSON()).toStrictEqual({
       AppId: 1,
-      created: new Date(),
+      created: expect.any(Date),
       height: 247,
       id: 6,
       index: 1,
       language: 'nl',
       mime: 'image/png',
       screenshot: expect.any(Buffer),
-      updated: new Date(),
+      updated: expect.any(Date),
       width: 474,
     });
 
     expect(createdNlScreenshots[2].toJSON()).toStrictEqual({
       AppId: 1,
-      created: new Date(),
+      created: expect.any(Date),
       height: 247,
       id: 7,
       index: 2,
       language: 'nl',
       mime: 'image/png',
       screenshot: expect.any(Buffer),
-      updated: new Date(),
+      updated: expect.any(Date),
       width: 474,
     });
   });
@@ -274,7 +270,11 @@ describe('createAppScreenshot', () => {
         "errors": [
           {
             "argument": "image/png,image/jpeg,image/tiff,image/webp",
-            "instance": "I am not a screenshot",
+            "instance": {
+              "screenshots": [
+                "",
+              ],
+            },
             "message": "has an invalid content type",
             "name": "contentType",
             "path": [

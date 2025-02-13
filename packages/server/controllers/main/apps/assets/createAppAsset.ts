@@ -1,4 +1,10 @@
-import { assertKoaError, throwKoaError } from '@appsemble/node-utils';
+import {
+  assertKoaError,
+  type AssetToUpload,
+  getCompressedFileMeta,
+  throwKoaError,
+  uploadAssets,
+} from '@appsemble/node-utils';
 import { OrganizationPermission } from '@appsemble/types';
 import { type Context } from 'koa';
 import { UniqueConstraintError } from 'sequelize';
@@ -12,7 +18,7 @@ export async function createAppAsset(ctx: Context): Promise<void> {
     request: {
       body: {
         clonable,
-        file: { contents, filename, mime },
+        file: { filename, mime, path },
         name,
       },
       query: { seed },
@@ -30,40 +36,37 @@ export async function createAppAsset(ctx: Context): Promise<void> {
   });
 
   let asset: Asset;
+  const assetsToUpload: AssetToUpload[] = [];
+  const compressedFileMeta = getCompressedFileMeta({ filename, mime });
   try {
     if (!(ctx.client && 'app' in ctx.client) && seed === 'true') {
       asset = await Asset.create({
         AppId: appId,
-        data: contents,
-        filename,
-        mime,
         name,
         seed: true,
         ephemeral: false,
         clonable,
+        ...compressedFileMeta,
       });
 
       if (app.demoMode) {
+        assetsToUpload.push({ id: asset.id, mime, path });
         asset = await Asset.create({
           AppId: appId,
-          data: contents,
-          filename,
-          mime,
           name,
           seed: false,
           ephemeral: true,
           clonable: false,
+          ...compressedFileMeta,
         });
       }
     } else {
       asset = await Asset.create({
         AppId: appId,
-        data: contents,
-        filename,
-        mime,
         name,
         ephemeral: app.demoMode,
         clonable,
+        ...compressedFileMeta,
       });
     }
   } catch (error: unknown) {
@@ -72,6 +75,9 @@ export async function createAppAsset(ctx: Context): Promise<void> {
     }
     throw error;
   }
+
+  assetsToUpload.push({ id: asset.id, mime, path });
+  await uploadAssets(appId, assetsToUpload);
 
   ctx.status = 201;
   ctx.body = { id: asset.id, mime, filename, name };

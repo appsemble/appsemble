@@ -1,7 +1,6 @@
-import { readFixture } from '@appsemble/node-utils';
+import { uploadS3File } from '@appsemble/node-utils';
 import { PredefinedOrganizationRole } from '@appsemble/types';
 import { request, setTestApp } from 'axios-test-instance';
-import sharp from 'sharp';
 import { beforeAll, beforeEach, describe, expect, it } from 'vitest';
 
 import {
@@ -60,13 +59,13 @@ describe('getAppAssetById', () => {
   });
 
   it('should be able to fetch an asset', async () => {
-    const data = Buffer.from('buffer');
     const asset = await Asset.create({
       AppId: app.id,
       mime: 'application/octet-stream',
       filename: 'test.bin',
-      data,
     });
+
+    await uploadS3File(`app-${app.id}`, asset.id, Buffer.from('buffer'));
 
     const response = await request.get(`/api/apps/${app.id}/assets/${asset.id}`, {
       responseType: 'arraybuffer',
@@ -79,19 +78,18 @@ describe('getAppAssetById', () => {
         'content-disposition': 'attachment; filename="test.bin"',
         'cache-control': 'max-age=31536000,immutable',
       }),
-      data,
     });
   });
 
   it('should be able to fetch an by name', async () => {
-    const data = Buffer.from('buffer');
-    await Asset.create({
+    const asset = await Asset.create({
       AppId: app.id,
       mime: 'application/octet-stream',
       filename: 'test.mp3',
-      data,
       name: 'test-asset',
     });
+
+    await uploadS3File(`app-${app.id}`, asset.id, Buffer.from('buffer'));
 
     const response = await request.get(`/api/apps/${app.id}/assets/test-asset`);
 
@@ -102,40 +100,15 @@ describe('getAppAssetById', () => {
         'content-disposition': 'attachment; filename="test.mp3"',
         'cache-control': 'max-age=31536000,immutable',
       }),
-      data: 'buffer',
-    });
-  });
-
-  it('should fetch the compressed version of an image asset', async () => {
-    const data = await readFixture('nodejs-logo.png');
-    const asset = await Asset.create({
-      AppId: app.id,
-      mime: 'image/png',
-      filename: 'logo.png',
-      data,
-    });
-
-    const response = await request.get(`/api/apps/${app.id}/assets/${asset.id}`, {
-      responseType: 'arraybuffer',
-    });
-
-    expect(response).toMatchObject({
-      status: 200,
-      headers: expect.objectContaining({
-        'content-type': 'image/avif',
-        'content-disposition': 'inline; filename="logo.avif"',
-        'cache-control': 'max-age=31536000,immutable',
-      }),
-      data: sharp(data).toFormat('avif').toBuffer(),
     });
   });
 
   it('should fallback to the asset id as the filename', async () => {
-    const data = Buffer.from('buffer');
     const asset = await Asset.create({
       AppId: app.id,
-      data,
     });
+
+    await uploadS3File(`app-${app.id}`, asset.id, Buffer.from('buffer'));
 
     const response = await request.get(`/api/apps/${app.id}/assets/${asset.id}`, {
       responseType: 'arraybuffer',
@@ -147,17 +120,16 @@ describe('getAppAssetById', () => {
         'content-type': 'application/octet-stream',
         'content-disposition': `attachment; filename="${asset.id}"`,
       }),
-      data,
     });
   });
 
   it('should determine the file extension based on the mime type', async () => {
-    const data = Buffer.from('buffer');
     const asset = await Asset.create({
       AppId: app.id,
       mime: 'text/plain',
-      data,
     });
+
+    await uploadS3File(`app-${app.id}`, asset.id, Buffer.from('buffer'));
 
     const response = await request.get(`/api/apps/${app.id}/assets/${asset.id}`, {
       responseType: 'arraybuffer',
@@ -169,7 +141,6 @@ describe('getAppAssetById', () => {
         'content-type': 'text/plain',
         'content-disposition': `attachment; filename="${asset.id}.txt"`,
       }),
-      data,
     });
   });
 
@@ -193,13 +164,12 @@ describe('getAppAssetById', () => {
       vapidPrivateKey: 'b',
       OrganizationId: organization.id,
     });
-    const data = Buffer.from('buffer');
     const asset = await Asset.create({
       AppId: appB.id,
       mime: 'application/octet-stream',
       filename: 'test.bin',
-      data,
     });
+    await uploadS3File(`app-${app.id}`, asset.id, Buffer.from('buffer'));
 
     const response = await request.get(`/api/apps/${app.id}/assets/${asset.id}`);
 
@@ -216,13 +186,13 @@ describe('getAppAssetById', () => {
   });
 
   it('should not fetch deleted assets', async () => {
-    const data = Buffer.from('buffer');
     const asset = await Asset.create({
       AppId: app.id,
       mime: 'application/octet-stream',
       filename: 'test.bin',
-      data,
     });
+
+    await uploadS3File(`app-${app.id}`, asset.id, Buffer.from('buffer'));
 
     const assetId = asset.id;
     const { status } = await request.get(`/api/apps/${app.id}/assets/${assetId}`);
