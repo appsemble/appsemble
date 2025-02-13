@@ -1,7 +1,7 @@
 apiVersion: v2
 name: appsemble
-version: 0.31.1-test.3
-appVersion: 0.31.1-test.3
+version: 0.31.1-test.5
+appVersion: 0.31.1-test.5
 kubeVersion: '>=1.21.0'
 type: application
 description: The open source low-code app building platform
@@ -29,11 +29,8 @@ dependencies:
 annotations:
   artifacthub.io/changes: >
     - kind: added
-      description: "Block(form): Add filter option to enum field."
-    - kind: fixed
-      description: "Block(filter): Escape single quote and back-slash characters."
-    - kind: fixed
-      description: "Studio: Remapper links in docs generated from a schema."
+      description: "Utils: New remapper length to fetch the length of the input array
+        or string."
   artifacthub.io/license: LGPL-3.0-only
   artifacthub.io/links: |
     - name: Appsemble Studio

@@ -409,9 +409,7 @@ const mapperImplementations: MapperImplementations = {
     });
   },
 
-  array: (prop, input: any[], context) =>
-    context.array?.[prop] ??
-    (prop === 'length' && Array.isArray(input) ? input?.[prop] : undefined),
+  array: (prop, input: any[], context) => context.array?.[prop],
 
   'array.filter'(mapper, input: any[], context) {
     if (!Array.isArray(input)) {
@@ -593,6 +591,8 @@ const mapperImplementations: MapperImplementations = {
   },
 
   root: (args, input, context) => context.root,
+
+  len: (args, input: any[] | string) => input?.length,
 
   history: (index, input, context) => context.history?.[index],
 

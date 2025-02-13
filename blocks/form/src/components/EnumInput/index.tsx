@@ -46,6 +46,7 @@ export function EnumInput({
   const [filter, setFilter] = useState<string>('');
   const [originalOptions, setOriginalOptions] = useState<Choice[]>(options);
   const [inputValue, setInputValue] = useState<string>('');
+
   const ref = useRef<HTMLDivElement>();
   const { disable, enabled, toggle } = useToggle();
 
@@ -93,7 +94,6 @@ export function EnumInput({
     }
 
     const handleOptions = (result: Choice[]): void => {
-      setOptions(result);
       setOriginalOptions(result);
       if ('filter' in field) {
         if (field.filter) {
@@ -102,6 +102,32 @@ export function EnumInput({
           return;
         }
       }
+      setLoading(false);
+    };
+
+    const handleError = (): void => {
+      setError(utils.remap(field.loadError ?? 'Error loading options', {}) as string);
+      setLoading(false);
+    };
+
+    if ('action' in field) {
+      actions[field.action]().then(handleOptions, handleError);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [filter]);
+
+  useEffect(() => {
+    if ('enum' in field) {
+      return;
+    }
+
+    if ('remapper' in field) {
+      return;
+    }
+
+    const handleOptions = (result: Choice[]): void => {
+      setOriginalOptions(result);
+      setOptions(result);
       setLoading(false);
     };
 
@@ -125,18 +151,7 @@ export function EnumInput({
       events.on[field.event](eventHandler);
       return () => events.off[field.event](eventHandler);
     }
-  }, [
-    actions,
-    applyFilter,
-    events,
-    field,
-    fieldsetEntryValues,
-    filter,
-    formValues,
-    options,
-    originalOptions,
-    utils,
-  ]);
+  }, [actions, events, field, fieldsetEntryValues, formValues, utils]);
 
   const filterChange = useCallback((e: ChangeEvent<HTMLInputElement>, input: string): void => {
     setInputValue(input);
@@ -148,7 +163,6 @@ export function EnumInput({
       if (onSelect) {
         actions[onSelect]({ value: v });
       }
-
       onChange(n, v);
     },
     [actions, onChange, onSelect],

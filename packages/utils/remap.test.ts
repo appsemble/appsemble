@@ -1084,7 +1084,7 @@ describe('array.flatten', () => {
 
 describe('array', () => {
   runTests({
-    'return undefined if not in the context of array.map or if the input is not an array': {
+    'return undefined if not in the context of array.map': {
       input: {},
       mappers: [
         {
@@ -1120,19 +1120,6 @@ describe('array', () => {
         { value: 'c', index: 2, length: 3, item: { value: 'c' } },
       ],
     },
-    'return the length of the input array if not in the context': {
-      input: [1, 2, 3, 4],
-      mappers: [
-        {
-          'object.from': {
-            index: [{ array: 'index' }],
-            length: [{ array: 'length' }],
-            item: [{ array: 'item' }],
-          },
-        },
-      ],
-      expected: { index: undefined, length: 4, item: undefined },
-    },
   });
 });
 
@@ -1165,7 +1152,7 @@ describe('array.filter', () => {
     },
     'it should filter arrays with mixed content type based on type of the item': {
       input: ['Craig', 5, 'Joey', 7, 'Stuart'],
-      mappers: [{ 'array.filter': { equals: [{ type: { array: 'item' } }, 'number'] } } as never],
+      mappers: [{ 'array.filter': { equals: [[{ array: 'item' }, { type: null }], 'number'] } }],
       expected: [5, 7],
     },
   });
@@ -1397,6 +1384,26 @@ describe('random.string', () => {
       input: { input: undefined },
       mappers: [{ 'random.string': { choice: 'abcdefghijklmnopqrstuvwzyx', length: 12 } }],
       expected: 'aknpsufhknszp',
+    },
+  });
+});
+
+describe('length', () => {
+  runTests({
+    'return the length of input array': {
+      input: [1, 2, 3, 4, 5],
+      mappers: [{ len: null }],
+      expected: 5,
+    },
+    'return undefined if the input is not an array or a string': {
+      input: { hello: 'world' },
+      mappers: [{ len: null }],
+      expected: undefined,
+    },
+    'return the length of input string': {
+      input: 'foo',
+      mappers: [{ len: null }],
+      expected: 3,
     },
   });
 });
