@@ -2,6 +2,26 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.31.1-test.5](https://gitlab.com/appsemble/appsemble/-/releases/0.31.1-test.5)] - 2025-02-12
+
+### Added
+
+- Utils: New remapper `length` to fetch the length of the input array or string.
+
+## \[[0.31.1-test.4](https://gitlab.com/appsemble/appsemble/-/releases/0.31.1-test.4)] - 2025-02-12
+
+### Added
+
+- App: Display name of the logged in app member in the title bar.
+- App: Option to add profile picture from the camera in mobile devices.
+
+### Fixed
+
+- Block(`filter`): Render only one label for boolean fields.
+- Cli: Fix `block build` command.
+- Server: Wrong app member picture url.
+- Studio: Fix "Unsaved changes" popup appearing in the editor even after the app has been saved.
+
 ## \[[0.31.1-test.3](https://gitlab.com/appsemble/appsemble/-/releases/0.31.1-test.3)] - 2025-02-06
 
 ### Added

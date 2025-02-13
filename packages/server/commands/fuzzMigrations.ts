@@ -9,7 +9,7 @@ import { handleDBError } from '../utils/sqlUtils.js';
 import { setupTestDatabase } from '../utils/test/testSchema.js';
 
 export const command = 'fuzz-migrations';
-export const description = 'Fuzz migrations to find inconcistencies';
+export const description = 'Fuzz migrations to find inconsistencies';
 
 export function builder(yargs: Argv): Argv {
   return databaseBuilder(yargs);

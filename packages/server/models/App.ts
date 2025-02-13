@@ -224,7 +224,7 @@ export class App extends Model {
   @HasMany(() => AppSamlSecret)
   AppSamlSecrets: AppSamlSecret[];
 
-  @BelongsTo(() => Organization)
+  @BelongsTo(() => Organization, { onDelete: 'CASCADE' })
   Organization: Awaited<Organization>;
 
   @HasMany(() => AppSubscription)

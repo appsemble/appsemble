@@ -39,6 +39,6 @@ export class EmailAuthorization extends Model {
   @Column(DataType.UUID)
   UserId: string;
 
-  @BelongsTo(() => User)
+  @BelongsTo(() => User, { onDelete: 'CASCADE' })
   User: Awaited<User>;
 }
