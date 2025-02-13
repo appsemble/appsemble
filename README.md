@@ -73,6 +73,11 @@ Clone and setup the project.
 git clone https://gitlab.com/appsemble/appsemble.git
 cd appsemble
 npm ci
+```
+
+We use playwright to create the mermaid diagram, you can install it with
+
+```sh
 npx playwright install
 ```
 
