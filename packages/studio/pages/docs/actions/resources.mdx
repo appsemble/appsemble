@@ -66,7 +66,7 @@ fetch the `person` resource.
 ```yaml validate blocks-snippet
 blocks:
   - type: data-loader
-    version: 0.31.1-test.6
+    version: 0.32.0
     actions:
       onLoad:
         type: resource.get
@@ -86,7 +86,7 @@ fetch the `person` resource.
 ```yaml validate blocks-snippet
 blocks:
   - type: data-loader
-    version: 0.31.1-test.6
+    version: 0.32.0
     actions:
       onLoad:
         type: resource.history.get
@@ -108,7 +108,7 @@ example of how you can use this action to fetch all `person` resources.
 ```yaml validate blocks-snippet
 blocks:
   - type: data-loader
-    version: 0.31.1-test.6
+    version: 0.32.0
     actions:
       onLoad:
         type: resource.query
@@ -128,7 +128,7 @@ use this action to fetch the number of resources.
 ```yaml validate blocks-snippet
 blocks:
   - type: data-loader
-    version: 0.31.1-test.6
+    version: 0.32.0
     actions:
       onLoad:
         type: resource.count
@@ -146,7 +146,7 @@ you can use this action to create a new resource of type person.
 ```yaml validate blocks-snippet
 blocks:
   - type: form
-    version: 0.31.1-test.6
+    version: 0.32.0
     actions:
       onSubmit:
         type: resource.create
@@ -169,7 +169,7 @@ update an existing resource of type person.
 ```yaml validate blocks-snippet
 blocks:
   - type: form
-    version: 0.31.1-test.6
+    version: 0.32.0
     parameters:
       fields:
         - type: string
@@ -205,7 +205,7 @@ resource of type person using this action.
 ```yaml validate blocks-snippet
 blocks:
   - type: form
-    version: 0.31.1-test.6
+    version: 0.32.0
     parameters:
       fields:
         - type: string
@@ -232,7 +232,7 @@ block of code.
 ```yaml validate blocks-snippet
 blocks:
   - type: button-list
-    version: 0.31.1-test.6
+    version: 0.32.0
     parameters:
       buttons:
         - label: { translate: cancel }
@@ -261,7 +261,7 @@ person:
 ```yaml validate blocks-snippet
 blocks:
   - type: table
-    version: 0.31.1-test.6
+    version: 0.32.0
     parameters:
       fields:
         - value: { prop: firstName }
@@ -286,7 +286,7 @@ action to unsubscribe to the delete notifications related to resource person.
 ```yaml validate blocks-snippet
 blocks:
   - type: action-button
-    version: 0.31.1-test.6
+    version: 0.32.0
     parameters:
       icon: bell-slash
     actions:
@@ -308,7 +308,7 @@ how you can use this action.
 ```yaml validate blocks-snippet
 blocks:
   - type: action-button
-    version: 0.31.1-test.6
+    version: 0.32.0
     parameters:
       icon: toggle-on
     actions:
@@ -329,7 +329,7 @@ action is `update`. Here’s an example of usage of this action.
 ```yaml validate blocks-snippet
 blocks:
   - type: action-button
-    version: 0.31.1-test.6
+    version: 0.32.0
     parameters:
       icon: envelope
     actions:

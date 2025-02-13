@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.32.0](https://gitlab.com/appsemble/appsemble/-/releases/0.32.0)] - 2025-02-13
+
+### Changed
+
+- Server: Use S3 compatible storage for app assets.
+
 ## \[[0.31.1-test.6](https://gitlab.com/appsemble/appsemble/-/releases/0.31.1-test.6)] - 2025-02-13
 
 ## \[[0.31.1-test.5](https://gitlab.com/appsemble/appsemble/-/releases/0.31.1-test.5)] - 2025-02-12
