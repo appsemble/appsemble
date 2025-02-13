@@ -25,16 +25,13 @@ can check it out here: https://gitlab.com/appsemble/appsemble.
 
 ## New to Appsemble?
 
-<!-- TODO: Should link to trainings once they are done. -->
-
 Appsemble can be a difficult piece of software to understand right away. We recommend you first
-learn the basics by reading our documentation before diving into creating an app.
+learn the basics by going through the training course before diving into creating an app.
 
-By going through the following docs, we're confident that you will understand the basics of
-Appsemble:
+The training course can be found under the [Trainings](/trainings) tab.
 
-- [Studio documentation](/docs/studio)
-- [Basic app](/docs/guides/basic-app)
+If you have any more questions, feel free to join our
+[Discord server](https://discord.com/invite/q5aZAyq5kZ) and ask in the appropriate channels.
 
 ## Documentation structure
 

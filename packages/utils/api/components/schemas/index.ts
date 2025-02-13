@@ -125,7 +125,7 @@ export * from './ThrowActionDefinition.js';
 export * from './User.js';
 export * from './UserInfo.js';
 export * from './Training.js';
-export * from './TrainingBlock.js';
+export * from './TrainingCompleted.js';
 export * from './UserEmail.js';
 export * from './AppMemberLogoutActionDefinition.js';
 export * from './AppMemberLoginActionDefinition.js';

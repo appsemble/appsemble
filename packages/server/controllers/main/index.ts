@@ -4,7 +4,6 @@ export * from './auth/index.js';
 export * from './blocks/index.js';
 export * from './messages/index.js';
 export * from './organizations/index.js';
-export * from './training-blocks/index.js';
 export * from './trainings/index.js';
 export * from './users/index.js';
 export * from './groups/index.js';

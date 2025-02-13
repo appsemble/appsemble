@@ -50,6 +50,7 @@
     "@types/react-dom": "^18.0.0",
     "@types/react-router-dom": "^5.0.0",
     "@types/webpack-env": "^1.0.0",
+    "@xyflow/react": "^12.3.6",
     "axios": "^1.0.0",
     "classnames": "^2.0.0",
     "elkjs": "^0.9.0",

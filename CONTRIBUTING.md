@@ -362,6 +362,49 @@ Migrating down to the first migration.
 npm run appsemble migrate -- --migrate-to 0.24.12
 ```
 
+## Trainings
+
+When the server starts up it checks the `trainings` directory and makes sure all training IDs are
+stored on the database. To make sure this works as intended, the directory should maintain the
+following strucutre:
+
+Each folder in the root of the `trainings` directory defines a training chapter. A chapter has a
+`properties.json` file that has some additional information on how the chapter should be rendered in
+the studio. These properties are:
+
+- `blockedBy`: The ID of the chapter that must be completed before being able to see this one.
+- `title`: The chapter's title
+- `trainingOrder`: Array of IDs of this chapter's trainings. Defines in what order they appear.
+
+An individual training is placed in a chapter as a directory with a unique ID, and a markdown file
+that contains the content called `index.md`.
+
+[![Training structure](/config/assets/training-structure.png 'Training structure')]
+
+### Adding a new training
+
+1. Find or create the chapter you want to add a training to.
+2. Create a new directory with a unique ID representing the name of the training
+3. Inside this directory, create a new markdown file: `index.md`.
+4. Put the content of the training you want to make in this new markdown file
+5. (Optional) Put the place you want this training to be in the `trainingOrder` array of the
+   chapter's `properties.json` file. Otherwise, the position in the directory will be used.
+
+### Adding a new chapter
+
+1. Create a new folder in the root of the `trainings` directory with a unique name.
+2. In the new folder, create a `properties.json` file containing the following JSON:
+
+```json
+{
+  "blockedBy": null,
+  "title": "Example chapter",
+  "trainingOrder": []
+}
+```
+
+3. Create at least one training in the chapter for it to be considered valid.
+
 ## Releasing
 
 Push to the `staging` branch before pushing to main and releasing to test and review the changes in

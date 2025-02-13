@@ -27,6 +27,7 @@ export * from './ssl.js';
 export * from './template.js';
 export * from './theme.js';
 export * from './oauth2.js';
+export * from './training.js';
 export * from './quota.js';
 export * from './permissions.js';
 export * from './roles.js';
@@ -2811,80 +2812,6 @@ export interface AppSamlSecret extends WritableAppSamlSecret {
    * The SAML service provider certificate.
    */
   spCertificate?: string;
-}
-
-export interface Training {
-  /**
-   * Id of the training
-   */
-  id: number;
-
-  /**
-   * Title of the training.
-   */
-  title: string;
-
-  /**
-   * A brief overview of what the training is about.
-   */
-  description: string;
-
-  /**
-   * Tags related to competence of the training.
-   */
-  competences: string[];
-
-  /**
-   * Difficulty level of the training.
-   */
-  difficultyLevel: number;
-
-  /**
-   * The creation date of the training.
-   */
-  $created?: string;
-
-  /**
-   * The date when the training was last updated.
-   */
-  $updated?: string;
-}
-
-export interface TrainingBlock {
-  /**
-   * ID of the training block
-   */
-  id: string;
-
-  /**
-   * Title of the block.
-   */
-  title: string;
-
-  /**
-   * Id of the parent training.
-   */
-  trainingId: number;
-
-  /**
-   * A link pointing to the documentation of Appsemble.
-   */
-  documentationLink?: string;
-
-  /**
-   * A link pointing to a video regarding the topic.
-   */
-  videoLink?: string;
-
-  /**
-   * Link to an external resource.
-   */
-  externalResource?: string;
-
-  /**
-   * Example code for the user to try out.
-   */
-  exampleCode?: string;
 }
 
 export type SAMLStatus =
