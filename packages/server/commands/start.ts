@@ -16,6 +16,7 @@ import { createServer } from '../utils/createServer.js';
 import { configureDNS } from '../utils/dns/index.js';
 import { migrate } from '../utils/migrate.js';
 import { handleDBError } from '../utils/sqlUtils.js';
+import { syncTrainings } from '../utils/syncTrainings.js';
 
 interface AdditionalArguments {
   webpackConfigs?: Configuration[];
@@ -164,6 +165,8 @@ export async function handler({ webpackConfigs }: AdditionalArguments = {}): Pro
   if (argv.migrateTo) {
     await migrate(argv.migrateTo, migrations);
   }
+
+  syncTrainings('trainings');
 
   await configureDNS();
 

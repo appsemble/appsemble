@@ -78,7 +78,6 @@ export function DocsRoutes(): ReactNode {
   const { formatMessage } = useIntl();
 
   const [, setBreadCrumbsDecoration] = useBreadCrumbsDecoration();
-
   useSideMenu(
     <MenuSection label={<FormattedMessage {...messages.title} />}>
       <MenuItem end icon="search" to="docs/search">

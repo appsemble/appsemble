@@ -150,10 +150,6 @@ export const tags: OpenAPIV3.TagObject[] = [
     description: 'Operations related to trainings',
   },
   {
-    name: 'training-block',
-    description: 'Operations related to training blocks.',
-  },
-  {
     name: 'translation',
     description: 'Operations related to translations',
   },

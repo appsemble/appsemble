@@ -1,247 +1,96 @@
-import {
-  Button,
-  Content,
-  Icon,
-  useConfirmation,
-  useData,
-  useMessages,
-} from '@appsemble/react-components';
-import { OrganizationPermission, type Training, type TrainingBlock } from '@appsemble/types';
-import { checkOrganizationRoleOrganizationPermissions } from '@appsemble/utils';
-import { randomString } from '@appsemble/web-utils';
+import { Button, Icon, useMessages, useMeta } from '@appsemble/react-components';
+import { type Training } from '@appsemble/types';
 import axios from 'axios';
-import { type ChangeEvent, type ReactNode, useCallback, useEffect, useState } from 'react';
+import { type ComponentType, type ReactNode, useCallback, useMemo, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { useLocation, useNavigate, useParams } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 
-import { CreatingTrainingBlockButton } from './CreateTrainingBlock/index.js';
-import styles from './index.module.css';
 import { messages } from './messages.js';
-import { AsyncDataView } from '../../../components/AsyncDataView/index.js';
-import { CardHeaderControl } from '../../../components/CardHeaderControl/index.js';
-import { StarRating } from '../../../components/StarRating/index.js';
-import { TrainingBlockCard } from '../../../components/TrainingBlockCard/index.js';
-import {
-  type defaultTrainingValues,
-  TrainingModal,
-} from '../../../components/TrainingModal/index.js';
 import { useUser } from '../../../components/UserProvider/index.js';
 
-export function TrainingHomePage(): ReactNode {
-  const { formatMessage } = useIntl();
-  const { trainingId } = useParams<{ trainingId: string }>();
-  const { organizations, userInfo } = useUser();
+interface TrainingPageProps {
+  readonly content: ComponentType;
+  readonly id: string;
+  readonly completed: boolean;
+  readonly setCompleted: (trainingId: string) => void;
+  readonly nextTraining?: Training;
+}
+
+export function TrainingPage({
+  completed,
+  content: TrainingContent,
+  id,
+  nextTraining,
+  setCompleted,
+}: TrainingPageProps): ReactNode {
+  const [isCompleted, setIsCompleted] = useState(completed);
+  useMeta(id);
   const push = useMessages();
+  const { formatMessage } = useIntl();
+  const isLoggedIn = useUser().userInfo != null;
   const navigate = useNavigate();
-  const { hash } = useLocation();
-  const trainingInfo = useData<Training>(`/api/trainings/${trainingId}`);
-  const [comp, setComp] = useState(null);
-  const trainingBlocks = useData<TrainingBlock[]>(`/api/trainings/${trainingId}/blocks`);
-  const isEnrolled = useData<{ enrolled: boolean; completed: boolean }>(
-    `/api/trainings/${trainingId}/users/current`,
-  );
+  const location = useLocation();
 
-  const isAppsembleMember = organizations?.find((org) => org.id === 'appsemble');
+  // State doesn't get reset when using navigate, so this needs to be initialized again
+  useMemo(() => {
+    setIsCompleted(completed);
+  }, [completed]);
 
-  useEffect(() => {
-    if (trainingInfo) {
-      setComp(trainingInfo?.data?.competences);
-    }
-  }, [trainingInfo]);
-
-  const markAsCompleted = useCallback(async () => {
-    const formData = new FormData();
-    formData.set('completed', 'true');
-    await axios.patch(`/api/trainings/${trainingId}/users/current`, formData);
-    window.location.reload();
-  }, [trainingId]);
-
-  const onEnroll = useCallback(async () => {
-    await axios.post(`/api/trainings/${trainingId}/users/current`);
-    window.location.reload();
-  }, [trainingId]);
-
-  const mayDeleteTraining =
-    isAppsembleMember &&
-    checkOrganizationRoleOrganizationPermissions(isAppsembleMember.role, [
-      OrganizationPermission.DeleteTrainings,
-    ]);
-
-  const handleSelectChange = useCallback(
-    ({ currentTarget }: ChangeEvent<HTMLSelectElement>) => {
-      const selectedValue = currentTarget.value;
-      setComp((prevCompetence: string[]) => {
-        if (prevCompetence.includes(selectedValue)) {
-          return prevCompetence.filter((value) => value !== selectedValue);
-        }
-        return [...prevCompetence, selectedValue];
+  const completeTraining = useCallback(async () => {
+    if (isLoggedIn) {
+      await axios.post(`/api/trainings/completed/${id}`).catch(() => {
+        push(formatMessage(messages.completeFailed));
+        throw new Error(formatMessage(messages.completeFailed));
       });
-    },
-    [setComp],
-  );
+    }
 
-  const onEdit = useCallback(() => {
-    navigate({ hash: 'edit' }, { replace: true });
-  }, [navigate]);
+    setIsCompleted(true);
+    setCompleted(id);
+  }, [isLoggedIn, setCompleted, id, push, formatMessage]);
 
-  const closeEditDialog = useCallback(() => {
-    navigate({ hash: null }, { replace: true });
-  }, [navigate]);
+  const navToTree = useCallback(() => {
+    const trainingTreeUrl = `${location.pathname.split('trainings')[0]}trainings`;
+    navigate(trainingTreeUrl);
+  }, [location.pathname, navigate]);
 
-  const isEditModalActive = hash === '#edit';
-
-  const onEditTraining = useCallback(
-    async ({
-      description: trainingDescription,
-      difficultyLevel: trainingDifficultyLevel,
-      title: trainingTitle,
-    }: typeof defaultTrainingValues) => {
-      const formData = new FormData();
-      formData.set('title', trainingTitle);
-      formData.set('description', trainingDescription);
-      formData.set('difficultyLevel', String(trainingDifficultyLevel));
-      formData.set('competences', JSON.stringify(comp));
-      await axios.patch<Training>(`/api/trainings/${trainingId}`, formData);
-      closeEditDialog();
-      window.location.reload();
-    },
-    [closeEditDialog, comp, trainingId],
-  );
-
-  const onDeleteTraining = useConfirmation({
-    title: <FormattedMessage {...messages.deleteWarningTitle} />,
-    body: <FormattedMessage {...messages.deleteWarning} />,
-    cancelLabel: <FormattedMessage {...messages.cancel} />,
-    confirmLabel: <FormattedMessage {...messages.delete} />,
-    async action() {
-      try {
-        await axios.delete(`/api/trainings/${trainingId}`);
-        push({
-          body: formatMessage(messages.deleteSuccess, {
-            name: String(trainingInfo?.data.title),
-          }),
-          color: 'info',
-        });
-        navigate('../');
-      } catch {
-        push(formatMessage(messages.errorDelete));
-      }
-    },
-  });
+  const navToNextTraining = useCallback(() => {
+    if (!nextTraining) {
+      navToTree();
+    }
+    const nextTrainingUrl = `${location.pathname.split('/').slice(0, -2).join('/')}/${nextTraining.path}`;
+    navigate(nextTrainingUrl);
+  }, [nextTraining, location.pathname, navigate, navToTree]);
 
   return (
-    <Content className={`pb-5 ${styles.root}`}>
-      <AsyncDataView
-        emptyMessage={<FormattedMessage {...messages.emptyTraining} />}
-        errorMessage={<FormattedMessage {...messages.errorTraining} />}
-        loadingMessage={<FormattedMessage {...messages.loadingTraining} />}
-        result={trainingInfo}
+    <div>
+      <TrainingContent />
+      <Button
+        className={`ml-6 ${isCompleted ? 'is-success is-light' : 'is-primary'}`}
+        disabled={isCompleted}
+        onClick={completeTraining}
       >
-        {(trainingInfoData) => (
-          <CardHeaderControl
-            controls={
-              <>
-                {mayDeleteTraining ? (
-                  <CreatingTrainingBlockButton className="mx-3 my-1 is-flex" />
-                ) : null}
-                {mayDeleteTraining ? (
-                  <Button
-                    className="button is-primary mx-3 my-1"
-                    icon="edit"
-                    iconSize="medium"
-                    onClick={onEdit}
-                  >
-                    <FormattedMessage {...messages.editTraining} />
-                  </Button>
-                ) : null}
-                {mayDeleteTraining ? (
-                  <Button
-                    className="button is-danger is-light mx-3 my-1"
-                    icon="trash"
-                    iconSize="medium"
-                    onClick={onDeleteTraining}
-                  >
-                    <FormattedMessage {...messages.deleteTraining} />
-                  </Button>
-                ) : null}
-                <TrainingModal
-                  defaultValues={{
-                    title: trainingInfo?.data.title,
-                    description: trainingInfo?.data.description,
-                    difficultyLevel: trainingInfo?.data.difficultyLevel,
-                    competences: comp,
-                  }}
-                  isActive={isEditModalActive}
-                  modalTitle={<FormattedMessage {...messages.editTraining} />}
-                  onClose={closeEditDialog}
-                  onSelectChange={handleSelectChange}
-                  onSubmit={onEditTraining}
-                />
-              </>
-            }
-            description={trainingInfoData?.description}
-            details={
-              <>
-                <div>
-                  <StarRating value={trainingInfoData?.difficultyLevel} />
-                </div>
-                <div>
-                  {trainingInfoData?.competences?.map((tag) => (
-                    <span className="tag is-primary is-capitalized ml-2" key={randomString()}>
-                      {tag}
-                    </span>
-                  ))}
-                </div>
-              </>
-            }
-            icon={<Icon className={`px-4 py-4 card fa-light ${styles.icon}`} icon="book-open" />}
-            subtitle={null}
-            title={trainingInfoData.title}
-          />
+        {isCompleted ? (
+          <FormattedMessage {...messages.trainingButtonCompleted} />
+        ) : (
+          <FormattedMessage {...messages.trainingButtonNotCompleted} />
         )}
-      </AsyncDataView>
-      <AsyncDataView
-        emptyMessage={null}
-        errorMessage={<FormattedMessage {...messages.errorTraining} />}
-        loadingMessage={<FormattedMessage {...messages.loadingTraining} />}
-        result={trainingBlocks}
-      >
-        {(trainingBlocksData) => (
-          <div className={styles.list}>
-            {trainingBlocksData?.map((block) => (
-              <div className={styles.stack} key={block.id}>
-                <TrainingBlockCard
-                  blockId={block.id}
-                  exampleCode={block.exampleCode}
-                  externalResource={block.externalResource}
-                  linkToDocumentation={block.documentationLink}
-                  linkToVideo={block.videoLink}
-                  title={block.title}
-                />
-              </div>
-            ))}
-          </div>
-        )}
-      </AsyncDataView>
-      <div className={styles.isPositionedTopRight}>
-        {userInfo && isEnrolled.data && !isEnrolled.data.enrolled ? (
-          <Button className="is-primary" icon="school" onClick={onEnroll}>
-            <FormattedMessage {...messages.enroll} />
+      </Button>
+      <div className={`ml-6 pt-3 ${isCompleted ? '' : 'disabled'}`}>
+        <Button className="is-info mr-3" disabled={!isCompleted} onClick={navToTree}>
+          <Icon icon="diagram-project" />
+          <span>
+            <FormattedMessage {...messages.backToTree} />
+          </span>
+        </Button>
+        {nextTraining ? (
+          <Button className="is-info" disabled={!isCompleted} onClick={navToNextTraining}>
+            <Icon icon="arrow-down" />
+            <span>
+              <FormattedMessage {...messages.to} /> &quot;{nextTraining.title}&quot;
+            </span>
           </Button>
         ) : null}
-        {isEnrolled.data?.enrolled && !isEnrolled.data?.completed ? (
-          <Button className="is-primary" icon="school-circle-check" onClick={markAsCompleted}>
-            <FormattedMessage {...messages.markAsCompleted} />
-          </Button>
-        ) : (isEnrolled.data && !isEnrolled.data.enrolled) || !userInfo ? null : (
-          <div className="tag is-large has-background-success-light has-text-success-dark">
-            <span>
-              <Icon className="mr-2" icon="user-graduate" />
-              <FormattedMessage {...messages.completed} />
-            </span>
-          </div>
-        )}
       </div>
-    </Content>
+    </div>
   );
 }

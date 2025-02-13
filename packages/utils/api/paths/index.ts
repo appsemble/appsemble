@@ -126,12 +126,9 @@ import { pathItems as organizationsOrganizationId } from './organizations/organi
 import { pathItems as organizations } from './organizations.js';
 import { pathItems as ssl } from './ssl.js';
 import { pathItems as timezones } from './timezones.js';
-import { pathItems as trainingBlocksTrainingBlockId } from './trainingBlocks/trainingBlockId.js';
-import { pathItems as trainingsTrainingIdBlocks } from './trainings/trainingId/blocks.js';
-import { pathItems as trainingsTrainingIdUsersCurrent } from './trainings/trainingId/users/current.js';
-import { pathItems as trainingsTrainingIdUsers } from './trainings/trainingId/users.js';
-import { pathItems as trainingsTrainingId } from './trainings/trainingId.js';
-import { pathItems as trainings } from './trainings.js';
+import { pathItems as completedTrainings } from './trainings/completedTrainings.js';
+import { pathItems as completeTraining } from './trainings/completeTraining.js';
+import { pathItems as trainingIds } from './trainings/trainingIds.js';
 import { pathItems as usersCurrentAppsAccounts } from './users/current/apps/accounts.js';
 import { pathItems as usersCurrentAppsAppIdAccount } from './users/current/apps/appId/account.js';
 import { pathItems as usersCurrentApps } from './users/current/apps.js';
@@ -294,12 +291,9 @@ export const paths = {
   '/api/groups/{groupId}/members': groupsGroupIdMembers,
   '/api/groups/{groupId}': groupsGroupId,
   '/api/timezones': timezones,
-  '/api/training-blocks/{trainingBlockId}': trainingBlocksTrainingBlockId,
-  '/api/trainings/{trainingId}/blocks': trainingsTrainingIdBlocks,
-  '/api/trainings/{trainingId}/users/current': trainingsTrainingIdUsersCurrent,
-  '/api/trainings/{trainingId}/users': trainingsTrainingIdUsers,
-  '/api/trainings/{trainingId}': trainingsTrainingId,
-  '/api/trainings': trainings,
+  '/api/trainings/completed': completedTrainings,
+  '/api/trainings/completed/{trainingId}': completeTraining,
+  '/api/trainings': trainingIds,
   '/api/users/current/apps/accounts': usersCurrentAppsAccounts,
   '/api/users/current/apps/{appId}/account': usersCurrentAppsAppIdAccount,
   '/api/users/current/apps': usersCurrentApps,

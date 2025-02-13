@@ -100,7 +100,6 @@ declare module 'koas-parameters' {
     appVariableId: number;
     userId: string;
     memberEmail: string;
-    trainingBlockId: number;
     trainingId: number;
     container: string;
   }

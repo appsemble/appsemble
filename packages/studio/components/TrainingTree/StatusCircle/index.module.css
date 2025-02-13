@@ -1,0 +1,48 @@
+.circleWrapper {
+  align-items: center;
+  display: flex;
+  height: 50px;
+  justify-content: center;
+  width: 50px;
+}
+
+.statusCircle {
+  border: 1px solid;
+  border-radius: 50%;
+  position: relative;
+}
+
+.handle {
+  position: absolute;
+  visibility: hidden;
+}
+
+.handle:hover {
+  cursor: default;
+}
+
+.large {
+  height: 100%;
+  width: 100%;
+}
+
+.small {
+  height: 50%;
+  width: 50%;
+}
+
+.green {
+  background-color: rgb(34 177 76);
+}
+
+.orange {
+  background-color: rgb(255 127 39);
+}
+
+.gray {
+  background-color: rgb(211 211 211);
+}
+
+.white {
+  background-color: rgb(255 255 255);
+}

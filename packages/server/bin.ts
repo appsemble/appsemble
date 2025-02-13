@@ -16,6 +16,7 @@ import * as restore from './commands/restore.js';
 import * as runCronJobs from './commands/runCronJobs.js';
 import * as scaleContainers from './commands/scaleContainers.js';
 import * as start from './commands/start.js';
+import * as synchronizeTrainings from './commands/synchronizeTrainings.js';
 import './types.js';
 import { setArgv } from './utils/argv.js';
 import { configureSentry } from './utils/sentry.js';
@@ -55,6 +56,7 @@ const parser = yargs()
   .command(health as CommandModule)
   .command(scaleContainers as CommandModule)
   .command(start as CommandModule)
+  .command(synchronizeTrainings as CommandModule)
   .command(migrate as CommandModule)
   .command(migrateAppDefinitions as CommandModule)
   .command(restore as CommandModule)
