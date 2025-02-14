@@ -38,18 +38,18 @@ export async function up(transaction: Transaction, db: Sequelize): Promise<void>
       break;
     }
 
-    await Promise.all(
-      result.map(async (row) => {
-        try {
-          if (row.data) {
-            await uploadS3File(`app-${row.AppId}`, row.id, row.data);
-          }
-        } catch (error) {
-          logger.error(`Error processing asset ${row.id}:`, error);
-          throw error;
+    for (const row of result) {
+      try {
+        if (row.data) {
+          await uploadS3File(`app-${row.AppId}`, row.id, row.data);
+        } else {
+          logger.warn(`Asset ${row.id} data has not loaded into memory`);
         }
-      }),
-    );
+      } catch (error) {
+        logger.error(`Error processing asset ${row.id}:`, error);
+        throw error;
+      }
+    }
 
     logger.info(`Batch with offset ${offset} processed.`);
     offset += batchSize;
