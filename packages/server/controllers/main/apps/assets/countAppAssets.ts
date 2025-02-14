@@ -17,7 +17,6 @@ export async function countAppAssets(ctx: Context): Promise<void> {
   ctx.body = await Asset.count({
     where: {
       AppId: appId,
-      OriginalId: null,
       ...(app.demoMode ? { seed: false, ephemeral: true } : {}),
     },
   });

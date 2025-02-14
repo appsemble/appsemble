@@ -23,8 +23,7 @@ import {
   Organization,
   OrganizationMember,
   ResetPasswordToken,
-  Training,
-  UserTraining,
+  TrainingCompleted,
 } from './index.js';
 
 @Table({ tableName: 'User', paranoid: true })
@@ -61,9 +60,6 @@ export class User extends Model {
   @BelongsToMany(() => Organization, () => OrganizationMember)
   Organizations: Organization[];
 
-  @BelongsToMany(() => Training, () => UserTraining)
-  Trainings: Training[];
-
   @HasMany(() => EmailAuthorization)
   EmailAuthorizations: EmailAuthorization[];
 
@@ -78,6 +74,9 @@ export class User extends Model {
 
   @HasMany(() => AppMember)
   AppMembers: AppMember[];
+
+  @HasMany(() => TrainingCompleted)
+  CompletedTrainings: TrainingCompleted[];
 
   @CreatedAt
   created: Date;

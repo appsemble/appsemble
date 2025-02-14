@@ -12,7 +12,7 @@
 
 You could argue that blocks are the most important element of an app. Blocks enable you to shape the
 app. A block can be a button, a text field, a dropdown menu, a form, etc. Next to the app store
-there is also a block store where you can access the different blocks:
+there is also a [block store](/blocks) where you can access the different blocks:
 
 ![Block Store Menu](assets/block-store-menu.png 'Block Store Menu')
 
@@ -25,7 +25,7 @@ only works when you have a page defined with the name Home.
 
 ```yaml copy validate block-snippet
 - type: action-button
-  version: 0.31.1-test.5
+  version: 0.32.0
   parameters:
     icon: home
   actions:
@@ -47,7 +47,7 @@ pages:
   - name: Home
     blocks:
       - type: action-button
-        version: 0.31.1-test.5
+        version: 0.32.0
         parameters:
           icon: arrow-right
         actions:
@@ -58,7 +58,7 @@ pages:
   - name: Other Page
     blocks:
       - type: action-button
-        version: 0.31.1-test.5
+        version: 0.32.0
         parameters:
           icon: home
         actions:

@@ -78,6 +78,7 @@ describe('organization', () => {
 
   describe('updateOrganization', () => {
     it('should update an existing organization', async () => {
+      vi.useRealTimers();
       const organization = await Organization.create({
         id: 'test',
         name: 'Test',
@@ -100,17 +101,19 @@ describe('organization', () => {
       expect(organization.dataValues).toMatchInlineSnapshot(
         {
           icon: expect.any(Buffer),
+          created: expect.any(Date),
+          updated: expect.any(Date),
         },
         `
       {
-        "created": 1970-01-01T00:00:00.000Z,
+        "created": Any<Date>,
         "deleted": null,
         "description": "Description Changed",
         "email": "test@example.com",
         "icon": Any<Buffer>,
         "id": "test",
         "name": "Test changed",
-        "updated": 1970-01-01T00:00:00.000Z,
+        "updated": Any<Date>,
         "website": null,
       }
     `,

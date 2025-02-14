@@ -2,6 +2,7 @@ import {
   AppsembleError,
   handleValidatorResult,
   updateCompanionContainers,
+  uploadToBuffer,
 } from '@appsemble/node-utils';
 import { type AppDefinition, OrganizationPermission } from '@appsemble/types';
 import { normalize, validateAppDefinition, validateStyle } from '@appsemble/utils';
@@ -107,11 +108,11 @@ export async function createApp(ctx: Context): Promise<void> {
     result.containers = definition.containers;
     result.registry = definition.registry;
     if (icon) {
-      result.icon = icon.contents;
+      result.icon = await uploadToBuffer(icon.path);
     }
 
     if (maskableIcon) {
-      result.maskableIcon = maskableIcon.contents;
+      result.maskableIcon = await uploadToBuffer(maskableIcon.path);
     }
 
     await setAppPath(ctx, result, path);

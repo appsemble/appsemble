@@ -1,3 +1,9 @@
+import {
+  createFixtureStream,
+  getS3FileBuffer,
+  readFixture,
+  uploadS3File,
+} from '@appsemble/node-utils';
 import { PredefinedOrganizationRole } from '@appsemble/types';
 import { request, setTestApp } from 'axios-test-instance';
 import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
@@ -97,6 +103,7 @@ describe('reseedDemoApp', () => {
   });
 
   it('should reseed resources and assets with undefined user properties', async () => {
+    vi.useRealTimers();
     authorizeStudio();
     const { id: appId } = await App.create({
       demoMode: true,
@@ -128,15 +135,15 @@ describe('reseedDemoApp', () => {
       AppId: 1,
       name: 'tasks',
       seed: true,
-      data: Buffer.from('asset'),
     });
+    await uploadS3File(`app-${appId}`, seedAssetId, createFixtureStream('standing.png'));
 
     const { id: ephemeralAssetId } = await Asset.create({
       AppId: 1,
       name: 'tasks',
       ephemeral: true,
-      data: Buffer.from('asset'),
     });
+    await uploadS3File(`app-${appId}`, ephemeralAssetId, createFixtureStream('standing.png'));
 
     await request.post(`/api/apps/${appId}/reseed`);
 
@@ -148,14 +155,12 @@ describe('reseedDemoApp', () => {
       },
     });
 
-    expect(seedResource).toMatchInlineSnapshot(`
-      {
-        "$created": "1970-01-01T00:00:00.000Z",
-        "$updated": "1970-01-01T00:00:00.000Z",
-        "foo": "bar",
-        "id": 1,
-      }
-    `);
+    expect(seedResource).toStrictEqual(
+      expect.objectContaining({
+        id: 1,
+        data: { foo: 'bar' },
+      }),
+    );
 
     const oldEphemeralResource = await Resource.findOne({
       where: {
@@ -173,18 +178,16 @@ describe('reseedDemoApp', () => {
       },
     });
 
-    expect(newEphemeralResource).toMatchInlineSnapshot(`
-      {
-        "$created": "1970-01-01T00:00:00.000Z",
-        "$ephemeral": true,
-        "$updated": "1970-01-01T00:00:00.000Z",
-        "foo": "bar",
-        "id": 3,
-      }
-    `);
+    expect(newEphemeralResource).toStrictEqual(
+      expect.objectContaining({
+        id: 3,
+        data: { foo: 'bar' },
+        ephemeral: true,
+      }),
+    );
 
     const seedAsset = await Asset.findOne({
-      attributes: ['name', 'seed', 'ephemeral', 'data'],
+      attributes: ['name', 'seed', 'ephemeral'],
       where: {
         id: seedAssetId,
         AppId: appId,
@@ -192,18 +195,15 @@ describe('reseedDemoApp', () => {
       },
     });
 
-    expect(seedAsset.dataValues).toMatchInlineSnapshot(
-      {
-        data: expect.any(Buffer),
-      },
-      `
-      {
-        "data": Any<Buffer>,
-        "ephemeral": false,
-        "name": "tasks",
-        "seed": true,
-      }
-    `,
+    expect(seedAsset).toStrictEqual(
+      expect.objectContaining({
+        name: 'tasks',
+        seed: true,
+        ephemeral: false,
+      }),
+    );
+    expect(await getS3FileBuffer(`app-${appId}`, seedAssetId)).toStrictEqual(
+      await readFixture('standing.png'),
     );
 
     const oldEphemeralAsset = await Asset.findOne({
@@ -214,31 +214,30 @@ describe('reseedDemoApp', () => {
     });
 
     expect(oldEphemeralAsset).toBeNull();
+    expect(await getS3FileBuffer(`app-${appId}`, ephemeralAssetId)).toBeNull();
 
     const newEphemeralAsset = await Asset.findOne({
-      attributes: ['name', 'seed', 'ephemeral', 'data'],
+      attributes: ['id', 'name', 'seed', 'ephemeral'],
       where: {
         AppId: appId,
         ephemeral: true,
       },
     });
 
-    expect(newEphemeralAsset.dataValues).toMatchInlineSnapshot(
-      {
-        data: expect.any(Buffer),
-      },
-      `
-      {
-        "data": Any<Buffer>,
-        "ephemeral": true,
-        "name": "tasks",
-        "seed": false,
-      }
-    `,
+    expect(newEphemeralAsset).toStrictEqual(
+      expect.objectContaining({
+        name: 'tasks',
+        seed: false,
+        ephemeral: true,
+      }),
+    );
+    expect(await getS3FileBuffer(`app-${appId}`, newEphemeralAsset.id)).toStrictEqual(
+      await readFixture('standing.png'),
     );
   });
 
   it('should reseed resources and assets with defined user properties', async () => {
+    vi.useRealTimers();
     authorizeStudio();
     const { id: appId } = await App.create({
       demoMode: true,
@@ -313,15 +312,15 @@ describe('reseedDemoApp', () => {
       AppId: 1,
       name: 'tasks',
       seed: true,
-      data: Buffer.from('asset'),
     });
+    await uploadS3File(`app-${appId}`, seedAssetId, createFixtureStream('standing.png'));
 
     const { id: ephemeralAssetId } = await Asset.create({
       AppId: 1,
       name: 'tasks',
       ephemeral: true,
-      data: Buffer.from('asset'),
     });
+    await uploadS3File(`app-${appId}`, ephemeralAssetId, createFixtureStream('standing.png'));
 
     await AppMember.create({
       email: user.primaryEmail,
@@ -379,22 +378,16 @@ describe('reseedDemoApp', () => {
       },
     });
 
-    expect(seedResources).toMatchInlineSnapshot(`
-      [
-        {
-          "$created": "1970-01-01T00:00:00.000Z",
-          "$updated": "1970-01-01T00:00:00.000Z",
-          "foo": "bar",
-          "id": 1,
-        },
-        {
-          "$created": "1970-01-01T00:00:00.000Z",
-          "$updated": "1970-01-01T00:00:00.000Z",
-          "foo": "bar",
-          "id": 2,
-        },
-      ]
-    `);
+    expect(seedResources).toStrictEqual([
+      expect.objectContaining({
+        id: 1,
+        data: { foo: 'bar' },
+      }),
+      expect.objectContaining({
+        id: 2,
+        data: { foo: 'bar' },
+      }),
+    ]);
 
     const oldEphemeralResource1 = await Resource.findOne({
       where: {
@@ -420,27 +413,21 @@ describe('reseedDemoApp', () => {
       },
     });
 
-    expect(newEphemeralResources).toMatchInlineSnapshot(`
-      [
-        {
-          "$created": "1970-01-01T00:00:00.000Z",
-          "$ephemeral": true,
-          "$updated": "1970-01-01T00:00:00.000Z",
-          "foo": "bar",
-          "id": 5,
-        },
-        {
-          "$created": "1970-01-01T00:00:00.000Z",
-          "$ephemeral": true,
-          "$updated": "1970-01-01T00:00:00.000Z",
-          "foo": "bar",
-          "id": 6,
-        },
-      ]
-    `);
+    expect(newEphemeralResources).toStrictEqual([
+      expect.objectContaining({
+        id: 5,
+        data: { foo: 'bar' },
+        ephemeral: true,
+      }),
+      expect.objectContaining({
+        id: 6,
+        data: { foo: 'bar' },
+        ephemeral: true,
+      }),
+    ]);
 
     const seedAsset = await Asset.findOne({
-      attributes: ['name', 'seed', 'ephemeral', 'data'],
+      attributes: ['name', 'seed', 'ephemeral'],
       where: {
         id: seedAssetId,
         AppId: appId,
@@ -448,18 +435,15 @@ describe('reseedDemoApp', () => {
       },
     });
 
-    expect(seedAsset.dataValues).toMatchInlineSnapshot(
-      {
-        data: expect.any(Buffer),
-      },
-      `
-      {
-        "data": Any<Buffer>,
-        "ephemeral": false,
-        "name": "tasks",
-        "seed": true,
-      }
-    `,
+    expect(seedAsset).toStrictEqual(
+      expect.objectContaining({
+        name: 'tasks',
+        seed: true,
+        ephemeral: false,
+      }),
+    );
+    expect(await getS3FileBuffer(`app-${appId}`, seedAssetId)).toStrictEqual(
+      await readFixture('standing.png'),
     );
 
     const oldEphemeralAsset = await Asset.findOne({
@@ -470,27 +454,25 @@ describe('reseedDemoApp', () => {
     });
 
     expect(oldEphemeralAsset).toBeNull();
+    expect(await getS3FileBuffer(`app-${appId}`, ephemeralAssetId)).toBeNull();
 
     const newEphemeralAsset = await Asset.findOne({
-      attributes: ['name', 'seed', 'ephemeral', 'data'],
+      attributes: ['id', 'name', 'seed', 'ephemeral'],
       where: {
         AppId: appId,
         ephemeral: true,
       },
     });
 
-    expect(newEphemeralAsset.dataValues).toMatchInlineSnapshot(
-      {
-        data: expect.any(Buffer),
-      },
-      `
-      {
-        "data": Any<Buffer>,
-        "ephemeral": true,
-        "name": "tasks",
-        "seed": false,
-      }
-    `,
+    expect(newEphemeralAsset).toStrictEqual(
+      expect.objectContaining({
+        name: 'tasks',
+        seed: false,
+        ephemeral: true,
+      }),
+    );
+    expect(await getS3FileBuffer(`app-${appId}`, newEphemeralAsset.id)).toStrictEqual(
+      await readFixture('standing.png'),
     );
   });
 

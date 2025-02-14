@@ -1,4 +1,4 @@
-import { assertKoaError } from '@appsemble/node-utils';
+import { assertKoaError, uploadToBuffer } from '@appsemble/node-utils';
 import { OrganizationPermission } from '@appsemble/types';
 import { type Context } from 'koa';
 
@@ -27,9 +27,11 @@ export async function updateAppCollection(ctx: Context): Promise<void> {
     name: body.name ?? undefined,
     expertName: body.expertName ?? undefined,
     expertDescription: body.expertDescription ?? undefined,
-    expertProfileImage: body.expertProfileImage?.contents ?? undefined,
+    expertProfileImage: body.expertProfileImage
+      ? await uploadToBuffer(body.expertProfileImage.path)
+      : undefined,
     expertProfileImageMimeType: body.expertProfileImage?.mime ?? undefined,
-    headerImage: body.headerImage?.contents ?? undefined,
+    headerImage: body.headerImage ? await uploadToBuffer(body.headerImage.path) : undefined,
     headerImageMimeType: body.headerImage?.mime ?? undefined,
     visibility: body.visibility ?? undefined,
     domain: body.domain ?? undefined,

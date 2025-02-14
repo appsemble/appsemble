@@ -2,6 +2,7 @@ import {
   assertKoaError,
   handleValidatorResult,
   updateCompanionContainers,
+  uploadToBuffer,
 } from '@appsemble/node-utils';
 import { type AppDefinition, OrganizationPermission } from '@appsemble/types';
 import { validateAppDefinition, validateStyle } from '@appsemble/utils';
@@ -250,11 +251,11 @@ export async function patchApp(ctx: Context): Promise<void> {
     }
 
     if (icon) {
-      result.icon = icon.contents;
+      result.icon = await uploadToBuffer(icon.path);
     }
 
     if (maskableIcon) {
-      result.maskableIcon = maskableIcon.contents;
+      result.maskableIcon = await uploadToBuffer(maskableIcon.path);
     }
 
     if (iconBackground) {

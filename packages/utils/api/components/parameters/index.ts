@@ -14,7 +14,6 @@ export * from './resourceId.js';
 export * from './resourceType.js';
 export * from './screenshotId.js';
 export * from './serviceSecretId.js';
-export * from './trainingBlockId.js';
 export * from './trainingId.js';
 export * from './$filter.js';
 export * from './$orderby.js';

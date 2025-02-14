@@ -72,8 +72,9 @@ The following types can be used to define the type of a property:
 ## Resource actions
 
 In order to make the usage of resources more convenient, Appsemble supports the usage of
-`resource actions`. Resource actions are actions that can fetch, modify, create or delete resources.
-These are configured to use Appsemble APIs by default, but can be overridden manually if needed.
+[resource actions](../actions/resources.mdx). Resource actions are actions that can fetch, modify,
+create or delete resources. These are configured to use Appsemble APIs by default, but can be
+overridden manually if needed.
 
 The available resource actions are:
 
@@ -129,7 +130,7 @@ return all entries from the `answers` resource:
 
 ```yaml validate block-snippet
 - type: data-loader
-  version: 0.31.1-test.5
+  version: 0.32.0
   actions:
     onLoad:
       type: resource.query
@@ -164,7 +165,7 @@ Returns:
 ]
 ```
 
-The result of the query has a lot of extra data you might not need like information about when it
+The result of the query has a lot of extra data you might not need, like information about when it
 was created or the author's name. You can transform this data further using
 [remappers](../remappers/index.mdx) to make sure it only includes what you need.
 

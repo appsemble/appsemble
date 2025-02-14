@@ -1,3 +1,4 @@
+import { uploadToBuffer } from '@appsemble/node-utils';
 import { OrganizationPermission } from '@appsemble/types';
 import { type Context } from 'koa';
 
@@ -20,9 +21,11 @@ export async function createOrganizationAppCollection(ctx: Context): Promise<voi
     name: body.name,
     expertName: body.expertName,
     expertDescription: body.expertDescription,
-    expertProfileImage: body.expertProfileImage.contents,
+    expertProfileImage: body.expertProfileImage.path
+      ? await uploadToBuffer(body.expertProfileImage.path)
+      : undefined,
     expertProfileImageMimeType: body.expertProfileImage.mime,
-    headerImage: body.headerImage.contents,
+    headerImage: body.headerImage.path ? await uploadToBuffer(body.headerImage.path) : undefined,
     headerImageMimeType: body.headerImage.mime,
     OrganizationId: organizationId,
     visibility: body.visibility ?? 'public',

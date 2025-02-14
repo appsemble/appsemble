@@ -1,6 +1,6 @@
 {
   "name": "@appsemble/cli",
-  "version": "0.31.1-test.5",
+  "version": "0.32.0",
   "description": "The CLI for developing with Appsemble apps and blocks",
   "keywords": [
     "app",
@@ -44,9 +44,9 @@
     "test": "vitest"
   },
   "dependencies": {
-    "@appsemble/node-utils": "0.31.1-test.5",
-    "@appsemble/types": "0.31.1-test.5",
-    "@appsemble/utils": "0.31.1-test.5",
+    "@appsemble/node-utils": "0.32.0",
+    "@appsemble/types": "0.32.0",
+    "@appsemble/utils": "0.32.0",
     "@fortawesome/fontawesome-common-types": "^6.0.0",
     "@koa/cors": "^5.0.0",
     "@odata/parser": "^0.2.0",
@@ -89,21 +89,21 @@
     "yargs": "^17.0.0"
   },
   "devDependencies": {
-    "@appsemble/types": "0.31.1-test.5",
-    "@appsemble/server": "0.31.1-test.5",
+    "@appsemble/types": "0.32.0",
+    "@appsemble/server": "0.32.0",
     "bcrypt": "^5.0.0",
     "axios-test-instance": "^7.0.0",
     "@types/concat-stream": "^2.0.0",
     "@types/inquirer": "^9.0.0",
+    "@types/koa__cors": "^5.0.0",
     "@types/normalize-path": "^3.0.0",
     "@types/postcss-import": "^14.0.0",
     "@types/postcss-url": "^10.0.0",
-    "@types/koa__cors": "^5.0.0",
     "concat-stream": "^2.0.0",
     "vitest": "^2.0.0",
-    "sequelize": "^6.0.0"
+    "sequelize": "^6.0.0",
+    "minio": "^8.0.3"
   },
-  "peerDependencies": {},
   "optionalDependencies": {
     "keytar": "^7.0.0"
   },

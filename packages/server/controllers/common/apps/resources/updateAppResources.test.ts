@@ -1,4 +1,4 @@
-import { createFormData } from '@appsemble/node-utils';
+import { createFormData, getS3FileBuffer } from '@appsemble/node-utils';
 import { PredefinedOrganizationRole, type Resource as ResourceType } from '@appsemble/types';
 import { uuid4Pattern } from '@appsemble/utils';
 import { request, setTestApp } from 'axios-test-instance';
@@ -141,12 +141,13 @@ describe('updateAppResources', () => {
   });
 
   it('should accept assets as form data with multiple resources', async () => {
+    vi.useRealTimers();
     authorizeStudio();
     const resources = await request.post<ResourceType[]>(
       `/api/apps/${app.id}/resources/testAssets`,
       createFormData({
         resource: [{ string: 'A' }, { string: 'B', file: '0' }],
-        assets: [Buffer.from('Test resource B')],
+        assets: Buffer.from('Test resource B'),
       }),
     );
 
@@ -163,15 +164,12 @@ describe('updateAppResources', () => {
 
     const assets = await Asset.findAll({ raw: true });
     expect(assets).toStrictEqual([
-      {
+      expect.objectContaining({
         AppId: app.id,
         ResourceId: 1,
         GroupId: null,
-        OriginalId: null,
         AppMemberId: null,
         clonable: false,
-        created: new Date('1970-01-01T00:00:00.000Z'),
-        data: Buffer.from('Test Resource A'),
         deleted: null,
         ephemeral: false,
         filename: null,
@@ -179,10 +177,15 @@ describe('updateAppResources', () => {
         mime: 'application/octet-stream',
         name: null,
         seed: false,
-        updated: new Date('1970-01-01T00:00:00.000Z'),
-      },
+      }),
     ]);
-    expect(Buffer.from('Test Resource A').equals(assets[0].data)).toBe(true);
+    const assetsData = await Promise.all(
+      assets.map((asset) => getS3FileBuffer(`app-${app.id}`, asset.id)),
+    );
+    expect(Buffer.from('Test Resource A').equals(assetsData[0])).toBe(true);
+
+    response.data = response.data.map(({ $created, $updated, ...rest }) => rest) as ResourceType[];
+
     expect(response).toMatchInlineSnapshot(
       {
         data: [{ file: expect.stringMatching(/^[0-f]{8}(?:-[0-f]{4}){3}-[0-f]{12}$/) }, {}],
@@ -193,15 +196,11 @@ describe('updateAppResources', () => {
 
       [
         {
-          "$created": "1970-01-01T00:00:00.000Z",
-          "$updated": "1970-01-01T00:00:00.000Z",
           "file": StringMatching /\\^\\[0-f\\]\\{8\\}\\(\\?:-\\[0-f\\]\\{4\\}\\)\\{3\\}-\\[0-f\\]\\{12\\}\\$/,
           "id": 1,
           "string": "A",
         },
         {
-          "$created": "1970-01-01T00:00:00.000Z",
-          "$updated": "1970-01-01T00:00:00.000Z",
           "id": 2,
           "string": "B updated",
         },

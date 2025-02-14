@@ -1,4 +1,3 @@
-import { readFixture } from '@appsemble/node-utils';
 import { type Asset as AssetType, PredefinedOrganizationRole } from '@appsemble/types';
 import { uuid4Pattern } from '@appsemble/utils';
 import { request, setTestApp } from 'axios-test-instance';
@@ -126,74 +125,6 @@ describe('queryAppAssets', () => {
     );
     expect(response.data[0].id).toBe(assetB.id);
     expect(response.data[1].id).toBe(assetA.id);
-  });
-
-  it('should fetch compressed versions of the app’s image assets', async () => {
-    const resource = await Resource.create({
-      AppId: app.id,
-      type: 'testResource',
-      data: {},
-    });
-
-    const assetA = await Asset.create({
-      AppId: app.id,
-      mime: 'image/png',
-      filename: 'logo.png',
-      data: await readFixture('nodejs-logo.png'),
-      name: 'a',
-    });
-
-    const assetACompressed = await Asset.findOne({
-      where: { OriginalId: assetA.id },
-    });
-
-    const assetB = await Asset.create({
-      AppId: app.id,
-      ResourceId: resource.id,
-      mime: 'application/octet-stream',
-      filename: 'foo.bin',
-      data: Buffer.from('bar'),
-    });
-
-    authorizeStudio();
-    const response = await request.get<AssetType[]>(`/api/apps/${app.id}/assets`);
-    expect(response).toMatchInlineSnapshot(
-      {
-        data: [
-          { id: expect.stringMatching(uuid4Pattern) },
-          { id: expect.stringMatching(uuid4Pattern) },
-          { id: expect.stringMatching(uuid4Pattern) },
-        ],
-      },
-      `
-      HTTP/1.1 200 OK
-      Content-Type: application/json; charset=utf-8
-
-      [
-        {
-          "filename": "foo.bin",
-          "id": StringMatching /\\^\\[\\\\d\\[a-f\\]\\{8\\}-\\[\\\\da-f\\]\\{4\\}-4\\[\\\\da-f\\]\\{3\\}-\\[\\\\da-f\\]\\{4\\}-\\[\\\\d\\[a-f\\]\\{12\\}\\$/,
-          "mime": "application/octet-stream",
-          "resourceId": 1,
-          "resourceType": "testResource",
-        },
-        {
-          "filename": "logo.avif",
-          "id": StringMatching /\\^\\[\\\\d\\[a-f\\]\\{8\\}-\\[\\\\da-f\\]\\{4\\}-4\\[\\\\da-f\\]\\{3\\}-\\[\\\\da-f\\]\\{4\\}-\\[\\\\d\\[a-f\\]\\{12\\}\\$/,
-          "mime": "image/avif",
-          "name": "a_compressed",
-        },
-        {
-          "filename": "logo.png",
-          "id": StringMatching /\\^\\[\\\\d\\[a-f\\]\\{8\\}-\\[\\\\da-f\\]\\{4\\}-4\\[\\\\da-f\\]\\{3\\}-\\[\\\\da-f\\]\\{4\\}-\\[\\\\d\\[a-f\\]\\{12\\}\\$/,
-          "mime": "image/png",
-          "name": "a",
-        },
-      ]
-    `,
-    );
-    expect(response.data[0].id).toBe(assetB.id);
-    expect(response.data[1].id).toBe(assetACompressed.id);
   });
 
   it('should not fetch another app’s assets', async () => {

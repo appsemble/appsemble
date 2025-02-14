@@ -1,4 +1,8 @@
-import { type UpdateAppResourceParams } from '@appsemble/node-utils';
+import {
+  getCompressedFileMeta,
+  type UpdateAppResourceParams,
+  uploadAssets,
+} from '@appsemble/node-utils';
 import { type Resource as ResourceInterface } from '@appsemble/types';
 
 import { getCurrentAppMember } from './getCurrentAppMember.js';
@@ -55,6 +59,7 @@ export function updateAppResource({
       await Asset.bulkCreate(
         preparedAssets.map((asset) => ({
           ...asset,
+          ...getCompressedFileMeta(asset),
           AppId: app.id,
           ResourceId: id,
           AppMemberId: member?.sub,
@@ -64,6 +69,8 @@ export function updateAppResource({
         })),
         { logging: false, transaction },
       );
+
+      await uploadAssets(app.id, preparedAssets);
     }
 
     if (resourceDefinition.history) {

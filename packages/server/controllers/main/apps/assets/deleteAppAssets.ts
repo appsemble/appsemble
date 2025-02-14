@@ -1,10 +1,9 @@
-import { assertKoaError } from '@appsemble/node-utils';
+import { assertKoaError, deleteS3Files } from '@appsemble/node-utils';
 import { OrganizationPermission } from '@appsemble/types';
 import { type Context } from 'koa';
 import { type FindOptions, Op } from 'sequelize';
 
 import { App, Asset } from '../../../../models/index.js';
-import { assetsCache } from '../../../../utils/assetCache.js';
 import { checkUserOrganizationPermissions } from '../../../../utils/authorization.js';
 
 export async function deleteAppAssets(ctx: Context): Promise<void> {
@@ -51,10 +50,14 @@ export async function deleteAppAssets(ctx: Context): Promise<void> {
 
   assertKoaError(!isSeed && assets.length === 0, ctx, 404, 'No assets found');
 
-  assets.map(async (asset) => {
-    assetsCache.mdel([`${appId}-${asset.id}`, `${appId}-${asset.name}`]);
+  await deleteS3Files(
+    `app-${appId}`,
+    assets.map((asset) => asset.id),
+  );
+
+  for (const asset of assets) {
     await asset.destroy();
-  });
+  }
 
   ctx.status = 204;
 }

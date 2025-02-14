@@ -3,6 +3,7 @@ import {
   handleValidatorResult,
   logger,
   throwKoaError,
+  uploadToBuffer,
 } from '@appsemble/node-utils';
 import { type BlockDefinition, OrganizationPermission } from '@appsemble/types';
 import { has } from '@appsemble/utils';
@@ -156,7 +157,7 @@ export async function createBlock(ctx: Context): Promise<void> {
         {
           ...data,
           visibility: data.visibility || 'public',
-          icon: icon?.contents,
+          icon: icon ? await uploadToBuffer(icon.path) : undefined,
           name: blockId,
           OrganizationId,
         },
@@ -169,13 +170,15 @@ export async function createBlock(ctx: Context): Promise<void> {
         );
       }
       createdBlock.BlockAssets = await BlockAsset.bulkCreate(
-        files.map((file) => ({
-          name: blockId,
-          BlockVersionId: createdBlock.id,
-          filename: decodeURIComponent(file.filename),
-          mime: file.mime,
-          content: file.contents,
-        })),
+        await Promise.all(
+          files.map(async (file) => ({
+            name: blockId,
+            BlockVersionId: createdBlock.id,
+            filename: decodeURIComponent(file.filename),
+            mime: file.mime,
+            content: await uploadToBuffer(file.path),
+          })),
+        ),
         { logging: false, transaction },
       );
 

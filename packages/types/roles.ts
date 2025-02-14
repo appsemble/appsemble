@@ -96,21 +96,10 @@ const OrganizationBlockManagerPermissions = [
   OrganizationPermission.DeleteBlocks,
 ];
 
-const OrganizationTrainingManagerPermissions = [
-  ...OrganizationMemberPermissions,
-  OrganizationPermission.CreateTrainings,
-  OrganizationPermission.UpdateTrainings,
-  OrganizationPermission.DeleteTrainings,
-  OrganizationPermission.CreateTrainingBlocks,
-  OrganizationPermission.UpdateTrainingBlocks,
-  OrganizationPermission.DeleteTrainingBlocks,
-];
-
 const OrganizationMaintainerPermissions = [
   ...OrganizationAppManagerPermissions,
   ...OrganizationAppCollectionManagerPermissions,
   ...OrganizationBlockManagerPermissions,
-  ...OrganizationTrainingManagerPermissions,
   OrganizationPermission.CreateApps,
   OrganizationPermission.DeleteApps,
   OrganizationPermission.CreateOrganizationInvites,

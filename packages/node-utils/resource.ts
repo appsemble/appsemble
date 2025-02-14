@@ -13,11 +13,10 @@ import {
   type DefaultState,
   type ParameterizedContext,
 } from 'koa';
-import { type File } from 'koas-body-parser';
 import parseDuration from 'parse-duration';
 
 import { preProcessCSV } from './csv.js';
-import { handleValidatorResult, type PreparedAsset } from './index.js';
+import { handleValidatorResult, type PreparedAsset, type TempFile } from './index.js';
 import { throwKoaError } from './koa.js';
 
 export function stripResource({
@@ -91,13 +90,14 @@ export function getResourceDefinition(
  */
 export function extractResourceBody(
   ctx: Context | ParameterizedContext<DefaultState, DefaultContext, any>,
-): [Record<string, unknown> | Record<string, unknown>[], File[], PreValidatePropertyFunction] {
+): [Record<string, unknown> | Record<string, unknown>[], TempFile[], PreValidatePropertyFunction] {
   let body: ResourceType | ResourceType[];
-  let assets: File[];
+  let assets: TempFile[];
   let preValidateProperty: PreValidatePropertyFunction;
 
   if (ctx?.request?.body && ctx.is('multipart/form-data')) {
     ({ assets = [], resource: body } = ctx.request.body);
+
     if (Array.isArray(body) && body.length === 1) {
       [body] = body;
     }
@@ -164,17 +164,17 @@ export function processResourceBody(
   }
 
   const preparedRegularAssets = regularAssets.map<PreparedAsset>(
-    ({ contents, filename, mime }, index) => {
+    ({ filename, mime, path }, index) => {
       const id = randomUUID();
       assetIdMap.set(index, id);
       assetUsedMap.set(index, false);
-      return { data: contents, filename, id, mime };
+      return { path, filename, id, mime };
     },
   );
 
   const usedPreparedRegularAssets: string[] = [];
   const preparedThumbnailAssets = thumbnailAssets.map<PreparedAsset>(
-    ({ contents, filename, mime }, index) => {
+    ({ filename, mime, path }, index) => {
       const regularAsset = preparedRegularAssets.find(
         (ra) =>
           !usedPreparedRegularAssets.includes(ra.id) &&
@@ -186,7 +186,7 @@ export function processResourceBody(
 
       assetIdMap.set(index + preparedRegularAssets.length, id);
       assetUsedMap.set(index, false);
-      return { data: contents, filename, id, mime };
+      return { path, filename, id, mime };
     },
   );
 

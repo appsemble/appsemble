@@ -1,24 +1,18 @@
-import { writeFile } from 'node:fs/promises';
+import { createReadStream } from 'node:fs';
 
 import { type AppAsset, type CreateAppAssetParams } from '@appsemble/node-utils';
 
-export async function createAppAsset({
-  context,
-  payload,
-}: CreateAppAssetParams): Promise<AppAsset> {
-  const { data, filename, mime, name } = payload;
+export function createAppAsset({ context, payload }: CreateAppAssetParams): Promise<AppAsset> {
+  const { filename, mime, name, path } = payload;
 
-  const asset = {
+  const asset: AppAsset = {
     id: name,
-    data,
     mime,
     name,
     filename,
+    stream: createReadStream(path),
   };
 
   context.appAssets.push(asset);
-
-  await writeFile(filename, data);
-
-  return asset;
+  return Promise.resolve(asset);
 }

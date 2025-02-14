@@ -1,3 +1,4 @@
+import { uploadS3File } from '@appsemble/node-utils';
 import { PredefinedOrganizationRole } from '@appsemble/types';
 import { request, setTestApp } from 'axios-test-instance';
 import { beforeAll, beforeEach, describe, expect, it } from 'vitest';
@@ -10,7 +11,6 @@ import {
   type User,
 } from '../../../../models/index.js';
 import { setArgv } from '../../../../utils/argv.js';
-import { assetsCache } from '../../../../utils/assetCache.js';
 import { createServer } from '../../../../utils/createServer.js';
 import { authorizeStudio, createTestUser } from '../../../../utils/test/authorization.js';
 
@@ -63,8 +63,8 @@ describe('deleteAppAsset', () => {
       AppId: app.id,
       mime: 'application/octet-stream',
       filename: 'test.bin',
-      data: Buffer.from('buffer'),
     });
+    await uploadS3File(`app-${app.id}`, asset.id, Buffer.from('buffer'));
 
     authorizeStudio();
     const response = await request.delete(`/api/apps/${app.id}/assets/${asset.id}`);
@@ -77,8 +77,8 @@ describe('deleteAppAsset', () => {
       AppId: app.id,
       mime: 'application/octet-stream',
       filename: 'test.bin',
-      data: Buffer.from('buffer'),
     });
+    await uploadS3File(`app-${app.id}`, asset.id, Buffer.from('buffer'));
 
     authorizeStudio();
     const assetId = asset.id;
@@ -90,31 +90,8 @@ describe('deleteAppAsset', () => {
       AppId: app.id,
       mime: 'application/octet-stream',
       filename: 'test.bin',
-      data: Buffer.from('buffer'),
       deleted: expect.any(Date),
     });
-  });
-
-  it('should clear existing assets in cache', async () => {
-    const asset = await Asset.create({
-      AppId: app.id,
-      mime: 'application/octet-stream',
-      filename: 'test.bin',
-      data: Buffer.from('buffer'),
-    });
-    const assetId = asset.id;
-    await request.get(`/api/apps/${app.id}/assets/${assetId}`);
-    expect(assetsCache.get(`${app.id}-${assetId}`)).toMatchObject({
-      filename: 'test.bin',
-      mime: 'application/octet-stream',
-      name: null,
-    });
-
-    authorizeStudio();
-    const response = await request.delete(`/api/apps/${app.id}/assets/${asset.id}`);
-    expect(assetsCache.get(`${app.id}-${assetId}`)).toBeUndefined();
-
-    expect(response).toMatchInlineSnapshot('HTTP/1.1 204 No Content');
   });
 
   it('should not delete assets if the user has insufficient permissions', async () => {

@@ -1,11 +1,10 @@
-import { logger } from '@appsemble/node-utils';
+import { deleteS3Files, logger } from '@appsemble/node-utils';
 import { Op } from 'sequelize';
 import { type Argv } from 'yargs';
 
 import { databaseBuilder } from './builder/database.js';
 import { App, Asset, initDB, Resource } from '../models/index.js';
 import { argv } from '../utils/argv.js';
-import { assetsCache } from '../utils/assetCache.js';
 import { reseedResourcesRecursively } from '../utils/resource.js';
 import { handleDBError } from '../utils/sqlUtils.js';
 
@@ -43,12 +42,17 @@ export async function handler(): Promise<void> {
 
   logger.info('Cleaning up ephemeral assets from demo apps.');
 
-  assetsCache.mdel(
-    demoAssetsToDestroy.flatMap((asset) => [
-      `${asset.AppId}-${asset.id}`,
-      `${asset.AppId}-${asset.name}`,
-    ]),
-  );
+  const demoAssetsToDestroyByApp: Record<string, string[]> = {};
+  for (const asset of demoAssetsToDestroy) {
+    demoAssetsToDestroyByApp[asset.AppId] = [
+      ...(demoAssetsToDestroyByApp[asset.AppId] || []),
+      asset.id,
+    ];
+  }
+
+  for (const [appId, assetIds] of Object.entries(demoAssetsToDestroyByApp)) {
+    await deleteS3Files(`app-${appId}`, assetIds);
+  }
 
   const demoAssetsDeletionResult = await Asset.destroy({
     where: {
@@ -147,12 +151,14 @@ export async function handler(): Promise<void> {
 
   logger.info('Cleaning up ephemeral assets from regular apps.');
 
-  assetsCache.mdel(
-    assetsToDestroy.flatMap((asset) => [
-      `${asset.AppId}-${asset.id}`,
-      `${asset.AppId}-${asset.name}`,
-    ]),
-  );
+  const assetsToDestroyByApp: Record<string, string[]> = {};
+  for (const asset of assetsToDestroy) {
+    assetsToDestroyByApp[asset.AppId] = [...(assetsToDestroyByApp[asset.AppId] || []), asset.id];
+  }
+
+  for (const [appId, assetIds] of Object.entries(assetsToDestroyByApp)) {
+    await deleteS3Files(`app-${appId}`, assetIds);
+  }
 
   const assetsDeletionResult = await Asset.destroy({
     where: {

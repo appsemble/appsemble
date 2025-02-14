@@ -1,8 +1,8 @@
-# ![](https://gitlab.com/appsemble/appsemble/-/raw/0.31.1-test.5/config/assets/logo.svg) Appsemble Studio
+# ![](https://gitlab.com/appsemble/appsemble/-/raw/0.32.0/config/assets/logo.svg) Appsemble Studio
 
 > Manage Appsemble apps
 
-[![GitLab CI](https://gitlab.com/appsemble/appsemble/badges/0.31.1-test.5/pipeline.svg)](https://gitlab.com/appsemble/appsemble/-/releases/0.31.1-test.5)
+[![GitLab CI](https://gitlab.com/appsemble/appsemble/badges/0.32.0/pipeline.svg)](https://gitlab.com/appsemble/appsemble/-/releases/0.32.0)
 [![Prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg)](https://prettier.io)
 
 ## Table of Contents
@@ -17,5 +17,5 @@ that enables users to build and explore Appsemble apps.
 
 ## License
 
-[LGPL-3.0-only](https://gitlab.com/appsemble/appsemble/-/blob/0.31.1-test.5/LICENSE.md) ©
+[LGPL-3.0-only](https://gitlab.com/appsemble/appsemble/-/blob/0.32.0/LICENSE.md) ©
 [Appsemble](https://appsemble.com)

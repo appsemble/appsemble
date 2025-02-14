@@ -1,7 +1,7 @@
 import { createFixtureStream, createFormData } from '@appsemble/node-utils';
 import { PredefinedOrganizationRole } from '@appsemble/types';
 import { request, setTestApp } from 'axios-test-instance';
-import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
+import { beforeAll, beforeEach, describe, expect, it } from 'vitest';
 
 import {
   AppCollection,
@@ -19,16 +19,12 @@ const argv: Partial<Argv> = { host: 'http://localhost', secret: 'test', aesSecre
 
 describe('createOrganizationAppCollection', () => {
   beforeAll(async () => {
-    vi.useFakeTimers();
     setArgv(argv);
     const server = await createServer({});
     await setTestApp(server);
   });
 
   beforeEach(async () => {
-    // https://github.com/vitest-dev/vitest/issues/1154#issuecomment-1138717832
-    vi.clearAllTimers();
-    vi.setSystemTime(0);
     user = await createTestUser();
     organization = await Organization.create({
       id: 'testorganization',
@@ -68,8 +64,8 @@ describe('createOrganizationAppCollection', () => {
       OrganizationName: organization.name,
       visibility: 'public',
       domain: null,
-      $created: new Date(0).toISOString(),
-      $updated: new Date(0).toISOString(),
+      $created: expect.any(String),
+      $updated: expect.any(String),
     });
 
     const collection = await AppCollection.findByPk(response.data.id);

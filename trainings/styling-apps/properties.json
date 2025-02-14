@@ -1,0 +1,5 @@
+{
+  "blockedBy": "data-transformation",
+  "title": "Styling apps",
+  "trainingOrder": ["styling-options", "bulma-theming", "custom-css"]
+}

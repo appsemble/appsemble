@@ -1,6 +1,6 @@
 {
   "name": "@appsemble/studio",
-  "version": "0.31.1-test.5",
+  "version": "0.32.0",
   "private": true,
   "description": "The frontend for managing Appsemble apps and organizations",
   "keywords": [
@@ -31,10 +31,10 @@
     "test": "vitest"
   },
   "dependencies": {
-    "@appsemble/react-components": "0.31.1-test.5",
-    "@appsemble/types": "0.31.1-test.5",
-    "@appsemble/utils": "0.31.1-test.5",
-    "@appsemble/web-utils": "0.31.1-test.5",
+    "@appsemble/react-components": "0.32.0",
+    "@appsemble/types": "0.32.0",
+    "@appsemble/utils": "0.32.0",
+    "@appsemble/web-utils": "0.32.0",
     "@browser-logos/chrome": "^2.0.0",
     "@browser-logos/edge": "^2.0.0",
     "@browser-logos/firefox": "^3.0.0",
@@ -50,6 +50,7 @@
     "@types/react-dom": "^18.0.0",
     "@types/react-router-dom": "^5.0.0",
     "@types/webpack-env": "^1.0.0",
+    "@xyflow/react": "^12.3.6",
     "axios": "^1.0.0",
     "classnames": "^2.0.0",
     "elkjs": "^0.9.0",

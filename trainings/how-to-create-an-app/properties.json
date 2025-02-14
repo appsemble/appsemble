@@ -1,0 +1,5 @@
+{
+  "blockedBy": "introduction",
+  "title": "How to create an app",
+  "trainingOrder": ["app-structure", "what-is-a-page", "what-is-a-block", "simple-app"]
+}

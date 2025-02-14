@@ -1,4 +1,4 @@
-import { assertKoaError } from '@appsemble/node-utils';
+import { assertKoaError, getS3File } from '@appsemble/node-utils';
 import { OrganizationPermission } from '@appsemble/types';
 import JSZip from 'jszip';
 import { type Context } from 'koa';
@@ -160,12 +160,12 @@ export async function exportApp(ctx: Context): Promise<void> {
     await app.reload({
       include: [Asset],
     });
-    app.Assets.map((asset) => {
-      zip.file(`assets/${asset.filename}`, asset.data);
-    });
+    for (const asset of app.Assets) {
+      zip.file(`assets/${asset.filename}`, await getS3File(`app-${app.id}`, asset.id));
+    }
   }
 
-  const content = zip.generateNodeStream();
+  const content = await zip.generateNodeStream();
   ctx.attachment(`${app.definition.name}_${app.id}.zip`);
   ctx.body = content;
   ctx.type = 'application/zip';

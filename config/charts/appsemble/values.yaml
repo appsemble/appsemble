@@ -113,3 +113,18 @@ mailpit:
         enabled: true
         existingSecret:
           name: mailpit-ui
+
+minio:
+  fullnameOverride: appsemble-minio
+  auth:
+    existingSecret: s3
+    rootUserSecretKey: access-key
+    rootPasswordSecretKey: secret-key
+  ingress:
+    enabled: true
+    tls: true
+    ingressClassName: nginx
+  apiIngress:
+    enabled: true
+    tls: true
+    ingressClassName: nginx

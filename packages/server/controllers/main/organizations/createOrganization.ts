@@ -1,4 +1,9 @@
-import { assertKoaError, organizationBlocklist, throwKoaError } from '@appsemble/node-utils';
+import {
+  assertKoaError,
+  organizationBlocklist,
+  throwKoaError,
+  uploadToBuffer,
+} from '@appsemble/node-utils';
 import { PredefinedOrganizationRole } from '@appsemble/types';
 import { type Context } from 'koa';
 import { Op, UniqueConstraintError } from 'sequelize';
@@ -60,7 +65,7 @@ export async function createOrganization(ctx: Context): Promise<void> {
       email,
       description,
       website,
-      icon: icon ? icon.contents : null,
+      icon: icon ? await uploadToBuffer(icon.path) : null,
     });
 
     await OrganizationMember.create({

@@ -160,6 +160,8 @@ describe('getAppTemplates', () => {
       UserId: user.id,
       yaml: '',
     });
+    vi.useRealTimers();
+    vi.useFakeTimers();
     vi.advanceTimersByTime(1000);
     t1.AppSnapshots = [
       snapshot1,

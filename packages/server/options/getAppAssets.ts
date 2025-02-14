@@ -1,5 +1,4 @@
-import { type GetAppSubEntityParams } from '@appsemble/node-utils';
-import { type Asset as AppAsset } from '@appsemble/types';
+import { type AppAsset, type GetAppSubEntityParams, getS3File } from '@appsemble/node-utils';
 
 import { Asset } from '../models/index.js';
 
@@ -8,13 +7,16 @@ export async function getAppAssets({ app }: GetAppSubEntityParams): Promise<AppA
     attributes: ['id', 'name', 'ResourceId'],
     where: {
       AppId: app.id,
-      OriginalId: null,
       ...(app.demoMode ? { seed: false, ephemeral: true } : {}),
     },
   });
-  return assets.map((asset) => ({
-    id: asset.id,
-    name: asset.name,
-    resourceId: asset.ResourceId,
-  })) as AppAsset[];
+  return Promise.all(
+    assets.map(async (asset) => ({
+      id: asset.id,
+      name: asset.name,
+      mime: asset.mime,
+      resourceId: asset.ResourceId,
+      stream: await getS3File(`app-${app.id}`, asset.id),
+    })),
+  );
 }

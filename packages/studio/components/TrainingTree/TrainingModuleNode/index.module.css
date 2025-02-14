@@ -1,0 +1,17 @@
+.root {
+  align-items: center;
+  display: flex;
+}
+
+.nodeTitle {
+  padding-left: 10px;
+}
+
+.disabled {
+  color: rgb(146 146 146);
+}
+
+.disabled:hover,
+.notClickable:hover {
+  cursor: default;
+}

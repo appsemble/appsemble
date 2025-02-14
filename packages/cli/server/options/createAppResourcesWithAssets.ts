@@ -1,4 +1,4 @@
-import { writeFile } from 'node:fs/promises';
+import { createReadStream } from 'node:fs';
 
 import { type CreateAppResourcesWithAssetsParams } from '@appsemble/node-utils';
 import { type Resource as ResourceInterface } from '@appsemble/types';
@@ -24,12 +24,9 @@ export async function createAppResourcesWithAssets({
     resourceType,
   );
 
-  const assetPromises = preparedAssets.map(async (asset) => {
-    context.appAssets.push(asset);
-    await writeFile(asset.filename, asset.data);
-  });
-
-  await Promise.all(assetPromises);
+  for (const asset of preparedAssets) {
+    context.appAssets.push({ ...asset, stream: createReadStream(asset.path) });
+  }
 
   return createdResources;
 }

@@ -1,4 +1,10 @@
-import { assertKoaError, getResourceDefinition, processResourceBody } from '@appsemble/node-utils';
+import {
+  assertKoaError,
+  getCompressedFileMeta,
+  getResourceDefinition,
+  processResourceBody,
+  uploadAssets,
+} from '@appsemble/node-utils';
 import { type Context } from 'koa';
 
 import { App, Asset, Resource, ResourceVersion, transactional } from '../../../../models/index.js';
@@ -72,6 +78,7 @@ export async function patchAppResource(ctx: Context): Promise<void> {
         Asset.bulkCreate(
           preparedAssets.map((asset) => ({
             ...asset,
+            ...getCompressedFileMeta(asset),
             AppId: app.id,
             GroupId: selectedGroupId ?? null,
             ResourceId: resource.id,
@@ -79,6 +86,7 @@ export async function patchAppResource(ctx: Context): Promise<void> {
           })),
           { logging: false, transaction },
         ),
+        uploadAssets(app.id, preparedAssets),
       );
     }
 

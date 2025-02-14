@@ -55,7 +55,7 @@ There are currently 3 different types of pages:
 
 - **Tabs page**: Define sub-pages for a page as different tabs.
 - **Flow page**: Define a set of sub-pages in a certain order that the user must go through
-- **Loop page**: Flow page that allow you to load in data to dynamically generate pages
+- **Loop page**: Flow page that allows you to load in data to dynamically generate pages
 
 These are more defined [here](../guides/page-types.md).
 

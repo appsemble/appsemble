@@ -1,6 +1,9 @@
 import { isDeepStrictEqual } from 'node:util';
 
-import { type CreateAppResourcesWithAssetsParams } from '@appsemble/node-utils';
+import {
+  type CreateAppResourcesWithAssetsParams,
+  getCompressedFileMeta,
+} from '@appsemble/node-utils';
 import { type Resource as ResourceInterface } from '@appsemble/types';
 
 import { getCurrentAppMember } from './getCurrentAppMember.js';
@@ -60,6 +63,7 @@ export async function createAppResourcesWithAssets({
         } = createdResources[index];
         return {
           ...asset,
+          ...getCompressedFileMeta(asset),
           AppId: app.id,
           GroupId: groupId ?? null,
           ResourceId,

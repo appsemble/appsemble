@@ -1,6 +1,6 @@
 import { writeFile } from 'node:fs/promises';
 
-import { readFixture, resolveFixture } from '@appsemble/node-utils';
+import { getS3FileBuffer, readFixture, resolveFixture } from '@appsemble/node-utils';
 import { createServer, createTestUser, models, setArgv } from '@appsemble/server';
 import { PredefinedOrganizationRole } from '@appsemble/types';
 import { ISODateTimePattern } from '@appsemble/utils';
@@ -410,10 +410,9 @@ describe('app', () => {
       );
       const assets = await Asset.findAll({ order: [['filename', 'ASC']] });
       const tuxData = await readFixture('apps/test/assets/tux.png');
-      expect(assets.map((a) => a.data)).toStrictEqual([
-        await sharp(tuxData).toFormat('avif').toBuffer(),
-        tuxData,
-      ]);
+      expect(
+        await Promise.all(assets.map((a) => getS3FileBuffer(`app-${app.id}`, a.id))),
+      ).toStrictEqual([await sharp(tuxData).toFormat('avif').toBuffer()]);
     });
 
     it('should publish app with runtime config', async () => {
@@ -591,7 +590,9 @@ describe('app', () => {
       const assets = await Asset.findAll({ order: [['filename', 'ASC']] });
       const tuxData = await readFixture('apps/test/assets/tux.png');
       const tuxAvifData = await sharp(tuxData).toFormat('avif').toBuffer();
-      expect(assets.map((a) => a.data)).toStrictEqual([tuxAvifData, tuxAvifData, tuxData, tuxData]);
+      expect(
+        await Promise.all(assets.map((a) => getS3FileBuffer(`app-${app.id}`, a.id))),
+      ).toStrictEqual([tuxAvifData, tuxAvifData]);
       const appCollectionApp = await AppCollectionApp.findOne();
       expect(appCollectionApp.AppId).toBe(1);
       expect(appCollectionApp.AppCollectionId).toBe(1);
@@ -749,10 +750,9 @@ describe('app', () => {
       );
       const assets = await Asset.findAll({ order: [['filename', 'ASC']] });
       const tuxData = await readFixture('apps/test/variants/tux/assets/small-tux.png');
-      expect(assets.map((a) => a.data)).toStrictEqual([
-        await sharp(tuxData).toFormat('avif').toBuffer(),
-        tuxData,
-      ]);
+      expect(
+        await Promise.all(assets.map((a) => getS3FileBuffer(`app-${app.id}`, a.id))),
+      ).toStrictEqual([await sharp(tuxData).toFormat('avif').toBuffer()]);
     });
 
     it('should publish app variables and secrets', async () => {
@@ -1268,10 +1268,9 @@ describe('app', () => {
       );
       const assets = await Asset.findAll({ order: [['filename', 'ASC']] });
       const tuxData = await readFixture('apps/test/assets/tux.png');
-      expect(assets.map((a) => a.data)).toStrictEqual([
-        await sharp(tuxData).toFormat('avif').toBuffer(),
-        tuxData,
-      ]);
+      expect(
+        await Promise.all(assets.map((a) => getS3FileBuffer(`app-${app.id}`, a.id))),
+      ).toStrictEqual([await sharp(tuxData).toFormat('avif').toBuffer()]);
     });
 
     it('should update app with runtime config', async () => {
@@ -1450,7 +1449,9 @@ describe('app', () => {
       const assets = await Asset.findAll({ order: [['filename', 'ASC']] });
       const tuxData = await readFixture('apps/test/assets/tux.png');
       const tuxAvifData = await sharp(tuxData).toFormat('avif').toBuffer();
-      expect(assets.map((a) => a.data)).toStrictEqual([tuxAvifData, tuxAvifData, tuxData, tuxData]);
+      expect(
+        await Promise.all(assets.map((a) => getS3FileBuffer(`app-${app.id}`, a.id))),
+      ).toStrictEqual([tuxAvifData, tuxAvifData]);
       // TODO: not yet implemented
       // const appCollectionApp = await AppCollectionApp.findOne();
       // expect(appCollectionApp.AppId).toBe(1);
@@ -1609,7 +1610,7 @@ describe('app', () => {
     `,
       );
       const assets = await Asset.findAll();
-      expect(assets.map((a) => a.filename)).toStrictEqual(['small-tux.png', 'small-tux.avif']);
+      expect(assets.map((a) => a.filename)).toStrictEqual(['small-tux.avif']);
     });
 
     it('should update app variables and secrets', async () => {

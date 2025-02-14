@@ -1,6 +1,4 @@
-import { readFixture } from '@appsemble/node-utils';
 import { request, setTestApp } from 'axios-test-instance';
-import sharp from 'sharp';
 import { beforeAll, beforeEach, describe, expect, it } from 'vitest';
 
 import {
@@ -80,31 +78,6 @@ describe('getAssetHeadersById', () => {
         'access-control-expose-headers': 'Content-Disposition',
       }),
       data: Buffer.from([]),
-    });
-  });
-
-  it('should fetch the headers for a compressed version of an image asset', async () => {
-    const data = await readFixture('nodejs-logo.png');
-    const asset = await Asset.create({
-      AppId: app.id,
-      mime: 'image/png',
-      filename: 'logo.png',
-      data,
-    });
-
-    const response = await request.get(`/api/apps/${app.id}/assets/${asset.id}`, {
-      responseType: 'arraybuffer',
-    });
-
-    expect(response).toMatchObject({
-      status: 200,
-      headers: expect.objectContaining({
-        'content-type': 'image/avif',
-        'content-disposition': 'inline; filename="logo.avif"',
-        'cache-control': 'max-age=31536000,immutable',
-        'access-control-expose-headers': 'Content-Disposition',
-      }),
-      data: sharp(data).toFormat('avif').toBuffer(),
     });
   });
 

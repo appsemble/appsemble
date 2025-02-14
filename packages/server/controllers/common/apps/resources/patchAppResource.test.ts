@@ -1,4 +1,4 @@
-import { createFormData } from '@appsemble/node-utils';
+import { createFormData, getS3FileBuffer } from '@appsemble/node-utils';
 import {
   PredefinedAppRole,
   PredefinedOrganizationRole,
@@ -75,6 +75,9 @@ describe('patchAppResource', () => {
       data: { foo: 'I am Foo.', bar: 'I am Bar.' },
     });
 
+    vi.useRealTimers();
+    vi.useFakeTimers();
+    vi.setSystemTime(0);
     vi.advanceTimersByTime(20e3);
 
     authorizeStudio();
@@ -437,6 +440,8 @@ describe('patchAppResource', () => {
 
   it('should not set $expires if the date has already passed', async () => {
     // 10 minutes
+    vi.useRealTimers();
+    vi.useFakeTimers();
     vi.advanceTimersByTime(600e3);
     authorizeStudio();
 
@@ -479,6 +484,7 @@ describe('patchAppResource', () => {
   });
 
   it('should accept assets as form data', async () => {
+    vi.useRealTimers();
     const resource = await Resource.create({ AppId: app.id, type: 'testAssets', data: {} });
     authorizeStudio();
     const response = await request.patch<ResourceType>(
@@ -489,6 +495,9 @@ describe('patchAppResource', () => {
       }),
     );
 
+    const { $created, $updated, ...rest } = response.data;
+    response.data = rest as ResourceType;
+
     expect(response).toMatchInlineSnapshot(
       { data: { file: expect.stringMatching(/^[0-f]{8}(?:-[0-f]{4}){3}-[0-f]{12}$/) } },
       `
@@ -496,8 +505,6 @@ describe('patchAppResource', () => {
       Content-Type: application/json; charset=utf-8
 
       {
-        "$created": "1970-01-01T00:00:00.000Z",
-        "$updated": "1970-01-01T00:00:00.000Z",
         "file": StringMatching /\\^\\[0-f\\]\\{8\\}\\(\\?:-\\[0-f\\]\\{4\\}\\)\\{3\\}-\\[0-f\\]\\{12\\}\\$/,
         "id": 1,
       }
@@ -505,26 +512,25 @@ describe('patchAppResource', () => {
     );
     const assets = await Asset.findAll({ where: { ResourceId: response.data.id }, raw: true });
     expect(assets).toStrictEqual([
-      {
+      expect.objectContaining({
         AppId: app.id,
         ResourceId: 1,
         AppMemberId: null,
         GroupId: null,
-        OriginalId: null,
         clonable: false,
         deleted: null,
         ephemeral: false,
         seed: false,
-        created: new Date('1970-01-01T00:00:00.000Z'),
-        data: expect.any(Buffer),
         filename: null,
         id: response.data.file,
         mime: 'application/octet-stream',
         name: null,
-        updated: new Date('1970-01-01T00:00:00.000Z'),
-      },
+      }),
     ]);
-    expect(Buffer.from('Test resource a').equals(assets[0].data)).toBe(true);
+    const assetsData = await Promise.all(
+      assets.map((asset) => getS3FileBuffer(`app-${app.id}`, asset.id)),
+    );
+    expect(Buffer.from('Test resource a').equals(assetsData[0])).toBe(true);
   });
 
   it('should disallow unused assets', async () => {

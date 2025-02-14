@@ -241,11 +241,19 @@ test node:
   extends: .npm
   services:
     - postgres:15
+    - name: minio/minio:latest
+      alias: minio
+      command: ['server', '/data']
+      variables:
+        MINIO_ROOT_USER: admin
+        MINIO_ROOT_PASSWORD: password
   variables:
     POSTGRES_DB: testAppsemble
     POSTGRES_USER: admin
     POSTGRES_PASSWORD: password
     DATABASE_URL: 'postgres://admin:password@postgres:5432/testAppsemble'
+    S3_HOST: 'minio'
+    S3_PORT: 9000
   stage: test
   script:
     - npm test -- --no-file-parallelism --coverage --shard=$CI_NODE_INDEX/$CI_NODE_TOTAL
@@ -591,7 +599,7 @@ update dependencies:
 
 # Deploy the Docker image for a branch to a review environment.
 review:
-  image: dtzar/helm-kubectl:3
+  image: dtzar/helm-kubectl:3.16.0
   stage: deploy
   needs:
     - build docker image
@@ -649,6 +657,11 @@ review:
       --set "sentry.environment=review-$CI_MERGE_REQUEST_IID"
       --set "sentry.secret=sentry"
       --set "mailpit.mailpit.smtp.tls.secretName=review-$CI_MERGE_REQUEST_IID-mailpit-tls"
+      --set "minio.fullnameOverride=review-$CI_MERGE_REQUEST_IID-minio"
+      --set "minio.ingress.hostname=console.minio.${CI_ENVIRONMENT_URL/https:\/\//}"
+      --set "minio.ingress.annotations.cert-manager\\.io/cluster-issuer=acme-issuer-dev"
+      --set "minio.apiIngress.hostname=api.minio.${CI_ENVIRONMENT_URL/https:\/\//}"
+      --set "minio.apiIngress.annotations.cert-manager\\.io/cluster-issuer=acme-issuer-dev"
 
 # Stop a review environment.
 stop review:
@@ -746,6 +759,11 @@ staging:
       --set "quotas.appEmail.alertOrganizationOwner=true"
       --set "mailpit.mailpit.smtp.tls.secretName=staging-mailpit-tls"
       --set "mailpit.fullnameOverride=staging-appsemble-mailpit"
+      --set "minio.fullnameOverride=staging-minio"
+      --set "minio.ingress.hostname=console.minio.staging.appsemble.review"
+      --set "minio.ingress.annotations.cert-manager\\.io/cluster-issuer=acme-issuer-dev"
+      --set "minio.apiIngress.hostname=api.minio.staging.appsemble.review"
+      --set "minio.apiIngress.annotations.cert-manager\\.io/cluster-issuer=acme-issuer-dev"
 
 production:
   image: dtzar/helm-kubectl:3
@@ -823,6 +841,10 @@ production:
       --set "quotas.appEmail.dailyLimit=10"
       --set "quotas.appEmail.alertOrganizationOwner=true"
       --set "mailpit.mailpit.smtp.tls.secretName=appsemble-mailpit-tls"
+      --set "minio.ingress.hostname=console.minio.appsemble.app"
+      --set "minio.ingress.annotations.cert-manager\\.io/cluster-issuer=acme-issuer-prod"
+      --set "minio.apiIngress.hostname=api.minio.appsemble.app"
+      --set "minio.apiIngress.annotations.cert-manager\\.io/cluster-issuer=acme-issuer-prod"
       --wait
 
 ###################################################################################################

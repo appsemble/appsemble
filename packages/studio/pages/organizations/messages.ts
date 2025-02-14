@@ -273,28 +273,4 @@ export const messages = defineMessages({
     id: 'studio.+7+1T0',
     defaultMessage: 'The permission to send manual push notifications for an app.',
   },
-  CreateTrainings: {
-    id: 'studio.puSpQ5',
-    defaultMessage: 'The permission to create trainings.',
-  },
-  UpdateTrainings: {
-    id: 'studio.zcQwQW',
-    defaultMessage: 'The permission to update trainings.',
-  },
-  DeleteTrainings: {
-    id: 'studio.D4iR4a',
-    defaultMessage: 'The permission to delete trainings.',
-  },
-  CreateTrainingBlocks: {
-    id: 'studio.0Lp17s',
-    defaultMessage: 'The permission to create training blocks.',
-  },
-  UpdateTrainingBlocks: {
-    id: 'studio.0Lp17s',
-    defaultMessage: 'The permission to create training blocks.',
-  },
-  DeleteTrainingBlocks: {
-    id: 'studio.0Lp17s',
-    defaultMessage: 'The permission to create training blocks.',
-  },
 });

@@ -1,4 +1,11 @@
-import { type AppAsset, type CreateAppAssetParams, throwKoaError } from '@appsemble/node-utils';
+import {
+  type AppAsset,
+  type CreateAppAssetParams,
+  getCompressedFileMeta,
+  getS3File,
+  throwKoaError,
+  uploadAssets,
+} from '@appsemble/node-utils';
 import { UniqueConstraintError } from 'sequelize';
 
 import { getCurrentAppMember } from './getCurrentAppMember.js';
@@ -9,7 +16,7 @@ export async function createAppAsset({
   context,
   payload,
 }: CreateAppAssetParams): Promise<AppAsset> {
-  const { data, filename, mime, name } = payload;
+  const { filename, mime, name, path } = payload;
 
   const member = await getCurrentAppMember({ context });
 
@@ -17,11 +24,9 @@ export async function createAppAsset({
   try {
     asset = await Asset.create({
       AppId: app.id,
-      data,
-      filename,
-      mime,
       name,
       AppMemberId: member?.sub,
+      ...getCompressedFileMeta({ filename, mime }),
     });
   } catch (error: unknown) {
     if (error instanceof UniqueConstraintError) {
@@ -30,5 +35,7 @@ export async function createAppAsset({
     throw error;
   }
 
-  return asset;
+  await uploadAssets(app.id, [{ id: asset.id, mime, path }]);
+
+  return { ...asset, stream: await getS3File(`app-${app.id}`, asset.id) };
 }

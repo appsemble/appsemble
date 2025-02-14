@@ -1,8 +1,8 @@
+import { type TempFile } from '@appsemble/node-utils';
 import { type BlockManifest } from '@appsemble/types';
-import { type File } from 'koas-body-parser';
 
 export interface PublishBlockBody extends Omit<BlockManifest, 'files'> {
-  files: File[];
-  icon: File;
+  files: TempFile[];
+  icon: TempFile;
   examples: string[];
 }
