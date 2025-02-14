@@ -1,10 +1,9 @@
 import { randomUUID } from 'node:crypto';
-import { createReadStream } from 'node:fs';
 import { unlink, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 
-import { logger, uploadS3File } from '@appsemble/node-utils';
+import { logger, uploadS3FileFromPath } from '@appsemble/node-utils';
 import { DataTypes, QueryTypes, type Sequelize, type Transaction } from 'sequelize';
 
 export const key = '0.32.1-test.1';
@@ -49,7 +48,7 @@ export async function up(transaction: Transaction, db: Sequelize): Promise<void>
         if (row.data) {
           const path = join(tmpdir(), `${Date.now()}-${randomUUID()}`);
           await writeFile(path, row.data);
-          await uploadS3File(`app-${row.AppId}`, row.id, createReadStream(path));
+          await uploadS3FileFromPath(`app-${row.AppId}`, row.id, path);
           await unlink(path);
         } else {
           logger.warn(`Asset ${row.id} data has not loaded into memory`);

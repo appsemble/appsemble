@@ -74,6 +74,20 @@ export async function uploadS3File(
   }
 }
 
+export async function uploadS3FileFromPath(
+  bucket: string,
+  key: string,
+  path: string,
+): Promise<void> {
+  try {
+    await ensureBucket(bucket);
+    await s3Client.fPutObject(bucket, key, path);
+  } catch (error) {
+    logger.error(error);
+    throw error;
+  }
+}
+
 export async function getS3File(bucket: string, key: string): Promise<Readable> {
   try {
     return await s3Client.getObject(bucket, key);
