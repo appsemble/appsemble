@@ -1,7 +1,7 @@
 import { logger, uploadS3File } from '@appsemble/node-utils';
 import { DataTypes, QueryTypes, type Sequelize, type Transaction } from 'sequelize';
 
-export const key = '0.32.0';
+export const key = '0.32.1-test.0';
 
 /**
  * Summary:
@@ -22,6 +22,7 @@ export async function up(transaction: Transaction, db: Sequelize): Promise<void>
         `
       SELECT id, data, "AppId"
       FROM "Asset"
+      WHERE deleted IS NULL
       ORDER BY id
       LIMIT :batchSize OFFSET :offset
     `,
@@ -40,18 +41,9 @@ export async function up(transaction: Transaction, db: Sequelize): Promise<void>
     await Promise.all(
       result.map(async (row) => {
         try {
-          await uploadS3File(`app-${row.AppId}`, row.id, row.data);
-          await queryInterface.sequelize.query(
-            `
-          DELETE FROM "Asset"
-          WHERE id = :id
-          `,
-            {
-              replacements: { id: row.id },
-              transaction,
-              type: QueryTypes.DELETE,
-            },
-          );
+          if (row.data) {
+            await uploadS3File(`app-${row.AppId}`, row.id, row.data);
+          }
         } catch (error) {
           logger.error(`Error processing asset ${row.id}:`, error);
           throw error;
