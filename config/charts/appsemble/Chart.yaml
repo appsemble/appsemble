@@ -1,7 +1,7 @@
 apiVersion: v2
 name: appsemble
-version: 0.32.0
-appVersion: 0.32.0
+version: 0.32.1-test.0
+appVersion: 0.32.1-test.0
 kubeVersion: '>=1.21.0'
 type: application
 description: The open source low-code app building platform
@@ -32,8 +32,7 @@ dependencies:
     condition: minio.enabled
 annotations:
   artifacthub.io/changes: |
-    - kind: changed
-      description: "Server: Use S3 compatible storage for app assets."
+    []
   artifacthub.io/license: LGPL-3.0-only
   artifacthub.io/links: |
     - name: Appsemble Studio

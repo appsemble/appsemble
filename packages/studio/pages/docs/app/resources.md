@@ -130,7 +130,7 @@ return all entries from the `answers` resource:
 
 ```yaml validate block-snippet
 - type: data-loader
-  version: 0.32.0
+  version: 0.32.1-test.0
   actions:
     onLoad:
       type: resource.query
