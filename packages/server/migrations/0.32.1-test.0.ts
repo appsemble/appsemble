@@ -1,7 +1,7 @@
 import { logger, uploadS3File } from '@appsemble/node-utils';
 import { DataTypes, QueryTypes, type Sequelize, type Transaction } from 'sequelize';
 
-export const key = '0.32.0';
+export const key = '0.32.1-test.0';
 
 /**
  * Summary:
@@ -22,6 +22,7 @@ export async function up(transaction: Transaction, db: Sequelize): Promise<void>
         `
       SELECT id, data, "AppId"
       FROM "Asset"
+      WHERE deleted IS NULL
       ORDER BY id
       LIMIT :batchSize OFFSET :offset
     `,
@@ -37,27 +38,18 @@ export async function up(transaction: Transaction, db: Sequelize): Promise<void>
       break;
     }
 
-    await Promise.all(
-      result.map(async (row) => {
-        try {
+    for (const row of result) {
+      try {
+        if (row.data) {
           await uploadS3File(`app-${row.AppId}`, row.id, row.data);
-          await queryInterface.sequelize.query(
-            `
-          DELETE FROM "Asset"
-          WHERE id = :id
-          `,
-            {
-              replacements: { id: row.id },
-              transaction,
-              type: QueryTypes.DELETE,
-            },
-          );
-        } catch (error) {
-          logger.error(`Error processing asset ${row.id}:`, error);
-          throw error;
+        } else {
+          logger.warn(`Asset ${row.id} data has not loaded into memory`);
         }
-      }),
-    );
+      } catch (error) {
+        logger.error(`Error processing asset ${row.id}:`, error);
+        throw error;
+      }
+    }
 
     logger.info(`Batch with offset ${offset} processed.`);
     offset += batchSize;

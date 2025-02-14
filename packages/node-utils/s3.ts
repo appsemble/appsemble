@@ -1,7 +1,7 @@
 import { type Readable } from 'node:stream';
 
 import { streamToBuffer } from 'memfs/lib/node/util.js';
-import { type BucketItemStat, Client } from 'minio';
+import { type BucketItemStat, Client, S3Error } from 'minio';
 
 import { logger } from './logger.js';
 
@@ -40,7 +40,19 @@ async function ensureBucket(name: string): Promise<void> {
   try {
     const bucketExists = await s3Client.bucketExists(name);
     if (!bucketExists) {
-      await s3Client.makeBucket(name);
+      try {
+        await s3Client.makeBucket(name);
+      } catch (makeBucketError) {
+        if (
+          makeBucketError instanceof S3Error &&
+          makeBucketError.code === 'BucketAlreadyOwnedByYou'
+        ) {
+          logger.warn(makeBucketError);
+          logger.info('This was probably called in an asynchronous batch upload.');
+        } else {
+          throw makeBucketError;
+        }
+      }
     }
   } catch (error) {
     logger.error(error);
