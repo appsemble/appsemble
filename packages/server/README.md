@@ -1,9 +1,9 @@
-# ![](https://gitlab.com/appsemble/appsemble/-/raw/0.32.1-test.1/config/assets/logo.svg) Appsemble Server
+# ![](https://gitlab.com/appsemble/appsemble/-/raw/0.32.1-test.2/config/assets/logo.svg) Appsemble Server
 
 > The official Appsemble Docker image
 
 [![](https://img.shields.io/docker/v/appsemble/appsemble)](https://hub.docker.com/r/appsemble/appsemble)
-[![GitLab CI](https://gitlab.com/appsemble/appsemble/badges/0.32.1-test.1/pipeline.svg)](https://gitlab.com/appsemble/appsemble/-/releases/0.32.1-test.1)
+[![GitLab CI](https://gitlab.com/appsemble/appsemble/badges/0.32.1-test.2/pipeline.svg)](https://gitlab.com/appsemble/appsemble/-/releases/0.32.1-test.2)
 [![Prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg)](https://prettier.io)
 
 ## Table of Contents
@@ -163,5 +163,5 @@ These can also be used as CLI parameters.
 
 ## License
 
-[LGPL-3.0-only](https://gitlab.com/appsemble/appsemble/-/blob/0.32.1-test.1/LICENSE.md) ©
+[LGPL-3.0-only](https://gitlab.com/appsemble/appsemble/-/blob/0.32.1-test.2/LICENSE.md) ©
 [Appsemble](https://appsemble.com)

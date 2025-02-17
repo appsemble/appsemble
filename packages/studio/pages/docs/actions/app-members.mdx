@@ -43,7 +43,7 @@ in the app's security definition or `Member` if a default role is not defined.
 ```yaml validate blocks-snippet
 blocks:
   - type: form
-    version: 0.32.1-test.1
+    version: 0.32.1-test.2
     parameters:
       fields:
         - name: username
@@ -89,7 +89,7 @@ definition or in the predefined app roles in the system - `Member`, `MembersMana
 ```yaml validate blocks-snippet
 blocks:
   - type: form
-    version: 0.32.1-test.1
+    version: 0.32.1-test.2
     parameters:
       fields:
         - name: email
@@ -120,7 +120,7 @@ action in use.
 ```yaml validate blocks-snippet
 blocks:
   - type: form
-    version: 0.32.1-test.1
+    version: 0.32.1-test.2
     parameters:
       fields:
         - name: email
@@ -153,7 +153,7 @@ which is `app.member.logout` in this case. Here is an example of this action in 
 ```yaml validate blocks-snippet
 blocks:
   - type: action-button
-    version: 0.32.1-test.1
+    version: 0.32.1-test.2
     parameters:
       icon: right-from-bracket
     actions:
@@ -175,7 +175,7 @@ app members data.
 ```yaml validate blocks-snippet
 blocks:
   - type: data-loader
-    version: 0.32.1-test.1
+    version: 0.32.1-test.2
     actions:
       onLoad:
         type: app.member.query
@@ -195,7 +195,7 @@ converted into strings. Here is an example of this action in use.
 ```yaml validate blocks-snippet
 blocks:
   - type: form
-    version: 0.32.1-test.1
+    version: 0.32.1-test.2
     parameters:
       fields:
         - name: name
@@ -223,7 +223,7 @@ This action requires the `$member:role:update` app permission. For more informat
 ```yaml validate blocks-snippet
 blocks:
   - type: form
-    version: 0.32.1-test.1
+    version: 0.32.1-test.2
     parameters:
       fields:
         - name: sub
@@ -250,7 +250,7 @@ example of this action in use.
 ```yaml validate blocks-snippet
 blocks:
   - type: form
-    version: 0.32.1-test.1
+    version: 0.32.1-test.2
     parameters:
       fields:
         - name: sub
@@ -279,7 +279,7 @@ logged in. Supported fields for this action are `type` and `sub`. Type is `app.m
 ```yaml validate blocks-snippet
 blocks:
   - type: action-button
-    version: 0.32.1-test.1
+    version: 0.32.1-test.2
     parameters:
       icon: trash
     actions:

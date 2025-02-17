@@ -31,7 +31,7 @@ pages:
   - name: Create report
     blocks:
       - type: button-list
-        version: 0.32.1-test.1
+        version: 0.32.1-test.2
         roles:
           - User
         actions:
@@ -54,7 +54,7 @@ pages:
             - label: Health check
               onClick: health
       - type: form
-        version: 0.32.1-test.1
+        version: 0.32.1-test.2
         actions:
           onSubmit:
             type: request

@@ -1,6 +1,6 @@
 {
   "name": "@appsemble/qr-scan",
-  "version": "0.32.1-test.1",
+  "version": "0.32.1-test.2",
   "private": true,
   "description": "A block that creates a video from the camera and scans for QR codes.",
   "homepage": "https://appsemble.app",
@@ -17,7 +17,7 @@
     "test": "vitest"
   },
   "dependencies": {
-    "@appsemble/sdk": "0.32.1-test.1",
+    "@appsemble/sdk": "0.32.1-test.2",
     "jsqr": "^1.0.0"
   }
 }
