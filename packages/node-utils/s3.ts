@@ -64,10 +64,11 @@ export async function uploadS3File(
   bucket: string,
   key: string,
   content: Buffer | Readable | string,
+  size?: number,
 ): Promise<void> {
   try {
     await ensureBucket(bucket);
-    await s3Client.putObject(bucket, key, content);
+    await s3Client.putObject(bucket, key, content, size);
   } catch (error) {
     logger.error(error);
     throw error;

@@ -1,4 +1,5 @@
 import { createReadStream } from 'node:fs';
+import { stat } from 'node:fs/promises';
 
 import { type Context } from 'koa';
 import { type BucketItemStat } from 'minio';
@@ -72,8 +73,9 @@ export async function uploadAsset(appId: number, asset: AssetToUpload): Promise<
   }
 
   try {
+    const stats = await stat(uploadFrom);
     const stream = createReadStream(uploadFrom);
-    await uploadS3File(`app-${appId}`, id, stream);
+    await uploadS3File(`app-${appId}`, id, stream, stats.size);
   } catch (error) {
     logger.error(error);
   }

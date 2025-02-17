@@ -2,6 +2,7 @@ import {
   assertKoaError,
   deleteS3Files,
   getS3File,
+  getS3FileStats,
   logger,
   uploadS3File,
 } from '@appsemble/node-utils';
@@ -91,7 +92,9 @@ export async function reseedDemoApp(ctx: Context): Promise<void> {
       ephemeral: true,
       seed: false,
     });
-    await uploadS3File(`app-${appId}`, created.id, await getS3File(`app-${appId}`, id));
+    const stream = await getS3File(`app-${appId}`, id);
+    const stats = await getS3FileStats(`app-${appId}`, id);
+    await uploadS3File(`app-${appId}`, created.id, stream, stats.size);
   }
 
   logger.info(`Reseeded ${demoAssetsToReseed.length} ephemeral assets.`);
