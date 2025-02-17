@@ -1,7 +1,9 @@
-import { existsSync, mkdirSync } from 'node:fs';
-import { writeFile } from 'node:fs/promises';
+import { randomUUID } from 'node:crypto';
+import { createReadStream, createWriteStream, existsSync, mkdirSync } from 'node:fs';
+import { stat, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { basename, dirname, join } from 'node:path';
+import { pipeline } from 'node:stream/promises';
 
 import {
   AppsembleError,
@@ -169,8 +171,12 @@ export async function importApp(ctx: Context): Promise<void> {
           .folder('assets')
           .filter((filename) => !['.DS_Store'].includes(filename))) {
           if (!jsZipObject.dir) {
-            const data = await jsZipObject.async('nodebuffer');
             const { name } = jsZipObject;
+
+            const tempPath = join(tmpdir(), `${Date.now()}-${randomUUID()}`);
+            const fileWriteStream = createWriteStream(tempPath);
+            await pipeline(jsZipObject.nodeStream(), fileWriteStream);
+            const stats = await stat(tempPath);
 
             const asset = await Asset.create(
               {
@@ -181,7 +187,7 @@ export async function importApp(ctx: Context): Promise<void> {
               { transaction },
             );
 
-            await uploadS3File(`app-${appId}`, asset.id, data);
+            await uploadS3File(`app-${appId}`, asset.id, createReadStream(tempPath), stats.size);
           }
         }
 
