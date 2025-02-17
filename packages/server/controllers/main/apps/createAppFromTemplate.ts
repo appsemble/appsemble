@@ -1,6 +1,7 @@
 import {
   assertKoaError,
   getS3File,
+  getS3FileStats,
   throwKoaError,
   updateCompanionContainers,
   uploadS3File,
@@ -231,8 +232,9 @@ export async function createAppFromTemplate(ctx: Context): Promise<void> {
     if (result.Assets) {
       for (const templateAsset of result.Assets) {
         const templateStream = await getS3File(`app-${template.id}`, templateAsset.id);
+        const templateStats = await getS3FileStats(`app-${template.id}`, templateAsset.id);
         const createdAsset = record.Assets.find((asset) => asset.name === templateAsset.name);
-        await uploadS3File(`app-${record.id}`, createdAsset.id, templateStream);
+        await uploadS3File(`app-${record.id}`, createdAsset.id, templateStream, templateStats.size);
       }
     }
 
