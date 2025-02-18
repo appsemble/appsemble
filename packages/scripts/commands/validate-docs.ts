@@ -17,6 +17,8 @@ import {
   type ResourceCreateActionDefinition,
   type ResourceDefinition,
   type ResourceDeleteActionDefinition,
+  type ResourceDeleteAllActionDefinition,
+  type ResourceDeleteBulkActionDefinition,
   type ResourceGetActionDefinition,
   type ResourcePatchActionDefinition,
   type ResourceQueryActionDefinition,
@@ -272,6 +274,8 @@ function appendBlockToTemplate(block: BlockDefinition, template: AppDefinition):
     ) as
       | ResourceCreateActionDefinition
       | ResourceDeleteActionDefinition
+      | ResourceDeleteAllActionDefinition
+      | ResourceDeleteBulkActionDefinition
       | ResourceGetActionDefinition
       | ResourcePatchActionDefinition
       | ResourceQueryActionDefinition

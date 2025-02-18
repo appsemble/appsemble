@@ -45,6 +45,8 @@ Supported resource actions are as below:
 - [`resource.update`](#resourceupdate)
 - [`resource.patch`](#resourcepatch)
 - [`resource.delete`](#resourcedelete)
+- [`resource.delete.all`](#resourcedeleteall)
+- [`resource.delete.bulk`](#resourcedeletebulk)
 - [`resource.subscription.subscribe`](#resourcesubscriptionsubscribe)
 - [`resource.subscription.unsubscribe`](#resourcesubscriptionunsubscribe)
 - [`resource.subscription.toggle`](#resourcesubscriptiontoggle)
@@ -249,7 +251,7 @@ blocks:
         resource: person
 ```
 
-### resource.delete<Side name="resource.delete.all" />
+### resource.delete.all<Side name="resource.delete.all" />
 
 This action is used to delete all resources of certain type from the database. Supported field for
 this action are `type` and `resource`. Both of the fields are required. Resource refers to the type
@@ -269,7 +271,7 @@ blocks:
           onClick: cancelDialog
         - label: { translate: configDelete }
           color: danger
-          onClick: removeItem
+          onClick: removeAll
     actions:
       cancelDialog:
         type: dialog.ok
@@ -278,7 +280,7 @@ blocks:
         resource: person
 ```
 
-### resource.delete<Side name="resource.delete.bulk" />
+### resource.delete.bulk<Side name="resource.delete.bulk" />
 
 This action is used to delete several resources of a certain type from the database by id. Supported
 fields for this action are `type` and `resource`. Both of the fields are required. Resource refers
@@ -298,7 +300,7 @@ blocks:
           onClick: cancelDialog
         - label: { translate: configDelete }
           color: danger
-          onClick: removeItem
+          onClick: removePeople
     actions:
       cancelDialog:
         type: dialog.ok
