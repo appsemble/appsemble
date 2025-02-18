@@ -1,7 +1,6 @@
 import { mkdir, rm, writeFile } from 'node:fs/promises';
 
-import { logger } from '@appsemble/node-utils';
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
 import { syncTrainings } from './syncTrainings.js';
 import { Training } from '../models/Training.js';
@@ -10,8 +9,6 @@ const basePath = 'training-test';
 const chapterPath = `${basePath}/test-chapter`;
 
 beforeEach(async () => {
-  vi.spyOn(logger, 'error').mockImplementation(null);
-
   await mkdir(basePath);
   await mkdir(chapterPath);
 });
@@ -42,7 +39,23 @@ describe('syncTrainings', () => {
     await syncTrainings(basePath);
 
     const training = await Training.findByPk('old-training');
-
     expect(training).toBeNull();
+  });
+
+  it('should do nothing if training is already in database', async () => {
+    const properties = JSON.stringify({
+      blockedBy: null,
+      title: '',
+      trainingOrder: ['existing-training'],
+    });
+    await Training.create({ id: 'existing-training' });
+    await writeFile(`${chapterPath}/properties.json`, properties);
+    await mkdir(`${chapterPath}/existing-training`);
+    await writeFile(`${chapterPath}/existing-training/index.md`, '');
+
+    await syncTrainings(basePath);
+
+    const training = await Training.findByPk('existing-training');
+    expect(training).not.toBeNull();
   });
 });

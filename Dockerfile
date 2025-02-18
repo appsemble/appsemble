@@ -39,6 +39,7 @@ COPY --from=build /app/packages/types packages/types
 COPY --from=build /app/packages/utils packages/utils
 COPY --from=build /app/package.json package.json
 COPY --from=build /app/package-lock.json package-lock.json
+COPY --from=build /app/trainings trainings
 RUN npm install --omit=dev
 RUN npm prune
 RUN find . -name '*.ts' -delete
