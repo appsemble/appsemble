@@ -249,6 +249,68 @@ blocks:
         resource: person
 ```
 
+### resource.delete<Side name="resource.delete.all" />
+
+This action is used to delete all resources of certain type from the database. Supported field for
+this action are `type` and `resource`. Both of the fields are required. Resource refers to the type
+of resources to be deleted. This action requires at least one of the app permissions
+`$resource:all:delete` or `$resource:<resource-name>:delete` depending on the context. For more
+information check out [security](../app/security.md#permissions). To delete all person resources,
+you can use the following block of code.
+
+```yaml validate blocks-snippet
+blocks:
+  - type: button-list
+    version: 0.32.1-test.3
+    parameters:
+      buttons:
+        - label: { translate: cancel }
+          color: primary
+          onClick: cancelDialog
+        - label: { translate: configDelete }
+          color: danger
+          onClick: removeItem
+    actions:
+      cancelDialog:
+        type: dialog.ok
+      removeAll:
+        type: resource.delete.all
+        resource: person
+```
+
+### resource.delete<Side name="resource.delete.bulk" />
+
+This action is used to delete several resources of a certain type from the database by id. Supported
+fields for this action are `type` and `resource`. Both of the fields are required. Resource refers
+to the type of resources to be deleted. This action requires at least one of the app permissions
+`$resource:all:delete` or `$resource:<resource-name>:delete` depending on the context. For more
+information check out [security](../app/security.md#permissions). To delete several person resources,
+you can use the following block of code.
+
+```yaml validate blocks-snippet
+blocks:
+  - type: button-list
+    version: 0.32.1-test.3
+    parameters:
+      buttons:
+        - label: { translate: cancel }
+          color: primary
+          onClick: cancelDialog
+        - label: { translate: configDelete }
+          color: danger
+          onClick: removeItem
+    actions:
+      cancelDialog:
+        type: dialog.ok
+      removePeople:
+        remapBefore:
+          array.from:
+            - 1
+            - 2
+        type: resource.delete.bulk
+        resource: person
+```
+
 ### resource.subscription.subscribe<Side name="resource.subscription.subscribe" />
 
 This action is used to subscribe to resource modification for push notifications. Supported fields

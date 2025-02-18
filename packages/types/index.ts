@@ -1661,6 +1661,8 @@ export interface ControllerActionDefinition extends BaseActionDefinition<'contro
 export type RequestActionDefinition = RequestLikeActionDefinition<'request'>;
 export type ResourceCreateActionDefinition = ResourceActionDefinition<'resource.create'>;
 export type ResourceDeleteActionDefinition = ResourceActionDefinition<'resource.delete'>;
+export type ResourceDeleteAllActionDefinition = ResourceActionDefinition<'resource.delete.all'>;
+export type ResourceDeleteBulkActionDefinition = ResourceActionDefinition<'resource.delete.bulk'>;
 export type ResourceHistoryGetActionDefinition = ResourceActionDefinition<'resource.history.get'>;
 export type ResourceGetActionDefinition = ResourceActionDefinition<'resource.get'> &
   ResourceActionWithIdDefinition &
@@ -1804,6 +1806,8 @@ export type ActionDefinition =
   | ResourceCountActionDefinition
   | ResourceCreateActionDefinition
   | ResourceDeleteActionDefinition
+  | ResourceDeleteAllActionDefinition
+  | ResourceDeleteBulkActionDefinition
   | ResourceGetActionDefinition
   | ResourceHistoryGetActionDefinition
   | ResourcePatchActionDefinition

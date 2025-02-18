@@ -47,6 +47,8 @@ pages:
         events:
           emit:
             data: data
+          listen:
+            refresh: refreshPeople
       - type: table
         version: 0.32.1-test.3
         parameters:
@@ -70,6 +72,35 @@ pages:
           onClick:
             to: Person Registration Form
             type: link
+      - type: button-list
+        version: 0.32.1-test.3
+        parameters:
+          buttons:
+            - label: Delete All People
+              onClick: deleteAll
+            - label: Delete The First Three People
+              onClick: deleteThree
+        actions:
+          deleteAll:
+            type: resource.delete.all
+            resource: person
+            onSuccess:
+              type: event
+              event: refreshPeople
+          deleteThree:
+            type: resource.query
+            resource: person
+            onSuccess:
+              remapBefore:
+                array.from:
+                  - [{ prop: 0 }, { prop: id }]
+                  - [{ prop: 1 }, { prop: id }]
+                  - [{ prop: 2 }, { prop: id }]
+              type: resource.delete.bulk
+              resource: person
+              onSuccess:
+                type: event
+                event: refreshPeople
 
   - name: Person Registration Form
     blocks:

@@ -273,3 +273,49 @@ describe('resource.delete', () => {
     expect(result).toBeNull();
   });
 });
+
+describe('resource.delete.all', () => {
+  it('should make a DELETE request for all resources', async () => {
+    mock.onGet(/.*/).reply(() => [
+      200,
+      [
+        { id: 1, type: 'pet' },
+        { id: 2, type: 'pet' },
+      ],
+      {},
+    ]);
+    mock.onDelete(/.*/).reply((req) => {
+      request = req;
+      return [204, null, {}];
+    });
+    const action = createTestAction({
+      appDefinition,
+      definition: { type: 'resource.delete.all', resource: 'pet' },
+    });
+    const result = await action();
+    expect(request.method).toBe('delete');
+    expect(request.url).toBe(`${apiUrl}/api/apps/42/resources/pet`);
+    expect(request.params).toBeUndefined();
+    expect(request.data).toBe('[1,2]');
+    expect(result).toBeNull();
+  });
+});
+
+describe('resource.delete.bulk', () => {
+  it('should make a DELETE request for several resources', async () => {
+    mock.onDelete(/.*/).reply((req) => {
+      request = req;
+      return [204, null, {}];
+    });
+    const action = createTestAction({
+      appDefinition,
+      definition: { type: 'resource.delete.bulk', resource: 'pet', body: { 'array.from': [63] } },
+    });
+    const result = await action([63]);
+    expect(request.method).toBe('delete');
+    expect(request.url).toBe(`${apiUrl}/api/apps/42/resources/pet`);
+    expect(request.params).toBeUndefined();
+    expect(request.data).toBe('[63]');
+    expect(result).toBeNull();
+  });
+});

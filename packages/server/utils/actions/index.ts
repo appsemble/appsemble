@@ -53,6 +53,8 @@ export const actions = {
   request,
   'resource.create': resource.create,
   'resource.delete': resource.remove,
+  'resource.delete.all': resource.removeAll,
+  'resource.delete.bulk': resource.removeBulk,
   'resource.get': resource.get,
   'resource.history.get': noop,
   'resource.query': resource.query,

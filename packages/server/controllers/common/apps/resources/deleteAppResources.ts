@@ -3,7 +3,7 @@ import { type Context } from 'koa';
 
 import { App, Resource } from '../../../../models/index.js';
 import { options } from '../../../../options/options.js';
-import { checkAuthSubjectAppPermissions } from '../../../../utils/authorization.js';
+import { checkAppPermissions } from '../../../../utils/authorization.js';
 import {
   processHooks,
   processReferenceHooks,
@@ -21,7 +21,7 @@ export async function deleteAppResources(ctx: Context): Promise<void> {
     attributes: ['definition', 'id'],
   });
 
-  await checkAuthSubjectAppPermissions({
+  await checkAppPermissions({
     context: ctx,
     appId,
     requiredPermissions: [`$resource:${resourceType}:delete`],

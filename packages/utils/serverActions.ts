@@ -13,6 +13,8 @@ export const serverActions = new Set([
   'resource.patch',
   'resource.update',
   'resource.delete',
+  'resource.delete.all',
+  'resource.delete.bulk',
   'static',
 ] as const);
 
