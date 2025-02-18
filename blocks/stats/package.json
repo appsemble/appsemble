@@ -1,6 +1,6 @@
 {
   "name": "@appsemble/stats",
-  "version": "0.32.1-test.2",
+  "version": "0.32.1-test.3",
   "private": true,
   "description": "A block that renders some simple statistics in a friendly manner.",
   "homepage": "https://appsemble.app",
@@ -17,7 +17,7 @@
     "test": "vitest"
   },
   "dependencies": {
-    "@appsemble/sdk": "0.32.1-test.2",
+    "@appsemble/sdk": "0.32.1-test.3",
     "mini-jsx": "^4.0.0"
   }
 }
