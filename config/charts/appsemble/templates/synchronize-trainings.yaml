@@ -1,0 +1,27 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ include "appsemble.fullname" . }}-synchronize-trainings
+  labels:
+    {{ include "appsemble.labels" . }}
+  annotations:
+    helm.sh/hook: post-install,post-upgrade
+    helm.sh/hook-weight: '2'
+spec:
+  template:
+    metadata:
+      annotations:
+        {{ include "appsemble.gitlab" . | indent 8 }}
+    spec:
+      restartPolicy: Never
+      containers:
+        - name: {{ include "appsemble.fullname" . }}-synchronize-trainings
+          image: "{{ .Values.image.repository }}:{{ include "appsemble.tag" . }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          securityContext:
+            readOnlyRootFilesystem: true
+          args:
+            - synchronize-trainings
+            - -vv
+          env:
+{{ include "appsemble.postgres" . | indent 12 }}

@@ -628,6 +628,7 @@ review:
     - rm mailpit.key mailpit.crt
     # default bitnami postgresql PVC size is 8Gi, but that much should not be needed for a review environment
     - helm install "review-$CI_MERGE_REQUEST_IID" ./public/appsemble-*.tgz
+      --debug
       --atomic
       --set "fullnameOverride=review-$CI_MERGE_REQUEST_IID"
       --set "gitlab.app=$CI_PROJECT_PATH_SLUG"

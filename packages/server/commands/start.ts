@@ -166,7 +166,12 @@ export async function handler({ webpackConfigs }: AdditionalArguments = {}): Pro
     await migrate(argv.migrateTo, migrations);
   }
 
-  syncTrainings('trainings');
+  try {
+    await syncTrainings('trainings');
+  } catch (error: unknown) {
+    logger.warn('Trainings failed to sync');
+    logger.warn(error);
+  }
 
   await configureDNS();
 
