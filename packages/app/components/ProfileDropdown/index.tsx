@@ -52,8 +52,10 @@ export function ProfileDropdown(): ReactNode {
 
   return (
     <>
-      {appMemberInfo?.name && !demoMode && displayAppMemberName ? (
-        <span className="m-1 is-size-6 is-align-content-center">{appMemberInfo.name}</span>
+      {!demoMode && displayAppMemberName && appMemberInfo ? (
+        <span className="m-1 is-size-6 is-align-content-center">
+          {appMemberInfo.name || appMemberInfo.email}
+        </span>
       ) : null}
       <NavbarDropdown
         className={`is-right ${styles.dropdown}`}
