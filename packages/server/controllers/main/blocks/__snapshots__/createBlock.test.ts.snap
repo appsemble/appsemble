@@ -1902,7 +1902,10 @@ disabled by setting this to \`false\`
                       "description": "The name of the schema to validate against before submitting data.",
                     },
                     "type": {
-                      "description": "Delete all instances of a resource.",
+                      "description": "Delete all instances of a resource.
+> **Warning!**
+>
+> Use this action with caution to avoid losing precious data!",
                       "enum": [
                         "resource.delete.all",
                       ],
@@ -1930,7 +1933,10 @@ disabled by setting this to \`false\`
                 ],
                 "property": "instance.actions.onSubmit.type",
                 "schema": {
-                  "description": "Delete all instances of a resource.",
+                  "description": "Delete all instances of a resource.
+> **Warning!**
+>
+> Use this action with caution to avoid losing precious data!",
                   "enum": [
                     "resource.delete.all",
                   ],
@@ -7159,7 +7165,10 @@ disabled by setting this to \`false\`
               "description": "The name of the schema to validate against before submitting data.",
             },
             "type": {
-              "description": "Delete all instances of a resource.",
+              "description": "Delete all instances of a resource.
+> **Warning!**
+>
+> Use this action with caution to avoid losing precious data!",
               "enum": [
                 "resource.delete.all",
               ],
@@ -7187,7 +7196,10 @@ disabled by setting this to \`false\`
         ],
         "property": "instance.actions.onSubmit.type",
         "schema": {
-          "description": "Delete all instances of a resource.",
+          "description": "Delete all instances of a resource.
+> **Warning!**
+>
+> Use this action with caution to avoid losing precious data!",
           "enum": [
             "resource.delete.all",
           ],
