@@ -84,6 +84,10 @@ The available resource actions are:
 - [**resource.create**](../actions/resources.mdx#resourcecreate): Create a new resource.
 - [**resource.update**](../actions/resources.mdx#resourceupdate): Update an existing resource.
 - [**resource.delete**](../actions/resources.mdx#resourcedelete): Delete an existing resource.
+- [**resource.delete.all**](../actions/resources.mdx#resourcedeleteall): Delete all existing
+  resources of a type.
+- [**resource.delete.bulk**](../actions/resources.mdx#resourcedeletebulk): Delete several existing
+  resources of a type.
 - [**resource.subscription.subscribe**](../actions/resources.mdx#resourcesubscriptionsubscribe):
   Subscribe to an existing resource to receive push notifications. (See
   [notifications](../guides/notifications.md).)

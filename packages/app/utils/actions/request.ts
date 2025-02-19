@@ -39,6 +39,8 @@ export const request: ActionCreator<'request'> = ({ definition, prefixIndex, rem
           }
           req.data = serializeResource(body ? remap(body, data, context) : data);
         }
+      } else if (method === 'DELETE' && body) {
+        req.data = remap(body, data, context);
       } else if (proxy) {
         req.params = { data: JSON.stringify(data) };
       }

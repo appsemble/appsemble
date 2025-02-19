@@ -97,6 +97,8 @@ export const actionCreators: ActionCreators = {
   'resource.update': resource.update,
   'resource.patch': resource.patch,
   'resource.delete': resource.remove,
+  'resource.delete.all': resource.removeAll,
+  'resource.delete.bulk': resource.removeBulk,
   'resource.subscription.subscribe': resource.subscribe,
   'resource.subscription.unsubscribe': resource.unsubscribe,
   'resource.subscription.toggle': resource.toggle,

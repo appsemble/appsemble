@@ -7,6 +7,8 @@ import {
 import {
   type ResourceCreateActionDefinition,
   type ResourceDeleteActionDefinition,
+  type ResourceDeleteAllActionDefinition,
+  type ResourceDeleteBulkActionDefinition,
   type ResourceGetActionDefinition,
   type ResourcePatchActionDefinition,
   type ResourceQueryActionDefinition,
@@ -17,7 +19,12 @@ import { Op } from 'sequelize';
 
 import { type ServerActionParameters } from './index.js';
 import { Asset, Resource, ResourceVersion, transactional } from '../../models/index.js';
-import { parseQuery, processHooks, processReferenceHooks } from '../resource.js';
+import {
+  parseQuery,
+  processHooks,
+  processReferenceHooks,
+  processReferenceTriggers,
+} from '../resource.js';
 
 export async function get({
   action,
@@ -367,6 +374,93 @@ export async function remove({
 
   processReferenceHooks(app, resource, 'delete', options, context);
   processHooks(app, resource, 'delete', options, context);
+
+  // Returning empty string just like in the client-side resource.delete action.
+  return '';
+}
+
+export async function removeAll({
+  action,
+  app,
+  context,
+  options,
+}: ServerActionParameters<ResourceDeleteAllActionDefinition>): Promise<unknown> {
+  getResourceDefinition(app.definition, action.resource, context);
+
+  const resources = await Resource.findAll({
+    attributes: ['id'],
+    where: {
+      type: action.resource,
+      AppId: app.id,
+    },
+  });
+
+  let deletedAmount = 0;
+  while (deletedAmount < resources.length) {
+    for (const resource of await Resource.findAll({
+      where: {
+        id: resources.slice(deletedAmount, deletedAmount + 100),
+      },
+      include: [
+        {
+          model: Asset,
+          required: false,
+          where: { id: null },
+        },
+      ],
+      limit: 100,
+    })) {
+      processReferenceHooks(app, resource, 'delete', options, context);
+      processHooks(app, resource, 'delete', options, context);
+
+      await processReferenceTriggers(app, resource, 'delete', context);
+
+      await resource.destroy();
+    }
+    deletedAmount += 100;
+  }
+
+  // Returning empty string just like in the client-side resource.delete action.
+  return '';
+}
+
+export async function removeBulk({
+  action,
+  app,
+  context,
+  data,
+  options,
+}: ServerActionParameters<ResourceDeleteBulkActionDefinition>): Promise<unknown> {
+  const body = data as number[];
+
+  getResourceDefinition(app.definition, action.resource, context);
+
+  let deletedAmount = 0;
+  while (deletedAmount < body.length) {
+    for (const resource of await Resource.findAll({
+      where: {
+        id: body.slice(deletedAmount, deletedAmount + 100),
+        type: action.resource,
+        AppId: app.id,
+      },
+      include: [
+        {
+          model: Asset,
+          required: false,
+          where: { id: null },
+        },
+      ],
+      limit: 100,
+    })) {
+      processReferenceHooks(app, resource, 'delete', options, context);
+      processHooks(app, resource, 'delete', options, context);
+
+      await processReferenceTriggers(app, resource, 'delete', context);
+
+      await resource.destroy();
+    }
+    deletedAmount += 100;
+  }
 
   // Returning empty string just like in the client-side resource.delete action.
   return '';

@@ -82,6 +82,8 @@ export * from './ResourceCountActionDefinition.js';
 export * from './ResourceCreateActionDefinition.js';
 export * from './ResourceDefinition.js';
 export * from './ResourceDeleteActionDefinition.js';
+export * from './ResourceDeleteAllActionDefinition.js';
+export * from './ResourceDeleteBulkActionDefinition.js';
 export * from './ResourceGetActionDefinition.js';
 export * from './ResourceHistoryGetActionDefinition.js';
 export * from './ResourceHistoryDefinition.js';

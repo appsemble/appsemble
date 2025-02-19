@@ -303,6 +303,91 @@ export const remove: ActionCreator<'resource.delete'> = (args) => {
   });
 };
 
+export const removeAll: ActionCreator<'resource.delete.all'> = (args) => {
+  const { appDefinition, definition, getAppMemberSelectedGroup } = args;
+  const resource = appDefinition.resources[definition.resource];
+  const method = resource?.delete?.method || 'DELETE';
+  const url =
+    resource?.delete?.url ||
+    resource.url ||
+    `${apiUrl}/api/apps/${appId}/resources/${definition.resource}`;
+  const { id = 'id' } = resource;
+
+  const queryRemapper: Remapper = [];
+  const selectedGroup = getAppMemberSelectedGroup?.();
+  if (selectedGroup) {
+    queryRemapper.push({ 'object.assign': { selectedGroupId: selectedGroup.id } });
+  }
+
+  const [queryExistingResources] = query({
+    ...args,
+    definition: {
+      ...definition,
+      type: 'resource.query',
+      query: queryRemapper.length ? queryRemapper : undefined,
+    },
+  });
+
+  return [
+    async (data: any) => {
+      const existingResources = await queryExistingResources(data, {});
+      const [dispatch] = request({
+        ...args,
+        definition: {
+          ...definition,
+          query: queryRemapper.length ? queryRemapper : undefined,
+          method,
+          proxy: false,
+          type: 'request',
+          url,
+          schema: resource.schema,
+          body: {
+            'array.from': (existingResources as []).map((r) => r[id]),
+          },
+        },
+      });
+      return dispatch(data, {});
+    },
+    { method, url },
+  ];
+};
+
+export const removeBulk: ActionCreator<'resource.delete.bulk'> = (args) => {
+  const { appDefinition, definition, getAppMemberSelectedGroup } = args;
+  const resource = appDefinition.resources[definition.resource];
+  const method = resource?.delete?.method || 'DELETE';
+  const url =
+    resource?.delete?.url ||
+    resource.url ||
+    `${apiUrl}/api/apps/${appId}/resources/${definition.resource}`;
+
+  const queryRemapper: Remapper = [];
+  const selectedGroup = getAppMemberSelectedGroup?.();
+  if (selectedGroup) {
+    queryRemapper.push({ 'object.assign': { selectedGroupId: selectedGroup.id } });
+  }
+
+  return [
+    (data) => {
+      const [dispatch] = request({
+        ...args,
+        definition: {
+          ...definition,
+          query: queryRemapper.length ? queryRemapper : undefined,
+          method,
+          proxy: false,
+          type: 'request',
+          url,
+          schema: resource.schema,
+          body: { root: null },
+        },
+      });
+      return dispatch(data, {});
+    },
+    { method, url },
+  ];
+};
+
 async function getSubscription(
   pushNotifications: ServiceWorkerRegistrationContextType,
 ): Promise<PushSubscription> {

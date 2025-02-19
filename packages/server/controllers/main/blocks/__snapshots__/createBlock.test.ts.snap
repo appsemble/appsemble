@@ -10,7 +10,7 @@ Content-Type: application/json; charset=utf-8
       {
         "argument": {
           "id": "[subschema 1]",
-          "length": 110,
+          "length": 114,
           "valid": {
             "disableFormat": false,
             "errors": [
@@ -1836,6 +1836,212 @@ disabled by setting this to \`false\`
                   ],
                 },
                 "stack": "instance.actions.onSubmit.type is not one of enum values: resource.delete",
+              },
+              {
+                "argument": "resource",
+                "instance": {
+                  "type": "invalid",
+                },
+                "message": "requires property "resource"",
+                "name": "required",
+                "path": [
+                  "actions",
+                  "onSubmit",
+                ],
+                "property": "instance.actions.onSubmit",
+                "schema": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "body": {
+                      "$ref": "#/components/schemas/RemapperDefinition",
+                      "description": "remapper that results in the request body to send.
+
+If not specified, the raw input data is used.
+",
+                    },
+                    "headers": {
+                      "additionalProperties": false,
+                      "description": "The headers to be set for the outgoing request",
+                      "properties": {
+                        "Content-Type": {
+                          "description": "Content type for the outgoing request",
+                          "enum": [
+                            "application/xml",
+                            "text/plain",
+                            "application/x-www-form-urlencoded",
+                            "multipart/form-data",
+                          ],
+                        },
+                      },
+                      "type": "object",
+                    },
+                    "onError": {},
+                    "onSuccess": {},
+                    "proxy": {
+                      "default": true,
+                      "description": "By default requests will be proxied through the Appsemble API.
+
+This allows to protect user data and ensures
+[CORS](https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS) is enabled. This behavior can be
+disabled by setting this to \`false\`
+",
+                      "type": "boolean",
+                    },
+                    "query": {
+                      "$ref": "#/components/schemas/RemapperDefinition",
+                      "description": "A remapper that results in either an object containing each property of the query string, or a string that gets passed through as-is.",
+                    },
+                    "remapAfter": {},
+                    "remapBefore": {},
+                    "resource": {
+                      "description": "The type of the resource to delete.",
+                      "type": "string",
+                    },
+                    "schema": {
+                      "$ref": "#/components/schemas/JSONSchema",
+                      "description": "The name of the schema to validate against before submitting data.",
+                    },
+                    "type": {
+                      "description": "Delete all instances of a resource.
+> **Warning!**
+>
+> Use this action with caution to avoid losing precious data!",
+                      "enum": [
+                        "resource.delete.all",
+                      ],
+                    },
+                  },
+                  "required": [
+                    "type",
+                    "resource",
+                  ],
+                  "type": "object",
+                },
+                "stack": "instance.actions.onSubmit requires property "resource"",
+              },
+              {
+                "argument": [
+                  "resource.delete.all",
+                ],
+                "instance": "invalid",
+                "message": "is not one of enum values: resource.delete.all",
+                "name": "enum",
+                "path": [
+                  "actions",
+                  "onSubmit",
+                  "type",
+                ],
+                "property": "instance.actions.onSubmit.type",
+                "schema": {
+                  "description": "Delete all instances of a resource.
+> **Warning!**
+>
+> Use this action with caution to avoid losing precious data!",
+                  "enum": [
+                    "resource.delete.all",
+                  ],
+                },
+                "stack": "instance.actions.onSubmit.type is not one of enum values: resource.delete.all",
+              },
+              {
+                "argument": "resource",
+                "instance": {
+                  "type": "invalid",
+                },
+                "message": "requires property "resource"",
+                "name": "required",
+                "path": [
+                  "actions",
+                  "onSubmit",
+                ],
+                "property": "instance.actions.onSubmit",
+                "schema": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "body": {
+                      "$ref": "#/components/schemas/RemapperDefinition",
+                      "description": "remapper that results in the request body to send.
+
+If not specified, the raw input data is used.
+",
+                    },
+                    "headers": {
+                      "additionalProperties": false,
+                      "description": "The headers to be set for the outgoing request",
+                      "properties": {
+                        "Content-Type": {
+                          "description": "Content type for the outgoing request",
+                          "enum": [
+                            "application/xml",
+                            "text/plain",
+                            "application/x-www-form-urlencoded",
+                            "multipart/form-data",
+                          ],
+                        },
+                      },
+                      "type": "object",
+                    },
+                    "onError": {},
+                    "onSuccess": {},
+                    "proxy": {
+                      "default": true,
+                      "description": "By default requests will be proxied through the Appsemble API.
+
+This allows to protect user data and ensures
+[CORS](https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS) is enabled. This behavior can be
+disabled by setting this to \`false\`
+",
+                      "type": "boolean",
+                    },
+                    "query": {
+                      "$ref": "#/components/schemas/RemapperDefinition",
+                      "description": "A remapper that results in either an object containing each property of the query string, or a string that gets passed through as-is.",
+                    },
+                    "remapAfter": {},
+                    "remapBefore": {},
+                    "resource": {
+                      "description": "The type of the resource to delete.",
+                      "type": "string",
+                    },
+                    "schema": {
+                      "$ref": "#/components/schemas/JSONSchema",
+                      "description": "The name of the schema to validate against before submitting data.",
+                    },
+                    "type": {
+                      "description": "Delete several instances of a resource.",
+                      "enum": [
+                        "resource.delete.bulk",
+                      ],
+                    },
+                  },
+                  "required": [
+                    "type",
+                    "resource",
+                  ],
+                  "type": "object",
+                },
+                "stack": "instance.actions.onSubmit requires property "resource"",
+              },
+              {
+                "argument": [
+                  "resource.delete.bulk",
+                ],
+                "instance": "invalid",
+                "message": "is not one of enum values: resource.delete.bulk",
+                "name": "enum",
+                "path": [
+                  "actions",
+                  "onSubmit",
+                  "type",
+                ],
+                "property": "instance.actions.onSubmit.type",
+                "schema": {
+                  "description": "Delete several instances of a resource.",
+                  "enum": [
+                    "resource.delete.bulk",
+                  ],
+                },
+                "stack": "instance.actions.onSubmit.type is not one of enum values: resource.delete.bulk",
               },
               {
                 "argument": "resource",
@@ -4409,6 +4615,8 @@ Does nothing if the app member isn’t logged in.",
                   "<#/components/schemas/ResourceCountActionDefinition>",
                   "<#/components/schemas/ResourceCreateActionDefinition>",
                   "<#/components/schemas/ResourceDeleteActionDefinition>",
+                  "<#/components/schemas/ResourceDeleteAllActionDefinition>",
+                  "<#/components/schemas/ResourceDeleteBulkActionDefinition>",
                   "<#/components/schemas/ResourceGetActionDefinition>",
                   "<#/components/schemas/ResourceHistoryGetActionDefinition>",
                   "<#/components/schemas/ResourceQueryActionDefinition>",
@@ -4445,7 +4653,7 @@ Does nothing if the app member isn’t logged in.",
                 "instance": {
                   "type": "invalid",
                 },
-                "message": "is not any of <#/components/schemas/AnalyticsActionDefinition>,<#/components/schemas/ControllerActionDefinition>,<#/components/schemas/ConditionActionDefinition>,<#/components/schemas/DialogActionDefinition>,<#/components/schemas/DialogErrorActionDefinition>,<#/components/schemas/DialogOkActionDefinition>,<#/components/schemas/DownloadActionDefinition>,<#/components/schemas/EachActionDefinition>,<#/components/schemas/EmailActionDefinition>,<#/components/schemas/EventActionDefinition>,<#/components/schemas/FlowBackActionDefinition>,<#/components/schemas/FlowFinishActionDefinition>,<#/components/schemas/FlowNextActionDefinition>,<#/components/schemas/FlowCancelActionDefinition>,<#/components/schemas/FlowToActionDefinition>,<#/components/schemas/LinkActionDefinition>,<#/components/schemas/LinkBackActionDefinition>,<#/components/schemas/LinkNextActionDefinition>,<#/components/schemas/LogActionDefinition>,<#/components/schemas/MatchActionDefinition>,<#/components/schemas/MessageActionDefinition>,<#/components/schemas/NoopActionDefinition>,<#/components/schemas/NotifyActionDefinition>,<#/components/schemas/RequestActionDefinition>,<#/components/schemas/ResourceCountActionDefinition>,<#/components/schemas/ResourceCreateActionDefinition>,<#/components/schemas/ResourceDeleteActionDefinition>,<#/components/schemas/ResourceGetActionDefinition>,<#/components/schemas/ResourceHistoryGetActionDefinition>,<#/components/schemas/ResourceQueryActionDefinition>,<#/components/schemas/ResourceSubscriptionStatusActionDefinition>,<#/components/schemas/ResourceSubscriptionSubscribeActionDefinition>,<#/components/schemas/ResourceSubscriptionToggleActionDefinition>,<#/components/schemas/ResourceSubscriptionUnsubscribeActionDefinition>,<#/components/schemas/ResourceUpdateActionDefinition>,<#/components/schemas/ResourcePatchActionDefinition>,<#/components/schemas/ShareActionDefinition>,<#/components/schemas/StaticActionDefinition>,<#/components/schemas/StorageAppendActionDefinition>,<#/components/schemas/StorageSubtractActionDefinition>,<#/components/schemas/StorageReadActionDefinition>,<#/components/schemas/StorageWriteActionDefinition>,<#/components/schemas/StorageUpdateActionDefinition>,<#/components/schemas/StorageDeleteActionDefinition>,<#/components/schemas/GroupMemberInviteActionDefinition>,<#/components/schemas/GroupMemberQueryActionDefinition>,<#/components/schemas/GroupMemberDeleteActionDefinition>,<#/components/schemas/GroupMemberRoleUpdateActionDefinition>,<#/components/schemas/GroupQueryActionDefinition>,<#/components/schemas/ThrowActionDefinition>,<#/components/schemas/AppMemberLoginActionDefinition>,<#/components/schemas/AppMemberLogoutActionDefinition>,<#/components/schemas/AppMemberRegisterActionDefinition>,<#/components/schemas/AppMemberInviteActionDefinition>,<#/components/schemas/AppMemberRoleUpdateActionDefinition>,<#/components/schemas/AppMemberCurrentPatchActionDefinition>,<#/components/schemas/AppMemberPropertiesPatchActionDefinition>,<#/components/schemas/AppMemberQueryActionDefinition>,<#/components/schemas/AppMemberDeleteActionDefinition>",
+                "message": "is not any of <#/components/schemas/AnalyticsActionDefinition>,<#/components/schemas/ControllerActionDefinition>,<#/components/schemas/ConditionActionDefinition>,<#/components/schemas/DialogActionDefinition>,<#/components/schemas/DialogErrorActionDefinition>,<#/components/schemas/DialogOkActionDefinition>,<#/components/schemas/DownloadActionDefinition>,<#/components/schemas/EachActionDefinition>,<#/components/schemas/EmailActionDefinition>,<#/components/schemas/EventActionDefinition>,<#/components/schemas/FlowBackActionDefinition>,<#/components/schemas/FlowFinishActionDefinition>,<#/components/schemas/FlowNextActionDefinition>,<#/components/schemas/FlowCancelActionDefinition>,<#/components/schemas/FlowToActionDefinition>,<#/components/schemas/LinkActionDefinition>,<#/components/schemas/LinkBackActionDefinition>,<#/components/schemas/LinkNextActionDefinition>,<#/components/schemas/LogActionDefinition>,<#/components/schemas/MatchActionDefinition>,<#/components/schemas/MessageActionDefinition>,<#/components/schemas/NoopActionDefinition>,<#/components/schemas/NotifyActionDefinition>,<#/components/schemas/RequestActionDefinition>,<#/components/schemas/ResourceCountActionDefinition>,<#/components/schemas/ResourceCreateActionDefinition>,<#/components/schemas/ResourceDeleteActionDefinition>,<#/components/schemas/ResourceDeleteAllActionDefinition>,<#/components/schemas/ResourceDeleteBulkActionDefinition>,<#/components/schemas/ResourceGetActionDefinition>,<#/components/schemas/ResourceHistoryGetActionDefinition>,<#/components/schemas/ResourceQueryActionDefinition>,<#/components/schemas/ResourceSubscriptionStatusActionDefinition>,<#/components/schemas/ResourceSubscriptionSubscribeActionDefinition>,<#/components/schemas/ResourceSubscriptionToggleActionDefinition>,<#/components/schemas/ResourceSubscriptionUnsubscribeActionDefinition>,<#/components/schemas/ResourceUpdateActionDefinition>,<#/components/schemas/ResourcePatchActionDefinition>,<#/components/schemas/ShareActionDefinition>,<#/components/schemas/StaticActionDefinition>,<#/components/schemas/StorageAppendActionDefinition>,<#/components/schemas/StorageSubtractActionDefinition>,<#/components/schemas/StorageReadActionDefinition>,<#/components/schemas/StorageWriteActionDefinition>,<#/components/schemas/StorageUpdateActionDefinition>,<#/components/schemas/StorageDeleteActionDefinition>,<#/components/schemas/GroupMemberInviteActionDefinition>,<#/components/schemas/GroupMemberQueryActionDefinition>,<#/components/schemas/GroupMemberDeleteActionDefinition>,<#/components/schemas/GroupMemberRoleUpdateActionDefinition>,<#/components/schemas/GroupQueryActionDefinition>,<#/components/schemas/ThrowActionDefinition>,<#/components/schemas/AppMemberLoginActionDefinition>,<#/components/schemas/AppMemberLogoutActionDefinition>,<#/components/schemas/AppMemberRegisterActionDefinition>,<#/components/schemas/AppMemberInviteActionDefinition>,<#/components/schemas/AppMemberRoleUpdateActionDefinition>,<#/components/schemas/AppMemberCurrentPatchActionDefinition>,<#/components/schemas/AppMemberPropertiesPatchActionDefinition>,<#/components/schemas/AppMemberQueryActionDefinition>,<#/components/schemas/AppMemberDeleteActionDefinition>",
                 "name": "anyOf",
                 "path": [
                   "actions",
@@ -4534,6 +4742,12 @@ Does nothing if the app member isn’t logged in.",
                     },
                     {
                       "$ref": "#/components/schemas/ResourceDeleteActionDefinition",
+                    },
+                    {
+                      "$ref": "#/components/schemas/ResourceDeleteAllActionDefinition",
+                    },
+                    {
+                      "$ref": "#/components/schemas/ResourceDeleteBulkActionDefinition",
                     },
                     {
                       "$ref": "#/components/schemas/ResourceGetActionDefinition",
@@ -4633,7 +4847,7 @@ Does nothing if the app member isn’t logged in.",
                     },
                   ],
                 },
-                "stack": "instance.actions.onSubmit is not any of <#/components/schemas/AnalyticsActionDefinition>,<#/components/schemas/ControllerActionDefinition>,<#/components/schemas/ConditionActionDefinition>,<#/components/schemas/DialogActionDefinition>,<#/components/schemas/DialogErrorActionDefinition>,<#/components/schemas/DialogOkActionDefinition>,<#/components/schemas/DownloadActionDefinition>,<#/components/schemas/EachActionDefinition>,<#/components/schemas/EmailActionDefinition>,<#/components/schemas/EventActionDefinition>,<#/components/schemas/FlowBackActionDefinition>,<#/components/schemas/FlowFinishActionDefinition>,<#/components/schemas/FlowNextActionDefinition>,<#/components/schemas/FlowCancelActionDefinition>,<#/components/schemas/FlowToActionDefinition>,<#/components/schemas/LinkActionDefinition>,<#/components/schemas/LinkBackActionDefinition>,<#/components/schemas/LinkNextActionDefinition>,<#/components/schemas/LogActionDefinition>,<#/components/schemas/MatchActionDefinition>,<#/components/schemas/MessageActionDefinition>,<#/components/schemas/NoopActionDefinition>,<#/components/schemas/NotifyActionDefinition>,<#/components/schemas/RequestActionDefinition>,<#/components/schemas/ResourceCountActionDefinition>,<#/components/schemas/ResourceCreateActionDefinition>,<#/components/schemas/ResourceDeleteActionDefinition>,<#/components/schemas/ResourceGetActionDefinition>,<#/components/schemas/ResourceHistoryGetActionDefinition>,<#/components/schemas/ResourceQueryActionDefinition>,<#/components/schemas/ResourceSubscriptionStatusActionDefinition>,<#/components/schemas/ResourceSubscriptionSubscribeActionDefinition>,<#/components/schemas/ResourceSubscriptionToggleActionDefinition>,<#/components/schemas/ResourceSubscriptionUnsubscribeActionDefinition>,<#/components/schemas/ResourceUpdateActionDefinition>,<#/components/schemas/ResourcePatchActionDefinition>,<#/components/schemas/ShareActionDefinition>,<#/components/schemas/StaticActionDefinition>,<#/components/schemas/StorageAppendActionDefinition>,<#/components/schemas/StorageSubtractActionDefinition>,<#/components/schemas/StorageReadActionDefinition>,<#/components/schemas/StorageWriteActionDefinition>,<#/components/schemas/StorageUpdateActionDefinition>,<#/components/schemas/StorageDeleteActionDefinition>,<#/components/schemas/GroupMemberInviteActionDefinition>,<#/components/schemas/GroupMemberQueryActionDefinition>,<#/components/schemas/GroupMemberDeleteActionDefinition>,<#/components/schemas/GroupMemberRoleUpdateActionDefinition>,<#/components/schemas/GroupQueryActionDefinition>,<#/components/schemas/ThrowActionDefinition>,<#/components/schemas/AppMemberLoginActionDefinition>,<#/components/schemas/AppMemberLogoutActionDefinition>,<#/components/schemas/AppMemberRegisterActionDefinition>,<#/components/schemas/AppMemberInviteActionDefinition>,<#/components/schemas/AppMemberRoleUpdateActionDefinition>,<#/components/schemas/AppMemberCurrentPatchActionDefinition>,<#/components/schemas/AppMemberPropertiesPatchActionDefinition>,<#/components/schemas/AppMemberQueryActionDefinition>,<#/components/schemas/AppMemberDeleteActionDefinition>",
+                "stack": "instance.actions.onSubmit is not any of <#/components/schemas/AnalyticsActionDefinition>,<#/components/schemas/ControllerActionDefinition>,<#/components/schemas/ConditionActionDefinition>,<#/components/schemas/DialogActionDefinition>,<#/components/schemas/DialogErrorActionDefinition>,<#/components/schemas/DialogOkActionDefinition>,<#/components/schemas/DownloadActionDefinition>,<#/components/schemas/EachActionDefinition>,<#/components/schemas/EmailActionDefinition>,<#/components/schemas/EventActionDefinition>,<#/components/schemas/FlowBackActionDefinition>,<#/components/schemas/FlowFinishActionDefinition>,<#/components/schemas/FlowNextActionDefinition>,<#/components/schemas/FlowCancelActionDefinition>,<#/components/schemas/FlowToActionDefinition>,<#/components/schemas/LinkActionDefinition>,<#/components/schemas/LinkBackActionDefinition>,<#/components/schemas/LinkNextActionDefinition>,<#/components/schemas/LogActionDefinition>,<#/components/schemas/MatchActionDefinition>,<#/components/schemas/MessageActionDefinition>,<#/components/schemas/NoopActionDefinition>,<#/components/schemas/NotifyActionDefinition>,<#/components/schemas/RequestActionDefinition>,<#/components/schemas/ResourceCountActionDefinition>,<#/components/schemas/ResourceCreateActionDefinition>,<#/components/schemas/ResourceDeleteActionDefinition>,<#/components/schemas/ResourceDeleteAllActionDefinition>,<#/components/schemas/ResourceDeleteBulkActionDefinition>,<#/components/schemas/ResourceGetActionDefinition>,<#/components/schemas/ResourceHistoryGetActionDefinition>,<#/components/schemas/ResourceQueryActionDefinition>,<#/components/schemas/ResourceSubscriptionStatusActionDefinition>,<#/components/schemas/ResourceSubscriptionSubscribeActionDefinition>,<#/components/schemas/ResourceSubscriptionToggleActionDefinition>,<#/components/schemas/ResourceSubscriptionUnsubscribeActionDefinition>,<#/components/schemas/ResourceUpdateActionDefinition>,<#/components/schemas/ResourcePatchActionDefinition>,<#/components/schemas/ShareActionDefinition>,<#/components/schemas/StaticActionDefinition>,<#/components/schemas/StorageAppendActionDefinition>,<#/components/schemas/StorageSubtractActionDefinition>,<#/components/schemas/StorageReadActionDefinition>,<#/components/schemas/StorageWriteActionDefinition>,<#/components/schemas/StorageUpdateActionDefinition>,<#/components/schemas/StorageDeleteActionDefinition>,<#/components/schemas/GroupMemberInviteActionDefinition>,<#/components/schemas/GroupMemberQueryActionDefinition>,<#/components/schemas/GroupMemberDeleteActionDefinition>,<#/components/schemas/GroupMemberRoleUpdateActionDefinition>,<#/components/schemas/GroupQueryActionDefinition>,<#/components/schemas/ThrowActionDefinition>,<#/components/schemas/AppMemberLoginActionDefinition>,<#/components/schemas/AppMemberLogoutActionDefinition>,<#/components/schemas/AppMemberRegisterActionDefinition>,<#/components/schemas/AppMemberInviteActionDefinition>,<#/components/schemas/AppMemberRoleUpdateActionDefinition>,<#/components/schemas/AppMemberCurrentPatchActionDefinition>,<#/components/schemas/AppMemberPropertiesPatchActionDefinition>,<#/components/schemas/AppMemberQueryActionDefinition>,<#/components/schemas/AppMemberDeleteActionDefinition>",
               },
             ],
             "instance": {
@@ -4730,6 +4944,12 @@ Does nothing if the app member isn’t logged in.",
                 },
                 {
                   "$ref": "#/components/schemas/ResourceDeleteActionDefinition",
+                },
+                {
+                  "$ref": "#/components/schemas/ResourceDeleteAllActionDefinition",
+                },
+                {
+                  "$ref": "#/components/schemas/ResourceDeleteBulkActionDefinition",
                 },
                 {
                   "$ref": "#/components/schemas/ResourceGetActionDefinition",
@@ -4834,7 +5054,7 @@ Does nothing if the app member isn’t logged in.",
         "instance": {
           "type": "invalid",
         },
-        "message": "does not match allOf schema [subschema 1] with 110 error[s]:",
+        "message": "does not match allOf schema [subschema 1] with 114 error[s]:",
         "name": "allOf",
         "path": [
           "actions",
@@ -4950,6 +5170,12 @@ Does nothing if the app member isn’t logged in.",
                   "$ref": "#/components/schemas/ResourceDeleteActionDefinition",
                 },
                 {
+                  "$ref": "#/components/schemas/ResourceDeleteAllActionDefinition",
+                },
+                {
+                  "$ref": "#/components/schemas/ResourceDeleteBulkActionDefinition",
+                },
+                {
                   "$ref": "#/components/schemas/ResourceGetActionDefinition",
                 },
                 {
@@ -5049,7 +5275,7 @@ Does nothing if the app member isn’t logged in.",
             },
           ],
         },
-        "stack": "instance.actions.onSubmit does not match allOf schema [subschema 1] with 110 error[s]:",
+        "stack": "instance.actions.onSubmit does not match allOf schema [subschema 1] with 114 error[s]:",
       },
       {
         "argument": "target",
@@ -6873,6 +7099,212 @@ disabled by setting this to \`false\`
           ],
         },
         "stack": "instance.actions.onSubmit.type is not one of enum values: resource.delete",
+      },
+      {
+        "argument": "resource",
+        "instance": {
+          "type": "invalid",
+        },
+        "message": "requires property "resource"",
+        "name": "required",
+        "path": [
+          "actions",
+          "onSubmit",
+        ],
+        "property": "instance.actions.onSubmit",
+        "schema": {
+          "additionalProperties": false,
+          "properties": {
+            "body": {
+              "$ref": "#/components/schemas/RemapperDefinition",
+              "description": "remapper that results in the request body to send.
+
+If not specified, the raw input data is used.
+",
+            },
+            "headers": {
+              "additionalProperties": false,
+              "description": "The headers to be set for the outgoing request",
+              "properties": {
+                "Content-Type": {
+                  "description": "Content type for the outgoing request",
+                  "enum": [
+                    "application/xml",
+                    "text/plain",
+                    "application/x-www-form-urlencoded",
+                    "multipart/form-data",
+                  ],
+                },
+              },
+              "type": "object",
+            },
+            "onError": {},
+            "onSuccess": {},
+            "proxy": {
+              "default": true,
+              "description": "By default requests will be proxied through the Appsemble API.
+
+This allows to protect user data and ensures
+[CORS](https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS) is enabled. This behavior can be
+disabled by setting this to \`false\`
+",
+              "type": "boolean",
+            },
+            "query": {
+              "$ref": "#/components/schemas/RemapperDefinition",
+              "description": "A remapper that results in either an object containing each property of the query string, or a string that gets passed through as-is.",
+            },
+            "remapAfter": {},
+            "remapBefore": {},
+            "resource": {
+              "description": "The type of the resource to delete.",
+              "type": "string",
+            },
+            "schema": {
+              "$ref": "#/components/schemas/JSONSchema",
+              "description": "The name of the schema to validate against before submitting data.",
+            },
+            "type": {
+              "description": "Delete all instances of a resource.
+> **Warning!**
+>
+> Use this action with caution to avoid losing precious data!",
+              "enum": [
+                "resource.delete.all",
+              ],
+            },
+          },
+          "required": [
+            "type",
+            "resource",
+          ],
+          "type": "object",
+        },
+        "stack": "instance.actions.onSubmit requires property "resource"",
+      },
+      {
+        "argument": [
+          "resource.delete.all",
+        ],
+        "instance": "invalid",
+        "message": "is not one of enum values: resource.delete.all",
+        "name": "enum",
+        "path": [
+          "actions",
+          "onSubmit",
+          "type",
+        ],
+        "property": "instance.actions.onSubmit.type",
+        "schema": {
+          "description": "Delete all instances of a resource.
+> **Warning!**
+>
+> Use this action with caution to avoid losing precious data!",
+          "enum": [
+            "resource.delete.all",
+          ],
+        },
+        "stack": "instance.actions.onSubmit.type is not one of enum values: resource.delete.all",
+      },
+      {
+        "argument": "resource",
+        "instance": {
+          "type": "invalid",
+        },
+        "message": "requires property "resource"",
+        "name": "required",
+        "path": [
+          "actions",
+          "onSubmit",
+        ],
+        "property": "instance.actions.onSubmit",
+        "schema": {
+          "additionalProperties": false,
+          "properties": {
+            "body": {
+              "$ref": "#/components/schemas/RemapperDefinition",
+              "description": "remapper that results in the request body to send.
+
+If not specified, the raw input data is used.
+",
+            },
+            "headers": {
+              "additionalProperties": false,
+              "description": "The headers to be set for the outgoing request",
+              "properties": {
+                "Content-Type": {
+                  "description": "Content type for the outgoing request",
+                  "enum": [
+                    "application/xml",
+                    "text/plain",
+                    "application/x-www-form-urlencoded",
+                    "multipart/form-data",
+                  ],
+                },
+              },
+              "type": "object",
+            },
+            "onError": {},
+            "onSuccess": {},
+            "proxy": {
+              "default": true,
+              "description": "By default requests will be proxied through the Appsemble API.
+
+This allows to protect user data and ensures
+[CORS](https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS) is enabled. This behavior can be
+disabled by setting this to \`false\`
+",
+              "type": "boolean",
+            },
+            "query": {
+              "$ref": "#/components/schemas/RemapperDefinition",
+              "description": "A remapper that results in either an object containing each property of the query string, or a string that gets passed through as-is.",
+            },
+            "remapAfter": {},
+            "remapBefore": {},
+            "resource": {
+              "description": "The type of the resource to delete.",
+              "type": "string",
+            },
+            "schema": {
+              "$ref": "#/components/schemas/JSONSchema",
+              "description": "The name of the schema to validate against before submitting data.",
+            },
+            "type": {
+              "description": "Delete several instances of a resource.",
+              "enum": [
+                "resource.delete.bulk",
+              ],
+            },
+          },
+          "required": [
+            "type",
+            "resource",
+          ],
+          "type": "object",
+        },
+        "stack": "instance.actions.onSubmit requires property "resource"",
+      },
+      {
+        "argument": [
+          "resource.delete.bulk",
+        ],
+        "instance": "invalid",
+        "message": "is not one of enum values: resource.delete.bulk",
+        "name": "enum",
+        "path": [
+          "actions",
+          "onSubmit",
+          "type",
+        ],
+        "property": "instance.actions.onSubmit.type",
+        "schema": {
+          "description": "Delete several instances of a resource.",
+          "enum": [
+            "resource.delete.bulk",
+          ],
+        },
+        "stack": "instance.actions.onSubmit.type is not one of enum values: resource.delete.bulk",
       },
       {
         "argument": "resource",
@@ -9446,6 +9878,8 @@ Does nothing if the app member isn’t logged in.",
           "<#/components/schemas/ResourceCountActionDefinition>",
           "<#/components/schemas/ResourceCreateActionDefinition>",
           "<#/components/schemas/ResourceDeleteActionDefinition>",
+          "<#/components/schemas/ResourceDeleteAllActionDefinition>",
+          "<#/components/schemas/ResourceDeleteBulkActionDefinition>",
           "<#/components/schemas/ResourceGetActionDefinition>",
           "<#/components/schemas/ResourceHistoryGetActionDefinition>",
           "<#/components/schemas/ResourceQueryActionDefinition>",
@@ -9482,7 +9916,7 @@ Does nothing if the app member isn’t logged in.",
         "instance": {
           "type": "invalid",
         },
-        "message": "is not any of <#/components/schemas/AnalyticsActionDefinition>,<#/components/schemas/ControllerActionDefinition>,<#/components/schemas/ConditionActionDefinition>,<#/components/schemas/DialogActionDefinition>,<#/components/schemas/DialogErrorActionDefinition>,<#/components/schemas/DialogOkActionDefinition>,<#/components/schemas/DownloadActionDefinition>,<#/components/schemas/EachActionDefinition>,<#/components/schemas/EmailActionDefinition>,<#/components/schemas/EventActionDefinition>,<#/components/schemas/FlowBackActionDefinition>,<#/components/schemas/FlowFinishActionDefinition>,<#/components/schemas/FlowNextActionDefinition>,<#/components/schemas/FlowCancelActionDefinition>,<#/components/schemas/FlowToActionDefinition>,<#/components/schemas/LinkActionDefinition>,<#/components/schemas/LinkBackActionDefinition>,<#/components/schemas/LinkNextActionDefinition>,<#/components/schemas/LogActionDefinition>,<#/components/schemas/MatchActionDefinition>,<#/components/schemas/MessageActionDefinition>,<#/components/schemas/NoopActionDefinition>,<#/components/schemas/NotifyActionDefinition>,<#/components/schemas/RequestActionDefinition>,<#/components/schemas/ResourceCountActionDefinition>,<#/components/schemas/ResourceCreateActionDefinition>,<#/components/schemas/ResourceDeleteActionDefinition>,<#/components/schemas/ResourceGetActionDefinition>,<#/components/schemas/ResourceHistoryGetActionDefinition>,<#/components/schemas/ResourceQueryActionDefinition>,<#/components/schemas/ResourceSubscriptionStatusActionDefinition>,<#/components/schemas/ResourceSubscriptionSubscribeActionDefinition>,<#/components/schemas/ResourceSubscriptionToggleActionDefinition>,<#/components/schemas/ResourceSubscriptionUnsubscribeActionDefinition>,<#/components/schemas/ResourceUpdateActionDefinition>,<#/components/schemas/ResourcePatchActionDefinition>,<#/components/schemas/ShareActionDefinition>,<#/components/schemas/StaticActionDefinition>,<#/components/schemas/StorageAppendActionDefinition>,<#/components/schemas/StorageSubtractActionDefinition>,<#/components/schemas/StorageReadActionDefinition>,<#/components/schemas/StorageWriteActionDefinition>,<#/components/schemas/StorageUpdateActionDefinition>,<#/components/schemas/StorageDeleteActionDefinition>,<#/components/schemas/GroupMemberInviteActionDefinition>,<#/components/schemas/GroupMemberQueryActionDefinition>,<#/components/schemas/GroupMemberDeleteActionDefinition>,<#/components/schemas/GroupMemberRoleUpdateActionDefinition>,<#/components/schemas/GroupQueryActionDefinition>,<#/components/schemas/ThrowActionDefinition>,<#/components/schemas/AppMemberLoginActionDefinition>,<#/components/schemas/AppMemberLogoutActionDefinition>,<#/components/schemas/AppMemberRegisterActionDefinition>,<#/components/schemas/AppMemberInviteActionDefinition>,<#/components/schemas/AppMemberRoleUpdateActionDefinition>,<#/components/schemas/AppMemberCurrentPatchActionDefinition>,<#/components/schemas/AppMemberPropertiesPatchActionDefinition>,<#/components/schemas/AppMemberQueryActionDefinition>,<#/components/schemas/AppMemberDeleteActionDefinition>",
+        "message": "is not any of <#/components/schemas/AnalyticsActionDefinition>,<#/components/schemas/ControllerActionDefinition>,<#/components/schemas/ConditionActionDefinition>,<#/components/schemas/DialogActionDefinition>,<#/components/schemas/DialogErrorActionDefinition>,<#/components/schemas/DialogOkActionDefinition>,<#/components/schemas/DownloadActionDefinition>,<#/components/schemas/EachActionDefinition>,<#/components/schemas/EmailActionDefinition>,<#/components/schemas/EventActionDefinition>,<#/components/schemas/FlowBackActionDefinition>,<#/components/schemas/FlowFinishActionDefinition>,<#/components/schemas/FlowNextActionDefinition>,<#/components/schemas/FlowCancelActionDefinition>,<#/components/schemas/FlowToActionDefinition>,<#/components/schemas/LinkActionDefinition>,<#/components/schemas/LinkBackActionDefinition>,<#/components/schemas/LinkNextActionDefinition>,<#/components/schemas/LogActionDefinition>,<#/components/schemas/MatchActionDefinition>,<#/components/schemas/MessageActionDefinition>,<#/components/schemas/NoopActionDefinition>,<#/components/schemas/NotifyActionDefinition>,<#/components/schemas/RequestActionDefinition>,<#/components/schemas/ResourceCountActionDefinition>,<#/components/schemas/ResourceCreateActionDefinition>,<#/components/schemas/ResourceDeleteActionDefinition>,<#/components/schemas/ResourceDeleteAllActionDefinition>,<#/components/schemas/ResourceDeleteBulkActionDefinition>,<#/components/schemas/ResourceGetActionDefinition>,<#/components/schemas/ResourceHistoryGetActionDefinition>,<#/components/schemas/ResourceQueryActionDefinition>,<#/components/schemas/ResourceSubscriptionStatusActionDefinition>,<#/components/schemas/ResourceSubscriptionSubscribeActionDefinition>,<#/components/schemas/ResourceSubscriptionToggleActionDefinition>,<#/components/schemas/ResourceSubscriptionUnsubscribeActionDefinition>,<#/components/schemas/ResourceUpdateActionDefinition>,<#/components/schemas/ResourcePatchActionDefinition>,<#/components/schemas/ShareActionDefinition>,<#/components/schemas/StaticActionDefinition>,<#/components/schemas/StorageAppendActionDefinition>,<#/components/schemas/StorageSubtractActionDefinition>,<#/components/schemas/StorageReadActionDefinition>,<#/components/schemas/StorageWriteActionDefinition>,<#/components/schemas/StorageUpdateActionDefinition>,<#/components/schemas/StorageDeleteActionDefinition>,<#/components/schemas/GroupMemberInviteActionDefinition>,<#/components/schemas/GroupMemberQueryActionDefinition>,<#/components/schemas/GroupMemberDeleteActionDefinition>,<#/components/schemas/GroupMemberRoleUpdateActionDefinition>,<#/components/schemas/GroupQueryActionDefinition>,<#/components/schemas/ThrowActionDefinition>,<#/components/schemas/AppMemberLoginActionDefinition>,<#/components/schemas/AppMemberLogoutActionDefinition>,<#/components/schemas/AppMemberRegisterActionDefinition>,<#/components/schemas/AppMemberInviteActionDefinition>,<#/components/schemas/AppMemberRoleUpdateActionDefinition>,<#/components/schemas/AppMemberCurrentPatchActionDefinition>,<#/components/schemas/AppMemberPropertiesPatchActionDefinition>,<#/components/schemas/AppMemberQueryActionDefinition>,<#/components/schemas/AppMemberDeleteActionDefinition>",
         "name": "anyOf",
         "path": [
           "actions",
@@ -9571,6 +10005,12 @@ Does nothing if the app member isn’t logged in.",
             },
             {
               "$ref": "#/components/schemas/ResourceDeleteActionDefinition",
+            },
+            {
+              "$ref": "#/components/schemas/ResourceDeleteAllActionDefinition",
+            },
+            {
+              "$ref": "#/components/schemas/ResourceDeleteBulkActionDefinition",
             },
             {
               "$ref": "#/components/schemas/ResourceGetActionDefinition",
@@ -9670,7 +10110,7 @@ Does nothing if the app member isn’t logged in.",
             },
           ],
         },
-        "stack": "instance.actions.onSubmit is not any of <#/components/schemas/AnalyticsActionDefinition>,<#/components/schemas/ControllerActionDefinition>,<#/components/schemas/ConditionActionDefinition>,<#/components/schemas/DialogActionDefinition>,<#/components/schemas/DialogErrorActionDefinition>,<#/components/schemas/DialogOkActionDefinition>,<#/components/schemas/DownloadActionDefinition>,<#/components/schemas/EachActionDefinition>,<#/components/schemas/EmailActionDefinition>,<#/components/schemas/EventActionDefinition>,<#/components/schemas/FlowBackActionDefinition>,<#/components/schemas/FlowFinishActionDefinition>,<#/components/schemas/FlowNextActionDefinition>,<#/components/schemas/FlowCancelActionDefinition>,<#/components/schemas/FlowToActionDefinition>,<#/components/schemas/LinkActionDefinition>,<#/components/schemas/LinkBackActionDefinition>,<#/components/schemas/LinkNextActionDefinition>,<#/components/schemas/LogActionDefinition>,<#/components/schemas/MatchActionDefinition>,<#/components/schemas/MessageActionDefinition>,<#/components/schemas/NoopActionDefinition>,<#/components/schemas/NotifyActionDefinition>,<#/components/schemas/RequestActionDefinition>,<#/components/schemas/ResourceCountActionDefinition>,<#/components/schemas/ResourceCreateActionDefinition>,<#/components/schemas/ResourceDeleteActionDefinition>,<#/components/schemas/ResourceGetActionDefinition>,<#/components/schemas/ResourceHistoryGetActionDefinition>,<#/components/schemas/ResourceQueryActionDefinition>,<#/components/schemas/ResourceSubscriptionStatusActionDefinition>,<#/components/schemas/ResourceSubscriptionSubscribeActionDefinition>,<#/components/schemas/ResourceSubscriptionToggleActionDefinition>,<#/components/schemas/ResourceSubscriptionUnsubscribeActionDefinition>,<#/components/schemas/ResourceUpdateActionDefinition>,<#/components/schemas/ResourcePatchActionDefinition>,<#/components/schemas/ShareActionDefinition>,<#/components/schemas/StaticActionDefinition>,<#/components/schemas/StorageAppendActionDefinition>,<#/components/schemas/StorageSubtractActionDefinition>,<#/components/schemas/StorageReadActionDefinition>,<#/components/schemas/StorageWriteActionDefinition>,<#/components/schemas/StorageUpdateActionDefinition>,<#/components/schemas/StorageDeleteActionDefinition>,<#/components/schemas/GroupMemberInviteActionDefinition>,<#/components/schemas/GroupMemberQueryActionDefinition>,<#/components/schemas/GroupMemberDeleteActionDefinition>,<#/components/schemas/GroupMemberRoleUpdateActionDefinition>,<#/components/schemas/GroupQueryActionDefinition>,<#/components/schemas/ThrowActionDefinition>,<#/components/schemas/AppMemberLoginActionDefinition>,<#/components/schemas/AppMemberLogoutActionDefinition>,<#/components/schemas/AppMemberRegisterActionDefinition>,<#/components/schemas/AppMemberInviteActionDefinition>,<#/components/schemas/AppMemberRoleUpdateActionDefinition>,<#/components/schemas/AppMemberCurrentPatchActionDefinition>,<#/components/schemas/AppMemberPropertiesPatchActionDefinition>,<#/components/schemas/AppMemberQueryActionDefinition>,<#/components/schemas/AppMemberDeleteActionDefinition>",
+        "stack": "instance.actions.onSubmit is not any of <#/components/schemas/AnalyticsActionDefinition>,<#/components/schemas/ControllerActionDefinition>,<#/components/schemas/ConditionActionDefinition>,<#/components/schemas/DialogActionDefinition>,<#/components/schemas/DialogErrorActionDefinition>,<#/components/schemas/DialogOkActionDefinition>,<#/components/schemas/DownloadActionDefinition>,<#/components/schemas/EachActionDefinition>,<#/components/schemas/EmailActionDefinition>,<#/components/schemas/EventActionDefinition>,<#/components/schemas/FlowBackActionDefinition>,<#/components/schemas/FlowFinishActionDefinition>,<#/components/schemas/FlowNextActionDefinition>,<#/components/schemas/FlowCancelActionDefinition>,<#/components/schemas/FlowToActionDefinition>,<#/components/schemas/LinkActionDefinition>,<#/components/schemas/LinkBackActionDefinition>,<#/components/schemas/LinkNextActionDefinition>,<#/components/schemas/LogActionDefinition>,<#/components/schemas/MatchActionDefinition>,<#/components/schemas/MessageActionDefinition>,<#/components/schemas/NoopActionDefinition>,<#/components/schemas/NotifyActionDefinition>,<#/components/schemas/RequestActionDefinition>,<#/components/schemas/ResourceCountActionDefinition>,<#/components/schemas/ResourceCreateActionDefinition>,<#/components/schemas/ResourceDeleteActionDefinition>,<#/components/schemas/ResourceDeleteAllActionDefinition>,<#/components/schemas/ResourceDeleteBulkActionDefinition>,<#/components/schemas/ResourceGetActionDefinition>,<#/components/schemas/ResourceHistoryGetActionDefinition>,<#/components/schemas/ResourceQueryActionDefinition>,<#/components/schemas/ResourceSubscriptionStatusActionDefinition>,<#/components/schemas/ResourceSubscriptionSubscribeActionDefinition>,<#/components/schemas/ResourceSubscriptionToggleActionDefinition>,<#/components/schemas/ResourceSubscriptionUnsubscribeActionDefinition>,<#/components/schemas/ResourceUpdateActionDefinition>,<#/components/schemas/ResourcePatchActionDefinition>,<#/components/schemas/ShareActionDefinition>,<#/components/schemas/StaticActionDefinition>,<#/components/schemas/StorageAppendActionDefinition>,<#/components/schemas/StorageSubtractActionDefinition>,<#/components/schemas/StorageReadActionDefinition>,<#/components/schemas/StorageWriteActionDefinition>,<#/components/schemas/StorageUpdateActionDefinition>,<#/components/schemas/StorageDeleteActionDefinition>,<#/components/schemas/GroupMemberInviteActionDefinition>,<#/components/schemas/GroupMemberQueryActionDefinition>,<#/components/schemas/GroupMemberDeleteActionDefinition>,<#/components/schemas/GroupMemberRoleUpdateActionDefinition>,<#/components/schemas/GroupQueryActionDefinition>,<#/components/schemas/ThrowActionDefinition>,<#/components/schemas/AppMemberLoginActionDefinition>,<#/components/schemas/AppMemberLogoutActionDefinition>,<#/components/schemas/AppMemberRegisterActionDefinition>,<#/components/schemas/AppMemberInviteActionDefinition>,<#/components/schemas/AppMemberRoleUpdateActionDefinition>,<#/components/schemas/AppMemberCurrentPatchActionDefinition>,<#/components/schemas/AppMemberPropertiesPatchActionDefinition>,<#/components/schemas/AppMemberQueryActionDefinition>,<#/components/schemas/AppMemberDeleteActionDefinition>",
       },
     ],
   },
