@@ -228,7 +228,8 @@ export const messages = defineMessages({
     defaultMessage: 'Display App Member Name',
   },
   displayAppMemberNameDescription: {
-    id: 'studio.VfE8ed',
-    defaultMessage: "Whether to display the logged in app member's name in the title bar",
+    id: 'studio.ipo4aU',
+    defaultMessage:
+      "Whether to display the logged in app member's name in the title bar, if the name is not available email is displayed",
   },
 });
