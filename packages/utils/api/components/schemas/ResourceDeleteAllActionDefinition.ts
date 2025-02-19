@@ -10,7 +10,10 @@ export const ResourceDeleteAllActionDefinition = extendJSONSchema(
     properties: {
       type: {
         enum: ['resource.delete.all'],
-        description: 'Delete all instances of a resource.',
+        description: `Delete all instances of a resource.
+> **Warning!**
+>
+> Use this action with caution to avoid losing precious data!`,
       },
       resource: {
         type: 'string',
