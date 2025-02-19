@@ -993,6 +993,12 @@ export interface ResourceDefinition {
   history?: ResourceHistoryDefinition | boolean;
 
   /**
+   * Whether to enable position column for the instances of this resource. This is used for keeping
+   * an ordered list to enable custom sorting of the data using drag and drop features.
+   */
+  positioning?: boolean;
+
+  /**
    * The definition for the `resource.create` action.
    */
   create?: ResourceCall;

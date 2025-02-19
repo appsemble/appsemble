@@ -43,6 +43,7 @@ import { pathItems as appsAppIdRatings } from './apps/appId/ratings.js';
 import { pathItems as appsAppIdReadmesReadmeId } from './apps/appId/readmes/readmeId.js';
 import { pathItems as appsAppIdReseed } from './apps/appId/reseed.js';
 import { pathItems as appsAppIdResourcesResourceType$Count } from './apps/appId/resources/resourceType/count.js';
+import { pathItems as appsAppIdResourcesResourceTypeResourceIdPositioning } from './apps/appId/resources/resourceType/resourceId/positions.js';
 import { pathItems as appsAppIdResourcesResourceTypeResourceIdSubscriptions } from './apps/appId/resources/resourceType/resourceId/subscriptions.js';
 import { pathItems as appsAppIdResourcesResourceTypeResourceId } from './apps/appId/resources/resourceType/resourceId.js';
 import { pathItems as appsAppIdResourcesResourceTypeSubscriptions } from './apps/appId/resources/resourceType/subscriptions.js';
@@ -198,6 +199,8 @@ export const paths = {
   '/api/apps/{appId}/resources/{resourceType}': appsAppIdResourcesResourceType,
   '/api/apps/{appId}/resources/{resourceType}/{resourceId}/versions':
     appsAppIdResourcesResourceTypeResourceIdVersions,
+  '/api/apps/{appId}/resources/{resourceType}/{resourceId}/positions':
+    appsAppIdResourcesResourceTypeResourceIdPositioning,
   '/api/apps/{appId}/resources': appsAppIdResources,
   '/api/apps/{appId}/saml/{appSamlSecretId}/acs': appsAppIdSamlSecretIdAcs,
   '/api/apps/{appId}/saml/{appSamlSecretId}/authn': appsAppIdSamlSecretIdAuthn,
