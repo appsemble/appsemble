@@ -1,7 +1,7 @@
 import { logger } from '@appsemble/node-utils';
 import { DataTypes, type Sequelize, type Transaction } from 'sequelize';
 
-export const key = '0.32.1-test.2';
+export const key = '0.32.1-test.5';
 
 /**
  * Summary:
@@ -11,21 +11,21 @@ export const key = '0.32.1-test.2';
 
 export async function up(transaction: Transaction, db: Sequelize): Promise<void> {
   const queryInterface = db.getQueryInterface();
-  logger.info('Add column `position` to table `Resource`');
+  logger.info('Adding column `Position` to table `Resource`');
   await queryInterface.addColumn(
     'Resource',
-    'position',
+    'Position',
     {
-      type: DataTypes.FLOAT,
+      type: DataTypes.DECIMAL,
       allowNull: true,
     },
     { transaction },
   );
-  logger.info('Add unique index `ResourcePositionUniqueIndex` to table `Resource`');
+  logger.info('Adding unique index `ResourcePositionUniqueIndex` to table `Resource`');
   await queryInterface.addIndex('Resource', {
     name: 'ResourcePositionUniqueIndex',
     unique: true,
-    fields: ['position', 'AppId', 'type'],
+    fields: ['Position', 'AppId', 'type'],
     transaction,
   });
 }
@@ -38,6 +38,8 @@ export async function up(transaction: Transaction, db: Sequelize): Promise<void>
 
 export async function down(transaction: Transaction, db: Sequelize): Promise<void> {
   const queryInterface = db.getQueryInterface();
+  logger.info('Removing unique index `ResourcePositionUniqueIndex` from table `Resource`');
   await queryInterface.removeIndex('Resource', 'ResourcePositionUniqueIndex', { transaction });
-  await queryInterface.removeColumn('Resource', 'position', { transaction });
+  logger.warn('Removing column `Position` from table `Resource`');
+  await queryInterface.removeColumn('Resource', 'Position', { transaction });
 }

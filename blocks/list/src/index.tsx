@@ -8,15 +8,64 @@ import { ListItem } from './components/ListItem/index.js';
 import styles from './index.module.css';
 import { type Item } from '../block.js';
 
-export const renderItems = (items: Item[], spaced?: boolean): VNode => (
-  <ul className={spaced ? 'py-4 px-5' : 'pb-4'}>
-    {items.map((item, index) => (
-      <li key={item.id ?? index}>
-        <ListItem index={index} item={item} />
-      </li>
-    ))}
-  </ul>
-);
+export const renderItems = (items: Item[], spaced?: boolean): VNode => {
+  const itemList: Item[] = items;
+  let draggedItemIndex: number | null = null;
+
+  const handleDragStart = (index: number): void => {
+    draggedItemIndex = index;
+  };
+
+  const handleDrop = async (index: number): Promise<void> => {
+    if (draggedItemIndex == null || draggedItemIndex === index) {
+      return;
+    }
+
+    const updatedItems = [...itemList];
+    const [movedItem] = updatedItems.splice(draggedItemIndex, 1);
+    updatedItems.splice(index, 0, movedItem);
+
+    const prevResourcePosition = Number(itemList[index - 1]?.Position);
+    const nextResourcePosition = Number(itemList[index]?.Position);
+
+    try {
+      await fetch(`http://localhost:9999/api/apps/15/resources/hmm/${movedItem.id}/positions`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          prevResourcePosition: prevResourcePosition ?? undefined,
+          nextResourcePosition: nextResourcePosition ?? undefined,
+        }),
+      });
+    } catch {
+      // Do nothing
+    }
+
+    draggedItemIndex = null;
+  };
+
+  return (
+    <ul className={spaced ? 'py-4 px-5' : 'pb-4'}>
+      {itemList.map((item, index) => (
+        // eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions
+        <li
+          draggable={item.Position != null}
+          key={item.id ?? index}
+          onDragEnd={() => {
+            draggedItemIndex = null;
+          }}
+          onDragOver={(e) => e.preventDefault()}
+          onDragStart={() => handleDragStart(index)}
+          onDrop={() => handleDrop(index)}
+        >
+          <ListItem index={index} item={item} />
+        </li>
+      ))}
+    </ul>
+  );
+};
 
 bootstrap(
   ({
@@ -30,6 +79,10 @@ bootstrap(
     const [groupedData, setGroupedData] = useState<Record<string, Item[]>>({});
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(false);
+    const renderItemsCallback = useCallback(
+      (renderData: Item[], spaced?: boolean) => renderItems(renderData, spaced),
+      [],
+    );
 
     useEffect(() => {
       if (blockData != null) {
@@ -131,13 +184,13 @@ bootstrap(
             Object.entries(groupedData).map(([key, value]) => (
               <div key={key}>
                 <div className={styles.title}>{key}</div>
-                {renderItems(value)}
+                {renderItemsCallback(value)}
               </div>
             ))
           ) : (
             <>
               <div className={styles.title}>{title}</div>
-              {renderItems(data)}
+              {renderItemsCallback(data)}
             </>
           )}
         </div>
@@ -145,7 +198,7 @@ bootstrap(
     ) : (
       <>
         {title && !collapsible ? <div className={styles.title}>{title}</div> : null}
-        {collapsible ? renderFirstList() : renderItems(data, true)}
+        {collapsible ? renderFirstList() : renderItemsCallback(data, true)}
       </>
     );
   },

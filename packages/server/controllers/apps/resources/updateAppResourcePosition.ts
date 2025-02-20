@@ -3,7 +3,7 @@ import { type Context } from 'koa';
 import { Op } from 'sequelize';
 
 import { App, Resource } from '../../../models/index.js';
-import { checkAppMemberAppPermissions } from '../../../utils/authorization.js';
+import { checkAppPermissions } from '../../../utils/authorization.js';
 
 export async function updateAppResourcePosition(ctx: Context): Promise<void> {
   const {
@@ -14,49 +14,42 @@ export async function updateAppResourcePosition(ctx: Context): Promise<void> {
     user: authSubject,
   } = ctx;
 
-  assertKoaError(
-    nextResourcePosition <= prevResourcePosition,
-    ctx,
-    400,
-    'Previous resource position should be less than the next resource',
-  );
-
   const app = await App.findByPk(appId);
   assertKoaError(!app, ctx, 404, 'App not found');
   if (!nextResourcePosition) {
     const count = await Resource.count({
-      where: { AppId: appId, type: resourceType, position: { [Op.gt]: prevResourcePosition } },
+      where: { AppId: appId, type: resourceType, Position: { [Op.gt]: prevResourcePosition } },
     });
     assertKoaError(count > 0, ctx, 400, 'Invalid Position');
   }
   if (!prevResourcePosition) {
     const count = await Resource.count({
-      where: { AppId: appId, type: resourceType, position: { [Op.lt]: nextResourcePosition } },
+      where: { AppId: appId, type: resourceType, Position: { [Op.lt]: nextResourcePosition } },
     });
     assertKoaError(count > 0, ctx, 400, 'Invalid Position');
   }
 
   const nextPositionResource = await Resource.findOne({
-    attributes: ['position'],
+    attributes: ['Position'],
     where: {
       AppId: appId,
       type: resourceType,
-      ...(nextResourcePosition ? { position: nextResourcePosition } : {}),
+      ...(nextResourcePosition ? { Position: nextResourcePosition } : {}),
     },
   });
   const prevPositionResource = await Resource.findOne({
-    attributes: ['position'],
+    attributes: ['Position'],
     where: {
       AppId: appId,
       type: resourceType,
-      ...(prevResourcePosition ? { position: prevResourcePosition } : {}),
+      ...(prevResourcePosition ? { Position: prevResourcePosition } : {}),
     },
   });
   const resourcesInBetween = await Resource.count({
     where: {
       AppId: appId,
       type: resourceType,
-      position: {
+      Position: {
         [Op.and]: {
           [Op.gt]: prevResourcePosition,
           [Op.lt]: nextResourcePosition,
@@ -68,16 +61,26 @@ export async function updateAppResourcePosition(ctx: Context): Promise<void> {
     !nextPositionResource || !prevPositionResource || resourcesInBetween !== 0,
     ctx,
     400,
-    'Invalid previous or next resource position',
+    'Invalid previous or next resource Position',
   );
+
+  if (nextResourcePosition && prevResourcePosition) {
+    assertKoaError(
+      nextResourcePosition <= prevResourcePosition,
+      ctx,
+      400,
+      'Previous resource Position should be less than the next resource',
+    );
+  }
+
   const oldResource = await Resource.findOne({
     where: { id: resourceId, type: resourceType },
     include: [{ association: 'Author', attributes: ['id', 'name'], required: false }],
-    attributes: ['position', 'id', 'created', 'updated'],
+    attributes: ['Position', 'id', 'created', 'updated'],
   });
 
   assertKoaError(!oldResource, ctx, 404, 'Resource not found');
-  await checkAppMemberAppPermissions({
+  await checkAppPermissions({
     context: ctx,
     appId,
     requiredPermissions: [
@@ -86,15 +89,16 @@ export async function updateAppResourcePosition(ctx: Context): Promise<void> {
         : `$resource:${resourceType}:update`,
     ],
   });
-  // If the previous position is not defined i.e. to insert at the top, use 0 as the default.
-  // e.g. If the position of the first element is 1, the position for the updated first element
+  // If the previous Position is not defined i.e. to insert at the top, use 0 as the default.
+  // e.g. If the Position of the first element is 1, the position for the updated first element
   // becomes (0 + 1)/2 = 0.5, similarly, for moving an element to the last of the list, we add
-  // with 1.1 to make the position greater than the lastResourcePosition
-  const updatedPosition = nextResourcePosition
-    ? ((prevResourcePosition ?? 0) + nextResourcePosition) / 2
-    : prevResourcePosition * 1.1;
+  // with 1.1 to make the Position greater than the lastResourcePosition
+  const updatedPosition =
+    nextResourcePosition == null
+      ? prevResourcePosition * 1.1
+      : ((prevResourcePosition ?? 0) + nextResourcePosition) / 2;
   await Resource.update(
-    { position: updatedPosition },
+    { Position: updatedPosition },
     { where: { id: oldResource.id, type: resourceType } },
   );
   ctx.status = 200;

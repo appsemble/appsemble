@@ -110,8 +110,8 @@ export class Resource extends Model {
 
   @AllowNull(true)
   @Index({ name: 'ResourcePositionUniqueIndex', unique: true })
-  @Column(DataTypes.FLOAT)
-  position: number;
+  @Column(DataTypes.DECIMAL)
+  Position: number;
 
   @BelongsTo(() => Group, { onDelete: 'CASCADE' })
   Group: Awaited<Group>;
@@ -317,7 +317,7 @@ export class Resource extends Model {
     const result: ResourceType = {
       ...this.data,
       id: this.id,
-      position: this.position,
+      Position: this.Position,
       $created: this.created.toJSON(),
       $updated: this.updated.toJSON(),
     };

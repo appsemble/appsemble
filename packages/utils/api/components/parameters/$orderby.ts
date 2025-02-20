@@ -4,9 +4,9 @@ export const $orderby: OpenAPIV3.ParameterObject = {
   name: '$orderby',
   in: 'query',
   description: `
-    An OData filter
+    An OData query option to fetch ordered data
 
-    http://docs.oasis-open.org/odata/odata/v4.01/odata-v4.01-part1-protocol.html#sec_SystemQueryOptionfilter
+    https://docs.oasis-open.org/odata/odata/v4.01/odata-v4.01-part1-protocol.html#sec_SystemQueryOptionorderby
   `,
   schema: { type: 'string' },
 };

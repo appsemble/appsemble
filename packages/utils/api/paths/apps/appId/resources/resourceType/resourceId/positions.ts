@@ -16,24 +16,21 @@ export const pathItems: OpenAPIV3.PathItemObject = {
           schema: {
             type: 'object',
             description: '',
-            anyOf: [
-              {
-                required: ['prevResourcePosition'],
-              },
-              {
-                required: ['nextResourcePosition'],
-              },
-            ],
+            required: ['prevResourcePosition', 'nextResourcePosition'],
             properties: {
               prevResourcePosition: {
-                type: 'number',
-                nullable: true,
-                minimum: 0,
+                oneOf: [
+                  {
+                    type: 'number',
+                    minimum: 0,
+                  },
+                  {
+                    enum: [null],
+                  },
+                ],
               },
               nextResourcePosition: {
-                type: 'number',
-                nullable: true,
-                minimum: 0,
+                oneOf: [{ type: 'number', minimum: 0 }, { enum: [null] }],
               },
             },
           },

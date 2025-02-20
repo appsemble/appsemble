@@ -217,6 +217,11 @@ export interface BlockUtils extends Utils {
    * @param header A header that can be used to separate from other block menus.
    */
   menu: (items: MenuItem[], header?: string) => void;
+
+  /**
+   * Get the URL of the API, this can be handy when a block wants to make a request to the API.
+   */
+  apiUrl: string;
 }
 
 export interface Events {

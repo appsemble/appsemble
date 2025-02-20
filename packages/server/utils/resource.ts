@@ -59,6 +59,8 @@ export function renameODataWithCasting(name: string, type?: FieldType): Literal 
       return 'GroupId';
     case 'id':
       return name;
+    case 'Position':
+      return 'Position';
     default:
       return type === 'string' ? `data.${name}` : literal(`("Resource"."data"#>'{${name}}')`);
   }
