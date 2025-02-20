@@ -145,3 +145,4 @@ export * from './AppMemberPropertyDefinition.js';
 export * from './GroupMember.js';
 export * from './AppAccount.js';
 export * from './PageActionsDefinition.js';
+export * from './FilterParametersDefinition.js';

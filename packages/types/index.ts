@@ -1,4 +1,5 @@
 import { type IconName } from '@fortawesome/fontawesome-common-types';
+import { type literalValues } from '@odata/parser';
 import { type Schema } from 'jsonschema';
 import { type OpenAPIV3 } from 'openapi-types';
 import { type JsonObject, type RequireExactlyOne } from 'type-fest';
@@ -331,6 +332,15 @@ export interface SubstringCaseType {
    */
   substring: string;
 }
+
+export type ODataLiteralType = keyof typeof literalValues;
+
+type FilterParams = Record<
+  string,
+  { type: ODataLiteralType; value: Remapper; comparator: 'eq' | 'ge' | 'gt' | 'le' | 'lt' | 'ne' }
+>;
+
+type OrderParams = Record<string, 'asc' | 'desc'>;
 
 export interface Remappers {
   /**
@@ -777,6 +787,16 @@ export interface Remappers {
   translate: string;
 
   container: string;
+
+  /**
+   * Construct an OData $filter
+   */
+  'filter.from': FilterParams;
+
+  /**
+   * Construct an OData $orderby
+   */
+  'order.from': OrderParams;
 }
 
 export type ObjectRemapper = RequireExactlyOne<Remappers>;

@@ -1726,3 +1726,39 @@ describe.each(Object.entries(examples))(
     });
   },
 );
+
+describe('filter.from', () => {
+  runTests({
+    'create a new filter from remappers': {
+      input: { exclude: 'Peter' },
+      mappers: {
+        'filter.from': {
+          name: { type: 'String', comparator: 'ne', value: { prop: 'exclude' } },
+          age: { type: 'Int64', comparator: 'lt', value: 10 },
+          birthday: { type: 'Date', comparator: 'ge', value: '2000-01-01' },
+          job: { type: 'String', comparator: 'eq', value: null },
+          employed: { type: 'Boolean', comparator: 'eq', value: false },
+          undefined: { type: 'String', comparator: 'eq', value: undefined },
+          special: { type: 'String', comparator: 'eq', value: "Special character's test" },
+        },
+      },
+      expected:
+        "name ne 'Peter' and age lt 10 and birthday ge 2000-01-01 and job eq null and employed eq false and undefined eq null and special eq 'Special character''s test'",
+    },
+  });
+});
+
+describe('order.from', () => {
+  runTests({
+    'create a new order from remappers': {
+      input: { exclude: 'Peter' },
+      mappers: {
+        'order.from': {
+          name: 'asc',
+          age: 'desc',
+        },
+      },
+      expected: 'name asc,age desc',
+    },
+  });
+});

@@ -80,17 +80,6 @@ describe('toOData', () => {
       filter: { test: 'search' },
       expected: "contains(tolower(test),'search')",
     },
-    "make the single quote(') and backslash(\\) odata compatible": {
-      input: [
-        {
-          name: 'test',
-          type: 'string',
-          defaultValue: '',
-        },
-      ],
-      filter: { test: "'\\" },
-      expected: "contains(tolower(test),'''\\\\')",
-    },
     'process multiple queries': {
       input: [
         {

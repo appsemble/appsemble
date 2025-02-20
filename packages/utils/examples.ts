@@ -746,6 +746,32 @@ export const examples: Record<RemapperExampleKeys, RemapperExample> = {
     result: {},
     skip: true,
   },
+  'filter.from': {
+    input: { exclude: 'Peter' },
+    remapper: {
+      'filter.from': {
+        name: { type: 'String', comparator: 'ne', value: { prop: 'exclude' } },
+        age: { type: 'Int64', comparator: 'lt', value: 10 },
+        birthday: { type: 'Date', comparator: 'ge', value: '2000-01-01' },
+        job: { type: 'String', comparator: 'eq', value: null },
+        employed: { type: 'Boolean', comparator: 'eq', value: false },
+        undefined: { type: 'String', comparator: 'eq', value: undefined },
+        special: { type: 'String', comparator: 'eq', value: "Special character's test" },
+      },
+    },
+    result:
+      "name ne 'Peter' and age lt 10 and birthday ge 2000-01-01 and job eq null and employed eq false and undefined eq null and special eq 'Special character''s test'",
+  },
+  'order.from': {
+    input: null,
+    remapper: {
+      'order.from': {
+        name: 'asc',
+        age: 'desc',
+      },
+    },
+    result: 'name asc,age desc',
+  },
 } as const;
 
 /**
