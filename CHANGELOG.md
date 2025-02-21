@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.32.1-test.5](https://gitlab.com/appsemble/appsemble/-/releases/0.32.1-test.5)] - 2025-02-21
+
+### Added
+
+- App: Add `resource.delete.bulk` and `resource.delete.all` actions.
+
+### Changed
+
+- App: Use email address as the fallback if the name is not set for `displayAppMemberName`.
+
 ## \[[0.32.1-test.4](https://gitlab.com/appsemble/appsemble/-/releases/0.32.1-test.4)] - 2025-02-18
 
 ## \[[0.32.1-test.3](https://gitlab.com/appsemble/appsemble/-/releases/0.32.1-test.3)] - 2025-02-18
