@@ -6,6 +6,7 @@ import {
   type SubstringCaseType,
   type ValueFromProcess,
 } from '@appsemble/types';
+import { filter, literalValues, param } from '@odata/parser';
 import { addMilliseconds, format, parse, parseISO } from 'date-fns';
 import equal from 'fast-deep-equal';
 import { createEvent, type EventAttributes } from 'ics';
@@ -703,5 +704,29 @@ const mapperImplementations: MapperImplementations = {
 
     const url = `http://${containerName}.${namespace}.svc.cluster.local/${endpoint}`;
     return url;
+  },
+
+  'filter.from'(values, input, context) {
+    let result = filter();
+    for (const [field, { comparator, type, value }] of Object.entries(values)) {
+      const remapped = remap(value, input, context);
+      const remappedDefined = remapped === undefined ? null : remapped;
+      const literal =
+        type === 'String' && value != null
+          ? literalValues[type](
+              (remappedDefined as string).replaceAll("'", "''").replaceAll('\\', '\\\\'),
+            )
+          : literalValues[type === 'Number' ? 'Decimal' : type](remappedDefined as never);
+
+      result = result.field(field)[comparator](literal);
+    }
+
+    return String(param().filter(result)).replace(/^\$filter=/, '');
+  },
+
+  'order.from'(values) {
+    return String(
+      param().orderby(Object.entries(values).map(([key, order]) => ({ field: key, order }))),
+    ).replace('$orderby=', '');
   },
 };

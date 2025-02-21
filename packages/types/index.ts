@@ -332,6 +332,17 @@ export interface SubstringCaseType {
   substring: string;
 }
 
+type FilterParams = Record<
+  string,
+  {
+    type: 'Boolean' | 'Date' | 'Guid' | 'Number' | 'String';
+    value: Remapper;
+    comparator: 'eq' | 'ge' | 'gt' | 'le' | 'lt' | 'ne';
+  }
+>;
+
+type OrderParams = Record<string, 'asc' | 'desc'>;
+
 export interface Remappers {
   /**
    * Get app metadata.
@@ -777,6 +788,16 @@ export interface Remappers {
   translate: string;
 
   container: string;
+
+  /**
+   * Construct an OData $filter
+   */
+  'filter.from': FilterParams;
+
+  /**
+   * Construct an OData $orderby
+   */
+  'order.from': OrderParams;
 }
 
 export type ObjectRemapper = RequireExactlyOne<Remappers>;

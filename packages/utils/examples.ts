@@ -746,6 +746,40 @@ export const examples: Record<RemapperExampleKeys, RemapperExample> = {
     result: {},
     skip: true,
   },
+  'filter.from': {
+    input: { exclude: 'Peter' },
+    remapper: {
+      'filter.from': {
+        name: { type: 'String', comparator: 'ne', value: { prop: 'exclude' } },
+        age: { type: 'Number', comparator: 'lt', value: 10 },
+        height: { type: 'Number', comparator: 'le', value: 1.75 },
+        heightString: { type: 'Number', comparator: 'le', value: '1.75' },
+        birthday: { type: 'Date', comparator: 'ge', value: '2000-01-01' },
+        friendsSince: { type: 'Date', comparator: 'ge', value: '2014-01-01T00:00:00Z' },
+        job: { type: 'String', comparator: 'eq', value: null },
+        employed: { type: 'Boolean', comparator: 'eq', value: false },
+        id: { type: 'Guid', comparator: 'eq', value: '03a0a47b-e3a2-e311-9402-00155d104c24' },
+        undefined: { type: 'String', comparator: 'eq', value: undefined },
+        special: {
+          type: 'String',
+          comparator: 'eq',
+          value: 'Special character\'s "test" \\%&+?^/',
+        },
+      },
+    },
+    result:
+      "name ne 'Peter' and age lt 10 and height le 1.75 and heightString le 1.75 and birthday ge 2000-01-01 and friendsSince ge 2014-01-01T00:00:00Z and job eq null and employed eq false and id eq 03a0a47b-e3a2-e311-9402-00155d104c24 and undefined eq null and special eq 'Special character''s \"test\" \\\\%&+?^/'",
+  },
+  'order.from': {
+    input: null,
+    remapper: {
+      'order.from': {
+        name: 'asc',
+        age: 'desc',
+      },
+    },
+    result: 'name asc,age desc',
+  },
 } as const;
 
 /**

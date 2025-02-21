@@ -175,10 +175,13 @@ export function TabsPage({
       <>
         <Tabs centered onChange={onChange} size="medium" value={pathname}>
           {pageTabs.map((tab, index) => {
-            const translatedName = getAppMessage({
-              id: `${prefix}.tabs.${index}`,
-              defaultMessage: remap(tab.name, data, remapperContext),
-            }).format() as string;
+            const defaultMessage = remap(tab.name, data, remapperContext);
+            const translatedName = createdTabs.length
+              ? defaultMessage
+              : (getAppMessage({
+                  id: `${prefix}.tabs.${index}`,
+                  defaultMessage,
+                }).format() as string);
 
             const value = `${['', lang, pageId, normalize(translatedName)].join('/')}${
               wildcard.includes('/') ? wildcard.slice(wildcard.indexOf('/')) : ''
@@ -195,10 +198,12 @@ export function TabsPage({
           {pageTabs.map(({ blocks, name, roles }, index) => {
             const defaultMessage =
               typeof name === 'string' ? name : String(remap(name, data, remapperContext));
-            const translatedName = getAppMessage({
-              id: `${prefix}.tabs.${index}`,
-              defaultMessage,
-            }).format() as string;
+            const translatedName = createdTabs.length
+              ? defaultMessage
+              : (getAppMessage({
+                  id: `${prefix}.tabs.${index}`,
+                  defaultMessage,
+                }).format() as string);
 
             return (
               <Route

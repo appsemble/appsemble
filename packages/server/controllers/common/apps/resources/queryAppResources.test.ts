@@ -1054,6 +1054,34 @@ describe('queryAppResources', () => {
     `);
   });
 
+  it('should be able to filter fields with special characters when fetching resources', async () => {
+    await Resource.create({
+      AppId: app.id,
+      type: 'testResource',
+      data: { foo: 'foo\'s " \\%&+?^/' },
+    });
+    await Resource.create({ AppId: app.id, type: 'testResource', data: { foo: 'bar' } });
+    authorizeStudio();
+
+    const response = await request.get(
+      `/api/apps/${app.id}/resources/testResource?$filter=foo eq 'foo''s%20%22%20%5C%5C%25%26%2B%3F%5E%2F'`,
+    );
+
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 200 OK
+      Content-Type: application/json; charset=utf-8
+
+      [
+        {
+          "$created": "1970-01-01T00:00:00.000Z",
+          "$updated": "1970-01-01T00:00:00.000Z",
+          "foo": "foo's " \\%&+?^/",
+          "id": 1,
+        },
+      ]
+    `);
+  });
+
   it('should be able to filter multiple fields when fetching resources', async () => {
     const resource = await Resource.create({
       AppId: app.id,

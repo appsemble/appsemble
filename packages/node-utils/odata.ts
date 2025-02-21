@@ -22,9 +22,7 @@ export function processLiteral(token: Token): Date | boolean | number | string {
     case Edm.Boolean:
       return token.raw === 'true';
     case Edm.String:
-      return JSON.parse(
-        `"${token.raw.slice(1, -1).replaceAll('"', '\\"').replaceAll("''", "'").replaceAll('\\\\', '\\')}"`,
-      );
+      return JSON.parse(`"${token.raw.slice(1, -1).replaceAll('"', '\\"').replaceAll("''", "'")}"`);
     case Edm.Byte:
     case Edm.Decimal:
     case Edm.Double:
