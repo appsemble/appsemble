@@ -227,10 +227,10 @@ spec:
               mountPath: /tmp/mailpit.crt
               subPath: tls.crt
           {{- end }}
-      {{- if .Values.mailpit.mailpit.smtp.tls.secretName}}
       volumes:
         - name: tmp-volume
           emptyDir: {}
+      {{- if .Values.mailpit.mailpit.smtp.tls.secretName}}
         - name: mailpit-cert
           secret:
             secretName: {{ .Values.mailpit.mailpit.smtp.tls.secretName }}
