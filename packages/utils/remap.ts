@@ -266,7 +266,6 @@ const mapperImplementations: MapperImplementations = {
   },
 
   'tab.name'(mapper, input, context) {
-    console.info('tab.name', mapper, input, context);
     return context.tabRef.current.name;
   },
 
@@ -717,12 +716,12 @@ const mapperImplementations: MapperImplementations = {
           ? literalValues[type](
               (remappedDefined as string).replaceAll("'", "''").replaceAll('\\', '\\\\'),
             )
-          : literalValues[type](remappedDefined as never);
+          : literalValues[type === 'Number' ? 'Decimal' : type](remappedDefined as never);
 
       result = result.field(field)[comparator](literal);
     }
 
-    return String(param().filter(result)).replace('$filter=', '');
+    return String(param().filter(result)).replace(/^\$filter=/, '');
   },
 
   'order.from'(values) {

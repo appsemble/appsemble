@@ -14,12 +14,12 @@ resource queries.
 
 The different comparator options are as follows:
 
-- eq - Equals
-- ne - Does not equal
+- eq - Equal to
+- ne - Not equal to
 - lt - Less than
 - gt - Greater than
-- le - Less or equal than
-- ge - Greater or equal than
+- le - Less than or equal to
+- ge - Greater than or equal to
 
 The most common types of values are \`String\`, \`Number\`, \`Boolean\` and \`Date\`. If you need a more specific
 type, please refer to [the OData spec](https://www.odata.org/documentation/odata-version-2-0/overview/).

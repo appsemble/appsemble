@@ -1058,13 +1058,13 @@ describe('queryAppResources', () => {
     await Resource.create({
       AppId: app.id,
       type: 'testResource',
-      data: { foo: "foo's" },
+      data: { foo: 'foo\'s " \\%&+?^/' },
     });
     await Resource.create({ AppId: app.id, type: 'testResource', data: { foo: 'bar' } });
     authorizeStudio();
 
     const response = await request.get(
-      `/api/apps/${app.id}/resources/testResource?$filter=foo eq 'foo''s'`,
+      `/api/apps/${app.id}/resources/testResource?$filter=foo eq 'foo''s%20%22%20%5C%5C%25%26%2B%3F%5E%2F'`,
     );
 
     expect(response).toMatchInlineSnapshot(`
@@ -1075,7 +1075,7 @@ describe('queryAppResources', () => {
         {
           "$created": "1970-01-01T00:00:00.000Z",
           "$updated": "1970-01-01T00:00:00.000Z",
-          "foo": "foo's",
+          "foo": "foo's " \\%&+?^/",
           "id": 1,
         },
       ]
