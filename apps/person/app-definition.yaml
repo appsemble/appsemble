@@ -73,7 +73,7 @@ pages:
             to: Person Registration Form
             type: link
       - type: button-list
-        version: 0.32.1-test.3
+        version: 0.32.1-test.4
         parameters:
           buttons:
             - label: Delete All People
