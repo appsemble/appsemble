@@ -3,6 +3,8 @@ icon: gears
 ---
 
 import { importDocs } from './index.js';
+import { ActionRef } from './ActionRef/index.tsx';
+import { ActionDefinition } from '../../../../utils/api/components/schemas/ActionDefinition.ts';
 
 # Actions
 
@@ -93,6 +95,10 @@ Actions will copy their data before being executed onto the `history` stack. Thi
 retrieve this data in a later action by for example using `remapAfter` with the `history`,
 `assign.history` or `omit.history` remappers. This is useful whenever an action overwrites data the
 current data.
+
+## Base properties:
+
+<ActionRef action={ActionDefinition.allOf[0]} excludeBase={false} />
 
 Below you can find the actions grouped by type that Appsemble supports.
 

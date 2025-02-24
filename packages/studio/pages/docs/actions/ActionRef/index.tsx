@@ -1,11 +1,9 @@
-import { useMeta } from '@appsemble/react-components';
 import { camelToHyphen, defaultLocale } from '@appsemble/utils';
 import { type Schema as JSONSchema } from 'jsonschema';
 import { type OpenAPIV3 } from 'openapi-types';
 import { type ReactNode } from 'react';
 import { Link } from 'react-router-dom';
 
-import { messages } from './messages.js';
 import { type RenderRefProps, Schema } from '../../../../components/Schema/index.js';
 
 interface ActionRefProps {
@@ -34,8 +32,6 @@ function Ref({ isArray, jsonRef }: RenderRefProps): ReactNode {
 }
 
 export function ActionRef({ action, excludeBase = true }: ActionRefProps): ReactNode {
-  useMeta(messages.title, messages.description);
-
   const schema = action as JSONSchema;
 
   const entry = excludeBase
