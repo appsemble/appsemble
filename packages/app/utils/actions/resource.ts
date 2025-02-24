@@ -227,6 +227,36 @@ export const update: ActionCreator<'resource.update'> = (args) => {
   });
 };
 
+export const updatePositions: ActionCreator<'resource.update.positions'> = (args) => {
+  const { appDefinition, definition } = args;
+  const resource = appDefinition.resources[definition.resource];
+  const method = 'PUT';
+  const url = `${apiUrl}/api/apps/${appId}/resources/${definition.resource}`;
+  const { id = 'id' } = resource;
+  return request({
+    ...args,
+    definition: {
+      ...definition,
+      body: {
+        'object.from': {
+          prevResourcePosition: { prop: 'prevResourcePosition' },
+          nextResourcePosition: { prop: 'nextResourcePosition' },
+        },
+      },
+      method,
+      proxy: false,
+      type: 'request',
+      url: {
+        'string.format': {
+          template: `${url}${url.endsWith('/') ? '' : '/'}{id}/positions`,
+          values: { id: definition.id ?? { prop: id as string } },
+        },
+      },
+      schema: resource.schema,
+    },
+  });
+};
+
 export const patch: ActionCreator<'resource.patch'> = (args) => {
   const { appDefinition, definition, getAppMemberSelectedGroup } = args;
   const resource = appDefinition.resources[definition.resource];

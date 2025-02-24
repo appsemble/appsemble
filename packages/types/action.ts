@@ -42,6 +42,7 @@ interface RequestLikeAction<T extends Action['type']> extends BaseAction<T> {
 export type RequestAction = RequestLikeAction<'request'>;
 export type ResourceCreateAction = RequestLikeAction<'resource.create'>;
 export type ResourceDeleteAction = RequestLikeAction<'resource.delete'>;
+export type ResourceUpdatePositionsAction = RequestLikeAction<'resource.update.positions'>;
 export type ResourceDeleteAllAction = RequestLikeAction<'resource.delete.all'>;
 export type ResourceDeleteBulkAction = RequestLikeAction<'resource.delete.bulk'>;
 export type ResourceGetAction = RequestLikeAction<'resource.get'>;
@@ -115,7 +116,8 @@ export type Action =
   | ResourceHistoryGetAction
   | ResourcePatchAction
   | ResourceQueryAction
-  | ResourceUpdateAction;
+  | ResourceUpdateAction
+  | ResourceUpdatePositionsAction;
 
 interface ActionErrorOptions<D extends ActionDefinition> {
   /**

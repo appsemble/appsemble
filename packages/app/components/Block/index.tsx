@@ -171,7 +171,6 @@ export function Block({
     const utils: BlockUtils = {
       remap,
       showMessage: push,
-      apiUrl,
       addCleanup(fn) {
         cleanups.current.push(fn);
       },

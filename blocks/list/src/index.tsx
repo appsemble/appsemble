@@ -1,4 +1,4 @@
-import { bootstrap, FormattedMessage } from '@appsemble/preact';
+import { bootstrap, FormattedMessage, useBlock } from '@appsemble/preact';
 import { Loader, Message } from '@appsemble/preact-components';
 import { type VNode } from 'preact';
 import { useCallback, useEffect, useState } from 'preact/hooks';
@@ -8,7 +8,7 @@ import { ListItem } from './components/ListItem/index.js';
 import styles from './index.module.css';
 import { type Item } from '../block.js';
 
-export const renderItems = (items: Item[], spaced?: boolean): VNode => {
+export const renderItems = (items: Item[], spaced?: boolean, onDrop?: any): VNode => {
   const itemList: Item[] = items;
   let draggedItemIndex: number | null = null;
 
@@ -28,20 +28,7 @@ export const renderItems = (items: Item[], spaced?: boolean): VNode => {
     const prevResourcePosition = Number(itemList[index - 1]?.Position);
     const nextResourcePosition = Number(itemList[index]?.Position);
 
-    try {
-      await fetch(`http://localhost:9999/api/apps/15/resources/hmm/${movedItem.id}/positions`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          prevResourcePosition: prevResourcePosition ?? undefined,
-          nextResourcePosition: nextResourcePosition ?? undefined,
-        }),
-      });
-    } catch {
-      // Do nothing
-    }
+    await onDrop({ prevResourcePosition, nextResourcePosition, ...movedItem });
 
     draggedItemIndex = null;
   };
@@ -51,7 +38,7 @@ export const renderItems = (items: Item[], spaced?: boolean): VNode => {
       {itemList.map((item, index) => (
         // eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions
         <li
-          draggable={item.Position != null}
+          draggable={onDrop ? onDrop.type !== 'noop' : null}
           key={item.id ?? index}
           onDragEnd={() => {
             draggedItemIndex = null;
@@ -79,10 +66,9 @@ bootstrap(
     const [groupedData, setGroupedData] = useState<Record<string, Item[]>>({});
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(false);
-    const renderItemsCallback = useCallback(
-      (renderData: Item[], spaced?: boolean) => renderItems(renderData, spaced),
-      [],
-    );
+    const {
+      actions: { onDrop },
+    } = useBlock();
 
     useEffect(() => {
       if (blockData != null) {
@@ -184,13 +170,13 @@ bootstrap(
             Object.entries(groupedData).map(([key, value]) => (
               <div key={key}>
                 <div className={styles.title}>{key}</div>
-                {renderItemsCallback(value)}
+                {renderItems(value, false, onDrop)}
               </div>
             ))
           ) : (
             <>
               <div className={styles.title}>{title}</div>
-              {renderItemsCallback(data)}
+              {renderItems(data, false, onDrop)}
             </>
           )}
         </div>
@@ -198,7 +184,7 @@ bootstrap(
     ) : (
       <>
         {title && !collapsible ? <div className={styles.title}>{title}</div> : null}
-        {collapsible ? renderFirstList() : renderItemsCallback(data, true)}
+        {collapsible ? renderFirstList() : renderItems(data, true, onDrop)}
       </>
     );
   },

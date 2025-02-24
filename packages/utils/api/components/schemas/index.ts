@@ -95,6 +95,7 @@ export * from './ResourceSubscriptionSubscribeActionDefinition.js';
 export * from './ResourceSubscriptionToggleActionDefinition.js';
 export * from './ResourceSubscriptionUnsubscribeActionDefinition.js';
 export * from './ResourceUpdateActionDefinition.js';
+export * from './ResourceUpdatePositionsActionDefinition.js';
 export * from './ResourcePatchActionDefinition.js';
 export * from './ResourceViewDefinition.js';
 export * from './SecurityCronDefinition.js';

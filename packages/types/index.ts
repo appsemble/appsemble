@@ -836,6 +836,7 @@ export type ResourceAction =
   | 'delete'
   | 'history.get'
   | 'patch'
+  | 'update.positions'
   | 'update';
 
 export type CustomAppResourcePermission = `$resource:${string}:${ResourceAction}`;
@@ -1700,6 +1701,8 @@ export type ResourceQueryActionDefinition = OwnResourceDefinition &
 export type ResourceCountActionDefinition = OwnResourceDefinition &
   ResourceActionDefinition<'resource.count'>;
 export type ResourceUpdateActionDefinition = ResourceActionDefinition<'resource.update'>;
+export type ResourceUpdatePositionsActionDefinition =
+  ResourceActionDefinition<'resource.update.positions'> & ResourceActionWithIdDefinition;
 export type ResourcePatchActionDefinition = ResourceActionDefinition<'resource.patch'> &
   ResourceActionWithIdDefinition;
 export type AppMemberLogoutAction = BaseActionDefinition<'app.member.logout'>;
@@ -1844,6 +1847,7 @@ export type ActionDefinition =
   | ResourceSubscriptionToggleActionDefinition
   | ResourceSubscriptionUnsubscribeActionDefinition
   | ResourceUpdateActionDefinition
+  | ResourceUpdatePositionsActionDefinition
   | ShareActionDefinition
   | StaticActionDefinition
   | StorageAppendActionDefinition
