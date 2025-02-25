@@ -19,6 +19,7 @@ export const ResourceSubscriptionSubscribeActionDefinition = extendJSONSchema(
       action: {
         enum: ['create', 'delete', 'update'],
         description: 'The resource action type to subscribe to.',
+        default: 'update',
       },
     },
   },

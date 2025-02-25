@@ -17,6 +17,7 @@ export const ResourceSubscriptionToggleActionDefinition = extendJSONSchema(BaseA
     action: {
       enum: ['create', 'delete', 'update'],
       description: 'The resource action type to toggle the subscription state for.',
+      default: 'update',
     },
   },
 });

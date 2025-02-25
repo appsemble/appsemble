@@ -3,6 +3,8 @@ import { type OpenAPIV3 } from 'openapi-types';
 import { ResourceCountActionDefinition } from '../../api/components/schemas/ResourceCountActionDefinition.js';
 import { ResourceCreateActionDefinition } from '../../api/components/schemas/ResourceCreateActionDefinition.js';
 import { ResourceDeleteActionDefinition } from '../../api/components/schemas/ResourceDeleteActionDefinition.js';
+import { ResourceDeleteAllActionDefinition } from '../../api/components/schemas/ResourceDeleteAllActionDefinition.js';
+import { ResourceDeleteBulkActionDefinition } from '../../api/components/schemas/ResourceDeleteBulkActionDefinition.js';
 import { ResourceGetActionDefinition } from '../../api/components/schemas/ResourceGetActionDefinition.js';
 import { ResourceHistoryGetActionDefinition } from '../../api/components/schemas/ResourceHistoryGetActionDefinition.js';
 import { ResourcePatchActionDefinition } from '../../api/components/schemas/ResourcePatchActionDefinition.js';
@@ -22,6 +24,8 @@ export const resourceActions: Record<string, OpenAPIV3.SchemaObject> = {
   'resource.update': ResourceUpdateActionDefinition,
   'resource.patch': ResourcePatchActionDefinition,
   'resource.delete': ResourceDeleteActionDefinition,
+  'resource.delete.all': ResourceDeleteAllActionDefinition,
+  'resource.delete.bulk': ResourceDeleteBulkActionDefinition,
   'resource.subscription.subscribe': ResourceSubscriptionSubscribeActionDefinition,
   'resource.subscription.unsubscribe': ResourceSubscriptionUnsubscribeActionDefinition,
   'resource.subscription.toggle': ResourceSubscriptionToggleActionDefinition,

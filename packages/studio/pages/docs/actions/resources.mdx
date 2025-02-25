@@ -1,7 +1,6 @@
 import { ClientServerActionSupport as Side } from './ClientServerActionSupport/index.tsx';
 import { ActionRef } from './ActionRef/index.tsx';
 import { resourceActions as actions } from '../../../../utils/reference-schemas/actions/resources.ts';
-import { ActionDefinition } from '../../../../utils/api/components/schemas/ActionDefinition.ts';
 
 # Resources
 
@@ -58,17 +57,16 @@ Supported resource actions are as below:
 ## Actions
 
 ### resource.get<Side name="resource.get" />
+
 <ActionRef action={actions['resource.get']} />
 
-This action is used to fetch a single resource. Supported fields for this action are `type`,
-`resource`, `id` and `view`. Fields `type` and `resource` are required. Resource refers to the
-resource to be fetched, id can be specified explicitly using the parameter `id` or appsemble can
-infer it from the data passed to the action function, explicitly defined id is preferred by the
-system and view is the view to use for the resource. This action requires at least one of the app
-permissions `$resource:all:get`, `$resource:all:own:get`, `$resource:all:get:<view-name>`,
+This action is used to fetch a single resource. Id can be specified explicitly using the parameter
+`id` or appsemble can infer it from the data passed to the action function, explicitly defined id is
+preferred by the system. This action requires at least one of the app permissions
+`$resource:all:get`, `$resource:all:own:get`, `$resource:all:get:<view-name>`,
 `$resource:<resource-name>:get`, `$resource:<resource-name>:own:get` or
-`$resource:<resource-name>:get:<view-name>` depending on the context. For more information check out
-[security](../app/security.md#permissions). Here’s an example of how you can use this action to
+`$resource:<resource-name>:get:<view-name>`, depending on the context. For more information check
+out [security](../app/security.md#permissions). Here’s an example of how you can use this action to
 fetch the `person` resource.
 
 ```yaml validate blocks-snippet
@@ -82,15 +80,14 @@ blocks:
 ```
 
 ### resource.history.get<Side name="resource.history.get" />
+
 <ActionRef action={actions['resource.history.get']} />
 
-This action is used to fetch the history of a single resource, `history` attribute of the resource
-should be set to true for this action to work. Supported fields for this action are `type` and
-`resource`. Fields `type` and `resource` are required. Resource refers to the resource to be
-fetched. This action requires at least one of the app permissions `$resource:all:history:get` or
-`$resource:<resource-name>:history:get` depending on the context. For more information check out
-[security](../app/security.md#permissions). Here’s an example of how you can use this action to
-fetch the `person` resource.
+This action is used to fetch the history of a single resource. The `history` attribute of the
+resource should be set to true for this action to work. This action requires at least one of the app
+permissions `$resource:all:history:get` or `$resource:<resource-name>:history:get`, depending on the
+context. For more information check out [security](../app/security.md#permissions). Here’s an
+example of how you can use this action to fetch the `person` resource.
 
 ```yaml validate blocks-snippet
 blocks:
@@ -103,17 +100,15 @@ blocks:
 ```
 
 ### resource.query<Side name="resource.query" />
+
 <ActionRef action={actions['resource.query']} />
 
-This action is used to fetch all the resources. Similar to `resource.get` supported fields for this
-action are `type`, `resource` and `view`. This action also supports the `own` field, which can be
-used to fetch only resources created by the authenticated app member. Fields `type` and `resource`
-are required. Resource refers to the resource to be fetched, and view is the view to use for the
-resource. This action requires at least one of the app permissions `$resource:all:query`,
-`$resource:all:own:query`, `$resource:all:query:<view-name>`, `$resource:<resource-name>:query`,
-`$resource:<resource-name>:own:query` or `$resource:<resource-name>:query:<view-name>` depending on
-the context. For more information check out [security](../app/security.md#permissions). Here’s an
-example of how you can use this action to fetch all `person` resources.
+This action is used to fetch all the resources. This action requires at least one of the app
+permissions `$resource:all:query`, `$resource:all:own:query`, `$resource:all:query:<view-name>`,
+`$resource:<resource-name>:query`, `$resource:<resource-name>:own:query` or
+`$resource:<resource-name>:query:<view-name>`, depending on the context. For more information check
+out [security](../app/security.md#permissions). Here’s an example of how you can use this action to
+fetch all `person` resources.
 
 ```yaml validate blocks-snippet
 blocks:
@@ -126,15 +121,14 @@ blocks:
 ```
 
 ### resource.count<Side name="resource.count" />
+
 <ActionRef action={actions['resource.count']} />
 
-This action is used to fetch the count of resources. Supported field for this action are `type`,
-`resource` and `own`. The fields `type` and `resource` are required. The `own` field can be used to
-fetch only resources created by the authenticated app member. Resource refers to the resource whose
-count is to be fetched. This action requires at least one of the app permissions
-`$resource:all:query` or `$resource:<resource-name>:query` depending on the context. For more
-information check out [security](../app/security.md#permissions). Here’s an example of how you can
-use this action to fetch the number of resources.
+This action is used to count the number of resources a `resource.query` action would return. This
+action requires at least one of the app permissions `$resource:all:query` or
+`$resource:<resource-name>:query`, depending on the context. For more information check out
+[security](../app/security.md#permissions). Here’s an example of how you can use this action to
+fetch the number of resources.
 
 ```yaml validate blocks-snippet
 blocks:
@@ -147,11 +141,11 @@ blocks:
 ```
 
 ### resource.create<Side name="resource.create" />
+
 <ActionRef action={actions['resource.create']} />
 
-This action is used to create new resources. Supported fields for this action are `type` and
-`resource`. Both of the fields are required. This action requires at least one of the app
-permissions `$resource:all:create` or `$resource:<resource-name>:create` depending on the context.
+This action is used to create new resources. This action requires at least one of the app
+permissions `$resource:all:create` or `$resource:<resource-name>:create`, depending on the context.
 For more information check out [security](../app/security.md#permissions). Here’s an example of how
 you can use this action to create a new resource of type person.
 
@@ -167,17 +161,16 @@ blocks:
 ```
 
 ### resource.update<Side name="resource.update" />
+
 <ActionRef action={actions['resource.update']} />
 
-This action is used to replace some resource’s data with a completely new set of values. Supported
-field for this action are `type`, `id` and `resource`. The fields `type` and `resource` are
-required. Resource refers to the resource to be updated, id can be specified explicitly using the
-parameter `id` or appsemble can infer it from the data passed to the action function, explicitly
-defined id is preferred by the system. This action requires at least one of the app permissions
-`$resource:all:update`, `$resource:all:own:update`, `$resource:<resource-name>:update` or
-`$resource:<resource-name>:own:update` depending on the context. For more information check out
-[security](../app/security.md#permissions). Here’s an example of how you can use this action to
-update an existing resource of type person.
+This action is used to replace some resource’s data with a completely new set of values. Id can be
+specified explicitly using the parameter `id` or appsemble can infer it from the data passed to the
+action function, explicitly defined id is preferred by the system. This action requires at least one
+of the app permissions `$resource:all:update`, `$resource:all:own:update`,
+`$resource:<resource-name>:update` or `$resource:<resource-name>:own:update`, depending on the
+context. For more information check out [security](../app/security.md#permissions). Here’s an
+example of how you can use this action to update an existing resource of type person.
 
 ```yaml validate blocks-snippet
 blocks:
@@ -206,15 +199,14 @@ blocks:
 ```
 
 ### resource.patch<Side name="resource.patch" />
+
 <ActionRef action={actions['resource.patch']} />
 
-This action is used to partially update a resource with new data. Supported field for this action
-are `type` and `resource`. Both of the fields are required. Resource refers to the resource to be
-partially updated. This action requires at least one of the app permissions `$resource:all:patch`,
-`$resource:all:own:patch`, `$resource:<resource-name>:patch` or
-`$resource:<resource-name>:own:patch` depending on the context. For more information check out
-[security](../app/security.md#permissions). Here’s an example of how you can partially update a
-resource of type person using this action.
+This action is used to partially update a resource with new data. This action requires at least one
+of the app permissions `$resource:all:patch`, `$resource:all:own:patch`,
+`$resource:<resource-name>:patch` or `$resource:<resource-name>:own:patch`, depending on the
+context. For more information check out [security](../app/security.md#permissions). Here’s an
+example of how you can partially update a resource of type person using this action.
 
 ```yaml validate blocks-snippet
 blocks:
@@ -234,15 +226,14 @@ blocks:
 ```
 
 ### resource.delete<Side name="resource.delete" />
+
 <ActionRef action={actions['resource.delete']} />
 
-This action is used to delete a resource from the database. Supported field for this action are
-`type` and `resource`. Both of the fields are required. Resource refers to the resource to be
-deleted. This action requires at least one of the app permissions `$resource:all:delete`,
-`$resource:all:own:delete`, `$resource:<resource-name>:delete` or
-`$resource:<resource-name>:own:delete` depending on the context. For more information check out
-[security](../app/security.md#permissions). To delete a person resource, you can use the following
-block of code.
+This action is used to delete a resource from the database. This action requires at least one of the
+app permissions `$resource:all:delete`, `$resource:all:own:delete`,
+`$resource:<resource-name>:delete` or `$resource:<resource-name>:own:delete`, depending on the
+context. For more information check out [security](../app/security.md#permissions). To delete a
+person resource, you can use the following block of code.
 
 ```yaml validate blocks-snippet
 blocks:
@@ -266,12 +257,12 @@ blocks:
 
 ### resource.delete.all<Side name="resource.delete.all" />
 
-This action is used to delete all resources of certain type from the database. Supported field for
-this action are `type` and `resource`. Both of the fields are required. Resource refers to the type
-of resources to be deleted. This action requires at least one of the app permissions
-`$resource:all:delete` or `$resource:<resource-name>:delete` depending on the context. For more
-information check out [security](../app/security.md#permissions). To delete all person resources,
-you can use the following block of code.
+<ActionRef action={actions['resource.delete.all']} />
+
+This action is used to delete all resources of certain type from the database. This action requires
+at least one of the app permissions `$resource:all:delete` or `$resource:<resource-name>:delete`,
+depending on the context. For more information check out [security](../app/security.md#permissions).
+To delete all person resources, you can use the following block of code.
 
 > **Warning!**
 >
@@ -299,12 +290,17 @@ blocks:
 
 ### resource.delete.bulk<Side name="resource.delete.bulk" />
 
-This action is used to delete several resources of a certain type from the database by id. Supported
-fields for this action are `type` and `resource`. Both of the fields are required. Resource refers
-to the type of resources to be deleted. This action requires at least one of the app permissions
-`$resource:all:delete` or `$resource:<resource-name>:delete` depending on the context. For more
-information check out [security](../app/security.md#permissions). To delete several person resources,
-you can use the following block of code.
+<ActionRef action={actions['resource.delete.bulk']} />
+
+This action is used to delete several resources of a certain type from the database by id. This
+action requires at least one of the app permissions `$resource:all:delete` or
+`$resource:<resource-name>:delete`, depending on the context. For more information check out
+[security](../app/security.md#permissions). To delete several person resources, you can use the
+following block of code.
+
+> **Warning!**
+>
+> Use this action with caution to avoid losing precious data!
 
 ```yaml validate blocks-snippet
 blocks:
@@ -331,14 +327,11 @@ blocks:
 ```
 
 ### resource.subscription.subscribe<Side name="resource.subscription.subscribe" />
+
 <ActionRef action={actions['resource.subscription.subscribe']} />
 
-This action is used to subscribe to resource modification for push notifications. Supported fields
-for this action are `type`, `resource` and `action`. Fields type and resource are required, the
-field action refers to the action on the resource for which push notifications will be subscribed,
-the action has to be either of type `update`, `delete` or `create`. The default value set for action
-is `update`. Here’s how you can use this action to subscribe to all the updates made to the resource
-person:
+This action is used to subscribe to resource modification for push notifications. Here’s how you can
+use this action to subscribe to all the updates made to the resource person:
 
 ```yaml validate blocks-snippet
 blocks:
@@ -358,13 +351,11 @@ blocks:
 ```
 
 ### resource.subscription.unsubscribe<Side name="resource.subscription.unsubscribe" />
+
 <ActionRef action={actions['resource.subscription.unsubscribe']} />
 
-This action is used to unsubscribe from resource modifications. Supported fields for this action are
-`type`, `resource` and `action`. Fields type and resource are required, the field action refers to
-the action that shall unsubscribe from the resource, the action has to be either of type `update`,
-`delete` or `create`. The default value set for action is `update`. Here’s how you can use this
-action to unsubscribe to the delete notifications related to resource person.
+This action is used to unsubscribe from resource modifications. Here’s how you can use this action
+to unsubscribe to the delete notifications related to resource person.
 
 ```yaml validate blocks-snippet
 blocks:
@@ -380,13 +371,11 @@ blocks:
 ```
 
 ### resource.subscription.toggle<Side name="resource.subscription.toggle" />
+
 <ActionRef action={actions['resource.subscription.toggle']} />
 
 This action is used to toggle push notifications for resource modification. i.e. It will set the
-subscribed property to `true` if it’s set to `false` and vice versa. Supported fields for this
-action are `type`, `resource` and `action`. Fields type and resource are required, the field action
-refers to the action on the resource for which push notifications will be toggled, action has to be
-either of type `update`, `delete` or `create`. The default value set for action is `update`. Here’s
+subscribed property to `true` if it’s set to `false` and vice versa. Here’s
 how you can use this action.
 
 ```yaml validate blocks-snippet
@@ -403,13 +392,10 @@ blocks:
 ```
 
 ### resource.subscription.status<Side name="resource.subscription.status" />
+
 <ActionRef action={actions['resource.subscription.status']} />
 
-This action can be used to access the status of notification subscriptions for a resource. Supported
-fields for this action are `type`, `resource` and `action`. Fields type and resource are required,
-the field action refers to the action on the resource for which the push notification status will be
-fetched. Action has to be either of type `update`, `delete` or `create`. The default value set for
-action is `update`. Here’s an example of usage of this action.
+This action can be used to access the status of notification subscriptions for a resource. Here’s an example of usage of this action.
 
 ```yaml validate blocks-snippet
 blocks:

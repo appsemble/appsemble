@@ -19,6 +19,7 @@ export const ResourceSubscriptionUnsubscribeActionDefinition = extendJSONSchema(
       action: {
         enum: ['create', 'delete', 'update'],
         description: 'The resource action type to unsubscribe from.',
+        default: 'update',
       },
     },
   },
