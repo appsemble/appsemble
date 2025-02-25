@@ -122,12 +122,7 @@ blocks:
 
 <ActionRef action={actions['storage.update']} />
 
-This action is used to update an existing item in storage, or update an item inside a stored array.
-Supported fields for the usage of the action are `type`, `key`, `item`, `value` and `storage`. Item
-is used to identify the item in storage, key and value are used to append data to existing array in
-storage, type is `storage.update` and storage is used to identify the type of storage to use.
-Default value for the storage key is `indexedDb`. Here’s an example of how you can use this action
-to update the data in storage.
+Here’s an example of how you can use this action to update the data in storage.
 
 ```yaml validate blocks-snippet
 blocks:
