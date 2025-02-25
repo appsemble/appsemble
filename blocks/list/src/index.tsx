@@ -8,52 +8,6 @@ import { ListItem } from './components/ListItem/index.js';
 import styles from './index.module.css';
 import { type Item } from '../block.js';
 
-export const renderItems = (items: Item[], spaced?: boolean, onDrop?: any): VNode => {
-  const itemList: Item[] = items;
-  let draggedItemIndex: number | null = null;
-
-  const handleDragStart = (index: number): void => {
-    draggedItemIndex = index;
-  };
-
-  const handleDrop = async (index: number): Promise<void> => {
-    if (draggedItemIndex == null || draggedItemIndex === index) {
-      return;
-    }
-
-    const updatedItems = [...itemList];
-    const [movedItem] = updatedItems.splice(draggedItemIndex, 1);
-    updatedItems.splice(index, 0, movedItem);
-
-    const prevResourcePosition = Number(itemList[index - 1]?.Position);
-    const nextResourcePosition = Number(itemList[index]?.Position);
-
-    await onDrop({ prevResourcePosition, nextResourcePosition, ...movedItem });
-
-    draggedItemIndex = null;
-  };
-
-  return (
-    <ul className={spaced ? 'py-4 px-5' : 'pb-4'}>
-      {itemList.map((item, index) => (
-        // eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions
-        <li
-          draggable={onDrop ? onDrop.type !== 'noop' : null}
-          key={item.id ?? index}
-          onDragEnd={() => {
-            draggedItemIndex = null;
-          }}
-          onDragOver={(e) => e.preventDefault()}
-          onDragStart={() => handleDragStart(index)}
-          onDrop={() => handleDrop(index)}
-        >
-          <ListItem index={index} item={item} />
-        </li>
-      ))}
-    </ul>
-  );
-};
-
 bootstrap(
   ({
     data: blockData,
@@ -69,6 +23,60 @@ bootstrap(
     const {
       actions: { onDrop },
     } = useBlock();
+
+    const renderItems = useCallback(
+      (items: Item[], spaced?: boolean): VNode => {
+        const itemList: Item[] = items;
+        let draggedItemIndex: number | null = null;
+
+        const handleDragStart = (index: number): void => {
+          draggedItemIndex = index;
+        };
+
+        const handleDrop = async (index: number): Promise<void> => {
+          if (draggedItemIndex == null || draggedItemIndex === index) {
+            return;
+          }
+
+          const updatedItems = [...itemList];
+          const [movedItem] = updatedItems.splice(draggedItemIndex, 1);
+          updatedItems.splice(index, 0, movedItem);
+
+          const prevResourcePosition = Number(itemList[index - 1]?.Position);
+          const nextResourcePosition = Number(itemList[index]?.Position);
+
+          const result: Item[] = await onDrop({
+            prevResourcePosition,
+            nextResourcePosition,
+            ...movedItem,
+          });
+
+          setData(result);
+          draggedItemIndex = null;
+        };
+
+        return (
+          <ul className={spaced ? 'py-4 px-5' : 'pb-4'}>
+            {itemList.map((item, index) => (
+              // eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions
+              <li
+                draggable={onDrop ? onDrop.type !== 'noop' : null}
+                key={item.id ?? index}
+                onDragEnd={() => {
+                  draggedItemIndex = null;
+                }}
+                onDragOver={(e) => e.preventDefault()}
+                onDragStart={() => handleDragStart(index)}
+                onDrop={() => handleDrop(index)}
+              >
+                <ListItem index={index} item={item} />
+              </li>
+            ))}
+          </ul>
+        );
+      },
+      [onDrop, setData],
+    );
 
     useEffect(() => {
       if (blockData != null) {
@@ -151,6 +159,7 @@ bootstrap(
       <CollapsibleListComponent
         index={0}
         items={data}
+        renderItems={renderItems}
         title={utils.remap(title, blockData) as string}
       />
     );
@@ -160,7 +169,13 @@ bootstrap(
         <div>
           {Object.entries(groupedData).length
             ? Object.entries(groupedData).map(([key, value], index) => (
-                <CollapsibleListComponent index={index} items={value} key={key} title={key} />
+                <CollapsibleListComponent
+                  index={index}
+                  items={value}
+                  key={key}
+                  renderItems={renderItems}
+                  title={key}
+                />
               ))
             : renderFirstList()}
         </div>
@@ -170,13 +185,13 @@ bootstrap(
             Object.entries(groupedData).map(([key, value]) => (
               <div key={key}>
                 <div className={styles.title}>{key}</div>
-                {renderItems(value, false, onDrop)}
+                {renderItems(value)}
               </div>
             ))
           ) : (
             <>
               <div className={styles.title}>{title}</div>
-              {renderItems(data, false, onDrop)}
+              {renderItems(data)}
             </>
           )}
         </div>
@@ -184,7 +199,7 @@ bootstrap(
     ) : (
       <>
         {title && !collapsible ? <div className={styles.title}>{title}</div> : null}
-        {collapsible ? renderFirstList() : renderItems(data, true, onDrop)}
+        {collapsible ? renderFirstList() : renderItems(data)}
       </>
     );
   },

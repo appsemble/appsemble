@@ -91,16 +91,36 @@ export async function updateAppResourcePosition(ctx: Context): Promise<void> {
   });
   // If the previous Position is not defined i.e. to insert at the top, use 0 as the default.
   // e.g. If the Position of the first element is 1, the position for the updated first element
-  // becomes (0 + 1)/2 = 0.5, similarly, for moving an element to the last of the list, we add
+  // becomes (0 + 1)/2 = 0.5, similarly, for moving an element to the last of the list, we multiply
   // with 1.1 to make the Position greater than the lastResourcePosition
   const updatedPosition =
     nextResourcePosition == null
       ? prevResourcePosition * 1.1
       : ((prevResourcePosition ?? 0) + nextResourcePosition) / 2;
+  if (
+    prevResourcePosition &&
+    nextResourcePosition &&
+    (updatedPosition >= nextResourcePosition || updatedPosition <= prevResourcePosition)
+  ) {
+    const resetPositionResources = await Resource.findAll({
+      attributes: ['id'],
+      where: { type: resourceType, AppId: appId },
+      order: [['Position', 'ASC']],
+    });
+    resetPositionResources.map(async (resource, index) => {
+      await resource.update({ Position: index });
+    });
+  }
   await Resource.update(
     { Position: updatedPosition },
     { where: { id: oldResource.id, type: resourceType } },
   );
   ctx.status = 200;
-  ctx.body = (await oldResource.reload()).toJSON();
+  const orderedResources = (
+    await Resource.findAll({
+      where: { type: resourceType, AppId: appId },
+      order: [['Position', 'ASC']],
+    })
+  ).map((item) => item.toJSON());
+  ctx.body = orderedResources;
 }

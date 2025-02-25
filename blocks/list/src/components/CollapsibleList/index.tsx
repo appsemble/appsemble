@@ -6,17 +6,18 @@ import { useState } from 'preact/hooks';
 
 import styles from './index.module.css';
 import { type Item } from '../../../block.js';
-import { renderItems } from '../../index.js';
 
 interface CollapsibleListComponentProps {
   readonly index: number;
   readonly title?: string;
   readonly items: Item[];
+  readonly renderItems: (items: Item[], spaced?: boolean) => VNode;
 }
 
 export function CollapsibleListComponent({
   index,
   items,
+  renderItems,
   title,
 }: CollapsibleListComponentProps): VNode {
   const {
