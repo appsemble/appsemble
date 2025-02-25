@@ -29,7 +29,7 @@ interface ImageComponentProps {
 }
 
 export function Image({
-  field: { alt, file, rounded, size = 48 },
+  field: { alt, aspectRatio = 'square', file, rounded, size = 48 },
   index,
   isVisible,
   item,
@@ -83,5 +83,14 @@ export function Image({
     })();
   }, [asset, item, fetched, value, isVisible]);
 
-  return <ImageComponent alt={alternate} id={index} rounded={rounded} size={size} src={src} />;
+  return (
+    <ImageComponent
+      alt={alternate}
+      aspectRatio={aspectRatio}
+      id={index}
+      rounded={rounded}
+      size={size}
+      src={src}
+    />
+  );
 }

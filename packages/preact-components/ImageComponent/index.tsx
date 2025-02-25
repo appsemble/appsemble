@@ -13,6 +13,13 @@ interface ImageComponentProps {
   readonly size: 16 | 24 | 32 | 48 | 64 | 96 | 128;
 
   /**
+   * The aspect ratio the image should be displayed in.
+   *
+   * @default square
+   */
+  readonly aspectRatio?: '4:3' | '9:16' | '16:9' | 'square';
+
+  /**
    * Is the image rounded.
    *
    */
@@ -34,12 +41,30 @@ interface ImageComponentProps {
   readonly alt: string;
 }
 
-export function ImageComponent({ alt, id, rounded, size = 48, src }: ImageComponentProps): VNode {
+export function ImageComponent({
+  alt,
+  aspectRatio = 'square',
+  id,
+  rounded,
+  size = 48,
+  src,
+}: ImageComponentProps): VNode {
   const modal = useToggle();
 
   const [isVisible, setIsVisible] = useState(false);
 
   const imgRef = useRef();
+
+  let width = size;
+  let height = size;
+  if (aspectRatio !== 'square') {
+    const [w, h] = aspectRatio.split(':').map(Number);
+    if (w > h) {
+      width = (w / h) * size;
+    } else {
+      height = (h / w) * size;
+    }
+  }
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -78,7 +103,11 @@ export function ImageComponent({ alt, id, rounded, size = 48, src }: ImageCompon
             onClick={modal.enable}
             type="button"
           >
-            <figure className={`image is-${size}x${size} mr-2 ${styles.root}`}>
+            <figure
+              className={`image mr-2 ${styles.root}`}
+              // eslint-disable-next-line react/forbid-dom-props
+              style={{ width: `${width}px`, height: `${height}px` }}
+            >
               <img
                 alt={alt}
                 className={`${styles.img} ${rounded && 'is-rounded'}`}

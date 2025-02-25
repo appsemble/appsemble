@@ -211,6 +211,13 @@ export interface Image {
    * @default 48
    */
   size?: 16 | 24 | 32 | 48 | 64 | 96 | 128;
+
+  /**
+   * The aspect ratio the image should be displayed in.
+   *
+   * @default square
+   */
+  aspectRatio?: '4:3' | '9:16' | '16:9' | 'square';
 }
 
 declare module '@appsemble/sdk' {
