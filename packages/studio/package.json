@@ -1,6 +1,6 @@
 {
   "name": "@appsemble/studio",
-  "version": "0.32.1-test.5",
+  "version": "0.32.1-test.6",
   "private": true,
   "description": "The frontend for managing Appsemble apps and organizations",
   "keywords": [
@@ -31,10 +31,10 @@
     "test": "vitest"
   },
   "dependencies": {
-    "@appsemble/react-components": "0.32.1-test.5",
-    "@appsemble/types": "0.32.1-test.5",
-    "@appsemble/utils": "0.32.1-test.5",
-    "@appsemble/web-utils": "0.32.1-test.5",
+    "@appsemble/react-components": "0.32.1-test.6",
+    "@appsemble/types": "0.32.1-test.6",
+    "@appsemble/utils": "0.32.1-test.6",
+    "@appsemble/web-utils": "0.32.1-test.6",
     "@browser-logos/chrome": "^2.0.0",
     "@browser-logos/edge": "^2.0.0",
     "@browser-logos/firefox": "^3.0.0",

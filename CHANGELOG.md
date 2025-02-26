@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.32.1-test.6](https://gitlab.com/appsemble/appsemble/-/releases/0.32.1-test.6)] - 2025-02-26
+
+### Added
+
+- Block(`list`): Support aspect ratios for images.
+- Utils: Add `filter.from` and `order.from` OData remappers.
+
+### Fixed
+
+- App: Don't format dynamic tabs' names.
+
 ## \[[0.32.1-test.5](https://gitlab.com/appsemble/appsemble/-/releases/0.32.1-test.5)] - 2025-02-21
 
 ### Added
