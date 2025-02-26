@@ -205,7 +205,7 @@ describe('patchApp', () => {
     expect(status).toBe(200);
     const resources = (
       await Resource.findAll({
-        attributes: ['id', 'position', 'type'],
+        attributes: ['id', 'Position', 'type'],
         where: {
           AppId: app.id,
           type: 'testResource',
@@ -215,52 +215,52 @@ describe('patchApp', () => {
     expect(resources).toMatchObject([
       {
         id: 1,
-        position: '0',
+        Position: '1',
         type: 'testResource',
       },
       {
         id: 2,
-        position: '1',
+        Position: '2',
         type: 'testResource',
       },
       {
         id: 3,
-        position: '2',
+        Position: '3',
         type: 'testResource',
       },
       {
         id: 4,
-        position: '3',
+        Position: '4',
         type: 'testResource',
       },
       {
         id: 5,
-        position: '4',
+        Position: '5',
         type: 'testResource',
       },
       {
         id: 6,
-        position: '5',
+        Position: '6',
         type: 'testResource',
       },
       {
         id: 7,
-        position: '6',
+        Position: '7',
         type: 'testResource',
       },
       {
         id: 8,
-        position: '7',
+        Position: '8',
         type: 'testResource',
       },
       {
         id: 9,
-        position: '8',
+        Position: '9',
         type: 'testResource',
       },
       {
         id: 10,
-        position: '9',
+        Position: '10',
         type: 'testResource',
       },
     ]);
@@ -286,7 +286,7 @@ describe('patchApp', () => {
         type: 'testResource',
         data: { foo: `bar ${entry}` },
         AppId: app.id,
-        position: entry * 10,
+        Position: entry * 10,
       })),
     );
     authorizeStudio(user);
@@ -317,7 +317,7 @@ describe('patchApp', () => {
 
     const resources = (
       await Resource.findAll({
-        attributes: ['id', 'position', 'type'],
+        attributes: ['id', 'Position', 'type'],
         where: {
           AppId: app.id,
           type: 'testResource',
@@ -327,52 +327,52 @@ describe('patchApp', () => {
     expect(resources).toMatchObject([
       {
         id: 1,
-        position: '0',
+        Position: '0',
         type: 'testResource',
       },
       {
         id: 2,
-        position: '10',
+        Position: '10',
         type: 'testResource',
       },
       {
         id: 3,
-        position: '20',
+        Position: '20',
         type: 'testResource',
       },
       {
         id: 4,
-        position: '30',
+        Position: '30',
         type: 'testResource',
       },
       {
         id: 5,
-        position: '40',
+        Position: '40',
         type: 'testResource',
       },
       {
         id: 6,
-        position: '50',
+        Position: '50',
         type: 'testResource',
       },
       {
         id: 7,
-        position: '60',
+        Position: '60',
         type: 'testResource',
       },
       {
         id: 8,
-        position: '70',
+        Position: '70',
         type: 'testResource',
       },
       {
         id: 9,
-        position: '80',
+        Position: '80',
         type: 'testResource',
       },
       {
         id: 10,
-        position: '90',
+        Position: '90',
         type: 'testResource',
       },
     ]);

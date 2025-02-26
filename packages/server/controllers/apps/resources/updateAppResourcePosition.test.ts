@@ -23,6 +23,7 @@ let organization: Organization;
 let user: User;
 let app: App;
 let appMember: AppMember;
+let resource: Resource;
 
 describe('updateResourcePosition', () => {
   beforeAll(async () => {
@@ -33,7 +34,6 @@ describe('updateResourcePosition', () => {
 
   beforeEach(async () => {
     vi.useFakeTimers();
-
     user = await createTestUser();
     organization = await Organization.create({
       id: 'testorganization',
@@ -46,34 +46,35 @@ describe('updateResourcePosition', () => {
     });
     app = await exampleApp(organization.id);
     appMember = await createTestAppMember(app.id, user.primaryEmail, PredefinedAppRole.Owner);
+
+    resource = await Resource.create({
+      type: 'testResource',
+      AppId: app.id,
+      data: { foo: 'I am Foo.' },
+      Position: 4,
+    });
+
+    await Resource.create({
+      type: 'testResource',
+      AppId: app.id,
+      data: { foo: 'I am Foo.' },
+      Position: 1,
+    });
+    await Resource.create({
+      type: 'testResource',
+      AppId: app.id,
+      data: { foo: 'I am Foo.' },
+      Position: 2,
+    });
+    await Resource.create({
+      type: 'testResource',
+      AppId: app.id,
+      data: { foo: 'I am Foo.' },
+      Position: 3,
+    });
   });
 
   it('should throw if the previous Position is greater than the next position', async () => {
-    const resource = await Resource.create({
-      type: 'testResource',
-      AppId: app.id,
-      data: { foo: 'I am Foo.' },
-      position: 4,
-    });
-
-    await Resource.create({
-      type: 'testResource',
-      AppId: app.id,
-      data: { foo: 'I am Foo.' },
-      position: 1,
-    });
-    await Resource.create({
-      type: 'testResource',
-      AppId: app.id,
-      data: { foo: 'I am Foo.' },
-      position: 2,
-    });
-    await Resource.create({
-      type: 'testResource',
-      AppId: app.id,
-      data: { foo: 'I am Foo.' },
-      position: 3,
-    });
     authorizeAppMember(app, appMember);
     const response = await request.put(
       `/api/apps/${app.id}/resources/testResource/${resource.id}/positions`,
@@ -84,37 +85,12 @@ describe('updateResourcePosition', () => {
       data: {
         statusCode: 400,
         error: 'Bad Request',
-        message: 'Previous resource position should be less than the next resource',
+        message: 'Previous resource Position should be less than the next resource',
       },
     });
   });
 
   it('should throw if the resource does not exist', async () => {
-    await Resource.create({
-      type: 'testResource',
-      AppId: app.id,
-      data: { foo: 'I am Foo.' },
-      position: 4,
-    });
-
-    await Resource.create({
-      type: 'testResource',
-      AppId: app.id,
-      data: { foo: 'I am Foo.' },
-      position: 1,
-    });
-    await Resource.create({
-      type: 'testResource',
-      AppId: app.id,
-      data: { foo: 'I am Foo.' },
-      position: 2,
-    });
-    await Resource.create({
-      type: 'testResource',
-      AppId: app.id,
-      data: { foo: 'I am Foo.' },
-      position: 3,
-    });
     authorizeAppMember(app, appMember);
     const response = await request.put(`/api/apps/${app.id}/resources/testResource/10/positions`, {
       prevResourcePosition: 1,
@@ -132,31 +108,6 @@ describe('updateResourcePosition', () => {
 
   it('should throw if the app member does not have sufficient permissions', async () => {
     await appMember.update({ role: PredefinedAppRole.Member });
-    const resource = await Resource.create({
-      type: 'testResource',
-      AppId: app.id,
-      data: { foo: 'I am Foo.' },
-      position: 4,
-    });
-
-    await Resource.create({
-      type: 'testResource',
-      AppId: app.id,
-      data: { foo: 'I am Foo.' },
-      position: 1,
-    });
-    await Resource.create({
-      type: 'testResource',
-      AppId: app.id,
-      data: { foo: 'I am Foo.' },
-      position: 2,
-    });
-    await Resource.create({
-      type: 'testResource',
-      AppId: app.id,
-      data: { foo: 'I am Foo.' },
-      position: 3,
-    });
     authorizeAppMember(app, appMember);
     const response = await request.put(
       `/api/apps/${app.id}/resources/testResource/${resource.id}/positions`,
@@ -173,31 +124,6 @@ describe('updateResourcePosition', () => {
   });
 
   it('should check if the position parameters are valid', async () => {
-    const resource = await Resource.create({
-      type: 'testResource',
-      AppId: app.id,
-      data: { foo: 'I am Foo.' },
-      position: 4,
-    });
-
-    await Resource.create({
-      type: 'testResource',
-      AppId: app.id,
-      data: { foo: 'I am Foo.' },
-      position: 1,
-    });
-    await Resource.create({
-      type: 'testResource',
-      AppId: app.id,
-      data: { foo: 'I am Foo.' },
-      position: 2,
-    });
-    await Resource.create({
-      type: 'testResource',
-      AppId: app.id,
-      data: { foo: 'I am Foo.' },
-      position: 3,
-    });
     authorizeAppMember(app, appMember);
     const response = await request.put(
       `/api/apps/${app.id}/resources/testResource/${resource.id}/positions`,
@@ -208,37 +134,12 @@ describe('updateResourcePosition', () => {
       data: {
         statusCode: 400,
         error: 'Bad Request',
-        message: 'Invalid previous or next resource position',
+        message: 'Invalid previous or next resource Position',
       },
     });
   });
 
   it('should not allow inserting between two non adjacent resources', async () => {
-    const resource = await Resource.create({
-      type: 'testResource',
-      AppId: app.id,
-      data: { foo: 'I am Foo.' },
-      position: 4,
-    });
-
-    await Resource.create({
-      type: 'testResource',
-      AppId: app.id,
-      data: { foo: 'I am Foo.' },
-      position: 1,
-    });
-    await Resource.create({
-      type: 'testResource',
-      AppId: app.id,
-      data: { foo: 'I am Foo.' },
-      position: 2,
-    });
-    await Resource.create({
-      type: 'testResource',
-      AppId: app.id,
-      data: { foo: 'I am Foo.' },
-      position: 3,
-    });
     authorizeAppMember(app, appMember);
     const response = await request.put(
       `/api/apps/${app.id}/resources/testResource/${resource.id}/positions`,
@@ -249,41 +150,16 @@ describe('updateResourcePosition', () => {
       data: {
         statusCode: 400,
         error: 'Bad Request',
-        message: 'Invalid previous or next resource position',
+        message: 'Invalid previous or next resource Position',
       },
     });
   });
 
   it('should not allow an invalid nextResourcePosition for inserting at the top', async () => {
-    const resource = await Resource.create({
-      type: 'testResource',
-      AppId: app.id,
-      data: { foo: 'I am Foo.' },
-      position: 4,
-    });
-
-    await Resource.create({
-      type: 'testResource',
-      AppId: app.id,
-      data: { foo: 'I am Foo.' },
-      position: 1,
-    });
-    await Resource.create({
-      type: 'testResource',
-      AppId: app.id,
-      data: { foo: 'I am Foo.' },
-      position: 2,
-    });
-    await Resource.create({
-      type: 'testResource',
-      AppId: app.id,
-      data: { foo: 'I am Foo.' },
-      position: 3,
-    });
     authorizeAppMember(app, appMember);
     const response = await request.put(
       `/api/apps/${app.id}/resources/testResource/${resource.id}/positions`,
-      { nextResourcePosition: 2 },
+      { nextResourcePosition: 2, prevResourcePosition: null },
     );
     expect(response).toMatchObject({
       status: 400,
@@ -296,35 +172,14 @@ describe('updateResourcePosition', () => {
   });
 
   it('should not allow an invalid prevResourcePosition for inserting at the end', async () => {
-    const resource = await Resource.create({
-      type: 'testResource',
-      AppId: app.id,
-      data: { foo: 'I am Foo.' },
-      position: 0,
+    await resource.update({
+      Position: 0,
     });
 
-    await Resource.create({
-      type: 'testResource',
-      AppId: app.id,
-      data: { foo: 'I am Foo.' },
-      position: 1,
-    });
-    await Resource.create({
-      type: 'testResource',
-      AppId: app.id,
-      data: { foo: 'I am Foo.' },
-      position: 2,
-    });
-    await Resource.create({
-      type: 'testResource',
-      AppId: app.id,
-      data: { foo: 'I am Foo.' },
-      position: 3,
-    });
     authorizeAppMember(app, appMember);
     const response = await request.put(
       `/api/apps/${app.id}/resources/testResource/${resource.id}/positions`,
-      { prevResourcePosition: 2 },
+      { prevResourcePosition: 2, nextResourcePosition: null },
     );
     expect(response).toMatchObject({
       status: 400,
@@ -337,113 +192,47 @@ describe('updateResourcePosition', () => {
   });
 
   it('should allow a valid prevResourcePosition for inserting at the end', async () => {
-    const resource = await Resource.create({
-      type: 'testResource',
-      AppId: app.id,
-      data: { foo: 'I am Foo.' },
-      position: 0,
-    });
-
-    await Resource.create({
-      type: 'testResource',
-      AppId: app.id,
-      data: { foo: 'I am Foo.' },
-      position: 1,
-    });
-    await Resource.create({
-      type: 'testResource',
-      AppId: app.id,
-      data: { foo: 'I am Foo.' },
-      position: 2,
-    });
-    await Resource.create({
-      type: 'testResource',
-      AppId: app.id,
-      data: { foo: 'I am Foo.' },
-      position: 3,
-    });
+    await resource.update({ Position: 0 });
     authorizeAppMember(app, appMember);
     const response = await request.put(
       `/api/apps/${app.id}/resources/testResource/${resource.id}/positions`,
-      { prevResourcePosition: 3 },
+      { prevResourcePosition: 3, nextResourcePosition: null },
     );
     expect(response).toMatchObject({
       status: 200,
-      data: {
-        id: resource.id,
-        foo: 'I am Foo.',
-        position: 3 * 1.1,
-      },
+      data: expect.arrayContaining([
+        {
+          $created: expect.any(String),
+          $updated: expect.any(String),
+          id: resource.id,
+          foo: 'I am Foo.',
+          Position: String(3 * 1.1),
+        },
+      ]),
     });
   });
 
   it('should allow a valid nextResourcePosition for inserting at the top', async () => {
-    const resource = await Resource.create({
-      type: 'testResource',
-      AppId: app.id,
-      data: { foo: 'I am Foo.' },
-      position: 4,
-    });
-
-    await Resource.create({
-      type: 'testResource',
-      AppId: app.id,
-      data: { foo: 'I am Foo.' },
-      position: 1,
-    });
-    await Resource.create({
-      type: 'testResource',
-      AppId: app.id,
-      data: { foo: 'I am Foo.' },
-      position: 2,
-    });
-    await Resource.create({
-      type: 'testResource',
-      AppId: app.id,
-      data: { foo: 'I am Foo.' },
-      position: 3,
-    });
     authorizeAppMember(app, appMember);
     const response = await request.put(
       `/api/apps/${app.id}/resources/testResource/${resource.id}/positions`,
-      { nextResourcePosition: 1 },
+      { nextResourcePosition: 1, prevResourcePosition: null },
     );
     expect(response).toMatchObject({
       status: 200,
-      data: {
-        id: resource.id,
-        foo: 'I am Foo.',
-        position: 0.5,
-      },
+      data: expect.arrayContaining([
+        {
+          $created: expect.any(String),
+          $updated: expect.any(String),
+          id: resource.id,
+          foo: 'I am Foo.',
+          Position: '0.5',
+        },
+      ]),
     });
   });
 
   it('should update the position of the resource', async () => {
-    const resource = await Resource.create({
-      type: 'testResource',
-      AppId: app.id,
-      data: { foo: 'I am Foo.' },
-      position: 4,
-    });
-
-    await Resource.create({
-      type: 'testResource',
-      AppId: app.id,
-      data: { foo: 'I am Foo.' },
-      position: 1,
-    });
-    await Resource.create({
-      type: 'testResource',
-      AppId: app.id,
-      data: { foo: 'I am Foo.' },
-      position: 2,
-    });
-    await Resource.create({
-      type: 'testResource',
-      AppId: app.id,
-      data: { foo: 'I am Foo.' },
-      position: 3,
-    });
     authorizeAppMember(app, appMember);
     const response = await request.put(
       `/api/apps/${app.id}/resources/testResource/${resource.id}/positions`,
@@ -451,11 +240,33 @@ describe('updateResourcePosition', () => {
     );
     expect(response).toMatchObject({
       status: 200,
-      data: {
-        position: 1.5,
-        id: resource.id,
-        foo: 'I am Foo.',
-      },
+      data: [
+        {
+          $created: expect.any(String),
+          $updated: expect.any(String),
+          Position: '1',
+          foo: 'I am Foo.',
+        },
+        {
+          $created: expect.any(String),
+          $updated: expect.any(String),
+          Position: '1.5',
+          id: resource.id,
+          foo: 'I am Foo.',
+        },
+        {
+          $created: expect.any(String),
+          $updated: expect.any(String),
+          Position: '2',
+          foo: 'I am Foo.',
+        },
+        {
+          $created: expect.any(String),
+          $updated: expect.any(String),
+          Position: '3',
+          foo: 'I am Foo.',
+        },
+      ],
     });
   });
 });

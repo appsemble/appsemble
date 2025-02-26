@@ -317,7 +317,7 @@ export class Resource extends Model {
     const result: ResourceType = {
       ...this.data,
       id: this.id,
-      Position: this.Position,
+      ...(this.Position == null ? {} : { Position: this.Position }),
       $created: this.created.toJSON(),
       $updated: this.updated.toJSON(),
     };

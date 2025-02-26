@@ -97,10 +97,10 @@ export async function updateAppResourcePosition(ctx: Context): Promise<void> {
     nextResourcePosition == null
       ? prevResourcePosition * 1.1
       : ((prevResourcePosition ?? 0) + nextResourcePosition) / 2;
+  // If there is a collision, reset the positions.
   if (
-    prevResourcePosition &&
     nextResourcePosition &&
-    (updatedPosition >= nextResourcePosition || updatedPosition <= prevResourcePosition)
+    (updatedPosition >= nextResourcePosition || updatedPosition <= (prevResourcePosition ?? 0))
   ) {
     const resetPositionResources = await Resource.findAll({
       attributes: ['id'],

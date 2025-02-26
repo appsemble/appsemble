@@ -87,7 +87,15 @@ describe('resource.update.positions', () => {
   it('should make a PUT request to the right URL', async () => {
     mock.onAny(/.*/).reply((req) => {
       request = req;
-      return [200, { id: 84, position: (44.55 + 45.66) / 2 }, {}];
+      return [
+        200,
+        [
+          { id: 83, Position: 44.55 },
+          { id: 84, Position: (44.55 + 45.66) / 2 },
+          { id: 82, Position: 45.66 },
+        ],
+        {},
+      ];
     });
     const action = createTestAction({
       appDefinition,
@@ -103,7 +111,11 @@ describe('resource.update.positions', () => {
     expect(request.url).toBe(`${apiUrl}/api/apps/42/resources/pet/84/positions`);
     expect(request.params).toBeUndefined();
     expect(request.data).toBe('{"prevResourcePosition":44.55,"nextResourcePosition":45.66}');
-    expect(result).toStrictEqual({ id: 84, position: (44.55 + 45.66) / 2 });
+    expect(result).toStrictEqual([
+      { id: 83, Position: 44.55 },
+      { id: 84, Position: (44.55 + 45.66) / 2 },
+      { id: 82, Position: 45.66 },
+    ]);
   });
 });
 

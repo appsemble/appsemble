@@ -30,7 +30,7 @@ export async function createAppResourcesWithAssets({
     if (positioning) {
       lastPositionResource = await Resource.findOne({
         attributes: ['Position'],
-        where: { AppId: app.id, type: resourceType, position: { [Op.not]: null } },
+        where: { AppId: app.id, type: resourceType, Position: { [Op.not]: null } },
         order: [['Position', 'DESC']],
       });
     }
