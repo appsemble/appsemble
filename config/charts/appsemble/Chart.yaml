@@ -1,7 +1,7 @@
 apiVersion: v2
 name: appsemble
-version: 0.32.1-test.6
-appVersion: 0.32.1-test.6
+version: 0.32.1-test.7
+appVersion: 0.32.1-test.7
 kubeVersion: '>=1.21.0'
 type: application
 description: The open source low-code app building platform
@@ -32,12 +32,7 @@ dependencies:
     condition: minio.enabled
 annotations:
   artifacthub.io/changes: |
-    - kind: added
-      description: "Block(list): Support aspect ratios for images."
-    - kind: added
-      description: "Utils: Add filter.from and order.from OData remappers."
-    - kind: fixed
-      description: "App: Don't format dynamic tabs' names."
+    []
   artifacthub.io/license: LGPL-3.0-only
   artifacthub.io/links: |
     - name: Appsemble Studio
