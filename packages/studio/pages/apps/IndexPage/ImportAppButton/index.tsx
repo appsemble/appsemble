@@ -57,7 +57,7 @@ export function ImportAppButton({ className }: { readonly className?: string }):
         },
       };
       await axios.post(
-        `/api/apps/import/organization/${organizations[selectedOrganization].id}`,
+        `/api/organizations/${organizations[selectedOrganization].id}/apps/import`,
         uploadingImportFile,
         config,
       );
