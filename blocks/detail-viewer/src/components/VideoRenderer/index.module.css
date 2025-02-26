@@ -1,5 +1,5 @@
 .wrapper iframe,
 .wrapper video {
   border-radius: 10px;
-  object-fit: fill;
+  object-fit: contain;
 }
