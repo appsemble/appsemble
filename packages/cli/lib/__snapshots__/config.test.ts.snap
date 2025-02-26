@@ -5109,6 +5109,17 @@ No value will be rendered if undefined.",
             "description": "The alt text of the image.",
             "format": "remapper",
           },
+          "aspectRatio": {
+            "default": "square",
+            "description": "The aspect ratio the image should be displayed in.",
+            "enum": [
+              "4:3",
+              "9:16",
+              "16:9",
+              "square",
+            ],
+            "type": "string",
+          },
           "file": {
             "description": "The image to show in the cell.
 
