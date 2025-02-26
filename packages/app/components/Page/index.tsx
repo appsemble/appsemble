@@ -300,6 +300,34 @@ export function Page(): ReactNode {
     }
   }, [checkPagePermissionsCallback, navPage, pageDefinition, setPage]);
 
+  useEffect(() => {
+    if (navigator.credentials) {
+      const originalGet = navigator.credentials.get;
+      const originalCreate = navigator.credentials.create;
+
+      const noop = (): Promise<never> =>
+        Promise.reject(new Error('WebAuthn blocked to allow bfcache'));
+
+      if ('get' in navigator.credentials) {
+        navigator.credentials.get = noop;
+      }
+
+      if ('create' in navigator.credentials) {
+        navigator.credentials.create = noop;
+      }
+
+      return () => {
+        if (originalGet) {
+          navigator.credentials.get = originalGet;
+        }
+
+        if (originalCreate) {
+          navigator.credentials.create = originalCreate;
+        }
+      };
+    }
+  }, []);
+
   // If the user is on an existing page and is allowed to view it, render it.
   if (pageDefinition && checkPagePermissionsCallback(pageDefinition)) {
     const pageName = getAppMessage({
