@@ -1,14 +1,16 @@
 import {
   FileUpload,
   FormButtons,
+  Icon,
   SimpleForm,
   SimpleFormError,
   SimpleFormField,
   SimpleSubmit,
   useMessages,
+  WebcamImageUpload,
 } from '@appsemble/react-components';
 import axios from 'axios';
-import { type ReactNode, useCallback } from 'react';
+import { type ReactNode, useCallback, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useParams } from 'react-router-dom';
 
@@ -22,27 +24,24 @@ export function ProfileSettings(): ReactNode {
   const { appMemberInfo, setAppMemberInfo } = useAppMember();
   const { lang } = useParams<{ lang: string }>();
   const push = useMessages();
-  const toMatch = [
-    /android/i,
-    /webos/i,
-    /iphone/i,
-    /ipad/i,
-    /ipod/i,
-    /blackberry/i,
-    /windows phone/i,
-  ];
-  const isMobile = toMatch.some((item) => navigator.userAgent.match(item));
+  const [pictureCamera, setPictureCamera] = useState<Blob | null>(null);
 
+  const onCapture = useCallback(
+    (data: Blob) => {
+      setPictureCamera(data);
+    },
+    [setPictureCamera],
+  );
   const onSaveProfile = useCallback(
-    async (values: { name: string; picture: File; pictureCamera: File }) => {
+    async (values: { name: string; picture: File }) => {
       const formData = new FormData();
       formData.append('name', values.name);
       formData.append('locale', lang);
 
       if (values.picture) {
         formData.append('picture', values.picture);
-      } else if (values.pictureCamera) {
-        formData.append('picture', values.pictureCamera);
+      } else if (pictureCamera) {
+        formData.append('picture', pictureCamera);
       }
 
       const { data } = await axios.patch<{
@@ -56,7 +55,7 @@ export function ProfileSettings(): ReactNode {
       });
       push({ body: formatMessage(messages.submitSuccess), color: 'success' });
     },
-    [formatMessage, push, setAppMemberInfo, appMemberInfo, lang],
+    [formatMessage, push, pictureCamera, setAppMemberInfo, appMemberInfo, lang],
   );
 
   return (
@@ -64,7 +63,6 @@ export function ProfileSettings(): ReactNode {
       defaultValues={{
         name: appMemberInfo?.name || '',
         picture: null,
-        pictureCamera: null,
       }}
       onSubmit={onSaveProfile}
     >
@@ -84,21 +82,18 @@ export function ProfileSettings(): ReactNode {
         help={<FormattedMessage {...messages.pictureDescription} />}
         label={<FormattedMessage {...messages.picture} />}
         name="picture"
-        preview={<PicturePreview pictureUrl={appMemberInfo?.picture} />}
+        preview={
+          <PicturePreview pictureCamera={pictureCamera} pictureUrl={appMemberInfo?.picture} />
+        }
       />
-      {isMobile ? (
-        <SimpleFormField
-          accept="image/jpeg, image/png, image/tiff, image/webp"
-          capture="user"
-          component={FileUpload}
-          fileButtonLabel={<FormattedMessage {...messages.camera} />}
-          fileLabel={<FormattedMessage {...messages.clickPicture} />}
-          help={<FormattedMessage {...messages.clickDescription} />}
-          label={<FormattedMessage {...messages.camera} />}
-          name="pictureCamera"
-          preview={<PicturePreview pictureUrl="" />}
-        />
-      ) : null}
+      <SimpleFormField
+        clickButtonLabel={<Icon icon="camera" size="large" />}
+        component={WebcamImageUpload}
+        help={<FormattedMessage {...messages.clickDescription} />}
+        onCapture={onCapture}
+        value={pictureCamera}
+        videoButtonLabel={<FormattedMessage {...messages.clickPicture} />}
+      />
       <FormButtons>
         <SimpleSubmit>
           <FormattedMessage {...messages.saveProfile} />

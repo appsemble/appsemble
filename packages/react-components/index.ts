@@ -84,3 +84,4 @@ export * from './ValuePickerProvider/index.js';
 export * from './Prompt/index.js';
 export * from './LogViewer/index.js';
 export * from './LogEntryList/index.js';
+export * from './WebcamImageUpload/index.js';
