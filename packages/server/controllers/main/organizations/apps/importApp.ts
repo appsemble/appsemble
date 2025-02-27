@@ -145,7 +145,7 @@ export async function importApp(ctx: Context): Promise<void> {
                 $clonable,
                 $ephemeral,
                 $seed,
-                data,
+                ...data
               }: {
                 data: Record<string, any>;
                 $seed: boolean;

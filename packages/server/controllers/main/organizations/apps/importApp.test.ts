@@ -135,7 +135,7 @@ describe('importApp', () => {
     zip.file('screenshots/nl/0.png', await readFixture('nl-standing.png'));
     zip.file(
       'resources/testResource.json',
-      Buffer.from('[{"data":{"foo":"bar"}, "$clonable":false,"$seed":false, "$ephemeral":false }]'),
+      Buffer.from('[{"foo":"bar", "$clonable":false,"$seed":false, "$ephemeral":false }]'),
     );
     zip.file('assets/10x50.png', await readFixture('10x50.png'));
     vi.useRealTimers();
