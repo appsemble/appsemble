@@ -2385,6 +2385,7 @@ disabled by setting this to \`false\`
                   "additionalProperties": false,
                   "properties": {
                     "action": {
+                      "default": "update",
                       "description": "The resource action type to get the subscription state for.",
                       "enum": [
                         "create",
@@ -2452,6 +2453,7 @@ disabled by setting this to \`false\`
                   "additionalProperties": false,
                   "properties": {
                     "action": {
+                      "default": "update",
                       "description": "The resource action type to subscribe to.",
                       "enum": [
                         "create",
@@ -2519,6 +2521,7 @@ disabled by setting this to \`false\`
                   "additionalProperties": false,
                   "properties": {
                     "action": {
+                      "default": "update",
                       "description": "The resource action type to toggle the subscription state for.",
                       "enum": [
                         "create",
@@ -2586,6 +2589,7 @@ disabled by setting this to \`false\`
                   "additionalProperties": false,
                   "properties": {
                     "action": {
+                      "default": "update",
                       "description": "The resource action type to unsubscribe from.",
                       "enum": [
                         "create",
@@ -7648,6 +7652,7 @@ disabled by setting this to \`false\`
           "additionalProperties": false,
           "properties": {
             "action": {
+              "default": "update",
               "description": "The resource action type to get the subscription state for.",
               "enum": [
                 "create",
@@ -7715,6 +7720,7 @@ disabled by setting this to \`false\`
           "additionalProperties": false,
           "properties": {
             "action": {
+              "default": "update",
               "description": "The resource action type to subscribe to.",
               "enum": [
                 "create",
@@ -7782,6 +7788,7 @@ disabled by setting this to \`false\`
           "additionalProperties": false,
           "properties": {
             "action": {
+              "default": "update",
               "description": "The resource action type to toggle the subscription state for.",
               "enum": [
                 "create",
@@ -7849,6 +7856,7 @@ disabled by setting this to \`false\`
           "additionalProperties": false,
           "properties": {
             "action": {
+              "default": "update",
               "description": "The resource action type to unsubscribe from.",
               "enum": [
                 "create",
