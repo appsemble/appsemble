@@ -186,6 +186,7 @@ export interface UserInfo extends BaseUserInfo {
    * If the user is subscribed to the newsletter
    */
   subscribed?: boolean;
+  hasPassword?: boolean;
 }
 
 export interface AppMemberInfo extends BaseUserInfo {

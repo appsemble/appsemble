@@ -121,4 +121,28 @@ export const messages = defineMessages({
     id: 'studio.It/Dy0',
     defaultMessage: 'Yes, I want to be kept up to date with Appsemble news.',
   },
+  passwordLabel: {
+    id: 'studio.5sg7KC',
+    defaultMessage: 'Password',
+  },
+  changePassword: {
+    id: 'studio.QiKKFz',
+    defaultMessage: 'Change Password',
+  },
+  currentPasswordLabel: {
+    id: 'studio.GretYf',
+    defaultMessage: 'Current Password',
+  },
+  newPasswordLabel: {
+    id: 'studio.Ev6SEF',
+    defaultMessage: 'New Password',
+  },
+  wrongPasswordError: {
+    id: 'studio.NFWglg',
+    defaultMessage: 'Current Password is incorrect.',
+  },
+  changePasswordSuccess: {
+    id: 'studio.dt/e+s',
+    defaultMessage: 'Successfully changed password.',
+  },
 });

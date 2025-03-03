@@ -1277,5 +1277,10 @@
   "studio.zji8KM": "Allow {app} to perform the following actions on your behalf?",
   "studio.zo9Szm": "Deleting an app collection cannot be undone.",
   "studio.zoSzG+": "Switch to GUI Editor",
-  "studio.zwurmB": "Cookie"
+  "studio.zwurmB": "Cookie",
+  "studio.QiKKFz": "Change Password",
+  "studio.GretYf": "Current Password",
+  "studio.Ev6SEF": "New Password",
+  "studio.NFWglg": "Current Password is incorrect.",
+  "studio.dt/e+s": "Successfully changed password."
 }

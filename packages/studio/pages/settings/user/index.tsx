@@ -6,6 +6,8 @@ import {
   FormButtons,
   Loader,
   Message,
+  PasswordField,
+  PasswordStrengthIndicator,
   SelectField,
   SimpleForm,
   SimpleFormError,
@@ -17,6 +19,7 @@ import {
   useData,
   useMessages,
   useMeta,
+  useToggle,
 } from '@appsemble/react-components';
 import { type EmailAuthorization } from '@appsemble/types';
 import { defaultLocale, has } from '@appsemble/utils';
@@ -39,6 +42,8 @@ export function UserPage(): ReactNode {
     params: { lang },
     pathname,
   } = useMatch(':lang/settings/user');
+
+  const busy = useToggle();
 
   const push = useMessages();
   const { refreshUserInfo, userInfo } = useUser();
@@ -79,6 +84,26 @@ export function UserPage(): ReactNode {
       );
     },
     [emails, formatMessage, push, setEmails],
+  );
+
+  const onChangePassword = useCallback(
+    async ({ newPassword, password }: { password: string; newPassword: string }) => {
+      busy.enable();
+
+      try {
+        await axios.post('/api/auth/email/patch-password', {
+          newPassword,
+          currentPassword: password,
+        });
+        push({
+          body: formatMessage(messages.changePasswordSuccess),
+          color: 'success',
+        });
+      } finally {
+        busy.disable();
+      }
+    },
+    [busy, formatMessage, push],
   );
 
   const setPrimaryEmail = useCallback(
@@ -217,6 +242,49 @@ export function UserPage(): ReactNode {
           </FormButtons>
         </SimpleForm>
       </Content>
+      {userInfo.hasPassword ? (
+        <>
+          <hr />
+          <Content>
+            <Title>
+              <FormattedMessage {...messages.passwordLabel} />
+            </Title>
+            <SimpleForm
+              defaultValues={{ password: '', newPassword: '' }}
+              onSubmit={onChangePassword}
+              resetOnSuccess
+            >
+              <SimpleFormError>
+                {() => <FormattedMessage {...messages.wrongPasswordError} />}
+              </SimpleFormError>
+              <SimpleFormField
+                autoComplete="current-password"
+                component={PasswordField}
+                disabled={busy.enabled}
+                label={<FormattedMessage {...messages.currentPasswordLabel} />}
+                minLength={8}
+                name="password"
+                required
+              />
+              <SimpleFormField
+                autoComplete="new-password"
+                component={PasswordField}
+                disabled={busy.enabled}
+                help={<PasswordStrengthIndicator minLength={8} name="newPassword" />}
+                label={<FormattedMessage {...messages.newPasswordLabel} />}
+                minLength={8}
+                name="newPassword"
+                required
+              />
+              <FormButtons>
+                <SimpleSubmit disabled={busy.enabled}>
+                  <FormattedMessage {...messages.changePassword} />
+                </SimpleSubmit>
+              </FormButtons>
+            </SimpleForm>
+          </Content>
+        </>
+      ) : null}
       <hr />
       <Table>
         <thead>
