@@ -1,3 +1,6 @@
 .treeWrapper {
-  height: 2000px;
+  /* Increase width or height if edges aren't rendering */
+  height: 1300px;
+  margin: auto;
+  width: 500px;
 }

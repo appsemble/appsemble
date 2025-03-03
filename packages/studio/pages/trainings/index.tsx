@@ -10,7 +10,14 @@ import { getChapterBlockedState, getChapterCompletionState } from './utils/index
 import { TrainingTree } from '../../components/TrainingTree/index.js';
 import { useUser } from '../../components/UserProvider/index.js';
 
-function updateChapterBlockedStates(chapters: TrainingChapter[]): TrainingChapter[] {
+function updateChapterBlockedStates(
+  chapters: TrainingChapter[],
+  isLoggedIn: boolean,
+): TrainingChapter[] {
+  if (!isLoggedIn) {
+    return chapters;
+  }
+
   const updatedChapters: TrainingChapter[] = [];
   for (const chapter of chapters) {
     const { trainings } = chapter;
@@ -33,11 +40,7 @@ export function TrainingRoutes(): ReactNode {
 
   // Initialization
   useMemo(async () => {
-    let chapterList = await getTrainings(isLoggedIn);
-    if (isLoggedIn) {
-      chapterList = updateChapterBlockedStates(chapterList);
-    }
-
+    const chapterList = updateChapterBlockedStates(await getTrainings(isLoggedIn), isLoggedIn);
     setChapters(chapterList);
   }, [isLoggedIn]);
 
@@ -62,10 +65,10 @@ export function TrainingRoutes(): ReactNode {
           };
         });
 
-        const updatedChapters = isLoggedIn
-          ? updateChapterBlockedStates(chaptersWithUpdatedTrainings)
-          : chaptersWithUpdatedTrainings;
-
+        const updatedChapters = updateChapterBlockedStates(
+          chaptersWithUpdatedTrainings,
+          isLoggedIn,
+        );
         return updatedChapters;
       });
     },
