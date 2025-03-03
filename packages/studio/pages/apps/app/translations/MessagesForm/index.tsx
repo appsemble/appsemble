@@ -75,13 +75,13 @@ export function MessagesForm({
     }
     return {
       app: Object.fromEntries(
-        Object.entries(appMessages.messages.app).map(([key, value]) => [
+        Object.entries(appMessages.messages.app ?? {}).map(([key, value]) => [
           key,
           defaultAppMessages.messages.app[key] === value ? '' : value,
         ]),
       ),
       core: Object.fromEntries(
-        Object.entries(appMessages.messages.core).map(([key, value]) => [
+        Object.entries(appMessages.messages.core ?? {}).map(([key, value]) => [
           key,
           defaultAppMessages.messages.core[key] === value ? '' : value,
         ]),
@@ -93,7 +93,7 @@ export function MessagesForm({
 
   const sortedMessageIds = useMemo(
     () =>
-      Object.entries(defaultAppMessages.messages.messageIds).sort(([idA], [idB]) =>
+      Object.entries(defaultAppMessages.messages.messageIds ?? {}).sort(([idA], [idB]) =>
         idA.localeCompare(idB),
       ),
     [defaultAppMessages],
