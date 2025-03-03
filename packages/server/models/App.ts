@@ -40,6 +40,7 @@ import {
   AppSnapshot,
   AppSubscription,
   AppVariable,
+  AppWebhookSecret,
   Asset,
   Group,
   Organization,
@@ -256,6 +257,9 @@ export class App extends Model {
 
   @HasMany(() => AppServiceSecret)
   AppServiceSecrets: AppServiceSecret[];
+
+  @HasMany(() => AppWebhookSecret, { onDelete: 'CASCADE' })
+  AppWebhookSecrets: AppWebhookSecret[];
 
   @HasMany(() => AppSnapshot, { onDelete: 'CASCADE' })
   AppSnapshots: AppSnapshot[];

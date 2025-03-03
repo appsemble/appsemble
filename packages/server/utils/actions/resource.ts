@@ -1,8 +1,11 @@
 import {
+  getCompressedFileMeta,
   getRemapperContext,
   getResourceDefinition,
   processResourceBody,
   type QueryParams,
+  serializeServerResource,
+  uploadAssets,
 } from '@appsemble/node-utils';
 import {
   type ResourceCreateActionDefinition,
@@ -136,7 +139,8 @@ export async function create({
   internalContext,
   options,
 }: ServerActionParameters<ResourceCreateActionDefinition>): Promise<unknown> {
-  const { getAppAssets } = options;
+  const { createAppResourcesWithAssets, getAppAssets } = options;
+
   const body = (remap(action.body, data, internalContext) ?? data) as
     | Record<string, unknown>
     | Record<string, unknown>[];
@@ -144,33 +148,40 @@ export async function create({
   const definition = getResourceDefinition(app.definition, action.resource, context);
 
   const appAssets = await getAppAssets({ context, app: app.toJSON() });
-  Object.assign(context, { body: serializeResource(body) });
 
-  const [processedBody] = processResourceBody(
+  if (context.is && context.is('multipart/form-data')) {
+    Object.assign(context.request, { body: serializeServerResource(body) });
+  } else {
+    Object.assign(context, { body: serializeResource(body) });
+  }
+
+  const [processedBody, preparedAssets] = processResourceBody(
     context,
     definition,
     undefined,
     undefined,
     appAssets.map((asset) => ({ id: asset.id, name: asset.name })),
   );
+
   const resources = Array.isArray(processedBody) ? processedBody : [processedBody];
-  const createdResources = await Resource.bulkCreate(
-    resources.map(({ $expires, ...resourceData }) => ({
-      type: action.resource,
-      data: resourceData,
-      AppId: app.id,
-      expires: $expires,
-      seed: false,
-      ephemeral: app.demoMode,
+
+  const createdResources = await createAppResourcesWithAssets({
+    app: app.toJSON(),
+    context,
+    resources: resources.map((resource) => ({
+      ...resource,
+      $seed: false,
+      $ephemeral: app.demoMode,
+      ...(app.demoMode ? { $clonable: false } : {}),
     })),
-  );
+    preparedAssets,
+    resourceType: action.resource,
+    options,
+  });
 
-  processReferenceHooks(app, createdResources[0], 'create', options, context);
-  processHooks(app, createdResources[0], 'create', options, context);
+  await uploadAssets(app.id, preparedAssets);
 
-  const mappedResources = createdResources.map((r) => r.toJSON());
-
-  return Array.isArray(processedBody) ? mappedResources : mappedResources[0];
+  return Array.isArray(processedBody) ? createdResources : createdResources[0];
 }
 
 export async function update({
@@ -206,9 +217,14 @@ export async function update({
   }
   const { getAppAssets } = options;
   const appAssets = await getAppAssets({ context, app: app.toJSON() });
-  Object.assign(context, { body: serializeResource(body) });
 
-  const [updatedResource] = processResourceBody(
+  if (context.is && context.is('multipart/form-data')) {
+    Object.assign(context.request, { body: serializeServerResource(body) });
+  } else {
+    Object.assign(context, { body: serializeResource(body) });
+  }
+
+  const [updatedResource, preparedAssets, deletedAssetIds] = processResourceBody(
     context,
     definition,
     appAssets.filter((asset) => asset.resourceId === resource.id).map((asset) => asset.id),
@@ -231,6 +247,21 @@ export async function update({
       resource.update({ data, clonable, expires }, { transaction }),
     ];
 
+    if (preparedAssets.length) {
+      promises.push(
+        Asset.bulkCreate(
+          preparedAssets.map((asset) => ({
+            ...asset,
+            ...getCompressedFileMeta(asset),
+            AppId: app.id,
+            ResourceId: resource.id,
+          })),
+          { logging: false, transaction },
+        ),
+        uploadAssets(app.id, preparedAssets),
+      );
+    }
+
     if (definition.history) {
       promises.push(
         ResourceVersion.create(
@@ -242,6 +273,8 @@ export async function update({
           { transaction },
         ),
       );
+    } else {
+      promises.push(Asset.destroy({ where: { id: deletedAssetIds }, transaction }));
     }
 
     return Promise.all(promises);
@@ -288,9 +321,14 @@ export async function patch({
 
   const { getAppAssets } = options;
   const appAssets = await getAppAssets({ context, app: app.toJSON() });
-  Object.assign(context, { body: serializeResource(body) });
 
-  const [patchedResource] = processResourceBody(
+  if (context.is && context.is('multipart/form-data')) {
+    Object.assign(context.request, { body: serializeServerResource(body) });
+  } else {
+    Object.assign(context, { body: serializeResource(body) });
+  }
+
+  const [patchedResource, preparedAssets, deletedAssetIds] = processResourceBody(
     context,
     definition,
     appAssets.filter((asset) => asset.resourceId === resource.id).map((asset) => asset.id),
@@ -315,6 +353,21 @@ export async function patch({
       resource.update({ data: patchedData, clonable, expires }, { transaction }),
     ];
 
+    if (preparedAssets.length) {
+      promises.push(
+        Asset.bulkCreate(
+          preparedAssets.map((asset) => ({
+            ...asset,
+            ...getCompressedFileMeta(asset),
+            AppId: app.id,
+            ResourceId: resource.id,
+          })),
+          { logging: false, transaction },
+        ),
+        uploadAssets(app.id, preparedAssets),
+      );
+    }
+
     if (definition.history) {
       promises.push(
         ResourceVersion.create(
@@ -326,6 +379,8 @@ export async function patch({
           { transaction },
         ),
       );
+    } else {
+      promises.push(Asset.destroy({ where: { id: deletedAssetIds }, transaction }));
     }
 
     return Promise.all(promises);

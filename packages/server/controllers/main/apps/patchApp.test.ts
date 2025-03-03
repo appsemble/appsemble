@@ -1179,6 +1179,14 @@ describe('patchApp', () => {
                   "theme": {
                     "$ref": "#/components/schemas/Theme",
                   },
+                  "webhooks": {
+                    "additionalProperties": {
+                      "$ref": "#/components/schemas/WebhookDefinition",
+                    },
+                    "description": "A list of callable webhooks that are associated with this app.",
+                    "minProperties": 1,
+                    "type": "object",
+                  },
                 },
                 "required": [
                   "name",
@@ -1329,6 +1337,14 @@ describe('patchApp', () => {
                   },
                   "theme": {
                     "$ref": "#/components/schemas/Theme",
+                  },
+                  "webhooks": {
+                    "additionalProperties": {
+                      "$ref": "#/components/schemas/WebhookDefinition",
+                    },
+                    "description": "A list of callable webhooks that are associated with this app.",
+                    "minProperties": 1,
+                    "type": "object",
                   },
                 },
                 "required": [

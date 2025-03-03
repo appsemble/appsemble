@@ -57,6 +57,7 @@ declare module 'koas-security' {
     basic: {};
     cli: { scope: string };
     studio: {};
+    webhook: {};
   }
 
   interface Users {
@@ -65,6 +66,7 @@ declare module 'koas-security' {
     cli: AuthSubject;
     scim: AuthSubject;
     studio: AuthSubject;
+    webhook: AuthSubject;
   }
 }
 
@@ -102,6 +104,8 @@ declare module 'koas-parameters' {
     memberEmail: string;
     trainingId: number;
     container: string;
+    webhookName: string;
+    webhookSecretId: string;
   }
 
   interface QueryParams {
@@ -477,8 +481,16 @@ export interface Options {
   getAppVariables: (params: GetAppVariablesParams) => Promise<AppConfigEntry[]>;
 }
 
-export interface TempFile {
-  path: string;
-  filename: string;
-  mime: string;
+export class TempFile {
+  readonly filename: string;
+
+  readonly mime: string;
+
+  readonly path: string;
+
+  constructor({ filename, mime, path }: { filename: string; mime: string; path: string }) {
+    this.filename = filename;
+    this.mime = mime;
+    this.path = path;
+  }
 }

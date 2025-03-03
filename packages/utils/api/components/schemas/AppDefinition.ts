@@ -100,6 +100,12 @@ The most basic resource has a \`schema\` property and defines the minimal securi
       description: 'A list of cron jobs that are associated with this app.',
       additionalProperties: { $ref: '#/components/schemas/CronDefinition' },
     },
+    webhooks: {
+      type: 'object',
+      minProperties: 1,
+      description: 'A list of callable webhooks that are associated with this app.',
+      additionalProperties: { $ref: '#/components/schemas/WebhookDefinition' },
+    },
     anchors: {
       type: 'array',
       minItems: 1,

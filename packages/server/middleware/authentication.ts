@@ -4,6 +4,7 @@ import { compare } from 'bcrypt';
 import jwt, { type JwtPayload } from 'jsonwebtoken';
 import { Op } from 'sequelize';
 
+import { AppWebhookSecret } from '../models/AppWebhookSecret.js';
 import {
   App,
   AppMember,
@@ -104,6 +105,30 @@ export function authentication(): SecurityOptions {
       return User.findByPk(sub, {
         attributes: ['id'],
       });
+    },
+
+    async webhook(webhookToken: string, { path }: { path: string }) {
+      const match = path.match(/^\/api\/apps\/(\d+)\/webhooks/);
+      if (!match) {
+        return;
+      }
+
+      const appWebhookSecrets = await AppWebhookSecret.findAll({
+        where: {
+          AppId: Number(match[1]),
+        },
+        attributes: ['secret'],
+      });
+
+      const webhookSecret = appWebhookSecrets.find(
+        (whSecret) =>
+          decrypt(whSecret.secret, argv.aesSecret) ===
+          decrypt(Buffer.from(webhookToken, 'hex'), argv.aesSecret),
+      );
+
+      if (webhookSecret) {
+        return {} as AppMember;
+      }
     },
   };
 }

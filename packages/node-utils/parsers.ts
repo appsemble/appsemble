@@ -12,7 +12,7 @@ import { type OpenAPIV3 } from 'openapi-types';
 import { is } from 'type-is';
 
 import { logger } from './logger.js';
-import { type TempFile } from './server/types.js';
+import { TempFile } from './server/types.js';
 
 export const xWwwFormUrlencodedParser: Parser<unknown> = async (
   body,
@@ -112,10 +112,10 @@ export const streamParser: Parser<Record<string, unknown>> = async (
           tempFiles[fieldName] = [];
         }
         (response[fieldName] as string[]).push('');
-        (tempFiles[fieldName] as TempFile[]).push({ path, mime, filename });
+        (tempFiles[fieldName] as TempFile[]).push(new TempFile({ path, mime, filename }));
       } else {
         response[fieldName] = '';
-        tempFiles[fieldName] = { path, mime, filename };
+        tempFiles[fieldName] = new TempFile({ path, mime, filename });
       }
     })
       .on('field', (fieldName, content) => {
