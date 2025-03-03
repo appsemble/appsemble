@@ -26,5 +26,6 @@ export async function getUserInfoById(id: string): Promise<UserInfo> {
     locale: user.locale,
     zoneinfo: user.timezone,
     subscribed: user.subscribed,
+    hasPassword: Boolean(user.password != null),
   } as UserInfo;
 }

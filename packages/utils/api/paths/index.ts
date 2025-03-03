@@ -82,6 +82,7 @@ import { pathItems as appsAppId } from './apps/appId.js';
 import { pathItems as apps } from './apps.js';
 import { pathItems as appTemplates } from './appTemplates.js';
 import { pathItems as authEmailLogin } from './auth/email/login.js';
+import { pathItems as authEmailPatchPassword } from './auth/email/patchPassword.js';
 import { pathItems as authEmailRegister } from './auth/email/register.js';
 import { pathItems as authEmailRequestPasswordReset } from './auth/email/requestResetPassword.js';
 import { pathItems as authEmailResendVerification } from './auth/email/resendVerification.js';
@@ -243,6 +244,7 @@ export const paths = {
   '/api/auth/email/login': authEmailLogin,
   '/api/auth/email/register': authEmailRegister,
   '/api/auth/email/reset-password': authEmailResetPassword,
+  '/api/auth/email/patch-password': authEmailPatchPassword,
   '/api/auth/email/resend-verification': authEmailResendVerification,
   '/api/auth/email/request-password-reset': authEmailRequestPasswordReset,
   '/api/auth/email/verify': authEmailVerify,
