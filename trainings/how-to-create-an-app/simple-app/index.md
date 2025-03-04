@@ -12,7 +12,7 @@ First, we'll create the app in the studio to get a blank template to work off of
 
 > **Note:** Make sure you are logged in and are in an organization with permissions that allow you
 > to create apps (Maintainer or Owner). If you're stuck on this, read
-> [Account setup](/docs/studio/account-setup.md)
+> [Account setup](/docs/studio/account-setup)
 
 Once you're set up, go to the [App store](/apps) and click on **Create new app**. You will be
 prompted with a screen that asks you to fill in some details like the app's name and organization.
@@ -81,7 +81,7 @@ pages:
       - type: markdown
         version: 0.30.14-test.5
         parameters:
-          # Note: The '\' characters create a new line.
+          # Note: The '\' character creates a new line.
           content: |
             # About us
 
@@ -152,7 +152,7 @@ blocks:
         # Echo's Journey VR
 
         Echo's journey is a virtual reality experience about escaping from an alien cave system.\
-        Our new VR technology provide an immersive experience like never seen before!
+        Our new VR technology provides an immersive experience like never seen before!
 
         Wishlist our game now on Steam!
   - type: image

@@ -7,7 +7,7 @@ displaying data in a certain format or transforming data.
 To get a good understanding of how blocks work and how to define one, take a look at the
 documentation:
 
-- [Block documentation](/docs/blocks)
+- [Block documentation](/docs/app/blocks)
 
 With this knowledge we can pick a simple block from the [block store](/blocks) and fill in the
 fields to add functionality to our app.
@@ -36,4 +36,4 @@ blocks that are from the `@appsemble` organization.
 **(Optional)** If you can't quite create the app you want with the blocks that are available to you,
 you can also create your own:
 
-- [Developing blocks](/docs/development/developing-blocks.md)
+- [Developing blocks](/docs/development/developing-blocks)
