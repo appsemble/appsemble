@@ -17,22 +17,6 @@ this remapper is case-sensitive.
 ${schemaExample('string.startsWith')}
 `,
   },
-  'string.slice': {
-    description: `Extract characters from a string,
-accepts either an array of two numbers (indexes of starting point and ending point)
-or a number (index of the starting point).
-startIndex is inclusive whereas the endIndex is not.
-${schemaExample('string.slice')}`,
-    oneOf: [
-      {
-        type: 'array',
-        items: {
-          type: 'number',
-        },
-      },
-      { type: 'number' },
-    ],
-  },
   'string.endsWith': {
     oneOf: [
       {

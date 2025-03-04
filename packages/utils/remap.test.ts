@@ -1560,19 +1560,61 @@ describe('string.endsWith', () => {
   });
 });
 
-describe('string.slice', () => {
+describe('slice', () => {
   runTests({
     'should support number as remapper input': {
       input: 'lazy crazy fox, fix my pipeline',
-      mappers: { 'string.slice': 5 },
+      mappers: { slice: 5 },
       expected: 'crazy fox, fix my pipeline',
     },
   });
   runTests({
     'should support numbers array as remapper input': {
       input: 'lazy crazy fox, fix my pipeline',
-      mappers: { 'string.slice': [5, 10] },
+      mappers: { slice: [5, 10] },
       expected: 'crazy',
+    },
+  });
+  runTests({
+    'should return string sliced till the end if the ending index is out of bound': {
+      input: 'lazy crazy fox, fix my pipeline',
+      mappers: { slice: [5, 1000] },
+      expected: 'crazy fox, fix my pipeline',
+    },
+  });
+  runTests({
+    'should return empty string if the starting index is out of bounds': {
+      input: 'lazy crazy fox, fix my pipeline',
+      mappers: { slice: [1000, 100] },
+      expected: '',
+    },
+  });
+  runTests({
+    'should return null if the input is not of type string or array': {
+      input: 55_555,
+      mappers: { slice: 4 },
+      expected: null,
+    },
+  });
+  runTests({
+    'should slice an array': {
+      input: [1, 2, 3, 4, 5, 6],
+      mappers: { slice: 3 },
+      expected: [4, 5, 6],
+    },
+  });
+  runTests({
+    'should return array sliced till the end if the ending index is out of bound': {
+      input: ['a', 'b', 'c', 'd', 'e', 'f'],
+      mappers: { slice: [4, 1000] },
+      expected: ['e', 'f'],
+    },
+  });
+  runTests({
+    'should return empty array if the starting index is out of bounds': {
+      input: Array.of(['foo', 'bar', 'hello', 'world']),
+      mappers: { slice: [1000, 100] },
+      expected: [],
     },
   });
 });

@@ -701,10 +701,10 @@ export const examples: Record<RemapperExampleKeys, RemapperExample> = {
     },
     result: true,
   },
-  'string.slice': {
+  slice: {
     input: 'Laziness',
     remapper: {
-      'string.slice': [3, 6],
+      slice: [3, 6],
     },
     result: 'ine',
   },

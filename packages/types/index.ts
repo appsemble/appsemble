@@ -752,9 +752,9 @@ export interface Remappers {
   'string.endsWith': SubstringCaseType | string;
 
   /**
-   * Extract a section of the string.
+   * Extract a section of the string or an array.
    */
-  'string.slice': number | [number, number];
+  slice: number | [number, number];
 
   /**
    * Format a string using remapped input variables.
