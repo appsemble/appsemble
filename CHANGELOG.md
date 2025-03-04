@@ -2,6 +2,22 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.32.1-test.8](https://gitlab.com/appsemble/appsemble/-/releases/0.32.1-test.8)] - 2025-03-04
+
+### Added
+
+- Utils: Add `slice` remapper to support slicing arrays and strings.
+
+### Removed
+
+- Utils: Remove `string.slice` remapper.
+
+### Fixed
+
+- Block(`table`): Fix not being able to return to the initial state of the data.
+- Studio: Import app feature making a request to the wrong endpoint.
+- Studio: Import translations succeeding but throwing an error at the same time.
+
 ## \[[0.32.1-test.7](https://gitlab.com/appsemble/appsemble/-/releases/0.32.1-test.7)] - 2025-02-26
 
 ## \[[0.32.1-test.6](https://gitlab.com/appsemble/appsemble/-/releases/0.32.1-test.6)] - 2025-02-26
