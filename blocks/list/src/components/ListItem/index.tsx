@@ -12,9 +12,10 @@ import { type Item } from '../../../block.js';
 interface ListItemProps {
   readonly index: number;
   readonly item: Item;
+  readonly preventClick?: boolean;
 }
 
-export function ListItem({ index, item }: ListItemProps): VNode {
+export function ListItem({ index, item, preventClick }: ListItemProps): VNode {
   const {
     actions,
     parameters: { button, dropdown, image, imageInline },
@@ -82,7 +83,7 @@ export function ListItem({ index, item }: ListItemProps): VNode {
         <HeaderComponent index={index} isVisible={isVisible} item={item} />
         <ContentComponent index={index} item={item} />
       </div>
-      {actions.onClick.type !== 'noop' && button == null && (
+      {actions.onClick.type !== 'noop' && button == null && preventClick !== true && (
         <Icon className={`${styles.button} mx-0 my-0 px-0 py-0`} icon="angle-right" size="large" />
       )}
     </div>

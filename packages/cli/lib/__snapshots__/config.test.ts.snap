@@ -4889,6 +4889,10 @@ exports[`config > getProjectImplementations > official blocks > list 1`] = `
 
 If defined, an indicator will show up to show that the list item has a click action.",
     },
+    "onDrop": {
+      "description": "Action that gets triggered when you drag and drop an item,
+If you define this action the list items will be draggable.",
+    },
   },
   "events": {
     "emit": undefined,

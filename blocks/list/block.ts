@@ -328,6 +328,12 @@ declare module '@appsemble/sdk' {
     onClick: never;
 
     /**
+     * Action that gets triggered when you drag and drop an item,
+     * If you define this action the list items will be draggable.
+     */
+    onDrop: never;
+
+    /**
      * Custom action mapping.
      */
     [key: string]: never;

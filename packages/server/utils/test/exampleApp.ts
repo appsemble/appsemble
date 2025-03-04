@@ -49,7 +49,6 @@ export const exampleApp = (
               array: { type: 'array' },
             },
           },
-          roles: ['$public'],
           create: {
             hooks: {
               notification: {

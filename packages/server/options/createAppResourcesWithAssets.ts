@@ -5,6 +5,7 @@ import {
   getCompressedFileMeta,
 } from '@appsemble/node-utils';
 import { type Resource as ResourceInterface } from '@appsemble/types';
+import { Op } from 'sequelize';
 
 import { getCurrentAppMember } from './getCurrentAppMember.js';
 import { App, Asset, transactional } from '../models/index.js';
@@ -16,6 +17,7 @@ export async function createAppResourcesWithAssets({
   context,
   groupId,
   options,
+  positioning,
   preparedAssets,
   resourceType,
   resources,
@@ -24,8 +26,16 @@ export async function createAppResourcesWithAssets({
 
   let createdResources: Resource[];
   await transactional(async (transaction) => {
+    let lastPositionResource: Resource | undefined;
+    if (positioning) {
+      lastPositionResource = await Resource.findOne({
+        attributes: ['Position'],
+        where: { AppId: app.id, type: resourceType, Position: { [Op.not]: null } },
+        order: [['Position', 'DESC']],
+      });
+    }
     createdResources = await Resource.bulkCreate(
-      resources.map(({ $clonable, $ephemeral, $expires, $seed, $thumbnails, ...data }) => ({
+      resources.map(({ $clonable, $ephemeral, $expires, $seed, $thumbnails, ...data }, index) => ({
         AppId: app.id,
         GroupId: groupId ?? null,
         type: resourceType,
@@ -35,6 +45,7 @@ export async function createAppResourcesWithAssets({
         expires: $expires,
         clonable: $clonable,
         ephemeral: $ephemeral,
+        Position: lastPositionResource ? lastPositionResource.Position + index : null,
       })),
       { logging: false, transaction },
     );

@@ -1,6 +1,6 @@
 import { logger } from '@appsemble/node-utils';
 import { type Resource as ResourceType } from '@appsemble/types';
-import { type FindOptions } from 'sequelize';
+import { DataTypes, type FindOptions } from 'sequelize';
 import {
   AllowNull,
   AutoIncrement,
@@ -46,6 +46,7 @@ export class Resource extends Model {
 
   @AllowNull(false)
   @Index({ name: 'resourceTypeComposite' })
+  @Index({ name: 'ResourcePositionUniqueIndex', unique: true })
   @Column(DataType.STRING)
   type: string;
 
@@ -93,6 +94,7 @@ export class Resource extends Model {
 
   @ForeignKey(() => App)
   @Index({ name: 'resourceTypeComposite' })
+  @Index({ name: 'ResourcePositionUniqueIndex', unique: true })
   @AllowNull(false)
   @Column(DataType.INTEGER)
   AppId: number;
@@ -105,6 +107,11 @@ export class Resource extends Model {
   @AllowNull(true)
   @Column(DataType.INTEGER)
   GroupId: number;
+
+  @AllowNull(true)
+  @Index({ name: 'ResourcePositionUniqueIndex', unique: true })
+  @Column(DataTypes.DECIMAL)
+  Position: number;
 
   @BelongsTo(() => Group, { onDelete: 'CASCADE' })
   Group: Awaited<Group>;
@@ -310,6 +317,7 @@ export class Resource extends Model {
     const result: ResourceType = {
       ...this.data,
       id: this.id,
+      ...(this.Position == null ? {} : { Position: this.Position }),
       $created: this.created.toJSON(),
       $updated: this.updated.toJSON(),
     };

@@ -10,6 +10,7 @@ import {
   BlockVersion,
   Organization,
   OrganizationMember,
+  Resource,
   type User,
 } from '../../../models/index.js';
 import { setArgv } from '../../../utils/argv.js';
@@ -153,6 +154,228 @@ describe('patchApp', () => {
               ",
       }
     `);
+  });
+
+  it('should assign the positions to resources if enabled in the app definition', async () => {
+    const app = await App.create({
+      definition: {
+        name: 'Test app',
+        defaultPage: 'Test Page',
+        resources: {
+          testResource: { schema: { type: 'object', properties: { foo: { type: 'string' } } } },
+        },
+      },
+      path: 'test-app',
+      vapidPublicKey: 'a',
+      vapidPrivateKey: 'b',
+      OrganizationId: organization.id,
+    });
+
+    await Resource.bulkCreate(
+      Array.from(Array.from({ length: 10 }).keys()).map((entry) => ({
+        type: 'testResource',
+        data: { foo: `bar ${entry}` },
+        AppId: app.id,
+      })),
+    );
+    authorizeStudio(user);
+    const { status } = await request.patch(
+      `/api/apps/${app.id}`,
+      createFormData({
+        yaml: stripIndent(`
+          name: Test App
+          defaultPage: Test Page
+          pages:
+            - name: Test Page
+              blocks:
+                - type: test
+                  version: 0.0.0
+          resources:
+            testResource:
+              schema:
+                additionalProperties: false
+                type: object
+                properties:
+                  foo:
+                    type: string
+              positioning: true
+        `),
+      }),
+    );
+    expect(status).toBe(200);
+    const resources = (
+      await Resource.findAll({
+        attributes: ['id', 'Position', 'type'],
+        where: {
+          AppId: app.id,
+          type: 'testResource',
+        },
+      })
+    ).map((resource) => resource.dataValues);
+    expect(resources).toMatchObject([
+      {
+        id: 1,
+        Position: '1',
+        type: 'testResource',
+      },
+      {
+        id: 2,
+        Position: '2',
+        type: 'testResource',
+      },
+      {
+        id: 3,
+        Position: '3',
+        type: 'testResource',
+      },
+      {
+        id: 4,
+        Position: '4',
+        type: 'testResource',
+      },
+      {
+        id: 5,
+        Position: '5',
+        type: 'testResource',
+      },
+      {
+        id: 6,
+        Position: '6',
+        type: 'testResource',
+      },
+      {
+        id: 7,
+        Position: '7',
+        type: 'testResource',
+      },
+      {
+        id: 8,
+        Position: '8',
+        type: 'testResource',
+      },
+      {
+        id: 9,
+        Position: '9',
+        type: 'testResource',
+      },
+      {
+        id: 10,
+        Position: '10',
+        type: 'testResource',
+      },
+    ]);
+  });
+
+  it('should not update the positions if the resources already have positions', async () => {
+    const app = await App.create({
+      definition: {
+        name: 'Test app',
+        defaultPage: 'Test Page',
+        resources: {
+          testResource: { schema: { type: 'object', properties: { foo: { type: 'string' } } } },
+        },
+      },
+      path: 'test-app',
+      vapidPublicKey: 'a',
+      vapidPrivateKey: 'b',
+      OrganizationId: organization.id,
+    });
+
+    await Resource.bulkCreate(
+      Array.from(Array.from({ length: 10 }).keys()).map((entry) => ({
+        type: 'testResource',
+        data: { foo: `bar ${entry}` },
+        AppId: app.id,
+        Position: entry * 10,
+      })),
+    );
+    authorizeStudio(user);
+    const { status } = await request.patch(
+      `/api/apps/${app.id}`,
+      createFormData({
+        yaml: stripIndent(`
+          name: Test App
+          defaultPage: Test Page
+          pages:
+            - name: Test Page
+              blocks:
+                - type: test
+                  version: 0.0.0
+          resources:
+            testResource:
+              schema:
+                additionalProperties: false
+                type: object
+                properties:
+                  foo:
+                    type: string
+              positioning: true
+        `),
+      }),
+    );
+    expect(status).toBe(200);
+
+    const resources = (
+      await Resource.findAll({
+        attributes: ['id', 'Position', 'type'],
+        where: {
+          AppId: app.id,
+          type: 'testResource',
+        },
+      })
+    ).map((resource) => resource.dataValues);
+    expect(resources).toMatchObject([
+      {
+        id: 1,
+        Position: '0',
+        type: 'testResource',
+      },
+      {
+        id: 2,
+        Position: '10',
+        type: 'testResource',
+      },
+      {
+        id: 3,
+        Position: '20',
+        type: 'testResource',
+      },
+      {
+        id: 4,
+        Position: '30',
+        type: 'testResource',
+      },
+      {
+        id: 5,
+        Position: '40',
+        type: 'testResource',
+      },
+      {
+        id: 6,
+        Position: '50',
+        type: 'testResource',
+      },
+      {
+        id: 7,
+        Position: '60',
+        type: 'testResource',
+      },
+      {
+        id: 8,
+        Position: '70',
+        type: 'testResource',
+      },
+      {
+        id: 9,
+        Position: '80',
+        type: 'testResource',
+      },
+      {
+        id: 10,
+        Position: '90',
+        type: 'testResource',
+      },
+    ]);
   });
 
   it('should update the email settings', async () => {

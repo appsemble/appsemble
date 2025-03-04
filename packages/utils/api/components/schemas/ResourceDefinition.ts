@@ -90,6 +90,12 @@ name of the resource and how it should behave.
         },
       },
     },
+    positioning: {
+      type: 'boolean',
+      default: false,
+      description:
+        'Whether to enable position column for the instances of this resource. This is used for keeping an ordered list to enable custom sorting of the data using drag and drop features.',
+    },
     url: {
       type: 'string',
       default: '/api/apps/{appId}/{resource}',

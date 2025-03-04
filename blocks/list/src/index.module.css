@@ -4,3 +4,7 @@
   margin-top: 12px;
   padding-left: 1rem;
 }
+
+.invisible {
+  opacity: 0;
+}

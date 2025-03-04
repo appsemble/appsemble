@@ -837,6 +837,7 @@ export type ResourceAction =
   | 'delete'
   | 'history.get'
   | 'patch'
+  | 'update.positions'
   | 'update';
 
 export type CustomAppResourcePermission = `$resource:${string}:${ResourceAction}`;
@@ -992,6 +993,12 @@ export interface ResourceDefinition {
    * A definition of how versioning should happen for instances of this resource.
    */
   history?: ResourceHistoryDefinition | boolean;
+
+  /**
+   * Whether to enable position column for the instances of this resource. This is used for keeping
+   * an ordered list to enable custom sorting of the data using drag and drop features.
+   */
+  positioning?: boolean;
 
   /**
    * The definition for the `resource.create` action.
@@ -1695,6 +1702,8 @@ export type ResourceQueryActionDefinition = OwnResourceDefinition &
 export type ResourceCountActionDefinition = OwnResourceDefinition &
   ResourceActionDefinition<'resource.count'>;
 export type ResourceUpdateActionDefinition = ResourceActionDefinition<'resource.update'>;
+export type ResourceUpdatePositionsActionDefinition =
+  ResourceActionDefinition<'resource.update.positions'> & ResourceActionWithIdDefinition;
 export type ResourcePatchActionDefinition = ResourceActionDefinition<'resource.patch'> &
   ResourceActionWithIdDefinition;
 export type AppMemberLogoutAction = BaseActionDefinition<'app.member.logout'>;
@@ -1839,6 +1848,7 @@ export type ActionDefinition =
   | ResourceSubscriptionToggleActionDefinition
   | ResourceSubscriptionUnsubscribeActionDefinition
   | ResourceUpdateActionDefinition
+  | ResourceUpdatePositionsActionDefinition
   | ShareActionDefinition
   | StaticActionDefinition
   | StorageAppendActionDefinition

@@ -103,6 +103,7 @@ export function createCreateAppResourceController(options: Options): Middleware 
         preparedAssets: preparedSeedAssets,
         resourceType,
         options,
+        positioning: resourceDefinition.positioning,
       });
 
       if (!app.demoMode) {

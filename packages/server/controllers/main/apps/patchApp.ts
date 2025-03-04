@@ -7,7 +7,7 @@ import {
 import { type AppDefinition, OrganizationPermission } from '@appsemble/types';
 import { validateAppDefinition, validateStyle } from '@appsemble/utils';
 import { type Context } from 'koa';
-import { literal } from 'sequelize';
+import { literal, Op } from 'sequelize';
 import { parse } from 'yaml';
 
 import {
@@ -17,6 +17,7 @@ import {
   AppScreenshot,
   AppSnapshot,
   Organization,
+  Resource,
   transactional,
 } from '../../../models/index.js';
 import {
@@ -146,7 +147,6 @@ export async function patchApp(ctx: Context): Promise<void> {
           });
         }
       }
-
       // Make the actual update
       await updateCompanionContainers(
         definition.containers ?? [],
@@ -307,6 +307,31 @@ export async function patchApp(ctx: Context): Promise<void> {
           { transaction },
         );
         dbApp.AppSnapshots = [snapshot];
+      }
+      if (result.definition?.resources) {
+        for (const [key, value] of Object.entries(result.definition.resources)) {
+          if (value.positioning) {
+            const countNonNullResources = await Resource.count({
+              where: { AppId: appId, type: key, Position: { [Op.not]: null } },
+              transaction,
+            });
+            if (countNonNullResources) {
+              break;
+            }
+            const resourcesToUpdate = await Resource.findAll({
+              attributes: ['id'],
+              where: { AppId: appId, type: key },
+              order: [['updated', 'DESC']],
+              transaction,
+            });
+
+            for (const [i, element] of resourcesToUpdate.entries()) {
+              // If we start with 0, insertion at top becomes impossible unless we move the first
+              // item.
+              await element.update({ Position: i + 1 }, { transaction });
+            }
+          }
+        }
       }
 
       if (screenshots?.length) {

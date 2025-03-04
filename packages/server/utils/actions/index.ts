@@ -59,6 +59,7 @@ export const actions = {
   'resource.history.get': noop,
   'resource.query': resource.query,
   'resource.update': resource.update,
+  'resource.update.positions': noop,
   'resource.patch': resource.patch,
   'resource.count': noop,
   'resource.subscription.status': noop,
