@@ -7,19 +7,6 @@ import axios from 'axios';
 
 import { getChapterCompletionState } from './utils/index.js';
 
-const order = [
-  'introduction',
-  'how-to-create-an-app',
-  'data-flow',
-  'storing-data',
-  'data-transformation',
-  'styling-apps',
-];
-
-function bumpByOrder(a: string, b: string): number {
-  return order.indexOf(a.split('/')[1]) - order.indexOf(b.split('/')[1]);
-}
-
 export async function getTrainings(isLoggedIn: boolean): Promise<TrainingChapter[]> {
   const context = require.context('../../../../trainings', true, /\.mdx?$|\.json$/);
   const validTrainingIds = (await axios.get<string[]>('/api/trainings')).data;
@@ -28,10 +15,7 @@ export async function getTrainings(isLoggedIn: boolean): Promise<TrainingChapter
     : [];
 
   const chapters: TrainingChapter[] = [];
-  const properties = context
-    .keys()
-    .filter((path) => path.endsWith('properties.json'))
-    .sort(bumpByOrder);
+  const properties = context.keys().filter((path) => path.endsWith('properties.json'));
 
   for (const path of properties) {
     const { blockedBy, title, trainingOrder }: TrainingChapterProperties = context(path);
