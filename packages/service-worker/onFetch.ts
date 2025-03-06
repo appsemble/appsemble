@@ -1,6 +1,11 @@
 import { partialNormalized } from '@appsemble/utils';
 
-import { cacheFirst, requestFirst } from './utils.js';
+import {
+  cacheFirst,
+  handleModifyAndInvalidateCache,
+  requestFirst,
+  staleWhileRevalidate,
+} from './utils.js';
 
 /**
  * Map all requests to a caching behavior based on the HTTP method and URL.
@@ -10,16 +15,31 @@ import { cacheFirst, requestFirst } from './utils.js';
 export function onFetch(event: FetchEvent): void {
   const { request } = event;
 
+  const { origin, pathname } = new URL(request.url);
+
+  // Match all modifying requests (POST, PUT, PATCH, DELETE) for resource endpoints
+  if (
+    ['POST', 'PUT', 'PATCH', 'DELETE'].includes(request.method) &&
+    /^\/api\/apps\/\d+\/resources\/[^/?]+/.test(pathname)
+  ) {
+    event.respondWith(handleModifyAndInvalidateCache(request));
+    return;
+  }
+
   // Pass through any non GET or HEAD requests.
   if (request.method !== 'GET' && request.method !== 'HEAD') {
     return;
   }
 
-  const { origin, pathname } = new URL(request.url);
-
   // App assets are immutable and can be cached.
   if (/^\/api\/apps\/\d+\/assets\//.test(pathname)) {
     event.respondWith(cacheFirst(request));
+    return;
+  }
+
+  // Cache data endpoints using stale-while-revalidate strategy
+  if (/^\/api\/apps\/\d+\/resources\/[^/?]+/.test(pathname)) {
+    event.respondWith(staleWhileRevalidate(request));
     return;
   }
 
