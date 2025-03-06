@@ -72,3 +72,61 @@ export async function requestFirst(request: Request): Promise<Response> {
   }
   return put(request, response, () => tryCached(request, () => response));
 }
+
+/**
+ * Implements a stale-while-revalidate caching strategy.
+ *
+ * 1. Serve cached response immediately if available.
+ * 2. Fetch new data in the background and update the cache.
+ * 3. Ensure the user gets the fastest response while keeping data fresh.
+ *
+ * @param request The request for which to get a response.
+ * @returns The fetch response object.
+ */
+export async function staleWhileRevalidate(request: Request): Promise<Response> {
+  const cachedResponse = await tryCached(request, () => null);
+
+  // Fetch fresh data in the background and update cache.
+  const fetchPromise = fetch(request)
+    .then((response) => put(request, response, () => response))
+    // Ignore errors, use cached response instead
+    .catch((): null => null);
+
+  return cachedResponse || fetchPromise || fetch(request);
+}
+
+/**
+ * Handles modifying requests (POST, PUT, PATCH, DELETE) by invalidating the cache
+ * for all related resources. This ensures that after a resource is modified,
+ * the next fetch request retrieves fresh data.
+ *
+ * Steps:
+ * 1. Performs the actual API request.
+ * 2. If the request is successful, deletes all cached responses that match the resource type.
+ * 3. Ensures that future GET requests to this resource type will fetch fresh data.
+ *
+ * @param request The modifying request (POST, PUT, PATCH, DELETE) that affects resources.
+ * @returns A promise that resolves with the original fetch response.
+ */
+export async function handleModifyAndInvalidateCache(request: Request): Promise<Response> {
+  const clonedRequest = request.clone();
+  const response = await fetch(request);
+
+  if (!response.ok) {
+    return response;
+  }
+
+  const cache = await caches.open('appsemble');
+  const resourceUrl = new URL(clonedRequest.url);
+
+  const resourceListPrefix = resourceUrl.pathname.replace(/\/[^/]+$/, '');
+
+  const cacheKeys = await cache.keys();
+  for (const cacheRequest of cacheKeys) {
+    if (cacheRequest.url.startsWith(resourceUrl.origin + resourceListPrefix)) {
+      await cache.delete(cacheRequest);
+    }
+  }
+
+  return response;
+}
