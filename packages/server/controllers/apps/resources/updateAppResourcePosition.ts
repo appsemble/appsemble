@@ -1,13 +1,15 @@
-import { assertKoaCondition } from '@appsemble/node-utils';
+import { assertKoaCondition, getResourceDefinition } from '@appsemble/node-utils';
 import { type Context } from 'koa';
 import { Op } from 'sequelize';
 
 import { App, Resource } from '../../../models/index.js';
 import { checkAppPermissions } from '../../../utils/authorization.js';
+import { parseQuery } from '../../../utils/resource.js';
 
 export async function updateAppResourcePosition(ctx: Context): Promise<void> {
   const {
     pathParams: { appId, resourceId, resourceType },
+    queryParams: { $filter, selectedGroupId },
     request: {
       body: { nextResourcePosition, prevResourcePosition },
     },
@@ -16,15 +18,28 @@ export async function updateAppResourcePosition(ctx: Context): Promise<void> {
 
   const app = await App.findByPk(appId);
   assertKoaCondition(app != null, ctx, 404, 'App not found');
+  const resourceDefinition = getResourceDefinition(app.definition, resourceType);
+  const { query } = parseQuery({ $filter, resourceDefinition });
+  const commonFindOptions = {
+    ...(query ? { query } : {}),
+    AppId: appId,
+    type: resourceType,
+    GroupId: selectedGroupId ?? null,
+    ...(app.demoMode ? { ephemeral: true, seed: false } : {}),
+  };
   if (!nextResourcePosition) {
     const count = await Resource.count({
-      where: { AppId: appId, type: resourceType, Position: { [Op.gt]: prevResourcePosition } },
+      where: {
+        [Op.and]: [commonFindOptions, { Position: { [Op.gt]: prevResourcePosition } }],
+      },
     });
     assertKoaCondition(!(count > 0), ctx, 400, 'Invalid Position');
   }
   if (!prevResourcePosition) {
     const count = await Resource.count({
-      where: { AppId: appId, type: resourceType, Position: { [Op.lt]: nextResourcePosition } },
+      where: {
+        [Op.and]: [{ ...commonFindOptions }, { Position: { [Op.lt]: nextResourcePosition } }],
+      },
     });
     assertKoaCondition(!(count > 0), ctx, 400, 'Invalid Position');
   }
@@ -32,29 +47,34 @@ export async function updateAppResourcePosition(ctx: Context): Promise<void> {
   const nextPositionResource = await Resource.findOne({
     attributes: ['Position'],
     where: {
-      AppId: appId,
-      type: resourceType,
-      ...(nextResourcePosition ? { Position: nextResourcePosition } : {}),
+      [Op.and]: [
+        { ...commonFindOptions },
+        { ...(nextResourcePosition ? { Position: nextResourcePosition } : {}) },
+      ],
     },
   });
   const prevPositionResource = await Resource.findOne({
     attributes: ['Position'],
     where: {
-      AppId: appId,
-      type: resourceType,
-      ...(prevResourcePosition ? { Position: prevResourcePosition } : {}),
+      [Op.and]: [
+        { ...commonFindOptions },
+        { ...(prevResourcePosition ? { Position: prevResourcePosition } : {}) },
+      ],
     },
   });
   const resourcesInBetween = await Resource.count({
     where: {
-      AppId: appId,
-      type: resourceType,
-      Position: {
-        [Op.and]: {
-          [Op.gt]: prevResourcePosition,
-          [Op.lt]: nextResourcePosition,
+      [Op.and]: [
+        { ...commonFindOptions },
+        {
+          Position: {
+            [Op.and]: {
+              [Op.gt]: prevResourcePosition,
+              [Op.lt]: nextResourcePosition,
+            },
+          },
         },
-      },
+      ],
     },
   });
   assertKoaCondition(
@@ -74,7 +94,7 @@ export async function updateAppResourcePosition(ctx: Context): Promise<void> {
   }
 
   const oldResource = await Resource.findOne({
-    where: { id: resourceId, type: resourceType },
+    where: { id: resourceId, type: resourceType, GroupId: selectedGroupId ?? null },
     include: [{ association: 'Author', attributes: ['id', 'name'], required: false }],
     attributes: ['Position', 'id', 'created', 'updated'],
   });
@@ -111,16 +131,7 @@ export async function updateAppResourcePosition(ctx: Context): Promise<void> {
       await resource.update({ Position: index });
     });
   }
-  await Resource.update(
-    { Position: updatedPosition },
-    { where: { id: oldResource.id, type: resourceType } },
-  );
+  await oldResource.update({ Position: updatedPosition });
   ctx.status = 200;
-  const orderedResources = (
-    await Resource.findAll({
-      where: { type: resourceType, AppId: appId },
-      order: [['Position', 'ASC']],
-    })
-  ).map((item) => item.toJSON());
-  ctx.body = orderedResources;
+  ctx.body = (await oldResource.reload()).toJSON();
 }

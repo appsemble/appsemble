@@ -1098,6 +1098,11 @@ export interface ResourceDefinition {
   positioning?: boolean;
 
   /**
+   * Enforce Custom Ordering By the fields.
+   */
+  enforceOrderingGroupByFields?: string[];
+
+  /**
    * The definition for the `resource.create` action.
    */
   create?: ResourceCall;

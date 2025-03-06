@@ -213,67 +213,29 @@ describe('patchApp', () => {
         },
       })
     ).map((resource) => resource.dataValues);
-    expect(resources).toMatchObject([
-      {
-        id: 1,
-        Position: '1',
+    expect(resources).toMatchObject(
+      [...Array.from({ length: 10 }).keys()].map((i) => ({
+        id: i + 1,
+        Position: String((i + 1) * 10),
         type: 'testResource',
-      },
-      {
-        id: 2,
-        Position: '2',
-        type: 'testResource',
-      },
-      {
-        id: 3,
-        Position: '3',
-        type: 'testResource',
-      },
-      {
-        id: 4,
-        Position: '4',
-        type: 'testResource',
-      },
-      {
-        id: 5,
-        Position: '5',
-        type: 'testResource',
-      },
-      {
-        id: 6,
-        Position: '6',
-        type: 'testResource',
-      },
-      {
-        id: 7,
-        Position: '7',
-        type: 'testResource',
-      },
-      {
-        id: 8,
-        Position: '8',
-        type: 'testResource',
-      },
-      {
-        id: 9,
-        Position: '9',
-        type: 'testResource',
-      },
-      {
-        id: 10,
-        Position: '10',
-        type: 'testResource',
-      },
-    ]);
+      })),
+    );
   });
 
-  it('should not update the positions if the resources already have positions', async () => {
+  it('should reset the positions and respect enforceOrderingGroupByFields if the resources already have positions', async () => {
     const app = await App.create({
       definition: {
         name: 'Test app',
         defaultPage: 'Test Page',
         resources: {
-          testResource: { schema: { type: 'object', properties: { foo: { type: 'string' } } } },
+          testResource: {
+            schema: {
+              type: 'object',
+              positioning: true,
+              enforceOrderingGroupByFields: ['numericFoo'],
+              properties: { foo: { type: 'string' }, numericFoo: { type: 'number' } },
+            },
+          },
         },
       },
       path: 'test-app',
@@ -285,9 +247,9 @@ describe('patchApp', () => {
     await Resource.bulkCreate(
       Array.from(Array.from({ length: 10 }).keys()).map((entry) => ({
         type: 'testResource',
-        data: { foo: `bar ${entry}` },
+        data: { foo: `bar ${entry}`, numericFoo: entry % 2 === 0 ? 0 : entry },
         AppId: app.id,
-        Position: entry * 10,
+        Position: (entry + 1) * 10,
       })),
     );
     authorizeStudio(user);
@@ -311,6 +273,7 @@ describe('patchApp', () => {
                   foo:
                     type: string
               positioning: true
+              enforceOrderingGroupByFields: ['numericFoo']
         `),
       }),
     );
@@ -318,65 +281,108 @@ describe('patchApp', () => {
 
     const resources = (
       await Resource.findAll({
-        attributes: ['id', 'Position', 'type'],
+        attributes: ['id', 'data', 'Position', 'type'],
         where: {
           AppId: app.id,
           type: 'testResource',
         },
+        order: [['Position', 'ASC']],
       })
     ).map((resource) => resource.dataValues);
-    expect(resources).toMatchObject([
-      {
-        id: 1,
-        Position: '0',
-        type: 'testResource',
-      },
-      {
-        id: 2,
-        Position: '10',
-        type: 'testResource',
-      },
-      {
-        id: 3,
-        Position: '20',
-        type: 'testResource',
-      },
-      {
-        id: 4,
-        Position: '30',
-        type: 'testResource',
-      },
-      {
-        id: 5,
-        Position: '40',
-        type: 'testResource',
-      },
-      {
-        id: 6,
-        Position: '50',
-        type: 'testResource',
-      },
-      {
-        id: 7,
-        Position: '60',
-        type: 'testResource',
-      },
-      {
-        id: 8,
-        Position: '70',
-        type: 'testResource',
-      },
-      {
-        id: 9,
-        Position: '80',
-        type: 'testResource',
-      },
-      {
-        id: 10,
-        Position: '90',
-        type: 'testResource',
-      },
-    ]);
+    expect(resources).toMatchInlineSnapshot(`
+      [
+        {
+          "Position": "10",
+          "data": {
+            "foo": "bar 0",
+            "numericFoo": 0,
+          },
+          "id": 1,
+          "type": "testResource",
+        },
+        {
+          "Position": "20",
+          "data": {
+            "foo": "bar 2",
+            "numericFoo": 0,
+          },
+          "id": 3,
+          "type": "testResource",
+        },
+        {
+          "Position": "30",
+          "data": {
+            "foo": "bar 4",
+            "numericFoo": 0,
+          },
+          "id": 5,
+          "type": "testResource",
+        },
+        {
+          "Position": "40",
+          "data": {
+            "foo": "bar 6",
+            "numericFoo": 0,
+          },
+          "id": 7,
+          "type": "testResource",
+        },
+        {
+          "Position": "50",
+          "data": {
+            "foo": "bar 8",
+            "numericFoo": 0,
+          },
+          "id": 9,
+          "type": "testResource",
+        },
+        {
+          "Position": "60",
+          "data": {
+            "foo": "bar 1",
+            "numericFoo": 1,
+          },
+          "id": 2,
+          "type": "testResource",
+        },
+        {
+          "Position": "70",
+          "data": {
+            "foo": "bar 3",
+            "numericFoo": 3,
+          },
+          "id": 4,
+          "type": "testResource",
+        },
+        {
+          "Position": "80",
+          "data": {
+            "foo": "bar 5",
+            "numericFoo": 5,
+          },
+          "id": 6,
+          "type": "testResource",
+        },
+        {
+          "Position": "90",
+          "data": {
+            "foo": "bar 7",
+            "numericFoo": 7,
+          },
+          "id": 8,
+          "type": "testResource",
+        },
+        {
+          "Position": "100",
+          "data": {
+            "foo": "bar 9",
+            "numericFoo": 9,
+          },
+          "id": 10,
+          "type": "testResource",
+        },
+      ]
+    `);
   });
 
   it('should update the email settings', async () => {

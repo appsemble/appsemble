@@ -332,7 +332,6 @@ export interface CreateAppResourcesWithAssetsParams extends GetAppSubEntityParam
   resourceType: string;
   options: Options;
   groupId?: number;
-  positioning?: boolean;
 }
 
 export interface UpdateAppResourceParams extends GetAppSubEntityParams {

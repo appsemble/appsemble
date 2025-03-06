@@ -24,6 +24,7 @@ import {
   authorizeAppMember,
   authorizeClientCredentials,
   authorizeStudio,
+  createTestAppMember,
   createTestUser,
 } from '../../../../utils/test/authorization.js';
 import { exampleApp } from '../../../../utils/test/exampleApp.js';
@@ -960,6 +961,46 @@ describe('createAppResource', () => {
       seedAssets.map((asset) => getS3FileBuffer(`app-${app.id}`, asset.id)),
     );
     expect(Buffer.from('Test resource a').equals(seedAssetsData[0])).toBe(true);
+  });
+
+  it.todo('should create resources with Positioning and grouped Positions', async () => {
+    const testApp = await App.create({
+      OrganizationId: organization.id,
+      definition: {
+        name: 'Test App',
+        defaultPage: 'Test Page',
+        security: {},
+        enforceOrderingGroupByFields: ['foo'],
+        resources: {
+          testResource: {
+            positioning: true,
+            schema: {
+              type: 'object',
+              required: ['foo'],
+              properties: {
+                foo: {
+                  type: 'string',
+                },
+              },
+            },
+          },
+        },
+        pages: [],
+      },
+      path: 'test-app',
+      vapidPublicKey: 'a',
+      vapidPrivateKey: 'b',
+    });
+    const appMember = await createTestAppMember(
+      testApp.id,
+      user.primaryEmail,
+      PredefinedAppRole.Owner,
+    );
+    authorizeAppMember(app, appMember);
+    const resources = Array.from({ length: 10 })
+      .keys()
+      .map((item) => ({ foo: `foo ${item}`, bar: item % 2 === 0 ? item + 1 : null }));
+    await request.post<ResourceType>(`api/apps/${testApp.id}/resources/testResource`, resources);
   });
 
   it('should create seed resources with assets and ephemeral resources with assets in demo apps', async () => {

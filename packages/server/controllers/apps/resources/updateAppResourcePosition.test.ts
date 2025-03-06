@@ -1,10 +1,13 @@
 import { PredefinedAppRole, PredefinedOrganizationRole } from '@appsemble/types';
 import { request, setTestApp } from 'axios-test-instance';
+import { Op } from 'sequelize';
 import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import {
-  type App,
+  App,
   type AppMember,
+  Group,
+  GroupMember,
   Organization,
   OrganizationMember,
   Resource,
@@ -17,7 +20,6 @@ import {
   createTestAppMember,
   createTestUser,
 } from '../../../utils/test/authorization.js';
-import { exampleApp } from '../../../utils/test/exampleApp.js';
 
 let organization: Organization;
 let user: User;
@@ -44,7 +46,36 @@ describe('updateResourcePosition', () => {
       UserId: user.id,
       role: PredefinedOrganizationRole.Owner,
     });
-    app = await exampleApp(organization.id);
+    app = await App.create({
+      OrganizationId: organization.id,
+      definition: {
+        name: 'Test App',
+        defaultPage: 'Test Page',
+        security: {},
+        enforceOrderingGroupByFields: ['bar'],
+        resources: {
+          testResource: {
+            positioning: true,
+            schema: {
+              type: 'object',
+              required: ['foo'],
+              properties: {
+                foo: {
+                  type: 'string',
+                },
+                bar: {
+                  type: 'number',
+                },
+              },
+            },
+          },
+        },
+        pages: [],
+      },
+      path: 'test-app',
+      vapidPublicKey: 'a',
+      vapidPrivateKey: 'b',
+    });
     appMember = await createTestAppMember(app.id, user.primaryEmail, PredefinedAppRole.Owner);
 
     resource = await Resource.create({
@@ -200,15 +231,13 @@ describe('updateResourcePosition', () => {
     );
     expect(response).toMatchObject({
       status: 200,
-      data: expect.arrayContaining([
-        {
-          $created: expect.any(String),
-          $updated: expect.any(String),
-          id: resource.id,
-          foo: 'I am Foo.',
-          Position: String(3 * 1.1),
-        },
-      ]),
+      data: expect.objectContaining({
+        $created: expect.any(String),
+        $updated: expect.any(String),
+        id: resource.id,
+        foo: 'I am Foo.',
+        Position: String(3 * 1.1),
+      }),
     });
   });
 
@@ -220,15 +249,48 @@ describe('updateResourcePosition', () => {
     );
     expect(response).toMatchObject({
       status: 200,
-      data: expect.arrayContaining([
-        {
-          $created: expect.any(String),
-          $updated: expect.any(String),
-          id: resource.id,
-          foo: 'I am Foo.',
-          Position: '0.5',
-        },
-      ]),
+      data: expect.objectContaining({
+        $created: expect.any(String),
+        $updated: expect.any(String),
+        id: resource.id,
+        foo: 'I am Foo.',
+        Position: '0.5',
+      }),
+    });
+  });
+
+  it('should support groups', async () => {
+    const { id: groupId } = await Group.create({ AppId: app.id, name: 'testGroup' });
+    await GroupMember.create({
+      GroupId: groupId,
+      AppMemberId: appMember.id,
+      role: PredefinedAppRole.Owner,
+    });
+    await Resource.destroy({ where: { AppId: app.id, type: 'testResource' }, force: true });
+    await Resource.bulkCreate(
+      [...Array.from({ length: 5 }).keys()].map((i) => ({
+        data: { foo: `bar ${i}` },
+        AppId: app.id,
+        type: 'testResource',
+        Position: i + 1,
+        GroupId: groupId,
+      })),
+    );
+    const resource2 = await Resource.findOne({
+      where: { AppId: app.id, type: 'testResource', GroupId: groupId, Position: { [Op.gt]: 2 } },
+    });
+    authorizeAppMember(app, appMember);
+    const response = await request.put(
+      `/api/apps/${app.id}/resources/testResource/${resource2!.id}/positions?selectedGroupId=${groupId}`,
+      { prevResourcePosition: 1, nextResourcePosition: 2 },
+    );
+    expect(response).toMatchObject({
+      status: 200,
+      data: {
+        Position: '1.5',
+        foo: 'bar 2',
+        id: 7,
+      },
     });
   });
 
@@ -240,33 +302,13 @@ describe('updateResourcePosition', () => {
     );
     expect(response).toMatchObject({
       status: 200,
-      data: [
-        {
-          $created: expect.any(String),
-          $updated: expect.any(String),
-          Position: '1',
-          foo: 'I am Foo.',
-        },
-        {
-          $created: expect.any(String),
-          $updated: expect.any(String),
-          Position: '1.5',
-          id: resource.id,
-          foo: 'I am Foo.',
-        },
-        {
-          $created: expect.any(String),
-          $updated: expect.any(String),
-          Position: '2',
-          foo: 'I am Foo.',
-        },
-        {
-          $created: expect.any(String),
-          $updated: expect.any(String),
-          Position: '3',
-          foo: 'I am Foo.',
-        },
-      ],
+      data: {
+        $created: expect.any(String),
+        $updated: expect.any(String),
+        Position: '1.5',
+        id: resource.id,
+        foo: 'I am Foo.',
+      },
     });
   });
 });

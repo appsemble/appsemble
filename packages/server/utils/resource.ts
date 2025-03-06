@@ -42,6 +42,8 @@ export function renameOData(name: string): string {
       return 'clonable';
     case 'id':
       return name;
+    case 'Position':
+      return 'Position';
     default:
       return `data.${name}`;
   }
