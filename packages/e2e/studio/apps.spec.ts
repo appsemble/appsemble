@@ -1,6 +1,8 @@
 import { expect, test } from '../fixtures/test/index.js';
 
 test.describe('Apps', () => {
+  test.use({ storageState: { cookies: [], origins: [] } });
+
   test.beforeEach(async ({ page }) => {
     await page.goto('/en/apps');
   });
@@ -10,19 +12,24 @@ test.describe('Apps', () => {
     await expect(page.locator('text=My Apps')).toBeHidden();
   });
 
-  test('should display “My Apps” when logged in', async ({ login, page }) => {
-    await login('/en/apps');
+  test('should display “My Apps” when logged in', async ({ loginStudio, page }) => {
+    await loginStudio('/en/apps');
     await expect(page.getByText('My Apps')).toBeVisible();
   });
 
-  test('should render a list of apps', async ({ page }) => {
-    await expect(page.getByText('Empty App')).toBeVisible();
-    await expect(page.getByText('Holidays')).toBeVisible();
-    await expect(page.getByText('Notes')).toBeVisible();
-    await expect(page.getByText('Person')).toBeVisible();
-    await expect(page.getByText('Survey')).toBeVisible();
-    await expect(page.getByText('Unlittered')).toBeVisible();
-  });
+  const defaultApps = [
+    { name: 'Empty App' },
+    { name: 'Holidays' },
+    { name: 'Notes' },
+    { name: 'Person' },
+    { name: 'Survey' },
+    { name: 'Unlittered' },
+  ];
+  for (const { name } of defaultApps) {
+    test(`should render "${name}" app`, async ({ page }) => {
+      await expect(page.getByText(name).first()).toBeVisible();
+    });
+  }
 
   test('should link to app details', async ({ page }) => {
     await page.click('text=Empty App');

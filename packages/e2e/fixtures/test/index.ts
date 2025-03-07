@@ -25,12 +25,12 @@ interface Fixtures {
    *
    * @param redirect The URL to navigate to after logging in.
    */
-  login: (redirect: string) => Promise<void>;
+  loginStudio: (redirect: string) => Promise<void>;
 
   /**
    * Perform a logout in Appsemble Studio.
    */
-  logout: () => Promise<void>;
+  logoutStudio: () => Promise<void>;
 
   /**
    * Visit an app.
@@ -58,7 +58,7 @@ export const test = base.extend<Fixtures>({
     });
   },
 
-  async login({ page }, use) {
+  async loginStudio({ page }, use) {
     await use(async (redirect) => {
       const queryParams = new URLSearchParams({ redirect });
       await page.goto(`/en/login?${queryParams}`);
@@ -72,7 +72,7 @@ export const test = base.extend<Fixtures>({
     });
   },
 
-  async logout({ page }, use) {
+  async logoutStudio({ page }, use) {
     await use(async () => {
       await page
         .locator(

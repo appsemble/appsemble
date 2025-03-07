@@ -1,14 +1,12 @@
-import { type Page } from '@playwright/test';
-
-import { expect, test } from '../../fixtures/test/index.js';
+import { expect, type Page, test } from '@playwright/test';
 
 async function clickSideMenuItem(page: Page, title: string): Promise<void> {
   await page.getByTestId('studio-app-side-menu').getByRole('link', { name: title }).click();
 }
 
 test.describe('/apps/:appId', () => {
-  test.beforeEach(async ({ login, page }) => {
-    await login('/en/apps');
+  test.beforeEach(async ({ page }) => {
+    await page.goto('/en/apps');
     await page.getByRole('link', { name: 'Person Appsemble' }).first().click();
 
     await expect(page.getByTestId('studio-app-side-menu-name')).toHaveText('Person');

@@ -1,8 +1,7 @@
 import { expect, test } from '../fixtures/test/index.js';
 
 test.describe('Notes', () => {
-  test.beforeEach(async ({ login, visitApp }) => {
-    await login('/en/apps');
+  test.beforeEach(async ({ visitApp }) => {
     await visitApp('notes');
   });
 
