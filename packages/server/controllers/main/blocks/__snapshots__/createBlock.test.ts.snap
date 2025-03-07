@@ -343,7 +343,7 @@ The dialog action that opened the dialog will be rejected with the data passed t
                 "schema": {
                   "description": "Close an open dialog.
 
-The dialog action that opened the dialog will be rejected with the data passed to this action.
+The dialog action that opened the dialog will be resolved with the data passed to this action.
 ",
                   "enum": [
                     "dialog.ok",
@@ -766,7 +766,7 @@ it is present. If this is called on the first page, nothing happens.
                 ],
                 "property": "instance.actions.onSubmit.type",
                 "schema": {
-                  "description": "On [flow pages](#flow-page-definition-sub-pages), triggers the
+                  "description": "On [flow pages](../guides/page-types#flow-page), triggers the
 [\`onFlowFinish\`](#flow-page-actions-definition-on-flow-finish) action on the page.
 ",
                   "enum": [
@@ -813,7 +813,7 @@ be called instead.
                 ],
                 "property": "instance.actions.onSubmit.type",
                 "schema": {
-                  "description": "On [flow pages](#flow-page-definition-sub-pages), cancel the ongoing flow and invoke the page's [\`onFlowFinish\`](#flow-page-actions-definition-on-flow-finish) action.",
+                  "description": "On [flow pages](../guides/page-types#flow-page), cancel the ongoing flow and invoke the page's [\`onFlowFinish\`](#flow-page-actions-definition-on-flow-finish) action.",
                   "enum": [
                     "flow.cancel",
                   ],
@@ -2385,6 +2385,7 @@ disabled by setting this to \`false\`
                   "additionalProperties": false,
                   "properties": {
                     "action": {
+                      "default": "update",
                       "description": "The resource action type to get the subscription state for.",
                       "enum": [
                         "create",
@@ -2452,6 +2453,7 @@ disabled by setting this to \`false\`
                   "additionalProperties": false,
                   "properties": {
                     "action": {
+                      "default": "update",
                       "description": "The resource action type to subscribe to.",
                       "enum": [
                         "create",
@@ -2519,6 +2521,7 @@ disabled by setting this to \`false\`
                   "additionalProperties": false,
                   "properties": {
                     "action": {
+                      "default": "update",
                       "description": "The resource action type to toggle the subscription state for.",
                       "enum": [
                         "create",
@@ -2586,6 +2589,7 @@ disabled by setting this to \`false\`
                   "additionalProperties": false,
                   "properties": {
                     "action": {
+                      "default": "update",
                       "description": "The resource action type to unsubscribe from.",
                       "enum": [
                         "create",
@@ -3243,9 +3247,9 @@ remapBefore:
                     "type": {
                       "description": "Subtract last item from a storage entry.
 
-      If the entry consists of only one item, turns it into a singular object.
+If the entry consists of only one item, turns it into a singular object.
 
-      If the entry is a single item, the entry is removed entirely.
+If the entry is a single item, the entry is removed entirely.
 
 For example:
 \`\`\`yaml
@@ -3283,9 +3287,9 @@ storage: localStorage
                 "schema": {
                   "description": "Subtract last item from a storage entry.
 
-      If the entry consists of only one item, turns it into a singular object.
+If the entry consists of only one item, turns it into a singular object.
 
-      If the entry is a single item, the entry is removed entirely.
+If the entry is a single item, the entry is removed entirely.
 
 For example:
 \`\`\`yaml
@@ -3946,7 +3950,7 @@ storage: localStorage
                     "remapAfter": {},
                     "remapBefore": {},
                     "type": {
-                      "description": "Allow a user to join a group.",
+                      "description": "Delete a group member from the group in which the invoking user is a member",
                       "enum": [
                         "group.member.delete",
                       ],
@@ -3974,7 +3978,7 @@ storage: localStorage
                 ],
                 "property": "instance.actions.onSubmit.type",
                 "schema": {
-                  "description": "Allow a user to join a group.",
+                  "description": "Delete a group member from the group in which the invoking user is a member",
                   "enum": [
                     "group.member.delete",
                   ],
@@ -5719,7 +5723,7 @@ The dialog action that opened the dialog will be rejected with the data passed t
         "schema": {
           "description": "Close an open dialog.
 
-The dialog action that opened the dialog will be rejected with the data passed to this action.
+The dialog action that opened the dialog will be resolved with the data passed to this action.
 ",
           "enum": [
             "dialog.ok",
@@ -6142,7 +6146,7 @@ it is present. If this is called on the first page, nothing happens.
         ],
         "property": "instance.actions.onSubmit.type",
         "schema": {
-          "description": "On [flow pages](#flow-page-definition-sub-pages), triggers the
+          "description": "On [flow pages](../guides/page-types#flow-page), triggers the
 [\`onFlowFinish\`](#flow-page-actions-definition-on-flow-finish) action on the page.
 ",
           "enum": [
@@ -6189,7 +6193,7 @@ be called instead.
         ],
         "property": "instance.actions.onSubmit.type",
         "schema": {
-          "description": "On [flow pages](#flow-page-definition-sub-pages), cancel the ongoing flow and invoke the page's [\`onFlowFinish\`](#flow-page-actions-definition-on-flow-finish) action.",
+          "description": "On [flow pages](../guides/page-types#flow-page), cancel the ongoing flow and invoke the page's [\`onFlowFinish\`](#flow-page-actions-definition-on-flow-finish) action.",
           "enum": [
             "flow.cancel",
           ],
@@ -7761,6 +7765,7 @@ disabled by setting this to \`false\`
           "additionalProperties": false,
           "properties": {
             "action": {
+              "default": "update",
               "description": "The resource action type to get the subscription state for.",
               "enum": [
                 "create",
@@ -7828,6 +7833,7 @@ disabled by setting this to \`false\`
           "additionalProperties": false,
           "properties": {
             "action": {
+              "default": "update",
               "description": "The resource action type to subscribe to.",
               "enum": [
                 "create",
@@ -7895,6 +7901,7 @@ disabled by setting this to \`false\`
           "additionalProperties": false,
           "properties": {
             "action": {
+              "default": "update",
               "description": "The resource action type to toggle the subscription state for.",
               "enum": [
                 "create",
@@ -7962,6 +7969,7 @@ disabled by setting this to \`false\`
           "additionalProperties": false,
           "properties": {
             "action": {
+              "default": "update",
               "description": "The resource action type to unsubscribe from.",
               "enum": [
                 "create",
@@ -8619,9 +8627,9 @@ remapBefore:
             "type": {
               "description": "Subtract last item from a storage entry.
 
-      If the entry consists of only one item, turns it into a singular object.
+If the entry consists of only one item, turns it into a singular object.
 
-      If the entry is a single item, the entry is removed entirely.
+If the entry is a single item, the entry is removed entirely.
 
 For example:
 \`\`\`yaml
@@ -8659,9 +8667,9 @@ storage: localStorage
         "schema": {
           "description": "Subtract last item from a storage entry.
 
-      If the entry consists of only one item, turns it into a singular object.
+If the entry consists of only one item, turns it into a singular object.
 
-      If the entry is a single item, the entry is removed entirely.
+If the entry is a single item, the entry is removed entirely.
 
 For example:
 \`\`\`yaml
@@ -9322,7 +9330,7 @@ storage: localStorage
             "remapAfter": {},
             "remapBefore": {},
             "type": {
-              "description": "Allow a user to join a group.",
+              "description": "Delete a group member from the group in which the invoking user is a member",
               "enum": [
                 "group.member.delete",
               ],
@@ -9350,7 +9358,7 @@ storage: localStorage
         ],
         "property": "instance.actions.onSubmit.type",
         "schema": {
-          "description": "Allow a user to join a group.",
+          "description": "Delete a group member from the group in which the invoking user is a member",
           "enum": [
             "group.member.delete",
           ],

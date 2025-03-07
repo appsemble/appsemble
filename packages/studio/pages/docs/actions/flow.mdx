@@ -1,4 +1,6 @@
 import { ClientServerActionSupport as Side } from './ClientServerActionSupport/index.tsx';
+import { ActionRef } from './ActionRef/index.tsx';
+import { flowActions as actions } from '../../../../utils/reference-schemas/actions/flow.ts';
 
 # Flow
 
@@ -49,12 +51,13 @@ To use flow actions, you need a flow page:
               type: flow.finish
 ```
 
+## Actions
+
 ### flow.next<Side name="flow.next" />
 
-On a flow page, this action proceed to the next page if it is present. Otherwise, the flow is
-considered to be complete and [\`flow.finish\`](#flowfinish) will be called instead. Supported field
-for this action is `type`, which is `flow.next` in this case. Here is an example of this action
-being used.
+<ActionRef action={actions['flow.next']} />
+
+Here is an example of this action being used.
 
 ```yaml validate flow-blocks-snippet
 blocks:
@@ -72,8 +75,9 @@ blocks:
 
 ### flow.finish<Side name="flow.finish" />
 
-On a flow page, this action triggers the `onFlowFinish` action on the page. Supported field for this
-action is `type`, which is `flow.finish` in this case. Here is an example of this action being used.
+<ActionRef action={actions['flow.finish']} />
+
+Here is an example of this action being used.
 
 ```yaml validate flow-blocks-snippet
 blocks:
@@ -91,9 +95,9 @@ blocks:
 
 ### flow.back<Side name="flow.back" />
 
-On a flow page, this action returns to the previous page if it is present. If this action is called
-on the first page, nothing happens. Supported field for this action is `type`, which is `flow.back`
-in this case. Here is an example of this action being used.
+<ActionRef action={actions['flow.back']} />
+
+Here is an example of this action being used.
 
 ```yaml validate flow-blocks-snippet
 blocks:
@@ -111,8 +115,9 @@ blocks:
 
 ### flow.cancel<Side name="flow.cancel" />
 
-On a flow page, calling this action triggers the `onFlowCancel` action. Supported field for this
-action is `type`, which is `flow.cancel` in this case. Here is an example of how to use this action.
+<ActionRef action={actions['flow.cancel']} />
+
+Here is an example of how to use this action.
 
 ```yaml validate flow-blocks-snippet
 blocks:
@@ -127,10 +132,9 @@ blocks:
 
 ### flow.to<Side name="flow.to" />
 
-On a flow page, this action is used to move to a specific step. Supported fields for this action are
-`type` and `step`. Step is the name of the step to move to, this is a remapper which gets called
-with the action input and current context, the type is `flow.to`. Both fields are required. Here is
-how you can use this action in your app.
+<ActionRef action={actions['flow.to']} />
+
+Here is how you can use this action in your app.
 
 ```yaml validate flow-blocks-snippet
 blocks:

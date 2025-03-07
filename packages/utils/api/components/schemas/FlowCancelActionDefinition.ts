@@ -9,7 +9,7 @@ export const FlowCancelActionDefinition = extendJSONSchema(BaseActionDefinition,
     type: {
       enum: ['flow.cancel'],
       description:
-        "On [flow pages](#flow-page-definition-sub-pages), cancel the ongoing flow and invoke the page's [`onFlowFinish`](#flow-page-actions-definition-on-flow-finish) action.",
+        "On [flow pages](../guides/page-types#flow-page), cancel the ongoing flow and invoke the page's [`onFlowFinish`](#flow-page-actions-definition-on-flow-finish) action.",
     },
   },
 });

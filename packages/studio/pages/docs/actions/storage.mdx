@@ -1,4 +1,6 @@
 import { ClientServerActionSupport as Side } from './ClientServerActionSupport/index.tsx';
+import { ActionRef } from './ActionRef/index.tsx';
+import { storageActions as actions } from '../../../../utils/reference-schemas/actions/storage.ts';
 
 # Storage
 
@@ -21,14 +23,13 @@ visit this [page](../guides/storage.md). Supported storage actions are as below:
 - [`storage.update`](#storageupdate)
 - [`storage.delete`](#storagedelete)
 
+## Actions
+
 ### storage.read<Side name="storage.read" />
 
-This action can be used to read data from indexedDB, localStorage, sessionStorage, and appStorage.
-Usage of this action requires the `key` and `type` fields. Supported fields for the usage of the
-action are `type`, `key` and `storage`. Key is used to fetch the data from the storage, type is
-`storage.read` and storage is used to identify the type of storage to use. Default value for the
-storage key is `indexedDb`. Here’s an example of how you can use this action to read data with key
-poolData from sessionStorage.
+<ActionRef action={actions['storage.read']} />
+
+Here’s an example of how you can use this action to read data with key poolData from sessionStorage.
 
 ```yaml validate blocks-snippet
 blocks:
@@ -45,12 +46,9 @@ blocks:
 
 ### storage.write<Side name="storage.write" />
 
-This action is used to write data to indexedDB, localStorage, sessionStorage, and appStorage. Usage
-of this action requires the `key`, `value` and `type` fields. Supported fields for the usage of the
-action are `type`, `key`, `value` and `storage`. Key and value are used to store the data in
-storage, type is `storage.write` and storage is used to identify the type of storage to use. Default
-value for the storage key is `indexedDb`. Here’s an example of how you can use this action to write
-data.
+<ActionRef action={actions['storage.write']} />
+
+Here’s an example of how you can use this action to write data.
 
 ```yaml validate blocks-snippet
 blocks:
@@ -72,12 +70,9 @@ blocks:
 
 ### storage.append<Side name="storage.append" />
 
-This action is used to append data to an existing array in storage. If the storage entry is a single
-object, it turns it into an array to append the data on. Supported fields for the usage of the
-action are `type`, `key`, `value` and `storage`. Key and value are used to append data to existing
-array in storage, type is `storage.append` and storage is used to identify the type of storage to
-use. Default value for the storage key is `indexedDb`. Here’s an example of how you can use this
-action to write data.
+<ActionRef action={actions['storage.append']} />
+
+Here’s an example of how you can use this action to write data.
 
 ```yaml validate blocks-snippet
 blocks:
@@ -106,13 +101,9 @@ blocks:
 
 ### storage.subtract<Side name="storage.subtract" />
 
-This action is used to subtract the last item from a storage entry. If the entry consists of only
-one item, the value is turned into a singular object. If the entry is a single item, the entry is
-removed entirely. Usage of this action requires the `key` and `type` fields. Supported fields for
-the usage of the action are `type`, `key` and `storage`. Key is used to delete the data from the
-storage, type is `storage.subtract` and storage is used to identify the type of storage to use.
-Default value for the storage key is `indexedDb`. Here’s an example of how you can use this action
-to subtract an entry of data.
+<ActionRef action={actions['storage.subtract']} />
+
+Here’s an example of how you can use this action to subtract an entry of data.
 
 ```yaml validate blocks-snippet
 blocks:
@@ -129,12 +120,9 @@ blocks:
 
 ### storage.update<Side name="storage.update" />
 
-This action is used to update an existing item in storage, or update an item inside a stored array.
-Supported fields for the usage of the action are `type`, `key`, `item`, `value` and `storage`. Item
-is used to identify the item in storage, key and value are used to append data to existing array in
-storage, type is `storage.update` and storage is used to identify the type of storage to use.
-Default value for the storage key is `indexedDb`. Here’s an example of how you can use this action
-to update the data in storage.
+<ActionRef action={actions['storage.update']} />
+
+Here’s an example of how you can use this action to update the data in storage.
 
 ```yaml validate blocks-snippet
 blocks:
@@ -164,10 +152,8 @@ blocks:
 
 ### storage.delete<Side name="storage.delete" />
 
-This action is used to delete the item that is stored at the specified key. Usage of this action
-requires the `key` and `type` fields. Supported fields for the usage of the action are `type`, `key`
-and `storage`. Key is used to delete the data from the storage, type is `storage.delete` and storage
-is used to identify the type of storage to use. Default value for the storage key is `indexedDb`.
+<ActionRef action={actions['storage.delete']} />
+
 Here’s an example of how you can use this in action to delete the data in storage.
 
 ```yaml validate blocks-snippet

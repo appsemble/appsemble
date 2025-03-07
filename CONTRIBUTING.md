@@ -455,6 +455,16 @@ documentation, make sure to keep everything in the right categories.
 - **Packages**: Documentation of the various packages that Appsemble consists of. These are
   generated from each package's README file.
 
+### Reducing duplication
+
+When writing documentation, try to reduce duplication as much as possible. If you find yourself
+writing the same thing in multiple places, consider creating a reusable component or snippet.
+
+Avoid repeating generated documentation. For example, if you're documenting an action, you don't
+need to explain what the action does, as this is already explained in the action schema's
+description. You don't need to list all the required properties or their meaning, only edge cases or
+extra information not already covered by the generated reference.
+
 ### Highlighting
 
 If you're making documentation on a certain feature it might be a good idea to highlight some

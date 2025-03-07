@@ -18,6 +18,7 @@ export const ResourceSubscriptionStatusActionDefinition = extendJSONSchema(BaseA
     action: {
       enum: ['create', 'delete', 'update'],
       description: 'The resource action type to get the subscription state for.',
+      default: 'update',
     },
   },
 });
