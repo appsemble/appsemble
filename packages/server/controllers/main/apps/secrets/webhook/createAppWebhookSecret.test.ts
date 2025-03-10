@@ -85,6 +85,7 @@ describe('createAppWebhookSecret', () => {
       {
         "id": StringMatching /\\^\\[\\\\d\\[a-f\\]\\{8\\}-\\[\\\\da-f\\]\\{4\\}-4\\[\\\\da-f\\]\\{3\\}-\\[\\\\da-f\\]\\{4\\}-\\[\\\\d\\[a-f\\]\\{12\\}\\$/,
         "name": "Test webhook",
+        "webhookName": "test",
       }
     `,
     );

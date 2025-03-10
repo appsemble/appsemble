@@ -65,6 +65,7 @@ describe('deleteAppWebhookSecret', () => {
   it('should delete a single app webhook secret', async () => {
     const secret = await AppWebhookSecret.create({
       name: 'Test service',
+      webhookName: 'test',
       secret: 'c6a5e780dee8e2f1f576538c8',
       AppId: app.id,
     });

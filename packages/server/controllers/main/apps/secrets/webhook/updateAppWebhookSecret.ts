@@ -36,10 +36,11 @@ export async function updateAppWebhookSecret(ctx: Context): Promise<void> {
     AppId: appId,
   });
 
-  const { id, name } = appWebhookSecret;
+  const { id, name, webhookName } = appWebhookSecret;
 
   ctx.body = {
     id,
     name,
+    webhookName,
   };
 }

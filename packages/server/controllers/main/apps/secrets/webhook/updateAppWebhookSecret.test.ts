@@ -66,11 +66,13 @@ describe('updateAppWebhookSecret', () => {
   it('should update a single app webhook secret', async () => {
     await AppWebhookSecret.create({
       name: 'Test webhook',
+      webhookName: 'test',
       secret: 'c6a5e780dee8e2f1f576538c8',
       AppId: app.id,
     });
     const secret2 = await AppWebhookSecret.create({
       name: 'Test webhook',
+      webhookName: 'test',
       secret: 'g2a3ca7494c1aad9e5e56a6c3',
       AppId: app.id,
     });
@@ -88,6 +90,7 @@ describe('updateAppWebhookSecret', () => {
       {
         "id": StringMatching /\\^\\[\\\\d\\[a-f\\]\\{8\\}-\\[\\\\da-f\\]\\{4\\}-4\\[\\\\da-f\\]\\{3\\}-\\[\\\\da-f\\]\\{4\\}-\\[\\\\d\\[a-f\\]\\{12\\}\\$/,
         "name": "Test webhook updated",
+        "webhookName": "test",
       }
     `,
     );
@@ -96,6 +99,7 @@ describe('updateAppWebhookSecret', () => {
   it('should not allow directly updating the secret', async () => {
     const secret = await AppWebhookSecret.create({
       name: 'Test webhook',
+      webhookName: 'test',
       secret: 'c6a5e780dee8e2f1f576538c8',
       AppId: app.id,
     });
