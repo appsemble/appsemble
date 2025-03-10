@@ -65,11 +65,13 @@ describe('getAppWebhookSecrets', () => {
   it('should get app webhook secrets', async () => {
     await AppWebhookSecret.create({
       name: 'Test webhook',
+      webhookName: 'foo',
       secret: 'c6a5e780dee8e2f1f576538c8',
       AppId: app.id,
     });
     await AppWebhookSecret.create({
       name: 'Test webhook',
+      webhookName: 'bar',
       secret: 'Strong_Password-123',
       AppId: app.id,
     });
@@ -91,10 +93,12 @@ describe('getAppWebhookSecrets', () => {
         {
           "id": StringMatching /\\^\\[\\\\d\\[a-f\\]\\{8\\}-\\[\\\\da-f\\]\\{4\\}-4\\[\\\\da-f\\]\\{3\\}-\\[\\\\da-f\\]\\{4\\}-\\[\\\\d\\[a-f\\]\\{12\\}\\$/,
           "name": "Test webhook",
+          "webhookName": "foo",
         },
         {
           "id": StringMatching /\\^\\[\\\\d\\[a-f\\]\\{8\\}-\\[\\\\da-f\\]\\{4\\}-4\\[\\\\da-f\\]\\{3\\}-\\[\\\\da-f\\]\\{4\\}-\\[\\\\d\\[a-f\\]\\{12\\}\\$/,
           "name": "Test webhook",
+          "webhookName": "bar",
         },
       ]
     `,

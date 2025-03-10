@@ -198,7 +198,9 @@ export function SecretsPage(): ReactNode {
       <ServiceSecrets onClickServiceCheckbox={onClickServiceCheckbox} />
       <OAuth2Secrets />
       <SamlSecrets />
-      <WebhookSecrets />
+      {app.definition.webhooks && Object.keys(app.definition.webhooks).length > 0 ? (
+        <WebhookSecrets />
+      ) : null}
       <Collapsible
         help={
           <FormattedMessage

@@ -30,6 +30,19 @@ describe('createAppWebhookSecret', () => {
       definition: {
         name: 'Test App',
         defaultPage: 'Test Page',
+        webhooks: {
+          test: {
+            schema: {
+              type: 'object',
+              properties: {
+                foo: { type: 'string' },
+              },
+            },
+            action: {
+              type: 'log',
+            },
+          },
+        },
         security: {
           groups: {
             join: 'anyone',
@@ -60,6 +73,7 @@ describe('createAppWebhookSecret', () => {
   it('should create new app webhook secret', async () => {
     const response = await request.post(`/api/apps/${app.id}/secrets/webhook`, {
       name: 'Test webhook',
+      webhookName: 'test',
     });
 
     expect(response).toMatchInlineSnapshot(
@@ -81,6 +95,7 @@ describe('createAppWebhookSecret', () => {
     await member.update({ role: 'Member' });
     const response = await request.post(`/api/apps/${app.id}/secrets/webhook`, {
       name: 'Test webhook',
+      webhookName: 'test',
     });
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 403 Forbidden
@@ -90,6 +105,41 @@ describe('createAppWebhookSecret', () => {
         "error": "Forbidden",
         "message": "User does not have sufficient organization permissions.",
         "statusCode": 403,
+      }
+    `);
+  });
+
+  it('should require a webhookName', async () => {
+    authorizeStudio();
+    const response = await request.post(`/api/apps/${app.id}/secrets/webhook`, {
+      name: 'Test webhook',
+    });
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 400 Bad Request
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "error": "Bad Request",
+        "message": "Webhook name is required",
+        "statusCode": 400,
+      }
+    `);
+  });
+
+  it('should require the webhook to be defined in the app', async () => {
+    authorizeStudio();
+    const response = await request.post(`/api/apps/${app.id}/secrets/webhook`, {
+      name: 'Test webhook',
+      webhookName: 'non-existing',
+    });
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 400 Bad Request
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "error": "Bad Request",
+        "message": "Webhook does not exist in the app definition",
+        "statusCode": 400,
       }
     `);
   });

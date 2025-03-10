@@ -7,7 +7,7 @@ import { messages } from './messages.js';
 
 interface SecretFieldProps {
   readonly appId: number;
-  readonly secretId: number;
+  readonly secretId: string;
 }
 
 export const SecretField = forwardRef<HTMLInputElement, SecretFieldProps>((props, ref) => {

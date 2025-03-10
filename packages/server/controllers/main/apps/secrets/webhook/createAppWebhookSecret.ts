@@ -17,7 +17,7 @@ export async function createAppWebhookSecret(ctx: Context): Promise<void> {
   } = ctx;
 
   const app = await App.findByPk(appId, {
-    attributes: ['OrganizationId', 'path'],
+    attributes: ['OrganizationId', 'path', 'definition'],
   });
 
   assertKoaError(!app, ctx, 404, 'App not found');
@@ -30,7 +30,16 @@ export async function createAppWebhookSecret(ctx: Context): Promise<void> {
     requiredPermissions: [OrganizationPermission.CreateAppSecrets],
   });
 
-  const { id, name } = await AppWebhookSecret.create({
+  assertKoaError(!body.webhookName, ctx, 400, 'Webhook name is required');
+
+  assertKoaError(
+    !Object.keys(app.definition.webhooks).includes(body.webhookName),
+    ctx,
+    400,
+    'Webhook does not exist in the app definition',
+  );
+
+  const { id, name, webhookName } = await AppWebhookSecret.create({
     ...body,
     secret: encrypt(randomBytes(40).toString('hex'), argv.aesSecret),
     AppId: appId,
@@ -39,5 +48,6 @@ export async function createAppWebhookSecret(ctx: Context): Promise<void> {
   ctx.body = {
     id,
     name,
+    webhookName,
   };
 }

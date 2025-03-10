@@ -19,6 +19,7 @@ export async function up(transaction: Transaction, db: Sequelize): Promise<void>
     {
       id: { type: DataTypes.UUID, allowNull: false, primaryKey: true },
       name: { type: DataTypes.STRING(255), allowNull: true },
+      webhookName: { type: DataTypes.STRING(255), allowNull: false },
       secret: { type: DataTypes.BLOB, allowNull: false },
       AppId: {
         type: DataTypes.INTEGER,

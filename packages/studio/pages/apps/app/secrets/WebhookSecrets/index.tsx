@@ -12,8 +12,8 @@ import { HeaderControl } from '../../../../../components/HeaderControl/index.js'
 import { useApp } from '../../index.js';
 
 const initialSecret: AppWebhookSecret = {
-  id: 0,
-  name: '',
+  id: '',
+  webhookName: '',
 };
 
 /**

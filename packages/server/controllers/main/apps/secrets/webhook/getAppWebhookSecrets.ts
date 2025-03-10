@@ -26,7 +26,7 @@ export async function getAppWebhookSecrets(ctx: Context): Promise<void> {
   });
 
   const webhookSecrets = await AppWebhookSecret.findAll({
-    attributes: ['id', 'name'],
+    attributes: ['id', 'name', 'webhookName'],
     where: {
       AppId: appId,
     },

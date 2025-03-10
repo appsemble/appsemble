@@ -1,6 +1,7 @@
 import {
   Button,
   ModalCard,
+  SelectField,
   SimpleForm,
   SimpleFormField,
   SimpleModalFooter,
@@ -54,7 +55,7 @@ export function WebhookSecretsModal({
 }: WebhookSecretCardProps): ReactNode {
   const { formatMessage } = useIntl();
   const {
-    app: { locked },
+    app: { definition, locked },
   } = useApp();
 
   const push = useMessages();
@@ -95,6 +96,7 @@ export function WebhookSecretsModal({
       defaultValues={secret}
       footer={
         <SimpleModalFooter
+          allowPristine={false}
           cancelLabel={<FormattedMessage {...messages.close} />}
           onClose={onClose}
           submitLabel={<FormattedMessage {...messages.save} />}
@@ -118,12 +120,27 @@ export function WebhookSecretsModal({
         />
       </p>
       <SimpleFormField
+        component={SelectField}
+        disabled={locked !== 'unlocked'}
+        help={<FormattedMessage {...messages.webhookNameHelp} />}
+        label={<FormattedMessage {...messages.webhookNameLabel} />}
+        name="webhookName"
+        required
+      >
+        <option value="" />
+        {Object.keys(definition.webhooks).map((webhookName) => (
+          <option key={webhookName} value={webhookName}>
+            {webhookName}
+          </option>
+        ))}
+      </SimpleFormField>
+      <SimpleFormField
         disabled={locked !== 'unlocked'}
         help={<FormattedMessage {...messages.nameHelp} />}
         label={<FormattedMessage {...messages.nameLabel} />}
         name="name"
       />
-      <SecretField appId={app.id} secretId={secret.id} />
+      {secret.id ? <SecretField appId={app.id} secretId={secret.id} /> : null}
       {onDeleted ? (
         <Button className={styles.deleteButton} color="danger" icon="trash" onClick={onDelete}>
           <FormattedMessage {...messages.deleteButton} />

@@ -28,6 +28,10 @@ export class AppWebhookSecret extends Model {
   name: string;
 
   @AllowNull(false)
+  @Column(DataType.STRING)
+  webhookName: string;
+
+  @AllowNull(false)
   @Column(DataType.BLOB)
   secret: Buffer;
 

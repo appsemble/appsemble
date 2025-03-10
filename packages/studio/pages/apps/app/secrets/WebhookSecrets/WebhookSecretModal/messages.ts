@@ -9,6 +9,14 @@ export const messages = defineMessages({
     id: 'studio.9PjpLU',
     defaultMessage: 'Learn more in the <link>documentation</link>',
   },
+  webhookNameLabel: {
+    id: 'studio.gxnmW0',
+    defaultMessage: 'Webhook Name',
+  },
+  webhookNameHelp: {
+    id: 'studio.j8zOYp',
+    defaultMessage: 'The name of the webhook this secret is tied to',
+  },
   nameLabel: {
     id: 'studio.HAlOn1',
     defaultMessage: 'Name',

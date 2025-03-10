@@ -59,7 +59,7 @@ export function WebhookSecretItem({
           onClick={modal.enable}
         >
           <Title className="is-marginless mr-2" size={5}>
-            {secret.name ?? 'Webhook secret'}
+            {secret.name ?? secret.webhookName}
           </Title>
         </Button>
       </li>

@@ -108,7 +108,7 @@ export function authentication(): SecurityOptions {
     },
 
     async webhook(webhookToken: string, { path }: { path: string }) {
-      const match = path.match(/^\/api\/apps\/(\d+)\/webhooks/);
+      const match = path.match(/^\/api\/apps\/(\d+)\/webhooks\/(.+)$/);
       if (!match) {
         return;
       }
@@ -116,6 +116,7 @@ export function authentication(): SecurityOptions {
       const appWebhookSecrets = await AppWebhookSecret.findAll({
         where: {
           AppId: Number(match[1]),
+          webhookName: match[2],
         },
         attributes: ['secret'],
       });
