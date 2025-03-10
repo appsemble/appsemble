@@ -18,25 +18,7 @@ import {
 } from '../../models/index.js';
 import { argv } from '../../utils/argv.js';
 import { createJWTResponse } from '../../utils/createJWTResponse.js';
-import { hasScope } from '../../utils/oauth2.js';
-
-class GrantError extends Error {
-  status: number;
-
-  constructor(
-    error:
-      | 'invalid_client'
-      | 'invalid_grant'
-      | 'invalid_request'
-      | 'invalid_scope'
-      | 'unsupported_grant_type',
-    status = 400,
-  ) {
-    super(error);
-    this.status = status;
-    this.name = 'GrantError';
-  }
-}
+import { GrantError, hasScope } from '../../utils/oauth2.js';
 
 function checkTokenRequestParameters(
   query: Record<string, string[] | string>,
