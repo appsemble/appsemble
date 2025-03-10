@@ -23,8 +23,8 @@ import * as m0_31_1_test_4 from './0.31.1-test.4.js';
 import * as m0_31_1_test_5 from './0.31.1-test.5.js';
 import * as m0_31_1_test_6 from './0.31.1-test.6.js';
 import * as m0_32_1_test_1 from './0.32.1-test.1.js';
+import * as m0_32_1_test_10 from './0.32.1-test.10.js';
 import * as m0_32_1_test_8 from './0.32.1-test.8.js';
-import * as m0_32_1_test_9 from './0.32.1-test.9.js';
 import { type Migration } from '../utils/migrate.js';
 
 export const migrations: Migration[] = [
@@ -54,6 +54,6 @@ export const migrations: Migration[] = [
   m0_31_1_test_6,
   m0_32_1_test_1,
   m0_32_1_test_8,
-  m0_32_1_test_9,
+  m0_32_1_test_10,
   // TODO Add m0_32_2 later for safety
 ];
