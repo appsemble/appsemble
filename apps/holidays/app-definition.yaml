@@ -12,7 +12,7 @@ pages:
             version: 0.32.1-test.9
             actions:
               onLoad:
-                url: https://date.nager.at/Api/v2/NextPublicHolidays/NL
+                url: https://date.nager.at/Api/v3/NextPublicHolidays/NL
                 type: request
             events:
               emit:
@@ -46,7 +46,7 @@ pages:
             version: 0.32.1-test.9
             actions:
               onLoad:
-                url: https://date.nager.at/Api/v2/NextPublicHolidays/DE
+                url: https://date.nager.at/Api/v3/NextPublicHolidays/DE
                 type: request
             events:
               emit:
@@ -80,7 +80,7 @@ pages:
             version: 0.32.1-test.9
             actions:
               onLoad:
-                url: https://date.nager.at/Api/v2/NextPublicHolidays/ES
+                url: https://date.nager.at/Api/v3/NextPublicHolidays/ES
                 type: request
             events:
               emit:
@@ -119,7 +119,7 @@ pages:
             version: 0.32.1-test.9
             actions:
               onLoad:
-                url: https://date.nager.at/Api/v2/NextPublicHolidays/US
+                url: https://date.nager.at/Api/v3/NextPublicHolidays/US
                 type: request
             events:
               emit:
@@ -151,7 +151,7 @@ pages:
             version: 0.32.1-test.9
             actions:
               onLoad:
-                url: https://date.nager.at/Api/v2/NextPublicHolidays/CA
+                url: https://date.nager.at/Api/v3/NextPublicHolidays/CA
                 type: request
             events:
               emit:
@@ -183,7 +183,7 @@ pages:
             version: 0.32.1-test.9
             actions:
               onLoad:
-                url: https://date.nager.at/Api/v2/NextPublicHolidays/MX
+                url: https://date.nager.at/Api/v3/NextPublicHolidays/MX
                 type: request
             events:
               emit:
