@@ -21,7 +21,9 @@ import { createTestUser } from '../../../../utils/test/authorization.js';
 let organization: Organization;
 let user: User;
 let app: App;
-let webhookSecret: AppWebhookSecret;
+let createSecret: AppWebhookSecret;
+let patchSecret: AppWebhookSecret;
+let updateSecret: AppWebhookSecret;
 
 const aesSecret = 'testSecret';
 const argv = { host: 'http://localhost', secret: 'test', aesSecret };
@@ -150,8 +152,21 @@ describe('callAppWebhook', () => {
       },
     });
 
-    webhookSecret = await AppWebhookSecret.create({
+    createSecret = await AppWebhookSecret.create({
       AppId: app.id,
+      webhookName: 'createRecord',
+      secret: encrypt(randomBytes(40).toString('hex'), aesSecret),
+    });
+
+    patchSecret = await AppWebhookSecret.create({
+      AppId: app.id,
+      webhookName: 'patchFirstRecord',
+      secret: encrypt(randomBytes(40).toString('hex'), aesSecret),
+    });
+
+    updateSecret = await AppWebhookSecret.create({
+      AppId: app.id,
+      webhookName: 'updateFirstRecord',
       secret: encrypt(randomBytes(40).toString('hex'), aesSecret),
     });
   });
@@ -220,7 +235,7 @@ describe('callAppWebhook', () => {
     const res = await request.post(
       `/api/apps/${app.id}/webhooks/createRecord`,
       {},
-      { headers: { Authorization: `Bearer ${webhookSecret.secret.toString('hex')}` } },
+      { headers: { Authorization: `Bearer ${createSecret.secret.toString('hex')}` } },
     );
     expect(res).toMatchInlineSnapshot(`
       HTTP/1.1 400 Bad Request
@@ -295,7 +310,7 @@ describe('callAppWebhook', () => {
         pdf: 'sample.pdf',
         xml: createFixtureStream('note.xml'),
       }),
-      { headers: { Authorization: `Bearer ${webhookSecret.secret.toString('hex')}` } },
+      { headers: { Authorization: `Bearer ${createSecret.secret.toString('hex')}` } },
     );
     expect(res).toMatchInlineSnapshot(`
       HTTP/1.1 400 Bad Request
@@ -344,7 +359,7 @@ describe('callAppWebhook', () => {
     const res = await request.post(
       `/api/apps/${app.id}/webhooks/createRecord`,
       { foo: 'bar' },
-      { headers: { Authorization: `Bearer ${webhookSecret.secret.toString('hex')}` } },
+      { headers: { Authorization: `Bearer ${createSecret.secret.toString('hex')}` } },
     );
     expect(res).toMatchInlineSnapshot(`
       HTTP/1.1 200 OK
@@ -371,7 +386,7 @@ describe('callAppWebhook', () => {
         pdf: createFixtureStream('sample.pdf'),
         xml: createFixtureStream('note.xml'),
       }),
-      { headers: { Authorization: `Bearer ${webhookSecret.secret.toString('hex')}` } },
+      { headers: { Authorization: `Bearer ${createSecret.secret.toString('hex')}` } },
     );
     expect(res).toMatchInlineSnapshot(`
       HTTP/1.1 200 OK
@@ -395,7 +410,7 @@ describe('callAppWebhook', () => {
         foo: 'baz',
         pdf: createFixtureStream('note.xml'),
       }),
-      { headers: { Authorization: `Bearer ${webhookSecret.secret.toString('hex')}` } },
+      { headers: { Authorization: `Bearer ${patchSecret.secret.toString('hex')}` } },
     );
     expect(res2).toMatchInlineSnapshot(`
       HTTP/1.1 200 OK
@@ -420,7 +435,7 @@ describe('callAppWebhook', () => {
         pdf: createFixtureStream('note.xml'),
         xml: createFixtureStream('note.xml'),
       }),
-      { headers: { Authorization: `Bearer ${webhookSecret.secret.toString('hex')}` } },
+      { headers: { Authorization: `Bearer ${updateSecret.secret.toString('hex')}` } },
     );
     expect(res3).toMatchInlineSnapshot(`
       HTTP/1.1 200 OK
