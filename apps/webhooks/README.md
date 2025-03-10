@@ -7,7 +7,8 @@ property in the request body is required, while `pdf` and `xml` are optional. If
 pdf and a xml file in the body, you must make a `multipart/form-data` request. If you only wish to
 send `foo` in the body, you can also use `application/json`.
 
-In order to be able to use the webhook, you must generate at least one webhook secret for the app.
-You can do so from the studio. After generating a webhook secret, review its value in the studio and
-copy it. You must provide it in an `Authorization` header in your `POST` request prefixed by
-`Bearer `.
+In order to be able to use the webhook, you need to generate a webhook secret for it in the studio.
+After generating a webhook secret, review its value in the studio and copy it. You must provide it
+in an `Authorization` header in your `POST` request prefixed by `Bearer `. Each webhook secret is
+tied to a specific webhook. Providing its value in the header gives the caller permissions for all
+the actions in the webhook.
