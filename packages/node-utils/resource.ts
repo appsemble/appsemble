@@ -34,7 +34,16 @@ export function stripResource({
   return data;
 }
 
-export function serializeServerResource(data: any): JsonValue | Record<string, unknown> {
+/**
+ * Works on a resource, which has been processed on the server by the streamParser
+ *
+ * @param data The resource to be serialized, optionally containing parsed TempFile instance assets
+ * @returns An object containing the resource and an array of the assets referenced
+ *   from the resource
+ */
+export function serializeServerResource(
+  data: any,
+): JsonValue | { resource: JsonValue; assets: TempFile[] } {
   const assets: TempFile[] = [];
   const extractAssets = (value: Date | JsonValue | TempFile): JsonValue => {
     if (Array.isArray(value)) {
@@ -55,14 +64,10 @@ export function serializeServerResource(data: any): JsonValue | Record<string, u
   if (!assets.length) {
     return resource;
   }
-  const result: Record<string, unknown> = {
+  return {
     resource,
-    assets: [],
+    assets,
   };
-  for (const asset of assets) {
-    (result.assets as TempFile[]).push(asset);
-  }
-  return result;
 }
 
 /**
