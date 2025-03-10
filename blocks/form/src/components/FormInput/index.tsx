@@ -12,6 +12,7 @@ import { Fieldset } from '../Fieldset/index.js';
 import { FileInput } from '../FileInput/index.js';
 import { GeoCoordinatesInput } from '../GeoCoordinatesInput/index.js';
 import { ListInput } from '../ListInput/index.js';
+import { MarkdownInput } from '../MarkdownInput/index.js';
 import { NumberInput } from '../NumberInput/index.js';
 import { RadioInput } from '../RadioInput/index.js';
 import { RangeInput } from '../RangeInput/index.js';
@@ -199,6 +200,16 @@ export function FormInput({ field, onChange, ...props }: FormInputProps): VNode 
     case 'selection':
       return (
         <SelectionInput
+          dirty={dirty}
+          errorLinkRef={errorLinkRef}
+          field={field}
+          onChange={handleChange}
+          {...props}
+        />
+      );
+    case 'markdown':
+      return (
+        <MarkdownInput
           dirty={dirty}
           errorLinkRef={errorLinkRef}
           field={field}

@@ -1230,6 +1230,18 @@ export interface Fieldset extends AbstractField {
   requirements?: FieldsetRequirement[];
 }
 
+export interface MarkdownField extends AbstractField {
+  /**
+   * The default value of the field.
+   */
+  defaultValue?: string;
+
+  /**
+   * The type of the field.
+   */
+  type: 'markdown';
+}
+
 export type Field =
   | BooleanField
   | DateField
@@ -1240,6 +1252,7 @@ export type Field =
   | GeoCoordinatesField
   | HiddenField
   | ListField
+  | MarkdownField
   | NumberField
   | RadioField
   | RangeField
