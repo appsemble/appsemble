@@ -24,7 +24,7 @@
     "*.md": [
       "remark --frail --no-stdout"
     ],
-    "*.{html,json,md,scss,yaml,yml}": [
+    "*.{html,json,md,mdx,scss,yaml,yml}": [
       "prettier --check"
     ],
     "*.{js,md,ts,tsx}": [

@@ -41,6 +41,7 @@ Supported resource actions are as below:
 
 - [`resource.get`](#resourceget)
 - [`resource.history.get`](#resourcehistoryget)
+- [`resource.update.positions`](#resourceupdatepositions)
 - [`resource.query`](#resourcequery)
 - [`resource.count`](#resourcecount)
 - [`resource.create`](#resourcecreate)
@@ -97,6 +98,43 @@ blocks:
       onLoad:
         type: resource.history.get
         resource: person
+```
+
+### resource.update.positions<Side name="resource.update.positions" />
+
+<ActionRef action={actions['resource.update.positions']} />
+
+This action is used to update the positions of a single resource. This only works with the
+[list block](/blocks/@appsemble/list)
+
+**Requirements**:
+
+This action requires the following:
+
+- The input data must have the following fields of type **number**:
+  - `prevResourcePosition`
+  - `nextResourcePosition`
+- The resource getting affected by the action must have the `positioning` attribute set to **true**
+- The member using this action must have the following permissions:
+  - `$resource:all:update`
+  - `$resource:<resource-name>:update`
+
+Here is an example of how you can use this action to update the positions of a resource:
+
+```yaml
+blocks:
+  - type: list
+    version: 0.32.1-test.8
+    actions:
+      onDrop:
+        type: resource.update.positions
+        resource: person
+    events:
+      listen: data
+    parameters:
+      fields:
+        - value: { prop: value }
+        - foo: { prop: foo }
 ```
 
 ### resource.query<Side name="resource.query" />
@@ -375,8 +413,8 @@ blocks:
 <ActionRef action={actions['resource.subscription.toggle']} />
 
 This action is used to toggle push notifications for resource modification. i.e. It will set the
-subscribed property to `true` if it’s set to `false` and vice versa. Here’s
-how you can use this action.
+subscribed property to `true` if it’s set to `false` and vice versa. Here’s how you can use this
+action.
 
 ```yaml validate blocks-snippet
 blocks:
@@ -395,7 +433,8 @@ blocks:
 
 <ActionRef action={actions['resource.subscription.status']} />
 
-This action can be used to access the status of notification subscriptions for a resource. Here’s an example of usage of this action.
+This action can be used to access the status of notification subscriptions for a resource. Here’s an
+example of usage of this action.
 
 ```yaml validate blocks-snippet
 blocks:

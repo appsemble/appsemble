@@ -10,7 +10,7 @@ export const ResourceUpdatePositionsActionDefinition = extendJSONSchema(
     properties: {
       type: {
         enum: ['resource.update.positions'],
-        description: 'Update a resource.',
+        description: 'Update the position of a resource.',
       },
       resource: {
         type: 'string',
