@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.32.1-test.9](https://gitlab.com/appsemble/appsemble/-/releases/0.32.1-test.9)] - 2025-03-10
+
+### Fixed
+
+- Cli: Dev server failing assets requests.
+
 ## \[[0.32.1-test.8](https://gitlab.com/appsemble/appsemble/-/releases/0.32.1-test.8)] - 2025-03-04
 
 ### Added

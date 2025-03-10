@@ -1,7 +1,7 @@
 apiVersion: v2
 name: appsemble
-version: 0.32.1-test.8
-appVersion: 0.32.1-test.8
+version: 0.32.1-test.9
+appVersion: 0.32.1-test.9
 kubeVersion: '>=1.21.0'
 type: application
 description: The open source low-code app building platform
@@ -31,19 +31,9 @@ dependencies:
     repository: https://charts.bitnami.com/bitnami
     condition: minio.enabled
 annotations:
-  artifacthub.io/changes: >
-    - kind: added
-      description: "Utils: Add slice remapper to support slicing arrays and strings."
-    - kind: removed
-      description: "Utils: Remove string.slice remapper."
+  artifacthub.io/changes: |
     - kind: fixed
-      description: "Block(table): Fix not being able to return to the initial state of
-        the data."
-    - kind: fixed
-      description: "Studio: Import app feature making a request to the wrong endpoint."
-    - kind: fixed
-      description: "Studio: Import translations succeeding but throwing an error at
-        the same time."
+      description: "Cli: Dev server failing assets requests."
   artifacthub.io/license: LGPL-3.0-only
   artifacthub.io/links: |
     - name: Appsemble Studio
