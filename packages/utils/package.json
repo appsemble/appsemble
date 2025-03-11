@@ -61,7 +61,7 @@
     "@types/langmap": "^0.0.3",
     "@types/language-tags": "^1.0.0",
     "@types/lcm": "^0.0.2",
-    "bulma": "0.9.4",
+    "bulma": "=0.9.3",
     "koas-core": "^0.7.0",
     "vitest": "^2.0.0"
   },
