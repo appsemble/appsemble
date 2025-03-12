@@ -2809,7 +2809,7 @@ disabled by setting this to \`false\`
                       "description": "The name of the schema to validate against before submitting data.",
                     },
                     "type": {
-                      "description": "Update a resource.",
+                      "description": "Update the position of a resource.",
                       "enum": [
                         "resource.update.positions",
                       ],
@@ -2837,7 +2837,7 @@ disabled by setting this to \`false\`
                 ],
                 "property": "instance.actions.onSubmit.type",
                 "schema": {
-                  "description": "Update a resource.",
+                  "description": "Update the position of a resource.",
                   "enum": [
                     "resource.update.positions",
                   ],
@@ -8189,7 +8189,7 @@ disabled by setting this to \`false\`
               "description": "The name of the schema to validate against before submitting data.",
             },
             "type": {
-              "description": "Update a resource.",
+              "description": "Update the position of a resource.",
               "enum": [
                 "resource.update.positions",
               ],
@@ -8217,7 +8217,7 @@ disabled by setting this to \`false\`
         ],
         "property": "instance.actions.onSubmit.type",
         "schema": {
-          "description": "Update a resource.",
+          "description": "Update the position of a resource.",
           "enum": [
             "resource.update.positions",
           ],
