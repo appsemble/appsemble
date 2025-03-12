@@ -5,6 +5,7 @@ import {
   type ResourceDefinition,
   type Resource as ResourceType,
 } from '@appsemble/types';
+import { mapValues } from '@appsemble/utils';
 import { addMilliseconds, isPast, parseISO } from 'date-fns';
 import { type PreValidatePropertyFunction, ValidationError, Validator } from 'jsonschema';
 import {
@@ -14,9 +15,10 @@ import {
   type ParameterizedContext,
 } from 'koa';
 import parseDuration from 'parse-duration';
+import { type JsonObject, type JsonValue } from 'type-fest';
 
 import { preProcessCSV } from './csv.js';
-import { handleValidatorResult, type PreparedAsset, type TempFile } from './index.js';
+import { handleValidatorResult, type PreparedAsset, TempFile } from './index.js';
 import { throwKoaError } from './koa.js';
 
 export function stripResource({
@@ -30,6 +32,42 @@ export function stripResource({
   ...data
 }: ResourceType): Record<string, unknown> {
   return data;
+}
+
+/**
+ * Works on a resource, which has been processed on the server by the streamParser
+ *
+ * @param data The resource to be serialized, optionally containing parsed TempFile instance assets
+ * @returns An object containing the resource and an array of the assets referenced
+ *   from the resource
+ */
+export function serializeServerResource(
+  data: any,
+): JsonValue | { resource: JsonValue; assets: TempFile[] } {
+  const assets: TempFile[] = [];
+  const extractAssets = (value: Date | JsonValue | TempFile): JsonValue => {
+    if (Array.isArray(value)) {
+      return value.map(extractAssets);
+    }
+    if (value instanceof TempFile) {
+      return String(assets.push(value) - 1);
+    }
+    if (value instanceof Date) {
+      return value.toJSON();
+    }
+    if (value && typeof value === 'object') {
+      return mapValues(value as JsonObject, extractAssets);
+    }
+    return value;
+  };
+  const resource = extractAssets(data);
+  if (!assets.length) {
+    return resource;
+  }
+  return {
+    resource,
+    assets,
+  };
 }
 
 /**

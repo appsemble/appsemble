@@ -56,7 +56,7 @@ export async function handleAction(
       ...params,
       context: params.app?.definition?.security?.cron
         ? { ...params.context, user: appMemberInfo, client: { app: params.app.toJSON() } }
-        : { ...params.context },
+        : params.context,
       data,
       internalContext: updatedContext,
     });

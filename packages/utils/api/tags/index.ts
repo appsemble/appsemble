@@ -165,4 +165,8 @@ export const tags: OpenAPIV3.TagObject[] = [
     name: 'version',
     description: 'Operations related to versions.',
   },
+  {
+    name: 'webhook',
+    description: 'Operations related to webhooks.',
+  },
 ];

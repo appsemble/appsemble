@@ -20,6 +20,7 @@ import { AppServiceSecret } from './AppServiceSecret.js';
 import { AppSnapshot } from './AppSnapshot.js';
 import { AppSubscription } from './AppSubscription.js';
 import { AppVariable } from './AppVariable.js';
+import { AppWebhookSecret } from './AppWebhookSecret.js';
 import { Asset } from './Asset.js';
 import { BlockAsset } from './BlockAsset.js';
 import { BlockMessages } from './BlockMessages.js';
@@ -80,6 +81,7 @@ export {
   AppSubscription,
   AppVariable,
   AppMessages,
+  AppWebhookSecret,
   Asset,
   BlockAsset,
   BlockMessages,
@@ -147,6 +149,7 @@ export function initDB({
       AppSubscription,
       AppVariable,
       AppMessages,
+      AppWebhookSecret,
       Asset,
       BlockAsset,
       BlockMessages,

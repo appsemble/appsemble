@@ -26,6 +26,7 @@ import { SSLSecrets } from './SSLSecrets/index.js';
 import { AsyncDataView } from '../../../../components/AsyncDataView/index.js';
 import { Collapsible } from '../../../../components/Collapsible/index.js';
 import { useApp } from '../index.js';
+import { WebhookSecrets } from './WebhookSecrets/index.js';
 
 interface EmailFormParameters {
   emailName: string;
@@ -197,6 +198,9 @@ export function SecretsPage(): ReactNode {
       <ServiceSecrets onClickServiceCheckbox={onClickServiceCheckbox} />
       <OAuth2Secrets />
       <SamlSecrets />
+      {app.definition.webhooks && Object.keys(app.definition.webhooks).length > 0 ? (
+        <WebhookSecrets />
+      ) : null}
       <Collapsible
         help={
           <FormattedMessage

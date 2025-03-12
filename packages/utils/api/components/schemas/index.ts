@@ -147,3 +147,5 @@ export * from './GroupMember.js';
 export * from './AppAccount.js';
 export * from './PageActionsDefinition.js';
 export * from './FilterParametersDefinition.js';
+export * from './WebhookDefinition.js';
+export * from './AppWebhookSecret.js';

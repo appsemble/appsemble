@@ -2,6 +2,13 @@ import { type JsonObject, type JsonValue } from 'type-fest';
 
 import { mapValues } from './mapValues.js';
 
+/**
+ * Works on a resource on the client, for example passed from the form block
+ *
+ * @param data The resource to be serialized, optionally containing asset blobs
+ * @returns A FormData instance containing the resource and an array of the assets
+ *   referenced from the resource
+ */
 export function serializeResource(data: any): FormData | JsonValue {
   const assets: Blob[] = [];
   const extractAssets = (value: Blob | Date | JsonValue): JsonValue => {

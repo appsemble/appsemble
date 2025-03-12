@@ -1,0 +1,24 @@
+context:
+  development:
+    organization: appsemble
+    remote: http://localhost:9999
+    template: true
+    visibility: public
+  e2e:
+    organization: appsemble
+    template: true
+    visibility: public
+  production:
+    organization: appsemble
+    remote: https://appsemble.app
+    template: true
+    visibility: public
+  review:
+    organization: appsemble
+    template: true
+    visibility: public
+  staging:
+    organization: appsemble
+    remote: https://staging.appsemble.review
+    template: true
+    visibility: public

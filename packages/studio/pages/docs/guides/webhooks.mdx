@@ -1,0 +1,71 @@
+# Webhooks
+
+## Table of Contents
+
+- [Introduction](#introduction)
+- [Actions](#actions)
+- [Example](#example)
+
+## Introduction
+
+App webhooks are a mechanism that allows external parties to call app endpoints with custom
+functionality, defined in the form of Appsemble [actions](../reference/action.mdx). Webhook
+endpoints will be automatically generated based on the webhooks definition in the app definition.
+Webhooks can be called by making a `POST` request (intentionally, only `POST` requests are supported)
+to `{apiUrl}/apps/${appId}/webhooks/${webhookName}`.
+
+Webhooks can define a schema for the payload they expect to receive. The payload will be validated
+on the server. Either `multipart/form-data` or `application/json` payload can be used.
+
+In order to be able to use the webhook, you need to generate a webhook secret for it in the studio.
+After generating a webhook secret, review its value in the studio and copy it. You must provide it
+in an `Authorization` header in your `POST` request prefixed by `Bearer `. Each webhook secret is
+tied to a specific webhook. Providing its value in the header gives the caller permissions for all
+the actions in the webhook.
+
+## Actions
+
+Similar to [cron jobs](./cron.mdx), webhooks can contain only certain actions that we support on the
+server, they may still be used in older apps, but will run a `noop` action instead. The actions also
+work a little different e.g. the actions are not run by the user, so retrieving user information
+with the[user](../remappers/data.mdx#user) remapper won’t work the same.
+
+> Note: In contrast to cron jobs, webhooks support file uploads, and in extension - assets.
+
+Supported (server-side) actions:
+
+<ul>
+  {Array.from(serverActions).map((action) => (
+    <li key={action}>
+      <a href={`/docs/reference/action#${action}`}>{action}</a>
+    </li>
+  ))}
+</ul>
+
+## Example
+
+In the following example we define a webhook for creating `record` resources, which also supports
+file uploads. By specifying `type: string`, `format: binary` for the `pdf` and `xml` fields in the
+webhook schema, we can enable server side file parsing.
+
+```yaml copy
+webhooks:
+  createRecord:
+    schema:
+      type: object
+      additionalProperties: false
+      required:
+        - foo
+      properties:
+        foo:
+          type: string
+        pdf:
+          type: string
+          format: binary
+        xml:
+          type: string
+          format: binary
+    action:
+      type: resource.create
+      resource: record
+```

@@ -71,6 +71,8 @@ import { pathItems as appsAppIdSecretsScim } from './apps/appId/secrets/scim.js'
 import { pathItems as appsAppIdSecretsServiceSecretId } from './apps/appId/secrets/service/secretId.js';
 import { pathItems as appsAppIdSecretsService } from './apps/appId/secrets/service.js';
 import { pathItems as appsAppIdSecretsSsl } from './apps/appId/secrets/ssl.js';
+import { pathItems as appsAppIdSecretsWebhookSecretId } from './apps/appId/secrets/webhook/secretId.js';
+import { pathItems as appsAppIdSecretsWebhook } from './apps/appId/secrets/webhook.js';
 import { pathItems as appsAppIdSnapshotsSnapshotId } from './apps/appId/snapshots/snapshotId.js';
 import { pathItems as appsAppIdSnapshots } from './apps/appId/snapshots.js';
 import { pathItems as appsAppIdStyleBlockOrganizationIdBLockId } from './apps/appId/style/block/organizationId/blockId.js';
@@ -79,6 +81,7 @@ import { pathItems as appsAppIdStyleShared } from './apps/appId/style/shared.js'
 import { pathItems as appsAppIdSubscriptions } from './apps/appId/subscriptions.js';
 import { pathItems as appsAppIdVariablesAppVariableId } from './apps/appId/variables/variableId.js';
 import { pathItems as appsAppIdVariables } from './apps/appId/variables.js';
+import { pathItems as appsAppIdWebhooksWebhookName } from './apps/appId/webhooks/webhookName.js';
 import { pathItems as appsAppId } from './apps/appId.js';
 import { pathItems as apps } from './apps.js';
 import { pathItems as appTemplates } from './appTemplates.js';
@@ -226,6 +229,8 @@ export const paths = {
   '/api/apps/{appId}/secrets/service/{serviceSecretId}': appsAppIdSecretsServiceSecretId,
   '/api/apps/{appId}/secrets/service': appsAppIdSecretsService,
   '/api/apps/{appId}/secrets/ssl': appsAppIdSecretsSsl,
+  '/api/apps/{appId}/secrets/webhook/{webhookSecretId}': appsAppIdSecretsWebhookSecretId,
+  '/api/apps/{appId}/secrets/webhook': appsAppIdSecretsWebhook,
   '/api/apps/{appId}/snapshots/{snapshotId}': appsAppIdSnapshotsSnapshotId,
   '/api/apps/{appId}/snapshots': appsAppIdSnapshots,
   '/api/apps/{appId}/style/block/@{organizationId}/{blockId}':
@@ -235,6 +240,7 @@ export const paths = {
   '/api/apps/{appId}/subscriptions': appsAppIdSubscriptions,
   '/api/apps/{appId}/variables/{appVariableId}': appsAppIdVariablesAppVariableId,
   '/api/apps/{appId}/variables': appsAppIdVariables,
+  '/api/apps/{appId}/webhooks/{webhookName}': appsAppIdWebhooksWebhookName,
   '/api/apps/{appId}': appsAppId,
   '/api/apps/{appId}/auth/email/login': appsAppIdAuthEmailLogin,
   '/api/apps/{appId}/auth/email/register': appsAppIdAuthEmailRegister,
