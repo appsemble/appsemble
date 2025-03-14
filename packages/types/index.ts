@@ -801,6 +801,11 @@ export interface Remappers {
   'order.from': OrderParams;
 
   /**
+   * Parse an xml string to a JavaScript object
+   */
+  'xml.parse': Remapper;
+
+  /**
    * Check if the value is defined
    *
    * @example
