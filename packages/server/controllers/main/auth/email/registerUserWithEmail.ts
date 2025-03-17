@@ -1,6 +1,6 @@
 import { randomBytes } from 'node:crypto';
 
-import { assertKoaError, logger, throwKoaError } from '@appsemble/node-utils';
+import { assertKoaCondition, logger, throwKoaError } from '@appsemble/node-utils';
 import { hash } from 'bcrypt';
 import { type Context } from 'koa';
 import { DatabaseError, UniqueConstraintError } from 'sequelize';
@@ -10,7 +10,7 @@ import { argv } from '../../../../utils/argv.js';
 import { createJWTResponse } from '../../../../utils/createJWTResponse.js';
 
 export async function registerUserWithEmail(ctx: Context): Promise<void> {
-  assertKoaError(argv.disableRegistration, ctx, 403, 'Registration is disabled');
+  assertKoaCondition(!argv.disableRegistration, ctx, 403, 'Registration is disabled');
   const {
     mailer,
     request: {

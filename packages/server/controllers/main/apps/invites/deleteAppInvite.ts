@@ -1,4 +1,4 @@
-import { assertKoaError } from '@appsemble/node-utils';
+import { assertKoaCondition } from '@appsemble/node-utils';
 import { OrganizationPermission } from '@appsemble/types';
 import { type Context } from 'koa';
 
@@ -11,7 +11,7 @@ export async function deleteAppInvite(ctx: Context): Promise<void> {
   const email = request.body.email.toLowerCase();
   const invite = await AppInvite.findOne({ where: { email } });
 
-  assertKoaError(!invite, ctx, 404, 'This invite does not exist');
+  assertKoaCondition(!!invite, ctx, 404, 'This invite does not exist');
 
   const app = await App.findByPk(invite.AppId, { attributes: ['OrganizationId'] });
 

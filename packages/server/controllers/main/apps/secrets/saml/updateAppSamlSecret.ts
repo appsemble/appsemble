@@ -1,4 +1,4 @@
-import { assertKoaError } from '@appsemble/node-utils';
+import { assertKoaCondition } from '@appsemble/node-utils';
 import { OrganizationPermission } from '@appsemble/types';
 import { type Context } from 'koa';
 
@@ -18,7 +18,7 @@ export async function updateAppSamlSecret(ctx: Context): Promise<void> {
     include: [{ model: AppSamlSecret, required: false, where: { id: appSamlSecretId } }],
   });
 
-  assertKoaError(!app, ctx, 404, 'App not found');
+  assertKoaCondition(!!app, ctx, 404, 'App not found');
 
   checkAppLock(ctx, app);
 
@@ -29,7 +29,7 @@ export async function updateAppSamlSecret(ctx: Context): Promise<void> {
   });
 
   const [secret] = app.AppSamlSecrets;
-  assertKoaError(!secret, ctx, 404, 'SAML secret not found');
+  assertKoaCondition(!!secret, ctx, 404, 'SAML secret not found');
 
   ctx.body = await secret.update({
     ...body,

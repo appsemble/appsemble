@@ -1,4 +1,4 @@
-import { assertKoaError, throwKoaError } from '@appsemble/node-utils';
+import { assertKoaCondition, throwKoaError } from '@appsemble/node-utils';
 import { type Context } from 'koa';
 
 import { OAuthAuthorization, transactional, User } from '../../../../../models/index.js';
@@ -47,7 +47,7 @@ export async function registerOAuth2Authorization(ctx: Context): Promise<void> {
     clientSecret = argv.githubClientSecret;
   }
 
-  assertKoaError(!clientId || !clientSecret, ctx, 501, 'Unknown authorization URL');
+  assertKoaCondition(!!(clientId && clientSecret), ctx, 501, 'Unknown authorization URL');
 
   // Exchange the authorization code for an access token and refresh token.
   const {

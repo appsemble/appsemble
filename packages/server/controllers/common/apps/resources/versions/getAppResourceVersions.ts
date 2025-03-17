@@ -1,4 +1,4 @@
-import { assertKoaError, getResourceDefinition } from '@appsemble/node-utils';
+import { assertKoaCondition, getResourceDefinition } from '@appsemble/node-utils';
 import { type Context } from 'koa';
 
 import { App, AppMember, Resource, ResourceVersion } from '../../../../../models/index.js';
@@ -12,7 +12,7 @@ export async function getAppResourceVersions(ctx: Context): Promise<void> {
 
   const app = await App.findByPk(appId, { attributes: ['id', 'OrganizationId', 'definition'] });
 
-  assertKoaError(!app, ctx, 404, 'App not found');
+  assertKoaCondition(!!app, ctx, 404, 'App not found');
 
   await checkAppPermissions({
     context: ctx,
@@ -36,9 +36,9 @@ export async function getAppResourceVersions(ctx: Context): Promise<void> {
 
   const definition = getResourceDefinition(app.definition, resourceType, ctx);
 
-  assertKoaError(!definition.history, ctx, 404, `Resource “${resourceType}” has no history`);
+  assertKoaCondition(!!definition.history, ctx, 404, `Resource “${resourceType}” has no history`);
 
-  assertKoaError(!resource, ctx, 404, 'Resource not found');
+  assertKoaCondition(!!resource, ctx, 404, 'Resource not found');
 
   ctx.body = [
     {

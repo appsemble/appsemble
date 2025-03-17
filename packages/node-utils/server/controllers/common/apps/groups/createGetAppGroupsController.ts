@@ -1,7 +1,7 @@
 import { AppPermission } from '@appsemble/types';
 import { type Context, type Middleware } from 'koa';
 
-import { assertKoaError } from '../../../../../koa.js';
+import { assertKoaCondition } from '../../../../../koa.js';
 import { type Options } from '../../../../types.js';
 
 export function createGetAppGroupsController({
@@ -16,7 +16,7 @@ export function createGetAppGroupsController({
 
     const app = await getApp({ context: ctx, query: { where: { id: appId } } });
 
-    assertKoaError(!app, ctx, 404, 'App not found');
+    assertKoaCondition(!!app, ctx, 404, 'App not found');
 
     await checkAuthSubjectAppPermissions({
       app,

@@ -121,3 +121,24 @@ export function assertKoaError(
     throwKoaError(ctx, status, message, data);
   }
 }
+
+/**
+ * Throws standard Koa error response when condition is _not_ met.
+ * Does the opposite of `assertKoaError`.
+ *
+ * @param condition The condition to check.
+ * @param ctx The Koa context used to throw the error response.
+ * @param status The HTTP status code to use.
+ * @param message The message for in the response body.
+ * @param data Optional data to include.
+ * @see throwKoaError
+ */
+export function assertKoaCondition(
+  condition: boolean,
+  ctx: Context,
+  status: HttpErrorCodes,
+  message?: string,
+  data?: Record<string, any>,
+): asserts condition {
+  assertKoaError(!condition, ctx, status, message, data);
+}

@@ -1,4 +1,4 @@
-import { assertKoaError } from '@appsemble/node-utils';
+import { assertKoaCondition } from '@appsemble/node-utils';
 import { type Context } from 'koa';
 
 import { OAuthAuthorization, User } from '../../../../../../../models/index.js';
@@ -11,7 +11,7 @@ export async function deleteCurrentUserOAuth2Authorization(ctx: Context): Promis
 
   const rows = await OAuthAuthorization.destroy({ where: { UserId: user.id, authorizationUrl } });
 
-  assertKoaError(!rows, ctx, 404, 'OAuth2 account to unlink not found');
+  assertKoaCondition(!!rows, ctx, 404, 'OAuth2 account to unlink not found');
 
   const dbUser = await User.findOne({
     attributes: ['password'],

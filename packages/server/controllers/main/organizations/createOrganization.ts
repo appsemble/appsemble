@@ -1,5 +1,5 @@
 import {
-  assertKoaError,
+  assertKoaCondition,
   organizationBlocklist,
   throwKoaError,
   uploadToBuffer,
@@ -44,15 +44,15 @@ export async function createOrganization(ctx: Context): Promise<void> {
     },
   });
 
-  assertKoaError(
-    !user.primaryEmail || !userEmailAuthorization.verified,
+  assertKoaCondition(
+    !!(user.primaryEmail && userEmailAuthorization.verified),
     ctx,
     403,
     'Email not verified.',
   );
 
-  assertKoaError(
-    organizationBlocklist.includes(id),
+  assertKoaCondition(
+    !organizationBlocklist.includes(id),
     ctx,
     400,
     'This organization id is not allowed.',

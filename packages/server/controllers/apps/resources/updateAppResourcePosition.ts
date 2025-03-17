@@ -1,4 +1,4 @@
-import { assertKoaError } from '@appsemble/node-utils';
+import { assertKoaCondition } from '@appsemble/node-utils';
 import { type Context } from 'koa';
 import { Op } from 'sequelize';
 
@@ -15,18 +15,18 @@ export async function updateAppResourcePosition(ctx: Context): Promise<void> {
   } = ctx;
 
   const app = await App.findByPk(appId);
-  assertKoaError(!app, ctx, 404, 'App not found');
+  assertKoaCondition(!!app, ctx, 404, 'App not found');
   if (!nextResourcePosition) {
     const count = await Resource.count({
       where: { AppId: appId, type: resourceType, Position: { [Op.gt]: prevResourcePosition } },
     });
-    assertKoaError(count > 0, ctx, 400, 'Invalid Position');
+    assertKoaCondition(!(count > 0), ctx, 400, 'Invalid Position');
   }
   if (!prevResourcePosition) {
     const count = await Resource.count({
       where: { AppId: appId, type: resourceType, Position: { [Op.lt]: nextResourcePosition } },
     });
-    assertKoaError(count > 0, ctx, 400, 'Invalid Position');
+    assertKoaCondition(!(count > 0), ctx, 400, 'Invalid Position');
   }
 
   const nextPositionResource = await Resource.findOne({
@@ -57,16 +57,16 @@ export async function updateAppResourcePosition(ctx: Context): Promise<void> {
       },
     },
   });
-  assertKoaError(
-    !nextPositionResource || !prevPositionResource || resourcesInBetween !== 0,
+  assertKoaCondition(
+    !(!nextPositionResource || !prevPositionResource || resourcesInBetween !== 0),
     ctx,
     400,
     'Invalid previous or next resource Position',
   );
 
   if (nextResourcePosition && prevResourcePosition) {
-    assertKoaError(
-      nextResourcePosition <= prevResourcePosition,
+    assertKoaCondition(
+      !(nextResourcePosition <= prevResourcePosition),
       ctx,
       400,
       'Previous resource Position should be less than the next resource',
@@ -79,7 +79,7 @@ export async function updateAppResourcePosition(ctx: Context): Promise<void> {
     attributes: ['Position', 'id', 'created', 'updated'],
   });
 
-  assertKoaError(!oldResource, ctx, 404, 'Resource not found');
+  assertKoaCondition(!!oldResource, ctx, 404, 'Resource not found');
   await checkAppPermissions({
     context: ctx,
     appId,

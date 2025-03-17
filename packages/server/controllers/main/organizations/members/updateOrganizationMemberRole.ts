@@ -1,4 +1,4 @@
-import { assertKoaError } from '@appsemble/node-utils';
+import { assertKoaCondition } from '@appsemble/node-utils';
 import { OrganizationPermission } from '@appsemble/types';
 import { type Context } from 'koa';
 
@@ -16,13 +16,18 @@ export async function updateOrganizationMemberRole(ctx: Context): Promise<void> 
 
   const organization = await Organization.findByPk(organizationId, { include: [User] });
 
-  assertKoaError(
-    !organization.Users.some((u) => u.id === user.id),
+  assertKoaCondition(
+    organization.Users.some((u) => u.id === user.id),
     ctx,
     404,
     'User is not a member of this organization.',
   );
-  assertKoaError(user.id === organizationMemberId, ctx, 400, 'Not allowed to change your own rule');
+  assertKoaCondition(
+    user.id !== organizationMemberId,
+    ctx,
+    400,
+    'Not allowed to change your own rule',
+  );
 
   await checkUserOrganizationPermissions({
     context: ctx,
@@ -32,7 +37,7 @@ export async function updateOrganizationMemberRole(ctx: Context): Promise<void> 
 
   const member = organization.Users.find((m) => m.id === organizationMemberId);
 
-  assertKoaError(!member, ctx, 400, 'This member is not part of this organization.');
+  assertKoaCondition(!!member, ctx, 400, 'This member is not part of this organization.');
 
   await member.OrganizationMember.update({ role });
   ctx.body = {

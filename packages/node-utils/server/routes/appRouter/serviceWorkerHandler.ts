@@ -1,6 +1,6 @@
 import { readFile } from 'node:fs/promises';
 
-import { assertKoaError, type Options } from '@appsemble/node-utils';
+import { assertKoaCondition, type Options } from '@appsemble/node-utils';
 import { getAppBlocks } from '@appsemble/utils';
 import { type Context, type Middleware } from 'koa';
 
@@ -16,7 +16,7 @@ export function createServiceWorkerHandler({ getApp, getBlocksAssetsPaths }: Opt
 
     const app = await getApp({ context: ctx });
 
-    assertKoaError(!app, ctx, 404, 'App does not exist.');
+    assertKoaCondition(!!app, ctx, 404, 'App does not exist.');
 
     const identifiableBlocks = getAppBlocks(app.definition);
     const blocksAssetsPaths = await getBlocksAssetsPaths({ identifiableBlocks, context: ctx });

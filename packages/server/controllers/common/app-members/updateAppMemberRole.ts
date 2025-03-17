@@ -1,4 +1,4 @@
-import { assertKoaError } from '@appsemble/node-utils';
+import { assertKoaCondition } from '@appsemble/node-utils';
 import { AppPermission } from '@appsemble/types';
 import { getAppRoles } from '@appsemble/utils';
 import { type Context } from 'koa';
@@ -29,17 +29,17 @@ export async function updateAppMemberRole(ctx: Context): Promise<void> {
     ],
   });
 
-  assertKoaError(!appMember, ctx, 404, 'App member not found');
+  assertKoaCondition(!!appMember, ctx, 404, 'App member not found');
 
-  assertKoaError(
-    appMemberId === authSubject.id,
+  assertKoaCondition(
+    appMemberId !== authSubject.id,
     ctx,
     401,
     'Cannot use this endpoint to update your own role',
   );
 
-  assertKoaError(
-    !getAppRoles(appMember.App.definition.security).includes(role),
+  assertKoaCondition(
+    getAppRoles(appMember.App.definition.security).includes(role),
     ctx,
     401,
     'Role not allowed',

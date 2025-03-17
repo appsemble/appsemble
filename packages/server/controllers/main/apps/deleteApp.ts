@@ -1,5 +1,5 @@
 import {
-  assertKoaError,
+  assertKoaCondition,
   deleteCompanionContainers,
   formatServiceName,
 } from '@appsemble/node-utils';
@@ -16,7 +16,7 @@ export async function deleteApp(ctx: Context): Promise<void> {
 
   const app = await App.findByPk(appId, { attributes: ['id', 'OrganizationId', 'definition'] });
 
-  assertKoaError(!app, ctx, 404, 'App not found');
+  assertKoaCondition(!!app, ctx, 404, 'App not found');
 
   await checkUserOrganizationPermissions({
     context: ctx,

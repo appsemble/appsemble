@@ -1,4 +1,4 @@
-import { assertKoaError } from '@appsemble/node-utils';
+import { assertKoaCondition } from '@appsemble/node-utils';
 import { type Context } from 'koa';
 import { literal } from 'sequelize';
 
@@ -41,7 +41,7 @@ export async function getBlock(ctx: Context): Promise<void> {
     order: [['created', 'DESC']],
   });
 
-  assertKoaError(!blockVersion, ctx, 404, 'Block definition not found');
+  assertKoaCondition(!!blockVersion, ctx, 404, 'Block definition not found');
 
   ctx.body = blockVersionToJson(blockVersion);
 }

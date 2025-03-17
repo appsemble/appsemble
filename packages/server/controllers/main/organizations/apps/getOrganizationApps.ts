@@ -1,4 +1,4 @@
-import { assertKoaError } from '@appsemble/node-utils';
+import { assertKoaCondition } from '@appsemble/node-utils';
 import { type Context } from 'koa';
 import { col, fn, literal } from 'sequelize';
 
@@ -15,7 +15,7 @@ export async function getOrganizationApps(ctx: Context): Promise<void> {
 
   const organization = await Organization.findByPk(organizationId);
 
-  assertKoaError(!organization, ctx, 404, 'Organization not found.');
+  assertKoaCondition(!!organization, ctx, 404, 'Organization not found.');
   let organizationMember;
 
   if (authSubject) {

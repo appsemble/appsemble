@@ -1,4 +1,4 @@
-import { assertKoaError } from '@appsemble/node-utils';
+import { assertKoaCondition } from '@appsemble/node-utils';
 import { type Context } from 'koa';
 import { literal } from 'sequelize';
 
@@ -20,8 +20,8 @@ export async function getOrganizationInvite(ctx: Context): Promise<void> {
     },
   });
 
-  assertKoaError(!invite, ctx, 404, 'This token does not exist');
-  assertKoaError(!invite.organization, ctx, 404, 'Organization not found');
+  assertKoaCondition(!!invite, ctx, 404, 'This token does not exist');
+  assertKoaCondition(!!invite.organization, ctx, 404, 'Organization not found');
 
   ctx.body = {
     id: invite.organization.id,

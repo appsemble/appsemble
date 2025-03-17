@@ -11,8 +11,8 @@
 App webhooks are a mechanism that allows external parties to call app endpoints with custom
 functionality, defined in the form of Appsemble [actions](../reference/action.mdx). Webhook
 endpoints will be automatically generated based on the webhooks definition in the app definition.
-Webhooks can be called by making a `POST` request (intentionally, only `POST` requests are supported)
-to `{apiUrl}/apps/${appId}/webhooks/${webhookName}`.
+Webhooks can be called by making a `POST` request (intentionally, only `POST` requests are
+supported) to `{apiUrl}/apps/${appId}/webhooks/${webhookName}`.
 
 Webhooks can define a schema for the payload they expect to receive. The payload will be validated
 on the server. Either `multipart/form-data` or `application/json` payload can be used.

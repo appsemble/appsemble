@@ -1,5 +1,5 @@
 import {
-  assertKoaError,
+  assertKoaCondition,
   type FindOptions,
   getRemapperContext,
   getResourceDefinition,
@@ -39,7 +39,7 @@ export function createGetAppResourceByIdController(options: Options): Middleware
       findOptions,
     });
 
-    assertKoaError(!resource, ctx, 404, 'Resource not found');
+    assertKoaCondition(!!resource, ctx, 404, 'Resource not found');
 
     await checkAppPermissions({
       context: ctx,

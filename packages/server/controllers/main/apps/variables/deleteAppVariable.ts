@@ -1,4 +1,4 @@
-import { assertKoaError } from '@appsemble/node-utils';
+import { assertKoaCondition } from '@appsemble/node-utils';
 import { OrganizationPermission } from '@appsemble/types';
 import { type Context } from 'koa';
 
@@ -15,7 +15,7 @@ export async function deleteAppVariable(ctx: Context): Promise<void> {
     attributes: ['OrganizationId'],
   });
 
-  assertKoaError(!app, ctx, 404, 'App not found');
+  assertKoaCondition(!!app, ctx, 404, 'App not found');
 
   checkAppLock(ctx, app);
 
@@ -26,7 +26,7 @@ export async function deleteAppVariable(ctx: Context): Promise<void> {
   });
 
   const appVariable = await AppVariable.findByPk(appVariableId);
-  assertKoaError(!appVariable, ctx, 404, 'Cannot find the app variable to delete');
+  assertKoaCondition(!!appVariable, ctx, 404, 'Cannot find the app variable to delete');
 
   await appVariable.destroy();
 

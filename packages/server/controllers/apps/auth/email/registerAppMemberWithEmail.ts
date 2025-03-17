@@ -2,7 +2,7 @@ import { randomBytes } from 'node:crypto';
 
 import {
   AppMemberPropertiesError,
-  assertKoaError,
+  assertKoaCondition,
   logger,
   throwKoaError,
   uploadToBuffer,
@@ -46,26 +46,26 @@ export async function registerAppMemberWithEmail(ctx: Context): Promise<void> {
     ],
   });
 
-  assertKoaError(!app, ctx, 404, 'App could not be found.');
-  assertKoaError(
-    !app.enableSelfRegistration,
+  assertKoaCondition(!!app, ctx, 404, 'App could not be found.');
+  assertKoaCondition(
+    !!app.enableSelfRegistration,
     ctx,
     401,
     'Self registration is disabled for this app.',
   );
 
-  assertKoaError(!app.definition?.security, ctx, 401, 'This app has no security definition');
+  assertKoaCondition(!!app.definition?.security, ctx, 401, 'This app has no security definition');
 
-  assertKoaError(
-    !(await checkAppSecurityPolicy(app)),
+  assertKoaCondition(
+    await checkAppSecurityPolicy(app),
     ctx,
     401,
     'App member is not allowed to register due to the app’s security policy',
     { isAllowed: false },
   );
 
-  assertKoaError(
-    !app.definition?.security?.default?.role,
+  assertKoaCondition(
+    !!app.definition?.security?.default?.role,
     ctx,
     401,
     'This app has no default role',
@@ -75,8 +75,8 @@ export async function registerAppMemberWithEmail(ctx: Context): Promise<void> {
     where: { email, AppId: appId },
   });
 
-  assertKoaError(
-    Boolean(appMemberExists),
+  assertKoaCondition(
+    !appMemberExists,
     ctx,
     409,
     'App member with this email address already exists.',

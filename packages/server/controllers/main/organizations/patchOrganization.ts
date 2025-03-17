@@ -1,4 +1,4 @@
-import { assertKoaError, uploadToBuffer } from '@appsemble/node-utils';
+import { assertKoaCondition, uploadToBuffer } from '@appsemble/node-utils';
 import { OrganizationPermission } from '@appsemble/types';
 import { type Context } from 'koa';
 
@@ -21,7 +21,7 @@ export async function patchOrganization(ctx: Context): Promise<void> {
 
   const organization = await Organization.findByPk(organizationId);
 
-  assertKoaError(!organization, ctx, 404, 'Organization not found');
+  assertKoaCondition(!!organization, ctx, 404, 'Organization not found');
 
   const result: Partial<Organization> = {};
   if (name !== undefined) {

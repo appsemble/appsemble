@@ -1,4 +1,4 @@
-import { assertKoaError } from '@appsemble/node-utils';
+import { assertKoaCondition } from '@appsemble/node-utils';
 import { type Context } from 'koa';
 
 import { AppCollection, Organization, OrganizationMember } from '../../../../models/index.js';
@@ -11,7 +11,7 @@ export async function queryOrganizationAppCollections(ctx: Context): Promise<voi
 
   const organization = await Organization.findByPk(organizationId, { attributes: ['id'] });
 
-  assertKoaError(!organization, ctx, 404, 'Organization not found.');
+  assertKoaCondition(!!organization, ctx, 404, 'Organization not found.');
 
   let organizationMember;
   if (authSubject) {

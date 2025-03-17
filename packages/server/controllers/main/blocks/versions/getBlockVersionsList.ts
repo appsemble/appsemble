@@ -1,4 +1,4 @@
-import { assertKoaError } from '@appsemble/node-utils';
+import { assertKoaCondition } from '@appsemble/node-utils';
 import { type Context } from 'koa';
 
 import { BlockVersion } from '../../../../models/index.js';
@@ -14,7 +14,7 @@ export async function getBlockVersionsList(ctx: Context): Promise<void> {
     order: [['created', 'DESC']],
   });
 
-  assertKoaError(blockVersions.length === 0, ctx, 404, 'Block not found');
+  assertKoaCondition(blockVersions.length !== 0, ctx, 404, 'Block not found');
 
   ctx.body = blockVersions.map((block) => String(block.version));
 }

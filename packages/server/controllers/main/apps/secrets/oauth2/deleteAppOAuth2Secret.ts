@@ -1,4 +1,4 @@
-import { assertKoaError } from '@appsemble/node-utils';
+import { assertKoaCondition } from '@appsemble/node-utils';
 import { OrganizationPermission } from '@appsemble/types';
 import { type Context } from 'koa';
 
@@ -15,8 +15,8 @@ export async function deleteAppOAuth2Secret(ctx: Context): Promise<void> {
     include: [{ model: AppOAuth2Secret, required: false, where: { id: appOAuth2SecretId } }],
   });
 
-  assertKoaError(!app, ctx, 404, 'App not found');
-  assertKoaError(!app.AppOAuth2Secrets?.length, ctx, 404, 'OAuth2 secret not found');
+  assertKoaCondition(!!app, ctx, 404, 'App not found');
+  assertKoaCondition(!!app.AppOAuth2Secrets?.length, ctx, 404, 'OAuth2 secret not found');
 
   await checkUserOrganizationPermissions({
     context: ctx,

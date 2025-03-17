@@ -1,4 +1,4 @@
-import { assertKoaError } from '@appsemble/node-utils';
+import { assertKoaCondition } from '@appsemble/node-utils';
 import { OrganizationPermission } from '@appsemble/types';
 import { type Context } from 'koa';
 
@@ -15,7 +15,7 @@ export async function updateAppOAuth2Secret(ctx: Context): Promise<void> {
 
   const app = await App.findByPk(appId, { attributes: ['OrganizationId'] });
 
-  assertKoaError(!app, ctx, 404, 'App not found');
+  assertKoaCondition(!!app, ctx, 404, 'App not found');
 
   const appOAuth2Secret = await AppOAuth2Secret.findOne({
     where: {
@@ -30,7 +30,7 @@ export async function updateAppOAuth2Secret(ctx: Context): Promise<void> {
     requiredPermissions: [OrganizationPermission.UpdateAppSecrets],
   });
 
-  assertKoaError(!appOAuth2Secret, ctx, 404, 'OAuth2 secret not found');
+  assertKoaCondition(!!appOAuth2Secret, ctx, 404, 'OAuth2 secret not found');
 
   ctx.body = await appOAuth2Secret.update({ ...body, userInfoUrl: body.userInfoUrl || null });
 }

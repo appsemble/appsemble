@@ -1,4 +1,4 @@
-import { assertKoaError, logger } from '@appsemble/node-utils';
+import { assertKoaCondition, logger } from '@appsemble/node-utils';
 import { type Context } from 'koa';
 
 import { App, AppMember } from '../../../../models/index.js';
@@ -27,7 +27,7 @@ export async function resendAppMemberEmailVerification(ctx: Context): Promise<vo
     ],
   });
 
-  assertKoaError(!app, ctx, 404, 'App could not be found.');
+  assertKoaCondition(!!app, ctx, 404, 'App could not be found.');
 
   const appMember = await AppMember.findOne({
     where: { email },
@@ -36,10 +36,10 @@ export async function resendAppMemberEmailVerification(ctx: Context): Promise<vo
     },
   });
 
-  assertKoaError(!appMember, ctx, 404, 'App member with this email could not be found.');
+  assertKoaCondition(!!appMember, ctx, 404, 'App member with this email could not be found.');
 
-  assertKoaError(
-    appMember.emailVerified,
+  assertKoaCondition(
+    !appMember.emailVerified,
     ctx,
     400,
     'The email of this app member has already been verified.',

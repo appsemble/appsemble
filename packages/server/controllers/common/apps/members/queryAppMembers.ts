@@ -1,4 +1,4 @@
-import { assertKoaError } from '@appsemble/node-utils';
+import { assertKoaCondition } from '@appsemble/node-utils';
 import { AppPermission } from '@appsemble/types';
 import { getAppRoles } from '@appsemble/utils';
 import { type Context } from 'koa';
@@ -18,7 +18,7 @@ export async function queryAppMembers(ctx: Context): Promise<void> {
     attributes: ['OrganizationId', 'definition', 'demoMode'],
   });
 
-  assertKoaError(!app, ctx, 404, 'App not found');
+  assertKoaCondition(!!app, ctx, 404, 'App not found');
 
   await checkAuthSubjectAppPermissions({
     context: ctx,
@@ -34,7 +34,7 @@ export async function queryAppMembers(ctx: Context): Promise<void> {
   if (passedRoles.length) {
     const passedRolesAreSupported = passedRoles.every((role) => supportedAppRoles.includes(role));
 
-    assertKoaError(!passedRolesAreSupported, ctx, 400, 'Unsupported role in filter!');
+    assertKoaCondition(!!passedRolesAreSupported, ctx, 400, 'Unsupported role in filter!');
   }
 
   const appMembers = await AppMember.findAll({

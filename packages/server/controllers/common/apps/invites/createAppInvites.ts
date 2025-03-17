@@ -1,6 +1,6 @@
 import { randomBytes } from 'node:crypto';
 
-import { assertKoaError } from '@appsemble/node-utils';
+import { assertKoaCondition } from '@appsemble/node-utils';
 import { AppPermission } from '@appsemble/types';
 import { getAppRoles } from '@appsemble/utils';
 import { type Context } from 'koa';
@@ -22,12 +22,17 @@ export async function createAppInvites(ctx: Context): Promise<void> {
     attributes: ['id', 'definition', 'path', 'OrganizationId', 'domain'],
   });
 
-  assertKoaError(!app, ctx, 404, 'App not found');
+  assertKoaCondition(!!app, ctx, 404, 'App not found');
 
-  assertKoaError(!app.definition.security, ctx, 403, 'App does not have a security definition.');
+  assertKoaCondition(
+    !!app.definition.security,
+    ctx,
+    403,
+    'App does not have a security definition.',
+  );
 
-  assertKoaError(
-    !(body as AppInvite[]).every((invite) =>
+  assertKoaCondition(
+    (body as AppInvite[]).every((invite) =>
       getAppRoles(app.definition.security).find((role) => role === invite.role),
     ),
     ctx,
@@ -58,8 +63,8 @@ export async function createAppInvites(ctx: Context): Promise<void> {
     }))
     .filter((invite) => !memberEmails.has(invite.email));
 
-  assertKoaError(
-    !newInvites.length,
+  assertKoaCondition(
+    !!newInvites.length,
     ctx,
     400,
     'All invited emails are already members of this app',
@@ -69,8 +74,8 @@ export async function createAppInvites(ctx: Context): Promise<void> {
 
   const pendingInvites = newInvites.filter((invite) => !existingInvites.has(invite.email));
 
-  assertKoaError(
-    !pendingInvites.length,
+  assertKoaCondition(
+    !!pendingInvites.length,
     ctx,
     400,
     'All email addresses are already invited to this app',

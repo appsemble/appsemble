@@ -1,5 +1,5 @@
 import {
-  assertKoaError,
+  assertKoaCondition,
   type FindOptions,
   getResourceDefinition,
   type Options,
@@ -39,7 +39,7 @@ export function createUpdateAppResourceController(options: Options): Middleware 
       findOptions,
     });
 
-    assertKoaError(!oldResource, ctx, 404, 'Resource not found');
+    assertKoaCondition(!!oldResource, ctx, 404, 'Resource not found');
 
     await checkAppPermissions({
       context: ctx,

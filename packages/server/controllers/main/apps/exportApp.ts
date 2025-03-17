@@ -1,4 +1,4 @@
-import { assertKoaError, getS3File } from '@appsemble/node-utils';
+import { assertKoaCondition, getS3File } from '@appsemble/node-utils';
 import { OrganizationPermission } from '@appsemble/types';
 import JSZip from 'jszip';
 import { type Context } from 'koa';
@@ -42,7 +42,7 @@ export async function exportApp(ctx: Context): Promise<void> {
     ],
   });
 
-  assertKoaError(!app, ctx, 404, 'App not found');
+  assertKoaCondition(!!app, ctx, 404, 'App not found');
 
   if (app.visibility === 'private' || !app.showAppDefinition) {
     await checkUserOrganizationPermissions({

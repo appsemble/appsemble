@@ -1,5 +1,5 @@
 import {
-  assertKoaError,
+  assertKoaCondition,
   handleValidatorResult,
   logger,
   throwKoaError,
@@ -35,8 +35,8 @@ export async function createBlock(ctx: Context): Promise<void> {
 
   if (data.actions) {
     for (const key of Object.keys(data.actions)) {
-      assertKoaError(
-        !actionKeyRegex.test(key) && key !== '$any',
+      assertKoaCondition(
+        !!(actionKeyRegex.test(key) || key === '$any'),
         ctx,
         400,
         `Action “${key}” does match /${actionKeyRegex.source}/`,
@@ -121,8 +121,8 @@ export async function createBlock(ctx: Context): Promise<void> {
     const messageKeys = Object.keys(messages.en);
     for (const [language, record] of Object.entries(messages)) {
       const keys = Object.keys(record);
-      assertKoaError(
-        keys.length !== messageKeys.length || keys.some((key) => !messageKeys.includes(key)),
+      assertKoaCondition(
+        !(keys.length !== messageKeys.length || keys.some((key) => !messageKeys.includes(key))),
         ctx,
         400,
         `Language ‘${language}’ contains mismatched keys compared to ‘en’.`,

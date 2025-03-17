@@ -28,6 +28,12 @@ module.exports = {
   },
   overrides: [
     {
+      files: ['packages/server/**', 'packages/node-utils/server/**'],
+      rules: {
+        'no-implicit-coercion': 'off',
+      },
+    },
+    {
       files: ['packages/scripts/**'],
       rules: {
         'no-console': 'off',

@@ -1,4 +1,4 @@
-import { assertKoaError } from '@appsemble/node-utils';
+import { assertKoaCondition } from '@appsemble/node-utils';
 import { type Context } from 'koa';
 
 import { BlockMessages, BlockVersion } from '../../../../../models/index.js';
@@ -20,9 +20,9 @@ export async function getBlockVersionMessages(ctx: Context): Promise<void> {
     ],
   });
 
-  assertKoaError(!block, ctx, 404, 'Block version not found');
-  assertKoaError(
-    block.BlockMessages.length !== 1,
+  assertKoaCondition(!!block, ctx, 404, 'Block version not found');
+  assertKoaCondition(
+    block.BlockMessages.length === 1,
     ctx,
     404,
     'Block has no messages for language "en"',

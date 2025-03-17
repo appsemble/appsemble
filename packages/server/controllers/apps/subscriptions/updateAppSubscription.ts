@@ -1,4 +1,4 @@
-import { assertKoaError } from '@appsemble/node-utils';
+import { assertKoaCondition } from '@appsemble/node-utils';
 import { type Context } from 'koa';
 
 import { App, AppSubscription, ResourceSubscription } from '../../../models/index.js';
@@ -35,10 +35,10 @@ export async function updateAppSubscription(ctx: Context): Promise<void> {
     ],
   });
 
-  assertKoaError(!app, ctx, 404, 'App not found');
+  assertKoaCondition(!!app, ctx, 404, 'App not found');
 
   const [appSubscription] = app.AppSubscriptions;
-  assertKoaError(!appSubscription, ctx, 404, 'Subscription not found');
+  assertKoaCondition(!!appSubscription, ctx, 404, 'Subscription not found');
 
   if (appMember?.id && !appSubscription.AppMemberId) {
     await appSubscription.update({ AppMemberId: appMember.id });

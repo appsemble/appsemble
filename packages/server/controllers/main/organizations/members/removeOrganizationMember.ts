@@ -1,4 +1,4 @@
-import { assertKoaError } from '@appsemble/node-utils';
+import { assertKoaCondition } from '@appsemble/node-utils';
 import { OrganizationPermission } from '@appsemble/types';
 import { type Context } from 'koa';
 
@@ -13,15 +13,15 @@ export async function removeOrganizationMember(ctx: Context): Promise<void> {
 
   const organization = await Organization.findByPk(organizationId, { include: [User] });
 
-  assertKoaError(
-    !organization.Users.some((u) => u.id === user.id),
+  assertKoaCondition(
+    !!organization.Users.some((u) => u.id === user.id),
     ctx,
     404,
     'User is not a member of this organization.',
   );
 
-  assertKoaError(
-    !organization.Users.some((u) => u.id === organizationMemberId),
+  assertKoaCondition(
+    !!organization.Users.some((u) => u.id === organizationMemberId),
     ctx,
     404,
     'This member is not part of this organization.',
@@ -35,8 +35,8 @@ export async function removeOrganizationMember(ctx: Context): Promise<void> {
     });
   }
 
-  assertKoaError(
-    organizationMemberId === user.id && organization.Users.length <= 1,
+  assertKoaCondition(
+    !(organizationMemberId === user.id && organization.Users.length <= 1),
     ctx,
     406,
     'Not allowed to remove yourself from an organization if you’re the only member left.',

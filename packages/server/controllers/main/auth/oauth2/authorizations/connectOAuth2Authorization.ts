@@ -1,4 +1,4 @@
-import { assertKoaError, throwKoaError } from '@appsemble/node-utils';
+import { assertKoaCondition, throwKoaError } from '@appsemble/node-utils';
 import { type Context } from 'koa';
 import { DatabaseError } from 'sequelize';
 
@@ -23,11 +23,16 @@ export async function connectOAuth2Authorization(ctx: Context): Promise<void> {
   } = ctx;
   const preset = presets.find((p) => p.authorizationUrl === authorizationUrl);
 
-  assertKoaError(!preset, ctx, 501, 'Unknown authorization URL');
+  assertKoaCondition(!!preset, ctx, 501, 'Unknown authorization URL');
 
   const authorization = await OAuthAuthorization.findOne({ where: { code, authorizationUrl } });
 
-  assertKoaError(!authorization, ctx, 404, 'No pending OAuth2 authorization found for given state');
+  assertKoaCondition(
+    !!authorization,
+    ctx,
+    404,
+    'No pending OAuth2 authorization found for given state',
+  );
 
   // The user is already logged in to Appsemble.
   if (user) {
@@ -79,8 +84,8 @@ export async function connectOAuth2Authorization(ctx: Context): Promise<void> {
           where: { email: userInfo.email.toLowerCase() },
         });
         if (emailAuthorization) {
-          assertKoaError(
-            emailAuthorization.UserId !== user.id,
+          assertKoaCondition(
+            emailAuthorization.UserId === user.id,
             ctx,
             409,
             'This email address has already been linked to an existing account.',

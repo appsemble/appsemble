@@ -1,4 +1,4 @@
-import { assertKoaError, uploadToBuffer } from '@appsemble/node-utils';
+import { assertKoaCondition, uploadToBuffer } from '@appsemble/node-utils';
 import { OrganizationPermission } from '@appsemble/types';
 import { type Context } from 'koa';
 
@@ -15,7 +15,7 @@ export async function updateAppCollection(ctx: Context): Promise<void> {
     include: [{ model: Organization, attributes: ['name'] }],
   });
 
-  assertKoaError(!collection, ctx, 404, 'Collection not found');
+  assertKoaCondition(!!collection, ctx, 404, 'Collection not found');
 
   await checkUserOrganizationPermissions({
     context: ctx,

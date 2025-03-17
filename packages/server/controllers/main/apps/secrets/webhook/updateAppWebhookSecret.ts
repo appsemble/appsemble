@@ -1,4 +1,4 @@
-import { assertKoaError } from '@appsemble/node-utils';
+import { assertKoaCondition } from '@appsemble/node-utils';
 import { OrganizationPermission } from '@appsemble/types';
 import { type Context } from 'koa';
 
@@ -16,7 +16,7 @@ export async function updateAppWebhookSecret(ctx: Context): Promise<void> {
     attributes: ['OrganizationId', 'path'],
   });
 
-  assertKoaError(!app, ctx, 404, 'App not found');
+  assertKoaCondition(!!app, ctx, 404, 'App not found');
 
   checkAppLock(ctx, app);
 
@@ -26,10 +26,10 @@ export async function updateAppWebhookSecret(ctx: Context): Promise<void> {
     requiredPermissions: [OrganizationPermission.UpdateAppSecrets],
   });
 
-  assertKoaError(body.secret, ctx, 401, 'Cannot update the secret directly');
+  assertKoaCondition(!body.secret, ctx, 401, 'Cannot update the secret directly');
 
   const appWebhookSecret = await AppWebhookSecret.findByPk(webhookSecretId);
-  assertKoaError(!appWebhookSecret, ctx, 404, 'Cannot find the app webhook secret to update');
+  assertKoaCondition(!!appWebhookSecret, ctx, 404, 'Cannot find the app webhook secret to update');
 
   await appWebhookSecret.update({
     ...body,

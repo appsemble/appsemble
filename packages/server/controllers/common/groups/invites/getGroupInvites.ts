@@ -1,4 +1,4 @@
-import { assertKoaError } from '@appsemble/node-utils';
+import { assertKoaCondition } from '@appsemble/node-utils';
 import { OrganizationPermission } from '@appsemble/types';
 import { type Context } from 'koa';
 
@@ -20,7 +20,7 @@ export async function getGroupInvites(ctx: Context): Promise<void> {
     ],
   });
 
-  assertKoaError(!group, ctx, 404, 'Group not found.');
+  assertKoaCondition(!!group, ctx, 404, 'Group not found.');
 
   await checkUserOrganizationPermissions({
     context: ctx,

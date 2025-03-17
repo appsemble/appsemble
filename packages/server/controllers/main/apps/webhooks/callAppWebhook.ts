@@ -1,4 +1,4 @@
-import { assertKoaError, handleValidatorResult } from '@appsemble/node-utils';
+import { assertKoaCondition, handleValidatorResult } from '@appsemble/node-utils';
 import { type Context } from 'koa';
 import { type OpenAPIV3 } from 'openapi-types';
 
@@ -19,11 +19,11 @@ export async function callAppWebhook(ctx: Context): Promise<void> {
     attributes: ['id', 'definition'],
   });
 
-  assertKoaError(!app, ctx, 404, 'App not found');
+  assertKoaCondition(!!app, ctx, 404, 'App not found');
 
   const webhookDefinition = app.definition.webhooks[webhookName];
 
-  assertKoaError(!webhookDefinition, ctx, 404, 'Webhook not found');
+  assertKoaCondition(!!webhookDefinition, ctx, 404, 'Webhook not found');
 
   const parsedSchema = structuredClone(webhookDefinition.schema);
   for (const [propertyName, propertySchema] of Object.entries(parsedSchema.properties)) {

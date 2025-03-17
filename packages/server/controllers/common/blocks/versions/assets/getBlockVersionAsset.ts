@@ -1,4 +1,4 @@
-import { assertKoaError } from '@appsemble/node-utils';
+import { assertKoaCondition } from '@appsemble/node-utils';
 import { type Context } from 'koa';
 
 import { BlockAsset, BlockVersion } from '../../../../../models/index.js';
@@ -17,9 +17,9 @@ export async function getBlockVersionAsset(ctx: Context): Promise<void> {
     ],
   });
 
-  assertKoaError(!block, ctx, 404, 'Block version not found');
-  assertKoaError(
-    block.BlockAssets.length !== 1,
+  assertKoaCondition(!!block, ctx, 404, 'Block version not found');
+  assertKoaCondition(
+    block.BlockAssets.length === 1,
     ctx,
     404,
     `Block has no asset named "${filename}"`,

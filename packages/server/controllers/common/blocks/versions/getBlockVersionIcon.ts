@@ -1,4 +1,4 @@
-import { assertKoaError, serveIcon } from '@appsemble/node-utils';
+import { assertKoaCondition, serveIcon } from '@appsemble/node-utils';
 import { isEqual, parseISO } from 'date-fns';
 import { type Context } from 'koa';
 
@@ -16,7 +16,7 @@ export async function getBlockVersionIcon(ctx: Context): Promise<void> {
     include: [{ model: Organization, attributes: ['icon', 'updated'] }],
   });
 
-  assertKoaError(!version, ctx, 404, 'Block version not found');
+  assertKoaCondition(!!version, ctx, 404, 'Block version not found');
 
   const cache = version.icon
     ? true

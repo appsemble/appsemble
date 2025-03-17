@@ -1,4 +1,4 @@
-import { assertKoaError, throwKoaError } from '@appsemble/node-utils';
+import { assertKoaCondition, throwKoaError } from '@appsemble/node-utils';
 import { type Context } from 'koa';
 
 import {
@@ -31,8 +31,8 @@ export async function verifyAppOAuth2SecretCode(ctx: Context): Promise<void> {
     throwKoaError(ctx, 400, 'The referer header is invalid');
   }
 
-  assertKoaError(
-    referer.origin !== new URL(argv.host).origin,
+  assertKoaCondition(
+    referer.origin === new URL(argv.host).origin,
     ctx,
     400,
     'The referer header is invalid',
@@ -50,8 +50,8 @@ export async function verifyAppOAuth2SecretCode(ctx: Context): Promise<void> {
     ],
   });
 
-  assertKoaError(!app, ctx, 404, 'App not found');
-  assertKoaError(!app.AppOAuth2Secrets?.length, ctx, 404, 'OAuth2 secret not found');
+  assertKoaCondition(!!app, ctx, 404, 'App not found');
+  assertKoaCondition(!!app.AppOAuth2Secrets?.length, ctx, 404, 'OAuth2 secret not found');
 
   const [secret] = app.AppOAuth2Secrets;
   const {

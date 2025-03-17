@@ -1,6 +1,6 @@
 import { randomBytes } from 'node:crypto';
 
-import { assertKoaError } from '@appsemble/node-utils';
+import { assertKoaCondition } from '@appsemble/node-utils';
 import { type Context } from 'koa';
 
 import { EmailAuthorization, User } from '../../../../../models/index.js';
@@ -14,7 +14,7 @@ export async function addCurrentUserEmail(ctx: Context): Promise<void> {
     where: { email },
   });
 
-  assertKoaError(Boolean(dbEmail), ctx, 409, 'This email has already been registered.');
+  assertKoaCondition(!dbEmail, ctx, 409, 'This email has already been registered.');
 
   const user = await User.findByPk(authSubject.id, {
     include: [

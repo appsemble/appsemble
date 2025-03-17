@@ -1,4 +1,4 @@
-import { assertKoaError } from '@appsemble/node-utils';
+import { assertKoaCondition } from '@appsemble/node-utils';
 import { hash } from 'bcrypt';
 import { type Context } from 'koa';
 
@@ -14,14 +14,14 @@ export async function resetAppMemberPassword(ctx: Context): Promise<void> {
 
   const app = await App.findByPk(appId, { attributes: ['id'] });
 
-  assertKoaError(!app, ctx, 404, 'App could not be found.');
+  assertKoaCondition(!!app, ctx, 404, 'App could not be found.');
 
   const appMember = await AppMember.findOne({
     where: { AppId: appId, resetKey: token },
     attributes: ['id'],
   });
 
-  assertKoaError(!appMember, ctx, 404, `Unknown password reset token: ${token}`);
+  assertKoaCondition(!!appMember, ctx, 404, `Unknown password reset token: ${token}`);
 
   const password = await hash(ctx.request.body.password, 10);
 

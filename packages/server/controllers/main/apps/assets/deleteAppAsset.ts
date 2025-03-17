@@ -1,4 +1,4 @@
-import { assertKoaError, deleteS3File } from '@appsemble/node-utils';
+import { assertKoaCondition, deleteS3File } from '@appsemble/node-utils';
 import { OrganizationPermission } from '@appsemble/types';
 import { type Context } from 'koa';
 
@@ -14,7 +14,7 @@ export async function deleteAppAsset(ctx: Context): Promise<void> {
     attributes: ['OrganizationId'],
   });
 
-  assertKoaError(!app, ctx, 404, 'App not found');
+  assertKoaCondition(!!app, ctx, 404, 'App not found');
 
   await checkUserOrganizationPermissions({
     context: ctx,
@@ -34,7 +34,7 @@ export async function deleteAppAsset(ctx: Context): Promise<void> {
     },
   });
 
-  assertKoaError(!asset, ctx, 404, 'Asset not found');
+  assertKoaCondition(!!asset, ctx, 404, 'Asset not found');
 
   await asset.destroy();
 

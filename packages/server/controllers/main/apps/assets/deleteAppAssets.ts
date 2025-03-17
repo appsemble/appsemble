@@ -1,4 +1,4 @@
-import { assertKoaError, deleteS3Files } from '@appsemble/node-utils';
+import { assertKoaCondition, deleteS3Files } from '@appsemble/node-utils';
 import { OrganizationPermission } from '@appsemble/types';
 import { type Context } from 'koa';
 import { type FindOptions, Op } from 'sequelize';
@@ -17,7 +17,7 @@ export async function deleteAppAssets(ctx: Context): Promise<void> {
     attributes: ['OrganizationId', 'demoMode'],
   });
 
-  assertKoaError(!app, ctx, 404, 'App not found');
+  assertKoaCondition(!!app, ctx, 404, 'App not found');
 
   const isSeed = !(ctx.client && 'app' in ctx.client) && seed === 'true';
 
@@ -48,7 +48,7 @@ export async function deleteAppAssets(ctx: Context): Promise<void> {
 
   const assets = await Asset.findAll(query);
 
-  assertKoaError(!isSeed && assets.length === 0, ctx, 404, 'No assets found');
+  assertKoaCondition(!!(isSeed || assets.length !== 0), ctx, 404, 'No assets found');
 
   await deleteS3Files(
     `app-${appId}`,

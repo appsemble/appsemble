@@ -1,4 +1,4 @@
-import { assertKoaError } from '@appsemble/node-utils';
+import { assertKoaCondition } from '@appsemble/node-utils';
 import { OrganizationPermission } from '@appsemble/types';
 import { type Context } from 'koa';
 
@@ -16,7 +16,7 @@ export async function deleteBlockVersion(ctx: Context): Promise<void> {
     where: { name: blockId, OrganizationId: organizationId, version: blockVersion },
   });
 
-  assertKoaError(!version, ctx, 404, 'Block version not found');
+  assertKoaCondition(!!version, ctx, 404, 'Block version not found');
 
   await checkUserOrganizationPermissions({
     context: ctx,
@@ -25,7 +25,7 @@ export async function deleteBlockVersion(ctx: Context): Promise<void> {
   });
   const usedBlocks = await findBlockInApps(blockId, blockVersion, organizationId);
 
-  assertKoaError(usedBlocks, ctx, 403, 'Cannot delete blocks that are used by apps.');
+  assertKoaCondition(!usedBlocks, ctx, 403, 'Cannot delete blocks that are used by apps.');
 
   await BlockAsset.destroy({
     where: { BlockVersionId: version.id },

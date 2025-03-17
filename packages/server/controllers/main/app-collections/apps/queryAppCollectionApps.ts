@@ -1,4 +1,4 @@
-import { assertKoaError } from '@appsemble/node-utils';
+import { assertKoaCondition } from '@appsemble/node-utils';
 import { type Context } from 'koa';
 import { col, fn, literal, Op } from 'sequelize';
 
@@ -24,7 +24,7 @@ export async function queryAppCollectionApps(ctx: Context): Promise<void> {
     attributes: ['id', 'OrganizationId', 'visibility'],
   });
 
-  assertKoaError(!collection, ctx, 404, 'App collection not found');
+  assertKoaCondition(!!collection, ctx, 404, 'App collection not found');
 
   const organizationMember = await OrganizationMember.findOne({
     where: {
@@ -34,8 +34,8 @@ export async function queryAppCollectionApps(ctx: Context): Promise<void> {
     attributes: ['OrganizationId'],
   });
 
-  assertKoaError(
-    collection.visibility === 'private' && !organizationMember,
+  assertKoaCondition(
+    !(collection.visibility === 'private' && !organizationMember),
     ctx,
     403,
     'You are not allowed to see this app collection',
@@ -89,7 +89,7 @@ export async function queryAppCollectionApps(ctx: Context): Promise<void> {
     })
   )?.Apps;
 
-  assertKoaError(!apps, ctx, 404, 'App collection apps not found');
+  assertKoaCondition(!!apps, ctx, 404, 'App collection apps not found');
 
   const ratingsMap = new Map(
     (

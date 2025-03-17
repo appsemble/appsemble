@@ -1,4 +1,4 @@
-import { assertKoaError, serveIcon } from '@appsemble/node-utils';
+import { assertKoaCondition, serveIcon } from '@appsemble/node-utils';
 import { isEqual, parseISO } from 'date-fns';
 import { type Context } from 'koa';
 
@@ -16,7 +16,7 @@ export async function getOrganizationIcon(ctx: Context): Promise<void> {
     raw: true,
   });
 
-  assertKoaError(!organization, ctx, 404, 'Organization not found.');
+  assertKoaCondition(!!organization, ctx, 404, 'Organization not found.');
 
   await serveIcon(ctx, {
     background: background as string,

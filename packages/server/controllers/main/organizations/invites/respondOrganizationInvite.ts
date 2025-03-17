@@ -1,4 +1,4 @@
-import { assertKoaError } from '@appsemble/node-utils';
+import { assertKoaCondition } from '@appsemble/node-utils';
 import { type Context } from 'koa';
 
 import { OrganizationInvite, OrganizationMember } from '../../../../models/index.js';
@@ -16,7 +16,7 @@ export async function respondOrganizationInvite(ctx: Context): Promise<void> {
     where: { key: token },
   });
 
-  assertKoaError(!invite, ctx, 404, 'This token is invalid');
+  assertKoaCondition(!!invite, ctx, 404, 'This token is invalid');
 
   if (response) {
     await OrganizationMember.create({
