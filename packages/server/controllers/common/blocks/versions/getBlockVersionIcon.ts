@@ -16,7 +16,7 @@ export async function getBlockVersionIcon(ctx: Context): Promise<void> {
     include: [{ model: Organization, attributes: ['icon', 'updated'] }],
   });
 
-  assertKoaCondition(!!version, ctx, 404, 'Block version not found');
+  assertKoaCondition(version != null, ctx, 404, 'Block version not found');
 
   const cache = version.icon
     ? true

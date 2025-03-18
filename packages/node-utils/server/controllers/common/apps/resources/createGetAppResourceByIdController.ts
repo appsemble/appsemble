@@ -39,7 +39,7 @@ export function createGetAppResourceByIdController(options: Options): Middleware
       findOptions,
     });
 
-    assertKoaCondition(!!resource, ctx, 404, 'Resource not found');
+    assertKoaCondition(resource != null, ctx, 404, 'Resource not found');
 
     await checkAppPermissions({
       context: ctx,

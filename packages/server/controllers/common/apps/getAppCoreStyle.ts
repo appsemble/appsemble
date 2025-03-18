@@ -10,7 +10,7 @@ export async function getAppCoreStyle(ctx: Context): Promise<void> {
 
   const app = await App.findByPk(appId, { attributes: ['coreStyle'], raw: true });
 
-  assertKoaCondition(!!app, ctx, 404, 'App not found');
+  assertKoaCondition(app != null, ctx, 404, 'App not found');
 
   ctx.body = app.coreStyle || '';
   ctx.type = 'css';

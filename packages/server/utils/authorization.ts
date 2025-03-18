@@ -99,14 +99,14 @@ export async function checkUnauthenticatedAppPermissions({
 }: CheckAppPermissionsParams): Promise<void> {
   const app = await App.findByPk(appId, { attributes: ['definition'] });
 
-  assertKoaCondition(!!app, context, 404, 'App not found');
+  assertKoaCondition(app != null, context, 404, 'App not found');
 
   if (!app.definition.security) {
     return;
   }
 
   assertKoaCondition(
-    !!checkGuestAppPermissions(app.definition.security, requiredPermissions),
+    checkGuestAppPermissions(app.definition.security, requiredPermissions),
     context,
     403,
     'Guest does not have sufficient app permissions.',
@@ -123,7 +123,7 @@ export async function checkAppMemberAppPermissions({
 
   const app = await App.findByPk(appId, { attributes: ['definition'] });
 
-  assertKoaCondition(!!app, context, 404, 'App not found');
+  assertKoaCondition(app != null, context, 404, 'App not found');
 
   if (!app.definition.security) {
     return;
@@ -131,12 +131,12 @@ export async function checkAppMemberAppPermissions({
 
   const appMember = await AppMember.findByPk(authSubject.id, { attributes: ['id'] });
 
-  assertKoaCondition(!!appMember, context, 403, 'App member not found');
+  assertKoaCondition(appMember != null, context, 403, 'App member not found');
 
   const appMemberAppRole = await getAppMemberAppRole(appMember.id, appId, groupId);
 
   assertKoaCondition(
-    !!checkAppRoleAppPermissions(app.definition.security, appMemberAppRole, requiredPermissions),
+    checkAppRoleAppPermissions(app.definition.security, appMemberAppRole, requiredPermissions),
     context,
     403,
     'App member does not have sufficient app permissions.',
@@ -153,7 +153,7 @@ export async function checkUserAppPermissions({
 
   const app = await App.findByPk(appId, { attributes: ['definition', 'OrganizationId'] });
 
-  assertKoaCondition(!!app, context, 404, 'App not found');
+  assertKoaCondition(app != null, context, 404, 'App not found');
 
   if (!app.definition.security) {
     return;
@@ -164,10 +164,8 @@ export async function checkUserAppPermissions({
   const userOrganizationRole = await getUserOrganizationRole(authSubject.id, app.OrganizationId);
 
   assertKoaCondition(
-    !!(
-      checkAppRoleAppPermissions(app.definition.security, userAppRole, requiredPermissions) ||
-      checkOrganizationRoleAppPermissions(userOrganizationRole, requiredPermissions)
-    ),
+    checkAppRoleAppPermissions(app.definition.security, userAppRole, requiredPermissions) ||
+      checkOrganizationRoleAppPermissions(userOrganizationRole, requiredPermissions),
     context,
     403,
     'User does not have sufficient app permissions.',
@@ -181,11 +179,11 @@ export async function checkUserOrganizationPermissions({
 }: CheckOrganizationPermissionsParams): Promise<void> {
   const { user: authSubject } = context;
 
-  assertKoaCondition(!!authSubject, context, 401);
+  assertKoaCondition(authSubject != null, context, 401);
 
   const organization = await Organization.findByPk(organizationId, { attributes: ['id'] });
 
-  assertKoaCondition(!!organization, context, 404, 'Organization not found.');
+  assertKoaCondition(organization != null, context, 404, 'Organization not found.');
 
   const organizationMember = await OrganizationMember.findOne({
     attributes: ['role'],
@@ -196,7 +194,7 @@ export async function checkUserOrganizationPermissions({
   });
 
   assertKoaCondition(
-    !!organizationMember,
+    organizationMember != null,
     context,
     403,
     'User is not a member of this organization.',
@@ -205,7 +203,7 @@ export async function checkUserOrganizationPermissions({
   const userOrganizationRole = await getUserOrganizationRole(authSubject.id, organizationId);
 
   assertKoaCondition(
-    !!checkOrganizationRoleOrganizationPermissions(userOrganizationRole, requiredPermissions),
+    checkOrganizationRoleOrganizationPermissions(userOrganizationRole, requiredPermissions),
     context,
     403,
     'User does not have sufficient organization permissions.',

@@ -20,7 +20,7 @@ export async function getGroupInvites(ctx: Context): Promise<void> {
     ],
   });
 
-  assertKoaCondition(!!group, ctx, 404, 'Group not found.');
+  assertKoaCondition(group != null, ctx, 404, 'Group not found.');
 
   await checkUserOrganizationPermissions({
     context: ctx,

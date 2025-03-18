@@ -13,8 +13,8 @@ export async function deleteAppIcon(ctx: Context): Promise<void> {
     attributes: ['id', 'icon', 'OrganizationId'],
   });
 
-  assertKoaCondition(!!app, ctx, 404, 'App not found');
-  assertKoaCondition(!!app.icon, ctx, 404, 'App has no icon');
+  assertKoaCondition(app != null, ctx, 404, 'App not found');
+  assertKoaCondition(app.icon != null, ctx, 404, 'App has no icon');
 
   await checkUserOrganizationPermissions({
     context: ctx,

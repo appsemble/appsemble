@@ -14,7 +14,7 @@ export async function updateAppSslSecret(ctx: Context): Promise<void> {
   } = ctx;
 
   const app = await App.findByPk(appId, { attributes: ['domain', 'id', 'OrganizationId'] });
-  assertKoaCondition(!!app, ctx, 404, 'App not found');
+  assertKoaCondition(app != null, ctx, 404, 'App not found');
 
   await app.update({
     sslCertificate: certificate?.trim() || null,

@@ -27,6 +27,6 @@ export async function getAppAsset({
         ...(app.demoMode ? { seed: false, ephemeral: true } : {}),
       },
     }));
-  assertKoaCondition(!!asset, ctx, 404, 'Asset not found');
+  assertKoaCondition(asset != null, ctx, 404, 'Asset not found');
   return { ...asset, stream: await getS3File(`app-${app.id}`, assetId) };
 }

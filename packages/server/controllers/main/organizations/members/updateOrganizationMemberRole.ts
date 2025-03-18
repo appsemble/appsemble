@@ -37,7 +37,7 @@ export async function updateOrganizationMemberRole(ctx: Context): Promise<void> 
 
   const member = organization.Users.find((m) => m.id === organizationMemberId);
 
-  assertKoaCondition(!!member, ctx, 400, 'This member is not part of this organization.');
+  assertKoaCondition(member != null, ctx, 400, 'This member is not part of this organization.');
 
   await member.OrganizationMember.update({ role });
   ctx.body = {

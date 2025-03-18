@@ -19,7 +19,7 @@ export async function setAppLock(ctx: Context): Promise<void> {
     include: [{ model: AppScreenshot, attributes: ['id'] }],
   });
 
-  assertKoaCondition(!!app, ctx, 404, 'App not found');
+  assertKoaCondition(app != null, ctx, 404, 'App not found');
   if (app.locked === 'fullLock' && !ctx.client) {
     throwKoaError(ctx, 403, 'This app can only be unlocked from the CLI.');
   }

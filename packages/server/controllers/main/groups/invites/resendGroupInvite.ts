@@ -15,7 +15,7 @@ export async function resendGroupInvite(ctx: Context): Promise<void> {
 
   const group = await Group.findByPk(groupId, { attributes: ['AppId', 'name'] });
 
-  assertKoaCondition(!!group, ctx, 404, 'Group not found.');
+  assertKoaCondition(group != null, ctx, 404, 'Group not found.');
 
   const app = await App.findByPk(group.AppId, {
     attributes: ['OrganizationId', 'definition', 'domain', 'path'],
@@ -35,7 +35,12 @@ export async function resendGroupInvite(ctx: Context): Promise<void> {
     },
   });
 
-  assertKoaCondition(!!existingGroupInvite, ctx, 404, 'This person was not invited previously.');
+  assertKoaCondition(
+    existingGroupInvite != null,
+    ctx,
+    404,
+    'This person was not invited previously.',
+  );
 
   try {
     const user = await User.findOne({

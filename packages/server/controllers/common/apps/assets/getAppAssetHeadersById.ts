@@ -14,7 +14,7 @@ export async function getAppAssetHeadersById(ctx: Context): Promise<void> {
     attributes: ['OrganizationId', 'demoMode'],
   });
 
-  assertKoaCondition(!!app, ctx, 404, 'App not found');
+  assertKoaCondition(app != null, ctx, 404, 'App not found');
 
   const asset = await Asset.findOne({
     where: {
@@ -25,7 +25,7 @@ export async function getAppAssetHeadersById(ctx: Context): Promise<void> {
     attributes: ['id', 'mime', 'filename', 'name'],
   });
 
-  assertKoaCondition(!!asset, ctx, 404, 'Asset not found');
+  assertKoaCondition(asset != null, ctx, 404, 'Asset not found');
 
   let { filename, mime } = asset;
 

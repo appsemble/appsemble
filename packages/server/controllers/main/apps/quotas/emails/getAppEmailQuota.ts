@@ -19,7 +19,7 @@ export async function getAppEmailQuota(ctx: Context): Promise<void> {
     attributes: ['OrganizationId'],
   });
 
-  assertKoaCondition(!!app, ctx, 404, 'App not found');
+  assertKoaCondition(app != null, ctx, 404, 'App not found');
 
   checkAppLock(ctx, app);
 

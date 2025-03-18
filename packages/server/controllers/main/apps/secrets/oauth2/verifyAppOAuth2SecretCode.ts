@@ -50,8 +50,13 @@ export async function verifyAppOAuth2SecretCode(ctx: Context): Promise<void> {
     ],
   });
 
-  assertKoaCondition(!!app, ctx, 404, 'App not found');
-  assertKoaCondition(!!app.AppOAuth2Secrets?.length, ctx, 404, 'OAuth2 secret not found');
+  assertKoaCondition(app != null, ctx, 404, 'App not found');
+  assertKoaCondition(
+    app.AppOAuth2Secrets != null && app.AppOAuth2Secrets.length > 0,
+    ctx,
+    404,
+    'OAuth2 secret not found',
+  );
 
   const [secret] = app.AppOAuth2Secrets;
   const {

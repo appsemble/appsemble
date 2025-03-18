@@ -15,7 +15,7 @@ export async function getAppSamlSecrets(ctx: Context): Promise<void> {
     include: [{ model: AppSamlSecret }],
   });
 
-  assertKoaCondition(!!app, ctx, 404, 'App not found');
+  assertKoaCondition(app != null, ctx, 404, 'App not found');
 
   await checkUserOrganizationPermissions({
     context: ctx,

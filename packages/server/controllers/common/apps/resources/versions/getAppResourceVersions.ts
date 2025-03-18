@@ -12,7 +12,7 @@ export async function getAppResourceVersions(ctx: Context): Promise<void> {
 
   const app = await App.findByPk(appId, { attributes: ['id', 'OrganizationId', 'definition'] });
 
-  assertKoaCondition(!!app, ctx, 404, 'App not found');
+  assertKoaCondition(app != null, ctx, 404, 'App not found');
 
   await checkAppPermissions({
     context: ctx,
@@ -36,9 +36,14 @@ export async function getAppResourceVersions(ctx: Context): Promise<void> {
 
   const definition = getResourceDefinition(app.definition, resourceType, ctx);
 
-  assertKoaCondition(!!definition.history, ctx, 404, `Resource “${resourceType}” has no history`);
+  assertKoaCondition(
+    definition.history != null,
+    ctx,
+    404,
+    `Resource “${resourceType}” has no history`,
+  );
 
-  assertKoaCondition(!!resource, ctx, 404, 'Resource not found');
+  assertKoaCondition(resource != null, ctx, 404, 'Resource not found');
 
   ctx.body = [
     {

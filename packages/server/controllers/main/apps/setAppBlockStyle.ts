@@ -19,7 +19,7 @@ export async function setAppBlockStyle(ctx: Context): Promise<void> {
   try {
     const app = await App.findByPk(appId, { attributes: ['locked', 'OrganizationId'] });
 
-    assertKoaCondition(!!app, ctx, 404, 'App not found');
+    assertKoaCondition(app != null, ctx, 404, 'App not found');
     checkAppLock(ctx, app);
     validateStyle(css);
 
@@ -27,7 +27,7 @@ export async function setAppBlockStyle(ctx: Context): Promise<void> {
       where: { name: blockId, OrganizationId: organizationId },
     });
 
-    assertKoaCondition(!!block, ctx, 404, 'Block not found');
+    assertKoaCondition(block != null, ctx, 404, 'Block not found');
 
     await checkUserOrganizationPermissions({
       context: ctx,

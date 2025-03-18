@@ -10,7 +10,7 @@ export async function getAppSharedStyle(ctx: Context): Promise<void> {
 
   const app = await App.findByPk(appId, { attributes: ['sharedStyle'], raw: true });
 
-  assertKoaCondition(!!app, ctx, 404, 'App not found');
+  assertKoaCondition(app != null, ctx, 404, 'App not found');
 
   ctx.body = app.sharedStyle || '';
   ctx.type = 'css';

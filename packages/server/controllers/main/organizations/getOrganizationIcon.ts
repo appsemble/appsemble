@@ -16,7 +16,7 @@ export async function getOrganizationIcon(ctx: Context): Promise<void> {
     raw: true,
   });
 
-  assertKoaCondition(!!organization, ctx, 404, 'Organization not found.');
+  assertKoaCondition(organization != null, ctx, 404, 'Organization not found.');
 
   await serveIcon(ctx, {
     background: background as string,

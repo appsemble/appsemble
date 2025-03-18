@@ -17,7 +17,7 @@ export async function getBlockVersionAsset(ctx: Context): Promise<void> {
     ],
   });
 
-  assertKoaCondition(!!block, ctx, 404, 'Block version not found');
+  assertKoaCondition(block != null, ctx, 404, 'Block version not found');
   assertKoaCondition(
     block.BlockAssets.length === 1,
     ctx,

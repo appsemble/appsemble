@@ -14,7 +14,7 @@ export async function deleteAppAsset(ctx: Context): Promise<void> {
     attributes: ['OrganizationId'],
   });
 
-  assertKoaCondition(!!app, ctx, 404, 'App not found');
+  assertKoaCondition(app != null, ctx, 404, 'App not found');
 
   await checkUserOrganizationPermissions({
     context: ctx,
@@ -34,7 +34,7 @@ export async function deleteAppAsset(ctx: Context): Promise<void> {
     },
   });
 
-  assertKoaCondition(!!asset, ctx, 404, 'Asset not found');
+  assertKoaCondition(asset != null, ctx, 404, 'Asset not found');
 
   await asset.destroy();
 

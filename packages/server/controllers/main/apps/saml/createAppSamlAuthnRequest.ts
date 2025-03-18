@@ -38,7 +38,7 @@ export async function createAppSamlAuthnRequest(ctx: Context): Promise<void> {
     ],
   });
 
-  assertKoaCondition(!!app, ctx, 404, 'App not found');
+  assertKoaCondition(app != null, ctx, 404, 'App not found');
 
   assertKoaCondition(
     await checkAppSecurityPolicy(app, authSubject?.id),
@@ -53,9 +53,9 @@ export async function createAppSamlAuthnRequest(ctx: Context): Promise<void> {
     attributes: ['id'],
   });
 
-  assertKoaCondition(!!appMember, ctx, 404, 'App member not found');
+  assertKoaCondition(appMember != null, ctx, 404, 'App member not found');
   const [secret] = app.AppSamlSecrets;
-  assertKoaCondition(!!secret, ctx, 404, 'SAML secret not found');
+  assertKoaCondition(secret != null, ctx, 404, 'SAML secret not found');
 
   const loginId = `id${randomUUID()}`;
   const doc = dom.createDocument(NS.samlp, 'samlp:AuthnRequest', null);

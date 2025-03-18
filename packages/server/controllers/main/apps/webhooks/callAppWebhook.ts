@@ -19,11 +19,11 @@ export async function callAppWebhook(ctx: Context): Promise<void> {
     attributes: ['id', 'definition'],
   });
 
-  assertKoaCondition(!!app, ctx, 404, 'App not found');
+  assertKoaCondition(app != null, ctx, 404, 'App not found');
 
   const webhookDefinition = app.definition.webhooks[webhookName];
 
-  assertKoaCondition(!!webhookDefinition, ctx, 404, 'Webhook not found');
+  assertKoaCondition(webhookDefinition != null, ctx, 404, 'Webhook not found');
 
   const parsedSchema = structuredClone(webhookDefinition.schema);
   for (const [propertyName, propertySchema] of Object.entries(parsedSchema.properties)) {

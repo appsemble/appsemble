@@ -12,7 +12,7 @@ export async function deleteGroup(ctx: Context): Promise<void> {
 
   const group = await Group.findByPk(groupId);
 
-  assertKoaCondition(!!group, ctx, 404, 'Group not found');
+  assertKoaCondition(group != null, ctx, 404, 'Group not found');
 
   await checkAuthSubjectAppPermissions({
     context: ctx,

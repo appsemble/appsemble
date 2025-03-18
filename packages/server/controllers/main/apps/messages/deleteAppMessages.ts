@@ -16,7 +16,7 @@ export async function deleteAppMessages(ctx: Context): Promise<void> {
     where: { id: appId },
   });
 
-  assertKoaCondition(!!app, ctx, 404, 'App not found');
+  assertKoaCondition(app != null, ctx, 404, 'App not found');
 
   checkAppLock(ctx, app);
 
@@ -30,5 +30,5 @@ export async function deleteAppMessages(ctx: Context): Promise<void> {
     where: { language: language.toLowerCase(), AppId: appId },
   });
 
-  assertKoaCondition(!!affectedRows, ctx, 404, `App does not have messages for “${language}”`);
+  assertKoaCondition(affectedRows > 0, ctx, 404, `App does not have messages for “${language}”`);
 }

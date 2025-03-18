@@ -17,7 +17,7 @@ export async function getAppLanguages(ctx: Context): Promise<void> {
     include: [{ model: AppMessages, required: false }],
   });
 
-  assertKoaCondition(!!app, ctx, 404, 'App not found');
+  assertKoaCondition(app != null, ctx, 404, 'App not found');
   if (includeMessages) {
     const result = [];
     for (const message of app.AppMessages) {

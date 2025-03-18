@@ -20,8 +20,8 @@ export async function getAppReadme(ctx: Context): Promise<void> {
     ],
   });
 
-  assertKoaCondition(!!app, ctx, 404, 'App not found');
-  assertKoaCondition(!!app.AppReadmes?.length, ctx, 404, 'Readme not found');
+  assertKoaCondition(app != null, ctx, 404, 'App not found');
+  assertKoaCondition(app.AppReadmes?.length > 0, ctx, 404, 'Readme not found');
 
   const [{ file }] = app.AppReadmes;
 

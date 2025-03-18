@@ -17,7 +17,7 @@ export async function deleteAppAssets(ctx: Context): Promise<void> {
     attributes: ['OrganizationId', 'demoMode'],
   });
 
-  assertKoaCondition(!!app, ctx, 404, 'App not found');
+  assertKoaCondition(app != null, ctx, 404, 'App not found');
 
   const isSeed = !(ctx.client && 'app' in ctx.client) && seed === 'true';
 
@@ -48,7 +48,7 @@ export async function deleteAppAssets(ctx: Context): Promise<void> {
 
   const assets = await Asset.findAll(query);
 
-  assertKoaCondition(!!(isSeed || assets.length !== 0), ctx, 404, 'No assets found');
+  assertKoaCondition(isSeed || assets.length !== 0, ctx, 404, 'No assets found');
 
   await deleteS3Files(
     `app-${appId}`,

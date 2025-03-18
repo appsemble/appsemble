@@ -30,7 +30,7 @@ export async function createOrganizationInvites(ctx: Context): Promise<void> {
 
   const organization = await Organization.findByPk(organizationId, { attributes: ['id'] });
 
-  assertKoaCondition(!!organization, ctx, 404, 'Organization not found');
+  assertKoaCondition(organization != null, ctx, 404, 'Organization not found');
 
   const organizationMembers = await OrganizationMember.findAll({
     where: {
@@ -66,7 +66,7 @@ export async function createOrganizationInvites(ctx: Context): Promise<void> {
     .filter((invite) => !memberEmails.has(invite.email));
 
   assertKoaCondition(
-    !!newInvites.length,
+    newInvites.length > 0,
     ctx,
     400,
     'All invited users are already part of this organization',
@@ -77,7 +77,7 @@ export async function createOrganizationInvites(ctx: Context): Promise<void> {
   const pendingInvites = newInvites.filter((invite) => !existingInvites.has(invite.email));
 
   assertKoaCondition(
-    !!pendingInvites.length,
+    pendingInvites.length > 0,
     ctx,
     400,
     'All email addresses are already invited to this organization',

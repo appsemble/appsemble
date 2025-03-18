@@ -28,7 +28,7 @@ export async function requestAppMemberPasswordReset(ctx: Context): Promise<void>
     ],
   });
 
-  assertKoaCondition(!!app, ctx, 404, 'App could not be found.');
+  assertKoaCondition(app != null, ctx, 404, 'App could not be found.');
 
   const email = request.body.email.toLowerCase();
 

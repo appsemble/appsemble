@@ -264,7 +264,7 @@ export function createProxyHandler(useBody: boolean, options: Options): Middlewa
     } = ctx;
 
     const app = await options.getApp({ context: ctx, query: { where: { id: appId } } });
-    assertKoaCondition(!!app, ctx, 404, 'App not found');
+    assertKoaCondition(app != null, ctx, 404, 'App not found');
     const appAction = get(app.definition, path) as ActionDefinition;
     const action = supportedActions.find((act) => act === appAction?.type);
 

@@ -24,7 +24,7 @@ export async function queryAppCollectionApps(ctx: Context): Promise<void> {
     attributes: ['id', 'OrganizationId', 'visibility'],
   });
 
-  assertKoaCondition(!!collection, ctx, 404, 'App collection not found');
+  assertKoaCondition(collection != null, ctx, 404, 'App collection not found');
 
   const organizationMember = await OrganizationMember.findOne({
     where: {
@@ -89,7 +89,7 @@ export async function queryAppCollectionApps(ctx: Context): Promise<void> {
     })
   )?.Apps;
 
-  assertKoaCondition(!!apps, ctx, 404, 'App collection apps not found');
+  assertKoaCondition(apps != null, ctx, 404, 'App collection apps not found');
 
   const ratingsMap = new Map(
     (

@@ -20,7 +20,7 @@ export async function createAppWebhookSecret(ctx: Context): Promise<void> {
     attributes: ['OrganizationId', 'path', 'definition'],
   });
 
-  assertKoaCondition(!!app, ctx, 404, 'App not found');
+  assertKoaCondition(app != null, ctx, 404, 'App not found');
 
   checkAppLock(ctx, app);
 
@@ -30,10 +30,10 @@ export async function createAppWebhookSecret(ctx: Context): Promise<void> {
     requiredPermissions: [OrganizationPermission.CreateAppSecrets],
   });
 
-  assertKoaCondition(!!body.webhookName, ctx, 400, 'Webhook name is required');
+  assertKoaCondition(body.webhookName != null, ctx, 400, 'Webhook name is required');
 
   assertKoaCondition(
-    !!Object.keys(app.definition.webhooks).includes(body.webhookName),
+    Object.keys(app.definition.webhooks).includes(body.webhookName),
     ctx,
     400,
     'Webhook does not exist in the app definition',

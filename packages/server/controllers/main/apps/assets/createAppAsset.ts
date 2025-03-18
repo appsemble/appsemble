@@ -27,7 +27,7 @@ export async function createAppAsset(ctx: Context): Promise<void> {
 
   const app = await App.findByPk(appId, { attributes: ['id', 'demoMode', 'OrganizationId'] });
 
-  assertKoaCondition(!!app, ctx, 404, 'App not found');
+  assertKoaCondition(app != null, ctx, 404, 'App not found');
 
   await checkUserOrganizationPermissions({
     context: ctx,

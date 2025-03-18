@@ -22,7 +22,7 @@ export async function patchAppMemberProperties(ctx: Context): Promise<void> {
     },
   });
 
-  assertKoaCondition(!!appMember, ctx, 404, 'App member not found');
+  assertKoaCondition(appMember != null, ctx, 404, 'App member not found');
 
   assertKoaCondition(
     appMemberId !== authSubject.id,

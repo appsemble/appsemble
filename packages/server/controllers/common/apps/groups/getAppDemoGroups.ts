@@ -12,7 +12,7 @@ export async function getAppDemoGroups(ctx: Context): Promise<void> {
     attributes: ['OrganizationId', 'definition', 'demoMode'],
   });
 
-  assertKoaCondition(!!app, ctx, 404, 'App not found');
+  assertKoaCondition(app != null, ctx, 404, 'App not found');
 
   assertKoaCondition(app.demoMode, ctx, 401, 'App is not in demo mode');
 

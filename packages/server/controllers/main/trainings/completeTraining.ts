@@ -10,7 +10,7 @@ export async function completeTraining(ctx: Context): Promise<void> {
   } = ctx;
 
   const training = await Training.findByPk(trainingId);
-  assertKoaCondition(!!training, ctx, 404, 'Training not found');
+  assertKoaCondition(training != null, ctx, 404, 'Training not found');
 
   const alreadyCompleted = await TrainingCompleted.findOne({
     where: { TrainingId: trainingId, UserId: user.id },

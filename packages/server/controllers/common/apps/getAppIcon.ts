@@ -21,7 +21,7 @@ export async function getAppIcon(ctx: Context): Promise<void> {
     include: [{ model: Organization, attributes: ['icon', 'updated'] }],
   });
 
-  assertKoaCondition(!!app, ctx, 404, 'App not found');
+  assertKoaCondition(app != null, ctx, 404, 'App not found');
 
   const dbUpdated =
     (maskable && app.maskableIcon) || app.icon ? app.updated : app.Organization.updated;

@@ -27,7 +27,7 @@ export async function resendAppMemberEmailVerification(ctx: Context): Promise<vo
     ],
   });
 
-  assertKoaCondition(!!app, ctx, 404, 'App could not be found.');
+  assertKoaCondition(app != null, ctx, 404, 'App could not be found.');
 
   const appMember = await AppMember.findOne({
     where: { email },
@@ -36,7 +36,7 @@ export async function resendAppMemberEmailVerification(ctx: Context): Promise<vo
     },
   });
 
-  assertKoaCondition(!!appMember, ctx, 404, 'App member with this email could not be found.');
+  assertKoaCondition(appMember != null, ctx, 404, 'App member with this email could not be found.');
 
   assertKoaCondition(
     !appMember.emailVerified,

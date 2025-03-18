@@ -45,7 +45,7 @@ export async function createOrganization(ctx: Context): Promise<void> {
   });
 
   assertKoaCondition(
-    !!(user.primaryEmail && userEmailAuthorization.verified),
+    user.primaryEmail && userEmailAuthorization.verified,
     ctx,
     403,
     'Email not verified.',

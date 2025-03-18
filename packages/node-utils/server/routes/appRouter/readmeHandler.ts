@@ -7,12 +7,12 @@ export function createReadmeHandler({ getApp, getAppReadmes }: Options): Middlew
 
     const app = await getApp({ context: ctx });
 
-    assertKoaCondition(!!app, ctx, 404, 'App not found');
+    assertKoaCondition(app != null, ctx, 404, 'App not found');
 
     const appReadmes = await getAppReadmes({ app, context: ctx });
     const appReadme = appReadmes.find((readme) => readme.id === Number.parseInt(id));
 
-    assertKoaCondition(!!appReadme, ctx, 404, 'Readme not found');
+    assertKoaCondition(appReadme != null, ctx, 404, 'Readme not found');
 
     const { file } = appReadme;
 

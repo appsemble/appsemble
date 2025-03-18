@@ -60,7 +60,7 @@ export async function importApp(ctx: Context): Promise<void> {
   try {
     const definitionFile = zip.file('app-definition.yaml');
     assertKoaCondition(
-      !!definitionFile,
+      definitionFile != null,
       ctx,
       400,
       'app-definition.yaml file not found in the zip file',
@@ -270,7 +270,7 @@ export async function importApp(ctx: Context): Promise<void> {
             const blockVersion = await BlockVersion.findOne({
               where: { name: blockName, organizationId: orgName },
             });
-            assertKoaCondition(!!blockVersion, ctx, 404, 'Block not found');
+            assertKoaCondition(blockVersion != null, ctx, 404, 'Block not found');
             const style = validateStyle(await block.async('text'));
             record.AppBlockStyles = [
               await AppBlockStyle.create(

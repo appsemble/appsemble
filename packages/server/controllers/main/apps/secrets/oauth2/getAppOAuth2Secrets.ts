@@ -13,7 +13,7 @@ export async function getAppOAuth2Secrets(ctx: Context): Promise<void> {
     include: [AppOAuth2Secret],
   });
 
-  assertKoaCondition(!!app, ctx, 404, 'App not found');
+  assertKoaCondition(app != null, ctx, 404, 'App not found');
 
   await checkUserOrganizationPermissions({
     context: ctx,

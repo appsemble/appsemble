@@ -15,7 +15,7 @@ export async function deleteAppWebhookSecret(ctx: Context): Promise<void> {
     attributes: ['OrganizationId', 'path'],
   });
 
-  assertKoaCondition(!!app, ctx, 404, 'App not found');
+  assertKoaCondition(app != null, ctx, 404, 'App not found');
 
   checkAppLock(ctx, app);
 
@@ -26,7 +26,12 @@ export async function deleteAppWebhookSecret(ctx: Context): Promise<void> {
   });
 
   const appWebhookSecret = await AppWebhookSecret.findByPk(webhookSecretId);
-  assertKoaCondition(!!appWebhookSecret, ctx, 404, 'Cannot find the app webhook secret to delete');
+  assertKoaCondition(
+    appWebhookSecret != null,
+    ctx,
+    404,
+    'Cannot find the app webhook secret to delete',
+  );
 
   await appWebhookSecret.destroy();
 

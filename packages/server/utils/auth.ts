@@ -94,7 +94,7 @@ export async function handleUniqueAppMemberEmailIndex(
     error.parent.constraint === 'UniqueAppMemberEmailIndex'
   ) {
     assertKoaCondition(
-      !!emailVerified,
+      emailVerified,
       ctx,
       403,
       `Account linking is only allowed to a verified account. Please verify your email ${email}.`,

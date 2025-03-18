@@ -17,7 +17,7 @@ export async function resendAppInvite(ctx: Context): Promise<void> {
     attributes: ['OrganizationId', 'definition', 'domain', 'path'],
   });
 
-  assertKoaCondition(!!app, ctx, 404, 'App not found.');
+  assertKoaCondition(app != null, ctx, 404, 'App not found.');
 
   await checkUserOrganizationPermissions({
     context: ctx,
@@ -34,7 +34,12 @@ export async function resendAppInvite(ctx: Context): Promise<void> {
     include: [User],
   });
 
-  assertKoaCondition(!!existingAppInvite, ctx, 404, 'This person was not invited previously.');
+  assertKoaCondition(
+    existingAppInvite != null,
+    ctx,
+    404,
+    'This person was not invited previously.',
+  );
 
   const url = new URL('/App-Invite', getAppUrl(app));
   url.searchParams.set('token', existingAppInvite.key);

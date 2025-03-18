@@ -20,7 +20,7 @@ export async function getGroupInvite(ctx: Context): Promise<void> {
     ],
   });
 
-  assertKoaCondition(!!invite, ctx, 404, `No invite found for token: ${token}`);
+  assertKoaCondition(invite != null, ctx, 404, `No invite found for token: ${token}`);
 
   ctx.body = {
     groupId: invite.GroupId,

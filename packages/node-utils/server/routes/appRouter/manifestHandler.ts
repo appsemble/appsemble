@@ -9,7 +9,7 @@ export function createManifestHandler({ getApp, getAppScreenshots }: Options): M
   return async (ctx: Context) => {
     const app = await getApp({ context: ctx });
 
-    assertKoaCondition(!!app, ctx, 404, 'Block asset not found');
+    assertKoaCondition(app != null, ctx, 404, 'Block asset not found');
 
     const { defaultPage, description, name, theme = baseTheme } = app.definition;
     const { themeColor = '#ffffff', splashColor = themeColor } = theme;

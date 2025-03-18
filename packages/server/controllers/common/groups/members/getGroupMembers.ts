@@ -15,7 +15,7 @@ export async function getGroupMembers(ctx: Context): Promise<void> {
     where: { id: groupId },
   });
 
-  assertKoaCondition(!!group, ctx, 404, 'Group not found.');
+  assertKoaCondition(group != null, ctx, 404, 'Group not found.');
 
   await checkAuthSubjectAppPermissions({
     context: ctx,

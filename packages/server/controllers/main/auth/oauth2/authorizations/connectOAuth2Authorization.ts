@@ -23,12 +23,12 @@ export async function connectOAuth2Authorization(ctx: Context): Promise<void> {
   } = ctx;
   const preset = presets.find((p) => p.authorizationUrl === authorizationUrl);
 
-  assertKoaCondition(!!preset, ctx, 501, 'Unknown authorization URL');
+  assertKoaCondition(preset != null, ctx, 501, 'Unknown authorization URL');
 
   const authorization = await OAuthAuthorization.findOne({ where: { code, authorizationUrl } });
 
   assertKoaCondition(
-    !!authorization,
+    authorization != null,
     ctx,
     404,
     'No pending OAuth2 authorization found for given state',

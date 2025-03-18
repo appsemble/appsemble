@@ -39,7 +39,7 @@ export async function getBlockVersion(ctx: Context): Promise<void> {
     ],
   });
 
-  assertKoaCondition(!!version, ctx, 404, 'Block version not found');
+  assertKoaCondition(version != null, ctx, 404, 'Block version not found');
 
   ctx.body = blockVersionToJson(version);
   ctx.set('Cache-Control', 'max-age=31536000,immutable');

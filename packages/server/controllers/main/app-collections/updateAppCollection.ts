@@ -15,7 +15,7 @@ export async function updateAppCollection(ctx: Context): Promise<void> {
     include: [{ model: Organization, attributes: ['name'] }],
   });
 
-  assertKoaCondition(!!collection, ctx, 404, 'Collection not found');
+  assertKoaCondition(collection != null, ctx, 404, 'Collection not found');
 
   await checkUserOrganizationPermissions({
     context: ctx,

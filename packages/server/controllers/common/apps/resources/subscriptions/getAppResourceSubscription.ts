@@ -40,7 +40,7 @@ export async function getAppResourceSubscription(ctx: Context): Promise<void> {
   });
   getResourceDefinition(app.definition, resourceType, ctx);
 
-  assertKoaCondition(!!app.Resources.length, ctx, 404, 'Resource not found.');
+  assertKoaCondition(app.Resources.length > 0, ctx, 404, 'Resource not found.');
 
   const subscriptions = app.AppSubscriptions?.[0]?.ResourceSubscriptions ?? [];
   const result: any = { id: resourceId, update: false, delete: false };

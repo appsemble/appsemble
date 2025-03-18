@@ -16,7 +16,7 @@ export async function addAppToAppCollection(ctx: Context): Promise<void> {
     attributes: ['id', 'OrganizationId'],
   });
 
-  assertKoaCondition(!!collection, ctx, 404, 'App collection not found');
+  assertKoaCondition(collection != null, ctx, 404, 'App collection not found');
 
   await checkUserOrganizationPermissions({
     context: ctx,
@@ -26,7 +26,7 @@ export async function addAppToAppCollection(ctx: Context): Promise<void> {
 
   const app = await App.findByPk(body.AppId, { attributes: ['id'] });
 
-  assertKoaCondition(!!app, ctx, 404, 'App not found');
+  assertKoaCondition(app != null, ctx, 404, 'App not found');
 
   try {
     await AppCollectionApp.create({

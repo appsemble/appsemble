@@ -27,16 +27,16 @@ export async function createGroupInvites(ctx: Context): Promise<void> {
   } = ctx;
 
   const group = await Group.findOne({ where: { id: groupId } });
-  assertKoaCondition(!!group, ctx, 400, `Group ${groupId} does not exist`);
+  assertKoaCondition(group != null, ctx, 400, `Group ${groupId} does not exist`);
 
   const app = await App.findByPk(group.AppId, {
     attributes: ['id', 'definition', 'path', 'OrganizationId', 'domain'],
   });
 
-  assertKoaCondition(!!app, ctx, 404, 'App not found');
+  assertKoaCondition(app != null, ctx, 404, 'App not found');
 
   assertKoaCondition(
-    !!app.definition.security,
+    app.definition.security != null,
     ctx,
     403,
     'App does not have a security definition.',
@@ -84,7 +84,7 @@ export async function createGroupInvites(ctx: Context): Promise<void> {
     .filter((invite) => !memberEmails.has(invite.email));
 
   assertKoaCondition(
-    !!newInvites.length,
+    newInvites.length > 0,
     ctx,
     400,
     'All invited emails are already members of this group',
@@ -95,7 +95,7 @@ export async function createGroupInvites(ctx: Context): Promise<void> {
   const pendingInvites = newInvites.filter((invite) => !existingInvites.has(invite.email));
 
   assertKoaCondition(
-    !!pendingInvites.length,
+    pendingInvites.length > 0,
     ctx,
     400,
     'All email addresses are already invited to this group',

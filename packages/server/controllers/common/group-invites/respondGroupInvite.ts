@@ -16,7 +16,7 @@ export async function respondGroupInvite(ctx: Context): Promise<void> {
     where: { key: token },
   });
 
-  assertKoaCondition(!!invite, ctx, 404, 'This token is invalid');
+  assertKoaCondition(invite != null, ctx, 404, 'This token is invalid');
 
   const authenticatedAppMember = await AppMember.findByPk(authSubject.id, {
     attributes: ['email'],
@@ -59,7 +59,7 @@ export async function respondGroupInvite(ctx: Context): Promise<void> {
       where: { email: invite.email },
     });
 
-    assertKoaCondition(!!appMember, ctx, 400, 'The invited email is not a member of the app');
+    assertKoaCondition(appMember != null, ctx, 400, 'The invited email is not a member of the app');
 
     await GroupMember.create({
       AppMemberId: appMember.id,

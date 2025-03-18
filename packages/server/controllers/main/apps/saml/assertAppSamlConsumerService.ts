@@ -42,10 +42,10 @@ export async function assertAppSamlConsumerService(ctx: Context): Promise<void> 
     attributes: ['definition', 'domain', 'id', 'path', 'OrganizationId', 'scimEnabled'],
   });
 
-  assertKoaCondition(!!app, ctx, 404, 'App not found');
+  assertKoaCondition(app != null, ctx, 404, 'App not found');
 
   assertKoaCondition(
-    !!(await checkAppSecurityPolicy(app, authSubject?.id)),
+    await checkAppSecurityPolicy(app, authSubject?.id),
     ctx,
     401,
     'User is not allowed to login due to the app’s security policy',
@@ -180,7 +180,7 @@ export async function assertAppSamlConsumerService(ctx: Context): Promise<void> 
       // If the app uses SCIM for user provisioning, it should be able to find a user based on
       // the "objectId" attribute in the secret.
       assertKoaCondition(
-        !!objectId,
+        objectId != null,
         ctx,
         400,
         'Could not retrieve ObjectID value from incoming secret. Is your app SAML secret configured correctly?.',

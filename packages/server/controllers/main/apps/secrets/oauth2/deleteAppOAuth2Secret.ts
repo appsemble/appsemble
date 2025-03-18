@@ -15,8 +15,13 @@ export async function deleteAppOAuth2Secret(ctx: Context): Promise<void> {
     include: [{ model: AppOAuth2Secret, required: false, where: { id: appOAuth2SecretId } }],
   });
 
-  assertKoaCondition(!!app, ctx, 404, 'App not found');
-  assertKoaCondition(!!app.AppOAuth2Secrets?.length, ctx, 404, 'OAuth2 secret not found');
+  assertKoaCondition(app != null, ctx, 404, 'App not found');
+  assertKoaCondition(
+    app.AppOAuth2Secrets != null && app.AppOAuth2Secrets.length > 0,
+    ctx,
+    404,
+    'OAuth2 secret not found',
+  );
 
   await checkUserOrganizationPermissions({
     context: ctx,

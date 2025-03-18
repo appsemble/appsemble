@@ -45,7 +45,7 @@ export async function createAppMessages(ctx: Context): Promise<void> {
     where: { id: appId },
   });
 
-  assertKoaCondition(!!app, ctx, 404, 'App not found');
+  assertKoaCondition(app != null, ctx, 404, 'App not found');
 
   checkAppLock(ctx, app);
 

@@ -88,7 +88,7 @@ export async function createAppFromTemplate(ctx: Context): Promise<void> {
     requiredPermissions: [OrganizationPermission.CreateApps],
   });
 
-  assertKoaCondition(!!template, ctx, 404, `Template with ID ${templateId} does not exist.`);
+  assertKoaCondition(template != null, ctx, 404, `Template with ID ${templateId} does not exist.`);
 
   if (!template.template && (template.visibility === 'private' || !template.showAppDefinition)) {
     // Only allow cloning of unlisted apps if the user is part of the template’s organization.

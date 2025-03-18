@@ -7,14 +7,14 @@ export function createScreenshotHandler({ getApp, getAppScreenshots }: Options):
 
     const app = await getApp({ context: ctx });
 
-    assertKoaCondition(!!app, ctx, 404, 'App not found');
+    assertKoaCondition(app != null, ctx, 404, 'App not found');
 
     const appScreenshots = await getAppScreenshots({ app, context: ctx });
     const appScreenshot = appScreenshots.find(
       (screenshot) => screenshot.id === Number.parseInt(id),
     );
 
-    assertKoaCondition(!!appScreenshot, ctx, 404, 'Screenshot not found');
+    assertKoaCondition(appScreenshot != null, ctx, 404, 'Screenshot not found');
 
     const { mime, screenshot } = appScreenshot;
 

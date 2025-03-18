@@ -14,7 +14,7 @@ export async function deleteAppCollection(ctx: Context): Promise<void> {
     attributes: ['id', 'OrganizationId'],
   });
 
-  assertKoaCondition(!!collection, ctx, 404, 'Collection not found');
+  assertKoaCondition(collection != null, ctx, 404, 'Collection not found');
 
   await checkUserOrganizationPermissions({
     context: ctx,

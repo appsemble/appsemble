@@ -11,7 +11,7 @@ export async function deleteGroupInvite(ctx: Context): Promise<void> {
   const email = request.body.email.toLowerCase();
   const invite = await GroupInvite.findOne({ where: { email } });
 
-  assertKoaCondition(!!invite, ctx, 404, 'This invite does not exist');
+  assertKoaCondition(invite != null, ctx, 404, 'This invite does not exist');
 
   const group = await Group.findByPk(invite.GroupId, { attributes: ['AppId'] });
 

@@ -8,7 +8,7 @@ export async function getAppOAuth2Secret(ctx: Context): Promise<void> {
 
   const app = await App.findByPk(appId, { attributes: ['id'] });
 
-  assertKoaCondition(!!app, ctx, 404, 'App not found');
+  assertKoaCondition(app != null, ctx, 404, 'App not found');
 
   const appOAuth2Secret = await AppOAuth2Secret.findOne({
     attributes: {
@@ -31,7 +31,7 @@ export async function getAppOAuth2Secret(ctx: Context): Promise<void> {
     },
   });
 
-  assertKoaCondition(!!appOAuth2Secret, ctx, 404, 'OAuth2 secret not found');
+  assertKoaCondition(appOAuth2Secret != null, ctx, 404, 'OAuth2 secret not found');
 
   ctx.body = appOAuth2Secret;
 }

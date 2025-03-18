@@ -11,7 +11,7 @@ export async function queryOrganizationAppCollections(ctx: Context): Promise<voi
 
   const organization = await Organization.findByPk(organizationId, { attributes: ['id'] });
 
-  assertKoaCondition(!!organization, ctx, 404, 'Organization not found.');
+  assertKoaCondition(organization != null, ctx, 404, 'Organization not found.');
 
   let organizationMember;
   if (authSubject) {

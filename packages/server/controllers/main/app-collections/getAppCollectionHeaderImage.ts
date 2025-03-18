@@ -12,7 +12,7 @@ export async function getAppCollectionHeaderImage(ctx: Context): Promise<void> {
     attributes: ['headerImage', 'headerImageMimeType'],
   });
 
-  assertKoaCondition(!!collection, ctx, 404, 'Collection not found');
+  assertKoaCondition(collection != null, ctx, 404, 'Collection not found');
 
   ctx.response.status = 200;
   ctx.response.body = collection.headerImage;

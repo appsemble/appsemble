@@ -21,7 +21,7 @@ export async function patchOrganization(ctx: Context): Promise<void> {
 
   const organization = await Organization.findByPk(organizationId);
 
-  assertKoaCondition(!!organization, ctx, 404, 'Organization not found');
+  assertKoaCondition(organization != null, ctx, 404, 'Organization not found');
 
   const result: Partial<Organization> = {};
   if (name !== undefined) {

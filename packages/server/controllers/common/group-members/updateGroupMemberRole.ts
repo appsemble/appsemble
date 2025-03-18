@@ -35,7 +35,7 @@ export async function updateGroupMemberRole(ctx: Context): Promise<void> {
     ],
   });
 
-  assertKoaCondition(!!groupMember, ctx, 404, 'Group member not found.');
+  assertKoaCondition(groupMember != null, ctx, 404, 'Group member not found.');
 
   assertKoaCondition(
     groupMember.AppMemberId !== authSubject.id,
@@ -45,7 +45,7 @@ export async function updateGroupMemberRole(ctx: Context): Promise<void> {
   );
 
   assertKoaCondition(
-    !!getAppRoles(groupMember.Group.App.definition.security).includes(role),
+    getAppRoles(groupMember.Group.App.definition.security).includes(role),
     ctx,
     401,
     'Role not allowed',

@@ -18,7 +18,7 @@ export async function updateAppServiceSecret(ctx: Context): Promise<void> {
     attributes: ['OrganizationId', 'path'],
   });
 
-  assertKoaCondition(!!app, ctx, 404, 'App not found');
+  assertKoaCondition(app != null, ctx, 404, 'App not found');
 
   checkAppLock(ctx, app);
 
@@ -29,7 +29,12 @@ export async function updateAppServiceSecret(ctx: Context): Promise<void> {
   });
 
   const appServiceSecret = await AppServiceSecret.findByPk(serviceSecretId);
-  assertKoaCondition(!!appServiceSecret, ctx, 404, 'Cannot find the app service secret to update');
+  assertKoaCondition(
+    appServiceSecret != null,
+    ctx,
+    404,
+    'Cannot find the app service secret to update',
+  );
 
   await appServiceSecret.update({
     ...body,

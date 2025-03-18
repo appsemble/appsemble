@@ -16,7 +16,7 @@ export async function getOrganization(ctx: Context): Promise<void> {
     },
   });
 
-  assertKoaCondition(!!organization, ctx, 404, 'Organization not found.');
+  assertKoaCondition(organization != null, ctx, 404, 'Organization not found.');
 
   ctx.body = {
     id: organization.id,

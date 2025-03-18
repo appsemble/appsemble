@@ -16,7 +16,7 @@ export async function respondOrganizationInvite(ctx: Context): Promise<void> {
     where: { key: token },
   });
 
-  assertKoaCondition(!!invite, ctx, 404, 'This token is invalid');
+  assertKoaCondition(invite != null, ctx, 404, 'This token is invalid');
 
   if (response) {
     await OrganizationMember.create({

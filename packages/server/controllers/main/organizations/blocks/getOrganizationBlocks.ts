@@ -17,7 +17,7 @@ export async function getOrganizationBlocks(ctx: Context): Promise<void> {
     },
   });
 
-  assertKoaCondition(!!organization, ctx, 404, 'Organization not found.');
+  assertKoaCondition(organization != null, ctx, 404, 'Organization not found.');
 
   // Sequelize does not support sub queries
   // The alternative is to query everything and filter manually

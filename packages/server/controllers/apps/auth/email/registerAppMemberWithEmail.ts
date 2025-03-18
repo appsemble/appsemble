@@ -46,15 +46,20 @@ export async function registerAppMemberWithEmail(ctx: Context): Promise<void> {
     ],
   });
 
-  assertKoaCondition(!!app, ctx, 404, 'App could not be found.');
+  assertKoaCondition(app != null, ctx, 404, 'App could not be found.');
   assertKoaCondition(
-    !!app.enableSelfRegistration,
+    app.enableSelfRegistration,
     ctx,
     401,
     'Self registration is disabled for this app.',
   );
 
-  assertKoaCondition(!!app.definition?.security, ctx, 401, 'This app has no security definition');
+  assertKoaCondition(
+    app.definition?.security != null,
+    ctx,
+    401,
+    'This app has no security definition',
+  );
 
   assertKoaCondition(
     await checkAppSecurityPolicy(app),
@@ -65,7 +70,7 @@ export async function registerAppMemberWithEmail(ctx: Context): Promise<void> {
   );
 
   assertKoaCondition(
-    !!app.definition?.security?.default?.role,
+    app.definition?.security?.default?.role != null,
     ctx,
     401,
     'This app has no default role',

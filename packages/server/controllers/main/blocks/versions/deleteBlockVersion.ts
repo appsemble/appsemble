@@ -16,7 +16,7 @@ export async function deleteBlockVersion(ctx: Context): Promise<void> {
     where: { name: blockId, OrganizationId: organizationId, version: blockVersion },
   });
 
-  assertKoaCondition(!!version, ctx, 404, 'Block version not found');
+  assertKoaCondition(version != null, ctx, 404, 'Block version not found');
 
   await checkUserOrganizationPermissions({
     context: ctx,

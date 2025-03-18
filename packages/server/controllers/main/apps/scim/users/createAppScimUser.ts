@@ -64,7 +64,7 @@ export async function createAppScimUser(ctx: Context): Promise<void> {
     .security?.default?.role;
 
   assertKoaCondition(
-    !!defaultRole,
+    defaultRole != null,
     ctx,
     400,
     'App does not have a security definition in place to handle SCIM users. See SCIM documentation for more info.',

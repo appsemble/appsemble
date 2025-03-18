@@ -11,7 +11,7 @@ export function createGetAppVariablesController({ getApp, getAppVariables }: Opt
 
     const app = await getApp({ context: ctx, query: { where: { id: appId } } });
 
-    assertKoaCondition(!!app, ctx, 404, 'App not found');
+    assertKoaCondition(app != null, ctx, 404, 'App not found');
 
     ctx.body = await getAppVariables({
       context: ctx,

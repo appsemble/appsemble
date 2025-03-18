@@ -20,7 +20,7 @@ export async function getBlockVersionMessages(ctx: Context): Promise<void> {
     ],
   });
 
-  assertKoaCondition(!!block, ctx, 404, 'Block version not found');
+  assertKoaCondition(block != null, ctx, 404, 'Block version not found');
   assertKoaCondition(
     block.BlockMessages.length === 1,
     ctx,

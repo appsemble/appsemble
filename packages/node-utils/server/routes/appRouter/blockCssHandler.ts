@@ -9,7 +9,7 @@ export function createBlockCssHandler({ getApp, getAppBlockStyles }: Options): M
 
     const app = await getApp({ context: ctx });
 
-    assertKoaCondition(!!app, ctx, 404, 'App not found');
+    assertKoaCondition(app != null, ctx, 404, 'App not found');
 
     const appBlockStyles = await getAppBlockStyles({ app, name, context: ctx });
 

@@ -11,7 +11,7 @@ export async function deleteOrganizationInvite(ctx: Context): Promise<void> {
   const email = request.body.email.toLowerCase();
   const invite = await OrganizationInvite.findOne({ where: { email } });
 
-  assertKoaCondition(!!invite, ctx, 404, 'This invite does not exist');
+  assertKoaCondition(invite != null, ctx, 404, 'This invite does not exist');
 
   await checkUserOrganizationPermissions({
     context: ctx,

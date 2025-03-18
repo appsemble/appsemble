@@ -14,14 +14,14 @@ export async function removeOrganizationMember(ctx: Context): Promise<void> {
   const organization = await Organization.findByPk(organizationId, { include: [User] });
 
   assertKoaCondition(
-    !!organization.Users.some((u) => u.id === user.id),
+    organization.Users.some((u) => u.id === user.id),
     ctx,
     404,
     'User is not a member of this organization.',
   );
 
   assertKoaCondition(
-    !!organization.Users.some((u) => u.id === organizationMemberId),
+    organization.Users.some((u) => u.id === organizationMemberId),
     ctx,
     404,
     'This member is not part of this organization.',

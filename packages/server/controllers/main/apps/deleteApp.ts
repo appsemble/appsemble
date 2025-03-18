@@ -16,7 +16,7 @@ export async function deleteApp(ctx: Context): Promise<void> {
 
   const app = await App.findByPk(appId, { attributes: ['id', 'OrganizationId', 'definition'] });
 
-  assertKoaCondition(!!app, ctx, 404, 'App not found');
+  assertKoaCondition(app != null, ctx, 404, 'App not found');
 
   await checkUserOrganizationPermissions({
     context: ctx,

@@ -22,10 +22,10 @@ export async function getAppSubscription(ctx: Context): Promise<void> {
       },
     ],
   });
-  assertKoaCondition(!!app, ctx, 404, 'App not found');
+  assertKoaCondition(app != null, ctx, 404, 'App not found');
 
   const [appSubscription] = app.AppSubscriptions;
-  assertKoaCondition(!!appSubscription, ctx, 404, 'Subscription not found');
+  assertKoaCondition(appSubscription != null, ctx, 404, 'Subscription not found');
 
   const resources: SubscriptionResponse = {};
   if (app.definition.resources) {

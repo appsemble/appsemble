@@ -11,7 +11,7 @@ export async function deleteAppInvite(ctx: Context): Promise<void> {
   const email = request.body.email.toLowerCase();
   const invite = await AppInvite.findOne({ where: { email } });
 
-  assertKoaCondition(!!invite, ctx, 404, 'This invite does not exist');
+  assertKoaCondition(invite != null, ctx, 404, 'This invite does not exist');
 
   const app = await App.findByPk(invite.AppId, { attributes: ['OrganizationId'] });
 

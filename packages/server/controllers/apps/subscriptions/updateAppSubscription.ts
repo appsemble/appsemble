@@ -35,10 +35,10 @@ export async function updateAppSubscription(ctx: Context): Promise<void> {
     ],
   });
 
-  assertKoaCondition(!!app, ctx, 404, 'App not found');
+  assertKoaCondition(app != null, ctx, 404, 'App not found');
 
   const [appSubscription] = app.AppSubscriptions;
-  assertKoaCondition(!!appSubscription, ctx, 404, 'Subscription not found');
+  assertKoaCondition(appSubscription != null, ctx, 404, 'Subscription not found');
 
   if (appMember?.id && !appSubscription.AppMemberId) {
     await appSubscription.update({ AppMemberId: appMember.id });

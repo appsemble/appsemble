@@ -100,7 +100,7 @@ export async function patchApp(ctx: Context): Promise<void> {
     ],
   });
 
-  assertKoaCondition(!!dbApp, ctx, 404, 'App not found');
+  assertKoaCondition(dbApp != null, ctx, 404, 'App not found');
 
   checkAppLock(ctx, dbApp);
 

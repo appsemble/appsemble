@@ -17,7 +17,7 @@ export async function deleteCurrentUserOAuth2ClientCredentials(ctx: Context): Pr
   });
 
   assertKoaCondition(
-    !!affectedRows,
+    affectedRows !== 0,
     ctx,
     404,
     'No client credentials found for the given client id',

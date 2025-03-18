@@ -16,7 +16,7 @@ export function createGetAppGroupsController({
 
     const app = await getApp({ context: ctx, query: { where: { id: appId } } });
 
-    assertKoaCondition(!!app, ctx, 404, 'App not found');
+    assertKoaCondition(app != null, ctx, 404, 'App not found');
 
     await checkAuthSubjectAppPermissions({
       app,

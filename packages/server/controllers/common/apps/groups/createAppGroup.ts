@@ -21,7 +21,7 @@ export async function createAppGroup(ctx: Context): Promise<void> {
 
   const app = await App.findByPk(appId, { attributes: ['demoMode', 'definition'] });
   assertKoaCondition(
-    !!app.definition.security,
+    app.definition.security != null,
     ctx,
     400,
     'App does not have a security definition',

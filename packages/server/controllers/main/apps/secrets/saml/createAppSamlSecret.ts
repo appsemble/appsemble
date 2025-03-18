@@ -21,7 +21,7 @@ export async function createAppSamlSecret(ctx: Context): Promise<void> {
     include: [{ model: AppSamlSecret }],
   });
 
-  assertKoaCondition(!!app, ctx, 404, 'App not found');
+  assertKoaCondition(app != null, ctx, 404, 'App not found');
 
   checkAppLock(ctx, app);
 

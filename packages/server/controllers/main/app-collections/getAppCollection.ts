@@ -11,7 +11,7 @@ export async function getAppCollection(ctx: Context): Promise<void> {
 
   const collection = await AppCollection.findByPk(appCollectionId);
 
-  assertKoaCondition(!!collection, ctx, 404, 'App collection not found');
+  assertKoaCondition(collection != null, ctx, 404, 'App collection not found');
 
   const organizationMember = await OrganizationMember.findOne({
     where: {

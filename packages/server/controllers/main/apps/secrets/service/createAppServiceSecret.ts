@@ -18,7 +18,7 @@ export async function createAppServiceSecret(ctx: Context): Promise<void> {
     attributes: ['OrganizationId', 'path'],
   });
 
-  assertKoaCondition(!!app, ctx, 404, 'App not found');
+  assertKoaCondition(app != null, ctx, 404, 'App not found');
 
   checkAppLock(ctx, app);
 

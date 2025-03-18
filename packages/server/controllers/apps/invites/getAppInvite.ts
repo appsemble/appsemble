@@ -12,11 +12,11 @@ export async function getAppInvite(ctx: Context): Promise<void> {
     where: { key: token },
   });
 
-  assertKoaCondition(!!invite, ctx, 404, 'This token does not exist');
+  assertKoaCondition(invite != null, ctx, 404, 'This token does not exist');
 
   const app = await App.findByPk(invite.AppId, { attributes: ['id'] });
 
-  assertKoaCondition(!!app, ctx, 404, 'App not found');
+  assertKoaCondition(app != null, ctx, 404, 'App not found');
 
   ctx.body = { email: invite.email };
 }

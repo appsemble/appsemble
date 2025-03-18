@@ -36,7 +36,7 @@ export async function createBlock(ctx: Context): Promise<void> {
   if (data.actions) {
     for (const key of Object.keys(data.actions)) {
       assertKoaCondition(
-        !!(actionKeyRegex.test(key) || key === '$any'),
+        actionKeyRegex.test(key) || key === '$any',
         ctx,
         400,
         `Action “${key}” does match /${actionKeyRegex.source}/`,

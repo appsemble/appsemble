@@ -18,7 +18,7 @@ export async function deleteAppScreenshot(ctx: Context): Promise<void> {
     ],
   });
 
-  assertKoaCondition(!!app, ctx, 404, 'App not found');
+  assertKoaCondition(app != null, ctx, 404, 'App not found');
 
   checkAppLock(ctx, app);
 
@@ -28,7 +28,12 @@ export async function deleteAppScreenshot(ctx: Context): Promise<void> {
     requiredPermissions: [OrganizationPermission.DeleteAppScreenshots],
   });
 
-  assertKoaCondition(!!app.AppScreenshots.length, ctx, 404, 'Screenshot not found');
+  assertKoaCondition(
+    app.AppScreenshots != null && app.AppScreenshots.length > 0,
+    ctx,
+    404,
+    'Screenshot not found',
+  );
 
   await app.AppScreenshots[0].destroy();
 }

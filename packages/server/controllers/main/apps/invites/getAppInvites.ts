@@ -14,7 +14,7 @@ export async function getAppInvites(ctx: Context): Promise<void> {
     attributes: ['OrganizationId'],
   });
 
-  assertKoaCondition(!!app, ctx, 404, 'App not found.');
+  assertKoaCondition(app != null, ctx, 404, 'App not found.');
 
   await checkUserOrganizationPermissions({
     context: ctx,

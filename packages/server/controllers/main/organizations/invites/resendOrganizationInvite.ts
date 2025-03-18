@@ -21,7 +21,7 @@ export async function resendOrganizationInvite(ctx: Context): Promise<void> {
 
   const organization = await Organization.findByPk(organizationId, { attributes: ['id'] });
 
-  assertKoaCondition(!!organization, ctx, 404, 'Organization not found.');
+  assertKoaCondition(organization != null, ctx, 404, 'Organization not found.');
 
   const email = request.body.email.toLowerCase();
   const existingOrganizationInvite = await OrganizationInvite.findOne({
@@ -33,7 +33,7 @@ export async function resendOrganizationInvite(ctx: Context): Promise<void> {
   });
 
   assertKoaCondition(
-    !!existingOrganizationInvite,
+    existingOrganizationInvite != null,
     ctx,
     404,
     'This person was not invited previously.',

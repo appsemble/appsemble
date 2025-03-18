@@ -20,8 +20,8 @@ export async function getOrganizationInvite(ctx: Context): Promise<void> {
     },
   });
 
-  assertKoaCondition(!!invite, ctx, 404, 'This token does not exist');
-  assertKoaCondition(!!invite.organization, ctx, 404, 'Organization not found');
+  assertKoaCondition(invite != null, ctx, 404, 'This token does not exist');
+  assertKoaCondition(invite.organization != null, ctx, 404, 'Organization not found');
 
   ctx.body = {
     id: invite.organization.id,

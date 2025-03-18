@@ -12,7 +12,7 @@ export async function countAppAssets(ctx: Context): Promise<void> {
     attributes: ['OrganizationId'],
   });
 
-  assertKoaCondition(!!app, ctx, 404, 'App not found');
+  assertKoaCondition(app != null, ctx, 404, 'App not found');
 
   ctx.body = await Asset.count({
     where: {

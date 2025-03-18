@@ -14,7 +14,7 @@ export async function getOrganizationMembers(ctx: Context): Promise<void> {
     include: [User],
   });
 
-  assertKoaCondition(!!organization, ctx, 404, 'Organization not found.');
+  assertKoaCondition(organization != null, ctx, 404, 'Organization not found.');
 
   await checkUserOrganizationPermissions({
     context: ctx,

@@ -15,7 +15,7 @@ export async function updateAppResourcePosition(ctx: Context): Promise<void> {
   } = ctx;
 
   const app = await App.findByPk(appId);
-  assertKoaCondition(!!app, ctx, 404, 'App not found');
+  assertKoaCondition(app != null, ctx, 404, 'App not found');
   if (!nextResourcePosition) {
     const count = await Resource.count({
       where: { AppId: appId, type: resourceType, Position: { [Op.gt]: prevResourcePosition } },
@@ -79,7 +79,7 @@ export async function updateAppResourcePosition(ctx: Context): Promise<void> {
     attributes: ['Position', 'id', 'created', 'updated'],
   });
 
-  assertKoaCondition(!!oldResource, ctx, 404, 'Resource not found');
+  assertKoaCondition(oldResource != null, ctx, 404, 'Resource not found');
   await checkAppPermissions({
     context: ctx,
     appId,

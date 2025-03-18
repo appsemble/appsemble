@@ -15,7 +15,7 @@ export async function deleteAppVariable(ctx: Context): Promise<void> {
     attributes: ['OrganizationId'],
   });
 
-  assertKoaCondition(!!app, ctx, 404, 'App not found');
+  assertKoaCondition(app != null, ctx, 404, 'App not found');
 
   checkAppLock(ctx, app);
 
@@ -26,7 +26,7 @@ export async function deleteAppVariable(ctx: Context): Promise<void> {
   });
 
   const appVariable = await AppVariable.findByPk(appVariableId);
-  assertKoaCondition(!!appVariable, ctx, 404, 'Cannot find the app variable to delete');
+  assertKoaCondition(appVariable != null, ctx, 404, 'Cannot find the app variable to delete');
 
   await appVariable.destroy();
 

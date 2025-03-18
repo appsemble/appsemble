@@ -36,8 +36,7 @@ export async function getMessagesUtil(
 
   const app = await getApp({ context: ctx, query: { where: { id: appId } } });
 
-  // eslint-disable-next-line no-implicit-coercion
-  assertKoaCondition(!!app, ctx, 404, 'App not found');
+  assertKoaCondition(app != null, ctx, 404, 'App not found');
 
   const blockPrefixes: [string, Prefix][] = [];
   const blockQuery: BlockQueryItem[] = [];

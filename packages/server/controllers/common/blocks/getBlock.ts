@@ -41,7 +41,7 @@ export async function getBlock(ctx: Context): Promise<void> {
     order: [['created', 'DESC']],
   });
 
-  assertKoaCondition(!!blockVersion, ctx, 404, 'Block definition not found');
+  assertKoaCondition(blockVersion != null, ctx, 404, 'Block definition not found');
 
   ctx.body = blockVersionToJson(blockVersion);
 }

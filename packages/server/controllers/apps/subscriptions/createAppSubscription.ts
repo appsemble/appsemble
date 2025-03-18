@@ -14,7 +14,7 @@ export async function createAppSubscription(ctx: Context): Promise<void> {
 
   const app = await App.findByPk(appId, { attributes: [], include: [AppSubscription] });
 
-  assertKoaCondition(!!app, ctx, 404, 'App not found');
+  assertKoaCondition(app != null, ctx, 404, 'App not found');
 
   await AppSubscription.create({
     AppId: appId,

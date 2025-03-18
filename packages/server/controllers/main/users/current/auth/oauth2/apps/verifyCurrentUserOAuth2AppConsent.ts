@@ -24,12 +24,12 @@ export async function verifyCurrentUserOAuth2AppConsent(ctx: Context): Promise<v
     },
   });
 
-  assertKoaCondition(!!app, ctx, 404, 'App not found');
+  assertKoaCondition(app != null, ctx, 404, 'App not found');
 
   const isAllowed = await checkAppSecurityPolicy(app, authSubject.id);
 
   assertKoaCondition(
-    !!isAllowed,
+    isAllowed,
     ctx,
     400,
     'User is not allowed to login due to the app’s security policy',
@@ -40,7 +40,7 @@ export async function verifyCurrentUserOAuth2AppConsent(ctx: Context): Promise<v
   );
 
   assertKoaCondition(
-    !!(appMember && appMember.consent != null),
+    appMember != null && appMember.consent != null,
     ctx,
     400,
     'User has not agreed to the requested scopes',

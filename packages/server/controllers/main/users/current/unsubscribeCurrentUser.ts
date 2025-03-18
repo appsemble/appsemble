@@ -13,14 +13,14 @@ export async function unsubscribeCurrentUser(ctx: Context): Promise<void> {
   } = ctx;
 
   assertKoaCondition(
-    authorization === `Bearer ${argv.adminApiSecret}` && !!argv.adminApiSecret,
+    authorization === `Bearer ${argv.adminApiSecret}` && argv.adminApiSecret != null,
     ctx,
     401,
     'Invalid or missing admin API secret',
   );
 
   const user = await User.findOne({ where: { primaryEmail: email } });
-  assertKoaCondition(!!user, ctx, 404, 'User does not exist');
+  assertKoaCondition(user != null, ctx, 404, 'User does not exist');
   if (!user?.subscribed) {
     ctx.status = 422;
     ctx.body = "User wasn't subscribed";

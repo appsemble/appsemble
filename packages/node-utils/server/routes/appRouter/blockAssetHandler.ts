@@ -9,7 +9,7 @@ export function createBlockAssetHandler({ getBlockAsset }: Options): Middleware 
 
     const blockAsset = await getBlockAsset({ filename, name, version, context: ctx });
 
-    assertKoaCondition(!!blockAsset, ctx, 404, 'Block asset not found');
+    assertKoaCondition(blockAsset != null, ctx, 404, 'Block asset not found');
 
     ctx.body = blockAsset.content;
     ctx.type = blockAsset.mime;

@@ -42,7 +42,7 @@ export async function exportApp(ctx: Context): Promise<void> {
     ],
   });
 
-  assertKoaCondition(!!app, ctx, 404, 'App not found');
+  assertKoaCondition(app != null, ctx, 404, 'App not found');
 
   if (app.visibility === 'private' || !app.showAppDefinition) {
     await checkUserOrganizationPermissions({

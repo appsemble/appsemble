@@ -23,7 +23,7 @@ export async function unpinAppFromAppCollection(ctx: Context): Promise<void> {
     ],
   });
 
-  assertKoaCondition(!!aca, ctx, 404, 'App not found in collection');
+  assertKoaCondition(aca != null, ctx, 404, 'App not found in collection');
 
   await checkUserOrganizationPermissions({
     context: ctx,

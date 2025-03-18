@@ -14,7 +14,7 @@ export function createDeleteAppSeedResourcesController(options: Options): Middle
 
     const app = await getApp({ context: ctx, query: { where: { id: appId } } });
 
-    assertKoaCondition(!!app, ctx, 404, 'App not found');
+    assertKoaCondition(app != null, ctx, 404, 'App not found');
 
     for (const resourceType of Object.keys(app.definition.resources ?? {})) {
       await deleteResourcesRecursively(resourceType, app, options, ctx);

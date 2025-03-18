@@ -16,7 +16,7 @@ export function createServiceWorkerHandler({ getApp, getBlocksAssetsPaths }: Opt
 
     const app = await getApp({ context: ctx });
 
-    assertKoaCondition(!!app, ctx, 404, 'App does not exist.');
+    assertKoaCondition(app != null, ctx, 404, 'App does not exist.');
 
     const identifiableBlocks = getAppBlocks(app.definition);
     const blocksAssetsPaths = await getBlocksAssetsPaths({ identifiableBlocks, context: ctx });

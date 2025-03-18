@@ -21,7 +21,7 @@ export async function deleteGroupMember(ctx: Context): Promise<void> {
     ],
   });
 
-  assertKoaCondition(!!groupMember, ctx, 404, 'Group member not found.');
+  assertKoaCondition(groupMember != null, ctx, 404, 'Group member not found.');
 
   assertKoaCondition(
     groupMember.AppMember.id !== authSubject.id,

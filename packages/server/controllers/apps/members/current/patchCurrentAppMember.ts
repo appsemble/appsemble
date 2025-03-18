@@ -22,11 +22,11 @@ export async function patchCurrentAppMember(ctx: Context): Promise<void> {
     where: { id: appId },
   });
 
-  assertKoaCondition(!!app, ctx, 404, 'App not found');
+  assertKoaCondition(app != null, ctx, 404, 'App not found');
 
   const appMember = await AppMember.findByPk(authSubject.id);
 
-  assertKoaCondition(!!appMember, ctx, 404, 'App member not found');
+  assertKoaCondition(appMember != null, ctx, 404, 'App member not found');
 
   const result: Partial<AppMember> = {};
 

@@ -21,7 +21,7 @@ export async function removeCurrentUserEmail(ctx: Context): Promise<void> {
   const dbEmail = await EmailAuthorization.findOne({ where: { email, UserId: user.id } });
 
   assertKoaCondition(
-    !!dbEmail,
+    dbEmail != null,
     ctx,
     404,
     'This email address is not associated with your account.',
