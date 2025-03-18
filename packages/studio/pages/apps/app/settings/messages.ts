@@ -232,4 +232,12 @@ export const messages = defineMessages({
     defaultMessage:
       "Whether to display the logged in app member's name in the title bar, if the name is not available email is displayed",
   },
+  displayInstallationPromptLabel: {
+    id: 'studio.rQb2kK',
+    defaultMessage: 'Prompt App Install',
+  },
+  displayInstallationPromptDescription: {
+    id: 'studio.L5Cie6',
+    defaultMessage: 'Whether to display installation prompts to the users of the app',
+  },
 });

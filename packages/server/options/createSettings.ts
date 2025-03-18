@@ -60,6 +60,7 @@ export async function createSettings({
       'controllerCode',
       'controllerImplementations',
       'displayAppMemberName',
+      'displayInstallationPrompt',
     ],
     where: { id: app.id },
     include: [
@@ -123,6 +124,7 @@ export async function createSettings({
       demoMode: persistedApp.demoMode,
       showAppsembleLogin: persistedApp.showAppsembleLogin ?? false,
       displayAppMemberName: persistedApp.displayAppMemberName ?? false,
+      displayInstallationPrompt: persistedApp.displayInstallationPrompt ?? false,
       showAppsembleOAuth2Login: persistedApp.showAppsembleOAuth2Login ?? true,
       enableSelfRegistration: persistedApp.enableSelfRegistration ?? true,
       showDemoLogin: persistedApp.demoMode ?? false,

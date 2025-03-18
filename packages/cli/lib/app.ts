@@ -1623,6 +1623,11 @@ interface PatchAppParams {
   displayAppMemberName?: boolean;
 
   /**
+   * Whether to prompt the app users to display the installation prompts
+   */
+  displayInstallationPrompt?: boolean;
+
+  /**
    * Whether the Appsemble OAuth2 login method should be shown.
    */
   showAppsembleOAuth2Login?: boolean;
@@ -1674,6 +1679,10 @@ export async function patchApp({ id, remote, ...options }: PatchAppParams): Prom
   if (options.displayAppMemberName !== undefined) {
     logger.info(`Setting displayAppMemberName to ${options.displayAppMemberName}`);
     formData.append('displayAppMemberName', String(options.displayAppMemberName));
+  }
+  if (options.displayInstallationPrompt !== undefined) {
+    logger.info(`Setting displayInstallationPrompt to ${options.displayInstallationPrompt}`);
+    formData.append('displayInstallationPrompt', String(options.displayInstallationPrompt));
   }
   if (options.showAppsembleOAuth2Login !== undefined) {
     logger.info(`Setting showAppsembleOAuth2Login to ${options.showAppsembleOAuth2Login}`);

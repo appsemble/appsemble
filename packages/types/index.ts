@@ -2289,6 +2289,11 @@ export interface App {
   displayAppMemberName: boolean;
 
   /**
+   * Whether to display the installation prompt to the app members.
+   */
+  displayInstallationPrompt: boolean;
+
+  /**
    * Whether the Appsemble OAuth2 login method should be shown.
    */
   showAppsembleOAuth2Login: boolean;

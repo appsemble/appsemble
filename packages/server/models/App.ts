@@ -142,6 +142,10 @@ export class App extends Model {
   @Column(DataType.BOOLEAN)
   displayAppMemberName: boolean;
 
+  @Default(false)
+  @Column(DataType.BOOLEAN)
+  displayInstallationPrompt: boolean;
+
   @Default(true)
   @Column(DataType.BOOLEAN)
   enableSelfRegistration: boolean;
@@ -312,6 +316,7 @@ export class App extends Model {
       enableSelfRegistration: this.enableSelfRegistration ?? true,
       enableUnsecuredServiceSecrets: this.enableUnsecuredServiceSecrets ?? false,
       displayAppMemberName: this.displayAppMemberName ?? false,
+      displayInstallationPrompt: this.displayInstallationPrompt ?? false,
       rating:
         this.RatingAverage == null
           ? undefined
