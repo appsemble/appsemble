@@ -18,6 +18,7 @@ interface PatchAppArguments extends BaseArguments {
   showAppsembleOAuth2Login?: boolean;
   showAppsembleLogin?: boolean;
   displayAppMemberName?: boolean;
+  displayInstallationPrompt?: boolean;
   enableSelfRegistration?: boolean;
 }
 
@@ -71,6 +72,10 @@ export function builder(yargs: Argv): Argv<any> {
     })
     .option('displayAppMemberName', {
       description: 'Whether to display the app member name in the title bar',
+      type: 'boolean',
+    })
+    .option('displayInstallationPrompt', {
+      description: 'Whether to prompt the app users to display the installation prompts',
       type: 'boolean',
     })
     .option('force', {

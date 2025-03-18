@@ -3,6 +3,7 @@ import { type ReactNode, useCallback, useEffect, useRef, useState } from 'react'
 import { FormattedMessage } from 'react-intl';
 
 import { messages } from './messages.js';
+import { displayInstallationPrompt } from '../../utils/settings.js';
 
 interface BeforeInstallPromptEvent extends Event {
   prompt: () => Promise<void>;
@@ -35,6 +36,7 @@ export function InstallationTracker(): ReactNode {
 
   const showInstallationPrompt =
     visitCount + 1 >= visitThreshold &&
+    displayInstallationPrompt &&
     (!lastPromptTime || currentTime - lastPromptTime > cooldownPeriod);
 
   const promptSupported = 'onbeforeinstallprompt' in window;

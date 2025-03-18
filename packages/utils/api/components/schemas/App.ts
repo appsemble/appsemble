@@ -72,6 +72,10 @@ This doesn’t affect whether or not the app can be accessed on its own domain.
       type: 'boolean',
       description: 'Whether to display app member name in the title bar.',
     },
+    displayInstallationPrompt: {
+      type: 'boolean',
+      description: 'Whether to display installtion prompt to the users of app',
+    },
     template: {
       type: 'boolean',
       description: 'Determines whether this app should be included when fetching for templates.',

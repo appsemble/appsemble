@@ -14,4 +14,5 @@ export interface FormValues {
   locked: AppLock;
   showAppDefinition: boolean;
   displayAppMemberName: boolean;
+  displayInstallationPrompt: boolean;
 }

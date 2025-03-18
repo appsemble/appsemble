@@ -8,6 +8,7 @@ export const {
   demoMode,
   development,
   displayAppMemberName,
+  displayInstallationPrompt,
   enableSelfRegistration,
   id: appId,
   languages,

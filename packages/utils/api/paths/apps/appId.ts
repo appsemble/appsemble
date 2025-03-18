@@ -118,6 +118,9 @@ export const pathItems: OpenAPIV3.PathItemObject = {
               displayAppMemberName: {
                 $ref: '#/components/schemas/App/properties/displayAppMemberName',
               },
+              displayInstallationPrompt: {
+                $ref: '#/components/schemas/App/properties/displayInstallationPrompt',
+              },
               emailName: {
                 type: 'string',
                 description: 'The name used for emails.',

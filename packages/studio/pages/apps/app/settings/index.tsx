@@ -87,6 +87,7 @@ export function SettingsPage(): ReactNode {
       locked: app.locked,
       showAppDefinition: app.showAppDefinition,
       displayAppMemberName: app.displayAppMemberName || false,
+      displayInstallationPrompt: app.displayInstallationPrompt || false,
     }),
     [app],
   );
@@ -103,6 +104,7 @@ export function SettingsPage(): ReactNode {
     form.set('iconBackground', values.iconBackground);
     form.set('showAppDefinition', String(values.showAppDefinition));
     form.set('displayAppMemberName', String(values.displayAppMemberName));
+    form.set('displayInstallationPrompt', String(values.displayInstallationPrompt));
     if (values.icon !== app.iconUrl) {
       form.set('icon', values.icon);
     }
@@ -204,6 +206,13 @@ export function SettingsPage(): ReactNode {
             help={<FormattedMessage {...messages.displayAppMemberNameDescription} />}
             label={<FormattedMessage {...messages.displayAppMemberNameLabel} />}
             name="displayAppMemberName"
+          />
+          <SimpleFormField
+            component={CheckboxField}
+            disabled={app.locked !== 'unlocked'}
+            help={<FormattedMessage {...messages.displayInstallationPromptDescription} />}
+            label={<FormattedMessage {...messages.displayInstallationPromptLabel} />}
+            name="displayInstallationPrompt"
           />
           <SimpleFormField
             addonLeft={
