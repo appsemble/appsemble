@@ -12,7 +12,7 @@ bootstrap(
   ({
     data: blockData,
     events,
-    parameters: { base, collapsible, groupBy, hideOnNoData = false, title },
+    parameters: { appendData, base, collapsible, groupBy, hideOnNoData = false, title },
     ready,
     utils,
   }) => {
@@ -122,14 +122,20 @@ bootstrap(
         const newData = base == null ? blockData : (blockData as any)[base];
 
         if (Array.isArray(newData)) {
-          setData(newData);
+          if (appendData) {
+            setData((prevData) => [...prevData, ...newData]);
+          } else {
+            setData(newData);
+          }
 
           if (!events.on.data) {
             setLoading(false);
           }
         }
       }
-    }, [base, blockData, events.on.data]);
+    }, [appendData, base, blockData, events.on.data]);
+
+    useEffect(ready, [ready]);
 
     useEffect(() => {
       if (data != null) {
@@ -150,21 +156,27 @@ bootstrap(
           setError(true);
         } else {
           if (base == null) {
-            setData(d);
+            setData((prevData) => (appendData ? [...prevData, ...d] : d));
           } else {
-            setData(d[base]);
+            setData((prevData) => (appendData ? [...prevData, ...d] : d)[base]);
           }
           setError(false);
         }
         setLoading(false);
       },
-      [base],
+      [appendData, base],
     );
 
     useEffect(() => {
       events.on.data(loadData);
-      ready();
+      return () => events.off.data(loadData);
     }, [events, loadData, ready, utils]);
+
+    useEffect(() => {
+      const callback = (): void => setData([]);
+      events.on.reset(callback);
+      return () => events.off.data(callback);
+    }, [events]);
 
     if (loading) {
       return <Loader />;

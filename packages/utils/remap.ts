@@ -733,4 +733,9 @@ const mapperImplementations: MapperImplementations = {
       param().orderby(Object.entries(values).map(([key, order]) => ({ field: key, order }))),
     ).replace('$orderby=', '');
   },
+
+  defined(value, input, context) {
+    const remapped = remap(value, input, context);
+    return remapped !== undefined && remapped != null;
+  },
 };

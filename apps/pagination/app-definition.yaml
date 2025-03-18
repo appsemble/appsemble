@@ -1,0 +1,471 @@
+name: Pagination
+description: Keep personal notes and display them nicely
+defaultPage: Notes Table
+security:
+  default:
+    role: User
+    policy: everyone
+  roles:
+    User:
+      description: A user who keeps their own notes.
+      permissions:
+        - $resource:note:own:update
+        - $resource:note:own:patch
+        - $resource:note:own:query
+        - $resource:note:own:get
+        - $resource:note:own:delete
+        - $resource:note:create
+
+resources:
+  note:
+    schema:
+      type: object
+      additionalProperties: false
+      required:
+        - title
+      properties:
+        title:
+          title: Title
+          type: string
+        body:
+          title: Body
+          type: string
+
+pages:
+  - name: Notes Table
+    icon: scroll
+    blocks:
+      - type: filter
+        version: 0.32.1-test.11
+        parameters:
+          highlight: ['title']
+          fields:
+            - name: title
+              label: { translate: title }
+              type: string
+        actions:
+          onLoad:
+            type: event
+            event: filterChanged
+            onSuccess:
+              remapBefore:
+                object.from:
+                  stateAction: updateFilter
+                  data:
+                    object.from:
+                      $filter: { prop: $filter }
+              type: event
+              event: changeState
+              onSuccess:
+                type: resource.count
+                resource: note
+                own: true
+                query:
+                  object.from:
+                    $filter: [{ prop: data }, { prop: $filter }]
+                onSuccess:
+                  type: event
+                  event: notesCount
+
+        events:
+          listen:
+            refresh: refreshNotes
+
+      - type: stateful
+        version: 0.32.1-test.11
+        parameters:
+          stateActions:
+            updateFilter:
+              object.from:
+                $skip: { prop: [state, $skip] }
+                $top: { prop: [state, $top] }
+                $filter: { prop: [data, $filter] }
+            updatePagination:
+              object.from:
+                $skip: { prop: [data, $skip] }
+                $top: { prop: [data, $top] }
+                $filter: { prop: [state, $filter] }
+        events:
+          listen:
+            onStateChange: changeState
+          emit:
+            stateChanged: stateChanged
+
+      - type: data-loader
+        version: 0.32.1-test.11
+        parameters:
+          skipInitialLoad: true
+        actions:
+          onLoad:
+            type: condition
+            if:
+              and:
+                - defined: [{ prop: state }, { prop: $filter }]
+                - defined: [{ prop: state }, { prop: $skip }]
+                - defined: [{ prop: state }, { prop: $top }]
+            then:
+              type: resource.query
+              resource: note
+              own: true
+              query:
+                - prop: state
+                - object.from:
+                    $skip: { prop: $skip }
+                    $top: { prop: $top }
+                    $filter: { prop: $filter }
+            else:
+              type: noop
+              remapAfter:
+                array.from: []
+        events:
+          listen:
+            refresh: stateChanged
+          emit:
+            data: notes
+
+      - type: table
+        version: 0.32.1-test.11
+        parameters:
+          fields:
+            - value: { prop: title }
+              label: { translate: title }
+            - button:
+                icon: trash
+                color: danger
+              alignment: right
+              onClick: onRemoveClick
+        events:
+          listen:
+            data: notes
+        actions:
+          onClick:
+            type: dialog
+            closable: true
+            blocks:
+              - type: form
+                version: 0.32.1-test.11
+                parameters:
+                  fields:
+                    - type: string
+                      name: title
+                      label: { translate: title }
+                      requirements:
+                        - required: true
+                    - type: string
+                      name: body
+                      label: { translate: body }
+                      multiline: true
+                actions:
+                  onSubmit:
+                    type: resource.update
+                    resource: note
+                    onSuccess:
+                      type: dialog.ok
+            onSuccess:
+              type: event
+              event: refreshNotes
+          onRemoveClick:
+            type: dialog
+            closable: true
+            blocks:
+              - type: detail-viewer
+                version: 0.32.1-test.11
+                parameters:
+                  fields:
+                    - label: { translate: confirmDelete }
+                      value: { prop: title }
+              - type: button-list
+                version: 0.32.1-test.11
+                parameters:
+                  buttons:
+                    - label: { translate: cancel }
+                      color: primary
+                      onClick: cancelDialog
+                    - label: { translate: configDelete }
+                      color: danger
+                      onClick: removeItem
+                actions:
+                  cancelDialog:
+                    type: dialog.ok
+                  removeItem:
+                    type: resource.delete
+                    resource: note
+                    onSuccess:
+                      type: event
+                      event: refreshNotes
+                      onSuccess:
+                        type: dialog.ok
+
+      - type: paginator
+        version: 0.32.1-test.11
+        parameters:
+          itemsPerPage: 10
+          paginationType: 'limit-offset'
+          paginatorType: 'buttons'
+        actions:
+          onLoad:
+            remapBefore:
+              object.from:
+                stateAction: updatePagination
+                data:
+                  object.from:
+                    $skip: { prop: $skip }
+                    $top: { prop: $top }
+            type: event
+            event: changeState
+        events:
+          listen:
+            reset: filterChanged
+            itemsCountChange: notesCount
+
+      - type: action-button
+        version: 0.32.1-test.11
+        parameters:
+          icon: plus
+        actions:
+          onClick:
+            type: dialog
+            blocks:
+              - type: form
+                version: 0.32.1-test.11
+                parameters:
+                  fields:
+                    - type: string
+                      name: title
+                      label: { translate: title }
+                      requirements:
+                        - required: true
+                    - type: string
+                      name: body
+                      label: { translate: body }
+                      multiline: true
+                actions:
+                  onSubmit:
+                    type: resource.create
+                    resource: note
+                    onSuccess:
+                      type: dialog.ok
+            onSuccess:
+              type: event
+              event: refreshNotes
+
+  - name: Notes List
+    icon: scroll
+    blocks:
+      - type: filter
+        version: 0.32.1-test.11
+        parameters:
+          highlight: ['title']
+          fields:
+            - name: title
+              label: { translate: title }
+              type: string
+        actions:
+          onLoad:
+            type: event
+            event: filterChanged
+            onSuccess:
+              remapBefore:
+                object.from:
+                  stateAction: updateFilter
+                  data:
+                    object.from:
+                      $filter: { prop: $filter }
+              type: event
+              event: changeState
+              onSuccess:
+                type: resource.count
+                resource: note
+                own: true
+                query:
+                  object.from:
+                    $filter: [{ prop: data }, { prop: $filter }]
+                onSuccess:
+                  type: event
+                  event: notesCount
+        events:
+          listen:
+            refresh: refreshNotes
+
+      - type: stateful
+        version: 0.32.1-test.11
+        parameters:
+          stateActions:
+            updateFilter:
+              object.from:
+                $skip: { prop: [state, $skip] }
+                $top: { prop: [state, $top] }
+                $filter: { prop: [data, $filter] }
+            updatePagination:
+              object.from:
+                $skip: { prop: [data, $skip] }
+                $top: { prop: [data, $top] }
+                $filter: { prop: [state, $filter] }
+        events:
+          listen:
+            onStateChange: changeState
+          emit:
+            stateChanged: stateChanged
+
+      - type: data-loader
+        version: 0.32.1-test.11
+        parameters:
+          skipInitialLoad: true
+        actions:
+          onLoad:
+            type: condition
+            if:
+              and:
+                - defined: [{ prop: state }, { prop: $filter }]
+                - defined: [{ prop: state }, { prop: $skip }]
+                - defined: [{ prop: state }, { prop: $top }]
+            then:
+              type: resource.query
+              resource: note
+              own: true
+              query:
+                - prop: state
+                - object.from:
+                    $skip: { prop: $skip }
+                    $top: { prop: $top }
+                    $filter: { prop: $filter }
+            else:
+              type: noop
+              remapAfter:
+                array.from: []
+        events:
+          listen:
+            refresh: stateChanged
+          emit:
+            data: notes
+
+      - type: list
+        version: 0.32.1-test.11
+        parameters:
+          appendData: true
+          fields:
+            - value: { prop: title }
+              label: { translate: title }
+          dropdown:
+            icon: ellipsis-vertical
+            options:
+              - label: Edit
+                onClick: onEdit
+              - label: Delete
+                onClick: onDelete
+        events:
+          listen:
+            data: notes
+            reset: filterChanged
+        actions:
+          onEdit:
+            type: dialog
+            closable: true
+            blocks:
+              - type: form
+                version: 0.32.1-test.11
+                parameters:
+                  fields:
+                    - type: string
+                      name: title
+                      label: { translate: title }
+                      requirements:
+                        - required: true
+                    - type: string
+                      name: body
+                      label: { translate: body }
+                      multiline: true
+                actions:
+                  onSubmit:
+                    type: resource.update
+                    resource: note
+                    onSuccess:
+                      type: dialog.ok
+            onSuccess:
+              type: event
+              event: refreshNotes
+          onDelete:
+            type: dialog
+            closable: true
+            blocks:
+              - type: detail-viewer
+                version: 0.32.1-test.11
+                parameters:
+                  fields:
+                    - label: { translate: confirmDelete }
+                      value: { prop: title }
+              - type: button-list
+                version: 0.32.1-test.11
+                parameters:
+                  buttons:
+                    - label: { translate: cancel }
+                      color: primary
+                      onClick: cancelDialog
+                    - label: { translate: configDelete }
+                      color: danger
+                      onClick: removeItem
+                actions:
+                  cancelDialog:
+                    type: dialog.ok
+                  removeItem:
+                    type: resource.delete
+                    resource: note
+                    onSuccess:
+                      type: event
+                      event: refreshNotes
+                      onSuccess:
+                        type: dialog.ok
+
+      - type: paginator
+        version: 0.32.1-test.11
+        parameters:
+          itemsPerPage: 10
+          paginationType: 'limit-offset'
+          paginatorType: 'scroll'
+        actions:
+          onLoad:
+            remapBefore:
+              object.from:
+                stateAction: updatePagination
+                data:
+                  object.from:
+                    $skip: { prop: $skip }
+                    $top: { prop: $top }
+            type: event
+            event: changeState
+        events:
+          listen:
+            reset: filterChanged
+            itemsCountChange: notesCount
+            toggleTracking: notes
+
+      - type: action-button
+        version: 0.32.1-test.11
+        parameters:
+          icon: plus
+        actions:
+          onClick:
+            type: dialog
+            blocks:
+              - type: form
+                version: 0.32.1-test.11
+                parameters:
+                  fields:
+                    - type: string
+                      name: title
+                      label: { translate: title }
+                      requirements:
+                        - required: true
+                    - type: string
+                      name: body
+                      label: { translate: body }
+                      multiline: true
+                actions:
+                  onSubmit:
+                    type: resource.create
+                    resource: note
+                    onSuccess:
+                      type: dialog.ok
+            onSuccess:
+              type: event
+              event: refreshNotes

@@ -158,4 +158,15 @@ If only one remapper or none is passed, the remapper value gets computed.
 ${schemaExample('or')}
 `,
   },
+  defined: {
+    $ref: '#/components/schemas/RemapperDefinition',
+    description: `Check if a value is defined. Returns \`true\` if defined, \`false\` if not.
+
+Considers falsy values like \`0\`, \`""\` and \`false\` as defined.
+
+The \`null\` and \`undefined\` values are considered as not defined.
+
+${schemaExample('defined')}
+`,
+  },
 };

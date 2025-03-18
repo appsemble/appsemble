@@ -799,6 +799,17 @@ export interface Remappers {
    * Construct an OData $orderby
    */
   'order.from': OrderParams;
+
+  /**
+   * Check if the value is defined
+   *
+   * @example
+   * "" -> true
+   * 0 -> true
+   * null -> false
+   * undefined -> false
+   */
+  defined: Remapper;
 }
 
 export type ObjectRemapper = RequireExactlyOne<Remappers>;
