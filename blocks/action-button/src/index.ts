@@ -14,7 +14,7 @@ bootstrap(({ actions, data, parameters: { icon, title }, utils: { fa, remap } })
     node.type = 'button';
   }
   node.classList.add('button', 'is-paddingless', 'is-primary', 'is-rounded');
-  node.title = remap(title, data) as string;
+  node.title = (remap(title, data) as string) ?? '';
   node.addEventListener(
     'click',
     (event) => {

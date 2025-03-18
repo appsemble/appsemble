@@ -31,7 +31,7 @@ bootstrap(({ actions, data, events, parameters: { buttons }, utils }) => (
           'is-inverted': inverted,
           'is-outlined': outlined,
         });
-        node.title = utils.remap(title, data) as string;
+        node.title = (utils.remap(title, data) as string) ?? '';
         if (!iconSide && icon) {
           node.append(
             <span className="icon">
