@@ -1,4 +1,4 @@
-import { assertKoaError, scimAssert } from '@appsemble/node-utils';
+import { assertKoaCondition, scimAssert } from '@appsemble/node-utils';
 import { type Context } from 'koa';
 
 import { App, AppMember, Group, GroupMember, transactional } from '../../../../../models/index.js';
@@ -63,8 +63,8 @@ export async function createAppScimUser(ctx: Context): Promise<void> {
   const defaultRole = (await App.findByPk(appId, { attributes: ['definition'] }))?.definition
     .security?.default?.role;
 
-  assertKoaError(
-    !defaultRole,
+  assertKoaCondition(
+    defaultRole != null,
     ctx,
     400,
     'App does not have a security definition in place to handle SCIM users. See SCIM documentation for more info.',

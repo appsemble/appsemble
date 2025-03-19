@@ -1,4 +1,4 @@
-import { assertKoaError } from '@appsemble/node-utils';
+import { assertKoaCondition } from '@appsemble/node-utils';
 import { stripPem } from '@appsemble/utils';
 import { type Context } from 'koa';
 import { toXml } from 'xast-util-to-xml';
@@ -19,7 +19,7 @@ export async function getAppSamlEntityId(ctx: Context): Promise<void> {
     where: { AppId: appId, id: appSamlSecretId },
   });
 
-  assertKoaError(!secret, ctx, 404, 'SAML secret not found');
+  assertKoaCondition(secret != null, ctx, 404, 'SAML secret not found');
 
   ctx.body = toXml(
     <>

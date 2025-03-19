@@ -1,6 +1,6 @@
 import { randomBytes } from 'node:crypto';
 
-import { assertKoaError } from '@appsemble/node-utils';
+import { assertKoaCondition } from '@appsemble/node-utils';
 import { OrganizationPermission } from '@appsemble/types';
 import { type Context } from 'koa';
 
@@ -20,7 +20,7 @@ export async function createAppWebhookSecret(ctx: Context): Promise<void> {
     attributes: ['OrganizationId', 'path', 'definition'],
   });
 
-  assertKoaError(!app, ctx, 404, 'App not found');
+  assertKoaCondition(app != null, ctx, 404, 'App not found');
 
   checkAppLock(ctx, app);
 
@@ -30,10 +30,10 @@ export async function createAppWebhookSecret(ctx: Context): Promise<void> {
     requiredPermissions: [OrganizationPermission.CreateAppSecrets],
   });
 
-  assertKoaError(!body.webhookName, ctx, 400, 'Webhook name is required');
+  assertKoaCondition(body.webhookName != null, ctx, 400, 'Webhook name is required');
 
-  assertKoaError(
-    !Object.keys(app.definition.webhooks).includes(body.webhookName),
+  assertKoaCondition(
+    Object.keys(app.definition.webhooks).includes(body.webhookName),
     ctx,
     400,
     'Webhook does not exist in the app definition',

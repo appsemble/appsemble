@@ -1,4 +1,4 @@
-import { assertKoaError } from '@appsemble/node-utils';
+import { assertKoaCondition } from '@appsemble/node-utils';
 import { AppPermission } from '@appsemble/types';
 import { type Context } from 'koa';
 
@@ -16,9 +16,9 @@ export async function deleteAppMember(ctx: Context): Promise<void> {
     attributes: ['id', 'AppId'],
   });
 
-  assertKoaError(!appMember, ctx, 404, 'App member not found');
-  assertKoaError(
-    appMemberId === authSubject.id,
+  assertKoaCondition(appMember != null, ctx, 404, 'App member not found');
+  assertKoaCondition(
+    appMemberId !== authSubject.id,
     ctx,
     401,
     'Cannot use this endpoint to delete your own account',

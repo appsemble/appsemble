@@ -1,4 +1,4 @@
-import { assertKoaError, throwKoaError } from '@appsemble/node-utils';
+import { assertKoaCondition, throwKoaError } from '@appsemble/node-utils';
 import { type Context } from 'koa';
 
 import { App, AppMember, EmailAuthorization, User } from '../../../../../../../models/index.js';
@@ -29,10 +29,10 @@ export async function agreeCurrentUserOAuth2AppConsent(ctx: Context): Promise<vo
     },
   });
 
-  assertKoaError(!app, ctx, 404, 'App not found');
+  assertKoaCondition(app != null, ctx, 404, 'App not found');
 
-  assertKoaError(
-    !(await checkAppSecurityPolicy(app, authSubject.id)),
+  assertKoaCondition(
+    await checkAppSecurityPolicy(app, authSubject.id),
     ctx,
     401,
     'User is not allowed to login due to the app’s security policy',

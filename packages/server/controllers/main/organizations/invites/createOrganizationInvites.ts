@@ -1,6 +1,6 @@
 import { randomBytes } from 'node:crypto';
 
-import { assertKoaError } from '@appsemble/node-utils';
+import { assertKoaCondition } from '@appsemble/node-utils';
 import { OrganizationPermission } from '@appsemble/types';
 import { type Context } from 'koa';
 import { Op } from 'sequelize';
@@ -30,7 +30,7 @@ export async function createOrganizationInvites(ctx: Context): Promise<void> {
 
   const organization = await Organization.findByPk(organizationId, { attributes: ['id'] });
 
-  assertKoaError(!organization, ctx, 404, 'Organization not found');
+  assertKoaCondition(organization != null, ctx, 404, 'Organization not found');
 
   const organizationMembers = await OrganizationMember.findAll({
     where: {
@@ -65,8 +65,8 @@ export async function createOrganizationInvites(ctx: Context): Promise<void> {
     }))
     .filter((invite) => !memberEmails.has(invite.email));
 
-  assertKoaError(
-    !newInvites.length,
+  assertKoaCondition(
+    newInvites.length > 0,
     ctx,
     400,
     'All invited users are already part of this organization',
@@ -76,8 +76,8 @@ export async function createOrganizationInvites(ctx: Context): Promise<void> {
 
   const pendingInvites = newInvites.filter((invite) => !existingInvites.has(invite.email));
 
-  assertKoaError(
-    !pendingInvites.length,
+  assertKoaCondition(
+    pendingInvites.length > 0,
     ctx,
     400,
     'All email addresses are already invited to this organization',

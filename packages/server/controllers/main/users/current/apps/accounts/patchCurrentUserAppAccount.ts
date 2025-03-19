@@ -1,4 +1,4 @@
-import { AppMemberPropertiesError, assertKoaError, throwKoaError } from '@appsemble/node-utils';
+import { AppMemberPropertiesError, assertKoaCondition, throwKoaError } from '@appsemble/node-utils';
 import { type AppAccount } from '@appsemble/types';
 import { type Context } from 'koa';
 import { literal } from 'sequelize';
@@ -51,7 +51,7 @@ export async function patchCurrentUserAppAccount(ctx: Context): Promise<void> {
     ],
   });
 
-  assertKoaError(!app, ctx, 404, 'App not found');
+  assertKoaCondition(app != null, ctx, 404, 'App not found');
 
   const appMember = await AppMember.findOne({
     where: {
@@ -72,7 +72,7 @@ export async function patchCurrentUserAppAccount(ctx: Context): Promise<void> {
     ],
   });
 
-  assertKoaError(!appMember, ctx, 404, 'App member not found');
+  assertKoaCondition(appMember != null, ctx, 404, 'App member not found');
 
   const result: Partial<AppMember> = {};
 

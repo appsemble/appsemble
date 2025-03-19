@@ -1,4 +1,4 @@
-import { assertKoaError, throwKoaError } from '@appsemble/node-utils';
+import { assertKoaCondition, throwKoaError } from '@appsemble/node-utils';
 import { OrganizationPermission } from '@appsemble/types';
 import { type Context } from 'koa';
 
@@ -15,7 +15,7 @@ export async function resendGroupInvite(ctx: Context): Promise<void> {
 
   const group = await Group.findByPk(groupId, { attributes: ['AppId', 'name'] });
 
-  assertKoaError(!group, ctx, 404, 'Group not found.');
+  assertKoaCondition(group != null, ctx, 404, 'Group not found.');
 
   const app = await App.findByPk(group.AppId, {
     attributes: ['OrganizationId', 'definition', 'domain', 'path'],
@@ -35,7 +35,12 @@ export async function resendGroupInvite(ctx: Context): Promise<void> {
     },
   });
 
-  assertKoaError(!existingGroupInvite, ctx, 404, 'This person was not invited previously.');
+  assertKoaCondition(
+    existingGroupInvite != null,
+    ctx,
+    404,
+    'This person was not invited previously.',
+  );
 
   try {
     const user = await User.findOne({

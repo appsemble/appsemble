@@ -1,4 +1,4 @@
-import { assertKoaError } from '@appsemble/node-utils';
+import { assertKoaCondition } from '@appsemble/node-utils';
 import { AppPermission } from '@appsemble/types';
 import { type Context } from 'koa';
 
@@ -20,7 +20,12 @@ export async function createAppGroup(ctx: Context): Promise<void> {
   });
 
   const app = await App.findByPk(appId, { attributes: ['demoMode', 'definition'] });
-  assertKoaError(!app.definition.security, ctx, 400, 'App does not have a security definition');
+  assertKoaCondition(
+    app.definition.security != null,
+    ctx,
+    400,
+    'App does not have a security definition',
+  );
 
   const group = await Group.create({
     name,

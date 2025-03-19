@@ -1,4 +1,4 @@
-import { assertKoaError } from '@appsemble/node-utils';
+import { assertKoaCondition } from '@appsemble/node-utils';
 import { OrganizationPermission } from '@appsemble/types';
 import { type Context } from 'koa';
 
@@ -14,7 +14,7 @@ export async function updateAppSslSecret(ctx: Context): Promise<void> {
   } = ctx;
 
   const app = await App.findByPk(appId, { attributes: ['domain', 'id', 'OrganizationId'] });
-  assertKoaError(!app, ctx, 404, 'App not found');
+  assertKoaCondition(app != null, ctx, 404, 'App not found');
 
   await app.update({
     sslCertificate: certificate?.trim() || null,

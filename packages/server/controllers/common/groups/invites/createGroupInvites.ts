@@ -1,6 +1,6 @@
 import { randomBytes } from 'node:crypto';
 
-import { assertKoaError } from '@appsemble/node-utils';
+import { assertKoaCondition } from '@appsemble/node-utils';
 import { AppPermission } from '@appsemble/types';
 import { getAppRoles } from '@appsemble/utils';
 import { type Context } from 'koa';
@@ -27,20 +27,25 @@ export async function createGroupInvites(ctx: Context): Promise<void> {
   } = ctx;
 
   const group = await Group.findOne({ where: { id: groupId } });
-  assertKoaError(!group, ctx, 400, `Group ${groupId} does not exist`);
+  assertKoaCondition(group != null, ctx, 400, `Group ${groupId} does not exist`);
 
   const app = await App.findByPk(group.AppId, {
     attributes: ['id', 'definition', 'path', 'OrganizationId', 'domain'],
   });
 
-  assertKoaError(!app, ctx, 404, 'App not found');
+  assertKoaCondition(app != null, ctx, 404, 'App not found');
 
-  assertKoaError(!app.definition.security, ctx, 403, 'App does not have a security definition.');
+  assertKoaCondition(
+    app.definition.security != null,
+    ctx,
+    403,
+    'App does not have a security definition.',
+  );
 
   const appRoles = getAppRoles(app.definition.security);
 
-  assertKoaError(
-    (body as GroupInvite[]).some((invite) => !appRoles.includes(invite.role)),
+  assertKoaCondition(
+    !(body as GroupInvite[]).some((invite) => !appRoles.includes(invite.role)),
     ctx,
     403,
     'Role not allowed.',
@@ -78,8 +83,8 @@ export async function createGroupInvites(ctx: Context): Promise<void> {
     }))
     .filter((invite) => !memberEmails.has(invite.email));
 
-  assertKoaError(
-    !newInvites.length,
+  assertKoaCondition(
+    newInvites.length > 0,
     ctx,
     400,
     'All invited emails are already members of this group',
@@ -89,8 +94,8 @@ export async function createGroupInvites(ctx: Context): Promise<void> {
 
   const pendingInvites = newInvites.filter((invite) => !existingInvites.has(invite.email));
 
-  assertKoaError(
-    !pendingInvites.length,
+  assertKoaCondition(
+    pendingInvites.length > 0,
     ctx,
     400,
     'All email addresses are already invited to this group',

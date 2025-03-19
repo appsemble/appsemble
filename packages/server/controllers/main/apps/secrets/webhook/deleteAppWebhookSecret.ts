@@ -1,4 +1,4 @@
-import { assertKoaError } from '@appsemble/node-utils';
+import { assertKoaCondition } from '@appsemble/node-utils';
 import { OrganizationPermission } from '@appsemble/types';
 import { type Context } from 'koa';
 
@@ -15,7 +15,7 @@ export async function deleteAppWebhookSecret(ctx: Context): Promise<void> {
     attributes: ['OrganizationId', 'path'],
   });
 
-  assertKoaError(!app, ctx, 404, 'App not found');
+  assertKoaCondition(app != null, ctx, 404, 'App not found');
 
   checkAppLock(ctx, app);
 
@@ -26,7 +26,12 @@ export async function deleteAppWebhookSecret(ctx: Context): Promise<void> {
   });
 
   const appWebhookSecret = await AppWebhookSecret.findByPk(webhookSecretId);
-  assertKoaError(!appWebhookSecret, ctx, 404, 'Cannot find the app webhook secret to delete');
+  assertKoaCondition(
+    appWebhookSecret != null,
+    ctx,
+    404,
+    'Cannot find the app webhook secret to delete',
+  );
 
   await appWebhookSecret.destroy();
 

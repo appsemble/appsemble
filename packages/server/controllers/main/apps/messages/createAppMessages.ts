@@ -1,4 +1,4 @@
-import { assertKoaError, throwKoaError } from '@appsemble/node-utils';
+import { assertKoaCondition, throwKoaError } from '@appsemble/node-utils';
 import {
   type AppDefinition,
   type AppsembleMessages,
@@ -45,7 +45,7 @@ export async function createAppMessages(ctx: Context): Promise<void> {
     where: { id: appId },
   });
 
-  assertKoaError(!app, ctx, 404, 'App not found');
+  assertKoaCondition(app != null, ctx, 404, 'App not found');
 
   checkAppLock(ctx, app);
 

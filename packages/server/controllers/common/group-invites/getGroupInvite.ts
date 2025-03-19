@@ -1,4 +1,4 @@
-import { assertKoaError } from '@appsemble/node-utils';
+import { assertKoaCondition } from '@appsemble/node-utils';
 import { type GroupInvite as GroupInviteType } from '@appsemble/types';
 import { type Context } from 'koa';
 
@@ -20,7 +20,7 @@ export async function getGroupInvite(ctx: Context): Promise<void> {
     ],
   });
 
-  assertKoaError(!invite, ctx, 404, `No invite found for token: ${token}`);
+  assertKoaCondition(invite != null, ctx, 404, `No invite found for token: ${token}`);
 
   ctx.body = {
     groupId: invite.GroupId,

@@ -1,4 +1,4 @@
-import { assertKoaError } from '@appsemble/node-utils';
+import { assertKoaCondition } from '@appsemble/node-utils';
 import { compare, hash } from 'bcrypt';
 import { type Context } from 'koa';
 
@@ -11,7 +11,7 @@ export async function patchPassword(ctx: Context): Promise<void> {
   const userToChange = await User.findByPk(user.id);
 
   const passwordsMatch = await compare(currentPassword, userToChange.password);
-  assertKoaError(!passwordsMatch, ctx, 401, 'Old password is incorrect.');
+  assertKoaCondition(passwordsMatch, ctx, 401, 'Old password is incorrect.');
 
   const hashedNewPassword = await hash(newPassword, 10);
   await userToChange.update({ password: hashedNewPassword });

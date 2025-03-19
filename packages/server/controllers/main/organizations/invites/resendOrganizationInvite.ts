@@ -1,4 +1,4 @@
-import { assertKoaError, throwKoaError } from '@appsemble/node-utils';
+import { assertKoaCondition, throwKoaError } from '@appsemble/node-utils';
 import { OrganizationPermission } from '@appsemble/types';
 import { type Context } from 'koa';
 
@@ -21,7 +21,7 @@ export async function resendOrganizationInvite(ctx: Context): Promise<void> {
 
   const organization = await Organization.findByPk(organizationId, { attributes: ['id'] });
 
-  assertKoaError(!organization, ctx, 404, 'Organization not found.');
+  assertKoaCondition(organization != null, ctx, 404, 'Organization not found.');
 
   const email = request.body.email.toLowerCase();
   const existingOrganizationInvite = await OrganizationInvite.findOne({
@@ -32,7 +32,12 @@ export async function resendOrganizationInvite(ctx: Context): Promise<void> {
     include: [User],
   });
 
-  assertKoaError(!existingOrganizationInvite, ctx, 404, 'This person was not invited previously.');
+  assertKoaCondition(
+    existingOrganizationInvite != null,
+    ctx,
+    404,
+    'This person was not invited previously.',
+  );
 
   try {
     await mailer.sendTranslatedEmail({

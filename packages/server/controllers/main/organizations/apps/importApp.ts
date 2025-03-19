@@ -7,7 +7,7 @@ import { pipeline } from 'node:stream/promises';
 
 import {
   AppsembleError,
-  assertKoaError,
+  assertKoaCondition,
   getSupportedLanguages,
   handleValidatorResult,
   type TempFile,
@@ -59,7 +59,12 @@ export async function importApp(ctx: Context): Promise<void> {
   const zip = await JSZip.loadAsync(importFile);
   try {
     const definitionFile = zip.file('app-definition.yaml');
-    assertKoaError(!definitionFile, ctx, 400, 'app-definition.yaml file not found in the zip file');
+    assertKoaCondition(
+      definitionFile != null,
+      ctx,
+      400,
+      'app-definition.yaml file not found in the zip file',
+    );
 
     const yaml = await definitionFile.async('text');
     const theme = zip.folder('theme');
@@ -266,7 +271,7 @@ export async function importApp(ctx: Context): Promise<void> {
             const blockVersion = await BlockVersion.findOne({
               where: { name: blockName, organizationId: orgName },
             });
-            assertKoaError(!blockVersion, ctx, 404, 'Block not found');
+            assertKoaCondition(blockVersion != null, ctx, 404, 'Block not found');
             const style = validateStyle(await block.async('text'));
             record.AppBlockStyles = [
               await AppBlockStyle.create(

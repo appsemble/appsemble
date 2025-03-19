@@ -1,4 +1,4 @@
-import { assertKoaError } from '@appsemble/node-utils';
+import { assertKoaCondition } from '@appsemble/node-utils';
 import { type Context } from 'koa';
 
 import { AppCollection } from '../../../models/index.js';
@@ -12,7 +12,7 @@ export async function getAppCollectionHeaderImage(ctx: Context): Promise<void> {
     attributes: ['headerImage', 'headerImageMimeType'],
   });
 
-  assertKoaError(!collection, ctx, 404, 'Collection not found');
+  assertKoaCondition(collection != null, ctx, 404, 'Collection not found');
 
   ctx.response.status = 200;
   ctx.response.body = collection.headerImage;

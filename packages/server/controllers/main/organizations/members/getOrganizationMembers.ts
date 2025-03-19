@@ -1,4 +1,4 @@
-import { assertKoaError } from '@appsemble/node-utils';
+import { assertKoaCondition } from '@appsemble/node-utils';
 import { OrganizationPermission } from '@appsemble/types';
 import { type Context } from 'koa';
 
@@ -14,7 +14,7 @@ export async function getOrganizationMembers(ctx: Context): Promise<void> {
     include: [User],
   });
 
-  assertKoaError(!organization, ctx, 404, 'Organization not found.');
+  assertKoaCondition(organization != null, ctx, 404, 'Organization not found.');
 
   await checkUserOrganizationPermissions({
     context: ctx,

@@ -1,7 +1,7 @@
 import { randomBytes } from 'node:crypto';
 
 import {
-  assertKoaError,
+  assertKoaCondition,
   getSupportedLanguages,
   logger,
   mergeMessages,
@@ -144,7 +144,7 @@ export function parseLanguage(
     return { language: undefined, baseLanguage: undefined, query: [] };
   }
 
-  assertKoaError(!tags.check(language), ctx, 400, `Language “${language}” is invalid`);
+  assertKoaCondition(tags.check(language), ctx, 400, `Language “${language}” is invalid`);
 
   const lang = language?.toLowerCase();
   const baseLanguage = String(
@@ -273,7 +273,7 @@ export async function createAppScreenshots(
           const { format, height, width } = await img.metadata();
           const mime = lookup(format);
 
-          assertKoaError(!mime, ctx, 404, `Unknown screenshot mime type: ${mime}`);
+          assertKoaCondition(mime !== false, ctx, 404, `Unknown screenshot mime type: ${mime}`);
 
           return {
             screenshot: contents,

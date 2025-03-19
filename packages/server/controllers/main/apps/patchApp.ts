@@ -1,5 +1,5 @@
 import {
-  assertKoaError,
+  assertKoaCondition,
   handleValidatorResult,
   updateCompanionContainers,
   uploadToBuffer,
@@ -101,7 +101,7 @@ export async function patchApp(ctx: Context): Promise<void> {
     ],
   });
 
-  assertKoaError(!dbApp, ctx, 404, 'App not found');
+  assertKoaCondition(dbApp != null, ctx, 404, 'App not found');
 
   checkAppLock(ctx, dbApp);
 

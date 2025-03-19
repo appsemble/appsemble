@@ -1,4 +1,4 @@
-import { assertKoaError } from '@appsemble/node-utils';
+import { assertKoaCondition } from '@appsemble/node-utils';
 import { type Context } from 'koa';
 
 import { App, AppMember } from '../../../../../../../models/index.js';
@@ -24,12 +24,12 @@ export async function verifyCurrentUserOAuth2AppConsent(ctx: Context): Promise<v
     },
   });
 
-  assertKoaError(!app, ctx, 404, 'App not found');
+  assertKoaCondition(app != null, ctx, 404, 'App not found');
 
   const isAllowed = await checkAppSecurityPolicy(app, authSubject.id);
 
-  assertKoaError(
-    !isAllowed,
+  assertKoaCondition(
+    isAllowed,
     ctx,
     400,
     'User is not allowed to login due to the app’s security policy',
@@ -39,8 +39,8 @@ export async function verifyCurrentUserOAuth2AppConsent(ctx: Context): Promise<v
     },
   );
 
-  assertKoaError(
-    !appMember || appMember.consent == null,
+  assertKoaCondition(
+    appMember != null && appMember.consent != null,
     ctx,
     400,
     'User has not agreed to the requested scopes',

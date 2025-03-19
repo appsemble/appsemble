@@ -1,4 +1,4 @@
-import { assertKoaError } from '@appsemble/node-utils';
+import { assertKoaCondition } from '@appsemble/node-utils';
 import { type Context } from 'koa';
 
 import { EmailAuthorization, User } from '../../../../models/index.js';
@@ -35,8 +35,8 @@ export async function patchCurrentUser(ctx: Context): Promise<void> {
 
   if (email && email !== user.primaryEmail) {
     const emailAuth = await EmailAuthorization.findOne({ where: { email } });
-    assertKoaError(!emailAuth, ctx, 404, 'No matching email could be found.');
-    assertKoaError(!emailAuth.verified, ctx, 406, 'This email address has not been verified.');
+    assertKoaCondition(emailAuth != null, ctx, 404, 'No matching email could be found.');
+    assertKoaCondition(emailAuth.verified, ctx, 406, 'This email address has not been verified.');
   }
 
   await user.update({ primaryEmail: email, name, locale, timezone, subscribed });

@@ -1,4 +1,4 @@
-import { assertKoaError } from '@appsemble/node-utils';
+import { assertKoaCondition } from '@appsemble/node-utils';
 import { OrganizationPermission } from '@appsemble/types';
 import { type Context } from 'koa';
 
@@ -16,7 +16,7 @@ export async function createAppVariable(ctx: Context): Promise<void> {
     attributes: ['OrganizationId'],
   });
 
-  assertKoaError(!app, ctx, 404, 'App not found');
+  assertKoaCondition(app != null, ctx, 404, 'App not found');
 
   checkAppLock(ctx, app);
 
@@ -35,7 +35,7 @@ export async function createAppVariable(ctx: Context): Promise<void> {
     },
   });
 
-  assertKoaError(existing != null, ctx, 400, `App variable with name ${name} already exists`);
+  assertKoaCondition(existing == null, ctx, 400, `App variable with name ${name} already exists`);
 
   const { id } = await AppVariable.create({
     name,

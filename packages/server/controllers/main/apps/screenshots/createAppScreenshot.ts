@@ -1,4 +1,4 @@
-import { assertKoaError, type TempFile } from '@appsemble/node-utils';
+import { assertKoaCondition, type TempFile } from '@appsemble/node-utils';
 import { OrganizationPermission } from '@appsemble/types';
 import { type Context } from 'koa';
 
@@ -19,7 +19,7 @@ export async function createAppScreenshot(ctx: Context): Promise<void> {
     attributes: ['id', 'OrganizationId'],
   });
 
-  assertKoaError(!app, ctx, 404, 'App not found');
+  assertKoaCondition(app != null, ctx, 404, 'App not found');
 
   checkAppLock(ctx, app);
 

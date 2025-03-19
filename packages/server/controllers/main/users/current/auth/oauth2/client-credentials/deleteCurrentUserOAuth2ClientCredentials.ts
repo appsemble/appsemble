@@ -1,4 +1,4 @@
-import { assertKoaError } from '@appsemble/node-utils';
+import { assertKoaCondition } from '@appsemble/node-utils';
 import { type Context } from 'koa';
 
 import { OAuth2ClientCredentials } from '../../../../../../../models/index.js';
@@ -16,5 +16,10 @@ export async function deleteCurrentUserOAuth2ClientCredentials(ctx: Context): Pr
     },
   });
 
-  assertKoaError(!affectedRows, ctx, 404, 'No client credentials found for the given client id');
+  assertKoaCondition(
+    affectedRows !== 0,
+    ctx,
+    404,
+    'No client credentials found for the given client id',
+  );
 }

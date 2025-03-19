@@ -1,4 +1,4 @@
-import { assertKoaError } from '@appsemble/node-utils';
+import { assertKoaCondition } from '@appsemble/node-utils';
 import { type Context } from 'koa';
 
 import { App, Asset } from '../../../../models/index.js';
@@ -12,7 +12,7 @@ export async function countAppAssets(ctx: Context): Promise<void> {
     attributes: ['OrganizationId'],
   });
 
-  assertKoaError(!app, ctx, 404, 'App not found');
+  assertKoaCondition(app != null, ctx, 404, 'App not found');
 
   ctx.body = await Asset.count({
     where: {

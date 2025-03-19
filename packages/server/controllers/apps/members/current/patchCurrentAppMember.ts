@@ -1,6 +1,6 @@
 import {
   AppMemberPropertiesError,
-  assertKoaError,
+  assertKoaCondition,
   throwKoaError,
   uploadToBuffer,
 } from '@appsemble/node-utils';
@@ -22,11 +22,11 @@ export async function patchCurrentAppMember(ctx: Context): Promise<void> {
     where: { id: appId },
   });
 
-  assertKoaError(!app, ctx, 404, 'App not found');
+  assertKoaCondition(app != null, ctx, 404, 'App not found');
 
   const appMember = await AppMember.findByPk(authSubject.id);
 
-  assertKoaError(!appMember, ctx, 404, 'App member not found');
+  assertKoaCondition(appMember != null, ctx, 404, 'App member not found');
 
   const result: Partial<AppMember> = {};
 

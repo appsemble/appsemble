@@ -1,4 +1,4 @@
-import { assertKoaError } from '@appsemble/node-utils';
+import { assertKoaCondition } from '@appsemble/node-utils';
 import { type Context } from 'koa';
 
 import {
@@ -18,8 +18,8 @@ export async function linkCurrentAppMember(ctx: Context): Promise<void> {
     user: { id: AppMemberId },
   } = ctx;
   const assert = (emailVerified: boolean): void =>
-    assertKoaError(
-      !emailVerified,
+    assertKoaCondition(
+      emailVerified,
       ctx,
       403,
       `Account linking is only allowed to a verified account. Please verify your email ${email}.`,

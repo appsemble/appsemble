@@ -1,4 +1,4 @@
-import { AppMemberPropertiesError, assertKoaError, throwKoaError } from '@appsemble/node-utils';
+import { AppMemberPropertiesError, assertKoaCondition, throwKoaError } from '@appsemble/node-utils';
 import { AppPermission } from '@appsemble/types';
 import { type Context } from 'koa';
 
@@ -22,10 +22,10 @@ export async function patchAppMemberProperties(ctx: Context): Promise<void> {
     },
   });
 
-  assertKoaError(!appMember, ctx, 404, 'App member not found');
+  assertKoaCondition(appMember != null, ctx, 404, 'App member not found');
 
-  assertKoaError(
-    appMemberId === authSubject.id,
+  assertKoaCondition(
+    appMemberId !== authSubject.id,
     ctx,
     401,
     'Cannot use this endpoint to patch your own properties',
