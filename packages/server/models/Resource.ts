@@ -1,7 +1,8 @@
 import { logger } from '@appsemble/node-utils';
 import { type Resource as ResourceType } from '@appsemble/types';
-import { DataTypes, type FindOptions } from 'sequelize';
+import { DataTypes, type DestroyOptions, type FindOptions } from 'sequelize';
 import {
+  AfterDestroy,
   AllowNull,
   AutoIncrement,
   BeforeBulkDestroy,
@@ -305,6 +306,14 @@ export class Resource extends Model {
     }
 
     logger.info(`Updated ${Object.keys(appMembersToUpdate).length} users' properties.`);
+  }
+
+  @AfterDestroy
+  static async afterDestroyHook(instance: Resource, { force }: DestroyOptions): Promise<void> {
+    if (force || !instance?.ephemeral) {
+      return;
+    }
+    await instance?.destroy({ force: true });
   }
 
   /**

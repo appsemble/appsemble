@@ -9,7 +9,7 @@ export async function countAppAssets(ctx: Context): Promise<void> {
   } = ctx;
 
   const app = await App.findByPk(appId, {
-    attributes: ['OrganizationId'],
+    attributes: ['OrganizationId', 'demoMode'],
   });
 
   assertKoaError(!app, ctx, 404, 'App not found');

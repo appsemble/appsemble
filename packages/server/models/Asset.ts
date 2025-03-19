@@ -1,4 +1,6 @@
+import { type DestroyOptions } from 'sequelize';
 import {
+  AfterDestroy,
   AllowNull,
   BelongsTo,
   Column,
@@ -123,4 +125,12 @@ export class Asset extends Model {
   // TODO remove in 0.32.1
   @BelongsTo(() => Asset, { onDelete: 'SET NULL' })
   Original: Awaited<Asset>;
+
+  @AfterDestroy
+  static async afterDestroyHook(instance: Asset, { force }: DestroyOptions): Promise<void> {
+    if (force || !instance?.ephemeral) {
+      return;
+    }
+    await instance.destroy({ force: true });
+  }
 }
