@@ -1,4 +1,4 @@
-import { assertKoaError, type Options } from '@appsemble/node-utils';
+import { assertKoaCondition, type Options } from '@appsemble/node-utils';
 import { type Context, type Middleware } from 'koa';
 
 export function createBlockAssetHandler({ getBlockAsset }: Options): Middleware {
@@ -9,7 +9,7 @@ export function createBlockAssetHandler({ getBlockAsset }: Options): Middleware 
 
     const blockAsset = await getBlockAsset({ filename, name, version, context: ctx });
 
-    assertKoaError(!blockAsset, ctx, 404, 'Block asset not found');
+    assertKoaCondition(blockAsset != null, ctx, 404, 'Block asset not found');
 
     ctx.body = blockAsset.content;
     ctx.type = blockAsset.mime;

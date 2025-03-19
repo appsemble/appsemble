@@ -1,4 +1,4 @@
-import { assertKoaError } from '@appsemble/node-utils';
+import { assertKoaCondition } from '@appsemble/node-utils';
 import { OrganizationPermission } from '@appsemble/types';
 import { type Context } from 'koa';
 
@@ -13,8 +13,8 @@ export async function deleteAppIcon(ctx: Context): Promise<void> {
     attributes: ['id', 'icon', 'OrganizationId'],
   });
 
-  assertKoaError(!app, ctx, 404, 'App not found');
-  assertKoaError(!app.icon, ctx, 404, 'App has no icon');
+  assertKoaCondition(app != null, ctx, 404, 'App not found');
+  assertKoaCondition(app.icon != null, ctx, 404, 'App has no icon');
 
   await checkUserOrganizationPermissions({
     context: ctx,

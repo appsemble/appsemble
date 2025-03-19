@@ -1,4 +1,4 @@
-import { assertKoaError } from '@appsemble/node-utils';
+import { assertKoaCondition } from '@appsemble/node-utils';
 import {
   type AppRole,
   type CustomAppPermission,
@@ -99,14 +99,14 @@ export async function checkUnauthenticatedAppPermissions({
 }: CheckAppPermissionsParams): Promise<void> {
   const app = await App.findByPk(appId, { attributes: ['definition'] });
 
-  assertKoaError(!app, context, 404, 'App not found');
+  assertKoaCondition(app != null, context, 404, 'App not found');
 
   if (!app.definition.security) {
     return;
   }
 
-  assertKoaError(
-    !checkGuestAppPermissions(app.definition.security, requiredPermissions),
+  assertKoaCondition(
+    checkGuestAppPermissions(app.definition.security, requiredPermissions),
     context,
     403,
     'Guest does not have sufficient app permissions.',
@@ -123,7 +123,7 @@ export async function checkAppMemberAppPermissions({
 
   const app = await App.findByPk(appId, { attributes: ['definition'] });
 
-  assertKoaError(!app, context, 404, 'App not found');
+  assertKoaCondition(app != null, context, 404, 'App not found');
 
   if (!app.definition.security) {
     return;
@@ -131,12 +131,12 @@ export async function checkAppMemberAppPermissions({
 
   const appMember = await AppMember.findByPk(authSubject.id, { attributes: ['id'] });
 
-  assertKoaError(!appMember, context, 403, 'App member not found');
+  assertKoaCondition(appMember != null, context, 403, 'App member not found');
 
   const appMemberAppRole = await getAppMemberAppRole(appMember.id, appId, groupId);
 
-  assertKoaError(
-    !checkAppRoleAppPermissions(app.definition.security, appMemberAppRole, requiredPermissions),
+  assertKoaCondition(
+    checkAppRoleAppPermissions(app.definition.security, appMemberAppRole, requiredPermissions),
     context,
     403,
     'App member does not have sufficient app permissions.',
@@ -153,7 +153,7 @@ export async function checkUserAppPermissions({
 
   const app = await App.findByPk(appId, { attributes: ['definition', 'OrganizationId'] });
 
-  assertKoaError(!app, context, 404, 'App not found');
+  assertKoaCondition(app != null, context, 404, 'App not found');
 
   if (!app.definition.security) {
     return;
@@ -163,11 +163,9 @@ export async function checkUserAppPermissions({
 
   const userOrganizationRole = await getUserOrganizationRole(authSubject.id, app.OrganizationId);
 
-  assertKoaError(
-    !(
-      checkAppRoleAppPermissions(app.definition.security, userAppRole, requiredPermissions) ||
-      checkOrganizationRoleAppPermissions(userOrganizationRole, requiredPermissions)
-    ),
+  assertKoaCondition(
+    checkAppRoleAppPermissions(app.definition.security, userAppRole, requiredPermissions) ||
+      checkOrganizationRoleAppPermissions(userOrganizationRole, requiredPermissions),
     context,
     403,
     'User does not have sufficient app permissions.',
@@ -181,11 +179,11 @@ export async function checkUserOrganizationPermissions({
 }: CheckOrganizationPermissionsParams): Promise<void> {
   const { user: authSubject } = context;
 
-  assertKoaError(!authSubject, context, 401);
+  assertKoaCondition(authSubject != null, context, 401);
 
   const organization = await Organization.findByPk(organizationId, { attributes: ['id'] });
 
-  assertKoaError(!organization, context, 404, 'Organization not found.');
+  assertKoaCondition(organization != null, context, 404, 'Organization not found.');
 
   const organizationMember = await OrganizationMember.findOne({
     attributes: ['role'],
@@ -195,12 +193,17 @@ export async function checkUserOrganizationPermissions({
     },
   });
 
-  assertKoaError(!organizationMember, context, 403, 'User is not a member of this organization.');
+  assertKoaCondition(
+    organizationMember != null,
+    context,
+    403,
+    'User is not a member of this organization.',
+  );
 
   const userOrganizationRole = await getUserOrganizationRole(authSubject.id, organizationId);
 
-  assertKoaError(
-    !checkOrganizationRoleOrganizationPermissions(userOrganizationRole, requiredPermissions),
+  assertKoaCondition(
+    checkOrganizationRoleOrganizationPermissions(userOrganizationRole, requiredPermissions),
     context,
     403,
     'User does not have sufficient organization permissions.',

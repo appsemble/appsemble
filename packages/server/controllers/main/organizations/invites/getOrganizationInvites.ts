@@ -1,4 +1,4 @@
-import { assertKoaError } from '@appsemble/node-utils';
+import { assertKoaCondition } from '@appsemble/node-utils';
 import { OrganizationPermission } from '@appsemble/types';
 import { type Context } from 'koa';
 
@@ -18,7 +18,7 @@ export async function getOrganizationInvites(ctx: Context): Promise<void> {
 
   const organization = await Organization.findByPk(organizationId);
 
-  assertKoaError(!organization, ctx, 404, 'Organization not found.');
+  assertKoaCondition(organization != null, ctx, 404, 'Organization not found.');
 
   const organizationInvites = await OrganizationInvite.findAll({
     where: {

@@ -1,4 +1,4 @@
-import { assertKoaError } from '@appsemble/node-utils';
+import { assertKoaCondition } from '@appsemble/node-utils';
 import { type Context } from 'koa';
 import { literal } from 'sequelize';
 
@@ -39,7 +39,7 @@ export async function getBlockVersion(ctx: Context): Promise<void> {
     ],
   });
 
-  assertKoaError(!version, ctx, 404, 'Block version not found');
+  assertKoaCondition(version != null, ctx, 404, 'Block version not found');
 
   ctx.body = blockVersionToJson(version);
   ctx.set('Cache-Control', 'max-age=31536000,immutable');

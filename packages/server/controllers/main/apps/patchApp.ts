@@ -1,5 +1,5 @@
 import {
-  assertKoaError,
+  assertKoaCondition,
   handleValidatorResult,
   updateCompanionContainers,
   uploadToBuffer,
@@ -42,6 +42,7 @@ export async function patchApp(ctx: Context): Promise<void> {
         coreStyle,
         demoMode,
         displayAppMemberName,
+        displayInstallationPrompt,
         domain,
         emailHost,
         emailName,
@@ -100,7 +101,7 @@ export async function patchApp(ctx: Context): Promise<void> {
     ],
   });
 
-  assertKoaError(!dbApp, ctx, 404, 'App not found');
+  assertKoaCondition(dbApp != null, ctx, 404, 'App not found');
 
   checkAppLock(ctx, dbApp);
 
@@ -228,6 +229,10 @@ export async function patchApp(ctx: Context): Promise<void> {
 
     if (displayAppMemberName !== undefined) {
       result.displayAppMemberName = displayAppMemberName;
+    }
+
+    if (displayInstallationPrompt !== undefined) {
+      result.displayInstallationPrompt = displayInstallationPrompt;
     }
 
     if (showAppsembleOAuth2Login !== undefined) {

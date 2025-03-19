@@ -2,7 +2,7 @@ import { randomUUID } from 'node:crypto';
 import { promisify } from 'node:util';
 import { deflateRaw } from 'node:zlib';
 
-import { assertKoaError, logger } from '@appsemble/node-utils';
+import { assertKoaCondition, logger } from '@appsemble/node-utils';
 import { DOMImplementation } from '@xmldom/xmldom';
 import { type Context } from 'koa';
 import forge from 'node-forge';
@@ -38,10 +38,10 @@ export async function createAppSamlAuthnRequest(ctx: Context): Promise<void> {
     ],
   });
 
-  assertKoaError(!app, ctx, 404, 'App not found');
+  assertKoaCondition(app != null, ctx, 404, 'App not found');
 
-  assertKoaError(
-    !(await checkAppSecurityPolicy(app, authSubject?.id)),
+  assertKoaCondition(
+    await checkAppSecurityPolicy(app, authSubject?.id),
     ctx,
     401,
     'User is not allowed to login due to the app’s security policy',
@@ -53,9 +53,9 @@ export async function createAppSamlAuthnRequest(ctx: Context): Promise<void> {
     attributes: ['id'],
   });
 
-  assertKoaError(!appMember, ctx, 404, 'App member not found');
+  assertKoaCondition(appMember != null, ctx, 404, 'App member not found');
   const [secret] = app.AppSamlSecrets;
-  assertKoaError(!secret, ctx, 404, 'SAML secret not found');
+  assertKoaCondition(secret != null, ctx, 404, 'SAML secret not found');
 
   const loginId = `id${randomUUID()}`;
   const doc = dom.createDocument(NS.samlp, 'samlp:AuthnRequest', null);

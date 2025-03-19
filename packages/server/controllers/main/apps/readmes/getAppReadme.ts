@@ -1,4 +1,4 @@
-import { assertKoaError } from '@appsemble/node-utils';
+import { assertKoaCondition } from '@appsemble/node-utils';
 import { type Context } from 'koa';
 
 import { App, AppReadme } from '../../../../models/index.js';
@@ -20,8 +20,8 @@ export async function getAppReadme(ctx: Context): Promise<void> {
     ],
   });
 
-  assertKoaError(!app, ctx, 404, 'App not found');
-  assertKoaError(!app.AppReadmes?.length, ctx, 404, 'Readme not found');
+  assertKoaCondition(app != null, ctx, 404, 'App not found');
+  assertKoaCondition(app.AppReadmes?.length > 0, ctx, 404, 'Readme not found');
 
   const [{ file }] = app.AppReadmes;
 

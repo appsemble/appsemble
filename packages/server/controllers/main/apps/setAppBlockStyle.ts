@@ -1,4 +1,4 @@
-import { assertKoaError, throwKoaError } from '@appsemble/node-utils';
+import { assertKoaCondition, throwKoaError } from '@appsemble/node-utils';
 import { OrganizationPermission } from '@appsemble/types';
 import { StyleValidationError, validateStyle } from '@appsemble/utils';
 import { type Context } from 'koa';
@@ -19,7 +19,7 @@ export async function setAppBlockStyle(ctx: Context): Promise<void> {
   try {
     const app = await App.findByPk(appId, { attributes: ['locked', 'OrganizationId'] });
 
-    assertKoaError(!app, ctx, 404, 'App not found');
+    assertKoaCondition(app != null, ctx, 404, 'App not found');
     checkAppLock(ctx, app);
     validateStyle(css);
 
@@ -27,7 +27,7 @@ export async function setAppBlockStyle(ctx: Context): Promise<void> {
       where: { name: blockId, OrganizationId: organizationId },
     });
 
-    assertKoaError(!block, ctx, 404, 'Block not found');
+    assertKoaCondition(block != null, ctx, 404, 'Block not found');
 
     await checkUserOrganizationPermissions({
       context: ctx,

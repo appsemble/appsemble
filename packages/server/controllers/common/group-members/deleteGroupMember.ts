@@ -1,4 +1,4 @@
-import { assertKoaError } from '@appsemble/node-utils';
+import { assertKoaCondition } from '@appsemble/node-utils';
 import { AppPermission } from '@appsemble/types';
 import { type Context } from 'koa';
 
@@ -21,10 +21,10 @@ export async function deleteGroupMember(ctx: Context): Promise<void> {
     ],
   });
 
-  assertKoaError(!groupMember, ctx, 404, 'Group member not found.');
+  assertKoaCondition(groupMember != null, ctx, 404, 'Group member not found.');
 
-  assertKoaError(
-    groupMember.AppMember.id === authSubject.id,
+  assertKoaCondition(
+    groupMember.AppMember.id !== authSubject.id,
     ctx,
     401,
     'Cannot use this endpoint to remove yourself from the group',

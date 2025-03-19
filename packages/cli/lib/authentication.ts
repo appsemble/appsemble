@@ -3,7 +3,7 @@ import { hostname } from 'node:os';
 
 import {
   AppsembleError,
-  assertKoaError,
+  assertKoaCondition,
   getKeytar,
   getService,
   logger,
@@ -44,8 +44,9 @@ function waitForCredentials(url: URL): Promise<string> {
       } catch {
         throwKoaError(ctx, 400, 'Invalid JSON');
       }
-      assertKoaError(
-        typeof credentials === 'string' && !validate(credentials),
+
+      assertKoaCondition(
+        !(typeof credentials === 'string' && !validate(credentials)),
         ctx,
         400,
         'Invalid client credentials',

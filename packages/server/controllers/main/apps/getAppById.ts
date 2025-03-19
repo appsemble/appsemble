@@ -1,4 +1,4 @@
-import { assertKoaError } from '@appsemble/node-utils';
+import { assertKoaCondition } from '@appsemble/node-utils';
 import { type App as AppType, OrganizationPermission } from '@appsemble/types';
 import { type Context } from 'koa';
 import { col, fn, literal } from 'sequelize';
@@ -113,7 +113,7 @@ export async function getAppById(ctx: Context): Promise<void> {
     ],
   });
 
-  assertKoaError(!app, ctx, 404, 'App not found');
+  assertKoaCondition(app != null, ctx, 404, 'App not found');
 
   const propertyFilters: (keyof AppType)[] = [];
   if (app.visibility === 'private' || !app.showAppDefinition) {

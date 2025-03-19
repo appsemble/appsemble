@@ -1,4 +1,4 @@
-import { assertKoaError, throwKoaError } from '@appsemble/node-utils';
+import { assertKoaCondition, throwKoaError } from '@appsemble/node-utils';
 import { OrganizationPermission } from '@appsemble/types';
 import { type Context } from 'koa';
 import { UniqueConstraintError } from 'sequelize';
@@ -16,7 +16,7 @@ export async function addAppToAppCollection(ctx: Context): Promise<void> {
     attributes: ['id', 'OrganizationId'],
   });
 
-  assertKoaError(!collection, ctx, 404, 'App collection not found');
+  assertKoaCondition(collection != null, ctx, 404, 'App collection not found');
 
   await checkUserOrganizationPermissions({
     context: ctx,
@@ -26,7 +26,7 @@ export async function addAppToAppCollection(ctx: Context): Promise<void> {
 
   const app = await App.findByPk(body.AppId, { attributes: ['id'] });
 
-  assertKoaError(!app, ctx, 404, 'App not found');
+  assertKoaCondition(app != null, ctx, 404, 'App not found');
 
   try {
     await AppCollectionApp.create({

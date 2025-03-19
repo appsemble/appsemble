@@ -1,4 +1,4 @@
-import { assertKoaError, updateNamespacedSecret } from '@appsemble/node-utils';
+import { assertKoaCondition, updateNamespacedSecret } from '@appsemble/node-utils';
 import { OrganizationPermission } from '@appsemble/types';
 import { type Context } from 'koa';
 
@@ -18,7 +18,7 @@ export async function createAppServiceSecret(ctx: Context): Promise<void> {
     attributes: ['OrganizationId', 'path'],
   });
 
-  assertKoaError(!app, ctx, 404, 'App not found');
+  assertKoaCondition(app != null, ctx, 404, 'App not found');
 
   checkAppLock(ctx, app);
 

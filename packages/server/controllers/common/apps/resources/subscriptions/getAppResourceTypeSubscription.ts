@@ -1,4 +1,4 @@
-import { assertKoaError, getResourceDefinition } from '@appsemble/node-utils';
+import { assertKoaCondition, getResourceDefinition } from '@appsemble/node-utils';
 import { type Context } from 'koa';
 
 import {
@@ -39,9 +39,9 @@ export async function getAppResourceTypeSubscription(ctx: Context): Promise<void
   });
   getResourceDefinition(app.definition, resourceType, ctx);
 
-  assertKoaError(!app.Resources.length, ctx, 404, 'Resource not found');
-  assertKoaError(
-    !app.AppSubscriptions.length,
+  assertKoaCondition(app.Resources.length > 0, ctx, 404, 'Resource not found');
+  assertKoaCondition(
+    app.AppSubscriptions.length > 0,
     ctx,
     404,
     'App member is not subscribed to this app.',
@@ -49,7 +49,7 @@ export async function getAppResourceTypeSubscription(ctx: Context): Promise<void
 
   const [appSubscription] = app.AppSubscriptions;
 
-  assertKoaError(!appSubscription, ctx, 404, 'Subscription not found');
+  assertKoaCondition(appSubscription != null, ctx, 404, 'Subscription not found');
 
   const result: any = { create: false, update: false, delete: false };
   for (const { ResourceId, action } of appSubscription.ResourceSubscriptions) {

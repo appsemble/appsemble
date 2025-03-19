@@ -1,6 +1,6 @@
 import { randomBytes } from 'node:crypto';
 
-import { assertKoaError } from '@appsemble/node-utils';
+import { assertKoaCondition } from '@appsemble/node-utils';
 import { type Context } from 'koa';
 import { Op, type Transaction, UniqueConstraintError } from 'sequelize';
 import { type Promisable } from 'type-fest';
@@ -93,8 +93,8 @@ export async function handleUniqueAppMemberEmailIndex(
     'constraint' in error.parent &&
     error.parent.constraint === 'UniqueAppMemberEmailIndex'
   ) {
-    assertKoaError(
-      !emailVerified,
+    assertKoaCondition(
+      emailVerified,
       ctx,
       403,
       `Account linking is only allowed to a verified account. Please verify your email ${email}.`,

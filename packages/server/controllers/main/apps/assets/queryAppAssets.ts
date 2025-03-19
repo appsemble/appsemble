@@ -1,4 +1,4 @@
-import { assertKoaError } from '@appsemble/node-utils';
+import { assertKoaCondition } from '@appsemble/node-utils';
 import { OrganizationPermission } from '@appsemble/types';
 import { type Context } from 'koa';
 
@@ -15,7 +15,7 @@ export async function queryAppAssets(ctx: Context): Promise<void> {
     attributes: ['OrganizationId', 'demoMode'],
   });
 
-  assertKoaError(!app, ctx, 404, 'App not found');
+  assertKoaCondition(app != null, ctx, 404, 'App not found');
 
   await checkUserOrganizationPermissions({
     context: ctx,

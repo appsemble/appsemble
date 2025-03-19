@@ -1,4 +1,4 @@
-import { assertKoaError } from '@appsemble/node-utils';
+import { assertKoaCondition } from '@appsemble/node-utils';
 import { AppPermission } from '@appsemble/types';
 import { type Context } from 'koa';
 
@@ -19,7 +19,7 @@ export async function getGroupMember(ctx: Context): Promise<void> {
     ],
   });
 
-  assertKoaError(!groupMember, ctx, 404, 'Group member not found.');
+  assertKoaCondition(groupMember != null, ctx, 404, 'Group member not found.');
 
   await checkAuthSubjectAppPermissions({
     context: ctx,

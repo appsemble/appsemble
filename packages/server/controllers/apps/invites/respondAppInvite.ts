@@ -1,6 +1,6 @@
 import { randomBytes } from 'node:crypto';
 
-import { assertKoaError, logger } from '@appsemble/node-utils';
+import { assertKoaCondition, logger } from '@appsemble/node-utils';
 import { hash } from 'bcrypt';
 import { type Context } from 'koa';
 
@@ -18,7 +18,7 @@ export async function respondAppInvite(ctx: Context): Promise<void> {
 
   const invite = await AppInvite.findOne({ where: { key: token } });
 
-  assertKoaError(!invite, ctx, 404, 'This token is invalid');
+  assertKoaCondition(invite != null, ctx, 404, 'This token is invalid');
 
   const app = await App.findByPk(invite.AppId, {
     attributes: ['id', 'definition', 'OrganizationId', 'path', 'demoMode'],

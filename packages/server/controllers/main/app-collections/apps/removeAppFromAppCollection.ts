@@ -1,4 +1,4 @@
-import { assertKoaError } from '@appsemble/node-utils';
+import { assertKoaCondition } from '@appsemble/node-utils';
 import { OrganizationPermission } from '@appsemble/types';
 import { type Context } from 'koa';
 
@@ -14,7 +14,7 @@ export async function removeAppFromAppCollection(ctx: Context): Promise<void> {
     attributes: ['id', 'OrganizationId'],
   });
 
-  assertKoaError(!collection, ctx, 404, 'Collection not found');
+  assertKoaCondition(collection != null, ctx, 404, 'Collection not found');
 
   await checkUserOrganizationPermissions({
     context: ctx,
@@ -24,7 +24,7 @@ export async function removeAppFromAppCollection(ctx: Context): Promise<void> {
 
   const app = await App.findByPk(appId, { attributes: ['id'] });
 
-  assertKoaError(!app, ctx, 404, 'App not found');
+  assertKoaCondition(app != null, ctx, 404, 'App not found');
 
   await AppCollectionApp.destroy({
     where: {

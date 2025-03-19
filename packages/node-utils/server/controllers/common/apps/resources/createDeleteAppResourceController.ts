@@ -1,4 +1,4 @@
-import { assertKoaError, type FindOptions, type Options } from '@appsemble/node-utils';
+import { assertKoaCondition, type FindOptions, type Options } from '@appsemble/node-utils';
 import { type Context, type Middleware } from 'koa';
 
 export function createDeleteAppResourceController(options: Options): Middleware {
@@ -32,7 +32,7 @@ export function createDeleteAppResourceController(options: Options): Middleware 
       findOptions,
     });
 
-    assertKoaError(!resource, ctx, 404, 'Resource not found');
+    assertKoaCondition(resource != null, ctx, 404, 'Resource not found');
 
     await checkAppPermissions({
       context: ctx,

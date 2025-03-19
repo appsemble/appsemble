@@ -104,6 +104,7 @@ export async function createApp(ctx: Context): Promise<void> {
       controllerCode,
       controllerImplementations,
       displayAppMemberName: false,
+      displayInstallationPrompt: false,
     };
     result.containers = definition.containers;
     result.registry = definition.registry;

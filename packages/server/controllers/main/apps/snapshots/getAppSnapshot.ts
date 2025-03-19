@@ -1,4 +1,4 @@
-import { assertKoaError } from '@appsemble/node-utils';
+import { assertKoaCondition } from '@appsemble/node-utils';
 import { OrganizationPermission } from '@appsemble/types';
 import { type Context } from 'koa';
 
@@ -20,7 +20,7 @@ export async function getAppSnapshot(ctx: Context): Promise<void> {
     },
   });
 
-  assertKoaError(!app, ctx, 404, 'App not found');
+  assertKoaCondition(app != null, ctx, 404, 'App not found');
 
   await checkUserOrganizationPermissions({
     context: ctx,
@@ -28,7 +28,7 @@ export async function getAppSnapshot(ctx: Context): Promise<void> {
     requiredPermissions: [OrganizationPermission.QueryApps],
   });
 
-  assertKoaError(!app.AppSnapshots.length, ctx, 404, 'Snapshot not found');
+  assertKoaCondition(app.AppSnapshots.length > 0, ctx, 404, 'Snapshot not found');
 
   const [snapshot] = app.AppSnapshots;
   ctx.body = {

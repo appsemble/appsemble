@@ -1,4 +1,4 @@
-import { assertKoaError, throwKoaError } from '@appsemble/node-utils';
+import { assertKoaCondition, throwKoaError } from '@appsemble/node-utils';
 import { type Context } from 'koa';
 
 import { OAuthAuthorization, transactional, User } from '../../../../../models/index.js';
@@ -33,8 +33,8 @@ export async function registerOAuth2Authorization(ctx: Context): Promise<void> {
   }
 
   const preset = presets.find((p) => p.authorizationUrl === authorizationUrl);
-  let clientId: string;
-  let clientSecret: string;
+  let clientId: string | undefined;
+  let clientSecret: string | undefined;
 
   if (preset === googlePreset) {
     clientId = argv.googleClientId;
@@ -47,7 +47,8 @@ export async function registerOAuth2Authorization(ctx: Context): Promise<void> {
     clientSecret = argv.githubClientSecret;
   }
 
-  assertKoaError(!clientId || !clientSecret, ctx, 501, 'Unknown authorization URL');
+  // eslint-disable-next-line no-implicit-coercion
+  assertKoaCondition(!!(clientId && clientSecret), ctx, 501, 'Unknown authorization URL');
 
   // Exchange the authorization code for an access token and refresh token.
   const {

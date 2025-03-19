@@ -1,6 +1,6 @@
 import { isDeepStrictEqual } from 'node:util';
 
-import { assertKoaError, serveIcon } from '@appsemble/node-utils';
+import { assertKoaCondition, serveIcon } from '@appsemble/node-utils';
 import { parseISO } from 'date-fns';
 import { type Context } from 'koa';
 
@@ -21,7 +21,7 @@ export async function getAppIcon(ctx: Context): Promise<void> {
     include: [{ model: Organization, attributes: ['icon', 'updated'] }],
   });
 
-  assertKoaError(!app, ctx, 404, 'App not found');
+  assertKoaCondition(app != null, ctx, 404, 'App not found');
 
   const dbUpdated =
     (maskable && app.maskableIcon) || app.icon ? app.updated : app.Organization.updated;

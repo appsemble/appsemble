@@ -1,6 +1,6 @@
 import { type Context, type Middleware } from 'koa';
 
-import { assertKoaError } from '../../../../../koa.js';
+import { assertKoaCondition } from '../../../../../koa.js';
 import { type Options } from '../../../../types.js';
 
 export function createCreateAppAssetController({ createAppAsset, getApp }: Options): Middleware {
@@ -17,7 +17,7 @@ export function createCreateAppAssetController({ createAppAsset, getApp }: Optio
 
     const app = await getApp({ context: ctx, query: { where: { id: appId } } });
 
-    assertKoaError(!app, ctx, 404, 'App not found');
+    assertKoaCondition(app != null, ctx, 404, 'App not found');
 
     const asset = await createAppAsset({
       app,

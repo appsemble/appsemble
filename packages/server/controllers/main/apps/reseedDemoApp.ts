@@ -1,5 +1,5 @@
 import {
-  assertKoaError,
+  assertKoaCondition,
   deleteS3Files,
   getS3File,
   getS3FileStats,
@@ -23,9 +23,9 @@ export async function reseedDemoApp(ctx: Context): Promise<void> {
     attributes: ['demoMode', 'definition', 'OrganizationId'],
   });
 
-  assertKoaError(!app, ctx, 404, 'App not found');
+  assertKoaCondition(app != null, ctx, 404, 'App not found');
 
-  assertKoaError(!app.demoMode, ctx, 400, 'App is not in demo mode');
+  assertKoaCondition(app.demoMode, ctx, 400, 'App is not in demo mode');
 
   logger.info('Cleaning up ephemeral assets.');
 

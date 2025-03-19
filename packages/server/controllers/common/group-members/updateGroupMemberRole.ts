@@ -1,4 +1,4 @@
-import { assertKoaError } from '@appsemble/node-utils';
+import { assertKoaCondition } from '@appsemble/node-utils';
 import { AppPermission, type GroupMember as GroupMemberType } from '@appsemble/types';
 import { getAppRoles } from '@appsemble/utils';
 import { type Context } from 'koa';
@@ -35,17 +35,17 @@ export async function updateGroupMemberRole(ctx: Context): Promise<void> {
     ],
   });
 
-  assertKoaError(!groupMember, ctx, 404, 'Group member not found.');
+  assertKoaCondition(groupMember != null, ctx, 404, 'Group member not found.');
 
-  assertKoaError(
-    groupMember.AppMemberId === authSubject.id,
+  assertKoaCondition(
+    groupMember.AppMemberId !== authSubject.id,
     ctx,
     401,
     'Cannot use this endpoint to update your own role in the group',
   );
 
-  assertKoaError(
-    !getAppRoles(groupMember.Group.App.definition.security).includes(role),
+  assertKoaCondition(
+    getAppRoles(groupMember.Group.App.definition.security).includes(role),
     ctx,
     401,
     'Role not allowed',

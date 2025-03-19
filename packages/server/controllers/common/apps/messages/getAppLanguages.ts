@@ -1,4 +1,4 @@
-import { assertKoaError, getMessagesUtil } from '@appsemble/node-utils';
+import { assertKoaCondition, getMessagesUtil } from '@appsemble/node-utils';
 import { compareStrings, defaultLocale } from '@appsemble/utils';
 import { type Context } from 'koa';
 
@@ -17,7 +17,7 @@ export async function getAppLanguages(ctx: Context): Promise<void> {
     include: [{ model: AppMessages, required: false }],
   });
 
-  assertKoaError(!app, ctx, 404, 'App not found');
+  assertKoaCondition(app != null, ctx, 404, 'App not found');
   if (includeMessages) {
     const result = [];
     for (const message of app.AppMessages) {

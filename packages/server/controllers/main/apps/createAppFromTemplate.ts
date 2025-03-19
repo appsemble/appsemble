@@ -1,5 +1,5 @@
 import {
-  assertKoaError,
+  assertKoaCondition,
   getS3File,
   getS3FileStats,
   throwKoaError,
@@ -88,7 +88,7 @@ export async function createAppFromTemplate(ctx: Context): Promise<void> {
     requiredPermissions: [OrganizationPermission.CreateApps],
   });
 
-  assertKoaError(!template, ctx, 404, `Template with ID ${templateId} does not exist.`);
+  assertKoaCondition(template != null, ctx, 404, `Template with ID ${templateId} does not exist.`);
 
   if (!template.template && (template.visibility === 'private' || !template.showAppDefinition)) {
     // Only allow cloning of unlisted apps if the user is part of the template’s organization.

@@ -93,6 +93,7 @@ declare global {
       development: boolean;
       snapshotId?: number;
       displayAppMemberName?: boolean;
+      displayInstallationPrompt?: boolean;
     };
   }
 }

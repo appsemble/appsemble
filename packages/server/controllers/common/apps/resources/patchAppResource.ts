@@ -1,5 +1,5 @@
 import {
-  assertKoaError,
+  assertKoaCondition,
   getCompressedFileMeta,
   getResourceDefinition,
   processResourceBody,
@@ -27,7 +27,7 @@ export async function patchAppResource(ctx: Context): Promise<void> {
     include: [{ association: 'Author', attributes: ['id', 'name'], required: false }],
   });
 
-  assertKoaError(!resource, ctx, 404, 'Resource not found');
+  assertKoaCondition(resource != null, ctx, 404, 'Resource not found');
 
   await checkAppPermissions({
     context: ctx,
@@ -49,7 +49,7 @@ export async function patchAppResource(ctx: Context): Promise<void> {
     where: { AppId: appId, GroupId: selectedGroupId ?? null },
   });
 
-  assertKoaError(!resource, ctx, 404, 'Resource not found');
+  assertKoaCondition(resource != null, ctx, 404, 'Resource not found');
 
   const [updatedResource, preparedAssets, deletedAssetIds] = processResourceBody(
     ctx,

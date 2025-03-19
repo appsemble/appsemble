@@ -1,4 +1,4 @@
-import { assertKoaError } from '@appsemble/node-utils';
+import { assertKoaCondition } from '@appsemble/node-utils';
 import { getAppRoles } from '@appsemble/utils';
 import { type Context } from 'koa';
 import { Op } from 'sequelize';
@@ -16,9 +16,9 @@ export async function queryAppDemoMembers(ctx: Context): Promise<void> {
     attributes: ['OrganizationId', 'definition', 'demoMode'],
   });
 
-  assertKoaError(!app, ctx, 404, 'App not found');
+  assertKoaCondition(app != null, ctx, 404, 'App not found');
 
-  assertKoaError(!app.demoMode, ctx, 401, 'App is not in demo mode');
+  assertKoaCondition(app.demoMode, ctx, 401, 'App is not in demo mode');
 
   const supportedAppRoles = getAppRoles(app.definition.security);
 
@@ -27,7 +27,7 @@ export async function queryAppDemoMembers(ctx: Context): Promise<void> {
   if (passedRoles.length) {
     const passedRolesAreSupported = passedRoles.every((role) => supportedAppRoles.includes(role));
 
-    assertKoaError(!passedRolesAreSupported, ctx, 400, 'Unsupported role in filter!');
+    assertKoaCondition(passedRolesAreSupported, ctx, 400, 'Unsupported role in filter!');
   }
 
   const appMembers = await AppMember.findAll({

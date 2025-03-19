@@ -1,4 +1,4 @@
-import { assertKoaError } from '@appsemble/node-utils';
+import { assertKoaCondition } from '@appsemble/node-utils';
 import { OrganizationPermission } from '@appsemble/types';
 import { type Context } from 'koa';
 
@@ -18,7 +18,7 @@ export async function deleteAppScreenshot(ctx: Context): Promise<void> {
     ],
   });
 
-  assertKoaError(!app, ctx, 404, 'App not found');
+  assertKoaCondition(app != null, ctx, 404, 'App not found');
 
   checkAppLock(ctx, app);
 
@@ -28,7 +28,12 @@ export async function deleteAppScreenshot(ctx: Context): Promise<void> {
     requiredPermissions: [OrganizationPermission.DeleteAppScreenshots],
   });
 
-  assertKoaError(!app.AppScreenshots.length, ctx, 404, 'Screenshot not found');
+  assertKoaCondition(
+    app.AppScreenshots != null && app.AppScreenshots.length > 0,
+    ctx,
+    404,
+    'Screenshot not found',
+  );
 
   await app.AppScreenshots[0].destroy();
 }

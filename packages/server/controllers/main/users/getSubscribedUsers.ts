@@ -1,4 +1,4 @@
-import { assertKoaError } from '@appsemble/node-utils';
+import { assertKoaCondition } from '@appsemble/node-utils';
 import { type Context } from 'koa';
 import { Op } from 'sequelize';
 
@@ -12,8 +12,8 @@ export async function getSubscribedUsers(ctx: Context): Promise<void> {
     },
   } = ctx;
 
-  assertKoaError(
-    authorization !== `Bearer ${argv.adminApiSecret}` || !argv.adminApiSecret,
+  assertKoaCondition(
+    !(authorization !== `Bearer ${argv.adminApiSecret}` || !argv.adminApiSecret),
     ctx,
     401,
     'Invalid or missing admin API secret',

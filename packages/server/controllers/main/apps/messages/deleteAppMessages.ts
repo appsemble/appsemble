@@ -1,4 +1,4 @@
-import { assertKoaError } from '@appsemble/node-utils';
+import { assertKoaCondition } from '@appsemble/node-utils';
 import { OrganizationPermission } from '@appsemble/types';
 import { type Context } from 'koa';
 
@@ -16,7 +16,7 @@ export async function deleteAppMessages(ctx: Context): Promise<void> {
     where: { id: appId },
   });
 
-  assertKoaError(!app, ctx, 404, 'App not found');
+  assertKoaCondition(app != null, ctx, 404, 'App not found');
 
   checkAppLock(ctx, app);
 
@@ -30,5 +30,5 @@ export async function deleteAppMessages(ctx: Context): Promise<void> {
     where: { language: language.toLowerCase(), AppId: appId },
   });
 
-  assertKoaError(!affectedRows, ctx, 404, `App does not have messages for “${language}”`);
+  assertKoaCondition(affectedRows > 0, ctx, 404, `App does not have messages for “${language}”`);
 }

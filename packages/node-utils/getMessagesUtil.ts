@@ -14,7 +14,7 @@ import {
 import { type Context } from 'koa';
 import tags from 'language-tags';
 
-import { assertKoaError, throwKoaError } from './koa.js';
+import { assertKoaCondition, throwKoaError } from './koa.js';
 
 export async function getMessagesUtil(
   ctx: Context,
@@ -36,7 +36,7 @@ export async function getMessagesUtil(
 
   const app = await getApp({ context: ctx, query: { where: { id: appId } } });
 
-  assertKoaError(!app, ctx, 404, 'App not found');
+  assertKoaCondition(app != null, ctx, 404, 'App not found');
 
   const blockPrefixes: [string, Prefix][] = [];
   const blockQuery: BlockQueryItem[] = [];

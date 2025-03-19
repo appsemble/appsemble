@@ -1,4 +1,4 @@
-import { assertKoaError } from '@appsemble/node-utils';
+import { assertKoaCondition } from '@appsemble/node-utils';
 import { type SubscriptionResponse } from '@appsemble/types';
 import { type Context } from 'koa';
 
@@ -22,10 +22,10 @@ export async function getAppSubscription(ctx: Context): Promise<void> {
       },
     ],
   });
-  assertKoaError(!app, ctx, 404, 'App not found');
+  assertKoaCondition(app != null, ctx, 404, 'App not found');
 
   const [appSubscription] = app.AppSubscriptions;
-  assertKoaError(!appSubscription, ctx, 404, 'Subscription not found');
+  assertKoaCondition(appSubscription != null, ctx, 404, 'Subscription not found');
 
   const resources: SubscriptionResponse = {};
   if (app.definition.resources) {

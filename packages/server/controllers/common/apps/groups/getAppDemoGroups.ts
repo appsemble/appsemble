@@ -1,4 +1,4 @@
-import { assertKoaError } from '@appsemble/node-utils';
+import { assertKoaCondition } from '@appsemble/node-utils';
 import { type Context } from 'koa';
 
 import { App, Group } from '../../../../models/index.js';
@@ -12,9 +12,9 @@ export async function getAppDemoGroups(ctx: Context): Promise<void> {
     attributes: ['OrganizationId', 'definition', 'demoMode'],
   });
 
-  assertKoaError(!app, ctx, 404, 'App not found');
+  assertKoaCondition(app != null, ctx, 404, 'App not found');
 
-  assertKoaError(!app.demoMode, ctx, 401, 'App is not in demo mode');
+  assertKoaCondition(app.demoMode, ctx, 401, 'App is not in demo mode');
 
   const groups = await Group.findAll({
     where: {
