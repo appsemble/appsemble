@@ -1,10 +1,82 @@
 .title {
   font-size: 16px;
   font-weight: bold;
-  margin-top: 12px;
+  margin-top: 14px;
   padding-left: 1rem;
 }
 
 .invisible {
   opacity: 0;
+}
+
+.isMovable {
+  padding: 0.75rem;
+}
+
+.isMovable:hover {
+  cursor: move;
+}
+
+.listItem {
+  width: 100%;
+}
+
+.listItemDragEnter {
+  animation: border-dance-enlarge 1s infinite linear;
+
+  /* border: 3px dashed lightcoral; */
+  background-image: linear-gradient(90deg, hsl(0deg 79% 72%) 50%, transparent 50%),
+    linear-gradient(90deg, hsl(0deg 79% 72%) 50%, transparent 50%),
+    linear-gradient(0deg, hsl(0deg 79% 72%) 50%, transparent 50%),
+    linear-gradient(0deg, hsl(0deg 79% 72%) 50%, transparent 50%);
+  background-position:
+    left top,
+    right bottom,
+    left bottom,
+    right top;
+  background-repeat: repeat-x, repeat-x, repeat-y, repeat-y;
+  background-size:
+    15px 2px,
+    15px 2px,
+    2px 15px,
+    2px 15px;
+  transform: scale(1.05);
+}
+
+@keyframes border-dance-enlarge {
+  0% {
+    background-position:
+      left top,
+      right bottom,
+      left bottom,
+      right top;
+    transform: scale(1);
+  }
+
+  100% {
+    background-position:
+      left 15px top,
+      right 15px bottom,
+      left bottom 15px,
+      right top 15px;
+    transform: scale(1.02);
+  }
+}
+
+.dividerContainer {
+  align-items: center;
+  display: flex;
+  justify-content: center;
+  padding: 0.25rem 5rem;
+  width: 100%;
+}
+
+.dividerDragEnter {
+  background-color: hsl(0deg 100% 50%);
+}
+
+.divider {
+  border-radius: 3px;
+  height: 10px;
+  width: 100%;
 }
