@@ -57,7 +57,7 @@ export function EnumInput({
 
   const applyFilter = useCallback((): void => {
     const filteredOptions = originalOptions.filter((choice) =>
-      String(choice.value).toLowerCase().includes(filter.toLowerCase()),
+      String(choice.label).toLowerCase().includes(filter.toLowerCase()),
     );
     setOptions(filteredOptions);
   }, [filter, originalOptions]);
@@ -179,7 +179,7 @@ export function EnumInput({
 
   const handleSelect = useCallback(
     (choice: Choice) => {
-      setInputValue(choice.value as string);
+      setInputValue(choice.label as string);
       handleChange(name, choice.value as string);
       disable();
     },
@@ -204,7 +204,7 @@ export function EnumInput({
             errorLinkRef={errorLinkRef}
             help={utils.remap(field.help, value) as string}
             icon={icon}
-            label={(utils.remap(label, value) as string) ?? name}
+            label={(utils.remap(label, inputValue) as string) ?? name}
             loading={loading}
             name={name}
             onChange={filterChange}
@@ -218,7 +218,6 @@ export function EnumInput({
           <div
             className="dropdown-menu"
             id="dropdown-menu"
-            onClick={toggle}
             onKeyDown={onKeyDown}
             role="menu"
             tabIndex={0}
