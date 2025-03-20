@@ -104,7 +104,7 @@ exports[`Mailer > sendTranslatedEmail > appEmailQuotaLimitHit > nl > should rend
 </head>
 <body>
 <p>Hallo,</p>
-<p>Uw app Test App heeft de limiet voor het e-mailquotum bereikt.</p>
+<p>De app Test App heeft de limiet voor het e-mailquotum bereikt.</p>
 <p>Met vriendelijke groet,</p>
 <p>Het Appsemble Team_</p>
 </body>
@@ -113,7 +113,7 @@ exports[`Mailer > sendTranslatedEmail > appEmailQuotaLimitHit > nl > should rend
   "subject": "E-mailquotum bereikt",
   "text": "Hallo,
 
-Uw app Test App heeft de limiet voor het e-mailquotum bereikt.
+De app Test App heeft de limiet voor het e-mailquotum bereikt.
 
 Met vriendelijke groet,
 
@@ -137,7 +137,7 @@ exports[`Mailer > sendTranslatedEmail > appEmailQuotaLimitHit > nl > should rend
 </head>
 <body>
 <p>Hallo John Doe,</p>
-<p>Uw app Test App heeft de limiet voor het e-mailquotum bereikt.</p>
+<p>De app Test App heeft de limiet voor het e-mailquotum bereikt.</p>
 <p>Met vriendelijke groet,</p>
 <p>Het Appsemble Team_</p>
 </body>
@@ -146,7 +146,7 @@ exports[`Mailer > sendTranslatedEmail > appEmailQuotaLimitHit > nl > should rend
   "subject": "E-mailquotum bereikt",
   "text": "Hallo John Doe,
 
-Uw app Test App heeft de limiet voor het e-mailquotum bereikt.
+De app Test App heeft de limiet voor het e-mailquotum bereikt.
 
 Met vriendelijke groet,
 
@@ -242,7 +242,7 @@ exports[`Mailer > sendTranslatedEmail > appMemberEmailChange > nl > should rende
 </head>
 <body>
 <p>Hallo,</p>
-<p>Je hebt je e-mailadres voor Test App gewijzigd. Voordat je jouw account kunt gebruiken, moeten we jouw e-mailadres verifiëren.</p>
+<p>Je hebt jouw e-mailadres voor Test App gewijzigd. Voordat je jouw account kunt gebruiken, moeten we jouw e-mailadres verifiëren.</p>
 <p>Klik <a href="https://example.com">hier</a> om jouw e-mailadres te verifiëren.</p>
 <p>Met vriendelijke groet,</p>
 <p><em>Test App</em></p>
@@ -252,7 +252,7 @@ exports[`Mailer > sendTranslatedEmail > appMemberEmailChange > nl > should rende
   "subject": "E-mail gewijzigd",
   "text": "Hallo,
 
-Je hebt je e-mailadres voor Test App gewijzigd. Voordat je jouw account kunt gebruiken, moeten we jouw e-mailadres verifiëren.
+Je hebt jouw e-mailadres voor Test App gewijzigd. Voordat je jouw account kunt gebruiken, moeten we jouw e-mailadres verifiëren.
 
 Klik [hier](https://example.com) om jouw e-mailadres te verifiëren.
 
@@ -278,7 +278,7 @@ exports[`Mailer > sendTranslatedEmail > appMemberEmailChange > nl > should rende
 </head>
 <body>
 <p>Beste John Doe,</p>
-<p>Je hebt je e-mailadres voor Test App gewijzigd. Voordat je jouw account kunt gebruiken, moeten we jouw e-mailadres verifiëren.</p>
+<p>Je hebt jouw e-mailadres voor Test App gewijzigd. Voordat je jouw account kunt gebruiken, moeten we jouw e-mailadres verifiëren.</p>
 <p>Klik <a href="https://example.com">hier</a> om jouw e-mailadres te verifiëren.</p>
 <p>Met vriendelijke groet,</p>
 <p><em>Test App</em></p>
@@ -288,7 +288,7 @@ exports[`Mailer > sendTranslatedEmail > appMemberEmailChange > nl > should rende
   "subject": "E-mail gewijzigd",
   "text": "Beste John Doe,
 
-Je hebt je e-mailadres voor Test App gewijzigd. Voordat je jouw account kunt gebruiken, moeten we jouw e-mailadres verifiëren.
+Je hebt jouw e-mailadres voor Test App gewijzigd. Voordat je jouw account kunt gebruiken, moeten we jouw e-mailadres verifiëren.
 
 Klik [hier](https://example.com) om jouw e-mailadres te verifiëren.
 
@@ -482,10 +482,10 @@ exports[`Mailer > sendTranslatedEmail > emailAdded > nl > should render emailAdd
 </head>
 <body>
 <p>Hallo,</p>
-<p>U heeft een nieuw e-mailadres geregistreerd voor uw account. Om volledig gebruik te kunnen maken van deze e-mail, moeten we uw e-mailadres verifiëren.</p>
-<p>Klik op <a href="https://example.com">deze link</a> om uw e-mailadres te verifiëren.</p>
+<p>Je hebt een nieuw e-mailadres geregistreerd voor je account. Om volledig gebruik te kunnen maken van deze e-mail, moeten we jouw e-mailadres verifiëren.</p>
+<p>Klik op <a href="https://example.com">deze link</a> om jouw e-mailadres te verifiëren.</p>
 <p><strong>Heb je deze e-mail niet aangevraagd?</strong>.</p>
-<p>Geen zorgen! Mogelijk is uw adres per ongeluk ingevoerd. Als u deze e-mail negeert of verwijdert, wordt er niets met dit e-mailadres gedaan.</p>
+<p>Geen zorgen! Mogelijk is je adres per ongeluk ingevoerd. Als je deze e-mail negeert of verwijdert, wordt er niets met dit e-mailadres gedaan.</p>
 <p>Met vriendelijke groet,</p>
 <p><em>Test App</em></p>
 </body>
@@ -494,13 +494,13 @@ exports[`Mailer > sendTranslatedEmail > emailAdded > nl > should render emailAdd
   "subject": "E-mailadres toegevoegd aan account",
   "text": "Hallo,
 
-U heeft een nieuw e-mailadres geregistreerd voor uw account. Om volledig gebruik te kunnen maken van deze e-mail, moeten we uw e-mailadres verifiëren.
+Je hebt een nieuw e-mailadres geregistreerd voor je account. Om volledig gebruik te kunnen maken van deze e-mail, moeten we jouw e-mailadres verifiëren.
 
-Klik op [deze link](https://example.com) om uw e-mailadres te verifiëren.
+Klik op [deze link](https://example.com) om jouw e-mailadres te verifiëren.
 
 **Heb je deze e-mail niet aangevraagd?**.
 
-Geen zorgen! Mogelijk is uw adres per ongeluk ingevoerd. Als u deze e-mail negeert of verwijdert, wordt er niets met dit e-mailadres gedaan.
+Geen zorgen! Mogelijk is je adres per ongeluk ingevoerd. Als je deze e-mail negeert of verwijdert, wordt er niets met dit e-mailadres gedaan.
 
 Met vriendelijke groet,
 
@@ -524,10 +524,10 @@ exports[`Mailer > sendTranslatedEmail > emailAdded > nl > should render emailAdd
 </head>
 <body>
 <p>Hallo John Doe,</p>
-<p>U heeft een nieuw e-mailadres geregistreerd voor uw account. Om volledig gebruik te kunnen maken van deze e-mail, moeten we uw e-mailadres verifiëren.</p>
-<p>Klik op <a href="https://example.com">deze link</a> om uw e-mailadres te verifiëren.</p>
+<p>Je hebt een nieuw e-mailadres geregistreerd voor je account. Om volledig gebruik te kunnen maken van deze e-mail, moeten we jouw e-mailadres verifiëren.</p>
+<p>Klik op <a href="https://example.com">deze link</a> om jouw e-mailadres te verifiëren.</p>
 <p><strong>Heb je deze e-mail niet aangevraagd?</strong>.</p>
-<p>Geen zorgen! Mogelijk is uw adres per ongeluk ingevoerd. Als u deze e-mail negeert of verwijdert, wordt er niets met dit e-mailadres gedaan.</p>
+<p>Geen zorgen! Mogelijk is je adres per ongeluk ingevoerd. Als je deze e-mail negeert of verwijdert, wordt er niets met dit e-mailadres gedaan.</p>
 <p>Met vriendelijke groet,</p>
 <p><em>Test App</em></p>
 </body>
@@ -536,13 +536,13 @@ exports[`Mailer > sendTranslatedEmail > emailAdded > nl > should render emailAdd
   "subject": "E-mailadres toegevoegd aan account",
   "text": "Hallo John Doe,
 
-U heeft een nieuw e-mailadres geregistreerd voor uw account. Om volledig gebruik te kunnen maken van deze e-mail, moeten we uw e-mailadres verifiëren.
+Je hebt een nieuw e-mailadres geregistreerd voor je account. Om volledig gebruik te kunnen maken van deze e-mail, moeten we jouw e-mailadres verifiëren.
 
-Klik op [deze link](https://example.com) om uw e-mailadres te verifiëren.
+Klik op [deze link](https://example.com) om jouw e-mailadres te verifiëren.
 
 **Heb je deze e-mail niet aangevraagd?**.
 
-Geen zorgen! Mogelijk is uw adres per ongeluk ingevoerd. Als u deze e-mail negeert of verwijdert, wordt er niets met dit e-mailadres gedaan.
+Geen zorgen! Mogelijk is je adres per ongeluk ingevoerd. Als je deze e-mail negeert of verwijdert, wordt er niets met dit e-mailadres gedaan.
 
 Met vriendelijke groet,
 
@@ -566,10 +566,10 @@ exports[`Mailer > sendTranslatedEmail > emailAdded > nl > should render emailAdd
 </head>
 <body>
 <p>Hallo,</p>
-<p>U heeft een nieuw e-mailadres geregistreerd voor uw account. Om volledig gebruik te kunnen maken van deze e-mail, moeten we uw e-mailadres verifiëren.</p>
-<p>Klik op <a href="https://example.com">deze link</a> om uw e-mailadres te verifiëren.</p>
+<p>Je hebt een nieuw e-mailadres geregistreerd voor je account. Om volledig gebruik te kunnen maken van deze e-mail, moeten we jouw e-mailadres verifiëren.</p>
+<p>Klik op <a href="https://example.com">deze link</a> om jouw e-mailadres te verifiëren.</p>
 <p><strong>Heb je deze e-mail niet aangevraagd?</strong>.</p>
-<p>Geen zorgen! Mogelijk is uw adres per ongeluk ingevoerd. Als u deze e-mail negeert of verwijdert, wordt er niets met dit e-mailadres gedaan.</p>
+<p>Geen zorgen! Mogelijk is je adres per ongeluk ingevoerd. Als je deze e-mail negeert of verwijdert, wordt er niets met dit e-mailadres gedaan.</p>
 <p>Met vriendelijke groet,</p>
 <p><em>Het Appsemble Team</em></p>
 </body>
@@ -578,13 +578,13 @@ exports[`Mailer > sendTranslatedEmail > emailAdded > nl > should render emailAdd
   "subject": "E-mailadres toegevoegd aan account",
   "text": "Hallo,
 
-U heeft een nieuw e-mailadres geregistreerd voor uw account. Om volledig gebruik te kunnen maken van deze e-mail, moeten we uw e-mailadres verifiëren.
+Je hebt een nieuw e-mailadres geregistreerd voor je account. Om volledig gebruik te kunnen maken van deze e-mail, moeten we jouw e-mailadres verifiëren.
 
-Klik op [deze link](https://example.com) om uw e-mailadres te verifiëren.
+Klik op [deze link](https://example.com) om jouw e-mailadres te verifiëren.
 
 **Heb je deze e-mail niet aangevraagd?**.
 
-Geen zorgen! Mogelijk is uw adres per ongeluk ingevoerd. Als u deze e-mail negeert of verwijdert, wordt er niets met dit e-mailadres gedaan.
+Geen zorgen! Mogelijk is je adres per ongeluk ingevoerd. Als je deze e-mail negeert of verwijdert, wordt er niets met dit e-mailadres gedaan.
 
 Met vriendelijke groet,
 
@@ -608,10 +608,10 @@ exports[`Mailer > sendTranslatedEmail > emailAdded > nl > should render emailAdd
 </head>
 <body>
 <p>Hallo John Doe,</p>
-<p>U heeft een nieuw e-mailadres geregistreerd voor uw account. Om volledig gebruik te kunnen maken van deze e-mail, moeten we uw e-mailadres verifiëren.</p>
-<p>Klik op <a href="https://example.com">deze link</a> om uw e-mailadres te verifiëren.</p>
+<p>Je hebt een nieuw e-mailadres geregistreerd voor je account. Om volledig gebruik te kunnen maken van deze e-mail, moeten we jouw e-mailadres verifiëren.</p>
+<p>Klik op <a href="https://example.com">deze link</a> om jouw e-mailadres te verifiëren.</p>
 <p><strong>Heb je deze e-mail niet aangevraagd?</strong>.</p>
-<p>Geen zorgen! Mogelijk is uw adres per ongeluk ingevoerd. Als u deze e-mail negeert of verwijdert, wordt er niets met dit e-mailadres gedaan.</p>
+<p>Geen zorgen! Mogelijk is je adres per ongeluk ingevoerd. Als je deze e-mail negeert of verwijdert, wordt er niets met dit e-mailadres gedaan.</p>
 <p>Met vriendelijke groet,</p>
 <p><em>Het Appsemble Team</em></p>
 </body>
@@ -620,13 +620,13 @@ exports[`Mailer > sendTranslatedEmail > emailAdded > nl > should render emailAdd
   "subject": "E-mailadres toegevoegd aan account",
   "text": "Hallo John Doe,
 
-U heeft een nieuw e-mailadres geregistreerd voor uw account. Om volledig gebruik te kunnen maken van deze e-mail, moeten we uw e-mailadres verifiëren.
+Je hebt een nieuw e-mailadres geregistreerd voor je account. Om volledig gebruik te kunnen maken van deze e-mail, moeten we jouw e-mailadres verifiëren.
 
-Klik op [deze link](https://example.com) om uw e-mailadres te verifiëren.
+Klik op [deze link](https://example.com) om jouw e-mailadres te verifiëren.
 
 **Heb je deze e-mail niet aangevraagd?**.
 
-Geen zorgen! Mogelijk is uw adres per ongeluk ingevoerd. Als u deze e-mail negeert of verwijdert, wordt er niets met dit e-mailadres gedaan.
+Geen zorgen! Mogelijk is je adres per ongeluk ingevoerd. Als je deze e-mail negeert of verwijdert, wordt er niets met dit e-mailadres gedaan.
 
 Met vriendelijke groet,
 
@@ -723,7 +723,7 @@ exports[`Mailer > sendTranslatedEmail > groupInvite > nl > should render groupIn
 <body>
 <p>Hallo,</p>
 <p>Je bent uitgenodigd om deel uit te maken van het group <strong>Test Group</strong> voor de app <strong>Test App</strong>.</p>
-<p>U kunt deze uitnodiging accepteren door <a href="https://example.com">deze link</a> te volgen.</p>
+<p>Je kunt deze uitnodiging accepteren door <a href="https://example.com">deze link</a> te volgen.</p>
 <p>Met vriendelijke groet,</p>
 <p><em>Het Test App Team</em></p>
 </body>
@@ -734,7 +734,7 @@ exports[`Mailer > sendTranslatedEmail > groupInvite > nl > should render groupIn
 
 Je bent uitgenodigd om deel uit te maken van het group **Test Group** voor de app **Test App**.
 
-U kunt deze uitnodiging accepteren door [deze link](https://example.com) te volgen.
+Je kunt deze uitnodiging accepteren door [deze link](https://example.com) te volgen.
 
 Met vriendelijke groet,
 
@@ -759,7 +759,7 @@ exports[`Mailer > sendTranslatedEmail > groupInvite > nl > should render groupIn
 <body>
 <p>Hallo John Doe,</p>
 <p>Je bent uitgenodigd om deel uit te maken van het group <strong>Test Group</strong> voor de app <strong>Test App</strong>.</p>
-<p>U kunt deze uitnodiging accepteren door <a href="https://example.com">deze link</a> te volgen.</p>
+<p>Je kunt deze uitnodiging accepteren door <a href="https://example.com">deze link</a> te volgen.</p>
 <p>Met vriendelijke groet,</p>
 <p><em>Het Test App Team</em></p>
 </body>
@@ -770,7 +770,7 @@ exports[`Mailer > sendTranslatedEmail > groupInvite > nl > should render groupIn
 
 Je bent uitgenodigd om deel uit te maken van het group **Test Group** voor de app **Test App**.
 
-U kunt deze uitnodiging accepteren door [deze link](https://example.com) te volgen.
+Je kunt deze uitnodiging accepteren door [deze link](https://example.com) te volgen.
 
 Met vriendelijke groet,
 
@@ -873,8 +873,8 @@ exports[`Mailer > sendTranslatedEmail > organizationInvite > nl > should render 
 <body>
 <p>Hallo,</p>
 <p>Je bent uitgenodigd om lid te worden van de organisatie <strong>Test Organization</strong>.</p>
-<p>Als u lid wordt van een organisatie, kunt u privéapplicaties bekijken en apps van een organisatie maken en bewerken.</p>
-<p>U kunt deze uitnodiging accepteren of weigeren door <a href="https://example.com">deze link</a> te volgen.</p>
+<p>Als je lid wordt van een organisatie, kun je privéapplicaties bekijken en apps van een organisatie maken en bewerken.</p>
+<p>Je kunt deze uitnodiging accepteren of weigeren door <a href="https://example.com">deze link</a> te volgen.</p>
 <p>Met vriendelijke groet,</p>
 <p><em>Het Appsemble Team</em></p>
 </body>
@@ -885,9 +885,9 @@ exports[`Mailer > sendTranslatedEmail > organizationInvite > nl > should render 
 
 Je bent uitgenodigd om lid te worden van de organisatie **Test Organization**.
 
-Als u lid wordt van een organisatie, kunt u privéapplicaties bekijken en apps van een organisatie maken en bewerken.
+Als je lid wordt van een organisatie, kun je privéapplicaties bekijken en apps van een organisatie maken en bewerken.
 
-U kunt deze uitnodiging accepteren of weigeren door [deze link](https://example.com) te volgen.
+Je kunt deze uitnodiging accepteren of weigeren door [deze link](https://example.com) te volgen.
 
 Met vriendelijke groet,
 
@@ -912,8 +912,8 @@ exports[`Mailer > sendTranslatedEmail > organizationInvite > nl > should render 
 <body>
 <p>Hallo John Doe,</p>
 <p>Je bent uitgenodigd om lid te worden van de organisatie <strong>Test Organization</strong>.</p>
-<p>Als u lid wordt van een organisatie, kunt u privéapplicaties bekijken en apps van een organisatie maken en bewerken.</p>
-<p>U kunt deze uitnodiging accepteren of weigeren door <a href="https://example.com">deze link</a> te volgen.</p>
+<p>Als je lid wordt van een organisatie, kun je privéapplicaties bekijken en apps van een organisatie maken en bewerken.</p>
+<p>Je kunt deze uitnodiging accepteren of weigeren door <a href="https://example.com">deze link</a> te volgen.</p>
 <p>Met vriendelijke groet,</p>
 <p><em>Het Appsemble Team</em></p>
 </body>
@@ -924,9 +924,9 @@ exports[`Mailer > sendTranslatedEmail > organizationInvite > nl > should render 
 
 Je bent uitgenodigd om lid te worden van de organisatie **Test Organization**.
 
-Als u lid wordt van een organisatie, kunt u privéapplicaties bekijken en apps van een organisatie maken en bewerken.
+Als je lid wordt van een organisatie, kun je privéapplicaties bekijken en apps van een organisatie maken en bewerken.
 
-U kunt deze uitnodiging accepteren of weigeren door [deze link](https://example.com) te volgen.
+Je kunt deze uitnodiging accepteren of weigeren door [deze link](https://example.com) te volgen.
 
 Met vriendelijke groet,
 
