@@ -13,4 +13,4 @@ For example:
 
 ### Images
 
-![Detail viewer screenshot](https://gitlab.com/appsemble/appsemble/-/raw/0.32.1-test.10/config/assets/detail-viewer.png)
+![Detail viewer screenshot](https://gitlab.com/appsemble/appsemble/-/raw/0.32.1-test.11/config/assets/detail-viewer.png)

@@ -16,7 +16,7 @@
   },
   "blocks": {
     "@appsemble/form": {
-      "0.32.1-test.10": {
+      "0.32.1-test.11": {
         "submitLabel": "Следующий"
       }
     }

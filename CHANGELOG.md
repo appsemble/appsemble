@@ -2,6 +2,8 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.32.1-test.11](https://gitlab.com/appsemble/appsemble/-/releases/0.32.1-test.11)] - 2025-03-20
+
 ## \[[0.32.1-test.10](https://gitlab.com/appsemble/appsemble/-/releases/0.32.1-test.10)] - 2025-03-20
 
 ### Added

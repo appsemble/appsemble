@@ -1,6 +1,6 @@
 {
   "name": "@appsemble/chart",
-  "version": "0.32.1-test.10",
+  "version": "0.32.1-test.11",
   "private": true,
   "description": "Render a chart",
   "homepage": "https://appsemble.app",
@@ -17,7 +17,7 @@
     "test": "vitest"
   },
   "dependencies": {
-    "@appsemble/sdk": "0.32.1-test.10",
+    "@appsemble/sdk": "0.32.1-test.11",
     "chart.js": "^3.0.0"
   }
 }
