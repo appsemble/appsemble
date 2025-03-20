@@ -454,7 +454,7 @@ export async function removeAll({
   while (deletedAmount < resources.length) {
     for (const resource of await Resource.findAll({
       where: {
-        id: resources.slice(deletedAmount, deletedAmount + 100),
+        id: resources.slice(deletedAmount, deletedAmount + 100).map(({ id }) => id),
       },
       include: [
         {
