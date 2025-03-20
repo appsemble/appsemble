@@ -1,5 +1,5 @@
 import { bootstrap, FormattedMessage, useBlock } from '@appsemble/preact';
-import { Loader, Message } from '@appsemble/preact-components';
+import { Icon, Loader, Message } from '@appsemble/preact-components';
 import { type VNode } from 'preact';
 import { useCallback, useEffect, useState } from 'preact/hooks';
 
@@ -20,6 +20,9 @@ bootstrap(
     const [groupedData, setGroupedData] = useState<Record<string, Item[]>>({});
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(false);
+    const [isDragging, setIsDragging] = useState(false);
+    const [currentLine, setCurrentLine] = useState(-1);
+    const [draggedItemIndex, setDraggedItemIndex] = useState<number | null>(null);
     const {
       actions: { onDrop },
     } = useBlock();
@@ -27,13 +30,14 @@ bootstrap(
     const renderItems = useCallback(
       (items: Item[], spaced?: boolean): VNode => {
         const itemList: Item[] = items;
-        let draggedItemIndex: number | null = null;
 
         const handleDragStart = (index: number): void => {
-          draggedItemIndex = index;
+          setIsDragging(true);
+          setDraggedItemIndex(index);
         };
 
         const handleDrop = async (index: number): Promise<void> => {
+          setIsDragging(false);
           if (draggedItemIndex == null || draggedItemIndex === index) {
             return;
           }
@@ -42,8 +46,8 @@ bootstrap(
           const [movedItem] = updatedItems.splice(draggedItemIndex, 1);
           updatedItems.splice(index, 0, movedItem);
 
-          const prevResourcePosition = Number(itemList[index - 1]?.Position);
-          const nextResourcePosition = Number(itemList[index]?.Position);
+          const prevResourcePosition = Number(itemList[index]?.Position);
+          const nextResourcePosition = Number(itemList[index + 1]?.Position);
 
           const result: Item[] = await onDrop({
             prevResourcePosition,
@@ -52,7 +56,7 @@ bootstrap(
           });
 
           setData(result);
-          draggedItemIndex = null;
+          setDraggedItemIndex(null);
         };
 
         return (
@@ -60,16 +64,41 @@ bootstrap(
             {itemList.map((item, index) => (
               // eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions
               <li
-                draggable={onDrop ? onDrop.type !== 'noop' : null}
+                draggable={isDragging && onDrop ? onDrop.type !== 'noop' : null}
                 key={item.id ?? index}
                 onDragEnd={() => {
-                  draggedItemIndex = null;
+                  handleDrop(currentLine);
+                  setCurrentLine(-1);
                 }}
+                onDragEnter={() => setCurrentLine((prev) => (prev === index ? prev : index))}
                 onDragOver={(e) => e.preventDefault()}
                 onDragStart={() => handleDragStart(index)}
-                onDrop={() => handleDrop(index)}
               >
-                <ListItem index={index} item={item} />
+                <div className="is-flex is-align-items-center">
+                  {}
+                  {onDrop.type === 'noop' ? null : (
+                    // eslint-disable-next-line jsx-a11y/no-static-element-interactions
+                    <div
+                      className={String(styles.isMovable)}
+                      onMouseEnter={() => setIsDragging(true)}
+                      onMouseLeave={() => setIsDragging(false)}
+                    >
+                      <Icon icon="grip-vertical" size="medium" />
+                    </div>
+                  )}
+                  <div
+                    className={`${isDragging && currentLine === index ? styles.listItemDragEnter : ''} ${styles.listItem}`}
+                  >
+                    <ListItem index={index} item={item} />
+                  </div>
+                </div>
+                {onDrop.type !== 'noop' && (
+                  <div className={styles.dividerContainer}>
+                    <div
+                      className={`${styles.divider} ${index === currentLine ? styles.dividerDragEnter : ''}`}
+                    />
+                  </div>
+                )}
               </li>
             ))}
             {onDrop?.type === 'noop' ? null : (
@@ -85,7 +114,7 @@ bootstrap(
           </ul>
         );
       },
-      [onDrop, setData],
+      [currentLine, isDragging, onDrop, draggedItemIndex],
     );
 
     useEffect(() => {
