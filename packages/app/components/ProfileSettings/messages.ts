@@ -54,4 +54,12 @@ export const messages = defineMessages({
     defaultMessage:
       'Click a picture straight from your camera, (Only works if no file is being uploaded)',
   },
+  languageLabel: {
+    id: 'app.y1Z3or',
+    defaultMessage: 'Language',
+  },
+  languageDescription: {
+    id: 'app.swaMky',
+    defaultMessage: 'Preferred language for this app',
+  },
 });

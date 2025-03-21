@@ -22,8 +22,7 @@ export function AppSettings(): ReactNode {
         <FormattedMessage {...messages.settings} />
       </AppBar>
       <Main>
-        {isLoggedIn ? <ProfileSettings /> : null}
-        <LanguagePreference />
+        {isLoggedIn ? <ProfileSettings /> : <LanguagePreference />}
         <AppSubscriptions />
       </Main>
     </Content>
