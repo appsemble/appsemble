@@ -202,10 +202,8 @@ blocks:
 
 <ActionRef action={actions['resource.update']} />
 
-This action is used to replace some resource’s data with a completely new set of values. Id can be
-specified explicitly using the parameter `id` or appsemble can infer it from the data passed to the
-action function, explicitly defined id is preferred by the system. This action requires at least one
-of the app permissions `$resource:all:update`, `$resource:all:own:update`,
+This action is used to replace some resource’s data with a completely new set of values. This action
+requires at least one of the app permissions `$resource:all:update`, `$resource:all:own:update`,
 `$resource:<resource-name>:update` or `$resource:<resource-name>:own:update`, depending on the
 context. For more information check out [security](../app/security.md#permissions). Here’s an
 example of how you can use this action to update an existing resource of type person.
@@ -240,11 +238,13 @@ blocks:
 
 <ActionRef action={actions['resource.patch']} />
 
-This action is used to partially update a resource with new data. This action requires at least one
-of the app permissions `$resource:all:patch`, `$resource:all:own:patch`,
-`$resource:<resource-name>:patch` or `$resource:<resource-name>:own:patch`, depending on the
-context. For more information check out [security](../app/security.md#permissions). Here’s an
-example of how you can partially update a resource of type person using this action.
+This action is used to partially update a resource with new data. Id can be specified explicitly
+using the parameter `id` or appsemble can infer it from the data passed to the action function,
+explicitly defined id is preferred by the system. This action requires at least one of the app
+permissions `$resource:all:patch`, `$resource:all:own:patch`, `$resource:<resource-name>:patch` or
+`$resource:<resource-name>:own:patch`, depending on the context. For more information check out
+[security](../app/security.md#permissions). Here’s an example of how you can partially update a
+resource of type person using this action.
 
 ```yaml validate blocks-snippet
 blocks:
