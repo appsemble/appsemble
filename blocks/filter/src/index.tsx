@@ -10,7 +10,13 @@ import { type FilterValue, type FilterValues } from '../block.js';
 import { toOData } from './utils/toOData.js';
 
 bootstrap(
-  ({ actions, events, parameters: { fields, fullscreen, highlight, icon }, ready, utils }) => {
+  ({
+    actions,
+    events,
+    parameters: { fields, fullscreen, hideButton, highlight, icon },
+    ready,
+    utils,
+  }) => {
     const modal = useToggle();
     const [loading, setLoading] = useState(false);
     const [shouldFetch, setShouldFetch] = useState(false);
@@ -30,7 +36,9 @@ bootstrap(
     const [values, setValues] = useState(defaultValues);
 
     const highlightedFields = fields.filter((field) =>
-      typeof highlight === 'string' ? field.name === highlight : highlight.includes(field.name),
+      typeof highlight === 'string'
+        ? field.name === highlight
+        : (highlight || []).includes(field.name),
     );
     const fetchData = useCallback(
       async (submitValues: FilterValues) => {
@@ -107,7 +115,15 @@ bootstrap(
       // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
-    const showModal = fields.some((field) => field.name !== highlight);
+    const showModal = useMemo(
+      () =>
+        fields.some((field) =>
+          typeof highlight === 'string'
+            ? field.name !== highlight
+            : !(highlight || []).includes(field.name),
+        ),
+      [fields, highlight],
+    );
 
     return (
       <Form
@@ -116,27 +132,35 @@ bootstrap(
         })}
         onSubmit={onSubmit}
       >
-        {highlightedFields?.map((highlightedField) => (
-          <div className="field" key={highlightedField.name}>
-            {highlightedField.label ? (
-              <label className="label">{utils.remap(highlightedField.label, {}) as string}</label>
-            ) : null}
-            <div className="control">
-              <FieldComponent
-                className="mx-2 my-2"
-                field={highlightedField}
-                highlight
-                loading={loading}
-                onChange={onChange}
-                value={values[highlightedField.name]}
-              />
+        <div className={classNames(styles['highlighted-fields-wrapper'])}>
+          {highlightedFields?.map((highlightedField) => (
+            <div
+              className={classNames('field', styles['highlighted-field'])}
+              key={highlightedField.name}
+            >
+              {highlightedField.label ? (
+                <label className="label">{utils.remap(highlightedField.label, {}) as string}</label>
+              ) : null}
+              <div className="control">
+                <FieldComponent
+                  field={highlightedField}
+                  highlight
+                  loading={loading}
+                  onChange={onChange}
+                  value={values[highlightedField.name]}
+                />
+              </div>
             </div>
-          </div>
-        ))}
+          ))}
+        </div>
         {showModal ? (
           <>
             <Button
-              className={classNames('mx-2 my-2', { 'is-primary': true })}
+              className={classNames(
+                'mx-2 my-2',
+                { 'is-primary': true },
+                hideButton ? 'is-hidden' : '',
+              )}
               icon={icon || 'filter'}
               loading={loading}
               onClick={modal.enable}

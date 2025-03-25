@@ -1547,6 +1547,10 @@ exports[`config > getProjectImplementations > official blocks > filter 1`] = `
             "description": "The name of the field to filter on.",
             "type": "string",
           },
+          "separator": {
+            "description": "The text to put between the \`to\` and \`from\` fields.",
+            "format": "remapper",
+          },
           "toLabel": {
             "description": "The label to render on the \`to\` field.",
             "format": "remapper",
@@ -1778,6 +1782,13 @@ By setting this to true, an exact match is used.",
       "fullscreen": {
         "default": false,
         "description": "Whether the modal should fill the whole page or not.",
+        "type": "boolean",
+      },
+      "hideButton": {
+        "default": false,
+        "description": "Whether the button that opens the modal should be hidden.
+
+If all the fields are highlighted, the button will be automatically hidden.",
         "type": "boolean",
       },
       "highlight": {

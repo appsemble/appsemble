@@ -121,6 +121,11 @@ export interface DateRangeField extends AbstractField<'date-range', [string, str
    * The label to render on the `to` field.
    */
   toLabel?: Remapper;
+
+  /**
+   * The text to put between the `to` and `from` fields.
+   */
+  separator?: Remapper;
 }
 
 export interface ListField extends AbstractField<'list', string> {
@@ -206,6 +211,15 @@ declare module '@appsemble/sdk' {
      * @default 'filter'
      */
     icon?: IconName;
+
+    /**
+     * Whether the button that opens the modal should be hidden.
+     *
+     * If all the fields are highlighted, the button will be automatically hidden.
+     *
+     * @default false
+     */
+    hideButton?: boolean;
   }
 
   interface Messages {
