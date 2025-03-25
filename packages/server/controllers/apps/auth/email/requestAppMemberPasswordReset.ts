@@ -33,7 +33,7 @@ export async function requestAppMemberPasswordReset(ctx: Context): Promise<void>
   const email = request.body.email.toLowerCase();
 
   const appMember = await AppMember.findOne({
-    where: { email },
+    where: { email, AppId: appId },
     attributes: {
       exclude: ['picture'],
     },
