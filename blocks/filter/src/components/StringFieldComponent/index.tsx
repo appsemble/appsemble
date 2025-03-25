@@ -16,7 +16,7 @@ export function StringFieldComponent({
       loading={loading}
       name={field.name}
       onChange={onChange}
-      value={value}
+      value={value ?? ''}
     />
   );
 }

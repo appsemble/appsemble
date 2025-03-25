@@ -11,9 +11,12 @@
   display: flex;
   flex-wrap: wrap;
   gap: 2rem;
-  padding: 2rem;
 }
 
 .highlighted-field {
   width: 250px;
+}
+
+.wide-highlighted-field {
+  width: 350px;
 }

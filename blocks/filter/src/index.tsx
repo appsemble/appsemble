@@ -13,7 +13,7 @@ bootstrap(
   ({
     actions,
     events,
-    parameters: { fields, fullscreen, hideButton, highlight, icon },
+    parameters: { fields, fullscreen, hideButton, highlight = [], icon },
     ready,
     utils,
   }) => {
@@ -36,9 +36,7 @@ bootstrap(
     const [values, setValues] = useState(defaultValues);
 
     const highlightedFields = fields.filter((field) =>
-      typeof highlight === 'string'
-        ? field.name === highlight
-        : (highlight || []).includes(field.name),
+      typeof highlight === 'string' ? field.name === highlight : highlight.includes(field.name),
     );
     const fetchData = useCallback(
       async (submitValues: FilterValues) => {
@@ -120,22 +118,36 @@ bootstrap(
         fields.some((field) =>
           typeof highlight === 'string'
             ? field.name !== highlight
-            : !(highlight || []).includes(field.name),
+            : !highlight.includes(field.name),
         ),
       [fields, highlight],
     );
 
+    const hasHighlight = useMemo(
+      () => typeof highlight === 'string' || highlight.length,
+      [highlight],
+    );
+
     return (
       <Form
-        className={classNames(`is-flex mb-1 ${styles.root}`, {
+        className={classNames(`is-flex is-flex-direction-column p-4 mb-1 ${styles.root}`, {
           [styles.highlighted]: highlightedFields[0],
         })}
         onSubmit={onSubmit}
       >
-        <div className={classNames(styles['highlighted-fields-wrapper'])}>
+        <div
+          className={classNames(styles['highlighted-fields-wrapper'], hasHighlight ? 'mb-6' : '')}
+        >
           {highlightedFields?.map((highlightedField) => (
             <div
-              className={classNames('field', styles['highlighted-field'])}
+              className={classNames(
+                'field',
+                styles[
+                  highlightedField.type === 'date-range'
+                    ? 'wide-highlighted-field'
+                    : 'highlighted-field'
+                ],
+              )}
               key={highlightedField.name}
             >
               {highlightedField.label ? (
@@ -153,55 +165,60 @@ bootstrap(
             </div>
           ))}
         </div>
-        {showModal ? (
-          <>
-            <Button
-              className={classNames(
-                'mx-2 my-2',
-                { 'is-primary': true },
-                hideButton ? 'is-hidden' : '',
-              )}
-              icon={icon || 'filter'}
-              loading={loading}
-              onClick={modal.enable}
-            />
-            <ModalCard
-              footer={
-                <>
-                  <CardFooterButton onClick={resetFilter}>
-                    {utils.formatMessage('clearLabel')}
-                  </CardFooterButton>
-                  <CardFooterButton color="primary" type="submit">
-                    {utils.formatMessage('submitLabel')}
-                  </CardFooterButton>
-                </>
-              }
-              fullscreen={fullscreen}
-              isActive={modal.enabled}
-              onClose={modal.disable}
-              title={<span>{utils.formatMessage('modalTitle')}</span>}
-            >
-              {fields.map(
-                (field) =>
-                  highlightedFields.includes(field) || (
-                    <div className="field" key={field.name}>
-                      {field.label ? (
-                        <label className="label">{utils.remap(field.label, {}) as string}</label>
-                      ) : null}
-                      <div className="control">
-                        <FieldComponent
-                          field={field}
-                          loading={loading}
-                          onChange={onChange}
-                          value={values[field.name]}
-                        />
+        <div className="is-flex is-align-items-center">
+          {hasHighlight ? (
+            <Button onClick={resetFilter}>{utils.formatMessage('clearLabel')}</Button>
+          ) : null}
+          {showModal ? (
+            <>
+              <Button
+                className={classNames(
+                  'mx-2 my-2',
+                  { 'is-primary': true },
+                  hideButton ? 'is-hidden' : '',
+                )}
+                icon={icon || 'filter'}
+                loading={loading}
+                onClick={modal.enable}
+              />
+              <ModalCard
+                footer={
+                  <>
+                    <CardFooterButton onClick={resetFilter}>
+                      {utils.formatMessage('clearLabel')}
+                    </CardFooterButton>
+                    <CardFooterButton color="primary" type="submit">
+                      {utils.formatMessage('submitLabel')}
+                    </CardFooterButton>
+                  </>
+                }
+                fullscreen={fullscreen}
+                isActive={modal.enabled}
+                onClose={modal.disable}
+                title={<span>{utils.formatMessage('modalTitle')}</span>}
+              >
+                {fields.map(
+                  (field) =>
+                    highlightedFields.includes(field) || (
+                      <div className="field" key={field.name}>
+                        {field.label ? (
+                          <label className="label">{utils.remap(field.label, {}) as string}</label>
+                        ) : null}
+                        <div className="control">
+                          <FieldComponent
+                            field={field}
+                            loading={loading}
+                            onChange={onChange}
+                            value={values[field.name]}
+                          />
+                        </div>
                       </div>
-                    </div>
-                  ),
-              )}
-            </ModalCard>
-          </>
-        ) : null}
+                    ),
+                )}
+              </ModalCard>
+            </>
+          ) : null}
+        </div>
       </Form>
     );
   },
