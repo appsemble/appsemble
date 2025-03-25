@@ -45,6 +45,7 @@
     "cron-parser": "^4.0.0",
     "date-fns": "^2.0.0",
     "fast-deep-equal": "^3.0.0",
+    "fast-xml-parser": "^5.0.8",
     "ics": "^3.0.0",
     "intl-messageformat": "^10.0.0",
     "jsonschema": "~1.4.1",

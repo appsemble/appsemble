@@ -9,6 +9,7 @@ import {
 import { filter, literalValues, param } from '@odata/parser';
 import { addMilliseconds, format, parse, parseISO } from 'date-fns';
 import equal from 'fast-deep-equal';
+import { XMLParser } from 'fast-xml-parser';
 import { createEvent, type EventAttributes } from 'ics';
 import { type IntlMessageFormat } from 'intl-messageformat';
 import parseDuration from 'parse-duration';
@@ -732,6 +733,20 @@ const mapperImplementations: MapperImplementations = {
     return String(
       param().orderby(Object.entries(values).map(([key, order]) => ({ field: key, order }))),
     ).replace('$orderby=', '');
+  },
+
+  'xml.parse'(value, input, context) {
+    const parser = new XMLParser({
+      ignoreAttributes: false,
+      attributeNamePrefix: '',
+    });
+
+    try {
+      return parser.parse((remap(value, input, context) as string) || '');
+    } catch (error) {
+      console.error(error);
+      return {};
+    }
   },
 
   defined(value, input, context) {

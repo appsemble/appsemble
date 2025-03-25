@@ -1,5 +1,7 @@
 import { type OpenAPIV3 } from 'openapi-types';
 
+import { schemaExample } from '../../examples.js';
+
 export const unsortedRemappers: Record<string, OpenAPIV3.ReferenceObject | OpenAPIV3.SchemaObject> =
   {
     ics: {
@@ -250,5 +252,13 @@ For example:
 }
 \`\`\`
 `,
+    },
+    'xml.parse': {
+      description: `This can be used to parse an xml string into an object
+
+For example:
+
+${schemaExample('xml.parse', { result: 'pretty' })}`,
+      $ref: '#/components/schemas/RemapperDefinition',
     },
   };

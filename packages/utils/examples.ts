@@ -780,6 +780,65 @@ export const examples: Record<RemapperExampleKeys, RemapperExample> = {
     },
     result: 'name asc,age desc',
   },
+  'xml.parse': {
+    input: {
+      xml: `
+<obj>
+  <foo>bar</foo>
+  <item foo="bar">
+    <item foo="bar">
+      <text>text</text>
+    </item>
+  </item>
+  <item bar="baz">
+    <item bar="baz">
+      <text>text 2</text>
+    </item>
+  </item>
+  <item>
+    <item foo="bar">
+      <item foo="bar">
+        <text>text</text>
+      </item>
+    </item>
+    <item bar="baz">
+      <item bar="baz">
+        <text>text 2</text>
+      </item>
+    </item>
+  </item>
+</obj>
+`,
+    },
+    remapper: { 'xml.parse': { prop: 'xml' } },
+    result: {
+      obj: {
+        foo: 'bar',
+        item: [
+          {
+            foo: 'bar',
+            item: { foo: 'bar', text: 'text' },
+          },
+          {
+            bar: 'baz',
+            item: { bar: 'baz', text: 'text 2' },
+          },
+          {
+            item: [
+              {
+                foo: 'bar',
+                item: { foo: 'bar', text: 'text' },
+              },
+              {
+                bar: 'baz',
+                item: { bar: 'baz', text: 'text 2' },
+              },
+            ],
+          },
+        ],
+      },
+    },
+  },
   defined: {
     input: [0, '', false, undefined, null],
     remapper: {
