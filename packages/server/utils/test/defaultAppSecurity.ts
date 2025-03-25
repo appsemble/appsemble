@@ -1,6 +1,11 @@
+import { normalize } from '@appsemble/utils';
+
 import { App, type Organization } from '../../models/index.js';
 
-export function createDefaultAppWithSecurity(org: Organization): Promise<App> {
+export function createDefaultAppWithSecurity(
+  org: Organization,
+  { name = 'Test App' } = {},
+): Promise<App> {
   return App.create({
     definition: {
       name: 'Test App',
@@ -16,7 +21,7 @@ export function createDefaultAppWithSecurity(org: Organization): Promise<App> {
         },
       },
     },
-    path: 'test-app',
+    path: normalize(name),
     vapidPublicKey: 'a',
     vapidPrivateKey: 'b',
     OrganizationId: org.id,
