@@ -1,0 +1,28 @@
+# To see this in use, refer to the `pagination` app
+parameters:
+  itemsPerPage: 10
+  # This is the default type of pagination for the block. It provides the `$skip` and `$top`
+  # properties in the `onLoad` action
+  paginationType: 'limit-offset'
+  # This means that the block will be displayed as a set of buttons for navigating to the previous
+  # and next pages. It does not matter where the block is placed when this is set to `buttons`
+  paginatorType: 'buttons'
+actions:
+  onLoad:
+    remapBefore:
+      object.from:
+        stateAction: updatePagination
+        data:
+          object.from:
+            # The `$skip` and `$top` properties are available on the data of the `onLoad` action
+            $skip: { prop: $skip }
+            $top: { prop: $top }
+    type: event
+    event: changeState
+events:
+  listen:
+    # This resets the pagination and restarts tracking of the invisible element
+    reset: filterChanged
+    # This sets the number of items, based on which the number of pages is calculated. This could
+    # come from a `data-loader` block with a `resource.count` action
+    itemsCountChange: notesCount

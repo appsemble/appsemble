@@ -13,6 +13,7 @@ bootstrap(
   ({ actions, events, parameters: { fields, fullscreen, highlight, icon }, ready, utils }) => {
     const modal = useToggle();
     const [loading, setLoading] = useState(false);
+    const [shouldFetch, setShouldFetch] = useState(false);
     const defaultValues = useMemo(() => {
       const result: FilterValues = {};
       for (const { defaultValue, name, type } of fields) {
@@ -56,11 +57,21 @@ bootstrap(
         };
         setValues(newValues);
         if (typeof highlight === 'string' ? name === highlight : highlight.includes(name)) {
-          fetchData(newValues);
+          setShouldFetch(true);
         }
       },
-      [fetchData, highlight, values],
+      [highlight, values],
     );
+
+    useEffect(() => {
+      const handler = setTimeout(() => {
+        if (shouldFetch) {
+          fetchData(values);
+        }
+      }, 300);
+
+      return () => clearTimeout(handler);
+    }, [fetchData, shouldFetch, values]);
 
     const onSubmit = useCallback(
       () => fetchData(values).then(modal.disable),

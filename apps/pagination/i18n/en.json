@@ -1,0 +1,17 @@
+{
+  "app": {
+    "app.roles.User": "User",
+    "app.roles.User.description": "A user who keeps their own notes.",
+    "description": "Keep personal notes and display them nicely",
+    "name": "Pagination",
+    "pages.notes-list": "Notes List",
+    "pages.notes-table": "Notes Table"
+  },
+  "messageIds": {
+    "body": "Body",
+    "cancel": "Cancel",
+    "configDelete": "Delete",
+    "confirmDelete": "Are you sure you want to delete the following note?",
+    "title": "Title"
+  }
+}

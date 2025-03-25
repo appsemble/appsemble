@@ -1,0 +1,28 @@
+# To see this in use, refer to the `pagination` app
+parameters:
+  # Define here the different actions than can modify the state
+  stateActions:
+    updateFilter:
+      object.from:
+        # Keep the existing `$skip` and `$top` from the state
+        $skip: { prop: [state, $skip] }
+        $top: { prop: [state, $top] }
+        # Change `$filter` to the one coming in from the data in the event
+        $filter: { prop: [data, $filter] }
+    updatePagination:
+      object.from:
+        # Change `$skip` and `$top` to the ones coming in from the data in the event
+        $skip: { prop: [data, $skip] }
+        $top: { prop: [data, $top] }
+        # Keep the existing `$filter` from the state
+        $filter: { prop: [state, $filter] }
+events:
+  listen:
+    # This modifies the internal state, based on the `stateAction` property, defined on the object
+    # passed to this event, and the remapper defined for this `stateAction` in the `stateActions`
+    # parameter
+    onStateChange: changeState
+  emit:
+    # This emits an object in the form
+    # { state: { $skip: 0, $top: 10, $filter: "" }, stateAction: "updateFilter" }
+    stateChanged: stateChanged

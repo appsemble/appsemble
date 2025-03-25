@@ -317,6 +317,11 @@ declare module '@appsemble/sdk' {
      * The definition of the contents and styling of the dropdown.
      */
     dropdown?: Dropdown;
+
+    /**
+     * Whether items should be appended at the end of the list instead of replace the existing ones
+     */
+    appendData?: boolean;
   }
 
   interface Actions {
@@ -346,5 +351,12 @@ declare module '@appsemble/sdk' {
      * Compatible data that is received will be displayed. Must be a set of data.
      */
     data: never;
+
+    /**
+     * The event that resets the list.
+     *
+     * Commonly used with a filter.
+     */
+    reset: never;
   }
 }

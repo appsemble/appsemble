@@ -4967,6 +4967,11 @@ If you define this action the list items will be draggable.",
 
 Compatible data that is received will be displayed. Must be a set of data.",
       },
+      "reset": {
+        "description": "The event that resets the list.
+
+Commonly used with a filter.",
+      },
     },
   },
   "messages": {
@@ -5244,6 +5249,10 @@ image can either be url or uploaded image",
       },
     },
     "properties": {
+      "appendData": {
+        "description": "Whether items should be appended at the end of the list instead of replace the existing ones",
+        "type": "boolean",
+      },
       "base": {
         "description": "An optional name of the field that contains the data.
 
@@ -5616,6 +5625,80 @@ exports[`config > getProjectImplementations > official blocks > openai 1`] = `
 }
 `;
 
+exports[`config > getProjectImplementations > official blocks > paginator 1`] = `
+{
+  "actions": {
+    "onLoad": {
+      "description": "The action to dispatch with the pagination parameters",
+    },
+  },
+  "events": {
+    "emit": {
+      "paginated": {
+        "description": "This event is emitted when new data is available because of a user interaction with
+pagination.",
+      },
+    },
+    "listen": {
+      "itemsCountChange": {
+        "description": "This event sets the total number of items, based on which the number of pages
+will be calculated",
+      },
+      "reset": {
+        "description": "This event resets the pagination, goes to the first page and re-enables tracking",
+      },
+      "toggleTracking": {
+        "description": "This event tells the paginator to start tracking for scrolling.
+
+Only used when \`paginatorType\` is \`scroll\`.",
+      },
+    },
+  },
+  "messages": {
+    "nextLabel": {
+      "description": "The label of the next button",
+    },
+    "prevLabel": {
+      "description": "The label of the previous button",
+    },
+  },
+  "parameters": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "additionalProperties": false,
+    "properties": {
+      "itemsPerPage": {
+        "description": "The number of items per page",
+        "type": "number",
+      },
+      "paginationType": {
+        "const": "limit-offset",
+        "default": "limit-offset",
+        "type": "string",
+      },
+      "paginatorType": {
+        "default": "buttons",
+        "description": "The type of the pagination
+
+\`buttons\` displays clickable pagination buttons
+
+\`scroll\` displays a hidden element, which when scrolled to, increments the current page",
+        "enum": [
+          "buttons",
+          "scroll",
+        ],
+        "type": "string",
+      },
+    },
+    "required": [
+      "itemsPerPage",
+      "paginationType",
+      "paginatorType",
+    ],
+    "type": "object",
+  },
+}
+`;
+
 exports[`config > getProjectImplementations > official blocks > pdf-viewer 1`] = `
 {
   "actions": {
@@ -5686,6 +5769,57 @@ foundQr event only holds the string of the QR.",
         "type": "number",
       },
     },
+    "type": "object",
+  },
+}
+`;
+
+exports[`config > getProjectImplementations > official blocks > stateful 1`] = `
+{
+  "actions": undefined,
+  "events": {
+    "emit": {
+      "stateChanged": {
+        "description": "This event is emitted when the state updates and contains the state itself
+as well as the state action that triggered the update.",
+      },
+    },
+    "listen": {
+      "onStateChange": {
+        "description": "This event changes the internal state.
+
+It requires an object with two entries:
+- \`stateAction\` - the state action from this block's parameters
+- \`data\` - an object which will be used to update the state",
+      },
+    },
+  },
+  "messages": undefined,
+  "parameters": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "additionalProperties": false,
+    "definitions": {
+      "Record<string,StateAction>": {
+        "additionalProperties": {
+          "$ref": "#/definitions/StateAction",
+        },
+        "type": "object",
+      },
+      "StateAction": {
+        "format": "remapper",
+      },
+    },
+    "properties": {
+      "stateActions": {
+        "$ref": "#/definitions/Record%3Cstring%2CStateAction%3E",
+        "description": "A record of stateAction names to remappers
+
+The remappers will be used to extract data from the existing state and from the incoming data to update the state",
+      },
+    },
+    "required": [
+      "stateActions",
+    ],
     "type": "object",
   },
 }

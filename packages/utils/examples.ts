@@ -780,6 +780,15 @@ export const examples: Record<RemapperExampleKeys, RemapperExample> = {
     },
     result: 'name asc,age desc',
   },
+  defined: {
+    input: [0, '', false, undefined, null],
+    remapper: {
+      'array.map': {
+        defined: { array: 'item' },
+      },
+    },
+    result: [true, true, true, false, false],
+  },
 } as const;
 
 /**

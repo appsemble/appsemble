@@ -1,0 +1,6 @@
+{
+  "extends": "@appsemble/tsconfig",
+  "compilerOptions": {
+    "types": ["@appsemble/webpack-config/types"]
+  }
+}

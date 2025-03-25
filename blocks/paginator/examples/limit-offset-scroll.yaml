@@ -1,0 +1,33 @@
+# To see this in use, refer to the `pagination` app
+parameters:
+  itemsPerPage: 10
+  # This is the default type of pagination for the block. It provides the `$skip` and `$top`
+  # properties in the `onLoad` action
+  paginationType: 'limit-offset'
+  # This means that the block will be displayed as an invisible element on the page. After the user
+  # scrolls to it, the block will trigger the onLoad action. The block should be placed after the
+  # block that shows the data - `list` or `table`
+  paginatorType: 'scroll'
+actions:
+  onLoad:
+    remapBefore:
+      object.from:
+        stateAction: updatePagination
+        data:
+          object.from:
+            # The `$skip` and `$top` properties are available on the data of the `onLoad` action
+            $skip: { prop: $skip }
+            $top: { prop: $top }
+    type: event
+    event: changeState
+events:
+  listen:
+    # This resets the pagination and restarts tracking of the invisible element
+    reset: filterChanged
+    # This sets the number of items, based on which the number of pages is calculated. This could
+    # come from a `data-loader` block with a `resource.count` action
+    itemsCountChange: notesCount
+    # This notifies the block to start tracking the invisible element. It's best to wait for the
+    # data, that is to be paginated, to be loaded before starting to track the element. This could
+    # come from a `data-loader` block with a `resource.query` action
+    toggleTracking: notes
