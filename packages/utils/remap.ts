@@ -740,7 +740,13 @@ const mapperImplementations: MapperImplementations = {
       ignoreAttributes: false,
       attributeNamePrefix: '',
     });
-    return parser.parse((remap(value, input, context) as string) || '');
+
+    try {
+      return parser.parse((remap(value, input, context) as string) || '');
+    } catch (error) {
+      console.error(error);
+      return {};
+    }
   },
 
   defined(value, input, context) {
