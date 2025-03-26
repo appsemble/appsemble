@@ -99,7 +99,7 @@ export function AddToCollectionButton({ app, className }: AppToCollectionButtonP
         >
           <SimpleFormError>
             {({ error }) =>
-              axios.isAxiosError(error) && error.response.status === 409 ? (
+              axios.isAxiosError(error) && error.response?.status === 409 ? (
                 <FormattedMessage {...messages.alreadyInCollection} />
               ) : (
                 <FormattedMessage {...messages.error} />

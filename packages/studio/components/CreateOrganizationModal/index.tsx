@@ -156,7 +156,7 @@ export function CreateOrganizationModal({
       {help}
       <SimpleFormError>
         {(error) =>
-          axios.isAxiosError(error) && error.response.status === 409 ? (
+          axios.isAxiosError(error) && error.response?.status === 409 ? (
             <FormattedMessage {...messages.conflict} />
           ) : (
             <FormattedMessage {...messages.error} />

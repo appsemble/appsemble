@@ -220,7 +220,7 @@ export function UserPage(): ReactNode {
         <SimpleForm defaultValues={{ email: '' }} onSubmit={onAddNewEmail} resetOnSuccess>
           <SimpleFormError>
             {({ error: submitError }) =>
-              axios.isAxiosError(submitError) && submitError.response.status === 409 ? (
+              axios.isAxiosError(submitError) && submitError.response?.status === 409 ? (
                 <FormattedMessage {...messages.addEmailConflict} />
               ) : (
                 <FormattedMessage {...messages.addEmailError} />
