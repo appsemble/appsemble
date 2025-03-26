@@ -6,3 +6,17 @@
     justify-content: space-between;
   }
 }
+
+.highlighted-fields-wrapper {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2rem;
+}
+
+.highlighted-field {
+  width: 250px;
+}
+
+.wide-highlighted-field {
+  width: 350px;
+}

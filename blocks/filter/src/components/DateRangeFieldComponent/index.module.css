@@ -7,3 +7,7 @@
   content: attr(placeholder) !important;
   margin-right: 0.5rem;
 }
+
+.gap {
+  gap: 1rem;
+}

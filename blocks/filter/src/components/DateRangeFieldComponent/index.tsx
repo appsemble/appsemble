@@ -33,7 +33,7 @@ export function DateRangeFieldComponent({
 
   return (
     <div
-      className={classNames(`field is-grouped ${className}`, {
+      className={classNames(`field is-align-items-center is-grouped ${className} ${styles.gap}`, {
         'is-loading': loading,
         [styles.highlight]: highlight,
       })}
@@ -46,6 +46,7 @@ export function DateRangeFieldComponent({
         type="date"
         value={value[0]}
       />
+      <div>{utils.remap(field.separator ?? 'to', {}) as string}</div>
       <Input
         className={styles.input}
         name={field.name}
