@@ -1,6 +1,6 @@
 {
   "name": "@appsemble/detail-viewer",
-  "version": "0.32.1-test.11",
+  "version": "0.32.1-test.12",
   "private": true,
   "description": "A block that can be used to display various fields based on input data.",
   "homepage": "https://appsemble.app",
@@ -17,9 +17,9 @@
     "test": "vitest"
   },
   "dependencies": {
-    "@appsemble/preact": "0.32.1-test.11",
-    "@appsemble/preact-components": "0.32.1-test.11",
-    "@appsemble/sdk": "0.32.1-test.11",
+    "@appsemble/preact": "0.32.1-test.12",
+    "@appsemble/preact-components": "0.32.1-test.12",
+    "@appsemble/sdk": "0.32.1-test.12",
     "@types/leaflet": "^1.0.0",
     "classnames": "^2.0.0",
     "leaflet": "~1.5.0",

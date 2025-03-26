@@ -1,8 +1,8 @@
-# ![](https://gitlab.com/appsemble/appsemble/-/raw/0.32.1-test.11/config/assets/logo.svg) Appsemble End 2 End Tests
+# ![](https://gitlab.com/appsemble/appsemble/-/raw/0.32.1-test.12/config/assets/logo.svg) Appsemble End 2 End Tests
 
 > Run end 2 end tests on an Appsemble environment
 
-[![GitLab CI](https://gitlab.com/appsemble/appsemble/badges/0.32.1-test.11/pipeline.svg)](https://gitlab.com/appsemble/appsemble/-/releases/0.32.1-test.11)
+[![GitLab CI](https://gitlab.com/appsemble/appsemble/badges/0.32.1-test.12/pipeline.svg)](https://gitlab.com/appsemble/appsemble/-/releases/0.32.1-test.12)
 [![Prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg)](https://prettier.io)
 
 ## Table of Contents
@@ -33,5 +33,5 @@ The end to end tests use the following environment variables:
 
 ## License
 
-[LGPL-3.0-only](https://gitlab.com/appsemble/appsemble/-/blob/0.32.1-test.11/LICENSE.md) ©
+[LGPL-3.0-only](https://gitlab.com/appsemble/appsemble/-/blob/0.32.1-test.12/LICENSE.md) ©
 [Appsemble](https://appsemble.com)

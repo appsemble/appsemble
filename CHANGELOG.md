@@ -2,6 +2,24 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.32.1-test.12](https://gitlab.com/appsemble/appsemble/-/releases/0.32.1-test.12)] - 2025-03-26
+
+### Added
+
+- Block(`table`): Allow an option to be disabled in the dropdown fields.
+
+### Changed
+
+- Block(`filter`): Better style highlighted fields.
+- App: Improve the process of changing locale preference for an app member.
+
+### Fixed
+
+- Server: Assets count endpoint returning wrong number in demo apps.
+- Server: Reseeding demo apps fail in some cases.
+- Studio: Move the description of how to use `id` from `resource.update` to `resource.patch` since
+  these were swapped around.
+
 ## \[[0.32.1-test.11](https://gitlab.com/appsemble/appsemble/-/releases/0.32.1-test.11)] - 2025-03-20
 
 ## \[[0.32.1-test.10](https://gitlab.com/appsemble/appsemble/-/releases/0.32.1-test.10)] - 2025-03-20
