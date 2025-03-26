@@ -81,7 +81,7 @@ bootstrap(({ events, parameters: { caption, fields }, ready, utils }) => {
           {heads.map((header) =>
             header ? (
               <th
-                className={`${styles.pointer} ${header?.name === highlighted ? 'has-background-warning' : ''}`}
+                className={`${styles.pointer} ${header?.name && header.name === highlighted ? 'has-background-warning' : ''}`}
                 key={header?.label}
                 onClick={() => onTableHeaderClick(header?.name)}
               >

@@ -197,6 +197,13 @@ export interface DropdownOption {
    * @format action
    */
   onClick: string;
+
+  /*
+   * Whether the option should be disabled.
+   *
+   * If the resulting remapper value is truthy, the option will be disabled.
+   */
+  disabled?: Remapper;
 }
 
 export interface Image extends BaseField {

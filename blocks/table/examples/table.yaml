@@ -13,4 +13,4 @@ actions:
   onClick:
     type: link
     to: sourceUrl
-# To better see how to use this block, look at the default 'Survey' app.
+# To better see how to use this block, look at the default 'Notes' app.
