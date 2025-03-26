@@ -74,18 +74,22 @@ interface CreateGroupParams extends SharedGroupParams {
 export function resolveAnnotations(annotations: string[]): Record<string, string> {
   const annotationRegex = /^\w+=.+$/;
 
+  if (!annotations.length) {
+    // TODO: will {} break anything?
+    // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
+    return undefined;
+  }
+
   if (annotations.some((a) => !annotationRegex.test(a))) {
     throw new AppsembleError('One of the annotations did not follow the pattern of key=value');
   }
 
-  return annotations.length
-    ? Object.fromEntries(
-        annotations.map((annotation) => {
-          const [key, ...value] = annotation.split('=');
-          return [key, value.join('=')];
-        }),
-      )
-    : undefined;
+  return Object.fromEntries(
+    annotations.map((annotation) => {
+      const [key, ...value] = annotation.split('=');
+      return [key, value.join('=')];
+    }),
+  );
 }
 
 export async function createGroup({

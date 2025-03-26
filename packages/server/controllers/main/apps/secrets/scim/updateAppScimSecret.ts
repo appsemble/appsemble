@@ -1,3 +1,4 @@
+import { assertKoaCondition } from '@appsemble/node-utils';
 import { OrganizationPermission } from '@appsemble/types';
 import { type Context } from 'koa';
 
@@ -15,6 +16,7 @@ export async function updateAppScimSecret(ctx: Context): Promise<void> {
   const app = await App.findByPk(appId, {
     attributes: ['id', 'OrganizationId', 'scimEnabled', 'scimToken'],
   });
+  assertKoaCondition(app != null, ctx, 404, 'App not found');
 
   await checkUserOrganizationPermissions({
     context: ctx,

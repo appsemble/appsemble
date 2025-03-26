@@ -29,7 +29,7 @@ function isContentAttachment(attachment: unknown): attachment is ContentAttachme
     return false;
   }
   const { content } = attachment as ContentAttachment;
-  return content && typeof content === 'string';
+  return content != null && typeof content === 'string';
 }
 
 function isTargetAttachment(attachment: unknown): attachment is TargetAttachment {
@@ -40,7 +40,7 @@ function isTargetAttachment(attachment: unknown): attachment is TargetAttachment
     return false;
   }
   const { target } = attachment as TargetAttachment;
-  return target && typeof target === 'string';
+  return target != null && typeof target === 'string';
 }
 
 export async function email({
@@ -58,11 +58,11 @@ export async function email({
     context,
   );
 
-  const to = remap(action.to, data, remapperContext) as string;
+  const to = remap(action.to ?? null, data, remapperContext) as string;
   const from =
-    (remap(action.from, data, remapperContext) as string) || app.emailName || 'Appsemble';
-  const cc = remap(action.cc, data, remapperContext) as string[] | string;
-  const bcc = remap(action.bcc, data, remapperContext) as string[] | string;
+    (remap(action.from ?? null, data, remapperContext) as string) || app.emailName || 'Appsemble';
+  const cc = remap(action.cc ?? null, data, remapperContext) as string[] | string;
+  const bcc = remap(action.bcc ?? null, data, remapperContext) as string[] | string;
   const body = remap(action.body, data, remapperContext) as string;
   const sub = remap(action.subject, data, remapperContext) as string;
 
@@ -78,7 +78,7 @@ export async function email({
 
   const attachments: SendMailOptions['attachments'] = [];
   const assetSelectors: TargetAttachment[] = [];
-  for (const remapped of [remap(action.attachments, data, remapperContext)].flat()) {
+  for (const remapped of [remap(action.attachments ?? null, data, remapperContext)].flat()) {
     const attachment = typeof remapped === 'string' ? { target: String(remapped) } : remapped;
     if (isTargetAttachment(attachment)) {
       if (attachment.target.startsWith('http')) {

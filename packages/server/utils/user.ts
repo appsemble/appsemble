@@ -6,6 +6,11 @@ import { EmailAuthorization, User } from '../models/index.js';
 export async function getUserInfoById(id: string): Promise<UserInfo> {
   const user = await User.findByPk(id);
 
+  if (user == null) {
+    // TODO: handle differently?
+    throw new Error('User not found');
+  }
+
   const userEmailAuthorizations = await EmailAuthorization.findAll({
     where: {
       UserId: user.id,

@@ -18,7 +18,13 @@ export function getCsp({
   return {
     // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
     'report-uri': [reportUri],
-    'connect-src': ['*', 'blob:', 'data:', sentryOrigin, sentryDsn && 'https://sentry.io'],
+    'connect-src': [
+      '*',
+      'blob:',
+      'data:',
+      sentryOrigin ?? false,
+      sentryDsn ? 'https://sentry.io' : false,
+    ],
     'default-src': ["'self'"],
     'script-src': [
       "'self'",

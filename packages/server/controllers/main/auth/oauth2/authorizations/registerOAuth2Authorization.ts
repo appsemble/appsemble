@@ -22,13 +22,15 @@ export async function registerOAuth2Authorization(ctx: Context): Promise<void> {
     },
   } = ctx;
   // XXX Replace this with an imported language array when supporting more languages
-  let referer: URL;
   try {
-    referer = new URL(headers.referer);
+    const referer = new URL(headers.referer!);
+    assertKoaCondition(
+      referer.origin === new URL(argv.host).origin,
+      ctx,
+      400,
+      'The referer header is invalid',
+    );
   } catch {
-    throwKoaError(ctx, 400, 'The referer header is invalid');
-  }
-  if (referer.origin !== new URL(argv.host).origin) {
     throwKoaError(ctx, 400, 'The referer header is invalid');
   }
 
@@ -47,8 +49,13 @@ export async function registerOAuth2Authorization(ctx: Context): Promise<void> {
     clientSecret = argv.githubClientSecret;
   }
 
-  // eslint-disable-next-line no-implicit-coercion
-  assertKoaCondition(!!(clientId && clientSecret), ctx, 501, 'Unknown authorization URL');
+  assertKoaCondition(preset !== undefined, ctx, 501, 'Unknown authorization URL');
+  assertKoaCondition(
+    clientId !== undefined && clientSecret !== undefined,
+    ctx,
+    501,
+    'Unknown authorization URL',
+  );
 
   // Exchange the authorization code for an access token and refresh token.
   const {
@@ -56,7 +63,7 @@ export async function registerOAuth2Authorization(ctx: Context): Promise<void> {
     id_token: idToken,
     refresh_token: refreshToken,
   } = await getAccessToken(
-    preset.tokenUrl,
+    preset?.tokenUrl,
     code,
     String(new URL('/callback', argv.host)),
     clientId,

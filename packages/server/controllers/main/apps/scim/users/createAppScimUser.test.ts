@@ -434,11 +434,11 @@ describe('createAppScimUser', () => {
           mAnAgEr: 'krbs',
         },
       });
-      const result = await Group.findOne({
+      const result = (await Group.findOne({
         where: { AppId: app.id, name: appMember.scimExternalId },
       }).then((group) =>
-        GroupMember.findOne({ where: { GroupId: group.id, AppMemberId: appMember.id } }),
-      );
+        GroupMember.findOne({ where: { GroupId: group!.id, AppMemberId: appMember.id } }),
+      ))!;
 
       expect(result.role).toBe('manager');
     },

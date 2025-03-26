@@ -37,7 +37,12 @@ export async function get({
   internalContext,
   options,
 }: ServerActionParameters<ResourceGetActionDefinition>): Promise<unknown> {
-  const body = (remap(action.body, data, internalContext) ?? data) as Record<string, unknown>;
+  // @ts-expect-error 2345 argument of type is not assignable to parameter of type
+  // (strictNullChecks)
+  const body = (remap(action.body ?? null, data, internalContext) ?? data) as Record<
+    string,
+    unknown
+  >;
 
   if (!body?.id) {
     throw new Error('Missing id');
@@ -75,7 +80,7 @@ export async function get({
     options,
     context,
   );
-  return remap(resourceDefinition.views[view].remap, parsedResource, remapperContext);
+  return remap(resourceDefinition.views?.[view].remap ?? null, parsedResource, remapperContext);
 }
 
 export async function query({
@@ -87,9 +92,11 @@ export async function query({
   options,
 }: ServerActionParameters<ResourceQueryActionDefinition>): Promise<unknown> {
   const { view } = action;
-  const queryRemapper = action?.query ?? app.definition.resources[action.resource]?.query?.query;
+  const queryRemapper = action?.query ?? app.definition.resources?.[action.resource]?.query?.query;
 
-  const queryParams = (remap(queryRemapper, data, internalContext) || {}) as QueryParams;
+  // @ts-expect-error 2345 argument of type is not assignable to parameter of type
+  // (strictNullChecks)
+  const queryParams = (remap(queryRemapper ?? null, data, internalContext) || {}) as QueryParams;
 
   const resourceDefinition = getResourceDefinition(app.definition, action.resource, context, view);
 
@@ -127,7 +134,7 @@ export async function query({
     context,
   );
   return mappedResources.map((resource) =>
-    remap(resourceDefinition.views[view].remap, resource, remapperContext),
+    remap(resourceDefinition.views?.[view].remap ?? null, resource, remapperContext),
   );
 }
 
@@ -141,7 +148,9 @@ export async function create({
 }: ServerActionParameters<ResourceCreateActionDefinition>): Promise<unknown> {
   const { createAppResourcesWithAssets, getAppAssets } = options;
 
-  const body = (remap(action.body, data, internalContext) ?? data) as
+  // @ts-expect-error 2345 argument of type is not assignable to parameter of type
+  // (strictNullChecks)
+  const body = (remap(action.body ?? null, data, internalContext) ?? data) as
     | Record<string, unknown>
     | Record<string, unknown>[];
 
@@ -194,7 +203,9 @@ export async function update({
   internalContext,
   options,
 }: ServerActionParameters<ResourceUpdateActionDefinition>): Promise<unknown> {
-  const body = (remap(action.body, actionData, internalContext) ?? actionData) as Record<
+  // @ts-expect-error 2345 argument of type is not assignable to parameter of type
+  // (strictNullChecks)
+  const body = (remap(action.body ?? null, actionData, internalContext) ?? actionData) as Record<
     string,
     unknown
   >;
@@ -299,7 +310,9 @@ export async function patch({
   internalContext,
   options,
 }: ServerActionParameters<ResourcePatchActionDefinition>): Promise<unknown> {
-  const body = (remap(action.body, actionData, internalContext) ?? actionData) as Record<
+  // @ts-expect-error 2345 argument of type is not assignable to parameter of type
+  // (strictNullChecks)
+  const body = (remap(action.body ?? null, actionData, internalContext) ?? actionData) as Record<
     string,
     unknown
   >;
@@ -404,7 +417,12 @@ export async function remove({
   internalContext,
   options,
 }: ServerActionParameters<ResourceDeleteActionDefinition>): Promise<unknown> {
-  const body = (remap(action.body, data, internalContext) ?? data) as Record<string, unknown>;
+  // @ts-expect-error 2345 argument of type is not assignable to parameter of type
+  // (strictNullChecks)
+  const body = (remap(action.body ?? null, data, internalContext) ?? data) as Record<
+    string,
+    unknown
+  >;
 
   getResourceDefinition(app.definition, action.resource, context);
 

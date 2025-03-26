@@ -23,17 +23,13 @@ import { type Configuration } from 'webpack';
  */
 export async function getProjectBuildConfig(dir: string): Promise<ProjectBuildConfig> {
   const explorer = cosmiconfig('appsemble', { stopDir: dir });
-  const found = await explorer.search(dir);
+  const found = (await explorer.search(dir)) ?? (await explorer.search(dirname(dir)));
 
-  let foundInParent;
   if (!found) {
-    foundInParent = await explorer.search(dirname(dir));
-    if (!foundInParent) {
-      throw new AppsembleError(`No Appsemble configuration file found searching ${dir}`);
-    }
+    throw new AppsembleError(`No Appsemble configuration file found searching ${dir}`);
   }
 
-  const { config, filepath } = found || foundInParent;
+  const { config, filepath } = found;
   logger.info(`Found configuration file: ${filepath}`);
 
   const [pkg] = await readData<PackageJson>(join(dir, 'package.json'));
@@ -80,7 +76,7 @@ export async function getProjectsBuildConfigs(root: string): Promise<ProjectBuil
       // Ignore non-project workspaces.
       .map((p) => p.catch((): null => null)),
   );
-  return projectBuildConfigs.filter(Boolean);
+  return projectBuildConfigs.filter((x) => x != null);
 }
 
 /**

@@ -117,7 +117,7 @@ export function FlowPage({
         ? generateLoopPrefix(prefix)
         : typeof steps?.[currentStep]?.name === 'string'
           ? steps?.[currentStep]?.name
-          : remap(steps?.[currentStep]?.name, stepsData, remapperContext),
+          : remap(steps?.[currentStep]?.name ?? null, stepsData, remapperContext),
   }).format() as string;
   // @ts-expect-error 2345 argument of type is not assignable to parameter of type
   // (strictNullChecks)

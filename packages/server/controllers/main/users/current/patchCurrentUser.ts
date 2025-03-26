@@ -15,6 +15,8 @@ export async function patchCurrentUser(ctx: Context): Promise<void> {
 
   const user = await User.findByPk(authSubject!.id, { include: [EmailAuthorization] });
 
+  assertKoaCondition(user != null, ctx, 404, 'User not found');
+
   const result: Partial<User> = {};
 
   if (name != null) {

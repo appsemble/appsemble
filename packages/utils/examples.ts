@@ -868,7 +868,7 @@ export function schemaExample(
 
   if (!exclude.includes('input')) {
     const spacing = input === 'pretty' && 2;
-    example += `Input:\n\n\`\`\`json\n${JSON.stringify(examples[remapper].input, null, spacing)}\n\`\`\`\n`;
+    example += `Input:\n\n\`\`\`json\n${JSON.stringify(examples[remapper].input, null, spacing || undefined)}\n\`\`\`\n`;
   }
 
   if (!exclude.includes('remapper')) {
@@ -877,7 +877,7 @@ export function schemaExample(
 
   if (!exclude.includes('result')) {
     const spacing = result === 'pretty' && 2;
-    example += `Result:\n\n\`\`\`json\n${JSON.stringify(examples[remapper].result, null, spacing)}\n\`\`\`\n`;
+    example += `Result:\n\n\`\`\`json\n${JSON.stringify(examples[remapper].result, null, spacing || undefined)}\n\`\`\`\n`;
   }
 
   return example;
@@ -890,8 +890,9 @@ export function createExampleContext(
   history?: [],
 ): RemapperContext {
   return {
-    getMessage: ({ defaultMessage }) => new IntlMessageFormat(defaultMessage, lang, undefined),
-    getVariable: (name) => (name === 'MY_VARIABLE' ? 'variable value' : null),
+    getMessage: ({ defaultMessage }) =>
+      new IntlMessageFormat(defaultMessage ?? [], lang, undefined),
+    getVariable: (name) => (name === 'MY_VARIABLE' ? 'variable value' : undefined),
     url: String(url),
     appUrl: `${url.protocol}//example-app.example-organization.${url.host}`,
     context: {},

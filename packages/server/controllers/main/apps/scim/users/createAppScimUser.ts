@@ -54,8 +54,7 @@ export async function createAppScimUser(ctx: Context): Promise<void> {
     'Expected manager to be a string',
   );
 
-  let member: AppMember;
-  let group: Group;
+  let group: Group | null;
   if (managerId) {
     group = await Group.findOne({ where: { AppId: appId, name: managerId } });
   }
@@ -70,6 +69,7 @@ export async function createAppScimUser(ctx: Context): Promise<void> {
     'App does not have a security definition in place to handle SCIM users. See SCIM documentation for more info.',
   );
   try {
+    let member: AppMember | undefined;
     await transactional(async (transaction) => {
       member = await AppMember.create(
         {
@@ -127,9 +127,8 @@ export async function createAppScimUser(ctx: Context): Promise<void> {
         );
       }
     });
+    ctx.body = convertAppMemberToScimUser(member!);
   } catch {
     scimAssert(false, ctx, 409, 'Conflict');
   }
-
-  ctx.body = convertAppMemberToScimUser(member);
 }

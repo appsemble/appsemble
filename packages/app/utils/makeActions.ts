@@ -39,10 +39,10 @@ export function createAction<T extends ActionDefinition['type']>({
 }: CreateActionParams<T>): Extract<Action, { type: T }> {
   const type = (definition?.type ?? 'noop') as T;
   const actionCreator = has(actionCreators, type)
-    ? actionCreators[type]
+    ? actionCreators[type]!
     : has(extraCreators, type)
-      ? extraCreators[type]
-      : actionCreators.noop;
+      ? extraCreators![type]!
+      : actionCreators.noop!;
 
   const [dispatch, properties] = actionCreator({
     ...params,
@@ -87,9 +87,9 @@ export function createAction<T extends ActionDefinition['type']>({
     try {
       try {
         const data = has(definition, 'remapBefore')
-          ? localRemap(definition.remapBefore, args, context)
+          ? localRemap(definition.remapBefore ?? null, args, context)
           : has(definition, 'remap')
-            ? localRemap(definition.remap, args, context)
+            ? localRemap(definition.remap ?? null, args, context)
             : args;
 
         updatedContext = {
@@ -100,7 +100,7 @@ export function createAction<T extends ActionDefinition['type']>({
         result = await dispatch(data, updatedContext);
 
         if (has(definition, 'remapAfter')) {
-          result = localRemap(definition.remapAfter, result, updatedContext);
+          result = localRemap(definition.remapAfter ?? null, result, updatedContext);
         }
         addBreadcrumb({
           category: 'appsemble.action',
@@ -160,6 +160,7 @@ export function makeActions({
     if (key !== '$any') {
       actionMap[key] = createAction({
         ...params,
+        // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
         definition: context?.actions?.[key],
         prefix: `${prefix}.actions.${key}`,
         prefixIndex: `${prefixIndex}.actions.${key}`,
@@ -184,7 +185,7 @@ export function createTestAction<T extends ActionDefinition['type']>(
     extraCreators: null,
     // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
     flowActions: null,
-    getAppMessage: ({ defaultMessage }) => new IntlMessageFormat(defaultMessage),
+    getAppMessage: ({ defaultMessage }) => new IntlMessageFormat(defaultMessage ?? ''),
     // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
     navigate: null,
     pageReady: Promise.resolve(),
@@ -198,7 +199,7 @@ export function createTestAction<T extends ActionDefinition['type']>(
     pushNotifications: null,
     remap: (remapper, data, context) =>
       remap(remapper, data, {
-        getMessage: ({ defaultMessage }) => new IntlMessageFormat(defaultMessage),
+        getMessage: ({ defaultMessage }) => new IntlMessageFormat(defaultMessage ?? ''),
         // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
         getVariable: params.getAppVariable,
         appId,
@@ -206,7 +207,7 @@ export function createTestAction<T extends ActionDefinition['type']>(
         appUrl: 'https://example.com',
         // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
         appMemberInfo: null,
-        context,
+        context: context ?? {},
         locale: defaultLocale,
       }),
     params: {

@@ -156,7 +156,7 @@ async function handleRequestProxy(
     ctx,
   );
 
-  const proxyUrl = new URL(String(remap(action.url, data, remapperContext)));
+  const proxyUrl = new URL(String(remap(action.url ?? null, data, remapperContext)));
   if (/\/api\/apps\/\d+\/actions\/.*/.test(proxyUrl.pathname) && ctx.URL.host === proxyUrl.host) {
     throwKoaError(
       ctx,

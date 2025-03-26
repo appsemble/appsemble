@@ -25,9 +25,9 @@ export const appMemberRegister: ActionCreator<'app.member.register'> = ({
     const email = remap(definition.email, data);
     const password = remap(definition.password, data);
     const name = remap(definition.name, data);
-    const picture = remap(definition.picture, data);
-    const properties = remap(definition.properties, data);
-    const login = remap(definition.login, data) ?? true;
+    const picture = remap(definition.picture ?? null, data);
+    const properties = remap(definition.properties ?? null, data);
+    const login = remap(definition.login ?? null, data) ?? true;
 
     const formData = new FormData();
     formData.append('email', email);
@@ -128,7 +128,7 @@ export const appMemberQuery: ActionCreator<'app.member.query'> = ({
       return data;
     }
 
-    const roles = remap(definition.roles, data);
+    const roles = remap(definition.roles ?? null, data);
     const selectedGroupId = getAppMemberSelectedGroup()?.id;
     const url = `${apiUrl}/api/apps/${appId}/${appMemberInfo.demo ? 'demo-' : ''}members?roles=${roles || []}${selectedGroupId ? `&selectedGroupId=${selectedGroupId}` : ''}`;
 
@@ -153,9 +153,9 @@ export const appMemberCurrentPatch: ActionCreator<'app.member.current.patch'> = 
       return data;
     }
 
-    const name = remap(definition.name, data);
-    const properties = remap(definition.properties, data);
-    const picture = remap(definition.picture, data);
+    const name = remap(definition.name ?? null, data);
+    const properties = remap(definition.properties ?? null, data);
+    const picture = remap(definition.picture ?? null, data);
 
     const formData = new FormData();
 

@@ -56,8 +56,19 @@ describe('storage.read', () => {
     const action = createTestAction({
       definition: { type: 'storage.read', key: 'test', storage: 'localStorage' },
     });
-    const result = await action({});
-    expect(result).toBeNull();
+    let result;
+    try {
+      result = await action({});
+    } catch (error) {
+      result = error as ActionError;
+    }
+    expect(result).toStrictEqual(
+      new ActionError({
+        cause: 'Could not find data at this key.',
+        data: null,
+        definition: { type: 'storage.read', key: 'test', storage: 'localStorage' },
+      }),
+    );
   });
 
   it('should return undefined for unknown keys in the store', async () => {
@@ -134,7 +145,7 @@ describe('storage.write', () => {
       },
     });
     await action({});
-    const storageData = JSON.parse(localStorage.getItem('appsemble-42-test-key'));
+    const storageData = JSON.parse(localStorage.getItem('appsemble-42-test-key') ?? '');
     expect(storageData).toMatchObject({
       expiry: expect.any(Number),
       value: 'test-value',

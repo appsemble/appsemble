@@ -42,7 +42,7 @@ function processNode(
     // (strictNullChecks)
     const child = [...parent.children].filter(matchNode(xmlObject, name))[index];
     return Object.fromEntries(
-      Object.entries(schema.properties).map(([key, childSchema]) => [
+      Object.entries(schema.properties ?? {}).map(([key, childSchema]) => [
         key,
         processNode(child, childSchema as OpenAPIV3.SchemaObject, key),
       ]),
@@ -54,16 +54,22 @@ function processNode(
     // @ts-expect-error 2345 argument of type is not assignable to parameter of type
     // (strictNullChecks)
     const wrapper = xmlObject?.wrapped ? childNodes.find(matchNode(xmlObject, name)) : parent;
-    return [...wrapper.children]
-      .filter(matchNode(itemSchema.xml, name))
-      .map((element, i) => processNode(wrapper, itemSchema, name, i));
+    return (
+      [...(wrapper?.children ?? [])]
+        // @ts-expect-error 2345 argument of type is not assignable to parameter of type
+        // (strictNullChecks)
+        .filter(matchNode(itemSchema.xml, name))
+        // @ts-expect-error 2345 argument of type is not assignable to parameter of type
+        // (strictNullChecks)
+        .map((element, i) => processNode(wrapper, itemSchema, name, i))
+    );
   }
   if (schema.xml?.attribute) {
     return parseFromString(
       // @ts-expect-error 2345 argument of type is not assignable to parameter of type
       // (strictNullChecks)
       parent.getAttribute(
-        (xmlObject.prefix ? `${xmlObject.prefix}:` : '') + (xmlObject.name || name),
+        (xmlObject?.prefix ? `${xmlObject.prefix}:` : '') + (xmlObject?.name || name),
       ),
       schema,
     );
@@ -83,7 +89,7 @@ export function xmlToJson(xml: string, schema: OpenAPIV3.SchemaObject): JsonValu
   const doc = parser.parseFromString(xml, 'application/xml');
   const [errorNode] = doc.getElementsByTagName('parsererror');
   if (errorNode) {
-    throw new Error(errorNode.textContent);
+    throw new Error(errorNode.textContent ?? undefined);
   }
   return processNode(doc as any, schema);
 }

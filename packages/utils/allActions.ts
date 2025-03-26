@@ -10,12 +10,14 @@ type SchemaObject = OpenAPIV3.SchemaObject;
 const [, kinds] = schemas.ActionDefinition.allOf as NonArraySchemaObject[];
 
 export const allActions = new Set(
-  (kinds.anyOf as ReferenceObject[]).map(({ $ref }) => {
-    const ref = $ref.split('/').at(-1);
-    const action = schemas[ref as keyof typeof schemas] as SchemaObject;
-    const name = (action.properties.type as SchemaObject).enum[0] as string;
-    return name;
-  }),
+  (kinds.anyOf as ReferenceObject[])
+    .map(({ $ref }) => {
+      const ref = $ref.split('/').at(-1);
+      const action = schemas[ref as keyof typeof schemas] as SchemaObject;
+      const name = (action.properties?.type as SchemaObject).enum?.[0] as string | undefined;
+      return name;
+    })
+    .filter((x) => x !== undefined),
 );
 
 export type ActionName = ActionDefinition['type'];

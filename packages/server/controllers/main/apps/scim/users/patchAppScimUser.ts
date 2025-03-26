@@ -11,6 +11,7 @@ export async function patchAppScimUser(ctx: Context): Promise<void> {
     request: { body },
   } = ctx;
 
+  const app = await App.findByPk(appId, { include: [{ model: AppMember }] });
   const member = await AppMember.findOne({
     where: { AppId: appId, id: userId },
     include: [
@@ -27,14 +28,18 @@ export async function patchAppScimUser(ctx: Context): Promise<void> {
       },
     ],
   });
-  scimAssert(member, ctx, 404, 'User not found');
+  scimAssert(app != null, ctx, 404, 'App not found');
+  scimAssert(member != null, ctx, 404, 'User not found');
 
   const operations = getCaseInsensitive(body, 'operations');
   scimAssert(Array.isArray(operations), ctx, 400, 'Expected operations to be array');
 
   let managerId: string | undefined;
 
-  function replace(path: string, value: unknown): void {
+  // Using a const arrow function instead of a regular function statement here prevents
+  // the function being hoisted, and therefore `member` being captured in a closure
+  // as nullable before it can be asserted that it's not null.
+  const replace = (path: string, value: unknown): void => {
     const lower = path.toLowerCase();
     scimAssert(typeof value === 'string', ctx, 400, 'Expected value to be a string');
 
@@ -59,7 +64,7 @@ export async function patchAppScimUser(ctx: Context): Promise<void> {
     } else {
       throwKoaError(ctx, 400, `Unknown path: ${path}`);
     }
-  }
+  };
 
   for (const operation of operations) {
     scimAssert(
@@ -111,7 +116,7 @@ export async function patchAppScimUser(ctx: Context): Promise<void> {
 
       if (!group) {
         group = await Group.create({ AppId: appId, name: managerId }, { transaction });
-        group.App = await App.findByPk(appId, { include: [{ model: AppMember }] });
+        group.App = app;
       }
 
       if (!group.Members?.some((m) => m.AppMemberId === member.id)) {

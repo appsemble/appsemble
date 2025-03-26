@@ -55,7 +55,8 @@ export async function importApp(ctx: Context): Promise<void> {
     requiredPermissions: [OrganizationPermission.CreateApps],
   });
 
-  let result: Partial<App>;
+  let result: Partial<App> = {};
+  // TODO: assert that some file/folder structure is present in the zip file
   const zip = await JSZip.loadAsync(importFile);
   try {
     const definitionFile = zip.file('app-definition.yaml');
@@ -71,7 +72,7 @@ export async function importApp(ctx: Context): Promise<void> {
     const definition = parse(yaml, { maxAliasCount: 10_000 });
     handleValidatorResult(
       ctx,
-      openApi.validate(definition, openApi.document.components.schemas.AppDefinition, {
+      openApi!.validate(definition, openApi!.document.components!.schemas!.AppDefinition, {
         throw: false,
       }),
       'App validation failed',
@@ -102,26 +103,27 @@ export async function importApp(ctx: Context): Promise<void> {
       iconBackground: '#ffffff',
     };
     await setAppPath(ctx, result, path);
-    const coreStyleFile = theme.file('core/index.css');
+    const coreStyleFile = theme?.file('core/index.css');
     if (coreStyleFile) {
       const coreStyle = await coreStyleFile.async('text');
       result.coreStyle = validateStyle(coreStyle);
     }
-    const sharedStyleFile = theme.file('shared/index.css');
+    const sharedStyleFile = theme?.file('shared/index.css');
     if (sharedStyleFile) {
       const sharedStyle = await sharedStyleFile.async('text');
       result.sharedStyle = validateStyle(sharedStyle);
     }
 
-    let record: App;
+    let rec: App;
     try {
+      let record: App | undefined;
       await transactional(async (transaction) => {
         record = await App.create(result, { transaction });
         record.AppSnapshots = [
           await AppSnapshot.create({ AppId: record.id, yaml }, { transaction }),
         ];
 
-        const i18Folder = zip.folder('i18n').filter((filename) => filename.endsWith('json'));
+        const i18Folder = zip.folder('i18n')?.filter((filename) => filename.endsWith('json')) ?? [];
         for (const json of i18Folder) {
           const language = json.name.slice(5, 7);
           const messages = await json.async('text');
@@ -135,9 +137,8 @@ export async function importApp(ctx: Context): Promise<void> {
 
         const appId = record.id;
 
-        const resourcesFolder = zip
-          .folder('resources')
-          .filter((filename) => filename.endsWith('json'));
+        const resourcesFolder =
+          zip.folder('resources')?.filter((filename) => filename.endsWith('json')) ?? [];
 
         for (const file of resourcesFolder) {
           const [, resourceJsonName] = file.name.split('/');
@@ -175,7 +176,7 @@ export async function importApp(ctx: Context): Promise<void> {
 
         for (const jsZipObject of zip
           .folder('assets')
-          .filter((filename) => !['.DS_Store'].includes(filename))) {
+          ?.filter((filename) => !['.DS_Store'].includes(filename)) ?? []) {
           if (!jsZipObject.dir) {
             const { name } = jsZipObject;
 
@@ -201,7 +202,7 @@ export async function importApp(ctx: Context): Promise<void> {
         const screenshots: TempFile[] = [];
         for (const jsZipObject of zip
           .folder('screenshots')
-          .filter((filename) => !['.DS_Store'].includes(filename))) {
+          ?.filter((filename) => !['.DS_Store'].includes(filename)) ?? []) {
           if (!jsZipObject.dir) {
             const { name } = jsZipObject;
             const contents = await jsZipObject.async('nodebuffer');
@@ -259,15 +260,15 @@ export async function importApp(ctx: Context): Promise<void> {
         }
         await createAppReadmes(record.id, readmeFiles, transaction);
 
-        const organizations = theme.filter((filename) => filename.startsWith('@'));
+        const organizations = theme?.filter((filename) => filename.startsWith('@')) ?? [];
         for (const organization of organizations) {
-          const organizationFolder = theme.folder(organization.name);
-          const blocks = organizationFolder.filter(
-            (filename) => !organizationFolder.file(filename).dir,
-          );
+          const organizationFolder = theme?.folder(organization.name);
+          const blocks =
+            organizationFolder?.filter((filename) => !organizationFolder!.file(filename)!.dir) ??
+            [];
           for (const block of blocks) {
             const [, blockName] = block.name.split('/');
-            const orgName = organizationFolder.name.slice(1);
+            const orgName = organizationFolder!.name.slice(1);
             const blockVersion = await BlockVersion.findOne({
               where: { name: blockName, organizationId: orgName },
             });
@@ -286,14 +287,16 @@ export async function importApp(ctx: Context): Promise<void> {
           }
         }
       });
+      rec = record!;
     } catch (error: unknown) {
       if (error instanceof AppsembleError) {
         ctx.status = 204;
         return;
       }
+      // @ts-expect-error 2769 No overload matches this call (strictNullChecks)
       ctx.throw(error);
     }
-    ctx.body = record.toJSON();
+    ctx.body = rec.toJSON();
     ctx.status = 201;
   } catch (error) {
     handleAppValidationError(ctx, error as Error, result);

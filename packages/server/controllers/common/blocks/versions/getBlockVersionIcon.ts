@@ -20,13 +20,13 @@ export async function getBlockVersionIcon(ctx: Context): Promise<void> {
 
   const cache = version.icon
     ? true
-    : isEqual(parseISO(updated as string), version.Organization.updated);
+    : isEqual(parseISO(updated as string), version.Organization!.updated);
 
   return serveIcon(ctx, {
     cache,
     fallback: 'cubes-solid.png',
-    height: size && Number.parseInt(size as string),
-    icon: version.icon || version.Organization.icon,
-    width: size && Number.parseInt(size as string),
+    height: size ? Number.parseInt(size as string) : undefined,
+    icon: version.icon || version.Organization!.icon,
+    width: size ? Number.parseInt(size as string) : undefined,
   });
 }

@@ -6,7 +6,6 @@ import {
 } from '@appsemble/types';
 import { normalize, type RemapperContext } from '@appsemble/utils';
 import {
-  type ChangeEvent,
   type ComponentPropsWithoutRef,
   type MutableRefObject,
   type ReactNode,
@@ -57,11 +56,11 @@ export function TabsPage({
   const { pathname } = useLocation();
   const navigate = useNavigate();
   const { appMemberInfo, appMemberRole, appMemberSelectedGroup } = useAppMember();
-  const [tabsWithPermissions, setTabsWithPermissions] = useState([]);
-  const [defaultTab, setDefaultTab] = useState(null);
+  const [tabsWithPermissions, setTabsWithPermissions] = useState<SubPageDefinition[]>([]);
+  const [defaultTab, setDefaultTab] = useState<{ id: string; name: string } | null>(null);
   const { getVariable } = useAppVariables();
   const [pageReady, setPageReady] = useState<Promise<void>>();
-  const [createdTabs, setCreatedTabs] = useState([]);
+  const [createdTabs, setCreatedTabs] = useState<SubPageDefinition[]>([]);
 
   const remapperContext = useMemo(
     () =>
@@ -84,6 +83,7 @@ export function TabsPage({
         name: remap(subPage.name, data, remapperContext) as string,
         type: undefined,
         roles: subPage.roles,
+        blocks: [],
       };
 
       return checkPagePermissions(pd, appDefinition, appMemberRole, appMemberSelectedGroup);
@@ -93,8 +93,8 @@ export function TabsPage({
 
   const events = createEvents(
     ee,
-    pageReady,
-    pageManifests.events,
+    pageReady ?? Promise.resolve(),
+    pageManifests?.events,
     // @ts-expect-error 2345 argument of type is not assignable to parameter of type
     // (strictNullChecks)
     pageDefinition.definition ? pageDefinition.definition.events : null,
@@ -117,17 +117,24 @@ export function TabsPage({
       setTabsWithPermissions(filteredTabs);
       const id = pageDefinition.tabs.indexOf(filteredTabs[0]);
       setDefaultTab({
-        id,
-        name: filteredTabs[0]?.name,
+        id: String(id),
+        name: remap(filteredTabs[0]?.name, undefined, remapperContext),
       });
     } else if (createdTabs) {
       setTabsWithPermissions(createdTabs);
       setDefaultTab({
         id: '0',
-        name: createdTabs[0]?.name || '',
+        name: remap(createdTabs[0]?.name, undefined, remapperContext),
       });
     }
-  }, [checkSubPagePermissions, pageDefinition, createdTabs, setCreatedTabs]);
+  }, [
+    checkSubPagePermissions,
+    pageDefinition,
+    createdTabs,
+    setCreatedTabs,
+    remap,
+    remapperContext,
+  ]);
 
   useEffect(() => {
     const script = document.createElement('script');
@@ -167,7 +174,7 @@ export function TabsPage({
     return () => events.off.data(callback) as any;
   });
 
-  const onChange = useCallback((event: ChangeEvent, value: string) => navigate(value), [navigate]);
+  const onChange = useCallback((event: unknown, value: string) => navigate(value), [navigate]);
 
   const pageName = getAppMessage({
     id: prefix,
@@ -189,11 +196,11 @@ export function TabsPage({
                 }).format() as string);
 
             const value = `${['', lang, pageId, normalize(translatedName)].join('/')}${
-              wildcard.includes('/') ? wildcard.slice(wildcard.indexOf('/')) : ''
+              wildcard?.includes('/') ? wildcard.slice(wildcard.indexOf('/')) : ''
             }`;
 
             return checkSubPagePermissions(tab) ? (
-              <Tab href={value} key={tab.name} value={value}>
+              <Tab href={value} key={String(defaultMessage)} value={value}>
                 {translatedName}
               </Tab>
             ) : null;
@@ -215,7 +222,7 @@ export function TabsPage({
                 element={
                   checkSubPagePermissions({ blocks, name, roles }) ? (
                     <TabContent
-                      key={`${prefix}.tabs.${normalize(name)}`}
+                      key={`${prefix}.tabs.${normalize(defaultMessage)}`}
                       {...blockListProps}
                       appStorage={appStorage}
                       blocks={blocks}
@@ -232,7 +239,7 @@ export function TabsPage({
                     />
                   ) : null
                 }
-                key={name}
+                key={defaultMessage}
                 path={`/${normalize(translatedName)}${String(
                   (pageDefinition.parameters || []).map((param) => `/:${param}`),
                 )}`}
@@ -245,8 +252,8 @@ export function TabsPage({
               <Navigate
                 to={`/${lang}/${pageId}/${normalize(
                   getAppMessage({
-                    id: `${prefix}.tabs.${defaultTab.id}`,
-                    defaultMessage: defaultTab.name,
+                    id: `${prefix}.tabs.${defaultTab?.id}`,
+                    defaultMessage: defaultTab?.name,
                   }).format() as string,
                 )}`}
               />

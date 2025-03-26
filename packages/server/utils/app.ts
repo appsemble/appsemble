@@ -77,23 +77,27 @@ export async function getApp(
     } else if (subdomain.length === 2) {
       [value.appPath, value.organizationId] = subdomain;
 
-      value.app = await App.findOne({
+      value.app =
+        (await App.findOne({
+          where: {
+            path: value.appPath,
+            OrganizationId: value.organizationId,
+            ...where,
+          },
+          ...findOptions,
+        })) ?? undefined;
+    }
+  } else {
+    value.app =
+      (await App.findOne({
         where: {
-          path: value.appPath,
-          OrganizationId: value.organizationId,
+          ...(localHostnames.has(hostname) || hostname === platformHost
+            ? {}
+            : { domain: hostname }),
           ...where,
         },
         ...findOptions,
-      });
-    }
-  } else {
-    value.app = await App.findOne({
-      where: {
-        ...(localHostnames.has(hostname) || hostname === platformHost ? {} : { domain: hostname }),
-        ...where,
-      },
-      ...findOptions,
-    });
+      })) ?? undefined;
   }
   return value;
 }
@@ -182,10 +186,11 @@ export function parseLanguage(
  * @param language The language to search for within AppMessages.
  * @param baseLanguage The base language to search for within AppMessages.
  */
-export function applyAppMessages(app: App, language: string, baseLanguage: string): void {
+export function applyAppMessages(app: App, language: string, baseLanguage?: string): void {
   if (app.AppMessages?.length) {
-    const baseMessages =
-      baseLanguage && app.AppMessages.find((messages) => messages.language === baseLanguage);
+    const baseMessages = baseLanguage
+      ? app.AppMessages.find((messages) => messages.language === baseLanguage)
+      : undefined;
     const languageMessages = app.AppMessages.find((messages) => messages.language === language);
 
     Object.assign(app, {
@@ -374,7 +379,8 @@ export function resolveIconUrl(app: App): string {
     return `/api/organizations/${app.OrganizationId}/icon?${new URLSearchParams({
       background: app.iconBackground || '#ffffff',
       maskable: 'true',
-      updated: app.Organization.updated.toISOString(),
+      // You better be sure the `app` passed includes the `Organization` model.
+      updated: app.Organization!.updated.toISOString(),
     })}`;
   }
 

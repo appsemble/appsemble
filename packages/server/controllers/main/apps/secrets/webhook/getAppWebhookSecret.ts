@@ -29,6 +29,8 @@ export async function getAppWebhookSecret(ctx: Context): Promise<void> {
     attributes: ['secret'],
   });
 
+  assertKoaCondition(webhookSecret != null, ctx, 404, 'Webhook secret not found');
+
   ctx.body = {
     secret: webhookSecret.secret.toString('hex'),
   };

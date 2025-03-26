@@ -53,9 +53,9 @@ export async function createOrganizationInvites(ctx: Context): Promise<void> {
   });
 
   const memberEmails = new Set(
-    organizationMembers.flatMap(({ User: { EmailAuthorizations } }) =>
-      EmailAuthorizations.flatMap(({ email }) => email),
-    ),
+    organizationMembers
+      .flatMap(({ User: user }) => user!.EmailAuthorizations)
+      .map(({ email }) => email),
   );
 
   const newInvites = (body as OrganizationInvite[])

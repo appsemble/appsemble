@@ -11,19 +11,26 @@ import {
 
 export async function linkCurrentAppMember(ctx: Context): Promise<void> {
   const {
-    // PathParams: { appId },
     request: {
       body: { email, externalId, secret },
     },
-    user: { id: AppMemberId },
+    user: appMember,
   } = ctx;
-  const assert = (emailVerified: boolean): void =>
+  const { id: AppMemberId } = appMember!;
+  function assertNotNull(
+    value: unknown,
+    thing: string,
+  ): asserts value is NonNullable<typeof value> {
+    assertKoaCondition(value != null, ctx, 404, `${thing} not found`);
+  }
+  function assert(emailVerified: boolean): asserts emailVerified {
     assertKoaCondition(
       emailVerified,
       ctx,
       403,
       `Account linking is only allowed to a verified account. Please verify your email ${email}.`,
     );
+  }
 
   const [type, secretId] = secret.split(':');
   switch (type) {
@@ -32,6 +39,7 @@ export async function linkCurrentAppMember(ctx: Context): Promise<void> {
         where: { sub: externalId, AppOAuth2SecretId: secretId, email },
         attributes: ['sub', 'AppOAuth2SecretId', 'emailVerified'],
       });
+      assertNotNull(authorization, 'OAuth2 authorization');
       assert(authorization.emailVerified);
       authorization.update({ AppMemberId });
       break;
@@ -41,6 +49,7 @@ export async function linkCurrentAppMember(ctx: Context): Promise<void> {
         where: { nameId: externalId, AppSamlSecretId: secretId, email },
         attributes: ['nameId', 'AppSamlSecretId', 'emailVerified'],
       });
+      assertNotNull(authorization, 'SAML authorization');
       assert(authorization.emailVerified);
       authorization.update({ AppMemberId });
       break;
@@ -55,7 +64,8 @@ export async function linkCurrentAppMember(ctx: Context): Promise<void> {
         },
         attributes: ['id'],
       });
-      assert(user?.EmailAuthorizations?.[0]?.verified);
+      assertNotNull(user, 'User');
+      assert(user.EmailAuthorizations[0].verified);
       await AppMember.update({ UserId: externalId }, { where: { id: AppMemberId } });
       break;
     }

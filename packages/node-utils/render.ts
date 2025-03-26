@@ -49,7 +49,7 @@ export async function render(
  */
 export function makeCSP(csp: ContentSecurityPolicy): string {
   return Object.entries(csp)
-    .map(([key, values]) => [key, values.filter(Boolean)] as const)
+    .map(([key, values]) => [key, values.filter((val) => val !== false && val != null)] as const)
     .filter(([, values]) => values?.length)
     .sort(([a], [b]) => a.localeCompare(b))
     .map(([key, values]) => `${key} ${[...new Set(values)].sort(compareStrings).join(' ')}`)

@@ -12,7 +12,13 @@ import { FormattedMessage } from 'react-intl';
 import { messages } from './messages.js';
 import { Button, Form, FormButtons } from '../index.js';
 
-const Context = createContext<StepperProps>(null);
+const Context = createContext<StepperProps>({
+  children: [],
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
+  onFinish() {},
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
+  onCancel() {},
+});
 
 interface StepperProps {
   readonly children: ReactNode;

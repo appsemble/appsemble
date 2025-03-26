@@ -864,7 +864,7 @@ function checkCyclicRoleInheritance(
       return true;
     }
     stack.push(role);
-    return roles[role]?.inherits?.some(checkRoleRecursively);
+    return Boolean(roles[role]?.inherits?.some(checkRoleRecursively));
   };
 
   const duplicate = checkRoleRecursively(name);

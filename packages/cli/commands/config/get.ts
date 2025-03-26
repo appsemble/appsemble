@@ -18,10 +18,14 @@ export function builder(yargs: Argv): Argv<any> {
 }
 
 export async function handler({ key }: ConfigGetArguments): Promise<void> {
-  const { packageJson } = await readPackageUp({ normalize: false });
+  const readResult = await readPackageUp({ normalize: false });
+  if (!readResult) {
+    throw new Error('Could not find package.json in the current directory or any of its parents');
+  }
+  const { packageJson } = readResult;
   const pkg = packageJson as MonoRepoPackageJson;
   if (has(pkg, 'appsembleServer')) {
     // eslint-disable-next-line no-console
-    console.log(pkg.appsembleServer[key]);
+    console.log(pkg.appsembleServer?.[key]);
   }
 }

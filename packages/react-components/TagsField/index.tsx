@@ -24,6 +24,9 @@ export const TagsField = forwardRef<HTMLInputElement, TagsFieldProps>(
 
     useEffect(() => {
       const element = innerRef.current;
+      if (!element) {
+        return;
+      }
       bulmaInputRef.current = new BulmaTagsInput(element, { delimiter });
       // Bulma tags input can’t be updated. Don’t support updating the delimiter on the fly.
       // eslint-disable-next-line react-hooks/exhaustive-deps

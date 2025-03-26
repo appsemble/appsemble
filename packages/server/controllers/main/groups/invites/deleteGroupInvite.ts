@@ -14,8 +14,10 @@ export async function deleteGroupInvite(ctx: Context): Promise<void> {
   assertKoaCondition(invite != null, ctx, 404, 'This invite does not exist');
 
   const group = await Group.findByPk(invite.GroupId, { attributes: ['AppId'] });
+  assertKoaCondition(group != null, ctx, 404, 'Group not found');
 
   const app = await App.findByPk(group.AppId, { attributes: ['OrganizationId'] });
+  assertKoaCondition(app != null, ctx, 404, 'App not found');
 
   await checkUserOrganizationPermissions({
     context: ctx,

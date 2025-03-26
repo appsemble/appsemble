@@ -79,9 +79,12 @@ export function getAppMemberSSO(appMember: AppMember): SSOConfiguration[] {
     for (const { AppOAuth2Secret: secret } of appMember.AppOAuth2Authorizations) {
       sso.push({
         type: 'oauth2',
-        icon: secret.icon,
-        url: secret.dataValues.authorizatio,
-        name: secret.name,
+        // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
+        icon: secret?.icon,
+        // TODO: SEVERE typo
+        url: secret?.dataValues.authorizatio,
+        // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
+        name: secret?.name,
       });
     }
   }
@@ -90,9 +93,12 @@ export function getAppMemberSSO(appMember: AppMember): SSOConfiguration[] {
     for (const { AppSamlSecret: secret } of appMember.AppSamlAuthorizations) {
       sso.push({
         type: 'saml',
-        icon: secret.icon,
-        url: secret.ssoUrl,
-        name: secret.name,
+        // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
+        icon: secret?.icon,
+        // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
+        url: secret?.ssoUrl,
+        // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
+        name: secret?.name,
       });
     }
   }

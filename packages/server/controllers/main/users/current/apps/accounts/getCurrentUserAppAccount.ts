@@ -1,3 +1,4 @@
+import { assertKoaCondition } from '@appsemble/node-utils';
 import { type AppAccount } from '@appsemble/types';
 import { type Context } from 'koa';
 import { literal } from 'sequelize';
@@ -68,6 +69,7 @@ export async function getCurrentUserAppAccount(ctx: Context): Promise<void> {
       ...includeOptions,
     ],
   });
+  assertKoaCondition(app != null, ctx, 404, 'App not found');
 
   applyAppMessages(app, language, baseLanguage);
 

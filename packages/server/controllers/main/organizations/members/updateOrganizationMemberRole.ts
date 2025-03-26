@@ -17,6 +17,8 @@ export async function updateOrganizationMemberRole(ctx: Context): Promise<void> 
 
   const organization = await Organization.findByPk(organizationId, { include: [User] });
 
+  assertKoaCondition(organization != null, ctx, 404, 'Organization not found');
+
   assertKoaCondition(
     organization.Users.some((u) => u.id === user.id),
     ctx,

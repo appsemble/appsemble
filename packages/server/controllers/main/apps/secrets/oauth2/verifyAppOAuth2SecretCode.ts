@@ -24,19 +24,17 @@ export async function verifyAppOAuth2SecretCode(ctx: Context): Promise<void> {
     },
   } = ctx;
   // XXX Replace this with an imported language array when supporting more languages
-  let referer: URL;
   try {
-    referer = new URL(headers.referer);
+    const referer = new URL(headers.referer!);
+    assertKoaCondition(
+      referer.origin === new URL(argv.host).origin,
+      ctx,
+      400,
+      'The referer header is invalid',
+    );
   } catch {
     throwKoaError(ctx, 400, 'The referer header is invalid');
   }
-
-  assertKoaCondition(
-    referer.origin === new URL(argv.host).origin,
-    ctx,
-    400,
-    'The referer header is invalid',
-  );
 
   const app = await App.findByPk(appId, {
     attributes: ['id', 'path', 'OrganizationId', 'definition'],
@@ -110,6 +108,8 @@ export async function verifyAppOAuth2SecretCode(ctx: Context): Promise<void> {
       });
       await handleAuthorization(appMember);
     } catch (error) {
+      // @ts-expect-error 2345 argument of type is not assignable to parameter of type
+      // (strictNullChecks) - Severe
       await handleUniqueAppMemberEmailIndex(ctx, error, email, emailVerified, async (data) => {
         const { AppOAuth2SecretId, sub: subject } = await handleAuthorization();
         throwKoaError(ctx, 409, 'Account already exists for this email.', {
@@ -119,6 +119,7 @@ export async function verifyAppOAuth2SecretCode(ctx: Context): Promise<void> {
         });
       });
     }
+    appMember = appMember!;
   }
 
   const appOAuth2AuthorizationCode = await createAppOAuth2AuthorizationCode(

@@ -1,4 +1,4 @@
-import { getResourceDefinition } from '@appsemble/node-utils';
+import { assertKoaCondition, getResourceDefinition } from '@appsemble/node-utils';
 import { type Context } from 'koa';
 
 import { App, Resource } from '../../../../models/index.js';
@@ -20,6 +20,7 @@ export async function deleteAppResources(ctx: Context): Promise<void> {
   const app = await App.findByPk(appId, {
     attributes: ['definition', 'id'],
   });
+  assertKoaCondition(app != null, ctx, 404, 'App not found');
 
   await checkAppPermissions({
     context: ctx,

@@ -51,7 +51,7 @@ export function getMimeTypeCategory(mimeType: string): MimeTypeCategory | null {
 }
 
 export function getMimeTypeCategories(mimeTypes: string[]): MimeTypeCategory[] {
-  return Array.from(new Set(mimeTypes.map(getMimeTypeCategory).filter(Boolean)));
+  return Array.from(new Set(mimeTypes.map(getMimeTypeCategory).filter((cat) => cat != null)));
 }
 
 export type FileIconName = IconName | `file-${string}`;

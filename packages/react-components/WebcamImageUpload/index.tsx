@@ -92,6 +92,9 @@ export const WebcamImageUpload = forwardRef<HTMLVideoElement, WebcamImageUploadP
           context.drawImage(videoRef.current, 0, 0, canvas.width, canvas.height);
           stopWebcam();
           canvas.toBlob((blob) => {
+            if (!blob) {
+              return;
+            }
             onCapture(blob);
           }, 'image/png');
         }

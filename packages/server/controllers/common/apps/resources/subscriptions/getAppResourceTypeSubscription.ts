@@ -37,6 +37,8 @@ export async function getAppResourceTypeSubscription(ctx: Context): Promise<void
       },
     ],
   });
+  assertKoaCondition(app != null, ctx, 404, 'App not found');
+
   getResourceDefinition(app.definition, resourceType, ctx);
 
   assertKoaCondition(app.Resources.length > 0, ctx, 404, 'Resource not found');
@@ -53,6 +55,9 @@ export async function getAppResourceTypeSubscription(ctx: Context): Promise<void
 
   const result: any = { create: false, update: false, delete: false };
   for (const { ResourceId, action } of appSubscription.ResourceSubscriptions) {
+    if (!action) {
+      continue;
+    }
     if (ResourceId) {
       if (!result.subscriptions) {
         result.subscriptions = {};

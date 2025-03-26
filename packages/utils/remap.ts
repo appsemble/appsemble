@@ -181,7 +181,12 @@ export function remap(
       throw new RemapperError(`Remapper name does not exist: ${JSON.stringify(name)}`, mapper);
     }
     // eslint-disable-next-line @typescript-eslint/no-use-before-define
-    const implementation = mapperImplementations[name];
+    const implementation = mapperImplementations[name]! as (
+      // Fixes weird type union issue where the type union for `args` turns into `never`
+      args: any,
+      input: unknown,
+      context: InternalContext,
+    ) => unknown;
     result = implementation(args as any, result, { root: input, ...context });
   }
   return result;
@@ -299,10 +304,10 @@ const mapperImplementations: MapperImplementations = {
       startInputType: 'utc',
       startOutputType: 'utc',
       title: remap(mappers.title, input, context) as string,
-      description: remap(mappers.description, input, context) as string,
-      url: remap(mappers.url, input, context) as string,
-      location: remap(mappers.location, input, context) as string,
-      geo: processLocation(remap(mappers.coordinates, input, context)),
+      description: remap(mappers.description ?? null, input, context) as string,
+      url: remap(mappers.url ?? null, input, context) as string,
+      location: remap(mappers.location ?? null, input, context) as string,
+      geo: processLocation(remap(mappers.coordinates ?? null, input, context)),
       productId: context.appUrl,
     };
 
@@ -342,8 +347,11 @@ const mapperImplementations: MapperImplementations = {
 
   match(mappers, input, context) {
     return (
-      remap(mappers.find((mapper) => remap(mapper.case, input, context))?.value, input, context) ??
-      null
+      remap(
+        mappers.find((mapper) => remap(mapper.case, input, context))?.value ?? null,
+        input,
+        context,
+      ) ?? null
     );
   },
 
@@ -623,15 +631,17 @@ const mapperImplementations: MapperImplementations = {
   history: (index, input, context) => context.history?.[index],
 
   'from.history': ({ index, props }, input, context) =>
-    mapValues(props, (mapper) => remap(mapper, context.history[index], context)),
+    mapValues(props, (mapper) => remap(mapper, context.history?.[index], context)),
 
   'assign.history': ({ index, props }, input: any, context) => ({
     ...input,
-    ...mapValues(props, (mapper) => remap(mapper, context.history[index], context)),
+    ...mapValues(props, (mapper) => remap(mapper, context.history?.[index], context)),
   }),
 
+  // eslint-disable-next-line @typescript-eslint/prefer-ts-expect-error
+  // @ts-ignore 2322 ... is not assignable to type (strictNullChecks)
   'omit.history'({ index, keys }, input: Record<string, any>, context) {
-    const result = { ...(context.history[index] as Record<string, any>) };
+    const result = { ...(context.history?.[index] as Record<string, any>) };
     for (const key of keys) {
       if (Array.isArray(key)) {
         let acc = result;
@@ -659,7 +669,9 @@ const mapperImplementations: MapperImplementations = {
     return input;
   },
 
-  'string.startsWith'(substring: SubstringCaseType, input: string) {
+  // eslint-disable-next-line @typescript-eslint/prefer-ts-expect-error
+  // @ts-ignore 2322 ... is not assignable to type (strictNullChecks)
+  'string.startsWith'(substring: SubstringCaseType | string, input: string) {
     if (typeof substring === 'string') {
       return input.startsWith(substring);
     }
@@ -669,7 +681,9 @@ const mapperImplementations: MapperImplementations = {
     return input.toLowerCase().startsWith(substring.substring.toLowerCase());
   },
 
-  'string.endsWith'(substring: SubstringCaseType, input: string) {
+  // eslint-disable-next-line @typescript-eslint/prefer-ts-expect-error
+  // @ts-ignore 2322 ... is not assignable to type (strictNullChecks)
+  'string.endsWith'(substring: SubstringCaseType | string, input: string) {
     if (typeof substring === 'string') {
       return input.endsWith(substring);
     }
@@ -696,7 +710,7 @@ const mapperImplementations: MapperImplementations = {
 
   'string.format'({ messageId, template, values }, input, context) {
     try {
-      const remappedMessageId = remap(messageId, input, context) as string;
+      const remappedMessageId = remap(messageId ?? null, input, context) as string;
       const message = context.getMessage({ id: remappedMessageId, defaultMessage: template });
       return message.format(
         values ? mapValues(values, (val) => remap(val, input, context)) : undefined,

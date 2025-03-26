@@ -20,6 +20,7 @@ export async function createAppGroup(ctx: Context): Promise<void> {
   });
 
   const app = await App.findByPk(appId, { attributes: ['demoMode', 'definition'] });
+  assertKoaCondition(app != null, ctx, 404, 'App not found');
   assertKoaCondition(
     app.definition.security != null,
     ctx,

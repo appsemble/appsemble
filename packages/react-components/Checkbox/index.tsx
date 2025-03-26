@@ -87,7 +87,9 @@ export const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(
     );
 
     useEffect(() => {
-      innerRef.current.indeterminate = indeterminate;
+      if (innerRef.current) {
+        innerRef.current.indeterminate = Boolean(indeterminate);
+      }
     }, [indeterminate]);
 
     return (

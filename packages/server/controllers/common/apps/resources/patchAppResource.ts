@@ -21,6 +21,7 @@ export async function patchAppResource(ctx: Context): Promise<void> {
   const app = await App.findByPk(appId, {
     attributes: ['definition', 'id'],
   });
+  assertKoaCondition(app != null, ctx, 404, 'App not found');
 
   const resource = await Resource.findOne({
     where: { id: resourceId, type: resourceType, AppId: appId, GroupId: selectedGroupId ?? null },

@@ -57,6 +57,10 @@ export function authentication(): SecurityOptions {
         attributes: ['id'],
       });
 
+      if (!appMember) {
+        return;
+      }
+
       const result: [AuthSubject, { scope: string; app: AppType }] = [appMember, { scope, app }];
       return result;
     },

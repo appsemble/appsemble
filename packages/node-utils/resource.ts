@@ -105,7 +105,7 @@ export function getResourceDefinition(
     }
   }
 
-  if (view && !definition.views[view]) {
+  if (view && !definition.views?.[view]) {
     if (ctx === undefined) {
       throw new Error(`View ${view} does not exist for resource type ${resourceType}`);
     } else {
@@ -128,10 +128,14 @@ export function getResourceDefinition(
  */
 export function extractResourceBody(
   ctx: Context | ParameterizedContext<DefaultState, DefaultContext, any>,
-): [Record<string, unknown> | Record<string, unknown>[], TempFile[], PreValidatePropertyFunction] {
+): [
+  Record<string, unknown> | Record<string, unknown>[],
+  TempFile[],
+  PreValidatePropertyFunction | undefined,
+] {
   let body: ResourceType | ResourceType[];
   let assets: TempFile[];
-  let preValidateProperty: PreValidatePropertyFunction;
+  let preValidateProperty: PreValidatePropertyFunction | undefined;
 
   if (ctx?.request?.body && ctx.is('multipart/form-data')) {
     ({ assets = [], resource: body } = ctx.request.body);
@@ -216,10 +220,11 @@ export function processResourceBody(
       const regularAsset = preparedRegularAssets.find(
         (ra) =>
           !usedPreparedRegularAssets.includes(ra.id) &&
-          ra.filename.startsWith(filename.replace(thumbnailAssetSuffix, '')),
+          ra.filename?.startsWith(filename.replace(thumbnailAssetSuffix, '')),
       );
 
       const id = regularAsset ? `${regularAsset.id}-thumbnail` : randomUUID();
+      // @ts-expect-error 2322 null is not assignable to type (strictNullChecks) - Severe
       usedPreparedRegularAssets.push(regularAsset?.id);
 
       assetIdMap.set(index + preparedRegularAssets.length, id);
@@ -306,6 +311,8 @@ export function processResourceBody(
             const date = parseISO(value);
 
             if (Number.isNaN(date.getTime())) {
+              // @ts-expect-error 2345 argument of type is not assignable to parameter of type
+              // (strictNullChecks) - Severe
               return addMilliseconds(new Date(), parseDuration(value));
             }
 
@@ -315,7 +322,7 @@ export function processResourceBody(
                 (error) => error.message === 'has already passed' && error.path === path,
               )
             ) {
-              customErrors.push(new ValidationError('has already passed', value, null, path));
+              customErrors.push(new ValidationError('has already passed', value, undefined, path));
             }
             return date;
           }
@@ -345,7 +352,10 @@ export function processResourceBody(
         }
         const uuid = assetIdMap.get(num);
         const currentResource = Array.isArray(resource) ? resource[path[0] as number] : resource;
-        preparedAssets.find((asset) => asset.id === uuid).resource = currentResource;
+        const preparedAsset = preparedAssets.find((asset) => asset.id === uuid);
+        if (preparedAsset) {
+          preparedAsset.resource = currentResource;
+        }
         assetUsedMap.set(num, true);
         return uuid;
       },
@@ -360,7 +370,7 @@ export function processResourceBody(
         new ValidationError(
           'is not referenced from the resource',
           assetId,
-          null,
+          undefined,
           ['assets', assetId],
           'binary',
           'format',
