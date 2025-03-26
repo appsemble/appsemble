@@ -2,6 +2,8 @@
   "extends": "../../tsconfig",
   "files": [],
   "compilerOptions": {
-    "rootDir": "."
+    "rootDir": ".",
+    "strictFunctionTypes": true,
+    "strictNullChecks": true
   }
 }

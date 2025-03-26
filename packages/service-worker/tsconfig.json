@@ -2,6 +2,8 @@
   "extends": "../../tsconfig",
   "compilerOptions": {
     "lib": ["esnext", "webworker"],
+    "strictFunctionTypes": true,
+    "strictNullChecks": true,
     "rootDir": ".",
     "types": ["node"]
   }

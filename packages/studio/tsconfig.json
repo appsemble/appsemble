@@ -4,6 +4,8 @@
     "jsx": "react-jsx",
     "lib": ["dom", "dom.iterable", "esnext"],
     "resolveJsonModule": true,
+    "strictNullChecks": false,
+    "strictFunctionTypes": false,
     "rootDir": ".",
     "types": ["css-modules", "mdx", "node", "webpack-env"]
   }

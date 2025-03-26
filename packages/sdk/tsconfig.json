@@ -3,6 +3,8 @@
   "compilerOptions": {
     "lib": ["dom", "dom.iterable", "esnext"],
     "resolveJsonModule": true,
-    "rootDir": "."
+    "rootDir": ".",
+    "strictFunctionTypes": true,
+    "strictNullChecks": true
   }
 }

@@ -5,6 +5,8 @@
     "jsxImportSource": "preact",
     "lib": ["dom", "dom.iterable", "esnext"],
     "module": "esnext",
+    "strictNullChecks": false,
+    "strictFunctionTypes": false,
     "moduleResolution": "bundler",
     "rootDir": ".",
     "types": ["css-modules"]
