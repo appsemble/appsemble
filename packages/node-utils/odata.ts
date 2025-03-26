@@ -39,6 +39,7 @@ export function processLiteral(token: Token): Date | boolean | number | string {
     case Edm.Guid:
       return token.raw;
     case Edm.null:
+      // @ts-expect-error 2322 null is not assignable to type (strictNullChecks) - Severe
       return null;
     default:
       throw new TypeError(`${token.position}: Unhandled OData literal type: ${token.value}`);

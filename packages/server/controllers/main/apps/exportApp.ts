@@ -57,7 +57,9 @@ export async function exportApp(ctx: Context): Promise<void> {
   zip.file('app-definition.yaml', definition);
 
   const theme = zip.folder('theme');
+  // @ts-expect-error 2769 No overload matches this call (strictNullChecks)
   theme.file('core/index.css', app.coreStyle);
+  // @ts-expect-error 2769 No overload matches this call (strictNullChecks)
   theme.file('shared/index.css', app.sharedStyle);
 
   if (app.AppMessages !== undefined) {
@@ -70,6 +72,7 @@ export async function exportApp(ctx: Context): Promise<void> {
   if (app.AppBlockStyles !== undefined) {
     for (const block of app.AppBlockStyles) {
       const [orgName, blockName] = block.block.split('/');
+      // @ts-expect-error 2769 No overload matches this call (strictNullChecks)
       theme.file(`${orgName}/${blockName}/index.css`, block.style);
     }
   }

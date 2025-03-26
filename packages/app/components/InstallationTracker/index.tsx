@@ -66,10 +66,12 @@ export function InstallationTracker(): ReactNode {
         );
       };
 
+      // @ts-expect-error beforeinstallprompt not keyof WindowEventMap (who knows why)
       window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
 
       // Cleanup the event listener on component unmount
       return () => {
+        // @ts-expect-error beforeinstallprompt not keyof WindowEventMap (who knows why)
         window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
       };
     }

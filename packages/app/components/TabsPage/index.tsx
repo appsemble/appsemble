@@ -95,6 +95,8 @@ export function TabsPage({
     ee,
     pageReady,
     pageManifests.events,
+    // @ts-expect-error 2345 argument of type is not assignable to parameter of type
+    // (strictNullChecks)
     pageDefinition.definition ? pageDefinition.definition.events : null,
   );
   const resolvePageReady = useRef<Function>();
@@ -129,11 +131,14 @@ export function TabsPage({
 
   useEffect(() => {
     const script = document.createElement('script');
+    // @ts-expect-error PageEvent is not a standard event, we should find how to make typescript
+    // recognize it
     script.addEventListener('PageEvent', (event: CustomEvent) => {
       event.stopImmediatePropagation();
       event.preventDefault();
     });
     const callback = (d: any): void => {
+      // @ts-expect-error 18048 variable is possibly undefined (strictNullChecks)
       const { blocks, name } = pageDefinition.definition.foreach;
       function createTabs(): SubPageDefinition[] {
         const newTabs: SubPageDefinition[] = [];

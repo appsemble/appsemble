@@ -58,10 +58,13 @@ export function BottomNavigation({ pages }: BottomNavigationProps): ReactNode {
               context: { name },
               locale: lang,
             };
-            const navName = page.navTitle
-              ? (remap(page.navTitle, null, remapperContext) as ReactNode)
-              : name;
+            // @ts-expect-error 2345 argument of type is not assignable to parameter of type
+            // (strictNullChecks)
+            // eslint-disable-next-line prettier/prettier
+            const navName = page.navTitle ? (remap(page.navTitle, null, remapperContext) as ReactNode) : name;
 
+            // @ts-expect-error 2345 argument of type is not assignable to parameter of type
+            // (strictNullChecks)
             const count = remap(page.badgeCount, null, remapperContext) as number;
 
             return (

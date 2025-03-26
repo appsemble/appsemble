@@ -15,6 +15,7 @@ import { argv } from '../argv.js';
 function getImplementation(): typeof import('./index.js') {
   const { appDomainStrategy } = argv;
   if (!appDomainStrategy) {
+    // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
     return;
   }
 

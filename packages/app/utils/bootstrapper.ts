@@ -118,6 +118,7 @@ function getControllerFunction(): Promisable<ControllerFunction> {
 }
 
 export function getHandlerFunction(handler: string): HandlerFunction {
+  // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
   return handlerFunctions.get(handler);
 }
 
@@ -141,6 +142,7 @@ export async function callBootstrap(
 
         script.src = prefixBlockURL({ type: manifest.name, version: manifest.version }, url);
 
+        // @ts-expect-error Not a default event
         script.addEventListener('AppsembleBootstrap', (event: AppsembleBootstrapEvent) => {
           event.stopImmediatePropagation();
           event.preventDefault();
@@ -174,6 +176,7 @@ export async function callController(params: EventParams): Promise<void> {
     const blob = new Blob([appControllerCode], { type: 'application/javascript' });
     script.src = URL.createObjectURL(blob);
 
+    // @ts-expect-error Not a default event
     script.addEventListener('AppsembleController', (event: AppsembleControllerEvent) => {
       event.stopImmediatePropagation();
       event.preventDefault();

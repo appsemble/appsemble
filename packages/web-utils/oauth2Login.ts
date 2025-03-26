@@ -74,8 +74,10 @@ export function startOAuth2Login(
  */
 export function loadOAuth2State<T extends OAuth2State = OAuth2State>(): T {
   try {
-    return JSON.parse(sessionStorage.getItem(storageKey));
+    return JSON.parse(sessionStorage.getItem(storageKey) ?? '');
   } catch {
+    // eslint-disable-next-line @typescript-eslint/prefer-ts-expect-error
+    // @ts-ignore 2322 null is not assignable to type (strictNullChecks)
     return null;
   }
 }

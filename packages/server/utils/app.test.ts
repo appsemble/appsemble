@@ -237,6 +237,8 @@ describe('app', () => {
       ];
       const [b, a, d, e, c] = apps;
 
+      // @ts-expect-error 2345 argument of type is not assignable to parameter of type
+      // (strictNullChecks)
       expect(apps.sort(compareApps)).toMatchObject([a, b, c, d, e]);
     });
   });

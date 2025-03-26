@@ -52,6 +52,7 @@ export async function stopIdleContainers(interval = 10): Promise<void> {
   }
 
   for (const deployment of deployments.items) {
+    // @ts-expect-error 2339 Property does not exist on type undefined
     const { annotations, name, namespace } = deployment.metadata;
 
     if (

@@ -51,6 +51,8 @@ export const FileUpload = forwardRef<HTMLInputElement, FileUploadProps>(
   ) => {
     const inputRef = useRef<HTMLInputElement>(null);
 
+    // eslint-disable-next-line @typescript-eslint/prefer-ts-expect-error
+    // @ts-ignore 2322 null is not assignable to type (strictNullChecks)
     useImperativeHandle(ref, () => inputRef.current);
 
     const handleChange = useCallback(

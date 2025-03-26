@@ -135,17 +135,22 @@ export function BlockList({
       await callController({
         actions: makeActions({
           appStorage,
+          // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
           actions: controllerImplementations.actions,
           appDefinition,
+          // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
           context: appDefinition.controller,
           pushNotifications,
+          // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
           pageReady,
           params,
           prefix: 'controller',
           prefixIndex: 'controller',
           ee,
+          // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
           remap,
           appMemberGroups,
+          // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
           addAppMemberGroup,
           getAppMemberInfo: () => appMemberInfoRef.current,
           passwordLogin,
@@ -156,12 +161,15 @@ export function BlockList({
         }),
         events: createEvents(
           ee,
+          // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
           pageReady,
           controllerImplementations.events,
+          // @ts-expect-error 18048 variable is possibly undefined (strictNullChecks)
           appDefinition.controller.events,
         ),
         data: location.state,
         utils: {
+          // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
           remap,
           addCleanup(cleanupFn) {
             cleanups.current.push(cleanupFn);
@@ -216,10 +224,12 @@ export function BlockList({
           flowActions={flowActions}
           key={`${prefix}.${index}-${revision}`}
           pageDefinition={pageDefinition}
+          // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
           pageReady={pageReady}
           prefix={`${prefix}.${index}`}
           prefixIndex={`${prefixIndex}.${index}`}
           ready={ready}
+          // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
           remap={remap}
           showDialog={showDialog}
           showShareDialog={showShareDialog}

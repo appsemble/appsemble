@@ -94,6 +94,7 @@ export async function assertAppSamlConsumerService(ctx: Context): Promise<void> 
   }
 
   sig.keyInfoProvider = {
+    // @ts-expect-error 2322 null is not assignable to type (strictNullChecks) - Severe
     getKeyInfo: null,
     getKey: () => Buffer.from(idpCertificate || appSamlSecret.idpCertificate),
   };
@@ -209,6 +210,8 @@ export async function assertAppSamlConsumerService(ctx: Context): Promise<void> 
           await handleUniqueAppMemberEmailIndex(
             ctx,
             error,
+            // @ts-expect-error 2345 argument of type is not assignable to parameter of type
+            // (strictNullChecks) - Severe
             email,
             emailVerified,
             async ({ logins, user }) => {
@@ -216,6 +219,8 @@ export async function assertAppSamlConsumerService(ctx: Context): Promise<void> 
               const secret = `saml:${AppSamlSecretId}`;
               location.searchParams.set('externalId', id);
               location.searchParams.set('secret', secret);
+              // @ts-expect-error 2345 argument of type is not assignable to parameter of type
+              // (strictNullChecks) - Severe
               location.searchParams.set('email', email);
               location.searchParams.set('user', String(user));
               location.searchParams.set('logins', logins);

@@ -185,6 +185,7 @@ export async function updateCompanionContainers(
           {
             op: 'replace',
             path: '/metadata',
+            // @ts-expect-error 18048 variable is possibly undefined (strictNullChecks)
             value: { ...def.metadata, name: existing.metadata.name },
           },
           {
@@ -224,6 +225,7 @@ export async function updateCompanionContainers(
         {
           op: 'replace',
           path: '/metadata',
+          // @ts-expect-error 18048 variable is possibly undefined (strictNullChecks)
           value: { ...def.metadata, name: existing.metadata.name },
         },
         {
@@ -283,6 +285,7 @@ export async function updateCompanionContainers(
           },
           name: pod.metadata.name,
         };
+        // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
         patchOptions[0] = pod?.metadata?.name;
         patchOptions[2] = [
           {
@@ -347,6 +350,8 @@ export async function updateCompanionContainers(
       );
 
       if (!existing) {
+        // @ts-expect-error 2345 argument of type is not assignable to parameter of type
+        // (strictNullChecks)
         await deleteCompanionContainers(service.metadata?.name);
       }
     }

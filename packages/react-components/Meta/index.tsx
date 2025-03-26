@@ -69,6 +69,8 @@ export function MetaProvider({ children, description, title }: MetaProviderProps
         return oldValues;
       }
       const newValues = [...oldValues];
+      // eslint-disable-next-line @typescript-eslint/prefer-ts-expect-error
+      // @ts-ignore 2322 null is not assignable to type (strictNullChecks)
       newValues[index] = newValue;
       return newValues;
     });
@@ -137,6 +139,8 @@ export function useMeta(title: Text, description?: Text): void {
       string ? (typeof string === 'string' ? string : formatMessage(string)) : undefined;
 
     setMeta(depth, {
+      // eslint-disable-next-line @typescript-eslint/prefer-ts-expect-error
+      // @ts-ignore 2322 null is not assignable to type (strictNullChecks)
       description: formatMaybe(description),
       title: formatMaybe(title),
       url,
@@ -168,6 +172,9 @@ interface MetaSwitchProps {
  */
 export function MetaSwitch({ children, description, title }: MetaSwitchProps): ReactNode {
   const [depth, setMeta] = useContext(MetaContext);
+  // eslint-disable-next-line @typescript-eslint/prefer-ts-expect-error
+  // @ts-ignore 2345 argument of type is not assignable to parameter of type
+  // (strictNullChecks)
   useMeta(title, description);
 
   return (

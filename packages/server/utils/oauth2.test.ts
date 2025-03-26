@@ -151,6 +151,8 @@ describe('oauth2', () => {
           subscribed: false,
         },
       ]);
+      // @ts-expect-error 2345 argument of type is not assignable to parameter of type
+      // (strictNullChecks)
       const userInfo = await getUserInfo('', null, '/user', [
         {
           'object.from': {

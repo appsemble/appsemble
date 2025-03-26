@@ -151,18 +151,32 @@ type MailerArgs = Partial<
  * A class to simplify sending emails.
  */
 export class Mailer {
+  // @ts-expect-error 2564 Property ... has no initializer and is not definitely assigned in the
+  // constructor
   transport: Transporter;
 
+  // @ts-expect-error 2564 Property ... has no initializer and is not definitely assigned in the
+  // constructor
   connection: boolean;
 
+  // @ts-expect-error 2564 Property ... has no initializer and is not definitely assigned in the
+  // constructor
   private imapHost: string;
 
+  // @ts-expect-error 2564 Property ... has no initializer and is not definitely assigned in the
+  // constructor
   private imapPass: string;
 
+  // @ts-expect-error 2564 Property ... has no initializer and is not definitely assigned in the
+  // constructor
   private imapPort: number;
 
+  // @ts-expect-error 2564 Property ... has no initializer and is not definitely assigned in the
+  // constructor
   private imapSecure: boolean;
 
+  // @ts-expect-error 2564 Property ... has no initializer and is not definitely assigned in the
+  // constructor
   private imapUser: string;
 
   constructor({
@@ -194,9 +208,11 @@ export class Mailer {
     }
     if (imapHost) {
       this.imapHost = imapHost;
+      // @ts-expect-error 2322 undefined is not assignable to type (strictNullChecks)
       this.imapPass = imapPass;
       this.imapPort = imapPort || 993;
       this.imapSecure = imapSecure;
+      // @ts-expect-error 2322 undefined is not assignable to type (strictNullChecks)
       this.imapUser = imapUser;
     }
   }
@@ -279,6 +295,7 @@ export class Mailer {
     ) {
       templateSubject = defaultLocaleMessages.messages.core[subjectKey];
       templateBody = defaultLocaleMessages.messages.core[bodyKey];
+      // @ts-expect-error 2322 undefined is not assignable to type (strictNullChecks)
     } else if ((await supportedLanguages).has(baseLang) || (await supportedLanguages).has(lang)) {
       const coreMessages = await getAppsembleMessages(lang, baseLang);
       if (has(coreMessages, bodyKey) && has(coreMessages, subjectKey)) {
@@ -339,6 +356,7 @@ export class Mailer {
           const members = await OrganizationMember.findAll({
             where: {
               role: PredefinedOrganizationRole.Owner,
+              // @ts-expect-error 18048 variable is possibly null (strictNullChecks)
               OrganizationId: fullApp.OrganizationId,
             },
             include: [
@@ -355,13 +373,15 @@ export class Mailer {
             members.map(async (m) => {
               await this.sendTranslatedEmail({
                 to: {
-                  name: m.User.name,
-                  email: m.User.primaryEmail,
+                  name: m.User!.name,
+                  // @ts-expect-error 2322 undefined is not assignable to type (strictNullChecks)
+                  email: m.User!.primaryEmail,
                 },
                 emailName: 'appEmailQuotaLimitHit',
-                locale: m.User.locale,
+                locale: m.User!.locale,
                 values: {
-                  name: m.User.name,
+                  name: m.User!.name,
+                  // @ts-expect-error 18048 variable is possibly null (strictNullChecks)
                   appName: fullApp.definition.name,
                 },
               });

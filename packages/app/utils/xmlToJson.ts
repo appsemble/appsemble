@@ -38,6 +38,8 @@ function processNode(
 ): JsonValue {
   const xmlObject = schema.xml;
   if (schema.type === 'object') {
+    // @ts-expect-error 2345 argument of type is not assignable to parameter of type
+    // (strictNullChecks)
     const child = [...parent.children].filter(matchNode(xmlObject, name))[index];
     return Object.fromEntries(
       Object.entries(schema.properties).map(([key, childSchema]) => [
@@ -49,6 +51,8 @@ function processNode(
   if (schema.type === 'array') {
     const childNodes = [...parent.children];
     const itemSchema = schema.items as OpenAPIV3.SchemaObject;
+    // @ts-expect-error 2345 argument of type is not assignable to parameter of type
+    // (strictNullChecks)
     const wrapper = xmlObject?.wrapped ? childNodes.find(matchNode(xmlObject, name)) : parent;
     return [...wrapper.children]
       .filter(matchNode(itemSchema.xml, name))
@@ -56,16 +60,22 @@ function processNode(
   }
   if (schema.xml?.attribute) {
     return parseFromString(
+      // @ts-expect-error 2345 argument of type is not assignable to parameter of type
+      // (strictNullChecks)
       parent.getAttribute(
         (xmlObject.prefix ? `${xmlObject.prefix}:` : '') + (xmlObject.name || name),
       ),
       schema,
     );
   }
+  // @ts-expect-error 2345 argument of type is not assignable to parameter of type
+  // (strictNullChecks)
   const node = [...parent.children].filter(matchNode(xmlObject, name))[index];
   if (!node) {
     return null;
   }
+  // @ts-expect-error 2345 argument of type is not assignable to parameter of type
+  // (strictNullChecks)
   return parseFromString(node.textContent, schema);
 }
 

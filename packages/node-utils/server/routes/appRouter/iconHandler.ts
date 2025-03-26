@@ -5,6 +5,7 @@ import { type Context, type Middleware } from 'koa';
 export function createIconHandler({ getApp, getAppIcon, getDbUpdated }: Options): Middleware {
   return async (ctx: Context) => {
     const {
+      // @ts-expect-error Messed up
       params: { size = 128 },
       query: { maskable = false, updated },
     } = ctx;
@@ -21,6 +22,7 @@ export function createIconHandler({ getApp, getAppIcon, getDbUpdated }: Options)
       cache: dbUpdated ? isEqual(parseISO(updated as string), dbUpdated) : false,
       fallback: 'mobile-alt-solid.png',
       height: size && Number.parseInt(size as string),
+      // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
       icon: appIcon,
       maskable: Boolean(maskable),
       width: size && Number.parseInt(size as string),

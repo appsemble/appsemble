@@ -10,32 +10,53 @@ describe('makeActions', () => {
 
   beforeEach(() => {
     testDefaults = {
+      // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
       appDefinition: null,
+      // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
       appStorage: null,
+      // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
       context: null,
+      // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
       ee: null,
+      // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
       extraCreators: null,
+      // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
       flowActions: null,
+      // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
       getAppMessage: null,
+      // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
       navigate: null,
       pageReady: new Promise((resolve) => {
         pageReady = resolve;
       }),
       prefix: 'pages.test-page.blocks.0',
       prefixIndex: 'pages.0.blocks.0',
+      // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
       pushNotifications: null,
+      // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
       remap,
+      // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
       params: null,
+      // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
       showDialog: null,
+      // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
       showShareDialog: null,
+      // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
       showMessage: null,
       appMemberGroups: [],
+      // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
       addAppMemberGroup: null,
+      // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
       getAppMemberInfo: null,
+      // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
       passwordLogin: null,
+      // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
       passwordLogout: null,
+      // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
       setAppMemberInfo: null,
+      // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
       refetchDemoAppMembers: null,
+      // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
       getAppMemberSelectedGroup: null,
     };
   });
@@ -225,6 +246,7 @@ describe('makeActions', () => {
       },
     });
     await actions.onClick('input');
+    // @ts-expect-error Used before assigned
     expect(prefix).toBe('pages.test-page.blocks.0.actions.onClick');
   });
 });

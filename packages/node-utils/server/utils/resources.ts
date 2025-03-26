@@ -12,8 +12,11 @@ export function generateResourceQuery(
 ): { order: OrderItem[]; where: WhereOptions } {
   try {
     return parseQuery({
+      // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
       $filter: ctx.queryParams.$filter,
+      // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
       $orderby: ctx.queryParams.$orderby,
+      // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
       resourceDefinition,
     });
   } catch (error: unknown) {

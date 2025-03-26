@@ -102,6 +102,8 @@ export async function email({
       where: { AppId: app.id, id: assetSelectors.map((selector) => selector.target) },
     })) {
       const attachment = assetSelectors.find((selector) => selector.target === asset.id);
+      // @ts-expect-error 2345 argument of type is not assignable to parameter of type
+      // (strictNullChecks)
       const ext = extension(attachment?.accept || asset.mime);
       const filename =
         attachment?.filename || asset.filename || (ext ? `${asset.id}.${ext}` : asset.id);

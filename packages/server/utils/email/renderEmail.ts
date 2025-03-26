@@ -52,7 +52,10 @@ export async function renderEmail(
     // eslint-disable-next-line no-param-reassign
     node.url = node.url.replace(/\/{{(\w+)}}/, replace);
   });
+  // @ts-expect-error 2769 No overload matches this call (strictNullChecks)
   visit(mdast, 'inlineCode', (node: InlineCode, index, parent: Parent) => {
+    // @ts-expect-error 2345 argument of type is not assignable to parameter of type
+    // (strictNullChecks)
     parent.children.splice(index, 1, {
       type: 'text',
       value: node.value.replace(/{{(\w+)}}/, replace),
@@ -60,8 +63,10 @@ export async function renderEmail(
   });
 
   if (!sub) {
+    // @ts-expect-error 2769 No overload matches this call (strictNullChecks)
     visit(mdast, 'yaml', (node: YAML, index, parent: Parent) => {
       ({ subject } = parse(node.value) as Email);
+      // @ts-expect-error 2769 No overload matches this call (strictNullChecks)
       parent.children.splice(index, 1);
     });
   }
@@ -69,5 +74,6 @@ export async function renderEmail(
   const text = remark.stringify(mdast);
   const hast = await rehype.run(mdast);
   const html = rehype.stringify(hast);
+  // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
   return { html, subject, text };
 }

@@ -71,9 +71,10 @@ export function SideNavigation({ blockMenus, pages }: SideNavigationProps): Reac
         defaultMessage: page.name,
       }).format() as string;
       const remapperContext = createRemapperContext(name);
-      const navName = page.navTitle
-        ? (remap(page.navTitle, null, remapperContext) as string)
-        : name;
+      // @ts-expect-error 2345 argument of type is not assignable to parameter of type
+      // (strictNullChecks)
+      // eslint-disable-next-line prettier/prettier
+      const navName = page.navTitle ? (remap(page.navTitle, null, remapperContext) as string) : name;
       return [name, navName];
     },
     [getAppMessage, createRemapperContext],
@@ -100,9 +101,10 @@ export function SideNavigation({ blockMenus, pages }: SideNavigationProps): Reac
           return (
             <MenuItem
               count={
-                page.badgeCount
-                  ? (remap(page.badgeCount, null, createRemapperContext(name)) as number)
-                  : undefined
+                // @ts-expect-error 2345 argument of type is not assignable to parameter of type
+                // (strictNullChecks)
+                // eslint-disable-next-line prettier/prettier
+                page.badgeCount ? (remap(page.badgeCount, null, createRemapperContext(name)) as number) : undefined
               }
               icon={page.icon}
               key={page.name}

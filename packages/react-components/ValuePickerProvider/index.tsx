@@ -17,6 +17,8 @@ interface ValuePickerContext<T> {
   readonly value: T;
 }
 
+// eslint-disable-next-line @typescript-eslint/prefer-ts-expect-error
+// @ts-ignore 2345 argument of type is not assignable to parameter of type (strictNullChecks)
 const Context = createContext<ValuePickerContext<unknown>>(null);
 
 export interface ValuePickerProviderProps<T> extends ValuePickerContext<T> {

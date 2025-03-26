@@ -83,6 +83,7 @@ export async function serveIcon(
   if (raw) {
     const { format } = await img.metadata();
     ctx.body = buffer;
+    // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
     ctx.type = format;
     return;
   }
@@ -106,8 +107,10 @@ export async function serveIcon(
     // Make the regular icon maskable
     const actual = img;
     const metadata = await actual.metadata();
+    // @ts-expect-error 18048 variable is possibly undefined (strictNullChecks)
     const angle = Math.atan(metadata.height / metadata.width);
     actual.resize({
+      // @ts-expect-error 18048 variable is possibly undefined (strictNullChecks)
       width: Math.ceil(Math.cos(angle) * safeAreaDiameter * width),
       // By leaving out height, libvips will determine this for us. This has better precision than
       // calculating this using JavasScript and passing it manually.
@@ -115,7 +118,9 @@ export async function serveIcon(
       fit: 'contain',
       background,
     });
+    // @ts-expect-error 18048 variable is possibly undefined (strictNullChecks)
     img = sharp(Buffer.alloc(width * height * 4, 0), {
+      // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
       raw: { width, height, channels: 4 },
     });
     img.resize({ width, height });

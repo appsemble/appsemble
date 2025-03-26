@@ -94,6 +94,8 @@ export const request: ActionCreator<'request'> = ({ definition, prefixIndex, rem
         typeof responseBody === 'string' &&
         /^(application|text)\/(.+\+)?xml/.test(response.headers['content-type'])
       ) {
+        // @ts-expect-error 2345 argument of type is not assignable to parameter of type
+        // (strictNullChecks)
         responseBody = xmlToJson(responseBody, schema);
       }
       return responseBody;

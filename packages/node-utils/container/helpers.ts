@@ -117,6 +117,7 @@ export function parseServiceUrl(url: string): {
   const appId = deploymentName.split('-').pop();
   const appName = deploymentName.replace(`-${appId}`, '');
 
+  // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
   return { deploymentName, appId, appName, namespace };
 }
 

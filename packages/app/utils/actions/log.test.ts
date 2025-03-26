@@ -4,8 +4,14 @@ import { createTestAction } from '../makeActions.js';
 
 describe('log', () => {
   beforeEach(() => {
+    // @ts-expect-error 2345 argument of type is not assignable to parameter of type
+    // (strictNullChecks)
     vi.spyOn(console, 'error').mockImplementation(null);
+    // @ts-expect-error 2345 argument of type is not assignable to parameter of type
+    // (strictNullChecks)
     vi.spyOn(console, 'info').mockImplementation(null);
+    // @ts-expect-error 2345 argument of type is not assignable to parameter of type
+    // (strictNullChecks)
     vi.spyOn(console, 'warn').mockImplementation(null);
   });
 

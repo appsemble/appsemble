@@ -26,6 +26,7 @@ export const link: ActionCreator<'link'> = ({
         (!Array.isArray(to) ||
           (Array.isArray(to) && to.every((entry) => typeof entry === 'object')));
 
+      // @ts-expect-error 2322 undefined is not assignable to type (strictNullChecks)
       let [toBase, toSub]: [string, string] = [undefined, undefined];
       if (isRemappedLink) {
         const remappedLink = remap(to as Remapper, data);
@@ -34,6 +35,7 @@ export const link: ActionCreator<'link'> = ({
         }
         [toBase, toSub] = [].concat(remappedLink ?? pages[0].name);
       } else {
+        // @ts-expect-error 2769 No overload matches this call (strictNullChecks)
         [toBase, toSub] = [].concat(to);
       }
 
@@ -48,6 +50,7 @@ export const link: ActionCreator<'link'> = ({
       }
 
       if (toPage == null || (toSub && subPage == null)) {
+        // @ts-expect-error 2769 No overload matches this call (strictNullChecks)
         throw new Error(`Invalid link reference ${[].concat(to).join('/')}`);
       }
 
@@ -71,6 +74,7 @@ export const link: ActionCreator<'link'> = ({
           ? [
               normalize(
                 getAppMessage({
+                  // @ts-expect-error 2454 Variable 'index' is used before being assigned - Severe
                   id: `pages.${normalizedPageName}.tabs.${index}`,
                   defaultMessage: normalize(
                     typeof subPage.name === 'string' ? subPage.name : remap(subPage.name, data),

@@ -160,6 +160,8 @@ export async function create({
     definition,
     undefined,
     undefined,
+    // @ts-expect-error 2345 argument of type is not assignable to parameter of type
+    // (strictNullChecks)
     appAssets.map((asset) => ({ id: asset.id, name: asset.name })),
   );
 
@@ -229,6 +231,8 @@ export async function update({
     definition,
     appAssets.filter((asset) => asset.resourceId === resource.id).map((asset) => asset.id),
     resource.expires,
+    // @ts-expect-error 2345 argument of type is not assignable to parameter of type
+    // (strictNullChecks)
     appAssets.map((asset) => ({ id: asset.id, name: asset.name })),
   );
 
@@ -333,6 +337,8 @@ export async function patch({
     definition,
     appAssets.filter((asset) => asset.resourceId === resource.id).map((asset) => asset.id),
     resource.expires,
+    // @ts-expect-error 2345 argument of type is not assignable to parameter of type
+    // (strictNullChecks)
     appAssets.map((asset) => ({ id: asset.id, name: asset.name })),
     true,
   );

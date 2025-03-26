@@ -7,7 +7,7 @@ import { type Plugin, type Transformer } from 'unified';
 const transformer: Transformer<Root> = (ast) => {
   const sections: [string, { title: string; haystack: string }][] = [];
   let section: RootContent[] = [];
-  let heading: Element;
+  let heading: Element | undefined;
 
   for (const child of ast.children) {
     if (child.type === 'text') {

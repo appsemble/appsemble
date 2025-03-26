@@ -19,6 +19,7 @@ interface ServiceWorkerRegistrationProviderProps {
   readonly serviceWorkerRegistrationPromise: Promise<ServiceWorkerRegistration>;
 }
 
+// @ts-expect-error 2345 argument of type is not assignable to parameter of type (strictNullChecks)
 const Context = createContext<ServiceWorkerRegistrationContextType>(null);
 
 export function useServiceWorkerRegistration(): ServiceWorkerRegistrationContextType {
@@ -114,5 +115,6 @@ export function ServiceWorkerRegistrationProvider({
     [permission, requestPermission, subscribe, subscription, unsubscribe],
   );
 
+  // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
   return <Context.Provider value={value}>{children}</Context.Provider>;
 }

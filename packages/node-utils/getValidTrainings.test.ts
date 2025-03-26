@@ -9,6 +9,8 @@ const basePath = 'training-test';
 const chapterPath = `${basePath}/test-chapter`;
 
 beforeEach(async () => {
+  // @ts-expect-error 2345 argument of type is not assignable to parameter of type
+  // (strictNullChecks)
   vi.spyOn(logger, 'error').mockImplementation(null);
 
   await mkdir(basePath);

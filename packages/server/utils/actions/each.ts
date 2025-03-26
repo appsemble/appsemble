@@ -15,6 +15,10 @@ export function each({
 
   return Promise.all(
     entries.map((entry) =>
+      // XXX: what's going on here
+      //
+      // @ts-expect-error 2345 argument of type is not assignable to parameter of type
+      // (strictNullChecks)
       handleAction(implementation, { ...params, action: actionDefinition, data: entry }),
     ),
   );

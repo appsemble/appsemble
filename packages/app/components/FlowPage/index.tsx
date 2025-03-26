@@ -93,6 +93,7 @@ export function FlowPage({
     getVariable,
     appMemberInfo,
     context: { name: pageDefinition.name },
+    // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
     locale: params.lang,
   };
 
@@ -118,6 +119,8 @@ export function FlowPage({
           ? steps?.[currentStep]?.name
           : remap(steps?.[currentStep]?.name, stepsData, remapperContext),
   }).format() as string;
+  // @ts-expect-error 2345 argument of type is not assignable to parameter of type
+  // (strictNullChecks)
   useMeta(name === `{${id}}` ? null : name);
 
   useEffect(() => {
@@ -150,6 +153,7 @@ export function FlowPage({
       setData(d);
       return d;
     },
+    // @ts-expect-error 2454 Variable 'actions' is used before being assigned (strictNullChecks)
     [actions, currentStep, loopData, pageDefinition.type, setData, stepRef, stepsData],
   );
 
@@ -203,6 +207,7 @@ export function FlowPage({
       await actions.onFlowCancel(d);
       setData(d);
     },
+    // @ts-expect-error 2454 Variable 'actions' is used before being assigned (strictNullChecks)
     [actions, setData],
   );
 
@@ -254,11 +259,13 @@ export function FlowPage({
         prefixIndex,
         pushNotifications,
         ee,
+        // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
         pageReady: null,
         remap,
         params,
         showMessage,
         appMemberGroups,
+        // @ts-expect-error Please Fix Me! TODO important
         addAppMemberGroup,
         getAppMemberInfo: () => appMemberInfoRef.current,
         passwordLogin,

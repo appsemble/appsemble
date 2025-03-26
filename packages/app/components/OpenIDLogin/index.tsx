@@ -35,6 +35,7 @@ export function OpenIDLogin({
   return (
     <>
       {showAppsembleOAuth2Login ? (
+        // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
         <SSOLoginButton
           authorizationUrl={String(new URL('/connect/authorize', apiUrl))}
           className={buttonProps.className}
@@ -46,6 +47,7 @@ export function OpenIDLogin({
         </SSOLoginButton>
       ) : null}
       {logins?.map(({ icon, id, name, type }) => (
+        // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
         <SSOLoginButton
           authorizationUrl={String(new URL(`/connect/authorize/${type}/${id}`, apiUrl))}
           className={buttonProps.className}

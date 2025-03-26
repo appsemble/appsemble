@@ -234,12 +234,15 @@ export async function createAppFromTemplate(ctx: Context): Promise<void> {
         const templateStream = await getS3File(`app-${template.id}`, templateAsset.id);
         const templateStats = await getS3FileStats(`app-${template.id}`, templateAsset.id);
         const createdAsset = record.Assets.find((asset) => asset.name === templateAsset.name);
+        // @ts-expect-error 18048 variable is possibly undefined (strictNullChecks)
         await uploadS3File(`app-${record.id}`, createdAsset.id, templateStream, templateStats.size);
       }
     }
 
     const doc = parseDocument(template.AppSnapshots[0].yaml);
+    // @ts-expect-error 18048 variable is possibly undefined (strictNullChecks)
     doc.setIn(['description'], result.definition.description);
+    // @ts-expect-error 18048 variable is possibly undefined (strictNullChecks)
     doc.setIn(['name'], result.definition.name);
     const snapshot = await AppSnapshot.create({
       AppId: record.id,

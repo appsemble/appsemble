@@ -21,6 +21,7 @@ export async function requestUserPasswordReset(ctx: Context): Promise<void> {
       .sendTranslatedEmail({
         to: {
           name: user.name,
+          // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
           email: user.primaryEmail,
         },
         emailName: 'reset',

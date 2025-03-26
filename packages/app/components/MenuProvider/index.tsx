@@ -38,6 +38,7 @@ interface MenuProviderContext {
 }
 
 const Context = createContext<MenuProviderContext>({
+  // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
   page: undefined,
   setPage: noop,
   setBlockMenu: noop,
@@ -54,9 +55,12 @@ export function MenuProvider({ children }: MenuProviderProps): ReactNode {
   const [blockMenus, setBlockMenus] = useState<BlockMenuItem[]>([]);
   const value = useMemo<MenuProviderContext>(
     () => ({
+      // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
       page,
       setPage(p) {
         setBlockMenus([]);
+        // @ts-expect-error 2345 argument of type is not assignable to parameter of type
+        // (strictNullChecks)
         setPage(p);
       },
       setBlockMenu(menu) {

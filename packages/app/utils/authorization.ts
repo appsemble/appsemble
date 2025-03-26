@@ -75,6 +75,8 @@ export function checkPagePermissions(
   }
 
   const appMemberViewRoles = getAppMemberViewRoles(
+    // @ts-expect-error 2345 argument of type is not assignable to parameter of type
+    // (strictNullChecks)
     appDefinition.security,
     appMemberRole,
     appMemberSelectedGroup,
@@ -96,6 +98,8 @@ export function checkBlockPermissions(
   appMemberSelectedGroup?: AppMemberGroup,
 ): boolean {
   const appMemberViewRoles = getAppMemberViewRoles(
+    // @ts-expect-error 2345 argument of type is not assignable to parameter of type
+    // (strictNullChecks)
     appDefinition.security,
     appMemberRole,
     appMemberSelectedGroup,

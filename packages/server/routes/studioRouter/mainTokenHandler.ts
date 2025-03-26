@@ -33,6 +33,8 @@ export async function mainTokenHandler(ctx: Context): Promise<void> {
 
     switch (grantType) {
       case 'client_credentials': {
+        // @ts-expect-error 2345 argument of type is not assignable to parameter of type
+        // (strictNullChecks)
         const { scope: requestedScope } = checkTokenRequestParameters(query, ['scope']);
         const authorization = /^Basic (.*)$/.exec(header.authorization);
         if (!authorization) {

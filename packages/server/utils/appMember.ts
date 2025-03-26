@@ -54,6 +54,7 @@ export async function getAppMemberGroups(id: string, appId: number): Promise<Gro
 
 export async function getAppMemberInfoById(id: string): Promise<AppMemberInfo> {
   const appMember = await AppMember.findByPk(id);
+  // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
   return appMember ? getAppMemberInfo(appMember) : null;
 }
 

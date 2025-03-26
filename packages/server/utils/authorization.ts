@@ -30,6 +30,7 @@ interface CheckOrganizationPermissionsParams {
 
 async function getAppMemberScopedRole(appMember: AppMember, groupId?: number): Promise<AppRole> {
   if (!appMember) {
+    // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
     return null;
   }
 
@@ -42,6 +43,7 @@ async function getAppMemberScopedRole(appMember: AppMember, groupId?: number): P
     });
 
     if (!groupMember) {
+      // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
       return null;
     }
 
@@ -58,6 +60,8 @@ async function getAppMemberAppRole(
 ): Promise<AppRole> {
   const appMember = await AppMember.findByPk(appMemberId, { attributes: ['id', 'role'] });
 
+  // @ts-expect-error 2345 argument of type is not assignable to parameter of type
+  // (strictNullChecks)
   return getAppMemberScopedRole(appMember, groupId);
 }
 
@@ -70,6 +74,8 @@ async function getUserAppRole(userId: string, appId: number, groupId?: number): 
     },
   });
 
+  // @ts-expect-error 2345 argument of type is not assignable to parameter of type
+  // (strictNullChecks)
   return getAppMemberScopedRole(appMember, groupId);
 }
 
@@ -86,6 +92,7 @@ async function getUserOrganizationRole(
   });
 
   if (!organizationMember) {
+    // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
     return null;
   }
 

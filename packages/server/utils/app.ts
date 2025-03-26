@@ -113,6 +113,7 @@ export function getAppUrl(app: App): URL {
  */
 export function compareApps(a: App, b: App): number {
   if (a.RatingAverage != null && b.RatingAverage != null) {
+    // @ts-expect-error 18048 variable is possibly undefined (strictNullChecks)
     return b.RatingAverage - a.RatingAverage || b.RatingCount - a.RatingCount;
   }
 
@@ -141,6 +142,7 @@ export function parseLanguage(
 } {
   const language = Array.isArray(input) ? input[0] : input;
   if (!language) {
+    // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
     return { language: undefined, baseLanguage: undefined, query: [] };
   }
 
@@ -271,6 +273,8 @@ export async function createAppScreenshots(
           const img = sharp(contents);
 
           const { format, height, width } = await img.metadata();
+          // @ts-expect-error 2345 argument of type is not assignable to parameter of type
+          // (strictNullChecks)
           const mime = lookup(format);
 
           assertKoaCondition(mime !== false, ctx, 404, `Unknown screenshot mime type: ${mime}`);
@@ -374,5 +378,6 @@ export function resolveIconUrl(app: App): string {
     })}`;
   }
 
+  // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
   return null;
 }

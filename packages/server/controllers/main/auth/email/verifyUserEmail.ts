@@ -15,6 +15,7 @@ export async function verifyUserEmail(ctx: Context): Promise<void> {
   assertKoaCondition(email != null, ctx, 404, 'Unable to verify this token.');
 
   email.verified = true;
+  // @ts-expect-error 2322 null is not assignable to type (strictNullChecks) - Severe
   email.key = null;
   await email.save();
 

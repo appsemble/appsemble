@@ -300,8 +300,10 @@ export const Methods = {
       const entityIndex = await db.getIndex(modelDir, id);
       const existing = await this.findById<M>(id, modelDir);
       await db.push(`${modelDir}[${entityIndex}]`, { ...existing, ...values }, true);
+      // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
       return this.findOne<M>({ where: values }, modelDir);
     } catch {
+      // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
       return null;
     }
   },
@@ -312,6 +314,7 @@ export const Methods = {
       const entityIndex = await db.getIndex(modelDir, id);
       return await db.delete(`${modelDir}[${entityIndex}]`);
     } catch {
+      // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
       return null;
     }
   },

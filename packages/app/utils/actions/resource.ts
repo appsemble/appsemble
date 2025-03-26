@@ -197,6 +197,7 @@ export const update: ActionCreator<'resource.update'> = (args) => {
     resource?.update?.url ||
     resource.url ||
     `${apiUrl}/api/apps/${appId}/resources/${definition.resource}`;
+  // @ts-expect-error Messed up
   const { id = 'id' } = resource;
 
   const queryRemapper: Remapper = []
@@ -265,6 +266,7 @@ export const patch: ActionCreator<'resource.patch'> = (args) => {
     resource?.update?.url ||
     resource.url ||
     `${apiUrl}/api/apps/${appId}/resources/${definition.resource}`;
+  // @ts-expect-error Messed up
   const { id = 'id' } = resource;
 
   const queryRemapper: Remapper = []
@@ -303,6 +305,7 @@ export const remove: ActionCreator<'resource.delete'> = (args) => {
     resource?.delete?.url ||
     resource.url ||
     `${apiUrl}/api/apps/${appId}/resources/${definition.resource}`;
+  // @ts-expect-error Messed up
   const { id = 'id' } = resource;
 
   const queryRemapper: Remapper = []
@@ -341,6 +344,7 @@ export const removeAll: ActionCreator<'resource.delete.all'> = (args) => {
     resource?.delete?.url ||
     resource.url ||
     `${apiUrl}/api/apps/${appId}/resources/${definition.resource}`;
+  // @ts-expect-error Messed up
   const { id = 'id' } = resource;
 
   const queryRemapper: Remapper = [];
@@ -446,6 +450,7 @@ export const subscribe: ActionCreator<'resource.subscription.subscribe'> = ({
   pushNotifications,
 }) => {
   const resource = appDefinition.resources[definition.resource];
+  // @ts-expect-error Messed up
   const { id = 'id' } = resource;
 
   return [
@@ -470,6 +475,7 @@ export const unsubscribe: ActionCreator<'resource.subscription.unsubscribe'> = (
   pushNotifications,
 }) => {
   const resource = appDefinition.resources[definition.resource];
+  // @ts-expect-error Messed up
   const { id = 'id' } = resource;
 
   return [
@@ -494,6 +500,7 @@ export const toggle: ActionCreator<'resource.subscription.toggle'> = ({
   pushNotifications,
 }) => {
   const resource = appDefinition.resources[definition.resource];
+  // @ts-expect-error Messed up
   const { id = 'id' } = resource;
 
   return [
@@ -517,6 +524,7 @@ export const status: ActionCreator<'resource.subscription.status'> = ({
   pushNotifications,
 }) => {
   const resource = appDefinition.resources[definition.resource];
+  // @ts-expect-error Messed up
   const { id = 'id' } = resource;
 
   return [

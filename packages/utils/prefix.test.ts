@@ -8,6 +8,7 @@ it('should prefix a string if the prefix is truthy', () => {
 });
 
 it('should not prefix a string if the prefix is falsy', () => {
+  // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
   const result = prefix('bar', null);
   expect(result).toBe('bar');
 });

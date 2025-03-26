@@ -40,6 +40,7 @@ export function coerceRemote(value: string): string {
  */
 export function coerceFile(value: string): NodeJS.ReadStream | ReadStream {
   if (value == null) {
+    // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
     return;
   }
 

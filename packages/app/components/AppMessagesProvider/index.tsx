@@ -43,6 +43,7 @@ interface AppMessageContext {
   appMessageIds: string[];
 }
 
+// @ts-expect-error 2345 argument of type is not assignable to parameter of type (strictNullChecks)
 const Context = createContext<AppMessageContext>(null);
 
 const formatters = {
@@ -73,14 +74,20 @@ export function AppMessagesProvider({ children }: IntlMessagesProviderProps): Re
 
   useEffect(() => {
     const defaultLanguage = definition.defaultLanguage || defaultLocale;
+    // @ts-expect-error 2345 argument of type is not assignable to parameter of type
+    // (strictNullChecks)
     if (lang === defaultLanguage || languages.includes(lang)) {
       return;
     }
     const preferredLanguage = localStorage.getItem('preferredLanguage');
     const detected =
+      // @ts-expect-error 2345 argument of type is not assignable to parameter of type
+      // (strictNullChecks)
       (languages.includes(preferredLanguage) && preferredLanguage) ||
       detectLocale(languages, navigator.languages) ||
       defaultLanguage;
+    // @ts-expect-error 2345 argument of type is not assignable to parameter of type
+    // (strictNullChecks)
     if (/^[A-Z]/.test(lang) || definition.pages.some((page) => lang === normalize(page.name))) {
       // Someone got linked to a page without a language tag. Redirect them to the same page, but
       // with language set. This is especially important for the OAuth2 callback URL.
@@ -92,11 +99,14 @@ export function AppMessagesProvider({ children }: IntlMessagesProviderProps): Re
 
   useEffect(() => {
     const defaultLanguage = definition.defaultLanguage || defaultLocale;
+    // @ts-expect-error 2345 argument of type is not assignable to parameter of type
+    // (strictNullChecks)
     if (lang !== defaultLanguage && !languages.includes(lang)) {
       document.documentElement.lang = defaultLocale;
       return;
     }
 
+    // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
     document.documentElement.lang = lang;
     axios
       .get<AppMessages>(`${apiUrl}/api/apps/${appId}/messages/${lang}`)
@@ -107,6 +117,7 @@ export function AppMessagesProvider({ children }: IntlMessagesProviderProps): Re
 
   const getMessage = useCallback(
     ({ defaultMessage, id }: IntlMessage) => {
+      // @ts-expect-error 18048 variable is possibly undefined (strictNullChecks)
       const message = has(messages.messageIds, id) ? messages.messageIds[id] : defaultMessage;
       return messageCache(message || `'{${id}}'`);
     },
@@ -115,6 +126,7 @@ export function AppMessagesProvider({ children }: IntlMessagesProviderProps): Re
 
   const getAppMessage = useCallback(
     ({ defaultMessage, id }: IntlMessage) => {
+      // @ts-expect-error 18048 variable is possibly undefined (strictNullChecks)
       const message = has(messages.app, id) ? messages.app[id] : defaultMessage;
       return messageCache(message || `'{${id}}'`);
     },
@@ -124,7 +136,9 @@ export function AppMessagesProvider({ children }: IntlMessagesProviderProps): Re
   const getBlockMessage = useCallback(
     (blockName: string, blockVersion: string, { id }: IntlMessage, prefix: string) => {
       const message =
+        // @ts-expect-error 18048 variable is possibly undefined (strictNullChecks)
         (prefix && messages.app?.[`${prefix}.${id}`]) ||
+        // @ts-expect-error 18048 variable is possibly undefined (strictNullChecks)
         messages.blocks?.[blockName]?.[blockVersion]?.[id] ||
         '';
       return messageCache(message);
@@ -155,10 +169,13 @@ export function AppMessagesProvider({ children }: IntlMessagesProviderProps): Re
   }
 
   return (
+    // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
     <Context.Provider value={value}>
       <IntlProvider
         defaultLocale={defaultLocale}
+        // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
         locale={lang}
+        // @ts-expect-error 18048 variable is possibly undefined (strictNullChecks)
         messages={{ ...messages.core, ...messages.app }}
       >
         {children}

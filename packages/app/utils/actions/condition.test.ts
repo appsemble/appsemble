@@ -19,6 +19,7 @@ describe('condition', () => {
         'dialog.ok': () => [ok],
         'dialog.error': () => [error],
       },
+      // @ts-expect-error This one is just messed up, these should NOT be two different types.
       remap,
     });
     const result = await action({ input: true }, { context: null });
@@ -45,6 +46,7 @@ describe('condition', () => {
         'dialog.ok': () => [ok],
         'dialog.error': () => [error],
       },
+      // @ts-expect-error And this one is messed up too.
       remap,
     });
     const result = await action({ input: false }, { context: null });

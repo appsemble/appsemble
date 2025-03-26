@@ -41,11 +41,13 @@ export function AppSubscriptions(): ReactNode {
         for (const key of Object.keys(resource)) {
           if (
             (key === 'create' || key === 'update' || key === 'delete') &&
+            // @ts-expect-error 18048 variable is possibly undefined (strictNullChecks)
             resource[key].hooks?.notification?.subscribe
           ) {
             if (!has(subs, resourceType)) {
               subs[resourceType] = {};
             }
+            // @ts-expect-error 18048 variable is possibly undefined (strictNullChecks)
             subs[resourceType][key] = { ...resource[key].hooks, subscribed: false };
           }
         }
@@ -70,6 +72,7 @@ export function AppSubscriptions(): ReactNode {
                 continue;
               }
 
+              // @ts-expect-error 18048 variable is possibly undefined (strictNullChecks)
               subs[key][action as keyof SubscriptionState].subscribed = value;
             }
           }
@@ -108,6 +111,7 @@ export function AppSubscriptions(): ReactNode {
     }
 
     try {
+      // @ts-expect-error 2769 No overload matches this call (strictNullChecks)
       const resourceActionsToSubscribeTo = Object.entries(subscriptions).flatMap(
         ([resourceType, subscriptionState]) =>
           resourceSubscribableAction
@@ -143,7 +147,9 @@ export function AppSubscriptions(): ReactNode {
       setSubscriptions({
         ...subscriptions,
         [resource]: {
+          // @ts-expect-error 18048 variable is possibly undefined (strictNullChecks)
           ...subscriptions[resource],
+          // @ts-expect-error 18048 variable is possibly undefined (strictNullChecks)
           [action]: { ...subscriptions[resource][action], subscribed: value },
         },
       });
@@ -207,6 +213,7 @@ export function AppSubscriptions(): ReactNode {
                     }}
                   />
                 }
+                // @ts-expect-error 18048 variable is possibly undefined (strictNullChecks)
                 value={subscriptions[resourceType].create.subscribed}
               />
             ) : null}
@@ -226,6 +233,7 @@ export function AppSubscriptions(): ReactNode {
                     }}
                   />
                 }
+                // @ts-expect-error 18048 variable is possibly undefined (strictNullChecks)
                 value={subscriptions[resourceType].update.subscribed}
               />
             ) : null}
@@ -245,6 +253,7 @@ export function AppSubscriptions(): ReactNode {
                     }}
                   />
                 }
+                // @ts-expect-error 18048 variable is possibly undefined (strictNullChecks)
                 value={subscriptions[resourceType].update.subscribed}
               />
             ) : null}

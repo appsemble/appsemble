@@ -83,7 +83,11 @@ describe('responseLogger', () => {
 
 describe('configureAxios', () => {
   beforeEach(() => {
+    // @ts-expect-error 2345 argument of type is not assignable to parameter of type
+    // (strictNullChecks)
     vi.spyOn(axios.interceptors.request, 'use').mockImplementation(null);
+    // @ts-expect-error 2345 argument of type is not assignable to parameter of type
+    // (strictNullChecks)
     vi.spyOn(axios.interceptors.response, 'use').mockImplementation(null);
   });
 

@@ -28,5 +28,6 @@ export async function getAppAsset({
       },
     }));
   assertKoaCondition(asset != null, ctx, 404, 'Asset not found');
+  // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
   return { ...asset, stream: await getS3File(`app-${app.id}`, assetId) };
 }

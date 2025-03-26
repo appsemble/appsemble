@@ -26,7 +26,10 @@ export async function getReleaseNotes(): Promise<string> {
       sectionStart = index;
     }
   }
+  // @ts-expect-error 2345 argument of type is not assignable to parameter of type
+  // (strictNullChecks)
   ast.children.splice(sectionEnd);
+  // @ts-expect-error 18048 variable is possibly undefined (strictNullChecks)
   ast.children.splice(0, sectionStart + 1);
   visit(ast, 'text', (node: Text) => {
     // eslint-disable-next-line no-param-reassign

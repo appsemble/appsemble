@@ -10,6 +10,7 @@ describe('onFetch', () => {
   beforeEach(() => {
     const env = makeServiceWorkerEnv();
     Object.assign(global, env);
+    // @ts-expect-error 2769 No overload matches this call (strictNullChecks)
     env.addEventListener('fetch', onFetch);
   });
 

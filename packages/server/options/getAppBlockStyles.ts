@@ -14,6 +14,7 @@ export async function getAppBlockStyles({
     where: { AppId: app.id, block: name },
   });
 
+  // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
   return appBlockStyles.map((appBlockStyle) => ({
     style: appBlockStyle.style,
   }));

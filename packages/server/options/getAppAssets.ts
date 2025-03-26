@@ -11,6 +11,7 @@ export async function getAppAssets({ app }: GetAppSubEntityParams): Promise<Asse
       ...(app.demoMode ? { seed: false, ephemeral: true } : {}),
     },
   });
+  // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
   return assets.map((asset) => ({
     id: asset.id,
     name: asset.name,

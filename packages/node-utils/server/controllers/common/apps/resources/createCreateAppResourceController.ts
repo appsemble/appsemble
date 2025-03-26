@@ -50,6 +50,8 @@ export function createCreateAppResourceController(options: Options): Middleware 
       resourceDefinition,
       undefined,
       undefined,
+      // @ts-expect-error 2345 argument of type is not assignable to parameter of type
+      // (strictNullChecks)
       appAssets.map((appAsset) => ({ id: appAsset.id, name: appAsset.name })),
     );
 
@@ -80,6 +82,7 @@ export function createCreateAppResourceController(options: Options): Middleware 
       for (const preparedSeedAsset of preparedSeedAssets) {
         const index = resources.findIndex(
           ({ $clonable: clonable, $ephemeral: ephemeral, $seed: unused, ...cleanResource }) => {
+            // @ts-expect-error Messed up
             const { $clonable, $ephemeral, $seed, ...cleanAssetResource } =
               preparedSeedAsset.resource;
             return isDeepStrictEqual(cleanResource, cleanAssetResource);
@@ -108,6 +111,8 @@ export function createCreateAppResourceController(options: Options): Middleware 
 
       if (!app.demoMode) {
         ctx.body = Array.isArray(processedBody) ? createdSeedResources : createdSeedResources[0];
+        // @ts-expect-error 2345 argument of type is not assignable to parameter of type
+        // (strictNullChecks)
         await uploadAssets(app.id, preparedSeedAssets);
         return;
       }
@@ -131,6 +136,8 @@ export function createCreateAppResourceController(options: Options): Middleware 
     });
 
     assetsToUpload.push(...preparedAssets);
+    // @ts-expect-error 2345 argument of type is not assignable to parameter of type
+    // (strictNullChecks)
     await uploadAssets(app.id, assetsToUpload);
 
     ctx.body = Array.isArray(processedBody) ? createdResources : createdResources[0];

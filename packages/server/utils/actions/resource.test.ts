@@ -148,6 +148,8 @@ describe('resource', () => {
         data: { name: 'Patrick' },
       });
 
+      // @ts-expect-error 2345 argument of type is not assignable to parameter of type
+      // (strictNullChecks) - Severe
       const result = await handleAction(query, {
         app,
         action,
@@ -192,6 +194,8 @@ describe('resource', () => {
         data: { firstName: 'Patrick', lastName: 'Star' },
       });
 
+      // @ts-expect-error 2345 argument of type is not assignable to parameter of type
+      // (strictNullChecks) - Severe
       const result = await handleAction(query, {
         app,
         action,
@@ -227,6 +231,8 @@ describe('resource', () => {
         data: { name: 'Patrick' },
       });
 
+      // @ts-expect-error 2345 argument of type is not assignable to parameter of type
+      // (strictNullChecks) - Severe
       const result = await handleAction(get, {
         app,
         action,
@@ -263,6 +269,8 @@ describe('resource', () => {
         data: { firstName: 'Patrick', lastName: 'Star' },
       });
 
+      // @ts-expect-error 2345 argument of type is not assignable to parameter of type
+      // (strictNullChecks) - Severe
       const result = await handleAction(get, {
         app,
         action,
@@ -293,6 +301,8 @@ describe('resource', () => {
       });
 
       await expect(() =>
+        // @ts-expect-error 2345 argument of type is not assignable to parameter of type
+        // (strictNullChecks) - Severe
         handleAction(get, {
           app,
           action,
@@ -335,6 +345,8 @@ describe('resource', () => {
       });
 
       await expect(() =>
+        // @ts-expect-error 2345 argument of type is not assignable to parameter of type
+        // (strictNullChecks) - Severe
         handleAction(get, {
           app,
           action,
@@ -369,6 +381,8 @@ describe('resource', () => {
 
       const app = await exampleApp('testorg', action);
 
+      // @ts-expect-error 2345 argument of type is not assignable to parameter of type
+      // (strictNullChecks) - Severe
       const result = await handleAction(create, {
         app,
         action,
@@ -401,6 +415,8 @@ describe('resource', () => {
       await app.update({ demoMode: true });
       await app.reload();
 
+      // @ts-expect-error 2345 argument of type is not assignable to parameter of type
+      // (strictNullChecks) - Severe
       const result = await handleAction(create, {
         app,
         action,
@@ -437,6 +453,8 @@ describe('resource', () => {
 
       const app = await exampleApp('testorg', action);
 
+      // @ts-expect-error 2345 argument of type is not assignable to parameter of type
+      // (strictNullChecks) - Severe
       const result = await handleAction(create, {
         app,
         action,
@@ -463,9 +481,10 @@ describe('resource', () => {
 
       const app = await exampleApp('testorg', action);
       await expect(() =>
+        // @ts-expect-error 2345 argument of type is not assignable to parameter of type
+        // (strictNullChecks) - Severe
         handleAction(create, {
           app,
-
           action,
           mailer,
           data: {
@@ -486,9 +505,10 @@ describe('resource', () => {
       const app = await exampleApp('testorg', action);
 
       await expect(() =>
+        // @ts-expect-error 2345 argument of type is not assignable to parameter of type
+        // (strictNullChecks) - Severe
         handleAction(create, {
           app,
-
           action,
           mailer,
           data: {},
@@ -509,6 +529,8 @@ describe('resource', () => {
 
       const app = await exampleApp('testorg', action);
 
+      // @ts-expect-error 2345 argument of type is not assignable to parameter of type
+      // (strictNullChecks) - Severe
       const result = await handleAction(create, {
         app,
 
@@ -538,6 +560,8 @@ describe('resource', () => {
 
       const app = await exampleApp('testorg', action);
 
+      // @ts-expect-error 2345 argument of type is not assignable to parameter of type
+      // (strictNullChecks) - Severe
       const result = await handleAction(create, {
         app,
 
@@ -574,6 +598,8 @@ describe('resource', () => {
       const app = await exampleApp('testorg', action);
 
       await expect(() =>
+        // @ts-expect-error 2345 argument of type is not assignable to parameter of type
+        // (strictNullChecks) - Severe
         handleAction(create, {
           app,
 
@@ -597,6 +623,8 @@ describe('resource', () => {
 
       const app = await exampleApp('testorg', action);
 
+      // @ts-expect-error 2345 argument of type is not assignable to parameter of type
+      // (strictNullChecks) - Severe
       const result = await handleAction(create, {
         app,
 
@@ -653,6 +681,8 @@ describe('resource', () => {
         },
       });
 
+      // @ts-expect-error 2345 argument of type is not assignable to parameter of type
+      // (strictNullChecks) - Severe
       const result = await handleAction(update, {
         app,
 
@@ -700,6 +730,8 @@ describe('resource', () => {
         },
       });
 
+      // @ts-expect-error 2345 argument of type is not assignable to parameter of type
+      // (strictNullChecks) - Severe
       const result = await handleAction(update, {
         app,
 
@@ -742,6 +774,8 @@ describe('resource', () => {
       });
 
       await expect(() =>
+        // @ts-expect-error 2345 argument of type is not assignable to parameter of type
+        // (strictNullChecks) - Severe
         handleAction(update, {
           app,
 
@@ -797,6 +831,8 @@ describe('resource', () => {
       });
 
       await expect(() =>
+        // @ts-expect-error 2345 argument of type is not assignable to parameter of type
+        // (strictNullChecks) - Severe
         handleAction(update, {
           app,
 
@@ -849,6 +885,8 @@ describe('resource', () => {
       });
 
       await expect(() =>
+        // @ts-expect-error 2345 argument of type is not assignable to parameter of type
+        // (strictNullChecks) - Severe
         handleAction(update, {
           app,
 
@@ -896,6 +934,8 @@ describe('resource', () => {
       const appB = await exampleApp('testorg', action, 'app-b');
 
       await expect(() =>
+        // @ts-expect-error 2345 argument of type is not assignable to parameter of type
+        // (strictNullChecks) - Severe
         handleAction(update, {
           app: appB,
 
@@ -941,6 +981,8 @@ describe('resource', () => {
       });
 
       await expect(() =>
+        // @ts-expect-error 2345 argument of type is not assignable to parameter of type
+        // (strictNullChecks) - Severe
         handleAction(update, {
           app,
 
@@ -973,6 +1015,8 @@ describe('resource', () => {
         },
       });
 
+      // @ts-expect-error 2345 argument of type is not assignable to parameter of type
+      // (strictNullChecks) - Severe
       const result = await handleAction(update, {
         app,
 
@@ -1017,6 +1061,8 @@ describe('resource', () => {
         },
       });
 
+      // @ts-expect-error 2345 argument of type is not assignable to parameter of type
+      // (strictNullChecks) - Severe
       const result = await handleAction(update, {
         app,
 
@@ -1062,6 +1108,8 @@ describe('resource', () => {
       });
 
       await expect(() =>
+        // @ts-expect-error 2345 argument of type is not assignable to parameter of type
+        // (strictNullChecks) - Severe
         handleAction(update, {
           app,
 
@@ -1095,6 +1143,8 @@ describe('resource', () => {
         },
       });
 
+      // @ts-expect-error 2345 argument of type is not assignable to parameter of type
+      // (strictNullChecks) - Severe
       const result = await handleAction(update, {
         app,
 
@@ -1139,6 +1189,8 @@ describe('resource', () => {
         },
       });
 
+      // @ts-expect-error 2345 argument of type is not assignable to parameter of type
+      // (strictNullChecks) - Severe
       const result = await handleAction(update, {
         app,
 
@@ -1189,6 +1241,8 @@ describe('resource', () => {
         },
       });
 
+      // @ts-expect-error 2345 argument of type is not assignable to parameter of type
+      // (strictNullChecks) - Severe
       const result = await handleAction(update, {
         app,
 
@@ -1239,6 +1293,8 @@ describe('resource', () => {
         },
       });
 
+      // @ts-expect-error 2345 argument of type is not assignable to parameter of type
+      // (strictNullChecks) - Severe
       const result = await handleAction(update, {
         app,
 
@@ -1292,6 +1348,8 @@ describe('resource', () => {
         },
       });
 
+      // @ts-expect-error 2345 argument of type is not assignable to parameter of type
+      // (strictNullChecks) - Severe
       const result = await handleAction(patch, {
         app,
 
@@ -1337,6 +1395,8 @@ describe('resource', () => {
         },
       });
 
+      // @ts-expect-error 2345 argument of type is not assignable to parameter of type
+      // (strictNullChecks) - Severe
       const result = await handleAction(patch, {
         app,
 
@@ -1379,6 +1439,8 @@ describe('resource', () => {
       });
 
       await expect(() =>
+        // @ts-expect-error 2345 argument of type is not assignable to parameter of type
+        // (strictNullChecks) - Severe
         handleAction(patch, {
           app,
 
@@ -1434,6 +1496,8 @@ describe('resource', () => {
       });
 
       await expect(() =>
+        // @ts-expect-error 2345 argument of type is not assignable to parameter of type
+        // (strictNullChecks) - Severe
         handleAction(patch, {
           app,
 
@@ -1486,6 +1550,8 @@ describe('resource', () => {
       });
 
       await expect(() =>
+        // @ts-expect-error 2345 argument of type is not assignable to parameter of type
+        // (strictNullChecks) - Severe
         handleAction(patch, {
           app,
 
@@ -1533,6 +1599,8 @@ describe('resource', () => {
       const appB = await exampleApp('testorg', action, 'app-b');
 
       await expect(() =>
+        // @ts-expect-error 2345 argument of type is not assignable to parameter of type
+        // (strictNullChecks) - Severe
         handleAction(patch, {
           app: appB,
 
@@ -1578,6 +1646,8 @@ describe('resource', () => {
       });
 
       await expect(() =>
+        // @ts-expect-error 2345 argument of type is not assignable to parameter of type
+        // (strictNullChecks) - Severe
         handleAction(patch, {
           app,
 
@@ -1610,6 +1680,8 @@ describe('resource', () => {
         },
       });
 
+      // @ts-expect-error 2345 argument of type is not assignable to parameter of type
+      // (strictNullChecks) - Severe
       const result = await handleAction(patch, {
         app,
 
@@ -1649,6 +1721,8 @@ describe('resource', () => {
         },
       });
 
+      // @ts-expect-error 2345 argument of type is not assignable to parameter of type
+      // (strictNullChecks) - Severe
       const result = await handleAction(patch, {
         app,
 
@@ -1692,6 +1766,8 @@ describe('resource', () => {
         },
       });
 
+      // @ts-expect-error 2345 argument of type is not assignable to parameter of type
+      // (strictNullChecks) - Severe
       const result = await handleAction(patch, {
         app,
 
@@ -1737,6 +1813,8 @@ describe('resource', () => {
       });
 
       await expect(() =>
+        // @ts-expect-error 2345 argument of type is not assignable to parameter of type
+        // (strictNullChecks) - Severe
         handleAction(patch, {
           app,
 
@@ -1770,6 +1848,8 @@ describe('resource', () => {
         },
       });
 
+      // @ts-expect-error 2345 argument of type is not assignable to parameter of type
+      // (strictNullChecks) - Severe
       const result = await handleAction(patch, {
         app,
 
@@ -1813,6 +1893,8 @@ describe('resource', () => {
         },
       });
 
+      // @ts-expect-error 2345 argument of type is not assignable to parameter of type
+      // (strictNullChecks) - Severe
       const result = await handleAction(patch, {
         app,
 
@@ -1863,6 +1945,8 @@ describe('resource', () => {
         },
       });
 
+      // @ts-expect-error 2345 argument of type is not assignable to parameter of type
+      // (strictNullChecks) - Severe
       const result = await handleAction(patch, {
         app,
 
@@ -1913,6 +1997,8 @@ describe('resource', () => {
         },
       });
 
+      // @ts-expect-error 2345 argument of type is not assignable to parameter of type
+      // (strictNullChecks) - Severe
       const result = await handleAction(patch, {
         app,
 
@@ -1971,6 +2057,8 @@ describe('resource', () => {
         data: { firstName: 'Patrick', lastName: 'Star' },
       });
 
+      // @ts-expect-error 2345 argument of type is not assignable to parameter of type
+      // (strictNullChecks) - Severe
       const deletedResource = await handleAction(remove, {
         app,
 
@@ -2021,6 +2109,8 @@ describe('resource', () => {
         data: { firstName: 'Patrick', lastName: 'Star' },
       });
 
+      // @ts-expect-error 2345 argument of type is not assignable to parameter of type
+      // (strictNullChecks) - Severe
       const deletedResource = await handleAction(remove, {
         app,
 
@@ -2072,6 +2162,8 @@ describe('resource', () => {
       });
 
       await expect(() =>
+        // @ts-expect-error 2345 argument of type is not assignable to parameter of type
+        // (strictNullChecks) - Severe
         handleAction(remove, {
           app,
 
@@ -2127,6 +2219,8 @@ describe('resource', () => {
       });
 
       await expect(() =>
+        // @ts-expect-error 2345 argument of type is not assignable to parameter of type
+        // (strictNullChecks) - Severe
         handleAction(remove, {
           app,
 
@@ -2179,6 +2273,8 @@ describe('resource', () => {
       });
 
       await expect(() =>
+        // @ts-expect-error 2345 argument of type is not assignable to parameter of type
+        // (strictNullChecks) - Severe
         handleAction(remove, {
           app,
 
@@ -2226,6 +2322,8 @@ describe('resource', () => {
       const appB = await exampleApp('testorg', action, 'app-b');
 
       await expect(() =>
+        // @ts-expect-error 2345 argument of type is not assignable to parameter of type
+        // (strictNullChecks) - Severe
         handleAction(remove, {
           app: appB,
 

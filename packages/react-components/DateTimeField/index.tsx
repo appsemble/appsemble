@@ -61,6 +61,9 @@ export const DateTimeField = forwardRef<HTMLInputElement, DateTimeFieldProps>(
   ) => {
     const { formatDate } = useIntl();
     const inputRef = useRef<HTMLInputElement>();
+    // eslint-disable-next-line @typescript-eslint/prefer-ts-expect-error
+    // @ts-ignore 2345 argument of type is not assignable to parameter of type
+    // (strictNullChecks)
     const combinedRef = useCombinedRefs(ref, inputRef);
     const [picker, setPicker] = useState<flatpickr.default.Instance>(null);
 

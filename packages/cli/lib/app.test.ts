@@ -2370,6 +2370,8 @@ describe('app', () => {
     it('should return an error if no app-definition is found in the given directory', async () => {
       const formData = new FormData();
       await expect(() =>
+        // @ts-expect-error 2345 argument of type is not assignable to parameter of type
+        // (strictNullChecks)
         traverseAppDirectory(resolveFixture('apps/empty'), null, formData),
       ).rejects.toThrow('No app definition found');
     });
@@ -2404,6 +2406,7 @@ describe('app', () => {
           resolveFixture('apps/test'),
           'notFound',
           'http://localhost:8888',
+          // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
           null,
         ),
       ).rejects.toThrow('App ID was not found');
@@ -2419,6 +2422,7 @@ describe('app', () => {
         OrganizationId: organization.id,
       });
       await expect(() =>
+        // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
         resolveAppIdAndRemote(resolveFixture('apps/test'), 'notFound', null, app.id),
       ).rejects.toThrow('App remote was not found');
     });

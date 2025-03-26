@@ -71,6 +71,8 @@ export function SideMenuProvider({ base, bottom, children }: SideMenuProviderPro
     }
   }, [disable, location]);
 
+  // eslint-disable-next-line @typescript-eslint/prefer-ts-expect-error
+  // @ts-ignore 2769 No overload matches this call (strictNullChecks)
   useEventListener(
     globalThis,
     'keydown',

@@ -82,6 +82,8 @@ export async function registerOAuth2Authorization(ctx: Context): Promise<void> {
         await processEmailAuthorization(
           mailer,
           dbUser.id,
+          // @ts-expect-error 2345 argument of type is not assignable to parameter of type
+          // (strictNullChecks) - Severe
           userInfo.name,
           userInfo.email,
           Boolean(userInfo.email_verified),

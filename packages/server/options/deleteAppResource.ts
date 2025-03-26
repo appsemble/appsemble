@@ -25,10 +25,17 @@ export async function deleteAppResource({
     where: { id, type, AppId: app.id, ...whereOptions },
   });
 
+  // @ts-expect-error 2345 argument of type is not assignable to parameter of type
+  // (strictNullChecks)
   processReferenceHooks(persistedApp, resource, 'delete', options, context);
+  // @ts-expect-error 2345 argument of type is not assignable to parameter of type
+  // (strictNullChecks)
   processHooks(persistedApp, resource, 'delete', options, context);
 
+  // @ts-expect-error 2345 argument of type is not assignable to parameter of type
+  // (strictNullChecks)
   await processReferenceTriggers(persistedApp, resource, 'delete', context);
 
+  // @ts-expect-error 18048 variable is possibly null (strictNullChecks)
   return resource.destroy();
 }

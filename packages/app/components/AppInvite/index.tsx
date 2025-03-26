@@ -72,6 +72,7 @@ export function AppInvite(): ReactNode {
         password: props.password,
       });
       setAccepted(true);
+      // @ts-expect-error 18048 variable is possibly undefined (strictNullChecks)
       await passwordLogin({ username: invite.email, password: props.password });
       navigate('/');
     },
@@ -86,6 +87,7 @@ export function AppInvite(): ReactNode {
     return (
       <Content padding>
         <Message color="danger">
+          {/* @ts-expect-error 18048 variable is possibly undefined (strictNullChecks) */}
           {inviteError.response.status === 404 ? (
             <FormattedMessage {...messages.notFound} />
           ) : (
@@ -157,6 +159,7 @@ export function AppInvite(): ReactNode {
         </div>
         <SimpleFormError>
           {({ error }) =>
+            // @ts-expect-error 18048 variable is possibly undefined (strictNullChecks)
             axios.isAxiosError(error) && error.response.status === 409 ? (
               <FormattedMessage {...messages.emailConflict} />
             ) : (

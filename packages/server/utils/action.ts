@@ -64,6 +64,8 @@ export async function handleAction(
       data = remap(params.action.remapAfter, data, updatedContext);
     }
     if (params.action.onSuccess) {
+      // @ts-expect-error 2345 argument of type is not assignable to parameter of type
+      // (strictNullChecks)
       return await handleAction(actions[params.action.onSuccess.type], {
         ...params,
         action: params.action.onSuccess,
@@ -74,6 +76,8 @@ export async function handleAction(
   } catch (error) {
     logger.error(`Error running action: ${params.action.type}`);
     if (params.action.onError) {
+      // @ts-expect-error 2345 argument of type is not assignable to parameter of type
+      // (strictNullChecks)
       return handleAction(actions[params.action.onError.type], {
         ...params,
         action: params.action.onError,

@@ -27,6 +27,7 @@ export function Register(): ReactNode {
       const formData = new FormData();
       formData.append('email', values.email);
       formData.append('password', values.password);
+      // @ts-expect-error 2769 No overload matches this call (strictNullChecks)
       formData.append('locale', lang);
       formData.append('timezone', timezone);
 

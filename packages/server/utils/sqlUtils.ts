@@ -16,7 +16,7 @@ export function logSQL(statement: string): void {
   logger.silly(highlight(statement, { language: 'sql', ignoreIllegals: true }));
 }
 
-export function handleDBError(error: Error): void {
+export function handleDBError(error: Error): never {
   const original = (error as ConnectionError).original as any;
   if (error instanceof AccessDeniedError) {
     throw new AppsembleError(`AccessDeniedError: ${original.sqlMessage}`);

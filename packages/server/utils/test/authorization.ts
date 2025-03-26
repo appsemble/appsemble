@@ -181,6 +181,7 @@ if (process.env.NODE_ENV === 'test') {
   const { afterEach } = await import('vitest');
 
   afterEach(() => {
+    // @ts-expect-error 2322 undefined is not assignable to type (strictNullChecks)
     testUser = undefined;
     unauthorize();
   });

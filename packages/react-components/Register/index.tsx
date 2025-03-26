@@ -69,6 +69,8 @@ export function Register({ onRegister }: RegisterProps): ReactNode {
         required
       />
       <SimpleFormField
+        // eslint-disable-next-line @typescript-eslint/prefer-ts-expect-error
+        // @ts-ignore Messed up
         component={CheckboxField}
         name="subscribed"
         title={<FormattedMessage {...messages.newsletter} />}

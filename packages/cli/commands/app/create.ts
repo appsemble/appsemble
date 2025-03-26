@@ -141,7 +141,11 @@ export async function handler(args: AppArgs): Promise<void> {
   const cronJobs = answers['cron-jobs'] || args.cronJobs;
   const { groups } = answers;
 
+  // @ts-expect-error 2345 argument of type is not assignable to parameter of type
+  // (strictNullChecks)
   const outputDirectory = join(path, name);
+  // @ts-expect-error 2345 argument of type is not assignable to parameter of type
+  // (strictNullChecks)
   const inputDirectory = join(`${templatesDir}/`, template);
   const appsembleRcPath = join(inputDirectory, '.appsemblerc.yaml');
   const [appsembleRc] = await readData<AppsembleRC>(appsembleRcPath);

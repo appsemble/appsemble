@@ -22,6 +22,8 @@ export async function getUserInfoById(id: string): Promise<UserInfo> {
           emailAuthorization.email === user.primaryEmail && emailAuthorization.verified === true,
       ),
     ),
+    // @ts-expect-error 2345 argument of type is not assignable to parameter of type
+    // (strictNullChecks)
     picture: getGravatarUrl(user.primaryEmail),
     locale: user.locale,
     zoneinfo: user.timezone,

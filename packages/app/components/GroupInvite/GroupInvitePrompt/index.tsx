@@ -25,7 +25,7 @@ export function GroupInvitePrompt(): ReactNode {
 
   const [accepted, setAccepted] = useState(false);
   const [declined, setDeclined] = useState(false);
-  const [error, setError] = useState(null);
+  const [error, setError] = useState<unknown>(null);
 
   const token = query.get('token');
 
@@ -49,12 +49,17 @@ export function GroupInvitePrompt(): ReactNode {
     try {
       await axios.post(`${apiUrl}/api/group-invites/${token}/respond`, { response: true });
 
+      // @ts-expect-error 18048 variable is possibly undefined (strictNullChecks)
       const group = { id: invite.groupId, name: invite.groupName, role: invite.role };
 
       setAccepted(true);
+      // @ts-expect-error 2345 argument of type is not assignable to parameter of type
+      // (strictNullChecks)
       addAppMemberGroup(group);
 
       if (!appMemberSelectedGroup) {
+        // @ts-expect-error 2345 argument of type is not assignable to parameter of type
+        // (strictNullChecks)
         setAppMemberSelectedGroup(group);
       }
 
@@ -79,7 +84,7 @@ export function GroupInvitePrompt(): ReactNode {
     return (
       <Content padding>
         <Message color="danger">
-          {inviteError.response.status === 404 ? (
+          {inviteError.response?.status === 404 ? (
             <FormattedMessage {...messages.notFound} />
           ) : (
             <FormattedMessage {...messages.inviteLoadingError} />
@@ -95,6 +100,7 @@ export function GroupInvitePrompt(): ReactNode {
         <Message color="success">
           <FormattedMessage
             {...messages.accepted}
+            // @ts-expect-error 18048 variable is possibly undefined (strictNullChecks)
             values={{ groupName: <strong>{invite.groupName}</strong> }}
           />
         </Message>
@@ -108,6 +114,7 @@ export function GroupInvitePrompt(): ReactNode {
         <Message color="success">
           <FormattedMessage
             {...messages.declined}
+            // @ts-expect-error 18048 variable is possibly undefined (strictNullChecks)
             values={{ groupName: <strong>{invite.groupName}</strong> }}
           />
         </Message>
@@ -122,7 +129,7 @@ export function GroupInvitePrompt(): ReactNode {
           <FormattedMessage
             {...messages.descriptionWithoutName}
             values={{
-              groupName: <strong>{invite.groupName}</strong>,
+              groupName: <strong>{invite?.groupName}</strong>,
               email: <strong>{appMemberInfo.email}</strong>,
             }}
           />
@@ -130,7 +137,7 @@ export function GroupInvitePrompt(): ReactNode {
           <FormattedMessage
             {...messages.description}
             values={{
-              groupName: <strong>{invite.groupName}</strong>,
+              groupName: <strong>{invite?.groupName}</strong>,
               name: <strong>{appMemberInfo.name}</strong>,
               email: <strong>{appMemberInfo.email}</strong>,
             }}
@@ -147,7 +154,7 @@ export function GroupInvitePrompt(): ReactNode {
       </div>
       {error ? (
         <div className="mt-2 is-flex is-justify-content-center">
-          {axios.isAxiosError(error) && error.response.status === 409 ? (
+          {axios.isAxiosError(error) && error.response?.status === 409 ? (
             <FormattedMessage {...messages.emailConflict} />
           ) : (
             <FormattedMessage {...messages.submissionError} />

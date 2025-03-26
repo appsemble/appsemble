@@ -55,6 +55,7 @@ let parser = yargs(process.argv.slice(2))
   .option('client-credentials', {
     description: `OAuth2 client credentials formatted as "client_id:client_secret". This may also be defined in the ${CREDENTIALS_ENV_VAR} environment variable.`,
   })
+  // @ts-expect-error 2322 ... is not assignable to type (strictNullChecks)
   .middleware([configureLogger, initAxios])
   .command(app)
   .command(asset)

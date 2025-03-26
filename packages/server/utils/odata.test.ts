@@ -243,6 +243,8 @@ describe('odataFilterToSequelize', () => {
   const empty = ['', null, undefined];
 
   it.each(empty)('%p', (filter) => {
+    // @ts-expect-error 2345 argument of type is not assignable to parameter of type
+    // (strictNullChecks)
     const result = odataFilterToSequelize(filter, { tableName: 'Model' });
     expect(result).toStrictEqual({});
   });
@@ -267,6 +269,8 @@ describe('odataOrderbyToSequelize', () => {
   const empty = ['', null, undefined];
 
   it.each(empty)('%p', (filter) => {
+    // @ts-expect-error 2345 argument of type is not assignable to parameter of type
+    // (strictNullChecks)
     const result = odataOrderbyToSequelize(filter);
     expect(result).toStrictEqual([]);
   });

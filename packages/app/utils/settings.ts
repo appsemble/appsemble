@@ -22,4 +22,5 @@ export const {
   snapshotId,
   vapidPublicKey,
 } = window.settings;
+// @ts-expect-error This is intentional
 delete window.settings;

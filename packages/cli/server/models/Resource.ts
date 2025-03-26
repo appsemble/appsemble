@@ -5,16 +5,22 @@ import { Methods } from '../db/methods.js';
 const dir = '/resources';
 
 export class Resource {
+  // @ts-expect-error 2567 No initializer and not assigned in constructor
   id: number;
 
+  // @ts-expect-error 2567 No initializer and not assigned in constructor
   $clonable: boolean;
 
+  // @ts-expect-error 2567 No initializer and not assigned in constructor
   $seed: boolean;
 
+  // @ts-expect-error 2567 No initializer and not assigned in constructor
   $ephemeral: boolean;
 
+  // @ts-expect-error 2567 No initializer and not assigned in constructor
   $created: string;
 
+  // @ts-expect-error 2567 No initializer and not assigned in constructor
   $updated: string;
 
   [key: string]: unknown;

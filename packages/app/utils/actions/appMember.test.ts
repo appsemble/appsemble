@@ -30,6 +30,7 @@ describe('app.member.register', () => {
         properties: { static: { test: [1, 2, 3], property: 'Property', bool: true } },
       },
       passwordLogin,
+      // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
       // eslint-disable-next-line unicorn/no-useless-undefined
       getAppMemberInfo: () => undefined,
       refetchDemoAppMembers,
@@ -87,6 +88,7 @@ describe('app.member.invite', () => {
         email: { prop: 'email' },
         role: { prop: 'role' },
       },
+      // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
       // eslint-disable-next-line unicorn/no-useless-undefined
       getAppMemberSelectedGroup: () => undefined,
       getAppMemberInfo: () => ({
@@ -111,8 +113,10 @@ describe('app.member.invite', () => {
         email: { prop: 'email' },
         role: { prop: 'role' },
       },
+      // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
       // eslint-disable-next-line unicorn/no-useless-undefined
       getAppMemberSelectedGroup: () => undefined,
+      // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
       getAppMemberInfo: () => null,
     });
 
@@ -138,6 +142,7 @@ describe('app.member.login', () => {
         email: 'test@example.com',
       },
       passwordLogin,
+      // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
       // eslint-disable-next-line unicorn/no-useless-undefined
       getAppMemberInfo: () => undefined,
       refetchDemoAppMembers,
@@ -222,6 +227,7 @@ describe('app.member.query', () => {
           'array.from': ['Role1', 'Role2', 'Role3'],
         },
       },
+      // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
       // eslint-disable-next-line unicorn/no-useless-undefined
       getAppMemberSelectedGroup: () => undefined,
       getAppMemberInfo: () => ({
@@ -306,6 +312,7 @@ describe('app.member.query', () => {
         type: 'app.member.query',
         roles: null,
       },
+      // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
       // eslint-disable-next-line unicorn/no-useless-undefined
       getAppMemberSelectedGroup: () => undefined,
       getAppMemberInfo: () => ({
@@ -398,6 +405,7 @@ describe('app.member.query', () => {
         role: PredefinedAppRole.MembersManager,
         demo: true,
       }),
+      // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
       // eslint-disable-next-line unicorn/no-useless-undefined
       getAppMemberSelectedGroup: () => undefined,
       setAppMemberInfo,
@@ -444,7 +452,9 @@ describe('app.member.query', () => {
           'array.from': ['Role1', 'Role2', 'Role3'],
         },
       },
+      // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
       getAppMemberInfo: () => null,
+      // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
       // eslint-disable-next-line unicorn/no-useless-undefined
       getAppMemberSelectedGroup: () => undefined,
     });
@@ -536,6 +546,7 @@ describe('app.member.current.patch', () => {
         type: 'app.member.current.patch',
         name: { prop: 'name' },
       },
+      // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
       // eslint-disable-next-line unicorn/no-useless-undefined
       getAppMemberInfo: () => undefined,
     });
@@ -575,6 +586,7 @@ describe('app.member.current.patch', () => {
         role: PredefinedAppRole.Member,
         demo: false,
       }),
+      // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
       // eslint-disable-next-line unicorn/no-useless-undefined
       getAppMemberSelectedGroup: () => undefined,
       setAppMemberInfo,
@@ -636,6 +648,7 @@ describe('app.member.role.update', () => {
         role: PredefinedAppRole.MembersManager,
         demo: false,
       }),
+      // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
       // eslint-disable-next-line unicorn/no-useless-undefined
       getAppMemberSelectedGroup: () => undefined,
       refetchDemoAppMembers,
@@ -665,6 +678,7 @@ describe('app.member.role.update', () => {
         sub: 'some-user-id',
         role: PredefinedAppRole.ResourcesManager,
       },
+      // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
       // eslint-disable-next-line unicorn/no-useless-undefined
       getAppMemberInfo: () => undefined,
     });
@@ -713,6 +727,7 @@ describe('app.member.properties.patch', () => {
         role: PredefinedAppRole.Member,
         demo: false,
       }),
+      // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
       // eslint-disable-next-line unicorn/no-useless-undefined
       getAppMemberSelectedGroup: () => undefined,
       refetchDemoAppMembers,
@@ -741,8 +756,10 @@ describe('app.member.properties.patch', () => {
         sub: 'some-user-id',
         properties: { static: { test: [1, 2, 3], property: 'Property', bool: true } },
       },
+      // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
       // eslint-disable-next-line unicorn/no-useless-undefined
       getAppMemberSelectedGroup: () => undefined,
+      // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
       // eslint-disable-next-line unicorn/no-useless-undefined
       getAppMemberInfo: () => undefined,
     });
@@ -772,6 +789,7 @@ describe('app.member.delete', () => {
         sub: 'some-user-id',
         type: 'app.member.delete',
       },
+      // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
       // eslint-disable-next-line unicorn/no-useless-undefined
       getAppMemberSelectedGroup: () => undefined,
       getAppMemberInfo: () => ({
@@ -800,8 +818,10 @@ describe('app.member.delete', () => {
         sub: 'some-user-id',
         type: 'app.member.delete',
       },
+      // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
       // eslint-disable-next-line unicorn/no-useless-undefined
       getAppMemberInfo: () => undefined,
+      // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
       // eslint-disable-next-line unicorn/no-useless-undefined
       getAppMemberSelectedGroup: () => undefined,
     });

@@ -128,6 +128,7 @@ describe('link', () => {
       appDefinition: { defaultPage: '', pages: [{ name: 'Page A', blocks: [] }] },
       definition: { type: 'link', to: 'Page A' },
       params: { lang: 'da' },
+      // @ts-expect-error 2538 type undefined cannot be used as an index type
       getAppMessage: ({ id }) => new IntlMessageFormat(appMessages[id]),
       navigate,
     });
@@ -192,6 +193,7 @@ describe('link', () => {
       definition: { type: 'link', to: ['Page A', 'Subpage B'] },
       params: { lang: 'da' },
       getAppMessage: ({ defaultMessage, id }) =>
+        // @ts-expect-error 2538 type undefined cannot be used as an index type
         new IntlMessageFormat(appMessages[id] ?? defaultMessage),
       navigate,
     });

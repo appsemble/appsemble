@@ -22,6 +22,10 @@ export function getAppMessages({
 
     const baseLang = baseLanguage && String(baseLanguage).toLowerCase();
 
+    // XXX: Why do we have 3 types we could be returning here? Messages, AppMessages,
+    // and AppMessages again but defined slightly differently in `types`
+    //
+    // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
     return AppMessages.findAll({
       order: [['language', 'desc']],
       where: {
@@ -36,6 +40,7 @@ export function getAppMessages({
     });
   }
 
+  // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
   return AppMessages.findAll({
     where: { AppId: app.id },
   });

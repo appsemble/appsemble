@@ -32,6 +32,7 @@ export const appMemberRegister: ActionCreator<'app.member.register'> = ({
     const formData = new FormData();
     formData.append('email', email);
     formData.append('password', password);
+    // @ts-expect-error 2769 No overload matches this call (strictNullChecks)
     formData.append('locale', params.lang);
     formData.append('timezone', timezone);
 

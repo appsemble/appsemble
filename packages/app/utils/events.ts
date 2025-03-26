@@ -51,9 +51,13 @@ export function createEvents(
       ? async (data, error) => {
           await ready;
           const name = definition.emit[key];
+          // @ts-expect-error 2345 argument of type is not assignable to parameter of type
+          // (strictNullChecks)
           ee.emit(name, data, error === '' ? 'Error' : error);
           addBreadcrumb({
             category: 'appsemble.event',
+            // @ts-expect-error 2345 argument of type is not assignable to parameter of type
+            // (strictNullChecks)
             data: { name, listeners: String(ee.listenerCount(name)) },
           });
           return true;

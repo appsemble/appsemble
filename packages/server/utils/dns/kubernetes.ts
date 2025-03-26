@@ -257,6 +257,7 @@ async function createIngressFunction(): Promise<
     const secretName = generateSSLSecretName(domain);
 
     if (!customSSL && issuerAnnotationKey) {
+      // @ts-expect-error 2322 undefined is not assignable to type (strictNullChecks)
       annotations[issuerAnnotationKey] = issuerAnnotationValue;
     }
 
@@ -473,6 +474,8 @@ export async function restoreDNS(): Promise<void> {
 
   for await (const { domain } of iterTable(App, {
     attributes: ['domain'],
+    // TODO: does changing null to undefined break this query?
+    // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
     where: { [Op.and]: [{ domain: { [Op.not]: null } }, { domain: { [Op.not]: '' } }] },
   })) {
     await createIngress(domain);
@@ -480,6 +483,8 @@ export async function restoreDNS(): Promise<void> {
 
   for await (const { domain } of iterTable(AppCollection, {
     attributes: ['domain'],
+    // TODO: does changing null to undefined break this query?
+    // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
     where: { [Op.and]: [{ domain: { [Op.not]: null } }, { domain: { [Op.not]: '' } }] },
   })) {
     await createIngress(domain);

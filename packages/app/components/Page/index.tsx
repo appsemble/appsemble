@@ -123,6 +123,8 @@ export function Page(): ReactNode {
     ee.current = new EventEmitter();
   }
 
+  // @ts-expect-error 2345 argument of type is not assignable to parameter of type
+  // (strictNullChecks)
   const normalizedPageId = normalize(pageId);
   let index = appDefinition.pages.findIndex((p) => normalize(p.name) === normalizedPageId);
 
@@ -191,8 +193,11 @@ export function Page(): ReactNode {
         context,
         history,
         root: input,
+        // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
         locale: lang,
+        // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
         stepRef,
+        // @ts-expect-error 2322 unknown is not assignable to type (strictNullChecks)
         tabRef,
       }),
     [getMessage, getVariable, data, appMemberInfoRef, lang],
@@ -207,23 +212,31 @@ export function Page(): ReactNode {
   const actions = useMemo(
     () =>
       makeActions({
+        // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
         addAppMemberGroup,
+        // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
         appStorage: appStorage.current,
         appMemberGroups,
         getAppMessage,
         getAppVariable: getVariable,
         actions: { onLoad: {} },
         appDefinition,
+        // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
         context: pageDefinition,
         navigate,
         extraCreators: {},
+        // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
         prefix,
+        // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
         prefixIndex,
         pushNotifications,
         showDialog,
         showShareDialog,
+        // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
         ee: ee.current,
+        // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
         pageReady: null,
+        // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
         remap,
         params,
         showMessage,
@@ -265,6 +278,8 @@ export function Page(): ReactNode {
       return;
     }
     const bulmaElement = document.getElementById('bulma-style-app') as HTMLLinkElement;
+    // @ts-expect-error 2345 argument of type is not assignable to parameter of type
+    // (strictNullChecks)
     bulmaElement.href = createThemeURL(mergeThemes(appDefinition.theme, pageDefinition.theme));
   }, [appDefinition, pageDefinition]);
 
@@ -338,6 +353,7 @@ export function Page(): ReactNode {
 
     if (pageId !== normalize(normalizedPageName)) {
       // Redirect to page with untranslated page name
+      // @ts-expect-error 2769 No overload matches this call (strictNullChecks)
       return <Navigate to={pathname.replace(pageId, normalizedPageName)} />;
     }
 
@@ -357,7 +373,9 @@ export function Page(): ReactNode {
             ee={ee.current}
             key={prefix}
             pageDefinition={pageDefinition}
+            // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
             prefix={prefix}
+            // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
             prefixIndex={prefixIndex}
             remap={remapWithContext}
             showDialog={showDialog}
@@ -377,7 +395,9 @@ export function Page(): ReactNode {
                     ee={ee.current}
                     key={prefix}
                     pageDefinition={pageDefinition}
+                    // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
                     prefix={prefix}
+                    // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
                     prefixIndex={prefixIndex}
                     remap={remapWithContext}
                     setData={setData}
@@ -426,7 +446,9 @@ export function Page(): ReactNode {
           showShareDialog={showShareDialog}
         />
         <ShareDialog
+          // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
           setShareDialogParams={setShareDialogParams}
+          // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
           shareDialogParams={shareDialogParams}
         />
       </main>
@@ -444,6 +466,8 @@ export function Page(): ReactNode {
   const defaultPageName = getDefaultPageName(isLoggedIn, appMemberRole, appDefinition);
   const defaultPage = appDefinition.pages.find((p) => p.name === defaultPageName);
 
+  // @ts-expect-error 2345 argument of type is not assignable to parameter of type
+  // (strictNullChecks)
   if (checkPagePermissionsCallback(defaultPage)) {
     const defaultPagePrefix = `pages.${normalize(defaultPage.name)}`;
     let pageName = defaultPage.name;
@@ -452,6 +476,8 @@ export function Page(): ReactNode {
       pageName = getAppMessage({ id: defaultPagePrefix }).format() as string;
     }
 
+    // @ts-expect-error 2345 argument of type is not assignable to parameter of type
+    // (strictNullChecks)
     return <Navigate to={`${url}/${normalize(pageName)}`} />;
   }
 

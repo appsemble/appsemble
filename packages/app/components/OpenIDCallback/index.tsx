@@ -34,11 +34,15 @@ export function OpenIDCallback(): ReactNode {
   const logins = query.get('logins');
 
   const shouldLink = startAccountLinking({
+    // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
     externalId: sub,
+    // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
     secret,
+    // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
     email,
     showAppsembleOAuth2Login,
     showAppsembleLogin,
+    // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
     logins,
   });
 

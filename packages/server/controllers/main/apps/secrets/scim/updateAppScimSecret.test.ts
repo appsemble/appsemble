@@ -85,6 +85,8 @@ describe('updateAppScimSecret', () => {
     `);
 
     await app.reload();
+    // @ts-expect-error 2345 argument of type is not assignable to parameter of type
+    // (strictNullChecks)
     expect(decrypt(app.scimToken, argv.aesSecret)).toBe('6789');
   });
 });

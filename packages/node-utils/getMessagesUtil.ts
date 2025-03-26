@@ -60,6 +60,7 @@ export async function getMessagesUtil(
     }),
   };
 
+  // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
   const blockMessages = await getBlockMessages({ context: ctx, blockQuery, baseLang, lang });
 
   if (

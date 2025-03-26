@@ -6,6 +6,7 @@ let event: CustomEvent;
 let originalCurrentScript: HTMLOrSVGScriptElement;
 
 beforeEach(() => {
+  // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
   originalCurrentScript = document.currentScript;
   Object.defineProperty(document, 'currentScript', {
     value: {
@@ -22,6 +23,7 @@ afterEach(() => {
     value: originalCurrentScript,
     writable: true,
   });
+  // @ts-expect-error 2322 undefined is not assignable to type (strictNullChecks)
   originalCurrentScript = undefined;
 });
 

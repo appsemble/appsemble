@@ -16,6 +16,8 @@ const transformer: Transformer<Root> = (ast, vfile) => {
       return;
     }
     // Resolve the link from the directory containing the file.
+    // @ts-expect-error 2345 argument of type is not assignable to parameter of type
+    // (strictNullChecks)
     const resolved = resolve(vfile.dirname, chunks[0]);
     // Resolve the path relative to the CWD. This works, because the directory
     // containing the docs and the URL prefix are the same. Otherwise, this would

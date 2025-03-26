@@ -15,6 +15,7 @@ describe('each', () => {
       extraCreators: {
         'dialog.ok': () => [ok],
       },
+      // @ts-expect-error Messed up
       remap,
     });
     const result = await action([1, 2], { context: null });
@@ -35,6 +36,7 @@ describe('each', () => {
       extraCreators: {
         'dialog.ok': () => [ok],
       },
+      // @ts-expect-error Messed up
       remap,
     });
     const result = await action(1, { context: null });

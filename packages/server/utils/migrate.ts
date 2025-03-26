@@ -50,7 +50,7 @@ and include the stacktrace.`,
 export async function migrate(toVersion: string, migrations: Migration[]): Promise<void> {
   const db = getDB();
   await Meta.sync();
-  const to = toVersion === 'next' ? migrations.at(-1).key : toVersion;
+  const to = toVersion === 'next' ? migrations.at(-1)!.key : toVersion;
   const metas = await Meta.findAll();
   if (metas.length > 1) {
     throw new AppsembleError('Multiple Meta entries found. The database requires a manual fix.');

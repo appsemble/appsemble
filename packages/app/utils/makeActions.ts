@@ -174,25 +174,37 @@ export function createTestAction<T extends ActionDefinition['type']>(
   params: SetRequired<Partial<CreateActionParams<T>>, 'definition'>,
 ): Extract<Action, { type: T }> {
   return createAction<T>({
+    // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
     appDefinition: null,
+    // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
     definition: null,
+    // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
     ee: null,
+    // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
     extraCreators: null,
+    // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
     flowActions: null,
     getAppMessage: ({ defaultMessage }) => new IntlMessageFormat(defaultMessage),
+    // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
     navigate: null,
     pageReady: Promise.resolve(),
+    // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
     appStorage: null,
+    // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
     prefix: null,
+    // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
     prefixIndex: null,
+    // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
     pushNotifications: null,
     remap: (remapper, data, context) =>
       remap(remapper, data, {
         getMessage: ({ defaultMessage }) => new IntlMessageFormat(defaultMessage),
+        // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
         getVariable: params.getAppVariable,
         appId,
         url: 'https://example.com/en/example',
         appUrl: 'https://example.com',
+        // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
         appMemberInfo: null,
         context,
         locale: defaultLocale,
@@ -200,16 +212,26 @@ export function createTestAction<T extends ActionDefinition['type']>(
     params: {
       lang: 'en',
     },
+    // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
     showDialog: null,
+    // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
     showShareDialog: null,
+    // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
     showMessage: null,
     appMemberGroups: [],
+    // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
     addAppMemberGroup: null,
+    // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
     getAppMemberInfo: null,
+    // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
     passwordLogin: null,
+    // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
     passwordLogout: null,
+    // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
     setAppMemberInfo: null,
+    // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
     refetchDemoAppMembers: null,
+    // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
     getAppMemberSelectedGroup: null,
     ...params,
   });

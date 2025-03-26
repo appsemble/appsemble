@@ -63,6 +63,8 @@ export async function agreeCurrentUserOAuth2AppConsent(ctx: Context): Promise<vo
       await handleUniqueAppMemberEmailIndex(
         ctx,
         error,
+        // @ts-expect-error 2345 argument of type is not assignable to parameter of type
+        // (strictNullChecks)
         user.primaryEmail,
         emailAuthorization?.verified ?? false,
         (data) => {
@@ -76,5 +78,7 @@ export async function agreeCurrentUserOAuth2AppConsent(ctx: Context): Promise<vo
     }
   }
 
+  // @ts-expect-error 2345 argument of type is not assignable to parameter of type
+  // (strictNullChecks)
   ctx.body = await createAppOAuth2AuthorizationCode(app, redirectUri, scope, appMember, ctx);
 }

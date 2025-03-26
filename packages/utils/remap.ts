@@ -263,17 +263,25 @@ const mapperImplementations: MapperImplementations = {
   },
 
   step(mapper, input, context) {
+    // eslint-disable-next-line @typescript-eslint/prefer-ts-expect-error
+    // @ts-ignore 18048 variable is possibly undefined (strictNullChecks)
     return context.stepRef.current[mapper];
   },
 
   'tab.name'(mapper, input, context) {
+    // eslint-disable-next-line @typescript-eslint/prefer-ts-expect-error
+    // @ts-ignore 18048 variable is possibly undefined (strictNullChecks)
     return context.tabRef.current.name;
   },
 
   gt: ([left, right], input: any, context) =>
+    // eslint-disable-next-line @typescript-eslint/prefer-ts-expect-error
+    // @ts-ignore Messed up - 2571 Object is of type 'unknown'.
     remap(left, input, context) > remap(right, input, context),
 
   lt: ([left, right], input: any, context) =>
+    // eslint-disable-next-line @typescript-eslint/prefer-ts-expect-error
+    // @ts-ignore Messed up - 2571 Object is of type 'unknown'.
     remap(left, input, context) < remap(right, input, context),
 
   ics(mappers, input, context) {
@@ -347,6 +355,8 @@ const mapperImplementations: MapperImplementations = {
     ...mapValues(mappers, (mapper) => remap(mapper, input, context)),
   }),
 
+  // eslint-disable-next-line @typescript-eslint/prefer-ts-expect-error
+  // @ts-ignore 2322 ... is not assignable to type (strictNullChecks)
   'object.omit'(keys, input: Record<string, any>) {
     const result = { ...input };
     for (const key of keys) {
@@ -379,6 +389,8 @@ const mapperImplementations: MapperImplementations = {
     return typeof input;
   },
 
+  // eslint-disable-next-line @typescript-eslint/prefer-ts-expect-error
+  // @ts-ignore 2322 ... is not assignable to type (strictNullChecks)
   'array.map': (mapper, input: any[], context) =>
     input?.map((item, index) =>
       remap(mapper, item, {
@@ -411,8 +423,12 @@ const mapperImplementations: MapperImplementations = {
     });
   },
 
+  // eslint-disable-next-line @typescript-eslint/prefer-ts-expect-error
+  // @ts-ignore 2322 ... is not assignable to type (strictNullChecks)
   array: (prop, input: any[], context) => context.array?.[prop],
 
+  // eslint-disable-next-line @typescript-eslint/prefer-ts-expect-error
+  // @ts-ignore 2322 ... is not assignable to type (strictNullChecks)
   'array.filter'(mapper, input: any[], context) {
     if (!Array.isArray(input)) {
       console.error(`${input} is not an array!`);
@@ -429,6 +445,8 @@ const mapperImplementations: MapperImplementations = {
     });
   },
 
+  // eslint-disable-next-line @typescript-eslint/prefer-ts-expect-error
+  // @ts-ignore 2322 ... is not assignable to type (strictNullChecks)
   'array.find'(mapper, input: any[], context) {
     if (!Array.isArray(input)) {
       console.error(`${input} is not an array!`);
@@ -541,6 +559,8 @@ const mapperImplementations: MapperImplementations = {
     return remapped;
   },
 
+  // eslint-disable-next-line @typescript-eslint/prefer-ts-expect-error
+  // @ts-ignore 2322 ... is not assignable to type (strictNullChecks)
   'date.parse': (fmt, input: string) => (fmt ? parse(input, fmt, new Date()) : parseISO(input)),
 
   'date.now': () => new Date(),
@@ -568,6 +588,8 @@ const mapperImplementations: MapperImplementations = {
 
   'null.strip': (args, input) => stripNullValues(input, args || {}),
 
+  // eslint-disable-next-line @typescript-eslint/prefer-ts-expect-error
+  // @ts-ignore 2322 ... is not assignable to type (strictNullChecks)
   'random.choice': (args, input: any[]) =>
     Array.isArray(input) ? input[Math.floor(Math.random() * input.length)] : input,
 
@@ -594,6 +616,8 @@ const mapperImplementations: MapperImplementations = {
 
   root: (args, input, context) => context.root,
 
+  // eslint-disable-next-line @typescript-eslint/prefer-ts-expect-error
+  // @ts-ignore 2322 ... is not assignable to type (strictNullChecks)
   len: (args, input: any[] | string) => input?.length,
 
   history: (index, input, context) => context.history?.[index],
@@ -655,6 +679,8 @@ const mapperImplementations: MapperImplementations = {
     return input.toLowerCase().endsWith(substring.substring.toLowerCase());
   },
 
+  // eslint-disable-next-line @typescript-eslint/prefer-ts-expect-error
+  // @ts-ignore 2322 null is not assignable to type (strictNullChecks)
   slice(sliceIndex: number | [number, number], input: string | []) {
     try {
       return Array.isArray(sliceIndex) ? input.slice(...sliceIndex) : input.slice(sliceIndex);

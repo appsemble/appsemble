@@ -22,6 +22,10 @@ export async function condition({
 
   const actionDefinition = remap(action.if, data, remapperContext) ? action.then : action.else;
   const implementation = actions[actionDefinition.type];
+  // XXX: what's going on here
+  //
+  // @ts-expect-error 2345 argument of type is not assignable to parameter of type
+  // (strictNullChecks)
   return handleAction(implementation, {
     app,
     action: actionDefinition,
