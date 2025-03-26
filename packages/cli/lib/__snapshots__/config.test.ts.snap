@@ -6108,6 +6108,9 @@ If this isn’t specified, no label will be shown. If no fields have a label, th
       "DropdownOption": {
         "additionalProperties": false,
         "properties": {
+          "disabled": {
+            "format": "remapper",
+          },
           "icon": {
             "description": "The icon to show in the option.",
             "format": "fontawesome",

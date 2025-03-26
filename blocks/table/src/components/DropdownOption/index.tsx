@@ -53,9 +53,11 @@ export function DropdownOption({
   }, [actions, index, option.onClick, record, repeatedIndex]);
 
   const label = remap(option.label, item, { index, repeatedIndex }) as string;
+  const disabled = remap(option.disabled, item, { index, repeatedIndex }) as boolean;
   return (
     <Button
       className={`dropdown-item pl-5 ${styles.noBorder}`}
+      disabled={disabled ?? false}
       icon={option.icon}
       onClick={onClick}
     >
