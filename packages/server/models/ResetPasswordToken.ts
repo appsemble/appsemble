@@ -17,19 +17,19 @@ import { User } from './index.js';
 export class ResetPasswordToken extends Model {
   @PrimaryKey
   @Column(DataType.STRING)
-  token: string;
+  token!: string;
 
   @AllowNull(false)
   @ForeignKey(() => User)
   @Column(DataType.UUID)
-  UserId: string;
+  UserId!: string;
 
   @BelongsTo(() => User, { onDelete: 'CASCADE' })
-  User: Awaited<User>;
+  User?: Awaited<User>;
 
   @CreatedAt
-  created: Date;
+  created!: Date;
 
   @UpdatedAt
-  updated: Date;
+  updated!: Date;
 }

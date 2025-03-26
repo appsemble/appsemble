@@ -84,7 +84,7 @@ export function registerController(
     );
   }
   controllerFunctions.set('app-controller', fn);
-  const callbacks = controllerResolvers.get('app-controller');
+  const callbacks = controllerResolvers.get('app-controller') ?? [];
   controllerResolvers.delete('app-controller');
   for (const resolve of callbacks) {
     resolve(fn);
@@ -93,12 +93,12 @@ export function registerController(
 
 function getBootstrapFunction(blockDefId: string): Promisable<BootstrapFunction> {
   if (bootstrapFunctions.has(blockDefId)) {
-    return bootstrapFunctions.get(blockDefId);
+    return bootstrapFunctions.get(blockDefId)!;
   }
   if (!bootstrapResolvers.has(blockDefId)) {
     bootstrapResolvers.set(blockDefId, []);
   }
-  const waiting = bootstrapResolvers.get(blockDefId);
+  const waiting = bootstrapResolvers.get(blockDefId)!;
   return new Promise((resolve) => {
     waiting.push(resolve);
   });
@@ -106,12 +106,12 @@ function getBootstrapFunction(blockDefId: string): Promisable<BootstrapFunction>
 
 function getControllerFunction(): Promisable<ControllerFunction> {
   if (controllerFunctions.has('app-controller')) {
-    return controllerFunctions.get('app-controller');
+    return controllerFunctions.get('app-controller')!;
   }
   if (!controllerResolvers.has('app-controller')) {
     controllerResolvers.set('app-controller', []);
   }
-  const waiting = controllerResolvers.get('app-controller');
+  const waiting = controllerResolvers.get('app-controller')!;
   return new Promise((resolve) => {
     waiting.push(resolve);
   });

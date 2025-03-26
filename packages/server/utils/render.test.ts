@@ -10,7 +10,7 @@ describe('makeCSP', () => {
       'script-src': ['connect.facebook.net'],
     },
     '': {
-      'script-src': [null],
+      'script-src': [false],
     },
     "script-src 'none' 'self' https://example.com": {
       'script-src': ["'none'", "'self'", 'https://example.com'],

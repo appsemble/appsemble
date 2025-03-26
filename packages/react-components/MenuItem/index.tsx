@@ -48,7 +48,7 @@ export function MenuItem({ children, count, end, icon, title, to }: SideNavLinkP
     (event: MouseEvent<HTMLSpanElement>) => {
       event.preventDefault();
       event.stopPropagation();
-      setCollapsed(!collapsed);
+      setCollapsed?.(!collapsed);
     },
     [collapsed, setCollapsed],
   );

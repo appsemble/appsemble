@@ -22,7 +22,7 @@ export async function getKeytar(): Promise<typeof import('keytar')> {
   }
 }
 
-async function getClientCredentials(remote: string, inputCredentials: string): Promise<string> {
+async function getClientCredentials(remote: string, inputCredentials?: string): Promise<string> {
   if (inputCredentials) {
     return inputCredentials;
   }
@@ -67,7 +67,7 @@ async function getClientCredentials(remote: string, inputCredentials: string): P
 export async function authenticate(
   remote: string,
   scope: string,
-  inputCredentials: string,
+  inputCredentials?: string,
 ): Promise<void> {
   const credentials = await getClientCredentials(remote, inputCredentials);
   if (authorizedRemotes.has(remote)) {

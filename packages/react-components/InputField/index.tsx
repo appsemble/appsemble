@@ -8,7 +8,10 @@ type InputFieldProps = Omit<
 > &
   SharedFormComponentProps;
 
-function getHelpExtra(maxLength: number, value?: number | string | readonly string[]): string {
+function getHelpExtra(
+  maxLength: number | undefined,
+  value?: number | string | readonly string[],
+): string | undefined {
   if (!maxLength) {
     return;
   }

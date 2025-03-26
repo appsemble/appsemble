@@ -56,7 +56,7 @@ function runTests(tests: Record<string, TestCase>): void {
           // @ts-expect-error 2538 type undefined cannot be used as an index type
           new IntlMessageFormat(messages?.messageIds?.[id] ?? defaultMessage),
         getVariable: (variableName) =>
-          variables.find((variable) => variable.name === variableName)?.value,
+          variables?.find((variable) => variable.name === variableName)?.value,
         url: 'https://example.com/en/example',
         appUrl: 'https://example.com',
         // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
@@ -388,7 +388,7 @@ describe('log', () => {
             // @ts-expect-error 2538 type undefined cannot be used as an index type
             new IntlMessageFormat(messages?.messageIds?.[id] ?? defaultMessage),
           getVariable: (variableName) =>
-            variables.find((variable) => variable.name === variableName).value,
+            variables?.find((variable) => variable.name === variableName)?.value,
           url: 'https://example.com/en/example',
           appUrl: 'https://example.com',
           // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)

@@ -73,7 +73,7 @@ export async function patchApp(ctx: Context): Promise<void> {
     user,
   } = ctx;
 
-  let result: Partial<App>;
+  const result: Partial<App> = {};
 
   const dbApp = await App.findOne({
     where: { id: appId },
@@ -106,8 +106,6 @@ export async function patchApp(ctx: Context): Promise<void> {
   checkAppLock(ctx, dbApp);
 
   try {
-    result = {};
-
     const permissionsToCheck: OrganizationPermission[] = [];
     if (yaml) {
       permissionsToCheck.push(OrganizationPermission.UpdateApps);
@@ -115,7 +113,7 @@ export async function patchApp(ctx: Context): Promise<void> {
       const definition = parse(yaml, { maxAliasCount: 10_000 }) as AppDefinition;
       handleValidatorResult(
         ctx,
-        openApi.validate(definition, openApi.document.components.schemas.AppDefinition, {
+        openApi!.validate(definition, openApi!.document.components!.schemas!.AppDefinition, {
           throw: false,
         }),
         'App validation failed',
@@ -191,7 +189,7 @@ export async function patchApp(ctx: Context): Promise<void> {
     if (emailPassword !== undefined) {
       result.emailPassword = (emailPassword as string).length
         ? encrypt(emailPassword, argv.aesSecret)
-        : null;
+        : undefined;
     }
 
     if (emailUser !== undefined) {
@@ -308,7 +306,7 @@ export async function patchApp(ctx: Context): Promise<void> {
       await dbApp.update(result, { where: { id: appId }, transaction });
       if (yaml) {
         const snapshot = await AppSnapshot.create(
-          { AppId: dbApp.id, UserId: user.id, yaml },
+          { AppId: dbApp.id, UserId: user!.id, yaml },
           { transaction },
         );
         dbApp.AppSnapshots = [snapshot];

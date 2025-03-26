@@ -15,11 +15,11 @@ export async function deleteAppResource({
   type,
   whereOptions,
 }: DeleteAppResourceParams): Promise<void> {
-  const persistedApp = await App.findOne({
+  const persistedApp = (await App.findOne({
     where: {
       id: app.id,
     },
-  });
+  }))!;
 
   const resource = await Resource.findOne({
     where: { id, type, AppId: app.id, ...whereOptions },

@@ -61,7 +61,7 @@ export async function handleEmail(
     if (error instanceof EmailQuotaExceededError) {
       throwKoaError(ctx, 429, error.message);
     }
-    ctx.throw(error);
+    ctx.throw(error as any);
   }
   ctx.status = 204;
 }
@@ -183,8 +183,9 @@ async function handleRequestProxy(
   };
 
   axiosConfig = await applyAppServiceSecrets({ axiosConfig, context: ctx, app });
+  axiosConfig.headers ??= {};
 
-  if (axiosConfig.method.toUpperCase() !== method) {
+  if (axiosConfig.method?.toUpperCase() !== method) {
     throwKoaError(ctx, 400, 'Method does not match the request action method');
   }
 
@@ -207,7 +208,7 @@ async function handleRequestProxy(
 
   // Restricting access to only the containers defined by the app
   if (containerUrlPattern.test(String(proxyUrl))) {
-    axiosConfig.url = axiosConfig.url.replace(
+    axiosConfig.url = axiosConfig.url?.replace(
       axiosConfig.url.split('.')[1],
       getContainerNamespace(),
     );
@@ -234,7 +235,9 @@ async function handleRequestProxy(
         await waitForPodReadiness(
           namespace,
           deploymentName,
-          (process.env.POD_READINESS_TIMEOUT as undefined as number) ?? undefined,
+          Number.isNaN(Number(process.env.POD_READINESS_TIMEOUT))
+            ? undefined
+            : Number(process.env.POD_READINESS_TIMEOUT),
         );
 
         response = await axios(axiosConfig);

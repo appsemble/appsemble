@@ -17,7 +17,7 @@ export async function queryOrganizationAppCollections(ctx: Context): Promise<voi
   if (authSubject) {
     organizationMember = await OrganizationMember.findOne({
       where: {
-        UserId: authSubject.id,
+        UserId: authSubject!.id,
         OrganizationId: organizationId,
       },
     });

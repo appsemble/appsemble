@@ -22,44 +22,44 @@ export class BlockVersion extends Model {
   @PrimaryKey
   @Default(DataType.UUIDV4)
   @Column(DataType.UUID)
-  id: string;
+  id!: string;
 
   @Index({ name: 'blockVersionComposite', unique: true })
   @ForeignKey(() => Organization)
   @AllowNull(false)
   @Column(DataType.STRING)
-  OrganizationId: string;
+  OrganizationId!: string;
 
   @AllowNull(false)
   @Index({ name: 'blockVersionComposite', unique: true })
   @Column(DataType.STRING)
-  name: string;
+  name!: string;
 
   @AllowNull(false)
   @Index({ name: 'blockVersionComposite', unique: true })
   @Column(DataType.STRING)
-  version: string;
+  version!: string;
 
   @Column(DataType.STRING)
   layout?: 'float' | 'grow' | 'hidden' | 'static' | null;
 
   @Column(DataType.BLOB)
-  icon: Buffer;
+  icon?: Buffer;
 
   @Column(DataType.TEXT)
-  description: string;
+  description?: string;
 
   @Column(DataType.TEXT)
-  longDescription: string;
+  longDescription?: string;
 
   @Column(DataType.JSON)
-  parameters: Schema;
+  parameters?: Schema;
 
   @Column(DataType.JSON)
   actions?: Record<string, ActionType>;
 
   @Column(DataType.JSON)
-  events: {
+  events?: {
     listen?: Record<string, EventType>;
     emit?: Record<string, EventType>;
   };
@@ -67,27 +67,27 @@ export class BlockVersion extends Model {
   @Default(false)
   @AllowNull(false)
   @Column(DataType.BOOLEAN)
-  wildcardActions: boolean;
+  wildcardActions!: boolean;
 
   @Default('public')
   @AllowNull(false)
   @Column(DataType.STRING)
-  visibility: 'public' | 'unlisted';
+  visibility!: 'public' | 'unlisted';
 
   @AllowNull(false)
   @Default([])
   @Column(DataType.JSONB)
-  examples: string[];
+  examples!: string[];
 
   @BelongsTo(() => Organization)
-  Organization: Awaited<Organization>;
+  Organization?: Awaited<Organization>;
 
   @HasMany(() => BlockAsset)
-  BlockAssets?: BlockAsset[];
+  BlockAssets!: BlockAsset[];
 
   @HasMany(() => BlockMessages)
-  BlockMessages: BlockMessages[];
+  BlockMessages!: BlockMessages[];
 
   @CreatedAt
-  created: Date;
+  created!: Date;
 }

@@ -38,7 +38,7 @@ function waitForCredentials(url: URL): Promise<string> {
       ctx.assert(ctx.path === '/', 404);
       ctx.assert(ctx.method === 'POST', 405);
       ctx.assert(ctx.is('json'), 415);
-      let credentials: string;
+      let credentials = '';
       try {
         ({ credentials } = JSON.parse(await raw(ctx.req, { encoding: 'utf8' })));
       } catch {
@@ -66,14 +66,14 @@ function waitForCredentials(url: URL): Promise<string> {
 export async function login({ clientCredentials, remote }: BaseArguments): Promise<void> {
   const { setPassword } = await getKeytar();
   const url = new URL('/settings/client-credentials', remote);
-  let credentials = clientCredentials;
+  let credentials = clientCredentials!;
   if (credentials) {
-    if (!validate(clientCredentials)) {
+    if (!validate(clientCredentials ?? '')) {
       throw new AppsembleError(
         `Invalid client credentials. Client credentials can be registered on ${url}`,
       );
     }
-    credentials = clientCredentials;
+    credentials = clientCredentials!;
   } else {
     logger.info(`Opening ${url}`);
     credentials = await waitForCredentials(url);

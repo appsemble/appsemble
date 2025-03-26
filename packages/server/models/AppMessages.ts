@@ -21,22 +21,22 @@ export class AppMessages extends Model implements MessagesType {
   @ForeignKey(() => App)
   @Column(DataType.INTEGER)
   @Index({ name: 'appMessagesComposite' })
-  AppId: number;
+  AppId!: number;
 
   @BelongsTo(() => App)
-  App: Awaited<App>;
+  App?: Awaited<App>;
 
   @PrimaryKey
   @Column(DataType.STRING)
   @Index({ name: 'appMessagesComposite' })
-  language: string;
+  language!: string;
 
   @Column(DataType.JSON)
-  messages: AppsembleMessages;
+  messages?: AppsembleMessages;
 
   @CreatedAt
-  created: Date;
+  created!: Date;
 
   @UpdatedAt
-  updated: Date;
+  updated!: Date;
 }

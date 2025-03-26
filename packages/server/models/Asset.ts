@@ -24,20 +24,20 @@ export class Asset extends Model {
   @PrimaryKey
   @Default(DataType.UUIDV4)
   @Column(DataType.STRING)
-  id: string;
+  id!: string;
 
   @Column(DataType.STRING)
-  mime: string;
+  mime?: string;
 
   @Column(DataType.STRING)
-  filename: string;
+  filename?: string;
 
   @Index({ name: 'UniqueAssetWithNullGroupId', unique: true })
   @Index({ name: 'UniqueAssetWithGroupId', unique: true })
   @Index({ name: 'assetNameIndex' })
   @Index({ name: 'assetAppIdNameIndex' })
   @Column(DataType.STRING)
-  name: string;
+  name?: string;
 
   /**
    * If true, the asset will be transferred when cloning an app
@@ -45,7 +45,7 @@ export class Asset extends Model {
   @AllowNull(false)
   @Default(false)
   @Column(DataType.BOOLEAN)
-  clonable: boolean;
+  clonable!: boolean;
 
   /**
    * If true, the asset will be used for creating ephemeral assets in demo apps
@@ -53,7 +53,7 @@ export class Asset extends Model {
   @AllowNull(false)
   @Default(false)
   @Column(DataType.BOOLEAN)
-  seed: boolean;
+  seed!: boolean;
 
   /**
    * If true, the asset is cleaned up regularly
@@ -63,20 +63,20 @@ export class Asset extends Model {
   @Index({ name: 'UniqueAssetWithNullGroupId', unique: true })
   @Index({ name: 'UniqueAssetWithGroupId', unique: true })
   @Column(DataType.BOOLEAN)
-  ephemeral: boolean;
+  ephemeral!: boolean;
 
   @CreatedAt
-  created: Date;
+  created!: Date;
 
   @UpdatedAt
-  updated: Date;
+  updated!: Date;
 
   @DeletedAt
-  deleted: Date;
+  deleted?: Date;
 
   // TODO remove in 0.32.1
   @Column(DataType.BLOB)
-  data: Buffer;
+  data?: Buffer;
 
   @AllowNull(false)
   @ForeignKey(() => App)
@@ -85,46 +85,46 @@ export class Asset extends Model {
   @Index({ name: 'assetAppIdIndex' })
   @Index({ name: 'assetAppIdNameIndex' })
   @Column(DataType.INTEGER)
-  AppId: number;
+  AppId!: number;
 
   @BelongsTo(() => App)
-  App: Awaited<App>;
+  App?: Awaited<App>;
 
   @AllowNull(true)
   @ForeignKey(() => Group)
   @Index({ name: 'UniqueAssetWithGroupId', unique: true })
   @Column(DataType.INTEGER)
-  GroupId: number;
+  GroupId?: number;
 
   @BelongsTo(() => Group, { onDelete: 'CASCADE' })
-  Group: Awaited<Group>;
+  Group?: Awaited<Group>;
 
   @ForeignKey(() => AppMember)
   @Column(DataType.UUID)
-  AppMemberId: string;
+  AppMemberId?: string;
 
   @BelongsTo(() => AppMember, { onDelete: 'CASCADE' })
-  AppMember: Awaited<AppMember>;
+  AppMember?: Awaited<AppMember>;
 
   @ForeignKey(() => Resource)
   @Column(DataType.INTEGER)
-  ResourceId: number;
+  ResourceId?: number;
 
   @BelongsTo(() => Resource, { onDelete: 'CASCADE' })
-  Resource: Awaited<Resource>;
+  Resource?: Awaited<Resource>;
 
   // TODO remove in 0.32.1
   @HasOne(() => Asset, { foreignKey: 'OriginalId', onDelete: 'CASCADE' })
-  Compressed: Awaited<Asset>;
+  Compressed?: Awaited<Asset>;
 
   // TODO remove in 0.32.1
   @ForeignKey(() => Asset)
   @Column(DataType.STRING)
-  OriginalId: string;
+  OriginalId?: string;
 
   // TODO remove in 0.32.1
   @BelongsTo(() => Asset, { onDelete: 'SET NULL' })
-  Original: Awaited<Asset>;
+  Original?: Awaited<Asset>;
 
   @AfterDestroy
   static async afterDestroyHook(instance: Asset, { force }: DestroyOptions): Promise<void> {

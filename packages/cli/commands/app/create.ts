@@ -119,7 +119,7 @@ export async function handler(args: AppArgs): Promise<void> {
         when: (appOptions: AppArgs) => appOptions.security,
       },
       !args.cronJobs && {
-        name: 'cron-jobs',
+        name: 'cronJobs',
         message: 'Would you like to add a cron-job to the definition of the app.',
         type: 'confirm',
         default: false,
@@ -138,7 +138,7 @@ export async function handler(args: AppArgs): Promise<void> {
   const languages = answers.languages || args.languages;
   const resource = answers.resource || args.resource;
   const security = answers.security || args.security;
-  const cronJobs = answers['cron-jobs'] || args.cronJobs;
+  const cronJobs = answers.cronJobs || args.cronJobs;
   const { groups } = answers;
 
   // @ts-expect-error 2345 argument of type is not assignable to parameter of type
@@ -150,7 +150,8 @@ export async function handler(args: AppArgs): Promise<void> {
   const appsembleRcPath = join(inputDirectory, '.appsemblerc.yaml');
   const [appsembleRc] = await readData<AppsembleRC>(appsembleRcPath);
   const outputAppsembleRcObject: AppsembleRC = { ...appsembleRc };
-  for (const key of Object.keys(appsembleRc.context)) {
+  outputAppsembleRcObject.context ??= {};
+  for (const key of Object.keys(appsembleRc.context ?? {})) {
     outputAppsembleRcObject.context[key].organization = organization;
   }
   const outputAppsembleRc = parse(stringify(outputAppsembleRcObject));
@@ -220,7 +221,7 @@ export async function handler(args: AppArgs): Promise<void> {
     force: false,
     recursive: true,
   });
-  for (const language of languages) {
+  for (const language of languages ?? []) {
     await writeData(join(outputDirectory, 'i18n', `${language}.json`), {});
   }
   await writeData(join(outputDirectory, '.appsemblerc.yaml'), outputAppsembleRc);

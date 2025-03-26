@@ -19,6 +19,6 @@ export async function processCss(path: string): Promise<string> {
   postCss.use(postcssUrl({ url: 'inline' }));
   postCss.use(postcssImport({ plugins: postCss.plugins }));
 
-  const { css } = await postCss.process(data, { from: path, to: null });
+  const { css } = await postCss.process(data, { from: path, to: undefined });
   return css;
 }

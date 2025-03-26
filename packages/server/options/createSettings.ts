@@ -44,7 +44,7 @@ export async function createSettings({
     },
   });
 
-  const persistedApp = await App.findOne({
+  const persistedApp = (await App.findOne({
     attributes: [
       'id',
       'icon',
@@ -81,7 +81,7 @@ export async function createSettings({
         model: AppSnapshot,
       },
     ],
-  });
+  }))!;
 
   const { sentryDsn, sentryEnvironment } = getSentryClientSettings(
     hostname,
@@ -101,7 +101,7 @@ export async function createSettings({
           layout,
           actions,
           events,
-          files: BlockAssets.map(({ filename }) => filename),
+          files: (BlockAssets ?? []).map(({ filename }) => filename),
         }),
       ),
       id: persistedApp.id,

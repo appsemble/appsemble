@@ -87,10 +87,10 @@ describe('createBlock', () => {
 
     await authorizeClientCredentials('blocks:write');
     const { status } = await request.post('/api/blocks', formData);
-    const blockVersionMessages = await BlockVersion.findOne({
+    const blockVersionMessages = (await BlockVersion.findOne({
       where: { version: '1.32.9', OrganizationId: 'xkcd', name: 'standing' },
       include: [BlockMessages],
-    });
+    }))!;
 
     expect(status).toBe(201);
     expect(blockVersionMessages.BlockMessages).toMatchObject([

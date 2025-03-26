@@ -21,7 +21,7 @@ describe('verifyUserEmail', () => {
       password: 'password',
       timezone: 'Europe/Amsterdam',
     });
-    const email = await EmailAuthorization.findByPk('test@example.com');
+    const email = (await EmailAuthorization.findByPk('test@example.com'))!;
 
     expect(email.verified).toBe(false);
     expect(email.key).not.toBeNull();

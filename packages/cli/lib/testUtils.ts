@@ -7,6 +7,6 @@ export async function authorizeCLI(scopes: string, testingApp: AxiosTestInstance
   const OAuth2AuthorizationCode = await authorizeClientCredentials(scopes);
   const { id, secret } = OAuth2AuthorizationCode;
   await OAuth2AuthorizationCode.update({ secret: await hash(secret, 10) });
-  await authenticate(testingApp.defaults.baseURL, scopes, `${id}:${secret}`);
+  await authenticate(testingApp.defaults.baseURL!, scopes, `${id}:${secret}`);
   return `${id}:${secret}`;
 }

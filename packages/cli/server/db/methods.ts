@@ -244,7 +244,7 @@ export const Methods = {
       let filtered = mapped;
 
       if (query.where) {
-        filtered = filtered.filter((entity) => checkEntity(entity, query.where));
+        filtered = filtered.filter((entity) => checkEntity(entity, query.where!));
       }
 
       const sorted = filtered;
@@ -276,7 +276,7 @@ export const Methods = {
       let filtered = mapped;
 
       if (query.where) {
-        filtered = filtered.filter((entity) => checkEntity(entity, query.where));
+        filtered = filtered.filter((entity) => checkEntity(entity, query.where!));
       }
 
       const sorted = filtered;

@@ -63,7 +63,7 @@ export async function createApp(ctx: Context): Promise<void> {
 
     handleValidatorResult(
       ctx,
-      openApi.validate(definition, openApi.document.components.schemas.AppDefinition, {
+      openApi!.validate(definition, openApi!.document.components!.schemas!.AppDefinition, {
         throw: false,
       }),
       'App validation failed',
@@ -177,6 +177,7 @@ export async function createApp(ctx: Context): Promise<void> {
     ctx.body = record.toJSON();
     ctx.status = 201;
   } catch (error: unknown) {
+    // @ts-expect-error Messed up
     handleAppValidationError(ctx, error as Error, result);
   }
 }

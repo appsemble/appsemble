@@ -32,62 +32,62 @@ export class User extends Model {
   @IsUUID(4)
   @Default(DataType.UUIDV4)
   @Column(DataType.UUID)
-  id: string;
+  id!: string;
 
   @Column(DataType.STRING)
-  name: string;
+  name?: string;
 
   @ForeignKey(() => EmailAuthorization)
   @Index({ name: 'UniqueUserEmail', unique: true })
   @Column(DataType.STRING)
-  primaryEmail: string;
+  primaryEmail?: string;
 
   @Column(DataType.STRING)
-  password: string;
+  password?: string;
 
   @Column(DataType.STRING)
-  locale: string;
+  locale?: string;
 
   @AllowNull(false)
   @Column(DataType.STRING)
-  timezone: string;
+  timezone!: string;
 
   @AllowNull(false)
   @Default(true)
   @Column(DataType.BOOLEAN)
-  subscribed: boolean;
+  subscribed!: boolean;
 
   @BelongsToMany(() => Organization, () => OrganizationMember)
-  Organizations: Organization[];
+  Organizations!: Organization[];
 
   @HasMany(() => EmailAuthorization)
-  EmailAuthorizations: EmailAuthorization[];
+  EmailAuthorizations!: EmailAuthorization[];
 
   // @HasMany(() => OAuth2AuthorizationCode)
   // OAuth2AuthorizationCodes: OAuth2AuthorizationCode[];
 
   @HasMany(() => OAuthAuthorization)
-  OAuthAuthorizations: OAuthAuthorization[];
+  OAuthAuthorizations!: OAuthAuthorization[];
 
   @HasMany(() => ResetPasswordToken, { onDelete: 'CASCADE' })
-  ResetPasswordTokens: ResetPasswordToken[];
+  ResetPasswordTokens!: ResetPasswordToken[];
 
   @HasMany(() => AppMember)
-  AppMembers: AppMember[];
+  AppMembers!: AppMember[];
 
   @HasMany(() => TrainingCompleted)
-  CompletedTrainings: TrainingCompleted[];
+  CompletedTrainings!: TrainingCompleted[];
 
   @CreatedAt
-  created: Date;
+  created!: Date;
 
   @UpdatedAt
-  updated: Date;
+  updated!: Date;
 
   @DeletedAt
-  deleted: Date;
+  deleted?: Date;
 
-  AppMember: AppMember;
+  AppMember?: AppMember;
 
-  OrganizationMember: OrganizationMember;
+  OrganizationMember?: OrganizationMember;
 }

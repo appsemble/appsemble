@@ -72,7 +72,7 @@ describe('requestAppMemberPasswordReset', () => {
       email: data.email,
     });
 
-    const m = await AppMember.findOne({ where: { email: data.email, AppId: app.id } });
+    const m = (await AppMember.findOne({ where: { email: data.email, AppId: app.id } }))!;
     const responseB = await request.post(`/api/apps/${app.id}/auth/email/reset-password`, {
       token: m.resetKey,
       password: 'newPassword',
@@ -82,7 +82,7 @@ describe('requestAppMemberPasswordReset', () => {
 
     expect(responseA).toMatchInlineSnapshot('HTTP/1.1 204 No Content');
     expect(responseB).toMatchInlineSnapshot('HTTP/1.1 204 No Content');
-    expect(await compare('newPassword', m.password)).toBe(true);
+    expect(await compare('newPassword', m.password!)).toBe(true);
     expect(m.resetKey).toBeNull();
   });
 
@@ -117,27 +117,27 @@ describe('requestAppMemberPasswordReset', () => {
     let memberB = await AppMember.findOne({ where: { email: data.email, AppId: appB.id } });
 
     // Assert resetKey is generated for appA and not for appB
-    expect(memberA.resetKey).not.toBeNull();
-    expect(memberB.resetKey).toBeNull();
+    expect(memberA!.resetKey).not.toBeNull();
+    expect(memberB!.resetKey).toBeNull();
 
     // Reset password for appA
     let responseB = await request.post(`/api/apps/${appA.id}/auth/email/reset-password`, {
-      token: memberA.resetKey,
+      token: memberA!.resetKey,
       password: 'newPasswordA',
     });
 
-    await memberA.reload();
-    await memberB.reload();
+    await memberA!.reload();
+    await memberB!.reload();
 
     // Assert password reset for appA
     expect(responseA).toMatchInlineSnapshot('HTTP/1.1 204 No Content');
     expect(responseB).toMatchInlineSnapshot('HTTP/1.1 204 No Content');
-    expect(await compare('newPasswordA', memberA.password)).toBe(true);
-    expect(memberA.resetKey).toBeNull();
+    expect(await compare('newPasswordA', memberA!.password!)).toBe(true);
+    expect(memberA!.resetKey).toBeNull();
 
     // Assert no changes for appB
-    expect(await compare('password', memberB.password)).toBe(true);
-    expect(memberB.resetKey).toBeNull();
+    expect(await compare('password', memberB!.password!)).toBe(true);
+    expect(memberB!.resetKey).toBeNull();
 
     // We test for both members in the same test to ensure that
     // the order of member creation does not affect the app for which the password is reset
@@ -150,26 +150,26 @@ describe('requestAppMemberPasswordReset', () => {
     memberB = await AppMember.findOne({ where: { email: data.email, AppId: appB.id } });
 
     // Assert resetKey is generated for appB and not for appA
-    expect(memberB.resetKey).not.toBeNull();
-    expect(memberA.resetKey).toBeNull();
+    expect(memberB!.resetKey).not.toBeNull();
+    expect(memberA!.resetKey).toBeNull();
 
     // Reset password for appB
     responseB = await request.post(`/api/apps/${appB.id}/auth/email/reset-password`, {
-      token: memberB.resetKey,
+      token: memberB!.resetKey,
       password: 'newPasswordB',
     });
 
-    await memberA.reload();
-    await memberB.reload();
+    await memberA!.reload();
+    await memberB!.reload();
 
     // Assert password reset for appB
     expect(responseA).toMatchInlineSnapshot('HTTP/1.1 204 No Content');
     expect(responseB).toMatchInlineSnapshot('HTTP/1.1 204 No Content');
-    expect(await compare('newPasswordB', memberB.password)).toBe(true);
-    expect(memberB.resetKey).toBeNull();
+    expect(await compare('newPasswordB', memberB!.password!)).toBe(true);
+    expect(memberB!.resetKey).toBeNull();
 
     // Assert no changes for appA
-    expect(await compare('newPasswordA', memberA.password)).toBe(true);
-    expect(memberA.resetKey).toBeNull();
+    expect(await compare('newPasswordA', memberA!.password!)).toBe(true);
+    expect(memberA!.resetKey).toBeNull();
   });
 });

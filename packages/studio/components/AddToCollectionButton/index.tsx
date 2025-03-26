@@ -83,7 +83,7 @@ export function AddToCollectionButton({ app, className }: AppToCollectionButtonP
       </Button>
       {userInfo ? (
         <ModalCard
-          component={SimpleForm}
+          component={SimpleForm as typeof SimpleForm<typeof defaultValues>}
           defaultValues={defaultValues}
           footer={
             <SimpleModalFooter

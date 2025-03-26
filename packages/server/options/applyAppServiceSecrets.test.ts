@@ -47,6 +47,7 @@ describe('applyAppServiceSecrets', () => {
       vapidPrivateKey: '',
       OrganizationId: 'org',
       definition: {
+        name: 'Test app',
         defaultPage: '',
         roles: ['Visitor', 'Reader', 'Admin'],
         security: {
@@ -130,6 +131,7 @@ describe('applyAppServiceSecrets', () => {
   afterEach(async () => {
     await proxiedRequest.close();
     proxiedBody = undefined;
+    // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
     responseHeaders = undefined;
   });
 
@@ -140,7 +142,7 @@ describe('applyAppServiceSecrets', () => {
       UserId: user.id,
       role: 'Admin',
     });
-    server.context.user = null;
+    server.context.user = undefined;
 
     await AppServiceSecret.create({
       name: 'Test service',
@@ -151,7 +153,7 @@ describe('applyAppServiceSecrets', () => {
       AppId: app.id,
     });
 
-    let outgoingRequestConfig: InternalAxiosRequestConfig;
+    let outgoingRequestConfig: InternalAxiosRequestConfig | undefined;
 
     const interceptor = axios.interceptors.request.use((config) => {
       outgoingRequestConfig = config;
@@ -162,9 +164,9 @@ describe('applyAppServiceSecrets', () => {
 
     axios.interceptors.request.eject(interceptor);
 
-    expect(outgoingRequestConfig.headers.Authorization).toBeUndefined();
-    expect(outgoingRequestConfig.httpsAgent).toBeUndefined();
-    expect(outgoingRequestConfig.params).toBeUndefined();
+    expect(outgoingRequestConfig?.headers.Authorization).toBeUndefined();
+    expect(outgoingRequestConfig?.httpsAgent).toBeUndefined();
+    expect(outgoingRequestConfig?.params).toBeUndefined();
 
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 418 I'm a teapot
@@ -178,7 +180,7 @@ describe('applyAppServiceSecrets', () => {
     expect({ ...proxiedContext.headers }).toMatchObject({
       accept: 'application/json, text/plain, */*',
       'accept-encoding': 'gzip, compress, deflate, br',
-      host: new URL(proxiedRequest.defaults.baseURL).host,
+      host: new URL(proxiedRequest.defaults.baseURL!).host,
       'user-agent': `AppsembleServer/${version}`,
     });
   });
@@ -201,7 +203,7 @@ describe('applyAppServiceSecrets', () => {
       AppId: app.id,
     });
 
-    let outgoingRequestConfig: InternalAxiosRequestConfig;
+    let outgoingRequestConfig: InternalAxiosRequestConfig | undefined;
 
     const interceptor = axios.interceptors.request.use((config) => {
       outgoingRequestConfig = config;
@@ -212,9 +214,9 @@ describe('applyAppServiceSecrets', () => {
 
     axios.interceptors.request.eject(interceptor);
 
-    expect(outgoingRequestConfig.headers.Authorization).toBeUndefined();
-    expect(outgoingRequestConfig.httpsAgent).toBeUndefined();
-    expect(outgoingRequestConfig.params).toBeUndefined();
+    expect(outgoingRequestConfig?.headers.Authorization).toBeUndefined();
+    expect(outgoingRequestConfig?.httpsAgent).toBeUndefined();
+    expect(outgoingRequestConfig?.params).toBeUndefined();
 
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 418 I'm a teapot
@@ -228,7 +230,7 @@ describe('applyAppServiceSecrets', () => {
     expect({ ...proxiedContext.headers }).toMatchObject({
       accept: 'application/json, text/plain, */*',
       'accept-encoding': 'gzip, compress, deflate, br',
-      host: new URL(proxiedRequest.defaults.baseURL).host,
+      host: new URL(proxiedRequest.defaults.baseURL!).host,
       'user-agent': `AppsembleServer/${version}`,
     });
   });
@@ -241,6 +243,7 @@ describe('applyAppServiceSecrets', () => {
       vapidPrivateKey: '',
       OrganizationId: 'org',
       definition: {
+        name: 'Test App',
         defaultPage: '',
         pages: [
           {
@@ -276,7 +279,7 @@ describe('applyAppServiceSecrets', () => {
       AppId: appWithoutSecurity.id,
     });
 
-    let outgoingRequestConfig: InternalAxiosRequestConfig;
+    let outgoingRequestConfig: InternalAxiosRequestConfig | undefined;
 
     const interceptor = axios.interceptors.request.use((config) => {
       outgoingRequestConfig = config;
@@ -289,9 +292,9 @@ describe('applyAppServiceSecrets', () => {
 
     axios.interceptors.request.eject(interceptor);
 
-    expect(outgoingRequestConfig.headers.Authorization).toBeUndefined();
-    expect(outgoingRequestConfig.httpsAgent).toBeUndefined();
-    expect(outgoingRequestConfig.params).toBeUndefined();
+    expect(outgoingRequestConfig?.headers.Authorization).toBeUndefined();
+    expect(outgoingRequestConfig?.httpsAgent).toBeUndefined();
+    expect(outgoingRequestConfig?.params).toBeUndefined();
 
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 418 I'm a teapot
@@ -305,7 +308,7 @@ describe('applyAppServiceSecrets', () => {
     expect({ ...proxiedContext.headers }).toMatchObject({
       accept: 'application/json, text/plain, */*',
       'accept-encoding': 'gzip, compress, deflate, br',
-      host: new URL(proxiedRequest.defaults.baseURL).host,
+      host: new URL(proxiedRequest.defaults.baseURL!).host,
       'user-agent': `AppsembleServer/${version}`,
     });
   });
@@ -318,6 +321,7 @@ describe('applyAppServiceSecrets', () => {
       vapidPrivateKey: '',
       OrganizationId: 'org',
       definition: {
+        name: 'Test App',
         defaultPage: '',
         pages: [
           {
@@ -354,7 +358,7 @@ describe('applyAppServiceSecrets', () => {
       AppId: appWithoutSecurity.id,
     });
 
-    let outgoingRequestConfig: InternalAxiosRequestConfig;
+    let outgoingRequestConfig: InternalAxiosRequestConfig | undefined;
 
     const interceptor = axios.interceptors.request.use((config) => {
       outgoingRequestConfig = config;
@@ -367,11 +371,11 @@ describe('applyAppServiceSecrets', () => {
 
     axios.interceptors.request.eject(interceptor);
 
-    expect(outgoingRequestConfig.headers.Authorization).toBe(
+    expect(outgoingRequestConfig?.headers.Authorization).toBe(
       'Basic am9obl9kb2U6U3Ryb25nX1Bhc3N3b3JkLTEyMw==',
     );
-    expect(outgoingRequestConfig.httpsAgent).toBeUndefined();
-    expect(outgoingRequestConfig.params).toBeUndefined();
+    expect(outgoingRequestConfig?.httpsAgent).toBeUndefined();
+    expect(outgoingRequestConfig?.params).toBeUndefined();
 
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 418 I'm a teapot
@@ -385,7 +389,7 @@ describe('applyAppServiceSecrets', () => {
     expect({ ...proxiedContext.headers }).toMatchObject({
       accept: 'application/json, text/plain, */*',
       'accept-encoding': 'gzip, compress, deflate, br',
-      host: new URL(proxiedRequest.defaults.baseURL).host,
+      host: new URL(proxiedRequest.defaults.baseURL!).host,
       'user-agent': `AppsembleServer/${version}`,
     });
   });
@@ -408,7 +412,7 @@ describe('applyAppServiceSecrets', () => {
       AppId: app.id,
     });
 
-    let outgoingRequestConfig: InternalAxiosRequestConfig;
+    let outgoingRequestConfig: InternalAxiosRequestConfig | undefined;
 
     const interceptor = axios.interceptors.request.use((config) => {
       outgoingRequestConfig = config;
@@ -419,11 +423,11 @@ describe('applyAppServiceSecrets', () => {
 
     axios.interceptors.request.eject(interceptor);
 
-    expect(outgoingRequestConfig.headers.Authorization).toBe(
+    expect(outgoingRequestConfig?.headers.Authorization).toBe(
       'Basic am9obl9kb2U6U3Ryb25nX1Bhc3N3b3JkLTEyMw==',
     );
-    expect(outgoingRequestConfig.httpsAgent).toBeUndefined();
-    expect(outgoingRequestConfig.params).toBeUndefined();
+    expect(outgoingRequestConfig?.httpsAgent).toBeUndefined();
+    expect(outgoingRequestConfig?.params).toBeUndefined();
 
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 418 I'm a teapot
@@ -437,7 +441,7 @@ describe('applyAppServiceSecrets', () => {
     expect({ ...proxiedContext.headers }).toMatchObject({
       accept: 'application/json, text/plain, */*',
       'accept-encoding': 'gzip, compress, deflate, br',
-      host: new URL(proxiedRequest.defaults.baseURL).host,
+      host: new URL(proxiedRequest.defaults.baseURL!).host,
       'user-agent': `AppsembleServer/${version}`,
     });
   });
@@ -469,7 +473,7 @@ describe('applyAppServiceSecrets', () => {
       AppId: app.id,
     });
 
-    let outgoingRequestConfig: InternalAxiosRequestConfig;
+    let outgoingRequestConfig: InternalAxiosRequestConfig | undefined;
 
     const interceptor = axios.interceptors.request.use((config) => {
       outgoingRequestConfig = config;
@@ -480,11 +484,11 @@ describe('applyAppServiceSecrets', () => {
 
     axios.interceptors.request.eject(interceptor);
 
-    expect(outgoingRequestConfig.headers.Authorization).toBe(
+    expect(outgoingRequestConfig?.headers.Authorization).toBe(
       'Basic am9obl9kb2U6U3Ryb25nX1Bhc3N3b3JkLTEyMw==',
     );
-    expect(outgoingRequestConfig.httpsAgent).toBeUndefined();
-    expect(outgoingRequestConfig.params).toBeUndefined();
+    expect(outgoingRequestConfig?.httpsAgent).toBeUndefined();
+    expect(outgoingRequestConfig?.params).toBeUndefined();
 
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 418 I'm a teapot
@@ -498,7 +502,7 @@ describe('applyAppServiceSecrets', () => {
     expect({ ...proxiedContext.headers }).toMatchObject({
       accept: 'application/json, text/plain, */*',
       'accept-encoding': 'gzip, compress, deflate, br',
-      host: new URL(proxiedRequest.defaults.baseURL).host,
+      host: new URL(proxiedRequest.defaults.baseURL!).host,
       'user-agent': `AppsembleServer/${version}`,
     });
   });
@@ -525,7 +529,7 @@ describe('applyAppServiceSecrets', () => {
       AppId: app.id,
     });
 
-    let outgoingRequestConfig: InternalAxiosRequestConfig;
+    let outgoingRequestConfig: InternalAxiosRequestConfig | undefined;
 
     const interceptor = axios.interceptors.request.use((config) => {
       outgoingRequestConfig = config;
@@ -536,20 +540,20 @@ describe('applyAppServiceSecrets', () => {
 
     axios.interceptors.request.eject(interceptor);
 
-    expect(outgoingRequestConfig.headers.Authorization).toBeUndefined();
-    expect(outgoingRequestConfig.httpsAgent).toHaveProperty(
+    expect(outgoingRequestConfig?.headers.Authorization).toBeUndefined();
+    expect(outgoingRequestConfig?.httpsAgent).toHaveProperty(
       ['options', 'cert'],
       '-----BEGIN CERTIFICATE-----\nTEST\n-----END CERTIFICATE-----',
     );
-    expect(outgoingRequestConfig.httpsAgent).toHaveProperty(
+    expect(outgoingRequestConfig?.httpsAgent).toHaveProperty(
       ['options', 'key'],
       '-----BEGIN PRIVATE KEY-----\nTEST\n-----END PRIVATE KEY-----',
     );
-    expect(outgoingRequestConfig.httpsAgent).toHaveProperty(
+    expect(outgoingRequestConfig?.httpsAgent).toHaveProperty(
       ['options', 'ca'],
       '-----BEGIN CERTIFICATE-----\nTEST\n-----END CERTIFICATE-----\n-----BEGIN CERTIFICATE-----\nTEST\n-----END CERTIFICATE-----',
     );
-    expect(outgoingRequestConfig.params).toBeUndefined();
+    expect(outgoingRequestConfig?.params).toBeUndefined();
 
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 418 I'm a teapot
@@ -563,7 +567,7 @@ describe('applyAppServiceSecrets', () => {
     expect({ ...proxiedContext.headers }).toMatchObject({
       accept: 'application/json, text/plain, */*',
       'accept-encoding': 'gzip, compress, deflate, br',
-      host: new URL(proxiedRequest.defaults.baseURL).host,
+      host: new URL(proxiedRequest.defaults.baseURL!).host,
       'user-agent': `AppsembleServer/${version}`,
     });
   });
@@ -600,7 +604,7 @@ describe('applyAppServiceSecrets', () => {
       AppId: app.id,
     });
 
-    let outgoingRequestConfig: InternalAxiosRequestConfig;
+    let outgoingRequestConfig: InternalAxiosRequestConfig | undefined;
 
     const interceptor = axios.interceptors.request.use((config) => {
       outgoingRequestConfig = config;
@@ -611,16 +615,16 @@ describe('applyAppServiceSecrets', () => {
 
     axios.interceptors.request.eject(interceptor);
 
-    expect(outgoingRequestConfig.headers.Authorization).toBeUndefined();
-    expect(outgoingRequestConfig.httpsAgent).toHaveProperty(
+    expect(outgoingRequestConfig?.headers.Authorization).toBeUndefined();
+    expect(outgoingRequestConfig?.httpsAgent).toHaveProperty(
       ['options', 'cert'],
       '-----BEGIN CERTIFICATE-----\nTEST\n-----END CERTIFICATE-----',
     );
-    expect(outgoingRequestConfig.httpsAgent).toHaveProperty(
+    expect(outgoingRequestConfig?.httpsAgent).toHaveProperty(
       ['options', 'key'],
       '-----BEGIN PRIVATE KEY-----\nTEST\n-----END PRIVATE KEY-----',
     );
-    expect(outgoingRequestConfig.params).toBeUndefined();
+    expect(outgoingRequestConfig?.params).toBeUndefined();
 
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 418 I'm a teapot
@@ -634,7 +638,7 @@ describe('applyAppServiceSecrets', () => {
     expect({ ...proxiedContext.headers }).toMatchObject({
       accept: 'application/json, text/plain, */*',
       'accept-encoding': 'gzip, compress, deflate, br',
-      host: new URL(proxiedRequest.defaults.baseURL).host,
+      host: new URL(proxiedRequest.defaults.baseURL!).host,
       'user-agent': `AppsembleServer/${version}`,
     });
   });
@@ -662,7 +666,7 @@ describe('applyAppServiceSecrets', () => {
       AppId: app.id,
     });
 
-    let outgoingRequestConfig: InternalAxiosRequestConfig;
+    let outgoingRequestConfig: InternalAxiosRequestConfig | undefined;
 
     const mock = new MockAdapter(axios);
 
@@ -687,9 +691,9 @@ describe('applyAppServiceSecrets', () => {
     axios.interceptors.request.eject(requestInterceptor);
     axios.interceptors.request.eject(responseInterceptor);
 
-    expect(outgoingRequestConfig.headers.Authorization).toBe('Bearer abcd');
-    expect(outgoingRequestConfig.httpsAgent).toBeUndefined();
-    expect(outgoingRequestConfig.params).toBeUndefined();
+    expect(outgoingRequestConfig?.headers.Authorization).toBe('Bearer abcd');
+    expect(outgoingRequestConfig?.httpsAgent).toBeUndefined();
+    expect(outgoingRequestConfig?.params).toBeUndefined();
 
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 418 I'm a teapot
@@ -703,7 +707,7 @@ describe('applyAppServiceSecrets', () => {
     expect({ ...proxiedContext.headers }).toMatchObject({
       accept: 'application/json, text/plain, */*',
       'accept-encoding': 'gzip, compress, deflate, br',
-      host: new URL(proxiedRequest.defaults.baseURL).host,
+      host: new URL(proxiedRequest.defaults.baseURL!).host,
       'user-agent': `AppsembleServer/${version}`,
     });
   });
@@ -738,7 +742,7 @@ describe('applyAppServiceSecrets', () => {
       AppId: app.id,
     });
 
-    let outgoingRequestConfig: InternalAxiosRequestConfig;
+    let outgoingRequestConfig: InternalAxiosRequestConfig | undefined;
 
     const interceptor = axios.interceptors.request.use((config) => {
       outgoingRequestConfig = config;
@@ -749,11 +753,11 @@ describe('applyAppServiceSecrets', () => {
 
     axios.interceptors.request.eject(interceptor);
 
-    expect(outgoingRequestConfig.headers.Authorization).toBe(
+    expect(outgoingRequestConfig?.headers.Authorization).toBe(
       'Basic am9obl9kb2U6U3Ryb25nX1Bhc3N3b3JkLTEyMw==',
     );
-    expect(outgoingRequestConfig.httpsAgent).toBeUndefined();
-    expect(outgoingRequestConfig.params).toBeUndefined();
+    expect(outgoingRequestConfig?.httpsAgent).toBeUndefined();
+    expect(outgoingRequestConfig?.params).toBeUndefined();
 
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 418 I'm a teapot
@@ -767,7 +771,7 @@ describe('applyAppServiceSecrets', () => {
     expect({ ...proxiedContext.headers }).toMatchObject({
       accept: 'application/json, text/plain, */*',
       'accept-encoding': 'gzip, compress, deflate, br',
-      host: new URL(proxiedRequest.defaults.baseURL).host,
+      host: new URL(proxiedRequest.defaults.baseURL!).host,
       'user-agent': `AppsembleServer/${version}`,
     });
   });
@@ -790,7 +794,7 @@ describe('applyAppServiceSecrets', () => {
       AppId: app.id,
     });
 
-    let outgoingRequestConfig: InternalAxiosRequestConfig;
+    let outgoingRequestConfig: InternalAxiosRequestConfig | undefined;
 
     const interceptor = axios.interceptors.request.use((config) => {
       outgoingRequestConfig = config;
@@ -801,9 +805,9 @@ describe('applyAppServiceSecrets', () => {
 
     axios.interceptors.request.eject(interceptor);
 
-    expect(outgoingRequestConfig.headers['Set-Cookie']).toBe('cookie=secret;');
-    expect(outgoingRequestConfig.httpsAgent).toBeUndefined();
-    expect(outgoingRequestConfig.params).toBeUndefined();
+    expect(outgoingRequestConfig?.headers['Set-Cookie']).toBe('cookie=secret;');
+    expect(outgoingRequestConfig?.httpsAgent).toBeUndefined();
+    expect(outgoingRequestConfig?.params).toBeUndefined();
 
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 418 I'm a teapot
@@ -817,7 +821,7 @@ describe('applyAppServiceSecrets', () => {
     expect({ ...proxiedContext.headers }).toMatchObject({
       accept: 'application/json, text/plain, */*',
       'accept-encoding': 'gzip, compress, deflate, br',
-      host: new URL(proxiedRequest.defaults.baseURL).host,
+      host: new URL(proxiedRequest.defaults.baseURL!).host,
       'user-agent': `AppsembleServer/${version}`,
     });
   });
@@ -848,7 +852,7 @@ describe('applyAppServiceSecrets', () => {
       AppId: app.id,
     });
 
-    let outgoingRequestConfig: InternalAxiosRequestConfig;
+    let outgoingRequestConfig: InternalAxiosRequestConfig | undefined;
 
     const interceptor = axios.interceptors.request.use((config) => {
       outgoingRequestConfig = config;
@@ -859,11 +863,11 @@ describe('applyAppServiceSecrets', () => {
 
     axios.interceptors.request.eject(interceptor);
 
-    expect(outgoingRequestConfig.headers['Set-Cookie']).toBe(
+    expect(outgoingRequestConfig?.headers['Set-Cookie']).toBe(
       'cookie=secret; another-cookie=another-secret;',
     );
-    expect(outgoingRequestConfig.httpsAgent).toBeUndefined();
-    expect(outgoingRequestConfig.params).toBeUndefined();
+    expect(outgoingRequestConfig?.httpsAgent).toBeUndefined();
+    expect(outgoingRequestConfig?.params).toBeUndefined();
 
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 418 I'm a teapot
@@ -877,7 +881,7 @@ describe('applyAppServiceSecrets', () => {
     expect({ ...proxiedContext.headers }).toMatchObject({
       accept: 'application/json, text/plain, */*',
       'accept-encoding': 'gzip, compress, deflate, br',
-      host: new URL(proxiedRequest.defaults.baseURL).host,
+      host: new URL(proxiedRequest.defaults.baseURL!).host,
       'user-agent': `AppsembleServer/${version}`,
     });
   });
@@ -900,7 +904,7 @@ describe('applyAppServiceSecrets', () => {
       AppId: app.id,
     });
 
-    let outgoingRequestConfig: InternalAxiosRequestConfig;
+    let outgoingRequestConfig: InternalAxiosRequestConfig | undefined;
 
     const interceptor = axios.interceptors.request.use((config) => {
       outgoingRequestConfig = config;
@@ -911,9 +915,9 @@ describe('applyAppServiceSecrets', () => {
 
     axios.interceptors.request.eject(interceptor);
 
-    expect(outgoingRequestConfig.headers['custom-header']).toBe('secret');
-    expect(outgoingRequestConfig.httpsAgent).toBeUndefined();
-    expect(outgoingRequestConfig.params).toBeUndefined();
+    expect(outgoingRequestConfig?.headers['custom-header']).toBe('secret');
+    expect(outgoingRequestConfig?.httpsAgent).toBeUndefined();
+    expect(outgoingRequestConfig?.params).toBeUndefined();
 
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 418 I'm a teapot
@@ -927,7 +931,7 @@ describe('applyAppServiceSecrets', () => {
     expect({ ...proxiedContext.headers }).toMatchObject({
       accept: 'application/json, text/plain, */*',
       'accept-encoding': 'gzip, compress, deflate, br',
-      host: new URL(proxiedRequest.defaults.baseURL).host,
+      host: new URL(proxiedRequest.defaults.baseURL!).host,
       'user-agent': `AppsembleServer/${version}`,
     });
   });
@@ -958,7 +962,7 @@ describe('applyAppServiceSecrets', () => {
       AppId: app.id,
     });
 
-    let outgoingRequestConfig: InternalAxiosRequestConfig;
+    let outgoingRequestConfig: InternalAxiosRequestConfig | undefined;
 
     const interceptor = axios.interceptors.request.use((config) => {
       outgoingRequestConfig = config;
@@ -969,11 +973,11 @@ describe('applyAppServiceSecrets', () => {
 
     axios.interceptors.request.eject(interceptor);
 
-    expect(outgoingRequestConfig.headers.Authorization).toBe(
+    expect(outgoingRequestConfig?.headers.Authorization).toBe(
       'Basic am9obl9kb2U6U3Ryb25nX1Bhc3N3b3JkLTEyMw==',
     );
-    expect(outgoingRequestConfig.httpsAgent).toBeUndefined();
-    expect(outgoingRequestConfig.params).toBeUndefined();
+    expect(outgoingRequestConfig?.httpsAgent).toBeUndefined();
+    expect(outgoingRequestConfig?.params).toBeUndefined();
 
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 418 I'm a teapot
@@ -987,7 +991,7 @@ describe('applyAppServiceSecrets', () => {
     expect({ ...proxiedContext.headers }).toMatchObject({
       accept: 'application/json, text/plain, */*',
       'accept-encoding': 'gzip, compress, deflate, br',
-      host: new URL(proxiedRequest.defaults.baseURL).host,
+      host: new URL(proxiedRequest.defaults.baseURL!).host,
       'user-agent': `AppsembleServer/${version}`,
     });
   });
@@ -1010,7 +1014,7 @@ describe('applyAppServiceSecrets', () => {
       AppId: app.id,
     });
 
-    let outgoingRequestConfig: InternalAxiosRequestConfig;
+    let outgoingRequestConfig: InternalAxiosRequestConfig | undefined;
 
     const interceptor = axios.interceptors.request.use((config) => {
       outgoingRequestConfig = config;
@@ -1021,9 +1025,9 @@ describe('applyAppServiceSecrets', () => {
 
     axios.interceptors.request.eject(interceptor);
 
-    expect(outgoingRequestConfig.headers.Authorization).toBeUndefined();
-    expect(outgoingRequestConfig.httpsAgent).toBeUndefined();
-    expect(outgoingRequestConfig.params).toStrictEqual({
+    expect(outgoingRequestConfig?.headers.Authorization).toBeUndefined();
+    expect(outgoingRequestConfig?.httpsAgent).toBeUndefined();
+    expect(outgoingRequestConfig?.params).toStrictEqual({
       authKey: 'key',
     });
 
@@ -1039,7 +1043,7 @@ describe('applyAppServiceSecrets', () => {
     expect({ ...proxiedContext.headers }).toMatchObject({
       accept: 'application/json, text/plain, */*',
       'accept-encoding': 'gzip, compress, deflate, br',
-      host: new URL(proxiedRequest.defaults.baseURL).host,
+      host: new URL(proxiedRequest.defaults.baseURL!).host,
       'user-agent': `AppsembleServer/${version}`,
     });
   });
@@ -1070,7 +1074,7 @@ describe('applyAppServiceSecrets', () => {
       AppId: app.id,
     });
 
-    let outgoingRequestConfig: InternalAxiosRequestConfig;
+    let outgoingRequestConfig: InternalAxiosRequestConfig | undefined;
 
     const interceptor = axios.interceptors.request.use((config) => {
       outgoingRequestConfig = config;
@@ -1081,9 +1085,9 @@ describe('applyAppServiceSecrets', () => {
 
     axios.interceptors.request.eject(interceptor);
 
-    expect(outgoingRequestConfig.headers.Authorization).toBeUndefined();
-    expect(outgoingRequestConfig.httpsAgent).toBeUndefined();
-    expect(outgoingRequestConfig.params).toStrictEqual({
+    expect(outgoingRequestConfig?.headers.Authorization).toBeUndefined();
+    expect(outgoingRequestConfig?.httpsAgent).toBeUndefined();
+    expect(outgoingRequestConfig?.params).toStrictEqual({
       authKey: 'key',
       anotherOne: 'w',
     });
@@ -1100,7 +1104,7 @@ describe('applyAppServiceSecrets', () => {
     expect({ ...proxiedContext.headers }).toMatchObject({
       accept: 'application/json, text/plain, */*',
       'accept-encoding': 'gzip, compress, deflate, br',
-      host: new URL(proxiedRequest.defaults.baseURL).host,
+      host: new URL(proxiedRequest.defaults.baseURL!).host,
       'user-agent': `AppsembleServer/${version}`,
     });
   });
@@ -1142,7 +1146,7 @@ describe('applyAppServiceSecrets', () => {
       AppId: app.id,
     });
 
-    let outgoingRequestConfig: InternalAxiosRequestConfig;
+    let outgoingRequestConfig: InternalAxiosRequestConfig | undefined;
 
     const interceptor = axios.interceptors.request.use((config) => {
       outgoingRequestConfig = config;
@@ -1153,18 +1157,18 @@ describe('applyAppServiceSecrets', () => {
 
     axios.interceptors.request.eject(interceptor);
 
-    expect(outgoingRequestConfig.headers.Authorization).toBe(
+    expect(outgoingRequestConfig?.headers.Authorization).toBe(
       'Basic am9obl9kb2U6U3Ryb25nX1Bhc3N3b3JkLTEyMw==',
     );
-    expect(outgoingRequestConfig.httpsAgent).toHaveProperty(
+    expect(outgoingRequestConfig?.httpsAgent).toHaveProperty(
       ['options', 'cert'],
       '-----BEGIN CERTIFICATE-----\nTEST\n-----END CERTIFICATE-----',
     );
-    expect(outgoingRequestConfig.httpsAgent).toHaveProperty(
+    expect(outgoingRequestConfig?.httpsAgent).toHaveProperty(
       ['options', 'key'],
       '-----BEGIN PRIVATE KEY-----\nTEST\n-----END PRIVATE KEY-----',
     );
-    expect(outgoingRequestConfig.params).toStrictEqual({
+    expect(outgoingRequestConfig?.params).toStrictEqual({
       authKey: 'key',
     });
 
@@ -1180,7 +1184,7 @@ describe('applyAppServiceSecrets', () => {
     expect({ ...proxiedContext.headers }).toMatchObject({
       accept: 'application/json, text/plain, */*',
       'accept-encoding': 'gzip, compress, deflate, br',
-      host: new URL(proxiedRequest.defaults.baseURL).host,
+      host: new URL(proxiedRequest.defaults.baseURL!).host,
       'user-agent': `AppsembleServer/${version}`,
     });
   });

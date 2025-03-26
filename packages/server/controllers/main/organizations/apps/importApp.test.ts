@@ -181,7 +181,7 @@ describe('importApp', () => {
       );
     }
 
-    const asset = await Asset.findOne({ where: { AppId: 1 } });
+    const asset = (await Asset.findOne({ where: { AppId: 1 } }))!;
 
     expect(await getS3FileBuffer(`app-${1}`, asset.id)).toStrictEqual(
       await readFixture('10x50.png'),
@@ -242,26 +242,26 @@ describe('importApp', () => {
       language: 'unspecified',
     });
 
-    const enReadme = await AppReadme.findOne({
+    const enReadme = (await AppReadme.findOne({
       attributes: ['AppId', 'file', 'language'],
       where: {
         AppId: 1,
         language: 'en',
       },
-    });
+    }))!;
     expect(enReadme.toJSON()).toStrictEqual({
       AppId: 1,
       file: Buffer.from('English'),
       language: 'en',
     });
 
-    const nlReadme = await AppReadme.findOne({
+    const nlReadme = (await AppReadme.findOne({
       attributes: ['AppId', 'file', 'language'],
       where: {
         AppId: 1,
         language: 'nl',
       },
-    });
+    }))!;
     expect(nlReadme.toJSON()).toStrictEqual({
       AppId: 1,
       file: Buffer.from('Dutch'),

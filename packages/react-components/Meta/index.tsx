@@ -94,7 +94,7 @@ export function MetaProvider({ children, description, title }: MetaProviderProps
     }
     const descriptions = breadcrumbs.map((breadcrumb) => breadcrumb?.description).filter(Boolean);
     descriptionNode.current.content = descriptions.length
-      ? descriptions.at(-1)
+      ? descriptions.at(-1)!
       : typeof description === 'string'
         ? description
         : formatMessage(description);
@@ -135,14 +135,14 @@ export function useMeta(title: Text, description?: Text): void {
   const url = String(pathname + '/..'.repeat(segmentCount > 0 ? segmentCount - depth : 0)).slice(4);
 
   useEffect(() => {
-    const formatMaybe = (string: Text): string =>
+    const formatMaybe = (string?: Text): string | undefined =>
       string ? (typeof string === 'string' ? string : formatMessage(string)) : undefined;
 
     setMeta(depth, {
       // eslint-disable-next-line @typescript-eslint/prefer-ts-expect-error
       // @ts-ignore 2322 null is not assignable to type (strictNullChecks)
       description: formatMaybe(description),
-      title: formatMaybe(title),
+      title: formatMaybe(title)!,
       url,
     });
 

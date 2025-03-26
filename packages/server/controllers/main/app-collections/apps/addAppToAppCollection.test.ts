@@ -94,7 +94,7 @@ describe('addAppToAppCollection', () => {
       include: [{ model: AppCollectionApp, include: [{ model: App }] }],
     });
     expect(collection).not.toBeNull();
-    expect(collection?.Apps.map((app) => app.App.path)).toStrictEqual(
+    expect(collection?.Apps.map((app) => app.App!.path)).toStrictEqual(
       expect.arrayContaining(['fun-and-productivity-app']),
     );
   });

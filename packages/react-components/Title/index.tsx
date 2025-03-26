@@ -41,7 +41,7 @@ export function Title({
   level = (size - 2) as TitleProps['size'],
   ...props
 }: TitleProps): ReactNode {
-  const ref = useRef<HTMLHeadingElement>();
+  const ref = useRef<HTMLHeadingElement>(null);
 
   useScrollTo(ref);
 

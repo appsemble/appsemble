@@ -13,7 +13,7 @@ export async function patchCurrentUser(ctx: Context): Promise<void> {
     user: authSubject,
   } = ctx;
 
-  const user = await User.findByPk(authSubject.id, { include: [EmailAuthorization] });
+  const user = await User.findByPk(authSubject!.id, { include: [EmailAuthorization] });
 
   const result: Partial<User> = {};
 
@@ -40,5 +40,5 @@ export async function patchCurrentUser(ctx: Context): Promise<void> {
   }
 
   await user.update({ primaryEmail: email, name, locale, timezone, subscribed });
-  ctx.body = await getUserInfoById(authSubject.id);
+  ctx.body = await getUserInfoById(authSubject!.id);
 }

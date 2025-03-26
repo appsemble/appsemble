@@ -8,19 +8,19 @@ export const dialog: ActionCreator<'dialog'> = ({
 }) => [
   (data) =>
     new Promise((resolve, reject) => {
-      const close = showDialog({
+      const close = showDialog?.({
         actionCreators: {
           'dialog.error': () => [
             (error) => {
               reject(error);
-              close();
+              close?.();
               return error;
             },
           ],
           'dialog.ok': () => [
             (result) => {
               resolve(result);
-              close();
+              close?.();
               return result;
             },
           ],
@@ -29,7 +29,7 @@ export const dialog: ActionCreator<'dialog'> = ({
         closable,
         data,
         close() {
-          close();
+          close?.();
           reject(new Error('closed'));
         },
         fullscreen,

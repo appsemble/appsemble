@@ -39,23 +39,31 @@ export async function buildBlock(
   const conf = await getProjectWebpackConfig(
     buildConfig,
     env || 'production',
+    // @ts-expect-error 2345 argument of type is not assignable to parameter of type
+    // (strictNullChecks)
     join(buildConfig.dir, buildConfig.output),
   );
 
-  if (existsSync(conf.output.path)) {
-    logger.warn(`Removing ${conf.output.path}`);
-    await rm(conf.output.path, { force: true, recursive: true });
+  // @ts-expect-error 2345 argument of type is not assignable to parameter of type
+  // (strictNullChecks)
+  if (existsSync(conf.output?.path)) {
+    logger.warn(`Removing ${conf.output?.path}`);
+    // @ts-expect-error 2345 argument of type is not assignable to parameter of type
+    // (strictNullChecks)
+    await rm(conf.output?.path, { force: true, recursive: true });
   }
   logger.info(`Building ${buildConfig.name}@${buildConfig.version} 🔨`);
   const compiler = webpack(conf);
   return new Promise((resolve, reject) => {
-    const callback = (err: Error | null, stats: Stats): void => {
+    const callback = (err: Error | null, stats: Stats | undefined): void => {
       if (err) {
         reject(err);
-      } else if (stats.hasErrors()) {
+      } else if (stats?.hasErrors()) {
         reject(new AppsembleError(stats.toString({ colors: true })));
       } else {
-        logger.verbose(stats.toString({ colors: true }));
+        logger.verbose(stats?.toString({ colors: true }));
+        // @ts-expect-error 2345 argument of type is not assignable to parameter of type
+        // (strictNullChecks)
         resolve(stats);
       }
     };

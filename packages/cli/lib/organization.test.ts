@@ -25,7 +25,7 @@ describe('organization', () => {
     vi.setSystemTime(0);
     const server = await createServer();
     testApp = await setTestApp(server);
-    initAxios({ remote: testApp.defaults.baseURL });
+    initAxios({ remote: testApp.defaults.baseURL! });
     user = await createTestUser();
   });
 

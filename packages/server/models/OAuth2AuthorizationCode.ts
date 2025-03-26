@@ -16,30 +16,30 @@ export class OAuth2AuthorizationCode extends Model {
   @PrimaryKey
   @AllowNull(false)
   @Column(DataType.STRING)
-  code: string;
+  code!: string;
 
   @AllowNull(false)
   @Column(DataType.STRING)
-  redirectUri: string;
+  redirectUri!: string;
 
   @AllowNull(false)
   @Column(DataType.STRING)
-  scope: string;
+  scope!: string;
 
   @AllowNull(false)
   @Column(DataType.DATE)
-  expires: Date;
+  expires!: Date;
 
   @AllowNull(false)
   @ForeignKey(() => AppMember)
   @Column(DataType.UUID)
-  AppMemberId: string;
+  AppMemberId!: string;
 
   @AllowNull(false)
   @ForeignKey(() => App)
   @Column(DataType.INTEGER)
-  AppId: number;
+  AppId!: number;
 
   @BelongsTo(() => App, { onDelete: 'CASCADE' })
-  App: Awaited<App>;
+  App?: Awaited<App>;
 }

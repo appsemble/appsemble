@@ -8,7 +8,7 @@ const dayLength = 24 * hourLength;
 const weekLength = 7 * dayLength;
 
 export function getDuration(duration: number | string): DurationObject {
-  let milliseconds = typeof duration === 'string' ? parseDuration(duration) : duration;
+  let milliseconds = typeof duration === 'string' ? (parseDuration(duration) ?? 0) : duration;
   const weeks = Math.floor(milliseconds / weekLength);
   milliseconds %= weekLength;
   const days = Math.floor(milliseconds / dayLength);

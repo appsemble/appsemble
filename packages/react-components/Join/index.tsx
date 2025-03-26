@@ -22,7 +22,7 @@ export function Join({ children, separator }: JoinProps): ReactNode {
       return child;
     }
     return (
-      <Fragment key={('key' in child && child.key) ?? count}>
+      <Fragment key={('key' in child ? child.key : null) ?? count}>
         {separator}
         {child}
       </Fragment>

@@ -71,7 +71,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
     const handleChange = useCallback(
       (event: ChangeEvent<HTMLInputElement>) => {
         const { currentTarget } = event;
-        onChange(event, type === 'number' ? currentTarget.valueAsNumber : currentTarget.value);
+        onChange?.(event, type === 'number' ? currentTarget.valueAsNumber : currentTarget.value);
       },
       [onChange, type],
     );
@@ -86,7 +86,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
             'is-loading': loading,
           })}
           id={id}
-          list={datalist ? `${id}-dataset` : null}
+          list={datalist ? `${id}-dataset` : undefined}
           name={name}
           onChange={handleChange}
           pattern={pattern instanceof RegExp ? pattern.source : pattern}
@@ -95,7 +95,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
           type={type}
         />
         {datalist ? (
-          <datalist id={datalist ? `${id}-dataset` : null}>
+          <datalist id={datalist ? `${id}-dataset` : undefined}>
             {datalist.map((option) => (
               <option key={option} value={option} />
             ))}

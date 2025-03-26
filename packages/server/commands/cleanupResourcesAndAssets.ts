@@ -133,11 +133,11 @@ export async function handler(): Promise<void> {
 
   const resourcesByApp: Record<string, Resource[]> = {};
   for (const resource of demoResourcesToReseed) {
-    resourcesByApp[resource.App.id] = [...(resourcesByApp[resource.App.id] ?? []), resource];
+    resourcesByApp[resource.App!.id] = [...(resourcesByApp[resource.App!.id] ?? []), resource];
   }
 
   for (const appResources of Object.values(resourcesByApp)) {
-    await reseedResourcesRecursively(appResources[0].App.definition, appResources);
+    await reseedResourcesRecursively(appResources[0].App!.definition, appResources);
   }
 
   logger.info(`Reseeded ${demoResourcesToReseed.length} ephemeral resources into demo apps.`);

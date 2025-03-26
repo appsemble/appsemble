@@ -22,12 +22,12 @@ export function tinyRouter(routes: Route[]): Middleware {
   return (ctx, next) => {
     const { method, path } = ctx;
 
-    let match: RegExpMatchArray;
+    let match: RegExpMatchArray | undefined;
     const result = routes.find(({ route }) => {
       if (typeof route === 'string') {
         return path === route;
       }
-      match = path.match(route);
+      match = path.match(route) ?? undefined;
       return match;
     });
     if (!result) {
@@ -40,7 +40,7 @@ export function tinyRouter(routes: Route[]): Middleware {
       }
       m = 'any';
     }
-    ctx.params = match?.groups ? { ...match.groups } : null;
-    return result[m as HttpMethod](ctx, next);
+    ctx.params = match?.groups ? { ...match.groups } : undefined;
+    return result[m as HttpMethod]?.(ctx, next);
   };
 }

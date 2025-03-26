@@ -57,7 +57,7 @@ export async function stopIdleContainers(interval = 10): Promise<void> {
 
     if (
       deployment.metadata?.namespace !== getContainerNamespace() ||
-      deployment.spec.replicas === 0
+      deployment.spec?.replicas === 0
     ) {
       continue;
     }
@@ -111,7 +111,7 @@ export async function waitForPodReadiness(
   appSelector: string,
   maxWait = 10_000,
 ): Promise<void> {
-  let isReady: boolean;
+  let isReady = false;
   const interval = 500;
   let elapsed = 0;
 

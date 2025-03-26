@@ -44,6 +44,7 @@ describe('actions', () => {
       vapidPrivateKey: '',
       OrganizationId: 'org',
       definition: {
+        name: 'Test App',
         defaultPage: '',
         resources: { testResource: { schema: { type: 'object' } } },
         pages: [
@@ -92,6 +93,7 @@ describe('actions', () => {
         vapidPrivateKey: '',
         OrganizationId: 'org',
         definition: {
+          name: 'Test App',
           defaultPage: '',
           roles: ['Visitor', 'Reader', 'Admin'],
           security: {
@@ -175,6 +177,7 @@ describe('actions', () => {
     afterEach(async () => {
       await proxiedRequest.close();
       proxiedBody = undefined;
+      // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
       responseHeaders = undefined;
     });
 
@@ -215,7 +218,7 @@ describe('actions', () => {
       expect({ ...proxiedContext.headers }).toMatchObject({
         accept: 'application/json, text/plain, */*',
         'accept-encoding': 'gzip, compress, deflate, br',
-        host: new URL(proxiedRequest.defaults.baseURL).host,
+        host: new URL(proxiedRequest.defaults.baseURL!).host,
         'user-agent': `AppsembleServer/${version}`,
       });
       expect(proxiedContext.path).toBe('/');
@@ -257,7 +260,7 @@ describe('actions', () => {
       expect({ ...proxiedContext.headers }).toMatchObject({
         accept: 'application/json, text/plain, */*',
         'accept-encoding': 'gzip, compress, deflate, br',
-        host: new URL(proxiedRequest.defaults.baseURL).host,
+        host: new URL(proxiedRequest.defaults.baseURL!).host,
         'user-agent': `AppsembleServer/${version}`,
         'content-type': 'image/png',
       });
@@ -285,6 +288,7 @@ describe('actions', () => {
         vapidPrivateKey: '',
         OrganizationId: 'org',
         definition: {
+          name: 'Test App',
           defaultPage: '',
           pages: [
             {
@@ -335,6 +339,7 @@ describe('actions', () => {
         vapidPrivateKey: '',
         OrganizationId: 'org',
         definition: {
+          name: 'Test App',
           defaultPage: '',
           pages: [
             {
@@ -458,6 +463,7 @@ describe('actions', () => {
         vapidPrivateKey: '',
         OrganizationId: 'org',
         definition: {
+          name: 'Test App',
           defaultPage: '',
           pages: [
             {

@@ -139,7 +139,7 @@ export function FlowPage({
     async (d: any): Promise<any> => {
       if (pageDefinition.type === 'loop') {
         applyRefs(null, stepRef);
-        const newData = { ...loopData[currentStep], ...d };
+        const newData = { ...loopData?.[currentStep], ...d };
         let stepData = stepsData;
         if (Array.isArray(stepData) && stepData.length > 0) {
           stepData.push(newData);
@@ -160,15 +160,15 @@ export function FlowPage({
   const next = useCallback(
     // eslint-disable-next-line require-await
     async (d: any): Promise<any> => {
-      if (currentStep + 1 === steps.length) {
+      if (currentStep + 1 === steps?.length) {
         return finish(d);
       }
 
       if (pageDefinition.type === 'loop') {
         applyRefs((loopData as Record<string, any>)[currentStep + 1], stepRef);
-        const newData = { ...loopData[currentStep], ...d };
+        const newData = { ...loopData?.[currentStep], ...d };
         if (Array.isArray(stepsData) && stepsData.length > 0) {
-          setStepsData((previous: Object[]) => [...previous, newData]);
+          setStepsData((previous: Object[] | undefined) => [...(previous ?? []), newData]);
         } else {
           setStepsData([newData]);
         }
@@ -191,7 +191,7 @@ export function FlowPage({
       }
 
       if (pageDefinition.type === 'loop') {
-        stepsData.pop();
+        stepsData?.pop();
         applyRefs((loopData as Record<string, any>)[currentStep - 1], stepRef);
       } else {
         setData(d);
@@ -216,7 +216,7 @@ export function FlowPage({
       if (typeof stepName !== 'string') {
         throw new TypeError(`Expected pagе to be a string, got: ${JSON.stringify(stepName)}`);
       }
-      const found = steps.findIndex((p) => p.name === stepName);
+      const found = steps?.findIndex((p) => p.name === stepName) ?? -1;
       if (found === -1) {
         throw new Error(`No matching page was found for ${stepName}`);
       }

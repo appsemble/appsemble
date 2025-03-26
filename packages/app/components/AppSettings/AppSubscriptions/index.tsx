@@ -186,7 +186,7 @@ export function AppSubscriptions(): ReactNode {
       </FormComponent>
 
       <FormComponent label={<FormattedMessage {...messages.subscriptions} />} required>
-        {Object.entries(subscriptions).map(([resourceType, resource]) => (
+        {Object.entries(subscriptions ?? {}).map(([resourceType, resource]) => (
           <FormComponent
             key={resourceType}
             label={

@@ -71,8 +71,9 @@ export async function getMessagesUtil(
   }
 
   const baseLanguageMessages =
-    override === 'true' && appMessages.find((m) => m.language === baseLang);
-  const languageMessages = override === 'true' && appMessages.find((m) => m.language === lang);
+    override === 'true' ? appMessages.find((m) => m.language === baseLang) : undefined;
+  const languageMessages =
+    override === 'true' ? appMessages.find((m) => m.language === lang) : undefined;
 
   for (const block of blockMessages) {
     const { name } = block;

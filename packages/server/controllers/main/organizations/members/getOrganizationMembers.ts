@@ -11,7 +11,11 @@ export async function getOrganizationMembers(ctx: Context): Promise<void> {
   } = ctx;
 
   const organization = await Organization.findByPk(organizationId, {
-    include: [User],
+    include: [
+      {
+        model: User,
+      },
+    ],
   });
 
   assertKoaCondition(organization != null, ctx, 404, 'Organization not found.');
@@ -26,6 +30,6 @@ export async function getOrganizationMembers(ctx: Context): Promise<void> {
     id: user.id,
     name: user.name,
     primaryEmail: user.primaryEmail,
-    role: user.OrganizationMember.role,
+    role: user.OrganizationMember!.role,
   }));
 }

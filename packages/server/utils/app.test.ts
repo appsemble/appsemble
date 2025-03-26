@@ -152,7 +152,7 @@ describe('app', () => {
       expect(result).toStrictEqual({
         appPath: 'my-app',
         organizationId: 'my-org',
-        app: null,
+        app: undefined,
       });
     });
 

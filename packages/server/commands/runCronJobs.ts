@@ -95,10 +95,10 @@ export async function handler(): Promise<void> {
 
     try {
       logger.info(
-        `Processing ${Object.keys(app.definition.cron).length} cron jobs for app ${app.id}`,
+        `Processing ${Object.keys(app.definition.cron ?? {}).length} cron jobs for app ${app.id}`,
       );
 
-      for (const [id, job] of Object.entries(app.definition.cron)) {
+      for (const [id, job] of Object.entries(app.definition.cron ?? {})) {
         lastId = id;
         const schedule = cron.parseExpression(job.schedule, { startDate });
 
@@ -108,7 +108,9 @@ export async function handler(): Promise<void> {
         }
 
         logger.info(`Running cronjob ${id}. Last schedule: ${schedule.prev().toISOString()}`);
-        const action = actions[job.action.type];
+        const action = actions[job.action.type] as (typeof actions)[keyof typeof actions];
+        // @ts-expect-error 2345 argument of type is not assignable to parameter of type
+        // (strictNullChecks)
         await handleAction(action, {
           app,
           action: job.action,

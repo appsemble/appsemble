@@ -211,7 +211,7 @@ export class Mailer {
       // @ts-expect-error 2322 undefined is not assignable to type (strictNullChecks)
       this.imapPass = imapPass;
       this.imapPort = imapPort || 993;
-      this.imapSecure = imapSecure;
+      this.imapSecure = imapSecure ?? false;
       // @ts-expect-error 2322 undefined is not assignable to type (strictNullChecks)
       this.imapUser = imapUser;
     }
@@ -267,8 +267,8 @@ export class Mailer {
     const subjectKey = `server.emails.${emailName}.subject`;
     const bodyKey = `server.emails.${emailName}.body`;
 
-    let templateSubject: string;
-    let templateBody: string;
+    let templateSubject: string | undefined;
+    let templateBody: string | undefined;
 
     const langMessages = appMessages.find((a) => a.language === lang);
     const baseLangMessages = appMessages.find((a) => a.language === baseLang);
@@ -279,22 +279,22 @@ export class Mailer {
       has(langMessages.messages?.core, subjectKey) &&
       has(langMessages.messages?.core, bodyKey)
     ) {
-      templateSubject = langMessages.messages.core[subjectKey];
-      templateBody = langMessages.messages.core[bodyKey];
+      templateSubject = langMessages.messages?.core[subjectKey];
+      templateBody = langMessages.messages?.core[bodyKey];
     } else if (
       baseLangMessages &&
       has(baseLangMessages.messages?.core, subjectKey) &&
       has(baseLangMessages.messages?.core, bodyKey)
     ) {
-      templateSubject = baseLangMessages.messages.core[subjectKey];
-      templateBody = baseLangMessages.messages.core[bodyKey];
+      templateSubject = baseLangMessages.messages?.core[subjectKey];
+      templateBody = baseLangMessages.messages?.core[bodyKey];
     } else if (
       defaultLocaleMessages &&
       has(defaultLocaleMessages.messages?.core, subjectKey) &&
       has(defaultLocaleMessages.messages?.core, bodyKey)
     ) {
-      templateSubject = defaultLocaleMessages.messages.core[subjectKey];
-      templateBody = defaultLocaleMessages.messages.core[bodyKey];
+      templateSubject = defaultLocaleMessages.messages?.core[subjectKey];
+      templateBody = defaultLocaleMessages.messages?.core[bodyKey];
       // @ts-expect-error 2322 undefined is not assignable to type (strictNullChecks)
     } else if ((await supportedLanguages).has(baseLang) || (await supportedLanguages).has(lang)) {
       const coreMessages = await getAppsembleMessages(lang, baseLang);

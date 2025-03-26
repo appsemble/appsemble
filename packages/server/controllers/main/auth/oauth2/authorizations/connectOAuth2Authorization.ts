@@ -52,7 +52,7 @@ export async function connectOAuth2Authorization(ctx: Context): Promise<void> {
   else {
     const userInfo = await getUserInfo(
       authorization.accessToken,
-      null,
+      undefined,
       preset.userInfoUrl,
       preset.remapper,
       preset.userEmailsUrl,
@@ -76,6 +76,7 @@ export async function connectOAuth2Authorization(ctx: Context): Promise<void> {
           );
         }
       }
+      user = user!;
       await authorization.update({ UserId: user.id }, { transaction });
       if (userInfo.email) {
         // We’ll try to link this email address to the new user, even though no password has been
@@ -104,6 +105,7 @@ export async function connectOAuth2Authorization(ctx: Context): Promise<void> {
         }
       }
     });
+    user = user!;
   }
   ctx.body = createJWTResponse(user.id);
 }

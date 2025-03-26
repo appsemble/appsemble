@@ -24,46 +24,46 @@ import {
 export class Organization extends Model {
   @PrimaryKey
   @Column(DataType.STRING)
-  id: string;
+  id!: string;
 
   @Column(DataType.STRING)
-  name: string;
+  name?: string;
 
   @Column(DataType.STRING)
-  description: string;
+  description?: string;
 
   @Column(DataType.STRING)
-  website: string;
+  website?: string;
 
   @Column(DataType.STRING)
-  email: string;
+  email?: string;
 
   @Column(DataType.BLOB)
-  icon: Buffer;
+  icon?: Buffer;
 
   @BelongsToMany(() => User, () => OrganizationMember)
-  Users: User[];
+  Users!: User[];
 
   @HasMany(() => OrganizationInvite)
-  OrganizationInvites: OrganizationInvite[];
+  OrganizationInvites!: OrganizationInvite[];
 
   @HasMany(() => App)
-  Apps: App[];
+  Apps!: App[];
 
   @HasMany(() => AppCollection)
-  AppCollections: AppCollection[];
+  AppCollections!: AppCollection[];
 
   @HasMany(() => BlockVersion)
-  BlockVersions: BlockVersion[];
+  BlockVersions!: BlockVersion[];
 
   @CreatedAt
-  created: Date;
+  created!: Date;
 
   @UpdatedAt
-  updated: Date;
+  updated!: Date;
 
   @DeletedAt
-  deleted: Date;
+  deleted?: Date;
 
-  OrganizationMember: Awaited<OrganizationMember>;
+  OrganizationMember?: Awaited<OrganizationMember>;
 }

@@ -21,6 +21,7 @@ const exampleApp = (orgId: string, action: ActionDefinition, path = 'test-app'):
     vapidPrivateKey: '',
     vapidPublicKey: '',
     definition: {
+      name: 'Test App',
       defaultPage: '',
       resources: {
         person: {

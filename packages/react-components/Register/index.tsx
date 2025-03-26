@@ -33,7 +33,7 @@ export function Register({ onRegister }: RegisterProps): ReactNode {
     >
       <SimpleFormError>
         {({ error }) =>
-          axios.isAxiosError(error) && error.response.status === 409 ? (
+          axios.isAxiosError(error) && error.response?.status === 409 ? (
             <FormattedMessage {...messages.emailConflict} />
           ) : (
             <FormattedMessage {...messages.registerFailed} />

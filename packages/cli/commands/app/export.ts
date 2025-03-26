@@ -47,7 +47,7 @@ export async function handler(args: ExportAppArgs): Promise<void> {
 
   logger.info(`Exporting app with id: ${appId}`);
   await exportAppAsZip(
-    clientCredentials,
+    clientCredentials ?? '',
     appId,
     assets,
     resources,

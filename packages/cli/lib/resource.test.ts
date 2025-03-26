@@ -26,7 +26,7 @@ describe('resource', () => {
     vi.setSystemTime(0);
     const server = await createServer();
     testApp = await setTestApp(server);
-    initAxios({ remote: testApp.defaults.baseURL });
+    initAxios({ remote: testApp.defaults.baseURL! });
     user = await createTestUser();
     organization = await Organization.create({
       id: 'testorganization',
@@ -81,7 +81,7 @@ describe('resource', () => {
         appId: app.id,
         definition: resourceDefinition as ResourceDefinition,
         path: resolveFixture('resources/test.json'),
-        remote: testApp.defaults.baseURL,
+        remote: testApp.defaults.baseURL!,
         type: 'test',
         seed: false,
       });
@@ -115,7 +115,7 @@ describe('resource', () => {
     });
   });
 
-  it('should throw  if there is an error', async () => {
+  it('should throw if there is an error', async () => {
     const resourceDefinition = {
       roles: ['$public'],
       schema: {
@@ -152,7 +152,7 @@ describe('resource', () => {
         appId: app.id,
         definition: resourceDefinition as ResourceDefinition,
         path: resolveFixture('resources/test.json'),
-        remote: testApp.defaults.baseURL,
+        remote: testApp.defaults.baseURL!,
         type: 'test',
         seed: false,
       }),
@@ -223,7 +223,7 @@ describe('resource', () => {
       await updateResource({
         appId: app.id,
         resourceName: 'test',
-        remote: testApp.defaults.baseURL,
+        remote: testApp.defaults.baseURL!,
         path: resolveFixture('resources/test-update.json'),
       });
 
@@ -309,7 +309,7 @@ describe('resource', () => {
         updateResource({
           appId: app.id,
           resourceName: 'test',
-          remote: testApp.defaults.baseURL,
+          remote: testApp.defaults.baseURL!,
           path: resolveFixture('resources/test-update.json'),
         }),
       ).rejects.toThrow('Request failed with status code 404');
@@ -387,7 +387,7 @@ describe('resource', () => {
       await updateResource({
         appId: app.id,
         resourceName: 'test',
-        remote: testApp.defaults.baseURL,
+        remote: testApp.defaults.baseURL!,
         path: resolveFixture('resources/test.json'),
       });
       expect(resources.map((r) => r.toJSON())).toMatchInlineSnapshot(`

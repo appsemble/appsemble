@@ -38,35 +38,35 @@ export class AppMember extends Model {
   @IsUUID(4)
   @Default(DataType.UUIDV4)
   @Column(DataType.UUID)
-  id: string;
+  id!: string;
 
   @AllowNull(false)
   @Column(DataType.STRING)
-  role: string;
+  role!: string;
 
   @AllowNull(false)
   @Index({ name: 'UniqueAppMemberEmailIndex', unique: true })
   @Column(DataType.STRING)
-  email: string;
+  email!: string;
 
   @Default(false)
   @Column(DataType.BOOLEAN)
-  emailVerified: boolean;
+  emailVerified?: boolean;
 
   @Column(DataType.STRING)
-  name: string;
+  name?: string;
 
   @Column(DataType.STRING)
-  password: string;
+  password?: string;
 
   @Column(DataType.STRING)
-  emailKey: string;
+  emailKey?: string;
 
   @Column(DataType.STRING)
-  resetKey: string;
+  resetKey?: string;
 
   @Column(DataType.DATE)
-  consent: Date;
+  consent?: Date;
 
   @Column(DataType.BLOB)
   picture?: Buffer;
@@ -80,54 +80,54 @@ export class AppMember extends Model {
   @Default(false)
   @AllowNull(false)
   @Column(DataType.BOOLEAN)
-  scimActive?: boolean;
+  scimActive!: boolean;
 
   @Column(DataType.STRING)
   locale?: string;
 
   @Column(DataType.STRING)
-  timezone: string;
+  timezone?: string;
 
   @AllowNull(false)
   @Default(false)
   @Column(DataType.BOOLEAN)
-  demo: boolean;
+  demo!: boolean;
 
   @CreatedAt
-  created: Date;
+  created!: Date;
 
   @UpdatedAt
-  updated: Date;
+  updated!: Date;
 
   @AllowNull(false)
   @ForeignKey(() => App)
   @Index({ name: 'UniqueAppMemberEmailIndex', unique: true })
   @Index({ name: 'UniqueAppMemberIndex', unique: true })
   @Column(DataType.INTEGER)
-  AppId: number;
+  AppId!: number;
 
   @BelongsTo(() => App)
-  App: Awaited<App>;
+  App?: Awaited<App>;
 
   @ForeignKey(() => User)
   @Index({ name: 'UniqueAppMemberIndex', unique: true })
   @Column(DataType.UUID)
-  UserId: string;
+  UserId?: string;
 
   @BelongsTo(() => User, { onDelete: 'CASCADE' })
-  User: Awaited<User>;
+  User?: Awaited<User>;
 
   @HasMany(() => GroupMember)
-  GroupMembers: GroupMember[];
+  GroupMembers!: GroupMember[];
 
   @HasMany(() => AppOAuth2Authorization)
-  AppOAuth2Authorizations: AppOAuth2Authorization[];
+  AppOAuth2Authorizations!: AppOAuth2Authorization[];
 
   @HasMany(() => OAuth2AuthorizationCode, { onDelete: 'CASCADE', onUpdate: 'CASCADE' })
-  OAuth2AuthorizationCodes: OAuth2AuthorizationCode[];
+  OAuth2AuthorizationCodes!: OAuth2AuthorizationCode[];
 
   @HasMany(() => AppSamlAuthorization)
-  AppSamlAuthorizations: AppSamlAuthorization[];
+  AppSamlAuthorizations!: AppSamlAuthorization[];
 
   get hasPicture(): boolean {
     return this.get('hasPicture');

@@ -21,34 +21,37 @@ export class GroupInvite extends Model {
   @ForeignKey(() => Group)
   @AllowNull(false)
   @Column(DataType.INTEGER)
-  GroupId: number;
+  GroupId!: number;
 
   @PrimaryKey
   @AllowNull(false)
   @Column(DataType.STRING)
-  email: string;
+  email!: string;
 
   @AllowNull(false)
   @Column(DataType.STRING)
-  key: string;
+  key!: string;
 
   @Default('Member')
   @AllowNull(false)
   @Column(DataType.STRING)
-  role: AppRole;
+  role!: AppRole;
 
   @BelongsTo(() => Group, { onDelete: 'CASCADE' })
-  Group: Awaited<Group>;
+  Group?: Awaited<Group>;
 
   @CreatedAt
-  created: Date;
+  created!: Date;
 
   @UpdatedAt
-  updated: Date;
+  updated!: Date;
 
   toJSON(): { id: number; name: string } {
+    // Here we assume you queried with `{ include: Group }`
     return {
+      // @ts-expect-error 2532 object is possibly undefined (strictNullChecks)
       id: this.GroupId ?? this.Group.id,
+      // @ts-expect-error 2532 object is possibly undefined (strictNullChecks)
       name: this.Group.name,
     };
   }

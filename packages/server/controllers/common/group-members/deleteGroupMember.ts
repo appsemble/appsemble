@@ -24,7 +24,7 @@ export async function deleteGroupMember(ctx: Context): Promise<void> {
   assertKoaCondition(groupMember != null, ctx, 404, 'Group member not found.');
 
   assertKoaCondition(
-    groupMember.AppMember.id !== authSubject.id,
+    groupMember.AppMember!.id !== authSubject!.id,
     ctx,
     401,
     'Cannot use this endpoint to remove yourself from the group',
@@ -32,7 +32,7 @@ export async function deleteGroupMember(ctx: Context): Promise<void> {
 
   await checkAuthSubjectAppPermissions({
     context: ctx,
-    appId: groupMember.AppMember.AppId,
+    appId: groupMember.AppMember!.AppId,
     requiredPermissions: [AppPermission.RemoveGroupMembers],
     groupId: selectedGroupId,
   });

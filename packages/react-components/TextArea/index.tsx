@@ -29,7 +29,7 @@ export const TextArea = forwardRef<HTMLTextAreaElement, TextAreaProps>(
   ({ error, loading, name, onChange, readOnly, id = name, ...props }, ref) => {
     const handleChange = useCallback(
       (event: ChangeEvent<HTMLTextAreaElement>) => {
-        onChange(event, event.currentTarget.value);
+        onChange?.(event, event.currentTarget.value);
       },
       [onChange],
     );

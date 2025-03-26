@@ -314,7 +314,7 @@ export async function handler(argv: ServeArguments): Promise<void> {
             `File at ${path} does not contain an object or array of objects`,
           );
         }
-        resources = [].concat(resource);
+        resources = ([] as unknown[]).concat(resource);
       }
 
       logger.info(`Creating resource(s) from ${path}`);

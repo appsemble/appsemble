@@ -367,9 +367,9 @@ describe('verifyAppOAuth2SecretCode', () => {
     `,
     );
 
-    const auth = await OAuth2AuthorizationCode.findOne({
+    const auth = (await OAuth2AuthorizationCode.findOne({
       where: { code: response.data.code },
-    });
+    }))!;
     expect(auth).toMatchObject({
       expires: expect.any(Date),
       redirectUri: 'http://test-app.testorganization.localhost',

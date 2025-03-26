@@ -5,8 +5,12 @@ import { App, AppRating, Organization, OrganizationMember } from '../../../../..
 import { applyAppMessages, compareApps, parseLanguage } from '../../../../../utils/app.js';
 
 export async function queryCurrentUserApps(ctx: Context): Promise<void> {
-  const { user } = ctx;
-  const { baseLanguage, language, query: languageQuery } = parseLanguage(ctx, ctx.query?.language);
+  const user = ctx.user!;
+  const {
+    baseLanguage,
+    language,
+    query: languageQuery,
+  } = parseLanguage(ctx, ctx.query?.language ?? []);
 
   const memberships = await OrganizationMember.findAll({
     attributes: ['OrganizationId'],

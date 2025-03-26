@@ -11,7 +11,11 @@ export async function getOrganizationApps(ctx: Context): Promise<void> {
     user: authSubject,
   } = ctx;
 
-  const { baseLanguage, language, query: languageQuery } = parseLanguage(ctx, ctx.query?.language);
+  const {
+    baseLanguage,
+    language,
+    query: languageQuery,
+  } = parseLanguage(ctx, ctx.query?.language ?? []);
 
   const organization = await Organization.findByPk(organizationId);
 
@@ -21,7 +25,7 @@ export async function getOrganizationApps(ctx: Context): Promise<void> {
   if (authSubject) {
     organizationMember = await OrganizationMember.findOne({
       where: {
-        UserId: authSubject.id,
+        UserId: authSubject!.id,
         OrganizationId: organizationId,
       },
     });

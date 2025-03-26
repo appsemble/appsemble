@@ -16,6 +16,7 @@ export function getCsp({
   );
 
   return {
+    // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
     'report-uri': [reportUri],
     'connect-src': ['*', 'blob:', 'data:', sentryOrigin, sentryDsn && 'https://sentry.io'],
     'default-src': ["'self'"],
@@ -23,7 +24,7 @@ export function getCsp({
       "'self'",
       `'nonce-${nonce}'`,
       settingsHash,
-      app.googleAnalyticsID && 'https://www.googletagmanager.com',
+      app.googleAnalyticsID ? 'https://www.googletagmanager.com' : false,
       // This is needed for Webpack.
       process.env.NODE_ENV !== 'production' && "'unsafe-eval'",
     ],

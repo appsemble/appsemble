@@ -20,7 +20,11 @@ export async function getAppById(ctx: Context): Promise<void> {
   const {
     pathParams: { appId },
   } = ctx;
-  const { baseLanguage, language, query: languageQuery } = parseLanguage(ctx, ctx.query?.language);
+  const {
+    baseLanguage,
+    language,
+    query: languageQuery,
+  } = parseLanguage(ctx, ctx.query?.language ?? []);
 
   const languageScreenshot = await AppScreenshot.findOne({
     attributes: ['language'],

@@ -33,7 +33,7 @@ export async function createAppWebhookSecret(ctx: Context): Promise<void> {
   assertKoaCondition(body.webhookName != null, ctx, 400, 'Webhook name is required');
 
   assertKoaCondition(
-    Object.keys(app.definition.webhooks).includes(body.webhookName),
+    Object.keys(app.definition.webhooks ?? {}).includes(body.webhookName),
     ctx,
     400,
     'Webhook does not exist in the app definition',

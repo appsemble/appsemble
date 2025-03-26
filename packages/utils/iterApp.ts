@@ -155,7 +155,7 @@ export function iterPage(
   if (page.type === 'flow' || page.type === 'tabs') {
     let result = false;
     if ('actions' in page) {
-      result = Object.entries(page.actions).some(([key, action]) =>
+      result = Object.entries(page.actions ?? {}).some(([key, action]) =>
         iterAction(action, callbacks, [...prefix, 'actions', key]),
       );
     }
@@ -170,7 +170,7 @@ export function iterPage(
           ? page.tabs.some((tab, index) =>
               iterBlockList(tab.blocks, callbacks, [...prefix, 'tabs', index, 'blocks']),
             )
-          : iterBlockList(page.definition.foreach.blocks, callbacks, [
+          : iterBlockList(page.definition?.foreach.blocks ?? [], callbacks, [
               ...prefix,
               'tabs',
               0,
@@ -182,7 +182,7 @@ export function iterPage(
   if (page.type === 'loop') {
     let result = false;
     if ('actions' in page) {
-      result = Object.entries(page.actions).some(([key, action]) =>
+      result = Object.entries(page.actions ?? {}).some(([key, action]) =>
         iterAction(action, callbacks, [...prefix, 'actions', key]),
       );
     }

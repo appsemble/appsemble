@@ -21,37 +21,37 @@ export class AppInvite extends Model {
   @PrimaryKey
   @AllowNull(false)
   @Column(DataType.STRING)
-  email: string;
+  email!: string;
 
   @AllowNull(false)
   @Column(DataType.STRING)
-  key: string;
+  key!: string;
 
   @Default('Member')
   @AllowNull(false)
   @Column(DataType.STRING)
-  role: AppRole;
+  role!: AppRole;
 
   @ForeignKey(() => User)
   @Index({ name: 'AppInvite_UserId_AppId_key', unique: true })
   @Column(DataType.UUID)
-  UserId: string;
+  UserId?: string;
 
   @BelongsTo(() => User, { onDelete: 'CASCADE' })
-  User: Awaited<User>;
+  User?: Awaited<User>;
 
   @PrimaryKey
   @ForeignKey(() => App)
   @Index({ name: 'AppInvite_UserId_AppId_key', unique: true })
   @Column(DataType.INTEGER)
-  AppId: number;
+  AppId!: number;
 
   @BelongsTo(() => App, { onDelete: 'CASCADE' })
-  app: Awaited<App>;
+  app?: Awaited<App>;
 
   @CreatedAt
-  created: Date;
+  created!: Date;
 
   @UpdatedAt
-  updated: Date;
+  updated!: Date;
 }

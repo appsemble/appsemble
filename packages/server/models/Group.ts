@@ -21,37 +21,37 @@ export class Group extends Model {
   @PrimaryKey
   @AutoIncrement
   @Column(DataType.INTEGER)
-  id: number;
+  id!: number;
 
   @AllowNull(false)
   @Column(DataType.STRING)
-  name: string;
+  name!: string;
 
   @Column(DataType.JSON)
-  annotations: Record<string, string>;
+  annotations?: Record<string, string>;
 
   @AllowNull(false)
   @Default(false)
   @Column(DataType.BOOLEAN)
-  demo: boolean;
+  demo!: boolean;
 
   @AllowNull(false)
   @ForeignKey(() => App)
   @Column(DataType.INTEGER)
-  AppId: number;
+  AppId!: number;
 
   @BelongsTo(() => App)
-  App: Awaited<App>;
+  App?: Awaited<App>;
 
   @HasMany(() => GroupMember)
-  Members: GroupMember[];
+  Members!: GroupMember[];
 
   @HasMany(() => GroupInvite)
-  Invites: GroupInvite[];
+  Invites!: GroupInvite[];
 
   @CreatedAt
-  created: Date;
+  created!: Date;
 
   @UpdatedAt
-  updated: Date;
+  updated!: Date;
 }

@@ -36,7 +36,7 @@ export function startAccountLinking(linking: Linking): boolean {
  */
 export function loadAccountLinkingState(): Linking | null {
   try {
-    return JSON.parse(sessionStorage.getItem(storageKey));
+    return JSON.parse(sessionStorage.getItem(storageKey)!);
   } catch {
     return null;
   }

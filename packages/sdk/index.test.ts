@@ -31,7 +31,7 @@ describe('bootstrap', () => {
   it('should dispatch the AppsembleBootstrap event', () => {
     const fn = vi.fn();
     bootstrap(fn);
-    expect(document.currentScript.dispatchEvent).toHaveBeenCalledWith(new CustomEvent(''));
+    expect(document.currentScript?.dispatchEvent).toHaveBeenCalledWith(new CustomEvent(''));
     expect(event.type).toBe('AppsembleBootstrap');
     expect(event.detail).toStrictEqual({ fn, document });
   });

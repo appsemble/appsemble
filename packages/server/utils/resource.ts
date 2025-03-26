@@ -156,7 +156,8 @@ export async function processHooks(
     return;
   }
 
-  const resourceDefinition = app.definition.resources[resource.type];
+  // Since we're accepting a resource from arguments, it's quite likely a defined one
+  const resourceDefinition = app.definition.resources![resource.type]!;
 
   if (resourceDefinition[action]?.hooks?.notification) {
     const { notification } = resourceDefinition[action].hooks;
@@ -187,6 +188,7 @@ export async function processHooks(
       app,
       notification,
       // Don't send notifications to the creator when creating
+      // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
       action === 'create' ? null : resource.AuthorId,
       resource.type,
       action,
@@ -210,7 +212,7 @@ export async function processReferenceHooks(
     return;
   }
   await Promise.all(
-    Object.entries(app.definition.resources[resource.type].references || {}).map(
+    Object.entries(app.definition.resources?.[resource.type].references ?? {}).map(
       async ([propertyName, reference]) => {
         if (!reference[action]?.triggers?.length) {
           // Do nothing
@@ -244,9 +246,9 @@ export async function processReferenceTriggers(
   const resourceReferences = [];
   for (const [resourceName, resourceDefinition] of Object.entries(app.definition.resources || {})) {
     const [referencedProperty, referenceToParent] =
-      Object.entries(resourceDefinition.references || {}).find(
+      Object.entries(resourceDefinition.references ?? {}).find(
         ([, reference]) => reference.resource === parent.type && Boolean(reference[action]),
-      ) || [];
+      ) ?? [];
 
     if (referenceToParent) {
       // @ts-expect-error Messed up - Severe

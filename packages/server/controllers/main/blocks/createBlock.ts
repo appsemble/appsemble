@@ -53,7 +53,7 @@ export async function createBlock(ctx: Context): Promise<void> {
     validator.customFormats['event-emitter'] = () => true;
 
     for (const exampleString of data.examples) {
-      let example: BlockDefinition;
+      let example: BlockDefinition | undefined;
       try {
         example = parse(exampleString);
       } catch {
@@ -63,15 +63,17 @@ export async function createBlock(ctx: Context): Promise<void> {
         continue;
       }
       const { required, ...blockSchema } = structuredClone(
-        ctx.openApi.document.components.schemas.BlockDefinition,
+        ctx.openApi!.document.components!.schemas!.BlockDefinition,
       ) as OpenAPIV3.NonArraySchemaObject;
 
-      delete blockSchema.properties.name;
-      delete blockSchema.properties.version;
+      delete blockSchema.properties?.name;
+      delete blockSchema.properties?.version;
 
-      const actionsSchema = blockSchema.properties.actions as OpenAPIV3.NonArraySchemaObject;
+      const actionsSchema = blockSchema.properties?.actions as
+        | OpenAPIV3.NonArraySchemaObject
+        | undefined;
 
-      delete actionsSchema.additionalProperties;
+      delete actionsSchema?.additionalProperties;
       if (example.actions) {
         // @ts-expect-error 18048 variable is possibly undefined (strictNullChecks)
         actionsSchema.properties = Object.fromEntries(
@@ -116,7 +118,7 @@ export async function createBlock(ctx: Context): Promise<void> {
         }
       }
 
-      const validationResult = ctx.openApi.validate(example, blockSchema, { throw: false });
+      const validationResult = ctx.openApi!.validate(example, blockSchema, { throw: false });
       handleValidatorResult(ctx, validationResult, 'Validation failed for block example');
     }
   }

@@ -27,7 +27,7 @@ describe('asset', () => {
     vi.setSystemTime(0);
     const server = await createServer();
     testApp = await setTestApp(server);
-    initAxios({ remote: testApp.defaults.baseURL });
+    initAxios({ remote: testApp.defaults.baseURL! });
     user = await createTestUser();
     organization = await Organization.create({
       id: 'testorganization',
@@ -63,10 +63,10 @@ describe('asset', () => {
         clonable: false,
         name: 'test',
         path: resolveFixture('apps/tux.png'),
-        remote: testApp.defaults.baseURL,
+        remote: testApp.defaults.baseURL!,
         seed: false,
       });
-      const asset = await Asset.findOne();
+      const asset = (await Asset.findOne())!;
       expect(asset).toStrictEqual(
         expect.objectContaining({
           filename: 'tux.avif',
@@ -98,7 +98,7 @@ describe('asset', () => {
           clonable: false,
           name: 'test',
           path: resolveFixture('apps/tux.png'),
-          remote: testApp.defaults.baseURL,
+          remote: testApp.defaults.baseURL!,
           seed: false,
         }),
       ).rejects.toThrow('Request failed with status code 404');

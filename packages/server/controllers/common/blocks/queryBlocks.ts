@@ -58,6 +58,7 @@ export async function queryBlocks(ctx: Context): Promise<void> {
     if (hasIcon) {
       iconUrl = `/api/blocks/@${OrganizationId}/${name}/versions/${version}/icon`;
     } else if (hasOrganizationIcon) {
+      // @ts-expect-error 18048 variable is possibly undefined (strictNullChecks)
       iconUrl = `/api/organizations/${OrganizationId}/icon?updated=${organizationUpdated.toISOString()}`;
     }
     return {

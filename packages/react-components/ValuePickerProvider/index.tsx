@@ -39,7 +39,9 @@ export function ValuePickerProvider<T>({
 }: ValuePickerProviderProps<T>): ReactNode {
   const context = useMemo(() => ({ name, onChange, value }), [name, onChange, value]);
 
-  return <Context.Provider value={context}>{children}</Context.Provider>;
+  return (
+    <Context.Provider value={context as ValuePickerContext<unknown>}>{children}</Context.Provider>
+  );
 }
 
 /**

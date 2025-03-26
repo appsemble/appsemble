@@ -23,13 +23,13 @@ export async function getGroupMember(ctx: Context): Promise<void> {
 
   await checkAuthSubjectAppPermissions({
     context: ctx,
-    appId: groupMember.AppMember.AppId,
+    appId: groupMember.AppMember!.AppId,
     requiredPermissions: [AppPermission.QueryGroupMembers],
   });
 
   ctx.body = {
     id: groupMember.id,
-    name: groupMember.AppMember.name,
-    primaryEmail: groupMember.AppMember.email,
+    name: groupMember.AppMember!.name,
+    primaryEmail: groupMember.AppMember!.email,
   };
 }

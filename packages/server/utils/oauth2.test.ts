@@ -32,7 +32,7 @@ describe('oauth2', () => {
 
   describe('getAccessToken', () => {
     it('should make an access token request', async () => {
-      let config: AxiosRequestConfig;
+      let config: AxiosRequestConfig | undefined;
       mock.onPost('https://example.com/token').reply((req) => {
         config = req;
         return [200, { access_token: 'token' }];
@@ -44,10 +44,10 @@ describe('oauth2', () => {
         'test_id',
         'test_secret',
       );
-      expect(config.data).toBe(
+      expect(config?.data).toBe(
         'grant_type=authorization_code&client_id=test_id&client_secret=test_secret&code=test_code&redirect_uri=http%3A%2F%2Flocalhost%2Fcallback',
       );
-      expect(config.headers).toMatchObject({
+      expect(config?.headers).toMatchObject({
         Accept: 'application/json',
         'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8',
         authorization: 'Basic dGVzdF9pZDp0ZXN0X3NlY3JldA==',

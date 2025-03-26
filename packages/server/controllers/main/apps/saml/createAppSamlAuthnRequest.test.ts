@@ -96,7 +96,7 @@ describe('createAuthnRequest', () => {
     const inflated = await inflate(Buffer.from(params.SAMLRequest, 'base64'));
     const samlRequest = inflated.toString('utf8');
 
-    const loginRequest = await SamlLoginRequest.findOne();
+    const loginRequest = (await SamlLoginRequest.findOne())!;
     expect(loginRequest).toMatchObject({
       id: expect.any(String),
       AppSamlSecretId: secret.id,

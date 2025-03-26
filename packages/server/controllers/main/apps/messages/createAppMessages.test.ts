@@ -54,7 +54,7 @@ describe('createAppMessages', () => {
       language: 'en',
       messages: { messageIds: { test: 'Test.' } },
     });
-    const translation = await AppMessages.findOne({ where: { AppId: app.id, language: 'en' } });
+    const translation = (await AppMessages.findOne({ where: { AppId: app.id, language: 'en' } }))!;
 
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 201 Created

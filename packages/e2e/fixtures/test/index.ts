@@ -16,7 +16,7 @@ export async function getAppId(page: Page): Promise<number> {
   const response = await fetch('/api/apps');
   const apps: App[] = await response.json();
   const index = apps.findIndex((app) => app.path === path);
-  return apps[index].id;
+  return apps[index].id!;
 }
 
 interface Fixtures {

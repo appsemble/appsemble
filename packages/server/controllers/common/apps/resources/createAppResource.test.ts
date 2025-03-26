@@ -703,7 +703,7 @@ describe('createAppResource', () => {
         }
       `,
     );
-    const foundResource = await Resource.findByPk(response.data.id);
+    const foundResource = (await Resource.findByPk(response.data.id))!;
     expect(foundResource.dataValues.AuthorId).toBe(member.id);
   });
 

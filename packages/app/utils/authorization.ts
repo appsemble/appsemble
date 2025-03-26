@@ -54,7 +54,7 @@ function checkTabPagePermissions(
     });
   }
 
-  const pageRoles = pageDefinition.definition.foreach.roles || [];
+  const pageRoles = pageDefinition.definition?.foreach.roles || [];
 
   return checkAppMemberViewRoles(pageRoles, appMemberViewRoles);
 }

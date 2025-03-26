@@ -8,7 +8,7 @@ export const share: ActionCreator<'share'> = ({ definition, remap, showShareDial
 
     await (navigator.share
       ? navigator.share({ title, text, url })
-      : showShareDialog({ title, text, url }));
+      : showShareDialog?.({ title, text, url }));
 
     return data;
   },

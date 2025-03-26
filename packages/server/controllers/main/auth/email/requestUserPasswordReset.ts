@@ -13,7 +13,7 @@ export async function requestUserPasswordReset(ctx: Context): Promise<void> {
   const emailRecord = await EmailAuthorization.findByPk(email);
 
   if (emailRecord) {
-    const user = await User.findByPk(emailRecord.UserId);
+    const user = (await User.findByPk(emailRecord.UserId))!;
 
     const token = randomBytes(40).toString('hex');
     await ResetPasswordToken.create({ UserId: user.id, token });

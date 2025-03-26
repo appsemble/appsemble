@@ -31,7 +31,7 @@ export function ServiceWorkerRegistrationProvider({
   serviceWorkerRegistrationPromise,
 }: ServiceWorkerRegistrationProviderProps): ReactNode {
   const [permission, setPermission] = useState<Permission>(window.Notification?.permission);
-  const [subscription, setSubscription] = useState<PushSubscription>();
+  const [subscription, setSubscription] = useState<PushSubscription | null>();
 
   useEffect(() => {
     serviceWorkerRegistrationPromise

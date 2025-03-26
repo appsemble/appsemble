@@ -18,27 +18,27 @@ import { User } from './index.js';
 export class EmailAuthorization extends Model {
   @PrimaryKey
   @Column(DataType.STRING)
-  email: string;
+  email!: string;
 
   @Default(false)
   @AllowNull(false)
   @Column(DataType.BOOLEAN)
-  verified: boolean;
+  verified!: boolean;
 
   @Column(DataType.STRING)
-  key: string;
+  key?: string;
 
   @CreatedAt
-  created: Date;
+  created!: Date;
 
   @UpdatedAt
-  updated: Date;
+  updated!: Date;
 
   @AllowNull(false)
   @ForeignKey(() => User)
   @Column(DataType.UUID)
-  UserId: string;
+  UserId!: string;
 
   @BelongsTo(() => User, { onDelete: 'CASCADE' })
-  User: Awaited<User>;
+  User?: Awaited<User>;
 }

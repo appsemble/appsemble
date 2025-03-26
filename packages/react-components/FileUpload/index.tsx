@@ -56,13 +56,17 @@ export const FileUpload = forwardRef<HTMLInputElement, FileUploadProps>(
     useImperativeHandle(ref, () => inputRef.current);
 
     const handleChange = useCallback(
-      (event: ChangeEvent<HTMLInputElement>) => onChange(event, event.currentTarget.files[0]),
+      // eslint-disable-next-line @typescript-eslint/prefer-ts-expect-error
+      // @ts-ignore 2322 null is not assignable to type (strictNullChecks)
+      (event: ChangeEvent<HTMLInputElement>) => onChange(event, event?.currentTarget.files?.[0]),
       [onChange],
     );
 
     useEffect(() => {
       // Make sure the input is cleared when the value is cleared.
       if (!value) {
+        // eslint-disable-next-line @typescript-eslint/prefer-ts-expect-error
+        // @ts-ignore 2322 null is not assignable to type (strictNullChecks)
         inputRef.current.value = null;
       }
     }, [value, inputRef]);

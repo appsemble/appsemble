@@ -33,7 +33,7 @@ export const request: ActionCreator<'request'> = ({ definition, prefixIndex, rem
           if (contentType) {
             Object.assign(req, {
               headers: {
-                'Content-Type': definition.headers['Content-Type'],
+                'Content-Type': contentType,
               },
             });
           }
@@ -102,7 +102,9 @@ export const request: ActionCreator<'request'> = ({ definition, prefixIndex, rem
     },
     {
       method,
-      url,
+      // This is required for `request` actions, but not for `resource` actions. Because they
+      // "inherit" from request actions (actually RequestLike). Odd stuff.
+      url: url!,
     },
   ];
 };

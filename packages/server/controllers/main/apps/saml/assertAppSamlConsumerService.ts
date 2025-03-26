@@ -173,7 +173,7 @@ export async function assertAppSamlConsumerService(ctx: Context): Promise<void> 
     );
   }
 
-  let appMember: AppMember;
+  let appMember: AppMember | null = null;
   const location = new URL(loginRequest.redirectUri);
 
   switch (true) {
@@ -193,7 +193,7 @@ export async function assertAppSamlConsumerService(ctx: Context): Promise<void> 
       break;
 
     default:
-      appMember = authorization?.AppMember;
+      appMember = authorization?.AppMember ?? null;
       if (!appMember) {
         const role = app.definition.security?.default?.role;
         try {

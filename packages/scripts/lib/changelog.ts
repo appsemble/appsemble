@@ -13,8 +13,8 @@ import { visit } from 'unist-util-visit';
 export async function getReleaseNotes(): Promise<string> {
   const changelog = await readFile('CHANGELOG.md', 'utf8');
   const ast = fromMarkdown(changelog);
-  let sectionStart: number;
-  let sectionEnd: number;
+  let sectionStart: number | undefined;
+  let sectionEnd: number | undefined;
   for (const [index, child] of ast.children.entries()) {
     if (child.type !== 'heading' || child.depth !== 2) {
       continue;

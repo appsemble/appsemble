@@ -821,7 +821,7 @@ export type ObjectRemapper = RequireExactlyOne<Remappers>;
 
 export type ArrayRemapper = (ArrayRemapper | ObjectRemapper)[];
 
-export type Remapper = ArrayRemapper | ObjectRemapper | boolean | number | string;
+export type Remapper = ArrayRemapper | ObjectRemapper | boolean | number | string | null;
 
 export interface SubscriptionResponseResource {
   create: boolean;
@@ -2022,7 +2022,7 @@ export interface LoopPageDefinition extends BasePageDefinition {
   /**
    * Template step that the loop will pass data onto
    */
-  foreach?: SubPageDefinition;
+  foreach: SubPageDefinition;
 
   /**
    * A mapping of actions that can be fired by the page to action handlers.
@@ -2030,7 +2030,7 @@ export interface LoopPageDefinition extends BasePageDefinition {
   actions?: {
     onFlowCancel?: ActionDefinition;
     onFlowFinish?: ActionDefinition;
-    onLoad?: ActionDefinition;
+    onLoad: ActionDefinition;
   };
 
   /**
@@ -2084,7 +2084,7 @@ export interface AppDefinition {
    *
    * This determines the default path of the app.
    */
-  name?: string;
+  name: string;
 
   /**
    * The description of the app.
@@ -2242,7 +2242,7 @@ export interface App {
   /**
    * A domain name on which this app should be served.
    */
-  domain?: string;
+  domain?: string | null;
 
   /**
    * The name used for emails
@@ -2252,7 +2252,7 @@ export interface App {
   /**
    * The id of the organization this app belongs to.
    */
-  OrganizationId?: string;
+  OrganizationId: string;
 
   /**
    * The name of the organization this app belongs to.
@@ -2322,12 +2322,12 @@ export interface App {
   /**
    * The Sentry DSN of the app.
    */
-  sentryDsn: string;
+  sentryDsn?: string;
 
   /**
    * The Sentry environment associated with the Sentry DSN.
    */
-  sentryEnvironment: string;
+  sentryEnvironment?: string;
 
   /**
    * The app definition.
@@ -2337,7 +2337,7 @@ export interface App {
   /**
    * The app definition formatted as YAML.
    */
-  yaml: string;
+  yaml?: string;
 
   /**
    * An app rating.
@@ -2651,6 +2651,7 @@ export interface AppsembleMessages {
   blocks: Record<string, Record<string, Record<string, string>>>;
 }
 
+// XXX: The interfaces for messages below kinda suck
 /**
  * Translated messages for an app or block.
  */
@@ -2668,7 +2669,7 @@ export interface Messages {
   /**
    * A mapping of message id to message content.
    */
-  messages: AppsembleMessages;
+  messages?: AppsembleMessages;
 }
 
 export interface AppMessages {
@@ -2990,7 +2991,7 @@ export interface BlockManifest extends ProjectManifest {
   /**
    * The URL that can be used to fetch this block’s icon.
    */
-  iconUrl?: string;
+  iconUrl?: string | null;
 
   /**
    * The languages that are supported by the block by default.

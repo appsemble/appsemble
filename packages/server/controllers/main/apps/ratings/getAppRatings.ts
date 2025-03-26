@@ -12,7 +12,7 @@ export async function getAppRatings(ctx: Context): Promise<void> {
     rating,
     description,
     UserId,
-    name: r.User.name,
+    name: r.User!.name,
     $created: created,
     $updated: updated,
   }));

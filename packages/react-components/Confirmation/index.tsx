@@ -45,7 +45,7 @@ interface DeferredConfirmationOptions extends ConfirmationOptions<any, any[]> {
   reject: () => void;
 }
 
-const Context = createContext(null);
+const Context = createContext<(...args: any[]) => Promise<any>>(() => Promise.resolve());
 
 /**
  * A provider for the {@link useConfirmation} hook.

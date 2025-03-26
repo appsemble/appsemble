@@ -24,24 +24,24 @@ describe('requestUserPasswordReset', () => {
       email: data.email,
     });
 
-    const email = await EmailAuthorization.findOne({ where: { email: data.email } });
+    const email = (await EmailAuthorization.findOne({ where: { email: data.email } }))!;
 
-    const token = await ResetPasswordToken.findOne({
+    const token = (await ResetPasswordToken.findOne({
       where: { UserId: email.UserId },
       include: [User],
-    });
+    }))!;
 
     const responseB = await request.post('/api/auth/email/reset-password', {
       token: token.token,
       password: 'newPassword',
     });
 
-    const user = token.User;
+    const user = token.User!;
     await user.reload();
 
     expect(responseA).toMatchInlineSnapshot('HTTP/1.1 204 No Content');
     expect(responseB).toMatchInlineSnapshot('HTTP/1.1 204 No Content');
-    expect(await compare('newPassword', user.password)).toBe(true);
+    expect(await compare('newPassword', user.password!)).toBe(true);
 
     // Sequelize throws errors when trying to load in null objects.
     await expect(token.reload()).rejects.toThrow(

@@ -16,7 +16,8 @@ export interface Msg extends BaseMessage {
 
 export type ShowMessage = (message: Msg | string) => void;
 
-const Context = createContext<ShowMessage>(null);
+// eslint-disable-next-line @typescript-eslint/no-empty-function
+const Context = createContext<ShowMessage>(() => {});
 
 interface MessagesProviderProps {
   /**

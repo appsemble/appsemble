@@ -24,9 +24,9 @@ export async function createAppResourcesWithAssets({
 }: CreateAppResourcesWithAssetsParams): Promise<ResourceInterface[]> {
   const appMember = await getCurrentAppMember({ context });
 
-  let createdResources: Resource[];
+  let createdResources: Resource[] = [];
   await transactional(async (transaction) => {
-    let lastPositionResource: Resource | undefined;
+    let lastPositionResource: Resource | null;
     if (positioning) {
       lastPositionResource = await Resource.findOne({
         attributes: ['Position'],
@@ -45,7 +45,7 @@ export async function createAppResourcesWithAssets({
         expires: $expires,
         clonable: $clonable,
         ephemeral: $ephemeral,
-        Position: lastPositionResource ? lastPositionResource.Position + index : null,
+        Position: lastPositionResource ? lastPositionResource.Position! + index : null,
       })),
       { logging: false, transaction },
     );
@@ -62,6 +62,7 @@ export async function createAppResourcesWithAssets({
     await Asset.bulkCreate(
       preparedAssets.map((asset) => {
         const index = cleanResources.findIndex((resource) => {
+          // @ts-expect-error Messed up
           const { $clonable, $ephemeral, $seed, $thumbnails, ...cleanAssetResource } =
             asset.resource;
           return isDeepStrictEqual(resource, cleanAssetResource);
@@ -88,7 +89,7 @@ export async function createAppResourcesWithAssets({
     );
   });
 
-  const persistedApp = await App.findOne({ where: { id: app.id } });
+  const persistedApp = (await App.findOne({ where: { id: app.id } }))!;
 
   processReferenceHooks(persistedApp, createdResources[0], 'create', options, context);
   processHooks(persistedApp, createdResources[0], 'create', options, context);

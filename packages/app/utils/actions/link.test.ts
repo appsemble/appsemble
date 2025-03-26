@@ -16,7 +16,7 @@ beforeEach(() => {
 describe('link', () => {
   it('should support external links', async () => {
     const action = createTestAction({
-      appDefinition: { defaultPage: '', pages: [] },
+      appDefinition: { name: 'Test App', defaultPage: '', pages: [] },
       definition: { type: 'link', to: 'https://example.com' },
     });
     const link = action.href();
@@ -32,7 +32,7 @@ describe('link', () => {
 
   it('should support external links from input data', async () => {
     const action = createTestAction({
-      appDefinition: { defaultPage: '', pages: [{ name: 'Page A', blocks: [] }] },
+      appDefinition: { name: 'Test App', defaultPage: '', pages: [{ name: 'Page A', blocks: [] }] },
       definition: { type: 'link', to: 'Page A' },
     });
     const link = action.href('https://example.com');
@@ -48,7 +48,7 @@ describe('link', () => {
 
   it('should support links to default app pages', async () => {
     const action = createTestAction({
-      appDefinition: { defaultPage: '', pages: [{ name: 'Page A', blocks: [] }] },
+      appDefinition: { name: 'Test App', defaultPage: '', pages: [{ name: 'Page A', blocks: [] }] },
       definition: { type: 'link', to: '/Login' },
       params: { lang: 'da' },
       navigate,
@@ -62,7 +62,7 @@ describe('link', () => {
 
   it('should support links to pages', async () => {
     const action = createTestAction({
-      appDefinition: { defaultPage: '', pages: [{ name: 'Page A', blocks: [] }] },
+      appDefinition: { name: 'Test App', defaultPage: '', pages: [{ name: 'Page A', blocks: [] }] },
       definition: { type: 'link', to: 'Page A' },
       params: { lang: 'da' },
       navigate,
@@ -77,6 +77,7 @@ describe('link', () => {
   it('should support links to pages inside container pages', async () => {
     const action = createTestAction({
       appDefinition: {
+        name: 'Test App',
         defaultPage: '',
         pages: [
           { name: 'Container Page', type: 'container', pages: [{ name: 'Page A', blocks: [] }] },
@@ -101,6 +102,7 @@ describe('link', () => {
 
     const action = createTestAction({
       appDefinition: {
+        name: 'Test App',
         defaultPage: '',
         pages: [
           { name: 'Container Page', type: 'container', pages: [{ name: 'Page A', blocks: [] }] },
@@ -108,6 +110,7 @@ describe('link', () => {
       },
       definition: { type: 'link', to: 'Page A' },
       params: { lang: 'da' },
+      // @ts-expect-error 2538 type undefined cannot be used as an index type
       getAppMessage: ({ id }) => new IntlMessageFormat(appMessages[id]),
       navigate,
     });
@@ -125,7 +128,7 @@ describe('link', () => {
     };
 
     const action = createTestAction({
-      appDefinition: { defaultPage: '', pages: [{ name: 'Page A', blocks: [] }] },
+      appDefinition: { name: 'Test App', defaultPage: '', pages: [{ name: 'Page A', blocks: [] }] },
       definition: { type: 'link', to: 'Page A' },
       params: { lang: 'da' },
       // @ts-expect-error 2538 type undefined cannot be used as an index type
@@ -143,6 +146,7 @@ describe('link', () => {
   it('should support links to sub-pages inside container pages', async () => {
     const action = createTestAction({
       appDefinition: {
+        name: 'Test App',
         defaultPage: '',
         pages: [
           {
@@ -166,6 +170,7 @@ describe('link', () => {
   it('should support links to sub-pages', async () => {
     const action = createTestAction({
       appDefinition: {
+        name: 'Test App',
         defaultPage: '',
         pages: [{ name: 'Page A', type: 'tabs', tabs: [{ name: 'Subpage B', blocks: [] }] }],
       },
@@ -187,6 +192,7 @@ describe('link', () => {
 
     const action = createTestAction({
       appDefinition: {
+        name: 'Test App',
         defaultPage: '',
         pages: [{ name: 'Page A', type: 'tabs', tabs: [{ name: 'Subpage B', blocks: [] }] }],
       },
@@ -207,6 +213,7 @@ describe('link', () => {
   it('should support page parameters', async () => {
     const action = createTestAction({
       appDefinition: {
+        name: 'Test App',
         defaultPage: '',
         pages: [{ name: 'Page A', blocks: [], parameters: ['id'] }],
       },
@@ -224,6 +231,7 @@ describe('link', () => {
   it('should support links to tabs page with page parameters', async () => {
     const action = createTestAction({
       appDefinition: {
+        name: 'Test App',
         defaultPage: '',
         pages: [
           {
@@ -248,6 +256,7 @@ describe('link', () => {
   it('should support links to sub-pages with parent tabs page parameters', async () => {
     const action = createTestAction({
       appDefinition: {
+        name: 'Test App',
         defaultPage: '',
         pages: [
           {
@@ -272,6 +281,7 @@ describe('link', () => {
   it('should support dynamic links', async () => {
     const action = createTestAction({
       appDefinition: {
+        name: 'Test App',
         defaultPage: '',
         pages: [{ name: 'Page A', type: 'tabs', tabs: [{ name: 'Subpage B', blocks: [] }] }],
       },

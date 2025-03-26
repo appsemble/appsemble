@@ -48,7 +48,7 @@ describe('group', () => {
     vi.setSystemTime(0);
     const server = await createServer();
     testApp = await setTestApp(server);
-    initAxios({ remote: testApp.defaults.baseURL });
+    initAxios({ remote: testApp.defaults.baseURL! });
     user = await createTestUser();
     organization = await Organization.create({
       id: 'testorganization',
@@ -111,7 +111,7 @@ describe('group', () => {
       await createGroup({
         appId: app.id,
         name: 'test',
-        remote: testApp.defaults.baseURL,
+        remote: testApp.defaults.baseURL!,
         clientCredentials,
       });
 
@@ -135,7 +135,7 @@ describe('group', () => {
         createGroup({
           appId: 1,
           name: 'test',
-          remote: testApp.defaults.baseURL,
+          remote: testApp.defaults.baseURL!,
           clientCredentials,
         }),
       ).rejects.toThrow('Request failed with status code 404');
@@ -176,7 +176,7 @@ describe('group', () => {
       await deleteGroup({
         appId: app.id,
         id: group.id,
-        remote: testApp.defaults.baseURL,
+        remote: testApp.defaults.baseURL!,
         clientCredentials,
       });
       expect(group).toMatchInlineSnapshot(`
@@ -220,7 +220,7 @@ describe('group', () => {
       });
       const clientCredentials = await authorizeCLI('groups:write', testApp);
       await expect(() =>
-        deleteGroup({ appId: app.id, id: 1, remote: testApp.defaults.baseURL, clientCredentials }),
+        deleteGroup({ appId: app.id, id: 1, remote: testApp.defaults.baseURL!, clientCredentials }),
       ).rejects.toThrow('Request failed with status code 404');
     });
   });
@@ -258,7 +258,7 @@ describe('group', () => {
       await updateGroup({
         appId: app.id,
         id: group.id,
-        remote: testApp.defaults.baseURL,
+        remote: testApp.defaults.baseURL!,
         name: 'test2',
       });
       await group.reload();
@@ -309,7 +309,7 @@ describe('group', () => {
         updateGroup({
           appId: app.id,
           id: group.id,
-          remote: testApp.defaults.baseURL,
+          remote: testApp.defaults.baseURL!,
           name: 'test2',
           clientCredentials,
         }),
@@ -348,7 +348,7 @@ describe('group', () => {
         updateGroup({
           appId: app.id,
           id: group.id,
-          remote: testApp.defaults.baseURL,
+          remote: testApp.defaults.baseURL!,
           name: 'test2',
         }),
       ).rejects.toThrow('Request failed with status code 401');
@@ -391,11 +391,12 @@ describe('group', () => {
       await inviteMember({
         appId: app.id,
         id: group.id,
-        remote: testApp.defaults.baseURL,
+        remote: testApp.defaults.baseURL!,
+        // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
         user: user.primaryEmail,
         role: 'Reader',
       });
-      const invite = await GroupInvite.findOne();
+      const invite = (await GroupInvite.findOne())!;
       expect(invite.dataValues).toMatchInlineSnapshot(
         {
           key: expect.any(String),
@@ -443,7 +444,8 @@ describe('group', () => {
         inviteMember({
           appId: app.id,
           id: 10,
-          remote: testApp.defaults.baseURL,
+          remote: testApp.defaults.baseURL!,
+          // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
           user: user.primaryEmail,
           role: 'Reader',
         }),
@@ -494,7 +496,7 @@ describe('group', () => {
       await authorizeCLI('groups:write', testApp);
       await updateMember({
         appId: app.id,
-        remote: testApp.defaults.baseURL,
+        remote: testApp.defaults.baseURL!,
         user: groupMember.id,
         role: 'Updater',
         id: group.id,
@@ -547,7 +549,7 @@ describe('group', () => {
       await expect(() =>
         updateMember({
           appId: app.id,
-          remote: testApp.defaults.baseURL,
+          remote: testApp.defaults.baseURL!,
           user: user.id,
           role: 'Updater',
           id: group.id,
@@ -613,7 +615,7 @@ describe('group', () => {
         id: group.id,
         appId: app.id,
         user: groupMemberId,
-        remote: testApp.defaults.baseURL,
+        remote: testApp.defaults.baseURL!,
       });
       const foundGroupMember = await GroupMember.findByPk(groupMemberId);
       expect(foundGroupMember).toBeNull();
@@ -659,7 +661,7 @@ describe('group', () => {
       await expect(() =>
         deleteMember({
           appId: app.id,
-          remote: testApp.defaults.baseURL,
+          remote: testApp.defaults.baseURL!,
           user: user.id,
           id: group.id,
         }),

@@ -21,11 +21,12 @@ export async function callAppWebhook(ctx: Context): Promise<void> {
 
   assertKoaCondition(app != null, ctx, 404, 'App not found');
 
-  const webhookDefinition = app.definition.webhooks[webhookName];
+  const webhookDefinition = app.definition.webhooks?.[webhookName];
 
   assertKoaCondition(webhookDefinition != null, ctx, 404, 'Webhook not found');
 
   const parsedSchema = structuredClone(webhookDefinition.schema);
+  parsedSchema.properties ??= {};
   for (const [propertyName, propertySchema] of Object.entries(parsedSchema.properties)) {
     const schemaObject = propertySchema as OpenAPIV3.SchemaObject;
     if (schemaObject.type === 'string' && schemaObject.format === 'binary') {
@@ -42,13 +43,14 @@ export async function callAppWebhook(ctx: Context): Promise<void> {
 
   handleValidatorResult(
     ctx,
-    openApi.validate(body || {}, parsedSchema, {
+    openApi!.validate(body || {}, parsedSchema, {
       throw: false,
     }),
     'Webhook body validation failed',
   );
 
   const action = actions[webhookDefinition.action.type];
+  // @ts-expect-error Messed up
   await handleAction(action, {
     app,
     action: webhookDefinition.action,

@@ -50,7 +50,7 @@ export function NavbarDropdown({
     toggle.toggle();
   }, [toggle]);
 
-  const ref = useRef<HTMLDivElement>();
+  const ref = useRef<HTMLDivElement>(null);
   useClickOutside(ref, toggle.disable);
 
   return (

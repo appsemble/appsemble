@@ -74,7 +74,7 @@ describe('registerOAuth2Authorization', () => {
   it('should return the user info if the returned authorization response is unknown', async () => {
     argv.gitlabClientId = 'gitlab_client_id';
     argv.gitlabClientSecret = 'gitlab_client_secret';
-    let tokenRequest: AxiosRequestConfig;
+    let tokenRequest: AxiosRequestConfig | undefined;
     mock.onGet('https://gitlab.com/oauth/userinfo').reply(() => [
       200,
       {
@@ -143,7 +143,7 @@ describe('registerOAuth2Authorization', () => {
     authorizeStudio();
     argv.gitlabClientId = 'gitlab_client_id';
     argv.gitlabClientSecret = 'gitlab_client_secret';
-    let tokenRequest: AxiosRequestConfig;
+    let tokenRequest: AxiosRequestConfig | undefined;
     mock.onPost('https://gitlab.com/oauth/token').reply((config) => {
       tokenRequest = config;
       return [

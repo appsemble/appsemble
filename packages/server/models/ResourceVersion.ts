@@ -21,28 +21,28 @@ export class ResourceVersion extends Model {
   @IsUUID(4)
   @Default(DataType.UUIDV4)
   @Column(DataType.UUID)
-  id: string;
+  id!: string;
 
   @Column(DataType.JSON)
-  data: any;
+  data?: any;
 
   @ForeignKey(() => Resource)
   @AllowNull(false)
   @Column(DataType.INTEGER)
-  ResourceId: number;
+  ResourceId!: number;
 
   @BelongsTo(() => Resource)
-  Resource: Awaited<Resource>;
+  Resource?: Awaited<Resource>;
 
   @ForeignKey(() => AppMember)
   @Column(DataType.UUID)
-  AppMemberId: string;
+  AppMemberId?: string;
 
   @BelongsTo(() => AppMember, { onDelete: 'CASCADE' })
-  AppMember: Awaited<AppMember>;
+  AppMember?: Awaited<AppMember>;
 
   @CreatedAt
-  created: Date;
+  created!: Date;
 
   toJSON(): ResourceVersionType {
     return {

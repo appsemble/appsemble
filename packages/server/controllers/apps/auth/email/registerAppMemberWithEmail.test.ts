@@ -127,10 +127,10 @@ describe('registerAppMemberWithEmail', () => {
     `,
     );
 
-    const m = await AppMember.findOne({ where: { email: 'test@example.com' } });
+    const m = (await AppMember.findOne({ where: { email: 'test@example.com' } }))!;
 
     expect(m.password).not.toBe('password');
-    expect(await compare('password', m.password)).toBe(true);
+    expect(await compare('password', m.password!)).toBe(true);
   });
 
   it('should accept a display name', async () => {
@@ -166,7 +166,7 @@ describe('registerAppMemberWithEmail', () => {
     `,
     );
 
-    const m = await AppMember.findOne({ where: { email: 'test@example.com' } });
+    const m = (await AppMember.findOne({ where: { email: 'test@example.com' } }))!;
     expect(m.name).toBe('Me');
   });
 
@@ -184,7 +184,7 @@ describe('registerAppMemberWithEmail', () => {
       }),
     );
 
-    const m = await AppMember.findOne({ where: { email: 'test@example.com' } });
+    const m = (await AppMember.findOne({ where: { email: 'test@example.com' } }))!;
 
     const responseB = await request.get(`/api/app-members/${m.id}/picture`, {
       responseType: 'arraybuffer',

@@ -87,7 +87,7 @@ export async function handler({
   for (const path of files) {
     logger.info('');
     await publishAsset({
-      name: name || (useFileName ? parse(path).name : null),
+      name: name || (useFileName ? parse(path).name : undefined),
       appId: resolvedAppId,
       path,
       seed,

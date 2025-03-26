@@ -143,7 +143,9 @@ export const streamParser: Parser<Record<string, unknown>> = async (
     ctx.req.pipe(bb);
   });
 
-  const result = ctx.openApi.validate(response, schema, { throw: false });
+  // @ts-expect-error 2345 argument of type is not assignable to parameter of type
+  // (strictNullChecks) (schema may be undefined for some reason)
+  const result = ctx.openApi!.validate(response, schema, { throw: false });
   for (const [key, values] of Object.entries(tempFiles)) {
     const vals = Array.isArray(values) ? values : [values];
     for (const [index, value] of vals.entries()) {

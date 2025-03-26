@@ -24,7 +24,11 @@ export async function patchCurrentUserAppAccount(ctx: Context): Promise<void> {
     user: authSubject,
   } = ctx;
 
-  const { baseLanguage, language, query: includeOptions } = parseLanguage(ctx, ctx.query?.language);
+  const {
+    baseLanguage,
+    language,
+    query: includeOptions,
+  } = parseLanguage(ctx, ctx.query?.language ?? []);
 
   const app = await App.findOne({
     where: { id: appId },
@@ -56,7 +60,7 @@ export async function patchCurrentUserAppAccount(ctx: Context): Promise<void> {
   const appMember = await AppMember.findOne({
     where: {
       AppId: appId,
-      UserId: authSubject.id,
+      UserId: authSubject!.id,
     },
     include: [
       {

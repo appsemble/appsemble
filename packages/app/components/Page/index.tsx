@@ -69,7 +69,7 @@ export function Page(): ReactNode {
     setData({});
   }, [pageId]);
 
-  const [dialog, setDialog] = useState<ShowDialogParams>();
+  const [dialog, setDialog] = useState<ShowDialogParams | undefined>();
   const stepRef = useRef<unknown>();
   const tabRef = useRef<unknown>();
   const url = `/${lang}`;
@@ -205,7 +205,8 @@ export function Page(): ReactNode {
   const showDialog = useCallback((d: ShowDialogParams) => {
     setDialog(d);
     return () => {
-      setDialog(null);
+      // eslint-disable-next-line unicorn/no-useless-undefined
+      setDialog(undefined);
     };
   }, []);
 
@@ -286,7 +287,7 @@ export function Page(): ReactNode {
   // Remove the listeners from any previous pages
   useEffect(
     () => () => {
-      ee.current.removeAllListeners();
+      ee.current?.removeAllListeners();
     },
     [pageDefinition],
   );
@@ -346,7 +347,7 @@ export function Page(): ReactNode {
   // If the user is on an existing page and is allowed to view it, render it.
   if (pageDefinition && checkPagePermissionsCallback(pageDefinition)) {
     const pageName = getAppMessage({
-      id: prefix,
+      id: prefix ?? undefined,
       defaultMessage: pageDefinition.name,
     }).format() as string;
     const normalizedPageName = normalize(pageName);
@@ -410,7 +411,9 @@ export function Page(): ReactNode {
                     <Navigate
                       to={pathname.replace(
                         pageId,
-                        normalize(pageDefinition.pages.find(checkPagePermissionsCallback).name),
+                        // @ts-expect-error 2345 argument of type is not assignable to parameter
+                        // of type (strictNullChecks)
+                        normalize(pageDefinition.pages.find(checkPagePermissionsCallback)?.name),
                       )}
                     />
                   ) : (
@@ -469,8 +472,10 @@ export function Page(): ReactNode {
   // @ts-expect-error 2345 argument of type is not assignable to parameter of type
   // (strictNullChecks)
   if (checkPagePermissionsCallback(defaultPage)) {
-    const defaultPagePrefix = `pages.${normalize(defaultPage.name)}`;
-    let pageName = defaultPage.name;
+    // @ts-expect-error 2345 argument of type is not assignable to parameter of type
+    // (strictNullChecks)
+    const defaultPagePrefix = `pages.${normalize(defaultPage?.name)}`;
+    let pageName = defaultPage?.name;
 
     if (appMessageIds.includes(defaultPagePrefix)) {
       pageName = getAppMessage({ id: defaultPagePrefix }).format() as string;

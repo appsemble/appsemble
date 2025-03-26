@@ -46,6 +46,8 @@ export async function resendAppMemberEmailVerification(ctx: Context): Promise<vo
   );
 
   const url = new URL('/Verify', getAppUrl(app));
+  // @ts-expect-error 2345 argument of type is not assignable to parameter of type
+  // (strictNullChecks)
   url.searchParams.set('token', appMember.emailKey);
 
   mailer

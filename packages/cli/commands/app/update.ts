@@ -127,7 +127,7 @@ export async function handler({
   for (const dir of directories) {
     await updateApp({
       ...args,
-      clientCredentials,
+      clientCredentials: clientCredentials ?? '',
       id,
       path: dir,
       remote,

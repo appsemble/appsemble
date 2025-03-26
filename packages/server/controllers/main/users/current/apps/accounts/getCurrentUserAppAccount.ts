@@ -20,7 +20,11 @@ export async function getCurrentUserAppAccount(ctx: Context): Promise<void> {
     user: authSubject,
   } = ctx;
 
-  const { baseLanguage, language, query: includeOptions } = parseLanguage(ctx, ctx.query?.language);
+  const {
+    baseLanguage,
+    language,
+    query: includeOptions,
+  } = parseLanguage(ctx, ctx.query?.language ?? []);
 
   const app = await App.findByPk(appId, {
     attributes: {
@@ -47,7 +51,7 @@ export async function getCurrentUserAppAccount(ctx: Context): Promise<void> {
         attributes: {
           exclude: ['picture'],
         },
-        where: { UserId: authSubject.id },
+        where: { UserId: authSubject!.id },
         include: [
           {
             model: AppSamlAuthorization,

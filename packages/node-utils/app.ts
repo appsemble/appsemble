@@ -100,7 +100,7 @@ function replaceStyle(
   selector: string,
   property: string,
   value: string,
-): CssNode {
+): CssNode | undefined {
   try {
     walk(stylesheet, (nodeSelector) => {
       if (nodeSelector.type !== 'Rule' || nodeSelector.prelude.type !== 'Raw') {

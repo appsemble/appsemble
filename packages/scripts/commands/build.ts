@@ -39,8 +39,8 @@ interface Args {
 
 export async function handler({ app, appStats, studio, studioStats }: Args): Promise<void> {
   const configurations: Configuration[] = [];
-  let appConfig: Configuration;
-  let studioConfig: Configuration;
+  let appConfig: Configuration | undefined;
+  let studioConfig: Configuration | undefined;
   const outputDir = new URL('../../../dist/', import.meta.url);
   logger.warn(`Removing directory: ${outputDir}`);
   await rm(outputDir, { force: true, recursive: true });
@@ -57,21 +57,27 @@ export async function handler({ app, appStats, studio, studioStats }: Args): Pro
     compiler.run((error, stats) => {
       if (error) {
         reject(error);
-      } else if (stats.hasErrors()) {
+      } else if (stats?.hasErrors()) {
         reject(stats.toString({ colors: true }));
       } else {
-        logger.info(stats.toString({ colors: true, reasons: true }));
-        resolvePromise(stats);
+        logger.info(stats?.toString({ colors: true, reasons: true }));
+        resolvePromise(stats!);
       }
     });
   });
 
-  function writeStats(filename: string, config: Configuration): Promise<string> {
+  function writeStats(filename: string, config: Configuration): Promise<string | undefined> {
     if (filename && config) {
       logger.info(`Writing stats for ${config.name} to ${filename}`);
       return writeData(filename, result.stats[configurations.indexOf(config)].toJson());
     }
+    // eslint-disable-next-line unicorn/no-useless-undefined
+    return Promise.resolve(undefined);
   }
-  await writeStats(appStats, appConfig);
-  await writeStats(studioStats, studioConfig);
+  if (app) {
+    await writeStats(appStats, appConfig!);
+  }
+  if (studio) {
+    await writeStats(studioStats, studioConfig!);
+  }
 }

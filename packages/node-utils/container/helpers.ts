@@ -121,7 +121,7 @@ export function parseServiceUrl(url: string): {
   return { deploymentName, appId, appName, namespace };
 }
 
-export function validateContainerResources(resources: ContainerResources): ContainerResources {
+export function validateContainerResources(resources?: ContainerResources): ContainerResources {
   // Validate Memory
   if (!resources || !resources.limits) {
     return { limits: resourceDefaults };

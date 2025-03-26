@@ -23,31 +23,31 @@ export class GroupMember extends Model {
   @IsUUID(4)
   @Default(DataType.UUIDV4)
   @Column(DataType.UUID)
-  id: string;
+  id!: string;
 
   @AllowNull(false)
   @Column(DataType.STRING)
-  role: AppRole;
+  role!: AppRole;
 
   @PrimaryKey
   @ForeignKey(() => Group)
   @Column(DataType.INTEGER)
-  GroupId: number;
+  GroupId!: number;
 
   @PrimaryKey
   @ForeignKey(() => AppMember)
   @Column(DataType.UUID)
-  AppMemberId: string;
+  AppMemberId!: string;
 
   @BelongsTo(() => AppMember)
-  AppMember: Awaited<AppMember>;
+  AppMember?: Awaited<AppMember>;
 
   @BelongsTo(() => Group)
-  Group: Awaited<Group>;
+  Group?: Awaited<Group>;
 
   @CreatedAt
-  created: Date;
+  created!: Date;
 
   @UpdatedAt
-  updated: Date;
+  updated!: Date;
 }

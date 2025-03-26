@@ -132,31 +132,35 @@ async function validate(
   /**
    * Validate package.json
    */
-  const pkgNameMatch = pkg.name.match(/^(@(?<scope>[a-z-]+)\/)?(?<name>[a-z-]+[\da-z-]+)$/);
+  const pkgNameMatch = pkg.name!.match(/^(@(?<scope>[a-z-]+)\/)?(?<name>[a-z-]+[\da-z-]+)$/);
   const isBlock = basename(dirname(dir)) === 'blocks';
   const isController = basename(dir) === 'controller';
 
   assert(
-    basename(dir) === pkgNameMatch?.groups.name,
+    basename(dir) === pkgNameMatch?.groups?.name,
     '',
     'Base directory should match package name',
   );
   assert(
-    pkgNameMatch?.groups.scope === 'appsemble' ||
-      unscopedPackageNames.has(pkgNameMatch?.groups.name),
+    pkgNameMatch?.groups?.scope === 'appsemble' ||
+      // @ts-expect-error 2345 argument of type is not assignable to parameter of type
+      // (strictNullChecks)
+      unscopedPackageNames.has(pkgNameMatch?.groups?.name),
     'package.json',
     'Name should use the @appsemble scope',
   );
   if (!isBlock && !isController) {
     for (const keyword of ['app', 'apps', 'framework', 'low-code', 'lowcode']) {
       assert(
-        pkg.keywords.includes(keyword),
+        (pkg.keywords ?? []).includes(keyword),
         'package.json',
         `Keywords should at least contain ${keyword}`,
       );
     }
     assert(
-      pkg.keywords.every((keyword, i) => !i || pkg.keywords[i - 1].localeCompare(keyword) < 0),
+      (pkg.keywords ?? []).every(
+        (keyword, i) => !i || pkg.keywords![i - 1].localeCompare(keyword) < 0,
+      ),
       'package.json',
       'Keywords should be sorted alphabetically',
     );
@@ -205,7 +209,7 @@ async function validate(
   );
   assert(pkg.scripts?.test === 'vitest', 'package.json', 'Test script should be "vitest"');
   for (const version of Object.values({ ...pkg.dependencies, ...pkg.devDependencies })) {
-    if (version.startsWith('@appsemnle/')) {
+    if ((version ?? '').startsWith('@appsemnle/')) {
       assert(
         version === latestVersion,
         'package.json',
@@ -274,12 +278,13 @@ async function validateContext(assert: Assert, types: string, cli: string): Prom
   const cliContent = await readFile(cliFile, 'utf8');
   const [rcContent] = await readData(rcFile);
   const file = ts.createSourceFile('temp.ts', cliContent, ts.ScriptTarget.ES2019);
+  // @ts-expect-error 2532 Object is possibly undefined
   const props = file.statements
     .find(ts.isInterfaceDeclaration)
     .members.filter(ts.isPropertySignature);
 
   // TODO: validate recursively
-  const interfaceProps = props.map((p) => ({
+  const interfaceProps = props?.map((p) => ({
     name: p.name.getText(file),
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-expect-error
@@ -334,17 +339,22 @@ export async function handler(): Promise<void> {
         filename,
         message,
         pass,
+        // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
         workspace: { dir: workspace, pkg: '' as unknown as PackageJson },
       }),
+    // @ts-expect-error 2345 argument of type is not assignable to parameter of type
+    // (strictNullChecks)
     paths.find((path) => path.endsWith('types')),
     paths.find((path) => path.endsWith('cli')),
   );
 
   const workspaces = allWorkspaces
-    .filter(({ pkg }) => !pkg.name.startsWith('@types/'))
+    .filter(({ pkg }) => !(pkg.name ?? '').startsWith('@types/'))
     .sort((a, b) => a.dir.localeCompare(b.dir));
 
   const latestVersion = semver.maxSatisfying(
+    // @ts-expect-error 2345 argument of type is not assignable to parameter of type
+    // (strictNullChecks)
     workspaces.map(({ pkg }) => pkg.version),
     '*',
     { includePrerelease: true },
@@ -354,6 +364,8 @@ export async function handler(): Promise<void> {
     await validate(
       (pass, filename, message) => results.push({ filename, message, pass, workspace }),
       workspace,
+      // @ts-expect-error 2345 argument of type is not assignable to parameter of type
+      // (strictNullChecks)
       latestVersion,
     );
   }

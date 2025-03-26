@@ -48,8 +48,8 @@ describe('registerCurrentUserOAuth2ClientCredentials', () => {
         secret: expect.stringMatching(/^[\da-z]{64}$/),
       },
     });
-    const credentials = await OAuth2ClientCredentials.findOne();
-    expect(await compare(response.data.secret, credentials.secret)).toBe(true);
+    const credentials = (await OAuth2ClientCredentials.findOne())!;
+    expect(await compare(response.data.secret!, credentials.secret)).toBe(true);
   });
 
   it('should not allow to create already expired client credentials', async () => {

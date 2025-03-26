@@ -160,7 +160,7 @@ export function SideNavigation({ blockMenus, pages }: SideNavigationProps): Reac
           {menu.items.map((item) => (
             <Fragment key={`${menu.path}/${item.title}`}>
               <MenuButton
-                active={item.active}
+                active={item.active ?? false}
                 icon={item.icon}
                 iconColor={item.iconColor}
                 onClick={() => item.onClick()}
@@ -172,7 +172,7 @@ export function SideNavigation({ blockMenus, pages }: SideNavigationProps): Reac
                 <MenuSection className="mt-2">
                   {item.submenu.map((subItem) => (
                     <MenuButton
-                      active={subItem.active}
+                      active={subItem.active ?? false}
                       icon={subItem.icon}
                       iconColor={subItem.iconColor}
                       isChild

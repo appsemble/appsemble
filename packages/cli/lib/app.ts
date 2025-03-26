@@ -78,9 +78,9 @@ export async function traverseAppDirectory(
     logger.warn(`Could not read ${join(path, 'i18n')}. No supported languages found.`);
   }
 
-  const gatheredData: App = {
+  const gatheredData: Partial<App> & { screenshotUrls: string[] } = {
     screenshotUrls: [],
-  } as App;
+  };
 
   logger.info(`Traversing directory for App files in ${path} 🕵`);
   await opendirSafe(path, async (filepath, filestat) => {
@@ -103,7 +103,7 @@ export async function traverseAppDirectory(
           gatheredData.iconBackground = rc.iconBackground;
         }
         if (context && has(rc?.context, context)) {
-          discoveredContext = rc.context[context];
+          discoveredContext = rc.context![context];
           logger.verbose(`Using context: ${inspect(discoveredContext, { colors: true })}`);
         }
         break;
@@ -192,7 +192,8 @@ export async function traverseAppDirectory(
         controllerBuildConfig = await getProjectBuildConfig(controllerPath);
         controllerBuildResult = await buildProject(controllerBuildConfig);
 
-        controllerCode = controllerBuildResult.outputFiles[0].text;
+        // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
+        controllerCode = controllerBuildResult.outputFiles?.[0].text;
 
         formData.append('controllerCode', controllerCode);
         gatheredData.controllerCode = controllerCode;
@@ -213,7 +214,6 @@ export async function traverseAppDirectory(
     throw new AppsembleError('No app definition found');
   }
   discoveredContext ||= {};
-
   // @ts-expect-error 2454 Variable used before it was assigned
   // eslint-disable-next-line prettier/prettier
   discoveredContext.icon = discoveredContext.icon ? resolve(path, discoveredContext.icon) : iconPath;
@@ -244,7 +244,7 @@ async function retrieveContext(path: string, context: string): Promise<Appsemble
         logger.info(`Reading app settings from ${filepath}`);
         [rc] = await readData<AppsembleRC>(filepath);
         if (context && has(rc?.context, context)) {
-          discoveredContext = rc.context[context];
+          discoveredContext = rc.context![context];
           logger.verbose(`Using context: ${inspect(discoveredContext, { colors: true })}`);
         }
         break;
@@ -774,7 +774,7 @@ export async function writeAppMessages(
   format: 'json' | 'yaml',
 ): Promise<void> {
   logger.info(`Extracting messages from ${path}`);
-  let app: AppDefinition;
+  let app: AppDefinition | undefined;
   let i18nDir = join(path, 'i18n');
   const messageFiles = new Set<string>();
 
@@ -1239,7 +1239,7 @@ export async function publishApp({
       throw error;
     }
     throw new AppsembleError(
-      printAxiosError(filename, yaml, (error.response.data as any).data.errors),
+      printAxiosError(filename, yaml, (error.response?.data as any).data.errors),
     );
   }
 
@@ -1563,7 +1563,7 @@ export async function updateApp({
       throw error;
     }
     throw new AppsembleError(
-      printAxiosError(filename, yaml, (error.response.data as any).data.errors),
+      printAxiosError(filename, yaml, (error.response?.data as any).data.errors),
     );
   }
 

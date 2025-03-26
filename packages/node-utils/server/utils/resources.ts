@@ -36,7 +36,7 @@ export async function deleteResourcesRecursively(
 ): Promise<void> {
   const { deleteAppResource, getAppResources } = options;
 
-  const referencingResources = Object.entries(app.definition.resources).filter(
+  const referencingResources = Object.entries(app.definition.resources ?? {}).filter(
     ([, resourceDefinition]) =>
       Object.values(resourceDefinition.references ?? {}).find(
         (resourceReference) => resourceReference.resource === type,

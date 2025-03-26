@@ -54,7 +54,7 @@ describe('app', () => {
     vi.setSystemTime(0);
     const server = await createServer();
     testApp = await setTestApp(server);
-    initAxios({ remote: testApp.defaults.baseURL });
+    initAxios({ remote: testApp.defaults.baseURL! });
     user = await createTestUser();
     organization = await Organization.create({
       id: 'testorganization',
@@ -94,14 +94,14 @@ describe('app', () => {
       await publishApp({
         path: resolveFixture('apps/test'),
         organization: organization.id,
-        remote: testApp.defaults.baseURL,
+        remote: testApp.defaults.baseURL!,
         clientCredentials,
         // Required defaults
         visibility: 'unlisted',
         iconBackground: '#ffffff',
       });
       vi.useFakeTimers();
-      const app = await App.findOne();
+      const app = (await App.findOne())!;
       expect(app.toJSON()).toMatchInlineSnapshot(
         {
           $created: expect.stringMatching(ISODateTimePattern),
@@ -203,11 +203,11 @@ describe('app', () => {
       );
       expect(app.icon).toStrictEqual(await readFixture('apps/test/icon.png'));
       expect(app.maskableIcon).toStrictEqual(await readFixture('apps/test/maskable-icon.png'));
-      const appBlockStyle = await AppBlockStyle.findOne();
+      const appBlockStyle = (await AppBlockStyle.findOne())!;
       expect(appBlockStyle.style).toBe(`.tux {
   color: rgb(0 0 0);
 }`);
-      const appScreenshot = await AppScreenshot.findOne();
+      const appScreenshot = (await AppScreenshot.findOne())!;
       expect(appScreenshot.screenshot).toStrictEqual(
         await readFixture('apps/test/screenshots/test_en-us.png'),
       );
@@ -229,7 +229,7 @@ describe('app', () => {
         publishApp({
           path: resolveFixture('apps/test'),
           organization: organization.id,
-          remote: testApp.defaults.baseURL,
+          remote: testApp.defaults.baseURL!,
           clientCredentials,
           // Required defaults
           visibility: 'unlisted',
@@ -246,7 +246,7 @@ describe('app', () => {
       await publishApp({
         path: resolveFixture('apps/test'),
         organization: organization.id,
-        remote: testApp.defaults.baseURL,
+        remote: testApp.defaults.baseURL!,
         clientCredentials,
         // Required defaults
         visibility: 'unlisted',
@@ -266,7 +266,7 @@ describe('app', () => {
       await publishApp({
         path: resolveFixture('apps/test'),
         organization: organization.id,
-        remote: testApp.defaults.baseURL,
+        remote: testApp.defaults.baseURL!,
         clientCredentials,
         // Required defaults
         visibility: 'unlisted',
@@ -276,7 +276,7 @@ describe('app', () => {
         assets: true,
       });
       vi.useFakeTimers();
-      const app = await App.findOne();
+      const app = (await App.findOne())!;
       expect(app.toJSON()).toMatchInlineSnapshot(
         {
           $created: expect.stringMatching(ISODateTimePattern),
@@ -378,11 +378,11 @@ describe('app', () => {
       );
       expect(app.icon).toStrictEqual(await readFixture('apps/test/icon.png'));
       expect(app.maskableIcon).toStrictEqual(await readFixture('apps/test/maskable-icon.png'));
-      const appBlockStyle = await AppBlockStyle.findOne();
+      const appBlockStyle = (await AppBlockStyle.findOne())!;
       expect(appBlockStyle.style).toBe(`.tux {
   color: rgb(0 0 0);
 }`);
-      const appScreenshot = await AppScreenshot.findOne();
+      const appScreenshot = (await AppScreenshot.findOne())!;
       expect(appScreenshot.screenshot).toStrictEqual(
         await readFixture('apps/test/screenshots/test_en-us.png'),
       );
@@ -436,7 +436,7 @@ describe('app', () => {
       await publishApp({
         path: resolveFixture('apps/test'),
         organization: organization.id,
-        remote: testApp.defaults.baseURL,
+        remote: testApp.defaults.baseURL!,
         clientCredentials,
         // Required defaults
         visibility: 'unlisted',
@@ -445,7 +445,7 @@ describe('app', () => {
         context: 'test',
       });
       vi.useFakeTimers();
-      const app = await App.findOne();
+      const app = (await App.findOne())!;
       expect(app.toJSON()).toMatchInlineSnapshot(
         {
           $created: expect.stringMatching(ISODateTimePattern),
@@ -547,11 +547,11 @@ describe('app', () => {
       );
       expect(app.icon).toStrictEqual(await readFixture('apps/test/icon.png'));
       expect(app.maskableIcon).toStrictEqual(await readFixture('apps/test/maskable-icon.png'));
-      const appBlockStyle = await AppBlockStyle.findOne();
+      const appBlockStyle = (await AppBlockStyle.findOne())!;
       expect(appBlockStyle.style).toBe(`.tux {
   color: rgb(0 0 0);
 }`);
-      const appScreenshot = await AppScreenshot.findOne();
+      const appScreenshot = (await AppScreenshot.findOne())!;
       expect(appScreenshot.screenshot).toStrictEqual(
         await readFixture('apps/test/screenshots/test_en-us.png'),
       );
@@ -596,7 +596,7 @@ describe('app', () => {
       expect(
         await Promise.all(assets.map((a) => getS3FileBuffer(`app-${app.id}`, a.id))),
       ).toStrictEqual([tuxAvifData, tuxAvifData]);
-      const appCollectionApp = await AppCollectionApp.findOne();
+      const appCollectionApp = (await AppCollectionApp.findOne())!;
       expect(appCollectionApp.AppId).toBe(1);
       expect(appCollectionApp.AppCollectionId).toBe(1);
     });
@@ -610,7 +610,7 @@ describe('app', () => {
       await publishApp({
         path: resolveFixture('apps/test'),
         organization: organization.id,
-        remote: testApp.defaults.baseURL,
+        remote: testApp.defaults.baseURL!,
         clientCredentials,
         // Required defaults
         visibility: 'unlisted',
@@ -621,7 +621,7 @@ describe('app', () => {
         assets: true,
       });
       vi.useFakeTimers();
-      const app = await App.findOne();
+      const app = (await App.findOne())!;
       expect(app.toJSON()).toMatchInlineSnapshot(
         {
           $created: expect.stringMatching(ISODateTimePattern),
@@ -719,9 +719,9 @@ describe('app', () => {
       expect(app.maskableIcon).toStrictEqual(
         await readFixture('apps/test/variants/tux/maskable-icon.png'),
       );
-      const appBlockStyle = await AppBlockStyle.findOne();
+      const appBlockStyle = (await AppBlockStyle.findOne())!;
       expect(appBlockStyle.style).toBe('.tux{color:rgb(1 2 3)}');
-      const appScreenshot = await AppScreenshot.findOne();
+      const appScreenshot = (await AppScreenshot.findOne())!;
       expect(appScreenshot.screenshot).toStrictEqual(
         await readFixture('apps/test/variants/tux/screenshots/tux.png'),
       );
@@ -789,7 +789,7 @@ describe('app', () => {
       await publishApp({
         path: resolveFixture('apps/test'),
         organization: organization.id,
-        remote: testApp.defaults.baseURL,
+        remote: testApp.defaults.baseURL!,
         clientCredentials,
         visibility: 'unlisted',
         iconBackground: '#ffffff',
@@ -797,12 +797,12 @@ describe('app', () => {
 
       vi.useFakeTimers();
 
-      const app = await App.findOne({
+      const app = (await App.findOne({
         attributes: ['scimEnabled', 'scimToken', 'sslKey', 'sslCertificate'],
         where: {
           id: 1,
         },
-      });
+      }))!;
 
       expect({
         scimEnabled: app.scimEnabled,
@@ -833,12 +833,12 @@ describe('app', () => {
         value: 'test-variable-1.test-variable-2',
       });
 
-      const appServiceSecret = await AppServiceSecret.findOne({
+      const appServiceSecret = (await AppServiceSecret.findOne({
         attributes: ['name', 'authenticationMethod', 'urlPatterns', 'identifier', 'secret'],
         where: {
           AppId: 1,
         },
-      });
+      }))!;
 
       expect(appServiceSecret.toJSON()).toStrictEqual({
         name: 'test-service-secret',
@@ -848,7 +848,7 @@ describe('app', () => {
         secret: expect.any(Buffer),
       });
 
-      const appSamlSecret = await AppSamlSecret.findOne({
+      const appSamlSecret = (await AppSamlSecret.findOne({
         attributes: [
           'name',
           'icon',
@@ -861,7 +861,7 @@ describe('app', () => {
         where: {
           AppId: 1,
         },
-      });
+      }))!;
 
       expect(appSamlSecret.toJSON()).toStrictEqual({
         emailAttribute: 'email',
@@ -876,7 +876,7 @@ describe('app', () => {
         spCertificate: expect.any(String),
       });
 
-      const appOauth2Secret = await AppOAuth2Secret.findOne({
+      const appOauth2Secret = (await AppOAuth2Secret.findOne({
         attributes: [
           'name',
           'icon',
@@ -891,7 +891,7 @@ describe('app', () => {
         where: {
           AppId: 1,
         },
-      });
+      }))!;
 
       expect({
         authorizationUrl: appOauth2Secret.authorizationUrl,
@@ -930,7 +930,7 @@ describe('app', () => {
         publishApp({
           path: resolveFixture('apps/test'),
           organization: organization.id,
-          remote: testApp.defaults.baseURL,
+          remote: testApp.defaults.baseURL!,
           clientCredentials,
           // Required defaults
           visibility: 'unlisted',
@@ -962,7 +962,7 @@ describe('app', () => {
       await updateApp({
         id: app.id,
         path: resolveFixture('apps/test'),
-        remote: testApp.defaults.baseURL,
+        remote: testApp.defaults.baseURL!,
         clientCredentials,
         // Required defaults
         visibility: 'unlisted',
@@ -1072,11 +1072,11 @@ describe('app', () => {
       );
       expect(app.icon).toStrictEqual(await readFixture('apps/test/icon.png'));
       expect(app.maskableIcon).toStrictEqual(await readFixture('apps/test/maskable-icon.png'));
-      const appBlockStyle = await AppBlockStyle.findOne();
+      const appBlockStyle = (await AppBlockStyle.findOne())!;
       expect(appBlockStyle.style).toBe(`.tux {
   color: rgb(0 0 0);
 }`);
-      const appScreenshot = await AppScreenshot.findOne();
+      const appScreenshot = (await AppScreenshot.findOne())!;
       expect(appScreenshot.screenshot).toStrictEqual(
         await readFixture('apps/test/screenshots/test_en-us.png'),
       );
@@ -1099,7 +1099,7 @@ describe('app', () => {
           id: app.id,
           force: false,
           path: resolveFixture('apps/test'),
-          remote: testApp.defaults.baseURL,
+          remote: testApp.defaults.baseURL!,
           clientCredentials,
           // Required defaults
           visibility: 'unlisted',
@@ -1127,7 +1127,7 @@ describe('app', () => {
       await updateApp({
         id: app.id,
         path: resolveFixture('apps/test'),
-        remote: testApp.defaults.baseURL,
+        remote: testApp.defaults.baseURL!,
         clientCredentials,
         // Required defaults
         visibility: 'unlisted',
@@ -1240,11 +1240,11 @@ describe('app', () => {
       );
       expect(app.icon).toStrictEqual(await readFixture('apps/test/icon.png'));
       expect(app.maskableIcon).toStrictEqual(await readFixture('apps/test/maskable-icon.png'));
-      const appBlockStyle = await AppBlockStyle.findOne();
+      const appBlockStyle = (await AppBlockStyle.findOne())!;
       expect(appBlockStyle.style).toBe(`.tux {
   color: rgb(0 0 0);
 }`);
-      const appScreenshot = await AppScreenshot.findOne();
+      const appScreenshot = (await AppScreenshot.findOne())!;
       expect(appScreenshot.screenshot).toStrictEqual(
         await readFixture('apps/test/screenshots/test_en-us.png'),
       );
@@ -1298,7 +1298,7 @@ describe('app', () => {
       await updateApp({
         path: resolveFixture('apps/test'),
         id: app.id,
-        remote: testApp.defaults.baseURL,
+        remote: testApp.defaults.baseURL!,
         clientCredentials,
         // Required defaults
         visibility: 'unlisted',
@@ -1410,11 +1410,11 @@ describe('app', () => {
       );
       expect(app.icon).toStrictEqual(await readFixture('apps/test/icon.png'));
       expect(app.maskableIcon).toStrictEqual(await readFixture('apps/test/maskable-icon.png'));
-      const appBlockStyle = await AppBlockStyle.findOne();
+      const appBlockStyle = (await AppBlockStyle.findOne())!;
       expect(appBlockStyle.style).toBe(`.tux {
   color: rgb(0 0 0);
 }`);
-      const appScreenshot = await AppScreenshot.findOne();
+      const appScreenshot = (await AppScreenshot.findOne())!;
       expect(appScreenshot.screenshot).toStrictEqual(
         await readFixture('apps/test/screenshots/test_en-us.png'),
       );
@@ -1474,7 +1474,7 @@ describe('app', () => {
       await updateApp({
         path: resolveFixture('apps/test'),
         id: app.id,
-        remote: testApp.defaults.baseURL,
+        remote: testApp.defaults.baseURL!,
         clientCredentials,
         // Required defaults
         visibility: 'unlisted',
@@ -1584,9 +1584,9 @@ describe('app', () => {
       expect(app.maskableIcon).toStrictEqual(
         await readFixture('apps/test/variants/tux/maskable-icon.png'),
       );
-      const appBlockStyle = await AppBlockStyle.findOne();
+      const appBlockStyle = (await AppBlockStyle.findOne())!;
       expect(appBlockStyle.style).toBe('.tux{color:rgb(1 2 3)}');
-      const appScreenshot = await AppScreenshot.findOne();
+      const appScreenshot = (await AppScreenshot.findOne())!;
       expect(appScreenshot.screenshot).toStrictEqual(
         await readFixture('apps/test/variants/tux/screenshots/tux.png'),
       );
@@ -1651,7 +1651,7 @@ describe('app', () => {
       await updateApp({
         id: 1,
         path: resolveFixture('apps/test'),
-        remote: testApp.defaults.baseURL,
+        remote: testApp.defaults.baseURL!,
         clientCredentials,
         visibility: 'unlisted',
         iconBackground: '#ffffff',
@@ -1660,12 +1660,12 @@ describe('app', () => {
 
       vi.useFakeTimers();
 
-      const updatedApp = await App.findOne({
+      const updatedApp = (await App.findOne({
         attributes: ['scimEnabled', 'scimToken', 'sslKey', 'sslCertificate'],
         where: {
           id: 1,
         },
-      });
+      }))!;
 
       expect({
         scimEnabled: updatedApp.scimEnabled,
@@ -1696,12 +1696,12 @@ describe('app', () => {
         value: 'test-variable-1.test-variable-2',
       });
 
-      const appServiceSecret = await AppServiceSecret.findOne({
+      const appServiceSecret = (await AppServiceSecret.findOne({
         attributes: ['name', 'authenticationMethod', 'urlPatterns', 'identifier', 'secret'],
         where: {
           AppId: 1,
         },
-      });
+      }))!;
 
       expect(appServiceSecret.toJSON()).toStrictEqual({
         name: 'test-service-secret',
@@ -1711,7 +1711,7 @@ describe('app', () => {
         secret: expect.any(Buffer),
       });
 
-      const appSamlSecret = await AppSamlSecret.findOne({
+      const appSamlSecret = (await AppSamlSecret.findOne({
         attributes: [
           'name',
           'icon',
@@ -1724,7 +1724,7 @@ describe('app', () => {
         where: {
           AppId: 1,
         },
-      });
+      }))!;
 
       expect(appSamlSecret.toJSON()).toStrictEqual({
         emailAttribute: 'email',
@@ -1739,7 +1739,7 @@ describe('app', () => {
         spCertificate: expect.any(String),
       });
 
-      const appOauth2Secret = await AppOAuth2Secret.findOne({
+      const appOauth2Secret = (await AppOAuth2Secret.findOne({
         attributes: [
           'name',
           'icon',
@@ -1754,7 +1754,7 @@ describe('app', () => {
         where: {
           AppId: 1,
         },
-      });
+      }))!;
 
       expect({
         authorizationUrl: appOauth2Secret.authorizationUrl,
@@ -1785,7 +1785,7 @@ describe('app', () => {
       await updateApp({
         path: resolveFixture('apps/test'),
         force: true,
-        remote: testApp.defaults.baseURL,
+        remote: testApp.defaults.baseURL!,
         id: app.id,
         clientCredentials,
         visibility: 'public',
@@ -1893,7 +1893,7 @@ describe('app', () => {
         updateApp({
           path: resolveFixture('apps/test'),
           force: false,
-          remote: testApp.defaults.baseURL,
+          remote: testApp.defaults.baseURL!,
           id: app.id,
           clientCredentials,
           visibility: 'public',
@@ -1965,7 +1965,7 @@ describe('app', () => {
           path: resolveFixture('apps/test'),
           id: app.id,
           force: false,
-          remote: testApp.defaults.baseURL,
+          remote: testApp.defaults.baseURL!,
           clientCredentials,
           // Required defaults
           visibility: 'unlisted',
@@ -2055,7 +2055,7 @@ describe('app', () => {
       await authorizeCLI('apps:write', testApp);
       await patchApp({
         ...patches,
-        remote: testApp.defaults.baseURL,
+        remote: testApp.defaults.baseURL!,
         id: app.id,
       });
       await app.reload();
@@ -2152,7 +2152,7 @@ describe('app', () => {
       await authorizeCLI('apps:write', testApp);
       await patchApp({
         [key]: to,
-        remote: testApp.defaults.baseURL,
+        remote: testApp.defaults.baseURL!,
         id: app.id,
       });
       expect(app.dataValues[key]).toStrictEqual(from);
@@ -2176,7 +2176,7 @@ describe('app', () => {
       );
       await authorizeCLI('apps:write', testApp);
       await patchApp({
-        remote: testApp.defaults.baseURL,
+        remote: testApp.defaults.baseURL!,
         id: app.id,
         showAppDefinition: true,
       });
@@ -2201,7 +2201,7 @@ describe('app', () => {
       );
       await authorizeCLI('apps:write', testApp);
       await patchApp({
-        remote: testApp.defaults.baseURL,
+        remote: testApp.defaults.baseURL!,
         id: app.id,
         showAppDefinition: true,
         force: true,
@@ -2432,7 +2432,7 @@ describe('app', () => {
     it('should throw if an error occurs', async () => {
       const clientCredentials = await authorizeCLI('apps:delete', testApp);
       await expect(() =>
-        deleteApp({ id: 1, remote: testApp.defaults.baseURL, clientCredentials }),
+        deleteApp({ id: 1, remote: testApp.defaults.baseURL!, clientCredentials }),
       ).rejects.toThrow('Request failed with status code 404');
     });
 
@@ -2446,7 +2446,7 @@ describe('app', () => {
         OrganizationId: organization.id,
       });
       const clientCredentials = await authorizeCLI('apps:delete', testApp);
-      await deleteApp({ id: app.id, remote: testApp.defaults.baseURL, clientCredentials });
+      await deleteApp({ id: app.id, remote: testApp.defaults.baseURL!, clientCredentials });
       const foundApps = await App.findAll();
       expect(foundApps).toStrictEqual([]);
     });

@@ -11,7 +11,7 @@ const serviceWorkerRegistrationPromise =
   navigator.serviceWorker?.register('/service-worker.js') ||
   Promise.reject(new Error('Service worker not available'));
 
-createRoot(document.getElementById('app')).render(
+createRoot(document.getElementById('app')!).render(
   <App serviceWorkerRegistrationPromise={serviceWorkerRegistrationPromise} />,
 );
 

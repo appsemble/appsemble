@@ -136,7 +136,7 @@ export async function checkAppMemberAppPermissions({
     return;
   }
 
-  const appMember = await AppMember.findByPk(authSubject.id, { attributes: ['id'] });
+  const appMember = await AppMember.findByPk(authSubject!.id, { attributes: ['id'] });
 
   assertKoaCondition(appMember != null, context, 403, 'App member not found');
 
@@ -166,9 +166,9 @@ export async function checkUserAppPermissions({
     return;
   }
 
-  const userAppRole = await getUserAppRole(authSubject.id, appId, groupId);
+  const userAppRole = await getUserAppRole(authSubject!.id, appId, groupId);
 
-  const userOrganizationRole = await getUserOrganizationRole(authSubject.id, app.OrganizationId);
+  const userOrganizationRole = await getUserOrganizationRole(authSubject!.id, app.OrganizationId);
 
   assertKoaCondition(
     checkAppRoleAppPermissions(app.definition.security, userAppRole, requiredPermissions) ||
@@ -195,7 +195,7 @@ export async function checkUserOrganizationPermissions({
   const organizationMember = await OrganizationMember.findOne({
     attributes: ['role'],
     where: {
-      UserId: authSubject.id,
+      UserId: authSubject!.id,
       OrganizationId: organizationId,
     },
   });
@@ -207,7 +207,7 @@ export async function checkUserOrganizationPermissions({
     'User is not a member of this organization.',
   );
 
-  const userOrganizationRole = await getUserOrganizationRole(authSubject.id, organizationId);
+  const userOrganizationRole = await getUserOrganizationRole(authSubject!.id, organizationId);
 
   assertKoaCondition(
     checkOrganizationRoleOrganizationPermissions(userOrganizationRole, requiredPermissions),

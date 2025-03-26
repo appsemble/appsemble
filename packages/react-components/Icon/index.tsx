@@ -15,7 +15,7 @@ interface IconProps extends ComponentProps<'span'> {
 // eslint-disable-next-line @typescript-eslint/prefer-ts-expect-error
 // @ts-ignore 2322 null is not assignable to type (strictNullChecks)
 const iconSizeMap: { [size in IconProps['size']]: IconProps['iconSize'] } = {
-  small: null,
+  small: undefined,
   medium: 'lg',
   large: '2x',
 };

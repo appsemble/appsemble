@@ -926,7 +926,7 @@ describe('validateAppDefinition', () => {
 
   it('should validate the default role exists', async () => {
     const app = createTestApp();
-    app.security.default.role = 'Unknown';
+    app.security!.default!.role = 'Unknown';
     const result = await validateAppDefinition(app, () => []);
     expect(result.valid).toBe(false);
     expect(result.errors).toStrictEqual([
@@ -1112,7 +1112,7 @@ describe('validateAppDefinition', () => {
 
   it('should validate resources use schemas define a type', async () => {
     const app = createTestApp();
-    app.resources.person.schema = { properties: {} };
+    app.resources!.person.schema = { properties: {} };
     const result = await validateAppDefinition(app, () => []);
     expect(result.valid).toBe(false);
     expect(result.errors).toStrictEqual([
@@ -1126,7 +1126,7 @@ describe('validateAppDefinition', () => {
 
   it('should validate resources use schemas define a type of object', async () => {
     const app = createTestApp();
-    app.resources.person.schema = { type: 'string', properties: {} };
+    app.resources!.person.schema = { type: 'string', properties: {} };
     const result = await validateAppDefinition(app, () => []);
     expect(result.valid).toBe(false);
     expect(result.errors).toStrictEqual([
@@ -1141,7 +1141,7 @@ describe('validateAppDefinition', () => {
 
   it('should validate the resource id schema is correct', async () => {
     const app = createTestApp();
-    app.resources.person.schema = {
+    app.resources!.person.schema = {
       type: 'object',
       properties: { id: { type: 'string', description: '', title: '', format: 'email' } },
     };
@@ -1169,7 +1169,7 @@ describe('validateAppDefinition', () => {
 
   it('should validate the resource $created and $updated schemas are correct', async () => {
     const app = createTestApp();
-    app.resources.person.schema = {
+    app.resources!.person.schema = {
       type: 'object',
       properties: {
         $created: { type: 'number', description: '', title: '', format: 'email' },
@@ -1216,7 +1216,7 @@ describe('validateAppDefinition', () => {
 
   it('should report resource properties starting with $', async () => {
     const app = createTestApp();
-    app.resources.person.schema = {
+    app.resources!.person.schema = {
       type: 'object',
       properties: { $invalid: { type: 'string' } },
     };
@@ -1235,7 +1235,7 @@ describe('validateAppDefinition', () => {
 
   it('should report missing properties in JSON schemas', async () => {
     const app = createTestApp();
-    app.resources.person.schema = { type: 'object' };
+    app.resources!.person.schema = { type: 'object' };
     const result = await validateAppDefinition(app, () => []);
     expect(result.valid).toBe(false);
     expect(result.errors).toStrictEqual([
@@ -1249,7 +1249,7 @@ describe('validateAppDefinition', () => {
 
   it('should report missing properties in JSON schemas resursively', async () => {
     const app = createTestApp();
-    app.resources.person.schema = {
+    app.resources!.person.schema = {
       type: 'object',
       properties: { foo: { type: 'object' } },
     };
@@ -1268,7 +1268,7 @@ describe('validateAppDefinition', () => {
 
   it('should report unknown required properties in JSON schemas', async () => {
     const app = createTestApp();
-    app.resources.person.schema = {
+    app.resources!.person.schema = {
       type: 'object',
       required: ['bar'],
       properties: { foo: { type: 'object', properties: {}, required: ['baz'] } },
@@ -1335,7 +1335,7 @@ describe('validateAppDefinition', () => {
 
   it('should validate inherited roles', async () => {
     const app = createTestApp();
-    app.security.roles.User.inherits = ['Unknown'];
+    app.security!.roles!.User.inherits = ['Unknown'];
     const result = await validateAppDefinition(app, () => []);
     expect(result.valid).toBe(false);
     expect(result.errors).toStrictEqual([
@@ -1351,11 +1351,11 @@ describe('validateAppDefinition', () => {
 
   it('should report cyclic role inheritance', async () => {
     const app = createTestApp();
-    app.security.roles.A = { inherits: ['B'] };
-    app.security.roles.B = { inherits: ['C'] };
-    app.security.roles.C = { inherits: ['E', 'A'] };
-    app.security.roles.D = { inherits: ['A'] };
-    app.security.roles.E = {};
+    app.security!.roles!.A = { inherits: ['B'] };
+    app.security!.roles!.B = { inherits: ['C'] };
+    app.security!.roles!.C = { inherits: ['E', 'A'] };
+    app.security!.roles!.D = { inherits: ['A'] };
+    app.security!.roles!.E = {};
     const result = await validateAppDefinition(app, () => []);
     expect(result.valid).toBe(false);
     expect(result.errors).toStrictEqual([
@@ -1379,7 +1379,7 @@ describe('validateAppDefinition', () => {
 
   it('should report unknown roles in resource notification hooks', async () => {
     const app = createTestApp();
-    app.resources.person.update.hooks = {
+    app.resources!.person.update!.hooks = {
       notification: {
         to: ['Unknown'],
       },
@@ -1401,7 +1401,7 @@ describe('validateAppDefinition', () => {
 
   it('should allow $author in resource notification hooks', async () => {
     const app = createTestApp();
-    app.resources.person.update.hooks = {
+    app.resources!.person.update!.hooks = {
       notification: {
         to: ['$author'],
       },
@@ -1412,7 +1412,7 @@ describe('validateAppDefinition', () => {
 
   it('should report invalid resource references', async () => {
     const app = createTestApp();
-    app.resources.person.references = {
+    app.resources!.person.references = {
       name: {
         resource: 'non-existent',
       },
@@ -1432,7 +1432,7 @@ describe('validateAppDefinition', () => {
 
   it('should report invalid resource reference fields', async () => {
     const app = createTestApp();
-    app.resources.person.references = {
+    app.resources!.person.references = {
       invalid: {
         resource: 'person',
       },
@@ -1451,7 +1451,7 @@ describe('validateAppDefinition', () => {
 
   it('should not report valid resource references', async () => {
     const app = createTestApp();
-    app.resources.person.references = {
+    app.resources!.person.references = {
       name: {
         resource: 'person',
       },
@@ -2238,6 +2238,8 @@ describe('validateAppDefinition', () => {
   });
 
   it('should throw if an app is null', async () => {
+    // @ts-expect-error 2345 argument of type is not assignable to parameter of type
+    // (strictNullChecks)
     const result = await validateAppDefinition(null, () => []);
     expect(result.valid).toBe(false);
     expect(result.errors).toStrictEqual([
@@ -2266,6 +2268,7 @@ describe('validateAppDefinition', () => {
   it('should handle if an unexpected error occurs', async () => {
     const result = await validateAppDefinition(
       {
+        name: 'Test App',
         get defaultPage(): string {
           throw new Error('Boom!');
         },

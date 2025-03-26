@@ -45,16 +45,16 @@ declare module 'jsonschema' {
  */
 export function generateDataFromSchema(schema?: Schema): JsonValue {
   if (!schema) {
-    return;
+    return null;
   }
   // Let’s assume the default conforms to the schema, although this might not be true.
   if ('default' in schema) {
-    return schema.default;
+    return schema.default ?? null;
   }
   // If no predefined value exists, generate something based on its type.
   switch (schema.type) {
     case 'array':
-      return Array.from({ length: schema.minItems }, (empty, index) =>
+      return Array.from({ length: schema.minItems ?? 0 }, (empty, index) =>
         generateDataFromSchema(
           Array.isArray(schema.items)
             ? schema.items[index] ||
@@ -88,6 +88,7 @@ export function generateDataFromSchema(schema?: Schema): JsonValue {
     default:
       break;
   }
+  return null;
 }
 
 /**

@@ -115,8 +115,8 @@ export function authorizeAppMember(app: App, appMember = testAppMember): void {
   const tokens = createJWTResponse(appMember.id, {
     aud: `app:${app.id}`,
     scope: Object.keys(
-      (api('').components.securitySchemes.app as OpenAPIV3.OAuth2SecurityScheme).flows
-        .authorizationCode.scopes,
+      (api('').components!.securitySchemes!.app as OpenAPIV3.OAuth2SecurityScheme).flows
+        .authorizationCode!.scopes,
     ).join(' '),
   });
   request.defaults.headers.common.authorization = bearer(tokens);

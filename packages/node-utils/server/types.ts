@@ -435,8 +435,8 @@ export interface ParsedQuery {
 export type ContentSecurityPolicy = Record<string, (string | false)[]>;
 
 export interface Options {
-  getCurrentAppMember: (params: GetCurrentAppMemberParams) => Promise<AppMemberInfo>;
-  getCurrentAppMemberGroups: (params: GetCurrentAppMemberGroupsParams) => Promise<Group[]>;
+  getCurrentAppMember: (params: GetCurrentAppMemberParams) => Promise<AppMemberInfo | null>;
+  getCurrentAppMemberGroups: (params: GetCurrentAppMemberGroupsParams) => Promise<Group[] | null>;
   getApp: (params: GetAppParams) => Promise<App>;
   getAppDetails: (params: GetAppParams) => Promise<AppDetails>;
   getAppMessages: (params: GetAppMessagesParams) => Promise<AppMessages[]>;
@@ -467,7 +467,7 @@ export interface Options {
   checkAppPermissions: (params: CheckAppPermissionsParams) => Promise<void>;
   reloadUser: (params: ReloadUserParams) => Promise<Record<string, any>>;
   parseQuery: (params: ParseQueryParams) => ParsedQuery;
-  getAppResource: (params: GetAppResourceParams) => Promise<Resource>;
+  getAppResource: (params: GetAppResourceParams) => Promise<Resource | null>;
   getAppResources: (params: GetAppResourcesParams) => Promise<Resource[]>;
   createAppResourcesWithAssets: (params: CreateAppResourcesWithAssetsParams) => Promise<Resource[]>;
   updateAppResource: (params: UpdateAppResourceParams) => Promise<Resource | null>;

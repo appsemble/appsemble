@@ -4,7 +4,7 @@ import { Op } from 'sequelize';
 import { OAuth2ClientCredentials } from '../../../../../../../models/index.js';
 
 export async function listCurrentUserOAuth2ClientCredentials(ctx: Context): Promise<void> {
-  const { user } = ctx;
+  const user = ctx.user!;
 
   const credentials = await OAuth2ClientCredentials.findAll({
     attributes: ['created', 'description', 'id', 'expires', 'scopes'],

@@ -19,30 +19,32 @@ export class AppCollectionApp extends Model {
   @PrimaryKey
   @AutoIncrement
   @Column(DataType.INTEGER)
-  id: number;
+  id!: number;
 
+  // TODO: make non-nullable
   @ForeignKey(() => AppCollection)
   @Index({ name: 'UniqueAppCollectionAppIndex', unique: true })
   @Column(DataType.INTEGER)
-  AppCollectionId: number;
+  AppCollectionId?: number;
 
+  // TODO: make non-nullable
   @ForeignKey(() => App)
   @Index({ name: 'UniqueAppCollectionAppIndex', unique: true })
   @Column(DataType.INTEGER)
-  AppId: number;
+  AppId?: number;
 
   @BelongsTo(() => AppCollection)
-  AppCollection: Awaited<AppCollection>;
+  AppCollection?: Awaited<AppCollection>;
 
   @BelongsTo(() => App, { onDelete: 'CASCADE' })
-  App: Awaited<App>;
+  App?: Awaited<App>;
 
   @Column(DataType.DATE)
   pinnedAt?: Date;
 
   @CreatedAt
-  created: Date;
+  created!: Date;
 
   @UpdatedAt
-  updated: Date;
+  updated!: Date;
 }

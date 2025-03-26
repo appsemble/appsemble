@@ -189,6 +189,7 @@ export async function applyAppServiceSecrets({
               // (strictNullChecks)
               `Using updated client-credentials secret "Bearer ${decrypt(updatedSecret.accessToken, argv.aesSecret)}"`,
             );
+            newAxiosConfig.headers ??= {};
             newAxiosConfig.headers.Authorization = `Bearer ${decrypt(
               // @ts-expect-error 2345 argument of type is not assignable to parameter of type
               // (strictNullChecks)
@@ -201,6 +202,7 @@ export async function applyAppServiceSecrets({
             `Using client-credentials secret "Bearer ${decrypt(serviceSecret.accessToken, argv.aesSecret)}"`,
           );
 
+          newAxiosConfig.headers ??= {};
           newAxiosConfig.headers.Authorization = `Bearer ${decrypt(
             serviceSecret.accessToken,
             argv.aesSecret,
@@ -213,7 +215,8 @@ export async function applyAppServiceSecrets({
         const cookie = `${encodeURIComponent(serviceSecret.identifier)}=${encodeURIComponent(
           decryptedSecret,
         )};`;
-        if (axiosConfig.headers['Set-Cookie']) {
+        newAxiosConfig.headers ??= {};
+        if (axiosConfig.headers?.['Set-Cookie']) {
           logger.silly(`Appending cookie secret ${cookie}`);
           newAxiosConfig.headers['Set-Cookie'] += ` ${cookie}`;
         } else {
@@ -224,7 +227,7 @@ export async function applyAppServiceSecrets({
       }
       case 'custom-header':
         if (
-          serviceSecret.identifier.toLowerCase() === 'authorization' &&
+          serviceSecret.identifier?.toLowerCase() === 'authorization' &&
           axiosConfig.headers?.Authorization
         ) {
           logger.silly(
@@ -233,6 +236,7 @@ export async function applyAppServiceSecrets({
           continue;
         }
         logger.silly(`Applying custom-header secret ${decryptedSecret}.`);
+        newAxiosConfig.headers ??= {};
         // @ts-expect-error 2538 type undefined cannot be used as an index type
         newAxiosConfig.headers[serviceSecret.identifier] = decryptedSecret;
         break;

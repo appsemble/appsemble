@@ -28,7 +28,7 @@ describe('block', () => {
     vi.setSystemTime(0);
     const server = await createServer();
     testApp = await setTestApp(server);
-    initAxios({ remote: testApp.defaults.baseURL });
+    initAxios({ remote: testApp.defaults.baseURL! });
     user = await createTestUser();
     organization = await Organization.create({
       id: 'testorganization',
@@ -151,7 +151,7 @@ export const string = 'with-icon';
       });
       const clientCredentials = await authorizeCLI('blocks:delete', testApp);
       await deleteBlock({
-        remote: testApp.defaults.baseURL,
+        remote: testApp.defaults.baseURL!,
         clientCredentials,
         blockName: block.name,
         blockVersion: block.version,
@@ -189,10 +189,10 @@ export const string = 'with-icon';
       await traverseBlockThemes(
         resolveFixture('apps/test'),
         app.id,
-        testApp.defaults.baseURL,
+        testApp.defaults.baseURL!,
         false,
       );
-      const style = await AppBlockStyle.findOne();
+      const style = (await AppBlockStyle.findOne())!;
       expect(style.dataValues).toMatchInlineSnapshot(`
         {
           "AppId": 1,
@@ -217,7 +217,7 @@ export const string = 'with-icon';
       });
       await authorizeCLI('apps:write', testApp);
       await expect(() =>
-        traverseBlockThemes(resolveFixture('apps/test'), app.id, testApp.defaults.baseURL, false),
+        traverseBlockThemes(resolveFixture('apps/test'), app.id, testApp.defaults.baseURL!, false),
       ).rejects.toThrow('Request failed with status code 404');
       const style = await AppBlockStyle.findOne();
       expect(style).toBeNull();
@@ -249,7 +249,7 @@ export const string = 'with-icon';
       await traverseBlockThemes(
         resolveFixture('apps/test'),
         app.id,
-        testApp.defaults.baseURL,
+        testApp.defaults.baseURL!,
         false,
       );
       const style = await Theme.findAll();

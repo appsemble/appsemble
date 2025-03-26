@@ -161,7 +161,7 @@ function processToken(
   if (operators.has(token.type)) {
     return where(
       processToken(token.value.left, model, rename),
-      operators.get(token.type),
+      operators.get(token.type)!,
       processToken(token.value.right, model, rename),
     );
   }
@@ -205,7 +205,7 @@ function processLogicalExpression(token: Token, model: PartialModel, rename: Ren
   const flatten = (expr: any): WhereOptions => (op in expr ? expr[op] : expr);
   const left = flatten(processLogicalExpression(token.value.left, model, rename));
   const right = flatten(processLogicalExpression(token.value.right, model, rename));
-  return { [op]: [].concat(left).concat(right) };
+  return { [op]: ([] as WhereOptions[]).concat(left).concat(right) };
 }
 
 /**

@@ -18,7 +18,7 @@ describe('migration 0.30.0', () => {
     const patched = await migrateAppDefinition(definition, appPatches, getDB());
 
     expect(logger.error).not.toHaveBeenCalled();
-    expect(patched.trim()).toBe(
+    expect(patched?.trim()).toBe(
       `
 # Replace remap with remapBefore
 name: test
@@ -48,7 +48,7 @@ pages:
     const patched = await migrateAppDefinition(definition, appPatches, getDB());
 
     expect(logger.error).not.toHaveBeenCalled();
-    expect(patched.trim()).toBe(
+    expect(patched?.trim()).toBe(
       `
 # Replace hideFromMenu with hideNavTitle
 name: test
@@ -78,7 +78,7 @@ pages:
     const patched = await migrateAppDefinition(definition, appPatches, getDB());
 
     expect(logger.error).not.toHaveBeenCalled();
-    expect(patched.trim()).toBe(
+    expect(patched?.trim()).toBe(
       `
 # Rename users property to members
 name: test
@@ -131,7 +131,7 @@ members:
     const patched = await migrateAppDefinition(definition, appPatches, getDB());
 
     expect(logger.error).not.toHaveBeenCalled();
-    expect(patched.trim()).toBe(
+    expect(patched?.trim()).toBe(
       `
 # Rename user actions to app.member actions
 name: test
@@ -192,7 +192,7 @@ pages:
     const patched = await migrateAppDefinition(definition, appPatches, getDB());
 
     expect(logger.error).not.toHaveBeenCalled();
-    expect(patched.trim()).toBe(
+    expect(patched?.trim()).toBe(
       `
 # Rename team actions to group.member actions
 name: test
@@ -239,7 +239,7 @@ pages:
     const patched = await migrateAppDefinition(definition, appPatches, getDB());
 
     expect(logger.error).not.toHaveBeenCalled();
-    expect(patched.trim()).toBe(
+    expect(patched?.trim()).toBe(
       `
 # Delete roles property
 name: test
@@ -274,7 +274,7 @@ pages:
     const patched = await migrateAppDefinition(definition, appPatches, getDB());
 
     expect(logger.error).not.toHaveBeenCalled();
-    expect(patched.trim()).toBe(
+    expect(patched?.trim()).toBe(
       `
 # Delete resource.method property
 name: test
@@ -301,7 +301,7 @@ pages:
     const patched = await migrateAppDefinition(definition, appPatches, getDB());
 
     expect(logger.error).not.toHaveBeenCalled();
-    expect(patched.trim()).toBe(
+    expect(patched?.trim()).toBe(
       `
 # Replace $none with $guest
 name: test
@@ -334,7 +334,7 @@ security:
     const patched1 = await migrateAppDefinition(definition1, appPatches, getDB());
 
     expect(logger.error).not.toHaveBeenCalled();
-    expect(patched1.trim()).toBe(
+    expect(patched1?.trim()).toBe(
       `
 # Add guest to security
 name: test
@@ -402,7 +402,7 @@ pages:
     const patched2 = await migrateAppDefinition(definition2, appPatches, getDB());
 
     expect(logger.error).not.toHaveBeenCalled();
-    expect(patched2.trim()).toBe(
+    expect(patched2?.trim()).toBe(
       `
 # Add guest to security
 name: test
@@ -455,7 +455,7 @@ pages:
     const patched3 = await migrateAppDefinition(definition3, appPatches, getDB());
 
     expect(logger.error).not.toHaveBeenCalled();
-    expect(patched3.trim()).toBe(
+    expect(patched3?.trim()).toBe(
       `
 # Add guest to security
 name: test
@@ -512,7 +512,7 @@ pages:
     const patched = await migrateAppDefinition(definition, appPatches, getDB());
 
     expect(logger.error).not.toHaveBeenCalled();
-    expect(patched.trim()).toBe(
+    expect(patched?.trim()).toBe(
       `
 # Add group roles
 name: test
@@ -602,7 +602,7 @@ pages:
     const patched = await migrateAppDefinition(definition, appPatches, getDB());
 
     expect(logger.error).not.toHaveBeenCalled();
-    expect(patched.trim()).toBe(
+    expect(patched?.trim()).toBe(
       `
 # Move resource roles to role permissions:
 name: test
@@ -795,7 +795,7 @@ pages:
     const patched = await migrateAppDefinition(definition, appPatches, getDB());
 
     expect(logger.error).not.toHaveBeenCalled();
-    expect(patched.trim()).toBe(
+    expect(patched?.trim()).toBe(
       `
 # Delete $public
 name: test

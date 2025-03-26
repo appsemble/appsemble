@@ -203,12 +203,12 @@ export async function createAppFromTemplate(ctx: Context): Promise<void> {
           }),
         ) as AppSamlSecret[],
       }),
-      AppMessages: [].concat(template.AppMessages),
+      AppMessages: ([] as AppMessages[]).concat(template.AppMessages),
     };
 
     await setAppPath(ctx, result, path);
 
-    for (const m of result.AppMessages) {
+    for (const m of result.AppMessages!) {
       delete m.messages?.app?.name;
       delete m.messages?.app?.description;
     }
@@ -246,7 +246,7 @@ export async function createAppFromTemplate(ctx: Context): Promise<void> {
     doc.setIn(['name'], result.definition.name);
     const snapshot = await AppSnapshot.create({
       AppId: record.id,
-      UserId: user.id,
+      UserId: user!.id,
       yaml: String(doc),
     });
     record.AppSnapshots = [snapshot];

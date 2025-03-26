@@ -37,7 +37,7 @@ export function createDeleteAppResourceController(options: Options): Middleware 
     await checkAppPermissions({
       context: ctx,
       permissions: [
-        resource.$author?.id === authSubject.id
+        resource.$author?.id === authSubject!.id
           ? `$resource:${resourceType}:own:delete`
           : `$resource:${resourceType}:delete`,
       ],

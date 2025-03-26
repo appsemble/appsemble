@@ -16,7 +16,11 @@ import { getAppMemberInfo, getAppMemberSSO } from '../../../../../../utils/appMe
 
 export async function getCurrentUserAppAccounts(ctx: Context): Promise<void> {
   const { user: authSubject } = ctx;
-  const { baseLanguage, language, query: includeOptions } = parseLanguage(ctx, ctx.query?.language);
+  const {
+    baseLanguage,
+    language,
+    query: includeOptions,
+  } = parseLanguage(ctx, ctx.query?.language ?? []);
 
   const apps = await App.findAll({
     attributes: {
@@ -43,7 +47,7 @@ export async function getCurrentUserAppAccounts(ctx: Context): Promise<void> {
         attributes: {
           exclude: ['picture'],
         },
-        where: { UserId: authSubject.id },
+        where: { UserId: authSubject!.id },
         include: [
           {
             model: AppSamlAuthorization,

@@ -75,7 +75,7 @@ describe('createEvents', () => {
     });
 
     it('should handle unknown event types', () => {
-      const events = createEvents(ee, promise, null, { emit: { foo: 'bar' } });
+      const events = createEvents(ee, promise, undefined, { emit: { foo: 'bar' } });
       const emitter = events.emit.foo;
       expect(emitter).toBeUndefined();
     });
@@ -124,7 +124,7 @@ describe('createEvents', () => {
     });
 
     it('should handle unknown event types', () => {
-      const events = createEvents(ee, promise, null, { listen: { foo: 'bar' } });
+      const events = createEvents(ee, promise, undefined, { listen: { foo: 'bar' } });
       const emitter = events.on.foo;
       expect(emitter).toBeUndefined();
     });
@@ -175,7 +175,7 @@ describe('createEvents', () => {
     });
 
     it('should handle unknown event types', () => {
-      const events = createEvents(ee, promise, null, { listen: { foo: 'bar' } });
+      const events = createEvents(ee, promise, undefined, { listen: { foo: 'bar' } });
       const emitter = events.off.foo;
       expect(emitter).toBeUndefined();
     });

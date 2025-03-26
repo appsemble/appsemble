@@ -33,7 +33,7 @@ export function extendJSONSchema(
   }
 
   result.properties = { ...schema.properties };
-  for (const [name, property] of Object.entries(base.properties)) {
+  for (const [name, property] of Object.entries(base.properties ?? {})) {
     if (!omit.includes(name) && !has(result.properties, name)) {
       result.properties[name] = property;
     }

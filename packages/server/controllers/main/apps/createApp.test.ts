@@ -181,9 +181,9 @@ describe('createApp', () => {
       }),
     );
     expect(response.status).toBe(201);
-    const foundMember = await AppMember.findOne({
+    const foundMember = (await AppMember.findOne({
       where: { AppId: response.data.id, role: 'cron' },
-    });
+    }))!;
     expect(foundMember.dataValues).toMatchObject({
       email: expect.stringMatching('cron.*example'),
       AppId: response.data.id,
@@ -322,7 +322,7 @@ describe('createApp', () => {
       }
     `);
 
-    const screenshot = await AppScreenshot.findOne();
+    const screenshot = (await AppScreenshot.findOne())!;
     expect(screenshot.toJSON()).toStrictEqual({
       AppId: 1,
       created: new Date(),
