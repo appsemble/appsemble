@@ -4,9 +4,9 @@ dependencies:
   version: 11.6.3
 - name: mailpit
   repository: https://jouve.github.io/charts
-  version: 0.18.3
+  version: 0.23.1
 - name: minio
   repository: https://charts.bitnami.com/bitnami
   version: 14.10.0
-digest: sha256:8f3b337b696dc510411c12bcd68ef70bcf7380da3055a4a1d930fe6b792688f5
-generated: "2025-02-12T15:16:37.975137+02:00"
+digest: sha256:f64e189ed8d13f1dd8c96387caf1f647fdaff8e5ce9d4ea388fc10828836988f
+generated: "2025-03-27T05:14:26.084658259Z"

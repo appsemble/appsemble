@@ -23,7 +23,7 @@ dependencies:
     repository: https://charts.bitnami.com/bitnami
     condition: postgresql.enabled
   - name: mailpit
-    version: 0.18.3
+    version: 0.23.1
     repository: https://jouve.github.io/charts
     condition: mailpit.enabled
   - name: minio
