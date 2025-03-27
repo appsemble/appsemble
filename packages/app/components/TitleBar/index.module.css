@@ -1,0 +1,5 @@
+.dropdowns {
+  @media screen and (width > 540px) {
+    display: flex;
+  }
+}
