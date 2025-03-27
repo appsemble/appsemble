@@ -2,6 +2,7 @@ import { Portal, SideMenuButton } from '@appsemble/react-components';
 import { type ReactNode } from 'react';
 import { FormattedMessage } from 'react-intl';
 
+import styles from './index.module.css';
 import { messages } from './messages.js';
 import { shouldShowMenu } from '../../utils/layout.js';
 import { useAppDefinition } from '../AppDefinitionProvider/index.js';
@@ -49,16 +50,18 @@ export function AppBar({ children, hideName }: AppBarProps): ReactNode {
             <FormattedMessage {...messages.demo} />
           </div>
         ) : null}
-        {appMemberGroups.length ? (
-          <div className="navbar-end is-flex is-align-items-stretch is-justify-content-flex-end ml-auto">
-            <GroupDropdown />
-          </div>
-        ) : null}
-        {definition.layout?.login == null || definition.layout?.login === 'navbar' ? (
-          <div className="navbar-end is-flex is-align-items-stretch is-justify-content-flex-end ml-auto">
-            <ProfileDropdown />
-          </div>
-        ) : null}
+        <div className={styles.dropdowns}>
+          {appMemberGroups.length ? (
+            <div className="navbar-end is-flex is-align-items-stretch is-justify-content-flex-end ml-auto">
+              <GroupDropdown />
+            </div>
+          ) : null}
+          {definition.layout?.login == null || definition.layout?.login === 'navbar' ? (
+            <div className="navbar-end is-flex is-align-items-stretch is-justify-content-flex-end ml-auto">
+              <ProfileDropdown />
+            </div>
+          ) : null}
+        </div>
       </div>
     </Portal>
   );
