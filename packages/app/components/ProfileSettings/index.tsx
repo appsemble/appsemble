@@ -12,7 +12,7 @@ import {
 } from '@appsemble/react-components';
 import { getLanguageDisplayName } from '@appsemble/utils';
 import axios from 'axios';
-import { type ReactNode, useCallback, useState } from 'react';
+import { type ReactNode, useCallback, useMemo, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useNavigate, useParams } from 'react-router-dom';
 
@@ -20,6 +20,8 @@ import { messages } from './messages.js';
 import { PicturePreview } from './PicturePreview/index.js';
 import { apiUrl, appId, languages } from '../../utils/settings.js';
 import { useAppMember } from '../AppMemberProvider/index.js';
+
+const DEFAULT_IMAGE_PREFIX = 'https://www.gravatar.com/avatar/';
 
 export function ProfileSettings(): ReactNode {
   const { formatMessage } = useIntl();
@@ -32,6 +34,11 @@ export function ProfileSettings(): ReactNode {
   const preferredLanguage =
     appMemberInfo.locale || localStorage.getItem('preferredLanguage') || lang;
 
+  const hasPicture = useMemo(
+    () => Boolean(appMemberInfo.picture && !appMemberInfo.picture.startsWith(DEFAULT_IMAGE_PREFIX)),
+    [appMemberInfo.picture],
+  );
+
   const onCapture = useCallback(
     (data: Blob) => {
       setPictureCamera(data);
@@ -43,6 +50,10 @@ export function ProfileSettings(): ReactNode {
       const formData = new FormData();
       formData.append('name', values.name);
       formData.append('locale', values.locale);
+
+      if ((values.picture as unknown as string) === '') {
+        formData.append('picture', '');
+      }
 
       if (values.picture) {
         formData.append('picture', values.picture);
@@ -68,6 +79,13 @@ export function ProfileSettings(): ReactNode {
     [formatMessage, lang, navigate, push, pictureCamera, setAppMemberInfo, appMemberInfo],
   );
 
+  const onRemoveProfilePicture = useCallback(() => {
+    setAppMemberInfo({
+      ...appMemberInfo,
+      picture: null,
+    });
+  }, [setAppMemberInfo, appMemberInfo]);
+
   return (
     <SimpleForm
       defaultValues={{
@@ -90,6 +108,8 @@ export function ProfileSettings(): ReactNode {
         component={FileUpload}
         fileButtonLabel={<FormattedMessage {...messages.picture} />}
         fileLabel={<FormattedMessage {...messages.selectFile} />}
+        handleRemove={onRemoveProfilePicture}
+        hasPicture={hasPicture}
         help={<FormattedMessage {...messages.pictureDescription} />}
         label={<FormattedMessage {...messages.picture} />}
         name="picture"

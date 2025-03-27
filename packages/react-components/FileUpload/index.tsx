@@ -22,6 +22,8 @@ type FileUploadProps = Omit<
     readonly onChange: (event: ChangeEvent<HTMLInputElement>, value: File) => void;
     readonly formComponentClassName?: string;
     readonly value?: File;
+    readonly handleRemove?: () => void;
+    readonly hasPicture?: boolean;
   };
 
 export const FileUpload = forwardRef<HTMLInputElement, FileUploadProps>(
@@ -42,6 +44,8 @@ export const FileUpload = forwardRef<HTMLInputElement, FileUploadProps>(
       preview = null,
       required = false,
       value,
+      handleRemove,
+      hasPicture = false,
     },
     ref,
   ) => {
@@ -62,6 +66,11 @@ export const FileUpload = forwardRef<HTMLInputElement, FileUploadProps>(
     }, [value, inputRef]);
 
     const fileName = value?.name || fileLabel;
+
+    const handleRemoveClick = (): void => {
+      handleRemove();
+      inputRef.current.dispatchEvent(new Event('change', { bubbles: true }));
+    };
 
     return (
       <FormComponent className={formComponentClassName} id={id} label={label} required={required}>
@@ -84,6 +93,13 @@ export const FileUpload = forwardRef<HTMLInputElement, FileUploadProps>(
             </span>
             {fileName ? <span className="file-name">{fileName}</span> : null}
           </label>
+          {hasPicture ? (
+            <button
+              className="delete is-medium is-align-self-center ml-2"
+              onClick={handleRemoveClick}
+              type="button"
+            />
+          ) : null}
         </div>
         {help ? <p className="help">{help}</p> : null}
       </FormComponent>

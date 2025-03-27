@@ -122,6 +122,39 @@ describe('patchCurrentAppMember', () => {
     expect(appMember.picture).toStrictEqual(await readFixture('tux.png'));
   });
 
+  it('should allow for removing the profile picture', async () => {
+    await appMember.update({ picture: await readFixture('tux.png') });
+    authorizeAppMember(app);
+
+    const response = await request.patch<AppMemberInfo>(
+      `/api/apps/${app.id}/members/current`,
+      createFormData({
+        name: 'Me',
+        picture: '',
+      }),
+    );
+    expect(response.data).toMatchInlineSnapshot(
+      { sub: expect.stringMatching(uuid4Pattern), picture: expect.any(String) },
+      `
+      {
+        "demo": false,
+        "email": "test@example.com",
+        "email_verified": false,
+        "locale": "en",
+        "name": "Me",
+        "picture": Any<String>,
+        "properties": {},
+        "role": "Member",
+        "sub": StringMatching /\\^\\[\\\\d\\[a-f\\]\\{8\\}-\\[\\\\da-f\\]\\{4\\}-4\\[\\\\da-f\\]\\{3\\}-\\[\\\\da-f\\]\\{4\\}-\\[\\\\d\\[a-f\\]\\{12\\}\\$/,
+        "zoneinfo": "Europe/Amsterdam",
+      }
+    `,
+    );
+    expect(response.data.picture).toMatch(/https:\/\/www\.gravatar\.com\/avatar\/.*/gm);
+    await appMember.reload();
+    expect(appMember.picture).toBeNull();
+  });
+
   it('should throw 404 if the app doesn’t exist', async () => {
     authorizeAppMember(app);
 
