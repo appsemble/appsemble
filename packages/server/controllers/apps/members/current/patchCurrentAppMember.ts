@@ -34,7 +34,9 @@ export async function patchCurrentAppMember(ctx: Context): Promise<void> {
     result.name = name;
   }
 
-  if (picture) {
+  if (picture === '') {
+    result.picture = null;
+  } else if (picture) {
     result.picture = await uploadToBuffer(picture.path);
   }
 
