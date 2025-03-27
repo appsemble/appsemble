@@ -45,4 +45,12 @@ export const messages = defineMessages({
     id: 'app.CSfqxX',
     defaultMessage: 'Successfully declined joining {appName}',
   },
+  alreadyMember: {
+    id: 'app.EatTbk',
+    defaultMessage: 'There is an app member, {username}, already logged in.',
+  },
+  logout: {
+    id: 'app.PlBReU',
+    defaultMessage: 'Log out',
+  },
 });
