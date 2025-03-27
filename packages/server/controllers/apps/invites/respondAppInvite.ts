@@ -1,6 +1,6 @@
 import { randomBytes } from 'node:crypto';
 
-import { assertKoaCondition, logger } from '@appsemble/node-utils';
+import { assertKoaCondition } from '@appsemble/node-utils';
 import { hash } from 'bcrypt';
 import { type Context } from 'koa';
 
@@ -9,7 +9,6 @@ import { getAppUrl } from '../../../utils/app.js';
 
 export async function respondAppInvite(ctx: Context): Promise<void> {
   const {
-    mailer,
     pathParams: { token },
     request: {
       body: { locale, password, response, timezone },
@@ -39,7 +38,8 @@ export async function respondAppInvite(ctx: Context): Promise<void> {
           email: invite.email.toLowerCase(),
           role: invite.role,
           password: hashedPassword,
-          emailKey: key,
+          emailKey: null,
+          emailVerified: true,
           timezone,
           locale,
           demo: app.demoMode,
@@ -47,25 +47,6 @@ export async function respondAppInvite(ctx: Context): Promise<void> {
 
     const url = new URL('/Verify', getAppUrl(app));
     url.searchParams.set('token', key);
-
-    // This is purposely not awaited, so failure won’t make the request fail
-    mailer
-      .sendTranslatedEmail({
-        to: { email: invite.email },
-        from: app.emailName,
-        appId: app.id,
-        emailName: 'welcome',
-        locale,
-        values: {
-          link: (text) => `[${text}](${url})`,
-          appName: app.definition.name,
-          name: 'null',
-        },
-        app,
-      })
-      .catch((error: Error) => {
-        logger.error(error);
-      });
   }
 
   await invite.destroy();
