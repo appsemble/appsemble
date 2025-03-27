@@ -42,7 +42,11 @@ The app should have a security definition and app roles defined, but will still 
 
 Service secrets will still be applied without a security definition or app roles, when opted into
 `Unsecured Service Secrets`. If a security definition is defined. The app service secrets will be
-applied based on the security policy.
+applied based on the security policy. Service secrets by default are not applied to the
+unauthenticated requests, i.e. if an app defines a security definition and no app member is logged
+in when the request action is executed, no secrets will be applied. To change this behaviour, a user
+can select the `public` checkbox in the studio or set the `public` field in the config file to true
+when publishing the app.
 
 See [Security](../app/security.md) for more on the security definition and policies.
 
