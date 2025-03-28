@@ -1,5 +1,6 @@
 import {
   AsyncButton,
+  Button,
   Content,
   Loader,
   Message,
@@ -42,6 +43,8 @@ export function AppInvite(): ReactNode {
 
   const [accepted, setAccepted] = useState(false);
   const [declined, setDeclined] = useState(false);
+
+  const { appMemberInfo, logout } = useAppMember();
 
   const appName = (getAppMessage({ id: 'name' }).format() as string) ?? definition.name;
 
@@ -106,6 +109,22 @@ export function AppInvite(): ReactNode {
     );
   }
 
+  if (appMemberInfo) {
+    return (
+      <Content padding>
+        <Message color="danger">
+          <FormattedMessage
+            {...messages.alreadyMember}
+            values={{ username: <strong>{appMemberInfo.name}</strong> }}
+          />
+        </Message>
+        <Button color="primary" onClick={() => logout()}>
+          <FormattedMessage {...messages.logout} />
+        </Button>
+      </Content>
+    );
+  }
+
   return (
     <Content padding>
       <p className="content has-text-centered">
@@ -118,6 +137,7 @@ export function AppInvite(): ReactNode {
         <FormattedMessage {...messages.setPassword} />
       </p>
       <SimpleForm defaultValues={{ password: '', accepted: false }} onSubmit={accept}>
+        <SimpleFormField disabled value={invite.email} />
         <SimpleFormField
           autoComplete="new-password"
           component={PasswordField}
