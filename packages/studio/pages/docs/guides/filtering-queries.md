@@ -54,7 +54,7 @@ pages:
   - name: Example Page
     blocks:
       - type: data-loader
-        version: 0.32.1-test.12
+        version: 0.32.1-test.13
         actions:
           onLoad:
             type: resource.query
@@ -66,7 +66,7 @@ pages:
           emit:
             data: people
       - type: table
-        version: 0.32.1-test.12
+        version: 0.32.1-test.13
         events:
           listen:
             data: people

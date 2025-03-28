@@ -1,6 +1,6 @@
 {
   "name": "create-appsemble",
-  "version": "0.32.1-test.12",
+  "version": "0.32.1-test.13",
   "description": "Bootstrap an Appsemble project",
   "keywords": [
     "app",
@@ -39,8 +39,8 @@
     "test": "vitest"
   },
   "dependencies": {
-    "@appsemble/node-utils": "0.32.1-test.12",
-    "@appsemble/types": "0.32.1-test.12",
+    "@appsemble/node-utils": "0.32.1-test.13",
+    "@appsemble/types": "0.32.1-test.13",
     "inquirer": "^9.0.0",
     "type-fest": "^4.0.0",
     "yaml": "^2.0.0"

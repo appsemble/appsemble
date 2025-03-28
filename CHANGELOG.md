@@ -2,6 +2,22 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.32.1-test.13](https://gitlab.com/appsemble/appsemble/-/releases/0.32.1-test.13)] - 2025-03-28
+
+### Added
+
+- Block(`form`): Support showing and removing selected options in the selection field.
+
+### Changed
+
+- Block(`form`): Show remove button in selection field regardless of `minItems`.
+
+### Fixed
+
+- Block(`form`): Hide long submission message on form error.
+- App: Handle `notify` action in dynamic tabs.
+- Server: Send notifications to AppMemberId instead of UserId.
+
 ## \[[0.32.1-test.12](https://gitlab.com/appsemble/appsemble/-/releases/0.32.1-test.12)] - 2025-03-26
 
 ### Added
