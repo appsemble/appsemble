@@ -9,9 +9,15 @@ export const messages = defineMessages({
     id: 'app.pvtgR2',
     defaultMessage: 'Decline',
   },
+  descriptionWithoutName: {
+    id: 'app.6LoFIF',
+    defaultMessage:
+      'Do you, {email}, want to become a member of group {groupName}? If you do not want to enroll with your current account, logout now and login with the one you want to accept a membership with.',
+  },
   description: {
-    id: 'app.Yqebpa',
-    defaultMessage: 'Would you like to join the group {groupName}?',
+    id: 'app.cOQTHN',
+    defaultMessage:
+      'Do you, {name} ({email}), want to become a member of group {groupName}? If you do not want to enroll with your current account, logout now and login with the one you want to accept a membership with.',
   },
   inviteLoadingError: {
     id: 'app.SLVblb',

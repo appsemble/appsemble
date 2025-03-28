@@ -20,7 +20,8 @@ export function GroupInvitePrompt(): ReactNode {
   const query = useQuery();
   const navigate = useNavigate();
 
-  const { addAppMemberGroup, appMemberSelectedGroup, setAppMemberSelectedGroup } = useAppMember();
+  const { addAppMemberGroup, appMemberInfo, appMemberSelectedGroup, setAppMemberSelectedGroup } =
+    useAppMember();
 
   const [accepted, setAccepted] = useState(false);
   const [declined, setDeclined] = useState(false);
@@ -117,10 +118,24 @@ export function GroupInvitePrompt(): ReactNode {
   return (
     <Content padding>
       <p className="content has-text-centered">
-        <FormattedMessage
-          {...messages.description}
-          values={{ groupName: <strong>{invite.groupName}</strong> }}
-        />
+        {appMemberInfo.name == null ? (
+          <FormattedMessage
+            {...messages.descriptionWithoutName}
+            values={{
+              groupName: <strong>{invite.groupName}</strong>,
+              email: <strong>{appMemberInfo.email}</strong>,
+            }}
+          />
+        ) : (
+          <FormattedMessage
+            {...messages.description}
+            values={{
+              groupName: <strong>{invite.groupName}</strong>,
+              name: <strong>{appMemberInfo.name}</strong>,
+              email: <strong>{appMemberInfo.email}</strong>,
+            }}
+          />
+        )}
       </p>
       <div className="mt-2 is-flex is-justify-content-space-evenly">
         <AsyncButton color="danger" disabled={accepted || declined} onClick={decline}>
