@@ -147,7 +147,7 @@ export function SelectionInput({
             key={option.id}
             onRemove={deselectOption}
             option={option}
-            showRemove={!readOnly && !disabled && (!minItems || selectedOptions.length > minItems)}
+            showRemove={!readOnly && !disabled}
           />
         ))}
       </div>
