@@ -919,6 +919,7 @@
   "studio.d1OBbT": "Report Bug",
   "studio.d1uESJ": "Assets",
   "studio.d5JTn+": "Create new App",
+  "studio.d5mtxM": "If a secret is marked public, it can be applied to the unauthenticated users, e.g. in the requests originating in a custom sign up or login page.",
   "studio.dKK3KZ": "Client certificate authentication",
   "studio.dOQCL8": "Display name",
   "studio.dXTCjA": "Not verified",

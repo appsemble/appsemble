@@ -5,6 +5,7 @@ import {
   Column,
   CreatedAt,
   DataType,
+  Default,
   ForeignKey,
   Model,
   PrimaryKey,
@@ -37,6 +38,11 @@ export class AppServiceSecret extends Model {
     | 'custom-header'
     | 'http-basic'
     | 'query-parameter';
+
+  @AllowNull(false)
+  @Default(false)
+  @Column({ type: DataType.BOOLEAN })
+  public: boolean;
 
   /**
    * Identifies the secret.

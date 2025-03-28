@@ -29,6 +29,7 @@ const initialSecret: AppServiceSecret = {
   tokenUrl: '',
   scope: '',
   ca: '',
+  public: false,
 };
 
 interface ServiceSecretsParams {
