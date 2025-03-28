@@ -36,6 +36,11 @@ export function SelectionInput({
   readOnly,
 }: SelectionInputProps): VNode {
   const { events, utils } = useBlock();
+  const {
+    allowRemovalFromModal = false,
+    disableSearch = false,
+    showSelectedInModal = false,
+  } = field;
   const [loading, setLoading] = useState('event' in field);
   const [options, setOptions] = useState('event' in field ? [] : field.selection);
   const [optionsError, setOptionsError] = useState<boolean>(false);
@@ -95,10 +100,12 @@ export function SelectionInput({
 
   const getOptionsFilteredBySelection = useCallback(
     (): SelectionChoice[] =>
-      options.filter(
-        (option) => !selectedOptions.some((selectedOption) => selectedOption.id === option.id),
-      ),
-    [options, selectedOptions],
+      showSelectedInModal
+        ? options
+        : options.filter(
+            (option) => !selectedOptions.some((selectedOption) => selectedOption.id === option.id),
+          ),
+    [options, selectedOptions, showSelectedInModal],
   );
 
   const handleModalOpen = (): void => {
@@ -147,7 +154,7 @@ export function SelectionInput({
             key={option.id}
             onRemove={deselectOption}
             option={option}
-            showRemove={!readOnly && !disabled && (!minItems || selectedOptions.length > minItems)}
+            showRemove={!readOnly && !disabled}
           />
         ))}
       </div>
@@ -159,7 +166,7 @@ export function SelectionInput({
         </FormButtons>
       ) : null}
       <ModalCard isActive={modal.enabled} onClose={modal.disable}>
-        {!field.disableSearch && <Input className="mb-2" onChange={handleSearch} />}
+        {!disableSearch && <Input className="mb-2" onChange={handleSearch} />}
         {loading ? (
           <Loader />
         ) : optionsError ? (
@@ -170,7 +177,14 @@ export function SelectionInput({
           </Message>
         ) : filteredOptions.length > 0 ? (
           filteredOptions.map((option) => (
-            <SelectionOption key={option.id} onAdd={selectOption} option={option} />
+            <SelectionOption
+              key={option.id}
+              mayRemove={allowRemovalFromModal}
+              onAdd={selectOption}
+              onRemove={deselectOption}
+              option={option}
+              selected={selectedOptions.some((o) => o.id === option.id)}
+            />
           ))
         ) : (
           <Message className="mt-4 mr-6 mb-4 ml-5">

@@ -2753,7 +2753,13 @@ Replaces the optional label if the field is optional. Won’t display if the fie
             "description": "The label to show on the button for adding a new entry.",
             "format": "remapper",
           },
+          "allowRemovalFromModal": {
+            "default": false,
+            "description": "Whether to allow removing selected choices from within the selection modal.",
+            "type": "boolean",
+          },
           "disableSearch": {
+            "default": false,
             "description": "Whether to disable the search field for the selection choices.",
             "type": "boolean",
           },
@@ -2814,6 +2820,11 @@ These are evaluated in the order they are defined in.",
 
 If not specified, the field will display.",
             "format": "remapper",
+          },
+          "showSelectedInModal": {
+            "default": false,
+            "description": "Whether to show already selected choices in the selection modal.",
+            "type": "boolean",
           },
           "tag": {
             "description": "The label that is shown to the right of the label.
@@ -4508,7 +4519,13 @@ Replaces the optional label if the field is optional. Won’t display if the fie
             "description": "The label to show on the button for adding a new entry.",
             "format": "remapper",
           },
+          "allowRemovalFromModal": {
+            "default": false,
+            "description": "Whether to allow removing selected choices from within the selection modal.",
+            "type": "boolean",
+          },
           "disableSearch": {
+            "default": false,
             "description": "Whether to disable the search field for the selection choices.",
             "type": "boolean",
           },
@@ -4571,6 +4588,11 @@ These are evaluated in the order they are defined in.",
 
 If not specified, the field will display.",
             "format": "remapper",
+          },
+          "showSelectedInModal": {
+            "default": false,
+            "description": "Whether to show already selected choices in the selection modal.",
+            "type": "boolean",
           },
           "tag": {
             "description": "The label that is shown to the right of the label.
