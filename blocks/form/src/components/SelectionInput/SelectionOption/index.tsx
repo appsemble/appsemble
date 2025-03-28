@@ -11,9 +11,18 @@ import { Image } from '../Image/index.js';
 interface SelectionOptionProps {
   readonly option: SelectionChoice;
   readonly onAdd: (id: number | string) => void;
+  readonly onRemove: (id: number | string) => void;
+  readonly selected?: boolean;
+  readonly mayRemove?: boolean;
 }
 
-export function SelectionOption({ onAdd, option }: SelectionOptionProps): VNode {
+export function SelectionOption({
+  mayRemove = false,
+  onAdd,
+  onRemove,
+  option,
+  selected = false,
+}: SelectionOptionProps): VNode {
   const { id, image, imageInline } = option;
   const alignment = image?.alignment || 'default';
 
@@ -21,8 +30,12 @@ export function SelectionOption({ onAdd, option }: SelectionOptionProps): VNode 
 
   const ref = useRef();
 
-  const onAddClick = (): void => {
-    onAdd(id);
+  const onClick = (): void => {
+    if (selected && mayRemove) {
+      onRemove(id);
+    } else {
+      onAdd(id);
+    }
   };
 
   useEffect(() => {
@@ -72,7 +85,11 @@ export function SelectionOption({ onAdd, option }: SelectionOptionProps): VNode 
         <Content option={option} />
       </div>
       <div className="is-flex is-flex-direction-column is-justify-content-end">
-        <Button icon="plus" onClick={onAddClick} />
+        <Button
+          disabled={selected ? !mayRemove : null}
+          icon={selected ? (mayRemove ? 'xmark' : 'check') : 'plus'}
+          onClick={onClick}
+        />
       </div>
     </div>
   );

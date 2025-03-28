@@ -932,8 +932,24 @@ export interface AbstractSelectionField extends AbstractField, InlineField {
 
   /**
    * Whether to disable the search field for the selection choices.
+   *
+   * @default false
    */
   disableSearch?: boolean;
+
+  /**
+   * Whether to show already selected choices in the selection modal.
+   *
+   * @default false
+   */
+  showSelectedInModal?: boolean;
+
+  /**
+   * Whether to allow removing selected choices from within the selection modal.
+   *
+   * @default false
+   */
+  allowRemovalFromModal?: boolean;
 }
 
 export interface EventSelectionField extends AbstractSelectionField {
