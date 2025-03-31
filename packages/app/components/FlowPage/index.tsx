@@ -265,7 +265,7 @@ export function FlowPage({
         params,
         showMessage,
         appMemberGroups,
-        // @ts-expect-error Please Fix Me! TODO important
+        // @ts-expect-error TODO: this shouldn't be an error
         addAppMemberGroup,
         getAppMemberInfo: () => appMemberInfoRef.current,
         passwordLogin,

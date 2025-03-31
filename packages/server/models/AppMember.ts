@@ -69,7 +69,7 @@ export class AppMember extends Model {
   consent?: Date;
 
   @Column(DataType.BLOB)
-  picture?: Buffer;
+  picture?: Buffer | null;
 
   @Column(DataType.JSON)
   properties?: Record<string, any>;

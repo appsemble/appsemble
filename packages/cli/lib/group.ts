@@ -71,12 +71,10 @@ interface CreateGroupParams extends SharedGroupParams {
   annotations?: string[];
 }
 
-export function resolveAnnotations(annotations: string[]): Record<string, string> {
+export function resolveAnnotations(annotations: string[]): Record<string, string> | undefined {
   const annotationRegex = /^\w+=.+$/;
 
   if (!annotations.length) {
-    // TODO: will {} break anything?
-    // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
     return undefined;
   }
 

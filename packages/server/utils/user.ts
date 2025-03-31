@@ -3,12 +3,11 @@ import { type UserInfo } from '@appsemble/types';
 import { getGravatarUrl } from './gravatar.js';
 import { EmailAuthorization, User } from '../models/index.js';
 
-export async function getUserInfoById(id: string): Promise<UserInfo> {
+export async function getUserInfoById(id: string): Promise<UserInfo | null> {
   const user = await User.findByPk(id);
 
   if (user == null) {
-    // TODO: handle differently?
-    throw new Error('User not found');
+    return null;
   }
 
   const userEmailAuthorizations = await EmailAuthorization.findAll({
