@@ -38,7 +38,7 @@ export async function getGroupMembers(ctx: Context): Promise<void> {
   ctx.body = groupMembers.map((groupMember) => ({
     id: groupMember.id,
     role: groupMember.role,
-    name: groupMember.AppMember.name,
-    email: groupMember.AppMember.email,
+    name: groupMember.AppMember!.name,
+    email: groupMember.AppMember!.email,
   })) as GroupMemberType[];
 }

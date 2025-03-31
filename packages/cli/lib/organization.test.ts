@@ -25,7 +25,7 @@ describe('organization', () => {
     vi.setSystemTime(0);
     const server = await createServer();
     testApp = await setTestApp(server);
-    initAxios({ remote: testApp.defaults.baseURL });
+    initAxios({ remote: testApp.defaults.baseURL! });
     user = await createTestUser();
   });
 
@@ -68,6 +68,7 @@ describe('organization', () => {
           id: organization.id,
           name: 'Test',
           email: 'test@example.com',
+          // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
           icon: null,
           website: 'https://example.com',
         }),
@@ -94,6 +95,7 @@ describe('organization', () => {
         name: 'Test changed',
         description: 'Description Changed',
         email: 'test@example.com',
+        // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
         website: null,
         icon: createFixtureStream('apps/tux.png'),
       });
@@ -136,9 +138,12 @@ describe('organization', () => {
         updateOrganization({
           id: organization.id,
           name: 'Test changed',
+          // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
           description: null,
           email: 'test@example.com',
+          // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
           website: null,
+          // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
           icon: null,
         }),
       ).rejects.toThrow('Request failed with status code 404');
@@ -158,9 +163,12 @@ describe('organization', () => {
         updateOrganization({
           id: organization.id,
           name: 'Test changed',
+          // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
           description: null,
           email: 'test@example.com',
+          // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
           website: null,
+          // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
           icon: null,
         }),
       ).rejects.toThrow('Request failed with status code 401');
@@ -175,6 +183,7 @@ describe('organization', () => {
         id: 'test',
         name: 'Test',
         email: 'test@example.com',
+        // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
         icon: null,
         website: 'https://example.com',
       });
@@ -203,9 +212,12 @@ describe('organization', () => {
       await upsertOrganization({
         id: organization.id,
         name: 'Test changed',
+        // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
         description: null,
         email: 'test@example.com',
+        // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
         website: null,
+        // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
         icon: null,
       });
       expect(organization).toMatchObject({
@@ -234,9 +246,11 @@ describe('organization', () => {
         upsertOrganization({
           id: organization.id,
           name: 'Test changed',
+          // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
           description: null,
           email: 'test@example.com',
           website: 'https://www.example.com',
+          // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
           icon: null,
         }),
       ).rejects.toThrow('Request failed with status code 403');

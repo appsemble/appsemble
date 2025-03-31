@@ -41,15 +41,11 @@ export function detectLocale(
   const supportedLocales = sortLocales(languages);
   const wantedLocales = sortLocales(choices);
 
-  let result: string;
-  wantedLocales.some((wanted) =>
-    supportedLocales.some((supported) => {
+  for (const wanted of wantedLocales) {
+    for (const supported of supportedLocales) {
       if (wanted.startsWith(supported)) {
-        result = supported;
-        return true;
+        return supported;
       }
-      return false;
-    }),
-  );
-  return result;
+    }
+  }
 }

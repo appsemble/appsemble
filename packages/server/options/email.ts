@@ -16,7 +16,7 @@ export async function email({
   } = context;
   const app = await getApp({ context, query: { where: { id: appId } } });
 
-  const persistedApp = await App.findByPk(app.id, {
+  const persistedApp = (await App.findByPk(app.id, {
     attributes: [
       'definition',
       'domain',
@@ -30,7 +30,7 @@ export async function email({
       'OrganizationId',
       'path',
     ],
-  });
+  }))!;
 
   await serverEmail({ app: persistedApp, action, data, mailer, options, context });
 }

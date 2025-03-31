@@ -53,11 +53,11 @@ export class App extends Model {
   @PrimaryKey
   @AutoIncrement
   @Column(DataType.INTEGER)
-  id: number;
+  id!: number;
 
   @AllowNull(false)
   @Column(DataType.JSON)
-  definition: AppDefinition;
+  definition!: AppDefinition;
 
   /**
    * The maximum length of a domain name is 255 bytes as per
@@ -66,13 +66,13 @@ export class App extends Model {
    */
   @Column({ type: DataType.STRING(253) })
   @Index({ name: 'appDomainComposite' })
-  domain: string;
+  domain?: string;
 
   @Column({ type: DataType.TEXT })
-  sslCertificate: string;
+  sslCertificate?: string;
 
   @Column({ type: DataType.TEXT })
-  sslKey: string;
+  sslKey?: string;
 
   @Column(DataType.BLOB)
   icon?: Buffer;
@@ -81,192 +81,192 @@ export class App extends Model {
   maskableIcon?: Buffer;
 
   @Column(DataType.STRING)
-  iconBackground: string;
+  iconBackground?: string;
 
   @Index({ name: 'App_path_OrganizationId_key', unique: true })
   @Column(DataType.STRING)
-  path: string;
+  path!: string;
 
   @AllowNull(false)
   @Default('unlisted')
   @Column(DataType.STRING)
-  visibility: AppVisibility;
+  visibility!: AppVisibility;
 
   @AllowNull(false)
   @Default(false)
   @Column(DataType.BOOLEAN)
-  showAppDefinition: boolean;
+  showAppDefinition!: boolean;
 
   @AllowNull(false)
   @Default(false)
   @Column(DataType.BOOLEAN)
-  template: boolean;
+  template!: boolean;
 
   @AllowNull(false)
   @Default(false)
   @Column(DataType.BOOLEAN)
-  demoMode: boolean;
+  demoMode!: boolean;
 
   @Column(DataType.TEXT)
-  coreStyle: string;
+  coreStyle?: string;
 
   @Column(DataType.TEXT)
-  sharedStyle: string;
+  sharedStyle?: string;
 
   @AllowNull(false)
   @Column(DataType.STRING)
-  vapidPublicKey: string;
+  vapidPublicKey!: string;
 
   @AllowNull(false)
   @Column(DataType.STRING)
-  vapidPrivateKey: string;
+  vapidPrivateKey!: string;
 
   @Default('unlocked')
   @Column(DataType.ENUM('fullLock', 'studioLock', 'unlocked'))
-  locked: AppLock;
+  locked!: AppLock;
 
   @AllowNull(false)
   @Default(false)
   @Column(DataType.BOOLEAN)
-  enableUnsecuredServiceSecrets: boolean;
+  enableUnsecuredServiceSecrets!: boolean;
 
   @Default(true)
   @Column(DataType.BOOLEAN)
-  showAppsembleOAuth2Login: boolean;
+  showAppsembleOAuth2Login!: boolean;
 
   @Default(false)
   @Column(DataType.BOOLEAN)
-  showAppsembleLogin: boolean;
+  showAppsembleLogin!: boolean;
 
   @Default(false)
   @Column(DataType.BOOLEAN)
-  displayAppMemberName: boolean;
+  displayAppMemberName!: boolean;
 
   @Default(false)
   @Column(DataType.BOOLEAN)
-  displayInstallationPrompt: boolean;
+  displayInstallationPrompt!: boolean;
 
   @Default(true)
   @Column(DataType.BOOLEAN)
-  enableSelfRegistration: boolean;
+  enableSelfRegistration!: boolean;
 
   @Column(DataType.STRING)
-  emailName: string;
+  emailName?: string;
 
   @Column(DataType.STRING)
-  emailHost: string;
+  emailHost?: string;
 
   @Column(DataType.STRING)
-  emailUser: string;
+  emailUser?: string;
 
   @Column(DataType.BLOB)
-  emailPassword: Buffer;
+  emailPassword?: Buffer;
 
   @Default(587)
   @Column(DataType.INTEGER)
-  emailPort: number;
+  emailPort!: number;
 
   @Default(true)
   @Column(DataType.BOOLEAN)
-  emailSecure: boolean;
+  emailSecure!: boolean;
 
   @Column(DataType.STRING)
-  googleAnalyticsID: string;
+  googleAnalyticsID?: string;
 
   @Column(DataType.STRING)
-  sentryDsn: string;
+  sentryDsn?: string;
 
   @Column(DataType.STRING)
-  sentryEnvironment: string;
+  sentryEnvironment?: string;
 
   @Default(false)
   @AllowNull(false)
   @Column(DataType.BOOLEAN)
-  scimEnabled: boolean;
+  scimEnabled!: boolean;
 
   @Column(DataType.BLOB)
-  scimToken: Buffer;
+  scimToken?: Buffer;
 
   @Column(DataType.TEXT)
-  controllerCode: string;
+  controllerCode?: string;
 
   @Column(DataType.JSON)
-  controllerImplementations: ProjectImplementations;
+  controllerImplementations?: ProjectImplementations;
 
   @AllowNull(true)
   @Column(DataType.JSON)
-  containers: CompanionContainerDefinition[];
+  containers?: CompanionContainerDefinition[];
 
   @AllowNull(true)
   @Column(DataType.STRING)
-  registry: string;
+  registry?: string;
 
   @UpdatedAt
-  updated: Date;
+  updated!: Date;
 
   @CreatedAt
-  created: Date;
+  created!: Date;
 
   @DeletedAt
   @Index({ name: 'appDomainComposite' })
-  deleted: Date;
+  deleted?: Date;
 
   @AllowNull(false)
   @ForeignKey(() => Organization)
   @Index({ name: 'App_path_OrganizationId_key', unique: true })
   @Column(DataType.STRING)
-  OrganizationId: string;
+  OrganizationId!: string;
 
   @HasMany(() => AppVariable)
-  AppVariables: AppVariable[];
+  AppVariables!: AppVariable[];
 
   @HasMany(() => AppBlockStyle)
-  AppBlockStyles: AppBlockStyle[];
+  AppBlockStyles!: AppBlockStyle[];
 
   @HasMany(() => AppOAuth2Secret)
-  AppOAuth2Secrets: AppOAuth2Secret[];
+  AppOAuth2Secrets!: AppOAuth2Secret[];
 
   @HasMany(() => AppSamlSecret)
-  AppSamlSecrets: AppSamlSecret[];
+  AppSamlSecrets!: AppSamlSecret[];
 
   @BelongsTo(() => Organization, { onDelete: 'CASCADE' })
-  Organization: Awaited<Organization>;
+  Organization?: Awaited<Organization>;
 
   @HasMany(() => AppSubscription)
-  AppSubscriptions: AppSubscription[];
+  AppSubscriptions!: AppSubscription[];
 
   @HasMany(() => AppMessages)
-  AppMessages: AppMessages[];
+  AppMessages!: AppMessages[];
 
   @HasMany(() => Asset)
-  Assets: Asset[];
+  Assets!: Asset[];
 
   @HasMany(() => AppMember)
-  AppMembers: AppMember[];
+  AppMembers!: AppMember[];
 
   @HasMany(() => Resource)
-  Resources: Resource[];
+  Resources!: Resource[];
 
   @HasMany(() => AppRating)
-  AppRatings: AppRating[];
+  AppRatings!: AppRating[];
 
   @HasMany(() => AppScreenshot)
-  AppScreenshots: AppScreenshot[];
+  AppScreenshots!: AppScreenshot[];
 
   @HasMany(() => AppReadme)
-  AppReadmes: AppReadme[];
+  AppReadmes!: AppReadme[];
 
   @HasMany(() => Group)
-  Groups: Group[];
+  Groups!: Group[];
 
   @HasMany(() => AppServiceSecret)
-  AppServiceSecrets: AppServiceSecret[];
+  AppServiceSecrets!: AppServiceSecret[];
 
   @HasMany(() => AppWebhookSecret, { onDelete: 'CASCADE' })
-  AppWebhookSecrets: AppWebhookSecret[];
+  AppWebhookSecrets!: AppWebhookSecret[];
 
   @HasMany(() => AppSnapshot, { onDelete: 'CASCADE' })
-  AppSnapshots: AppSnapshot[];
+  AppSnapshots!: AppSnapshot[];
 
   RatingAverage?: number;
 
@@ -317,6 +317,7 @@ export class App extends Model {
       enableUnsecuredServiceSecrets: this.enableUnsecuredServiceSecrets ?? false,
       displayAppMemberName: this.displayAppMemberName ?? false,
       displayInstallationPrompt: this.displayInstallationPrompt ?? false,
+      // @ts-expect-error 2322 null is not assignable to type (strictNullChecks) - Severe
       rating:
         this.RatingAverage == null
           ? undefined

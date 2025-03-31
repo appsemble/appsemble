@@ -72,6 +72,7 @@ export function AppInvite(): ReactNode {
         password: props.password,
       });
       setAccepted(true);
+      // @ts-expect-error 18048 variable is possibly undefined (strictNullChecks)
       await passwordLogin({ username: invite.email, password: props.password });
       navigate('/');
     },
@@ -86,7 +87,7 @@ export function AppInvite(): ReactNode {
     return (
       <Content padding>
         <Message color="danger">
-          {inviteError.response.status === 404 ? (
+          {inviteError.response?.status === 404 ? (
             <FormattedMessage {...messages.notFound} />
           ) : (
             <FormattedMessage {...messages.inviteLoadingError} />
@@ -137,7 +138,7 @@ export function AppInvite(): ReactNode {
         <FormattedMessage {...messages.setPassword} />
       </p>
       <SimpleForm defaultValues={{ password: '', accepted: false }} onSubmit={accept}>
-        <SimpleFormField disabled value={invite.email} />
+        <SimpleFormField disabled value={invite?.email} />
         <SimpleFormField
           autoComplete="new-password"
           component={PasswordField}
@@ -157,7 +158,7 @@ export function AppInvite(): ReactNode {
         </div>
         <SimpleFormError>
           {({ error }) =>
-            axios.isAxiosError(error) && error.response.status === 409 ? (
+            axios.isAxiosError(error) && error.response?.status === 409 ? (
               <FormattedMessage {...messages.emailConflict} />
             ) : (
               <FormattedMessage {...messages.submissionError} />

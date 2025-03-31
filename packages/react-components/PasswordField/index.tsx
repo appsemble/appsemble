@@ -22,6 +22,9 @@ export const PasswordField = forwardRef<HTMLInputElement, PasswordFieldProps>((p
     inputRef.current?.focus();
   }, [visible]);
 
+  // eslint-disable-next-line @typescript-eslint/prefer-ts-expect-error
+  // @ts-ignore 2345 argument of type is not assignable to parameter of type
+  // (strictNullChecks)
   const combinedRef = useCombinedRefs(ref, inputRef);
 
   return (

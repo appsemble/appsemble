@@ -88,7 +88,7 @@ export function AddCollectionModal({ onCreated, state }: AddCollectionModalProps
     >
       <SimpleFormError>
         {({ error }) =>
-          axios.isAxiosError(error) && error.response.status === 409 ? (
+          axios.isAxiosError(error) && error.response?.status === 409 ? (
             <FormattedMessage {...messages.nameConflict} />
           ) : (
             <FormattedMessage {...messages.error} />

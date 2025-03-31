@@ -35,10 +35,14 @@ export function DemoLogin({ modal }: DemoLoginProps): ReactNode {
 
   const appRoles = getAppRoles(appDefinition.security);
   const defaultAppRole = useMemo(
+    // @ts-expect-error 18048 variable is possibly undefined (strictNullChecks)
     () => appDefinition?.security?.default.role ?? appRoles[0] ?? '',
+    // @ts-expect-error 18048 variable is possibly undefined (strictNullChecks)
     [appDefinition?.security?.default.role, appRoles],
   );
 
+  // @ts-expect-error 2345 argument of type is not assignable to parameter of type
+  // (strictNullChecks)
   const [selectedDemoAppMember, setSelectedDemoAppMember] = useState<AppMemberInfo>(null);
   const [selectedAppRole, setSelectedAppRole] = useState<string>(defaultAppRole);
 
@@ -54,6 +58,7 @@ export function DemoLogin({ modal }: DemoLoginProps): ReactNode {
   const getRoleDescription = (role: AppRole): string =>
     getAppMessage({
       id: `app.roles.${role}.description`,
+      // @ts-expect-error 18048 variable is possibly undefined (strictNullChecks)
       defaultMessage: appDefinition.security?.roles[role]?.description || role,
     }).format() as string;
 

@@ -68,7 +68,7 @@ function validateJSONSchema(schema: Schema, prefix: Prefix, report: Report): voi
           }
         }
       }
-      for (const [key, propertySchema] of Object.entries(schema.properties)) {
+      for (const [key, propertySchema] of Object.entries(schema.properties ?? {})) {
         validateJSONSchema(propertySchema, [...prefix, 'properties', key], report);
       }
     } else {
@@ -97,7 +97,7 @@ function validateUniquePageNames(definition: AppDefinition, report: Report): voi
       const pagePath = [...parentPath, pageName];
 
       if (pageNames.has(normalizedPageName)) {
-        const paths = pageNames.get(normalizedPageName);
+        const paths = pageNames.get(normalizedPageName)!;
         paths.push(pagePath);
         report(pageName, 'is a duplicate page name', pagePath);
       } else {
@@ -132,7 +132,7 @@ function validateMembersSchema(definition: AppDefinition, report: Report): void 
       report(schema, 'must define type or enum', prefix);
     }
 
-    if ('reference' in propertyDefinition) {
+    if ('reference' in propertyDefinition && propertyDefinition.reference) {
       const { resource: resourceName } = propertyDefinition.reference;
 
       const resourceDefinition = definition.resources?.[resourceName];
@@ -186,7 +186,7 @@ function validateResourceSchemas(definition: AppDefinition, report: Report): voi
       report(schema.type, 'must define type object', [...prefix, 'type']);
     }
     if ('properties' in schema) {
-      for (const [propertyName, propertySchema] of Object.entries(schema.properties)) {
+      for (const [propertyName, propertySchema] of Object.entries(schema.properties ?? {})) {
         if (propertyName === 'id') {
           for (const [validatorKey, value] of Object.entries(propertySchema)) {
             if (validatorKey === 'description' || validatorKey === 'title') {
@@ -456,7 +456,7 @@ function validatePermissions(
         const [, resourceName, , resourceView] = permission.split(':');
 
         if (resourceName === 'all') {
-          for (const [rName, resourceDefinition] of Object.entries(appDefinition.resources)) {
+          for (const [rName, resourceDefinition] of Object.entries(appDefinition.resources ?? {})) {
             if (!resourceDefinition.views?.[resourceView]) {
               report(
                 appDefinition,
@@ -467,7 +467,7 @@ function validatePermissions(
             }
           }
         } else {
-          if (!appDefinition.resources[resourceName]?.views?.[resourceView]) {
+          if (!appDefinition.resources?.[resourceName]?.views?.[resourceView]) {
             report(
               appDefinition,
               `resource ${resourceName} is missing a definition for the ${resourceView} view`,
@@ -855,7 +855,7 @@ function checkCyclicRoleInheritance(
   name: string,
   report: Report,
 ): void {
-  let lastChecked: string;
+  let lastChecked: string | undefined;
   const stack: string[] = [];
 
   const checkRoleRecursively = (role: string): boolean => {
@@ -864,7 +864,7 @@ function checkCyclicRoleInheritance(
       return true;
     }
     stack.push(role);
-    return roles[role]?.inherits?.some(checkRoleRecursively);
+    return Boolean(roles[role]?.inherits?.some(checkRoleRecursively));
   };
 
   const duplicate = checkRoleRecursively(name);
@@ -884,7 +884,7 @@ function validateSecurity(definition: AppDefinition, report: Report): void {
   const predefinedRoles = Object.keys(PredefinedAppRole);
 
   const checkRoleExists = (name: string, path: Prefix, roles = predefinedRoles): boolean => {
-    if (!has(security.roles, name) && !roles.includes(name)) {
+    if (!has(security?.roles, name) && !roles.includes(name)) {
       report(name, 'does not exist in this app’s roles', path);
       return false;
     }
@@ -987,6 +987,8 @@ function validateSecurity(definition: AppDefinition, report: Report): void {
       );
     }
   } else {
+    // eslint-disable-next-line @typescript-eslint/prefer-ts-expect-error
+    // @ts-ignore 18048 variable is possibly undefined (strictNullChecks)
     checkRoleExists(security.default.role, ['security', 'default', 'role']);
   }
 
@@ -1062,7 +1064,7 @@ function validateHooks(definition: AppDefinition, report: Report): void {
       if (!has(resource, actionType)) {
         continue;
       }
-      const tos = resource[actionType].hooks?.notification?.to;
+      const tos = resource[actionType]?.hooks?.notification?.to;
       if (tos) {
         for (const [index, to] of tos.entries()) {
           if (to !== '$author' && !has(definition.security?.roles, to)) {
@@ -1365,7 +1367,9 @@ function validateActions(definition: AppDefinition, report: Report): void {
           return;
         }
 
-        const [toBase, toSub] = [].concat(to);
+        const [toBase, toSub] = ([] as unknown[]).concat(to);
+        // @ts-expect-error 2345 argument of type is not assignable to parameter of type
+        // (strictNullChecks) - Severe
         const toPage = findPageByName(definition.pages, toBase);
 
         if (!toPage) {
@@ -1473,8 +1477,8 @@ function validateEvents(
       if (action.type === 'dialog') {
         for (const block of action.blocks) {
           const versions = blockVersions.get(normalizeBlockName(block.type));
-          const version = versions.get(block.version);
-          if (version.layout === 'float') {
+          const version = versions?.get(block.version);
+          if (version?.layout === 'float') {
             report(
               block.version,
               'block with layout type: "'
@@ -1501,7 +1505,7 @@ function validateEvents(
       }
 
       collect([...path, 'event'], action.event, true);
-      if ('waitFor' in action) {
+      if ('waitFor' in action && action.waitFor) {
         collect([...path, 'waitFor'], action.waitFor, false);
       }
     },
@@ -1511,13 +1515,13 @@ function validateEvents(
         return;
       }
 
-      if (page.definition.events.emit) {
+      if (page.definition?.events.emit) {
         for (const [prefix, name] of Object.entries(page.definition.events.emit)) {
           collect([...path, 'events', 'emit', prefix], name, true);
         }
       }
 
-      if (page.definition.events.listen) {
+      if (page.definition?.events.listen) {
         for (const [prefix, name] of Object.entries(page.definition.events.listen)) {
           collect([...path, 'events', 'listen', prefix], name, false);
         }
@@ -1549,6 +1553,8 @@ function validateEvents(
   };
 
   if (indexMap.has('controller')) {
+    // eslint-disable-next-line @typescript-eslint/prefer-ts-expect-error
+    // @ts-ignore 2322 null is not assignable to type (strictNullChecks)
     controllerEvents = { ...indexMap.get('controller') };
   }
 
@@ -1639,7 +1645,7 @@ export async function validateAppDefinition(
     if (!blockVersionMap.has(version.name)) {
       blockVersionMap.set(version.name, new Map());
     }
-    blockVersionMap.get(version.name).set(version.version, version);
+    blockVersionMap.get(version.name)!.set(version.version, version);
   }
 
   const report: Report = (instance, message, path) => {
@@ -1647,6 +1653,9 @@ export async function validateAppDefinition(
   };
 
   try {
+    // eslint-disable-next-line @typescript-eslint/prefer-ts-expect-error
+    // @ts-ignore 2345 argument of type is not assignable to parameter of type
+    // (strictNullChecks)
     validateController(definition, controllerImplementations, report);
     validateCronJobs(definition, report);
     validateDefaultPage(definition, report);

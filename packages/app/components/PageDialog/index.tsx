@@ -8,20 +8,20 @@ import { BlockList } from '../BlockList/index.js';
 
 interface PageDialogProps
   extends Omit<ComponentPropsWithoutRef<typeof BlockList>, 'blocks' | 'prefix' | 'prefixIndex'> {
-  readonly dialog: ShowDialogParams;
+  readonly dialog?: ShowDialogParams;
 }
 
 /**
  * The dialog component to render on a page when the `dialog` action is dispatched.
  */
-export function PageDialog({ dialog = null, remap, ...props }: PageDialogProps): ReactNode {
+export function PageDialog({ dialog, remap, ...props }: PageDialogProps): ReactNode {
   return (
     <ModalCard
       cardClassName={classNames({ [styles.fullscreen]: dialog?.fullscreen })}
       closable={Boolean(dialog?.closable)}
       isActive={Boolean(dialog)}
       onClose={dialog?.close}
-      title={remap(dialog?.title, {}, {})}
+      title={remap(dialog?.title ?? null, {}, {})}
     >
       {dialog ? (
         <BlockList

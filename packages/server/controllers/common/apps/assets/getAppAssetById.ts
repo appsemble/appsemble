@@ -47,6 +47,8 @@ export async function getAppAssetById(ctx: Context): Promise<void> {
   const stats = await getS3FileStats(`app-${appId}`, asset.id);
   const stream = await getS3File(`app-${appId}`, asset.id);
 
+  // @ts-expect-error 2345 argument of type is not assignable to parameter of type
+  // (strictNullChecks)
   setAssetHeaders(ctx, mime, filename, stats);
 
   ctx.body = stream;

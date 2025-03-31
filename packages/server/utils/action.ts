@@ -21,26 +21,31 @@ export async function handleAction(
     where: { AppId: params.app.id, language: locale },
   });
 
-  const context: RemapperContext = params.internalContext ?? {
-    appId: params.app.id,
-    appUrl,
-    url: String(url),
-    context: {},
-    history: [],
-    getMessage({ defaultMessage, id }) {
-      const messageIds = messages?.messages?.messageIds;
-      const message = has(messageIds, id) ? messageIds[id] : defaultMessage;
-      return new IntlMessageFormat(message);
-    },
-    getVariable() {
-      return null;
-    },
-    appMemberInfo: undefined,
-    locale,
-  };
+  const context: RemapperContext =
+    params.internalContext ??
+    // @ts-expect-error 2353 Messed up
+    ({
+      appId: params.app.id,
+      appUrl,
+      url: String(url),
+      context: {},
+      history: [],
+      getMessage({ defaultMessage, id }) {
+        const messageIds = messages?.messages?.messageIds;
+        const message = id && messageIds && has(messageIds, id) ? messageIds[id] : defaultMessage;
+        // @ts-expect-error 2345 argument of type is not assignable to parameter of type
+        // (strictNullChecks)
+        return new IntlMessageFormat(message);
+      },
+      getVariable() {
+        return null;
+      },
+      appMemberInfo: undefined,
+      locale,
+    } as RemapperContext);
   let data =
     'remapBefore' in params.action
-      ? remap(params.action.remapBefore, params.data, context)
+      ? remap(params.action.remapBefore ?? null, params.data, context)
       : params.data;
 
   const updatedContext = {
@@ -54,6 +59,7 @@ export async function handleAction(
     });
     data = await action({
       ...params,
+      // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
       context: params.app?.definition?.security?.cron
         ? { ...params.context, user: appMemberInfo, client: { app: params.app.toJSON() } }
         : params.context,
@@ -61,9 +67,11 @@ export async function handleAction(
       internalContext: updatedContext,
     });
     if ('remapAfter' in params.action) {
-      data = remap(params.action.remapAfter, data, updatedContext);
+      data = remap(params.action.remapAfter ?? null, data, updatedContext);
     }
     if (params.action.onSuccess) {
+      // @ts-expect-error 2345 argument of type is not assignable to parameter of type
+      // (strictNullChecks)
       return await handleAction(actions[params.action.onSuccess.type], {
         ...params,
         action: params.action.onSuccess,
@@ -74,6 +82,8 @@ export async function handleAction(
   } catch (error) {
     logger.error(`Error running action: ${params.action.type}`);
     if (params.action.onError) {
+      // @ts-expect-error 2345 argument of type is not assignable to parameter of type
+      // (strictNullChecks)
       return handleAction(actions[params.action.onError.type], {
         ...params,
         action: params.action.onError,

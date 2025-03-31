@@ -215,7 +215,7 @@ function appendFlowBlockToTemplate(block: BlockDefinition, template: AppDefiniti
 
   (template.pages as FlowPageDefinition[])
     .find((page) => page.name === supportPageName)
-    .steps[1].blocks.push(block);
+    ?.steps[1].blocks.push(block);
 
   return template;
 }
@@ -235,7 +235,7 @@ function appendBlockToTemplate(block: BlockDefinition, template: AppDefinition):
 
   (updatedTemplate.pages as BasicPageDefinition[])
     .find((page) => page.name === supportPageName)
-    .blocks.push(block);
+    ?.blocks.push(block);
 
   if (block.actions) {
     const supportBlock: BlockDefinition = {
@@ -344,7 +344,7 @@ function appendControllerToTemplate(
 
   updatedTemplate.controller = controller;
 
-  for (const action of Object.values(controller.actions)) {
+  for (const action of Object.values(controller.actions ?? {})) {
     if (action.type.startsWith('resource')) {
       updatedTemplate.resources = {
         [(action as ResourceActionDefinition<'noop'>).resource]: {
@@ -376,7 +376,7 @@ function appendMembersToTemplate(
   updatedTemplate.members = members;
 
   for (const propertyDefinition of Object.values(members.properties)) {
-    if (propertyDefinition.reference.resource) {
+    if (propertyDefinition.reference?.resource) {
       updatedTemplate.resources = {
         [propertyDefinition.reference.resource]: {
           schema: {
@@ -413,6 +413,7 @@ async function accumulateAppDefinitions(docsPath: string): Promise<AppDefinition
 
         visit(ast, 'code', (node: Code) => {
           const { meta, position, value } = node;
+          // @ts-expect-error 18048 variable is possibly undefined (strictNullChecks)
           const { line } = position.start;
 
           const filename = basename(path);
@@ -452,6 +453,7 @@ async function accumulateAppDefinitions(docsPath: string): Promise<AppDefinition
   for (const [filename, snippets] of Object.entries(snippetsByFilename)) {
     let template: AppDefinition = {
       name: 'App from snippets',
+      // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
       defaultPage: null,
       pages: [],
     };

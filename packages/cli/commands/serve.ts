@@ -116,6 +116,7 @@ export async function handler(argv: ServeArguments): Promise<void> {
     name: 'dev',
     email: 'dev@example.com',
     email_verified: true,
+    // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
     role: passedUserRole || appSecurity?.default?.role,
     demo: false,
     zoneinfo: '',
@@ -248,6 +249,8 @@ export async function handler(argv: ServeArguments): Promise<void> {
       getProjectWebpackConfig(
         blockConfig,
         'development',
+        // @ts-expect-error 2345 argument of type is not assignable to parameter of type
+        // (strictNullChecks)
         join(blockConfig.dir, blockConfig.output),
       ),
     ),
@@ -311,7 +314,7 @@ export async function handler(argv: ServeArguments): Promise<void> {
             `File at ${path} does not contain an object or array of objects`,
           );
         }
-        resources = [].concat(resource);
+        resources = ([] as unknown[]).concat(resource);
       }
 
       logger.info(`Creating resource(s) from ${path}`);

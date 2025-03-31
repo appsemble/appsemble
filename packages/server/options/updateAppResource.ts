@@ -23,15 +23,15 @@ export function updateAppResource({
   return transactional(async (transaction) => {
     const member = await getCurrentAppMember({ context });
 
-    const persistedApp = await App.findOne({
+    const persistedApp = (await App.findOne({
       where: {
         id: app.id,
       },
-    });
+    }))!;
 
     const { $clonable: clonable, $expires: expires, ...data } = resource as Record<string, unknown>;
 
-    const oldResource = await Resource.findOne({
+    const oldResource = (await Resource.findOne({
       where: {
         id,
       },
@@ -40,7 +40,7 @@ export function updateAppResource({
         { model: Asset, attributes: ['id'], required: false },
         { association: 'Group', attributes: ['id', 'name'], required: false },
       ],
-    });
+    }))!;
 
     const oldData = oldResource.data;
     const previousEditorId = resource.EditorId;
@@ -70,6 +70,8 @@ export function updateAppResource({
         { logging: false, transaction },
       );
 
+      // @ts-expect-error 2345 argument of type is not assignable to parameter of type
+      // (strictNullChecks)
       await uploadAssets(app.id, preparedAssets);
     }
 
@@ -103,6 +105,6 @@ export function updateAppResource({
     processReferenceHooks(persistedApp, newResource, 'update', options, context);
     processHooks(persistedApp, newResource, 'update', options, context);
 
-    return reloaded.toJSON({ exclude: reloaded.App.template ? ['$seed'] : undefined });
+    return reloaded.toJSON({ exclude: reloaded.App!.template ? ['$seed'] : undefined });
   });
 }

@@ -191,7 +191,7 @@ describe('iterBlock', () => {
 
     const result = iterBlock(block, { onAction, onBlock });
 
-    expect(onAction).toHaveBeenCalledWith(block.actions.onClick, ['actions', 'onClick']);
+    expect(onAction).toHaveBeenCalledWith(block.actions?.onClick, ['actions', 'onClick']);
     expect(onBlock).toHaveBeenCalledWith(block, []);
     expect(result).toBe(false);
   });
@@ -221,7 +221,7 @@ describe('iterBlock', () => {
     const onAction = vi.fn().mockReturnValue(true);
     const onBlock = vi.fn();
 
-    const block: BlockDefinition = {
+    const block = {
       type: 'list',
       version: '1.2.3',
       actions: {
@@ -229,7 +229,7 @@ describe('iterBlock', () => {
           type: 'log',
         },
       },
-    };
+    } satisfies BlockDefinition;
 
     const result = iterBlock(block, { onAction, onBlock });
 
@@ -377,7 +377,7 @@ describe('iterPage', () => {
     const onBlockList = vi.fn();
     const onPage = vi.fn();
 
-    const page: PageDefinition = {
+    const page = {
       name: 'Page',
       type: 'tabs',
       tabs: [
@@ -386,7 +386,7 @@ describe('iterPage', () => {
           blocks: [],
         },
       ],
-    };
+    } satisfies PageDefinition;
 
     const result = iterPage(page, { onBlockList, onPage });
 
@@ -399,7 +399,7 @@ describe('iterPage', () => {
     const onAction = vi.fn();
     const onPage = vi.fn();
 
-    const page: PageDefinition = {
+    const page = {
       name: 'Page',
       type: 'flow',
       actions: {
@@ -408,7 +408,7 @@ describe('iterPage', () => {
         },
       },
       steps: [],
-    };
+    } satisfies PageDefinition;
 
     const result = iterPage(page, { onAction, onPage });
 
@@ -422,7 +422,7 @@ describe('iterPage', () => {
     const onPage = vi.fn();
     const onBlockList = vi.fn();
 
-    const page: PageDefinition = {
+    const page = {
       name: 'Page',
       type: 'flow',
       actions: {
@@ -446,7 +446,7 @@ describe('iterPage', () => {
           ],
         },
       ],
-    };
+    } satisfies PageDefinition;
 
     const result = iterPage(page, { onAction, onPage, onBlockList });
 
@@ -519,8 +519,8 @@ describe('iterApp', () => {
     const result = iterApp(app, { onAction });
 
     expect(onAction).toHaveBeenCalledTimes(2);
-    expect(onAction).toHaveBeenCalledWith(app.cron.foo.action, ['cron', 'foo', 'action']);
-    expect(onAction).toHaveBeenCalledWith(app.cron.bar.action, ['cron', 'bar', 'action']);
+    expect(onAction).toHaveBeenCalledWith(app.cron?.foo.action, ['cron', 'foo', 'action']);
+    expect(onAction).toHaveBeenCalledWith(app.cron?.bar.action, ['cron', 'bar', 'action']);
     expect(result).toBe(false);
   });
 
@@ -540,7 +540,7 @@ describe('iterApp', () => {
     const result = iterApp(app, { onAction });
 
     expect(onAction).toHaveBeenCalledTimes(1);
-    expect(onAction).toHaveBeenCalledWith(app.cron.foo.action, ['cron', 'foo', 'action']);
+    expect(onAction).toHaveBeenCalledWith(app.cron?.foo.action, ['cron', 'foo', 'action']);
     expect(result).toBe(true);
   });
 });

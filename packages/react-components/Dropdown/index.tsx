@@ -45,7 +45,7 @@ export function Dropdown({
   icon,
   label,
 }: DropdownProps): ReactNode {
-  const ref = useRef<HTMLDivElement>();
+  const ref = useRef<HTMLDivElement>(null);
   const { disable, enabled, toggle } = useToggle();
 
   const onKeyDown = useCallback(

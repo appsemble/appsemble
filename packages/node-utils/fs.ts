@@ -84,15 +84,19 @@ export async function writeData(
   data: unknown,
   { compare = compareStrings, sort = true }: WriteDataOptions = {},
 ): Promise<string> {
+  // @ts-expect-error 2769 No overload matches this call (strictNullChecks)
   const sorted = sort ? sortKeys(data, { deep: true, compare: compare || undefined }) : data;
   let buffer: string;
   try {
     const { default: prettier } = await import('prettier');
     const { inferredParser } = await prettier.getFileInfo(path, { resolveConfig: true });
     const prettierOptions = await prettier.resolveConfig(path, { editorconfig: true });
+    // @ts-expect-error 18048 variable is possibly null (strictNullChecks)
     prettierOptions.parser = inferredParser;
     buffer =
       inferredParser === 'yaml' ? stringify(sorted) : `${JSON.stringify(sorted, undefined, 2)}\n`;
+    // @ts-expect-error 2345 argument of type is not assignable to parameter of type
+    // (strictNullChecks)
     buffer = await prettier.format(buffer, prettierOptions);
   } catch {
     const ext = extname(path);

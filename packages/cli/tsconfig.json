@@ -5,6 +5,8 @@
     "jsxFactory": "h",
     "jsxFragmentFactory": "null",
     "rootDir": ".",
+    "strictFunctionTypes": true,
+    "strictNullChecks": true,
     "types": ["node"]
   }
 }

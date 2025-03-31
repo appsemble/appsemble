@@ -16,14 +16,14 @@ export async function resendUserEmailVerification(ctx: Context): Promise<void> {
     await mailer
       .sendTranslatedEmail({
         to: {
-          name: record.User.name,
+          name: record.User!.name,
           email: record.email,
         },
         emailName: 'resend',
-        locale: record.User.locale,
+        locale: record.User!.locale,
         values: {
           link: (text) => `[${text}](${argv.host}/verify?token=${key})`,
-          name: record.User.name || 'null',
+          name: record.User!.name || 'null',
           appName: 'null',
         },
       })

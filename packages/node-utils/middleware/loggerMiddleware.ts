@@ -10,6 +10,7 @@ interface RangeMap<T> {
 }
 
 function rangeFormat<T>(value: number, map: RangeMap<T>): T {
+  // @ts-expect-error 2532 Object is possibly 'undefined'.
   return Object.entries(map).find(([v]) => v === 'default' || value < Number(v))[1];
 }
 

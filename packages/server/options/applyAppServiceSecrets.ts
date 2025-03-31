@@ -19,6 +19,7 @@ export async function applyAppServiceSecrets({
   axiosConfig,
   context,
 }: ApplyAppServiceSecretsParams): Promise<RawAxiosRequestConfig> {
+  // XXX: this is not a copy, intent unclear
   const newAxiosConfig = axiosConfig;
 
   if (!context.user) {
@@ -35,10 +36,14 @@ export async function applyAppServiceSecrets({
   logger.silly('Service Secrets:');
   for (const serviceSecret of appServiceSecrets) {
     logger.silly(serviceSecret);
+    // @ts-expect-error 2345 argument of type is not assignable to parameter of type
+    // (strictNullChecks)
     if (!isMatch(axiosConfig.url, serviceSecret.urlPatterns.split(','))) {
       continue;
     }
 
+    // @ts-expect-error 2345 argument of type is not assignable to parameter of type
+    // (strictNullChecks)
     const decryptedSecret = decrypt(serviceSecret.secret, argv.aesSecret);
 
     switch (serviceSecret.authenticationMethod) {
@@ -50,8 +55,13 @@ export async function applyAppServiceSecrets({
           continue;
         }
         logger.silly(
+          // @ts-expect-error 2345 argument of type is not assignable to parameter of type
+          // (strictNullChecks)
           `Applying http-basic secret ${basicAuth(serviceSecret.identifier, decryptedSecret)}`,
         );
+        newAxiosConfig.headers ??= {};
+        // @ts-expect-error 2345 argument of type is not assignable to parameter of type
+        // (strictNullChecks)
         newAxiosConfig.headers.Authorization = basicAuth(serviceSecret.identifier, decryptedSecret);
         break;
       case 'client-certificate':
@@ -86,6 +96,8 @@ export async function applyAppServiceSecrets({
           const clientCertSecret = appServiceSecrets.find(
             (secret) =>
               secret.authenticationMethod === 'client-certificate' &&
+              // @ts-expect-error 2345 argument of type is not assignable to parameter of type
+              // (strictNullChecks)
               isMatch(serviceSecret.tokenUrl, secret.urlPatterns.split(',')),
           );
           let httpsAgent;
@@ -93,12 +105,16 @@ export async function applyAppServiceSecrets({
             logger.silly('Using client-certificate secret:');
             logger.silly({
               cert: clientCertSecret.identifier,
+              // @ts-expect-error 2345 argument of type is not assignable to parameter of type
+              // (strictNullChecks)
               key: decrypt(clientCertSecret.secret, argv.aesSecret),
               ...(clientCertSecret.ca ? { ca: clientCertSecret.ca } : {}),
             });
 
             httpsAgent = new https.Agent({
               cert: clientCertSecret.identifier,
+              // @ts-expect-error 2345 argument of type is not assignable to parameter of type
+              // (strictNullChecks)
               key: decrypt(clientCertSecret.secret, argv.aesSecret),
               ...(clientCertSecret.ca ? { ca: clientCertSecret.ca } : {}),
             });
@@ -117,6 +133,8 @@ export async function applyAppServiceSecrets({
               headers: {
                 'user-agent': `AppsembleServer/${version}`,
                 'content-type': 'application/x-www-form-urlencoded',
+                // @ts-expect-error 2345 argument of type is not assignable to parameter of type
+                // (strictNullChecks)
                 Authorization: basicAuth(serviceSecret.identifier, decryptedSecret),
               },
               httpsAgent,
@@ -132,6 +150,8 @@ export async function applyAppServiceSecrets({
               headers: {
                 'user-agent': `AppsembleServer/${version}`,
                 'content-type': 'application/x-www-form-urlencoded',
+                // @ts-expect-error 2345 argument of type is not assignable to parameter of type
+                // (strictNullChecks)
                 Authorization: basicAuth(serviceSecret.identifier, decryptedSecret),
               },
               httpsAgent,
@@ -165,10 +185,14 @@ export async function applyAppServiceSecrets({
 
           if (updatedSecret) {
             logger.silly(
+              // @ts-expect-error 2345 argument of type is not assignable to parameter of type
+              // (strictNullChecks)
               `Using updated client-credentials secret "Bearer ${decrypt(updatedSecret.accessToken, argv.aesSecret)}"`,
             );
-
+            newAxiosConfig.headers ??= {};
             newAxiosConfig.headers.Authorization = `Bearer ${decrypt(
+              // @ts-expect-error 2345 argument of type is not assignable to parameter of type
+              // (strictNullChecks)
               updatedSecret.accessToken,
               argv.aesSecret,
             )}`;
@@ -178,6 +202,7 @@ export async function applyAppServiceSecrets({
             `Using client-credentials secret "Bearer ${decrypt(serviceSecret.accessToken, argv.aesSecret)}"`,
           );
 
+          newAxiosConfig.headers ??= {};
           newAxiosConfig.headers.Authorization = `Bearer ${decrypt(
             serviceSecret.accessToken,
             argv.aesSecret,
@@ -185,10 +210,13 @@ export async function applyAppServiceSecrets({
         }
         break;
       case 'cookie': {
+        // @ts-expect-error 2345 argument of type is not assignable to parameter of type
+        // (strictNullChecks)
         const cookie = `${encodeURIComponent(serviceSecret.identifier)}=${encodeURIComponent(
           decryptedSecret,
         )};`;
-        if (axiosConfig.headers['Set-Cookie']) {
+        newAxiosConfig.headers ??= {};
+        if (axiosConfig.headers?.['Set-Cookie']) {
           logger.silly(`Appending cookie secret ${cookie}`);
           newAxiosConfig.headers['Set-Cookie'] += ` ${cookie}`;
         } else {
@@ -199,7 +227,7 @@ export async function applyAppServiceSecrets({
       }
       case 'custom-header':
         if (
-          serviceSecret.identifier.toLowerCase() === 'authorization' &&
+          serviceSecret.identifier?.toLowerCase() === 'authorization' &&
           axiosConfig.headers?.Authorization
         ) {
           logger.silly(
@@ -208,12 +236,15 @@ export async function applyAppServiceSecrets({
           continue;
         }
         logger.silly(`Applying custom-header secret ${decryptedSecret}.`);
+        newAxiosConfig.headers ??= {};
+        // @ts-expect-error 2538 type undefined cannot be used as an index type
         newAxiosConfig.headers[serviceSecret.identifier] = decryptedSecret;
         break;
       case 'query-parameter':
         logger.silly(`Applying query-parameter secret ${decryptedSecret}.`);
         newAxiosConfig.params = {
           ...axiosConfig.params,
+          // @ts-expect-error 2464 A computed property must be of type ...
           [serviceSecret.identifier]: decryptedSecret,
         };
         break;

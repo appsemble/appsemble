@@ -3,6 +3,7 @@ import { type Context, type Middleware } from 'koa';
 
 export function createScreenshotHandler({ getApp, getAppScreenshots }: Options): Middleware {
   return async (ctx: Context) => {
+    // @ts-expect-error Messed up
     const { id } = ctx.params;
 
     const app = await getApp({ context: ctx });

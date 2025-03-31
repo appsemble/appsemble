@@ -24,7 +24,7 @@ export async function getGroupInvite(ctx: Context): Promise<void> {
 
   ctx.body = {
     groupId: invite.GroupId,
-    groupName: invite.Group.name,
+    groupName: invite.Group!.name,
     email: invite.email,
     role: invite.role,
   } as GroupInviteType;

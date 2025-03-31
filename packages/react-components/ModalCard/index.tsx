@@ -109,8 +109,8 @@ export function ModalCard<T extends ElementType = 'div'>({
       {/* eslint-disable-next-line jsx-a11y/prefer-tag-over-role */}
       <div
         className="modal-background"
-        onClick={closable ? onClose : null}
-        onKeyDown={closable ? onKeyDown : null}
+        onClick={closable ? onClose : undefined}
+        onKeyDown={closable ? onKeyDown : undefined}
         role="presentation"
       />
       {/* @ts-expect-error This should be fine */}

@@ -104,6 +104,7 @@ export function createBulmaHandler({ createTheme, getTheme }: Options): Middlewa
       themeColor: (getQueryParameter(query.themeColor) || baseTheme.themeColor).toLowerCase(),
       splashColor: (getQueryParameter(query.splashColor) || baseTheme.splashColor).toLowerCase(),
       fontFamily: getQueryParameter(query.fontFamily) || baseTheme.font.family,
+      // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
       fontSource: getQueryParameter(query.fontSource) || baseTheme.font.source,
     };
 

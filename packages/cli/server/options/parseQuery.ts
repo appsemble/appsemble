@@ -37,7 +37,7 @@ function processToken(token: Token): any {
   if (operators.has(token.type)) {
     return {
       [processToken(token.value.left)]: {
-        [operators.get(token.type)]: processToken(token.value.right),
+        [operators.get(token.type)!]: processToken(token.value.right),
       },
     };
   }
@@ -74,7 +74,7 @@ function processLogicalExpression(token: Token): WhereOptions {
   const left = flatten(processLogicalExpression(token.value.left));
   const right = flatten(processLogicalExpression(token.value.right));
 
-  return { [op]: [].concat(left).concat(right) };
+  return { [op]: ([] as WhereOptions[]).concat(left).concat(right) };
 }
 
 function parseOdataFilter(query: Token | string): WhereOptions {

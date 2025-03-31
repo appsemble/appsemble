@@ -60,6 +60,8 @@ export async function getRemapperContext(
     (message) =>
       new IntlMessageFormat(message, language, undefined, {
         formatters: {
+          // XXX: idk
+          // @ts-expect-error 2322 undefined is not assignable to type ... (strictNullChecks)
           getNumberFormat,
           getPluralRules,
           getDateTimeFormat: memoize(
@@ -71,17 +73,22 @@ export async function getRemapperContext(
   );
 
   return {
+    // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
     appId: app.id,
     appUrl,
     url: appUrl,
     getMessage({ defaultMessage, id }) {
+      // @ts-expect-error 2345 argument of type is not assignable to parameter of type
+      // (strictNullChecks)
       const msg = appMessages.find(({ messages }) => has(messages.messageIds, id));
+      // @ts-expect-error 2538 type undefined cannot be used as an index type
       const message = msg ? msg.messages.messageIds[id] : defaultMessage;
       return cache(message || `'{${id}}'`);
     },
     getVariable(variableName) {
       return appVariables.find((appVariable) => appVariable.name === variableName)?.value;
     },
+    // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
     appMemberInfo,
     context: {},
     locale: appMemberInfo?.locale ?? app.definition.defaultLanguage ?? defaultLocale,
@@ -93,7 +100,7 @@ function replaceStyle(
   selector: string,
   property: string,
   value: string,
-): CssNode {
+): CssNode | undefined {
   try {
     walk(stylesheet, (nodeSelector) => {
       if (nodeSelector.type !== 'Rule' || nodeSelector.prelude.type !== 'Raw') {
@@ -203,6 +210,7 @@ async function patchStyle(
     });
 
     for (const { property, selector, value } of replacements) {
+      // @ts-expect-error 2322 undefined is not assignable to type (strictNullChecks)
       doc = replaceStyle(doc, selector, property, String(value));
     }
 

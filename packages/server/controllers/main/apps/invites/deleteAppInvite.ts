@@ -14,6 +14,7 @@ export async function deleteAppInvite(ctx: Context): Promise<void> {
   assertKoaCondition(invite != null, ctx, 404, 'This invite does not exist');
 
   const app = await App.findByPk(invite.AppId, { attributes: ['OrganizationId'] });
+  assertKoaCondition(app != null, ctx, 404, 'App not found');
 
   await checkUserOrganizationPermissions({
     context: ctx,

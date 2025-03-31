@@ -119,15 +119,15 @@ export async function getUserInfo(
   remapper?: Remapper,
   userEmailsUrl?: string,
 ): Promise<Partial<UserInfo>> {
-  let email: string;
-  let emailVerified: boolean;
-  let name: string;
-  let profile: string;
-  let picture: string;
-  let sub: string;
-  let locale: string;
-  let zoneinfo: string;
-  let subscribed: boolean;
+  let email: string | undefined;
+  let emailVerified: boolean | undefined;
+  let name: string | undefined;
+  let profile: string | undefined;
+  let picture: string | undefined;
+  let sub: string | undefined;
+  let locale: string | undefined;
+  let zoneinfo: string | undefined;
+  let subscribed: boolean | undefined;
 
   function assign(info: UserInfo): void {
     email ??= info.email;
@@ -168,9 +168,10 @@ export async function getUserInfo(
       headers: { authorization: `Bearer ${accessToken}` },
     };
     const { data } = await axios.get<UserInfo>(userInfoUrl, requestConfig);
-    const actualData: UserInfo = remapper
-      ? (remap(remapper, data, null) as UserInfo)
-      : (data as UserInfo);
+    // @ts-expect-error 2345 argument of type is not assignable to parameter of type
+    // (strictNullChecks) - Severe
+    // eslint-disable-next-line prettier/prettier
+    const actualData: UserInfo = remapper ? (remap(remapper, data, null) as UserInfo) : (data as UserInfo);
     if (!actualData.email && userEmailsUrl) {
       const { data: emailsData } = await axios.get(userEmailsUrl, requestConfig);
       if (emailsData.length > 0) {

@@ -63,15 +63,18 @@ async function* iterApps({
 }: IterAppsOptions): AsyncGenerator<[string, number | string][], void, undefined> {
   let offset = 0;
   let length = Number.POSITIVE_INFINITY;
+  // @ts-expect-error 18048 variable is possibly undefined (strictNullChecks)
   while (batch <= length) {
     let chunk: [string, number | string][] = [];
     if (paths?.length) {
       chunk = await Promise.all(
         paths
+          // @ts-expect-error 18048 variable is possibly undefined (strictNullChecks)
           .slice(offset, offset + batch)
-          .map<
-            Promise<[string, number | string]>
-          >(async (path) => [String(await readFile(path)), path]),
+          .map<Promise<[string, number | string]>>(async (path) => [
+            String(await readFile(path)),
+            path,
+          ]),
       );
       yield chunk;
     } else {
@@ -222,7 +225,7 @@ export async function handler({
   save,
   validate,
 }: AdditionalArguments = {}): Promise<void> {
-  const patches = migrations.at(-1).appPatches;
+  const patches = migrations.at(-1)?.appPatches;
   if (!patches?.length) {
     logger.info('No patches found, nothing to migrate.');
     process.exit();
@@ -244,13 +247,14 @@ export async function handler({
     if (!paths?.length) {
       handleDBError(error as Error);
     }
+    handleDBError(error as Error);
   }
 
-  let validator: Validator;
+  let validator: Validator | undefined;
   if (validate) {
     validator = new Validator();
     Object.entries(schemas).map(([name, schema]) =>
-      validator.addSchema(schema, `/#/components/schemas/${name}`),
+      validator!.addSchema(schema, `/#/components/schemas/${name}`),
     );
   }
 
@@ -279,7 +283,7 @@ export async function handler({
       patched += 1;
 
       const id = typeof idOrPath === 'number' ? idOrPath : undefined;
-      if (validate && (await validateDefinition(validator, patchedDefinition, id))) {
+      if (validate && (await validateDefinition(validator!, patchedDefinition, id))) {
         failed += 1;
         continue;
       }

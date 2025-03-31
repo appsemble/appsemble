@@ -297,6 +297,9 @@ export async function handler({ identifier, increment }: Args): Promise<void> {
   const workspaces = await getWorkspaces(process.cwd());
   logger.info(`Old version: ${version}`);
   const newVersion = semver.inc(version, increment, identifier);
+  if (newVersion == null) {
+    throw new Error(`Invalid version increment: ${increment}, semver.inc returned ${newVersion}`);
+  }
   logger.info(`New version: ${newVersion}`);
   const paths = await globby(
     [

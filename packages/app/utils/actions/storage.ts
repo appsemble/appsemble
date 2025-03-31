@@ -10,13 +10,12 @@ let dbPromise: Promise<IDBPDatabase>;
 
 const mutexes = new Map<string, Mutex>();
 
-function withMutex(key: string, fn: () => Promise<void>): Promise<void> {
-  const mutex = mutexes.get(key) || mutexes.set(key, new Mutex()).get(key);
-  return mutex.runExclusive(fn).then(() => {
-    if (!mutex.isLocked()) {
-      mutexes.delete(key);
-    }
-  });
+async function withMutex(key: string, fn: () => Promise<void>): Promise<void> {
+  const mutex = mutexes.get(key) || mutexes.set(key, new Mutex()).get(key)!;
+  await mutex.runExclusive(fn);
+  if (!mutex.isLocked()) {
+    mutexes.delete(key);
+  }
 }
 
 export function getDB(): Promise<IDBPDatabase> {
@@ -32,7 +31,8 @@ export function getDB(): Promise<IDBPDatabase> {
 }
 
 function readFromLocalStorage(key: string): Object | null {
-  const value = JSON.parse(localStorage.getItem(`appsemble-${appId}-${key}`));
+  const item = localStorage.getItem(`appsemble-${appId}-${key}`);
+  const value = item ? JSON.parse(item) : null;
   if (!value) {
     throw new Error('Could not find data at this key.');
   }
@@ -71,7 +71,7 @@ export async function readStorage(
       value = Array.isArray(value) ? [...value] : { ...value };
     }
 
-    return value;
+    return value as Object;
   }
   if (storage !== 'indexedDB') {
     const store = storage === 'localStorage' ? localStorage : sessionStorage;
@@ -82,7 +82,11 @@ export async function readStorage(
       }
       return JSON.parse(value);
     }
-    return readFromLocalStorage(key);
+    const value = readFromLocalStorage(key);
+    if (!value) {
+      throw new Error('Could not find data at this key.');
+    }
+    return value;
   }
 
   const db = await getDB();
@@ -105,7 +109,7 @@ function writeToLocalStorage(
     '7d': 7 * millisecondsInADay,
     '12h': (1 / 2) * millisecondsInADay,
   };
-  if (expiryToTimeObject[expiry]) {
+  if (expiry && expiryToTimeObject[expiry]) {
     localStorage.setItem(
       `appsemble-${appId}-${key}`,
       JSON.stringify({ value, expiry: Date.now() + expiryToTimeObject[expiry] }),
@@ -170,7 +174,7 @@ export const read: ActionCreator<'storage.read'> = ({ appStorage, definition, re
       return;
     }
 
-    const result = await readStorage(definition.storage, key, appStorage);
+    const result = await readStorage(definition.storage ?? 'indexedDB', key, appStorage);
     return result;
   },
 ];
@@ -184,8 +188,10 @@ export const write: ActionCreator<'storage.write'> = ({ appStorage, definition, 
 
     const value = remap(definition.value, data, context);
 
-    withMutex(`${definition.storage}:${key}`, () =>
-      writeStorage(definition.storage, key, value, appStorage, definition.expiry),
+    const { storage = 'indexedDB' } = definition;
+
+    withMutex(`${storage}:${key}`, () =>
+      writeStorage(definition.storage ?? 'indexedDB', key, value, appStorage, definition.expiry),
     );
 
     return data;
@@ -199,7 +205,7 @@ export const remove: ActionCreator<'storage.delete'> = ({ appStorage, definition
       return data;
     }
 
-    deleteStorage(definition.storage, key, appStorage);
+    deleteStorage(definition.storage ?? 'indexedDB', key, appStorage);
     return data;
   },
 ];
@@ -211,7 +217,7 @@ export const append: ActionCreator<'storage.append'> = ({ appStorage, definition
       return data;
     }
 
-    const { storage } = definition;
+    const { storage = 'indexedDB' } = definition;
 
     const value = remap(definition.value, data, context);
 
@@ -236,10 +242,10 @@ export const subtract: ActionCreator<'storage.subtract'> = ({ appStorage, defini
       return data;
     }
 
-    const { storage } = definition;
+    const { storage = 'indexedDB' } = definition;
 
     await withMutex(`${storage}:${key}`, async () => {
-      let storageData: Object | Object[] = await readStorage(storage, key, appStorage);
+      let storageData: Object | Object[] | null = await readStorage(storage, key, appStorage);
       if (Array.isArray(storageData)) {
         const last = storageData.pop();
         if (storageData.length <= 1) {
@@ -269,7 +275,7 @@ export const update: ActionCreator<'storage.update'> = ({ appStorage, definition
       return data;
     }
 
-    const { storage } = definition;
+    const { storage = 'indexedDB' } = definition;
 
     await withMutex(`${storage}:${key}`, async () => {
       let storageData: Object | Object[] = await readStorage(storage, key, appStorage);

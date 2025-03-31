@@ -45,6 +45,8 @@ export async function updateAppServiceSecret(ctx: Context): Promise<void> {
   const { authenticationMethod, ca, id, identifier, name, scope, tokenUrl, urlPatterns } =
     appServiceSecret;
 
+  // @ts-expect-error 2345 argument of type is not assignable to parameter of type
+  // (strictNullChecks)
   await updateNamespacedSecret(name, body.secret, app.path, String(appId));
 
   ctx.body = {

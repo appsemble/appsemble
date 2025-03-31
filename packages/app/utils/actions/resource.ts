@@ -8,7 +8,8 @@ import { apiUrl, appId } from '../settings.js';
 
 export const historyGet: ActionCreator<'resource.history.get'> = (args) => {
   const { appDefinition, definition, getAppMemberSelectedGroup } = args;
-  const resource = appDefinition.resources[definition.resource];
+  const resource = appDefinition.resources?.[definition.resource];
+  // @ts-expect-error Messed up
   const { id = 'id' } = resource;
 
   const selectedGroupId = getAppMemberSelectedGroup?.();
@@ -28,7 +29,7 @@ export const historyGet: ActionCreator<'resource.history.get'> = (args) => {
           values: { id: { prop: id as string } },
         },
       },
-      schema: resource.schema,
+      schema: resource?.schema,
     },
   });
 };
@@ -36,15 +37,18 @@ export const historyGet: ActionCreator<'resource.history.get'> = (args) => {
 export const get: ActionCreator<'resource.get'> = (args) => {
   const { appDefinition, definition, getAppMemberSelectedGroup } = args;
   const { view } = definition;
-  const resource = appDefinition.resources[definition.resource];
+  const resource = appDefinition.resources?.[definition.resource];
   const method = resource?.get?.method || 'GET';
   const url =
     resource?.get?.url ??
     resource?.url ??
     `${apiUrl}/api/apps/${appId}/resources/${definition.resource}`;
+  // @ts-expect-error Messed up
   const { id = 'id' } = resource;
 
-  const query: Remapper = [].concat(definition?.query ?? resource?.query?.query).filter(Boolean);
+  const query: Remapper = ([] as any[])
+    .concat(definition?.query ?? resource?.query?.query ?? null)
+    .filter(Boolean);
 
   if (view) {
     query.push({ 'object.assign': { view } });
@@ -73,7 +77,7 @@ export const get: ActionCreator<'resource.get'> = (args) => {
           values: { id: definition.id ?? { prop: id as string } },
         },
       },
-      schema: resource.schema,
+      schema: resource?.schema,
     },
   });
 };
@@ -81,15 +85,15 @@ export const get: ActionCreator<'resource.get'> = (args) => {
 export const query: ActionCreator<'resource.query'> = (args) => {
   const { appDefinition, definition, getAppMemberSelectedGroup } = args;
   const { own, view } = definition;
-  const resource = appDefinition.resources[definition.resource];
+  const resource = appDefinition.resources?.[definition.resource];
   const method = resource?.query?.method || 'GET';
   const url =
     resource?.query?.url ??
     resource?.url ??
     `${apiUrl}/api/apps/${appId}/resources/${definition.resource}`;
 
-  const queryRemapper: Remapper = []
-    .concat(definition?.query ?? resource?.query?.query)
+  const queryRemapper: Remapper = ([] as any[])
+    .concat(definition?.query ?? resource?.query?.query ?? null)
     .filter(Boolean);
 
   if (view) {
@@ -114,7 +118,7 @@ export const query: ActionCreator<'resource.query'> = (args) => {
       proxy: false,
       type: 'request',
       url,
-      schema: resource.schema,
+      schema: resource?.schema,
     },
   });
 };
@@ -122,15 +126,15 @@ export const query: ActionCreator<'resource.query'> = (args) => {
 export const count: ActionCreator<'resource.count'> = (args) => {
   const { appDefinition, definition, getAppMemberSelectedGroup } = args;
   const { own } = definition;
-  const resource = appDefinition.resources[definition.resource];
+  const resource = appDefinition.resources?.[definition.resource];
   const method = resource?.count?.method || 'GET';
   const url =
     resource?.count?.url ??
     resource?.url ??
     `${apiUrl}/api/apps/${appId}/resources/${definition.resource}/$count`;
 
-  const queryRemapper: Remapper = []
-    .concat(definition?.query ?? resource?.count?.query)
+  const queryRemapper: Remapper = ([] as any[])
+    .concat(definition?.query ?? resource?.count?.query ?? null)
     .filter(Boolean);
 
   if (own) {
@@ -151,22 +155,22 @@ export const count: ActionCreator<'resource.count'> = (args) => {
       proxy: false,
       type: 'request',
       url,
-      schema: resource.schema,
+      schema: resource?.schema,
     },
   });
 };
 
 export const create: ActionCreator<'resource.create'> = (args) => {
   const { appDefinition, definition, getAppMemberSelectedGroup } = args;
-  const resource = appDefinition.resources[definition.resource];
+  const resource = appDefinition.resources?.[definition.resource];
   const method = resource?.create?.method || 'POST';
   const url =
     resource?.create?.url ||
-    resource.url ||
+    resource?.url ||
     `${apiUrl}/api/apps/${appId}/resources/${definition.resource}`;
 
-  const queryRemapper: Remapper = []
-    .concat(definition?.query ?? resource?.create?.query)
+  const queryRemapper: Remapper = ([] as any[])
+    .concat(definition?.query ?? resource?.create?.query ?? null)
     .filter(Boolean);
 
   const selectedGroup = getAppMemberSelectedGroup?.();
@@ -183,7 +187,7 @@ export const create: ActionCreator<'resource.create'> = (args) => {
       proxy: false,
       type: 'request',
       url,
-      schema: resource.schema,
+      schema: resource?.schema,
     },
   });
   return [dispatch, { ...properties, type: 'resource.create' }];
@@ -191,16 +195,17 @@ export const create: ActionCreator<'resource.create'> = (args) => {
 
 export const update: ActionCreator<'resource.update'> = (args) => {
   const { appDefinition, definition, getAppMemberSelectedGroup } = args;
-  const resource = appDefinition.resources[definition.resource];
+  const resource = appDefinition.resources?.[definition.resource];
   const method = resource?.update?.method || 'PUT';
   const url =
     resource?.update?.url ||
-    resource.url ||
+    resource?.url ||
     `${apiUrl}/api/apps/${appId}/resources/${definition.resource}`;
+  // @ts-expect-error Messed up
   const { id = 'id' } = resource;
 
-  const queryRemapper: Remapper = []
-    .concat(definition?.query ?? resource?.update?.query)
+  const queryRemapper: Remapper = ([] as any[])
+    .concat(definition?.query ?? resource?.update?.query ?? null)
     .filter(Boolean);
 
   const selectedGroup = getAppMemberSelectedGroup?.();
@@ -222,16 +227,17 @@ export const update: ActionCreator<'resource.update'> = (args) => {
           values: { id: { prop: id as string } },
         },
       },
-      schema: resource.schema,
+      schema: resource?.schema,
     },
   });
 };
 
 export const updatePositions: ActionCreator<'resource.update.positions'> = (args) => {
   const { appDefinition, definition } = args;
-  const resource = appDefinition.resources[definition.resource];
+  const resource = appDefinition.resources?.[definition.resource];
   const method = 'PUT';
   const url = `${apiUrl}/api/apps/${appId}/resources/${definition.resource}`;
+  // @ts-expect-error Messed up
   const { id = 'id' } = resource;
   return request({
     ...args,
@@ -252,23 +258,24 @@ export const updatePositions: ActionCreator<'resource.update.positions'> = (args
           values: { id: definition.id ?? { prop: id as string } },
         },
       },
-      schema: resource.schema,
+      schema: resource?.schema,
     },
   });
 };
 
 export const patch: ActionCreator<'resource.patch'> = (args) => {
   const { appDefinition, definition, getAppMemberSelectedGroup } = args;
-  const resource = appDefinition.resources[definition.resource];
+  const resource = appDefinition.resources?.[definition.resource];
   const method = resource?.update?.method || 'PATCH';
   const url =
     resource?.update?.url ||
-    resource.url ||
+    resource?.url ||
     `${apiUrl}/api/apps/${appId}/resources/${definition.resource}`;
+  // @ts-expect-error Messed up
   const { id = 'id' } = resource;
 
-  const queryRemapper: Remapper = []
-    .concat(definition?.query ?? resource?.patch?.query)
+  const queryRemapper: Remapper = ([] as any[])
+    .concat(definition?.query ?? resource?.patch?.query ?? null)
     .filter(Boolean);
 
   const selectedGroup = getAppMemberSelectedGroup?.();
@@ -290,23 +297,24 @@ export const patch: ActionCreator<'resource.patch'> = (args) => {
           values: { id: definition.id ?? { prop: id as string } },
         },
       },
-      schema: resource.schema,
+      schema: resource?.schema,
     },
   });
 };
 
 export const remove: ActionCreator<'resource.delete'> = (args) => {
   const { appDefinition, definition, getAppMemberSelectedGroup } = args;
-  const resource = appDefinition.resources[definition.resource];
+  const resource = appDefinition.resources?.[definition.resource];
   const method = resource?.delete?.method || 'DELETE';
   const url =
     resource?.delete?.url ||
-    resource.url ||
+    resource?.url ||
     `${apiUrl}/api/apps/${appId}/resources/${definition.resource}`;
+  // @ts-expect-error Messed up
   const { id = 'id' } = resource;
 
-  const queryRemapper: Remapper = []
-    .concat(definition?.query ?? resource?.delete?.query)
+  const queryRemapper: Remapper = ([] as any[])
+    .concat(definition?.query ?? resource?.delete?.query ?? null)
     .filter(Boolean);
 
   const selectedGroup = getAppMemberSelectedGroup?.();
@@ -328,19 +336,20 @@ export const remove: ActionCreator<'resource.delete'> = (args) => {
           values: { id: { prop: id as string } },
         },
       },
-      schema: resource.schema,
+      schema: resource?.schema,
     },
   });
 };
 
 export const removeAll: ActionCreator<'resource.delete.all'> = (args) => {
   const { appDefinition, definition, getAppMemberSelectedGroup } = args;
-  const resource = appDefinition.resources[definition.resource];
+  const resource = appDefinition.resources?.[definition.resource];
   const method = resource?.delete?.method || 'DELETE';
   const url =
     resource?.delete?.url ||
-    resource.url ||
+    resource?.url ||
     `${apiUrl}/api/apps/${appId}/resources/${definition.resource}`;
+  // @ts-expect-error Messed up
   const { id = 'id' } = resource;
 
   const queryRemapper: Remapper = [];
@@ -370,7 +379,7 @@ export const removeAll: ActionCreator<'resource.delete.all'> = (args) => {
           proxy: false,
           type: 'request',
           url,
-          schema: resource.schema,
+          schema: resource?.schema,
           body: {
             'array.from': (existingResources as []).map((r) => r[id]),
           },
@@ -384,11 +393,11 @@ export const removeAll: ActionCreator<'resource.delete.all'> = (args) => {
 
 export const removeBulk: ActionCreator<'resource.delete.bulk'> = (args) => {
   const { appDefinition, definition, getAppMemberSelectedGroup } = args;
-  const resource = appDefinition.resources[definition.resource];
+  const resource = appDefinition.resources?.[definition.resource];
   const method = resource?.delete?.method || 'DELETE';
   const url =
     resource?.delete?.url ||
-    resource.url ||
+    resource?.url ||
     `${apiUrl}/api/apps/${appId}/resources/${definition.resource}`;
 
   const queryRemapper: Remapper = [];
@@ -408,7 +417,7 @@ export const removeBulk: ActionCreator<'resource.delete.bulk'> = (args) => {
           proxy: false,
           type: 'request',
           url,
-          schema: resource.schema,
+          schema: resource?.schema,
           body: { root: null },
         },
       });
@@ -445,7 +454,8 @@ export const subscribe: ActionCreator<'resource.subscription.subscribe'> = ({
   definition,
   pushNotifications,
 }) => {
-  const resource = appDefinition.resources[definition.resource];
+  const resource = appDefinition.resources?.[definition.resource];
+  // @ts-expect-error Messed up
   const { id = 'id' } = resource;
 
   return [
@@ -469,7 +479,8 @@ export const unsubscribe: ActionCreator<'resource.subscription.unsubscribe'> = (
   definition,
   pushNotifications,
 }) => {
-  const resource = appDefinition.resources[definition.resource];
+  const resource = appDefinition.resources?.[definition.resource];
+  // @ts-expect-error Messed up
   const { id = 'id' } = resource;
 
   return [
@@ -493,7 +504,8 @@ export const toggle: ActionCreator<'resource.subscription.toggle'> = ({
   definition,
   pushNotifications,
 }) => {
-  const resource = appDefinition.resources[definition.resource];
+  const resource = appDefinition.resources?.[definition.resource];
+  // @ts-expect-error Messed up
   const { id = 'id' } = resource;
 
   return [
@@ -516,7 +528,8 @@ export const status: ActionCreator<'resource.subscription.status'> = ({
   definition,
   pushNotifications,
 }) => {
-  const resource = appDefinition.resources[definition.resource];
+  const resource = appDefinition.resources?.[definition.resource];
+  // @ts-expect-error Messed up
   const { id = 'id' } = resource;
 
   return [

@@ -7,6 +7,7 @@ import { createTestAction } from '../makeActions.js';
 import { apiUrl } from '../settings.js';
 
 const appDefinition: AppDefinition = {
+  name: 'Test App',
   defaultPage: '',
   resources: {
     pet: { schema: { type: 'object' } },
@@ -38,7 +39,7 @@ describe('resource.get', () => {
     const result = await action({ id: 1 });
     expect(request.method).toBe('get');
     expect(request.url).toBe(`${apiUrl}/api/apps/42/resources/pet/1`);
-    expect(request.params).toBeUndefined();
+    expect(request.params).toBeNull();
     expect(request.data).toBeUndefined();
     expect(result).toStrictEqual({ type: 'cat' });
   });
@@ -55,7 +56,7 @@ describe('resource.get', () => {
     const result = await action({ test: 33 });
     expect(request.method).toBe('get');
     expect(request.url).toBe(`${apiUrl}/api/apps/42/resources/pet/33`);
-    expect(request.params).toBeUndefined();
+    expect(request.params).toBeNull();
     expect(request.data).toBeUndefined();
     expect(result).toStrictEqual({ type: 'crow' });
   });
@@ -109,7 +110,7 @@ describe('resource.update.positions', () => {
     });
     expect(request.method).toBe('put');
     expect(request.url).toBe(`${apiUrl}/api/apps/42/resources/pet/84/positions`);
-    expect(request.params).toBeUndefined();
+    expect(request.params).toBeNull();
     expect(request.data).toBe('{"prevResourcePosition":44.55,"nextResourcePosition":45.66}');
     expect(result).toStrictEqual([
       { id: 83, Position: 44.55 },
@@ -132,7 +133,7 @@ describe('resource.query', () => {
     const result = await action();
     expect(request.method).toBe('get');
     expect(request.url).toBe(`${apiUrl}/api/apps/42/resources/pet`);
-    expect(request.params).toBeUndefined();
+    expect(request.params).toBeNull();
     expect(request.data).toBeUndefined();
     expect(result).toStrictEqual([{ type: 'cat' }]);
   });
@@ -195,7 +196,7 @@ describe('resource.count', () => {
     const result = await action();
     expect(request.method).toBe('get');
     expect(request.url).toBe(`${apiUrl}/api/apps/42/resources/pet/$count`);
-    expect(request.params).toBeUndefined();
+    expect(request.params).toBeNull();
     expect(request.data).toBeUndefined();
     expect(result).toBe(12);
   });
@@ -231,7 +232,7 @@ describe('resource.create', () => {
     const result = await action({ type: 'fish' });
     expect(request.method).toBe('post');
     expect(request.url).toBe(`${apiUrl}/api/apps/42/resources/pet`);
-    expect(request.params).toBeUndefined();
+    expect(request.params).toBeNull();
     expect(request.data).toBe('{"type":"fish"}');
     expect(result).toStrictEqual({ id: 84, type: 'fish' });
   });
@@ -250,7 +251,7 @@ describe('resource.update', () => {
     const result = await action({ id: 84, type: 'fish' });
     expect(request.method).toBe('put');
     expect(request.url).toBe(`${apiUrl}/api/apps/42/resources/pet/84`);
-    expect(request.params).toBeUndefined();
+    expect(request.params).toBeNull();
     expect(request.data).toBe('{"id":84,"type":"fish"}');
     expect(result).toStrictEqual({ id: 84, type: 'fish' });
   });
@@ -269,7 +270,7 @@ describe('resource.patch', () => {
     const result = await action({ id: 84, type: 'fish' });
     expect(request.method).toBe('patch');
     expect(request.url).toBe(`${apiUrl}/api/apps/42/resources/pet/84`);
-    expect(request.params).toBeUndefined();
+    expect(request.params).toBeNull();
     expect(request.data).toBe('{"id":84,"type":"fish"}');
     expect(result).toStrictEqual({ id: 84, type: 'fish' });
   });
@@ -304,7 +305,7 @@ describe('resource.delete', () => {
     const result = await action({ id: 63 });
     expect(request.method).toBe('delete');
     expect(request.url).toBe(`${apiUrl}/api/apps/42/resources/pet/63`);
-    expect(request.params).toBeUndefined();
+    expect(request.params).toBeNull();
     expect(request.data).toBeUndefined();
     expect(result).toBeNull();
   });
@@ -331,7 +332,7 @@ describe('resource.delete.all', () => {
     const result = await action();
     expect(request.method).toBe('delete');
     expect(request.url).toBe(`${apiUrl}/api/apps/42/resources/pet`);
-    expect(request.params).toBeUndefined();
+    expect(request.params).toBeNull();
     expect(request.data).toBe('[1,2]');
     expect(result).toBeNull();
   });
@@ -350,7 +351,7 @@ describe('resource.delete.bulk', () => {
     const result = await action([63]);
     expect(request.method).toBe('delete');
     expect(request.url).toBe(`${apiUrl}/api/apps/42/resources/pet`);
-    expect(request.params).toBeUndefined();
+    expect(request.params).toBeNull();
     expect(request.data).toBe('[63]');
     expect(result).toBeNull();
   });

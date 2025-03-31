@@ -39,7 +39,8 @@ export function stripBlockName(name: string): string {
  * @param name The block name to parse.
  * @returns A tuple containing the organization id and block id.
  */
-export function parseBlockName(name: string): [string, string] {
+export function parseBlockName(name: string): [string, string] | undefined {
+  // TODO: should this not throw an error? Most call sites are not well-prepared for undefined.
   const match = blockNamePattern.exec(normalizeBlockName(name));
   if (match) {
     return match.slice(1, 3) as [string, string];

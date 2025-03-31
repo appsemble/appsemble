@@ -38,14 +38,14 @@ export interface SelectProps
    */
   readonly errorLinkRef?: MutableRef<HTMLElement>;
 
+  // TODO: comment me well
   /**
-   * TODO: comment me well
    * The placeholder
    */
   readonly placeholder?: string;
 
+  // TODO: comment me well
   /*
-   * TODO: comment me well
    * The readonly attribute
    */
   readonly readOnly?: boolean;

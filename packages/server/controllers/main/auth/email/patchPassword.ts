@@ -8,9 +8,10 @@ export async function patchPassword(ctx: Context): Promise<void> {
   const { user } = ctx;
   const { currentPassword, newPassword } = ctx.request.body;
 
-  const userToChange = await User.findByPk(user.id);
+  const userToChange = (await User.findByPk(user!.id))!;
 
-  const passwordsMatch = await compare(currentPassword, userToChange.password);
+  // TODO: how do you change your password if your user wasn't created with one (service login)?
+  const passwordsMatch = await compare(currentPassword, userToChange.password!);
   assertKoaCondition(passwordsMatch, ctx, 401, 'Old password is incorrect.');
 
   const hashedNewPassword = await hash(newPassword, 10);

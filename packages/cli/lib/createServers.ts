@@ -52,7 +52,9 @@ export async function createStaticServer({
     app.use(compress());
   }
 
-  if (!['test', 'production'].includes(process.env.NODE_ENV)) {
+  if (!['test', 'production'].includes(process.env.NODE_ENV ?? '')) {
+    // @ts-expect-error 2345 argument of type is not assignable to parameter of type
+    // (strictNullChecks)
     app.use(await frontend(webpackConfigs, argv));
   }
 

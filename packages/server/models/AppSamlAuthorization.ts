@@ -21,14 +21,14 @@ export class AppSamlAuthorization extends Model {
    */
   @PrimaryKey
   @Column(DataType.STRING)
-  nameId: string;
+  nameId!: string;
 
   /**
    * The email used on the SAML provider.
    */
   @AllowNull(false)
   @Column(DataType.STRING)
-  email: string;
+  email!: string;
 
   /**
    * Whether the linked email is verified on the SAML provider.
@@ -36,7 +36,7 @@ export class AppSamlAuthorization extends Model {
   @Default(false)
   @AllowNull(false)
   @Column(DataType.BOOLEAN)
-  emailVerified: boolean;
+  emailVerified!: boolean;
 
   /**
    * The id of the linked app SAML secret.
@@ -44,30 +44,30 @@ export class AppSamlAuthorization extends Model {
   @PrimaryKey
   @ForeignKey(() => AppSamlSecret)
   @Column(DataType.INTEGER)
-  AppSamlSecretId: number;
+  AppSamlSecretId!: number;
 
   /**
    * The linked app SAML secret.
    */
   @BelongsTo(() => AppSamlSecret, { onDelete: 'CASCADE' })
-  AppSamlSecret: Awaited<AppSamlSecret>;
+  AppSamlSecret?: Awaited<AppSamlSecret>;
 
   /**
    * The id of the linked app user.
    */
   @ForeignKey(() => AppMember)
   @Column(DataType.UUID)
-  AppMemberId: string;
+  AppMemberId?: string;
 
   /**
    * The app user.
    */
   @BelongsTo(() => AppMember)
-  AppMember: Awaited<AppMember>;
+  AppMember?: Awaited<AppMember>;
 
   @CreatedAt
-  created: Date;
+  created!: Date;
 
   @UpdatedAt
-  updated: Date;
+  updated!: Date;
 }

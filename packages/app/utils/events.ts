@@ -20,10 +20,10 @@ export function createEvents(
   manifest?: ProjectManifest['events'],
   definition?: BlockDefinition['events'],
 ): Events {
-  function createProxy<E extends keyof Events, M extends keyof ProjectManifest['events']>(
-    manifestKey: M,
-    createFn: (registered: boolean, key: string) => Events[E][string],
-  ): Events[E] {
+  function createProxy<
+    E extends keyof Events,
+    M extends keyof NonNullable<ProjectManifest['events']>,
+  >(manifestKey: M, createFn: (registered: boolean, key: string) => Events[E][string]): Events[E] {
     return new Proxy<Events[E]>(
       {},
       {
@@ -50,10 +50,14 @@ export function createEvents(
     implemented
       ? async (data, error) => {
           await ready;
-          const name = definition.emit[key];
+          const name = definition?.emit?.[key];
+          // @ts-expect-error 2345 argument of type is not assignable to parameter of type
+          // (strictNullChecks)
           ee.emit(name, data, error === '' ? 'Error' : error);
           addBreadcrumb({
             category: 'appsemble.event',
+            // @ts-expect-error 2345 argument of type is not assignable to parameter of type
+            // (strictNullChecks)
             data: { name, listeners: String(ee.listenerCount(name)) },
           });
           return true;
@@ -65,7 +69,9 @@ export function createEvents(
   const on = createProxy<'on', 'listen'>('listen', (implemented, key) =>
     implemented
       ? (callback) => {
-          ee.on(definition.listen[key], callback);
+          // @ts-expect-error 2345 argument of type is not assignable to parameter of type
+          // (strictNullChecks)
+          ee.on(definition.listen?.[key], callback);
           return true;
         }
       : () => false,
@@ -74,7 +80,9 @@ export function createEvents(
   const off = createProxy<'off', 'listen'>('listen', (implemented, key) =>
     implemented
       ? (callback) => {
-          ee.off(definition.listen[key], callback);
+          // @ts-expect-error 2345 argument of type is not assignable to parameter of type
+          // (strictNullChecks)
+          ee.off(definition.listen?.[key], callback);
           return true;
         }
       : () => false,

@@ -75,7 +75,7 @@ describe('deleteOrganization', () => {
       status: 403,
     });
 
-    const organizationId = await Organization.findByPk(organization.id);
+    const organizationId = (await Organization.findByPk(organization.id))!;
     expect(organizationId.id).toBe(organization.id);
   });
 
@@ -108,7 +108,7 @@ describe('deleteOrganization', () => {
       status: 403,
       data: { message: 'Cannot delete an organization with associated blocks.' },
     });
-    const organizationId = await Organization.findByPk(organization.id);
+    const organizationId = (await Organization.findByPk(organization.id))!;
     expect(organizationId.id).toBe(organization.id);
   });
 
@@ -139,7 +139,7 @@ describe('deleteOrganization', () => {
       status: 403,
       data: { message: 'Cannot delete an organization with associated app collections.' },
     });
-    const organizationId = await Organization.findByPk(organization.id);
+    const organizationId = (await Organization.findByPk(organization.id))!;
     expect(organizationId.id).toBe(organization.id);
   });
 });

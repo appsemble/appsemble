@@ -29,7 +29,7 @@ export async function patchOrganization(ctx: Context): Promise<void> {
   }
 
   if (icon !== undefined) {
-    result.icon = icon ? await uploadToBuffer(icon.path) : null;
+    result.icon = icon ? await uploadToBuffer(icon.path) : undefined;
   }
 
   if (description !== undefined) {

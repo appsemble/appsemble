@@ -117,18 +117,21 @@ export async function handleUniqueAppMemberEmailIndex(
         },
       ],
     });
+    // TODO: assert memberToLink is not null??
     const hasPassword = await AppMember.count({
-      where: { id: memberToLink.id, password: { [Op.ne]: null } },
+      where: { id: memberToLink?.id, password: { [Op.ne]: null } },
     });
     const data = {
       email,
-      user: Boolean(memberToLink.UserId),
+      user: Boolean(memberToLink?.UserId),
       password: Boolean(hasPassword),
       logins: [
-        ...memberToLink.AppOAuth2Authorizations.map(
-          ({ AppOAuth2Secret: { id } }) => `oauth2:${id}`,
-        ),
-        ...memberToLink.AppSamlAuthorizations.map(({ AppSamlSecret: { id } }) => `saml:${id}`),
+        ...(memberToLink?.AppOAuth2Authorizations.map(
+          ({ AppOAuth2Secret: secret }) => `oauth2:${secret!.id}`,
+        ) ?? []),
+        ...(memberToLink?.AppSamlAuthorizations.map(
+          ({ AppSamlSecret: secret }) => `saml:${secret!.id}`,
+        ) ?? []),
       ].join(','),
     };
     await handleAuthorization(data);

@@ -36,13 +36,15 @@ export async function createSettings({
     ],
     where: {
       [Op.or]: identifiableBlocks.map(({ type, version }) => {
+        // eslint-disable-next-line @typescript-eslint/prefer-ts-expect-error
+        // @ts-ignore Messed up
         const [OrganizationId, name] = parseBlockName(type);
         return { name, OrganizationId, version };
       }),
     },
   });
 
-  const persistedApp = await App.findOne({
+  const persistedApp = (await App.findOne({
     attributes: [
       'id',
       'icon',
@@ -79,7 +81,7 @@ export async function createSettings({
         model: AppSnapshot,
       },
     ],
-  });
+  }))!;
 
   const { sentryDsn, sentryEnvironment } = getSentryClientSettings(
     hostname,
@@ -99,7 +101,7 @@ export async function createSettings({
           layout,
           actions,
           events,
-          files: BlockAssets.map(({ filename }) => filename),
+          files: (BlockAssets ?? []).map(({ filename }) => filename),
         }),
       ),
       id: persistedApp.id,

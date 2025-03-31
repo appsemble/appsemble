@@ -41,11 +41,17 @@ const parser = yargs()
   })
   .option('sentry-dsn', {
     desc: 'The Sentry DSN to use for error reporting. See https://sentry.io for details.',
+    type: 'string',
   })
   .option('sentry-environment', {
     desc: 'The Sentry environment to use for error reporting. See https://sentry.io for details.',
+    type: 'string',
   })
-  .middleware([setArgv, configureLogger, configureSentry])
+  .middleware([
+    setArgv as (...args: Parameters<typeof setArgv>) => void,
+    configureLogger,
+    configureSentry,
+  ])
   .command(cleanup as CommandModule)
   .command(cleanupResourcesAndAssets as CommandModule)
   .command(cleanupDemoAppMembers as CommandModule)

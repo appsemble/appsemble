@@ -83,7 +83,7 @@ export function AddToCollectionButton({ app, className }: AppToCollectionButtonP
       </Button>
       {userInfo ? (
         <ModalCard
-          component={SimpleForm}
+          component={SimpleForm as typeof SimpleForm<typeof defaultValues>}
           defaultValues={defaultValues}
           footer={
             <SimpleModalFooter
@@ -99,7 +99,7 @@ export function AddToCollectionButton({ app, className }: AppToCollectionButtonP
         >
           <SimpleFormError>
             {({ error }) =>
-              axios.isAxiosError(error) && error.response.status === 409 ? (
+              axios.isAxiosError(error) && error.response?.status === 409 ? (
                 <FormattedMessage {...messages.alreadyInCollection} />
               ) : (
                 <FormattedMessage {...messages.error} />

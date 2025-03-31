@@ -21,31 +21,31 @@ export class AppWebhookSecret extends Model {
   @IsUUID(4)
   @Default(DataType.UUIDV4)
   @Column(DataType.UUID)
-  id: string;
+  id!: string;
 
   @AllowNull(true)
   @Column(DataType.STRING)
-  name: string;
+  name?: string;
 
   @AllowNull(false)
   @Column(DataType.STRING)
-  webhookName: string;
+  webhookName!: string;
 
   @AllowNull(false)
   @Column(DataType.BLOB)
-  secret: Buffer;
+  secret!: Buffer;
 
   @ForeignKey(() => App)
   @AllowNull(false)
   @Column(DataType.INTEGER)
-  AppId: number;
+  AppId!: number;
 
   @BelongsTo(() => App)
-  App: Awaited<App>;
+  App?: Awaited<App>;
 
   @CreatedAt
-  created: Date;
+  created!: Date;
 
   @UpdatedAt
-  updated: Date;
+  updated!: Date;
 }

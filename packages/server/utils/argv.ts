@@ -403,62 +403,99 @@ export interface Argv {
 const defaults: Argv = {
   quiet: 0,
   verbose: 0,
+  // @ts-expect-error 2322 undefined is not assignable to type (strictNullChecks)
   host: undefined,
   forceProtocolHttps: false,
   port: 9999,
   proxy: false,
+  // @ts-expect-error 2322 undefined is not assignable to type (strictNullChecks)
   secret: undefined,
+  // @ts-expect-error 2322 undefined is not assignable to type (strictNullChecks)
   aesSecret: undefined,
+  // @ts-expect-error 2322 undefined is not assignable to type (strictNullChecks)
   appDomainStrategy: undefined,
+  // @ts-expect-error 2322 undefined is not assignable to type (strictNullChecks)
   serviceName: undefined,
+  // @ts-expect-error 2322 undefined is not assignable to type (strictNullChecks)
   servicePort: undefined,
   kubernetesServiceHost: 'kubernetes.default.svc',
   kubernetesServicePort: 443,
+  // @ts-expect-error 2322 undefined is not assignable to type (strictNullChecks)
   ingressAnnotations: undefined,
   ingressClassName: 'nginx',
+  // @ts-expect-error 2322 undefined is not assignable to type (strictNullChecks)
   databaseHost: undefined,
   databasePort: 5432,
+  // @ts-expect-error 2322 undefined is not assignable to type (strictNullChecks)
   databaseUser: undefined,
+  // @ts-expect-error 2322 undefined is not assignable to type (strictNullChecks)
   databasePassword: undefined,
+  // @ts-expect-error 2322 undefined is not assignable to type (strictNullChecks)
   databaseName: undefined,
   databaseSsl: false,
+  // @ts-expect-error 2322 undefined is not assignable to type (strictNullChecks)
   databaseUrl: undefined,
   interval: 5,
+  // @ts-expect-error 2322 undefined is not assignable to type (strictNullChecks)
   migrateTo: undefined,
   ssl: false,
+  // @ts-expect-error 2322 undefined is not assignable to type (strictNullChecks)
   sslKey: undefined,
+  // @ts-expect-error 2322 undefined is not assignable to type (strictNullChecks)
   sslCert: undefined,
+  // @ts-expect-error 2322 undefined is not assignable to type (strictNullChecks)
   smtpFrom: undefined,
+  // @ts-expect-error 2322 undefined is not assignable to type (strictNullChecks)
   smtpHost: undefined,
+  // @ts-expect-error 2322 undefined is not assignable to type (strictNullChecks)
   smtpPort: undefined,
+  // @ts-expect-error 2322 undefined is not assignable to type (strictNullChecks)
   smtpUser: undefined,
+  // @ts-expect-error 2322 undefined is not assignable to type (strictNullChecks)
   smtpPass: undefined,
   smtpSecure: false,
+  // @ts-expect-error 2322 undefined is not assignable to type (strictNullChecks)
   imapHost: undefined,
+  // @ts-expect-error 2322 undefined is not assignable to type (strictNullChecks)
   imapPort: undefined,
   imapSecure: false,
+  // @ts-expect-error 2322 undefined is not assignable to type (strictNullChecks)
   imapUser: undefined,
+  // @ts-expect-error 2322 undefined is not assignable to type (strictNullChecks)
   imapPass: undefined,
   imapCopyToSentFolder: false,
   enableAppEmailQuota: false,
   dailyAppEmailQuota: 10,
   enableAppEmailQuotaAlerts: false,
+  // @ts-expect-error 2322 undefined is not assignable to type (strictNullChecks)
   sentryDsn: undefined,
+  // @ts-expect-error 2322 undefined is not assignable to type (strictNullChecks)
   sentryEnvironment: undefined,
+  // @ts-expect-error 2322 undefined is not assignable to type (strictNullChecks)
   githubClientId: undefined,
+  // @ts-expect-error 2322 undefined is not assignable to type (strictNullChecks)
   githubClientSecret: undefined,
+  // @ts-expect-error 2322 undefined is not assignable to type (strictNullChecks)
   gitlabClientId: undefined,
+  // @ts-expect-error 2322 undefined is not assignable to type (strictNullChecks)
   gitlabClientSecret: undefined,
+  // @ts-expect-error 2322 undefined is not assignable to type (strictNullChecks)
   googleClientId: undefined,
+  // @ts-expect-error 2322 undefined is not assignable to type (strictNullChecks)
   googleClientSecret: undefined,
   disableRegistration: false,
+  // @ts-expect-error 2322 undefined is not assignable to type (strictNullChecks)
   remote: null,
+  // @ts-expect-error 2322 undefined is not assignable to type (strictNullChecks)
   adminApiSecret: undefined,
   scaleTo: 0,
+  // @ts-expect-error 2322 undefined is not assignable to type (strictNullChecks)
   s3Host: undefined,
   s3Port: 9000,
   s3Secure: true,
+  // @ts-expect-error 2322 undefined is not assignable to type (strictNullChecks)
   s3AccessKey: undefined,
+  // @ts-expect-error 2322 undefined is not assignable to type (strictNullChecks)
   s3SecretKey: undefined,
 };
 

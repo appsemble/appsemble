@@ -216,13 +216,13 @@ describe('reseedDemoApp', () => {
     expect(oldEphemeralAsset).toBeNull();
     expect(await getS3FileBuffer(`app-${appId}`, ephemeralAssetId)).toBeNull();
 
-    const newEphemeralAsset = await Asset.findOne({
+    const newEphemeralAsset = (await Asset.findOne({
       attributes: ['id', 'name', 'seed', 'ephemeral'],
       where: {
         AppId: appId,
         ephemeral: true,
       },
-    });
+    }))!;
 
     expect(newEphemeralAsset).toStrictEqual(
       expect.objectContaining({
@@ -334,12 +334,12 @@ describe('reseedDemoApp', () => {
       timezone: 'Europe/Amsterdam',
     });
 
-    const appMember = await AppMember.findOne({
+    const appMember = (await AppMember.findOne({
       attributes: ['properties'],
       where: {
         AppId: appId,
       },
-    });
+    }))!;
 
     expect(appMember.dataValues).toMatchInlineSnapshot(`
       {
@@ -456,13 +456,13 @@ describe('reseedDemoApp', () => {
     expect(oldEphemeralAsset).toBeNull();
     expect(await getS3FileBuffer(`app-${appId}`, ephemeralAssetId)).toBeNull();
 
-    const newEphemeralAsset = await Asset.findOne({
+    const newEphemeralAsset = (await Asset.findOne({
       attributes: ['id', 'name', 'seed', 'ephemeral'],
       where: {
         AppId: appId,
         ephemeral: true,
       },
-    });
+    }))!;
 
     expect(newEphemeralAsset).toStrictEqual(
       expect.objectContaining({

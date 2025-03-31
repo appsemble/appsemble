@@ -50,7 +50,7 @@ export async function updateNamespacedSecret(
     data: { [secretName]: Buffer.from(value).toString('base64') },
   };
 
-  let existing: V1Secret;
+  let existing: V1Secret | undefined;
   try {
     existing = (await coreApi.readNamespacedSecret(formattedName, namespace)).body;
   } catch (error: unknown) {
@@ -71,7 +71,7 @@ export async function updateNamespacedSecret(
         namespace,
         existing,
       );
-      logger.info(`Secret ${updatedSecret.metadata.name} updated successfully`);
+      logger.info(`Secret ${updatedSecret.metadata?.name} updated successfully`);
     } catch (error: unknown) {
       handleKubernetesError(error);
     }
@@ -104,7 +104,7 @@ export async function deleteSecret(appName: string, appId: string, key?: string)
         `Deleteing key ${key} of secret ${secretName} from namespace ${namespace} ...`,
       );
 
-      if (!(key in secret.data)) {
+      if (!(secret.data && key in secret.data)) {
         logger.warn(`Key ${key} does not exist on secret ${secret.metadata?.name}`);
         return;
       }
@@ -162,11 +162,11 @@ export async function updateCompanionContainers(
   for (const def of definitions) {
     const serviceName = formatServiceName(def.name, appName, appId);
 
-    const existing = services?.items?.find((s) => s.metadata.name === serviceName);
+    const existing = services?.items?.find((s) => s.metadata?.name === serviceName);
 
     // Update
     if (existing) {
-      logger.verbose(`Updating resources for ${existing.metadata.name} in namespace ${namespace}`);
+      logger.verbose(`Updating resources for ${existing.metadata?.name} in namespace ${namespace}`);
 
       const patchOptions: [
         string,
@@ -179,12 +179,14 @@ export async function updateCompanionContainers(
         boolean?,
         { headers: Record<string, string> }?,
       ] = [
-        existing.metadata?.name,
+        // @ts-expect-error 18048 variable is possibly undefined (strictNullChecks)
+        existing.metadata.name,
         namespace,
         [
           {
             op: 'replace',
             path: '/metadata',
+            // @ts-expect-error 18048 variable is possibly undefined (strictNullChecks)
             value: { ...def.metadata, name: existing.metadata.name },
           },
           {
@@ -224,6 +226,7 @@ export async function updateCompanionContainers(
         {
           op: 'replace',
           path: '/metadata',
+          // @ts-expect-error 18048 variable is possibly undefined (strictNullChecks)
           value: { ...def.metadata, name: existing.metadata.name },
         },
         {
@@ -234,7 +237,7 @@ export async function updateCompanionContainers(
         {
           op: 'replace',
           path: '/spec/template/spec/containers/0/env',
-          value: [...formatEnv(def.env, appName, appId)],
+          value: [...formatEnv(def.env ?? [], appName, appId)],
         },
         {
           op: 'add',
@@ -270,19 +273,20 @@ export async function updateCompanionContainers(
           logger.silly(`Deployment ${serviceName} has 0 pods, skipping ...`);
           continue;
         }
-        const pod = body?.items?.find((i) => i.metadata.labels.app === existing.metadata.name);
+        const pod = body?.items?.find((i) => i.metadata?.labels?.app === existing.metadata?.name);
 
         // Set base labels, such as selector, pod name, pod hash
         const props = {
           ...def.metadata,
           labels: {
             ...(def.metadata ? def.metadata.labels : null),
-            app: pod.metadata.labels.app,
-            'pod-template-hash': pod.metadata.labels['pod-template-hash'],
+            app: pod?.metadata?.labels?.app,
+            'pod-template-hash': pod?.metadata?.labels?.['pod-template-hash'],
             appId,
           },
-          name: pod.metadata.name,
+          name: pod?.metadata?.name,
         };
+        // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
         patchOptions[0] = pod?.metadata?.name;
         patchOptions[2] = [
           {
@@ -307,7 +311,9 @@ export async function updateCompanionContainers(
         appId,
         registry,
       );
-      if (isWhitelisted(deployment.spec.template.spec.containers[0].image)) {
+      // @ts-expect-error 2345 argument of type is not assignable to parameter of type
+      // (strictNullChecks)
+      if (isWhitelisted(deployment.spec?.template.spec?.containers[0].image)) {
         logger.verbose(`Creating resources in namespace ${namespace} ...`);
 
         try {
@@ -325,7 +331,7 @@ export async function updateCompanionContainers(
         }
       } else {
         logger.error(
-          `Image ${deployment.spec.template.spec.containers[0].image} is not in the repository whitelist!`,
+          `Image ${deployment.spec?.template.spec?.containers[0].image} is not in the repository whitelist!`,
         );
       }
     }
@@ -333,7 +339,7 @@ export async function updateCompanionContainers(
 
   // Delete companions removed from the definition
   for (const service of services.items) {
-    if (service.spec.type === 'ExternalName') {
+    if (service.spec?.type === 'ExternalName') {
       continue;
     }
 
@@ -343,10 +349,12 @@ export async function updateCompanionContainers(
       service.metadata.labels[appIdLabel] === appId
     ) {
       const existing = definitions.find(
-        (d) => formatServiceName(d.name, appName, appId) === service.metadata.name,
+        (d) => formatServiceName(d.name, appName, appId) === service.metadata?.name,
       );
 
       if (!existing) {
+        // @ts-expect-error 2345 argument of type is not assignable to parameter of type
+        // (strictNullChecks)
         await deleteCompanionContainers(service.metadata?.name);
       }
     }

@@ -22,5 +22,5 @@ export async function handler({
   id,
   remote,
 }: DeleteAppArguments): Promise<void> {
-  await deleteApp({ id, remote, clientCredentials });
+  await deleteApp({ id, remote, clientCredentials: clientCredentials ?? '' });
 }

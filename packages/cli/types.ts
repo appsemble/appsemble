@@ -46,6 +46,8 @@ export interface UpdateAppArguments extends BaseArguments {
   force: boolean;
 }
 
+// @ts-expect-error Messed up
 export interface MonoRepoPackageJson extends PackageJson {
+  // @ts-expect-error Messed up
   appsembleServer?: JsonObject;
 }

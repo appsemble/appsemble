@@ -73,7 +73,7 @@ describe('verifyAppMemberEmail', () => {
       }),
     );
 
-    const m = await AppMember.findOne({ where: { email: 'test@example.com' } });
+    const m = (await AppMember.findOne({ where: { email: 'test@example.com' } }))!;
 
     expect(m.emailVerified).toBe(false);
     expect(m.emailKey).not.toBeNull();

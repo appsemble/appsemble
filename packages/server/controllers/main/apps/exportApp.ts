@@ -55,13 +55,16 @@ export async function exportApp(ctx: Context): Promise<void> {
   const zip = new JSZip();
   const definition = app.AppSnapshots?.[0]?.yaml || stringify(app.definition);
   zip.file('app-definition.yaml', definition);
-
-  const theme = zip.folder('theme');
+  // The call to zip.folder can't actually return null, but it's not typed correctly
+  // https://stackoverflow.com/q/79412936
+  const theme = zip.folder('theme')!;
+  // @ts-expect-error 2769 No overload matches this call (strictNullChecks)
   theme.file('core/index.css', app.coreStyle);
+  // @ts-expect-error 2769 No overload matches this call (strictNullChecks)
   theme.file('shared/index.css', app.sharedStyle);
 
   if (app.AppMessages !== undefined) {
-    const i18 = zip.folder('i18n');
+    const i18 = zip.folder('i18n')!;
     for (const message of app.AppMessages) {
       i18.file(`${message.language}.json`, JSON.stringify(message.messages));
     }
@@ -70,6 +73,7 @@ export async function exportApp(ctx: Context): Promise<void> {
   if (app.AppBlockStyles !== undefined) {
     for (const block of app.AppBlockStyles) {
       const [orgName, blockName] = block.block.split('/');
+      // @ts-expect-error 2769 No overload matches this call (strictNullChecks)
       theme.file(`${orgName}/${blockName}/index.css`, block.style);
     }
   }
@@ -83,7 +87,7 @@ export async function exportApp(ctx: Context): Promise<void> {
       ];
     }
 
-    const screenshotsFolder = zip.folder('screenshots');
+    const screenshotsFolder = zip.folder('screenshots')!;
     for (const [language, languageScreenshots] of Object.entries(screenshotsByLanguage)) {
       let languageFolder;
 
@@ -141,7 +145,7 @@ export async function exportApp(ctx: Context): Promise<void> {
       if (!splitResources.has(resource.type)) {
         splitResources.set(resource.type, []);
       }
-      splitResources.get(resource.type).push(resource);
+      splitResources.get(resource.type)!.push(resource);
     }
     for (const [type, resourcesValue] of splitResources.entries()) {
       zip.file(

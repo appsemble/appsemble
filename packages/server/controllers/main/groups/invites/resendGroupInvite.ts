@@ -20,6 +20,7 @@ export async function resendGroupInvite(ctx: Context): Promise<void> {
   const app = await App.findByPk(group.AppId, {
     attributes: ['OrganizationId', 'definition', 'domain', 'path'],
   });
+  assertKoaCondition(app != null, ctx, 404, 'App not found');
 
   await checkUserOrganizationPermissions({
     context: ctx,

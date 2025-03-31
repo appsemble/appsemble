@@ -4,7 +4,8 @@ import { type Context } from 'koa';
 import { EmailAuthorization, OAuthAuthorization, type User } from '../../../../../models/index.js';
 
 export async function removeCurrentUserEmail(ctx: Context): Promise<void> {
-  const { request, user } = ctx;
+  const { request } = ctx;
+  const user = ctx.user!;
 
   const email = request.body.email.toLowerCase();
   await (user as User).reload({

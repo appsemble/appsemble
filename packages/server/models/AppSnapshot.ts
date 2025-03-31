@@ -19,24 +19,24 @@ export class AppSnapshot extends Model {
   @PrimaryKey
   @AutoIncrement
   @Column(DataType.INTEGER)
-  id: number;
+  id!: number;
 
   @AllowNull(false)
   @Column(DataType.TEXT)
-  yaml: string;
+  yaml!: string;
 
   @CreatedAt
   @Index({ name: 'appSnapshotComposite' })
-  created: Date;
+  created!: Date;
 
   @ForeignKey(() => App)
   @AllowNull(false)
   @Column(DataType.INTEGER)
   @Index({ name: 'appSnapshotComposite' })
-  AppId: number;
+  AppId!: number;
 
   @BelongsTo(() => App)
-  App: Awaited<App>;
+  App?: Awaited<App>;
 
   /**
    * XXX: Update this to not allow null after the migration has finished
@@ -44,8 +44,8 @@ export class AppSnapshot extends Model {
   @ForeignKey(() => User)
   @AllowNull(true)
   @Column(DataType.UUID)
-  UserId: string;
+  UserId?: string;
 
   @BelongsTo(() => User)
-  User: Awaited<User>;
+  User?: Awaited<User>;
 }

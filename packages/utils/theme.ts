@@ -31,7 +31,11 @@ export function mergeThemes(...themes: Partial<Theme>[]): Theme {
  */
 export function createThemeURL(theme: Theme): string {
   const { font, ...rest } = theme;
-  const params = new URLSearchParams({ ...rest, fontFamily: font.family, fontSource: font.source });
+  const params = new URLSearchParams({
+    ...rest,
+    fontFamily: font.family,
+    fontSource: font.source ?? '',
+  });
   // Sort for cacheability.
   params.sort();
   return `/bulma/0.9.3/bulma.min.css?${params}`;

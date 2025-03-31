@@ -250,7 +250,7 @@ describe('request', () => {
     const result = await action({ hello: 'get' });
     expect(request.method).toBe('get');
     expect(request.url).toBe('https://example.com');
-    expect(request.params).toBeUndefined();
+    expect(request.params).toBeNull();
     expect(request.data).toBeUndefined();
     expect(result).toBe('Example content');
   });
@@ -281,7 +281,7 @@ describe('request', () => {
     const result = await action(null, { test: 'nl' });
     expect(request.method).toBe('get');
     expect(request.url).toBe('https://example.nl');
-    expect(request.params).toBeUndefined();
+    expect(request.params).toBeNull();
     expect(request.data).toBeUndefined();
     expect(result).toBe('Example content');
   });
@@ -336,7 +336,7 @@ describe('request', () => {
     const result = await action(null, { test: { foo: 'bar', baz: 1234 } });
     expect(request.method).toBe('post');
     expect(request.url).toBe('https://example.com');
-    expect(request.params).toBeUndefined();
+    expect(request.params).toBeNull();
     expect(request.data).toBe('{"foo":"bar","baz":1234}');
     expect(result).toBe('Example content');
   });

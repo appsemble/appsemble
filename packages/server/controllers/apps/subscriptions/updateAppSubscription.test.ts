@@ -112,9 +112,9 @@ describe('updateAppSubscription', () => {
       params: { endpoint: 'https://example.com' },
     });
 
-    const subscription = await AppSubscription.findOne({
+    const subscription = (await AppSubscription.findOne({
       where: { endpoint: 'https://example.com' },
-    });
+    }))!;
 
     expect(response).toMatchInlineSnapshot('HTTP/1.1 204 No Content');
     expect(responseB).toMatchInlineSnapshot(`
@@ -163,13 +163,13 @@ describe('updateAppSubscription', () => {
       params: { endpoint: 'https://example.com' },
     });
 
-    const subscription = await AppSubscription.findOne({
+    const subscription = (await AppSubscription.findOne({
       where: { endpoint: 'https://example.com' },
       include: {
         model: AppMember,
         attributes: ['id'],
       },
-    });
+    }))!;
 
     expect(response).toMatchInlineSnapshot('HTTP/1.1 204 No Content');
     expect(responseB).toMatchInlineSnapshot(`
@@ -195,7 +195,7 @@ describe('updateAppSubscription', () => {
         },
       }
     `);
-    expect(subscription.AppMember.id).toStrictEqual(appMember.id);
+    expect(subscription.AppMember!.id).toStrictEqual(appMember.id);
   });
 
   it('should remove resource type subscription settings if set to false', async () => {

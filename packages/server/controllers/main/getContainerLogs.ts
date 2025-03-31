@@ -1,4 +1,4 @@
-import { formatServiceName, getLogs } from '@appsemble/node-utils';
+import { assertKoaCondition, formatServiceName, getLogs } from '@appsemble/node-utils';
 import { type Context } from 'koa';
 
 import { App } from '../../models/App.js';
@@ -9,6 +9,7 @@ export async function getContainerLogs(ctx: Context): Promise<void> {
   } = ctx;
 
   const app = await App.findByPk(appId, { attributes: ['path'] });
+  assertKoaCondition(app != null, ctx, 404, 'App not found');
 
   const serviceName = formatServiceName(container, app.path, String(appId));
 

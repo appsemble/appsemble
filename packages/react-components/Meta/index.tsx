@@ -69,6 +69,8 @@ export function MetaProvider({ children, description, title }: MetaProviderProps
         return oldValues;
       }
       const newValues = [...oldValues];
+      // eslint-disable-next-line @typescript-eslint/prefer-ts-expect-error
+      // @ts-ignore 2322 null is not assignable to type (strictNullChecks)
       newValues[index] = newValue;
       return newValues;
     });
@@ -92,7 +94,7 @@ export function MetaProvider({ children, description, title }: MetaProviderProps
     }
     const descriptions = breadcrumbs.map((breadcrumb) => breadcrumb?.description).filter(Boolean);
     descriptionNode.current.content = descriptions.length
-      ? descriptions.at(-1)
+      ? descriptions.at(-1)!
       : typeof description === 'string'
         ? description
         : formatMessage(description);
@@ -133,12 +135,14 @@ export function useMeta(title: Text, description?: Text): void {
   const url = String(pathname + '/..'.repeat(segmentCount > 0 ? segmentCount - depth : 0)).slice(4);
 
   useEffect(() => {
-    const formatMaybe = (string: Text): string =>
+    const formatMaybe = (string?: Text): string | undefined =>
       string ? (typeof string === 'string' ? string : formatMessage(string)) : undefined;
 
     setMeta(depth, {
+      // eslint-disable-next-line @typescript-eslint/prefer-ts-expect-error
+      // @ts-ignore 2322 null is not assignable to type (strictNullChecks)
       description: formatMaybe(description),
-      title: formatMaybe(title),
+      title: formatMaybe(title)!,
       url,
     });
 
@@ -168,6 +172,9 @@ interface MetaSwitchProps {
  */
 export function MetaSwitch({ children, description, title }: MetaSwitchProps): ReactNode {
   const [depth, setMeta] = useContext(MetaContext);
+  // eslint-disable-next-line @typescript-eslint/prefer-ts-expect-error
+  // @ts-ignore 2345 argument of type is not assignable to parameter of type
+  // (strictNullChecks)
   useMeta(title, description);
 
   return (

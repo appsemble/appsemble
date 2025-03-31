@@ -39,7 +39,7 @@ export function formData(config: InternalAxiosRequestConfig): InternalAxiosReque
 export function requestLogger(config: InternalAxiosRequestConfig): InternalAxiosRequestConfig {
   const time = Date.now();
   logger.verbose(
-    `> ${time} ${highlight(`${config.method.toUpperCase()} ${axios.getUri(config)} HTTP/1.1`, {
+    `> ${time} ${highlight(`${config.method?.toUpperCase()} ${axios.getUri(config)} HTTP/1.1`, {
       language: 'http',
     })}`,
   );

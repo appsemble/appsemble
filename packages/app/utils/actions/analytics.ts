@@ -6,7 +6,7 @@ export const analytics: ActionCreator<'analytics'> = ({
 }) => [
   (data) => {
     try {
-      gtag('event', target, remap(config, data));
+      gtag('event', target, remap(config ?? null, data));
     } catch {
       // Explicitly ignore any errors that occur when doing analytics.
     }

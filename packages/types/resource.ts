@@ -62,7 +62,7 @@ export interface ResourceAuthor {
   /**
    * The display name of the user.
    */
-  name: string;
+  name?: string;
 }
 
 export interface ResourceGroup {
@@ -80,5 +80,5 @@ export interface ResourceGroup {
 export interface ResourceVersion {
   created: string;
   data: Record<string, unknown>;
-  author: ResourceAuthor;
+  author?: ResourceAuthor;
 }

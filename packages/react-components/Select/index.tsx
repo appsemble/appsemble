@@ -33,7 +33,7 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
   ) => {
     const handleChange = useCallback(
       (event: ChangeEvent<HTMLSelectElement>) => {
-        onChange(event, event.currentTarget.value);
+        onChange?.(event, event.currentTarget.value);
       },
       [onChange],
     );

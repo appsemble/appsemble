@@ -23,7 +23,7 @@ export async function createOrganization(ctx: Context): Promise<void> {
     user: authSubject,
   } = ctx;
 
-  const user = await User.findByPk(authSubject.id, {
+  const user = (await User.findByPk(authSubject!.id, {
     attributes: ['id', 'primaryEmail', 'name'],
     include: [
       {
@@ -35,7 +35,7 @@ export async function createOrganization(ctx: Context): Promise<void> {
         },
       },
     ],
-  });
+  }))!;
 
   const userEmailAuthorization = await EmailAuthorization.findOne({
     attributes: ['verified'],
@@ -45,7 +45,7 @@ export async function createOrganization(ctx: Context): Promise<void> {
   });
 
   assertKoaCondition(
-    user.primaryEmail && userEmailAuthorization.verified,
+    user.primaryEmail != null && userEmailAuthorization != null && userEmailAuthorization.verified,
     ctx,
     403,
     'Email not verified.',

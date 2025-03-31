@@ -23,6 +23,7 @@ export async function apply(db: Sequelize, name: string, fn: () => Promise<void>
       host: db.config.host,
       port: Number(db.config.port),
       user: db.config.username,
+      // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
       password: db.config.password,
       database: db.config.database,
     },

@@ -30,6 +30,7 @@ interface CheckOrganizationPermissionsParams {
 
 async function getAppMemberScopedRole(appMember: AppMember, groupId?: number): Promise<AppRole> {
   if (!appMember) {
+    // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
     return null;
   }
 
@@ -42,6 +43,7 @@ async function getAppMemberScopedRole(appMember: AppMember, groupId?: number): P
     });
 
     if (!groupMember) {
+      // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
       return null;
     }
 
@@ -58,6 +60,8 @@ async function getAppMemberAppRole(
 ): Promise<AppRole> {
   const appMember = await AppMember.findByPk(appMemberId, { attributes: ['id', 'role'] });
 
+  // @ts-expect-error 2345 argument of type is not assignable to parameter of type
+  // (strictNullChecks)
   return getAppMemberScopedRole(appMember, groupId);
 }
 
@@ -70,6 +74,8 @@ async function getUserAppRole(userId: string, appId: number, groupId?: number): 
     },
   });
 
+  // @ts-expect-error 2345 argument of type is not assignable to parameter of type
+  // (strictNullChecks)
   return getAppMemberScopedRole(appMember, groupId);
 }
 
@@ -86,6 +92,7 @@ async function getUserOrganizationRole(
   });
 
   if (!organizationMember) {
+    // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
     return null;
   }
 
@@ -129,7 +136,7 @@ export async function checkAppMemberAppPermissions({
     return;
   }
 
-  const appMember = await AppMember.findByPk(authSubject.id, { attributes: ['id'] });
+  const appMember = await AppMember.findByPk(authSubject!.id, { attributes: ['id'] });
 
   assertKoaCondition(appMember != null, context, 403, 'App member not found');
 
@@ -159,9 +166,9 @@ export async function checkUserAppPermissions({
     return;
   }
 
-  const userAppRole = await getUserAppRole(authSubject.id, appId, groupId);
+  const userAppRole = await getUserAppRole(authSubject!.id, appId, groupId);
 
-  const userOrganizationRole = await getUserOrganizationRole(authSubject.id, app.OrganizationId);
+  const userOrganizationRole = await getUserOrganizationRole(authSubject!.id, app.OrganizationId);
 
   assertKoaCondition(
     checkAppRoleAppPermissions(app.definition.security, userAppRole, requiredPermissions) ||
@@ -188,7 +195,7 @@ export async function checkUserOrganizationPermissions({
   const organizationMember = await OrganizationMember.findOne({
     attributes: ['role'],
     where: {
-      UserId: authSubject.id,
+      UserId: authSubject!.id,
       OrganizationId: organizationId,
     },
   });
@@ -200,7 +207,7 @@ export async function checkUserOrganizationPermissions({
     'User is not a member of this organization.',
   );
 
-  const userOrganizationRole = await getUserOrganizationRole(authSubject.id, organizationId);
+  const userOrganizationRole = await getUserOrganizationRole(authSubject!.id, organizationId);
 
   assertKoaCondition(
     checkOrganizationRoleOrganizationPermissions(userOrganizationRole, requiredPermissions),

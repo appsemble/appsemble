@@ -60,6 +60,7 @@ describe('findMessageIds', () => {
 describe('extractAppMessages', () => {
   it('should extract page prefixes', () => {
     const result = extractAppMessages({
+      name: 'Test app',
       defaultPage: '',
       pages: [
         { name: 'First Page', blocks: [] },
@@ -73,6 +74,7 @@ describe('extractAppMessages', () => {
 
   it('should extract block header remappers', () => {
     const result = extractAppMessages({
+      name: 'Test app',
       defaultPage: '',
       pages: [
         {
@@ -88,6 +90,7 @@ describe('extractAppMessages', () => {
 
   it('should extract remappers from block parameters', () => {
     const result = extractAppMessages({
+      name: 'Test app',
       defaultPage: '',
       pages: [
         {
@@ -107,6 +110,7 @@ describe('extractAppMessages', () => {
 
   it('should extract action remap', () => {
     const result = extractAppMessages({
+      name: 'Test app',
       defaultPage: '',
       pages: [
         {
@@ -142,6 +146,7 @@ describe('extractAppMessages', () => {
 
   it('should extract condition action if', () => {
     const result = extractAppMessages({
+      name: 'Test app',
       defaultPage: '',
       pages: [
         {
@@ -171,6 +176,7 @@ describe('extractAppMessages', () => {
 
   it('should extract dialog action title', () => {
     const result = extractAppMessages({
+      name: 'Test app',
       defaultPage: '',
       pages: [
         {
@@ -199,6 +205,7 @@ describe('extractAppMessages', () => {
 
   it('should extract email action remappers', () => {
     const result = extractAppMessages({
+      name: 'Test app',
       defaultPage: '',
       pages: [
         {
@@ -231,6 +238,7 @@ describe('extractAppMessages', () => {
 
   it('should extract flow.to action step', () => {
     const result = extractAppMessages({
+      name: 'Test app',
       defaultPage: '',
       pages: [
         {
@@ -258,6 +266,7 @@ describe('extractAppMessages', () => {
 
   it('should extract message action body', () => {
     const result = extractAppMessages({
+      name: 'Test app',
       defaultPage: '',
       pages: [
         {
@@ -285,6 +294,7 @@ describe('extractAppMessages', () => {
 
   it('should extract request action remappers', () => {
     const result = extractAppMessages({
+      name: 'Test app',
       defaultPage: '',
       pages: [
         {
@@ -378,6 +388,7 @@ describe('extractAppMessages', () => {
 
   it('should extract share action remappers', () => {
     const result = extractAppMessages({
+      name: 'Test app',
       defaultPage: '',
       pages: [
         {
@@ -407,6 +418,7 @@ describe('extractAppMessages', () => {
 
   it('should extract names from tabs pages', () => {
     const result = extractAppMessages({
+      name: 'Test app',
       defaultPage: '',
       pages: [
         {
@@ -423,6 +435,7 @@ describe('extractAppMessages', () => {
     const onBlock = vi.fn().mockReturnValue({ foo: 'bar' });
     const result = extractAppMessages(
       {
+        name: 'Test app',
         defaultPage: '',
         pages: [{ name: 'Page', blocks: [{ type: '', version: '' }] }],
       },

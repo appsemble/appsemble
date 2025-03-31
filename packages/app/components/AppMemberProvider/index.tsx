@@ -32,6 +32,7 @@ interface JwtPayload {
 
 const initialState: LoginState = {
   isLoggedIn: false,
+  // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
   appMemberRole: null,
   appMemberGroups: [],
 };
@@ -92,6 +93,7 @@ interface TokenResponse {
 
 const REFRESH_TOKEN = 'refresh_token';
 
+// @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
 const Context = createContext<AppMemberContext>(null);
 
 export function AppMemberProvider({ children }: AppMemberProviderProps): ReactNode {
@@ -102,12 +104,18 @@ export function AppMemberProvider({ children }: AppMemberProviderProps): ReactNo
 
   const navigate = useNavigate();
 
+  // @ts-expect-error 2345 argument of type is not assignable to parameter of type
+  // (strictNullChecks)
   const [appMemberInfo, setAppMemberInfo] = useState<AppMemberInfo>(null);
   const [appMemberSelectedGroup, setAppMemberSelectedGroup] = useState<AppMemberGroup>(
+    // @ts-expect-error 2345 argument of type is not assignable to parameter of type
+    // (strictNullChecks)
     JSON.parse(sessionStorage.getItem(`appsemble-group-${appId}-appMemberSelectedGroup`)),
   );
 
   const [exp, setExp] = useState(null);
+  // @ts-expect-error 2345 argument of type is not assignable to parameter of type
+  // (strictNullChecks)
   const [authorization, setAuthorization] = useState<string>(null);
 
   const appMemberInfoRef = useRef(appMemberInfo);
@@ -121,8 +129,14 @@ export function AppMemberProvider({ children }: AppMemberProviderProps): ReactNo
     localStorage.removeItem(REFRESH_TOKEN);
     setExp(null);
     setState(initialState);
+    // @ts-expect-error 2345 argument of type is not assignable to parameter of type
+    // (strictNullChecks)
     setAppMemberInfo(null);
+    // @ts-expect-error 2345 argument of type is not assignable to parameter of type
+    // (strictNullChecks)
     setAuthorization(null);
+    // @ts-expect-error 2345 argument of type is not assignable to parameter of type
+    // (strictNullChecks)
     setAppMemberSelectedGroup(null);
   }, []);
 
@@ -152,6 +166,8 @@ export function AppMemberProvider({ children }: AppMemberProviderProps): ReactNo
     localStorage.setItem(REFRESH_TOKEN, rt);
     const auth = `Bearer ${accessToken}`;
     setAuthorization(auth);
+    // @ts-expect-error 2345 argument of type is not assignable to parameter of type
+    // (strictNullChecks)
     setExp(payload.exp);
     return [auth, payload] as const;
   }, []);
@@ -206,6 +222,7 @@ export function AppMemberProvider({ children }: AppMemberProviderProps): ReactNo
         clearAccountLinkingState();
 
         if ((params as unknown as PasswordLoginParams).redirect) {
+          // @ts-expect-error 2769 No overload matches this call (strictNullChecks)
           navigate((params as unknown as PasswordLoginParams).redirect);
         }
       } catch (error: unknown) {
@@ -322,6 +339,7 @@ export function AppMemberProvider({ children }: AppMemberProviderProps): ReactNo
       }
       try {
         // Fetch a new access token, but do keep the original role and user info.
+        // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
         await fetchToken('refresh_token', { refresh_token: rt });
       } catch {
         // If refreshing the session fails for any reason, log out the user.

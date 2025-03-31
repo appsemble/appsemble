@@ -53,16 +53,19 @@ function runTests(tests: Record<string, TestCase>): void {
     (name, { appMemberInfo, context, expected, history, input, mappers, messages, variables }) => {
       const result = remap(mappers, input, {
         getMessage: ({ defaultMessage, id }) =>
+          // @ts-expect-error 2538 type undefined cannot be used as an index type
           new IntlMessageFormat(messages?.messageIds?.[id] ?? defaultMessage),
         getVariable: (variableName) =>
-          variables.find((variable) => variable.name === variableName)?.value,
+          variables?.find((variable) => variable.name === variableName)?.value,
         url: 'https://example.com/en/example',
         appUrl: 'https://example.com',
+        // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
         context,
         history,
         appId: 6789,
         locale: 'en',
         pageData: { hello: 'Page data' },
+        // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
         appMemberInfo,
       });
       expect(result).toStrictEqual(expected);
@@ -155,12 +158,14 @@ describe('context', () => {
     'handle null': {
       input: {},
       context: { name: 'Spongebob' },
+      // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
       mappers: { context: null },
       expected: null,
     },
     'handle properties named null': {
       input: {},
       context: { null: 'Spongebob' },
+      // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
       mappers: { context: null },
       expected: 'Spongebob',
     },
@@ -296,16 +301,19 @@ describe('date.format', () => {
   runTests({
     'format date objects': {
       input: new Date('2020-01-02T03:04:05Z'),
+      // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
       mappers: { 'date.format': null },
       expected: '2020-01-02T03:04:05.000Z',
     },
     'format date strings': {
       input: '2020-01-02T03:04:05Z',
+      // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
       mappers: { 'date.format': null },
       expected: '2020-01-02T03:04:05.000Z',
     },
     'format unix timestamps': {
       input: 0,
+      // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
       mappers: { 'date.format': null },
       expected: '1970-01-01T00:00:00.000Z',
     },
@@ -329,8 +337,14 @@ describe('date.format', () => {
 
 describe('log', () => {
   beforeEach(() => {
+    // @ts-expect-error 2345 argument of type is not assignable to parameter of type
+    // (strictNullChecks)
     vi.spyOn(console, 'error').mockImplementation(null);
+    // @ts-expect-error 2345 argument of type is not assignable to parameter of type
+    // (strictNullChecks)
     vi.spyOn(console, 'info').mockImplementation(null);
+    // @ts-expect-error 2345 argument of type is not assignable to parameter of type
+    // (strictNullChecks)
     vi.spyOn(console, 'warn').mockImplementation(null);
   });
 
@@ -371,16 +385,19 @@ describe('log', () => {
         );
         remap(mappers, input, {
           getMessage: ({ defaultMessage, id }) =>
+            // @ts-expect-error 2538 type undefined cannot be used as an index type
             new IntlMessageFormat(messages?.messageIds?.[id] ?? defaultMessage),
           getVariable: (variableName) =>
-            variables.find((variable) => variable.name === variableName).value,
+            variables?.find((variable) => variable.name === variableName)?.value,
           url: 'https://example.com/en/example',
           appUrl: 'https://example.com',
+          // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
           context,
           history,
           appId: 6789,
           locale: 'en',
           pageData: { hello: 'Page data' },
+          // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
           appMemberInfo,
         });
         expect(console[(mappers as { log: 'error' | 'info' | 'warn' }).log]).toHaveBeenCalledWith(
@@ -1320,6 +1337,8 @@ describe('prop', () => {
 describe('random.choice', () => {
   it('should return random entries from a list', () => {
     const input = [1, 2, 3, 4];
+    // @ts-expect-error 2345 argument of type is not assignable to parameter of type
+    // (strictNullChecks)
     const result = remap({ 'random.choice': null }, input, null);
     expect(input).toContain(result);
   });

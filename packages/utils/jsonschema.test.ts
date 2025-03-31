@@ -5,7 +5,7 @@ import { combineSchemas, generateDataFromSchema, iterJSONSchema } from './jsonsc
 describe('generateDataFromSchema', () => {
   it('should not crash if no schema is defined', () => {
     const result = generateDataFromSchema();
-    expect(result).toBeUndefined();
+    expect(result).toBeNull();
   });
 
   it('should return the default value', () => {

@@ -9,12 +9,15 @@ export function refreshToken(ctx: Context): void {
   const {
     request: { body },
   } = ctx;
-  let sub: string;
   try {
-    ({ sub } = jwt.verify(body.refresh_token, argv.secret, { audience: argv.host }) as JwtPayload);
+    const { sub } = jwt.verify(body.refresh_token, argv.secret, {
+      audience: argv.host,
+    }) as JwtPayload;
+    if (!sub) {
+      throwKoaError(ctx, 401, 'Invalid refresh token');
+    }
+    ctx.body = createJWTResponse(sub);
   } catch {
     throwKoaError(ctx, 401, 'Invalid refresh token');
   }
-
-  ctx.body = createJWTResponse(sub);
 }

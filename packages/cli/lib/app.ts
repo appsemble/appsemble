@@ -78,9 +78,9 @@ export async function traverseAppDirectory(
     logger.warn(`Could not read ${join(path, 'i18n')}. No supported languages found.`);
   }
 
-  const gatheredData: App = {
+  const gatheredData: Partial<App> & { screenshotUrls: string[] } = {
     screenshotUrls: [],
-  } as App;
+  };
 
   logger.info(`Traversing directory for App files in ${path} 🕵`);
   await opendirSafe(path, async (filepath, filestat) => {
@@ -103,7 +103,7 @@ export async function traverseAppDirectory(
           gatheredData.iconBackground = rc.iconBackground;
         }
         if (context && has(rc?.context, context)) {
-          discoveredContext = rc.context[context];
+          discoveredContext = rc.context![context];
           logger.verbose(`Using context: ${inspect(discoveredContext, { colors: true })}`);
         }
         break;
@@ -192,7 +192,8 @@ export async function traverseAppDirectory(
         controllerBuildConfig = await getProjectBuildConfig(controllerPath);
         controllerBuildResult = await buildProject(controllerBuildConfig);
 
-        controllerCode = controllerBuildResult.outputFiles[0].text;
+        // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
+        controllerCode = controllerBuildResult.outputFiles?.[0].text;
 
         formData.append('controllerCode', controllerCode);
         gatheredData.controllerCode = controllerCode;
@@ -208,18 +209,20 @@ export async function traverseAppDirectory(
     }
   });
 
+  // @ts-expect-error 2454 Variable used before it was assigned
   if (yaml === undefined) {
     throw new AppsembleError('No app definition found');
   }
   discoveredContext ||= {};
-  discoveredContext.icon = discoveredContext.icon
-    ? resolve(path, discoveredContext.icon)
-    : iconPath;
-  discoveredContext.maskableIcon = discoveredContext.maskableIcon
-    ? resolve(path, discoveredContext.maskableIcon)
-    : maskableIconPath;
+  // @ts-expect-error 2454 Variable used before it was assigned
+  // eslint-disable-next-line prettier/prettier
+  discoveredContext.icon = discoveredContext.icon ? resolve(path, discoveredContext.icon) : iconPath;
+  // @ts-expect-error 2454 Variable used before it was assigned
+  // eslint-disable-next-line prettier/prettier
+  discoveredContext.maskableIcon = discoveredContext.maskableIcon ? resolve(path, discoveredContext.maskableIcon) : maskableIconPath;
 
-  return [discoveredContext, rc, yaml, gatheredData];
+  // @ts-expect-error 2454 Variable used before it was assigned
+  return [discoveredContext, rc, yaml, gatheredData as App];
 }
 
 function extractFilenameFromContentDisposition(contentDisposition: string): string | null {
@@ -241,7 +244,7 @@ async function retrieveContext(path: string, context: string): Promise<Appsemble
         logger.info(`Reading app settings from ${filepath}`);
         [rc] = await readData<AppsembleRC>(filepath);
         if (context && has(rc?.context, context)) {
-          discoveredContext = rc.context[context];
+          discoveredContext = rc.context![context];
           logger.verbose(`Using context: ${inspect(discoveredContext, { colors: true })}`);
         }
         break;
@@ -258,12 +261,12 @@ async function retrieveContext(path: string, context: string): Promise<Appsemble
     }
   });
   discoveredContext ||= {};
-  discoveredContext.icon = discoveredContext.icon
-    ? resolve(path, discoveredContext.icon)
-    : iconPath;
-  discoveredContext.maskableIcon = discoveredContext.maskableIcon
-    ? resolve(path, discoveredContext.maskableIcon)
-    : maskableIconPath;
+  // @ts-expect-error 2454 Variable used before it was assigned
+  // eslint-disable-next-line prettier/prettier
+  discoveredContext.icon = discoveredContext.icon ? resolve(path, discoveredContext.icon) : iconPath;
+  // @ts-expect-error 2454 Variable used before it was assigned
+  // eslint-disable-next-line prettier/prettier
+  discoveredContext.maskableIcon = discoveredContext.maskableIcon ? resolve(path, discoveredContext.maskableIcon) : maskableIconPath;
 
   return discoveredContext;
 }
@@ -398,8 +401,10 @@ export async function publishSeedResources(path: string, app: App, remote: strin
         if (resource.isFile()) {
           const { name } = parse(resource.name);
           resourcesToPublish.push({
+            // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
             appId: app.id,
             path: join(resourcesPath, resource.name),
+            // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
             definition: app.definition.resources?.[name],
             type: name,
           });
@@ -410,8 +415,10 @@ export async function publishSeedResources(path: string, app: App, remote: strin
 
           for (const subResource of subDirectoryResources.filter((s) => s.isFile())) {
             resourcesToPublish.push({
+              // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
               appId: app.id,
               path: join(resourcesPath, resource.name, subResource.name),
+              // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
               definition: app.definition.resources?.[resource.name],
               type: resource.name,
             });
@@ -463,6 +470,7 @@ export async function publishSeedAssets(
       for (const assetFilePath of files) {
         await publishAsset({
           name: parse(assetFilePath).name,
+          // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
           appId: app.id,
           path: assetFilePath,
           remote,
@@ -489,6 +497,7 @@ function parseValueFromDefinition(value: ValueFromDefinition): ValueFromProcess 
     );
   }
 
+  // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
   return parsed;
 }
 
@@ -570,6 +579,8 @@ export async function publishAppConfig(path: string, app: App, remote: string): 
           for (const serviceSecret of serviceSecrets) {
             const { identifier, name, secret, urlPatterns, ...rest } = serviceSecret;
 
+            // @ts-expect-error 2345 argument of type is not assignable to parameter of type
+            // (strictNullChecks)
             const [parsedValues, missingValues] = parseValues('service secret', name, [
               { secret },
               { identifier },
@@ -763,7 +774,7 @@ export async function writeAppMessages(
   format: 'json' | 'yaml',
 ): Promise<void> {
   logger.info(`Extracting messages from ${path}`);
-  let app: AppDefinition;
+  let app: AppDefinition | undefined;
   let i18nDir = join(path, 'i18n');
   const messageFiles = new Set<string>();
 
@@ -1097,6 +1108,8 @@ export async function publishApp({
 }: PublishAppParams): Promise<void> {
   const file = await stat(path);
   const formData = new FormData();
+  // @ts-expect-error 2345 argument of type is not assignable to parameter of type
+  // (strictNullChecks)
   const appsembleContext = await retrieveContext(path, context);
   let rc: AppsembleRC;
   let yaml: string;
@@ -1123,6 +1136,7 @@ export async function publishApp({
     let appsembleVariantContext;
     [appsembleVariantContext, rc, yaml] = await traverseAppDirectory(
       appVariantPath,
+      // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
       context,
       formData,
     );
@@ -1225,7 +1239,7 @@ export async function publishApp({
       throw error;
     }
     throw new AppsembleError(
-      printAxiosError(filename, yaml, (error.response.data as any).data.errors),
+      printAxiosError(filename, yaml, (error.response?.data as any).data.errors),
     );
   }
 
@@ -1237,7 +1251,11 @@ export async function publishApp({
 
   if (file.isDirectory() && !dryRun) {
     // After uploading the app, upload block styles, messages if they are available
+    // @ts-expect-error 2345 argument of type is not assignable to parameter of type
+    // (strictNullChecks)
     await traverseBlockThemes(appVariantPath, data.id, remote, false);
+    // @ts-expect-error 2345 argument of type is not assignable to parameter of type
+    // (strictNullChecks)
     await uploadMessages(appVariantPath, data.id, remote, false);
     await publishAppConfig(appVariantPath, data, remote);
 
@@ -1252,7 +1270,10 @@ export async function publishApp({
   }
 
   if (modifyContext && appsembleContext && context && !dryRun) {
+    // @ts-expect-error 2345 argument of type is not assignable to parameter of type
+    // (strictNullChecks)
     rc.context[context].id = data.id;
+    // @ts-expect-error 2454 Variable used before it was assigned
     await writeData(join(appVariantPath, '.appsemblerc.yaml'), rc, { sort: false });
 
     logger.info(`Updated .appsemblerc: Set context.${context}.id to ${data.id}`);
@@ -1263,6 +1284,8 @@ export async function publishApp({
   logger.info(`App URL: ${protocol}//${data.path}.${data.OrganizationId}.${host}`);
   logger.info(`App store page: ${new URL(`/apps/${data.id}`, remote)}`);
 
+  // eslint-disable-next-line max-len
+  // @ts-expect-error 2454 Variable used before it was assigned, 2538 Undefined cannot be used as an index type
   const rcCollections = rc?.context?.[context]?.collections;
   if (Array.isArray(rcCollections)) {
     for (const collectionId of rcCollections) {
@@ -1283,6 +1306,7 @@ export async function publishApp({
 
   if (appVariantPath !== path && modifyContext && !dryRun) {
     const [defaultAppRc] = await readData<AppsembleRC>(join(path, '.appsemblerc.yaml'));
+    // @ts-expect-error 2538 Undefined cannot be used as an index type
     defaultAppRc.context[context] = rc.context[context];
 
     await writeData(join(path, '.appsemblerc.yaml'), defaultAppRc, { sort: false });
@@ -1402,6 +1426,8 @@ export async function updateApp({
 }: UpdateAppParams): Promise<void> {
   const file = await stat(path);
   const formData = new FormData();
+  // @ts-expect-error 2345 argument of type is not assignable to parameter of type
+  // (strictNullChecks)
   const appsembleContext = await retrieveContext(path, context);
   let yaml: string;
   let filename = relative(process.cwd(), path);
@@ -1426,6 +1452,8 @@ export async function updateApp({
     let appsembleVariantContext;
     [appsembleVariantContext, , yaml] = await traverseAppDirectory(
       appVariantPath,
+      // @ts-expect-error 2345 argument of type is not assignable to parameter of type
+      // (strictNullChecks)
       context,
       formData,
     );
@@ -1535,13 +1563,17 @@ export async function updateApp({
       throw error;
     }
     throw new AppsembleError(
-      printAxiosError(filename, yaml, (error.response.data as any).data.errors),
+      printAxiosError(filename, yaml, (error.response?.data as any).data.errors),
     );
   }
 
   if (file.isDirectory()) {
     // After uploading the app, upload block styles and messages if they are available
+    // @ts-expect-error 2345 argument of type is not assignable to parameter of type
+    // (strictNullChecks)
     await traverseBlockThemes(appVariantPath, data.id, remote, force);
+    // @ts-expect-error 2345 argument of type is not assignable to parameter of type
+    // (strictNullChecks)
     await uploadMessages(appVariantPath, data.id, remote, force);
     await publishAppConfig(appVariantPath, data, remote);
 

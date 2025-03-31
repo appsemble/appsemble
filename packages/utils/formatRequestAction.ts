@@ -9,8 +9,8 @@ export function formatRequestAction(
 ): RawAxiosRequestConfig {
   return {
     method,
-    url: String(remap(action.url, data, context)),
-    params: remap(query, data, context),
+    url: String(remap(action.url ?? null, data, context)),
+    params: remap(query ?? null, data, context),
     responseType: 'arraybuffer',
     headers: {},
   };

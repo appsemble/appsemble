@@ -57,6 +57,7 @@ export async function extractMessages(): Promise<Translations> {
 
   for (const locale of locales) {
     for (const [key, value] of Object.entries(messages)) {
+      // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
       newTranslations[locale][key] =
         locale === defaultLocale ? value.defaultMessage : (currentTranslations[locale][key] ?? '');
     }

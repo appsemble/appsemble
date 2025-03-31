@@ -2,7 +2,7 @@ import { AppsembleError } from '@appsemble/node-utils';
 import { has } from '@appsemble/utils';
 
 const PROMPT = process.platform === 'win32' ? '>' : '$';
-const COMMAND = /yarn/.test(process.env.npm_execpath)
+const COMMAND = /yarn/.test(process.env.npm_execpath ?? '')
   ? 'yarn add --dev --ignore-workspace-root-check'
   : 'npm install --save-dev';
 const INSTALL_MESSAGE = `This command requires the Appsemble server to be installed. It can be installed by running the following command:

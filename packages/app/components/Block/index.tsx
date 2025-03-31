@@ -126,6 +126,7 @@ export function Block({
 
   useEffect(() => {
     const div = ref.current;
+    // @ts-expect-error 18048 variable is possibly undefined (strictNullChecks)
     if (initialized || (!div && manifest.layout !== 'hidden') || !pageReady) {
       return;
     }
@@ -133,12 +134,14 @@ export function Block({
 
     const shadowRoot = div?.attachShadow({ mode: 'open' });
 
+    // @ts-expect-error 18048 variable is possibly undefined (strictNullChecks)
     const events = createEvents(ee, pageReady, manifest.events, block.events);
 
     const actions = makeActions({
       getAppMessage,
       getAppVariable: getVariable,
       appStorage,
+      // @ts-expect-error 18048 variable is possibly undefined (strictNullChecks)
       actions: manifest.actions,
       appDefinition,
       context: block,
@@ -156,6 +159,7 @@ export function Block({
       remap,
       showMessage: push,
       appMemberGroups,
+      // @ts-expect-error TODO: this shouldn't be an error
       addAppMemberGroup,
       getAppMemberInfo: () => appMemberInfoRef.current,
       passwordLogin,
@@ -164,11 +168,14 @@ export function Block({
       refetchDemoAppMembers,
       getAppMemberSelectedGroup: () => appMemberSelectedGroup,
     });
+    // @ts-expect-error 2345 argument of type is not assignable to parameter of type
+    // (strictNullChecks)
     const theme = mergeThemes(appDefinition.theme, pageDefinition.theme, block.theme);
 
     const bulmaUrl = createThemeURL(theme);
 
     const utils: BlockUtils = {
+      // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
       remap,
       showMessage: push,
       addCleanup(fn) {
@@ -197,15 +204,21 @@ export function Block({
           [
             bulmaUrl,
             FA_URL,
+            // @ts-expect-error 18048 variable is possibly undefined (strictNullChecks)
             ...manifest.files
               .filter((url) => url.endsWith('.css'))
               .map((url) => prefixBlockURL(block, url)),
             `/shared.css?updated=${appUpdated}`,
+            // @ts-expect-error 18048 variable is possibly undefined (strictNullChecks)
             `/${manifest.name}.css?updated=${appUpdated}`,
+            // @ts-expect-error 2345 argument of type is not assignable to parameter of type
+            // (strictNullChecks)
           ].map((url) => injectCSS(shadowRoot, url)),
         );
       }
 
+      // @ts-expect-error 2345 argument of type is not assignable to parameter of type
+      // (strictNullChecks)
       await callBootstrap(manifest, {
         actions,
         parameters: block.parameters || {},
@@ -259,6 +272,7 @@ export function Block({
     appMemberSelectedGroup,
   ]);
 
+  // @ts-expect-error 18048 variable is possibly undefined (strictNullChecks)
   const { layout = manifest.layout } = block;
 
   const hide = block.hide ? remap(block.hide, { ...data, ...params }) : false;
@@ -298,6 +312,7 @@ export function Block({
           data-path-index={prefixIndex}
         >
           {header}
+          {/* @ts-expect-error 2322 null is not assignable to type (strictNullChecks) */}
           <div className={styles.host} ref={ref} />
         </div>,
         document.body,
@@ -312,6 +327,7 @@ export function Block({
         data-path-index={prefixIndex}
       >
         {header}
+        {/* @ts-expect-error 2322 null is not assignable to type (strictNullChecks) */}
         <div className={styles.host} ref={ref} />
       </div>
     );

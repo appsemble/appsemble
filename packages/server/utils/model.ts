@@ -21,9 +21,10 @@ export function resolveIconUrl(app: models.App): string {
     return `/api/organizations/${app.OrganizationId}/icon?${new URLSearchParams({
       background: app.iconBackground || '#ffffff',
       maskable: 'true',
-      updated: app.Organization.updated.toISOString(),
+      updated: app.Organization!.updated.toISOString(),
     })}`;
   }
 
+  // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
   return null;
 }

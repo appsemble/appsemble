@@ -63,6 +63,8 @@ export const options: Options = {
   getAppResource,
   getAppResources,
   getAppScreenshots,
+  // XXX: weird
+  // @ts-expect-error 2322 ... not assignable to ... (strictNullChecks)
   getAppStyles,
   getAppGroups,
   getAppUrl,

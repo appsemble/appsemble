@@ -23,5 +23,6 @@ export async function getApp({ context, query }: GetAppParams): Promise<AppInter
       ],
     }),
   });
+  // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
   return app ? app.toJSON() : null;
 }

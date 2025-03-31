@@ -20,6 +20,7 @@ export function authentication(): SecurityOptions {
 
   return {
     async basic(email: string, password: string) {
+      // @ts-expect-error Messed up
       const { User: user } = await EmailAuthorization.findOne({
         include: [
           {
@@ -39,6 +40,7 @@ export function authentication(): SecurityOptions {
       return null;
     },
 
+    // @ts-expect-error Messed up
     async app(accessToken: string) {
       const { aud, scope, sub } = jwt.verify(accessToken, secret) as JwtPayload;
       // XXX use origin check when default app domains are implemented.
@@ -48,16 +50,22 @@ export function authentication(): SecurityOptions {
         return;
       }
 
+      // @ts-expect-error Messed up
       const app = (await App.findByPk(id)).toJSON();
 
       const appMember = await AppMember.findByPk(sub, {
         attributes: ['id'],
       });
 
+      if (!appMember) {
+        return;
+      }
+
       const result: [AuthSubject, { scope: string; app: AppType }] = [appMember, { scope, app }];
       return result;
     },
 
+    // @ts-expect-error Messed up
     async cli(accessToken: string) {
       const { aud, scope, sub } = jwt.verify(accessToken, secret) as JwtPayload;
       const credentials = await OAuth2ClientCredentials.count({
@@ -76,10 +84,15 @@ export function authentication(): SecurityOptions {
         return;
       }
 
+      if (!user) {
+        return;
+      }
+
       const result: [AuthSubject, { scope: string }] = [user, { scope }];
       return result;
     },
 
+    // @ts-expect-error Messed up
     async scim(scimToken: string, { path }: { path: string }) {
       // This runs before the path parameter parsing, so we can’t use pathParams
       const match = path.match(/^\/api\/apps\/(\d+)\/scim/);
@@ -95,11 +108,13 @@ export function authentication(): SecurityOptions {
         attributes: ['id', 'scimToken'],
       });
 
+      // @ts-expect-error 18048 variable is possibly null (strictNullChecks)
       if (decrypt(app.scimToken, argv.aesSecret) === scimToken) {
         return {} as User;
       }
     },
 
+    // @ts-expect-error Messed up
     studio(accessToken: string) {
       const { sub } = jwt.verify(accessToken, secret, { audience: host }) as JwtPayload;
       return User.findByPk(sub, {
@@ -107,6 +122,7 @@ export function authentication(): SecurityOptions {
       });
     },
 
+    // @ts-expect-error Messed up
     async webhook(webhookToken: string, { path }: { path: string }) {
       const match = path.match(/^\/api\/apps\/(\d+)\/webhooks\/(.+)$/);
       if (!match) {

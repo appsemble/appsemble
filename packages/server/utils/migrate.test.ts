@@ -27,7 +27,11 @@ describe('migrate', () => {
   it('should fail if multiple meta entries are found', async () => {
     await Meta.create({ version: '0.0.0' });
     await Meta.create({ version: '1.2.3' });
+    // @ts-expect-error 2345 argument of type is not assignable to parameter of type
+    // (strictNullChecks)
     await expect(migrate(null, [])).rejects.toThrow(AppsembleError);
+    // @ts-expect-error 2345 argument of type is not assignable to parameter of type
+    // (strictNullChecks)
     await expect(migrate(null, [])).rejects.toThrow(
       'Multiple Meta entries found. The database requires a manual fix.',
     );
@@ -106,7 +110,8 @@ describe('migrate', () => {
 
   it('should run downgrades in sequence', async () => {
     await Meta.create({ version: '0.0.3' });
-    let resolve: () => void;
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
+    let resolve: () => void = () => {};
     (m003.down as Mock).mockReturnValue(
       new Promise<void>((r) => {
         resolve = r;
@@ -121,7 +126,8 @@ describe('migrate', () => {
 
   it('should run upgrades in sequence', async () => {
     await Meta.create({ version: '0.0.1' });
-    let resolve: () => void;
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
+    let resolve: () => void = () => {};
     (m001.up as Mock).mockReturnValue(
       new Promise<void>((r) => {
         resolve = r;

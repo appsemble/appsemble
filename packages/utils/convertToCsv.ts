@@ -29,6 +29,8 @@ export function convertToCsv(body: any): string {
   const data = Array.isArray(body) ? body : [body];
 
   if (data.length === 0) {
+    // eslint-disable-next-line @typescript-eslint/prefer-ts-expect-error
+    // @ts-ignore 2322 null is not assignable to type (strictNullChecks)
     return null;
   }
 

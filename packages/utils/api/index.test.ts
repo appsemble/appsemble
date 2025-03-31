@@ -71,7 +71,9 @@ describe('schemas', () => {
   describe('object', () => {
     it.each(entries.filter(([, schema]) => schema.type === 'object'))('%s', (path, schema) => {
       // Action descriptions are defined on the type property.
-      const descriptionSchema = path.endsWith('ActionDefinition') ? schema.properties.type : schema;
+      const descriptionSchema = path.endsWith('ActionDefinition')
+        ? schema.properties?.type
+        : schema;
       const isTabsPageDefinition = path.endsWith('TabsPageDefinition');
       expect(schema).not.toHaveProperty('additionalItems');
       expect(schema).toHaveProperty('additionalProperties');

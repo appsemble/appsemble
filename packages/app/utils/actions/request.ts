@@ -33,7 +33,7 @@ export const request: ActionCreator<'request'> = ({ definition, prefixIndex, rem
           if (contentType) {
             Object.assign(req, {
               headers: {
-                'Content-Type': definition.headers['Content-Type'],
+                'Content-Type': contentType,
               },
             });
           }
@@ -94,13 +94,17 @@ export const request: ActionCreator<'request'> = ({ definition, prefixIndex, rem
         typeof responseBody === 'string' &&
         /^(application|text)\/(.+\+)?xml/.test(response.headers['content-type'])
       ) {
+        // @ts-expect-error 2345 argument of type is not assignable to parameter of type
+        // (strictNullChecks)
         responseBody = xmlToJson(responseBody, schema);
       }
       return responseBody;
     },
     {
       method,
-      url,
+      // This is required for `request` actions, but not for `resource` actions. Because they
+      // "inherit" from request actions (actually RequestLike). Odd stuff.
+      url: url!,
     },
   ];
 };

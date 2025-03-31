@@ -156,7 +156,8 @@ export async function processHooks(
     return;
   }
 
-  const resourceDefinition = app.definition.resources[resource.type];
+  // Since we're accepting a resource from arguments, it's quite likely a defined one
+  const resourceDefinition = app.definition.resources![resource.type]!;
 
   if (resourceDefinition[action]?.hooks?.notification) {
     const { notification } = resourceDefinition[action].hooks;
@@ -187,6 +188,7 @@ export async function processHooks(
       app,
       notification,
       // Don't send notifications to the creator when creating
+      // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
       action === 'create' ? null : resource.AuthorId,
       resource.type,
       action,
@@ -210,7 +212,7 @@ export async function processReferenceHooks(
     return;
   }
   await Promise.all(
-    Object.entries(app.definition.resources[resource.type].references || {}).map(
+    Object.entries(app.definition.resources?.[resource.type].references ?? {}).map(
       async ([propertyName, reference]) => {
         if (!reference[action]?.triggers?.length) {
           // Do nothing
@@ -244,11 +246,12 @@ export async function processReferenceTriggers(
   const resourceReferences = [];
   for (const [resourceName, resourceDefinition] of Object.entries(app.definition.resources || {})) {
     const [referencedProperty, referenceToParent] =
-      Object.entries(resourceDefinition.references || {}).find(
+      Object.entries(resourceDefinition.references ?? {}).find(
         ([, reference]) => reference.resource === parent.type && Boolean(reference[action]),
-      ) || [];
+      ) ?? [];
 
     if (referenceToParent) {
+      // @ts-expect-error Messed up - Severe
       const { triggers } = referenceToParent[action];
 
       resourceReferences.push({
@@ -275,6 +278,7 @@ export async function processReferenceTriggers(
     if (childResources[childName].length > 0) {
       switch (action) {
         case 'delete':
+          // @ts-expect-error 7006 Parameter implicitly has an 'any' type
           if (triggers.some((trigger) => !trigger.cascade)) {
             return throwKoaError(
               context,
@@ -291,10 +295,12 @@ export async function processReferenceTriggers(
     for (const child of childResources[childName]) {
       triggerPromises.push(
         await Promise.all(
+          // @ts-expect-error 7006 Parameter implicitly has an 'any' type
           triggers.map(async (trigger) => {
             switch (trigger.cascade) {
               case 'update':
                 await child.update({
+                  // @ts-expect-error 2464 Computed property must be of type ...
                   data: { ...child.data, [referencedProperty]: null },
                 });
                 break;
@@ -351,6 +357,7 @@ export function parseQuery({
       )
     : undefined;
 
+  // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
   return { order, query };
 }
 

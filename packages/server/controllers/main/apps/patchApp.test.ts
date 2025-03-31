@@ -1500,7 +1500,7 @@ describe('patchApp', () => {
       }),
     );
     expect(response.status).toBe(200);
-    const foundMember = await AppMember.findOne({ where: { AppId: app.id, role: 'cron' } });
+    const foundMember = (await AppMember.findOne({ where: { AppId: app.id, role: 'cron' } }))!;
     expect(foundMember.dataValues).toMatchObject({
       AppId: app.id,
       role: 'cron',

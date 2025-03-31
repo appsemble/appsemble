@@ -6,7 +6,7 @@ export const message: ActionCreator<'message'> = ({
   showMessage,
 }) => [
   (data) => {
-    showMessage({ body: remap(body, data), color, dismissable, timeout, layout });
+    showMessage?.({ body: remap(body, data), color, dismissable, timeout, layout });
     return data;
   },
 ];

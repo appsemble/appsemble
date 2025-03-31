@@ -77,23 +77,27 @@ export async function getApp(
     } else if (subdomain.length === 2) {
       [value.appPath, value.organizationId] = subdomain;
 
-      value.app = await App.findOne({
+      value.app =
+        (await App.findOne({
+          where: {
+            path: value.appPath,
+            OrganizationId: value.organizationId,
+            ...where,
+          },
+          ...findOptions,
+        })) ?? undefined;
+    }
+  } else {
+    value.app =
+      (await App.findOne({
         where: {
-          path: value.appPath,
-          OrganizationId: value.organizationId,
+          ...(localHostnames.has(hostname) || hostname === platformHost
+            ? {}
+            : { domain: hostname }),
           ...where,
         },
         ...findOptions,
-      });
-    }
-  } else {
-    value.app = await App.findOne({
-      where: {
-        ...(localHostnames.has(hostname) || hostname === platformHost ? {} : { domain: hostname }),
-        ...where,
-      },
-      ...findOptions,
-    });
+      })) ?? undefined;
   }
   return value;
 }
@@ -113,6 +117,7 @@ export function getAppUrl(app: App): URL {
  */
 export function compareApps(a: App, b: App): number {
   if (a.RatingAverage != null && b.RatingAverage != null) {
+    // @ts-expect-error 18048 variable is possibly undefined (strictNullChecks)
     return b.RatingAverage - a.RatingAverage || b.RatingCount - a.RatingCount;
   }
 
@@ -141,6 +146,7 @@ export function parseLanguage(
 } {
   const language = Array.isArray(input) ? input[0] : input;
   if (!language) {
+    // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
     return { language: undefined, baseLanguage: undefined, query: [] };
   }
 
@@ -180,10 +186,11 @@ export function parseLanguage(
  * @param language The language to search for within AppMessages.
  * @param baseLanguage The base language to search for within AppMessages.
  */
-export function applyAppMessages(app: App, language: string, baseLanguage: string): void {
+export function applyAppMessages(app: App, language: string, baseLanguage?: string): void {
   if (app.AppMessages?.length) {
-    const baseMessages =
-      baseLanguage && app.AppMessages.find((messages) => messages.language === baseLanguage);
+    const baseMessages = baseLanguage
+      ? app.AppMessages.find((messages) => messages.language === baseLanguage)
+      : undefined;
     const languageMessages = app.AppMessages.find((messages) => messages.language === language);
 
     Object.assign(app, {
@@ -271,6 +278,8 @@ export async function createAppScreenshots(
           const img = sharp(contents);
 
           const { format, height, width } = await img.metadata();
+          // @ts-expect-error 2345 argument of type is not assignable to parameter of type
+          // (strictNullChecks)
           const mime = lookup(format);
 
           assertKoaCondition(mime !== false, ctx, 404, `Unknown screenshot mime type: ${mime}`);
@@ -370,9 +379,11 @@ export function resolveIconUrl(app: App): string {
     return `/api/organizations/${app.OrganizationId}/icon?${new URLSearchParams({
       background: app.iconBackground || '#ffffff',
       maskable: 'true',
-      updated: app.Organization.updated.toISOString(),
+      // You better be sure the `app` passed includes the `Organization` model.
+      updated: app.Organization!.updated.toISOString(),
     })}`;
   }
 
+  // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
   return null;
 }

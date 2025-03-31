@@ -60,6 +60,8 @@ export function SimpleFormField<C extends ComponentType = typeof InputField>({
       let message: ReactNode;
       if (validity && !validity.valid) {
         const reason = Object.entries(validityMessages).find(
+          // eslint-disable-next-line @typescript-eslint/prefer-ts-expect-error
+          // @ts-ignore 2769 No overload matches this call (strictNullChecks)
           ([validityType]: [keyof ValidityMessages, ReactNode]) => validity[validityType],
         );
         message = reason ? reason[1] : true;
@@ -76,16 +78,23 @@ export function SimpleFormField<C extends ComponentType = typeof InputField>({
         onChange(event, val);
       }
 
+      // eslint-disable-next-line @typescript-eslint/prefer-ts-expect-error
+      // @ts-ignore 2345 argument of type is not assignable to parameter of type
+      // (strictNullChecks)
       validateValue(event?.currentTarget, name, val);
     },
     [name, onChange, preprocess, validateValue, values],
   );
 
   useEffect(() => {
+    // TODO: this is a bad hack. don't do this
     // Only run for create organization form
     // Only when the name field is changed
     if (id === 'create-organization' && values.name !== prevNameValueRef.current) {
       const idField = document.querySelector<HTMLInputElement>('#id');
+      // eslint-disable-next-line @typescript-eslint/prefer-ts-expect-error
+      // @ts-ignore 2345 argument of type is not assignable to parameter of type
+      // (strictNullChecks)
       validateValue(idField, idField.name, idField?.value || '');
 
       prevNameValueRef.current = values.name;
@@ -93,8 +102,13 @@ export function SimpleFormField<C extends ComponentType = typeof InputField>({
   }, [values, validateValue, id]);
 
   useEffect(() => {
+    // eslint-disable-next-line @typescript-eslint/prefer-ts-expect-error
+    // @ts-ignore 18048 variable is possibly undefined (strictNullChecks)
     if (!(name in formErrors)) {
       const validity = ref?.current?.validity;
+      // eslint-disable-next-line @typescript-eslint/prefer-ts-expect-error
+      // @ts-ignore 2345 argument of type is not assignable to parameter of type
+      // (strictNullChecks)
       setFormError(name, validity && !validity.valid);
     }
   }, [formErrors, name, setFormError]);
@@ -103,10 +117,14 @@ export function SimpleFormField<C extends ComponentType = typeof InputField>({
     // @ts-expect-error XXX This shouldn’t be necessary.
     <Component
       disabled={disabled || submitting}
+      // eslint-disable-next-line @typescript-eslint/prefer-ts-expect-error
+      // @ts-ignore Messed up - undefined cannot be used as an index type
       error={!pristine[name] && formErrors[name]}
       name={name}
       onChange={internalOnChange}
       ref={ref}
+      // eslint-disable-next-line @typescript-eslint/prefer-ts-expect-error
+      // @ts-ignore Messed up - undefined cannot be used as an index type
       value={value || values[name]}
       {...props}
     />

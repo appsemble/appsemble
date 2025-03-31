@@ -17,7 +17,7 @@ export async function agreeCurrentUserOAuth2AppConsent(ctx: Context): Promise<vo
     user: authSubject,
   } = ctx;
 
-  const user = await User.findByPk(authSubject.id);
+  const user = (await User.findByPk(authSubject!.id))!;
 
   const app = await App.findByPk(appId, {
     attributes: ['domain', 'definition', 'id', 'path', 'OrganizationId'],
@@ -32,7 +32,7 @@ export async function agreeCurrentUserOAuth2AppConsent(ctx: Context): Promise<vo
   assertKoaCondition(app != null, ctx, 404, 'App not found');
 
   assertKoaCondition(
-    await checkAppSecurityPolicy(app, authSubject.id),
+    await checkAppSecurityPolicy(app, authSubject!.id),
     ctx,
     401,
     'User is not allowed to login due to the app’s security policy',
@@ -56,13 +56,15 @@ export async function agreeCurrentUserOAuth2AppConsent(ctx: Context): Promise<vo
         email: user.primaryEmail,
         timezone: user.timezone,
         emailVerified: emailAuthorization?.verified ?? false,
-        role: app.definition.security.default.role,
+        role: app.definition.security?.default?.role,
         consent: new Date(),
       });
     } catch (error) {
       await handleUniqueAppMemberEmailIndex(
         ctx,
         error,
+        // @ts-expect-error 2345 argument of type is not assignable to parameter of type
+        // (strictNullChecks)
         user.primaryEmail,
         emailAuthorization?.verified ?? false,
         (data) => {
@@ -76,5 +78,7 @@ export async function agreeCurrentUserOAuth2AppConsent(ctx: Context): Promise<vo
     }
   }
 
+  // @ts-expect-error 2345 argument of type is not assignable to parameter of type
+  // (strictNullChecks)
   ctx.body = await createAppOAuth2AuthorizationCode(app, redirectUri, scope, appMember, ctx);
 }

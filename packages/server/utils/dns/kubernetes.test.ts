@@ -37,7 +37,7 @@ describe('kubernetes', () => {
 
   describe('configureDNS', () => {
     it('should create a wildcard ingress when an organization is created', async () => {
-      let config: AxiosRequestConfig;
+      let config: AxiosRequestConfig | undefined;
       mock.onPost(/.*/).reply((request) => {
         config = request;
         return [201, request.data];
@@ -47,16 +47,16 @@ describe('kubernetes', () => {
       await kubernetes.configureDNS();
       await Organization.create({ id: 'testorg' });
 
-      expect(config.url).toBe('/apis/networking.k8s.io/v1/namespaces/test/ingresses');
-      expect(config.baseURL).toBe('https://kubernetes.default.svc:443');
-      expect({ ...config.headers }).toStrictEqual({
+      expect(config?.url).toBe('/apis/networking.k8s.io/v1/namespaces/test/ingresses');
+      expect(config?.baseURL).toBe('https://kubernetes.default.svc:443');
+      expect({ ...config?.headers }).toStrictEqual({
         Accept: 'application/json, text/plain, */*',
         authorization: 'Bearer kubenetes.serviceaccount.token',
         'Content-Type': 'application/json',
       });
-      expect(config.httpsAgent).toBeInstanceOf(Agent);
-      expect(config.httpsAgent.options.ca).toBe(ca);
-      expect(JSON.parse(config.data)).toStrictEqual({
+      expect(config?.httpsAgent).toBeInstanceOf(Agent);
+      expect(config?.httpsAgent.options.ca).toBe(ca);
+      expect(JSON.parse(config?.data)).toStrictEqual({
         metadata: {
           annotations: {},
           labels: {
@@ -93,7 +93,7 @@ describe('kubernetes', () => {
     });
 
     it('should create an ingress when an app with a domain is created', async () => {
-      let config: AxiosRequestConfig;
+      let config: AxiosRequestConfig | undefined;
       mock.onPost(/.*/).reply((request) => {
         config = request;
         return [201, request.data];
@@ -110,16 +110,16 @@ describe('kubernetes', () => {
         OrganizationId: 'org',
       });
 
-      expect(config.url).toBe('/apis/networking.k8s.io/v1/namespaces/test/ingresses');
-      expect(config.baseURL).toBe('https://kubernetes.default.svc:443');
-      expect({ ...config.headers }).toStrictEqual({
+      expect(config?.url).toBe('/apis/networking.k8s.io/v1/namespaces/test/ingresses');
+      expect(config?.baseURL).toBe('https://kubernetes.default.svc:443');
+      expect({ ...config?.headers }).toStrictEqual({
         Accept: 'application/json, text/plain, */*',
         authorization: 'Bearer kubenetes.serviceaccount.token',
         'Content-Type': 'application/json',
       });
-      expect(config.httpsAgent).toBeInstanceOf(Agent);
-      expect(config.httpsAgent.options.ca).toBe(ca);
-      expect(JSON.parse(config.data)).toStrictEqual({
+      expect(config?.httpsAgent).toBeInstanceOf(Agent);
+      expect(config?.httpsAgent.options.ca).toBe(ca);
+      expect(JSON.parse(config?.data)).toStrictEqual({
         metadata: {
           annotations: {},
           labels: {
@@ -154,7 +154,7 @@ describe('kubernetes', () => {
     });
 
     it('should not create an ingress when an app without a domain is created', async () => {
-      let config: AxiosRequestConfig;
+      let config: AxiosRequestConfig | undefined;
       mock.onPost(/.*/).reply((request) => {
         config = request;
         return [201, request.data];
@@ -174,7 +174,7 @@ describe('kubernetes', () => {
     });
 
     it('should inject custom annotations', async () => {
-      let config: AxiosRequestConfig;
+      let config: AxiosRequestConfig | undefined;
       mock.onPost(/.*/).reply((request) => {
         config = request;
         return [201, request.data];
@@ -189,16 +189,16 @@ describe('kubernetes', () => {
       await kubernetes.configureDNS();
       await Organization.create({ id: 'foo' });
 
-      expect(config.url).toBe('/apis/networking.k8s.io/v1/namespaces/test/ingresses');
-      expect(config.baseURL).toBe('https://kubernetes.default.svc:443');
-      expect({ ...config.headers }).toStrictEqual({
+      expect(config?.url).toBe('/apis/networking.k8s.io/v1/namespaces/test/ingresses');
+      expect(config?.baseURL).toBe('https://kubernetes.default.svc:443');
+      expect({ ...config?.headers }).toStrictEqual({
         Accept: 'application/json, text/plain, */*',
         authorization: 'Bearer kubenetes.serviceaccount.token',
         'Content-Type': 'application/json',
       });
-      expect(config.httpsAgent).toBeInstanceOf(Agent);
-      expect(config.httpsAgent.options.ca).toBe(ca);
-      expect(JSON.parse(config.data)).toStrictEqual({
+      expect(config?.httpsAgent).toBeInstanceOf(Agent);
+      expect(config?.httpsAgent.options.ca).toBe(ca);
+      expect(JSON.parse(config?.data)).toStrictEqual({
         metadata: {
           annotations: { custom: 'annotation' },
           labels: {

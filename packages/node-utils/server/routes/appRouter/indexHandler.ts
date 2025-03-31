@@ -85,6 +85,8 @@ export function createIndexHandler({
       host,
       locale: defaultLanguage,
       locales: languages.filter((lang) => lang !== defaultLanguage),
+      // @ts-expect-error 2345 argument of type is not assignable to parameter of type
+      // (strictNullChecks)
       bulmaURL: createThemeURL(mergeThemes(app.definition.theme)),
       faURL,
       nonce,

@@ -82,7 +82,7 @@ export function ProfileSettings(): ReactNode {
   const onRemoveProfilePicture = useCallback(() => {
     setAppMemberInfo({
       ...appMemberInfo,
-      picture: null,
+      picture: undefined,
     });
   }, [setAppMemberInfo, appMemberInfo]);
 
@@ -90,7 +90,9 @@ export function ProfileSettings(): ReactNode {
     <SimpleForm
       defaultValues={{
         name: appMemberInfo?.name || '',
+        // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
         picture: null,
+        // @ts-expect-error 2322 string | undefined is not assignable to type (strictNullChecks)
         locale: preferredLanguage,
       }}
       onSubmit={onSaveProfile}
@@ -105,6 +107,7 @@ export function ProfileSettings(): ReactNode {
       />
       <SimpleFormField
         accept="image/jpeg, image/png, image/tiff, image/webp"
+        // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
         component={FileUpload}
         fileButtonLabel={<FormattedMessage {...messages.picture} />}
         fileLabel={<FormattedMessage {...messages.selectFile} />}
@@ -114,11 +117,13 @@ export function ProfileSettings(): ReactNode {
         label={<FormattedMessage {...messages.picture} />}
         name="picture"
         preview={
+          // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
           <PicturePreview pictureCamera={pictureCamera} pictureUrl={appMemberInfo?.picture} />
         }
       />
       <SimpleFormField
         clickButtonLabel={<Icon icon="camera" size="large" />}
+        // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
         component={WebcamImageUpload}
         help={<FormattedMessage {...messages.clickDescription} />}
         onCapture={onCapture}

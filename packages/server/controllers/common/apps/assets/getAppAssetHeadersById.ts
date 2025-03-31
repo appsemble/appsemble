@@ -39,5 +39,7 @@ export async function getAppAssetHeadersById(ctx: Context): Promise<void> {
     }
   }
 
+  // @ts-expect-error 2345 argument of type is not assignable to parameter of type
+  // (strictNullChecks)
   setAssetHeaders(ctx, mime, filename);
 }

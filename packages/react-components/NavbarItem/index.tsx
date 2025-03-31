@@ -43,6 +43,8 @@ export function NavbarItem({
       {content}
     </button>
   ) : (
+    // eslint-disable-next-line @typescript-eslint/prefer-ts-expect-error
+    // @ts-ignore 2322 null is not assignable to type (strictNullChecks)
     <NavLink className="navbar-item" {...props} to={to}>
       {content}
     </NavLink>

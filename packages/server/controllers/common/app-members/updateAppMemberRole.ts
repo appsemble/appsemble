@@ -32,14 +32,14 @@ export async function updateAppMemberRole(ctx: Context): Promise<void> {
   assertKoaCondition(appMember != null, ctx, 404, 'App member not found');
 
   assertKoaCondition(
-    appMemberId !== authSubject.id,
+    appMemberId !== authSubject!.id,
     ctx,
     401,
     'Cannot use this endpoint to update your own role',
   );
 
   assertKoaCondition(
-    getAppRoles(appMember.App.definition.security).includes(role),
+    getAppRoles(appMember.App!.definition.security).includes(role),
     ctx,
     401,
     'Role not allowed',
@@ -47,7 +47,7 @@ export async function updateAppMemberRole(ctx: Context): Promise<void> {
 
   await checkAuthSubjectAppPermissions({
     context: ctx,
-    appId: appMember.App.id,
+    appId: appMember.App!.id,
     requiredPermissions: [AppPermission.UpdateAppMemberRoles],
     groupId: selectedGroupId,
   });

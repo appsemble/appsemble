@@ -112,7 +112,9 @@ describe('dialog', () => {
       prefix: 'pages.test-page.blocks.0.actions.onClick',
       prefixIndex: 'pages.0.blocks.0.actions.onClick',
     });
-    await options.actionCreators['dialog.ok'](null)[0]({ value: 'success' }, null);
+    // @ts-expect-error 2345 argument of type is not assignable to parameter of type
+    // (strictNullChecks)
+    await options.actionCreators['dialog.ok']?.(null)[0]({ value: 'success' }, null);
     const result = await promise;
     expect(result).toStrictEqual({ value: 'success' });
   });
@@ -137,7 +139,9 @@ describe('dialog', () => {
       prefix: 'pages.test-page.blocks.0.actions.onClick',
       prefixIndex: 'pages.0.blocks.0.actions.onClick',
     });
-    await options.actionCreators['dialog.error'](null)[0]({ value: 'fail' }, null);
+    // @ts-expect-error 2345 argument of type is not assignable to parameter of type
+    // (strictNullChecks)
+    await options.actionCreators['dialog.error']?.(null)[0]({ value: 'fail' }, null);
     await expect(promise).rejects.toThrow(
       new ActionError({
         data: '',

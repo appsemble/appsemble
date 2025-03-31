@@ -36,7 +36,10 @@ export function MenuSection({ children, className, label, testId }: MenuSectionP
   return (
     <>
       {label ? <p className={`menu-label pl-1 ${styles.label}`}>{label}</p> : null}
-      <ul className={classNames('menu-list', { [className]: className })} data-testid={testId}>
+      <ul
+        className={classNames('menu-list', { [className ?? '']: className })}
+        data-testid={testId}
+      >
         {Children.map(children, (child) => (
           <li>{child}</li>
         ))}

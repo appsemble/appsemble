@@ -20,6 +20,7 @@ describe('condition', () => {
         'dialog.ok': () => [ok],
         'dialog.error': () => [error],
       },
+      // @ts-expect-error Messed up
       remap,
     });
     const result = await action({ input: 'ok' }, { context: null });
@@ -47,6 +48,7 @@ describe('condition', () => {
         'dialog.ok': () => [ok],
         'dialog.error': () => [error],
       },
+      // @ts-expect-error Messed up
       remap,
     });
     const result = await action({ input: 'error' }, { context: null });
@@ -74,6 +76,7 @@ describe('condition', () => {
         'dialog.ok': () => [ok],
         'dialog.error': () => [error],
       },
+      // @ts-expect-error Messed up
       remap,
     });
     const result = await action({ input: 'no match' }, { context: null });

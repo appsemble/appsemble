@@ -17,7 +17,7 @@ export async function getCurrentAppMemberGroups(ctx: Context): Promise<void> {
     include: [
       {
         model: GroupMember,
-        where: { AppMemberId: authSubject.id },
+        where: { AppMemberId: authSubject!.id },
         required: true,
       },
     ],

@@ -16,7 +16,7 @@ describe('partialNormalized', () => {
     const match = input.match(partialNormalized);
     expect(match).not.toBeNull();
     expect(match).toHaveLength(2);
-    expect([...match]).toStrictEqual([expected, expected]);
+    expect([...match!]).toStrictEqual([expected, expected]);
   });
 
   it('should be reusable to compose a new regular expression', () => {
@@ -24,7 +24,7 @@ describe('partialNormalized', () => {
     const match = '@foo/bar'.match(composed);
     expect(match).not.toBeNull();
     expect(match).toHaveLength(3);
-    expect([...match]).toStrictEqual(['@foo/bar', 'foo', 'bar']);
+    expect([...match!]).toStrictEqual(['@foo/bar', 'foo', 'bar']);
   });
 });
 

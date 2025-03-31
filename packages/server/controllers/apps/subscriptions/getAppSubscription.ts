@@ -35,7 +35,7 @@ export async function getAppSubscription(ctx: Context): Promise<void> {
   }
 
   for (const { ResourceId, action, type } of appSubscription.ResourceSubscriptions) {
-    if (!resources[type]) {
+    if (!action || !type || !resources[type]) {
       continue;
     }
 

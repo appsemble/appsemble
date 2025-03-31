@@ -53,7 +53,7 @@ export async function createBlock(ctx: Context): Promise<void> {
     validator.customFormats['event-emitter'] = () => true;
 
     for (const exampleString of data.examples) {
-      let example: BlockDefinition;
+      let example: BlockDefinition | undefined;
       try {
         example = parse(exampleString);
       } catch {
@@ -63,16 +63,19 @@ export async function createBlock(ctx: Context): Promise<void> {
         continue;
       }
       const { required, ...blockSchema } = structuredClone(
-        ctx.openApi.document.components.schemas.BlockDefinition,
+        ctx.openApi!.document.components!.schemas!.BlockDefinition,
       ) as OpenAPIV3.NonArraySchemaObject;
 
-      delete blockSchema.properties.name;
-      delete blockSchema.properties.version;
+      delete blockSchema.properties?.name;
+      delete blockSchema.properties?.version;
 
-      const actionsSchema = blockSchema.properties.actions as OpenAPIV3.NonArraySchemaObject;
+      const actionsSchema = blockSchema.properties?.actions as
+        | OpenAPIV3.NonArraySchemaObject
+        | undefined;
 
-      delete actionsSchema.additionalProperties;
+      delete actionsSchema?.additionalProperties;
       if (example.actions) {
+        // @ts-expect-error 18048 variable is possibly undefined (strictNullChecks)
         actionsSchema.properties = Object.fromEntries(
           Object.keys(example.actions).map((key) => [
             key,
@@ -85,9 +88,11 @@ export async function createBlock(ctx: Context): Promise<void> {
         additionalProperties: false,
         properties: {},
       };
+      // @ts-expect-error 18048 variable is possibly undefined (strictNullChecks)
       blockSchema.properties.events = blockEventsSchema;
       if (example.events) {
         if (example.events.emit) {
+          // @ts-expect-error 18048 variable is possibly undefined (strictNullChecks)
           blockEventsSchema.properties.emit = has(example.events.emit, '$any')
             ? { type: 'object', additionalProperties: { type: 'string' } }
             : {
@@ -98,6 +103,7 @@ export async function createBlock(ctx: Context): Promise<void> {
               };
         }
         if (example.events.listen) {
+          // @ts-expect-error 18048 variable is possibly undefined (strictNullChecks)
           blockEventsSchema.properties.listen = has(example.events.listen, '$any')
             ? { type: 'object', additionalProperties: { type: 'string' } }
             : {
@@ -112,7 +118,7 @@ export async function createBlock(ctx: Context): Promise<void> {
         }
       }
 
-      const validationResult = ctx.openApi.validate(example, blockSchema, { throw: false });
+      const validationResult = ctx.openApi!.validate(example, blockSchema, { throw: false });
       handleValidatorResult(ctx, validationResult, 'Validation failed for block example');
     }
   }
@@ -120,6 +126,7 @@ export async function createBlock(ctx: Context): Promise<void> {
   if (messages) {
     const messageKeys = Object.keys(messages.en);
     for (const [language, record] of Object.entries(messages)) {
+      // @ts-expect-error 2769 No overload matches this call (strictNullChecks)
       const keys = Object.keys(record);
       assertKoaCondition(
         !(keys.length !== messageKeys.length || keys.some((key) => !messageKeys.includes(key))),

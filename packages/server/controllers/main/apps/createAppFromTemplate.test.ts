@@ -282,7 +282,7 @@ describe('createAppFromTemplate', () => {
     });
 
     const { id } = response.data;
-    const app = await App.findByPk(id, { include: [{ model: AppBlockStyle }] });
+    const app = (await App.findByPk(id, { include: [{ model: AppBlockStyle }] }))!;
 
     expect(app.coreStyle).toStrictEqual(template.coreStyle);
     expect(app.sharedStyle).toStrictEqual(template.sharedStyle);
@@ -344,12 +344,12 @@ describe('createAppFromTemplate', () => {
 
     const { id } = response.data;
 
-    const appServiceSecret = await AppServiceSecret.findOne({
+    const appServiceSecret = (await AppServiceSecret.findOne({
       attributes: ['name', 'authenticationMethod', 'urlPatterns', 'identifier', 'secret'],
       where: {
         AppId: id,
       },
-    });
+    }))!;
 
     expect(appServiceSecret.toJSON()).toStrictEqual({
       name: 'test',
@@ -359,7 +359,7 @@ describe('createAppFromTemplate', () => {
       secret: Buffer.from('placeholder'),
     });
 
-    const appSamlSecret = await AppSamlSecret.findOne({
+    const appSamlSecret = (await AppSamlSecret.findOne({
       attributes: [
         'name',
         'icon',
@@ -375,7 +375,7 @@ describe('createAppFromTemplate', () => {
       where: {
         AppId: id,
       },
-    });
+    }))!;
 
     expect(appSamlSecret.toJSON()).toStrictEqual({
       emailAttribute: 'emailAttribute',
@@ -436,12 +436,12 @@ describe('createAppFromTemplate', () => {
       resources: true,
     });
 
-    const translations = await AppMessages.findOne({
+    const translations = (await AppMessages.findOne({
       where: { AppId: id, language: 'nl-nl' },
-    });
+    }))!;
 
-    expect(translations.messages.app.name).toBeUndefined();
-    expect(translations.messages.app.description).toBeUndefined();
+    expect(translations.messages?.app.name).toBeUndefined();
+    expect(translations.messages?.app.description).toBeUndefined();
   });
 
   it('should append a number when creating a new app using a template with a duplicate name', async () => {

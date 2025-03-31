@@ -10,6 +10,7 @@ function serializer(): Plugin {
   return koaSerializer({
     serializers: {
       'application/scim+json': (body) => JSON.stringify(body),
+      // @ts-expect-error 2322 unknown is not assignable to type string (strictNullChecks)
       'application/xml': (body: string) => body,
       'text/csv': convertToCsv,
     },
@@ -90,7 +91,7 @@ export function throwKoaError(
   status: HttpErrorCodes,
   message?: string,
   data?: Record<string, any>,
-): void {
+): never {
   ctx.response.status = status;
   ctx.response.body = {
     error: errorStatusMap[status],

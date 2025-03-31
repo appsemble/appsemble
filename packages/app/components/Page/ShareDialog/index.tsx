@@ -33,6 +33,8 @@ export function ShareDialog({
   shareDialogParams,
 }: ShareDialogParams): ReactNode {
   const rejectShareDialog = useCallback(() => {
+    // @ts-expect-error 2345 argument of type is not assignable to parameter of type
+    // (strictNullChecks)
     setShareDialogParams((old) => {
       old?.reject('Closed share dialog');
       return null;
@@ -43,6 +45,8 @@ export function ShareDialog({
     // Defer immediately setting the params to null
     // to allow for the default <a> click handler to resolve the url properly.
     setTimeout(() => {
+      // @ts-expect-error 2345 argument of type is not assignable to parameter of type
+      // (strictNullChecks)
       setShareDialogParams((old) => {
         old?.resolve();
         return null;
@@ -66,7 +70,9 @@ export function ShareDialog({
           className="is-fullwidth is-justify-content-start"
           component="a"
           href={createUrl('mailto:', {
+            // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
             subject: title,
+            // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
             body: text && url ? `${text}\n${url}` : text || url,
           }).replaceAll('+', '%20')}
           icon="envelope"
@@ -78,7 +84,9 @@ export function ShareDialog({
           className={`${styles.twitter} ${styles.light} is-fullwidth is-justify-content-start`}
           component="a"
           href={createUrl('https://twitter.com/intent/tweet', {
+            // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
             text: title && text ? `${title}\n${text}` : title || text,
+            // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
             url,
           })}
           icon="twitter"
@@ -103,6 +111,7 @@ export function ShareDialog({
           className={`${styles.telegram} ${styles.light} is-fullwidth is-justify-content-start`}
           component="a"
           href={createUrl('https://t.me/share', {
+            // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
             url,
             text: [title, text].filter(Boolean).join('\n'),
           })}
@@ -119,8 +128,10 @@ export function ShareDialog({
               className={`${styles.linkedin} ${styles.light} is-fullwidth is-justify-content-start`}
               component="a"
               href={createUrl('https://www.linkedin.com/shareArticle', {
+                // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
                 summary: text,
                 url,
+                // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
                 title,
               })}
               icon="linkedin"

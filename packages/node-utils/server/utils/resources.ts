@@ -12,8 +12,11 @@ export function generateResourceQuery(
 ): { order: OrderItem[]; where: WhereOptions } {
   try {
     return parseQuery({
+      // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
       $filter: ctx.queryParams.$filter,
+      // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
       $orderby: ctx.queryParams.$orderby,
+      // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
       resourceDefinition,
     });
   } catch (error: unknown) {
@@ -33,7 +36,7 @@ export async function deleteResourcesRecursively(
 ): Promise<void> {
   const { deleteAppResource, getAppResources } = options;
 
-  const referencingResources = Object.entries(app.definition.resources).filter(
+  const referencingResources = Object.entries(app.definition.resources ?? {}).filter(
     ([, resourceDefinition]) =>
       Object.values(resourceDefinition.references ?? {}).find(
         (resourceReference) => resourceReference.resource === type,

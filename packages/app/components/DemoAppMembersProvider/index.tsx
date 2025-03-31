@@ -21,6 +21,7 @@ interface DemoAppMembersProviderProps {
   readonly children: ReactNode;
 }
 
+// @ts-expect-error 2345 argument of type is not assignable to parameter of type (strictNullChecks)
 const Context = createContext<DemoAppMembersContext>(null);
 
 export function DemoAppMembersProvider({ children }: DemoAppMembersProviderProps): ReactNode {

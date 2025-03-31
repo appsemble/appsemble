@@ -17,10 +17,16 @@ export const TagsField = forwardRef<HTMLInputElement, TagsFieldProps>(
     const innerRef = useRef<HTMLInputElement>();
     const bulmaInputRef = useRef<BulmaTagsInput>();
 
+    // eslint-disable-next-line @typescript-eslint/prefer-ts-expect-error
+    // @ts-ignore 2345 argument of type is not assignable to parameter of type
+    // (strictNullChecks)
     const mergedRef = useCombinedRefs(innerRef, ref);
 
     useEffect(() => {
       const element = innerRef.current;
+      if (!element) {
+        return;
+      }
       bulmaInputRef.current = new BulmaTagsInput(element, { delimiter });
       // Bulma tags input can’t be updated. Don’t support updating the delimiter on the fly.
       // eslint-disable-next-line react-hooks/exhaustive-deps

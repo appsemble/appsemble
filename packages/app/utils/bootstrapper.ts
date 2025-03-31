@@ -84,7 +84,7 @@ export function registerController(
     );
   }
   controllerFunctions.set('app-controller', fn);
-  const callbacks = controllerResolvers.get('app-controller');
+  const callbacks = controllerResolvers.get('app-controller') ?? [];
   controllerResolvers.delete('app-controller');
   for (const resolve of callbacks) {
     resolve(fn);
@@ -93,12 +93,12 @@ export function registerController(
 
 function getBootstrapFunction(blockDefId: string): Promisable<BootstrapFunction> {
   if (bootstrapFunctions.has(blockDefId)) {
-    return bootstrapFunctions.get(blockDefId);
+    return bootstrapFunctions.get(blockDefId)!;
   }
   if (!bootstrapResolvers.has(blockDefId)) {
     bootstrapResolvers.set(blockDefId, []);
   }
-  const waiting = bootstrapResolvers.get(blockDefId);
+  const waiting = bootstrapResolvers.get(blockDefId)!;
   return new Promise((resolve) => {
     waiting.push(resolve);
   });
@@ -106,18 +106,19 @@ function getBootstrapFunction(blockDefId: string): Promisable<BootstrapFunction>
 
 function getControllerFunction(): Promisable<ControllerFunction> {
   if (controllerFunctions.has('app-controller')) {
-    return controllerFunctions.get('app-controller');
+    return controllerFunctions.get('app-controller')!;
   }
   if (!controllerResolvers.has('app-controller')) {
     controllerResolvers.set('app-controller', []);
   }
-  const waiting = controllerResolvers.get('app-controller');
+  const waiting = controllerResolvers.get('app-controller')!;
   return new Promise((resolve) => {
     waiting.push(resolve);
   });
 }
 
 export function getHandlerFunction(handler: string): HandlerFunction {
+  // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
   return handlerFunctions.get(handler);
 }
 
@@ -141,6 +142,7 @@ export async function callBootstrap(
 
         script.src = prefixBlockURL({ type: manifest.name, version: manifest.version }, url);
 
+        // @ts-expect-error Not a default event
         script.addEventListener('AppsembleBootstrap', (event: AppsembleBootstrapEvent) => {
           event.stopImmediatePropagation();
           event.preventDefault();
@@ -174,6 +176,7 @@ export async function callController(params: EventParams): Promise<void> {
     const blob = new Blob([appControllerCode], { type: 'application/javascript' });
     script.src = URL.createObjectURL(blob);
 
+    // @ts-expect-error Not a default event
     script.addEventListener('AppsembleController', (event: AppsembleControllerEvent) => {
       event.stopImmediatePropagation();
       event.preventDefault();

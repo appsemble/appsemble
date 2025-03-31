@@ -20,41 +20,41 @@ export class AppSubscription extends Model {
   @PrimaryKey
   @AutoIncrement
   @Column(DataType.INTEGER)
-  id: number;
+  id!: number;
 
   @AllowNull(false)
   @Column(DataType.STRING)
-  endpoint: string;
+  endpoint!: string;
 
   @AllowNull(false)
   @Column(DataType.STRING)
-  p256dh: string;
+  p256dh!: string;
 
   @AllowNull(false)
   @Column(DataType.STRING)
-  auth: string;
+  auth!: string;
 
   @AllowNull(false)
   @ForeignKey(() => App)
   @Column(DataType.INTEGER)
-  AppId: number;
+  AppId!: number;
 
   @BelongsTo(() => App)
-  App: Awaited<App>;
+  App?: Awaited<App>;
 
   @ForeignKey(() => AppMember)
   @Column(DataType.UUID)
-  AppMemberId: string;
+  AppMemberId?: string;
 
   @CreatedAt
-  created: Date;
+  created!: Date;
 
   @UpdatedAt
-  updated: Date;
+  updated!: Date;
 
   @BelongsTo(() => AppMember, { onDelete: 'SET NULL' })
-  AppMember: Awaited<AppMember>;
+  AppMember?: Awaited<AppMember>;
 
   @HasMany(() => ResourceSubscription, { onDelete: 'CASCADE' })
-  ResourceSubscriptions: ResourceSubscription[];
+  ResourceSubscriptions!: ResourceSubscription[];
 }

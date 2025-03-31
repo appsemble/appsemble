@@ -57,6 +57,7 @@ export function GroupDropdown(): ReactNode {
           }).format()}
         </NavbarItem>
       ))}
+      {/* @ts-expect-error 2345 argument of type is not assignable to parameter of type (strictNullChecks) */}
       <NavbarItem key="no-group" onClick={() => handleGroupChange(null)}>
         {formatMessage(messages.noGroup)}
         {' - '}

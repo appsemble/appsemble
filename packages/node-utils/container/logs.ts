@@ -95,11 +95,11 @@ export async function getLogs(
       pod.metadata?.ownerReferences?.find((r) => r.kind === 'ReplicaSet') &&
       pod.status?.phase === 'Running'
     ) {
-      if (fromAppsemble && !pod.metadata?.name.includes(appsembleServiceName)) {
+      if (fromAppsemble && !pod.metadata?.name?.includes(appsembleServiceName)) {
         continue;
       }
 
-      if (!fromAppsemble && !pod.metadata?.name.includes(deploymentName)) {
+      if (!fromAppsemble && !pod.metadata?.name?.includes(deploymentName)) {
         continue;
       }
 
@@ -109,15 +109,17 @@ export async function getLogs(
       try {
         const res = await fetchLogs(
           fromAppsemble ? appsembleNamespace : containerNamespace,
+          // @ts-expect-error 2345 argument of type is not assignable to parameter of type
+          // (strictNullChecks)
           pod.metadata?.name,
           fromAppsemble ? 'appsemble' : deploymentName,
         );
         let entries = res.split('\n');
         logger.silly(`Number of entries found for pod ${pod.metadata?.name}: ${entries.length}`);
 
-        entries = filterLogEntries([...entries], deploymentName, fromAppsemble);
+        entries = filterLogEntries([...entries], deploymentName, fromAppsemble ?? false);
 
-        podLogs.push({ fromAppsemble, entries });
+        podLogs.push({ fromAppsemble: fromAppsemble ?? false, entries });
       } catch (error: unknown) {
         handleKubernetesError(error);
       }

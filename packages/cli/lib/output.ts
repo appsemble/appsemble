@@ -10,7 +10,9 @@ export function printAxiosError(filename: string, yaml: string, errors: Validati
       const node = doc.getIn(error.path, true);
       let result = filename;
       if (isNode(node)) {
-        const { col, line } = lineCounter.linePos(node.range[0]);
+        // @ts-expect-error 2345 argument of type is not assignable to parameter of type
+        // (strictNullChecks)
+        const { col, line } = lineCounter.linePos(node.range?.[0]);
         result += `:${line}:${col}`;
       }
       return `${result} ${error.message}`;

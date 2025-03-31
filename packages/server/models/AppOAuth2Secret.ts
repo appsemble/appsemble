@@ -39,47 +39,47 @@ export class AppOAuth2Secret extends Model {
   @PrimaryKey
   @AutoIncrement
   @Column(DataType.INTEGER)
-  id: number;
+  id!: number;
 
   @AllowNull(false)
   @Column(DataType.STRING)
-  authorizationUrl: string;
+  authorizationUrl!: string;
 
   @AllowNull(false)
   @Column(DataType.STRING)
-  tokenUrl: string;
+  tokenUrl!: string;
 
   @Column(DataType.STRING)
-  userInfoUrl: string;
+  userInfoUrl?: string;
 
   @Column(DataType.JSON)
-  remapper: Remapper;
+  remapper?: Remapper;
 
   @AllowNull(false)
   @Column(DataType.STRING)
-  clientId: string;
+  clientId!: string;
 
   @AllowNull(false)
   @Column(DataType.STRING)
-  clientSecret: string;
+  clientSecret!: string;
 
   @AllowNull(false)
   @Column(DataType.STRING)
-  icon: IconName;
+  icon!: IconName;
 
   @AllowNull(false)
   @Column(DataType.STRING)
-  name: string;
+  name!: string;
 
   @AllowNull(false)
   @Column(DataType.STRING)
-  scope: string;
+  scope!: string;
 
   @CreatedAt
-  created: Date;
+  created!: Date;
 
   @UpdatedAt
-  updated: Date;
+  updated!: Date;
 
   /**
    * The id of the app this secret is linked to.
@@ -87,11 +87,11 @@ export class AppOAuth2Secret extends Model {
   @ForeignKey(() => App)
   @AllowNull(false)
   @Column(DataType.INTEGER)
-  AppId: number;
+  AppId!: number;
 
   @BelongsTo(() => App)
-  App: Awaited<App>;
+  App?: Awaited<App>;
 
   @HasMany(() => AppOAuth2Authorization, { onDelete: 'CASCADE' })
-  AppOAuth2Authorizations: AppOAuth2Authorization[];
+  AppOAuth2Authorizations!: AppOAuth2Authorization[];
 }

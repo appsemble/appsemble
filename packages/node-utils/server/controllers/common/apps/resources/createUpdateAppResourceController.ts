@@ -61,6 +61,8 @@ export function createUpdateAppResourceController(options: Options): Middleware 
       resourceDefinition,
       appAssets.filter((asset) => asset.resourceId === resourceId).map((asset) => asset.id),
       oldResource.expires as Date,
+      // @ts-expect-error 2345 argument of type is not assignable to parameter of type
+      // (strictNullChecks)
       appAssets.map((asset) => ({ id: asset.id, name: asset.name })),
     );
 

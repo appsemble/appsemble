@@ -16,13 +16,13 @@ export async function addCurrentUserEmail(ctx: Context): Promise<void> {
 
   assertKoaCondition(!dbEmail, ctx, 409, 'This email has already been registered.');
 
-  const user = await User.findByPk(authSubject.id, {
+  const user = (await User.findByPk(authSubject!.id, {
     include: [
       {
         model: EmailAuthorization,
       },
     ],
-  });
+  }))!;
 
   const key = randomBytes(40).toString('hex');
   await EmailAuthorization.create({ UserId: user.id, email, key });

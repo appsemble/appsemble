@@ -84,6 +84,7 @@ export async function requestFirst(request: Request): Promise<Response> {
  * @returns The fetch response object.
  */
 export async function staleWhileRevalidate(request: Request): Promise<Response> {
+  // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
   const cachedResponse = await tryCached(request, () => null);
 
   // Fetch fresh data in the background and update cache.

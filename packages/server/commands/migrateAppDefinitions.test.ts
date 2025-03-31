@@ -269,6 +269,8 @@ pages:
       expected: doc,
     },
   ])('should $patch.message', async ({ changed, expected, patch }) => {
+    // @ts-expect-error 2345 argument of type is not assignable to parameter of type
+    // (strictNullChecks)
     const output = await applyPatch(patch, document, null);
     expect(output).toBe(changed);
     expect(String(document).trim()).toStrictEqual(expected.trim());

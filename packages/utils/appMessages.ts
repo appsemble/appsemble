@@ -45,7 +45,7 @@ export function extractAppMessages(
   const messages: Pick<AppsembleMessages, 'app' | 'messageIds'> = {
     app: {
       name: app.name,
-      description: app.description,
+      description: app.description ?? '',
       ...Object.fromEntries(
         Object.entries(app.security?.roles ?? {}).flatMap(([role, roleDefinition]) => [
           [`app.roles.${role}`, role],

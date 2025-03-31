@@ -23,6 +23,8 @@ export async function respondAppInvite(ctx: Context): Promise<void> {
     attributes: ['id', 'definition', 'OrganizationId', 'path', 'demoMode'],
   });
 
+  assertKoaCondition(app != null, ctx, 404, 'This app does not exist');
+
   if (response) {
     const existingAppMember = await AppMember.findOne({
       where: { AppId: app.id, email: invite.email },

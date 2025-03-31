@@ -127,7 +127,7 @@ export function getGuestAppPermissions(appSecurityDefinition: Security): CustomA
 
   return [
     ...(appSecurityDefinition.guest.permissions || []),
-    ...getAppRolePermissions(appSecurityDefinition, appSecurityDefinition.guest.inherits),
+    ...getAppRolePermissions(appSecurityDefinition, appSecurityDefinition.guest.inherits ?? []),
   ];
 }
 
@@ -139,7 +139,7 @@ export function checkGuestAppPermissions(
   return checkAppPermissions(guestPermissions, requiredPermissions);
 }
 
-export function getAppRoles(appSecurityDefinition: Security): AppRole[] {
+export function getAppRoles(appSecurityDefinition?: Security): AppRole[] {
   return Array.from(new Set(Object.keys(appSecurityDefinition?.roles || {})));
 }
 

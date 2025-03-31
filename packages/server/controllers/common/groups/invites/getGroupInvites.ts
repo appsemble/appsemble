@@ -24,7 +24,7 @@ export async function getGroupInvites(ctx: Context): Promise<void> {
 
   await checkUserOrganizationPermissions({
     context: ctx,
-    organizationId: group.App.OrganizationId,
+    organizationId: group.App!.OrganizationId,
     requiredPermissions: [OrganizationPermission.QueryGroupInvites],
   });
 

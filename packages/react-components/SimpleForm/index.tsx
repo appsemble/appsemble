@@ -24,7 +24,7 @@ type FormErrors = Record<string, ReactNode>;
 type FormValues = Record<string, any>;
 
 interface SimpleFormContext {
-  id: string;
+  id: string | undefined;
   formErrors: FormErrors;
   pristine: Record<string, boolean>;
   setFormError: (name: string, errorMessage: ReactNode) => void;
@@ -35,6 +35,8 @@ interface SimpleFormContext {
   values: FormValues;
 }
 
+// eslint-disable-next-line @typescript-eslint/prefer-ts-expect-error
+// @ts-ignore 2322 null is not assignable to type (strictNullChecks)
 const Context = createContext<SimpleFormContext>(null);
 export const SimpleFormProvider = Context.Provider;
 
@@ -47,7 +49,7 @@ export function SimpleForm<T extends {}>({
   ...props
 }: SimpleFormProps<T>): ReactNode {
   const [values, setValues] = useState(defaultValues);
-  const [submitError, setSubmitError] = useState<Error>(null);
+  const [submitError, setSubmitError] = useState<Error | undefined>();
   const [formErrors, setFormErrors] = useState<FormErrors>({});
   const [pristine, setPristine] = useState(
     Object.fromEntries(Object.keys(defaultValues).map((key) => [key, true])),
@@ -60,7 +62,8 @@ export function SimpleForm<T extends {}>({
   }, [defaultValues]);
 
   const doSubmit = useCallback(async () => {
-    setSubmitError(null);
+    // eslint-disable-next-line unicorn/no-useless-undefined
+    setSubmitError(undefined);
     setSubmitting(true);
     try {
       await onSubmit(values);
@@ -70,7 +73,8 @@ export function SimpleForm<T extends {}>({
     } finally {
       setSubmitting(false);
     }
-    setSubmitError(null);
+    // eslint-disable-next-line unicorn/no-useless-undefined
+    setSubmitError(undefined);
     if (resetOnSuccess) {
       reset();
     }
@@ -105,7 +109,7 @@ export function SimpleForm<T extends {}>({
       pristine,
       setFormError,
       setValue,
-      setValues,
+      setValues: setValues as (values: FormValues) => void,
       submitError,
       submitting,
       values,

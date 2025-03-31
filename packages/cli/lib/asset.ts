@@ -10,7 +10,7 @@ interface PublishAssetParams {
    * The name of the asset being uploaded.
    * This must be a unique name for the app. If left empty, the ID is used instead.
    */
-  name: string;
+  name?: string;
 
   /**
    * The path in which the resource JSON is located.

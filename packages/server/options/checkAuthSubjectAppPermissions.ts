@@ -9,6 +9,7 @@ export function checkAuthSubjectAppPermissions({
 }: CheckAuthSubjectAppPermissionsParams): Promise<void> {
   return checkAuthSubjectAppPermissionsServer({
     context,
+    // @ts-expect-error 2322 undefined is not assignable to type (strictNullChecks)
     appId: app.id,
     requiredPermissions: permissions,
   });

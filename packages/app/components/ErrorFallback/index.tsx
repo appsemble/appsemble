@@ -11,7 +11,7 @@ interface ErrorFallbackProps {
   /**
    * The Sentry event ID that was generated.
    */
-  readonly eventId: string;
+  readonly eventId?: string;
 
   /**
    * Resets ErrorBoundary state to be able to navigate back.

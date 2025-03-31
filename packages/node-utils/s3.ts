@@ -94,6 +94,7 @@ export async function getS3File(bucket: string, key: string): Promise<Readable> 
     return await s3Client.getObject(bucket, key);
   } catch (error) {
     logger.error(error);
+    // @ts-expect-error 2322 null is not assignable to type (strictNullChecks) - Severe
     return null;
   }
 }
@@ -101,9 +102,11 @@ export async function getS3File(bucket: string, key: string): Promise<Readable> 
 export async function getS3FileBuffer(bucket: string, key: string): Promise<Buffer> {
   try {
     const stream = await getS3File(bucket, key);
+    // @ts-expect-error 2322 null is not assignable to type (strictNullChecks) - Severe
     return stream ? streamToBuffer(stream) : null;
   } catch (error) {
     logger.error(error);
+    // @ts-expect-error 2322 null is not assignable to type (strictNullChecks) - Severe
     return null;
   }
 }

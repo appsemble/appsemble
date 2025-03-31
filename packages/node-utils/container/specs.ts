@@ -44,7 +44,7 @@ export function generateDeploymentAndServiceSpecs(
 
   const validatedResources = validateContainerResources(resources);
 
-  const env = formatEnv(definition.env, appName, appId);
+  const env = formatEnv(definition.env ?? [], appName, appId);
 
   // Env should have string keys!
   const podTemplateSpec: V1PodTemplateSpec = {

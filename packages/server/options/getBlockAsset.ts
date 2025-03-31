@@ -12,6 +12,7 @@ export function getBlockAsset({
 }: GetBlockAssetParams): Promise<BlockAssetInterface> {
   const [org, blockId] = name.split('/');
 
+  // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
   return BlockAsset.findOne({
     attributes: ['mime', 'content'],
     where: { filename },

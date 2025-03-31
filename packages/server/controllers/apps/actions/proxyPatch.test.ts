@@ -42,6 +42,7 @@ describe('proxyPatch', () => {
       vapidPrivateKey: '',
       OrganizationId: 'org',
       definition: {
+        name: 'Test App',
         defaultPage: '',
         roles: ['Visitor', 'Reader', 'Admin'],
         security: {
@@ -125,6 +126,7 @@ describe('proxyPatch', () => {
   afterEach(async () => {
     await proxiedRequest.close();
     proxiedBody = undefined;
+    // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
     responseHeaders = undefined;
   });
 
@@ -144,7 +146,7 @@ describe('proxyPatch', () => {
       'accept-encoding': 'gzip, compress, deflate, br',
       'content-length': '2',
       'content-type': 'application/json',
-      host: new URL(proxiedRequest.defaults.baseURL).host,
+      host: new URL(proxiedRequest.defaults.baseURL!).host,
       'user-agent': `AppsembleServer/${version}`,
     });
     expect(proxiedContext.path).toBe('/');

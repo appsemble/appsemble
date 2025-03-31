@@ -27,7 +27,7 @@ export async function createSettings({
     const controllerBuildResult = await buildProject(controllerBuildConfig);
     [, controllerImplementations] = await makeProjectPayload(controllerBuildConfig);
 
-    controllerCode = controllerBuildResult.outputFiles[0].text;
+    controllerCode = controllerBuildResult.outputFiles?.[0].text;
   }
 
   return createUtilsSettings({

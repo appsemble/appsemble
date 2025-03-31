@@ -39,6 +39,8 @@ export function RadioGroup({
 }: RadioGroupProps): ReactNode {
   return (
     <FormComponent className={className} id={name} label={label} required={required}>
+      {/* eslint-disable-next-line @typescript-eslint/prefer-ts-expect-error */}
+      {/* @ts-ignore 2322 null is not assignable to type (strictNullChecks) */}
       <ValuePickerProvider name={name} onChange={onChange} value={value}>
         {children}
         {error ? <p className="help is-danger">{error}</p> : null}

@@ -3,7 +3,7 @@ import { type Context } from 'koa';
 
 export async function iconHandler(ctx: Context): Promise<void> {
   const { params, request } = ctx;
-  const size = Number(params.size);
+  const size = Number(params?.size);
 
   await serveIcon(ctx, {
     background: 'opaque' in request.query ? '#ffffff' : undefined,

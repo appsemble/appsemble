@@ -18,7 +18,7 @@ export async function queryAppCollectionApps(ctx: Context): Promise<void> {
     pathParams: { appCollectionId },
     user,
   } = ctx;
-  const { baseLanguage, language } = parseLanguage(ctx, ctx.query?.language);
+  const { baseLanguage, language } = parseLanguage(ctx, ctx.query?.language ?? []);
 
   const collection = await AppCollection.findByPk(appCollectionId, {
     attributes: ['id', 'OrganizationId', 'visibility'],
@@ -99,7 +99,7 @@ export async function queryAppCollectionApps(ctx: Context): Promise<void> {
           [fn('AVG', col('rating')), 'RatingAverage'],
           [fn('COUNT', col('AppId')), 'RatingCount'],
         ],
-        where: { AppId: apps.map((app) => app.App.id) },
+        where: { AppId: apps.map((app) => app.App!.id) },
         group: ['AppId'],
       })
     ).map((rating) => [
@@ -114,15 +114,15 @@ export async function queryAppCollectionApps(ctx: Context): Promise<void> {
   ctx.response.status = 200;
   ctx.response.body = apps
     .map(({ App: app, pinnedAt }) => {
-      const rating = ratingsMap.get(app.id);
+      const rating = ratingsMap.get(app!.id);
       if (rating) {
-        Object.assign(app, {
+        Object.assign(app!, {
           RatingAverage: rating.average,
           RatingCount: rating.count,
         });
       }
-      applyAppMessages(app, language, baseLanguage);
-      return { app, pinnedAt };
+      applyAppMessages(app!, language, baseLanguage);
+      return { app: app!, pinnedAt };
     })
     .sort(({ app: app1, pinnedAt: pinnedAt1 }, { app: app2, pinnedAt: pinnedAt2 }) => {
       if (pinnedAt1 && !pinnedAt2) {

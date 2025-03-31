@@ -20,13 +20,13 @@ export async function verifyCurrentUserOAuth2AppConsent(ctx: Context): Promise<v
 
   const appMember = await AppMember.findOne({
     where: {
-      UserId: authSubject.id,
+      UserId: authSubject!.id,
     },
   });
 
   assertKoaCondition(app != null, ctx, 404, 'App not found');
 
-  const isAllowed = await checkAppSecurityPolicy(app, authSubject.id);
+  const isAllowed = await checkAppSecurityPolicy(app, authSubject!.id);
 
   assertKoaCondition(
     isAllowed,

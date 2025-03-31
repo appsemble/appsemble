@@ -9,7 +9,7 @@ export async function sendNotifications({
   title,
   to,
 }: SendNotificationsParams): Promise<void> {
-  const persistedApp = await App.findByPk(app.id, {
+  const persistedApp = (await App.findByPk(app.id, {
     attributes: ['id', 'definition', 'vapidPrivateKey', 'vapidPublicKey'],
     include: [
       to === 'all'
@@ -26,7 +26,7 @@ export async function sendNotifications({
             },
           },
     ],
-  });
+  }))!;
 
   for (const subscription of persistedApp.AppSubscriptions) {
     sendNotification(persistedApp, subscription, { title, body });

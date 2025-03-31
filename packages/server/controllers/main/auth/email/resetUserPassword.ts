@@ -17,6 +17,7 @@ export async function resetUserPassword(ctx: Context): Promise<void> {
 
   const password = await hash(ctx.request.body.password, 10);
   const user = await User.findByPk(tokenRecord.UserId);
+  assertKoaCondition(user != null, ctx, 404, `Unknown user for password reset token: ${token}`);
 
   await user.update({ password });
   await tokenRecord.destroy();

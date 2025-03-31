@@ -1,4 +1,5 @@
 import {
+  assertKoaCondition,
   deleteS3Files,
   extractResourceBody,
   getCompressedFileMeta,
@@ -25,6 +26,7 @@ export async function updateAppResources(ctx: Context): Promise<void> {
   const app = await App.findByPk(appId, {
     attributes: ['definition', 'id'],
   });
+  assertKoaCondition(app != null, ctx, 404, 'App not found');
 
   await checkAuthSubjectAppPermissions({
     context: ctx,
@@ -140,12 +142,12 @@ export async function updateAppResources(ctx: Context): Promise<void> {
 
       await uploadAssets(app.id, preparedAssets);
     }
+
+    ctx.body = updatedResources;
+
+    for (const resource of updatedResources) {
+      processReferenceHooks(app, resource, 'update', options, ctx);
+      processHooks(app, resource, 'update', options, ctx);
+    }
   });
-
-  ctx.body = updatedResources;
-
-  for (const resource of updatedResources) {
-    processReferenceHooks(app, resource, 'update', options, ctx);
-    processHooks(app, resource, 'update', options, ctx);
-  }
 }

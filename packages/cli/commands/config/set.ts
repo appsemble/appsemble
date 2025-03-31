@@ -26,7 +26,11 @@ export function builder(yargs: Argv): Argv<any> {
 }
 
 export async function handler({ key, value }: ConfigSetArguments): Promise<void> {
-  const { packageJson, path } = await readPackageUp({ normalize: false });
+  const readResult = await readPackageUp({ normalize: false });
+  if (!readResult) {
+    throw new Error('Could not find package.json in the current directory or any of its parents');
+  }
+  const { packageJson, path } = readResult;
   const pkg = packageJson as MonoRepoPackageJson;
   if (!has(pkg, 'appsembleServer')) {
     pkg.appsembleServer = {};
@@ -37,6 +41,7 @@ export async function handler({ key, value }: ConfigSetArguments): Promise<void>
   } catch {
     parsed = value;
   }
+  pkg.appsembleServer ??= {};
   pkg.appsembleServer[key] = parsed;
   await writeData(path, packageJson);
   logger.info(

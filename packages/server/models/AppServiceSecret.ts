@@ -19,18 +19,18 @@ export class AppServiceSecret extends Model {
   @PrimaryKey
   @AutoIncrement
   @Column(DataType.INTEGER)
-  id: number;
+  id!: number;
 
   @Column(DataType.STRING)
-  name: string;
+  name?: string;
 
   @AllowNull(false)
   @Column(DataType.STRING)
-  urlPatterns: string;
+  urlPatterns!: string;
 
   @AllowNull(false)
   @Column({ type: DataType.STRING })
-  authenticationMethod:
+  authenticationMethod!:
     | 'client-certificate'
     | 'client-credentials'
     | 'cookie'
@@ -44,55 +44,55 @@ export class AppServiceSecret extends Model {
    * Can be a certificate, cookie-, or client ID, username, or parameter/header name.
    */
   @Column({ type: DataType.TEXT })
-  identifier: string;
+  identifier?: string;
 
   /**
    * Can be a parameter-, header-, cookie, client secret, password, or private key.
    */
   @Column(DataType.BLOB)
-  secret: Buffer;
+  secret?: Buffer;
 
   /**
    * Used for the client-credentials flow.
    */
   @Column(DataType.STRING)
-  tokenUrl: string;
+  tokenUrl?: string;
 
   /**
    * Used for the client-credentials flow.
    */
   @Column(DataType.STRING)
-  scope: string;
+  scope?: string;
 
   /**
    * Used for the client-certificate flow.
    */
   @Column(DataType.TEXT)
-  ca: string;
+  ca?: string;
 
   /**
    * The client-credentials access token used to authenticate outgoing requests.
    */
   @Column(DataType.BLOB)
-  accessToken: Buffer;
+  accessToken?: Buffer;
 
   /**
    * When the client-credentials `accessToken` expires.
    */
   @Column(DataType.DATE)
-  expiresAt: Date;
+  expiresAt?: Date;
 
   @ForeignKey(() => App)
   @AllowNull(false)
   @Column(DataType.INTEGER)
-  AppId: number;
+  AppId!: number;
 
   @BelongsTo(() => App)
-  App: Awaited<App>;
+  App?: Awaited<App>;
 
   @CreatedAt
-  created: Date;
+  created!: Date;
 
   @UpdatedAt
-  updated: Date;
+  updated!: Date;
 }

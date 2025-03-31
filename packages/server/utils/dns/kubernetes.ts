@@ -257,6 +257,7 @@ async function createIngressFunction(): Promise<
     const secretName = generateSSLSecretName(domain);
 
     if (!customSSL && issuerAnnotationKey) {
+      // @ts-expect-error 2322 undefined is not assignable to type (strictNullChecks)
       annotations[issuerAnnotationKey] = issuerAnnotationValue;
     }
 
@@ -305,7 +306,7 @@ async function createIngressFunction(): Promise<
         config,
       );
     } catch (error) {
-      if (axios.isAxiosError(error) && error.response.status !== 409) {
+      if (axios.isAxiosError(error) && error.response?.status !== 409) {
         throw error;
       }
       logger.warn(`Conflict registering ingress ${name}`);
@@ -329,7 +330,7 @@ async function createIngressFunction(): Promise<
             },
           );
         } catch (err) {
-          if (axios.isAxiosError(err) && err.response.status !== 422) {
+          if (axios.isAxiosError(err) && err.response?.status !== 422) {
             throw err;
           }
 
@@ -376,7 +377,7 @@ async function createSSLSecretFunction(): Promise<
     try {
       await axios.post(url, secret, config);
     } catch (error) {
-      if (axios.isAxiosError(error) && error.response.status !== 409) {
+      if (axios.isAxiosError(error) && error.response?.status !== 409) {
         throw error;
       }
       logger.warn(`Conflict registering secret ${name}`);
@@ -473,17 +474,21 @@ export async function restoreDNS(): Promise<void> {
 
   for await (const { domain } of iterTable(App, {
     attributes: ['domain'],
+    // TODO: does changing null to undefined break this query?
+    // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
     where: { [Op.and]: [{ domain: { [Op.not]: null } }, { domain: { [Op.not]: '' } }] },
   })) {
-    await createIngress(domain);
+    await createIngress(domain!);
   }
 
   for await (const { domain } of iterTable(AppCollection, {
     attributes: ['domain'],
+    // TODO: does changing null to undefined break this query?
+    // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
     where: { [Op.and]: [{ domain: { [Op.not]: null } }, { domain: { [Op.not]: '' } }] },
   })) {
-    await createIngress(domain);
-    if (!domain.startsWith('www.')) {
+    await createIngress(domain!);
+    if (!domain!.startsWith('www.')) {
       await createIngress(`www.${domain}`, false, domain);
     }
   }

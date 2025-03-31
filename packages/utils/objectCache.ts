@@ -13,7 +13,7 @@ export function objectCache<T, K = string>(factory: (id: K) => T): (id: K) => T 
 
   return (id) => {
     if (cache.has(id)) {
-      return cache.get(id);
+      return cache.get(id)!;
     }
     const item = factory(id);
     cache.set(id, item);

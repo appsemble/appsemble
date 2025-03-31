@@ -1,5 +1,6 @@
 import {
   AppsembleError,
+  assertKoaCondition,
   handleValidatorResult,
   updateCompanionContainers,
   uploadToBuffer,
@@ -50,6 +51,13 @@ export async function createApp(ctx: Context): Promise<void> {
     },
   } = ctx;
 
+  const organization = await Organization.findByPk(OrganizationId, {
+    attributes: {
+      include: ['id', 'name', 'updated', [literal('"Organization".icon IS NOT NULL'), 'hasIcon']],
+    },
+  });
+  assertKoaCondition(organization != null, ctx, 404, 'Organization not found.');
+
   let result: Partial<App>;
 
   await checkUserOrganizationPermissions({
@@ -63,7 +71,7 @@ export async function createApp(ctx: Context): Promise<void> {
 
     handleValidatorResult(
       ctx,
-      openApi.validate(definition, openApi.document.components.schemas.AppDefinition, {
+      openApi!.validate(definition, openApi!.document.components!.schemas!.AppDefinition, {
         throw: false,
       }),
       'App validation failed',
@@ -120,19 +128,18 @@ export async function createApp(ctx: Context): Promise<void> {
 
     let record: App;
     try {
+      let rec: App | undefined;
       await transactional(async (transaction) => {
-        record = await App.create(result, { transaction });
+        rec = await App.create(result, { transaction });
 
-        record.AppSnapshots = [
-          await AppSnapshot.create({ AppId: record.id, yaml }, { transaction }),
-        ];
+        rec.AppSnapshots = [await AppSnapshot.create({ AppId: rec.id, yaml }, { transaction })];
 
-        record.AppScreenshots = screenshots?.length
-          ? await createAppScreenshots(record.id, screenshots, transaction, ctx)
+        rec.AppScreenshots = screenshots?.length
+          ? await createAppScreenshots(rec.id, screenshots, transaction, ctx)
           : [];
 
-        record.AppReadmes = readmes?.length
-          ? await createAppReadmes(record.id, readmes, transaction)
+        rec.AppReadmes = readmes?.length
+          ? await createAppReadmes(rec.id, readmes, transaction)
           : [];
 
         if (dryRun === 'true') {
@@ -141,6 +148,7 @@ export async function createApp(ctx: Context): Promise<void> {
           throw new AppsembleError('Dry run');
         }
       });
+      record = rec!;
       if (record.definition.cron && record.definition.security?.cron) {
         const identifier = Math.random().toString(36).slice(2);
         const cronEmail = `cron-${identifier}@example.com`;
@@ -169,14 +177,11 @@ export async function createApp(ctx: Context): Promise<void> {
       );
     }
 
-    record.Organization = await Organization.findByPk(record.OrganizationId, {
-      attributes: {
-        include: ['id', 'name', 'updated', [literal('"Organization".icon IS NOT NULL'), 'hasIcon']],
-      },
-    });
+    record.Organization = organization;
     ctx.body = record.toJSON();
     ctx.status = 201;
   } catch (error: unknown) {
+    // @ts-expect-error Messed up
     handleAppValidationError(ctx, error as Error, result);
   }
 }

@@ -13,13 +13,13 @@ export async function completeTraining(ctx: Context): Promise<void> {
   assertKoaCondition(training != null, ctx, 404, 'Training not found');
 
   const alreadyCompleted = await TrainingCompleted.findOne({
-    where: { TrainingId: trainingId, UserId: user.id },
+    where: { TrainingId: trainingId, UserId: user?.id },
   });
   assertKoaCondition(alreadyCompleted == null, ctx, 409, 'Training has already been completed');
 
   await TrainingCompleted.create({
     TrainingId: trainingId,
-    UserId: user.id,
+    UserId: user?.id,
   });
 
   ctx.status = 201;

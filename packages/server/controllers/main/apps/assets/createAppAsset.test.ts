@@ -211,7 +211,7 @@ describe('createAppAsset', () => {
       createFormData({ file: Buffer.from('Test asset') }),
       { params: { seed: 'true' } },
     );
-    const asset = await Asset.findByPk(response.data.id);
+    const asset = (await Asset.findByPk(response.data.id))!;
 
     expect(asset.AppMemberId).toBeNull();
     expect(response).toMatchInlineSnapshot(
@@ -227,13 +227,13 @@ describe('createAppAsset', () => {
     `,
     );
 
-    const seedAsset = await Asset.findOne({
+    const seedAsset = (await Asset.findOne({
       where: {
         AppId: app.id,
         seed: true,
         ephemeral: false,
       },
-    });
+    }))!;
     expect(seedAsset.dataValues).toStrictEqual(
       expect.objectContaining({
         id: expect.any(String),
@@ -261,7 +261,7 @@ describe('createAppAsset', () => {
       `/api/apps/${app.id}/assets?seed=true`,
       createFormData({ file: Buffer.from('Test asset') }),
     );
-    const asset = await Asset.findByPk(response.data.id);
+    const asset = (await Asset.findByPk(response.data.id))!;
 
     expect(asset.AppMemberId).toBeNull();
     expect(response).toMatchInlineSnapshot(
@@ -277,13 +277,13 @@ describe('createAppAsset', () => {
     `,
     );
 
-    const seedAsset = await Asset.findOne({
+    const seedAsset = (await Asset.findOne({
       where: {
         AppId: app.id,
         seed: true,
         ephemeral: false,
       },
-    });
+    }))!;
     expect(seedAsset.dataValues).toStrictEqual(
       expect.objectContaining({
         id: expect.any(String),
@@ -303,13 +303,13 @@ describe('createAppAsset', () => {
       }),
     );
 
-    const ephemeralAsset = await Asset.findOne({
+    const ephemeralAsset = (await Asset.findOne({
       where: {
         AppId: app.id,
         seed: false,
         ephemeral: true,
       },
-    });
+    }))!;
     expect(ephemeralAsset.dataValues).toStrictEqual(
       expect.objectContaining({
         id: expect.any(String),

@@ -245,7 +245,7 @@ describe('exportApp', () => {
       'icon.png',
     ]);
 
-    expect(await archive.file('app-definition.yaml').async('text')).toMatchInlineSnapshot(
+    expect(await archive.file('app-definition.yaml')?.async('text')).toMatchInlineSnapshot(
       `
         "name: Test App
         defaultPage: Test Page
@@ -254,19 +254,19 @@ describe('exportApp', () => {
         "
       `,
     );
-    expect(await archive.file('theme/core/index.css').async('text')).toMatchInlineSnapshot(`
+    expect(await archive.file('theme/core/index.css')?.async('text')).toMatchInlineSnapshot(`
       "
               * {
                 color: var(--primary-color)
               }"
     `);
-    expect(await archive.file('theme/shared/index.css').async('text')).toMatchInlineSnapshot(`
+    expect(await archive.file('theme/shared/index.css')?.async('text')).toMatchInlineSnapshot(`
       "
               * {
                 color: var(--link-color)
               }"
     `);
-    expect(await archive.file('i18n/en.json').async('text')).toMatchInlineSnapshot(
+    expect(await archive.file('i18n/en.json')?.async('text')).toMatchInlineSnapshot(
       '"[{"test":"test"}]"',
     );
   });
@@ -346,7 +346,7 @@ describe('exportApp', () => {
       'icon.png',
     ]);
 
-    expect(await archive.file('app-definition.yaml').async('text')).toMatchInlineSnapshot(
+    expect(await archive.file('app-definition.yaml')?.async('text')).toMatchInlineSnapshot(
       `
         "name: Test App
         defaultPage: Test Page
@@ -355,28 +355,28 @@ describe('exportApp', () => {
         "
       `,
     );
-    expect(await archive.file('theme/core/index.css').async('text')).toMatchInlineSnapshot(`
+    expect(await archive.file('theme/core/index.css')?.async('text')).toMatchInlineSnapshot(`
       "
               * {
                 color: var(--primary-color)
               }"
     `);
-    expect(await archive.file('theme/shared/index.css').async('text')).toMatchInlineSnapshot(`
+    expect(await archive.file('theme/shared/index.css')?.async('text')).toMatchInlineSnapshot(`
       "
               * {
                 color: var(--link-color)
               }"
     `);
-    expect(await archive.file('i18n/en.json').async('text')).toMatchInlineSnapshot(
+    expect(await archive.file('i18n/en.json')?.async('text')).toMatchInlineSnapshot(
       '"[{"test":"test"}]"',
     );
-    expect(await archive.file('README.md').async('nodebuffer')).toStrictEqual(
+    expect(await archive.file('README.md')?.async('nodebuffer')).toStrictEqual(
       Buffer.from('Default'),
     );
-    expect(await archive.file('README.en.md').async('nodebuffer')).toStrictEqual(
+    expect(await archive.file('README.en.md')?.async('nodebuffer')).toStrictEqual(
       Buffer.from('English'),
     );
-    expect(await archive.file('README.nl.md').async('nodebuffer')).toStrictEqual(
+    expect(await archive.file('README.nl.md')?.async('nodebuffer')).toStrictEqual(
       Buffer.from('Dutch'),
     );
   });
@@ -471,7 +471,7 @@ describe('exportApp', () => {
       'icon.png',
     ]);
 
-    expect(await archive.file('app-definition.yaml').async('text')).toMatchInlineSnapshot(
+    expect(await archive.file('app-definition.yaml')?.async('text')).toMatchInlineSnapshot(
       `
         "name: Test App
         defaultPage: Test Page
@@ -480,28 +480,28 @@ describe('exportApp', () => {
         "
       `,
     );
-    expect(await archive.file('theme/core/index.css').async('text')).toMatchInlineSnapshot(`
+    expect(await archive.file('theme/core/index.css')?.async('text')).toMatchInlineSnapshot(`
       "
               * {
                 color: var(--primary-color)
               }"
     `);
-    expect(await archive.file('theme/shared/index.css').async('text')).toMatchInlineSnapshot(`
+    expect(await archive.file('theme/shared/index.css')?.async('text')).toMatchInlineSnapshot(`
       "
               * {
                 color: var(--link-color)
               }"
     `);
-    expect(await archive.file('i18n/en.json').async('text')).toMatchInlineSnapshot(
+    expect(await archive.file('i18n/en.json')?.async('text')).toMatchInlineSnapshot(
       '"[{"test":"test"}]"',
     );
-    expect(await archive.file('screenshots/0.png').async('nodebuffer')).toStrictEqual(
+    expect(await archive.file('screenshots/0.png')?.async('nodebuffer')).toStrictEqual(
       await readFixture('standing.png'),
     );
-    expect(await archive.file('screenshots/en/0.png').async('nodebuffer')).toStrictEqual(
+    expect(await archive.file('screenshots/en/0.png')?.async('nodebuffer')).toStrictEqual(
       await readFixture('en-standing.png'),
     );
-    expect(await archive.file('screenshots/nl/0.png').async('nodebuffer')).toStrictEqual(
+    expect(await archive.file('screenshots/nl/0.png')?.async('nodebuffer')).toStrictEqual(
       await readFixture('nl-standing.png'),
     );
   });
@@ -567,7 +567,7 @@ describe('exportApp', () => {
       'assets/nodejs-logo.avif',
     ]);
 
-    expect(await archive.file('app-definition.yaml').async('text')).toMatchInlineSnapshot(
+    expect(await archive.file('app-definition.yaml')?.async('text')).toMatchInlineSnapshot(
       `
         "name: Test App
         defaultPage: Test Page
@@ -576,19 +576,19 @@ describe('exportApp', () => {
         "
       `,
     );
-    expect(await archive.file('theme/core/index.css').async('text')).toMatchInlineSnapshot(`
+    expect(await archive.file('theme/core/index.css')?.async('text')).toMatchInlineSnapshot(`
       "
             * {
               color: var(--primary-color)
             }"
     `);
-    expect(await archive.file('theme/shared/index.css').async('text')).toMatchInlineSnapshot(`
+    expect(await archive.file('theme/shared/index.css')?.async('text')).toMatchInlineSnapshot(`
       "
             * {
               color: var(--link-color)
             }"
     `);
-    expect(await archive.file('assets/nodejs-logo.avif').async('nodebuffer')).toStrictEqual(
+    expect(await archive.file('assets/nodejs-logo.avif')?.async('nodebuffer')).toStrictEqual(
       await sharp(await readFixture('nodejs-logo.png'))
         .toFormat('avif')
         .toBuffer(),
@@ -672,7 +672,7 @@ describe('exportApp', () => {
       'resources/testResource.json',
     ]);
 
-    expect(await archive.file('app-definition.yaml').async('text')).toMatchInlineSnapshot(
+    expect(await archive.file('app-definition.yaml')?.async('text')).toMatchInlineSnapshot(
       `
         "name: Test App
         defaultPage: Test Page
@@ -698,22 +698,22 @@ describe('exportApp', () => {
         "
       `,
     );
-    expect(await archive.file('theme/core/index.css').async('text')).toMatchInlineSnapshot(`
+    expect(await archive.file('theme/core/index.css')?.async('text')).toMatchInlineSnapshot(`
       "
             * {
               color: var(--primary-color)
             }"
     `);
-    expect(await archive.file('theme/shared/index.css').async('text')).toMatchInlineSnapshot(`
+    expect(await archive.file('theme/shared/index.css')?.async('text')).toMatchInlineSnapshot(`
       "
             * {
               color: var(--link-color)
             }"
     `);
-    expect(await archive.file('i18n/en.json').async('text')).toMatchInlineSnapshot(
+    expect(await archive.file('i18n/en.json')?.async('text')).toMatchInlineSnapshot(
       '"[{"test":"test"}]"',
     );
-    expect(await archive.file('resources/testResource.json').async('text')).toMatchInlineSnapshot(
+    expect(await archive.file('resources/testResource.json')?.async('text')).toMatchInlineSnapshot(
       '"[{"foo":"bar","id":1,"$created":"1970-01-01T00:00:00.000Z","$updated":"1970-01-01T00:00:00.000Z","$clonable":false,"$seed":false}]"',
     );
   });

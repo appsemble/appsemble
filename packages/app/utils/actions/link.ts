@@ -26,6 +26,7 @@ export const link: ActionCreator<'link'> = ({
         (!Array.isArray(to) ||
           (Array.isArray(to) && to.every((entry) => typeof entry === 'object')));
 
+      // @ts-expect-error 2322 undefined is not assignable to type (strictNullChecks)
       let [toBase, toSub]: [string, string] = [undefined, undefined];
       if (isRemappedLink) {
         const remappedLink = remap(to as Remapper, data);
@@ -34,26 +35,28 @@ export const link: ActionCreator<'link'> = ({
         }
         [toBase, toSub] = [].concat(remappedLink ?? pages[0].name);
       } else {
+        // @ts-expect-error 2769 No overload matches this call (strictNullChecks)
         [toBase, toSub] = [].concat(to);
       }
 
       const toPage = findPageByName(pages, toBase);
 
-      let subPage: SubPageDefinition;
+      let subPage: SubPageDefinition | null = null;
       let index: number;
 
       if (toPage?.type === 'tabs' && toPage?.tabs) {
         subPage = toPage?.tabs?.find(({ name }) => name === toSub) ?? toPage.tabs[0];
-        index = toPage.tabs.findIndex(({ name }) => name === subPage.name);
+        index = toPage.tabs.findIndex(({ name }) => name === subPage?.name);
       }
 
       if (toPage == null || (toSub && subPage == null)) {
+        // @ts-expect-error 2769 No overload matches this call (strictNullChecks)
         throw new Error(`Invalid link reference ${[].concat(to).join('/')}`);
       }
 
       const normalizedPageName = normalize(toPage.name);
       const translatedPageName = normalize(
-        getAppMessage({
+        getAppMessage?.({
           id: `pages.${normalizedPageName}`,
           defaultMessage: normalizedPageName,
         }).format() as string,
@@ -70,7 +73,8 @@ export const link: ActionCreator<'link'> = ({
         ...(subPage
           ? [
               normalize(
-                getAppMessage({
+                getAppMessage?.({
+                  // @ts-expect-error 2454 Variable 'index' is used before being assigned - Severe
                   id: `pages.${normalizedPageName}.tabs.${index}`,
                   defaultMessage: normalize(
                     typeof subPage.name === 'string' ? subPage.name : remap(subPage.name, data),
@@ -91,7 +95,7 @@ export const link: ActionCreator<'link'> = ({
       if (urlRegex.test(target)) {
         window.open(target, '_blank', 'noopener,noreferrer');
       } else {
-        navigate(target, data ?? {});
+        navigate?.(target, data ?? {});
       }
     },
     { href },
@@ -100,14 +104,14 @@ export const link: ActionCreator<'link'> = ({
 
 export const back: ActionCreator<'link.back'> = ({ navigate }) => [
   (data) => {
-    navigate(-1);
+    navigate?.(-1);
     return data;
   },
 ];
 
 export const next: ActionCreator<'link.next'> = ({ navigate }) => [
   (data) => {
-    navigate(+1);
+    navigate?.(+1);
     return data;
   },
 ];

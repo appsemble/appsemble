@@ -69,6 +69,7 @@ describe('detectLocale', () => {
   const tests: [string[], string[], string][] = [
     [['en'], ['en'], 'en'],
     [['en', 'en-US'], ['en', 'en-US'], 'en-us'],
+    // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
     [['nl'], ['en', 'en-US'], undefined],
 
     // XXX The following need to be handled by the sorting algorithm in `sortLocales()`,

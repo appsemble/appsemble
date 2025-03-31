@@ -45,15 +45,18 @@ export const WebcamImageUpload = forwardRef<HTMLVideoElement, WebcamImageUploadP
     const { pristine } = useSimpleForm();
     const [showVideo, setShowVideo] = useState<boolean>(false);
 
-    useImperativeHandle(ref, () => videoRef.current);
+    useImperativeHandle(ref, () => videoRef.current!);
 
     useEffect(() => {
+      if (!clickButtonRef.current) {
+        return;
+      }
       clickButtonRef.current.disabled = true;
     }, [clickButtonRef]);
     const startWebcam = useCallback(async () => {
       try {
         setShowVideo(true);
-        clickButtonRef.current.disabled = false;
+        clickButtonRef.current!.disabled = false;
         const mediaStream = await navigator.mediaDevices.getUserMedia?.({ video: true });
         setStream(mediaStream);
         if (videoRef.current) {
@@ -75,7 +78,7 @@ export const WebcamImageUpload = forwardRef<HTMLVideoElement, WebcamImageUploadP
         }
         setStream(null);
         pristine.picture = false;
-        clickButtonRef.current.disabled = true;
+        clickButtonRef.current!.disabled = true;
       }
     }, [stream, pristine]);
 
@@ -89,6 +92,9 @@ export const WebcamImageUpload = forwardRef<HTMLVideoElement, WebcamImageUploadP
           context.drawImage(videoRef.current, 0, 0, canvas.width, canvas.height);
           stopWebcam();
           canvas.toBlob((blob) => {
+            if (!blob) {
+              return;
+            }
             onCapture(blob);
           }, 'image/png');
         }

@@ -33,10 +33,10 @@ function httpErrorToString(error: AxiosError): string {
     chalk.blue.bold('Request:'),
     highlight(
       [
-        `${config.method.toUpperCase()} ${axios.getUri(config)} HTTP/${
+        `${config?.method?.toUpperCase()} ${axios.getUri(config)} HTTP/${
           request?.res?.httpVersion ?? '1.1'
         }`,
-        ...Object.entries(config.headers)
+        ...Object.entries(config?.headers ?? {})
           .map(([key, value]) => [headerCase(key), value])
           .map(([key, value]) => `${key}: ${key === 'Authorization' ? 'xxxxxxxxxx' : value}`)
           .sort(),
@@ -66,11 +66,13 @@ function httpErrorToString(error: AxiosError): string {
 function toString(info: TransformableInfo): string {
   if (info instanceof Error) {
     if ('sql' in info) {
-      return info.stack.replace(/^Error/, `${info.sql}\n${info.name}: ${info.message}`);
+      // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
+      return info.stack?.replace(/^Error/, `${info.sql}\n${info.name}: ${info.message}`);
     }
     if (axios.isAxiosError(info)) {
       return httpErrorToString(info);
     }
+    // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
     return info.stack;
   }
   if (typeof info.message === 'string') {

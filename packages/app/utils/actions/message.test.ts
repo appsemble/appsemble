@@ -8,6 +8,7 @@ describe('message', () => {
     const showMessage = vi.fn();
     const action = createTestAction({
       definition: { type: 'message', body: '' },
+      // @ts-expect-error Messed up
       remap,
       showMessage,
     });
@@ -19,6 +20,7 @@ describe('message', () => {
     const showMessage = vi.fn();
     const action = createTestAction({
       definition: { type: 'message', body: { 'string.case': 'upper' } },
+      // @ts-expect-error Messed up
       remap,
       showMessage,
     });
@@ -41,6 +43,7 @@ describe('message', () => {
         dismissable: true,
         timeout: 10,
       },
+      // @ts-expect-error Messed up
       remap,
       showMessage,
     });

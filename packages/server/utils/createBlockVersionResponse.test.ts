@@ -126,9 +126,10 @@ describe('Create block version response', () => {
       wildcardActions: false,
       visibility: 'public',
     });
+    // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
     user = null;
     const response = await createBlockVersionResponse(
-      { user } as any,
+      { user: null } as any,
       [blockVersion],
       blockVersionMapper,
     );

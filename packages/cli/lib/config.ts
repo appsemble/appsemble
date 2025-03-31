@@ -23,17 +23,13 @@ import { type Configuration } from 'webpack';
  */
 export async function getProjectBuildConfig(dir: string): Promise<ProjectBuildConfig> {
   const explorer = cosmiconfig('appsemble', { stopDir: dir });
-  const found = await explorer.search(dir);
+  const found = (await explorer.search(dir)) ?? (await explorer.search(dirname(dir)));
 
-  let foundInParent;
   if (!found) {
-    foundInParent = await explorer.search(dirname(dir));
-    if (!foundInParent) {
-      throw new AppsembleError(`No Appsemble configuration file found searching ${dir}`);
-    }
+    throw new AppsembleError(`No Appsemble configuration file found searching ${dir}`);
   }
 
-  const { config, filepath } = found || foundInParent;
+  const { config, filepath } = found;
   logger.info(`Found configuration file: ${filepath}`);
 
   const [pkg] = await readData<PackageJson>(join(dir, 'package.json'));
@@ -45,7 +41,7 @@ export async function getProjectBuildConfig(dir: string): Promise<ProjectBuildCo
     );
   }
 
-  let longDescription: string;
+  let longDescription: string | undefined;
   if (existsSync(join(dir, 'README.md'))) {
     longDescription = await readFile(join(dir, 'README.md'), 'utf8');
   }
@@ -80,7 +76,7 @@ export async function getProjectsBuildConfigs(root: string): Promise<ProjectBuil
       // Ignore non-project workspaces.
       .map((p) => p.catch((): null => null)),
   );
-  return projectBuildConfigs.filter(Boolean);
+  return projectBuildConfigs.filter((x) => x != null);
 }
 
 /**
@@ -97,6 +93,8 @@ function getProgram(path: string): ts.Program {
   } as ts.FormatDiagnosticsHost;
 
   const tsConfigPath = ts.findConfigFile(path, ts.sys.fileExists);
+  // @ts-expect-error 2345 argument of type is not assignable to parameter of type
+  // (strictNullChecks)
   const { config, error } = ts.readConfigFile(tsConfigPath, ts.sys.readFile);
 
   if (error) {
@@ -147,7 +145,9 @@ function getProgram(path: string): ts.Program {
  * @param node The node for which to get the tsdoc.
  * @returns The tsdoc comment as a string, if present.
  */
-function getNodeComments(checker: ts.TypeChecker, node: ts.TypeElement): string {
+function getNodeComments(checker: ts.TypeChecker, node: ts.TypeElement): string | undefined {
+  // @ts-expect-error 2345 argument of type is not assignable to parameter of type
+  // (strictNullChecks)
   const symbol = checker.getSymbolAtLocation(node.name);
   if (!symbol) {
     return;
@@ -178,8 +178,8 @@ function getNodeComments(checker: ts.TypeChecker, node: ts.TypeElement): string 
 function processInterface<T>(
   iface: ts.InterfaceDeclaration,
   checker: ts.TypeChecker,
-  convert: (name: string, description: string) => [string, T],
-): Record<string, T> {
+  convert: (name?: string, description?: string) => [string, T],
+): Record<string, T> | undefined {
   if (!iface?.members.length) {
     return;
   }
@@ -284,7 +284,10 @@ function processEvents(
  * @param iface The interface node from which to extract parameters.
  * @returns The JSON schema for the project parameters.
  */
-function processParameters(program: ts.Program, iface: ts.InterfaceDeclaration): Schema {
+function processParameters(
+  program: ts.Program,
+  iface: ts.InterfaceDeclaration,
+): Schema | undefined {
   if (!iface) {
     return;
   }
@@ -322,6 +325,7 @@ function processMessages(
   iface: ts.InterfaceDeclaration,
   checker: ts.TypeChecker,
 ): ProjectImplementations['messages'] {
+  // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
   return processInterface(iface, checker, (name, description) => [name, { description }]);
 }
 
@@ -338,11 +342,11 @@ export function getProjectImplementations(buildConfig: ProjectBuildConfig): Proj
   const program = getProgram(buildConfig.dir);
   const checker = program.getTypeChecker();
 
-  let actionInterface: ts.InterfaceDeclaration;
-  let eventEmitterInterface: ts.InterfaceDeclaration;
-  let eventListenerInterface: ts.InterfaceDeclaration;
-  let messagesInterface: ts.InterfaceDeclaration;
-  let parametersInterface: ts.InterfaceDeclaration;
+  let actionInterface: ts.InterfaceDeclaration | undefined;
+  let eventEmitterInterface: ts.InterfaceDeclaration | undefined;
+  let eventListenerInterface: ts.InterfaceDeclaration | undefined;
+  let messagesInterface: ts.InterfaceDeclaration | undefined;
+  let parametersInterface: ts.InterfaceDeclaration | undefined;
 
   for (const sourceFile of program.getSourceFiles()) {
     const fileName = relative(process.cwd(), sourceFile.fileName);
@@ -362,6 +366,8 @@ export function getProjectImplementations(buildConfig: ProjectBuildConfig): Proj
       if (mod.name.text !== '@appsemble/sdk') {
         return;
       }
+      // @ts-expect-error 2345 argument of type is not assignable to parameter of type
+      // (strictNullChecks)
       ts.forEachChild(mod.body, (iface) => {
         // Appsemble only uses module interface augmentation.
         if (!ts.isInterfaceDeclaration(iface)) {
@@ -413,19 +419,20 @@ export function getProjectImplementations(buildConfig: ProjectBuildConfig): Proj
 
   return {
     actions:
+      // @ts-expect-error 2454 Variable used before it was assigned
       'actions' in buildConfig ? buildConfig.actions : processActions(actionInterface, checker),
     events:
-      'events' in buildConfig
-        ? buildConfig.events
-        : processEvents(eventListenerInterface, eventEmitterInterface, checker),
+      // @ts-expect-error 2454 Variable used before it was assigned
+      // eslint-disable-next-line prettier/prettier
+      'events' in buildConfig ? buildConfig.events : processEvents(eventListenerInterface, eventEmitterInterface, checker),
     parameters:
-      'parameters' in buildConfig
-        ? buildConfig.parameters
-        : processParameters(program, parametersInterface),
+      // @ts-expect-error 2454 Variable used before it was assigned
+      // eslint-disable-next-line prettier/prettier
+      'parameters' in buildConfig ? buildConfig.parameters : processParameters(program, parametersInterface),
     messages:
-      'messages' in buildConfig
-        ? buildConfig.messages
-        : processMessages(messagesInterface, checker),
+      // @ts-expect-error 2454 Variable used before it was assigned
+      // eslint-disable-next-line prettier/prettier
+      'messages' in buildConfig ? buildConfig.messages : processMessages(messagesInterface, checker),
   };
 }
 

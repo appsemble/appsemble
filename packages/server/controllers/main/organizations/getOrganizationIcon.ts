@@ -22,10 +22,10 @@ export async function getOrganizationIcon(ctx: Context): Promise<void> {
     background: background as string,
     cache: isEqual(parseISO(updated as string), organization.updated),
     fallback: 'building-solid.png',
-    height: size && Number.parseInt(size as string),
+    height: size ? Number.parseInt(size as string) : undefined,
     icon: organization.icon,
     maskable: Boolean(maskable),
     raw: Boolean(raw),
-    width: size && Number.parseInt(size as string),
+    width: size ? Number.parseInt(size as string) : undefined,
   });
 }

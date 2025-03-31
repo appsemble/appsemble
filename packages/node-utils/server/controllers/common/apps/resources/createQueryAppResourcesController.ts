@@ -76,7 +76,7 @@ export function createQueryAppResourcesController(options: Options): Middleware 
       );
 
       ctx.body = resources.map((resource) =>
-        remap(resourceDefinition.views[view].remap, resource, context),
+        remap(resourceDefinition.views?.[view].remap ?? null, resource, context),
       );
       return;
     }

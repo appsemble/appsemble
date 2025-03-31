@@ -21,7 +21,7 @@ import { createJWTResponse } from '../../utils/createJWTResponse.js';
 import { GrantError, hasScope } from '../../utils/oauth2.js';
 
 function checkTokenRequestParameters(
-  query: Record<string, string[] | string>,
+  query: Record<string, string[] | string | undefined>,
   allowed: string[],
 ): Record<string, string> {
   for (const [key, value] of Object.entries(query)) {
@@ -66,7 +66,8 @@ export async function appsTokenHandler(ctx: Context): Promise<void> {
           scope: requestedScope,
         } = checkTokenRequestParameters(query, ['client_id', 'code', 'redirect_uri', 'scope']);
         try {
-          const referer = new URL(header.referer);
+          // May throw if the referer is not a valid URL, or if the referer header is missing.
+          const referer = new URL(header.referer!);
           const redirect = new URL(redirectUri);
           if (referer.origin !== redirect.origin) {
             throw new GrantError('invalid_request');
@@ -102,7 +103,7 @@ export async function appsTokenHandler(ctx: Context): Promise<void> {
       }
       case 'client_credentials': {
         const { scope: requestedScope } = checkTokenRequestParameters(query, ['scope']);
-        const authorization = /^Basic (.*)$/.exec(header.authorization);
+        const authorization = /^Basic (.*)$/.exec(header.authorization ?? '');
         if (!authorization) {
           throw new GrantError('invalid_client');
         }
@@ -140,6 +141,7 @@ export async function appsTokenHandler(ctx: Context): Promise<void> {
         const { refresh_token: token } = checkTokenRequestParameters(query, ['refresh_token']);
         try {
           const payload = jwt.verify(token, argv.secret) as JwtPayload;
+          // @ts-expect-error 2322 undefined is not assignable to type (strictNullChecks)
           ({ scope, sub } = payload);
           aud = payload.aud as string;
           refreshToken = true;
@@ -204,7 +206,7 @@ export async function appsTokenHandler(ctx: Context): Promise<void> {
           const role =
             appRole === ''
               ? (app.definition.security?.default?.role ??
-                Object.keys(app.definition.security?.roles)[0])
+                Object.keys(app.definition.security?.roles ?? {}).at(0))
               : appRole;
 
           if (!role) {
@@ -232,7 +234,7 @@ export async function appsTokenHandler(ctx: Context): Promise<void> {
                 GroupId: group.id,
                 demo: true,
                 AppId: app.id,
-                AppMemberId: appMember.id,
+                AppMemberId: appMember!.id,
               })),
               { transaction },
             );
@@ -242,7 +244,7 @@ export async function appsTokenHandler(ctx: Context): Promise<void> {
         }
 
         aud = clientId;
-        sub = appMember?.id;
+        sub = appMember!.id;
         scope = requestedScope;
         refreshToken = true;
         break;

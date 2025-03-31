@@ -18,7 +18,7 @@ export async function deleteAppMember(ctx: Context): Promise<void> {
 
   assertKoaCondition(appMember != null, ctx, 404, 'App member not found');
   assertKoaCondition(
-    appMemberId !== authSubject.id,
+    appMemberId !== authSubject!.id,
     ctx,
     401,
     'Cannot use this endpoint to delete your own account',

@@ -64,13 +64,13 @@ export async function indexHandler(ctx: Context): Promise<void> {
     customDomainAppCollection: appCollectionId ? { id: appCollectionId, realHost: host } : null,
   });
   const csp = makeCSP({
-    'report-uri': [reportUri],
+    'report-uri': [reportUri ?? false],
     // This is needed for Webpack.
     'connect-src':
       process.env.NODE_ENV === 'production'
-        ? [sentryDsn && 'https://sentry.io', sentryOrigin, "'self'", '127.0.0.1:*']
+        ? [sentryDsn ? 'https://sentry.io' : false, sentryOrigin ?? false, "'self'", '127.0.0.1:*']
         : ['*'],
-    'default-src': ["'self'", sentryOrigin],
+    'default-src': ["'self'", sentryOrigin ?? false],
     'img-src': ['blob:', 'data:', '*'],
     'script-src': [
       "'self'",

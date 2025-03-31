@@ -27,7 +27,7 @@ export async function pinAppToAppCollection(ctx: Context): Promise<void> {
 
   await checkUserOrganizationPermissions({
     context: ctx,
-    organizationId: aca.AppCollection.OrganizationId,
+    organizationId: aca.AppCollection!.OrganizationId,
     requiredPermissions: [OrganizationPermission.UpdateAppCollections],
   });
 

@@ -18,20 +18,20 @@ export class BlockMessages extends Model {
   @AllowNull(false)
   @ForeignKey(() => BlockVersion)
   @Column(DataType.UUID)
-  BlockVersionId: string;
+  BlockVersionId!: string;
 
   @PrimaryKey
   @AllowNull(false)
   @Column(DataType.STRING)
-  language: string;
+  language!: string;
 
   @AllowNull(false)
   @Column(DataType.JSON)
-  messages: Record<string, string>;
+  messages!: Record<string, string>;
 
   @CreatedAt
-  created: Date;
+  created!: Date;
 
   @UpdatedAt
-  updated: Date;
+  updated!: Date;
 }

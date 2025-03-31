@@ -265,7 +265,7 @@ describe('createQueryResources', () => {
     );
 
     const remappedResources = mockResources.map((resource) =>
-      remap(resourceDefinition.views.view.remap, resource, remapperContext),
+      remap(resourceDefinition.views?.view.remap ?? null, resource, remapperContext),
     );
 
     const middleware = createQueryAppResourcesController(options);
@@ -574,7 +574,7 @@ describe('createGetResourceById', () => {
     );
 
     const remappedResource = remap(
-      resourceDefinition.views.view.remap,
+      resourceDefinition.views?.view.remap ?? null,
       mockResource,
       remapperContext,
     );

@@ -4,6 +4,7 @@ import { type Context, type Middleware } from 'koa';
 export function createBlockAssetHandler({ getBlockAsset }: Options): Middleware {
   return async (ctx: Context) => {
     const {
+      // @ts-expect-error Messed up
       params: { filename, name, version },
     } = ctx;
 

@@ -233,7 +233,7 @@ function shared(env: string, { mode }: CliConfigOptions): Configuration {
  */
 export function createAppConfig(argv: CliConfigOptions): Configuration {
   const config = shared('app', argv);
-  config.plugins.push(
+  config.plugins?.push(
     new HtmlWebpackPlugin({
       template: fileURLToPath(new URL('app/error.html', packagesDir)),
       filename: 'error.html',
@@ -265,7 +265,7 @@ export function createAppConfig(argv: CliConfigOptions): Configuration {
 export function createStudioConfig(argv: CliConfigOptions): Configuration {
   const config = shared('studio', argv);
   if (argv.mode === 'production') {
-    config.plugins.push(
+    config.plugins?.push(
       new GenerateSW({
         // Some of our JavaScript assets are still too big to fit within the default cache limit.
         maximumFileSizeToCacheInBytes: 3 * 2 ** 20,

@@ -115,6 +115,6 @@ describe('removeAppFromAppCollection', () => {
     });
 
     expect(collection).not.toBeNull();
-    expect(collection?.Apps.map((app) => app.App.path)).toStrictEqual(['productivity-app']);
+    expect(collection?.Apps.map((app) => app.App!.path)).toStrictEqual(['productivity-app']);
   });
 });

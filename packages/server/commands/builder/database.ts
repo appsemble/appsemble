@@ -34,7 +34,7 @@ export function databaseBuilder(yargs: Argv): Argv {
         production && 'database-name',
         production && 'database-user',
         production && 'database-password',
-      ].filter(Boolean),
+      ].filter((x) => x !== false),
     })
     .option('s3-host', {
       desc: 'The host of the Amazon S3 compatible object storage server',

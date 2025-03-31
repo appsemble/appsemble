@@ -369,7 +369,7 @@ describe('callAppWebhook', () => {
         "foo": "bar",
       }
     `);
-    const resource = await Resource.findOne({ where: { AppId: app.id } });
+    const resource = (await Resource.findOne({ where: { AppId: app.id } }))!;
     expect(resource.toJSON()).toStrictEqual(
       expect.objectContaining({
         id: 1,
@@ -394,7 +394,7 @@ describe('callAppWebhook', () => {
 
       OK
     `);
-    const resource = await Resource.findOne({ where: { AppId: app.id } });
+    const resource = (await Resource.findOne({ where: { AppId: app.id } }))!;
     expect(resource.toJSON()).toStrictEqual(
       expect.objectContaining({
         id: 1,

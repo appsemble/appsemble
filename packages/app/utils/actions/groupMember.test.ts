@@ -60,6 +60,7 @@ describe('groupMemberInvite', () => {
         email: 'test2@example.com',
         role: 'Member',
       },
+      // @ts-expect-error 2322 undefined is not assignable to type (strictNullChecks)
       getAppMemberInfo: () => ({
         sub: undefined,
         name: '',
@@ -123,6 +124,7 @@ describe('groupMemberQuery', () => {
         type: 'group.member.query',
         id: 1,
       },
+      // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
       getAppMemberInfo: () => ({
         sub: undefined,
         name: '',
@@ -149,6 +151,7 @@ describe('GroupMemberDelete', () => {
         type: 'group.member.delete',
         id: 'random-id',
       },
+      // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
       getAppMemberInfo: () => ({
         sub: undefined,
         name: '',

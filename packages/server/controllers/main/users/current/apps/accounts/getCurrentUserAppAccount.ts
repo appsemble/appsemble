@@ -1,3 +1,4 @@
+import { assertKoaCondition } from '@appsemble/node-utils';
 import { type AppAccount } from '@appsemble/types';
 import { type Context } from 'koa';
 import { literal } from 'sequelize';
@@ -20,7 +21,11 @@ export async function getCurrentUserAppAccount(ctx: Context): Promise<void> {
     user: authSubject,
   } = ctx;
 
-  const { baseLanguage, language, query: includeOptions } = parseLanguage(ctx, ctx.query?.language);
+  const {
+    baseLanguage,
+    language,
+    query: includeOptions,
+  } = parseLanguage(ctx, ctx.query?.language ?? []);
 
   const app = await App.findByPk(appId, {
     attributes: {
@@ -47,7 +52,7 @@ export async function getCurrentUserAppAccount(ctx: Context): Promise<void> {
         attributes: {
           exclude: ['picture'],
         },
-        where: { UserId: authSubject.id },
+        where: { UserId: authSubject!.id },
         include: [
           {
             model: AppSamlAuthorization,
@@ -64,6 +69,7 @@ export async function getCurrentUserAppAccount(ctx: Context): Promise<void> {
       ...includeOptions,
     ],
   });
+  assertKoaCondition(app != null, ctx, 404, 'App not found');
 
   applyAppMessages(app, language, baseLanguage);
 

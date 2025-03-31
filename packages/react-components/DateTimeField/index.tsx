@@ -61,8 +61,11 @@ export const DateTimeField = forwardRef<HTMLInputElement, DateTimeFieldProps>(
   ) => {
     const { formatDate } = useIntl();
     const inputRef = useRef<HTMLInputElement>();
+    // eslint-disable-next-line @typescript-eslint/prefer-ts-expect-error
+    // @ts-ignore 2345 argument of type is not assignable to parameter of type
+    // (strictNullChecks)
     const combinedRef = useCombinedRefs(ref, inputRef);
-    const [picker, setPicker] = useState<flatpickr.default.Instance>(null);
+    const [picker, setPicker] = useState<flatpickr.default.Instance | null>(null);
 
     useEffect(() => {
       // @ts-expect-error https://github.com/flatpickr/flatpickr/pull/2857
@@ -110,7 +113,9 @@ export const DateTimeField = forwardRef<HTMLInputElement, DateTimeFieldProps>(
       const handlers = picker.config.onChange;
 
       const handleChange = ([val]: Date[]): void => {
-        onChange({ target: current, currentTarget: current }, iso ? val.toISOString() : val);
+        // eslint-disable-next-line @typescript-eslint/prefer-ts-expect-error
+        // @ts-ignore 2769 No overload matches this call (strictNullChecks)
+        onChange?.({ target: current, currentTarget: current }, iso ? val.toISOString() : val);
       };
 
       handlers.push(handleChange);

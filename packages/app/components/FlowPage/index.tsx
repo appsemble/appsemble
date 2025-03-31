@@ -93,6 +93,7 @@ export function FlowPage({
     getVariable,
     appMemberInfo,
     context: { name: pageDefinition.name },
+    // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
     locale: params.lang,
   };
 
@@ -116,8 +117,10 @@ export function FlowPage({
         ? generateLoopPrefix(prefix)
         : typeof steps?.[currentStep]?.name === 'string'
           ? steps?.[currentStep]?.name
-          : remap(steps?.[currentStep]?.name, stepsData, remapperContext),
+          : remap(steps?.[currentStep]?.name ?? null, stepsData, remapperContext),
   }).format() as string;
+  // @ts-expect-error 2345 argument of type is not assignable to parameter of type
+  // (strictNullChecks)
   useMeta(name === `{${id}}` ? null : name);
 
   useEffect(() => {
@@ -136,7 +139,7 @@ export function FlowPage({
     async (d: any): Promise<any> => {
       if (pageDefinition.type === 'loop') {
         applyRefs(null, stepRef);
-        const newData = { ...loopData[currentStep], ...d };
+        const newData = { ...loopData?.[currentStep], ...d };
         let stepData = stepsData;
         if (Array.isArray(stepData) && stepData.length > 0) {
           stepData.push(newData);
@@ -150,21 +153,22 @@ export function FlowPage({
       setData(d);
       return d;
     },
+    // @ts-expect-error 2454 Variable 'actions' is used before being assigned (strictNullChecks)
     [actions, currentStep, loopData, pageDefinition.type, setData, stepRef, stepsData],
   );
 
   const next = useCallback(
     // eslint-disable-next-line require-await
     async (d: any): Promise<any> => {
-      if (currentStep + 1 === steps.length) {
+      if (currentStep + 1 === steps?.length) {
         return finish(d);
       }
 
       if (pageDefinition.type === 'loop') {
         applyRefs((loopData as Record<string, any>)[currentStep + 1], stepRef);
-        const newData = { ...loopData[currentStep], ...d };
+        const newData = { ...loopData?.[currentStep], ...d };
         if (Array.isArray(stepsData) && stepsData.length > 0) {
-          setStepsData((previous: Object[]) => [...previous, newData]);
+          setStepsData((previous: Object[] | undefined) => [...(previous ?? []), newData]);
         } else {
           setStepsData([newData]);
         }
@@ -187,7 +191,7 @@ export function FlowPage({
       }
 
       if (pageDefinition.type === 'loop') {
-        stepsData.pop();
+        stepsData?.pop();
         applyRefs((loopData as Record<string, any>)[currentStep - 1], stepRef);
       } else {
         setData(d);
@@ -203,6 +207,7 @@ export function FlowPage({
       await actions.onFlowCancel(d);
       setData(d);
     },
+    // @ts-expect-error 2454 Variable 'actions' is used before being assigned (strictNullChecks)
     [actions, setData],
   );
 
@@ -211,7 +216,7 @@ export function FlowPage({
       if (typeof stepName !== 'string') {
         throw new TypeError(`Expected pagе to be a string, got: ${JSON.stringify(stepName)}`);
       }
-      const found = steps.findIndex((p) => p.name === stepName);
+      const found = steps?.findIndex((p) => p.name === stepName) ?? -1;
       if (found === -1) {
         throw new Error(`No matching page was found for ${stepName}`);
       }
@@ -254,11 +259,13 @@ export function FlowPage({
         prefixIndex,
         pushNotifications,
         ee,
+        // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
         pageReady: null,
         remap,
         params,
         showMessage,
         appMemberGroups,
+        // @ts-expect-error TODO: this shouldn't be an error
         addAppMemberGroup,
         getAppMemberInfo: () => appMemberInfoRef.current,
         passwordLogin,

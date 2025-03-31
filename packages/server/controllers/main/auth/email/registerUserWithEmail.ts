@@ -21,7 +21,7 @@ export async function registerUserWithEmail(ctx: Context): Promise<void> {
   const email = ctx.request.body.email.toLowerCase();
   const hashedPassword = await hash(password, 10);
   const key = randomBytes(40).toString('hex');
-  let user: User;
+  let user: User | undefined;
 
   try {
     await transactional(async (transaction) => {
@@ -31,6 +31,7 @@ export async function registerUserWithEmail(ctx: Context): Promise<void> {
       );
       await EmailAuthorization.create({ UserId: user.id, email, key }, { transaction });
     });
+    user = user!;
   } catch (error: unknown) {
     if (error instanceof UniqueConstraintError) {
       throwKoaError(ctx, 409, 'User with this email address already exists.');

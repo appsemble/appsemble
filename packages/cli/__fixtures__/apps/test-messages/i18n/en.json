@@ -1,5 +1,6 @@
 {
   "app": {
+    "description": "",
     "name": "Test App",
     "pages.test-page": "Test Page"
   }

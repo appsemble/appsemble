@@ -1226,6 +1226,7 @@ function combinePermissions(document: Document, steps: Path, resources: string[]
     }
     toAdd.add([base, 'all', actionPart].join(':'));
   }
+  // @ts-expect-error 18046 variable is of type unknown (strictNullChecks)
   const removing = [...toRemove].sort((a, b) => (a > b ? -1 : 0));
   for (const remove of removing) {
     document.deleteIn([...steps, remove]);

@@ -10,19 +10,19 @@ interface ErrorHandlerProps {
   /**
    * The fallback to render in case an error occurs rendering children.
    */
-  readonly fallback: ElementType<ErrorHandlerState | { resetErrorBoundary: () => void }>;
+  readonly fallback: ElementType<ErrorHandlerState & { resetErrorBoundary: () => void }>;
 }
 
 interface ErrorHandlerState {
   /**
    * The error that was thrown.
    */
-  error: Error;
+  error?: Error;
 
   /**
    * The Sentry event ID that has been generated.
    */
-  eventId: string;
+  eventId?: string;
 }
 
 /**
@@ -32,8 +32,8 @@ interface ErrorHandlerState {
  */
 class ErrorBoundary extends Component<ErrorHandlerProps, ErrorHandlerState> {
   state: ErrorHandlerState = {
-    error: null,
-    eventId: null,
+    error: undefined,
+    eventId: undefined,
   };
 
   componentDidCatch(error: Error, { componentStack }: ErrorInfo): void {
@@ -44,7 +44,7 @@ class ErrorBoundary extends Component<ErrorHandlerProps, ErrorHandlerState> {
   }
 
   resetErrorBoundary = (): void => {
-    this.setState({ error: null, eventId: null });
+    this.setState({ error: undefined, eventId: undefined });
   };
 
   render(): ReactNode {

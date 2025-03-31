@@ -195,7 +195,7 @@ export async function publishProject(
     await axios.post(url, form);
     logger.info(`Successfully published ${buildConfig.name}@${buildConfig.version} 🎉`);
   } catch (err: unknown) {
-    if (ignoreConflict && axios.isAxiosError(err) && err.response.status === 409) {
+    if (ignoreConflict && axios.isAxiosError(err) && err.response?.status === 409) {
       logger.warn(`${buildConfig.name}@${buildConfig.version} was already published.`);
       return;
     }

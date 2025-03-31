@@ -21,41 +21,41 @@ export class AppOAuth2Authorization extends Model {
    */
   @PrimaryKey
   @Column(DataType.STRING)
-  sub: string;
+  sub!: string;
 
   @PrimaryKey
   @ForeignKey(() => AppOAuth2Secret)
   @Column(DataType.INTEGER)
-  AppOAuth2SecretId: number;
+  AppOAuth2SecretId!: number;
 
   @BelongsTo(() => AppOAuth2Secret, { onDelete: 'CASCADE' })
-  AppOAuth2Secret: Awaited<AppOAuth2Secret>;
+  AppOAuth2Secret?: Awaited<AppOAuth2Secret>;
 
   /**
    * The access token assigned to Appsemble linked to the subject.
    */
   @AllowNull(false)
   @Column(DataType.TEXT)
-  accessToken: string;
+  accessToken!: string;
 
   /**
    * The expiration date of the access token.
    */
   @Column(DataType.DATE)
-  expiresAt: Date;
+  expiresAt?: Date;
 
   /**
    * The refresh token that may be used to refresh the access token.
    */
   @Column(DataType.TEXT)
-  refreshToken: string;
+  refreshToken?: string;
 
   /**
    * The email used on the OAuth2 provider.
    */
   @AllowNull(false)
   @Column(DataType.STRING)
-  email: string;
+  email!: string;
 
   /**
    * Whether the linked email is verified on the OAuth2 provider.
@@ -63,24 +63,24 @@ export class AppOAuth2Authorization extends Model {
   @Default(false)
   @AllowNull(false)
   @Column(DataType.BOOLEAN)
-  emailVerified: boolean;
+  emailVerified!: boolean;
 
   @CreatedAt
-  created: Date;
+  created!: Date;
 
   @UpdatedAt
-  updated: Date;
+  updated!: Date;
 
   /**
    * The id of the linked app user.
    */
   @ForeignKey(() => AppMember)
   @Column(DataType.UUID)
-  AppMemberId: string;
+  AppMemberId?: string;
 
   /**
    * The App user.
    */
   @BelongsTo(() => AppMember)
-  AppMember: Awaited<AppMember>;
+  AppMember!: Awaited<AppMember>;
 }

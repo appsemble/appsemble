@@ -276,9 +276,9 @@ describe('connectOAuth2Authorization', () => {
       },
     });
     await oauthAuthorization.reload();
-    const emailAuthorization = await EmailAuthorization.findOne({
+    const emailAuthorization = (await EmailAuthorization.findOne({
       where: { email: 'me@example.com' },
-    });
+    }))!;
     expect(emailAuthorization.UserId).toBe(oauthAuthorization.UserId);
   });
 });

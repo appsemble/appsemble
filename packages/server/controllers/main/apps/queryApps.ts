@@ -5,7 +5,11 @@ import { App, AppRating, Organization } from '../../../models/index.js';
 import { applyAppMessages, compareApps, parseLanguage } from '../../../utils/app.js';
 
 export async function queryApps(ctx: Context): Promise<void> {
-  const { baseLanguage, language, query: languageQuery } = parseLanguage(ctx, ctx.query?.language);
+  const {
+    baseLanguage,
+    language,
+    query: languageQuery,
+  } = parseLanguage(ctx, ctx.query?.language ?? []);
 
   const apps = await App.findAll({
     attributes: {

@@ -19,13 +19,16 @@ window.settings = {
   appControllerImplementations: {},
   blockManifests: [],
   pageManifests: {},
+  // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
   definition: null,
   demoMode: false,
   development: false,
   id: 42,
   languages: ['en', 'nl'],
   logins: [],
+  // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
   sentryDsn: null,
+  // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
   sentryEnvironment: null,
   showAppsembleLogin: false,
   showAppsembleOAuth2Login: true,

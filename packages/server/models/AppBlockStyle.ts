@@ -19,7 +19,7 @@ export class AppBlockStyle extends Model {
   @AllowNull(false)
   @ForeignKey(() => App)
   @Column(DataType.INTEGER)
-  AppId: number;
+  AppId!: number;
 
   /**
    * This refers to the organization and name of a block
@@ -30,17 +30,17 @@ export class AppBlockStyle extends Model {
   @PrimaryKey
   @AllowNull(false)
   @Column(DataType.STRING)
-  block: string;
+  block!: string;
 
   @Column({ type: DataType.TEXT })
-  style: string;
+  style?: string;
 
   @BelongsTo(() => App)
-  App: Awaited<App>;
+  App?: Awaited<App>;
 
   @CreatedAt
-  created: Date;
+  created!: Date;
 
   @UpdatedAt
-  updated: Date;
+  updated!: Date;
 }

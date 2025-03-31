@@ -33,7 +33,7 @@ export function Register({ onRegister }: RegisterProps): ReactNode {
     >
       <SimpleFormError>
         {({ error }) =>
-          axios.isAxiosError(error) && error.response.status === 409 ? (
+          axios.isAxiosError(error) && error.response?.status === 409 ? (
             <FormattedMessage {...messages.emailConflict} />
           ) : (
             <FormattedMessage {...messages.registerFailed} />
@@ -69,6 +69,8 @@ export function Register({ onRegister }: RegisterProps): ReactNode {
         required
       />
       <SimpleFormField
+        // eslint-disable-next-line @typescript-eslint/prefer-ts-expect-error
+        // @ts-ignore Messed up
         component={CheckboxField}
         name="subscribed"
         title={<FormattedMessage {...messages.newsletter} />}

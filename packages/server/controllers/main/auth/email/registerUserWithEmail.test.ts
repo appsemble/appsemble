@@ -48,11 +48,11 @@ describe('registerUserWithEmail', () => {
     `,
     );
 
-    const email = await EmailAuthorization.findByPk('test@example.com');
-    const user = await User.findByPk(email.UserId);
+    const email = (await EmailAuthorization.findByPk('test@example.com'))!;
+    const user = (await User.findByPk(email.UserId))!;
 
     expect(user.password).not.toBe('password');
-    expect(await compare(data.password, user.password)).toBe(true);
+    expect(await compare(data.password, user.password!)).toBe(true);
 
     expect(server.context.mailer.sendTranslatedEmail).toHaveBeenCalledWith({
       emailName: 'welcome',
@@ -99,8 +99,8 @@ describe('registerUserWithEmail', () => {
     `,
     );
 
-    const email = await EmailAuthorization.findByPk('test@example.com');
-    const user = await User.findByPk(email.UserId);
+    const email = (await EmailAuthorization.findByPk('test@example.com'))!;
+    const user = (await User.findByPk(email.UserId))!;
 
     expect(user.name).toBe('Me');
   });

@@ -24,10 +24,10 @@ https://gitlab.com/appsemble/appsemble/-/releases/${CI_COMMIT_TAG}`;
 
 export async function handler(): Promise<void> {
   const twitter = new TwitterApi({
-    appKey: TWITTER_CONSUMER_API_KEY,
-    appSecret: TWITTER_CONSUMER_API_KEY_SECRET,
-    accessToken: TWITTER_ACCESS_TOKEN,
-    accessSecret: TWITTER_ACCESS_TOKEN_SECRET,
+    appKey: TWITTER_CONSUMER_API_KEY!,
+    appSecret: TWITTER_CONSUMER_API_KEY_SECRET!,
+    accessToken: TWITTER_ACCESS_TOKEN!,
+    accessSecret: TWITTER_ACCESS_TOKEN_SECRET!,
   });
   logger.info('Tweeting:');
   logger.info(status);

@@ -20,47 +20,47 @@ export class SamlLoginRequest extends Model {
    */
   @PrimaryKey
   @Column(DataType.STRING)
-  id: string;
+  id!: string;
 
   /**
    * The OAuth2 scope the app requested in the login request.
    */
   @AllowNull(false)
   @Column(DataType.STRING)
-  scope: string;
+  scope!: string;
 
   /**
    * The OAuth2 state the app specified in the login request.
    */
   @AllowNull(false)
   @Column(DataType.STRING)
-  state: string;
+  state!: string;
 
   /**
    * The email address the user is linking.
    */
   @Column(DataType.STRING)
-  email: string;
+  email?: string;
 
   /**
    * The nameId that’s stored if the authorization is being linked to the user.
    */
   @Column(DataType.STRING)
-  nameId: string;
+  nameId?: string;
 
   /**
    * The OAuth2 redirect URI the app specified in the login request.
    */
   @AllowNull(false)
   @Column(DataType.STRING)
-  redirectUri: string;
+  redirectUri!: string;
 
   /**
    * The timezone of the browser used during the login flow.
    */
   @AllowNull(false)
   @Column(DataType.STRING)
-  timezone: string;
+  timezone!: string;
 
   /**
    * The ID of the app’s SAML secret.
@@ -68,30 +68,30 @@ export class SamlLoginRequest extends Model {
   @ForeignKey(() => AppSamlSecret)
   @AllowNull(false)
   @Column(DataType.INTEGER)
-  AppSamlSecretId: number;
+  AppSamlSecretId!: number;
 
   /**
    * The app’s SAML secret.
    */
   @BelongsTo(() => AppSamlSecret, { onDelete: 'CASCADE' })
-  AppSamlSecret: Awaited<AppSamlSecret>;
+  AppSamlSecret?: Awaited<AppSamlSecret>;
 
   /**
    * An optional ID of the user who’s logged in to Appsemble Studio at the time of the request.
    */
   @ForeignKey(() => AppMember)
   @Column(DataType.UUID)
-  AppMemberId: string;
+  AppMemberId?: string;
 
   /**
    * An optional user who’s logged in to Appsemble Studio at the time of the request.
    */
   @BelongsTo(() => AppMember, { onDelete: 'CASCADE' })
-  AppMember: Awaited<AppMember>;
+  AppMember?: Awaited<AppMember>;
 
   @CreatedAt
-  created: Date;
+  created!: Date;
 
   @UpdatedAt
-  updated: Date;
+  updated!: Date;
 }

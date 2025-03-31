@@ -172,8 +172,10 @@ export function convertAppMemberToScimUser(member: AppMember): ScimUser {
       : undefined,
     timezone: member.timezone,
     locale: member.locale,
+    // @ts-expect-error 2322 undefined is not assignable to type (strictNullChecks)
     'urn:ietf:params:scim:schemas:extension:enterprise:2.0:User': member.GroupMembers?.length
       ? {
+          // @ts-expect-error 2532 object is possibly undefined (strictNullChecks)
           manager: { value: member.GroupMembers.at(-1).Group.name },
         }
       : undefined,

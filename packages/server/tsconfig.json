@@ -4,6 +4,8 @@
     "jsx": "react",
     "jsxFactory": "h",
     "jsxFragmentFactory": "null",
-    "rootDir": "."
+    "rootDir": ".",
+    "strictFunctionTypes": true,
+    "strictNullChecks": true
   }
 }

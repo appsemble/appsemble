@@ -28,12 +28,13 @@ export function blockVersionToJson(blockVersion: BlockVersion): BlockManifest {
     version,
     wildcardActions,
   } = blockVersion;
-  const blockName = `@${OrganizationId || Organization.id}/${name}`;
+  // Call blockVersionToJson with a blockVersion that includes an Organization
+  const blockName = `@${OrganizationId || Organization!.id}/${name}`;
   let iconUrl = null;
   if (blockVersion.icon || blockVersion.get('hasIcon')) {
     iconUrl = `/api/blocks/${blockName}/versions/${version}/icon`;
   } else if (blockVersion.Organization?.icon || blockVersion.Organization?.get('hasIcon')) {
-    iconUrl = `/api/organizations/${Organization.id}/icon?${new URLSearchParams({
+    iconUrl = `/api/organizations/${Organization!.id}/icon?${new URLSearchParams({
       updated: blockVersion.Organization?.updated.toISOString(),
     })}`;
   }
@@ -43,7 +44,7 @@ export function blockVersionToJson(blockVersion: BlockVersion): BlockManifest {
     events,
     examples,
     files: BlockAssets?.map((f) => f.filename).sort(compareStrings),
-    iconUrl,
+    iconUrl: iconUrl ?? null,
     layout,
     longDescription,
     name: blockName,
@@ -101,7 +102,7 @@ export async function syncBlock({
     logger.info(`Synchronized block from ${blockUrl}`);
     return block;
   } catch (error) {
-    if (axios.isAxiosError(error) && error.response.status === 404) {
+    if (axios.isAxiosError(error) && error.response?.status === 404) {
       logger.warn(`Failed to synchronize block from ${blockUrl}`);
       return;
     }
@@ -111,6 +112,8 @@ export async function syncBlock({
 
 export async function getBlockVersions(blocks: IdentifiableBlock[]): Promise<BlockManifest[]> {
   const uniqueBlocks = blocks.map(({ type, version }) => {
+    // eslint-disable-next-line @typescript-eslint/prefer-ts-expect-error
+    // @ts-ignore 2488 [...] | undefined must have a '[Symbol.iterator]()'
     const [OrganizationId, name] = parseBlockName(type);
     return {
       name,
@@ -132,7 +135,7 @@ export async function getBlockVersions(blocks: IdentifiableBlock[]): Promise<Blo
       (block) => !knownIdentifiers.has(`@${block.OrganizationId}/${block.name}@${block.version}`),
     );
     const syncedBlocks = await Promise.all(unknownBlocks.map(syncBlock));
-    result.push(...syncedBlocks.filter(Boolean));
+    result.push(...syncedBlocks.filter((block) => block !== undefined));
   }
 
   return result;

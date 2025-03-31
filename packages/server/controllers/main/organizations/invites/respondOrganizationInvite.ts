@@ -9,12 +9,14 @@ export async function respondOrganizationInvite(ctx: Context): Promise<void> {
     request: {
       body: { response },
     },
-    user: { id: userId },
+    user,
   } = ctx;
 
   const invite = await OrganizationInvite.findOne({
     where: { key: token },
   });
+
+  const { id: userId } = user!;
 
   assertKoaCondition(invite != null, ctx, 404, 'This token is invalid');
 

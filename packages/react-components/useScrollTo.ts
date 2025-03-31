@@ -6,11 +6,15 @@ import { useLocation } from 'react-router-dom';
  *
  * @param ref A React ref which holds the the element to scroll to.
  */
-export function useScrollTo(ref: MutableRefObject<HTMLElement>): void {
+export function useScrollTo(ref: MutableRefObject<HTMLElement | null>): void {
   const { hash } = useLocation();
 
   useEffect(() => {
     const element = ref.current;
+
+    if (!element) {
+      return;
+    }
 
     if (!element?.id) {
       return;

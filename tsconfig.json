@@ -11,8 +11,8 @@
     "skipLibCheck": true,
     "sourceMap": true,
     "strict": true,
-    "strictFunctionTypes": false,
-    "strictNullChecks": false,
+    "strictFunctionTypes": true,
+    "strictNullChecks": true,
     "target": "ES2020",
     "types": []
   },

@@ -8,10 +8,13 @@ import { checkUserOrganizationPermissions } from '../../../../utils/authorizatio
 export async function removeOrganizationMember(ctx: Context): Promise<void> {
   const {
     pathParams: { organizationId, organizationMemberId },
-    user,
   } = ctx;
 
+  const user = ctx.user!;
+
   const organization = await Organization.findByPk(organizationId, { include: [User] });
+
+  assertKoaCondition(organization != null, ctx, 404, 'Organization not found');
 
   assertKoaCondition(
     organization.Users.some((u) => u.id === user.id),

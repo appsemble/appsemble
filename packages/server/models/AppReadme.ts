@@ -20,28 +20,28 @@ export class AppReadme extends Model {
   @PrimaryKey
   @AutoIncrement
   @Column(DataType.INTEGER)
-  id: number;
+  id!: number;
 
   @AllowNull(false)
   @Column(DataType.BLOB)
-  file: Buffer;
+  file!: Buffer;
 
   @Default('unspecified')
   @AllowNull(false)
   @Column(DataType.STRING)
-  language: string;
+  language!: string;
 
   @UpdatedAt
-  updated: Date;
+  updated!: Date;
 
   @CreatedAt
-  created: Date;
+  created!: Date;
 
   @ForeignKey(() => App)
   @AllowNull(false)
   @Column(DataType.INTEGER)
-  AppId: number;
+  AppId!: number;
 
   @BelongsTo(() => App)
-  App: Awaited<App>;
+  App?: Awaited<App>;
 }

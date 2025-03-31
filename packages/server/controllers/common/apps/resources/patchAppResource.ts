@@ -21,6 +21,7 @@ export async function patchAppResource(ctx: Context): Promise<void> {
   const app = await App.findByPk(appId, {
     attributes: ['definition', 'id'],
   });
+  assertKoaCondition(app != null, ctx, 404, 'App not found');
 
   const resource = await Resource.findOne({
     where: { id: resourceId, type: resourceType, AppId: appId, GroupId: selectedGroupId ?? null },
@@ -56,6 +57,8 @@ export async function patchAppResource(ctx: Context): Promise<void> {
     definition,
     appAssets.filter((asset) => asset.ResourceId === resourceId).map((asset) => asset.id),
     resource.expires,
+    // @ts-expect-error 2345 argument of type is not assignable to parameter of type
+    // (strictNullChecks)
     appAssets.map((asset) => ({ id: asset.id, name: asset.name })),
   );
 

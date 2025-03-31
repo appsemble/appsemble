@@ -11,10 +11,13 @@ export async function updateOrganizationMemberRole(ctx: Context): Promise<void> 
     request: {
       body: { role },
     },
-    user,
   } = ctx;
 
+  const user = ctx.user!;
+
   const organization = await Organization.findByPk(organizationId, { include: [User] });
+
+  assertKoaCondition(organization != null, ctx, 404, 'Organization not found');
 
   assertKoaCondition(
     organization.Users.some((u) => u.id === user.id),
@@ -39,7 +42,9 @@ export async function updateOrganizationMemberRole(ctx: Context): Promise<void> 
 
   assertKoaCondition(member != null, ctx, 400, 'This member is not part of this organization.');
 
-  await member.OrganizationMember.update({ role });
+  // XXX: how is OrganizationMember loaded? Sequelize doesn't allow to use it with `include`, yet it
+  // works without including it in the User model. How?
+  await member.OrganizationMember!.update({ role });
   ctx.body = {
     id: member.id,
     role,

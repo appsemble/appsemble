@@ -6,8 +6,14 @@ import { setArgv } from '../argv.js';
 
 describe('dns', () => {
   beforeEach(() => {
+    // @ts-expect-error 2345 argument of type is not assignable to parameter of type
+    // (strictNullChecks)
     vi.spyOn(kubernetes, 'configureDNS').mockResolvedValue(null);
+    // @ts-expect-error 2345 argument of type is not assignable to parameter of type
+    // (strictNullChecks)
     vi.spyOn(kubernetes, 'cleanupDNS').mockResolvedValue(null);
+    // @ts-expect-error 2345 argument of type is not assignable to parameter of type
+    // (strictNullChecks)
     vi.spyOn(kubernetes, 'restoreDNS').mockResolvedValue(null);
   });
 

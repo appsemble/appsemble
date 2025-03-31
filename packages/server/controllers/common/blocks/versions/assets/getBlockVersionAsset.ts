@@ -19,12 +19,13 @@ export async function getBlockVersionAsset(ctx: Context): Promise<void> {
 
   assertKoaCondition(block != null, ctx, 404, 'Block version not found');
   assertKoaCondition(
-    block.BlockAssets.length === 1,
+    block.BlockAssets?.length === 1,
     ctx,
     404,
     `Block has no asset named "${filename}"`,
   );
 
   ctx.body = block.BlockAssets[0].content;
+  // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
   ctx.type = block.BlockAssets[0].mime;
 }

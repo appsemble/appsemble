@@ -171,9 +171,9 @@ export function collectPaths(
   main: Path,
   root: YAMLMap,
   node: unknown = root,
-  anchors = (root.get('anchors') as YAMLSeq<Scalar | YAMLMap | YAMLSeq>)?.items.map(
-    ({ anchor }) => anchor,
-  ) ?? [],
+  anchors = (root.get('anchors') as YAMLSeq<Scalar | YAMLMap | YAMLSeq>)?.items
+    .map(({ anchor }) => anchor)
+    .filter((anchor) => anchor !== undefined) ?? [],
   handledAnchors = new Set<string>(),
   index = 0,
   // TODO: should be able to separate paths from steps in another function

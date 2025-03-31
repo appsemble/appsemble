@@ -45,16 +45,16 @@ declare module 'jsonschema' {
  */
 export function generateDataFromSchema(schema?: Schema): JsonValue {
   if (!schema) {
-    return;
+    return null;
   }
   // Let’s assume the default conforms to the schema, although this might not be true.
   if ('default' in schema) {
-    return schema.default;
+    return schema.default ?? null;
   }
   // If no predefined value exists, generate something based on its type.
   switch (schema.type) {
     case 'array':
-      return Array.from({ length: schema.minItems }, (empty, index) =>
+      return Array.from({ length: schema.minItems ?? 0 }, (empty, index) =>
         generateDataFromSchema(
           Array.isArray(schema.items)
             ? schema.items[index] ||
@@ -88,6 +88,7 @@ export function generateDataFromSchema(schema?: Schema): JsonValue {
     default:
       break;
   }
+  return null;
 }
 
 /**
@@ -111,18 +112,30 @@ export function combineSchemas(...schemas: Schema[]): Schema {
     }
     if ('minimum' in schema) {
       result.minimum =
+        // eslint-disable-next-line @typescript-eslint/prefer-ts-expect-error
+        // @ts-ignore 2345 argument of type is not assignable to parameter of type
+        // (strictNullChecks)
         'minimum' in result ? Math.max(result.minimum, schema.minimum) : schema.minimum;
     }
     if ('minLength' in schema) {
       result.minLength =
+        // eslint-disable-next-line @typescript-eslint/prefer-ts-expect-error
+        // @ts-ignore 2345 argument of type is not assignable to parameter of type
+        // (strictNullChecks)
         'minLength' in result ? Math.max(result.minLength, schema.minLength) : schema.minLength;
     }
     if ('maximum' in schema) {
       result.maximum =
+        // eslint-disable-next-line @typescript-eslint/prefer-ts-expect-error
+        // @ts-ignore 2345 argument of type is not assignable to parameter of type
+        // (strictNullChecks)
         'maximum' in result ? Math.min(result.maximum, schema.maximum) : schema.maximum;
     }
     if ('maxLength' in schema) {
       result.maxLength =
+        // eslint-disable-next-line @typescript-eslint/prefer-ts-expect-error
+        // @ts-ignore 2345 argument of type is not assignable to parameter of type
+        // (strictNullChecks)
         'maxLength' in result ? Math.min(result.maxLength, schema.maxLength) : schema.maxLength;
     }
     if (schema.multipleOf) {

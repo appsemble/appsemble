@@ -49,7 +49,7 @@ export async function createAppSamlAuthnRequest(ctx: Context): Promise<void> {
   );
 
   const appMember = await AppMember.findOne({
-    where: { AppId: app.id, UserId: authSubject.id },
+    where: { AppId: app.id, UserId: authSubject!.id },
     attributes: ['id'],
   });
 

@@ -10,8 +10,8 @@ import { OAuth2ClientCredentials } from '../../../../../../../models/index.js';
 export async function registerCurrentUserOAuth2ClientCredentials(ctx: Context): Promise<void> {
   const {
     request: { body },
-    user,
   } = ctx;
+  const user = ctx.user!;
 
   let expires;
   if (body.expires) {

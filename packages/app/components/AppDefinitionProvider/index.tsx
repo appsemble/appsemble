@@ -107,6 +107,7 @@ export function AppDefinitionProvider({ children }: AppDefinitionProviderProps):
     [revision],
   );
 
+  // @ts-expect-error 2769 No overload matches this call (strictNullChecks)
   useEventListener(window, 'message', onMessage);
 
   return <Context.Provider value={value}>{children}</Context.Provider>;

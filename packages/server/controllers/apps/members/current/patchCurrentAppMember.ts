@@ -24,7 +24,7 @@ export async function patchCurrentAppMember(ctx: Context): Promise<void> {
 
   assertKoaCondition(app != null, ctx, 404, 'App not found');
 
-  const appMember = await AppMember.findByPk(authSubject.id);
+  const appMember = await AppMember.findByPk(authSubject!.id);
 
   assertKoaCondition(appMember != null, ctx, 404, 'App member not found');
 
@@ -56,5 +56,5 @@ export async function patchCurrentAppMember(ctx: Context): Promise<void> {
     }
   }
 
-  ctx.body = await getAppMemberInfoById(authSubject.id);
+  ctx.body = await getAppMemberInfoById(authSubject!.id);
 }

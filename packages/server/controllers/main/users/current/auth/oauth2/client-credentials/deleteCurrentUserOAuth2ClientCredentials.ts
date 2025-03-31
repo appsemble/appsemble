@@ -6,8 +6,9 @@ import { OAuth2ClientCredentials } from '../../../../../../../models/index.js';
 export async function deleteCurrentUserOAuth2ClientCredentials(ctx: Context): Promise<void> {
   const {
     pathParams: { clientId },
-    user,
   } = ctx;
+
+  const user = ctx.user!;
 
   const affectedRows = await OAuth2ClientCredentials.destroy({
     where: {

@@ -26,6 +26,8 @@ export async function getAppsembleMessages(
   const languages = await getSupportedLanguages();
   const messages = {};
 
+  // @ts-expect-error 2345 argument of type is not assignable to parameter of type
+  // (strictNullChecks)
   if (baseLang && languages.has(baseLanguage)) {
     Object.assign(
       messages,

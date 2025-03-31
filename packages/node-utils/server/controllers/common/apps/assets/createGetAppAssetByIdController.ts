@@ -20,6 +20,7 @@ export function createGetAppAssetByIdController({ getApp, getAppAsset }: Options
       // Redirect to asset using current asset ID
       ctx.status = 302;
       ctx.set('location', `/api/apps/${app.id}/assets/${asset.id}`);
+      // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
       ctx.type = null;
       return;
     }

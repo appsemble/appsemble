@@ -71,21 +71,23 @@ interface CreateGroupParams extends SharedGroupParams {
   annotations?: string[];
 }
 
-export function resolveAnnotations(annotations: string[]): Record<string, string> {
+export function resolveAnnotations(annotations: string[]): Record<string, string> | undefined {
   const annotationRegex = /^\w+=.+$/;
+
+  if (!annotations.length) {
+    return undefined;
+  }
 
   if (annotations.some((a) => !annotationRegex.test(a))) {
     throw new AppsembleError('One of the annotations did not follow the pattern of key=value');
   }
 
-  return annotations.length
-    ? Object.fromEntries(
-        annotations.map((annotation) => {
-          const [key, ...value] = annotation.split('=');
-          return [key, value.join('=')];
-        }),
-      )
-    : undefined;
+  return Object.fromEntries(
+    annotations.map((annotation) => {
+      const [key, ...value] = annotation.split('=');
+      return [key, value.join('=')];
+    }),
+  );
 }
 
 export async function createGroup({

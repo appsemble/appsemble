@@ -45,12 +45,15 @@ interface DeferredConfirmationOptions extends ConfirmationOptions<any, any[]> {
   reject: () => void;
 }
 
-const Context = createContext(null);
+const Context = createContext<(...args: any[]) => Promise<any>>(() => Promise.resolve());
 
 /**
  * A provider for the {@link useConfirmation} hook.
  */
 export function Confirmation({ children }: ConfirmationProps): ReactNode {
+  // eslint-disable-next-line @typescript-eslint/prefer-ts-expect-error
+  // @ts-ignore 2345 argument of type is not assignable to parameter of type
+  // (strictNullChecks)
   const [options, setOptions] = useState<DeferredConfirmationOptions>(null);
   const [isActive, setIsActive] = useState(false);
 

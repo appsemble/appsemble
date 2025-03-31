@@ -3,6 +3,8 @@
   "compilerOptions": {
     "lib": ["dom", "esnext"],
     "rootDir": ".",
+    "strictFunctionTypes": true,
+    "strictNullChecks": true,
     "types": ["node"]
   }
 }

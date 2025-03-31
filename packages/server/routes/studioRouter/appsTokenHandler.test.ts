@@ -434,7 +434,7 @@ describe('appsTokenHandler', () => {
         'apps/1/auth/oauth2/token',
         new URLSearchParams({
           grant_type: 'refresh_token',
-          refresh_token: createJWTResponse(user.id).refresh_token,
+          refresh_token: createJWTResponse(user.id).refresh_token!,
           scope: 'resources:manage',
         }),
       );

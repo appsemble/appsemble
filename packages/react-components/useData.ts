@@ -35,7 +35,7 @@ export interface UseAxiosResult<T> {
    * This may be useful if the data has been updated because of user interaction. E.g. a resource
    * has been updated or deleted.
    */
-  setData: Dispatch<SetStateAction<T>>;
+  setData: Dispatch<SetStateAction<T | undefined>>;
 }
 
 /**
@@ -47,9 +47,10 @@ export interface UseAxiosResult<T> {
  * @returns A state which holds the target data and some utility functions.
  */
 export function useData<T>(url: string): UseAxiosResult<T> {
-  const [error, setError] = useState<AxiosError>(null);
+  const [error, setError] = useState<AxiosError | undefined>();
   const [loading, setLoading] = useState(true);
-  const [result, setResult] = useState<T>(null);
+  // eslint-disable-next-line unicorn/no-useless-undefined
+  const [result, setResult] = useState<T | undefined>(undefined);
 
   const [refresher, setRefresher] = useState<Record<string, unknown>>();
 
@@ -58,19 +59,23 @@ export function useData<T>(url: string): UseAxiosResult<T> {
   useEffect(() => {
     const source = axios.CancelToken.source();
     setLoading(true);
-    setError(null);
-    setResult(null);
+    // eslint-disable-next-line unicorn/no-useless-undefined
+    setError(undefined);
+    // eslint-disable-next-line unicorn/no-useless-undefined
+    setResult(undefined);
 
     axios
       .get<T>(url, { cancelToken: source.token })
       .then(({ data }) => {
         setResult(data);
-        setError(null);
+        // eslint-disable-next-line unicorn/no-useless-undefined
+        setError(undefined);
         setLoading(false);
       })
       .catch((err) => {
         if (!axios.isCancel(err)) {
-          setResult(null);
+          // eslint-disable-next-line unicorn/no-useless-undefined
+          setResult(undefined);
           setError(err);
           setLoading(false);
         }
@@ -85,9 +90,10 @@ export function useData<T>(url: string): UseAxiosResult<T> {
       error,
       data: result,
       refresh,
-      setData(data: T) {
+      setData(data: SetStateAction<T | undefined>) {
         setResult(data);
-        setError(null);
+        // eslint-disable-next-line unicorn/no-useless-undefined
+        setError(undefined);
         setLoading(false);
       },
     }),

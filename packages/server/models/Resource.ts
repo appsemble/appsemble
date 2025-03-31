@@ -43,18 +43,18 @@ export class Resource extends Model {
   @PrimaryKey
   @AutoIncrement
   @Column(DataType.INTEGER)
-  id: number;
+  id!: number;
 
   @AllowNull(false)
   @Index({ name: 'resourceTypeComposite' })
   @Index({ name: 'ResourcePositionUniqueIndex', unique: true })
   @Column(DataType.STRING)
-  type: string;
+  type!: string;
 
   @AllowNull(false)
   @Column(DataType.JSONB)
   @Index({ name: 'resourceDataIndex' })
-  data: any;
+  data!: any;
 
   /**
    * If true, the resource will be transferred when cloning an app
@@ -62,7 +62,7 @@ export class Resource extends Model {
   @AllowNull(false)
   @Default(false)
   @Column(DataType.BOOLEAN)
-  clonable: boolean;
+  clonable!: boolean;
 
   /**
    * If true, the resource will be used for creating ephemeral resources in demo apps
@@ -70,7 +70,7 @@ export class Resource extends Model {
   @AllowNull(false)
   @Default(false)
   @Column(DataType.BOOLEAN)
-  seed: boolean;
+  seed!: boolean;
 
   /**
    * If true, the resource is cleaned up regularly
@@ -78,67 +78,67 @@ export class Resource extends Model {
   @AllowNull(false)
   @Default(false)
   @Column(DataType.BOOLEAN)
-  ephemeral: boolean;
+  ephemeral!: boolean;
 
   @Column(DataType.DATE)
   @Index({ name: 'resourceTypeComposite' })
-  expires: Date;
+  expires?: Date;
 
   @CreatedAt
-  created: Date;
+  created!: Date;
 
   @UpdatedAt
-  updated: Date;
+  updated!: Date;
 
   @DeletedAt
-  deleted: Date;
+  deleted?: Date;
 
   @ForeignKey(() => App)
   @Index({ name: 'resourceTypeComposite' })
   @Index({ name: 'ResourcePositionUniqueIndex', unique: true })
   @AllowNull(false)
   @Column(DataType.INTEGER)
-  AppId: number;
+  AppId!: number;
 
   @BelongsTo(() => App)
-  App: Awaited<App>;
+  App?: Awaited<App>;
 
   @ForeignKey(() => Group)
   @Index({ name: 'resourceTypeComposite' })
   @AllowNull(true)
   @Column(DataType.INTEGER)
-  GroupId: number;
+  GroupId?: number;
 
   @AllowNull(true)
   @Index({ name: 'ResourcePositionUniqueIndex', unique: true })
   @Column(DataTypes.DECIMAL)
-  Position: number;
+  Position?: number;
 
   @BelongsTo(() => Group, { onDelete: 'CASCADE' })
-  Group: Awaited<Group>;
+  Group?: Awaited<Group>;
 
   @ForeignKey(() => AppMember)
   @Column(DataType.UUID)
-  AuthorId: string;
+  AuthorId?: string;
 
   @BelongsTo(() => AppMember, { foreignKey: 'AuthorId', onDelete: 'CASCADE' })
-  Author: Awaited<AppMember>;
+  Author?: Awaited<AppMember>;
 
   @ForeignKey(() => AppMember)
   @Column(DataType.UUID)
-  EditorId: string;
+  EditorId?: string;
 
   @BelongsTo(() => AppMember, { foreignKey: 'EditorId', onDelete: 'CASCADE' })
-  Editor: Awaited<AppMember>;
+  Editor?: Awaited<AppMember>;
 
   @HasMany(() => Asset)
-  Assets: Asset[];
+  Assets!: Asset[];
 
   @HasMany(() => ResourceSubscription, { onDelete: 'CASCADE' })
-  ResourceSubscriptions: ResourceSubscription[];
+  ResourceSubscriptions!: ResourceSubscription[];
 
   @HasMany(() => ResourceVersion, { onDelete: 'CASCADE' })
-  ResourceVersions: ResourceVersion[];
+  ResourceVersions!: ResourceVersion[];
 
   @BeforeDestroy
   static async beforeDestroyHook(instance: Resource): Promise<void> {
@@ -192,7 +192,7 @@ export class Resource extends Model {
         }
 
         if (propertyDefinition.schema.type === 'array') {
-          updatedValue = appMember.properties[propertyName]?.filter(
+          updatedValue = appMember.properties?.[propertyName]?.filter(
             (entry: number) => entry !== resource.id,
           );
         }
@@ -260,6 +260,7 @@ export class Resource extends Model {
 
     for (const appMember of app.AppMembers) {
       if (!appMembersToUpdate[appMember.id]) {
+        // @ts-expect-error 2322 null is not assignable to type (strictNullChecks) - Severe
         appMembersToUpdate[appMember.id] = appMember.properties;
       }
 
@@ -275,10 +276,10 @@ export class Resource extends Model {
         }
 
         if (propertyDefinition.schema.type === 'array') {
-          updatedValue = appMember.properties[propertyName].filter(
+          updatedValue = appMember.properties?.[propertyName].filter(
             (entry: number) =>
               !app.Resources.filter(
-                (resource) => resource.type === propertyDefinition.reference.resource,
+                (resource) => resource.type === propertyDefinition.reference?.resource,
               )
                 .map((resource) => resource.id)
                 .includes(entry),

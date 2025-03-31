@@ -21,7 +21,7 @@ export async function getAppResources({
   return resources.map((resource) =>
     resource.toJSON({
       include: attributes,
-      exclude: resource.App.template ? ['$seed'] : undefined,
+      exclude: resource.App!.template ? ['$seed'] : undefined,
     }),
   );
 }

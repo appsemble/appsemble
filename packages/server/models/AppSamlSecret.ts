@@ -40,54 +40,54 @@ export class AppSamlSecret extends Model {
   @PrimaryKey
   @AutoIncrement
   @Column(DataType.INTEGER)
-  id: number;
+  id!: number;
 
   @AllowNull(false)
   @Column(DataType.TEXT)
-  idpCertificate: string;
+  idpCertificate!: string;
 
   @AllowNull(false)
   @Column(DataType.STRING)
-  entityId: string;
+  entityId!: string;
 
   @AllowNull(false)
   @Column(DataType.STRING)
-  ssoUrl: string;
+  ssoUrl!: string;
 
   @AllowNull(false)
   @Column(DataType.STRING)
-  name: string;
+  name!: string;
 
   @AllowNull(false)
   @Column(DataType.STRING)
-  icon: IconName;
+  icon!: IconName;
 
   @AllowNull(false)
   @Column(DataType.TEXT)
-  spPrivateKey: string;
+  spPrivateKey!: string;
 
   @AllowNull(false)
   @Column(DataType.TEXT)
-  spPublicKey: string;
+  spPublicKey!: string;
 
   @AllowNull(false)
   @Column(DataType.TEXT)
-  spCertificate: string;
+  spCertificate!: string;
 
   @AllowNull(false)
   @Default(DEFAULT_SAML_EMAIL_ATTRIBUTE)
   @Column(DataType.STRING)
-  emailAttribute: string;
+  emailAttribute!: string;
 
   @Column(DataType.STRING)
-  emailVerifiedAttribute: string;
+  emailVerifiedAttribute?: string;
 
   @Column(DataType.STRING)
-  nameAttribute: string;
+  nameAttribute?: string;
 
   // Unique identifier of the external user
   @Column(DataType.STRING)
-  objectIdAttribute: string;
+  objectIdAttribute?: string;
 
   /**
    * The id of the app this secret is linked to.
@@ -95,20 +95,20 @@ export class AppSamlSecret extends Model {
   @ForeignKey(() => App)
   @AllowNull(false)
   @Column(DataType.INTEGER)
-  AppId: number;
+  AppId!: number;
 
   @BelongsTo(() => App)
-  App: Awaited<App>;
+  App?: Awaited<App>;
 
   @CreatedAt
-  created: Date;
+  created!: Date;
 
   @UpdatedAt
-  updated: Date;
+  updated!: Date;
 
   @HasMany(() => AppSamlAuthorization, { onDelete: 'CASCADE' })
-  AppSamlAuthorizations: AppSamlAuthorization[];
+  AppSamlAuthorizations!: AppSamlAuthorization[];
 
   @HasMany(() => SamlLoginRequest, { onDelete: 'CASCADE' })
-  SamlLoginRequests: SamlLoginRequest[];
+  SamlLoginRequests!: SamlLoginRequest[];
 }

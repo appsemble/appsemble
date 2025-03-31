@@ -20,28 +20,28 @@ export class AppVariable extends Model {
   @PrimaryKey
   @AutoIncrement
   @Column(DataType.INTEGER)
-  id: number;
+  id!: number;
 
   @AllowNull(false)
   @Index({ name: 'UniqueNameIndex', unique: true })
   @Column(DataType.STRING)
-  name: string;
+  name!: string;
 
   @Column(DataType.STRING)
-  value: string;
+  value?: string;
 
   @ForeignKey(() => App)
   @AllowNull(false)
   @Index({ name: 'UniqueNameIndex', unique: true })
   @Column(DataType.INTEGER)
-  AppId: number;
+  AppId!: number;
 
   @BelongsTo(() => App)
-  App: Awaited<App>;
+  App?: Awaited<App>;
 
   @CreatedAt
-  created: Date;
+  created!: Date;
 
   @UpdatedAt
-  updated: Date;
+  updated!: Date;
 }

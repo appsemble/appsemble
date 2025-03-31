@@ -113,7 +113,7 @@ export async function publishResource({
       throw new AppsembleError(`File at ${path} does not contain an object or array of objects`);
     }
 
-    resources = [].concat(file);
+    resources = ([] as Resource[]).concat(file);
   }
 
   logger.info(`Publishing resource(s) from ${path}`);
@@ -156,7 +156,7 @@ export async function publishResource({
     throw error;
   }
 
-  const ids: number[] = [].concat(data).map((d: Resource) => d.id);
+  const ids: number[] = ([] as Resource[]).concat(data).map((d: Resource) => d.id);
   const url = new URL(`/apps/${appId}/resources/${type}/`, remote);
   logger.info(
     `Successfully published ${ids.length} resource${resources.length === 1 ? '' : 's'} at: \n${ids
@@ -228,7 +228,7 @@ export async function updateResource({
     throw new AppsembleError(`File at ${path} does not contain an object or array of objects`);
   }
 
-  const resources = [].concat(file);
+  const resources = ([] as Resource[]).concat(file);
   logger.info(`Updating ${resources.length} resource(s) from ${path}`);
 
   for (const resource of resources) {

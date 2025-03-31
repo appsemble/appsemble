@@ -64,7 +64,7 @@ export function createGetAppResourceByIdController(options: Options): Middleware
 
       const resourceDefinition = getResourceDefinition(app.definition, resourceType, ctx, view);
 
-      ctx.body = remap(resourceDefinition.views[view].remap, resource, context);
+      ctx.body = remap(resourceDefinition.views?.[view].remap ?? null, resource, context);
       return;
     }
 

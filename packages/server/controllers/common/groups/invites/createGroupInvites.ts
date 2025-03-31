@@ -74,7 +74,7 @@ export async function createGroupInvites(ctx: Context): Promise<void> {
     where: { GroupId: groupId },
   });
 
-  const memberEmails = new Set(groupMembers.flatMap((groupMember) => groupMember.AppMember.email));
+  const memberEmails = new Set(groupMembers.flatMap((groupMember) => groupMember.AppMember!.email));
 
   const newInvites = (body as GroupInvite[])
     .map((invite) => ({

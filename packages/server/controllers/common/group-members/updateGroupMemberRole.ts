@@ -38,14 +38,14 @@ export async function updateGroupMemberRole(ctx: Context): Promise<void> {
   assertKoaCondition(groupMember != null, ctx, 404, 'Group member not found.');
 
   assertKoaCondition(
-    groupMember.AppMemberId !== authSubject.id,
+    groupMember.AppMemberId !== authSubject!.id,
     ctx,
     401,
     'Cannot use this endpoint to update your own role in the group',
   );
 
   assertKoaCondition(
-    getAppRoles(groupMember.Group.App.definition.security).includes(role),
+    getAppRoles(groupMember.Group!.App!.definition.security).includes(role),
     ctx,
     401,
     'Role not allowed',
@@ -53,7 +53,7 @@ export async function updateGroupMemberRole(ctx: Context): Promise<void> {
 
   await checkAuthSubjectAppPermissions({
     context: ctx,
-    appId: groupMember.Group.App.id,
+    appId: groupMember.Group!.App!.id,
     requiredPermissions: [AppPermission.UpdateGroupMemberRoles],
     groupId: selectedGroupId,
   });
@@ -62,8 +62,8 @@ export async function updateGroupMemberRole(ctx: Context): Promise<void> {
 
   ctx.body = {
     id: groupMember.id,
-    name: groupMember.AppMember.name,
-    email: groupMember.AppMember.email,
+    name: groupMember.AppMember!.name,
+    email: groupMember.AppMember!.email,
     role,
   } as GroupMemberType;
 }
