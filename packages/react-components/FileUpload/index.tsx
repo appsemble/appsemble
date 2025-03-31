@@ -74,8 +74,8 @@ export const FileUpload = forwardRef<HTMLInputElement, FileUploadProps>(
     const fileName = value?.name || fileLabel;
 
     const handleRemoveClick = (): void => {
-      handleRemove();
-      inputRef.current.dispatchEvent(new Event('change', { bubbles: true }));
+      handleRemove?.();
+      inputRef.current?.dispatchEvent(new Event('change', { bubbles: true }));
     };
 
     return (

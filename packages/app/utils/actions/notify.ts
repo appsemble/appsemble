@@ -13,7 +13,7 @@ export const notify: ActionCreator<'notify'> = ({ appDefinition, prefixIndex }) 
     if (
       pageNumber &&
       appDefinition.pages[pageNumber].type === 'tabs' &&
-      appDefinition.pages[pageNumber].definition.foreach
+      appDefinition.pages[pageNumber].definition?.foreach
     ) {
       prefix = prefix.replace(/tabs\.\d+/, 'definition.foreach');
     }

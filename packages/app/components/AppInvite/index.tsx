@@ -138,7 +138,7 @@ export function AppInvite(): ReactNode {
         <FormattedMessage {...messages.setPassword} />
       </p>
       <SimpleForm defaultValues={{ password: '', accepted: false }} onSubmit={accept}>
-        <SimpleFormField disabled value={invite.email} />
+        <SimpleFormField disabled value={invite?.email} />
         <SimpleFormField
           autoComplete="new-password"
           component={PasswordField}

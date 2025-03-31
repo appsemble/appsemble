@@ -82,7 +82,7 @@ export function ProfileSettings(): ReactNode {
   const onRemoveProfilePicture = useCallback(() => {
     setAppMemberInfo({
       ...appMemberInfo,
-      picture: null,
+      picture: undefined,
     });
   }, [setAppMemberInfo, appMemberInfo]);
 

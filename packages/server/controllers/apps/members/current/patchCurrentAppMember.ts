@@ -35,7 +35,7 @@ export async function patchCurrentAppMember(ctx: Context): Promise<void> {
   }
 
   if (picture === '') {
-    result.picture = null;
+    result.picture = undefined;
   } else if (picture) {
     result.picture = await uploadToBuffer(picture.path);
   }
