@@ -46,6 +46,16 @@ spec:
                       name: {{ .Values.smtpSecret  | quote }}
                       key: host
                 {{- end }}
+                - name: SECRET
+                  valueFrom:
+                    secretKeyRef:
+                      name: {{ .Values.secretSecret | quote }}
+                      key: secret
+                - name: AES_SECRET
+                  valueFrom:
+                    secretKeyRef:
+                      name: {{ .Values.secretSecret | quote }}
+                      key: aes-secret
                 {{- with .Values.smtpSecret }}
                 - name: SMTP_PORT
                   valueFrom:
