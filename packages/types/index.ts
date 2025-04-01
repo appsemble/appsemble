@@ -645,6 +645,51 @@ export interface Remappers {
   'object.compare': [Remapper, Remapper];
 
   /**
+   * Takes an object with an array property and transforms it into an array of objects.
+   *
+   * Each object in the resulting array contains all the entries of the original object
+   * plus all the entries of the corresponding array item from the array property.
+   *
+   * > **Note**
+   * > If one of the items in the array contains a key, which exists in the original object
+   * > it will overwrite the original key
+   *
+   * > **Note**
+   * > Nested arrays or objects are not exploded
+   *
+   * @example
+   * Input:
+   * ```javascript
+   * {
+   *   ownerName: 'John',
+   *   country: 'USA',
+   *   pets: [
+   *     { name: 'Milka' },
+   *     { name: 'Sven', country: 'Sweden' },
+   *     { name: 'Tom', likes: ['mice', 'fish'] },
+   *     { name: 'Jerry', looks: { color: 'brown' } }
+   *   ]
+   * }
+   * ```
+   *
+   * Remapper:
+   * ```yaml
+   * object.explode: pets
+   * ```
+   *
+   * Returns:
+   * ```javascript
+   * [
+   *   { ownerName: 'John', name: 'Milka', country: 'USA' },
+   *   { ownerName: 'John', name: 'Sven', country: 'Sweden' },
+   *   { ownerName: 'John', name: 'Tom', country: 'USA', likes: ['mice', 'fish'] },
+   *   { ownerName: 'John', name: 'Jerry', country: 'USA', looks: { color: 'brown' } }
+   * ]
+   * ```
+   */
+  'object.explode': string;
+
+  /**
    * Use a static value.
    */
   static: any;

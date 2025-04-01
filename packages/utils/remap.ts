@@ -444,6 +444,23 @@ const mapperImplementations: MapperImplementations = {
     return deepDiff(remapped1, remapped2);
   },
 
+  'object.explode'(property, input) {
+    if (!isPlainObject(input)) {
+      return [];
+    }
+
+    const { [property]: arrayValue, ...rest } = input;
+
+    if (!Array.isArray(arrayValue)) {
+      return [];
+    }
+
+    return arrayValue.map((item) => ({
+      ...rest,
+      ...item,
+    }));
+  },
+
   type(args, input) {
     // eslint-disable-next-line eqeqeq
     if (input === null) {

@@ -108,4 +108,22 @@ This remapper allows you to compare two objects and get differences in their key
 ${schemaExample('object.compare', { input: 'pretty', result: 'pretty' })}
 `,
   },
+  'object.explode': {
+    type: 'string',
+    description: `
+
+Takes an object with an array property and transforms it into an array of objects.
+
+Each object in the resulting array contains all the entries of the original object
+plus all the entries of the corresponding array item from the array property.
+
+If one of the items in the array contains a key, which exists in the original object
+it will overwrite the original key.
+
+Nested arrays or objects are not exploded.
+
+Example:
+${schemaExample('object.explode', { input: 'pretty', result: 'pretty' })}
+`,
+  },
 };

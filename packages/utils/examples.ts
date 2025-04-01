@@ -656,6 +656,27 @@ export const examples: Record<RemapperExampleKeys, RemapperExample> = {
       { path: ['address', 'country'], type: 'added', value: 'France' },
     ],
   },
+  'object.explode': {
+    input: {
+      ownerName: 'John',
+      country: 'USA',
+      pets: [
+        { name: 'Milka' },
+        { name: 'Sven', country: 'Sweden' },
+        { name: 'Tom', likes: ['mice', 'fish'] },
+        { name: 'Jerry', looks: { color: 'brown' } },
+      ],
+    },
+    remapper: {
+      'object.explode': 'pets',
+    },
+    result: [
+      { ownerName: 'John', name: 'Milka', country: 'USA' },
+      { ownerName: 'John', name: 'Sven', country: 'Sweden' },
+      { ownerName: 'John', name: 'Tom', country: 'USA', likes: ['mice', 'fish'] },
+      { ownerName: 'John', name: 'Jerry', country: 'USA', looks: { color: 'brown' } },
+    ],
+  },
   'omit.history': {
     input: null,
     remapper: {},
