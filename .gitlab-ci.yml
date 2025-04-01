@@ -508,10 +508,9 @@ publish helm:
 # Publish npm packages to npmjs.org.
 publish npm:
   stage: publish
-  dependencies:
-    - pack
   needs:
-    - pack
+    - job: pack
+      artifacts: true
   variables:
     GIT_STRATEGY: none
   rules:
@@ -521,9 +520,16 @@ publish npm:
       aud: sigstore
   script:
     - npm config set //registry.npmjs.org/:_authToken "$NPM_TOKEN"
-    # Disable provenance for now
-    # - find . -exec npm publish --access public --provenance {} \;
-    - find . -exec npm publish --access public \;
+    - |
+      if echo "$CI_RUNNED_TAGS" | grep -q "self-hosted"; then
+        PROVENANCE_FLAG=""
+        echo "Detected self-hosted tag, skipping provenance"
+      else
+        PROVENANCE_FLAG="--provenance"
+        echo "No self-hosted tag detected, enabling provenance"
+      fi
+      echo "Using provenance flag: '$PROVENANCE_FLAG'"
+      find ./build -name "*.tgz" -print0 | xargs -0 -I{} sh -c 'npm publish "{}" --access public '"$PROVENANCE_FLAG"''
 
 # Perform various post release actions.
 sentry release:
