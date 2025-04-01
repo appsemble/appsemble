@@ -94,4 +94,18 @@ based on the given object keys. This includes nested properties.
 ${schemaExample('object.omit', { input: 'pretty', result: 'pretty' })}
 `,
   },
+  'object.compare': {
+    type: 'array',
+    items: {
+      minItems: 2,
+      maxItems: 2,
+      $ref: '#/components/schemas/RemapperDefinition',
+    },
+    description: `
+
+This remapper allows you to compare two objects and get differences in their key-value pairs like in the following example:
+
+${schemaExample('object.compare', { input: 'pretty', result: 'pretty' })}
+`,
+  },
 };

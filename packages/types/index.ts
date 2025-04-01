@@ -549,7 +549,7 @@ export interface Remappers {
    *
    * Returns nothing if array.map’s context isn’t set.
    */
-  array: 'index' | 'item' | 'length';
+  array: 'index' | 'item' | 'length' | 'nextItem' | 'prevItem';
 
   /**
    *
@@ -607,6 +607,42 @@ export interface Remappers {
    * ```
    */
   'object.omit': (string[] | string)[];
+
+  /**
+   * Compare two objects to each other and get an array of differences
+   *
+   * Nested object keys are returned as a path array.
+   *
+   * @example
+   * ```yaml
+   * object.compare:
+   *   - object.from:
+   *       name: Alice
+   *       age: 25
+   *       address:
+   *         object.from:
+   *           city: Paris
+   *           zip: 7500
+   *   - object.from:
+   *       name: Alice
+   *       age: 26
+   *       address:
+   *         object.from:
+   *           city: Lyon
+   *           country: France
+   * ```
+   *
+   * Returns:
+   * ```javascript
+   * [
+   *   { path: ['age'], type: 'changed', from: 25, to: 26 },
+   *   { path: ['address', 'city'], type: 'changed', from: 'Paris', to: 'Lyon' },
+   *   { path: ['address', 'zip'], type: 'removed', value: 7500 },
+   *   { path: ['address', 'country'], type: 'added', value: 'France' }
+   * ]
+   * ```
+   */
+  'object.compare': [Remapper, Remapper];
 
   /**
    * Use a static value.

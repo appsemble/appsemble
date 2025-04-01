@@ -73,6 +73,12 @@ export const examples: Record<RemapperExampleKeys, RemapperExample> = {
           item: {
             array: 'item',
           },
+          prevItem: {
+            array: 'prevItem',
+          },
+          nextItem: {
+            array: 'nextItem',
+          },
         },
       },
     },
@@ -81,16 +87,22 @@ export const examples: Record<RemapperExampleKeys, RemapperExample> = {
         index: 0,
         length: 3,
         item: 'a',
+        prevItem: undefined,
+        nextItem: 'b',
       },
       {
         index: 1,
         length: 3,
         item: 'b',
+        prevItem: 'a',
+        nextItem: 'c',
       },
       {
         index: 2,
         length: 3,
         item: 'c',
+        prevItem: 'b',
+        nextItem: undefined,
       },
     ],
   },
@@ -606,6 +618,43 @@ export const examples: Record<RemapperExampleKeys, RemapperExample> = {
       },
       title: 'Weekly fishing 21',
     },
+  },
+  'object.compare': {
+    input: { name: 'Alice' },
+    remapper: {
+      'object.compare': [
+        {
+          'object.from': {
+            name: { prop: 'name' },
+            age: 25,
+            address: {
+              'object.from': {
+                city: 'Paris',
+                zip: 7500,
+              },
+            },
+          },
+        },
+        {
+          'object.from': {
+            name: 'Alice',
+            age: 26,
+            address: {
+              'object.from': {
+                city: 'Lyon',
+                country: 'France',
+              },
+            },
+          },
+        },
+      ],
+    },
+    result: [
+      { path: ['age'], type: 'changed', from: 25, to: 26 },
+      { path: ['address', 'city'], type: 'changed', from: 'Paris', to: 'Lyon' },
+      { path: ['address', 'zip'], type: 'removed', value: 7500 },
+      { path: ['address', 'country'], type: 'added', value: 'France' },
+    ],
   },
   'omit.history': {
     input: null,

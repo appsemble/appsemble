@@ -119,6 +119,8 @@ interface InternalContext extends RemapperContext {
     index: number;
     length: number;
     item: unknown;
+    prevItem: unknown;
+    nextItem: unknown;
   };
 
   stepRef?: {
@@ -142,6 +144,17 @@ class RemapperError extends TypeError {
     this.name = 'RemapperError';
     this.remapper = remapper;
   }
+}
+
+function isPlainObject(value: unknown): value is Record<string, unknown> {
+  return value != null && typeof value === 'object' && !Array.isArray(value);
+}
+
+function isEqualArray(a: unknown[], b: unknown[]): boolean {
+  if (a.length !== b.length) {
+    return false;
+  }
+  return a.every((val, i) => val === b[i]);
 }
 
 export function remap(
@@ -384,6 +397,53 @@ const mapperImplementations: MapperImplementations = {
     return result;
   },
 
+  'object.compare'([remapper1, remapper2], input, context) {
+    const remapped1 = remap(remapper1, input, context);
+    const remapped2 = remap(remapper2, input, context);
+
+    type Diff =
+      | { path: string[]; type: 'added'; value: unknown }
+      | { path: string[]; type: 'changed'; from: unknown; to: unknown }
+      | { path: string[]; type: 'removed'; value: unknown };
+
+    function deepDiff(
+      obj1: Record<string, unknown>,
+      obj2: Record<string, unknown>,
+      path: string[] = [],
+    ): Diff[] {
+      const diffs: Diff[] = [];
+
+      const keys = new Set([...Object.keys(obj1 || {}), ...Object.keys(obj2 || {})]);
+      for (const key of keys) {
+        const val1 = obj1?.[key];
+        const val2 = obj2?.[key];
+        const currentPath = [...path, key];
+
+        if (isPlainObject(val1) && isPlainObject(val2)) {
+          diffs.push(...deepDiff(val1, val2, currentPath));
+        } else if (Array.isArray(val1) && Array.isArray(val2)) {
+          if (!isEqualArray(val1, val2)) {
+            diffs.push({ path: currentPath, type: 'changed', from: val1, to: val2 });
+          }
+        } else if (!(key in obj1)) {
+          diffs.push({ path: currentPath, type: 'added', value: val2 });
+        } else if (!(key in obj2)) {
+          diffs.push({ path: currentPath, type: 'removed', value: val1 });
+        } else if (val1 !== val2) {
+          diffs.push({ path: currentPath, type: 'changed', from: val1, to: val2 });
+        }
+      }
+
+      return diffs;
+    }
+
+    if (!isPlainObject(remapped1) || !isPlainObject(remapped2)) {
+      return [];
+    }
+
+    return deepDiff(remapped1, remapped2);
+  },
+
   type(args, input) {
     // eslint-disable-next-line eqeqeq
     if (input === null) {
@@ -403,7 +463,13 @@ const mapperImplementations: MapperImplementations = {
     input?.map((item, index) =>
       remap(mapper, item, {
         ...context,
-        array: { index, length: input.length, item },
+        array: {
+          index,
+          length: input.length,
+          item,
+          prevItem: input[index - 1],
+          nextItem: input[index + 1],
+        },
       }),
     ) ?? [],
 
@@ -417,7 +483,13 @@ const mapperImplementations: MapperImplementations = {
         ? item
         : remap(mapper, item, {
             ...context,
-            array: { index, length: input.length, item },
+            array: {
+              index,
+              length: input.length,
+              item,
+              prevItem: input[index - 1],
+              nextItem: input[index + 1],
+            },
           }),
     );
     return input.filter((value, index) => {
@@ -446,7 +518,13 @@ const mapperImplementations: MapperImplementations = {
     return input?.filter((item, index) => {
       const remapped = remap(mapper, item, {
         ...context,
-        array: { index, length: input.length, item },
+        array: {
+          index,
+          length: input.length,
+          item,
+          prevItem: input[index - 1],
+          nextItem: input[index + 1],
+        },
       });
 
       return remapped;
