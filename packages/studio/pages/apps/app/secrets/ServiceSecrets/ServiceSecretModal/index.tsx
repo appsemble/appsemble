@@ -1,5 +1,6 @@
 import {
   Button,
+  CheckboxField,
   ModalCard,
   SelectField,
   SimpleForm,
@@ -140,6 +141,13 @@ export function ServiceSecretsModal({
         name="urlPatterns"
         placeholder="https://example.com/api"
         required
+      />
+      <SimpleFormField
+        component={CheckboxField}
+        disabled={locked !== 'unlocked'}
+        help={<FormattedMessage {...messages.publicSecretHelp} />}
+        label={<FormattedMessage {...messages.publicSecretLabel} />}
+        name="public"
       />
       <SimpleFormField
         className={styles.select}

@@ -70,4 +70,13 @@ export const messages = defineMessages({
     id: 'studio.UriWmZ',
     defaultMessage: 'Delete service secret',
   },
+  publicSecretHelp: {
+    id: 'studio.d5mtxM',
+    defaultMessage:
+      'If a secret is marked public, it can be applied to the unauthenticated users, e.g. in the requests originating in a custom sign up or login page.',
+  },
+  publicSecretLabel: {
+    id: 'studio.uhu5aG',
+    defaultMessage: 'Public',
+  },
 });

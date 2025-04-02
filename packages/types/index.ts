@@ -2876,6 +2876,14 @@ export interface AppServiceSecretDefinition {
    * The custom certificate authority used for client-certificate method.
    */
   ca?: string;
+
+  /**
+   * If a secret is marked public, it can be applied to the unauthenticated users, e.g. in the
+   * requests originating in a custom sign up or login page.
+   *
+   * @default false
+   */
+  public: boolean;
 }
 
 export interface AppServiceSecret extends AppServiceSecretDefinition {

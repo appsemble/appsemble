@@ -9,9 +9,9 @@ import {
 import axios, { type RawAxiosRequestConfig } from 'axios';
 import { isMatch } from 'matcher';
 
-import { checkAuthSubjectAppPermissions } from './checkAuthSubjectAppPermissions.js';
 import { AppServiceSecret } from '../models/index.js';
 import { argv } from '../utils/argv.js';
+import { checkAppPermissions } from '../utils/authorization.js';
 import { decrypt, encrypt } from '../utils/crypto.js';
 
 export async function applyAppServiceSecrets({
@@ -22,14 +22,20 @@ export async function applyAppServiceSecrets({
   // XXX: this is not a copy, intent unclear
   const newAxiosConfig = axiosConfig;
 
-  if (!context.user) {
+  const publicSecrets = await AppServiceSecret.count({
+    where: {
+      AppId: app.id,
+      public: true,
+    },
+  });
+  if (!context.user && !publicSecrets) {
     return newAxiosConfig;
   }
-  await checkAuthSubjectAppPermissions({ context, app, permissions: [] });
+  await checkAppPermissions({ context, appId: app.id, requiredPermissions: [] });
 
   const appServiceSecrets = (
     await AppServiceSecret.findAll({
-      where: { AppId: app.id },
+      where: { AppId: app.id, ...(context.user ? {} : { public: true }) },
     })
   ).map<AppServiceSecret>((secret) => secret.toJSON());
 

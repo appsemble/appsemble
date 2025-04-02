@@ -47,6 +47,12 @@ export const AppServiceSecret: OpenAPIV3.NonArraySchemaObject = {
       type: 'string',
       description: 'The scope to request access tokens for.',
     },
+    public: {
+      type: 'boolean',
+      description:
+        'If a secret is marked public, it can be applied to the unauthenticated users, e.g. in the requests originating in a custom sign up or login page.',
+      default: false,
+    },
     ca: {
       type: 'string',
       description: 'The custom certificate authority.',
