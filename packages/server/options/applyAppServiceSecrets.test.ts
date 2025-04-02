@@ -458,7 +458,7 @@ describe('applyAppServiceSecrets', () => {
       public: true,
     });
 
-    let outgoingRequestConfig: InternalAxiosRequestConfig;
+    let outgoingRequestConfig: InternalAxiosRequestConfig | undefined;
 
     const interceptor = axios.interceptors.request.use((config) => {
       outgoingRequestConfig = config;
@@ -469,11 +469,11 @@ describe('applyAppServiceSecrets', () => {
 
     axios.interceptors.request.eject(interceptor);
 
-    expect(outgoingRequestConfig.headers.Authorization).toBe(
+    expect(outgoingRequestConfig?.headers.Authorization).toBe(
       'Basic am9obl9kb2U6U3Ryb25nX1Bhc3N3b3JkLTEyMw==',
     );
-    expect(outgoingRequestConfig.httpsAgent).toBeUndefined();
-    expect(outgoingRequestConfig.params).toBeUndefined();
+    expect(outgoingRequestConfig?.httpsAgent).toBeUndefined();
+    expect(outgoingRequestConfig?.params).toBeUndefined();
 
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 418 I'm a teapot
@@ -487,7 +487,7 @@ describe('applyAppServiceSecrets', () => {
     expect({ ...proxiedContext.headers }).toMatchObject({
       accept: 'application/json, text/plain, */*',
       'accept-encoding': 'gzip, compress, deflate, br',
-      host: new URL(proxiedRequest.defaults.baseURL).host,
+      host: new URL(proxiedRequest.defaults.baseURL!).host,
       'user-agent': `AppsembleServer/${version}`,
     });
   });
