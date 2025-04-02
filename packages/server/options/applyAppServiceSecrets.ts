@@ -31,7 +31,7 @@ export async function applyAppServiceSecrets({
   if (!context.user && !publicSecrets) {
     return newAxiosConfig;
   }
-  await checkAppPermissions({ context, appId: app.id, requiredPermissions: [] });
+  await checkAppPermissions({ context, appId: app.id!, requiredPermissions: [] });
 
   const appServiceSecrets = (
     await AppServiceSecret.findAll({

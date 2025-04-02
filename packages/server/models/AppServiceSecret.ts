@@ -42,7 +42,7 @@ export class AppServiceSecret extends Model {
   @AllowNull(false)
   @Default(false)
   @Column({ type: DataType.BOOLEAN })
-  public: boolean;
+  public!: boolean;
 
   /**
    * Identifies the secret.
