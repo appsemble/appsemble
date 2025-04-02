@@ -49,7 +49,9 @@ export async function getAppResourceVersions(ctx: Context): Promise<void> {
     {
       created: resource.updated,
       data: resource.data,
-      author: resource.Editor ? { id: resource.Editor.id, name: resource.Editor.name } : undefined,
+      author: resource.Editor
+        ? { id: resource.Editor.id, name: resource.Editor.name, email: resource.Editor.email }
+        : undefined,
     },
     ...resource.ResourceVersions.sort((a, b) => Number(b.created) - Number(a.created)),
   ];
