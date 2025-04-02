@@ -1,1 +1,0 @@
-Add `object.compare` remapper.

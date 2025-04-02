@@ -1,7 +1,7 @@
 apiVersion: v2
 name: appsemble
-version: 0.32.1-test.13
-appVersion: 0.32.1-test.13
+version: 0.32.1-test.14
+appVersion: 0.32.1-test.14
 kubeVersion: '>=1.21.0'
 type: application
 description: The open source low-code app building platform
@@ -31,18 +31,13 @@ dependencies:
     repository: https://charts.bitnami.com/bitnami
     condition: minio.enabled
 annotations:
-  artifacthub.io/changes: >
+  artifacthub.io/changes: |
     - kind: added
-      description: "Block(form): Support showing and removing selected options in the
-        selection field."
-    - kind: changed
-      description: "Block(form): Show remove button in selection field regardless of minItems."
-    - kind: fixed
-      description: "Block(form): Hide long submission message on form error."
-    - kind: fixed
-      description: "App: Handle notify action in dynamic tabs."
-    - kind: fixed
-      description: "Server: Send notifications to AppMemberId instead of UserId."
+      description: "Utils: Add object.compare remapper."
+    - kind: added
+      description: "Utils: Add object.explode remapper."
+    - kind: added
+      description: "Utils: Add prevItem and nextItem to the array remapper."
   artifacthub.io/license: LGPL-3.0-only
   artifacthub.io/links: |
     - name: Appsemble Studio

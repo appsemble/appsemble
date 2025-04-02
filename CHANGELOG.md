@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.32.1-test.14](https://gitlab.com/appsemble/appsemble/-/releases/0.32.1-test.14)] - 2025-04-02
+
+### Added
+
+- Utils: Add `object.compare` remapper.
+- Utils: Add `object.explode` remapper.
+- Utils: Add `prevItem` and `nextItem` to the `array` remapper.
+
 ## \[[0.32.1-test.13](https://gitlab.com/appsemble/appsemble/-/releases/0.32.1-test.13)] - 2025-03-28
 
 ### Added
