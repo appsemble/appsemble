@@ -406,31 +406,30 @@ const mapperImplementations: MapperImplementations = {
       | { path: string[]; type: 'changed'; from: unknown; to: unknown }
       | { path: string[]; type: 'removed'; value: unknown };
 
-    function deepDiff(
-      obj1: Record<string, unknown>,
-      obj2: Record<string, unknown>,
-      path: string[] = [],
-    ): Diff[] {
+    function deepDiff(object1: Record<string, unknown>, object2: Record<string, unknown>): Diff[] {
+      const stack = [{ obj1: object1, obj2: object2, path: [] as string[] }];
       const diffs: Diff[] = [];
 
-      const keys = new Set([...Object.keys(obj1 || {}), ...Object.keys(obj2 || {})]);
-      for (const key of keys) {
-        const val1 = obj1?.[key];
-        const val2 = obj2?.[key];
-        const currentPath = [...path, key];
+      while (stack.length !== 0) {
+        const { obj1, obj2, path } = stack.pop()!;
+        const keys = new Set([...Object.keys(obj1 || {}), ...Object.keys(obj2 || {})]);
 
-        if (isPlainObject(val1) && isPlainObject(val2)) {
-          diffs.push(...deepDiff(val1, val2, currentPath));
-        } else if (Array.isArray(val1) && Array.isArray(val2)) {
-          if (!isEqualArray(val1, val2)) {
+        for (const key of keys) {
+          const val1 = obj1?.[key];
+          const val2 = obj2?.[key];
+          const currentPath = [...path, key];
+
+          if (isPlainObject(val1) && isPlainObject(val2)) {
+            stack.push({ obj1: val1, obj2: val2, path: currentPath });
+          } else if (Array.isArray(val1) && Array.isArray(val2) && !isEqualArray(val1, val2)) {
+            diffs.push({ path: currentPath, type: 'changed', from: val1, to: val2 });
+          } else if (!(key in obj1)) {
+            diffs.push({ path: currentPath, type: 'added', value: val2 });
+          } else if (!(key in obj2)) {
+            diffs.push({ path: currentPath, type: 'removed', value: val1 });
+          } else if (val1 !== val2) {
             diffs.push({ path: currentPath, type: 'changed', from: val1, to: val2 });
           }
-        } else if (!(key in obj1)) {
-          diffs.push({ path: currentPath, type: 'added', value: val2 });
-        } else if (!(key in obj2)) {
-          diffs.push({ path: currentPath, type: 'removed', value: val1 });
-        } else if (val1 !== val2) {
-          diffs.push({ path: currentPath, type: 'changed', from: val1, to: val2 });
         }
       }
 
