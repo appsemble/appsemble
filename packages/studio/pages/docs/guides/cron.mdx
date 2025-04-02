@@ -12,6 +12,7 @@ about upcoming events.
 
 - [Schedule](#schedule)
 - [Action](#action)
+- [Security](#security)
 - [Example](#example)
 
 ## Schedule
@@ -64,6 +65,18 @@ Supported (server-side) actions:
     </li>
   ))}
 </ul>
+
+## Security
+
+Cron jobs that contain resource or member actions need security permissions. In the security
+definition add the appropriate permissions under the cron property.
+
+```yaml security definition cron
+security:
+  cron:
+    permissions:
+      - $ resource:all:query
+```
 
 ## Example
 
