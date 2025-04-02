@@ -549,7 +549,7 @@ export interface Remappers {
    *
    * Returns nothing if array.map’s context isn’t set.
    */
-  array: 'index' | 'item' | 'length';
+  array: 'index' | 'item' | 'length' | 'nextItem' | 'prevItem';
 
   /**
    *
@@ -607,6 +607,87 @@ export interface Remappers {
    * ```
    */
   'object.omit': (string[] | string)[];
+
+  /**
+   * Compare two objects to each other and get an array of differences
+   *
+   * Nested object keys are returned as a path array.
+   *
+   * @example
+   * ```yaml
+   * object.compare:
+   *   - object.from:
+   *       name: Alice
+   *       age: 25
+   *       address:
+   *         object.from:
+   *           city: Paris
+   *           zip: 7500
+   *   - object.from:
+   *       name: Alice
+   *       age: 26
+   *       address:
+   *         object.from:
+   *           city: Lyon
+   *           country: France
+   * ```
+   *
+   * Returns:
+   * ```javascript
+   * [
+   *   { path: ['age'], type: 'changed', from: 25, to: 26 },
+   *   { path: ['address', 'city'], type: 'changed', from: 'Paris', to: 'Lyon' },
+   *   { path: ['address', 'zip'], type: 'removed', value: 7500 },
+   *   { path: ['address', 'country'], type: 'added', value: 'France' }
+   * ]
+   * ```
+   */
+  'object.compare': [Remapper, Remapper];
+
+  /**
+   * Takes an object with an array property and transforms it into an array of objects.
+   *
+   * Each object in the resulting array contains all the entries of the original object
+   * plus all the entries of the corresponding array item from the array property.
+   *
+   * > **Note**
+   * > If one of the items in the array contains a key, which exists in the original object
+   * > it will overwrite the original key
+   *
+   * > **Note**
+   * > Nested arrays or objects are not exploded
+   *
+   * @example
+   * Input:
+   * ```javascript
+   * {
+   *   ownerName: 'John',
+   *   country: 'USA',
+   *   pets: [
+   *     { name: 'Milka' },
+   *     { name: 'Sven', country: 'Sweden' },
+   *     { name: 'Tom', likes: ['mice', 'fish'] },
+   *     { name: 'Jerry', looks: { color: 'brown' } }
+   *   ]
+   * }
+   * ```
+   *
+   * Remapper:
+   * ```yaml
+   * object.explode: pets
+   * ```
+   *
+   * Returns:
+   * ```javascript
+   * [
+   *   { ownerName: 'John', name: 'Milka', country: 'USA' },
+   *   { ownerName: 'John', name: 'Sven', country: 'Sweden' },
+   *   { ownerName: 'John', name: 'Tom', country: 'USA', likes: ['mice', 'fish'] },
+   *   { ownerName: 'John', name: 'Jerry', country: 'USA', looks: { color: 'brown' } }
+   * ]
+   * ```
+   */
+  'object.explode': string;
 
   /**
    * Use a static value.
