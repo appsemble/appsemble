@@ -54,6 +54,8 @@ export function OpenIDCallback(): ReactNode {
   const [error, setError] = useState(false);
 
   const { redirect } = session;
+  // eslint-disable-next-line no-console
+  console.log('app state', state, session.state);
   const stateOk = state && session.state && state === session.state;
   const isOk = code && !errorMessage && !error && !isLoggedIn && stateOk;
 

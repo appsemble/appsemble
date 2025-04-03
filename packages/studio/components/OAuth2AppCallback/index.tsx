@@ -19,6 +19,9 @@ export function OAuth2AppCallback({ session }: OAuth2AppCallbackProps): ReactNod
     const error = state === session.state ? qs.get('error') : 'invalid_request';
     const appRequest = new URLSearchParams(session.appRequest);
 
+    // eslint-disable-next-line no-console
+    console.log('studio state', state, session.state);
+
     if (error) {
       oauth2Redirect(appRequest, { error });
       return;
