@@ -67,11 +67,7 @@ export function startOAuth2Login(
     JSON.stringify({ ...data, state, redirect, authorizationUrl } as OAuth2State),
   );
 
-  setTimeout((): void => {
-    window.location.href = String(url);
-  }, 5000);
-
-  // Window.location.href = String(url);
+  window.location.href = String(url);
 }
 
 /**
