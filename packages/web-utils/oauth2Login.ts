@@ -60,10 +60,13 @@ export function startOAuth2Login(
   url.searchParams.set('response_type', 'code');
   url.searchParams.set('scope', scope);
   url.searchParams.set('state', state);
+  // eslint-disable-next-line no-console
+  console.log('setting state to', state);
   sessionStorage.setItem(
     storageKey,
     JSON.stringify({ ...data, state, redirect, authorizationUrl } as OAuth2State),
   );
+
   window.location.href = String(url);
 }
 
