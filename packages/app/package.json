@@ -1,6 +1,6 @@
 {
   "name": "@appsemble/app",
-  "version": "0.32.1-test.14",
+  "version": "0.32.1-test.15",
   "private": true,
   "description": "The base for Appsemble apps",
   "keywords": [
@@ -31,11 +31,11 @@
     "test": "vitest"
   },
   "dependencies": {
-    "@appsemble/react-components": "0.32.1-test.14",
-    "@appsemble/sdk": "0.32.1-test.14",
-    "@appsemble/types": "0.32.1-test.14",
-    "@appsemble/utils": "0.32.1-test.14",
-    "@appsemble/web-utils": "0.32.1-test.14",
+    "@appsemble/react-components": "0.32.1-test.15",
+    "@appsemble/sdk": "0.32.1-test.15",
+    "@appsemble/types": "0.32.1-test.15",
+    "@appsemble/utils": "0.32.1-test.15",
+    "@appsemble/web-utils": "0.32.1-test.15",
     "@browser-logos/chrome": "^2.0.0",
     "@browser-logos/edge": "^2.0.0",
     "@browser-logos/firefox": "^3.0.0",
