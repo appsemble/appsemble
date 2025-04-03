@@ -24,11 +24,11 @@ declare module '@appsemble/sdk' {
     /**
      * Height of the container in which PDF is displayed
      */
-    height?: number;
+    height?: number | string;
 
     /**
      * Width of the container in which PDF is displayed
      */
-    width?: number;
+    width?: number | string;
   }
 }
