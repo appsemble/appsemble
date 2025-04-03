@@ -5758,11 +5758,17 @@ exports[`config > getProjectImplementations > official blocks > pdf-viewer 1`] =
     "properties": {
       "height": {
         "description": "Height of the container in which PDF is displayed",
-        "type": "number",
+        "type": [
+          "number",
+          "string",
+        ],
       },
       "width": {
         "description": "Width of the container in which PDF is displayed",
-        "type": "number",
+        "type": [
+          "number",
+          "string",
+        ],
       },
     },
     "type": "object",
