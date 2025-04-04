@@ -69,7 +69,7 @@ bootstrap(
     const [lastChanged, setLastChanged] = useState<string>(null);
     const [triedToSubmit, setTriedToSubmit] = useState<boolean>(false);
     const [longSubmission, setLongSubmission] = useState<boolean>(false);
-    const [thumbnails, setThumbnails] = useState<File[]>([]);
+    const [thumbnails, setThumbnails] = useState<(File | string)[]>([]);
 
     const errors = useMemo(
       () =>
@@ -430,16 +430,28 @@ bootstrap(
       }
     };
 
-    const addThumbnail = (thumbnail: File): void => {
-      setThumbnails((oldThumbnails) => [...oldThumbnails, thumbnail]);
+    const addThumbnail = (thumbnail: File | string): void => {
+      setThumbnails((oldThumbnails) => {
+        if (typeof thumbnail === 'string') {
+          if (!oldThumbnails.some((old) => typeof old === 'string' && old === thumbnail)) {
+            return [...oldThumbnails, thumbnail];
+          }
+          return oldThumbnails;
+        }
+        return [...oldThumbnails, thumbnail];
+      });
     };
 
-    const removeThumbnail = (thumbnail: File): void => {
+    const removeThumbnail = (thumbnail: File | string): void => {
       setThumbnails((oldThumbnails) => {
-        const firstExistingIndex = oldThumbnails.findIndex((existingThumbnail) =>
-          checkFileEquality(existingThumbnail, thumbnail),
-        );
-        return oldThumbnails.splice(firstExistingIndex, 1);
+        const firstExistingIndex = oldThumbnails.findIndex((existingThumbnail) => {
+          if (typeof existingThumbnail === 'string') {
+            return typeof thumbnail === 'string' && thumbnail === existingThumbnail;
+          }
+          return typeof thumbnail !== 'string' && checkFileEquality(existingThumbnail, thumbnail);
+        });
+        oldThumbnails.splice(firstExistingIndex, 1);
+        return oldThumbnails;
       });
     };
 
