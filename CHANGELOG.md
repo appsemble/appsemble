@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.32.1-test.16](https://gitlab.com/appsemble/appsemble/-/releases/0.32.1-test.16)] - 2025-04-07
+
+### Changed
+
+- Block(`pdf-viewer`): Allow string values for width and height.
+
+### Fixed
+
+- Block(`form`): Fix thumbnail logic.
+- Block(`list`): Fix spacing.
+
 ## \[[0.32.1-test.15](https://gitlab.com/appsemble/appsemble/-/releases/0.32.1-test.15)] - 2025-04-03
 
 ## \[[0.32.1-test.14](https://gitlab.com/appsemble/appsemble/-/releases/0.32.1-test.14)] - 2025-04-02

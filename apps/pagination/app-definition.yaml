@@ -36,7 +36,7 @@ pages:
     icon: scroll
     blocks:
       - type: filter
-        version: 0.32.1-test.15
+        version: 0.32.1-test.16
         parameters:
           highlight: ['title']
           fields:
@@ -72,7 +72,7 @@ pages:
             refresh: refreshNotes
 
       - type: stateful
-        version: 0.32.1-test.15
+        version: 0.32.1-test.16
         parameters:
           stateActions:
             updateFilter:
@@ -92,7 +92,7 @@ pages:
             stateChanged: stateChanged
 
       - type: data-loader
-        version: 0.32.1-test.15
+        version: 0.32.1-test.16
         parameters:
           skipInitialLoad: true
         actions:
@@ -124,7 +124,7 @@ pages:
             data: notes
 
       - type: table
-        version: 0.32.1-test.15
+        version: 0.32.1-test.16
         parameters:
           fields:
             - value: { prop: title }
@@ -143,7 +143,7 @@ pages:
             closable: true
             blocks:
               - type: form
-                version: 0.32.1-test.15
+                version: 0.32.1-test.16
                 parameters:
                   fields:
                     - type: string
@@ -169,13 +169,13 @@ pages:
             closable: true
             blocks:
               - type: detail-viewer
-                version: 0.32.1-test.15
+                version: 0.32.1-test.16
                 parameters:
                   fields:
                     - label: { translate: confirmDelete }
                       value: { prop: title }
               - type: button-list
-                version: 0.32.1-test.15
+                version: 0.32.1-test.16
                 parameters:
                   buttons:
                     - label: { translate: cancel }
@@ -197,7 +197,7 @@ pages:
                         type: dialog.ok
 
       - type: paginator
-        version: 0.32.1-test.15
+        version: 0.32.1-test.16
         parameters:
           itemsPerPage: 10
           paginationType: 'limit-offset'
@@ -219,7 +219,7 @@ pages:
             itemsCountChange: notesCount
 
       - type: action-button
-        version: 0.32.1-test.15
+        version: 0.32.1-test.16
         parameters:
           icon: plus
         actions:
@@ -227,7 +227,7 @@ pages:
             type: dialog
             blocks:
               - type: form
-                version: 0.32.1-test.15
+                version: 0.32.1-test.16
                 parameters:
                   fields:
                     - type: string
@@ -253,7 +253,7 @@ pages:
     icon: scroll
     blocks:
       - type: filter
-        version: 0.32.1-test.15
+        version: 0.32.1-test.16
         parameters:
           highlight: ['title']
           fields:
@@ -288,7 +288,7 @@ pages:
             refresh: refreshNotes
 
       - type: stateful
-        version: 0.32.1-test.15
+        version: 0.32.1-test.16
         parameters:
           stateActions:
             updateFilter:
@@ -308,7 +308,7 @@ pages:
             stateChanged: stateChanged
 
       - type: data-loader
-        version: 0.32.1-test.15
+        version: 0.32.1-test.16
         parameters:
           skipInitialLoad: true
         actions:
@@ -340,7 +340,7 @@ pages:
             data: notes
 
       - type: list
-        version: 0.32.1-test.15
+        version: 0.32.1-test.16
         parameters:
           appendData: true
           fields:
@@ -363,7 +363,7 @@ pages:
             closable: true
             blocks:
               - type: form
-                version: 0.32.1-test.15
+                version: 0.32.1-test.16
                 parameters:
                   fields:
                     - type: string
@@ -389,13 +389,13 @@ pages:
             closable: true
             blocks:
               - type: detail-viewer
-                version: 0.32.1-test.15
+                version: 0.32.1-test.16
                 parameters:
                   fields:
                     - label: { translate: confirmDelete }
                       value: { prop: title }
               - type: button-list
-                version: 0.32.1-test.15
+                version: 0.32.1-test.16
                 parameters:
                   buttons:
                     - label: { translate: cancel }
@@ -417,7 +417,7 @@ pages:
                         type: dialog.ok
 
       - type: paginator
-        version: 0.32.1-test.15
+        version: 0.32.1-test.16
         parameters:
           itemsPerPage: 10
           paginationType: 'limit-offset'
@@ -440,7 +440,7 @@ pages:
             toggleTracking: notes
 
       - type: action-button
-        version: 0.32.1-test.15
+        version: 0.32.1-test.16
         parameters:
           icon: plus
         actions:
@@ -448,7 +448,7 @@ pages:
             type: dialog
             blocks:
               - type: form
-                version: 0.32.1-test.15
+                version: 0.32.1-test.16
                 parameters:
                   fields:
                     - type: string

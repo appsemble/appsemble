@@ -3,4 +3,4 @@ asset. The tile can emit an action when clicked.
 
 ### Images
 
-![Stats screenshot](https://gitlab.com/appsemble/appsemble/-/raw/0.32.1-test.15/config/assets/tiles.png)
+![Stats screenshot](https://gitlab.com/appsemble/appsemble/-/raw/0.32.1-test.16/config/assets/tiles.png)

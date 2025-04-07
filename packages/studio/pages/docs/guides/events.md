@@ -23,7 +23,7 @@ In an app definition this can be defined as follows, taking the `data-loader` bl
 ```yaml copy validate blocks-snippet
 blocks:
   - type: data-loader
-    version: 0.32.1-test.15
+    version: 0.32.1-test.16
     actions:
       onLoad: # load some form of data from somewhere
         type: resource.query
@@ -78,7 +78,7 @@ For example, let’s say we want an `action-button` to trigger the `data-loader`
 ```yaml copy validate blocks-snippet
 blocks:
   - type: data-loader
-    version: 0.32.1-test.15
+    version: 0.32.1-test.16
     actions:
       onLoad: # load some form of data from somewhere
         type: resource.query
@@ -89,7 +89,7 @@ blocks:
       listen:
         refresh: refreshPeople
   - type: action-button
-    version: 0.32.1-test.15
+    version: 0.32.1-test.16
     parameters:
       icon: sync
     actions:
@@ -97,7 +97,7 @@ blocks:
         type: event
         event: refreshPeople
   - type: table
-    version: 0.32.1-test.15
+    version: 0.32.1-test.16
     events:
       listen:
         data: people
