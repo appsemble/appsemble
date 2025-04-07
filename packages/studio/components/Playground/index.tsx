@@ -1,4 +1,12 @@
 import {
+  createExampleContext,
+  examples,
+  remap,
+  type RemapperContext,
+  type RemapperExampleKeys,
+  schemas,
+} from '@appsemble/lang-sdk';
+import {
   applyRefs,
   Button,
   FileUpload,
@@ -6,14 +14,6 @@ import {
   Select,
   useToggle,
 } from '@appsemble/react-components';
-import {
-  createExampleContext,
-  examples,
-  remap,
-  type RemapperContext,
-  type RemapperExampleKeys,
-  schemas,
-} from '@appsemble/utils';
 import classNames from 'classnames';
 import { Validator } from 'jsonschema';
 import { editor, type IDisposable } from 'monaco-editor/esm/vs/editor/editor.api.js';

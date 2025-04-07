@@ -1,5 +1,5 @@
+import { generateDataFromSchema } from '@appsemble/lang-sdk';
 import { SelectField } from '@appsemble/react-components';
-import { generateDataFromSchema } from '@appsemble/utils';
 import { type Schema, validate } from 'jsonschema';
 import { type ChangeEvent, type ReactNode, useCallback, useContext, useState } from 'react';
 import { type JsonObject } from 'type-fest';

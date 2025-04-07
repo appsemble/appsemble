@@ -1,5 +1,6 @@
 import { type EventEmitter } from 'events';
 
+import { normalizeBlockName, prefixBlockURL } from '@appsemble/lang-sdk';
 import { Title, useMessages } from '@appsemble/react-components';
 import { type BlockUtils } from '@appsemble/sdk';
 import {
@@ -8,7 +9,7 @@ import {
   type PageDefinition,
   type Remapper,
 } from '@appsemble/types';
-import { createThemeURL, mergeThemes, normalizeBlockName, prefixBlockURL } from '@appsemble/utils';
+import { createThemeURL, mergeThemes } from '@appsemble/utils';
 import { fa } from '@appsemble/web-utils';
 import classNames from 'classnames';
 import { type ReactNode, useEffect, useRef, useState } from 'react';

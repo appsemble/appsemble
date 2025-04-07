@@ -1,5 +1,6 @@
 import { type Readable } from 'node:stream';
 
+import { type IdentifiableBlock } from '@appsemble/lang-sdk';
 import {
   type App,
   type AppConfigEntry,
@@ -17,7 +18,6 @@ import {
   type ResourceDefinition,
   type Theme as ThemeType,
 } from '@appsemble/types';
-import { type IdentifiableBlock } from '@appsemble/utils';
 import { type RawAxiosRequestConfig } from 'axios';
 import {
   type DefaultContext as DefaultContextInterface,

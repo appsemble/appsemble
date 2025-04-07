@@ -43,6 +43,7 @@
     "@appsemble/node-utils": "0.33.6",
     "@appsemble/types": "0.33.6",
     "@appsemble/utils": "0.33.6",
+    "@appsemble/lang-sdk": "0.33.6",
     "@cacheable/node-cache": "^1.0.0",
     "@formatjs/fast-memoize": "^2.0.0",
     "@fortawesome/fontawesome-common-types": "^6.0.0",

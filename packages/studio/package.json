@@ -35,6 +35,7 @@
     "@appsemble/types": "0.33.6",
     "@appsemble/utils": "0.33.6",
     "@appsemble/web-utils": "0.33.6",
+    "@appsemble/lang-sdk": "0.33.6",
     "@browser-logos/chrome": "^2.0.0",
     "@browser-logos/edge": "^2.0.0",
     "@browser-logos/firefox": "^3.0.0",

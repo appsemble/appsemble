@@ -1,5 +1,6 @@
 import { randomBytes } from 'node:crypto';
 
+import { extractAppMessages } from '@appsemble/lang-sdk';
 import {
   assertKoaCondition,
   getSupportedLanguages,
@@ -9,7 +10,7 @@ import {
   throwKoaError,
   uploadToBuffer,
 } from '@appsemble/node-utils';
-import { extractAppMessages, StyleValidationError } from '@appsemble/utils';
+import { StyleValidationError } from '@appsemble/utils';
 import { type Context } from 'koa';
 import tags from 'language-tags';
 import { lookup } from 'mime-types';

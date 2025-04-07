@@ -1,4 +1,4 @@
-import { remap } from '@appsemble/utils';
+import { remap } from '@appsemble/lang-sdk';
 import { describe, expect, it, vi } from 'vitest';
 
 import { createTestAction } from '../makeActions.js';

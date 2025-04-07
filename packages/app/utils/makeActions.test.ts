@@ -1,5 +1,5 @@
+import { identity, remap } from '@appsemble/lang-sdk';
 import { ActionError } from '@appsemble/types';
-import { identity, remap } from '@appsemble/utils';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { makeActions, type MakeActionsParams } from './makeActions.js';

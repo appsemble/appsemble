@@ -1,5 +1,5 @@
 import { RemapperRef } from './RemapperRef/index.js';
-import { arrayRemappers } from '../../../../utils/reference-schemas/remappers/index.js';
+import { referenceSchemas } from '@appsemble/lang-sdk'
 
 # Arrays
 
@@ -127,4 +127,4 @@ save it in a resource, send it in an email, etc.
 
 ## Remappers
 
-<RemapperRef remappers={arrayRemappers} />
+<RemapperRef remappers={referenceSchemas.arrayRemappers} />

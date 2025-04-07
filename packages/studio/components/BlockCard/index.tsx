@@ -1,6 +1,6 @@
+import { defaultLocale, parseBlockName } from '@appsemble/lang-sdk';
 import { Icon, Subtitle, Title } from '@appsemble/react-components';
 import { type BlockManifest } from '@appsemble/types';
-import { defaultLocale, parseBlockName } from '@appsemble/utils';
 import { type ReactNode } from 'react';
 import { Link } from 'react-router-dom';
 

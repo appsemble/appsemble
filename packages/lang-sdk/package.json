@@ -1,0 +1,66 @@
+{
+  "name": "@appsemble/lang-sdk",
+  "version": "0.33.6",
+  "description": "Language SDK for Appsemble",
+  "keywords": [
+    "app",
+    "apps",
+    "appsemble",
+    "framework",
+    "low-code",
+    "lowcode"
+  ],
+  "homepage": "https://appsemble.app",
+  "bugs": "https://gitlab.com/appsemble/appsemble/-/issues",
+  "repository": {
+    "type": "git",
+    "url": "https://gitlab.com/appsemble/appsemble.git",
+    "directory": "packages/lang-sdk"
+  },
+  "license": "LGPL-3.0-only",
+  "author": "Appsemble <info@appsemble.com> (https://appsemble.com)",
+  "sideEffects": false,
+  "type": "module",
+  "exports": {
+    ".": {
+      "ts-source": "./index.ts",
+      "default": "./index.js"
+    }
+  },
+  "files": [
+    "**/*.d.ts",
+    "**/*.js",
+    "!**/*.test.js",
+    "!**/*.test.d.ts",
+    "!*.config.js"
+  ],
+  "scripts": {
+    "prepack": "tsc --noEmit false",
+    "test": "vitest"
+  },
+  "dependencies": {
+    "openapi-types": "^12.0.0",
+    "@odata/parser": "^0.2.14",
+    "date-fns": "^2.0.0",
+    "fast-deep-equal": "^3.0.0",
+    "ics": "^3.0.0",
+    "intl-messageformat": "^10.0.0",
+    "parse-duration": "^1.0.0",
+    "fast-xml-parser": "^5.0.8",
+    "vitest": "^2.0.0",
+    "cron-parser": "^4.0.0",
+    "language-tags": "^1.0.0",
+    "type-fest": "^4.0.0",
+    "jsonschema": "~1.4.1",
+    "yaml": "^2.0.0",
+    "lcm": "^0.0.3"
+  },
+  "devDependencies": {
+    "@types/language-tags": "^1.0.0",
+    "@types/lcm": "^0.0.2",
+    "vitest": "^2.0.0"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

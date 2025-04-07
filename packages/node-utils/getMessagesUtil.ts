@@ -1,16 +1,16 @@
 import {
+  defaultLocale,
+  extractAppMessages,
+  normalizeBlockName,
+  type Prefix,
+} from '@appsemble/lang-sdk';
+import {
   type BlockQueryItem,
   getAppsembleMessages,
   mergeMessages,
   type Options,
 } from '@appsemble/node-utils';
 import { type AppsembleMessages } from '@appsemble/types';
-import {
-  defaultLocale,
-  extractAppMessages,
-  normalizeBlockName,
-  type Prefix,
-} from '@appsemble/utils';
 import { type Context } from 'koa';
 import tags from 'language-tags';
 

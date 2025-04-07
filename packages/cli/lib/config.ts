@@ -3,9 +3,9 @@ import { readFile, stat } from 'node:fs/promises';
 import { dirname, join, relative } from 'node:path';
 import { inspect } from 'node:util';
 
+import { prefixBlockURL } from '@appsemble/lang-sdk';
 import { AppsembleError, getWorkspaces, logger, readData } from '@appsemble/node-utils';
 import { type ProjectBuildConfig, type ProjectImplementations } from '@appsemble/types';
-import { prefixBlockURL } from '@appsemble/utils';
 import chalk from 'chalk';
 import { parse } from 'comment-parser';
 import { cosmiconfig } from 'cosmiconfig';

@@ -1,12 +1,12 @@
 import { existsSync } from 'node:fs';
 import { join } from 'node:path';
 
+import { parseBlockName } from '@appsemble/lang-sdk';
 import {
   type AppBlockStyle as AppBlockStyleInterface,
   type GetAppBlockStylesParams,
   opendirSafe,
 } from '@appsemble/node-utils';
-import { parseBlockName } from '@appsemble/utils';
 
 import { processCss } from '../../lib/processCss.js';
 

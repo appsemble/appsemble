@@ -1,6 +1,6 @@
 import { ClientServerActionSupport as Side } from './ClientServerActionSupport/index.tsx';
 import { ActionRef } from './ActionRef/index.tsx';
-import { miscellaneousActions as actions } from '../../../../utils/reference-schemas/actions/miscellaneous.ts';
+import { referenceSchemas } from '@appsemble/lang-sdk'
 
 # Miscellaneous
 
@@ -36,7 +36,7 @@ miscellaneous supported actions.
 
 ### analytics<Side name="analytics" />
 
-<ActionRef action={actions['analytics']} />
+<ActionRef action={referenceSchemas.miscellaneousActions['analytics']} />
 
 Below is an example of this action in use.
 
@@ -55,7 +55,7 @@ blocks:
 
 ### condition<Side name="condition" />
 
-<ActionRef action={actions['condition']} />
+<ActionRef action={referenceSchemas.miscellaneousActions['condition']} />
 
 Here is how you can use this action in your app.
 
@@ -88,7 +88,7 @@ blocks:
 
 ### controller<Side name="controller" />
 
-<ActionRef action={actions['controller']} />
+<ActionRef action={referenceSchemas.miscellaneousActions['controller']} />
 
 This action is used to specify a custom function from a JavaScript file to be used as the controller
 to handle the action. This can help the user to overcome the limitations of `yaml` with logic
@@ -152,7 +152,7 @@ blocks:
 
 ### download<Side name="download" />
 
-<ActionRef action={actions['download']} />
+<ActionRef action={referenceSchemas.miscellaneousActions['download']} />
 
 Here is an example of this action being used.
 
@@ -180,7 +180,7 @@ blocks:
 
 ### dialog<Side name="dialog" />
 
-<ActionRef action={actions['dialog']} />
+<ActionRef action={referenceSchemas.miscellaneousActions['dialog']} />
 
 Following is an example of how to use this action.
 
@@ -225,7 +225,7 @@ blocks:
 
 #### dialog.ok<Side name="dialog.ok" />
 
-<ActionRef action={actions['dialog.ok']} />
+<ActionRef action={referenceSchemas.miscellaneousActions['dialog.ok']} />
 
 Here is an example of this action in use.
 
@@ -254,7 +254,7 @@ blocks:
 
 #### dialog.error<Side name="dialog.error" />
 
-<ActionRef action={actions['dialog.error']} />
+<ActionRef action={referenceSchemas.miscellaneousActions['dialog.error']} />
 
 Here is an example of this action being used.
 
@@ -285,7 +285,7 @@ blocks:
 
 ### each<Side name="each" />
 
-<ActionRef action={actions['each']} />
+<ActionRef action={referenceSchemas.miscellaneousActions['each']} />
 
 Below is an example of this action in use.
 
@@ -314,7 +314,7 @@ blocks:
 
 ### event<Side name="event" />
 
-<ActionRef action={actions['event']} />
+<ActionRef action={referenceSchemas.miscellaneousActions['event']} />
 
 Here is how you can use this action.
 
@@ -345,7 +345,7 @@ blocks:
 
 ### email<Side name="email" />
 
-<ActionRef action={actions['email']} />
+<ActionRef action={referenceSchemas.miscellaneousActions['email']} />
 
 Following is an example of email action in use.
 
@@ -382,7 +382,7 @@ blocks:
 
 ### log<Side name="log" />
 
-<ActionRef action={actions['log']} />
+<ActionRef action={referenceSchemas.miscellaneousActions['log']} />
 
 Below is an example of this action in use.
 
@@ -414,7 +414,7 @@ blocks:
 
 ### match<Side name="match" />
 
-<ActionRef action={actions['match']} />
+<ActionRef action={referenceSchemas.miscellaneousActions['match']} />
 
 The following is how you can use this action in your app.
 
@@ -449,7 +449,7 @@ blocks:
 
 ### message<Side name="message" />
 
-<ActionRef action={actions['message']} />
+<ActionRef action={referenceSchemas.miscellaneousActions['message']} />
 
 Below is an example of this action being used in an app.
 
@@ -478,7 +478,7 @@ blocks:
 
 ### noop<Side name="noop" />
 
-<ActionRef action={actions['noop']} />
+<ActionRef action={referenceSchemas.miscellaneousActions['noop']} />
 
 The name of this action corresponds to no-operation. This action returns the data passed to it. This
 action only supports a single field `type`. The following is an example of this action in use.
@@ -497,7 +497,7 @@ blocks:
 
 ### notify<Side name="notify" />
 
-<ActionRef action={actions['notify']} />
+<ActionRef action={referenceSchemas.miscellaneousActions['notify']} />
 
 Below is how you can use this action in your app.
 
@@ -518,7 +518,7 @@ blocks:
 
 ### request<Side name="request" />
 
-<ActionRef action={actions['request']} />
+<ActionRef action={referenceSchemas.miscellaneousActions['request']} />
 
 This action performs an HTTP request. This can be used to call the Appsemble API or an external API
 in order to fetch data or send data. When sending `POST`, `PUT`, `DELETE` and `PATCH` calls the data
@@ -576,7 +576,7 @@ blocks:
 
 ### share<Side name="share" />
 
-<ActionRef action={actions['share']} />
+<ActionRef action={referenceSchemas.miscellaneousActions['share']} />
 
 The following is an example of this action in use.
 
@@ -597,7 +597,7 @@ blocks:
 
 ### static<Side name="static" />
 
-<ActionRef action={actions['static']} />
+<ActionRef action={referenceSchemas.miscellaneousActions['static']} />
 
 The following is an example of this action being used in an app.
 
@@ -618,7 +618,7 @@ blocks:
 
 ### throw<Side name="throw" />
 
-<ActionRef action={actions['throw']} />
+<ActionRef action={referenceSchemas.miscellaneousActions['throw']} />
 
 The following is an example of how this action can be used:
 

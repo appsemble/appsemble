@@ -140,6 +140,7 @@ pack:
     - mkdir build/
     - npm --pack-destination build --workspace @appsemble/types pack
     - npm --pack-destination build --workspace @appsemble/sdk pack
+    - npm --pack-destination build --workspace @appsemble/lang-sdk pack
     - npm --pack-destination build --workspace @appsemble/preact pack
     - npm --pack-destination build --workspace @appsemble/utils pack
     - npm --pack-destination build --workspace @appsemble/node-utils pack

@@ -1,5 +1,5 @@
+import { normalize } from '@appsemble/lang-sdk';
 import { Content, Message, useMeta, useQuery } from '@appsemble/react-components';
-import { normalize } from '@appsemble/utils';
 import { type ReactNode } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { Navigate } from 'react-router-dom';

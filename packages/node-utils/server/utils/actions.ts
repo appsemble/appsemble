@@ -1,3 +1,4 @@
+import { defaultLocale, remap } from '@appsemble/lang-sdk';
 import {
   assertKoaCondition,
   createFormData,
@@ -20,7 +21,6 @@ import {
   type NotifyActionDefinition,
   type RequestLikeActionDefinition,
 } from '@appsemble/types';
-import { defaultLocale, remap } from '@appsemble/utils';
 import axios, { type RawAxiosRequestConfig } from 'axios';
 import { type Context, type Middleware } from 'koa';
 import { get, mapValues, pick } from 'lodash-es';

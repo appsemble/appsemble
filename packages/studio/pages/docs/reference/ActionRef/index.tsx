@@ -1,5 +1,5 @@
+import { camelToHyphen, defaultLocale, schemas } from '@appsemble/lang-sdk';
 import { Title, useMeta } from '@appsemble/react-components';
-import { camelToHyphen, defaultLocale, schemas } from '@appsemble/utils';
 import { type Schema as JSONSchema } from 'jsonschema';
 import { type OpenAPIV3 } from 'openapi-types';
 import { Fragment, type ReactNode } from 'react';

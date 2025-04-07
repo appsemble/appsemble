@@ -177,6 +177,7 @@ describe('schemas', () => {
 
         it.each(readdirSync(valid))('%s', async (filename) => {
           const buffer = await readFile(new URL(filename, valid), 'utf8');
+          // TODO: update
           expect(buffer).toMatch(
             new RegExp(
               `^# yaml-language-server: \\$schema=https://appsemble.app/api.json#/components/schemas/${name}\n`,

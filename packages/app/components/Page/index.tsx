@@ -1,5 +1,6 @@
 import { EventEmitter } from 'events';
 
+import { normalize, remap } from '@appsemble/lang-sdk';
 import {
   Button,
   Content,
@@ -9,7 +10,7 @@ import {
   useMessages,
 } from '@appsemble/react-components';
 import { type PageDefinition, type Remapper } from '@appsemble/types';
-import { createThemeURL, mergeThemes, normalize, remap } from '@appsemble/utils';
+import { createThemeURL, mergeThemes } from '@appsemble/utils';
 import classNames from 'classnames';
 import { type ReactNode, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { FormattedMessage } from 'react-intl';

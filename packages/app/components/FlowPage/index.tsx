@@ -1,5 +1,6 @@
 import { type EventEmitter } from 'events';
 
+import { type RemapperContext } from '@appsemble/lang-sdk';
 import { applyRefs, Loader, useMessages, useMeta } from '@appsemble/react-components';
 import { type BootstrapParams } from '@appsemble/sdk';
 import {
@@ -9,7 +10,6 @@ import {
   type Remapper,
   type SubPageDefinition,
 } from '@appsemble/types';
-import { type RemapperContext } from '@appsemble/utils';
 import {
   type MutableRefObject,
   type ReactNode,

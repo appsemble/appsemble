@@ -1,11 +1,11 @@
 import { randomUUID } from 'node:crypto';
 
+import { mapValues } from '@appsemble/lang-sdk';
 import {
   type AppDefinition,
   type ResourceDefinition,
   type Resource as ResourceType,
 } from '@appsemble/types';
-import { mapValues } from '@appsemble/utils';
 import { addMilliseconds, isPast, parseISO } from 'date-fns';
 import { type PreValidatePropertyFunction, ValidationError, Validator } from 'jsonschema';
 import {

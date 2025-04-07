@@ -1,5 +1,5 @@
+import { generateDataFromSchema } from '@appsemble/lang-sdk';
 import { Button, CardFooterButton, ModalCard } from '@appsemble/react-components';
-import { generateDataFromSchema } from '@appsemble/utils';
 import { type NamedEvent } from '@appsemble/web-utils';
 import { type OpenAPIV3 } from 'openapi-types';
 import { type MouseEvent, type ReactNode, useCallback, useState } from 'react';

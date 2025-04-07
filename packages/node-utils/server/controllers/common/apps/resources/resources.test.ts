@@ -1,3 +1,4 @@
+import { remap } from '@appsemble/lang-sdk';
 import {
   type App,
   type AppConfigEntry,
@@ -9,7 +10,7 @@ import {
   type ResourceDefinition,
   type ResourceView,
 } from '@appsemble/types';
-import { defaultLocale, remap } from '@appsemble/utils';
+import { defaultLocale } from '@appsemble/utils';
 import { type DefaultContext, type DefaultState, type ParameterizedContext } from 'koa';
 import { type PathParams, type QueryParams } from 'koas-parameters';
 import { beforeEach, describe, expect, it, type Mock, vi } from 'vitest';

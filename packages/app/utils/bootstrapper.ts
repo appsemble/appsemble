@@ -1,3 +1,4 @@
+import { normalizeBlockName, prefixBlockURL } from '@appsemble/lang-sdk';
 import {
   type AppsembleBootstrapEvent,
   type AppsembleControllerEvent,
@@ -8,7 +9,6 @@ import {
   type HandlerFunction,
 } from '@appsemble/sdk';
 import { type BlockManifest } from '@appsemble/types';
-import { normalizeBlockName, prefixBlockURL } from '@appsemble/utils';
 import { type Promisable } from 'type-fest';
 
 import { appControllerCode } from './settings.js';

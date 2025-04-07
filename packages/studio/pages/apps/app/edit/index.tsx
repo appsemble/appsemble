@@ -1,3 +1,4 @@
+import { getAppBlocks, normalize } from '@appsemble/lang-sdk';
 import {
   Button,
   Loader,
@@ -15,7 +16,6 @@ import {
   useToggle,
 } from '@appsemble/react-components';
 import { type App, type AppDefinition } from '@appsemble/types';
-import { getAppBlocks, normalize } from '@appsemble/utils';
 import axios from 'axios';
 import classNames from 'classnames';
 import equal from 'fast-deep-equal';

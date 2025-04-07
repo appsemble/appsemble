@@ -20,6 +20,7 @@ export function isRequired(
   values?: Values,
 ): boolean {
   return Boolean(
+    // TODO: fix
     field.requirements?.some(({ required }) => utils?.remap(required, values) ?? required),
   );
 }

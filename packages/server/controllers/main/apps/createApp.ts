@@ -1,3 +1,4 @@
+import { normalize, schemas, validateAppDefinition } from '@appsemble/lang-sdk';
 import {
   AppsembleError,
   assertKoaCondition,
@@ -6,8 +7,9 @@ import {
   uploadToBuffer,
 } from '@appsemble/node-utils';
 import { type AppDefinition, OrganizationPermission } from '@appsemble/types';
-import { normalize, validateAppDefinition, validateStyle } from '@appsemble/utils';
+import { validateStyle } from '@appsemble/utils';
 import { type Context } from 'koa';
+import { createValidator } from 'koas-core/lib/validation.js';
 import { literal } from 'sequelize';
 import webpush from 'web-push';
 import { parse } from 'yaml';
@@ -70,14 +72,19 @@ export async function createApp(ctx: Context): Promise<void> {
   try {
     const definition = parse(yaml, { maxAliasCount: 10_000 }) as AppDefinition;
 
+    // TODO: something other than that
+    // createValidator();
+
     handleValidatorResult(
       ctx,
-      openApi!.validate(definition, openApi!.document.components!.schemas!.AppDefinition, {
+      // TODO: fix
+      openApi!.validate(definition, schemas.AppDefinition, {
         throw: false,
       }),
       'App validation failed',
     );
 
+    // TODO: this is exactly where issue 1854 happens
     handleValidatorResult(
       ctx,
       await validateAppDefinition(

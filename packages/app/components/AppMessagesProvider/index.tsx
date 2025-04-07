@@ -1,14 +1,13 @@
-import { Content, Loader, Message, useLocationString } from '@appsemble/react-components';
-import { type AppMessages } from '@appsemble/types';
 import {
   defaultLocale,
-  detectLocale,
   has,
   type IntlMessage,
   type MessageGetter,
   normalize,
-  objectCache,
-} from '@appsemble/utils';
+} from '@appsemble/lang-sdk';
+import { Content, Loader, Message, useLocationString } from '@appsemble/react-components';
+import { type AppMessages } from '@appsemble/types';
+import { detectLocale, objectCache } from '@appsemble/utils';
 import { memoize } from '@formatjs/fast-memoize';
 import axios from 'axios';
 import { type Formatters, IntlMessageFormat } from 'intl-messageformat';

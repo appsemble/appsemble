@@ -1,10 +1,10 @@
+import { normalize, type RemapperContext } from '@appsemble/lang-sdk';
 import { applyRefs, MetaSwitch, Tab, Tabs } from '@appsemble/react-components';
 import {
   type PageDefinition,
   type SubPageDefinition,
   type TabsPageDefinition,
 } from '@appsemble/types';
-import { normalize, type RemapperContext } from '@appsemble/utils';
 import {
   type ComponentPropsWithoutRef,
   type MutableRefObject,

@@ -1,5 +1,5 @@
+import { camelToHyphen, combineSchemas, decodeJSONRef } from '@appsemble/lang-sdk';
 import { Join, Title } from '@appsemble/react-components';
-import { camelToHyphen, combineSchemas, decodeJSONRef } from '@appsemble/utils';
 import classNames from 'classnames';
 import { type Schema as SchemaType } from 'jsonschema';
 import { type FC, type ReactNode, useMemo } from 'react';

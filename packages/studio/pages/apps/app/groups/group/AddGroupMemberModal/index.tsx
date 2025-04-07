@@ -1,3 +1,4 @@
+import { getAppRoles } from '@appsemble/lang-sdk';
 import {
   CardFooterButton,
   Form,
@@ -10,7 +11,6 @@ import {
   useMessages,
 } from '@appsemble/react-components';
 import { type AppMemberInfo, type AppRole, type GroupInvite } from '@appsemble/types';
-import { getAppRoles } from '@appsemble/utils';
 import axios from 'axios';
 import {
   type ChangeEvent,

@@ -2,8 +2,8 @@ import { existsSync } from 'node:fs';
 import { readFile } from 'node:fs/promises';
 import { join } from 'node:path';
 
+import { parseBlockName } from '@appsemble/lang-sdk';
 import { type GetBlockAssetParams, type ProjectAsset } from '@appsemble/node-utils';
-import { parseBlockName } from '@appsemble/utils';
 import globalCacheDir from 'global-cache-dir';
 import { lookup } from 'mime-types';
 

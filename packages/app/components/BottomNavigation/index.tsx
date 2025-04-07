@@ -1,6 +1,6 @@
+import { normalize, remap } from '@appsemble/lang-sdk';
 import { Button, Icon } from '@appsemble/react-components';
 import { type PageDefinition } from '@appsemble/types';
-import { normalize, remap } from '@appsemble/utils';
 import { type ReactNode, useMemo } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { NavLink, useParams } from 'react-router-dom';

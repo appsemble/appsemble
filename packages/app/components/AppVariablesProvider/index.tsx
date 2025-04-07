@@ -1,6 +1,6 @@
+import { type AppConfigEntryGetter } from '@appsemble/lang-sdk';
 import { Content, Loader, Message } from '@appsemble/react-components';
 import { type AppConfigEntry, type ValueFromProcess } from '@appsemble/types';
-import { type AppConfigEntryGetter } from '@appsemble/utils';
 import axios from 'axios';
 import {
   createContext,

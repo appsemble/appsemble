@@ -1,3 +1,4 @@
+import { normalize, remap } from '@appsemble/lang-sdk';
 import {
   Button,
   CollapsibleMenuSection,
@@ -6,7 +7,6 @@ import {
   MenuSection,
 } from '@appsemble/react-components';
 import { type PageDefinition } from '@appsemble/types';
-import { normalize, remap } from '@appsemble/utils';
 import { Fragment, type ReactNode, useCallback } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useParams } from 'react-router-dom';

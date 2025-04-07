@@ -1,6 +1,6 @@
 import { ClientServerActionSupport as Side } from './ClientServerActionSupport/index.tsx';
 import { ActionRef } from './ActionRef/index.tsx';
-import { linkActions as actions } from '../../../../utils/reference-schemas/actions/link.ts';
+import { referenceSchemas } from '@appsemble/lang-sdk'
 
 # Link
 
@@ -17,7 +17,7 @@ useful for navigation or redirecting. Supported link actions are the following.
 
 ### link<Side name="link" />
 
-<ActionRef action={actions['link']} />
+<ActionRef action={referenceSchemas.linkActions['link']} />
 
 Here is how you can use this action in your app.
 
@@ -35,7 +35,7 @@ blocks:
 
 ### link.back<Side name="link.back" />
 
-<ActionRef action={actions['link.back']} />
+<ActionRef action={referenceSchemas.linkActions['link.back']} />
 
 The following is an example of this action being used in an app.
 
@@ -53,7 +53,7 @@ blocks:
 
 ### link.next<Side name="link.next" />
 
-<ActionRef action={actions['link.next']} />
+<ActionRef action={referenceSchemas.linkActions['link.next']} />
 
 The following is an example of this action being used in an app.
 

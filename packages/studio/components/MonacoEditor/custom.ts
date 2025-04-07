@@ -72,6 +72,7 @@ configureMonacoYaml(monaco, {
       fileMatch: ['app.yaml'],
       uri: String(new URL('/docs/reference', window.location.origin)),
       schema: {
+        // TODO: focus on this later
         $ref: '#/components/schemas/AppDefinition',
         components: {
           schemas: mapValues(schemas, addMarkdownDescriptions),

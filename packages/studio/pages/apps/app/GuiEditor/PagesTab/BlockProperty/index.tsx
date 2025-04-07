@@ -1,3 +1,4 @@
+import { normalizeBlockName } from '@appsemble/lang-sdk';
 import {
   Button,
   Confirmation,
@@ -6,7 +7,6 @@ import {
   useData,
 } from '@appsemble/react-components';
 import { type BlockManifest } from '@appsemble/types';
-import { normalizeBlockName } from '@appsemble/utils';
 import { type ReactNode, useCallback } from 'react';
 import { type JsonObject } from 'type-fest';
 import { type Document, parse, type ParsedNode, stringify } from 'yaml';

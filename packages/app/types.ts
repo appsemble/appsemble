@@ -1,5 +1,6 @@
 import { type EventEmitter } from 'events';
 
+import { type AppConfigEntryGetter, type MessageGetter } from '@appsemble/lang-sdk';
 import { type ShowMessage } from '@appsemble/react-components';
 import {
   type ActionDefinition,
@@ -14,7 +15,6 @@ import {
   type ResourceSubscribableAction,
   type UserInfo,
 } from '@appsemble/types';
-import { type AppConfigEntryGetter, type MessageGetter } from '@appsemble/utils';
 import { type IconName } from '@fortawesome/fontawesome-common-types';
 import { type Dispatch } from 'react';
 import { type NavigateFunction, type Params } from 'react-router-dom';

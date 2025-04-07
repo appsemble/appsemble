@@ -5,6 +5,14 @@ import { basename, extname, join, parse } from 'node:path';
 import { Readable } from 'node:stream';
 
 import {
+  asciiLogo,
+  getAppBlocks,
+  getAppRoles,
+  type IdentifiableBlock,
+  normalize,
+  parseBlockName,
+} from '@appsemble/lang-sdk';
+import {
   AppsembleError,
   type ExtendedGroup,
   logger,
@@ -22,14 +30,6 @@ import {
   type Asset,
   type BlockManifest,
 } from '@appsemble/types';
-import {
-  asciiLogo,
-  getAppBlocks,
-  getAppRoles,
-  type IdentifiableBlock,
-  normalize,
-  parseBlockName,
-} from '@appsemble/utils';
 import axios from 'axios';
 import csvToJson from 'csvtojson';
 import FormData from 'form-data';
@@ -152,7 +152,7 @@ export async function handler(argv: ServeArguments): Promise<void> {
   const remoteIdentifiableBlocks: IdentifiableBlock[] = [];
 
   for (const identifiableBlock of identifiableBlocks) {
-    const [, blockName] = parseBlockName(identifiableBlock.type);
+    const [, blockName] = parseBlockName(identifiableBlock.type)!;
     if (existsSync(join(process.cwd(), 'blocks', blockName))) {
       localIdentifiableBlocks.push(identifiableBlock);
     } else {
@@ -162,7 +162,7 @@ export async function handler(argv: ServeArguments): Promise<void> {
 
   const localBlocksConfigs = await Promise.all(
     localIdentifiableBlocks.map(async (identifiableBlock) => {
-      const [organization, blockName] = parseBlockName(identifiableBlock.type);
+      const [organization, blockName] = parseBlockName(identifiableBlock.type)!;
 
       const buildConfig = await getProjectBuildConfig(join(process.cwd(), 'blocks', blockName));
       return {
@@ -184,7 +184,7 @@ export async function handler(argv: ServeArguments): Promise<void> {
 
   const cacheDir = await globalCacheDir('appsemble');
   const remoteBlocksPromises = remoteIdentifiableBlocks.map(async (identifiableBlock) => {
-    const [organization, blockName] = parseBlockName(identifiableBlock.type);
+    const [organization, blockName] = parseBlockName(identifiableBlock.type)!;
 
     const blockCacheDir = join(
       cacheDir,
