@@ -81,12 +81,12 @@ interface FileEntryProps extends InputProps<Blob | string, FileField> {
   /**
    * A function to add a thumbnail to the form collected thumbnails
    */
-  readonly addThumbnail: (thumbnail: File) => void;
+  readonly addThumbnail: (thumbnail: File | string) => void;
 
   /**
    * A function to remove a thumbnail from the form collected thumbnails
    */
-  readonly removeThumbnail: (thumbnail: File) => void;
+  readonly removeThumbnail: (thumbnail: File | string) => void;
 }
 
 export function FileEntry({
@@ -117,8 +117,9 @@ export function FileEntry({
   const [fileType, setFileType] = useState<MimeTypeCategory | null>(null);
   const [fileName, setFileName] = useState<string>('');
   const [firstFrameSrc, setFirstFrameSrc] = useState('');
-  const [thumbnail, setThumbnail] = useState<File>(null);
+  const [thumbnail, setThumbnail] = useState<File | string>(null);
   const [thumbnailAddedToForm, setThumbnailAddedToForm] = useState<boolean>(false);
+  const [checkedThumbnailAsset, setCheckedThumbnailAsset] = useState<boolean>(false);
 
   const onSelect = useCallback(
     async (event: JSX.TargetedEvent<HTMLInputElement>): Promise<void> => {
@@ -145,6 +146,18 @@ export function FileEntry({
           const assetUrl = utils.asset(valueString);
           const response = await fetch(assetUrl);
           if (response.ok) {
+            if (!checkedThumbnailAsset && !thumbnailAddedToForm) {
+              const thumbnailId = `${valueString}-thumbnail`;
+              const thumbnailUrl = utils.asset(thumbnailId);
+              const thumbnailResponse = await fetch(thumbnailUrl);
+              if (thumbnailResponse.ok) {
+                setThumbnail(thumbnailId);
+                addThumbnailToFormPayload(thumbnailId);
+                setThumbnailAddedToForm(true);
+                setCheckedThumbnailAsset(true);
+              }
+            }
+
             const contentType = response.headers.get('Content-Type');
             if (contentType) {
               setFileType(getMimeTypeCategory(contentType));
@@ -173,7 +186,14 @@ export function FileEntry({
         }
       }
     })();
-  }, [utils, value, valueString]);
+  }, [
+    addThumbnailToFormPayload,
+    checkedThumbnailAsset,
+    thumbnailAddedToForm,
+    utils,
+    value,
+    valueString,
+  ]);
 
   useEffect(() => {
     if (firstFrameSrc && fileName && !thumbnailAddedToForm) {
@@ -207,6 +227,7 @@ export function FileEntry({
       onChange({ currentTarget: { name } } as any as Event, null);
       removeThumbnail(thumbnail);
       setThumbnail(null);
+      setFirstFrameSrc('');
       setThumbnailAddedToForm(false);
     },
     [name, onChange, removeThumbnail, thumbnail],

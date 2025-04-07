@@ -250,7 +250,7 @@ bootstrap(
     ) : (
       <>
         {title && !collapsible ? <div className={styles.title}>{title}</div> : null}
-        {collapsible ? renderFirstList() : renderItems(data)}
+        {collapsible ? renderFirstList() : renderItems(data, true)}
       </>
     );
   },
