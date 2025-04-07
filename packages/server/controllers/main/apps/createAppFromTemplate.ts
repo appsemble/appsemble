@@ -29,6 +29,7 @@ import {
 } from '../../../models/index.js';
 import { setAppPath } from '../../../utils/app.js';
 import { checkUserOrganizationPermissions } from '../../../utils/authorization.js';
+import { createDynamicIndexes } from '../../../utils/dynamicIndexes.js';
 
 export async function createAppFromTemplate(ctx: Context): Promise<void> {
   const {
@@ -237,6 +238,15 @@ export async function createAppFromTemplate(ctx: Context): Promise<void> {
         // @ts-expect-error 18048 variable is possibly undefined (strictNullChecks)
         await uploadS3File(`app-${record.id}`, createdAsset.id, templateStream, templateStats.size);
       }
+    }
+    if (resources) {
+      Object.entries(template.definition.resources ?? {}).map(
+        ([resourceType, { enforceOrderingGroupByFields, positioning }]) => {
+          if (positioning && enforceOrderingGroupByFields) {
+            createDynamicIndexes(enforceOrderingGroupByFields, record.id, resourceType);
+          }
+        },
+      );
     }
 
     const doc = parseDocument(template.AppSnapshots[0].yaml);

@@ -233,10 +233,16 @@ export const update: ActionCreator<'resource.update'> = (args) => {
 };
 
 export const updatePositions: ActionCreator<'resource.update.positions'> = (args) => {
-  const { appDefinition, definition } = args;
-  const resource = appDefinition.resources?.[definition.resource];
+  const { appDefinition, definition, getAppMemberSelectedGroup } = args;
+  const { query: actionQuery, resource: resourceType } = definition;
+  const queryRemapper = ([] as any[]).concat(actionQuery).filter(Boolean);
+  const selectedGroup = getAppMemberSelectedGroup?.();
+  if (selectedGroup) {
+    queryRemapper.push({ 'object.assign': { selectedGroupId: selectedGroup.id } });
+  }
+  const resource = appDefinition.resources?.[resourceType];
   const method = 'PUT';
-  const url = `${apiUrl}/api/apps/${appId}/resources/${definition.resource}`;
+  const url = `${apiUrl}/api/apps/${appId}/resources/${resourceType}`;
   // @ts-expect-error Messed up
   const { id = 'id' } = resource;
   return request({
@@ -250,6 +256,7 @@ export const updatePositions: ActionCreator<'resource.update.positions'> = (args
         },
       },
       method,
+      query: queryRemapper,
       proxy: false,
       type: 'request',
       url: {

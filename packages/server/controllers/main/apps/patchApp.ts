@@ -7,7 +7,7 @@ import {
 import { type AppDefinition, OrganizationPermission } from '@appsemble/types';
 import { validateAppDefinition, validateStyle } from '@appsemble/utils';
 import { type Context } from 'koa';
-import { literal, Op } from 'sequelize';
+import { literal } from 'sequelize';
 import { parse } from 'yaml';
 
 import {
@@ -30,6 +30,7 @@ import { checkUserOrganizationPermissions } from '../../../utils/authorization.j
 import { getBlockVersions } from '../../../utils/block.js';
 import { checkAppLock } from '../../../utils/checkAppLock.js';
 import { encrypt } from '../../../utils/crypto.js';
+import { createDynamicIndexes } from '../../../utils/dynamicIndexes.js';
 
 export async function patchApp(ctx: Context): Promise<void> {
   const {
@@ -312,26 +313,30 @@ export async function patchApp(ctx: Context): Promise<void> {
         dbApp.AppSnapshots = [snapshot];
       }
       if (result.definition?.resources) {
-        for (const [key, value] of Object.entries(result.definition.resources)) {
-          if (value.positioning) {
-            const countNonNullResources = await Resource.count({
-              where: { AppId: appId, type: key, Position: { [Op.not]: null } },
-              transaction,
-            });
-            if (countNonNullResources) {
-              break;
+        for (const [key, { enforceOrderingGroupByFields, positioning }] of Object.entries(
+          result.definition.resources,
+        )) {
+          if (positioning) {
+            let group: string[] | undefined;
+            if (enforceOrderingGroupByFields) {
+              createDynamicIndexes(enforceOrderingGroupByFields, appId, key, transaction);
+              group = enforceOrderingGroupByFields.map((field) => `data.${field}`);
             }
             const resourcesToUpdate = await Resource.findAll({
-              attributes: ['id'],
               where: { AppId: appId, type: key },
-              order: [['updated', 'DESC']],
+              // Reset positions every time the app is updated
+              order: [...(group ?? []), ['Position', 'ASC'], ['updated', 'DESC']],
               transaction,
             });
+            await Resource.update(
+              { Position: null },
+              { where: { AppId: appId, type: key }, transaction },
+            );
 
             for (const [i, element] of resourcesToUpdate.entries()) {
               // If we start with 0, insertion at top becomes impossible unless we move the first
               // item.
-              await element.update({ Position: i + 1 }, { transaction });
+              await element.update({ Position: (i + 1) * 10 }, { transaction });
             }
           }
         }

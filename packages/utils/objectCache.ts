@@ -1,7 +1,7 @@
 /**
  * Create a function for memoizing values.
  *
- * The cache accepts a favtory function which is used for creating a value. If cache is called with
+ * The cache accepts a factory function which is used for creating a value. If cache is called with
  * the value, the factory is called and the returned value is memoized. If the cache is called with
  * the same value again, the memoized value is returned.
  *

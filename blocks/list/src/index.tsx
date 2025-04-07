@@ -49,13 +49,12 @@ bootstrap(
           const prevResourcePosition = Number(itemList[index]?.Position);
           const nextResourcePosition = Number(itemList[index + 1]?.Position);
 
-          const result: Item[] = await onDrop({
+          await onDrop({
             prevResourcePosition,
             nextResourcePosition,
             ...movedItem,
           });
 
-          setData(result);
           setDraggedItemIndex(null);
         };
 

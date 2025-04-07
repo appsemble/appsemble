@@ -21,6 +21,7 @@ import {
 } from '../../../utils/app.js';
 import { checkUserOrganizationPermissions } from '../../../utils/authorization.js';
 import { getBlockVersions } from '../../../utils/block.js';
+import { createDynamicIndexes } from '../../../utils/dynamicIndexes.js';
 
 export async function createApp(ctx: Context): Promise<void> {
   const {
@@ -141,6 +142,21 @@ export async function createApp(ctx: Context): Promise<void> {
         rec.AppReadmes = readmes?.length
           ? await createAppReadmes(rec.id, readmes, transaction)
           : [];
+
+        if (rec.definition.resources) {
+          Object.entries(rec.definition.resources ?? {}).map(
+            ([resourceType, { enforceOrderingGroupByFields, positioning }]) => {
+              if (positioning && enforceOrderingGroupByFields) {
+                createDynamicIndexes(
+                  enforceOrderingGroupByFields,
+                  rec!.id,
+                  resourceType,
+                  transaction,
+                );
+              }
+            },
+          );
+        }
 
         if (dryRun === 'true') {
           // Manually calling `await transaction.rollback()` causes an error

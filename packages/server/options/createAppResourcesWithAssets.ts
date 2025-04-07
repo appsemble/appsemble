@@ -3,6 +3,7 @@ import { isDeepStrictEqual } from 'node:util';
 import {
   type CreateAppResourcesWithAssetsParams,
   getCompressedFileMeta,
+  getResourceDefinition,
 } from '@appsemble/node-utils';
 import { type Resource as ResourceInterface } from '@appsemble/types';
 import { Op } from 'sequelize';
@@ -10,14 +11,13 @@ import { Op } from 'sequelize';
 import { getCurrentAppMember } from './getCurrentAppMember.js';
 import { App, Asset, transactional } from '../models/index.js';
 import { Resource } from '../models/Resource.js';
-import { processHooks, processReferenceHooks } from '../utils/resource.js';
+import { parseQuery, processHooks, processReferenceHooks } from '../utils/resource.js';
 
 export async function createAppResourcesWithAssets({
   app,
   context,
   groupId,
   options,
-  positioning,
   preparedAssets,
   resourceType,
   resources,
@@ -26,28 +26,50 @@ export async function createAppResourcesWithAssets({
 
   let createdResources: Resource[] = [];
   await transactional(async (transaction) => {
-    let lastPositionResource: Resource | null;
-    if (positioning) {
-      lastPositionResource = await Resource.findOne({
-        attributes: ['Position'],
-        where: { AppId: app.id, type: resourceType, Position: { [Op.not]: null } },
-        order: [['Position', 'DESC']],
-      });
-    }
+    const resourceDefinition = getResourceDefinition(app.definition, resourceType);
+    const { enforceOrderingGroupByFields, positioning } = resourceDefinition;
     createdResources = await Resource.bulkCreate(
-      resources.map(({ $clonable, $ephemeral, $expires, $seed, $thumbnails, ...data }, index) => ({
-        AppId: app.id,
-        GroupId: groupId ?? null,
-        type: resourceType,
-        data,
-        AuthorId: appMember?.sub,
-        seed: $seed,
-        expires: $expires,
-        clonable: $clonable,
-        ephemeral: $ephemeral,
-        Position: lastPositionResource ? lastPositionResource.Position! + index : null,
-      })),
-      { logging: false, transaction },
+      await Promise.all(
+        resources.map(async ({ $clonable, $ephemeral, $expires, $seed, $thumbnails, ...data }) => {
+          const { query } = parseQuery({
+            $filter: enforceOrderingGroupByFields
+              ?.map((item) => `${item} eq '${data[item]}'`)
+              .join(' and '),
+            resourceDefinition,
+          });
+
+          // Fetch the last position resource
+          const lastPositionResource = await Resource.findOne({
+            attributes: ['Position'],
+            where: {
+              AppId: app.id,
+              type: resourceType,
+              GroupId: groupId ?? null,
+              Position: { [Op.not]: null },
+              ...(query ? { query } : {}),
+            },
+            order: [['Position', 'DESC']],
+          });
+
+          // Return the resource object to be created
+          return {
+            AppId: app.id,
+            GroupId: groupId ?? null,
+            type: resourceType,
+            data,
+            AuthorId: appMember?.sub,
+            seed: $seed,
+            expires: $expires,
+            clonable: $clonable,
+            ephemeral: $ephemeral,
+            // Database returns string values for `DECIMAL` type
+            Position: positioning
+              ? Number.parseFloat(String(lastPositionResource?.Position ?? 0)) + 10
+              : null,
+          };
+        }),
+      ),
+      { transaction },
     );
 
     for (const createdResource of createdResources) {

@@ -161,8 +161,23 @@ function validateResourceSchemas(definition: AppDefinition, report: Report): voi
       continue;
     }
 
-    const { schema } = resource;
+    const { enforceOrderingGroupByFields, positioning, schema } = resource;
     const prefix = ['resources', resourceName, 'schema'];
+
+    if (!positioning && enforceOrderingGroupByFields?.length) {
+      report(enforceOrderingGroupByFields, 'must set positioning to true', [
+        'resources',
+        resourceName,
+        'enforceOrderingGroupByFields',
+      ]);
+    }
+    if (enforceOrderingGroupByFields?.some((item) => !item.match('^[a-zA-Z0-9]*$'))) {
+      report(enforceOrderingGroupByFields, 'must be alphanumeric', [
+        'resources',
+        resourceName,
+        'enforceOrderingGroupByFields',
+      ]);
+    }
 
     const reservedKeywords = new Set([
       'created',

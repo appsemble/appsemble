@@ -40,6 +40,7 @@ import {
 } from '../../../../utils/app.js';
 import { checkUserOrganizationPermissions } from '../../../../utils/authorization.js';
 import { getBlockVersions } from '../../../../utils/block.js';
+import { createDynamicIndexes } from '../../../../utils/dynamicIndexes.js';
 import { processHooks, processReferenceHooks } from '../../../../utils/resource.js';
 
 export async function importApp(ctx: Context): Promise<void> {
@@ -139,6 +140,20 @@ export async function importApp(ctx: Context): Promise<void> {
 
         const resourcesFolder =
           zip.folder('resources')?.filter((filename) => filename.endsWith('json')) ?? [];
+        if (resourcesFolder.length) {
+          Object.entries(record.definition.resources ?? {}).map(
+            ([resourceType, { enforceOrderingGroupByFields, positioning }]) => {
+              if (positioning && enforceOrderingGroupByFields) {
+                createDynamicIndexes(
+                  enforceOrderingGroupByFields,
+                  record!.id,
+                  resourceType,
+                  transaction,
+                );
+              }
+            },
+          );
+        }
 
         for (const file of resourcesFolder) {
           const [, resourceJsonName] = file.name.split('/');

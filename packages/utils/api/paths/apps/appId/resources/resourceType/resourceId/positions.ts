@@ -5,6 +5,8 @@ export const pathItems: OpenAPIV3.PathItemObject = {
     { $ref: '#/components/parameters/appId' },
     { $ref: '#/components/parameters/resourceType' },
     { $ref: '#/components/parameters/resourceId' },
+    { $ref: '#/components/parameters/selectedGroupId' },
+    { $ref: '#/components/parameters/$filter' },
   ],
   put: {
     tags: ['app', 'resource', 'positioning', 'custom-sort'],

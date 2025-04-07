@@ -47,7 +47,6 @@ export class Resource extends Model {
 
   @AllowNull(false)
   @Index({ name: 'resourceTypeComposite' })
-  @Index({ name: 'ResourcePositionUniqueIndex', unique: true })
   @Column(DataType.STRING)
   type!: string;
 
@@ -95,7 +94,6 @@ export class Resource extends Model {
 
   @ForeignKey(() => App)
   @Index({ name: 'resourceTypeComposite' })
-  @Index({ name: 'ResourcePositionUniqueIndex', unique: true })
   @AllowNull(false)
   @Column(DataType.INTEGER)
   AppId!: number;
@@ -110,7 +108,6 @@ export class Resource extends Model {
   GroupId?: number;
 
   @AllowNull(true)
-  @Index({ name: 'ResourcePositionUniqueIndex', unique: true })
   @Column(DataTypes.DECIMAL)
   Position?: number;
 
