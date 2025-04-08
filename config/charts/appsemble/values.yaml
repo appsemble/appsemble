@@ -23,6 +23,8 @@ ingress:
     nginx.ingress.kubernetes.io/hsts: 'true'
     nginx.ingress.kubernetes.io/hsts-include-subdomains: 'true'
     nginx.ingress.kubernetes.io/hsts-max-age: '31536000'
+    nginx.ingress.kubernetes.io/limit-rps: '100'
+    nginx.ingress.kubernetes.io/limit-connections: '100'
   host: ''
   tls:
     {}
