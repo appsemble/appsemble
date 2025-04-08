@@ -93,6 +93,37 @@ describe('verifyAppMemberEmail', () => {
     expect(m.emailKey).toBeNull();
   });
 
+  it('should not update app member properties after verification', async () => {
+    const app = await createDefaultAppWithSecurity(organization);
+
+    await request.post(
+      `/api/apps/${app.id}/auth/email/register`,
+      createFormData({
+        email: 'test@example.com',
+        password: 'password',
+        timezone: 'Europe/Amsterdam',
+        properties: {
+          foo: 'bar',
+          age: '22',
+        },
+      }),
+    );
+
+    const m = (await AppMember.findOne({ where: { email: 'test@example.com' } }))!;
+
+    expect(m.emailVerified).toBe(false);
+    expect(m.emailKey).not.toBeNull();
+
+    const { status } = await request.post(`/api/apps/${app.id}/auth/email/verify`, {
+      token: m.emailKey,
+    });
+    expect(status).toBe(200);
+    await m.reload();
+    expect(m.emailVerified).toBe(true);
+    expect(m.emailKey).toBeNull();
+    expect(m.properties).toStrictEqual({ foo: 'bar', age: 22 });
+  });
+
   it('should not verify empty or invalid keys', async () => {
     const app = await createDefaultAppWithSecurity(organization);
 

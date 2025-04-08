@@ -107,4 +107,30 @@ describe('patchAppMemberProperties', () => {
     `,
     );
   });
+
+  it('should not update the existing properties that are not in the request body', async () => {
+    authorizeStudio();
+
+    const app = await App.create({
+      OrganizationId: 'testorganization',
+      vapidPublicKey: '',
+      vapidPrivateKey: '',
+      definition: {},
+    });
+    const appMember = await AppMember.create({
+      email: user.primaryEmail,
+      AppId: app.id,
+      UserId: user.id,
+      role: PredefinedAppRole.Member,
+      properties: { foo: 'bar', number: 33 },
+    });
+
+    const { status } = await request.patch(
+      `/api/app-members/${appMember.id}/properties`,
+      createFormData({ properties: { foo: 'test' } }),
+    );
+    expect(status).toBe(200);
+    await appMember.reload();
+    expect(appMember.properties).toStrictEqual({ foo: 'test', number: 33 });
+  });
 });
