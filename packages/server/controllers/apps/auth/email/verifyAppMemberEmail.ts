@@ -17,7 +17,7 @@ export async function verifyAppMemberEmail(ctx: Context): Promise<void> {
 
   const appMember = await AppMember.findOne({
     where: { AppId: appId, emailKey: token },
-    attributes: ['id', 'emailVerified', 'emailKey'],
+    attributes: ['id', 'emailVerified', 'emailKey', 'properties'],
   });
 
   assertKoaCondition(appMember != null, ctx, 404, 'Unable to verify this token.');

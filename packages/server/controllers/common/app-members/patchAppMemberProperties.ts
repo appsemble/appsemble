@@ -40,7 +40,7 @@ export async function patchAppMemberProperties(ctx: Context): Promise<void> {
 
   try {
     const updatedAppMember = await appMember.update({
-      properties: parseAppMemberProperties(properties),
+      properties: { ...appMember.properties, ...parseAppMemberProperties(properties) },
     });
 
     ctx.body = getAppMemberInfo(updatedAppMember);
