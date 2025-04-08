@@ -68,14 +68,12 @@ Supported (server-side) actions:
 
 ## Security
 
-Cron jobs that contain resource or member actions need security permissions. In the security
-definition add the appropriate permissions under the cron property.
+Cron jobs that contain resource or member actions need a security definition of an empty list: `[]`
 
 ```yaml security definition cron
 security:
   cron:
-    permissions:
-      - $ resource:all:query
+    permissions: []
 ```
 
 ## Example
