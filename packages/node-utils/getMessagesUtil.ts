@@ -41,7 +41,10 @@ export async function getMessagesUtil(
   const blockPrefixes: [string, Prefix][] = [];
   const blockQuery: BlockQueryItem[] = [];
 
-  const appMessages = await getAppMessages({ context: ctx, app, language });
+  const extractedMessages = Object.keys(extractAppMessages(app.definition).app);
+  const appMessages = (await getAppMessages({ context: ctx, app, language })).filter((item) =>
+    Object.keys(item.messages.app ?? {}).filter((key) => !(key in extractedMessages)),
+  );
   const coreMessages = await getAppsembleMessages(lang, baseLang);
 
   const messages: AppsembleMessages = {
