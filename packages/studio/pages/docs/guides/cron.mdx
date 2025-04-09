@@ -68,7 +68,7 @@ Supported (server-side) actions:
 
 ## Security
 
-Cron jobs that contain resource or member actions need a security definition of an empty list: `[]`
+Cron jobs that contain request action and need [service secrets](../guides/services.md) to be applied for the outgoing request need the cron field to be defined with permissions being an empty array in the [security definition](../app/security.mdx#security-definition) of the app.
 
 ```yaml security definition cron
 security:
