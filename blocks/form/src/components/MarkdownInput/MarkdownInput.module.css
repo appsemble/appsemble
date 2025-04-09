@@ -7,3 +7,11 @@
 .gap {
   gap: 1rem;
 }
+
+:global(#root-crepe .milkdown .editor) {
+  padding: 0;
+}
+
+:global(#root-crepe .milkdown .editor p) {
+  padding-top: 1rem;
+}

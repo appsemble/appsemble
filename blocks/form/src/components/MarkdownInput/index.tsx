@@ -58,8 +58,9 @@ export function MarkdownInput({
   formValues,
   name,
   onChange,
+  readOnly,
 }: MarkdownInputProps): VNode {
-  const { shadowRoot, utils } = useBlock();
+  const { utils } = useBlock();
 
   const crepeRef = useRef<Crepe | undefined>();
   const crepeRootRef = useRef<HTMLDivElement | null>(null);
@@ -149,16 +150,10 @@ export function MarkdownInput({
   }, []);
 
   useEffect(() => {
-    const editorElement = shadowRoot
-      .getElementById('root-crepe')
-      .getElementsByTagName('div')
-      .item(0)
-      ?.getElementsByTagName('div')
-      ?.item(0);
-    editorElement?.classList.add('p-0');
-    editorElement?.setAttribute('contenteditable', 'true');
-    crepeRef.current?.setReadonly(disabled);
-  }, [disabled, shadowRoot]);
+    if (crepeRef?.current) {
+      crepeRef.current.setReadonly(disabled || readOnly);
+    }
+  }, [disabled, readOnly]);
 
   return (
     <FormComponent
