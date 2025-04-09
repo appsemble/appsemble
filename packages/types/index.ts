@@ -2081,6 +2081,7 @@ export interface FlowPageDefinition extends Omit<BasePageDefinition, 'actions'> 
    * A mapping of actions that can be fired by the page to action handlers.
    */
   actions?: {
+    onLoad?: ActionDefinition;
     onFlowCancel?: ActionDefinition;
     onFlowFinish?: ActionDefinition;
   };
