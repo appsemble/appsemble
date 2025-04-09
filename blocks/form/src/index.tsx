@@ -490,7 +490,7 @@ bootstrap(
                 className={`mb-4 ${f.type === 'enum' && !show(f) ? 'is-hidden' : ''} ${classNames({
                   [styles.dense]: dense,
                   [styles['column-span']]:
-                    ['fieldset', 'tags', 'file', 'selection'].includes(f.type) ||
+                    ['fieldset', 'tags', 'file', 'selection', 'markdown'].includes(f.type) ||
                     (f as StringField).multiline,
                 })}`}
                 disabled={

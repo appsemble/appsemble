@@ -123,7 +123,7 @@ export function FieldGroup({
             classNames({
               [styles['column-span']]:
                 fieldSpan ||
-                ['fieldset', 'tags', 'file', 'selection'].includes(f.type) ||
+                ['fieldset', 'tags', 'file', 'selection', 'markdown'].includes(f.type) ||
                 (f as StringField).multiline,
             }),
           )}
