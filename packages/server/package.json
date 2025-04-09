@@ -119,7 +119,7 @@
     "webpack-dev-middleware": "^6.0.0",
     "xast-util-to-xml": "^4.0.0",
     "xastscript": "^4.0.0",
-    "xml-crypto": "^3.0.0",
+    "xml-crypto": "^3.2.1",
     "yaml": "^2.0.0",
     "yargs": "^17.0.0"
   },
