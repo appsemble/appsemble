@@ -12,6 +12,7 @@ import { validateTags } from './validateTags.js';
 import { type BaseRequirement, type Field, type Values } from '../../../block.js';
 import { getValueByNameSequence } from '../getNested.js';
 import { isRequired } from '../requirements.js';
+import { validateMarkdown } from './validateMarkdown.js';
 
 export const validators: Record<string, Validator> = {
   date: validateDateTime,
@@ -26,6 +27,7 @@ export const validators: Record<string, Validator> = {
   integer: validateNumber,
   tags: validateTags,
   selection: validateSelection,
+  markdown: validateMarkdown,
 };
 
 type Validator = (

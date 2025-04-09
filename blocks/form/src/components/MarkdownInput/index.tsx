@@ -24,6 +24,7 @@ import { visit } from 'unist-util-visit';
 import styles from './MarkdownInput.module.css';
 import { type InputProps, type MarkdownField } from '../../../block.js';
 import { getValueByNameSequence } from '../../utils/getNested.js';
+import { isRequired } from '../../utils/requirements.js';
 
 type MarkdownInputProps = InputProps<string, MarkdownField>;
 
@@ -52,8 +53,10 @@ function stripImages(markdown: string): string {
 
 export function MarkdownInput({
   className,
+  dirty,
   disabled,
   error,
+  errorLinkRef,
   field,
   formValues,
   name,
@@ -99,6 +102,11 @@ export function MarkdownInput({
     }
 
     if (crepeRootRef.current) {
+      if (errorLinkRef) {
+        // eslint-disable-next-line no-param-reassign
+        errorLinkRef.current = crepeRootRef.current;
+      }
+
       crepeRef.current = new Crepe({
         root: crepeRootRef.current,
         defaultValue: initValue,
@@ -114,7 +122,7 @@ export function MarkdownInput({
         crepe.destroy();
       };
     }
-  }, [initValue, onChange]);
+  }, [errorLinkRef, initValue, onChange]);
 
   // Common and custom editor commands
   const toggleBold = useCallback(() => {
@@ -158,10 +166,11 @@ export function MarkdownInput({
   return (
     <FormComponent
       className={className}
-      error={error}
+      error={dirty ? error : null}
       help={help}
       icon={icon}
       label={remappedLabel as string}
+      required={isRequired(field, utils, formValues)}
       tag={tag}
     >
       <div className={classNames('is-flex is-flex-direction-row', styles.gap)}>

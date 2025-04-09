@@ -14,6 +14,7 @@ function generateDefaultValue(field: Field): unknown {
     case 'number':
       return field.display === 'slider' ? getMin(field) : undefined;
     case 'string':
+    case 'markdown':
       return '';
     case 'file':
       return field.repeated ? [] : null;

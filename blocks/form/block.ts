@@ -359,6 +359,8 @@ export type FieldsetRequirement = LengthRequirement;
 
 export type GeocoordinateRequirement = ProhibitedRequirement | RequiredRequirement;
 
+export type MarkdownRequirement = RequiredRequirement;
+
 /**
  * An option that is displayed in a dropdown menu or radio button field.
  */
@@ -1256,6 +1258,11 @@ export interface MarkdownField extends AbstractField {
    * The type of the field.
    */
   type: 'markdown';
+
+  /**
+   * Requirements that are applicable to a markdown field.
+   */
+  requirements?: MarkdownRequirement[];
 }
 
 export type Field =
