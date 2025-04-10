@@ -24,6 +24,7 @@ import { visit } from 'unist-util-visit';
 import styles from './MarkdownInput.module.css';
 import { type InputProps, type MarkdownField } from '../../../block.js';
 import { getValueByNameSequence } from '../../utils/getNested.js';
+import { isRequired } from '../../utils/requirements.js';
 
 type MarkdownInputProps = InputProps<string, MarkdownField>;
 
@@ -52,14 +53,17 @@ function stripImages(markdown: string): string {
 
 export function MarkdownInput({
   className,
+  dirty,
   disabled,
   error,
+  errorLinkRef,
   field,
   formValues,
   name,
   onChange,
+  readOnly,
 }: MarkdownInputProps): VNode {
-  const { shadowRoot, utils } = useBlock();
+  const { utils } = useBlock();
 
   const crepeRef = useRef<Crepe | undefined>();
   const crepeRootRef = useRef<HTMLDivElement | null>(null);
@@ -98,6 +102,11 @@ export function MarkdownInput({
     }
 
     if (crepeRootRef.current) {
+      if (errorLinkRef) {
+        // eslint-disable-next-line no-param-reassign
+        errorLinkRef.current = crepeRootRef.current;
+      }
+
       crepeRef.current = new Crepe({
         root: crepeRootRef.current,
         defaultValue: initValue,
@@ -113,7 +122,7 @@ export function MarkdownInput({
         crepe.destroy();
       };
     }
-  }, [initValue, onChange]);
+  }, [errorLinkRef, initValue, onChange]);
 
   // Common and custom editor commands
   const toggleBold = useCallback(() => {
@@ -149,24 +158,19 @@ export function MarkdownInput({
   }, []);
 
   useEffect(() => {
-    const editorElement = shadowRoot
-      .getElementById('root-crepe')
-      .getElementsByTagName('div')
-      .item(0)
-      ?.getElementsByTagName('div')
-      ?.item(0);
-    editorElement?.classList.add('p-0');
-    editorElement?.setAttribute('contenteditable', 'true');
-    crepeRef.current?.setReadonly(disabled);
-  }, [disabled, shadowRoot]);
+    if (crepeRef?.current) {
+      crepeRef.current.setReadonly(disabled || readOnly);
+    }
+  }, [disabled, readOnly]);
 
   return (
     <FormComponent
       className={className}
-      error={error}
+      error={dirty ? error : null}
       help={help}
       icon={icon}
       label={remappedLabel as string}
+      required={isRequired(field, utils, formValues)}
       tag={tag}
     >
       <div className={classNames('is-flex is-flex-direction-row', styles.gap)}>
