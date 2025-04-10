@@ -7,7 +7,8 @@ export const PageActionsDefinition: OpenAPIV3.NonArraySchemaObject = {
   properties: {
     onLoad: {
       $ref: '#/components/schemas/ActionDefinition',
-      description: '',
+      description:
+        'This action is fired when a page loads, highly helpful in loading data for the page',
     },
   },
 };

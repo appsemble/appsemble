@@ -211,6 +211,15 @@ export function FlowPage({
     [actions, setData],
   );
 
+  useEffect(() => {
+    if (actions.onLoad.type !== 'noop') {
+      actions.onLoad().then((results) => {
+        setData(results);
+      });
+    }
+    // @ts-expect-error 2454 Variable 'actions' is used before being assigned (strictNullChecks)
+  }, [setData, actions]);
+
   const to = useCallback(
     (d: any, stepName: string) => {
       if (typeof stepName !== 'string') {
