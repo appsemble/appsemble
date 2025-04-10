@@ -272,7 +272,6 @@ ${schemaExample('maths', { result: 'pretty' })}`,
         a: { $ref: '#/components/schemas/RemapperDefinition' },
         b: { $ref: '#/components/schemas/RemapperDefinition' },
         operation: {
-          type: 'string',
           enum: ['add', 'divide', 'mod', 'multiply', 'subtract'],
         },
       },
