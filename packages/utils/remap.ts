@@ -157,6 +157,10 @@ function isEqualArray(a: unknown[], b: unknown[]): boolean {
   return a.every((val, i) => val === b[i]);
 }
 
+function isNumber(a: unknown): boolean {
+  return a !== undefined && a != null && a !== '' && !Number.isNaN(Number(a));
+}
+
 export function remap(
   remapper: Remapper,
   input: unknown,
@@ -887,5 +891,36 @@ const mapperImplementations: MapperImplementations = {
   defined(value, input, context) {
     const remapped = remap(value, input, context);
     return remapped !== undefined && remapped != null;
+  },
+
+  maths(value, input, context) {
+    const { a, b, operation } = value;
+    const aRemapped = remap(a, input, context);
+    const bRemapped = remap(b, input, context);
+
+    if (!isNumber(aRemapped) || !isNumber(bRemapped)) {
+      return -1;
+    }
+
+    const na = Number(aRemapped);
+    const nb = Number(bRemapped);
+
+    switch (operation) {
+      case 'add':
+        return na + nb;
+      case 'subtract':
+        return na - nb;
+      case 'multiply':
+        return na * nb;
+      case 'divide':
+        if (nb === 0) {
+          return -1;
+        }
+        return na / nb;
+      case 'mod':
+        return na % nb;
+      default:
+        return -1;
+    }
   },
 };
