@@ -896,6 +896,19 @@ export interface Remappers {
    * undefined -> false
    */
   defined: Remapper;
+
+  /**
+   * Perform the specified mathematical operation on the two numbers.
+   *
+   * Where the position matters, `a` is the first input.
+   *
+   * If one of the inputs is not a number, or the operation is invalid, `-1` is returned.
+   */
+  maths: {
+    a: Remapper;
+    b: Remapper;
+    operation: 'add' | 'divide' | 'mod' | 'multiply' | 'subtract';
+  };
 }
 
 export type ObjectRemapper = RequireExactlyOne<Remappers>;

@@ -918,6 +918,17 @@ export const examples: Record<RemapperExampleKeys, RemapperExample> = {
     },
     result: [true, true, true, false, false],
   },
+  maths: {
+    input: { version: 0 },
+    remapper: {
+      maths: {
+        a: { prop: 'version' },
+        b: { static: 1 },
+        operation: 'add',
+      },
+    },
+    result: 1,
+  },
 } as const;
 
 /**

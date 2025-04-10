@@ -261,4 +261,19 @@ For example:
 ${schemaExample('xml.parse', { result: 'pretty' })}`,
       $ref: '#/components/schemas/RemapperDefinition',
     },
+    maths: {
+      description: `This can be used to perform a mathematical operation on two numbers
+
+For example:
+
+${schemaExample('maths', { result: 'pretty' })}`,
+      additionalProperties: false,
+      properties: {
+        a: { $ref: '#/components/schemas/RemapperDefinition' },
+        b: { $ref: '#/components/schemas/RemapperDefinition' },
+        operation: {
+          enum: ['add', 'divide', 'mod', 'multiply', 'subtract'],
+        },
+      },
+    },
   };

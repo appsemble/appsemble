@@ -1777,6 +1777,61 @@ describe('user', () => {
   });
 });
 
+describe('maths', () => {
+  runTests({
+    add: {
+      input: null,
+      mappers: { maths: { a: 4, b: 2, operation: 'add' } },
+      expected: 6,
+    },
+    subtract: {
+      input: null,
+      mappers: { maths: { a: 4, b: 2, operation: 'subtract' } },
+      expected: 2,
+    },
+    multiply: {
+      input: null,
+      mappers: { maths: { a: 4, b: 2, operation: 'multiply' } },
+      expected: 8,
+    },
+    divide: {
+      input: null,
+      mappers: { maths: { a: 4, b: 2, operation: 'divide' } },
+      expected: 2,
+    },
+    'mod-even': {
+      input: null,
+      mappers: { maths: { a: 4, b: 2, operation: 'mod' } },
+      expected: 0,
+    },
+    'mod-odd': {
+      input: null,
+      mappers: { maths: { a: 3, b: 2, operation: 'mod' } },
+      expected: 1,
+    },
+    'non-numeric-empty-string': {
+      input: null,
+      mappers: { maths: { a: 4, b: '', operation: 'add' } },
+      expected: -1,
+    },
+    'non-numeric-string': {
+      input: null,
+      mappers: { maths: { a: 4, b: 'a', operation: 'add' } },
+      expected: -1,
+    },
+    'non-numeric-object': {
+      input: null,
+      mappers: { maths: { a: 4, b: { static: {} }, operation: 'add' } },
+      expected: -1,
+    },
+    'divide-by-0': {
+      input: null,
+      mappers: { maths: { a: 4, b: 0, operation: 'divide' } },
+      expected: -1,
+    },
+  });
+});
+
 describe.each(Object.entries(examples))(
   'should test remapper example: %s',
   (name, { input, remapper, result: expected, skip }) => {
