@@ -2,6 +2,25 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.32.1-test.17](https://gitlab.com/appsemble/appsemble/-/releases/0.32.1-test.17)] - 2025-04-10
+
+### Added
+
+- Block(`form`): Add requirements and validation to `MarkdownInput` field.
+- App: `onLoad` action support for flow pages.
+
+### Changed
+
+- Block(`form`): Make the `MarkdownInput` field take up the whole width of the form.
+
+### Fixed
+
+- Block(`form`): Fix `MarkdownInput` styling.
+- Block(`table`): Do not allow clicking on headers if **name** property is not defined for the
+  field.
+- Server: App member verification or properties patch leading to properties being overwritten.
+- Utils: Publish app failing when `condition` action is defined without either `then` or `else`.
+
 ## \[[0.32.1-test.16](https://gitlab.com/appsemble/appsemble/-/releases/0.32.1-test.16)] - 2025-04-07
 
 ### Changed

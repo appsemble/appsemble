@@ -395,7 +395,7 @@ pages:
   - name: Test
     blocks:
       - type: button-list
-        version: 0.32.1-test.16
+        version: 0.32.1-test.17
         actions:
           handle:
             type: request

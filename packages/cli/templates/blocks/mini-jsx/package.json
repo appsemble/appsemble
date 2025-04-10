@@ -5,7 +5,7 @@
     "*.css"
   ],
   "dependencies": {
-    "@appsemble/sdk": "0.32.1-test.16",
+    "@appsemble/sdk": "0.32.1-test.17",
     "mini-jsx": "^4.0.0"
   }
 }

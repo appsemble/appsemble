@@ -1,7 +1,7 @@
 apiVersion: v2
 name: appsemble
-version: 0.32.1-test.16
-appVersion: 0.32.1-test.16
+version: 0.32.1-test.17
+appVersion: 0.32.1-test.17
 kubeVersion: '>=1.21.0'
 type: application
 description: The open source low-code app building platform
@@ -32,12 +32,24 @@ dependencies:
     condition: minio.enabled
 annotations:
   artifacthub.io/changes: >
+    - kind: added
+      description: "Block(form): Add requirements and validation to MarkdownInput field."
+    - kind: added
+      description: "App: onLoad action support for flow pages."
     - kind: changed
-      description: "Block(pdf-viewer): Allow string values for width and height."
+      description: "Block(form): Make the MarkdownInput field take up the whole width
+        of the form."
     - kind: fixed
-      description: "Block(form): Fix thumbnail logic."
+      description: "Block(form): Fix MarkdownInput styling."
     - kind: fixed
-      description: "Block(list): Fix spacing."
+      description: "Block(table): Do not allow clicking on headers if name property is
+        not defined for the field."
+    - kind: fixed
+      description: "Server: App member verification or properties patch leading to
+        properties being overwritten."
+    - kind: fixed
+      description: "Utils: Publish app failing when condition action is defined
+        without either then or else."
   artifacthub.io/license: LGPL-3.0-only
   artifacthub.io/links: |
     - name: Appsemble Studio

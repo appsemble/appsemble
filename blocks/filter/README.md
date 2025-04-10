@@ -6,5 +6,5 @@ The filter can be used as a search bar by using the highlight parameter with a s
 
 ### Images
 
-![Filter screenshot](https://gitlab.com/appsemble/appsemble/-/raw/0.32.1-test.16/config/assets/filter.png)
-![Filter screenshot](https://gitlab.com/appsemble/appsemble/-/raw/0.32.1-test.16/config/assets/filter-search-bar.png)
+![Filter screenshot](https://gitlab.com/appsemble/appsemble/-/raw/0.32.1-test.17/config/assets/filter.png)
+![Filter screenshot](https://gitlab.com/appsemble/appsemble/-/raw/0.32.1-test.17/config/assets/filter-search-bar.png)

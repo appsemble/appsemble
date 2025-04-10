@@ -1,1 +1,0 @@
-Fix `MarkdownInput` styling
