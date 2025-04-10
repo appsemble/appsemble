@@ -31,7 +31,7 @@ bootstrap(({ events, parameters: { caption, fields }, ready, utils }) => {
         const aFieldName = a[fieldName];
         const bFieldName = b[fieldName];
         if (typeof aFieldName === 'string' && typeof bFieldName === 'string') {
-          return aFieldName.localeCompare(bFieldName);
+          return aFieldName.toLowerCase().localeCompare(bFieldName.toLowerCase());
         }
         if (typeof aFieldName === 'number' && typeof bFieldName === 'number') {
           return a - b;
@@ -81,9 +81,9 @@ bootstrap(({ events, parameters: { caption, fields }, ready, utils }) => {
           {heads.map((header) =>
             header ? (
               <th
-                className={`${styles.pointer} ${header?.name && header.name === highlighted ? 'has-background-warning' : ''}`}
+                className={`${header?.name ? styles.pointer : ''} ${header?.name && header.name === highlighted ? 'has-background-warning' : ''}`}
                 key={header?.label}
-                onClick={() => onTableHeaderClick(header?.name)}
+                {...(header?.name ? { onClick: () => onTableHeaderClick(header.name) } : {})}
               >
                 {header.label as string}
                 <span className="ml-1">
