@@ -13,8 +13,9 @@ export function FieldGroup({ data, field }: RendererProps<FieldGroupType>): VNod
 
   const label = utils.remap(field.label, data);
   const value = utils.remap(field.value, data);
+  const hide = utils.remap(field.hide, data);
 
-  return (
+  return hide ? null : (
     <div className="appsemble-group">
       {isPreactChild(label) ? <h5 className="title is-5">{label}</h5> : null}
       {Array.isArray(value)

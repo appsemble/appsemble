@@ -10,6 +10,11 @@ interface AbstractField {
    * The Remapper used to retrieve the data.
    */
   value?: Remapper;
+
+  /**
+   * Whether the field should not be rendered.
+   */
+  hide?: Remapper;
 }
 
 interface AbstractMarkerIcon {

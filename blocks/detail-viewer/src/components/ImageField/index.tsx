@@ -14,7 +14,7 @@ interface ImageFieldProps {
 }
 
 export function ImageField({
-  field: { rounded = false, size = 128 },
+  field: { hide: conceal, rounded = false, size = 128 },
   label,
   name,
   source,
@@ -24,8 +24,9 @@ export function ImageField({
   const img = source as string;
 
   const alt = (label || utils.remap(name, source)) as string;
+  const hide = utils.remap(conceal, source);
 
-  return (
+  return hide ? null : (
     <>
       <button className={`${styles.button} ${styles.root}`} onClick={modal.enable} type="button">
         <figure className={`image mr-3 is-${size}x${size} ${styles.root}`}>

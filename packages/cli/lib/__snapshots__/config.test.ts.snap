@@ -735,6 +735,10 @@ The following special cases for [Font Awesome icon](https://fontawesome.com/icon
             ],
             "type": "object",
           },
+          "hide": {
+            "description": "Whether the field should not be rendered.",
+            "format": "remapper",
+          },
           "label": {
             "description": "The label that is presented to the user. No label will be displayed if this is not defined.",
             "format": "remapper",
@@ -791,6 +795,10 @@ The following special cases for [Font Awesome icon](https://fontawesome.com/icon
             },
             "type": "array",
           },
+          "hide": {
+            "description": "Whether the field should not be rendered.",
+            "format": "remapper",
+          },
           "label": {
             "description": "The label that is presented to the user. No label will be displayed if this is not defined.",
             "format": "remapper",
@@ -809,6 +817,10 @@ The following special cases for [Font Awesome icon](https://fontawesome.com/icon
         "additionalProperties": false,
         "description": "Displays files as images.",
         "properties": {
+          "hide": {
+            "description": "Whether the field should not be rendered.",
+            "format": "remapper",
+          },
           "label": {
             "description": "The label that is presented to the user. No label will be displayed if this is not defined.",
             "format": "remapper",
@@ -900,6 +912,10 @@ The following special cases for [Font Awesome icon](https://fontawesome.com/icon
         "additionalProperties": false,
         "description": "Displays a map with a marker.",
         "properties": {
+          "hide": {
+            "description": "Whether the field should not be rendered.",
+            "format": "remapper",
+          },
           "label": {
             "description": "The label that is presented to the user. No label will be displayed if this is not defined.",
             "format": "remapper",
@@ -939,6 +955,10 @@ If \`fields[].latitude\` and \`fields[].longitude\` are not set it defaults to \
 
 If the content is an object it will be converted using \`JSON.stringify()\`.",
         "properties": {
+          "hide": {
+            "description": "Whether the field should not be rendered.",
+            "format": "remapper",
+          },
           "icon": {
             "description": "The icon to be used.",
             "format": "fontawesome",
@@ -968,6 +988,10 @@ If the content is an object it will be converted using \`JSON.stringify()\`.",
             "default": 350,
             "description": "Height of the video element.",
             "type": "number",
+          },
+          "hide": {
+            "description": "Whether the field should not be rendered.",
+            "format": "remapper",
           },
           "label": {
             "description": "The label that is presented to the user. No label will be displayed if this is not defined.",

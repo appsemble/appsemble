@@ -9,7 +9,7 @@ import { ImageField } from '../ImageField/index.js';
 
 export function VideoRenderer({
   data,
-  field: { height = 350, label, platform, thumbnail: t, value, width = 350 },
+  field: { height = 350, hide, label, platform, thumbnail: t, value, width = 350 },
 }: RendererProps<VideoField>): VNode {
   const {
     utils: { asset, remap },
@@ -17,6 +17,7 @@ export function VideoRenderer({
 
   const video = remap(value, data) as string;
   const thumbnail = remap(t, data) as string;
+  const conceal = remap(hide, data) as boolean;
 
   const [videoUrl, setVideoUrl] = useState(null);
   const [thumbnailUrl, setThumbnailUrl] = useState(null);
@@ -76,7 +77,7 @@ export function VideoRenderer({
 
   const sandboxConfig = 'allow-scripts allow-same-origin allow-presentation';
 
-  return (
+  return conceal ? null : (
     <div className={styles.wrapper}>
       {isPreactChild(label) ? <h1 className="label">{label}</h1> : null}
       {video ? (
