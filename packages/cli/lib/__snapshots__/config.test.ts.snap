@@ -3473,6 +3473,13 @@ image can either be url or uploaded image",
             "description": "Whether the field should be read-only.",
             "format": "remapper",
           },
+          "requirements": {
+            "description": "Requirements that are applicable to a markdown field.",
+            "items": {
+              "$ref": "#/definitions/MarkdownRequirement",
+            },
+            "type": "array",
+          },
           "show": {
             "description": "Displays field only if condition is true.
 
@@ -3496,6 +3503,9 @@ Replaces the optional label if the field is optional. Won’t display if the fie
           "type",
         ],
         "type": "object",
+      },
+      "MarkdownRequirement": {
+        "$ref": "#/definitions/RequiredRequirement",
       },
       "MinMaxRequirement": {
         "additionalProperties": false,

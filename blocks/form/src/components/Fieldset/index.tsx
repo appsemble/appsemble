@@ -79,7 +79,8 @@ export function Fieldset({
 
   const fieldsetSpan = field.fields.some(
     (f) =>
-      ['fieldset', 'tags', 'file', 'selection', 'markdown'].includes(f.type) || (f as StringField).multiline,
+      ['fieldset', 'tags', 'file', 'selection', 'markdown'].includes(f.type) ||
+      (f as StringField).multiline,
   );
 
   return (
