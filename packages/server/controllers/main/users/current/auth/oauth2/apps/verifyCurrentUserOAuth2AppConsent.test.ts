@@ -97,6 +97,63 @@ describe('verifyCurrentUserOAuth2AppConsent', () => {
     });
   });
 
+  it('should verify consent only for the current app', async () => {
+    const app = await App.create({
+      OrganizationId: organization.id,
+      path: 'app',
+      definition: {
+        security: {
+          default: {
+            role: 'User',
+            policy: 'everyone',
+          },
+          roles: { User: {} },
+        },
+      },
+      vapidPublicKey: '',
+      vapidPrivateKey: '',
+    });
+    const app2 = await App.create({
+      OrganizationId: organization.id,
+      path: 'test-app',
+      definition: {
+        security: {
+          default: {
+            role: 'User',
+            policy: 'everyone',
+          },
+          roles: { User: {} },
+        },
+      },
+      vapidPublicKey: '',
+      vapidPrivateKey: '',
+    });
+
+    await AppMember.create({
+      AppId: app2.id,
+      UserId: user.id,
+      email: user.primaryEmail,
+      consent: new Date(),
+      role: 'User',
+    });
+    authorizeStudio();
+    const response = await request.post(
+      `/api/users/current/auth/oauth2/apps/${app.id}/consent/verify`,
+      {
+        redirectUri: 'http://app.org.localhost:9999',
+        scope: 'openid',
+      },
+    );
+    expect(response).toMatchObject({
+      status: 400,
+      data: {
+        error: 'Bad Request',
+        statusCode: 400,
+        message: 'User has not agreed to the requested scopes',
+      },
+    });
+  });
+
   it('should create an authorization code for the user and app on a custom domain if the user has previously agreed', async () => {
     const app = await App.create({
       OrganizationId: organization.id,
