@@ -1198,6 +1198,26 @@ export interface StringField extends AbstractField, InlineField {
   multiline?: boolean;
 
   /**
+   * Whether the field expects a datalist
+   *
+   * If a static array is passed to `datalist`, it will be used
+   *
+   * Otherwise, the field will attempt to get the datalist from the object passed to it
+   *
+   * If `multiline` is set to true, this is ignored
+   *
+   * @default false
+   */
+  datalistEnabled?: boolean;
+
+  /**
+   * Used to display a static html datalist for the field
+   *
+   * @default []
+   */
+  datalist?: { value: string }[];
+
+  /**
    * The type of the field.
    */
   type: 'string';

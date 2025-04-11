@@ -1,5 +1,6 @@
 import { useBlock } from '@appsemble/preact';
 import { InputField, TextAreaField } from '@appsemble/preact-components';
+import { has } from '@appsemble/utils';
 import classNames from 'classnames';
 import { type VNode } from 'preact';
 
@@ -25,9 +26,30 @@ export function StringInput({
   readOnly,
 }: StringInputProps): VNode {
   const { utils } = useBlock();
-  const { format, help, icon, inline, label, multiline, placeholder, tag } = field;
+  const {
+    datalistEnabled = false,
+    format,
+    help,
+    icon,
+    inline,
+    label,
+    multiline,
+    placeholder,
+    tag,
+  } = field;
+  let { datalist = [] } = field;
 
-  const value = getValueByNameSequence(name, formValues) as string;
+  const unknownValue = getValueByNameSequence(name, formValues);
+  let value;
+  if (unknownValue instanceof Object) {
+    if (!multiline && datalistEnabled && has(unknownValue, 'datalist')) {
+      datalist = (unknownValue as { datalist: { value: string }[] }).datalist;
+    }
+    value = has(unknownValue, 'value') ? (unknownValue as { value: number | string }).value : '';
+  } else {
+    value = unknownValue as string;
+  }
+
   const remappedLabel = utils.remap(label, value) ?? name;
   const commonProps = {
     className: classNames('appsemble-string', className),
@@ -45,14 +67,23 @@ export function StringInput({
     readOnly,
     required: isRequired(field, utils, formValues),
     tag: utils.remap(tag, value) as string,
-    value: format === 'url' ? String(new URL(value)) : value,
+    value: format === 'url' && typeof value === 'string' ? String(new URL(value)) : value,
     inline,
     errorLinkRef,
   };
 
   return multiline ? (
     <TextAreaField {...commonProps} />
+  ) : datalistEnabled && datalist.length > 0 ? (
+    <>
+      <datalist id={`${name}-datalist`}>
+        {datalist.map((item) => (
+          <option key={item.value} value={item.value} />
+        ))}
+      </datalist>
+      <InputField {...commonProps} list={`${name}-datalist`} type={format} />
+    </>
   ) : (
-    <InputField {...commonProps} type={format} />
+    <InputField {...commonProps} type={format} value={value as string} />
   );
 }
