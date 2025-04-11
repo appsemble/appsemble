@@ -41,7 +41,14 @@ export async function getMessagesUtil(
   const blockPrefixes: [string, Prefix][] = [];
   const blockQuery: BlockQueryItem[] = [];
 
-  const extractedMessages = Object.keys(extractAppMessages(app.definition).app);
+  const blockMessageKeys = new Set();
+  const extractedMessages = Object.keys(
+    extractAppMessages(app.definition, (block) => {
+      blockMessageKeys.add(
+        `${block.type.startsWith('@') ? block.type : `@appsemble/${block.type}`}-${block.version}`,
+      );
+    }).app,
+  );
   const appMessages = (await getAppMessages({ context: ctx, app, language })).filter((item) =>
     Object.keys(item.messages.app ?? {}).filter((key) => !(key in extractedMessages)),
   );
@@ -73,10 +80,41 @@ export async function getMessagesUtil(
     throwKoaError(ctx, 404, `Language “${language}” could not be found`);
   }
 
+  const filteredMessages = appMessages.map((message) => {
+    // Create a shallow copy of the message to avoid mutating the original
+    const newMessage = message;
+
+    const filteredBlocks: Record<string, Record<string, Record<string, string>>> = {};
+
+    const blockKeys = Object.keys(newMessage.messages.blocks ?? {});
+    for (const key of blockKeys) {
+      const block = newMessage.messages.blocks[key];
+
+      const filteredBlock: Record<string, Record<string, string>> = {};
+
+      const versionKeys = Object.keys(block);
+      for (const version of versionKeys) {
+        const combinedKey = `${key}-${version}`;
+        if (blockMessageKeys.has(combinedKey)) {
+          filteredBlock[version] = block[version];
+        }
+      }
+
+      if (Object.keys(filteredBlock).length > 0) {
+        filteredBlocks[key] = filteredBlock;
+      }
+    }
+
+    // Assign the filtered blocks back to the new message
+    newMessage.messages.blocks = filteredBlocks;
+
+    return newMessage;
+  });
+
   const baseLanguageMessages =
-    override === 'true' ? appMessages.find((m) => m.language === baseLang) : undefined;
+    override === 'true' ? filteredMessages.find((m) => m.language === baseLang) : undefined;
   const languageMessages =
-    override === 'true' ? appMessages.find((m) => m.language === lang) : undefined;
+    override === 'true' ? filteredMessages.find((m) => m.language === lang) : undefined;
 
   for (const block of blockMessages) {
     const { name } = block;
