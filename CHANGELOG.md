@@ -2,6 +2,22 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.32.1](https://gitlab.com/appsemble/appsemble/-/releases/0.32.1)] - 2025-04-11
+
+### Added
+
+- Block(`detail-viewer`): Add an option to **hide** a field.
+- Block(`form`): Add support for `datalist` in string fields.
+- Utils: Add `maths` remapper.
+
+### Changed
+
+- Block(`table`): Change sorting to emit an event instead of sorting the data in memory.
+
+### Fixed
+
+- Cli: App extract messages command failing if **app** is not defined in the messages file.
+
 ## \[[0.32.1-test.17](https://gitlab.com/appsemble/appsemble/-/releases/0.32.1-test.17)] - 2025-04-10
 
 ### Added

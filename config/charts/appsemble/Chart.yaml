@@ -1,7 +1,7 @@
 apiVersion: v2
 name: appsemble
-version: 0.32.1-test.17
-appVersion: 0.32.1-test.17
+version: 0.32.1
+appVersion: 0.32.1
 kubeVersion: '>=1.21.0'
 type: application
 description: The open source low-code app building platform
@@ -33,23 +33,17 @@ dependencies:
 annotations:
   artifacthub.io/changes: >
     - kind: added
-      description: "Block(form): Add requirements and validation to MarkdownInput field."
+      description: "Block(detail-viewer): Add an option to hide a field."
     - kind: added
-      description: "App: onLoad action support for flow pages."
+      description: "Block(form): Add support for datalist in string fields."
+    - kind: added
+      description: "Utils: Add maths remapper."
     - kind: changed
-      description: "Block(form): Make the MarkdownInput field take up the whole width
-        of the form."
+      description: "Block(table): Change sorting to emit an event instead of sorting
+        the data in memory."
     - kind: fixed
-      description: "Block(form): Fix MarkdownInput styling."
-    - kind: fixed
-      description: "Block(table): Do not allow clicking on headers if name property is
-        not defined for the field."
-    - kind: fixed
-      description: "Server: App member verification or properties patch leading to
-        properties being overwritten."
-    - kind: fixed
-      description: "Utils: Publish app failing when condition action is defined
-        without either then or else."
+      description: "Cli: App extract messages command failing if app is not defined in
+        the messages file."
   artifacthub.io/license: LGPL-3.0-only
   artifacthub.io/links: |
     - name: Appsemble Studio
