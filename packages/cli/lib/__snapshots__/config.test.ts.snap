@@ -5969,7 +5969,11 @@ This does not trigger if the field has a different action specified.",
     },
   },
   "events": {
-    "emit": undefined,
+    "emit": {
+      "sorted": {
+        "description": "This event is emitted when one of the columns is clicked for sorting.",
+      },
+    },
     "listen": {
       "data": {
         "description": "Listener for data used to display data in the table.",
@@ -6171,6 +6175,9 @@ If this isn’t specified, no label will be shown. If no fields have a label, th
         "additionalProperties": false,
         "properties": {
           "disabled": {
+            "description": "Whether the option should be disabled.
+
+If the resulting remapper value is truthy, the option will be disabled.",
             "format": "remapper",
           },
           "icon": {

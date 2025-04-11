@@ -198,7 +198,7 @@ export interface DropdownOption {
    */
   onClick: string;
 
-  /*
+  /**
    * Whether the option should be disabled.
    *
    * If the resulting remapper value is truthy, the option will be disabled.
@@ -284,5 +284,12 @@ declare module '@appsemble/sdk' {
      * Listener for data used to display data in the table.
      */
     data: never;
+  }
+
+  interface EventEmitters {
+    /**
+     * This event is emitted when one of the columns is clicked for sorting.
+     */
+    sorted: never;
   }
 }

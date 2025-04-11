@@ -14,44 +14,37 @@ bootstrap(({ events, parameters: { caption, fields }, ready, utils }) => {
   const [data, setData] = useState<Item[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
-  const [order, setOrder] = useState<'asc' | 'default' | 'desc'>('default');
-  const [loadedData, setLoadedData] = useState<Item[]>([]);
-  const [highlighted, setHighlighted] = useState<String>();
+  const [order, setOrder] = useState<{ field: string; order: 'asc' | 'desc' }>({
+    field: '',
+    order: 'asc',
+  });
 
   const remappedCaption = utils.remap(caption, {}) as string;
+
   const onTableHeaderClick = useCallback(
     (fieldName: string) => {
-      if (order === 'desc') {
-        setData(loadedData);
-        setOrder('default');
-        setHighlighted('');
-        return;
-      }
-      const sortedData = ([...data] as any[]).sort((a, b) => {
-        const aFieldName = a[fieldName];
-        const bFieldName = b[fieldName];
-        if (typeof aFieldName === 'string' && typeof bFieldName === 'string') {
-          return aFieldName.toLowerCase().localeCompare(bFieldName.toLowerCase());
+      if (order.field === fieldName) {
+        switch (order.order) {
+          case 'asc':
+            setOrder({ field: fieldName, order: 'desc' });
+            break;
+          case 'desc':
+            setOrder({ field: fieldName, order: 'asc' });
+            break;
+          default:
+            setOrder({ field: fieldName, order: 'desc' });
+            break;
         }
-        if (typeof aFieldName === 'number' && typeof bFieldName === 'number') {
-          return a - b;
-        }
-        if (typeof aFieldName === 'boolean' && typeof bFieldName === 'boolean') {
-          return Number(aFieldName) - Number(bFieldName);
-        }
-      });
-      if (order === 'default') {
-        setData(sortedData);
-        setOrder('asc');
-        setHighlighted(fieldName);
       } else {
-        setData(sortedData.reverse());
-        setOrder('desc');
-        setHighlighted(fieldName);
+        setOrder({ field: fieldName, order: 'asc' });
       }
     },
-    [data, order, loadedData],
+    [order],
   );
+
+  useEffect(() => {
+    events.emit.sorted(order);
+  }, [events.emit, order]);
 
   const headers = useMemo<VNode>(() => {
     const heads = fields.flatMap((field) => {
@@ -81,23 +74,14 @@ bootstrap(({ events, parameters: { caption, fields }, ready, utils }) => {
           {heads.map((header) =>
             header ? (
               <th
-                className={`${header?.name ? styles.pointer : ''} ${header?.name && header.name === highlighted ? 'has-background-warning' : ''}`}
+                className={`${header?.name ? styles.pointer : ''} ${header?.name && header.name === order.field ? 'has-background-warning' : ''}`}
                 key={header?.label}
                 {...(header?.name ? { onClick: () => onTableHeaderClick(header.name) } : {})}
               >
                 {header.label as string}
                 <span className="ml-1">
-                  {header.name ? (
-                    <Icon
-                      icon={
-                        order === 'default'
-                          ? 'arrows-up-down'
-                          : order === 'asc'
-                            ? 'arrow-up'
-                            : 'arrow-down'
-                      }
-                      size="small"
-                    />
+                  {header.name && header.name === order.field ? (
+                    <Icon icon={order.order === 'asc' ? 'arrow-up' : 'arrow-down'} size="small" />
                   ) : null}
                 </span>
               </th>
@@ -108,7 +92,7 @@ bootstrap(({ events, parameters: { caption, fields }, ready, utils }) => {
         </tr>
       </thead>
     );
-  }, [fields, highlighted, onTableHeaderClick, order, utils]);
+  }, [fields, onTableHeaderClick, order, utils]);
 
   useEffect(() => {
     const callback = (d: Item | Item[], err: string): void => {
@@ -118,7 +102,6 @@ bootstrap(({ events, parameters: { caption, fields }, ready, utils }) => {
         const items = Array.isArray(d) ? d : [d];
         const filteredItems = items.filter((item) => item != null);
         setData(filteredItems);
-        setLoadedData(filteredItems);
         setError(false);
       }
       setLoading(false);
