@@ -4235,6 +4235,34 @@ For example, the [\`regex\`](#RegexRequirement) requirement type allows you to v
 
 \`\`\`yaml type: string requirements:   - regex: \\w+@appsemble\\.com     errorMessage: Value does not end with “@appsemble.com” \`\`\`",
         "properties": {
+          "datalist": {
+            "default": [],
+            "description": "Used to display a static html datalist for the field",
+            "items": {
+              "additionalProperties": false,
+              "properties": {
+                "value": {
+                  "type": "string",
+                },
+              },
+              "required": [
+                "value",
+              ],
+              "type": "object",
+            },
+            "type": "array",
+          },
+          "datalistEnabled": {
+            "default": false,
+            "description": "Whether the field expects a datalist
+
+If a static array is passed to \`datalist\`, it will be used
+
+Otherwise, the field will attempt to get the datalist from the object passed to it
+
+If \`multiline\` is set to true, this is ignored",
+            "type": "boolean",
+          },
           "defaultValue": {
             "description": "The default value of the field.",
             "type": "string",
