@@ -66,7 +66,6 @@ pages:
                 onSuccess:
                   type: event
                   event: notesCount
-
         events:
           listen:
             refresh: refreshNotes
@@ -80,11 +79,19 @@ pages:
                 $skip: { prop: [state, $skip] }
                 $top: { prop: [state, $top] }
                 $filter: { prop: [data, $filter] }
+                $orderby: { prop: [ state, $orderby ] }
             updatePagination:
               object.from:
                 $skip: { prop: [data, $skip] }
                 $top: { prop: [data, $top] }
                 $filter: { prop: [state, $filter] }
+                $orderby: { prop: [ state, $orderby ] }
+            updateOrder:
+              object.from:
+                $skip: { prop: [ state, $skip ] }
+                $top: { prop: [ state, $top ] }
+                $filter: { prop: [ state, $filter ] }
+                $orderby: { prop: [ data, $orderby ] }
         events:
           listen:
             onStateChange: changeState
@@ -103,6 +110,7 @@ pages:
                 - defined: [{ prop: state }, { prop: $filter }]
                 - defined: [{ prop: state }, { prop: $skip }]
                 - defined: [{ prop: state }, { prop: $top }]
+                - defined: [{ prop: state }, { prop: $orderby }]
             then:
               type: resource.query
               resource: note
@@ -113,6 +121,7 @@ pages:
                     $skip: { prop: $skip }
                     $top: { prop: $top }
                     $filter: { prop: $filter }
+                    $orderby: { prop: $orderby }
             else:
               type: noop
               remapAfter:
@@ -123,12 +132,37 @@ pages:
           emit:
             data: notes
 
+      - type: data-loader
+        version: 0.32.1-test.17
+        actions:
+          onLoad:
+            remapBefore:
+              object.from:
+                stateAction: updateOrder
+                data:
+                  object.from:
+                    $orderby:
+                      string.format:
+                        template: '{field} {order}'
+                        values:
+                          field: { prop: field }
+                          order: { prop: order }
+            type: event
+            event: changeState
+        events:
+          listen:
+            refresh: tableSorted
+
       - type: table
         version: 0.32.1-test.17
         parameters:
           fields:
             - value: { prop: title }
               label: { translate: title }
+              name: title
+            - value: { prop: body }
+              label: { translate: body }
+              name: body
             - button:
                 icon: trash
                 color: danger
@@ -137,6 +171,8 @@ pages:
         events:
           listen:
             data: notes
+          emit:
+            sorted: tableSorted
         actions:
           onClick:
             type: dialog
@@ -199,7 +235,7 @@ pages:
       - type: paginator
         version: 0.32.1-test.17
         parameters:
-          itemsPerPage: 10
+          itemsPerPage: 2
           paginationType: 'limit-offset'
           paginatorType: 'buttons'
         actions:
