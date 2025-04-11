@@ -18,14 +18,7 @@ export async function verifyCurrentUserOAuth2AppConsent(ctx: Context): Promise<v
     attributes: ['definition', 'domain', 'id', 'path', 'OrganizationId'],
   });
 
-  const appMember = await AppMember.findOne({
-    where: {
-      UserId: authSubject!.id,
-    },
-  });
-
   assertKoaCondition(app != null, ctx, 404, 'App not found');
-
   const isAllowed = await checkAppSecurityPolicy(app, authSubject!.id);
 
   assertKoaCondition(
@@ -38,6 +31,13 @@ export async function verifyCurrentUserOAuth2AppConsent(ctx: Context): Promise<v
       appName: app.definition.name,
     },
   );
+
+  const appMember = await AppMember.findOne({
+    where: {
+      AppId: app.id,
+      UserId: authSubject!.id,
+    },
+  });
 
   assertKoaCondition(
     appMember != null && appMember.consent != null,

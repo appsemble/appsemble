@@ -23,13 +23,13 @@ export async function agreeCurrentUserOAuth2AppConsent(ctx: Context): Promise<vo
     attributes: ['domain', 'definition', 'id', 'path', 'OrganizationId'],
   });
 
+  assertKoaCondition(app != null, ctx, 404, 'App not found');
   let appMember = await AppMember.findOne({
     where: {
+      AppId: app.id,
       UserId: user.id,
     },
   });
-
-  assertKoaCondition(app != null, ctx, 404, 'App not found');
 
   assertKoaCondition(
     await checkAppSecurityPolicy(app, authSubject!.id),
