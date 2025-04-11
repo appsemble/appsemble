@@ -86,6 +86,75 @@ describe('getAppMessages', () => {
     );
   });
 
+  it('should return block messages only for the blocks used in the app', async () => {
+    await AppMessages.create({
+      AppId: app.id,
+      messages: {
+        messageIds: {
+          hello: 'world',
+        },
+        blocks: {
+          '@testorganization/test': {
+            '0.0.0': 'Foo',
+          },
+        },
+        app: {
+          name: 'App Name',
+        },
+      },
+      language: 'en',
+    });
+    const response = await request.get(`/api/apps/${app.id}/messages/en`);
+    expect(response).toMatchObject({
+      status: 200,
+      data: {
+        language: 'en',
+        messages: {
+          messageIds: {
+            hello: 'world',
+          },
+          app: {
+            name: 'App Name',
+          },
+          blocks: {},
+        },
+      },
+    });
+  });
+
+  it('should omit messages for pages that do not exist anymore', async () => {
+    await AppMessages.create({
+      language: 'en',
+      messages: {
+        messageIds: {
+          hello: 'world',
+        },
+        blocks: {},
+        app: {
+          name: 'App Name',
+          'pages.does-not-exist': 'Does not exist',
+        },
+      },
+      AppId: app.id,
+    });
+    const response = await request.get(`/api/apps/${app.id}/messages/en`);
+    expect(response).toMatchObject({
+      status: 200,
+      data: {
+        language: 'en',
+        messages: {
+          messageIds: {
+            hello: 'world',
+          },
+          app: {
+            name: 'App Name',
+          },
+          blocks: {},
+        },
+      },
+    });
+  });
+
   it('should return a 404 if a language is not supported', async () => {
     const response = await request.get(`/api/apps/${app.id}/messages/en-GB`);
     expect(response).toMatchInlineSnapshot(`

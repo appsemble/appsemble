@@ -875,7 +875,7 @@ export async function writeAppMessages(
     );
 
     const appMessagePrefixes = Object.keys(newAppMessages);
-    for (const [key, message] of Object.entries(oldMessages.app)) {
+    for (const [key, message] of Object.entries(oldMessages.app ?? {})) {
       const match = /^(pages\.[\dA-Za-z-]+(\..+)?)\.blocks\.\d+.+/.exec(key);
       if (!match) {
         continue;
