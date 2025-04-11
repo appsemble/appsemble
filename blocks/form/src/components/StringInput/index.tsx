@@ -76,12 +76,12 @@ export function StringInput({
     <TextAreaField {...commonProps} />
   ) : datalistEnabled && datalist.length > 0 ? (
     <>
-      <datalist id="datalist">
+      <datalist id={`${name}-datalist`}>
         {datalist.map((item) => (
           <option key={item.value} value={item.value} />
         ))}
       </datalist>
-      <InputField {...commonProps} list="datalist" type={format} />
+      <InputField {...commonProps} list={`${name}-datalist`} type={format} />
     </>
   ) : (
     <InputField {...commonProps} type={format} value={value as string} />
