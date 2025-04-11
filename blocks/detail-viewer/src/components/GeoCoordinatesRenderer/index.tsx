@@ -20,6 +20,7 @@ export function GeoCoordinatesRenderer({ data, field }: RendererProps<GeoCoordin
 
   const label = utils.remap(field.label, data);
   const value = utils.remap(field.value, data) as { lat: number; lng: number } | null;
+  const hide = utils.remap(field.hide, data);
   const lat = field.latitude ? (utils.remap(field.latitude, value ?? data) as number) : value.lat;
   const lng = field.longitude ? (utils.remap(field.longitude, value ?? data) as number) : value.lng;
   const [marker, setMarker] = useState<DivIcon | Icon>(null);
@@ -28,7 +29,7 @@ export function GeoCoordinatesRenderer({ data, field }: RendererProps<GeoCoordin
     createIcon(block).then(setMarker);
   }, [block]);
 
-  return (
+  return hide ? null : (
     <div className={`appsemble-geocoordinates ${styles.root}`}>
       {isPreactChild(label) ? <h1 className="label">{label}</h1> : null}
 

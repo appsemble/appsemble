@@ -14,8 +14,9 @@ export function FileRenderer({ data, field }: RendererProps<FileField>): VNode {
   const { utils } = useBlock();
   const value = utils.remap(field.value, data);
   const label = utils.remap(field.label, data);
+  const hide = utils.remap(field.hide, data);
 
-  return (
+  return hide ? null : (
     <div className="appsemble-file">
       {isPreactChild(label) && <h6 className="title is-6">{label}</h6>}
       {field.repeated ? (
