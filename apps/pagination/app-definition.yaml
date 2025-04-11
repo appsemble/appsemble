@@ -79,19 +79,19 @@ pages:
                 $skip: { prop: [state, $skip] }
                 $top: { prop: [state, $top] }
                 $filter: { prop: [data, $filter] }
-                $orderby: { prop: [ state, $orderby ] }
+                $orderby: { prop: [state, $orderby] }
             updatePagination:
               object.from:
                 $skip: { prop: [data, $skip] }
                 $top: { prop: [data, $top] }
                 $filter: { prop: [state, $filter] }
-                $orderby: { prop: [ state, $orderby ] }
+                $orderby: { prop: [state, $orderby] }
             updateOrder:
               object.from:
-                $skip: { prop: [ state, $skip ] }
-                $top: { prop: [ state, $top ] }
-                $filter: { prop: [ state, $filter ] }
-                $orderby: { prop: [ data, $orderby ] }
+                $skip: { prop: [state, $skip] }
+                $top: { prop: [state, $top] }
+                $filter: { prop: [state, $filter] }
+                $orderby: { prop: [data, $orderby] }
         events:
           listen:
             onStateChange: changeState
