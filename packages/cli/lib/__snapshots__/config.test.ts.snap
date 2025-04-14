@@ -4867,6 +4867,11 @@ If this is set to \`true\`, the default values for the fields won't contain data
         "description": "Weather the form should take up all available width on the page.",
         "type": "boolean",
       },
+      "hideSubmitButton": {
+        "description": "Whether the submit button should not be visible, useful when the only field is an enum and
+**onSelect** is defined",
+        "format": "remapper",
+      },
       "longSubmissionDuration": {
         "default": 5000,
         "description": "After this duration in milliseconds, a message will display urging the user to wait because the form is taking long to submit.",
