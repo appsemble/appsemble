@@ -633,6 +633,9 @@ export const examples: Record<RemapperExampleKeys, RemapperExample> = {
                 zip: 7500,
               },
             },
+            favoriteColors: {
+              'array.from': ['blue', 'green'],
+            },
           },
         },
         {
@@ -645,12 +648,19 @@ export const examples: Record<RemapperExampleKeys, RemapperExample> = {
                 country: 'France',
               },
             },
+            favoriteColors: { 'array.from': ['red', 'green', 'blue'] },
           },
         },
       ],
     },
     result: [
       { path: ['age'], type: 'changed', from: 25, to: 26 },
+      {
+        path: ['favoriteColors'],
+        type: 'changed',
+        from: ['blue', 'green'],
+        to: ['red', 'green', 'blue'],
+      },
       { path: ['address', 'city'], type: 'changed', from: 'Paris', to: 'Lyon' },
       { path: ['address', 'zip'], type: 'removed', value: 7500 },
       { path: ['address', 'country'], type: 'added', value: 'France' },
