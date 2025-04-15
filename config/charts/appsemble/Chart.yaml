@@ -1,7 +1,7 @@
 apiVersion: v2
 name: appsemble
-version: 0.32.1
-appVersion: 0.32.1
+version: 0.32.2-test.0
+appVersion: 0.32.2-test.0
 kubeVersion: '>=1.21.0'
 type: application
 description: The open source low-code app building platform
@@ -31,19 +31,8 @@ dependencies:
     repository: https://charts.bitnami.com/bitnami
     condition: minio.enabled
 annotations:
-  artifacthub.io/changes: >
-    - kind: added
-      description: "Block(detail-viewer): Add an option to hide a field."
-    - kind: added
-      description: "Block(form): Add support for datalist in string fields."
-    - kind: added
-      description: "Utils: Add maths remapper."
-    - kind: changed
-      description: "Block(table): Change sorting to emit an event instead of sorting
-        the data in memory."
-    - kind: fixed
-      description: "Cli: App extract messages command failing if app is not defined in
-        the messages file."
+  artifacthub.io/changes: |
+    []
   artifacthub.io/license: LGPL-3.0-only
   artifacthub.io/links: |
     - name: Appsemble Studio
