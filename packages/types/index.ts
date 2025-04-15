@@ -3106,8 +3106,6 @@ export interface ProjectConfig {
    * ^\d+\.\d+\.\d+$
    */
   version: string;
-
-  [key: string]: any;
 }
 
 export interface ProjectBuildConfig extends ProjectConfig {
@@ -3120,6 +3118,8 @@ export interface ProjectBuildConfig extends ProjectConfig {
    * The absolute directory of the project.
    */
   dir: string;
+
+  [key: string]: any;
 }
 
 export interface ProjectImplementations {

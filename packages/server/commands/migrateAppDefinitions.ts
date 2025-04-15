@@ -1,9 +1,9 @@
 import { readFile, writeFile } from 'node:fs/promises';
 
-import { schemas, validateAppDefinition } from '@appsemble/lang-sdk';
+import { BaseValidatorFactory, schemas, validateAppDefinition } from '@appsemble/lang-sdk';
 import { logger } from '@appsemble/node-utils';
 import { type AppDefinition as AppDefinitionType } from '@appsemble/types';
-import { Validator } from 'jsonschema';
+import { type Validator } from 'jsonschema';
 import { type Sequelize, type Transaction } from 'sequelize';
 import { type Document, parseDocument, stringify, type YAMLMap } from 'yaml';
 import { type Argv } from 'yargs';
@@ -191,6 +191,7 @@ async function validateDefinition(
     throwError: false,
     throwFirst: false,
     throwAll: false,
+    ...BaseValidatorFactory.defaultOptions,
   });
   const id = appId ? `id: ${appId}, ` : '';
   if (schemaValidationResult.errors.length > 0) {
@@ -228,8 +229,7 @@ export async function handler({
   const patches = migrations.at(-1)?.appPatches;
   if (!patches?.length) {
     logger.info('No patches found, nothing to migrate.');
-    process.exit();
-    return;
+    return process.exit();
   }
 
   let db: Sequelize;
@@ -252,10 +252,7 @@ export async function handler({
 
   let validator: Validator | undefined;
   if (validate) {
-    validator = new Validator();
-    Object.entries(schemas).map(([name, schema]) =>
-      validator!.addSchema(schema, `/#/components/schemas/${name}`),
-    );
+    validator = new BaseValidatorFactory({ schemas }).build();
   }
 
   let checked = 0;

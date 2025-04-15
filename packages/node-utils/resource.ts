@@ -161,6 +161,7 @@ export function extractResourceBody(
   ];
 }
 
+// XXX: unify with webhooks logic
 /**
  * Process an incoming resource request body.
  *
@@ -235,6 +236,7 @@ export function processResourceBody(
 
   const preparedAssets = [...preparedRegularAssets, ...preparedThumbnailAssets];
 
+  // TODO: @Vasil what kind of validator should we use here?
   validator.customFormats.binary = (input) => {
     if (knownAssetIds.includes(input)) {
       reusedAssets.add(input);

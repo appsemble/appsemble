@@ -5,7 +5,7 @@ import { tmpdir } from 'node:os';
 import { basename, dirname, join } from 'node:path';
 import { pipeline } from 'node:stream/promises';
 
-import { validateAppDefinition } from '@appsemble/lang-sdk';
+import { AppValidator, validateAppDefinition } from '@appsemble/lang-sdk';
 import {
   AppsembleError,
   assertKoaCondition,
@@ -72,13 +72,15 @@ export async function importApp(ctx: Context): Promise<void> {
     const yaml = await definitionFile.async('text');
     const theme = zip.folder('theme');
     const definition = parse(yaml, { maxAliasCount: 10_000 });
-    handleValidatorResult(
-      ctx,
-      openApi!.validate(definition, openApi!.document.components!.schemas!.AppDefinition, {
-        throw: false,
-      }),
-      'App validation failed',
-    );
+    const appValidator = new AppValidator();
+    handleValidatorResult(ctx, appValidator.validateApp(definition), 'App validation failed');
+    // handleValidatorResult(
+    //   ctx,
+    //   openApi!.validate(definition, openApi!.document.components!.schemas!.AppDefinition, {
+    //     throw: false,
+    //   }),
+    //   'App validation failed',
+    // );
     handleValidatorResult(
       ctx,
       await validateAppDefinition(definition, getBlockVersions),

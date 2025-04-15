@@ -26,7 +26,7 @@ import {
 } from './authorization.js';
 import { getAppBlocks, type IdentifiableBlock, normalizeBlockName } from './blockUtils.js';
 import { findPageByName } from './findPageByName.js';
-import { normalize, partialNormalized } from './index.js';
+import { AppValidator, normalize, partialNormalized } from './index.js';
 import { iterApp, type Prefix } from './iterApp.js';
 import { has } from './miscellaneous.js';
 import { type ServerActionName, serverActions } from './serverActions.js';
@@ -1646,6 +1646,9 @@ export async function validateAppDefinition(
   // and its validator
   if (!result) {
     const validator = new Validator();
+    // TODO: uncomment
+    // const validator = new AppValidator();
+    // result = validator.validateApp(definition);
     result = validator.validate(definition, {});
   }
 

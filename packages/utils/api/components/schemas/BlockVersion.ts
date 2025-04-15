@@ -77,7 +77,9 @@ This will be used to validate app definitions.
     },
     parameters: {
       // TODO: what do here?
-      $ref: '#/components/schemas/JSONSchemaRoot',
+      // $ref: '#/components/schemas/JSONSchemaRoot',
+      type: 'object',
+      additionalProperties: true,
       description: `A draft 7 JSON schema to use for block parameter validation.
 
 If the parameters of a block definition don’t conform to this schema, the app definition will be

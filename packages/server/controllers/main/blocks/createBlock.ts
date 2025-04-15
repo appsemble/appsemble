@@ -1,3 +1,4 @@
+import { BlockExampleValidator, BlockParamValidator } from '@appsemble/lang-sdk';
 import {
   assertKoaCondition,
   handleValidatorResult,
@@ -6,10 +7,7 @@ import {
   uploadToBuffer,
 } from '@appsemble/node-utils';
 import { type BlockDefinition, OrganizationPermission } from '@appsemble/types';
-import { has } from '@appsemble/utils';
-import { Validator } from 'jsonschema';
 import { type Context } from 'koa';
-import { type OpenAPIV3 } from 'openapi-types';
 import semver from 'semver';
 import { DatabaseError, literal, UniqueConstraintError } from 'sequelize';
 import { parse } from 'yaml';
@@ -44,13 +42,15 @@ export async function createBlock(ctx: Context): Promise<void> {
     }
   }
 
+  if (data.parameters) {
+    const paramValidator = new BlockParamValidator();
+
+    const result = paramValidator.validateParametersSchema(data.parameters);
+    handleValidatorResult(ctx, result, 'Validation failed for block parameters');
+  }
+
   if (data.examples?.length) {
-    const validator = new Validator();
-    validator.customFormats.fontawesome = () => true;
-    validator.customFormats.remapper = () => true;
-    validator.customFormats.action = () => true;
-    validator.customFormats['event-listener'] = () => true;
-    validator.customFormats['event-emitter'] = () => true;
+    const exampleValidator = new BlockExampleValidator();
 
     for (const exampleString of data.examples) {
       let example: BlockDefinition | undefined;
@@ -62,71 +62,14 @@ export async function createBlock(ctx: Context): Promise<void> {
       if (!example || typeof example !== 'object') {
         continue;
       }
-      const { required, ...blockSchema } = structuredClone(
-        ctx.openApi!.document.components!.schemas!.BlockDefinition,
-      ) as OpenAPIV3.NonArraySchemaObject;
-
-      delete blockSchema.properties?.name;
-      delete blockSchema.properties?.version;
-
-      const actionsSchema = blockSchema.properties?.actions as
-        | OpenAPIV3.NonArraySchemaObject
-        | undefined;
-
-      delete actionsSchema?.additionalProperties;
-      if (example.actions) {
-        // @ts-expect-error 18048 variable is possibly undefined (strictNullChecks)
-        actionsSchema.properties = Object.fromEntries(
-          Object.keys(example.actions).map((key) => [
-            key,
-            { $ref: '#/components/schemas/ActionDefinition' },
-          ]),
-        );
-      }
-      const blockEventsSchema: OpenAPIV3.NonArraySchemaObject = {
-        type: 'object',
-        additionalProperties: false,
-        properties: {},
-      };
-      // @ts-expect-error 18048 variable is possibly undefined (strictNullChecks)
-      blockSchema.properties.events = blockEventsSchema;
-      if (example.events) {
-        if (example.events.emit) {
-          // @ts-expect-error 18048 variable is possibly undefined (strictNullChecks)
-          blockEventsSchema.properties.emit = has(example.events.emit, '$any')
-            ? { type: 'object', additionalProperties: { type: 'string' } }
-            : {
-                type: 'object',
-                properties: Object.fromEntries(
-                  Object.keys(example.events.emit).map((emitter) => [emitter, { type: 'string' }]),
-                ),
-              };
-        }
-        if (example.events.listen) {
-          // @ts-expect-error 18048 variable is possibly undefined (strictNullChecks)
-          blockEventsSchema.properties.listen = has(example.events.listen, '$any')
-            ? { type: 'object', additionalProperties: { type: 'string' } }
-            : {
-                type: 'object',
-                properties: Object.fromEntries(
-                  Object.keys(example.events.listen).map((listener) => [
-                    listener,
-                    { type: 'string' },
-                  ]),
-                ),
-              };
-        }
-      }
-
-      const validationResult = ctx.openApi!.validate(example, blockSchema, { throw: false });
-      handleValidatorResult(ctx, validationResult, 'Validation failed for block example');
+      const result = exampleValidator.validate(example);
+      handleValidatorResult(ctx, result, 'Validation failed for block example');
     }
   }
 
   if (messages) {
     const messageKeys = Object.keys(messages.en);
     for (const [language, record] of Object.entries(messages)) {
-      // @ts-expect-error 2769 No overload matches this call (strictNullChecks)
       const keys = Object.keys(record);
       assertKoaCondition(
         !(keys.length !== messageKeys.length || keys.some((key) => !messageKeys.includes(key))),

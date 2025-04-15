@@ -1,4 +1,4 @@
-import { normalize, schemas, validateAppDefinition } from '@appsemble/lang-sdk';
+import { AppValidator, normalize, schemas, validateAppDefinition } from '@appsemble/lang-sdk';
 import {
   AppsembleError,
   assertKoaCondition,
@@ -9,7 +9,6 @@ import {
 import { type AppDefinition, OrganizationPermission } from '@appsemble/types';
 import { validateStyle } from '@appsemble/utils';
 import { type Context } from 'koa';
-import { createValidator } from 'koas-core/lib/validation.js';
 import { literal } from 'sequelize';
 import webpush from 'web-push';
 import { parse } from 'yaml';
@@ -74,15 +73,19 @@ export async function createApp(ctx: Context): Promise<void> {
 
     // TODO: something other than that
     // createValidator();
+    const appValidator = new AppValidator();
 
-    handleValidatorResult(
-      ctx,
-      // TODO: fix
-      openApi!.validate(definition, schemas.AppDefinition, {
-        throw: false,
-      }),
-      'App validation failed',
-    );
+    // handleValidatorResult(
+    //   ctx,
+    //   // TODO: fix
+    //   openApi!.validate(definition, schemas.AppDefinition, {
+    //     throw: false,
+    //   }),
+    //   'App validation failed',
+    // );
+    //
+    // TODO: do we even need two validators?
+    handleValidatorResult(ctx, appValidator.validateApp(definition), 'App validation failed');
 
     // TODO: this is exactly where issue 1854 happens
     handleValidatorResult(

@@ -19,3 +19,4 @@ export * from './noop.js';
 export * from './string.js';
 export * from './jsonschema.js';
 export * as referenceSchemas from './reference-schemas/index.js';
+export * from './BasicValidator.js';

@@ -97,6 +97,7 @@ The long description will be rendered on the app details page. Markdown content 
     definition: {
       type: 'object',
       additionalProperties: true,
+      description: 'An app definition describes what an Appsemble app looks like.',
     },
     screenshotUrls: {
       type: 'array',

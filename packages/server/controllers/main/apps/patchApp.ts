@@ -1,4 +1,4 @@
-import { validateAppDefinition } from '@appsemble/lang-sdk';
+import { AppValidator, validateAppDefinition } from '@appsemble/lang-sdk';
 import {
   assertKoaCondition,
   handleValidatorResult,
@@ -114,13 +114,16 @@ export async function patchApp(ctx: Context): Promise<void> {
       permissionsToCheck.push(OrganizationPermission.UpdateApps);
 
       const definition = parse(yaml, { maxAliasCount: 10_000 }) as AppDefinition;
-      handleValidatorResult(
-        ctx,
-        openApi!.validate(definition, openApi!.document.components!.schemas!.AppDefinition, {
-          throw: false,
-        }),
-        'App validation failed',
-      );
+      // handleValidatorResult(
+      //   ctx,
+      //   openApi!.validate(definition, openApi!.document.components!.schemas!.AppDefinition, {
+      //     throw: false,
+      //   }),
+      //   'App validation failed',
+      // );
+      // TODO: do we even need two validators?
+      const appValidator = new AppValidator();
+      handleValidatorResult(ctx, appValidator.validateApp(definition), 'App validation failed');
       handleValidatorResult(
         ctx,
         await validateAppDefinition(

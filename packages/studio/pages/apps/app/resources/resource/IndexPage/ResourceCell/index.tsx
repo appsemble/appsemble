@@ -18,6 +18,8 @@ interface ResourceCellProps {
 }
 
 export function ResourceCell({ required, schema, value }: ResourceCellProps): ReactNode {
+  // TODO: kill this
+  // also kill the whole component in here if we can please
   const { valid } = validator.validate(value, { required, ...schema }, { nestedErrors: true });
   const expandCell = useToggle();
   const contentRef = useRef<HTMLDivElement>(null);
