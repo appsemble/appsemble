@@ -37,7 +37,9 @@ export async function verifyAppOAuth2SecretCode(ctx: Context): Promise<void> {
   }
 
   const app = await App.findByPk(appId, {
-    attributes: ['id', 'path', 'OrganizationId', 'definition'],
+    // It is VERY important to include domain here
+    // It is used to verify the oauth2 redirectUrl
+    attributes: ['id', 'path', 'OrganizationId', 'definition', 'domain'],
     include: [
       {
         attributes: ['id', 'tokenUrl', 'clientId', 'clientSecret', 'remapper', 'userInfoUrl'],
