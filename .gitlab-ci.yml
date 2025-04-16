@@ -372,8 +372,28 @@ e2e:
     reports:
       junit: packages/e2e/results.xml
 
+e2e apps obligatory:
+  allow_failure: false
+  stage: end 2 end
+  needs:
+    - build docker image
+  rules:
+    - if: $CI_MERGE_REQUEST_ID && $CI_MERGE_REQUEST_SOURCE_PROJECT_PATH == 'appsemble/appsemble'
+    - if: $CI_COMMIT_TAG
+  inherit:
+    variables: false
+  variables:
+    APPSEMBLE_IMAGE: '$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG'
+  parallel:
+    matrix:
+      - PROJECT: ['appsemble/apps/sittard-geleen']
+  trigger:
+    project: $PROJECT
+    strategy: depend
+    branch: main
+
 # Allow failure temporarily until downstream tests are fixed
-e2e apps:
+e2e apps manual:
   allow_failure: true
   stage: end 2 end
   needs:
@@ -388,7 +408,7 @@ e2e apps:
     APPSEMBLE_IMAGE: '$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG'
   parallel:
     matrix:
-      - APP:
+      - PROJECT:
           [
             'appsemble/apps/template',
             'appsemble/apps/sittard-geleen',
@@ -398,7 +418,7 @@ e2e apps:
             'appsemble/apps/tbvwonen',
           ]
   trigger:
-    project: $APP
+    project: $PROJECT
     strategy: depend
     branch: main
 
