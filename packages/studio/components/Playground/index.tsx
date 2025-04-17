@@ -256,6 +256,7 @@ export function Playground({ customOption, defaultOption = 'None' }: PlaygroundP
       setJsonError(false);
       const parsedRemapper = parse(remapper);
       setYamlError(null);
+      // TODO: import a validator from lang-sdk
       const validator = new Validator();
       Object.entries(schemas).map(([path, schema]) =>
         validator.addSchema(schema, `/#/components/schemas/${path}`),

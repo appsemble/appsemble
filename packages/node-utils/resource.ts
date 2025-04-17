@@ -14,6 +14,7 @@ import {
   type DefaultState,
   type ParameterizedContext,
 } from 'koa';
+import { partition } from 'lodash-es';
 import parseDuration from 'parse-duration';
 import { type JsonObject, type JsonValue } from 'type-fest';
 
@@ -189,54 +190,59 @@ export function processResourceBody(
 ): [Record<string, unknown> | Record<string, unknown>[], PreparedAsset[], string[]] {
   const [resource, assets, preValidateProperty] = extractResourceBody(ctx);
   const validator = new Validator();
-  const assetIdMap = new Map<number, string>();
-  const assetUsedMap = new Map<number, boolean>();
-  const reusedAssets = new Set<string>();
 
-  const thumbnailAssets = [];
-  const regularAssets = [];
+  const reusedAssets = new Set<string>();
+  const usedAssetIndices = new Set<number>();
 
   const thumbnailAssetSuffix = '-thumbnail.png';
 
-  for (const asset of assets) {
-    if (asset.filename?.endsWith(thumbnailAssetSuffix)) {
-      thumbnailAssets.push(asset);
-    } else {
-      regularAssets.push(asset);
-    }
+  const [thumbnailAssets, regularAssets] = partition(
+    assets.map((asset, index) => ({ asset, index })),
+    ({ asset }) => asset.filename?.endsWith(thumbnailAssetSuffix),
+  );
+
+  const preparedRegularAssets = regularAssets.map(({ asset: { filename, mime, path }, index }) => ({
+    index,
+    asset: {
+      id: randomUUID(),
+      filename,
+      mime,
+      path,
+    } as PreparedAsset,
+  }));
+
+  // Maps 1 unique thumbnail asset to 1 unique regular asset (without other thumbnail assets
+  // pointing to it), or a random UUID if no match is found
+  // eslint-disable-next-line unicorn/no-array-reduce
+  const { prepared: preparedThumbnailAssets } = thumbnailAssets.reduce(
+    ({ prepared, used }, { asset, index }) => {
+      const reg = preparedRegularAssets.find(
+        (regular) =>
+          regular.asset.filename?.startsWith(asset.filename.replace(thumbnailAssetSuffix, '')) &&
+          !used.includes(regular.asset.id),
+      );
+      const id = reg ? `${reg.asset.id}-thumbnail` : randomUUID();
+      return {
+        prepared: [...prepared, { index, asset: { ...asset, id } }],
+        used: used.concat(reg?.asset.id ?? []),
+      };
+    },
+    { used: [] as string[], prepared: [] as { index: number; asset: PreparedAsset }[] },
+  );
+
+  const assetIndexIdMap = new Map<number, string>();
+  for (const { asset, index } of preparedRegularAssets) {
+    assetIndexIdMap.set(index, asset.id);
+  }
+  for (const { asset, index } of preparedThumbnailAssets) {
+    assetIndexIdMap.set(index, asset.id);
   }
 
-  const preparedRegularAssets = regularAssets.map<PreparedAsset>(
-    ({ filename, mime, path }, index) => {
-      const id = randomUUID();
-      assetIdMap.set(index, id);
-      assetUsedMap.set(index, false);
-      return { path, filename, id, mime };
-    },
+  const preparedAssets = [...preparedRegularAssets, ...preparedThumbnailAssets].map(
+    ({ asset }) => asset,
   );
 
-  const usedPreparedRegularAssets: string[] = [];
-  const preparedThumbnailAssets = thumbnailAssets.map<PreparedAsset>(
-    ({ filename, mime, path }, index) => {
-      const regularAsset = preparedRegularAssets.find(
-        (ra) =>
-          !usedPreparedRegularAssets.includes(ra.id) &&
-          ra.filename?.startsWith(filename.replace(thumbnailAssetSuffix, '')),
-      );
-
-      const id = regularAsset ? `${regularAsset.id}-thumbnail` : randomUUID();
-      // @ts-expect-error 2322 null is not assignable to type (strictNullChecks) - Severe
-      usedPreparedRegularAssets.push(regularAsset?.id);
-
-      assetIdMap.set(index + preparedRegularAssets.length, id);
-      assetUsedMap.set(index, false);
-      return { path, filename, id, mime };
-    },
-  );
-
-  const preparedAssets = [...preparedRegularAssets, ...preparedThumbnailAssets];
-
-  // TODO: @Vasil what kind of validator should we use here?
+  // TODO: what kind of validator should we use here?
   validator.customFormats.binary = (input) => {
     if (knownAssetIds.includes(input)) {
       reusedAssets.add(input);
@@ -251,12 +257,13 @@ export function processResourceBody(
       return false;
     }
     const num = Number(input);
-    if (assetUsedMap.get(num)) {
+    if (usedAssetIndices.has(num)) {
       return false;
     }
     return num >= 0 && num < assets.length;
   };
 
+  // TODO: lowkey weird. Do we have to validate like that?
   const patchedSchema = {
     ...definition.schema,
     required: ctx.request?.method === 'PATCH' || isPatch ? [] : definition.schema.required,
@@ -269,6 +276,7 @@ export function processResourceBody(
           {
             type: 'string',
             pattern:
+              // TODO: This pattern is duplicated at least 5 times across the codebase
               /^(\d+(y|yr|years))?\s*(\d+months)?\s*(\d+(w|wk|weeks))?\s*(\d+(d|days))?\s*(\d+(h|hr|hours))?\s*(\d+(m|min|minutes))?\s*(\d+(s|sec|seconds))?$/
                 .source,
           },
@@ -298,6 +306,7 @@ export function processResourceBody(
       nestedErrors: true,
       rewrite(value, { format, oneOf }, options, { path }) {
         let propertyName;
+        // XXX: NOT cool. unexplained assumption
         if (Array.isArray(resource) && path.length === 2 && typeof path[0] === 'number') {
           propertyName = path[1];
         } else if (path.length === 1) {
@@ -352,16 +361,16 @@ export function processResourceBody(
           return value;
         }
         const num = Number(value);
-        if (!assetIdMap.has(num)) {
+        if (!assetIndexIdMap.has(num)) {
           return value;
         }
-        const uuid = assetIdMap.get(num);
+        const uuid = assetIndexIdMap.get(num);
         const currentResource = Array.isArray(resource) ? resource[path[0] as number] : resource;
         const preparedAsset = preparedAssets.find((asset) => asset.id === uuid);
         if (preparedAsset) {
           preparedAsset.resource = currentResource;
         }
-        assetUsedMap.set(num, true);
+        usedAssetIndices.add(num);
         return uuid;
       },
     },
@@ -369,19 +378,17 @@ export function processResourceBody(
 
   result.errors.push(...customErrors);
 
-  for (const [assetId, used] of assetUsedMap.entries()) {
-    if (!used) {
-      result.errors.push(
-        new ValidationError(
-          'is not referenced from the resource',
-          assetId,
-          undefined,
-          ['assets', assetId],
-          'binary',
-          'format',
-        ),
-      );
-    }
+  for (const index of [...assetIndexIdMap.keys()].filter((idx) => !usedAssetIndices.has(idx))) {
+    result.errors.push(
+      new ValidationError(
+        'is not referenced from the resource',
+        index,
+        undefined,
+        ['assets', index],
+        'binary',
+        'format',
+      ),
+    );
   }
 
   handleValidatorResult(ctx, result, 'Resource validation failed');
