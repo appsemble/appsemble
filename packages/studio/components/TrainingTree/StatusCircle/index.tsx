@@ -29,7 +29,7 @@ export function StatusCircle({ status, type }: StatusCircleProps): ReactNode {
 
   return (
     <div className={styles.circleWrapper}>
-      <div className={`${styles.statusCircle} ${size} ${color}`}>
+      <div className={`${styles.statusCircle} ${size} ${color}`} data-testid="status-circle">
         <Handle className={styles.handle} isConnectable position={Position.Top} type="target" />
         <Handle className={styles.handle} isConnectable position={Position.Bottom} type="source" />
       </div>

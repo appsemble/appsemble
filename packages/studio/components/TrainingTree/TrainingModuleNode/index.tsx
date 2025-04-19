@@ -23,14 +23,25 @@ function renderTitle(
   chapterHead: boolean,
 ): ReactNode {
   if (chapterHead) {
-    return <h1 className={`is-size-4 ${styles.nodeTitle}`}>{title}</h1>;
+    return (
+      <h1
+        className={`is-size-4 ${styles.nodeTitle}`}
+        data-testid={`node-title-${blocked ? 'blocked' : 'available'}`}
+      >
+        {title}
+      </h1>
+    );
   }
   if (blocked) {
-    return <span className={styles.nodeTitle}>{title}</span>;
+    return (
+      <span className={styles.nodeTitle} data-testid="node-title-blocked">
+        {title}
+      </span>
+    );
   }
 
   return (
-    <NavLink to={docPath}>
+    <NavLink data-testid="node-title-available" to={docPath}>
       <span className={styles.nodeTitle}>{title}</span>
     </NavLink>
   );
