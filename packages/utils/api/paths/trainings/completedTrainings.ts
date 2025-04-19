@@ -19,4 +19,12 @@ export const pathItems: OpenAPIV3.PathItemObject = {
     },
     security: [{ studio: [] }],
   },
+  delete: {
+    description: 'Delete all completed trainings from user',
+    operationId: 'resetTrainingProgress',
+    responses: {
+      204: { description: 'Trainings successfully reset ' },
+    },
+    security: [{ studio: [] }],
+  },
 };

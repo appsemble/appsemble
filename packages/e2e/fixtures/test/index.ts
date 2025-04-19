@@ -48,6 +48,11 @@ interface Fixtures {
    * Create a test app.
    */
   createTestApp: (organization: string, yaml: string) => Promise<App>;
+
+  /**
+   * Resets the user's training progress
+   */
+  resetTrainingProgress: () => Promise<void>;
 }
 
 export const test = base.extend<Fixtures>({
@@ -108,6 +113,22 @@ export const test = base.extend<Fixtures>({
 
       const response = await axios.post<App>('/api/apps', formData);
       return response.data;
+    });
+  },
+
+  async resetTrainingProgress({ baseURL, context }, use) {
+    await use(async () => {
+      const accessToken = (await context.storageState()).origins[0].localStorage[0].value;
+      expect(accessToken).not.toBeNull();
+
+      const { status } = await fetch(`${baseURL}/api/trainings/completed`, {
+        method: 'DELETE',
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          'Content-Type': 'application/json',
+        },
+      });
+      expect(status).toBe(204);
     });
   },
 });
