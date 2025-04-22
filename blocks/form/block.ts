@@ -1531,6 +1531,13 @@ declare module '@appsemble/sdk' {
     previous?: boolean;
 
     /**
+     * Whether the submit button should not be visible, useful when the only field is an enum and
+     * **onSelect** is defined
+     *
+     */
+    hideSubmitButton?: Remapper;
+
+    /**
      * Whether or not space should be reserved for the help text.
      *
      * If this is left as `true`, any help text appearing will cause the form input to jump around

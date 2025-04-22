@@ -37,6 +37,7 @@ bootstrap(
       display = 'flex',
       fields: initialFields,
       fullWidth = false,
+      hideSubmitButton = false,
       longSubmissionDuration = 5000,
       previous,
       requirements,
@@ -542,18 +543,20 @@ bootstrap(
               {utils.formatMessage('previousLabel')}
             </Button>
           ) : null}
-          <Button
-            color="primary"
-            disabled={Boolean(
-              loading ||
-                submitting ||
-                utils.remap(disabled, values) ||
-                (triedToSubmit && (formErrors.some(Boolean) || !isFormValid(errors))),
-            )}
-            type="submit"
-          >
-            {utils.formatMessage('submitLabel')}
-          </Button>
+          {utils.remap(hideSubmitButton, values) ? null : (
+            <Button
+              color="primary"
+              disabled={Boolean(
+                loading ||
+                  submitting ||
+                  utils.remap(disabled, values) ||
+                  (triedToSubmit && (formErrors.some(Boolean) || !isFormValid(errors))),
+              )}
+              type="submit"
+            >
+              {utils.formatMessage('submitLabel')}
+            </Button>
+          )}
         </FormButtons>
       </Form>
     );
