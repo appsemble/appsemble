@@ -355,7 +355,8 @@ export function FileEntry({
             className={styles.videoAbsolute}
             controls
             crossOrigin="anonymous"
-            onCanPlay={captureFirstFrame}
+            muted
+            onLoadedData={captureFirstFrame}
             ref={videoRef}
             src={url}
           >
