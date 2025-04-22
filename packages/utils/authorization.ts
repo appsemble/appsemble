@@ -34,8 +34,12 @@ function checkAppPermissions(
     }
 
     if (customAppResourcePermissionPattern.test(p)) {
-      const [, , resourceAction] = (p as CustomAppResourcePermission).split(':');
-      return acquiredPermissions.includes(`$resource:all:${resourceAction}` as CustomAppPermission);
+      const [, , resourceAction, resourceExtenstion] = (p as CustomAppResourcePermission).split(
+        ':',
+      );
+      return acquiredPermissions.includes(
+        `$resource:all:${resourceAction}${resourceExtenstion ? `:${resourceExtenstion}` : ''}` as CustomAppPermission,
+      );
     }
 
     if (customAppOwnResourcePermissionPattern.test(p)) {

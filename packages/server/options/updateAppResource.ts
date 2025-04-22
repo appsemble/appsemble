@@ -43,7 +43,7 @@ export function updateAppResource({
     }))!;
 
     const oldData = oldResource.data;
-    const previousEditorId = resource.EditorId;
+    const previousEditorId = oldResource.EditorId;
 
     const newResource = await oldResource.update(
       {
