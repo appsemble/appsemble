@@ -90,7 +90,7 @@ export function MarkdownInput({
           listener.markdownUpdated((...[, markdown, prevMarkdown]) => {
             if (markdown !== prevMarkdown) {
               const imagelessMarkdown = stripImages(markdown);
-              onChange('md-updated', imagelessMarkdown);
+              onChange(name, imagelessMarkdown);
             }
           });
         })
@@ -121,7 +121,7 @@ export function MarkdownInput({
         crepe.destroy();
       };
     }
-  }, [errorLinkRef, initValue, onChange]);
+  }, [errorLinkRef, initValue, name, onChange]);
 
   // Common and custom editor commands
   const toggleBold = useCallback(() => {
