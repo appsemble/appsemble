@@ -1,12 +1,12 @@
 dependencies:
 - name: postgresql
   repository: https://charts.bitnami.com/bitnami
-  version: 11.6.3
+  version: 11.9.13
 - name: mailpit
   repository: https://jouve.github.io/charts
   version: 0.23.1
 - name: minio
   repository: https://charts.bitnami.com/bitnami
   version: 14.10.5
-digest: sha256:09175180fcb7a2888f4ebec31ba2631b4d412fb85596c0ce7c94d7ccd61bd9e0
-generated: "2025-03-29T05:14:27.8506754Z"
+digest: sha256:91bf9a5886d3712f01b6c02b1786fc9ac5a2388fee3cd012e37067a47d1dd019
+generated: "2025-03-30T04:14:21.327772743Z"
