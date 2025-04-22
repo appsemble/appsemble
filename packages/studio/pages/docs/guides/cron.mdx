@@ -12,6 +12,7 @@ about upcoming events.
 
 - [Schedule](#schedule)
 - [Action](#action)
+- [Security](#security)
 - [Example](#example)
 
 ## Schedule
@@ -64,6 +65,16 @@ Supported (server-side) actions:
     </li>
   ))}
 </ul>
+
+## Security
+
+Cron jobs that contain request action and need [service secrets](../guides/services.md) to be applied for the outgoing request need the cron field to be defined with permissions being an empty array in the [security definition](../app/security.mdx#security-definition) of the app.
+
+```yaml security definition cron
+security:
+  cron:
+    permissions: []
+```
 
 ## Example
 

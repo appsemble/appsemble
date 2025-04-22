@@ -16,9 +16,6 @@ were found.
 > [proxy](../reference/action.mdx#request-proxy) property. If this is set to `false` the request
 > won’t be passed through the Appsemble API to authenticate the request.
 
-> Note: At the time of writing this feature is `not supported` in
-> [cronjobs](../guides/cron.mdx#actions).
-
 ## Table of Contents
 
 - [Security configuration](#security-configuration)
