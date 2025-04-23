@@ -1,5 +1,6 @@
 import { bootstrap } from '@appsemble/preact';
 import { Icon, Loader } from '@appsemble/preact-components';
+import classNames from 'classnames';
 import { type VNode } from 'preact';
 import { useCallback, useEffect, useMemo, useState } from 'preact/hooks';
 
@@ -10,7 +11,7 @@ interface Item {
   id?: number;
 }
 
-bootstrap(({ events, parameters: { caption, fields }, ready, utils }) => {
+bootstrap(({ events, parameters: { borders, caption, fields, scrollable }, ready, utils }) => {
   const [data, setData] = useState<Item[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
@@ -124,14 +125,24 @@ bootstrap(({ events, parameters: { caption, fields }, ready, utils }) => {
   }
 
   return (
-    <table className="table is-hoverable is-striped is-fullwidth" role="grid">
-      {remappedCaption ? <caption className="is-size-5 mb-2 p-1">{remappedCaption}</caption> : null}
-      {headers}
-      <tbody>
-        {data.map((item, index) => (
-          <ItemRow index={index} item={item} key={item.id || index} />
-        ))}
-      </tbody>
-    </table>
+    <div {...(scrollable ? { className: 'table-container' } : {})}>
+      <table
+        className={classNames(
+          'table is-hoverable is-striped is-fullwidth',
+          borders && 'is-bordered',
+        )}
+        role="grid"
+      >
+        {remappedCaption ? (
+          <caption className="is-size-5 mb-2 p-1">{remappedCaption}</caption>
+        ) : null}
+        {headers}
+        <tbody>
+          {data.map((item, index) => (
+            <ItemRow index={index} item={item} key={item.id || index} />
+          ))}
+        </tbody>
+      </table>
+    </div>
   );
 });

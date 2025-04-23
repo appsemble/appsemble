@@ -263,6 +263,16 @@ declare module '@appsemble/sdk' {
      * Caption text for the table.
      */
     caption?: Remapper;
+
+    /**
+     * Whether the table items should be enclosed in borders.
+     */
+    borders?: boolean;
+
+    /**
+     * Whether the table should be scrollable.
+     */
+    scrollable?: boolean;
   }
 
   interface Actions {
