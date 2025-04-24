@@ -445,13 +445,15 @@ bootstrap(
 
     const removeThumbnail = (thumbnail: File | string): void => {
       setThumbnails((oldThumbnails) => {
-        const firstExistingIndex = oldThumbnails.findIndex((existingThumbnail) => {
-          if (typeof existingThumbnail === 'string') {
-            return typeof thumbnail === 'string' && thumbnail === existingThumbnail;
-          }
-          return typeof thumbnail !== 'string' && checkFileEquality(existingThumbnail, thumbnail);
-        });
-        oldThumbnails.splice(firstExistingIndex, 1);
+        if (thumbnail) {
+          const firstExistingIndex = oldThumbnails.findIndex((existingThumbnail) => {
+            if (typeof existingThumbnail === 'string') {
+              return typeof thumbnail === 'string' && thumbnail === existingThumbnail;
+            }
+            return typeof thumbnail !== 'string' && checkFileEquality(existingThumbnail, thumbnail);
+          });
+          oldThumbnails.splice(firstExistingIndex, 1);
+        }
         return oldThumbnails;
       });
     };
