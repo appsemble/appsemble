@@ -557,12 +557,12 @@ async function getIngressHosts(): Promise<{ hosts: string[]; name: string }[]> {
   );
   const names = data.items.flatMap(({ metadata, spec }) => ({
     hosts: spec.rules.map((rule) => rule.host),
-    name: metadata.name,
+    name: metadata.name!,
   }));
   return names;
 }
 
-export async function reconcileDNS({ dryRun = true }): Promise<void> {
+export async function reconcileDNS({ dryRun = true } = {}): Promise<void> {
   const { hostname } = new URL(argv.host);
   const orgWildcards = new Set<string>();
   for await (const { id } of iterTable(Organization, { attributes: ['id'] })) {
@@ -573,21 +573,21 @@ export async function reconcileDNS({ dryRun = true }): Promise<void> {
   const appDomainCertificates = new Map<string, { sslKey: string; sslCertificate: string }>();
   for await (const { domain, sslCertificate, sslKey } of iterTable(App, {
     attributes: ['domain', 'sslKey', 'sslCertificate'],
-    where: { [Op.and]: [{ domain: { [Op.not]: null } }, { domain: { [Op.not]: '' } }] },
+    where: { [Op.and]: [{ domain: { [Op.not]: undefined } }, { domain: { [Op.not]: '' } }] },
   })) {
-    appDomains.add(domain);
+    appDomains.add(domain!);
     if (sslCertificate && sslKey) {
-      appDomainCertificates.set(domain, { sslCertificate, sslKey });
+      appDomainCertificates.set(domain!, { sslCertificate, sslKey });
     }
   }
 
   const appCollectionDomains = new Set<string>();
   for await (const { domain } of iterTable(AppCollection, {
     attributes: ['domain'],
-    where: { [Op.and]: [{ domain: { [Op.not]: null } }, { domain: { [Op.not]: '' } }] },
+    where: { [Op.and]: [{ domain: { [Op.not]: undefined } }, { domain: { [Op.not]: '' } }] },
   })) {
-    appCollectionDomains.add(domain);
-    if (!domain.startsWith('www.')) {
+    appCollectionDomains.add(domain!);
+    if (!domain!.startsWith('www.')) {
       appCollectionDomains.add(`www.${domain}`);
     }
   }
@@ -623,7 +623,7 @@ export async function reconcileDNS({ dryRun = true }): Promise<void> {
         : undefined;
     await createIngress(name, Boolean(appDomainCertificates.has(name)), redirect);
     if (appDomainCertificates.has(name)) {
-      const { sslCertificate, sslKey } = appDomainCertificates.get(name);
+      const { sslCertificate, sslKey } = appDomainCertificates.get(name)!;
       await createSSLSecret(name, sslCertificate, sslKey);
     }
     logger.info(`Created missing ingress ${name}`);
