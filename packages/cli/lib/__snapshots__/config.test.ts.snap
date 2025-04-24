@@ -6418,6 +6418,10 @@ If this isn’t specified, no label will be shown. If no fields have a label, th
       },
     },
     "properties": {
+      "borders": {
+        "description": "Whether the table items should be enclosed in borders.",
+        "type": "boolean",
+      },
       "caption": {
         "description": "Caption text for the table.",
         "format": "remapper",
@@ -6447,6 +6451,10 @@ If this isn’t specified, no label will be shown. If no fields have a label, th
           ],
         },
         "type": "array",
+      },
+      "scrollable": {
+        "description": "Whether the table should be scrollable.",
+        "type": "boolean",
       },
     },
     "required": [
