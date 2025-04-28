@@ -36,7 +36,7 @@ pages:
     icon: scroll
     blocks:
       - type: data-loader
-        version: 0.32.2-test.0
+        version: 0.32.2-test.1
         actions:
           onLoad:
             type: resource.query
@@ -48,7 +48,7 @@ pages:
           emit:
             data: notes
       - type: table
-        version: 0.32.2-test.0
+        version: 0.32.2-test.1
         parameters:
           fields:
             - value: { prop: title }
@@ -67,7 +67,7 @@ pages:
             closable: true
             blocks:
               - type: form
-                version: 0.32.2-test.0
+                version: 0.32.2-test.1
                 parameters:
                   fields:
                     - type: string
@@ -93,13 +93,13 @@ pages:
             closable: true
             blocks:
               - type: detail-viewer
-                version: 0.32.2-test.0
+                version: 0.32.2-test.1
                 parameters:
                   fields:
                     - label: { translate: confirmDelete }
                       value: { prop: title }
               - type: button-list
-                version: 0.32.2-test.0
+                version: 0.32.2-test.1
                 parameters:
                   buttons:
                     - label: { translate: cancel }
@@ -120,7 +120,7 @@ pages:
                       onSuccess:
                         type: dialog.ok
       - type: action-button
-        version: 0.32.2-test.0
+        version: 0.32.2-test.1
         parameters:
           icon: plus
         actions:
@@ -128,7 +128,7 @@ pages:
             type: dialog
             blocks:
               - type: form
-                version: 0.32.2-test.0
+                version: 0.32.2-test.1
                 parameters:
                   fields:
                     - type: string

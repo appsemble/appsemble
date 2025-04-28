@@ -2,6 +2,24 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.32.2-test.1](https://gitlab.com/appsemble/appsemble/-/releases/0.32.2-test.1)] - 2025-04-28
+
+### Added
+
+- Block(`form`): Option to hide the submit button.
+- E2e: Custom matchers to assert training node status.
+- E2e: End-to-end tests for trainings.
+- Studio: Add cron security definition documentation with example code.
+
+### Removed
+
+- Studio: Remove note on unsupported service secrets for cron jobs.
+
+### Fixed
+
+- Server: Assign app member in `ResourceVersions` failing.
+- Server: Permission check for `resource.history.get` action.
+
 ## \[[0.32.2-test.0](https://gitlab.com/appsemble/appsemble/-/releases/0.32.2-test.0)] - 2025-04-15
 
 ## \[[0.32.1](https://gitlab.com/appsemble/appsemble/-/releases/0.32.1)] - 2025-04-11

@@ -1,6 +1,6 @@
 {
   "name": "@appsemble/list",
-  "version": "0.32.2-test.0",
+  "version": "0.32.2-test.1",
   "private": true,
   "description": "A block that can be used to display a vertically oriented list of data.",
   "homepage": "https://appsemble.app",
@@ -17,10 +17,10 @@
     "test": "vitest"
   },
   "dependencies": {
-    "@appsemble/preact": "0.32.2-test.0",
-    "@appsemble/preact-components": "0.32.2-test.0",
-    "@appsemble/sdk": "0.32.2-test.0",
-    "@appsemble/utils": "0.32.2-test.0",
+    "@appsemble/preact": "0.32.2-test.1",
+    "@appsemble/preact-components": "0.32.2-test.1",
+    "@appsemble/sdk": "0.32.2-test.1",
+    "@appsemble/utils": "0.32.2-test.1",
     "classnames": "^2.0.0",
     "preact": "^10.0.0"
   }

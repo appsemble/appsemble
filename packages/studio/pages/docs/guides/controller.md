@@ -63,7 +63,7 @@ pages:
   - name: Example Page A
     blocks:
       - type: form
-        version: 0.32.2-test.0
+        version: 0.32.2-test.1
         parameters:
           fields:
             - name: a
@@ -84,7 +84,7 @@ pages:
             handler: calculate
 
       - type: detail-viewer
-        version: 0.32.2-test.0
+        version: 0.32.2-test.1
         parameters:
           fields:
             - value: { prop: result }
