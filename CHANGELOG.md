@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.32.2-test.2](https://gitlab.com/appsemble/appsemble/-/releases/0.32.2-test.2)] - 2025-04-28
+
+### Changed
+
+- Node-utils: Support null values for binary strings in resources.
+
+### Fixed
+
+- Block(`form`): Don't remove thumbnails when removing an image from the file input.
+- Block(`form`): Start the markdown editor as interactive.
+- Block(`form`): Start videos muted in file inputs, handle first frame capture only once.
+- Block(`form`): Wait for file input fields to load before allowing the form to be submitted.
+- Block(`list`): Refetch image on value change.
+
 ## \[[0.32.2-test.1](https://gitlab.com/appsemble/appsemble/-/releases/0.32.2-test.1)] - 2025-04-28
 
 ### Added

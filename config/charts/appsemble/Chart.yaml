@@ -1,7 +1,7 @@
 apiVersion: v2
 name: appsemble
-version: 0.32.2-test.1
-appVersion: 0.32.2-test.1
+version: 0.32.2-test.2
+appVersion: 0.32.2-test.2
 kubeVersion: '>=1.21.0'
 type: application
 description: The open source low-code app building platform
@@ -32,20 +32,21 @@ dependencies:
     condition: minio.enabled
 annotations:
   artifacthub.io/changes: >
-    - kind: added
-      description: "Block(form): Option to hide the submit button."
-    - kind: added
-      description: "E2e: Custom matchers to assert training node status."
-    - kind: added
-      description: "E2e: End-to-end tests for trainings."
-    - kind: added
-      description: "Studio: Add cron security definition documentation with example code."
-    - kind: removed
-      description: "Studio: Remove note on unsupported service secrets for cron jobs."
+    - kind: changed
+      description: "Node-utils: Support null values for binary strings in resources."
     - kind: fixed
-      description: "Server: Assign app member in ResourceVersions failing."
+      description: "Block(form): Don't remove thumbnails when removing an image from
+        the file input."
     - kind: fixed
-      description: "Server: Permission check for resource.history.get action."
+      description: "Block(form): Start the markdown editor as interactive."
+    - kind: fixed
+      description: "Block(form): Start videos muted in file inputs, handle first frame
+        capture only once."
+    - kind: fixed
+      description: "Block(form): Wait for file input fields to load before allowing
+        the form to be submitted."
+    - kind: fixed
+      description: "Block(list): Refetch image on value change."
   artifacthub.io/license: LGPL-3.0-only
   artifacthub.io/links: |
     - name: Appsemble Studio
