@@ -1,6 +1,14 @@
 import { useBlock } from '@appsemble/preact';
 import { type VNode } from 'preact';
-import { type MutableRef, useCallback, useEffect, useRef, useState } from 'preact/hooks';
+import {
+  type Dispatch,
+  type MutableRef,
+  type StateUpdater,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from 'preact/hooks';
 
 import { type Field, type FormDisplay, type InputProps, type Values } from '../../../block.js';
 import { getValueByNameSequence } from '../../utils/getNested.js';
@@ -22,6 +30,7 @@ import { StringInput } from '../StringInput/index.js';
 import { TagsInput } from '../TagsInput/index.js';
 
 interface FormInputProps extends Omit<InputProps<any, Field>, 'dirty' | 'errorLinkRef'> {
+  readonly formDataLoading: boolean;
   readonly display?: FormDisplay;
   readonly setFieldErrorLink?: (
     fieldName: string,
@@ -30,6 +39,7 @@ interface FormInputProps extends Omit<InputProps<any, Field>, 'dirty' | 'errorLi
   readonly addThumbnail: (thumbnail: File) => void;
   readonly removeThumbnail: (thumbnail: File) => void;
   readonly fieldsetEntryValues?: Values;
+  readonly setFieldsReady: Dispatch<StateUpdater<Record<Field['name'], boolean>>>;
 }
 
 /**

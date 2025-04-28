@@ -294,7 +294,7 @@ export function processResourceBody(
       base: '#',
       preValidateProperty,
       nestedErrors: true,
-      rewrite(value, { format }, options, { path }) {
+      rewrite(value, { format, oneOf }, options, { path }) {
         let propertyName;
         if (Array.isArray(resource) && path.length === 2 && typeof path[0] === 'number') {
           propertyName = path[1];
@@ -340,10 +340,13 @@ export function processResourceBody(
           }
           return;
         }
-        if (format !== 'binary') {
+        if (format !== 'binary' && !oneOf?.some((s) => s.format === 'binary')) {
           return value;
         }
         if (knownAssetIds.includes(value)) {
+          return value;
+        }
+        if (value == null) {
           return value;
         }
         const num = Number(value);
