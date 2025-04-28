@@ -45,6 +45,10 @@ export function Image({
   const [fetched, setFetched] = useState(false);
 
   useEffect(() => {
+    setFetched(false);
+  }, [value]);
+
+  useEffect(() => {
     if (!isVisible) {
       return;
     }

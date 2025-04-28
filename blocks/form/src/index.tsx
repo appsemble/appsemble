@@ -71,6 +71,21 @@ bootstrap(
     const [triedToSubmit, setTriedToSubmit] = useState<boolean>(false);
     const [longSubmission, setLongSubmission] = useState<boolean>(false);
     const [thumbnails, setThumbnails] = useState<(File | string)[]>([]);
+    const [fieldsReady, setFieldsReady] = useState<Record<Field['name'], boolean>>();
+
+    useEffect(() => {
+      const newFieldsReady: Record<Field['name'], boolean> = {};
+      for (const field of fields) {
+        switch (field.type) {
+          case 'file':
+            newFieldsReady[field.name] = false;
+            break;
+          default:
+            newFieldsReady[field.name] = true;
+        }
+      }
+      setFieldsReady(newFieldsReady);
+    }, [fields]);
 
     const errors = useMemo(
       () =>
@@ -412,7 +427,7 @@ bootstrap(
       ready();
     }, [actions, events, ready, receiveData, skipInitialLoad, pageParameters]);
 
-    const loading = dataLoading || fieldsLoading;
+    const loading = dataLoading || fieldsLoading || Object.values(fieldsReady).includes(false);
 
     const getFieldsContainerClass = (): string => {
       switch (display) {
@@ -445,13 +460,15 @@ bootstrap(
 
     const removeThumbnail = (thumbnail: File | string): void => {
       setThumbnails((oldThumbnails) => {
-        const firstExistingIndex = oldThumbnails.findIndex((existingThumbnail) => {
-          if (typeof existingThumbnail === 'string') {
-            return typeof thumbnail === 'string' && thumbnail === existingThumbnail;
-          }
-          return typeof thumbnail !== 'string' && checkFileEquality(existingThumbnail, thumbnail);
-        });
-        oldThumbnails.splice(firstExistingIndex, 1);
+        if (thumbnail) {
+          const firstExistingIndex = oldThumbnails.findIndex((existingThumbnail) => {
+            if (typeof existingThumbnail === 'string') {
+              return typeof thumbnail === 'string' && thumbnail === existingThumbnail;
+            }
+            return typeof thumbnail !== 'string' && checkFileEquality(existingThumbnail, thumbnail);
+          });
+          oldThumbnails.splice(firstExistingIndex, 1);
+        }
         return oldThumbnails;
       });
     };
@@ -502,6 +519,7 @@ bootstrap(
                 display={display}
                 error={errors[f.name]}
                 field={f}
+                formDataLoading={dataLoading}
                 formValues={values}
                 key={f.name}
                 name={f.name}
@@ -509,6 +527,7 @@ bootstrap(
                 readOnly={Boolean(utils.remap(f.readOnly, values[f.name], { values }))}
                 removeThumbnail={removeThumbnail}
                 setFieldErrorLink={setFieldErrorLink}
+                setFieldsReady={setFieldsReady}
               />
             ))}
         </div>

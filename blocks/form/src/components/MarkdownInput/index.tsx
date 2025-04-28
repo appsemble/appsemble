@@ -2,7 +2,7 @@ import { useBlock } from '@appsemble/preact';
 import { FormComponent } from '@appsemble/preact-components';
 import { Crepe } from '@milkdown/crepe';
 import { linkTooltipAPI } from '@milkdown/kit/component/link-tooltip';
-import { commandsCtx, editorViewCtx } from '@milkdown/kit/core';
+import { commandsCtx, editorViewCtx, editorViewOptionsCtx } from '@milkdown/kit/core';
 import { type Ctx } from '@milkdown/kit/ctx';
 import {
   linkSchema,
@@ -11,7 +11,6 @@ import {
 } from '@milkdown/kit/preset/commonmark';
 import { gfm, toggleStrikethroughCommand } from '@milkdown/kit/preset/gfm';
 import { type MarkType } from '@milkdown/kit/prose/model';
-import { type EditorView } from '@milkdown/kit/prose/view';
 import { listenerCtx, listener as listenerPlugin } from '@milkdown/plugin-listener';
 import classNames from 'classnames';
 import { type VNode } from 'preact';
@@ -86,14 +85,14 @@ export function MarkdownInput({
       // https://milkdown.dev/docs/api/plugin-listener
       crepe.editor
         .config((ctx) => {
+          ctx.set(editorViewOptionsCtx, { editable: () => true });
           const listener = ctx.get(listenerCtx);
           listener.markdownUpdated((...[, markdown, prevMarkdown]) => {
             if (markdown !== prevMarkdown) {
-              const imagelessMarkdown = stripImages(markdown);
-              onChange('md-updated', imagelessMarkdown);
+              const markdownWithoutImages = stripImages(markdown);
+              onChange(name, markdownWithoutImages);
             }
           });
-          ctx.update(editorViewCtx, (prev) => ({ ...prev, editable: true }) as EditorView);
         })
         // Github-flavored Markdown
         .use(gfm)
@@ -122,7 +121,7 @@ export function MarkdownInput({
         crepe.destroy();
       };
     }
-  }, [errorLinkRef, initValue, onChange]);
+  }, [errorLinkRef, initValue, name, onChange]);
 
   // Common and custom editor commands
   const toggleBold = useCallback(() => {

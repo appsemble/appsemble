@@ -2,10 +2,11 @@ import { useBlock } from '@appsemble/preact';
 import { Button, FormButtons } from '@appsemble/preact-components';
 import classNames from 'classnames';
 import { type JSX, type VNode } from 'preact';
-import { type MutableRef, useCallback } from 'preact/hooks';
+import { type Dispatch, type MutableRef, type StateUpdater, useCallback } from 'preact/hooks';
 
 import styles from './index.module.css';
 import {
+  type Field,
   type FieldError,
   type Fieldset as FieldsetType,
   type FormDisplay,
@@ -19,6 +20,7 @@ import { getMaxLength, getMinLength } from '../../utils/requirements.js';
 import { FieldsetEntry } from '../FieldsetEntry/index.js';
 
 interface FieldsetProps extends InputProps<Values | Values[], FieldsetType> {
+  readonly formDataLoading: boolean;
   readonly display?: FormDisplay;
   readonly setFieldErrorLink?: (
     fieldName: string,
@@ -26,6 +28,7 @@ interface FieldsetProps extends InputProps<Values | Values[], FieldsetType> {
   ) => void;
   readonly addThumbnail: (thumbnail: File) => void;
   readonly removeThumbnail: (thumbnail: File) => void;
+  readonly setFieldsReady: Dispatch<StateUpdater<Record<Field['name'], boolean>>>;
 }
 
 /**
@@ -39,12 +42,14 @@ export function Fieldset({
   error,
   errorLinkRef,
   field,
+  formDataLoading,
   formValues,
   name,
   onChange,
   readOnly,
   removeThumbnail,
   setFieldErrorLink,
+  setFieldsReady,
 }: FieldsetProps): VNode {
   const { utils } = useBlock();
   const localValues = getValueByNameSequence(name, formValues) as Values[];
@@ -125,6 +130,7 @@ export function Fieldset({
                   errorLinkRef={errorLinkRef}
                   field={field}
                   fieldSpan={!fieldsetSpan}
+                  formDataLoading={formDataLoading}
                   formValues={formValues}
                   index={index}
                   name={`${name}.${index}`}
@@ -133,6 +139,7 @@ export function Fieldset({
                   setFieldErrorLink={(fieldName, params) =>
                     setFieldErrorLink(`${field.name}.${index}.${fieldName}`, params)
                   }
+                  setFieldsReady={setFieldsReady}
                 />
               </div>
             ))}
@@ -152,11 +159,13 @@ export function Fieldset({
           error={error}
           errorLinkRef={errorLinkRef}
           field={field}
+          formDataLoading={formDataLoading}
           formValues={formValues}
           name={name}
           onChange={onChange}
           removeThumbnail={removeThumbnail}
           setFieldErrorLink={setFieldErrorLink}
+          setFieldsReady={setFieldsReady}
         />
       )}
     </fieldset>

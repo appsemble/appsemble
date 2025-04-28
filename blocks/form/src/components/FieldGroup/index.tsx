@@ -1,6 +1,6 @@
 import classNames from 'classnames';
 import { type ComponentChildren, type VNode } from 'preact';
-import { type MutableRef, useCallback } from 'preact/hooks';
+import { type Dispatch, type MutableRef, type StateUpdater, useCallback } from 'preact/hooks';
 
 import styles from './index.module.css';
 import {
@@ -14,6 +14,8 @@ import { getValueByNameSequence } from '../../utils/getNested.js';
 import { FormInput } from '../FormInput/index.js';
 
 interface FieldGroupProps {
+  readonly formDataLoading: boolean;
+
   /**
    * Whether the inputs should be disabled.
    */
@@ -66,6 +68,8 @@ interface FieldGroupProps {
   readonly addThumbnail: (thumbnail: File) => void;
 
   readonly removeThumbnail: (thumbnail: File) => void;
+
+  readonly setFieldsReady: Dispatch<StateUpdater<Record<Field['name'], boolean>>>;
 }
 
 /**
@@ -78,11 +82,13 @@ export function FieldGroup({
   errors,
   fieldSpan,
   fields,
+  formDataLoading,
   formValues,
   name,
   onChange,
   removeThumbnail,
   setFieldErrorLink,
+  setFieldsReady,
 }: FieldGroupProps): VNode {
   const handleChange = useCallback(
     (localName: string, val: unknown) => {
@@ -132,12 +138,14 @@ export function FieldGroup({
           error={errors?.[f.name]}
           field={f}
           fieldsetEntryValues={fieldsetEntryValues}
+          formDataLoading={formDataLoading}
           formValues={formValues}
           key={f.name}
           name={name ? `${name}.${f.name}` : f.name}
           onChange={handleChange}
           removeThumbnail={removeThumbnail}
           setFieldErrorLink={setFieldErrorLink}
+          setFieldsReady={setFieldsReady}
         />
       ))}
     </div>

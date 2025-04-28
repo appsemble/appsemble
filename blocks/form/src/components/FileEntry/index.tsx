@@ -6,7 +6,7 @@ import {
   getMimeTypeCategories,
   getMimeTypeCategory,
   getMimeTypeIcon,
-  type MimeTypeCategory,
+  MimeTypeCategory,
 } from '@appsemble/utils';
 import { findIconDefinition, icon, library } from '@fortawesome/fontawesome-svg-core';
 import { fas } from '@fortawesome/free-solid-svg-icons';
@@ -76,6 +76,7 @@ export function createCustomSvg(iconName: any, hasPlus?: boolean): string {
 }
 
 interface FileEntryProps extends InputProps<Blob | string, FileField> {
+  readonly formDataLoading: boolean;
   readonly repeated?: boolean;
 
   /**
@@ -87,6 +88,11 @@ interface FileEntryProps extends InputProps<Blob | string, FileField> {
    * A function to remove a thumbnail from the form collected thumbnails
    */
   readonly removeThumbnail: (thumbnail: File | string) => void;
+
+  /**
+   * A function to update the ready status of the file entries
+   */
+  readonly handleFileEntryReady: (entryName: string, ready: boolean) => void;
 }
 
 export function FileEntry({
@@ -94,7 +100,9 @@ export function FileEntry({
   disabled,
   errorLinkRef,
   field,
+  formDataLoading,
   formValues: value,
+  handleFileEntryReady,
   name,
   onChange,
   removeThumbnail,
@@ -133,14 +141,27 @@ export function FileEntry({
         file = await resize(file, maxWidth, maxHeight, quality);
       }
 
+      if (file?.type.match('video/*')) {
+        handleFileEntryReady(name, false);
+      } else {
+        handleFileEntryReady(name, true);
+      }
+
       setThumbnailAddedToForm(false);
       onChange({ currentTarget, ...event }, file);
     },
-    [field, onChange],
+    [field, onChange, handleFileEntryReady, name],
   );
 
   useEffect(() => {
+    if (formDataLoading === false && !value) {
+      handleFileEntryReady(name, true);
+    }
+  }, [value, formDataLoading, handleFileEntryReady, name]);
+
+  useEffect(() => {
     (async () => {
+      const controller = new AbortController();
       if (valueString) {
         try {
           const assetUrl = utils.asset(valueString);
@@ -149,10 +170,11 @@ export function FileEntry({
             if (!checkedThumbnailAsset && !thumbnailAddedToForm) {
               const thumbnailId = `${valueString}-thumbnail`;
               const thumbnailUrl = utils.asset(thumbnailId);
-              const thumbnailResponse = await fetch(thumbnailUrl);
+              const thumbnailResponse = await fetch(thumbnailUrl, { signal: controller.signal });
               if (thumbnailResponse.ok) {
                 setThumbnail(thumbnailId);
                 addThumbnailToFormPayload(thumbnailId);
+                handleFileEntryReady(name, true);
                 setThumbnailAddedToForm(true);
                 setCheckedThumbnailAsset(true);
               }
@@ -161,6 +183,9 @@ export function FileEntry({
             const contentType = response.headers.get('Content-Type');
             if (contentType) {
               setFileType(getMimeTypeCategory(contentType));
+              if (contentType !== MimeTypeCategory.Video) {
+                handleFileEntryReady(name, true);
+              }
             }
 
             const contentDisposition = response.headers.get('Content-Disposition');
@@ -185,10 +210,14 @@ export function FileEntry({
           setFileName(value.name);
         }
       }
+
+      return () => controller.abort();
     })();
   }, [
     addThumbnailToFormPayload,
     checkedThumbnailAsset,
+    name,
+    handleFileEntryReady,
     thumbnailAddedToForm,
     utils,
     value,
@@ -216,10 +245,18 @@ export function FileEntry({
 
       setThumbnail(newThumbnail);
       addThumbnailToFormPayload(newThumbnail);
+      handleFileEntryReady(name, true);
 
       setThumbnailAddedToForm(true);
     }
-  }, [firstFrameSrc, fileName, addThumbnailToFormPayload, thumbnailAddedToForm]);
+  }, [
+    firstFrameSrc,
+    fileName,
+    addThumbnailToFormPayload,
+    thumbnailAddedToForm,
+    handleFileEntryReady,
+    name,
+  ]);
 
   const onRemove = useCallback(
     (event: Event) => {
@@ -355,7 +392,8 @@ export function FileEntry({
             className={styles.videoAbsolute}
             controls
             crossOrigin="anonymous"
-            onCanPlay={captureFirstFrame}
+            muted
+            onLoadedData={captureFirstFrame}
             ref={videoRef}
             src={url}
           >
