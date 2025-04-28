@@ -1,4 +1,10 @@
-import { type Options, type Schema, Validator, type ValidatorResult } from 'jsonschema';
+import {
+  type CustomFormat,
+  type Options,
+  type Schema,
+  Validator,
+  type ValidatorResult,
+} from 'jsonschema';
 
 import { schemas as allSchemas } from './index.js';
 import { escapeJsonPointer } from './jsonPointer.js';
@@ -6,13 +12,23 @@ import { has } from './miscellaneous.js';
 
 interface ValidatorFactoryOptions {
   schemas: Record<string, Schema>;
-  customFormats?: Record<string, (value: unknown) => boolean>;
+  customFormats?: Record<string, CustomFormat>;
 }
 
 export class BaseValidatorFactory {
   static readonly defaultOptions: Options = {
     base: '#',
     nestedErrors: true,
+  };
+
+  static readonly defaultCustomFormats = {
+    int32: () => true,
+    int64: () => true,
+    float: () => true,
+    double: () => true,
+    byte: () => true,
+    binary: () => true,
+    password: () => true,
   };
 
   private schemas;
@@ -47,6 +63,7 @@ export class BlockExampleValidator {
     this.validator = new BaseValidatorFactory({
       schemas: allSchemas,
       customFormats: {
+        ...BaseValidatorFactory.defaultCustomFormats,
         fontawesome: () => true,
         remapper: () => true,
         action: () => true,
@@ -120,13 +137,60 @@ export class BlockExampleValidator {
   }
 }
 
-export class BlockParamValidator {
+interface BlockParamInstanceValidatorOptions {
+  listeners?: string[];
+  emitters?: string[];
+  actions?: string[];
+}
+
+export class BlockParamInstanceValidator {
+  private validator: Validator;
+
+  constructor({
+    actions = [],
+    emitters = [],
+    listeners = [],
+  }: BlockParamInstanceValidatorOptions = {}) {
+    this.validator = new BaseValidatorFactory({
+      // TODO: this may not be so reasonable. Limit these schemas.
+      schemas: allSchemas,
+      customFormats: {
+        ...BaseValidatorFactory.defaultCustomFormats,
+        // TODO: validate more
+        fontawesome: () => true,
+        // TODO: validate more
+        remapper: () => true,
+        action: (property) => actions.includes(property),
+        'event-listener': (property) => listeners.includes(property),
+        'event-emitter': (property) => emitters.includes(property),
+      },
+    }).build();
+  }
+
+  // TODO: validate actions and listeners too, somehow
+  validateParametersInstance(instance: unknown, schema: Schema): ValidatorResult {
+    const actionFormat = this.validator.customFormats.action;
+    const listenerFormat = this.validator.customFormats['event-listener'];
+    const emitterFormat = this.validator.customFormats['event-emitter'];
+
+    const actionsReferenced = new Set<string>();
+    this.validator.customFormats.action = (property) => {
+      actionsReferenced.add(property);
+      return actionFormat(property);
+    };
+    return this.validator.validate(instance, schema, BaseValidatorFactory.defaultOptions);
+  }
+}
+
+export class BlockParamSchemaValidator {
   private validator: Validator;
 
   constructor() {
     this.validator = new BaseValidatorFactory({
+      // TODO: this may not be so reasonable. Limit these schemas.
       schemas: allSchemas,
       customFormats: {
+        ...BaseValidatorFactory.defaultCustomFormats,
         fontawesome: () => true,
         remapper: () => true,
         action: () => true,
@@ -136,12 +200,35 @@ export class BlockParamValidator {
     }).build();
   }
 
-  validateParametersSchema(paramSchema: unknown): ValidatorResult {
+  validateParamSchema(paramSchema: Schema): ValidatorResult {
     return this.validator.validate(
       paramSchema,
       allSchemas.JSONSchemaRoot,
       BaseValidatorFactory.defaultOptions,
     );
+  }
+}
+
+// TODO: complete
+export class BlockInstanceValidator {
+  private validator: Validator;
+
+  constructor() {
+    this.validator = new BaseValidatorFactory({
+      schemas: allSchemas,
+      customFormats: {
+        ...BaseValidatorFactory.defaultCustomFormats,
+        fontawesome: () => true,
+        remapper: () => true,
+        action: () => true,
+        'event-listener': () => true,
+        'event-emitter': () => true,
+      }
+    }).build();
+  }
+
+  validate(instance: unknown): ValidatorResult {
+
   }
 }
 
@@ -151,6 +238,9 @@ export class AppValidator {
   constructor() {
     this.validator = new BaseValidatorFactory({
       schemas: allSchemas,
+      customFormats: {
+        ...BaseValidatorFactory.defaultCustomFormats,
+      },
     }).build();
   }
 
@@ -158,6 +248,27 @@ export class AppValidator {
     return this.validator.validate(
       app,
       allSchemas.AppDefinition,
+      BaseValidatorFactory.defaultOptions,
+    );
+  }
+}
+
+export class RemapperValidator {
+  private validator: Validator;
+
+  constructor() {
+    this.validator = new BaseValidatorFactory({
+      schemas: allSchemas,
+      customFormats: {
+        ...BaseValidatorFactory.defaultCustomFormats,
+      },
+    }).build();
+  }
+
+  validateRemapper(remapper: unknown): ValidatorResult {
+    return this.validator.validate(
+      remapper,
+      allSchemas.RemapperDefinition,
       BaseValidatorFactory.defaultOptions,
     );
   }

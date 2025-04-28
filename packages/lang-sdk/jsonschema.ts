@@ -4,6 +4,7 @@ import { type JsonArray, type JsonValue } from 'type-fest';
 
 import { mapValues } from './mapValues.js';
 
+// XXX: This is holding back `jsonschema` from being updated to 1.5
 declare module 'jsonschema' {
   /**
    * See https://github.com/tdegrunt/jsonschema/pull/335

@@ -39,7 +39,6 @@ monaco.editor.onDidCreateModel((model) => {
 
     const client = await workerManager.getWorker(model.uri);
     const markers = await client.getDecorations(String(model.uri));
-    // TODO: bug here
     modelMap.set(model, model.deltaDecorations(modelMap.get(model) ?? [], markers));
   });
 

@@ -4,7 +4,7 @@ import {
   remap,
   type RemapperContext,
   type RemapperExampleKeys,
-  schemas,
+  RemapperValidator,
 } from '@appsemble/lang-sdk';
 import {
   applyRefs,
@@ -15,7 +15,6 @@ import {
   useToggle,
 } from '@appsemble/react-components';
 import classNames from 'classnames';
-import { Validator } from 'jsonschema';
 import { editor, type IDisposable } from 'monaco-editor/esm/vs/editor/editor.api.js';
 // Required for syntax highlighting in the Playground input and output editors
 import 'monaco-editor/esm/vs/language/json/monaco.contribution.js';
@@ -256,15 +255,9 @@ export function Playground({ customOption, defaultOption = 'None' }: PlaygroundP
       setJsonError(false);
       const parsedRemapper = parse(remapper);
       setYamlError(null);
-      // TODO: import a validator from lang-sdk
-      const validator = new Validator();
-      Object.entries(schemas).map(([path, schema]) =>
-        validator.addSchema(schema, `/#/components/schemas/${path}`),
-      );
+      const validator = new RemapperValidator();
       // TODO: consider using a service worker to offload the work from the main thread
-      const result = validator.validate(parsedRemapper, schemas.RemapperDefinition, {
-        nestedErrors: true,
-      });
+      const result = validator.validateRemapper(parsedRemapper);
 
       if (result.errors.length) {
         setRemapperErrorMessages(() => {

@@ -92,8 +92,6 @@ A long description for the app.
 The long description will be rendered on the app details page. Markdown content is supported.
 `,
     },
-    // TODO: ignore
-    // definition: { $ref: '#/components/schemas/AppDefinition' },
     definition: {
       type: 'object',
       additionalProperties: true,

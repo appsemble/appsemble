@@ -197,6 +197,7 @@ export function processResourceBody(
   const thumbnailAssetSuffix = '-thumbnail.png';
 
   const [thumbnailAssets, regularAssets] = partition(
+    // Preserve original index to handle asset references in data
     assets.map((asset, index) => ({ asset, index })),
     ({ asset }) => asset.filename?.endsWith(thumbnailAssetSuffix),
   );
@@ -242,7 +243,6 @@ export function processResourceBody(
     ({ asset }) => asset,
   );
 
-  // TODO: what kind of validator should we use here?
   validator.customFormats.binary = (input) => {
     if (knownAssetIds.includes(input)) {
       reusedAssets.add(input);
@@ -263,7 +263,6 @@ export function processResourceBody(
     return num >= 0 && num < assets.length;
   };
 
-  // TODO: lowkey weird. Do we have to validate like that?
   const patchedSchema = {
     ...definition.schema,
     required: ctx.request?.method === 'PATCH' || isPatch ? [] : definition.schema.required,
@@ -306,7 +305,6 @@ export function processResourceBody(
       nestedErrors: true,
       rewrite(value, { format, oneOf }, options, { path }) {
         let propertyName;
-        // XXX: NOT cool. unexplained assumption
         if (Array.isArray(resource) && path.length === 2 && typeof path[0] === 'number') {
           propertyName = path[1];
         } else if (path.length === 1) {

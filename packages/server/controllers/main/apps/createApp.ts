@@ -1,4 +1,4 @@
-import { AppValidator, normalize, schemas, validateAppDefinition } from '@appsemble/lang-sdk';
+import { AppValidator, normalize, validateAppDefinition } from '@appsemble/lang-sdk';
 import {
   AppsembleError,
   assertKoaCondition,
@@ -26,7 +26,6 @@ import { createDynamicIndexes } from '../../../utils/dynamicIndexes.js';
 
 export async function createApp(ctx: Context): Promise<void> {
   const {
-    openApi,
     request: {
       body: {
         OrganizationId,
@@ -71,23 +70,10 @@ export async function createApp(ctx: Context): Promise<void> {
   try {
     const definition = parse(yaml, { maxAliasCount: 10_000 }) as AppDefinition;
 
-    // TODO: something other than that
-    // createValidator();
     const appValidator = new AppValidator();
 
-    // handleValidatorResult(
-    //   ctx,
-    //   // TODO: fix
-    //   openApi!.validate(definition, schemas.AppDefinition, {
-    //     throw: false,
-    //   }),
-    //   'App validation failed',
-    // );
-    //
-    // TODO: do we even need two validators?
     handleValidatorResult(ctx, appValidator.validateApp(definition), 'App validation failed');
 
-    // TODO: this is exactly where issue 1854 happens
     handleValidatorResult(
       ctx,
       await validateAppDefinition(

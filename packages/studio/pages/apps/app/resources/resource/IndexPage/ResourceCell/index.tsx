@@ -7,6 +7,7 @@ import { FormattedDate, FormattedMessage, FormattedNumber } from 'react-intl';
 import styles from './index.module.css';
 import { messages } from './messages.js';
 
+// XXX: unify this with webhook/resource upload logic
 const validator = new Validator();
 const firstLineRegex = /^(.*)\n?/;
 const whitespaceRegex = /^\s+$/;
@@ -18,8 +19,6 @@ interface ResourceCellProps {
 }
 
 export function ResourceCell({ required, schema, value }: ResourceCellProps): ReactNode {
-  // TODO: kill this
-  // also kill the whole component in here if we can please
   const { valid } = validator.validate(value, { required, ...schema }, { nestedErrors: true });
   const expandCell = useToggle();
   const contentRef = useRef<HTMLDivElement>(null);

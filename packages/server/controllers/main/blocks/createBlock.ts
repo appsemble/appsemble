@@ -1,4 +1,4 @@
-import { BlockExampleValidator, BlockParamValidator } from '@appsemble/lang-sdk';
+import { BlockExampleValidator, BlockParamSchemaValidator } from '@appsemble/lang-sdk';
 import {
   assertKoaCondition,
   handleValidatorResult,
@@ -33,6 +33,7 @@ export async function createBlock(ctx: Context): Promise<void> {
 
   if (data.actions) {
     for (const key of Object.keys(data.actions)) {
+      // TODO: this doesn't belong here at all.
       assertKoaCondition(
         actionKeyRegex.test(key) || key === '$any',
         ctx,
@@ -43,9 +44,9 @@ export async function createBlock(ctx: Context): Promise<void> {
   }
 
   if (data.parameters) {
-    const paramValidator = new BlockParamValidator();
+    const paramValidator = new BlockParamSchemaValidator();
 
-    const result = paramValidator.validateParametersSchema(data.parameters);
+    const result = paramValidator.validateParamSchema(data.parameters);
     handleValidatorResult(ctx, result, 'Validation failed for block parameters');
   }
 

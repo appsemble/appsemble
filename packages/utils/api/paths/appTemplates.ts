@@ -53,17 +53,22 @@ export const pathItems: OpenAPIV3.PathItemObject = {
                 description: 'The ID of the template.',
               },
               name: {
-                // $ref: '#/components/schemas/AppDefinition/properties/name',
-                // TODO: all
                 type: 'string',
+                description: `The human readable name of the app.
+
+This will be displayed for example on the home screen or in the browser tab.
+`,
               },
               description: {
                 type: 'string',
-                // $ref: '#/components/schemas/AppDefinition/properties/description',
+                description: `A short description describing the app.
+
+This will be displayed on the app store.
+`,
               },
               organizationId: {
                 type: 'string',
-                // $ref: '#/components/schemas/Organization/properties/id',
+                description: 'The unique identifier for the organization.',
               },
               resources: {
                 type: 'boolean',

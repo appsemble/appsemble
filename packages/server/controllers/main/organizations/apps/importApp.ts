@@ -46,7 +46,6 @@ import { processHooks, processReferenceHooks } from '../../../../utils/resource.
 
 export async function importApp(ctx: Context): Promise<void> {
   const {
-    openApi,
     pathParams: { organizationId },
     request: { body: importFile },
   } = ctx;
@@ -72,15 +71,9 @@ export async function importApp(ctx: Context): Promise<void> {
     const yaml = await definitionFile.async('text');
     const theme = zip.folder('theme');
     const definition = parse(yaml, { maxAliasCount: 10_000 });
+
     const appValidator = new AppValidator();
     handleValidatorResult(ctx, appValidator.validateApp(definition), 'App validation failed');
-    // handleValidatorResult(
-    //   ctx,
-    //   openApi!.validate(definition, openApi!.document.components!.schemas!.AppDefinition, {
-    //     throw: false,
-    //   }),
-    //   'App validation failed',
-    // );
     handleValidatorResult(
       ctx,
       await validateAppDefinition(definition, getBlockVersions),

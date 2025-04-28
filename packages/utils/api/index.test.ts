@@ -1,8 +1,7 @@
-
 import { createValidator } from 'koas-core/lib/validation.js';
 import { describe, expect, it } from 'vitest';
 
-import { api, schemas } from './index.js';
+import { api } from './index.js';
 
 describe('schemas', () => {
   const document = api('');
@@ -158,5 +157,4 @@ describe('schemas', () => {
       expect(schema).not.toHaveProperty('uniqueItems');
     });
   });
-
 });

@@ -26,10 +26,18 @@ import {
 } from './authorization.js';
 import { getAppBlocks, type IdentifiableBlock, normalizeBlockName } from './blockUtils.js';
 import { findPageByName } from './findPageByName.js';
-import { AppValidator, normalize, partialNormalized } from './index.js';
+import {
+  AppValidator,
+  BlockParamInstanceValidator,
+  normalize,
+  partialNormalized,
+} from './index.js';
 import { iterApp, type Prefix } from './iterApp.js';
 import { has } from './miscellaneous.js';
 import { type ServerActionName, serverActions } from './serverActions.js';
+
+// TODO: change when MR ready
+const MR_READY = false;
 
 type Report = (instance: unknown, message: string, path: (number | string)[]) => void;
 
@@ -58,6 +66,7 @@ export function isAppLink(link: Remapper | string[] | string): boolean {
 }
 
 function validateJSONSchema(schema: Schema, prefix: Prefix, report: Report): void {
+  // TODO: bad nesting
   if (schema.type === 'object') {
     if ('properties' in schema) {
       if (Array.isArray(schema.required)) {
@@ -149,6 +158,7 @@ function validateMembersSchema(definition: AppDefinition, report: Report): void 
   }
 }
 
+// TODO: Very not good nesting
 function validateResourceSchemas(definition: AppDefinition, report: Report): void {
   if (!definition.resources) {
     return;
@@ -187,6 +197,7 @@ function validateResourceSchemas(definition: AppDefinition, report: Report): voi
       'ephemeral',
       'clonable',
       'expires',
+      // XXX: is position reserved?
     ]);
 
     if (reservedKeywords.has(resourceName)) {
@@ -277,6 +288,7 @@ function validateController(
 
   iterApp(definition, {
     onController(controller, path) {
+      // TODO: aaargh stop this BS
       const actionParameters = new Set<string>();
 
       if (controller.actions) {
@@ -284,6 +296,7 @@ function validateController(
           for (const [key, action] of Object.entries(controller.actions)) {
             if (
               action.type in
+              // XXX: What is this doing here? Hardcoded?
               [
                 'link',
                 'link.back',
@@ -360,6 +373,7 @@ function validateBlocks(
         report(block.type, 'is not a known block type', [...path, 'type']);
         return;
       }
+      // TODO: get rid of this thing
       const actionParameters = new Set<string>();
       const version = versions.get(block.version);
       if (!version) {
@@ -368,20 +382,36 @@ function validateBlocks(
       }
 
       if (version.parameters) {
-        const validator = new Validator();
+        let result: ValidatorResult;
+        if (MR_READY) {
+          const paramValidator = new BlockParamInstanceValidator({
+            actions: Object.keys(block.actions ?? {}),
+            emitters: Object.keys(block.events?.emit ?? {}),
+            listeners: Object.keys(block.events?.listen ?? {}),
+          });
+          result = paramValidator.validateParametersInstance(
+            block.parameters || {},
+            version.parameters,
+          );
+        } else {
+          const validator = new Validator();
 
-        validator.customFormats.fontawesome = () => true;
-        validator.customFormats.remapper = () => true;
-        validator.customFormats.action = (property) => {
-          actionParameters.add(property);
-          return has(block.actions, property);
-        };
-        validator.customFormats['event-listener'] = (property) =>
-          has(block.events?.listen, property);
-        validator.customFormats['event-emitter'] = (property) => has(block.events?.emit, property);
-        const result = validator.validate(block.parameters || {}, version.parameters, {
-          nestedErrors: true,
-        });
+          validator.customFormats.fontawesome = () => true;
+          validator.customFormats.remapper = () => true;
+          validator.customFormats.action = (property) => {
+            actionParameters.add(property);
+            return has(block.actions, property);
+          };
+          validator.customFormats['event-listener'] = (property) =>
+            has(block.events?.listen, property);
+          validator.customFormats['event-emitter'] = (property) =>
+            has(block.events?.emit, property);
+
+          result = validator.validate(block.parameters || {}, version.parameters, {
+            nestedErrors: true,
+          });
+        }
+
         if ('parameters' in block) {
           for (const error of result.errors) {
             report(error.instance, error.message, [...path, 'parameters', ...error.path]);
@@ -393,10 +423,12 @@ function validateBlocks(
         report(block.parameters, 'is not allowed on this block type', [...path, 'parameters']);
       }
 
+      // TODO: bad nesting
       if (block.actions) {
         if (version.actions) {
           for (const [key, action] of Object.entries(block.actions)) {
             if (version.actions.$any) {
+              // XXX: What is this
               if (actionParameters.has(key)) {
                 continue;
               }
@@ -434,6 +466,7 @@ function validateBlocks(
   });
 }
 
+// TODO: very redundant code
 function validatePermissions(
   appDefinition: AppDefinition,
   permissions: CustomAppPermission[],
@@ -506,6 +539,8 @@ function validatePermissions(
     }
 
     const otherPermissions = permissions.filter((p) => p !== permission);
+
+    // XXX: very duplicated code below, not readable, not in english/human/functional terms.
 
     if (resourcePermissionPattern.test(permission)) {
       const [, , resourceAction] = permission.split(':');
@@ -1164,11 +1199,13 @@ function validateCronJobs({ cron }: AppDefinition, report: Report): void {
   }
 }
 
+// TODO: horrible nesting
 function validateActions(definition: AppDefinition, report: Report): void {
   const urlRegex = new RegExp(`^${partialNormalized.source}:`);
 
   iterApp(definition, {
     onAction(action, path) {
+      // XXX: could we validate server-side actions differently
       if (path[0] === 'cron' && !serverActions.has(action.type as ServerActionName)) {
         report(action.type, 'action type is not supported for cron jobs', [...path, 'type']);
         return;
@@ -1249,6 +1286,7 @@ function validateActions(definition: AppDefinition, report: Report): void {
             allPermissions.push(...allRolePermissions);
           }
 
+          // TODO: pure dogshit
           if (
             !allPermissions.some((permission) => {
               if (resourcePermissionPattern.test(permission)) {
@@ -1275,7 +1313,7 @@ function validateActions(definition: AppDefinition, report: Report): void {
           ) {
             report(
               action.type,
-              'there is no-one in the app, who has permissions to use this action',
+              'there is no one in the app who has permissions to use this action',
               [...path, 'resource'],
             );
             return;
@@ -1307,6 +1345,7 @@ function validateActions(definition: AppDefinition, report: Report): void {
       }
 
       if (action.type.startsWith('flow.')) {
+        // TODO: path indexes are not sane. Raw-dogging the prefix is not sane.
         const page = definition.pages?.[Number(path[1])];
         if (page.type !== 'flow' && page.type !== 'loop') {
           report(
@@ -1416,6 +1455,7 @@ function validateEvents(
   blockVersions: Map<string, Map<string, BlockManifest>>,
   report: Report,
 ): void {
+  // XXX: what is this a map of?
   const indexMap = new Map<
     number | string,
     {
@@ -1488,6 +1528,7 @@ function validateEvents(
     },
 
     onAction(action, path) {
+      // TODO: really doesn't belong here,at all
       if (action.type === 'dialog') {
         for (const block of action.blocks) {
           const versions = blockVersions.get(normalizeBlockName(block.type));
@@ -1575,6 +1616,7 @@ function validateEvents(
   indexMap.delete('controller');
 
   for (const [name, prefixes] of controllerEvents.emitters.entries()) {
+    // TODO: you call this !Array.prototype.some
     let found = false;
     for (const { listeners } of indexMap.values()) {
       if (listeners.has(name)) {
@@ -1645,11 +1687,13 @@ export async function validateAppDefinition(
   // the default validator doesn't know about the things over at https://gitlab.com/remcohaszing/koas/-/blob/main/packages/koas-core/src/validation.ts
   // and its validator
   if (!result) {
-    const validator = new Validator();
-    // TODO: uncomment
-    // const validator = new AppValidator();
-    // result = validator.validateApp(definition);
-    result = validator.validate(definition, {});
+    if (MR_READY) {
+      const validator = new AppValidator();
+      result = validator.validateApp(definition);
+    } else {
+      const validator = new Validator();
+      result = validator.validate(definition, {});
+    }
   }
 
   if (!definition) {
