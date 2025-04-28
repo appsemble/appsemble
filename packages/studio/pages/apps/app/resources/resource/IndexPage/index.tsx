@@ -1,10 +1,12 @@
 import {
   Button,
   Checkbox,
+  FileUpload,
   Icon,
   ModalCard,
   PaginationNavigator,
   SimpleForm,
+  SimpleFormError,
   SimpleFormField,
   SimpleModalFooter,
   Table,
@@ -73,6 +75,7 @@ export function IndexPage({
   const createModal = useToggle();
   const hideModal = useToggle();
   const advancedOptionsModal = useToggle();
+  const importModal = useToggle();
 
   const defaultAdvancedOptions = new Set([]);
 
@@ -263,6 +266,36 @@ export function IndexPage({
     },
     [advancedOptionsModal, advancedOptionsKey, setAdvancedOptions],
   );
+  const onImportCsv = useCallback(
+    ({ delimiter, file }: { file: File; delimiter: string }) => {
+      axios
+        .post<Resource[]>(resourceURL, file, {
+          headers: { 'content-type': file.type },
+          params: { delimiter },
+        })
+        .then(
+          ({ data }) => {
+            const newResources = [].concat(data);
+            setResources((oldResources) => [...newResources, ...oldResources]);
+            updatePagination(count + newResources.length);
+            importModal.disable();
+            push({
+              body: formatMessage(messages.importSuccess, {
+                ids: newResources.map((r) => r.id).join(', '),
+              }) as string,
+              color: 'success',
+            });
+          },
+          () => {
+            push({
+              body: formatMessage(messages.importError),
+              color: 'danger',
+            });
+          },
+        );
+    },
+    [count, formatMessage, importModal, push, resourceURL, setResources, updatePagination],
+  );
 
   const onHideProperties = useCallback(
     (values: Record<string, boolean>) => {
@@ -316,39 +349,6 @@ export function IndexPage({
     );
     await download(`${resourceURL}?${newSearchParams}`, `${resourceName}.csv`, 'text/csv');
   }, [advancedOptions, hiddenProperties, keys, resourceName, resourceURL]);
-
-  const uploadCsv = useCallback(() => {
-    const input = document.createElement('input');
-    input.type = 'file';
-    input.accept = 'text/csv, application/json';
-    input.click();
-    input.addEventListener('change', () => {
-      const [file] = input.files;
-      axios
-        .post<Resource[]>(resourceURL, file, {
-          headers: { 'content-type': file.type },
-        })
-        .then(
-          ({ data }) => {
-            const newResources = [].concat(data);
-            setResources((oldResources) => [...newResources, ...oldResources]);
-            updatePagination(count + newResources.length);
-            push({
-              body: formatMessage(messages.importSuccess, {
-                ids: newResources.map((r) => r.id).join(', '),
-              }) as string,
-              color: 'success',
-            });
-          },
-          () => {
-            push({
-              body: formatMessage(messages.importError),
-              color: 'danger',
-            });
-          },
-        );
-    });
-  }, [count, formatMessage, push, resourceURL, setResources, updatePagination]);
 
   const onPageChange = useCallback(
     (updatedPage: number) => {
@@ -428,7 +428,7 @@ export function IndexPage({
         <Button icon="download" onClick={downloadCsv}>
           <FormattedMessage {...messages.export} />
         </Button>
-        <Button icon="upload" onClick={uploadCsv}>
+        <Button icon="upload" onClick={importModal.enable}>
           <FormattedMessage {...messages.import} />
         </Button>
         <Button
@@ -670,6 +670,45 @@ export function IndexPage({
             name="$clonable"
           />
         </div>
+      </ModalCard>
+      <ModalCard
+        component={SimpleForm}
+        defaultValues={{
+          file: null,
+          delimiter: ',',
+        }}
+        footer={
+          <SimpleModalFooter
+            cancelLabel={<FormattedMessage {...messages.cancelButton} />}
+            onClose={importModal.disable}
+            submitLabel={<FormattedMessage {...messages.import} />}
+          />
+        }
+        isActive={importModal.enabled}
+        onClose={() => importModal.disable}
+        onSubmit={onImportCsv}
+        title={<FormattedMessage {...messages.import} />}
+      >
+        <SimpleFormError>{() => <FormattedMessage {...messages.importError} />}</SimpleFormError>
+        <SimpleFormField
+          accept="text/csv, application/json"
+          component={FileUpload}
+          fileButtonLabel={<FormattedMessage {...messages.chooseFile} />}
+          fileLabel={<FormattedMessage {...messages.noFile} />}
+          label={<FormattedMessage {...messages.file} />}
+          name="file"
+          required
+        />
+        <SimpleFormField
+          help={
+            <FormattedMessage
+              {...messages.delimiterHelp}
+              values={{ bold: (value) => <strong>{value}</strong> }}
+            />
+          }
+          label={<FormattedMessage {...messages.delimiter} />}
+          name="delimiter"
+        />
       </ModalCard>
     </div>
   );

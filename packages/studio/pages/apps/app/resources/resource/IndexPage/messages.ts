@@ -152,4 +152,25 @@ export const messages = defineMessages({
     id: 'studio.xwEc8K',
     defaultMessage: 'API',
   },
+  file: {
+    id: 'studio.gyrIEl',
+    defaultMessage: 'File',
+  },
+  delimiter: {
+    id: 'studio.Cj3YE3',
+    defaultMessage: 'Delimiter',
+  },
+  chooseFile: {
+    id: 'studio.86RD6b',
+    defaultMessage: 'Choose file…',
+  },
+  noFile: {
+    id: 'studio.FTFqXw',
+    defaultMessage: 'No file chosen',
+  },
+  delimiterHelp: {
+    id: 'studio.3nhRA0',
+    defaultMessage:
+      'A csv delimiter is a character used to separate data values in a structured text format; use <bold>\\t</bold> for tabs',
+  },
 });
