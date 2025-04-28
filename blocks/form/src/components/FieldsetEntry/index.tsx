@@ -1,7 +1,8 @@
 import { type VNode } from 'preact';
-import { type MutableRef, useCallback } from 'preact/hooks';
+import { type Dispatch, type MutableRef, type StateUpdater, useCallback } from 'preact/hooks';
 
 import {
+  type Field,
   type FieldErrorMap,
   type Fieldset,
   type FormDisplay,
@@ -16,6 +17,8 @@ interface FieldsetEntryProps extends InputProps<Values, Fieldset> {
    */
   readonly index?: number;
 
+  readonly formDataLoading: boolean;
+
   readonly display?: FormDisplay;
 
   readonly fieldSpan?: boolean;
@@ -28,6 +31,8 @@ interface FieldsetEntryProps extends InputProps<Values, Fieldset> {
   readonly addThumbnail: (thumbnail: File) => void;
 
   readonly removeThumbnail: (thumbnail: File) => void;
+
+  readonly setFieldsReady: Dispatch<StateUpdater<Record<Field['name'], boolean>>>;
 }
 
 /**
@@ -40,12 +45,14 @@ export function FieldsetEntry({
   error,
   field,
   fieldSpan,
+  formDataLoading,
   formValues,
   index,
   name,
   onChange,
   removeThumbnail,
   setFieldErrorLink,
+  setFieldsReady,
 }: FieldsetEntryProps): VNode {
   const onChangeIndex = useCallback(
     (localName: string, values: Values) => {
@@ -62,11 +69,13 @@ export function FieldsetEntry({
       errors={error as FieldErrorMap}
       fields={field.fields}
       fieldSpan={fieldSpan}
+      formDataLoading={formDataLoading}
       formValues={formValues}
       name={name}
       onChange={index == null ? onChange : onChangeIndex}
       removeThumbnail={removeThumbnail}
       setFieldErrorLink={setFieldErrorLink}
+      setFieldsReady={setFieldsReady}
     />
   );
 }

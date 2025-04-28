@@ -89,8 +89,8 @@ export function MarkdownInput({
           const listener = ctx.get(listenerCtx);
           listener.markdownUpdated((...[, markdown, prevMarkdown]) => {
             if (markdown !== prevMarkdown) {
-              const imagelessMarkdown = stripImages(markdown);
-              onChange(name, imagelessMarkdown);
+              const markdownWithoutImages = stripImages(markdown);
+              onChange(name, markdownWithoutImages);
             }
           });
         })
