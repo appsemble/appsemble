@@ -7,9 +7,9 @@
   "longSubmissionWarning": "Das Formular wird noch eingereicht, bitte warten Sie.",
   "optionalLabel": "(optional)",
   "previousLabel": "Vorherige",
+  "search": "Suche",
   "selectionNoOptions": "Keine weiteren Optionen verfügbar",
   "selectionOptionsError": "Es gab einen Fehler beim Laden der Optionen",
   "submitError": "Beim Senden dieses Formulars ist ein Problem aufgetreten",
-  "submitLabel": "Übermitteln",
-  "search": ""
+  "submitLabel": "Übermitteln"
 }
