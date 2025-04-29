@@ -386,7 +386,9 @@ e2e apps obligatory:
     APPSEMBLE_IMAGE: '$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG'
   parallel:
     matrix:
-      - PROJECT: ['appsemble/apps/sittard-geleen']
+      - PROJECT:
+          - 'appsemble/apps/sittard-geleen'
+          - 'appsemble/apps/restaurants'
   trigger:
     project: $PROJECT
     strategy: depend
@@ -409,14 +411,12 @@ e2e apps manual:
   parallel:
     matrix:
       - PROJECT:
-          [
-            'appsemble/apps/template',
-            'appsemble/apps/sittard-geleen',
-            'appsemble/apps/eindhoven',
-            'appsemble/apps/amersfoort',
-            'appsemble/apps/sounding-bodies',
-            'appsemble/apps/tbvwonen',
-          ]
+          - 'appsemble/apps/template'
+          - 'appsemble/apps/sittard-geleen'
+          - 'appsemble/apps/eindhoven'
+          - 'appsemble/apps/amersfoort'
+          - 'appsemble/apps/sounding-bodies'
+          - 'appsemble/apps/tbvwonen'
   trigger:
     project: $PROJECT
     strategy: depend
