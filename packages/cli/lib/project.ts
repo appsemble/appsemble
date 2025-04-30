@@ -59,7 +59,8 @@ export async function makeProjectPayload(
 
   const gatheredData = {} as BlockManifest;
 
-  const { description, layout, longDescription, name, version, visibility } = buildConfig;
+  const { description, layout, longDescription, name, version, visibility, wildcardActions } =
+    buildConfig;
 
   const { actions, events, messages, parameters } = getProjectImplementations(buildConfig);
 
@@ -90,6 +91,7 @@ export async function makeProjectPayload(
   append('name', name);
   append('parameters', parameters);
   append('version', version);
+  append('wildcardActions', wildcardActions);
 
   if (icon) {
     const iconPath = join(dir, icon);

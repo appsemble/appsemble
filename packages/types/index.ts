@@ -3181,6 +3181,8 @@ export interface BlockManifest extends ProjectManifest {
 
   /**
    * Whether action validation for wildcard action is skipped.
+   *
+   * If true, ignore unused actions that fall under '$any'.
    */
   wildcardActions?: boolean;
 
