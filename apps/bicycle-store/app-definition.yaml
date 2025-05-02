@@ -1,0 +1,248 @@
+name: Bicycle Store
+description: Website for employees to manage and and sell bicycles
+defaultPage: Inventory
+
+theme:
+  primaryColor: '#4357AD'
+  successColor: '#48A9A6'
+  dangerColor: '#C1666B'
+  warningColor: '#D4B483'
+  infoColor: '#E4DFDA'
+
+security:
+  default:
+    role: employee
+  roles:
+    employee:
+      description: Regular employees of the store. They can sell bicycles.
+      permissions:
+        - $resource:bicycles:query
+        - $resource:bicycles:patch
+        - $resource:saleHistory:query
+        - $resource:saleHistory:create
+    manager:
+      description:
+        Managers of the store. They are in charge of overseeing the store and can add/remove bicycle
+        types to the inventory.
+      inherits:
+        - employee
+      permissions:
+        - $resource:bicycles:create
+
+resources:
+  bicycles:
+    schema:
+      type: object
+      additionalProperties: false
+      required:
+        - type
+        - stock
+        - image
+      properties:
+        type:
+          type: string
+          maxLength: 50
+        stock:
+          type: integer
+        image:
+          type: string
+          format: binary
+  saleHistory:
+    schema:
+      type: object
+      additionalProperties: false
+      required:
+        - bicycle
+        - saleDate
+        - buyerPhoneNumber
+      properties:
+        bicycle:
+          type: string
+          maxLength: 50
+        saleDate:
+          type: string
+          format: date-time
+        buyerPhoneNumber:
+          type: integer
+        notes:
+          type: string
+
+pages:
+  - name: Sell bicycle
+    roles:
+      - manager
+      - employee
+    blocks:
+      - type: data-loader
+        version: 0.32.1
+        events:
+          emit:
+            data: bicycleInventory
+          listen:
+            refresh: refreshStock
+        actions:
+          onLoad:
+            type: resource.query
+            resource: bicycles
+      - type: list
+        version: 0.32.1
+        events:
+          listen:
+            data: bicycleInventory
+        parameters:
+          title: Rent out bicycles
+          header: { prop: type }
+          image:
+            file: { prop: image }
+            alt:
+              string.format:
+                template: '{type} image'
+                values:
+                  type: { prop: type }
+          fields:
+            - label: Bicycles left
+              value: { prop: stock }
+          button:
+            label: Sell
+            onClick: sellBicycle
+            disabled:
+              lt: [{ prop: stock }, 1]
+        actions:
+          sellBicycle:
+            type: dialog
+            blocks:
+              - type: form
+                version: 0.32.1
+                parameters:
+                  fields:
+                    - name: phoneNumber
+                      type: number
+                      label: Buyer's phone number
+                      placeholder: '1234567890'
+                      requirements:
+                        - required: true
+                          errorMessage: A phone number is required to sell a bicycle!
+                    - name: notes
+                      type: string
+                      label: Notes
+                      multiline: true
+                actions:
+                  onSubmit:
+                    type: resource.create
+                    resource: saleHistory
+                    body:
+                      object.from:
+                        bicycle: { prop: type }
+                        saleDate: { date.now: null }
+                        buyerPhoneNumber: { prop: phoneNumber }
+                        notes: { prop: notes }
+                    onSuccess:
+                      type: resource.patch
+                      resource: bicycles
+                      id: [{ history: 0 }, { prop: id }]
+                      body:
+                        object.from:
+                          stock:
+                            maths:
+                              a: [{ history: 0 }, { prop: stock }]
+                              b: 1
+                              operation: subtract
+                      onSuccess:
+                        type: event
+                        event: refreshStock
+                        onSuccess:
+                          type: message
+                          color: success
+                          body: Successfully sold bicycle!
+                          onSuccess:
+                            type: dialog.ok
+  - name: Inventory
+    roles:
+      - manager
+    blocks:
+      - type: data-loader
+        version: 0.32.1
+        events:
+          emit:
+            data: bicycleStock
+          listen:
+            refresh: refreshBicycleInventory
+        actions:
+          onLoad:
+            type: resource.query
+            resource: bicycles
+      - type: table
+        version: 0.32.1
+        events:
+          listen:
+            data: bicycleStock
+        parameters:
+          caption: Bicycle inventory
+          fields:
+            - label: Type
+              value: { prop: type }
+            - label: Amount in stock
+              value: { prop: stock }
+      - type: action-button
+        version: 0.32.1
+        parameters:
+          icon: plus
+        actions:
+          onClick:
+            type: dialog
+            blocks:
+              - type: form
+                version: 0.32.1
+                parameters:
+                  fields:
+                    - type: string
+                      name: type
+                      requirements:
+                        - required: true
+                        - maxLength: 50
+                    - type: integer
+                      placeholder: '10'
+                      name: stock
+                      requirements:
+                        - required: true
+                    - type: file
+                      name: image
+                      icon: bicycle
+                      requirements:
+                        - required: true
+                actions:
+                  onSubmit:
+                    type: resource.create
+                    resource: bicycles
+                    onSuccess:
+                      type: event
+                      event: refreshBicycleInventory
+                      onSuccess:
+                        type: message
+                        body: Created a new bicycle!
+                        color: success
+                        onSuccess:
+                          type: dialog.ok
+  - name: Sale history
+    blocks:
+      - type: data-loader
+        version: 0.32.1
+        events:
+          emit:
+            data: saleHistoryData
+        actions:
+          onLoad:
+            type: resource.query
+            resource: saleHistory
+      - type: feed
+        version: 0.32.1
+        events:
+          listen:
+            data: saleHistoryData
+        parameters:
+          title: A bicycle has been sold!
+          description:
+            string.format:
+              template: We just sold a {bicycle}!
+              values:
+                bicycle: { prop: bicycle }

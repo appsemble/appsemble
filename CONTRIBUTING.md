@@ -495,7 +495,7 @@ the studio. These properties are:
 An individual training is placed in a chapter as a directory with a unique ID, and a markdown file
 that contains the content called `index.md`.
 
-[![Training structure](/config/assets/training-structure.png 'Training structure')]
+![Training structure](/config/assets/training-structure.png 'Training structure')
 
 ### Adding a new training
 

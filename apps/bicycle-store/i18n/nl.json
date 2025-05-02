@@ -1,0 +1,13 @@
+{
+  "app": {
+    "app.roles.employee": "medewerker",
+    "app.roles.employee.description": "Normale medewerkers van de winkel. Zij kunnen fietsen verkopen.",
+    "app.roles.manager": "manager",
+    "app.roles.manager.description": "Managers van de winkels. Zij zijn verantwoordelijk voor het overzien van de winkel en kunnen soorten fietsen toevoegen/verwijderen uit de inventaris.",
+    "description": "Website voor werknemers om fietsen te beheren en verkopen",
+    "name": "Fietsenwinkel",
+    "pages.inventory": "Inventaris",
+    "pages.sale-history": "Verkoopgeschiedenis",
+    "pages.sell-bicycle": "Fiets verkopen"
+  }
+}
