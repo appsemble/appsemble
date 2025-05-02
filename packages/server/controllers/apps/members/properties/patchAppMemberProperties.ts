@@ -7,11 +7,7 @@ import {
 } from '@appsemble/node-utils';
 import { type Context } from 'koa';
 
-<<<<<<<< HEAD:packages/server/controllers/apps/members/properties/patchAppMemberProperties.ts
-import { AppMember } from '../../../../models/index.js';
-========
 import { App, getAppDB } from '../../../../models/index.js';
->>>>>>>> 421054bb29 (support database per app):packages/server/controllers/common/apps/members/patchAppMemberProperties.ts
 import { getAppMemberInfo, parseAppMemberProperties } from '../../../../utils/appMember.js';
 import { checkAuthSubjectAppPermissions } from '../../../../utils/authorization.js';
 
