@@ -1,5 +1,3 @@
-version: '3.5'
-
 x-database-host: &database-host database
 x-database-port: &database-port 5432
 x-database-name: &database-name appsemble
