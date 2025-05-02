@@ -1,6 +1,13 @@
+import { useBlock } from '@appsemble/preact';
 import classNames from 'classnames';
 import { type ComponentChildren, type VNode } from 'preact';
-import { type Dispatch, type MutableRef, type StateUpdater, useCallback } from 'preact/hooks';
+import {
+  type Dispatch,
+  type MutableRef,
+  type StateUpdater,
+  useCallback,
+  useMemo,
+} from 'preact/hooks';
 
 import styles from './index.module.css';
 import {
@@ -90,6 +97,8 @@ export function FieldGroup({
   setFieldErrorLink,
   setFieldsReady,
 }: FieldGroupProps): VNode {
+  const { utils } = useBlock();
+
   const handleChange = useCallback(
     (localName: string, val: unknown) => {
       onChange(name, { ...(getValueByNameSequence(name, formValues) as Values), [localName]: val });
@@ -114,40 +123,54 @@ export function FieldGroup({
     }
   };
 
-  const fieldsetEntryValues: Values = {};
+  const fieldsetEntryValues = useMemo(() => {
+    const newFieldsetEntryValues: Values = {};
+    for (const field of fields) {
+      newFieldsetEntryValues[field.name] = getValueByNameSequence(
+        `${name}.${field.name}`,
+        formValues,
+      );
+    }
+    return newFieldsetEntryValues;
+  }, [fields, formValues, name]);
 
-  for (const field of fields) {
-    fieldsetEntryValues[field.name] = getValueByNameSequence(`${name}.${field.name}`, formValues);
-  }
+  const show = useCallback(
+    (field: Field) =>
+      field.show === undefined ||
+      Boolean(utils.remap(field.show, { ...formValues, fieldsetEntryValues })),
+    [utils, formValues, fieldsetEntryValues],
+  );
 
   return (
     <div className={getFieldsContainerClass()}>
-      {fields.map((f) => (
-        <FormInput
-          addThumbnail={addThumbnail}
-          className={String(
-            classNames({
-              [styles['column-span']]:
-                fieldSpan ||
-                ['fieldset', 'tags', 'file', 'selection', 'markdown'].includes(f.type) ||
-                (f as StringField).multiline,
-            }),
-          )}
-          disabled={disabled}
-          display={display}
-          error={errors?.[f.name]}
-          field={f}
-          fieldsetEntryValues={fieldsetEntryValues}
-          formDataLoading={formDataLoading}
-          formValues={formValues}
-          key={f.name}
-          name={name ? `${name}.${f.name}` : f.name}
-          onChange={handleChange}
-          removeThumbnail={removeThumbnail}
-          setFieldErrorLink={setFieldErrorLink}
-          setFieldsReady={setFieldsReady}
-        />
-      ))}
+      {fields
+        .filter((f) => f.type === 'enum' || show(f))
+        .map((f) => (
+          <FormInput
+            addThumbnail={addThumbnail}
+            className={`mb-4 ${f.type === 'enum' && !show(f) ? 'is-hidden' : ''} ${String(
+              classNames({
+                [styles['column-span']]:
+                  fieldSpan ||
+                  ['fieldset', 'tags', 'file', 'selection', 'markdown'].includes(f.type) ||
+                  (f as StringField).multiline,
+              }),
+            )}`}
+            disabled={disabled}
+            display={display}
+            error={errors?.[f.name]}
+            field={f}
+            fieldsetEntryValues={fieldsetEntryValues}
+            formDataLoading={formDataLoading}
+            formValues={formValues}
+            key={f.name}
+            name={name ? `${name}.${f.name}` : f.name}
+            onChange={handleChange}
+            removeThumbnail={removeThumbnail}
+            setFieldErrorLink={setFieldErrorLink}
+            setFieldsReady={setFieldsReady}
+          />
+        ))}
     </div>
   ) as ComponentChildren as VNode;
 }
