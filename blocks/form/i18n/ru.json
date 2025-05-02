@@ -7,9 +7,9 @@
   "longSubmissionWarning": "Форма находится в процессе отправки, пожалуйста, подождите.",
   "optionalLabel": "(необязательно)",
   "previousLabel": "Предыдущий",
+  "search": "Поиск",
   "selectionNoOptions": "Больше нет доступных вариантов",
   "selectionOptionsError": "Возникла ошибка при загрузке опций",
   "submitError": "При отправке этой формы возникла проблема",
-  "submitLabel": "Отправить",
-  "search": ""
+  "submitLabel": "Отправить"
 }
