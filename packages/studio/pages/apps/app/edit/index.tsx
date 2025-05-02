@@ -341,7 +341,6 @@ export default function EditPage(): ReactNode {
               <div className="navbar-item px-0">
                 <Button
                   className="is-fullwidth mr-2 mb-1"
-                  disabled={disabled}
                   icon="vial"
                   onClick={() => handleToolbarButtonClick(onSave)}
                 >
