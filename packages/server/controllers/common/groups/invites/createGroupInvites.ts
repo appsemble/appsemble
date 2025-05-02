@@ -141,6 +141,7 @@ export async function createGroupInvites(ctx: Context): Promise<void> {
           email: invite.email,
         },
         emailName: 'groupInvite',
+        ...(app.definition.defaultLanguage ? { locale: app.definition.defaultLanguage } : {}),
         ...(user ? { locale: user.locale } : {}),
         values: {
           link: (text) => `[${text}](${String(url)})`,

@@ -51,6 +51,7 @@ export async function resendAppInvite(ctx: Context): Promise<void> {
         email,
       },
       emailName: 'appInvite',
+      ...(app.definition.defaultLanguage ? { locale: app.definition.defaultLanguage } : {}),
       ...(existingAppInvite.User ? { locale: existingAppInvite.User.locale } : {}),
       values: {
         link: (text) => `[${text}](${String(url)})`,

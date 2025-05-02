@@ -121,6 +121,7 @@ export async function createAppInvites(ctx: Context): Promise<void> {
           email: invite.email,
         },
         emailName: 'appInvite',
+        ...(app.definition.defaultLanguage ? { locale: app.definition.defaultLanguage } : {}),
         ...(user ? { locale: user.locale } : {}),
         values: {
           link: (text) => `[${text}](${String(url)})`,
