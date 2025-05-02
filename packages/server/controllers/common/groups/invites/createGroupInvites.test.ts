@@ -10,7 +10,7 @@ import {
   GroupMember,
   Organization,
   OrganizationMember,
-  type User,
+  User,
 } from '../../../../models/index.js';
 import { setArgv } from '../../../../utils/argv.js';
 import { createServer } from '../../../../utils/createServer.js';
@@ -200,6 +200,207 @@ describe('createGroupInvites', () => {
         appName: 'Test App',
         link: expect.any(Function),
         name: 'null',
+        groupName: 'A',
+      },
+    });
+  });
+
+  it('should create and send an invite email with the default app language if present', async () => {
+    await app.update({
+      definition: {
+        ...app.definition,
+        defaultLanguage: 'nl',
+        security: {
+          ...app.definition.security,
+          roles: {
+            GroupMember: {
+              permissions: ['$group:member:invite'],
+            },
+          },
+          groups: {
+            ...app.definition.security,
+            join: 'invite',
+            invite: ['GroupMember'],
+          },
+        },
+      },
+    });
+
+    await appMember.update({
+      role: PredefinedAppRole.GroupsManager,
+    });
+
+    vi.spyOn(server.context.mailer, 'sendTranslatedEmail');
+    const group = await Group.create({ name: 'A', AppId: app.id });
+    await GroupMember.create({ GroupId: group.id, AppMemberId: appMember.id, role: 'Manager' });
+    const response = await request.post(`/api/groups/${group.id}/invites`, [
+      {
+        email: 'newuser@example.com',
+        role: 'GroupMember',
+      },
+    ]);
+
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 200 OK
+      Content-Type: application/json; charset=utf-8
+
+      [
+        {
+          "email": "newuser@example.com",
+          "role": "GroupMember",
+        },
+      ]
+    `);
+
+    expect(server.context.mailer.sendTranslatedEmail).toHaveBeenCalledWith({
+      emailName: 'groupInvite',
+      to: {
+        email: 'newuser@example.com',
+      },
+      locale: 'nl',
+      values: {
+        appName: 'Test App',
+        link: expect.any(Function),
+        name: 'null',
+        groupName: 'A',
+      },
+    });
+  });
+
+  it('should create and send an invite email with the locale of the user if present', async () => {
+    await app.update({
+      definition: {
+        ...app.definition,
+        security: {
+          ...app.definition.security,
+          roles: {
+            GroupMember: {
+              permissions: ['$group:member:invite'],
+            },
+          },
+          groups: {
+            ...app.definition.security,
+            join: 'invite',
+            invite: ['GroupMember'],
+          },
+        },
+      },
+    });
+
+    await appMember.update({
+      role: PredefinedAppRole.GroupsManager,
+    });
+
+    const newUser = await User.create({
+      primaryEmail: 'newuser@example.com',
+      locale: 'en',
+      timezone: 'Europe/Amsterdam',
+      name: 'John Doe',
+    });
+
+    vi.spyOn(server.context.mailer, 'sendTranslatedEmail');
+    const group = await Group.create({ name: 'A', AppId: app.id });
+    await GroupMember.create({ GroupId: group.id, AppMemberId: appMember.id, role: 'Manager' });
+    const response = await request.post(`/api/groups/${group.id}/invites`, [
+      {
+        email: newUser.primaryEmail,
+        role: 'GroupMember',
+      },
+    ]);
+
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 200 OK
+      Content-Type: application/json; charset=utf-8
+
+      [
+        {
+          "email": "newuser@example.com",
+          "role": "GroupMember",
+        },
+      ]
+    `);
+
+    expect(server.context.mailer.sendTranslatedEmail).toHaveBeenCalledWith({
+      emailName: 'groupInvite',
+      to: {
+        email: 'newuser@example.com',
+        name: 'John Doe',
+      },
+      locale: 'en',
+      values: {
+        appName: 'Test App',
+        link: expect.any(Function),
+        name: 'John Doe',
+        groupName: 'A',
+      },
+    });
+  });
+
+  it('should create and send an invite email prioritizing the locale of the user', async () => {
+    await app.update({
+      definition: {
+        ...app.definition,
+        defaultLanguage: 'nl',
+        security: {
+          ...app.definition.security,
+          roles: {
+            GroupMember: {
+              permissions: ['$group:member:invite'],
+            },
+          },
+          groups: {
+            ...app.definition.security,
+            join: 'invite',
+            invite: ['GroupMember'],
+          },
+        },
+      },
+    });
+
+    await appMember.update({
+      role: PredefinedAppRole.GroupsManager,
+    });
+
+    const newUser = await User.create({
+      primaryEmail: 'newuser@example.com',
+      locale: 'en',
+      timezone: 'Europe/Amsterdam',
+      name: 'John Doe',
+    });
+
+    vi.spyOn(server.context.mailer, 'sendTranslatedEmail');
+    const group = await Group.create({ name: 'A', AppId: app.id });
+    await GroupMember.create({ GroupId: group.id, AppMemberId: appMember.id, role: 'Manager' });
+    const response = await request.post(`/api/groups/${group.id}/invites`, [
+      {
+        email: newUser.primaryEmail,
+        role: 'GroupMember',
+      },
+    ]);
+
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 200 OK
+      Content-Type: application/json; charset=utf-8
+
+      [
+        {
+          "email": "newuser@example.com",
+          "role": "GroupMember",
+        },
+      ]
+    `);
+
+    expect(server.context.mailer.sendTranslatedEmail).toHaveBeenCalledWith({
+      emailName: 'groupInvite',
+      to: {
+        email: 'newuser@example.com',
+        name: 'John Doe',
+      },
+      locale: 'en',
+      values: {
+        appName: 'Test App',
+        link: expect.any(Function),
+        name: 'John Doe',
         groupName: 'A',
       },
     });

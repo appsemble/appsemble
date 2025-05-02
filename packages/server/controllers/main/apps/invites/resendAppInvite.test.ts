@@ -9,7 +9,7 @@ import {
   AppInvite,
   Organization,
   OrganizationMember,
-  type User,
+  User,
 } from '../../../../models/index.js';
 import { setArgv } from '../../../../utils/argv.js';
 import { createServer } from '../../../../utils/createServer.js';
@@ -89,6 +89,115 @@ describe('resendAppInvite', () => {
         appName: 'Test App',
         link: expect.any(Function),
         name: 'null',
+      },
+    });
+  });
+
+  it('should resend an invitation with the default app language if present', async () => {
+    app = await app.update({ definition: { ...app.definition, defaultLanguage: 'nl' } });
+
+    await AppInvite.create({
+      AppId: app.id,
+      email: 'test@example.com',
+      key: 'test-key',
+      role: 'User',
+    });
+
+    authorizeStudio();
+
+    const response = await request.post(`/api/apps/${app.id}/invites/resend`, {
+      email: 'test@example.com',
+    });
+
+    expect(response).toMatchObject({ status: 204 });
+    expect(server.context.mailer.sendTranslatedEmail).toHaveBeenCalledWith({
+      emailName: 'appInvite',
+      to: {
+        email: 'test@example.com',
+      },
+      locale: 'nl',
+      values: {
+        appName: 'Test App',
+        link: expect.any(Function),
+        name: 'null',
+      },
+    });
+  });
+
+  it('should resend an invitation with the locale of the user', async () => {
+    const newUser = await User.create({
+      primaryEmail: 'newuser@example.com',
+      locale: 'en',
+      timezone: 'Europe/Amsterdam',
+      name: 'John Doe',
+    });
+
+    await AppInvite.create({
+      AppId: app.id,
+      email: newUser.primaryEmail,
+      key: 'test-key',
+      role: 'User',
+      UserId: newUser.id,
+    });
+
+    authorizeStudio();
+
+    const response = await request.post(`/api/apps/${app.id}/invites/resend`, {
+      email: newUser.primaryEmail,
+    });
+
+    expect(response).toMatchObject({ status: 204 });
+    expect(server.context.mailer.sendTranslatedEmail).toHaveBeenCalledWith({
+      emailName: 'appInvite',
+      to: {
+        email: newUser.primaryEmail,
+        name: 'John Doe',
+      },
+      locale: 'en',
+      values: {
+        appName: 'Test App',
+        link: expect.any(Function),
+        name: 'John Doe',
+      },
+    });
+  });
+
+  it('should resend an invitation prioritizing the locale of the user', async () => {
+    app = await app.update({ definition: { ...app.definition, defaultLanguage: 'nl' } });
+
+    const newUser = await User.create({
+      primaryEmail: 'newuser@example.com',
+      locale: 'en',
+      timezone: 'Europe/Amsterdam',
+      name: 'John Doe',
+    });
+
+    await AppInvite.create({
+      AppId: app.id,
+      email: newUser.primaryEmail,
+      key: 'test-key',
+      role: 'User',
+      UserId: newUser.id,
+    });
+
+    authorizeStudio();
+
+    const response = await request.post(`/api/apps/${app.id}/invites/resend`, {
+      email: newUser.primaryEmail,
+    });
+
+    expect(response).toMatchObject({ status: 204 });
+    expect(server.context.mailer.sendTranslatedEmail).toHaveBeenCalledWith({
+      emailName: 'appInvite',
+      to: {
+        email: newUser.primaryEmail,
+        name: 'John Doe',
+      },
+      locale: 'en',
+      values: {
+        appName: 'Test App',
+        link: expect.any(Function),
+        name: 'John Doe',
       },
     });
   });
